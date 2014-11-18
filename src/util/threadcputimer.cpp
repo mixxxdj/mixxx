@@ -65,6 +65,10 @@ static inline void do_gettime(qint64 *sec, qint64 *frac)
         *frac = ts.tv_nsec;
         return;
     }
+#else
+    Q_UNUSED(threadCpuTimeChecked);
+    Q_UNUSED(threadCpuTimeAvailable);
+    Q_UNUSED(unixCheckClockType);
 #endif
     *sec = 0;
     *frac = 0;

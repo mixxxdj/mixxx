@@ -50,7 +50,7 @@ void WLabel::setup(QDomNode node, const SkinContext& context) {
     // Font size
     if (context.hasNode(node, "FontSize")) {
         int fontsize = context.selectString(node, "FontSize").toInt();
-        setFont( QFont("Helvetica",fontsize,QFont::Normal) );
+        setFont(QFont("Helvetica", fontsize, QFont::Normal));
     }
 
     // Alignment

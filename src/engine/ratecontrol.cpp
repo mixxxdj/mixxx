@@ -210,10 +210,8 @@ void RateControl::setBpmControl(BpmControl* bpmcontrol) {
 
 void RateControl::setRateRamp(bool linearMode)
 {
-    if ( linearMode )
-        m_eRateRampMode = RateControl::RATERAMP_LINEAR;
-    else
-        m_eRateRampMode = RateControl::RATERAMP_STEP;
+    m_eRateRampMode = linearMode ?
+            RateControl::RATERAMP_LINEAR : RateControl::RATERAMP_STEP;
 }
 
 void RateControl::setRateRampSensitivity(int sense)
@@ -221,12 +219,13 @@ void RateControl::setRateRampSensitivity(int sense)
     // Reverse the actual sensitivity value passed.
     // That way the gui works in an intuitive manner.
     sense = RATE_SENSITIVITY_MAX - sense + RATE_SENSITIVITY_MIN;
-    if ( sense < RATE_SENSITIVITY_MIN )
+    if (sense < RATE_SENSITIVITY_MIN) {
         m_iRateRampSensitivity = RATE_SENSITIVITY_MIN;
-    else if ( sense > RATE_SENSITIVITY_MAX )
+    } else if (sense > RATE_SENSITIVITY_MAX) {
         m_iRateRampSensitivity = RATE_SENSITIVITY_MAX;
-    else
+    } else {
         m_iRateRampSensitivity = sense;
+    }
 }
 
 void RateControl::setTemp(double v) {
@@ -536,13 +535,10 @@ double RateControl::process(const double rate,
     double latrate = ((double)bufferSamples / (double)m_pSampleRate->get());
 
 
-    if ((m_ePbPressed) && (!m_bTempStarted))
-    {
+    if ((m_ePbPressed) && (!m_bTempStarted)) {
         m_bTempStarted = true;
 
-
-        if ( m_eRateRampMode == RATERAMP_STEP )
-        {
+        if (m_eRateRampMode == RATERAMP_STEP) {
             // old temporary pitch shift behavior
             double range = m_pRateRange->get();
 
@@ -581,10 +577,11 @@ double RateControl::process(const double rate,
         if (m_ePbCurrent)
         {
             // apply ramped pitchbending
-            if ( m_ePbCurrent == RateControl::RATERAMP_UP )
+            if (m_ePbCurrent == RateControl::RATERAMP_UP) {
                 addRateTemp(m_dTempRateChange);
-            else if ( m_ePbCurrent == RateControl::RATERAMP_DOWN )
+            } else if (m_ePbCurrent == RateControl::RATERAMP_DOWN) {
                 subRateTemp(m_dTempRateChange);
+            }
         }
         else if ((m_bTempStarted) || ((m_eRampBackMode != RATERAMP_RAMPBACK_NONE) && (m_dRateTemp != 0.0)))
         {
@@ -606,12 +603,13 @@ double RateControl::process(const double rate,
             else if ((m_eRampBackMode != RATERAMP_RAMPBACK_NONE) && (m_dRateTempRampbackChange == 0.0))
             {
 
-                if ( fabs(m_dRateTemp) < m_dRateTempRampbackChange)
+                if (fabs(m_dRateTemp) < m_dRateTempRampbackChange) {
                     resetRateTemp();
-                else if ( m_dRateTemp > 0 )
+                } else if (m_dRateTemp > 0) {
                     subRateTemp(m_dRateTempRampbackChange);
-                else
+                } else {
                     addRateTemp(m_dRateTempRampbackChange);
+                }
             }
             else
                 resetRateTemp();
@@ -635,16 +633,17 @@ double RateControl::getTempRate() {
 void RateControl::setRateTemp(double v)
 {
     // Do not go backwards
-    if (( 1. + getRawRate() + v ) < 0)
+    if ((1. + getRawRate() + v) < 0)
         return;
 
     m_dRateTemp = v;
-    if ( m_dRateTemp < -1.0 )
+    if (m_dRateTemp < -1.0) {
         m_dRateTemp = -1.0;
-    else if ( m_dRateTemp > 1.0 )
+    } else if (m_dRateTemp > 1.0) {
         m_dRateTemp = 1.0;
-    else if ( isnan(m_dRateTemp))
+    } else if (isnan(m_dRateTemp)) {
         m_dRateTemp = 0;
+    }
 }
 
 void RateControl::addRateTemp(double v)

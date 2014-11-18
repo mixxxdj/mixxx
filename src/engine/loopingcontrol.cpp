@@ -786,7 +786,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint) {
         }
     }
 
-    if ((loop_in == -1) || ( loop_out == -1))
+    if ((loop_in == -1) || (loop_out == -1))
         return;
 
     if (!even(loop_in))

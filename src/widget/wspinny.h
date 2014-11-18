@@ -7,10 +7,11 @@
 #include <QHideEvent>
 #include <QEvent>
 
-#include "widget/wwidget.h"
-#include "vinylcontrol/vinylsignalquality.h"
 #include "skin/skincontext.h"
+#include "trackinfoobject.h"
+#include "vinylcontrol/vinylsignalquality.h"
 #include "widget/wbasewidget.h"
+#include "widget/wwidget.h"
 
 class ControlObjectThread;
 class VisualPlayPosition;
@@ -29,6 +30,8 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     void dropEvent(QDropEvent *event);
 
   public slots:
+    void slotLoadTrack(TrackPointer);
+    void slotReset();
     void updateVinylControlSpeed(double rpm);
     void updateVinylControlEnabled(double enabled);
     void updateVinylControlSignalEnabled(double enabled);
@@ -36,6 +39,10 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
 
   protected slots:
     void maybeUpdate();
+    void slotCoverFound(const QObject* pRequestor, int requestReference,
+                        const CoverInfo& info, QPixmap pixmap, bool fromCache);
+    void slotTrackCoverArtUpdated();
+
 
   signals:
     void trackDropped(QString filename, QString group);
@@ -46,6 +53,7 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     void mouseMoveEvent(QMouseEvent * e);
     void mousePressEvent(QMouseEvent * e);
     void mouseReleaseEvent(QMouseEvent * e);
+    void resizeEvent(QResizeEvent*);
     void showEvent(QShowEvent* event);
     void hideEvent(QHideEvent* event);
     bool event(QEvent* pEvent);
@@ -53,6 +61,7 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     double calculateAngle(double playpos);
     int calculateFullRotations(double playpos);
     double calculatePositionFromAngle(double angle);
+    QPixmap scaledCoverArt(const QPixmap& normal);
 
   private:
     QImage* m_pBgImage;
@@ -70,6 +79,13 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     ControlObjectThread* m_pSignalEnabled;
     ControlObjectThread* m_pSlipEnabled;
     ControlObjectThread* m_pSlipPosition;
+
+    TrackPointer m_loadedTrack;
+    QPixmap m_loadedCover;
+    QPixmap m_loadedCoverScaled;
+    CoverInfo m_lastRequestedCover;
+    bool m_bShowCover;
+
 
     VinylControlManager* m_pVCManager;
     double m_dInitialPos;

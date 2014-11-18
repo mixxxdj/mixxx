@@ -14,7 +14,7 @@
 
 class SoundSourceOpus : public Mixxx::SoundSource {
   public:
-    SoundSourceOpus(QString qFilename);
+    explicit SoundSourceOpus(QString qFilename);
     virtual ~SoundSourceOpus();
 	
     Result open();
@@ -26,9 +26,8 @@ class SoundSourceOpus : public Mixxx::SoundSource {
     static QList<QString> supportedFileExtensions();
 	
   private:
-    int m_iChannels;
-    quint64 m_lFilelength;
     OggOpusFile *m_ptrOpusFile;
+    quint64 m_lFilelength;
 };
 
 #endif

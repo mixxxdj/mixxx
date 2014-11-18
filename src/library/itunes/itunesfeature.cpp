@@ -68,7 +68,7 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
     m_isActivated = false;
     m_title = tr("iTunes");
 
-    m_database = QSqlDatabase::cloneDatabase( pTrackCollection->getDatabase(), "ITUNES_SCANNER");
+    m_database = QSqlDatabase::cloneDatabase(pTrackCollection->getDatabase(), "ITUNES_SCANNER");
 
     //Open the database connection in this thread.
     if (!m_database.open()) {

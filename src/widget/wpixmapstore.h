@@ -28,6 +28,7 @@
 #include <QRectF>
 
 #include "skin/imgsource.h"
+#include "skin/skincontext.h"
 
 class QString;
 
@@ -43,6 +44,7 @@ class Paintable {
     // Takes ownership of QImage.
     Paintable(QImage* pImage, DrawMode mode);
     Paintable(const QString& fileName, DrawMode mode);
+    Paintable(const PixmapSource& source, DrawMode mode);
 
     QSize size() const;
     int width() const;
@@ -71,8 +73,8 @@ typedef QWeakPointer<Paintable> WeakPaintablePointer;
 
 class WPixmapStore {
   public:
-    static PaintablePointer getPaintable(const QString& fileName,
-                                         Paintable::DrawMode mode);
+    static PaintablePointer getPaintable(PixmapSource source,
+                                            Paintable::DrawMode mode);
     static QPixmap* getPixmapNoCache(const QString& fileName);
     static void setLoader(QSharedPointer<ImgSource> ld);
 

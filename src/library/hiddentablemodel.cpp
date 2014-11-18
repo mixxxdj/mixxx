@@ -9,7 +9,7 @@ HiddenTableModel::HiddenTableModel(QObject* parent,
 HiddenTableModel::~HiddenTableModel() {
 }
 
-void HiddenTableModel::setTableModel(int id){
+void HiddenTableModel::setTableModel(int id) {
     Q_UNUSED(id);
     QSqlQuery query;
     const QString tableName("hidden_songs");

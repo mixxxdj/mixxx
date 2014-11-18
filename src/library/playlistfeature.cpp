@@ -82,7 +82,7 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
 }
 
 bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
-                                      QObject* pSource){
+                                      QObject* pSource) {
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
     int playlistId = playlistIdFromIndex(index);
     //m_playlistDao.appendTrackToPlaylist(url.toLocalFile(), playlistId);
@@ -219,10 +219,8 @@ QString PlaylistFeature::getRootViewHtml() const {
     html.append(QString("<p>%1 %2</p>").arg(playlistsSummary3,
                                             playlistsSummary4));
     html.append("</td></tr>");
-    html.append(
-        QString("<tr><td><a href=\"create\">%1</a>")
-        .arg(createPlaylistLink)
-    );
+    html.append(QString("<tr><td><a href=\"create\">%1</a>")
+                .arg(createPlaylistLink));
     html.append("</td></tr></table>");
     return html;
 }

@@ -882,8 +882,7 @@ int MixxxMainWindow::noSoundDlg(void)
         } else if (msgBox.clickedButton() == wikiButton) {
             QDesktopServices::openUrl(QUrl(
                 "http://mixxx.org/wiki/doku.php/troubleshooting"
-                "#no_or_too_few_sound_cards_appear_in_the_preferences_dialog")
-            );
+                "#no_or_too_few_sound_cards_appear_in_the_preferences_dialog"));
             wikiButton->setEnabled(false);
         } else if (msgBox.clickedButton() == reconfigureButton) {
             msgBox.hide();
@@ -943,7 +942,7 @@ int MixxxMainWindow::noOutputDlg(bool *continueClicked)
             // This way of opening the dialog allows us to use it synchronously
             m_pPrefDlg->setWindowModality(Qt::ApplicationModal);
             m_pPrefDlg->exec();
-            if ( m_pPrefDlg->result() == QDialog::Accepted) {
+            if (m_pPrefDlg->result() == QDialog::Accepted) {
                 m_pSoundManager->queryDevices();
                 return 0;
             }
@@ -1321,7 +1320,7 @@ void MixxxMainWindow::initActions()
     m_pDeveloperTools->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
                                                   "OptionsMenu_DeveloperTools"),
-                                                  tr("Ctrl+Shift+D"))));
+                                                  tr("Ctrl+Shift+T"))));
     m_pDeveloperTools->setShortcutContext(Qt::ApplicationShortcut);
     m_pDeveloperTools->setStatusTip(developerToolsText);
     m_pDeveloperTools->setWhatsThis(buildWhatsThis(developerToolsTitle, developerToolsText));
@@ -1361,6 +1360,29 @@ void MixxxMainWindow::initActions()
     m_pDeveloperStatsBase->setChecked(Experiment::isBase());
     connect(m_pDeveloperStatsBase, SIGNAL(triggered()),
             this, SLOT(slotDeveloperStatsBase()));
+
+
+
+
+    QString scriptDebuggerTitle = tr("Debugger Enabled");
+    QString scriptDebuggerText = tr("Enables the debugger during skin parsing");
+    bool scriptDebuggerEnabled = m_pConfig->getValueString(
+        ConfigKey("[ScriptDebugger]", "Enabled")) == "1";
+    m_pDeveloperDebugger = new QAction(scriptDebuggerTitle, this);
+
+    m_pDeveloperDebugger->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "DeveloperMenu_EnableDebugger"),
+                                                  tr("Ctrl+Shift+D"))));
+    m_pDeveloperDebugger->setShortcutContext(Qt::ApplicationShortcut);
+    m_pDeveloperDebugger->setWhatsThis(buildWhatsThis(keyboardShortcutTitle, keyboardShortcutText));
+    m_pDeveloperDebugger->setCheckable(true);
+    m_pDeveloperDebugger->setStatusTip(scriptDebuggerText);
+    m_pDeveloperDebugger->setChecked(scriptDebuggerEnabled);
+    connect(m_pDeveloperDebugger, SIGNAL(toggled(bool)),
+            this, SLOT(slotDeveloperDebugger(bool)));
+
+
 
     // TODO: This code should live in a separate class.
     m_TalkoverMapper = new QSignalMapper(this);
@@ -1439,6 +1461,7 @@ void MixxxMainWindow::initMenuBar()
     m_pDeveloperMenu->addAction(m_pDeveloperTools);
     m_pDeveloperMenu->addAction(m_pDeveloperStatsExperiment);
     m_pDeveloperMenu->addAction(m_pDeveloperStatsBase);
+    m_pDeveloperMenu->addAction(m_pDeveloperDebugger);
 
     // menuBar entry helpMenu
     m_pHelpMenu->addAction(m_pHelpSupport);
@@ -1545,6 +1568,11 @@ void MixxxMainWindow::slotDeveloperTools() {
     m_pDeveloperToolsDlg->activateWindow();
 }
 
+void MixxxMainWindow::slotDeveloperDebugger(bool toggle) {
+    m_pConfig->set(ConfigKey("[ScriptDebugger]","Enabled"),
+                   ConfigValue(toggle ? 1 : 0));
+}
+
 void MixxxMainWindow::slotDeveloperToolsClosed() {
     m_pDeveloperToolsDlg = NULL;
 }
@@ -1566,6 +1594,8 @@ void MixxxMainWindow::slotDeveloperStatsBase() {
         Experiment::disable();
     }
 }
+
+
 
 void MixxxMainWindow::slotViewFullScreen(bool toggle)
 {

@@ -1327,7 +1327,7 @@ void TrackDAO::markUnverifiedTracksAsDeleted() {
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "Couldn't find unverified tracks";
     }
-    while (query.next()){
+    while (query.next()) {
         trackIds.insert(query.value(query.record().indexOf("id")).toInt());
     }
     emit(tracksRemoved(trackIds));
@@ -1520,7 +1520,7 @@ void TrackDAO::markTracksAsMixxxDeleted(const QString& dir) {
     }
 }
 
-void TrackDAO::writeAudioMetaData(TrackInfoObject* pTrack){
+void TrackDAO::writeAudioMetaData(TrackInfoObject* pTrack) {
     if (m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1) {
         AudioTagger tagger(pTrack->getLocation(), pTrack->getSecurityToken());
 
@@ -1587,6 +1587,20 @@ bool TrackDAO::verifyRemainingTracks(volatile bool* pCancel) {
     }
     qDebug() << "verifyTracksOutside finished";
     return true;
+}
+
+namespace
+{
+    QImage parseCoverArt(const QFileInfo& fileInfo) {
+        SecurityTokenPointer pToken = Sandbox::openSecurityToken(fileInfo, true);
+        SoundSourceProxy proxy(fileInfo.filePath(), pToken);
+        Mixxx::SoundSourcePointer pSoundSource(proxy.getSoundSource());
+        if (pSoundSource) {
+            return pSoundSource->parseCoverArt();
+        } else {
+            return QImage();
+        }
+    }
 }
 
 void TrackDAO::detectCoverArtForUnknownTracks(volatile const bool* pCancel,
@@ -1659,9 +1673,7 @@ void TrackDAO::detectCoverArtForUnknownTracks(volatile const bool* pCancel,
             continue;
         }
 
-        SecurityTokenPointer pToken = Sandbox::openSecurityToken(trackInfo, true);
-        SoundSourceProxy proxy(trackLocation, pToken);
-        QImage image = proxy.parseCoverArt();
+        QImage image(parseCoverArt(trackInfo));
         if (!image.isNull()) {
             updateQuery.bindValue(":coverart_type",
                                   static_cast<int>(CoverInfo::METADATA));

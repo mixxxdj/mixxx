@@ -178,8 +178,8 @@ void AnalyserWaveform::resetFilters(TrackPointer tio, int sampleRate) {
 }
 
 void AnalyserWaveform::destroyFilters() {
-    for( int i = 0; i < FilterCount; i++) {
-        if( m_filter[i]) {
+    for (int i = 0; i < FilterCount; ++i) {
+        if (m_filter[i]) {
             delete m_filter[i];
             m_filter[i] = 0;
         }
@@ -202,7 +202,7 @@ void AnalyserWaveform::process(const CSAMPLE* buffer, const int bufferLength) {
     m_filter[High]->process(buffer, &m_buffers[High][0], bufferLength);
 
 
-    for( int i = 0; i < bufferLength; i+=2) {
+    for (int i = 0; i < bufferLength; i+=2) {
         // Take max value, not average of data
         CSAMPLE cover[2] = { fabs(buffer[i]), fabs(buffer[i+1]) };
         CSAMPLE clow[2] =  { fabs(m_buffers[ Low][i]), fabs(m_buffers[ Low][i+1]) };

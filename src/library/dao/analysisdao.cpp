@@ -216,7 +216,7 @@ void AnalysisDao::deleteAnalysises(const QList<int>& ids) {
         LOG_FAILED_QUERY(query) << "couldn't delete analysis";
     }
     const int idColumn = query.record().indexOf("id");
-    while(query.next()){
+    while (query.next()) {
         int id = query.value(idColumn).toInt();
         QString dataPath = getAnalysisStoragePath().absoluteFilePath(
                             QString::number(id));
