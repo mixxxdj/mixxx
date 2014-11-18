@@ -19,9 +19,8 @@
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
-#RightSpinny {
-  background-color: #000;
-  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+#SpinnyContainer {
+  background-color: #0f0f0f;
 }
 
 #Library {

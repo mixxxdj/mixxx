@@ -84,6 +84,7 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     QPixmap m_loadedCover;
     QPixmap m_loadedCoverScaled;
     CoverInfo m_lastRequestedCover;
+    bool m_bShowCover;
 
 
     VinylControlManager* m_pVCManager;

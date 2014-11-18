@@ -33,6 +33,7 @@ WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
           m_pSignalEnabled(NULL),
           m_pSlipEnabled(NULL),
           m_pSlipPosition(NULL),
+          m_bShowCover(true),
           m_dInitialPos(0.),
           m_iVinylInput(-1),
           m_bVinylActive(false),
@@ -142,6 +143,8 @@ void WSpinny::setup(QDomNode node, const SkinContext& context, QString group) {
     if (m_pBgImage && !m_pBgImage->isNull()) {
         setFixedSize(m_pBgImage->size());
     }
+
+    m_bShowCover = context.selectBool(node, "ShowCover", true);
 
 #ifdef __VINYLCONTROL__
     // Find the vinyl input we should listen to reports about.
@@ -284,7 +287,7 @@ void WSpinny::paintEvent(QPaintEvent *e) {
     QPainter p(this);
     p.setRenderHint(QPainter::SmoothPixmapTransform);
 
-    if (!m_loadedCoverScaled.isNull()) {
+    if (m_bShowCover && !m_loadedCoverScaled.isNull()) {
         p.drawPixmap(0, 0, m_loadedCoverScaled);
     }
 
