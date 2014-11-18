@@ -4,10 +4,12 @@
     A VU meter.
   Variables:
     group: The group for the controls.
+    control: The control to connect to.
+
 -->
 <Template>
   <VuMeter>
-    <MinimumSize>100,20</MinimumSize>
+    <MinimumSize>100,5</MinimumSize>
     <MaximumSize>200,20</MaximumSize>
     <PathVu>vumeter.svg</PathVu>
     <Horizontal>true</Horizontal>
