@@ -78,8 +78,8 @@ void EffectRack::slotNumEffectChainSlots(double v) {
 }
 
 void EffectRack::loadEffectToChainSlot(const unsigned int iChainSlotNumber,
-                                           const unsigned int iEffectSlotNumber,
-                                           QString effectId) {
+                                       const unsigned int iEffectSlotNumber,
+                                       QString effectId) {
     if (iChainSlotNumber >= static_cast<unsigned int>(m_effectChainSlots.size())) {
         return;
     }

@@ -47,9 +47,6 @@ class EffectParameterSlotBase : public QObject {
     void slotValueType(double v);
 
   protected:
-    const unsigned int m_iRackNumber;
-    const unsigned int m_iChainNumber;
-    const unsigned int m_iSlotNumber;
     const unsigned int m_iParameterSlotNumber;
     QString m_group;
     EffectPointer m_pEffect;

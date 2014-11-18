@@ -38,7 +38,7 @@ EffectsManager::~EffectsManager() {
     delete m_pHiEqFreq;
     delete m_pLoEqFreq;
     // Safe because the Engine is deleted before EffectsManager.
-    delete m_pEngineEffectsManager;
+ //   delete m_pEngineEffectsManager;
 }
 
 void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {

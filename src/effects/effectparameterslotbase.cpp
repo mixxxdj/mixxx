@@ -9,12 +9,8 @@ EffectParameterSlotBase::EffectParameterSlotBase(const unsigned int iRackNumber,
                                          const unsigned int iChainNumber,
                                          const unsigned int iSlotNumber,
                                          const unsigned int iParameterSlotNumber)
-        : m_iRackNumber(iRackNumber),
-          m_iChainNumber(iChainNumber),
-          m_iSlotNumber(iSlotNumber),
-          m_iParameterSlotNumber(iParameterSlotNumber),
-          m_group(formatGroupString(m_iRackNumber, m_iChainNumber,
-                                    m_iSlotNumber)),
+        : m_iParameterSlotNumber(iParameterSlotNumber),
+          m_group(formatGroupString(iRackNumber, iChainNumber, iSlotNumber)),
           m_pEffectParameter(NULL),
           m_dChainParameter(0.0) {
 
