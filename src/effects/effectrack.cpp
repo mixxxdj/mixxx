@@ -111,8 +111,9 @@ int EffectRack::numEffectChainSlots() const {
 
 EffectChainSlotPointer EffectRack::addEffectChainSlotForEQ() {
     int iChainSlotNumber = m_effectChainSlots.size();
+    QString group(EffectChainSlot::formatGroupString(m_iRackNumber, iChainSlotNumber));
     EffectChainSlot* pChainSlot =
-            new EffectChainSlot(this, m_iRackNumber, iChainSlotNumber);
+            new EffectChainSlot(this, group, iChainSlotNumber);
 
     // Add a one EffectSlot for EQDefault
     pChainSlot->addEffectSlot();
@@ -143,8 +144,9 @@ EffectChainSlotPointer EffectRack::addEffectChainSlotForEQ() {
 
 EffectChainSlotPointer EffectRack::addEffectChainSlot() {
     int iChainSlotNumber = m_effectChainSlots.size();
+    QString group(EffectChainSlot::formatGroupString(m_iRackNumber, iChainSlotNumber));
     EffectChainSlot* pChainSlot =
-            new EffectChainSlot(this, m_iRackNumber, iChainSlotNumber);
+            new EffectChainSlot(this, group, iChainSlotNumber);
 
     // TODO(rryan) How many should we make default? They create controls that
     // the GUI may rely on, so the choice is important to communicate to skin

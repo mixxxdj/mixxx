@@ -6,12 +6,12 @@
 #include "controlpushbutton.h"
 #include "util/math.h"
 
-EffectChainSlot::EffectChainSlot(EffectRack* pRack, unsigned int iRackNumber,
+EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,
                                  unsigned int iChainNumber)
         : m_iChainSlotNumber(iChainNumber),
           // The control group names are 1-indexed while internally everything
           // is 0-indexed.
-          m_group(formatGroupString(iRackNumber, iChainNumber)),
+          m_group(group),
           m_pEffectRack(pRack) {
     m_pControlClear = new ControlPushButton(ConfigKey(m_group, "clear"));
     connect(m_pControlClear, SIGNAL(valueChanged(double)),

@@ -21,7 +21,7 @@ class EffectChainSlot : public QObject {
     Q_OBJECT
   public:
     EffectChainSlot(EffectRack* pRack,
-                    const unsigned int iRackNumber,
+                    const QString& group,
                     const unsigned int iChainNumber);
     virtual ~EffectChainSlot();
 
