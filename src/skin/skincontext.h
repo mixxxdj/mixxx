@@ -73,6 +73,7 @@ class SkinContext {
                                 int lineNumber=1);
     QScriptValue importScriptExtension(const QString& extensionName);
     const QScriptEngine& getScriptEngine() const;
+    void enableScriptDebugger();
 
   private:
     QString variableNodeToText(const QDomElement& element) const;
