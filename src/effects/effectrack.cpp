@@ -109,9 +109,11 @@ int EffectRack::numEffectChainSlots() const {
 }
 
 
-EffectChainSlotPointer EffectRack::addEffectChainSlotForEQ() {
+EffectChainSlotPointer EffectRack::addEffectChainSlotForEQ(QString unitGroup) {
     int iChainSlotNumber = m_effectChainSlots.size();
-    QString unitGroup = QString("[EffectUnit%2]").arg(iChainSlotNumber+1);
+    if (unitGroup.isEmpty()) {
+        unitGroup = QString("[EffectUnit%2]").arg(iChainSlotNumber+1);
+    }
     QString group(EffectChainSlot::formatGroupString(m_group, unitGroup));
     EffectChainSlot* pChainSlot =
             new EffectChainSlot(this, group, iChainSlotNumber);
@@ -143,9 +145,11 @@ EffectChainSlotPointer EffectRack::addEffectChainSlotForEQ() {
     return pChainSlotPointer;
 }
 
-EffectChainSlotPointer EffectRack::addEffectChainSlot() {
+EffectChainSlotPointer EffectRack::addEffectChainSlot(QString unitGroup) {
     int iChainSlotNumber = m_effectChainSlots.size();
-    QString unitGroup = QString("[EffectUnit%2]").arg(iChainSlotNumber+1);
+    if (unitGroup.isEmpty()) {
+        unitGroup = QString("[EffectUnit%2]").arg(iChainSlotNumber+1);
+    }
     QString group(EffectChainSlot::formatGroupString(m_group, unitGroup));
     EffectChainSlot* pChainSlot =
             new EffectChainSlot(this, group, iChainSlotNumber);
