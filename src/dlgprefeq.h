@@ -39,7 +39,8 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
 
   public slots:
     void slotEffectChangedOnDeck(int effectIndex);
-    void slotAddComboBox(double numDecks);
+    void slotNumDecksChanged(double numDecks);
+    void slotSingleEqChecked(int checked);
     // Slot for toggling between advanced and basic views
     void slotPopulateDeckEffectSelectors();
     // Update Hi EQ
@@ -63,6 +64,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     double getEqFreq(int value, int minimum, int maximum);
     int getSliderPosition(double eqFreq, int minimum, int maximum);
     void validate_levels();
+    void applyEqSelections();
 
     ControlObjectSlave m_COLoFreq;
     ControlObjectSlave m_COHiFreq;
@@ -72,8 +74,10 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     // Members needed for changing the effects loaded on the EQ Effect Rack
     EffectsManager* m_pEffectsManager;
     EffectRack* m_pEQEffectRack;
+    QLabel* m_firstSelectorLabel;
+    QList<QWidget*> m_deckSelectorContainers;
     QList<QComboBox*> m_deckEffectSelectors;
-    QList<ControlObject*> m_fliterWaveformEnableCOs;
+    QList<ControlObject*> m_filterWaveformEnableCOs;
     ControlObjectSlave* m_pNumDecks;
     QString m_eqRackGroup;
 

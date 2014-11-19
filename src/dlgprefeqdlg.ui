@@ -29,17 +29,36 @@
      <item>
       <widget class="QCheckBox" name="CheckBoxBypass">
        <property name="text">
-        <string>Bypass</string>
+        <string>Bypass EQ effect processing</string>
+       </property>
+       <property name="toolTip">
+        <string>When checked, EQs are not processed, improving performance on slower computers.</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="CheckBoxHideEffects">
+      <widget class="QCheckBox" name="CheckBoxEqOnly">
        <property name="text">
-        <string>Fill menus with the best suited effects only</string>
+        <string>Only allow EQ knobs to control EQ-specific effects</string>
        </property>
        <property name="checked">
         <bool>true</bool>
+       </property>
+       <property name="toolTip">
+        <string>Uncheck to allow any effect to be loaded into the EQ knobs.</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="CheckBoxSingleEqEffect">
+       <property name="text">
+        <string>Use the same EQ filter for all decks</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+       <property name="toolTip">
+        <string>Uncheck to allow different decks to use different EQ effects.</string>
        </property>
       </widget>
      </item>
