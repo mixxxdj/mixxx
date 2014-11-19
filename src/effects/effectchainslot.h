@@ -31,6 +31,15 @@ class EffectChainSlot : public QObject {
             QString::number(iRackNumber+1), QString::number(iChainNumber+1));
     }
 
+    static QString formatGroupString(const QString& rackGroup,
+                                     const QString& unitGroup) {
+        QString group = rackGroup;
+        group.chop(1);
+        group += "_";
+        group += unitGroup.mid(1);
+        return group;
+    }
+
     // Get the ID of the loaded EffectChain
     QString id() const;
 

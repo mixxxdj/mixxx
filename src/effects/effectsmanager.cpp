@@ -152,8 +152,8 @@ EffectPointer EffectsManager::instantiateEffect(const QString& effectId) {
     return EffectPointer();
 }
 
-EffectRackPointer EffectsManager::addEffectRack() {
-    return m_pEffectChainManager->addEffectRack();
+EffectRackPointer EffectsManager::addEffectRack(const QString& group) {
+    return m_pEffectChainManager->addEffectRack(group);
 }
 
 EffectRackPointer EffectsManager::getEffectRack(int i) {

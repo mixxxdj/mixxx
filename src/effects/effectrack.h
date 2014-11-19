@@ -20,7 +20,8 @@ class EffectRack : public QObject {
   public:
     EffectRack(EffectsManager* pEffectsManager,
                EffectChainManager* pChainManager,
-               const unsigned int iRackNumber);
+               const unsigned int iRackNumber,
+               const QString& group);
     virtual ~EffectRack();
 
     static QString formatGroupString(const unsigned int iRackNumber) {
@@ -62,11 +63,6 @@ class EffectRack : public QObject {
                         EffectPointer pEffect);
 
   private:
-    inline QString debugString() const {
-        return QString("EffectRack%1").arg(m_iRackNumber);
-    }
-
-    const unsigned int m_iRackNumber;
     const QString m_group;
 
     EffectsManager* m_pEffectsManager;

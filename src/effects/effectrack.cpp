@@ -6,9 +6,9 @@
 
 EffectRack::EffectRack(EffectsManager* pEffectsManager,
                        EffectChainManager* pEffectChainManager,
-                       const unsigned int iRackNumber)
-        : m_iRackNumber(iRackNumber),
-          m_group(formatGroupString(m_iRackNumber)),
+                       const unsigned int iRackNumber,
+                       const QString& group)
+        : m_group(group.isEmpty() ? formatGroupString(iRackNumber) : group),
           m_pEffectsManager(pEffectsManager),
           m_pEffectChainManager(pEffectChainManager),
           m_controlNumEffectChainSlots(ConfigKey(m_group, "num_effectunits")),
@@ -111,7 +111,8 @@ int EffectRack::numEffectChainSlots() const {
 
 EffectChainSlotPointer EffectRack::addEffectChainSlotForEQ() {
     int iChainSlotNumber = m_effectChainSlots.size();
-    QString group(EffectChainSlot::formatGroupString(m_iRackNumber, iChainSlotNumber));
+    QString unitGroup = QString("[EffectUnit%2]").arg(iChainSlotNumber+1);
+    QString group(EffectChainSlot::formatGroupString(m_group, unitGroup));
     EffectChainSlot* pChainSlot =
             new EffectChainSlot(this, group, iChainSlotNumber);
 
@@ -144,7 +145,8 @@ EffectChainSlotPointer EffectRack::addEffectChainSlotForEQ() {
 
 EffectChainSlotPointer EffectRack::addEffectChainSlot() {
     int iChainSlotNumber = m_effectChainSlots.size();
-    QString group(EffectChainSlot::formatGroupString(m_iRackNumber, iChainSlotNumber));
+    QString unitGroup = QString("[EffectUnit%2]").arg(iChainSlotNumber+1);
+    QString group(EffectChainSlot::formatGroupString(m_group, unitGroup));
     EffectChainSlot* pChainSlot =
             new EffectChainSlot(this, group, iChainSlotNumber);
 
@@ -195,10 +197,6 @@ EffectChainSlotPointer EffectRack::getEffectChainSlot(int i) {
         return EffectChainSlotPointer();
     }
     return m_effectChainSlots[i];
-}
-
-int EffectRack::getRackNumber() {
-    return m_iRackNumber;
 }
 
 void EffectRack::loadNextChain(const unsigned int iChainSlotNumber,

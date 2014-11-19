@@ -26,7 +26,7 @@ class EffectChainManager : public QObject {
         return m_registeredGroups;
     }
 
-    EffectRackPointer addEffectRack();
+    EffectRackPointer addEffectRack(const QString& group = QString());
     EffectRackPointer getEffectRack(int i);
     int getEffectRacksSize();
 

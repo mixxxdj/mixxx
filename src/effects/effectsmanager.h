@@ -45,7 +45,7 @@ class EffectsManager : public QObject {
     void registerGroup(const QString& group);
     const QSet<QString>& registeredGroups() const;
 
-    EffectRackPointer addEffectRack();
+    EffectRackPointer addEffectRack(const QString& group = QString());
     EffectRackPointer getEffectRack(int rack);
     EffectRackPointer getEQEffectRack();
     int getEQEffectRackNumber();
