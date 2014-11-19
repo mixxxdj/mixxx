@@ -257,7 +257,7 @@ void DlgPrefEQ::loadSettings() {
                           SliderLoEQ->maximum()));
 
     CheckBoxBypass->setChecked(m_pConfig->getValueString(
-            ConfigKey(kConfigKey, kEnableEqs), "yes") == "yes");
+            ConfigKey(kConfigKey, kEnableEqs), "yes") == "no");
 
     CheckBoxEqOnly->setChecked(m_pConfig->getValueString(
             ConfigKey(kConfigKey, kEqsOnly), "yes") == "yes");
