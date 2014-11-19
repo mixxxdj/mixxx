@@ -206,16 +206,11 @@ void DlgPrefEQ::slotSingleEqChecked(int checked) {
     bool do_hide = static_cast<bool>(checked);
     m_pConfig->set(ConfigKey(kConfigKey, kSingleEq),
                    do_hide ? QString("yes") : QString("no"));
-    bool first = true;
-    foreach(QWidget* container, m_deckSelectorContainers) {
-        if (first) {
-            first = false;
-            continue;
-        }
+    for (int i = 1; i < m_deckSelectorContainers.size(); ++i) {
         if (do_hide) {
-            container->hide();
+            m_deckSelectorContainers[i]->hide();
         } else {
-            container->show();
+            m_deckSelectorContainers[i]->show();
         }
     }
 
