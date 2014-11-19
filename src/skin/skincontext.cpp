@@ -14,7 +14,7 @@ SkinContext::SkinContext(ConfigObject<ConfigValue>* pConfig,
                          const QString& xmlPath)
         : m_pConfig(pConfig),
           m_xmlPath(xmlPath) {
-    enableDebugger();
+    enableScriptDebugger();
 }
 
 SkinContext::SkinContext(const SkinContext& parent)
@@ -27,7 +27,7 @@ SkinContext::SkinContext(const SkinContext& parent)
          it != m_variables.end(); ++it) {
         context.setProperty(it.key(), it.value());
     }
-    enableDebugger();
+    enableScriptDebugger();
 }
 
 SkinContext::~SkinContext() {
@@ -43,7 +43,7 @@ SkinContext& SkinContext::operator=(const SkinContext& other) {
     return *this;
 }
 
-void SkinContext::enableDebugger() const {
+void SkinContext::enableScriptDebugger() {
     if (CmdlineArgs::Instance().getDeveloper() && m_pConfig->getValueString(
         ConfigKey("[ScriptDebugger]", "Enabled")) == "1") {
         m_debugger.attachTo(&m_scriptEngine);
