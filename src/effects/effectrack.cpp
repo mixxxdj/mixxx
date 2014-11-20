@@ -77,6 +77,10 @@ void EffectRack::slotNumEffectChainSlots(double v) {
     qWarning() << "WARNING: num_effectchain_slots is a read-only control.";
 }
 
+const QString& EffectRack::getGroup() const {
+    return m_group;
+}
+
 void EffectRack::loadEffectToChainSlot(const unsigned int iChainSlotNumber,
                                        const unsigned int iEffectSlotNumber,
                                        QString effectId) {
@@ -119,9 +123,6 @@ EffectChainSlotPointer EffectRack::addEffectChainSlotForEQ(QString unitGroup) {
             new EffectChainSlot(this, group, iChainSlotNumber);
 
     // Add a one EffectSlot for EQDefault
-    pChainSlot->addEffectSlot();
-
-    // Add a second EffectSlot for Filter
     pChainSlot->addEffectSlot();
 
     const QSet<QString>& registeredGroups =

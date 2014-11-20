@@ -28,6 +28,7 @@ class EffectChainManager : public QObject {
 
     EffectRackPointer addEffectRack(const QString& group = QString());
     EffectRackPointer getEffectRack(int i);
+    EffectRackPointer getEffectRack(const QString& group);
     int getEffectRacksSize();
 
     void addEffectChain(EffectChainPointer pEffectChain);
@@ -51,6 +52,7 @@ class EffectChainManager : public QObject {
     ConfigObject<ConfigValue>* m_pConfig;
     EffectsManager* m_pEffectsManager;
     QList<EffectRackPointer> m_effectRacks;
+    QHash<QString, EffectRackPointer> m_effectRacksHash;
     QList<EffectChainPointer> m_effectChains;
     QSet<QString> m_registeredGroups;
     DISALLOW_COPY_AND_ASSIGN(EffectChainManager);
