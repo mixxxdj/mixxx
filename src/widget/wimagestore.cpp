@@ -34,12 +34,11 @@ QImage* WImageStore::getImage(const PixmapSource& source) {
     // Image wasn't found, construct it
     //qDebug() << "WImageStore Loading Image from file" << source.getPath();
 
-    QImage* loadedImage = getImageNoCache(source.getPath());
+    QImage* loadedImage = getImageNoCache(source);
 
     if (loadedImage == NULL) {
         return NULL;
     }
-
 
     if (loadedImage->isNull()) {
         qDebug() << "WImageStore couldn't load:" << source.getPath() << (loadedImage == NULL);
@@ -54,7 +53,6 @@ QImage* WImageStore::getImage(const PixmapSource& source) {
     return info->image;
 }
 
-/**/
 // static
 QImage* WImageStore::getImageNoCache(const PixmapSource& source) {
     QImage* pImage;
