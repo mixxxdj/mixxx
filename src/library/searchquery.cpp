@@ -58,7 +58,7 @@ QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& colum
 
 bool AndNode::match(const TrackPointer& pTrack) const {
     if (m_nodes.isEmpty()) {
-        return false;
+        return true;
     }
 
     foreach (const QueryNode* pNode, m_nodes) {
@@ -81,6 +81,9 @@ QString AndNode::toSql() const {
 }
 
 bool OrNode::match(const TrackPointer& pTrack) const {
+    if (m_nodes.isEmpty()) {
+        return true;
+    }
     foreach (const QueryNode* pNode, m_nodes) {
         if (pNode->match(pTrack)) {
             return true;
@@ -98,6 +101,25 @@ QString OrNode::toSql() const {
         }
     }
     return queryFragments.join(" OR ");
+}
+
+NotNode::NotNode(QueryNode* pNode)
+        : m_pNode(pNode) {
+}
+
+bool NotNode::match(const TrackPointer& pTrack) const {
+    if (m_pNode != NULL) {
+        return !m_pNode->match(pTrack);
+    }
+    return false;
+}
+
+QString NotNode::toSql() const {
+    QString sql = m_pNode->toSql();
+    if (!sql.isEmpty()) {
+        return sql.prepend("NOT ");
+    }
+    return QString();
 }
 
 bool TextFilterNode::match(const TrackPointer& pTrack) const {
