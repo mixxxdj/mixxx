@@ -72,18 +72,18 @@ class SkinContext {
                                 const QString& filename=QString(),
                                 int lineNumber=1);
     QScriptValue importScriptExtension(const QString& extensionName);
-    const QScriptEngine& getScriptEngine() const;
-    void enableScriptDebugger();
+    const QScriptEngine* getScriptEngine() const;
 
   private:
     QString variableNodeToText(const QDomElement& element) const;
 
-    mutable QScriptEngine m_scriptEngine;
-    QScriptEngineDebugger m_debugger;
     QHash<QString, QString> m_variables;
     QString m_skinBasePath;
     ConfigObject<ConfigValue>* m_pConfig;
+    mutable QSharedPointer<QScriptEngine> m_scriptEngine;   // todo m_pScriptEngine
+    QSharedPointer<QScriptEngineDebugger> m_debugger;       // idem
     QString m_xmlPath;
+    
 };
 
 #endif /* SKINCONTEXT_H */

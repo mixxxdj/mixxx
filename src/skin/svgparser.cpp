@@ -119,7 +119,7 @@ void SvgParser::parseAttributes(const QDomNode& node) const {
     QDomElement element = node.toElement();
 
     // Retrieving hooks pattern from script extension
-    QScriptValue global = m_context.getScriptEngine().globalObject();
+    QScriptValue global = m_context.getScriptEngine()->globalObject();
     QScriptValue hooksPattern = global.property("svg")
         .property("getHooksPattern").call(global.property("svg"));
     QRegExp hookRx;
@@ -177,7 +177,7 @@ QScriptValue SvgParser::evaluateTemplateExpression(const QString& expression,
                                                    int lineNumber) const {
     QScriptValue out = m_context.evaluateScript(
         expression, m_currentFile, lineNumber);
-    if (m_context.getScriptEngine().hasUncaughtException()) {
+    if (m_context.getScriptEngine()->hasUncaughtException()) {
         // return an empty string as replacement for the in-attribute expression
         return QScriptValue();
     } else {

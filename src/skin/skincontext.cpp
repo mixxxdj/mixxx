@@ -13,41 +13,43 @@ SkinContext::SkinContext() {
 SkinContext::SkinContext(ConfigObject<ConfigValue>* pConfig,
                          const QString& xmlPath)
         : m_pConfig(pConfig),
+          m_scriptEngine(QSharedPointer<QScriptEngine>(new QScriptEngine())),
+          m_debugger(QSharedPointer<QScriptEngineDebugger>(
+              new QScriptEngineDebugger())),
           m_xmlPath(xmlPath) {
-    enableScriptDebugger();
+    if (CmdlineArgs::Instance().getDeveloper() && m_pConfig->getValueString(
+        ConfigKey("[ScriptDebugger]", "Enabled")) == "1") {
+        m_debugger->attachTo(m_scriptEngine.data());
+    }
 }
 
 SkinContext::SkinContext(const SkinContext& parent)
         : m_variables(parent.variables()),
           m_skinBasePath(parent.m_skinBasePath),
           m_pConfig(parent.m_pConfig),
+          m_scriptEngine(parent.m_scriptEngine),
+          m_debugger(parent.m_debugger),
           m_xmlPath(parent.m_xmlPath) {
-    QScriptValue context = m_scriptEngine.currentContext()->activationObject();
+    QScriptValue context = m_scriptEngine->pushContext()->activationObject();
+    
     for (QHash<QString, QString>::const_iterator it = m_variables.begin();
          it != m_variables.end(); ++it) {
         context.setProperty(it.key(), it.value());
     }
-    enableScriptDebugger();
 }
 
 SkinContext::~SkinContext() {
+    m_scriptEngine->popContext();
 }
 
 SkinContext& SkinContext::operator=(const SkinContext& other) {
     m_variables = other.variables();
-    QScriptValue context = m_scriptEngine.currentContext()->activationObject();
+    QScriptValue context = m_scriptEngine->currentContext()->activationObject();
     for (QHash<QString, QString>::const_iterator it = m_variables.begin();
          it != m_variables.end(); ++it) {
         context.setProperty(it.key(), it.value());
     }
     return *this;
-}
-
-void SkinContext::enableScriptDebugger() {
-    if (CmdlineArgs::Instance().getDeveloper() && m_pConfig->getValueString(
-        ConfigKey("[ScriptDebugger]", "Enabled")) == "1") {
-        m_debugger.attachTo(&m_scriptEngine);
-    }
 }
 
 QString SkinContext::variable(const QString& name) const {
@@ -56,7 +58,7 @@ QString SkinContext::variable(const QString& name) const {
 
 void SkinContext::setVariable(const QString& name, const QString& value) {
     m_variables[name] = value;
-    QScriptValue context = m_scriptEngine.currentContext()->activationObject();
+    QScriptValue context = m_scriptEngine->currentContext()->activationObject();
     context.setProperty(name, value);
 }
 
@@ -191,7 +193,7 @@ QString SkinContext::selectAttributeString(const QDomElement& element,
 
 QString SkinContext::variableNodeToText(const QDomElement& variableNode) const {
     if (variableNode.hasAttribute("expression")) {
-        QScriptValue result = m_scriptEngine.evaluate(
+        QScriptValue result = m_scriptEngine->evaluate(
             variableNode.attribute("expression"), m_xmlPath,
             variableNode.lineNumber());
         return result.toString();
@@ -267,17 +269,18 @@ PixmapSource SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
 QScriptValue SkinContext::evaluateScript(const QString& expression,
                                          const QString& filename/*=QString()*/,
                                          int lineNumber/*=1*/) {
-    return m_scriptEngine.evaluate(expression, filename, lineNumber);
+    return m_scriptEngine->evaluate(expression, filename, lineNumber);
 }
 
 QScriptValue SkinContext::importScriptExtension(const QString& extensionName) {
-    QScriptValue out = m_scriptEngine.importExtension(extensionName);
-    if (m_scriptEngine.hasUncaughtException()) {
+    QScriptValue out = m_scriptEngine->importExtension(extensionName);
+    if (m_scriptEngine->hasUncaughtException()) {
         qDebug() << out.toString();
     }
     return out;
 }
 
-const QScriptEngine& SkinContext::getScriptEngine() const {
-    return m_scriptEngine;
+// const QScriptEngine& SkinContext::getScriptEngine() const {
+const QScriptEngine* SkinContext::getScriptEngine() const {
+    return m_scriptEngine.data();
 }
