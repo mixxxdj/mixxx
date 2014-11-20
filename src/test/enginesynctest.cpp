@@ -743,6 +743,52 @@ TEST_F(EngineSyncTest, EnableOneDeckInitializesMaster) {
                                                         "beat_distance"))->get());
 }
 
+TEST_F(EngineSyncTest, LoadTrackInitializesMaster) {
+    // If master sync is on when a track gets loaded, the internal clock
+    // may or may not get synced to the new track depending on the state
+    // of other decks and whether they have tracks loaded as well.
+
+    // First eject the fake tracks that come with the testing framework.
+    m_pChannel1->getEngineBuffer()->slotEjectTrack(1.0);
+    m_pChannel2->getEngineBuffer()->slotEjectTrack(1.0);
+    m_pChannel3->getEngineBuffer()->slotEjectTrack(1.0);
+
+    // If sync is on and we load a track, that should initialize master.
+    QScopedPointer<ControlObjectThread> pButtonSyncEnabled1(getControlObjectThread(
+            ConfigKey(m_sGroup1, "sync_enabled")));
+    pButtonSyncEnabled1->slotSet(1.0);
+
+    m_pChannel1->getEngineBuffer()->loadFakeTrack(140.0);
+
+    EXPECT_FLOAT_EQ(140.0,
+                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+    EXPECT_FLOAT_EQ(140.0,
+                    ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+
+    // If sync is on two decks and we load a track, that should still initialize
+    // master.
+    m_pChannel1->getEngineBuffer()->slotEjectTrack(1.0);
+    QScopedPointer<ControlObjectThread> pButtonSyncEnabled2(getControlObjectThread(
+            ConfigKey(m_sGroup2, "sync_enabled")));
+    pButtonSyncEnabled2->slotSet(1.0);
+
+    m_pChannel1->getEngineBuffer()->loadFakeTrack(128.0);
+    EXPECT_FLOAT_EQ(128.0,
+                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+    EXPECT_FLOAT_EQ(128.0,
+                    ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+
+    // If sync is on two decks and one deck is loaded but not playing, we should
+    // still initialize to that deck.
+    m_pChannel2->getEngineBuffer()->loadFakeTrack(110.0);
+    EXPECT_FLOAT_EQ(128.0,
+                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+    EXPECT_FLOAT_EQ(128.0,
+                    ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+    EXPECT_FLOAT_EQ(128.0,
+                    ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+}
+
 TEST_F(EngineSyncTest, EnableOneDeckSliderUpdates) {
     // If we enable a deck to be master, the internal slider should immediately update.
     QScopedPointer<ControlObjectThread> pButtonSyncEnabled1(getControlObjectThread(

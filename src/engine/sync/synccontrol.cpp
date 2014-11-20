@@ -294,6 +294,15 @@ void SyncControl::trackLoaded(TrackPointer pTrack) {
         // If we loaded a new track while master, hand off.
         m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_NONE);
     }
+
+    if (getSyncMode() != SYNC_NONE) {
+        // Because of the order signals get processed, the file_bpm CO and
+        // rate slider are not updated as soon as we need them, so do that now.
+        m_pFileBpm->set(pTrack->getBpm());
+        // Horrible exploitation of a friend class. Sorry little guy.
+        m_pBpmControl->slotAdjustRateSlider();
+        m_pEngineSync->notifyTrackLoaded(this);
+    }
 }
 
 void SyncControl::trackUnloaded(TrackPointer pTrack) {
