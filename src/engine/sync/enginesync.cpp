@@ -204,27 +204,27 @@ void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
 void EngineSync::notifyTrackLoaded(Syncable* pSyncable) {
     // If there are no other sync decks, initialize master based on this.
     // If there is, make sure to set our rate based on that.
-    if (pSyncable->getSyncMode() == SYNC_NONE) {
+
+    // TODO(owilliams): Check this logic with an explicit master
+    if (pSyncable->getSyncMode() != SYNC_FOLLOWER) {
         return;
     }
 
-    if (m_pMasterSyncable == m_pInternalClock) {
-        bool sync_deck_exists = false;
-        foreach (const Syncable* pOtherSyncable, m_syncables) {
-            if (pOtherSyncable == pSyncable) {
-                continue;
-            }
-            if (pOtherSyncable->getSyncMode() != SYNC_NONE && pOtherSyncable->getBpm() != 0) {
-                sync_deck_exists = true;
-                break;
-            }
+    bool sync_deck_exists = false;
+    foreach (const Syncable* pOtherSyncable, m_syncables) {
+        if (pOtherSyncable == pSyncable) {
+            continue;
         }
+        if (pOtherSyncable->getSyncMode() != SYNC_NONE && pOtherSyncable->getBpm() != 0) {
+            sync_deck_exists = true;
+            break;
+        }
+    }
 
-        if (!sync_deck_exists) {
-            setMasterBpm(pSyncable, pSyncable->getBpm());
-        } else if (m_pMasterSyncable != NULL) {
-            pSyncable->setMasterBpm(masterBpm());
-        }
+    if (!sync_deck_exists) {
+        setMasterBpm(pSyncable, pSyncable->getBpm());
+    } else {
+        pSyncable->setMasterBpm(masterBpm());
     }
 }
 
