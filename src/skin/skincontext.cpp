@@ -19,8 +19,9 @@ SkinContext::SkinContext(ConfigObject<ConfigValue>* pConfig,
           m_xmlPath(xmlPath) {
     if (CmdlineArgs::Instance().getDeveloper() && m_pConfig->getValueString(
         ConfigKey("[ScriptDebugger]", "Enabled")) == "1") {
-        m_debugger->attachTo(m_scriptEngine.data());
+        enableDebugger(true);
     }
+    // m_scriptEngine->installTranslatorFunctions();
 }
 
 SkinContext::SkinContext(const SkinContext& parent)
@@ -34,6 +35,10 @@ SkinContext::SkinContext(const SkinContext& parent)
     
     for (QHash<QString, QString>::const_iterator it = m_variables.begin();
          it != m_variables.end(); ++it) {
+        if(it.key() == "color")
+            qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!! Setting variable : " << it.key() << " => " << it.value();
+        else
+            qDebug() << "Setting variable : " << it.key() << " => " << it.value();
         context.setProperty(it.key(), it.value());
     }
 }
@@ -60,6 +65,7 @@ void SkinContext::setVariable(const QString& name, const QString& value) {
     m_variables[name] = value;
     QScriptValue context = m_scriptEngine->currentContext()->activationObject();
     context.setProperty(name, value);
+    qDebug() << "!!!!!!!!!!!!!!!!!----- Setting variable : " << name << " => " << value;
 }
 
 void SkinContext::setXmlPath(const QString& xmlPath) {
@@ -280,7 +286,14 @@ QScriptValue SkinContext::importScriptExtension(const QString& extensionName) {
     return out;
 }
 
-// const QScriptEngine& SkinContext::getScriptEngine() const {
 const QScriptEngine* SkinContext::getScriptEngine() const {
     return m_scriptEngine.data();
 }
+
+void SkinContext::enableDebugger(bool state) const {
+    if( state )
+        m_debugger->attachTo(m_scriptEngine.data());
+    else 
+        m_debugger->detach();
+}
+

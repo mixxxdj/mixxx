@@ -133,6 +133,10 @@ void WSpinny::onVinylSignalQualityUpdate(const VinylSignalQualityReport& report)
 void WSpinny::setup(QDomNode node, const SkinContext& context, QString group) {
     m_group = group;
     
+    // The spinny widget causes a segfault if the debugger is enabled
+    // todo (jclaveau) : make the spinny debuggable if embeding scripts (svg)
+    context.enableDebugger(false);
+    
     // Set images
     m_pBgImage = WImageStore::getImage(context.getPixmapSource(
                         context.selectNode(node, "PathBackground")));
@@ -140,6 +144,9 @@ void WSpinny::setup(QDomNode node, const SkinContext& context, QString group) {
                         context.selectNode(node,"PathForeground")));
     m_pGhostImage = WImageStore::getImage(context.getPixmapSource(
                         context.selectNode(node,"PathGhost")));
+    
+    context.enableDebugger(true);
+    
     if (m_pBgImage && !m_pBgImage->isNull()) {
         setFixedSize(m_pBgImage->size());
     }
