@@ -162,8 +162,8 @@ class EngineBuffer : public EngineObject {
     // For dependency injection of scalers.
     void setScalerForTest(EngineBufferScale* pScale);
 
-    // For dependency injection of fake tracks.
-    TrackPointer loadFakeTrack();
+    // For dependency injection of fake tracks, with an optional filebpm value.
+    TrackPointer loadFakeTrack(double filebpm = 0);
 
     static QString getKeylockEngineName(KeylockEngine engine) {
         switch (engine) {
