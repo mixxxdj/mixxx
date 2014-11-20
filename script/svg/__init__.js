@@ -3,6 +3,13 @@ __setupPackage__(__extension__);
  * This extension provides the api to add hooks into attributes in
  * the SVG parser.
  */
+
+function isNumber(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+
+
 (function(){
 
     svg.templateHooks = {};

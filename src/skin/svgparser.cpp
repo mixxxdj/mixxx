@@ -6,8 +6,7 @@
 
 SvgParser::SvgParser(const SkinContext& parent)
         : m_context(parent) {
-    m_context.importScriptExtension("console");
-    m_context.importScriptExtension("svg");
+    // m_context.importScriptExtension("svg");
 }
 
 SvgParser::~SvgParser() {
@@ -109,12 +108,8 @@ void SvgParser::parseElement(QDomNode* node) const {
         }
         // Evaluates the content of the script element
         // QString expression = m_context.nodeToString(*node);
-        QString expression = element.text();
-            QString result = evaluateTemplateExpression(
-                expression, node->lineNumber()).toString();
-        // qDebug() << expression;
-        // QScriptValue result = m_context.evaluateScript(
-            // expression, m_currentFile, node->lineNumber());
+        QScriptValue result = m_context.evaluateScript(
+            element.text(), m_currentFile, node->lineNumber());
     }
 }
 
