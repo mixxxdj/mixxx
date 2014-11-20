@@ -18,7 +18,7 @@ class ImportFilesTask : public ScannerTask {
                     const QLinkedList<QFileInfo>& filesToImport,
                     const QLinkedList<QFileInfo>& possibleCovers,
                     SecurityTokenPointer pToken);
-    virtual ~ImportFilesTask();
+    virtual ~ImportFilesTask() {}
 
     virtual void run();
 

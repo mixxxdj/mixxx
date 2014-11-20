@@ -31,6 +31,9 @@
 #include "util/timer.h"
 #include "library/scanner/scannerutil.h"
 
+// TODO(rryan) make configurable
+const int kScannerThreadPoolSize = 10;
+
 LibraryScanner::LibraryScanner(QWidget* pParentWidget, TrackCollection* collection)
               : m_pCollection(collection),
                 m_libraryHashDao(m_database),
@@ -54,8 +57,7 @@ LibraryScanner::LibraryScanner(QWidget* pParentWidget, TrackCollection* collecti
     unsigned static id = 0; // the id of this LibraryScanner, for debugging purposes
     setObjectName(QString("LibraryScanner %1").arg(++id));
 
-    // TODO(rryan) make configurable
-    m_pool.setMaxThreadCount(10);
+    m_pool.setMaxThreadCount(kScannerThreadPoolSize);
 
     // Listen to signals from our public methods (invoked by other threads) and
     // connect them to our slots to run the command on the scanner thread.
@@ -263,7 +265,7 @@ void LibraryScanner::slotFinishScan() {
     if (bScanFinishedCleanly) {
         qDebug() << "Recursive scanning finished cleanly.";
     } else {
-        qDebug() << "Recursive scanning interrupted.";
+        qDebug() << "Recursive scanning interrupted by the user.";
     }
 
     // Finish adding the tracks -- rollback the transaction if the scan did not
@@ -452,6 +454,6 @@ void LibraryScanner::addNewTrack(TrackPointer pTrack) {
         emit(trackAdded(pTrack));
         emit(progressLoading(pTrack->getLocation()));
     } else {
-        qDebug() << "Track ("+pTrack->getLocation()+") could not be added";
+        qWarning() << "Track ("+pTrack->getLocation()+") could not be added";
     }
 }

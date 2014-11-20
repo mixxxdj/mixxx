@@ -15,9 +15,6 @@ ImportFilesTask::ImportFilesTask(LibraryScanner* pScanner,
           m_pToken(pToken) {
 }
 
-ImportFilesTask::~ImportFilesTask() {
-}
-
 void ImportFilesTask::run() {
     ScopedTimer timer("ImportFilesTask::run");
     foreach (const QFileInfo& file, m_filesToImport) {

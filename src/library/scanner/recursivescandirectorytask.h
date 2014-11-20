@@ -19,7 +19,7 @@ class RecursiveScanDirectoryTask : public ScannerTask {
                                const ScannerGlobalPointer scannerGlobal,
                                const QDir& dir,
                                SecurityTokenPointer pToken);
-    virtual ~RecursiveScanDirectoryTask();
+    virtual ~RecursiveScanDirectoryTask() {}
 
     virtual void run();
 

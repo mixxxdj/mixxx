@@ -14,9 +14,6 @@ RecursiveScanDirectoryTask::RecursiveScanDirectoryTask(
           m_pToken(pToken) {
 }
 
-RecursiveScanDirectoryTask::~RecursiveScanDirectoryTask() {
-}
-
 void RecursiveScanDirectoryTask::run() {
     ScopedTimer timer("RecursiveScanDirectoryTask::run");
     if (m_scannerGlobal->shouldCancel()) {
@@ -90,7 +87,7 @@ void RecursiveScanDirectoryTask::run() {
 
         // Insert or update the hash in the database.
         emit(directoryHashed(dirPath, !prevHashExists, newHash));
-    } else { //prevHash == newHash
+    } else {
         emit(directoryUnchanged(dirPath));
     }
 
