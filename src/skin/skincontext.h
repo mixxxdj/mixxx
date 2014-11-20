@@ -81,10 +81,15 @@ class SkinContext {
     QHash<QString, QString> m_variables;
     QString m_skinBasePath;
     ConfigObject<ConfigValue>* m_pConfig;
-    mutable QSharedPointer<QScriptEngine> m_scriptEngine;   // todo m_pScriptEngine
+    // mutable QSharedPointer<QScriptEngine> m_scriptEngine;   // todo m_pScriptEngine
+    QSharedPointer<QScriptEngine> m_scriptEngine;   // todo m_pScriptEngine
     QSharedPointer<QScriptEngineDebugger> m_debugger;       // idem
+    QSharedPointer<QScriptContext> m_scriptContext;
     QString m_xmlPath;
+    QScriptValue m_context;
     
+    QHash<QString, QScriptProgram> m_scriptPrograms;
+    QScriptValue m_parentGlobal;
 };
 
 #endif /* SKINCONTEXT_H */

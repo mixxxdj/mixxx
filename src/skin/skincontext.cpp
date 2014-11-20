@@ -17,10 +17,7 @@ SkinContext::SkinContext(ConfigObject<ConfigValue>* pConfig,
           m_debugger(QSharedPointer<QScriptEngineDebugger>(
               new QScriptEngineDebugger())),
           m_xmlPath(xmlPath) {
-    if (CmdlineArgs::Instance().getDeveloper() && m_pConfig->getValueString(
-        ConfigKey("[ScriptDebugger]", "Enabled")) == "1") {
-        enableDebugger(true);
-    }
+    enableDebugger(true);
     // m_scriptEngine->installTranslatorFunctions();
 }
 
@@ -31,25 +28,37 @@ SkinContext::SkinContext(const SkinContext& parent)
           m_scriptEngine(parent.m_scriptEngine),
           m_debugger(parent.m_debugger),
           m_xmlPath(parent.m_xmlPath) {
+    // m_scriptEngine = parent.m_scriptEngine;
+    // m_scriptContext = QSharedPointer<QScriptContext>(
+        // m_scriptEngine->pushContext());
     QScriptValue context = m_scriptEngine->pushContext()->activationObject();
+    // QScriptValue context = m_scriptEngine->currentContext()->activationObject();
+    
+    // m_parentGlobal = m_scriptEngine->globalObject();
+    // QScriptValue newGlobal = m_scriptEngine->newObject();
+    // newGlobal.setPrototype(m_parentGlobal);
+    // m_scriptEngine->setGlobalObject(context);
     
     for (QHash<QString, QString>::const_iterator it = m_variables.begin();
          it != m_variables.end(); ++it) {
-        if(it.key() == "color")
-            qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!! Setting variable : " << it.key() << " => " << it.value();
-        else
-            qDebug() << "Setting variable : " << it.key() << " => " << it.value();
+        qDebug() << "Setting variable : " << it.key() << " => " << it.value();
         context.setProperty(it.key(), it.value());
     }
+    
+    // QScriptContext* currentScriptContext = m_scriptEngine->currentContext();
+    // qDebug() << "!!!!!!!!!!!!!!!!!!!!!! : " << (&m_scriptContext == &currentScriptContext);
+    // qDebug() << "!!!!!!!!!!!!!!!!!!!!!! : " << m_context.toString() ;
 }
 
 SkinContext::~SkinContext() {
+    // m_scriptEngine->setGlobalObject(m_parentGlobal);
     m_scriptEngine->popContext();
 }
 
 SkinContext& SkinContext::operator=(const SkinContext& other) {
     m_variables = other.variables();
     QScriptValue context = m_scriptEngine->currentContext()->activationObject();
+    // QScriptValue context = m_scriptContext->activationObject();
     for (QHash<QString, QString>::const_iterator it = m_variables.begin();
          it != m_variables.end(); ++it) {
         context.setProperty(it.key(), it.value());
@@ -64,8 +73,9 @@ QString SkinContext::variable(const QString& name) const {
 void SkinContext::setVariable(const QString& name, const QString& value) {
     m_variables[name] = value;
     QScriptValue context = m_scriptEngine->currentContext()->activationObject();
+    // QScriptValue context = m_scriptContext->activationObject();
     context.setProperty(name, value);
-    qDebug() << "!!!!!!!!!!!!!!!!!----- Setting variable : " << name << " => " << value;
+    // qDebug() << "!!!!!!!!!!!!!!!!!----- Setting variable : " << name << " => " << value;
 }
 
 void SkinContext::setXmlPath(const QString& xmlPath) {
@@ -275,6 +285,19 @@ PixmapSource SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
 QScriptValue SkinContext::evaluateScript(const QString& expression,
                                          const QString& filename/*=QString()*/,
                                          int lineNumber/*=1*/) {
+                                             
+    /** /
+    QString programId = filename + QString::number(lineNumber);
+    qDebug() << "!!!!!!!!!!!!!!!!!! : " << programId;
+    
+    
+    if(!m_scriptPrograms.contains(programId)){
+        QScriptProgram program(expression, filename, lineNumber);
+        m_scriptPrograms[programId] = program;
+    }
+    
+    return m_scriptEngine->evaluate(m_scriptPrograms[programId]);
+    /**/
     return m_scriptEngine->evaluate(expression, filename, lineNumber);
 }
 
@@ -291,9 +314,14 @@ const QScriptEngine* SkinContext::getScriptEngine() const {
 }
 
 void SkinContext::enableDebugger(bool state) const {
-    if( state )
-        m_debugger->attachTo(m_scriptEngine.data());
-    else 
-        m_debugger->detach();
+    if (CmdlineArgs::Instance().getDeveloper() && m_pConfig->getValueString(
+        ConfigKey("[ScriptDebugger]", "Enabled")) == "1") {
+        if( state ) {
+            m_debugger->attachTo(m_scriptEngine.data());
+            m_debugger->action(QScriptEngineDebugger::StepOutAction);
+        } else { 
+            m_debugger->detach();
+        }
+    }
 }
 

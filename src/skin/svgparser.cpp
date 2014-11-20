@@ -98,7 +98,8 @@ void SvgParser::parseElement(QDomNode* node) const {
 
     } else if (element.tagName() == "script") {
         // Look for a filepath in the "src" attribute
-        QString scriptPath = node->toElement().attribute("src");
+        // QString scriptPath = node->toElement().attribute("src");
+        QString scriptPath = element.attribute("src");
         if (!scriptPath.isNull()) {
             QFile scriptFile(m_context.getSkinPath(scriptPath));
             scriptFile.open(QIODevice::ReadOnly|QIODevice::Text);
@@ -107,9 +108,13 @@ void SvgParser::parseElement(QDomNode* node) const {
                                                            scriptPath);
         }
         // Evaluates the content of the script element
-        QString expression = m_context.nodeToString(*node);
-        QScriptValue result = m_context.evaluateScript(
-            expression, m_currentFile, node->lineNumber());
+        // QString expression = m_context.nodeToString(*node);
+        QString expression = element.text();
+            QString result = evaluateTemplateExpression(
+                expression, node->lineNumber()).toString();
+        // qDebug() << expression;
+        // QScriptValue result = m_context.evaluateScript(
+            // expression, m_currentFile, node->lineNumber());
     }
 }
 
