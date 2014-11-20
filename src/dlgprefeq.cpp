@@ -103,6 +103,7 @@ void DlgPrefEQ::slotAddComboBox(double numDecks) {
 
         m_filterWaveformEnableCOs.append(
                 new ControlObject(ConfigKey(group, "filterWaveformEnable")));
+        m_filterWaveformEffectLoaded.append(false);
 
         // Create the drop down list for EQs
         QComboBox* eqComboBox = new QComboBox(this);
@@ -139,7 +140,10 @@ void DlgPrefEQ::slotAddComboBox(double numDecks) {
             configuredEffect = kDefaultEqId;
         }
         m_deckEqEffectSelectors[i]->setCurrentIndex(selectedEffectIndex);
-        m_filterWaveformEnableCOs[i]->set(m_pEffectsManager->isEQ(configuredEffect));
+        m_filterWaveformEffectLoaded[i] = m_pEffectsManager->isEQ(configuredEffect);
+        m_filterWaveformEnableCOs[i]->set(
+                m_filterWaveformEffectLoaded[i] &&
+                !CheckBoxBypass->checkState());
     }	
 }
 
@@ -308,7 +312,11 @@ void DlgPrefEQ::slotEqEffectChangedOnDeck(int effectIndex) {
         m_pConfig->set(ConfigKey(kConfigKey, "EffectForGroup_" + group),
                 ConfigValue(effectId));
 
-        m_filterWaveformEnableCOs[deckNumber]->set(m_pEffectsManager->isEQ(effectId));
+
+        m_filterWaveformEffectLoaded[deckNumber] = m_pEffectsManager->isEQ(effectId);
+        m_filterWaveformEnableCOs[deckNumber]->set(
+                m_filterWaveformEffectLoaded[deckNumber] &&
+                !CheckBoxBypass->checkState());
 
         // This is required to remove a previous selected effect that does not
         // fit to the current ShowAllEffects checkbox
@@ -420,7 +428,7 @@ void DlgPrefEQ::slotBypass(int state) {
         foreach(QComboBox* box, m_deckEqEffectSelectors) {
             QString group = getEQEffectGroupForDeck(deck);
             ControlObject::set(ConfigKey(group, "enabled"), 0);
-            m_filterWaveformEnableCOs[deck - 1]->set(0);
+            m_filterWaveformEnableCOs[deck]->set(0);
             deck++;
             box->setEnabled(false);
         }
@@ -428,12 +436,12 @@ void DlgPrefEQ::slotBypass(int state) {
         m_pConfig->set(ConfigKey(kConfigKey, kEnableEqs), QString("yes"));
         // Enable effect processing for all decks by setting the appropriate
         // controls to 1 ("[EffectRackX_EffectUnitDeck_Effect1],enable")
-        int deck = 1;
+        int deck = 0;
         ControlObjectSlave enableControl;
         foreach(QComboBox* box, m_deckEqEffectSelectors) {
             QString group = getEQEffectGroupForDeck(deck);
             ControlObject::set(ConfigKey(group, "enabled"), 1);
-            m_filterWaveformEnableCOs[deck - 1]->set(1);
+            m_filterWaveformEnableCOs[deck]->set(m_filterWaveformEffectLoaded[deck]);
             deck++;
             box->setEnabled(true);
         }
