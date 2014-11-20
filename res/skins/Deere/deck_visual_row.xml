@@ -110,7 +110,7 @@
           <Spinny>
             <Group><Variable name="group"/></Group>
             <PathBackground>image/vinyl_spinny_background.png</PathBackground>
-            <PathForeground>image/vinyl_spinny<Variable name="i"/>_foreground.png</PathForeground>
+            <PathForeground>image/vinyl_spinny_foreground.png</PathForeground>
             <PathGhost>image/vinyl_spinny_foreground_ghost.png</PathGhost>
             <!--
              If you want to have cover art beneath the spnning vinyl images,
