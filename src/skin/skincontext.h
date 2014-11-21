@@ -78,14 +78,13 @@ class SkinContext {
   private:
     QString variableNodeToText(const QDomElement& element) const;
 
-    QHash<QString, QString> m_variables;
+    QString m_xmlPath;
     QString m_skinBasePath;
     ConfigObject<ConfigValue>* m_pConfig;
+    
+    QHash<QString, QString> m_variables;
     QSharedPointer<QScriptEngine> m_pScriptEngine;
     QSharedPointer<QScriptEngineDebugger> m_pScriptDebugger;
-    QString m_xmlPath;
-    
-    QHash<QString, QScriptProgram> m_scriptPrograms;
     QScriptValue m_parentGlobal;
 };
 

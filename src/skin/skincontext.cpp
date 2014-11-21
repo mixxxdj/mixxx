@@ -13,29 +13,31 @@ SkinContext::SkinContext() {
 
 SkinContext::SkinContext(ConfigObject<ConfigValue>* pConfig,
                          const QString& xmlPath)
-        : m_pConfig(pConfig),
+        : m_xmlPath(xmlPath),
+          m_pConfig(pConfig),
           m_pScriptEngine(QSharedPointer<QScriptEngine>(new QScriptEngine())),
           m_pScriptDebugger(QSharedPointer<QScriptEngineDebugger>(
-              new QScriptEngineDebugger())),
-          m_xmlPath(xmlPath) {
+              new QScriptEngineDebugger())) {
     enableDebugger(true);
+    // the extensions are imported once and will be passed to the children
+    // global object as properties of the parent's global object.
     importScriptExtension("console");
     importScriptExtension("svg");
     m_pScriptEngine->installTranslatorFunctions();
 }
 
 SkinContext::SkinContext(const SkinContext& parent)
-        : m_variables(parent.variables()),
+        : m_xmlPath(parent.m_xmlPath),
           m_skinBasePath(parent.m_skinBasePath),
           m_pConfig(parent.m_pConfig),
+          m_variables(parent.variables()),
           m_pScriptEngine(parent.m_pScriptEngine),
           m_pScriptDebugger(parent.m_pScriptDebugger),
-          m_xmlPath(parent.m_xmlPath) {
+          m_parentGlobal(m_pScriptEngine->globalObject()) {
     
-    m_parentGlobal = m_pScriptEngine->globalObject();
-    QScriptContext* scriptContext = m_pScriptEngine->pushContext();
-    QScriptValue context = scriptContext->activationObject();
-    
+    // we generate a new global object to preserve the scope between
+    // a context and its children
+    QScriptValue context = m_pScriptEngine->pushContext()->activationObject();
     QScriptValue newGlobal = m_pScriptEngine->newObject();
     QScriptValueIterator it(m_parentGlobal);
     while (it.hasNext()) {
@@ -52,8 +54,8 @@ SkinContext::SkinContext(const SkinContext& parent)
 }
 
 SkinContext::~SkinContext() {
-    m_pScriptEngine->setGlobalObject(m_parentGlobal);
     m_pScriptEngine->popContext();
+    m_pScriptEngine->setGlobalObject(m_parentGlobal);
 }
 
 SkinContext& SkinContext::operator=(const SkinContext& other) {
@@ -283,19 +285,6 @@ PixmapSource SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
 QScriptValue SkinContext::evaluateScript(const QString& expression,
                                          const QString& filename/*=QString()*/,
                                          int lineNumber/*=1*/) {
-                                             
-    /** /
-    QString programId = filename + QString::number(lineNumber);
-    qDebug() << "!!!!!!!!!!!!!!!!!! : " << programId;
-    
-    
-    if(!m_scriptPrograms.contains(programId)){
-        QScriptProgram program(expression, filename, lineNumber);
-        m_scriptPrograms[programId] = program;
-    }
-    
-    return m_pScriptEngine->evaluate(m_scriptPrograms[programId]);
-    /**/
     return m_pScriptEngine->evaluate(expression, filename, lineNumber);
 }
 
