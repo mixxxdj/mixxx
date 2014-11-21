@@ -15,9 +15,8 @@ SkinContext::SkinContext(ConfigObject<ConfigValue>* pConfig,
                          const QString& xmlPath)
         : m_xmlPath(xmlPath),
           m_pConfig(pConfig),
-          m_pScriptEngine(QSharedPointer<QScriptEngine>(new QScriptEngine())),
-          m_pScriptDebugger(QSharedPointer<QScriptEngineDebugger>(
-              new QScriptEngineDebugger())) {
+          m_pScriptEngine(new QScriptEngine()),
+          m_pScriptDebugger(new QScriptEngineDebugger()) {
     enableDebugger(true);
     // the extensions are imported once and will be passed to the children
     // global object as properties of the parent's global object.
@@ -44,7 +43,6 @@ SkinContext::SkinContext(const SkinContext& parent)
         it.next();
         newGlobal.setProperty(it.name(), it.value());
     }
-    // newGlobal.setPrototype(m_parentGlobal);
     m_pScriptEngine->setGlobalObject(newGlobal);
     
     for (QHash<QString, QString>::const_iterator it = m_variables.begin();
@@ -56,16 +54,6 @@ SkinContext::SkinContext(const SkinContext& parent)
 SkinContext::~SkinContext() {
     m_pScriptEngine->popContext();
     m_pScriptEngine->setGlobalObject(m_parentGlobal);
-}
-
-SkinContext& SkinContext::operator=(const SkinContext& other) {
-    m_variables = other.variables();
-    QScriptValue context = m_pScriptEngine->currentContext()->activationObject();
-    for (QHash<QString, QString>::const_iterator it = m_variables.begin();
-         it != m_variables.end(); ++it) {
-        context.setProperty(it.key(), it.value());
-    }
-    return *this;
 }
 
 QString SkinContext::variable(const QString& name) const {
@@ -296,8 +284,8 @@ QScriptValue SkinContext::importScriptExtension(const QString& extensionName) {
     return out;
 }
 
-const QScriptEngine* SkinContext::getScriptEngine() const {
-    return m_pScriptEngine.data();
+const QSharedPointer<QScriptEngine> SkinContext::getScriptEngine() const {
+    return m_pScriptEngine;
 }
 
 void SkinContext::enableDebugger(bool state) const {
@@ -305,7 +293,6 @@ void SkinContext::enableDebugger(bool state) const {
         ConfigKey("[ScriptDebugger]", "Enabled")) == "1") {
         if( state ) {
             m_pScriptDebugger->attachTo(m_pScriptEngine.data());
-            // m_pScriptDebugger->action(QScriptEngineDebugger::StepOutAction);
         } else { 
             m_pScriptDebugger->detach();
         }
