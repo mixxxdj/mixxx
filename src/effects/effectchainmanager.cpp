@@ -32,10 +32,11 @@ void EffectChainManager::registerGroup(const QString& group) {
     }
 }
 
-EffectRackPointer EffectChainManager::addEffectRack() {
+EffectRackPointer EffectChainManager::addEffectRack(const QString& group) {
     EffectRackPointer pRack = EffectRackPointer(new EffectRack(
-        m_pEffectsManager, this, m_effectRacks.size()));
+            m_pEffectsManager, this, m_effectRacks.size(), group));
     m_effectRacks.append(pRack);
+    m_effectRacksHash.insert(pRack->getGroup(), pRack);
     return pRack;
 }
 
@@ -44,6 +45,10 @@ EffectRackPointer EffectChainManager::getEffectRack(int i) {
         return EffectRackPointer();
     }
     return m_effectRacks[i];
+}
+
+EffectRackPointer EffectChainManager::getEffectRack(const QString& group) {
+    return m_effectRacksHash.value(group);
 }
 
 int EffectChainManager::getEffectRacksSize() {

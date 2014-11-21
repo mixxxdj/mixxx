@@ -14,11 +14,17 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
     ControlDoublePrivate::getControls(&controlsList);
 
     for (QList<QSharedPointer<ControlDoublePrivate> >::const_iterator it = controlsList.begin();
-         it != controlsList.end(); ++it) {
+            it != controlsList.end(); ++it) {
         const QSharedPointer<ControlDoublePrivate>& pControl = *it;
         if (pControl) {
             m_controlModel.addControl(pControl->getKey(), pControl->name(),
                                       pControl->description());
+
+            ConfigKey aliasKey = ControlDoublePrivate::getFirstAliasFor(pControl);
+            if(!aliasKey.isNull()) {
+                m_controlModel.addControl(aliasKey, pControl->name(),
+                                          "Alias for " + pControl->getKey().group + pControl->getKey().item);
+            }
         }
     }
 

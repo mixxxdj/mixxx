@@ -37,8 +37,12 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
               ConfigObject<ConfigValue>* _config);
     virtual ~DlgPrefEQ();
 
+    QString getEQEffectGroupForDeck(int deck) const;
+    QString getQuickEffectGroupForDeck(int deck) const;
+
   public slots:
-    void slotEffectChangedOnDeck(int effectIndex);
+    void slotEqEffectChangedOnDeck(int effectIndex);
+    void slotQuickEffectChangedOnDeck(int effectIndex);
     void slotAddComboBox(double numDecks);
     // Slot for toggling between advanced and basic views
     void slotPopulateDeckEffectSelectors();
@@ -72,12 +76,14 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     // Members needed for changing the effects loaded on the EQ Effect Rack
     EffectsManager* m_pEffectsManager;
     EffectRack* m_pEQEffectRack;
-    QList<QComboBox*> m_deckEffectSelectors;
-    QList<ControlObject*> m_fliterWaveformEnableCOs;
+    EffectRack* m_pQuickEffectRack;
+    QList<QComboBox*> m_deckEqEffectSelectors;
+    QList<QComboBox*> m_deckFilterEffectSelectors;
+    QList<bool> m_filterWaveformEffectLoaded;
+    QList<ControlObject*> m_filterWaveformEnableCOs;
     ControlObjectSlave* m_pNumDecks;
-    QString m_eqRackGroup;
 
-    bool m_deckEffectSelectorsSetup;
+    bool m_inSlotPopulateDeckEffectSelectors;
 
     bool m_bEqAutoReset;
 };

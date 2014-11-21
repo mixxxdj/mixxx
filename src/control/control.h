@@ -38,6 +38,8 @@ class ControlDoublePrivate : public QObject {
     // Adds all ControlDoublePrivate that currently exist to pControlList
     static void getControls(QList<QSharedPointer<ControlDoublePrivate> >* pControlsList);
 
+    static ConfigKey getFirstAliasFor(QSharedPointer<ControlDoublePrivate> pControl);
+
     const QString& name() const {
         return m_name;
     }

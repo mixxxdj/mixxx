@@ -266,6 +266,9 @@ void PlayerManager::addDeckInner() {
     // Setup EQ for this deck
     m_pEffectsManager->addEqualizer(group);
 
+    // Setup Quick effect for this deck
+    m_pEffectsManager->addQuickEffect(group);
+
     pDeck->setupEqControlls();
 }
 
