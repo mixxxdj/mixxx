@@ -140,6 +140,7 @@ void WSpinny::setup(QDomNode node, const SkinContext& context, QString group) {
                         context.selectNode(node,"PathForeground")));
     m_pGhostImage = WImageStore::getImage(context.getPixmapSource(
                         context.selectNode(node,"PathGhost")));
+    
     if (m_pBgImage && !m_pBgImage->isNull()) {
         setFixedSize(m_pBgImage->size());
     }
@@ -212,9 +213,11 @@ void WSpinny::setup(QDomNode node, const SkinContext& context, QString group) {
 }
 
 void WSpinny::maybeUpdate() {
-    m_pVisualPlayPos->getPlaySlipAt(0,
-                                    &m_dAngleCurrentPlaypos,
-                                    &m_dGhostAngleCurrentPlaypos);
+    if (!m_pVisualPlayPos.isNull()) {
+        m_pVisualPlayPos->getPlaySlipAt(0,
+                                        &m_dAngleCurrentPlaypos,
+                                        &m_dGhostAngleCurrentPlaypos);
+    }
     if (m_dAngleCurrentPlaypos != m_dAngleLastPlaypos ||
             m_dGhostAngleCurrentPlaypos != m_dGhostAngleLastPlaypos ||
             m_bWidgetDirty) {
