@@ -369,7 +369,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     const int kNumEffectRacks = 1;
     for (int iRackNumber = 1; iRackNumber <= kNumEffectRacks; ++iRackNumber) {
-        const QString rackGroup = EffectRack::formatGroupString(
+        const QString rackGroup = StandardEffectRack::formatGroupString(
                 iRackNumber - 1);
         QMenu* rackMenu = addSubmenu(m_effectRackStr.arg(iRackNumber), effectsMenu);
         QString descriptionPrefix = m_effectRackStr.arg(iRackNumber);
@@ -382,8 +382,9 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             ConfigKey(rackGroup, "num_effectunits"));
         for (int iEffectUnitNumber = 1; iEffectUnitNumber <= numEffectUnits;
              ++iEffectUnitNumber) {
-            const QString effectUnitGroup = EffectChainSlot::formatGroupString(
-                    iRackNumber - 1, iEffectUnitNumber - 1);
+            const QString effectUnitGroup =
+                    StandardEffectRack::formatEffectChainSlotGroupString(
+                        iRackNumber - 1, iEffectUnitNumber - 1);
 
             descriptionPrefix = QString("%1, %2").arg(m_effectRackStr.arg(iRackNumber),
                                                       m_effectUnitStr.arg(iEffectUnitNumber));
@@ -509,9 +510,10 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                     ConfigKey(effectUnitGroup, "num_effectslots"));
             for (int iEffectSlotNumber = 1; iEffectSlotNumber <= numEffectSlots;
                      ++iEffectSlotNumber) {
-                const QString effectSlotGroup = EffectSlot::formatGroupString(
-                        iRackNumber - 1, iEffectUnitNumber - 1,
-                        iEffectSlotNumber - 1);
+                const QString effectSlotGroup =
+                        StandardEffectRack::formatEffectSlotGroupString(
+                            iRackNumber - 1, iEffectUnitNumber - 1,
+                            iEffectSlotNumber - 1);
 
                 QMenu* effectSlotMenu = addSubmenu(m_effectStr.arg(iEffectSlotNumber),
                                                    effectUnitMenu);
@@ -546,9 +548,12 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                         ConfigKey(effectSlotGroup, "num_parameterslots"));
                 for (int iParameterSlotNumber = 1; iParameterSlotNumber <= numParameterSlots;
                      ++iParameterSlotNumber) {
-                    const QString parameterSlotGroup = EffectParameterSlot::formatGroupString(
-                            iRackNumber - 1, iEffectUnitNumber - 1,
-                            iEffectSlotNumber - 1);
+                    // The parameter slot group is the same as the effect slot
+                    // group on a standard effect rack.
+                    const QString parameterSlotGroup =
+                            StandardEffectRack::formatEffectSlotGroupString(
+                                iRackNumber - 1, iEffectUnitNumber - 1,
+                                iEffectSlotNumber - 1);
                     const QString parameterSlotItemPrefix = EffectParameterSlot::formatItemPrefix(
                             iParameterSlotNumber - 1);
                     QMenu* parameterSlotMenu = addSubmenu(
@@ -576,13 +581,6 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             }
         }
     }
-
-    addDeckControl("filter",
-                   tr("Filter Toggle"),
-                   tr("Toggle filter effect"), effectsMenu);
-    addDeckControl("filterDepth",
-                   tr("Filter Intensity"),
-                   tr("Filter effect: Intensity"), effectsMenu, true);
 
     // Microphone Controls
     QMenu* microphoneMenu = addSubmenu(tr("Microphone / Auxiliary"));

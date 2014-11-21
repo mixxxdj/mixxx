@@ -56,17 +56,17 @@ void WEffectPushButton::setup(QDomNode node, const SkinContext& context) {
             int iState = context.selectInt(state, "Number");
             if (iState < m_iNoStates) {
                 PixmapSource pixmapSource;
-                
+
                 pixmapSource = context.getPixmapSource(context.selectNode(state, "Unpressed"));
                 if (!pixmapSource.isEmpty()) {
                     setPixmap(iState, false, pixmapSource);
                 }
-                
+
                 pixmapSource = context.getPixmapSource(context.selectNode(state, "Pressed"));
                 if (!pixmapSource.isEmpty()) {
                     setPixmap(iState, true, pixmapSource);
                 }
-                
+
                 m_text.replace(iState, context.selectString(state, "Text"));
                 QString alignment = context.selectString(state, "Alignment");
                 if (alignment == "left") {
@@ -199,7 +199,7 @@ void WEffectPushButton::setup(QDomNode node, const SkinContext& context) {
         qDebug() << "EffectPushButton node had invalid ButtonParameter number:" << parameterNumber;
     }
 
-    EffectRackPointer pRack = m_pEffectsManager->getEffectRack(rackNumber);
+    EffectRackPointer pRack = m_pEffectsManager->getStandardEffectRack(rackNumber);
     if (pRack) {
         EffectChainSlotPointer pChainSlot = pRack->getEffectChainSlot(chainNumber);
         if (pChainSlot) {
@@ -290,9 +290,9 @@ void WEffectPushButton::onConnectedControlChanged(double dParameter, double dVal
     }
 
 
-    double value = getControlParameterDisplay(); 
+    double value = getControlParameterDisplay();
     if (isnan(value) || m_iNoStates == 0) {
-	return; 
+	return;
     }
 
     int idx = static_cast<int>(value) % m_iNoStates;
@@ -384,10 +384,10 @@ void WEffectPushButton::mousePressEvent(QMouseEvent * e) {
             emitValue = 1.0;
         } else {
             // Toggle thru the states
-            emitValue = getControlParameterLeft(); 
-            if (!isnan(emitValue) && m_iNoStates) { 
+            emitValue = getControlParameterLeft();
+            if (!isnan(emitValue) && m_iNoStates) {
                 emitValue = static_cast<int>(emitValue + 1.0) % m_iNoStates;
-            }	
+            }
             if (m_leftButtonMode == ControlPushButton::LONGPRESSLATCHING) {
                 m_clickTimer.setSingleShot(true);
                 m_clickTimer.start(ControlPushButtonBehavior::kLongPressLatchingTimeMillis);
@@ -448,9 +448,9 @@ void WEffectPushButton::mouseReleaseEvent(QMouseEvent * e) {
             if (m_leftButtonMode == ControlPushButton::LONGPRESSLATCHING
                     && m_clickTimer.isActive() && emitValue >= 1.0) {
                 // revert toggle if button is released too early
-                if (!isnan(emitValue) && m_iNoStates) { 
+                if (!isnan(emitValue) && m_iNoStates) {
                     emitValue = static_cast<int>(emitValue - 1.0) % m_iNoStates;
-                }      
+                }
             } else {
                 // Nothing special happens when releasing a normal toggle button
             }
@@ -478,24 +478,24 @@ void WEffectPushButton::parameterUpdated() {
     m_pButtonMenu->clear();
     const QList<QPair<QString, double> >& options = m_pEffectParameterSlot->getManifest().getSteps();
     // qDebug() << " HERE IS THE OPTIONS SIZE: " << options.size() << m_pEffectParameterSlot->getManifest().name();
-    m_iNoStates = options.size(); 
+    m_iNoStates = options.size();
 	if (m_iNoStates == 0) {
 		// Toggle button without a menu
-		m_iNoStates = 2; 
-		return; 
+		m_iNoStates = 2;
+		return;
 	}
-    double value = getControlParameterLeft();     
+    double value = getControlParameterLeft();
 
     QActionGroup* actionGroup = new QActionGroup(m_pButtonMenu);
     actionGroup->setExclusive(true);
     for (int i = 0; i < options.size(); i++) {
         // action is added automatically to actionGroup
         QAction* action = new QAction(actionGroup);
-        // qDebug() << options[i].first; 
+        // qDebug() << options[i].first;
         action->setText(options[i].first);
         action->setData(options[i].second);
         action->setCheckable(true);
-	
+
         if (options[i].second == value) {
             action->setChecked(true);
         }

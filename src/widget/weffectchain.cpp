@@ -27,7 +27,7 @@ void WEffectChain::setup(QDomNode node, const SkinContext& context) {
         qDebug() << "EffectChainName node had invalid EffectChain number:" << chainNumber;
     }
 
-    EffectRackPointer pRack = m_pEffectsManager->getEffectRack(rackNumber);
+    EffectRackPointer pRack = m_pEffectsManager->getStandardEffectRack(rackNumber);
     if (pRack) {
         EffectChainSlotPointer pChainSlot = pRack->getEffectChainSlot(chainNumber);
         if (pChainSlot) {

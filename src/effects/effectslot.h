@@ -19,29 +19,10 @@ typedef QSharedPointer<EffectSlot> EffectSlotPointer;
 class EffectSlot : public QObject {
     Q_OBJECT
   public:
-    EffectSlot(const QString& chainGroup,
+    EffectSlot(const QString& group,
                const unsigned int iChainNumber,
                const unsigned int iEffectNumber);
     virtual ~EffectSlot();
-
-    static QString formatGroupString(const unsigned int iRackNumber,
-                                     const unsigned int iChainNumber,
-                                     const unsigned int iEffectNumber) {
-        return QString("[EffectRack%1_EffectUnit%2_Effect%3]").arg(
-            QString::number(iRackNumber+1),
-            QString::number(iChainNumber+1),
-            QString::number(iEffectNumber+1));
-
-    }
-
-    static QString formatGroupString(const QString& effectUnitGroup,
-                                     const unsigned int iEffectNumber) {
-
-        QString group(effectUnitGroup);
-        group.chop(1); // Remove tailing ']'
-        group += QString("_Effect%1]").arg(iEffectNumber+1);
-        return group;
-    }
 
     // Return the currently loaded effect, if any. If no effect is loaded,
     // returns a null EffectPointer.
@@ -64,6 +45,9 @@ class EffectSlot : public QObject {
     // Unload the currently loaded effect
     void clear();
 
+    const QString& getGroup() const {
+        return m_group;
+    }
 
   public slots:
     // Request that this EffectSlot load the given Effect
@@ -95,7 +79,6 @@ class EffectSlot : public QObject {
     // previous Effect into it.
     void prevEffect(unsigned int iChainNumber, unsigned int iEffectNumber,
                     EffectPointer pEffect);
-
 
     // Signal that whoever is in charge of this EffectSlot should clear this
     // EffectSlot (by deleting the effect from the underlying chain).

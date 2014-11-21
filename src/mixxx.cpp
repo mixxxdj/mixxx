@@ -536,11 +536,12 @@ MixxxMainWindow::~MixxxMainWindow() {
     qDebug() << "delete m_pEngine " << qTime.elapsed();
     delete m_pEngine;
 
-    // Must delete after EngineMaster.
+    qDebug() << "deleting preferences, " << qTime.elapsed();
+    delete m_pPrefDlg;
+
+    // Must delete after EngineMaster and DlgPrefEq.
     qDebug() << "deleting effects manager, " << qTime.elapsed();
     delete m_pEffectsManager;
-
-    delete m_pPrefDlg;
 
     delete m_pTouchShift;
 
