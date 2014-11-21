@@ -6,9 +6,9 @@
 
 EffectRack::EffectRack(EffectsManager* pEffectsManager,
                        EffectChainManager* pEffectChainManager,
-                       const unsigned int iRackNumber)
-        : m_iRackNumber(iRackNumber),
-          m_group(formatGroupString(m_iRackNumber)),
+                       const unsigned int iRackNumber,
+                       const QString& group)
+        : m_group(group.isEmpty() ? formatGroupString(iRackNumber) : group),
           m_pEffectsManager(pEffectsManager),
           m_pEffectChainManager(pEffectChainManager),
           m_controlNumEffectChainSlots(ConfigKey(m_group, "num_effectunits")),
@@ -77,9 +77,13 @@ void EffectRack::slotNumEffectChainSlots(double v) {
     qWarning() << "WARNING: num_effectchain_slots is a read-only control.";
 }
 
-void EffectRack::slotLoadEffectOnChainSlot(const unsigned int iChainSlotNumber,
-                                           const unsigned int iEffectSlotNumber,
-                                           QString effectId) {
+const QString& EffectRack::getGroup() const {
+    return m_group;
+}
+
+void EffectRack::loadEffectToChainSlot(const unsigned int iChainSlotNumber,
+                                       const unsigned int iEffectSlotNumber,
+                                       QString effectId) {
     if (iChainSlotNumber >= static_cast<unsigned int>(m_effectChainSlots.size())) {
         return;
     }
@@ -109,12 +113,16 @@ int EffectRack::numEffectChainSlots() const {
 }
 
 
-EffectChainSlotPointer EffectRack::addEffectChainSlotForEQ() {
+EffectChainSlotPointer EffectRack::addEffectChainSlotForEQ(QString unitGroup) {
     int iChainSlotNumber = m_effectChainSlots.size();
+    if (unitGroup.isEmpty()) {
+        unitGroup = QString("[EffectUnit%2]").arg(iChainSlotNumber+1);
+    }
+    QString group(EffectChainSlot::formatGroupString(m_group, unitGroup));
     EffectChainSlot* pChainSlot =
-            new EffectChainSlot(this, m_iRackNumber, iChainSlotNumber);
+            new EffectChainSlot(this, group, iChainSlotNumber);
 
-    // Add a single EffectSlot for EQDefault
+    // Add a one EffectSlot for EQDefault
     pChainSlot->addEffectSlot();
 
     const QSet<QString>& registeredGroups =
@@ -138,10 +146,14 @@ EffectChainSlotPointer EffectRack::addEffectChainSlotForEQ() {
     return pChainSlotPointer;
 }
 
-EffectChainSlotPointer EffectRack::addEffectChainSlot() {
+EffectChainSlotPointer EffectRack::addEffectChainSlot(QString unitGroup) {
     int iChainSlotNumber = m_effectChainSlots.size();
+    if (unitGroup.isEmpty()) {
+        unitGroup = QString("[EffectUnit%2]").arg(iChainSlotNumber+1);
+    }
+    QString group(EffectChainSlot::formatGroupString(m_group, unitGroup));
     EffectChainSlot* pChainSlot =
-            new EffectChainSlot(this, m_iRackNumber, iChainSlotNumber);
+            new EffectChainSlot(this, group, iChainSlotNumber);
 
     // TODO(rryan) How many should we make default? They create controls that
     // the GUI may rely on, so the choice is important to communicate to skin
@@ -190,10 +202,6 @@ EffectChainSlotPointer EffectRack::getEffectChainSlot(int i) {
         return EffectChainSlotPointer();
     }
     return m_effectChainSlots[i];
-}
-
-int EffectRack::getRackNumber() {
-    return m_iRackNumber;
 }
 
 void EffectRack::loadNextChain(const unsigned int iChainSlotNumber,

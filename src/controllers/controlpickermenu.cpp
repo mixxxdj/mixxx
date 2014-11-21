@@ -577,27 +577,12 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         }
     }
 
-    /* DEPRECATED EFFECTS
-    addDeckControl("flanger",
-                   tr("Flange Toggle"),
-                   tr("Toggle flange effect"),
-                   effectsMenu);
-    addControl("[Flanger]", "lfoPeriod",
-               tr("Flange Wavelength/Period"),
-               tr("Flange effect: Wavelength/period"), effectsMenu, true);
-    addControl("[Flanger]", "lfoDepth",
-               tr("Flange Intensity"),
-               tr("Flange effect: Intensity"), effectsMenu, true);
-    addControl("[Flanger]", "lfoDelay",
-               tr("Flange Phase Delay"),
-               tr("Flange effect: Phase delay"), effectsMenu, true);
     addDeckControl("filter",
                    tr("Filter Toggle"),
                    tr("Toggle filter effect"), effectsMenu);
     addDeckControl("filterDepth",
                    tr("Filter Intensity"),
                    tr("Filter effect: Intensity"), effectsMenu, true);
-    */
 
     // Microphone Controls
     QMenu* microphoneMenu = addSubmenu(tr("Microphone / Auxiliary"));

@@ -17,7 +17,7 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
-      <widget class="QCheckBox" name="bEqAutoReset">
+      <widget class="QCheckBox" name="CheckBoxEqAutoReset">
        <property name="toolTip">
         <string>Resets the equalizers to their default values when loading a track.</string>
        </property>
@@ -44,16 +44,51 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label">
-       <property name="font">
-        <font>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Effect Rack Configuration</string>
-       </property>
+      <widget class="QWidget" name="GridWidgetDecks" native="true">
+       <layout class="QGridLayout" name="gridLayout_3">
+        <item row="0" column="3">
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="0" column="2">
+         <widget class="QLabel" name="label_3">
+          <property name="font">
+           <font>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Filter knob configuration</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLabel" name="label_2">
+          <property name="font">
+           <font>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>EQ Knob Configuration</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QWidget" name="widget" native="true"/>
+        </item>
+       </layout>
       </widget>
      </item>
     </layout>
@@ -115,19 +150,6 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="TextLabel8_3">
-        <property name="font">
-         <font/>
-        </property>
-        <property name="text">
-         <string>16 Hz</string>
-        </property>
-        <property name="wordWrap">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
       <item row="2" column="1">
        <spacer>
         <property name="orientation">
@@ -140,6 +162,19 @@
          </size>
         </property>
        </spacer>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="TextLabel8_3">
+        <property name="font">
+         <font/>
+        </property>
+        <property name="text">
+         <string>16 Hz</string>
+        </property>
+        <property name="wordWrap">
+         <bool>false</bool>
+        </property>
+       </widget>
       </item>
       <item row="2" column="2">
        <widget class="QLabel" name="TextLabel8_2_3">
