@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QString>
 #include <QSharedPointer>
+#include <QHash>
 
 #include "controlobject.h"
 #include "effects/effectchainslot.h"

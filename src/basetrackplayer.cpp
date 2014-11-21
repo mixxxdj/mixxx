@@ -260,12 +260,24 @@ void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
         }
     }
     if(m_pConfig->getValueString(ConfigKey("[Mixer Profile]", "EqAutoReset"), 0).toInt()) {
-        m_pLowFilter->set(1.0);
-        m_pMidFilter->set(1.0);
-        m_pHighFilter->set(1.0);
-        m_pLowFilterKill->set(0.0);
-        m_pMidFilterKill->set(0.0);
-        m_pHighFilterKill->set(0.0);
+        if (m_pLowFilter != NULL) {
+            m_pLowFilter->set(1.0);
+        }
+        if (m_pMidFilter != NULL) {
+            m_pMidFilter->set(1.0);
+        }
+        if (m_pHighFilter != NULL) {
+            m_pHighFilter->set(1.0);
+        }
+        if (m_pLowFilterKill != NULL) {
+            m_pLowFilterKill->set(0.0);
+        }
+        if (m_pMidFilterKill != NULL) {
+            m_pMidFilterKill->set(0.0);
+        }
+        if (m_pHighFilterKill != NULL) {
+            m_pHighFilterKill->set(0.0);
+        }
         m_pPreGain->set(1.0);
     }
 
@@ -297,7 +309,7 @@ EngineDeck* BaseTrackPlayer::getEngineDeck() const {
     return m_pChannel;
 }
 
-void BaseTrackPlayer::setupEqControlls() {
+void BaseTrackPlayer::setupEqControls() {
     const QString group = getGroup();
     m_pLowFilter = new ControlObjectSlave(group,"filterLow");
     m_pMidFilter = new ControlObjectSlave(group,"filterMid");

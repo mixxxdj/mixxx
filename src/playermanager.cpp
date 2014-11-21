@@ -269,7 +269,7 @@ void PlayerManager::addDeckInner() {
     // Setup Quick effect for this deck
     m_pEffectsManager->addQuickEffect(group);
 
-    pDeck->setupEqControlls();
+    pDeck->setupEqControls();
 }
 
 void PlayerManager::addSampler() {
