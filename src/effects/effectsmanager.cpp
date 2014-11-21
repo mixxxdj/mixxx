@@ -27,7 +27,7 @@ EffectsManager::EffectsManager(QObject* pParent, ConfigObject<ConfigValue>* pCon
 }
 
 EffectsManager::~EffectsManager() {
-    m_pEffectChainManager->saveEffectChains();
+    //m_pEffectChainManager->saveEffectChains();
     processEffectsResponses();
     delete m_pEffectChainManager;
     while (!m_effectsBackends.isEmpty()) {
