@@ -47,10 +47,6 @@ class EffectRack : public QObject {
         return m_group;
     }
 
-    void loadEffectToChainSlot(const unsigned int iChainSlotNumber,
-                                   const unsigned int iEffectSlotNumber,
-                                   QString effectId);
-
   public slots:
     void slotClearRack(double v);
     void slotNumEffectChainSlots(double v);

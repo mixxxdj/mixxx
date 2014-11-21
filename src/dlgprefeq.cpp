@@ -302,12 +302,26 @@ void DlgPrefEQ::slotEqEffectChangedOnDeck(int effectIndex) {
     // Check if qobject_cast was successful
     if (c && !m_inSlotPopulateDeckEffectSelectors) {
         int deckNumber = m_deckEqEffectSelectors.indexOf(c);
+        QString group = PlayerManager::groupForDeck(deckNumber);
         QString effectId = c->itemData(effectIndex).toString();
-        if (m_pEQEffectRack) {
-            m_pEQEffectRack->loadEffectToChainSlot(deckNumber, 0, effectId);
+
+        EffectChainSlotPointer pChainSlot =
+                m_pEQEffectRack->getGroupEffectChainSlot(group);
+        if (pChainSlot) {
+            EffectChainPointer pChain = pChainSlot->getEffectChain();
+            if (pChain.isNull()) {
+                pChain = EffectChainPointer(new EffectChain(m_pEffectsManager, QString(),
+                                                            EffectChainPointer()));
+                pChain->setName(QObject::tr("Empty Chain"));
+                pChainSlot->loadEffectChain(pChain);
+            }
+            EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
+            if (pEffect) {
+                pChain->replaceEffect(0, pEffect);
+            }
         }
 
-        QString group = PlayerManager::groupForDeck(deckNumber);
+
 
         // Update the configured effect for the current QComboBox
         m_pConfig->set(ConfigKey(kConfigKey, "EffectForGroup_" + group),
@@ -331,8 +345,22 @@ void DlgPrefEQ::slotQuickEffectChangedOnDeck(int effectIndex) {
     if (c && !m_inSlotPopulateDeckEffectSelectors) {
         int deckNumber = m_deckFilterEffectSelectors.indexOf(c);
         QString effectId = c->itemData(effectIndex).toString();
-        if (m_pQuickEffectRack) {
-            m_pQuickEffectRack->loadEffectToChainSlot(deckNumber, 0, effectId);
+
+        EffectChainSlotPointer pChainSlot =
+                m_pQuickEffectRack->getGroupEffectChainSlot(
+                    PlayerManager::groupForDeck(deckNumber));
+        if (pChainSlot) {
+            EffectChainPointer pChain = pChainSlot->getEffectChain();
+            if (pChain.isNull()) {
+                pChain = EffectChainPointer(new EffectChain(m_pEffectsManager, QString(),
+                                                            EffectChainPointer()));
+                pChain->setName(QObject::tr("Empty Chain"));
+                pChainSlot->loadEffectChain(pChain);
+            }
+            EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
+            if (pEffect) {
+                pChain->replaceEffect(0, pEffect);
+            }
         }
 
         // Update the configured effect for the current QComboBox
