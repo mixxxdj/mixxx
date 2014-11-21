@@ -64,8 +64,8 @@ FilterGroupState::FilterGroupState()
           m_q(0.707106781),
           m_hiFreq(kMinCorner) {
     m_pBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
-    m_pLowFilter = new EngineFilterBiquad1Low(1, m_loFreq, m_q);
-    m_pHighFilter = new EngineFilterBiquad1High(1, m_hiFreq, m_q);
+    m_pLowFilter = new EngineFilterBiquad1Low(1, m_loFreq, m_q, true);
+    m_pHighFilter = new EngineFilterBiquad1High(1, m_hiFreq, m_q, true);
 }
 
 FilterGroupState::~FilterGroupState() {
@@ -132,58 +132,36 @@ void FilterEffect::processGroup(const QString& group,
         pState->m_pHighFilter->setFrequencyCorners(1, hpf, clampedQ);
     }
 
-    if (hpf > kMinCorner) {
-        if (lpf < kMaxCorner) {
-            // Overlapping
-            pState->m_pLowFilter->process(pInput, pState->m_pBuf, numSamples);
-            pState->m_pHighFilter->process(pState->m_pBuf, pOutput, numSamples);
-        } else {
-            // High Pass
-            if (pState->m_loFreq < kMaxCorner) {
-                pState->m_pLowFilter->pauseFilter();
-                pState->m_pHighFilter->process(pInput, pOutput, numSamples);
-            } else {
-                // disabling Low Pass
-                pState->m_pLowFilter->process(pInput, pState->m_pBuf, numSamples);
-                // Ramp to dry, because the filtered signal is delayed
-                SampleUtil::copy2WithRampingGain(pState->m_pBuf,
-                        pState->m_pBuf, 1.0, 0,  // fade out filtered
-                        pInput, 0, 1.0,  // fade in dry
-                        numSamples);
-                pState->m_pHighFilter->process(pState->m_pBuf, pOutput, numSamples);
-            }
-        }
-    } else if (pState->m_hiFreq > kMinCorner) {
-        // disabling High Pass
-        pState->m_pHighFilter->process(pInput, pState->m_pBuf, numSamples);
+    const CSAMPLE* pLpfInput = pState->m_pBuf;
+    CSAMPLE* pHpfOutput = pState->m_pBuf;
+    if (lpf >= kMaxCorner && pState->m_loFreq >= kMaxCorner) {
+        // Lpf disabled Hpf can write directly to output
+        pHpfOutput = pOutput;
+        pLpfInput = pHpfOutput;
+    }
 
-        if (lpf < kMaxCorner) {
-            // Ramp to dry into extra buffer, because the filtered signal is delayed
-            SampleUtil::copy2WithRampingGain(pState->m_pBuf,
-                    pState->m_pBuf, 1.0, 0,  // fade out filtered
-                    pInput, 0, 1.0,  // fade in dry
-                    numSamples);
-            // Low Pass
-            pState->m_pLowFilter->process(pState->m_pBuf, pOutput, numSamples);
-        } else {
-            // Ramp to Bypass directly into Output buffer
-            SampleUtil::copy2WithRampingGain(pState->m_pBuf,
-                    pState->m_pBuf, 1.0, 0,  // fade out filtered
-                    pInput, 0, 1.0,  // fade in dry
-                    numSamples);
-            pState->m_pLowFilter->pauseFilter();
-        }
+    if (hpf > kMinCorner) {
+        // hpf enabled, fade-in is handled in the filter when starting from pause
+        pState->m_pHighFilter->process(pInput, pHpfOutput, numSamples);
+    } else if (pState->m_hiFreq > kMinCorner) {
+            // hpf disabling
+            pState->m_pHighFilter->processAndPauseFilter(pInput,
+                    pHpfOutput, numSamples);
     } else {
-        // High pass disabled
-        pState->m_pHighFilter->pauseFilter();
-        if (lpf < kMaxCorner) {
-            // Low Pass only
-            pState->m_pLowFilter->process(pInput, pOutput, numSamples);
-        } else {
-            // Bypass
-            pState->m_pLowFilter->pauseFilter();
-            SampleUtil::copyWithGain(pOutput, pInput, 1.0, numSamples);
-        }
+        // paused LP uses input directly
+        pLpfInput = pInput;
+    }
+
+    if (lpf < kMaxCorner) {
+        // lpf enabled, fade-in is handled in the filter when starting from pause
+        pState->m_pLowFilter->process(pLpfInput, pOutput, numSamples);
+    } else if (pState->m_loFreq < kMaxCorner) {
+        // hpf disabling
+        pState->m_pLowFilter->processAndPauseFilter(pLpfInput,
+                pOutput, numSamples);
+    } else if (pLpfInput == pInput) {
+        // Both disabled
+        SampleUtil::copyWithGain(pOutput, pInput, 1.0, numSamples);
     }
 
     pState->m_loFreq = lpf;
