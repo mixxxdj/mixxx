@@ -126,7 +126,7 @@ class EffectChainSlot : public QObject {
 
   private:
     QString debugString() const {
-        return QString("EffectChainSlot(%1)").arg(m_iChainSlotNumber);
+        return QString("EffectChainSlot(%1)").arg(m_group);
     }
 
     const unsigned int m_iChainSlotNumber;

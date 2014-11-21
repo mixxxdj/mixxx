@@ -104,6 +104,10 @@ class EffectSlot : public QObject {
     void updated();
 
   private:
+    QString debugString() const {
+        return QString("EffectSlot(%1)").arg(m_group);
+    }
+
     const unsigned int m_iChainNumber;
     const unsigned int m_iEffectNumber;
     const QString m_group;
