@@ -66,8 +66,6 @@ EffectSlot::EffectSlot(const QString& effectUnitGroup,
         addEffectButtonParameterSlot();
     }
 
-    m_pCoSuper = new ControlObjectSlave(ConfigKey(effectUnitGroup, "parameter"));
-
     clear();
 }
 
@@ -85,7 +83,6 @@ EffectSlot::~EffectSlot() {
     delete m_pControlEffectSelector;
     delete m_pControlClear;
     delete m_pControlEnabled;
-    delete m_pCoSuper;
 }
 
 EffectParameterSlotPointer EffectSlot::addEffectParameterSlot() {

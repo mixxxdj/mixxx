@@ -120,7 +120,6 @@ class EffectSlot : public QObject {
     ControlObject* m_pControlEffectSelector;
     ControlObject* m_pControlClear;
     QList<EffectParameterSlotPointer> m_parameters;
-    ControlObjectSlave* m_pCoSuper;
     QList<EffectButtonParameterSlotPointer> m_buttonParameters;
 
     DISALLOW_COPY_AND_ASSIGN(EffectSlot);
