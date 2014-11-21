@@ -10,7 +10,7 @@
 <Template>
   <VuMeter>
     <MinimumSize>100,5</MinimumSize>
-    <MaximumSize>200,20</MaximumSize>
+    <MaximumSize>200,5</MaximumSize>
     <PathVu>vumeter.svg</PathVu>
     <Horizontal>true</Horizontal>
     <PeakHoldSize>5</PeakHoldSize>
