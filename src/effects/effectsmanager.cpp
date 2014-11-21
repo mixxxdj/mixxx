@@ -40,7 +40,9 @@ EffectsManager::~EffectsManager() {
 
     delete m_pHiEqFreq;
     delete m_pLoEqFreq;
-    // Safe because the Engine is deleted before EffectsManager.
+    // Safe because the Engine is deleted before EffectsManager. Also, it holds
+    // a bare pointer to m_pRequestPipe so it is critical that it does not
+    // outlast us.
     delete m_pEngineEffectsManager;
 }
 
@@ -240,6 +242,10 @@ void EffectsManager::setupDefaults() {
 }
 
 bool EffectsManager::writeRequest(EffectsRequest* request) {
+    if (m_pRequestPipe.isNull()) {
+        return false;
+    }
+
     // This is effectively only GC at this point so only deal with responses
     // when writing new requests.
     processEffectsResponses();
@@ -253,6 +259,10 @@ bool EffectsManager::writeRequest(EffectsRequest* request) {
 }
 
 void EffectsManager::processEffectsResponses() {
+    if (m_pRequestPipe.isNull()) {
+        return;
+    }
+
     EffectsResponse response;
     while (m_pRequestPipe->readMessages(&response, 1) == 1) {
         QHash<qint64, EffectsRequest*>::iterator it =
