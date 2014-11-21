@@ -139,13 +139,45 @@ void FilterEffect::processGroup(const QString& group,
             pState->m_pHighFilter->process(pState->m_pBuf, pOutput, numSamples);
         } else {
             // High Pass
+            if (pState->m_loFreq < kMaxCorner) {
+                pState->m_pLowFilter->pauseFilter();
+                pState->m_pHighFilter->process(pInput, pOutput, numSamples);
+            } else {
+                // disabling Low Pass
+                pState->m_pLowFilter->process(pInput, pState->m_pBuf, numSamples);
+                // Ramp to dry, because the filtered signal is delayed
+                SampleUtil::copy2WithRampingGain(pState->m_pBuf,
+                        pState->m_pBuf, 1.0, 0,  // fade out filtered
+                        pInput, 0, 1.0,  // fade in dry
+                        numSamples);
+                pState->m_pHighFilter->process(pState->m_pBuf, pOutput, numSamples);
+            }
+        }
+    } else if (pState->m_hiFreq > kMinCorner) {
+        // disabling High Pass
+        pState->m_pHighFilter->process(pInput, pState->m_pBuf, numSamples);
+
+        if (lpf < kMaxCorner) {
+            // Ramp to dry into extra buffer, because the filtered signal is delayed
+            SampleUtil::copy2WithRampingGain(pState->m_pBuf,
+                    pState->m_pBuf, 1.0, 0,  // fade out filtered
+                    pInput, 0, 1.0,  // fade in dry
+                    numSamples);
+            // Low Pass
+            pState->m_pLowFilter->process(pState->m_pBuf, pOutput, numSamples);
+        } else {
+            // Ramp to Bypass directly into Output buffer
+            SampleUtil::copy2WithRampingGain(pState->m_pBuf,
+                    pState->m_pBuf, 1.0, 0,  // fade out filtered
+                    pInput, 0, 1.0,  // fade in dry
+                    numSamples);
             pState->m_pLowFilter->pauseFilter();
-            pState->m_pHighFilter->process(pInput, pOutput, numSamples);
         }
     } else {
+        // High pass disabled
         pState->m_pHighFilter->pauseFilter();
         if (lpf < kMaxCorner) {
-            // Low Pass
+            // Low Pass only
             pState->m_pLowFilter->process(pInput, pOutput, numSamples);
         } else {
             // Bypass
