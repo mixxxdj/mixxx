@@ -43,6 +43,22 @@
       </PushButton>
 
       <PushButton>
+        <Size>60f,20f</Size>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>+MICROPHONE</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>-MICROPHONE</Text>
+        </State>
+        <Connection>
+          <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
+        </Connection>
+      </PushButton>
+
+      <PushButton>
         <Size>40f,20f</Size>
         <NumberStates>2</NumberStates>
         <State>
@@ -58,8 +74,6 @@
           <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
         </Connection>
       </PushButton>
-
-      <Template src="skin:microphone.xml"/>
 
       <WidgetGroup>
         <ObjectName>MasterControls</ObjectName>
