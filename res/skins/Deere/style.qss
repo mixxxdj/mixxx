@@ -215,7 +215,13 @@ WSliderComposed {
   font-size: 12pt;
 }
 
-#KnobLabel {
+#EffectKnob {
+}
+
+#EffectButton {
+}
+
+#KnobLabel, #EffectKnobLabel, #EffectButtonLabel {
   background-color: white;
   border: 1px solid black;
   qproperty-alignment: 'AlignCenter | AlignVCenter';

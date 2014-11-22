@@ -14,6 +14,7 @@
     <Children>
       <KnobComposed>
         <Size>40f,40f</Size>
+        <ObjectName>EffectKnob</ObjectName>
         <Knob>knob.svg</Knob>
         <MinAngle>-230</MinAngle>
         <MaxAngle>50</MaxAngle>
@@ -23,7 +24,7 @@
       </KnobComposed>
       <EffectParameterName>
         <Size>40f,10f</Size>
-        <ObjectName>KnobLabel</ObjectName>
+        <ObjectName>EffectKnobLabel</ObjectName>
         <EffectRack><Variable name="EffectRack"/></EffectRack>
         <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
         <Effect><Variable name="Effect"/></Effect>
