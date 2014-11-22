@@ -1,7 +1,7 @@
 <Template>
-    <WidgetStack currentpage="[Library],current" persist="true">
+    <WidgetStack currentpage="[Library],show_current" persist="true">
     <Children>
-    	<WidgetGroup trigger="[Library],show">
+    	<WidgetGroup trigger="[Library],show_library">
     		<ObjectName>Library</ObjectName>
     		<SizePolicy>me,me</SizePolicy>
     		<MinimumSize>1280,50</MinimumSize>
