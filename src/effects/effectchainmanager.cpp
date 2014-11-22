@@ -36,8 +36,7 @@ StandardEffectRackPointer EffectChainManager::addStandardEffectRack() {
     StandardEffectRackPointer pRack(new StandardEffectRack(
         m_pEffectsManager, this, m_standardEffectRacks.size()));
     m_standardEffectRacks.append(pRack);
-    m_effectRacksByGroup.insert(pRack->getGroup(),
-                                qSharedPointerDynamicCast<EffectRack>(pRack));
+    m_effectRacksByGroup.insert(pRack->getGroup(), pRack);
     return pRack;
 }
 
@@ -52,8 +51,7 @@ EqualizerRackPointer EffectChainManager::addEqualizerRack() {
     EqualizerRackPointer pRack(new EqualizerRack(
         m_pEffectsManager, this, m_equalizerEffectRacks.size()));
     m_equalizerEffectRacks.append(pRack);
-    m_effectRacksByGroup.insert(pRack->getGroup(),
-                                qSharedPointerDynamicCast<EffectRack>(pRack));
+    m_effectRacksByGroup.insert(pRack->getGroup(), pRack);
     return pRack;
 }
 
@@ -68,8 +66,7 @@ QuickEffectRackPointer EffectChainManager::addQuickEffectRack() {
     QuickEffectRackPointer pRack(new QuickEffectRack(
         m_pEffectsManager, this, m_quickEffectRacks.size()));
     m_quickEffectRacks.append(pRack);
-    m_effectRacksByGroup.insert(pRack->getGroup(),
-                                qSharedPointerDynamicCast<EffectRack>(pRack));
+    m_effectRacksByGroup.insert(pRack->getGroup(), pRack);
     return pRack;
 }
 

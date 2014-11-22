@@ -182,6 +182,10 @@ QuickEffectRackPointer EffectsManager::getQuickEffectRack(int rack) {
     return m_pEffectChainManager->getQuickEffectRack(rack);
 }
 
+EffectRackPointer EffectsManager::getEffectRack(const QString& group) {
+    return m_pEffectChainManager->getEffectRack(group);
+}
+
 void EffectsManager::setupDefaults() {
     //m_pEffectChainManager->loadEffectChains();
 

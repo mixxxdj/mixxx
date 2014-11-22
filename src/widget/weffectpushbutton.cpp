@@ -14,6 +14,7 @@
 #include "controlpushbutton.h"
 #include "control/controlbehavior.h"
 #include "util/debug.h"
+#include "widget/effectwidgetutils.h"
 
 WEffectPushButton::WEffectPushButton(QWidget* pParent, EffectsManager* pEffectsManager)
         : WWidget(pParent),
@@ -173,56 +174,24 @@ void WEffectPushButton::setup(QDomNode node, const SkinContext& context) {
     m_pButtonMenu = new QMenu(this);
     connect(m_pButtonMenu, SIGNAL(triggered(QAction*)),
             this, SLOT(slotActionChosen(QAction*)));
-    bool rackOk = false;
-    int rackNumber = context.selectInt(node, "EffectRack", &rackOk) - 1;
-    bool chainOk = false;
-    int chainNumber = context.selectInt(node, "EffectUnit", &chainOk) - 1;
-    bool effectOk = false;
-    int effectNumber = context.selectInt(node, "Effect", &effectOk) - 1;
-    bool parameterOk = false;
-    int parameterNumber = context.selectInt(node, "EffectButtonParameter", &parameterOk) - 1;
 
-    // Tolerate no <EffectRack>. Use the default one.
-    if (!rackOk) {
-        rackNumber = 0;
-    }
-
-    if (!chainOk) {
-        qDebug() << "EffectPushButton node had invalid EffectUnit number:" << chainNumber;
-    }
-
-    if (!effectOk) {
-        qDebug() << "EffectPushButton node had invalid Effect number:" << effectNumber;
-    }
-
-    if (!parameterOk) {
-        qDebug() << "EffectPushButton node had invalid ButtonParameter number:" << parameterNumber;
-    }
-
-    EffectRackPointer pRack = m_pEffectsManager->getStandardEffectRack(rackNumber);
-    if (pRack) {
-        EffectChainSlotPointer pChainSlot = pRack->getEffectChainSlot(chainNumber);
-        if (pChainSlot) {
-            EffectSlotPointer pEffectSlot = pChainSlot->getEffectSlot(effectNumber);
-            if (pEffectSlot) {
-                EffectParameterSlotBasePointer pParameterSlot =
-                        pEffectSlot->getEffectButtonParameterSlot(parameterNumber);
-                if (pParameterSlot) {
-                    m_pEffectParameterSlot = pParameterSlot;
-                    connect(pParameterSlot.data(), SIGNAL(updated()),
-                            this, SLOT(parameterUpdated()));
-                    parameterUpdated();
-                } else {
-                    qDebug() << "EffectPushButton node had invalid ButtonParameter number:" << parameterNumber;
-                }
-            } else {
-                qDebug() << "EffectPushButton node had invalid Effect number:" << effectNumber;
-            }
-        } else {
-            qDebug() << "EffectPushButton node had invalid EffectUnit number:" << chainNumber;
-        }
+    // EffectWidgetUtils propagates NULLs so this is all safe.
+    EffectRackPointer pRack = EffectWidgetUtils::getEffectRackFromNode(
+            node, context, m_pEffectsManager);
+    EffectChainSlotPointer pChainSlot = EffectWidgetUtils::getEffectChainSlotFromNode(
+            node, context, pRack);
+    EffectSlotPointer pEffectSlot = EffectWidgetUtils::getEffectSlotFromNode(
+            node, context, pChainSlot);
+    EffectParameterSlotBasePointer pParameterSlot =
+            EffectWidgetUtils::getButtonParameterSlotFromNode(
+                    node, context, pEffectSlot);
+    if (pParameterSlot) {
+        m_pEffectParameterSlot = pParameterSlot;
+        connect(pParameterSlot.data(), SIGNAL(updated()),
+                this, SLOT(parameterUpdated()));
+        parameterUpdated();
     } else {
-        qDebug() << "EffectPushButton node had invalid EffectRack number:" << rackNumber;
+        qDebug() << "EffectPushButton node could not attach to effect parameter.";
     }
 }
 
