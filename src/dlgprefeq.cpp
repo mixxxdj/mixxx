@@ -514,35 +514,40 @@ void DlgPrefEQ::setUpMasterEQ() {
         if (pEffect) {
             pChain->replaceEffect(0, pEffect);
             m_pEffectMasterEQ = pEffect;
-        }
 
-        // Create and set up Master EQ's sliders
-        for (int i = 0; i < 8; i++) {
-            QSlider* slider = new QSlider(this);
-            slider->setMinimum(-12);
-            slider->setMaximum(12);
-            slider->setSingleStep(1);
-            slider->setValue(0);
-            slider->setMinimumHeight(90);
-            // Set the index as a property because we need it inside slotUpdateFilter()
-            slider->setProperty("index", QVariant(i));
-            slidersGridLayout->addWidget(slider, 0, i);
-            m_masterEQSliders.append(slider);
-            connect(slider, SIGNAL(sliderMoved(int)), this, SLOT(slotUpdateFilter(int)));
-        }
+            int knobNum = pEffect->numKnobParameters();
 
-        // Display center frequencies for each filter
-        float centerFrequencies[8] = {45, 100, 220, 500, 1100, 2500, 5500, 12000};
-        for (unsigned int i = 0; i < 8; i++) {
-            QLabel* centerFreqLabel = new QLabel(this);
-            QString labelText;
-            if (centerFrequencies[i] < 1000) {
-                labelText = QString("%1 Hz").arg(centerFrequencies[i]);
-            } else {
-                labelText = QString("%1 kHz").arg(centerFrequencies[i] / 1000);
+            // Create and set up Master EQ's sliders
+            for (int i = 0; i < knobNum; i++) {
+                EffectParameter* param = pEffect->getKnobParameterForSlot(i);
+                if (param) {
+                    QSlider* slider = new QSlider(this);
+                    slider->setMinimum(param->getMinimum());
+                    slider->setMaximum(param->getMaximum());
+                    slider->setSingleStep((param->getMaximum() - param->getMinimum()) / 20);
+                    slider->setValue(param->getDefault());
+                    slider->setMinimumHeight(90);
+                    // Set the index as a property because we need it inside slotUpdateFilter()
+                    slider->setProperty("index", QVariant(i));
+                    slidersGridLayout->addWidget(slider, 0, i);
+                    m_masterEQSliders.append(slider);
+                    connect(slider, SIGNAL(sliderMoved(int)), this, SLOT(slotUpdateFilter(int)));
+                }
             }
-            centerFreqLabel->setText(labelText);
-            slidersGridLayout->addWidget(centerFreqLabel, 1, i, Qt::AlignCenter);
+
+            // Display center frequencies for each filter
+            float centerFrequencies[8] = {45, 100, 220, 500, 1100, 2500, 5500, 12000};
+            for (unsigned int i = 0; i < 8; i++) {
+                QLabel* centerFreqLabel = new QLabel(this);
+                QString labelText;
+                if (centerFrequencies[i] < 1000) {
+                    labelText = QString("%1 Hz").arg(centerFrequencies[i]);
+                } else {
+                    labelText = QString("%1 kHz").arg(centerFrequencies[i] / 1000);
+                }
+                centerFreqLabel->setText(labelText);
+                slidersGridLayout->addWidget(centerFreqLabel, 1, i, Qt::AlignCenter);
+            }
         }
     }
 }
