@@ -34,7 +34,7 @@
             <EffectRackGroup><Variable name="EqualizerRackGroup"/></EffectRackGroup>
             <EffectUnitGroup><Variable name="EqualizerEffectUnitGroup"/></EffectUnitGroup>
             <Effect><Variable name="EffectNumber"/></Effect>
-            <EffectParameter><Variable name="parameter"/></EffectParameter>
+            <EffectButtonParameter><Variable name="parameter"/></EffectButtonParameter>
 
             <NumberStates>2</NumberStates>
 	    <State>
