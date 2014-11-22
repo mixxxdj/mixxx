@@ -273,7 +273,7 @@
                 <SizePolicy>me,min</SizePolicy>
                 <Children></Children>
             </WidgetGroup>
-            <!-- <WidgetGroup>
+            <WidgetGroup>
                 <ObjectName>GuiToggleContainer</ObjectName>
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
@@ -299,7 +299,7 @@
                         </Connection>
                     </PushButton>
                 </Children>
-            </WidgetGroup>-->
+            </WidgetGroup>
         </Children>
     </WidgetGroup>
     <WidgetGroup>
@@ -307,8 +307,28 @@
         <Layout>vertical</Layout>
         <SizePolicy>min,i</SizePolicy>
         <Children>
-            <Template src="skin:sample_decks_container.xml"/>
-            <Template src="skin:effect_rack.xml"/>
+            <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,max</SizePolicy>
+                <MinimumSize>0,0</MinimumSize>
+                <Children>
+                    <WidgetStack currentpage="[Library],show_big_current" persist="true">
+                        <Children>
+                            <WidgetGroup trigger="[Library],show_big">
+                                <Layout>horizontal</Layout>
+                                <Children/>
+                            </WidgetGroup>
+                            <WidgetGroup>
+                                <Layout>vertical</Layout>
+                                <Children>
+                                    <Template src="skin:sample_decks_container.xml"/>
+                                    <Template src="skin:effect_rack.xml"/>
+                                </Children>
+                            </WidgetGroup>
+                        </Children>
+                    </WidgetStack>
+                </Children>
+            </WidgetGroup>
             <Template src="skin:library.xml"/>
         </Children>
     </WidgetGroup>
