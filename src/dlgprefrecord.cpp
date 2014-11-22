@@ -158,7 +158,7 @@ void DlgPrefRecord::updateTextQuality() {
     int quality = getSliderQualityVal();
     //QString encodingType = comboBoxEncoding->currentText();
 
-    TextQuality->setText(QString( QString::number(quality) + tr("kbps")));
+    TextQuality->setText(QString(QString::number(quality) + tr("kbps")));
 }
 
 void DlgPrefRecord::slotEncoding() {

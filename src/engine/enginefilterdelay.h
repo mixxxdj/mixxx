@@ -35,12 +35,12 @@ class EngineFilterDelay : public EngineObjectConstIn {
     }
 
     virtual void process(const CSAMPLE* pIn, CSAMPLE* pOutput,
-                                     const int iBufferSize) {
+                         const int iBufferSize) {
         if (!m_doRamping) {
             int delaySourcePos = (m_delayPos + SIZE - m_delaySamples) % SIZE;
 
             Q_ASSERT(delaySourcePos >= 0);
-            Q_ASSERT(delaySourcePos <= SIZE);
+            Q_ASSERT(delaySourcePos <= static_cast<int>(SIZE));
 
             for (int i = 0; i < iBufferSize; ++i) {
                 // put sample into delay buffer:
@@ -56,7 +56,7 @@ class EngineFilterDelay : public EngineObjectConstIn {
             int oldDelaySourcePos = (m_delayPos + SIZE - m_oldDelaySamples) % SIZE;
 
             Q_ASSERT(delaySourcePos >= 0);
-            Q_ASSERT(delaySourcePos <= SIZE);
+            Q_ASSERT(delaySourcePos <= static_cast<int>(SIZE));
 
             double cross_mix = 0.0;
             double cross_inc = 2 / static_cast<double>(iBufferSize);

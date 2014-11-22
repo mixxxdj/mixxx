@@ -208,7 +208,7 @@ TreeItem* TraktorFeature::importLibrary(QString file) {
                 inCollectionTag = true;
             }
             // Each "ENTRY" tag in <COLLECTION> represents a track
-            if (inCollectionTag && xml.name() == "ENTRY" ) {
+            if (inCollectionTag && xml.name() == "ENTRY") {
                 //parse track
                 parseTrack(xml, query);
                 ++nAudioFiles; //increment number of files in the music collection

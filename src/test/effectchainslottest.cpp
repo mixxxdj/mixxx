@@ -8,6 +8,7 @@
 #include "controlobject.h"
 #include "effects/effectchain.h"
 #include "effects/effectchainslot.h"
+#include "effects/effectrack.h"
 #include "effects/effectsmanager.h"
 #include "test/baseeffecttest.h"
 
@@ -28,12 +29,12 @@ TEST_F(EffectChainSlotTest, ChainSlotMirrorsLoadedChain) {
     int iRackNumber = 0;
     int iChainNumber = 0;
 
-    EffectRackPointer pRack = m_pEffectsManager->addEffectRack();
+    StandardEffectRackPointer pRack = m_pEffectsManager->addStandardEffectRack();
     EffectChainSlotPointer pSlot = pRack->addEffectChainSlot();
     pSlot->clear();
 
-    QString group = EffectChainSlot::formatGroupString(iRackNumber,
-                                                       iChainNumber);
+    QString group = StandardEffectRack::formatEffectChainSlotGroupString(
+        iRackNumber, iChainNumber);
     pSlot->loadEffectChain(pChain);
 
     pChain->setEnabled(true);
@@ -81,10 +82,10 @@ TEST_F(EffectChainSlotTest, ChainSlotMirrorsLoadedChain_StartsWithChainLoaded) {
     int iRackNumber = 0;
     int iChainNumber = 0;
 
-    EffectRackPointer pRack = m_pEffectsManager->addEffectRack();
+    StandardEffectRackPointer pRack = m_pEffectsManager->addStandardEffectRack();
     EffectChainSlotPointer pSlot = pRack->addEffectChainSlot();
-    QString group = EffectChainSlot::formatGroupString(iRackNumber,
-                                                       iChainNumber);
+    QString group = StandardEffectRack::formatEffectChainSlotGroupString(
+        iRackNumber, iChainNumber);
     EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(group, "loaded")));
 }
 
@@ -95,14 +96,14 @@ TEST_F(EffectChainSlotTest, ChainSlotMirrorsLoadedChain_Clear) {
     int iRackNumber = 0;
     int iChainNumber = 0;
 
-    EffectRackPointer pRack = m_pEffectsManager->addEffectRack();
+    StandardEffectRackPointer pRack = m_pEffectsManager->addStandardEffectRack();
     EffectChainSlotPointer pSlot = pRack->addEffectChainSlot();
 
     // Clear the default chain.
     pSlot->clear();
 
-    QString group = EffectChainSlot::formatGroupString(iRackNumber,
-                                                       iChainNumber);
+    QString group = StandardEffectRack::formatEffectChainSlotGroupString(
+        iRackNumber, iChainNumber);
     EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(group, "loaded")));
     pSlot->loadEffectChain(pChain);
     EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(group, "loaded")));

@@ -14,10 +14,10 @@ GLWaveformRendererSimpleSignal::GLWaveformRendererSimpleSignal(
 
 }
 
-GLWaveformRendererSimpleSignal::~GLWaveformRendererSimpleSignal(){
+GLWaveformRendererSimpleSignal::~GLWaveformRendererSimpleSignal() {
 }
 
-void GLWaveformRendererSimpleSignal::onSetup(const QDomNode &node){
+void GLWaveformRendererSimpleSignal::onSetup(const QDomNode& node) {
     Q_UNUSED(node);
 }
 
@@ -26,8 +26,7 @@ inline void setPoint(QPointF& point, qreal x, qreal y) {
     point.setY(y);
 }
 
-void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*event*/){
-
+void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*event*/) {
     TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
     if (!pTrack) {
         return;

@@ -119,7 +119,12 @@ def build_dmg(target, source, env):
         system('SetFile -a C "%s"' % dmg) #is there an sconsey way to declare this? Would be nice so that it could write what
 
 
-    if system("hdiutil create -srcfolder %s -format UDBZ -ov -volname %s %s" % (dmg, env['VOLNAME'], target)):
+    # TODO(rryan): hdiutil has a bug where if srcfolder is greater than 100M it
+    # fails to create a DMG with error -5341. The actual size of the resulting
+    # DMG is not affected by the -size parameter -- I think it's just the size
+    # of the "partition" in the DMG. Hard-coding 150M is a band-aid to get the
+    # build working again while we figure out the right solution.
+    if system("hdiutil create -size 150M -srcfolder %s -format UDBZ -ov -volname %s %s" % (dmg, env['VOLNAME'], target)):
         raise Exception("hdiutil create failed")
 
     shutil.rmtree(dmg)

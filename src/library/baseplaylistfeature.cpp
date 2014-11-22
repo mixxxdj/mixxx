@@ -495,8 +495,8 @@ void BasePlaylistFeature::bindWidget(WLibrary* libraryWidget,
     libraryWidget->registerView(m_rootViewName, edit);
 }
 
-void BasePlaylistFeature::htmlLinkClicked(const QUrl & link) {
-    if (QString(link.path())=="create") {
+void BasePlaylistFeature::htmlLinkClicked(const QUrl& link) {
+    if (QString(link.path()) == "create") {
         slotCreatePlaylist();
     } else {
         qDebug() << "Unknonw playlist link clicked" << link.path();

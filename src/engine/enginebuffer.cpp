@@ -506,9 +506,14 @@ void EngineBuffer::slotTrackLoading() {
     m_pTrackSamples->set(0); // Stop renderer
 }
 
-TrackPointer EngineBuffer::loadFakeTrack() {
+TrackPointer EngineBuffer::loadFakeTrack(double filebpm) {
     TrackPointer pTrack(new TrackInfoObject(), &QObject::deleteLater);
     pTrack->setSampleRate(44100);
+    // 10 seconds
+    pTrack->setDuration(10);
+    if (filebpm > 0) {
+        pTrack->setBpm(filebpm);
+    }
     slotTrackLoaded(pTrack, 44100, 44100 * 10);
     return pTrack;
 }

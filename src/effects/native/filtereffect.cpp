@@ -70,7 +70,7 @@ FilterGroupState::FilterGroupState()
 }
 
 FilterGroupState::~FilterGroupState() {
-    SampleUtil::free(m_pBuf );
+    SampleUtil::free(m_pBuf);
     delete m_pLowFilter;
     delete m_pHighFilter;
 }

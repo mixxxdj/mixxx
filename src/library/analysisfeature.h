@@ -53,8 +53,14 @@ class AnalysisFeature : public LibraryFeature {
     void cleanupAnalyser();
 
   private:
-    void setTitleDefault();		// Set title to tr("Analyze")
-    void setTitleProgress(int trackNum, int totalNum);	// Set title to "Analyze (x out of y)"
+    // Sets the title of this feature to the default name, given by
+    // m_sAnalysisTitleName
+    void setTitleDefault();
+
+    // Sets the title of this feature to the default name followed by (x / y)
+    // where x is the current track being analyzed and y is the total number of
+    // tracks in the job
+    void setTitleProgress(int trackNum, int totalNum);
 
     ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;

@@ -5,16 +5,10 @@
 #include "controlobject.h"
 #include "controlpushbutton.h"
 
-EffectParameterSlotBase::EffectParameterSlotBase(const unsigned int iRackNumber,
-                                         const unsigned int iChainNumber,
-                                         const unsigned int iSlotNumber,
-                                         const unsigned int iParameterSlotNumber)
-        : m_iRackNumber(iRackNumber),
-          m_iChainNumber(iChainNumber),
-          m_iSlotNumber(iSlotNumber),
-          m_iParameterSlotNumber(iParameterSlotNumber),
-          m_group(formatGroupString(m_iRackNumber, m_iChainNumber,
-                                    m_iSlotNumber)),
+EffectParameterSlotBase::EffectParameterSlotBase(const QString& group,
+                                                 const unsigned int iParameterSlotNumber)
+        : m_iParameterSlotNumber(iParameterSlotNumber),
+          m_group(group),
           m_pEffectParameter(NULL),
           m_dChainParameter(0.0) {
 

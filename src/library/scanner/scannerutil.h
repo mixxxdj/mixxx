@@ -22,7 +22,7 @@ class ScannerUtil {
         // Blacklist the _Serato_ directory that pollutes "My Music" on Windows.
         QString seratoDir = QDir::toNativeSeparators(
             QDesktopServices::storageLocation(QDesktopServices::MusicLocation) +
-            "/_Serato_" );
+            "/_Serato_");
         blacklist << seratoDir;
 #endif
         return blacklist;

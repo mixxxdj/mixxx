@@ -30,7 +30,7 @@ AnalyserBeats::AnalyserBeats(ConfigObject<ConfigValue>* pConfig)
           m_iMaxBpm(9999) {
 }
 
-AnalyserBeats::~AnalyserBeats(){
+AnalyserBeats::~AnalyserBeats() {
 }
 
 bool AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
@@ -86,7 +86,7 @@ bool AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
     bool bShouldAnalyze = !loadStored(tio);
 
     if (bShouldAnalyze) {
-        m_pVamp = new VampAnalyser(m_pConfig);
+        m_pVamp = new VampAnalyser();
         bShouldAnalyze = m_pVamp->Init(library, pluginID, m_iSampleRate, totalSamples,
                                        m_bPreferencesFastAnalysis);
         if (!bShouldAnalyze) {

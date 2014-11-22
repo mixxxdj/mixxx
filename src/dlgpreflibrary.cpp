@@ -92,7 +92,7 @@ void DlgPrefLibrary::slotHide() {
     }
 }
 
-void DlgPrefLibrary::initialiseDirList(){
+void DlgPrefLibrary::initialiseDirList() {
     // save which index was selected
     const QString selected = dirList->currentIndex().data().toString();
     // clear and fill model

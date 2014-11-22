@@ -96,6 +96,7 @@ class SyncableListener {
         Syncable* pSyncable, double beatDistance) = 0;
 
     virtual void notifyPlaying(Syncable* pSyncable, bool playing) = 0;
+    virtual void notifyTrackLoaded(Syncable* pSyncable) = 0;
 };
 
 #endif /* SYNCABLE_H */

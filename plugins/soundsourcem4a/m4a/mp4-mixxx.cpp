@@ -124,6 +124,10 @@ static MP4TrackId mp4_get_track(MP4FileHandle *handle)
     return MP4_INVALID_TRACK_ID;
 }
 
+static void mp4_init(struct input_plugin_data *ip_data) {
+    memset(ip_data, 0, sizeof(*ip_data));
+}
+
 static int mp4_open(struct input_plugin_data *ip_data)
 {
     struct mp4_private *priv;

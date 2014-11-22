@@ -85,7 +85,7 @@ void WWidgetGroup::setup(QDomNode node, const SkinContext& context) {
     if (context.hasNode(node, "BackPath")) {
         QString mode_str = context.selectAttributeString(
                 context.selectElement(node, "BackPath"), "scalemode", "TILE");
-        setPixmapBackground(context.getPixmapPath(context.selectNode(node, "BackPath")),
+        setPixmapBackground(context.getPixmapSource(context.selectNode(node, "BackPath")),
                             Paintable::DrawModeFromString(mode_str));
     }
 
@@ -132,11 +132,11 @@ void WWidgetGroup::setup(QDomNode node, const SkinContext& context) {
     }
 }
 
-void WWidgetGroup::setPixmapBackground(const QString &filename, Paintable::DrawMode mode) {
+void WWidgetGroup::setPixmapBackground(PixmapSource source, Paintable::DrawMode mode) {
     // Load background pixmap
-    m_pPixmapBack = WPixmapStore::getPaintable(filename, mode);
+    m_pPixmapBack = WPixmapStore::getPaintable(source, mode);
     if (!m_pPixmapBack) {
-        qDebug() << "WWidgetGroup: Error loading background pixmap:" << filename;
+        qDebug() << "WWidgetGroup: Error loading background pixmap:" << source.getPath();
     }
 }
 

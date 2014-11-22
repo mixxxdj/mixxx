@@ -159,7 +159,7 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
     m_playlistDao.moveTrack(m_iPlaylistId, oldPosition, newPosition);
 }
 
-bool PlaylistTableModel::isLocked(){
+bool PlaylistTableModel::isLocked() {
     return m_playlistDao.isPlaylistLocked(m_iPlaylistId);
 }
 

@@ -43,7 +43,7 @@ namespace Mixxx {
 
 class SoundSourceM4A : public SoundSource {
     public:
-        SoundSourceM4A(QString qFileName);
+        explicit SoundSourceM4A(QString qFileName);
         ~SoundSourceM4A();
         Result open();
         long seek(long);

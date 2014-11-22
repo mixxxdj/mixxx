@@ -107,7 +107,7 @@ QModelIndex SidebarModel::parent(const QModelIndex& index) const {
             // if we have selected an item at the first level of a childnode
 
             if (tree_item_parent) {
-                if (tree_item_parent->data() == "$root"){
+                if (tree_item_parent->data() == "$root") {
                     LibraryFeature* feature = tree_item->getFeature();
                     for (int i = 0; i < m_sFeatures.size(); ++i) {
                         if (feature == m_sFeatures[i]) {

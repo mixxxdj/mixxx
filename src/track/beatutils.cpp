@@ -139,7 +139,8 @@ double BeatUtils::computeFilteredWeightedAverage(
     return filterWeightedAverage / static_cast<double>(filterSum);
 }
 
-double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate, int min_bpm, int max_bpm){
+double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate,
+                               int min_bpm, int max_bpm) {
     /*
      * Let's compute the average local
      * BPM for N subsequent beats.

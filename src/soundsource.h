@@ -18,17 +18,12 @@
 #ifndef SOUNDSOURCE_H
 #define SOUNDSOURCE_H
 
-#include <QImage>
-#include <QString>
-
-#include <taglib/tfile.h>
-#include <taglib/apetag.h>
-#include <taglib/id3v2tag.h>
-#include <taglib/xiphcomment.h>
-#include <taglib/mp4tag.h>
-
 #include "util/types.h"
 #include "util/defs.h"
+
+#include <QImage>
+#include <QString>
+#include <QSharedPointer>
 
 #define MIXXX_SOUNDSOURCE_API_VERSION 6
 /** @note SoundSource API Version history:
@@ -59,112 +54,167 @@ namespace Mixxx
 class SoundSource
 {
 public:
-    SoundSource(QString qFilename);
     virtual ~SoundSource();
+
     virtual Result open() = 0;
     virtual long seek(long) = 0;
     virtual unsigned read(unsigned long size, const SAMPLE*) = 0;
     virtual long unsigned length() = 0;
-    static float str2bpm( QString sBpm );
     virtual Result parseHeader() = 0;
 
     // Returns the first cover art image embedded within the file (if any).
     virtual QImage parseCoverArt() = 0;
 
-    //static QList<QString> supportedFileExtensions(); //CRAP can't do this!
-    /** Return a list of cue points stored in the file */
-    virtual QList<long> *getCuePoints();
-    /** Returns filename */
-    virtual QString getFilename();
-    /** Return artist name */
-    virtual QString getArtist();
-    /** Return track title */
-    virtual QString getTitle();
-    virtual QString getAlbum();
-    virtual QString getAlbumArtist();
-    virtual QString getType();
-    virtual QString getComment();
-    virtual QString getYear();
-    virtual QString getGenre();
-    virtual QString getComposer();
-    virtual QString getGrouping();
-    virtual QString getTrackNumber();
-    virtual float getReplayGain();
-    virtual QString getKey();
-    virtual float getBPM();
-    virtual int getDuration();
-    virtual int getBitrate();
-    virtual unsigned int getSampleRate();
-    virtual int getChannels();
+    inline const QString& getType() const {
+        return m_sType;
+    }
+    inline const QString& getFilename() const {
+        return m_qFilename;
+    }
+    inline const QString& getArtist() const {
+        return m_sArtist;
+    }
+    inline const QString& getTitle() const {
+        return m_sTitle;
+    }
+    inline const QString& getAlbum() const {
+        return m_sAlbum;
+    }
+    inline const QString& getAlbumArtist() const {
+        return m_sAlbumArtist;
+    }
+    inline const QString& getComment() const {
+        return m_sComment;
+    }
+    inline const QString& getYear() const {
+        return m_sYear;
+    }
+    inline const QString& getGenre() const {
+        return m_sGenre;
+    }
+    inline const QString& getComposer() const {
+        return m_sComposer;
+    }
+    inline const QString& getGrouping() const {
+        return m_sGrouping;
+    }
+    inline const QString& getTrackNumber() const {
+        return m_sTrackNumber;
+    }
+    inline float getReplayGain() const {
+        return m_fReplayGain;
+    }
+    inline const QString& getKey() const {
+        return m_sKey;
+    }
+    inline float getBPM() const {
+        return m_fBpm;
+    }
+    inline int getBitrate() const {
+        return m_iBitrate;
+    }
+    inline int getDuration() const {
+        return m_iDuration;
+    }
 
-    virtual void setArtist(QString);
-    virtual void setTitle(QString);
-    virtual void setAlbum(QString);
-    virtual void setAlbumArtist(QString);
-    virtual void setType(QString);
-    virtual void setComment(QString);
-    virtual void setYear(QString);
-    virtual void setGenre(QString);
-    virtual void setComposer(QString);
-    virtual void setGrouping(QString);
-    virtual void setTrackNumber(QString);
-    virtual void setReplayGain(float);
-    virtual void setKey(QString);
-    virtual void setBPM(float);
-    virtual void setDuration(int);
-    virtual void setBitrate(int);
-    virtual void setSampleRate(unsigned int);
-    virtual void setChannels(int);
+    inline void setArtist(QString artist) {
+        m_sArtist = artist;
+    }
+    inline void setTitle(QString title) {
+        m_sTitle = title;
+    }
+    inline void setAlbum(QString album) {
+        m_sAlbum = album;
+    }
+    inline void setAlbumArtist(QString albumArtist) {
+        m_sAlbumArtist = albumArtist;
+    }
+    inline void setComment(QString comment) {
+        m_sComment = comment;
+    }
+    inline void setYear(QString year) {
+        m_sYear = year;
+    }
+    inline void setGenre(QString genre) {
+        m_sGenre = genre;
+    }
+    inline void setComposer(QString composer) {
+        m_sComposer = composer;
+    }
+    inline void setGrouping(QString grouping) {
+        m_sGrouping = grouping;
+    }
+    inline void setTrackNumber(QString trackNumber) {
+        m_sTrackNumber = trackNumber;
+    }
+    inline void setKey(QString key) {
+        m_sKey = key;
+    }
+    inline void setBpm(float bpm) {
+        m_fBpm = bpm;
+    }
+    void setBpmString(QString sBpm);
+    inline void setReplayGain(float replayGain) {
+        m_fReplayGain = replayGain;
+    }
+    void setReplayGainString(QString sReplayGain);
+
+    inline void setChannels(int channels) {
+        m_iChannels = channels;
+    }
+    inline void setSampleRate(unsigned int sampleRate) {
+        m_iSampleRate = sampleRate;
+    }
+    inline void setBitrate(int bitrate) {
+        m_iBitrate = bitrate;
+    }
+    inline void setDuration(int duration) {
+        m_iDuration = duration;
+    }
+
+    inline int getChannels() const {
+        return m_iChannels;
+    }
+    inline unsigned int getSampleRate() const {
+        return m_iSampleRate;
+    }
 
 protected:
-    // Automatically collects generic data from a TagLib File: title, artist,
-    // album, comment, genre, year, tracknumber, duration, bitrate, samplerate,
-    // and channels.
-    bool processTaglibFile(TagLib::File& f);
-    bool processID3v2Tag(TagLib::ID3v2::Tag* id3v2);
-    bool processAPETag(TagLib::APE::Tag* ape);
-    bool processXiphComment(TagLib::Ogg::XiphComment* xiph);
-    bool processMP4Tag(TagLib::MP4::Tag* mp4);
-    void processBpmString(QString tagName, QString sBpm);
-    void parseReplayGainString(QString sReplayGain);
+    explicit SoundSource(QString qFilename);
 
-    // In order to avoid processing images when it's not
-    // needed (TIO building), we must process it separately.
-    QImage getCoverInID3v2Tag(TagLib::ID3v2::Tag* id3v2);
-    QImage getCoverInAPETag(TagLib::APE::Tag* ape);
-    QImage getCoverInXiphComment(TagLib::Ogg::XiphComment* xiph);
-    QImage getCoverInMP4Tag(TagLib::MP4::Tag* mp4);
+    inline void setType(QString type) {
+        m_sType = type;
+    }
 
-    // Taglib strings can be NULL and using it could cause some segfaults,
-    // so in this case it will return a QString()
-    QString toQString(TagLib::String tstring) const;
+private:
+    const QString m_qFilename;
 
-    /** File name */
-    QString m_qFilename;
-
+    QString m_sType;
     QString m_sArtist;
     QString m_sTitle;
     QString m_sAlbum;
     QString m_sAlbumArtist;
-    QString m_sType;
     QString m_sComment;
     QString m_sYear;
     QString m_sGenre;
     QString m_sComposer;
     QString m_sGrouping;
     QString m_sTrackNumber;
-    float m_fReplayGain;
     QString m_sKey;
-    float m_fBPM;
-    int m_iDuration;
-    int m_iBitrate;
-    /** Sample rate of the file */
-    unsigned int m_iSampleRate;
-    int m_iChannels;
-    //Dontcha be forgettin' to initialize these variables.... arr
 
-    static const bool s_bDebugMetadata;
+    // The following members need to be initialized
+    // explicitly in the constructor! Otherwise their
+    // value is undefined.
+    int m_iChannels;
+    unsigned int m_iSampleRate;
+    float m_fReplayGain;
+    float m_fBpm;
+    int m_iBitrate;
+    int m_iDuration;
 };
+
+typedef QSharedPointer<SoundSource> SoundSourcePointer;
+
 } //namespace Mixxx
 
 #endif

@@ -490,4 +490,13 @@ void Tooltips::addStandardTooltips() {
     add("audio_latency_overload")
             << tr("Audio Latency Overload Indicator")
             << tr("Indicates that the audio buffer is too small to do all audio processing.");
+
+    add("coverart")
+            << tr("Cover Art")
+            << tr("Displays cover artwork of the loaded track.")
+            << QString("%1: %2").arg(rightClick, tr("Displays options for editing cover artwork."));
+
+    add("starrating")
+            << tr("Star Rating")
+            << tr("Assign ratings to individual tracks by clicking the stars.");
 }

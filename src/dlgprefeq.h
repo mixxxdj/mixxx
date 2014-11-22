@@ -26,6 +26,7 @@
 #include "controlobjectslave.h"
 #include "preferences/dlgpreferencepage.h"
 #include "effects/effectsmanager.h"
+#include "effects/effectrack.h"
 
 /**
   *@author John Sully
@@ -37,9 +38,12 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
               ConfigObject<ConfigValue>* _config);
     virtual ~DlgPrefEQ();
 
+    QString getEQEffectGroupForDeck(int deck) const;
+    QString getQuickEffectGroupForDeck(int deck) const;
+
   public slots:
     void slotEqEffectChangedOnDeck(int effectIndex);
-    void slotFilterEffectChangedOnDeck(int effectIndex);
+    void slotQuickEffectChangedOnDeck(int effectIndex);
     void slotAddComboBox(double numDecks);
     // Slot for toggling between advanced and basic views
     void slotPopulateDeckEffectSelectors();
@@ -76,19 +80,19 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
 
     // Members needed for changing the effects loaded on the EQ Effect Rack
     EffectsManager* m_pEffectsManager;
-    EffectRackPointer m_pDeckEQEffectRack;
-    EffectRackPointer m_pMasterEQEffectRack;
+    EqualizerRackPointer m_pEQEffectRack;
+    QuickEffectRackPointer m_pQuickEffectRack;
     QList<QComboBox*> m_deckEqEffectSelectors;
     QList<QComboBox*> m_deckFilterEffectSelectors;
-    QList<ControlObject*> m_fliterWaveformEnableCOs;
+    QList<bool> m_filterWaveformEffectLoaded;
+    QList<ControlObject*> m_filterWaveformEnableCOs;
     ControlObjectSlave* m_pNumDecks;
-    QString m_eqRackGroup;
 
     bool m_inSlotPopulateDeckEffectSelectors;
 
     // Members needed for the Master EQ
     QList<QSlider*> m_masterEQSliders;
-    EngineEffect* m_pEngineEffectMasterEQ;
+    QWeakPointer<Effect> m_pEffectMasterEQ;
 
     bool m_bEqAutoReset;
 };

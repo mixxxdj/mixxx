@@ -470,8 +470,9 @@ bool PlaylistDAO::insertTrackIntoPlaylist(const int trackId, const int playlistI
     return true;
 }
 
-int PlaylistDAO::insertTracksIntoPlaylist(const QList<int>& trackIds, const int playlistId, int position) {
-    if (playlistId < 0 || position < 0 ) {
+int PlaylistDAO::insertTracksIntoPlaylist(const QList<int>& trackIds,
+                                          const int playlistId, int position) {
+    if (playlistId < 0 || position < 0) {
         return 0;
     }
 

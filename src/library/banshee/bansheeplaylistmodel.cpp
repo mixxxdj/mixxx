@@ -134,7 +134,7 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
         if (!list.isEmpty()) {
             beginInsertRows(QModelIndex(), 0, list.size() - 1);
 
-            foreach (struct BansheeDbConnection::PlaylistEntry entry, list){
+            foreach (struct BansheeDbConnection::PlaylistEntry entry, list) {
                 query.bindValue(":" CLM_VIEW_ORDER, entry.viewOrder + 1);
                 query.bindValue(":" CLM_ARTIST, entry.pArtist->name);
                 query.bindValue(":" CLM_TITLE, entry.pTrack->title);
@@ -265,7 +265,7 @@ void BansheePlaylistModel::trackLoaded(QString group, TrackPointer pTrack) {
             }
         }
         if (pTrack) {
-            for (int row = 0; row < rowCount(); ++row ) {
+            for (int row = 0; row < rowCount(); ++row) {
                 QUrl rowUrl(getFieldString(index(row, 0), CLM_URI));
                 if (rowUrl.toLocalFile() == pTrack->getLocation()) {
                     m_iPreviewDeckTrackId = getFieldString(index(row, 0), CLM_VIEW_ORDER).toInt();
@@ -278,9 +278,7 @@ void BansheePlaylistModel::trackLoaded(QString group, TrackPointer pTrack) {
 
 QString BansheePlaylistModel::getFieldString(const QModelIndex& index,
         const QString& fieldName) const {
-    return index.sibling(
-            index.row(), fieldIndex(fieldName)
-            ).data().toString();
+    return index.sibling(index.row(), fieldIndex(fieldName)).data().toString();
 }
 
 TrackPointer BansheePlaylistModel::getTrack(const QModelIndex& index) const {

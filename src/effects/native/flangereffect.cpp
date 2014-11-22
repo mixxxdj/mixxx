@@ -21,12 +21,14 @@ EffectManifest FlangerEffect::getManifest() {
     manifest.setName(QObject::tr("Flanger"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
-    manifest.setDescription("TODO");
+    manifest.setDescription(QObject::tr(
+        "A simple modulation effect, created by taking the input signal "
+        "and mixing it with a delayed, pitch modulated copy of itself."));
 
     EffectManifestParameter* depth = manifest.addParameter();
     depth->setId("depth");
     depth->setName(QObject::tr("Depth"));
-    depth->setDescription("TODO");
+    depth->setDescription("Controls the intensity of the effect.");
     depth->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     depth->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
@@ -37,7 +39,7 @@ EffectManifest FlangerEffect::getManifest() {
     EffectManifestParameter* delay = manifest.addParameter();
     delay->setId("delay");
     delay->setName(QObject::tr("Delay"));
-    delay->setDescription("TODO");
+    delay->setDescription("Sets the value for the delay length.");
     delay->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     delay->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     delay->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
@@ -48,7 +50,7 @@ EffectManifest FlangerEffect::getManifest() {
     EffectManifestParameter* period = manifest.addParameter();
     period->setId("period");
     period->setName(QObject::tr("Period"));
-    period->setDescription("TODO");
+    period->setDescription("Controls the speed of the effect.");
     period->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     period->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
@@ -79,6 +81,7 @@ void FlangerEffect::processGroup(const QString& group,
                                  const EffectProcessor::EnableState enableState,
                                  const GroupFeatureState& groupFeatures) {
     Q_UNUSED(group);
+    Q_UNUSED(enableState);
     Q_UNUSED(groupFeatures);
     Q_UNUSED(sampleRate);
     CSAMPLE lfoPeriod = m_pPeriodParameter->value();

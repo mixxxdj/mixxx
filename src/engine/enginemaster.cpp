@@ -158,6 +158,15 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_pMasterMonoMixdown = new ControlObject(ConfigKey(group, "mono_mixdown"),
             true, false, true);  // persist = true
     m_pHeadphoneEnabled = new ControlObject(ConfigKey(group, "headEnabled"));
+
+
+    // Setup equalizer rack for Master.
+    if (pEffectsManager) {
+        EqualizerRackPointer pEqRack = pEffectsManager->getEqualizerRack(0);
+        if (pEqRack) {
+            pEqRack->addEffectChainSlotForGroup(group);
+        }
+    }
 }
 
 EngineMaster::~EngineMaster() {

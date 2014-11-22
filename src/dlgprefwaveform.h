@@ -32,7 +32,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotSetVisualGainLow(double gain);
     void slotSetVisualGainMid(double gain);
     void slotSetVisualGainHigh(double gain);
-    void slotSetNormalizeOverview( bool normalize);
+    void slotSetNormalizeOverview(bool normalize);
     void slotWaveformMeasured(float frameRate, int droppedFrames);
 
   private:

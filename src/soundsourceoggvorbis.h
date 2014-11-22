@@ -25,7 +25,7 @@
 
 class SoundSourceOggVorbis : public Mixxx::SoundSource {
  public:
-  SoundSourceOggVorbis(QString qFilename);
+  explicit SoundSourceOggVorbis(QString qFilename);
   ~SoundSourceOggVorbis();
   Result open();
   long seek(long);

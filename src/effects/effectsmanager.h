@@ -45,12 +45,14 @@ class EffectsManager : public QObject {
     void registerGroup(const QString& group);
     const QSet<QString>& registeredGroups() const;
 
-    EffectRackPointer addEffectRack();
-    EffectRackPointer getEffectRack(int rack);
-    EffectRackPointer getEqEffectRack();
-    int getEqEffectRackNumber();
-    EffectChainSlotPointer getMasterEQEffectChainSlot();
-    int getEqChainSlotNumberForGroup(const QString& group);
+    StandardEffectRackPointer addStandardEffectRack();
+    StandardEffectRackPointer getStandardEffectRack(int rack);
+
+    EqualizerRackPointer addEqualizerRack();
+    EqualizerRackPointer getEqualizerRack(int rack);
+
+    QuickEffectRackPointer addQuickEffectRack();
+    QuickEffectRackPointer getQuickEffectRack(int rack);
 
     QString getNextEffectId(const QString& effectId);
     QString getPrevEffectId(const QString& effectId);
@@ -64,9 +66,6 @@ class EffectsManager : public QObject {
 
     // Temporary, but for setting up all the default EffectChains and EffectRacks
     void setupDefaults();
-
-    // Add an Equalizer for the specified channel
-    void addEqualizer(const QString& group);
 
     // Write an EffectsRequest to the EngineEffectsManager. EffectsManager takes
     // ownership of request and deletes it once a response is received.
@@ -94,8 +93,6 @@ class EffectsManager : public QObject {
     // We need to create Control Objects for Equalizers' frequencies
     ControlPotmeter* m_pLoEqFreq;
     ControlPotmeter* m_pHiEqFreq;
-
-    QHash<QString, int> m_eqChainSlotNumberForGroup;
 
     DISALLOW_COPY_AND_ASSIGN(EffectsManager);
 };

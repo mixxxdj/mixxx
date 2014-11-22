@@ -189,7 +189,7 @@ void GLSLWaveformRendererSignal::createFrameBuffers()
     //qDebug() << bufferWidth;
 }
 
-bool GLSLWaveformRendererSignal::onInit(){
+bool GLSLWaveformRendererSignal::onInit() {
     m_loadedWaveform = 0;
 
     if (!m_frameShaderProgram)
@@ -210,12 +210,12 @@ void GLSLWaveformRendererSignal::onSetup(const QDomNode& /*node*/) {
 
 }
 
-void GLSLWaveformRendererSignal::onSetTrack(){
+void GLSLWaveformRendererSignal::onSetTrack() {
     m_loadedWaveform = 0;
     loadTexture();
 }
 
-void GLSLWaveformRendererSignal::onResize(){
+void GLSLWaveformRendererSignal::onResize() {
     createFrameBuffers();
 }
 

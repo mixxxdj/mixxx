@@ -33,51 +33,46 @@
   */
 
 
-/*
-  Base class for sound sources.
-*/
-class SoundSourceProxy : public Mixxx::SoundSource
+/**
+ * Creates sound sources for filenames or tracks.
+ */
+class SoundSourceProxy
 {
 public:
-    SoundSourceProxy(QString qFilename, SecurityTokenPointer pToken);
-    SoundSourceProxy(TrackPointer pTrack);
-    ~SoundSourceProxy();
     static void loadPlugins();
-    Result open();
-    long seek(long);
-    unsigned read(unsigned long size, const SAMPLE*);
-    long unsigned length();
-    Result parseHeader();
-
-    // Returns the first cover art image embedded within the file (if any).
-    QImage parseCoverArt();
-
-    unsigned int getSampleRate();
-    /** Returns filename */
-    QString getFilename();
-
-    SoundSource* getProxiedSoundSource() {
-        return m_pSoundSource;
-    }
 
     static QStringList supportedFileExtensions();
     static QStringList supportedFileExtensionsByPlugins();
     static QString supportedFileExtensionsString();
     static QString supportedFileExtensionsRegex();
     static bool isFilenameSupported(QString filename);
+
+    SoundSourceProxy(QString qFilename, SecurityTokenPointer pToken);
+    explicit SoundSourceProxy(TrackPointer pTrack);
+
+    const Mixxx::SoundSourcePointer& getSoundSource() const {
+        return m_pSoundSource;
+    }
+
+    // Opens the audio data through the proxy will
+    // update the some metadata of the track object.
+    // Returns a null pointer on failure.
+    Mixxx::SoundSourcePointer open() const;
+
 private:
-    static SoundSource* initialize(QString qFilename);
-    //void initPlugin(QString lib_filename, QString track_filename);
-    static QLibrary* getPlugin(QString lib_filename);
-
-    SoundSource* m_pSoundSource;
-    TrackPointer m_pTrack;
-    SecurityTokenPointer m_pSecurityToken;
-
     static QRegExp m_supportedFileRegex;
     static QMap<QString, QLibrary*> m_plugins;
     static QMap<QString, getSoundSourceFunc> m_extensionsSupportedByPlugins;
     static QMutex m_extensionsMutex;
+
+    static QLibrary* getPlugin(QString lib_filename);
+
+    static Mixxx::SoundSourcePointer initialize(const QString& qFilename);
+
+    const TrackPointer m_pTrack;
+    const SecurityTokenPointer m_pSecurityToken;
+
+    const Mixxx::SoundSourcePointer m_pSoundSource;
 };
 
 #endif

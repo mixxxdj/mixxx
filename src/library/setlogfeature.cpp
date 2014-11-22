@@ -204,7 +204,7 @@ void SetlogFeature::slotJoinWithPrevious() {
 
                     m_pPlaylistTableModel->select();
                     int rows = m_pPlaylistTableModel->rowCount();
-                    for(int i = 0; i < rows; ++i){
+                    for (int i = 0; i < rows; ++i) {
                         QModelIndex index = m_pPlaylistTableModel->index(i,0);
                         if (index.isValid()) {
                             TrackPointer track = m_pPlaylistTableModel->getTrack(index);

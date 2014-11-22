@@ -43,9 +43,9 @@ void WEffectPushButton::setup(QDomNode node, const SkinContext& context) {
     if (context.hasNode(node, "BackPath")) {
         QString mode_str = context.selectAttributeString(
                 context.selectElement(node, "BackPath"), "scalemode", "TILE");
-        QString backPath = context.getPixmapPath(context.selectNode(node, "BackPath"));
-        if (!backPath.isEmpty()) {
-            setPixmapBackground(backPath, Paintable::DrawModeFromString(mode_str));
+        PixmapSource backSource = context.getPixmapSource(context.selectNode(node, "BackPath"));
+        if (!backSource.isEmpty()) {
+            setPixmapBackground(backSource, Paintable::DrawModeFromString(mode_str));
         }
     }
 
@@ -55,18 +55,18 @@ void WEffectPushButton::setup(QDomNode node, const SkinContext& context) {
         if (state.isElement() && state.nodeName() == "State") {
             int iState = context.selectInt(state, "Number");
             if (iState < m_iNoStates) {
-                QString pixmapPath;
-                
-                pixmapPath = context.getPixmapPath(context.selectNode(state, "Unpressed"));
-                if (!pixmapPath.isEmpty()) {
-                    setPixmap(iState, false, pixmapPath);
+                PixmapSource pixmapSource;
+
+                pixmapSource = context.getPixmapSource(context.selectNode(state, "Unpressed"));
+                if (!pixmapSource.isEmpty()) {
+                    setPixmap(iState, false, pixmapSource);
                 }
-                
-                pixmapPath = context.getPixmapPath(context.selectNode(state, "Pressed"));
-                if (!pixmapPath.isEmpty()) {
-                    setPixmap(iState, true, pixmapPath);
+
+                pixmapSource = context.getPixmapSource(context.selectNode(state, "Pressed"));
+                if (!pixmapSource.isEmpty()) {
+                    setPixmap(iState, true, pixmapSource);
                 }
-                
+
                 m_text.replace(iState, context.selectString(state, "Text"));
                 QString alignment = context.selectString(state, "Alignment");
                 if (alignment == "left") {
@@ -199,7 +199,7 @@ void WEffectPushButton::setup(QDomNode node, const SkinContext& context) {
         qDebug() << "EffectPushButton node had invalid ButtonParameter number:" << parameterNumber;
     }
 
-    EffectRackPointer pRack = m_pEffectsManager->getEffectRack(rackNumber);
+    EffectRackPointer pRack = m_pEffectsManager->getStandardEffectRack(rackNumber);
     if (pRack) {
         EffectChainSlotPointer pChainSlot = pRack->getEffectChainSlot(chainNumber);
         if (pChainSlot) {
@@ -237,7 +237,8 @@ void WEffectPushButton::setStates(int iStates) {
     m_align.resize(iStates);
 }
 
-void WEffectPushButton::setPixmap(int iState, bool bPressed, const QString& filename) {
+void WEffectPushButton::setPixmap(int iState, bool bPressed,
+                                  const PixmapSource& source) {
     QVector<PaintablePointer>& pixmaps = bPressed ?
             m_pressedPixmaps : m_unpressedPixmaps;
 
@@ -245,13 +246,14 @@ void WEffectPushButton::setPixmap(int iState, bool bPressed, const QString& file
         return;
     }
 
-    PaintablePointer pPixmap = WPixmapStore::getPaintable(filename,
+    PaintablePointer pPixmap = WPixmapStore::getPaintable(source,
                                                           Paintable::STRETCH);
 
     if (pPixmap.isNull() || pPixmap->isNull()) {
         // Only log if it looks like the user tried to specify a pixmap.
-        if (!filename.isEmpty()) {
-            qDebug() << "WEffectPushButton: Error loading pixmap:" << filename;
+        if (!source.isEmpty()) {
+            qDebug() << "WEffectPushButton: Error loading pixmap:"
+                << source.getPath();
         }
     } else {
         // Set size of widget equal to pixmap size
@@ -260,14 +262,15 @@ void WEffectPushButton::setPixmap(int iState, bool bPressed, const QString& file
     pixmaps.replace(iState, pPixmap);
 }
 
-void WEffectPushButton::setPixmapBackground(const QString &filename,
-                                      Paintable::DrawMode mode) {
+void WEffectPushButton::setPixmapBackground(const PixmapSource &source,
+                                            Paintable::DrawMode mode) {
     // Load background pixmap
-    m_pPixmapBack = WPixmapStore::getPaintable(filename, mode);
-    if (!filename.isEmpty() &&
+    m_pPixmapBack = WPixmapStore::getPaintable(source, mode);
+    if (!source.isEmpty() &&
             (m_pPixmapBack.isNull() || m_pPixmapBack->isNull())) {
         // Only log if it looks like the user tried to specify a pixmap.
-        qDebug() << "WEffectPushButton: Error loading background pixmap:" << filename;
+        qDebug() << "WEffectPushButton: Error loading background pixmap:"
+            << source.getPath();
     }
 }
 
@@ -287,9 +290,9 @@ void WEffectPushButton::onConnectedControlChanged(double dParameter, double dVal
     }
 
 
-    double value = getControlParameterDisplay(); 
+    double value = getControlParameterDisplay();
     if (isnan(value) || m_iNoStates == 0) {
-	return; 
+	return;
     }
 
     int idx = static_cast<int>(value) % m_iNoStates;
@@ -381,10 +384,10 @@ void WEffectPushButton::mousePressEvent(QMouseEvent * e) {
             emitValue = 1.0;
         } else {
             // Toggle thru the states
-            emitValue = getControlParameterLeft(); 
-            if (!isnan(emitValue) && m_iNoStates) { 
+            emitValue = getControlParameterLeft();
+            if (!isnan(emitValue) && m_iNoStates) {
                 emitValue = static_cast<int>(emitValue + 1.0) % m_iNoStates;
-            }	
+            }
             if (m_leftButtonMode == ControlPushButton::LONGPRESSLATCHING) {
                 m_clickTimer.setSingleShot(true);
                 m_clickTimer.start(ControlPushButtonBehavior::kLongPressLatchingTimeMillis);
@@ -445,9 +448,9 @@ void WEffectPushButton::mouseReleaseEvent(QMouseEvent * e) {
             if (m_leftButtonMode == ControlPushButton::LONGPRESSLATCHING
                     && m_clickTimer.isActive() && emitValue >= 1.0) {
                 // revert toggle if button is released too early
-                if (!isnan(emitValue) && m_iNoStates) { 
+                if (!isnan(emitValue) && m_iNoStates) {
                     emitValue = static_cast<int>(emitValue - 1.0) % m_iNoStates;
-                }      
+                }
             } else {
                 // Nothing special happens when releasing a normal toggle button
             }
@@ -475,24 +478,24 @@ void WEffectPushButton::parameterUpdated() {
     m_pButtonMenu->clear();
     const QList<QPair<QString, double> >& options = m_pEffectParameterSlot->getManifest().getSteps();
     // qDebug() << " HERE IS THE OPTIONS SIZE: " << options.size() << m_pEffectParameterSlot->getManifest().name();
-    m_iNoStates = options.size(); 
+    m_iNoStates = options.size();
 	if (m_iNoStates == 0) {
 		// Toggle button without a menu
-		m_iNoStates = 2; 
-		return; 
+		m_iNoStates = 2;
+		return;
 	}
-    double value = getControlParameterLeft();     
+    double value = getControlParameterLeft();
 
     QActionGroup* actionGroup = new QActionGroup(m_pButtonMenu);
     actionGroup->setExclusive(true);
     for (int i = 0; i < options.size(); i++) {
         // action is added automatically to actionGroup
         QAction* action = new QAction(actionGroup);
-        // qDebug() << options[i].first; 
+        // qDebug() << options[i].first;
         action->setText(options[i].first);
         action->setData(options[i].second);
         action->setCheckable(true);
-	
+
         if (options[i].second == value) {
             action->setChecked(true);
         }

@@ -158,7 +158,7 @@ QKeySequence MixxxKeyboard::getKeySeq(QKeyEvent* e) {
     if (e->modifiers() & Qt::MetaModifier)
         modseq += "Meta+";
 
-    if( e->key() >= 0x01000020 && e->key() <= 0x01000023 ) {
+    if (e->key() >= 0x01000020 && e->key() <= 0x01000023) {
         // Do not act on Modifier only
         // avoid returning "khmer vowel sign ie (U+17C0)"
         return k;

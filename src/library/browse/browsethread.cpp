@@ -46,7 +46,7 @@ BrowseThread::~BrowseThread() {
     wait();
     qDebug() << "Browser background thread terminated!";
 }
-BrowseThread* BrowseThread::getInstance(){
+BrowseThread* BrowseThread::getInstance() {
     if (!m_instance)
     {
         s_Mutex.lock();
@@ -58,8 +58,7 @@ BrowseThread* BrowseThread::getInstance(){
     }
     return m_instance;
 }
-void BrowseThread::destroyInstance()
-{
+void BrowseThread::destroyInstance() {
     s_Mutex.lock();
     if(m_instance){
         delete m_instance;
@@ -235,7 +234,7 @@ void BrowseThread::populateModel() {
         ++row;
         // If 10 tracks have been analyzed, send it to GUI
         // Will limit GUI freezing
-        if(row % 10 == 0){
+        if (row % 10 == 0) {
             // this is a blocking operation
             emit(rowsAppended(rows, thisModelObserver));
             //qDebug() << "Append " << rows.count() << " from " << filepath;
