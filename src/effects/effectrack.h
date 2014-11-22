@@ -144,6 +144,8 @@ class QuickEffectRack : public PerGroupRack {
                     const unsigned int iRackNumber);
     virtual ~QuickEffectRack() {}
 
+    bool loadEffectToGroup(const QString& group, EffectPointer pEffect);
+
     static QString formatGroupString(const unsigned int iRackNumber) {
         return QString("[QuickEffectRack%1]")
                 .arg(QString::number(iRackNumber + 1));

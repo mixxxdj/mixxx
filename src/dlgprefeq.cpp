@@ -343,22 +343,11 @@ void DlgPrefEQ::slotQuickEffectChangedOnDeck(int effectIndex) {
     if (c && !m_inSlotPopulateDeckEffectSelectors) {
         int deckNumber = m_deckFilterEffectSelectors.indexOf(c);
         QString effectId = c->itemData(effectIndex).toString();
+        QString group = PlayerManager::groupForDeck(deckNumber);
 
-        EffectChainSlotPointer pChainSlot =
-                m_pQuickEffectRack->getGroupEffectChainSlot(
-                    PlayerManager::groupForDeck(deckNumber));
-        if (pChainSlot) {
-            EffectChainPointer pChain = pChainSlot->getEffectChain();
-            if (pChain.isNull()) {
-                pChain = EffectChainPointer(new EffectChain(m_pEffectsManager, QString(),
-                                                            EffectChainPointer()));
-                pChain->setName(QObject::tr("Empty Chain"));
-                pChainSlot->loadEffectChain(pChain);
-            }
-            EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
-            if (pEffect) {
-                pChain->replaceEffect(0, pEffect);
-            }
+        EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
+        if (pEffect) {
+            m_pQuickEffectRack->loadEffectToGroup(group, pEffect);
         }
 
         // Update the configured effect for the current QComboBox

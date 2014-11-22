@@ -297,6 +297,31 @@ void QuickEffectRack::configureEffectChainSlotForGroup(EffectChainSlotPointer pS
     pSlot->setParameterDefaultValue(0.5);
 }
 
+bool QuickEffectRack::loadEffectToGroup(const QString& group,
+                                        EffectPointer pEffect) {
+    EffectChainSlotPointer pChainSlot = getGroupEffectChainSlot(group);
+    if (pChainSlot.isNull()) {
+        qWarning() << "No chain for group" << group;
+        return false;
+    }
+
+    EffectChainPointer pChain = pChainSlot->getEffectChain();
+    if (pChain.isNull()) {
+        pChain = makeEmptyChain();
+        pChainSlot->loadEffectChain(pChain);
+        pChain->enableForGroup(group);
+        pChain->setMix(1.0);
+    }
+
+    pChain->replaceEffect(0, pEffect);
+
+    // Force update the new effect to match the current superknob position.
+    EffectSlotPointer pEffectSlot = pChainSlot->getEffectSlot(0);
+    if (pEffectSlot) {
+        pEffectSlot->onChainParameterChanged(pChainSlot->getParameter(), true);
+    }
+    return true;
+}
 
 EqualizerRack::EqualizerRack(EffectsManager* pEffectsManager,
                              EffectChainManager* pChainManager,

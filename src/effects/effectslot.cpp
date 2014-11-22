@@ -244,9 +244,9 @@ void EffectSlot::slotClear(double v) {
     }
 }
 
-void EffectSlot::onChainParameterChanged(double parameter) {
+void EffectSlot::onChainParameterChanged(double parameter, bool force) {
     for (int i = 0; i < m_parameters.size(); ++i) {
-        m_parameters[i]->onChainParameterChanged(parameter);
+        m_parameters[i]->onChainParameterChanged(parameter, force);
     }
 }
 
