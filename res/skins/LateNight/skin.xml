@@ -69,7 +69,7 @@
     <WidgetGroup>
         <ObjectName>SkinContainer</ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>me,max</SizePolicy>
+        <SizePolicy>i,max</SizePolicy>
         <!-- <MinimumSize>1280,525</MinimumSize>-->
         <!-- <MinimumSize>0,525</MinimumSize>-->
         <MaximumSize>1920,525</MaximumSize>
