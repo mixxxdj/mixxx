@@ -261,11 +261,11 @@ void WEffectPushButton::onConnectedControlChanged(double dParameter, double dVal
 
     double value = getControlParameterDisplay();
     if (isnan(value) || m_iNoStates == 0) {
-	return;
+        return;
     }
 
     int idx = static_cast<int>(value) % m_iNoStates;
-    setProperty("displayValue", idx);
+    emit(displayValueChanged(idx));
     // According to http://stackoverflow.com/a/3822243 this is the least
     // expensive way to restyle just this widget.
     // Since we expect button connections to not change at high frequency we

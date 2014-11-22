@@ -72,22 +72,22 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
             // support for variables in State elements
             SkinContext stateContext(context);
             stateContext.updateVariables(state);
-            
+
             int iState = stateContext.selectInt(state, "Number");
             if (iState < m_iNoStates) {
-                
+
                 PixmapSource pixmapSource = stateContext.getPixmapSource(
                     stateContext.selectNode(state, "Unpressed"));
                 if (!pixmapSource.isEmpty()) {
                     setPixmap(iState, false, pixmapSource);
                 }
-                
+
                 pixmapSource = stateContext.getPixmapSource(
                     stateContext.selectNode(state, "Pressed"));
                 if (!pixmapSource.isEmpty()) {
                     setPixmap(iState, true, pixmapSource);
                 }
-                
+
                 m_text.replace(iState, stateContext.selectString(state, "Text"));
                 QString alignment = stateContext.selectString(state, "Alignment").toLower();
                 if (alignment == "left") {
@@ -247,7 +247,7 @@ void WPushButton::onConnectedControlChanged(double dParameter, double dValue) {
 
     double value = getControlParameterDisplay();
     int idx = static_cast<int>(value) % m_iNoStates;
-    setProperty("displayValue", idx);
+    emit(displayValueChanged(idx));
     // According to http://stackoverflow.com/a/3822243 this is the least
     // expensive way to restyle just this widget.
     // Since we expect button connections to not change at high frequency we
