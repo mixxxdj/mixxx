@@ -1,5 +1,5 @@
 	<!--
-	LateNight Stacked, Resizable skin for Mixxx 1.12
+	LateNight, Resizable skin for Mixxx 1.12
 	www.mixxx.org
 	Copyright (C) 2010-2013 jus <s.brandt@mixxx.org>, 2014 Owen Williams <owilliams@mixxx.org>
 	"LateNight" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
@@ -27,7 +27,7 @@
 <!DOCTYPE skin>
 <skin>
   <manifest>
-    <title>LateNight-Stacked</title>
+    <title>LateNight</title>
     <author>owilliams</author>
     <version>1.12.0.01</version>
     <description>A nighttime-compatible skin</description>
