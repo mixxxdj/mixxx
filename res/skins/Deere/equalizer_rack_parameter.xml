@@ -1,0 +1,42 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    An equalizer rack parameter for the provided group.
+    Assumes the equalizer is effect 1 in the unit.
+  Variables:
+    group: the group
+    parameter: the parameter number
+-->
+<Template>
+  <SetVariable name="EqualizerNumber">1</SetVariable>
+  <SetVariable name="EffectNumber">1</SetVariable>
+  <SetVariable name="EqualizerRackGroup">[EqualizerRack<Variable name="EqualizerNumber"/>]</SetVariable>
+  <SetVariable name="EqualizerEffectUnitGroup">[EqualizerRack<Variable name="EqualizerNumber"/>_<Variable name="group"/>]</SetVariable>
+  <SetVariable name="EqualizerEffectGroup">[EqualizerRack<Variable name="EqualizerNumber"/>_<Variable name="group"/>_Effect<Variable name="EffectNumber"/>]</SetVariable>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <Children>
+      <KnobComposed>
+        <Size>40f,40f</Size>
+        <Knob>knob.svg</Knob>
+        <MinAngle>-230</MinAngle>
+        <MaxAngle>50</MaxAngle>
+        <Connection>
+          <ConfigKey><Variable name="EqualizerEffectGroup"/>,parameter<Variable name="parameter"/></ConfigKey>
+        </Connection>
+      </KnobComposed>
+      <EffectParameterName>
+        <Size>40f,10f</Size>
+        <ObjectName>KnobLabel</ObjectName>
+        <EffectRackGroup><Variable name="EqualizerRackGroup"/></EffectRackGroup>
+        <EffectUnitGroup><Variable name="EqualizerEffectUnitGroup"/></EffectUnitGroup>
+        <Effect><Variable name="EffectNumber"/></Effect>
+        <EffectParameter><Variable name="parameter"/></EffectParameter>
+      </EffectParameterName>
+    </Children>
+    <Connection>
+      <ConfigKey><Variable name="EqualizerEffectGroup"/>,parameter<Variable name="parameter"/>_loaded</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>
