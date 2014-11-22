@@ -31,6 +31,7 @@
 #include "controlpushbutton.h"
 #include "control/controlbehavior.h"
 #include "util/debug.h"
+#include "util/math.h"
 
 WPushButton::WPushButton(QWidget* pParent)
         : WWidget(pParent),
@@ -247,8 +248,11 @@ void WPushButton::onConnectedControlChanged(double dParameter, double dValue) {
     }
 
     double value = getControlParameterDisplay();
-    int idx = static_cast<int>(value) % m_iNoStates;
-    emit(displayValueChanged(idx));
+    if (!isnan(value) && m_iNoStates > 0) {
+        int idx = static_cast<int>(value) % m_iNoStates;
+        emit(displayValueChanged(idx));
+    }
+
     // According to http://stackoverflow.com/a/3822243 this is the least
     // expensive way to restyle just this widget.
     // Since we expect button connections to not change at high frequency we
@@ -344,7 +348,10 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
             emitValue = 1.0;
         } else {
             // Toggle thru the states
-            emitValue = static_cast<int>(getControlParameterLeft() + 1.0) % m_iNoStates;
+            emitValue = getControlParameterLeft();
+            if (!isnan(emitValue) && m_iNoStates > 0) {
+                emitValue = static_cast<int>(emitValue + 1.0) % m_iNoStates;
+            }
             if (m_leftButtonMode == ControlPushButton::LONGPRESSLATCHING) {
                 m_clickTimer.setSingleShot(true);
                 m_clickTimer.start(ControlPushButtonBehavior::kLongPressLatchingTimeMillis);
@@ -410,7 +417,9 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
             if (m_leftButtonMode == ControlPushButton::LONGPRESSLATCHING
                     && m_clickTimer.isActive() && emitValue >= 1.0) {
                 // revert toggle if button is released too early
-                emitValue = static_cast<int>(emitValue - 1.0) % m_iNoStates;
+                if (!isnan(emitValue) && m_iNoStates > 0) {
+                    emitValue = static_cast<int>(emitValue - 1.0) % m_iNoStates;
+                }
             } else {
                 // Nothing special happens when releasing a normal toggle button
             }

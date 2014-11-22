@@ -60,7 +60,7 @@ class WPushButton : public WWidget {
         return idx;
     }
 
-    void setup(QDomNode node, const SkinContext& context);
+    virtual void setup(QDomNode node, const SkinContext& context);
 
     // Sets the number of states associated with this button, and removes
     // associated pixmaps.
@@ -70,7 +70,7 @@ class WPushButton : public WWidget {
     void displayValueChanged(int value);
 
   public slots:
-    void onConnectedControlChanged(double dParameter, double dValue);
+    virtual void onConnectedControlChanged(double dParameter, double dValue);
 
   protected:
     virtual void paintEvent(QPaintEvent*);
@@ -79,7 +79,7 @@ class WPushButton : public WWidget {
     virtual void focusOutEvent(QFocusEvent* e);
     void fillDebugTooltip(QStringList* debug);
 
-  private:
+  protected:
     // Associates a pixmap of a given state of the button with the widget
     void setPixmap(int iState, bool bPressed, PixmapSource source);
 
