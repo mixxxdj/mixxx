@@ -321,8 +321,6 @@ void DlgPrefEQ::slotEqEffectChangedOnDeck(int effectIndex) {
             }
         }
 
-
-
         // Update the configured effect for the current QComboBox
         m_pConfig->set(ConfigKey(kConfigKey, "EffectForGroup_" + group),
                 ConfigValue(effectId));
