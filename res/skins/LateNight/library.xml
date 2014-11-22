@@ -59,7 +59,7 @@
     	</WidgetGroup>
         
         <!-- Collapsed library -->
-        <WidgetGroup trigger="[Library],show_library">
+        <WidgetGroup>
             <Layout>horizontal</Layout>
             <Children/>
         </WidgetGroup>

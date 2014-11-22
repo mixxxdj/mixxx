@@ -309,7 +309,6 @@
   font: bold 10px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
   color: #585858;
   text-align: center;
-  qproperty-layoutAlignment: 'AlignCenter | AlignBottom';
   qproperty-alignment: 'AlignCenter | AlignBottom';
   padding-bottom: 2px;
   padding-top: -2px;
@@ -346,11 +345,7 @@ qproperty-layoutAlignment: 'AlignCenter';
 
 #GuiToggleContainer {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  padding-left: 2px;
-  padding-right: 3px;
-  padding-top: 3px;
-  padding-bottom: 0px;
-  margin-bottom: 0px;
+  padding: 2px;
   border: 0px solid #585858;
   border-left:0px;
   border-right:0px;

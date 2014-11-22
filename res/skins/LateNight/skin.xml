@@ -63,20 +63,41 @@
   <Layout>vertical</Layout>
 
   <Children>
-    <SetVariable name="SquareButtonSize">20f,20f</SetVariable>
-    <SetVariable name="TallButtonSize">20f,40f</SetVariable>
-    <SetVariable name="WideButtonSize">40f,20f</SetVariable>
     <WidgetGroup>
         <ObjectName>SkinContainer</ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>i,max</SizePolicy>
-        <!-- <MinimumSize>1280,525</MinimumSize>-->
-        <!--  <MinimumSize>0,525</MinimumSize>-->
-        <!--  <MaximumSize>1920,525</MaximumSize>-->
+        <SizePolicy>me,max</SizePolicy>
+        <MinimumSize>0,0</MinimumSize>
         <Children>
-            <Template src="skin:decks_left.xml"/>
-            <Template src="skin:waveform_and_mixer.xml"/>
-            <Template src="skin:decks_right.xml"/>
+            <WidgetStack currentpage="[Library],show_big_current" persist="true">
+                <Children>        
+                    <!-- Collapsed UI == big library.
+                    To get this to work, I had to wrap the stack in a group
+                    with sizepolicy max, max (which means the group can shrink
+                    as much as necessary) and then set the min size to 0, which
+                    means it can shrink to nothing.
+                     -->
+                    <WidgetGroup trigger="[Library],show_big">
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>f,f</SizePolicy>
+                        <Size>0,0</Size>
+                        <Children/>
+                    </WidgetGroup>
+                    
+                    <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>i,max</SizePolicy>
+                        <!-- <MinimumSize>1280,525</MinimumSize>-->
+                        <!--  <MinimumSize>0,525</MinimumSize>-->
+                        <!--  <MaximumSize>1920,525</MaximumSize>-->
+                        <Children>
+                            <Template src="skin:decks_left.xml"/>
+                            <Template src="skin:waveform_and_mixer.xml"/>
+                            <Template src="skin:decks_right.xml"/>
+                        </Children>
+                    </WidgetGroup>
+                </Children>
+            </WidgetStack>
         </Children>
     </WidgetGroup>
     <WidgetGroup>
@@ -144,16 +165,16 @@
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
                     <PushButton>
-                        <Size>40f,20f</Size>
+                        <Size>64f,20f</Size>
                         <ObjectName>GuiToggleButton</ObjectName>
                         <NumberStates>2</NumberStates>
                         <State>
                           <Number>0</Number>
-                          <Text>4DECK</Text>
+                          <Text>DECKS 3&amp;4</Text>
                         </State>
                         <State>
                           <Number>1</Number>
-                          <Text>4DECK</Text>
+                          <Text>DECKS 3&amp;4</Text>
                         </State>
                         <Connection>
                           <ConfigKey>[Master],show_4decks</ConfigKey>
@@ -219,12 +240,6 @@
                     </PushButton>
                 </Children>
             </WidgetGroup>
-            <WidgetGroup>  <!-- spacer -->
-                <ObjectName>UIButtonMargin</ObjectName>
-                <Layout>horizontal</Layout>
-                <SizePolicy>me,min</SizePolicy>
-                <Children></Children>
-            </WidgetGroup>
             <WidgetGroup>
                 <ObjectName>GuiToggleContainer</ObjectName>
                 <Layout>vertical</Layout>
@@ -252,13 +267,45 @@
                     </PushButton>
                 </Children>
             </WidgetGroup>
+            <WidgetGroup>  <!-- spacer -->
+                <ObjectName>UIButtonMargin</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,min</SizePolicy>
+                <Children></Children>
+            </WidgetGroup>
+            <!-- <WidgetGroup>
+                <ObjectName>GuiToggleContainer</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                    <PushButton>
+                        <Size>80f,20f</Size>
+                        <ObjectName>GuiToggleButton</ObjectName>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Text>BIG LIBRARY</Text>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Text>BIG LIBRARY</Text>
+                        </State>
+                        <Connection>
+                          <ConfigKey persist="true">[Library],show_big</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey persist="true">[Library],show_big</ConfigKey>
+                        </Connection>
+                    </PushButton>
+                </Children>
+            </WidgetGroup>-->
         </Children>
     </WidgetGroup>
     <WidgetGroup>
         <ObjectName>UILowerHalf</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>min,i</SizePolicy>
-        <MaximumSize>1920,800</MaximumSize>
         <Children>
             <Template src="skin:sample_decks_container.xml"/>
             <Template src="skin:effect_rack.xml"/>
