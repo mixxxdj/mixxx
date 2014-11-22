@@ -338,6 +338,25 @@
     background-color: #e17800;
 }
 
+#GuiToggleButtonInverted[displayValue="0"] {
+    border: 1px solid #585858;
+    font: bold 10px/12px Lucida Grande,
+          Lucida Sans Unicode, Arial,
+          Verdana, sans-serif;
+    color: #0e0e0e;
+    background-color: #e17800;
+}
+
+#GuiToggleButtonInverted[displayValue="1"] {
+    border: 1px solid #585858;
+    font: bold 10px/12px Lucida Grande,
+          Lucida Sans Unicode, Arial,
+          Verdana, sans-serif;
+    color: #585858;
+    background-color: #0e0e0e;
+}
+
+
 #CrossFadeContainer {
 qproperty-layoutAlignment: 'AlignCenter';
  background-color: #1e1e1e;
