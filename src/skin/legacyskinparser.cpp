@@ -121,9 +121,10 @@ ControlObject* LegacySkinParser::controlFromConfigNode(QDomElement element,
 
     QString default_val = m_pContext->selectAttributeString(keyElement, "default", "0");
     bool bPersist = m_pContext->selectAttributeBool(keyElement, "persist", false);
+    bool exists = m_pConfig->exists(key);
 
     ControlObject* co = controlFromConfigKey(key, bPersist, created);
-    if (*created) {
+    if (bPersist && !exists) {
         bool success = false;
         double d = default_val.toDouble(&success);
         if (success) {
