@@ -80,13 +80,13 @@
         <SizePolicy>min,min</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
-          <Template src="skin:knob.xml">
+          <Template src="skin:knob_label_horizontal.xml">
             <SetVariable name="group">[Master]</SetVariable>
             <SetVariable name="control">headMix</SetVariable>
             <SetVariable name="label">Head Mix</SetVariable>
           </Template>
 
-          <Template src="skin:knob.xml">
+          <Template src="skin:knob_label_horizontal.xml">
             <SetVariable name="group">[Master]</SetVariable>
             <SetVariable name="control">headVolume</SetVariable>
             <SetVariable name="label">Head Vol</SetVariable>
@@ -119,13 +119,13 @@
             </Connection>
           </PushButton>
 
-          <Template src="skin:knob.xml">
+          <Template src="skin:knob_label_horizontal.xml">
             <SetVariable name="group">[Master]</SetVariable>
             <SetVariable name="control">balance</SetVariable>
             <SetVariable name="label">Balance</SetVariable>
           </Template>
 
-          <Template src="skin:knob.xml">
+          <Template src="skin:knob_label_horizontal.xml">
             <SetVariable name="group">[Master]</SetVariable>
             <SetVariable name="control">volume</SetVariable>
             <SetVariable name="label">Volume</SetVariable>
@@ -133,7 +133,7 @@
 
         </Children>
       </WidgetGroup>
-      
+
       <WidgetGroup>
           <ObjectName>MasterVumeter</ObjectName>
           <SizePolicy>min,min</SizePolicy>
