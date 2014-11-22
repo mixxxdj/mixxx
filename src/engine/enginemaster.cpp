@@ -160,13 +160,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_pHeadphoneEnabled = new ControlObject(ConfigKey(group, "headEnabled"));
 
 
-    // Setup equalizer rack for Master.
-    if (pEffectsManager) {
-        EqualizerRackPointer pEqRack = pEffectsManager->getEqualizerRack(0);
-        if (pEqRack) {
-            pEqRack->addEffectChainSlotForGroup(group);
-        }
-    }
+    // Note: the EQ Rack is set in EffectsManager::setupDefaults();
 }
 
 EngineMaster::~EngineMaster() {

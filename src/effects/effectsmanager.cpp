@@ -235,7 +235,9 @@ void EffectsManager::setupDefaults() {
     m_pHiEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040);
 
     // Add an EqualizerRack.
-    addEqualizerRack();
+    EqualizerRackPointer pEqRack = addEqualizerRack();
+    // Add Master EQ here, because EngineMaster is already up
+    pEqRack->addEffectChainSlotForGroup("[Master]");
 
     // Add a QuickEffectRack
     addQuickEffectRack();
