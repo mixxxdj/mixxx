@@ -32,14 +32,14 @@
             <Children>
               <Key>
                 <Group><Variable name="group"/></Group>
-                <SizePolicy>min,</SizePolicy>
+                <SizePolicy>min,min</SizePolicy>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
                 </Connection>
               </Key>
               <NumberBpm>
                 <Group><Variable name="group"/></Group>
-                <SizePolicy>min,</SizePolicy>
+                <SizePolicy>min,min</SizePolicy>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
                 </Connection>
