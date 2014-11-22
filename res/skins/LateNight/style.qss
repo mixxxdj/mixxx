@@ -11,6 +11,7 @@
 }
 
 #UILowerHalf {
+  background-color: #0f0f0f;
 }
 
 #HorizBorder {
@@ -320,13 +321,7 @@
   border-bottom: 1px solid #585858;
 }
 
-/*#FourDeckToggleButton {
-  border: 1px solid #e17800;
-  font: bold 10px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-  color: #e17800;
-}*/
-
-#FourDeckToggleButton[displayValue="0"] {
+#GuiToggleButton[displayValue="0"] {
     border: 1px solid #585858;
     font: bold 10px/12px Lucida Grande,
           Lucida Sans Unicode, Arial,
@@ -335,7 +330,7 @@
     background-color: #0e0e0e;
 }
 
-#FourDeckToggleButton[displayValue="1"] {
+#GuiToggleButton[displayValue="1"] {
     border: 1px solid #585858;
     font: bold 10px/12px Lucida Grande,
           Lucida Sans Unicode, Arial,
@@ -349,9 +344,13 @@ qproperty-layoutAlignment: 'AlignCenter';
  background-color: #1e1e1e;
 }
 
-#FourDeckButton {
+#GuiToggleContainer {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  padding: 5px;
+  padding-left: 2px;
+  padding-right: 3px;
+  padding-top: 3px;
+  padding-bottom: 0px;
+  margin-bottom: 0px;
   border: 0px solid #585858;
   border-left:0px;
   border-right:0px;
