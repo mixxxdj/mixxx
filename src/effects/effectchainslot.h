@@ -37,6 +37,7 @@ class EffectChainSlot : public QObject {
 
     void registerGroup(const QString& group);
 
+    double getParameter() const;
     void setParameter(double value);
     void setParameterDefaultValue(double value);
 

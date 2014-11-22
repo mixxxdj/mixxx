@@ -102,6 +102,10 @@ QString EffectChainSlot::id() const {
     return "";
 }
 
+double EffectChainSlot::getParameter() const {
+    return m_pControlChainParameter->get();
+}
+
 void EffectChainSlot::setParameter(double value) {
     m_pControlChainParameter->set(value);
 }
