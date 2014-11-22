@@ -1349,7 +1349,7 @@ QList<QWidget*> LegacySkinParser::parseTemplate(QDomElement node) {
     // with them.
     m_pContext->updateVariables(node);
     m_pContext->setXmlPath(path);
-    
+
     QList<QWidget*> widgets;
 
     QDomNode child = templateNode.firstChild();
@@ -1534,14 +1534,14 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
         QSizePolicy::Policy horizontalPolicy;
         if (parseSizePolicy(&xs, &horizontalPolicy)) {
             sizePolicy.setHorizontalPolicy(horizontalPolicy);
-        } else {
+        } else if (!xs.isEmpty()) {
             qDebug() << "Could not parse horizontal size policy:" << xs;
         }
 
         QSizePolicy::Policy verticalPolicy;
         if (parseSizePolicy(&ys, &verticalPolicy)) {
             sizePolicy.setVerticalPolicy(verticalPolicy);
-        } else {
+        } else if (!ys.isEmpty()) {
             qDebug() << "Could not parse vertical size policy:" << ys;
         }
 
