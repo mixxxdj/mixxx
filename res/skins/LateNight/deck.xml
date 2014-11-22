@@ -14,7 +14,7 @@
                    <WidgetGroup>
                        <ObjectName>RateAdjust</ObjectName>
                        <Layout>vertical</Layout>
-                       <SizePolicy>min,min</SizePolicy>
+                       <SizePolicy>min,me</SizePolicy>
 	                   <Children>
                            <Key>
                               <ObjectName>TextColor<Variable name="channum" /></ObjectName>
@@ -58,19 +58,26 @@
 				            </NumberRate>-->
 			            </Children>
 		            </WidgetGroup>
-  		            <SliderComposed>
-  		                <TooltipId>rate</TooltipId>
-  		                <Handle>knob_pitch1.png</Handle>
-  		                <Slider>slider_pitch1.png</Slider>
-  		                <Horizontal>false</Horizontal>
-  		                <Connection>
-  		                    <ConfigKey>[Channel<Variable name="channum" />],rate</ConfigKey>
-  		                </Connection>
-  		            </SliderComposed>
+                    <WidgetGroup>
+                        <SizePolicy>min,min</SizePolicy>
+                        <Layout>horizontal</Layout>
+                        <ObjectName>RateSlider</ObjectName>
+                        <Children>
+        		            <SliderComposed>
+        		                <TooltipId>rate</TooltipId>
+        		                <Handle>knob_pitch1.png</Handle>
+        		                <Slider>slider_pitch1.png</Slider>
+        		                <Horizontal>false</Horizontal>
+        		                <Connection>
+        		                    <ConfigKey>[Channel<Variable name="channum" />],rate</ConfigKey>
+        		                </Connection>
+        		            </SliderComposed>
+                        </Children>
+                    </WidgetGroup>
 		            <WidgetGroup>
 		                <ObjectName>RateButtons</ObjectName>
 		                <Layout>vertical</Layout>
-		                <SizePolicy>min,me</SizePolicy>
+		                <SizePolicy>min,min</SizePolicy>
 		                <Children>
 		                    <WidgetGroup>
 		                        <ObjectName>RatePermButtons</ObjectName>

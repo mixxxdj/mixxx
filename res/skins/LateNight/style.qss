@@ -460,6 +460,10 @@ qproperty-layoutAlignment: 'AlignCenter';
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
+#RateSlider {
+  padding-bottom: 2px;
+}
+
 #RateContainer3 {
   border: 1px solid #585858;
   border-right: 0px;
