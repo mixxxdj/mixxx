@@ -45,8 +45,7 @@
           <Text> %1 </Text>
         </DefaultMark>
         <Connection>
-          <ConfigKey>
-          <Variable name="group"/>,playposition</ConfigKey>
+          <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
           <EmitOnDownPress>false</EmitOnDownPress>
         </Connection>
       </Overview>
