@@ -35,6 +35,10 @@
         <SetVariable name="label">Low</SetVariable>
       </Template>
 
+      <Template src="skin:quick_effect_superknob.xml">
+        <SetVariable name="QuickEffect">1</SetVariable>
+      </Template>
+
       <PushButton>
         <ObjectName>DeckMute</ObjectName>
         <Size>40f,20f</Size>
