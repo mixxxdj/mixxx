@@ -72,8 +72,8 @@ void WEffectPushButton::mousePressEvent(QMouseEvent* e) {
 }
 
 void WEffectPushButton::mouseReleaseEvent(QMouseEvent* e) {
-    // Pass all other press events to the base class.
-    WPushButton::mousePressEvent(e);
+    // Pass all other release events to the base class.
+    WPushButton::mouseReleaseEvent(e);
 
     // The release handler may have set the left value. Check the corresponding
     // QAction.
