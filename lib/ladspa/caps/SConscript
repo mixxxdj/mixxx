@@ -1,6 +1,0 @@
-
-Import('env')
-
-capslib = env.SharedLibrary('caps', ['Compress.cc', 'Phaser.cc', 'Reverb.cc'])
-
-Return('capslib')

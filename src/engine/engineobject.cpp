@@ -17,27 +17,17 @@
 
 #include "engineobject.h"
 
-// Static member variable definition
-//int EngineObject::PLAY_SRATE = 0;
-
-EngineObject::EngineObject()
-{
+EngineObject::EngineObject() {
 }
 
-EngineObject::~EngineObject()
-{
+EngineObject::~EngineObject() {
 }
 
-/*
-   void EngineObject::setPlaySrate(int srate)
-   {
-    PLAY_SRATE = srate;
-   }
+EngineObjectConstIn::EngineObjectConstIn() {
+}
 
-   int EngineObject::getPlaySrate()
-   {
-    return PLAY_SRATE;
-   }
+EngineObjectConstIn::~EngineObjectConstIn() {
+}
 
- */
+
 

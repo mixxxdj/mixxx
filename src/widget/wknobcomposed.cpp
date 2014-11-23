@@ -5,6 +5,7 @@
 
 WKnobComposed::WKnobComposed(QWidget* pParent)
         : WWidget(pParent),
+          m_dCurrentAngle(140.0),
           m_dMinAngle(-230.0),
           m_dMaxAngle(50.0) {
 }
@@ -17,12 +18,15 @@ void WKnobComposed::setup(QDomNode node, const SkinContext& context) {
 
     // Set background pixmap if available
     if (context.hasNode(node, "BackPath")) {
-        setPixmapBackground(context.getSkinPath(context.selectString(node, "BackPath")));
+        QString mode_str = context.selectAttributeString(
+                context.selectElement(node, "BackPath"), "scalemode", "TILE");
+        setPixmapBackground(context.getPixmapSource(context.selectNode(node, "BackPath")),
+                            Paintable::DrawModeFromString(mode_str));
     }
 
     // Set background pixmap if available
     if (context.hasNode(node, "Knob")) {
-        setPixmapKnob(context.getSkinPath(context.selectString(node, "Knob")));
+        setPixmapKnob(context.getPixmapSource(context.selectNode(node, "Knob")));
     }
 
     if (context.hasNode(node, "MinAngle")) {
@@ -39,19 +43,33 @@ void WKnobComposed::clear() {
     m_pKnob.clear();
 }
 
-void WKnobComposed::setPixmapBackground(const QString& filename) {
-    m_pPixmapBack = WPixmapStore::getPaintable(filename);
+void WKnobComposed::setPixmapBackground(PixmapSource source,
+                                        Paintable::DrawMode mode) {
+    m_pPixmapBack = WPixmapStore::getPaintable(source, mode);
     if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
         qDebug() << metaObject()->className()
-                 << "Error loading background pixmap:" << filename;
+                 << "Error loading background pixmap:" << source.getPath();
     }
 }
 
-void WKnobComposed::setPixmapKnob(const QString& filename) {
-    m_pKnob = WPixmapStore::getPaintable(filename);
+void WKnobComposed::setPixmapKnob(PixmapSource source) {
+    m_pKnob = WPixmapStore::getPaintable(source, Paintable::STRETCH);
     if (m_pKnob.isNull() || m_pKnob->isNull()) {
         qDebug() << metaObject()->className()
-                 << "Error loading knob pixmap:" << filename;
+                 << "Error loading knob pixmap:" << source.getPath();
+    }
+}
+
+void WKnobComposed::onConnectedControlChanged(double dParameter, double dValue) {
+    Q_UNUSED(dValue);
+    // dParameter is in the range [0, 1].
+    double angle = m_dMinAngle + (m_dMaxAngle - m_dMinAngle) * dParameter;
+
+    // TODO(rryan): What's a good epsilon? Should it be dependent on the min/max
+    // angle range? Right now it's just 1/100th of a degree.
+    if (fabs(angle - m_dCurrentAngle) > 0.01) {
+        // paintEvent updates m_dCurrentAngle
+        update();
     }
 }
 
@@ -71,11 +89,10 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
     if (!m_pKnob.isNull() && !m_pKnob->isNull()) {
         p.translate(width() / 2.0, height() / 2.0);
 
-        // Value is in the range [0, 1].
-        double value = getControlParameterDisplay();
-
-        double angle = m_dMinAngle + (m_dMaxAngle - m_dMinAngle) * value;
-        p.rotate(angle);
+        // We update m_dCurrentAngle since onConnectedControlChanged uses it for
+        // no-op detection.
+        m_dCurrentAngle = m_dMinAngle + (m_dMaxAngle - m_dMinAngle) * getControlParameterDisplay();
+        p.rotate(m_dCurrentAngle);
 
         m_pKnob->draw(-m_pKnob->width() / 2.0, -m_pKnob->height() / 2.0, &p);
     }

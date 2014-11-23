@@ -58,13 +58,14 @@ class CrateFeature : public LibraryFeature {
     void slotAnalyzeCrate();
     void slotCrateTableChanged(int playlistId);
     void slotCrateTableRenamed(int playlistId, QString a_strName);
-    void htmlLinkClicked(const QUrl & link);
+    void htmlLinkClicked(const QUrl& link);
 
   private:
     QString getRootViewHtml() const;
     QModelIndex constructChildModel(int selected_id);
     void clearChildModel();
     void buildCrateList();
+    int crateIdFromIndex(QModelIndex index);
 
     TrackCollection* m_pTrackCollection;
     CrateDAO& m_crateDao;

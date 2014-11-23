@@ -5,9 +5,10 @@
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "vinylcontrol/vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolxwax.h"
+#include "util/defs.h"
 #include "controlpushbutton.h"
-#include "defs.h"
 #include "util/timer.h"
+#include "util/event.h"
 #include "sampleutil.h"
 
 #define SIGNAL_QUALITY_FIFO_SIZE 256
@@ -32,7 +33,7 @@ VinylControlProcessor::VinylControlProcessor(QObject* pParent, ConfigObject<Conf
         m_samplePipes[i] = new FIFO<CSAMPLE>(SAMPLE_PIPE_FIFO_SIZE);
     }
 
-    start();
+    start(QThread::HighPriority);
 }
 
 VinylControlProcessor::~VinylControlProcessor() {
@@ -79,6 +80,7 @@ void VinylControlProcessor::run() {
     QThread::currentThread()->setObjectName(QString("VinylControlProcessor %1").arg(++id));
 
     while (!m_bQuit) {
+        Event::start("VinylControlProcessor");
         if (m_bReloadConfig) {
             reloadConfig();
             m_bReloadConfig = false;
@@ -126,6 +128,7 @@ void VinylControlProcessor::run() {
 
         // Wait for a signal from the main thread or engine thread that we
         // should wake up and process input.
+        Event::end("VinylControlProcessor");
         m_waitForSampleMutex.lock();
         m_samplesAvailableSignal.wait(&m_waitForSampleMutex);
         m_waitForSampleMutex.unlock();
@@ -150,7 +153,7 @@ void VinylControlProcessor::reloadConfig() {
     }
 }
 
-void VinylControlProcessor::onInputConnected(AudioInput input) {
+void VinylControlProcessor::onInputConfigured(AudioInput input) {
     if (input.getType() != AudioInput::VINYLCONTROL) {
         qDebug() << "WARNING: AudioInput type is not VINYLCONTROL. Ignoring.";
         return;
@@ -174,7 +177,7 @@ void VinylControlProcessor::onInputConnected(AudioInput input) {
     delete pCurrent;
 }
 
-void VinylControlProcessor::onInputDisconnected(AudioInput input) {
+void VinylControlProcessor::onInputUnconfigured(AudioInput input) {
     if (input.getType() != AudioInput::VINYLCONTROL) {
         qDebug() << "WARNING: AudioInput type is not VINYLCONTROL. Ignoring.";
         return;
@@ -196,6 +199,9 @@ void VinylControlProcessor::onInputDisconnected(AudioInput input) {
     delete pVC;
 }
 
+bool VinylControlProcessor::deckConfigured(int index) const {
+    return m_processors[index] != NULL;
+}
 
 void VinylControlProcessor::receiveBuffer(AudioInput input,
                                           const CSAMPLE* pBuffer,

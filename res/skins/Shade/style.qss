@@ -1,0 +1,23 @@
+#QToolTip { 
+	background-color: #191919; 
+	color: #CCCCCC; 
+	border: 1px solid #CCCCCC; 
+}
+
+#Mixxx {
+    background-color: #191919;
+    background-repeat:no-repeat;
+	background-attachment:fixed;
+	background-position:center top;  
+}
+
+#DecksAndMixer {
+    border: 10px solid #565E6B; 
+    //margin: 100px 100px 100px 100px;
+    //padding: 100px 100px 100px 100px;
+}
+
+
+
+
+

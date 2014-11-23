@@ -14,7 +14,8 @@
 SetlogFeature::SetlogFeature(QObject* parent,
                              ConfigObject<ConfigValue>* pConfig,
                              TrackCollection* pTrackCollection)
-        : BasePlaylistFeature(parent, pConfig, pTrackCollection, "SETLOGHOME") {
+        : BasePlaylistFeature(parent, pConfig, pTrackCollection, "SETLOGHOME"),
+          m_playlistId(-1) {
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                    "mixxx.db.model.setlog",
                                                    true); //show all tracks
@@ -81,6 +82,7 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
     m_pDeletePlaylistAction->setEnabled(!locked);
     m_pRenamePlaylistAction->setEnabled(!locked);
+    m_pJoinWithPreviousAction->setEnabled(!locked);
 
     m_pLockPlaylistAction->setText(locked ? tr("Unlock") : tr("Lock"));
 
@@ -202,7 +204,7 @@ void SetlogFeature::slotJoinWithPrevious() {
 
                     m_pPlaylistTableModel->select();
                     int rows = m_pPlaylistTableModel->rowCount();
-                    for(int i = 0; i < rows; ++i){
+                    for (int i = 0; i < rows; ++i) {
                         QModelIndex index = m_pPlaylistTableModel->index(i,0);
                         if (index.isValid()) {
                             TrackPointer track = m_pPlaylistTableModel->getTrack(index);
@@ -288,13 +290,6 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
         type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
         clearChildModel();
         m_lastRightClickedIndex = constructChildModel(playlistId);
-
-        if (type != PlaylistDAO::PLHT_UNKNOWN) {
-            // Switch the view to the playlist.
-            m_pPlaylistTableModel->setTableModel(playlistId);
-            // Update selection
-            emit(featureSelect(this, m_lastRightClickedIndex));
-        }
     }
 }
 

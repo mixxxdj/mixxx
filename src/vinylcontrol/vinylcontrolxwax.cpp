@@ -21,13 +21,14 @@
 
 #include <QtDebug>
 #include <limits.h>
-#include <math.h>
 
 #include "vinylcontrol/vinylcontrolxwax.h"
 #include "util/timer.h"
 #include "controlobjectthread.h"
 #include "controlobject.h"
 #include "sampleutil.h"
+#include "util/math.h"
+#include "util/defs.h"
 
 /****** TODO *******
    Stuff to maybe implement here
@@ -39,7 +40,7 @@
  ********************/
 
 // Sample threshold below which we consider there to be no signal.
-const double kMinSignal = 75.0 / SHRT_MAX;
+const double kMinSignal = 75.0 / SAMPLE_MAX;
 
 bool VinylControlXwax::s_bLUTInitialized = false;
 QMutex VinylControlXwax::s_xwaxLUTMutex;
@@ -63,6 +64,7 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue>* pConfig, QString g
           m_iPitchRingSize(0),
           m_iPitchRingPos(0),
           m_iPitchRingFilled(0),
+          m_dDisplayPitch(0.0),
           m_pSteadySubtle(new SteadyPitch(0.12)),
           m_pSteadyGross(new SteadyPitch(0.5)),
           m_bCDControl(false),
@@ -144,7 +146,7 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue>* pConfig, QString g
     // do this once across the VinylControlXwax instances.
     s_xwaxLUTMutex.lock();
 
-    timecoder_init(&timecoder, tc_def, speed, iSampleRate, /* photo */ false);
+    timecoder_init(&timecoder, tc_def, speed, iSampleRate, /* phono */ false);
     timecoder_monitor_init(&timecoder, MIXXX_VINYL_SCOPE_SIZE);
     //Note that timecoder_init will not double-malloc the LUTs, and after this we are guaranteed
     //that the LUT has been generated unless we ran out of memory.
@@ -215,12 +217,12 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
 
     // Convert CSAMPLE samples to shorts, preventing overflow.
     for (int i = 0; i < static_cast<int>(samplesSize); ++i) {
-        CSAMPLE sample = pSamples[i] * gain * SHRT_MAX;
+        CSAMPLE sample = pSamples[i] * gain * SAMPLE_MAX;
 
-        if (sample > SHRT_MAX) {
-            m_pWorkBuffer[i] = SHRT_MAX;
-        } else if (sample < SHRT_MIN) {
-            m_pWorkBuffer[i] = SHRT_MIN;
+        if (sample > SAMPLE_MAX) {
+            m_pWorkBuffer[i] = SAMPLE_MAX;
+        } else if (sample < SAMPLE_MIN) {
+            m_pWorkBuffer[i] = SAMPLE_MIN;
         } else {
             m_pWorkBuffer[i] = static_cast<short>(sample);
         }
@@ -573,8 +575,26 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
 
         controlScratch->slotSet(averagePitch + dDriftControl);
         if (m_iPosition != -1 && reportedPlayButton && uiUpdateTime(filePosition)) {
-            rateSlider->slotSet(rateDir->get() *
-                                (fabs(averagePitch + dDriftControl) - 1.0) / rateRange->get());
+            double true_pitch = averagePitch + dDriftControl;
+            double pitch_difference = true_pitch - m_dDisplayPitch;
+
+            // The true pitch can show a misleading amount of variance --
+            // differences of .1% or less can show up as 1 or 2 bpm changes.
+            // Therefore we react slowly to bpm changes to show a more steady
+            // number to the user.
+            if (fabs(pitch_difference) > 0.5) {
+                // For large changes in pitch (start/stop, usually), immediately
+                // update the display.
+                m_dDisplayPitch = true_pitch;
+            } else if (fabs(pitch_difference) > 0.005) {
+                // For medium changes in pitch, take 4 callback loops to
+                // converge on the correct amount.
+                m_dDisplayPitch += pitch_difference * .25;
+            } else {
+                // For extremely small changes, converge very slowly.
+                m_dDisplayPitch += pitch_difference * .01;
+            }
+            rateSlider->slotSet(rateDir->get() * (m_dDisplayPitch - 1.0) / rateRange->get());
             m_dUiUpdateTime = filePosition;
         }
 

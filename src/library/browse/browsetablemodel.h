@@ -7,6 +7,7 @@
 #include "library/trackmodel.h"
 #include "library/trackcollection.h"
 #include "recording/recordingmanager.h"
+#include "util/file.h"
 
 //constants
 const int COLUMN_FILENAME = 0;
@@ -26,6 +27,8 @@ const int COLUMN_BITRATE = 13;
 const int COLUMN_LOCATION = 14;
 const int COLUMN_ALBUMARTIST = 15;
 const int COLUMN_GROUPING = 16;
+const int COLUMN_FILE_MODIFIED_TIME = 17;
+const int COLUMN_FILE_CREATION_TIME = 18;
 
 // The BrowseTable models displays tracks
 // of given directory on the HDD.
@@ -36,7 +39,7 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel {
   public:
     BrowseTableModel(QObject* parent, TrackCollection* pTrackCollection, RecordingManager* pRec);
     virtual ~BrowseTableModel();
-    void setPath(QString absPath);
+    void setPath(const MDir& path);
     //reimplemented from TrackModel class
     virtual TrackPointer getTrack(const QModelIndex& index) const;
     virtual TrackModel::CapabilitiesFlags getCapabilities() const;
@@ -69,7 +72,7 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel {
     void addSearchColumn(int index);
     bool isTrackInUse(const QString& file) const;
     QList<int> m_searchColumns;
-    QString m_current_path;
+    MDir m_current_directory;
     TrackCollection* m_pTrackCollection;
     RecordingManager* m_pRecordingManager;
 };

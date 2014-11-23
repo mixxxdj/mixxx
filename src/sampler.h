@@ -9,6 +9,7 @@ class Sampler : public BaseTrackPlayer {
     Sampler(QObject* pParent,
             ConfigObject<ConfigValue> *pConfig,
             EngineMaster* pMixingEngine,
+            EffectsManager* pEffectsManager,
             EngineChannel::ChannelOrientation defaultOrientation,
             QString group);
     virtual ~Sampler();

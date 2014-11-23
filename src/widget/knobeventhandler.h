@@ -7,7 +7,7 @@
 #include <QApplication>
 #include <QPoint>
 
-#include "defs.h"
+#include "util/math.h"
 
 template <class T>
 class KnobEventHandler {
@@ -30,10 +30,10 @@ class KnobEventHandler {
         }
 
         // For legacy (MIDI) reasons this is tuned to 127.
-        double value = pWidget->getControlParameterLeft() + dist / 127.0;
+        double value = pWidget->getControlParameter() + dist / 127.0;
 
         // Clamp to [0.0, 1.0]
-        value = math_max(0.0, math_min(1.0, value));
+        value = math_clamp_unsafe(value, 0.0, 1.0);
 
         return value;
     }
@@ -42,7 +42,7 @@ class KnobEventHandler {
         if (!m_bRightButtonPressed) {
             QCursor::setPos(m_startPos);
             double value = valueFromMouseEvent(pWidget, e);
-            pWidget->setControlParameterLeftDown(value);
+            pWidget->setControlParameterDown(value);
             pWidget->update();
         }
     }
@@ -50,7 +50,7 @@ class KnobEventHandler {
     void mousePressEvent(T* pWidget, QMouseEvent* e) {
         switch (e->button()) {
             case Qt::RightButton:
-                pWidget->resetControlParameters();
+                pWidget->resetControlParameter();
                 m_bRightButtonPressed = true;
                 break;
             case Qt::LeftButton:
@@ -71,12 +71,11 @@ class KnobEventHandler {
                 QCursor::setPos(m_startPos);
                 QApplication::restoreOverrideCursor();
                 value = valueFromMouseEvent(pWidget, e);
-                pWidget->setControlParameterLeftUp(value);
+                pWidget->setControlParameterUp(value);
                 pWidget->update();
                 break;
             case Qt::RightButton:
                 m_bRightButtonPressed = false;
-                //pWidget->setControlParameterRightUp(pWidget->getValue());
                 break;
             default:
                 break;
@@ -90,10 +89,9 @@ class KnobEventHandler {
         double newValue = pWidget->getControlParameter() + wheelDirection;
 
         // Clamp to [0.0, 1.0]
-        newValue = math_max(0.0, math_min(1.0, newValue));
+        newValue = math_clamp_unsafe(newValue, 0.0, 1.0);
 
-        pWidget->setControlParameterDown(newValue);
-        pWidget->setControlParameterUp(newValue);
+        pWidget->setControlParameter(newValue);
         pWidget->update();
         e->accept();
     }

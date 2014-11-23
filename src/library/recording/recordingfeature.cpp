@@ -17,8 +17,7 @@ RecordingFeature::RecordingFeature(QObject* parent, ConfigObject<ConfigValue>* p
         : LibraryFeature(parent),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
-          m_pRecordingManager(pRecordingManager){
-
+          m_pRecordingManager(pRecordingManager) {
 }
 
 RecordingFeature::~RecordingFeature() {
@@ -65,4 +64,5 @@ void RecordingFeature::activate() {
     emit(switchToView(m_sRecordingViewName));
     // Ask the view to emit a restoreSearch signal.
     emit(requestRestoreSearch());
+    emit(enableCoverArtDisplay(false));
 }

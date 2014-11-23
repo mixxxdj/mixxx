@@ -1,0 +1,83 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Effect selector buttons.
+  Variables:
+    EffectRack: the rack
+    EffectUnit: the chain
+    Effect: the effect
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <Children>
+      <PushButton>
+        <Size>20f,20f</Size>
+        <NumberStates>1</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>⏏</Text>
+        </State>
+        <Connection>
+          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],clear</ConfigKey>
+          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+
+      <PushButton>
+        <Size>20f,20f</Size>
+        <NumberStates>1</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>◀</Text>
+        </State>
+        <Connection>
+          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],prev_effect</ConfigKey>
+          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+
+      <EffectName>
+        <MinimumSize>50,-1</MinimumSize>
+        <MaximumSize>50,-1</MaximumSize>
+        <EffectRack><Variable name="EffectRack"/></EffectRack>
+        <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
+        <Effect><Variable name="Effect"/></Effect>
+      </EffectName>
+
+      <PushButton>
+        <Size>20f,20f</Size>
+        <NumberStates>1</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>▶</Text>
+        </State>
+        <Connection>
+          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],next_effect</ConfigKey>
+          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+
+      <PushButton>
+        <Size>20f,20f</Size>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>E</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>E</Text>
+        </State>
+        <Connection>
+          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],enabled</ConfigKey>
+          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+    </Children>
+  </WidgetGroup>
+</Template>

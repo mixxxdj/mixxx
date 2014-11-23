@@ -19,38 +19,48 @@
 #define DLGPREFEQ_H
 
 #include <QWidget>
+#include <QComboBox>
 
 #include "ui_dlgprefeqdlg.h"
 #include "configobject.h"
-#include "engine/enginefilterblock.h"
-#include "controlobjectthread.h"
+#include "controlobjectslave.h"
 #include "preferences/dlgpreferencepage.h"
+#include "effects/effectsmanager.h"
+#include "effects/effectrack.h"
 
 /**
   *@author John Sully
   */
-
 class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     Q_OBJECT
   public:
-    DlgPrefEQ(QWidget *parent, ConfigObject<ConfigValue>* _config);
+    DlgPrefEQ(QWidget *parent, EffectsManager* pEffectsManager,
+              ConfigObject<ConfigValue>* _config);
     virtual ~DlgPrefEQ();
 
+    QString getEQEffectGroupForDeck(int deck) const;
+    QString getQuickEffectGroupForDeck(int deck) const;
+
   public slots:
-    void slotLoFiChanged();
-    /** Update Hi EQ **/
+    void slotEqEffectChangedOnDeck(int effectIndex);
+    void slotQuickEffectChangedOnDeck(int effectIndex);
+    void slotAddComboBox(double numDecks);
+    // Slot for toggling between advanced and basic views
+    void slotPopulateDeckEffectSelectors();
+    // Update Hi EQ
     void slotUpdateHiEQ();
-    /** Update Lo EQ **/
+    // Update Lo EQ
     void slotUpdateLoEQ();
-    /** Apply changes to widget */
+    // Apply changes to widget
     void slotApply();
     void slotUpdate();
+    void slotResetToDefaults();
+    void slotUpdateEqAutoReset(int);
+    void slotBypass(int state);
 
   signals:
     void apply(const QString &);
-
-  private slots:
-    void reset();
+    void effectOnChainSlot(const unsigned int, const unsigned int, QString);
 
   private:
     void loadSettings();
@@ -59,11 +69,24 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     int getSliderPosition(double eqFreq, int minimum, int maximum);
     void validate_levels();
 
-    ControlObjectThread m_COTLoFreq;
-    ControlObjectThread m_COTHiFreq;
-    ControlObjectThread m_COTLoFi;
+    ControlObjectSlave m_COLoFreq;
+    ControlObjectSlave m_COHiFreq;
     ConfigObject<ConfigValue>* m_pConfig;
     double m_lowEqFreq, m_highEqFreq;
+
+    // Members needed for changing the effects loaded on the EQ Effect Rack
+    EffectsManager* m_pEffectsManager;
+    EqualizerRackPointer m_pEQEffectRack;
+    QuickEffectRackPointer m_pQuickEffectRack;
+    QList<QComboBox*> m_deckEqEffectSelectors;
+    QList<QComboBox*> m_deckFilterEffectSelectors;
+    QList<bool> m_filterWaveformEffectLoaded;
+    QList<ControlObject*> m_filterWaveformEnableCOs;
+    ControlObjectSlave* m_pNumDecks;
+
+    bool m_inSlotPopulateDeckEffectSelectors;
+
+    bool m_bEqAutoReset;
 };
 
 #endif

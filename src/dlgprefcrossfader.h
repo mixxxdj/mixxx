@@ -43,7 +43,7 @@ class DlgPrefCrossfader : public DlgPreferencePage, public Ui::DlgPrefCrossfader
     /** Apply changes to widget */
     void slotApply();
     void slotUpdate();
-    void setDefaults();
+    void slotResetToDefaults();
 
   signals:
     void apply(const QString &);
@@ -64,6 +64,9 @@ class DlgPrefCrossfader : public DlgPreferencePage, public Ui::DlgPrefCrossfader
     ControlObjectThread m_COTCurve;
     ControlObjectThread m_COTCalibration;
     ControlObjectThread m_COTReverse;
+    ControlObjectThread m_COTCrossfader;
+
+    bool m_xFaderReverse;
 };
 
 #endif

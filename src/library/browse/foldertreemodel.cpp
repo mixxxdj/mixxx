@@ -1,7 +1,7 @@
 #if defined (__WINDOWS__)
 #include <windows.h>
 #include <Shellapi.h>
-#include <Shobjidl.h>
+#include <Shlobj.h>
 #else
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -15,6 +15,7 @@
 #include "library/treeitem.h"
 #include "library/browse/foldertreemodel.h"
 #include "library/browse/browsefeature.h"
+#include "util/file.h"
 
 FolderTreeModel::FolderTreeModel(QObject *parent)
         : TreeItemModel(parent) {
@@ -31,7 +32,7 @@ FolderTreeModel::~FolderTreeModel() {
  * Note that BrowseFeature inserts folder trees dynamically and rowCount()
  * is only called if necessary.
  */
-bool FolderTreeModel::hasChildren( const QModelIndex & parent) const {
+bool FolderTreeModel::hasChildren(const QModelIndex& parent) const {
     TreeItem *item = static_cast<TreeItem*>(parent.internalPointer());
     /* Usually the child count is 0 becuase we do lazy initalization
      * However, for, buid-in items such as 'Quick Links' there exist
@@ -53,6 +54,9 @@ bool FolderTreeModel::directoryHasChildren(const QString& path) const {
     if (it != m_directoryCache.end()) {
         return it.value();
     }
+
+    // Acquire a security token for the path.
+    MDir dir(path);
 
     /*
      *  The following code is too expensive, general and SLOW since

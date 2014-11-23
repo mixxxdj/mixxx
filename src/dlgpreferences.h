@@ -20,19 +20,23 @@
 
 #include <QDialog>
 #include <QEvent>
+#include <QRect>
+#include <QStringList>
 
 #include "ui_dlgpreferencesdlg.h"
 #include "configobject.h"
 #include "controlpushbutton.h"
 #include "preferences/dlgpreferencepage.h"
 
-class MixxxApp;
+class MixxxMainWindow;
 class SoundManager;
 class DlgPrefSound;
 class DlgPrefController;
 class DlgPrefControllers;
 class DlgPrefLibrary;
 class DlgPrefControls;
+class DlgPrefWaveform;
+class DlgPrefAutoDJ;
 class DlgPrefEQ;
 class DlgPrefCrossfader;
 class DlgPrefRecord;
@@ -43,6 +47,7 @@ class DlgPrefNoVinyl;
 class DlgPrefShoutcast;
 class DlgPrefReplayGain;
 class ControllerManager;
+class EffectsManager;
 class SkinLoader;
 class PlayerManager;
 class Library;
@@ -54,36 +59,52 @@ class DlgPrefModplug;
 class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     Q_OBJECT
   public:
-    DlgPreferences(MixxxApp* mixxx, SkinLoader* pSkinLoader, SoundManager* soundman,
+    DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader, SoundManager* soundman,
                    PlayerManager* pPlayerManager, ControllerManager* controllers,
-                   VinylControlManager* pVCManager, ConfigObject<ConfigValue>* pConfig,
-                   Library *pLibrary);
+                   VinylControlManager* pVCManager, EffectsManager* pEffectsManager,
+                   ConfigObject<ConfigValue>* pConfig, Library *pLibrary);
     virtual ~DlgPreferences();
 
     void addPageWidget(DlgPreferencePage* pWidget);
     void removePageWidget(DlgPreferencePage* pWidget);
+    void expandTreeItem(QTreeWidgetItem* pItem);
     void switchToPage(DlgPreferencePage* pWidget);
 
   public slots:
     void changePage(QTreeWidgetItem* current, QTreeWidgetItem* previous);
     void showSoundHardwarePage();
-
+    void slotButtonPressed(QAbstractButton* pButton);
   signals:
     void closeDlg();
     void showDlg();
 
+    // Emitted just after the user clicks Apply or OK.
+    void applyPreferences();
+    // Emitted if the user clicks Cancel
+    void cancelPreferences();
+    // Emitted if the user clicks Reset to Defaults.
+    void resetToDefaults();
+
   protected:
     bool eventFilter(QObject*, QEvent*);
+    void moveEvent(QMoveEvent* e);
+    void resizeEvent(QResizeEvent* e);
 
   private:
+    DlgPreferencePage* currentPage();
     void createIcons();
     void onShow();
     void onHide();
+    QRect getDefaultGeometry();
 
+    QStringList m_geometry;
+    ConfigObject<ConfigValue>* m_pConfig;
     DlgPrefSound* m_wsound;
     DlgPrefLibrary* m_wlibrary;
     DlgPrefControllers *m_wcontrollers;
     DlgPrefControls* m_wcontrols;
+    DlgPrefWaveform* m_wwaveform;
+    DlgPrefAutoDJ* m_wautodj;
     DlgPrefEQ* m_weq;
     DlgPrefCrossfader* m_wcrossfader;
     DlgPrefRecord* m_wrecord;
@@ -100,6 +121,8 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     QTreeWidgetItem* m_pSoundButton;
     QTreeWidgetItem* m_pLibraryButton;
     QTreeWidgetItem* m_pControlsButton;
+    QTreeWidgetItem* m_pWaveformButton;
+    QTreeWidgetItem* m_pAutoDJButton;
     QTreeWidgetItem* m_pEqButton;
     QTreeWidgetItem* m_pCrossfaderButton;
     QTreeWidgetItem* m_pRecordingButton;

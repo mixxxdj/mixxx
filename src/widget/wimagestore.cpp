@@ -1,36 +1,47 @@
 #include "widget/wimagestore.h"
 
 #include <QtDebug>
+#include <QSvgRenderer>
+#include <QPainter>
 
 // static
 QHash<QString, WImageStore::ImageInfoType*> WImageStore::m_dictionary;
 QSharedPointer<ImgSource> WImageStore::m_loader = QSharedPointer<ImgSource>();
 
 // static
-QImage * WImageStore::getImage(const QString &fileName) {
+QImage* WImageStore::getImageNoCache(const QString& fileName) {
+    return getImageNoCache(PixmapSource(fileName));
+}
+
+// static
+QImage* WImageStore::getImage(const QString& fileName) {
+    return getImage(PixmapSource(fileName));
+}
+
+// static
+QImage* WImageStore::getImage(const PixmapSource& source) {
     // Search for Image in list
     ImageInfoType* info = NULL;
 
-    QHash<QString, ImageInfoType*>::iterator it = m_dictionary.find(fileName);
+    QHash<QString, ImageInfoType*>::iterator it = m_dictionary.find(source.getId());
     if (it != m_dictionary.end()) {
         info = it.value();
         info->instCount++;
-        //qDebug() << "WImageStore returning cached Image for:" << fileName;
+        //qDebug() << "WImageStore returning cached Image for:" << source.getPath();
         return info->image;
     }
 
     // Image wasn't found, construct it
-    //qDebug() << "WImageStore Loading Image from file" << fileName;
+    //qDebug() << "WImageStore Loading Image from file" << source.getPath();
 
-    QImage* loadedImage = getImageNoCache(fileName);
+    QImage* loadedImage = getImageNoCache(source);
 
     if (loadedImage == NULL) {
         return NULL;
     }
 
-
     if (loadedImage->isNull()) {
-        qDebug() << "WImageStore couldn't load:" << fileName << (loadedImage == NULL);
+        qDebug() << "WImageStore couldn't load:" << source.getPath() << (loadedImage == NULL);
         delete loadedImage;
         return NULL;
     }
@@ -38,17 +49,31 @@ QImage * WImageStore::getImage(const QString &fileName) {
     info = new ImageInfoType;
     info->image = loadedImage;
     info->instCount = 1;
-    m_dictionary.insert(fileName, info);
+    m_dictionary.insert(source.getId(), info);
     return info->image;
 }
 
 // static
-QImage * WImageStore::getImageNoCache(const QString& fileName) {
+QImage* WImageStore::getImageNoCache(const PixmapSource& source) {
     QImage* pImage;
-    if (m_loader) {
-        pImage = m_loader->getImage(fileName);
+    if (source.isSVG()) {
+        QSvgRenderer renderer;
+        if (source.getData().isEmpty()) {
+            renderer.load(source.getPath());
+        } else {
+            renderer.load(source.getData());
+        }
+
+        pImage = new QImage(renderer.defaultSize(), QImage::Format_ARGB32);
+        pImage->fill(0x00000000);  // Transparent black.
+        QPainter painter(pImage);
+        renderer.render(&painter);
     } else {
-        pImage = new QImage(fileName);
+        if (m_loader) {
+            pImage = m_loader->getImage(source.getPath());
+        } else {
+            pImage = new QImage(source.getPath());
+        }
     }
     return pImage;
 }

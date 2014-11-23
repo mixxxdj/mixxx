@@ -16,16 +16,6 @@
 ***************************************************************************/
 #include "configobject.h"
 
-#ifdef __WINDOWS__
-#include <windows.h>
-#endif
-
-#ifdef __APPLE__
-#include <CoreFoundation/CoreFoundation.h>
-#endif
-
-#include <math.h>
-
 #include <QIODevice>
 #include <QTextStream>
 #include <QApplication>
@@ -72,7 +62,7 @@ ConfigValue::ConfigValue(int _value)
     value = QString::number(_value);
 }
 
-void ConfigValue::valCopy(const ConfigValue _value)
+void ConfigValue::valCopy(const ConfigValue& _value)
 {
     value = _value.value;
 }
@@ -97,18 +87,18 @@ ConfigValueKbd::ConfigValueKbd(QKeySequence key)
 //          qDebug() << "value" << value;
 }
 
-void ConfigValueKbd::valCopy(const ConfigValueKbd v)
+void ConfigValueKbd::valCopy(const ConfigValueKbd& v)
 {
     m_qKey = v.m_qKey;
     QTextStream(&value) << m_qKey.toString();
 }
 
-bool operator==(const ConfigValue & s1, const ConfigValue & s2)
+bool operator==(const ConfigValue& s1, const ConfigValue& s2)
 {
     return (s1.value.toUpper() == s2.value.toUpper());
 }
 
-bool operator==(const ConfigValueKbd & s1, const ConfigValueKbd & s2)
+bool operator==(const ConfigValueKbd& s1, const ConfigValueKbd& s2)
 {
     return (s1.value.toUpper() == s2.value.toUpper());
 }
@@ -202,7 +192,7 @@ ConfigKey *ConfigObject<ValueType>::get(ValueType v)
     while (iterator.hasNext())
     {
         it = iterator.next();
-        if (QString::compare(it->val->value, v.value, Qt::CaseInsensitive) == 0){
+        if (QString::compare(it->val->value, v.value, Qt::CaseInsensitive) == 0) {
             //qDebug() << "ConfigObject #534: QString::compare match for " << it->key->group << it->key->item;
             return it->key;
         }
@@ -284,7 +274,6 @@ template <class ValueType> bool ConfigObject<ValueType>::Parse()
     return true;
 }
 
-
 template <class ValueType> void ConfigObject<ValueType>::clear()
 {
     //Delete the pointers, because that's what we did before we
@@ -350,57 +339,46 @@ QString ConfigObject<ValueType>::getResourcePath() {
     // On Windows it is always (and only) app dir.
     // On OS X it is the current directory and then the Resources/ dir in the app bundle
     //
-    QString qResourcePath; // TODO: this only changes once (on first load) during a run should make this a singleton.
+
+#ifdef __WINDOWS__
+    bool windows = true;
+#else
+    bool windows = false;
+#endif
 
     // Try to read in the resource directory from the command line
-    qResourcePath = CmdlineArgs::Instance().getResourcePath();
+    QString qResourcePath = CmdlineArgs::Instance().getResourcePath();
 
     if (qResourcePath.isNull() || qResourcePath.isEmpty()) {
-#ifdef __UNIX__
-        // On Linux, check if the path is stored in the configuration database.
-        if (getValueString(ConfigKey("[Config]","Path")).length()>0 && QDir(getValueString(ConfigKey("[Config]","Path"))).exists())
+        QDir mixxxDir(QCoreApplication::applicationDirPath());
+        // Always check to see if the path is stored in the configuration
+        // database unless we are running on Windows. See Bug #1392854.
+        if (!windows && getValueString(ConfigKey("[Config]","Path")).length()>0 && QDir(getValueString(ConfigKey("[Config]","Path"))).exists()) {
             qResourcePath = getValueString(ConfigKey("[Config]","Path"));
-        else
-        {
-            // Set the path according to the compile time define, UNIX_SHARE_PATH
+        } else if (mixxxDir.cd("res")) {
+            // We are running out of the repository root.
+            qResourcePath = mixxxDir.absolutePath();
+        } else if (mixxxDir.absolutePath().endsWith("_build") &&
+                   mixxxDir.cdUp() && mixxxDir.cd("res")) {
+            // We are running out of the (lin|win|osx)XX_build folder.
+            qResourcePath = mixxxDir.absolutePath();
+        }
+#ifdef __UNIX__
+        // On Linux if all of the above fail the /usr/share path is the logical
+        // place to look.
+        else {
             qResourcePath = UNIX_SHARE_PATH;
         }
 #endif
 #ifdef __WINDOWS__
-        // On Windows, set the config dir relative to the application dir
-        qResourcePath = QCoreApplication::applicationDirPath();
+        // On Windows, set the config dir relative to the application dir if all
+        // of the above fail.
+        else {
+            qResourcePath = QCoreApplication::applicationDirPath();
+        }
 #endif
 #ifdef __APPLE__
-        /*
-        // Set the path relative to the bundle directory
-        CFURLRef pluginRef = CFBundleCopyBundleURL(CFBundleGetMainBundle());
-        CFStringRef macPath = CFURLCopyFileSystemPath(pluginRef, kCFURLPOSIXPathStyle);
-        char utf8path[256];
-        //Attempt to decode obtain the macPath string as UTF-8
-        if (CFStringGetCString(macPath, utf8path, sizeof(utf8path), kCFStringEncodingUTF8))
-        {
-        qConfigPath.fromUtf8(utf8path);
-        }
-        else {
-        //Fallback on the "system encoding"... (this is just our old code, which probably doesn't make any sense
-        //since it plays roullette with the type of text encoding)
-        qConfigPath = CFStringGetCStringPtr(macPath, CFStringGetSystemEncoding());
-        }
-        qConfigPath.append("/Contents/Resources/"); //XXX this should really use QDir, this entire function should
-        */
-        QDir mixxxDir(QCoreApplication::applicationDirPath());
-
-        if (mixxxDir.absolutePath().endsWith("_build")) {
-            // We are running out of the osxXX_build folder.
-            if (mixxxDir.cdUp() && mixxxDir.cd("res")) {
-                qResourcePath = mixxxDir.absolutePath();
-            } else {
-                // TODO(rryan): What should we do here?
-            }
-        } else if (mixxxDir.cd("res")) {
-            // We are running out of the repository root.
-            qResourcePath = mixxxDir.absolutePath();
-        } else if (mixxxDir.cdUp() && mixxxDir.cd("Resources")) {
+        else if (mixxxDir.cdUp() && mixxxDir.cd("Resources")) {
             // Release configuraton
             qResourcePath = mixxxDir.absolutePath();
         } else {
@@ -408,7 +386,7 @@ QString ConfigObject<ValueType>::getResourcePath() {
         }
 #endif
     } else {
-        qDebug() << "Setting qResourcePath from location in resourcePath commandline arg:" << qResourcePath;
+        //qDebug() << "Setting qResourcePath from location in resourcePath commandline arg:" << qResourcePath;
     }
 
     if (qResourcePath.length() == 0) {
@@ -420,9 +398,10 @@ QString ConfigObject<ValueType>::getResourcePath() {
         qResourcePath.append("/");
     }
 
+    qDebug() << "Loading resources from " << qResourcePath;
+
     return qResourcePath;
 }
-
 
 template <class ValueType> ConfigObject<ValueType>::ConfigObject(QDomNode node) {
 
@@ -448,6 +427,13 @@ template <class ValueType> QString ConfigObject<ValueType>::getSettingsPath() co
     return configFileInfo.absoluteDir().absolutePath();
 }
 
+template <class ValueType> QHash<ConfigKey, ValueType> ConfigObject<ValueType>::toHash() const {
+    QHash<ConfigKey, ValueType> hash;
+    foreach (ConfigOption<ValueType>* pOption, m_list) {
+        hash.insert(*pOption->key, *pOption->val);
+    }
+    return hash;
+}
 
 template class ConfigObject<ConfigValue>;
 template class ConfigObject<ConfigValueKbd>;

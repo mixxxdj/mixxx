@@ -1,6 +1,8 @@
 #ifndef BATTERYLINUX_H
 #define BATTERYLINUX_H
 
+#include <QString>
+
 #include "util/battery/battery.h"
 
 class BatteryLinux : public Battery {

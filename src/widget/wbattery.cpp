@@ -3,7 +3,7 @@
 
 #include "widget/wbattery.h"
 #include "util/battery/battery.h"
-#include "defs.h"
+#include "util/math.h"
 
 WBattery::WBattery(QWidget *parent)
         : WWidget(parent),
@@ -19,15 +19,27 @@ WBattery::~WBattery() {
 
 void WBattery::setup(QDomNode node, const SkinContext& context) {
     if (context.hasNode(node, "BackPath")) {
-        setPixmap(&m_pPixmapBack, context.selectString(node, "BackPath"));
+        QString mode_str = context.selectAttributeString(
+                context.selectElement(node, "BackPath"), "scalemode", "TILE");
+        setPixmap(&m_pPixmapBack,
+                  context.getPixmapSource(context.selectNode(node, "BackPath")),
+                  Paintable::DrawModeFromString(mode_str));
     }
 
     if (context.hasNode(node, "PixmapUnknown")) {
-        setPixmap(&m_pPixmapUnknown, context.selectString(node, "PixmapUnknown"));
+        QString mode_str = context.selectAttributeString(
+                context.selectElement(node, "PixmapUnknown"), "scalemode", "TILE");
+        setPixmap(&m_pPixmapUnknown,
+                  context.getPixmapSource(context.selectNode(node, "PixmapUnknown")),
+                  Paintable::DrawModeFromString(mode_str));
     }
 
     if (context.hasNode(node, "PixmapCharged")) {
-        setPixmap(&m_pPixmapCharged, context.selectString(node, "PixmapCharged"));
+        QString mode_str = context.selectAttributeString(
+                context.selectElement(node, "PixmapCharged"), "scalemode", "TILE");
+        setPixmap(&m_pPixmapCharged,
+                  context.getPixmapSource(context.selectNode(node, "PixmapCharged")),
+                  Paintable::DrawModeFromString(mode_str));
     }
 
     int numberStates = context.selectInt(node, "NumberStates");
@@ -39,18 +51,28 @@ void WBattery::setup(QDomNode node, const SkinContext& context) {
     m_dischargingPixmaps.resize(numberStates);
 
     if (context.hasNode(node, "PixmapsCharging")) {
+        // TODO(XXX) inline SVG support via context.getPixmapSource.
         QString chargingPath = context.selectString(node, "PixmapsCharging");
+        Paintable::DrawMode mode = Paintable::DrawModeFromString(
+                context.selectAttributeString(
+                        context.selectElement(node, "PixmapsCharging"),
+                        "scalemode", "TILE"));
         for (int i = 0; i < m_chargingPixmaps.size(); ++i) {
-            setPixmaps(&m_chargingPixmaps, i,
-                       context.getSkinPath(chargingPath.arg(i)));
+            PixmapSource source(chargingPath.arg(i));
+            setPixmap(&m_chargingPixmaps[i], source, mode);
         }
     }
 
     if (context.hasNode(node, "PixmapsDischarging")) {
+        // TODO(XXX) inline SVG support via context.getPixmapSource.
         QString dischargingPath = context.selectString(node, "PixmapsDischarging");
+        Paintable::DrawMode mode = Paintable::DrawModeFromString(
+                context.selectAttributeString(
+                        context.selectElement(node, "PixmapsDischarging"),
+                        "scalemode", "TILE"));
         for (int i = 0; i < m_dischargingPixmaps.size(); ++i) {
-            setPixmaps(&m_dischargingPixmaps, i,
-                       context.getSkinPath(dischargingPath.arg(i)));
+            PixmapSource source(dischargingPath.arg(i));
+            setPixmap(&m_dischargingPixmaps[i], source, mode);
         }
     }
 
@@ -124,31 +146,13 @@ void WBattery::update() {
     WWidget::update();
 }
 
-void WBattery::setPixmap(PaintablePointer* ppPixmap, const QString& filename) {
-    PaintablePointer pPixmap = WPixmapStore::getPaintable(filename);
-
+void WBattery::setPixmap(PaintablePointer* ppPixmap, const PixmapSource& source,
+                         Paintable::DrawMode mode) {
+    PaintablePointer pPixmap = WPixmapStore::getPaintable(source, mode);
     if (pPixmap.isNull() || pPixmap->isNull()) {
-        qDebug() << metaObject()->className()
-                 << "Error loading pixmap:" << filename;
+        qDebug() << this << "Error loading pixmap:" << source.getPath();
     } else {
         *ppPixmap = pPixmap;
-        setFixedSize(pPixmap->size());
-    }
-}
-
-void WBattery::setPixmaps(QVector<PaintablePointer>* pPixmaps,
-                          int iPos, const QString& filename) {
-    if (iPos < 0 || iPos >= pPixmaps->size()) {
-        return;
-    }
-
-    PaintablePointer pPixmap = WPixmapStore::getPaintable(filename);
-
-    if (pPixmap.isNull() || pPixmap->isNull()) {
-        qDebug() << metaObject()->className()
-                 << "Error loading pixmap:" << filename;
-    } else {
-        (*pPixmaps)[iPos] = pPixmap;
         setFixedSize(pPixmap->size());
     }
 }

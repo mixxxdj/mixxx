@@ -19,16 +19,7 @@
 
 #include <signal.h>
 
-#ifdef __WINDOWS__
-#include <windows.h>
-//sleep on linux assumes seconds where as Sleep on Windows assumes milliseconds
-#define sleep(x) Sleep(x*1000)
-#else
-#include <unistd.h>
-#endif
-
 #include "engine/sidechain/engineshoutcast.h"
-
 #include "configobject.h"
 #include "playerinfo.h"
 #include "encoder/encoder.h"
@@ -36,6 +27,7 @@
 #include "encoder/encodervorbis.h"
 #include "shoutcast/defs_shoutcast.h"
 #include "trackinfoobject.h"
+#include "util/sleep.h"
 
 #define TIMEOUT 10
 
@@ -46,6 +38,7 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
           m_pShoutMetaData(NULL),
           m_iMetaDataLife(0),
           m_iShoutStatus(0),
+          m_iShoutFailures(0),
           m_pConfig(_config),
           m_encoder(NULL),
           m_pShoutcastNeedUpdateFromPrefs(NULL),
@@ -114,7 +107,7 @@ EngineShoutcast::~EngineShoutcast() {
 }
 
 bool EngineShoutcast::serverDisconnect() {
-    if (m_encoder){
+    if (m_encoder) {
         m_encoder->flush();
         delete m_encoder;
         m_encoder = NULL;
@@ -212,6 +205,9 @@ void EngineShoutcast::updateFromPreferences() {
             ConfigKey(SHOUTCAST_PREF_KEY, "custom_title"));
     m_customArtist = m_pConfig->getValueString(
             ConfigKey(SHOUTCAST_PREF_KEY, "custom_artist"));
+
+    m_metadataFormat = m_pConfig->getValueString(
+            ConfigKey(SHOUTCAST_PREF_KEY, "metadata_format"));
 
     int format;
     int protocol;
@@ -381,7 +377,7 @@ bool EngineShoutcast::serverConnect() {
      * If m_encoder is NULL, then we propably want to use MP3 streaming, however, lame could not be found
      * It does not make sense to connect
      */
-    if(m_encoder == NULL){
+    if (m_encoder == NULL) {
         m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY,"enabled"),ConfigValue("0"));
         m_pShoutcastStatus->set(SHOUTCAST_DISCONNECTED);
         return false;
@@ -433,7 +429,7 @@ bool EngineShoutcast::serverConnect() {
     }
     //otherwise disable shoutcast in preferences
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY,"enabled"),ConfigValue("0"));
-    if(m_pShout){
+    if (m_pShout) {
         shout_close(m_pShout);
         //errorDialog(tr("Mixxx could not connect to the server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
     }
@@ -450,11 +446,11 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
 
     if (m_iShoutStatus == SHOUTERR_CONNECTED) {
         // Send header if there is one
-        if ( headerLen > 0 ) {
+        if (headerLen > 0) {
             ret = shout_send(m_pShout, header, headerLen);
             if (ret != SHOUTERR_SUCCESS) {
                 qDebug() << "DEBUG: Send error: " << shout_get_error(m_pShout);
-                if ( m_iShoutFailures > 3 ){
+                if (m_iShoutFailures > 3) {
                     if(!serverConnect())
                         errorDialog(tr("Lost connection to streaming server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
                 }
@@ -471,7 +467,7 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
         ret = shout_send(m_pShout, body, bodyLen);
         if (ret != SHOUTERR_SUCCESS) {
             qDebug() << "DEBUG: Send error: " << shout_get_error(m_pShout);
-            if ( m_iShoutFailures > 3 ){
+            if (m_iShoutFailures > 3) {
                 if(!serverConnect())
                     errorDialog(tr("Lost connection to streaming server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
             }
@@ -533,7 +529,7 @@ void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         return;
 
     // If we are connected, encode the samples.
-    if (iBufferSize > 0 && m_encoder){
+    if (iBufferSize > 0 && m_encoder) {
         m_encoder->encodeBuffer(pBuffer, iBufferSize);
     }
 
@@ -546,6 +542,8 @@ void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
 bool EngineShoutcast::metaDataHasChanged() {
     TrackPointer pTrack;
 
+    // TODO(rryan): This is latency and buffer size dependent. Should be based
+    // on time.
     if (m_iMetaDataLife < 16) {
         m_iMetaDataLife++;
         return false;
@@ -611,7 +609,35 @@ void EngineShoutcast::updateMetaData() {
                 shout_metadata_add(m_pShoutMetaData, "artist",  encodeString(artist).constData());
                 shout_metadata_add(m_pShoutMetaData, "title",  encodeString(title).constData());
             } else {
-                QByteArray baSong = encodeString(artist.isEmpty() ? title : artist + " - " + title);
+                // we are going to take the metadata format and replace all
+                // the references to $title and $artist by doing a single
+                // pass over the string
+                int replaceIndex = 0;
+
+                // Make a copy so we don't overwrite the references only
+                // once per streaming session.
+                QString metadataFinal = m_metadataFormat;
+                do {
+                    // find the next occurrence
+                    replaceIndex = metadataFinal.indexOf(
+                                      QRegExp("\\$artist|\\$title"),
+                                      replaceIndex);
+
+                    if (replaceIndex != -1) {
+                        if (metadataFinal.indexOf(
+                                          QRegExp("\\$artist"), replaceIndex)
+                                          == replaceIndex) {
+                            metadataFinal.replace(replaceIndex, 7, artist);
+                            // skip to the end of the replacement
+                            replaceIndex += artist.length();
+                        } else {
+                            metadataFinal.replace(replaceIndex, 6, title);
+                            replaceIndex += title.length();
+                        }
+                    }
+                } while (replaceIndex != -1);
+
+                QByteArray baSong = encodeString(metadataFinal);
                 shout_metadata_add(m_pShoutMetaData, "song",  baSong.constData());
             }
             shout_set_metadata(m_pShout, m_pShoutMetaData);

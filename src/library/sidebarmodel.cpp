@@ -5,6 +5,7 @@
 #include "library/libraryfeature.h"
 #include "library/sidebarmodel.h"
 #include "library/treeitem.h"
+#include "library/browse/browsefeature.h"
 
 SidebarModel::SidebarModel(QObject* parent)
         : QAbstractItemModel(parent),
@@ -17,8 +18,8 @@ SidebarModel::~SidebarModel() {
 
 void SidebarModel::addLibraryFeature(LibraryFeature* feature) {
     m_sFeatures.push_back(feature);
-    connect(feature, SIGNAL(featureIsLoading(LibraryFeature*)),
-            this, SLOT(slotFeatureIsLoading(LibraryFeature*)));
+    connect(feature, SIGNAL(featureIsLoading(LibraryFeature*, bool)),
+            this, SLOT(slotFeatureIsLoading(LibraryFeature*, bool)));
     connect(feature, SIGNAL(featureLoadingFinished(LibraryFeature*)),
             this, SLOT(slotFeatureLoadingFinished(LibraryFeature*)));
     connect(feature, SIGNAL(featureSelect(LibraryFeature*, const QModelIndex&)),
@@ -106,7 +107,7 @@ QModelIndex SidebarModel::parent(const QModelIndex& index) const {
             // if we have selected an item at the first level of a childnode
 
             if (tree_item_parent) {
-                if (tree_item_parent->data() == "$root"){
+                if (tree_item_parent->data() == "$root") {
                     LibraryFeature* feature = tree_item->getFeature();
                     for (int i = 0; i < m_sFeatures.size(); ++i) {
                         if (feature == m_sFeatures[i]) {
@@ -174,6 +175,7 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
     }
 
     if (index.internalPointer() == this) {
+        //If it points to SidebarModel
         if (role == Qt::DisplayRole) {
             return m_sFeatures[index.row()]->title();
         } else if (role == Qt::DecorationRole) {
@@ -181,17 +183,28 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
         }
     }
 
-    TreeItem* tree_item = (TreeItem*)index.internalPointer();
-    if (tree_item) {
-        if (role == Qt::DisplayRole) {
-            return tree_item->data();
-        } else if (role == Qt::UserRole) {
-            // We use Qt::UserRole to ask for the datapath.
-            return tree_item->dataPath();
-        } else if (role == Qt::DecorationRole) {
-            return tree_item->getIcon();
+    if (index.internalPointer() != this) {
+        // If it points to a TreeItem
+        TreeItem* tree_item = (TreeItem*)index.internalPointer();
+        if (tree_item) {
+            if (role == Qt::DisplayRole) {
+                return tree_item->data();
+            } else if (role == Qt::ToolTipRole) {
+                // If it's the "Quick Links" node, display it's name
+                if (tree_item->dataPath() == QUICK_LINK_NODE) {
+                    return tree_item->data();
+                } else {
+                    return tree_item->dataPath();
+                }
+            } else if (role == Qt::UserRole) {
+                // We use Qt::UserRole to ask for the datapath.
+                return tree_item->dataPath();
+            } else if (role == Qt::DecorationRole) {
+                return tree_item->getIcon();
+            }
         }
     }
+
     return QVariant();
 }
 
@@ -362,13 +375,13 @@ void SidebarModel::slotModelReset() {
 
 /*
  * Call this slot whenever the title of the feature has changed.
- * See RhythmboxFeature for an example.
- * While the rhythmbox music collection is parsed
- * the title becomes '(loading) Rhythmbox'
+ * See RhythmboxFeature for an example, in which the title becomes '(loading) Rhythmbox'
+ * If selectFeature is true, the feature is selected when the title change occurs.
  */
-void SidebarModel::slotFeatureIsLoading(LibraryFeature * feature) {
+void SidebarModel::slotFeatureIsLoading(LibraryFeature * feature, bool selectFeature) {
     featureRenamed(feature);
-    slotFeatureSelect(feature);
+    if(selectFeature)
+    	slotFeatureSelect(feature);
 }
 
 /* Tobias: This slot is somewhat redundant but I decided

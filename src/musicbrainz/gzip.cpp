@@ -26,7 +26,7 @@ inline unsigned long calculateCrc32(const QByteArray &data)
 
 QByteArray gzipCompress(const QByteArray &data)
 {
-    const char header[10] = {
+    const unsigned char header[10] = {
         0x1f, 0x8b, // ID1 + ID2
         8,          // Compression Method
         0,          // Flags
@@ -40,10 +40,9 @@ QByteArray gzipCompress(const QByteArray &data)
     compressedData.remove(compressedData.size() - 4, 4); // zlib footer
 
     QByteArray result;
-    result.append(header, 10);
+    result.append(reinterpret_cast<const char*>(header), 10);
     result.append(compressedData);
     result.append(render32BitInt(calculateCrc32(data)));
     result.append(render32BitInt(data.size()));
     return result;
 }
-

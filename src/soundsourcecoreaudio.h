@@ -19,7 +19,6 @@
 #ifndef SOUNDSOURCECOREAUDIO_H
 #define SOUNDSOURCECOREAUDIO_H
 
-#include <QFile>
 #include <QString>
 #include <AudioToolbox/AudioToolbox.h>
 //In our tree at lib/apple/
@@ -36,24 +35,24 @@
 #include "AudioFormat.h"
 #endif
 
-#include <vector>
 #include <fcntl.h>
 
-#include "defs.h"
+#include "util/types.h"
+#include "util/defs.h"
 #include "soundsource.h"
 
 class SoundSourceCoreAudio : public Mixxx::SoundSource {
 public:
-    SoundSourceCoreAudio(QString filename);
+    explicit SoundSourceCoreAudio(QString filename);
     ~SoundSourceCoreAudio();
-    int open();
+    Result open();
     long seek(long filepos);
     unsigned read(unsigned long size, const SAMPLE *buffer);
     inline long unsigned length();
-    int parseHeader();
+    Result parseHeader();
+    QImage parseCoverArt();
     static QList<QString> supportedFileExtensions();
 private:
-    QFile m_file;
     unsigned int m_samples; // total number of samples
     SInt64 m_headerFrames;
     ExtAudioFileRef m_audioFile;

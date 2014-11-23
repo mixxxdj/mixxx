@@ -9,9 +9,9 @@
 
 #include "configobject.h"
 #include "analyser.h"
+#include "soundsource.h"
 #include "trackinfoobject.h"
 
-class SoundSourceProxy;
 class TrackCollection;
 
 class AnalyserQueue : public QThread {
@@ -58,7 +58,7 @@ class AnalyserQueue : public QThread {
 
     bool isLoadedTrackWaiting(TrackPointer tio);
     TrackPointer dequeueNextBlocking();
-    bool doAnalysis(TrackPointer tio, SoundSourceProxy* pSoundSource);
+    bool doAnalysis(TrackPointer tio, const Mixxx::SoundSourcePointer& pSoundSource);
     void emitUpdateProgress(TrackPointer tio, int progress);
 
     bool m_exit;

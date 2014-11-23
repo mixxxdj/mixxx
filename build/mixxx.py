@@ -52,7 +52,8 @@ class MixxxBuild(object):
                                    'kfreebsd-amd64', 'kfreebsd-i386',
                                    'i486', 'i386', 'ppc', 'ppc64', 'powerpc',
                                    'powerpc64', 'powerpcspe', 's390x',
-                                   'amd64', 'amd64', 'em64t', 'intel64']:
+                                   'amd64', 'em64t', 'intel64', 'arm64',
+                                   'ppc64el']:
             raise Exception("invalid machine type")
 
         if toolchain not in ['gnu', 'msvs']:
@@ -100,15 +101,16 @@ class MixxxBuild(object):
             ) in ['x86_64', 'powerpc64', 'ppc64', 'amd64', 'em64t', 'intel64']
         self.bitwidth = 64 if self.machine_is_64bit else 32
         self.architecture_is_x86 = self.machine.lower(
-            ) in ['x86', 'x86_64', 'i386', 'i486', 'i586', 'i686', 'em64t', 'intel64']
+            ) in ['x86', 'x86_64', 'i386', 'i486', 'i586', 'i686', 'em64t',
+                  'intel64', 'amd64']
         self.architecture_is_powerpc = self.machine.lower(
             ) in ['powerpc', 'powerpc64', 'ppc', 'ppc64']
+        self.architecture_is_arm = self.machine.lower().startswith('arm')
 
         self.build_dir = util.get_build_dir(self.platform, self.bitwidth)
 
         # Currently this only works for Windows
         self.static_dependencies = int(Script.ARGUMENTS.get('staticlibs', 0))
-        self.msvcdebug = int(Script.ARGUMENTS.get('msvcdebug', 0))
 
         logging.info("Target Platform: %s" % self.platform)
         logging.info("Target Machine: %s" % self.machine)
@@ -119,8 +121,6 @@ class MixxxBuild(object):
         if self.platform_is_windows:
             logging.info("Static dependencies: %s" % (
                 "YES" if self.static_dependencies else "NO"))
-            logging.info(
-                "MSVC Debug build: %s" % ("YES" if self.msvcdebug else "NO"))
 
         if self.crosscompile:
             logging.info("Host Platform: %s" % self.host_platform)
@@ -171,10 +171,18 @@ class MixxxBuild(object):
             tools.append('OSConsX')
             toolpath.append('#/build/osx/')
         if self.platform_is_windows and self.toolchain_is_msvs:
-            toolpath.append('msvs')
-            extra_arguments['VCINSTALLDIR'] = os.getenv(
-                'VCInstallDir')  # TODO(XXX) Why?
-            extra_arguments['QT_LIB'] = ''  # TODO(XXX) Why?
+            # NOTE(rryan): Don't use the SCons mssdk tool since it does not
+            # support x64.
+            # In SConscript.env we use the MSVS tool to let you generate a
+            # Visual Studio solution. Consider removing this.
+            tools.extend(['msvs'])
+            # SCons's built-in Qt tool attempts to link 'qt' into your binary if
+            # you don't do this.
+            extra_arguments['QT_LIB'] = ''
+            # Causes SCons to bypass MSVC environment detection altogether
+            # and depend on environment variables.
+            # TODO(rryan): Expose SCons MSVC auto-detection options.
+            extra_arguments['MSVC_USE_SCRIPT'] = None
 
         # Setup the appropriate toolchains for cross-compiling
         if self.crosscompile:
@@ -187,6 +195,11 @@ class MixxxBuild(object):
             tools=tools, toolpath=toolpath, ENV=os.environ,
             **extra_arguments)
         self.read_environment_variables()
+
+        # Now that environment variables have been read, we can detect the compiler.
+        self.compiler_is_gcc = 'gcc' in self.env['CC']
+        self.compiler_is_clang = 'clang' in self.env['CC']
+
         self.virtualize_build_dir()
 
         if self.toolchain_is_gnu:
@@ -194,6 +207,8 @@ class MixxxBuild(object):
                 self.env.Append(CCFLAGS='-m32')
             elif flags_force64:
                 self.env.Append(CCFLAGS='-m64')
+
+        self.setup_platform_sdk()
 
         if self.platform_is_osx:
             if self.architecture_is_powerpc:
@@ -238,6 +253,108 @@ class MixxxBuild(object):
     def detect_machine(self):
         return platform.machine()
 
+    def setup_platform_sdk(self):
+        if self.platform_is_windows:
+            self.setup_windows_platform_sdk()
+        elif self.platform_is_osx:
+            self.setup_osx_platform_sdk()
+
+    def setup_windows_platform_sdk(self):
+        mssdk_dir = Script.ARGUMENTS.get('mssdk_dir', None)
+        if mssdk_dir is None:
+            print 'Skipping Windows SDK setup because no SDK path was specified.'
+            print 'Specify the path to your platform SDK with mssdk_dir.'
+            return
+        env_update_tuples = []
+        include_path = os.path.join(mssdk_dir, 'Include')
+
+        if not os.path.exists(include_path):
+            raise Exception('No "Include" subfolder exists in the specified mssdk_dir.')
+        env_update_tuples.append(('INCLUDE', include_path))
+        mfc_path = os.path.join(include_path, 'mfc')
+        if os.path.exists(mfc_path):
+            env_update_tuples.append(('INCLUDE', mfc_path))
+        atl_path = os.path.join(include_path, 'atl')
+        if os.path.exists(atl_path):
+            env_update_tuples.append(('INCLUDE', atl_path))
+
+        bin_path = os.path.join(mssdk_dir, 'Bin')
+        if self.machine_is_64bit:
+            bin_path = os.path.join(bin_path, 'x64')
+        if not os.path.exists(bin_path):
+            raise Exception('No "Bin" subfolder exists in the specified mssdk_dir.')
+        env_update_tuples.append(('PATH', bin_path))
+
+        lib_path = os.path.join(mssdk_dir, 'Lib')
+        if self.machine_is_64bit:
+            lib_path = os.path.join(lib_path, 'x64')
+        if not os.path.exists(lib_path):
+            raise Exception('No "Lib" subfolder exists in the specified mssdk_dir.')
+        env_update_tuples.append(('LIB', lib_path))
+        env_update_tuples.append(('LIBPATH', lib_path))
+
+        for variable, directory in env_update_tuples:
+            self.env.PrependENVPath(variable, directory)
+
+
+    def setup_osx_platform_sdk(self):
+        sysroot = Script.ARGUMENTS.get('sysroot', '')
+        if sysroot:
+            self.env.Append(CCFLAGS=['-isysroot', sysroot])
+
+        # If no sysroot was specified, pick one automatically. The only platform
+        # we pick one automatically on is OS X.
+        if self.platform_is_osx:
+            if '-isysroot' in self.env['CXXFLAGS'] or '-isysroot' in self.env['CFLAGS']:
+                print 'Skipping OS X automatic sysroot selection because -isysroot is in your CCFLAGS.'
+                return
+
+            print 'Automatically detecting Mac OS X SDK.'
+
+            # SDK versions in order of precedence.
+            sdk_versions = ( '10.9', '10.8', '10.7', '10.6', '10.5', )
+            clang_sdk_versions = ( '10.9', '10.8', '10.7', )
+            valid_cpp_lib_versions = ( 'libstdc++', 'libc++', )
+
+            # By default use old gcc C++ library version
+            osx_stdlib = Script.ARGUMENTS.get('stdlib', 'libstdc++')
+            if osx_stdlib not in valid_cpp_lib_versions:
+                raise Exception('Unsupported C++ stdlib version')
+
+            if osx_stdlib == 'libc++':
+                sdk_version_default = '10.9'
+            else:
+                sdk_version_default = '10.5'
+
+            min_sdk_version = Script.ARGUMENTS.get('osx_sdk_version_min', sdk_version_default)
+            if min_sdk_version not in sdk_versions:
+                raise Exception('Unsupported osx_sdk_version_min value')
+
+            if osx_stdlib == 'libc++' and min_sdk_version not in clang_sdk_versions:
+                raise Exception('stdlib=libc++ requires osx_sdk_version_min >= 10.7')
+
+            print "XCode developer directory:", os.popen('xcode-select -p').readline().strip()
+            for sdk in sdk_versions:
+                sdk_path = os.popen(
+                    'xcodebuild -version -sdk macosx%s Path' % sdk).readline().strip()
+                if sdk_path:
+                    print "Automatically selected OS X SDK:", sdk_path
+
+                    common_flags = ['-isysroot', sdk_path,
+                                    '-mmacosx-version-min=%s' % min_sdk_version]
+                    link_flags = [
+                        '-Wl,-syslibroot,' + sdk_path,
+                        '-stdlib=%s' % osx_stdlib
+                    ]
+                    self.env.Append(CCFLAGS=common_flags)
+                    self.env.Append(LINKFLAGS=common_flags + link_flags)
+                    return
+
+            print 'Could not find a supported Mac OS X SDK.'
+            print ('Make sure that XCode is installed, you have installed '
+                   'the command line tools, and have selected an SDK path with '
+                   'xcode-select.')
+
     def read_environment_variables(self):
         # Import environment variables from the terminal. Note that some
         # variables correspond to variables inside the SCons env with different
@@ -252,6 +369,16 @@ class MixxxBuild(object):
             self.env['CXXFLAGS'] += SCons.Util.CLVar(os.environ['CXXFLAGS'])
         if 'LDFLAGS' in os.environ:
             self.env['LINKFLAGS'] += SCons.Util.CLVar(os.environ['LDFLAGS'])
+
+        # Allow installation directories to be specified.
+        prefix = Script.ARGUMENTS.get('prefix', '/usr/local')
+        if os.environ.has_key('LIBDIR'):
+            self.env['LIBDIR'] = os.path.relpath(os.environ['LIBDIR'], prefix)
+        if os.environ.has_key('BINDIR'):
+            self.env['BINDIR'] = os.path.relpath(os.environ['BINDIR'], prefix)
+        if os.environ.has_key('SHAREDIR'):
+            self.env['SHAREDIR'] = \
+                os.path.relpath(os.environ['SHAREDIR'], prefix)
 
         # Initialize this as a list, fixes a bug where first CPPDEFINE would get
         # mangled
@@ -283,9 +410,8 @@ class MixxxBuild(object):
         vars.Add('virtualize',
                  'Dynamically swap out the build directory when switching Git branches.', 1)
         vars.Add('qtdir', 'Set to your QT4 directory', '/usr/share/qt4')
-        if self.platform_is_windows:
-            vars.Add('sqlitedll', 'Set to 1 to enable including QSQLite.dll.\
-\n           Set to 0 if SQLite support is compiled into QtSQL.dll.', 1)
+        vars.Add('qt_sqlite_plugin', 'Set to 1 to package the Qt SQLite plugin.'
+                 '\n           Set to 0 if SQLite support is compiled into QtSQL.', 0)
         vars.Add('target',
                  'Set the build target for cross-compiling (windows, osx, linux, bsd).', '')
         vars.Add(
@@ -296,6 +422,7 @@ class MixxxBuild(object):
                  'Set the path to the root of a cross-compile sandbox.', '')
         vars.Add('force32', 'Force a 32-bit compile', 0)
         vars.Add('force64', 'Force a 64-bit compile', 0)
+        vars.Add('sysroot', 'Specify a custom sysroot', '')
 
         for feature_class in self.available_features:
             # Instantiate the feature

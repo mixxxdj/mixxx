@@ -88,7 +88,7 @@ TEST_F(DirectoryDAOTest, addDirTest) {
     }
 
     // the test db should be always empty when tests are started.
-    ASSERT_EQ(1, dirs.size());
+    EXPECT_EQ(1, dirs.size());
     EXPECT_QSTRING_EQ(testParent, dirs.at(0));
 }
 
@@ -125,7 +125,7 @@ TEST_F(DirectoryDAOTest, getDirTest) {
 
     QStringList dirs = m_DirectoryDao.getDirs();
 
-    ASSERT_EQ(2, dirs.size());
+    EXPECT_EQ(2, dirs.size());
     EXPECT_QSTRING_EQ(testdir, dirs.at(0));
     EXPECT_QSTRING_EQ(testdir2, dirs.at(1));
 }
@@ -133,24 +133,34 @@ TEST_F(DirectoryDAOTest, getDirTest) {
 TEST_F(DirectoryDAOTest, relocateDirTest) {
     DirectoryDAO &directoryDao = m_pTrackCollection->getDirectoryDAO();
 
-    directoryDao.addDirectory("/Test");
-    directoryDao.addDirectory("/Test2");
+    // use a temp dir so that we always use a real existing system path
+    QString testdir(QDir::tempPath() + "/TestDir");
+    QString test2(QDir::tempPath() + "/TestDir2");
+    QString testnew(QDir::tempPath() + "/TestDirNew");
+
+    directoryDao.addDirectory(testdir);
+    directoryDao.addDirectory(test2);
+
     TrackDAO &trackDAO = m_pTrackCollection->getTrackDAO();
     // ok now lets create some tracks here
     trackDAO.addTracksPrepare();
-    trackDAO.addTracksAdd(new TrackInfoObject("/Test/a", false), false);
-    trackDAO.addTracksAdd(new TrackInfoObject("/Test/b", false), false);
-    trackDAO.addTracksAdd(new TrackInfoObject("/Test2/c", false), false);
-    trackDAO.addTracksAdd(new TrackInfoObject("/Test2/d", false), false);
+    trackDAO.addTracksAdd(new TrackInfoObject(
+            testdir + "/a", SecurityTokenPointer(), false), false);
+    trackDAO.addTracksAdd(new TrackInfoObject(
+            testdir + "/b", SecurityTokenPointer(), false), false);
+    trackDAO.addTracksAdd(new TrackInfoObject(
+            test2 + "/c", SecurityTokenPointer(), false), false);
+    trackDAO.addTracksAdd(new TrackInfoObject(
+            test2 + "/d", SecurityTokenPointer(), false), false);
     trackDAO.addTracksFinish(false);
 
-    QSet<int> ids = directoryDao.relocateDirectory("/Test", "/new");
+    QSet<int> ids = directoryDao.relocateDirectory(testdir, testnew);
     EXPECT_EQ(2, ids.size());
 
     QStringList dirs = directoryDao.getDirs();
-    ASSERT_EQ(2, dirs.size());
+    EXPECT_EQ(2, dirs.size());
     qSort(dirs);
-    EXPECT_THAT(dirs, ElementsAre(QString("/Test2"), QString("/new")));
+    EXPECT_THAT(dirs, ElementsAre(test2, testnew));
 }
 
 }  // namespace

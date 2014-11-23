@@ -5,6 +5,7 @@
 #include <QColor>
 
 #include "util/timer.h"
+#include "util/math.h"
 #include "waveform/waveform.h"
 
 WOverviewLMH::WOverviewLMH(const char *pGroup,
@@ -25,7 +26,7 @@ bool WOverviewLMH::drawNextPixmapPart() {
     }
 
     const int dataSize = m_pWaveform->getDataSize();
-    if (dataSize == 0 ) {
+    if (dataSize == 0) {
         return false;
     }
 

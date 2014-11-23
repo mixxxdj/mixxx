@@ -27,6 +27,7 @@
 
 WDisplay::WDisplay(QWidget * parent)
         : WWidget(parent),
+          m_iCurrentPixmap(0),
           m_pPixmapBack(NULL),
           m_bDisabledLoaded(false) {
     setPositions(0);
@@ -39,8 +40,10 @@ WDisplay::~WDisplay() {
 void WDisplay::setup(QDomNode node, const SkinContext& context) {
     // Set background pixmap if available
     if (context.hasNode(node, "BackPath")) {
-        setPixmapBackground(context.getSkinPath(
-            context.selectString(node, "BackPath")));
+        QString mode_str = context.selectAttributeString(
+                context.selectElement(node, "BackPath"), "scalemode", "TILE");
+        setPixmapBackground(context.getPixmapSource(context.selectNode(node, "BackPath")),
+                            Paintable::DrawModeFromString(mode_str));
     }
 
     // Number of states
@@ -83,11 +86,12 @@ void WDisplay::resetPositions() {
     m_disabledPixmaps.resize(0);
 }
 
-void WDisplay::setPixmapBackground(const QString& filename) {
-    m_pPixmapBack = WPixmapStore::getPaintable(filename);
+void WDisplay::setPixmapBackground(PixmapSource source,
+                                   Paintable::DrawMode mode) {
+    m_pPixmapBack = WPixmapStore::getPaintable(source, mode);
     if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
         qDebug() << metaObject()->className()
-                 << "Error loading background pixmap:" << filename;
+                 << "Error loading background pixmap:" << source.getPath();
     }
 }
 
@@ -97,7 +101,9 @@ void WDisplay::setPixmap(QVector<PaintablePointer>* pPixmaps, int iPos,
         return;
     }
 
-    PaintablePointer pPixmap = WPixmapStore::getPaintable(filename);
+    PixmapSource source(filename);
+    PaintablePointer pPixmap = WPixmapStore::getPaintable(source,
+                                                          Paintable::TILE);
 
     if (pPixmap.isNull() || pPixmap->isNull()) {
         qDebug() << metaObject()->className()
@@ -108,7 +114,7 @@ void WDisplay::setPixmap(QVector<PaintablePointer>* pPixmaps, int iPos,
     }
 }
 
-int WDisplay::getActivePixmapIndex() const {
+int WDisplay::getPixmapForParameter(double dParameter) const {
     // When there are an even number of pixmaps by convention we want a value of
     // 0.5 to align to the lower of the two middle pixmaps. In Mixxx < 1.12.0 we
     // accomplished this by the below formula:
@@ -145,10 +151,19 @@ int WDisplay::getActivePixmapIndex() const {
     // Subtracting an epsilon prevents out of bound values at the end of the
     // range and biases the middle value towards the lower of the 2 center
     // pixmaps when there are an even number of pixmaps.
-    return static_cast<int>(getControlParameterDisplay() * numPixmaps() - 0.00001);
+    return static_cast<int>(dParameter * numPixmaps() - 0.00001);
 }
 
-void WDisplay::paintEvent(QPaintEvent* ) {
+void WDisplay::onConnectedControlChanged(double dParameter, double dValue) {
+    Q_UNUSED(dValue);
+    int pixmap = getPixmapForParameter(dParameter);
+    if (pixmap != m_iCurrentPixmap) {
+        // paintEvent updates m_iCurrentPixmap.
+        update();
+    }
+}
+
+void WDisplay::paintEvent(QPaintEvent*) {
     QStyleOption option;
     option.initFrom(this);
     QStylePainter p(this);
@@ -167,7 +182,11 @@ void WDisplay::paintEvent(QPaintEvent* ) {
         return;
     }
 
-    int idx = getActivePixmapIndex();
+    int idx = getPixmapForParameter(getControlParameterDisplay());
+
+    // onConnectedControlChanged uses this to detect no-ops but it does not
+    // clamp so don't clamp.
+    m_iCurrentPixmap = idx;
 
     // Clamp active pixmap index to valid ranges.
     if (idx < 0) {

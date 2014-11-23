@@ -8,12 +8,11 @@
 #include "library/browse/browsetablemodel.h"
 #include "library/browse/browsethread.h"
 #include "soundsourceproxy.h"
-#include "mixxxutils.cpp"
 #include "playerinfo.h"
 #include "controlobject.h"
 #include "library/dao/trackdao.h"
 #include "audiotagger.h"
-
+#include "util/dnd.h"
 
 BrowseTableModel::BrowseTableModel(QObject* parent,
                                    TrackCollection* pTrackCollection,
@@ -41,6 +40,8 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
     header_data.insert(COLUMN_LOCATION, tr("Location"));
     header_data.insert(COLUMN_ALBUMARTIST, tr("Album Artist"));
     header_data.insert(COLUMN_GROUPING, tr("Grouping"));
+    header_data.insert(COLUMN_FILE_MODIFIED_TIME, tr("File Modified"));
+    header_data.insert(COLUMN_FILE_CREATION_TIME, tr("File Created"));
 
     addSearchColumn(COLUMN_FILENAME);
     addSearchColumn(COLUMN_ARTIST);
@@ -52,6 +53,8 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
     addSearchColumn(COLUMN_COMMENT);
     addSearchColumn(COLUMN_ALBUMARTIST);
     addSearchColumn(COLUMN_GROUPING);
+    addSearchColumn(COLUMN_FILE_MODIFIED_TIME);
+    addSearchColumn(COLUMN_FILE_CREATION_TIME);
 
     setHorizontalHeaderLabels(header_data);
     // register the QList<T> as a metatype since we use QueuedConnection below
@@ -82,9 +85,9 @@ void BrowseTableModel::addSearchColumn(int index) {
     m_searchColumns.push_back(index);
 }
 
-void BrowseTableModel::setPath(QString absPath) {
-    m_current_path = absPath;
-    BrowseThread::getInstance()->executePopulation(m_current_path, this);
+void BrowseTableModel::setPath(const MDir& path) {
+    m_current_directory = path;
+    BrowseThread::getInstance()->executePopulation(m_current_directory, this);
 }
 
 TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const {
@@ -209,7 +212,8 @@ void BrowseTableModel::removeTracks(QStringList trackLocations) {
 
     // Repopulate model if any tracks were actually deleted
     if (any_deleted) {
-        BrowseThread::getInstance()->executePopulation(m_current_path, this);
+        BrowseThread::getInstance()->executePopulation(m_current_directory,
+                                                       this);
     }
 }
 
@@ -232,13 +236,12 @@ QMimeData* BrowseTableModel::mimeData(const QModelIndexList &indexes) const {
         if (index.isValid()) {
             if (!rows.contains(index.row())) {
                 rows.push_back(index.row());
-                QUrl url = QUrl::fromLocalFile(getTrackLocation(index));
+                QUrl url = DragAndDropHelper::urlFromLocation(getTrackLocation(index));
                 if (!url.isValid()) {
-                    qDebug() << "ERROR invalid url\n";
-                } else {
-                    urls.append(url);
-                    qDebug() << "Appending URL:" << url;
+                    qDebug() << "ERROR invalid url" << url;
+                    continue;
                 }
+                urls.append(url);
             }
         }
     }
@@ -287,10 +290,12 @@ Qt::ItemFlags BrowseTableModel::flags(const QModelIndex &index) const {
     int column = index.column();
 
     if (isTrackInUse(track_location) ||
-       column == COLUMN_FILENAME ||
-       column == COLUMN_BITRATE ||
-       column == COLUMN_DURATION ||
-       column == COLUMN_TYPE) {
+            column == COLUMN_FILENAME ||
+            column == COLUMN_BITRATE ||
+            column == COLUMN_DURATION ||
+            column == COLUMN_TYPE ||
+            column == COLUMN_FILE_MODIFIED_TIME ||
+            column == COLUMN_FILE_CREATION_TIME) {
         return defaultFlags;
     } else {
         return defaultFlags | Qt::ItemIsEditable;
@@ -320,7 +325,7 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
     int row = index.row();
     int col = index.column();
     QString track_location = getTrackLocation(index);
-    AudioTagger tagger(track_location);
+    AudioTagger tagger(track_location, m_current_directory.token());
 
     // set tagger information
     tagger.setArtist(this->index(row, COLUMN_ARTIST).data().toString());
@@ -363,7 +368,6 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
     } else if (col == COLUMN_GROUPING) {
         tagger.setGrouping(value.toString());
     }
-
 
     QStandardItem* item = itemFromIndex(index);
     if (tagger.save()) {

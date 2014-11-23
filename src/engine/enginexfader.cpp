@@ -1,6 +1,6 @@
 #include "engine/enginexfader.h"
 
-#include "mathstuff.h"
+#include "util/math.h"
 
 double EngineXfader::getCalibration(double transform) {
     // get the transform_root of -3db (.5)

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MixxxControllerPreset schemaVersion="1">
+    <info>
+        <name>Hercules DJ Control MP3 HID</name>
+        <author>Shalty
+Adaptation for the MP3 reusing the work on the Mk1 by zestoy/ewanuno</author>
+        <description>Native HID script for the Hercules DJ Control MP3 controller.</description>
+        <forums>http://mixxx.org/forums/viewtopic.php?f=1&amp;t=4966</forums>
+    </info>
+    <controller id="Hercules DJ Control MP3 HID">
+        <scriptfiles>
+            <file filename="Hercules-DJ-Control-MP3-hid-scripts.js" functionprefix="HerculesMP3Hid"/>
+        </scriptfiles>
+    </controller>
+</MixxxControllerPreset>

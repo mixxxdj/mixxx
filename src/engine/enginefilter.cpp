@@ -20,6 +20,12 @@
 
 
 EngineFilter::EngineFilter(char * conf, int predefinedType)
+        : iir(0),
+          fir(0),
+          tmp(0),
+          ff(NULL),
+          funcp(NULL),
+          run(NULL)
 {
     switch(predefinedType)
     {
@@ -64,18 +70,18 @@ EngineFilter::~EngineFilter()
 
 
 
-void EngineFilter::process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize)
+void EngineFilter::process(CSAMPLE* pInOut, const int iBufferSize)
 {
     int i;
-    for(i=0; i < iBufferSize; i+=2)
+    for(i = 0; i < iBufferSize; i += 2)
     {
-        pOut[i] = (CSAMPLE) processSample(fbuf1, (double) pIn[i]);
-        pOut[i+1] = (CSAMPLE) processSample(fbuf2, (double) pIn[i+1]);
+        pInOut[i] = (CSAMPLE) processSample(fbuf1, (double) pInOut[i]);
+        pInOut[i + 1] = (CSAMPLE) processSample(fbuf2, (double) pInOut[i + 1]);
     }
 }
 
 
-//250Hz-3Khz Butterworth
+// 250Hz-3Khz Butterworth
 double processSampleBp(void *bufIn, const double sample)
 {
     double *buf = (double*) bufIn;

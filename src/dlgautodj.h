@@ -6,9 +6,9 @@
 #include "configobject.h"
 #include "controlpushbutton.h"
 #include "trackinfoobject.h"
-#include "library/dao/playlistdao.h"
 #include "library/libraryview.h"
 #include "library/trackcollection.h"
+#include "library/dao/playlistdao.h"
 #include "mixxxkeyboard.h"
 
 class PlaylistTableModel;
@@ -16,6 +16,7 @@ class WTrackTableView;
 class AnalyserQueue;
 class QSqlTableModel;
 class ControlObjectThread;
+class ControlObjectSlave;
 
 class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     Q_OBJECT
@@ -50,6 +51,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void addRandomButton(bool buttonChecked);
     void loadTrack(TrackPointer tio);
     void loadTrackToPlayer(TrackPointer tio, QString group, bool);
+    void trackSelected(TrackPointer pTrack);
 
   private:
     enum ADJstates {
@@ -66,7 +68,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     // right side. (prevents AutoDJ logic from having to check for hamster mode
     // every time)
     double getCrossfader() const;
-    void setCrossfader(double value);
+    void setCrossfader(double value, bool right);
 
     TrackPointer getNextTrackFromQueue();
     bool loadNextTrackFromQueue();
@@ -76,11 +78,6 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     TrackCollection* m_pTrackCollection;
     WTrackTableView* m_pTrackTableView;
     PlaylistTableModel* m_pAutoDJTableModel;
-
-    // Makes our Auto DJ logic assume the next track that should be played is
-    // already loaded. We need this flag to make our
-    // first-track-gets-loaded-but- not-removed-from-the-queue behavior work.
-    bool m_bNextTrackAlreadyLoaded;
 
     bool m_bFadeNow;
     enum ADJstates m_eState;
@@ -93,12 +90,10 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     ControlObjectThread* m_pCOPlayPos2;
     ControlObjectThread* m_pCOPlay1;
     ControlObjectThread* m_pCOPlay2;
-    ControlObjectThread* m_pCOPlay1Fb;
-    ControlObjectThread* m_pCOPlay2Fb;
-    ControlObjectThread* m_pCORepeat1;
-    ControlObjectThread* m_pCORepeat2;
-    ControlObjectThread* m_pCOCrossfader;
-    ControlObjectThread* m_pCOCrossfaderReverse;
+    ControlObjectSlave* m_pCORepeat1;
+    ControlObjectSlave* m_pCORepeat2;
+    ControlObjectSlave* m_pCOCrossfader;
+    ControlObjectSlave* m_pCOCrossfaderReverse;
     ControlObjectThread* m_pCOTSkipNext;
     ControlObjectThread* m_pCOTFadeNow;
     ControlObjectThread* m_pCOTShufflePlaylist;
@@ -110,19 +105,3 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
 };
 
 #endif //DLGAUTODJ_H
-
-
-
-
-
-
-
-
-
-
-
-
-
-#define _blah if ((QDate::currentDate().day() == 1) && (QDate::currentDate().month() == 4)) \
-        pushButtonAutoDJ->setText("\x45\x6e\x61\x62\x6c\x65\x20\x50\x65\x65" \
-                                  "\x20\x42\x72\x65\x61\x6b\x20\x4d\x6f\x64\x65")

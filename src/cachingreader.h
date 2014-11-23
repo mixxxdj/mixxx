@@ -10,7 +10,7 @@
 #include <QLinkedList>
 #include <QHash>
 
-#include "defs.h"
+#include "util/types.h"
 #include "configobject.h"
 #include "trackinfoobject.h"
 #include "engine/engineworker.h"
@@ -46,7 +46,7 @@ class CachingReader : public QObject {
 
   public:
     // Construct a CachingReader with the given group.
-    CachingReader(const char* _group,
+    CachingReader(QString group,
                   ConfigObject<ConfigValue>* _config);
     virtual ~CachingReader();
 

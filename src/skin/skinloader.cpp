@@ -13,6 +13,7 @@
 #include "skin/legacyskinparser.h"
 #include "controllers/controllermanager.h"
 #include "library/library.h"
+#include "effects/effectsmanager.h"
 #include "playermanager.h"
 #include "util/debug.h"
 
@@ -38,19 +39,30 @@ QString SkinLoader::getConfiguredSkinPath() {
     if (configSkin.length() > 0 && thisSkin.exists()) {
         qSkinPath = qThisSkin;
     } else {
-        // Fall back to default skin
-        QString defaultSkin;
-        QRect screenGeo = QApplication::desktop()->screenGeometry();
-        if (screenGeo.width() >= 1280 && screenGeo.height() >= 800) {
-            defaultSkin = "Deere1280x800-WXGA";
+        // try developer path
+        qSkinPath = m_pConfig->getResourcePath();
+        qSkinPath.append("developer_skins/");
+        qThisSkin = qSkinPath + configSkin;
+        thisSkin = qThisSkin;
+        if (configSkin.length() > 0 && thisSkin.exists()) {
+            qSkinPath = qThisSkin;
+        } else {
+            // Fall back to default skin
+            QString defaultSkin;
+            QRect screenGeo = QApplication::desktop()->screenGeometry();
+            if (screenGeo.width() >= 1280 && screenGeo.height() >= 800) {
+                defaultSkin = "LateNight";
+            }
+            else if (screenGeo.width() >= 1024 && screenGeo.height() >= 600) {
+                defaultSkin = "ShadeDark1024x600-Netbook";
+            }
+            else {
+                defaultSkin = "Outline800x480-WVGA"; // Mixxx's smallest Skin
+            }
+            qSkinPath = m_pConfig->getResourcePath();
+            qSkinPath.append("skins/");
+            qSkinPath.append(defaultSkin);
         }
-        else if (screenGeo.width() >= 1024 && screenGeo.height() >= 600) {
-            defaultSkin = "ShadeDark1024x600-Netbook";
-        }
-        else {
-            defaultSkin = "Outline800x480-WVGA"; // Mixxx's smallest Skin
-        }
-        qSkinPath.append(defaultSkin);
     }
 
     QDir skinPath(qSkinPath);
@@ -66,9 +78,11 @@ QWidget* SkinLoader::loadDefaultSkin(QWidget* pParent,
                                      PlayerManager* pPlayerManager,
                                      ControllerManager* pControllerManager,
                                      Library* pLibrary,
-                                     VinylControlManager* pVCMan) {
+                                     VinylControlManager* pVCMan,
+                                     EffectsManager* pEffectsManager) {
     QString skinPath = getConfiguredSkinPath();
-
-    LegacySkinParser legacy(m_pConfig, pKeyboard, pPlayerManager, pControllerManager, pLibrary, pVCMan);
+    LegacySkinParser legacy(m_pConfig, pKeyboard, pPlayerManager,
+                            pControllerManager, pLibrary, pVCMan,
+                            pEffectsManager);
     return legacy.parseSkin(skinPath, pParent);
 }

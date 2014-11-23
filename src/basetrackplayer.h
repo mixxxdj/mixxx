@@ -11,7 +11,9 @@ class EngineMaster;
 class ControlObject;
 class ControlPotmeter;
 class ControlObjectThread;
+class ControlObjectSlave;
 class AnalyserQueue;
+class EffectsManager;
 
 class BaseTrackPlayer : public BasePlayer {
     Q_OBJECT
@@ -19,6 +21,7 @@ class BaseTrackPlayer : public BasePlayer {
     BaseTrackPlayer(QObject* pParent,
                     ConfigObject<ConfigValue>* pConfig,
                     EngineMaster* pMixingEngine,
+                    EffectsManager* pEffectsManager,
                     EngineChannel::ChannelOrientation defaultOrientation,
                     QString group,
                     bool defaultMaster,
@@ -31,12 +34,15 @@ class BaseTrackPlayer : public BasePlayer {
     // connected. Delete me when EngineMaster supports AudioInput assigning.
     EngineDeck* getEngineDeck() const;
 
+    void setupEqControls();
+
   public slots:
     void slotLoadTrack(TrackPointer track, bool bPlay=false);
     void slotFinishLoading(TrackPointer pTrackInfoObject);
     void slotLoadFailed(TrackPointer pTrackInfoObject, QString reason);
     void slotUnloadTrack(TrackPointer track);
     void slotSetReplayGain(double replayGain);
+    void slotPlayToggled(double);
 
   signals:
     void loadTrack(TrackPointer pTrack, bool bPlay=false);
@@ -59,7 +65,16 @@ class BaseTrackPlayer : public BasePlayer {
     ControlObjectThread* m_pKey;
     ControlObjectThread* m_pReplayGain;
     ControlObjectThread* m_pPlay;
+    ControlObjectSlave* m_pLowFilter;
+    ControlObjectSlave* m_pMidFilter;
+    ControlObjectSlave* m_pHighFilter;
+    ControlObjectSlave* m_pLowFilterKill;
+    ControlObjectSlave* m_pMidFilterKill;
+    ControlObjectSlave* m_pHighFilterKill;
+    ControlObjectSlave* m_pPreGain;
     EngineDeck* m_pChannel;
+
+    bool m_replaygainPending;
 };
 
 

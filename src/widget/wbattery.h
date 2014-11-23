@@ -29,10 +29,8 @@ class WBattery : public WWidget {
     void paintEvent(QPaintEvent *);
 
   private:
-    void setPixmap(PaintablePointer* ppPixmap, const QString& filename);
-    void setPixmaps(QVector<PaintablePointer>* pPixmaps, int iPos,
-                    const QString& filename);
-
+    void setPixmap(PaintablePointer* ppPixmap, const PixmapSource& source,
+                   Paintable::DrawMode mode);
 
     QScopedPointer<Battery> m_pBattery;
     PaintablePointer m_pCurrentPixmap;

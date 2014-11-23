@@ -20,12 +20,14 @@
 // Fixes redefinition warnings from SoundTouch.
 #undef TRUE
 #undef FALSE
-#include "SoundTouch.h"
-#include "mathstuff.h"
+#include <SoundTouch.h>
+
 #include "controlobject.h"
 #include "engine/readaheadmanager.h"
 #include "engine/engineobject.h"
 #include "track/keyutils.h"
+#include "sampleutil.h"
+#include "util/math.h"
 
 using namespace soundtouch;
 
@@ -41,6 +43,7 @@ EngineBufferScaleST::EngineBufferScaleST(ReadAheadManager *pReadAheadManager)
     m_pSoundTouch->setTempo(m_dTempoOld);
     m_pSoundTouch->setPitch(1.0);
     m_pSoundTouch->setSetting(SETTING_USE_QUICKSEEK, 1);
+    m_pSoundTouch->setSampleRate(m_iSampleRate > 0 ? m_iSampleRate : 44100);
 
     buffer_back = new CSAMPLE[kiSoundTouchReadAheadLength*2];
 }
@@ -122,7 +125,7 @@ CSAMPLE* EngineBufferScaleST::getScaled(unsigned long buf_size) {
     m_samplesRead = 0.0;
 
     if (m_dRateOld == 0 || m_dTempoOld == 0) {
-        memset(m_buffer, 0, sizeof(m_buffer[0]) * buf_size);
+        SampleUtil::clear(m_buffer, buf_size);
         m_samplesRead = buf_size;
         return m_buffer;
     }

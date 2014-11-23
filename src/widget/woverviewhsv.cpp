@@ -4,7 +4,7 @@
 #include <QColor>
 
 #include "util/timer.h"
-
+#include "util/math.h"
 #include "waveform/waveform.h"
 
 WOverviewHSV::WOverviewHSV(const char* pGroup,
@@ -24,7 +24,7 @@ bool WOverviewHSV::drawNextPixmapPart() {
     }
 
     const int dataSize = m_pWaveform->getDataSize();
-    if (dataSize == 0 ) {
+    if (dataSize == 0) {
         return false;
     }
 
@@ -63,9 +63,11 @@ bool WOverviewHSV::drawNextPixmapPart() {
     QPainter painter(m_pWaveformSourceImage);
     painter.translate(0.0,(double)m_pWaveformSourceImage->height()/2.0);
 
-    // Get HSV of low color
-    double h,s,v;
-    m_signalColors.getLowColor().getHsvF(&h,&s,&v);
+    // Get HSV of low color. NOTE(rryan): On ARM, qreal is float so it's
+    // important we use qreal here and not double or float or else we will get
+    // build failures on ARM.
+    qreal h, s, v;
+    m_signalColors.getLowColor().getHsvF(&h, &s, &v);
 
     QColor color;
     float lo, hi, total;
@@ -91,15 +93,14 @@ bool WOverviewHSV::drawNextPixmapPart() {
                      maxHigh[0] + maxHigh[1]) * 1.2;
 
             // Prevent division by zero
-            if( total > 0 )
-            {
+            if (total > 0) {
                 // Normalize low and high
                 // (mid not need, because it not change the color)
                 lo = (maxLow[0] + maxLow[1]) / total;
                 hi = (maxHigh[0] + maxHigh[1]) / total;
-            }
-            else
+            } else {
                 lo = hi = 0.0;
+            }
 
             // Set color
             color.setHsvF(h, 1.0-hi, 1.0-lo);

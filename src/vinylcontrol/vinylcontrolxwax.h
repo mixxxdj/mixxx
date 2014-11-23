@@ -6,6 +6,7 @@
 #include "soundmanagerutil.h"
 #include "vinylcontrol/vinylcontrol.h"
 #include "vinylcontrol/steadypitch.h"
+#include "util/types.h"
 
 #ifdef _MSC_VER
 #include "timecoder.h"
@@ -96,6 +97,8 @@ class VinylControlXwax : public VinylControl {
     // How much of the pitch ring buffer is "filled" versus empty (used before
     // it fills up completely).
     int m_iPitchRingFilled;
+    // A smoothed pitch value to show to the user.
+    double m_dDisplayPitch;
 
     // Steady pitch trackers.
     SteadyPitch* m_pSteadySubtle;

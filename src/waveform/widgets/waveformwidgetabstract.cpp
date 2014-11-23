@@ -5,7 +5,7 @@
 #include <QWidget>
 
 
-WaveformWidgetAbstract::WaveformWidgetAbstract( const char* group) 
+WaveformWidgetAbstract::WaveformWidgetAbstract(const char* group)
     : WaveformWidgetRenderer(group),
       m_initSuccess(false) {
     m_widget = NULL;
@@ -37,7 +37,7 @@ int WaveformWidgetAbstract::render() {
     return 0; // Time for Painter setup, unknown in this case
 }
 
-void WaveformWidgetAbstract::resize( int width, int height) {
+void WaveformWidgetAbstract::resize(int width, int height) {
     if (m_widget) {
         m_widget->resize(width, height);
     }

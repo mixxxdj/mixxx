@@ -7,7 +7,7 @@ class ControlObject;
 
 class GLVSyncTestRenderer : public WaveformRendererSignalBase {
   public:
-    explicit GLVSyncTestRenderer( WaveformWidgetRenderer* waveformWidgetRenderer);
+    explicit GLVSyncTestRenderer(WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~GLVSyncTestRenderer();
 
     virtual void onSetup(const QDomNode &node);

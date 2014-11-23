@@ -112,7 +112,7 @@ bool TreeItem::removeChildren(int position, int count) {
     if (position < 0 || position + count > m_childItems.size())
         return false;
 
-    for (int row = 0; row < count; ++row){
+    for (int row = 0; row < count; ++row) {
         //Remove from list to avoid invalid pointers
         TreeItem* item = m_childItems.takeAt(position);
         if(item) delete item;

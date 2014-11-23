@@ -21,20 +21,20 @@
 #include "controlobject.h"
 #include "util/performancetimer.h"
 
-class ControlLogpotmeter;
+class ControlAudioTaperPot;
 class ControlPotmeter;
 class ControlObject;
 
 class EnginePregain : public EngineObject {
   public:
-    EnginePregain(const char* group);
+    EnginePregain(QString group);
     virtual ~EnginePregain();
 
-    void process(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
+    void process(CSAMPLE* pInOut, const int iBufferSize);
 
   private:
     float m_fPrevGain;
-    ControlLogpotmeter* potmeterPregain;
+    ControlAudioTaperPot* m_pPotmeterPregain;
     ControlObject* m_pTotalGain;
     ControlObject* m_pControlReplayGain;
     ControlObject* m_pPassthroughEnabled;

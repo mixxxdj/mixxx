@@ -11,8 +11,10 @@ Import('build')
 # On Posix default SCons.LIBPREFIX = 'lib', on Windows default SCons.LIBPREFIX = ''
 
 m4a_sources = [
-    "soundsource.cpp", # required to subclass soundsource
     "soundsourcem4a.cpp",  # MP4/M4A Support through FAAD/libmp4v2
+    "soundsourcetaglib.cpp", # TagLib dependencies
+    "soundsource.cpp", # required to subclass SoundSource
+    "sampleutil.cpp", # utility functions
 ]
 
 #Tell SCons to build the SoundSourceM4A plugin
@@ -53,7 +55,11 @@ if int(build.flags['faad']):
     SHLIBPREFIX='lib' #Makes the filename "libsoundsourcem4a" consistently across platforms to make our lives easier.
     if build.platform_is_windows:
         env["LINKFLAGS"].remove("/entry:mainCRTStartup")
-        env["LINKFLAGS"].remove("/subsystem:windows")
+        # TODO(rryan): Why do we do this?
+        if build.machine_is_64bit:
+            env["LINKFLAGS"].remove("/subsystem:windows,5.02")
+        else:
+            env["LINKFLAGS"].remove("/subsystem:windows,5.01")
         ssm4a_bin = env.SharedLibrary('soundsourcem4a', m4a_sources, LINKCOM  = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
     else:
         ssm4a_bin = env.SharedLibrary('soundsourcem4a', m4a_sources)

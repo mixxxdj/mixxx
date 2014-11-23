@@ -9,8 +9,8 @@ class MixxxKeyboard;
 class PlayerManager;
 class ControllerManager;
 class Library;
-class MixxxView;
 class VinylControlManager;
+class EffectsManager;
 
 class SkinLoader {
   public:
@@ -21,7 +21,8 @@ class SkinLoader {
                              PlayerManager* pPlayerManager,
                              ControllerManager* pControllerManager,
                              Library* pLibrary,
-                             VinylControlManager* pVCMan);
+                             VinylControlManager* pVCMan,
+                             EffectsManager* pEffectsManager);
 
     QString getConfiguredSkinPath();
 

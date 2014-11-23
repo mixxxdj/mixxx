@@ -5,19 +5,20 @@
 #include "trackinfoobject.h"
 #include "configobject.h"
 #include "controlobject.h"
+#include "controlobjectslave.h"
 #include "controlpushbutton.h"
 
 class VinylControlControl : public EngineControl {
     Q_OBJECT
   public:
-    VinylControlControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig);
+    VinylControlControl(QString group, ConfigObject<ConfigValue>* pConfig);
     virtual ~VinylControlControl();
 
     void trackLoaded(TrackPointer pTrack);
     void trackUnloaded(TrackPointer pTrack);
 
     // If the engine asks for a seek, we may need to disable absolute mode.
-    void notifySeek();
+    void notifySeekQueued();
     bool isEnabled();
     bool isScratching();
 
@@ -25,6 +26,7 @@ class VinylControlControl : public EngineControl {
     void slotControlVinylSeek(double value);
 
   private:
+    ControlObject* m_pControlVinylRate;
     ControlObject* m_pControlVinylSeek;
     ControlObject* m_pControlVinylSpeedType;
     ControlObject* m_pControlVinylStatus;
@@ -34,6 +36,7 @@ class VinylControlControl : public EngineControl {
     ControlPushButton* m_pControlVinylWantEnabled;
     ControlPushButton* m_pControlVinylCueing;
     ControlPushButton* m_pControlVinylSignalEnabled;
+    ControlObjectSlave* m_pPlayEnabled;
     TrackPointer m_pCurrentTrack;
     bool m_bSeekRequested;
 };

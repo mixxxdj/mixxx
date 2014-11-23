@@ -8,6 +8,7 @@
 #include "analyserqueue.h"
 #include "soundsourceproxy.h"
 #include "playerinfo.h"
+#include "sampleutil.h"
 #include "util/timer.h"
 #include "library/trackcollection.h"
 #include "analyserwaveform.h"
@@ -16,6 +17,8 @@
 #include "analyserkey.h"
 #include "vamp/vampanalyser.h"
 #include "util/compatibility.h"
+#include "util/event.h"
+#include "util/trace.h"
 
 // Measured in 0.1%,
 // 0 for no progress during finalize
@@ -115,7 +118,9 @@ bool AnalyserQueue::isLoadedTrackWaiting(TrackPointer tio) {
 TrackPointer AnalyserQueue::dequeueNextBlocking() {
     m_qm.lock();
     if (m_tioq.isEmpty()) {
+        Event::end("AnalyserQueue process");
         m_qwait.wait(&m_qm);
+        Event::start("AnalyserQueue process");
 
         if (m_exit) {
             m_qm.unlock();
@@ -155,7 +160,7 @@ TrackPointer AnalyserQueue::dequeueNextBlocking() {
 }
 
 // This is called from the AnalyserQueue thread
-bool AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy* pSoundSource) {
+bool AnalyserQueue::doAnalysis(TrackPointer tio, const Mixxx::SoundSourcePointer& pSoundSource) {
     int totalSamples = pSoundSource->length();
     //qDebug() << tio->getFilename() << " has " << totalSamples << " samples.";
     int processedSamples = 0;
@@ -193,11 +198,7 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy* pSoundSource)
             dieflag = true;
         }
 
-        // Normalize the samples from [SHRT_MIN, SHRT_MAX] to [-1.0, 1.0].
-        // TODO(rryan): Change the SoundSource API to do this for us.
-        for (int i = 0; i < read; ++i) {
-            m_pSamples[i] = static_cast<CSAMPLE>(m_pSamplesPCM[i]) / SHRT_MAX;
-        }
+        SampleUtil::convertS16ToFloat32(m_pSamples, m_pSamplesPCM, read);
 
         QListIterator<Analyser*> it(m_aq);
 
@@ -232,7 +233,7 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy* pSoundSource)
         //QThread::usleep(10);
 
         //has something new entered the queue?
-        if (deref(m_aiCheckPriorities)) {
+        if (load_atomic(m_aiCheckPriorities)) {
             m_aiCheckPriorities = false;
             if (isLoadedTrackWaiting(tio)) {
                 qDebug() << "Interrupting analysis to give preference to a loaded track.";
@@ -287,17 +288,30 @@ void AnalyserQueue::run() {
         // Could happen if the track was queued but then deleted.
         // Or if dequeueNextBlocking is unblocked by exit == true
         if (!nextTrack) {
+            m_qm.lock();
+            m_queue_size = m_tioq.size();
+            m_qm.unlock();
+            if (m_queue_size == 0) {
+                emit(queueEmpty()); // emit asynchrony for no deadlock
+            }
             continue;
         }
 
+        Trace trace("AnalyserQueue analyzing track");
+
         // Get the audio
-        SoundSourceProxy* pSoundSource = new SoundSourceProxy(nextTrack);
-        pSoundSource->open(); //Open the file for reading
+        SoundSourceProxy soundSourceProxy(nextTrack);
+        Mixxx::SoundSourcePointer pSoundSource(soundSourceProxy.open());
+        if (pSoundSource.isNull()) {
+            qWarning() << "Failed to open file for analyzing:" << nextTrack->getLocation();
+            continue;
+        }
+
         int iNumSamples = pSoundSource->length();
         int iSampleRate = pSoundSource->getSampleRate();
 
         if (iNumSamples == 0 || iSampleRate == 0) {
-            qDebug() << "Skipping invalid file:" << nextTrack->getLocation();
+            qWarning() << "Skipping invalid file:" << nextTrack->getLocation();
             continue;
         }
 
@@ -341,8 +355,6 @@ void AnalyserQueue::run() {
             qDebug() << "Skipping track analysis because no analyzer initialized.";
         }
 
-        delete pSoundSource;
-
         m_qm.lock();
         m_queue_size = m_tioq.size();
         m_qm.unlock();
@@ -360,7 +372,7 @@ void AnalyserQueue::emitUpdateProgress(TrackPointer tio, int progress) {
         // The following tries will success if the previous signal was processed in the GUI Thread
         // This prevent the AnalysisQueue from filling up the GUI Thread event Queue
         // 100 % is emitted in any case
-        if (progress < 1000 - FINALIZE_PERCENT && progress > 0 ) {
+        if (progress < 1000 - FINALIZE_PERCENT && progress > 0) {
             // Signals during processing are not required in any case
             if (!m_progressInfo.sema.tryAcquire()) {
                return;
@@ -415,7 +427,7 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(
     ret->addAnalyser(new AnalyserBeats(pConfig));
     ret->addAnalyser(new AnalyserKey(pConfig));
 
-    ret->start(QThread::IdlePriority);
+    ret->start(QThread::LowPriority);
     return ret;
 }
 
@@ -424,12 +436,11 @@ AnalyserQueue* AnalyserQueue::createAnalysisFeatureAnalyserQueue(
         ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection) {
     AnalyserQueue* ret = new AnalyserQueue(pTrackCollection);
 
-    ret->addAnalyser(new AnalyserWaveform(pConfig));
     ret->addAnalyser(new AnalyserGain(pConfig));
     VampAnalyser::initializePluginPaths();
     ret->addAnalyser(new AnalyserBeats(pConfig));
     ret->addAnalyser(new AnalyserKey(pConfig));
 
-    ret->start(QThread::IdlePriority);
+    ret->start(QThread::LowPriority);
     return ret;
 }

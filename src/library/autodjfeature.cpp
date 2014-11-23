@@ -15,6 +15,7 @@
 #include "widget/wlibrary.h"
 #include "mixxxkeyboard.h"
 #include "soundsourceproxy.h"
+#include "util/dnd.h"
 
 const QString AutoDJFeature::m_sAutoDJViewName = QString("Auto DJ");
 
@@ -60,7 +61,7 @@ AutoDJFeature::AutoDJFeature(QObject* parent,
     // from, the auto-DJ queue.
     connect(&m_crateMapper, SIGNAL(mapped(int)),
             this, SLOT(slotAddCrateToAutoDj(int)));
-    m_pRemoveCrateFromAutoDj = new QAction(tr("Remove"), this);
+    m_pRemoveCrateFromAutoDj = new QAction(tr("Remove Crate as Track Source"), this);
     connect(m_pRemoveCrateFromAutoDj, SIGNAL(triggered()),
             this, SLOT(slotRemoveCrateFromAutoDj()));
 
@@ -93,6 +94,9 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
     connect(m_pAutoDJView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
 
+    connect(m_pAutoDJView, SIGNAL(trackSelected(TrackPointer)),
+            this, SIGNAL(trackSelected(TrackPointer)));
+
 #ifdef __AUTODJCRATES__
     // Be informed when the user wants to add another random track.
     connect(m_pAutoDJView, SIGNAL(addRandomButton(bool)),
@@ -113,26 +117,21 @@ void AutoDJFeature::activate() {
     //qDebug() << "AutoDJFeature::activate()";
     emit(switchToView(m_sAutoDJViewName));
     emit(restoreSearch(QString())); //Null String disables search box
+    emit(enableCoverArtDisplay(true));
 }
 
 bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
     TrackDAO &trackDao = m_pTrackCollection->getTrackDAO();
 
-    //If a track is dropped onto a playlist's name, but the track isn't in the library,
-    //then add the track to the library before adding it to the playlist.
-    QList<QFileInfo> files;
-    foreach (QUrl url, urls) {
-        //XXX: See the note in PlaylistFeature::dropAccept() about using QUrl::toLocalFile()
-        //     instead of toString()
-        QFileInfo file = url.toLocalFile();
-        if (SoundSourceProxy::isFilenameSupported(file.fileName())) {
-            files.append(file);
-        }
-    }
+    // If a track is dropped onto a playlist's name, but the track isn't in the
+    // library, then add the track to the library before adding it to the
+    // playlist.
+    QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
     QList<int> trackIds;
     if (pSource) {
         trackIds = trackDao.getTrackIds(files);
+        trackDao.unhideTracks(trackIds);
     } else {
         trackIds = trackDao.addTracks(files, true);
     }

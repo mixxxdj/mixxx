@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<MixxxControllerPreset mixxxVersion="1.11.0+" schemaVersion="1">
+<MixxxControllerPreset mixxxVersion="1.12.0+" schemaVersion="1">
 	<info>
 		<name>Vestax VCI-300</name>
 		<author>Uwe Klotz</author>
 		<forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=4021</forums>
-                <wiki>http://mixxx.org/wiki/doku.php/vestax_vci-300</wiki>
+		<wiki>http://mixxx.org/wiki/doku.php/vestax_vci-300</wiki>
 	</info>
 	<controller id="Vestax VCI-300">
 		<scriptfiles>
@@ -17,10 +17,6 @@
 				<midino>0x18</midino>
 				<status>0xB0</status>
 				<key>crossfader</key>
-				<options>
-					<normal/>
-					<soft-takeover/>
-				</options>
 			</control>
 			<control>
 				<group>[Master]</group>
@@ -210,7 +206,7 @@
 				<group>[Channel1]</group>
 				<midino>0x32</midino>
 				<status>0x90</status>
-				<key>VestaxVCI300.onCensorReverseButton</key>
+				<key>VestaxVCI300.onCensorFilterButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -219,7 +215,7 @@
 				<group>[Channel2]</group>
 				<midino>0x45</midino>
 				<status>0x90</status>
-				<key>VestaxVCI300.onCensorReverseButton</key>
+				<key>VestaxVCI300.onCensorFilterButton</key>
 				<options>
 					<script-binding/>
 				</options>
@@ -230,40 +226,24 @@
 				<midino>0x0E</midino>
 				<status>0xB0</status>
 				<key>pregain</key>
-				<options>
-					<normal/>
-					<soft-takeover/>
-				</options>
 			</control>
 			<control>
 				<group>[Channel2]</group>
 				<midino>0x14</midino>
 				<status>0xB0</status>
 				<key>pregain</key>
-				<options>
-					<normal/>
-					<soft-takeover/>
-				</options>
 			</control>
 			<control>
 				<group>[Channel1]</group>
 				<midino>0x0C</midino>
 				<status>0xB0</status>
 				<key>volume</key>
-				<options>
-					<normal/>
-					<soft-takeover/>
-				</options>
 			</control>
 			<control>
 				<group>[Channel2]</group>
 				<midino>0x12</midino>
 				<status>0xB0</status>
 				<key>volume</key>
-				<options>
-					<normal/>
-					<soft-takeover/>
-				</options>
 			</control>
 <!-- Deck Filter Controls -->
 			<control>
@@ -271,19 +251,14 @@
 				<midino>0x0F</midino>
 				<status>0xB0</status>
 				<key>filterHigh</key>
-				<options>
-					<normal/>
-					<soft-takeover/>
-				</options>
 			</control>
 			<control>
 				<group>[Channel1]</group>
 				<midino>0x10</midino>
 				<status>0xB0</status>
-				<key>filterMid</key>
+				<key>VestaxVCI300.onFilterMidKnob</key>
 				<options>
-					<normal/>
-					<soft-takeover/>
+					<script-binding/>
 				</options>
 			</control>
 			<control>
@@ -291,29 +266,20 @@
 				<midino>0x11</midino>
 				<status>0xB0</status>
 				<key>filterLow</key>
-				<options>
-					<normal/>
-					<soft-takeover/>
-				</options>
 			</control>
 			<control>
 				<group>[Channel2]</group>
 				<midino>0x15</midino>
 				<status>0xB0</status>
 				<key>filterHigh</key>
-				<options>
-					<normal/>
-					<soft-takeover/>
-				</options>
 			</control>
 			<control>
 				<group>[Channel2]</group>
 				<midino>0x16</midino>
 				<status>0xB0</status>
-				<key>filterMid</key>
+				<key>VestaxVCI300.onFilterMidKnob</key>
 				<options>
-					<normal/>
-					<soft-takeover/>
+					<script-binding/>
 				</options>
 			</control>
 			<control>
@@ -384,20 +350,26 @@
 			<control>
 				<group>[Channel1]</group>
 				<midino>0x29</midino>
+				<status>0x80</status>
+				<key>sync_enabled</key>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<midino>0x29</midino>
 				<status>0x90</status>
-				<key>VestaxVCI300.onAutoTempoButton</key>
-				<options>
-					<script-binding/>
-				</options>
+				<key>sync_enabled</key>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<midino>0x3C</midino>
+				<status>0x80</status>
+				<key>sync_enabled</key>
 			</control>
 			<control>
 				<group>[Channel2]</group>
 				<midino>0x3C</midino>
 				<status>0x90</status>
-				<key>VestaxVCI300.onAutoTempoButton</key>
-				<options>
-					<script-binding/>
-				</options>
+				<key>sync_enabled</key>
 			</control>
 			<control>
 				<group>[Channel1]</group>
@@ -673,6 +645,560 @@
 				</options>
 			</control>
 		</controls>
-		<outputs/>
+
+		<outputs>
+			<!-- PFL -->
+			<output>
+				<group>[Channel1]</group>
+				<key>pfl</key>
+				<status>0x90</status>
+				<midino>0x2D</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>pfl</key>
+				<status>0x90</status>
+				<midino>0x31</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.5</minimum>
+			</output>
+			<!-- Keylock -->
+			<output>
+				<group>[Channel1]</group>
+				<key>keylock</key>
+				<status>0x90</status>
+				<midino>0x24</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>keylock</key>
+				<status>0x90</status>
+				<midino>0x33</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.5</minimum>
+			</output>
+			<!-- Cue -->
+			<output>
+				<group>[Channel1]</group>
+				<key>cue_indicator</key>
+				<status>0x90</status>
+				<midino>0x71</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>cue_indicator</key>
+				<status>0x90</status>
+				<midino>0x73</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.5</minimum>
+			</output>
+			<!-- Play -->
+			<output>
+				<group>[Channel1]</group>
+				<key>play_indicator</key>
+				<status>0x90</status>
+				<midino>0x72</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>play_indicator</key>
+				<status>0x90</status>
+				<midino>0x74</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.5</minimum>
+			</output>
+			<!-- Hotcues [Channel1] -->
+			<output>
+				<group>[Channel1]</group>
+				<key>hotcue_1_enabled</key>
+				<status>0x90</status>
+				<midino>0x41</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Channel1]</group>
+				<key>hotcue_1_enabled</key>
+				<status>0x90</status>
+				<midino>0x47</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<!-- disabled -->
+				<minimum>0.5</minimum>
+				<maximum>0.5</maximum>
+			</output>
+			<output>
+				<group>[Channel1]</group>
+				<key>hotcue_2_enabled</key>
+				<status>0x90</status>
+				<midino>0x43</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Channel1]</group>
+				<key>hotcue_2_enabled</key>
+				<status>0x90</status>
+				<midino>0x49</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<!-- disabled -->
+				<minimum>0.5</minimum>
+				<maximum>0.5</maximum>
+			</output>
+			<output>
+				<group>[Channel1]</group>
+				<key>hotcue_3_enabled</key>
+				<status>0x90</status>
+				<midino>0x45</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Channel1]</group>
+				<key>hotcue_3_enabled</key>
+				<status>0x90</status>
+				<midino>0x4B</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<!-- disabled -->
+				<minimum>0.5</minimum>
+				<maximum>0.5</maximum>
+			</output>
+			<!-- Hotcues [Channel2] -->
+			<output>
+				<group>[Channel2]</group>
+				<key>hotcue_1_enabled</key>
+				<status>0x90</status>
+				<midino>0x4D</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>hotcue_1_enabled</key>
+				<status>0x90</status>
+				<midino>0x53</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<!-- disabled -->
+				<minimum>0.5</minimum>
+				<maximum>0.5</maximum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>hotcue_2_enabled</key>
+				<status>0x90</status>
+				<midino>0x4F</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>hotcue_2_enabled</key>
+				<status>0x90</status>
+				<midino>0x55</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<!-- disabled -->
+				<minimum>0.5</minimum>
+				<maximum>0.5</maximum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>hotcue_3_enabled</key>
+				<status>0x90</status>
+				<midino>0x51</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>hotcue_3_enabled</key>
+				<status>0x90</status>
+				<midino>0x57</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<!-- disabled -->
+				<minimum>0.5</minimum>
+				<maximum>0.5</maximum>
+			</output>
+			<!-- Cue Loop [Channel1] -->
+			<output>
+				<group>[Channel1]</group>
+				<key>loop_start_position</key>
+				<status>0x90</status>
+				<midino>0x48</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0</minimum>
+				<maximum>2147483647</maximum>
+			</output>
+			<output>
+				<group>[Channel1]</group>
+				<key>loop_start_position</key>
+				<status>0x90</status>
+				<midino>0x42</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<!-- disabled -->
+				<minimum>-2</minimum>
+				<maximum>-2</maximum>
+			</output>
+			<output>
+				<group>[Channel1]</group>
+				<key>loop_end_position</key>
+				<status>0x90</status>
+				<midino>0x4A</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0</minimum>
+				<maximum>2147483647</maximum>
+			</output>
+			<output>
+				<group>[Channel1]</group>
+				<key>loop_end_position</key>
+				<status>0x90</status>
+				<midino>0x44</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<!-- disabled -->
+				<minimum>-2</minimum>
+				<maximum>-2</maximum>
+			</output>
+			<output>
+				<group>[Channel1]</group>
+				<key>loop_enabled</key>
+				<status>0x90</status>
+				<midino>0x4C</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Channel1]</group>
+				<key>loop_enabled</key>
+				<status>0x90</status>
+				<midino>0x46</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<!-- disabled -->
+				<minimum>0.5</minimum>
+				<maximum>0.5</maximum>
+			</output>
+			<!-- Cue Loop [Channel2] -->
+			<output>
+				<group>[Channel2]</group>
+				<key>loop_start_position</key>
+				<status>0x90</status>
+				<midino>0x54</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0</minimum>
+				<maximum>2147483647</maximum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>loop_start_position</key>
+				<status>0x90</status>
+				<midino>0x4E</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<!-- disabled -->
+				<minimum>-2</minimum>
+				<maximum>-2</maximum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>loop_end_position</key>
+				<status>0x90</status>
+				<midino>0x56</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0</minimum>
+				<maximum>2147483647</maximum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>loop_end_position</key>
+				<status>0x90</status>
+				<midino>0x50</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<!-- disabled -->
+				<minimum>-2</minimum>
+				<maximum>-2</maximum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>loop_enabled</key>
+				<status>0x90</status>
+				<midino>0x58</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>loop_enabled</key>
+				<status>0x90</status>
+				<midino>0x52</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<!-- disabled -->
+				<minimum>0.5</minimum>
+				<maximum>0.5</maximum>
+			</output>
+			<!-- VU meter: 1st green -->
+			<output>
+				<group>[Channel1]</group>
+				<key>VuMeter</key>
+				<status>0x90</status>
+				<midino>0x64</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.09</minimum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>VuMeter</key>
+				<status>0x90</status>
+				<midino>0x70</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.09</minimum>
+			</output>
+			<!-- VU meter: 2nd green -->
+			<output>
+				<group>[Channel1]</group>
+				<key>VuMeter</key>
+				<status>0x90</status>
+				<midino>0x63</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.18</minimum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>VuMeter</key>
+				<status>0x90</status>
+				<midino>0x6F</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.18</minimum>
+			</output>
+			<!-- VU meter: 3rd green -->
+			<output>
+				<group>[Channel1]</group>
+				<key>VuMeter</key>
+				<status>0x90</status>
+				<midino>0x62</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.27</minimum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>VuMeter</key>
+				<status>0x90</status>
+				<midino>0x6E</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.27</minimum>
+			</output>
+			<!-- VU meter: 4th green -->
+			<output>
+				<group>[Channel1]</group>
+				<key>VuMeter</key>
+				<status>0x90</status>
+				<midino>0x61</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.36</minimum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>VuMeter</key>
+				<status>0x90</status>
+				<midino>0x6D</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.36</minimum>
+			</output>
+			<!-- VU meter: 5th green -->
+			<output>
+				<group>[Channel1]</group>
+				<key>VuMeter</key>
+				<status>0x90</status>
+				<midino>0x60</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.45</minimum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>VuMeter</key>
+				<status>0x90</status>
+				<midino>0x6C</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.45</minimum>
+			</output>
+			<!-- VU meter: 6th green -->
+			<output>
+				<group>[Channel1]</group>
+				<key>VuMeter</key>
+				<status>0x90</status>
+				<midino>0x5F</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.54</minimum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>VuMeter</key>
+				<status>0x90</status>
+				<midino>0x6B</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.54</minimum>
+			</output>
+			<!-- VU meter: 7th green -->
+			<output>
+				<group>[Channel1]</group>
+				<key>VuMeter</key>
+				<status>0x90</status>
+				<midino>0x5E</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.63</minimum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>VuMeter</key>
+				<status>0x90</status>
+				<midino>0x6A</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.63</minimum>
+			</output>
+			<!-- VU meter: 8th green -->
+			<output>
+				<group>[Channel1]</group>
+				<key>VuMeter</key>
+				<status>0x90</status>
+				<midino>0x5D</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.72</minimum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>VuMeter</key>
+				<status>0x90</status>
+				<midino>0x69</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.72</minimum>
+			</output>
+			<!-- VU meter: 9th green -->
+			<output>
+				<group>[Channel1]</group>
+				<key>VuMeter</key>
+				<status>0x90</status>
+				<midino>0x5C</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.80</minimum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>VuMeter</key>
+				<status>0x90</status>
+				<midino>0x68</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.80</minimum>
+			</output>
+			<!-- VU meter: 1st red -->
+			<output>
+				<group>[Channel1]</group>
+				<key>VuMeter</key>
+				<status>0x90</status>
+				<midino>0x5B</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.88</minimum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>VuMeter</key>
+				<status>0x90</status>
+				<midino>0x67</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.88</minimum>
+			</output>
+			<!-- VU meter: 2nd red -->
+			<output>
+				<group>[Channel1]</group>
+				<key>VuMeter</key>
+				<status>0x90</status>
+				<midino>0x5A</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.94</minimum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>VuMeter</key>
+				<status>0x90</status>
+				<midino>0x66</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.94</minimum>
+			</output>
+			<!-- VU meter: 3rd red (peak) -->
+			<output>
+				<group>[Channel1]</group>
+				<key>PeakIndicator</key>
+				<status>0x90</status>
+				<midino>0x59</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.5</minimum>
+			</output>
+			<output>
+				<group>[Channel2]</group>
+				<key>PeakIndicator</key>
+				<status>0x90</status>
+				<midino>0x65</midino>
+				<on>0x7F</on>
+				<off>0x00</off>
+				<minimum>0.5</minimum>
+			</output>
+		</outputs>outputs>
 	</controller>
 </MixxxControllerPreset>

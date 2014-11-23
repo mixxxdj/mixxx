@@ -22,10 +22,18 @@ typedef QList<mixxx::track::io::Beat> BeatList;
 class BeatMap : public QObject, public Beats {
     Q_OBJECT
   public:
-    BeatMap(TrackPointer pTrack, const QByteArray* pByteArray=NULL);
-    // Construct a BeatMap, optionally providing a list of beat locations in
-    // audio frames.
-    BeatMap(TrackPointer pTrack, const QVector<double> beats = QVector<double>());
+    // Construct a BeatMap. iSampleRate may be provided if a more accurate
+    // sample rate is known than the one associated with the Track. If it is
+    // zero then the track's sample rate will be used. If a byte array is
+    // provided then the BeatMap will be deserialized from the byte array.
+    BeatMap(TrackPointer pTrack, int iSampleRate,
+            const QByteArray* pByteArray=NULL);
+    // Construct a BeatMap. iSampleRate may be provided if a more accurate
+    // sample rate is known than the one associated with the Track. If it is
+    // zero then the track's sample rate will be used. A list of beat locations
+    // in audio frames may be provided.
+    BeatMap(TrackPointer pTrack, int iSampleRate,
+            const QVector<double> beats = QVector<double>());
     virtual ~BeatMap();
 
     // See method comments in beats.h
@@ -69,7 +77,7 @@ class BeatMap : public QObject, public Beats {
     void updated();
 
   private:
-    void initialize(TrackPointer pTrack);
+    void initialize(TrackPointer pTrack, int iSampleRate);
     void readByteArray(const QByteArray* pByteArray);
     void createFromBeatVector(QVector<double> beats);
     void onBeatlistChanged();

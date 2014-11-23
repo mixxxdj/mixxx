@@ -1,10 +1,11 @@
 #include <QtDebug>
 #include <QMap>
-#include <QRegExp>
 #include <QMutexLocker>
+#include <QPair>
+#include <QRegExp>
 
 #include "track/keyutils.h"
-#include "mathstuff.h"
+#include "util/math.h"
 
 using mixxx::track::io::key::ChromaticKey;
 using mixxx::track::io::key::ChromaticKey_IsValid;
@@ -16,12 +17,15 @@ static const char* s_openKeyPattern = "(1[0-2]|[1-9])([dm])";
 static const char* s_lancelotKeyPattern = "(1[0-2]|[1-9])([ab])";
 
 // a-g followed by any number of sharps or flats.
-static const char* s_keyPattern = "([a-g])([#b]*m?)";
+static const char* s_keyPattern = "([a-g])([#♯b♭]*m?)";
+
+static const QString s_sharpSymbol = QString::fromUtf8("♯");
+static const QString s_flatSymbol = QString::fromUtf8("♭");
 
 static const char *s_traditionalKeyNames[] = {
     "INVALID",
-    "C", "Db", "D", "Eb", "E", "F", "F#/Gb", "G", "Ab", "A", "Bb", "B",
-    "Cm", "C#m", "Dm", "D#m/Ebm", "Em", "Fm", "F#m", "Gm", "G#m", "Am", "Bbm", "Bm"
+    "C", "D♭", "D", "E♭", "E", "F", "F♯/G♭", "G", "A♭", "A", "B♭", "B",
+    "Cm", "C♯m", "Dm", "D♯m/E♭m", "Em", "Fm", "F♯m", "Gm", "G♯m", "Am", "B♭m", "Bm"
 };
 
 // Maps an OpenKey number to its major and minor key.
@@ -83,11 +87,11 @@ ChromaticKey KeyUtils::openKeyNumberToKey(int openKeyNumber, bool major) {
 }
 
 // static
-const char* KeyUtils::keyDebugName(ChromaticKey key) {
+QString KeyUtils::keyDebugName(ChromaticKey key) {
     if (!ChromaticKey_IsValid(key)) {
-        return s_traditionalKeyNames[0];
+        key = mixxx::track::io::key::INVALID;
     }
-    return s_traditionalKeyNames[static_cast<int>(key)];
+    return QString::fromUtf8(s_traditionalKeyNames[static_cast<int>(key)]);
 }
 
 // static
@@ -129,7 +133,7 @@ QString KeyUtils::keyToString(ChromaticKey key,
         int number = openKeyNumberToLancelotNumber(keyToOpenKeyNumber(key));
         return QString::number(number) + (major ? "B" : "A");
     } else if (notation == TRADITIONAL) {
-        return s_traditionalKeyNames[static_cast<int>(key)];
+        return QString::fromUtf8(s_traditionalKeyNames[static_cast<int>(key)]);
     }
     return keyDebugName(key);
 }
@@ -201,7 +205,7 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
                 major = false;
                 break;
             }
-            steps += *it == '#' ? 1 : -1;
+            steps += (*it == '#' || *it == s_sharpSymbol[0]) ? 1 : -1;
         }
 
         ChromaticKey letterKey = static_cast<ChromaticKey>(
@@ -230,15 +234,17 @@ double KeyUtils::keyToNumericValue(ChromaticKey key) {
 }
 
 // static
-ChromaticKey KeyUtils::scaleKeyOctaves(ChromaticKey key, double octave_change) {
+QPair<ChromaticKey, double> KeyUtils::scaleKeyOctaves(ChromaticKey key, double octave_change) {
     // Convert the octave_change from percentage of octave to the nearest
     // integer of key changes. We need the rounding to be in the same direction
     // so that a -1.0 and 1.0 scale of C makes it back to C.
     double key_changes_scaled = octave_change * 12;
-    int key_changes = int(key_changes_scaled +
+    int key_changes = static_cast<int>(key_changes_scaled +
                           (key_changes_scaled > 0 ? 0.5 : -0.5));
 
-    return scaleKeySteps(key, key_changes);
+    // Distance to the nearest key
+    double diff_to_key = key_changes_scaled - key_changes;
+    return QPair<ChromaticKey, double>(scaleKeySteps(key, key_changes), diff_to_key);
 }
 
 // static

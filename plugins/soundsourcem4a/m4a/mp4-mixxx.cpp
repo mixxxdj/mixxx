@@ -9,7 +9,7 @@
 #include <QtCore>
 #include <stdlib.h>
 
-#include "mathstuff.h"
+#include "util/math.h"
 
 /*
  * Copyright 2006 dnk <dnk@bjum.net>
@@ -122,6 +122,10 @@ static MP4TrackId mp4_get_track(MP4FileHandle *handle)
     }
 
     return MP4_INVALID_TRACK_ID;
+}
+
+static void mp4_init(struct input_plugin_data *ip_data) {
+    memset(ip_data, 0, sizeof(*ip_data));
 }
 
 static int mp4_open(struct input_plugin_data *ip_data)
@@ -429,8 +433,8 @@ static int mp4_seek_sample(struct input_plugin_data *ip_data, int sample)
         // pops). This is akin to seeking in a video and seeing MPEG
         // artifacts. Figure out how many frames we need to go backward -- 1 seems
         // to work.
-        const int how_many_backwards = 1;
-        int start_frame = math_max(frame_for_sample - how_many_backwards, 1);
+        const unsigned int how_many_backwards = 1;
+        int start_frame = math_max(frame_for_sample - how_many_backwards, 1U);
         priv->mp4.sample = start_frame;
 
         // rryan 9/2009 -- the documentation is sketchy on this, but I think that

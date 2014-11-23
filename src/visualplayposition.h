@@ -39,10 +39,11 @@ class VisualPlayPositionData {
 };
 
 
-class VisualPlayPosition {
+class VisualPlayPosition : public QObject {
+    Q_OBJECT
   public:
     VisualPlayPosition(const QString& m_key);
-    ~VisualPlayPosition();
+    virtual ~VisualPlayPosition();
 
     // WARNING: Not thread safe. This function must be called only from the
     // engine thread.
@@ -60,9 +61,13 @@ class VisualPlayPosition {
 
     void setInvalid() { m_valid = false; };
 
+  private slots:
+    void slotAudioBufferSizeChanged(double size);
+
   private:
     ControlValueAtomic<VisualPlayPositionData> m_data;
     ControlObjectSlave* m_audioBufferSize;
+    double m_dAudioBufferSize;
     bool m_valid;
     QString m_key;
 

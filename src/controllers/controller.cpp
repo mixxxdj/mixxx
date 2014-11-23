@@ -66,25 +66,24 @@ void Controller::applyPreset(QList<QString> scriptPaths) {
         return;
     }
 
-    if (pPreset->scriptFileNames.isEmpty()) {
+    if (pPreset->scripts.isEmpty()) {
         qWarning() << "No script functions available! Did the XML file(s) load successfully? See above for any errors.";
         return;
     }
 
-    m_pEngine->loadScriptFiles(scriptPaths, pPreset->scriptFileNames);
-    m_pEngine->initializeScripts(pPreset->scriptFunctionPrefixes);
+    m_pEngine->loadScriptFiles(scriptPaths, pPreset->scripts);
+    m_pEngine->initializeScripts(pPreset->scripts);
 }
 
-void Controller::learn(MixxxControl control) {
-    qDebug() << m_sDeviceName << ": Learning" << control.group() << "," << control.item();
-    m_controlToLearn = control;
+void Controller::startLearning() {
+    qDebug() << m_sDeviceName << "started learning";
     m_bLearning = true;
 }
 
-void Controller::cancelLearn() {
-    m_controlToLearn = MixxxControl();
+void Controller::stopLearning() {
+    //qDebug() << m_sDeviceName << "stopped learning.";
     m_bLearning = false;
-    //qDebug() << m_sDeviceName << ": Aborted learning.";
+
 }
 
 void Controller::send(QList<int> data, unsigned int length) {
@@ -132,4 +131,3 @@ void Controller::receive(const QByteArray data) {
         }
     }
 }
-

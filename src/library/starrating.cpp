@@ -15,9 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <cmath>
-
 #include "starrating.h"
+#include "util/math.h"
 
 const int PaintingScaleFactor = 15;
 

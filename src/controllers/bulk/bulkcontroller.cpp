@@ -5,13 +5,13 @@
   * @brief USB Bulk controller backend
   *
   */
-#include <time.h>
-#include <stdio.h>
+#include <libusb.h>
 
 #include "controllers/bulk/bulkcontroller.h"
 #include "controllers/bulk/bulksupported.h"
 #include "controllers/defs_controllers.h"
 #include "util/compatibility.h"
+#include "util/trace.h"
 
 BulkReader::BulkReader(libusb_device_handle *handle, unsigned char in_epaddr)
         : QThread(),
@@ -31,7 +31,7 @@ void BulkReader::run() {
     m_stop = 0;
     unsigned char data[255];
 
-    while (deref(m_stop) == 0) {
+    while (load_atomic(m_stop) == 0) {
         // Blocked polling: The only problem with this is that we can't close
         // the device until the block is released, which means the controller
         // has to send more data
@@ -46,7 +46,9 @@ void BulkReader::run() {
                                       m_in_epaddr,
                                       data, sizeof(data),
                                       &transferred, 500);
+        Trace timeout("BulkReader timeout");
         if (result >= 0) {
+            Trace process("BulkReader process packet");
             //qDebug() << "Read" << result << "bytes, pointer:" << data;
             QByteArray outData((char*)data, transferred);
             emit(incomingData(outData));

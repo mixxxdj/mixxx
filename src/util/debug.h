@@ -9,8 +9,10 @@
 template <typename T>
 QString toDebugString(const T& object) {
     QString output;
+#ifndef QT_NO_DEBUG_OUTPUT
     QDebug deb(&output);
     deb << object;
+#endif
     return output;
 }
 

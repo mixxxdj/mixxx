@@ -9,6 +9,7 @@
 #include <QString>
 #include "soundsource.h"
 #include "defs_version.h"
+#include "util/defs.h"
 
 #include "wavpack/wavpack.h"
 
@@ -24,18 +25,19 @@ namespace Mixxx {
 
 class SoundSourceWV : public SoundSource {
  public:
-  SoundSourceWV(QString qFilename);
+  explicit SoundSourceWV(QString qFilename);
   ~SoundSourceWV();
-  int open();
+  Result open();
   long seek(long);
   unsigned read(unsigned long size, const SAMPLE*);
   inline long unsigned length();
-  int parseHeader();
+  Result parseHeader();
+  QImage parseCoverArt();
   static QList<QString> supportedFileExtensions();
  private:
+  WavpackContext * filewvc; //works as a file handle to access the wv file.
   int Bps;
   unsigned long filelength;
-  WavpackContext * filewvc;	//works as a file handle to access the wv file.
   int32_t tempbuffer[WV_BUF_LENGTH];	//hax ! legacy from cmus. this is 64k*4bytes.
   void format_samples(int, char *, int32_t *, uint32_t);
 };

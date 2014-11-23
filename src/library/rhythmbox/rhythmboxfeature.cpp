@@ -117,10 +117,11 @@ void RhythmboxFeature::activate() {
         m_track_watcher.setFuture(m_track_future);
         m_title = "(loading) Rhythmbox";
         //calls a slot in the sidebar model such that 'Rhythmbox (isLoading)' is displayed.
-        emit (featureIsLoading(this));
+        emit (featureIsLoading(this, true));
     }
 
     emit(showTrackModel(m_pRhythmboxTrackModel));
+    emit(enableCoverArtDisplay(false));
 }
 
 void RhythmboxFeature::activateChild(const QModelIndex& index) {
@@ -129,6 +130,7 @@ void RhythmboxFeature::activateChild(const QModelIndex& index) {
     qDebug() << "Activating " << playlist;
     m_pRhythmboxPlaylistModel->setPlaylist(playlist);
     emit(showTrackModel(m_pRhythmboxPlaylistModel));
+    emit(enableCoverArtDisplay(false));
 }
 
 TreeItem* RhythmboxFeature::importMusicCollection() {
@@ -136,10 +138,11 @@ TreeItem* RhythmboxFeature::importMusicCollection() {
      // Try and open the Rhythmbox DB. An API call which tells us where
      // the file is would be nice.
     QFile db(QDir::homePath() + "/.gnome2/rhythmbox/rhythmdb.xml");
-    if ( ! db.exists()) {
+    if (!db.exists()) {
         db.setFileName(QDir::homePath() + "/.local/share/rhythmbox/rhythmdb.xml");
-        if ( ! db.exists())
+        if (!db.exists()) {
             return NULL;
+        }
     }
 
     if (!db.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -190,10 +193,11 @@ TreeItem* RhythmboxFeature::importMusicCollection() {
 
 TreeItem* RhythmboxFeature::importPlaylists() {
     QFile db(QDir::homePath() + "/.gnome2/rhythmbox/playlists.xml");
-    if ( ! db.exists()) {
+    if (!db.exists()) {
         db.setFileName(QDir::homePath() + "/.local/share/rhythmbox/playlists.xml");
-        if (!db.exists())
+        if (!db.exists()) {
             return NULL;
+        }
     }
     //Open file
      if (!db.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -312,7 +316,7 @@ void RhythmboxFeature::importTrack(QXmlStreamReader &xml, QSqlQuery &query) {
                 continue;
             }
             if (xml.name() == "location") {
-                locationUrl = QUrl::fromEncoded( xml.readElementText().toUtf8());
+                locationUrl = QUrl::fromEncoded(xml.readElementText().toUtf8());
                 continue;
             }
         }

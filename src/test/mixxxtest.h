@@ -47,6 +47,10 @@ class MixxxTest : public testing::Test {
 
     QApplication* m_pApplication;
     QScopedPointer<ConfigObject<ConfigValue> > m_pConfig;
+
+  private:
+    bool removeDir(const QString& dirName);
+    QString testDataDir;
 };
 
 

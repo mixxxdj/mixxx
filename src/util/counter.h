@@ -9,9 +9,10 @@ class Counter {
     : m_tag(tag) {
     }
     void increment(int by=1) {
-        Stat::track(m_tag, Stat::COUNTER,
-                    Stat::COUNT | Stat::SUM | Stat::AVERAGE | Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX,
-                    by);
+        Stat::ComputeFlags flags = Stat::experimentFlags(
+            Stat::COUNT | Stat::SUM | Stat::AVERAGE |
+            Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX);
+        Stat::track(m_tag, Stat::COUNTER, flags, by);
     }
     Counter& operator+=(int by) {
         this->increment(by);

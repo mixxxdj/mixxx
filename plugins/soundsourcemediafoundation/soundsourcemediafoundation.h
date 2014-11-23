@@ -23,7 +23,7 @@
 #include <QFile>
 #include <QString>
 
-#include "defs.h"
+#include "util/defs.h"
 #include "defs_version.h"
 #include "soundsource.h"
 
@@ -39,13 +39,14 @@ class IMFMediaSource;
 
 class SoundSourceMediaFoundation : public Mixxx::SoundSource {
   public:
-    SoundSourceMediaFoundation(QString filename);
+    explicit SoundSourceMediaFoundation(QString filename);
     ~SoundSourceMediaFoundation();
-    int open();
+    Result open();
     long seek(long filepos);
     unsigned read(unsigned long size, const SAMPLE *buffer);
     inline long unsigned length();
-    int parseHeader();
+    Result parseHeader();
+    QImage parseCoverArt();
     static QList<QString> supportedFileExtensions();
 
   private:
@@ -57,7 +58,6 @@ class SoundSourceMediaFoundation : public Mixxx::SoundSource {
     static inline qint64 mfFromSeconds(qreal sec);
     static inline qint64 frameFromMF(qint64 mf);
     static inline qint64 mfFromFrame(qint64 frame);
-    QFile m_file;
     IMFSourceReader *m_pReader;
     IMFMediaType *m_pAudioType;
     wchar_t *m_wcFilename;

@@ -17,13 +17,25 @@
 
 #include "widget/wpixmapstore.h"
 
+#include <QString>
 #include <QtDebug>
 
 // static
 QHash<QString, WeakPaintablePointer> WPixmapStore::m_paintableCache;
 QSharedPointer<ImgSource> WPixmapStore::m_loader = QSharedPointer<ImgSource>();
 
-Paintable::Paintable(QImage* pImage) {
+Paintable::DrawMode Paintable::DrawModeFromString(QString str) {
+    if (str.toUpper() == "TILE") {
+        return TILE;
+    } else if (str.toUpper() == "STRETCH") {
+        return STRETCH;
+    }
+    qWarning() << "Unknown string for Paintable drawing mode " << str << ", using TILE";
+    return TILE;
+}
+
+Paintable::Paintable(QImage* pImage, DrawMode mode)
+        : m_draw_mode(mode) {
 #if QT_VERSION >= 0x040700
     m_pPixmap.reset(new QPixmap());
     m_pPixmap->convertFromImage(*pImage);
@@ -33,13 +45,64 @@ Paintable::Paintable(QImage* pImage) {
     delete pImage;
 }
 
-Paintable::Paintable(const QString& fileName) {
+Paintable::Paintable(const QString& fileName, DrawMode mode)
+        : m_draw_mode(mode) {
     if (fileName.endsWith(".svg", Qt::CaseInsensitive)) {
-        m_pSvg.reset(new QSvgRenderer(fileName));
+        if (mode == STRETCH) {
+            m_pSvg.reset(new QSvgRenderer(fileName));
+        } else if (mode == TILE) {
+            // The SVG renderer doesn't directly support tiling, so we render
+            // it to a pixmap which will then get tiled.
+            QSvgRenderer renderer(fileName);
+            QImage copy_buffer(renderer.defaultSize(), QImage::Format_ARGB32);
+            copy_buffer.fill(0x00000000);  // Transparent black.
+            m_pPixmap.reset(new QPixmap(renderer.defaultSize()));
+            QPainter painter(&copy_buffer);
+            renderer.render(&painter);
+            m_pPixmap->convertFromImage(copy_buffer);
+        } else {
+            qWarning() << "Error, unknown drawing mode!";
+        }
     } else {
         m_pPixmap.reset(new QPixmap(fileName));
     }
 }
+
+Paintable::Paintable(const PixmapSource& source, DrawMode mode)
+        : m_draw_mode(mode) {
+    if (source.isSVG()) {
+        QScopedPointer<QSvgRenderer> pSvgRenderer(new QSvgRenderer());
+        if (source.getData().isEmpty()) {
+            pSvgRenderer->load(source.getPath());
+        } else {
+            pSvgRenderer->load(source.getData());
+        }
+
+        if (mode == STRETCH) {
+            m_pSvg.reset(pSvgRenderer.take());
+        } else if (mode == TILE) {
+            // The SVG renderer doesn't directly support tiling, so we render
+            // it to a pixmap which will then get tiled.
+            QImage copy_buffer(pSvgRenderer->defaultSize(), QImage::Format_ARGB32);
+            copy_buffer.fill(0x00000000);  // Transparent black.
+            m_pPixmap.reset(new QPixmap(pSvgRenderer->defaultSize()));
+            QPainter painter(&copy_buffer);
+            pSvgRenderer->render(&painter);
+            m_pPixmap->convertFromImage(copy_buffer);
+        } else {
+            qWarning() << "Error, unknown drawing mode!";
+        }
+    } else {
+        QPixmap * pPixmap = new QPixmap();
+        if (!source.getData().isEmpty()) {
+            pPixmap->loadFromData(source.getData());
+        } else {
+            pPixmap->load(source.getPath());
+        }
+        m_pPixmap.reset(pPixmap);
+    }
+}
+
 
 bool Paintable::isNull() const {
     if (!m_pPixmap.isNull()) {
@@ -85,8 +148,15 @@ void Paintable::draw(const QRectF& targetRect, QPainter* pPainter) {
     }
 
     if (!m_pPixmap.isNull() && !m_pPixmap->isNull()) {
-        pPainter->drawPixmap(targetRect, *m_pPixmap, m_pPixmap->rect());
+        if (m_draw_mode == Paintable::STRETCH) {
+            pPainter->drawPixmap(targetRect, *m_pPixmap, m_pPixmap->rect());
+        } else if (m_draw_mode == Paintable::TILE) {
+            pPainter->drawTiledPixmap(targetRect, *m_pPixmap, QPoint(0,0));
+        }
     } else if (!m_pSvg.isNull() && m_pSvg->isValid()) {
+        if (m_draw_mode == Paintable::TILE) {
+            qWarning() << "Tiled SVG should have been rendered to pixmap!";
+        }
         m_pSvg->render(pPainter, targetRect);
     }
 }
@@ -143,31 +213,41 @@ void Paintable::resizeSvgPixmap(const QRectF& targetRect,
 }
 
 // static
-PaintablePointer WPixmapStore::getPaintable(const QString& fileName) {
+PaintablePointer WPixmapStore::getPaintable(PixmapSource source,
+                                            Paintable::DrawMode mode) {
     // See if we have a cached value for the pixmap.
-    PaintablePointer pPaintable = m_paintableCache.value(fileName, PaintablePointer());
+    PaintablePointer pPaintable = m_paintableCache.value(source.getId(), PaintablePointer());
     if (pPaintable) {
         return pPaintable;
     }
 
     // Otherwise, construct it with the pixmap loader.
-    //qDebug() << "WPixmapStore Loading pixmap from file" << fileName;
+    //qDebug() << "WPixmapStore Loading pixmap from file" << source.getPath();
 
     if (m_loader) {
-        QImage* pImage = m_loader->getImage(fileName);
-        pPaintable = PaintablePointer(new Paintable(pImage));
+        QImage* pImage = m_loader->getImage(source.getPath());
+        pPaintable = PaintablePointer(new Paintable(pImage, mode));
     } else {
-        pPaintable = PaintablePointer(new Paintable(fileName));
+        pPaintable = PaintablePointer(new Paintable(source, mode));
     }
 
     if (pPaintable.isNull() || pPaintable->isNull()) {
-        qDebug() << "WPixmapStore couldn't load:" << fileName
-                 << pPaintable.isNull();
+        // Only log if it looks like the user tried to specify a
+        // pixmap. Otherwise we probably just have a widget that is calling
+        // getPaintable without checking that the skinner actually wanted one.
+        if (!source.isEmpty()) {
+            qDebug() << "WPixmapStore couldn't load:" << source.getPath()
+                     << pPaintable.isNull();
+        }
         return PaintablePointer();
     }
-    m_paintableCache[fileName] = pPaintable;
+
+    m_paintableCache[source.getId()] = pPaintable;
     return pPaintable;
 }
+
+
+
 
 // static
 QPixmap* WPixmapStore::getPixmapNoCache(const QString& fileName) {

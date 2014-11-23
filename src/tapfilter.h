@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QTime>
 
-#include "defs.h"
+#include "util/types.h"
 
 class TapFilter : public QObject {
     Q_OBJECT

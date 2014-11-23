@@ -5,6 +5,8 @@
 #include <QVector>
 #include <QString>
 
+#include "util/experiment.h"
+
 struct StatReport;
 
 class Stat {
@@ -15,9 +17,34 @@ class Stat {
         DURATION_MSEC,
         DURATION_NANOSEC,
         DURATION_SEC,
-        TRACE_START,
-        TRACE_FINISH,
+        EVENT,
+        EVENT_START,
+        EVENT_END,
     };
+
+    static QString statTypeToString(StatType type) {
+        switch (type) {
+            case UNSPECIFIED:
+                return "UNSPECIFIED";
+            case COUNTER:
+                return "COUNTER";
+            case DURATION_MSEC:
+                return "DURATION_MSEC";
+            case DURATION_NANOSEC:
+                return "DURATION_NANOSEC";
+            case DURATION_SEC:
+                return "DURATION_SEC";
+            case EVENT:
+                return "EVENT";
+            case EVENT_START:
+                return "START";
+            case EVENT_END:
+                return "END";
+            default:
+                return "UNKNOWN";
+        }
+    }
+
     enum ComputeTypes {
         NONE            = 0x0000,
         // O(1) in time and space.
@@ -43,8 +70,33 @@ class Stat {
         REPORTS_PER_SECOND = 0x0200,
         // TODO, track the time in between received reports.
         REPORT_TIME_DELTA = 0x0400,
+        // Used for marking stats recorded in EXPERIMENT mode.
+        STATS_EXPERIMENT  = 0x0800,
+        // Used for marking stats recorded in BASE mode.
+        STATS_BASE        = 0x1000,
     };
     typedef int ComputeFlags;
+
+    static Experiment::Mode modeFromFlags(ComputeFlags flags) {
+        if (flags & Stat::STATS_EXPERIMENT) {
+            return Experiment::EXPERIMENT;
+        } else if (flags & Stat::STATS_BASE) {
+            return Experiment::BASE;
+        }
+        return Experiment::OFF;
+    }
+
+    static ComputeFlags experimentFlags(ComputeFlags flags) {
+        switch (Experiment::mode()) {
+            case Experiment::EXPERIMENT:
+                return flags | STATS_EXPERIMENT;
+            case Experiment::BASE:
+                return flags | STATS_BASE;
+            default:
+            case Experiment::OFF:
+                return flags;
+        }
+    }
 
     explicit Stat();
     void processReport(const StatReport& report);
@@ -76,10 +128,10 @@ QDebug operator<<(QDebug dbg, const Stat &stat);
 
 struct StatReport {
     char* tag;
+    qint64 time;
     Stat::StatType type;
     Stat::ComputeFlags compute;
     double value;
-    // TODO(XXX): time?
 };
 
 #endif /* STAT_H */

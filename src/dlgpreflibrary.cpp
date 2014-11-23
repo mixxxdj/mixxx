@@ -32,7 +32,8 @@ DlgPrefLibrary::DlgPrefLibrary(QWidget * parent,
         : DlgPreferencePage(parent),
           m_dirListModel(),
           m_pconfig(config),
-          m_pLibrary(pLibrary) {
+          m_pLibrary(pLibrary),
+          m_baddedDirectory(false) {
     setupUi(this);
     slotUpdate();
     checkbox_ID3_sync->setVisible(false);
@@ -64,7 +65,34 @@ DlgPrefLibrary::DlgPrefLibrary(QWidget * parent,
 DlgPrefLibrary::~DlgPrefLibrary() {
 }
 
-void DlgPrefLibrary::initialiseDirList(){
+void DlgPrefLibrary::slotShow() {
+    m_baddedDirectory = false;
+}
+
+void DlgPrefLibrary::slotHide() {
+    if (!m_baddedDirectory) {
+        return;
+    }
+
+    QMessageBox msgBox;
+    msgBox.setIcon(QMessageBox::Warning);
+    msgBox.setWindowTitle(tr("Music Directory Added"));
+    msgBox.setText(tr("You added one or more music directories. The tracks in "
+                      "these directories won't be available until you rescan "
+                      "your library. Would you like to rescan now?"));
+    QPushButton* scanButton = msgBox.addButton(
+        tr("Scan"), QMessageBox::AcceptRole);
+    msgBox.addButton(QMessageBox::Cancel);
+    msgBox.setDefaultButton(scanButton);
+    msgBox.exec();
+
+    if (msgBox.clickedButton() == scanButton) {
+        emit(scanLibrary());
+        return;
+    }
+}
+
+void DlgPrefLibrary::initialiseDirList() {
     // save which index was selected
     const QString selected = dirList->currentIndex().data().toString();
     // clear and fill model
@@ -89,9 +117,21 @@ void DlgPrefLibrary::slotExtraPlugins() {
     QDesktopServices::openUrl(QUrl(MIXXX_ADDONS_URL));
 }
 
+void DlgPrefLibrary::slotResetToDefaults() {
+    checkBox_library_scan->setChecked(false);
+    checkbox_ID3_sync->setChecked(false);
+    checkBox_use_relative_path->setChecked(false);
+    checkBox_show_rhythmbox->setChecked(true);
+    checkBox_show_banshee->setChecked(true);
+    checkBox_show_itunes->setChecked(true);
+    checkBox_show_traktor->setChecked(true);
+    radioButton_dbclick_bottom->setChecked(false);
+    radioButton_dbclick_top->setChecked(false);
+    radioButton_dbclick_deck->setChecked(true);
+}
+
 void DlgPrefLibrary::slotUpdate() {
     initialiseDirList();
-    //Bundled songs stat tracking
     checkBox_library_scan->setChecked((bool)m_pconfig->getValueString(
             ConfigKey("[Library]","RescanOnStartup")).toInt());
     checkbox_ID3_sync->setChecked((bool)m_pconfig->getValueString(
@@ -106,6 +146,19 @@ void DlgPrefLibrary::slotUpdate() {
             ConfigKey("[Library]","ShowITunesLibrary"),"1").toInt());
     checkBox_show_traktor->setChecked((bool)m_pconfig->getValueString(
             ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt());
+
+    switch (m_pconfig->getValueString(ConfigKey("[Library]","TrackLoadAction"),
+                                      QString::number(LOAD_TRACK_DECK)).toInt()) {
+    case ADD_TRACK_BOTTOM:
+            radioButton_dbclick_bottom->setChecked(true);
+            break;
+    case ADD_TRACK_TOP:
+            radioButton_dbclick_top->setChecked(true);
+            break;
+    default:
+            radioButton_dbclick_deck->setChecked(true);
+            break;
+    }
 }
 
 void DlgPrefLibrary::slotAddDir() {
@@ -115,6 +168,7 @@ void DlgPrefLibrary::slotAddDir() {
     if (!fd.isEmpty()) {
         emit(requestAddDir(fd));
         slotUpdate();
+        m_baddedDirectory = true;
     }
 }
 
@@ -214,6 +268,16 @@ void DlgPrefLibrary::slotApply() {
                 ConfigValue((int)checkBox_show_itunes->isChecked()));
     m_pconfig->set(ConfigKey("[Library]","ShowTraktorLibrary"),
                 ConfigValue((int)checkBox_show_traktor->isChecked()));
+    int dbclick_status;
+    if (radioButton_dbclick_bottom->isChecked()) {
+            dbclick_status = ADD_TRACK_BOTTOM;
+    } else if (radioButton_dbclick_top->isChecked()) {
+            dbclick_status = ADD_TRACK_TOP;
+    } else {
+            dbclick_status = LOAD_TRACK_DECK;
+    }
+    m_pconfig->set(ConfigKey("[Library]","TrackLoadAction"),
+                ConfigValue(dbclick_status));
 
     m_pconfig->Save();
 }

@@ -18,29 +18,27 @@
 #include <taglib/mp4file.h>
 
 #include "soundsourcecoreaudio.h"
+#include "soundsourcetaglib.h"
+#include "util/math.h"
 
 SoundSourceCoreAudio::SoundSourceCoreAudio(QString filename)
-        : Mixxx::SoundSource(filename),
-          m_file(filename),
+        : SoundSource(filename),
           m_samples(0),
           m_headerFrames(0) {
 }
 
 SoundSourceCoreAudio::~SoundSourceCoreAudio() {
     ExtAudioFileDispose(m_audioFile);
-
 }
 
 // soundsource overrides
-int SoundSourceCoreAudio::open() {
-    //m_file.open(QIODevice::ReadOnly);
-
+Result SoundSourceCoreAudio::open() {
     //Open the audio file.
     OSStatus err;
 
     /** This code blocks works with OS X 10.5+ only. DO NOT DELETE IT for now. */
     CFStringRef urlStr = CFStringCreateWithCharacters(
-        0, reinterpret_cast<const UniChar *>(m_qFilename.unicode()), m_qFilename.size());
+        0, reinterpret_cast<const UniChar *>(getFilename().unicode()), getFilename().size());
     CFURLRef urlRef = CFURLCreateWithFileSystemPath(NULL, urlStr, kCFURLPOSIXPathStyle, false);
     err = ExtAudioFileOpenURL(urlRef, &m_audioFile);
     CFRelease(urlStr);
@@ -55,7 +53,7 @@ int SoundSourceCoreAudio::open() {
     */
 
     if (err != noErr) {
-        qDebug() << "SSCA: Error opening file " << m_qFilename;
+        qDebug() << "SSCA: Error opening file " << getFilename();
         return ERR;
     }
 
@@ -65,7 +63,7 @@ int SoundSourceCoreAudio::open() {
     m_inputFormat = inputFormat;
     err = ExtAudioFileGetProperty(m_audioFile, kExtAudioFileProperty_FileDataFormat, &size, &inputFormat);
     if (err != noErr) {
-        qDebug() << "SSCA: Error getting file format (" << m_qFilename << ")";
+        qDebug() << "SSCA: Error getting file format (" << getFilename() << ")";
         return ERR;
     }
 
@@ -86,8 +84,7 @@ int SoundSourceCoreAudio::open() {
         return ERR;
     }
 
-    // Set m_iChannels and m_samples.
-    m_iChannels = m_outputFormat.NumberChannels();
+    setChannels(m_outputFormat.NumberChannels());
 
     //get the total length in frames of the audio file - copypasta: http://discussions.apple.com/thread.jspa?threadID=2364583&tstart=47
     UInt32        dataSize;
@@ -117,10 +114,10 @@ int SoundSourceCoreAudio::open() {
         m_headerFrames=primeInfo.leadingFrames;
     }
 
-    m_samples = (totalFrameCount/*-m_headerFrames*/)*m_iChannels;
-    m_iDuration = m_samples / (inputFormat.mSampleRate * m_iChannels);
-    m_iSampleRate = inputFormat.mSampleRate;
-    qDebug() << m_samples << totalFrameCount << m_iChannels;
+    m_samples = (totalFrameCount/* - m_headerFrames*/) * getChannels();
+    setDuration(m_samples / (inputFormat.mSampleRate * getChannels()));
+    setSampleRate(inputFormat.mSampleRate);
+    qDebug() << m_samples << totalFrameCount << getChannels();
 
     //Seek to position 0, which forces us to skip over all the header frames.
     //This makes sure we're ready to just let the Analyser rip and it'll
@@ -144,7 +141,7 @@ long SoundSourceCoreAudio::seek(long filepos) {
 
     //err = ExtAudioFileSeek(m_audioFile, filepos / 2);
     if (err != noErr) {
-        qDebug() << "SSCA: Error seeking to" << filepos << " (file " << m_qFilename << ")";// << GetMacOSStatusErrorString(err) << GetMacOSStatusCommentString(err);
+        qDebug() << "SSCA: Error seeking to" << filepos << " (file " << getFilename() << ")";// << GetMacOSStatusErrorString(err) << GetMacOSStatusCommentString(err);
     }
     return filepos;
 }
@@ -164,7 +161,7 @@ unsigned int SoundSourceCoreAudio::read(unsigned long size, const SAMPLE *destin
         AudioBufferList fillBufList;
         fillBufList.mNumberBuffers = 1; //Decode a single track?
         fillBufList.mBuffers[0].mNumberChannels = m_outputFormat.mChannelsPerFrame;
-        fillBufList.mBuffers[0].mDataByteSize = math_min(1024, numFramesToRead*4);//numFramesToRead*sizeof(*destBuffer); // 2 = num bytes per SAMPLE
+        fillBufList.mBuffers[0].mDataByteSize = math_min<unsigned int>(1024, numFramesToRead*4);//numFramesToRead*sizeof(*destBuffer); // 2 = num bytes per SAMPLE
         fillBufList.mBuffers[0].mData = (void*)(&destBuffer[numFramesRead*2]);
 
         // client format is always linear PCM - so here we determine how many frames of lpcm
@@ -187,48 +184,86 @@ inline unsigned long SoundSourceCoreAudio::length() {
     return m_samples;
 }
 
-int SoundSourceCoreAudio::parseHeader() {
-    if (getFilename().endsWith(".m4a"))
+Result SoundSourceCoreAudio::parseHeader() {
+    if (getFilename().endsWith(".m4a")) {
         setType("m4a");
-    else if (getFilename().endsWith(".mp3"))
-        setType("mp3");
-    else if (getFilename().endsWith(".mp2"))
-        setType("mp2");
-
-    bool result = false;
-
-    if (getType() == "m4a") {
         TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
-        result = processTaglibFile(f);
-        TagLib::MP4::Tag* tag = f.tag();
-        if (tag) {
-            processMP4Tag(tag);
+        if (!readFileHeader(this, f)) {
+            return ERR;
         }
-    } else if (getType() == "mp3") {
-        // No need for toLocal8Bit on Windows since CoreAudio is OS X only.
+        TagLib::MP4::Tag *mp4(f.tag());
+        if (mp4) {
+            readMP4Tag(this, *mp4);
+        } else {
+            // fallback
+            const TagLib::Tag *tag(f.tag());
+            if (tag) {
+                readTag(this, *tag);
+            } else {
+                return ERR;
+            }
+        }
+    } else if (getFilename().endsWith(".mp3")) {
+        setType("mp3");
         TagLib::MPEG::File f(getFilename().toLocal8Bit().constData());
-
-        // Takes care of all the default metadata
-        result = processTaglibFile(f);
-
-        // Now look for MP3 specific metadata (e.g. BPM)
+        if (!readFileHeader(this, f)) {
+            return ERR;
+        }
         TagLib::ID3v2::Tag* id3v2 = f.ID3v2Tag();
         if (id3v2) {
-            processID3v2Tag(id3v2);
+            readID3v2Tag(this, *id3v2);
+        } else {
+            TagLib::APE::Tag *ape = f.APETag();
+            if (ape) {
+                readAPETag(this, *ape);
+            } else {
+                // fallback
+                const TagLib::Tag *tag(f.tag());
+                if (tag) {
+                    readTag(this, *tag);
+                } else {
+                    return ERR;
+                }
+            }
         }
-
-        TagLib::APE::Tag *ape = f.APETag();
-        if (ape) {
-            processAPETag(ape);
-        }
-    } else if (getType() == "mp2") {
+    } else if (getFilename().endsWith(".mp2")) {
+        setType("mp2");
         //TODO: MP2 metadata. Does anyone use mp2 files anymore?
         //      Feels like 1995 again...
+        return ERR;
     }
 
-    return result ? OK : ERR;
+    return OK;
 }
 
+QImage SoundSourceCoreAudio::parseCoverArt() {
+    QImage coverArt;
+    if (getFilename().endsWith(".m4a")) {
+        setType("m4a");
+        TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
+        TagLib::MP4::Tag *mp4(f.tag());
+        if (mp4) {
+            return Mixxx::getCoverInMP4Tag(*mp4);
+        } else {
+            return QImage();
+        }
+    } else if (getFilename().endsWith(".mp3")) {
+        setType("mp3");
+        TagLib::MPEG::File f(getFilename().toLocal8Bit().constData());
+        TagLib::ID3v2::Tag* id3v2 = f.ID3v2Tag();
+        if (id3v2) {
+            coverArt = Mixxx::getCoverInID3v2Tag(*id3v2);
+        }
+        if (coverArt.isNull()) {
+            TagLib::APE::Tag *ape = f.APETag();
+            if (ape) {
+                coverArt = Mixxx::getCoverInAPETag(*ape);
+            }
+        }
+        return coverArt;
+    }
+    return coverArt;
+}
 
 // static
 QList<QString> SoundSourceCoreAudio::supportedFileExtensions() {

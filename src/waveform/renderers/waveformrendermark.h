@@ -13,7 +13,7 @@ class WaveformRenderMark : public WaveformRendererAbstract {
     virtual void setup(const QDomNode& node, const SkinContext& context);
     virtual void draw(QPainter* painter, QPaintEvent* event);
 
-private:
+  private:
     void generateMarkImage(WaveformMark& mark);
 
     WaveformMarkSet m_marks;

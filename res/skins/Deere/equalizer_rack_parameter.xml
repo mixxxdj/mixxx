@@ -1,0 +1,69 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    An equalizer rack parameter for the provided group.
+    Assumes the equalizer is effect 1 in the unit.
+  Variables:
+    group: the group
+    parameter: the parameter number
+-->
+<Template>
+  <SetVariable name="EqualizerNumber">1</SetVariable>
+  <SetVariable name="EffectNumber">1</SetVariable>
+  <SetVariable name="EqualizerRackGroup">[EqualizerRack<Variable name="EqualizerNumber"/>]</SetVariable>
+  <SetVariable name="EqualizerEffectUnitGroup">[EqualizerRack<Variable name="EqualizerNumber"/>_<Variable name="group"/>]</SetVariable>
+  <SetVariable name="EqualizerEffectGroup">[EqualizerRack<Variable name="EqualizerNumber"/>_<Variable name="group"/>_Effect<Variable name="EffectNumber"/>]</SetVariable>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <Children>
+      <KnobComposed>
+        <Size>40f,40f</Size>
+        <Knob>knob.svg</Knob>
+        <MinAngle>-230</MinAngle>
+        <MaxAngle>50</MaxAngle>
+        <Connection>
+          <ConfigKey><Variable name="EqualizerEffectGroup"/>,parameter<Variable name="parameter"/></ConfigKey>
+        </Connection>
+      </KnobComposed>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <EffectPushButton>
+            <Size>10f,10f</Size>
+            <ObjectName>KillButton</ObjectName>
+            <EffectRackGroup><Variable name="EqualizerRackGroup"/></EffectRackGroup>
+            <EffectUnitGroup><Variable name="EqualizerEffectUnitGroup"/></EffectUnitGroup>
+            <Effect><Variable name="EffectNumber"/></Effect>
+            <EffectButtonParameter><Variable name="parameter"/></EffectButtonParameter>
+
+            <NumberStates>2</NumberStates>
+	    <State>
+	      <Number>0</Number>
+              <Text>O</Text>
+	    </State>
+	    <State>
+	      <Number>1</Number>
+              <Text>K</Text>
+	    </State>
+            <Connection>
+	      <ConfigKey><Variable name="EqualizerEffectGroup"/>,button_parameter<Variable name="parameter"/></ConfigKey>
+	      <ButtonState>LeftButton</ButtonState>
+	    </Connection>
+          </EffectPushButton>
+          <EffectParameterName>
+            <Size>30f,10f</Size>
+            <ObjectName>KnobLabel</ObjectName>
+            <EffectRackGroup><Variable name="EqualizerRackGroup"/></EffectRackGroup>
+            <EffectUnitGroup><Variable name="EqualizerEffectUnitGroup"/></EffectUnitGroup>
+            <Effect><Variable name="EffectNumber"/></Effect>
+            <EffectParameter><Variable name="parameter"/></EffectParameter>
+          </EffectParameterName>
+        </Children>
+      </WidgetGroup>
+    </Children>
+    <Connection>
+      <ConfigKey><Variable name="EqualizerEffectGroup"/>,parameter<Variable name="parameter"/>_loaded</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

@@ -38,7 +38,10 @@ ControlObjectThread::ControlObjectThread(const ConfigKey& key, QObject* pParent)
 
 void ControlObjectThread::initialize(const ConfigKey& key) {
     m_key = key;
-    m_pControl = ControlDoublePrivate::getControl(key);
+    // Don't bother looking up the control if key is NULL. Prevents log spew.
+    if (!key.isNull()) {
+        m_pControl = ControlDoublePrivate::getControl(key);
+    }
     if (m_pControl) {
         connect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
                 this, SLOT(slotValueChanged(double, QObject*)),
@@ -59,41 +62,10 @@ bool ControlObjectThread::connectValueChanged(
     return connect((QObject*)this, SIGNAL(valueChanged(double)), parent(), method, type);
 }
 
-
-double ControlObjectThread::get() {
-    return m_pControl ? m_pControl->get() : 0.0;
+QString ControlObjectThread::name() const {
+    return m_pControl ? m_pControl->name() : QString();
 }
 
-void ControlObjectThread::slotSet(double v) {
-    set(v);
-}
-
-void ControlObjectThread::set(double v) {
-    if (m_pControl) {
-        m_pControl->set(v, this);
-    }
-}
-
-void ControlObjectThread::reset() {
-    if (m_pControl) {
-        // NOTE(rryan): This is important. The originator of this action does
-        // not know the resulting value so it makes sense that we should emit a
-        // general valueChanged() signal even though the change originated from
-        // us. For this reason, we provide NULL here so that the change is
-        // broadcast as valueChanged() and not valueChangedByThis().
-        m_pControl->reset();
-    }
-}
-
-void ControlObjectThread::emitValueChanged() {
-    emit(valueChanged(get()));
-}
-
-void ControlObjectThread::slotValueChanged(double v, QObject* pSetter) {
-    if (pSetter != this) {
-        // This is base implementation of this function without scaling
-        emit(valueChanged(v));
-    } else {
-        emit(valueChangedByThis(v));
-    }
+QString ControlObjectThread::description() const {
+    return m_pControl ? m_pControl->description() : QString();
 }

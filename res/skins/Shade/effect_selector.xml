@@ -1,0 +1,21 @@
+<Template>
+	<WidgetGroup>
+		<ObjectName>Effect</ObjectName>
+		<Size>500,40</Size>
+		<Layout>horizontal</Layout>
+		<Style>QGroupBox { 
+			margin: 0px;
+			padding: 0px;
+			background: url();
+		} 
+		</Style>
+		<Children>
+			<Template src="skin:effect_selector_button.xml">
+                <SetVariable name="Effect">1</SetVariable>
+            </Template>
+            <WidgetGroup>
+            	<SizePolicy>me,max</SizePolicy>
+			</WidgetGroup>
+         </Children>
+	</WidgetGroup>
+</Template>

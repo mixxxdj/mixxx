@@ -9,6 +9,7 @@ class PreviewDeck : public BaseTrackPlayer {
     PreviewDeck(QObject* pParent,
                 ConfigObject<ConfigValue> *pConfig,
                 EngineMaster* pMixingEngine,
+                EffectsManager* pEffectsManager,
                 EngineChannel::ChannelOrientation defaultOrientation,
                 QString group);
     virtual ~PreviewDeck();

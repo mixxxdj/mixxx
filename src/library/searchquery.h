@@ -54,6 +54,17 @@ class AndNode : public GroupNode {
     QString toSql() const;
 };
 
+class NotNode : public QueryNode {
+  public:
+    explicit NotNode(QueryNode* pNode);
+
+    bool match(const TrackPointer& pTrack) const;
+    QString toSql() const;
+
+  private:
+    QueryNode* m_pNode;
+};
+
 class TextFilterNode : public QueryNode {
   public:
     TextFilterNode(const QSqlDatabase& database,
@@ -76,10 +87,13 @@ class TextFilterNode : public QueryNode {
 class NumericFilterNode : public QueryNode {
   public:
     NumericFilterNode(const QStringList& sqlColumns, QString argument);
+    NumericFilterNode(const QStringList& sqlColumns);
     bool match(const TrackPointer& pTrack) const;
     QString toSql() const;
 
-  private:
+  protected:
+    virtual void init(QString argument);
+    virtual double parse(const QString& arg, bool *ok);
     QStringList m_sqlColumns;
     bool m_bOperatorQuery;
     QString m_operator;
@@ -87,6 +101,14 @@ class NumericFilterNode : public QueryNode {
     bool m_bRangeQuery;
     double m_dRangeLow;
     double m_dRangeHigh;
+};
+
+class DurationFilterNode : public NumericFilterNode {
+  public:
+    DurationFilterNode(const QStringList& sqlColumns, QString argument);
+
+  private:
+    virtual double parse(const QString& arg, bool* ok);
 };
 
 class KeyFilterNode : public QueryNode {
@@ -102,7 +124,7 @@ class KeyFilterNode : public QueryNode {
 
 class SqlNode : public QueryNode {
   public:
-    SqlNode(const QString& sqlExpression)
+    explicit SqlNode(const QString& sqlExpression)
             // Need to wrap it since we don't know if the caller wrapped it.
             : m_sql(QString("(%1)").arg(sqlExpression)) {
     }

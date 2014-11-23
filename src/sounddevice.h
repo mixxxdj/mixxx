@@ -22,6 +22,7 @@
 #include <QList>
 
 #include "soundmanager.h"
+#include "util/defs.h"
 
 //Forward declarations
 class SoundDevice;
@@ -41,29 +42,53 @@ class SoundDevice {
     SoundDevice(ConfigObject<ConfigValue> *config, SoundManager* sm);
     virtual ~SoundDevice();
 
-    QString getInternalName() const;
+    inline QString getInternalName() const {
+        return m_strInternalName;
+    }
     QString getDisplayName() const;
     QString getHostAPI() const;
     void setHostAPI(QString api);
     void setSampleRate(double sampleRate);
     void setFramesPerBuffer(unsigned int framesPerBuffer);
-    virtual int open() = 0;
-    virtual int close() = 0;
+    virtual Result open(bool isClkRefDevice, int syncBuffers) = 0;
+    virtual Result close() = 0;
+    virtual void readProcess() = 0;
+    virtual void writeProcess() = 0;
     virtual QString getError() const = 0;
     virtual unsigned int getDefaultSampleRate() const = 0;
     int getNumOutputChannels() const;
     int getNumInputChannels() const;
     SoundDeviceError addOutput(const AudioOutputBuffer& out);
     SoundDeviceError addInput(const AudioInputBuffer& in);
+    const QList<AudioInputBuffer>& inputs() const {
+        return m_audioInputs;
+    }
+    const QList<AudioOutputBuffer>& outputs() const {
+        return m_audioOutputs;
+    }
+
     void clearOutputs();
     void clearInputs();
     bool operator==(const SoundDevice &other) const;
     bool operator==(const QString &other) const;
 
   protected:
+    void composeOutputBuffer(CSAMPLE* outputBuffer,
+                             const unsigned int iFramesPerBuffer,
+                             const unsigned int readOffset,
+                             const unsigned int iFrameSize);
+
+    void composeInputBuffer(const CSAMPLE* inputBuffer,
+                            const unsigned int framesToPush,
+                            const unsigned int framesWriteOffset,
+                            const unsigned int iFrameSize);
+
+    void clearInputBuffer(const unsigned int framesToPush,
+                          const unsigned int framesWriteOffset);
+
     ConfigObject<ConfigValue> *m_pConfig;
     // Pointer to the SoundManager object which we'll request audio from.
-    SoundManager *m_pSoundManager;
+    SoundManager* m_pSoundManager;
     // The name of the soundcard, used internally (may include the device ID)
     QString m_strInternalName;
     // The name of the soundcard, as displayed to the user

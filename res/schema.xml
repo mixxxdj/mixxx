@@ -383,4 +383,16 @@ METADATA
       );
     </sql>
   </revision>
+  <revision version="24" min_compatible="3">
+    <description>
+      Add cover art support. Default source is UNKNOWN and default type is NONE.
+      See library/coverart.h.
+    </description>
+    <sql>
+      ALTER TABLE library ADD COLUMN coverart_source INTEGER DEFAULT 0;
+      ALTER TABLE library ADD COLUMN coverart_type INTEGER DEFAULT 0;
+      ALTER TABLE library ADD COLUMN coverart_location TEXT DEFAULT "";
+      ALTER TABLE library ADD COLUMN coverart_hash INTEGER DEFAULT 0;
+    </sql>
+  </revision>
 </schema>

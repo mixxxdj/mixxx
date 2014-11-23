@@ -105,7 +105,7 @@ void EncoderVorbis::writePage() {
             // weld packet into bitstream
             ogg_stream_packetin(&m_oggs, &m_oggpacket);
             // write out pages
-            int eos = 0;
+            bool eos = false;
             while (!eos) {
                 int result = ogg_stream_pageout(&m_oggs, &m_oggpage);
                 if (result == 0)
@@ -113,7 +113,7 @@ void EncoderVorbis::writePage() {
                 m_pCallback->write(m_oggpage.header, m_oggpage.body,
                                    m_oggpage.header_len, m_oggpage.body_len);
                 if (ogg_page_eos(&m_oggpage))
-                    eos = 1;
+                    eos = true;
             }
         }
     }
@@ -158,12 +158,15 @@ void EncoderVorbis::initStream() {
     // add comment
     vorbis_comment_init(&m_vcomment);
     vorbis_comment_add_tag(&m_vcomment, "ENCODER", "mixxx/libvorbis");
-    if (m_metaDataArtist != NULL)
+    if (m_metaDataArtist != NULL) {
         vorbis_comment_add_tag(&m_vcomment, "ARTIST", m_metaDataArtist);
-    if (m_metaDataTitle != NULL)
+    }
+    if (m_metaDataTitle != NULL) {
         vorbis_comment_add_tag(&m_vcomment, "TITLE", m_metaDataTitle);
-        if (m_metaDataAlbum != NULL)
+    }
+    if (m_metaDataAlbum != NULL) {
         vorbis_comment_add_tag(&m_vcomment, "ALBUM", m_metaDataAlbum);
+    }
 
     // set up the vorbis headers
     ogg_packet headerInit;
@@ -174,9 +177,9 @@ void EncoderVorbis::initStream() {
     ogg_stream_packetin(&m_oggs, &headerComment);
     ogg_stream_packetin(&m_oggs, &headerCode);
 
-        //The encoder is now inialized
-        // Encode method will start streaming by sending the header first
-        m_header_write = true;
+    // The encoder is now inialized. The encode method will start streaming by
+    // sending the header first.
+    m_header_write = true;
     m_bStreamInitialized = true;
 }
 

@@ -73,7 +73,7 @@ EncoderFfmpegCore::EncoderFfmpegCore(EncoderCallback* pCallback, CodecID codec)
     m_lBitrate = 128000;
     m_lDts = 0;
     m_lPts = 0;
-    m_lRecorededBytes = 0;
+    m_lRecordedBytes = 0;
 
 }
 
@@ -107,10 +107,6 @@ EncoderFfmpegCore::~EncoderFfmpegCore() {
 
     // Close buffer
     delete m_pResample;
-}
-
-unsigned int EncoderFfmpegCore::reSample(AVFrame *inframe) {
-    return m_pResample->reSample(inframe);
 }
 
 //call sendPackages() or write() after 'flush()' as outlined in engineshoutcast.cpp
@@ -170,11 +166,11 @@ void EncoderFfmpegCore::encodeBuffer(const CSAMPLE *samples, const int size) {
             if (m_lBufferSize > 0) {
                 m_pFltSamples[j] = m_SBuffer[ l_iBufPos++ ];
                 m_lBufferSize--;
-                m_lRecorededBytes++;
+                m_lRecordedBytes++;
             } else {
                 m_pFltSamples[j] = l_fNormalizedSamples[l_iPos++];
                 l_iLeft--;
-                m_lRecorededBytes++;
+                m_lRecordedBytes++;
             }
 
             if (l_iLeft <= 0) {
@@ -298,6 +294,7 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx,
     AVFrame *l_SFrame = avcodec_alloc_frame();
     int l_iGotPacket;
     int l_iRet;
+    uint8_t *l_iOut = NULL;
 #ifdef av_make_error_string
     char l_strErrorBuff[256];
 #endif // av_make_error_string
@@ -307,7 +304,7 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx,
     l_SPacket.data = NULL;
 
     // Calculate correct DTS for FFMPEG
-    m_lDts = round(((double)m_lRecorededBytes / (double)44100 / (double)2. *
+    m_lDts = round(((double)m_lRecordedBytes / (double)44100 / (double)2. *
                     (double)m_pEncoderAudioStream->time_base.den));
     m_lPts = m_lDts;
 
@@ -344,7 +341,7 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx,
     // to something that fits..
     if (l_SCodecCtx->sample_fmt != AV_SAMPLE_FMT_FLT) {
 
-        reSample(l_SFrame);
+        m_pResample->reSample(l_SFrame, &l_iOut);
         // After we have turned our samples to destination
         // Format we must re-alloc l_SFrame.. it easier like this..
 #if LIBAVCODEC_VERSION_INT > 3544932
@@ -362,9 +359,12 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx,
 
         l_iRet = avcodec_fill_audio_frame(l_SFrame, l_SCodecCtx->channels,
                                           l_SCodecCtx->sample_fmt,
-                                          (const uint8_t *)m_pResample->getBuffer(),
+                                          l_iOut,
                                           m_iAudioCpyLen,
                                           1);
+
+        free(l_iOut);
+        l_iOut = NULL;
 
         if (l_iRet != 0) {
 #ifdef av_make_error_string
