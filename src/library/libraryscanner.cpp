@@ -32,7 +32,7 @@
 #include "library/scanner/scannerutil.h"
 
 // TODO(rryan) make configurable
-const int kScannerThreadPoolSize = 10;
+const int kScannerThreadPoolSize = 1;
 
 LibraryScanner::LibraryScanner(QWidget* pParentWidget, TrackCollection* collection)
               : m_pCollection(collection),
