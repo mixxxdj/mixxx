@@ -47,7 +47,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
            m_pSkinLoader(pSkinLoader),
            m_pPlayerManager(pPlayerManager),
            m_iNumConfiguredDecks(0),
-           m_iNumConfiguredSamplers(0) {
+           m_iNumConfiguredSamplers(0),
+           m_rebootNotifiedColoumnHeight(false) {
     setupUi(this);
 
     m_pNumDecks = new ControlObjectSlave("[Master]", "num_decks", this);
@@ -77,6 +78,13 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     }
     connect(ComboBoxPosition, SIGNAL(activated(int)),
             this, SLOT(slotSetPositionDisplay(int)));
+
+    // Set default direction as stored in config file
+    int coloumnHeight = m_pConfig->getValueString(ConfigKey("[Library]","ColoumnHeight"), "20").toInt();
+    spinBoxColoumnHeight->setValue(coloumnHeight);
+    connect(spinBoxColoumnHeight, SIGNAL(valueChanged(int)),
+            this, SLOT(slotColoumnHeightValueChanged(int)));
+
 
     // Set default direction as stored in config file
     if (m_pConfig->getValueString(ConfigKey("[Controls]","RateDir")).length() == 0)
@@ -671,4 +679,12 @@ void DlgPrefControls::slotNumSamplersChanged(double new_count) {
     m_iNumConfiguredSamplers = numsamplers;
     slotSetRateDir(m_pConfig->getValueString(ConfigKey("[Controls]","RateDir")).toInt());
     slotSetRateRange(m_pConfig->getValueString(ConfigKey("[Controls]","RateRange")).toInt());
+}
+
+void DlgPrefControls::slotColoumnHeightValueChanged(int height) {
+    m_pConfig->set(ConfigKey("[Library]","ColoumnHeight"),ConfigValue(height));
+    if(!m_rebootNotifiedColoumnHeight) {
+        notifyRebootNecessary();
+        m_rebootNotifiedColoumnHeight = true;
+    }
 }
