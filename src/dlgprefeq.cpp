@@ -425,15 +425,8 @@ void DlgPrefEQ::slotUpdateFilter(int value) {
         EngineEffect* pEngineEffect = effect->getEngineEffect();
         QSlider* slider = qobject_cast<QSlider*>(sender());
         int index = slider->property("index").toInt();
-        EffectsRequest* pRequest = new EffectsRequest();
-        pRequest->type = EffectsRequest::SET_PARAMETER_PARAMETERS;
-        pRequest->pTargetEffect = pEngineEffect;
-        pRequest->SetParameterParameters.iParameter = index;
-        pRequest->value = value;
-        pRequest->minimum = -12;
-        pRequest->maximum = 12;
-        pRequest->default_value = 0;
-        m_pEffectsManager->writeRequest(pRequest);
+        EffectParameter* param = effect->getKnobParameterForSlot(index);
+        param->setValue(value);
     }
 }
 
