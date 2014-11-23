@@ -108,13 +108,13 @@ class TrackDAO : public QObject, public virtual DAO {
     void markTracksAsMixxxDeleted(const QString& dir);
 
     // Scanning related calls. Should be elsewhere or private somehow.
-    void markTrackLocationAsVerified(const QString& location);
+    void markTrackLocationsAsVerified(const QStringList& locations);
     void markTracksInDirectoriesAsVerified(const QStringList& directories);
     void invalidateTrackLocationsInLibrary();
     void markUnverifiedTracksAsDeleted();
     void markTrackLocationsAsDeleted(const QString& directory);
     void detectMovedFiles(QSet<int>* tracksMovedSetNew, QSet<int>* tracksMovedSetOld);
-    bool verifyRemainingTracks(volatile bool* pCancel);
+    void verifyRemainingTracks();
     void detectCoverArtForUnknownTracks(volatile const bool* pCancel,
                                         QSet<int>* pTracksChanged);
 
