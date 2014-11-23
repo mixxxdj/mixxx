@@ -426,7 +426,9 @@ void DlgPrefEQ::slotUpdateFilter(int value) {
         QSlider* slider = qobject_cast<QSlider*>(sender());
         int index = slider->property("index").toInt();
         EffectParameter* param = effect->getKnobParameterForSlot(index);
-        param->setValue(value);
+        if (param) {
+            param->setValue(value);
+        }
     }
 }
 
