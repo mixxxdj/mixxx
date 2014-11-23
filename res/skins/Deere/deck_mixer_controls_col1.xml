@@ -21,11 +21,7 @@
       </Template>
 
       <Template src="skin:equalizer_rack_parameter.xml">
-        <SetVariable name="parameter">1</SetVariable>
-      </Template>
-
-      <Template src="skin:equalizer_rack_parameter.xml">
-        <SetVariable name="parameter">2</SetVariable>
+        <SetVariable name="parameter">4</SetVariable>
       </Template>
 
       <Template src="skin:equalizer_rack_parameter.xml">
@@ -33,7 +29,11 @@
       </Template>
 
       <Template src="skin:equalizer_rack_parameter.xml">
-        <SetVariable name="parameter">4</SetVariable>
+        <SetVariable name="parameter">2</SetVariable>
+      </Template>
+
+      <Template src="skin:equalizer_rack_parameter.xml">
+        <SetVariable name="parameter">1</SetVariable>
       </Template>
 
       <Template src="skin:quick_effect_superknob.xml">
