@@ -285,6 +285,7 @@ void DlgPrefEQ::setDefaultShelves()
 }
 
 void DlgPrefEQ::slotResetToDefaults() {
+    masterEQToDefault();
     setDefaultShelves();
     foreach(QComboBox* pCombo, m_deckEqEffectSelectors) {
         pCombo->setCurrentIndex(
@@ -422,7 +423,6 @@ void DlgPrefEQ::slotUpdateLoEQ() {
 void DlgPrefEQ::slotUpdateFilter(int value) {
     EffectPointer effect(m_pEffectMasterEQ);
     if (!effect.isNull()) {
-        EngineEffect* pEngineEffect = effect->getEngineEffect();
         QSlider* slider = qobject_cast<QSlider*>(sender());
         int index = slider->property("index").toInt();
         EffectParameter* param = effect->getKnobParameterForSlot(index);
@@ -584,3 +584,19 @@ QString DlgPrefEQ::getQuickEffectGroupForDeck(int deck) const {
     }
     return QString();
 }
+
+void DlgPrefEQ::masterEQToDefault() {
+    EffectPointer effect(m_pEffectMasterEQ);
+    if (!effect.isNull()) {
+        int knobNum = effect->numKnobParameters();
+        for (int i = 0; i < knobNum; i++) {
+            EffectParameter* param = effect->getKnobParameterForSlot(i);
+            if (param) {
+                double defaultValue = param->getDefault();
+                param->setValue(defaultValue);
+                m_masterEQSliders[i]->setValue(defaultValue);
+            }
+        }
+    }
+}
+

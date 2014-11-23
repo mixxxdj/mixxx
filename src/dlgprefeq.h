@@ -41,6 +41,8 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     QString getEQEffectGroupForDeck(int deck) const;
     QString getQuickEffectGroupForDeck(int deck) const;
 
+    void masterEQToDefault();
+
   public slots:
     void slotEqEffectChangedOnDeck(int effectIndex);
     void slotQuickEffectChangedOnDeck(int effectIndex);
