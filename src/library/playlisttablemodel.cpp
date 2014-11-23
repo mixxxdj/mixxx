@@ -70,7 +70,7 @@ void PlaylistTableModel::setTableModel(int playlistId) {
 
 int PlaylistTableModel::addTracks(const QModelIndex& index,
                                   const QList<QString>& locations) {
-    if (locations.size() == 0) {
+    if (locations.isEmpty()) {
         return 0;
     }
 
@@ -84,7 +84,10 @@ int PlaylistTableModel::addTracks(const QModelIndex& index,
 
     QList<QFileInfo> fileInfoList;
     foreach (QString fileLocation, locations) {
-        fileInfoList.append(QFileInfo(fileLocation));
+        QFileInfo fileInfo(fileLocation);
+        if (fileInfo.exists()) {
+            fileInfoList.append(fileInfo);
+        }
     }
 
     QList<int> trackIds = m_trackDAO.addTracks(fileInfoList, true);

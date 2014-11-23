@@ -623,27 +623,30 @@ QList<int> TrackDAO::addTracks(const QList<QFileInfo>& fileInfoList,
     QSqlQuery query(m_database);
     QList<int> trackIDs;
 
-
     // Prepare to add tracks to the database.
     // This also begins an SQL transaction.
     addTracksPrepare();
 
     // Create a temporary database of the paths of all the imported tracks.
     query.prepare("CREATE TEMP TABLE playlist_import "
-                  "(location varchar (512))");
+                  "(add_index INTEGER PRIMARY KEY, location varchar (512))");
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
+        addTracksFinish(true);
         return trackIDs;
     }
 
     // All all the track paths to this database.
-    query.prepare("INSERT INTO playlist_import (location) "
-                  "VALUES (:location)");
-    foreach (const QFileInfo &rFileInfo, fileInfoList) {
+    query.prepare("INSERT INTO playlist_import (add_index, location) "
+                  "VALUES (:add_index, :location)");
+    int index = 0;
+    foreach (const QFileInfo& rFileInfo, fileInfoList) {
+        query.bindValue(":add_index", index);
         query.bindValue(":location", rFileInfo.absoluteFilePath());
         if (!query.exec()) {
             LOG_FAILED_QUERY(query);
         }
+        index++;
     }
 
     query.prepare("SELECT library.id FROM playlist_import, "
@@ -652,7 +655,7 @@ QList<int> TrackDAO::addTracks(const QList<QFileInfo>& fileInfoList,
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
-    const int idColumn = query.record().indexOf("id");
+    int idColumn = query.record().indexOf("id");
     while (query.next()) {
         int trackId = query.value(idColumn).toInt();
         trackIDs.append(trackId);
@@ -667,29 +670,50 @@ QList<int> TrackDAO::addTracks(const QList<QFileInfo>& fileInfoList,
         }
         query.prepare(QString("UPDATE library SET mixxx_deleted=0 "
                               "WHERE id in (%1) AND mixxx_deleted=1")
-                      .arg(idStringList.join (",")));
+                      .arg(idStringList.join(",")));
         if (!query.exec()) {
             LOG_FAILED_QUERY(query);
         }
     }
 
     // Any tracks not already in the database need to be added.
-    query.prepare("SELECT location FROM playlist_import "
+    query.prepare("SELECT add_index, location FROM playlist_import "
                   "WHERE NOT EXISTS (SELECT location FROM track_locations "
                   "WHERE playlist_import.location = track_locations.location)");
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
+    const int addIndexColumn = query.record().indexOf("add_index");
     const int locationColumn = query.record().indexOf("location");
     while (query.next()) {
+        int addIndex = query.value(addIndexColumn).toInt();
         QString filePath = query.value(locationColumn).toString();
-        TrackInfoObject* pTrack = new TrackInfoObject(QFileInfo(filePath));
+        const QFileInfo& fileInfo = fileInfoList.at(addIndex);
+        TrackInfoObject* pTrack = new TrackInfoObject(fileInfo);
         addTracksAdd(pTrack, unremove);
         int trackID = pTrack->getId();
         if (trackID >= 0) {
             trackIDs.append(trackID);
         }
         delete pTrack;
+    }
+
+    // Now that we have imported any tracks that were not already in the
+    // library, clear trackIDs and re-select ordering by
+    // playlist_import.add_index to return the list of track ids in the order
+    // that they were requested to be added.
+    trackIDs.clear();
+    query.prepare("SELECT library.id FROM playlist_import, "
+                  "track_locations, library WHERE library.location = track_locations.id "
+                  "AND playlist_import.location = track_locations.location "
+                  "ORDER BY playlist_import.add_index");
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+    idColumn = query.record().indexOf("id");
+    while (query.next()) {
+        int trackId = query.value(idColumn).toInt();
+        trackIDs.append(trackId);
     }
 
     // Drop the temporary playlist-import table.
