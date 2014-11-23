@@ -532,21 +532,13 @@ void DlgPrefEQ::setUpMasterEQ() {
                     slidersGridLayout->addWidget(slider, 0, i);
                     m_masterEQSliders.append(slider);
                     connect(slider, SIGNAL(sliderMoved(int)), this, SLOT(slotUpdateFilter(int)));
-                }
-            }
 
-            // Display center frequencies for each filter
-            float centerFrequencies[8] = {45, 100, 220, 500, 1100, 2500, 5500, 12000};
-            for (unsigned int i = 0; i < 8; i++) {
-                QLabel* centerFreqLabel = new QLabel(this);
-                QString labelText;
-                if (centerFrequencies[i] < 1000) {
-                    labelText = QString("%1 Hz").arg(centerFrequencies[i]);
-                } else {
-                    labelText = QString("%1 kHz").arg(centerFrequencies[i] / 1000);
+                    // Setup Lable
+                    QLabel* centerFreqLabel = new QLabel(this);
+                    QString labelText = param->manifest().name();
+                    centerFreqLabel->setText(labelText);
+                    slidersGridLayout->addWidget(centerFreqLabel, 1, i, Qt::AlignCenter);
                 }
-                centerFreqLabel->setText(labelText);
-                slidersGridLayout->addWidget(centerFreqLabel, 1, i, Qt::AlignCenter);
             }
         }
     }
