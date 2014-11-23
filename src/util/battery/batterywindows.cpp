@@ -54,8 +54,8 @@ void BatteryWindows::read() {
     case Battery::CHARGED:
         bat = "charged";
     }
-    qDebug() << "BatteryWindows::read()"
-             << "capacity " << m_dPercentage
-             << "minutes_left " << m_iMinutesLeft
-             << "battery_status " << bat;
+    // qDebug() << "BatteryWindows::read()"
+    //          << "capacity " << m_dPercentage
+    //          << "minutes_left " << m_iMinutesLeft
+    //          << "battery_status " << bat;
 }

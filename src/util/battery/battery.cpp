@@ -11,7 +11,6 @@
 // interval (in ms) of the timer which calls update()
 static const int kiUpdateInterval = 5000;
 
-
 Battery::Battery(QObject *parent)
         : QObject(parent),
           m_csChargingState(UNKNOWN),
@@ -27,13 +26,13 @@ Battery::~Battery() {
 
 Battery* Battery::getBattery(QObject *parent) {
 #ifdef Q_OS_LINUX
-		return new BatteryLinux(parent);
+    return new BatteryLinux(parent);
 #elif defined(Q_OS_WIN)
-		return new BatteryWindows(parent);
+    return new BatteryWindows(parent);
 #elif defined(Q_OS_MAC)
-		return new BatteryMac(parent);
+    return new BatteryMac(parent);
 #else
-		return NULL;
+    return NULL;
 #endif
 }
 
