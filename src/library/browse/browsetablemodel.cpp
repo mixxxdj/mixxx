@@ -7,7 +7,6 @@
 
 #include "library/browse/browsetablemodel.h"
 #include "library/browse/browsethread.h"
-#include "soundsourceproxy.h"
 #include "playerinfo.h"
 #include "controlobject.h"
 #include "library/dao/trackdao.h"

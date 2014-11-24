@@ -1,7 +1,6 @@
 #include "engine/effects/engineeffectrack.h"
 
 #include "engine/effects/engineeffectchain.h"
-#include "sampleutil.h"
 
 EngineEffectRack::EngineEffectRack(int iRackNumber)
         : m_iRackNumber(iRackNumber) {
