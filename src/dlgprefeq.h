@@ -94,6 +94,8 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
 
     // Members needed for the Master EQ
     QList<QSlider*> m_masterEQSliders;
+    QList<QLabel*> m_masterEQValues;
+    QList<QLabel*> m_masterEQLabels;
     QWeakPointer<Effect> m_pEffectMasterEQ;
 
     bool m_bEqAutoReset;
