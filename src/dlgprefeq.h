@@ -41,8 +41,6 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     QString getEQEffectGroupForDeck(int deck) const;
     QString getQuickEffectGroupForDeck(int deck) const;
 
-    void masterEQToDefault();
-
   public slots:
     void slotEqEffectChangedOnDeck(int effectIndex);
     void slotQuickEffectChangedOnDeck(int effectIndex);
@@ -61,6 +59,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     void slotBypass(int state);
     // Update the Master EQ
     void slotUpdateFilter(int value);
+    void slotMasterEQToDefault();
 
   signals:
     void apply(const QString &);

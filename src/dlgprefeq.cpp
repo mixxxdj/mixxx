@@ -285,7 +285,7 @@ void DlgPrefEQ::setDefaultShelves()
 }
 
 void DlgPrefEQ::slotResetToDefaults() {
-    masterEQToDefault();
+    slotMasterEQToDefault();
     setDefaultShelves();
     foreach(QComboBox* pCombo, m_deckEqEffectSelectors) {
         pCombo->setCurrentIndex(
@@ -494,6 +494,9 @@ void DlgPrefEQ::slotBypass(int state) {
 }
 
 void DlgPrefEQ::setUpMasterEQ() {
+    connect(pbResetMasterEq, SIGNAL(clicked(bool)),
+            this, SLOT(slotMasterEQToDefault()));
+
     // The Master EQ is the only Effect in the MasterEQEffectChainSlot
     EffectChainSlotPointer pChainSlot = m_pEQEffectRack->getGroupEffectChainSlot("[Master]");
 
@@ -587,7 +590,7 @@ QString DlgPrefEQ::getQuickEffectGroupForDeck(int deck) const {
     return QString();
 }
 
-void DlgPrefEQ::masterEQToDefault() {
+void DlgPrefEQ::slotMasterEQToDefault() {
     EffectPointer effect(m_pEffectMasterEQ);
     if (!effect.isNull()) {
         int knobNum = effect->numKnobParameters();
