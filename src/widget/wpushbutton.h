@@ -32,6 +32,7 @@
 #include "controlpushbutton.h"
 #include "skin/skincontext.h"
 #include "controlwidgetconnection.h"
+#include "util/math.h"
 
 class WPushButton : public WWidget {
     Q_OBJECT
@@ -56,8 +57,10 @@ class WPushButton : public WWidget {
 
     int readDisplayValue() const {
         double value = getControlParameterDisplay();
-        int idx = static_cast<int>(value) % m_iNoStates;
-        return idx;
+        if (!isnan(value) && m_iNoStates > 0) {
+            return static_cast<int>(value) % m_iNoStates;
+        }
+        return 0;
     }
 
     virtual void setup(QDomNode node, const SkinContext& context);
@@ -80,6 +83,8 @@ class WPushButton : public WWidget {
     void fillDebugTooltip(QStringList* debug);
 
   protected:
+    void restyleAndRepaint();
+
     // Associates a pixmap of a given state of the button with the widget
     void setPixmap(int iState, bool bPressed, PixmapSource source);
 
