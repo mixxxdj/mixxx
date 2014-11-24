@@ -153,6 +153,10 @@ static bool isMixingEQ(EffectManifest* pManifest) {
     return pManifest->isMixingEQ();
 }
 
+static bool isMasterEQ(EffectManifest* pManifest) {
+    return pManifest->isMasterEQ();
+}
+
 static bool isForFilterKnob(EffectManifest* pManifest) {
     return pManifest->isForFilterKnob();
 }
@@ -510,7 +514,7 @@ void DlgPrefEQ::setUpMasterEQ() {
 
     QList<QPair<QString, QString> > availableMasterEQEffectNames;
     availableMasterEQEffectNames =
-            m_pEffectsManager->getEffectNamesFiltered(NULL);
+            m_pEffectsManager->getEffectNamesFiltered(isMasterEQ);
 
     availableMasterEQEffectNames.append(QPair<QString,QString>("", tr("None")));
 
