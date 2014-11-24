@@ -496,9 +496,7 @@ QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
 
 QWidget* LegacySkinParser::parseSplitter(QDomElement node) {
     WSplitter* pSplitter = new WSplitter(m_pParent, m_pConfig);
-    setupConnections(node, pSplitter);
-    setupBaseWidget(node, pSplitter);
-    setupWidget(node, pSplitter);
+    commonWidgetSetup(node, pSplitter);
 
     QDomNode childrenNode = m_pContext->selectNode(node, "Children");
     QWidget* pOldParent = m_pParent;
@@ -530,9 +528,7 @@ QWidget* LegacySkinParser::parseSplitter(QDomElement node) {
 
 QWidget* LegacySkinParser::parseWidgetGroup(QDomElement node) {
     WWidgetGroup* pGroup = new WWidgetGroup(m_pParent);
-    setupConnections(node, pGroup);
-    setupBaseWidget(node, pGroup);
-    setupWidget(node, pGroup);
+    commonWidgetSetup(node, pGroup);
     pGroup->setup(node, *m_pContext);
     pGroup->Init();
 
@@ -586,9 +582,7 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
                                             pPrevControl, pCurrentPageControl);
     pStack->setObjectName("WidgetStack");
     pStack->setContentsMargins(0, 0, 0, 0);
-    setupConnections(node, pStack);
-    setupBaseWidget(node, pStack);
-    setupWidget(node, pStack);
+    commonWidgetSetup(node, pStack);
 
     if (createdNext && pNextControl) {
         pNextControl->setParent(pStack);
@@ -662,9 +656,7 @@ QWidget* LegacySkinParser::parseSizeAwareStack(QDomElement node) {
     WSizeAwareStack* pStack = new WSizeAwareStack(m_pParent);
     pStack->setObjectName("SizeAwareStack");
     pStack->setContentsMargins(0, 0, 0, 0);
-    setupConnections(node, pStack);
-    setupBaseWidget(node, pStack);
-    setupWidget(node, pStack);
+    commonWidgetSetup(node, pStack);
 
     QWidget* pOldParent = m_pParent;
     m_pParent = pStack;
@@ -756,9 +748,7 @@ QWidget* LegacySkinParser::parseStandardWidget(QDomElement element,
     if (timerListener) {
         WaveformWidgetFactory::instance()->addTimerListener(pWidget);
     }
-    setupConnections(element, pWidget);
-    setupBaseWidget(element, pWidget);
-    setupWidget(element, pWidget);
+    commonWidgetSetup(element, pWidget);
     pWidget->setup(element, *m_pContext);
     pWidget->installEventFilter(m_pKeyboard);
     pWidget->installEventFilter(
@@ -781,9 +771,7 @@ void LegacySkinParser::setupLabelWidget(QDomElement element, WLabel* pLabel) {
     // set before the palette is set then the custom palette will not take
     // effect which breaks color scheme support.
     pLabel->setup(element, *m_pContext);
-    setupConnections(element, pLabel);
-    setupBaseWidget(element, pLabel);
-    setupWidget(element, pLabel);
+    commonWidgetSetup(element, pLabel);
     pLabel->installEventFilter(m_pKeyboard);
     pLabel->installEventFilter(
             m_pControllerManager->getControllerLearningEventFilter());
@@ -815,9 +803,7 @@ QWidget* LegacySkinParser::parseOverview(QDomElement node) {
     connect(overviewWidget, SIGNAL(trackDropped(QString, QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
 
-    setupConnections(node, overviewWidget);
-    setupBaseWidget(node, overviewWidget);
-    setupWidget(node, overviewWidget);
+    commonWidgetSetup(node, overviewWidget);
     overviewWidget->setup(node, *m_pContext);
     overviewWidget->installEventFilter(m_pKeyboard);
     overviewWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
@@ -858,10 +844,7 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
 
     viewer->installEventFilter(m_pKeyboard);
     viewer->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
-
-    setupConnections(node, viewer);
-    setupBaseWidget(node, viewer);
-    setupWidget(node, viewer);
+    commonWidgetSetup(node, viewer);
     viewer->Init();
 
     // connect display with loading/unloading of tracks
@@ -1019,9 +1002,7 @@ QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
         dummy->setText(tr("No OpenGL\nsupport."));
         return dummy;
     }
-    setupConnections(node, spinny);
-    setupBaseWidget(node, spinny);
-    setupWidget(node, spinny);
+    commonWidgetSetup(node, spinny);
 
     WaveformWidgetFactory::instance()->addTimerListener(spinny);
     connect(spinny, SIGNAL(trackDropped(QString, QString)),
@@ -1046,8 +1027,7 @@ QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
 
 QWidget* LegacySkinParser::parseSearchBox(QDomElement node) {
     WSearchLineEdit* pLineEditSearch = new WSearchLineEdit(m_pParent);
-    setupBaseWidget(node, pLineEditSearch);
-    setupWidget(node, pLineEditSearch);
+    commonWidgetSetup(node, pLineEditSearch, false);
     pLineEditSearch->setup(node, *m_pContext);
 
     // Connect search box signals to the library
@@ -1068,9 +1048,7 @@ QWidget* LegacySkinParser::parseCoverArt(QDomElement node) {
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channel);
 
     WCoverArt* pCoverArt = new WCoverArt(m_pParent, m_pConfig, channel);
-    setupConnections(node, pCoverArt);
-    setupBaseWidget(node, pCoverArt);
-    setupWidget(node, pCoverArt);
+    commonWidgetSetup(node, pCoverArt);
     pCoverArt->setup(node, *m_pContext);
 
     // If no group was provided, hook the widget up to the Library.
@@ -1110,8 +1088,7 @@ QWidget* LegacySkinParser::parseLibrary(QDomElement node) {
 
     // This must come after the bindWidget or we will not style any of the
     // LibraryView's because they have not been added yet.
-    setupBaseWidget(node, pLibraryWidget);
-    setupWidget(node, pLibraryWidget);
+    commonWidgetSetup(node, pLibraryWidget, false);
 
     return pLibraryWidget;
 }
@@ -1121,8 +1098,7 @@ QWidget* LegacySkinParser::parseLibrarySidebar(QDomElement node) {
     pLibrarySidebar->installEventFilter(m_pKeyboard);
     pLibrarySidebar->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
     m_pLibrary->bindSidebarWidget(pLibrarySidebar);
-    setupBaseWidget(node, pLibrarySidebar);
-    setupWidget(node, pLibrarySidebar);
+    commonWidgetSetup(node, pLibrarySidebar, false);
     return pLibrarySidebar;
 }
 
@@ -1429,9 +1405,7 @@ QWidget* LegacySkinParser::parseEffectName(QDomElement node) {
 
 QWidget* LegacySkinParser::parseEffectPushButton(QDomElement element) {
     WEffectPushButton* pWidget = new WEffectPushButton(m_pParent, m_pEffectsManager);
-    setupConnections(element, pWidget);
-    setupBaseWidget(element, pWidget);
-    setupWidget(element, pWidget);
+    commonWidgetSetup(element, pWidget);
     pWidget->setup(element, *m_pContext);
     pWidget->installEventFilter(m_pKeyboard);
     pWidget->installEventFilter(
@@ -1652,6 +1626,21 @@ QString LegacySkinParser::getStyleFromNode(QDomNode node) {
     return style;
 }
 
+void LegacySkinParser::commonWidgetSetup(QDomNode node,
+                                         WBaseWidget* pBaseWidget,
+                                         bool allowConnections) {
+    setupBaseWidget(node, pBaseWidget);
+    setupWidget(node, pBaseWidget->toQWidget());
+    // NOTE(rryan): setupConnections should come after setupBaseWidget and
+    // setupWidget since a BindProperty connection to the display parameter can
+    // cause the widget to be polished (i.e. style computed) before it is
+    // ready. The most common case is that the object name has not yet been set
+    // in setupWidget. See Bug #1285836.
+    if (allowConnections) {
+        setupConnections(node, pBaseWidget);
+    }
+}
+
 void LegacySkinParser::setupBaseWidget(QDomNode node,
                                        WBaseWidget* pBaseWidget) {
     // Tooltip
@@ -1689,7 +1678,7 @@ void LegacySkinParser::setupWidget(QDomNode node,
     if (m_pContext->selectBool(node, "LegacyTableViewStyle", false)) {
         style = getLibraryStyle(node);
     }
-    if (style != "") {
+    if (!style.isEmpty()) {
         pWidget->setStyleSheet(style);
     }
 }
