@@ -428,9 +428,10 @@ void DlgPrefEQ::slotUpdateFilter(int value) {
         int index = slider->property("index").toInt();
         EffectParameter* param = effect->getKnobParameterForSlot(index);
         if (param) {
-            param->setValue(value);
+            double dValue = value / 100.0;
+            param->setValue(dValue);
             QLabel* valueLabel = m_masterEQValues[index];
-            QString valueText = QString::number(value);
+            QString valueText = QString::number(dValue);
             valueLabel->setText(valueText);
         }
     }
@@ -566,10 +567,10 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
                     slidersGridLayout->addWidget(centerFreqLabel, 0, i + 1, Qt::AlignCenter);
 
                     QSlider* slider = new QSlider(this);
-                    slider->setMinimum(param->getMinimum());
-                    slider->setMaximum(param->getMaximum());
-                    slider->setSingleStep((param->getMaximum() - param->getMinimum()) / 20);
-                    slider->setValue(param->getDefault());
+                    slider->setMinimum(param->getMinimum() * 100);
+                    slider->setMaximum(param->getMaximum() * 100);
+                    slider->setSingleStep(1);
+                    slider->setValue(param->getDefault() * 100);
                     slider->setMinimumHeight(90);
                     // Set the index as a property because we need it inside slotUpdateFilter()
                     slider->setProperty("index", QVariant(i));
@@ -579,7 +580,7 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
 
                     QLabel* valueLabel = new QLabel(this);
                     m_masterEQValues.append(valueLabel);
-                    QString valueText = QString::number(param->getValue());
+                    QString valueText = QString::number((double)slider->value() / 100);
                     valueLabel->setText(valueText);
                     slidersGridLayout->addWidget(valueLabel, 2, i + 1, Qt::AlignCenter);
 
@@ -652,7 +653,7 @@ void DlgPrefEQ::slotMasterEQToDefault() {
             if (param) {
                 double defaultValue = param->getDefault();
                 param->setValue(defaultValue);
-                m_masterEQSliders[i]->setValue(defaultValue);
+                m_masterEQSliders[i]->setValue(defaultValue * 100);
 
                 QLabel* valueLabel = m_masterEQValues[i];
                 QString valueText = QString::number(defaultValue);
