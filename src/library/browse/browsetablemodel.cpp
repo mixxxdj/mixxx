@@ -7,8 +7,11 @@
 
 #include "library/browse/browsetablemodel.h"
 #include "library/browse/browsethread.h"
+<<<<<<< HEAD
 #include "library/previewbuttondelegate.h"
 #include "soundsourceproxy.h"
+=======
+>>>>>>> Delete obsolete include directives
 #include "playerinfo.h"
 #include "controlobject.h"
 #include "library/dao/trackdao.h"
