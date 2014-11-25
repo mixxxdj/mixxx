@@ -96,6 +96,42 @@ class AutoDJProcessor : public QObject {
             delete pRepeat;
         }
 
+        bool isLeft() const {
+            return orientation == EngineChannel::LEFT;
+        }
+
+        bool isRight() const {
+            return orientation == EngineChannel::RIGHT;
+        }
+
+        bool isPlaying() const {
+            return pPlay->get() > 0.0;
+        }
+
+        void stop() {
+            pPlay->set(0.0);
+        }
+
+        void play() {
+            pPlay->set(1.0);
+        }
+
+        double playPosition() const {
+            return pPlayPos->get();
+        }
+
+        void setPlayPosition(double playpos) {
+            pPlayPos->set(playpos);
+        }
+
+        bool isRepeat() const {
+            return pRepeat->get() > 0.0;
+        }
+
+        void setRepeat(bool enabled) {
+            pRepeat->set(enabled ? 1.0 : 0.0);
+        }
+
         int index;
         QString group;
         EngineChannel::ChannelOrientation orientation;
