@@ -327,8 +327,6 @@ void DlgPrefEQ::slotEqEffectChangedOnDeck(int effectIndex) {
             pChain->replaceEffect(0, pEffect);
         }
 
-
-
         // Update the configured effect for the current QComboBox
         m_pConfig->set(ConfigKey(kConfigKey, "EffectForGroup_" + group),
                 ConfigValue(effectId));
@@ -523,6 +521,24 @@ void DlgPrefEQ::setUpMasterEQ() {
     }
 
     slotMasterEqEffectChanged(comboBoxMasterEq->currentIndex());
+
+    // Load parameters from preferences:
+    EffectPointer effect(m_pEffectMasterEQ);
+    if (!effect.isNull()) {
+        int knobNum = effect->numKnobParameters();
+        for (int i = 0; i < knobNum; i++) {
+            EffectParameter* param = effect->getKnobParameterForSlot(i);
+            if (param) {
+                QString strValue = m_pConfig->getValueString(ConfigKey(kConfigKey,
+                        QString("EffectForGroup_[Master]_parameter%1").arg(i + 1)));
+                bool ok;
+                double value = strValue.toDouble(&ok);
+                if (ok) {
+                    setMasterEQParameter(i, value);
+                }
+            }
+        }
+    }
 }
 
 void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
@@ -671,6 +687,10 @@ void DlgPrefEQ::setMasterEQParameter(int i, double value) {
             QLabel* valueLabel = m_masterEQValues[i];
             QString valueText = QString::number(value);
             valueLabel->setText(valueText);
+
+            m_pConfig->set(ConfigKey(kConfigKey,
+                    QString("EffectForGroup_[Master]_parameter%1").arg(i + 1)),
+                            ConfigValue(valueText));
         }
     }
 }
