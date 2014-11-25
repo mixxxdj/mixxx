@@ -63,6 +63,7 @@ void EffectRack::removeFromEngine() {
     pRequest->type = EffectsRequest::REMOVE_EFFECT_RACK;
     pRequest->RemoveEffectRack.pRack = m_pEngineEffectRack;
     m_pEffectsManager->writeRequest(pRequest);
+    m_pEngineEffectRack = NULL;
 }
 
 void EffectRack::registerGroup(const QString& group) {
