@@ -60,6 +60,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     // Update the Master EQ
     void slotUpdateFilter(int value);
     void slotMasterEQToDefault();
+    void setMasterEQParameter(int i, double value);
     void slotMasterEqEffectChanged(int effectIndex);
 
   signals:

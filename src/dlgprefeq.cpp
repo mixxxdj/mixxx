@@ -654,13 +654,23 @@ void DlgPrefEQ::slotMasterEQToDefault() {
             EffectParameter* param = effect->getKnobParameterForSlot(i);
             if (param) {
                 double defaultValue = param->getDefault();
-                param->setValue(defaultValue);
-                m_masterEQSliders[i]->setValue(defaultValue * 100);
-
-                QLabel* valueLabel = m_masterEQValues[i];
-                QString valueText = QString::number(defaultValue);
-                valueLabel->setText(valueText);
+                setMasterEQParameter(i, defaultValue);
             }
+        }
+    }
+}
+
+void DlgPrefEQ::setMasterEQParameter(int i, double value) {
+    EffectPointer effect(m_pEffectMasterEQ);
+    if (!effect.isNull()) {
+        EffectParameter* param = effect->getKnobParameterForSlot(i);
+        if (param) {
+            param->setValue(value);
+            m_masterEQSliders[i]->setValue(value * 100);
+
+            QLabel* valueLabel = m_masterEQValues[i];
+            QString valueText = QString::number(value);
+            valueLabel->setText(valueText);
         }
     }
 }
