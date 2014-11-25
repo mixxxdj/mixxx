@@ -260,7 +260,7 @@ void AutoDJProcessor::controlSkipNext(double value) {
 
 void AutoDJProcessor::player1PositionChanged(double value) {
     // 95% playback is when we crossfade and do stuff
-    // const float posThreshold = 0.95;
+    // const double posThreshold = 0.95;
 
     // 0.05; // 5% playback is crossfade duration
     const double fadeDuration = m_fadeDuration1;
@@ -333,7 +333,7 @@ void AutoDJProcessor::player1PositionChanged(double value) {
             emit(autoDJStateChanged(m_eState));
         }
 
-        float posFadeEnd = math_min(1.0, m_posThreshold1 + fadeDuration);
+        double posFadeEnd = math_min(1.0, m_posThreshold1 + fadeDuration);
 
         if (value >= posFadeEnd) {
             // Pre-EndState
@@ -346,9 +346,9 @@ void AutoDJProcessor::player1PositionChanged(double value) {
             // m_eState = ADJ_IDLE; // Fading ready
         } else {
             // Crossfade!
-            float crossfadeValue = -1.0 +
+            double crossfadeValue = -1.0 +
                     2*(value-m_posThreshold1)/(posFadeEnd-m_posThreshold1);
-            // crossfadeValue = -1.0f -> + 1.0f
+            // crossfadeValue = -1.0 -> + 1.0
             // Move crossfader to the right!
             setCrossfader(crossfadeValue, true);
         }
@@ -357,10 +357,10 @@ void AutoDJProcessor::player1PositionChanged(double value) {
 
 void AutoDJProcessor::player2PositionChanged(double value) {
     // 95% playback is when we crossfade and do stuff
-    // const float posThreshold = 0.95;
+    // const double posThreshold = 0.95;
 
     // 0.05; // 5% playback is crossfade duration
-    float fadeDuration = m_fadeDuration2;
+    double fadeDuration = m_fadeDuration2;
 
     //qDebug() << "player2PositionChanged(" << value << ")";
     if (m_eState == ADJ_DISABLED) {
@@ -393,7 +393,7 @@ void AutoDJProcessor::player2PositionChanged(double value) {
 
     if (value >= m_posThreshold2) {
         if (m_eState == ADJ_IDLE &&
-            (deck2Playing || m_posThreshold2 >= 1.0f)) {
+            (deck2Playing || m_posThreshold2 >= 1.0)) {
             if (!deck1Playing) {
                 player1PlayChanged(1.0);
                 m_pCOPlay1->set(1.0);
@@ -407,7 +407,7 @@ void AutoDJProcessor::player2PositionChanged(double value) {
             emit(autoDJStateChanged(m_eState));
         }
 
-        float posFadeEnd = math_min(1.0, m_posThreshold2 + fadeDuration);
+        double posFadeEnd = math_min(1.0, m_posThreshold2 + fadeDuration);
 
         if (value >= posFadeEnd) {
             // Pre-End State
@@ -421,9 +421,9 @@ void AutoDJProcessor::player2PositionChanged(double value) {
             // m_eState = ADJ_IDLE; // Fading ready
         } else {
             //Crossfade!
-            float crossfadeValue = 1.0 -
+            double crossfadeValue = 1.0 -
                     2*(value-m_posThreshold2)/(posFadeEnd-m_posThreshold2);
-            // crossfadeValue = 1.0f -> + -1.0f
+            // crossfadeValue = 1.0 -> + -1.0
             setCrossfader(crossfadeValue, false); // Move crossfader to the left!
         }
     }
@@ -530,8 +530,8 @@ void AutoDJProcessor::player1PlayChanged(double value) {
                                             TrackDuration/2);
 
             if (TrackDuration > autoDjTransition) {
-                m_fadeDuration1 = static_cast<float>(autoDjTransition) /
-                        static_cast<float>(TrackDuration);
+                m_fadeDuration1 = static_cast<double>(autoDjTransition) /
+                        static_cast<double>(TrackDuration);
             } else {
                 m_fadeDuration1 = 0;
             }
@@ -562,8 +562,8 @@ void AutoDJProcessor::player2PlayChanged(double value) {
                                             TrackDuration/2);
 
             if (TrackDuration > autoDjTransition) {
-                m_fadeDuration2 = static_cast<float>(autoDjTransition) /
-                        static_cast<float>(TrackDuration);
+                m_fadeDuration2 = static_cast<double>(autoDjTransition) /
+                        static_cast<double>(TrackDuration);
             } else {
                 m_fadeDuration2 = 0;
             }
