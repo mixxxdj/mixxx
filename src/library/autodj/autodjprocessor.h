@@ -86,7 +86,10 @@ class AutoDJProcessor : public QObject {
 
     TrackPointer getNextTrackFromQueue();
     bool loadNextTrackFromQueue();
-    bool removePlayingTrackFromQueue(const QString& group);
+
+    // Removes the track loaded to the player group from the top of the AutoDJ
+    // queue if it is present.
+    bool removeLoadedTrackFromTopOfQueue(const QString& group);
 
     ConfigObject<ConfigValue>* m_pConfig;
     PlaylistTableModel* m_pAutoDJTableModel;

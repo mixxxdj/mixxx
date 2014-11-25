@@ -147,10 +147,10 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::skipNext() {
 
     // Load the next song from the queue.
     if (m_pCOPlay1->get() == 0.0) {
-        removePlayingTrackFromQueue("[Channel1]");
+        removeLoadedTrackFromTopOfQueue("[Channel1]");
         loadNextTrackFromQueue();
     } else if (m_pCOPlay2->get() == 0.0) {
-        removePlayingTrackFromQueue("[Channel2]");
+        removeLoadedTrackFromTopOfQueue("[Channel2]");
         loadNextTrackFromQueue();
     }
     return ADJ_OK;
@@ -170,10 +170,10 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
 
         // Never load the same track if it is already playing
         if (deck1Playing) {
-            removePlayingTrackFromQueue("[Channel1]");
+            removeLoadedTrackFromTopOfQueue("[Channel1]");
         }
         if (deck2Playing) {
-            removePlayingTrackFromQueue("[Channel2]");
+            removeLoadedTrackFromTopOfQueue("[Channel2]");
         }
 
         TrackPointer nextTrack = getNextTrackFromQueue();
@@ -279,7 +279,7 @@ void AutoDJProcessor::player1PositionChanged(double value) {
         if (!deck1Playing && !deck2Playing) {
             setCrossfader(-1.0, false);  // Move crossfader to the left!
             m_pCOPlay1->set(1.0);  // Play the track in player 1
-            removePlayingTrackFromQueue("[Channel1]");
+            removeLoadedTrackFromTopOfQueue("[Channel1]");
         } else {
             m_eState = ADJ_IDLE;
             if (deck1Playing && !deck2Playing) {
@@ -328,7 +328,7 @@ void AutoDJProcessor::player1PositionChanged(double value) {
                     m_pCOPlayPos2->set(m_fadeDuration2);
                 }
             }
-            removePlayingTrackFromQueue("[Channel2]");
+            removeLoadedTrackFromTopOfQueue("[Channel2]");
             m_eState = ADJ_P1FADING;
             emit(autoDJStateChanged(m_eState));
         }
@@ -402,7 +402,7 @@ void AutoDJProcessor::player2PositionChanged(double value) {
                     m_pCOPlayPos1->set(m_fadeDuration1);
                 }
             }
-            removePlayingTrackFromQueue("[Channel1]");
+            removeLoadedTrackFromTopOfQueue("[Channel1]");
             m_eState = ADJ_P2FADING;
             emit(autoDJStateChanged(m_eState));
         }
@@ -480,35 +480,40 @@ bool AutoDJProcessor::loadNextTrackFromQueue() {
     return true;
 }
 
-bool AutoDJProcessor::removePlayingTrackFromQueue(const QString& group) {
-    // Get the track at the top of the playlist...
-    TrackPointer nextTrack = m_pAutoDJTableModel->getTrack(
+bool AutoDJProcessor::removeLoadedTrackFromTopOfQueue(const QString& group) {
+    // Get the track id at the top of the playlist.
+    int nextId = m_pAutoDJTableModel->getTrackId(
             m_pAutoDJTableModel->index(0, 0));
-    int nextId = 0;
-    if (nextTrack) {
-        nextId = nextTrack->getId();
-    }
 
-    // Get loaded track
-    TrackPointer loadedTrack = PlayerInfo::instance().getTrackInfo(group);
-    int loadedId = 0;
-    if (loadedTrack) {
-        loadedId = loadedTrack->getId();
-    }
-
-    // When enable auto DJ and Topmost Song is already on second deck, nothing to do
-    //BaseTrackPlayer::getLoadedTrack()
-    //pTrack = PlayerInfo::Instance().getCurrentPlayingTrack();
-
-    if (loadedId != nextId) {
-        // Do not remove when the user has loaded a track manually
+    // No track at the top of the queue. Bail.
+    if (nextId == -1) {
         return false;
     }
 
-    // remove the top track
+    // Get loaded track for this group.
+    TrackPointer loadedTrack = PlayerInfo::instance().getTrackInfo(group);
+
+    // No loaded track in this group.
+    if (loadedTrack.isNull()) {
+        return false;
+    }
+
+    int loadedId = loadedTrack->getId();
+
+    // Loaded track is not a library track.
+    if (loadedId == -1) {
+        return false;
+    }
+
+    // If the loaded track is not the next track in the queue then do nothing.
+    if (loadedId != nextId) {
+        return false;
+    }
+
+    // Remove the top track.
     m_pAutoDJTableModel->removeTrack(m_pAutoDJTableModel->index(0, 0));
 
-    // Re-queue if configured
+    // Re-queue if configured.
     if (m_pConfig->getValueString(ConfigKey(kConfigKey, "Requeue")).toInt()) {
         m_pAutoDJTableModel->appendTrack(loadedId);
     }

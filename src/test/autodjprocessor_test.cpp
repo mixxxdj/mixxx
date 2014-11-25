@@ -9,6 +9,7 @@
 #include "controlpushbutton.h"
 #include "controlpotmeter.h"
 #include "controllinpotmeter.h"
+#include "playerinfo.h"
 
 using ::testing::_;
 
@@ -79,6 +80,10 @@ class AutoDJProcessorTest : public LibraryTest {
     virtual ~AutoDJProcessorTest() {
     }
 
+    void setTrackId(TrackPointer pTrack, int id) {
+        pTrack->setId(id);
+    }
+
     FakeMaster master;
     FakeDeck deck1;
     FakeDeck deck2;
@@ -108,7 +113,7 @@ TEST_F(AutoDJProcessorTest, QueueEmpty) {
     EXPECT_EQ(AutoDJProcessor::ADJ_QUEUE_EMPTY, err);
 }
 
-TEST_F(AutoDJProcessorTest, EnabledSuccess) {
+TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped) {
     int testId = collection()->getTrackDAO().addTrack(kTrackLocationTest, false);
     ASSERT_LT(0, testId);
 
@@ -123,4 +128,50 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess) {
     AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
     EXPECT_EQ(AutoDJProcessor::ADJ_OK, err);
     EXPECT_EQ(AutoDJProcessor::ADJ_ENABLE_P1LOADED, pProcessor->getState());
+}
+
+TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck1) {
+    int testId = collection()->getTrackDAO().addTrack(kTrackLocationTest, false);
+    ASSERT_LT(0, testId);
+
+    // Pretend a track is playing on deck 1.
+    TrackPointer pTrack(new TrackInfoObject());
+    setTrackId(pTrack, testId + 1);
+    PlayerInfo::instance().setTrackInfo("[Channel1]", pTrack);
+    deck1.play.set(1);
+
+    PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
+    pAutoDJTableModel->appendTrack(testId);
+    pAutoDJTableModel->appendTrack(testId);
+
+    EXPECT_CALL(*pProcessor, transitionTimeChanged(kDefaultTransitionTime));
+    EXPECT_CALL(*pProcessor, autoDJStateChanged(AutoDJProcessor::ADJ_IDLE));
+    EXPECT_CALL(*pProcessor, loadTrack(_));
+
+    AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
+    EXPECT_EQ(AutoDJProcessor::ADJ_OK, err);
+    EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
+}
+
+TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck2) {
+    int testId = collection()->getTrackDAO().addTrack(kTrackLocationTest, false);
+    ASSERT_LT(0, testId);
+
+    // Pretend a track is playing on deck 2.
+    TrackPointer pTrack(new TrackInfoObject());
+    setTrackId(pTrack, testId + 1);
+    PlayerInfo::instance().setTrackInfo("[Channel2]", pTrack);
+    deck2.play.set(1);
+
+    PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
+    pAutoDJTableModel->appendTrack(testId);
+    pAutoDJTableModel->appendTrack(testId);
+
+    EXPECT_CALL(*pProcessor, transitionTimeChanged(kDefaultTransitionTime));
+    EXPECT_CALL(*pProcessor, autoDJStateChanged(AutoDJProcessor::ADJ_IDLE));
+    EXPECT_CALL(*pProcessor, loadTrack(_));
+
+    AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
+    EXPECT_EQ(AutoDJProcessor::ADJ_OK, err);
+    EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
 }
