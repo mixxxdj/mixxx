@@ -521,6 +521,8 @@ void DlgPrefEQ::setUpMasterEQ() {
             comboBoxMasterEq->setCurrentIndex(i);
         }
     }
+
+    slotMasterEqEffectChanged(comboBoxMasterEq->currentIndex());
 }
 
 void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
