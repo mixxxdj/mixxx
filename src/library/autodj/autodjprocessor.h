@@ -93,17 +93,22 @@ class AutoDJProcessor : public QObject {
     PlaylistTableModel* m_pAutoDJTableModel;
 
     AutoDJState m_eState;
-    double m_posThreshold[2];
-    double m_fadeDuration[2];
     int m_iTransitionTime;
     int m_iBackupTransitionTime;
 
-    QList<ControlObjectThread*> m_pCOPlayPos;
+    struct DeckAttributes {
+        ControlObjectThread* pPlayPos;
+        ControlObjectThread* pPlay;
+        ControlObjectSlave* pRepeat;
+        double posThreshold;
+        double fadeDuration;
+    };
+    QList<DeckAttributes> m_decks;
+
     QSignalMapper m_playPosMapper;
-    QList<ControlObjectThread*> m_pCOPlay;
     QSignalMapper m_playMapper;
-    QList<ControlObjectSlave*> m_pCORepeat;
     QSignalMapper m_repeatMapper;
+
     ControlObjectSlave* m_pCOCrossfader;
     ControlObjectSlave* m_pCOCrossfaderReverse;
     ControlObjectSlave* m_pNumDecks;
