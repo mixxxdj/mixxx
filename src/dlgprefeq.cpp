@@ -179,8 +179,10 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
     }
     availableEQEffectNames =
             m_pEffectsManager->getEffectNamesFiltered(filterEQ);
+    availableEQEffectNames.append(QPair<QString,QString>("", tr("None")));
     availableFilterEffectNames =
             m_pEffectsManager->getEffectNamesFiltered(filterFilter);
+    availableFilterEffectNames.append(QPair<QString,QString>("", tr("None")));
 
     foreach (QComboBox* box, m_deckEqEffectSelectors) {
         // Populate comboboxes with all available effects
@@ -207,8 +209,6 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
         }
         box->setCurrentIndex(currentIndex);
     }
-
-    availableFilterEffectNames.append(QPair<QString,QString>("", tr("None")));
 
     foreach (QComboBox* box, m_deckFilterEffectSelectors) {
         // Populate comboboxes with all available effects
@@ -324,9 +324,7 @@ void DlgPrefEQ::slotEqEffectChangedOnDeck(int effectIndex) {
                 pChainSlot->loadEffectChain(pChain);
             }
             EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
-            if (pEffect) {
-                pChain->replaceEffect(0, pEffect);
-            }
+            pChain->replaceEffect(0, pEffect);
         }
 
 
@@ -366,9 +364,7 @@ void DlgPrefEQ::slotQuickEffectChangedOnDeck(int effectIndex) {
                 pChainSlot->loadEffectChain(pChain);
             }
             EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
-            if (pEffect) {
-                pChain->replaceEffect(0, pEffect);
-            }
+            pChain->replaceEffect(0, pEffect);
         }
 
         // Update the configured effect for the current QComboBox
