@@ -5,6 +5,7 @@
 
 #include "engine/effects/engineeffectsmanager.h"
 #include "engine/effects/engineeffect.h"
+#include "engine/effects/engineeffectrack.h"
 
 const char* kEqualizerRackName = "[EqualizerChain]";
 const char* kQuickEffectRackName = "[QuickEffectChain]";
@@ -292,6 +293,9 @@ void EffectsManager::processEffectsResponses() {
                 if (pRequest->type == EffectsRequest::REMOVE_EFFECT_FROM_CHAIN) {
                     //qDebug() << debugString() << "delete" << pRequest->RemoveEffectFromChain.pEffect;
                     delete pRequest->RemoveEffectFromChain.pEffect;
+                } else if (pRequest->type == EffectsRequest::REMOVE_EFFECT_RACK) {
+                    qDebug() << debugString() << "delete" << pRequest->RemoveEffectRack.pRack;
+                    delete pRequest->RemoveEffectRack.pRack;
                 }
             }
 
