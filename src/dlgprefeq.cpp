@@ -179,10 +179,10 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
     }
     availableEQEffectNames =
             m_pEffectsManager->getEffectNamesFiltered(filterEQ);
-    availableEQEffectNames.append(QPair<QString,QString>("", tr("None")));
+    availableEQEffectNames.append(QPair<QString,QString>("none", tr("None")));
     availableFilterEffectNames =
             m_pEffectsManager->getEffectNamesFiltered(filterFilter);
-    availableFilterEffectNames.append(QPair<QString,QString>("", tr("None")));
+    availableFilterEffectNames.append(QPair<QString,QString>("none", tr("None")));
 
     foreach (QComboBox* box, m_deckEqEffectSelectors) {
         // Populate comboboxes with all available effects
@@ -512,7 +512,7 @@ void DlgPrefEQ::setUpMasterEQ() {
     availableMasterEQEffectNames =
             m_pEffectsManager->getEffectNamesFiltered(isMasterEQ);
 
-    availableMasterEQEffectNames.append(QPair<QString,QString>("", tr("None")));
+    availableMasterEQEffectNames.append(QPair<QString,QString>("none", tr("None")));
 
     for (int i = 0; i < availableMasterEQEffectNames.size(); ++i) {
         comboBoxMasterEq->addItem(availableMasterEQEffectNames[i].second);
