@@ -158,6 +158,9 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_pMasterMonoMixdown = new ControlObject(ConfigKey(group, "mono_mixdown"),
             true, false, true);  // persist = true
     m_pHeadphoneEnabled = new ControlObject(ConfigKey(group, "headEnabled"));
+
+
+    // Note: the EQ Rack is set in EffectsManager::setupDefaults();
 }
 
 EngineMaster::~EngineMaster() {
