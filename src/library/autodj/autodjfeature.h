@@ -18,7 +18,7 @@
 
 #include "library/libraryfeature.h"
 #include "configobject.h"
-#include "treeitemmodel.h"
+#include "library/treeitemmodel.h"
 #include "dlgautodj.h"
 
 #ifdef __AUTODJCRATES__
@@ -26,6 +26,7 @@
 #endif // __AUTODJCRATES__
 
 class TrackCollection;
+class AutoDJProcessor;
 
 class AutoDJFeature : public LibraryFeature {
     Q_OBJECT
@@ -59,6 +60,9 @@ class AutoDJFeature : public LibraryFeature {
     TrackCollection* m_pTrackCollection;
     CrateDAO& m_crateDao;
     PlaylistDAO& m_playlistDao;
+    // The id of the AutoDJ playlist.
+    int m_iAutoDJPlaylistId;
+    AutoDJProcessor* m_pAutoDJProcessor;
     const static QString m_sAutoDJViewName;
     TreeItemModel m_childModel;
     DlgAutoDJ* m_pAutoDJView;
