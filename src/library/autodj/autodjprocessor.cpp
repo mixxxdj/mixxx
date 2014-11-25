@@ -220,11 +220,9 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
             m_eState = ADJ_IDLE;
             if (deck1Playing) {
                 // deck 1 is already playing
-                leftDeck.play();
                 playerPlayChanged(&leftDeck);
             } else {
                 // deck 2 is already playing
-                rightDeck.play();
                 playerPlayChanged(&rightDeck);
             }
         }
@@ -539,11 +537,9 @@ void AutoDJProcessor::setTransitionTime(int time) {
         DeckAttributes& rightDeck = *m_decks[1];
 
         if (leftDeck.isPlaying()) {
-            leftDeck.play();
             playerPlayChanged(&leftDeck);
         }
         if (rightDeck.isPlaying()) {
-            rightDeck.play();
             playerPlayChanged(&rightDeck);
         }
     }
