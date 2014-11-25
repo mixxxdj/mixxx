@@ -501,7 +501,7 @@ void AutoDJProcessor::playerPlayChanged(int index) {
             int autoDjTransition = math_min(m_iTransitionTime,
                                             TrackDuration/2);
 
-            if (TrackDuration > autoDjTransition) {
+            if (TrackDuration > autoDjTransition && TrackDuration > 0) {
                 m_fadeDuration[index] = static_cast<double>(autoDjTransition) /
                         static_cast<double>(TrackDuration);
             } else {
