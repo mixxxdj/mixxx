@@ -61,9 +61,9 @@ class AutoDJProcessor : public QObject {
     AutoDJError toggleAutoDJ(bool enable);
 
   signals:
-    void loadTrack(TrackPointer pTrack);
-    void transitionTimeChanged(int time);
-    void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
+    virtual void loadTrack(TrackPointer pTrack);
+    virtual void transitionTimeChanged(int time);
+    virtual void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
 
   private slots:
     void player1PositionChanged(double value);
