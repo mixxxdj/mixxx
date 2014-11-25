@@ -66,10 +66,8 @@ class AutoDJProcessor : public QObject {
     virtual void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
 
   private slots:
-    void player1PositionChanged(double value);
-    void player2PositionChanged(double value);
-    void player1PlayChanged(double value);
-    void player2PlayChanged(double value);
+    void playerPositionChanged(int index);
+    void playerPlayChanged(int index);
 
     void controlEnable(double value);
     void controlFadeNow(double value);
@@ -95,21 +93,20 @@ class AutoDJProcessor : public QObject {
     PlaylistTableModel* m_pAutoDJTableModel;
 
     AutoDJState m_eState;
-    double m_posThreshold1;
-    double m_posThreshold2;
-    double m_fadeDuration1;
-    double m_fadeDuration2;
+    double m_posThreshold[2];
+    double m_fadeDuration[2];
     int m_iTransitionTime;
     int m_iBackupTransitionTime;
 
-    ControlObjectThread* m_pCOPlayPos1;
-    ControlObjectThread* m_pCOPlayPos2;
-    ControlObjectThread* m_pCOPlay1;
-    ControlObjectThread* m_pCOPlay2;
-    ControlObjectSlave* m_pCORepeat1;
-    ControlObjectSlave* m_pCORepeat2;
+    QList<ControlObjectThread*> m_pCOPlayPos;
+    QSignalMapper m_playPosMapper;
+    QList<ControlObjectThread*> m_pCOPlay;
+    QSignalMapper m_playMapper;
+    QList<ControlObjectSlave*> m_pCORepeat;
+    QSignalMapper m_repeatMapper;
     ControlObjectSlave* m_pCOCrossfader;
     ControlObjectSlave* m_pCOCrossfaderReverse;
+    ControlObjectSlave* m_pNumDecks;
 
     ControlPushButton* m_pSkipNext;
     ControlPushButton* m_pFadeNow;
