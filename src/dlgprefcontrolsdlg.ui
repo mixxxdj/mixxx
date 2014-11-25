@@ -624,14 +624,14 @@ Numark mode:
       </widget>
      </item>
      <item row="5" column="0">
-      <widget class="QLabel" name="labelColoumnHeight">
+      <widget class="QLabel" name="labelRowHeight">
        <property name="text">
-        <string>Library Coloumn Height</string>
+        <string>Library Row Height</string>
        </property>
       </widget>
      </item>
      <item row="5" column="1" colspan="2">
-      <widget class="QSpinBox" name="spinBoxColoumnHeight">
+      <widget class="QSpinBox" name="spinBoxRowHeight">
        <property name="minimum">
         <number>10</number>
        </property>

@@ -48,7 +48,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
            m_pPlayerManager(pPlayerManager),
            m_iNumConfiguredDecks(0),
            m_iNumConfiguredSamplers(0),
-           m_rebootNotifiedColoumnHeight(false) {
+           m_rebootNotifiedRowHeight(false) {
     setupUi(this);
 
     m_pNumDecks = new ControlObjectSlave("[Master]", "num_decks", this);
@@ -80,10 +80,10 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
             this, SLOT(slotSetPositionDisplay(int)));
 
     // Set default direction as stored in config file
-    int coloumnHeight = m_pConfig->getValueString(ConfigKey("[Library]","ColoumnHeight"), "20").toInt();
-    spinBoxColoumnHeight->setValue(coloumnHeight);
-    connect(spinBoxColoumnHeight, SIGNAL(valueChanged(int)),
-            this, SLOT(slotColoumnHeightValueChanged(int)));
+    int rowHeight = m_pConfig->getValueString(ConfigKey("[Library]","RowHeight"), "20").toInt();
+    spinBoxRowHeight->setValue(rowHeight);
+    connect(spinBoxRowHeight, SIGNAL(valueChanged(int)),
+            this, SLOT(slotRowHeightValueChanged(int)));
 
 
     // Set default direction as stored in config file
@@ -424,6 +424,9 @@ void DlgPrefControls::slotResetToDefaults() {
     spinBoxTempRateRight->setValue(2.0);
     spinBoxPermRateLeft->setValue(0.50);
     spinBoxPermRateRight->setValue(0.05);
+
+    //
+
 }
 
 void DlgPrefControls::slotSetLocale(int pos) {
@@ -681,10 +684,10 @@ void DlgPrefControls::slotNumSamplersChanged(double new_count) {
     slotSetRateRange(m_pConfig->getValueString(ConfigKey("[Controls]","RateRange")).toInt());
 }
 
-void DlgPrefControls::slotColoumnHeightValueChanged(int height) {
-    m_pConfig->set(ConfigKey("[Library]","ColoumnHeight"),ConfigValue(height));
-    if(!m_rebootNotifiedColoumnHeight) {
+void DlgPrefControls::slotRowHeightValueChanged(int height) {
+    m_pConfig->set(ConfigKey("[Library]","RowHeight"),ConfigValue(height));
+    if(!m_rebootNotifiedRowHeight) {
         notifyRebootNecessary();
-        m_rebootNotifiedColoumnHeight = true;
+        m_rebootNotifiedRowHeight = true;
     }
 }
