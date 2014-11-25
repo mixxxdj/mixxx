@@ -8,7 +8,7 @@
 #include <QMenu>
 #endif // __AUTODJCRATES__
 
-#include "library/autodjfeature.h"
+#include "library/autodj/autodjfeature.h"
 
 #include "library/autodj/autodjprocessor.h"
 #include "library/trackcollection.h"

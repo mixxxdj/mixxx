@@ -18,7 +18,7 @@
 
 #include "library/libraryfeature.h"
 #include "configobject.h"
-#include "treeitemmodel.h"
+#include "library/treeitemmodel.h"
 #include "dlgautodj.h"
 
 #ifdef __AUTODJCRATES__
