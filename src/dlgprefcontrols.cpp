@@ -386,6 +386,10 @@ void DlgPrefControls::slotUpdate() {
         ComboBoxRateDir->setCurrentIndex(0);
     else
         ComboBoxRateDir->setCurrentIndex(1);
+
+    int rowHeight = m_pConfig->getValueString(ConfigKey("[Library]","RowHeight"),
+            QString::number(kDefaultRowHeight)).toInt();
+    spinBoxRowHeight->setValue(rowHeight);
 }
 
 void DlgPrefControls::slotResetToDefaults() {
