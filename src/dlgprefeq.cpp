@@ -419,7 +419,7 @@ void DlgPrefEQ::slotUpdateLoEQ() {
     slotApply();
 }
 
-void DlgPrefEQ::slotUpdateFilter(int value) {
+void DlgPrefEQ::slotUpdateMasterEQParameter(int value) {
     EffectPointer effect(m_pEffectMasterEQ);
     if (!effect.isNull()) {
         QSlider* slider = qobject_cast<QSlider*>(sender());
@@ -431,6 +431,10 @@ void DlgPrefEQ::slotUpdateFilter(int value) {
             QLabel* valueLabel = m_masterEQValues[index];
             QString valueText = QString::number(dValue);
             valueLabel->setText(valueText);
+
+            m_pConfig->set(ConfigKey(kConfigKey,
+                    QString("EffectForGroup_[Master]_parameter%1").arg(index + 1)),
+                            ConfigValue(valueText));
         }
     }
 }
@@ -594,7 +598,7 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
                     slider->setProperty("index", QVariant(i));
                     slidersGridLayout->addWidget(slider, 1, i + 1, Qt::AlignCenter);
                     m_masterEQSliders.append(slider);
-                    connect(slider, SIGNAL(sliderMoved(int)), this, SLOT(slotUpdateFilter(int)));
+                    connect(slider, SIGNAL(sliderMoved(int)), this, SLOT(slotUpdateMasterEQParameter(int)));
 
                     QLabel* valueLabel = new QLabel(this);
                     m_masterEQValues.append(valueLabel);
