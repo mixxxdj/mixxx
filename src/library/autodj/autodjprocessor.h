@@ -9,10 +9,11 @@
 #include "trackinfoobject.h"
 #include "configobject.h"
 #include "library/playlisttablemodel.h"
+#include "engine/enginechannel.h"
+#include "controlobjectthread.h"
+#include "controlobjectslave.h"
 
-class ControlObjectThread;
 class ControlPushButton;
-class ControlObjectSlave;
 class TrackCollection;
 
 class AutoDJProcessor : public QObject {
@@ -75,6 +76,36 @@ class AutoDJProcessor : public QObject {
     void controlSkipNext(double value);
 
   private:
+    struct DeckAttributes {
+        DeckAttributes(int index,
+                       const QString& group,
+                       EngineChannel::ChannelOrientation orientation)
+                : index(index),
+                  group(group),
+                  orientation(orientation),
+                  pPlayPos(new ControlObjectThread(group, "playposition")),
+                  pPlay(new ControlObjectThread(group, "play")),
+                  pRepeat(new ControlObjectSlave(group, "repeat")),
+                  posThreshold(1.0),
+                  fadeDuration(0.0) {
+        }
+
+        ~DeckAttributes() {
+            delete pPlayPos;
+            delete pPlay;
+            delete pRepeat;
+        }
+
+        int index;
+        QString group;
+        EngineChannel::ChannelOrientation orientation;
+        ControlObjectThread* pPlayPos;
+        ControlObjectThread* pPlay;
+        ControlObjectSlave* pRepeat;
+        double posThreshold;
+        double fadeDuration;
+    };
+
     // Gets or sets the crossfader position while normalizing it so that -1 is
     // all the way mixed to the left side and 1 is all the way mixed to the
     // right side. (prevents AutoDJ logic from having to check for hamster mode
@@ -84,6 +115,8 @@ class AutoDJProcessor : public QObject {
 
     TrackPointer getNextTrackFromQueue();
     bool loadNextTrackFromQueue();
+    void playerPositionChanged(DeckAttributes* pAttributes);
+    void playerPlayChanged(DeckAttributes* pAttributes);
 
     // Removes the track loaded to the player group from the top of the AutoDJ
     // queue if it is present.
@@ -96,14 +129,7 @@ class AutoDJProcessor : public QObject {
     int m_iTransitionTime;
     int m_iBackupTransitionTime;
 
-    struct DeckAttributes {
-        ControlObjectThread* pPlayPos;
-        ControlObjectThread* pPlay;
-        ControlObjectSlave* pRepeat;
-        double posThreshold;
-        double fadeDuration;
-    };
-    QList<DeckAttributes> m_decks;
+    QList<DeckAttributes*> m_decks;
 
     QSignalMapper m_playPosMapper;
     QSignalMapper m_playMapper;
