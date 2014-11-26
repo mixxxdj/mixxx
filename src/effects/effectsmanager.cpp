@@ -6,6 +6,7 @@
 #include "engine/effects/engineeffectsmanager.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectrack.h"
+#include "engine/effects/engineeffectchain.h"
 
 const char* kEqualizerRackName = "[EqualizerChain]";
 const char* kQuickEffectRackName = "[QuickEffectChain]";
@@ -257,6 +258,9 @@ bool EffectsManager::writeRequest(EffectsRequest* request) {
         if (request->type == EffectsRequest::REMOVE_EFFECT_FROM_CHAIN) {
             //qDebug() << debugString() << "delete" << request->RemoveEffectFromChain.pEffect;
             delete request->RemoveEffectFromChain.pEffect;
+        } else if (request->type == EffectsRequest::REMOVE_CHAIN_FROM_RACK) {
+            //qDebug() << debugString() << "delete" << request->RemoveEffectFromChain.pEffect;
+            delete request->RemoveChainFromRack.pChain;
         } else if (request->type == EffectsRequest::REMOVE_EFFECT_RACK) {
             //qDebug() << debugString() << "delete" << request->RemoveEffectRack.pRack;
             delete request->RemoveEffectRack.pRack;
@@ -266,6 +270,7 @@ bool EffectsManager::writeRequest(EffectsRequest* request) {
     }
 
     if (m_pRequestPipe.isNull()) {
+        delete request;
         return false;
     }
 
@@ -274,10 +279,12 @@ bool EffectsManager::writeRequest(EffectsRequest* request) {
     processEffectsResponses();
 
     request->request_id = m_nextRequestId++;
+    // TODO(XXX) use preallocated requests to avoid delete calls from engine
     if (m_pRequestPipe->writeMessages(&request, 1) == 1) {
         m_activeRequests[request->request_id] = request;
         return true;
     }
+    delete request;
     return false;
 }
 
@@ -311,6 +318,9 @@ void EffectsManager::processEffectsResponses() {
                 if (pRequest->type == EffectsRequest::REMOVE_EFFECT_FROM_CHAIN) {
                     //qDebug() << debugString() << "delete" << pRequest->RemoveEffectFromChain.pEffect;
                     delete pRequest->RemoveEffectFromChain.pEffect;
+                } else if (pRequest->type == EffectsRequest::REMOVE_CHAIN_FROM_RACK) {
+                    //qDebug() << debugString() << "delete" << request->RemoveEffectFromChain.pEffect;
+                    delete pRequest->RemoveChainFromRack.pChain;
                 } else if (pRequest->type == EffectsRequest::REMOVE_EFFECT_RACK) {
                     qDebug() << debugString() << "delete" << pRequest->RemoveEffectRack.pRack;
                     delete pRequest->RemoveEffectRack.pRack;
