@@ -261,6 +261,7 @@ bool EffectsManager::writeRequest(EffectsRequest* request) {
             //qDebug() << debugString() << "delete" << request->RemoveEffectRack.pRack;
             delete request->RemoveEffectRack.pRack;
         }
+        delete request;
         return false;
     }
 
