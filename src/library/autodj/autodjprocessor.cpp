@@ -453,16 +453,11 @@ bool AutoDJProcessor::loadNextTrackFromQueue() {
 
     // We ran out of tracks in the queue.
     if (!nextTrack) {
-        // Disable auto DJ and return.
-        m_eState = ADJ_DISABLED;
-
-        // TODO(rryan): Need to disconnect and clear the state like we do in
-        // toggleAutoDJ(false)!
-        emit(autoDJStateChanged(m_eState));
+        // Disable AutoDJ.
+        toggleAutoDJ(false);
 
         // And eject track (nextTrack is null) as "End of auto DJ warning"
         emit(loadTrack(nextTrack));
-
         return false;
     }
 
