@@ -229,6 +229,11 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
             // we will receive a playerPositionChanged update for deck 1 which
             // will load a track into the right deck and switch to IDLE mode.
             emit(loadTrackToPlayer(nextTrack, leftDeck.group, true));
+
+            // Remove the track from the top of the queue. Using
+            // removeLoadedTrackFromTopOfQueue causes a race condition. See Bug
+            // #1206080.
+            removeTrackFromTopOfQueue(nextTrack);
         } else {
             // One of the two decks is playing. Switch into IDLE mode and wait
             // until the playing deck crosses posThreshold to start fading.
@@ -323,7 +328,6 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes) {
         // Auto DJ Start
         if (!leftDeckPlaying && !rightDeckPlaying) {
             setCrossfader(-1.0, false);  // Move crossfader to the left!
-            removeLoadedTrackFromTopOfQueue(leftDeck.group);
         } else {
             // One of left and right is playing. Switch to IDLE mode and make
             // sure our thresholds are configured (by calling calculateFadeThresholds
@@ -475,15 +479,6 @@ bool AutoDJProcessor::loadNextTrackFromQueue(const DeckAttributes& deck) {
 }
 
 bool AutoDJProcessor::removeLoadedTrackFromTopOfQueue(const QString& group) {
-    // Get the track id at the top of the playlist.
-    int nextId = m_pAutoDJTableModel->getTrackId(
-            m_pAutoDJTableModel->index(0, 0));
-
-    // No track at the top of the queue. Bail.
-    if (nextId == -1) {
-        return false;
-    }
-
     // Get loaded track for this group.
     TrackPointer loadedTrack = PlayerInfo::instance().getTrackInfo(group);
 
@@ -492,15 +487,33 @@ bool AutoDJProcessor::removeLoadedTrackFromTopOfQueue(const QString& group) {
         return false;
     }
 
-    int loadedId = loadedTrack->getId();
+    return removeTrackFromTopOfQueue(loadedTrack);
+}
+
+bool AutoDJProcessor::removeTrackFromTopOfQueue(TrackPointer pTrack) {
+    // No track to test for.
+    if (pTrack.isNull()) {
+        return false;
+    }
+
+    int trackId = pTrack->getId();
 
     // Loaded track is not a library track.
-    if (loadedId == -1) {
+    if (trackId == -1) {
+        return false;
+    }
+
+    // Get the track id at the top of the playlist.
+    int nextId = m_pAutoDJTableModel->getTrackId(
+            m_pAutoDJTableModel->index(0, 0));
+
+    // No track at the top of the queue.
+    if (nextId == -1) {
         return false;
     }
 
     // If the loaded track is not the next track in the queue then do nothing.
-    if (loadedId != nextId) {
+    if (trackId != nextId) {
         return false;
     }
 
@@ -509,7 +522,7 @@ bool AutoDJProcessor::removeLoadedTrackFromTopOfQueue(const QString& group) {
 
     // Re-queue if configured.
     if (m_pConfig->getValueString(ConfigKey(kConfigKey, "Requeue")).toInt()) {
-        m_pAutoDJTableModel->appendTrack(loadedId);
+        m_pAutoDJTableModel->appendTrack(nextId);
     }
     return true;
 }

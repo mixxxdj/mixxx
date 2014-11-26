@@ -118,6 +118,9 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped) {
     ASSERT_LT(0, testId);
 
     PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
+    // Need two tracks -- one to be loaded in the left deck and one to load in
+    // the right deck.
+    pAutoDJTableModel->appendTrack(testId);
     pAutoDJTableModel->appendTrack(testId);
 
     // Expect that we switch into ADJ_ENABLE_P1LOADED first.
