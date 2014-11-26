@@ -152,7 +152,7 @@ class AutoDJProcessor : public QObject {
     TrackPointer getNextTrackFromQueue();
     bool loadNextTrackFromQueue();
     void playerPositionChanged(DeckAttributes* pAttributes);
-    void playerPlayChanged(DeckAttributes* pAttributes);
+    void calculateFadeThresholds(DeckAttributes* pAttributes);
 
     // Removes the track loaded to the player group from the top of the AutoDJ
     // queue if it is present.

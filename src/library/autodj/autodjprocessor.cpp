@@ -222,10 +222,10 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
             m_eState = ADJ_IDLE;
             if (deck1Playing) {
                 // Update fade thresholds for the left deck.
-                playerPlayChanged(&leftDeck);
+                calculateFadeThresholds(&leftDeck);
             } else {
                 // Update fade thresholds for the right deck.
-                playerPlayChanged(&rightDeck);
+                calculateFadeThresholds(&rightDeck);
             }
         }
         emit(autoDJStateChanged(m_eState));
@@ -312,7 +312,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes) {
             removeLoadedTrackFromTopOfQueue(leftDeck.group);
         } else {
             // One of left and right is playing. Switch to IDLE mode and make
-            // sure our thresholds are configured (by calling playerPlayChanged
+            // sure our thresholds are configured (by calling calculateFadeThresholds
             // for the playing deck).
             m_eState = ADJ_IDLE;
             if (leftDeckPlaying && !rightDeckPlaying) {
@@ -320,10 +320,10 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes) {
                 // or if it was started just before
                 loadNextTrackFromQueue();
                 // Set crossfade thresholds for left deck.
-                playerPlayChanged(&leftDeck);
+                calculateFadeThresholds(&leftDeck);
             } else {
                 // Set crossfade thresholds for right deck.
-                playerPlayChanged(&rightDeck);
+                calculateFadeThresholds(&rightDeck);
             }
             emit(autoDJStateChanged(m_eState));
         }
@@ -374,7 +374,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes) {
 
                 // Setup the other deck's fade thresholds (since we use the
                 // fadeDuration next).
-                playerPlayChanged(&otherDeck);
+                calculateFadeThresholds(&otherDeck);
 
                 // For negative fade durations, jump back to insert a pause
                 // between the tracks.
@@ -508,10 +508,10 @@ void AutoDJProcessor::playerPlayChanged(int index) {
     if (index < 0 || index >= m_decks.size()) {
         return;
     }
-    playerPlayChanged(m_decks[index]);
+    calculateFadeThresholds(m_decks[index]);
 }
 
-void AutoDJProcessor::playerPlayChanged(DeckAttributes* pAttributes) {
+void AutoDJProcessor::calculateFadeThresholds(DeckAttributes* pAttributes) {
     bool playing = pAttributes->isPlaying();
 
     //qDebug() << "player" << pAttributes->group << "PlayChanged(" << playing << ")";
@@ -563,11 +563,11 @@ void AutoDJProcessor::setTransitionTime(int time) {
     if (m_eState == ADJ_IDLE) {
         DeckAttributes& leftDeck = *m_decks[0];
         if (leftDeck.isPlaying()) {
-            playerPlayChanged(&leftDeck);
+            calculateFadeThresholds(&leftDeck);
         }
         DeckAttributes& rightDeck = *m_decks[1];
         if (rightDeck.isPlaying()) {
-            playerPlayChanged(&rightDeck);
+            calculateFadeThresholds(&rightDeck);
         }
     }
 }
