@@ -632,6 +632,9 @@ Numark mode:
      </item>
      <item row="5" column="1" colspan="2">
       <widget class="QSpinBox" name="spinBoxRowHeight">
+       <property name="suffix">
+        <string> px</string>
+       </property>
        <property name="minimum">
         <number>10</number>
        </property>
