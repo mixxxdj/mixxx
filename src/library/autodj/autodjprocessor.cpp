@@ -159,10 +159,10 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::skipNext() {
     DeckAttributes& rightDeck = *m_decks[1];
     if (!leftDeck.isPlaying()) {
         removeLoadedTrackFromTopOfQueue(leftDeck.group);
-        loadNextTrackFromQueue();
+        loadNextTrackFromQueue(leftDeck);
     } else if (!rightDeck.isPlaying()) {
         removeLoadedTrackFromTopOfQueue(rightDeck.group);
-        loadNextTrackFromQueue();
+        loadNextTrackFromQueue(rightDeck);
     }
     return ADJ_OK;
 }
@@ -216,12 +216,24 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
                 &m_playMapper, SLOT(map()));
 
         if (!deck1Playing && !deck2Playing) {
-            // both decks are stopped
+            // Both decks are stopped. Load a track into deck 1 and start it
+            // playing. Instruct playerPositionChanged to wait for a
+            // playposition update from deck 1. playerPositionChanged for
+            // ADJ_ENABLE_P1LOADED will set the crossfader left and remove the
+            // loaded track from the queue and wait for the next call to
+            // playerPositionChanged for deck1 after the track is loaded.
             m_eState = ADJ_ENABLE_P1LOADED;
-            // playerPositionChanged for ADJ_ENABLE_P1LOADED will set the
-            // crossfader left, start the left deck and remove the loaded track
-            // from the queue.
             playerPositionChanged(&leftDeck);
+
+            // Load track into the left deck and play. Once it starts playing,
+            // we will receive a playerPositionChanged update for deck 1 which
+            // will load a track into the right deck and switch to IDLE mode.
+            emit(loadTrackToPlayer(nextTrack, leftDeck.group, true));
+
+            // Remove the track from the top of the queue. Using
+            // removeLoadedTrackFromTopOfQueue causes a race condition. See Bug
+            // #1206080.
+            removeTrackFromTopOfQueue(nextTrack);
         } else {
             // One of the two decks is playing. Switch into IDLE mode and wait
             // until the playing deck crosses posThreshold to start fading.
@@ -229,14 +241,16 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
             if (deck1Playing) {
                 // Update fade thresholds for the left deck.
                 calculateFadeThresholds(&leftDeck);
+                // Load track into the right deck.
+                emit(loadTrackToPlayer(nextTrack, rightDeck.group, false));
             } else {
                 // Update fade thresholds for the right deck.
                 calculateFadeThresholds(&rightDeck);
+                // Load track into the left deck.
+                emit(loadTrackToPlayer(nextTrack, leftDeck.group, false));
             }
         }
         emit(autoDJStateChanged(m_eState));
-        // Loads into first deck If stopped else into second else not
-        emit(loadTrack(nextTrack));
     } else {  // Disable Auto DJ
         if (m_pEnabledAutoDJ->get() != 0.0) {
             m_pEnabledAutoDJ->set(0.0);
@@ -314,17 +328,16 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes) {
         // Auto DJ Start
         if (!leftDeckPlaying && !rightDeckPlaying) {
             setCrossfader(-1.0, false);  // Move crossfader to the left!
-            leftDeck.play();  // Play the track in player 1
-            removeLoadedTrackFromTopOfQueue(leftDeck.group);
         } else {
             // One of left and right is playing. Switch to IDLE mode and make
             // sure our thresholds are configured (by calling calculateFadeThresholds
             // for the playing deck).
             m_eState = ADJ_IDLE;
             if (leftDeckPlaying && !rightDeckPlaying) {
-                // Here we are, if first deck was playing before starting Auto DJ
-                // or if it was started just before
-                loadNextTrackFromQueue();
+                // Here we are, if first deck was playing before starting Auto
+                // DJ or if it was started just before. Load the next track into
+                // the right player since it is not playing.
+                loadNextTrackFromQueue(rightDeck);
                 // Set crossfade thresholds for left deck.
                 calculateFadeThresholds(&leftDeck);
             } else {
@@ -347,8 +360,8 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes) {
                 setCrossfader(1.0, true);
             }
             m_eState = ADJ_IDLE;
-            // Load next track to stopped deck.
-            loadNextTrackFromQueue();
+            // Load the next track to otherDeck.
+            loadNextTrackFromQueue(otherDeck);
             emit(autoDJStateChanged(m_eState));
         }
         if (m_eState == ADJ_P1FADING && !thisDeck.isLeft()) {
@@ -448,38 +461,24 @@ TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
     }
 }
 
-bool AutoDJProcessor::loadNextTrackFromQueue() {
+bool AutoDJProcessor::loadNextTrackFromQueue(const DeckAttributes& deck) {
     TrackPointer nextTrack = getNextTrackFromQueue();
 
     // We ran out of tracks in the queue.
     if (!nextTrack) {
-        // Disable auto DJ and return.
-        m_eState = ADJ_DISABLED;
-
-        // TODO(rryan): Need to disconnect and clear the state like we do in
-        // toggleAutoDJ(false)!
-        emit(autoDJStateChanged(m_eState));
+        // Disable AutoDJ.
+        toggleAutoDJ(false);
 
         // And eject track (nextTrack is null) as "End of auto DJ warning"
-        emit(loadTrack(nextTrack));
-
+        emit(loadTrackToPlayer(nextTrack, deck.group, false));
         return false;
     }
 
-    emit(loadTrack(nextTrack));
+    emit(loadTrackToPlayer(nextTrack, deck.group, false));
     return true;
 }
 
 bool AutoDJProcessor::removeLoadedTrackFromTopOfQueue(const QString& group) {
-    // Get the track id at the top of the playlist.
-    int nextId = m_pAutoDJTableModel->getTrackId(
-            m_pAutoDJTableModel->index(0, 0));
-
-    // No track at the top of the queue. Bail.
-    if (nextId == -1) {
-        return false;
-    }
-
     // Get loaded track for this group.
     TrackPointer loadedTrack = PlayerInfo::instance().getTrackInfo(group);
 
@@ -488,15 +487,33 @@ bool AutoDJProcessor::removeLoadedTrackFromTopOfQueue(const QString& group) {
         return false;
     }
 
-    int loadedId = loadedTrack->getId();
+    return removeTrackFromTopOfQueue(loadedTrack);
+}
+
+bool AutoDJProcessor::removeTrackFromTopOfQueue(TrackPointer pTrack) {
+    // No track to test for.
+    if (pTrack.isNull()) {
+        return false;
+    }
+
+    int trackId = pTrack->getId();
 
     // Loaded track is not a library track.
-    if (loadedId == -1) {
+    if (trackId == -1) {
+        return false;
+    }
+
+    // Get the track id at the top of the playlist.
+    int nextId = m_pAutoDJTableModel->getTrackId(
+            m_pAutoDJTableModel->index(0, 0));
+
+    // No track at the top of the queue.
+    if (nextId == -1) {
         return false;
     }
 
     // If the loaded track is not the next track in the queue then do nothing.
-    if (loadedId != nextId) {
+    if (trackId != nextId) {
         return false;
     }
 
@@ -505,7 +522,7 @@ bool AutoDJProcessor::removeLoadedTrackFromTopOfQueue(const QString& group) {
 
     // Re-queue if configured.
     if (m_pConfig->getValueString(ConfigKey(kConfigKey, "Requeue")).toInt()) {
-        m_pAutoDJTableModel->appendTrack(loadedId);
+        m_pAutoDJTableModel->appendTrack(nextId);
     }
     return true;
 }

@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Author 2014 Tuukka Pasanen <pasanen.tuukka@gmail.com> -->
-<application>
+<component>
   <id type="desktop">mixxx.desktop</id>
-  <metadata_license>GPL-2.0</metadata_license>
+  <metadata_license>CC-BY-SA-3.0</metadata_license>
+  <project_license>GPL-2.0</project_license>
+  <name>Mixxx DJ Software</name>
+  <summary>Everything you need to perform live DJ mixes.</summary>
   <description>
     <p><b>Mixxx/</b> is free DJ software that gives you
       everything you need to perform live DJ mixes. Blend songs together with
@@ -36,7 +39,8 @@
   </description>
   <screenshots>
     <screenshot type="default">http://www.mixxx.org/images/press_art/mixxx_1110_default_deere_skin.png</screenshot>
+    <caption>Mixxx 1.11.0 with the default Deere skin.</caption>
   </screenshots>
   <url type="homepage">http://mixxx.org</url>
   <updatecontact>Mixxx Devel <mixxx-devel@lists.sourceforge.net></updatecontact>
-</application>
+</component>
