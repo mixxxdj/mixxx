@@ -30,6 +30,7 @@
 const char* kConfigKey = "[Mixer Profile]";
 const char* kEnableEqs = "EnableEQs";
 const char* kDefaultEqId = "org.mixxx.effects.bessel8lvmixeq";
+const char* kDefaultMasterEqId = "org.mixxx.effects.graphiceq";
 
 const int kFrequencyUpperLimit = 20050;
 const int kFrequencyLowerLimit = 16;
@@ -73,6 +74,8 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
     m_pNumDecks = new ControlObjectSlave("[Master]", "num_decks", this);
     m_pNumDecks->connectValueChanged(SLOT(slotAddComboBox(double)));
     slotAddComboBox(m_pNumDecks->get());
+
+    setUpMasterEQ();
 
     loadSettings();
     slotUpdate();
@@ -150,6 +153,10 @@ static bool isMixingEQ(EffectManifest* pManifest) {
     return pManifest->isMixingEQ();
 }
 
+static bool isMasterEQ(EffectManifest* pManifest) {
+    return pManifest->isMasterEQ();
+}
+
 static bool isForFilterKnob(EffectManifest* pManifest) {
     return pManifest->isForFilterKnob();
 }
@@ -172,8 +179,10 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
     }
     availableEQEffectNames =
             m_pEffectsManager->getEffectNamesFiltered(filterEQ);
+    availableEQEffectNames.append(QPair<QString,QString>("none", tr("None")));
     availableFilterEffectNames =
             m_pEffectsManager->getEffectNamesFiltered(filterFilter);
+    availableFilterEffectNames.append(QPair<QString,QString>("none", tr("None")));
 
     foreach (QComboBox* box, m_deckEqEffectSelectors) {
         // Populate comboboxes with all available effects
@@ -200,8 +209,6 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
         }
         box->setCurrentIndex(currentIndex);
     }
-
-    availableFilterEffectNames.append(QPair<QString,QString>("", tr("None")));
 
     foreach (QComboBox* box, m_deckFilterEffectSelectors) {
         // Populate comboboxes with all available effects
@@ -283,6 +290,7 @@ void DlgPrefEQ::setDefaultShelves()
 }
 
 void DlgPrefEQ::slotResetToDefaults() {
+    slotMasterEQToDefault();
     setDefaultShelves();
     foreach(QComboBox* pCombo, m_deckEqEffectSelectors) {
         pCombo->setCurrentIndex(
@@ -316,9 +324,7 @@ void DlgPrefEQ::slotEqEffectChangedOnDeck(int effectIndex) {
                 pChainSlot->loadEffectChain(pChain);
             }
             EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
-            if (pEffect) {
-                pChain->replaceEffect(0, pEffect);
-            }
+            pChain->replaceEffect(0, pEffect);
         }
 
         // Update the configured effect for the current QComboBox
@@ -346,9 +352,7 @@ void DlgPrefEQ::slotQuickEffectChangedOnDeck(int effectIndex) {
         QString group = PlayerManager::groupForDeck(deckNumber);
 
         EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
-        if (pEffect) {
-            m_pQuickEffectRack->loadEffectToGroup(group, pEffect);
-        }
+        m_pQuickEffectRack->loadEffectToGroup(group, pEffect);
 
         // Update the configured effect for the current QComboBox
         //m_pConfig->set(ConfigKey(CONFIG_KEY, QString("EffectForDeck%1").
@@ -360,8 +364,7 @@ void DlgPrefEQ::slotQuickEffectChangedOnDeck(int effectIndex) {
     }
 }
 
-void DlgPrefEQ::slotUpdateHiEQ()
-{
+void DlgPrefEQ::slotUpdateHiEQ() {
     if (SliderHiEQ->value() < SliderLoEQ->value())
     {
         SliderHiEQ->setValue(SliderLoEQ->value());
@@ -383,8 +386,7 @@ void DlgPrefEQ::slotUpdateHiEQ()
     slotApply();
 }
 
-void DlgPrefEQ::slotUpdateLoEQ()
-{
+void DlgPrefEQ::slotUpdateLoEQ() {
     if (SliderLoEQ->value() > SliderHiEQ->value())
     {
         SliderLoEQ->setValue(SliderHiEQ->value());
@@ -406,8 +408,27 @@ void DlgPrefEQ::slotUpdateLoEQ()
     slotApply();
 }
 
-int DlgPrefEQ::getSliderPosition(double eqFreq, int minValue, int maxValue)
-{
+void DlgPrefEQ::slotUpdateMasterEQParameter(int value) {
+    EffectPointer effect(m_pEffectMasterEQ);
+    if (!effect.isNull()) {
+        QSlider* slider = qobject_cast<QSlider*>(sender());
+        int index = slider->property("index").toInt();
+        EffectParameter* param = effect->getKnobParameterForSlot(index);
+        if (param) {
+            double dValue = value / 100.0;
+            param->setValue(dValue);
+            QLabel* valueLabel = m_masterEQValues[index];
+            QString valueText = QString::number(dValue);
+            valueLabel->setText(valueText);
+
+            m_pConfig->set(ConfigKey(kConfigKey,
+                    QString("EffectForGroup_[Master]_parameter%1").arg(index + 1)),
+                            ConfigValue(valueText));
+        }
+    }
+}
+
+int DlgPrefEQ::getSliderPosition(double eqFreq, int minValue, int maxValue) {
     if (eqFreq >= kFrequencyUpperLimit) {
         return maxValue;
     } else if (eqFreq <= kFrequencyLowerLimit) {
@@ -468,6 +489,124 @@ void DlgPrefEQ::slotBypass(int state) {
     slotApply();
 }
 
+void DlgPrefEQ::setUpMasterEQ() {
+    connect(pbResetMasterEq, SIGNAL(clicked(bool)),
+            this, SLOT(slotMasterEQToDefault()));
+
+    connect(comboBoxMasterEq, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(slotMasterEqEffectChanged(int)));
+
+    QString configuredEffect = m_pConfig->getValueString(ConfigKey(kConfigKey,
+            "EffectForGroup_[Master]"), kDefaultMasterEqId);
+
+    QList<QPair<QString, QString> > availableMasterEQEffectNames;
+    availableMasterEQEffectNames =
+            m_pEffectsManager->getEffectNamesFiltered(isMasterEQ);
+
+    availableMasterEQEffectNames.append(QPair<QString,QString>("none", tr("None")));
+
+    for (int i = 0; i < availableMasterEQEffectNames.size(); ++i) {
+        comboBoxMasterEq->addItem(availableMasterEQEffectNames[i].second);
+        comboBoxMasterEq->setItemData(i, QVariant(availableMasterEQEffectNames[i].first));
+        if (configuredEffect == availableMasterEQEffectNames[i].first) {
+            comboBoxMasterEq->setCurrentIndex(i);
+        }
+    }
+
+    slotMasterEqEffectChanged(comboBoxMasterEq->currentIndex());
+
+    // Load parameters from preferences:
+    EffectPointer effect(m_pEffectMasterEQ);
+    if (!effect.isNull()) {
+        int knobNum = effect->numKnobParameters();
+        for (int i = 0; i < knobNum; i++) {
+            EffectParameter* param = effect->getKnobParameterForSlot(i);
+            if (param) {
+                QString strValue = m_pConfig->getValueString(ConfigKey(kConfigKey,
+                        QString("EffectForGroup_[Master]_parameter%1").arg(i + 1)));
+                bool ok;
+                double value = strValue.toDouble(&ok);
+                if (ok) {
+                    setMasterEQParameter(i, value);
+                }
+            }
+        }
+    }
+}
+
+void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
+    // Check if qobject_cast was successful
+
+    // clear parameters view first
+    qDeleteAll(m_masterEQSliders);
+    m_masterEQSliders.clear();
+    qDeleteAll(m_masterEQValues);
+    m_masterEQValues.clear();
+    qDeleteAll(m_masterEQLabels);
+    m_masterEQLabels.clear();
+
+    QString effectId = comboBoxMasterEq->itemData(effectIndex).toString();
+    EffectChainSlotPointer pChainSlot =
+            m_pEQEffectRack->getGroupEffectChainSlot("[Master]");
+
+    if (pChainSlot) {
+        EffectChainPointer pChain = pChainSlot->getEffectChain();
+        if (pChain.isNull()) {
+            pChain = EffectChainPointer(new EffectChain(m_pEffectsManager, QString(),
+                                        EffectChainPointer()));
+            pChain->setName(QObject::tr("Empty Chain"));
+            pChainSlot->loadEffectChain(pChain);
+        }
+        EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
+        pChain->replaceEffect(0, pEffect);
+
+        if (pEffect) {
+            m_pEffectMasterEQ = pEffect;
+
+            int knobNum = pEffect->numKnobParameters();
+
+            // Create and set up Master EQ's sliders
+            int i;
+            for (i = 0; i < knobNum; i++) {
+                EffectParameter* param = pEffect->getKnobParameterForSlot(i);
+                if (param) {
+                    // Setup Label
+                    QLabel* centerFreqLabel = new QLabel(this);
+                    QString labelText = param->manifest().name();
+                    m_masterEQLabels.append(centerFreqLabel);
+                    centerFreqLabel->setText(labelText);
+                    slidersGridLayout->addWidget(centerFreqLabel, 0, i + 1, Qt::AlignCenter);
+
+                    QSlider* slider = new QSlider(this);
+                    slider->setMinimum(param->getMinimum() * 100);
+                    slider->setMaximum(param->getMaximum() * 100);
+                    slider->setSingleStep(1);
+                    slider->setValue(param->getDefault() * 100);
+                    slider->setMinimumHeight(90);
+                    // Set the index as a property because we need it inside slotUpdateFilter()
+                    slider->setProperty("index", QVariant(i));
+                    slidersGridLayout->addWidget(slider, 1, i + 1, Qt::AlignCenter);
+                    m_masterEQSliders.append(slider);
+                    connect(slider, SIGNAL(sliderMoved(int)), this, SLOT(slotUpdateMasterEQParameter(int)));
+
+                    QLabel* valueLabel = new QLabel(this);
+                    m_masterEQValues.append(valueLabel);
+                    QString valueText = QString::number((double)slider->value() / 100);
+                    valueLabel->setText(valueText);
+                    slidersGridLayout->addWidget(valueLabel, 2, i + 1, Qt::AlignCenter);
+
+                }
+            }
+        }
+    }
+
+    // Update the configured effect for the current QComboBox
+    m_pConfig->set(ConfigKey(kConfigKey, "EffectForGroup_[Master]"),
+            ConfigValue(effectId));
+}
+
+
+
 double DlgPrefEQ::getEqFreq(int sliderVal, int minValue, int maxValue) {
     // We're mapping f(x) = x^4 onto the range kFrequencyLowerLimit,
     // kFrequencyUpperLimit with x [minValue, maxValue]. First translate x into
@@ -514,4 +653,37 @@ QString DlgPrefEQ::getQuickEffectGroupForDeck(int deck) const {
             0, PlayerManager::groupForDeck(deck));
     }
     return QString();
+}
+
+void DlgPrefEQ::slotMasterEQToDefault() {
+    EffectPointer effect(m_pEffectMasterEQ);
+    if (!effect.isNull()) {
+        int knobNum = effect->numKnobParameters();
+        for (int i = 0; i < knobNum; i++) {
+            EffectParameter* param = effect->getKnobParameterForSlot(i);
+            if (param) {
+                double defaultValue = param->getDefault();
+                setMasterEQParameter(i, defaultValue);
+            }
+        }
+    }
+}
+
+void DlgPrefEQ::setMasterEQParameter(int i, double value) {
+    EffectPointer effect(m_pEffectMasterEQ);
+    if (!effect.isNull()) {
+        EffectParameter* param = effect->getKnobParameterForSlot(i);
+        if (param) {
+            param->setValue(value);
+            m_masterEQSliders[i]->setValue(value * 100);
+
+            QLabel* valueLabel = m_masterEQValues[i];
+            QString valueText = QString::number(value);
+            valueLabel->setText(valueText);
+
+            m_pConfig->set(ConfigKey(kConfigKey,
+                    QString("EffectForGroup_[Master]_parameter%1").arg(i + 1)),
+                            ConfigValue(valueText));
+        }
+    }
 }

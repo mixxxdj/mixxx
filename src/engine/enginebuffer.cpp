@@ -636,7 +636,7 @@ double EngineBuffer::updateIndicatorsAndModifyPlay(double v) {
     bool playPossible = true;
     if ((!m_pCurrentTrack && load_atomic(m_iTrackLoading) == 0) ||
             (m_pCurrentTrack && m_filepos_play >= m_file_length_old &&
-                    load_atomic(!m_iSeekQueued))) {
+                    !load_atomic(m_iSeekQueued))) {
         // play not possible
         playPossible = false;
     }

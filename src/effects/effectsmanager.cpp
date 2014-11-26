@@ -197,22 +197,22 @@ void EffectsManager::setupDefaults() {
     pStandardRack->addEffectChainSlot();
 
     EffectChainPointer pChain = EffectChainPointer(new EffectChain(
-        this, "org.mixxx.effectchain.flanger"));
+           this, "org.mixxx.effectchain.flanger"));
     pChain->setName(tr("Flanger"));
     EffectPointer pEffect = instantiateEffect(
-        "org.mixxx.effects.flanger");
+           "org.mixxx.effects.flanger");
     pChain->addEffect(pEffect);
     m_pEffectChainManager->addEffectChain(pChain);
 
     pChain = EffectChainPointer(new EffectChain(
-        this, "org.mixxx.effectchain.bitcrusher"));
+            this, "org.mixxx.effectchain.bitcrusher"));
     pChain->setName(tr("BitCrusher"));
     pEffect = instantiateEffect("org.mixxx.effects.bitcrusher");
     pChain->addEffect(pEffect);
     m_pEffectChainManager->addEffectChain(pChain);
 
     pChain = EffectChainPointer(new EffectChain(
-        this, "org.mixxx.effectchain.filter"));
+            this, "org.mixxx.effectchain.filter"));
     pChain->setName(tr("Filter"));
     pEffect = instantiateEffect("org.mixxx.effects.filter");
     pChain->addEffect(pEffect);
@@ -220,7 +220,7 @@ void EffectsManager::setupDefaults() {
 
 #ifndef __MACAPPSTORE__
     pChain = EffectChainPointer(new EffectChain(
-        this, "org.mixxx.effectchain.reverb"));
+            this, "org.mixxx.effectchain.reverb"));
     pChain->setName(tr("Reverb"));
     pEffect = instantiateEffect("org.mixxx.effects.reverb");
     pChain->addEffect(pEffect);
@@ -228,7 +228,7 @@ void EffectsManager::setupDefaults() {
 #endif
 
     pChain = EffectChainPointer(new EffectChain(
-        this, "org.mixxx.effectchain.echo"));
+            this, "org.mixxx.effectchain.echo"));
     pChain->setName(tr("Echo"));
     pEffect = instantiateEffect("org.mixxx.effects.echo");
     pChain->addEffect(pEffect);
@@ -239,7 +239,9 @@ void EffectsManager::setupDefaults() {
     m_pHiEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040);
 
     // Add an EqualizerRack.
-    addEqualizerRack();
+    EqualizerRackPointer pEqRack = addEqualizerRack();
+    // Add Master EQ here, because EngineMaster is already up
+    pEqRack->addEffectChainSlotForGroup("[Master]");
 
     // Add a QuickEffectRack
     addQuickEffectRack();
