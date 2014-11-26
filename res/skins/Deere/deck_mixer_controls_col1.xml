@@ -43,25 +43,6 @@
       </Template>
 
       <PushButton>
-        <ObjectName>DeckMute</ObjectName>
-        <Size>40f,20f</Size>
-        <NumberStates>2</NumberStates>
-        <State>
-          <Number>0</Number>
-          <Text>MUTE</Text>
-        </State>
-        <State>
-          <Number>1</Number>
-          <Text>MUTE</Text>
-        </State>
-        <Connection>
-          <ConfigKey><Variable name="group"/>,mute</ConfigKey>
-          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-          <ButtonState>LeftButton</ButtonState>
-        </Connection>
-      </PushButton>
-
-      <PushButton>
         <ObjectName>DeckPFL</ObjectName>
         <Size>40f,20f</Size>
         <NumberStates>2</NumberStates>
