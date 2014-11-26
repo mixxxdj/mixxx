@@ -14,7 +14,7 @@ EffectRack::EffectRack(EffectsManager* pEffectsManager,
           m_group(group),
           m_controlNumEffectChainSlots(ConfigKey(m_group, "num_effectunits")),
           m_controlClearRack(ConfigKey(m_group, "clear")),
-          m_pEngineEffectRack(new EngineEffectRack(iRackNumber)) {
+          m_pEngineEffectRack(NULL) {
     connect(&m_controlClearRack, SIGNAL(valueChanged(double)),
             this, SLOT(slotClearRack(double)));
     m_controlNumEffectChainSlots.connectValueChangeRequest(
@@ -31,6 +31,7 @@ EngineEffectRack* EffectRack::getEngineEffectRack() {
 }
 
 void EffectRack::addToEngine() {
+    m_pEngineEffectRack = new EngineEffectRack(m_iRackNumber);
     EffectsRequest* pRequest = new EffectsRequest();
     pRequest->type = EffectsRequest::ADD_EFFECT_RACK;
     pRequest->AddEffectRack.pRack = m_pEngineEffectRack;
