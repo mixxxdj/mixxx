@@ -312,12 +312,10 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes) {
                 // Here we are, if first deck was playing before starting Auto DJ
                 // or if it was started just before
                 loadNextTrackFromQueue();
-                // if we start the deck from code we don`t get a signal
-                leftDeck.play();
+                // Set crossfade thresholds for left deck.
                 playerPlayChanged(&leftDeck);
-                // call function manually
             } else {
-                rightDeck.play();
+                // Set crossfade thresholds for right deck.
                 playerPlayChanged(&rightDeck);
             }
             emit(autoDJStateChanged(m_eState));
