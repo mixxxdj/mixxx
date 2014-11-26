@@ -37,8 +37,8 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
     setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
 
     verticalHeader()->hide();
-    int coloumnHeight = m_pConfig->getValueString(ConfigKey("[Library]","RowHeight"), "20").toInt();
-    verticalHeader()->setDefaultSectionSize(coloumnHeight);
+    int rowHeight = m_pConfig->getValueString(ConfigKey("[Library]","RowHeight"), "20").toInt();
+    verticalHeader()->setDefaultSectionSize(rowHeight);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     setAlternatingRowColors(true);
 
