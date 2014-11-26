@@ -1,0 +1,52 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A standard knob with an additional pushbutton
+    (e.g. for adding kill buttons next to a knob).
+  Variables:
+    control: The control to connect the knob to.
+    button_control: The control to connect the pushbutton to.
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <Children>
+      <KnobComposed>
+        <Size>40f,40f</Size>
+        <Knob>knob.svg</Knob>
+        <MinAngle>-230</MinAngle>
+        <MaxAngle>50</MaxAngle>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,<Variable name="control"/></ConfigKey>
+        </Connection>
+      </KnobComposed>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <PushButton>
+            <ObjectName>KillButtons</ObjectName>
+            <Size>10f,10f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>O</Text>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>X</Text>
+            </State>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,<Variable name="button_control"/></ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+          </PushButton>
+          <Label>
+            <Size>30f,10f</Size>
+            <ObjectName>KnobLabel</ObjectName>
+            <Text><Variable name="label"/></Text>
+          </Label>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>
