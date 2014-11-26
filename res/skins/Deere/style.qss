@@ -89,9 +89,11 @@ WSliderComposed {
   qproperty-layoutSpacing: 1;
   padding: 1px;
 }
+
 #HotcueGrid WWidgetGroup {
   qproperty-layoutSpacing: 1;
 }
+
 #HotcueGrid WPushButton {
   background-color: green;
 }
@@ -105,7 +107,22 @@ WSliderComposed {
 #BeatLoopContainer WWidgetGroup {
   qproperty-layoutSpacing: 1;
 }
+
 #BeatLoopContainer WPushButton {
+  background-color: green;
+}
+
+#BeatJumpLoopMoveContainer {
+  background-color: black;
+  qproperty-layoutSpacing: 1;
+  padding: 1px;
+}
+
+#BeatJumpLoopMoveContainer WWidgetGroup {
+  qproperty-layoutSpacing: 1;
+}
+
+#BeatJumpLoopMoveContainer WPushButton {
   background-color: green;
 }
 

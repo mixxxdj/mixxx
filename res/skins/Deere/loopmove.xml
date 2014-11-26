@@ -1,0 +1,328 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A stack of loop move controls that move loops forward or backward.
+  Variables:
+    group: The group for the controls.
+-->
+<Template>
+  <WidgetStack>
+    <ObjectName>LoopMoveContainer</ObjectName>
+    <Layout>horizontal</Layout>
+    <MinimumSize>-1,-1</MinimumSize>
+    <SizePolicy>max,min</SizePolicy>
+    <NextControl>[LoopMove],next</NextControl>
+    <PrevControl>[LoopMove],prev</PrevControl>
+    <Children>
+       <!-- Set moving loops 4 beats as default for audible effect on first try. Later user changes persist. -->
+       <WidgetGroup>
+         <Layout>horizontal</Layout>
+         <Children>
+           <Template src="skin:loopmove_button.xml">
+             <SetVariable name="control_length">4</SetVariable>
+             <SetVariable name="text_length">|&lt;|</SetVariable>
+             <SetVariable name="direction">backward</SetVariable>
+           </Template>
+
+           <Template src="skin:left_1state_button.xml">
+             <SetVariable name="ObjectName">LoopMoveNext</SetVariable>
+             <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
+             <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
+             <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+             <SetVariable name="state_0_text">4</SetVariable>
+             <SetVariable name="state_0_pressed"></SetVariable>
+             <SetVariable name="state_0_unpressed"></SetVariable>
+             <SetVariable name="left_connection_control">[LoopMove],next</SetVariable>
+           </Template>
+
+           <Template src="skin:loopmove_button.xml">
+             <SetVariable name="control_length">4</SetVariable>
+             <SetVariable name="text_length">|&gt;|</SetVariable>
+             <SetVariable name="direction">forward</SetVariable>
+           </Template>
+         </Children>
+       </WidgetGroup>
+
+       <WidgetGroup>
+         <Layout>horizontal</Layout>
+         <Children>
+           <Template src="skin:loopmove_button.xml">
+             <SetVariable name="control_length">8</SetVariable>
+             <SetVariable name="text_length">|&lt;|</SetVariable>
+             <SetVariable name="direction">backward</SetVariable>
+           </Template>
+
+          <Template src="skin:left_1state_button.xml">
+             <SetVariable name="ObjectName">LoopMoveNext</SetVariable>
+             <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
+             <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
+             <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+             <SetVariable name="state_0_text">8</SetVariable>
+             <SetVariable name="state_0_pressed"></SetVariable>
+             <SetVariable name="state_0_unpressed"></SetVariable>
+             <SetVariable name="left_connection_control">[LoopMove],next</SetVariable>
+           </Template>
+
+          <Template src="skin:loopmove_button.xml">
+             <SetVariable name="control_length">8</SetVariable>
+             <SetVariable name="text_length">|&gt;|</SetVariable>
+             <SetVariable name="direction">forward</SetVariable>
+           </Template>
+         </Children>
+       </WidgetGroup>
+
+       <WidgetGroup>
+         <Layout>horizontal</Layout>
+         <Children>
+           <Template src="skin:loopmove_button.xml">
+             <SetVariable name="control_length">16</SetVariable>
+             <SetVariable name="text_length">|&lt;|</SetVariable>
+             <SetVariable name="direction">backward</SetVariable>
+           </Template>
+
+           <Template src="skin:left_1state_button.xml">
+             <SetVariable name="ObjectName">LoopMoveNext</SetVariable>
+             <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
+             <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
+             <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+             <SetVariable name="state_0_text">16</SetVariable>
+             <SetVariable name="state_0_pressed"></SetVariable>
+             <SetVariable name="state_0_unpressed"></SetVariable>
+             <SetVariable name="left_connection_control">[LoopMove],next</SetVariable>
+           </Template>
+
+           <Template src="skin:loopmove_button.xml">
+             <SetVariable name="control_length">16</SetVariable>
+             <SetVariable name="text_length">|&gt;|</SetVariable>
+             <SetVariable name="direction">forward</SetVariable>
+           </Template>
+         </Children>
+       </WidgetGroup>
+
+       <WidgetGroup>
+         <Layout>horizontal</Layout>
+         <Children>
+           <Template src="skin:loopmove_button.xml">
+             <SetVariable name="control_length">32</SetVariable>
+             <SetVariable name="text_length">|&lt;|</SetVariable>
+             <SetVariable name="direction">backward</SetVariable>
+           </Template>
+
+          <Template src="skin:left_1state_button.xml">
+             <SetVariable name="ObjectName">LoopMoveNext</SetVariable>
+             <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
+             <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
+             <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+             <SetVariable name="state_0_text">32</SetVariable>
+             <SetVariable name="state_0_pressed"></SetVariable>
+             <SetVariable name="state_0_unpressed"></SetVariable>
+             <SetVariable name="left_connection_control">[LoopMove],next</SetVariable>
+           </Template>
+
+          <Template src="skin:loopmove_button.xml">
+             <SetVariable name="control_length">32</SetVariable>
+             <SetVariable name="text_length">|&gt;|</SetVariable>
+             <SetVariable name="direction">forward</SetVariable>
+           </Template>
+         </Children>
+       </WidgetGroup>
+
+       <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:loopmove_button.xml">
+            <SetVariable name="control_length">64</SetVariable>
+            <SetVariable name="text_length">|&lt;|</SetVariable>
+            <SetVariable name="direction">backward</SetVariable>
+          </Template>
+
+          <Template src="skin:left_1state_button.xml">
+            <SetVariable name="ObjectName">LoopMoveNext</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text">64</SetVariable>
+            <SetVariable name="state_0_pressed"></SetVariable>
+            <SetVariable name="state_0_unpressed"></SetVariable>
+            <SetVariable name="left_connection_control">[LoopMove],next</SetVariable>
+          </Template>
+
+          <Template src="skin:loopmove_button.xml">
+            <SetVariable name="control_length">64</SetVariable>
+            <SetVariable name="text_length">|&gt;|</SetVariable>
+            <SetVariable name="direction">forward</SetVariable>
+          </Template>
+        </Children>
+       </WidgetGroup>
+
+       <WidgetGroup>
+         <Layout>horizontal</Layout>
+         <Children>
+           <Template src="skin:loopmove_button.xml">
+             <SetVariable name="control_length">0.0625</SetVariable>
+             <SetVariable name="text_length">|&lt;|</SetVariable>
+             <SetVariable name="direction">backward</SetVariable>
+           </Template>
+
+         <Template src="skin:left_1state_button.xml">
+             <SetVariable name="ObjectName">LoopMoveNext</SetVariable>
+             <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
+             <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
+             <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+             <SetVariable name="state_0_text">1/16</SetVariable>
+             <SetVariable name="state_0_pressed"></SetVariable>
+             <SetVariable name="state_0_unpressed"></SetVariable>
+             <SetVariable name="left_connection_control">[LoopMove],next</SetVariable>
+           </Template>
+
+         <Template src="skin:loopmove_button.xml">
+             <SetVariable name="control_length">0.0625</SetVariable>
+             <SetVariable name="text_length">|&gt;|</SetVariable>
+             <SetVariable name="direction">forward</SetVariable>
+           </Template>
+         </Children>
+       </WidgetGroup>
+
+       <WidgetGroup>
+         <Layout>horizontal</Layout>
+         <Children>
+           <Template src="skin:loopmove_button.xml">
+             <SetVariable name="control_length">0.125</SetVariable>
+             <SetVariable name="text_length">|&lt;|</SetVariable>
+             <SetVariable name="direction">backward</SetVariable>
+           </Template>
+
+           <Template src="skin:left_1state_button.xml">
+             <SetVariable name="ObjectName">LoopMoveNext</SetVariable>
+             <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
+             <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
+             <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+             <SetVariable name="state_0_text">1/8</SetVariable>
+             <SetVariable name="state_0_pressed"></SetVariable>
+             <SetVariable name="state_0_unpressed"></SetVariable>
+             <SetVariable name="left_connection_control">[LoopMove],next</SetVariable>
+           </Template>
+
+           <Template src="skin:loopmove_button.xml">
+             <SetVariable name="control_length">0.125</SetVariable>
+             <SetVariable name="text_length">|&gt;|</SetVariable>
+             <SetVariable name="direction">forward</SetVariable>
+           </Template>
+         </Children>
+       </WidgetGroup>
+
+       <WidgetGroup>
+         <Layout>horizontal</Layout>
+         <Children>
+           <Template src="skin:loopmove_button.xml">
+             <SetVariable name="control_length">0.25</SetVariable>
+             <SetVariable name="text_length">|&lt;|</SetVariable>
+             <SetVariable name="direction">backward</SetVariable>
+           </Template>
+
+           <Template src="skin:left_1state_button.xml">
+             <SetVariable name="ObjectName">LoopMoveNext</SetVariable>
+             <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
+             <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
+             <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+             <SetVariable name="state_0_text">1/4</SetVariable>
+             <SetVariable name="state_0_pressed"></SetVariable>
+             <SetVariable name="state_0_unpressed"></SetVariable>
+             <SetVariable name="left_connection_control">[LoopMove],next</SetVariable>
+           </Template>
+
+           <Template src="skin:loopmove_button.xml">
+             <SetVariable name="control_length">0.25</SetVariable>
+             <SetVariable name="text_length">|&gt;|</SetVariable>
+             <SetVariable name="direction">forward</SetVariable>
+           </Template>
+         </Children>
+       </WidgetGroup>
+
+       <WidgetGroup>
+         <Layout>horizontal</Layout>
+         <Children>
+           <Template src="skin:loopmove_button.xml">
+             <SetVariable name="control_length">0.5</SetVariable>
+             <SetVariable name="text_length">|&lt;|</SetVariable>
+             <SetVariable name="direction">backward</SetVariable>
+           </Template>
+
+           <Template src="skin:left_1state_button.xml">
+             <SetVariable name="ObjectName">LoopMoveNext</SetVariable>
+             <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
+             <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
+             <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+             <SetVariable name="state_0_text">1/2</SetVariable>
+             <SetVariable name="state_0_pressed"></SetVariable>
+             <SetVariable name="state_0_unpressed"></SetVariable>
+             <SetVariable name="left_connection_control">[LoopMove],next</SetVariable>
+           </Template>
+
+           <Template src="skin:loopmove_button.xml">
+             <SetVariable name="control_length">0.5</SetVariable>
+             <SetVariable name="text_length">|&gt;|</SetVariable>
+             <SetVariable name="direction">forward</SetVariable>
+           </Template>
+         </Children>
+       </WidgetGroup>
+
+       <WidgetGroup>
+         <Layout>horizontal</Layout>
+         <Children>
+           <Template src="skin:loopmove_button.xml">
+             <SetVariable name="control_length">1</SetVariable>
+             <SetVariable name="text_length">|&lt;|</SetVariable>
+             <SetVariable name="direction">backward</SetVariable>
+           </Template>
+
+           <Template src="skin:left_1state_button.xml">
+             <SetVariable name="ObjectName">LoopMoveNext</SetVariable>
+             <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
+             <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
+             <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+             <SetVariable name="state_0_text">1</SetVariable>
+             <SetVariable name="state_0_pressed"></SetVariable>
+             <SetVariable name="state_0_unpressed"></SetVariable>
+             <SetVariable name="left_connection_control">[LoopMove],next</SetVariable>
+           </Template>
+
+           <Template src="skin:loopmove_button.xml">
+             <SetVariable name="control_length">1</SetVariable>
+             <SetVariable name="text_length">|&gt;|</SetVariable>
+             <SetVariable name="direction">forward</SetVariable>
+           </Template>
+         </Children>
+       </WidgetGroup>
+
+       <WidgetGroup>
+         <Layout>horizontal</Layout>
+         <Children>
+           <Template src="skin:loopmove_button.xml">
+             <SetVariable name="control_length">2</SetVariable>
+             <SetVariable name="text_length">|&lt;|</SetVariable>
+             <SetVariable name="direction">backward</SetVariable>
+           </Template>
+
+           <Template src="skin:left_1state_button.xml">
+             <SetVariable name="ObjectName">LoopMoveNext</SetVariable>
+             <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
+             <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
+             <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+             <SetVariable name="state_0_text">2</SetVariable>
+             <SetVariable name="state_0_pressed"></SetVariable>
+             <SetVariable name="state_0_unpressed"></SetVariable>
+             <SetVariable name="left_connection_control">[LoopMove],next</SetVariable>
+           </Template>
+
+           <Template src="skin:loopmove_button.xml">
+             <SetVariable name="control_length">2</SetVariable>
+             <SetVariable name="text_length">|&gt;|</SetVariable>
+             <SetVariable name="direction">forward</SetVariable>
+           </Template>
+         </Children>
+       </WidgetGroup>
+    </Children>
+  </WidgetStack>
+
+</Template>
