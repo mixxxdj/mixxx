@@ -129,11 +129,17 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::fadeNow() {
         DeckAttributes& leftDeck = *m_decks[0];
         DeckAttributes& rightDeck = *m_decks[1];
         if (crossfader <= 0.3 && leftDeck.isPlaying()) {
+            // Make sure leftDeck.fadeDuration is up to date.
+            calculateFadeThresholds(&leftDeck);
+
             leftDeck.posThreshold = leftDeck.playPosition() -
                     ((crossfader + 1.0) / 2 * (leftDeck.fadeDuration));
             // Repeat is disabled by FadeNow but disables auto Fade
             leftDeck.setRepeat(false);
         } else if (crossfader >= -0.3 && rightDeck.isPlaying()) {
+            // Make sure rightDeck.fadeDuration is up to date.
+            calculateFadeThresholds(&rightDeck);
+
             rightDeck.posThreshold = rightDeck.playPosition() -
                     ((1.0 - crossfader) / 2 * (rightDeck.fadeDuration));
             // Repeat is disabled by FadeNow but disables auto Fade
