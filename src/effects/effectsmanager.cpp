@@ -15,7 +15,8 @@ EffectsManager::EffectsManager(QObject* pParent, ConfigObject<ConfigValue>* pCon
           m_pEffectChainManager(new EffectChainManager(pConfig, this)),
           m_nextRequestId(0),
           m_pLoEqFreq(NULL),
-          m_pHiEqFreq(NULL) {
+          m_pHiEqFreq(NULL),
+          m_underDestruction(false) {
     qRegisterMetaType<EffectChain::InsertionType>("EffectChain::InsertionType");
     QPair<EffectsRequestPipe*, EffectsResponsePipe*> requestPipes =
             TwoWayMessagePipe<EffectsRequest*, EffectsResponse>::makeTwoWayMessagePipe(
@@ -26,9 +27,12 @@ EffectsManager::EffectsManager(QObject* pParent, ConfigObject<ConfigValue>* pCon
 }
 
 EffectsManager::~EffectsManager() {
+    m_underDestruction = true;
     //m_pEffectChainManager->saveEffectChains();
-    processEffectsResponses();
     delete m_pEffectChainManager;
+    // This must be done here, since the engineRacks are deleted via
+    // the queue
+    processEffectsResponses();
     while (!m_effectsBackends.isEmpty()) {
         EffectsBackend* pBackend = m_effectsBackends.takeLast();
         delete pBackend;
@@ -247,6 +251,19 @@ void EffectsManager::setupDefaults() {
 }
 
 bool EffectsManager::writeRequest(EffectsRequest* request) {
+    if (m_underDestruction) {
+        // Catch all delete Messages since the engine is already down
+        // and we cannot what for a communication cycle
+        if (request->type == EffectsRequest::REMOVE_EFFECT_FROM_CHAIN) {
+            //qDebug() << debugString() << "delete" << request->RemoveEffectFromChain.pEffect;
+            delete request->RemoveEffectFromChain.pEffect;
+        } else if (request->type == EffectsRequest::REMOVE_EFFECT_RACK) {
+            //qDebug() << debugString() << "delete" << request->RemoveEffectRack.pRack;
+            delete request->RemoveEffectRack.pRack;
+        }
+        return false;
+    }
+
     if (m_pRequestPipe.isNull()) {
         return false;
     }
