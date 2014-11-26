@@ -163,7 +163,6 @@ class AutoDJProcessor : public QObject {
 
     AutoDJState m_eState;
     int m_iTransitionTime;
-    int m_iBackupTransitionTime;
 
     QList<DeckAttributes*> m_decks;
 

@@ -20,8 +20,7 @@ AutoDJProcessor::AutoDJProcessor(QObject* pParent,
           m_pConfig(pConfig),
           m_pAutoDJTableModel(NULL),
           m_eState(ADJ_DISABLED),
-          m_iTransitionTime(kTransitionPreferenceDefault),
-          m_iBackupTransitionTime(kTransitionPreferenceDefault) {
+          m_iTransitionTime(kTransitionPreferenceDefault) {
     m_pAutoDJTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                  "mixxx.db.model.autodj");
     m_pAutoDJTableModel->setTableModel(iAutoDJPlaylistId);
@@ -71,7 +70,6 @@ AutoDJProcessor::AutoDJProcessor(QObject* pParent,
             ConfigKey(kConfigKey, kTransitionPreferenceName));
     if (!str_autoDjTransition.isEmpty()) {
         m_iTransitionTime = str_autoDjTransition.toInt();
-        m_iBackupTransitionTime = m_iTransitionTime;
     }
 }
 
@@ -399,13 +397,6 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes) {
 }
 
 TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
-    int tmp = m_iBackupTransitionTime;
-    // This will also signal valueChanged and by that change
-    // m_iBackupTransitionTime so we need to copy to orignal value back
-    m_iTransitionTime = m_iBackupTransitionTime;
-    emit(transitionTimeChanged(m_iTransitionTime));
-    m_iBackupTransitionTime = tmp;
-
     // Get the track at the top of the playlist...
     while (true) {
         TrackPointer nextTrack = m_pAutoDJTableModel->getTrack(
@@ -413,12 +404,6 @@ TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
 
         if (nextTrack) {
             if (nextTrack->exists()) {
-                // found a valid Track
-                if (nextTrack->getDuration() < m_iBackupTransitionTime) {
-                    m_iTransitionTime = nextTrack->getDuration()/2;
-                    m_iBackupTransitionTime = tmp;
-                    emit(transitionTimeChanged(m_iTransitionTime));
-                }
                 return nextTrack;
             } else {
                 // Remove missing song from auto DJ playlist
@@ -532,19 +517,20 @@ void AutoDJProcessor::playerPlayChanged(DeckAttributes* pAttributes) {
 }
 
 void AutoDJProcessor::setTransitionTime(int time) {
+    // Update the transition time first.
+    m_pConfig->set(ConfigKey(kConfigKey, kTransitionPreferenceName),
+                   ConfigValue(time));
+    m_iTransitionTime = time;
+
+    // Then re-calculate fade thresholds for the decks.
     if (m_eState == ADJ_IDLE) {
         DeckAttributes& leftDeck = *m_decks[0];
-        DeckAttributes& rightDeck = *m_decks[1];
-
         if (leftDeck.isPlaying()) {
             playerPlayChanged(&leftDeck);
         }
+        DeckAttributes& rightDeck = *m_decks[1];
         if (rightDeck.isPlaying()) {
             playerPlayChanged(&rightDeck);
         }
     }
-    m_pConfig->set(ConfigKey(kConfigKey, kTransitionPreferenceName),
-                   ConfigValue(time));
-    m_iTransitionTime = time;
-    m_iBackupTransitionTime = time;
 }

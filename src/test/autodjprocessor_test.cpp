@@ -120,7 +120,6 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped) {
     PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
     pAutoDJTableModel->appendTrack(testId);
 
-    EXPECT_CALL(*pProcessor, transitionTimeChanged(kDefaultTransitionTime));
     EXPECT_CALL(*pProcessor, autoDJStateChanged(AutoDJProcessor::ADJ_ENABLE_P1LOADED));
     EXPECT_CALL(*pProcessor, loadTrack(_));
 
@@ -149,7 +148,6 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck1) {
     PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
     pAutoDJTableModel->appendTrack(testId);
 
-    EXPECT_CALL(*pProcessor, transitionTimeChanged(kDefaultTransitionTime));
     EXPECT_CALL(*pProcessor, autoDJStateChanged(AutoDJProcessor::ADJ_IDLE));
     EXPECT_CALL(*pProcessor, loadTrack(_));
 
@@ -179,7 +177,6 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck2) {
     PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
     pAutoDJTableModel->appendTrack(testId);
 
-    EXPECT_CALL(*pProcessor, transitionTimeChanged(kDefaultTransitionTime));
     EXPECT_CALL(*pProcessor, autoDJStateChanged(AutoDJProcessor::ADJ_IDLE));
     EXPECT_CALL(*pProcessor, loadTrack(_));
 
