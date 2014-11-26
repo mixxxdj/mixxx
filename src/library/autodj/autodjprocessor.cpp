@@ -212,15 +212,19 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         if (!deck1Playing && !deck2Playing) {
             // both decks are stopped
             m_eState = ADJ_ENABLE_P1LOADED;
-            // Force Update on load Track
+            // playerPositionChanged for ADJ_ENABLE_P1LOADED will set the
+            // crossfader left, start the left deck and remove the loaded track
+            // from the queue.
             playerPositionChanged(&leftDeck);
         } else {
+            // One of the two decks is playing. Switch into IDLE mode and wait
+            // until the playing deck crosses posThreshold to start fading.
             m_eState = ADJ_IDLE;
             if (deck1Playing) {
-                // deck 1 is already playing
+                // Update fade thresholds for the left deck.
                 playerPlayChanged(&leftDeck);
             } else {
-                // deck 2 is already playing
+                // Update fade thresholds for the right deck.
                 playerPlayChanged(&rightDeck);
             }
         }
@@ -280,7 +284,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes) {
     // const double posThreshold = 0.95;
 
     // 0.05; // 5% playback is crossfade duration
-    const double fadeDuration = pAttributes->fadeDuration;
+    const double thisFadeDuration = pAttributes->fadeDuration;
 
     // qDebug() << "player" << pAttributes->group << "PositionChanged(" << value << ")";
     if (m_eState == ADJ_DISABLED) {
@@ -307,6 +311,9 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes) {
             leftDeck.play();  // Play the track in player 1
             removeLoadedTrackFromTopOfQueue(leftDeck.group);
         } else {
+            // One of left and right is playing. Switch to IDLE mode and make
+            // sure our thresholds are configured (by calling playerPlayChanged
+            // for the playing deck).
             m_eState = ADJ_IDLE;
             if (leftDeckPlaying && !rightDeckPlaying) {
                 // Here we are, if first deck was playing before starting Auto DJ
@@ -324,6 +331,8 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes) {
     }
 
     if (m_eState == ADJ_P1FADING || m_eState == ADJ_P2FADING) {
+        // We are fading but the other deck has stopped. Switch out of fading
+        // mode to idle.
         if (thisDeckPlaying && !otherDeckPlaying) {
             // Force crossfader all the way
             if (thisDeck.isLeft()) {
@@ -332,6 +341,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes) {
                 setCrossfader(1.0, true);
             }
             m_eState = ADJ_IDLE;
+            // Load next track to stopped deck.
             loadNextTrackFromQueue();
             emit(autoDJStateChanged(m_eState));
         }
@@ -341,46 +351,63 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes) {
         if (m_eState == ADJ_P2FADING && !thisDeck.isRight()) {
             return;
         }
+        // If this deck is the fading deck continue to process the logic below.
     }
 
     if (m_eState == ADJ_IDLE && thisDeck.isRepeat()) {
-        // repeat disables auto DJ
-        // TODO(rryan): So why doesn't this disable Auto DJ?
+        // repeat pauses auto DJ
         return;
     }
 
+    // If we are past this deck's posThreshold then:
+    // - transition into fading mode, play the other deck and fade to it.
+    // - check if we've passed the fade end point and stop the deck
+    // - update the crossfader
+    // TODO(rryan): We need to investigate the chain of events that occur when
+    // the track we are fading to crosses its posThreshold before we are done
+    // fading to it.
     if (thisPlayPosition >= thisDeck.posThreshold) {
-        if (m_eState == ADJ_IDLE &&
-            (thisDeckPlaying || thisDeck.posThreshold >= 1.0)) {
+        if (m_eState == ADJ_IDLE && (thisDeckPlaying ||
+                                     thisDeck.posThreshold >= 1.0)) {
             if (!otherDeckPlaying) {
                 otherDeck.play();
+
+                // Setup the other deck's fade thresholds (since we use the
+                // fadeDuration next).
                 playerPlayChanged(&otherDeck);
-                if (fadeDuration < 0.0) {
-                    // Scroll back for pause between tracks
+
+                // For negative fade durations, jump back to insert a pause
+                // between the tracks.
+                if (thisFadeDuration < 0.0) {
+                    // TODO(rryan) why otherDeck.fadeDuration?
                     otherDeck.setPlayPosition(otherDeck.fadeDuration);
                 }
             }
+
+            // Now that we have started the other deck playing, remove the track
+            // that was "on deck" from the top of the queue.
             removeLoadedTrackFromTopOfQueue(otherDeck.group);
+
+            // Set the state as FADING.
             m_eState = thisDeck.isLeft() ? ADJ_P1FADING : ADJ_P2FADING;
             emit(autoDJStateChanged(m_eState));
         }
 
-        double posFadeEnd = math_min(1.0, thisDeck.posThreshold + fadeDuration);
+        double posFadeEnd = math_min(1.0, thisDeck.posThreshold + thisFadeDuration);
         if (thisPlayPosition >= posFadeEnd) {
-            // Pre-EndState
-            thisDeck.stop();  // Stop the player
-            //m_posThreshold = 1.0 - fadeDuration; // back to default
-
-            // does not work always immediately after stop
-            // loadNextTrackFromQueue();
-            // m_eState = ADJ_IDLE; // Fading ready
+            // If this track has passed the end of its target fade then we stop
+            // it. We don't handle mode switches here since that's handled by
+            // the next playerPositionChanged call otherDeck (see the
+            // P1/P2FADING case above).
+            thisDeck.stop();
         } else {
-            // Crossfade!
+            // We are past this deck's posThreshold but before its
+            // posThreshold+fadeDuration, we move the crossfader linearly with
+            // movements in this track's play position.
 
-            // If this is index 0 (left), the new crossfade value is -1 plus
-            // the adjustment.  If this is index 1 (right), the new value is
-            // 1.0 minus the adjustment.
-
+            // If thisDeck is left, the new crossfade value is -1 plus the
+            // adjustment.  If thisDeck is right, the new value is 1.0 minus the
+            // adjustment.
             double crossfadeEdgeValue = -1.0;
             double adjustment = 2 * (thisPlayPosition - thisDeck.posThreshold) /
                     (posFadeEnd - thisDeck.posThreshold);
@@ -395,7 +422,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes) {
 }
 
 TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
-    // Get the track at the top of the playlist...
+    // Get the track at the top of the playlist.
     while (true) {
         TrackPointer nextTrack = m_pAutoDJTableModel->getTrack(
             m_pAutoDJTableModel->index(0, 0));
@@ -404,12 +431,12 @@ TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
             if (nextTrack->exists()) {
                 return nextTrack;
             } else {
-                // Remove missing song from auto DJ playlist
+                // Remove missing song from auto DJ playlist.
                 m_pAutoDJTableModel->removeTrack(
                         m_pAutoDJTableModel->index(0, 0));
             }
         } else {
-            // we are running out of tracks
+            // We're out of tracks. Return the null TrackPointer.
             return nextTrack;
         }
     }
@@ -418,13 +445,18 @@ TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
 bool AutoDJProcessor::loadNextTrackFromQueue() {
     TrackPointer nextTrack = getNextTrackFromQueue();
 
-    // We ran out of tracks in the queue...
+    // We ran out of tracks in the queue.
     if (!nextTrack) {
-        // Disable auto DJ and return...
+        // Disable auto DJ and return.
         m_eState = ADJ_DISABLED;
+
+        // TODO(rryan): Need to disconnect and clear the state like we do in
+        // toggleAutoDJ(false)!
         emit(autoDJStateChanged(m_eState));
-        // And eject track as "End of auto DJ warning"
+
+        // And eject track (nextTrack is null) as "End of auto DJ warning"
         emit(loadTrack(nextTrack));
+
         return false;
     }
 
@@ -483,17 +515,24 @@ void AutoDJProcessor::playerPlayChanged(DeckAttributes* pAttributes) {
     bool playing = pAttributes->isPlaying();
 
     //qDebug() << "player" << pAttributes->group << "PlayChanged(" << playing << ")";
+
+    // We require ADJ_IDLE to prevent changing the thresholds in the middle of a
+    // fade.
+    // TODO(rryan): Investigate removing the playing and idle check. If a track
+    // is loaded we should be able to calculate the fadeDuration and
+    // posThreshold regardless of the rest of the ADJ.
     if (playing && m_eState == ADJ_IDLE) {
         TrackPointer loadedTrack =
                 PlayerInfo::instance().getTrackInfo(pAttributes->group);
         if (loadedTrack) {
+            // TODO(rryan): Duration is super inaccurate! We should be using
+            // track_samples / track_samplerate instead.
             int TrackDuration = loadedTrack->getDuration();
             qDebug() << "TrackDuration = " << TrackDuration;
 
             // The track might be shorter than the transition period. Use a
             // sensible cap.
-            int autoDjTransition = math_min(m_iTransitionTime,
-                                            TrackDuration/2);
+            int autoDjTransition = math_min(m_iTransitionTime, TrackDuration/2);
 
             if (TrackDuration > autoDjTransition && TrackDuration > 0) {
                 pAttributes->fadeDuration = static_cast<double>(autoDjTransition) /
