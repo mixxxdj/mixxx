@@ -16,6 +16,10 @@ EffectChainManager::EffectChainManager(ConfigObject<ConfigValue>* pConfig,
 }
 
 EffectChainManager::~EffectChainManager() {
+    m_effectRacksByGroup.clear();
+    m_standardEffectRacks.clear();
+    m_equalizerEffectRacks.clear();
+    m_quickEffectRacks.clear();
     //qDebug() << debugString() << "destroyed";
 }
 

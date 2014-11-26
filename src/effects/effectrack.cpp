@@ -24,6 +24,7 @@ EffectRack::EffectRack(EffectsManager* pEffectsManager,
 
 EffectRack::~EffectRack() {
     removeFromEngine();
+    //qDebug() << "EffectRack::~EffectRack()";
 }
 
 EngineEffectRack* EffectRack::getEngineEffectRack() {
