@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="50" height="5">
+  <defs>
+    <linearGradient id="vumeterGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:rgb(0,255,0);stop-opacity:1" />
+      <stop offset="33%" style="stop-color:rgb(0,255,0);stop-opacity:1" />
+      <stop offset="33%" style="stop-color:rgb(255,255,0);stop-opacity:1" />
+      <stop offset="66%" style="stop-color:rgb(255,255,0);stop-opacity:1" />
+      <stop offset="66%" style="stop-color:rgb(255,0,0);stop-opacity:1" />
+      <stop offset="100%" style="stop-color:rgb(255,0,0);stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="50" height="5" fill="url(#vumeterGrad)"/>
+</svg>
