@@ -67,6 +67,65 @@
  ** END BORDER *****************************************************************
  *******************************************************************************/
 
+
+/*******************************************************************************
+ ** LIBRARY *********************************************************************
+ *******************************************************************************/
+
+
+/* checkbox in library "Played" column */
+QTableView::indicator {
+  width: 12px;
+  height: 12px;
+}
+
+QTableView::indicator:checked {
+  background: url(skin:/image/style_checkbox_checked.png);
+}
+
+QTableView::indicator:unchecked {
+  background: url(skin:/image/style_checkbox_unchecked.png);
+}
+
+/* Button in library "Preview" column */
+QPushButton#LibraryPreviewButton {
+  width: 23px;
+  height: 12px;
+  background: transparent;
+  border: none;
+}
+
+QPushButton#LibraryPreviewButton:!checked {
+  image: url(skin:/image/style_library_preview_play.png);
+}
+
+QPushButton#LibraryPreviewButton:checked {
+  image: url(skin:/image/style_library_preview_pause.png);
+}
+
+/* splitter between treeview and library */
+QSplitter::handle {
+  image: url(skin:/image/style_handle_unchecked.png);
+  background: none;
+}
+
+QSplitter::handle:pressed {
+  image: url(skin:/image/style_handle_checked.png);
+  background: none;
+}
+
+QSplitter::handle:horizontal {
+  width: 6px;
+}
+
+QSplitter::handle:vertical {
+  height: 6px;
+}
+
+/*******************************************************************************
+ ** END LIBRARY *****************************************************************
+ *******************************************************************************/
+
 WWidget, QLabel {
   font: bold 16pt/18pt Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
   font-size: 7pt;
