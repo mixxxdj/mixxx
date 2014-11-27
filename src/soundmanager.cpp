@@ -436,6 +436,10 @@ closeAndError:
     return err;
 }
 
+int SoundManager::connected() const {
+    return static_cast<int>(m_pControlObjectSoundStatusCO->get());
+}
+
 SoundDevice* SoundManager::getErrorDevice() const {
     return m_pErrorDevice;
 }

@@ -107,6 +107,9 @@ class SoundManager : public QObject {
     QList<AudioOutput> registeredOutputs() const;
     QList<AudioInput> registeredInputs() const;
 
+    // Returns the value of the sound status control object.
+    int connected() const;
+
   signals:
     void devicesUpdated(); // emitted when pointers to SoundDevices go stale
     void devicesSetup(); // emitted when the sound devices have been set up

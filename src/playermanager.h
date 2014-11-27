@@ -115,6 +115,8 @@ class PlayerManager : public QObject {
     void slotNumSamplersControlChanged(double v);
     void slotNumPreviewDecksControlChanged(double v);
 
+    void slotDeckPlayChanged(double);
+
   signals:
     void loadLocationToPlayer(QString location, QString group);
 
