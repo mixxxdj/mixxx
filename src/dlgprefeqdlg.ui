@@ -15,83 +15,87 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0,0,0">
-     <item>
-      <widget class="QCheckBox" name="CheckBoxEqAutoReset">
-       <property name="toolTip">
-        <string>Resets the equalizers to their default values when loading a track.</string>
-       </property>
-       <property name="text">
-        <string>Reset equalizers on track load</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="CheckBoxBypass">
-       <property name="text">
-        <string>Bypass</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="CheckBoxHideEffects">
-       <property name="text">
-        <string>Fill menus with the best suited effects only</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QWidget" name="GridWidgetDecks" native="true">
-       <layout class="QGridLayout" name="gridLayout_3">
-        <item row="0" column="3">
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="0" column="2">
-         <widget class="QLabel" name="label_3">
-          <property name="font">
-           <font>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>Filter knob configuration</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QLabel" name="label_2">
-          <property name="font">
-           <font>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>EQ Knob Configuration</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QWidget" name="widget" native="true"/>
-        </item>
-       </layout>
-      </widget>
-     </item>
-    </layout>
+    <widget class="QGroupBox" name="EQRackOptions">
+     <property name="title">
+      <string>Equalizer Rack</string>
+     </property>
+      <layout class="QVBoxLayout" name="Racklayout" stretch="0,0,0,0">
+       <item>
+        <widget class="QCheckBox" name="CheckBoxEqOnly">
+         <property name="text">
+          <string>Only allow EQ knobs to control EQ-specific effects</string>
+         </property>
+          <property name="checked">
+          <bool>true</bool>
+         </property>
+         <property name="toolTip">
+          <string>Uncheck to allow any effect to be loaded into the EQ knobs.</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="CheckBoxSingleEqEffect">
+         <property name="text">
+          <string>Use the same EQ filter for all decks</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <property name="toolTip">
+          <string>Uncheck to allow different decks to use different EQ effects.</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QWidget" name="GridWidgetDecks" native="true">
+         <layout class="QGridLayout" name="gridLayout_3">
+          <item row="0" column="3">
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="0" column="0">
+           <widget class="QWidget" name="widget" native="true"/>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="label_2">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Equalizer Plugin</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLabel" name="label_3">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Quick Effect</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+    </widget>
    </item>
    <item>
     <widget class="QGroupBox" name="GroupBoxHiEQ">
@@ -348,21 +352,50 @@
         </item>
        </layout>
       </item>
-      <item>
-       <spacer name="verticalSpacer">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
      </layout>
     </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="EQMiscOptions">
+     <property name="title">
+      <string>Miscellaneous</string>
+     </property>
+      <layout class="QVBoxLayout" name="miscOptionsLayout" stretch="0,0,0,0">
+       <item>
+        <widget class="QCheckBox" name="CheckBoxEqAutoReset">
+         <property name="toolTip">
+          <string>Resets the equalizers to their default values when loading a track.</string>
+         </property>
+         <property name="text">
+          <string>Reset equalizers on track load</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="CheckBoxBypass">
+         <property name="text">
+          <string>Bypass EQ effect processing</string>
+         </property>
+         <property name="toolTip">
+          <string>When checked, EQs are not processed, improving performance on slower computers.</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
    </item>
   </layout>
  </widget>
