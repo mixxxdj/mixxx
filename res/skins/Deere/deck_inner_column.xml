@@ -74,6 +74,11 @@
         </State>
         <Connection>
           <ConfigKey><Variable name="group"/>,cue_default</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,cue_gotoandstop</ConfigKey>
+          <ButtonState>RightButton</ButtonState>
         </Connection>
       </PushButton>
 
