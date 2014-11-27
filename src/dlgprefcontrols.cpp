@@ -47,7 +47,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
            m_pSkinLoader(pSkinLoader),
            m_pPlayerManager(pPlayerManager),
            m_iNumConfiguredDecks(0),
-           m_iNumConfiguredSamplers(0) {
+           m_iNumConfiguredSamplers(0), 
+           m_bPitchAutoReset(false) {
     setupUi(this);
 
     m_pNumDecks = new ControlObjectSlave("[Master]", "num_decks", this);
@@ -324,6 +325,12 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     SliderRateRampSensitivity->setValue(m_pConfig->getValueString(
             ConfigKey("[Controls]", "RateRampSensitivity")).toInt());
 
+    // Update Speed/Pitch checker box 
+    connect(CheckBoxPitchAutoReset, SIGNAL(stateChanged(int)), this, SLOT(slotUpdatePitchAutoReset(int)));
+    m_bPitchAutoReset = static_cast<bool>(m_pConfig->getValueString(
+            ConfigKey("[Mixer Profile]", "PitchAutoReset")).toInt());
+    CheckBoxPitchAutoReset->setChecked(m_bPitchAutoReset);
+    
     slotUpdate();
 }
 
@@ -375,6 +382,8 @@ void DlgPrefControls::slotUpdate() {
         ComboBoxRateDir->setCurrentIndex(0);
     else
         ComboBoxRateDir->setCurrentIndex(1);
+    
+    CheckBoxPitchAutoReset->setChecked(m_bPitchAutoReset);
 }
 
 void DlgPrefControls::slotResetToDefaults() {
@@ -416,6 +425,10 @@ void DlgPrefControls::slotResetToDefaults() {
     spinBoxTempRateRight->setValue(2.0);
     spinBoxPermRateLeft->setValue(0.50);
     spinBoxPermRateRight->setValue(0.05);
+    
+    // Pitch auto reset default un-checked.
+    m_bPitchAutoReset = false;
+    CheckBoxPitchAutoReset->setChecked(Qt::Unchecked);
 }
 
 void DlgPrefControls::slotSetLocale(int pos) {
@@ -591,6 +604,9 @@ void DlgPrefControls::slotApply() {
         m_pConfig->set(ConfigKey("[Controls]","RateDir"), ConfigValue(0));
     else
         m_pConfig->set(ConfigKey("[Controls]","RateDir"), ConfigValue(1));
+    
+    m_pConfig->set(ConfigKey("[Mixer Profile]","PitchAutoReset"),
+            ConfigValue(m_bPitchAutoReset ? 1 : 0));
 
 }
 
@@ -671,4 +687,8 @@ void DlgPrefControls::slotNumSamplersChanged(double new_count) {
     m_iNumConfiguredSamplers = numsamplers;
     slotSetRateDir(m_pConfig->getValueString(ConfigKey("[Controls]","RateDir")).toInt());
     slotSetRateRange(m_pConfig->getValueString(ConfigKey("[Controls]","RateRange")).toInt());
+}
+
+void DlgPrefControls::slotUpdatePitchAutoReset(int i) {
+    m_bPitchAutoReset = static_cast<bool>(i);
 }
