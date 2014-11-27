@@ -29,13 +29,6 @@
         <SetVariable name="button_control">mute</SetVariable>
         <SetVariable name="label">Gain</SetVariable>
       </Template>
-
-      <Template src="skin:knob.xml">
-        <SetVariable name="group">[Microphone<Variable name="i"/>]</SetVariable>
-        <SetVariable name="control">volume</SetVariable>
-        <SetVariable name="label">Volume</SetVariable>
-      </Template>
-
     </Children>
   </WidgetGroup>
 </Template>
