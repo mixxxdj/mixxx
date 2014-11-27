@@ -523,7 +523,8 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
 
         QTableWidgetItem* pScriptBuiltin = new QTableWidgetItem();
         pScriptBuiltin->setCheckState(script.builtin ? Qt::Checked : Qt::Unchecked);
-        pScriptBuiltin->setFlags(pScriptBuiltin->flags() & ~(Qt::ItemIsEditable |
+        pScriptBuiltin->setFlags(pScriptBuiltin->flags() & ~(Qt::ItemIsEnabled |
+                                                             Qt::ItemIsEditable |
                                                              Qt::ItemIsUserCheckable));
         m_ui.m_pScriptsTableWidget->setItem(i, 2, pScriptBuiltin);
     }
