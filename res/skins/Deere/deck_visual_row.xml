@@ -120,7 +120,7 @@
               <Text> + </Text>
             </State>
             <Connection>
-              <ConfigKey persist="true"><Variable name="group"/>,waveform_zoom_up</ConfigKey>
+              <ConfigKey persist="true"><Variable name="group"/>,waveform_zoom_down</ConfigKey>
             </Connection>
           </PushButton>
 
@@ -154,7 +154,7 @@
               <Text> - </Text>
             </State>
             <Connection>
-              <ConfigKey persist="true"><Variable name="group"/>,waveform_zoom_down</ConfigKey>
+              <ConfigKey persist="true"><Variable name="group"/>,waveform_zoom_up</ConfigKey>
             </Connection>
           </PushButton>
         </Children>
