@@ -12,13 +12,13 @@
 #include "engine/effects/engineeffectsmanager.h"
 #include "controlaudiotaperpot.h"
 
-EngineAux::EngineAux(const char* pGroup, EffectsManager* pEffectsManager)
-        : EngineChannel(pGroup, EngineChannel::CENTER),
+EngineAux::EngineAux(const QString& group, EffectsManager* pEffectsManager)
+        : EngineChannel(group, EngineChannel::CENTER),
           m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
-          m_vuMeter(pGroup),
-          m_pEnabled(new ControlObject(ConfigKey(pGroup, "enabled"))),
-          m_pPassing(new ControlPushButton(ConfigKey(pGroup, "passthrough"))),
-          m_pPregain(new ControlAudioTaperPot(ConfigKey(pGroup, "pregain"), -12, 12, 0.5)),
+          m_vuMeter(group),
+          m_pEnabled(new ControlObject(ConfigKey(group, "enabled"))),
+          m_pPassing(new ControlPushButton(ConfigKey(group, "passthrough"))),
+          m_pPregain(new ControlAudioTaperPot(ConfigKey(group, "pregain"), -12, 12, 0.5)),
           m_sampleBuffer(NULL),
           m_wasActive(false) {
     if (pEffectsManager != NULL) {

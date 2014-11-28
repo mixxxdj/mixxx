@@ -196,8 +196,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 
     for (int i = 0; i < kAuxiliaryCount; ++i) {
         QString group = QString("[Auxiliary%1]").arg(i + 1);
-        EngineAux* pAux = new EngineAux(strdup(group.toStdString().c_str()),
-                                        m_pEffectsManager);
+        EngineAux* pAux = new EngineAux(group, m_pEffectsManager);
         // What should channelbase be?
         AudioInput auxInput = AudioInput(AudioPath::AUXILIARY, 0, 0, i);
         m_pEngine->addChannel(pAux);
