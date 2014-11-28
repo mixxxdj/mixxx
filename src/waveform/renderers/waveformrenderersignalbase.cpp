@@ -68,8 +68,6 @@ bool WaveformRendererSignalBase::init() {
             m_waveformRenderer->getGroup(), "filterWaveformEnable");
     m_pLowFilterControlObject = new ControlObjectSlave(
             m_waveformRenderer->getGroup(), "filterLow");
-    m_pLowFilterControlObject = new ControlObjectSlave(
-            m_waveformRenderer->getGroup(), "filterLow");
     m_pMidFilterControlObject = new ControlObjectSlave(
             m_waveformRenderer->getGroup(), "filterMid");
     m_pHighFilterControlObject = new ControlObjectSlave(
