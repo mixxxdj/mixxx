@@ -33,7 +33,7 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
           m_pLowFilterKill(NULL),
           m_pMidFilterKill(NULL),
           m_pHighFilterKill(NULL),
-          m_pPitch(NULL),
+          m_pSpeed(NULL),
           m_replaygainPending(false) {
     m_pChannel = new EngineDeck(getGroup(), pConfig, pMixingEngine,
                                 pEffectsManager, defaultOrientation);
@@ -117,7 +117,7 @@ BaseTrackPlayer::~BaseTrackPlayer()
     delete m_pMidFilterKill;
     delete m_pHighFilterKill;
     delete m_pPreGain;
-    delete m_pPitch;
+    delete m_pSpeed;
 }
 
 void BaseTrackPlayer::slotLoadTrack(TrackPointer track, bool bPlay) {
@@ -282,9 +282,9 @@ void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
         }
         m_pPreGain->set(1.0);
     }
-    if(m_pConfig->getValueString(ConfigKey("[Mixer Profile]", "PitchAutoReset"), 0).toInt()) {
-        if (m_pPitch != NULL) {
-            m_pPitch->set(0.0);
+    if(m_pConfig->getValueString(ConfigKey("[Mixer Profile]", "SpeedAutoReset"), 0).toInt()) {
+        if (m_pSpeed != NULL) {
+            m_pSpeed->set(0.0);
         }
     }
     emit(newTrackLoaded(m_pLoadedTrack));
@@ -323,5 +323,5 @@ void BaseTrackPlayer::setupEqControls() {
     m_pLowFilterKill = new ControlObjectSlave(group,"filterLowKill");
     m_pMidFilterKill = new ControlObjectSlave(group,"filterMidKill");
     m_pHighFilterKill = new ControlObjectSlave(group,"filterHighKill");
-    m_pPitch = new ControlObjectSlave(group,"rate");
+    m_pSpeed = new ControlObjectSlave(group,"rate");
 }

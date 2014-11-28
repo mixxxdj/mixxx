@@ -15,12 +15,12 @@
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
    <item row="3" column="0">
-    <widget class="QCheckBox" name="CheckBoxPitchAutoReset">
+    <widget class="QCheckBox" name="CheckBoxSpeedAutoReset">
      <property name="toolTip">
       <string>Resets Speed Control Slider to default when a track is loaded.</string>
      </property>
      <property name="text">
-      <string>Reset equalizers on track load</string>
+      <string>Reset Speed on track load</string>
      </property>
     </widget>
    </item>
