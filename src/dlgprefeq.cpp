@@ -129,11 +129,10 @@ void DlgPrefEQ::slotAddComboBox(double numDecks) {
         // Set the configured effect for box and simpleBox or Bessel8 LV-Mix EQ
         // if none is configured
         QString configuredEffect;
-        int selectedEffectIndex;
         QString group = PlayerManager::groupForDeck(i);
         configuredEffect = m_pConfig->getValueString(ConfigKey(kConfigKey,
                 "EffectForGroup_" + group), kDefaultEqId);
-        selectedEffectIndex = m_deckEqEffectSelectors[i]->findData(configuredEffect);
+        int selectedEffectIndex = m_deckEqEffectSelectors[i]->findData(configuredEffect);
         if (selectedEffectIndex < 0) {
             selectedEffectIndex = m_deckEqEffectSelectors[i]->findData(kDefaultEqId);
             configuredEffect = kDefaultEqId;
