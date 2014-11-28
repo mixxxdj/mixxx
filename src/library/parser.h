@@ -25,9 +25,15 @@ it afterwards fro proper functioning
 #include <QString>
 #include <QList>
 
-class Parser : public QObject
-{
-public:
+class Parser : public QObject {
+  public:
+    static bool isPlaylistFilenameSupported(const QString& fileName) {
+        return fileName.endsWith(".m3u", Qt::CaseInsensitive) ||
+                fileName.endsWith(".m3u8", Qt::CaseInsensitive) ||
+                fileName.endsWith(".pls", Qt::CaseInsensitive) ||
+                fileName.endsWith(".csv", Qt::CaseInsensitive);
+    }
+
     Parser();
     ~Parser();
     /**Can be called to parse a pls file
