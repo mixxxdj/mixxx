@@ -289,8 +289,9 @@ class MixxxMainWindow : public QMainWindow {
     static const int kMicrophoneCount;
     static const int kAuxiliaryCount;
 
-    // Once we pop up the output device warning, don't display it again until
-    // we receive valid ticks.
+    // This is used to prevent the output device warning from popping up too
+    // many times, or when the user has already been warned, or when the library
+    // is being scanned.
     bool m_bInhibitOutputDeviceWarning;
 };
 
