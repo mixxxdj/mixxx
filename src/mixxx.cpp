@@ -552,6 +552,7 @@ MixxxMainWindow::~MixxxMainWindow() {
     WaveformWidgetFactory::destroy();
 
     delete m_pGuiTick;
+    delete m_pGuiTickCO;
 
     // Check for leaked ControlObjects and give warnings.
     QList<QSharedPointer<ControlDoublePrivate> > leakedControls;
