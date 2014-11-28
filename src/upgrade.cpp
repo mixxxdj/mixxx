@@ -384,7 +384,7 @@ bool Upgrade::askReScanLibrary() {
                       "Do you want to scan your library for cover files now?"));
     QPushButton* rescanButton = msgBox.addButton(
         QMessageBox::tr("Scan"), QMessageBox::AcceptRole);
-    msgBox.addButton(QMessageBox::tr("Not Now"), QMessageBox::RejectRole);
+    msgBox.addButton(QMessageBox::tr("Later"), QMessageBox::RejectRole);
     msgBox.setDefaultButton(rescanButton);
     msgBox.exec();
 
