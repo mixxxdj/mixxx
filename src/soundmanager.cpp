@@ -32,6 +32,7 @@
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "sampleutil.h"
 #include "util/cmdlineargs.h"
+#include "waveform/guitick.h"
 
 #ifdef __PORTAUDIO__
 typedef PaError (*SetJackClientName)(const char *name);
@@ -45,7 +46,8 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig,
           m_paInitialized(false),
           m_jackSampleRate(-1),
 #endif
-          m_pErrorDevice(NULL) {
+          m_pErrorDevice(NULL),
+          m_dOutputTickTime(0.0) {
 
 #ifdef __PORTAUDIO__
     qDebug() << "PortAudio version:" << Pa_GetVersion()
@@ -436,10 +438,6 @@ closeAndError:
     return err;
 }
 
-int SoundManager::connected() const {
-    return static_cast<int>(m_pControlObjectSoundStatusCO->get());
-}
-
 SoundDevice* SoundManager::getErrorDevice() const {
     return m_pErrorDevice;
 }
@@ -482,6 +480,10 @@ void SoundManager::checkConfig() {
 }
 
 void SoundManager::onDeviceOutputCallback(const unsigned int iFramesPerBuffer) {
+    // This tick time doesn't increase with every device callback, but it's
+    // good enough to check that the devices have gotten a callback in the last
+    // ~100ms or so.
+    m_dOutputTickTime = GuiTick::cpuTimeLastTick();
     // Produce a block of samples for output. EngineMaster expects stereo
     // samples so multiply iFramesPerBuffer by 2.
     m_pMaster->process(iFramesPerBuffer*2);
@@ -520,7 +522,6 @@ void SoundManager::readProcess() {
         }
     }
 }
-
 
 void SoundManager::registerOutput(AudioOutput output, AudioSource *src) {
     if (m_registeredSources.contains(output)) {

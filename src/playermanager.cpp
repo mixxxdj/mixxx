@@ -236,20 +236,6 @@ void PlayerManager::slotNumPreviewDecksControlChanged(double v) {
     }
 }
 
-void PlayerManager::slotDeckPlayChanged(double) {
-    qDebug() << "PLAY CHANGED";
-    if (!m_pSoundManager->connected()) {
-        QMessageBox::warning(
-                this,
-                tr("Mixxx"),
-                tr("There are no sound devices set up for playback.\n"
-                   "Please select a device in the sound hardware preferences first."),
-                QMessageBox::Ok, QMessageBox::Ok);
-//        m_pPrefDlg->show();
-//        m_pPrefDlg->showSoundHardwarePage();
-    }
-}
-
 void PlayerManager::addDeck() {
     QMutexLocker locker(&m_mutex);
     addDeckInner();
@@ -276,10 +262,6 @@ void PlayerManager::addDeckInner() {
 
     Deck* pDeck = new Deck(this, m_pConfig, m_pEngine, m_pEffectsManager,
                            orientation, group);
-    ControlObject* playControl =
-                ControlObject::getControl(ConfigKey(pDeck->getGroup(), "play"));
-    connect(playControl, SIGNAL(valueChanged(double)),
-            this, SLOT(slotDeckPlayChanged(double)));
     if (m_pAnalyserQueue) {
         connect(pDeck, SIGNAL(newTrackLoaded(TrackPointer)),
                 m_pAnalyserQueue, SLOT(slotAnalyseTrack(TrackPointer)));
