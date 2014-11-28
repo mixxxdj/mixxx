@@ -528,10 +528,12 @@
 }
 
 #RateSlider {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   padding-bottom: 2px;
 }
 
 #RateContainer3 {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   border: 1px solid #585858;
   border-right: 0px;
   border-top: 0px;
@@ -539,6 +541,7 @@
 }
 
 #RateContainer4 {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   border: 1px solid #585858;
   border-right: 0px;
   border-left: 0px;
@@ -547,12 +550,14 @@
 }
 
 #RateContainer1 {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   border: 1px solid #585858;
   border-right: 0px;
   padding: 3px;
 }
 
 #RateContainer2 {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   border: 1px solid #585858;
   border-right: 0px;
   border-left: 0px;
@@ -560,7 +565,7 @@
 }
 
 #RateAdjust {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
 #MicContainer {
