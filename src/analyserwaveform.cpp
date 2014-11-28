@@ -111,17 +111,17 @@ bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
 }
 
 bool AnalyserWaveform::loadStored(TrackPointer tio) const {
-    Waveform* waveform = tio->getWaveform();
-    Waveform* waveformSummary = tio->getWaveformSummary();
+    Waveform* pWaveform = tio->getWaveform();
+    Waveform* pWaveformSummary = tio->getWaveformSummary();
 
-    if (!waveform || !waveformSummary) {
+    if (!pWaveform || !pWaveformSummary) {
         qWarning() << "AnalyserWaveform::loadStored - no waveform/waveform summary";
         return false;
     }
 
     int trackId = tio->getId();
-    bool missingWaveform = waveform->getDataSize() == 0;
-    bool missingWavesummary = waveformSummary->getDataSize() == 0;
+    bool missingWaveform = pWaveform->getDataSize() == 0;
+    bool missingWavesummary = pWaveformSummary->getDataSize() == 0;
 
     if (trackId != -1 && (missingWaveform || missingWavesummary)) {
         QList<AnalysisDao::AnalysisInfo> analyses =
@@ -135,7 +135,7 @@ bool AnalyserWaveform::loadStored(TrackPointer tio) const {
             if (analysis.type == AnalysisDao::TYPE_WAVEFORM) {
                 vc = WaveformFactory::waveformVersionToVersionClass(analysis.version);
                 if (missingWaveform && vc == WaveformFactory::VC_USE) {
-                    if (WaveformFactory::updateWaveformFromAnalysis(waveform, analysis)) {
+                    if (WaveformFactory::updateWaveformFromAnalysis(pWaveform, analysis)) {
                         missingWaveform = false;
                     }
                 } else if (vc != WaveformFactory::VC_KEEP) {
@@ -145,7 +145,7 @@ bool AnalyserWaveform::loadStored(TrackPointer tio) const {
             } if (analysis.type == AnalysisDao::TYPE_WAVESUMMARY) {
                 vc = WaveformFactory::waveformSummaryVersionToVersionClass(analysis.version);
                 if (missingWavesummary && vc == WaveformFactory::VC_USE) {
-                    if (WaveformFactory::updateWaveformFromAnalysis(waveformSummary, analysis)) {
+                    if (WaveformFactory::updateWaveformFromAnalysis(pWaveformSummary, analysis)) {
                         tio->waveformSummaryNew();
                         missingWavesummary = false;
                     }

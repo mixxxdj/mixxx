@@ -20,6 +20,7 @@ Waveform::Waveform(const QByteArray data)
 
 Waveform::~Waveform() {
     delete m_mutex;
+    m_data.clear();
 }
 
 QByteArray Waveform::toByteArray() const {
