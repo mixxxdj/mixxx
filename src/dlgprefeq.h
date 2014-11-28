@@ -44,7 +44,8 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
   public slots:
     void slotEqEffectChangedOnDeck(int effectIndex);
     void slotQuickEffectChangedOnDeck(int effectIndex);
-    void slotAddComboBox(double numDecks);
+    void slotNumDecksChanged(double numDecks);
+    void slotSingleEqChecked(int checked);
     // Slot for toggling between advanced and basic views
     void slotPopulateDeckEffectSelectors();
     // Update Hi EQ
@@ -75,6 +76,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     void validate_levels();
     void updateBandFilter(int index, double value);
     void setUpMasterEQ();
+    void applySelections();
 
     ControlObjectSlave m_COLoFreq;
     ControlObjectSlave m_COHiFreq;
@@ -85,8 +87,9 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     EffectsManager* m_pEffectsManager;
     EqualizerRackPointer m_pEQEffectRack;
     QuickEffectRackPointer m_pQuickEffectRack;
+    QLabel* m_firstSelectorLabel;
     QList<QComboBox*> m_deckEqEffectSelectors;
-    QList<QComboBox*> m_deckFilterEffectSelectors;
+    QList<QComboBox*> m_deckQuickEffectSelectors;
     QList<bool> m_filterWaveformEffectLoaded;
     QList<ControlObject*> m_filterWaveformEnableCOs;
     ControlObjectSlave* m_pNumDecks;

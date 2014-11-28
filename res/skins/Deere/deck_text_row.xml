@@ -48,6 +48,7 @@
                       <Key>
                         <Group><Variable name="group"/></Group>
                         <SizePolicy>min,</SizePolicy>
+                        <DisplayCents>false</DisplayCents>
                         <Connection>
                           <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
                         </Connection>

@@ -62,7 +62,8 @@ class AutoDJProcessor : public QObject {
     AutoDJError toggleAutoDJ(bool enable);
 
   signals:
-    virtual void loadTrack(TrackPointer pTrack);
+    virtual void loadTrackToPlayer(TrackPointer pTrack, QString group,
+                                   bool play);
     virtual void transitionTimeChanged(int time);
     virtual void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
 
@@ -150,13 +151,17 @@ class AutoDJProcessor : public QObject {
     void setCrossfader(double value, bool right);
 
     TrackPointer getNextTrackFromQueue();
-    bool loadNextTrackFromQueue();
+    bool loadNextTrackFromQueue(const DeckAttributes& pDeck);
     void playerPositionChanged(DeckAttributes* pAttributes);
     void calculateFadeThresholds(DeckAttributes* pAttributes);
 
     // Removes the track loaded to the player group from the top of the AutoDJ
     // queue if it is present.
     bool removeLoadedTrackFromTopOfQueue(const QString& group);
+
+    // Removes the provided track from the top of the AutoDJ queue if it is
+    // present.
+    bool removeTrackFromTopOfQueue(TrackPointer pTrack);
 
     ConfigObject<ConfigValue>* m_pConfig;
     PlaylistTableModel* m_pAutoDJTableModel;

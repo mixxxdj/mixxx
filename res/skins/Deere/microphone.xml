@@ -18,42 +18,17 @@
         <SetVariable name="talk_text">Talk<Variable name="i"/></SetVariable>
       </Template>
 
-      <PushButton>
-        <ObjectName>DeckMute</ObjectName>
-        <Size>40f,20f</Size>
-        <NumberStates>2</NumberStates>
-        <State>
-          <Number>0</Number>
-          <Text>MUTE</Text>
-        </State>
-        <State>
-          <Number>1</Number>
-          <Text>MUTE</Text>
-        </State>
-        <Connection>
-          <ConfigKey>[Microphone<Variable name="i"/>],mute</ConfigKey>
-          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-          <ButtonState>LeftButton</ButtonState>
-        </Connection>
-      </PushButton>
-
       <Template src="skin:vumeter.xml">
         <SetVariable name="group">[Microphone<Variable name="i"/>]</SetVariable>
         <SetVariable name="control">VuMeter</SetVariable>
       </Template>
 
-      <Template src="skin:knob.xml">
+      <Template src="skin:knob_with_button.xml">
         <SetVariable name="group">[Microphone<Variable name="i"/>]</SetVariable>
         <SetVariable name="control">pregain</SetVariable>
+        <SetVariable name="button_control">mute</SetVariable>
         <SetVariable name="label">Gain</SetVariable>
       </Template>
-
-      <Template src="skin:knob.xml">
-        <SetVariable name="group">[Microphone<Variable name="i"/>]</SetVariable>
-        <SetVariable name="control">volume</SetVariable>
-        <SetVariable name="label">Volume</SetVariable>
-      </Template>
-
     </Children>
   </WidgetGroup>
 </Template>

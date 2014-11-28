@@ -91,7 +91,6 @@
                         <TooltipId>channel_volume</TooltipId>
                         <Handle>knob_volume1.png</Handle>
                         <Slider>slider_volume1.png</Slider>
-                        <Pos>26,153</Pos>
                         <Horizontal>false</Horizontal>
                         <Connection>
                           <ConfigKey>[Channel<Variable name="channum"/>],volume</ConfigKey>

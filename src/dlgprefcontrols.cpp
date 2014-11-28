@@ -37,6 +37,8 @@
 #include "mixxx.h"
 #include "defs_urls.h"
 
+const int kDefaultRowHeight = 20;
+
 DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
                                  SkinLoader* pSkinLoader,
                                  PlayerManager* pPlayerManager,
@@ -47,8 +49,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
            m_pSkinLoader(pSkinLoader),
            m_pPlayerManager(pPlayerManager),
            m_iNumConfiguredDecks(0),
-           m_iNumConfiguredSamplers(0), 
-           m_bPitchAutoReset(false) {
+           m_iNumConfiguredSamplers(0),
+           m_rebootNotifiedRowHeight(false) {
     setupUi(this);
 
     m_pNumDecks = new ControlObjectSlave("[Master]", "num_decks", this);
@@ -78,6 +80,14 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     }
     connect(ComboBoxPosition, SIGNAL(activated(int)),
             this, SLOT(slotSetPositionDisplay(int)));
+
+    // Set default direction as stored in config file
+    int rowHeight = m_pConfig->getValueString(ConfigKey("[Library]","RowHeight"),
+            QString::number(kDefaultRowHeight)).toInt();
+    spinBoxRowHeight->setValue(rowHeight);
+    connect(spinBoxRowHeight, SIGNAL(valueChanged(int)),
+            this, SLOT(slotRowHeightValueChanged(int)));
+
 
     // Set default direction as stored in config file
     if (m_pConfig->getValueString(ConfigKey("[Controls]","RateDir")).length() == 0)
@@ -325,12 +335,6 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     SliderRateRampSensitivity->setValue(m_pConfig->getValueString(
             ConfigKey("[Controls]", "RateRampSensitivity")).toInt());
 
-    // Update Speed/Pitch checker box 
-    connect(CheckBoxPitchAutoReset, SIGNAL(stateChanged(int)), this, SLOT(slotUpdatePitchAutoReset(int)));
-    m_bPitchAutoReset = static_cast<bool>(m_pConfig->getValueString(
-            ConfigKey("[Mixer Profile]", "PitchAutoReset")).toInt());
-    CheckBoxPitchAutoReset->setChecked(m_bPitchAutoReset);
-    
     slotUpdate();
 }
 
@@ -382,8 +386,10 @@ void DlgPrefControls::slotUpdate() {
         ComboBoxRateDir->setCurrentIndex(0);
     else
         ComboBoxRateDir->setCurrentIndex(1);
-    
-    CheckBoxPitchAutoReset->setChecked(m_bPitchAutoReset);
+
+    int rowHeight = m_pConfig->getValueString(ConfigKey("[Library]","RowHeight"),
+            QString::number(kDefaultRowHeight)).toInt();
+    spinBoxRowHeight->setValue(rowHeight);
 }
 
 void DlgPrefControls::slotResetToDefaults() {
@@ -425,10 +431,8 @@ void DlgPrefControls::slotResetToDefaults() {
     spinBoxTempRateRight->setValue(2.0);
     spinBoxPermRateLeft->setValue(0.50);
     spinBoxPermRateRight->setValue(0.05);
-    
-    // Pitch auto reset default un-checked.
-    m_bPitchAutoReset = false;
-    CheckBoxPitchAutoReset->setChecked(Qt::Unchecked);
+
+    spinBoxRowHeight->setValue(kDefaultRowHeight);
 }
 
 void DlgPrefControls::slotSetLocale(int pos) {
@@ -600,13 +604,15 @@ void DlgPrefControls::slotApply() {
     m_pConfig->set(ConfigKey("[Controls]","RateRange"), ConfigValue((int)idx));
 
     // Write rate direction to config file
-    if (deck1RateDir == 1)
+    if (deck1RateDir == 1) {
         m_pConfig->set(ConfigKey("[Controls]","RateDir"), ConfigValue(0));
-    else
+    } else {
         m_pConfig->set(ConfigKey("[Controls]","RateDir"), ConfigValue(1));
-    
-    m_pConfig->set(ConfigKey("[Mixer Profile]","PitchAutoReset"),
-            ConfigValue(m_bPitchAutoReset ? 1 : 0));
+    }
+
+    int rowHeight = spinBoxRowHeight->value();
+    m_pConfig->set(ConfigKey("[Library]","RowHeight"),
+            ConfigValue(rowHeight));
 
 }
 
@@ -689,6 +695,10 @@ void DlgPrefControls::slotNumSamplersChanged(double new_count) {
     slotSetRateRange(m_pConfig->getValueString(ConfigKey("[Controls]","RateRange")).toInt());
 }
 
-void DlgPrefControls::slotUpdatePitchAutoReset(int i) {
-    m_bPitchAutoReset = static_cast<bool>(i);
+void DlgPrefControls::slotRowHeightValueChanged(int height) {
+    Q_UNUSED(height);
+    if(!m_rebootNotifiedRowHeight) {
+        notifyRebootNecessary();
+        m_rebootNotifiedRowHeight = true;
+    }
 }

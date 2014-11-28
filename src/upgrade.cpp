@@ -330,7 +330,7 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
     if (configVersion.startsWith("1.11")) {
         qDebug() << "Upgrading from v1.11.x...";
 
-        // UPGRADE TO THE MULTI LIBRARY FOLDER SETTIGNS
+        // upgrade to the multi library folder settings
         QString currentFolder = config->getValueString(PREF_LEGACY_LIBRARY_DIR);
         // to migrate the DB just add the current directory to the new
         // directories table
@@ -344,6 +344,13 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
         // the config settings path and this function is what loads the config
         // so it's not ready yet.
         bool successful = directoryDAO.addDirectory(currentFolder);
+
+        // ask for library rescan to activate cover art. We can later ask for
+        // this variable when the library scanner is constructed.
+        m_bRescanLibrary = askReScanLibrary();
+
+        // if everything until here worked fine we can mark the configuration as
+        // updated
         if (successful) {
             configVersion = VERSION;
             m_bUpgraded = true;
@@ -352,11 +359,6 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
         else {
             qDebug() << "Upgrade failed!\n";
         }
-
-        // ASK FOR LIBRARY RESCAN TO ACTIVATE COVER ART
-        // we can later ask for this variable when the library scanner is
-        // constructed.
-        m_bRescanLibrary = askReScanLibrary();
     }
 
     if (configVersion == VERSION) qDebug() << "Configuration file is now at the current version" << VERSION;
@@ -382,7 +384,7 @@ bool Upgrade::askReScanLibrary() {
                       "Do you want to scan your library for cover files now?"));
     QPushButton* rescanButton = msgBox.addButton(
         QMessageBox::tr("Scan"), QMessageBox::AcceptRole);
-    msgBox.addButton(QMessageBox::Cancel);
+    msgBox.addButton(QMessageBox::tr("Later"), QMessageBox::RejectRole);
     msgBox.setDefaultButton(rescanButton);
     msgBox.exec();
 

@@ -72,7 +72,7 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     void slotNumDecksChanged(double);
     void slotNumSamplersChanged(double);
 
-    void slotUpdatePitchAutoReset(int i); 
+    void slotRowHeightValueChanged(int);
 
   private:
     void notifyRebootNecessary();
@@ -92,8 +92,8 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
 
     int m_iNumConfiguredDecks;
     int m_iNumConfiguredSamplers;
-    
-    bool m_bPitchAutoReset;
+
+    bool m_rebootNotifiedRowHeight;
 };
 
 #endif
