@@ -75,6 +75,7 @@
                 <ObjectName>EffectKnob</ObjectName>
                 <Children>
                      <WidgetGroup>
+                         <ObjectName>AlignCenterTop</ObjectName>
                          <Layout>horizontal</Layout>
                          <SizePolicy>min,min</SizePolicy>
                          <Children>
@@ -87,10 +88,12 @@
                              </Knob>
                          </Children>
                      </WidgetGroup>
-                     <Label>
-                          <ObjectName>KnobLabel</ObjectName>
-                          <Text>Quick Effect</Text>
-                     </Label>
+                     <EffectName>
+                         <ObjectName>KnobLabel</ObjectName>
+                         <EffectRackGroup>[QuickEffectRack1]</EffectRackGroup>
+                         <EffectUnitGroup>[QuickEffectRack1_[Channel<Variable name="channum"/>]]</EffectUnitGroup>
+                         <Effect>1</Effect>
+                     </EffectName>
                  </Children>
             </WidgetGroup>
 			<WidgetGroup>
