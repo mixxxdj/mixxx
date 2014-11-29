@@ -444,7 +444,7 @@ void DlgPrefControls::slotResetToDefaults() {
 
     spinBoxRowHeight->setValue(kDefaultRowHeight);
 
-    // Pitch auto reset default un-checked.
+    // Speed auto reset checkbox default un-checked.
     m_bSpeedAutoReset = false;
     CheckBoxSpeedAutoReset->setChecked(Qt::Unchecked);
 }
