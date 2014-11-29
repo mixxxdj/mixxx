@@ -124,7 +124,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     QMenu* speedMenu = addSubmenu(tr("Speed (Pitch/Tempo)"));
     addDeckAndSamplerControl("keylock", tr("Keylock Mode"),
                              tr("Toggle keylock mode"), speedMenu);
-    addDeckAndSamplerControl("rate", tr("Playback Speed Slider"),
+    addDeckAndSamplerControl("rate", tr("Playback Speed"),
                              tr("Playback speed control slider"), speedMenu, true);
     addDeckAndSamplerControl("pitch", tr("Pitch Slider (Musical key)"),
                              tr("Pitch control slider (does not affect tempo)"), speedMenu, true);
