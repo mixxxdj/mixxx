@@ -9,10 +9,11 @@
 #include "trackinfoobject.h"
 #include "configobject.h"
 #include "library/playlisttablemodel.h"
+#include "engine/enginechannel.h"
+#include "controlobjectthread.h"
+#include "controlobjectslave.h"
 
-class ControlObjectThread;
 class ControlPushButton;
-class ControlObjectSlave;
 class TrackCollection;
 
 class AutoDJProcessor : public QObject {
@@ -61,7 +62,8 @@ class AutoDJProcessor : public QObject {
     AutoDJError toggleAutoDJ(bool enable);
 
   signals:
-    virtual void loadTrack(TrackPointer pTrack);
+    virtual void loadTrackToPlayer(TrackPointer pTrack, QString group,
+                                   bool play);
     virtual void transitionTimeChanged(int time);
     virtual void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
 
@@ -75,6 +77,72 @@ class AutoDJProcessor : public QObject {
     void controlSkipNext(double value);
 
   private:
+    struct DeckAttributes {
+        DeckAttributes(int index,
+                       const QString& group,
+                       EngineChannel::ChannelOrientation orientation)
+                : index(index),
+                  group(group),
+                  orientation(orientation),
+                  pPlayPos(new ControlObjectThread(group, "playposition")),
+                  pPlay(new ControlObjectThread(group, "play")),
+                  pRepeat(new ControlObjectSlave(group, "repeat")),
+                  posThreshold(1.0),
+                  fadeDuration(0.0) {
+        }
+
+        ~DeckAttributes() {
+            delete pPlayPos;
+            delete pPlay;
+            delete pRepeat;
+        }
+
+        bool isLeft() const {
+            return orientation == EngineChannel::LEFT;
+        }
+
+        bool isRight() const {
+            return orientation == EngineChannel::RIGHT;
+        }
+
+        bool isPlaying() const {
+            return pPlay->get() > 0.0;
+        }
+
+        void stop() {
+            pPlay->set(0.0);
+        }
+
+        void play() {
+            pPlay->set(1.0);
+        }
+
+        double playPosition() const {
+            return pPlayPos->get();
+        }
+
+        void setPlayPosition(double playpos) {
+            pPlayPos->set(playpos);
+        }
+
+        bool isRepeat() const {
+            return pRepeat->get() > 0.0;
+        }
+
+        void setRepeat(bool enabled) {
+            pRepeat->set(enabled ? 1.0 : 0.0);
+        }
+
+        int index;
+        QString group;
+        EngineChannel::ChannelOrientation orientation;
+        ControlObjectThread* pPlayPos;
+        ControlObjectThread* pPlay;
+        ControlObjectSlave* pRepeat;
+        double posThreshold;
+        double fadeDuration;
+    };
+
     // Gets or sets the crossfader position while normalizing it so that -1 is
     // all the way mixed to the left side and 1 is all the way mixed to the
     // right side. (prevents AutoDJ logic from having to check for hamster mode
@@ -83,27 +151,25 @@ class AutoDJProcessor : public QObject {
     void setCrossfader(double value, bool right);
 
     TrackPointer getNextTrackFromQueue();
-    bool loadNextTrackFromQueue();
+    bool loadNextTrackFromQueue(const DeckAttributes& pDeck);
+    void playerPositionChanged(DeckAttributes* pAttributes);
+    void calculateFadeThresholds(DeckAttributes* pAttributes);
 
     // Removes the track loaded to the player group from the top of the AutoDJ
     // queue if it is present.
     bool removeLoadedTrackFromTopOfQueue(const QString& group);
+
+    // Removes the provided track from the top of the AutoDJ queue if it is
+    // present.
+    bool removeTrackFromTopOfQueue(TrackPointer pTrack);
 
     ConfigObject<ConfigValue>* m_pConfig;
     PlaylistTableModel* m_pAutoDJTableModel;
 
     AutoDJState m_eState;
     int m_iTransitionTime;
-    int m_iBackupTransitionTime;
 
-    struct DeckAttributes {
-        ControlObjectThread* pPlayPos;
-        ControlObjectThread* pPlay;
-        ControlObjectSlave* pRepeat;
-        double posThreshold;
-        double fadeDuration;
-    };
-    QList<DeckAttributes> m_decks;
+    QList<DeckAttributes*> m_decks;
 
     QSignalMapper m_playPosMapper;
     QSignalMapper m_playMapper;

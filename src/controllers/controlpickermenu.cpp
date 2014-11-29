@@ -31,10 +31,10 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     // Master Controls
     QMenu* mixerMenu = addSubmenu(tr("Mixer"));
     addControl("[Master]", "crossfader", tr("Crossfader"), tr("Master crossfader"), mixerMenu, true);
-    addControl("[Master]", "volume", tr("Master Volume"), tr("Master volume"), mixerMenu, true);
+    addControl("[Master]", "gain", tr("Master Gain"), tr("Master gain"), mixerMenu, true);
     addControl("[Master]", "balance", tr("Master Balance"), tr("Master balance"), mixerMenu, true);
     addControl("[Master]", "delay", tr("Master Delay"), tr("Master delay"), mixerMenu, true);
-    addControl("[Master]", "headVolume", tr("Headphone Volume"), tr("Headphone volume"), mixerMenu, true);
+    addControl("[Master]", "headGain", tr("Headphone Gain"), tr("Headphone gain"), mixerMenu, true);
     addControl("[Master]", "headMix", tr("Headphone Mix"), tr("Headphone mix (pre/main)"), mixerMenu, true);
     addControl("[Master]", "headSplit", tr("Headphone Split Cue"), tr("Toggle headphone split cueing"), mixerMenu);
     addControl("[Master]", "headDelay", tr("Headphone Delay"), tr("Headphone delay"), mixerMenu, true);
@@ -602,6 +602,10 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                tr("Auxiliary on/off"),
                                microphoneMenu,
                                false, true);
+    addMicrophoneAndAuxControl("pregain",
+                               tr("Gain"),
+                               tr("Gain knob"), microphoneMenu,
+                               true, true, true);
     addMicrophoneAndAuxControl("volume",
                                tr("Volume Fader"),
                                tr("Volume Fader"), microphoneMenu,

@@ -14,7 +14,7 @@
                    <WidgetGroup>
                        <ObjectName>RateAdjust</ObjectName>
                        <Layout>vertical</Layout>
-                       <SizePolicy>min,me</SizePolicy>
+                       <SizePolicy>min,min</SizePolicy>
 	                   <Children>
                            <WidgetGroup>
                                <Layout>horizontal</Layout>

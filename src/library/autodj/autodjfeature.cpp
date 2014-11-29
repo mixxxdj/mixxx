@@ -10,6 +10,7 @@
 
 #include "library/autodj/autodjfeature.h"
 
+#include "library/parser.h"
 #include "library/autodj/autodjprocessor.h"
 #include "library/trackcollection.h"
 #include "dlgautodj.h"
@@ -49,8 +50,8 @@ AutoDJFeature::AutoDJFeature(QObject* parent,
     qRegisterMetaType<AutoDJProcessor::AutoDJState>("AutoDJState");
     m_pAutoDJProcessor = new AutoDJProcessor(
             this, m_pConfig, m_iAutoDJPlaylistId, m_pTrackCollection);
-    connect(m_pAutoDJProcessor, SIGNAL(loadTrack(TrackPointer)),
-            this, SIGNAL(loadTrack(TrackPointer)));
+    connect(m_pAutoDJProcessor, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
+            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
 
 #ifdef __AUTODJCRATES__
 
@@ -139,7 +140,6 @@ void AutoDJFeature::activate() {
 }
 
 bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
-    //TODO: Filter by supported formats regex and reject anything that doesn't match.
     TrackDAO &trackDao = m_pTrackCollection->getTrackDAO();
 
     // If a track is dropped onto a playlist's name, but the track isn't in the
@@ -154,7 +154,6 @@ bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
         trackIds = trackDao.addTracks(files, true);
     }
 
-    int playlistId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
     // remove tracks that could not be added
     for (int trackId = 0; trackId < trackIds.size(); trackId++) {
         if (trackIds.at(trackId) < 0) {
@@ -163,12 +162,13 @@ bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     }
 
     // Return whether the tracks were appended.
-    return m_playlistDao.appendTracksToPlaylist(trackIds, playlistId);
+    return m_playlistDao.appendTracksToPlaylist(trackIds, m_iAutoDJPlaylistId);
 }
 
 bool AutoDJFeature::dragMoveAccept(QUrl url) {
     QFileInfo file(url.toLocalFile());
-    return SoundSourceProxy::isFilenameSupported(file.fileName());
+    return SoundSourceProxy::isFilenameSupported(file.fileName()) ||
+            Parser::isPlaylistFilenameSupported(file.fileName());
 }
 
 // Add a crate to the auto-DJ queue.

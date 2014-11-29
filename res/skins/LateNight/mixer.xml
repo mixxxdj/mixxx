@@ -205,11 +205,11 @@
                                       <ObjectName>MasterKnobCol</ObjectName>
                                       <Children>
                                         <Knob>
-                                          <TooltipId>master_volume</TooltipId>
+                                          <TooltipId>master_gain</TooltipId>
                                           <NumberStates>64</NumberStates>
                                           <Path>knobs/knob_rotary_s%1.png</Path>
                                           <Connection>
-                                              <ConfigKey>[Master],volume</ConfigKey>
+                                              <ConfigKey>[Master],gain</ConfigKey>
                                           </Connection>
                                         </Knob>
                                         <Label>
@@ -236,16 +236,16 @@
                                       <ObjectName>MasterKnobCol</ObjectName>
                                       <Children>
                                           <Knob>
-                                              <TooltipId>headphone_volume</TooltipId>
+                                              <TooltipId>headphone_gain</TooltipId>
                                               <NumberStates>64</NumberStates>
                                               <Path>knobs/knob_rotary_s%1.png</Path>
                                               <Connection>
-                                                  <ConfigKey>[Master],headVolume</ConfigKey>
+                                                  <ConfigKey>[Master],headGain</ConfigKey>
                                               </Connection>
                                           </Knob>
                                           <Label>
                                               <ObjectName>KnobLabel</ObjectName>
-                                              <Text>Head Vol</Text>
+                                              <Text>Head Gain</Text>
                                           </Label>
                                           <Knob>
                                               <TooltipId>headMix</TooltipId>

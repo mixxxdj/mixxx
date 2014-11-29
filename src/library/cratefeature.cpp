@@ -149,7 +149,7 @@ bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
     qDebug() << "CrateFeature::dropAcceptChild adding tracks"
             << trackIds.size() << " to crate "<< crateId;
     // remove tracks that could not be added
-    for (int trackId =0; trackId<trackIds.size() ; trackId++) {
+    for (int trackId = 0; trackId < trackIds.size(); ++trackId) {
         if (trackIds.at(trackId) < 0) {
             trackIds.removeAt(trackId--);
         }
@@ -159,14 +159,14 @@ bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
 }
 
 bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
-    //TODO: Filter by supported formats regex and reject anything that doesn't match.
     int crateId = crateIdFromIndex(index);
     if (crateId == -1) {
         return false;
     }
     bool locked = m_crateDao.isCrateLocked(crateId);
     QFileInfo file(url.toLocalFile());
-    bool formatSupported = SoundSourceProxy::isFilenameSupported(file.fileName());
+    bool formatSupported = SoundSourceProxy::isFilenameSupported(file.fileName()) ||
+            Parser::isPlaylistFilenameSupported(file.fileName());
     return !locked && formatSupported;
 }
 

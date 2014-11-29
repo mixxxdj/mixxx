@@ -9,6 +9,40 @@
     <Layout>horizontal</Layout>
     <SizePolicy>me,f</SizePolicy>
     <Children>
+
+      <WidgetGroup>
+        <ObjectName>NotificationsContainer</ObjectName>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Label>
+            <Size>60f,20f</Size>
+            <Text>Recording ✓</Text>
+            <Connection>
+              <ConfigKey>[Recording],status</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </Label>
+
+          <Label>
+            <Size>60f,20f</Size>
+            <Text>AutoDJ ✓</Text>
+            <Connection>
+              <ConfigKey>[AutoDJ],enabled</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </Label>
+
+          <Label>
+            <Size>60f,20f</Size>
+            <Text>Broadcasting ✓</Text>
+            <Connection>
+              <ConfigKey>[Shoutcast],status</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </Label>
+        </Children>
+      </WidgetGroup>
+
       <PushButton>
         <Size>40f,20f</Size>
         <NumberStates>2</NumberStates>
@@ -75,6 +109,8 @@
         </Connection>
       </PushButton>
 
+      <Template src="skin:spacer_h.xml"></Template>
+
       <WidgetGroup>
         <ObjectName>MasterControls</ObjectName>
         <SizePolicy>min,min</SizePolicy>
@@ -88,8 +124,8 @@
 
           <Template src="skin:knob_label_horizontal.xml">
             <SetVariable name="group">[Master]</SetVariable>
-            <SetVariable name="control">headVolume</SetVariable>
-            <SetVariable name="label">Head Vol</SetVariable>
+            <SetVariable name="control">headGain</SetVariable>
+            <SetVariable name="label">Head Gain</SetVariable>
           </Template>
         </Children>
       </WidgetGroup>
@@ -127,8 +163,8 @@
 
           <Template src="skin:knob_label_horizontal.xml">
             <SetVariable name="group">[Master]</SetVariable>
-            <SetVariable name="control">volume</SetVariable>
-            <SetVariable name="label">Volume</SetVariable>
+            <SetVariable name="control">gain</SetVariable>
+            <SetVariable name="label">Gain</SetVariable>
           </Template>
 
         </Children>
@@ -152,12 +188,25 @@
           </Children>
       </WidgetGroup>
 
-      <Time>
-        <ObjectName>Time</ObjectName>
-        <Size>60f,20f</Size>
-        <TooltipId>time</TooltipId>
-        <ShowSeconds>false</ShowSeconds>
-      </Time>
+     <WidgetGroup>
+        <ObjectName></ObjectName>
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>vertical</Layout>
+        <Children>
+          <Time>
+            <ObjectName>Time</ObjectName>
+            <Size>60f,20f</Size>
+            <TooltipId>time</TooltipId>
+            <ShowSeconds>false</ShowSeconds>
+          </Time>
+
+         <Template src="skin:vumeter_latency.xml">
+           <SetVariable name="TooltipId">audio_latency_usage</SetVariable>
+           <SetVariable name="group">[Master]</SetVariable>
+           <SetVariable name="control">audio_latency_usage</SetVariable>
+         </Template>
+        </Children>
+      </WidgetGroup>
 
     </Children>
   </WidgetGroup>

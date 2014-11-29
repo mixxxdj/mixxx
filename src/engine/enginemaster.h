@@ -217,8 +217,8 @@ class EngineMaster : public QObject, public AudioSource {
     EngineWorkerScheduler* m_pWorkerScheduler;
     EngineSync* m_pMasterSync;
 
-    ControlObject* m_pMasterVolume;
-    ControlObject* m_pHeadVolume;
+    ControlObject* m_pMasterGain;
+    ControlObject* m_pHeadGain;
     ControlObject* m_pMasterSampleRate;
     ControlObject* m_pMasterLatency;
     ControlObject* m_pMasterAudioBufferSize;

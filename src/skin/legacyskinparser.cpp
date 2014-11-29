@@ -987,14 +987,14 @@ QWidget* LegacySkinParser::parseEngineKey(QDomElement node) {
 
 QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
     QString channelStr = lookupNodeGroup(node);
-    const char* pSafeChannelStr = safeChannelString(channelStr);
     if (CmdlineArgs::Instance().getSafeMode()) {
         WLabel* dummy = new WLabel(m_pParent);
         //: Shown when Mixxx is running in safe mode.
         dummy->setText(tr("Safe Mode Enabled"));
         return dummy;
     }
-    WSpinny* spinny = new WSpinny(m_pParent, m_pVCManager);
+    WSpinny* spinny = new WSpinny(m_pParent, channelStr, m_pConfig,
+                                  m_pVCManager);
     if (!spinny->isValid()) {
         delete spinny;
         WLabel* dummy = new WLabel(m_pParent);
@@ -1018,7 +1018,7 @@ QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
         spinny->slotLoadTrack(pPlayer->getLoadedTrack());
     }
 
-    spinny->setup(node, *m_pContext, pSafeChannelStr);
+    spinny->setup(node, *m_pContext);
     spinny->installEventFilter(m_pKeyboard);
     spinny->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
     spinny->Init();

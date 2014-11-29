@@ -49,7 +49,7 @@
             <SetVariable name="state_0_text">RELOOP</SetVariable>
             <SetVariable name="state_0_pressed"></SetVariable>
             <SetVariable name="state_0_unpressed"></SetVariable>
-            <SetVariable name="state_1_text">RELOOP</SetVariable>
+            <SetVariable name="state_1_text">EXIT</SetVariable>
             <SetVariable name="state_1_pressed"></SetVariable>
             <SetVariable name="state_1_unpressed"></SetVariable>
             <SetVariable name="left_connection_control"><Variable name="group"/>,reloop_exit</SetVariable>

@@ -35,20 +35,19 @@
             <EffectUnitGroup><Variable name="EqualizerEffectUnitGroup"/></EffectUnitGroup>
             <Effect><Variable name="EffectNumber"/></Effect>
             <EffectButtonParameter><Variable name="parameter"/></EffectButtonParameter>
-
             <NumberStates>2</NumberStates>
-	    <State>
-	      <Number>0</Number>
+            <State>
+              <Number>0</Number>
               <Text>O</Text>
-	    </State>
-	    <State>
-	      <Number>1</Number>
+            </State>
+            <State>
+              <Number>1</Number>
               <Text>K</Text>
-	    </State>
+            </State>
             <Connection>
-	      <ConfigKey><Variable name="EqualizerEffectGroup"/>,button_parameter<Variable name="parameter"/></ConfigKey>
-	      <ButtonState>LeftButton</ButtonState>
-	    </Connection>
+              <ConfigKey><Variable name="EqualizerEffectGroup"/>,button_parameter<Variable name="parameter"/></ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
           </EffectPushButton>
           <EffectParameterName>
             <Size>30f,10f</Size>
