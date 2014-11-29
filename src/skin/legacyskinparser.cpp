@@ -1711,13 +1711,17 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
             QString property = m_pContext->selectString(con, "BindProperty");
             //qDebug() << "Making property connection for" << property;
 
+            QDomElement bind = m_pContext->selectElement(con, "BindProperty");
+            bool invert = m_pContext->selectAttributeBool(bind, "invert", false);
+
             ControlObjectSlave* pControlWidget =
                     new ControlObjectSlave(control->getKey(),
                                            pWidget->toQWidget());
 
             ControlWidgetPropertyConnection* pConnection =
                     new ControlWidgetPropertyConnection(pWidget, pControlWidget,
-                                                        pTransformer, property);
+                                                        pTransformer, property,
+                                                        invert);
             pWidget->addPropertyConnection(pConnection);
 
             // If we created this control, bind it to the

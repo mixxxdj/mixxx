@@ -104,9 +104,11 @@ void ControlParameterWidgetConnection::setControlParameterUp(double v) {
 ControlWidgetPropertyConnection::ControlWidgetPropertyConnection(WBaseWidget* pBaseWidget,
                                                                  ControlObjectSlave* pControl,
                                                                  ValueTransformer* pTransformer,
-                                                                 const QString& propertyName)
+                                                                 const QString& propertyName,
+                                                                 bool invert)
         : ControlWidgetConnection(pBaseWidget, pControl, pTransformer),
-          m_propertyName(propertyName.toAscii()) {
+          m_propertyName(propertyName.toAscii()),
+          m_invert(invert) {
     slotControlValueChanged(m_pControl->get());
 }
 
@@ -127,6 +129,9 @@ void ControlWidgetPropertyConnection::slotControlValueChanged(double v) {
     QVariant property = pWidget->property(m_propertyName.constData());
     if (property.type() == QVariant::Bool) {
         parameter = getControlParameterForValue(v) > 0;
+        if (m_invert) {
+            parameter = !(parameter.toBool());
+        }
     } else {
         parameter = getControlParameterForValue(v);
     }

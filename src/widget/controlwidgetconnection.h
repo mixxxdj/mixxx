@@ -127,7 +127,8 @@ class ControlWidgetPropertyConnection : public ControlWidgetConnection {
     ControlWidgetPropertyConnection(WBaseWidget* pBaseWidget,
                                     ControlObjectSlave* pControl,
                                     ValueTransformer* pTransformer,
-                                    const QString& property);
+                                    const QString& property,
+                                    bool invert);
     virtual ~ControlWidgetPropertyConnection();
 
     QString toDebugString() const;
@@ -137,6 +138,7 @@ class ControlWidgetPropertyConnection : public ControlWidgetConnection {
 
   private:
     QByteArray m_propertyName;
+    bool m_invert;
 };
 
 #endif /* CONTROLWIDGETCONNECTION_H */
