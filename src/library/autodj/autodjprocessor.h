@@ -27,39 +27,39 @@ class DeckAttributes : public QObject {
     virtual ~DeckAttributes();
 
     bool isLeft() const {
-        return orientation == EngineChannel::LEFT;
+        return m_orientation == EngineChannel::LEFT;
     }
 
     bool isRight() const {
-        return orientation == EngineChannel::RIGHT;
+        return m_orientation == EngineChannel::RIGHT;
     }
 
     bool isPlaying() const {
-        return pPlay->get() > 0.0;
+        return m_pPlay->get() > 0.0;
     }
 
     void stop() {
-        pPlay->set(0.0);
+        m_pPlay->set(0.0);
     }
 
     void play() {
-        pPlay->set(1.0);
+        m_pPlay->set(1.0);
     }
 
     double playPosition() const {
-        return pPlayPos->get();
+        return m_pPlayPos->get();
     }
 
     void setPlayPosition(double playpos) {
-        pPlayPos->set(playpos);
+        m_pPlayPos->set(playpos);
     }
 
     bool isRepeat() const {
-        return pRepeat->get() > 0.0;
+        return m_pRepeat->get() > 0.0;
     }
 
     void setRepeat(bool enabled) {
-        pRepeat->set(enabled ? 1.0 : 0.0);
+        m_pRepeat->set(enabled ? 1.0 : 0.0);
     }
 
     TrackPointer getLoadedTrack() const;
@@ -81,14 +81,14 @@ class DeckAttributes : public QObject {
   public:
     int index;
     QString group;
-    EngineChannel::ChannelOrientation orientation;
-    ControlObjectThread* pPlayPos;
-    ControlObjectThread* pPlay;
-    ControlObjectSlave* pRepeat;
     double posThreshold;
     double fadeDuration;
 
   private:
+    EngineChannel::ChannelOrientation m_orientation;
+    ControlObjectThread* m_pPlayPos;
+    ControlObjectThread* m_pPlay;
+    ControlObjectSlave* m_pRepeat;
     BaseTrackPlayer* m_pPlayer;
 };
 

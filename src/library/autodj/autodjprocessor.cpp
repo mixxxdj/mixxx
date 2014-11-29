@@ -19,29 +19,29 @@ DeckAttributes::DeckAttributes(int index,
                                EngineChannel::ChannelOrientation orientation)
         : index(index),
           group(pPlayer->getGroup()),
-          orientation(orientation),
-          pPlayPos(new ControlObjectThread(group, "playposition")),
-          pPlay(new ControlObjectThread(group, "play")),
-          pRepeat(new ControlObjectSlave(group, "repeat")),
           posThreshold(1.0),
           fadeDuration(0.0),
+          m_orientation(orientation),
+          m_pPlayPos(new ControlObjectThread(group, "playposition")),
+          m_pPlay(new ControlObjectThread(group, "play")),
+          m_pRepeat(new ControlObjectSlave(group, "repeat")),
           m_pPlayer(pPlayer) {
-    connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
+    connect(m_pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
             this, SLOT(slotTrackLoaded(TrackPointer)));
-    connect(pPlayer, SIGNAL(loadTrackFailed(TrackPointer)),
+    connect(m_pPlayer, SIGNAL(loadTrackFailed(TrackPointer)),
             this, SLOT(slotTrackLoadFailed(TrackPointer)));
-    connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
+    connect(m_pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
             this, SLOT(slotTrackUnloaded(TrackPointer)));
-    connect(pPlayPos, SIGNAL(valueChanged(double)),
+    connect(m_pPlayPos, SIGNAL(valueChanged(double)),
             this, SLOT(slotPlayPosChanged(double)));
-    connect(pPlay, SIGNAL(valueChanged(double)),
+    connect(m_pPlay, SIGNAL(valueChanged(double)),
             this, SLOT(slotPlayChanged(double)));
 }
 
 DeckAttributes::~DeckAttributes() {
-    delete pPlayPos;
-    delete pPlay;
-    delete pRepeat;
+    delete m_pPlayPos;
+    delete m_pPlay;
+    delete m_pRepeat;
 }
 
 void DeckAttributes::slotPlayChanged(double v) {
