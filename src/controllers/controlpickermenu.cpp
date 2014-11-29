@@ -135,14 +135,14 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckAndSamplerControl("rate_perm_down", tr("Decrease Speed"), tr("Adjust speed down (coarse)"), speedMenu);
     addDeckAndSamplerControl("rate_perm_down_small", tr("Increase Speed (Fine)"),
                              tr("Adjust speed down (fine)"), speedMenu);
-    addDeckAndSamplerControl("rate_temp_up", tr("Pitch-Bend Rate Up"),
-                             tr("Pitch-bend rate up (coarse)"), speedMenu);
-    addDeckAndSamplerControl("rate_temp_up_small", tr("Pitch-Bend Rate Up (Fine)"),
-                             tr("Pitch-bend rate up (fine)"), speedMenu);
-    addDeckAndSamplerControl("rate_temp_down", tr("Pitch-Bend Rate Down"),
-                             tr("Pitch-bend rate down (coarse)"), speedMenu);
-    addDeckAndSamplerControl("rate_temp_down_small", tr("Pitch-Bend Rate Down (Fine)"),
-                             tr("Pitch-bend rate down (fine)"), speedMenu);
+    addDeckAndSamplerControl("rate_temp_up", tr("Temporary Increase Speed"),
+                             tr("Temporary increase speed (coarse)"), speedMenu);
+    addDeckAndSamplerControl("rate_temp_up_small", tr("Temporary Increase Speed (Fine)"),
+                             tr("Temporary increase speed (fine)"), speedMenu);
+    addDeckAndSamplerControl("rate_temp_down", tr("Temporary Decrease Speed"),
+                             tr("Temporary decrease speed (coarse)"), speedMenu);
+    addDeckAndSamplerControl("rate_temp_down_small", tr("Temporary Decrease Speed (Fine)"),
+                             tr("Temporary decrease speed (fine)"), speedMenu);
 
     // EQs
     QMenu* eqMenu = addSubmenu(tr("Equalizers"));
