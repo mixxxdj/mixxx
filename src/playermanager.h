@@ -23,7 +23,24 @@ class SoundManager;
 class EffectsManager;
 class TrackCollection;
 
-class PlayerManager : public QObject {
+// For mocking PlayerManager.
+class PlayerManagerInterface {
+  public:
+    // Get a BaseTrackPlayer (i.e. a Deck or a Sampler) by its group
+    virtual BaseTrackPlayer* getPlayer(QString group) const = 0;
+
+    // Get the deck by its deck number. Decks are numbered starting with 1.
+    virtual Deck* getDeck(unsigned int player) const = 0;
+
+    // Get the preview deck by its deck number. Preview decks are numbered
+    // starting with 1.
+    virtual PreviewDeck* getPreviewDeck(unsigned int libPreviewPlayer) const = 0;
+
+    // Get the sampler by its number. Samplers are numbered starting with 1.
+    virtual Sampler* getSampler(unsigned int sampler) const = 0;
+};
+
+class PlayerManager : public QObject, public PlayerManagerInterface {
     Q_OBJECT
   public:
     PlayerManager(ConfigObject<ConfigValue>* pConfig,
