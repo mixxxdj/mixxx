@@ -175,7 +175,6 @@ class AutoDJProcessorTest : public LibraryTest {
     }
 
     FakeMaster master;
-    ControlObject numDecks;
     FakeDeck deck1;
     FakeDeck deck2;
     FakeDeck deck3;
