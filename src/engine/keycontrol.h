@@ -43,6 +43,7 @@ class KeyControl : public EngineControl {
     ControlObject* m_pRateRange;
     ControlObject* m_pRateDir;
     ControlObject* m_pKeylock;
+    ControlPotmeter* m_pPitchAdjust;
     ControlPotmeter* m_pPitch;
     ControlPushButton* m_pButtonSyncKey;
 

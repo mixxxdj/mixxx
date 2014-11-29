@@ -16,12 +16,21 @@ KeyControl::KeyControl(QString group,
           m_bOldKeylock(false),
           m_dPitchCompensation(0.0),
           m_dPitchCompensationOldPitch(0.0) {
+    m_pPitchAdjust = new ControlPotmeter(ConfigKey(group, "pitchadjust"), -1.f, 1.f);
     m_pPitch = new ControlPotmeter(ConfigKey(group, "pitch"), -1.f, 1.f);
     // Course adjust by full step.
+    m_pPitchAdjust->setStepCount(24);
     m_pPitch->setStepCount(24);
     // Fine adjust by half-step / semitone.
+    m_pPitchAdjust->setSmallStepCount(48);
     m_pPitch->setSmallStepCount(48);
 
+    connect(m_pPitchAdjust, SIGNAL(valueChanged(double)),
+            this, SLOT(slotPitchChanged(double)),
+            Qt::DirectConnection);
+    connect(m_pPitchAdjust, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotPitchChanged(double)),
+            Qt::DirectConnection);
     connect(m_pPitch, SIGNAL(valueChanged(double)),
             this, SLOT(slotPitchChanged(double)),
             Qt::DirectConnection);
@@ -81,6 +90,7 @@ KeyControl::KeyControl(QString group,
 }
 
 KeyControl::~KeyControl() {
+    delete m_pPitchAdjust;
     delete m_pPitch;
     delete m_pButtonSyncKey;
     delete m_pFileKey;
@@ -89,7 +99,7 @@ KeyControl::~KeyControl() {
 }
 
 double KeyControl::getPitchAdjustOctaves() {
-    return m_pPitch->get();
+    return m_pPitchAdjust->get();
 }
 
 double KeyControl::getKey() {
@@ -100,30 +110,40 @@ void KeyControl::slotRateChanged() {
     // If rate is non-1.0 then we have to try and calculate the octave change
     // caused by it.
     double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
-    bool bKeylock = m_pKeylock->get() > 0;
+    bool bKeylock = m_pKeylock->toBool();
+
+    if (bKeylock) {
+        m_pPitch->set(0.0);
+    } else {
+        m_pPitch->set(KeyUtils::powerOf2ToOctaveChange(dRate));
+    }
 
     // If we just turned keylock on or off, adjust the pitch so that the
     // effective key stays the same. This is only relevant when m_dOldRate !=
     // 1.0 because that's the only case when rate adjustment causes pitch
     // change.
     if (bKeylock && !m_bOldKeylock) {
-        double pitch = m_pPitch->get();
+        // Enabling Keylock
+        double pitch = m_pPitchAdjust->get();
         m_dPitchCompensation = pitch + KeyUtils::powerOf2ToOctaveChange(m_dOldRate);
         m_dPitchCompensationOldPitch = pitch;
-        m_pPitch->set(m_dPitchCompensation);
+        // Pitch scale to original key
+        m_pPitchAdjust->set(m_dPitchCompensation);
     } else if (!bKeylock && m_bOldKeylock) {
-        double pitch = m_pPitch->get();
+        // Disabling Keylock
+        double pitch = m_pPitchAdjust->get();
 
         // The pitch has not changed since we enabled keylock. Restore the
         // old pitch.
         if (pitch == m_dPitchCompensation) {
-            m_pPitch->set(m_dPitchCompensationOldPitch);
+            m_pPitchAdjust->set(m_dPitchCompensationOldPitch);
         } else {
             // Otherwise, compensate in the opposite direction to prevent
             // pitch change. We know the user has a pitch control because
             // they changed it.
             double pitchAdjust = KeyUtils::powerOf2ToOctaveChange(m_dOldRate);
-            m_pPitch->set(pitch - pitchAdjust);
+            // pitch scale relative to rate control
+            m_pPitchAdjust->set(pitch - pitchAdjust);
         }
 
         m_dPitchCompensationOldPitch = 0.0;
@@ -143,7 +163,7 @@ void KeyControl::slotFileKeyChanged(double value) {
             KeyUtils::keyFromNumericValue(value);
 
     // The pitch adjust in octaves.
-    double pitch_adjust = m_pPitch->get();
+    double pitch_adjust = m_pPitchAdjust->get();
     bool keylock_enabled = m_pKeylock->get() > 0;
 
     // If keylock is enabled then rate only affects the tempo and not the pitch.
@@ -199,7 +219,7 @@ bool KeyControl::syncKey(EngineBuffer* pOtherEngineBuffer) {
     if (m_dOldRate != 1.0 && !keylock_enabled) {
         newPitch -= KeyUtils::powerOf2ToOctaveChange(m_dOldRate);
     }
-    m_pPitch->set(newPitch);
+    m_pPitchAdjust->set(newPitch);
     return true;
 }
 

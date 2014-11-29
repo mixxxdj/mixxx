@@ -258,7 +258,7 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
 
     m_pKeyControl = new KeyControl(group, _config);
     addControl(m_pKeyControl);
-    m_pPitchControl = new ControlObjectSlave(m_group, "pitch", this);
+    m_pPitchAdjustControl = new ControlObjectSlave(m_group, "pitch_adjust", this);
 
     // Create the clock controller
     m_pClockControl = new ClockControl(group, _config);
@@ -530,7 +530,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_pTrackSamples->set(iTrackNumSamples);
     m_pTrackSampleRate->set(iTrackSampleRate);
     // Reset the pitch value for the new track.
-    m_pPitchControl->set(0.0);
+    m_pPitchAdjustControl->set(0.0);
     m_pause.unlock();
 
     // All EngineControls are connected directly
@@ -746,7 +746,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
 
         // If keylock was on, and the user disabled it, also reset the pitch.
         if (m_bWasKeylocked && !keylock_enabled) {
-            m_pPitchControl->set(0.0);
+            m_pPitchAdjustControl->set(0.0);
         }
 
         // speed is the percentage change in player speed. Depending on whether
