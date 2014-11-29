@@ -121,7 +121,6 @@ class EngineBuffer : public EngineObject {
     EngineBuffer(QString _group, ConfigObject<ConfigValue>* _config,
                  EngineChannel* pChannel, EngineMaster* pMixingEngine);
     virtual ~EngineBuffer();
-    bool getPitchIndpTimeStretch(void);
 
     void bindWorkers(EngineWorkerScheduler* pWorkerScheduler);
 
