@@ -9,9 +9,11 @@
 #include "controlpushbutton.h"
 #include "controlpotmeter.h"
 #include "controllinpotmeter.h"
-#include "playerinfo.h"
+#include "playermanager.h"
+#include "basetrackplayer.h"
 
 using ::testing::_;
+using ::testing::Return;
 
 static int kDefaultTransitionTime = 10;
 const QString kTrackLocationTest(QDir::currentPath() %
@@ -29,28 +31,97 @@ class FakeMaster {
     ControlPushButton crossfaderReverse;
 };
 
-class FakeDeck {
+class FakeDeck : public BaseTrackPlayer {
   public:
     FakeDeck(const QString& group)
-            : playposition(ConfigKey(group, "playposition"), 0.0, 1.0, true),
+            : BaseTrackPlayer(NULL, group),
+              playposition(ConfigKey(group, "playposition"), 0.0, 1.0, true),
               play(ConfigKey(group, "play")),
               repeat(ConfigKey(group, "repeat")) {
         play.setButtonMode(ControlPushButton::TOGGLE);
         repeat.setButtonMode(ControlPushButton::TOGGLE);
     }
 
+    void fakeTrackLoadedEvent(TrackPointer pTrack) {
+        loadedTrack = pTrack;
+        emit(newTrackLoaded(pTrack));
+    }
+
+    void fakeTrackLoadFailedEvent(TrackPointer pTrack) {
+        emit(loadTrackFailed(pTrack));
+    }
+
+    void fakeUnloadingTrackEvent(TrackPointer pTrack) {
+        emit(unloadingTrack(pTrack));
+        loadedTrack.clear();
+    }
+
+    TrackPointer getLoadedTrack() const {
+        return loadedTrack;
+    }
+
+    // This method emulates requesting a track load to a player and emits no
+    // signals. Normally, the reader thread attempts to load the file and emits
+    // a success or failure signal. To simulate a load success, call
+    // fakeTrackLoadedEvent. To simulate a failure, call
+    // fakeTrackLoadFailedEvent.
+    void slotLoadTrack(TrackPointer pTrack, bool bPlay) {
+        loadedTrack = pTrack;
+        play.set(bPlay);
+    }
+
+    TrackPointer loadedTrack;
     ControlLinPotmeter playposition;
     ControlPushButton play;
     ControlPushButton repeat;
+};
+
+class MockPlayerManager : public PlayerManagerInterface {
+  public:
+    MockPlayerManager()
+            : numDecks(ConfigKey("[Master]", "num_decks"), true),
+              numSamplers(ConfigKey("[Master]", "num_samplers"), true),
+              numPreviewDecks(ConfigKey("[Master]", "num_preview_decks"),
+                              true) {
+    }
+
+    virtual ~MockPlayerManager() {
+    }
+
+    MOCK_CONST_METHOD1(getPlayer, BaseTrackPlayer*(QString));
+    MOCK_CONST_METHOD1(getDeck, Deck*(unsigned int));
+    MOCK_CONST_METHOD1(getPreviewDeck, PreviewDeck*(unsigned int));
+    MOCK_CONST_METHOD1(getSampler, Sampler*(unsigned int));
+
+    unsigned int numberOfDecks() const {
+        return static_cast<unsigned int>(numDecks.get());
+    }
+
+    unsigned int numberOfSamplers() const {
+        return static_cast<unsigned int>(numSamplers.get());
+    }
+
+    unsigned int numberOfPreviewDecks() const {
+        return static_cast<unsigned int>(numPreviewDecks.get());
+    }
+
+    ControlObject numDecks;
+    ControlObject numSamplers;
+    ControlObject numPreviewDecks;
 };
 
 class MockAutoDJProcessor : public AutoDJProcessor {
   public:
     MockAutoDJProcessor(QObject* pParent,
                         ConfigObject<ConfigValue>* pConfig,
+                        PlayerManagerInterface* pPlayerManager,
                         int iAutoDJPlaylistId,
                         TrackCollection* pCollection)
-            : AutoDJProcessor(pParent, pConfig, iAutoDJPlaylistId, pCollection) {
+            : AutoDJProcessor(pParent, pConfig, pPlayerManager,
+                              iAutoDJPlaylistId, pCollection) {
+    }
+
+    virtual ~MockAutoDJProcessor() {
     }
 
     MOCK_METHOD3(loadTrackToPlayer, void(TrackPointer, QString, bool));
@@ -73,8 +144,27 @@ class AutoDJProcessorTest : public LibraryTest {
                     AUTODJ_TABLE, PlaylistDAO::PLHT_AUTO_DJ);
         }
 
-        pProcessor.reset(new MockAutoDJProcessor(NULL, config(), m_iAutoDJPlaylistId,
-                                                 collection()));
+        pPlayerManager.reset(new MockPlayerManager());
+
+        // Setup 4 fake decks.
+        ON_CALL(*pPlayerManager, getPlayer(QString("[Channel1]")))
+                .WillByDefault(Return(&deck1));
+        ON_CALL(*pPlayerManager, getPlayer(QString("[Channel2]")))
+                .WillByDefault(Return(&deck2));
+        ON_CALL(*pPlayerManager, getPlayer(QString("[Channel3]")))
+                .WillByDefault(Return(&deck3));
+        ON_CALL(*pPlayerManager, getPlayer(QString("[Channel4]")))
+                .WillByDefault(Return(&deck4));
+        pPlayerManager->numDecks.set(4);
+
+        EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel1]"))).Times(1);
+        EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel2]"))).Times(1);
+        EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel3]"))).Times(1);
+        EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel4]"))).Times(1);
+
+        pProcessor.reset(new MockAutoDJProcessor(
+                NULL, config(), pPlayerManager.data(),
+                m_iAutoDJPlaylistId, collection()));
     }
 
     virtual ~AutoDJProcessorTest() {
@@ -89,6 +179,7 @@ class AutoDJProcessorTest : public LibraryTest {
     FakeDeck deck2;
     FakeDeck deck3;
     FakeDeck deck4;
+    QScopedPointer<MockPlayerManager> pPlayerManager;
     int m_iAutoDJPlaylistId;
     QScopedPointer<MockAutoDJProcessor> pProcessor;
 };
@@ -96,8 +187,15 @@ class AutoDJProcessorTest : public LibraryTest {
 TEST_F(AutoDJProcessorTest, TransitionTimeLoadedFromConfig) {
     EXPECT_EQ(kDefaultTransitionTime, pProcessor->getTransitionTime());
     config()->set(ConfigKey("[Auto DJ]", "Transition"), QString("25"));
-    pProcessor.reset(new MockAutoDJProcessor(NULL, config(), m_iAutoDJPlaylistId,
-                                             collection()));
+    // Creating a new MockAutoDJProcessor will get each player from player
+    // manager.
+    EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel1]"))).Times(1);
+    EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel2]"))).Times(1);
+    EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel3]"))).Times(1);
+    EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel4]"))).Times(1);
+    pProcessor.reset(new MockAutoDJProcessor(
+            NULL, config(), pPlayerManager.data(),
+            m_iAutoDJPlaylistId, collection()));
     EXPECT_EQ(25, pProcessor->getTransitionTime());
 }
 
@@ -148,9 +246,20 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped) {
     // triggers a call to AutoDJProcessor::playerPlayChanged and
     // AutoDJProcessor::playerPlaypositionChanged. We should switch to ADJ_IDLE
     // and queue a track to deck 2.
-    deck1.play.set(1.0);
+
+    // Load the track and mark it playing (as the loadTrackToPlayer signal would
+    // have connected to this eventually).
+    TrackPointer pTrack(new TrackInfoObject());
+    setTrackId(pTrack, testId);
+    deck1.slotLoadTrack(pTrack, true);
+
+    // Signal that the request to load pTrack succeeded.
+    deck1.fakeTrackLoadedEvent(pTrack);
+
+    // Pretend the engine moved forward on the deck.
     deck1.playposition.set(100);
 
+    // By now we will have transitioned to idle and requested a load to deck 2.
     EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
 }
 
@@ -161,8 +270,10 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck1) {
     // Pretend a track is playing on deck 1.
     TrackPointer pTrack(new TrackInfoObject());
     setTrackId(pTrack, testId + 1);
-    PlayerInfo::instance().setTrackInfo("[Channel1]", pTrack);
-    deck1.play.set(1);
+    // Load track and mark it playing.
+    deck1.slotLoadTrack(pTrack, true);
+    // Indicate the track loaded successfully.
+    deck1.fakeTrackLoadedEvent(pTrack);
 
     // Arbitrary to check that it was unchanged.
     master.crossfader.set(0.2447);
@@ -190,8 +301,10 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck2) {
     // Pretend a track is playing on deck 2.
     TrackPointer pTrack(new TrackInfoObject());
     setTrackId(pTrack, testId + 1);
-    PlayerInfo::instance().setTrackInfo("[Channel2]", pTrack);
-    deck2.play.set(1);
+    // Load track and mark it playing.
+    deck2.slotLoadTrack(pTrack, true);
+    // Indicate the track loaded successfully.
+    deck2.fakeTrackLoadedEvent(pTrack);
 
     // Arbitrary to check that it was unchanged.
     master.crossfader.set(0.2447);

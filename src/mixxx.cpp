@@ -273,6 +273,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     CoverArtCache::create();
 
     m_pLibrary = new Library(this, m_pConfig,
+                             m_pPlayerManager,
                              m_pRecordingManager);
     m_pPlayerManager->bindToLibrary(m_pLibrary);
 
@@ -499,9 +500,6 @@ MixxxMainWindow::~MixxxMainWindow() {
     delete m_PassthroughMapper;
     delete m_AuxiliaryMapper;
     delete m_TalkoverMapper;
-    // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
-    qDebug() << "delete playerManager " << qTime.elapsed();
-    delete m_pPlayerManager;
 
     // LibraryScanner depends on Library
     qDebug() << "delete library scanner " <<  qTime.elapsed();
@@ -511,10 +509,14 @@ MixxxMainWindow::~MixxxMainWindow() {
     CoverArtCache::destroy();
 
     // Delete the library after the view so there are no dangling pointers to
-    // Depends on RecordingManager
     // the data models.
+    // Depends on RecordingManager and PlayerManager
     qDebug() << "delete library " << qTime.elapsed();
     delete m_pLibrary;
+
+    // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
+    qDebug() << "delete playerManager " << qTime.elapsed();
+    delete m_pPlayerManager;
 
     // RecordingManager depends on config, engine
     qDebug() << "delete RecordingManager " << qTime.elapsed();
