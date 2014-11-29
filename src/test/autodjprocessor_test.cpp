@@ -60,6 +60,11 @@ class FakeDeck : public BaseTrackPlayer {
         return loadedTrack;
     }
 
+    // This method emulates requesting a track load to a player and emits no
+    // signals. Normally, the reader thread attempts to load the file and emits
+    // a success or failure signal. To simulate a load success, call
+    // fakeTrackLoadedEvent. To simulate a failure, call
+    // fakeTrackLoadFailedEvent.
     void slotLoadTrack(TrackPointer pTrack, bool bPlay) {
         loadedTrack = pTrack;
         play.set(bPlay);
@@ -242,9 +247,20 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped) {
     // triggers a call to AutoDJProcessor::playerPlayChanged and
     // AutoDJProcessor::playerPlaypositionChanged. We should switch to ADJ_IDLE
     // and queue a track to deck 2.
-    deck1.play.set(1.0);
+
+    // Load the track and mark it playing (as the loadTrackToPlayer signal would
+    // have connected to this eventually).
+    TrackPointer pTrack(new TrackInfoObject());
+    setTrackId(pTrack, testId);
+    deck1.slotLoadTrack(pTrack, true);
+
+    // Signal that the request to load pTrack succeeded.
+    deck1.fakeTrackLoadedEvent(pTrack);
+
+    // Pretend the engine moved forward on the deck.
     deck1.playposition.set(100);
 
+    // By now we will have transitioned to idle and requested a load to deck 2.
     EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
 }
 
@@ -257,6 +273,8 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck1) {
     setTrackId(pTrack, testId + 1);
     // Load track and mark it playing.
     deck1.slotLoadTrack(pTrack, true);
+    // Indicate the track loaded successfully.
+    deck1.fakeTrackLoadedEvent(pTrack);
 
     // Arbitrary to check that it was unchanged.
     master.crossfader.set(0.2447);
@@ -286,6 +304,8 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck2) {
     setTrackId(pTrack, testId + 1);
     // Load track and mark it playing.
     deck2.slotLoadTrack(pTrack, true);
+    // Indicate the track loaded successfully.
+    deck2.fakeTrackLoadedEvent(pTrack);
 
     // Arbitrary to check that it was unchanged.
     master.crossfader.set(0.2447);
