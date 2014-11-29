@@ -211,7 +211,7 @@ class EngineBuffer : public EngineObject {
     void slotPassthroughChanged(double v);
 
   private:
-    void enablePitchAndTimeScaling(bool bEnable);
+    void enableIndependentPitchTempoScaling(bool bEnable);
 
     void updateIndicators(double rate, int iBufferSize);
 
