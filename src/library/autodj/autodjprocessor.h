@@ -10,7 +10,6 @@
 #include "configobject.h"
 #include "library/playlisttablemodel.h"
 #include "engine/enginechannel.h"
-#include "controlobjectthread.h"
 #include "controlobjectslave.h"
 
 class ControlPushButton;
@@ -35,31 +34,31 @@ class DeckAttributes : public QObject {
     }
 
     bool isPlaying() const {
-        return m_pPlay->get() > 0.0;
+        return m_play.toBool();
     }
 
     void stop() {
-        m_pPlay->set(0.0);
+        m_play.set(0.0);
     }
 
     void play() {
-        m_pPlay->set(1.0);
+        m_play.set(1.0);
     }
 
     double playPosition() const {
-        return m_pPlayPos->get();
+        return m_playPos.get();
     }
 
     void setPlayPosition(double playpos) {
-        m_pPlayPos->set(playpos);
+        m_playPos.set(playpos);
     }
 
     bool isRepeat() const {
-        return m_pRepeat->get() > 0.0;
+        return m_repeat.toBool();
     }
 
     void setRepeat(bool enabled) {
-        m_pRepeat->set(enabled ? 1.0 : 0.0);
+        m_repeat.set(enabled ? 1.0 : 0.0);
     }
 
     TrackPointer getLoadedTrack() const;
@@ -86,9 +85,9 @@ class DeckAttributes : public QObject {
 
   private:
     EngineChannel::ChannelOrientation m_orientation;
-    ControlObjectThread* m_pPlayPos;
-    ControlObjectThread* m_pPlay;
-    ControlObjectSlave* m_pRepeat;
+    ControlObjectSlave m_playPos;
+    ControlObjectSlave m_play;
+    ControlObjectSlave m_repeat;
     BaseTrackPlayer* m_pPlayer;
 };
 

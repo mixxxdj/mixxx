@@ -2,7 +2,6 @@
 
 #include "library/trackcollection.h"
 #include "controlpushbutton.h"
-#include "controlobjectthread.h"
 #include "controlobjectslave.h"
 #include "util/math.h"
 #include "playermanager.h"
@@ -22,9 +21,9 @@ DeckAttributes::DeckAttributes(int index,
           posThreshold(1.0),
           fadeDuration(0.0),
           m_orientation(orientation),
-          m_pPlayPos(new ControlObjectThread(group, "playposition")),
-          m_pPlay(new ControlObjectThread(group, "play")),
-          m_pRepeat(new ControlObjectSlave(group, "repeat")),
+          m_playPos(group, "playposition"),
+          m_play(group, "play"),
+          m_repeat(group, "repeat"),
           m_pPlayer(pPlayer) {
     connect(m_pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
             this, SLOT(slotTrackLoaded(TrackPointer)));
@@ -32,16 +31,11 @@ DeckAttributes::DeckAttributes(int index,
             this, SLOT(slotTrackLoadFailed(TrackPointer)));
     connect(m_pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
             this, SLOT(slotTrackUnloaded(TrackPointer)));
-    connect(m_pPlayPos, SIGNAL(valueChanged(double)),
-            this, SLOT(slotPlayPosChanged(double)));
-    connect(m_pPlay, SIGNAL(valueChanged(double)),
-            this, SLOT(slotPlayChanged(double)));
+    m_playPos.connectValueChanged(this, SLOT(slotPlayPosChanged(double)));
+    m_play.connectValueChanged(this, SLOT(slotPlayChanged(double)));
 }
 
 DeckAttributes::~DeckAttributes() {
-    delete m_pPlayPos;
-    delete m_pPlay;
-    delete m_pRepeat;
 }
 
 void DeckAttributes::slotPlayChanged(double v) {
