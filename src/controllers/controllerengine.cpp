@@ -17,8 +17,6 @@
 #include "util/math.h"
 #include "util/time.h"
 
-// #include <QScriptSyntaxCheckResult>
-
 // Used for id's inside controlConnection objects
 // (closure compatible version of connectControl)
 #include <QUuid>
@@ -1196,8 +1194,8 @@ void ControllerEngine::timerEvent(QTimerEvent *event) {
              (optional) beta value for the filter
     Output:  -
     -------- ------------------------------------------------------ */
-void ControllerEngine::scratchEnable(int deck, int intervalsPerRev, float rpm,
-                                     float alpha, float beta, bool ramp) {
+void ControllerEngine::scratchEnable(int deck, int intervalsPerRev, double rpm,
+                                     double alpha, double beta, bool ramp) {
 
     // If we're already scratching this deck, override that with this request
     if (m_dx[deck]) {
@@ -1207,11 +1205,17 @@ void ControllerEngine::scratchEnable(int deck, int intervalsPerRev, float rpm,
         m_scratchTimers.remove(timerId);
     }
 
-    // Controller resolution in intervals per second at normal speed (rev/min * ints/rev * mins/sec)
-    float intervalsPerSecond = (rpm * intervalsPerRev)/60;
+    // Controller resolution in intervals per second at normal speed.
+    // (rev/min * ints/rev * mins/sec)
+    double intervalsPerSecond = (rpm * intervalsPerRev) / 60.0;
 
-    m_dx[deck] = 1/intervalsPerSecond;
-    m_intervalAccumulator[deck] = 0;
+    if (intervalsPerSecond == 0.0) {
+        qWarning() << "Invalid rpm or intervalsPerRev supplied to scratchEnable. Ignoring request.";
+        return;
+    }
+
+    m_dx[deck] = 1.0 / intervalsPerSecond;
+    m_intervalAccumulator[deck] = 0.0;
     m_ramp[deck] = false;
     m_rampFactor[deck] = 0.001;
     m_brakeActive[deck] = false;
@@ -1220,7 +1224,7 @@ void ControllerEngine::scratchEnable(int deck, int intervalsPerRev, float rpm,
     QString group = PlayerManager::groupForDeck(deck - 1);
 
     // Ramp
-    float initVelocity = 0.0;   // Default to stopped
+    double initVelocity = 0.0;   // Default to stopped
     ControlObjectThread *cot = getControlObjectThread(group, "scratch2_enable");
 
     // If ramping is desired, figure out the deck's current speed
@@ -1237,7 +1241,7 @@ void ControllerEngine::scratchEnable(int deck, int intervalsPerRev, float rpm,
             cot = getControlObjectThread(group, "play");
             if (cot != NULL && cot->get() == 1) {
                 // If so, set the filter's initial velocity to the playback speed
-                float rate = 0;
+                double rate = 0;
 
                 cot = getControlObjectThread(group, "rate");
                 if (cot != NULL) {
@@ -1250,7 +1254,7 @@ void ControllerEngine::scratchEnable(int deck, int intervalsPerRev, float rpm,
                 }
 
                 // Add 1 since the deck is playing
-                rate++;
+                rate += 1.0;
 
                 // See if we're in reverse play
                 cot = getControlObjectThread(group, "reverse");
@@ -1313,17 +1317,16 @@ void ControllerEngine::scratchProcess(int timerId) {
 
     // Give the filter a data point:
 
-    // If we're ramping to end scratching
-    //  and the wheel hasn't been turned very recently (spinback after lift-off,)
-    //  feed fixed data
+    // If we're ramping to end scratching and the wheel hasn't been turned very
+    // recently (spinback after lift-off,) feed fixed data
     if (m_ramp[deck] &&
         ((Time::elapsedMsecs() - m_lastMovement[deck]) > 0)) {
         filter->observation(m_rampTo[deck]*m_rampFactor[deck]);
         // Once this code path is run, latch so it always runs until reset
-//         m_lastMovement[deck] += 1000;
+        //m_lastMovement[deck] += 1000;
     } else {
-        //  This will (and should) be 0 if no net ticks have been accumulated
-        //  (i.e. the wheel is stopped)
+        // This will (and should) be 0 if no net ticks have been accumulated
+        // (i.e. the wheel is stopped)
         filter->observation(m_dx[deck] * m_intervalAccumulator[deck]);
     }
 
@@ -1469,7 +1472,7 @@ void ControllerEngine::softTakeover(QString group, QString name, bool set) {
              delay (optional), rate (optional)
     Output:  -
     -------- ------------------------------------------------------ */
-void ControllerEngine::spinback(int deck, bool activate, float factor, float rate) {
+void ControllerEngine::spinback(int deck, bool activate, double factor, double rate) {
     // defaults for args set in header file
     brake(deck, activate, factor, rate);
 }
@@ -1480,7 +1483,7 @@ void ControllerEngine::spinback(int deck, bool activate, float factor, float rat
              delay (optional), rate (optional)
     Output:  -
     -------- ------------------------------------------------------ */
-void ControllerEngine::brake(int deck, bool activate, float factor, float rate) {
+void ControllerEngine::brake(int deck, bool activate, double factor, double rate) {
     // PlayerManager::groupForDeck is 0-indexed.
     QString group = PlayerManager::groupForDeck(deck - 1);
 
@@ -1500,7 +1503,7 @@ void ControllerEngine::brake(int deck, bool activate, float factor, float rate) 
 
     if (activate) {
         // store the new values for this spinback/brake effect
-        m_rampFactor[deck] = rate * factor / 100000; // approx 1 second for a factor of 1
+        m_rampFactor[deck] = rate * factor / 100000.0; // approx 1 second for a factor of 1
         m_rampTo[deck] = 0.0;
 
         // setup timer and send first scratch2 'tick'

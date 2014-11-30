@@ -99,14 +99,14 @@ class ControllerEngine : public QObject {
     Q_INVOKABLE void log(QString message);
     Q_INVOKABLE int beginTimer(int interval, QScriptValue scriptCode, bool oneShot = false);
     Q_INVOKABLE void stopTimer(int timerId);
-    Q_INVOKABLE void scratchEnable(int deck, int intervalsPerRev, float rpm,
-                                   float alpha, float beta, bool ramp = true);
+    Q_INVOKABLE void scratchEnable(int deck, int intervalsPerRev, double rpm,
+                                   double alpha, double beta, bool ramp = true);
     Q_INVOKABLE void scratchTick(int deck, int interval);
     Q_INVOKABLE void scratchDisable(int deck, bool ramp = true);
     Q_INVOKABLE bool isScratching(int deck);
     Q_INVOKABLE void softTakeover(QString group, QString name, bool set);
-    Q_INVOKABLE void brake(int deck, bool activate, float factor=0.9, float rate=1.0);
-    Q_INVOKABLE void spinback(int deck, bool activate, float factor=1.8, float rate=-10.0);
+    Q_INVOKABLE void brake(int deck, bool activate, double factor=0.9, double rate=1.0);
+    Q_INVOKABLE void spinback(int deck, bool activate, double factor=1.8, double rate=-10.0);
 
     // Handler for timers that scripts set.
     virtual void timerEvent(QTimerEvent *event);
@@ -181,7 +181,7 @@ class ControllerEngine : public QObject {
     //  If more are needed at run-time, these will move to the heap automatically
     QVarLengthArray<int> m_intervalAccumulator;
     QVarLengthArray<uint> m_lastMovement;
-    QVarLengthArray<float> m_dx, m_rampTo, m_rampFactor;
+    QVarLengthArray<double> m_dx, m_rampTo, m_rampFactor;
     QVarLengthArray<bool> m_ramp, m_brakeActive;
     QVarLengthArray<AlphaBetaFilter*> m_scratchFilters;
     QHash<int, int> m_scratchTimers;
