@@ -243,8 +243,8 @@ QPair<ChromaticKey, double> KeyUtils::scaleKeyOctaves(ChromaticKey key, double o
                           (key_changes_scaled > 0 ? 0.5 : -0.5));
 
     // Distance to the nearest key
-    double diff_to_key = key_changes_scaled - key_changes;
-    return QPair<ChromaticKey, double>(scaleKeySteps(key, key_changes), diff_to_key);
+    double diff_to_nearest_full_key = key_changes_scaled - key_changes;
+    return QPair<ChromaticKey, double>(scaleKeySteps(key, key_changes), diff_to_nearest_full_key);
 }
 
 // static

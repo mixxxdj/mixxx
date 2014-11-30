@@ -752,7 +752,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
         // keylock is enabled, this is applied to either the rate or the tempo.
         double speed = m_pRateControl->calculateRate(
             baserate, paused, iBufferSize, &is_scratching);
-        double pitch = m_pKeyControl->getPitchAdjustOctaves();
+        double pitchAdjust = m_pKeyControl->getPitchAdjustOctaves();
 
         // Update the slipped position and seek if it was disabled.
         processSlip(iBufferSize);
@@ -763,7 +763,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
         // rate.
         // High seek speeds also disables keylock.  Our pitch slider could go
         // to 90%, so that's the cutoff point.
-        bool use_pitch_and_time_scaling = !is_scratching && (keylock_enabled || pitch != 0) &&
+        bool use_pitch_and_time_scaling = !is_scratching && (keylock_enabled || pitchAdjust != 0) &&
                                           fabs(speed) <= 1.9;
         enablePitchAndTimeScaling(use_pitch_and_time_scaling);
 
@@ -774,7 +774,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
         // scaler. Also, if we have changed scalers then we need to update the
         // scaler.
         if (baserate != m_baserate_old || speed != m_speed_old ||
-                pitch != m_pitch_old || m_bScalerChanged) {
+                pitchAdjust != m_pitch_old || m_bScalerChanged) {
             // The rate returned by the scale object can be different from the
             // wanted rate!  Make sure new scaler has proper position. This also
             // crossfades between the old scaler and new scaler to prevent
@@ -804,7 +804,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
 
             // The pitch adjustment in percentage of octaves (0.0 being normal
             // pitch. 1.0 is a full octave shift up).
-            double pitch_adjust = pitch;
+            double pitch_adjust = pitchAdjust;
 
             // Whether or not the speed change calculated by RateControl should
             // affect the pitch of the song (e.g. as a traditional style pitch
@@ -819,7 +819,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
 
             m_baserate_old = baserate;
             m_speed_old = speed;
-            m_pitch_old = pitch;
+            m_pitch_old = pitchAdjust;
             m_bWasKeylocked = keylock_enabled;
 
             // The way we treat rate inside of EngineBuffer is actually a

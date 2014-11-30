@@ -31,9 +31,6 @@ KeyControl::KeyControl(QString group,
     connect(m_pPitch, SIGNAL(valueChanged(double)),
             this, SLOT(slotPitchChanged(double)),
             Qt::DirectConnection);
-    connect(m_pPitch, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotPitchChanged(double)),
-            Qt::DirectConnection);
 
     m_pButtonSyncKey = new ControlPushButton(ConfigKey(group, "sync_key"));
     connect(m_pButtonSyncKey, SIGNAL(valueChanged(double)),
@@ -161,7 +158,7 @@ void KeyControl::slotRateChanged() {
 }
 
 void KeyControl::slotFileKeyChanged(double value) {
-    mixxx::track::io::key::ChromaticKey key =
+    mixxx::track::io::key::ChromaticKey fileKey =
             KeyUtils::keyFromNumericValue(value);
 
     // The pitch adjust in octaves.
@@ -174,9 +171,10 @@ void KeyControl::slotFileKeyChanged(double value) {
     }
 
     QPair<mixxx::track::io::key::ChromaticKey, double> adjusted =
-            KeyUtils::scaleKeyOctaves(key, pitch_adjust);
+            KeyUtils::scaleKeyOctaves(fileKey, pitch_adjust);
     m_pEngineKey->set(KeyUtils::keyToNumericValue(adjusted.first));
-    m_pEngineKeyDistance->set(adjusted.second);
+    double diff_to_nearest_full_key = adjusted.second;
+    m_pEngineKeyDistance->set(diff_to_nearest_full_key);
 }
 
 void KeyControl::slotSetEngineKey(double key) {
