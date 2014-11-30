@@ -288,17 +288,14 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
             // loaded track from the queue and wait for the next call to
             // playerPositionChanged for deck1 after the track is loaded.
             m_eState = ADJ_ENABLE_P1LOADED;
-            playerPositionChanged(&leftDeck, leftDeck.playPosition());
+
+            // Move crossfader to the left.
+            setCrossfader(-1.0, false);
 
             // Load track into the left deck and play. Once it starts playing,
             // we will receive a playerPositionChanged update for deck 1 which
             // will load a track into the right deck and switch to IDLE mode.
             emit(loadTrackToPlayer(nextTrack, leftDeck.group, true));
-
-            // Remove the track from the top of the queue. Using
-            // removeLoadedTrackFromTopOfQueue causes a race condition. See Bug
-            // #1206080.
-            removeTrackFromTopOfQueue(nextTrack);
         } else {
             // One of the two decks is playing. Switch into IDLE mode and wait
             // until the playing deck crosses posThreshold to start fading.
@@ -382,20 +379,29 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
     bool thisDeckPlaying = thisDeck.isPlaying();
     bool otherDeckPlaying = otherDeck.isPlaying();
 
+    // To switch out of ADJ_ENABLE_P1LOADED we wait for a playposition update
+    // for either deck.
     if (m_eState == ADJ_ENABLE_P1LOADED) {
-        // Auto DJ Start
-        if (!leftDeckPlaying && !rightDeckPlaying) {
-            setCrossfader(-1.0, false);  // Move crossfader to the left!
-        } else {
+        if (leftDeckPlaying || rightDeckPlaying) {
             // One of left and right is playing. Switch to IDLE mode and make
             // sure our thresholds are configured (by calling calculateFadeThresholds
             // for the playing deck).
             m_eState = ADJ_IDLE;
+
             if (leftDeckPlaying && !rightDeckPlaying) {
-                // Here we are, if first deck was playing before starting Auto
-                // DJ or if it was started just before. Load the next track into
-                // the right player since it is not playing.
+                // In ADJ_ENABLE_P1LOADED mode we wait until the left deck
+                // successfully starts playing. We don't know in toggleAutoDJ
+                // whether the track will load successfully so we have to
+                // wait. If the track fails to load then playerTrackLoadFailed
+                // will remove it from the top of the queue and request another
+                // track. Remove the left deck's current track from the queue
+                // since it is the track we requested in toggleAutoDJ.
+                removeLoadedTrackFromTopOfQueue(leftDeck);
+
+                // Load the next track into the right player since it is not
+                // playing.
                 loadNextTrackFromQueue(rightDeck);
+
                 // Set crossfade thresholds for left deck.
                 calculateFadeThresholds(&leftDeck);
             } else {
@@ -517,7 +523,7 @@ TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
     }
 }
 
-bool AutoDJProcessor::loadNextTrackFromQueue(const DeckAttributes& deck) {
+bool AutoDJProcessor::loadNextTrackFromQueue(const DeckAttributes& deck, bool play) {
     TrackPointer nextTrack = getNextTrackFromQueue();
 
     // We ran out of tracks in the queue.
@@ -530,7 +536,7 @@ bool AutoDJProcessor::loadNextTrackFromQueue(const DeckAttributes& deck) {
         return false;
     }
 
-    emit(loadTrackToPlayer(nextTrack, deck.group, false));
+    emit(loadTrackToPlayer(nextTrack, deck.group, play));
     return true;
 }
 
@@ -649,6 +655,24 @@ void AutoDJProcessor::playerTrackLoadFailed(DeckAttributes* pDeck, TrackPointer 
                  << (pTrack.isNull() ? "(null)" : pTrack->getLocation());
     }
 
+    // There are four conditions under which we load a track.
+    // 1) We are enabling AutoDJ and no decks are playing. Mode is
+    //    ADJ_ENABLE_P1LOADED.
+    // 2) After #1, we load a track into the other deck. Mode is ADJ_IDLE.
+    // 3) We are enabling AutoDJ and a single deck is playing. Mode is ADJ_IDLE.
+    // 4) We have just completed fading from one deck to another. Mode is
+    //    ADJ_IDLE.
+    // In all of these cases, it should be safe to skip the bad track in the
+    // queue and re-request a track load for the next track. The only case where
+    // we request a load-and-play is case #1 currently so we can easily test for
+    // this based on the mode.
+
+    // Remove the bad track from the queue.
+    removeTrackFromTopOfQueue(pTrack);
+
+    // Load the next track. If we are the first AutoDJ track
+    // (ADJ_ENABLE_P1LOADED state) then play the track.
+    loadNextTrackFromQueue(*pDeck, m_eState == ADJ_ENABLE_P1LOADED);
 }
 
 void AutoDJProcessor::playerTrackUnloaded(DeckAttributes* pDeck, TrackPointer pTrack) {

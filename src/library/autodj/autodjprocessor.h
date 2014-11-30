@@ -164,7 +164,7 @@ class AutoDJProcessor : public QObject {
     void setCrossfader(double value, bool right);
 
     TrackPointer getNextTrackFromQueue();
-    bool loadNextTrackFromQueue(const DeckAttributes& pDeck);
+    bool loadNextTrackFromQueue(const DeckAttributes& pDeck, bool play = false);
     void calculateFadeThresholds(DeckAttributes* pAttributes);
 
     // Removes the track loaded to the player group from the top of the AutoDJ
