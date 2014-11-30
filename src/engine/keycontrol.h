@@ -16,7 +16,8 @@ class KeyControl : public EngineControl {
 
     // Returns a value describing the pitch adjustment measured in octaves. A
     // pitch adjustment of 0 means no change should take place.
-    double getPitchAdjustOctaves();
+    double getPitchAdjustOctaves() const;
+    void setPitchAdjustOctaves(double value);
 
     double getKey();
 

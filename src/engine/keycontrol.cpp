@@ -16,7 +16,7 @@ KeyControl::KeyControl(QString group,
           m_bOldKeylock(false),
           m_dPitchCompensation(0.0),
           m_dPitchCompensationOldPitch(0.0) {
-    m_pPitchAdjust = new ControlPotmeter(ConfigKey(group, "pitchadjust"), -1.f, 1.f);
+    m_pPitchAdjust = new ControlPotmeter(ConfigKey(group, "pitch_adjust"), -1.f, 1.f);
     m_pPitch = new ControlPotmeter(ConfigKey(group, "pitch"), -1.f, 1.f);
     // Course adjust by full step.
     m_pPitchAdjust->setStepCount(24);
@@ -26,9 +26,6 @@ KeyControl::KeyControl(QString group,
     m_pPitch->setSmallStepCount(48);
 
     connect(m_pPitchAdjust, SIGNAL(valueChanged(double)),
-            this, SLOT(slotPitchChanged(double)),
-            Qt::DirectConnection);
-    connect(m_pPitchAdjust, SIGNAL(valueChangedFromEngine(double)),
             this, SLOT(slotPitchChanged(double)),
             Qt::DirectConnection);
     connect(m_pPitch, SIGNAL(valueChanged(double)),
@@ -98,8 +95,13 @@ KeyControl::~KeyControl() {
     delete m_pEngineKeyDistance;
 }
 
-double KeyControl::getPitchAdjustOctaves() {
+double KeyControl::getPitchAdjustOctaves() const {
     return m_pPitchAdjust->get();
+}
+
+void KeyControl::setPitchAdjustOctaves(double value) {
+    m_pPitchAdjust->set(value);
+    slotPitchChanged(value);
 }
 
 double KeyControl::getKey() {
