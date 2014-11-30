@@ -67,7 +67,7 @@ void EngineBufferScaleLinear::setScaleParameters(int iSampleRate,
     m_dOldRate = m_dRate;
     // pitch_adjust is measured in octave change. Convert it to a rate using
     // octaveChangeToPowerOf2.
-    m_dRate = base_rate * *speed_adjust * KeyUtils::octaveChangeToPowerOf2(*pitch_adjust);
+    m_dRate = base_rate * *speed_adjust;
 
     // Determine playback direction
     m_bBackwards = m_dRate < 0.0;

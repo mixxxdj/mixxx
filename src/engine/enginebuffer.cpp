@@ -814,10 +814,20 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
             // tempo.
             bool speed_affects_pitch = is_scratching || !keylock_enabled;
 
+
+            double pitchSale = KeyUtils::octaveChangeToPowerOf2(pitchAdjust);
+            double tempo = speed_adjust;
+
+            // The only difference for speed_affects_pitch is that we include speed_abs
+            // as part of the pitchSale scale.
+            if (speed_affects_pitch) {
+                pitchSale *= speed_adjust;
+            }
+
             m_pScale->setScaleParameters(m_pSampleRate->get(),
                                          baserate, speed_affects_pitch,
-                                         &speed_adjust,
-                                         &pitchAdjust);
+                                         &tempo,
+                                         &pitchSale);
 
             // The way we treat rate inside of EngineBuffer is actually a
             // description of "sample consumption rate" or percentage of samples

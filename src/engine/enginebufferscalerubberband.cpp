@@ -84,13 +84,7 @@ void EngineBufferScaleRubberBand::setScaleParameters(int iSampleRate,
 
     // RubberBand handles checking for whether the change in pitchScale is a
     // no-op.
-    double pitchScale = base_rate * KeyUtils::octaveChangeToPowerOf2(*pitch_adjust);
-
-    // The only difference for speed_affects_pitch is that we include speed_abs
-    // as part of the pitch scale.
-    if (speed_affects_pitch) {
-        pitchScale *= speed_abs;
-    }
+    double pitchScale = base_rate * *pitch_adjust;
 
     if (pitchScale > 0) {
         //qDebug() << "EngineBufferScaleRubberBand setPitchScale" << *pitch_adjust << pitchScale;

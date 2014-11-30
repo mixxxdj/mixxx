@@ -82,12 +82,7 @@ void EngineBufferScaleST::setScaleParameters(int iSampleRate,
     // Include baserate in rate_abs so that we do samplerate conversion as part
     // of rate adjustment.
     double rate_abs = base_rate;
-    double tempo_abs = 1.0;
-    if (speed_affects_pitch) {
-        rate_abs *= speed_abs;
-    } else {
-        tempo_abs *= speed_abs;
-    }
+    double tempo_abs = speed_abs;
 
     // Note that we do not set the tempo if it is zero. This is because of the
     // above clamping which prevents us from going below MIN_SEEK_SPEED. I think
@@ -102,8 +97,7 @@ void EngineBufferScaleST::setScaleParameters(int iSampleRate,
         m_dRateOld = rate_abs;
     }
     if (*pitch_adjust != m_dPitchAdjust) {
-        m_pSoundTouch->setPitch(
-            KeyUtils::octaveChangeToPowerOf2(*pitch_adjust));
+        m_pSoundTouch->setPitch(*pitch_adjust);
         m_dPitchAdjust = *pitch_adjust;
     }
 
