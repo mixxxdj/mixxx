@@ -296,11 +296,6 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
             // we will receive a playerPositionChanged update for deck 1 which
             // will load a track into the right deck and switch to IDLE mode.
             emit(loadTrackToPlayer(nextTrack, leftDeck.group, true));
-
-            // Remove the track from the top of the queue. Using
-            // removeLoadedTrackFromTopOfQueue causes a race condition. See Bug
-            // #1206080.
-            removeTrackFromTopOfQueue(nextTrack);
         } else {
             // One of the two decks is playing. Switch into IDLE mode and wait
             // until the playing deck crosses posThreshold to start fading.
@@ -394,10 +389,19 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             m_eState = ADJ_IDLE;
 
             if (leftDeckPlaying && !rightDeckPlaying) {
-                // Here we are, if first deck was playing before starting Auto
-                // DJ or if it was started just before. Load the next track into
-                // the right player since it is not playing.
+                // In ADJ_ENABLE_P1LOADED mode we wait until the left deck
+                // successfully starts playing. We don't know in toggleAutoDJ
+                // whether the track will load successfully so we have to
+                // wait. If the track fails to load then playerTrackLoadFailed
+                // will remove it from the top of the queue and request another
+                // track. Remove the left deck's current track from the queue
+                // since it is the track we requested in toggleAutoDJ.
+                removeLoadedTrackFromTopOfQueue(leftDeck);
+
+                // Load the next track into the right player since it is not
+                // playing.
                 loadNextTrackFromQueue(rightDeck);
+
                 // Set crossfade thresholds for left deck.
                 calculateFadeThresholds(&leftDeck);
             } else {
