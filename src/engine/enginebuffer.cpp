@@ -752,6 +752,8 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
         // keylock is enabled, this is applied to either the rate or the tempo.
         double speed = m_pRateControl->calculateRate(
             baserate, paused, iBufferSize, &is_scratching);
+        // The pitch adjustment in percentage of octaves (0.0 being normal
+        // pitch. 1.0 is a full octave shift up).
         double pitchAdjust = m_pKeyControl->getPitchAdjustOctaves();
 
         // Update the slipped position and seek if it was disabled.
@@ -790,6 +792,10 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
                 }
             }
 
+            m_baserate_old = baserate;
+            m_speed_old = speed;
+            m_pitch_old = pitchAdjust;
+            m_bWasKeylocked = keylock_enabled;
 
             // Now we need to update the scaler with the master sample rate, the
             // base rate (ratio between sample rate of the source audio and the
@@ -802,10 +808,6 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
             // pass for every 1 real second)
             double speed_adjust = speed;
 
-            // The pitch adjustment in percentage of octaves (0.0 being normal
-            // pitch. 1.0 is a full octave shift up).
-            double pitch_adjust = pitchAdjust;
-
             // Whether or not the speed change calculated by RateControl should
             // affect the pitch of the song (e.g. as a traditional style pitch
             // fader does) or whether the pitch change should purely affect the
@@ -815,12 +817,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
             m_pScale->setScaleParameters(m_pSampleRate->get(),
                                          baserate, speed_affects_pitch,
                                          &speed_adjust,
-                                         &pitch_adjust);
-
-            m_baserate_old = baserate;
-            m_speed_old = speed;
-            m_pitch_old = pitchAdjust;
-            m_bWasKeylocked = keylock_enabled;
+                                         &pitchAdjust);
 
             // The way we treat rate inside of EngineBuffer is actually a
             // description of "sample consumption rate" or percentage of samples
