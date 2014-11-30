@@ -48,11 +48,11 @@ class TransformNot : public TransformNode {
     TransformNot() {}
 
     double transform(double argument) const {
-        return !argument;
+        return !static_cast<bool>(argument);
     }
 
     double transformInverse(double argument) const {
-        return !argument;
+        return !static_cast<bool>(argument);
     }
 };
 
