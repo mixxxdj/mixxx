@@ -32,6 +32,7 @@ class KeyControl : public EngineControl {
 
   private:
     bool syncKey(EngineBuffer* pOtherEngineBuffer);
+    void updateKeyCOs(double fileKeyNumeric, double pitch);
 
     // The previous rate slider rate.
     double m_dOldRate;

@@ -25,9 +25,6 @@ KeyControl::KeyControl(QString group,
     m_pPitchAdjust->setSmallStepCount(48);
     m_pPitch->setSmallStepCount(48);
 
-    connect(m_pPitchAdjust, SIGNAL(valueChanged(double)),
-            this, SLOT(slotPitchChanged(double)),
-            Qt::DirectConnection);
     connect(m_pPitch, SIGNAL(valueChanged(double)),
             this, SLOT(slotPitchChanged(double)),
             Qt::DirectConnection);
@@ -158,24 +155,30 @@ void KeyControl::slotRateChanged() {
 }
 
 void KeyControl::slotFileKeyChanged(double value) {
-    mixxx::track::io::key::ChromaticKey fileKey =
-            KeyUtils::keyFromNumericValue(value);
 
     // The pitch adjust in octaves.
-    double pitch_adjust = m_pPitchAdjust->get();
+    double pitch = m_pPitchAdjust->get();
     bool keylock_enabled = m_pKeylock->get() > 0;
 
     // If keylock is enabled then rate only affects the tempo and not the pitch.
     if (m_dOldRate != 1.0 && !keylock_enabled) {
-        pitch_adjust += KeyUtils::powerOf2ToOctaveChange(m_dOldRate);
+        pitch += KeyUtils::powerOf2ToOctaveChange(m_dOldRate);
     }
 
+    updateKeyCOs(value, pitch);
+}
+
+void KeyControl::updateKeyCOs(double fileKeyNumeric, double pitch) {
+    mixxx::track::io::key::ChromaticKey fileKey =
+            KeyUtils::keyFromNumericValue(fileKeyNumeric);
+
     QPair<mixxx::track::io::key::ChromaticKey, double> adjusted =
-            KeyUtils::scaleKeyOctaves(fileKey, pitch_adjust);
+            KeyUtils::scaleKeyOctaves(fileKey, pitch);
     m_pEngineKey->set(KeyUtils::keyToNumericValue(adjusted.first));
     double diff_to_nearest_full_key = adjusted.second;
     m_pEngineKeyDistance->set(diff_to_nearest_full_key);
 }
+
 
 void KeyControl::slotSetEngineKey(double key) {
     Q_UNUSED(key);
@@ -183,6 +186,9 @@ void KeyControl::slotSetEngineKey(double key) {
 }
 
 void KeyControl::slotPitchChanged(double) {
+
+
+
     double dFileKey = m_pFileKey->get();
     slotFileKeyChanged(dFileKey);
 }
