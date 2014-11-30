@@ -43,6 +43,19 @@ class TransformInvert : public TransformNode {
     }
 };
 
+class TransformNot : public TransformNode {
+  public:
+    TransformNot() {}
+
+    double transform(double argument) const {
+        return !argument;
+    }
+
+    double transformInverse(double argument) const {
+        return !argument;
+    }
+};
+
 class ValueTransformer {
   public:
     double transform(double argument) const;
