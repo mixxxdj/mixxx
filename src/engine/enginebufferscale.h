@@ -60,14 +60,12 @@ class EngineBufferScale : public QObject {
     // be set to the value it was clamped to.
     virtual void setScaleParameters(int iSampleRate,
                                     double base_rate,
-                                    bool speed_affects_pitch,
-                                    double* speed_adjust,
-                                    double* pitch_adjust) {
+                                    double* pTempo,
+                                    double* pPitch) {
         m_iSampleRate = iSampleRate;
         m_dBaseRate = base_rate;
-        m_bSpeedAffectsPitch = speed_affects_pitch;
-        m_dSpeedAdjust = *speed_adjust;
-        m_dPitchAdjust = *pitch_adjust;
+        m_dTempo = *pTempo;
+        m_dPitch = *pPitch;
     }
 
     /** Get new playpos after call to scale() */
@@ -81,8 +79,8 @@ class EngineBufferScale : public QObject {
     int m_iSampleRate;
     double m_dBaseRate;
     bool m_bSpeedAffectsPitch;
-    double m_dSpeedAdjust;
-    double m_dPitchAdjust;
+    double m_dTempo;
+    double m_dPitch;
     /** Pointer to internal buffer */
     CSAMPLE* m_buffer;
     /** New playpos after call to scale */
