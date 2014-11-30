@@ -14,7 +14,7 @@
 #include <QFileSystemWatcher>
 
 #include "configobject.h"
-#include "controllers/pitchfilter.h"
+#include "util/alphabetafilter.h"
 #include "controllers/softtakeover.h"
 #include "controllers/controllerpreset.h"
 #include "qtscript-bytearray/bytearrayclass.h"
@@ -176,14 +176,14 @@ class ControllerEngine : public QObject {
     };
     QHash<int, TimerInfo> m_timers;
     SoftTakeoverCtrl m_st;
-    ByteArrayClass *m_pBaClass;
+    ByteArrayClass* m_pBaClass;
     // 256 (default) available virtual decks is enough I would think.
     //  If more are needed at run-time, these will move to the heap automatically
     QVarLengthArray<int> m_intervalAccumulator;
     QVarLengthArray<uint> m_lastMovement;
     QVarLengthArray<float> m_dx, m_rampTo, m_rampFactor;
     QVarLengthArray<bool> m_ramp, m_brakeActive;
-    QVarLengthArray<PitchFilter*> m_pitchFilter;
+    QVarLengthArray<AlphaBetaFilter*> m_scratchFilters;
     QHash<int, int> m_scratchTimers;
     mutable QHash<QString, QScriptValue> m_scriptValueCache;
     // Filesystem watcher for script auto-reload

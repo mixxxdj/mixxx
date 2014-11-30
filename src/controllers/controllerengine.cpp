@@ -25,13 +25,16 @@
 
 const int kDecks = 16;
 
-ControllerEngine::ControllerEngine(Controller* controller)
-    : m_pEngine(NULL),
-      m_pController(controller),
-      m_bDebug(false),
-      m_bPopups(false),
-      m_pBaClass(NULL) {
+// Use 1ms for the Alpha-Beta dt. We're assuming the OS actually gives us a 1ms
+// timer.
+const double kAlphaBetaDt = 0.001;
 
+ControllerEngine::ControllerEngine(Controller* controller)
+        : m_pEngine(NULL),
+          m_pController(controller),
+          m_bDebug(false),
+          m_bPopups(false),
+          m_pBaClass(NULL) {
     // Handle error dialog buttons
     qRegisterMetaType<QMessageBox::StandardButton>("QMessageBox::StandardButton");
 
@@ -41,13 +44,13 @@ ControllerEngine::ControllerEngine(Controller* controller)
     m_dx.resize(kDecks);
     m_rampTo.resize(kDecks);
     m_ramp.resize(kDecks);
-    m_pitchFilter.resize(kDecks);
+    m_scratchFilters.resize(kDecks);
     m_rampFactor.resize(kDecks);
     m_brakeActive.resize(kDecks);
     // Initialize arrays used for testing and pointers
-    for (int i=0; i < kDecks; i++) {
+    for (int i = 0; i < kDecks; ++i) {
         m_dx[i] = 0.0;
-        m_pitchFilter[i] = new PitchFilter();
+        m_scratchFilters[i] = new AlphaBetaFilter();
         m_ramp[i] = false;
     }
 
@@ -56,9 +59,9 @@ ControllerEngine::ControllerEngine(Controller* controller)
 
 ControllerEngine::~ControllerEngine() {
     // Clean up
-    for (int i=0; i < kDecks; i++) {
-        delete m_pitchFilter[i];
-        m_pitchFilter[i] = NULL;
+    for (int i = 0; i < kDecks; ++i) {
+        delete m_scratchFilters[i];
+        m_scratchFilters[i] = NULL;
     }
 
     // Delete the script engine, first clearing the pointer so that
@@ -68,7 +71,6 @@ ControllerEngine::~ControllerEngine() {
         m_pEngine = NULL;
         engine->deleteLater();
     }
-
 }
 
 /* -------- ------------------------------------------------------
@@ -1261,13 +1263,12 @@ void ControllerEngine::scratchEnable(int deck, int intervalsPerRev, float rpm,
         }
     }
 
-    // Initialize pitch filter (0.001s = 1ms) (We're assuming the OS actually
-    // gives us a 1ms timer below)
+    // Initialize scratch filter
     if (alpha && beta) {
-        m_pitchFilter[deck]->init(0.001, initVelocity, alpha, beta);
+        m_scratchFilters[deck]->init(kAlphaBetaDt, initVelocity, alpha, beta);
     } else {
         // Use filter's defaults if not specified
-        m_pitchFilter[deck]->init(0.001, initVelocity);
+        m_scratchFilters[deck]->init(kAlphaBetaDt, initVelocity);
     }
 
     // 1ms is shortest possible, OS dependent
@@ -1302,13 +1303,13 @@ void ControllerEngine::scratchProcess(int timerId) {
     int deck = m_scratchTimers[timerId];
     // PlayerManager::groupForDeck is 0-indexed.
     QString group = PlayerManager::groupForDeck(deck - 1);
-    PitchFilter* filter = m_pitchFilter[deck];
+    AlphaBetaFilter* filter = m_scratchFilters[deck];
     if (!filter) {
         qWarning() << "Scratch filter pointer is null on deck" << deck;
         return;
     }
 
-    const float oldPitch = filter->currentPitch();
+    const double oldRate = filter->predictedVelocity();
 
     // Give the filter a data point:
 
@@ -1326,26 +1327,25 @@ void ControllerEngine::scratchProcess(int timerId) {
         filter->observation(m_dx[deck] * m_intervalAccumulator[deck]);
     }
 
-    const float newPitch = filter->currentPitch();
+    const double newRate = filter->predictedVelocity();
 
     // Actually do the scratching
     ControlObjectThread *cot = getControlObjectThread(group, "scratch2");
     if(cot == NULL) {
         return; // abort and maybe it'll work on the next pass
     }
-    cot->slotSet(filter->currentPitch());
+    cot->slotSet(newRate);
 
     // Reset accumulator
     m_intervalAccumulator[deck] = 0;
 
-    //if (m_ramp[deck]) qDebug() << "Ramping to" << m_rampTo[deck] << " Currently at:" << filter->currentPitch();
-
-    // If we're ramping and the current pitch is really close to the rampTo
-    // value or we're in brake mode and have crossed over the zero value, end scratching
-    if ((m_ramp[deck] && fabs(m_rampTo[deck] - newPitch) <= 0.00001) ||
+    // If we're ramping and the current rate is really close to the rampTo value
+    // or we're in brake mode and have crossed over the zero value, end
+    // scratching
+    if ((m_ramp[deck] && fabs(m_rampTo[deck] - newRate) <= 0.00001) ||
         (m_brakeActive[deck] && (
-            (oldPitch > 0.0 && newPitch < 0.0) ||
-            (oldPitch < 0.0 && newPitch > 0.0)))) {
+            (oldRate > 0.0 && newRate < 0.0) ||
+            (oldRate < 0.0 && newRate > 0.0)))) {
         // Not ramping no mo'
         m_ramp[deck] = false;
 
@@ -1396,27 +1396,27 @@ void ControllerEngine::scratchDisable(int deck, bool ramp) {
         ControlObjectThread *cot = getControlObjectThread(group, "play");
         if (cot != NULL && cot->get() == 1) {
             // If so, set the target velocity to the playback speed
-            float rate=0;
-            // Get the pitch slider value
+            double rate = 0;
+            // Get the rate slider value
             cot = getControlObjectThread(group, "rate");
             if (cot != NULL) {
                 rate = cot->get();
             }
 
-            // Get the pitch slider direction
+            // Get the rate slider direction
             cot = getControlObjectThread(group, "rate_dir");
             if (cot != NULL && cot->get() == -1) {
                 rate = -rate;
             }
 
-            // Multiply by the pitch range
+            // Multiply by the rate range
             cot = getControlObjectThread(group, "rateRange");
             if (cot != NULL) {
                 rate = rate * cot->get();
             }
 
             // Add 1 since the deck is playing
-            rate++;
+            rate += 1.0;
 
             // See if we're in reverse play
             cot = getControlObjectThread(group, "reverse");
@@ -1513,9 +1513,9 @@ void ControllerEngine::brake(int deck, bool activate, float factor, float rate) 
         }
 
         // setup the filter
-        PitchFilter* filter = m_pitchFilter[deck];
+        AlphaBetaFilter* filter = m_scratchFilters[deck];
         if (filter != NULL) {
-            m_pitchFilter[deck]->init(0.001, rate);
+            filter->init(kAlphaBetaDt, rate);
         }
 
         // activate the ramping in scratchProcess()
