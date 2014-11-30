@@ -914,8 +914,6 @@ int MixxxMainWindow::noOutputDlg(bool *continueClicked)
                     "</ul></html>"
     );
 
-    m_bInhibitOutputDeviceWarning = true;
-
     QPushButton *continueButton = msgBox.addButton(tr("Continue"), QMessageBox::ActionRole);
     QPushButton *reconfigureButton = msgBox.addButton(tr("Reconfigure"), QMessageBox::ActionRole);
     QPushButton *exitButton = msgBox.addButton(tr("Exit"), QMessageBox::ActionRole);
