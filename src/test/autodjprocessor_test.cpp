@@ -485,7 +485,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck1_TrackLoadFailed) {
     EXPECT_DOUBLE_EQ(0.0, deck2.play.get());
 
     // After the load failed signal we will receive another track load signal
-    // for deck 1.
+    // for deck 2.
     EXPECT_CALL(*pProcessor, loadTrackToPlayer(_, QString("[Channel2]"), false));
 
     // Pretend the track load fails.
@@ -502,7 +502,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck1_TrackLoadFailed) {
     deck2.slotLoadTrack(pTrack, false);
     deck2.fakeTrackLoadedEvent(pTrack);
 
-    // No change to the mode, crossfader or play states.
+    // No change to the mode, crossfader, or play states.
     EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
     EXPECT_DOUBLE_EQ(0.2447, master.crossfader.get());
     EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
