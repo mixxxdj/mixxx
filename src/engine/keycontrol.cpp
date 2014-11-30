@@ -95,7 +95,17 @@ double KeyControl::getPitchAdjustOctaves() const {
 
 void KeyControl::setPitchAdjustOctaves(double value) {
     m_pPitchAdjust->set(value);
-    slotPitchChanged(value);
+    double pitch = value;
+    bool keylock_enabled = m_pKeylock->toBool();
+
+    // If keylock is enabled then rate only affects the tempo and not the pitch.
+    if (m_dOldRate != 1.0 && !keylock_enabled) {
+        pitch += KeyUtils::powerOf2ToOctaveChange(m_dOldRate);
+    }
+    m_pPitch->set(pitch);
+
+    double dFileKey = m_pFileKey->get();
+    updateKeyCOs(dFileKey, pitch);
 }
 
 double KeyControl::getKey() {
@@ -185,12 +195,18 @@ void KeyControl::slotSetEngineKey(double key) {
     // TODO(rryan): set m_pPitch to match the desired key.
 }
 
-void KeyControl::slotPitchChanged(double) {
+void KeyControl::slotPitchChanged(double pitch) {
+    double pitchAdjust = pitch;
+    bool keylock_enabled = m_pKeylock->toBool();
 
-
+    // If keylock is enabled then rate only affects the tempo and not the pitch.
+    if (m_dOldRate != 1.0 && !keylock_enabled) {
+        pitchAdjust -= KeyUtils::powerOf2ToOctaveChange(m_dOldRate);
+    }
+    m_pPitchAdjust->set(pitchAdjust);
 
     double dFileKey = m_pFileKey->get();
-    slotFileKeyChanged(dFileKey);
+    updateKeyCOs(dFileKey, pitch);
 }
 
 void KeyControl::slotSyncKey(double v) {
