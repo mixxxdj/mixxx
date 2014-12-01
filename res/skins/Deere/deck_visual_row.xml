@@ -103,6 +103,64 @@
       </Visual>
 
       <WidgetGroup>
+        <ObjectName>WaveformZoomContainer</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <PushButton>
+            <MinimumSize>20,20</MinimumSize>
+            <MaximumSize>30,30</MaximumSize>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text> + </Text>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text> + </Text>
+            </State>
+            <Connection>
+              <ConfigKey persist="true"><Variable name="group"/>,waveform_zoom_down</ConfigKey>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
+            <MinimumSize>20,20</MinimumSize>
+            <MaximumSize>30,30</MaximumSize>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text> O </Text>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text> O </Text>
+            </State>
+            <Connection>
+              <ConfigKey persist="true"><Variable name="group"/>,waveform_zoom_set_default</ConfigKey>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
+            <MinimumSize>20,20</MinimumSize>
+            <MaximumSize>30,30</MaximumSize>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text> - </Text>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text> - </Text>
+            </State>
+            <Connection>
+              <ConfigKey persist="true"><Variable name="group"/>,waveform_zoom_up</ConfigKey>
+            </Connection>
+          </PushButton>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
         <ObjectName>SpinnyHolder</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>max,max</SizePolicy>
@@ -110,8 +168,13 @@
           <Spinny>
             <Group><Variable name="group"/></Group>
             <PathBackground>image/vinyl_spinny_background.png</PathBackground>
-            <PathForeground>image/vinyl_spinny<Variable name="i"/>_foreground.png</PathForeground>
+            <PathForeground>image/vinyl_spinny_foreground.png</PathForeground>
             <PathGhost>image/vinyl_spinny_foreground_ghost.png</PathGhost>
+            <!--
+             If you want to have cover art beneath the spnning vinyl images,
+             set <ShowCover> to "true" AND make the <PathBackground> image semi-transparent.
+            -->
+            <ShowCover>false</ShowCover>
           </Spinny>
         </Children>
         <Connection>

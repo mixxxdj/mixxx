@@ -74,6 +74,11 @@
         </State>
         <Connection>
           <ConfigKey><Variable name="group"/>,cue_default</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,cue_gotoandstop</ConfigKey>
+          <ButtonState>RightButton</ButtonState>
         </Connection>
       </PushButton>
 
@@ -81,7 +86,7 @@
         <SetVariable name="ObjectName">PlayToggle</SetVariable>
         <SetVariable name="MinimumSize">40,20</SetVariable>
         <SetVariable name="MaximumSize">40,20</SetVariable>
-        <SetVariable name="SizePolicy">f,f,</SetVariable>
+        <SetVariable name="SizePolicy">f,f</SetVariable>
         <SetVariable name="state_0_text">▶</SetVariable>
         <SetVariable name="state_0_pressed"></SetVariable>
         <SetVariable name="state_0_unpressed"></SetVariable>

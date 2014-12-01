@@ -32,6 +32,7 @@
 #include "controlpushbutton.h"
 #include "skin/skincontext.h"
 #include "controlwidgetconnection.h"
+#include "util/math.h"
 
 class WPushButton : public WWidget {
     Q_OBJECT
@@ -52,22 +53,27 @@ class WPushButton : public WWidget {
     // The declaration #MyButton[displayValue="0"] { } will define the style
     // when the widget is in state 0.  This allows for effects like reversing
     // background and foreground colors to indicate enabled/disabled state.
-    Q_PROPERTY(int displayValue READ readDisplayValue)
+    Q_PROPERTY(int displayValue READ readDisplayValue NOTIFY displayValueChanged)
 
     int readDisplayValue() const {
         double value = getControlParameterDisplay();
-        int idx = static_cast<int>(value) % m_iNoStates;
-        return idx;
+        if (!isnan(value) && m_iNoStates > 0) {
+            return static_cast<int>(value) % m_iNoStates;
+        }
+        return 0;
     }
 
-    void setup(QDomNode node, const SkinContext& context);
+    virtual void setup(QDomNode node, const SkinContext& context);
 
     // Sets the number of states associated with this button, and removes
     // associated pixmaps.
     void setStates(int iStatesW);
 
+  signals:
+    void displayValueChanged(int value);
+
   public slots:
-    void onConnectedControlChanged(double dParameter, double dValue);
+    virtual void onConnectedControlChanged(double dParameter, double dValue);
 
   protected:
     virtual void paintEvent(QPaintEvent*);
@@ -76,7 +82,9 @@ class WPushButton : public WWidget {
     virtual void focusOutEvent(QFocusEvent* e);
     void fillDebugTooltip(QStringList* debug);
 
-  private:
+  protected:
+    void restyleAndRepaint();
+
     // Associates a pixmap of a given state of the button with the widget
     void setPixmap(int iState, bool bPressed, PixmapSource source);
 

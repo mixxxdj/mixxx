@@ -7,7 +7,7 @@
 -->
 <Template>
   <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
-  <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>]</SetVariable>
+  <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
   <WidgetGroup>
     <ObjectName>Deck<Variable name="i"/></ObjectName>
     <Layout>horizontal</Layout>

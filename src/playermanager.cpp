@@ -120,10 +120,13 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
 unsigned int PlayerManager::numDecks() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.
-    static ControlObject* pNumCO = NULL;
+    static ControlObjectSlave* pNumCO = NULL;
     if (pNumCO == NULL) {
-        pNumCO = ControlObject::getControl(
-            ConfigKey("[Master]", "num_decks"));
+        pNumCO = new ControlObjectSlave(ConfigKey("[Master]", "num_decks"));
+        if (!pNumCO->valid()) {
+            delete pNumCO;
+            pNumCO = NULL;
+        }
     }
     return pNumCO ? pNumCO->get() : 0;
 }
@@ -146,13 +149,33 @@ bool PlayerManager::isDeckGroup(const QString& group, int* number) {
 }
 
 // static
+bool PlayerManager::isPreviewDeckGroup(const QString& group, int* number) {
+    if (!group.startsWith("[PreviewDeck")) {
+        return false;
+    }
+
+    bool ok = false;
+    int deckNum = group.mid(8,group.lastIndexOf("]")-8).toInt(&ok);
+    if (!ok || deckNum <= 0) {
+        return false;
+    }
+    if (number != NULL) {
+        *number = deckNum;
+    }
+    return true;
+}
+
+// static
 unsigned int PlayerManager::numSamplers() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.
-    static ControlObject* pNumCO = NULL;
+    static ControlObjectSlave* pNumCO = NULL;
     if (pNumCO == NULL) {
-        pNumCO = ControlObject::getControl(
-            ConfigKey("[Master]", "num_samplers"));
+        pNumCO = new ControlObjectSlave(ConfigKey("[Master]", "num_samplers"));
+        if (!pNumCO->valid()) {
+            delete pNumCO;
+            pNumCO = NULL;
+        }
     }
     return pNumCO ? pNumCO->get() : 0;
 }
@@ -161,10 +184,14 @@ unsigned int PlayerManager::numSamplers() {
 unsigned int PlayerManager::numPreviewDecks() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.
-    static ControlObject* pNumCO = NULL;
+    static ControlObjectSlave* pNumCO = NULL;
     if (pNumCO == NULL) {
-        pNumCO = ControlObject::getControl(
-            ConfigKey("[Master]", "num_preview_decks"));
+        pNumCO = new ControlObjectSlave(
+                ConfigKey("[Master]", "num_preview_decks"));
+        if (!pNumCO->valid()) {
+            delete pNumCO;
+            pNumCO = NULL;
+        }
     }
     return pNumCO ? pNumCO->get() : 0;
 }
@@ -263,10 +290,22 @@ void PlayerManager::addDeckInner() {
     m_pSoundManager->registerInput(
         AudioInput(AudioInput::VINYLCONTROL, 0, 0, number - 1), pEngineDeck);
 
-    // Setup EQ for this deck
-    m_pEffectsManager->addEqualizer(group);
+    // Setup equalizer rack for this deck.
+    EqualizerRackPointer pEqRack = m_pEffectsManager->getEqualizerRack(0);
+    if (pEqRack) {
+        pEqRack->addEffectChainSlotForGroup(group);
+    }
 
-    pDeck->setupEqControlls();
+    // BaseTrackPlayer needs to delay until we have setup the equalizer rack for
+    // this deck to fetch the legacy EQ controls.
+    // TODO(rryan): Find a way to remove this cruft.
+    pDeck->setupEqControls();
+
+    // Setup quick effect rack for this deck.
+    QuickEffectRackPointer pQuickEffectRack = m_pEffectsManager->getQuickEffectRack(0);
+    if (pQuickEffectRack) {
+        pQuickEffectRack->addEffectChainSlotForGroup(group);
+    }
 }
 
 void PlayerManager::addSampler() {
@@ -327,7 +366,6 @@ BaseTrackPlayer* PlayerManager::getPlayer(QString group) const {
     }
     return NULL;
 }
-
 
 Deck* PlayerManager::getDeck(unsigned int deck) const {
     QMutexLocker locker(&m_mutex);

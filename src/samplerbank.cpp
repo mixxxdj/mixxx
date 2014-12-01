@@ -49,7 +49,10 @@ void SamplerBank::slotSaveSamplerBank(double v) {
     doc.appendChild(root);
 
     for (unsigned int i = 0; i < m_pPlayerManager->numSamplers(); ++i) {
-        Sampler* pSampler = m_pPlayerManager->getSampler(i);
+        Sampler* pSampler = m_pPlayerManager->getSampler(i + 1);
+        if (pSampler == NULL) {
+            continue;
+        }
         QDomElement samplerNode = doc.createElement(QString("sampler"));
 
         samplerNode.setAttribute("group", pSampler->getGroup());

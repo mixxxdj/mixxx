@@ -6,6 +6,7 @@
 #include <QTranslator>
 #include <QDir>
 
+#include "playermanager.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
 #include "library/libraryfeature.h"
@@ -20,7 +21,7 @@
 #include "library/recording/recordingfeature.h"
 #include "library/itunes/itunesfeature.h"
 #include "library/mixxxlibraryfeature.h"
-#include "library/autodjfeature.h"
+#include "library/autodj/autodjfeature.h"
 #include "library/playlistfeature.h"
 #include "library/traktor/traktorfeature.h"
 #include "library/librarycontrol.h"
@@ -38,6 +39,7 @@
 const QString Library::m_sTrackViewName = QString("WTrackTableView");
 
 Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig,
+                 PlayerManagerInterface* pPlayerManager,
                  RecordingManager* pRecordingManager) :
         m_pConfig(pConfig),
         m_pSidebarModel(new SidebarModel(parent)),
@@ -51,7 +53,7 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig,
     m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection,m_pConfig);
     addFeature(m_pMixxxLibraryFeature);
 
-    addFeature(new AutoDJFeature(this, pConfig, m_pTrackCollection));
+    addFeature(new AutoDJFeature(this, pConfig, pPlayerManager, m_pTrackCollection));
     m_pPlaylistFeature = new PlaylistFeature(this, m_pTrackCollection, m_pConfig);
     addFeature(m_pPlaylistFeature);
     m_pCrateFeature = new CrateFeature(this, m_pTrackCollection, m_pConfig);

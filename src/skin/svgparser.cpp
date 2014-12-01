@@ -6,8 +6,6 @@
 
 SvgParser::SvgParser(const SkinContext& parent)
         : m_context(parent) {
-    m_context.importScriptExtension("console");
-    m_context.importScriptExtension("svg");
 }
 
 SvgParser::~SvgParser() {
@@ -98,7 +96,8 @@ void SvgParser::parseElement(QDomNode* node) const {
 
     } else if (element.tagName() == "script") {
         // Look for a filepath in the "src" attribute
-        QString scriptPath = node->toElement().attribute("src");
+        // QString scriptPath = node->toElement().attribute("src");
+        QString scriptPath = element.attribute("src");
         if (!scriptPath.isNull()) {
             QFile scriptFile(m_context.getSkinPath(scriptPath));
             scriptFile.open(QIODevice::ReadOnly|QIODevice::Text);
@@ -107,9 +106,9 @@ void SvgParser::parseElement(QDomNode* node) const {
                                                            scriptPath);
         }
         // Evaluates the content of the script element
-        QString expression = m_context.nodeToString(*node);
+        // QString expression = m_context.nodeToString(*node);
         QScriptValue result = m_context.evaluateScript(
-            expression, m_currentFile, node->lineNumber());
+            element.text(), m_currentFile, node->lineNumber());
     }
 }
 
@@ -119,7 +118,7 @@ void SvgParser::parseAttributes(const QDomNode& node) const {
     QDomElement element = node.toElement();
 
     // Retrieving hooks pattern from script extension
-    QScriptValue global = m_context.getScriptEngine().globalObject();
+    QScriptValue global = m_context.getScriptEngine()->globalObject();
     QScriptValue hooksPattern = global.property("svg")
         .property("getHooksPattern").call(global.property("svg"));
     QRegExp hookRx;
@@ -177,7 +176,7 @@ QScriptValue SvgParser::evaluateTemplateExpression(const QString& expression,
                                                    int lineNumber) const {
     QScriptValue out = m_context.evaluateScript(
         expression, m_currentFile, lineNumber);
-    if (m_context.getScriptEngine().hasUncaughtException()) {
+    if (m_context.getScriptEngine()->hasUncaughtException()) {
         // return an empty string as replacement for the in-attribute expression
         return QScriptValue();
     } else {

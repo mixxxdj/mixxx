@@ -97,8 +97,13 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     // Balance
     m_pBalance = new ControlPotmeter(ConfigKey(group, "balance"), -1., 1.);
 
-    // Master volume
-    m_pMasterVolume = new ControlAudioTaperPot(ConfigKey(group, "volume"), -14, 14, 0.5);
+    // Master gain
+    m_pMasterGain = new ControlAudioTaperPot(ConfigKey(group, "gain"), -14, 14, 0.5);
+
+    // Legacy: the master "gain" control used to be named "volume" in Mixxx
+    // 1.11.0 and earlier. See Bug #1306253.
+    ControlDoublePrivate::insertAlias(ConfigKey(group, "volume"),
+                                      ConfigKey(group, "gain"));
 
     // VU meter:
     m_pVumeter = new EngineVuMeter(group);
@@ -107,7 +112,12 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_pHeadDelay = new EngineDelay(group, ConfigKey(group, "headDelay"));
 
     // Headphone volume
-    m_pHeadVolume = new ControlAudioTaperPot(ConfigKey(group, "headVolume"), -14, 14, 0.5);
+    m_pHeadGain = new ControlAudioTaperPot(ConfigKey(group, "headGain"), -14, 14, 0.5);
+
+    // Legacy: the headphone "headGain" control used to be named "headVolume" in
+    // Mixxx 1.11.0 and earlier. See Bug #1306253.
+    ControlDoublePrivate::insertAlias(ConfigKey(group, "headVolume"),
+                                      ConfigKey(group, "headGain"));
 
     // Headphone mix (left/right)
     m_pHeadMix = new ControlPotmeter(ConfigKey(group, "headMix"),-1.,1.);
@@ -158,6 +168,9 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_pMasterMonoMixdown = new ControlObject(ConfigKey(group, "mono_mixdown"),
             true, false, true);  // persist = true
     m_pHeadphoneEnabled = new ControlObject(ConfigKey(group, "headEnabled"));
+
+
+    // Note: the EQ Rack is set in EffectsManager::setupDefaults();
 }
 
 EngineMaster::~EngineMaster() {
@@ -167,8 +180,8 @@ EngineMaster::~EngineMaster() {
     delete m_pBalance;
     delete m_pHeadMix;
     delete m_pHeadSplitEnabled;
-    delete m_pMasterVolume;
-    delete m_pHeadVolume;
+    delete m_pMasterGain;
+    delete m_pHeadGain;
     delete m_pTalkoverDucking;
     delete m_pVumeter;
     delete m_pSideChain;
@@ -407,7 +420,7 @@ void EngineMaster::process(const int iBufferSize) {
         }
 
         // Apply master volume after effects.
-        CSAMPLE master_volume = m_pMasterVolume->get();
+        CSAMPLE master_volume = m_pMasterGain->get();
         if (m_bRampingGain) {
             SampleUtil::applyRampingGain(m_pMaster, m_masterVolumeOld,
                                          master_volume, iBufferSize);
@@ -462,7 +475,7 @@ void EngineMaster::process(const int iBufferSize) {
                                              iBufferSize, iSampleRate, headphoneFeatures);
         }
         // Head volume
-        CSAMPLE headphoneVolume = m_pHeadVolume->get();
+        CSAMPLE headphoneVolume = m_pHeadGain->get();
         if (m_bRampingGain) {
             SampleUtil::applyRampingGain(m_pHead, m_headphoneVolumeOld,
                                          headphoneVolume, iBufferSize);

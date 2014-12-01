@@ -2,7 +2,10 @@
 <!--
   Description:
     The microphone controls.
+  Variables:
+    i: The Microphone number (1-indexed)
 -->
+
 <Template>
   <WidgetGroup>
     <ObjectName>MicrophoneContainer</ObjectName>
@@ -10,51 +13,21 @@
     <SizePolicy>min,min</SizePolicy>
     <Children>
 
-      <Template src="skin:knob.xml">
-        <SetVariable name="group">[Master]</SetVariable>
-        <SetVariable name="control">duckStrength</SetVariable>
-        <SetVariable name="label">Strength</SetVariable>
+      <Template src="skin:microphone_talkover_button.xml">
+        <SetVariable name="group">[Microphone<Variable name="i"/>]</SetVariable>
+        <SetVariable name="talk_text">Talk<Variable name="i"/></SetVariable>
       </Template>
 
-      <PushButton>
-        <Size>40f,20f</Size>
-        <NumberStates>3</NumberStates>
-        <State>
-          <Number>0</Number>
-          <Text>Off</Text>
-        </State>
-        <State>
-          <Number>1</Number>
-          <Text>Auto</Text>
-        </State>
-        <State>
-          <Number>2</Number>
-          <Text>Manual</Text>
-        </State>
-        <Connection>
-          <ConfigKey>[Master],talkoverDucking</ConfigKey>
-          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-        </Connection>
-      </PushButton>
-
-      <Template src="skin:microphone_talkover_button.xml">
-        <SetVariable name="group">[Microphone]</SetVariable>
-        <SetVariable name="talk_text">Talk1</SetVariable>
+      <Template src="skin:vumeter.xml">
+        <SetVariable name="group">[Microphone<Variable name="i"/>]</SetVariable>
+        <SetVariable name="control">VuMeter</SetVariable>
       </Template>
 
-      <Template src="skin:microphone_talkover_button.xml">
-        <SetVariable name="group">[Microphone2]</SetVariable>
-        <SetVariable name="talk_text">Talk2</SetVariable>
-      </Template>
-
-      <Template src="skin:microphone_talkover_button.xml">
-        <SetVariable name="group">[Microphone3]</SetVariable>
-        <SetVariable name="talk_text">Talk3</SetVariable>
-      </Template>
-
-      <Template src="skin:microphone_talkover_button.xml">
-        <SetVariable name="group">[Microphone4]</SetVariable>
-        <SetVariable name="talk_text">Talk4</SetVariable>
+      <Template src="skin:knob_with_button.xml">
+        <SetVariable name="group">[Microphone<Variable name="i"/>]</SetVariable>
+        <SetVariable name="control">pregain</SetVariable>
+        <SetVariable name="button_control">mute</SetVariable>
+        <SetVariable name="label">Gain</SetVariable>
       </Template>
     </Children>
   </WidgetGroup>

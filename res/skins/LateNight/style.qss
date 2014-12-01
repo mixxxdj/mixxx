@@ -1,3 +1,7 @@
+#debugbg {
+    background-color: #fff;
+}
+
 #UIButtons {
 }
 
@@ -7,6 +11,7 @@
 }
 
 #UILowerHalf {
+  background-color: #0f0f0f;
 }
 
 #HorizBorder {
@@ -64,15 +69,15 @@
 #Deck4 {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
   border: 1px solid #585858;
-  border-top: 0px; 
+  border-top: 0px;
 }
 
 #Deck2 {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  border: 1px solid #585858; 
+  border: 1px solid #585858;
 }
 
-#Deck3 { 
+#Deck3 {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
   border: 1px solid #585858;
   border-right: 0px;
@@ -127,15 +132,24 @@
 }
 
 #MasterControls {
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+  padding-right: 2px;
+  padding-top: 10px;
 }
 
 #MixerContainer {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
   background-color: #1e1e1e;
+  padding-top: 5px;
 }
 
 #MixerChannel {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+}
+
+#MixerChannelReversed {
+  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+  padding-left: 3px;
 }
 
 #MixerChannelHoriz {
@@ -151,7 +165,21 @@
 }
 
 #MasterKnobs {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+}
+
+#MasterKnobCol {
+  padding-left:1px;
+  padding-right:1px;
+}
+
+#VuAndSlider {
+  padding-top: 3px;
+}
+
+#VuMeter {
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+  padding-right: 6px;
 }
 
 #MasterSync {
@@ -169,7 +197,16 @@
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
-#TitleGutter, #AlbumGutter { 
+#KillButton {
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+}
+
+#KillButtonReversed {
+  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+}
+
+
+#TitleGutter, #AlbumGutter {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
   padding: 1px;
   border: 1px solid #585858;
@@ -178,7 +215,7 @@
   border-right: 0px;
 }
 
-#ArtistGutter{ 
+#ArtistGutter{
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
   padding: 1px;
   padding-bottom: 4px;
@@ -229,7 +266,7 @@
 }
 
 #RateButtons, #RatePermButtons, #RateTempButtons {
-  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+  qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
 }
 
 #ColumnOne {
@@ -271,24 +308,19 @@
 #KnobLabel {
   font: bold 10px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
   color: #585858;
-  text-align:center;
+  text-align: center;
+  qproperty-alignment: 'AlignCenter | AlignBottom';
   padding-bottom: 2px;
   padding-top: -2px;
 }
 
 #SyncControls {
-  qproperty-layoutAlignment: 'AlignRight | AlignBottom';
+  qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
   padding-right: 0px;
   border-bottom: 1px solid #585858;
 }
 
-/*#FourDeckToggleButton {
-  border: 1px solid #e17800;
-  font: bold 10px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-  color: #e17800;
-}*/
-
-#FourDeckToggleButton[displayValue="0"] {
+#GuiToggleButton[displayValue="0"] {
     border: 1px solid #585858;
     font: bold 10px/12px Lucida Grande,
           Lucida Sans Unicode, Arial,
@@ -297,23 +329,96 @@
     background-color: #0e0e0e;
 }
 
-#FourDeckToggleButton[displayValue="1"] {
+#GuiToggleButton[displayValue="1"] {
     border: 1px solid #585858;
     font: bold 10px/12px Lucida Grande,
           Lucida Sans Unicode, Arial,
           Verdana, sans-serif;
     color: #0e0e0e;
-    background-color: #e17800;
+    background-color: #eece33;
+}
+
+#GuiToggleButtonInverted[displayValue="0"] {
+    border: 1px solid #585858;
+    font: bold 10px/12px Lucida Grande,
+          Lucida Sans Unicode, Arial,
+          Verdana, sans-serif;
+    color: #0e0e0e;
+    background-color: #eece33;
+}
+
+#GuiToggleButtonInverted[displayValue="1"] {
+    border: 1px solid #585858;
+    font: bold 10px/12px Lucida Grande,
+          Lucida Sans Unicode, Arial,
+          Verdana, sans-serif;
+    color: #585858;
+    background-color: #0e0e0e;
+}
+
+#PitchTweakButton[displayValue="0"] {
+    border: 1px solid #585858;
+    font: bold 10px Lucida Grande,
+          Lucida Sans Unicode, Arial,
+          Verdana, sans-serif;
+    color: #c1c1c1;
+    background-color: #0e0e0e;
+    padding: 1px;
+    margin: 1px;
+}
+
+#PitchTweakButton[displayValue="1"] {
+    border: 1px solid #585858;
+    font: bold 10px Lucida Grande,
+          Lucida Sans Unicode, Arial,
+          Verdana, sans-serif;
+    color: #c1c1c1;
+    background-color: #c00a09;
+    padding: 1px;
+    margin: 1px;
+}
+
+#PitchLabel {
+  font: bold 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  color: #585858;
+  text-align: center;
+  qproperty-alignment: 'AlignHCenter | AlignBottom';
+  padding: 2px;
+  margin: 2px;
+}
+
+#BpmContainer {
+  qproperty-layoutAlignment: 'AlignCenter';
+}
+
+#BpmTextColor1, #BpmTextColor2 {
+  qproperty-alignment: 'AlignCenter';
+  font: bold 16px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  background-color: transparent;
+  text-align: center;
+  padding: 0px;
+  margin: 0px;
+  color: #eece33;
+}
+
+#BpmTextColor3, #BpmTextColor4 {
+  qproperty-alignment: 'AlignCenter';
+  font: bold 16px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  background-color: transparent;
+  text-align: center;
+  padding: 0px;
+  margin: 0px;
+  color: #09B2AE;
 }
 
 #CrossFadeContainer {
-qproperty-layoutAlignment: 'AlignCenter';
+ qproperty-layoutAlignment: 'AlignCenter';
  background-color: #1e1e1e;
 }
 
-#FourDeckButton {
+#GuiToggleContainer {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  padding: 5px;
+  padding: 2px;
   border: 0px solid #585858;
   border-left:0px;
   border-right:0px;
@@ -386,8 +491,20 @@ qproperty-layoutAlignment: 'AlignCenter';
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
 }
 
+#AlignRightBottom {
+  qproperty-layoutAlignment: 'AlignRight | AlignBottom';
+}
+
+#AlignRightCenter {
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+}
+
 #AlignLeftBottom {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+}
+
+#AlignCenterTop {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
 #VinylStatusTop1, #VinylStatusTop3 {
@@ -414,7 +531,13 @@ qproperty-layoutAlignment: 'AlignCenter';
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
+#RateSlider {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  padding-bottom: 2px;
+}
+
 #RateContainer3 {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   border: 1px solid #585858;
   border-right: 0px;
   border-top: 0px;
@@ -422,6 +545,7 @@ qproperty-layoutAlignment: 'AlignCenter';
 }
 
 #RateContainer4 {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   border: 1px solid #585858;
   border-right: 0px;
   border-left: 0px;
@@ -430,12 +554,14 @@ qproperty-layoutAlignment: 'AlignCenter';
 }
 
 #RateContainer1 {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   border: 1px solid #585858;
   border-right: 0px;
   padding: 3px;
 }
 
 #RateContainer2 {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   border: 1px solid #585858;
   border-right: 0px;
   border-left: 0px;
@@ -443,7 +569,7 @@ qproperty-layoutAlignment: 'AlignCenter';
 }
 
 #RateAdjust {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
 #MicContainer {
@@ -639,7 +765,7 @@ qproperty-layoutAlignment: 'AlignCenter';
 #EffectKnob {
   qproperty-layoutAlignment: 'AlignCenter';
   padding-left: 5px;
-  padding-right: 5px; 
+  padding-right: 5px;
 }
 
 #EffectUnitKnob {
@@ -719,24 +845,24 @@ QTableView::item:selected {
 }
 
 /* Button in library "Preview" column */
-QPushButton#LibraryPreviewButton { 
-  width: 23px; 
-  height: 12px; 
-  background: transparent; 
-  border: 0px; 
+QPushButton#LibraryPreviewButton {
+  width: 23px;
+  height: 12px;
+  background: transparent;
+  border: 0px;
 }
-/*QPushButton#LibraryPreviewButton:focus { 
+/*QPushButton#LibraryPreviewButton:focus {
   background-color: #725309;
 }*/
 /*#LibraryBPMWidget, #LibraryBPMButton, #LibraryBPMSpinBox {
-  background-color: #ff0; 
+  background-color: #ff0;
 }*/
 
 QPushButton#LibraryPreviewButton:!checked{ image: url(skin:/style/style_library_preview_play.png); }
 QPushButton#LibraryPreviewButton:checked{ image: url(skin:/style/style_library_preview_pause.png); }
 
-QHeaderView { 
-  font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+QHeaderView {
+  font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
   color: #cfb32c;
   background-color: #0f0f0f;
 }
@@ -771,19 +897,19 @@ QScrollBar::add-page, QScrollBar::sub-page {
   border: 2px;
   background-color: #1a1a1a;
   border-radius: 3px;
-} 
+}
 QScrollBar::handle:horizontal {
-  min-width: 25px; 
+  min-width: 25px;
   background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #725309, stop:1 #412f05);
   border-radius: 3px;
   border: 1px solid #725309;
-} 
+}
 QScrollBar::handle:vertical {
-  min-height: 25px; 
+  min-height: 25px;
   background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #725309, stop:1 #412f05);
   border-radius: 3px;
   border: 1px solid #725309;
-} 
+}
 /* Turn off buttons */
 QScrollBar::add-line:horizontal, QScrollBar::add-line:vertical {
   width: 0px;
@@ -794,7 +920,7 @@ QScrollBar::sub-line:horizontal, QScrollBar::sub-line:vertical {
   width: 0px;
   height: 0px;
   border: 0px solid white;
-} 
+}
 
 /* transition time in Auto DJ tab */
 QSpinBox:editable { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: transparent; color: #cfb32c; }

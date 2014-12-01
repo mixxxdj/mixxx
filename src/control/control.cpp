@@ -9,9 +9,8 @@
 // Static member variable definition
 ConfigObject<ConfigValue>* ControlDoublePrivate::s_pUserConfig = NULL;
 QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> > ControlDoublePrivate::s_qCOHash;
-QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> > ControlDoublePrivate::s_qCOAliasHash;
+QHash<ConfigKey, ConfigKey> ControlDoublePrivate::s_qCOAliasHash;
 QMutex ControlDoublePrivate::s_qCOHashMutex;
-QMutex ControlDoublePrivate::s_qCOAliasHashMutex;
 
 /*
 ControlDoublePrivate::ControlDoublePrivate()
@@ -80,9 +79,23 @@ ControlDoublePrivate::~ControlDoublePrivate() {
 
 // static
 void ControlDoublePrivate::insertAlias(const ConfigKey& alias, const ConfigKey& key) {
-    QSharedPointer<ControlDoublePrivate> pControl = getControl(key);
-    QMutexLocker locker(&s_qCOAliasHashMutex);
-    s_qCOAliasHash.insert(alias, pControl);
+    QMutexLocker locker(&s_qCOHashMutex);
+
+    QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> >::const_iterator it =
+            s_qCOHash.find(key);
+    if (it == s_qCOHash.end()) {
+        qWarning() << "WARNING: ControlDoublePrivate::insertAlias called for null control" << key;
+        return;
+    }
+
+    QSharedPointer<ControlDoublePrivate> pControl = it.value();
+    if (pControl.isNull()) {
+        qWarning() << "WARNING: ControlDoublePrivate::insertAlias called for expired control" << key;
+        return;
+    }
+
+    s_qCOAliasHash.insert(key, alias);
+    s_qCOHash.insert(alias, pControl);
 }
 
 // static
@@ -107,12 +120,6 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
                 qDebug() << "ControlObject" << key.group << key.item << "already created";
             }
         } else {
-            pControl = it.value();
-        }
-    } else {
-        QMutexLocker locker(&s_qCOAliasHashMutex);
-        QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> >::const_iterator it = s_qCOAliasHash.find(key);
-        if (it != s_qCOAliasHash.end()) {
             pControl = it.value();
         }
     }
@@ -149,6 +156,12 @@ void ControlDoublePrivate::getControls(
         }
     }
     s_qCOHashMutex.unlock();
+}
+
+// static
+QHash<ConfigKey, ConfigKey> ControlDoublePrivate::getControlAliases() {
+    QMutexLocker locker(&s_qCOHashMutex);
+    return s_qCOAliasHash;
 }
 
 void ControlDoublePrivate::reset() {

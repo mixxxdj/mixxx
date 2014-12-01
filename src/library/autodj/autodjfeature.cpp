@@ -3,12 +3,16 @@
 // Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
 
 #include <QtDebug>
+#include <QMetaObject>
 #ifdef __AUTODJCRATES__
 #include <QMenu>
 #endif // __AUTODJCRATES__
 
-#include "library/autodjfeature.h"
+#include "library/autodj/autodjfeature.h"
 
+#include "library/parser.h"
+#include "playermanager.h"
+#include "library/autodj/autodjprocessor.h"
 #include "library/trackcollection.h"
 #include "dlgautodj.h"
 #include "library/treeitem.h"
@@ -21,12 +25,15 @@ const QString AutoDJFeature::m_sAutoDJViewName = QString("Auto DJ");
 
 AutoDJFeature::AutoDJFeature(QObject* parent,
                              ConfigObject<ConfigValue>* pConfig,
+                             PlayerManagerInterface* pPlayerManager,
                              TrackCollection* pTrackCollection)
         : LibraryFeature(parent),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
           m_crateDao(pTrackCollection->getCrateDAO()),
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
+          m_iAutoDJPlaylistId(-1),
+          m_pAutoDJProcessor(NULL),
           m_pAutoDJView(NULL)
 #ifdef __AUTODJCRATES__
           , m_autoDjCratesDao(pTrackCollection->getDatabase(),
@@ -36,6 +43,18 @@ AutoDJFeature::AutoDJFeature(QObject* parent,
                               pConfig)
 #endif // __AUTODJCRATES__
 {
+    m_iAutoDJPlaylistId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
+    // If the AutoDJ playlist does not exist yet then create it.
+    if (m_iAutoDJPlaylistId < 0) {
+        m_iAutoDJPlaylistId = m_playlistDao.createPlaylist(
+                AUTODJ_TABLE, PlaylistDAO::PLHT_AUTO_DJ);
+    }
+    qRegisterMetaType<AutoDJProcessor::AutoDJState>("AutoDJState");
+    m_pAutoDJProcessor = new AutoDJProcessor(
+            this, m_pConfig, pPlayerManager, m_iAutoDJPlaylistId, m_pTrackCollection);
+    connect(m_pAutoDJProcessor, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
+            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
+
 #ifdef __AUTODJCRATES__
 
     // Create the "Crates" tree-item under the root item.
@@ -72,6 +91,7 @@ AutoDJFeature::~AutoDJFeature() {
 #ifdef __AUTODJCRATES__
     delete m_pRemoveCrateFromAutoDj;
 #endif // __AUTODJCRATES__
+    delete m_pAutoDJProcessor;
 }
 
 QVariant AutoDJFeature::title() {
@@ -86,6 +106,7 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
                                MixxxKeyboard* keyboard) {
     m_pAutoDJView = new DlgAutoDJ(libraryWidget,
                                   m_pConfig,
+                                  m_pAutoDJProcessor,
                                   m_pTrackCollection,
                                   keyboard);
     libraryWidget->registerView(m_sAutoDJViewName, m_pAutoDJView);
@@ -121,7 +142,6 @@ void AutoDJFeature::activate() {
 }
 
 bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
-    //TODO: Filter by supported formats regex and reject anything that doesn't match.
     TrackDAO &trackDao = m_pTrackCollection->getTrackDAO();
 
     // If a track is dropped onto a playlist's name, but the track isn't in the
@@ -136,7 +156,6 @@ bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
         trackIds = trackDao.addTracks(files, true);
     }
 
-    int playlistId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
     // remove tracks that could not be added
     for (int trackId = 0; trackId < trackIds.size(); trackId++) {
         if (trackIds.at(trackId) < 0) {
@@ -145,12 +164,13 @@ bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     }
 
     // Return whether the tracks were appended.
-    return m_playlistDao.appendTracksToPlaylist(trackIds, playlistId);
+    return m_playlistDao.appendTracksToPlaylist(trackIds, m_iAutoDJPlaylistId);
 }
 
 bool AutoDJFeature::dragMoveAccept(QUrl url) {
     QFileInfo file(url.toLocalFile());
-    return SoundSourceProxy::isFilenameSupported(file.fileName());
+    return SoundSourceProxy::isFilenameSupported(file.fileName()) ||
+            Parser::isPlaylistFilenameSupported(file.fileName());
 }
 
 // Add a crate to the auto-DJ queue.
@@ -259,13 +279,12 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
 #ifdef __AUTODJCRATES__
     // Get access to the auto-DJ playlist.
     PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
-    int iAutoDJPlaylistId = playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
-    if (iAutoDJPlaylistId >= 0) {
+    if (m_iAutoDJPlaylistId >= 0) {
         // Get the ID of a randomly-selected track.
         int iTrackId = m_autoDjCratesDao.getRandomTrackId();
         if (iTrackId != -1) {
             // Add this randomly-selected track to the auto-DJ playlist.
-            playlistDao.appendTrackToPlaylist(iTrackId, iAutoDJPlaylistId);
+            playlistDao.appendTrackToPlaylist(iTrackId, m_iAutoDJPlaylistId);
 
             // Display the newly-added track.
             m_pAutoDJView->onShow();

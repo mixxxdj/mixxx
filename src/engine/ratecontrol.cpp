@@ -152,7 +152,8 @@ RateControl::RateControl(QString group,
 
     m_pScratch2Scratching = new ControlPushButton(ConfigKey(group,
                                                             "scratch2_indicates_scratching"));
-    // Enable by default, because it was always scratching befor introducing this control.
+    // Enable by default, because it was always scratching before introducing
+    // this control.
     m_pScratch2Scratching->set(1.0);
 
 

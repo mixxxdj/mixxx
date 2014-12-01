@@ -9,6 +9,40 @@
     <Layout>horizontal</Layout>
     <SizePolicy>me,f</SizePolicy>
     <Children>
+
+      <WidgetGroup>
+        <ObjectName>NotificationsContainer</ObjectName>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Label>
+            <Size>60f,20f</Size>
+            <Text>Recording ✓</Text>
+            <Connection>
+              <ConfigKey>[Recording],status</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </Label>
+
+          <Label>
+            <Size>60f,20f</Size>
+            <Text>AutoDJ ✓</Text>
+            <Connection>
+              <ConfigKey>[AutoDJ],enabled</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </Label>
+
+          <Label>
+            <Size>60f,20f</Size>
+            <Text>Broadcasting ✓</Text>
+            <Connection>
+              <ConfigKey>[Shoutcast],status</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </Label>
+        </Children>
+      </WidgetGroup>
+
       <PushButton>
         <Size>40f,20f</Size>
         <NumberStates>2</NumberStates>
@@ -43,6 +77,22 @@
       </PushButton>
 
       <PushButton>
+        <Size>60f,20f</Size>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>+MICROPHONE</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>-MICROPHONE</Text>
+        </State>
+        <Connection>
+          <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
+        </Connection>
+      </PushButton>
+
+      <PushButton>
         <Size>40f,20f</Size>
         <NumberStates>2</NumberStates>
         <State>
@@ -58,28 +108,24 @@
           <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
         </Connection>
       </PushButton>
-      <Time>
-      </Time>
-      <Battery>
-      </Battery>
 
-      <Template src="skin:microphone.xml"/>
+      <Template src="skin:spacer_h.xml"></Template>
 
       <WidgetGroup>
         <ObjectName>MasterControls</ObjectName>
         <SizePolicy>min,min</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
-          <Template src="skin:knob.xml">
+          <Template src="skin:knob_label_horizontal.xml">
             <SetVariable name="group">[Master]</SetVariable>
-            <SetVariable name="control">balance</SetVariable>
-            <SetVariable name="label">Balance</SetVariable>
+            <SetVariable name="control">headMix</SetVariable>
+            <SetVariable name="label">Head Mix</SetVariable>
           </Template>
 
-          <Template src="skin:knob.xml">
+          <Template src="skin:knob_label_horizontal.xml">
             <SetVariable name="group">[Master]</SetVariable>
-            <SetVariable name="control">volume</SetVariable>
-            <SetVariable name="label">Volume</SetVariable>
+            <SetVariable name="control">headGain</SetVariable>
+            <SetVariable name="label">Head Gain</SetVariable>
           </Template>
         </Children>
       </WidgetGroup>
@@ -89,24 +135,80 @@
         <SizePolicy>min,min</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
-          <Template src="skin:knob.xml">
+
+          <PushButton>
+            <ObjectName>HeadSplit</ObjectName>
+            <Size>50f,20f</Size>
+            <TooltipId>headsplit</TooltipId>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>STEREO</Text>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>MONO SPLIT</Text>
+            </State>
+            <Connection>
+              <ConfigKey>[Master],headSplit</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+            </Connection>
+          </PushButton>
+
+          <Template src="skin:knob_label_horizontal.xml">
             <SetVariable name="group">[Master]</SetVariable>
-            <SetVariable name="control">headVolume</SetVariable>
-            <SetVariable name="label">Head Vol</SetVariable>
+            <SetVariable name="control">balance</SetVariable>
+            <SetVariable name="label">Balance</SetVariable>
           </Template>
 
-          <Template src="skin:knob.xml">
+          <Template src="skin:knob_label_horizontal.xml">
             <SetVariable name="group">[Master]</SetVariable>
-            <SetVariable name="control">headMix</SetVariable>
-            <SetVariable name="label">Head Mix</SetVariable>
+            <SetVariable name="control">gain</SetVariable>
+            <SetVariable name="label">Gain</SetVariable>
           </Template>
 
         </Children>
       </WidgetGroup>
 
+      <WidgetGroup>
+          <ObjectName>MasterVumeter</ObjectName>
+          <SizePolicy>min,min</SizePolicy>
+          <Layout>vertical</Layout>
+          <Children>
+              <Template src="skin:vumeter.xml">
+                  <TooltipId>master_VuMeterL</TooltipId>
+                  <SetVariable name="group">[Master]</SetVariable>
+                  <SetVariable name="control">VuMeterL</SetVariable>
+              </Template>
+              <Template src="skin:vumeter.xml">
+                  <TooltipId>master_VuMeterR</TooltipId>
+                  <SetVariable name="group">[Master]</SetVariable>
+                  <SetVariable name="control">VuMeterR</SetVariable>
+              </Template>
+          </Children>
+      </WidgetGroup>
+
+     <WidgetGroup>
+        <ObjectName></ObjectName>
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>vertical</Layout>
+        <Children>
+          <Time>
+            <ObjectName>Time</ObjectName>
+            <Size>60f,20f</Size>
+            <TooltipId>time</TooltipId>
+            <ShowSeconds>false</ShowSeconds>
+          </Time>
+
+         <Template src="skin:vumeter_latency.xml">
+           <SetVariable name="TooltipId">audio_latency_usage</SetVariable>
+           <SetVariable name="group">[Master]</SetVariable>
+           <SetVariable name="control">audio_latency_usage</SetVariable>
+         </Template>
+        </Children>
+      </WidgetGroup>
+
     </Children>
   </WidgetGroup>
-
-
 
 </Template>

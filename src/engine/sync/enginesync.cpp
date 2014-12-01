@@ -84,6 +84,7 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
             deactivateSync(pSyncable);
         }
     }
+    checkUniquePlayingSyncable();
 }
 
 void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
@@ -162,6 +163,7 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
     } else {
         deactivateSync(pSyncable);
     }
+    checkUniquePlayingSyncable();
 }
 
 void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
@@ -176,11 +178,11 @@ void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
         // If there is only one deck playing, set internal clock beat distance
         // to match it, unless there is a single other playing deck, in which
         // case we should match that.
-        const Syncable* uniqueSyncEnabled = NULL;
+        Syncable* uniqueSyncEnabled = NULL;
         const Syncable* uniqueSyncDisabled = NULL;
         int playing_sync_decks = 0;
         int playing_nonsync_decks = 0;
-        foreach (const Syncable* pOtherSyncable, m_syncables) {
+        foreach (Syncable* pOtherSyncable, m_syncables) {
             if (pOtherSyncable->isPlaying()) {
                 if (pOtherSyncable->getSyncMode() != SYNC_NONE) {
                     uniqueSyncEnabled = pOtherSyncable;
@@ -192,6 +194,7 @@ void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
             }
         }
         if (playing_sync_decks == 1) {
+            uniqueSyncEnabled->notifyOnlyPlayingSyncable();
             if (playing_nonsync_decks == 1) {
                 m_pInternalClock->setMasterBeatDistance(uniqueSyncDisabled->getBeatDistance());
             } else {

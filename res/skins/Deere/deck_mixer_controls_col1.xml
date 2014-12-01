@@ -10,49 +10,37 @@
     <Layout>vertical</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Children>
-      <Template src="skin:knob.xml">
+      <Template src="skin:knob_with_button.xml">
         <SetVariable name="control">pregain</SetVariable>
+        <SetVariable name="button_control">mute</SetVariable>
         <SetVariable name="label">Gain</SetVariable>
       </Template>
 
-      <Template src="skin:knob.xml">
+      <Template src="skin:equalizer_rack_parameter.xml">
+        <SetVariable name="parameter">4</SetVariable>
+      </Template>
+
+      <Template src="skin:equalizer_rack_parameter.xml">
+        <SetVariable name="parameter">3</SetVariable>
+      </Template>
+
+      <Template src="skin:equalizer_rack_parameter.xml">
+        <SetVariable name="parameter">2</SetVariable>
+      </Template>
+
+      <Template src="skin:equalizer_rack_parameter.xml">
+        <SetVariable name="parameter">1</SetVariable>
+      </Template>
+
+      <Template src="skin:knob_with_button.xml">
         <SetVariable name="control">pitch</SetVariable>
-        <SetVariable name="label">Pitch</SetVariable>
+        <SetVariable name="button_control">keylock</SetVariable>
+        <SetVariable name="label">Key</SetVariable>
       </Template>
 
-      <Template src="skin:knob.xml">
-        <SetVariable name="control">filterHigh</SetVariable>
-        <SetVariable name="label">High</SetVariable>
+      <Template src="skin:quick_effect_superknob.xml">
+        <SetVariable name="QuickEffect">1</SetVariable>
       </Template>
-
-      <Template src="skin:knob.xml">
-        <SetVariable name="control">filterMid</SetVariable>
-        <SetVariable name="label">Mid</SetVariable>
-      </Template>
-
-      <Template src="skin:knob.xml">
-        <SetVariable name="control">filterLow</SetVariable>
-        <SetVariable name="label">Low</SetVariable>
-      </Template>
-
-      <PushButton>
-        <ObjectName>DeckMute</ObjectName>
-        <Size>40f,20f</Size>
-        <NumberStates>2</NumberStates>
-        <State>
-          <Number>0</Number>
-          <Text>MUTE</Text>
-        </State>
-        <State>
-          <Number>1</Number>
-          <Text>MUTE</Text>
-        </State>
-        <Connection>
-          <ConfigKey><Variable name="group"/>,mute</ConfigKey>
-          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-          <ButtonState>LeftButton</ButtonState>
-        </Connection>
-      </PushButton>
 
       <PushButton>
         <ObjectName>DeckPFL</ObjectName>

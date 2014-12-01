@@ -15,9 +15,13 @@
 #include "widget/wspinny.h"
 #include "wimagestore.h"
 
-WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
+WSpinny::WSpinny(QWidget* parent, const QString& group,
+                 ConfigObject<ConfigValue>* pConfig,
+                 VinylControlManager* pVCMan)
         : QGLWidget(parent, SharedGLContext::getWidget()),
           WBaseWidget(this),
+          m_group(group),
+          m_pConfig(pConfig),
           m_pBgImage(NULL),
           m_pFgImage(NULL),
           m_pGhostImage(NULL),
@@ -32,7 +36,6 @@ WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
           m_pVinylControlEnabled(NULL),
           m_pSignalEnabled(NULL),
           m_pSlipEnabled(NULL),
-          m_pSlipPosition(NULL),
           m_bShowCover(true),
           m_dInitialPos(0.),
           m_iVinylInput(-1),
@@ -77,25 +80,21 @@ WSpinny::~WSpinny() {
 #ifdef __VINYLCONTROL__
     m_pVCManager->removeSignalQualityListener(this);
 #endif
-    // No need to delete anything if m_group is empty because setup() was not called.
-    if (!m_group.isEmpty()) {
-        WImageStore::deleteImage(m_pBgImage);
-        WImageStore::deleteImage(m_pFgImage);
-        WImageStore::deleteImage(m_pGhostImage);
-        delete m_pPlay;
-        delete m_pPlayPos;
-        delete m_pTrackSamples;
-        delete m_pTrackSampleRate;
-        delete m_pScratchToggle;
-        delete m_pScratchPos;
-        delete m_pSlipEnabled;
-        delete m_pSlipPosition;
-    #ifdef __VINYLCONTROL__
-        delete m_pVinylControlSpeedType;
-        delete m_pVinylControlEnabled;
-        delete m_pSignalEnabled;
-    #endif
-    }
+    WImageStore::deleteImage(m_pBgImage);
+    WImageStore::deleteImage(m_pFgImage);
+    WImageStore::deleteImage(m_pGhostImage);
+    delete m_pPlay;
+    delete m_pPlayPos;
+    delete m_pTrackSamples;
+    delete m_pTrackSampleRate;
+    delete m_pScratchToggle;
+    delete m_pScratchPos;
+    delete m_pSlipEnabled;
+#ifdef __VINYLCONTROL__
+    delete m_pVinylControlSpeedType;
+    delete m_pVinylControlEnabled;
+    delete m_pSignalEnabled;
+#endif
 }
 
 void WSpinny::onVinylSignalQualityUpdate(const VinylSignalQualityReport& report) {
@@ -130,9 +129,7 @@ void WSpinny::onVinylSignalQualityUpdate(const VinylSignalQualityReport& report)
 #endif
 }
 
-void WSpinny::setup(QDomNode node, const SkinContext& context, QString group) {
-    m_group = group;
-    
+void WSpinny::setup(QDomNode node, const SkinContext& context) {
     // Set images
     m_pBgImage = WImageStore::getImage(context.getPixmapSource(
                         context.selectNode(node, "PathBackground")));
@@ -140,6 +137,7 @@ void WSpinny::setup(QDomNode node, const SkinContext& context, QString group) {
                         context.selectNode(node,"PathForeground")));
     m_pGhostImage = WImageStore::getImage(context.getPixmapSource(
                         context.selectNode(node,"PathGhost")));
+
     if (m_pBgImage && !m_pBgImage->isNull()) {
         setFixedSize(m_pBgImage->size());
     }
@@ -158,30 +156,28 @@ void WSpinny::setup(QDomNode node, const SkinContext& context, QString group) {
 #endif
 
     m_pPlay = new ControlObjectThread(
-            group, "play");
+            m_group, "play");
     m_pPlayPos = new ControlObjectThread(
-            group, "playposition");
-    m_pVisualPlayPos = VisualPlayPosition::getVisualPlayPosition(group);
+            m_group, "playposition");
+    m_pVisualPlayPos = VisualPlayPosition::getVisualPlayPosition(m_group);
     m_pTrackSamples = new ControlObjectThread(
-            group, "track_samples");
+            m_group, "track_samples");
     m_pTrackSampleRate = new ControlObjectThread(
-            group, "track_samplerate");
+            m_group, "track_samplerate");
 
     m_pScratchToggle = new ControlObjectThread(
-            group, "scratch_position_enable");
+            m_group, "scratch_position_enable");
     m_pScratchPos = new ControlObjectThread(
-            group, "scratch_position");
+            m_group, "scratch_position");
 
     m_pSlipEnabled = new ControlObjectThread(
-            group, "slip_enabled");
+            m_group, "slip_enabled");
     connect(m_pSlipEnabled, SIGNAL(valueChanged(double)),
             this, SLOT(updateSlipEnabled(double)));
-    m_pSlipPosition = new ControlObjectThread(
-            group, "slip_playposition");
 
 #ifdef __VINYLCONTROL__
     m_pVinylControlSpeedType = new ControlObjectThread(
-            group, "vinylcontrol_speed_type");
+            m_group, "vinylcontrol_speed_type");
     if (m_pVinylControlSpeedType)
     {
         //Initialize the rotational speed.
@@ -189,12 +185,12 @@ void WSpinny::setup(QDomNode node, const SkinContext& context, QString group) {
     }
 
     m_pVinylControlEnabled = new ControlObjectThread(
-            group, "vinylcontrol_enabled");
+            m_group, "vinylcontrol_enabled");
     connect(m_pVinylControlEnabled, SIGNAL(valueChanged(double)),
             this, SLOT(updateVinylControlEnabled(double)));
 
     m_pSignalEnabled = new ControlObjectThread(
-            group, "vinylcontrol_signal_enabled");
+            m_group, "vinylcontrol_signal_enabled");
     connect(m_pSignalEnabled, SIGNAL(valueChanged(double)),
             this, SLOT(updateVinylControlSignalEnabled(double)));
 
@@ -212,9 +208,11 @@ void WSpinny::setup(QDomNode node, const SkinContext& context, QString group) {
 }
 
 void WSpinny::maybeUpdate() {
-    m_pVisualPlayPos->getPlaySlipAt(0,
-                                    &m_dAngleCurrentPlaypos,
-                                    &m_dGhostAngleCurrentPlaypos);
+    if (!m_pVisualPlayPos.isNull()) {
+        m_pVisualPlayPos->getPlaySlipAt(0,
+                                        &m_dAngleCurrentPlaypos,
+                                        &m_dGhostAngleCurrentPlaypos);
+    }
     if (m_dAngleCurrentPlaypos != m_dAngleLastPlaypos ||
             m_dGhostAngleCurrentPlaypos != m_dGhostAngleLastPlaypos ||
             m_bWidgetDirty) {
@@ -601,30 +599,22 @@ bool WSpinny::event(QEvent* pEvent) {
     return QGLWidget::event(pEvent);
 }
 
-/** DRAG AND DROP **/
-void WSpinny::dragEnterEvent(QDragEnterEvent * event)
-{
-    // Accept the enter event if the thing is a filepath and nothing's playing
-    // in this deck.
-    if (event->mimeData()->hasUrls()) {
-        if (m_pPlay && m_pPlay->get()) {
-            event->ignore();
-        } else {
-            QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
-                event->mimeData()->urls(), true, false);
-            if (!files.isEmpty()) {
-                event->acceptProposedAction();
-                return;
-            }
-        }
+void WSpinny::dragEnterEvent(QDragEnterEvent* event) {
+    if (DragAndDropHelper::allowLoadToPlayer(m_group, m_pPlay->get() > 0.0,
+                                             m_pConfig) &&
+            DragAndDropHelper::dragEnterAccept(*event->mimeData(), m_group,
+                                               true, false)) {
+        event->acceptProposedAction();
+    } else {
+        event->ignore();
     }
-    event->ignore();
 }
 
 void WSpinny::dropEvent(QDropEvent * event) {
-    if (event->mimeData()->hasUrls()) {
-        QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
-                event->mimeData()->urls(), true, false);
+    if (DragAndDropHelper::allowLoadToPlayer(m_group, m_pPlay->get() > 0.0,
+                                             m_pConfig)) {
+        QList<QFileInfo> files = DragAndDropHelper::dropEventFiles(
+                *event->mimeData(), m_group, true, false);
         if (!files.isEmpty()) {
             event->accept();
             emit(trackDropped(files.at(0).canonicalFilePath(), m_group));

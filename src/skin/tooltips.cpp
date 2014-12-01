@@ -90,9 +90,15 @@ void Tooltips::addStandardTooltips() {
             << tr("Adjusts the volume of the selected channel.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
+    // Legacy control.
     add("master_volume")
             << tr("Master Volume")
             << tr("Adjusts the master output volume.")
+            << QString("%1: %2").arg(rightClick, resetToDefault);
+
+    add("master_gain")
+            << tr("Master Gain")
+            << tr("Adjusts the master output gain.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
     add("crossfader")
@@ -106,9 +112,15 @@ void Tooltips::addStandardTooltips() {
             << tr("Adjusts the left/right channel balance on the master output.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
+    // Legacy control.
     add("headphone_volume")
             << tr("Headphone Volume")
             << tr("Adjusts the headphone output volume.")
+            << QString("%1: %2").arg(rightClick, resetToDefault);
+
+    add("headphone_gain")
+            << tr("Headphone Gain")
+            << tr("Adjusts the headphone output gain.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
     add("headMix")
@@ -147,6 +159,11 @@ void Tooltips::addStandardTooltips() {
     add("microphone_volume")
             << tr("Microphone Volume")
             << tr("Adjusts the microphone volume.")
+            << QString("%1: %2").arg(rightClick, resetToDefault);
+
+    add("microphone_pregain")
+            << tr("Microphone Gain")
+            << tr("Adjusts the pre-fader microphone gain.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
     add("microphone_talkover")

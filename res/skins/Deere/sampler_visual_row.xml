@@ -17,15 +17,15 @@
         <SetVariable name="ObjectName">PlayToggle</SetVariable>
         <SetVariable name="MinimumSize">20,20</SetVariable>
         <SetVariable name="MaximumSize">20,20</SetVariable>
-        <SetVariable name="SizePolicy">f,f,</SetVariable>
+        <SetVariable name="SizePolicy">f,f</SetVariable>
         <SetVariable name="state_0_text">▶</SetVariable>
         <SetVariable name="state_0_pressed"></SetVariable>
         <SetVariable name="state_0_unpressed"></SetVariable>
         <SetVariable name="state_1_text">▶</SetVariable>
         <SetVariable name="state_1_pressed"></SetVariable>
         <SetVariable name="state_1_unpressed"></SetVariable>
-        <SetVariable name="left_connection_control"><Variable name="group"/>,play</SetVariable>
-        <SetVariable name="right_connection_control"><Variable name="group"/>,cue_set</SetVariable>
+        <SetVariable name="left_connection_control"><Variable name="group"/>,start_play</SetVariable>
+        <SetVariable name="right_connection_control"><Variable name="group"/>,start_stop</SetVariable>
       </Template>
 
       <Overview>
@@ -45,12 +45,10 @@
           <Text> %1 </Text>
         </DefaultMark>
         <Connection>
-          <ConfigKey>
-          <Variable name="group"/>,playposition</ConfigKey>
+          <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
           <EmitOnDownPress>false</EmitOnDownPress>
         </Connection>
       </Overview>
-
     </Children>
   </WidgetGroup>
 </Template>

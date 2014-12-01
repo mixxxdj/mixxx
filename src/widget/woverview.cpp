@@ -97,8 +97,10 @@ void WOverview::setup(QDomNode node, const SkinContext& context) {
 
     for (int i = 0; i < m_marks.size(); ++i) {
         WaveformMark& mark = m_marks[i];
-        connect(mark.m_pointControl, SIGNAL(valueChanged(double)),
-                this, SLOT(onMarkChanged(double)));
+        if (mark.m_pointControl) {
+            connect(mark.m_pointControl, SIGNAL(valueChanged(double)),
+                    this, SLOT(onMarkChanged(double)));
+        }
     }
 
     QDomNode child = node.firstChild();
@@ -108,12 +110,18 @@ void WOverview::setup(QDomNode node, const SkinContext& context) {
             WaveformMarkRange& markRange = m_markRanges.back();
             markRange.setup(m_group, child, context, m_signalColors);
 
-            connect(markRange.m_markEnabledControl, SIGNAL(valueChanged(double)),
-                     this, SLOT(onMarkRangeChange(double)));
-            connect(markRange.m_markStartPointControl, SIGNAL(valueChanged(double)),
-                     this, SLOT(onMarkRangeChange(double)));
-            connect(markRange.m_markEndPointControl, SIGNAL(valueChanged(double)),
-                     this, SLOT(onMarkRangeChange(double)));
+            if (markRange.m_markEnabledControl) {
+                connect(markRange.m_markEnabledControl, SIGNAL(valueChanged(double)),
+                        this, SLOT(onMarkRangeChange(double)));
+            }
+            if (markRange.m_markStartPointControl) {
+                connect(markRange.m_markStartPointControl, SIGNAL(valueChanged(double)),
+                        this, SLOT(onMarkRangeChange(double)));
+            }
+            if (markRange.m_markEndPointControl) {
+                connect(markRange.m_markEndPointControl, SIGNAL(valueChanged(double)),
+                        this, SLOT(onMarkRangeChange(double)));
+            }
         }
         child = child.nextSibling();
     }
@@ -494,26 +502,22 @@ void WOverview::resizeEvent(QResizeEvent *) {
 }
 
 void WOverview::dragEnterEvent(QDragEnterEvent* event) {
-    // Accept the enter event if the thing is a filepath and nothing's playing
-    // in this deck or the settings allow to interrupt the playing deck.
-    if (event->mimeData()->hasUrls() && event->mimeData()->urls().size() > 0) {
-        if ((m_playControl->get() == 0.0 ||
-            m_pConfig->getValueString(ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt()) || (m_group=="[PreviewDeck1]")) {
-            QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
-                event->mimeData()->urls(), true, false);
-            if (!files.isEmpty()) {
-                event->acceptProposedAction();
-                return;
-            }
-        }
+    if (DragAndDropHelper::allowLoadToPlayer(m_group,
+                                             m_playControl->get() > 0.0,
+                                             m_pConfig) &&
+            DragAndDropHelper::dragEnterAccept(*event->mimeData(), m_group,
+                                               true, false)) {
+        event->acceptProposedAction();
+    } else {
+        event->ignore();
     }
-    event->ignore();
 }
 
 void WOverview::dropEvent(QDropEvent* event) {
-    if (event->mimeData()->hasUrls()) {
-        QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
-                event->mimeData()->urls(), true, false);
+    if (DragAndDropHelper::allowLoadToPlayer(m_group, m_playControl->get() > 0.0,
+                                             m_pConfig)) {
+        QList<QFileInfo> files = DragAndDropHelper::dropEventFiles(
+                *event->mimeData(), m_group, true, false);
         if (!files.isEmpty()) {
             event->accept();
             emit(trackDropped(files.at(0).canonicalFilePath(), m_group));

@@ -34,8 +34,7 @@ Parser::~Parser()
 
 void Parser::clearLocations()
 {
-    while(!m_sLocations.isEmpty())
-        m_sLocations.removeFirst();
+    m_sLocations.clear();
 }
 
 long Parser::countParsed()

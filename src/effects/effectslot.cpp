@@ -6,18 +6,14 @@
 #include "controlobjectslave.h"
 
 // The maximum number of effect parameters we're going to support.
-const unsigned int kDefaultMaxParameters = 8;
+const unsigned int kDefaultMaxParameters = 16;
 
-EffectSlot::EffectSlot(const unsigned int iRackNumber,
+EffectSlot::EffectSlot(const QString& group,
                        const unsigned int iChainNumber,
                        const unsigned int iEffectnumber)
-        : m_iRackNumber(iRackNumber),
-          m_iChainNumber(iChainNumber),
+        : m_iChainNumber(iChainNumber),
           m_iEffectNumber(iEffectnumber),
-          // The control group names are 1-indexed while internally everything
-          // is 0-indexed.
-          m_group(formatGroupString(m_iRackNumber, m_iChainNumber,
-                                    m_iEffectNumber)) {
+          m_group(group) {
     m_pControlLoaded = new ControlObject(ConfigKey(m_group, "loaded"));
     m_pControlLoaded->connectValueChangeRequest(
         this, SLOT(slotLoaded(double)));
@@ -68,11 +64,6 @@ EffectSlot::EffectSlot(const unsigned int iRackNumber,
         addEffectButtonParameterSlot();
     }
 
-    QString effectUnitGroup =  QString("[EffectRack%1_EffectUnit%2]").arg(
-        QString::number(iRackNumber+1), QString::number(iChainNumber+1));
-
-    m_pCoSuper = new ControlObjectSlave(ConfigKey(effectUnitGroup, "parameter"));
-
     clear();
 }
 
@@ -90,13 +81,11 @@ EffectSlot::~EffectSlot() {
     delete m_pControlEffectSelector;
     delete m_pControlClear;
     delete m_pControlEnabled;
-    delete m_pCoSuper;
 }
 
 EffectParameterSlotPointer EffectSlot::addEffectParameterSlot() {
     EffectParameterSlotPointer pParameter = EffectParameterSlotPointer(
-        new EffectParameterSlot(m_iRackNumber, m_iChainNumber, m_iEffectNumber,
-                                m_parameters.size()));
+            new EffectParameterSlot(m_group, m_parameters.size()));
     m_parameters.append(pParameter);
     m_pControlNumParameterSlots->setAndConfirm(
             m_pControlNumParameterSlots->get() + 1);
@@ -105,8 +94,7 @@ EffectParameterSlotPointer EffectSlot::addEffectParameterSlot() {
 
 EffectButtonParameterSlotPointer EffectSlot::addEffectButtonParameterSlot() {
     EffectButtonParameterSlotPointer pParameter = EffectButtonParameterSlotPointer(
-        new EffectButtonParameterSlot(m_iRackNumber, m_iChainNumber, m_iEffectNumber,
-                                m_buttonParameters.size()));
+            new EffectButtonParameterSlot(m_group, m_buttonParameters.size()));
     m_buttonParameters.append(pParameter);
     m_pControlNumButtonParameterSlots->setAndConfirm(
             m_pControlNumButtonParameterSlots->get() + 1);
@@ -256,9 +244,9 @@ void EffectSlot::slotClear(double v) {
     }
 }
 
-void EffectSlot::onChainParameterChanged(double parameter) {
+void EffectSlot::onChainParameterChanged(double parameter, bool force) {
     for (int i = 0; i < m_parameters.size(); ++i) {
-        m_parameters[i]->onChainParameterChanged(parameter);
+        m_parameters[i]->onChainParameterChanged(parameter, force);
     }
 }
 

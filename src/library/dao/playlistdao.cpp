@@ -495,6 +495,7 @@ int PlaylistDAO::insertTracksIntoPlaylist(const QList<int>& trackIds,
             continue;
         }
         // Move all tracks in playlist up by 1.
+        // TODO(XXX) We could do this in one query before the for loop.
         query.prepare(QString("UPDATE PlaylistTracks SET position=position+1 "
                               "WHERE position>=%1 AND "
                               "playlist_id=%2").arg(insertPositon).arg(playlistId));

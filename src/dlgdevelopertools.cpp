@@ -12,13 +12,21 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
 
     QList<QSharedPointer<ControlDoublePrivate> > controlsList;
     ControlDoublePrivate::getControls(&controlsList);
+    QHash<ConfigKey, ConfigKey> controlAliases =
+            ControlDoublePrivate::getControlAliases();
 
     for (QList<QSharedPointer<ControlDoublePrivate> >::const_iterator it = controlsList.begin();
-         it != controlsList.end(); ++it) {
+            it != controlsList.end(); ++it) {
         const QSharedPointer<ControlDoublePrivate>& pControl = *it;
         if (pControl) {
             m_controlModel.addControl(pControl->getKey(), pControl->name(),
                                       pControl->description());
+
+            ConfigKey aliasKey = controlAliases[pControl->getKey()];
+            if (!aliasKey.isNull()) {
+                m_controlModel.addControl(aliasKey, pControl->name(),
+                                          "Alias for " + pControl->getKey().group + pControl->getKey().item);
+            }
         }
     }
 

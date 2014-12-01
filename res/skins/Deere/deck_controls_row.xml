@@ -12,6 +12,15 @@
     <SizePolicy>me,max</SizePolicy>
     <Children>
       <Template src="skin:transport.xml"/>
+      <WidgetGroup>
+        <ObjectName>BeatJumpLoopMoveContainer</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:beatjump.xml"/>
+          <Template src="skin:loopmove.xml"/>
+        </Children>
+      </WidgetGroup>
       <Template src="skin:beatloop.xml"/>
       <Template src="skin:loop.xml"/>
       <Template src="skin:hotcue.xml"/>

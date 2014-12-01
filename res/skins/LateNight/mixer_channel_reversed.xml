@@ -1,332 +1,121 @@
+<!--  This layout is only used for channel 2.  It can switch between a standard
+vertical layout and a reversed side-by-side layout for two-deck mode -->
+
+
 <Template>
+  <SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
   <WidgetStack currentpage="[Master],mixer_4decks_status" persist="true">
-    <SizePolicy>f,e</SizePolicy>
-    <Size>80,160</Size>
+    <SizePolicy>min,me</SizePolicy>
     <Children>
-      <WidgetGroup>  <!--  Channel1 controls side-by-side-->
+      <WidgetGroup>  <!--  Channel2 controls side-by-side-->
         <ObjectName>MixerChannelHoriz</ObjectName>
         <Layout>horizontal</Layout>
-          <SizePolicy>f,min</SizePolicy>
-          <MinimumSize>100,160</MinimumSize>
           <Children>
-            <WidgetGroup>
-              <Size>16,1</Size>
-              <Children>
-                <StatusLight>
-                    <TooltipId>PeakIndicator</TooltipId>
-                    <PathStatusLight>btn_clipping1_over.png</PathStatusLight>
-                    <PathBack>btn_clipping1.png</PathBack>
-                    <Pos>1,50</Pos>
-                    <Connection>
-                        <ConfigKey>[Channel<Variable name="channum"/>],PeakIndicator</ConfigKey>
-                    </Connection>
-                </StatusLight>
-                <VuMeter>
-                    <TooltipId>channel_VuMeter</TooltipId>
-                    <PathVu>btn_volume_display1_over.png</PathVu>
-                    <PathBack>btn_volume_display1.png</PathBack>
-                    <Pos>1,66</Pos>
-                    <Horizontal>false</Horizontal>
-                    <PeakHoldSize>5</PeakHoldSize>
-                    <PeakHoldTime>500</PeakHoldTime>
-                    <PeakFallTime>50</PeakFallTime>
-                    <PeakFallStep>2</PeakFallStep>
-                    <Connection>
-                        <ConfigKey>[Channel<Variable name="channum"/>],VuMeter</ConfigKey>
-                    </Connection>
-                </VuMeter>
-              </Children>
+            <WidgetGroup> <!-- VU Meter -->
+                <Layout>vertical</Layout>
+                <SizePolicy>max,max</SizePolicy>
+                <Size>18,0</Size>
+                <Children>
+                    <StatusLight>
+                        <TooltipId>PeakIndicator</TooltipId>
+                        <PathStatusLight>btn_clipping1_over.png</PathStatusLight>
+                        <PathBack>btn_clipping1.png</PathBack>
+                        <Connection>
+                            <ConfigKey>[Channel<Variable name="channum"/>],PeakIndicator</ConfigKey>
+                        </Connection>
+                    </StatusLight>
+                    <VuMeter>
+                        <TooltipId>channel_VuMeter</TooltipId>
+                        <PathVu>btn_volume_display1_over.png</PathVu>
+                        <PathBack>btn_volume_display1.png</PathBack>
+                        <Horizontal>false</Horizontal>
+                        <PeakHoldSize>5</PeakHoldSize>
+                        <PeakHoldTime>500</PeakHoldTime>
+                        <PeakFallTime>50</PeakFallTime>
+                        <PeakFallStep>2</PeakFallStep>
+                        <Connection>
+                            <ConfigKey>[Channel<Variable name="channum"/>],VuMeter</ConfigKey>
+                        </Connection>
+                    </VuMeter>
+                </Children>
             </WidgetGroup>
-            <WidgetGroup>
-              <ObjectName>MixerChannel</ObjectName>
-              <SizePolicy>f,f</SizePolicy>
-              <Size>55,160</Size>
+            <SliderComposed>  <!-- Volume slider -->
+                <TooltipId>channel_volume</TooltipId>
+                <Handle>knob_volume1.png</Handle>
+                <Slider>slider_volume1.png</Slider>
+                <Horizontal>false</Horizontal>
+                <Connection>
+                  <ConfigKey>[Channel<Variable name="channum"/>],volume</ConfigKey>
+                </Connection>
+            </SliderComposed>
+            <WidgetGroup>  <!-- EQs -->
+              <Layout>vertical</Layout>
+              <ObjectName>MixerChannelReversed</ObjectName>
+              <SizePolicy>min,min</SizePolicy>
               <Children>
-                <SliderComposed>
-                  <TooltipId>channel_volume</TooltipId>
-                  <Handle>knob_volume1.png</Handle>
-                  <Slider>slider_volume1.png</Slider>
-                  <Horizontal>false</Horizontal>
-                  <Pos>1,50</Pos>
-                  <Connection>
-                    <ConfigKey>[Channel<Variable name="channum"/>],volume</ConfigKey>
-                  </Connection>
-                </SliderComposed>
-              </Children>
-            </WidgetGroup>
-            <WidgetGroup>
-              <ObjectName>MixerChannel</ObjectName>
-              <SizePolicy>f,min</SizePolicy>
-              <MinimumSize>75,160</MinimumSize>
-              <Children>
-                <PushButton>
-                    <TooltipId>pfl</TooltipId>
-                    <NumberStates>2</NumberStates>
-                    <State>
-                        <Number>0</Number>
-                        <Pressed>btn_pfl1_down.png</Pressed>
-                        <Unpressed>btn_pfl1.png</Unpressed>
-                    </State>
-                    <State>
-                        <Number>1</Number>
-                        <Pressed>btn_pfl1_overdown.png</Pressed>
-                        <Unpressed>btn_pfl1_over.png</Unpressed>
-                    </State>
-                    <Pos>1,8</Pos>
-                    <Connection>
-                        <ConfigKey>[Channel<Variable name="channum"/>],pfl</ConfigKey>
-                    </Connection>
-                </PushButton>
-                <PushButton>
-                    <TooltipId>filterHighKill</TooltipId>
-                    <NumberStates>2</NumberStates>
-                    <State>
-                        <Number>0</Number>
-                        <Pressed>btn_kill_down.png</Pressed>
-                        <Unpressed>btn_kill.png</Unpressed>
-                    </State>
-                    <State>
-                        <Number>1</Number>
-                        <Pressed>btn_kill_overdown.png</Pressed>
-                        <Unpressed>btn_kill_over.png</Unpressed>
-                    </State>
-                    <Pos>4,54</Pos>
-                    <Connection>
-                        <ConfigKey>[Channel<Variable name="channum"/>],filterHighKill</ConfigKey>
-                        <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                </PushButton>
-                <PushButton>
-                    <TooltipId>filterMidKill</TooltipId>
-                    <NumberStates>2</NumberStates>
-                    <State>
-                        <Number>0</Number>
-                        <Pressed>btn_kill_down.png</Pressed>
-                        <Unpressed>btn_kill.png</Unpressed>
-                    </State>
-                    <State>
-                        <Number>1</Number>
-                        <Pressed>btn_kill_overdown.png</Pressed>
-                        <Unpressed>btn_kill_over.png</Unpressed>
-                    </State>
-                    <Pos>4,93</Pos>
-                    <Connection>
-                        <ConfigKey>[Channel<Variable name="channum"/>],filterMidKill</ConfigKey>
-                        <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                </PushButton>
-                <PushButton>
-                    <TooltipId>filterLowKill</TooltipId>
-                    <NumberStates>2</NumberStates>
-                    <State>
-                        <Number>0</Number>
-                        <Pressed>btn_kill_down.png</Pressed>
-                        <Unpressed>btn_kill.png</Unpressed>
-                    </State>
-                    <State>
-                        <Number>1</Number>
-                        <Pressed>btn_kill_overdown.png</Pressed>
-                        <Unpressed>btn_kill_over.png</Unpressed>
-                    </State>
-                    <Pos>4,130</Pos>
-                    <Connection>
-                        <ConfigKey>[Channel<Variable name="channum"/>],filterLowKill</ConfigKey>
-                        <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                </PushButton>
-                <Knob>
-                    <TooltipId>pregain</TooltipId>
-                    <NumberStates>64</NumberStates>
-                    <Path>knobs/knob_rotary_s%1.png</Path>
-                    <Pos>29,1</Pos>
-                    <Connection>
-                        <ConfigKey>[Channel<Variable name="channum"/>],pregain</ConfigKey>
-                    </Connection>
-                </Knob>
-                <Knob>
-                    <TooltipId>filterHigh</TooltipId>
-                    <NumberStates>64</NumberStates>
-                    <Path>knobs/knob_rotary_s%1.png</Path>
-                    <Pos>29,39</Pos>
-                    <Connection>
-                        <ConfigKey>[Channel<Variable name="channum"/>],filterHigh</ConfigKey>
-                    </Connection>
-                </Knob>
-                <Knob>
-                    <TooltipId>filterMid</TooltipId>
-                    <NumberStates>64</NumberStates>
-                    <Path>knobs/knob_rotary_s%1.png</Path>
-                    <Pos>29,78</Pos>
-                    <Connection>
-                        <ConfigKey>[Channel<Variable name="channum"/>],filterMid</ConfigKey>
-                    </Connection>
-                </Knob>
-                <Knob>
-                    <TooltipId>filterLow</TooltipId>
-                    <NumberStates>64</NumberStates>
-                    <Path>knobs/knob_rotary_s%1.png</Path>
-                    <Pos>29,115</Pos>
-                    <Connection>
-                        <ConfigKey>[Channel<Variable name="channum"/>],filterLow</ConfigKey>
-                    </Connection>
-                </Knob>
+                <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>min,max</SizePolicy>
+                    <Children>
+                        <WidgetGroup>
+                            <Layout>horizontal</Layout>
+                            <Children>
+                                <PushButton>
+                                    <TooltipId>pfl</TooltipId>
+                                    <NumberStates>2</NumberStates>
+                                    <State>
+                                        <Number>0</Number>
+                                        <Pressed>btn_pfl1_down.png</Pressed>
+                                        <Unpressed>btn_pfl1.png</Unpressed>
+                                    </State>
+                                    <State>
+                                        <Number>1</Number>
+                                        <Pressed>btn_pfl1_overdown.png</Pressed>
+                                        <Unpressed>btn_pfl1_over.png</Unpressed>
+                                    </State>
+                                    <Connection>
+                                        <ConfigKey>[Channel<Variable name="channum"/>],pfl</ConfigKey>
+                                    </Connection>
+                                </PushButton>
+                            </Children>
+                        </WidgetGroup>
+                        <Knob>
+                            <TooltipId>pregain</TooltipId>
+                            <NumberStates>64</NumberStates>
+                            <Path>knobs/knob_rotary_s%1.png</Path>
+                            <Connection>
+                                <ConfigKey>[Channel<Variable name="channum"/>],pregain</ConfigKey>
+                            </Connection>
+                        </Knob>
+                    </Children>
+                </WidgetGroup>
+                <Template src="skin:eq_knob.xml">
+                    <SetVariable name="parameter">4</SetVariable>
+                    <SetVariable name="reversed">Reversed</SetVariable>
+                </Template>
+                <Template src="skin:eq_knob.xml">
+                    <SetVariable name="parameter">3</SetVariable>
+                    <SetVariable name="reversed">Reversed</SetVariable>
+                </Template>
+                <Template src="skin:eq_knob.xml">
+                    <SetVariable name="parameter">2</SetVariable>
+                    <SetVariable name="reversed">Reversed</SetVariable>
+                </Template>
+                <Template src="skin:eq_knob.xml">
+                    <SetVariable name="parameter">1</SetVariable>
+                    <SetVariable name="reversed">Reversed</SetVariable>
+                </Template>
               </Children>
             </WidgetGroup>
           </Children>
-      </WidgetGroup> <!-- /Channel1 mixer side-by-side -->
-
-      <WidgetGroup trigger="[Master],show_4decks">  <!-- Channel1 controls -->
-        <ObjectName>MixerChannel</ObjectName>
-        <SizePolicy>f,f</SizePolicy>
-        <Size>80,160</Size>
-        <!-- Channel1 controls -->
-        <Children>
-          <SliderComposed>
-            <TooltipId>channel_volume</TooltipId>
-            <Handle>knob_volume1.png</Handle>
-            <Slider>slider_volume1.png</Slider>
-            <Pos>26,153</Pos>
-            <Horizontal>false</Horizontal>
-            <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],volume</ConfigKey>
-            </Connection>
-          </SliderComposed>
-          <PushButton>
-              <TooltipId>pfl</TooltipId>
-              <NumberStates>2</NumberStates>
-              <State>
-                  <Number>0</Number>
-                  <Pressed>btn_pfl1_down.png</Pressed>
-                  <Unpressed>btn_pfl1.png</Unpressed>
-              </State>
-              <State>
-                  <Number>1</Number>
-                  <Pressed>btn_pfl1_overdown.png</Pressed>
-                  <Unpressed>btn_pfl1_over.png</Unpressed>
-              </State>
-              <Pos>1,8</Pos>
-              <Connection>
-                  <ConfigKey>[Channel<Variable name="channum"/>],pfl</ConfigKey>
-              </Connection>
-          </PushButton>
-          <PushButton>
-              <TooltipId>filterHighKill</TooltipId>
-              <NumberStates>2</NumberStates>
-              <State>
-                  <Number>0</Number>
-                  <Pressed>btn_kill_down.png</Pressed>
-                  <Unpressed>btn_kill.png</Unpressed>
-              </State>
-              <State>
-                  <Number>1</Number>
-                  <Pressed>btn_kill_overdown.png</Pressed>
-                  <Unpressed>btn_kill_over.png</Unpressed>
-              </State>
-              <Pos>4,54</Pos>
-              <Connection>
-                  <ConfigKey>[Channel<Variable name="channum"/>],filterHighKill</ConfigKey>
-                  <ButtonState>LeftButton</ButtonState>
-              </Connection>
-          </PushButton>
-          <PushButton>
-              <TooltipId>filterMidKill</TooltipId>
-              <NumberStates>2</NumberStates>
-              <State>
-                  <Number>0</Number>
-                  <Pressed>btn_kill_down.png</Pressed>
-                  <Unpressed>btn_kill.png</Unpressed>
-              </State>
-              <State>
-                  <Number>1</Number>
-                  <Pressed>btn_kill_overdown.png</Pressed>
-                  <Unpressed>btn_kill_over.png</Unpressed>
-              </State>
-              <Pos>4,93</Pos>
-              <Connection>
-                  <ConfigKey>[Channel<Variable name="channum"/>],filterMidKill</ConfigKey>
-                  <ButtonState>LeftButton</ButtonState>
-              </Connection>
-          </PushButton>
-          <PushButton>
-              <TooltipId>filterLowKill</TooltipId>
-              <NumberStates>2</NumberStates>
-              <State>
-                  <Number>0</Number>
-                  <Pressed>btn_kill_down.png</Pressed>
-                  <Unpressed>btn_kill.png</Unpressed>
-              </State>
-              <State>
-                  <Number>1</Number>
-                  <Pressed>btn_kill_overdown.png</Pressed>
-                  <Unpressed>btn_kill_over.png</Unpressed>
-              </State>
-              <Pos>4,130</Pos>
-              <Connection>
-                  <ConfigKey>[Channel<Variable name="channum"/>],filterLowKill</ConfigKey>
-                  <ButtonState>LeftButton</ButtonState>
-              </Connection>
-          </PushButton>
-          <Knob>
-              <TooltipId>pregain</TooltipId>
-              <NumberStates>64</NumberStates>
-              <Path>knobs/knob_rotary_s%1.png</Path>
-              <Pos>29,1</Pos>
-              <Connection>
-                  <ConfigKey>[Channel<Variable name="channum"/>],pregain</ConfigKey>
-              </Connection>
-          </Knob>
-          <Knob>
-              <TooltipId>filterHigh</TooltipId>
-              <NumberStates>64</NumberStates>
-              <Path>knobs/knob_rotary_s%1.png</Path>
-              <Pos>29,39</Pos>
-              <Connection>
-                  <ConfigKey>[Channel<Variable name="channum"/>],filterHigh</ConfigKey>
-              </Connection>
-          </Knob>
-          <Knob>
-              <TooltipId>filterMid</TooltipId>
-              <NumberStates>64</NumberStates>
-              <Path>knobs/knob_rotary_s%1.png</Path>
-              <Pos>29,78</Pos>
-              <Connection>
-                  <ConfigKey>[Channel<Variable name="channum"/>],filterMid</ConfigKey>
-              </Connection>
-          </Knob>
-          <Knob>
-              <TooltipId>filterLow</TooltipId>
-              <NumberStates>64</NumberStates>
-              <Path>knobs/knob_rotary_s%1.png</Path>
-              <Pos>29,115</Pos>
-              <Connection>
-                  <ConfigKey>[Channel<Variable name="channum"/>],filterLow</ConfigKey>
-              </Connection>
-          </Knob>
-          <StatusLight>
-              <TooltipId>PeakIndicator</TooltipId>
-              <PathStatusLight>btn_clipping1_over.png</PathStatusLight>
-              <PathBack>btn_clipping1.png</PathBack>
-              <Pos>8,154</Pos>
-              <Connection>
-                  <ConfigKey>[Channel<Variable name="channum"/>],PeakIndicator</ConfigKey>
-              </Connection>
-          </StatusLight>
-          <VuMeter>
-              <TooltipId>channel_VuMeter</TooltipId>
-              <PathVu>btn_volume_display1_over.png</PathVu>
-              <PathBack>btn_volume_display1.png</PathBack>
-              <Pos>8,169</Pos>
-              <Horizontal>false</Horizontal>
-              <PeakHoldSize>5</PeakHoldSize>
-              <PeakHoldTime>500</PeakHoldTime>
-              <PeakFallTime>50</PeakFallTime>
-              <PeakFallStep>2</PeakFallStep>
-              <Connection>
-                  <ConfigKey>[Channel<Variable name="channum"/>],VuMeter</ConfigKey>
-              </Connection>
-          </VuMeter>
-        </Children>
-      </WidgetGroup> <!-- /Channel1 mixer vertical -->
+      </WidgetGroup> <!-- /Channel2 mixer side-by-side -->
+      <WidgetGroup trigger="[Master],show_4decks">
+          <Layout>horizontal</Layout>
+          <SizePolicy>min,max</SizePolicy>
+          <Children>
+              <Template src="skin:mixer_channel_vertical.xml"/>
+          </Children>
+      </WidgetGroup>
     </Children>
   </WidgetStack>
 </Template>

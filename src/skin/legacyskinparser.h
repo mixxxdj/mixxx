@@ -103,6 +103,8 @@ class LegacySkinParser : public QObject, public SkinParser {
     // Renders a template.
     QList<QWidget*> parseTemplate(QDomElement node);
 
+    void commonWidgetSetup(QDomNode node, WBaseWidget* pBaseWidget,
+                           bool allowConnections=true);
     void setupPosition(QDomNode node, QWidget* pWidget);
     void setupSize(QDomNode node, QWidget* pWidget);
     void setupBaseWidget(QDomNode node, WBaseWidget* pBaseWidget);

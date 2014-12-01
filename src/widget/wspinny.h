@@ -7,6 +7,7 @@
 #include <QHideEvent>
 #include <QEvent>
 
+#include "configobject.h"
 #include "skin/skincontext.h"
 #include "trackinfoobject.h"
 #include "vinylcontrol/vinylsignalquality.h"
@@ -20,12 +21,14 @@ class VinylControlManager;
 class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityListener {
     Q_OBJECT
   public:
-    WSpinny(QWidget* parent, VinylControlManager* pVCMan);
+    WSpinny(QWidget* parent, const QString& group,
+            ConfigObject<ConfigValue>* pConfig,
+            VinylControlManager* pVCMan);
     virtual ~WSpinny();
 
     void onVinylSignalQualityUpdate(const VinylSignalQualityReport& report);
 
-    void setup(QDomNode node, const SkinContext& context, QString group);
+    void setup(QDomNode node, const SkinContext& context);
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
 
@@ -64,6 +67,8 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     QPixmap scaledCoverArt(const QPixmap& normal);
 
   private:
+    QString m_group;
+    ConfigObject<ConfigValue>* m_pConfig;
     QImage* m_pBgImage;
     QImage* m_pFgImage;
     QImage* m_pGhostImage;
@@ -78,7 +83,6 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     ControlObjectThread* m_pVinylControlEnabled;
     ControlObjectThread* m_pSignalEnabled;
     ControlObjectThread* m_pSlipEnabled;
-    ControlObjectThread* m_pSlipPosition;
 
     TrackPointer m_loadedTrack;
     QPixmap m_loadedCover;
@@ -96,7 +100,6 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     QImage m_qImage;
     int m_iVinylScopeSize;
 
-    QString m_group;
     float m_fAngle; //Degrees
     double m_dAngleCurrentPlaypos;
     double m_dAngleLastPlaypos;
