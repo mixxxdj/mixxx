@@ -27,7 +27,10 @@ void SamplerBank::slotSaveSamplerBank(double v) {
     if (v == 0.0)
         return;
 
-    QString samplerBankPath = QFileDialog::getSaveFileName(NULL, tr("Save Sampler Bank"));
+    QString samplerBankPath = QFileDialog::getSaveFileName(
+            NULL, tr("Save Sampler Bank"),
+            QString(),
+            tr("Mixxx Sampler Banks (*.samplerbank.xml)"));
 
     // The user has picked a new directory via a file dialog. This means the
     // system sandboxer (if we are sandboxed) has granted us permission to this
@@ -75,7 +78,11 @@ void SamplerBank::slotLoadSamplerBank(double v) {
     if (v == 0.0)
         return;
 
-    QString samplerBankPath = QFileDialog::getOpenFileName(NULL, tr("Load Sampler Bank"));
+    QString samplerBankPath = QFileDialog::getOpenFileName(
+            NULL,
+            tr("Load Sampler Bank"),
+            QString(),
+            tr("Mixxx Sampler Banks (*.samplerbank.xml)"));
 
     // The user has picked a new directory via a file dialog. This means the
     // system sandboxer (if we are sandboxed) has granted us permission to this
@@ -83,7 +90,7 @@ void SamplerBank::slotLoadSamplerBank(double v) {
     // register a security bookmark.
 
     QFile file(samplerBankPath);
-    if (!file.open(QIODevice::WriteOnly)) {
+    if (!file.open(QIODevice::ReadOnly)) {
         QMessageBox::warning(NULL,
                              tr("Error Reading Sampler Bank"),
                              tr("Could not open the sampler bank file '%1'.")
