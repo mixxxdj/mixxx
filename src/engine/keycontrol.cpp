@@ -165,16 +165,8 @@ void KeyControl::slotRateChanged() {
 }
 
 void KeyControl::slotFileKeyChanged(double value) {
-
     // The pitch adjust in octaves.
-    double pitch = m_pPitchAdjust->get();
-    bool keylock_enabled = m_pKeylock->get() > 0;
-
-    // If keylock is enabled then rate only affects the tempo and not the pitch.
-    if (m_dOldRate != 1.0 && !keylock_enabled) {
-        pitch += KeyUtils::powerOf2ToOctaveChange(m_dOldRate);
-    }
-
+    double pitch = m_pPitch->get();
     updateKeyCOs(value, pitch);
 }
 
