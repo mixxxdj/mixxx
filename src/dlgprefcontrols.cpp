@@ -340,7 +340,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     connect(CheckBoxSpeedAutoReset, SIGNAL(stateChanged(int)),
             this, SLOT(slotUpdateSpeedAutoReset(int)));
     m_bSpeedAutoReset = static_cast<bool>(m_pConfig->getValueString(
-            ConfigKey("[Mixer Profile]", "SpeedAutoReset")).toInt());
+            ConfigKey("[Controls]", "SpeedAutoReset")).toInt());
     CheckBoxSpeedAutoReset->setChecked(m_bSpeedAutoReset);
     
     slotUpdate();
@@ -628,7 +628,7 @@ void DlgPrefControls::slotApply() {
     m_pConfig->set(ConfigKey("[Library]","RowHeight"),
             ConfigValue(rowHeight));
     
-    m_pConfig->set(ConfigKey("[Mixer Profile]","SpeedAutoReset"),
+    m_pConfig->set(ConfigKey("[Controls]","SpeedAutoReset"),
             ConfigValue(m_bSpeedAutoReset ? 1 : 0));
 }
 

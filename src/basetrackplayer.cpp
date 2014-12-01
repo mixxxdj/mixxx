@@ -287,7 +287,7 @@ void BaseTrackPlayerImpl::slotFinishLoading(TrackPointer pTrackInfoObject)
         }
         m_pPreGain->set(1.0);
     }
-    if(m_pConfig->getValueString(ConfigKey("[Mixer Profile]", "SpeedAutoReset"), 0).toInt()) {
+    if(m_pConfig->getValueString(ConfigKey("[Controls]", "SpeedAutoReset"), 0).toInt()) {
         if (m_pSpeed != NULL) {
             m_pSpeed->set(0.0);
         }
