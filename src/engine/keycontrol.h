@@ -14,12 +14,12 @@ class KeyControl : public EngineControl {
     KeyControl(QString group, ConfigObject<ConfigValue>* pConfig);
     virtual ~KeyControl();
 
-    // Returns a value describing the pitch adjustment measured in octaves. A
-    // pitch adjustment of 0 means no change should take place.
-    double getPitchAdjustOctaves() const;
-    void setPitchAdjustOctaves(double value);
+    void resetPitchToLinear();
 
+    // Returns a value describing the pitch ratio. A pitch adjustment of 1.0
+    // means no change should take place.
     double getPitchRatio() const;
+    void setPitchRatio(double pitchRatio);
 
     double getKey();
 

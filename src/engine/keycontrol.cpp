@@ -89,10 +89,6 @@ KeyControl::~KeyControl() {
     delete m_pEngineKeyDistance;
 }
 
-double KeyControl::getPitchAdjustOctaves() const {
-    return m_pPitchAdjust->get();
-}
-
 double KeyControl::getPitchRatio() const {
     // pitchOctaves -> -1 0 1 for up to on Octave pitch shift
     double pitchOctaves = m_pPitch->get();
@@ -101,19 +97,15 @@ double KeyControl::getPitchRatio() const {
     return pitchRatio;
 }
 
-void KeyControl::setPitchAdjustOctaves(double value) {
-    m_pPitchAdjust->set(value);
-    double pitch = value;
-    bool keylock_enabled = m_pKeylock->toBool();
+void KeyControl::setPitchRatio(double pitchRatio) {
+    // pitchOctaves -> -1 0 1 for up to on Octave pitch shift
+    double pitchOctaves = KeyUtils::powerOf2ToOctaveChange(pitchRatio);
+    m_pPitch->set(pitchOctaves);
+    slotPitchChanged(pitchOctaves);
+}
 
-    // If keylock is enabled then rate only affects the tempo and not the pitch.
-    if (m_dOldRate != 1.0 && !keylock_enabled) {
-        pitch += KeyUtils::powerOf2ToOctaveChange(m_dOldRate);
-    }
-    m_pPitch->set(pitch);
-
-    double dFileKey = m_pFileKey->get();
-    updateKeyCOs(dFileKey, pitch);
+void KeyControl::resetPitchToLinear() {
+    setPitchRatio(m_dOldRate);
 }
 
 double KeyControl::getKey() {
