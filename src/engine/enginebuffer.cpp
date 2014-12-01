@@ -808,7 +808,13 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
             // (1.0 being normal rate. 2.0 plays at 2x speed -- 2 track seconds
             // pass for every 1 real second)
             double tempoRatio = speed;
-            double pitchRatio = m_pKeyControl->getPitchRatio();
+            double pitchRatio;
+            if (use_pitch_and_time_scaling) {
+                pitchRatio = m_pKeyControl->getPitchRatio();
+            } else {
+                // This is for the natural speed pitch found on turn tables
+                pitchRatio = tempoRatio;
+            }
 
             m_pScale->setScaleParameters(m_pSampleRate->get(),
                                          baserate,
