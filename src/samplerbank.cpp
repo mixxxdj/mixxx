@@ -6,16 +6,17 @@
 #include "trackinfoobject.h"
 #include "controlpushbutton.h"
 #include "playermanager.h"
-#include "playerinfo.h"
 
 SamplerBank::SamplerBank(PlayerManager* pPlayerManager)
         : QObject(pPlayerManager),
           m_pPlayerManager(pPlayerManager) {
     Q_ASSERT(pPlayerManager);
     m_pLoadControl = new ControlPushButton(ConfigKey("[Sampler]", "LoadSamplerBank"));
-    connect(m_pLoadControl, SIGNAL(valueChanged(double)), this, SLOT(slotLoadSamplerBank(double)));
+    connect(m_pLoadControl, SIGNAL(valueChanged(double)),
+            this, SLOT(slotLoadSamplerBank(double)));
     m_pSaveControl = new ControlPushButton(ConfigKey("[Sampler]", "SaveSamplerBank"));
-    connect(m_pSaveControl, SIGNAL(valueChanged(double)), this, SLOT(slotSaveSamplerBank(double)));
+    connect(m_pSaveControl, SIGNAL(valueChanged(double)),
+            this, SLOT(slotSaveSamplerBank(double)));
 }
 
 SamplerBank::~SamplerBank() {
@@ -30,7 +31,10 @@ void SamplerBank::slotSaveSamplerBank(double v) {
     QString samplerBankPath = QFileDialog::getSaveFileName(
             NULL, tr("Save Sampler Bank"),
             QString(),
-            tr("Mixxx Sampler Banks (*.samplerbank.xml)"));
+            tr("Mixxx Sampler Banks (*.xml)"));
+    if (samplerBankPath.isEmpty()) {
+        return;
+    }
 
     // The user has picked a new directory via a file dialog. This means the
     // system sandboxer (if we are sandboxed) has granted us permission to this
@@ -60,7 +64,7 @@ void SamplerBank::slotSaveSamplerBank(double v) {
 
         samplerNode.setAttribute("group", pSampler->getGroup());
 
-        TrackPointer pTrack = PlayerInfo::instance().getTrackInfo(pSampler->getGroup());
+        TrackPointer pTrack = pSampler->getLoadedTrack();
         if (pTrack) {
             QString samplerLocation = pTrack->getLocation();
             samplerNode.setAttribute("location", samplerLocation);
@@ -82,7 +86,10 @@ void SamplerBank::slotLoadSamplerBank(double v) {
             NULL,
             tr("Load Sampler Bank"),
             QString(),
-            tr("Mixxx Sampler Banks (*.samplerbank.xml)"));
+            tr("Mixxx Sampler Banks (*.xml)"));
+    if (samplerBankPath.isEmpty()) {
+        return;
+    }
 
     // The user has picked a new directory via a file dialog. This means the
     // system sandboxer (if we are sandboxed) has granted us permission to this
@@ -126,7 +133,15 @@ void SamplerBank::slotLoadSamplerBank(double v) {
             if (e.tagName() == "sampler") {
                 QString group = e.attribute("group", "");
                 QString location = e.attribute("location", "");
-                m_pPlayerManager->slotLoadToPlayer(location, group);
+
+                if (!group.isEmpty()) {
+                    if (location.isEmpty()) {
+                        m_pPlayerManager->slotLoadTrackToPlayer(TrackPointer(), group);
+                    } else {
+                        m_pPlayerManager->slotLoadToPlayer(location, group);
+                    }
+                }
+
             }
         }
         n = n.nextSibling();
