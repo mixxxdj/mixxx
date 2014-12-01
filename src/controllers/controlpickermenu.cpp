@@ -125,7 +125,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckAndSamplerControl("keylock", tr("Keylock Mode"),
                              tr("Toggle keylock mode"), speedMenu);
     addDeckAndSamplerControl("rate", tr("Playback Speed"),
-                             tr("Playback speed control"), speedMenu, true);
+                             tr("Playback speed control (Vinyl \"Pitch\" slider)"), speedMenu, true);
     addDeckAndSamplerControl("pitch", tr("Pitch (Musical key)"),
                              tr("Pitch control (does not affect tempo)"), speedMenu, true);
     addDeckAndSamplerControl("sync_key", tr("Sync Key"), tr("Match musical key"), speedMenu, true);
