@@ -431,7 +431,9 @@ Numark mode:
         <font/>
        </property>
        <property name="toolTip">
-        <string>Adjust the available range for the speed (pitch/tempo) change controls.</string>
+        <string>Adjust the available range for the speed (Vinyl &quot;Pitch&quot;) slider.  
+A Speed change of 6 % changes the pitch by one semitone, if key lock is disabled.
+If key lock is enabled, only the tempo is effected. </string>
        </property>
       </widget>
      </item>
