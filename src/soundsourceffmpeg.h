@@ -64,36 +64,33 @@ struct ffmpegCacheObject {
 };
 
 class SoundSourceFFmpeg : public Mixxx::SoundSource {
+    typedef SoundSource Super;
+
 public:
+    static QList<QString> supportedFileExtensions();
+
     explicit SoundSourceFFmpeg(QString qFilename);
     ~SoundSourceFFmpeg();
-    Result open();
-    long seek(long);
-    unsigned int read(unsigned long size, const SAMPLE*);
-    Result parseHeader();
-    QImage parseCoverArt();
-    inline long unsigned length();
-    bool readInput();
-    static QList<QString> supportedFileExtensions();
-    AVCodecContext *getCodecContext();
-    AVFormatContext *getFormatContext();
-    int getAudioStreamIndex();
 
+    Result parseHeader() /*override*/;
+    QImage parseCoverArt() /*override*/;
 
-protected:
-    void lock();
-    void unlock();
+    Result open() /*override*/;
 
+    diff_type seekFrame(diff_type frameIndex) /*override*/;
+    size_type readFrameSamplesInterleaved(size_type frameCount,
+            sample_type* sampleBuffer) /*override*/;
+
+private:
     bool readFramesToCache(unsigned int count, qint64 offset);
     bool getBytesFromCache(char *buffer, quint64 offset, quint64 size);
     quint64 getSizeofCache();
     bool clearCache();
 
-private:
-    int m_iAudioStream;
-    quint64 m_filelength;
+    unsigned int read(unsigned long size, SAMPLE*);
+
     AVFormatContext *m_pFormatCtx;
-    AVInputFormat *m_pIformat;
+    int m_iAudioStream;
     AVCodecContext *m_pCodecCtx;
     AVCodec *m_pCodec;
 

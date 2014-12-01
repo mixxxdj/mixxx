@@ -1,225 +1,148 @@
 /***************************************************************************
-                          soundsourceoggvorbis.cpp  -  ogg vorbis decoder
-                             -------------------
-    copyright            : (C) 2003 by Svein Magne Bang
-    email                :
-***************************************************************************/
+ soundsourceoggvorbis.cpp  -  ogg vorbis decoder
+ -------------------
+ copyright            : (C) 2003 by Svein Magne Bang
+ email                :
+ ***************************************************************************/
 
 /***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
 
 #include "soundsourceoggvorbis.h"
 #include "soundsourcetaglib.h"
-#include "sampleutil.h"
 
 #include <taglib/vorbisfile.h>
 
 #include <vorbis/codec.h>
 
-#include <QtDebug>
-
-#ifdef __WINDOWS__
-#include <io.h>
-#include <fcntl.h>
-#elif __APPLE__
-#include <CoreFoundation/CFByteOrder.h>
-#elif __LINUX__
-#include <endian.h>
-#endif
-
-inline int getByteOrder() {
-#ifdef __LINUX__
-    return __BYTE_ORDER == __LITTLE_ENDIAN ? 0 : 1;
-#elif __APPLE__
-    return CFByteOrderGetCurrent() == CFByteOrderLittleEndian ? 0 : 1;
-#else
-    // Assume little endian.
-    // TODO(XXX) BSD.
-    return 0;
-#endif
-
-}
-
-/*
-   Class for reading Ogg Vorbis
- */
-
 SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename)
-: Mixxx::SoundSource(qFilename)
-{
-    filelength = 0;
-    setType("ogg");
+        : Super(qFilename, "ogg") {
+    memset(&m_vf, 0, sizeof(m_vf));
 }
 
-SoundSourceOggVorbis::~SoundSourceOggVorbis()
-{
-    if (filelength > 0) {
-        ov_clear(&vf);
+SoundSourceOggVorbis::~SoundSourceOggVorbis() {
+    if (0 != ov_clear(&m_vf)) {
+        qWarning() << "Failed to close OggVorbis file:" << getFilename();
     }
 }
 
 Result SoundSourceOggVorbis::open() {
     const QByteArray qBAFilename(getFilename().toLocal8Bit());
-#ifdef __WINDOWS__
-    if(ov_fopen(qBAFilename.constData(), &vf) < 0) {
-        qDebug() << "oggvorbis: Input does not appear to be an Ogg bitstream.";
-        filelength = 0;
-        return ERR;
-    }
-#else
-    FILE *vorbisfile =  fopen(qBAFilename.constData(), "r");
 
-    if (!vorbisfile) {
-        qDebug() << "oggvorbis: cannot open" << getFilename();
+    if (0 != ov_fopen(qBAFilename.constData(), &m_vf)) {
+        qWarning() << "Failed to open OggVorbis file:" << getFilename();
         return ERR;
     }
 
-    if(ov_open(vorbisfile, &vf, NULL, 0) < 0) {
-        qDebug() << "oggvorbis: Input does not appear to be an Ogg bitstream.";
-        filelength = 0;
+    if (!ov_seekable(&m_vf)) {
+        qWarning() << "OggVorbis file is not seekable:" << getFilename();
+        close();
         return ERR;
     }
-#endif
 
     // lookup the ogg's channels and samplerate
-    vorbis_info * vi = ov_info(&vf, -1);
-
-    channels = vi->channels;
-    setChannels(channels);
-    setSampleRate(vi->rate);
-
-    if (channels > 2) {
-        qDebug() << "oggvorbis: No support for more than 2 channels!";
-        ov_clear(&vf);
-        filelength = 0;
+    const vorbis_info* vi = ov_info(&m_vf, -1);
+    if (!vi) {
+        qWarning() << "Failed to read OggVorbis file:" << getFilename();
+        close();
         return ERR;
     }
+    setChannelCount(vi->channels);
+    setFrameRate(vi->rate);
 
-    // ov_pcm_total returns the total number of frames in the ogg file. The
-    // frame is the channel-independent measure of samples. The total samples in
-    // the file is channels * ov_pcm_total. rryan 7/2009 I verified this by
-    // hand. a 30 second long 48khz mono ogg and a 48khz stereo ogg both report
-    // 1440000 for ov_pcm_total.
-    ogg_int64_t ret = ov_pcm_total(&vf, -1);
-
-    if (ret >= 0) {
-        // We pretend that the file is stereo to the rest of the world.
-        filelength = ret * 2;
-    }
-    else //error
-    {
-      if (ret == OV_EINVAL) {
-          //The file is not seekable. Not sure if any action is needed.
-          qDebug() << "oggvorbis: file is not seekable " << getFilename();
-      }
+    ogg_int64_t frameCount = ov_pcm_total(&m_vf, -1);
+    if (0 <= frameCount) {
+        setFrameCount(frameCount);
+    } else {
+        qWarning() << "Failed to read OggVorbis file:" << getFilename();
+        close();
+        return ERR;
     }
 
     return OK;
 }
 
-/*
-   seek to <filepos>
- */
-
-long SoundSourceOggVorbis::seek(long filepos)
-{
-    // In our speak, filepos is a sample in the file abstraction (i.e. it's
-    // stereo no matter what). filepos/2 is the frame we want to seek to.
-    if (filepos % 2 != 0) {
-        qDebug() << "SoundSourceOggVorbis got non-even seek target.";
-        filepos--;
+void SoundSourceOggVorbis::close() {
+    if (0 != ov_clear(&m_vf)) {
+        qWarning() << "Failed to close OggVorbis file:" << getFilename();
     }
-
-    if (ov_seekable(&vf)) {
-        if (ov_pcm_seek(&vf, filepos/2) != 0) {
-            // This is totally common (i.e. you're at EOF). Let's not leave this
-            // qDebug on.
-
-            // qDebug() << "ogg vorbis: Seek ERR on seekable.";
-        }
-
-        // Even if an error occured, return them the current position because
-        // that's what we promised. (Double it because ov_pcm_tell returns
-        // frames and we pretend to the world that everything is stereo)
-        return ov_pcm_tell(&vf) * 2;
-    } else {
-        qDebug() << "ogg vorbis: Seek ERR at file " << getFilename();
-        return 0;
-    }
+    Super::reset();
 }
 
-
-/*
-   read <size> samples into <destination>, and return the number of
-   samples actually read.
- */
-
-unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * destination) {
-    if (size % 2 != 0) {
-        qDebug() << "SoundSourceOggVorbis got non-even size in read.";
-        size--;
+Mixxx::AudioSource::diff_type SoundSourceOggVorbis::seekFrame(
+        diff_type frameIndex) {
+    int seekResult = ov_pcm_seek(&m_vf, frameIndex);
+    if (0 != seekResult) {
+        qWarning() << "Failed to seek OggVorbis file:" << getFilename();
     }
+    return ov_pcm_tell(&m_vf);
+}
 
-    char *pRead  = (char*) destination;
-    SAMPLE *dest   = (SAMPLE*) destination;
+Mixxx::AudioSource::size_type SoundSourceOggVorbis::readFrameSamplesInterleaved(
+        size_type frameCount, sample_type* sampleBuffer) {
+    return readFrameSamplesInterleaved(frameCount, sampleBuffer, false);
+}
 
+Mixxx::AudioSource::size_type SoundSourceOggVorbis::readStereoFrameSamplesInterleaved(
+        size_type frameCount, sample_type* sampleBuffer) {
+    return readFrameSamplesInterleaved(frameCount, sampleBuffer, true);
+}
 
-
-    // 'needed' is size of buffer in bytes. 'size' is size in SAMPLEs,
-    // which is 2 bytes.  If the stream is mono, we read 'size' bytes,
-    // so that half the buffer is full, then below we double each
-    // sample on the left and right channel. If the stream is stereo,
-    // then ov_read interleaves the samples into the full length of
-    // the buffer.
-
-    // ov_read speaks bytes, we speak words.  needed is the bytes to
-    // read, not words to read.
-
-    // size is the maximum space in words that we have in
-    // destination. For stereo files, read the full buffer (size*2
-    // bytes). For mono files, only read half the buffer (size bytes),
-    // and we will double the buffer to be in stereo later.
-    unsigned int needed = size * channels;
-
-    unsigned int index=0,ret=0;
-
-    // loop until requested number of samples has been retrieved
-    while (needed > 0) {
-        // read samples into buffer
-        ret = ov_read(&vf, pRead+index, needed, getByteOrder(), 2, 1, &current_section);
-
-        if (ret <= 0) {
-            // An error or EOF occured, break out and return what we have sofar.
-            break;
+Mixxx::AudioSource::size_type SoundSourceOggVorbis::readFrameSamplesInterleaved(
+        size_type frameCount, sample_type* sampleBuffer,
+        bool readStereoSamples) {
+    size_type readCount = 0;
+    sample_type* nextSample = sampleBuffer;
+    while (readCount < frameCount) {
+        float** pcmChannels;
+        int currentSection;
+        long readResult = ov_read_float(&m_vf, &pcmChannels,
+                frameCount - readCount, &currentSection);
+        if (0 == readResult) {
+            break; // done
         }
-
-        index  += ret;
-        needed -= ret;
+        if (0 < readResult) {
+            if (isChannelCountMono()) {
+                if (readStereoSamples) {
+                    for (long i = 0; i < readResult; ++i) {
+                        *nextSample++ = pcmChannels[0][i];
+                        *nextSample++ = pcmChannels[0][i];
+                    }
+                } else {
+                    for (long i = 0; i < readResult; ++i) {
+                        *nextSample++ = pcmChannels[0][i];
+                    }
+                }
+            } else if (isChannelCountStereo() || readStereoSamples) {
+                for (long i = 0; i < readResult; ++i) {
+                    *nextSample++ = pcmChannels[0][i];
+                    *nextSample++ = pcmChannels[1][i];
+                }
+            } else {
+                for (long i = 0; i < readResult; ++i) {
+                    for (size_type j = 0; j < getChannelCount(); ++j) {
+                        *nextSample++ = pcmChannels[j][i];
+                    }
+                }
+            }
+            readCount += readResult;
+        } else {
+            qWarning() << "Failed to read sample data from OggVorbis file:"
+                    << getFilename();
+            break; // abort
+        }
     }
-
-    // As of here, index is the total bytes read. (index/2/channels) is the
-    // total frames read.
-
-    // convert into stereo if file is mono
-    if (channels == 1) {
-        SampleUtil::doubleMonoToDualMono(dest, index / 2);
-        // Pretend we read twice as many bytes as we did, since we just repeated
-        // each pair of bytes.
-        index *= 2;
-    }
-
-    // index is the total bytes read, so the words read is index/2
-    return index / 2;
+    return readCount;
 }
 
 /*
-   Parse the the file to get metadata
+ Parse the the file to get metadata
  */
 Result SoundSourceOggVorbis::parseHeader() {
     QByteArray qBAFilename = getFilename().toLocal8Bit();
@@ -256,16 +179,10 @@ QImage SoundSourceOggVorbis::parseCoverArt() {
 }
 
 /*
-   Return the length of the file in samples.
+ Return the length of the file in samples.
  */
 
-inline long unsigned SoundSourceOggVorbis::length()
-{
-    return filelength;
-}
-
-QList<QString> SoundSourceOggVorbis::supportedFileExtensions()
-{
+QList<QString> SoundSourceOggVorbis::supportedFileExtensions() {
     QList<QString> list;
     list.push_back("ogg");
     return list;

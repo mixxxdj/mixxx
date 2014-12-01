@@ -74,17 +74,17 @@ bool readFileHeader(SoundSource* pSoundSource, const TagLib::File& f) {
     if (f.isValid()) {
         const TagLib::AudioProperties *properties = f.audioProperties();
         if (properties) {
+            pSoundSource->setChannels(properties->channels());
+            pSoundSource->setSampleRate(properties->sampleRate());
             pSoundSource->setDuration(properties->length());
             pSoundSource->setBitrate(properties->bitrate());
-            pSoundSource->setSampleRate(properties->sampleRate());
-            pSoundSource->setChannels(properties->channels());
 
             if (s_bDebugMetadata) {
                 qDebug() << "TagLib"
-                        << "duration" << pSoundSource->getDuration()
-                        << "bitrate" << pSoundSource->getBitrate()
+                        << "channels" << pSoundSource->getChannels()
                         << "sampleRate" << pSoundSource->getSampleRate()
-                        << "channels" << pSoundSource->getChannels();
+                        << "bitrate" << pSoundSource->getBitrate()
+                        << "duration" << pSoundSource->getDuration();
             }
 
             return true;

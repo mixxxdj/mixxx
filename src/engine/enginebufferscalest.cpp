@@ -38,7 +38,6 @@ EngineBufferScaleST::EngineBufferScaleST(ReadAheadManager *pReadAheadManager)
       m_dTempoOld(1.0),
       m_pReadAheadManager(pReadAheadManager) {
     m_pSoundTouch = new soundtouch::SoundTouch();
-    m_pSoundTouch->setChannels(2);
     m_pSoundTouch->setRate(m_dRateOld);
     m_pSoundTouch->setTempo(m_dTempoOld);
     m_pSoundTouch->setPitch(1.0);

@@ -6,22 +6,23 @@
 #include <QSemaphore>
 #include <QThread>
 #include <QString>
-#include <QScopedPointer>
 
-#include "soundsource.h"
+#include "audiosource.h"
 #include "trackinfoobject.h"
 #include "engine/engineworker.h"
 #include "util/fifo.h"
-#include "util/types.h"
 
+
+// forward declaration(s)
+class AudioSourceProxy;
 
 // A Chunk is a section of audio that is being cached. The chunk_number can be
 // used to figure out the sample number of the first sample in data by using
 // sampleForChunk()
 typedef struct Chunk {
     int chunk_number;
-    int length;
-    CSAMPLE* data;
+    int frameCount;
+    Mixxx::AudioSource::sample_type* stereoSamples;
     Chunk* prev_lru;
     Chunk* next_lru;
 } Chunk;
@@ -44,10 +45,11 @@ enum ReaderStatus {
 typedef struct ReaderStatusUpdate {
     ReaderStatus status;
     Chunk* chunk;
-    int trackNumSamples;
-    ReaderStatusUpdate() {
-        status = INVALID;
-        chunk = NULL;
+    int trackFrameCount;
+    ReaderStatusUpdate()
+        : status(INVALID)
+        , chunk(NULL)
+        , trackFrameCount(0) {
     }
 } ReaderStatusUpdate;
 
@@ -71,12 +73,15 @@ class CachingReaderWorker : public EngineWorker {
     void quitWait();
 
     // A Chunk is a memory-resident section of audio that has been cached. Each
-    // chunk holds a fixed number of samples given by kSamplesPerChunk.
-    const static int kChunkLength, kSamplesPerChunk;
+    // chunk holds a fixed number of stereo frames given by kFramesPerChunk.
+    static const Mixxx::AudioSource::size_type kChunkLength;
+    static const Mixxx::AudioSource::size_type kChunkChannels = 2; // stereo
+    static const Mixxx::AudioSource::size_type kFramesPerChunk;
+    static const Mixxx::AudioSource::size_type kSamplesPerChunk; // = kFramesPerChunk * kChunkChannels
 
     // Given a chunk number, return the start sample number for the chunk.
-    inline static int sampleForChunk(int chunk_number) {
-        return chunk_number * kSamplesPerChunk;
+    static Mixxx::AudioSource::size_type frameForChunk(Mixxx::AudioSource::size_type chunk_number) {
+        return chunk_number * kFramesPerChunk;
     }
 
   signals:
@@ -108,12 +113,9 @@ class CachingReaderWorker : public EngineWorker {
     void processChunkReadRequest(ChunkReadRequest* request,
                                  ReaderStatusUpdate* update);
 
-    // The current sound source of the track loaded
-    Mixxx::SoundSourcePointer m_pCurrentSoundSource;
-    int m_iTrackNumSamples;
+    // The current audio source of the track loaded
+    Mixxx::AudioSourcePointer m_pAudioSource;
 
-    // Temporary buffer for reading from SoundSources
-    SAMPLE* m_pSample;
     QAtomicInt m_stop;
 };
 

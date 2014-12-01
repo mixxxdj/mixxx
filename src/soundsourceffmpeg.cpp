@@ -21,40 +21,34 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "trackinfoobject.h"
 #include "soundsourceffmpeg.h"
 
 #include <QtDebug>
 #include <QBuffer>
 
-static QMutex ffmpegmutex;
+#include <vector>
 
 #define SOUNDSOURCEFFMPEG_CACHESIZE 1000
 #define SOUNDSOURCEFFMPEG_POSDISTANCE ((1024 * 1000) / 8)
 
 SoundSourceFFmpeg::SoundSourceFFmpeg(QString filename)
-    : SoundSource(filename),
-    m_iAudioStream(-1),
-    m_filelength(-1),
-    m_pFormatCtx(NULL),
-    m_pIformat(NULL),
-    m_pCodecCtx(NULL),
-    m_pCodec(NULL),
-    m_pResample(NULL),
-    m_iCurrentMixxTs(0),
-    m_bIsSeeked(false),
-    m_lCacheBytePos(0),
-    m_lCacheStartByte(0),
-    m_lCacheEndByte(0),
-    m_lCacheLastPos(0),
-    m_lLastStoredPos(0),
-    m_lStoredSeekPoint(-1) {
-    m_SCache.clear();
-    setType(filename.section(".",-1).toLower());
+    : Mixxx::SoundSource(filename)
+    , m_pFormatCtx(NULL)
+    , m_iAudioStream(-1)
+    , m_pCodecCtx(NULL)
+    , m_pCodec(NULL)
+    , m_pResample(NULL)
+    , m_iCurrentMixxTs(0)
+    , m_bIsSeeked(false)
+    , m_lCacheBytePos(0)
+    , m_lCacheStartByte(0)
+    , m_lCacheEndByte(0)
+    , m_lCacheLastPos(0)
+    , m_lLastStoredPos(0)
+    , m_lStoredSeekPoint(-1) {
 }
 
 SoundSourceFFmpeg::~SoundSourceFFmpeg() {
-    struct ffmpegLocationObject *l_SRmJmp = NULL;
     clearCache();
 
     if (m_pCodecCtx != NULL) {
@@ -70,31 +64,10 @@ SoundSourceFFmpeg::~SoundSourceFFmpeg() {
     }
 
     while (m_SJumpPoints.size() > 0) {
-        l_SRmJmp = m_SJumpPoints[0];
+        ffmpegLocationObject* l_SRmJmp = m_SJumpPoints[0];
         m_SJumpPoints.remove(0);
         free(l_SRmJmp);
     }
-
-}
-
-AVCodecContext *SoundSourceFFmpeg::getCodecContext() {
-    return m_pCodecCtx;
-}
-
-AVFormatContext *SoundSourceFFmpeg::getFormatContext() {
-    return m_pFormatCtx;
-}
-
-int SoundSourceFFmpeg::getAudioStreamIndex() {
-    return m_iAudioStream;
-}
-
-void SoundSourceFFmpeg::lock() {
-    ffmpegmutex.lock();
-}
-
-void SoundSourceFFmpeg::unlock() {
-    ffmpegmutex.unlock();
 }
 
 bool SoundSourceFFmpeg::clearCache() {
@@ -431,22 +404,23 @@ Result SoundSourceFFmpeg::open() {
     m_pResample = new EncoderFfmpegResample(m_pCodecCtx);
     m_pResample->open(m_pCodecCtx->sample_fmt, AV_SAMPLE_FMT_S16);
 
-    this->setChannels(m_pCodecCtx->channels);
-    this->setSampleRate(m_pCodecCtx->sample_rate);
+    this->setChannelCount(m_pCodecCtx->channels);
+    this->setFrameRate(m_pCodecCtx->sample_rate);
+    this->setFrameCount((m_pFormatCtx->duration * m_pCodecCtx->sample_rate) / AV_TIME_BASE);
 
-    qDebug() << "ffmpeg: Samplerate: " << this->getSampleRate() << ", Channels: " <<
-             this->getChannels() << "\n";
-    if (this->getChannels() > 2) {
+    qDebug() << "ffmpeg: Samplerate: " << this->getFrameRate() << ", Channels: " <<
+             this->getChannelCount() << "\n";
+    if (this->getChannelCount() > 2) {
         qDebug() << "ffmpeg: No support for more than 2 channels!";
         return ERR;
     }
-    m_filelength = (long int) ((double)m_pFormatCtx->duration * 2 / AV_TIME_BASE *
-                             this->getSampleRate());
 
     return OK;
 }
 
-long SoundSourceFFmpeg::seek(long filepos) {
+Mixxx::AudioSource::diff_type SoundSourceFFmpeg::seekFrame(diff_type frameIndex) {
+    const diff_type filepos = frames2samples(frameIndex);
+
     int ret = 0;
     qint64 i = 0;
 
@@ -502,16 +476,15 @@ long SoundSourceFFmpeg::seek(long filepos) {
 
     m_bIsSeeked = TRUE;
 
-    return filepos;
+    return frameIndex;
 }
 
-unsigned int SoundSourceFFmpeg::read(unsigned long size,
-                                     const SAMPLE * destination) {
+unsigned int SoundSourceFFmpeg::read(unsigned long size, SAMPLE* destination) {
 
     if (m_SCache.size() == 0) {
         // Make sure we allways start at begining and cache have some
         // material that we can consume.
-        seek(0);
+        seekFrame(0);
         m_bIsSeeked = FALSE;
     }
 
@@ -528,6 +501,21 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size,
     m_bIsSeeked = FALSE;
     return size;
 
+}
+
+Mixxx::AudioSource::size_type SoundSourceFFmpeg::readFrameSamplesInterleaved(size_type frameCount,
+        sample_type* sampleBuffer) {
+    // This is just a hack that simply reuses existing
+    // functionality. Sample data should be resampled
+    // directly into AV_SAMPLE_FMT_FLT instead of
+    // AV_SAMPLE_FMT_S16!
+    typedef std::vector<SAMPLE> TempBuffer;
+    TempBuffer tempBuffer(frames2samples(frameCount));
+    const size_type readSamples = read(tempBuffer.size(), &tempBuffer[0]);
+    for (size_type i = 0; i < readSamples; ++i) {
+        sampleBuffer[i] = SAMPLE_clampSymmetric(tempBuffer[i]) / sample_type(SAMPLE_MAX);
+    }
+    return samples2frames(readSamples);
 }
 
 Result SoundSourceFFmpeg::parseHeader() {
@@ -630,11 +618,10 @@ Result SoundSourceFFmpeg::parseHeader() {
 
     }
 
-    this->setType(getFilename().section(".",-1).toLower());
-    this->setDuration(FmtCtx->duration / AV_TIME_BASE);
-    this->setBitrate((int)(CodecCtx->bit_rate / 1000));
-    this->setSampleRate(CodecCtx->sample_rate);
     this->setChannels(CodecCtx->channels);
+    this->setSampleRate(CodecCtx->sample_rate);
+    this->setBitrate(CodecCtx->bit_rate / 1000);
+    this->setDuration(FmtCtx->duration / AV_TIME_BASE);
 
     avcodec_close(CodecCtx);
     avformat_close_input(&FmtCtx);
@@ -644,11 +631,8 @@ Result SoundSourceFFmpeg::parseHeader() {
 }
 
 QImage SoundSourceFFmpeg::parseCoverArt() {
+    // currently not implemented
     return QImage();
-}
-
-inline long unsigned SoundSourceFFmpeg::length() {
-    return m_filelength;
 }
 
 QList<QString> SoundSourceFFmpeg::supportedFileExtensions() {

@@ -21,10 +21,14 @@
 #include "soundsourcetaglib.h"
 #include "util/math.h"
 
+namespace
+{
+    Mixxx::AudioSource::size_type kChannelCount = 2;
+}
+
 SoundSourceCoreAudio::SoundSourceCoreAudio(QString filename)
-        : SoundSource(filename),
-          m_samples(0),
-          m_headerFrames(0) {
+        : Super(filename)
+        , m_headerFrames(0) {
 }
 
 SoundSourceCoreAudio::~SoundSourceCoreAudio() {
@@ -58,23 +62,17 @@ Result SoundSourceCoreAudio::open() {
     }
 
     // get the input file format
-    CAStreamBasicDescription inputFormat;
-    UInt32 size = sizeof(inputFormat);
-    m_inputFormat = inputFormat;
-    err = ExtAudioFileGetProperty(m_audioFile, kExtAudioFileProperty_FileDataFormat, &size, &inputFormat);
+    UInt32 inputFormatSize = sizeof(m_inputFormat);
+    err = ExtAudioFileGetProperty(m_audioFile, kExtAudioFileProperty_FileDataFormat, &inputFormatSize, &m_inputFormat);
     if (err != noErr) {
         qDebug() << "SSCA: Error getting file format (" << getFilename() << ")";
         return ERR;
     }
 
-    //Debugging:
-    //printf ("Source File format: "); inputFormat.Print();
-    //printf ("Dest File format: "); outputFormat.Print();
-
     // create the output format
     m_outputFormat = CAStreamBasicDescription(
-        inputFormat.mSampleRate, 2,
-        CAStreamBasicDescription::kPCMFormatInt16, true);
+        m_inputFormat.mSampleRate, kChannelCount,
+        CAStreamBasicDescription::kPCMFormatFloat32, true);
 
     // set the client format
     err = ExtAudioFileSetProperty(m_audioFile, kExtAudioFileProperty_ClientDataFormat,
@@ -84,13 +82,10 @@ Result SoundSourceCoreAudio::open() {
         return ERR;
     }
 
-    setChannels(m_outputFormat.NumberChannels());
-
     //get the total length in frames of the audio file - copypasta: http://discussions.apple.com/thread.jspa?threadID=2364583&tstart=47
-    UInt32        dataSize;
-    SInt64        totalFrameCount;
-    dataSize    = sizeof(totalFrameCount); //XXX: This looks sketchy to me - Albert
-    err            = ExtAudioFileGetProperty(m_audioFile, kExtAudioFileProperty_FileLengthFrames, &dataSize, &totalFrameCount);
+    SInt64 totalFrameCount;
+    UInt32 totalFrameCountSize = sizeof(totalFrameCount);
+    err = ExtAudioFileGetProperty(m_audioFile, kExtAudioFileProperty_FileLengthFrames, &totalFrameCountSize, &totalFrameCount);
     if (err != noErr) {
         qDebug() << "SSCA: Error getting number of frames";
         return ERR;
@@ -101,92 +96,68 @@ Result SoundSourceCoreAudio::open() {
     //
 
     AudioConverterRef acRef;
-    UInt32 acrsize=sizeof(AudioConverterRef);
+    UInt32 acrsize = sizeof(AudioConverterRef);
     err = ExtAudioFileGetProperty(m_audioFile, kExtAudioFileProperty_AudioConverter, &acrsize, &acRef);
     //_ThrowExceptionIfErr(@"kExtAudioFileProperty_AudioConverter", err);
 
     AudioConverterPrimeInfo primeInfo;
-    UInt32 piSize=sizeof(AudioConverterPrimeInfo);
+    UInt32 piSize = sizeof(AudioConverterPrimeInfo);
     memset(&primeInfo, 0, piSize);
     err = AudioConverterGetProperty(acRef, kAudioConverterPrimeInfo, &piSize, &primeInfo);
     if (err != kAudioConverterErr_PropertyNotSupported) { // Only if decompressing
         //_ThrowExceptionIfErr(@"kAudioConverterPrimeInfo", err);
-        m_headerFrames=primeInfo.leadingFrames;
+        m_headerFrames = primeInfo.leadingFrames;
     }
 
-    m_samples = (totalFrameCount/* - m_headerFrames*/) * getChannels();
-    setDuration(m_samples / (inputFormat.mSampleRate * getChannels()));
-    setSampleRate(inputFormat.mSampleRate);
-    qDebug() << m_samples << totalFrameCount << getChannels();
+    setChannelCount(m_outputFormat.NumberChannels());
+    setFrameRate(m_inputFormat.mSampleRate);
+    setFrameCount(totalFrameCount/* - m_headerFrames*/);
 
     //Seek to position 0, which forces us to skip over all the header frames.
     //This makes sure we're ready to just let the Analyser rip and it'll
     //get the number of samples it expects (ie. no header frames).
-    seek(0);
+    seekFrame(0);
 
     return OK;
 }
 
-long SoundSourceCoreAudio::seek(long filepos) {
-    // important division here, filepos is in audio samples (i.e. shorts)
-    // but libflac expects a number in time samples. I _think_ this should
-    // be hard-coded at two because *2 is the assumption the caller makes
-    // -- bkgood
-    OSStatus err = noErr;
-    SInt64 segmentStart = filepos / 2;
-
-    err = ExtAudioFileSeek(m_audioFile, (SInt64)segmentStart+m_headerFrames);
+Mixxx::AudioSource::diff_type SoundSourceCoreAudio::seekFrame(diff_type frameIndex) {
+    OSStatus err = ExtAudioFileSeek(m_audioFile, frameIndex + m_headerFrames);
     //_ThrowExceptionIfErr(@"ExtAudioFileSeek", err);
-    //qDebug() << "SSCA: Seeking to" << segmentStart;
-
-    //err = ExtAudioFileSeek(m_audioFile, filepos / 2);
+    //qDebug() << "SSCA: Seeking to" << frameIndex;
     if (err != noErr) {
-        qDebug() << "SSCA: Error seeking to" << filepos << " (file " << getFilename() << ")";// << GetMacOSStatusErrorString(err) << GetMacOSStatusCommentString(err);
+        qDebug() << "SSCA: Error seeking to" << frameIndex << " (file " << getFilename() << ")";// << GetMacOSStatusErrorString(err) << GetMacOSStatusCommentString(err);
     }
-    return filepos;
+    return frameIndex;
 }
 
-unsigned int SoundSourceCoreAudio::read(unsigned long size, const SAMPLE *destination) {
+Mixxx::AudioSource::size_type SoundSourceCoreAudio::readFrameSamplesInterleaved(size_type frameCount,
+        sample_type* sampleBuffer) {
     //if (!m_decoder) return 0;
-    OSStatus err;
-    SAMPLE *destBuffer(const_cast<SAMPLE*>(destination));
-    UInt32 numFrames = 0;//(size / 2); /// m_outputFormat.mBytesPerFrame);
-    unsigned int totalFramesToRead = size/2;
-    unsigned int numFramesRead = 0;
-    unsigned int numFramesToRead = totalFramesToRead;
+    size_type numFramesRead = 0;
 
-    while (numFramesRead < totalFramesToRead) { //FIXME: Hardcoded 2
-        numFramesToRead = totalFramesToRead - numFramesRead;
+    while (numFramesRead < frameCount) {
+        size_type numFramesToRead = frameCount - numFramesRead;
 
         AudioBufferList fillBufList;
-        fillBufList.mNumberBuffers = 1; //Decode a single track?
-        fillBufList.mBuffers[0].mNumberChannels = m_outputFormat.mChannelsPerFrame;
-        fillBufList.mBuffers[0].mDataByteSize = math_min<unsigned int>(1024, numFramesToRead*4);//numFramesToRead*sizeof(*destBuffer); // 2 = num bytes per SAMPLE
-        fillBufList.mBuffers[0].mData = (void*)(&destBuffer[numFramesRead*2]);
+        fillBufList.mNumberBuffers = 1;
+        fillBufList.mBuffers[0].mNumberChannels = getChannelCount();
+        fillBufList.mBuffers[0].mDataByteSize = frames2samples(numFramesToRead) * sizeof(sampleBuffer[0]);
+        fillBufList.mBuffers[0].mData = sampleBuffer + frames2samples(numFramesRead);
 
-        // client format is always linear PCM - so here we determine how many frames of lpcm
-        // we can read/write given our buffer size
-        numFrames = numFramesToRead; //This silly variable acts as both a parameter and return value.
-        err = ExtAudioFileRead (m_audioFile, &numFrames, &fillBufList);
-        //The actual number of frames read also comes back in numFrames.
-        //(It's both a parameter to a function and a return value. wat apple?)
-        //XThrowIfError (err, "ExtAudioFileRead");
-        if (!numFrames) {
-            // this is our termination condition
+        UInt32 numFramesToReadInOut = numFramesToRead; // input/output parameter
+        OSStatus err = ExtAudioFileRead(m_audioFile, &numFramesToReadInOut, &fillBufList);
+        if (0 == numFramesToReadInOut) {
+            // EOF reached
             break;
         }
-        numFramesRead += numFrames;
+        numFramesRead += numFramesToReadInOut;
     }
-    return numFramesRead*2;
-}
-
-inline unsigned long SoundSourceCoreAudio::length() {
-    return m_samples;
+    return numFramesRead;
 }
 
 Result SoundSourceCoreAudio::parseHeader() {
-    if (getFilename().endsWith(".m4a")) {
-        setType("m4a");
+    if (getType() == "m4a") {
         TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
         if (!readFileHeader(this, f)) {
             return ERR;
@@ -203,8 +174,7 @@ Result SoundSourceCoreAudio::parseHeader() {
                 return ERR;
             }
         }
-    } else if (getFilename().endsWith(".mp3")) {
-        setType("mp3");
+    } else if (getType() == "mp3") {
         TagLib::MPEG::File f(getFilename().toLocal8Bit().constData());
         if (!readFileHeader(this, f)) {
             return ERR;
@@ -226,8 +196,7 @@ Result SoundSourceCoreAudio::parseHeader() {
                 }
             }
         }
-    } else if (getFilename().endsWith(".mp2")) {
-        setType("mp2");
+    } else if (getType() == "mp2") {
         //TODO: MP2 metadata. Does anyone use mp2 files anymore?
         //      Feels like 1995 again...
         return ERR;
@@ -238,8 +207,7 @@ Result SoundSourceCoreAudio::parseHeader() {
 
 QImage SoundSourceCoreAudio::parseCoverArt() {
     QImage coverArt;
-    if (getFilename().endsWith(".m4a")) {
-        setType("m4a");
+    if (getType() == "m4a") {
         TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
         TagLib::MP4::Tag *mp4(f.tag());
         if (mp4) {
@@ -247,8 +215,7 @@ QImage SoundSourceCoreAudio::parseCoverArt() {
         } else {
             return QImage();
         }
-    } else if (getFilename().endsWith(".mp3")) {
-        setType("mp3");
+    } else if (getType() == "mp3") {
         TagLib::MPEG::File f(getFilename().toLocal8Bit().constData());
         TagLib::ID3v2::Tag* id3v2 = f.ID3v2Tag();
         if (id3v2) {
