@@ -65,7 +65,9 @@ class ControllerEngine : public QObject {
     virtual ~ControllerEngine();
 
     bool isReady();
+    // Check whether a source file that was evaluated()'d has errors.
     bool hasErrors(QString filename);
+    // Get the errors for a source file that was evaluated()'d
     const QStringList getErrors(QString filename);
 
     void setDebug(bool bDebug) {
@@ -151,6 +153,7 @@ class ControllerEngine : public QObject {
 
     void scriptErrorDialog(QString detailedError);
     void generateScriptFunctions(QString code);
+    // Stops and removes all timers (for shutdown).
     void stopAllTimers();
 
     void callFunctionOnObjects(QList<QString>, QString, QScriptValueList args = QScriptValueList());
@@ -161,6 +164,9 @@ class ControllerEngine : public QObject {
 
     // Scratching functions & variables
     void scratchProcess(int timerId);
+
+    bool isDeckPlaying(const QString& group);
+    double getDeckRate(const QString& group);
 
     Controller* m_pController;
     bool m_bDebug;
