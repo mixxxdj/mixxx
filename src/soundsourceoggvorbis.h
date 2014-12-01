@@ -1,8 +1,8 @@
 /***************************************************************************
-                          soundsourceoggvorbis.h  -  ogg vorbis decoder
-                             -------------------
-    copyright            : (C) 2003 by Svein Magne Bang
-    email                :
+ soundsourceoggvorbis.h  -  ogg vorbis decoder
+ -------------------
+ copyright            : (C) 2003 by Svein Magne Bang
+ email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -17,28 +17,38 @@
 #ifndef SOUNDSOURCEOGGVORBIS_H
 #define SOUNDSOURCEOGGVORBIS_H
 
-#include <QString>
+#include "soundsource.h"
+
 #define OV_EXCLUDE_STATIC_CALLBACKS
 #include <vorbis/vorbisfile.h>
 
-#include "soundsource.h"
+class SoundSourceOggVorbis: public Mixxx::SoundSource {
+    typedef SoundSource Super;
 
-class SoundSourceOggVorbis : public Mixxx::SoundSource {
- public:
-  explicit SoundSourceOggVorbis(QString qFilename);
-  ~SoundSourceOggVorbis();
-  Result open();
-  long seek(long);
-  unsigned read(unsigned long size, const SAMPLE*);
-  inline long unsigned length();
-  Result parseHeader();
-  QImage parseCoverArt();
-  static QList<QString> supportedFileExtensions();
- private:
-  int channels;
-  unsigned long filelength;
-  OggVorbis_File vf;
-  int current_section;
+public:
+    static QList<QString> supportedFileExtensions();
+
+    explicit SoundSourceOggVorbis(QString qFilename);
+    ~SoundSourceOggVorbis();
+
+    Result parseHeader() /*override*/;
+    QImage parseCoverArt() /*override*/;
+
+    Result open() /*override*/;
+
+    diff_type seekFrame(diff_type frameIndex) /*override*/;
+    size_type readFrameSamplesInterleaved(size_type frameCount,
+            sample_type* sampleBuffer) /*override*/;
+    size_type readStereoFrameSamplesInterleaved(size_type frameCount,
+            sample_type* sampleBuffer) /*override*/;
+
+private:
+    void close();
+
+    size_type readFrameSamplesInterleaved(size_type frameCount,
+            sample_type* sampleBuffer, bool readStereoSamples);
+
+    OggVorbis_File m_vf;
 };
 
 #endif

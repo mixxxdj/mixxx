@@ -36,8 +36,13 @@ EngineBufferScaleST::EngineBufferScaleST(ReadAheadManager *pReadAheadManager)
       m_bBackwards(false),
       m_pReadAheadManager(pReadAheadManager) {
     m_pSoundTouch = new soundtouch::SoundTouch();
+<<<<<<< HEAD
     m_pSoundTouch->setChannels(2);
     m_pSoundTouch->setRate(m_dBaseRate);
+=======
+    m_pSoundTouch->setRate(m_dRateOld);
+    m_pSoundTouch->setTempo(m_dTempoOld);
+>>>>>>> New SoundSource/AudioSource API
     m_pSoundTouch->setPitch(1.0);
     m_pSoundTouch->setSetting(SETTING_USE_QUICKSEEK, 1);
     m_pSoundTouch->setSampleRate(m_iSampleRate > 0 ? m_iSampleRate : 44100);

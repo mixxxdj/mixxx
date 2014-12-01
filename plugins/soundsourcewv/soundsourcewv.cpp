@@ -1,124 +1,79 @@
-//soundsourcewv.cpp : sound source proxy for .wv (WavPack files)
-//created by fenugrec
-//great help from rryan & others on #mixxx
-//format_samples adapted from cmus (Peter Lemenkov)
-
-#include <QtDebug>
-
 #include "soundsourcewv.h"
 #include "soundsourcetaglib.h"
 #include "sampleutil.h"
 
 #include <taglib/wavpackfile.h>
+
 namespace Mixxx {
 
-SoundSourceWV::SoundSourceWV(QString qFilename)
-    : SoundSource(qFilename),
-    filewvc(NULL),
-    Bps(0),
-    filelength(0) {
-    setType("wv");
-}
-
-
-SoundSourceWV::~SoundSourceWV(){
-   if (filewvc) {
-    WavpackCloseFile(filewvc);
-    filewvc=NULL;
-   }
-}
-
-QList<QString> SoundSourceWV::supportedFileExtensions()
-{
+QList<QString> SoundSourceWV::supportedFileExtensions() {
     QList<QString> list;
     list.push_back("wv");
     return list;
 }
 
+SoundSourceWV::SoundSourceWV(QString qFilename)
+        : Super(qFilename, "wv"), m_wpc(NULL), m_sampleScale(0.0f) {
+}
 
-Result SoundSourceWV::open()
-{
+SoundSourceWV::~SoundSourceWV() {
+    if (m_wpc) {
+        WavpackCloseFile(m_wpc);
+    }
+}
+
+Result SoundSourceWV::open() {
     QByteArray qBAFilename(getFilename().toLocal8Bit());
     char msg[80];   //hold possible error message
 
-    filewvc = WavpackOpenFileInput(qBAFilename.constData(), msg, OPEN_2CH_MAX | OPEN_WVC,0);
-    if (!filewvc) {
-        qDebug() << "SSWV::open: failed to open file : "<< msg;
+    m_wpc = WavpackOpenFileInput(qBAFilename.constData(), msg,
+    OPEN_2CH_MAX | OPEN_WVC | OPEN_NORMALIZE, 0);
+    if (!m_wpc) {
+        qDebug() << "SSWV::open: failed to open file : " << msg;
         return ERR;
     }
-    if (WavpackGetMode(filewvc) & MODE_FLOAT) {
-        qDebug() << "SSWV::open: cannot load 32bit float files";
-        WavpackCloseFile(filewvc);
-        filewvc=NULL;
-        return ERR;
+
+    setChannelCount(WavpackGetReducedChannels(m_wpc));
+    setFrameRate(WavpackGetSampleRate(m_wpc));
+    setFrameCount(WavpackGetNumSamples(m_wpc));
+
+    if (WavpackGetMode(m_wpc) & MODE_FLOAT) {
+        m_sampleScale = 1.0f;
+    } else {
+        const int bitsPerSample = WavpackGetBitsPerSample(m_wpc);
+        const uint32_t maxSampleValue = uint32_t(1) << (bitsPerSample - 1);
+        m_sampleScale = 1.0f / (0.5f + sample_type(maxSampleValue));
     }
-    // wavpack_open succeeded -> populate variables
-    filelength = WavpackGetNumSamples(filewvc);
-    setSampleRate(WavpackGetSampleRate(filewvc));
-    setChannels(WavpackGetReducedChannels(filewvc));
-    Bps=WavpackGetBytesPerSample(filewvc);
-    qDebug () << "SSWV::open: opened filewvc with filelength: "<<filelength<<" SampleRate: " << getSampleRate()
-        << " channels: " << getChannels() << " bytes per samp: "<<Bps;
-    if (Bps>2) {
-        qDebug() << "SSWV::open: warning: input file has > 2 bytes per sample, will be truncated to 16bits";
-    }
+
     return OK;
 }
 
-
-long SoundSourceWV::seek(long filepos){
-    if (WavpackSeekSample(filewvc,filepos>>1) != true) {
-        qDebug() << "SSWV::seek : could not seek to sample #" << (filepos>>1);
-        return 0;
+AudioSource::diff_type SoundSourceWV::seekFrame(diff_type frameIndex) {
+    if (WavpackSeekSample(m_wpc, frameIndex) == TRUE) {
+        return frameIndex;
+    } else {
+        qDebug() << "SSWV::seek : could not seek to frame #" << frameIndex;
+        return WavpackGetSampleIndex(m_wpc);
     }
-    return filepos;
 }
 
-
-unsigned SoundSourceWV::read(volatile unsigned long size, const SAMPLE* destination){
-    //SAMPLE is "short int" => 16bits. [size] is timesamps*2 (because L+R)
-    SAMPLE * dest = (SAMPLE*) destination;
-    unsigned long sampsread=0;
-    unsigned long timesamps, tsdone;
-
-    //tempbuffer is fixed size : WV_BUF_LENGTH of uint32
-    while (sampsread != size) {
-        timesamps=(size-sampsread)>>1;      //timesamps still remaining
-        if (timesamps > (WV_BUF_LENGTH / getChannels())) {  //if requested size requires more than one buffer filling
-            timesamps=(WV_BUF_LENGTH / getChannels());      //tempbuffer must hold (timesamps * channels) samples
-            qDebug() << "SSWV::read : performance warning, size requested > buffer size !";
+AudioSource::size_type SoundSourceWV::readFrameSamplesInterleaved(
+        size_type frameCount, sample_type* sampleBuffer) {
+    // static assert: sizeof(sample_type) == sizeof(int32_t)
+    size_type unpackCount = WavpackUnpackSamples(m_wpc,
+            reinterpret_cast<int32_t*>(sampleBuffer), frameCount);
+    if (!(WavpackGetMode(m_wpc) & MODE_FLOAT)) {
+        // signed integer -> float
+        const size_type sampleCount = frames2samples(unpackCount);
+        for (size_type i = 0; i < sampleCount; ++i) {
+            const int32_t sampleValue =
+                    reinterpret_cast<int32_t*>(sampleBuffer)[i];
+            sampleBuffer[i] = SampleUtil::clampSample(
+                    sampleValue * m_sampleScale);
         }
-
-        tsdone=WavpackUnpackSamples(filewvc, tempbuffer, timesamps);    //fill temp buffer with timesamps*4bytes*channels
-                //data is right justified, format_samples() fixes that.
-
-        SoundSourceWV::format_samples(Bps, (char *) (dest + (sampsread>>1) * getChannels()), tempbuffer, tsdone*getChannels());
-                                //this will unpack the 4byte/sample
-                                //output of wUnpackSamples(), sign-extending or truncating to output 16bit / sample.
-                                //specifying dest+sampsread should resume the conversion where it was left if size requested
-                                //required multiple reads (size req. > fixed buffer size)
-
-        sampsread = sampsread + (tsdone<<1);
-        if (tsdone!=timesamps) {
-            qDebug () << "SSWV::read : WavpackUnpackSamples read "<<sampsread<<" asamps out of "<<size<<" requested";
-            break;  //exit the while loop : subsequent reads are sure to read less than required.
-        }
-
     }
-
-    if (getChannels() == 1) { //if MONO : expand array to double it's size; see ssov.cpp
-        SampleUtil::doubleMonoToDualMono(dest, sampsread / 2);
-    }
-
-    return sampsread;
+    return unpackCount;
 }
-
-
-inline long unsigned SoundSourceWV::length(){
-    //filelength is # of timesamps.
-    return filelength<<1;
-}
-
 
 Result SoundSourceWV::parseHeader() {
     const QByteArray qBAFilename(getFilename().toLocal8Bit());
@@ -152,45 +107,6 @@ QImage SoundSourceWV::parseCoverArt() {
     } else {
         return QImage();
     }
-}
-
-void SoundSourceWV::format_samples(int Bps, char *dst, int32_t *src, uint32_t count)
-{
-    //this handles converting the fixed 32bit per sample produced by UnpackSamples
-    //to 16 bps, by truncating (24/32) or sign-extending (8)
-    //could eventually be asm-optimized..
-    int32_t temp;
-
-    switch (Bps) {
-    case 1:
-        while (count--) {
-            *dst++ = (char) 0;      //left shift the 8 bit sample
-            *dst++ = (char) *src++ ;//+ 128;        //only works with u8int ?
-        }
-        break;
-    case 2:
-        while (count--) {
-            *dst++ = (char) (temp = *src++);    //low byte
-            *dst++ = (char) (temp >> 8);        //high byte
-        }
-        break;
-    case 3: //modified to truncate to 16bits
-        while (count--) {
-            *dst++ = (char) (temp = (*src++) >> 8);
-            *dst++ = (char) (temp >> 8);
-        }
-        break;
-    case 4: //also truncates
-        while (count--) {
-            *dst++ = (char) (temp = (*src++) >> 16);
-            *dst++ = (char) (temp >> 8);
-            //*dst++ = (char) (temp >> 16);
-            //*dst++ = (char) (temp >> 24);
-        }
-        break;
-    }
-
-    return;
 }
 
 }  // namespace Mixxx
