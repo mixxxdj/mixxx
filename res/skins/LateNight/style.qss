@@ -503,6 +503,10 @@
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
 }
 
+#AlignCenterTop {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+}
+
 #VinylStatusTop1, #VinylStatusTop3 {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   border: 1px solid #585858;

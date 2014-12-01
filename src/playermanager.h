@@ -23,7 +23,33 @@ class SoundManager;
 class EffectsManager;
 class TrackCollection;
 
-class PlayerManager : public QObject {
+// For mocking PlayerManager.
+class PlayerManagerInterface {
+  public:
+    // Get a BaseTrackPlayer (i.e. a Deck or a Sampler) by its group
+    virtual BaseTrackPlayer* getPlayer(QString group) const = 0;
+
+    // Get the deck by its deck number. Decks are numbered starting with 1.
+    virtual Deck* getDeck(unsigned int player) const = 0;
+
+    // Returns the number of decks.
+    virtual unsigned int numberOfDecks() const = 0;
+
+    // Get the preview deck by its deck number. Preview decks are numbered
+    // starting with 1.
+    virtual PreviewDeck* getPreviewDeck(unsigned int libPreviewPlayer) const = 0;
+
+    // Returns the number of preview decks.
+    virtual unsigned int numberOfPreviewDecks() const = 0;
+
+    // Get the sampler by its number. Samplers are numbered starting with 1.
+    virtual Sampler* getSampler(unsigned int sampler) const = 0;
+
+    // Returns the number of sampler decks.
+    virtual unsigned int numberOfSamplers() const = 0;
+};
+
+class PlayerManager : public QObject, public PlayerManagerInterface {
     Q_OBJECT
   public:
     PlayerManager(ConfigObject<ConfigValue>* pConfig,
@@ -47,15 +73,31 @@ class PlayerManager : public QObject {
     // Return the number of players. Thread-safe.
     static unsigned int numDecks();
 
+    unsigned int numberOfDecks() const {
+        return numDecks();
+    }
+
     // Returns true if the group is a deck group. If index is non-NULL,
     // populates it with the deck number (1-indexed).
     static bool isDeckGroup(const QString& group, int* number=NULL);
 
+    // Returns true if the group is a preview deck group. If index is non-NULL,
+    // populates it with the deck number (1-indexed).
+    static bool isPreviewDeckGroup(const QString& group, int* number=NULL);
+
     // Return the number of samplers. Thread-safe.
     static unsigned int numSamplers();
 
+    unsigned int numberOfSamplers() const {
+        return numSamplers();
+    }
+
     // Return the number of preview decks. Thread-safe.
     static unsigned int numPreviewDecks();
+
+    unsigned int numberOfPreviewDecks() const {
+        return numPreviewDecks();
+    }
 
     // Get a BaseTrackPlayer (i.e. a Deck or a Sampler) by its group
     BaseTrackPlayer* getPlayer(QString group) const;

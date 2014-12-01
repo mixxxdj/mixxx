@@ -79,7 +79,6 @@ class WBaseWidget {
     void updateTooltip();
     virtual void fillDebugTooltip(QStringList* debug);
 
-  protected:
     QList<ControlParameterWidgetConnection*> m_connections;
     ControlParameterWidgetConnection* m_pDisplayConnection;
     QList<ControlParameterWidgetConnection*> m_leftConnections;

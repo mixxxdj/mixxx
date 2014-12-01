@@ -16,7 +16,7 @@ class EffectWidgetUtils {
             return EffectRackPointer();
         }
 
-        // EffectRack always refers to a StandardEffectRack index.
+        // If specified, EffectRack always refers to a StandardEffectRack index.
         bool rackNumberOk = false;
         int rackNumber = context.selectInt(node, "EffectRack",
                                            &rackNumberOk);
@@ -25,6 +25,8 @@ class EffectWidgetUtils {
             return pEffectsManager->getStandardEffectRack(rackNumber - 1);
         }
 
+        // For custom racks, users can specify EffectRackGroup explicitly
+        // instead.
         QString rackGroup;
         if (!context.hasNodeSelectString(node, "EffectRackGroup", &rackGroup)) {
             return EffectRackPointer();

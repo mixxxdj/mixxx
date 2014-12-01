@@ -124,8 +124,8 @@
 
           <Template src="skin:knob_label_horizontal.xml">
             <SetVariable name="group">[Master]</SetVariable>
-            <SetVariable name="control">headVolume</SetVariable>
-            <SetVariable name="label">Head Vol</SetVariable>
+            <SetVariable name="control">headGain</SetVariable>
+            <SetVariable name="label">Head Gain</SetVariable>
           </Template>
         </Children>
       </WidgetGroup>
@@ -163,8 +163,8 @@
 
           <Template src="skin:knob_label_horizontal.xml">
             <SetVariable name="group">[Master]</SetVariable>
-            <SetVariable name="control">volume</SetVariable>
-            <SetVariable name="label">Volume</SetVariable>
+            <SetVariable name="control">gain</SetVariable>
+            <SetVariable name="label">Gain</SetVariable>
           </Template>
 
         </Children>

@@ -10,12 +10,15 @@
 #include <QRegExp>
 #include <QScopedPointer>
 
+#include "configobject.h"
+#include "controlobject.h"
 #include "soundsourceproxy.h"
 #include "library/parser.h"
 #include "library/parserm3u.h"
 #include "library/parserpls.h"
 #include "library/parsercsv.h"
 #include "util/sandbox.h"
+#include "playermanager.h"
 
 class DragAndDropHelper {
   public:
@@ -69,19 +72,69 @@ class DragAndDropHelper {
         return fileLocations;
     }
 
-    static QDrag* dragTrack(TrackPointer pTrack, QWidget* pDragSource) {
+    // Allow loading to a player if the player isn't playing or the settings
+    // allow interrupting a playing player.
+    static bool allowLoadToPlayer(const QString& group,
+                                  ConfigObject<ConfigValue>* pConfig) {
+        return allowLoadToPlayer(
+                group, ControlObject::get(ConfigKey(group, "play")) > 0.0,
+                pConfig);
+    }
+
+    // Allow loading to a player if the player isn't playing or the settings
+    // allow interrupting a playing player.
+    static bool allowLoadToPlayer(const QString& group,
+                                  bool isPlaying,
+                                  ConfigObject<ConfigValue>* pConfig) {
+        // Always allow loads to preview decks.
+        if (PlayerManager::isPreviewDeckGroup(group)) {
+            return true;
+        }
+
+        return !isPlaying || pConfig->getValueString(
+                ConfigKey("[Controls]",
+                          "AllowTrackLoadToPlayingDeck")).toInt();
+    }
+
+    static bool dragEnterAccept(const QMimeData& mimeData,
+                                const QString& sourceIdentifier,
+                                bool firstOnly,
+                                bool acceptPlaylists) {
+        QList<QFileInfo> files = dropEventFiles(mimeData, sourceIdentifier,
+                                                firstOnly, acceptPlaylists);
+        return !files.isEmpty();
+    }
+
+    static QList<QFileInfo> dropEventFiles(const QMimeData& mimeData,
+                                           const QString& sourceIdentifier,
+                                           bool firstOnly,
+                                           bool acceptPlaylists) {
+        if (!mimeData.hasUrls() ||
+                (mimeData.hasText() && mimeData.text() == sourceIdentifier)) {
+            return QList<QFileInfo>();
+        }
+
+        QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
+                mimeData.urls(), firstOnly, acceptPlaylists);
+        return files;
+    }
+
+
+    static QDrag* dragTrack(TrackPointer pTrack, QWidget* pDragSource,
+                            QString sourceIdentifier) {
         QList<QUrl> locationUrls;
         locationUrls.append(urlFromLocation(pTrack->getLocation()));
-        return dragUrls(locationUrls, pDragSource);
+        return dragUrls(locationUrls, pDragSource, sourceIdentifier);
     }
 
     static QDrag* dragTrackLocations(const QList<QString>& locations,
-                                     QWidget* pDragSource) {
+                                     QWidget* pDragSource,
+                                     QString sourceIdentifier) {
         QList<QUrl> locationUrls;
         foreach (QString location, locations) {
             locationUrls.append(urlFromLocation(location));
         }
-        return dragUrls(locationUrls, pDragSource);
+        return dragUrls(locationUrls, pDragSource, sourceIdentifier);
     }
 
     static QUrl urlFromLocation(const QString& trackLocation) {
@@ -90,13 +143,14 @@ class DragAndDropHelper {
 
   private:
     static QDrag* dragUrls(const QList<QUrl>& locationUrls,
-                           QWidget* pDragSource) {
+                           QWidget* pDragSource, QString sourceIdentifier) {
         if (locationUrls.isEmpty()) {
             return NULL;
         }
 
         QMimeData* mimeData = new QMimeData();
         mimeData->setUrls(locationUrls);
+        mimeData->setText(sourceIdentifier);
 
         QDrag* drag = new QDrag(pDragSource);
         drag->setMimeData(mimeData);

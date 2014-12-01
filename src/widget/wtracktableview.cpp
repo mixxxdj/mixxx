@@ -961,37 +961,25 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
         }
         locations.append(trackModel->getTrackLocation(index));
     }
-    DragAndDropHelper::dragTrackLocations(locations, this);
+    DragAndDropHelper::dragTrackLocations(locations, this, "library");
 }
 
 // Drag enter event, happens when a dragged item hovers over the track table view
 void WTrackTableView::dragEnterEvent(QDragEnterEvent * event) {
     //qDebug() << "dragEnterEvent" << event->mimeData()->formats();
-    if (event->mimeData()->hasUrls())
-    {
+    if (event->mimeData()->hasUrls()) {
         if (event->source() == this) {
             if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REORDER)) {
                 event->acceptProposedAction();
-            } else {
-                event->ignore();
+                return;
             }
-        } else {
-            QList<QUrl> urls(event->mimeData()->urls());
-            bool anyAccepted = false;
-            foreach (QUrl url, urls) {
-                QFileInfo file(url.toLocalFile());
-                if (SoundSourceProxy::isFilenameSupported(file.fileName()))
-                    anyAccepted = true;
-            }
-            if (anyAccepted) {
-                event->acceptProposedAction();
-            } else {
-                event->ignore();
-            }
+        } else if (DragAndDropHelper::dragEnterAccept(*event->mimeData(),
+                                                      "library", false, true)) {
+            event->acceptProposedAction();
+            return;
         }
-    } else {
-        event->ignore();
     }
+    event->ignore();
 }
 
 // Drag move event, happens when a dragged item hovers over the track table view...
