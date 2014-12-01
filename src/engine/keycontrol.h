@@ -19,6 +19,8 @@ class KeyControl : public EngineControl {
     double getPitchAdjustOctaves() const;
     void setPitchAdjustOctaves(double value);
 
+    double getPitchRatio() const;
+
     double getKey();
 
     void collectFeatures(GroupFeatureState* pGroupFeatures) const;

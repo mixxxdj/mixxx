@@ -40,8 +40,8 @@ class EngineBufferScaleLinear : public EngineBufferScale  {
 
     virtual void setScaleParameters(int iSampleRate,
                             double base_rate,
-                            double* pTempo,
-                            double* pPitch);
+                            double* pTempoRatio,
+                            double* pPitchRatio);
 
   private:
     CSAMPLE* do_scale(CSAMPLE* buf, unsigned long buf_size,

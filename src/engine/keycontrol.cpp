@@ -93,6 +93,14 @@ double KeyControl::getPitchAdjustOctaves() const {
     return m_pPitchAdjust->get();
 }
 
+double KeyControl::getPitchRatio() const {
+    // pitchOctaves -> -1 0 1 for up to on Octave pitch shift
+    double pitchOctaves = m_pPitch->get();
+    // pitchRatio -> 1 = no pitch shift
+    double pitchRatio =  KeyUtils::octaveChangeToPowerOf2(pitchOctaves);
+    return pitchRatio;
+}
+
 void KeyControl::setPitchAdjustOctaves(double value) {
     m_pPitchAdjust->set(value);
     double pitch = value;

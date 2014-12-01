@@ -752,9 +752,10 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
         // keylock is enabled, this is applied to either the rate or the tempo.
         double speed = m_pRateControl->calculateRate(
             baserate, paused, iBufferSize, &is_scratching);
+
         // The pitch adjustment in percentage of octaves (0.0 being normal
         // pitch. 1.0 is a full octave shift up).
-        double pitchAdjust = m_pKeyControl->getPitchAdjustOctaves();
+        double pitchAdjustOctaves = m_pKeyControl->getPitchAdjustOctaves();
 
         // Update the slipped position and seek if it was disabled.
         processSlip(iBufferSize);
@@ -765,7 +766,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
         // rate.
         // High seek speeds also disables keylock.  Our pitch slider could go
         // to 90%, so that's the cutoff point.
-        bool use_pitch_and_time_scaling = !is_scratching && (keylock_enabled || pitchAdjust != 0) &&
+        bool use_pitch_and_time_scaling = !is_scratching && (keylock_enabled || pitchAdjustOctaves != 0) &&
                                           fabs(speed) <= 1.9;
         enablePitchAndTimeScaling(use_pitch_and_time_scaling);
 
@@ -776,7 +777,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
         // scaler. Also, if we have changed scalers then we need to update the
         // scaler.
         if (baserate != m_baserate_old || speed != m_speed_old ||
-                pitchAdjust != m_pitch_old || m_bScalerChanged) {
+                pitchAdjustOctaves != m_pitch_old || m_bScalerChanged) {
             // The rate returned by the scale object can be different from the
             // wanted rate!  Make sure new scaler has proper position. This also
             // crossfades between the old scaler and new scaler to prevent
@@ -794,7 +795,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
 
             m_baserate_old = baserate;
             m_speed_old = speed;
-            m_pitch_old = pitchAdjust;
+            m_pitch_old = pitchAdjustOctaves;
             m_bWasKeylocked = keylock_enabled;
 
             // Now we need to update the scaler with the master sample rate, the
@@ -806,35 +807,20 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
             // RateControl. This is the ratio between track-time and real-time
             // (1.0 being normal rate. 2.0 plays at 2x speed -- 2 track seconds
             // pass for every 1 real second)
-            double speed_adjust = speed;
-
-            // Whether or not the speed change calculated by RateControl should
-            // affect the pitch of the song (e.g. as a traditional style pitch
-            // fader does) or whether the pitch change should purely affect the
-            // tempo.
-            bool speed_affects_pitch = is_scratching || !keylock_enabled;
-
-
-            double pitchScale = KeyUtils::octaveChangeToPowerOf2(pitchAdjust);
-            double tempo = speed_adjust;
-
-            // The only difference for speed_affects_pitch is that we include speed_abs
-            // as part of the pitchSale scale.
-            if (speed_affects_pitch) {
-                pitchScale *= speed_adjust;
-            }
+            double tempoRatio = speed;
+            double pitchRatio = m_pKeyControl->getPitchRatio();
 
             m_pScale->setScaleParameters(m_pSampleRate->get(),
                                          baserate,
-                                         &tempo,
-                                         &pitchScale);
+                                         &tempoRatio,
+                                         &pitchRatio);
 
             // The way we treat rate inside of EngineBuffer is actually a
             // description of "sample consumption rate" or percentage of samples
             // consumed relative to playing back the track at its native sample
             // rate and normal speed. pitch_adjust does not change the playback
             // rate.
-            m_rate_old = rate = baserate * speed_adjust;
+            m_rate_old = rate = baserate * speed;
 
             // Scaler is up to date now.
             m_bScalerChanged = false;

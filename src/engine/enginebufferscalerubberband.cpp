@@ -56,8 +56,8 @@ void EngineBufferScaleRubberBand::initializeRubberBand(int iSampleRate) {
 
 void EngineBufferScaleRubberBand::setScaleParameters(int iSampleRate,
                                                      double base_rate,
-                                                     double* pTempo,
-                                                     double* pPitch) {
+                                                     double* pTempoRatio,
+                                                     double* pPitchRatio) {
     if (m_iSampleRate != iSampleRate) {
         initializeRubberBand(iSampleRate);
         m_iSampleRate = iSampleRate;
@@ -65,7 +65,7 @@ void EngineBufferScaleRubberBand::setScaleParameters(int iSampleRate,
 
     // Negative speed means we are going backwards. pitch does not affect
     // the playback direction.
-    m_bBackwards = *pTempo < 0;
+    m_bBackwards = *pTempoRatio < 0;
 
     // Due to a bug in RubberBand, setting the timeRatio to a large value can
     // cause division-by-zero SIGFPEs. We limit the minimum seek speed to
@@ -75,15 +75,15 @@ void EngineBufferScaleRubberBand::setScaleParameters(int iSampleRate,
     // https://bugs.launchpad.net/ubuntu/+bug/1263233
     // https://bitbucket.org/breakfastquay/rubberband/issue/4/sigfpe-zero-division-with-high-time-ratios
     const double kMinSeekSpeed = 1.0 / 128.0;
-    double speed_abs = fabs(*pTempo);
+    double speed_abs = fabs(*pTempoRatio);
     if (speed_abs < kMinSeekSpeed) {
         // Let the caller know we ignored their speed.
-        speed_abs = *pTempo = 0;
+        speed_abs = *pTempoRatio = 0;
     }
 
     // RubberBand handles checking for whether the change in pitchScale is a
     // no-op.
-    double pitchScale = base_rate * *pPitch;
+    double pitchScale = base_rate * *pPitchRatio;
 
     if (pitchScale > 0) {
         //qDebug() << "EngineBufferScaleRubberBand setPitchScale" << *pitch << pitchScale;
@@ -112,13 +112,13 @@ void EngineBufferScaleRubberBand::setScaleParameters(int iSampleRate,
             m_pRubberBand->setTimeRatio(1.0 / timeRatioInverse);
         }
         speed_abs = timeRatioInverse / base_rate;
-        *pTempo = m_bBackwards ? -speed_abs : speed_abs;
+        *pTempoRatio = m_bBackwards ? -speed_abs : speed_abs;
     }
 
     // Used by other methods so we need to keep them up to date.
     m_dBaseRate = base_rate;
     m_dTempo = speed_abs;
-    m_dPitch = *pPitch;
+    m_dPitch = *pPitchRatio;
 }
 
 void EngineBufferScaleRubberBand::clear() {

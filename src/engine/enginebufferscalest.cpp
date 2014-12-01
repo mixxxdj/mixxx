@@ -55,8 +55,8 @@ EngineBufferScaleST::~EngineBufferScaleST() {
 
 void EngineBufferScaleST::setScaleParameters(int iSampleRate,
                                              double base_rate,
-                                             double* pTempo,
-                                             double* pPitch) {
+                                             double* pTempoRatio,
+                                             double* pPitchRatio) {
     if (m_iSampleRate != iSampleRate) {
         m_pSoundTouch->setSampleRate(iSampleRate > 0 ? iSampleRate : 44100);
         m_iSampleRate = iSampleRate;
@@ -64,11 +64,11 @@ void EngineBufferScaleST::setScaleParameters(int iSampleRate,
 
     // Negative speed means we are going backwards. pitch does not affect
     // the playback direction.
-    m_bBackwards = *pTempo < 0;
+    m_bBackwards = *pTempoRatio < 0;
 
     // It's an error to pass a rate or tempo smaller than MIN_SEEK_SPEED to
     // SoundTouch (see definition of MIN_SEEK_SPEED for more details).
-    double speed_abs = fabs(*pTempo);
+    double speed_abs = fabs(*pTempoRatio);
     if (speed_abs > MAX_SEEK_SPEED) {
         speed_abs = MAX_SEEK_SPEED;
     } else if (speed_abs < MIN_SEEK_SPEED) {
@@ -76,7 +76,7 @@ void EngineBufferScaleST::setScaleParameters(int iSampleRate,
     }
 
     // Let the caller know if we clamped their value.
-    *pTempo = m_bBackwards ? -speed_abs : speed_abs;
+    *pTempoRatio = m_bBackwards ? -speed_abs : speed_abs;
 
     // Include baserate in rate_abs so that we do samplerate conversion as part
     // of rate adjustment.
@@ -95,9 +95,9 @@ void EngineBufferScaleST::setScaleParameters(int iSampleRate,
         m_pSoundTouch->setRate(rate_abs);
         m_dRateOld = rate_abs;
     }
-    if (*pPitch != m_dPitch) {
-        m_pSoundTouch->setPitch(*pPitch);
-        m_dPitch = *pPitch;
+    if (*pPitchRatio != m_dPitch) {
+        m_pSoundTouch->setPitch(*pPitchRatio);
+        m_dPitch = *pPitchRatio;
     }
 
     // NOTE(rryan) : There used to be logic here that clear()'d when the player
@@ -106,7 +106,7 @@ void EngineBufferScaleST::setScaleParameters(int iSampleRate,
     // Used by other methods so we need to keep them up to date.
     m_dBaseRate = base_rate;
     m_dTempo = speed_abs;
-    m_dPitch = *pPitch;
+    m_dPitch = *pPitchRatio;
 }
 
 void EngineBufferScaleST::clear() {
