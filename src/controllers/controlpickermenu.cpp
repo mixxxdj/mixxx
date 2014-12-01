@@ -129,20 +129,22 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckAndSamplerControl("pitch", tr("Pitch (Musical key)"),
                              tr("Pitch control (does not affect tempo)"), speedMenu, true);
     addDeckAndSamplerControl("sync_key", tr("Sync Key"), tr("Match musical key"), speedMenu, true);
-    addDeckAndSamplerControl("rate_perm_up", tr("Increase Speed"), tr("Adjust speed up (coarse)"), speedMenu);
+    addDeckAndSamplerControl("rate_perm_up", tr("Increase Speed"),
+                             tr("Adjust speed faster (coarse)"), speedMenu);
     addDeckAndSamplerControl("rate_perm_up_small", tr("Increase Speed (Fine)"),
-                             tr("Adjust speed up (fine)"), speedMenu);
-    addDeckAndSamplerControl("rate_perm_down", tr("Decrease Speed"), tr("Adjust speed down (coarse)"), speedMenu);
+                             tr("Adjust speed faster (fine)"), speedMenu);
+    addDeckAndSamplerControl("rate_perm_down", tr("Decrease Speed"),
+                             tr("Adjust speed slower (coarse)"), speedMenu);
     addDeckAndSamplerControl("rate_perm_down_small", tr("Increase Speed (Fine)"),
-                             tr("Adjust speed down (fine)"), speedMenu);
-    addDeckAndSamplerControl("rate_temp_up", tr("Temporary Increase Speed"),
-                             tr("Temporary increase speed (coarse)"), speedMenu);
-    addDeckAndSamplerControl("rate_temp_up_small", tr("Temporary Increase Speed (Fine)"),
-                             tr("Temporary increase speed (fine)"), speedMenu);
-    addDeckAndSamplerControl("rate_temp_down", tr("Temporary Decrease Speed"),
-                             tr("Temporary decrease speed (coarse)"), speedMenu);
-    addDeckAndSamplerControl("rate_temp_down_small", tr("Temporary Decrease Speed (Fine)"),
-                             tr("Temporary decrease speed (fine)"), speedMenu);
+                             tr("Adjust speed slower (fine)"), speedMenu);
+    addDeckAndSamplerControl("rate_temp_up", tr("Temporarily Increase Speed"),
+                             tr("Temporarily increase speed (coarse)"), speedMenu);
+    addDeckAndSamplerControl("rate_temp_up_small", tr("Temporarily Increase Speed (Fine)"),
+                             tr("Temporarily increase speed (fine)"), speedMenu);
+    addDeckAndSamplerControl("rate_temp_down", tr("Temporarily Decrease Speed"),
+                             tr("TTemporarily decrease speed (coarse)"), speedMenu);
+    addDeckAndSamplerControl("rate_temp_down_small", tr("Temporarily Decrease Speed (Fine)"),
+                             tr("Temporarily decrease speed (fine)"), speedMenu);
 
     // EQs
     QMenu* eqMenu = addSubmenu(tr("Equalizers"));
