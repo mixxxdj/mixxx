@@ -14,9 +14,12 @@ class KeyControl : public EngineControl {
     KeyControl(QString group, ConfigObject<ConfigValue>* pConfig);
     virtual ~KeyControl();
 
-    // Returns a value describing the pitch adjustment measured in octaves. A
-    // pitch adjustment of 0 means no change should take place.
-    double getPitchAdjustOctaves();
+    void resetPitchToLinear();
+
+    // Returns a value describing the pitch ratio. A pitch adjustment of 1.0
+    // means no change should take place.
+    double getPitchRatio() const;
+    void setPitchRatio(double pitchRatio);
 
     double getKey();
 
@@ -31,6 +34,7 @@ class KeyControl : public EngineControl {
 
   private:
     bool syncKey(EngineBuffer* pOtherEngineBuffer);
+    void updateKeyCOs(double fileKeyNumeric, double pitch);
 
     // The previous rate slider rate.
     double m_dOldRate;
@@ -43,6 +47,7 @@ class KeyControl : public EngineControl {
     ControlObject* m_pRateRange;
     ControlObject* m_pRateDir;
     ControlObject* m_pKeylock;
+    ControlPotmeter* m_pPitchAdjust;
     ControlPotmeter* m_pPitch;
     ControlPushButton* m_pButtonSyncKey;
 

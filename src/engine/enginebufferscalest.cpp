@@ -55,21 +55,20 @@ EngineBufferScaleST::~EngineBufferScaleST() {
 
 void EngineBufferScaleST::setScaleParameters(int iSampleRate,
                                              double base_rate,
-                                             bool speed_affects_pitch,
-                                             double* speed_adjust,
-                                             double* pitch_adjust) {
+                                             double* pTempoRatio,
+                                             double* pPitchRatio) {
     if (m_iSampleRate != iSampleRate) {
         m_pSoundTouch->setSampleRate(iSampleRate > 0 ? iSampleRate : 44100);
         m_iSampleRate = iSampleRate;
     }
 
-    // Negative speed means we are going backwards. pitch_adjust does not affect
+    // Negative speed means we are going backwards. pitch does not affect
     // the playback direction.
-    m_bBackwards = *speed_adjust < 0;
+    m_bBackwards = *pTempoRatio < 0;
 
     // It's an error to pass a rate or tempo smaller than MIN_SEEK_SPEED to
     // SoundTouch (see definition of MIN_SEEK_SPEED for more details).
-    double speed_abs = fabs(*speed_adjust);
+    double speed_abs = fabs(*pTempoRatio);
     if (speed_abs > MAX_SEEK_SPEED) {
         speed_abs = MAX_SEEK_SPEED;
     } else if (speed_abs < MIN_SEEK_SPEED) {
@@ -77,17 +76,12 @@ void EngineBufferScaleST::setScaleParameters(int iSampleRate,
     }
 
     // Let the caller know if we clamped their value.
-    *speed_adjust = m_bBackwards ? -speed_abs : speed_abs;
+    *pTempoRatio = m_bBackwards ? -speed_abs : speed_abs;
 
     // Include baserate in rate_abs so that we do samplerate conversion as part
     // of rate adjustment.
     double rate_abs = base_rate;
-    double tempo_abs = 1.0;
-    if (speed_affects_pitch) {
-        rate_abs *= speed_abs;
-    } else {
-        tempo_abs *= speed_abs;
-    }
+    double tempo_abs = speed_abs;
 
     // Note that we do not set the tempo if it is zero. This is because of the
     // above clamping which prevents us from going below MIN_SEEK_SPEED. I think
@@ -101,10 +95,9 @@ void EngineBufferScaleST::setScaleParameters(int iSampleRate,
         m_pSoundTouch->setRate(rate_abs);
         m_dRateOld = rate_abs;
     }
-    if (*pitch_adjust != m_dPitchAdjust) {
-        m_pSoundTouch->setPitch(
-            KeyUtils::octaveChangeToPowerOf2(*pitch_adjust));
-        m_dPitchAdjust = *pitch_adjust;
+    if (*pPitchRatio != m_dPitch) {
+        m_pSoundTouch->setPitch(*pPitchRatio);
+        m_dPitch = *pPitchRatio;
     }
 
     // NOTE(rryan) : There used to be logic here that clear()'d when the player
@@ -112,9 +105,8 @@ void EngineBufferScaleST::setScaleParameters(int iSampleRate,
 
     // Used by other methods so we need to keep them up to date.
     m_dBaseRate = base_rate;
-    m_bSpeedAffectsPitch = speed_affects_pitch;
-    m_dSpeedAdjust = speed_abs;
-    m_dPitchAdjust = *pitch_adjust;
+    m_dTempo = speed_abs;
+    m_dPitch = *pPitchRatio;
 }
 
 void EngineBufferScaleST::clear() {
@@ -150,7 +142,7 @@ CSAMPLE* EngineBufferScaleST::getScaled(unsigned long buf_size) {
                     ->getNextSamples(
                         // The value doesn't matter here. All that matters is we
                         // are going forward or backward.
-                        (m_bBackwards ? -1.0 : 1.0) * m_dBaseRate * m_dSpeedAdjust,
+                        (m_bBackwards ? -1.0 : 1.0) * m_dBaseRate * m_dTempo,
                         buffer_back,
                         iLenFrames * iNumChannels);
             unsigned long iAvailFrames = iAvailSamples / iNumChannels;
@@ -182,7 +174,7 @@ CSAMPLE* EngineBufferScaleST::getScaled(unsigned long buf_size) {
     // NOTE(rryan): Why no m_dPitchAdjust here? SoundTouch implements pitch
     // shifting as a tempo shift of (1/m_dPitchAdjust) and a rate shift of
     // (*m_dPitchAdjust) so these two cancel out.
-    m_samplesRead = m_dBaseRate * m_dSpeedAdjust *
+    m_samplesRead = m_dBaseRate * m_dTempo *
             total_received_frames * iNumChannels;
 
     return m_buffer;

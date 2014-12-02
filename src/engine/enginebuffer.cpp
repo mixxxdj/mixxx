@@ -258,7 +258,6 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
 
     m_pKeyControl = new KeyControl(group, _config);
     addControl(m_pKeyControl);
-    m_pPitchControl = new ControlObjectSlave(m_group, "pitch", this);
 
     // Create the clock controller
     m_pClockControl = new ClockControl(group, _config);
@@ -530,7 +529,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_pTrackSamples->set(iTrackNumSamples);
     m_pTrackSampleRate->set(iTrackSampleRate);
     // Reset the pitch value for the new track.
-    m_pPitchControl->set(0.0);
+    m_pKeyControl->resetPitchToLinear();
     m_pause.unlock();
 
     // All EngineControls are connected directly
@@ -744,18 +743,23 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
 
         bool paused = m_playButton->get() == 0.0;
         bool is_scratching = false;
-        bool keylock_enabled = m_pKeylock->get() > 0;
-
-        // If keylock was on, and the user disabled it, also reset the pitch.
-        if (m_bWasKeylocked && !keylock_enabled) {
-            m_pPitchControl->set(0.0);
-        }
 
         // speed is the percentage change in player speed. Depending on whether
         // keylock is enabled, this is applied to either the rate or the tempo.
         double speed = m_pRateControl->calculateRate(
             baserate, paused, iBufferSize, &is_scratching);
-        double pitch = m_pKeyControl->getPitchAdjustOctaves();
+
+        bool keylock_enabled = m_pKeylock->get() > 0;
+
+        // If keylock was on, and the user disabled it, also reset the pitch
+        // to the linear scaler pitch
+        if (m_bWasKeylocked && !keylock_enabled) {
+            m_pKeyControl->setPitchRatio(speed);
+        }
+
+        // The pitch adjustment in Ratio (1.0 being normal
+        // pitch. 2.0 is a full octave shift up).
+        double pitchRatio = m_pKeyControl->getPitchRatio();
 
         // Update the slipped position and seek if it was disabled.
         processSlip(iBufferSize);
@@ -766,7 +770,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
         // rate.
         // High seek speeds also disables keylock.  Our pitch slider could go
         // to 90%, so that's the cutoff point.
-        bool use_pitch_and_time_scaling = !is_scratching && (keylock_enabled || pitch != 0) &&
+        bool use_pitch_and_time_scaling = !is_scratching && (keylock_enabled || pitchRatio != speed) &&
                                           fabs(speed) <= 1.9;
         enablePitchAndTimeScaling(use_pitch_and_time_scaling);
 
@@ -777,7 +781,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
         // scaler. Also, if we have changed scalers then we need to update the
         // scaler.
         if (baserate != m_baserate_old || speed != m_speed_old ||
-                pitch != m_pitch_old || m_bScalerChanged) {
+                pitchRatio != m_pitch_old || m_bScalerChanged) {
             // The rate returned by the scale object can be different from the
             // wanted rate!  Make sure new scaler has proper position. This also
             // crossfades between the old scaler and new scaler to prevent
@@ -793,6 +797,10 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
                 }
             }
 
+            m_baserate_old = baserate;
+            m_speed_old = speed;
+            m_pitch_old = pitchRatio;
+            m_bWasKeylocked = keylock_enabled;
 
             // Now we need to update the scaler with the master sample rate, the
             // base rate (ratio between sample rate of the source audio and the
@@ -803,34 +811,26 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
             // RateControl. This is the ratio between track-time and real-time
             // (1.0 being normal rate. 2.0 plays at 2x speed -- 2 track seconds
             // pass for every 1 real second)
-            double speed_adjust = speed;
-
-            // The pitch adjustment in percentage of octaves (0.0 being normal
-            // pitch. 1.0 is a full octave shift up).
-            double pitch_adjust = pitch;
-
-            // Whether or not the speed change calculated by RateControl should
-            // affect the pitch of the song (e.g. as a traditional style pitch
-            // fader does) or whether the pitch change should purely affect the
-            // tempo.
-            bool speed_affects_pitch = is_scratching || !keylock_enabled;
+            double tempoRatio = speed;
+            double pitchRatio;
+            if (use_pitch_and_time_scaling) {
+                pitchRatio = m_pKeyControl->getPitchRatio();
+            } else {
+                // This is for the natural speed pitch found on turn tables
+                pitchRatio = tempoRatio;
+            }
 
             m_pScale->setScaleParameters(m_pSampleRate->get(),
-                                         baserate, speed_affects_pitch,
-                                         &speed_adjust,
-                                         &pitch_adjust);
-
-            m_baserate_old = baserate;
-            m_speed_old = speed;
-            m_pitch_old = pitch;
-            m_bWasKeylocked = keylock_enabled;
+                                         baserate,
+                                         &tempoRatio,
+                                         &pitchRatio);
 
             // The way we treat rate inside of EngineBuffer is actually a
             // description of "sample consumption rate" or percentage of samples
             // consumed relative to playing back the track at its native sample
             // rate and normal speed. pitch_adjust does not change the playback
             // rate.
-            m_rate_old = rate = baserate * speed_adjust;
+            m_rate_old = rate = baserate * tempoRatio;
 
             // Scaler is up to date now.
             m_bScalerChanged = false;
