@@ -250,44 +250,34 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
 
     ComboBoxSkinconf->clear();
 
-    QDir skinsDir(m_pConfig->getResourcePath() + "skins/");
-    skinsDir.setFilter(QDir::Dirs);
-
-    QList<QFileInfo> list = skinsDir.entryInfoList();
-
-    if (CmdlineArgs::Instance().getDeveloper()) {
-        // Show developer skins
-        QDir developerSkinsDir(m_pConfig->getResourcePath() + "developer_skins/");
-        developerSkinsDir.setFilter(QDir::Dirs);
-        list += developerSkinsDir.entryInfoList();
+    QList<QDir> skinSearchPaths = m_pSkinLoader->getSkinSearchPaths();
+    QList<QFileInfo> skins;
+    foreach (QDir dir, skinSearchPaths) {
+        dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
+        skins.append(dir.entryInfoList());
     }
 
-    QString configuredSkinPath = m_pSkinLoader->getConfiguredSkinPath();
-
-    int j=0;
-    for (int i=0; i<list.size(); ++i)
-    {
-        if (list.at(i).fileName()!="." && list.at(i).fileName()!="..")
-        {
-            bool size_ok = checkSkinResolution(list.at(i).filePath());
-            if (size_ok) {
-                ComboBoxSkinconf->insertItem(i, list.at(i).fileName());
-            } else {
-                ComboBoxSkinconf->insertItem(i, QIcon(":/images/preferences/ic_preferences_warning.png"), list.at(i).fileName());
-            }
-
-            if (list.at(i).filePath() == configuredSkinPath) {
-                ComboBoxSkinconf->setCurrentIndex(j);
-                if (size_ok) {
-                    warningLabel->hide();
-                } else {
-                    warningLabel->show();
-                }
-            }
-            ++j;
+    QString configuredSkinPath = m_pSkinLoader->getSkinPath();
+    QIcon sizeWarningIcon(":/images/preferences/ic_preferences_warning.png");
+    int index = 0;
+    foreach (QFileInfo skinInfo, skins) {
+        bool size_ok = checkSkinResolution(skinInfo.filePath());
+        if (size_ok) {
+            ComboBoxSkinconf->insertItem(index, skinInfo.fileName());
+        } else {
+            ComboBoxSkinconf->insertItem(index, sizeWarningIcon, skinInfo.fileName());
         }
-    }
 
+        if (skinInfo.filePath() == configuredSkinPath) {
+            ComboBoxSkinconf->setCurrentIndex(index);
+            if (size_ok) {
+                warningLabel->hide();
+            } else {
+                warningLabel->show();
+            }
+        }
+        index++;
+    }
 
     connect(ComboBoxSkinconf, SIGNAL(activated(int)), this, SLOT(slotSetSkin(int)));
     connect(ComboBoxSchemeconf, SIGNAL(activated(int)), this, SLOT(slotSetScheme(int)));
@@ -346,11 +336,10 @@ DlgPrefControls::~DlgPrefControls() {
     qDeleteAll(m_rateRangeControls);
 }
 
-void DlgPrefControls::slotUpdateSchemes()
-{
+void DlgPrefControls::slotUpdateSchemes() {
     // Since this involves opening a file we won't do this as part of regular slotUpdate
     QList<QString> schlist = LegacySkinParser::getSchemeList(
-                m_pSkinLoader->getConfiguredSkinPath());
+                m_pSkinLoader->getSkinPath());
 
     ComboBoxSchemeconf->clear();
 
@@ -360,10 +349,11 @@ void DlgPrefControls::slotUpdateSchemes()
         ComboBoxSchemeconf->setCurrentIndex(0);
     } else {
         ComboBoxSchemeconf->setEnabled(true);
+        QString selectedScheme = m_pConfig->getValueString(ConfigKey("[Config]","Scheme"));
         for (int i = 0; i < schlist.size(); i++) {
             ComboBoxSchemeconf->addItem(schlist[i]);
 
-            if (schlist[i] == m_pConfig->getValueString(ConfigKey("[Config]","Scheme"))) {
+            if (schlist[i] == selectedScheme) {
                 ComboBoxSchemeconf->setCurrentIndex(i);
             }
         }
