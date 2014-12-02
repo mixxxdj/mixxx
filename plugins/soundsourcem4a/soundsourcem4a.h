@@ -19,8 +19,6 @@
 
 #include "soundsource.h"
 
-#include "m4a/ip.h"
-
 #include "defs_version.h"
 
 #ifdef __MP4V2__
@@ -31,10 +29,7 @@
 
 #include <neaacdec.h>
 
-#include <QString>
-#include <QDebug>
-
-#include <QtDebug>
+#include <vector>
 
 //As per QLibrary docs: http://doc.trolltech.com/4.6/qlibrary.html#resolve
 #ifdef Q_OS_WIN
@@ -65,10 +60,26 @@ class SoundSourceM4A : public SoundSource {
         size_type readFrameSamplesInterleaved(size_type frameCount, sample_type* sampleBuffer) /*override*/;
 
     private:
-        Result initializeDecoder();
+        void close();
 
-        input_plugin_data ipd;
-        int trackId;
+        bool isValidSampleId(MP4SampleId sampleId) const;
+
+        MP4FileHandle m_hFile;
+        MP4TrackId m_trackId;
+        MP4SampleId m_maxSampleId;
+        MP4SampleId m_curSampleId;
+
+        typedef std::vector<u_int8_t> InputBuffer;
+        InputBuffer m_inputBuffer;
+        InputBuffer::size_type m_inputBufferOffset;
+        u_int32_t m_inputBufferLength;
+
+        faacDecHandle m_hDecoder;
+
+        typedef std::vector<sample_type> SampleBuffer;
+        SampleBuffer m_prefetchSampleBuffer;
+
+        diff_type m_curFrameIndex;
 };
 
 extern "C" MY_EXPORT const char* getMixxxVersion()
