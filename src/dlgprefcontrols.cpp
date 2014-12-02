@@ -261,14 +261,14 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     QIcon sizeWarningIcon(":/images/preferences/ic_preferences_warning.png");
     int index = 0;
     foreach (QFileInfo skinInfo, skins) {
-        bool size_ok = checkSkinResolution(skinInfo.filePath());
+        bool size_ok = checkSkinResolution(skinInfo.absoluteFilePath());
         if (size_ok) {
             ComboBoxSkinconf->insertItem(index, skinInfo.fileName());
         } else {
             ComboBoxSkinconf->insertItem(index, sizeWarningIcon, skinInfo.fileName());
         }
 
-        if (skinInfo.filePath() == configuredSkinPath) {
+        if (skinInfo.absoluteFilePath() == configuredSkinPath) {
             ComboBoxSkinconf->setCurrentIndex(index);
             if (size_ok) {
                 warningLabel->hide();
