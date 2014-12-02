@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>461</width>
+    <width>538</width>
     <height>690</height>
    </rect>
   </property>
@@ -21,7 +21,7 @@
        <item row="0" column="1">
         <widget class="QGroupBox" name="groupBox_2">
          <property name="title">
-          <string>Temporary Speed Buttons</string>
+          <string>Temporary Speed Adjustment Buttons</string>
          </property>
          <layout class="QGridLayout" name="gridLayout">
           <item row="0" column="0">
@@ -130,7 +130,7 @@
        <item row="0" column="0">
         <widget class="QGroupBox" name="groupBox">
          <property name="title">
-          <string>Permanent Speed Buttons</string>
+          <string>Permanent Speed Adjustment Buttons</string>
          </property>
          <property name="checkable">
           <bool>false</bool>
