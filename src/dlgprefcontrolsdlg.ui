@@ -77,7 +77,7 @@
              <bool>true</bool>
             </property>
             <property name="suffix">
-             <string>%</string>
+             <string> %</string>
             </property>
             <property name="decimals">
              <number>2</number>
@@ -105,7 +105,7 @@
              <bool>true</bool>
             </property>
             <property name="suffix">
-             <string>%</string>
+             <string> %</string>
             </property>
             <property name="decimals">
              <number>2</number>
@@ -189,7 +189,7 @@
              <bool>true</bool>
             </property>
             <property name="suffix">
-             <string>%</string>
+             <string> %</string>
             </property>
             <property name="decimals">
              <number>2</number>
@@ -217,7 +217,7 @@
              <bool>true</bool>
             </property>
             <property name="suffix">
-             <string>%</string>
+             <string> %</string>
             </property>
             <property name="decimals">
              <number>2</number>
@@ -431,9 +431,7 @@ Numark mode:
         <font/>
        </property>
        <property name="toolTip">
-        <string>Adjust the available range for the speed (Vinyl &quot;Pitch&quot;) slider.  
-A Speed change of 6 % changes the pitch by one semitone, if key lock is disabled.
-If key lock is enabled, only the tempo is effected. </string>
+        <string>Adjusts the range of the speed (Vinyl &quot;Pitch&quot;) slider.</string>
        </property>
       </widget>
      </item>
