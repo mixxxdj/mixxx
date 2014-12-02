@@ -249,9 +249,16 @@ void EngineSync::notifyBpmChanged(Syncable* pSyncable, double bpm, bool fileChan
     // but it is required when the file BPM changes because it's not a true BPM
     // change, so we set the follower back to the master BPM.
     if (syncMode == SYNC_FOLLOWER && fileChanged) {
-        pSyncable->setMasterBaseBpm(masterBaseBpm());
-        pSyncable->setMasterBpm(masterBpm());
-        return;
+        double mbaseBpm = masterBaseBpm();
+        double mbpm = masterBpm();
+        // TODO(owilliams): Figure out why the master bpm is getting set to
+        // zero in the first place, that's the real bug that's being worked
+        // around.
+        if (mbaseBpm != 0.0 && mbpm != 0.0) {
+            pSyncable->setMasterBaseBpm(mbaseBpm);
+            pSyncable->setMasterBpm(mbpm);
+            return;
+        }
     }
 
     // Master Base BPM shouldn't be updated for every random deck that twiddles
