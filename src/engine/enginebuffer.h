@@ -131,8 +131,8 @@ class EngineBuffer : public EngineObject {
     double getSpeed();
     // Returns current bpm value (not thread-safe)
     double getBpm();
-    // Returns the BPM of the loaded track (not thread-safe)
-    double getFileBpm();
+    // Returns the BPM of the loaded track around the current position (not thread-safe)
+    double getLocalBpm();
     // Sets pointer to other engine buffer/channel
     void setEngineMaster(EngineMaster*);
 

@@ -89,6 +89,10 @@ class Beats {
     // specified in samples if the BPM is valid, otherwise returns -1
     virtual double getBpmRange(double startSample, double stopSample) const = 0;
 
+    // Return the average BPM over the range of n*2 beats centered around
+    // curSample.  (An n of 4 results in an averaging of 8 beats).
+    virtual double getBpmAroundPosition(double curSample, int n) const = 0;
+
     ////////////////////////////////////////////////////////////////////////////
     // Beat mutations
     ////////////////////////////////////////////////////////////////////////////

@@ -203,4 +203,42 @@ TEST_F(BeatMapTest, TestNthBeatWhenNotOnBeat) {
     }
 }
 
+TEST_F(BeatMapTest, TestBpmAround) {
+    const double filebpm = 60.0;
+    double approx_beat_length = getBeatLengthSamples(filebpm);
+    m_pTrack->setBpm(filebpm);
+    m_pTrack->setSampleRate(m_iSampleRate);
+    const int numBeats = 64;
+
+    QVector<double> beats;
+    double beat_pos = 0;
+    for (unsigned int i = 0, bpm=60; i < numBeats; ++i, ++bpm) {
+        double beat_length = getBeatLengthFrames(bpm);
+        beats.append(beat_pos);
+        beat_pos += beat_length;
+    }
+
+    BeatMap* pMap = new BeatMap(m_pTrack, 0, beats);
+
+    // The average of the first 8 beats should be different than the average
+    // of the last 8 beats.
+    EXPECT_DOUBLE_EQ(64.024390243902445,
+                     pMap->getBpmAroundPosition(4 * approx_beat_length, 4));
+    EXPECT_DOUBLE_EQ(118.98016997167139,
+                     pMap->getBpmAroundPosition(60 * approx_beat_length, 4));
+    // Also test at the beginning and end of the track
+    EXPECT_DOUBLE_EQ(62.968515742128936,
+                     pMap->getBpmAroundPosition(0, 4));
+    EXPECT_DOUBLE_EQ(118.98016997167139,
+                     pMap->getBpmAroundPosition(65 * approx_beat_length, 4));
+    delete pMap;
+
+    // Try a really, really short track
+    beats = createBeatVector(10, 3, getBeatLengthFrames(filebpm));
+    pMap = new BeatMap(m_pTrack, 0, beats);
+
+    EXPECT_DOUBLE_EQ(filebpm, pMap->getBpmAroundPosition(1 * approx_beat_length, 4));
+    delete pMap;
+}
+
 }  // namespace
