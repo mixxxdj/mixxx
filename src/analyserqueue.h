@@ -1,16 +1,18 @@
 #ifndef ANALYSERQUEUE_H
 #define ANALYSERQUEUE_H
 
+#include "configobject.h"
+#include "analyser.h"
+#include "trackinfoobject.h"
+#include "audiosource.h"
+
 #include <QList>
 #include <QThread>
 #include <QQueue>
 #include <QWaitCondition>
 #include <QSemaphore>
 
-#include "configobject.h"
-#include "analyser.h"
-#include "trackinfoobject.h"
-#include "audiosource.h"
+#include <vector>
 
 class TrackCollection;
 
@@ -63,7 +65,9 @@ class AnalyserQueue : public QThread {
 
     bool m_exit;
     QAtomicInt m_aiCheckPriorities;
-    Mixxx::AudioSource::sample_type* m_pStereoSamples;
+
+    typedef std::vector<Mixxx::AudioSource::sample_type> SampleBuffer;
+    SampleBuffer m_sampleBuffer;
 
     // The processing queue and associated mutex
     QQueue<TrackPointer> m_tioq;
