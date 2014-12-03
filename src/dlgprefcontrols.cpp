@@ -104,17 +104,17 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
         m_pConfig->set(ConfigKey("[Controls]","RateRange"),ConfigValue(2));
 
     ComboBoxRateRange->clear();
-    ComboBoxRateRange->addItem(tr("6 %"));
-    ComboBoxRateRange->addItem(tr("8 % (Technics SL-1210)"));
-    ComboBoxRateRange->addItem(tr("10 %"));
-    ComboBoxRateRange->addItem(tr("20 %"));
-    ComboBoxRateRange->addItem(tr("30 %"));
-    ComboBoxRateRange->addItem(tr("40 %"));
-    ComboBoxRateRange->addItem(tr("50 %"));
-    ComboBoxRateRange->addItem(tr("60 %"));
-    ComboBoxRateRange->addItem(tr("70 %"));
-    ComboBoxRateRange->addItem(tr("80 %"));
-    ComboBoxRateRange->addItem(tr("90 %"));
+    ComboBoxRateRange->addItem(tr("6%"));
+    ComboBoxRateRange->addItem(tr("8% (Technics SL-1210)"));
+    ComboBoxRateRange->addItem(tr("10%"));
+    ComboBoxRateRange->addItem(tr("20%"));
+    ComboBoxRateRange->addItem(tr("30%"));
+    ComboBoxRateRange->addItem(tr("40%"));
+    ComboBoxRateRange->addItem(tr("50%"));
+    ComboBoxRateRange->addItem(tr("60%"));
+    ComboBoxRateRange->addItem(tr("70%"));
+    ComboBoxRateRange->addItem(tr("80%"));
+    ComboBoxRateRange->addItem(tr("90%"));
     connect(ComboBoxRateRange, SIGNAL(activated(int)),
             this, SLOT(slotSetRateRange(int)));
 
