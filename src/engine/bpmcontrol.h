@@ -117,7 +117,7 @@ class BpmControl : public EngineControl {
 
     // The current loaded file's detected BPM
     ControlObject* m_pFileBpm;
-    // The bpm around the current playposition;
+    // The average bpm around the current playposition;
     ControlObject* m_pLocalBpm;
     ControlPushButton* m_pAdjustBeatsFaster;
     ControlPushButton* m_pAdjustBeatsSlower;
