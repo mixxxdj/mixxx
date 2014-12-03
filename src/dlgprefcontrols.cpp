@@ -328,6 +328,10 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     slotUpdate();
 }
 
+void DlgPrefControls::allowSkinChanges(bool allow) {
+    ComboBoxSkinconf->setEnabled(allow);
+}
+
 DlgPrefControls::~DlgPrefControls() {
     delete m_pControlPositionDisplay;
     qDeleteAll(m_rateControls);

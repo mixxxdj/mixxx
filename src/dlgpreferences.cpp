@@ -448,6 +448,10 @@ void DlgPreferences::switchToPage(DlgPreferencePage* pWidget) {
     pagesWidget->setCurrentWidget(pWidget->parentWidget()->parentWidget());
 }
 
+void DlgPreferences::allowSkinChanges(bool allow) {
+    m_wcontrols->allowSkinChanges(allow);
+}
+
 void DlgPreferences::moveEvent(QMoveEvent* e) {
     if (m_geometry.length() == 4) {
         m_geometry[0] = QString::number(e->pos().x());

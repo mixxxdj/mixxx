@@ -338,6 +338,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
                                     m_pConfig, m_pLibrary);
     m_pPrefDlg->setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
     m_pPrefDlg->setHidden(true);
+    m_pPrefDlg->allowSkinChanges(false);
 
     initializeKeyboard();
 
@@ -457,7 +458,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         m_pLibraryScanner->scan();
     }
     slotNumDecksChanged(m_pNumDecks->get());
-
+    m_pPrefDlg->allowSkinChanges(true);
 }
 
 MixxxMainWindow::~MixxxMainWindow() {
