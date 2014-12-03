@@ -142,7 +142,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckAndSamplerControl("rate_temp_up_small", tr("Temporarily Increase Speed (Fine)"),
                              tr("Temporarily increase speed (fine)"), speedMenu);
     addDeckAndSamplerControl("rate_temp_down", tr("Temporarily Decrease Speed"),
-                             tr("TTemporarily decrease speed (coarse)"), speedMenu);
+                             tr("Temporarily decrease speed (coarse)"), speedMenu);
     addDeckAndSamplerControl("rate_temp_down_small", tr("Temporarily Decrease Speed (Fine)"),
                              tr("Temporarily decrease speed (fine)"), speedMenu);
 
