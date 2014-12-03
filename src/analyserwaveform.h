@@ -163,8 +163,8 @@ class AnalyserWaveform : public Analyser {
   private:
     bool m_skipProcessing;
 
-    Waveform* m_waveform;
-    Waveform* m_waveformSummary;
+    WaveformPointer m_waveform;
+    WaveformPointer m_waveformSummary;
     int m_waveformDataSize;
     int m_waveformSummaryDataSize;
     WaveformData* m_waveformData;
