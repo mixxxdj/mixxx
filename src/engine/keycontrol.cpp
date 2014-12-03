@@ -13,10 +13,8 @@ KeyControl::KeyControl(QString group,
                        ConfigObject<ConfigValue>* pConfig)
         : EngineControl(group, pConfig),
           m_dOldRate(0.0),
-          m_bOldKeylock(false),
-          m_dPitchCompensation(0.0),
-          m_dPitchCompensationOldPitch(0.0) {
-    m_pPitch = new ControlPotmeter(ConfigKey(group, "pitch"), -1.f, 1.f);
+          m_bOldKeylock(false) {
+    m_pPitch = new ControlPotmeter(ConfigKey(group, "pitch"), -1.0, 1.0);
     // Course adjust by full step.
     m_pPitch->setStepCount(24);
     // Fine adjust by half-step / semitone.
@@ -101,34 +99,6 @@ void KeyControl::slotRateChanged() {
     // caused by it.
     double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
     bool bKeylock = m_pKeylock->get() > 0;
-
-    // If we just turned keylock on or off, adjust the pitch so that the
-    // effective key stays the same. This is only relevant when m_dOldRate !=
-    // 1.0 because that's the only case when rate adjustment causes pitch
-    // change.
-    if (bKeylock && !m_bOldKeylock) {
-        double pitch = m_pPitch->get();
-        m_dPitchCompensation = pitch + KeyUtils::powerOf2ToOctaveChange(m_dOldRate);
-        m_dPitchCompensationOldPitch = pitch;
-        m_pPitch->set(m_dPitchCompensation);
-    } else if (!bKeylock && m_bOldKeylock) {
-        double pitch = m_pPitch->get();
-
-        // The pitch has not changed since we enabled keylock. Restore the
-        // old pitch.
-        if (pitch == m_dPitchCompensation) {
-            m_pPitch->set(m_dPitchCompensationOldPitch);
-        } else {
-            // Otherwise, compensate in the opposite direction to prevent
-            // pitch change. We know the user has a pitch control because
-            // they changed it.
-            double pitchAdjust = KeyUtils::powerOf2ToOctaveChange(m_dOldRate);
-            m_pPitch->set(pitch - pitchAdjust);
-        }
-
-        m_dPitchCompensationOldPitch = 0.0;
-        m_dPitchCompensation = 0.0;
-    }
 
     if (m_dOldRate != dRate || bKeylock != m_bOldKeylock) {
         m_dOldRate = dRate;

@@ -333,7 +333,6 @@ class EngineBuffer : public EngineObject {
     ControlPotmeter* m_playposSlider;
     ControlObjectSlave* m_pSampleRate;
     ControlObjectSlave* m_pKeylockEngine;
-    ControlObjectSlave* m_pPitchControl;
     ControlPushButton* m_pKeylock;
     QScopedPointer<ControlObjectSlave> m_pPassthroughEnabled;
 
