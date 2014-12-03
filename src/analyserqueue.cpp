@@ -29,17 +29,19 @@ namespace
 {
     const Mixxx::AudioSource::size_type kAnalysisChannels = 2; // stereo
 
-    // We need to use a smaller block size becuase on Linux, the AnalyserQueue
-    // can starve the CPU of its resources, resulting in xruns.. A block size of
-    // 8192 seems to do fine.
-    const int kAnalysisBlockSize = 8192;
+    // We need to use a smaller block size because on Linux, the AnalyserQueue
+    // can starve the CPU of its resources, resulting in xruns. A block size of
+    // 4096 samples per channel seems to do fine.
+    const Mixxx::AudioSource::size_type kAnalysisFrameCount = 4096;
+
+    const Mixxx::AudioSource::size_type kAnalysisSampleCount = kAnalysisFrameCount * kAnalysisChannels;
 }
 
 AnalyserQueue::AnalyserQueue(TrackCollection* pTrackCollection)
         : m_aq(),
           m_exit(false),
           m_aiCheckPriorities(false),
-          m_pStereoSamples(new Mixxx::AudioSource::sample_type[kAnalysisBlockSize]),
+          m_sampleBuffer(kAnalysisSampleCount),
           m_tioq(),
           m_qm(),
           m_qwait(),
@@ -61,8 +63,6 @@ AnalyserQueue::~AnalyserQueue() {
         delete an;
     }
     //qDebug() << "AnalyserQueue::~AnalyserQueue()";
-
-    delete [] m_pStereoSamples;
 }
 
 void AnalyserQueue::addAnalyser(Analyser* an) {
@@ -162,60 +162,41 @@ TrackPointer AnalyserQueue::dequeueNextBlocking() {
 
 // This is called from the AnalyserQueue thread
 bool AnalyserQueue::doAnalysis(TrackPointer tio, Mixxx::AudioSourcePointer pAudioSource) {
-    const Mixxx::AudioSource::size_type totalFrames = pAudioSource->getFrameCount();
-    const Mixxx::AudioSource::size_type frameCount = kAnalysisBlockSize / kAnalysisChannels;
-    Mixxx::AudioSource::size_type processedFrames = 0;
-    Mixxx::AudioSource::size_type readFrames = 0;
 
     QTime progressUpdateInhibitTimer;
     progressUpdateInhibitTimer.start(); // Inhibit Updates for 60 milliseconds
 
+    Mixxx::AudioSource::size_type progressFrameCount = 0;
     bool dieflag = false;
     bool cancelled = false;
-    int progress; // progress in 0 ... 100
-
     do {
         ScopedTimer t("AnalyserQueue::doAnalysis block");
 
-        readFrames = pAudioSource->readStereoFrameSamplesInterleaved(frameCount, m_pStereoSamples);
-        const Mixxx::AudioSource::size_type readStereoFrameSamplesInterleaved = readFrames * kAnalysisChannels;
+        const Mixxx::AudioSource::size_type readFrameCount = pAudioSource->readStereoFrameSamplesInterleaved(kAnalysisFrameCount, &m_sampleBuffer[0]);
 
         // To compare apples to apples, let's only look at blocks that are the
         // full block size.
-        if (readFrames != frameCount) {
-            t.cancel();
-        }
-
-        // Safety net in case something later barfs on 0 sample input
-        if (frameCount == 0) {
-            t.cancel();
-            break;
-        }
-
-        // If we get more samples than length, ask the analysers to process
-        // up to the number we promised, then stop reading - AD
-        if (readFrames + processedFrames > totalFrames) {
-            qDebug() << "While processing track of length " << totalFrames << " actually got "
-                     << (readFrames + processedFrames) << " frames, truncating analysis at expected length";
-            readFrames = totalFrames - processedFrames;
-            dieflag = true;
+        if (readFrameCount < kAnalysisFrameCount) {
+            // The whole file should have been read now!
+            Q_ASSERT(pAudioSource->getFrameCount() == (progressFrameCount + readFrameCount));
+            break; // done
         }
 
         QListIterator<Analyser*> it(m_aq);
-
         while (it.hasNext()) {
             Analyser* an =  it.next();
             //qDebug() << typeid(*an).name() << ".process()";
-            an->process(m_pStereoSamples, readStereoFrameSamplesInterleaved);
+            an->process(&m_sampleBuffer[0], readFrameCount * kAnalysisChannels);
             //qDebug() << "Done " << typeid(*an).name() << ".process()";
         }
 
         // emit progress updates
         // During the doAnalysis function it goes only to 100% - FINALIZE_PERCENT
         // because the finalise functions will take also some time
-        processedFrames += readFrames;
         //fp div here prevents insane signed overflow
-        progress = (int)(((float)processedFrames)/totalFrames *
+        progressFrameCount += readFrameCount;
+        Q_ASSERT(progressFrameCount <= pAudioSource->getFrameCount());
+        int progress = (int)(((float)progressFrameCount) / pAudioSource->getFrameCount() *
                          (1000 - FINALIZE_PERCENT));
 
         if (m_progressInfo.track_progress != progress) {
@@ -252,7 +233,7 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, Mixxx::AudioSourcePointer pAudi
         if (dieflag || cancelled) {
             t.cancel();
         }
-    } while(!dieflag && (frameCount == readFrames));
+    } while (!dieflag && (progressFrameCount < pAudioSource->getFrameCount()));
 
     return !cancelled; //don't return !dieflag or we might reanalyze over and over
 }
