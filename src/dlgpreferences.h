@@ -68,6 +68,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     void removePageWidget(DlgPreferencePage* pWidget);
     void expandTreeItem(QTreeWidgetItem* pItem);
     void switchToPage(DlgPreferencePage* pWidget);
+    void skinChangePref(bool tabletMode);
 
   public slots:
     void changePage(QTreeWidgetItem* current, QTreeWidgetItem* previous);
@@ -83,6 +84,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     void cancelPreferences();
     // Emitted if the user clicks Reset to Defaults.
     void resetToDefaults();
+
 
   protected:
     bool eventFilter(QObject*, QEvent*);

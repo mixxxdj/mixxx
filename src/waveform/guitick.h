@@ -3,6 +3,7 @@
 
 #include <QObject>
 
+#include "mixxx.h"
 #include "util/performancetimer.h"
 
 class ControlObject;
@@ -11,7 +12,7 @@ class QTimer;
 class GuiTick : public QObject {
     Q_OBJECT
   public:
-    GuiTick(QObject* pParent = NULL);
+	GuiTick(QObject* pParent, MixxxMainWindow* mixxx);
     ~GuiTick();
     void process();
     static double cpuTime();
@@ -22,7 +23,12 @@ class GuiTick : public QObject {
 
     PerformanceTimer m_cpuTimer;
 
-    double m_lastUpdateTime;
+	bool tablet;
+	bool tabletMode;
+	bool lastTabletMode;
+	double m_lastUpdateTime;
+	double m_lastUpdateTime2;
+	MixxxMainWindow* m_mixxx;
     static double m_cpuTime; // Stream Time in seconds
 };
 

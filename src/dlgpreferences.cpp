@@ -482,3 +482,7 @@ QRect DlgPreferences::getDefaultGeometry() {
 
     return optimumRect;
 }
+
+void DlgPreferences::skinChangePref(bool tabletMode) {
+    m_wcontrols->skinChangeControl(tabletMode);
+}

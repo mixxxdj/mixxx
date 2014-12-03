@@ -1055,6 +1055,7 @@ class MixxxCore(Feature):
             # I used the Windows API in foldertreemodel.cpp
             # to quickly test if a folder has subfolders
             build.env.Append(LIBS='shell32')
+            build.env.Append(LIBS='user32')
 
         elif build.platform_is_linux:
             build.env.Append(CPPDEFINES='__LINUX__')

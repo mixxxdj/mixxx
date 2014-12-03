@@ -24,6 +24,7 @@
 #include <QString>
 #include <QDir>
 
+
 // REMOVE ME
 #include <QtDebug>
 #include <QResizeEvent>
@@ -72,6 +73,8 @@ class MixxxMainWindow : public QMainWindow {
     void setToolTipsCfg(int tt);
     inline int getToolTipsCgf() { return m_toolTipsCfg; }
     void rebootMixxxView();
+	void skinChange(bool tabletMode);
+
 
     inline GuiTick* getGuiTick() { return m_pGuiTick; };
 
@@ -147,6 +150,10 @@ class MixxxMainWindow : public QMainWindow {
     virtual bool event(QEvent* e);
 
   private:
+	bool initialized;
+	QTimer *myTimer;
+	int timerCount;
+	void timerTimeout();
     void logBuildDetails();
     void initializeWindow();
     void initializeKeyboard();

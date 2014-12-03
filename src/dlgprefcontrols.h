@@ -43,6 +43,7 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
                     SkinLoader* pSkinLoader, PlayerManager* pPlayerManager,
                     ConfigObject<ConfigValue> *pConfig);
     virtual ~DlgPrefControls();
+    void skinChangeControl(bool tabletMode);
 
   public slots:
     void slotUpdate();
@@ -73,6 +74,7 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     void slotNumSamplersChanged(double);
 
   private:
+    bool tablet;
     void notifyRebootNecessary();
     bool checkSkinResolution(QString skin);
 

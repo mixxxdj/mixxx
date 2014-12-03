@@ -325,6 +325,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
             ConfigKey("[Controls]", "RateRampSensitivity")).toInt());
 
     slotUpdate();
+
+    tablet = false;
 }
 
 DlgPrefControls::~DlgPrefControls() {
@@ -509,6 +511,7 @@ void DlgPrefControls::slotSetScheme(int) {
 
 void DlgPrefControls::slotSetSkin(int) {
     m_pConfig->set(ConfigKey("[Config]","Skin"), ComboBoxSkinconf->currentText());
+    //printf("TEST\n");
     m_mixxx->rebootMixxxView();
     checkSkinResolution(ComboBoxSkinconf->currentText())
             ? warningLabel->hide() : warningLabel->show();
@@ -671,4 +674,16 @@ void DlgPrefControls::slotNumSamplersChanged(double new_count) {
     m_iNumConfiguredSamplers = numsamplers;
     slotSetRateDir(m_pConfig->getValueString(ConfigKey("[Controls]","RateDir")).toInt());
     slotSetRateRange(m_pConfig->getValueString(ConfigKey("[Controls]","RateRange")).toInt());
+}
+
+void DlgPrefControls::skinChangeControl(bool tabletMode) {
+    if (tabletMode) 
+    {
+        ComboBoxSkinconf->setItemText(ComboBoxSkinconf->currentIndex(), "UCLA1920x1080");
+    }
+    else
+    {
+        ComboBoxSkinconf->setItemText(ComboBoxSkinconf->currentIndex(), "LateNight");
+    }
+    QMetaObject::invokeMethod( this, "slotSetSkin", Q_ARG( int, ComboBoxSkinconf->currentIndex() ) );
 }
