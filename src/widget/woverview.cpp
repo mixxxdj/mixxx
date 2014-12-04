@@ -35,7 +35,6 @@
 
 WOverview::WOverview(const char *pGroup, ConfigObject<ConfigValue>* pConfig, QWidget* parent) :
         WWidget(parent),
-        m_pWaveform(NULL),
         m_pWaveformSourceImage(NULL),
         m_actualCompletion(0),
         m_pixmapDone(false),
@@ -158,10 +157,11 @@ void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
 }
 
 void WOverview::slotWaveformSummaryUpdated() {
-    if (!m_pCurrentTrack) {
+    TrackPointer pTrack(m_pCurrentTrack);
+    if (!pTrack) {
         return;
     }
-    m_pWaveform = m_pCurrentTrack->getWaveformSummary();
+    m_pWaveform = pTrack->getWaveformSummary();
     // If the waveform is already complete, just draw it.
     if (m_pWaveform && m_pWaveform->getCompletion() == m_pWaveform->getDataSize()) {
         m_actualCompletion = 0;
@@ -236,7 +236,7 @@ void WOverview::slotUnloadTrack(TrackPointer /*pTrack*/) {
                    this, SLOT(slotAnalyserProgress(int)));
     }
     m_pCurrentTrack.clear();
-    m_pWaveform = NULL;
+    m_pWaveform.clear();
     m_actualCompletion = 0;
     m_waveformPeak = -1.0;
     m_pixmapDone = false;
