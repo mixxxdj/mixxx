@@ -14,8 +14,6 @@
 
 AnalyserWaveform::AnalyserWaveform(ConfigObject<ConfigValue>* pConfig) :
         m_skipProcessing(false),
-        m_waveformDataSize(0),
-        m_waveformSummaryDataSize(0),
         m_waveformData(NULL),
         m_waveformSummaryData(NULL),
         m_currentStride(0),
@@ -82,14 +80,11 @@ bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
                 sampleRate, totalSamples, mainWaveformSampleRate,
                 summaryWaveformSamples));
 
-        // We must not allow other parts of Mixxx to touch the waveforms while
-        // we are initializing them. Don't set them on the TIO until they are
-        // ready.
+        // Now, that the Waveform memory is initialized, we can set set them to
+        // the TIO. Be aware that other threads of Mixxx can touch them from
+        // now.
         tio->setWaveform(m_waveform);
         tio->setWaveformSummary(m_waveformSummary);
-
-        m_waveformDataSize = m_waveform->getDataSize();
-        m_waveformSummaryDataSize = m_waveformSummary->getDataSize();
 
         m_waveformData = m_waveform->data();
         m_waveformSummaryData = m_waveformSummary->data();
@@ -237,7 +232,7 @@ void AnalyserWaveform::process(const CSAMPLE* buffer, const int bufferLength) {
         m_stride.m_position++;
 
         if (fmod(m_stride.m_position, m_stride.m_length) < 1) {
-            if (m_currentStride + ChannelCount > m_waveformDataSize) {
+            if (m_currentStride + ChannelCount > m_waveform->getDataSize()) {
                 qWarning() << "AnalyserWaveform::process - currentStride >= waveform size";
                 return;
             }
@@ -247,7 +242,7 @@ void AnalyserWaveform::process(const CSAMPLE* buffer, const int bufferLength) {
         }
 
         if (fmod(m_stride.m_position, m_stride.m_averageLength) < 1) {
-            if (m_currentSummaryStride + ChannelCount > m_waveformSummaryDataSize) {
+            if (m_currentSummaryStride + ChannelCount > m_waveformSummary->getDataSize()) {
                 qWarning() << "AnalyserWaveform::process - current summary stride >= waveform summary size";
                 return;
             }
@@ -279,13 +274,15 @@ void AnalyserWaveform::cleanup(TrackPointer tio) {
     }
 
     tio->setWaveform(ConstWaveformPointer());
+    // Since clear() could delete the waveform, clear our pointer to the
+    // waveform's vector data first.
     m_waveformData = NULL;
-    m_waveformDataSize = 0;
     m_waveform.clear();
 
     tio->setWaveformSummary(ConstWaveformPointer());
+    // Since clear() could delete the waveform, clear our pointer to the
+    // waveform's vector data first.
     m_waveformSummaryData = NULL;
-    m_waveformSummaryDataSize = 0;
     m_waveformSummary.clear();
 }
 
@@ -299,8 +296,9 @@ void AnalyserWaveform::finalise(TrackPointer tio) {
         m_waveform->setCompletion(m_waveform->getDataSize());
         m_waveform->setVersion(WaveformFactory::currentWaveformVersion());
         m_waveform->setDescription(WaveformFactory::currentWaveformDescription());
+        // Since clear() could delete the waveform, clear our pointer to the
+        // waveform's vector data first.
         m_waveformData = NULL;
-        m_waveformDataSize = 0;
         m_waveform.clear();
     }
 
@@ -309,8 +307,9 @@ void AnalyserWaveform::finalise(TrackPointer tio) {
         m_waveformSummary->setCompletion(m_waveformSummary->getDataSize());
         m_waveformSummary->setVersion(WaveformFactory::currentWaveformSummaryVersion());
         m_waveformSummary->setDescription(WaveformFactory::currentWaveformSummaryDescription());
+        // Since clear() could delete the waveform, clear our pointer to the
+        // waveform's vector data first.
         m_waveformSummaryData = NULL;
-        m_waveformSummaryDataSize = 0;
         m_waveformSummary.clear();
     }
 

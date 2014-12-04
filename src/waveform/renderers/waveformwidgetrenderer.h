@@ -35,7 +35,7 @@ class WaveformWidgetRenderer {
     void draw(QPainter* painter, QPaintEvent* event);
 
     inline const char* getGroup() const { return m_group;}
-    const TrackPointer getTrackInfo() const { return m_trackInfoObject;}
+    const TrackPointer getTrackInfo() const { return m_pTrack;}
 
     double getFirstDisplayedPosition() const { return m_firstDisplayedPosition;}
     double getLastDisplayedPosition() const { return m_lastDisplayedPosition;}
@@ -85,7 +85,7 @@ class WaveformWidgetRenderer {
 
   protected:
     const char* m_group;
-    TrackPointer m_trackInfoObject;
+    TrackPointer m_pTrack;
     QList<WaveformRendererAbstract*> m_rendererStack;
     int m_height;
     int m_width;

@@ -14,7 +14,6 @@ const int WaveformWidgetRenderer::s_waveformMaxZoom = 6;
 
 WaveformWidgetRenderer::WaveformWidgetRenderer(const char* group)
     : m_group(group),
-      m_trackInfoObject(0),
       m_height(-1),
       m_width(-1),
 
@@ -121,7 +120,7 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
     double visualSamplePerPixel = m_zoomFactor * (1.0 + m_rateAdjust);
     m_visualSamplePerPixel = math_max(1.0, visualSamplePerPixel);
 
-    TrackPointer pTrack(m_trackInfoObject);
+    TrackPointer pTrack(m_pTrack);
     ConstWaveformPointer pWaveform = pTrack ? pTrack->getWaveform() : ConstWaveformPointer();
     int waveformDataSize = pWaveform ? pWaveform->getDataSize() : 0;
     if (pWaveform) {
@@ -253,7 +252,7 @@ void WaveformWidgetRenderer::setZoom(int zoom) {
 }
 
 void WaveformWidgetRenderer::setTrack(TrackPointer track) {
-    m_trackInfoObject = track;
+    m_pTrack = track;
     //used to postpone first display until track sample is actually available
     m_trackSamples = -1.0;
 

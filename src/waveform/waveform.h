@@ -101,16 +101,16 @@ class Waveform {
 
     // We do not lock the mutex since m_textureStride is not changed after
     // the constructor runs.
-    int getTextureStride() const { return m_textureStride; }
+    inline int getTextureStride() const { return m_textureStride; }
 
     // We do not lock the mutex since m_data is not resized after the
     // constructor runs.
-    int getTextureSize() const { return m_data.size(); }
+    inline int getTextureSize() const { return m_data.size(); }
 
     // Atomically get the number of data elements in this Waveform. We do not
     // lock the mutex since m_dataSize is not changed after the constructor
     // runs.
-    int getDataSize() const { return load_atomic(m_dataSize); }
+    inline int getDataSize() const { return m_dataSize; }
 
     inline const WaveformData& get(int i) const { return m_data[i];}
     inline unsigned char getLow(int i) const { return m_data[i].filtered.low;}
@@ -149,11 +149,14 @@ class Waveform {
 
     // The size of the waveform data stored in m_data. Not allowed to change
     // after the constructor runs.
-    QAtomicInt m_dataSize;
-    // The vector storing the waveform data. It has potentially more data
-    // allocated in it than m_dataSize since it includes padding for uploading
-    // the entire waveform as a texture in the GLSL renderer. The size is not
-    // allowed to change after the constructor runs.
+    int m_dataSize;
+    // The vector storing the waveform data. It is potentially larger than
+    // m_dataSize since it includes padding for uploading the entire waveform as
+    // a texture in the GLSL renderer. The size is not allowed to change after
+    // the constructor runs. We use a std::vector to avoid the cost of bounds
+    // checking when accessing the vector.
+    // TODO(XXX): In the future we should switch to QVector and use the raw data
+    // pointer when performance matters.
     std::vector<WaveformData> m_data;
     // Not allowed to change after the constructor runs.
     double m_visualSampleRate;
