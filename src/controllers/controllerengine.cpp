@@ -1154,7 +1154,11 @@ void ControllerEngine::timerEvent(QTimerEvent *event) {
         return;
     }
 
-    const TimerInfo& timerTarget = it.value();
+    // NOTE(rryan): Do not assign by reference -- make a copy. I have no idea
+    // why but this causes segfaults in ~QScriptValue while scratching if we
+    // don't copy here -- even though internalExecute passes the QScriptValues
+    // by value. *boggle*
+    const TimerInfo timerTarget = it.value();
     if (timerTarget.oneShot) {
         stopTimer(timerId);
     }
