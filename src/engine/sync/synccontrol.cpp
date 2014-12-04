@@ -397,7 +397,7 @@ void SyncControl::setLocalBpm(double local_bpm) {
     if (local_bpm == m_prevLocalBpm) {
         return;
     }
-    if (local_bpm == 0 && getSyncMode() != SYNC_NONE && m_pPlayButton->get()) {
+    if (local_bpm == 0 && getSyncMode() != SYNC_NONE && m_pPlayButton->toBool()) {
         // If the local bpm is suddenly zero and sync was active and we are playing,
         // stick with the previous localbpm.
         // I think this can only happen if the beatgrid is reset.
