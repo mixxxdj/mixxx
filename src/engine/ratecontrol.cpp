@@ -152,7 +152,8 @@ RateControl::RateControl(QString group,
 
     m_pScratch2Scratching = new ControlPushButton(ConfigKey(group,
                                                             "scratch2_indicates_scratching"));
-    // Enable by default, because it was always scratching befor introducing this control.
+    // Enable by default, because it was always scratching before introducing
+    // this control.
     m_pScratch2Scratching->set(1.0);
 
 
@@ -410,7 +411,7 @@ SyncMode RateControl::getSyncMode() const {
     return syncModeFromDouble(m_pSyncMode->get());
 }
 
-double RateControl::calculateRate(double baserate, bool paused,
+double RateControl::calculateSpeed(double baserate, bool paused,
                                   int iSamplesPerBuffer,
                                   bool* reportScratching) {
     *reportScratching = false;

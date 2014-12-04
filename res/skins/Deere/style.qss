@@ -63,6 +63,13 @@
   border-left:none;
 }
 
+#PreviewDeckContainer {
+margin: 0px;
+padding: 0px 0px 4px 5px;
+border: 1px solid #555;
+background: transparent;
+}
+
 /*******************************************************************************
  ** END BORDER *****************************************************************
  *******************************************************************************/
@@ -126,6 +133,10 @@ QSplitter::handle:vertical {
  ** END LIBRARY *****************************************************************
  *******************************************************************************/
 
+#Mixxx {
+  background-color: black;
+}
+
 WWidget, QLabel {
   font: bold 16pt/18pt Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
   font-size: 7pt;
@@ -154,7 +165,6 @@ WSliderComposed {
 }
 
 #HotcueGrid WPushButton {
-  background-color: green;
 }
 
 /* Make the beatloop button grid have black borders between all buttons */
@@ -168,7 +178,6 @@ WSliderComposed {
 }
 
 #BeatLoopContainer WPushButton {
-  background-color: green;
 }
 
 #BeatJumpLoopMoveContainer {
@@ -182,7 +191,6 @@ WSliderComposed {
 }
 
 #BeatJumpLoopMoveContainer WPushButton {
-  background-color: green;
 }
 
 /* Make the transport button grid have black borders between all buttons */
@@ -195,7 +203,6 @@ WSliderComposed {
   qproperty-layoutSpacing: 1;
 }
 #TransportContainer WPushButton {
-  background-color: green;
 }
 
 #LoopingContainer {
@@ -207,7 +214,6 @@ WSliderComposed {
   qproperty-layoutSpacing: 1;
 }
 #LoopingContainer WPushButton {
-  background-color: green;
 }
 
 #ToolBar {
@@ -304,7 +310,6 @@ WSliderComposed {
 }
 
 #Mixer {
-  background-color: green;
   qproperty-layoutAlignment: 'AlignTop';
 }
 
@@ -377,8 +382,10 @@ WWidget, WLabel {
   background-color: #CDDC39;
 }
 
-#Sampler {
-  background-color: cyan;
+#SampleDecksContainer, #PreviewDeckContainer {
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                  stop: 0 #222222,
+                                  stop: 1.0 #333333);
 }
 
 #MicrophonesContainer {
@@ -391,7 +398,7 @@ WWidget, WLabel {
 }
 
 #LibraryContainer {
-  background-color: green;
+  background-color: #222;
 }
 
 #LibraryExpanded, #LibraryCollapsed {
@@ -399,7 +406,9 @@ WWidget, WLabel {
 }
 
 #EffectRackContainer {
-  background-color: red;
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                  stop: 0 #222222,
+                                  stop: 1.0 #333333);
 }
 
 #EffectRackExpanded, #EffectRackCollapsed {
@@ -427,23 +436,18 @@ WWidget, WLabel {
 }
 
 #EffectUnit1 {
-  background-color: pink;
 }
 
 #EffectUnit2 {
-  background-color: brown;
 }
 
 #EffectUnit3 {
-  background-color: red;
 }
 
 #EffectUnit4 {
-  background-color: green;
 }
 
 #SampleDecksContainer {
-  background-color: orange;
 }
 
 #SampleDecksExpanded, #SampleDecksCollapsed {

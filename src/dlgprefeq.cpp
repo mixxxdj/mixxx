@@ -47,6 +47,8 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
           m_lowEqFreq(0.0),
           m_highEqFreq(0.0),
           m_pEffectsManager(pEffectsManager),
+          m_firstSelectorLabel(NULL),
+          m_pNumDecks(NULL),
           m_inSlotPopulateDeckEffectSelectors(false),
           m_bEqAutoReset(false) {
     m_pEQEffectRack = m_pEffectsManager->getEqualizerRack(0);
@@ -275,10 +277,12 @@ void DlgPrefEQ::slotSingleEqChecked(int checked) {
         }
     }
 
-    if (do_hide) {
-        m_firstSelectorLabel->setText(QObject::tr("EQ Effect"));
-    } else {
-        m_firstSelectorLabel->setText(QObject::tr("Deck 1 EQ Effect"));
+    if (m_firstSelectorLabel != NULL) {
+        if (do_hide) {
+            m_firstSelectorLabel->setText(QObject::tr("EQ Effect"));
+        } else {
+            m_firstSelectorLabel->setText(QObject::tr("Deck 1 EQ Effect"));
+        }
     }
 
     applySelections();

@@ -643,6 +643,10 @@ Result SoundSourceFFmpeg::parseHeader() {
     return OK;
 }
 
+QImage SoundSourceFFmpeg::parseCoverArt() {
+    return QImage();
+}
+
 inline long unsigned SoundSourceFFmpeg::length() {
     return m_filelength;
 }

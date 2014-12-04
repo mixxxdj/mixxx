@@ -34,8 +34,8 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
         return;
     }
 
-    const Waveform* waveform = trackInfo->getWaveform();
-    if (waveform == NULL) {
+    ConstWaveformPointer waveform = trackInfo->getWaveform();
+    if (waveform.isNull()) {
         return;
     }
 

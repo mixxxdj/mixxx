@@ -31,7 +31,7 @@ inline CSAMPLE scaleSignal(CSAMPLE invalue, FilterIndex index = FilterCount) {
     }
 }
 
-class WaveformStride {
+struct WaveformStride {
     inline void init(double samples, double averageSamples) {
         m_length = samples;
         m_averageLength = averageSamples;
@@ -122,7 +122,6 @@ class WaveformStride {
         }
     }
 
-  private:
     int m_position;
     double m_length;
     double m_averageLength;
@@ -136,9 +135,6 @@ class WaveformStride {
     float m_averageFilteredData[ChannelCount][FilterCount];
 
     float m_postScaleConversion;
-
-  private:
-    friend class AnalyserWaveform;
 };
 
 class AnalyserWaveform : public Analyser {
@@ -163,10 +159,8 @@ class AnalyserWaveform : public Analyser {
   private:
     bool m_skipProcessing;
 
-    Waveform* m_waveform;
-    Waveform* m_waveformSummary;
-    int m_waveformDataSize;
-    int m_waveformSummaryDataSize;
+    WaveformPointer m_waveform;
+    WaveformPointer m_waveformSummary;
     WaveformData* m_waveformData;
     WaveformData* m_waveformSummaryData;
 

@@ -320,8 +320,8 @@ void AnalysisDao::saveTrackAnalyses(TrackInfoObject* pTrack) {
         return;
     }
     const int trackId = pTrack->getId();
-    Waveform* pWaveform = pTrack->getWaveform();
-    Waveform* pWaveSummary = pTrack->getWaveformSummary();
+    ConstWaveformPointer pWaveform = pTrack->getWaveform();
+    ConstWaveformPointer pWaveSummary = pTrack->getWaveformSummary();
 
     // Don't try to save invalid or non-dirty waveforms.
     if (!pWaveform || pWaveform->getDataSize() == 0 || !pWaveform->isDirty() ||

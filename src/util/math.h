@@ -71,15 +71,16 @@ inline bool even(T value) {
 #endif
 
 inline int roundUpToPowerOf2(int v) {
-    // From http://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2
-    v--;
-    v |= v >> 1;
-    v |= v >> 2;
-    v |= v >> 4;
-    v |= v >> 8;
-    v |= v >> 16;
-    v++;
-    return v;
+    int power = 1;
+    while (power < v && power > 0) {
+        power *= 2;
+    }
+    // There is not a power of 2 higher than v representable by our
+    // architecture's integer size.
+    if (power < 0) {
+        return -1;
+    }
+    return power;
 }
 
 // MSVS 2013 (_MSC_VER 1800) introduced C99 support.

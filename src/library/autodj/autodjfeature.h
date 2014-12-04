@@ -25,6 +25,7 @@
 #include "library/dao/autodjcratesdao.h"
 #endif // __AUTODJCRATES__
 
+class PlayerManagerInterface;
 class TrackCollection;
 class AutoDJProcessor;
 
@@ -33,6 +34,7 @@ class AutoDJFeature : public LibraryFeature {
   public:
     AutoDJFeature(QObject* parent,
                   ConfigObject<ConfigValue>* pConfig,
+                  PlayerManagerInterface* pPlayerManager,
                   TrackCollection* pTrackCollection);
     virtual ~AutoDJFeature();
 

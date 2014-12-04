@@ -46,7 +46,8 @@ class EngineFilterBiquad1HighShelving : public EngineFilterIIR<5, IIR_BP> {
 class EngineFilterBiquad1Low : public EngineFilterIIR<2, IIR_LP> {
     Q_OBJECT
   public:
-    EngineFilterBiquad1Low(int sampleRate, double centerFreq, double Q);
+    EngineFilterBiquad1Low(int sampleRate, double centerFreq, double Q,
+                           bool startFromDry);
     void setFrequencyCorners(int sampleRate, double centerFreq, double Q);
 
   private:
@@ -66,7 +67,8 @@ class EngineFilterBiquad1Band : public EngineFilterIIR<2, IIR_BP> {
 class EngineFilterBiquad1High : public EngineFilterIIR<2, IIR_HP> {
     Q_OBJECT
   public:
-    EngineFilterBiquad1High(int sampleRate, double centerFreq, double Q);
+    EngineFilterBiquad1High(int sampleRate, double centerFreq, double Q,
+                            bool startFromDry);
     void setFrequencyCorners(int sampleRate, double centerFreq, double Q);
 
   private:

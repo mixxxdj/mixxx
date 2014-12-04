@@ -14,7 +14,6 @@ const int WaveformWidgetRenderer::s_waveformMaxZoom = 6;
 
 WaveformWidgetRenderer::WaveformWidgetRenderer(const char* group)
     : m_group(group),
-      m_trackInfoObject(0),
       m_height(-1),
       m_width(-1),
 
@@ -121,11 +120,15 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
     double visualSamplePerPixel = m_zoomFactor * (1.0 + m_rateAdjust);
     m_visualSamplePerPixel = math_max(1.0, visualSamplePerPixel);
 
-    if (m_trackInfoObject) {
-        m_audioSamplePerPixel = m_visualSamplePerPixel * m_trackInfoObject->getWaveform()->getAudioVisualRatio();
+    TrackPointer pTrack(m_pTrack);
+    ConstWaveformPointer pWaveform = pTrack ? pTrack->getWaveform() : ConstWaveformPointer();
+    int waveformDataSize = pWaveform ? pWaveform->getDataSize() : 0;
+    if (pWaveform) {
+        m_audioSamplePerPixel = m_visualSamplePerPixel * pWaveform->getAudioVisualRatio();
     } else {
         m_audioSamplePerPixel = 0.0;
     }
+
 
     m_playPos = m_visualPlayPosition->getAtNextVSync(vsyncThread);
     // m_playPos = -1 happens, when a new track is in buffer but m_visualPlayPosition was not updated
@@ -140,7 +143,7 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
         // Avoid pixel jitter in play position by rounding to the nearest track
         // pixel.
         m_playPos = round(m_playPos * m_trackPixelCount) / m_trackPixelCount; // Avoid pixel jitter in play position
-        m_playPosVSample = m_playPos * m_trackInfoObject->getWaveform()->getDataSize();
+        m_playPosVSample = m_playPos * waveformDataSize;
 
         m_firstDisplayedPosition = m_playPos - displayedLengthHalf;
         m_lastDisplayedPosition = m_playPos + displayedLengthHalf;
@@ -249,7 +252,7 @@ void WaveformWidgetRenderer::setZoom(int zoom) {
 }
 
 void WaveformWidgetRenderer::setTrack(TrackPointer track) {
-    m_trackInfoObject = track;
+    m_pTrack = track;
     //used to postpone first display until track sample is actually available
     m_trackSamples = -1.0;
 

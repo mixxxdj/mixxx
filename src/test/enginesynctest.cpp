@@ -1394,3 +1394,17 @@ TEST_F(EngineSyncTest, UserTweakBeatDistance) {
 
     EXPECT_FLOAT_EQ(0.0, m_pChannel1->getEngineBuffer()->m_pBpmControl->m_dUserOffset);
 }
+
+TEST_F(EngineSyncTest, MasterBpmNeverZero) {
+    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
+        ConfigKey(m_sGroup1, "file_bpm")));
+    pFileBpm1->set(128.0);
+
+    QScopedPointer<ControlObjectThread> pButtonSyncEnabled1(getControlObjectThread(
+            ConfigKey(m_sGroup1, "sync_enabled")));
+    pButtonSyncEnabled1->set(1.0);
+
+    pFileBpm1->set(0.0);
+    EXPECT_EQ(128.0,
+              ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+}

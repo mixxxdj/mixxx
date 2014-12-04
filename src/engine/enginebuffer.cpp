@@ -282,7 +282,7 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
     } else {
         m_pScaleKeylock = m_pScaleRB;
     }
-    enablePitchAndTimeScaling(false);
+    enableIndependentPitchTempoScaling(false);
 
     m_pPassthroughEnabled.reset(new ControlObjectSlave(group, "passthrough", this));
     m_pPassthroughEnabled->connectValueChanged(this, SLOT(slotPassthroughChanged(double)),
@@ -351,7 +351,7 @@ double EngineBuffer::fractionalPlayposFromAbsolute(double absolutePlaypos) {
     return fFractionalPlaypos;
 }
 
-void EngineBuffer::enablePitchAndTimeScaling(bool bEnable) {
+void EngineBuffer::enableIndependentPitchTempoScaling(bool bEnable) {
     // MUST ACQUIRE THE PAUSE MUTEX BEFORE CALLING THIS METHOD
 
     // When no time-stretching or pitch-shifting is needed we use our own linear
@@ -541,6 +541,8 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
 void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
                                        QString reason) {
     m_iTrackLoading = 0;
+    // NOTE(rryan) ejectTrack will not eject a playing track so set playing
+    // false before calling.
     m_playButton->set(0.0);
     ejectTrack();
     emit(trackLoadFailed(pTrack, reason));
@@ -739,31 +741,34 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
 
         bool paused = m_playButton->get() == 0.0;
         bool is_scratching = false;
-        bool keylock_enabled = m_pKeylock->get() > 0;
+        bool keylock_enabled = m_pKeylock->toBool();
 
         // If keylock was on, and the user disabled it, also reset the pitch.
         if (m_bWasKeylocked && !keylock_enabled) {
             m_pPitchControl->set(0.0);
         }
 
-        // speed is the percentage change in player speed. Depending on whether
-        // keylock is enabled, this is applied to either the rate or the tempo.
-        double speed = m_pRateControl->calculateRate(
-            baserate, paused, iBufferSize, &is_scratching);
+        // Speed is the resulting Speed of all Speed controls (rate_* COs),
+        // the percentage change in player speed. Depending on whether
+        // keylock is enabled, this is applied to either the rate
+        // (pitch and tempo) or the tempo only.
+        double speed = m_pRateControl->calculateSpeed(
+                baserate, paused, iBufferSize, &is_scratching);
         double pitch = m_pKeyControl->getPitchAdjustOctaves();
 
         // Update the slipped position and seek if it was disabled.
         processSlip(iBufferSize);
 
-        // If either keylock is enabled or the pitch slider is non-zero then we
-        // need to use pitch and time scaling. Scratching always disables
-        // keylock because keylock sounds terrible when not going at a constant
-        // rate.
-        // High seek speeds also disables keylock.  Our pitch slider could go
-        // to 90%, so that's the cutoff point.
-        bool use_pitch_and_time_scaling = !is_scratching && (keylock_enabled || pitch != 0) &&
-                                          fabs(speed) <= 1.9;
-        enablePitchAndTimeScaling(use_pitch_and_time_scaling);
+        // If either keylock is enabled or the (musical) pitch control is non-zero then we
+        // need to use independent pitch and tempo scaling.
+        // Scratching always uses pitch and tempo because tempo scratching sounds terrible
+        // High seek speeds also disables independent pitch and tempo scaling.
+        // Our speed (rate) slider could go to 90%, so that's the cutoff point.
+        bool useIndependentPitchAndTempoScaling =
+                !is_scratching &&
+                (keylock_enabled || pitch != 0) &&
+                fabs(speed) <= 1.9;
+        enableIndependentPitchTempoScaling(useIndependentPitchAndTempoScaling);
 
         processSyncRequests();
         processSeek();
