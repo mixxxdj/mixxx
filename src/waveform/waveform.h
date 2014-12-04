@@ -78,6 +78,8 @@ class Waveform {
         return m_bDirty;
     }
 
+    // AnalysisDAO needs to be able to set the waveform as clean so we mark this
+    // as const and m_bDirty mutable.
     void setDirty(bool bDirty) const {
         m_bDirty = bDirty;
     }
@@ -140,6 +142,7 @@ class Waveform {
 
     // If stored in the database, the ID of the waveform.
     int m_id;
+    // AnalysisDAO needs to be able to set the waveform as clean.
     mutable bool m_bDirty;
     QString m_version;
     QString m_description;

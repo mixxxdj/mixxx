@@ -76,13 +76,11 @@ bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
         //two visual sample per pixel in full width overview in full hd
         const int summaryWaveformSamples = 2*1920;
 
-        Waveform* pWaveform = new Waveform(sampleRate, totalSamples,
-                                           mainWaveformSampleRate, -1);
-        Waveform* pWaveformSummary = new Waveform(sampleRate, totalSamples,
-                                                  mainWaveformSampleRate,
-                                                  summaryWaveformSamples);
-        m_waveform = WaveformPointer(pWaveform);
-        m_waveformSummary = WaveformPointer(pWaveformSummary);
+        m_waveform = WaveformPointer(new Waveform(
+                sampleRate, totalSamples, mainWaveformSampleRate, -1));
+        m_waveformSummary = WaveformPointer(new Waveform(
+                sampleRate, totalSamples, mainWaveformSampleRate,
+                summaryWaveformSamples));
 
         // We must not allow other parts of Mixxx to touch the waveforms while
         // we are initializing them. Don't set them on the TIO until they are
@@ -93,8 +91,8 @@ bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
         m_waveformDataSize = m_waveform->getDataSize();
         m_waveformSummaryDataSize = m_waveformSummary->getDataSize();
 
-        m_waveformData = pWaveform->data();
-        m_waveformSummaryData = pWaveformSummary->data();
+        m_waveformData = m_waveform->data();
+        m_waveformSummaryData = m_waveformSummary->data();
 
         m_stride.init(m_waveform->getAudioVisualRatio(),
                       m_waveformSummary->getAudioVisualRatio());
@@ -104,7 +102,7 @@ bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
 
         //debug
         //m_waveform->dump();
-        //pWaveformSummary->dump();
+        //m_waveformSummary->dump();
 
     #ifdef TEST_HEAT_MAP
         test_heatMap = new QImage(256,256,QImage::Format_RGB32);
@@ -210,30 +208,30 @@ void AnalyserWaveform::process(const CSAMPLE* buffer, const int bufferLength) {
 
     for (int i = 0; i < bufferLength; i+=2) {
         // Take max value, not average of data
-        CSAMPLE cover[2] = { fabs(buffer[i]), fabs(buffer[i+1]) };
-        CSAMPLE clow[2] =  { fabs(m_buffers[ Low][i]), fabs(m_buffers[ Low][i+1]) };
-        CSAMPLE cmid[2] =  { fabs(m_buffers[ Mid][i]), fabs(m_buffers[ Mid][i+1]) };
-        CSAMPLE chigh[2] = { fabs(m_buffers[High][i]), fabs(m_buffers[High][i+1]) };
+        CSAMPLE cover[2] = { fabs(buffer[i]), fabs(buffer[i + 1]) };
+        CSAMPLE clow[2] =  { fabs(m_buffers[Low][i]), fabs(m_buffers[Low][i + 1]) };
+        CSAMPLE cmid[2] =  { fabs(m_buffers[Mid][i]), fabs(m_buffers[Mid][i + 1]) };
+        CSAMPLE chigh[2] = { fabs(m_buffers[High][i]), fabs(m_buffers[High][i + 1]) };
 
         // This is for if you want to experiment with averaging instead of
         // maxing.
         // m_stride.m_overallData[Right] += buffer[i]*buffer[i];
-        // m_stride.m_overallData[ Left] += buffer[i+1]*buffer[i+1];
-        // m_stride.m_filteredData[Right][ Low] += m_buffers[ Low][i  ]*m_buffers[ Low][i];
-        // m_stride.m_filteredData[ Left][ Low] += m_buffers[ Low][i+1]*m_buffers[ Low][i+1];
-        // m_stride.m_filteredData[Right][ Mid] += m_buffers[ Mid][i  ]*m_buffers[ Mid][i];
-        // m_stride.m_filteredData[ Left][ Mid] += m_buffers[ Mid][i+1]*m_buffers[ Mid][i+1];
-        // m_stride.m_filteredData[Right][High] += m_buffers[High][i  ]*m_buffers[High][i];
-        // m_stride.m_filteredData[ Left][High] += m_buffers[High][i+1]*m_buffers[High][i+1];
+        // m_stride.m_overallData[Left] += buffer[i + 1]*buffer[i + 1];
+        // m_stride.m_filteredData[Right][Low] += m_buffers[Low][i]*m_buffers[Low][i];
+        // m_stride.m_filteredData[Left][Low] += m_buffers[Low][i + 1]*m_buffers[Low][i + 1];
+        // m_stride.m_filteredData[Right][Mid] += m_buffers[Mid][i]*m_buffers[Mid][i];
+        // m_stride.m_filteredData[Left][Mid] += m_buffers[Mid][i + 1]*m_buffers[Mid][i + 1];
+        // m_stride.m_filteredData[Right][High] += m_buffers[High][i]*m_buffers[High][i];
+        // m_stride.m_filteredData[Left][High] += m_buffers[High][i + 1]*m_buffers[High][i + 1];
 
         // Record the max across this stride.
         storeIfGreater(&m_stride.m_overallData[Left], cover[Left]);
         storeIfGreater(&m_stride.m_overallData[Right], cover[Right]);
-        storeIfGreater(&m_stride.m_filteredData[ Left][ Low], clow[Left]);
-        storeIfGreater(&m_stride.m_filteredData[Right][ Low], clow[Right]);
-        storeIfGreater(&m_stride.m_filteredData[ Left][ Mid], cmid[Left]);
-        storeIfGreater(&m_stride.m_filteredData[Right][ Mid], cmid[Right]);
-        storeIfGreater(&m_stride.m_filteredData[ Left][High], chigh[Left]);
+        storeIfGreater(&m_stride.m_filteredData[Left][Low], clow[Left]);
+        storeIfGreater(&m_stride.m_filteredData[Right][Low], clow[Right]);
+        storeIfGreater(&m_stride.m_filteredData[Left][Mid], cmid[Left]);
+        storeIfGreater(&m_stride.m_filteredData[Right][Mid], cmid[Right]);
+        storeIfGreater(&m_stride.m_filteredData[Left][High], chigh[Left]);
         storeIfGreater(&m_stride.m_filteredData[Right][High], chigh[Right]);
 
         m_stride.m_position++;
@@ -258,13 +256,13 @@ void AnalyserWaveform::process(const CSAMPLE* buffer, const int bufferLength) {
             m_waveformSummary->setCompletion(m_currentSummaryStride);
 
 #ifdef TEST_HEAT_MAP
-                QPointF point(float(m_stride.m_filteredData[Right][High]),
-                              float(m_stride.m_filteredData[Right][ Mid]));
+                QPointF point(m_stride.m_filteredData[Right][High],
+                              m_stride.m_filteredData[Right][Mid]);
 
                 float norm = sqrt(point.x()*point.x() + point.y()*point.y());
                 point /= norm;
 
-                point *= m_stride.m_filteredData[Right][ Low];
+                point *= m_stride.m_filteredData[Right][Low];
                 test_heatMap->setPixel(point.toPoint(),0xFF0000FF);
 #endif
         }

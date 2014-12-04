@@ -23,7 +23,7 @@ Waveform::Waveform(const QByteArray data)
           m_dataSize(0),
           m_visualSampleRate(0),
           m_audioVisualRatio(0),
-                  m_textureStride(computeTextureStride(0)),
+          m_textureStride(computeTextureStride(0)),
           m_completion(-1) {
     readByteArray(data);
 }

@@ -112,10 +112,10 @@ bool WOverviewHSV::drawNextPixmapPart() {
 
     for (currentCompletion = m_actualCompletion;
             currentCompletion < nextCompletion; currentCompletion += 2) {
-        m_waveformPeak = math_max(m_waveformPeak,
-                (float)pWaveform->getAll(currentCompletion));
-        m_waveformPeak = math_max(m_waveformPeak,
-                (float)pWaveform->getAll(currentCompletion+1));
+        m_waveformPeak = math_max3(
+                m_waveformPeak,
+                static_cast<float>(pWaveform->getAll(currentCompletion)),
+                static_cast<float>(pWaveform->getAll(currentCompletion + 1)));
     }
 
     m_actualCompletion = nextCompletion;
