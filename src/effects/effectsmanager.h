@@ -6,6 +6,7 @@
 #include <QList>
 #include <QSet>
 #include <QScopedPointer>
+#include <QPair>
 
 #include "configobject.h"
 #include "controlpotmeter.h"
@@ -63,6 +64,8 @@ class EffectsManager : public QObject {
     // Each entry of the set is a pair containing the effect id and its name
     const QList<QPair<QString, QString> > getEffectNamesFiltered(EffectManifestFilterFnc filter) const;
     bool isEQ(const QString& effectId) const;
+    QPair<EffectManifest, EffectsBackend*> getEffectManifestAndBackend(
+            const QString& effectId) const;
     EffectManifest getEffectManifest(const QString& effectId) const;
     EffectPointer instantiateEffect(const QString& effectId);
 
