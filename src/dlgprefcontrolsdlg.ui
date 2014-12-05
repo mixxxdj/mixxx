@@ -14,6 +14,16 @@
    <string>Interface Preferences</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
+   <item row="3" column="0">
+    <widget class="QCheckBox" name="CheckBoxSpeedAutoReset">
+     <property name="toolTip">
+      <string>Resets Speed Control Slider to default when a track is loaded.</string>
+     </property>
+     <property name="text">
+      <string>Reset Speed on track load</string>
+     </property>
+    </widget>
+   </item>
    <item row="2" column="0">
     <widget class="QGroupBox" name="groupBoxRateRamp">
      <property name="enabled">
@@ -648,7 +658,7 @@ Numark mode:
      </item>
     </layout>
    </item>
-   <item row="3" column="0">
+   <item row="4" column="0">
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>

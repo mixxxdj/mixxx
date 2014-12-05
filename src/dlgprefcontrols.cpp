@@ -50,7 +50,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
            m_pPlayerManager(pPlayerManager),
            m_iNumConfiguredDecks(0),
            m_iNumConfiguredSamplers(0),
-           m_rebootNotifiedRowHeight(false) {
+           m_rebootNotifiedRowHeight(false), 
+           m_bSpeedAutoReset(false) {
     setupUi(this);
 
     m_pNumDecks = new ControlObjectSlave("[Master]", "num_decks", this);
@@ -334,7 +335,14 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
             this, SLOT(slotSetRateRampSensitivity(int)));
     SliderRateRampSensitivity->setValue(m_pConfig->getValueString(
             ConfigKey("[Controls]", "RateRampSensitivity")).toInt());
-
+    
+    // Update Speed Auto Reset Slider Box
+    connect(CheckBoxSpeedAutoReset, SIGNAL(stateChanged(int)),
+            this, SLOT(slotUpdateSpeedAutoReset(int)));
+    m_bSpeedAutoReset = static_cast<bool>(m_pConfig->getValueString(
+            ConfigKey("[Controls]", "SpeedAutoReset")).toInt());
+    CheckBoxSpeedAutoReset->setChecked(m_bSpeedAutoReset);
+    
     slotUpdate();
 }
 
@@ -390,6 +398,8 @@ void DlgPrefControls::slotUpdate() {
     int rowHeight = m_pConfig->getValueString(ConfigKey("[Library]","RowHeight"),
             QString::number(kDefaultRowHeight)).toInt();
     spinBoxRowHeight->setValue(rowHeight);
+
+    CheckBoxSpeedAutoReset->setChecked(m_bSpeedAutoReset);
 }
 
 void DlgPrefControls::slotResetToDefaults() {
@@ -433,6 +443,10 @@ void DlgPrefControls::slotResetToDefaults() {
     spinBoxPermRateRight->setValue(0.05);
 
     spinBoxRowHeight->setValue(kDefaultRowHeight);
+
+    // Speed auto reset checkbox default un-checked.
+    m_bSpeedAutoReset = false;
+    CheckBoxSpeedAutoReset->setChecked(Qt::Unchecked);
 }
 
 void DlgPrefControls::slotSetLocale(int pos) {
@@ -613,7 +627,9 @@ void DlgPrefControls::slotApply() {
     int rowHeight = spinBoxRowHeight->value();
     m_pConfig->set(ConfigKey("[Library]","RowHeight"),
             ConfigValue(rowHeight));
-
+    
+    m_pConfig->set(ConfigKey("[Controls]","SpeedAutoReset"),
+            ConfigValue(m_bSpeedAutoReset ? 1 : 0));
 }
 
 //Returns TRUE if skin fits to screen resolution, FALSE otherwise
@@ -701,4 +717,8 @@ void DlgPrefControls::slotRowHeightValueChanged(int height) {
         notifyRebootNecessary();
         m_rebootNotifiedRowHeight = true;
     }
+}
+
+void DlgPrefControls::slotUpdateSpeedAutoReset(int i) {
+    m_bSpeedAutoReset = static_cast<bool>(i);
 }

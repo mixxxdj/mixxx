@@ -86,6 +86,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     ControlObjectSlave* m_pMidFilterKill;
     ControlObjectSlave* m_pHighFilterKill;
     ControlObjectSlave* m_pPreGain;
+    ControlObjectSlave* m_pSpeed;
     EngineDeck* m_pChannel;
 
     bool m_replaygainPending;

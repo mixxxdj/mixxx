@@ -73,7 +73,9 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     void slotNumSamplersChanged(double);
 
     void slotRowHeightValueChanged(int);
-
+    
+    void slotUpdateSpeedAutoReset(int);
+  
   private:
     void notifyRebootNecessary();
     bool checkSkinResolution(QString skin);
@@ -94,6 +96,8 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     int m_iNumConfiguredSamplers;
 
     bool m_rebootNotifiedRowHeight;
+    
+    bool m_bSpeedAutoReset;
 };
 
 #endif

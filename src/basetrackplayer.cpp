@@ -37,6 +37,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
           m_pLowFilterKill(NULL),
           m_pMidFilterKill(NULL),
           m_pHighFilterKill(NULL),
+          m_pSpeed(NULL),
           m_replaygainPending(false) {
     m_pChannel = new EngineDeck(getGroup(), pConfig, pMixingEngine,
                                 pEffectsManager, defaultOrientation);
@@ -119,6 +120,7 @@ BaseTrackPlayerImpl::~BaseTrackPlayerImpl() {
     delete m_pMidFilterKill;
     delete m_pHighFilterKill;
     delete m_pPreGain;
+    delete m_pSpeed;
 }
 
 void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer track, bool bPlay) {
@@ -285,7 +287,11 @@ void BaseTrackPlayerImpl::slotFinishLoading(TrackPointer pTrackInfoObject)
         }
         m_pPreGain->set(1.0);
     }
-
+    if(m_pConfig->getValueString(ConfigKey("[Controls]", "SpeedAutoReset"), 0).toInt()) {
+        if (m_pSpeed != NULL) {
+            m_pSpeed->set(0.0);
+        }
+    }
     emit(newTrackLoaded(m_pLoadedTrack));
 }
 
@@ -322,4 +328,5 @@ void BaseTrackPlayerImpl::setupEqControls() {
     m_pLowFilterKill = new ControlObjectSlave(group,"filterLowKill");
     m_pMidFilterKill = new ControlObjectSlave(group,"filterMidKill");
     m_pHighFilterKill = new ControlObjectSlave(group,"filterHighKill");
+    m_pSpeed = new ControlObjectSlave(group,"rate");
 }
