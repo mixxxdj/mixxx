@@ -32,14 +32,14 @@
         <SetVariable name="parameter">1</SetVariable>
       </Template>
 
+      <Template src="skin:quick_effect_superknob.xml">
+        <SetVariable name="QuickEffect">1</SetVariable>
+      </Template>
+
       <Template src="skin:knob_with_button.xml">
         <SetVariable name="control">pitch</SetVariable>
         <SetVariable name="button_control">keylock</SetVariable>
         <SetVariable name="label">Key</SetVariable>
-      </Template>
-
-      <Template src="skin:quick_effect_superknob.xml">
-        <SetVariable name="QuickEffect">1</SetVariable>
       </Template>
 
       <PushButton>

@@ -411,7 +411,7 @@ SyncMode RateControl::getSyncMode() const {
     return syncModeFromDouble(m_pSyncMode->get());
 }
 
-double RateControl::calculateRate(double baserate, bool paused,
+double RateControl::calculateSpeed(double baserate, bool paused,
                                   int iSamplesPerBuffer,
                                   bool* reportScratching) {
     *reportScratching = false;

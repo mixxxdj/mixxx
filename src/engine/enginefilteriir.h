@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "engine/engineobject.h"
+#include "sampleutil.h"
 #define MIXXX
 #include <fidlib.h>
 
@@ -37,14 +38,25 @@ class EngineFilterIIR : public EngineObjectConstIn {
 
     virtual ~EngineFilterIIR() {};
 
+    // this can be called continuously for Filters that have own ramping
+    // or need no fade when disabling
     void pauseFilter() {
         if (!m_doStart) {
-            // Set the current buffers to 0
-            memset(m_buf1, 0, sizeof(m_buf1));
-            memset(m_buf2, 0, sizeof(m_buf2));
-            m_doRamping = true;
-            m_doStart = true;
+            pauseFilterInner();
         }
+    }
+
+    // this is can be used instead off a final process() call before pause
+    // It fades to dry or 0 according to the m_startFromDry parameter
+    // it is an alternative for using pauseFillter() calls
+    void processAndPauseFilter(const CSAMPLE* pIn, CSAMPLE* pOutput,
+                       const int iBufferSize) {
+        process(pIn, pOutput, iBufferSize);
+        SampleUtil::copy2WithRampingGain(pOutput,
+                pOutput, 1.0, 0,  // fade out filtered
+                pIn, 0, m_startFromDry ? 1.0 : 0,  // fade in dry if requested
+                iBufferSize);
+        pauseFilterInner();
     }
 
     void initBuffers() {
@@ -189,7 +201,7 @@ class EngineFilterIIR : public EngineObjectConstIn {
                 double old1;
                 double old2;
                 if (!m_doStart) {
-                    // Process old filter only if we do not do a fresh start
+                    // Process old filter, but only if we do not do a fresh start
                     old1 = processSample(m_oldCoef, m_oldBuf1, pIn[i]);
                     old2 = processSample(m_oldCoef, m_oldBuf2, pIn[i + 1]);
                 } else {
@@ -222,6 +234,13 @@ class EngineFilterIIR : public EngineObjectConstIn {
 
   protected:
     inline double processSample(double* coef, double* buf, register double val);
+    inline void pauseFilterInner() {
+        // Set the current buffers to 0
+        memset(m_buf1, 0, sizeof(m_buf1));
+        memset(m_buf2, 0, sizeof(m_buf2));
+        m_doRamping = true;
+        m_doStart = true;
+    }
 
     double m_coef[SIZE + 1];
     // Old coefficients needed for ramping

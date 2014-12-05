@@ -468,7 +468,7 @@ double BpmControl::calcSyncAdjustment(double my_percentage, bool userTweakingSyn
         } else if (fabs(error) > kErrorThreshold) {
             // Proportional control constant. The higher this is, the more we
             // influence sync.
-            const double kSyncAdjustmentProportional = 0.3;
+            const double kSyncAdjustmentProportional = 0.7;
             const double kSyncDeltaCap = 0.02;
 
             // TODO(owilliams): There are a lot of "1.0"s in this code -- can we eliminate them?
@@ -503,9 +503,7 @@ double BpmControl::getBeatDistance(double dThisPosition) const {
     }
 
     if (getSyncMode() != SYNC_NONE && m_pQuantize->get()) {
-        qWarning() << getGroup() << "No beatgrid but sync and quantize enabled. "
-                                    "Disabling quantize mode";
-        m_pQuantize->set(0.0);
+        qWarning() << getGroup() << "No beatgrid but sync and quantize enabled.";
     }
     return 0.0 - m_dUserOffset;
 }

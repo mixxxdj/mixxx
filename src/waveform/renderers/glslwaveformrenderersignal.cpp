@@ -79,13 +79,13 @@ bool GLSLWaveformRendererSignal::loadShaders() {
 
 bool GLSLWaveformRendererSignal::loadTexture() {
     TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
-    Waveform* waveform = NULL;
+    ConstWaveformPointer waveform;
     int dataSize = 0;
-    WaveformData* data = NULL;
+    const WaveformData* data = NULL;
 
     if (trackInfo) {
         waveform = trackInfo->getWaveform();
-        if (waveform != NULL) {
+        if (waveform) {
             dataSize = waveform->getDataSize();
             if (dataSize > 1) {
                 data = waveform->data();
@@ -229,8 +229,8 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
         return;
     }
 
-    const Waveform* waveform = trackInfo->getWaveform();
-    if (waveform == NULL) {
+    ConstWaveformPointer waveform = trackInfo->getWaveform();
+    if (waveform.isNull()) {
         return;
     }
 

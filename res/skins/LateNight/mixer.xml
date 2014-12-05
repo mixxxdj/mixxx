@@ -26,7 +26,7 @@
                            <WidgetGroup>
                               <Layout>vertical</Layout>
                               <Children>
-                                 <WidgetGroup>
+                                 <!-- <WidgetGroup>
                                     <ObjectName>MasterSync</ObjectName>
                                     <SizePolicy>f,me</SizePolicy>
                                     <Size>50,</Size>
@@ -68,29 +68,29 @@
                                             </Connection>
                                         </NumberBpm>
                                     </Children>
-                                </WidgetGroup>
+                                </WidgetGroup> -->
                                 <WidgetGroup>
-                                    <ObjectName>ClockWidget</ObjectName>
-                                    <Layout>horizontal</Layout>
-                                    <SizePolicy>me,me</SizePolicy>
-                                    <Children>
-                                        <WidgetGroup>
-                                          <Layout>horizontal</Layout>
-                                          <SizePolicy>max,max</SizePolicy>
-                                          <Children>
-                                            <Time>
-                                              <TooltipId>time</TooltipId>
-                                              <Style>QLabel { font: bold 16px/19px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-                                                        background-color: transparent; color: #EECE33; }
-                                              </Style>
-                                              <ShowSeconds>false</ShowSeconds>
-                                          </Time>
-                                        </Children>
-                                      </WidgetGroup>
-                                    </Children>
-                                  </WidgetGroup>
-                                </Children>
-                              </WidgetGroup>
+                                  <ObjectName>ClockWidget</ObjectName>
+                                  <Layout>horizontal</Layout>
+                                  <SizePolicy>me,me</SizePolicy>
+                                  <Children>
+                                    <WidgetGroup>
+                                      <Layout>horizontal</Layout>
+                                      <SizePolicy>max,max</SizePolicy>
+                                      <Children>
+                                        <Time>
+                                          <TooltipId>time</TooltipId>
+                                          <Style>QLabel { font: bold 16px/19px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+                                                    background-color: transparent; color: #EECE33; }
+                                          </Style>
+                                          <ShowSeconds>false</ShowSeconds>
+                                        </Time>
+                                      </Children>
+                                    </WidgetGroup>
+                                  </Children>
+                                </WidgetGroup>
+                              </Children>
+                           </WidgetGroup>
 					       <WidgetGroup>
 				                <ObjectName>MixerLeftMargin</ObjectName>
 				                <Layout>horizontal</Layout>

@@ -48,8 +48,6 @@ TrackInfoObject::TrackInfoObject(const QString& file,
           m_pSecurityToken(pToken.isNull() ? Sandbox::openSecurityToken(
                   m_fileInfo, true) : pToken),
           m_qMutex(QMutex::Recursive),
-          m_waveform(new Waveform()),
-          m_waveformSummary(new Waveform()),
           m_analyserProgress(-1) {
     initialize(parseHeader, parseCoverArt);
 }
@@ -61,16 +59,12 @@ TrackInfoObject::TrackInfoObject(const QFileInfo& fileInfo,
           m_pSecurityToken(pToken.isNull() ? Sandbox::openSecurityToken(
                   m_fileInfo, true) : pToken),
           m_qMutex(QMutex::Recursive),
-          m_waveform(new Waveform()),
-          m_waveformSummary(new Waveform()),
           m_analyserProgress(-1) {
     initialize(parseHeader, parseCoverArt);
 }
 
 TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
         : m_qMutex(QMutex::Recursive),
-          m_waveform(new Waveform()),
-          m_waveformSummary(new Waveform()),
           m_analyserProgress(-1) {
     QString filename = XmlParse::selectNodeQString(nodeHeader, "Filename");
     QString location = XmlParse::selectNodeQString(nodeHeader, "Filepath") + "/" +  filename;
@@ -145,9 +139,6 @@ TrackInfoObject::~TrackInfoObject() {
     // Notifies TrackDAO and other listeners that this track is about to be
     // deleted and should be saved to the database, removed from caches, etc.
     emit(deleted(this));
-
-    delete m_waveform;
-    delete m_waveformSummary;
 }
 
 void TrackInfoObject::parse(bool parseCoverArt) {
@@ -788,16 +779,21 @@ QString TrackInfoObject::getURL() {
     return m_sURL;
 }
 
-Waveform* TrackInfoObject::getWaveform() {
+ConstWaveformPointer TrackInfoObject::getWaveform() {
     return m_waveform;
 }
 
-Waveform* TrackInfoObject::getWaveformSummary() {
+void TrackInfoObject::setWaveform(ConstWaveformPointer pWaveform) {
+    m_waveform = pWaveform;
+    emit(waveformUpdated());
+}
+
+ConstWaveformPointer TrackInfoObject::getWaveformSummary() const {
     return m_waveformSummary;
 }
 
-// called from the AnalyserQueue Thread
-void TrackInfoObject::waveformSummaryNew() {
+void TrackInfoObject::setWaveformSummary(ConstWaveformPointer pWaveform) {
+    m_waveformSummary = pWaveform;
     emit(waveformSummaryUpdated());
 }
 

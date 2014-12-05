@@ -288,6 +288,8 @@ Qt::MouseButton LegacySkinParser::parseButtonState(QDomNode node,
 }
 
 QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
+    qDebug() << "LegacySkinParser loading skin:" << skinPath;
+
     if (m_pParent) {
         qDebug() << "ERROR: Somehow a parent already exists -- you are probably re-using a LegacySkinParser which is not advisable!";
     }

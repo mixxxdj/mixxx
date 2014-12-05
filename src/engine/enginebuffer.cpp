@@ -281,7 +281,7 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
     } else {
         m_pScaleKeylock = m_pScaleRB;
     }
-    enablePitchAndTimeScaling(false);
+    enableIndependentPitchTempoScaling(false);
 
     m_pPassthroughEnabled.reset(new ControlObjectSlave(group, "passthrough", this));
     m_pPassthroughEnabled->connectValueChanged(this, SLOT(slotPassthroughChanged(double)),
@@ -353,7 +353,7 @@ double EngineBuffer::fractionalPlayposFromAbsolute(double absolutePlaypos) {
     return fFractionalPlaypos;
 }
 
-void EngineBuffer::enablePitchAndTimeScaling(bool bEnable) {
+void EngineBuffer::enableIndependentPitchTempoScaling(bool bEnable) {
     // MUST ACQUIRE THE PAUSE MUTEX BEFORE CALLING THIS METHOD
 
     // When no time-stretching or pitch-shifting is needed we use our own linear
@@ -746,7 +746,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
 
         // speed is the percentage change in player speed. Depending on whether
         // keylock is enabled, this is applied to either the rate or the tempo.
-        double speed = m_pRateControl->calculateRate(
+        double speed = m_pRateControl->calculateSpeed(
             baserate, paused, iBufferSize, &is_scratching);
 
         bool keylock_enabled = m_pKeylock->get() > 0;
@@ -770,9 +770,9 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
         // rate.
         // High seek speeds also disables keylock.  Our pitch slider could go
         // to 90%, so that's the cutoff point.
-        bool use_pitch_and_time_scaling = !is_scratching && (keylock_enabled || pitchRatio != speed) &&
+        bool useIndependentPitchAndTempoScaling = !is_scratching && (keylock_enabled || pitchRatio != speed) &&
                                           fabs(speed) <= 1.9;
-        enablePitchAndTimeScaling(use_pitch_and_time_scaling);
+        enableIndependentPitchTempoScaling(useIndependentPitchAndTempoScaling);
 
         processSyncRequests();
         processSeek();
@@ -813,7 +813,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
             // pass for every 1 real second)
             double tempoRatio = speed;
             double pitchRatio;
-            if (use_pitch_and_time_scaling) {
+            if (useIndependentPitchAndTempoScaling) {
                 pitchRatio = m_pKeyControl->getPitchRatio();
             } else {
                 // This is for the natural speed pitch found on turn tables

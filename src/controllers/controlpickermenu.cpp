@@ -120,29 +120,31 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckAndSamplerControl("beatsync_phase", tr("Sync Phase One-Shot"),
                              tr("One-time beat sync (phase only)"), syncMenu);
 
-    // Rate
-    QMenu* rateMenu = addSubmenu(tr("Pitch and Rate"));
+    // Speed
+    QMenu* speedMenu = addSubmenu(tr("Speed (Pitch/Tempo)"));
     addDeckAndSamplerControl("keylock", tr("Keylock Mode"),
-                             tr("Toggle keylock mode"), rateMenu);
-    addDeckAndSamplerControl("rate", tr("Playback Speed Slider"),
-                             tr("Playback speed control slider"), rateMenu, true);
-    addDeckAndSamplerControl("pitch", tr("Pitch Slider (Musical)"),
-                             tr("Pitch control slider (does not affect speed)"), rateMenu, true);
-    addDeckAndSamplerControl("sync_key", tr("Sync Key"), tr("Match musical key"), rateMenu, true);
-    addDeckAndSamplerControl("rate_perm_up", tr("Rate Up"), tr("Adjust rate up (coarse)"), rateMenu);
-    addDeckAndSamplerControl("rate_perm_up_small", tr("Rate Up (Fine)"),
-                             tr("Adjust rate up (fine)"), rateMenu);
-    addDeckAndSamplerControl("rate_perm_down", tr("Rate Down"), tr("Adjust rate down (coarse)"), rateMenu);
-    addDeckAndSamplerControl("rate_perm_down_small", tr("Rate Down (Fine)"),
-                             tr("Adjust rate down (fine)"), rateMenu);
-    addDeckAndSamplerControl("rate_temp_up", tr("Pitch-Bend Rate Up"),
-                             tr("Pitch-bend rate up (coarse)"), rateMenu);
-    addDeckAndSamplerControl("rate_temp_up_small", tr("Pitch-Bend Rate Up (Fine)"),
-                             tr("Pitch-bend rate up (fine)"), rateMenu);
-    addDeckAndSamplerControl("rate_temp_down", tr("Pitch-Bend Rate Down"),
-                             tr("Pitch-bend rate down (coarse)"), rateMenu);
-    addDeckAndSamplerControl("rate_temp_down_small", tr("Pitch-Bend Rate Down (Fine)"),
-                             tr("Pitch-bend rate down (fine)"), rateMenu);
+                             tr("Toggle keylock mode"), speedMenu);
+    addDeckAndSamplerControl("rate", tr("Playback Speed"),
+                             tr("Playback speed control (Vinyl \"Pitch\" slider)"), speedMenu, true);
+    addDeckAndSamplerControl("pitch", tr("Pitch (Musical key)"),
+                             tr("Pitch control (does not affect tempo)"), speedMenu, true);
+    addDeckAndSamplerControl("sync_key", tr("Sync Key"), tr("Match musical key"), speedMenu, true);
+    addDeckAndSamplerControl("rate_perm_up", tr("Increase Speed"),
+                             tr("Adjust speed faster (coarse)"), speedMenu);
+    addDeckAndSamplerControl("rate_perm_up_small", tr("Increase Speed (Fine)"),
+                             tr("Adjust speed faster (fine)"), speedMenu);
+    addDeckAndSamplerControl("rate_perm_down", tr("Decrease Speed"),
+                             tr("Adjust speed slower (coarse)"), speedMenu);
+    addDeckAndSamplerControl("rate_perm_down_small", tr("Increase Speed (Fine)"),
+                             tr("Adjust speed slower (fine)"), speedMenu);
+    addDeckAndSamplerControl("rate_temp_up", tr("Temporarily Increase Speed"),
+                             tr("Temporarily increase speed (coarse)"), speedMenu);
+    addDeckAndSamplerControl("rate_temp_up_small", tr("Temporarily Increase Speed (Fine)"),
+                             tr("Temporarily increase speed (fine)"), speedMenu);
+    addDeckAndSamplerControl("rate_temp_down", tr("Temporarily Decrease Speed"),
+                             tr("Temporarily decrease speed (coarse)"), speedMenu);
+    addDeckAndSamplerControl("rate_temp_down_small", tr("Temporarily Decrease Speed (Fine)"),
+                             tr("Temporarily decrease speed (fine)"), speedMenu);
 
     // EQs
     QMenu* eqMenu = addSubmenu(tr("Equalizers"));

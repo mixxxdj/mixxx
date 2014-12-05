@@ -5,7 +5,7 @@ begin                : Wed May 12 2010
 copyright            : (C) 2010 by Sean M. Pappalardo
 email                : spappalardo@mixxx.org
 
-This is essentially just a C++ version of xwax's rate.h,
+This is essentially just a C++ version of xwax's pitch.h,
     which is Copyright (C) 2010 Mark Hills <mark@pogo.org.uk>
 ***************************************************************************/
 

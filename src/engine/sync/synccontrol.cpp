@@ -305,8 +305,8 @@ void SyncControl::trackLoaded(TrackPointer pTrack) {
         // Because of the order signals get processed, the file_bpm CO and
         // rate slider are not updated as soon as we need them, so do that now.
         m_pFileBpm->set(pTrack->getBpm());
-        // Horrible exploitation of a friend class. Sorry little guy.
-        m_pBpmControl->slotAdjustRateSlider();
+        double dRate = 1.0 + m_pRateDirection->get() * m_pRateRange->get() * m_pRateSlider->get();
+        m_pBpm->set(m_pFileBpm->get() * dRate);
         m_pEngineSync->notifyTrackLoaded(this);
     }
 }
@@ -406,6 +406,7 @@ void SyncControl::slotFileBpmChanged() {
 
     const double rate = 1.0 + m_pRateSlider->get() * m_pRateRange->get() * m_pRateDirection->get();
     double bpm = file_bpm * rate;
+    m_pBpm->set(bpm);
     m_pEngineSync->notifyBpmChanged(this, bpm, true);
 }
 
