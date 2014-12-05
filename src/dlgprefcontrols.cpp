@@ -50,8 +50,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
            m_pPlayerManager(pPlayerManager),
            m_iNumConfiguredDecks(0),
            m_iNumConfiguredSamplers(0),
-           m_rebootNotifiedRowHeight(false), 
-           m_bSpeedAutoReset(false) {
+           m_rebootNotifiedRowHeight(false) {
     setupUi(this);
 
     m_pNumDecks = new ControlObjectSlave("[Master]", "num_decks", this);
@@ -118,6 +117,14 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     ComboBoxRateRange->addItem(tr("90%"));
     connect(ComboBoxRateRange, SIGNAL(activated(int)),
             this, SLOT(slotSetRateRange(int)));
+
+    ComboBoxPitchAndKeylock->clear();
+    ComboBoxPitchAndKeylock->addItem(tr("Offset scale, resetting"));
+    ComboBoxPitchAndKeylock->addItem(tr("Absolute scale, no reset"));
+    connect(ComboBoxPitchAndKeylock, SIGNAL(activated(int)),
+            this, SLOT(slotPitchAndKeylock(int)));
+    m_pitchAndKeylock = m_pConfig->getValueString(
+            ConfigKey("[Controls]", "PitchAndKeylock"), "0").toInt();
 
     //
     // Rate buttons configuration
@@ -331,7 +338,6 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
             this, SLOT(slotUpdateSpeedAutoReset(int)));
     m_bSpeedAutoReset = static_cast<bool>(m_pConfig->getValueString(
             ConfigKey("[Controls]", "SpeedAutoReset")).toInt());
-    CheckBoxSpeedAutoReset->setChecked(m_bSpeedAutoReset);
     
     slotUpdate();
 }
@@ -389,6 +395,8 @@ void DlgPrefControls::slotUpdate() {
             QString::number(kDefaultRowHeight)).toInt();
     spinBoxRowHeight->setValue(rowHeight);
 
+    ComboBoxPitchAndKeylock->setCurrentIndex(m_pitchAndKeylock);
+
     CheckBoxSpeedAutoReset->setChecked(m_bSpeedAutoReset);
 }
 
@@ -437,6 +445,9 @@ void DlgPrefControls::slotResetToDefaults() {
     // Speed auto reset checkbox default un-checked.
     m_bSpeedAutoReset = false;
     CheckBoxSpeedAutoReset->setChecked(Qt::Unchecked);
+
+    m_pitchAndKeylock = 0;
+    ComboBoxPitchAndKeylock->setCurrentIndex(m_pitchAndKeylock);
 }
 
 void DlgPrefControls::slotSetLocale(int pos) {
@@ -484,6 +495,10 @@ void DlgPrefControls::slotSetRateDir(int index) {
         }
     }
 
+}
+
+void DlgPrefControls::slotPitchAndKeylock(int index) {
+    m_pitchAndKeylock = index;
 }
 
 void DlgPrefControls::slotSetAllowTrackLoadToPlayingDeck(int) {
@@ -620,6 +635,9 @@ void DlgPrefControls::slotApply() {
     
     m_pConfig->set(ConfigKey("[Controls]","SpeedAutoReset"),
             ConfigValue(m_bSpeedAutoReset ? 1 : 0));
+
+    m_pConfig->set(ConfigKey("[Controls]","PitchAndKeylock"),
+            ConfigValue(m_pitchAndKeylock));
 }
 
 //Returns TRUE if skin fits to screen resolution, FALSE otherwise

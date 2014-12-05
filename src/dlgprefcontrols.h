@@ -51,6 +51,7 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
 
     void slotSetRateRange(int pos);
     void slotSetRateDir(int pos);
+    void slotPitchAndKeylock(int pos);
     void slotSetRateTempLeft(double);
     void slotSetRateTempRight(double);
     void slotSetRatePermLeft(double);
@@ -98,6 +99,7 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     bool m_rebootNotifiedRowHeight;
     
     bool m_bSpeedAutoReset;
+    int m_pitchAndKeylock;
 };
 
 #endif
