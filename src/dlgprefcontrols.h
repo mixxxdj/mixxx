@@ -44,6 +44,8 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
                     ConfigObject<ConfigValue> *pConfig);
     virtual ~DlgPrefControls();
 
+    void allowSkinChanges(bool allow);
+
   public slots:
     void slotUpdate();
     void slotApply();

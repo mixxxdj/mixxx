@@ -70,6 +70,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     void removePageWidget(DlgPreferencePage* pWidget);
     void expandTreeItem(QTreeWidgetItem* pItem);
     void switchToPage(DlgPreferencePage* pWidget);
+    void allowSkinChanges(bool allow);
 
   public slots:
     void changePage(QTreeWidgetItem* current, QTreeWidgetItem* previous);
