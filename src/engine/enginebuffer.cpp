@@ -753,6 +753,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
 
         // If keylock was on, and the user disabled it, also reset the pitch
         // to the linear scaler pitch
+        // TODO(DSC) move this to KeyControl
         if (m_bWasKeylocked && !keylock_enabled) {
             m_pKeyControl->setPitchRatio(speed);
         }
@@ -763,6 +764,24 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
 
         // Update the slipped position and seek if it was disabled.
         processSlip(iBufferSize);
+
+        // How speed/tempo/pitch are related:
+        // Speed slider set the tempoRatio.
+        // It also sets a speedSliderPitchRatio.
+        // By default the speed slider controls tempo and speed with the same value
+        // If key lock is enabled, the speedSliderPitchRatio is const.
+        // With preference mode PitchAndKeylock = 0 the speedSliderPitchRatio is reset to 0
+        // and back to the tempoRatio (natural vinyl Pitch)
+        // when keylock is disabled and enabled. The Pitch knob does not reflect the
+        // speedSliderPitchRatio
+        // With preference mode PitchAndKeylock = 1 the speedSliderPitchRatio is not changed
+        // by keylock, but reflected in the pitch knob.
+        // If pitch ratio and tempo ratio are equal, a linear scaler is used, otherwise
+        // tempo and pitch are processed individual
+        // After that, all other speed changing controlls are porcessed.
+        // in the linear scaler case, they effect tempo and speed otherwise only tempo.
+        // If Scrathing is detected, the linear scaler is used, and the pitch value is
+        // ignored.
 
         // If either keylock is enabled or the pitch slider is non-zero then we
         // need to use pitch and time scaling. Scratching always disables
