@@ -88,7 +88,16 @@ bool LibraryTableModel::isColumnInternal(int column) {
 }
 
 bool LibraryTableModel::isColumnHiddenByDefault(int column) {
-    Q_UNUSED(column);
+    // TODO(owilliams): Make these defaults that are inherited by the other
+    // classes.
+    if ((column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER)) ||
+            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER)) ||
+            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR)) ||
+            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GROUPING)) ||
+            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LOCATION)) ||
+            (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST))) {
+        return true;
+    }
     return false;
 }
 

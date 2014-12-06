@@ -130,13 +130,25 @@ void WTrackTableViewHeader::restoreHeaderState() {
     }
 
     QString headerStateString = track_model->getModelSetting("header_state");
-    if (!headerStateString.isNull()) {
+    if (headerStateString.isNull()) {
+        loadDefaultHeaderState();
+    } else {
         // Load the previous header state (stored as a Base 64 string). Decode
         // it and restore it.
         //qDebug() << "Restoring header state" << headerStateString;
         QByteArray headerState = headerStateString.toAscii();
         headerState = QByteArray::fromBase64(headerState);
         restoreState(headerState);
+    }
+}
+
+void WTrackTableViewHeader::loadDefaultHeaderState() {
+    for (int i = 0; i < count(); ++i) {
+        int header_size = model()->headerData(
+                i, orientation(), TrackModel::kHeaderWidthRole).toInt();
+        if (header_size > 0) {
+            resizeSection(i, header_size);
+        }
     }
 }
 

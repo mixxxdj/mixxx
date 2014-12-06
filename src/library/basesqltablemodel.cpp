@@ -46,54 +46,104 @@ BaseSqlTableModel::~BaseSqlTableModel() {
 void BaseSqlTableModel::initHeaderData() {
     // Set the column heading labels, rename them for translations and have
     // proper capitalization
+
+    // TODO(owilliams): Clean this up to make it readable.
     setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED),
                   Qt::Horizontal, tr("Played"));
+    setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED),
+                  Qt::Horizontal, 50, TrackModel::kHeaderWidthRole);
     setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ARTIST),
                   Qt::Horizontal, tr("Artist"));
+    setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ARTIST),
+                  Qt::Horizontal, 200, TrackModel::kHeaderWidthRole);
     setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TITLE),
                   Qt::Horizontal, tr("Title"));
+    setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TITLE),
+                  Qt::Horizontal, 300, TrackModel::kHeaderWidthRole);
     setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUM),
                   Qt::Horizontal, tr("Album"));
+    setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUM),
+                  Qt::Horizontal, 200, TrackModel::kHeaderWidthRole);
     setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST),
                   Qt::Horizontal, tr("Album Artist"));
+    setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST),
+                  Qt::Horizontal, 100, TrackModel::kHeaderWidthRole);
     setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE),
                   Qt::Horizontal, tr("Genre"));
+    setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE),
+                  Qt::Horizontal, 100, TrackModel::kHeaderWidthRole);
     setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER),
                   Qt::Horizontal, tr("Composer"));
+    setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER),
+                  Qt::Horizontal, 50, TrackModel::kHeaderWidthRole);
     setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GROUPING),
                   Qt::Horizontal, tr("Grouping"));
+    setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GROUPING),
+                  Qt::Horizontal, 10, TrackModel::kHeaderWidthRole);
     setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR),
                   Qt::Horizontal, tr("Year"));
+    setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR),
+                  Qt::Horizontal, 40, TrackModel::kHeaderWidthRole);
     setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE),
                   Qt::Horizontal, tr("Type"));
+    setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE),
+                  Qt::Horizontal, 50, TrackModel::kHeaderWidthRole);
     setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LOCATION),
                   Qt::Horizontal, tr("Location"));
+    setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LOCATION),
+                  Qt::Horizontal, 100, TrackModel::kHeaderWidthRole);
     setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT),
                   Qt::Horizontal, tr("Comment"));
+    setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT),
+                  Qt::Horizontal, 250, TrackModel::kHeaderWidthRole);
     setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION),
                   Qt::Horizontal, tr("Duration"));
+    setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION),
+                  Qt::Horizontal, 70, TrackModel::kHeaderWidthRole);
     setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING),
                   Qt::Horizontal, tr("Rating"));
+    setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING),
+                  Qt::Horizontal, 100, TrackModel::kHeaderWidthRole);
     setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE),
                   Qt::Horizontal, tr("Bitrate"));
+    setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE),
+                  Qt::Horizontal, 50, TrackModel::kHeaderWidthRole);
     setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM),
                   Qt::Horizontal, tr("BPM"));
+    setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM),
+                  Qt::Horizontal, 70, TrackModel::kHeaderWidthRole);
     setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER),
                   Qt::Horizontal, tr("Track #"));
+    setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER),
+                  Qt::Horizontal, 10, TrackModel::kHeaderWidthRole);
     setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED),
                   Qt::Horizontal, tr("Date Added"));
+    setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED),
+                  Qt::Horizontal, 90, TrackModel::kHeaderWidthRole);
     setHeaderData(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
                   Qt::Horizontal, tr("#"));
+    setHeaderData(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
+                  Qt::Horizontal, 10, TrackModel::kHeaderWidthRole);
     setHeaderData(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED),
                   Qt::Horizontal, tr("Timestamp"));
+    setHeaderData(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED),
+                  Qt::Horizontal, 80, TrackModel::kHeaderWidthRole);
     setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY),
                   Qt::Horizontal, tr("Key"));
+    setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY),
+                  Qt::Horizontal, 50, TrackModel::kHeaderWidthRole);
     setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK),
                   Qt::Horizontal, tr("BPM Lock"));
+    setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK),
+                  Qt::Horizontal, 10, TrackModel::kHeaderWidthRole);
     setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW),
                   Qt::Horizontal, tr("Preview"));
+    setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW),
+                  Qt::Horizontal, 50, TrackModel::kHeaderWidthRole);
     setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART),
                   Qt::Horizontal, tr("Cover Art"));
+    setHeaderData(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART),
+                  Qt::Horizontal, 90, TrackModel::kHeaderWidthRole);
 }
 
 QSqlDatabase BaseSqlTableModel::database() const {
@@ -133,6 +183,12 @@ QVariant BaseSqlTableModel::headerData(int section, Qt::Orientation orientation,
             headerValue = QVariant(section).toString();
         }
         return headerValue;
+    } else if (role == TrackModel::kHeaderWidthRole && orientation == Qt::Horizontal) {
+        QVariant widthValue = m_headerInfo.value(section).value(role);
+        if (!widthValue.isValid()) {
+            return 0;
+        }
+        return widthValue;
     }
     return QAbstractTableModel::headerData(section, orientation, role);
 }
