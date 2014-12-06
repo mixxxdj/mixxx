@@ -6,6 +6,7 @@
 
 #include <QString>
 #include <QTableView>
+#include <QFont>
 
 #include "configobject.h"
 #include "library/libraryview.h"
@@ -34,6 +35,8 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
   public slots:
     void saveVScrollBarPos();
     void restoreVScrollBarPos();
+    void setTrackTableFont(const QFont& font);
+    void setTrackTableRowHeight(int rowHeight);
 
   private:
     void loadVScrollBarPosState();

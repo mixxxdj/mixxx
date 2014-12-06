@@ -7,6 +7,7 @@
 
 DlgAutoDJ::DlgAutoDJ(QWidget* parent,
                      ConfigObject<ConfigValue>* pConfig,
+                     Library* pLibrary,
                      AutoDJProcessor* pProcessor,
                      TrackCollection* pTrackCollection,
                      MixxxKeyboard* pKeyboard)
@@ -26,6 +27,10 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
     connect(m_pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
+    connect(pLibrary, SIGNAL(setTrackTableFont(QFont)),
+            m_pTrackTableView, SLOT(setTrackTableFont(QFont)));
+    connect(pLibrary, SIGNAL(setTrackTableRowHeight(int)),
+            m_pTrackTableView, SLOT(setTrackTableRowHeight(int)));
 
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
     Q_ASSERT(box); //Assumes the form layout is a QVBox/QHBoxLayout!
@@ -177,4 +182,12 @@ void DlgAutoDJ::autoDJStateChanged(AutoDJProcessor::AutoDJState state) {
         // You can always skip the next track if we are enabled.
         pushButtonSkipNext->setEnabled(true);
     }
+}
+
+void DlgAutoDJ::setTrackTableFont(const QFont& font) {
+    m_pTrackTableView->setTrackTableFont(font);
+}
+
+void DlgAutoDJ::setTrackTableRowHeight(int rowHeight) {
+    m_pTrackTableView->setTrackTableRowHeight(rowHeight);
 }

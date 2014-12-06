@@ -4,11 +4,12 @@
 #include "widget/wtracktableview.h"
 
 DlgMissing::DlgMissing(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
-                     TrackCollection* pTrackCollection, MixxxKeyboard* pKeyboard)
+                       Library* pLibrary,
+                       TrackCollection* pTrackCollection, MixxxKeyboard* pKeyboard)
          : QWidget(parent),
            Ui::DlgMissing(),
            m_pTrackTableView(
-               new WTrackTableView(this,pConfig,pTrackCollection, false)) {
+               new WTrackTableView(this, pConfig, pTrackCollection, false)) {
     setupUi(this);
     m_pTrackTableView->installEventFilter(pKeyboard);
 
@@ -32,6 +33,10 @@ DlgMissing::DlgMissing(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
             SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
             this,
             SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));
+    connect(pLibrary, SIGNAL(setTrackTableFont(QFont)),
+            m_pTrackTableView, SLOT(setTrackTableFont(QFont)));
+    connect(pLibrary, SIGNAL(setTrackTableRowHeight(int)),
+            m_pTrackTableView, SLOT(setTrackTableRowHeight(int)));
 
     connect(m_pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
@@ -70,4 +75,12 @@ void DlgMissing::selectionChanged(const QItemSelection &selected,
                                   const QItemSelection &deselected) {
     Q_UNUSED(deselected);
     activateButtons(!selected.indexes().isEmpty());
+}
+
+void DlgMissing::setTrackTableFont(const QFont& font) {
+    m_pTrackTableView->setTrackTableFont(font);
+}
+
+void DlgMissing::setTrackTableRowHeight(int rowHeight) {
+    m_pTrackTableView->setTrackTableRowHeight(rowHeight);
 }
