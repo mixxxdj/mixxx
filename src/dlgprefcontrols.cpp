@@ -123,8 +123,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     ComboBoxPitchAndKeylock->addItem(tr("Absolute scale, no reset"));
     connect(ComboBoxPitchAndKeylock, SIGNAL(activated(int)),
             this, SLOT(slotPitchAndKeylock(int)));
-    m_pitchAndKeylock = m_pConfig->getValueString(
-            ConfigKey("[Controls]", "PitchAndKeylock"), "0").toInt();
+    m_pitchAndKeylockMode = m_pConfig->getValueString(
+            ConfigKey("[Controls]", "PitchAndKeylockMode"), "0").toInt();
 
     //
     // Rate buttons configuration
@@ -348,6 +348,7 @@ DlgPrefControls::~DlgPrefControls() {
     qDeleteAll(m_rateDirControls);
     qDeleteAll(m_cueControls);
     qDeleteAll(m_rateRangeControls);
+    qDeleteAll(m_pitchAndKeylockControls);
 }
 
 void DlgPrefControls::slotUpdateSchemes() {
@@ -395,7 +396,7 @@ void DlgPrefControls::slotUpdate() {
             QString::number(kDefaultRowHeight)).toInt();
     spinBoxRowHeight->setValue(rowHeight);
 
-    ComboBoxPitchAndKeylock->setCurrentIndex(m_pitchAndKeylock);
+    ComboBoxPitchAndKeylock->setCurrentIndex(m_pitchAndKeylockMode);
 
     CheckBoxSpeedAutoReset->setChecked(m_bSpeedAutoReset);
 }
@@ -446,8 +447,8 @@ void DlgPrefControls::slotResetToDefaults() {
     m_bSpeedAutoReset = false;
     CheckBoxSpeedAutoReset->setChecked(Qt::Unchecked);
 
-    m_pitchAndKeylock = 0;
-    ComboBoxPitchAndKeylock->setCurrentIndex(m_pitchAndKeylock);
+    m_pitchAndKeylockMode = 0;
+    ComboBoxPitchAndKeylock->setCurrentIndex(m_pitchAndKeylockMode);
 }
 
 void DlgPrefControls::slotSetLocale(int pos) {
@@ -498,7 +499,7 @@ void DlgPrefControls::slotSetRateDir(int index) {
 }
 
 void DlgPrefControls::slotPitchAndKeylock(int index) {
-    m_pitchAndKeylock = index;
+    m_pitchAndKeylockMode = index;
 }
 
 void DlgPrefControls::slotSetAllowTrackLoadToPlayingDeck(int) {
@@ -636,8 +637,12 @@ void DlgPrefControls::slotApply() {
     m_pConfig->set(ConfigKey("[Controls]","SpeedAutoReset"),
             ConfigValue(m_bSpeedAutoReset ? 1 : 0));
 
-    m_pConfig->set(ConfigKey("[Controls]","PitchAndKeylock"),
-            ConfigValue(m_pitchAndKeylock));
+    m_pConfig->set(ConfigKey("[Controls]","PitchAndKeylockMode"),
+            ConfigValue(m_pitchAndKeylockMode));
+    // Set cue behavior for every group
+    foreach (ControlObjectThread* pControl, m_pitchAndKeylockControls) {
+        pControl->slotSet(m_pitchAndKeylockMode);
+    }
 }
 
 //Returns TRUE if skin fits to screen resolution, FALSE otherwise
@@ -689,6 +694,8 @@ void DlgPrefControls::slotNumDecksChanged(double new_count) {
                 group, "rate_dir"));
         m_cueControls.push_back(new ControlObjectThread(
                 group, "cue_mode"));
+        m_pitchAndKeylockControls.push_back(new ControlObjectThread(
+                        group, "pitchAndKeylockMode"));
     }
 
     m_iNumConfiguredDecks = numdecks;
@@ -712,6 +719,8 @@ void DlgPrefControls::slotNumSamplersChanged(double new_count) {
                 group, "rate_dir"));
         m_cueControls.push_back(new ControlObjectThread(
                 group, "cue_mode"));
+        m_pitchAndKeylockControls.push_back(new ControlObjectThread(
+                        group, "pitchAndKeylockMode"));
     }
 
     m_iNumConfiguredSamplers = numsamplers;

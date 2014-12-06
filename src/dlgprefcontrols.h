@@ -89,6 +89,7 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     QList<ControlObjectThread*> m_rateControls;
     QList<ControlObjectThread*> m_rateDirControls;
     QList<ControlObjectThread*> m_rateRangeControls;
+    QList<ControlObjectThread*> m_pitchAndKeylockControls;
     MixxxMainWindow *m_mixxx;
     SkinLoader* m_pSkinLoader;
     PlayerManager* m_pPlayerManager;
@@ -99,7 +100,7 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     bool m_rebootNotifiedRowHeight;
     
     bool m_bSpeedAutoReset;
-    int m_pitchAndKeylock;
+    int m_pitchAndKeylockMode;
 };
 
 #endif

@@ -675,7 +675,7 @@ Numark mode:
      <item row="10" column="0">
       <widget class="QLabel" name="labelPitchAndKeylock">
        <property name="text">
-        <string>Pitch and Keylock</string>
+        <string>Pitch and keylock mode</string>
        </property>
       </widget>
      </item>

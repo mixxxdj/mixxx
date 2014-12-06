@@ -109,7 +109,7 @@ void KeyControl::slotRateChanged() {
     double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
     bool bKeylock = m_pKeylock->toBool();
     int pitchAndKeylock = m_pConfig->getValueString(
-            ConfigKey("[Controls]", "PitchAndKeylock"), "0").toInt();
+            ConfigKey("[Controls]", "PitchAndKeylockMode"), "0").toInt();
 
     // |-----------------------|-----------------|
     //   SpeedSliderPitchRatio   pitchTweakRatio
@@ -187,7 +187,7 @@ void KeyControl::slotSetEngineKey(double key) {
 
 void KeyControl::slotPitchChanged(double pitch) {
     int m_pitchAndKeylock = m_pConfig->getValueString(
-            ConfigKey("[Controls]", "PitchAndKeylock"), "0").toInt();
+            ConfigKey("[Controls]", "PitchAndKeylockMode"), "0").toInt();
 
     double pitchTweakRatio = KeyUtils::octaveChangeToPowerOf2(pitch);
     if (m_pitchAndKeylock == 0) {
