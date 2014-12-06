@@ -340,17 +340,6 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_pPrefDlg->setHidden(true);
 
     initializeKeyboard();
-
-    // Load tracks in args.qlMusicFiles (command line arguments) into player
-    // 1 and 2:
-    const QList<QString>& musicFiles = args.getMusicFiles();
-    for (int i = 0; i < (int)m_pPlayerManager->numDecks()
-            && i < musicFiles.count(); ++i) {
-        if (SoundSourceProxy::isFilenameSupported(musicFiles.at(i))) {
-            m_pPlayerManager->slotLoadToDeck(musicFiles.at(i), i+1);
-        }
-    }
-
     initActions();
     initMenuBar();
 
@@ -456,6 +445,16 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         }
         setupDevices = m_pSoundManager->setupDevices();
         numDevices = m_pSoundManager->getConfig().getOutputs().count();
+    }
+
+    // Load tracks in args.qlMusicFiles (command line arguments) into player
+    // 1 and 2:
+    const QList<QString>& musicFiles = args.getMusicFiles();
+    for (int i = 0; i < (int)m_pPlayerManager->numDecks()
+            && i < musicFiles.count(); ++i) {
+        if (SoundSourceProxy::isFilenameSupported(musicFiles.at(i))) {
+            m_pPlayerManager->slotLoadToDeck(musicFiles.at(i), i+1);
+        }
     }
 }
 
