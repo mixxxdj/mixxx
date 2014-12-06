@@ -1,0 +1,28 @@
+<Template>
+    <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,max</SizePolicy>
+        <MinimumSize>0,0</MinimumSize>
+        <Children>
+            <WidgetStack currentpage="[Master],med_view_curpage" persist="true">
+                <SizePolicy>me,min</SizePolicy>
+                <Children>
+                    <WidgetGroup trigger="[EffectRack1],show_tab" persist="true">
+                        <Layout>vertical</Layout>
+                        <SizePolicy>me,min</SizePolicy>
+                        <Children>
+                            <Template src="skin:effect_rack.xml"/>
+                        </Children>
+                    </WidgetGroup>
+                    <WidgetGroup trigger="[Samplers],show_samplers_tab" persist="true">
+                        <Layout>vertical</Layout>
+                        <SizePolicy>me,min</SizePolicy>
+                        <Children>
+                            <Template src="skin:sampler_decks.xml"/>
+                        </Children>
+                    </WidgetGroup>
+                </Children>
+            </WidgetStack>
+        </Children>
+    </WidgetGroup>
+</Template>

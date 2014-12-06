@@ -1,0 +1,50 @@
+<Template>
+    <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,max</SizePolicy>
+        <MinimumSize>0,0</MinimumSize>
+        <Children>
+            <WidgetStack currentpage="[Library],show_big_current" persist="true">
+                <Children>
+                    <WidgetGroup trigger="[Library],unshow_big">
+                        <Layout>vertical</Layout>
+                        <Children>
+                            <WidgetStack currentpage="[Samplers],current" persist="true">
+                                <Children>
+                                    <WidgetGroup trigger="[Samplers],show_samplers" persist="true">
+                                        <Layout>vertical</Layout>
+                                        <Children>
+                                            <Template src="skin:sampler_decks.xml"/>
+                                        </Children>
+                                    </WidgetGroup>
+                                    <WidgetGroup>
+                                        <SizePolicy>me,min</SizePolicy>
+                                        <Children/>
+                                    </WidgetGroup>
+                                </Children>
+                            </WidgetStack>
+                            <WidgetStack currentpage="[EffectRack1],current" persist="true">
+                                <Children>
+                                    <WidgetGroup trigger="[EffectRack1],show" persist="true">
+                                        <Layout>vertical</Layout>
+                                        <Children>
+                                            <Template src="skin:effect_rack.xml"/>
+                                        </Children>
+                                    </WidgetGroup>
+                                    <WidgetGroup>
+                                        <SizePolicy>me,min</SizePolicy>
+                                        <Children/>
+                                    </WidgetGroup>
+                                </Children>
+                            </WidgetStack>
+                        </Children>
+                    </WidgetGroup>
+                    <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <Children/>
+                    </WidgetGroup>
+                </Children>
+            </WidgetStack>
+        </Children>
+    </WidgetGroup>
+</Template>

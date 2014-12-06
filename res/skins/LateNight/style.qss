@@ -12,6 +12,7 @@
 
 #UILowerHalf {
   background-color: #0f0f0f;
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
 #HorizBorder {
@@ -121,7 +122,7 @@
 }
 
 #ClockWidget {
-  qproperty-layoutAlignment: 'AlignBottom | AlignLeft';
+  qproperty-layoutAlignment: 'AlignBottom | AlignRight';
   padding: 3px;
 }
 
