@@ -751,13 +751,6 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
 
         bool keylock_enabled = m_pKeylock->get() > 0;
 
-        // If keylock was on, and the user disabled it, also reset the pitch
-        // to the linear scaler pitch
-        // TODO(DSC) move this to KeyControl
-        if (m_bWasKeylocked && !keylock_enabled) {
-            m_pKeyControl->setPitchRatio(speed);
-        }
-
         // The pitch adjustment in Ratio (1.0 being normal
         // pitch. 2.0 is a full octave shift up).
         double pitchRatio = m_pKeyControl->getPitchRatio();

@@ -15,7 +15,9 @@ KeyControl::KeyControl(QString group,
           m_dOldRate(0.0),
           m_bOldKeylock(false),
           m_dPitchCompensation(0.0),
-          m_dPitchCompensationOldPitch(0.0) {
+          m_dPitchCompensationOldPitch(0.0),
+          m_speedSliderPitchRatio(1.0),
+          m_pitchRatio(1.0) {
     m_pPitchAdjust = new ControlPotmeter(ConfigKey(group, "pitch_adjust"), -1.f, 1.f);
     m_pPitch = new ControlPotmeter(ConfigKey(group, "pitch"), -1.f, 1.f);
     // Course adjust by full step.
@@ -90,22 +92,11 @@ KeyControl::~KeyControl() {
 }
 
 double KeyControl::getPitchRatio() const {
-    // pitchOctaves -> -1 0 1 for up to on Octave pitch shift
-    double pitchOctaves = m_pPitch->get();
-    // pitchRatio -> 1 = no pitch shift
-    double pitchRatio =  KeyUtils::octaveChangeToPowerOf2(pitchOctaves);
-    return pitchRatio;
-}
-
-void KeyControl::setPitchRatio(double pitchRatio) {
-    // pitchOctaves -> -1 0 1 for up to on Octave pitch shift
-    double pitchOctaves = KeyUtils::powerOf2ToOctaveChange(pitchRatio);
-    m_pPitch->set(pitchOctaves);
-    slotPitchChanged(pitchOctaves);
+    return m_pitchRatio;
 }
 
 void KeyControl::resetPitchToLinear() {
-    setPitchRatio(m_dOldRate);
+    // TODO(DSC)
 }
 
 double KeyControl::getKey() {
@@ -113,61 +104,68 @@ double KeyControl::getKey() {
 }
 
 void KeyControl::slotRateChanged() {
-    // If rate is non-1.0 then we have to try and calculate the octave change
+    // If rate is not 1.0 then we have to try and calculate the octave change
     // caused by it.
     double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
     bool bKeylock = m_pKeylock->toBool();
+    int pitchAndKeylock = m_pConfig->getValueString(
+            ConfigKey("[Controls]", "PitchAndKeylock"), "0").toInt();
 
-    // If we just turned keylock on or off, adjust the pitch so that the
-    // effective key stays the same. This is only relevant when m_dOldRate !=
-    // 1.0 because that's the only case when rate adjustment causes pitch
-    // change.
-    if (bKeylock && !m_bOldKeylock) {
-        // Enabling Keylock
-        double pitch = m_pPitchAdjust->get();
-        m_dPitchCompensation = pitch + KeyUtils::powerOf2ToOctaveChange(m_dOldRate);
-        m_dPitchCompensationOldPitch = pitch;
-        // Pitch scale to original key
-        m_pPitchAdjust->set(m_dPitchCompensation);
-    } else if (!bKeylock && m_bOldKeylock) {
-        // Disabling Keylock
-        double pitch = m_pPitchAdjust->get();
+    // |-----------------------|-----------------|
+    //   SpeedSliderPitchRatio   pitchTweakRatio
+    //
+    // |-----------------------------------------|
+    //   m_pitchRatio
+    //
+    //                         |-----------------|
+    //                           m_pPitch (0)
+    //
+    // |-----------------------------------------|
+    //   m_pPitch (1)
 
-        // The pitch has not changed since we enabled keylock. Restore the
-        // old pitch.
-        if (pitch == m_dPitchCompensation) {
-            m_pPitchAdjust->set(m_dPitchCompensationOldPitch);
-        } else {
-            // Otherwise, compensate in the opposite direction to prevent
-            // pitch change. We know the user has a pitch control because
-            // they changed it.
-            double pitchAdjust = KeyUtils::powerOf2ToOctaveChange(m_dOldRate);
-            // pitch scale relative to rate control
-            m_pPitchAdjust->set(pitch - pitchAdjust);
-        }
+    // here is a possible race condition, if the pitch is changed in between.
+    // but it cannot happen if rate and pitch is set from the same thread
 
-        m_dPitchCompensationOldPitch = 0.0;
-        m_dPitchCompensation = 0.0;
-    }
-
-    if (m_dOldRate != dRate || bKeylock != m_bOldKeylock) {
-        m_dOldRate = dRate;
-        m_bOldKeylock = bKeylock;
-        double dFileKey = m_pFileKey->get();
-        slotFileKeyChanged(dFileKey);
-    }
+    double pitchTweakRatio = m_pitchRatio / m_speedSliderPitchRatio;
 
     if (bKeylock) {
-        m_pPitch->set(m_pPitchAdjust->get());
+        if (!m_bOldKeylock) {
+            // Enabling Keylock
+            if (pitchAndKeylock) {
+                // Lock at current pitch
+                m_speedSliderPitchRatio = dRate;
+            } else {
+                // Lock at original track pitch
+                m_speedSliderPitchRatio = 1.0;
+            }
+        }
     } else {
-        m_pPitch->set(m_pPitchAdjust->get() + KeyUtils::powerOf2ToOctaveChange(dRate));
+        // !bKeylock
+        if (m_bOldKeylock) {
+            // Disabling Keylock
+            if (pitchAndKeylock) {
+                // Adopt speedPitchRatio change as pitchTweakRatio
+                pitchTweakRatio *= (m_speedSliderPitchRatio / dRate);
+            }
+        }
+        m_speedSliderPitchRatio = dRate;
+    }
+    m_bOldKeylock = bKeylock;
+
+    m_pitchRatio = pitchTweakRatio * m_speedSliderPitchRatio;
+
+    double pitchOctaves = KeyUtils::powerOf2ToOctaveChange(m_pitchRatio);
+    double dFileKey = m_pFileKey->get();
+    updateKeyCOs(dFileKey, pitchOctaves);
+
+    if (pitchAndKeylock) {
+        // Pitch scale is always 0 at original pitch
+        m_pPitch->set(pitchOctaves);
     }
 }
 
 void KeyControl::slotFileKeyChanged(double value) {
-    // The pitch adjust in octaves.
-    double pitch = m_pPitch->get();
-    updateKeyCOs(value, pitch);
+    updateKeyCOs(value, KeyUtils::powerOf2ToOctaveChange(m_pitchRatio));
 }
 
 void KeyControl::updateKeyCOs(double fileKeyNumeric, double pitch) {
@@ -188,17 +186,18 @@ void KeyControl::slotSetEngineKey(double key) {
 }
 
 void KeyControl::slotPitchChanged(double pitch) {
-    double pitchAdjust = pitch;
-    bool keylock_enabled = m_pKeylock->toBool();
+    int m_pitchAndKeylock = m_pConfig->getValueString(
+            ConfigKey("[Controls]", "PitchAndKeylock"), "0").toInt();
 
-    // If keylock is enabled then rate only affects the tempo and not the pitch.
-    if (m_dOldRate != 1.0 && !keylock_enabled) {
-        pitchAdjust -= KeyUtils::powerOf2ToOctaveChange(m_dOldRate);
+    double pitchTweakRatio = KeyUtils::octaveChangeToPowerOf2(pitch);
+    if (m_pitchAndKeylock == 0) {
+        pitchTweakRatio *= m_speedSliderPitchRatio;
     }
-    m_pPitchAdjust->set(pitchAdjust);
+
+    m_pitchRatio = pitchTweakRatio;
 
     double dFileKey = m_pFileKey->get();
-    updateKeyCOs(dFileKey, pitch);
+    updateKeyCOs(dFileKey, KeyUtils::powerOf2ToOctaveChange(m_pitchRatio));
 }
 
 void KeyControl::slotSyncKey(double v) {

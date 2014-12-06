@@ -19,7 +19,6 @@ class KeyControl : public EngineControl {
     // Returns a value describing the pitch ratio. A pitch adjustment of 1.0
     // means no change should take place.
     double getPitchRatio() const;
-    void setPitchRatio(double pitchRatio);
 
     double getKey();
 
@@ -42,6 +41,8 @@ class KeyControl : public EngineControl {
     double m_dPitchCompensation;
     double m_dPitchCompensationOldPitch;
 
+    double m_speedSliderPitchRatio;
+
     // ControlObjects that come from EngineBuffer
     ControlObject* m_pRateSlider;
     ControlObject* m_pRateRange;
@@ -59,6 +60,10 @@ class KeyControl : public EngineControl {
     ControlPotmeter* m_pEngineKeyDistance;
 
     TrackPointer m_pTrack;
+
+    // this is the calculated value used by engine buffer for pitch
+    // by default is is equal to the tempoRatio set by the speed slider
+    double m_pitchRatio;
 };
 
 #endif // KEYCONTROL_H
