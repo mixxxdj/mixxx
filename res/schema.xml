@@ -393,12 +393,6 @@ METADATA
       ALTER TABLE library ADD COLUMN coverart_type INTEGER DEFAULT 0;
       ALTER TABLE library ADD COLUMN coverart_location TEXT DEFAULT "";
       ALTER TABLE library ADD COLUMN coverart_hash INTEGER DEFAULT 0;
-
-      <!-- Every time a visible column is added to the library, we have to
-      reset the column headers because they will just be broken.  In the future
-      we hope to develop a way of saving as much column data as possible to make
-      upgrading easier. -->
-      DELETE FROM settings WHERE name like "%header_state";
     </sql>
   </revision>
 </schema>
