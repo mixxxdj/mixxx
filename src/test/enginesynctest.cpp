@@ -694,7 +694,9 @@ TEST_F(EngineSyncTest, EnableOneDeckInitsMaster) {
                                                         "beat_distance"))->get());
 
     // Enable second deck, beat distance should still match original setting.
-    ControlObject::getControl(ConfigKey(m_sGroup2, "file_bpm"))->set(140.0);
+    QScopedPointer<ControlObjectThread> pFileBpm2(getControlObjectThread(
+        ConfigKey(m_sGroup2, "file_bpm")));
+    pFileBpm2->set(140.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(1.0));
     ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->set(0.2);
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
@@ -1081,8 +1083,12 @@ TEST_F(EngineSyncTest, ZeroBPMRateAdjustIgnored) {
 TEST_F(EngineSyncTest, ZeroLatencyRateChange) {
     // Confirm that a rate change in an explicit master is instantly communicated
     // to followers.
-    ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->set(128.0);
-    ControlObject::getControl(ConfigKey(m_sGroup2, "file_bpm"))->set(128.0);
+    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
+        ConfigKey(m_sGroup1, "file_bpm")));
+    QScopedPointer<ControlObjectThread> pFileBpm2(getControlObjectThread(
+        ConfigKey(m_sGroup2, "file_bpm")));
+    pFileBpm1->set(128.0);
+    pFileBpm2->set(128.0);
     BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1.data(), 128, 0.0);
     m_pTrack1->setBeats(pBeats1);
     BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2.data(), 128, 0.0);
@@ -1115,10 +1121,14 @@ TEST_F(EngineSyncTest, ZeroLatencyRateChange) {
 }
 
 TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
-    ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->set(70);
+    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
+        ConfigKey(m_sGroup1, "file_bpm")));
+    pFileBpm1->set(70);
     BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1.data(), 70, 0.0);
     m_pTrack1->setBeats(pBeats1);
-    ControlObject::getControl(ConfigKey(m_sGroup2, "file_bpm"))->set(140);
+    QScopedPointer<ControlObjectThread> pFileBpm2(getControlObjectThread(
+        ConfigKey(m_sGroup2, "file_bpm")));
+    pFileBpm2->set(140);
     BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2.data(), 140, 0.0);
     m_pTrack2->setBeats(pBeats2);
 

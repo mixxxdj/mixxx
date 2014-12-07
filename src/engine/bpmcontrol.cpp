@@ -18,6 +18,9 @@
 const int minBpm = 30;
 const int maxInterval = (int)(1000.*(60./(CSAMPLE)minBpm));
 const int filterLength = 5;
+// The local_bpm is calculated forward and backward this number of beats, so
+// the actual number of beats is this x2.
+const int kLocalBpmSpan = 4;
 
 BpmControl::BpmControl(QString group,
                        ConfigObject<ConfigValue>* _config) :
@@ -49,6 +52,7 @@ BpmControl::BpmControl(QString group,
     connect(m_pFileBpm, SIGNAL(valueChanged(double)),
             this, SLOT(slotFileBpmChanged(double)),
             Qt::DirectConnection);
+    m_pLocalBpm = new ControlObject(ConfigKey(group, "local_bpm"));
     m_pAdjustBeatsFaster = new ControlPushButton(ConfigKey(group, "beats_adjust_faster"), false);
     connect(m_pAdjustBeatsFaster, SIGNAL(valueChanged(double)),
             this, SLOT(slotAdjustBeatsFaster(double)),
@@ -125,6 +129,7 @@ BpmControl::~BpmControl() {
     delete m_pLoopStartPosition;
     delete m_pLoopEndPosition;
     delete m_pFileBpm;
+    delete m_pLocalBpm;
     delete m_pEngineBpm;
     delete m_pButtonTap;
     delete m_pButtonSync;
@@ -147,6 +152,12 @@ void BpmControl::slotFileBpmChanged(double bpm) {
     // Adjust the file-bpm with the current setting of the rate to get the
     // engine BPM. We only do this for SYNC_NONE decks because EngineSync will
     // set our BPM if the file BPM changes. See SyncControl::fileBpmChanged().
+    if (m_pBeats) {
+        m_pLocalBpm->set(m_pBeats->getBpmAroundPosition(getCurrentSample(),
+                                                        kLocalBpmSpan));
+    } else {
+        m_pLocalBpm->set(bpm);
+    }
     if (getSyncMode() == SYNC_NONE) {
         slotAdjustRateSlider();
     }
@@ -186,12 +197,12 @@ void BpmControl::slotTranslateBeatsLater(double v) {
 }
 
 void BpmControl::slotSetEngineBpm(double bpm) {
-    double filebpm = m_pFileBpm->get();
+    double localbpm = m_pLocalBpm->get();
     double ratedir = m_pRateDir->get();
     double raterange = m_pRateRange->get();
 
-    if (filebpm && ratedir && raterange) {
-        double newRate = bpm / filebpm;
+    if (localbpm && ratedir && raterange) {
+        double newRate = bpm / localbpm;
         m_pRateSlider->set((newRate - 1.0) / ratedir / raterange);
     }
 }
@@ -256,10 +267,10 @@ bool BpmControl::syncTempo() {
     }
 
     double fThisBpm = m_pEngineBpm->get();
-    double fThisFileBpm = m_pFileBpm->get();
+    double fThisLocalBpm = m_pLocalBpm->get();
 
     double fOtherBpm = pOtherEngineBuffer->getBpm();
-    double fOtherFileBpm = pOtherEngineBuffer->getFileBpm();
+    double fOtherLocalBpm = pOtherEngineBuffer->getLocalBpm();
 
     //qDebug() << "this" << "bpm" << fThisBpm << "filebpm" << fThisFileBpm;
     //qDebug() << "other" << "bpm" << fOtherBpm << "filebpm" << fOtherFileBpm;
@@ -298,17 +309,17 @@ bool BpmControl::syncTempo() {
         // The desired rate is the other decks effective rate divided by this
         // deck's file BPM. This gives us the playback rate that will produce an
         // effective BPM equivalent to the other decks.
-        double desiredRate = fOtherBpm / fThisFileBpm;
+        double desiredRate = fOtherBpm / fThisLocalBpm;
 
         // Test if this buffer's bpm is the double of the other one, and adjust
         // the rate scale. I believe this is intended to account for our BPM
         // algorithm sometimes finding double or half BPMs. This avoids drastic
         // scales.
 
-        float fFileBpmDelta = fabs(fThisFileBpm - fOtherFileBpm);
-        if (fabs(fThisFileBpm * 2.0 - fOtherFileBpm) < fFileBpmDelta) {
+        float fFileBpmDelta = fabs(fThisLocalBpm - fOtherLocalBpm);
+        if (fabs(fThisLocalBpm * 2.0 - fOtherLocalBpm) < fFileBpmDelta) {
             desiredRate /= 2.0;
-        } else if (fabs(fThisFileBpm - 2.0 * fOtherFileBpm) < fFileBpmDelta) {
+        } else if (fabs(fThisLocalBpm - 2.0 * fOtherLocalBpm) < fFileBpmDelta) {
             desiredRate *= 2.0;
         }
 
@@ -323,7 +334,7 @@ bool BpmControl::syncTempo() {
         // we are scaled between 0.5x and 2x.
         if (desiredRateShift < 1.0 && desiredRateShift > -0.5)
         {
-            m_pEngineBpm->set(m_pFileBpm->get() * desiredRate);
+            m_pEngineBpm->set(m_pLocalBpm->get() * desiredRate);
 
 
             // Adjust the rateScale. We have to divide by the range and
@@ -377,8 +388,8 @@ double BpmControl::shortestPercentageChange(const double& current_percentage,
 double BpmControl::calcSyncedRate(double userTweak) {
     double rate = 1.0;
     // Don't know what to do if there's no bpm.
-    if (m_pFileBpm->get() != 0.0) {
-        rate = m_dSyncInstantaneousBpm / m_pFileBpm->get();
+    if (m_pLocalBpm->get() != 0.0) {
+        rate = m_dSyncInstantaneousBpm / m_pLocalBpm->get();
     }
 
     // If we are not quantized, or there are no beats, or we're master,
@@ -691,7 +702,7 @@ double BpmControl::getPhaseOffset(double dThisPosition) {
 void BpmControl::slotAdjustRateSlider() {
     // Adjust playback bpm in response to a change in the rate slider.
     double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
-    m_pEngineBpm->set(m_pFileBpm->get() * dRate);
+    m_pEngineBpm->set(m_pLocalBpm->get() * dRate);
 }
 
 void BpmControl::trackLoaded(TrackPointer pTrack) {
@@ -767,6 +778,22 @@ double BpmControl::process(const double dRate,
     Q_UNUSED(dTotalSamples);
     Q_UNUSED(iBufferSize);
     return kNoTrigger;
+}
+
+double BpmControl::updateLocalBpm() {
+    double prev_local_bpm = m_pLocalBpm->get();
+    double local_bpm = 0;
+    if (m_pBeats) {
+        local_bpm = m_pBeats->getBpmAroundPosition(getCurrentSample(),
+                                                   kLocalBpmSpan);
+    } else {
+        local_bpm = m_pFileBpm->get();
+    }
+    if (local_bpm != prev_local_bpm) {
+        m_pLocalBpm->set(local_bpm);
+        slotAdjustRateSlider();
+    }
+    return local_bpm;
 }
 
 double BpmControl::updateBeatDistance() {
