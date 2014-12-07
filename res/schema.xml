@@ -292,11 +292,7 @@ METADATA
     <sql>
       ALTER TABLE library ADD COLUMN composer varchar(64) DEFAULT "";
 
-      DELETE FROM settings WHERE name="mixxx.db.model.library.header_state";
-      DELETE FROM settings WHERE name="mixxx.db.model.playlist.header_state";
-      DELETE FROM settings WHERE name="mixxx.db.model.crate.header_state";
-      DELETE FROM settings WHERE name="mixxx.db.model.prepare.header_state";
-      DELETE FROM settings WHERE name="mixxx.db.model.missing.header_state";
+      DELETE FROM settings WHERE name like "%header_state";
     </sql>
   </revision>
   <revision version="15" min_compatible="3">
@@ -343,11 +339,7 @@ METADATA
       ALTER TABLE Library ADD COLUMN keys_version TEXT;
       ALTER TABLE Library ADD COLUMN keys_sub_version TEXT;
 
-      DELETE FROM settings WHERE name="mixxx.db.model.library.header_state";
-      DELETE FROM settings WHERE name="mixxx.db.model.playlist.header_state";
-      DELETE FROM settings WHERE name="mixxx.db.model.crate.header_state";
-      DELETE FROM settings WHERE name="mixxx.db.model.prepare.header_state";
-      DELETE FROM settings WHERE name="mixxx.db.model.missing.header_state";
+      DELETE FROM settings WHERE name like "%header_state";
     </sql>
   </revision>
   <revision version="19" min_compatible="3">
@@ -375,11 +367,7 @@ METADATA
       ALTER TABLE Library ADD COLUMN grouping TEXT DEFAULT "";
       ALTER TABLE Library ADD COLUMN album_artist TEXT DEFAULT "";
 
-      DELETE FROM settings WHERE name="mixxx.db.model.library.header_state";
-      DELETE FROM settings WHERE name="mixxx.db.model.playlist.header_state";
-      DELETE FROM settings WHERE name="mixxx.db.model.crate.header_state";
-      DELETE FROM settings WHERE name="mixxx.db.model.prepare.header_state";
-      DELETE FROM settings WHERE name="mixxx.db.model.missing.header_state";
+      DELETE FROM settings WHERE name like "%header_state";
     </sql>
   </revision>
   <revision version="22" min_compatible="3">
@@ -416,11 +404,7 @@ METADATA
       reset the column headers because they will just be broken.  In the future
       we hope to develop a way of saving as much column data as possible to make
       upgrading easier. -->
-      DELETE FROM settings WHERE name="mixxx.db.model.library.header_state";
-      DELETE FROM settings WHERE name="mixxx.db.model.playlist.header_state";
-      DELETE FROM settings WHERE name="mixxx.db.model.crate.header_state";
-      DELETE FROM settings WHERE name="mixxx.db.model.prepare.header_state";
-      DELETE FROM settings WHERE name="mixxx.db.model.missing.header_state";
+      DELETE FROM settings WHERE name like "%header_state";
     </sql>
   </revision>
 </schema>
