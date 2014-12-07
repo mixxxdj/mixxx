@@ -15,10 +15,7 @@ static const int kPakmAbsoluteScaleNoReset = 1;
 KeyControl::KeyControl(QString group,
                        ConfigObject<ConfigValue>* pConfig)
         : EngineControl(group, pConfig),
-          m_dOldRate(0.0),
           m_bOldKeylock(false),
-          m_dPitchCompensation(0.0),
-          m_dPitchCompensationOldPitch(0.0),
           m_speedSliderPitchRatio(1.0),
           m_pitchRatio(1.0),
           m_iPitchAndKeylockMode(kPakmOffsetScaleReseting) {
@@ -257,9 +254,9 @@ bool KeyControl::syncKey(EngineBuffer* pOtherEngineBuffer) {
             KeyUtils::keyFromNumericValue(m_pFileKey->get());
 
     // Get the sync target's effective key, since that is what we aim to match.
-    ControlObject otherKeyControl(ConfigKey(pOtherEngineBuffer->getGroup(), "key"));
+    double dKey = ControlObject::get(ConfigKey(pOtherEngineBuffer->getGroup(), "key"));
     mixxx::track::io::key::ChromaticKey otherKey =
-            KeyUtils::keyFromNumericValue(otherKeyControl.get());
+            KeyUtils::keyFromNumericValue(dKey);
 
     if (thisFileKey == mixxx::track::io::key::INVALID ||
         otherKey == mixxx::track::io::key::INVALID) {
@@ -267,13 +264,10 @@ bool KeyControl::syncKey(EngineBuffer* pOtherEngineBuffer) {
     }
 
     int stepsToTake = KeyUtils::shortestStepsToCompatibleKey(thisFileKey, otherKey);
-    double newPitch = KeyUtils::stepsToOctaveChange(stepsToTake);
-    // Compensate for the existing rate adjustment.
-    bool keylock_enabled = m_pKeylock->get() > 0;
-    if (m_dOldRate != 1.0 && !keylock_enabled) {
-        newPitch -= KeyUtils::powerOf2ToOctaveChange(m_dOldRate);
-    }
-    m_pPitchAdjust->set(newPitch);
+    double pitchToTakeOctaves = KeyUtils::stepsToOctaveChange(stepsToTake);
+
+    // TODO(DSC) work with this m_pitchRatio from this and the other engine buffer
+
     return true;
 }
 

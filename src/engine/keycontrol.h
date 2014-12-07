@@ -37,11 +37,8 @@ class KeyControl : public EngineControl {
     void updateKeyCOs(double fileKeyNumeric, double pitch);
 
     // The previous rate slider rate.
-    double m_dOldRate;
     bool m_bOldKeylock;
-    double m_dPitchCompensation;
-    double m_dPitchCompensationOldPitch;
-
+    // Pitch Ratio caused bay the speed slider (m_pRateSlider)
     double m_speedSliderPitchRatio;
 
     // ControlObjects that come from EngineBuffer
