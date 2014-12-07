@@ -125,6 +125,9 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
             this, SLOT(slotPitchAndKeylock(int)));
     m_pitchAndKeylockMode = m_pConfig->getValueString(
             ConfigKey("[Controls]", "PitchAndKeylockMode"), "0").toInt();
+    foreach (ControlObjectThread* pControl, m_pitchAndKeylockControls) {
+        pControl->slotSet(m_pitchAndKeylockMode);
+    }
 
     //
     // Rate buttons configuration
