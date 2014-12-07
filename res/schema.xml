@@ -291,8 +291,6 @@ METADATA
     </description>
     <sql>
       ALTER TABLE library ADD COLUMN composer varchar(64) DEFAULT "";
-
-      DELETE FROM settings WHERE name like "%header_state";
     </sql>
   </revision>
   <revision version="15" min_compatible="3">
@@ -338,8 +336,6 @@ METADATA
       ALTER TABLE Library ADD COLUMN keys BLOB;
       ALTER TABLE Library ADD COLUMN keys_version TEXT;
       ALTER TABLE Library ADD COLUMN keys_sub_version TEXT;
-
-      DELETE FROM settings WHERE name like "%header_state";
     </sql>
   </revision>
   <revision version="19" min_compatible="3">
@@ -366,8 +362,6 @@ METADATA
     <sql>
       ALTER TABLE Library ADD COLUMN grouping TEXT DEFAULT "";
       ALTER TABLE Library ADD COLUMN album_artist TEXT DEFAULT "";
-
-      DELETE FROM settings WHERE name like "%header_state";
     </sql>
   </revision>
   <revision version="22" min_compatible="3">
