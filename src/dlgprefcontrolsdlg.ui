@@ -320,7 +320,7 @@
    </item>
    <item row="0" column="0">
     <layout class="QGridLayout" name="GridLayout1">
-     <item row="8" column="1" colspan="2">
+     <item row="9" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxRateDir">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -333,7 +333,7 @@
        </property>
       </widget>
      </item>
-     <item row="6" column="1" colspan="2">
+     <item row="7" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxPosition">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -346,7 +346,7 @@
        </property>
       </widget>
      </item>
-     <item row="10" column="1" colspan="2">
+     <item row="11" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxCueDefault">
        <property name="toolTip">
         <string>Mixxx mode: 
@@ -365,14 +365,14 @@ Numark mode:
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
+     <item row="5" column="0">
       <widget class="QLabel" name="labelFullscreenOption">
        <property name="text">
         <string>Start in full screen mode</string>
        </property>
       </widget>
      </item>
-     <item row="6" column="0">
+     <item row="7" column="0">
       <widget class="QLabel" name="labelPositionDisplay">
        <property name="enabled">
         <bool>true</bool>
@@ -410,7 +410,26 @@ Numark mode:
        </property>
       </widget>
      </item>
-     <item row="7" column="0">
+	 <item row="4" column="0">
+      <widget class="QLabel" name="TextLabel6_2_2_6">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="font">
+        <font/>
+       </property>
+       <property name="text">
+        <string>Tablet Skin</string>
+       </property>
+       <property name="wordWrap">
+        <bool>false</bool>
+       </property>
+       <property name="buddy">
+        <cstring>ComboBoxTabletSkinconf</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="0">
       <widget class="QLabel" name="TextLabel6">
        <property name="enabled">
         <bool>true</bool>
@@ -429,7 +448,7 @@ Numark mode:
        </property>
       </widget>
      </item>
-     <item row="5" column="1" colspan="2">
+     <item row="6" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxTooltips">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -461,7 +480,7 @@ Numark mode:
        </property>
       </widget>
      </item>
-     <item row="11" column="0">
+     <item row="12" column="0">
       <widget class="QLabel" name="textLabelAllowTrackLoadToPlayingDeck">
        <property name="text">
         <string>Track load behavior</string>
@@ -471,7 +490,7 @@ Numark mode:
        </property>
       </widget>
      </item>
-     <item row="10" column="0">
+     <item row="11" column="0">
       <widget class="QLabel" name="labelCueMode">
        <property name="text">
         <string>Cue mode</string>
@@ -484,7 +503,7 @@ Numark mode:
        </property>
       </widget>
      </item>
-     <item row="7" column="1" colspan="2">
+     <item row="8" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxRateRange">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -500,7 +519,7 @@ Numark mode:
        </property>
       </widget>
      </item>
-     <item row="12" column="0">
+     <item row="13" column="0">
       <widget class="QLabel" name="textLabelLocale">
        <property name="text">
         <string>Locale</string>
@@ -510,14 +529,14 @@ Numark mode:
        </property>
       </widget>
      </item>
-     <item row="12" column="1" colspan="2">
+     <item row="13" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxLocale">
        <property name="toolTip">
         <string>Locales determine country and language specific settings.</string>
        </property>
       </widget>
      </item>
-     <item row="8" column="0">
+     <item row="9" column="0">
       <widget class="QLabel" name="TextLabel6_2">
        <property name="enabled">
         <bool>true</bool>
@@ -568,7 +587,20 @@ Numark mode:
        </property>
       </widget>
      </item>
-     <item row="9" column="0">
+	 <item row="4" column="1" colspan="2">
+      <widget class="QComboBox" name="ComboBoxTabletSkinconf">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font/>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="0">
       <widget class="QLabel" name="textLabelCueRecall">
        <property name="text">
         <string>Auto Recall Cue</string>
@@ -578,13 +610,13 @@ Numark mode:
        </property>
       </widget>
      </item>
-     <item row="11" column="1" colspan="2">
+     <item row="12" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxAllowTrackLoadToPlayingDeck"/>
      </item>
-     <item row="9" column="1" colspan="2">
+     <item row="10" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxCueRecall"/>
      </item>
-     <item row="5" column="0">
+     <item row="6" column="0">
       <widget class="QLabel" name="labelTooltips">
        <property name="enabled">
         <bool>true</bool>
@@ -603,7 +635,7 @@ Numark mode:
        </property>
       </widget>
      </item>
-     <item row="4" column="1" colspan="2">
+     <item row="5" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxStartInFullscreen">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -644,6 +676,7 @@ Numark mode:
  <tabstops>
   <tabstop>ComboBoxSkinconf</tabstop>
   <tabstop>ComboBoxSchemeconf</tabstop>
+  <tabstop>ComboBoxTabletSkinconf</tabstop>
   <tabstop>ComboBoxStartInFullscreen</tabstop>
   <tabstop>ComboBoxTooltips</tabstop>
   <tabstop>ComboBoxPosition</tabstop>

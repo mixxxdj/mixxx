@@ -35,36 +35,44 @@ QString SkinLoader::getConfiguredSkinPath() {
     QString configSkin = m_pConfig->getValueString(ConfigKey("[Config]","Skin"));
     QString qThisSkin = qSkinPath + configSkin;
     QDir thisSkin(qThisSkin);
-
+	
     if (configSkin.length() > 0 && thisSkin.exists()) {
         qSkinPath = qThisSkin;
     } else {
-        // try developer path
+		// try tablet skin path
         qSkinPath = m_pConfig->getResourcePath();
-        qSkinPath.append("developer_skins/");
+        qSkinPath.append("tablet_skins/");
         qThisSkin = qSkinPath + configSkin;
         thisSkin = qThisSkin;
-        if (configSkin.length() > 0 && thisSkin.exists()) {
+		if (configSkin.length() > 0 && thisSkin.exists()) {
             qSkinPath = qThisSkin;
-        } else {
-            // Fall back to default skin
-            QString defaultSkin;
-            QRect screenGeo = QApplication::desktop()->screenGeometry();
-            if (screenGeo.width() >= 1280 && screenGeo.height() >= 800) {
-                defaultSkin = "LateNight";
-            }
-            else if (screenGeo.width() >= 1024 && screenGeo.height() >= 600) {
-                defaultSkin = "ShadeDark1024x600-Netbook";
-            }
-            else {
-                defaultSkin = "Outline800x480-WVGA"; // Mixxx's smallest Skin
-            }
-            qSkinPath = m_pConfig->getResourcePath();
-            qSkinPath.append("skins/");
-            qSkinPath.append(defaultSkin);
-        }
-    }
-
+		} else {
+			// try developer path
+			qSkinPath = m_pConfig->getResourcePath();
+			qSkinPath.append("developer_skins/");
+			qThisSkin = qSkinPath + configSkin;
+			thisSkin = qThisSkin;
+			if (configSkin.length() > 0 && thisSkin.exists()) {
+				qSkinPath = qThisSkin;
+			} else {
+				// Fall back to default skin
+				QString defaultSkin;
+				QRect screenGeo = QApplication::desktop()->screenGeometry();
+				if (screenGeo.width() >= 1280 && screenGeo.height() >= 800) {
+					defaultSkin = "LateNight";
+				}
+				else if (screenGeo.width() >= 1024 && screenGeo.height() >= 600) {
+					defaultSkin = "ShadeDark1024x600-Netbook";
+				}
+				else {
+					defaultSkin = "Outline800x480-WVGA"; // Mixxx's smallest Skin
+				}
+				qSkinPath = m_pConfig->getResourcePath();
+				qSkinPath.append("skins/");
+				qSkinPath.append(defaultSkin);
+				}
+		}
+	}
     QDir skinPath(qSkinPath);
     if (!skinPath.exists()) {
         reportCriticalErrorAndQuit("Skin directory does not exist: " + qSkinPath);

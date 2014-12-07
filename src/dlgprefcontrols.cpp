@@ -276,9 +276,43 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
             ++j;
         }
     }
+	
+	ComboBoxTabletSkinconf->clear();
+
+    QDir tabletSkinsDir(m_pConfig->getResourcePath() + "tablet_skins/");
+    tabletSkinsDir.setFilter(QDir::Dirs);
+
+    QList<QFileInfo> list2 = tabletSkinsDir.entryInfoList();
+
+    configuredSkinPath = m_pSkinLoader->getConfiguredSkinPath();
+	
+	j=0;
+    for (int i=0; i<list2.size(); ++i)
+    {
+        if (list2.at(i).fileName()!="." && list2.at(i).fileName()!="..")
+        {
+            bool size_ok = checkSkinResolution(list2.at(i).filePath());
+            if (size_ok) {
+                ComboBoxTabletSkinconf->insertItem(i, list2.at(i).fileName());
+            } else {
+                ComboBoxTabletSkinconf->insertItem(i, QIcon(":/images/preferences/ic_preferences_warning.png"), list2.at(i).fileName());
+            }
+
+            if (list2.at(i).filePath() == configuredSkinPath) {
+                ComboBoxTabletSkinconf->setCurrentIndex(j);
+                /*if (size_ok) {
+                    warningLabel->hide();
+                } else {
+                    warningLabel->show();
+                }*/
+            }
+            ++j;
+        }
+    }
 
 
     connect(ComboBoxSkinconf, SIGNAL(activated(int)), this, SLOT(slotSetSkin(int)));
+	connect(ComboBoxTabletSkinconf, SIGNAL(activated(int)), this, SLOT(slotSetSkin(int)));
     connect(ComboBoxSchemeconf, SIGNAL(activated(int)), this, SLOT(slotSetScheme(int)));
 
     slotUpdateSchemes();
@@ -510,10 +544,14 @@ void DlgPrefControls::slotSetScheme(int) {
 }
 
 void DlgPrefControls::slotSetSkin(int) {
-    m_pConfig->set(ConfigKey("[Config]","Skin"), ComboBoxSkinconf->currentText());
+	if(!tablet)
+		m_pConfig->set(ConfigKey("[Config]","Skin"), ComboBoxSkinconf->currentText());
+	else
+		m_pConfig->set(ConfigKey("[Config]","Skin"), ComboBoxTabletSkinconf->currentText());
     //printf("TEST\n");
     m_mixxx->rebootMixxxView();
-    checkSkinResolution(ComboBoxSkinconf->currentText())
+	if(!tablet)
+		checkSkinResolution(ComboBoxSkinconf->currentText())
             ? warningLabel->hide() : warningLabel->show();
     slotUpdateSchemes();
 }
@@ -677,13 +715,15 @@ void DlgPrefControls::slotNumSamplersChanged(double new_count) {
 }
 
 void DlgPrefControls::skinChangeControl(bool tabletMode) {
-    if (tabletMode) 
+    /*if (tabletMode) 
     {
         ComboBoxSkinconf->setItemText(ComboBoxSkinconf->currentIndex(), "UCLA1920x1080");
     }
     else
     {
         ComboBoxSkinconf->setItemText(ComboBoxSkinconf->currentIndex(), "LateNight");
-    }
-    QMetaObject::invokeMethod( this, "slotSetSkin", Q_ARG( int, ComboBoxSkinconf->currentIndex() ) );
+    }*/
+	tablet = tabletMode;
+    /*QMetaObject::invokeMethod( this, "slotSetSkin", Q_ARG( int, ComboBoxSkinconf->currentIndex() ));*/
+	QMetaObject::invokeMethod( this, "slotSetSkin", Q_ARG( int, 0));
 }

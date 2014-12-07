@@ -24,6 +24,10 @@
 #include <QTextCodec>
 #include <QIODevice>
 #include <QFile>
+#include <QDockWidget>
+#include <QLineEdit>
+#include <QStatusBar>
+//#include "hostwindow.h"
 
 #include <stdio.h>
 #include <iostream>
@@ -341,6 +345,19 @@ int main(int argc, char * argv[])
     QObject::connect(&a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()));
 
     int result = -1;
+
+	/*//add logic for detecting win32 host
+	QDockWidget dockWidget(QObject::tr("Dock Widget"), mixxx);
+
+	QLineEdit edit(&dockWidget);
+	HostWindow host(&dockWidget);
+	QObject::connect(&host, SIGNAL(message(const QString&, int)), mixxx->statusBar(), SLOT(showMessage(const QString&, int)));
+	//QObject::connect(&edit, SIGNAL(returnPressed()), &host, SLOT(returnPressed()));
+
+	//dockWidget.setAllowedArea(Qt::LeftDockWidgetArea);
+	//dockWidget.setWidget(dockWidgetContents);
+	mixxx->addDockWidget(Qt::LeftDockWidgetArea, &dockWidget);*/
+
 
     if (!(ErrorDialogHandler::instance()->checkError())) {
         qDebug() << "Displaying mixxx";
