@@ -100,7 +100,9 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     void refreshCell(int row, int column);
 
   private:
-    // A simple helper function for initializing header defaults and data.
+    // A simple helper function for initializing header title and width.  Note
+    // that the ideal width of a column is based on the width of its data,
+    // not the title string itself.
     void setHeaderProperties(ColumnCache::Column column, QString title, int defaultWidth);
     inline void setTrackValueForColumn(TrackPointer pTrack, int column, QVariant value);
     QVariant getBaseValue(const QModelIndex& index, int role = Qt::DisplayRole) const;
