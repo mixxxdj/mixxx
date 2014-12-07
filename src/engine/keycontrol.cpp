@@ -9,6 +9,9 @@
 #include "engine/enginebuffer.h"
 #include "track/keyutils.h"
 
+static const int kPakmOffsetScaleReseting = 0;
+static const int kPakmAbsoluteScaleNoReset = 1;
+
 KeyControl::KeyControl(QString group,
                        ConfigObject<ConfigValue>* pConfig)
         : EngineControl(group, pConfig),
@@ -18,7 +21,7 @@ KeyControl::KeyControl(QString group,
           m_dPitchCompensationOldPitch(0.0),
           m_speedSliderPitchRatio(1.0),
           m_pitchRatio(1.0),
-          m_iPitchAndKeylockMode(0.0) {
+          m_iPitchAndKeylockMode(kPakmOffsetScaleReseting) {
     m_pPitchAdjust = new ControlPotmeter(ConfigKey(group, "pitch_adjust"), -1.f, 1.f);
     m_pPitch = new ControlPotmeter(ConfigKey(group, "pitch"), -1.f, 1.f);
     // Course adjust by full step.
@@ -113,8 +116,7 @@ double KeyControl::getKey() {
 }
 
 void KeyControl::slotRateChanged() {
-
-    qDebug() << "KeyControl::slotRateChanged 1" << m_pitchRatio << m_speedSliderPitchRatio;
+    //qDebug() << "KeyControl::slotRateChanged 1" << m_pitchRatio << m_speedSliderPitchRatio;
 
     // If rate is not 1.0 then we have to try and calculate the octave change
     // caused by it.
@@ -141,10 +143,11 @@ void KeyControl::slotRateChanged() {
     if (bKeylock) {
         if (!m_bOldKeylock) {
             // Enabling Keylock
-            if (m_iPitchAndKeylockMode) {
+            if (m_iPitchAndKeylockMode == kPakmAbsoluteScaleNoReset) {
                 // Lock at current pitch
                 m_speedSliderPitchRatio = dRate;
             } else {
+                // kPakmOffsetScaleReseting
                 // Lock at original track pitch
                 m_speedSliderPitchRatio = 1.0;
             }
@@ -153,7 +156,7 @@ void KeyControl::slotRateChanged() {
         // !bKeylock
         if (m_bOldKeylock) {
             // Disabling Keylock
-            if (m_iPitchAndKeylockMode) {
+            if (m_iPitchAndKeylockMode == kPakmAbsoluteScaleNoReset) {
                 // Adopt speedPitchRatio change as pitchTweakRatio
                 pitchTweakRatio *= (m_speedSliderPitchRatio / dRate);
             }
@@ -168,19 +171,18 @@ void KeyControl::slotRateChanged() {
     double dFileKey = m_pFileKey->get();
     updateKeyCOs(dFileKey, pitchOctaves);
 
-    if (m_iPitchAndKeylockMode) {
+    if (m_iPitchAndKeylockMode == kPakmAbsoluteScaleNoReset) {
         // Pitch scale is always 0 at original pitch
         m_pPitch->set(pitchOctaves);
     }
 
-    qDebug() << "KeyControl::slotRateChanged 2" << m_pitchRatio << m_speedSliderPitchRatio;
+    // qDebug() << "KeyControl::slotRateChanged 2" << m_pitchRatio << m_speedSliderPitchRatio;
 }
 
 void KeyControl::slotPitchAndKeylockModeChanged(double value) {
+    //qDebug() << "KeyControl::slotPitchAndKeylockModeChanged 1" << m_pitchRatio << m_speedSliderPitchRatio;
 
-    qDebug() << "KeyControl::slotPitchAndKeylockModeChanged 1" << m_pitchRatio << m_speedSliderPitchRatio;
-
-    if (value == 0.0 && m_iPitchAndKeylockMode == 1) {
+    if (value == 0.0 && m_iPitchAndKeylockMode == kPakmAbsoluteScaleNoReset) {
         // absolute mode to offset mode
         bool bKeylock = m_pKeylock->toBool();
         if (bKeylock) {
@@ -190,7 +192,7 @@ void KeyControl::slotPitchAndKeylockModeChanged(double value) {
     m_iPitchAndKeylockMode = (int)value;
     slotRateChanged();
 
-    if (m_iPitchAndKeylockMode == 0) {
+    if (m_iPitchAndKeylockMode == kPakmOffsetScaleReseting) {
         // Normally Pitch slider is not moved in this mode,
         // so we need to correct it manually here
         double pitchTweakRatio = m_pitchRatio / m_speedSliderPitchRatio;
@@ -198,10 +200,8 @@ void KeyControl::slotPitchAndKeylockModeChanged(double value) {
         m_pPitch->set(pitchTweakOctaves);
     }
 
-    qDebug() << "KeyControl::slotPitchAndKeylockModeChanged 2" << m_pitchRatio << m_speedSliderPitchRatio;
+    //qDebug() << "KeyControl::slotPitchAndKeylockModeChanged 2" << m_pitchRatio << m_speedSliderPitchRatio;
 }
-
-
 
 void KeyControl::slotFileKeyChanged(double value) {
     updateKeyCOs(value, KeyUtils::powerOf2ToOctaveChange(m_pitchRatio));
@@ -225,11 +225,11 @@ void KeyControl::slotSetEngineKey(double key) {
 }
 
 void KeyControl::slotPitchChanged(double pitch) {
-
-    qDebug() << "KeyControl::slotPitchChanged 1" << m_pitchRatio << m_speedSliderPitchRatio;
+    //qDebug() << "KeyControl::slotPitchChanged 1" << m_pitchRatio << m_speedSliderPitchRatio;
 
     double pitchTweakRatio = KeyUtils::octaveChangeToPowerOf2(pitch);
-    if (m_iPitchAndKeylockMode == 0) {
+    if (m_iPitchAndKeylockMode == kPakmOffsetScaleReseting) {
+        // Pitch slider presenst only the offset, calc absolute pitch
         pitchTweakRatio *= m_speedSliderPitchRatio;
     }
 
@@ -238,7 +238,7 @@ void KeyControl::slotPitchChanged(double pitch) {
     double dFileKey = m_pFileKey->get();
     updateKeyCOs(dFileKey, KeyUtils::powerOf2ToOctaveChange(m_pitchRatio));
 
-    qDebug() << "KeyControl::slotPitchChanged 2" << m_pitchRatio << m_speedSliderPitchRatio;
+    //qDebug() << "KeyControl::slotPitchChanged 2" << m_pitchRatio << m_speedSliderPitchRatio;
 }
 
 void KeyControl::slotSyncKey(double v) {
