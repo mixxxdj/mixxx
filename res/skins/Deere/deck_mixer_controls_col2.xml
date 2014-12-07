@@ -16,6 +16,7 @@
         <MinimumSize>40,100</MinimumSize>
         <MaximumSize>40,-1</MaximumSize>
         <Handle>handle-vertical.svg</Handle>
+        <Slider>slider-vertical.svg</Slider>
         <Horizontal>false</Horizontal>
         <Connection>
           <ConfigKey><Variable name="group"/>,volume</ConfigKey>

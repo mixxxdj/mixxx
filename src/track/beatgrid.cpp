@@ -228,6 +228,17 @@ double BeatGrid::getBpmRange(double startSample, double stopSample) const {
     return bpm();
 }
 
+double BeatGrid::getBpmAroundPosition(double curSample, int n) const {
+    Q_UNUSED(curSample);
+    Q_UNUSED(n);
+
+    QMutexLocker locker(&m_mutex);
+    if (!isValid()) {
+        return -1;
+    }
+    return bpm();
+}
+
 void BeatGrid::addBeat(double dBeatSample) {
     Q_UNUSED(dBeatSample);
     //QMutexLocker locker(&m_mutex);

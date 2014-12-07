@@ -56,6 +56,7 @@
             <SizePolicy>me,min</SizePolicy>
             <MinimumSize>-1,40</MinimumSize>
             <MaximumSize>-1,40</MaximumSize>
+            <Slider>slider-horizontal.svg</Slider>
             <Handle>handle-horizontal.svg</Handle>
             <Horizontal>true</Horizontal>
             <Connection>

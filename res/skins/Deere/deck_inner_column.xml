@@ -54,6 +54,7 @@
         <MinimumSize>40,50</MinimumSize>
         <MaximumSize>40,-1</MaximumSize>
         <SizePolicy>,me</SizePolicy>
+        <Slider>slider-vertical.svg</Slider>
         <Handle>handle-vertical.svg</Handle>
         <Connection>
           <ConfigKey><Variable name="group"/>,rate</ConfigKey>
