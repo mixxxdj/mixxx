@@ -696,6 +696,7 @@ void DlgPrefControls::slotNumDecksChanged(double new_count) {
                 group, "cue_mode"));
         m_pitchAndKeylockControls.push_back(new ControlObjectThread(
                         group, "pitchAndKeylockMode"));
+        m_pitchAndKeylockControls.last()->set(m_pitchAndKeylockMode);
     }
 
     m_iNumConfiguredDecks = numdecks;
@@ -721,6 +722,7 @@ void DlgPrefControls::slotNumSamplersChanged(double new_count) {
                 group, "cue_mode"));
         m_pitchAndKeylockControls.push_back(new ControlObjectThread(
                         group, "pitchAndKeylockMode"));
+        m_pitchAndKeylockControls.last()->set(m_pitchAndKeylockMode);
     }
 
     m_iNumConfiguredSamplers = numsamplers;
