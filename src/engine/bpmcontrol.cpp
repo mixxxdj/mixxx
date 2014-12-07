@@ -513,9 +513,9 @@ double BpmControl::getBeatDistance(double dThisPosition) const {
         return dBeatPercentage - m_dUserOffset;
     }
 
-    if (getSyncMode() != SYNC_NONE && m_pQuantize->get()) {
-        qWarning() << getGroup() << "No beatgrid but sync and quantize enabled.";
-    }
+    // if (getSyncMode() != SYNC_NONE && m_pQuantize->get()) {
+    //     qWarning() << getGroup() << "No beatgrid but sync and quantize enabled.";
+    // }
     return 0.0 - m_dUserOffset;
 }
 
