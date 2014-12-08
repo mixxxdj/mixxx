@@ -96,60 +96,6 @@
                         <NumberStates>2</NumberStates>
                         <State>
                           <Number>0</Number>
-                          <Text>MIXER</Text>
-                        </State>
-                        <State>
-                          <Number>1</Number>
-                          <Text>MIXER</Text>
-                        </State>
-                        <Connection>
-                          <ConfigKey>[Master],show_mixer</ConfigKey>
-                          <ButtonState>LeftButton</ButtonState>
-                        </Connection>
-                        <Connection>
-                          <ConfigKey>[Master],show_mixer</ConfigKey>
-                        </Connection>
-                    </PushButton>
-                </Children>
-            </WidgetGroup>
-            <WidgetGroup>
-                <ObjectName>GuiToggleContainer</ObjectName>
-                <Layout>vertical</Layout>
-                <SizePolicy>min,min</SizePolicy>
-                <Children>
-                    <PushButton>
-                        <Size>64f,20f</Size>
-                        <ObjectName>GuiToggleButton</ObjectName>
-                        <NumberStates>2</NumberStates>
-                        <State>
-                          <Number>0</Number>
-                          <Text>DECKS 3&amp;4</Text>
-                        </State>
-                        <State>
-                          <Number>1</Number>
-                          <Text>DECKS 3&amp;4</Text>
-                        </State>
-                        <Connection>
-                          <ConfigKey>[Master],show_4decks</ConfigKey>
-                          <ButtonState>LeftButton</ButtonState>
-                        </Connection>
-                        <Connection>
-                          <ConfigKey>[Master],show_4decks</ConfigKey>
-                        </Connection>
-                    </PushButton>
-                </Children>
-            </WidgetGroup>
-            <WidgetGroup>
-                <ObjectName>GuiToggleContainer</ObjectName>
-                <Layout>vertical</Layout>
-                <SizePolicy>min,min</SizePolicy>
-                <Children>
-                    <PushButton>
-                        <Size>40f,20f</Size>
-                        <ObjectName>GuiToggleButton</ObjectName>
-                        <NumberStates>2</NumberStates>
-                        <State>
-                          <Number>0</Number>
                           <Text>VINYL</Text>
                         </State>
                         <State>

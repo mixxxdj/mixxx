@@ -3,6 +3,17 @@
 }
 
 #UIButtons {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  background-color: #1e1e1e;
+  padding-top: 1px;
+  border: 1px solid #585858;
+  border-right: 0px;
+  border-left: 0px;
+  border-bottom: 0px;
+}
+
+#UIButtonMargin {
+  background-color: #1e1e1e;
 }
 
 #DecksSizer {
@@ -13,6 +24,7 @@
 #UILowerHalf {
   background-color: #0f0f0f;
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  padding-top: 10px;
 }
 
 #HorizBorder {
@@ -33,6 +45,7 @@
   border-left: 0px solid #585858;
   background-color: #0e0e0e;
   padding-top: 5px;
+  padding-bottom: 2px;
   /*border-top: 1px solid #585858;*/
 }
 
@@ -122,8 +135,7 @@
 }
 
 #ClockWidget {
-  qproperty-layoutAlignment: 'AlignBottom | AlignRight';
-  padding: 3px;
+  qproperty-layoutAlignment: 'AlignVCenter | AlignRight';
 }
 
 #PrimaryMixer {
@@ -424,11 +436,7 @@
   border-left:0px;
   border-right:0px;
   border-bottom:0px;
-  background-color: #0f0f0f;
-}
-
-#UIButtonMargin {
-  background-color: #0f0f0f;
+  background-color: transparent;
 }
 
 #Crossfader {
@@ -524,6 +532,16 @@
   border-left: 0px;
   border-right: 0px;
   padding: 0px;
+}
+
+#ToolbarTop {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  border: 1px solid #585858;
+  border-top: 0px;
+  border-left: 0px;
+  border-right: 0px;
+  padding: 0px;
+  background-color: #1e1e1e;
 }
 
 #WaveformMixerContainer {
@@ -724,7 +742,6 @@
 
 #EffectRackContainer {
   background-color: #0e0e0e;
-  padding-top: 2px;
   padding-bottom:5px;
   /*border-bottom: 10px solid #585858;*/
 }
