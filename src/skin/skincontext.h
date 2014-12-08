@@ -11,6 +11,7 @@
 
 #include "configobject.h"
 #include "skin/pixmapsource.h"
+#include "widget/wpixmapstore.h"
 
 // A class for managing the current context/environment when processing a
 // skin. Used hierarchically by LegacySkinParser to create new contexts and
@@ -63,6 +64,8 @@ class SkinContext {
                                   QString defaultValue) const;
     QString nodeToString(const QDomNode& node) const;
     PixmapSource getPixmapSource(const QDomNode& pixmapNode) const;
+    Paintable::DrawMode selectScaleMode(const QDomElement& element,
+                                        Paintable::DrawMode defaultDrawMode) const;
 
     QScriptValue evaluateScript(const QString& expression,
                                 const QString& filename=QString(),
