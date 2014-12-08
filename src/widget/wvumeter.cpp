@@ -210,7 +210,7 @@ void WVuMeter::paintEvent(QPaintEvent *) {
                         static_cast<double>(m_iNoPos);
                 targetRect = QRectF(widgetPeakPosition - m_iPeakHoldSize, 0,
                                     widgetPeakHoldSize, widgetHeight);
-                sourceRect = QRectF(m_pPixmapVu->width() - m_iPeakPos, 0,
+                sourceRect = QRectF(m_iPeakPos - m_iPeakHoldSize, 0,
                                     m_iPeakHoldSize, m_pPixmapVu->height());
                 m_pPixmapVu->draw(targetRect, &p, sourceRect);
             }
