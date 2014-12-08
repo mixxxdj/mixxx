@@ -37,7 +37,13 @@ class QString;
 class Paintable {
   public:
     enum DrawMode {
+        // Draw the image in its native dimensions with no stretching or tiling.
+        FIXED,
+        // Stretch the image.
         STRETCH,
+        // Stretch the image maintaining its aspect ratio.
+        STRETCH_ASPECT,
+        // Tile the image.
         TILE
     };
 
@@ -49,6 +55,10 @@ class Paintable {
     QSize size() const;
     int width() const;
     int height() const;
+    QRectF rect() const;
+    DrawMode drawMode() const {
+        return m_draw_mode;
+    }
 
     void draw(int x, int y, QPainter* pPainter);
     void draw(const QPointF& point, QPainter* pPainter,
@@ -57,14 +67,14 @@ class Paintable {
     void draw(const QRectF& targetRect, QPainter* pPainter,
               const QRectF& sourceRect);
     bool isNull() const;
-    static DrawMode DrawModeFromString(QString str);
+    static DrawMode DrawModeFromString(const QString& str);
 
   private:
-    void resizeSvgPixmap(const QRectF& targetRect, const QRectF& sourceRect);
+    void drawInternal(const QRectF& targetRect, QPainter* pPainter,
+                      const QRectF& sourceRect);
 
     QScopedPointer<QPixmap> m_pPixmap;
     QScopedPointer<QSvgRenderer> m_pSvg;
-    QScopedPointer<QPixmap> m_pPixmapSvg;
     DrawMode m_draw_mode;
 };
 
