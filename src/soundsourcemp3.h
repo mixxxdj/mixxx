@@ -33,15 +33,9 @@
 #include <stdlib.h>
 #include <sys/types.h>
 
-#include <QObject>
 #include <QFile>
 
-/** Struct used to store mad frames for seeking */
-typedef struct MadSeekFrameType {
-    unsigned char *m_pStreamPos;
-    long int pos;
-} MadSeekFrameType;
-
+#include <vector>
 
 /**
   *@author Tue and Ken Haste Andersen
@@ -71,39 +65,46 @@ private:
     size_type readFrameSamplesInterleaved(size_type frameCount, sample_type* sampleBuffer, bool readStereoSamples);
 
     /** Returns the position of the frame which was found. The found frame is set to
-      * the current element in m_qSeekList */
+     * the current element in m_qSeekList */
     int findFrame(int pos);
     size_type discardFrames(size_type frameCount);
-    MadSeekFrameType* getSeekFrame(long frameIndex) const;
 
     QFile m_file;
+    quint64 m_fileSize;
+    unsigned char* m_pFileData;
 
-    unsigned char *inputbuf;
-    unsigned inputbuf_len;
+    mad_stream m_madStream;
 
-    int framecount;
-    int currentframe;
-    /** current play position. */
-    mad_timer_t pos;
-    mad_timer_t filelength;
-    enum mad_units units;
-    mad_stream madStream;
-    mad_frame madFrame;
-
-    mad_synth m_madSynth;
-    unsigned short m_madSynthOffset; // left overs from the previous read
+    /** Struct used to store mad frames for seeking */
+    struct MadSeekFrameType {
+        const unsigned char *pFrameData;
+        long int pos;
+    };
 
     /** It is not possible to make a precise seek in an mp3 file without decoding the whole stream.
-      * To have precise seek within a limited range from the current decode position, we keep track
-      * of past decodeded frame, and their exact position. If a seek occours and it is within the
-      * range of frames we keep track of a precise seek occours, otherwise an unprecise seek is performed
-      */
-    QList<MadSeekFrameType*> m_qSeekList;
-    /** Index iterator for m_qSeekList. Helps us keep track of where we are in the file. */
-    long m_currentSeekFrameIndex;
-    /** Average frame size used when searching for a frame*/
+     * To have precise seek within a limited range from the current decode position, we keep track
+     * of past decodeded frame, and their exact position. If a seek occours and it is within the
+     * range of frames we keep track of a precise seek occours, otherwise an unprecise seek is performed
+     */
+    typedef std::vector<MadSeekFrameType> MadSeekFrameList;
+    MadSeekFrameList m_seekFrameList;
     int m_iAvgFrameSize;
-};
+    /** Index iterator for m_qSeekList. Helps us keep track of where we are in the file. */
+    MadSeekFrameList::size_type m_currentSeekFrameIndex;
 
+    inline
+    const MadSeekFrameType* getSeekFrame(MadSeekFrameList::size_type frameIndex) const {
+        if (m_seekFrameList.size() > frameIndex) {
+            return &m_seekFrameList[frameIndex];
+        } else {
+            return NULL;
+        }
+    }
+
+    // current play position
+    mad_frame m_madFrame;
+    mad_synth m_madSynth;
+    unsigned short m_madSynthOffset; // left overs from the previous read
+};
 
 #endif
