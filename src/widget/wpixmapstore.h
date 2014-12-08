@@ -66,7 +66,9 @@ class Paintable {
     void draw(const QRectF& targetRect, QPainter* pPainter,
               const QRectF& sourceRect);
     bool isNull() const;
+
     static DrawMode DrawModeFromString(const QString& str);
+    static QString DrawModeToString(DrawMode mode);
 
   private:
     void drawInternal(const QRectF& targetRect, QPainter* pPainter,

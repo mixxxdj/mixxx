@@ -26,6 +26,7 @@
 QHash<QString, WeakPaintablePointer> WPixmapStore::m_paintableCache;
 QSharedPointer<ImgSource> WPixmapStore::m_loader = QSharedPointer<ImgSource>();
 
+// static
 Paintable::DrawMode Paintable::DrawModeFromString(const QString& str) {
     if (str.compare("FIXED", Qt::CaseInsensitive) == 0) {
         return FIXED;
@@ -36,8 +37,29 @@ Paintable::DrawMode Paintable::DrawModeFromString(const QString& str) {
     } else if (str.compare("TILE", Qt::CaseInsensitive) == 0) {
         return TILE;
     }
-    qWarning() << "Unknown string for Paintable drawing mode " << str << ", using TILE";
-    return TILE;
+
+    // Fall back on the implicit default from before Mixxx supported draw modes.
+    qWarning() << "Unknown DrawMode string in DrawModeFromString:"
+               << str << "using FIXED";
+    return FIXED;
+}
+
+// static
+QString Paintable::DrawModeToString(DrawMode mode) {
+    switch (mode) {
+        case FIXED:
+            return "FIXED";
+        case STRETCH:
+            return "STRETCH";
+        case STRETCH_ASPECT:
+            return "STRETCH_ASPECT";
+        case TILE:
+            return "TILE";
+    }
+    // Fall back on the implicit default from before Mixxx supported draw modes.
+    qWarning() << "Unknown DrawMode in DrawModeToString " << mode
+               << "using FIXED";
+    return "FIXED";
 }
 
 Paintable::Paintable(QImage* pImage, DrawMode mode)
