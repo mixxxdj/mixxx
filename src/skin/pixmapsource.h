@@ -1,6 +1,9 @@
 #ifndef PIXMAPSOURCE_H
 #define PIXMAPSOURCE_H
 
+#include <QString>
+#include <QByteArray>
+
 // A class representing an image source for a pixmap
 // A bundle of a file path, raw data or inline svg
 class PixmapSource {

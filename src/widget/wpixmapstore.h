@@ -26,11 +26,10 @@
 #include <QScopedPointer>
 #include <QPainter>
 #include <QRectF>
+#include <QString>
 
 #include "skin/imgsource.h"
-#include "skin/skincontext.h"
-
-class QString;
+#include "skin/pixmapsource.h"
 
 // Wrapper around QImage and QSvgRenderer to support rendering SVG images in
 // high fidelity.
