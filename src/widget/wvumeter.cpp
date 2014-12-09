@@ -58,10 +58,18 @@ void WVuMeter::setup(QDomNode node, const SkinContext& context) {
 
     // Set background pixmap if available
     if (context.hasNode(node, "PathBack")) {
-        setPixmapBackground(context.getPixmapSource(context.selectNode(node, "PathBack")));
+        QDomElement backPathNode = context.selectElement(node, "PathBack");
+        // The implicit default in <1.12.0 was FIXED so we keep it for backwards
+        // compatibility.
+        setPixmapBackground(context.getPixmapSource(backPathNode),
+                            context.selectScaleMode(backPathNode, Paintable::FIXED));
     }
 
-    setPixmaps(context.getPixmapSource(context.selectNode(node, "PathVu")), bHorizontal);
+    QDomElement vuNode = context.selectElement(node, "PathVu");
+    // The implicit default in <1.12.0 was FIXED so we keep it for backwards
+    // compatibility.
+    setPixmaps(context.getPixmapSource(vuNode), bHorizontal,
+               context.selectScaleMode(vuNode, Paintable::FIXED));
 
     m_iPeakHoldSize = context.selectInt(node, "PeakHoldSize");
     if (m_iPeakHoldSize < 0 || m_iPeakHoldSize > 100)
@@ -80,21 +88,19 @@ void WVuMeter::setup(QDomNode node, const SkinContext& context) {
         m_iPeakFallTime = DEFAULT_FALLTIME;
 }
 
-void WVuMeter::setPixmapBackground(PixmapSource source) {
-    m_pPixmapBack = WPixmapStore::getPaintable(source,
-                                               Paintable::TILE);
+void WVuMeter::setPixmapBackground(PixmapSource source, Paintable::DrawMode mode) {
+    m_pPixmapBack = WPixmapStore::getPaintable(source, mode);
     if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
         qDebug() << metaObject()->className()
                  << "Error loading background pixmap:" << source.getPath();
-    } else {
+    } else if (mode == Paintable::FIXED) {
         setFixedSize(m_pPixmapBack->size());
     }
 }
 
 void WVuMeter::setPixmaps(PixmapSource source,
-                          bool bHorizontal) {
-    m_pPixmapVu = WPixmapStore::getPaintable(source,
-                                             Paintable::STRETCH);
+                          bool bHorizontal, Paintable::DrawMode mode) {
+    m_pPixmapVu = WPixmapStore::getPaintable(source, mode);
     if (m_pPixmapVu.isNull() || m_pPixmapVu->isNull()) {
         qDebug() << "WVuMeter: Error loading vu pixmap" << source.getPath();
     } else {
@@ -162,8 +168,8 @@ void WVuMeter::paintEvent(QPaintEvent *) {
     p.drawPrimitive(QStyle::PE_Widget, option);
 
     if (!m_pPixmapBack.isNull() && !m_pPixmapBack->isNull()) {
-        // Draw background.
-        m_pPixmapBack->draw(0, 0, &p);
+        // Draw background. DrawMode takes care of whether to stretch or not.
+        m_pPixmapBack->draw(rect(), &p);
     }
 
     if (!m_pPixmapVu.isNull() && !m_pPixmapVu->isNull()) {

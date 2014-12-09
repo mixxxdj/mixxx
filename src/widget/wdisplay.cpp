@@ -40,28 +40,36 @@ WDisplay::~WDisplay() {
 void WDisplay::setup(QDomNode node, const SkinContext& context) {
     // Set background pixmap if available
     if (context.hasNode(node, "BackPath")) {
-        QString mode_str = context.selectAttributeString(
-                context.selectElement(node, "BackPath"), "scalemode", "TILE");
-        setPixmapBackground(context.getPixmapSource(context.selectNode(node, "BackPath")),
-                            Paintable::DrawModeFromString(mode_str));
+        QDomElement backPathNode = context.selectElement(node, "BackPath");
+        setPixmapBackground(context.getPixmapSource(backPathNode),
+                            context.selectScaleMode(backPathNode, Paintable::TILE));
     }
 
     // Number of states
     setPositions(context.selectInt(node, "NumberStates"));
 
-
     // Load knob pixmaps
-    QString path = context.selectString(node, "Path");
+    QDomElement pathNode = context.selectElement(node, "Path");
+    QString path = context.nodeToString(pathNode);
+    // The implicit default in <1.12.0 was FIXED so we keep it for
+    // backwards compatibility.
+    Paintable::DrawMode pathMode =
+            context.selectScaleMode(pathNode, Paintable::FIXED);
     for (int i = 0; i < m_pixmaps.size(); ++i) {
-        setPixmap(&m_pixmaps, i, context.getSkinPath(path.arg(i)));
+        setPixmap(&m_pixmaps, i, context.getSkinPath(path.arg(i)), pathMode);
     }
 
     // See if disabled images is defined, and load them...
     if (context.hasNode(node, "DisabledPath")) {
-        QString disabledPath = context.selectString(node, "DisabledPath");
+        QDomElement disabledNode = context.selectElement(node, "DisabledPath");
+        QString disabledPath = context.nodeToString(disabledNode);
+        // The implicit default in <1.12.0 was FIXED so we keep it for
+        // backwards compatibility.
+        Paintable::DrawMode disabledMode =
+            context.selectScaleMode(disabledNode, Paintable::FIXED);
         for (int i = 0; i < m_disabledPixmaps.size(); ++i) {
             setPixmap(&m_disabledPixmaps, i,
-                      context.getSkinPath(disabledPath.arg(i)));
+                      context.getSkinPath(disabledPath.arg(i)), disabledMode);
         }
         m_bDisabledLoaded = true;
     }
@@ -96,21 +104,21 @@ void WDisplay::setPixmapBackground(PixmapSource source,
 }
 
 void WDisplay::setPixmap(QVector<PaintablePointer>* pPixmaps, int iPos,
-                         const QString& filename) {
+                         const QString& filename, Paintable::DrawMode mode) {
     if (iPos < 0 || iPos >= pPixmaps->size()) {
         return;
     }
 
     PixmapSource source(filename);
-    PaintablePointer pPixmap = WPixmapStore::getPaintable(source,
-                                                          Paintable::TILE);
-
+    PaintablePointer pPixmap = WPixmapStore::getPaintable(source, mode);
     if (pPixmap.isNull() || pPixmap->isNull()) {
         qDebug() << metaObject()->className()
                  << "Error loading pixmap:" << filename;
     } else {
         (*pPixmaps)[iPos] = pPixmap;
-        setFixedSize(pPixmap->size());
+        if (mode == Paintable::FIXED) {
+            setFixedSize(pPixmap->size());
+        }
     }
 }
 
@@ -170,7 +178,7 @@ void WDisplay::paintEvent(QPaintEvent*) {
     p.drawPrimitive(QStyle::PE_Widget, option);
 
     if (m_pPixmapBack) {
-        m_pPixmapBack->draw(0, 0, &p);
+        m_pPixmapBack->draw(rect(), &p);
     }
 
     // If we are disabled, use the disabled pixmaps. If not, use the regular
@@ -197,6 +205,6 @@ void WDisplay::paintEvent(QPaintEvent*) {
 
     PaintablePointer pPixmap = pixmaps[idx];
     if (pPixmap) {
-        pPixmap->draw(0, 0, &p);
+        pPixmap->draw(rect(), &p);
     }
 }

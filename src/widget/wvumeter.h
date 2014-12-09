@@ -36,9 +36,10 @@ class WVuMeter : public WWidget  {
     virtual ~WVuMeter();
 
     void setup(QDomNode node, const SkinContext& context);
-    void setPixmapBackground(PixmapSource source);
+    void setPixmapBackground(PixmapSource source, Paintable::DrawMode mode);
     void setPixmaps(PixmapSource source,
-                    bool bHorizontal=false);
+                    bool bHorizontal,
+                    Paintable::DrawMode mode);
     void onConnectedControlChanged(double dParameter, double dValue);
 
   protected slots:
