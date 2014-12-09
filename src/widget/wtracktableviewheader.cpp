@@ -240,7 +240,7 @@ void WTrackTableViewHeader::restoreHeaderState() {
     if (!headerStateString.isNull()) {
         // Load the previous header state (stored as serialized protobuf).
         // Decode it and restore it.
-        //qDebug() << "Restoring header state" << headerStateString;
+        //qDebug() << "Restoring header state from proto" << headerStateString;
         QHeaderViewState view_state(headerStateString);
         view_state.restoreState(this);
         return;
@@ -251,7 +251,7 @@ void WTrackTableViewHeader::restoreHeaderState() {
     if (!headerStateString.isNull()) {
         // Load the previous header state (stored as a Base 64 string). Decode
         // it and restore it.
-        //qDebug() << "Restoring header state" << headerStateString;
+        //qDebug() << "Restoring header state from blob" << headerStateString;
         QByteArray headerState = headerStateString.toAscii();
         headerState = QByteArray::fromBase64(headerState);
         restoreState(headerState);
@@ -276,8 +276,15 @@ bool WTrackTableViewHeader::hasPersistedHeaderState() {
         return false;
     }
     QString headerStateString = track_model->getModelSetting("header_state_pb");
+    if (!headerStateString.isNull()) {
+        return true;
+    }
 
-    if (!headerStateString.isNull()) return true;
+    // If the old blob is still there, use it.
+    headerStateString = track_model->getModelSetting("header_state");
+    if (!headerStateString.isNull()) {
+        return true;
+    }
     return false;
 }
 
