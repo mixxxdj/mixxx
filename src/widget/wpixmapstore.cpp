@@ -196,7 +196,7 @@ void Paintable::draw(const QRectF& targetRect, QPainter* pPainter,
         return;
     }
 
-    if (m_draw_mode == Paintable::FIXED) {
+    if (m_draw_mode == FIXED) {
         // Only render the minimum overlapping rectangle between the source
         // and target.
         QSizeF fixedSize(math_min(sourceRect.width(), targetRect.width()),
@@ -204,7 +204,7 @@ void Paintable::draw(const QRectF& targetRect, QPainter* pPainter,
         QRectF adjustedTarget(targetRect.topLeft(), fixedSize);
         QRectF adjustedSource(sourceRect.topLeft(), fixedSize);
         return drawInternal(adjustedTarget, pPainter, adjustedSource);
-    } else if (m_draw_mode == Paintable::STRETCH_ASPECT) {
+    } else if (m_draw_mode == STRETCH_ASPECT) {
         qreal sx = targetRect.width() / sourceRect.width();
         qreal sy = targetRect.height() / sourceRect.height();
 
@@ -219,18 +219,56 @@ void Paintable::draw(const QRectF& targetRect, QPainter* pPainter,
         } else {
             return drawInternal(targetRect, pPainter, sourceRect);
         }
-    } else if (m_draw_mode == Paintable::STRETCH) {
+    } else if (m_draw_mode == STRETCH) {
         return drawInternal(targetRect, pPainter, sourceRect);
-    } else if (m_draw_mode == Paintable::TILE) {
+    } else if (m_draw_mode == TILE) {
+        return drawInternal(targetRect, pPainter, sourceRect);
+    }
+}
+
+void Paintable::drawCentered(const QRectF& targetRect, QPainter* pPainter,
+                             const QRectF& sourceRect) {
+    if (m_draw_mode == FIXED) {
+        // Only render the minimum overlapping rectangle between the source
+        // and target.
+        QSizeF fixedSize(math_min(sourceRect.width(), targetRect.width()),
+                         math_min(sourceRect.height(), targetRect.height()));
+
+        QRectF adjustedSource(sourceRect.topLeft(), fixedSize);
+        QRectF adjustedTarget(QPointF(-adjustedSource.width() / 2.0,
+                                      -adjustedSource.height() / 2.0),
+                              fixedSize);
+        return drawInternal(adjustedTarget, pPainter, adjustedSource);
+    } else if (m_draw_mode == STRETCH_ASPECT) {
+        qreal sx = targetRect.width() / sourceRect.width();
+        qreal sy = targetRect.height() / sourceRect.height();
+
+        // Adjust the scale so that the scaling in both axes is equal.
+        if (sx != sy) {
+            qreal scale = math_min(sx, sy);
+            qreal scaledWidth = scale * sourceRect.width();
+            qreal scaledHeight = scale * sourceRect.height();
+            QRectF adjustedTarget(-scaledWidth / 2.0, -scaledHeight / 2.0,
+                                  scaledWidth, scaledHeight);
+            return drawInternal(adjustedTarget, pPainter, sourceRect);
+        } else {
+            return drawInternal(targetRect, pPainter, sourceRect);
+        }
+    } else if (m_draw_mode == STRETCH) {
+        return drawInternal(targetRect, pPainter, sourceRect);
+    } else if (m_draw_mode == TILE) {
+        // TODO(XXX): What's the right behavior here? Draw the first tile at the
+        // center point and then tile all around it based on that?
         return drawInternal(targetRect, pPainter, sourceRect);
     }
 }
 
 void Paintable::drawInternal(const QRectF& targetRect, QPainter* pPainter,
                              const QRectF& sourceRect) {
-    //qDebug() << "Paintable::drawInternal" << targetRect << sourceRect;
+    // qDebug() << "Paintable::drawInternal" << DrawModeToString(m_draw_mode)
+    //          << targetRect << sourceRect;
     if (m_pPixmap) {
-        if (m_draw_mode == Paintable::TILE) {
+        if (m_draw_mode == TILE) {
             // TODO(rryan): Using a source rectangle doesn't make much sense
             // with tiling. Ignore the source rect and tile our natural size
             // across the target rect. What's the right general behavior here?
@@ -244,7 +282,7 @@ void Paintable::drawInternal(const QRectF& targetRect, QPainter* pPainter,
                                  sourceRect.toRect());
         }
     } else if (m_pSvg) {
-        if (m_draw_mode == Paintable::TILE) {
+        if (m_draw_mode == TILE) {
             qWarning() << "Tiled SVG should have been rendered to pixmap!";
         } else {
             // NOTE(rryan): QSvgRenderer render does not clip for us -- it
