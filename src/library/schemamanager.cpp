@@ -147,7 +147,7 @@ int SchemaManager::upgradeToSchemaVersion(const QString& schemaFilename,
 
         if (!query.exec()) {
             success = -1;
-            qDebug() << "Deleting header_state settings failed"
+            LOG_FAILED_QUERY(query) << "Deleting header_state settings failed"
                      << query.lastError();
         }
     }
