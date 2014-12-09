@@ -136,6 +136,22 @@ int SchemaManager::upgradeToSchemaVersion(const QString& schemaFilename,
         }
     }
 
+    // Every time a visible column is added to the library, we have to
+    // reset the column headers because they will just be broken.  In the future
+    // we hope to develop a way of saving as much column data as possible to make
+    // upgrading easier.  Not all upgrades change the library schema, but
+    // it's easier to just do it every time.
+    if (success == 0) {
+        QSqlQuery query(db);
+        query.prepare("DELETE FROM settings WHERE name LIKE \"%header_state\";");
+
+        if (!query.exec()) {
+            success = -1;
+            qDebug() << "Deleting header_state settings failed"
+                     << query.lastError();
+        }
+    }
+
     return success;
 }
 

@@ -84,11 +84,6 @@ bool MissingTableModel::isColumnInternal(int column) {
     return false;
 }
 
-bool MissingTableModel::isColumnHiddenByDefault(int column) {
-    Q_UNUSED(column);
-    return false;
-}
-
 // Override flags from BaseSqlModel since we don't want edit this model
 Qt::ItemFlags MissingTableModel::flags(const QModelIndex &index) const {
     return readOnlyFlags(index);
