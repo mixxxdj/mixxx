@@ -1,0 +1,17 @@
+package mixxx.library;
+
+option optimize_for = LITE_RUNTIME;
+
+message HeaderViewState {
+  message HeaderState {
+    optional bool hidden = 1;
+    optional int32 size = 2;
+    optional int32 logical_index = 3;
+    optional int32 visual_index = 4;
+    optional int32 column_id = 5;
+  }
+  repeated HeaderState header_state = 1;
+  optional bool sort_indicator_shown = 2;
+  optional int32 sort_indicator_section = 3;
+  optional int32 sort_order = 4;
+}
