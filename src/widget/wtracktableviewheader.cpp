@@ -5,8 +5,116 @@
 
 #include "widget/wtracktableviewheader.h"
 #include "library/trackmodel.h"
+#include "proto/headers.pb.h"
 
 #define WTTVH_MINIMUM_SECTION_SIZE 20
+
+QHeaderViewState::QHeaderViewState(const QHeaderView& headers)
+{
+    for (int vi = 0; vi < headers.count(); ++vi) {
+        int li = headers.logicalIndex(vi);
+        HeaderState header;
+        header.hidden = headers.isSectionHidden(li);
+        header.size = headers.sectionSize(li);
+        header.logical_index = li;
+        header.visual_index = vi;
+        int column_id = headers.model()->headerData(
+                li, Qt::Horizontal, TrackModel::kHeaderIDRole).toInt();
+        // If there was some sort of error getting the column id,
+        // we have to skip this one.
+        if (column_id == -1) {
+            continue;
+        }
+        header.column_id = column_id;
+        m_headers.append(header);
+    }
+    m_sort_indicator_shown = headers.isSortIndicatorShown();
+    if (m_sort_indicator_shown) {
+        m_sort_indicator_section = headers.sortIndicatorSection();
+        m_sort_order = headers.sortIndicatorOrder();
+    }
+}
+
+QHeaderViewState::QHeaderViewState(const QString& serialized) {
+    mixxx::library::HeaderViewState headerViewState_pb;
+    headerViewState_pb.ParseFromString(serialized.toStdString());
+
+    for (int i = 0; i < headerViewState_pb.header_state_size(); ++i) {
+        const mixxx::library::HeaderViewState::HeaderState& header_state_pb =
+                headerViewState_pb.header_state(i);
+        HeaderState header;
+        header.hidden = header_state_pb.hidden();
+        header.size = header_state_pb.size();
+        header.logical_index = header_state_pb.logical_index();
+        header.visual_index = header_state_pb.visual_index();
+        header.column_id = header_state_pb.column_id();
+        m_headers.append(header);
+    }
+
+    m_sort_indicator_shown = headerViewState_pb.sort_indicator_shown();
+    m_sort_indicator_section = headerViewState_pb.sort_indicator_section();
+    m_sort_order = static_cast<Qt::SortOrder>(headerViewState_pb.sort_order());
+}
+
+void QHeaderViewState::restoreState(QHeaderView* headers) const {
+    const int max_columns = std::min(headers->count(),
+                                     static_cast<int>(m_headers.size()));
+
+    // Need to make a copy for constness
+    QList<HeaderState> header_state(m_headers);
+    QMap<int, HeaderState*> map;
+    for (int i = 0; i < header_state.size(); ++i) {
+        map[header_state[i].column_id] = &header_state[i];
+    }
+
+    // First set all sections to be hidden and update logical
+    // indexes
+    for (int li = 0; li < headers->count(); ++li) {
+        headers->setSectionHidden(li, true);
+        QMap<int, HeaderState *>::iterator it = map.find(
+                headers->model()->headerData(
+                        li, Qt::Horizontal, TrackModel::kHeaderIDRole).toInt());
+        if (it != map.end()) {
+            it.value()->logical_index = li;
+        }
+    }
+
+    // Now restore
+    for (int vi = 0; vi < max_columns; ++vi) {
+        HeaderState const & header = header_state[vi];
+        const int li = header.logical_index;
+        //SSCI_ASSERT_BUG(vi == header.visual_index);
+        headers->setSectionHidden(li, header.hidden);
+        headers->resizeSection(li, header.size);
+        headers->moveSection(headers->visualIndex(li), vi);
+    }
+    if (m_sort_indicator_shown) {
+        headers->setSortIndicator(m_sort_indicator_section, m_sort_order);
+    }
+}
+
+QString QHeaderViewState::saveState() const {
+    // Generate a proto from the internal state and return a string-serialized
+    // version.
+    mixxx::library::HeaderViewState headerViewState_pb;
+
+    for (int i = 0; i < m_headers.length(); ++i) {
+        mixxx::library::HeaderViewState::HeaderState* header_state_pb =
+                headerViewState_pb.add_header_state();
+        const HeaderState& header = m_headers.at(i);
+        header_state_pb->set_hidden(header.hidden);
+        header_state_pb->set_size(header.size);
+        header_state_pb->set_logical_index(header.logical_index);
+        header_state_pb->set_visual_index(header.visual_index);
+        header_state_pb->set_column_id(header.column_id);
+    }
+
+    headerViewState_pb.set_sort_indicator_shown(m_sort_indicator_shown);
+    headerViewState_pb.set_sort_indicator_section(m_sort_indicator_section);
+    headerViewState_pb.set_sort_order(static_cast<int>(m_sort_order));
+
+    return QString::fromStdString(headerViewState_pb.SerializeAsString());
+}
 
 WTrackTableViewHeader::WTrackTableViewHeader(Qt::Orientation orientation,
                                              QWidget* parent)
@@ -116,9 +224,8 @@ void WTrackTableViewHeader::saveHeaderState() {
         return;
     }
     // Convert the QByteArray to a Base64 string and save it.
-    const QString headerState = QString(saveState().toBase64());
-    //bool result =
-    track_model->setModelSetting("header_state", headerState);
+    QHeaderViewState view_state(*this);
+    track_model->setModelSetting("header_state_pb", view_state.saveState());
     //qDebug() << "Saving old header state:" << result << headerState;
 }
 
@@ -129,17 +236,28 @@ void WTrackTableViewHeader::restoreHeaderState() {
         return;
     }
 
-    QString headerStateString = track_model->getModelSetting("header_state");
-    if (headerStateString.isNull()) {
-        loadDefaultHeaderState();
-    } else {
+    QString headerStateString = track_model->getModelSetting("header_state_pb");
+    if (!headerStateString.isNull()) {
+        // Load the previous header state (stored as serialized protobuf).
+        // Decode it and restore it.
+        //qDebug() << "Restoring header state" << headerStateString;
+        QHeaderViewState view_state(headerStateString);
+        view_state.restoreState(this);
+        return;
+    }
+
+    // Try loading from the old QT-specific format next.
+    headerStateString = track_model->getModelSetting("header_state");
+    if (!headerStateString.isNull()) {
         // Load the previous header state (stored as a Base 64 string). Decode
         // it and restore it.
         //qDebug() << "Restoring header state" << headerStateString;
         QByteArray headerState = headerStateString.toAscii();
         headerState = QByteArray::fromBase64(headerState);
         restoreState(headerState);
+        return;
     }
+    loadDefaultHeaderState();
 }
 
 void WTrackTableViewHeader::loadDefaultHeaderState() {
@@ -157,7 +275,7 @@ bool WTrackTableViewHeader::hasPersistedHeaderState() {
     if (!track_model) {
         return false;
     }
-    QString headerStateString = track_model->getModelSetting("header_state");
+    QString headerStateString = track_model->getModelSetting("header_state_pb");
 
     if (!headerStateString.isNull()) return true;
     return false;

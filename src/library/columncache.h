@@ -8,6 +8,10 @@
 // column name to index.
 class ColumnCache {
   public:
+
+    // DO NOT insert enums into the middle of this list or it will break saved
+    // header information.  Instead, always add to the bottom (leaving
+    // NUM_COLUMNS as the very last item).
     enum Column {
         COLUMN_LIBRARYTABLE_ID,
         COLUMN_LIBRARYTABLE_ARTIST,
@@ -60,6 +64,7 @@ class ColumnCache {
         COLUMN_CRATETRACKSTABLE_TRACKID,
         COLUMN_CRATETRACKSTABLE_CRATEID,
 
+        // NUM_COLUMNS should always be the last item.
         NUM_COLUMNS
     };
 

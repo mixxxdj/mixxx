@@ -104,6 +104,8 @@ QSqlDatabase BaseSqlTableModel::database() const {
 
 void BaseSqlTableModel::setHeaderProperties(
         ColumnCache::Column column, QString title, int defaultWidth) {
+    setHeaderData(fieldIndex(column), Qt::Horizontal, column,
+                  TrackModel::kHeaderIDRole);
     setHeaderData(fieldIndex(column), Qt::Horizontal, title,
                   Qt::DisplayRole);
     setHeaderData(fieldIndex(column), Qt::Horizontal, defaultWidth,
@@ -146,9 +148,15 @@ QVariant BaseSqlTableModel::headerData(int section, Qt::Orientation orientation,
     } else if (role == TrackModel::kHeaderWidthRole && orientation == Qt::Horizontal) {
         QVariant widthValue = m_headerInfo.value(section).value(role);
         if (!widthValue.isValid()) {
-            return 0;
+            return 50;
         }
         return widthValue;
+    } else if (role == TrackModel::kHeaderIDRole && orientation == Qt::Horizontal) {
+        QVariant idValue = m_headerInfo.value(section).value(role);
+        if (!idValue.isValid()) {
+            return -1;
+        }
+        return idValue;
     }
     return QAbstractTableModel::headerData(section, orientation, role);
 }

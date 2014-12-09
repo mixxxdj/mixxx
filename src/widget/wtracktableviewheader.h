@@ -14,6 +14,49 @@
 
 class TrackModel;
 
+// Thanks to StackOverflow http://stackoverflow.com/questions/1163030/qt-qtableview-and-horizontalheader-restorestate
+// answer with this code snippet: http://codepad.org/2gPIMPYU
+class QHeaderViewState {
+public:
+    QHeaderViewState()
+            : m_sort_indicator_shown(true), m_sort_indicator_section(0),
+              m_sort_order(Qt::DescendingOrder) {}
+
+    // Populate the object based on the provided live view.
+    explicit QHeaderViewState(const QHeaderView& headers);
+
+    // Populate the object with the serialized protobuf data provided.
+    QHeaderViewState(const QString& serialized);
+
+    // Returns a serialized protobuf of the current state.
+    QString saveState() const;
+    // Apply the state to the provided view.
+    void restoreState(QHeaderView* headers) const;
+
+private:
+    struct HeaderState {
+        bool hidden;
+        int size;
+        int logical_index;
+        int visual_index;
+        int column_id;
+
+        HeaderState()
+                : hidden(false),
+                  size(50),
+                  logical_index(0),
+                  visual_index(0),
+                  column_id(0) {}
+    };
+
+    // Header information is stored in visual index order
+    QList<HeaderState> m_headers;
+    bool m_sort_indicator_shown;
+    int m_sort_indicator_section;
+    Qt::SortOrder m_sort_order;  // iff m_sort_indicator_shown
+};
+
+
 class WTrackTableViewHeader : public QHeaderView {
     Q_OBJECT
   public:
