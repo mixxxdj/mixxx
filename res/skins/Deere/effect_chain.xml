@@ -143,8 +143,8 @@
             <SizePolicy>me,max</SizePolicy>
             <Children>
               <Template src="skin:knob.xml">
-                <SetVariable name="control">parameter</SetVariable>
-                <SetVariable name="label">Parameter</SetVariable>
+                <SetVariable name="control">super1</SetVariable>
+                <SetVariable name="label">SuperKnob</SetVariable>
               </Template>
 
               <Template src="skin:knob.xml">

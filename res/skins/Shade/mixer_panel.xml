@@ -645,7 +645,7 @@
 							<Path>knobs/knob_rotary_s%1.png</Path>
 							<Pos>65,51</Pos>
 							<Connection>
-								<ConfigKey>[EffectRack1_EffectUnit1],parameter</ConfigKey>
+								<ConfigKey>[EffectRack1_EffectUnit1],super1</ConfigKey>
 							</Connection>
 						</Knob>
 						<Knob>
@@ -655,7 +655,7 @@
 							<Path>knobs/knob_rotary_s%1.png</Path>
 							<Pos>163,51</Pos>
 							<Connection>
-								<ConfigKey>[EffectRack1_EffectUnit2],parameter</ConfigKey>
+								<ConfigKey>[EffectRack1_EffectUnit2],super1</ConfigKey>
 							</Connection>
 						</Knob>
 						<Knob>

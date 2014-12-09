@@ -19,7 +19,7 @@
         <MinAngle>-230</MinAngle>
         <MaxAngle>50</MaxAngle>
         <Connection>
-          <ConfigKey><Variable name="QuickEffectUnitGroup"/>,parameter</ConfigKey>
+          <ConfigKey><Variable name="QuickEffectUnitGroup"/>,super1</ConfigKey>
         </Connection>
       </KnobComposed>
       <EffectName>
