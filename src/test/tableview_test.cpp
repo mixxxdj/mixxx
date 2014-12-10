@@ -19,7 +19,7 @@ TEST_F(HeaderViewStateTest, RoundTrip) {
     header_state_pb->set_size(50);
     header_state_pb->set_logical_index(10);
     header_state_pb->set_visual_index(2);
-    header_state_pb->set_column_id(1);
+    header_state_pb->set_column_name("MyCol");
 
     header_state_pb =
                 headerViewState_pb.add_header_state();
@@ -28,7 +28,7 @@ TEST_F(HeaderViewStateTest, RoundTrip) {
     header_state_pb->set_size(22);
     header_state_pb->set_logical_index(6);
     header_state_pb->set_visual_index(3);
-    header_state_pb->set_column_id(4);
+    header_state_pb->set_column_name("MyOtherCol");
 
     headerViewState_pb.set_sort_indicator_shown(true);
     headerViewState_pb.set_sort_indicator_section(1);

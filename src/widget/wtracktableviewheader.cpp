@@ -11,6 +11,7 @@
 
 HeaderViewState::HeaderViewState(const QHeaderView& headers)
 {
+    QAbstractItemModel* model = headers.model();
     for (int vi = 0; vi < headers.count(); ++vi) {
         int li = headers.logicalIndex(vi);
         mixxx::library::HeaderViewState::HeaderState* header_state =
@@ -19,14 +20,14 @@ HeaderViewState::HeaderViewState(const QHeaderView& headers)
         header_state->set_size(headers.sectionSize(li));
         header_state->set_logical_index(li);
         header_state->set_visual_index(vi);
-        int column_id = headers.model()->headerData(
-                li, Qt::Horizontal, TrackModel::kHeaderIDRole).toInt();
+        QString column_name = model->headerData(
+                li, Qt::Horizontal, TrackModel::kHeaderNameRole).toString();
         // If there was some sort of error getting the column id,
-        // we have to skip this one.
-        if (column_id == -1) {
+        // we have to skip this one. (Happens with non-displayed columns)
+        if (column_name.isEmpty()) {
             continue;
         }
-        header_state->set_column_id(column_id);
+        header_state->set_column_name(column_name.toStdString());
     }
     m_view_state.set_sort_indicator_shown(headers.isSortIndicatorShown());
     if (m_view_state.sort_indicator_shown()) {
@@ -56,10 +57,10 @@ void HeaderViewState::restoreState(QHeaderView* headers) {
     const int max_columns =
             math_min(headers->count(), m_view_state.header_state_size());
 
-    typedef QMap<int, mixxx::library::HeaderViewState::HeaderState*> state_map;
+    typedef QMap<QString, mixxx::library::HeaderViewState::HeaderState*> state_map;
     state_map map;
     for (int i = 0; i < m_view_state.header_state_size(); ++i) {
-        map[m_view_state.header_state(i).column_id()] =
+        map[QString::fromStdString(m_view_state.header_state(i).column_name())] =
                 m_view_state.mutable_header_state(i);
     }
 
@@ -70,7 +71,7 @@ void HeaderViewState::restoreState(QHeaderView* headers) {
         // TODO(owilliams): replace with auto once we're building on c++11.
         state_map::iterator it = map.find(
                 headers->model()->headerData(
-                        li, Qt::Horizontal, TrackModel::kHeaderIDRole).toInt());
+                        li, Qt::Horizontal, TrackModel::kHeaderNameRole).toString());
         if (it != map.end()) {
             it.value()->set_logical_index(li);
         }

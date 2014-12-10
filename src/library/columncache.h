@@ -9,11 +9,9 @@
 class ColumnCache {
   public:
 
-    // DO NOT insert enums into the middle of this list or it will break saved
-    // header information.  Instead, always add to the bottom (leaving
-    // NUM_COLUMNS as the very last item).
     enum Column {
-        COLUMN_LIBRARYTABLE_ID,
+        COLUMN_LIBRARYTABLE_INVALID = -1,
+        COLUMN_LIBRARYTABLE_ID = 0,
         COLUMN_LIBRARYTABLE_ARTIST,
         COLUMN_LIBRARYTABLE_TITLE,
         COLUMN_LIBRARYTABLE_ALBUM,
@@ -86,7 +84,21 @@ class ColumnCache {
         return m_columnIndexByName.value(columnName, -1);
     }
 
+    inline Column columnForFieldIndex(int index) const {
+        if (index < 0 || index >= NUM_COLUMNS) {
+            return COLUMN_LIBRARYTABLE_INVALID;
+        }
+        return m_columnByIndex[index];
+    }
+
+    inline QString columnName(Column column) const {
+        return m_columnIndexByName.key(static_cast<int>(column));
+    }
+
     QMap<QString, int> m_columnIndexByName;
+    // A mapping from logical index aka field index to Column enum.
+    Column m_columnByIndex[NUM_COLUMNS];
+    // A mapping from column enum to logical index.
     int m_columnIndexByEnum[NUM_COLUMNS];
 };
 

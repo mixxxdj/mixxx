@@ -12,7 +12,7 @@ message HeaderViewState {
     optional int32 size = 2;
     optional int32 logical_index = 3;
     optional int32 visual_index = 4;
-    optional int32 column_id = 5;
+    optional string column_name = 5;
   }
   repeated HeaderState header_state = 1;
   optional bool sort_indicator_shown = 2;
