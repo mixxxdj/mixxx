@@ -225,8 +225,10 @@ void WTrackTableViewHeader::restoreHeaderState() {
 }
 
 void WTrackTableViewHeader::loadDefaultHeaderState() {
+    // TODO: isColumnHiddenByDefault logic probably belongs here now.
+    QAbstractItemModel* m = model();
     for (int i = 0; i < count(); ++i) {
-        int header_size = model()->headerData(
+        int header_size = m->headerData(
                 i, orientation(), TrackModel::kHeaderWidthRole).toInt();
         if (header_size > 0) {
             resizeSection(i, header_size);
