@@ -272,6 +272,8 @@ bool KeyControl::syncKey(EngineBuffer* pOtherEngineBuffer) {
     double dKey = ControlObject::get(ConfigKey(pOtherEngineBuffer->getGroup(), "key"));
     mixxx::track::io::key::ChromaticKey otherKey =
             KeyUtils::keyFromNumericValue(dKey);
+    double otherDistance = ControlObject::get(ConfigKey(pOtherEngineBuffer->getGroup(), "visual_key_distance"));
+
 
     if (thisFileKey == mixxx::track::io::key::INVALID ||
         otherKey == mixxx::track::io::key::INVALID) {
@@ -279,10 +281,16 @@ bool KeyControl::syncKey(EngineBuffer* pOtherEngineBuffer) {
     }
 
     int stepsToTake = KeyUtils::shortestStepsToCompatibleKey(thisFileKey, otherKey);
-    double pitchToTakeOctaves = KeyUtils::stepsToOctaveChange(stepsToTake);
+    double pitchToTakeOctaves = (stepsToTake + otherDistance) / 12.0;
 
-    // TODO(DSC) work with this m_pitchRatio from this and the other engine buffer
+    if (m_iPitchAndKeylockMode == kPakmOffsetScaleReseting) {
+        double pitchToTakeRatio = KeyUtils::octaveChangeToPowerOf2(pitchToTakeOctaves);
+        double pitchTweakRatio = pitchToTakeRatio / m_speedSliderPitchRatio;
+        pitchToTakeOctaves = KeyUtils::powerOf2ToOctaveChange(pitchTweakRatio);
+    }
 
+    m_pPitch->set(pitchToTakeOctaves);
+    slotPitchChanged(pitchToTakeOctaves);
     return true;
 }
 

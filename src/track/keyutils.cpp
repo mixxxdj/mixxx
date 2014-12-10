@@ -312,9 +312,9 @@ int KeyUtils::shortestStepsToKey(
     mixxx::track::io::key::ChromaticKey target_key) {
     // For invalid keys just return zero steps.
     if (!ChromaticKey_IsValid(key) ||
-        key == mixxx::track::io::key::INVALID ||
-        !ChromaticKey_IsValid(target_key) ||
-        target_key == mixxx::track::io::key::INVALID) {
+            key == mixxx::track::io::key::INVALID ||
+            !ChromaticKey_IsValid(target_key) ||
+            target_key == mixxx::track::io::key::INVALID) {
         return 0;
     }
 
@@ -341,8 +341,8 @@ int KeyUtils::shortestStepsToKey(
 
 // static
 int KeyUtils::shortestStepsToCompatibleKey(
-    mixxx::track::io::key::ChromaticKey key,
-    mixxx::track::io::key::ChromaticKey target_key) {
+        mixxx::track::io::key::ChromaticKey key,
+        mixxx::track::io::key::ChromaticKey target_key) {
     // For invalid keys just return zero steps.
     if (!ChromaticKey_IsValid(key) ||
         key == mixxx::track::io::key::INVALID ||
@@ -352,7 +352,7 @@ int KeyUtils::shortestStepsToCompatibleKey(
     }
 
     // We know the key is in the set of valid values. Save whether or not the
-    // value is minor.
+    // value is major.
     bool major = keyIsMajor(key);
     bool targetMajor = keyIsMajor(target_key);
 
