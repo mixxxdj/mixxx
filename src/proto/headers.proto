@@ -1,3 +1,7 @@
+// This proto describes the layout of column headers in the Library.
+// It is used in place of QHeaderView's built-in save and restore state functions
+// because those break across library schema changes.
+
 package mixxx.library;
 
 option optimize_for = LITE_RUNTIME;
@@ -12,6 +16,8 @@ message HeaderViewState {
   }
   repeated HeaderState header_state = 1;
   optional bool sort_indicator_shown = 2;
+  // This is a logical index value.
   optional int32 sort_indicator_section = 3;
+  // This corresponds to the Qt::SortOrder enum.
   optional int32 sort_order = 4;
 }

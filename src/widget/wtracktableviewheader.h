@@ -12,48 +12,34 @@
 #include <QWidget>
 #include <QContextMenuEvent>
 
+#include "proto/headers.pb.h"
+
 class TrackModel;
 
 // Thanks to StackOverflow http://stackoverflow.com/questions/1163030/qt-qtableview-and-horizontalheader-restorestate
 // answer with this code snippet: http://codepad.org/2gPIMPYU
-class QHeaderViewState {
+class HeaderViewState {
 public:
-    QHeaderViewState()
-            : m_sort_indicator_shown(true), m_sort_indicator_section(0),
-              m_sort_order(Qt::DescendingOrder) {}
+    HeaderViewState() {}
 
     // Populate the object based on the provided live view.
-    explicit QHeaderViewState(const QHeaderView& headers);
+    explicit HeaderViewState(const QHeaderView& headers);
+
+    // Populate from an existing protobuf, mostly for testing.
+    explicit HeaderViewState(const mixxx::library::HeaderViewState& pb)
+            : m_view_state(pb) { }
 
     // Populate the object with the serialized protobuf data provided.
-    QHeaderViewState(const QString& serialized);
+    HeaderViewState(const QString& serialized);
 
     // Returns a serialized protobuf of the current state.
     QString saveState() const;
-    // Apply the state to the provided view.
-    void restoreState(QHeaderView* headers) const;
+    // Apply the state to the provided view.  The data in the object may be
+    // changed if the header format has changed.
+    void restoreState(QHeaderView* headers);
 
 private:
-    struct HeaderState {
-        bool hidden;
-        int size;
-        int logical_index;
-        int visual_index;
-        int column_id;
-
-        HeaderState()
-                : hidden(false),
-                  size(50),
-                  logical_index(0),
-                  visual_index(0),
-                  column_id(0) {}
-    };
-
-    // Header information is stored in visual index order
-    QList<HeaderState> m_headers;
-    bool m_sort_indicator_shown;
-    int m_sort_indicator_section;
-    Qt::SortOrder m_sort_order;  // iff m_sort_indicator_shown
+    mixxx::library::HeaderViewState m_view_state;
 };
 
 

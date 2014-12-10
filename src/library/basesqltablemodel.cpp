@@ -104,11 +104,10 @@ QSqlDatabase BaseSqlTableModel::database() const {
 
 void BaseSqlTableModel::setHeaderProperties(
         ColumnCache::Column column, QString title, int defaultWidth) {
-    setHeaderData(fieldIndex(column), Qt::Horizontal, column,
-                  TrackModel::kHeaderIDRole);
-    setHeaderData(fieldIndex(column), Qt::Horizontal, title,
-                  Qt::DisplayRole);
-    setHeaderData(fieldIndex(column), Qt::Horizontal, defaultWidth,
+    int fi = fieldIndex(column);
+    setHeaderData(fi, Qt::Horizontal, column, TrackModel::kHeaderIDRole);
+    setHeaderData(fi, Qt::Horizontal, title, Qt::DisplayRole);
+    setHeaderData(fi, Qt::Horizontal, defaultWidth,
                   TrackModel::kHeaderWidthRole);
 }
 
