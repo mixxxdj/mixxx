@@ -310,8 +310,6 @@ class EngineBuffer : public EngineObject {
     QAtomicInt m_slipEnabled;
     // m_bSlipEnabledProcessing is only used by the engine processing thread.
     bool m_bSlipEnabledProcessing;
-    bool m_bWasKeylocked;
-
 
     ControlObject* m_pTrackSamples;
     ControlObject* m_pTrackSampleRate;

@@ -3,6 +3,7 @@
 
 #include "engine/enginecontrol.h"
 #include "tapfilter.h"
+#include "control/controlvalue.h"
 
 class ControlObject;
 class ControlPotmeter;
@@ -11,14 +12,24 @@ class ControlPushButton;
 class KeyControl : public EngineControl {
     Q_OBJECT
   public:
+
+    struct PitchTempoRatio {
+        // this is the calculated value used by engine buffer for pitch
+        // by default is is equal to the tempoRatio set by the speed slider
+        double pitchRatio;
+        // this is the value of the speed slider and speed slider
+        // effecting controls at the moment of calculation
+        double tempoRatio;
+        bool keylock;
+    };
+
     KeyControl(QString group, ConfigObject<ConfigValue>* pConfig);
     virtual ~KeyControl();
 
     void resetPitchToLinear();
 
-    // Returns a value describing the pitch ratio. A pitch adjustment of 1.0
-    // means no change should take place.
-    double getPitchRatio() const;
+    // Returns a struct, with the results of the last pitch and tempo calculations
+    KeyControl::PitchTempoRatio getPitchTempoRatio() const;
 
     double getKey();
 
@@ -46,7 +57,6 @@ class KeyControl : public EngineControl {
     ControlObject* m_pRateRange;
     ControlObject* m_pRateDir;
     ControlObject* m_pKeylock;
-    ControlPotmeter* m_pPitchAdjust;
     ControlPotmeter* m_pPitch;
     ControlPushButton* m_pButtonSyncKey;
     ControlPushButton* m_pitchAndKeylockMode;
@@ -60,10 +70,8 @@ class KeyControl : public EngineControl {
 
     TrackPointer m_pTrack;
 
-    // this is the calculated value used by engine buffer for pitch
-    // by default is is equal to the tempoRatio set by the speed slider
-    double m_pitchRatio;
     int m_iPitchAndKeylockMode;
+    ControlValueAtomic<struct PitchTempoRatio> m_pitchRateInfo;
 };
 
 #endif // KEYCONTROL_H

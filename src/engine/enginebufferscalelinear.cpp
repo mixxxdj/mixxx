@@ -64,8 +64,6 @@ void EngineBufferScaleLinear::setScaleParameters(int iSampleRate,
     }
 
     m_dOldRate = m_dRate;
-    // pitch is measured in octave change. Convert it to a rate using
-    // octaveChangeToPowerOf2.
     m_dRate = base_rate * *pTempoRatio;
 
     // Determine playback direction

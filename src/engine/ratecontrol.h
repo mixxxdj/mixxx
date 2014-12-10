@@ -44,7 +44,7 @@ public:
     // Returns the current engine rate.  "reportScratching" is used to tell
     // the caller that the user is currently scratching, and this is used to
     // disable keylock.
-    double calculateSpeed(double baserate, bool paused,
+    double calculateSpeed(double baserate, double speed, bool paused,
                          int iSamplesPerBuffer, bool* reportScratching);
     double getRawRate() const;
 
