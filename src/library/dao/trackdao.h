@@ -104,6 +104,17 @@ class TrackDAO : public QObject, public virtual DAO {
     void purgeTracks(const QString& dir);
     void unhideTracks(const QList<int>& ids);
     TrackPointer getTrack(const int id, const bool cacheOnly=false) const;
+
+    // Fetches trackLocation from the database or adds it. If searchForCoverArt
+    // is true, searches the track and its directory for cover art via
+    // asynchronous request to CoverArtCache. If adding or fetching the track
+    // fails, returns a transient TrackPointer for trackLocation. If
+    // pAlreadyInLibrary is non-NULL, sets it to whether trackLocation was
+    // already in the database.
+    TrackPointer getOrAddTrack(const QString& trackLocation,
+                               bool processCoverArt,
+                               bool* pAlreadyInLibrary);
+
     bool isDirty(int trackId);
     void markTracksAsMixxxDeleted(const QString& dir);
 
