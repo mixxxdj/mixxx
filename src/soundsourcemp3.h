@@ -62,12 +62,10 @@ public:
 private:
     void close();
 
+    inline size_type skipFrameSamples(size_type frameCount) {
+        return readFrameSamplesInterleaved(frameCount, NULL);
+    }
     size_type readFrameSamplesInterleaved(size_type frameCount, sample_type* sampleBuffer, bool readStereoSamples);
-
-    /** Returns the position of the frame which was found. The found frame is set to
-     * the current element in m_qSeekList */
-    int findFrame(int pos);
-    size_type discardFrames(size_type frameCount);
 
     QFile m_file;
     quint64 m_fileSize;
@@ -77,8 +75,8 @@ private:
 
     /** Struct used to store mad frames for seeking */
     struct MadSeekFrameType {
-        const unsigned char *pFrameData;
-        long int pos;
+        diff_type frameIndex;
+        const unsigned char* pFileData;
     };
 
     /** It is not possible to make a precise seek in an mp3 file without decoding the whole stream.
@@ -87,24 +85,19 @@ private:
      * range of frames we keep track of a precise seek occours, otherwise an unprecise seek is performed
      */
     typedef std::vector<MadSeekFrameType> MadSeekFrameList;
-    MadSeekFrameList m_seekFrameList;
-    int m_iAvgFrameSize;
-    /** Index iterator for m_qSeekList. Helps us keep track of where we are in the file. */
-    MadSeekFrameList::size_type m_currentSeekFrameIndex;
+    MadSeekFrameList m_seekFrameList; // ordered-by frameIndex
+    size_type m_avgSeekFrameCount; // avg. samples frames per MP3 frame
 
-    inline
-    const MadSeekFrameType* getSeekFrame(MadSeekFrameList::size_type frameIndex) const {
-        if (m_seekFrameList.size() > frameIndex) {
-            return &m_seekFrameList[frameIndex];
-        } else {
-            return NULL;
-        }
-    }
+    /** Returns the position of the frame which was found. The found frame is set to
+     * the current element in m_qSeekList */
+    MadSeekFrameList::size_type findSeekFrameIndex(diff_type frameIndex) const;
+
+    diff_type m_curFrameIndex;
 
     // current play position
     mad_frame m_madFrame;
     mad_synth m_madSynth;
-    unsigned short m_madSynthOffset; // left overs from the previous read
+    size_type m_madSynthCount; // left overs from the previous read
 };
 
 #endif
