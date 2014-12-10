@@ -130,7 +130,13 @@ template <class ValueType> class ConfigObject {
     void clear();
     void reopen(QString file);
     void Save();
-    QString getResourcePath();
+
+    // Returns the resource path -- the path where controller presets, skins,
+    // library schema, keyboard mappings, and more are stored.
+    QString getResourcePath() const;
+
+    // Returns the settings path -- the path where user data (config file,
+    // library SQLite database, etc.) is stored.
     QString getSettingsPath() const;
 
   protected:
