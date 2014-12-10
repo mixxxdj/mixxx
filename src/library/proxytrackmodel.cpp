@@ -64,7 +64,6 @@ bool ProxyTrackModel::isColumnHiddenByDefault(int column) {
     return m_pTrackModel->isColumnHiddenByDefault(column);
 }
 
-
 void ProxyTrackModel::removeTracks(const QModelIndexList& indices) {
     QModelIndexList translatedList;
     foreach (QModelIndex index, indices) {

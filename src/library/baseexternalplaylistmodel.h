@@ -24,7 +24,6 @@ class BaseExternalPlaylistModel : public BaseSqlTableModel {
 
     virtual TrackPointer getTrack(const QModelIndex& index) const;
     virtual bool isColumnInternal(int column);
-    virtual bool isColumnHiddenByDefault(int column);
     Qt::ItemFlags flags(const QModelIndex &index) const;
     void setPlaylist(QString path_name);
     virtual TrackModel::CapabilitiesFlags getCapabilities() const;

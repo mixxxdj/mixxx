@@ -128,11 +128,6 @@ void BaseExternalPlaylistModel::setPlaylist(QString playlist_path) {
     setSearch("");
 }
 
-bool BaseExternalPlaylistModel::isColumnHiddenByDefault(int column) {
-    Q_UNUSED(column);
-    return false;
-}
-
 TrackModel::CapabilitiesFlags BaseExternalPlaylistModel::getCapabilities() const {
     // See src/library/trackmodel.h for the list of TRACKMODELCAPS
     return TRACKMODELCAPS_NONE

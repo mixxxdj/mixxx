@@ -11,7 +11,6 @@ class LibraryTableModel : public BaseSqlTableModel {
     virtual ~LibraryTableModel();
     void setTableModel(int id =-1);
     bool isColumnInternal(int column);
-    bool isColumnHiddenByDefault(int column);
     // Takes a list of locations and add the tracks to the library. Returns the
     // number of successful additions.
     int addTracks(const QModelIndex& index, const QList<QString>& locations);
