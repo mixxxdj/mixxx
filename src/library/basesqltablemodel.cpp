@@ -107,8 +107,7 @@ void BaseSqlTableModel::setHeaderProperties(
     int fi = fieldIndex(column);
     setHeaderData(fi, Qt::Horizontal, column, TrackModel::kHeaderIDRole);
     setHeaderData(fi, Qt::Horizontal, title, Qt::DisplayRole);
-    setHeaderData(fi, Qt::Horizontal, defaultWidth,
-                  TrackModel::kHeaderWidthRole);
+    setHeaderData(fi, Qt::Horizontal, defaultWidth, TrackModel::kHeaderWidthRole);
 }
 
 bool BaseSqlTableModel::setHeaderData(int section, Qt::Orientation orientation,
