@@ -326,14 +326,10 @@ int KeyUtils::shortestStepsToKey(
     int targetTonic = keyToTonic(target_key);
     int steps = targetTonic - tonic;
 
-    int upSteps = targetTonic - tonic + 12;
-    if (abs(upSteps) < abs(steps)) {
-        steps = upSteps;
-    }
-
-    int downSteps = targetTonic - tonic - 12;
-    if (abs(downSteps) < abs(steps)) {
-        steps = downSteps;
+    if (steps > 6) {
+        steps -= 12;
+    } else if (steps < -6)
+        steps += 12;
     }
 
     return steps;
