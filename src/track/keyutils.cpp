@@ -328,7 +328,7 @@ int KeyUtils::shortestStepsToKey(
 
     if (steps > 6) {
         steps -= 12;
-    } else if (steps < -6)
+    } else if (steps < -6) {
         steps += 12;
     }
 
@@ -339,11 +339,19 @@ int KeyUtils::shortestStepsToKey(
 int KeyUtils::shortestStepsToCompatibleKey(
         mixxx::track::io::key::ChromaticKey key,
         mixxx::track::io::key::ChromaticKey target_key) {
-    // For invalid keys just return zero steps.
+
     if (!ChromaticKey_IsValid(key) ||
-        key == mixxx::track::io::key::INVALID ||
-        !ChromaticKey_IsValid(target_key) ||
-        target_key == mixxx::track::io::key::INVALID) {
+            key == mixxx::track::io::key::INVALID ||
+            !ChromaticKey_IsValid(target_key) ||
+            target_key == mixxx::track::io::key::INVALID ||
+            key == target_key) {
+        // For invalid keys just return zero steps.
+        return 0;
+    }
+
+
+    if (key == target_key) {
+        // Already matching
         return 0;
     }
 
@@ -352,19 +360,53 @@ int KeyUtils::shortestStepsToCompatibleKey(
     bool major = keyIsMajor(key);
     bool targetMajor = keyIsMajor(target_key);
 
-    // If both keys are major/minor, then we just want to take the shortest
-    // number of steps to match the key.
     if (major == targetMajor) {
-        return shortestStepsToKey(key, target_key);
+        // If both keys are major/minor,
+        // The Compatible Key is +-5 or 0 halftone steps away
+        // 0(+-12) Tonic match
+        // +5 Perfect 4th (Sub-Dominant)
+        // -5 Perfect 5th (Dominant)
+
+        // first we need the current step distance to decide
+        // which case we choose
+        int shortestDistance = shortestStepsToKey(key, target_key);
+        // shortestDistance is in the range of -6 ..  +6
+        if (shortestDistance < -2) {
+            // Perfect 4th (Sub-Dominant)
+            return 5 + shortestDistance;
+        } if (shortestDistance > 2) {
+            // Perfect 5th (Dominant)
+            return -5 + shortestDistance;
+        }
+        // tonic match
+        return shortestDistance;
+    } else if (major) {
+        // We match a major key to a target minor
+        // Match Relative Minor
+        // The Compatible minor key is -3(9) halftone steps away
+
+        // first we need the current step distance to decide
+        // which case we choose
+        int shortestDistance = shortestStepsToKey(key, target_key);
+        // shortestDistance is in the range of -6 ..  +6
+        if (shortestDistance < 3) {
+            return 3 + shortestDistance;
+        }
+        return -9 + shortestDistance;
+    } else {
+        // We match a  key to a target minor
+        // Match Relative Major
+        // The Compatible major key is 3(-9) halftone steps away
+
+        // first we need the current step distance to decide
+        // which case we choose
+        int shortestDistance = shortestStepsToKey(key, target_key);
+        // shortestDistance is in the range of -6 .. +6
+        if (shortestDistance < -3) {
+            return 9 + shortestDistance;
+        }
+        return -3 + shortestDistance;
     }
-
-    int targetOpenKeyNumber = KeyUtils::keyToOpenKeyNumber(target_key);
-
-    // Get the key that matches target_key on the Circle of Fifths but is the
-    // same major/minor as key.
-    target_key = openKeyNumberToKey(targetOpenKeyNumber, major);
-
-    return shortestStepsToKey(key, target_key);
 }
 
 QList<mixxx::track::io::key::ChromaticKey> KeyUtils::getCompatibleKeys(
