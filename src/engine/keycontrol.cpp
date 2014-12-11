@@ -25,10 +25,10 @@ KeyControl::KeyControl(QString group,
     pitchRateInfo.keylock = false;
     m_pitchRateInfo.setValue(pitchRateInfo);
 
-    m_pPitch = new ControlPotmeter(ConfigKey(group, "pitch"), -1.f, 1.f);
+    m_pPitch = new ControlPotmeter(ConfigKey(group, "pitch"), -0.25f, 0.25f); // +-3 semitones [4.7 ct]
     // Course adjust by full step.
-    m_pPitch->setStepCount(24);
-    // Fine adjust by half-step / semitone.
+    m_pPitch->setStepCount(6);
+    // Fine adjust with semitone / 4.
     m_pPitch->setSmallStepCount(48);
 
     connect(m_pPitch, SIGNAL(valueChanged(double)),

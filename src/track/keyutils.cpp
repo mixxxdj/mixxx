@@ -361,7 +361,7 @@ int KeyUtils::shortestStepsToCompatibleKey(
     bool targetMajor = keyIsMajor(target_key);
 
     // If we have a mode missmatch, matching to a the Relative mode
-    // will produce a pitch up to +-6 halftones, which may sounds
+    // will produce a pitch up to +-6 semitones, which may sounds
     // too much chipmunked than expected.
     // Since the the relative major/minor key shares the same notes
     // we can convert the target mode
@@ -371,7 +371,7 @@ int KeyUtils::shortestStepsToCompatibleKey(
     }
 
     // Now both keys at the same mode
-    // The Compatible Key is +-5 or 0 halftone steps away
+    // The Compatible Key is +-5 or 0 semitone steps away
     // 0(+-12) Tonic match
     // +5 Perfect 4th (Sub-Dominant)
     // -5 Perfect 5th (Dominant)
