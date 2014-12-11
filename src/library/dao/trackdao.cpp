@@ -22,6 +22,7 @@
 #include "library/dao/playlistdao.h"
 #include "library/dao/analysisdao.h"
 #include "library/dao/libraryhashdao.h"
+#include "library/coverartcache.h"
 
 QHash<int, TrackWeakPointer> TrackDAO::m_sTracks;
 QMutex TrackDAO::m_sTracksMutex;
@@ -1737,4 +1738,45 @@ void TrackDAO::detectCoverArtForUnknownTracks(volatile const bool* pCancel,
             pTracksChanged->insert(trackId);
         }
     }
+}
+
+TrackPointer TrackDAO::getOrAddTrack(const QString& trackLocation,
+                                     bool processCoverArt,
+                                     bool* pAlreadyInLibrary) {
+    int track_id = getTrackId(trackLocation);
+    bool track_already_in_library = track_id >= 0;
+
+    // Add Track to library -- unremove if it was previously removed.
+    if (track_id < 0) {
+        track_id = addTrack(trackLocation, true);
+    }
+
+    TrackPointer pTrack;
+    if (track_id >= 0) {
+        pTrack = getTrack(track_id);
+    }
+
+    // addTrack or getTrack may fail. If they did, create a transient
+    // TrackPointer. We explicitly do not process cover art while creating the
+    // TrackInfoObject since we want to do it asynchronously (see below).
+    if (pTrack.isNull()) {
+        pTrack = TrackPointer(new TrackInfoObject(
+                trackLocation, SecurityTokenPointer(), true, false));
+    }
+
+    // If the track wasn't in the library already then it has not yet been
+    // checked for cover art. If processCoverArt is true then we should request
+    // cover processing via CoverArtCache asynchronously.
+    if (processCoverArt && pTrack && !track_already_in_library) {
+        CoverArtCache* pCache = CoverArtCache::instance();
+        if (pCache != NULL) {
+            pCache->requestGuessCover(pTrack);
+        }
+    }
+
+    if (pAlreadyInLibrary != NULL) {
+        *pAlreadyInLibrary = track_already_in_library;
+    }
+
+    return pTrack;
 }

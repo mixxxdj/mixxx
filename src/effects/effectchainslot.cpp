@@ -42,11 +42,11 @@ EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,
             this, SLOT(slotControlChainMix(double)));
     m_pControlChainMix->set(1.0);
 
-    m_pControlChainParameter = new ControlPotmeter(ConfigKey(m_group, "parameter"), 0.0, 1.0);
-    connect(m_pControlChainParameter, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlChainParameter(double)));
-    m_pControlChainParameter->set(0.0);
-    m_pControlChainParameter->setDefaultValue(0.0);
+    m_pControlChainSuperParameter = new ControlPotmeter(ConfigKey(m_group, "super1"), 0.0, 1.0);
+    connect(m_pControlChainSuperParameter, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlChainSuperParameter(double)));
+    m_pControlChainSuperParameter->set(0.0);
+    m_pControlChainSuperParameter->setDefaultValue(0.0);
 
     m_pControlChainInsertionType = new ControlPushButton(ConfigKey(m_group, "insertion_type"));
     m_pControlChainInsertionType->setButtonMode(ControlPushButton::TOGGLE);
@@ -80,7 +80,7 @@ EffectChainSlot::~EffectChainSlot() {
     delete m_pControlChainLoaded;
     delete m_pControlChainEnabled;
     delete m_pControlChainMix;
-    delete m_pControlChainParameter;
+    delete m_pControlChainSuperParameter;
     delete m_pControlChainInsertionType;
     delete m_pControlChainPrevPreset;
     delete m_pControlChainNextPreset;
@@ -102,16 +102,16 @@ QString EffectChainSlot::id() const {
     return "";
 }
 
-double EffectChainSlot::getParameter() const {
-    return m_pControlChainParameter->get();
+double EffectChainSlot::getSuperParameter() const {
+    return m_pControlChainSuperParameter->get();
 }
 
-void EffectChainSlot::setParameter(double value) {
-    m_pControlChainParameter->set(value);
+void EffectChainSlot::setSuperParameter(double value) {
+    m_pControlChainSuperParameter->set(value);
 }
 
-void EffectChainSlot::setParameterDefaultValue(double value) {
-    m_pControlChainParameter->setDefaultValue(value);
+void EffectChainSlot::setSuperParameterDefaultValue(double value) {
+    m_pControlChainSuperParameter->setDefaultValue(value);
 }
 
 void EffectChainSlot::slotChainNameChanged(const QString&) {
@@ -128,8 +128,8 @@ void EffectChainSlot::slotChainMixChanged(double mix) {
     emit(updated());
 }
 
-void EffectChainSlot::slotChainParameterChanged(double parameter) {
-    m_pControlChainParameter->set(parameter);
+void EffectChainSlot::slotChainSuperParameterChanged(double parameter) {
+    m_pControlChainSuperParameter->set(parameter);
     emit(updated());
 }
 
@@ -198,9 +198,8 @@ void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
         m_pControlChainLoaded->setAndConfirm(true);
         m_pControlChainInsertionType->set(m_pEffectChain->insertionType());
 
-        // Mix, parameter, and enabled channels are persistent properties of the
-        // chain slot, not of the chain. Propagate the current settings to the
-        // chain.
+        // Mix and enabled channels are persistent properties of the chain slot,
+        // not of the chain. Propagate the current settings to the chain.
         m_pEffectChain->setMix(m_pControlChainMix->get());
         m_pEffectChain->setEnabled(m_pControlChainEnabled->get() > 0.0);
         for (QMap<QString, ControlObject*>::iterator it = m_groupEnableControls.begin();
@@ -351,17 +350,17 @@ void EffectChainSlot::slotControlChainMix(double v) {
     }
 }
 
-void EffectChainSlot::slotControlChainParameter(double v) {
-    //qDebug() << debugString() << "slotControlChainParameter" << v;
+void EffectChainSlot::slotControlChainSuperParameter(double v) {
+    //qDebug() << debugString() << "slotControlChainSuperParameter" << v;
 
     // Clamp to [0.0, 1.0]
     if (v < 0.0 || v > 1.0) {
         qWarning() << debugString() << "value out of limits";
         v = math_clamp_unsafe(v, 0.0, 1.0);
-        m_pControlChainParameter->set(v);
+        m_pControlChainSuperParameter->set(v);
     }
     for (int i = 0; i < m_slots.size(); ++i) {
-        m_slots[i]->onChainParameterChanged(v);
+        m_slots[i]->onChainSuperParameterChanged(v);
     }
 }
 

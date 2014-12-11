@@ -2,7 +2,7 @@
   <rect x="4" y="5"
         width="32" height="170"
         rx="3" ry="3"
-        style="fill:rgb(153,153,153);stroke-width:5px;stroke:rgba(237,237,237,0.5)" />
+        style="fill:rgb(153,153,153);fill-opacity:0.3;stroke-width:5px;stroke:rgb(237,237,237);stroke-opacity:0.5" />
 
   <!-- marker lines every 5px -->
 

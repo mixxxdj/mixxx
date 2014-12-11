@@ -293,8 +293,8 @@ void QuickEffectRack::configureEffectChainSlotForGroup(EffectChainSlotPointer pS
     pChain->setMix(1.0);
 
     // Set the parameter default value to 0.5 (neutral).
-    pSlot->setParameter(0.5);
-    pSlot->setParameterDefaultValue(0.5);
+    pSlot->setSuperParameter(0.5);
+    pSlot->setSuperParameterDefaultValue(0.5);
 }
 
 bool QuickEffectRack::loadEffectToGroup(const QString& group,
@@ -318,7 +318,8 @@ bool QuickEffectRack::loadEffectToGroup(const QString& group,
     // Force update the new effect to match the current superknob position.
     EffectSlotPointer pEffectSlot = pChainSlot->getEffectSlot(0);
     if (pEffectSlot) {
-        pEffectSlot->onChainParameterChanged(pChainSlot->getParameter(), true);
+        pEffectSlot->onChainSuperParameterChanged(
+                pChainSlot->getSuperParameter(), true);
     }
     return true;
 }

@@ -405,7 +405,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                tr("Dry/Wet"),
                                tr("Dry/Wet"), descriptionPrefix,
                                effectUnitMenu, true);
-            addPrefixedControl(effectUnitGroup, "parameter",
+            addPrefixedControl(effectUnitGroup, "super1",
                                tr("Super Knob"),
                                tr("Super Knob (control linked effect parameters)"),
                                descriptionPrefix,
