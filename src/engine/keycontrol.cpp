@@ -25,7 +25,8 @@ KeyControl::KeyControl(QString group,
     pitchRateInfo.keylock = false;
     m_pitchRateInfo.setValue(pitchRateInfo);
 
-    m_pPitch = new ControlPotmeter(ConfigKey(group, "pitch"), -0.25f, 0.25f); // +-3 semitones [4.7 ct]
+    // pitch knob in semitones [4.7 ct] allowOutOfBounds = true;
+    m_pPitch = new ControlPotmeter(ConfigKey(group, "pitch"), -3.0, 3.0, true);
     // Course adjust by full step.
     m_pPitch->setStepCount(6);
     // Fine adjust with semitone / 4.
@@ -177,7 +178,7 @@ void KeyControl::slotRateChanged() {
 
     if (m_iPitchAndKeylockMode == kPakmAbsoluteScaleNoReset) {
         // Pitch scale is always 0 at original pitch
-        m_pPitch->set(pitchOctaves);
+        m_pPitch->set(pitchOctaves * 12);
     }
 
     // store so that the results are availabe to the engine at once
@@ -206,7 +207,7 @@ void KeyControl::slotPitchAndKeylockModeChanged(double value) {
         pitchRateInfo = m_pitchRateInfo.getValue();
         double pitchTweakRatio = pitchRateInfo.pitchRatio / m_speedSliderPitchRatio;
         double pitchTweakOctaves = KeyUtils::powerOf2ToOctaveChange(pitchTweakRatio);
-        m_pPitch->set(pitchTweakOctaves);
+        m_pPitch->set(pitchTweakOctaves * 12);
     }
 
     //qDebug() << "KeyControl::slotPitchAndKeylockModeChanged 2" << m_pitchRatio << m_speedSliderPitchRatio;
@@ -237,7 +238,7 @@ void KeyControl::slotSetEngineKey(double key) {
 void KeyControl::slotPitchChanged(double pitch) {
     //qDebug() << "KeyControl::slotPitchChanged 1" << m_pitchRatio << m_speedSliderPitchRatio;
 
-    double pitchTweakRatio = KeyUtils::octaveChangeToPowerOf2(pitch);
+    double pitchTweakRatio = KeyUtils::octaveChangeToPowerOf2(pitch / 12);
     if (m_iPitchAndKeylockMode == kPakmOffsetScaleReseting) {
         // Pitch slider presents only the offset, calc absolute pitch
         pitchTweakRatio *= m_speedSliderPitchRatio;
@@ -289,7 +290,7 @@ bool KeyControl::syncKey(EngineBuffer* pOtherEngineBuffer) {
         pitchToTakeOctaves = KeyUtils::powerOf2ToOctaveChange(pitchTweakRatio);
     }
 
-    m_pPitch->set(pitchToTakeOctaves);
+    m_pPitch->set(pitchToTakeOctaves * 12);
     slotPitchChanged(pitchToTakeOctaves);
     return true;
 }
