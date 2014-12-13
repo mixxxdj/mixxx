@@ -10,7 +10,7 @@
 				<ObjectName>PreviewDeckContainer</ObjectName>
 				<SizePolicy>min,min</SizePolicy>
 				<Children>
-					<WidgetGroup trigger="[PreviewDeck],show_previewdeck">
+					<WidgetGroup trigger="[PreviewDeck],show_previewdeck" persist="true" default="false">
 						<ObjectName>PreviewDeckExpanded</ObjectName>
 						<Layout>vertical</Layout>
 						<SizePolicy>min,min</SizePolicy>
@@ -30,7 +30,7 @@
 						</Children>
 					</WidgetGroup>
 
-					<!-- Collapsed Library  -->
+					<!-- Collapsed Previewdeck  -->
 					<WidgetGroup>
 						<ObjectName>AlignLeftBottom</ObjectName>
 						<Layout>horizontal</Layout>
