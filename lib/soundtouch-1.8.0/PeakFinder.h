@@ -9,10 +9,10 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Last changed  : $Date: 2009-02-21 18:00:14 +0200 (Sat, 21 Feb 2009) $
+// Last changed  : $Date: 2011-12-30 15:33:46 -0500 (Fri, 30 Dec 2011) $
 // File revision : $Revision: 4 $
 //
-// $Id: PeakFinder.h 63 2009-02-21 16:00:14Z oparviai $
+// $Id: PeakFinder.h 132 2011-12-30 20:33:46Z oparviai $
 //
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -62,6 +62,10 @@ protected:
                             int peakpos,        ///< Peak position index within the data vector.
                             int direction       /// Direction where to proceed from the peak: 1 = right, -1 = left.
                             ) const;
+
+    // Finds real 'top' of a peak hump from neighnourhood of the given 'peakpos'.
+    int findTop(const float *data, int peakpos) const;
+
 
     /// Finds the 'ground' level, i.e. smallest level between two neighbouring peaks, to right- 
     /// or left-hand side of the given peak position.

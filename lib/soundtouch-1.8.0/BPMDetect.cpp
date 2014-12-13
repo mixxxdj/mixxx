@@ -26,10 +26,10 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Last changed  : $Date: 2011-07-13 11:07:14 +0300 (Wed, 13 Jul 2011) $
+// Last changed  : $Date: 2012-08-30 15:45:25 -0400 (Thu, 30 Aug 2012) $
 // File revision : $Revision: 4 $
 //
-// $Id: BPMDetect.cpp 105 2011-07-13 08:07:14Z oparviai $
+// $Id: BPMDetect.cpp 149 2012-08-30 19:45:25Z oparviai $
 //
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -117,23 +117,19 @@ BPMDetect::BPMDetect(int numChannels, int aSampleRate)
 
     envelopeAccu = 0;
 
-    // Initialize RMS volume accumulator to RMS level of 3000 (out of 32768) that's
-    // a typical RMS signal level value for song data. This value is then adapted
+    // Initialize RMS volume accumulator to RMS level of 1500 (out of 32768) that's
+    // safe initial RMS signal level value for song data. This value is then adapted
     // to the actual level during processing.
 #ifdef SOUNDTOUCH_INTEGER_SAMPLES
     // integer samples
-    RMSVolumeAccu = (3000 * 3000) / avgnorm;
+    RMSVolumeAccu = (1500 * 1500) / avgnorm;
 #else
     // float samples, scaled to range [-1..+1[
-    RMSVolumeAccu = (0.092f * 0.092f) / avgnorm;
+    RMSVolumeAccu = (0.045f * 0.045f) / avgnorm;
 #endif
 
-    cutCoeff = 1.75;
-    aboveCutAccu = 0;
-    totalAccu = 0;
-
-    // choose decimation factor so that result is approx. 500 Hz
-    decimateBy = sampleRate / 500;
+    // choose decimation factor so that result is approx. 1000 Hz
+    decimateBy = sampleRate / 1000;
     assert(decimateBy > 0);
     assert(INPUT_BLOCK_SAMPLES < decimateBy * DECIMATED_BLOCK_SAMPLES);
 
@@ -270,29 +266,9 @@ void BPMDetect::calcEnvelope(SAMPLETYPE *samples, int numsamples)
 
         // cut amplitudes that are below cutoff ~2 times RMS volume
         // (we're interested in peak values, not the silent moments)
-        val -= cutCoeff * sqrt(RMSVolumeAccu * avgnorm);
-        if (val > 0)
-        {
-            aboveCutAccu += 1.0;  // sample above threshold
-        }
-        else
+        if (val < 0.5 * sqrt(RMSVolumeAccu * avgnorm))
         {
             val = 0;
-        }
-
-        totalAccu += 1.0;
-
-        // maintain sliding statistic what proportion of 'val' samples is
-        // above cutoff threshold
-        aboveCutAccu *= 0.99931;  // 2 sec time constant
-        totalAccu *= 0.99931;
-
-        if (totalAccu > 500)
-        {
-            // after initial settling, auto-adjust cutoff level so that ~8% of 
-            // values are above the threshold
-            double d = (aboveCutAccu / totalAccu) - 0.08;
-            cutCoeff += 0.001 * d;
         }
 
         // smooth amplitude envelope
@@ -305,12 +281,6 @@ void BPMDetect::calcEnvelope(SAMPLETYPE *samples, int numsamples)
         if (out > 32767) out = 32767;
 #endif // SOUNDTOUCH_INTEGER_SAMPLES
         samples[i] = (SAMPLETYPE)out;
-    }
-
-    // check that cutoff doesn't get too small - it can be just silent sequence!
-    if (cutCoeff < 1.5) 
-    {
-        cutCoeff = 1.5;
     }
 }
 
@@ -355,6 +325,26 @@ void BPMDetect::inputSamples(const SAMPLETYPE *samples, int numSamples)
 
 
 
+void BPMDetect::removeBias()
+{
+    int i;
+    float minval = 1e12f;   // arbitrary large number
+
+    for (i = windowStart; i < windowLen; i ++)
+    {
+        if (xcorr[i] < minval)
+        {
+            minval = xcorr[i];
+        }
+    }
+
+    for (i = windowStart; i < windowLen; i ++)
+    {
+        xcorr[i] -= minval;
+    }
+}
+
+
 float BPMDetect::getBpm()
 {
     double peakPos;
@@ -365,6 +355,9 @@ float BPMDetect::getBpm()
 
     // save bpm debug analysis data if debug data enabled
     _SaveDebugData(xcorr, windowStart, windowLen, coeff);
+
+    // remove bias from xcorr data
+    removeBias();
 
     // find peak position
     peakPos = peakFinder.detectPeak(xcorr, windowStart, windowLen);

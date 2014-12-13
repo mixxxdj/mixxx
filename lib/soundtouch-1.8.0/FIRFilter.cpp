@@ -11,10 +11,10 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Last changed  : $Date: 2011-02-13 21:13:57 +0200 (Sun, 13 Feb 2011) $
+// Last changed  : $Date: 2014-10-08 11:26:57 -0400 (Wed, 08 Oct 2014) $
 // File revision : $Revision: 4 $
 //
-// $Id: FIRFilter.cpp 104 2011-02-13 19:13:57Z oparviai $
+// $Id: FIRFilter.cpp 201 2014-10-08 15:26:57Z oparviai $
 //
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -43,7 +43,6 @@
 #include <assert.h>
 #include <math.h>
 #include <stdlib.h>
-#include <stdexcept>
 #include "FIRFilter.h"
 #include "cpu_detect.h"
 
@@ -62,12 +61,15 @@ FIRFilter::FIRFilter()
     length = 0;
     lengthDiv8 = 0;
     filterCoeffs = NULL;
+    sum = NULL;
+    sumsize = 0;
 }
 
 
 FIRFilter::~FIRFilter()
 {
     delete[] filterCoeffs;
+    delete[] sum;
 }
 
 // Usual C-version of the filter routine for stereo sound
@@ -168,13 +170,75 @@ uint FIRFilter::evaluateFilterMono(SAMPLETYPE *dest, const SAMPLETYPE *src, uint
 }
 
 
+uint FIRFilter::evaluateFilterMulti(SAMPLETYPE *dest, const SAMPLETYPE *src, uint numSamples, uint numChannels)
+{
+    uint i, j, end, c;
+
+    if (sumsize < numChannels)
+    {
+        // allocate large enough array for keeping sums
+        sumsize = numChannels;
+        delete[] sum;
+        sum = new LONG_SAMPLETYPE[numChannels];
+    }
+
+#ifdef SOUNDTOUCH_FLOAT_SAMPLES
+    // when using floating point samples, use a scaler instead of a divider
+    // because division is much slower operation than multiplying.
+    double dScaler = 1.0 / (double)resultDivider;
+#endif
+
+    assert(length != 0);
+    assert(src != NULL);
+    assert(dest != NULL);
+    assert(filterCoeffs != NULL);
+
+    end = numChannels * (numSamples - length);
+
+    for (c = 0; c < numChannels; c ++)
+    {
+        sum[c] = 0;
+    }
+
+    for (j = 0; j < end; j += numChannels)
+    {
+        const SAMPLETYPE *ptr;
+
+        ptr = src + j;
+
+        for (i = 0; i < length; i ++)
+        {
+            SAMPLETYPE coef=filterCoeffs[i];
+            for (c = 0; c < numChannels; c ++)
+            {
+                sum[c] += ptr[0] * coef;
+                ptr ++;
+            }
+        }
+        
+        for (c = 0; c < numChannels; c ++)
+        {
+#ifdef SOUNDTOUCH_INTEGER_SAMPLES
+            sum[c] >>= resultDivFactor;
+#else
+            sum[c] *= dScaler;
+#endif // SOUNDTOUCH_INTEGER_SAMPLES
+            *dest = (SAMPLETYPE)sum[c];
+            dest++;
+            sum[c] = 0;
+        }
+    }
+    return numSamples - length;
+}
+
+
 // Set filter coeffiecients and length.
 //
 // Throws an exception if filter length isn't divisible by 8
 void FIRFilter::setCoefficients(const SAMPLETYPE *coeffs, uint newLength, uint uResultDivFactor)
 {
     assert(newLength > 0);
-    if (newLength % 8) throw std::runtime_error("FIR filter length not divisible by 8");
+    if (newLength % 8) ST_THROW_RT_ERROR("FIR filter length not divisible by 8");
 
     lengthDiv8 = newLength / 8;
     length = lengthDiv8 * 8;
@@ -200,18 +264,27 @@ uint FIRFilter::getLength() const
 //
 // Note : The amount of outputted samples is by value of 'filter_length' 
 // smaller than the amount of input samples.
-uint FIRFilter::evaluate(SAMPLETYPE *dest, const SAMPLETYPE *src, uint numSamples, uint numChannels) const
+uint FIRFilter::evaluate(SAMPLETYPE *dest, const SAMPLETYPE *src, uint numSamples, uint numChannels) 
 {
-    assert(numChannels == 1 || numChannels == 2);
-
     assert(length > 0);
     assert(lengthDiv8 * 8 == length);
+
     if (numSamples < length) return 0;
-    if (numChannels == 2) 
+
+#ifndef USE_MULTICH_ALWAYS
+    if (numChannels == 1)
+    {
+        return evaluateFilterMono(dest, src, numSamples);
+    } 
+    else if (numChannels == 2)
     {
         return evaluateFilterStereo(dest, src, numSamples);
-    } else {
-        return evaluateFilterMono(dest, src, numSamples);
+    }
+    else
+#endif // USE_MULTICH_ALWAYS
+    {
+        assert(numChannels > 0);
+        return evaluateFilterMulti(dest, src, numSamples, numChannels);
     }
 }
 
@@ -222,8 +295,8 @@ uint FIRFilter::evaluate(SAMPLETYPE *dest, const SAMPLETYPE *src, uint numSample
 void * FIRFilter::operator new(size_t s)
 {
     // Notice! don't use "new FIRFilter" directly, use "newInstance" to create a new instance instead!
-    throw std::runtime_error("Error in FIRFilter::new: Don't use 'new FIRFilter', use 'newInstance' member instead!");
-    return NULL;
+    ST_THROW_RT_ERROR("Error in FIRFilter::new: Don't use 'new FIRFilter', use 'newInstance' member instead!");
+    return newInstance();
 }
 
 
