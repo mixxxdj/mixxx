@@ -94,6 +94,15 @@ QTableView::indicator:unchecked {
   background: url(skin:/image/style_checkbox_unchecked.png);
 }
 
+/* BPM lock icon in the library "BPM" column. */
+#LibraryBPMButton::indicator:checked {
+  image: url(:/images/library/ic_library_checked.png);
+}
+
+#LibraryBPMButton::indicator:unchecked {
+  image: url(:/images/library/ic_library_unchecked.png);
+}
+
 /* Button in library "Preview" column */
 QPushButton#LibraryPreviewButton {
   width: 23px;

@@ -883,7 +883,7 @@ QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject
     if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
         return new StarDelegate(pParent);
     } else if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
-        return new BPMDelegate(pParent, i, fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK));
+        return new BPMDelegate(pParent);
     } else if (PlayerManager::numPreviewDecks() > 0 && i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
         return new PreviewButtonDelegate(pParent, i);
     } else if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART)) {
