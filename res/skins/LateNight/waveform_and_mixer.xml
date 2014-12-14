@@ -63,6 +63,33 @@
                             </PushButton>
                         </Children>
                     </WidgetGroup>
+                    <WidgetGroup>
+                        <ObjectName>GuiToggleContainer</ObjectName>
+                        <Layout>vertical</Layout>
+                        <SizePolicy>min,min</SizePolicy>
+                        <Children>
+                            <PushButton>
+                                <Size>55f,20f</Size>
+                                <ObjectName>GuiToggleButton</ObjectName>
+                                <NumberStates>2</NumberStates>
+                                <State>
+                                  <Number>0</Number>
+                                  <Text>SPINNIES</Text>
+                                </State>
+                                <State>
+                                  <Number>1</Number>
+                                  <Text>SPINNIES</Text>
+                                </State>
+                                <Connection>
+                                  <ConfigKey persist="true">[Spinny],show_spinnies</ConfigKey>
+                                  <ButtonState>LeftButton</ButtonState>
+                                </Connection>
+                                <Connection>
+                                  <ConfigKey persist="true">[Spinny],show_spinnies</ConfigKey>
+                                </Connection>
+                            </PushButton>
+                        </Children>
+                    </WidgetGroup>
                     <WidgetGroup>  <!-- spacer -->
                         <Layout>horizontal</Layout>
                         <SizePolicy>me,min</SizePolicy>
