@@ -1,6 +1,11 @@
 <Template>
     <WidgetStack currentpage="[Library],show_current" persist="true">
     <Children>
+        <!-- Collapsed library -->
+        <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children/>
+        </WidgetGroup>
     	<WidgetGroup trigger="[Library],show_library">
     		<ObjectName>Library</ObjectName>
     		<SizePolicy>me,me</SizePolicy>
@@ -57,12 +62,6 @@
     			</WidgetGroup>
     		</Children>
     	</WidgetGroup>
-        
-        <!-- Collapsed library -->
-        <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <Children/>
-        </WidgetGroup>
       </Children>
     </WidgetStack>
 </Template>
