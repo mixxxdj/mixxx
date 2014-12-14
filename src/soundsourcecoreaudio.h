@@ -50,7 +50,7 @@ public:
     explicit SoundSourceCoreAudio(QString filename);
     ~SoundSourceCoreAudio();
 
-    Result parseHeader();
+    Result parseMetadata(Mixxx::TrackMetadata* pMetadata);
     QImage parseCoverArt();
 
     Result open();

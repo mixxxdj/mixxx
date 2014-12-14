@@ -15,7 +15,8 @@
  ***************************************************************************/
 
 #include "soundsourceoggvorbis.h"
-#include "soundsourcetaglib.h"
+
+#include "trackmetadatataglib.h"
 
 #include <taglib/vorbisfile.h>
 
@@ -174,22 +175,22 @@ Mixxx::AudioSource::size_type SoundSourceOggVorbis::readFrameSamplesInterleaved(
 /*
  Parse the the file to get metadata
  */
-Result SoundSourceOggVorbis::parseHeader() {
+Result SoundSourceOggVorbis::parseMetadata(Mixxx::TrackMetadata* pMetadata) {
     QByteArray qBAFilename = getFilename().toLocal8Bit();
     TagLib::Ogg::Vorbis::File f(qBAFilename.constData());
 
-    if (!readFileHeader(this, f)) {
+    if (!readAudioProperties(pMetadata, f)) {
         return ERR;
     }
 
     TagLib::Ogg::XiphComment *xiph = f.tag();
     if (xiph) {
-        readXiphComment(this, *xiph);
+        readXiphComment(pMetadata, *xiph);
     } else {
         // fallback
         const TagLib::Tag *tag(f.tag());
         if (tag) {
-            readTag(this, *tag);
+            readTag(pMetadata, *tag);
         } else {
             return ERR;
         }
@@ -202,7 +203,7 @@ QImage SoundSourceOggVorbis::parseCoverArt() {
     TagLib::Ogg::Vorbis::File f(getFilename().toLocal8Bit().constData());
     TagLib::Ogg::XiphComment *xiph = f.tag();
     if (xiph) {
-        return Mixxx::getCoverInXiphComment(*xiph);
+        return Mixxx::readXiphCommentCover(*xiph);
     } else {
         return QImage();
     }

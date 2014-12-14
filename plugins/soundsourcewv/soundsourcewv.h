@@ -25,8 +25,8 @@ public:
     explicit SoundSourceWV(QString qFilename);
     ~SoundSourceWV();
 
-    Result parseHeader();
-    QImage parseCoverArt();
+    Result parseMetadata(Mixxx::TrackMetadata* pMetadata) /*override*/;
+    QImage parseCoverArt() /*override*/;
 
     Result open();
 

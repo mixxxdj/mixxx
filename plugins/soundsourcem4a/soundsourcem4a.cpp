@@ -15,7 +15,8 @@
  ***************************************************************************/
 
 #include "soundsourcem4a.h"
-#include "soundsourcetaglib.h"
+
+#include "trackmetadatataglib.h"
 #include "sampleutil.h"
 
 #include <taglib/mp4file.h>
@@ -178,14 +179,6 @@ Result SoundSourceM4A::open() {
     setFrameRate(sampleRate);
     setFrameCount(m_maxSampleId * kFramesPerSampleBlock);
 
-    const u_int32_t timeScale = MP4GetTrackTimeScale(m_hFile, m_trackId);
-    const MP4Duration duration = MP4GetTrackDuration(m_hFile, m_trackId);
-    setDuration(duration / timeScale);
-
-    qDebug() << "#channels" << getChannelCount() << "frame rate"
-            << getFrameRate() << "#frames" << getFrameCount() << "duration"
-            << getDuration();
-
     const SampleBuffer::size_type prefetchSampleBufferSize = (kSampleIdPrefetchCount + 1) * frames2samples(kFramesPerSampleBlock);
     SampleBuffer(prefetchSampleBufferSize).swap(m_prefetchSampleBuffer);
 
@@ -320,21 +313,21 @@ AudioSource::size_type SoundSourceM4A::readFrameSamplesInterleaved(
     return readFrameCount;
 }
 
-Result SoundSourceM4A::parseHeader() {
+Result SoundSourceM4A::parseMetadata(Mixxx::TrackMetadata* pMetadata) {
     TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
 
-    if (!readFileHeader(this, f)) {
+    if (!readAudioProperties(pMetadata, f)) {
         return ERR;
     }
 
     TagLib::MP4::Tag *mp4(f.tag());
     if (mp4) {
-        readMP4Tag(this, *mp4);
+        readMP4Tag(pMetadata, *mp4);
     } else {
         // fallback
         const TagLib::Tag *tag(f.tag());
         if (tag) {
-            readTag(this, *tag);
+            readTag(pMetadata, *tag);
         } else {
             return ERR;
         }
@@ -347,7 +340,7 @@ QImage SoundSourceM4A::parseCoverArt() {
     TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
     TagLib::MP4::Tag *mp4(f.tag());
     if (mp4) {
-        return getCoverInMP4Tag(*mp4);
+        return readMP4TagCover(*mp4);
     } else {
         return QImage();
     }

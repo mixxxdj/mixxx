@@ -33,7 +33,7 @@ public:
     explicit SoundSourceOpus(QString qFilename);
     ~SoundSourceOpus();
 
-    Result parseHeader() /*override*/;
+    Result parseMetadata(Mixxx::TrackMetadata* pMetadata) /*override*/;
     QImage parseCoverArt() /*override*/;
 
     Result open() /*override*/;

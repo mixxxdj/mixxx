@@ -23,6 +23,7 @@
 
 #include "soundsourceffmpeg.h"
 
+<<<<<<< HEAD
 #include "soundsourcetaglib.h"
 #include <taglib/mpegfile.h>
 #include <taglib/vorbisfile.h>
@@ -33,7 +34,12 @@
 #include <taglib/wavfile.h>
 
 #include <QtDebug>
+=======
+#include "trackmetadata.h"
+
+>>>>>>> Move track metadata properties from SoundSource into separate DTO class
 #include <QBuffer>
+#include <QtDebug>
 
 #include <vector>
 
@@ -527,9 +533,21 @@ Mixxx::AudioSource::size_type SoundSourceFFmpeg::readFrameSamplesInterleaved(siz
     return samples2frames(readSamples);
 }
 
+<<<<<<< HEAD
 Result SoundSourceFFmpeg::parseHeader() {
     QString location = getFilename();
     setType(location.section(".",-1).toLower());
+=======
+Result SoundSourceFFmpeg::parseMetadata(Mixxx::TrackMetadata* pMetadata) {
+    qDebug() << "ffmpeg: SoundSourceFFmpeg::parseMetadata" << getFilename();
+    QByteArray qBAFilename = getFilename().toLocal8Bit();
+
+    AVFormatContext *FmtCtx = avformat_alloc_context();
+    AVCodecContext *CodecCtx;
+    AVDictionaryEntry *FmtTag = NULL;
+    unsigned int i;
+    AVDictionary *l_iFormatOpts = NULL;
+>>>>>>> Move track metadata properties from SoundSource into separate DTO class
 
     QByteArray qBAFilename = getFilename().toLocal8Bit();
 
@@ -610,6 +628,7 @@ Result SoundSourceFFmpeg::parseHeader() {
             return ERR;
         }
 
+<<<<<<< HEAD
         // Now look for MP3 specific metadata (e.g. BPM)
         TagLib::ID3v2::Tag* id3v2 = f.ID3v2Tag();
         if (id3v2) {
@@ -627,6 +646,34 @@ Result SoundSourceFFmpeg::parseHeader() {
                     return ERR;
                 }
             }
+=======
+    // Get a pointer to the codec context for the video stream
+    CodecCtx=FmtCtx->streams[m_iAudioStream]->codec;
+
+    while ((FmtTag = av_dict_get(FmtCtx->metadata, "", FmtTag,
+                                 AV_DICT_IGNORE_SUFFIX))) {
+        QString strValue (QString::fromUtf8 (FmtTag->value));
+
+        // TODO: More sophisticated metadata reading
+        if (!strncmp(FmtTag->key, "artist", 7)) {
+            pMetadata->setArtist(strValue);
+        } else if (!strncmp(FmtTag->key, "title", 5)) {
+            pMetadata->setTitle(strValue);
+        } else if (!strncmp(FmtTag->key, "album_artist", 12)) {
+            pMetadata->setAlbumArtist(strValue);
+        } else if (!strncmp(FmtTag->key, "albumartist", 11)) {
+            pMetadata->setAlbumArtist(strValue);
+        } else if (!strncmp(FmtTag->key, "album", 5)) {
+            pMetadata->setAlbum(strValue);
+        } else if (!strncmp(FmtTag->key, "TOAL", 4)) {
+            pMetadata->setAlbum(strValue);
+        } else if (!strncmp(FmtTag->key, "date", 4)) {
+            pMetadata->setYear(strValue);
+        } else if (!strncmp(FmtTag->key, "genre", 5)) {
+            pMetadata->setGenre(strValue);
+        } else if (!strncmp(FmtTag->key, "comment", 7)) {
+            pMetadata->setComment(strValue);
+>>>>>>> Move track metadata properties from SoundSource into separate DTO class
         }
     } else if (is_ogg) {
         TagLib::Ogg::Vorbis::File f(qBAFilename.constData());
@@ -650,8 +697,31 @@ Result SoundSourceFFmpeg::parseHeader() {
     } else if (is_mp4) {
         TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
 
+<<<<<<< HEAD
         if (!readFileHeader(this, f)) {
            return ERR;
+=======
+    while ((FmtTag = av_dict_get(FmtCtx->streams[m_iAudioStream]->metadata, "",
+                                 FmtTag, AV_DICT_IGNORE_SUFFIX))) {
+        // Convert the value from UTF-8.
+        QString strValue (QString::fromUtf8 (FmtTag->value));
+
+        if (!strncmp(FmtTag->key, "ARTIST", 7)) {
+            pMetadata->setArtist(strValue);
+        } else if (!strncmp(FmtTag->key, "ALBUM", 5)) {
+            pMetadata->setAlbum(strValue);
+        } else if (!strncmp(FmtTag->key, "YEAR", 4)) {
+            pMetadata->setYear(strValue);
+        } else if (!strncmp(FmtTag->key, "GENRE", 5)) {
+            pMetadata->setGenre(strValue);
+        } else if (!strncmp(FmtTag->key, "TITLE", 5)) {
+            pMetadata->setTitle(strValue);
+        } else if (!strncmp(FmtTag->key, "REPLAYGAIN_TRACK_PEAK", 20)) {
+        } else if (!strncmp(FmtTag->key, "REPLAYGAIN_TRACK_GAIN", 20)) {
+            pMetadata->setReplayGainString (strValue);
+        } else if (!strncmp(FmtTag->key, "REPLAYGAIN_ALBUM_PEAK", 20)) {
+        } else if (!strncmp(FmtTag->key, "REPLAYGAIN_ALBUM_GAIN", 20)) {
+>>>>>>> Move track metadata properties from SoundSource into separate DTO class
         }
 
         TagLib::MP4::Tag *mp4(f.tag());
@@ -672,6 +742,7 @@ Result SoundSourceFFmpeg::parseHeader() {
         TagLib::Ogg::Opus::File f(qBAFilename.constData());
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         if (!readFileHeader(this, f)) {
             return ERR;
         }
@@ -681,6 +752,12 @@ Result SoundSourceFFmpeg::parseHeader() {
     this->setBitrate(CodecCtx->bit_rate / 1000);
     this->setDuration(FmtCtx->duration / AV_TIME_BASE);
 >>>>>>> New SoundSource/AudioSource API
+=======
+    pMetadata->setChannels(CodecCtx->channels);
+    pMetadata->setSampleRate(CodecCtx->sample_rate);
+    pMetadata->setBitrate(CodecCtx->bit_rate / 1000);
+    pMetadata->setDuration(FmtCtx->duration / AV_TIME_BASE);
+>>>>>>> Move track metadata properties from SoundSource into separate DTO class
 
         TagLib::Ogg::XiphComment *xiph = f.tag();
         if (xiph) {

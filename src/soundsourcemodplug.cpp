@@ -1,12 +1,13 @@
 #include "soundsourcemodplug.h"
 
+#include "trackmetadata.h"
+#include "util/timer.h"
+
 #include <stdlib.h>
 #include <unistd.h>
 
 #include <QFile>
 #include <QtDebug>
-
-#include "util/timer.h"
 
 /* read files in 512k chunks */
 #define CHUNKSIZE (1 << 18)
@@ -165,17 +166,18 @@ Mixxx::AudioSource::size_type SoundSourceModPlug::readFrameSamplesInterleaved(
     return readFrames;
 }
 
-Result SoundSourceModPlug::parseHeader() {
+Result SoundSourceModPlug::parseMetadata(Mixxx::TrackMetadata* pMetadata) {
     if (m_pModFile == NULL) {
         // an error occured
         qDebug() << "Could not parse module header of " << getFilename();
         return ERR;
     }
 
-    setComment(QString(ModPlug::ModPlug_GetMessage(m_pModFile)));
-    setTitle(QString(ModPlug::ModPlug_GetName(m_pModFile)));
-    setDuration(ModPlug::ModPlug_GetLength(m_pModFile) / 1000);
-    setBitrate(8); // not really, but fill in something...
+    pMetadata->setComment(QString(ModPlug::ModPlug_GetMessage(m_pModFile)));
+    pMetadata->setTitle(QString(ModPlug::ModPlug_GetName(m_pModFile)));
+    pMetadata->setDuration(ModPlug::ModPlug_GetLength(m_pModFile) / 1000);
+    pMetadata->setBitrate(8); // not really, but fill in something...
+
     return OK;
 }
 

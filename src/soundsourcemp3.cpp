@@ -15,7 +15,8 @@
 ***************************************************************************/
 
 #include "soundsourcemp3.h"
-#include "soundsourcetaglib.h"
+
+#include "trackmetadatataglib.h"
 #include "util/math.h"
 
 #include <taglib/mpegfile.h>
@@ -224,9 +225,6 @@ Result SoundSourceMp3::open() {
         return ERR;
     }
 
-    // set the actual duration
-    setDuration(getFrameCount() / getFrameRate());
-
     // restart decoding
     m_curFrameIndex = getFrameCount();
     seekFrame(0);
@@ -251,18 +249,14 @@ void SoundSourceMp3::close() {
 }
 
 SoundSourceMp3::MadSeekFrameList::size_type SoundSourceMp3::findSeekFrameIndex(diff_type frameIndex) const {
-    qDebug() << "findSeekFrameIndex()" << frameIndex;
-
     if ((0 >= frameIndex) || m_seekFrameList.empty()) {
         return 0;
     }
-
     // Guess position of frame in m_seekFrameList based on average frame size
     SoundSourceMp3::MadSeekFrameList::size_type seekFrameIndex = frameIndex / m_avgSeekFrameCount;
     if (seekFrameIndex >= m_seekFrameList.size()) {
         seekFrameIndex = m_seekFrameList.size() - 1;
     }
-
     // binary search starting at seekFrameIndex
     SoundSourceMp3::MadSeekFrameList::size_type lowerBound = 0;
     SoundSourceMp3::MadSeekFrameList::size_type upperBound = m_seekFrameList.size();
@@ -283,7 +277,6 @@ SoundSourceMp3::MadSeekFrameList::size_type SoundSourceMp3::findSeekFrameIndex(d
 }
 
 Mixxx::AudioSource::diff_type SoundSourceMp3::seekFrame(diff_type frameIndex) {
-    qDebug() << "seekFrame()" << frameIndex;
     if (m_curFrameIndex == frameIndex) {
         return m_curFrameIndex;
     }
@@ -393,27 +386,27 @@ Mixxx::AudioSource::size_type SoundSourceMp3::readFrameSamplesInterleaved(
     return frameCount - framesRemaining;
 }
 
-Result SoundSourceMp3::parseHeader() {
+Result SoundSourceMp3::parseMetadata(Mixxx::TrackMetadata* pMetadata) {
     QByteArray qBAFilename(getFilename().toLocal8Bit());
     TagLib::MPEG::File f(qBAFilename.constData());
 
-    if (!readFileHeader(this, f)) {
+    if (!readAudioProperties(pMetadata, f)) {
         return ERR;
     }
 
     // Now look for MP3 specific metadata (e.g. BPM)
     TagLib::ID3v2::Tag* id3v2 = f.ID3v2Tag();
     if (id3v2) {
-        readID3v2Tag(this, *id3v2);
+        readID3v2Tag(pMetadata, *id3v2);
     } else {
         TagLib::APE::Tag *ape = f.APETag();
         if (ape) {
-            readAPETag(this, *ape);
+            readAPETag(pMetadata, *ape);
         } else {
             // fallback
             const TagLib::Tag *tag(f.tag());
             if (tag) {
-                readTag(this, *tag);
+                readTag(pMetadata, *tag);
             } else {
                 return ERR;
             }
@@ -428,12 +421,12 @@ QImage SoundSourceMp3::parseCoverArt() {
     TagLib::MPEG::File f(getFilename().toLocal8Bit().constData());
     TagLib::ID3v2::Tag* id3v2 = f.ID3v2Tag();
     if (id3v2) {
-        coverArt = Mixxx::getCoverInID3v2Tag(*id3v2);
+        coverArt = Mixxx::readID3v2TagCover(*id3v2);
     }
     if (coverArt.isNull()) {
         TagLib::APE::Tag *ape = f.APETag();
         if (ape) {
-            coverArt = Mixxx::getCoverInAPETag(*ape);
+            coverArt = Mixxx::readAPETagCover(*ape);
         }
     }
     return coverArt;

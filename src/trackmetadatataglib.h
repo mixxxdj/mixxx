@@ -10,7 +10,7 @@
 #ifndef SOUNDSOURCETAGLIB_H
 #define SOUNDSOURCETAGLIB_H
 
-#include "soundsource.h"
+#include "trackmetadata.h"
 
 #include <taglib/tfile.h>
 #include <taglib/apetag.h>
@@ -18,26 +18,27 @@
 #include <taglib/xiphcomment.h>
 #include <taglib/mp4tag.h>
 
+#include <QImage>
 
 namespace Mixxx
 {
-    bool readFileHeader(SoundSource* pSoundSource, const TagLib::File& taglibFile);
+    bool readAudioProperties(TrackMetadata* pTrackMetadata, const TagLib::File& taglibFile);
 
     // Read generic tags (will implicitly be invoked from the specialized functions)
-    void readTag(SoundSource* pSoundSource, const TagLib::Tag& tag);
+    void readTag(TrackMetadata* pTrackMetadata, const TagLib::Tag& tag);
 
     // Read specific tags
-    void readID3v2Tag(SoundSource* pSoundSource, const TagLib::ID3v2::Tag& id3v2Tag);
-    void readAPETag(SoundSource* pSoundSource, const TagLib::APE::Tag& ape);
-    void readXiphComment(SoundSource* pSoundSource, const TagLib::Ogg::XiphComment& xiph);
-    void readMP4Tag(SoundSource* pSoundSource, /*const*/ TagLib::MP4::Tag& mp4);
+    void readID3v2Tag(TrackMetadata* pTrackMetadata, const TagLib::ID3v2::Tag& id3v2Tag);
+    void readAPETag(TrackMetadata* pTrackMetadata, const TagLib::APE::Tag& ape);
+    void readXiphComment(TrackMetadata* pTrackMetadata, const TagLib::Ogg::XiphComment& xiph);
+    void readMP4Tag(TrackMetadata* pTrackMetadata, /*const*/ TagLib::MP4::Tag& mp4);
 
     // In order to avoid processing images when it's not
     // needed (TIO building), we must process it separately.
-    QImage getCoverInID3v2Tag(const TagLib::ID3v2::Tag& id3v2);
-    QImage getCoverInAPETag(const TagLib::APE::Tag& ape);
-    QImage getCoverInXiphComment(const TagLib::Ogg::XiphComment& xiph);
-    QImage getCoverInMP4Tag(/*const*/ TagLib::MP4::Tag& mp4);
+    QImage readID3v2TagCover(const TagLib::ID3v2::Tag& id3v2);
+    QImage readAPETagCover(const TagLib::APE::Tag& ape);
+    QImage readXiphCommentCover(const TagLib::Ogg::XiphComment& xiph);
+    QImage readMP4TagCover(/*const*/ TagLib::MP4::Tag& mp4);
 
 } //namespace Mixxx
 

@@ -20,7 +20,7 @@ public:
     explicit SoundSourceSndFile(QString qFilename);
     ~SoundSourceSndFile();
 
-    Result parseHeader() /*override*/;
+    Result parseMetadata(Mixxx::TrackMetadata* pMetadata) /*override*/;
     QImage parseCoverArt() /*override*/;
 
     Result open() /*override*/;

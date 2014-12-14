@@ -46,8 +46,8 @@ public:
     explicit SoundSourceMediaFoundation(QString filename);
     ~SoundSourceMediaFoundation();
 
-    Result parseHeader();
-    QImage parseCoverArt();
+    Result parseMetadata(Mixxx::TrackMetadata* pMetadata) /*override*/;
+    QImage parseCoverArt() /*override*/;
 
     Result open();
 
@@ -57,7 +57,7 @@ public:
 
 private:
     bool configureAudioStream();
-    bool readProperties();
+
     void copyFrames(sample_type *dest, size_t *destFrames, const sample_type *src,
             size_t srcFrames);
 

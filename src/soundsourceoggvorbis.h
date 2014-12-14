@@ -31,7 +31,7 @@ public:
     explicit SoundSourceOggVorbis(QString qFilename);
     ~SoundSourceOggVorbis();
 
-    Result parseHeader() /*override*/;
+    Result parseMetadata(Mixxx::TrackMetadata* pMetadata) /*override*/;
     QImage parseCoverArt() /*override*/;
 
     Result open() /*override*/;
