@@ -30,6 +30,7 @@
 
 #include "controlobject.h"
 #include "soundsourceproxy.h"
+#include "trackmetadata.h"
 #include "xmlparse.h"
 #include "track/beatfactory.h"
 #include "track/keyfactory.h"
@@ -167,86 +168,91 @@ void TrackInfoObject::parse(bool parseCoverArt) {
         qDebug() << "TrackInfoObject::parse()" << canonicalLocation;
     }
 
-    // Parse the information stored in the sound file.
     SoundSourceProxy proxy(canonicalLocation, m_pSecurityToken);
     Mixxx::SoundSourcePointer pSoundSource(proxy.getSoundSource());
-    if (pSoundSource && pSoundSource->parseHeader() == OK) {
+    if (pSoundSource) {
+        setType(pSoundSource->getType());
 
-        // Dump the metadata extracted from the file into the track.
+        // Parse the information stored in the sound file.
+        Mixxx::TrackMetadata trackMetadata;
+        if (pSoundSource->parseMetadata(&trackMetadata) == OK) {
 
-        // TODO(XXX): This involves locking the mutex for every setXXX
-        // method. We should figure out an optimization where there are private
-        // setters that don't lock the mutex.
+            // Dump the metadata extracted from the file into the track.
 
-        // If Artist, Title and Type fields are not blank, modify them.
-        // Otherwise, keep their current values.
-        // TODO(rryan): Should we re-visit this decision?
-        if (!(pSoundSource->getArtist().isEmpty())) {
-            setArtist(pSoundSource->getArtist());
-        } else {
-            parseArtist();
-        }
+            // TODO(XXX): This involves locking the mutex for every setXXX
+            // method. We should figure out an optimization where there are private
+            // setters that don't lock the mutex.
 
-        if (!(pSoundSource->getTitle().isEmpty())) {
-            setTitle(pSoundSource->getTitle());
-        } else {
-            parseTitle();
-        }
-
-        if (!(pSoundSource->getType().isEmpty())) {
-            setType(pSoundSource->getType());
-        }
-
-        setAlbum(pSoundSource->getAlbum());
-        setAlbumArtist(pSoundSource->getAlbumArtist());
-        setYear(pSoundSource->getYear());
-        setGenre(pSoundSource->getGenre());
-        setComposer(pSoundSource->getComposer());
-        setGrouping(pSoundSource->getGrouping());
-        setComment(pSoundSource->getComment());
-        setTrackNumber(pSoundSource->getTrackNumber());
-        setChannels(pSoundSource->getChannels());
-        setSampleRate(pSoundSource->getSampleRate());
-        setDuration(pSoundSource->getDuration());
-        setBitrate(pSoundSource->getBitrate());
-
-        float replayGain = pSoundSource->getReplayGain();
-        if (replayGain != 0.0f) {
-            setReplayGain(replayGain);
-        }
-
-        // Need to set BPM after sample rate since beat grid creation depends on
-        // knowing the sample rate. Bug #1020438.
-        float bpm = pSoundSource->getBPM();
-        if (bpm > 0) {
-            // do not delete beat grid if bpm is not set in file
-            setBpm(bpm);
-        }
-
-        QString key = pSoundSource->getKey();
-        if (!key.isEmpty()) {
-            setKeyText(key, mixxx::track::io::key::FILE_METADATA);
-        }
-
-        if (parseCoverArt) {
-            m_coverArt.image = pSoundSource->parseCoverArt();
-            if (!m_coverArt.image.isNull()) {
-                m_coverArt.info.hash = CoverArtUtils::calculateHash(
-                    m_coverArt.image);
-                m_coverArt.info.coverLocation = QString();
-                m_coverArt.info.type = CoverInfo::METADATA;
-                m_coverArt.info.source = CoverInfo::GUESSED;
+            // If Artist, Title and Type fields are not blank, modify them.
+            // Otherwise, keep their current values.
+            // TODO(rryan): Should we re-visit this decision?
+            if (!(trackMetadata.getArtist().isEmpty())) {
+                setArtist(trackMetadata.getArtist());
+            } else {
+                parseArtist();
             }
-        }
 
-        setHeaderParsed(true);
+            if (!(trackMetadata.getTitle().isEmpty())) {
+                setTitle(trackMetadata.getTitle());
+            } else {
+                parseTitle();
+            }
+
+            setAlbum(trackMetadata.getAlbum());
+            setAlbumArtist(trackMetadata.getAlbumArtist());
+            setYear(trackMetadata.getYear());
+            setGenre(trackMetadata.getGenre());
+            setComposer(trackMetadata.getComposer());
+            setGrouping(trackMetadata.getGrouping());
+            setComment(trackMetadata.getComment());
+            setTrackNumber(trackMetadata.getTrackNumber());
+            setChannels(trackMetadata.getChannels());
+            setSampleRate(trackMetadata.getSampleRate());
+            setDuration(trackMetadata.getDuration());
+            setBitrate(trackMetadata.getBitrate());
+
+            float replayGain = trackMetadata.getReplayGain();
+            if (replayGain != 0.0f) {
+                setReplayGain(replayGain);
+            }
+
+            // Need to set BPM after sample rate since beat grid creation depends on
+            // knowing the sample rate. Bug #1020438.
+            float bpm = trackMetadata.getBPM();
+            if (bpm > 0) {
+                // do not delete beat grid if bpm is not set in file
+                setBpm(bpm);
+            }
+
+            QString key = trackMetadata.getKey();
+            if (!key.isEmpty()) {
+                setKeyText(key, mixxx::track::io::key::FILE_METADATA);
+            }
+
+            if (parseCoverArt) {
+                m_coverArt.image = pSoundSource->parseCoverArt();
+                if (!m_coverArt.image.isNull()) {
+                    m_coverArt.info.hash = CoverArtUtils::calculateHash(
+                        m_coverArt.image);
+                    m_coverArt.info.coverLocation = QString();
+                    m_coverArt.info.type = CoverInfo::METADATA;
+                    m_coverArt.info.source = CoverInfo::GUESSED;
+                }
+            }
+
+            setHeaderParsed(true);
+        } else {
+            qDebug() << "TrackInfoObject::parse() error at file"
+                     << canonicalLocation;
+            setHeaderParsed(false);
+
+            // Add basic information derived from the filename:
+            parseFilename();
+        }
     } else {
         qDebug() << "TrackInfoObject::parse() error at file"
                  << canonicalLocation;
         setHeaderParsed(false);
-
-        // Add basic information derived from the filename:
-        parseFilename();
     }
 }
 

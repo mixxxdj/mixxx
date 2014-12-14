@@ -13,13 +13,15 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <QtDebug>
+#include "soundsourcecoreaudio.h"
+
+#include "trackmetadatataglib.h"
+#include "util/math.h"
+
 #include <taglib/mpegfile.h>
 #include <taglib/mp4file.h>
 
-#include "soundsourcecoreaudio.h"
-#include "soundsourcetaglib.h"
-#include "util/math.h"
+#include <QtDebug>
 
 namespace
 {
@@ -156,41 +158,41 @@ Mixxx::AudioSource::size_type SoundSourceCoreAudio::readFrameSamplesInterleaved(
     return numFramesRead;
 }
 
-Result SoundSourceCoreAudio::parseHeader() {
+Result SoundSourceCoreAudio::parseMetadata(Mixxx::TrackMetadata* pMetadata) {
     if (getType() == "m4a") {
         TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
-        if (!readFileHeader(this, f)) {
+        if (!readAudioProperties(pMetadata, f)) {
             return ERR;
         }
         TagLib::MP4::Tag *mp4(f.tag());
         if (mp4) {
-            readMP4Tag(this, *mp4);
+            readMP4Tag(pMetadata, *mp4);
         } else {
             // fallback
             const TagLib::Tag *tag(f.tag());
             if (tag) {
-                readTag(this, *tag);
+                readTag(pMetadata, *tag);
             } else {
                 return ERR;
             }
         }
     } else if (getType() == "mp3") {
         TagLib::MPEG::File f(getFilename().toLocal8Bit().constData());
-        if (!readFileHeader(this, f)) {
+        if (!readAudioProperties(pMetadata, f)) {
             return ERR;
         }
         TagLib::ID3v2::Tag* id3v2 = f.ID3v2Tag();
         if (id3v2) {
-            readID3v2Tag(this, *id3v2);
+            readID3v2Tag(pMetadata, *id3v2);
         } else {
             TagLib::APE::Tag *ape = f.APETag();
             if (ape) {
-                readAPETag(this, *ape);
+                readAPETag(pMetadata, *ape);
             } else {
                 // fallback
                 const TagLib::Tag *tag(f.tag());
                 if (tag) {
-                    readTag(this, *tag);
+                    readTag(pMetadata, *tag);
                 } else {
                     return ERR;
                 }
@@ -211,7 +213,7 @@ QImage SoundSourceCoreAudio::parseCoverArt() {
         TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
         TagLib::MP4::Tag *mp4(f.tag());
         if (mp4) {
-            return Mixxx::getCoverInMP4Tag(*mp4);
+            return Mixxx::readMP4TagCover(*mp4);
         } else {
             return QImage();
         }
@@ -219,12 +221,12 @@ QImage SoundSourceCoreAudio::parseCoverArt() {
         TagLib::MPEG::File f(getFilename().toLocal8Bit().constData());
         TagLib::ID3v2::Tag* id3v2 = f.ID3v2Tag();
         if (id3v2) {
-            coverArt = Mixxx::getCoverInID3v2Tag(*id3v2);
+            coverArt = Mixxx::readID3v2TagCover(*id3v2);
         }
         if (coverArt.isNull()) {
             TagLib::APE::Tag *ape = f.APETag();
             if (ape) {
-                coverArt = Mixxx::getCoverInAPETag(*ape);
+                coverArt = Mixxx::readAPETagCover(*ape);
             }
         }
         return coverArt;

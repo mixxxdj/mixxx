@@ -25,7 +25,7 @@ public:
     explicit SoundSourceModPlug(QString qFilename);
     ~SoundSourceModPlug();
 
-    Result parseHeader() /*override*/;
+    Result parseMetadata(Mixxx::TrackMetadata* pMetadata) /*override*/;
     QImage parseCoverArt() /*override*/;
 
     Result open() /*override*/;

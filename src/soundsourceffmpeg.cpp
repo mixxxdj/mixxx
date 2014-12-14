@@ -23,8 +23,10 @@
 
 #include "soundsourceffmpeg.h"
 
-#include <QtDebug>
+#include "trackmetadata.h"
+
 #include <QBuffer>
+#include <QtDebug>
 
 #include <vector>
 
@@ -518,8 +520,8 @@ Mixxx::AudioSource::size_type SoundSourceFFmpeg::readFrameSamplesInterleaved(siz
     return samples2frames(readSamples);
 }
 
-Result SoundSourceFFmpeg::parseHeader() {
-    qDebug() << "ffmpeg: SoundSourceFFmpeg::parseHeader" << getFilename();
+Result SoundSourceFFmpeg::parseMetadata(Mixxx::TrackMetadata* pMetadata) {
+    qDebug() << "ffmpeg: SoundSourceFFmpeg::parseMetadata" << getFilename();
     QByteArray qBAFilename = getFilename().toLocal8Bit();
 
     AVFormatContext *FmtCtx = avformat_alloc_context();
@@ -571,23 +573,23 @@ Result SoundSourceFFmpeg::parseHeader() {
 
         // TODO: More sophisticated metadata reading
         if (!strncmp(FmtTag->key, "artist", 7)) {
-            this->setArtist(strValue);
+            pMetadata->setArtist(strValue);
         } else if (!strncmp(FmtTag->key, "title", 5)) {
-            this->setTitle(strValue);
+            pMetadata->setTitle(strValue);
         } else if (!strncmp(FmtTag->key, "album_artist", 12)) {
-            this->setAlbumArtist(strValue);
+            pMetadata->setAlbumArtist(strValue);
         } else if (!strncmp(FmtTag->key, "albumartist", 11)) {
-            this->setAlbumArtist(strValue);
+            pMetadata->setAlbumArtist(strValue);
         } else if (!strncmp(FmtTag->key, "album", 5)) {
-            this->setAlbum(strValue);
+            pMetadata->setAlbum(strValue);
         } else if (!strncmp(FmtTag->key, "TOAL", 4)) {
-            this->setAlbum(strValue);
+            pMetadata->setAlbum(strValue);
         } else if (!strncmp(FmtTag->key, "date", 4)) {
-            this->setYear(strValue);
+            pMetadata->setYear(strValue);
         } else if (!strncmp(FmtTag->key, "genre", 5)) {
-            this->setGenre(strValue);
+            pMetadata->setGenre(strValue);
         } else if (!strncmp(FmtTag->key, "comment", 7)) {
-            this->setComment(strValue);
+            pMetadata->setComment(strValue);
         }
 
 
@@ -599,18 +601,18 @@ Result SoundSourceFFmpeg::parseHeader() {
         QString strValue (QString::fromUtf8 (FmtTag->value));
 
         if (!strncmp(FmtTag->key, "ARTIST", 7)) {
-            this->setArtist(strValue);
+            pMetadata->setArtist(strValue);
         } else if (!strncmp(FmtTag->key, "ALBUM", 5)) {
-            this->setAlbum(strValue);
+            pMetadata->setAlbum(strValue);
         } else if (!strncmp(FmtTag->key, "YEAR", 4)) {
-            this->setYear(strValue);
+            pMetadata->setYear(strValue);
         } else if (!strncmp(FmtTag->key, "GENRE", 5)) {
-            this->setGenre(strValue);
+            pMetadata->setGenre(strValue);
         } else if (!strncmp(FmtTag->key, "TITLE", 5)) {
-            this->setTitle(strValue);
+            pMetadata->setTitle(strValue);
         } else if (!strncmp(FmtTag->key, "REPLAYGAIN_TRACK_PEAK", 20)) {
         } else if (!strncmp(FmtTag->key, "REPLAYGAIN_TRACK_GAIN", 20)) {
-            this->setReplayGainString (strValue);
+            pMetadata->setReplayGainString (strValue);
         } else if (!strncmp(FmtTag->key, "REPLAYGAIN_ALBUM_PEAK", 20)) {
         } else if (!strncmp(FmtTag->key, "REPLAYGAIN_ALBUM_GAIN", 20)) {
         }
@@ -618,10 +620,10 @@ Result SoundSourceFFmpeg::parseHeader() {
 
     }
 
-    this->setChannels(CodecCtx->channels);
-    this->setSampleRate(CodecCtx->sample_rate);
-    this->setBitrate(CodecCtx->bit_rate / 1000);
-    this->setDuration(FmtCtx->duration / AV_TIME_BASE);
+    pMetadata->setChannels(CodecCtx->channels);
+    pMetadata->setSampleRate(CodecCtx->sample_rate);
+    pMetadata->setBitrate(CodecCtx->bit_rate / 1000);
+    pMetadata->setDuration(FmtCtx->duration / AV_TIME_BASE);
 
     avcodec_close(CodecCtx);
     avformat_close_input(&FmtCtx);

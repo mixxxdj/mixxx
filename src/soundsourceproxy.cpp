@@ -311,27 +311,28 @@ Mixxx::SoundSourcePointer SoundSourceProxy::open() const {
     }
 
     if (!m_pSoundSource->isChannelCountValid()) {
-        qWarning() << "Invalid number of channels" << m_pSoundSource->getChannelCount();
+        qWarning() << "Invalid number of channels" << m_pSoundSource->getFilename() << m_pSoundSource->getChannelCount();
         return Mixxx::SoundSourcePointer();
     }
     if (!m_pSoundSource->isFrameRateValid()) {
-        qWarning() << "Invalid frame rate:" << m_pSoundSource->getFrameRate();
+        qWarning() << "Invalid frame rate:" << m_pSoundSource->getFilename() << m_pSoundSource->getFrameRate();
+        return Mixxx::SoundSourcePointer();
+    }
+    if (m_pSoundSource->isFrameCountEmpty()) {
+        qWarning() << "Empty file:" << m_pSoundSource->getFilename();
         return Mixxx::SoundSourcePointer();
     }
 
-    //Update some metadata (currently only the duration)
-    //after a song is open()'d. Eg. We don't know the length
-    //of VBR MP3s until we've seeked through and counted all
-    //the frames. We don't do that in ParseHeader() to keep
-    //library scanning fast.
-    // .... but only do this if the song doesn't already
-    //      have a duration parsed. (Some SoundSources don't
-    //      parse metadata on open(), so they won't have the
-    //      duration.)
-    // SSMP3 will set duration to -1 on VBR files,
-    //  so we must look for that here too
-    if (m_pTrack && m_pTrack->getDuration() <= 0) {
-        m_pTrack->setDuration(m_pSoundSource->getDuration());
+    // Overwrite metadata with actual audio properties
+    if (m_pTrack) {
+        m_pTrack->setChannels(m_pSoundSource->getChannelCount());
+        m_pTrack->setSampleRate(m_pSoundSource->getFrameRate());
+        if (m_pSoundSource->hasDuration()) {
+            m_pTrack->setDuration(m_pSoundSource->getDuration());
+        }
+        if (m_pSoundSource->hasBitrate()) {
+            m_pTrack->setBitrate(m_pSoundSource->getBitrate());
+        }
     }
 
     return m_pSoundSource;

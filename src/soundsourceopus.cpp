@@ -1,5 +1,6 @@
 #include "soundsourceopus.h"
-#include "soundsourcetaglib.h"
+
+#include "trackmetadatataglib.h"
 
 // Include this if taglib if new enough (version 1.9.1 have opusfile)
 #if (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
@@ -115,34 +116,34 @@ Mixxx::AudioSource::size_type SoundSourceOpus::readStereoFrameSamplesInterleaved
 /*
  Parse the the file to get metadata
  */
-Result SoundSourceOpus::parseHeader() {
+Result SoundSourceOpus::parseMetadata(Mixxx::TrackMetadata* pMetadata) {
     int error = 0;
 
     QByteArray qBAFilename = getFilename().toLocal8Bit();
 
     OggOpusFile *l_ptrOpusFile = op_open_file(qBAFilename.constData(), &error);
 
-    setChannels(op_channel_count(l_ptrOpusFile, -1));
-    setSampleRate(kOpusSampleRate);
-    setBitrate(op_bitrate(l_ptrOpusFile, -1) / 1000);
-    setDuration(op_pcm_total(l_ptrOpusFile, -1) / getSampleRate());
+    pMetadata->setChannels(op_channel_count(l_ptrOpusFile, -1));
+    pMetadata->setSampleRate(kOpusSampleRate);
+    pMetadata->setBitrate(op_bitrate(l_ptrOpusFile, -1) / 1000);
+    pMetadata->setDuration(op_pcm_total(l_ptrOpusFile, -1) / pMetadata->getSampleRate());
 
 // If we don't have new enough Taglib we use libopusfile parser!
 #if (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
     TagLib::Ogg::Opus::File f(qBAFilename.constData());
 
-    if (!readFileHeader(this, f)) {
+    if (!readAudioProperties(pMetadata, f)) {
         return ERR;
     }
 
     TagLib::Ogg::XiphComment *xiph = f.tag();
     if (xiph) {
-        readXiphComment(this, *xiph);
+        readXiphComment(pMetadata, *xiph);
     } else {
         // fallback
         const TagLib::Tag *tag(f.tag());
         if (tag) {
-            readTag(this, *tag);
+            readTag(pMetadata, *tag);
         } else {
             return ERR;
         }
@@ -161,26 +162,26 @@ Result SoundSourceOpus::parseHeader() {
         QString l_SPayload = l_SWholeTag.right((l_SWholeTag.length() - l_SWholeTag.indexOf("=")) - 1);
 
         if (!l_STag.compare("ARTIST")) {
-            this->setArtist(l_SPayload);
+            pMetadata->setArtist(l_SPayload);
         } else if (!l_STag.compare("ALBUM")) {
-            this->setAlbum(l_SPayload);
+            pMetadata->setAlbum(l_SPayload);
         } else if (!l_STag.compare("BPM")) {
-            this->setBpm(l_SPayload.toFloat());
+            pMetadata->setBpm(l_SPayload.toFloat());
         } else if (!l_STag.compare("YEAR") || !l_STag.compare("DATE")) {
-            this->setYear(l_SPayload);
+            pMetadata->setYear(l_SPayload);
         } else if (!l_STag.compare("GENRE")) {
-            this->setGenre(l_SPayload);
+            pMetadata->setGenre(l_SPayload);
         } else if (!l_STag.compare("TRACKNUMBER")) {
-            this->setTrackNumber(l_SPayload);
+            pMetadata->setTrackNumber(l_SPayload);
         } else if (!l_STag.compare("COMPOSER")) {
-            this->setComposer(l_SPayload);
+            pMetadata->setComposer(l_SPayload);
         } else if (!l_STag.compare("ALBUMARTIST")) {
-            this->setAlbumArtist(l_SPayload);
+            pMetadata->setAlbumArtist(l_SPayload);
         } else if (!l_STag.compare("TITLE")) {
-            this->setTitle(l_SPayload);
+            pMetadata->setTitle(l_SPayload);
         } else if (!l_STag.compare("REPLAYGAIN_TRACK_PEAK")) {
         } else if (!l_STag.compare("REPLAYGAIN_TRACK_GAIN")) {
-            this->setReplayGainString (l_SPayload);
+            pMetadata->setReplayGainString (l_SPayload);
         } else if (!l_STag.compare("REPLAYGAIN_ALBUM_PEAK")) {
         } else if (!l_STag.compare("REPLAYGAIN_ALBUM_GAIN")) {
         }
@@ -211,7 +212,7 @@ QImage SoundSourceOpus::parseCoverArt() {
     TagLib::Ogg::Opus::File f(getFilename().toLocal8Bit().constData());
     TagLib::Ogg::XiphComment *xiph = f.tag();
     if (xiph) {
-        return Mixxx::getCoverInXiphComment(*xiph);
+        return Mixxx::readXiphCommentCover(*xiph);
     }
 #endif
     return QImage();

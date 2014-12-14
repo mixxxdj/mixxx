@@ -1,5 +1,6 @@
 #include "soundsourcesndfile.h"
-#include "soundsourcetaglib.h"
+
+#include "trackmetadatataglib.h"
 
 #include <taglib/flacfile.h>
 #include <taglib/aifffile.h>
@@ -92,26 +93,26 @@ Mixxx::AudioSource::size_type SoundSourceSndFile::readFrameSamplesInterleaved(
     }
 }
 
-Result SoundSourceSndFile::parseHeader() {
+Result SoundSourceSndFile::parseMetadata(Mixxx::TrackMetadata* pMetadata) {
     const QByteArray qBAFilename(getFilename().toLocal8Bit());
 
     if (getType() == "flac") {
         TagLib::FLAC::File f(qBAFilename.constData());
-        if (!readFileHeader(this, f)) {
+        if (!readAudioProperties(pMetadata, f)) {
             return ERR;
         }
         TagLib::Ogg::XiphComment* xiph = f.xiphComment();
         if (xiph) {
-            readXiphComment(this, *xiph);
+            readXiphComment(pMetadata, *xiph);
         } else {
             TagLib::ID3v2::Tag *id3v2(f.ID3v2Tag());
             if (id3v2) {
-                readID3v2Tag(this, *id3v2);
+                readID3v2Tag(pMetadata, *id3v2);
             } else {
                 // fallback
                 const TagLib::Tag *tag(f.tag());
                 if (tag) {
-                    readTag(this, *tag);
+                    readTag(pMetadata, *tag);
                 } else {
                     return ERR;
                 }
@@ -119,23 +120,23 @@ Result SoundSourceSndFile::parseHeader() {
         }
     } else if (getType() == "wav") {
         TagLib::RIFF::WAV::File f(qBAFilename.constData());
-        if (!readFileHeader(this, f)) {
+        if (!readAudioProperties(pMetadata, f)) {
             return ERR;
         }
         TagLib::ID3v2::Tag *id3v2(f.ID3v2Tag());
         if (id3v2) {
-            readID3v2Tag(this, *id3v2);
+            readID3v2Tag(pMetadata, *id3v2);
         } else {
             // fallback
             const TagLib::Tag *tag(f.tag());
             if (tag) {
-                readTag(this, *tag);
+                readTag(pMetadata, *tag);
             } else {
                 return ERR;
             }
         }
 
-        if (getDuration() <= 0) {
+        if (pMetadata->getDuration() <= 0) {
             // we're using a taglib version which doesn't know how to do wav
             // durations, set it with m_sfInfo from sndfile -bkgood
             // XXX remove this when ubuntu ships with an sufficiently
@@ -147,7 +148,7 @@ Result SoundSourceSndFile::parseHeader() {
             }
 
             if (m_sfInfo.samplerate > 0) {
-                setDuration(m_sfInfo.frames / m_sfInfo.samplerate);
+                pMetadata->setDuration(m_sfInfo.frames / m_sfInfo.samplerate);
             } else {
                 qDebug() << "WARNING: WAV file with invalid samplerate."
                         << "Can't get duration using libsndfile.";
@@ -156,12 +157,12 @@ Result SoundSourceSndFile::parseHeader() {
     } else if (getType().startsWith("aif")) {
         // Try AIFF
         TagLib::RIFF::AIFF::File f(qBAFilename.constData());
-        if (!readFileHeader(this, f)) {
+        if (!readAudioProperties(pMetadata, f)) {
             return ERR;
         }
         TagLib::ID3v2::Tag *id3v2(f.tag());
         if (id3v2) {
-            readID3v2Tag(this, *id3v2);
+            readID3v2Tag(pMetadata, *id3v2);
         } else {
             return ERR;
         }
@@ -180,12 +181,12 @@ QImage SoundSourceSndFile::parseCoverArt() {
         TagLib::FLAC::File f(qBAFilename.constData());
         TagLib::ID3v2::Tag* id3v2 = f.ID3v2Tag();
         if (id3v2) {
-            coverArt = Mixxx::getCoverInID3v2Tag(*id3v2);
+            coverArt = Mixxx::readID3v2TagCover(*id3v2);
         }
         if (coverArt.isNull()) {
             TagLib::Ogg::XiphComment *xiph = f.xiphComment();
             if (xiph) {
-                coverArt = Mixxx::getCoverInXiphComment(*xiph);
+                coverArt = Mixxx::readXiphCommentCover(*xiph);
             }
         }
         if (coverArt.isNull()) {
@@ -201,14 +202,14 @@ QImage SoundSourceSndFile::parseCoverArt() {
         TagLib::RIFF::WAV::File f(qBAFilename.constData());
         TagLib::ID3v2::Tag* id3v2 = f.tag();
         if (id3v2) {
-            coverArt = Mixxx::getCoverInID3v2Tag(*id3v2);
+            coverArt = Mixxx::readID3v2TagCover(*id3v2);
         }
     } else if (getType().startsWith("aif")) {
         // Try AIFF
         TagLib::RIFF::AIFF::File f(qBAFilename.constData());
         TagLib::ID3v2::Tag* id3v2 = f.tag();
         if (id3v2) {
-            coverArt = Mixxx::getCoverInID3v2Tag(*id3v2);
+            coverArt = Mixxx::readID3v2TagCover(*id3v2);
         }
     }
 

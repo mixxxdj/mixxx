@@ -1,5 +1,6 @@
 #include "soundsourcewv.h"
-#include "soundsourcetaglib.h"
+
+#include "trackmetadatataglib.h"
 #include "sampleutil.h"
 
 #include <taglib/wavpackfile.h>
@@ -75,22 +76,22 @@ AudioSource::size_type SoundSourceWV::readFrameSamplesInterleaved(
     return unpackCount;
 }
 
-Result SoundSourceWV::parseHeader() {
+Result SoundSourceWV::parseMetadata(Mixxx::TrackMetadata* pMetadata) {
     const QByteArray qBAFilename(getFilename().toLocal8Bit());
     TagLib::WavPack::File f(qBAFilename.constData());
 
-    if (!readFileHeader(this, f)) {
+    if (!readAudioProperties(pMetadata, f)) {
         return ERR;
     }
 
     TagLib::APE::Tag *ape = f.APETag();
     if (ape) {
-        readAPETag(this, *ape);
+        readAPETag(pMetadata, *ape);
     } else {
         // fallback
         const TagLib::Tag *tag(f.tag());
         if (tag) {
-            readTag(this, *tag);
+            readTag(pMetadata, *tag);
         } else {
             return ERR;
         }
@@ -103,7 +104,7 @@ QImage SoundSourceWV::parseCoverArt() {
     TagLib::WavPack::File f(getFilename().toLocal8Bit().constData());
     TagLib::APE::Tag *ape = f.APETag();
     if (ape) {
-        return Mixxx::getCoverInAPETag(*ape);
+        return Mixxx::readAPETagCover(*ape);
     } else {
         return QImage();
     }

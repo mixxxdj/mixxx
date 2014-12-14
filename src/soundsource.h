@@ -30,14 +30,15 @@
  */
 
 #include "audiosource.h"
+
 #include "util/defs.h"
 
 #include <QImage>
-#include <QString>
 
 /** Getter function to be declared by all SoundSource plugins */
 namespace Mixxx {
 class SoundSource;
+class TrackMetadata;
 }
 
 typedef Mixxx::SoundSource* (*getSoundSourceFunc)(QString filename);
@@ -68,110 +69,10 @@ public:
     // The implementation is free to set inaccurate estimated
     // values here that are overwritten when the AudioSource is
     // actually opened for reading.
-    virtual Result parseHeader() = 0;
+    virtual Result parseMetadata(Mixxx::TrackMetadata* pMetadata) = 0;
 
     // Returns the first cover art image embedded within the file (if any).
     virtual QImage parseCoverArt() = 0;
-
-    inline const QString& getArtist() const {
-        return m_sArtist;
-    }
-    inline const QString& getTitle() const {
-        return m_sTitle;
-    }
-    inline const QString& getAlbum() const {
-        return m_sAlbum;
-    }
-    inline const QString& getAlbumArtist() const {
-        return m_sAlbumArtist;
-    }
-    inline const QString& getComment() const {
-        return m_sComment;
-    }
-    inline const QString& getYear() const {
-        return m_sYear;
-    }
-    inline const QString& getGenre() const {
-        return m_sGenre;
-    }
-    inline const QString& getComposer() const {
-        return m_sComposer;
-    }
-    inline const QString& getGrouping() const {
-        return m_sGrouping;
-    }
-    inline const QString& getTrackNumber() const {
-        return m_sTrackNumber;
-    }
-    inline float getReplayGain() const {
-        return m_fReplayGain;
-    }
-    inline const QString& getKey() const {
-        return m_sKey;
-    }
-    inline float getBPM() const {
-        return m_fBpm;
-    }
-    inline int getBitrate() const {
-        return m_iBitrate;
-    }
-    int getChannels() const;
-    int getSampleRate() const;
-    int getDuration() const;
-
-    inline void setArtist(QString artist) {
-        m_sArtist = artist;
-    }
-    inline void setTitle(QString title) {
-        m_sTitle = title;
-    }
-    inline void setAlbum(QString album) {
-        m_sAlbum = album;
-    }
-    inline void setAlbumArtist(QString albumArtist) {
-        m_sAlbumArtist = albumArtist;
-    }
-    inline void setComment(QString comment) {
-        m_sComment = comment;
-    }
-    inline void setYear(QString year) {
-        m_sYear = year;
-    }
-    inline void setGenre(QString genre) {
-        m_sGenre = genre;
-    }
-    inline void setComposer(QString composer) {
-        m_sComposer = composer;
-    }
-    inline void setGrouping(QString grouping) {
-        m_sGrouping = grouping;
-    }
-    inline void setTrackNumber(QString trackNumber) {
-        m_sTrackNumber = trackNumber;
-    }
-    inline void setKey(QString key) {
-        m_sKey = key;
-    }
-    inline void setBpm(float bpm) {
-        m_fBpm = bpm;
-    }
-    void setBpmString(QString sBpm);
-    inline void setReplayGain(float replayGain) {
-        m_fReplayGain = replayGain;
-    }
-    void setReplayGainString(QString sReplayGain);
-    inline void setChannels(int channels) {
-        m_iChannels = channels;
-    }
-    inline void setSampleRate(int sampleRate) {
-        m_iSampleRate = sampleRate;
-    }
-    inline void setBitrate(int bitrate) {
-        m_iBitrate = bitrate;
-    }
-    inline void setDuration(int duration) {
-        m_iDuration = duration;
-    }
 
     /**
      * Opens the SoundSource for reading audio data.
@@ -181,37 +82,37 @@ public:
      */
     virtual Result open() = 0;
 
+    // The bitrate in kbit/s (optional).
+    // The actual bitrate might be determined and set when the file is opened.
+    inline bool hasBitrate() const {
+        return 0 < m_bitrate;
+    }
+    inline size_type getBitrate() const {
+        return m_bitrate;
+    }
+
+    // The actual duration in seconds.
+    // The actual duration can be calculated after the file has been opened.
+    inline bool hasDuration() const {
+        return !isFrameCountEmpty() && isFrameRateValid();
+    }
+    inline size_type getDuration() const {
+        return getFrameCount() / getFrameRate();
+    }
+
 protected:
     explicit SoundSource(QString sFilename);
     SoundSource(QString sFilename, QString sType);
+
+    inline void setBitrate(size_type bitrate) {
+        m_bitrate = bitrate;
+    }
 
 private:
     const QString m_sFilename;
     const QString m_sType;
 
-    QString m_sArtist;
-    QString m_sTitle;
-    QString m_sAlbum;
-    QString m_sAlbumArtist;
-    QString m_sComment;
-    QString m_sYear;
-    QString m_sGenre;
-    QString m_sComposer;
-    QString m_sGrouping;
-    QString m_sTrackNumber;
-    QString m_sKey;
-
-    // The following members need to be initialized
-    // explicitly in the constructor! Otherwise their
-    // value is undefined.
-    float m_fReplayGain;
-    float m_fBpm; // beats / minute
-
-    // Audio properties (from metadata)
-    int m_iChannels; // #channels
-    int m_iSampleRate; // Hz
-    int m_iBitrate; // kbit / s
-    int m_iDuration; // #seconds
+    size_type m_bitrate;
 };
 
 typedef QSharedPointer<SoundSource> SoundSourcePointer;

@@ -72,7 +72,7 @@ public:
     explicit SoundSourceFFmpeg(QString qFilename);
     ~SoundSourceFFmpeg();
 
-    Result parseHeader() /*override*/;
+    Result parseMetadata(Mixxx::TrackMetadata* pMetadata) /*override*/;
     QImage parseCoverArt() /*override*/;
 
     Result open() /*override*/;

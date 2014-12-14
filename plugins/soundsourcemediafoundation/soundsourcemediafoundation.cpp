@@ -20,8 +20,12 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <QtDebug>
+#include "soundsourcemediafoundation.h"
+
+#include "trackmetadatataglib.h"
+
 #include <taglib/mp4file.h>
+
 #include <windows.h>
 #include <mfapi.h>
 #include <mfidl.h>
@@ -29,8 +33,7 @@
 #include <mferror.h>
 #include <propvarutil.h>
 
-#include "soundsourcemediafoundation.h"
-#include "soundsourcetaglib.h"
+#include <QtDebug>
 
 const int kNumChannels = 2;
 const int kSampleRate = 44100;
@@ -89,9 +92,6 @@ SoundSourceMediaFoundation::SoundSourceMediaFoundation(QString filename)
     // AudioSource properties
     setChannelCount(kNumChannels);
     setFrameRate(kSampleRate);
-    // SoundSource properties
-    setChannels(kNumChannels);
-    setSampleRate(kSampleRate);
 
     // presentation attribute MF_PD_AUDIO_ENCODING_BITRATE only exists for
     // presentation descriptors, one of which MFSourceReader is not.
@@ -396,22 +396,22 @@ Mixxx::AudioSource::size_type SoundSourceMediaFoundation::readFrameSamplesInterl
     return framesRead;
 }
 
-Result SoundSourceMediaFoundation::parseHeader() {
+Result SoundSourceMediaFoundation::parseMetadata(Mixxx::TrackMetadata* pMetadata) {
     // Must be toLocal8Bit since Windows fopen does not do UTF-8
     TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
 
-    if (!readFileHeader(this, f)) {
+    if (!readAudioProperties(pMetadata, f)) {
         return ERR;
     }
 
     TagLib::MP4::Tag *mp4(f.tag());
     if (mp4) {
-        readMP4Tag(this, *mp4);
+        readMP4Tag(pMetadata, *mp4);
     } else {
         // fallback
         const TagLib::Tag *tag(f.tag());
         if (tag) {
-            readTag(this, *tag);
+            readTag(pMetadata, *tag);
         } else {
             return ERR;
         }
@@ -424,7 +424,7 @@ QImage SoundSourceMediaFoundation::parseCoverArt() {
     TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
     TagLib::MP4::Tag *mp4(f.tag());
     if (mp4) {
-        return Mixxx::getCoverInMP4Tag(*mp4);
+        return Mixxx::readMP4TagCover(*mp4);
     } else {
         return QImage();
     }
@@ -572,28 +572,6 @@ bool SoundSourceMediaFoundation::configureAudioStream() {
     m_leftoverBufferSize = leftoverBufferSize;
     m_leftoverBufferSize /= sizeof(sample_type); // convert size in bytes to sizeof(sample_type)
     m_leftoverBuffer = new sample_type[m_leftoverBufferSize];
-
-    return true;
-}
-
-bool SoundSourceMediaFoundation::readProperties() {
-    PROPVARIANT prop;
-    HRESULT hr = S_OK;
-
-    //Get the duration, provided as a 64-bit integer of 100-nanosecond units
-    hr = m_pReader->GetPresentationAttribute(MF_SOURCE_READER_MEDIASOURCE,
-            MF_PD_DURATION, &prop);
-    if (FAILED(hr)) {
-        qWarning() << "SSMF: error getting duration";
-        return false;
-    }
-    // QuadPart isn't available on compilers that don't support _int64. Visual
-    // Studio 6.0 introduced the type in 1998, so I think we're safe here
-    // -bkgood
-    setDuration(secondsFromMF(prop.hVal.QuadPart));
-    m_mfDuration = prop.hVal.QuadPart;
-    qDebug() << "SSMF: Duration:" << getDuration();
-    PropVariantClear(&prop);
 
     return true;
 }

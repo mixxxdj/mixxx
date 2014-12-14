@@ -50,7 +50,7 @@ public:
     explicit SoundSourceMp3(QString qFilename);
     ~SoundSourceMp3();
 
-    Result parseHeader() /*override*/;
+    Result parseMetadata(Mixxx::TrackMetadata* pMetadata) /*override*/;
     QImage parseCoverArt() /*override*/;
 
     Result open() /*override*/;

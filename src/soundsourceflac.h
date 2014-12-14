@@ -19,13 +19,10 @@
 #define SOUNDSOURCEFLAC_H
 
 #include "soundsource.h"
-#include "util/defs.h"
-#include "util/types.h"
 
 #include <FLAC/stream_decoder.h>
 
 #include <QFile>
-#include <QString>
 
 #include <vector>
 
@@ -38,8 +35,7 @@ public:
     explicit SoundSourceFLAC(QString filename);
     ~SoundSourceFLAC();
 
-    Result parseHeader() /*override*/;
-
+    Result parseMetadata(Mixxx::TrackMetadata* pMetadata) /*override*/;
     QImage parseCoverArt() /*override*/;
 
     Result open() /*override*/;

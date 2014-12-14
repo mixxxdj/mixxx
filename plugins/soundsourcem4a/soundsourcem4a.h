@@ -50,7 +50,7 @@ class SoundSourceM4A : public SoundSource {
         explicit SoundSourceM4A(QString qFileName);
         ~SoundSourceM4A();
 
-        Result parseHeader() /*override*/;
+        Result parseMetadata(Mixxx::TrackMetadata* pMetadata) /*override*/;
 
         QImage parseCoverArt() /*override*/;
 

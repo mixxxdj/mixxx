@@ -28,7 +28,6 @@
 #include <QSharedPointer>
 #include <QString>
 #include <QWeakPointer>
-#include <taglib/tfile.h>
 
 #include "library/dao/cue.h"
 #include "library/coverart.h"
