@@ -1,6 +1,17 @@
 #include "test/mixxxtest.h"
 #include "util/singleton.h"
+<<<<<<< HEAD
 #include "mixxxapplication.h"
+=======
+
+#ifdef __FFMPEGFILE__
+extern "C" {
+#include <libavcodec/avcodec.h>
+#include <libavformat/avformat.h>
+}
+#endif
+
+>>>>>>> Fix missing FFmpeg initialization in unit tests
 
 // Specialize the Singleton template for QApplication because it doesn't have a
 // 0-args constructor.
@@ -9,7 +20,15 @@ MixxxApplication* Singleton<MixxxApplication>::create() {
     if (!m_instance) {
         static int argc = 1;
         static char* argv[1] = { strdup("test") };
+<<<<<<< HEAD
         m_instance = new MixxxApplication(argc, argv);
+=======
+#ifdef __FFMPEGFILE__
+         av_register_all();
+         avcodec_register_all();
+#endif
+        m_instance = new QApplication(argc, argv);
+>>>>>>> Fix missing FFmpeg initialization in unit tests
     }
     return m_instance;
 }
