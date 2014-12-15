@@ -41,6 +41,11 @@ KeyControl::KeyControl(QString group,
             this, SLOT(slotSyncKey(double)),
             Qt::DirectConnection);
 
+    m_pButtonResetKey = new ControlPushButton(ConfigKey(group, "reset_key"));
+    connect(m_pButtonResetKey, SIGNAL(valueChanged(double)),
+            this, SLOT(slotResetKey(double)),
+            Qt::DirectConnection);
+
     m_pFileKey = new ControlObject(ConfigKey(group, "file_key"));
     connect(m_pFileKey, SIGNAL(valueChanged(double)),
             this, SLOT(slotFileKeyChanged(double)),
@@ -98,6 +103,7 @@ KeyControl::KeyControl(QString group,
 KeyControl::~KeyControl() {
     delete m_pPitch;
     delete m_pButtonSyncKey;
+    delete m_pButtonResetKey;
     delete m_pFileKey;
     delete m_pEngineKey;
     delete m_pEngineKeyDistance;
@@ -258,6 +264,12 @@ void KeyControl::slotSyncKey(double v) {
     if (v > 0) {
         EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
         syncKey(pOtherEngineBuffer);
+    }
+}
+
+void KeyControl::slotResetKey(double v) {
+    if (v > 0) {
+    	slotSetEngineKey(m_pFileKey->get());
     }
 }
 
