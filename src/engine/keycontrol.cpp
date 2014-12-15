@@ -237,8 +237,22 @@ void KeyControl::updateKeyCOs(double fileKeyNumeric, double pitch) {
 
 
 void KeyControl::slotSetEngineKey(double key) {
-    Q_UNUSED(key);
-    // TODO(rryan): set m_pPitch to match the desired key.
+    mixxx::track::io::key::ChromaticKey thisFileKey =
+            KeyUtils::keyFromNumericValue(m_pFileKey->get());
+    mixxx::track::io::key::ChromaticKey newKey =
+            KeyUtils::keyFromNumericValue(key);
+    int stepsToTake = KeyUtils::shortestStepsToKey(thisFileKey, newKey);
+    double pitchToTakeOctaves = stepsToTake / 12.0;
+
+    if (m_iPitchAndKeylockMode == kPakmOffsetScaleReseting) {
+        double pitchToTakeRatio = KeyUtils::octaveChangeToPowerOf2(pitchToTakeOctaves);
+        double pitchTweakRatio = pitchToTakeRatio / m_speedSliderPitchRatio;
+        pitchToTakeOctaves = KeyUtils::powerOf2ToOctaveChange(pitchTweakRatio);
+    }
+
+    m_pPitch->set(pitchToTakeOctaves * 12);
+    slotPitchChanged(pitchToTakeOctaves);
+    return;
 }
 
 void KeyControl::slotPitchChanged(double pitch) {
