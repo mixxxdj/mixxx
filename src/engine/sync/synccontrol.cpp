@@ -394,10 +394,13 @@ void SyncControl::slotSyncEnabledChangeRequest(double enabled) {
 }
 
 void SyncControl::setLocalBpm(double local_bpm) {
+    if (getSyncMode() == SYNC_NONE) {
+        return;
+    }
     if (local_bpm == m_prevLocalBpm) {
         return;
     }
-    if (local_bpm == 0 && getSyncMode() != SYNC_NONE && m_pPlayButton->toBool()) {
+    if (local_bpm == 0 && m_pPlayButton->toBool()) {
         // If the local bpm is suddenly zero and sync was active and we are playing,
         // stick with the previous localbpm.
         // I think this can only happen if the beatgrid is reset.
@@ -406,6 +409,7 @@ void SyncControl::setLocalBpm(double local_bpm) {
     }
     m_prevLocalBpm = local_bpm;
 
+    // FIXME: This recalculating of the rate is duplicated in bpmcontrol.
     const double rate = 1.0 + m_pRateSlider->get() * m_pRateRange->get() * m_pRateDirection->get();
     double bpm = local_bpm * rate;
     m_pBpm->set(bpm);
