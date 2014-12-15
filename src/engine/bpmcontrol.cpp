@@ -158,7 +158,7 @@ void BpmControl::slotFileBpmChanged(double bpm) {
     } else {
         m_pLocalBpm->set(bpm);
     }
-    if (getSyncMode() == SYNC_NONE && m_pLocalBpm->get() != 0.0) {
+    if (getSyncMode() == SYNC_NONE) {
         slotAdjustRateSlider();
     }
     resetSyncAdjustment();
@@ -789,7 +789,7 @@ double BpmControl::updateLocalBpm() {
     } else {
         local_bpm = m_pFileBpm->get();
     }
-    if (local_bpm != prev_local_bpm && local_bpm != 0.0) {
+    if (local_bpm != prev_local_bpm) {
         m_pLocalBpm->set(local_bpm);
         slotAdjustRateSlider();
     }
