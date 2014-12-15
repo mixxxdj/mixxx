@@ -467,6 +467,38 @@ WWidgetGroup {
   /*qproperty-layoutAlignment: 'AlignCenter';*/
 }
 
+WPushButton
+{
+    color: #999999;
+    background-color: QLinearGradient( x1: 0, y1: 1, x2: 0, y2: 0,
+    stop: 0 #484848, stop: 1 #484848);
+    border: 1px solid #4A4949;
+    border-radius: 1px;
+    outline: none;
+}
+
+WPushButton:hover
+{
+    color: #999999;
+    background-color: QLinearGradient( x1: 0, y1: 1, x2: 0, y2: 0,
+    stop: 0 #5E5D54, stop: 1 #5E5D54);
+    border: 0px solid #A4A4A4;
+}
+
+/*"Pressed" state*/
+WPushButton[value="1"] {
+    color: #E5E5E5;
+    background-color: QLinearGradient( x1: 0, y1: 1, x2: 0, y2: 0,
+    stop: 0 #006BA2, stop: 1 #006BA2);
+    border: 0px solid #A4A4A4;
+}
+
+WPushButton[value="1"]:hover {
+    color: #E5E5E5;
+    background-color: QLinearGradient( x1: 0, y1: 1, x2: 0, y2: 0,
+    stop: 0 #0085CA, stop: 1 #0085CA);
+    border: 0px solid #A4A4A4;
+}
 
 /*
 

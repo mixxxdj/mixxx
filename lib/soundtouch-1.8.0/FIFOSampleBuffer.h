@@ -15,10 +15,10 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Last changed  : $Date: 2009-02-21 18:00:14 +0200 (Sat, 21 Feb 2009) $
+// Last changed  : $Date: 2014-01-05 16:40:22 -0500 (Sun, 05 Jan 2014) $
 // File revision : $Revision: 4 $
 //
-// $Id: FIFOSampleBuffer.h 63 2009-02-21 16:00:14Z oparviai $
+// $Id: FIFOSampleBuffer.h 177 2014-01-05 21:40:22Z oparviai $
 //
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -89,7 +89,7 @@ private:
 
     /// Returns current capacity.
     uint getCapacity() const;
- 
+
 public:
 
     /// Constructor
@@ -162,11 +162,21 @@ public:
     /// Sets number of channels, 1 = mono, 2 = stereo.
     void setChannels(int numChannels);
 
+    /// Get number of channels
+    int getChannels() 
+    {
+        return channels;
+    }
+
     /// Returns nonzero if there aren't any samples available for outputting.
     virtual int isEmpty() const;
 
     /// Clears all the samples.
     virtual void clear();
+
+    /// allow trimming (downwards) amount of samples in pipeline.
+    /// Returns adjusted amount of samples
+    uint adjustAmountOfSamples(uint numSamples);
 };
 
 }

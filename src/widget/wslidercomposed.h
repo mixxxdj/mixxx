@@ -66,9 +66,9 @@ class WSliderComposed : public WWidget  {
     // True if right mouse button is pressed.
     bool m_bRightButtonPressed;
     // Internal storage of slider position in pixels
-    int m_iPos, m_iStartHandlePos, m_iStartMousePos;
+    double m_dPos, m_dStartHandlePos, m_dStartMousePos;
     // Length of handle in pixels
-    int m_iHandleLength;
+    double m_dHandleLength;
     // True if it's a horizontal slider
     bool m_bHorizontal;
     // Is true if events is emitted while the slider is dragged

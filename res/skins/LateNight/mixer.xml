@@ -69,26 +69,6 @@
                                         </NumberBpm>
                                     </Children>
                                 </WidgetGroup> -->
-                                <WidgetGroup>
-                                  <ObjectName>ClockWidget</ObjectName>
-                                  <Layout>horizontal</Layout>
-                                  <SizePolicy>me,me</SizePolicy>
-                                  <Children>
-                                    <WidgetGroup>
-                                      <Layout>horizontal</Layout>
-                                      <SizePolicy>max,max</SizePolicy>
-                                      <Children>
-                                        <Time>
-                                          <TooltipId>time</TooltipId>
-                                          <Style>QLabel { font: bold 16px/19px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-                                                    background-color: transparent; color: #EECE33; }
-                                          </Style>
-                                          <ShowSeconds>false</ShowSeconds>
-                                        </Time>
-                                      </Children>
-                                    </WidgetGroup>
-                                  </Children>
-                                </WidgetGroup>
                               </Children>
                            </WidgetGroup>
 					       <WidgetGroup>
@@ -182,9 +162,9 @@
 				</Children>
 			</WidgetGroup>
             <WidgetGroup>
-                <Layout>vertical</Layout>
-                <SizePolicy>min,me</SizePolicy>
-                <Children>
+              <Layout>vertical</Layout>
+              <SizePolicy>min,me</SizePolicy>
+              <Children>
                 <WidgetGroup>
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,me</SizePolicy>

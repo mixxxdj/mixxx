@@ -91,6 +91,7 @@ Result SoundSourceOggVorbis::open() {
     vorbis_info * vi = ov_info(&vf, -1);
 
     channels = vi->channels;
+    setChannels(channels);
     setSampleRate(vi->rate);
 
     if (channels > 2) {

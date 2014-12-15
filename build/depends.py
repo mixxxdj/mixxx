@@ -378,7 +378,7 @@ class ReplayGain(Dependence):
 
 
 class SoundTouch(Dependence):
-    SOUNDTOUCH_PATH = 'soundtouch-1.6.0'
+    SOUNDTOUCH_PATH = 'soundtouch-1.8.0'
 
     def sse_enabled(self, build):
         optimize = int(util.get_flags(build.env, 'optimize', 1))
@@ -388,21 +388,22 @@ class SoundTouch(Dependence):
 
     def sources(self, build):
         sources = ['engine/enginebufferscalest.cpp',
-                   '#lib/%s/SoundTouch.cpp' % self.SOUNDTOUCH_PATH,
-                   '#lib/%s/TDStretch.cpp' % self.SOUNDTOUCH_PATH,
-                   '#lib/%s/RateTransposer.cpp' % self.SOUNDTOUCH_PATH,
                    '#lib/%s/AAFilter.cpp' % self.SOUNDTOUCH_PATH,
+                   '#lib/%s/BPMDetect.cpp' % self.SOUNDTOUCH_PATH,
                    '#lib/%s/FIFOSampleBuffer.cpp' % self.SOUNDTOUCH_PATH,
                    '#lib/%s/FIRFilter.cpp' % self.SOUNDTOUCH_PATH,
+                   '#lib/%s/InterpolateCubic.cpp' % self.SOUNDTOUCH_PATH,
+                   '#lib/%s/InterpolateLinear.cpp' % self.SOUNDTOUCH_PATH,
+                   '#lib/%s/InterpolateShannon.cpp' % self.SOUNDTOUCH_PATH,
                    '#lib/%s/PeakFinder.cpp' % self.SOUNDTOUCH_PATH,
-                   '#lib/%s/BPMDetect.cpp' % self.SOUNDTOUCH_PATH]
+                   '#lib/%s/RateTransposer.cpp' % self.SOUNDTOUCH_PATH,
+                   '#lib/%s/SoundTouch.cpp' % self.SOUNDTOUCH_PATH,
+                   '#lib/%s/TDStretch.cpp' % self.SOUNDTOUCH_PATH]
 
         # SoundTouch CPU optimizations are only for x86
         # architectures. SoundTouch automatically ignores these files when it is
         # not being built for an architecture that supports them.
-        cpu_detection = '#lib/%s/cpu_detect_x86_win.cpp' if build.toolchain_is_msvs else \
-            '#lib/%s/cpu_detect_x86_gcc.cpp'
-        sources.append(cpu_detection % self.SOUNDTOUCH_PATH)
+        sources.append('#lib/%s/cpu_detect_x86.cpp' % self.SOUNDTOUCH_PATH)
 
         # Check if the compiler has SSE extention enabled
         # Allways the case on x64 (core instructions)
@@ -415,15 +416,12 @@ class SoundTouch(Dependence):
     def configure(self, build, conf, env=None):
         if env is None:
             env = build.env
-        if build.platform_is_windows:
-            # Regardless of the bitwidth, ST checks for WIN32
-            env.Append(CPPDEFINES='WIN32')
         env.Append(CPPPATH=['#lib/%s' % self.SOUNDTOUCH_PATH])
 
-        # Check if the compiler has SSE extention enabled
-        # Allways the case on x64 (core instructions)
-        if self.sse_enabled(build):
-            env.Append(CPPDEFINES='SOUNDTOUCH_ALLOW_X86_OPTIMIZATIONS')
+        # If we do not want SSE optimizations (either the architecture does not
+        # support it or we are running a non-optimized build) then disable them.
+        if not self.sse_enabled(build):
+            env.Append(CPPDEFINES='SOUNDTOUCH_DISABLE_X86_OPTIMIZATIONS')
 
 
 class RubberBand(Dependence):
