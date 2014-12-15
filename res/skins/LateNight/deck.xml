@@ -322,9 +322,9 @@
 		                        <Size>2me,10f</Size>
 		                        <TooltipId>vinylcontrol_status</TooltipId>
 		                        <NumberPos>3</NumberPos>
-		                        <PathStatusLight sizemode="RESIZE">btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
-		                        <PathStatusLight2 sizemode="RESIZE">btn_vinylcontrol_indicator_horizontal2.png</PathStatusLight2>
-		                        <PathStatusLight3 sizemode="RESIZE">btn_vinylcontrol_indicator_horizontal3.png</PathStatusLight3>
+		                        <PathStatusLight scalemode="STRETCH">btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
+		                        <PathStatusLight2 scalemode="STRETCH">btn_vinylcontrol_indicator_horizontal2.png</PathStatusLight2>
+		                        <PathStatusLight3 scalemode="STRETCH">btn_vinylcontrol_indicator_horizontal3.png</PathStatusLight3>
 		                        <Connection>
 		                            <ConfigKey>[Channel<Variable name="channum"/>],vinylcontrol_status</ConfigKey>
 		                        </Connection>

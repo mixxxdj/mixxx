@@ -15,8 +15,8 @@
         <SizePolicy>min,me</SizePolicy>
         <MinimumSize>40,100</MinimumSize>
         <MaximumSize>40,-1</MaximumSize>
-        <Handle>handle-vertical.svg</Handle>
-        <Slider>slider-vertical.svg</Slider>
+        <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
+        <Handle scalemode="STRETCH_ASPECT">handle-vertical.svg</Handle>
         <Horizontal>false</Horizontal>
         <Connection>
           <ConfigKey><Variable name="group"/>,volume</ConfigKey>

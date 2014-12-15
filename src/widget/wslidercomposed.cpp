@@ -50,13 +50,20 @@ void WSliderComposed::setup(QDomNode node, const SkinContext& context) {
     unsetPixmaps();
 
     if (context.hasNode(node, "Slider")) {
-        PixmapSource sourceSlider = context.getPixmapSource(context.selectNode(node, "Slider"));
-        setSliderPixmap(sourceSlider);
+        QDomElement slider = context.selectElement(node, "Slider");
+        // The implicit default in <1.12.0 was FIXED so we keep it for backwards
+        // compatibility.
+        PixmapSource sourceSlider = context.getPixmapSource(slider);
+        setSliderPixmap(sourceSlider, context.selectScaleMode(slider, Paintable::FIXED));
     }
 
-    PixmapSource sourceHandle = context.getPixmapSource(context.selectNode(node, "Handle"));
+    QDomElement handle = context.selectElement(node, "Handle");
+    PixmapSource sourceHandle = context.getPixmapSource(handle);
     bool h = context.selectBool(node, "Horizontal", false);
-    setHandlePixmap(h, sourceHandle);
+    // The implicit default in <1.12.0 was FIXED so we keep it for backwards
+    // compatibility.
+    setHandlePixmap(h, sourceHandle,
+                    context.selectScaleMode(handle, Paintable::FIXED));
 
     if (context.hasNode(node, "EventWhileDrag")) {
         if (context.selectString(node, "EventWhileDrag").contains("no")) {
@@ -76,44 +83,26 @@ void WSliderComposed::setup(QDomNode node, const SkinContext& context) {
     }
 }
 
-void WSliderComposed::setSliderPixmap(PixmapSource sourceSlider) {
-    m_pSlider = WPixmapStore::getPaintable(sourceSlider,
-                                           Paintable::STRETCH);
+void WSliderComposed::setSliderPixmap(PixmapSource sourceSlider,
+                                      Paintable::DrawMode drawMode) {
+    m_pSlider = WPixmapStore::getPaintable(sourceSlider, drawMode);
     if (!m_pSlider) {
         qDebug() << "WSliderComposed: Error loading slider pixmap:" << sourceSlider.getPath();
-    } else {
+    } else if (drawMode == Paintable::FIXED) {
         // Set size of widget, using size of slider pixmap
         setFixedSize(m_pSlider->size());
     }
 }
 
-void WSliderComposed::setHandlePixmap(bool bHorizontal, PixmapSource sourceHandle) {
+void WSliderComposed::setHandlePixmap(bool bHorizontal,
+                                      PixmapSource sourceHandle,
+                                      Paintable::DrawMode mode) {
     m_bHorizontal = bHorizontal;
-    m_pHandle = WPixmapStore::getPaintable(sourceHandle,
-                                           Paintable::STRETCH);
+    m_pHandle = WPixmapStore::getPaintable(sourceHandle, mode);
+    m_dHandleLength = calculateHandleLength();
     if (!m_pHandle) {
         qDebug() << "WSliderComposed: Error loading handle pixmap:" << sourceHandle.getPath();
     } else {
-        if (m_bHorizontal) {
-            // Stretch the pixmap to be the height of the widget.
-            if (m_pHandle->height() != 0.0) {
-                const qreal aspect = static_cast<double>(m_pHandle->width()) /
-                        static_cast<double>(m_pHandle->height());
-                m_dHandleLength = aspect * height();
-            } else {
-                m_dHandleLength = m_pHandle->width();
-            }
-        } else {
-            // Stretch the pixmap to be the width of the widget.
-            if (m_pHandle->width() != 0.0) {
-                const qreal aspect = static_cast<double>(m_pHandle->height()) /
-                        static_cast<double>(m_pHandle->width());
-                m_dHandleLength = aspect * width();
-            } else {
-                m_dHandleLength = m_pHandle->height();
-            }
-        }
-
         // Value is unused in WSliderComposed.
         onConnectedControlChanged(getControlParameter(), 0);
         update();
@@ -220,16 +209,16 @@ void WSliderComposed::paintEvent(QPaintEvent *) {
     p.drawPrimitive(QStyle::PE_Widget, option);
 
     if (!m_pSlider.isNull() && !m_pSlider->isNull()) {
-        m_pSlider->draw(0, 0, &p);
+        m_pSlider->draw(rect(), &p);
     }
 
     if (!m_pHandle.isNull() && !m_pHandle->isNull()) {
         if (m_bHorizontal) {
-            // Stretch the pixmap to be the height of the widget.
+            // The handle's draw mode determines whether it is stretched.
             QRectF targetRect(m_dPos, 0, m_dHandleLength, height());
             m_pHandle->draw(targetRect, &p);
         } else {
-            // Stretch the pixmap to be the width of the widget.
+            // The handle's draw mode determines whether it is stretched.
             QRectF targetRect(0, m_dPos, width(), m_dHandleLength);
             m_pHandle->draw(targetRect, &p);
         }
@@ -240,26 +229,7 @@ void WSliderComposed::resizeEvent(QResizeEvent* pEvent) {
     Q_UNUSED(pEvent);
     m_dOldValue = -1;
     m_dPos = -1;
-
-    if (m_bHorizontal) {
-        // Stretch the pixmap to be the height of the widget.
-        if (m_pHandle->height() != 0.0) {
-            const qreal aspect = static_cast<double>(m_pHandle->width()) /
-                    static_cast<double>(m_pHandle->height());
-            m_dHandleLength = aspect * height();
-        } else {
-            m_dHandleLength = m_pHandle->width();
-        }
-    } else {
-        // Stretch the pixmap to be the width of the widget.
-        if (m_pHandle->width() != 0.0) {
-            const qreal aspect = static_cast<double>(m_pHandle->height()) /
-                    static_cast<double>(m_pHandle->width());
-            m_dHandleLength = aspect * width();
-        } else {
-            m_dHandleLength = m_pHandle->height();
-        }
-    }
+    m_dHandleLength = calculateHandleLength();
 
     // Re-calculate m_dPos based on our new width/height.
     onConnectedControlChanged(getControlParameter(), 0);
@@ -309,4 +279,32 @@ void WSliderComposed::fillDebugTooltip(QStringList* debug) {
            << QString("SliderPosition: %1").arg(m_dPos)
            << QString("SliderLength: %1").arg(sliderLength)
            << QString("HandleLength: %1").arg(m_dHandleLength);
+}
+
+double WSliderComposed::calculateHandleLength() {
+    if (m_pHandle) {
+        Paintable::DrawMode mode = m_pHandle->drawMode();
+        if (m_bHorizontal) {
+            // Stretch the pixmap to be the height of the widget.
+            if (mode == Paintable::FIXED || mode == Paintable::STRETCH ||
+                    mode == Paintable::TILE || m_pHandle->height() == 0.0) {
+                return m_pHandle->width();
+            } else if (mode == Paintable::STRETCH_ASPECT) {
+                const qreal aspect = static_cast<double>(m_pHandle->width()) /
+                        static_cast<double>(m_pHandle->height());
+                return aspect * height();
+            }
+        } else {
+            // Stretch the pixmap to be the width of the widget.
+            if (mode == Paintable::FIXED || mode == Paintable::STRETCH ||
+                    mode == Paintable::TILE || m_pHandle->width() == 0.0) {
+                return m_pHandle->height();
+            } else if (mode == Paintable::STRETCH_ASPECT) {
+                const qreal aspect = static_cast<double>(m_pHandle->height()) /
+                        static_cast<double>(m_pHandle->width());
+                return aspect * width();
+            }
+        }
+    }
+    return 0;
 }

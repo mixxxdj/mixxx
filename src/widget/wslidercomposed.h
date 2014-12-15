@@ -43,8 +43,9 @@ class WSliderComposed : public WWidget  {
     virtual ~WSliderComposed();
 
     void setup(QDomNode node, const SkinContext& context);
-    void setSliderPixmap(PixmapSource sourceSlider);
-    void setHandlePixmap(bool bHorizontal, PixmapSource sourceHandle);
+    void setSliderPixmap(PixmapSource sourceSlider, Paintable::DrawMode mode);
+    void setHandlePixmap(bool bHorizontal, PixmapSource sourceHandle,
+                         Paintable::DrawMode mode);
     inline bool isHorizontal() const { return m_bHorizontal; };
 
   public slots:
@@ -60,6 +61,7 @@ class WSliderComposed : public WWidget  {
     virtual void resizeEvent(QResizeEvent* e);
 
   private:
+    double calculateHandleLength();
     void unsetPixmaps();
 
     double m_dOldValue;
