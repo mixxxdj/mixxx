@@ -63,8 +63,6 @@ LibraryScanner::LibraryScanner(QWidget* pParentWidget, TrackCollection* collecti
     // connect them to our slots to run the command on the scanner thread.
     connect(this, SIGNAL(startScan()),
             this, SLOT(slotStartScan()));
-    connect(this, SIGNAL(shutdownScanner()),
-            this, SLOT(slotShutdownScanner()));
 
     // Force the GUI thread's TrackInfoObject cache to be cleared when a library
     // scan is finished, because we might have modified the database directly

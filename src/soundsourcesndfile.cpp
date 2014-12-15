@@ -75,6 +75,7 @@ Result SoundSourceSndFile::open() {
     }
 
     channels = info.channels;
+    setChannels(channels);
     setSampleRate(info.samplerate);
     // This is the 'virtual' filelength. No matter how many channels the file
     // actually has, we pretend it has 2.

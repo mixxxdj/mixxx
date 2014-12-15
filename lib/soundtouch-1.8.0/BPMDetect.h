@@ -26,10 +26,10 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Last changed  : $Date: 2010-01-06 20:59:23 +0200 (Wed, 06 Jan 2010) $
+// Last changed  : $Date: 2012-08-30 15:53:44 -0400 (Thu, 30 Aug 2012) $
 // File revision : $Revision: 4 $
 //
-// $Id: BPMDetect.h 86 2010-01-06 18:59:23Z oparviai $
+// $Id: BPMDetect.h 150 2012-08-30 19:53:44Z oparviai $
 //
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -67,7 +67,7 @@ namespace soundtouch
 #define MIN_BPM 29
 
 /// Maximum allowed BPM rate. Used to restrict accepted result below a reasonable limit.
-#define MAX_BPM 230
+#define MAX_BPM 200
 
 
 /// Class for calculating BPM rate for audio data.
@@ -82,15 +82,6 @@ protected:
 
     /// RMS volume sliding average approximation level accumulator
     double RMSVolumeAccu;
-
-    /// Level below which to cut off signals
-    double cutCoeff;
-
-    /// Accumulator for accounting what proportion of samples exceed cutCoeff level
-    double aboveCutAccu;
-
-    /// Accumulator for total samples to calculate proportion of samples that exceed cutCoeff level
-    double totalAccu;
 
     /// Sample average counter.
     int decimateCount;
@@ -136,6 +127,9 @@ protected:
     void calcEnvelope(soundtouch::SAMPLETYPE *samples,  ///< Pointer to input/output data buffer
                       int numsamples                    ///< Number of samples in buffer
                       );
+
+    /// remove constant bias from xcorr data
+    void removeBias();
 
 public:
     /// Constructor.

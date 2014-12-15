@@ -12,7 +12,6 @@
         <WidgetGroup>
             <ObjectName>KillButton<Variable name="reversed"/></ObjectName>
             <Layout>horizontal</Layout>
-            <ObjectName>debugbg</ObjectName>
             <SizePolicy>min,min</SizePolicy>
             <MinimumSize>26,30</MinimumSize>
             <Children>

@@ -1626,6 +1626,14 @@ namespace
     }
 }
 
+struct TrackWithoutCover {
+    TrackWithoutCover() : trackId(-1) { }
+    int trackId;
+    QString trackLocation;
+    QString directoryPath;
+    QString trackAlbum;
+};
+
 void TrackDAO::detectCoverArtForUnknownTracks(volatile const bool* pCancel,
                                               QSet<int>* pTracksChanged) {
     // WARNING TO ANYONE TOUCHING THIS IN THE FUTURE
@@ -1636,6 +1644,7 @@ void TrackDAO::detectCoverArtForUnknownTracks(volatile const bool* pCancel,
     // 2).
 
     QSqlQuery query(m_database);
+    query.setForwardOnly(true);
     query.prepare("SELECT "
                   " library.id, " // 0
                   " track_locations.location, " // 1
@@ -1649,6 +1658,38 @@ void TrackDAO::detectCoverArtForUnknownTracks(volatile const bool* pCancel,
                   "WHERE coverart_source is NULL or coverart_source = 0 "
                   "ORDER BY track_locations.directory");
 
+    QList<TrackWithoutCover> tracksWithoutCover;
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query)
+                << "failed looking for tracks with unknown cover art";
+        return;
+    }
+
+    // We quickly iterate through the results to prevent blocking the database
+    // for other operations. Bug #1399981.
+    while (query.next()) {
+        if (*pCancel) {
+            return;
+        }
+
+        TrackWithoutCover track;
+        track.trackId = query.value(0).toInt();
+        track.trackLocation = query.value(1).toString();
+        // TODO(rryan) use QFileInfo path instead? symlinks? relative?
+        track.directoryPath = query.value(2).toString();
+        track.trackAlbum = query.value(3).toString();
+
+        CoverInfo::Source source = static_cast<CoverInfo::Source>(
+            query.value(4).toInt());
+        if (source == CoverInfo::USER_SELECTED) {
+            qWarning() << "PROGRAMMING ERROR! detectCoverArtForUnknownTracks"
+                       << "got a USER_SELECTED track. Skipping.";
+            continue;
+        }
+        tracksWithoutCover.append(track);
+    }
+
     QSqlQuery updateQuery(m_database);
     updateQuery.prepare(
         "UPDATE library SET "
@@ -1658,39 +1699,22 @@ void TrackDAO::detectCoverArtForUnknownTracks(volatile const bool* pCancel,
         "  coverart_location=:coverart_location "
         "WHERE id=:track_id");
 
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query)
-                << "failed looking for tracks with unknown cover art";
-        return;
-    }
 
     QRegExp coverArtFilenames(CoverArtUtils::supportedCoverArtExtensionsRegex(),
                               Qt::CaseInsensitive);
     QString currentDirectoryPath;
     MDir currentDirectory;
     QLinkedList<QFileInfo> possibleCovers;
-    while (query.next()) {
+
+    foreach (const TrackWithoutCover& track, tracksWithoutCover) {
         if (*pCancel) {
             return;
         }
 
-        int trackId = query.value(0).toInt();
-        QString trackLocation = query.value(1).toString();
-        // TODO(rryan) use QFileInfo path instead? symlinks? relative?
-        QString directoryPath = query.value(2).toString();
-        QString trackAlbum = query.value(3).toString();
-        CoverInfo::Source source = static_cast<CoverInfo::Source>(
-            query.value(4).toInt());
-        if (source == CoverInfo::USER_SELECTED) {
-            qWarning() << "PROGRAMMING ERROR! detectCoverArtForUnknownTracks"
-                       << "got a USER_SELECTED track. Skipping.";
-            continue;
-        }
-
         //qDebug() << "Searching for cover art for" << trackLocation;
-        emit(progressCoverArt(trackLocation));
+        emit(progressCoverArt(track.trackLocation));
 
-        QFileInfo trackInfo(trackLocation);
+        QFileInfo trackInfo(track.trackLocation);
         if (!trackInfo.exists()) {
             //qDebug() << trackLocation << "does not exist";
             continue;
@@ -1705,25 +1729,25 @@ void TrackDAO::detectCoverArtForUnknownTracks(volatile const bool* pCancel,
             updateQuery.bindValue(":coverart_hash",
                                   CoverArtUtils::calculateHash(image));
             updateQuery.bindValue(":coverart_location", "");
-            updateQuery.bindValue(":track_id", trackId);
+            updateQuery.bindValue(":track_id", track.trackId);
             if (!updateQuery.exec()) {
                 LOG_FAILED_QUERY(updateQuery) << "failed to write metadata cover";
             } else {
-                pTracksChanged->insert(trackId);
+                pTracksChanged->insert(track.trackId);
             }
             continue;
         }
 
-        if (directoryPath != currentDirectoryPath) {
+        if (track.directoryPath != currentDirectoryPath) {
             possibleCovers.clear();
-            currentDirectoryPath = directoryPath;
+            currentDirectoryPath = track.directoryPath;
             currentDirectory = MDir(currentDirectoryPath);
             possibleCovers = CoverArtUtils::findPossibleCoversInFolder(
                 currentDirectoryPath);
         }
 
         CoverArt art = CoverArtUtils::selectCoverArtForTrack(
-            trackInfo.baseName(), trackAlbum, possibleCovers);
+            trackInfo.baseName(), track.trackAlbum, possibleCovers);
 
         updateQuery.bindValue(":coverart_type",
                               static_cast<int>(art.info.type));
@@ -1731,11 +1755,11 @@ void TrackDAO::detectCoverArtForUnknownTracks(volatile const bool* pCancel,
                               static_cast<int>(art.info.source));
         updateQuery.bindValue(":coverart_hash", art.info.hash);
         updateQuery.bindValue(":coverart_location", art.info.coverLocation);
-        updateQuery.bindValue(":track_id", trackId);
+        updateQuery.bindValue(":track_id", track.trackId);
         if (!updateQuery.exec()) {
             LOG_FAILED_QUERY(updateQuery) << "failed to write file or none cover";
         } else {
-            pTracksChanged->insert(trackId);
+            pTracksChanged->insert(track.trackId);
         }
     }
 }

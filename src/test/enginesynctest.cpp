@@ -1293,7 +1293,7 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
         ConfigKey(m_sGroup2, "file_bpm")));
     ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->set(0.8);
     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(1.0));
-    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2.data(), 130, 0.0);
+    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2.data(), 100, 0.0);
     m_pTrack2->setBeats(pBeats2);
     pFileBpm2->set(100.0);
 
