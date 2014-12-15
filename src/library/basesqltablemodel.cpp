@@ -151,11 +151,7 @@ QVariant BaseSqlTableModel::headerData(int section, Qt::Orientation orientation,
         }
         return widthValue;
     } else if (role == TrackModel::kHeaderNameRole && orientation == Qt::Horizontal) {
-        ColumnCache::Column c = m_tableColumnCache.columnForFieldIndex(section);
-        if (c == ColumnCache::COLUMN_LIBRARYTABLE_INVALID) {
-            return "";
-        }
-        return m_tableColumnCache.columnName(c);
+        return m_headerInfo.value(section).value(role);
     }
     return QAbstractTableModel::headerData(section, orientation, role);
 }

@@ -85,19 +85,19 @@ class ColumnCache {
     }
 
     inline Column columnForFieldIndex(int index) const {
-        if (index < 0 || index >= NUM_COLUMNS) {
+        if (index < 0) {
             return COLUMN_LIBRARYTABLE_INVALID;
         }
         return m_columnByIndex[index];
     }
 
     inline QString columnName(Column column) const {
-        return m_columnIndexByName.key(static_cast<int>(column));
+        return m_columnIndexByName.key(fieldIndex(column));
     }
 
     QMap<QString, int> m_columnIndexByName;
     // A mapping from logical index aka field index to Column enum.
-    Column m_columnByIndex[NUM_COLUMNS];
+    QMap<int, Column> m_columnByIndex;
     // A mapping from column enum to logical index.
     int m_columnIndexByEnum[NUM_COLUMNS];
 };
