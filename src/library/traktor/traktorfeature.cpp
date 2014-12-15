@@ -30,7 +30,7 @@ bool TraktorTrackModel::isColumnHiddenByDefault(int column) {
     if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE)) {
         return true;
     }
-    return false;
+    return BaseSqlTableModel::isColumnHiddenByDefault(column);
 }
 
 TraktorPlaylistModel::TraktorPlaylistModel(QObject* parent,
@@ -47,7 +47,7 @@ bool TraktorPlaylistModel::isColumnHiddenByDefault(int column) {
     if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE)) {
         return true;
     }
-    return false;
+    return BaseSqlTableModel::isColumnHiddenByDefault(column);
 }
 
 TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollection)
