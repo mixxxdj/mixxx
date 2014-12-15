@@ -136,7 +136,7 @@
                         is the pushed state.  So we have to invert everything so the
                         default is 'don't make the library huge' -->
                         <Size>80f,20f</Size>
-                        <TooltipId>show_big_library</TooltipId>
+                        <TooltipId>toggle_expanded_library</TooltipId>
                         <ObjectName>GuiToggleButtonInverted</ObjectName>
                         <NumberStates>2</NumberStates>
                         <State>

@@ -168,7 +168,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Show Effects Rack")
             << tr("Show or hide the effects rack.");
 
-    add("show_big_library")
+    add("toggle_expanded_library")
             << tr("Toggle Big Library")
             << tr("Makes the library fill the screen.");
 
