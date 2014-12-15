@@ -613,6 +613,10 @@
 								<ConfigKey>[Channel<Variable name="channum"/>],sync_key</ConfigKey>
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
+							<Connection>
+								<ConfigKey>[Channel<Variable name="channum"/>],reset_key</ConfigKey>
+								<ButtonState>LeftButton</ButtonState>
+							</Connection>
 						</PushButton>
 		
 						<!--
