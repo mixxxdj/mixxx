@@ -863,6 +863,14 @@ QTableView::item:selected {
   background-color: #725309;
 }
 
+/* BPM lock icon in the library "BPM" column. */
+#LibraryBPMButton::indicator:checked { image: url(:/images/library/ic_library_checked.png); }
+#LibraryBPMButton::indicator:unchecked { image: url(:/images/library/ic_library_unchecked.png); }
+#LibraryBPMButton::item:selected {
+  color: #cfb32c;
+  background-color: #725309;
+}
+
 /* Button in library "Preview" column */
 QPushButton#LibraryPreviewButton {
   width: 23px;
