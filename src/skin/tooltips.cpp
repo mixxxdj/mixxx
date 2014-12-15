@@ -156,6 +156,26 @@ void Tooltips::addStandardTooltips() {
             << tr("Cover Art")
             << tr("Show/hide Cover Art.");
 
+    add("toggle_4decks")
+            << tr("Toggle 4 Decks")
+            << tr("Switches between showing 2 decks and 4 decks.");
+
+    add("show_library")
+            << tr("Show Library")
+            << tr("Show or hide the track library.");
+
+    add("show_effects")
+            << tr("Show Effects Rack")
+            << tr("Show or hide the effects rack.");
+
+    add("toggle_expanded_library")
+            << tr("Toggle Big Library")
+            << tr("Makes the library fill the screen.");
+
+    add("show_mixer")
+            << tr("Toggle Mixer")
+            << tr("Show or hide the mixer.");
+
     add("microphone_volume")
             << tr("Microphone Volume")
             << tr("Adjusts the microphone volume.")

@@ -24,7 +24,6 @@
 #UILowerHalf {
   background-color: #0f0f0f;
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  padding-top: 10px;
 }
 
 #HorizBorder {
@@ -606,14 +605,16 @@
   background-color: #0e0e0e;
   border-top: 1px solid #585858;
   /*border-bottom: 1px solid #585858;*/
-  padding: 2px;
-  padding-left: 0px;
+  padding-bottom: 0px;
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-top: 5px;
 }
 
 #SamplerDeck {
-  padding: 0px;
-  margin: 10px;
-  margin-top: 0px;
+  margin-top: 5px;
+  margin-left: 5px;
+  margin-right: 5px;
   border: 1px solid #585858;
   background-color: #1e1e1e;
 }
@@ -742,7 +743,7 @@
 
 #EffectRackContainer {
   background-color: #0e0e0e;
-  padding-bottom:5px;
+  padding-top: 5px;
   /*border-bottom: 10px solid #585858;*/
 }
 
@@ -794,10 +795,10 @@
 /* this is now inline in the pushbutton so we can change styles */
 /*#EffectUnitGroupControlButton {
   font: bold 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-  color: #e17800;
+  color: #eece33;
   text-transform: none;
   text-align: center;
-  border: 1px solid #e17800;
+  border: 1px solid #eece33;
   margin: 1px;
 }*/
 
@@ -816,7 +817,7 @@
     font: bold 11px/13px Lucida Grande, Lucida Sans Unicode,
           Arial, Verdana, sans-serif;
     color: #0e0e0e;
-    background-color: #e17800;
+    background-color: #eece33;
     text-transform: none;
     text-align: center;
     border: 1px solid #585858;
@@ -839,7 +840,7 @@
           Lucida Sans Unicode, Arial,
           Verdana, sans-serif;
     color: #0e0e0e;
-    background-color: #e17800;
+    background-color: #eece33;
     margin-right: 1px;
 }
 
