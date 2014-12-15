@@ -615,7 +615,7 @@
 							</Connection>
 							<Connection>
 								<ConfigKey>[Channel<Variable name="channum"/>],reset_key</ConfigKey>
-								<ButtonState>LeftButton</ButtonState>
+								<ButtonState>RightButton</ButtonState>
 							</Connection>
 						</PushButton>
 		
