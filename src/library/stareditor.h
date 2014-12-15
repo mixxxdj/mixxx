@@ -33,35 +33,46 @@
 #include <QStyle>
 #include <QSize>
 #include <QPaintEvent>
+#include <QStyleOptionViewItemV4>
+#include <QTableView>
+#include <QModelIndex>
 
-#include "starrating.h"
+#include "library/starrating.h"
 
 class StarEditor : public QWidget {
     Q_OBJECT
   public:
-    StarEditor(QWidget *parent, const QStyleOptionViewItem& option);
+    StarEditor(QWidget* parent, QTableView* pTableView,
+               const QModelIndex& index,
+               const QStyleOptionViewItemV4& option);
 
     QSize sizeHint() const;
-    void setStarRating(const StarRating &starRating) {
+    void setStarRating(const StarRating& starRating) {
         m_starRating = starRating;
     }
     StarRating starRating() { return m_starRating; }
+
+    static void renderHelper(QPainter* painter, QTableView* pTableView,
+                             const QStyleOptionViewItemV4& option,
+                             StarRating* pStarRating);
 
   signals:
     void editingFinished();
 
   protected:
-    void paintEvent(QPaintEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
+    void paintEvent(QPaintEvent* event);
+    void mouseMoveEvent(QMouseEvent* event);
+    void mouseReleaseEvent(QMouseEvent* event);
     //if the mouse leaves the editing index set starCount to 0
-    void leaveEvent(QEvent *);
+    void leaveEvent(QEvent*);
 
   private:
     int starAtPosition(int x);
 
+    QTableView* m_pTableView;
+    QModelIndex m_index;
+    QStyleOptionViewItemV4 m_styleOption;
     StarRating m_starRating;
-    bool m_isSelected;
 };
 
 #endif
