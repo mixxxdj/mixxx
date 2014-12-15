@@ -19,6 +19,15 @@
 
 #include <signal.h>
 
+// shout.h checks for WIN32 to see if we are on Windows.
+#ifdef __WINDOWS__
+#define WIN32
+#endif
+#include <shout/shout.h>
+#ifdef __WINDOWS__
+#undef WIN32
+#endif
+
 #include "engine/sidechain/engineshoutcast.h"
 #include "configobject.h"
 #include "playerinfo.h"

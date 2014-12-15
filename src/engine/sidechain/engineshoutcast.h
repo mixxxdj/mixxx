@@ -22,8 +22,6 @@
 #include <QMessageBox>
 #include <QTextCodec>
 
-#include <shout/shout.h>
-
 #include "configobject.h"
 #include "controlobject.h"
 #include "controlobjectthread.h"
@@ -37,6 +35,13 @@
 #define SHOUTCAST_CONNECTED 2
 
 class Encoder;
+
+// Forward declare libshout structures to prevent leaking shout.h definitions
+// beyond where they are needed.
+struct shout;
+typedef struct shout shout_t;
+struct _util_dict;
+typedef struct _util_dict shout_metadata_t;
 
 class EngineShoutcast : public QObject, public EncoderCallback, public SideChainWorker {
     Q_OBJECT
