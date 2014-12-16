@@ -113,6 +113,24 @@ Mixxx::AudioSource::size_type SoundSourceOpus::readStereoFrameSamplesInterleaved
     return readCount;
 }
 
+namespace
+{
+    class OggOpusFileOwner {
+    public:
+        explicit OggOpusFileOwner(OggOpusFile* pFile): m_pFile(pFile) {
+        }
+        ~OggOpusFileOwner() {
+            op_free(m_pFile);
+        }
+        operator OggOpusFile*() const {
+            return m_pFile;
+        }
+    private:
+        OggOpusFileOwner(const OggOpusFileOwner&); // disable copy constructor
+        OggOpusFile* const m_pFile;
+    };
+}
+
 /*
  Parse the the file to get metadata
  */
@@ -121,7 +139,7 @@ Result SoundSourceOpus::parseMetadata(Mixxx::TrackMetadata* pMetadata) {
 
     QByteArray qBAFilename = getFilename().toLocal8Bit();
 
-    OggOpusFile *l_ptrOpusFile = op_open_file(qBAFilename.constData(), &error);
+    OggOpusFileOwner l_ptrOpusFile(op_open_file(qBAFilename.constData(), &error));
 
     pMetadata->setChannels(op_channel_count(l_ptrOpusFile, -1));
     pMetadata->setSampleRate(kOpusSampleRate);
@@ -190,8 +208,6 @@ Result SoundSourceOpus::parseMetadata(Mixxx::TrackMetadata* pMetadata) {
         //qDebug() << "Comment" << i << l_ptrOpusTags->comment_lengths[i] <<
         //" (" << l_ptrOpusTags->user_comments[i] << ")" << l_STag << "*" << l_SPayload;
     }
-
-    op_free(l_ptrOpusFile);
 #endif
 
     return OK;
