@@ -29,8 +29,8 @@ KeyControl::KeyControl(QString group,
     m_pPitch = new ControlPotmeter(ConfigKey(group, "pitch"), -3.0, 3.0, true);
     // Course adjust by full step.
     m_pPitch->setStepCount(6);
-    // Fine adjust with semitone / 4.
-    m_pPitch->setSmallStepCount(48);
+    // Fine adjust with semitone / 5 = 20 ct;.
+    m_pPitch->setSmallStepCount(30);
 
     connect(m_pPitch, SIGNAL(valueChanged(double)),
             this, SLOT(slotPitchChanged(double)),
@@ -241,12 +241,10 @@ void KeyControl::updateKeyCOs(double fileKeyNumeric, double pitch) {
 
 void KeyControl::slotSetEngineKey(double key) {
     // Always set to a full key, reset key_distance
-    qDebug() << "KeyControl::slotSetEngineKey" << key;
     setEngineKey(key, 0.0);
 }
 
 void KeyControl::slotSetEngineKeyDistance(double key_distance) {
-    qDebug() << "KeyControl::slotSetEngineKeyDistance" << key_distance;
     setEngineKey(m_pEngineKey->get(), key_distance);
 }
 
@@ -260,8 +258,6 @@ void KeyControl::setEngineKey(double key, double key_distance) {
         newKey == mixxx::track::io::key::INVALID) {
         return;
     }
-
-    qDebug() << "KeyControl::setEngineKey" << key << key_distance;
 
     int stepsToTake = KeyUtils::shortestStepsToKey(thisFileKey, newKey);
     double pitchToTakeOctaves = (stepsToTake + key_distance) / 12.0;

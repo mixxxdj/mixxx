@@ -353,6 +353,12 @@ void Tooltips::addStandardTooltips() {
             << tr("Decks with sync locked will all play at the same tempo, and decks that also have "
                   "quantize enabled will always have their beats lined up.");
 
+    add("sync_reset_key")
+            << tr("Sync and Reset Key")
+            << QString("%1: %2").arg(leftClick, tr("Syncs the pitch (Key) to be compatible with the the other track, "))
+            << tr("if a Key is detected on both.")
+            << QString("%1: %2").arg(rightClick, tr("Resets the pitch (Key) to original track pitch."));
+
     add("sync_master")
             << tr("Enable Sync Clock Master")
             << tr("When enabled, this device will serve as the master clock for all other decks.");
@@ -366,6 +372,19 @@ void Tooltips::addStandardTooltips() {
             << tr("Pitch Control")
             << tr("Changes the track pitch independent of the tempo.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
+
+    add("pitch_up")
+            << tr("Pitch Control")
+            << tr("Changes the track pitch independent of the tempo.")
+            << QString("%1: %2").arg(leftClick, tr("Increases the pitch by one semitone."))
+            << QString("%1: %2").arg(rightClick, tr("Increases the pitch by 20 ct."));
+
+    add("pitch_down")
+            << tr("Pitch Control")
+            << tr("Changes the track pitch independent of the tempo.")
+            << QString("%1: %2").arg(leftClick, tr("Decreases the pitch by one semitone."))
+            << QString("%1: %2").arg(rightClick, tr("Decreases the pitch by 20 ct."));
+
 
     add("rate_display")
             << tr("Pitch Rate")
