@@ -77,7 +77,6 @@ class SliderEventHandler {
         } else {
             if (e->button() == Qt::RightButton) {
                 pWidget->resetControlParameter();
-                pWidget->update();
                 m_bRightButtonPressed = true;
             } else {
                 if (m_bHorizontal) {
@@ -111,12 +110,12 @@ class SliderEventHandler {
         newParameter = math_clamp_unsafe(newParameter, 0.0, 1.0);
 
         pWidget->setControlParameter(newParameter);
-        onConnectedControlChanged(pWidget, newParameter, 0);
+        onConnectedControlChanged(pWidget, newParameter);
         pWidget->update();
         e->accept();
     }
 
-    void onConnectedControlChanged(T* pWidget, double dParameter, double) {
+    void onConnectedControlChanged(T* pWidget, double dParameter) {
         // WARNING: The second parameter to this method is unused and called with
         // invalid values in parts of WSliderComposed. Do not use it unless you fix
         // this.
@@ -194,9 +193,6 @@ class SliderEventHandler {
     bool m_bDrag;
     // Is true if events is emitted while the slider is dragged
     bool m_bEventWhileDrag;
-
-    // Starting point when left mouse button is pressed
-    QPoint m_startPos;
 };
 
 #endif /* SLIDEREVENTHANDLER_H */

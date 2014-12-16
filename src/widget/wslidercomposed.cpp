@@ -135,7 +135,7 @@ void WSliderComposed::paintEvent(QPaintEvent *) {
     }
 
     if (!m_pHandle.isNull() && !m_pHandle->isNull()) {
-        double drawPos = m_handler.valueToPosition(getControlParameterDisplay());
+        double drawPos = m_handler.parameterToPosition(getControlParameterDisplay());
         if (m_bHorizontal) {
             // The handle's draw mode determines whether it is stretched.
             QRectF targetRect(drawPos, 0, m_dHandleLength, height());
@@ -161,8 +161,8 @@ void WSliderComposed::resizeEvent(QResizeEvent* pEvent) {
     onConnectedControlChanged(getControlParameter(), 0);
 }
 
-void WSliderComposed::onConnectedControlChanged(double dParameter, double x) {
-    m_handler.onConnectedControlChanged(this, dParameter, x);
+void WSliderComposed::onConnectedControlChanged(double dParameter, double) {
+    m_handler.onConnectedControlChanged(this, dParameter);
 }
 
 void WSliderComposed::fillDebugTooltip(QStringList* debug) {
@@ -170,7 +170,7 @@ void WSliderComposed::fillDebugTooltip(QStringList* debug) {
     int sliderLength = m_bHorizontal ? width() : height();
     *debug << QString("Horizontal: %1").arg(toDebugString(m_bHorizontal))
            << QString("SliderPosition: %1").arg(
-                   m_handler.valueToPosition(getControlParameterDisplay()))
+                   m_handler.parameterToPosition(getControlParameterDisplay()))
            << QString("SliderLength: %1").arg(sliderLength)
            << QString("HandleLength: %1").arg(m_dHandleLength);
 }
