@@ -30,10 +30,9 @@ SoundSourceOpus::~SoundSourceOpus() {
 }
 
 Result SoundSourceOpus::open() {
-    const QByteArray qBAFilename(getFilename().toLocal8Bit());
 
     int errorCode = 0;
-    m_pOggOpusFile = op_open_file(qBAFilename.constData(), &errorCode);
+    m_pOggOpusFile = op_open_file(getFilename().toLocal8Bit().constData(), &errorCode);
     if (!m_pOggOpusFile) {
         qDebug() << "Failed to open OggOpus file:" << getFilename()
                 << "errorCode" << errorCode;
@@ -141,11 +140,10 @@ namespace
  Parse the the file to get metadata
  */
 Result SoundSourceOpus::parseMetadata(Mixxx::TrackMetadata* pMetadata) {
+    const QByteArray qbaFilename(getFilename().toLocal8Bit());
+
     int error = 0;
-
-    QByteArray qBAFilename = getFilename().toLocal8Bit();
-
-    OggOpusFileOwner l_ptrOpusFile(op_open_file(qBAFilename.constData(), &error));
+    OggOpusFileOwner l_ptrOpusFile(op_open_file(qbaFilename.constData(), &error));
 
     pMetadata->setChannels(op_channel_count(l_ptrOpusFile, -1));
     pMetadata->setSampleRate(kOpusSampleRate);
@@ -154,7 +152,7 @@ Result SoundSourceOpus::parseMetadata(Mixxx::TrackMetadata* pMetadata) {
 
 // If we don't have new enough Taglib we use libopusfile parser!
 #if (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
-    TagLib::Ogg::Opus::File f(qBAFilename.constData());
+    TagLib::Ogg::Opus::File f(qbaFilename.constData());
 
     if (!readAudioProperties(pMetadata, f)) {
         return ERR;

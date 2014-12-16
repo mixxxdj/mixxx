@@ -101,11 +101,10 @@ Result SoundSourceM4A::open() {
     }
 
     /* open MP4 file, check for >= ver 1.9.1 */
-    const QByteArray qbaFilename(getFilename().toLocal8Bit());
 #if MP4V2_PROJECT_version_hex <= 0x00010901
-    m_hFile = MP4Read(qbaFilename.constData(), 0);
+    m_hFile = MP4Read(getFilename().toLocal8Bit().constData(), 0);
 #else
-    m_hFile = MP4Read(qbaFilename.constData());
+    m_hFile = MP4Read(getFilename().toLocal8Bit().constData());
 #endif
     if (MP4_INVALID_FILE_HANDLE == m_hFile) {
         close();
