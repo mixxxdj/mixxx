@@ -90,32 +90,13 @@ void WSliderComposed::setHandlePixmap(bool bHorizontal,
                                       PixmapSource sourceHandle,
                                       Paintable::DrawMode mode) {
     m_bHorizontal = bHorizontal;
+    m_handler.setHorizontal(m_bHorizontal);
     m_pHandle = WPixmapStore::getPaintable(sourceHandle, mode);
     m_dHandleLength = calculateHandleLength();
+    m_handler.setHandleLength(m_dHandleLength);
     if (!m_pHandle) {
         qDebug() << "WSliderComposed: Error loading handle pixmap:" << sourceHandle.getPath();
     } else {
-        if (m_bHorizontal) {
-            // Stretch the pixmap to be the height of the widget.
-            if (m_pHandle->height() != 0.0) {
-                const qreal aspect = static_cast<double>(m_pHandle->width()) /
-                        static_cast<double>(m_pHandle->height());
-                m_dHandleLength = aspect * height();
-            } else {
-                m_dHandleLength = m_pHandle->width();
-            }
-        } else {
-            // Stretch the pixmap to be the width of the widget.
-            if (m_pHandle->width() != 0.0) {
-                const qreal aspect = static_cast<double>(m_pHandle->height()) /
-                        static_cast<double>(m_pHandle->width());
-                m_dHandleLength = aspect * width();
-            } else {
-                m_dHandleLength = m_pHandle->height();
-            }
-        }
-        m_handler.setHandleLength(m_dHandleLength);
-
         // Value is unused in WSliderComposed.
         onConnectedControlChanged(getControlParameter(), 0);
         update();
@@ -156,11 +137,11 @@ void WSliderComposed::paintEvent(QPaintEvent *) {
     if (!m_pHandle.isNull() && !m_pHandle->isNull()) {
         double drawPos = m_handler.valueToPosition(getControlParameterDisplay());
         if (m_bHorizontal) {
-            // Stretch the pixmap to be the height of the widget.
+            // The handle's draw mode determines whether it is stretched.
             QRectF targetRect(drawPos, 0, m_dHandleLength, height());
             m_pHandle->draw(targetRect, &p);
         } else {
-            // Stretch the pixmap to be the width of the widget.
+            // The handle's draw mode determines whether it is stretched.
             QRectF targetRect(0, drawPos, width(), m_dHandleLength);
             m_pHandle->draw(targetRect, &p);
         }
@@ -170,28 +151,10 @@ void WSliderComposed::paintEvent(QPaintEvent *) {
 void WSliderComposed::resizeEvent(QResizeEvent* pEvent) {
     Q_UNUSED(pEvent);
 
-    if (m_bHorizontal) {
-        // Stretch the pixmap to be the height of the widget.
-        if (m_pHandle->height() != 0.0) {
-            const qreal aspect = static_cast<double>(m_pHandle->width()) /
-                    static_cast<double>(m_pHandle->height());
-            m_dHandleLength = aspect * height();
-        } else {
-            m_dHandleLength = m_pHandle->width();
-        }
-    } else {
-        // Stretch the pixmap to be the width of the widget.
-        if (m_pHandle->width() != 0.0) {
-            const qreal aspect = static_cast<double>(m_pHandle->height()) /
-                    static_cast<double>(m_pHandle->width());
-            m_dHandleLength = aspect * width();
-        } else {
-            m_dHandleLength = m_pHandle->height();
-        }
-    }
+    m_dHandleLength = calculateHandleLength();
+    m_handler.setHandleLength(m_dHandleLength);
     m_dSliderLength = m_bHorizontal ? width() : height();
     m_handler.setSliderLength(m_dSliderLength);
-    m_handler.setHandleLength(m_dHandleLength);
     m_handler.resizeEvent(this, pEvent);
 
     // Re-calculate state based on our new width/height.
