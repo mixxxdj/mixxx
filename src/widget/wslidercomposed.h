@@ -26,6 +26,7 @@
 #include <QMouseEvent>
 #include <QResizeEvent>
 
+#include "widget/slidereventhandler.h"
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
 #include "skin/skincontext.h"
@@ -64,23 +65,21 @@ class WSliderComposed : public WWidget  {
     double calculateHandleLength();
     void unsetPixmaps();
 
-    double m_dOldValue;
     // True if right mouse button is pressed.
     bool m_bRightButtonPressed;
-    // Internal storage of slider position in pixels
-    double m_dPos, m_dStartHandlePos, m_dStartMousePos;
     // Length of handle in pixels
     double m_dHandleLength;
+    // Length of the slider in pixels.
+    double m_dSliderLength;
     // True if it's a horizontal slider
     bool m_bHorizontal;
-    // Is true if events is emitted while the slider is dragged
-    bool m_bEventWhileDrag;
-    // True if slider is dragged. Only used when m_bEventWhileDrag is false
-    bool m_bDrag;
     // Pointer to pixmap of the slider
     PaintablePointer m_pSlider;
     // Pointer to pixmap of the handle
     PaintablePointer m_pHandle;
+    SliderEventHandler<WSliderComposed> m_handler;
+
+    friend class SliderEventHandler<WSliderComposed>;
 };
 
 #endif
