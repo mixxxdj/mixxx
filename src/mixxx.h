@@ -156,6 +156,7 @@ class MixxxMainWindow : public QMainWindow {
     void initializeWindow();
     void initializeKeyboard();
     void initializeTranslations(QApplication* pApp);
+    void initializeFonts();
     bool loadTranslations(const QLocale& systemLocale, QString userLocale,
                           const QString& translation, const QString& prefix,
                           const QString& translationPath, QTranslator* pTranslator);

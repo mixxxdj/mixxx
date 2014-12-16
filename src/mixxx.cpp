@@ -75,6 +75,7 @@
 #include "waveform/guitick.h"
 #include "util/math.h"
 #include "util/experiment.h"
+#include "util/font.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/defs_vinylcontrol.h"
@@ -129,6 +130,8 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 
     QString resourcePath = m_pConfig->getResourcePath();
     initializeTranslations(pApp);
+
+    initializeFonts();
 
     // Set the visibility of tooltips, default "1" = ON
     m_toolTipsCfg = m_pConfig->getValueString(ConfigKey("[Controls]", "Tooltips"), "1").toInt();
@@ -669,6 +672,28 @@ void MixxxMainWindow::initializeWindow() {
     setWindowTitle(tr("Mixxx %1").arg(version));
 #endif
     setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
+}
+
+void MixxxMainWindow::initializeFonts() {
+    QDir fontsDir(m_pConfig->getResourcePath());
+    if (!fontsDir.cd("fonts")) {
+        return;
+    }
+
+    QList<QFileInfo> files = fontsDir.entryInfoList(
+            QDir::NoDotAndDotDot | QDir::Files | QDir::Readable);
+    foreach (const QFileInfo& file, files) {
+        const QString& path = file.filePath();
+
+        // Skip text files (e.g. license files). For all others we let Qt tell
+        // us whether the font format is supported since there is no way to
+        // check other than adding.
+        if (path.endsWith(".txt", Qt::CaseInsensitive)) {
+            continue;
+        }
+
+        FontUtils::addFont(path);
+    }
 }
 
 void MixxxMainWindow::initializeTranslations(QApplication* pApp) {
