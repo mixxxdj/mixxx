@@ -886,7 +886,7 @@ QPushButton#LibraryPreviewButton:!checked{ image: url(skin:/style/style_library_
 QPushButton#LibraryPreviewButton:checked{ image: url(skin:/style/style_library_preview_pause.png); }
 
 QHeaderView {
-  /*font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;*/
+  font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
   color: #cfb32c;
   background-color: #0f0f0f;
 }

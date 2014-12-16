@@ -36,7 +36,7 @@ DlgPrefLibrary::DlgPrefLibrary(QWidget * parent,
           m_pconfig(config),
           m_pLibrary(pLibrary),
           m_baddedDirectory(false),
-          m_iOriginalTrackTableRowHeight(Library::kDefaultRowHeight) {
+          m_iOriginalTrackTableRowHeight(Library::kDefaultRowHeightPx) {
     setupUi(this);
     slotUpdate();
     checkbox_ID3_sync->setVisible(false);
@@ -144,7 +144,7 @@ void DlgPrefLibrary::slotResetToDefaults() {
     radioButton_dbclick_bottom->setChecked(false);
     radioButton_dbclick_top->setChecked(false);
     radioButton_dbclick_deck->setChecked(true);
-    spinBoxRowHeight->setValue(Library::kDefaultRowHeight);
+    spinBoxRowHeight->setValue(Library::kDefaultRowHeightPx);
     setLibraryFont(QApplication::font());
 }
 
@@ -329,10 +329,8 @@ void DlgPrefLibrary::slotRowHeightValueChanged(int height) {
 }
 
 void DlgPrefLibrary::setLibraryFont(const QFont& font) {
-    libraryFont->setText(QString("%1 %2 %3pt")
-                         .arg(font.family())
-                         .arg(font.styleName())
-                         .arg(QString::number(font.pointSizeF())));
+    libraryFont->setText(QString("%1 %2 %3pt").arg(
+        font.family(), font.styleName(), QString::number(font.pointSizeF())));
     emit(setTrackTableFont(font));
 
     // Don't let the row height exceed the library height.
@@ -345,8 +343,11 @@ void DlgPrefLibrary::setLibraryFont(const QFont& font) {
 }
 
 void DlgPrefLibrary::slotSelectFont() {
+    // False if the user cancels font selection.
     bool ok = false;
     QFont font = QFontDialog::getFont(&ok, m_pLibrary->getTrackTableFont(),
                                       this, tr("Select Library Font"));
-    setLibraryFont(font);
+    if (ok) {
+        setLibraryFont(font);
+    }
 }

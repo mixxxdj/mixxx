@@ -12,7 +12,7 @@ class FontUtils {
     static bool addFont(const QString& path) {
         int result = QFontDatabase::addApplicationFont(path);
         if (result == -1) {
-            qDebug() << "Failed to add font:" << path;
+            qWarning() << "Failed to add font:" << path;
             return false;
         }
 
@@ -41,6 +41,5 @@ class FontUtils {
   private:
     FontUtils() {}
 };
-
 
 #endif /* FONT_H */

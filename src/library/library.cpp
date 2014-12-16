@@ -39,7 +39,7 @@
 const QString Library::m_sTrackViewName = QString("WTrackTableView");
 
 // The default row height of the library.
-const int Library::kDefaultRowHeight = 20;
+const int Library::kDefaultRowHeightPx = 20;
 
 Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig,
                  PlayerManagerInterface* pPlayerManager,
@@ -114,7 +114,7 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig,
 
     m_iTrackTableRowHeight = m_pConfig->getValueString(
             ConfigKey("[Library]", "RowHeight"),
-            QString::number(kDefaultRowHeight)).toInt();
+            QString::number(kDefaultRowHeightPx)).toInt();
     QString fontStr = m_pConfig->getValueString(ConfigKey("[Library]", "Font"));
     if (!fontStr.isEmpty()) {
         m_trackTableFont.fromString(fontStr);

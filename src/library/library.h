@@ -73,7 +73,7 @@ public:
         PurgeTracks
     };
 
-    static const int kDefaultRowHeight;
+    static const int kDefaultRowHeightPx;
 
   public slots:
     void slotShowTrackModel(QAbstractItemModel* model);
