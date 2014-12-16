@@ -154,8 +154,7 @@ void WSliderComposed::paintEvent(QPaintEvent *) {
     }
 
     if (!m_pHandle.isNull() && !m_pHandle->isNull()) {
-        double drawPos = valueToPosition(getControlParameterDisplay());
-        qDebug() << "Drawing! " << getControlParameterDisplay() << " at pos " << drawPos;
+        double drawPos = m_handler.valueToPosition(getControlParameterDisplay());
         if (m_bHorizontal) {
             // Stretch the pixmap to be the height of the widget.
             QRectF targetRect(drawPos, 0, m_dHandleLength, height());
@@ -170,7 +169,6 @@ void WSliderComposed::paintEvent(QPaintEvent *) {
 
 void WSliderComposed::resizeEvent(QResizeEvent* pEvent) {
     Q_UNUSED(pEvent);
-    m_handler.resizeEvent(this, pEvent);
 
     if (m_bHorizontal) {
         // Stretch the pixmap to be the height of the widget.
@@ -192,7 +190,9 @@ void WSliderComposed::resizeEvent(QResizeEvent* pEvent) {
         }
     }
     m_dSliderLength = m_bHorizontal ? width() : height();
+    m_handler.setSliderLength(m_dSliderLength);
     m_handler.setHandleLength(m_dHandleLength);
+    m_handler.resizeEvent(this, pEvent);
 
     // Re-calculate state based on our new width/height.
     onConnectedControlChanged(getControlParameter(), 0);
@@ -206,7 +206,8 @@ void WSliderComposed::fillDebugTooltip(QStringList* debug) {
     WWidget::fillDebugTooltip(debug);
     int sliderLength = m_bHorizontal ? width() : height();
     *debug << QString("Horizontal: %1").arg(toDebugString(m_bHorizontal))
-           << QString("SliderPosition: %1").arg(getControlParameterDisplay())
+           << QString("SliderPosition: %1").arg(
+                   m_handler.valueToPosition(getControlParameterDisplay()))
            << QString("SliderLength: %1").arg(sliderLength)
            << QString("HandleLength: %1").arg(m_dHandleLength);
 }
