@@ -154,7 +154,7 @@ void WSliderComposed::paintEvent(QPaintEvent *) {
     }
 
     if (!m_pHandle.isNull() && !m_pHandle->isNull()) {
-        double drawPos = denormalizePos(1.0 - getControlParameterDisplay());
+        double drawPos = valueToPosition(getControlParameterDisplay());
         qDebug() << "Drawing! " << drawPos;
         if (m_bHorizontal) {
             // Stretch the pixmap to be the height of the widget.

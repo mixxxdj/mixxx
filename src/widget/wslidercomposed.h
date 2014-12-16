@@ -65,11 +65,11 @@ class WSliderComposed : public WWidget  {
     double calculateHandleLength();
     void unsetPixmaps();
 
-    double denormalizePos(double pos) {
+    double valueToPosition(double value) {
         int sliderLength = m_bHorizontal ? width() : height();
-        qDebug() << "denormalized " << pos << " " << sliderLength << " "
-                << m_dHandleLength << " " << (pos * (sliderLength - m_dHandleLength));
-        return pos * (sliderLength - m_dHandleLength);
+        qDebug() << "denormalized " << value << " " << sliderLength << " "
+                << m_dHandleLength << " " << (value * (sliderLength - m_dHandleLength));
+        return (1.0 - value) * (sliderLength - m_dHandleLength);
     }
 
     // True if right mouse button is pressed.
