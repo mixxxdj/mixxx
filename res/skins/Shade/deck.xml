@@ -488,7 +488,7 @@
 						</SliderComposed>
 
 						<SliderComposed>
-							<TooltipId>rate</TooltipId>
+							<TooltipId>pitch</TooltipId>
 							<Style></Style>
 							<Handle>knob_visual_key.png</Handle>
 							<Slider>slider_visual_key.png</Slider>
@@ -501,6 +501,7 @@
 						</SliderComposed>
 
 						<PushButton>
+							<TooltipId>pitch_up</TooltipId>
                             <Size>10f,10f</Size>							
                             <Style></Style>
 							<NumberStates>2</NumberStates>
@@ -524,6 +525,7 @@
 						</PushButton>
 
 						<PushButton>
+							<TooltipId>pitch_down</TooltipId>
                             <Size>10f,10f</Size>
 							<Style></Style>
 							<NumberStates>2</NumberStates>
@@ -570,7 +572,7 @@
 						**********************************************
 						-->
 						<PushButton>
-							<TooltipId>beatsync_beatsync_tempo</TooltipId>
+							<TooltipId>sync_enabled</TooltipId>
 							<Style></Style>
 							<NumberStates>2</NumberStates>
 							<State>
@@ -595,7 +597,7 @@
 						</PushButton>
 
 						<PushButton>
-							<TooltipId></TooltipId>
+							<TooltipId>sync_reset_key</TooltipId>
 							<Style></Style>
 							<NumberStates>2</NumberStates>
 							<State>
