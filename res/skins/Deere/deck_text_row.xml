@@ -91,6 +91,7 @@
                     <SizePolicy>min,max</SizePolicy>
                     <Children>
                       <NumberPos>
+                        <TooltipId>track_time</TooltipId>
                         <Group><Variable name="group"/></Group>
                       </NumberPos>
                     </Children>

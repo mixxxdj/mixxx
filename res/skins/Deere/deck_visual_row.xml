@@ -15,6 +15,7 @@
     <MinimumSize>-1,118</MinimumSize>
     <Children>
       <Visual>
+        <TooltipId>waveform_display</TooltipId>
         <Group><Variable name="group"/></Group>
         <BgColor>#1C1C1C</BgColor>
         <SignalHighColor></SignalHighColor>

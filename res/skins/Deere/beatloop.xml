@@ -15,6 +15,7 @@
 
     <Children>
       <PushButton>
+        <TooltipId>loop_halve</TooltipId>
         <ObjectName>LoopHalve</ObjectName>
         <!-- Grow to be as tall as the outer WidgetGroup -->
         <MinimumSize><Variable name="SmallVerticalStretchButtonMinimumSize"/></MinimumSize>
@@ -93,6 +94,7 @@
       </WidgetGroup>
 
       <PushButton>
+        <TooltipId>loop_double</TooltipId>
         <ObjectName>LoopDouble</ObjectName>
         <!-- Grow to be as tall as the outer WidgetGroup -->
         <MinimumSize><Variable name="SmallVerticalStretchButtonMinimumSize"/></MinimumSize>
