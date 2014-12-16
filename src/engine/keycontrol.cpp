@@ -58,6 +58,9 @@ KeyControl::KeyControl(QString group,
 
     m_pEngineKeyDistance = new ControlPotmeter(ConfigKey(group, "visual_key_distance"),
                                                -0.5, 0.5);
+    connect(m_pEngineKeyDistance, SIGNAL(valueChanged(double)),
+            this, SLOT(slotSetEngineKeyDistance(double)),
+            Qt::DirectConnection);
 
 
     m_pitchAndKeylockMode = new ControlPushButton(ConfigKey(group, "pitchAndKeylockMode"));
@@ -237,12 +240,31 @@ void KeyControl::updateKeyCOs(double fileKeyNumeric, double pitch) {
 
 
 void KeyControl::slotSetEngineKey(double key) {
+    // Always set to a full key, reset key_distance
+    qDebug() << "KeyControl::slotSetEngineKey" << key;
+    setEngineKey(key, 0.0);
+}
+
+void KeyControl::slotSetEngineKeyDistance(double key_distance) {
+    qDebug() << "KeyControl::slotSetEngineKeyDistance" << key_distance;
+    setEngineKey(m_pEngineKey->get(), key_distance);
+}
+
+void KeyControl::setEngineKey(double key, double key_distance) {
     mixxx::track::io::key::ChromaticKey thisFileKey =
             KeyUtils::keyFromNumericValue(m_pFileKey->get());
     mixxx::track::io::key::ChromaticKey newKey =
             KeyUtils::keyFromNumericValue(key);
+
+    if (thisFileKey == mixxx::track::io::key::INVALID ||
+        newKey == mixxx::track::io::key::INVALID) {
+        return;
+    }
+
+    qDebug() << "KeyControl::setEngineKey" << key << key_distance;
+
     int stepsToTake = KeyUtils::shortestStepsToKey(thisFileKey, newKey);
-    double pitchToTakeOctaves = stepsToTake / 12.0;
+    double pitchToTakeOctaves = (stepsToTake + key_distance) / 12.0;
 
     if (m_iPitchAndKeylockMode == kPakmOffsetScaleReseting) {
         double pitchToTakeRatio = KeyUtils::octaveChangeToPowerOf2(pitchToTakeOctaves);

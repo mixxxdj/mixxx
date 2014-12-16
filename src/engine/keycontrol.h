@@ -37,6 +37,7 @@ class KeyControl : public EngineControl {
 
   private slots:
     void slotSetEngineKey(double);
+    void slotSetEngineKeyDistance(double);
     void slotFileKeyChanged(double);
     void slotPitchChanged(double);
     void slotRateChanged();
@@ -45,6 +46,7 @@ class KeyControl : public EngineControl {
     void slotPitchAndKeylockModeChanged(double);
 
   private:
+    void setEngineKey(double key, double key_distance);
     bool syncKey(EngineBuffer* pOtherEngineBuffer);
     void updateKeyCOs(double fileKeyNumeric, double pitch);
 
