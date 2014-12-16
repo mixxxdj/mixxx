@@ -155,7 +155,7 @@ void WSliderComposed::paintEvent(QPaintEvent *) {
 
     if (!m_pHandle.isNull() && !m_pHandle->isNull()) {
         double drawPos = valueToPosition(getControlParameterDisplay());
-        qDebug() << "Drawing! " << drawPos;
+        qDebug() << "Drawing! " << getControlParameterDisplay() << " at pos " << drawPos;
         if (m_bHorizontal) {
             // Stretch the pixmap to be the height of the widget.
             QRectF targetRect(drawPos, 0, m_dHandleLength, height());
@@ -191,6 +191,7 @@ void WSliderComposed::resizeEvent(QResizeEvent* pEvent) {
             m_dHandleLength = m_pHandle->height();
         }
     }
+    m_dSliderLength = m_bHorizontal ? width() : height();
     m_handler.setHandleLength(m_dHandleLength);
 
     // Re-calculate state based on our new width/height.

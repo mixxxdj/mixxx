@@ -66,16 +66,19 @@ class WSliderComposed : public WWidget  {
     void unsetPixmaps();
 
     double valueToPosition(double value) {
-        int sliderLength = m_bHorizontal ? width() : height();
-        qDebug() << "denormalized " << value << " " << sliderLength << " "
-                << m_dHandleLength << " " << (value * (sliderLength - m_dHandleLength));
-        return (1.0 - value) * (sliderLength - m_dHandleLength);
+        if (!m_bHorizontal) {
+            value = 1.0 - value;
+        }
+        qDebug() << "denormalized " << value << " " << m_dSliderLength << " "
+                << m_dHandleLength << " " << (value * (m_dSliderLength - m_dHandleLength));
+        return value * (m_dSliderLength - m_dHandleLength);
     }
 
     // True if right mouse button is pressed.
     bool m_bRightButtonPressed;
     // Length of handle in pixels
     double m_dHandleLength;
+    double m_dSliderLength;
     // True if it's a horizontal slider
     bool m_bHorizontal;
     // Pointer to pixmap of the slider

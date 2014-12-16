@@ -16,13 +16,14 @@ class SliderEventHandler {
             : m_dStartHandlePos(0),
               m_dStartMousePos(0),
               m_bRightButtonPressed(false),
-              m_dOldValue(-1.0), // virgin
-              m_dPos(1.0),
+              m_dOldCOValue(-1.0), // virgin
+              m_dPos(0.0),
               m_dHandleLength(0),
               m_dSliderLength(0),
               m_bHorizontal(false),
               m_bDrag(false),
               m_bEventWhileDrag(true) {
+        qDebug() << "dpos now111 " << m_dPos;
     }
 
     void setHorizontal(bool horiz) {
@@ -39,32 +40,34 @@ class SliderEventHandler {
 
     void mouseMoveEvent(T* pWidget, QMouseEvent* e) {
         if (!m_bRightButtonPressed) {
+            double abs_pos = 0.0;
             if (m_bHorizontal) {
-                m_dPos = e->x() - m_dHandleLength / 2;
+                abs_pos = e->x() - m_dHandleLength / 2;
             } else {
-                m_dPos = e->y() - m_dHandleLength / 2;
+                abs_pos = e->y() - m_dHandleLength / 2;
             }
 
-            qDebug() << "start " << m_dStartHandlePos << ", pos " << m_dPos;
-            m_dPos = m_dStartHandlePos + (m_dPos - m_dStartMousePos);
+            qDebug() << "start " << m_dStartHandlePos << ", abs pos " << abs_pos;
+            m_dPos = m_dStartHandlePos + (abs_pos - m_dStartMousePos);
+            qDebug() << "new dpos " << m_dPos;
 
             //double sliderLength = m_bHorizontal ? pWidget->width() : pWidget->height();
 
             // Clamp to the range [0, sliderLength - m_dHandleLength].
             m_dPos = math_clamp_unsafe(m_dPos, 0.0, m_dSliderLength - m_dHandleLength);
+            qDebug() << "clamped dpos " << m_dPos;
 
             // Divide by (sliderLength - m_dHandleLength) to produce a normalized
             // value in the range of [0.0, 1.0].
-            double newValue = normalizePos(pWidget);
-            qDebug() << "new val1 " << newValue;
+            double newValue = positionToValue(pWidget);
             if (!m_bHorizontal) {
                 newValue = 1.0 - newValue;
             }
-            qDebug() << "newVal2 " << newValue;
+            qDebug() << "new CO val " << newValue;
 
             // If we don't change this, then updates might be rejected in
             // onConnectedControlChanged.
-            m_dOldValue = newValue;
+            m_dOldCOValue = newValue;
 
             // Emit valueChanged signal
             if (m_bEventWhileDrag) {
@@ -85,11 +88,13 @@ class SliderEventHandler {
             m_bDrag = true;
         } else {
             if (e->button() == Qt::RightButton) {
-                pWidget->setControlParameter(0.0);
-                onConnectedControlChanged(pWidget, 0.0, 0);
+//                pWidget->setControlParameter(1.0);
+//                onConnectedControlChanged(pWidget, 1.0, 0);
+                pWidget->resetControlParameter();
                 pWidget->update();
                 m_bRightButtonPressed = true;
             } else {
+                qDebug() << "get start pos " << e->y() << " " << m_dHandleLength / 2;
                 if (m_bHorizontal) {
                     m_dStartMousePos = e->x() - m_dHandleLength / 2;
                 } else {
@@ -109,26 +114,23 @@ class SliderEventHandler {
         if (e->button() == Qt::RightButton) {
             m_bRightButtonPressed = false;
         } else {
-            qDebug() << "old value " << m_dOldValue;
-            pWidget->setControlParameter(m_dOldValue);
+            qDebug() << "restore old value " << m_dOldCOValue;
+            pWidget->setControlParameter(m_dOldCOValue);
         }
     }
 
     void wheelEvent(T* pWidget, QWheelEvent* e) {
         // For legacy (MIDI) reasons this is tuned to 127.
-        double wheelDirection = ((QWheelEvent *)e)->delta() / (120.0 * 127.0);
-//        if (!m_bHorizontal) {
-//            wheelDirection *= -1;
-//        }
-        double newValue = pWidget->getControlParameter() + wheelDirection;
-        qDebug() << "wheel: " << pWidget->getControlParameter() << " " << newValue;
+        double wheelAdjustment = ((QWheelEvent *)e)->delta() / (120.0 * 127.0);
+        double newValue = pWidget->getControlParameter() + wheelAdjustment;
+        qDebug() << "wheel: " << pWidget->getControlParameter() << "--> " << newValue;
 
         // Clamp to [0.0, 1.0]
         newValue = math_clamp_unsafe(newValue, 0.0, 1.0);
 
-        qDebug() << "value is now " << newValue;
+        qDebug() << "CO value is now " << newValue;
         pWidget->setControlParameter(newValue);
-        //pWidget->onConnectedControlChanged(newValue, 0);
+        onConnectedControlChanged(pWidget, newValue, 0);
         pWidget->update();
         e->accept();
     }
@@ -145,17 +147,16 @@ class SliderEventHandler {
             return;
         }
 
-        if (m_dOldValue != dParameter) {
-            qDebug() << "UPDATING SLIDER " << dParameter;
-            m_dOldValue = dParameter;
+        qDebug() << "got an update " << dParameter;
 
-            // Calculate handle position
-            if (!m_bHorizontal) {
-                dParameter = 1.0 - dParameter;
-            }
+        if (m_dOldCOValue != dParameter) {
+            qDebug() << "UPDATING SLIDER " << dParameter;
+            m_dOldCOValue = dParameter;
+
+            qDebug() << "parameter now " << dParameter;
             //double sliderLength = m_bHorizontal ? pWidget->width() : pWidget->height();
 
-            double newPos = dParameter * (m_dSliderLength - m_dHandleLength);
+            double newPos = valueToPosition(pWidget, dParameter);
 
             // Clamp to [0.0, sliderLength - m_dHandleLength].
             newPos = math_clamp_unsafe(newPos, 0.0, m_dSliderLength - m_dHandleLength);
@@ -166,7 +167,7 @@ class SliderEventHandler {
             // parents.
             if (newPos != m_dPos) {
                 m_dPos = newPos;
-                qDebug() << "pos now " << m_dPos;
+                qDebug() << "dpos now " << m_dPos;
                 pWidget->setControlParameter(dParameter);
                 pWidget->update();
             }
@@ -176,17 +177,30 @@ class SliderEventHandler {
     void resizeEvent(T* pWidget, QResizeEvent* pEvent) {
         Q_UNUSED(pEvent);
         qDebug () << "RESIZE";
-        m_dOldValue = -1;
-        m_dPos = -1;
         m_dSliderLength = m_bHorizontal ? pWidget->width() : pWidget->height();
+        m_dPos = valueToPosition(pWidget, pWidget->getControlParameter());
+        m_dOldCOValue = -1;
+        qDebug() << "dpos now " << m_dPos;
     }
 
   private:
-    double normalizePos(T* pWidget) {
+    double valueToPosition(T* pWidget, double value) {
         if (m_dSliderLength <= 0) {
             m_dSliderLength = m_bHorizontal ? pWidget->width() : pWidget->height();
         }
-        qDebug() << "normalized pos " << m_dPos << m_dSliderLength << " "
+        if (!m_bHorizontal) {
+            value = 1.0 - value;
+        }
+        qDebug() << "eventhandler denormalized " << value << " " << m_dSliderLength << " "
+                << m_dHandleLength << " " << (value * (m_dSliderLength - m_dHandleLength));
+        return value * (m_dSliderLength - m_dHandleLength);
+    }
+
+    double positionToValue(T* pWidget) {
+        if (m_dSliderLength <= 0) {
+            m_dSliderLength = m_bHorizontal ? pWidget->width() : pWidget->height();
+        }
+        qDebug() << "convert pos to CO val " << m_dPos << m_dSliderLength << " "
                 << m_dHandleLength << " to " << m_dPos / (m_dSliderLength - m_dHandleLength);
         return m_dPos / (m_dSliderLength - m_dHandleLength);
     }
@@ -197,7 +211,7 @@ class SliderEventHandler {
     // True if right mouse button is pressed.
     bool m_bRightButtonPressed;
     // Previous value of the control object, 0 to 1
-    double m_dOldValue;
+    double m_dOldCOValue;
     // Internal storage of slider position in pixels
     double m_dPos;
     // Length of handle in pixels

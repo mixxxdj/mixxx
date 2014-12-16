@@ -105,9 +105,9 @@
 											<Template src="skin:mixer_channel.xml">
 												<SetVariable name="channum">1</SetVariable>
 											</Template>
-											<!-- <Template src="skin:mixer_channel_reversed.xml">
+											<Template src="skin:mixer_channel_reversed.xml">
 												<SetVariable name="channum">2</SetVariable>
-											</Template> -->
+											</Template>
 				                           <WidgetGroup>
 				                                <SizePolicy>max,min</SizePolicy>
 		                                        <Layout>horizontal</Layout>
@@ -123,7 +123,7 @@
 		                                    </WidgetGroup>
 										</Children>
 									</WidgetGroup>
-									<!-- <WidgetGroup>
+									<WidgetGroup>
 									    <ObjectName>CrossFadeContainer</ObjectName>
 										<Layout>horizontal</Layout>
 										<SizePolicy>me,max</SizePolicy>
@@ -146,7 +146,7 @@
 												</Children>
 											</WidgetGroup>
 										</Children>
-									</WidgetGroup> -->
+									</WidgetGroup>
 								</Children>
 							</WidgetGroup>
 							<WidgetGroup>
