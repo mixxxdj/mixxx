@@ -19,6 +19,8 @@
 #include "trackmetadatataglib.h"
 #include "util/math.h"
 
+#include <id3tag.h>
+
 #include <taglib/mpegfile.h>
 
 namespace
@@ -56,6 +58,12 @@ namespace
     }
 }
 
+QList<QString> SoundSourceMp3::supportedFileExtensions() {
+    QList<QString> list;
+    list.push_back("mp3");
+    return list;
+}
+
 SoundSourceMp3::SoundSourceMp3(QString qFilename)
         : Super(qFilename, "mp3"),
           m_file(qFilename),
@@ -69,16 +77,8 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename)
     mad_synth_init(&m_madSynth);
 }
 
-SoundSourceMp3::~SoundSourceMp3()
-{
+SoundSourceMp3::~SoundSourceMp3() {
     close();
-}
-
-QList<QString> SoundSourceMp3::supportedFileExtensions()
-{
-    QList<QString> list;
-    list.push_back("mp3");
-    return list;
 }
 
 Result SoundSourceMp3::open() {

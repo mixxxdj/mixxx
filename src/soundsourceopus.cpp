@@ -12,6 +12,12 @@ namespace {
 Mixxx::AudioSource::size_type kOpusSampleRate = 48000;
 }
 
+QList<QString> SoundSourceOpus::supportedFileExtensions() {
+    QList<QString> list;
+    list.push_back("opus");
+    return list;
+}
+
 SoundSourceOpus::SoundSourceOpus(QString qFilename)
         : Super(qFilename, "opus"), m_pOggOpusFile(NULL) {
 }
@@ -211,16 +217,6 @@ Result SoundSourceOpus::parseMetadata(Mixxx::TrackMetadata* pMetadata) {
 #endif
 
     return OK;
-}
-
-/*
- Return the length of the file in samples.
- */
-
-QList<QString> SoundSourceOpus::supportedFileExtensions() {
-    QList<QString> list;
-    list.push_back("opus");
-    return list;
 }
 
 QImage SoundSourceOpus::parseCoverArt() {

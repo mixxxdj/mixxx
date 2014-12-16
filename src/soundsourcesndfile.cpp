@@ -7,18 +7,6 @@
 #include <taglib/rifffile.h>
 #include <taglib/wavfile.h>
 
-/*
- Class for reading files using libsndfile
- */
-SoundSourceSndFile::SoundSourceSndFile(QString qFilename)
-        : Super(qFilename), m_pSndFile(NULL) {
-    memset(&m_sfInfo, 0, sizeof(m_sfInfo));
-}
-
-SoundSourceSndFile::~SoundSourceSndFile() {
-    close();
-}
-
 QList<QString> SoundSourceSndFile::supportedFileExtensions() {
     QList<QString> list;
     list.push_back("aiff");
@@ -26,6 +14,15 @@ QList<QString> SoundSourceSndFile::supportedFileExtensions() {
     list.push_back("wav");
     list.push_back("flac");
     return list;
+}
+
+SoundSourceSndFile::SoundSourceSndFile(QString qFilename)
+        : Super(qFilename), m_pSndFile(NULL) {
+    memset(&m_sfInfo, 0, sizeof(m_sfInfo));
+}
+
+SoundSourceSndFile::~SoundSourceSndFile() {
+    close();
 }
 
 Result SoundSourceSndFile::open() {

@@ -18,7 +18,6 @@
 #define SOUNDSOURCEM4A_H
 
 #include "soundsource.h"
-
 #include "defs_version.h"
 
 #ifdef __MP4V2__

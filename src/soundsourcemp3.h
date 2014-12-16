@@ -20,8 +20,6 @@
 
 #include "soundsource.h"
 
-#include <errno.h>
-#include <id3tag.h>
 #ifdef _MSC_VER
   // So mad.h doesn't try to use inline assembly which MSVC doesn't support. 
   // Notably, FPM_64BIT does not require a 64-bit machine. It merely requires a 

@@ -23,6 +23,12 @@
 
 #include <QtDebug>
 
+QList<QString> SoundSourceFLAC::supportedFileExtensions() {
+    QList<QString> list;
+    list.push_back("flac");
+    return list;
+}
+
 SoundSourceFLAC::SoundSourceFLAC(QString filename)
         : Super(filename, "flac"), m_file(filename), m_decoder(NULL), m_minBlocksize(
                 0), m_maxBlocksize(0), m_minFramesize(0), m_maxFramesize(0), m_sampleScale(
@@ -219,13 +225,6 @@ QImage SoundSourceFLAC::parseCoverArt() {
         }
     }
     return coverArt;
-}
-
-// static
-QList<QString> SoundSourceFLAC::supportedFileExtensions() {
-    QList<QString> list;
-    list.push_back("flac");
-    return list;
 }
 
 // flac callback methods
