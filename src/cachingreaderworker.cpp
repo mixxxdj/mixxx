@@ -122,10 +122,6 @@ namespace
             qWarning() << "Failed to open file:" << pTrack->getLocation();
             return Mixxx::AudioSourcePointer();
         }
-        if (pAudioSource->isFrameCountEmpty()) {
-            qWarning() << "File is empty:" << pTrack->getLocation();
-            return Mixxx::AudioSourcePointer();
-        }
         // successfully opened and readable
         return pAudioSource;
     }

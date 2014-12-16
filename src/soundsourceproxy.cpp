@@ -310,15 +310,13 @@ Mixxx::SoundSourcePointer SoundSourceProxy::open() const {
         return Mixxx::SoundSourcePointer();
     }
 
-    if (!m_pSoundSource->isChannelCountValid()) {
-        qWarning() << "Invalid number of channels" << m_pSoundSource->getFilename() << m_pSoundSource->getChannelCount();
+    if (!m_pSoundSource->isValid()) {
+        qWarning() << "Invalid file:" << m_pSoundSource->getFilename()
+                << "channels" << m_pSoundSource->getChannelCount()
+                << "frame rate" << m_pSoundSource->getChannelCount();
         return Mixxx::SoundSourcePointer();
     }
-    if (!m_pSoundSource->isFrameRateValid()) {
-        qWarning() << "Invalid frame rate:" << m_pSoundSource->getFilename() << m_pSoundSource->getFrameRate();
-        return Mixxx::SoundSourcePointer();
-    }
-    if (m_pSoundSource->isFrameCountEmpty()) {
+    if (m_pSoundSource->isEmpty()) {
         qWarning() << "Empty file:" << m_pSoundSource->getFilename();
         return Mixxx::SoundSourcePointer();
     }

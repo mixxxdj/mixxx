@@ -100,9 +100,5 @@ QString ChromaPrinter::getFingerPrint(TrackPointer pTrack) {
         qDebug() << "Skipping invalid file:" << pTrack->getLocation();
         return QString();
     }
-    if (pAudioSource->isFrameCountEmpty()) {
-        qDebug() << "Skipping empty file:" << pTrack->getLocation();
-        return QString();
-    }
     return calcFingerPrint(pAudioSource);
 }

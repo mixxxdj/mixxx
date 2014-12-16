@@ -246,6 +246,8 @@ void SoundSourceMp3::close() {
     m_fileSize = 0;
     m_pFileData = NULL;
     m_file.close();
+
+    Super::reset();
 }
 
 SoundSourceMp3::MadSeekFrameList::size_type SoundSourceMp3::findSeekFrameIndex(diff_type frameIndex) const {
