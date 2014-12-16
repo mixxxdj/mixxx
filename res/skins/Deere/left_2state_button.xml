@@ -1,0 +1,39 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A button that has a left-click display control and a right-click control.
+  Variables:
+    ObjectName: The object name.
+    Size: the button size.
+    state_X_text:
+    state_X_pressed:
+    state_X_unpressed:
+-->
+<Template>
+  <PushButton>
+    <TooltipId><Variable name="TooltipId"/></TooltipId>
+    <ObjectName><Variable name="ObjectName"/></ObjectName>
+    <MinimumSize><Variable name="MinimumSize"/></MinimumSize>
+    <MaximumSize><Variable name="MaximumSize"/></MaximumSize>
+    <SizePolicy><Variable name="SizePolicy"/></SizePolicy>
+    <NumberStates>2</NumberStates>
+    <RightClickIsPushButton>true</RightClickIsPushButton>
+    <State>
+      <Number>0</Number>
+      <Text><Variable name="state_0_text"/></Text>
+      <Pressed><Variable name="state_0_pressed"/></Pressed>
+      <Unpressed><Variable name="state_0_pressed"/></Unpressed>
+    </State>
+    <State>
+      <Number>1</Number>
+      <Text><Variable name="state_1_text"/></Text>
+      <Pressed><Variable name="state_1_pressed"/></Pressed>
+      <Unpressed><Variable name="state_1_pressed"/></Unpressed>
+    </State>
+    <Connection>
+      <ConfigKey><Variable name="left_connection_control"/></ConfigKey>
+      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+  </PushButton>
+</Template>

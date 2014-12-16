@@ -81,7 +81,7 @@ and allows you to pitch adjust them for harmonic mixing.</string>
    <item>
     <widget class="QGroupBox" name="groupOptions">
      <property name="title">
-      <string>Analyser Settings</string>
+      <string>Analyzer Settings</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>

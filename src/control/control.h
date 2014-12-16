@@ -25,9 +25,14 @@ class ControlDoublePrivate : public QObject {
         s_pUserConfig = pConfig;
     }
 
-    // Gets the ControlDoublePrivate matching the given ConfigKey. If bCreate
-    // is true, allocates a new ControlDoublePrivate for the ConfigKey if one
-    // does not exist.
+    // Adds a ConfigKey for 'alias' to the control for 'key'. Can be used for
+    // supporting a legacy / deprecated control. The 'key' control must exist
+    // for this to work.
+    static void insertAlias(const ConfigKey& alias, const ConfigKey& key);
+
+    // Gets the ControlDoublePrivate matching the given ConfigKey. If pCreatorCO
+    // is non-NULL, allocates a new ControlDoublePrivate for the ConfigKey if
+    // one does not exist.
     static QSharedPointer<ControlDoublePrivate> getControl(
             const ConfigKey& key, bool warn = true,
             ControlObject* pCreatorCO = NULL, bool bIgnoreNops = true, bool bTrack = false,
@@ -35,6 +40,8 @@ class ControlDoublePrivate : public QObject {
 
     // Adds all ControlDoublePrivate that currently exist to pControlList
     static void getControls(QList<QSharedPointer<ControlDoublePrivate> >* pControlsList);
+
+    static QHash<ConfigKey, ConfigKey> getControlAliases();
 
     const QString& name() const {
         return m_name;
@@ -58,19 +65,22 @@ class ControlDoublePrivate : public QObject {
     // ValueChangeRequest slot.
     void setAndConfirm(double value, QObject* pSender);
     // Gets the control value.
-    double get() const;
+    inline double get() const {
+        return m_value.getValue();
+    }
     // Resets the control value to its default.
     void reset();
 
     // Set the behavior to be used when setting values and translating between
     // parameter and value space. Returns the previously set behavior (if any).
-    // The caller must nut delete the behavior at any time. The memory is managed
+    // The caller must not delete the behavior at any time. The memory is managed
     // by this function.
     void setBehavior(ControlNumericBehavior* pBehavior);
 
     void setParameter(double dParam, QObject* pSender);
     double getParameter() const;
     double getParameterForValue(double value) const;
+    double getParameterForMidiValue(double midiValue) const;
 
     void setMidiParameter(MidiOpCode opcode, double dParam);
     double getMidiParameter() const;
@@ -84,8 +94,7 @@ class ControlDoublePrivate : public QObject {
     }
 
     inline double defaultValue() const {
-        double default_value = m_defaultValue.getValue();
-        return m_pBehavior ? m_pBehavior->defaultValue(default_value) : default_value;
+        return m_defaultValue.getValue();
     }
 
     inline ControlObject* getCreatorCO() const {
@@ -163,8 +172,11 @@ class ControlDoublePrivate : public QObject {
 
     // Hash of ControlDoublePrivate instantiations.
     static QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> > s_qCOHash;
+    // Hash of aliases between ConfigKeys. Solely used for looking up the first
+    // alias associated with a key.
+    static QHash<ConfigKey, ConfigKey> s_qCOAliasHash;
 
-    // Mutex guarding access to the ControlDoublePrivate hash.
+    // Mutex guarding access to s_qCOHash and s_qCOAliasHash.
     static QMutex s_qCOHashMutex;
 };
 

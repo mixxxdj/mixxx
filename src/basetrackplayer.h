@@ -11,19 +11,42 @@ class EngineMaster;
 class ControlObject;
 class ControlPotmeter;
 class ControlObjectThread;
+class ControlObjectSlave;
 class AnalyserQueue;
+class EffectsManager;
 
+// Interface for not leaking implementation details of BaseTrackPlayer into the
+// rest of Mixxx. Also makes testing a lot easier.
 class BaseTrackPlayer : public BasePlayer {
     Q_OBJECT
   public:
-    BaseTrackPlayer(QObject* pParent,
-                    ConfigObject<ConfigValue>* pConfig,
-                    EngineMaster* pMixingEngine,
-                    EngineChannel::ChannelOrientation defaultOrientation,
-                    QString group,
-                    bool defaultMaster,
-                    bool defaultHeadphones);
-    virtual ~BaseTrackPlayer();
+    BaseTrackPlayer(QObject* pParent, const QString& group);
+    virtual ~BaseTrackPlayer() {}
+
+    virtual TrackPointer getLoadedTrack() const = 0;
+
+  public slots:
+    virtual void slotLoadTrack(TrackPointer pTrack, bool bPlay=false) = 0;
+
+  signals:
+    void loadTrack(TrackPointer pTrack, bool bPlay=false);
+    void loadTrackFailed(TrackPointer pTrack);
+    void newTrackLoaded(TrackPointer pLoadedTrack);
+    void unloadingTrack(TrackPointer pAboutToBeUnloaded);
+};
+
+class BaseTrackPlayerImpl : public BaseTrackPlayer {
+    Q_OBJECT
+  public:
+    BaseTrackPlayerImpl(QObject* pParent,
+                        ConfigObject<ConfigValue>* pConfig,
+                        EngineMaster* pMixingEngine,
+                        EffectsManager* pEffectsManager,
+                        EngineChannel::ChannelOrientation defaultOrientation,
+                        QString group,
+                        bool defaultMaster,
+                        bool defaultHeadphones);
+    virtual ~BaseTrackPlayerImpl();
 
     TrackPointer getLoadedTrack() const;
 
@@ -31,18 +54,15 @@ class BaseTrackPlayer : public BasePlayer {
     // connected. Delete me when EngineMaster supports AudioInput assigning.
     EngineDeck* getEngineDeck() const;
 
+    void setupEqControls();
+
   public slots:
     void slotLoadTrack(TrackPointer track, bool bPlay=false);
     void slotFinishLoading(TrackPointer pTrackInfoObject);
     void slotLoadFailed(TrackPointer pTrackInfoObject, QString reason);
     void slotUnloadTrack(TrackPointer track);
     void slotSetReplayGain(double replayGain);
-
-  signals:
-    void loadTrack(TrackPointer pTrack, bool bPlay=false);
-    void loadTrackFailed(TrackPointer pTrack);
-    void newTrackLoaded(TrackPointer pLoadedTrack);
-    void unloadingTrack(TrackPointer pAboutToBeUnloaded);
+    void slotPlayToggled(double);
 
   private:
     ConfigObject<ConfigValue>* m_pConfig;
@@ -59,8 +79,16 @@ class BaseTrackPlayer : public BasePlayer {
     ControlObjectThread* m_pKey;
     ControlObjectThread* m_pReplayGain;
     ControlObjectThread* m_pPlay;
+    ControlObjectSlave* m_pLowFilter;
+    ControlObjectSlave* m_pMidFilter;
+    ControlObjectSlave* m_pHighFilter;
+    ControlObjectSlave* m_pLowFilterKill;
+    ControlObjectSlave* m_pMidFilterKill;
+    ControlObjectSlave* m_pHighFilterKill;
+    ControlObjectSlave* m_pPreGain;
     EngineDeck* m_pChannel;
-};
 
+    bool m_replaygainPending;
+};
 
 #endif // BASETRACKPLAYER_H

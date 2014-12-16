@@ -1,4 +1,4 @@
-// preparefeature.cpp
+// analysisfeature.cpp
 // Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
 // Forked 11/11/2009 by Albert Santoni (alberts@mixxx.org)
 
@@ -12,6 +12,8 @@
 #include "mixxxkeyboard.h"
 #include "analyserqueue.h"
 #include "soundsourceproxy.h"
+#include "util/dnd.h"
+#include "util/debug.h"
 
 const QString AnalysisFeature::m_sAnalysisViewName = QString("Analysis");
 
@@ -21,7 +23,11 @@ AnalysisFeature::AnalysisFeature(QObject* parent,
         LibraryFeature(parent),
         m_pConfig(pConfig),
         m_pTrackCollection(pTrackCollection),
-        m_pAnalyserQueue(NULL) {
+        m_pAnalyserQueue(NULL),
+        m_iOldBpmEnabled(0),
+        m_analysisTitleName(tr("Analyze")),
+        m_pAnalysisView(NULL) {
+	setTitleDefault();
 }
 
 AnalysisFeature::~AnalysisFeature() {
@@ -30,8 +36,22 @@ AnalysisFeature::~AnalysisFeature() {
     cleanupAnalyser();
 }
 
+
+void AnalysisFeature::setTitleDefault() {
+    m_Title = m_analysisTitleName;
+    emit(featureIsLoading(this, false));
+}
+
+void AnalysisFeature::setTitleProgress(int trackNum, int totalNum) {
+    m_Title = QString("%1 (%2 / %3)")
+            .arg(m_analysisTitleName)
+            .arg(QString::number(trackNum))
+            .arg(QString::number(totalNum));
+    emit(featureIsLoading(this, false));
+}
+
 QVariant AnalysisFeature::title() {
-    return tr("Analyze");
+    return m_Title;
 }
 
 QIcon AnalysisFeature::getIcon() {
@@ -51,6 +71,9 @@ void AnalysisFeature::bindWidget(WLibrary* libraryWidget,
             this, SLOT(analyzeTracks(QList<int>)));
     connect(m_pAnalysisView, SIGNAL(stopAnalysis()),
             this, SLOT(stopAnalysis()));
+
+    connect(m_pAnalysisView, SIGNAL(trackSelected(TrackPointer)),
+            this, SIGNAL(trackSelected(TrackPointer)));
 
     connect(this, SIGNAL(analysisActive(bool)),
             m_pAnalysisView, SLOT(analysisActive(bool)));
@@ -82,6 +105,7 @@ void AnalysisFeature::activate() {
     if (m_pAnalysisView) {
         emit(restoreSearch(m_pAnalysisView->currentSearch()));
     }
+    emit(enableCoverArtDisplay(true));
 }
 
 void AnalysisFeature::analyzeTracks(QList<int> trackIds) {
@@ -97,6 +121,8 @@ void AnalysisFeature::analyzeTracks(QList<int> trackIds) {
         connect(m_pAnalyserQueue, SIGNAL(trackProgress(int)),
                 m_pAnalysisView, SLOT(trackAnalysisProgress(int)));
         connect(m_pAnalyserQueue, SIGNAL(trackFinished(int)),
+                this, SLOT(slotProgressUpdate(int)));
+        connect(m_pAnalyserQueue, SIGNAL(trackFinished(int)),
                 m_pAnalysisView, SLOT(trackAnalysisFinished(int)));
 
         connect(m_pAnalyserQueue, SIGNAL(queueEmpty()),
@@ -111,7 +137,17 @@ void AnalysisFeature::analyzeTracks(QList<int> trackIds) {
             m_pAnalyserQueue->queueAnalyseTrack(pTrack);
         }
     }
+    if(trackIds.size() > 0)
+    	setTitleProgress(0, trackIds.size());
     emit(trackAnalysisStarted(trackIds.size()));
+}
+
+void AnalysisFeature::slotProgressUpdate(int num_left) {
+	int num_tracks = m_pAnalysisView->getNumTracks();
+    if (num_left > 0) {
+        int currentTrack = num_tracks - num_left + 1;
+        setTitleProgress(currentTrack, num_tracks);
+    }
 }
 
 void AnalysisFeature::stopAnalysis() {
@@ -122,6 +158,7 @@ void AnalysisFeature::stopAnalysis() {
 }
 
 void AnalysisFeature::cleanupAnalyser() {
+	setTitleDefault();
     emit(analysisActive(false));
     if (m_pAnalyserQueue != NULL) {
         m_pAnalyserQueue->stop();
@@ -134,15 +171,7 @@ void AnalysisFeature::cleanupAnalyser() {
 
 bool AnalysisFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     Q_UNUSED(pSource);
-    QList<QFileInfo> files;
-    foreach (QUrl url, urls) {
-        // XXX: Possible WTF alert - Previously we thought we needed toString() here
-        // but what you actually want in any case when converting a QUrl to a file
-        // system path is QUrl::toLocalFile(). This is the second time we have
-        // flip-flopped on this, but I think toLocalFile() should work in any
-        // case. toString() absolutely does not work when you pass the result to a
-        files.append(url.toLocalFile());
-    }
+    QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
     // Adds track, does not insert duplicates, handles unremoving logic.
     QList<int> trackIds = m_pTrackCollection->getTrackDAO().addTracks(files, true);
     analyzeTracks(trackIds);

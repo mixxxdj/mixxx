@@ -11,7 +11,9 @@
 #elif defined(__WINDOWS__)
 
 #else
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     #include <qx11info_x11.h>
+#endif // QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #endif
 
 #include "util/performancetimer.h"
@@ -58,7 +60,7 @@ class VSyncThread : public QThread {
     int usToNextSync();
     void setUsSyncIntervalTime(int usSyncTimer);
     void setVSyncType(int mode);
-    int rtErrorCnt();
+    int droppedFrames();
     void setSwapWait(int sw);
     int usFromTimerToNextSync(PerformanceTimer* timer);
     void vsyncSlotFinished();
@@ -71,7 +73,7 @@ class VSyncThread : public QThread {
     void vsyncSwap();
 
   private:
-    bool doRendering;
+    bool m_bDoRendering;
     QGLWidget *m_glw;
 
 #if defined(__APPLE__)
@@ -110,7 +112,7 @@ class VSyncThread : public QThread {
     int m_usWaitToSwap;
     enum VSyncMode m_vSyncMode;
     bool m_syncOk;
-    int m_rtErrorCnt;
+    int m_droppedFrames;
     int m_swapWait;
     PerformanceTimer m_timer;
     QSemaphore m_semaVsyncSlot;

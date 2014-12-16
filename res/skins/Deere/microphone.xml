@@ -1,0 +1,34 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    The microphone controls.
+  Variables:
+    i: The Microphone number (1-indexed)
+-->
+
+<Template>
+  <WidgetGroup>
+    <ObjectName>MicrophoneContainer</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+
+      <Template src="skin:microphone_talkover_button.xml">
+        <SetVariable name="group">[Microphone<Variable name="i"/>]</SetVariable>
+        <SetVariable name="talk_text">Talk<Variable name="i"/></SetVariable>
+      </Template>
+
+      <Template src="skin:vumeter.xml">
+        <SetVariable name="group">[Microphone<Variable name="i"/>]</SetVariable>
+        <SetVariable name="control">VuMeter</SetVariable>
+      </Template>
+
+      <Template src="skin:knob_with_button.xml">
+        <SetVariable name="group">[Microphone<Variable name="i"/>]</SetVariable>
+        <SetVariable name="control">pregain</SetVariable>
+        <SetVariable name="button_control">mute</SetVariable>
+        <SetVariable name="label">Gain</SetVariable>
+      </Template>
+    </Children>
+  </WidgetGroup>
+</Template>

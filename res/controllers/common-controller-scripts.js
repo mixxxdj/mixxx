@@ -26,7 +26,7 @@ function secondstominutes(secs)
 {
    var m = (secs / 60) | 0;
 
-   return (m < 10 ? "0" + m : m) 
+   return (m < 10 ? "0" + m : m)
           + ":"
           + ( ( secs %= 60 ) < 10 ? "0" + secs : secs);
 }
@@ -39,10 +39,10 @@ function msecondstominutes(msecs)
     msecs %= 1000;
     msecs = Math.round(msecs * 100 / 1000);
     if (msecs==100) msecs=99;
-    
+
 //     print("secs="+secs+", msecs="+msecs);
 
-    return (m < 10 ? "0" + m : m) 
+    return (m < 10 ? "0" + m : m)
         + ":"
         + ( secs < 10 ? "0" + secs : secs )
         + "."
@@ -155,26 +155,11 @@ script.crossfaderCurve = function (value, min, max) {
    -------- ------------------------------------------------------ */
 script.loopMove = function (group,direction,numberOfBeats) {
     if (!numberOfBeats || numberOfBeats==0) numberOfBeats = 0.5;
-    // 60s/min, *2 for stereo
-    var beatLength = (60*2) / engine.getValue(group, "bpm")
-        * engine.getValue(group, "track_samplerate");
-    var oldStart = engine.getValue(group,"loop_start_position");
-    var oldEnd = engine.getValue(group,"loop_end_position");
-    var loopLength = oldEnd - oldStart;
-    var moveAmount = beatLength*numberOfBeats;
-    // If the loop length is shorter than the amount requested to move, only move
-    //  the loop length to stay contiguous
-    if (loopLength<moveAmount) moveAmount = loopLength;
-    if (direction<0) {
-        // Backwards
-        engine.setValue(group,"loop_start_position",oldStart-moveAmount);
-        engine.setValue(group,"loop_end_position",oldEnd-moveAmount);
-    }
-    else {
-        // Forwards
-        engine.setValue(group,"loop_end_position",oldEnd+moveAmount);
-        engine.setValue(group,"loop_start_position",oldStart+moveAmount);
 
+    if (direction < 0) {
+        engine.setValue(group, "loop_move", -number_of_beats);
+    } else {
+        engine.setValue(group, "loop_move", number_of_beats);
     }
 }
 
@@ -202,7 +187,7 @@ script.midiPitch = function (LSB, MSB, status) {
 
 /* -------- ------------------------------------------------------
      script.spinback
-   Purpose: wrapper around engine.spinback() that can be directly mapped 
+   Purpose: wrapper around engine.spinback() that can be directly mapped
             from xml for a spinback effect
             e.g: <key>script.spinback</key>
    Input:   channel, control, value, status, group
@@ -215,7 +200,7 @@ script.spinback = function(channel, control, value, status, group) {
 
 /* -------- ------------------------------------------------------
      script.brake
-   Purpose: wrapper around engine.brake() that can be directly mapped 
+   Purpose: wrapper around engine.brake() that can be directly mapped
             from xml for a brake effect
             e.g: <key>script.brake</key>
    Input:   channel, control, value, status, group
@@ -256,12 +241,12 @@ bpm.tapButton = function(deck) {
         sum += bpm.tap[i];
     }
     var average = sum/bpm.tap.length;
-    
+
     var fRateScale = average/engine.getValue("[Channel"+deck+"]","bpm");
-    
+
     // Adjust the rate:
     fRateScale = (fRateScale-1.)/engine.getValue("[Channel"+deck+"]","rateRange");
-    
+
     engine.setValue("[Channel"+deck+"]","rate",fRateScale * engine.getValue("[Channel"+deck+"]","rate_dir"));
 //     print("Script: BPM="+average);
 }
@@ -288,7 +273,7 @@ Controller.prototype.addButton = function(buttonName, button, eventHandler) {
       }
       button.handler = handler;
    }
-   this.Buttons[buttonName] = button; 
+   this.Buttons[buttonName] = button;
 }
 
 Controller.prototype.setControlValue = function(control, value) {
@@ -311,7 +296,7 @@ function Control(mappedFunction, softMode) {
    this.midInput = 0x3F;
    this.maxInput = 0x7F;
    // ----
-   
+
    this.minOutput = -1.0;
    this.midOutput = 0.0;
    this.maxOutput = 1.0;
@@ -327,7 +312,7 @@ Control.prototype.setValue = function(group, inputValue){
    } else {
       outputValue = this.midOutput + ((inputValue - this.midInput) / (this.maxInput - this.midInput)) * (this.maxOutput - this.midOutput);
    }
-   if(this.softMode){ 
+   if(this.softMode){
       var currentValue = engine.getValue(group, this.mappedFunction);
       var currentRelative = 0.0;
       if(currentValue <= this.midOutput){

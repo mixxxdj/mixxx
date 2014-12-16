@@ -6,6 +6,8 @@
     <true/>
     <key>com.apple.security.assets.music.read-write</key>
     <true/>
+    <key>com.apple.security.files.downloads.read-write</key>
+    <true/>
     <key>com.apple.security.device.firewire</key>
     <true/>
     <key>com.apple.security.device.microphone</key>
@@ -16,9 +18,7 @@
     <true/>
     <key>com.apple.security.files.user-selected.read-write</key>
     <true/>
-    <key>com.apple.security.temporary-exception.files.absolute-path.read-write</key>
-    <array>
-      <string>/</string>
-    </array>
+    <key>com.apple.security.files.bookmarks.app-scope</key>
+    <true/>
   </dict>
 </plist>

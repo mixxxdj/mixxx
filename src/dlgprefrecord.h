@@ -38,6 +38,9 @@ class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     // Apply changes to widget
     void slotApply();
     void slotUpdate();
+    void slotResetToDefaults();
+
+
     void slotEncoding();
     void slotSliderQuality();
     void slotRecordPathChange();

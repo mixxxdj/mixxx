@@ -1,7 +1,7 @@
 #ifndef SIDECHAINWORKER_H
 #define SIDECHAINWORKER_H
 
-#include "defs.h"
+#include "util/types.h"
 
 class SideChainWorker {
   public:

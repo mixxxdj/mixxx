@@ -10,19 +10,19 @@
 struct ControlInfo {
     ControlInfo()
             : clickControl(NULL),
-              emitOption(ControlWidgetConnection::EMIT_ON_PRESS_AND_RELEASE),
+              emitOption(ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE),
               leftClickControl(NULL),
-              leftEmitOption(ControlWidgetConnection::EMIT_ON_PRESS_AND_RELEASE),
+              leftEmitOption(ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE),
               rightClickControl(NULL),
-              rightEmitOption(ControlWidgetConnection::EMIT_ON_PRESS_AND_RELEASE) {
+              rightEmitOption(ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE) {
     }
 
     ControlObject* clickControl;
-    ControlWidgetConnection::EmitOption emitOption;
+    ControlParameterWidgetConnection::EmitOption emitOption;
     ControlObject* leftClickControl;
-    ControlWidgetConnection::EmitOption leftEmitOption;
+    ControlParameterWidgetConnection::EmitOption leftEmitOption;
     ControlObject* rightClickControl;
-    ControlWidgetConnection::EmitOption rightEmitOption;
+    ControlParameterWidgetConnection::EmitOption rightEmitOption;
 };
 
 class ControllerLearningEventFilter : public QObject {
@@ -35,7 +35,7 @@ class ControllerLearningEventFilter : public QObject {
 
     void addWidgetClickInfo(QWidget* pWidget, Qt::MouseButton buttonState,
                             ControlObject* pControl,
-                            ControlWidgetConnection::EmitOption emitOption);
+                            ControlParameterWidgetConnection::EmitOption emitOption);
 
   public slots:
     void startListening();

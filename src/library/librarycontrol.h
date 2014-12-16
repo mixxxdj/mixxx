@@ -44,11 +44,13 @@ class LibraryControl : public QObject {
     void slotLoadSelectedTrackToGroup(QString group, bool play);
     void slotSelectNextTrack(double v);
     void slotSelectPrevTrack(double v);
+    void slotSelectTrack(double v);
+    void slotSelectSidebarItem(double v);
     void slotSelectNextSidebarItem(double v);
     void slotSelectPrevSidebarItem(double v);
     void slotToggleSelectedSidebarItem(double v);
     void slotLoadSelectedIntoFirstStopped(double v);
-    void slotSelectTrackKnob(double v);
+
     void maybeCreateGroupController(const QString& group);
     void slotNumDecksChanged(double v);
     void slotNumSamplersChanged(double v);
@@ -57,11 +59,15 @@ class LibraryControl : public QObject {
   private:
     ControlObject* m_pSelectNextTrack;
     ControlObject* m_pSelectPrevTrack;
-    ControlObject* m_pSelectNextPlaylist;
-    ControlObject* m_pSelectPrevPlaylist;
+    ControlObject* m_pSelectTrack;
+
+    ControlObject* m_pSelectSidebarItem;
+    ControlObject* m_pSelectPrevSidebarItem;
+    ControlObject* m_pSelectNextSidebarItem;
+
     ControlObject* m_pToggleSidebarItem;
     ControlObject* m_pLoadSelectedIntoFirstStopped;
-    ControlObject* m_pSelectTrackKnob;
+
     WLibrary* m_pLibraryWidget;
     WLibrarySidebar* m_pSidebarWidget;
     ControlObjectThread m_numDecks;

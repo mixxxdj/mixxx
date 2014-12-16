@@ -116,6 +116,7 @@ void BansheeFeature::activate() {
 
     m_pBansheePlaylistModel->setTableModel(0); // Gets the master playlist
     emit(showTrackModel(m_pBansheePlaylistModel));
+    emit(enableCoverArtDisplay(false));
 }
 
 void BansheeFeature::activateChild(const QModelIndex& index) {
@@ -127,6 +128,7 @@ void BansheeFeature::activateChild(const QModelIndex& index) {
         qDebug() << "Activating " << item->data().toString();
         m_pBansheePlaylistModel->setTableModel(playlistID);
         emit(showTrackModel(m_pBansheePlaylistModel));
+        emit(enableCoverArtDisplay(false));
     }
 }
 

@@ -40,7 +40,9 @@ public:
     static const unsigned int kMaxAudioBufferSizeIndex;
     static const QString kDefaultAPI;
     static const unsigned int kFallbackSampleRate;
+    static const unsigned int kDefaultDeckCount;
     static const int kDefaultAudioBufferSizeIndex;
+    static const int kDefaultSyncBuffers;
 
     SoundManagerConfig();
     ~SoundManagerConfig();
@@ -53,9 +55,18 @@ public:
     unsigned int getSampleRate() const;
     void setSampleRate(unsigned int sampleRate);
     bool checkSampleRate(const SoundManager &soundManager);
+
+    // Record the number of decks configured with this setup so they can
+    // be created and configured.
+    unsigned int getDeckCount() const;
+    void setDeckCount(unsigned int deckCount);
+    void setCorrectDeckCount(int configuredDeckCount);
+
     unsigned int getAudioBufferSizeIndex() const;
     unsigned int getFramesPerBuffer() const;
     void setAudioBufferSizeIndex(unsigned int latency);
+    unsigned int getSyncBuffers() const;
+    void setSyncBuffers(unsigned int sampleRate);
     void addOutput(const QString &device, const AudioOutput &out);
     void addInput(const QString &device, const AudioInput &in);
     QMultiHash<QString, AudioOutput> getOutputs() const;
@@ -72,11 +83,13 @@ private:
     // none of our sample rates are actually decimals, this avoids
     // the weirdness using floating point can introduce
     unsigned int m_sampleRate;
+    unsigned int m_deckCount;
     // m_latency is an index > 0, where 1 is a latency of 1ms and
     // higher indices represent subsequently higher latencies (storing
     // latency as milliseconds or frames per buffer is bad because those
     // values vary with sample rate) -- bkgood
     unsigned int m_audioBufferSizeIndex;
+    unsigned int m_syncBuffers;
     QMultiHash<QString, AudioOutput> m_outputs;
     QMultiHash<QString, AudioInput> m_inputs;
 };

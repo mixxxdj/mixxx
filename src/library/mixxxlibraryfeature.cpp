@@ -5,6 +5,7 @@
 
 #include "library/mixxxlibraryfeature.h"
 
+#include "library/parser.h"
 #include "library/basetrackcache.h"
 #include "library/librarytablemodel.h"
 #include "library/missingtablemodel.h"
@@ -14,6 +15,7 @@
 #include "treeitem.h"
 #include "soundsourceproxy.h"
 #include "widget/wlibrary.h"
+#include "util/dnd.h"
 
 MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
                                          TrackCollection* pTrackCollection,
@@ -31,28 +33,32 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
             << "library." + LIBRARYTABLE_PLAYED
             << "library." + LIBRARYTABLE_TIMESPLAYED
             //has to be up here otherwise Played and TimesPlayed are not show
+            << "library." + LIBRARYTABLE_ALBUMARTIST
+            << "library." + LIBRARYTABLE_ALBUM
             << "library." + LIBRARYTABLE_ARTIST
             << "library." + LIBRARYTABLE_TITLE
-            << "library." + LIBRARYTABLE_ALBUM
-            << "library." + LIBRARYTABLE_ALBUMARTIST
             << "library." + LIBRARYTABLE_YEAR
-            << "library." + LIBRARYTABLE_DURATION
             << "library." + LIBRARYTABLE_RATING
             << "library." + LIBRARYTABLE_GENRE
             << "library." + LIBRARYTABLE_COMPOSER
             << "library." + LIBRARYTABLE_GROUPING
-            << "library." + LIBRARYTABLE_FILETYPE
             << "library." + LIBRARYTABLE_TRACKNUMBER
             << "library." + LIBRARYTABLE_KEY
             << "library." + LIBRARYTABLE_KEY_ID
-            << "library." + LIBRARYTABLE_DATETIMEADDED
             << "library." + LIBRARYTABLE_BPM
             << "library." + LIBRARYTABLE_BPM_LOCK
+            << "library." + LIBRARYTABLE_DURATION
             << "library." + LIBRARYTABLE_BITRATE
+            << "library." + LIBRARYTABLE_FILETYPE
+            << "library." + LIBRARYTABLE_DATETIMEADDED
             << "track_locations.location"
             << "track_locations.fs_deleted"
             << "library." + LIBRARYTABLE_COMMENT
-            << "library." + LIBRARYTABLE_MIXXXDELETED;
+            << "library." + LIBRARYTABLE_MIXXXDELETED
+            << "library." + LIBRARYTABLE_COVERART_SOURCE
+            << "library." + LIBRARYTABLE_COVERART_TYPE
+            << "library." + LIBRARYTABLE_COVERART_LOCATION
+            << "library." + LIBRARYTABLE_COVERART_HASH;
 
     QSqlQuery query(pTrackCollection->getDatabase());
     QString tableName = "library_cache_view";
@@ -113,15 +119,20 @@ MixxxLibraryFeature::~MixxxLibraryFeature() {
 }
 
 void MixxxLibraryFeature::bindWidget(WLibrary* pLibrary,
-                    MixxxKeyboard* pKeyboard) {
+                                     MixxxKeyboard* pKeyboard) {
     m_pHiddenView = new DlgHidden(pLibrary,
                                   m_pConfig, m_pTrackCollection,
                                   pKeyboard);
     pLibrary->registerView(kHiddenTitle, m_pHiddenView);
+    connect(m_pHiddenView, SIGNAL(trackSelected(TrackPointer)),
+            this, SIGNAL(trackSelected(TrackPointer)));
+
     m_pMissingView = new DlgMissing(pLibrary,
                                   m_pConfig, m_pTrackCollection,
                                   pKeyboard);
     pLibrary->registerView(kMissingTitle, m_pMissingView);
+    connect(m_pMissingView, SIGNAL(trackSelected(TrackPointer)),
+            this, SIGNAL(trackSelected(TrackPointer)));
 }
 
 QVariant MixxxLibraryFeature::title() {
@@ -151,26 +162,20 @@ void MixxxLibraryFeature::refreshLibraryModels() {
 void MixxxLibraryFeature::activate() {
     qDebug() << "MixxxLibraryFeature::activate()";
     emit(showTrackModel(m_pLibraryTableModel));
+    emit(enableCoverArtDisplay(true));
 }
 
 void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     QString itemName = index.data().toString();
     emit(switchToView(itemName));
+    emit(enableCoverArtDisplay(true));
 }
 
 bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     if (pSource) {
         return false;
     } else {
-        QList<QFileInfo> files;
-        foreach (QUrl url, urls) {
-            // XXX: Possible WTF alert - Previously we thought we needed toString() here
-            // but what you actually want in any case when converting a QUrl to a file
-            // system path is QUrl::toLocalFile(). This is the second time we have
-            // flip-flopped on this, but I think toLocalFile() should work in any
-            // case. toString() absolutely does not work when you pass the result to a
-            files.append(url.toLocalFile());
-        }
+        QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
 
         // Adds track, does not insert duplicates, handles unremoving logic.
         QList<int> trackIds = m_trackDao.addTracks(files, true);
@@ -180,5 +185,6 @@ bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
 
 bool MixxxLibraryFeature::dragMoveAccept(QUrl url) {
     QFileInfo file(url.toLocalFile());
-    return SoundSourceProxy::isFilenameSupported(file.fileName());
+    return SoundSourceProxy::isFilenameSupported(file.fileName()) ||
+            Parser::isPlaylistFilenameSupported(file.fileName());
 }

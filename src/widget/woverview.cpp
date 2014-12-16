@@ -24,16 +24,17 @@
 #include "controlobjectthread.h"
 #include "woverview.h"
 #include "wskincolor.h"
+#include "widget/controlwidgetconnection.h"
 #include "trackinfoobject.h"
-#include "mathstuff.h"
+#include "util/math.h"
 #include "util/timer.h"
+#include "util/dnd.h"
 
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
 
 WOverview::WOverview(const char *pGroup, ConfigObject<ConfigValue>* pConfig, QWidget* parent) :
         WWidget(parent),
-        m_pWaveform(NULL),
         m_pWaveformSourceImage(NULL),
         m_actualCompletion(0),
         m_pixmapDone(false),
@@ -95,8 +96,10 @@ void WOverview::setup(QDomNode node, const SkinContext& context) {
 
     for (int i = 0; i < m_marks.size(); ++i) {
         WaveformMark& mark = m_marks[i];
-        connect(mark.m_pointControl, SIGNAL(valueChanged(double)),
-                this, SLOT(onMarkChanged(double)));
+        if (mark.m_pointControl) {
+            connect(mark.m_pointControl, SIGNAL(valueChanged(double)),
+                    this, SLOT(onMarkChanged(double)));
+        }
     }
 
     QDomNode child = node.firstChild();
@@ -106,38 +109,59 @@ void WOverview::setup(QDomNode node, const SkinContext& context) {
             WaveformMarkRange& markRange = m_markRanges.back();
             markRange.setup(m_group, child, context, m_signalColors);
 
-            connect(markRange.m_markEnabledControl, SIGNAL(valueChanged(double)),
-                     this, SLOT(onMarkRangeChange(double)));
-            connect(markRange.m_markStartPointControl, SIGNAL(valueChanged(double)),
-                     this, SLOT(onMarkRangeChange(double)));
-            connect(markRange.m_markEndPointControl, SIGNAL(valueChanged(double)),
-                     this, SLOT(onMarkRangeChange(double)));
+            if (markRange.m_markEnabledControl) {
+                connect(markRange.m_markEnabledControl, SIGNAL(valueChanged(double)),
+                        this, SLOT(onMarkRangeChange(double)));
+            }
+            if (markRange.m_markStartPointControl) {
+                connect(markRange.m_markStartPointControl, SIGNAL(valueChanged(double)),
+                        this, SLOT(onMarkRangeChange(double)));
+            }
+            if (markRange.m_markEndPointControl) {
+                connect(markRange.m_markEndPointControl, SIGNAL(valueChanged(double)),
+                        this, SLOT(onMarkRangeChange(double)));
+            }
         }
         child = child.nextSibling();
     }
 
     //qDebug() << "WOverview : m_marks" << m_marks.size();
     //qDebug() << "WOverview : m_markRanges" << m_markRanges.size();
+    if (!m_connections.isEmpty()) {
+        ControlParameterWidgetConnection* defaultConnection = m_connections.at(0);
+        if (defaultConnection) {
+            if (defaultConnection->getEmitOption() &
+                    ControlParameterWidgetConnection::EMIT_DEFAULT) {
+                // ON_PRESS means here value change on mouse move during press
+                defaultConnection->setEmitOption(
+                        ControlParameterWidgetConnection::EMIT_ON_RELEASE);
+            }
+        }
+    }
 }
 
-void WOverview::onConnectedControlValueChanged(double dValue) {
-    if (!m_bDrag)
-    {
-        // Calculate handle position
-        int iPos = valueToPosition(dValue);
+void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
+    Q_UNUSED(dValue);
+    if (!m_bDrag) {
+        // Calculate handle position. Clamp the value within 0-1 because that's
+        // all we represent with this widget.
+        dParameter = math_clamp_unsafe(dParameter, 0.0, 1.0);
+
+        int iPos = valueToPosition(dParameter);
         if (iPos != m_iPos) {
             m_iPos = iPos;
-            //qDebug() << "WOverview::onConnectedControlValueChanged" << dValue << ">>" << m_iPos;
+            //qDebug() << "WOverview::onConnectedControlChanged" << dParameter << ">>" << m_iPos;
             update();
         }
     }
 }
 
 void WOverview::slotWaveformSummaryUpdated() {
-    if (!m_pCurrentTrack) {
+    TrackPointer pTrack(m_pCurrentTrack);
+    if (!pTrack) {
         return;
     }
-    m_pWaveform = m_pCurrentTrack->getWaveformSummary();
+    m_pWaveform = pTrack->getWaveformSummary();
     // If the waveform is already complete, just draw it.
     if (m_pWaveform && m_pWaveform->getCompletion() == m_pWaveform->getDataSize()) {
         m_actualCompletion = 0;
@@ -212,7 +236,7 @@ void WOverview::slotUnloadTrack(TrackPointer /*pTrack*/) {
                    this, SLOT(slotAnalyserProgress(int)));
     }
     m_pCurrentTrack.clear();
-    m_pWaveform = NULL;
+    m_pWaveform.clear();
     m_actualCompletion = 0;
     m_waveformPeak = -1.0;
     m_pixmapDone = false;
@@ -238,24 +262,17 @@ void WOverview::onMarkRangeChange(double /*v*/) {
 }
 
 void WOverview::mouseMoveEvent(QMouseEvent* e) {
-    m_iPos = e->x();
-    m_iPos = math_max(0, math_min(m_iPos,width() - 1));
+    m_iPos = math_clamp(e->x(), 0, width() - 1);
     //qDebug() << "WOverview::mouseMoveEvent" << e->pos() << m_iPos;
     update();
 }
 
 void WOverview::mouseReleaseEvent(QMouseEvent* e) {
     mouseMoveEvent(e);
-
     double dValue = positionToValue(m_iPos);
-
     //qDebug() << "WOverview::mouseReleaseEvent" << e->pos() << m_iPos << ">>" << dValue;
 
-    if (e->button() == Qt::RightButton) {
-        setControlParameterRightUp(dValue);
-    } else {
-        setControlParameterLeftUp(dValue);
-    }
+    setControlParameterUp(dValue);
     m_bDrag = false;
 }
 
@@ -303,7 +320,7 @@ void WOverview::paintEvent(QPaintEvent *) {
                 diffGain = 255.0 - 255.0 / visualGain;
             }
 
-            if (m_diffGain != diffGain || m_waveformImageScaled.isNull() ) {
+            if (m_diffGain != diffGain || m_waveformImageScaled.isNull()) {
                 QRect sourceRect(0, diffGain, m_pWaveformSourceImage->width(),
                     m_pWaveformSourceImage->height() - 2 * diffGain);
                 m_waveformImageScaled = m_pWaveformSourceImage->copy(
@@ -341,7 +358,7 @@ void WOverview::paintEvent(QPaintEvent *) {
         const float gain = (float)(width()-2) / trackSamples;
 
         // Draw range (loop)
-        for( unsigned int i = 0; i < m_markRanges.size(); i++) {
+        for (unsigned int i = 0; i < m_markRanges.size(); ++i) {
             WaveformMarkRange& currentMarkRange = m_markRanges[i];
 
             // If the mark range is not active we should not draw it.
@@ -388,7 +405,7 @@ void WOverview::paintEvent(QPaintEvent *) {
 
         painter.setOpacity(0.9);
 
-        for( int i = 0; i < m_marks.size(); i++) {
+        for (int i = 0; i < m_marks.size(); ++i) {
             WaveformMark& currentMark = m_marks[i];
             if (currentMark.m_pointControl && currentMark.m_pointControl->get() >= 0.0) {
                 //const float markPosition = 1.0 +
@@ -406,7 +423,7 @@ void WOverview::paintEvent(QPaintEvent *) {
                     QPointF textPoint;
                     textPoint.setX(markPosition+0.5f);
 
-                    if( currentMark.m_align == Qt::AlignTop) {
+                    if (currentMark.m_align == Qt::AlignTop) {
                         QFontMetricsF metric(markerFont);
                         textPoint.setY(metric.tightBoundingRect(currentMark.m_text).height()+0.5f);
                     } else {
@@ -466,11 +483,10 @@ void WOverview::paintText(const QString &text, QPainter *painter) {
 }
 
 void WOverview::resizeEvent(QResizeEvent *) {
-    // Play-position potmeters range from -0.14 to 1.14. This is to give VC and
-    // MIDI control access to the pre-roll area.
-    // TODO(rryan): get these limits from the CO itself.
-    const double kMaxPlayposRange = 1.14;
-    const double kMinPlayposRange = -0.14;
+    // Play-position potmeters range from 0 to 1 but they allow out-of-range
+    // sets. This is to give VC access to the pre-roll area.
+    const double kMaxPlayposRange = 1.0;
+    const double kMinPlayposRange = 0.0;
 
     // Values of zero and one in normalized space.
     const double zero = (0.0 - kMinPlayposRange) / (kMaxPlayposRange - kMinPlayposRange);
@@ -486,31 +502,27 @@ void WOverview::resizeEvent(QResizeEvent *) {
 }
 
 void WOverview::dragEnterEvent(QDragEnterEvent* event) {
-    // Accept the enter event if the thing is a filepath and nothing's playing
-    // in this deck or the settings allow to interrupt the playing deck.
-    if (event->mimeData()->hasUrls() && event->mimeData()->urls().size() > 0) {
-        if ((m_playControl->get() == 0.0 ||
-            m_pConfig->getValueString(ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt()) || (m_group=="[PreviewDeck1]")) {
-            event->acceptProposedAction();
-        } else {
-            event->ignore();
-        }
+    if (DragAndDropHelper::allowLoadToPlayer(m_group,
+                                             m_playControl->get() > 0.0,
+                                             m_pConfig) &&
+            DragAndDropHelper::dragEnterAccept(*event->mimeData(), m_group,
+                                               true, false)) {
+        event->acceptProposedAction();
+    } else {
+        event->ignore();
     }
 }
 
 void WOverview::dropEvent(QDropEvent* event) {
-    if (event->mimeData()->hasUrls() &&
-            event->mimeData()->urls().size() > 0) {
-        QList<QUrl> urls(event->mimeData()->urls());
-        QUrl url = urls.first();
-        QString name = url.toLocalFile();
-        //If the file is on a network share, try just converting the URL to a string...
-        if (name == "") {
-            name = url.toString();
+    if (DragAndDropHelper::allowLoadToPlayer(m_group, m_playControl->get() > 0.0,
+                                             m_pConfig)) {
+        QList<QFileInfo> files = DragAndDropHelper::dropEventFiles(
+                *event->mimeData(), m_group, true, false);
+        if (!files.isEmpty()) {
+            event->accept();
+            emit(trackDropped(files.at(0).canonicalFilePath(), m_group));
+            return;
         }
-        event->accept();
-        emit(trackDropped(name, m_group));
-    } else {
-        event->ignore();
     }
+    event->ignore();
 }

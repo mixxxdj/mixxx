@@ -119,7 +119,12 @@ def build_dmg(target, source, env):
         system('SetFile -a C "%s"' % dmg) #is there an sconsey way to declare this? Would be nice so that it could write what
 
 
-    if system("hdiutil create -srcfolder %s -format UDBZ -ov -volname %s %s" % (dmg, env['VOLNAME'], target)):
+    # TODO(rryan): hdiutil has a bug where if srcfolder is greater than 100M it
+    # fails to create a DMG with error -5341. The actual size of the resulting
+    # DMG is not affected by the -size parameter -- I think it's just the size
+    # of the "partition" in the DMG. Hard-coding 150M is a band-aid to get the
+    # build working again while we figure out the right solution.
+    if system("hdiutil create -size 150M -srcfolder %s -format UDBZ -ov -volname %s %s" % (dmg, env['VOLNAME'], target)):
         raise Exception("hdiutil create failed")
 
     shutil.rmtree(dmg)
@@ -279,7 +284,11 @@ def build_app(target, source, env):
 
     print "Installing embedded libs:"
     for ref, (abs, embedded) in locals.iteritems():
-        Execute(Copy(embedded, abs))
+        real_abs = os.path.realpath(abs)
+        print "installing", real_abs, "to", embedded
+        # NOTE(rryan): abs can be a symlink. we want to copy the binary it is
+        # pointing to. os.path.realpath does this for us.
+        Execute(Copy(embedded, real_abs))
         if not os.access(embedded, os.W_OK):
             print "Adding write permissions to %s" % embedded_p
             mode = os.stat(embedded).st_mode
@@ -289,8 +298,11 @@ def build_app(target, source, env):
 
     print "Installing plugins:"
     for p, embedded_p in plugins_l:
-        print "installing", p,"to",embedded_p
-        Execute(Copy(embedded_p, p)) #:/
+        real_p = os.path.realpath(p)
+        print "installing", real_p, "to", embedded_p
+        # NOTE(rryan): p can be a symlink. we want to copy the binary it is
+        # pointing to. os.path.realpath does this for us.
+        Execute(Copy(embedded_p, real_p)) #:/
         patch_lib(str(embedded_p))
 
 
@@ -348,7 +360,7 @@ def emit_app(target, source, env):
     #it seems that if we tell Builder "suffix = '.app'" then it _at that point_ assumes that $NAME.app is a file, which then causes "TypeError: Tried to lookup File 'Mixxx.app' as a Dir.:"
     #so just work around that here
     if type(bundle) != Bundle:
-        bundle = Bundle(str(bundle)+".app")
+        bundle = Bundle(str(bundle).replace('_bundle', '')+".app")
 
     bundle_identifier = env['IDENTIFIER']
     bundle_version = env['VERSION']
@@ -381,8 +393,9 @@ def emit_app(target, source, env):
     #So, we use the first four characters of the app
     env.Writer(File(os.path.join(str(contents),"PkgInfo")), [], DATA = "%s%s" % (bundle_type, bundle_signature))
 
-    #.title() in the next line is used to make sure the titlebar on OS X has the capitalized name of the app
-    plist_data = {'CFBundleExecutable': binary.name.title(),
+    # Bug #1258435: executable name must match CFBundleExecutable otherwise
+    # case-sensitive file systems break. Don't use binary.name.title() here.
+    plist_data = {'CFBundleExecutable': binary.name,
                   'CFBundleIconFile': icon,
                   'CFBundlePackageType': bundle_type,
                   'CFBundleSignature': bundle_signature,
@@ -445,7 +458,7 @@ def codesign_path(identity, keychain, entitlements, path):
 def do_codesign(target, source, env):
     # target[0] is a File object, coerce to string to get its path (usually
     # something like osxXX_build/Mixxx)
-    bundle = str(target[0])
+    bundle = str(target[0]).replace('_codesign', '')
 
     # HACK(XXX) SCons can't have a Dir which is a target so we append .app here
     # since our actual target (the thing we want to codesign) is the bundle
@@ -475,14 +488,16 @@ def do_codesign(target, source, env):
             # Don't descend.
             del dirs[:]
 
-        # Codesign binaries.
-        for root, dirs, files in os.walk(binary_path):
-            for filename in files:
-                codesign_path(application_identity, keychain, entitlements, os.path.join(root, filename))
         # Codesign plugins.
         for root, dirs, files in os.walk(plugins_path):
             for filename in files:
                 codesign_path(application_identity, keychain, entitlements, os.path.join(root, filename))
+
+        # Codesign binaries.
+        for root, dirs, files in os.walk(binary_path):
+            for filename in files:
+                codesign_path(application_identity, keychain, entitlements, os.path.join(root, filename))
+
         # Codesign the bundle.
         codesign_path(application_identity, keychain, entitlements, bundle)
 CodeSign = Builder(action = do_codesign)
@@ -528,5 +543,3 @@ def generate(env):
 
 def exists(env):
     return os.platform == 'darwin'
-
-

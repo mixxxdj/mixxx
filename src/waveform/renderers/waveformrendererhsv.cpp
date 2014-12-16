@@ -7,12 +7,11 @@
 #include "widget/wskincolor.h"
 #include "trackinfoobject.h"
 #include "widget/wwidget.h"
-
-#include "defs.h"
+#include "util/math.h"
 
 WaveformRendererHSV::WaveformRendererHSV(
         WaveformWidgetRenderer* waveformWidgetRenderer)
-    : WaveformRendererSignalBase( waveformWidgetRenderer) {
+    : WaveformRendererSignalBase(waveformWidgetRenderer) {
 }
 
 WaveformRendererHSV::~WaveformRendererHSV() {
@@ -29,8 +28,8 @@ void WaveformRendererHSV::draw(QPainter* painter,
         return;
     }
 
-    const Waveform* waveform = trackInfo->getWaveform();
-    if (waveform == NULL) {
+    ConstWaveformPointer waveform = trackInfo->getWaveform();
+    if (waveform.isNull()) {
         return;
     }
 
@@ -61,16 +60,15 @@ void WaveformRendererHSV::draw(QPainter* painter,
             (double)m_waveformRenderer->getWidth();
 
     float allGain(1.0);
-    allGain = m_waveformRenderer->getGain();
+    getGains(&allGain, NULL, NULL, NULL);
 
-    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
-    allGain *= factory->getVisualGain(::WaveformWidgetFactory::All);
-
-    // Save HSV of waveform color
-    double h,s,v;
+    // Save HSV of waveform color. NOTE(rryan): On ARM, qreal is float so it's
+    // important we use qreal here and not double or float or else we will get
+    // build failures on ARM.
+    qreal h, s, v;
 
     // Get base color of waveform in the HSV format (s and v isn't use)
-    m_pColors->getLowColor().getHsvF(&h,&s,&v);
+    m_pColors->getLowColor().getHsvF(&h, &s, &v);
 
     QColor color;
     float lo, hi, total;
@@ -80,7 +78,7 @@ void WaveformRendererHSV::draw(QPainter* painter,
     const float heightFactor = allGain*halfHeight/255.0;
 
     //draw reference line
-    painter->setPen(m_axesColor);
+    painter->setPen(m_pColors->getAxesColor());
     painter->drawLine(0,halfHeight,m_waveformRenderer->getWidth(),halfHeight);
 
     for (int x = 0; x < m_waveformRenderer->getWidth(); ++x) {
@@ -108,8 +106,8 @@ void WaveformRendererHSV::draw(QPainter* painter,
         // We now know that some subset of [visualFrameStart, visualFrameStop]
         // lies within the valid range of visual frames. Clamp
         // visualFrameStart/Stop to within [0, lastVisualFrame].
-        visualFrameStart = math_max(math_min(lastVisualFrame, visualFrameStart), 0);
-        visualFrameStop = math_max(math_min(lastVisualFrame, visualFrameStop), 0);
+        visualFrameStart = math_clamp(visualFrameStart, 0, lastVisualFrame);
+        visualFrameStop = math_clamp(visualFrameStop, 0, lastVisualFrame);
 
         int visualIndexStart = visualFrameStart * 2;
         int visualIndexStop = visualFrameStop * 2;
@@ -129,17 +127,17 @@ void WaveformRendererHSV::draw(QPainter* painter,
             maxMid[1] = math_max(maxMid[1], (int)waveformDataNext.filtered.mid);
             maxHigh[0] = math_max(maxHigh[0], (int)waveformData.filtered.high);
             maxHigh[1] = math_max(maxHigh[1], (int)waveformDataNext.filtered.high);
-            maxAll[0] = math_max( maxAll[0], (int)waveformData.filtered.all);
-            maxAll[1] = math_max( maxAll[1], (int)waveformDataNext.filtered.all);
+            maxAll[0] = math_max(maxAll[0], (int)waveformData.filtered.all);
+            maxAll[1] = math_max(maxAll[1], (int)waveformDataNext.filtered.all);
         }
 
-        if( maxAll[0] && maxAll[1] ) {
+        if (maxAll[0] && maxAll[1]) {
             // Calculate sum, to normalize
             // Also multiply on 1.2 to prevent very dark or light color
             total = (maxLow[0] + maxLow[1] + maxMid[0] + maxMid[1] + maxHigh[0] + maxHigh[1]) * 1.2;
 
             // prevent division by zero
-            if( total > 0 )
+            if (total > 0)
             {
                 // Normalize low and high (mid not need, because it not change the color)
                 lo = (maxLow[0] + maxLow[1]) / total;

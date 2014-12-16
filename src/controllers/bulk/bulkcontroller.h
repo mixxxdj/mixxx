@@ -8,13 +8,15 @@
 #ifndef BULKCONTROLLER_H
 #define BULKCONTROLLER_H
 
-#include <libusb.h>
-
 #include <QAtomicInt>
 
 #include "controllers/controller.h"
 #include "controllers/hid/hidcontrollerpreset.h"
 #include "controllers/hid/hidcontrollerpresetfilehandler.h"
+
+struct libusb_device_handle;
+struct libusb_context;
+struct libusb_device_descriptor;
 
 class BulkReader : public QThread {
     Q_OBJECT
@@ -53,12 +55,14 @@ class BulkController : public Controller {
 
     virtual bool savePreset(const QString fileName) const;
 
-    virtual ControllerPresetFileHandler* getFileHandler() const {
-        return new HidControllerPresetFileHandler();
-    }
-
     virtual void visit(const MidiControllerPreset* preset);
     virtual void visit(const HidControllerPreset* preset);
+
+    virtual void accept(ControllerVisitor* visitor) {
+        if (visitor) {
+            visitor->visit(this);
+        }
+    }
 
     virtual bool isMappable() const {
         return m_preset.isMappable();

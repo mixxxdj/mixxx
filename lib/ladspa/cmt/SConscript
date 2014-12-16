@@ -1,6 +1,0 @@
-
-Import('env')
-
-cmtlib = env.SharedLibrary('cmt', ['cmt.cpp', 'init.cpp', 'descriptor.cpp', 'delay.cpp', 'filter.cpp'])
-
-Return('cmtlib')

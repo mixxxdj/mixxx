@@ -1,0 +1,66 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    The deck mixer controls.
+-->
+<Template>
+  <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>DeckMixer<Variable name="i"/>_Column1</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+      <Template src="skin:knob_with_button.xml">
+        <SetVariable name="control">pregain</SetVariable>
+        <SetVariable name="button_control">mute</SetVariable>
+        <SetVariable name="label">Gain</SetVariable>
+      </Template>
+
+      <Template src="skin:equalizer_rack_parameter.xml">
+        <SetVariable name="parameter">4</SetVariable>
+      </Template>
+
+      <Template src="skin:equalizer_rack_parameter.xml">
+        <SetVariable name="parameter">3</SetVariable>
+      </Template>
+
+      <Template src="skin:equalizer_rack_parameter.xml">
+        <SetVariable name="parameter">2</SetVariable>
+      </Template>
+
+      <Template src="skin:equalizer_rack_parameter.xml">
+        <SetVariable name="parameter">1</SetVariable>
+      </Template>
+
+      <Template src="skin:quick_effect_superknob.xml">
+        <SetVariable name="QuickEffect">1</SetVariable>
+      </Template>
+
+      <Template src="skin:knob_with_button.xml">
+        <SetVariable name="control">pitch</SetVariable>
+        <SetVariable name="button_control">keylock</SetVariable>
+        <SetVariable name="label">Key</SetVariable>
+      </Template>
+
+      <PushButton>
+        <ObjectName>DeckPFL</ObjectName>
+        <Size>40f,20f</Size>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>HEAD</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>HEAD</Text>
+        </State>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,pfl</ConfigKey>
+          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+
+    </Children>
+  </WidgetGroup>
+</Template>

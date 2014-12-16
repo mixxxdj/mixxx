@@ -5,8 +5,8 @@
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "vinylcontrol/vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolxwax.h"
+#include "util/defs.h"
 #include "controlpushbutton.h"
-#include "defs.h"
 #include "util/timer.h"
 #include "util/event.h"
 #include "sampleutil.h"
@@ -153,7 +153,7 @@ void VinylControlProcessor::reloadConfig() {
     }
 }
 
-void VinylControlProcessor::onInputConnected(AudioInput input) {
+void VinylControlProcessor::onInputConfigured(AudioInput input) {
     if (input.getType() != AudioInput::VINYLCONTROL) {
         qDebug() << "WARNING: AudioInput type is not VINYLCONTROL. Ignoring.";
         return;
@@ -177,7 +177,7 @@ void VinylControlProcessor::onInputConnected(AudioInput input) {
     delete pCurrent;
 }
 
-void VinylControlProcessor::onInputDisconnected(AudioInput input) {
+void VinylControlProcessor::onInputUnconfigured(AudioInput input) {
     if (input.getType() != AudioInput::VINYLCONTROL) {
         qDebug() << "WARNING: AudioInput type is not VINYLCONTROL. Ignoring.";
         return;
@@ -199,6 +199,9 @@ void VinylControlProcessor::onInputDisconnected(AudioInput input) {
     delete pVC;
 }
 
+bool VinylControlProcessor::deckConfigured(int index) const {
+    return m_processors[index] != NULL;
+}
 
 void VinylControlProcessor::receiveBuffer(AudioInput input,
                                           const CSAMPLE* pBuffer,

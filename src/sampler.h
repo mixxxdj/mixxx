@@ -3,12 +3,13 @@
 
 #include "basetrackplayer.h"
 
-class Sampler : public BaseTrackPlayer {
+class Sampler : public BaseTrackPlayerImpl {
     Q_OBJECT
     public:
     Sampler(QObject* pParent,
             ConfigObject<ConfigValue> *pConfig,
             EngineMaster* pMixingEngine,
+            EffectsManager* pEffectsManager,
             EngineChannel::ChannelOrientation defaultOrientation,
             QString group);
     virtual ~Sampler();

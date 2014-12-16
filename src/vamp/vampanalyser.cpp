@@ -10,9 +10,6 @@
 #include <QDesktopServices>
 #include <QCoreApplication>
 #include <QStringList>
-#include <stdlib.h>
-#include <iostream>
-#include <stdio.h>
 
 #include "vamp/vampanalyser.h"
 
@@ -37,36 +34,59 @@ void VampAnalyser::initializePluginPaths() {
     QStringList pathElements = vampPath.length() > 0 ? vampPath.split(PATH_SEPARATOR)
             : QStringList();
 
-    const QString homeLocation = QDesktopServices::storageLocation(
-        QDesktopServices::HomeLocation);
-    QString applicationPath = QCoreApplication::applicationDirPath();
+    const QString dataLocation = QDesktopServices::storageLocation(
+            QDesktopServices::DataLocation);
+    const QString applicationPath = QCoreApplication::applicationDirPath();
+
 #ifdef __WINDOWS__
     QDir winVampPath(applicationPath);
-    if (winVampPath.cd("plugins")) {
-        if (winVampPath.cd("vamp")) {
-            pathElements << winVampPath.absolutePath().replace("/","\\");
-        } else {
-            qDebug() << winVampPath.absolutePath() << "does not exist!";
-        }
+    if (winVampPath.cd("plugins") && winVampPath.cd("vamp")) {
+        pathElements << winVampPath.absolutePath().replace("/","\\");
     } else {
         qDebug() << winVampPath.absolutePath() << "does not exist!";
     }
 #elif __APPLE__
     // Location within the OS X bundle that we store plugins.
-    pathElements << applicationPath +"/../Plugins";
+    // blah/Mixxx.app/Contents/MacOS/
+    QDir bundlePluginDir(applicationPath);
+    if (bundlePluginDir.cdUp() && bundlePluginDir.cd("PlugIns")) {
+        pathElements << bundlePluginDir.absolutePath();
+    }
+
     // For people who build from source.
-    pathElements << applicationPath + "/osx32_build/vamp-plugins";
-    pathElements << applicationPath + "/osx64_build/vamp-plugins";
-    pathElements << homeLocation + "/Library/Application Support/Mixxx/Plugins/vamp/";
+    QDir developer32Root(applicationPath);
+    if (developer32Root.cd("osx32_build") && developer32Root.cd("vamp-plugins")) {
+        pathElements << developer32Root.absolutePath();
+    }
+    QDir developer64Root(applicationPath);
+    if (developer64Root.cd("osx64_build") && developer64Root.cd("vamp-plugins")) {
+        pathElements << developer64Root.absolutePath();
+    }
+
+    QDir dataPluginDir(dataLocation);
+    if (dataPluginDir.cd("Plugins") && dataPluginDir.cd("vamp")) {
+        pathElements << dataPluginDir.absolutePath();
+    }
 #elif __LINUX__
     QDir libPath(UNIX_LIB_PATH);
     if (libPath.cd("plugins") && libPath.cd("vamp")) {
         pathElements << libPath.absolutePath();
     }
-    pathElements << homeLocation + "/.mixxx/plugins/vamp/";
+
+    QDir dataPluginDir(dataLocation);
+    if (dataPluginDir.cd("plugins") && dataPluginDir.cd("vamp")) {
+        pathElements << dataPluginDir.absolutePath();
+    }
+
     // For people who build from source.
-    pathElements << applicationPath + "/lin32_build/vamp-plugins";
-    pathElements << applicationPath + "/lin64_build/vamp-plugins";
+    QDir developer32Root(applicationPath);
+    if (developer32Root.cd("lin32_build") && developer32Root.cd("vamp-plugins")) {
+        pathElements << developer32Root.absolutePath();
+    }
+    QDir developer64Root(applicationPath);
+    if (developer64Root.cd("lin64_build") && developer64Root.cd("vamp-plugins")) {
+        pathElements << developer64Root.absolutePath();
+    }
 #endif
 
     QString newPath = pathElements.join(PATH_SEPARATOR);
@@ -81,11 +101,19 @@ void VampAnalyser::initializePluginPaths() {
 #endif
 }
 
-VampAnalyser::VampAnalyser(ConfigObject<ConfigValue>* pconfig) {
-    m_pluginbuf = new CSAMPLE*[2];
-    m_plugin = NULL;
-    m_bDoNotAnalyseMoreSamples = false;
-    m_pConfig = pconfig;
+VampAnalyser::VampAnalyser()
+    : m_iSampleCount(0),
+      m_iOUT(0),
+      m_iRemainingSamples(0),
+      m_iBlockSize(0),
+      m_iStepSize(0),
+      m_rate(0),
+      m_iOutput(0),
+      m_pluginbuf(new CSAMPLE*[2]),
+      m_plugin(NULL),
+      m_bDoNotAnalyseMoreSamples(false),
+      m_FastAnalysisEnabled(false),
+      m_iMaxSamplesToAnalyse(0) {
 }
 
 VampAnalyser::~VampAnalyser() {
@@ -95,13 +123,8 @@ VampAnalyser::~VampAnalyser() {
 
 bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
                         const int samplerate, const int TotalSamples, bool bFastAnalysis) {
-    m_iOutput = 0;
-    m_rate = 0;
-    m_iMaxSamplesToAnalyse = 0;
     m_iRemainingSamples = TotalSamples;
     m_rate = samplerate;
-    m_iSampleCount = 0;
-    m_iOUT = 0;
 
     if (samplerate <= 0.0) {
         qDebug() << "VampAnalyser: Track has non-positive samplerate";
@@ -336,8 +359,7 @@ QVector<double> VampAnalyser::GetEndFramesVector() {
          fli != m_Results.end(); ++fli) {
         if (fli->hasDuration) {
             Vamp::RealTime ftime0 = fli->timestamp;
-            Vamp::RealTime ftime1 = ftime0;
-            ftime1 = ftime0 + fli->duration;
+            Vamp::RealTime ftime1 = ftime0 + fli->duration;
             //double ltime1 = ftime1.sec + (double(ftime1.nsec)
             //        / 1000000000.0);
             vectout << static_cast<double>(

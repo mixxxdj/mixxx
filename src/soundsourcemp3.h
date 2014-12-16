@@ -18,10 +18,15 @@
 #ifndef SOUNDSOURCEMP3_H
 #define SOUNDSOURCEMP3_H
 
+#include "soundsource.h"
+
 #include <errno.h>
 #include <id3tag.h>
-#ifdef WIN64
-  #define FPM_64BIT // So mad.h doesn't try to use inline assembly which MSVC-x64 doesn't support
+#ifdef _MSC_VER
+  // So mad.h doesn't try to use inline assembly which MSVC doesn't support. 
+  // Notably, FPM_64BIT does not require a 64-bit machine. It merely requires a 
+  // compiler that supports 64-bit types.
+  #define FPM_64BIT 
 #endif
 #include <mad.h>
 #include <stdio.h>
@@ -30,9 +35,6 @@
 
 #include <QObject>
 #include <QFile>
-
-#include "defs.h"
-#include "soundsource.h"
 
 #define READLENGTH 5000
 
@@ -49,17 +51,18 @@ typedef struct MadSeekFrameType {
 
 class SoundSourceMp3 : public Mixxx::SoundSource {
 public:
-    SoundSourceMp3(QString qFilename);
     ~SoundSourceMp3();
-    int open();
+    Result open();
     long seek(long);
     unsigned read(unsigned long size, const SAMPLE*);
     unsigned long discard(unsigned long size);
     /** Return the length of the file in samples. */
     inline long unsigned length();
-    int parseHeader();
+    Result parseHeader();
+    QImage parseCoverArt();
     static QList<QString> supportedFileExtensions();
 
+    explicit SoundSourceMp3(QString qFilename);
 private:
     /** Returns the position of the frame which was found. The found frame is set to
       * the current element in m_qSeekList */

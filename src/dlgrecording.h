@@ -1,21 +1,20 @@
 #ifndef DLGRECORDING_H
 #define DLGRECORDING_H
 
-#include <QItemSelection>
-#include "ui_dlgrecording.h"
 #include "configobject.h"
-#include "trackinfoobject.h"
-#include "library/libraryview.h"
-#include "library/trackcollection.h"
 #include "library/browse/browsetablemodel.h"
+#include "library/libraryview.h"
 #include "library/proxytrackmodel.h"
-#include "recording/recordingmanager.h"
+#include "library/trackcollection.h"
 #include "mixxxkeyboard.h"
+#include "recording/recordingmanager.h"
+#include "trackinfoobject.h"
+#include "ui_dlgrecording.h"
 
-class PlaylistTableModel;
-class WTrackTableView;
 class AnalyserQueue;
+class PlaylistTableModel;
 class QSqlTableModel;
+class WTrackTableView;
 
 class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual LibraryView {
     Q_OBJECT
@@ -38,6 +37,7 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     void slotBytesRecorded(long);
     void refreshBrowseModel();
     void slotRestoreSearch();
+    void slotDurationRecorded(QString durationRecorded);
 
   signals:
     void loadTrack(TrackPointer tio);
@@ -45,7 +45,6 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     void restoreSearch(QString search);
 
   private:
-
     ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;
     WTrackTableView* m_pTrackTableView;
@@ -53,8 +52,11 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     ProxyTrackModel m_proxyModel;
     QString m_recordingDir;
 
-    RecordingManager* m_pRecordingManager;
+    void refreshLabel();
+    QString m_bytesRecordedStr;
+    QString m_durationRecordedStr;
 
+    RecordingManager* m_pRecordingManager;
 };
 
 #endif //DLGRECORDING_H

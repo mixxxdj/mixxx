@@ -1,0 +1,47 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    An effect rack widget.
+  Variables:
+    group: The group for the controls.
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <ObjectName>EffectRackContainer</ObjectName>
+    <Children>
+        <WidgetGroup trigger="[EffectRack1],show">
+          <ObjectName>EffectRackExpanded</ObjectName>
+          <SizePolicy>me,min</SizePolicy>
+          <Layout>vertical</Layout>
+          <Children>
+            <WidgetGroup>
+              <Layout>horizontal</Layout>
+              <SizePolicy>me,min</SizePolicy>
+              <Children>
+              <Template src="skin:effect_unit.xml">
+                <SetVariable name="EffectRack">1</SetVariable>
+                <SetVariable name="EffectUnit">1</SetVariable>
+              </Template>
+
+              <Template src="skin:effect_unit.xml">
+                <SetVariable name="EffectRack">1</SetVariable>
+                <SetVariable name="EffectUnit">2</SetVariable>
+              </Template>
+
+              <Template src="skin:effect_unit.xml">
+                <SetVariable name="EffectRack">1</SetVariable>
+                <SetVariable name="EffectUnit">3</SetVariable>
+              </Template>
+
+              <Template src="skin:effect_unit.xml">
+                <SetVariable name="EffectRack">1</SetVariable>
+                <SetVariable name="EffectUnit">4</SetVariable>
+              </Template>
+              </Children>
+            </WidgetGroup>
+          </Children>
+        </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

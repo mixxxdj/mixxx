@@ -56,52 +56,61 @@ void WStatusLight::setup(QDomNode node, const SkinContext& context) {
         // Accept either PathStatusLight or PathStatusLight1 for value 1,
         QString nodeName = QString("PathStatusLight%1").arg(i);
         if (context.hasNode(node, nodeName)) {
-            setPixmap(i, context.getSkinPath(context.selectString(node, nodeName)));
+            QDomElement statusLightNode = context.selectElement(node, nodeName);
+            setPixmap(i, context.getPixmapSource(statusLightNode),
+                      context.selectScaleMode(statusLightNode, Paintable::FIXED));
         } else if (i == 0 && context.hasNode(node, "PathBack")) {
-            setPixmap(i, context.getSkinPath(context.selectString(node, "PathBack")));
+            QDomElement statusLightNode = context.selectElement(node, "PathBack");
+            setPixmap(i, context.getPixmapSource(statusLightNode),
+                      context.selectScaleMode(statusLightNode, Paintable::FIXED));
         } else if (i == 1 && context.hasNode(node, "PathStatusLight")) {
-            setPixmap(i, context.getSkinPath(context.selectString(node, "PathStatusLight")));
+            QDomElement statusLightNode = context.selectElement(node, "PathStatusLight");
+            setPixmap(i, context.getPixmapSource(statusLightNode),
+                      context.selectScaleMode(statusLightNode, Paintable::FIXED));
         } else {
             m_pixmaps[i].clear();
         }
     }
 }
 
-void WStatusLight::setPixmap(int iState, const QString& filename) {
+void WStatusLight::setPixmap(int iState, PixmapSource source,
+                             Paintable::DrawMode mode) {
     if (iState < 0 || iState >= m_pixmaps.size()) {
         return;
     }
 
-    PaintablePointer pPixmap = WPixmapStore::getPaintable(filename);
-
+    PaintablePointer pPixmap = WPixmapStore::getPaintable(source, mode);
     if (!pPixmap.isNull() && !pPixmap->isNull()) {
         m_pixmaps[iState] = pPixmap;
-
-        // Set size of widget equal to pixmap size
-        setFixedSize(pPixmap->size());
+        if (mode == Paintable::FIXED) {
+            setFixedSize(pPixmap->size());
+        }
     } else {
-        qDebug() << "WStatusLight: Error loading pixmap:" << filename << iState;
+        qDebug() << "WStatusLight: Error loading pixmap:" << source.getPath() << iState;
         m_pixmaps[iState].clear();
     }
 }
 
-void WStatusLight::onConnectedControlValueChanged(double v) {
-    int val = static_cast<int>(v);
-    if (m_iPos == val) {
-        return;
-    }
+void WStatusLight::onConnectedControlChanged(double dParameter, double dValue) {
+    // Enums are not currently represented using parameter space so it doesn't
+    // make sense to use the parameter here yet.
+    Q_UNUSED(dParameter);
+    int newPos = static_cast<int>(dValue);
 
     if (m_pixmaps.size() == 2) {
         // original behavior for two-state lights: any non-zero value is "on"
-        m_iPos = val > 0 ? 1 : 0;
-        update();
-    } else if (val < m_pixmaps.size() && val >= 0) {
-        // multi-state behavior: values must be correct
-        m_iPos = val;
-        update();
+        newPos = newPos > 0 ? 1 : 0;
+    } else if (newPos < m_pixmaps.size() && newPos >= 0) {
+        // multi-state behavior: values lie within the correct ranges
     } else {
         qDebug() << "Warning: wstatuslight asked for invalid position:"
-                 << val << "max val:" << m_pixmaps.size()-1;
+                 << newPos << "max val:" << m_pixmaps.size()-1;
+        return;
+    }
+
+    if (newPos != m_iPos) {
+        m_iPos = newPos;
+        update();
     }
 }
 
@@ -121,5 +130,5 @@ void WStatusLight::paintEvent(QPaintEvent *) {
         return;
     }
 
-    pPixmap->draw(0, 0, &p);
+    pPixmap->draw(rect(), &p);
 }

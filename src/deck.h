@@ -5,12 +5,13 @@
 
 #include "basetrackplayer.h"
 
-class Deck : public BaseTrackPlayer {
+class Deck : public BaseTrackPlayerImpl {
     Q_OBJECT
   public:
     Deck(QObject* pParent,
          ConfigObject<ConfigValue>* pConfig,
          EngineMaster* pMixingEngine,
+         EffectsManager* pEffectsManager,
          EngineChannel::ChannelOrientation defaultOrientation,
          QString group);
     virtual ~Deck();

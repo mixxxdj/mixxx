@@ -40,13 +40,13 @@ class WStatusLight : public WWidget  {
     void setup(QDomNode node, const SkinContext& context);
 
   public slots:
-    void onConnectedControlValueChanged(double v);
+    void onConnectedControlChanged(double dParameter, double dValue);
 
   protected:
     void paintEvent(QPaintEvent *);
 
   private:
-    void setPixmap(int iState, const QString &filename);
+    void setPixmap(int iState, PixmapSource source, Paintable::DrawMode mode);
     void setNoPos(int iNoPos);
 
     // Current position

@@ -2,6 +2,9 @@
 
 #include "track/keyutils.h"
 
+const char* kNegatePrefix = "-";
+const char* kFuzzyPrefix = "~";
+
 SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
         : m_database(database) {
     m_textFilters << "artist"
@@ -16,11 +19,11 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
     m_numericFilters << "year"
                      << "track"
                      << "bpm"
-                     << "duration"
                      << "played"
                      << "rating"
                      << "bitrate";
-    m_specialFilters << "key";
+    m_specialFilters << "key"
+                     << "duration";
 
     m_fieldToSqlColumns["artist"] << "artist" << "album_artist";
     m_fieldToSqlColumns["album_artist"] << "album_artist";
@@ -46,9 +49,9 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
     m_allFilters.append(m_specialFilters);
 
     m_fuzzyMatcher = QRegExp(QString("^~(%1)$").arg(m_allFilters.join("|")));
-    m_textFilterMatcher = QRegExp(QString("^(%1):(.*)$").arg(m_textFilters.join("|")));
-    m_numericFilterMatcher = QRegExp(QString("^(%1):(.*)$").arg(m_numericFilters.join("|")));
-    m_specialFilterMatcher = QRegExp(QString("^~?(%1):(.*)$").arg(m_specialFilters.join("|")));
+    m_textFilterMatcher = QRegExp(QString("^-?(%1):(.*)$").arg(m_textFilters.join("|")));
+    m_numericFilterMatcher = QRegExp(QString("^-?(%1):(.*)$").arg(m_numericFilters.join("|")));
+    m_specialFilterMatcher = QRegExp(QString("^[~-]?(%1):(.*)$").arg(m_specialFilters.join("|")));
 }
 
 SearchQueryParser::~SearchQueryParser() {
@@ -106,53 +109,80 @@ void SearchQueryParser::parseTokens(QStringList tokens,
             continue;
         }
 
-        bool consumed = false;
-
-        if (!consumed && m_fuzzyMatcher.indexIn(token) != -1) {
+        if (m_fuzzyMatcher.indexIn(token) != -1) {
             // TODO(XXX): implement this feature.
-        }
-
-        if (!consumed && m_textFilterMatcher.indexIn(token) != -1) {
+        } else if (m_textFilterMatcher.indexIn(token) != -1) {
+            bool negate = token.startsWith(kNegatePrefix);
             QString field = m_textFilterMatcher.cap(1);
             QString argument = getTextArgument(
                 m_textFilterMatcher.cap(2), &tokens).trimmed();
-            pQuery->addNode(new TextFilterNode(
-                m_database, m_fieldToSqlColumns[field], argument));
-            consumed = true;
-        }
 
-        if (!consumed && m_numericFilterMatcher.indexIn(token) != -1) {
+            if (!argument.isEmpty()) {
+                QueryNode* pNode = new TextFilterNode(
+                    m_database, m_fieldToSqlColumns[field], argument);
+                if (negate) {
+                    pNode = new NotNode(pNode);
+                }
+                pQuery->addNode(pNode);
+            }
+        } else if (m_numericFilterMatcher.indexIn(token) != -1) {
+            bool negate = token.startsWith(kNegatePrefix);
             QString field = m_numericFilterMatcher.cap(1);
             QString argument = getTextArgument(
                 m_numericFilterMatcher.cap(2), &tokens).trimmed();
-            pQuery->addNode(new NumericFilterNode(
-                m_fieldToSqlColumns[field], argument));
-            consumed = true;
-        }
 
-        if (!consumed && m_specialFilterMatcher.indexIn(token) != -1) {
+            if (!argument.isEmpty()) {
+                QueryNode* pNode = new NumericFilterNode(
+                    m_fieldToSqlColumns[field], argument);
+                if (negate) {
+                    pNode = new NotNode(pNode);
+                }
+                pQuery->addNode(pNode);
+            }
+        } else if (m_specialFilterMatcher.indexIn(token) != -1) {
+            bool negate = token.startsWith(kNegatePrefix);
+            bool fuzzy = token.startsWith(kFuzzyPrefix);
             QString field = m_specialFilterMatcher.cap(1);
             QString argument = getTextArgument(
                 m_specialFilterMatcher.cap(2), &tokens).trimmed();
-            if (field == "key") {
-                mixxx::track::io::key::ChromaticKey key =
-                        KeyUtils::guessKeyFromText(argument);
-                bool fuzzy = token.startsWith("~");
-                if (key == mixxx::track::io::key::INVALID) {
-                    pQuery->addNode(new TextFilterNode(
-                        m_database, m_fieldToSqlColumns[field], argument));
-                } else {
-                    pQuery->addNode(new KeyFilterNode(key, fuzzy));
+            QueryNode* pNode = NULL;
+            if (!argument.isEmpty()) {
+                if (field == "key") {
+                    mixxx::track::io::key::ChromaticKey key =
+                            KeyUtils::guessKeyFromText(argument);
+                    if (key == mixxx::track::io::key::INVALID) {
+                        pNode = new TextFilterNode(
+                            m_database, m_fieldToSqlColumns[field], argument);
+                    } else {
+                        pNode = new KeyFilterNode(key, fuzzy);
+                    }
+                } else if (field == "duration") {
+                    pNode = new DurationFilterNode(m_fieldToSqlColumns[field],
+                                                   argument);
                 }
-                consumed = true;
             }
-        }
+            if (pNode != NULL) {
+                if (negate) {
+                    pNode = new NotNode(pNode);
+                }
+                pQuery->addNode(pNode);
+            }
+        } else {
+            // If no advanced search feature matched, treat it as a search term.
+            bool negate = token.startsWith(kNegatePrefix);
+            if (negate) {
+                token = token.mid(1);
+            }
 
-        // If no advanced search feature matched, treat it as a search term.
-        if (!consumed) {
-            pQuery->addNode(new TextFilterNode(
-                m_database, searchColumns, token));
-            consumed = true;
+            // Don't trigger on a lone minus sign.
+            if (!token.isEmpty()) {
+                QueryNode* pNode = new TextFilterNode(
+                    m_database, searchColumns, token);
+                if (negate) {
+                    pNode = new NotNode(pNode);
+                }
+                pQuery->addNode(pNode);
+            }
         }
     }
 }

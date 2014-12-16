@@ -16,6 +16,7 @@
 ***************************************************************************/
 
 #include "engine/enginebufferscale.h"
+#include "util/defs.h"
 
 EngineBufferScale::EngineBufferScale()
         : m_iSampleRate(44100),

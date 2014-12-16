@@ -1,0 +1,60 @@
+<!DOCTYPE template>
+<Template>
+  <SetVariable name="EqualizerNumber">1</SetVariable>
+  <SetVariable name="EffectNumber">1</SetVariable>
+  <SetVariable name="EqualizerRackGroup">[EqualizerRack<Variable name="EqualizerNumber"/>]</SetVariable>
+  <SetVariable name="EqualizerEffectUnitGroup">[EqualizerRack<Variable name="EqualizerNumber"/>_<Variable name="group"/>]</SetVariable>
+  <SetVariable name="EqualizerEffectGroup">[EqualizerRack<Variable name="EqualizerNumber"/>_<Variable name="group"/>_Effect<Variable name="EffectNumber"/>]</SetVariable>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+        <WidgetGroup>
+            <ObjectName>KillButton<Variable name="reversed"/></ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <MinimumSize>26,30</MinimumSize>
+            <Children>
+                <EffectPushButton>
+                    <EffectRackGroup><Variable name="EqualizerRackGroup"/></EffectRackGroup>
+                    <EffectUnitGroup><Variable name="EqualizerEffectUnitGroup"/></EffectUnitGroup>
+                    <Effect><Variable name="EffectNumber"/></Effect>
+                    <EffectButtonParameter><Variable name="parameter"/></EffectButtonParameter>
+                    <NumberStates>2</NumberStates>
+                    <State>
+                        <Number>0</Number>
+                        <Pressed>btn_kill_down.png</Pressed>
+                        <Unpressed>btn_kill.png</Unpressed>
+                    </State>
+                    <State>
+                        <Number>1</Number>
+                        <Pressed>btn_kill_overdown.png</Pressed>
+                        <Unpressed>btn_kill_over.png</Unpressed>
+                    </State>
+                    <Connection>
+                        <ConfigKey><Variable name="EqualizerEffectGroup"/>,button_parameter<Variable name="parameter"/></ConfigKey>
+                        <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                </EffectPushButton>
+            </Children>
+        </WidgetGroup>
+        <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me, min</SizePolicy>
+            <Children>
+                <Knob>
+                    <NumberStates>64</NumberStates>
+                    <Path>knobs/knob_rotary_s%1.png</Path>
+                    <Connection>
+                        <ConfigKey><Variable name="EqualizerEffectGroup"/>,parameter<Variable name="parameter"/></ConfigKey>
+                    </Connection>
+                </Knob>
+            </Children>
+        </WidgetGroup>
+    </Children>
+    <Connection>
+      <ConfigKey><Variable name="EqualizerEffectGroup"/>,parameter<Variable name="parameter"/>_loaded</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

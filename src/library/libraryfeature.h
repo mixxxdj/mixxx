@@ -15,6 +15,7 @@
 
 #include "trackinfoobject.h"
 #include "treeitemmodel.h"
+#include "library/coverartcache.h"
 
 class TrackModel;
 class WLibrarySidebar;
@@ -86,12 +87,15 @@ class LibraryFeature : public QObject {
     void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
     void restoreSearch(const QString&);
     // emit this signal before you parse a large music collection, e.g., iTunes, Traktor.
-    void featureIsLoading(LibraryFeature*);
+    // The second arg indicates if the feature should be "selected" when loading starts
+    void featureIsLoading(LibraryFeature*, bool selectFeature);
     // emit this signal if the foreign music collection has been imported/parsed.
     void featureLoadingFinished(LibraryFeature*s);
     // emit this signal to select pFeature
     void featureSelect(LibraryFeature* pFeature, const QModelIndex& index);
-
+    // emit this signal to enable/disable the cover art widget
+    void enableCoverArtDisplay(bool);
+    void trackSelected(TrackPointer pTrack);
 };
 
 #endif /* LIBRARYFEATURE_H */

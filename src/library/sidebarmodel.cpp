@@ -18,8 +18,8 @@ SidebarModel::~SidebarModel() {
 
 void SidebarModel::addLibraryFeature(LibraryFeature* feature) {
     m_sFeatures.push_back(feature);
-    connect(feature, SIGNAL(featureIsLoading(LibraryFeature*)),
-            this, SLOT(slotFeatureIsLoading(LibraryFeature*)));
+    connect(feature, SIGNAL(featureIsLoading(LibraryFeature*, bool)),
+            this, SLOT(slotFeatureIsLoading(LibraryFeature*, bool)));
     connect(feature, SIGNAL(featureLoadingFinished(LibraryFeature*)),
             this, SLOT(slotFeatureLoadingFinished(LibraryFeature*)));
     connect(feature, SIGNAL(featureSelect(LibraryFeature*, const QModelIndex&)),
@@ -107,7 +107,7 @@ QModelIndex SidebarModel::parent(const QModelIndex& index) const {
             // if we have selected an item at the first level of a childnode
 
             if (tree_item_parent) {
-                if (tree_item_parent->data() == "$root"){
+                if (tree_item_parent->data() == "$root") {
                     LibraryFeature* feature = tree_item->getFeature();
                     for (int i = 0; i < m_sFeatures.size(); ++i) {
                         if (feature == m_sFeatures[i]) {
@@ -375,13 +375,13 @@ void SidebarModel::slotModelReset() {
 
 /*
  * Call this slot whenever the title of the feature has changed.
- * See RhythmboxFeature for an example.
- * While the rhythmbox music collection is parsed
- * the title becomes '(loading) Rhythmbox'
+ * See RhythmboxFeature for an example, in which the title becomes '(loading) Rhythmbox'
+ * If selectFeature is true, the feature is selected when the title change occurs.
  */
-void SidebarModel::slotFeatureIsLoading(LibraryFeature * feature) {
+void SidebarModel::slotFeatureIsLoading(LibraryFeature * feature, bool selectFeature) {
     featureRenamed(feature);
-    slotFeatureSelect(feature);
+    if(selectFeature)
+    	slotFeatureSelect(feature);
 }
 
 /* Tobias: This slot is somewhat redundant but I decided

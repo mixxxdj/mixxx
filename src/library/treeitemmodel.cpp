@@ -132,7 +132,7 @@ int TreeItemModel::rowCount(const QModelIndex &parent) const {
 
     TreeItem *parentItem = NULL;
     //qDebug() << "parent data: " << parent.data();
-    if (!parent.isValid()){
+    if (!parent.isValid()) {
         parentItem = m_pRootItem;
     }
     else{
@@ -161,22 +161,26 @@ void TreeItemModel::setRootItem(TreeItem *item) {
  * make sure you have initialized
  */
 bool TreeItemModel::insertRows(QList<TreeItem*> &data, int position, int rows, const QModelIndex &parent) {
+    if (rows == 0) {
+        return true;
+    }
     TreeItem *parentItem = getItem(parent);
-    bool success;
 
     beginInsertRows(parent, position, position + rows - 1);
-    success = parentItem->insertChildren(data, position, rows);
+    bool success = parentItem->insertChildren(data, position, rows);
     endInsertRows();
 
     return success;
 }
 
 bool TreeItemModel::removeRows(int position, int rows, const QModelIndex &parent) {
+    if (rows == 0) {
+        return true;
+    }
     TreeItem *parentItem = getItem(parent);
-    bool success = true;
 
     beginRemoveRows(parent, position, position + rows - 1);
-    success = parentItem->removeChildren(position, rows);
+    bool success = parentItem->removeChildren(position, rows);
     endRemoveRows();
 
     return success;

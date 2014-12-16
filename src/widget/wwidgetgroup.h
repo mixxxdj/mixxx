@@ -43,7 +43,7 @@ class WWidgetGroup : public QFrame, public WBaseWidget {
     void setLayoutAlignment(int alignment);
 
     void setup(QDomNode node, const SkinContext& context);
-    void setPixmapBackground(const QString &filename);
+    void setPixmapBackground(PixmapSource source, Paintable::DrawMode mode);
     void addWidget(QWidget* pChild);
 
   protected:

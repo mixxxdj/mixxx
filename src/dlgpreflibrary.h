@@ -33,24 +33,33 @@
 class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     Q_OBJECT
   public:
+    enum TrackLoadAction {
+        LOAD_TRACK_DECK,  // Load track to next available deck.
+        ADD_TRACK_BOTTOM, // Add track to Auto-DJ Queue (bottom).
+        ADD_TRACK_TOP     // Add track to Auto-DJ Queue (top).
+    };
+
     DlgPrefLibrary(QWidget *parent, ConfigObject<ConfigValue> *config,
                    Library *pLibrary);
     virtual ~DlgPrefLibrary();
 
   public slots:
-    // Update widget
+    // Common preference page slots.
     void slotUpdate();
+    void slotShow();
+    void slotHide();
+    void slotResetToDefaults();
+    void slotApply();
+
     // Dialog to browse for music file directory
     void slotAddDir();
     void slotRemoveDir();
     void slotRelocateDir();
-    // Apply changes to widget
-    void slotApply();
-
     void slotExtraPlugins();
 
   signals:
     void apply();
+    void scanLibrary();
     void requestAddDir(QString dir);
     void requestRemoveDir(QString dir, Library::RemovalType removalType);
     void requestRelocateDir(QString currentDir, QString newDir);
@@ -60,6 +69,7 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     QStandardItemModel m_dirListModel;
     ConfigObject<ConfigValue>* m_pconfig;
     Library *m_pLibrary;
+    bool m_baddedDirectory;
 };
 
 #endif

@@ -10,19 +10,18 @@
 #include "cachingreader.h"
 #include "engine/quantizecontrol.h"
 #include "engine/enginecontrol.h"
-#include "mathstuff.h"
 
-QuantizeControl::QuantizeControl(const char* pGroup,
+QuantizeControl::QuantizeControl(QString group,
                                  ConfigObject<ConfigValue>* pConfig)
-        : EngineControl(pGroup, pConfig) {
+        : EngineControl(group, pConfig) {
     // Turn quantize OFF by default. See Bug #898213
-    m_pCOQuantizeEnabled = new ControlPushButton(ConfigKey(pGroup, "quantize"));
+    m_pCOQuantizeEnabled = new ControlPushButton(ConfigKey(group, "quantize"));
     m_pCOQuantizeEnabled->setButtonMode(ControlPushButton::TOGGLE);
-    m_pCONextBeat = new ControlObject(ConfigKey(pGroup, "beat_next"));
+    m_pCONextBeat = new ControlObject(ConfigKey(group, "beat_next"));
     m_pCONextBeat->set(-1);
-    m_pCOPrevBeat = new ControlObject(ConfigKey(pGroup, "beat_prev"));
+    m_pCOPrevBeat = new ControlObject(ConfigKey(group, "beat_prev"));
     m_pCOPrevBeat->set(-1);
-    m_pCOClosestBeat = new ControlObject(ConfigKey(pGroup, "beat_closest"));
+    m_pCOClosestBeat = new ControlObject(ConfigKey(group, "beat_closest"));
     m_pCOClosestBeat->set(-1);
 }
 
@@ -72,23 +71,23 @@ double QuantizeControl::process(const double dRate,
     Q_UNUSED(dRate);
     Q_UNUSED(totalSamples);
     Q_UNUSED(iBufferSize);
-    int iCurrentSample = currentSample;
-    if (!even(iCurrentSample)) {
-        iCurrentSample--;
-    }
 
     if (!m_pBeats) {
         return kNoTrigger;
     }
 
+    int iCurrentSample = currentSample;
+    if (!even(iCurrentSample)) {
+        iCurrentSample--;
+    }
+
     double prevBeat = m_pCOPrevBeat->get();
     double nextBeat = m_pCONextBeat->get();
     double closestBeat = m_pCOClosestBeat->get();
-    double currentClosestBeat =
-            floorf(m_pBeats->findClosestBeat(iCurrentSample));
+    double currentClosestBeat = floor(m_pBeats->findClosestBeat(iCurrentSample));
 
     if (closestBeat != currentClosestBeat) {
-        if (!even(currentClosestBeat)) {
+        if (!even(static_cast<int>(currentClosestBeat))) {
             currentClosestBeat--;
         }
         m_pCOClosestBeat->set(currentClosestBeat);
@@ -97,12 +96,12 @@ double QuantizeControl::process(const double dRate,
     if (prevBeat == -1 || nextBeat == -1 ||
         currentSample >= nextBeat || currentSample <= prevBeat) {
         // TODO(XXX) are the floor and even checks necessary?
-        nextBeat = floorf(m_pBeats->findNextBeat(iCurrentSample));
-        prevBeat = floorf(m_pBeats->findPrevBeat(iCurrentSample));
+        nextBeat = floor(m_pBeats->findNextBeat(iCurrentSample));
+        prevBeat = floor(m_pBeats->findPrevBeat(iCurrentSample));
 
-        if (!even(nextBeat))
+        if (!even(static_cast<int>(nextBeat)))
             nextBeat--;
-        if (!even(prevBeat))
+        if (!even(static_cast<int>(prevBeat)))
             prevBeat--;
 
         m_pCONextBeat->set(nextBeat);

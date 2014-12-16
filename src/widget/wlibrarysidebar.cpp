@@ -1,11 +1,13 @@
 #include "widget/wlibrarysidebar.h"
 
+#include <QFileInfo>
 #include <QHeaderView>
 #include <QUrl>
 #include <QtDebug>
 #include <QMimeData>
 
 #include "library/sidebarmodel.h"
+#include "util/dnd.h"
 
 const int expand_time = 250;
 
@@ -21,6 +23,7 @@ WLibrarySidebar::WLibrarySidebar(QWidget* parent)
     setDropIndicatorShown(true);
     setAcceptDrops(true);
     setAutoScroll(true);
+    setAttribute(Qt::WA_MacShowFocusRect, false);
     header()->setStretchLastSection(false);
     header()->setResizeMode(QHeaderView::ResizeToContents);
     header()->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
@@ -41,8 +44,18 @@ void WLibrarySidebar::contextMenuEvent(QContextMenuEvent *event) {
 void WLibrarySidebar::dragEnterEvent(QDragEnterEvent * event) {
     qDebug() << "WLibrarySidebar::dragEnterEvent" << event->mimeData()->formats();
     if (event->mimeData()->hasUrls()) {
-        event->acceptProposedAction();
+        // We don't have a way to ask the LibraryFeatures whether to accept a
+        // drag so for now we accept all drags. Since almost every
+        // LibraryFeature accepts all files in the drop and accepts playlist
+        // drops we default to those flags to DragAndDropHelper.
+        QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
+                event->mimeData()->urls(), false, true);
+        if (!files.isEmpty()) {
+            event->acceptProposedAction();
+            return;
+        }
     }
+    event->ignore();
     //QTreeView::dragEnterEvent(event);
 }
 
@@ -111,7 +124,6 @@ void WLibrarySidebar::timerEvent(QTimerEvent *event) {
 // Drag-and-drop "drop" event. Occurs when something is dropped onto the track sources view
 void WLibrarySidebar::dropEvent(QDropEvent * event) {
     if (event->mimeData()->hasUrls()) {
-        QList<QUrl> urls(event->mimeData()->urls());
         // Drag and drop within this widget
         if ((event->source() == this)
                 && (event->possibleActions() & Qt::MoveAction)) {
@@ -127,6 +139,7 @@ void WLibrarySidebar::dropEvent(QDropEvent * event) {
                 QModelIndex destIndex = indexAt(event->pos());
                 // event->source() will return NULL if something is droped from
                 // a different application
+                QList<QUrl> urls(event->mimeData()->urls());
                 if (sidebarModel->dropAccept(destIndex, urls, event->source())) {
                     event->acceptProposedAction();
                 } else {
@@ -141,32 +154,41 @@ void WLibrarySidebar::dropEvent(QDropEvent * event) {
     }
 }
 
-void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
-    if (event->key() == Qt::Key_Return)
-    {
-        QModelIndexList selectedIndices = this->selectionModel()->selectedRows();
-        if (selectedIndices.size() > 0) {
-            QModelIndex index = selectedIndices.at(0);
-            emit(pressed(index));
-            //Expand or collapse the item as necessary.
-            setExpanded(index, !isExpanded(index));
-        }
+
+void WLibrarySidebar::toggleSelectedItem() {
+    QModelIndexList selectedIndices = this->selectionModel()->selectedRows();
+    if (selectedIndices.size() > 0) {
+        QModelIndex index = selectedIndices.at(0);
+        // Activate the item so its content shows in the main library.
+        emit(pressed(index));
+        // Expand or collapse the item as necessary.
+        setExpanded(index, !isExpanded(index));
     }
-    else if (event->key() == Qt::Key_Down || event->key() == Qt::Key_Up)
-    {
-        //Let the tree view move up and down for us...
+}
+
+void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
+    if (event->key() == Qt::Key_Return) {
+        toggleSelectedItem();
+        return;
+    } else if (event->key() == Qt::Key_Down || event->key() == Qt::Key_Up) {
+        // Let the tree view move up and down for us.
         QTreeView::keyPressEvent(event);
-        //But force the index to be activated/clicked after the selection
-        //changes. (Saves you from having to push "enter" after changing the selection.)
+
+        // But force the index to be activated/clicked after the selection
+        // changes. (Saves you from having to push "enter" after changing the
+        // selection.)
         QModelIndexList selectedIndices = this->selectionModel()->selectedRows();
+
         //Note: have to get the selected indices _after_ QTreeView::keyPressEvent()
         if (selectedIndices.size() > 0) {
             QModelIndex index = selectedIndices.at(0);
             emit(pressed(index));
         }
+        return;
     }
-    else
-        QTreeView::keyPressEvent(event);
+
+    // Fall through to deafult handler.
+    QTreeView::keyPressEvent(event);
 }
 
 void WLibrarySidebar::selectIndex(const QModelIndex& index) {

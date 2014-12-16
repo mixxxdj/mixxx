@@ -7,7 +7,7 @@ class ControlObject;
 
 class GLWaveformRendererFilteredSignal : public WaveformRendererSignalBase {
   public:
-    explicit GLWaveformRendererFilteredSignal( WaveformWidgetRenderer* waveformWidgetRenderer);
+    explicit GLWaveformRendererFilteredSignal(WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~GLWaveformRendererFilteredSignal();
 
     virtual void onSetup(const QDomNode &node);

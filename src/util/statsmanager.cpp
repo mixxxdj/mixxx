@@ -2,6 +2,7 @@
 #include <QMutexLocker>
 #include <QTextStream>
 #include <QFile>
+#include <QMetaType>
 
 #include "util/statsmanager.h"
 #include "util/compatibility.h"
@@ -17,6 +18,7 @@ bool StatsManager::s_bStatsManagerEnabled = false;
 StatsPipe::StatsPipe(StatsManager* pManager)
         : FIFO<StatReport>(kStatsPipeSize),
           m_pManager(pManager) {
+    qRegisterMetaType<Stat>("Stat");
 }
 
 StatsPipe::~StatsPipe() {
@@ -41,9 +43,31 @@ StatsManager::~StatsManager() {
     wait();
     qDebug() << "StatsManager shutdown report:";
     qDebug() << "=====================================";
+    qDebug() << "ALL STATS";
+    qDebug() << "=====================================";
     for (QMap<QString, Stat>::const_iterator it = m_stats.begin();
          it != m_stats.end(); ++it) {
         qDebug() << it.value();
+    }
+
+    if (!m_baseStats.isEmpty()) {
+        qDebug() << "=====================================";
+        qDebug() << "BASE STATS";
+        qDebug() << "=====================================";
+        for (QMap<QString, Stat>::const_iterator it = m_baseStats.begin();
+             it != m_baseStats.end(); ++it) {
+            qDebug() << it.value();
+        }
+    }
+
+    if (!m_experimentStats.isEmpty()) {
+        qDebug() << "=====================================";
+        qDebug() << "EXPERIMENT STATS";
+        qDebug() << "=====================================";
+        for (QMap<QString, Stat>::const_iterator it = m_experimentStats.begin();
+             it != m_experimentStats.end(); ++it) {
+            qDebug() << it.value();
+        }
     }
     qDebug() << "=====================================";
 
@@ -176,6 +200,21 @@ void StatsManager::processIncomingStatReports() {
             info.m_type = report.type;
             info.m_compute = report.compute;
             info.processReport(report);
+            emit(statUpdated(info));
+
+            if (report.compute & Stat::STATS_EXPERIMENT) {
+                Stat& experiment = m_experimentStats[tag];
+                experiment.m_tag = tag;
+                experiment.m_type = report.type;
+                experiment.m_compute = report.compute;
+                experiment.processReport(report);
+            } else if (report.compute & Stat::STATS_BASE) {
+                Stat& base = m_baseStats[tag];
+                base.m_tag = tag;
+                base.m_type = report.type;
+                base.m_compute = report.compute;
+                base.processReport(report);
+            }
 
             if (CmdlineArgs::Instance().getTimelineEnabled() &&
                     (report.type == Stat::EVENT ||
@@ -202,7 +241,15 @@ void StatsManager::run() {
         processIncomingStatReports();
         m_statsPipeLock.unlock();
 
-        if (deref(m_quit) == 1) {
+        if (load_atomic(m_emitAllStats) == 1) {
+            for (QMap<QString, Stat>::const_iterator it = m_stats.begin();
+                 it != m_stats.end(); ++it) {
+                emit(statUpdated(it.value()));
+            }
+            m_emitAllStats = 0;
+        }
+
+        if (load_atomic(m_quit) == 1) {
             qDebug() << "StatsManager thread shutting down.";
             break;
         }

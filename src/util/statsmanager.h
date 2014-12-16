@@ -28,6 +28,7 @@ class StatsPipe : public FIFO<StatReport> {
 };
 
 class StatsManager : public QThread, public Singleton<StatsManager> {
+    Q_OBJECT
   public:
     explicit StatsManager();
     virtual ~StatsManager();
@@ -36,6 +37,19 @@ class StatsManager : public QThread, public Singleton<StatsManager> {
     bool maybeWriteReport(const StatReport& report);
 
     static bool s_bStatsManagerEnabled;
+
+    // Tell the StatsManager to emit statUpdated for every stat that exists.
+    void emitAllStats() {
+        m_emitAllStats = 1;
+    }
+
+    void updateStats() {
+        m_statsPipeCondition.wakeAll();
+    }
+
+  signals:
+    void statUpdated(const Stat& stat);
+
   protected:
     virtual void run();
 
@@ -45,8 +59,11 @@ class StatsManager : public QThread, public Singleton<StatsManager> {
     void onStatsPipeDestroyed(StatsPipe* pPipe);
     void writeTimeline(const QString& filename);
 
+    QAtomicInt m_emitAllStats;
     QAtomicInt m_quit;
     QMap<QString, Stat> m_stats;
+    QMap<QString, Stat> m_baseStats;
+    QMap<QString, Stat> m_experimentStats;
     QList<Event> m_events;
 
     QWaitCondition m_statsPipeCondition;

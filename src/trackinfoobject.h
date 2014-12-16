@@ -19,55 +19,57 @@
 #define TRACKINFOOBJECT_H
 
 #include <QAtomicInt>
-#include <QList>
 #include <QDateTime>
-#include <QObject>
+#include <QDomNode>
 #include <QFileInfo>
+#include <QList>
 #include <QMutex>
-#include <QVector>
+#include <QObject>
 #include <QSharedPointer>
+#include <QString>
 #include <QWeakPointer>
+#include <taglib/tfile.h>
 
-#include "defs.h"
+#include "library/dao/cue.h"
+#include "library/coverart.h"
+#include "proto/keys.pb.h"
 #include "track/beats.h"
 #include "track/keys.h"
-#include "proto/keys.pb.h"
-#include "library/dao/cue.h"
+#include "util/sandbox.h"
+#include "waveform/waveform.h"
 
-class QString;
-class QDomElement;
-class QDomDocument;
-class QDomNode;
-class ControlObject;
-class TrackPlaylist;
 class Cue;
-class Waveform;
 
 class TrackInfoObject;
-
 typedef QSharedPointer<TrackInfoObject> TrackPointer;
 typedef QWeakPointer<TrackInfoObject> TrackWeakPointer;
 
-class TrackInfoObject : public QObject
-{
+class TrackInfoObject : public QObject {
     Q_OBJECT
-public:
-    // Initialize a new track with the filename. 
-    TrackInfoObject(const QString& file="", bool parseHeader=true);
+  public:
+    // Initialize a new track with the filename.
+    TrackInfoObject(const QString& file="",
+                    SecurityTokenPointer pToken=SecurityTokenPointer(),
+                    bool parseHeader=true,
+                    bool parseCoverArt=false);
     // Initialize track with a QFileInfo class
-    TrackInfoObject(const QFileInfo& fileInfo, bool parseHeader=true);
+    TrackInfoObject(const QFileInfo& fileInfo,
+                    SecurityTokenPointer pToken=SecurityTokenPointer(),
+                    bool parseHeader=true,
+                    bool parseCoverArt=false);
     // Creates a new track given information from the xml file.
     TrackInfoObject(const QDomNode &);
     virtual ~TrackInfoObject();
 
-    // Returns true if the object contains valid information 
-    int parse();
+    // Parse file metadata. If no file metadata is present, attempts to extract
+    // artist and title information from the filename.
+    void parse(bool parseCoverArt);
 
-    // Returns the duration in seconds 
+    // Returns the duration in seconds
     int getDuration() const;
-    // Set duration in seconds 
+    // Set duration in seconds
     void setDuration(int);
-    // Returns the duration as a string: H:MM:SS 
+    // Returns the duration as a string: H:MM:SS
     QString getDurationStr() const;
 
     // Accessors for various stats of the file on disk. These are auto-populated
@@ -93,6 +95,10 @@ public:
 
     // Returns absolute path to the file, including the filename.
     QString getLocation() const;
+    QString getCanonicalLocation() const;
+    QFileInfo getFileInfo() const;
+    SecurityTokenPointer getSecurityToken();
+
     // Returns the absolute path to the directory containing the file
     QString getDirectory() const;
     // Returns the filename of the file.
@@ -107,11 +113,11 @@ public:
     float getReplayGain() const;
     // Set ReplayGain
     void setReplayGain(float);
-    // Returns BPM 
+    // Returns BPM
     double getBpm() const;
-    // Set BPM 
+    // Set BPM
     void setBpm(double);
-    // Returns BPM as a string 
+    // Returns BPM as a string
     QString getBpmStr() const;
     // A track with a locked BPM will not be re-analyzed by the beats or bpm
     // analyzer.
@@ -119,7 +125,7 @@ public:
     bool hasBpmLock() const;
     bool getHeaderParsed() const;
     void setHeaderParsed(bool parsed = true);
-    // Returns the user comment 
+    // Returns the user comment
     QString getComment() const;
     // Sets the user commnet
     void setComment(const QString&);
@@ -147,8 +153,16 @@ public:
     QDateTime getDateAdded() const;
     void setDateAdded(const QDateTime& dateAdded);
 
-    // Getter/Setter methods for metadata 
-    // Return title 
+    // Returns file modified datetime. Limited by the accuracy of what Qt
+    // QFileInfo gives us.
+    QDateTime getFileModifiedTime() const;
+
+    // Returns file creation datetime. Limited by the accuracy of what Qt
+    // QFileInfo gives us.
+    QDateTime getFileCreationTime() const;
+
+    // Getter/Setter methods for metadata
+    // Return title
     QString getTitle() const;
     // Set title
     void setTitle(const QString&);
@@ -156,7 +170,7 @@ public:
     QString getArtist() const;
     // Set artist
     void setArtist(const QString&);
-    // Return album 
+    // Return album
     QString getAlbum() const;
     // Set album
     void setAlbum(const QString&);
@@ -168,7 +182,7 @@ public:
     QString getYear() const;
     // Set year
     void setYear(const QString&);
-    // Return genre 
+    // Return genre
     QString getGenre() const;
     // Set genre
     void setGenre(const QString&);
@@ -209,12 +223,11 @@ public:
     // Set URL for track
     void setURL(const QString& url);
 
-    Waveform* getWaveform();
-    void waveformNew();
+    ConstWaveformPointer getWaveform();
+    void setWaveform(ConstWaveformPointer pWaveform);
 
-    Waveform* getWaveformSummary();
-    const Waveform* getWaveformSummary() const;
-    void waveformSummaryNew();
+    ConstWaveformPointer getWaveformSummary() const;
+    void setWaveformSummary(ConstWaveformPointer pWaveform);
 
     void setAnalyserProgress(int progress);
     int getAnalyserProgress() const;
@@ -231,10 +244,6 @@ public:
     void setCuePoints(QList<Cue*> cuePoints);
 
     bool isDirty();
-
-    // Signals to the creator of this TrackInfoObject to save the Track as it
-    // may be deleted.
-    void doSave();
 
     // Returns true if the track location has changed
     bool locationChanged();
@@ -258,12 +267,19 @@ public:
     void setKeyText(QString key,
                     mixxx::track::io::key::Source source=mixxx::track::io::key::USER);
 
+    void setCoverInfo(const CoverInfo& cover);
+    CoverInfo getCoverInfo() const;
+
+    void setCoverArt(const CoverArt& cover);
+    CoverArt getCoverArt() const;
+
   public slots:
     void slotCueUpdated();
 
   signals:
     void waveformUpdated();
     void waveformSummaryUpdated();
+    void coverArtUpdated();
     void analyserProgress(int progress);
     void bpmUpdated(double bpm);
     void beatsUpdated();
@@ -274,18 +290,22 @@ public:
     void changed(TrackInfoObject* pTrack);
     void dirty(TrackInfoObject* pTrack);
     void clean(TrackInfoObject* pTrack);
-    void save(TrackInfoObject* pTrack);
+    // The deleted signal is emitted in TIO's destructor.  Any connections
+    // to this signal *must* be Qt::DirectConnection or risk segfaults.
+    void deleted(TrackInfoObject* pTrack);
 
   private slots:
     void slotBeatsUpdated();
 
   private:
     // Common initialization function between all TIO constructors.
-    void initialize(bool parseHeader);
+    void initialize(bool parseHeader, bool parseCoverArt);
 
-    // Method for parsing information from knowing only the file name.  It
+    // Methods for parsing information from knowing only the file name.  It
     // assumes that the filename is written like: "artist - trackname.xxx"
     void parseFilename();
+    void parseArtist();
+    void parseTitle();
 
     // Set whether the TIO is dirty not. This should never be called except by
     // TIO local methods or the TrackDAO.
@@ -306,10 +326,12 @@ public:
     // The file
     QFileInfo m_fileInfo;
 
-    // Metadata 
+    SecurityTokenPointer m_pSecurityToken;
+
+    // Metadata
     // Album
     QString m_sAlbum;
-    // Artist 
+    // Artist
     QString m_sArtist;
     // Album Artist
     QString m_sAlbumArtist;
@@ -325,6 +347,7 @@ public:
     QString m_sYear;
     // Track Number
     QString m_sTrackNumber;
+
 
     // File type
     QString m_sType;
@@ -346,7 +369,7 @@ public:
     int m_iTimesPlayed;
     // Replay Gain volume
     float m_fReplayGain;
-    // Has this track been played this sessions? 
+    // Has this track been played this sessions?
     bool m_bPlayed;
     // True if header was parsed
     bool m_bHeaderParsed;
@@ -365,19 +388,22 @@ public:
     // The list of cue points for the track
     QList<Cue*> m_cuePoints;
 
-    // Mutex protecting access to object 
+    // Mutex protecting access to object
     mutable QMutex m_qMutex;
 
     // Storage for the track's beats
     BeatsPointer m_pBeats;
 
     //Visual waveform data
-    Waveform* const m_waveform;
-    Waveform* const m_waveformSummary;
+    ConstWaveformPointer m_waveform;
+    ConstWaveformPointer m_waveformSummary;
 
     QAtomicInt m_analyserProgress; // in 0.1%
 
+    CoverArt m_coverArt;
+
     friend class TrackDAO;
+    friend class AutoDJProcessorTest;
 };
 
 #endif

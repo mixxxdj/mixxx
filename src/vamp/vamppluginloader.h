@@ -13,10 +13,7 @@
 
 #include <QMutex>
 #include <vamp-hostsdk/vamp-hostsdk.h>
-#include <vector>
 #include <string>
-#include <stdlib.h>
-#include <map>
 
 #include "util.h"
 

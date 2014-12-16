@@ -24,6 +24,7 @@
 #include <QWheelEvent>
 #include <QPaintEvent>
 #include <QMouseEvent>
+#include <QResizeEvent>
 
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
@@ -42,11 +43,13 @@ class WSliderComposed : public WWidget  {
     virtual ~WSliderComposed();
 
     void setup(QDomNode node, const SkinContext& context);
-    void setSliderPixmap(const QString& filenameSlider);
-    void setHandlePixmap(bool bHorizontal, const QString& filenameHandle);
+    void setSliderPixmap(PixmapSource sourceSlider, Paintable::DrawMode mode);
+    void setHandlePixmap(bool bHorizontal, PixmapSource sourceHandle,
+                         Paintable::DrawMode mode);
     inline bool isHorizontal() const { return m_bHorizontal; };
+
   public slots:
-    void onConnectedControlValueChanged(double);
+    void onConnectedControlChanged(double dParameter, double dValue);
     void fillDebugTooltip(QStringList* debug);
 
   protected:
@@ -55,17 +58,19 @@ class WSliderComposed : public WWidget  {
     virtual void mousePressEvent(QMouseEvent* e);
     virtual void paintEvent(QPaintEvent* e);
     virtual void wheelEvent(QWheelEvent* e);
+    virtual void resizeEvent(QResizeEvent* e);
 
   private:
+    double calculateHandleLength();
     void unsetPixmaps();
 
     double m_dOldValue;
     // True if right mouse button is pressed.
     bool m_bRightButtonPressed;
     // Internal storage of slider position in pixels
-    int m_iPos, m_iStartHandlePos, m_iStartMousePos;
+    double m_dPos, m_dStartHandlePos, m_dStartMousePos;
     // Length of handle in pixels
-    int m_iHandleLength;
+    double m_dHandleLength;
     // True if it's a horizontal slider
     bool m_bHorizontal;
     // Is true if events is emitted while the slider is dragged

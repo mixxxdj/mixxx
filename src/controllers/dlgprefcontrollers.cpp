@@ -1,9 +1,11 @@
+#include <QDesktopServices>
+
 #include "controllers/dlgprefcontrollers.h"
 
 #include "dlgpreferences.h"
 #include "controllers/controllermanager.h"
 #include "controllers/dlgprefcontroller.h"
-#include "controllers/dlgprefmappablecontroller.h"
+#include "controllers/defs_controllers.h"
 
 DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
                                        ConfigObject<ConfigValue>* pConfig,
@@ -17,21 +19,56 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
     setupUi(this);
     setupControllerWidgets();
 
+    connect(&m_buttonMapper, SIGNAL(mapped(QString)),
+            this, SLOT(slotOpenLocalFile(QString)));
+
+    connect(btnOpenSystemPresets, SIGNAL(clicked()),
+            &m_buttonMapper, SLOT(map()));
+    connect(btnOpenLocalPresets, SIGNAL(clicked()),
+            &m_buttonMapper, SLOT(map()));
+    connect(btnOpenUserPresets, SIGNAL(clicked()),
+            &m_buttonMapper, SLOT(map()));
+
+    m_buttonMapper.setMapping(btnOpenSystemPresets, resourcePresetsPath(m_pConfig));
+    m_buttonMapper.setMapping(btnOpenLocalPresets, localPresetsPath(m_pConfig));
+    m_buttonMapper.setMapping(btnOpenUserPresets, userPresetsPath(m_pConfig));
+
     // Connections
     connect(m_pControllerManager, SIGNAL(devicesChanged()),
             this, SLOT(rescanControllers()));
-
 }
 
 DlgPrefControllers::~DlgPrefControllers() {
     destroyControllerWidgets();
 }
 
-void DlgPrefControllers::slotUpdate() {
+void DlgPrefControllers::slotOpenLocalFile(const QString& file) {
+    QDesktopServices::openUrl(QUrl::fromLocalFile(file));
+}
 
+void DlgPrefControllers::slotUpdate() {
+    // Update our sub-windows.
+    foreach (DlgPrefController* pControllerWindows, m_controllerWindows) {
+        pControllerWindows->slotUpdate();
+    }
+}
+
+void DlgPrefControllers::slotCancel() {
+    // Update our sub-windows.
+    foreach (DlgPrefController* pControllerWindows, m_controllerWindows) {
+        pControllerWindows->slotCancel();
+    }
 }
 
 void DlgPrefControllers::slotApply() {
+    // Update our sub-windows.
+    foreach (DlgPrefController* pControllerWindows, m_controllerWindows) {
+        pControllerWindows->slotApply();
+    }
+
+    // Save all controller presets.
+    // TODO(rryan): Get rid of this and make DlgPrefController do this for each
+    // preset.
     m_pControllerManager->savePresets();
 }
 
@@ -41,12 +78,11 @@ bool DlgPrefControllers::handleTreeItemClick(QTreeWidgetItem* clickedItem) {
         DlgPrefController* controllerWidget = m_controllerWindows.value(controllerIndex);
         if (controllerWidget) {
             m_pDlgPreferences->switchToPage(controllerWidget);
-            // Manually fire this slot since it doesn't work right...
-            // TODO(rryan): Investigate whether/why this is still needed.
-            controllerWidget->slotUpdate();
         }
         return true;
     } else if (clickedItem == m_pControllerTreeItem) {
+        // Switch to the root page and expand the controllers tree item.
+        m_pDlgPreferences->expandTreeItem(clickedItem);
         m_pDlgPreferences->switchToPage(this);
         return true;
     }
@@ -80,28 +116,17 @@ void DlgPrefControllers::setupControllerWidgets() {
     qSort(controllerList.begin(), controllerList.end(), controllerCompare);
 
     foreach (Controller* pController, controllerList) {
-        DlgPrefController* controllerDlg = NULL;
-        if (pController->isMappable()) {
-            controllerDlg = new DlgPrefMappableController(
-                    this, pController, m_pControllerManager, m_pConfig);
-            connect(controllerDlg, SIGNAL(mappingStarted()),
-                    m_pDlgPreferences, SLOT(hide()));
-            connect(controllerDlg, SIGNAL(mappingEnded()),
-                    m_pDlgPreferences, SLOT(show()));
-        } else {
-            controllerDlg = new DlgPrefController(
-                    this, pController, m_pControllerManager, m_pConfig);
-        }
+        DlgPrefController* controllerDlg = new DlgPrefController(
+            this, pController, m_pControllerManager, m_pConfig);
+        connect(controllerDlg, SIGNAL(mappingStarted()),
+                m_pDlgPreferences, SLOT(hide()));
+        connect(controllerDlg, SIGNAL(mappingEnded()),
+                m_pDlgPreferences, SLOT(show()));
 
         m_controllerWindows.append(controllerDlg);
         m_pDlgPreferences->addPageWidget(controllerDlg);
 
-        connect(m_pDlgPreferences, SIGNAL(showDlg()),
-                controllerDlg, SLOT(enumeratePresets()));
-        connect(m_pDlgPreferences, SIGNAL(showDlg()),
-                controllerDlg, SLOT(slotUpdate()));
-
-        connect(controllerDlg, SIGNAL(deviceStateChanged(DlgPrefController*, bool)),
+        connect(controllerDlg, SIGNAL(controllerEnabled(DlgPrefController*, bool)),
                 this, SLOT(slotHighlightDevice(DlgPrefController*, bool)));
 
         QTreeWidgetItem * controllerWindowLink = new QTreeWidgetItem(QTreeWidgetItem::Type);
@@ -121,7 +146,7 @@ void DlgPrefControllers::setupControllerWidgets() {
 
     // If no controllers are available, show the "No controllers available"
     // message.
-    noControllersAvailable->setVisible(controllerList.empty());
+    txtNoControllersAvailable->setVisible(controllerList.empty());
 }
 
 void DlgPrefControllers::slotHighlightDevice(DlgPrefController* dialog, bool enabled) {

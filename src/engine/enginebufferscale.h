@@ -20,7 +20,7 @@
 
 #include <QObject>
 
-#include "defs.h"
+#include "util/types.h"
 
 // MAX_SEEK_SPEED needs to be good and high to allow room for the very high
 //  instantaneous velocities of advanced scratching (Uzi) and spin-backs.

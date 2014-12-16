@@ -9,6 +9,7 @@
 #include "library/dao/trackdao.h"
 #include "library/trackcollection.h"
 #include "library/trackmodel.h"
+#include "library/columncache.h"
 #include "util.h"
 
 // BaseSqlTableModel is a custom-written SQL-backed table which aggressively
@@ -28,7 +29,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     //  m_database, m_pTrackCollection, m_trackDAO
 
     virtual bool isColumnInternal(int column) = 0;
-    virtual bool isColumnHiddenByDefault(int column) = 0;
+    virtual bool isColumnHiddenByDefault(int column);
     virtual TrackModel::CapabilitiesFlags getCapabilities() const = 0;
 
     // functions that can be implemented
@@ -52,7 +53,10 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     const QString currentSearch() const;
     void setSort(int column, Qt::SortOrder order);
     void hideTracks(const QModelIndexList& indices);
+
+    int fieldIndex(ColumnCache::Column column) const;
     int fieldIndex(const QString& fieldName) const;
+
     void select();
     QString getTrackLocation(const QModelIndex& index) const;
     QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent);
@@ -64,9 +68,9 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
     int columnCount(const QModelIndex& parent = QModelIndex()) const;
     bool setHeaderData(int section, Qt::Orientation orientation,
-                               const QVariant &value, int role = Qt::EditRole);
+                       const QVariant &value, int role = Qt::DisplayRole);
     QVariant headerData(int section, Qt::Orientation orientation,
-                                int role=Qt::DisplayRole) const;
+                        int role=Qt::DisplayRole) const;
     virtual QMimeData* mimeData(const QModelIndexList &indexes) const;
 
   protected:
@@ -93,8 +97,13 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
   private slots:
     virtual void tracksChanged(QSet<int> trackIds);
     virtual void trackLoaded(QString group, TrackPointer pTrack);
+    void refreshCell(int row, int column);
 
   private:
+    // A simple helper function for initializing header title and width.  Note
+    // that the ideal width of a column is based on the width of its data,
+    // not the title string itself.
+    void setHeaderProperties(ColumnCache::Column column, QString title, int defaultWidth);
     inline void setTrackValueForColumn(TrackPointer pTrack, int column, QVariant value);
     QVariant getBaseValue(const QModelIndex& index, int role = Qt::DisplayRole) const;
     // Set the columns used for searching. Names must correspond to the column
@@ -125,7 +134,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     QSharedPointer<BaseTrackCache> m_trackSource;
     QStringList m_tableColumns;
     QString m_tableColumnsJoined;
-    QHash<QString, int> m_tableColumnIndex;
+    ColumnCache m_tableColumnCache;
     int m_iSortColumn;
     Qt::SortOrder m_eSortOrder;
     bool m_bInitialized;

@@ -19,39 +19,54 @@
 #define DLGPREFEQ_H
 
 #include <QWidget>
+#include <QComboBox>
 
 #include "ui_dlgprefeqdlg.h"
 #include "configobject.h"
-#include "engine/enginefilterblock.h"
-#include "controlobjectthread.h"
+#include "controlobjectslave.h"
 #include "preferences/dlgpreferencepage.h"
+#include "effects/effectsmanager.h"
+#include "effects/effectrack.h"
 
 /**
   *@author John Sully
   */
-
 class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     Q_OBJECT
   public:
-    DlgPrefEQ(QWidget *parent, ConfigObject<ConfigValue>* _config);
+    DlgPrefEQ(QWidget *parent, EffectsManager* pEffectsManager,
+              ConfigObject<ConfigValue>* _config);
     virtual ~DlgPrefEQ();
 
+    QString getEQEffectGroupForDeck(int deck) const;
+    QString getQuickEffectGroupForDeck(int deck) const;
+
   public slots:
-    void slotLoFiChanged();
-    void slotEnaEQChanged();
-    /** Update Hi EQ **/
+    void slotEqEffectChangedOnDeck(int effectIndex);
+    void slotQuickEffectChangedOnDeck(int effectIndex);
+    void slotNumDecksChanged(double numDecks);
+    void slotSingleEqChecked(int checked);
+    // Slot for toggling between advanced and basic views
+    void slotPopulateDeckEffectSelectors();
+    // Update Hi EQ
     void slotUpdateHiEQ();
-    /** Update Lo EQ **/
+    // Update Lo EQ
     void slotUpdateLoEQ();
-    /** Apply changes to widget */
+    // Apply changes to widget
     void slotApply();
     void slotUpdate();
+    void slotResetToDefaults();
+    void slotUpdateEqAutoReset(int);
+    void slotBypass(int state);
+    // Update the Master EQ
+    void slotUpdateMasterEQParameter(int value);
+    void slotMasterEQToDefault();
+    void setMasterEQParameter(int i, double value);
+    void slotMasterEqEffectChanged(int effectIndex);
 
   signals:
     void apply(const QString &);
-
-  private slots:
-    void reset();
+    void effectOnChainSlot(const unsigned int, const unsigned int, QString);
 
   private:
     void loadSettings();
@@ -59,13 +74,35 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     double getEqFreq(int value, int minimum, int maximum);
     int getSliderPosition(double eqFreq, int minimum, int maximum);
     void validate_levels();
+    void updateBandFilter(int index, double value);
+    void setUpMasterEQ();
+    void applySelections();
 
-    ControlObjectThread m_COTLoFreq;
-    ControlObjectThread m_COTHiFreq;
-    ControlObjectThread m_COTLoFi;
-    ControlObjectThread m_COTEnableEq;
+    ControlObjectSlave m_COLoFreq;
+    ControlObjectSlave m_COHiFreq;
     ConfigObject<ConfigValue>* m_pConfig;
     double m_lowEqFreq, m_highEqFreq;
+
+    // Members needed for changing the effects loaded on the EQ Effect Rack
+    EffectsManager* m_pEffectsManager;
+    EqualizerRackPointer m_pEQEffectRack;
+    QuickEffectRackPointer m_pQuickEffectRack;
+    QLabel* m_firstSelectorLabel;
+    QList<QComboBox*> m_deckEqEffectSelectors;
+    QList<QComboBox*> m_deckQuickEffectSelectors;
+    QList<bool> m_filterWaveformEffectLoaded;
+    QList<ControlObject*> m_filterWaveformEnableCOs;
+    ControlObjectSlave* m_pNumDecks;
+
+    bool m_inSlotPopulateDeckEffectSelectors;
+
+    // Members needed for the Master EQ
+    QList<QSlider*> m_masterEQSliders;
+    QList<QLabel*> m_masterEQValues;
+    QList<QLabel*> m_masterEQLabels;
+    QWeakPointer<Effect> m_pEffectMasterEQ;
+
+    bool m_bEqAutoReset;
 };
 
 #endif

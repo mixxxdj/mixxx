@@ -39,7 +39,7 @@ class WOverview : public WWidget {
     void setup(QDomNode node, const SkinContext& context);
 
   public slots:
-    void onConnectedControlValueChanged(double);
+    void onConnectedControlChanged(double dParameter, double dValue);
     void slotLoadNewTrack(TrackPointer pTrack);
     void slotTrackLoaded(TrackPointer pTrack);
     void slotUnloadTrack(TrackPointer pTrack);
@@ -56,7 +56,9 @@ class WOverview : public WWidget {
     virtual void dragEnterEvent(QDragEnterEvent* event);
     virtual void dropEvent(QDropEvent* event);
 
-    Waveform* m_pWaveform;
+    ConstWaveformPointer getWaveform() const {
+        return m_pWaveform;
+    }
 
     QImage* m_pWaveformSourceImage;
     QImage m_waveformImageScaled;
@@ -98,9 +100,9 @@ class WOverview : public WWidget {
     ControlObjectThread* m_trackSamplesControl;
     ControlObjectThread* m_playControl;
 
-
     // Current active track
     TrackPointer m_pCurrentTrack;
+    ConstWaveformPointer m_pWaveform;
 
     // True if slider is dragged. Only used when m_bEventWhileDrag is false
     bool m_bDrag;

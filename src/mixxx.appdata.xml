@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Author 2014 Tuukka Pasanen <pasanen.tuukka@gmail.com> -->
+<component>
+  <id type="desktop">mixxx.desktop</id>
+  <metadata_license>CC-BY-SA-3.0</metadata_license>
+  <project_license>GPL-2.0</project_license>
+  <name>Mixxx DJ Software</name>
+  <summary>Everything you need to perform live DJ mixes.</summary>
+  <description>
+    <p><b>Mixxx/</b> is free DJ software that gives you
+      everything you need to perform live DJ mixes. Blend songs together with
+      automatic BPM matching and remix on-the-fly with looping and hot cues.
+      Whether you're a pro DJ or just getting started, Mixxx has you covered.
+    </p>
+    <p>
+      <b>Mixxx</b> works with ALSA, JACK, OSS and supports many popular DJ
+      controllers.
+    </p>
+    <b>KEY FEATURES</b>
+    <ul>
+      <li>Parallel or split scratchable waveform displays.</li>
+      <li>MP3, OGG, WAVE, FLAC, and optional AAC (M4A) playback.</li>
+      <li>WAVE, OGG, and optional MP3 recording.</li>
+      <li>Fast, database-powered library.</li>
+      <li>Crates and playlists for organizing your music.</li>
+      <li>Reads iTunes, Traktor, and Rhythmbox libraries.</li>
+      <li>Cross-platform - works on Windows, Mac OS X and Linux.</li>
+      <li>Shoutcast and Icecast broadcasting.</li>
+      <li>Support for many DJ MIDI and HID controllers out-of-the-box.</li>
+      <li>Advanced MIDI scripting engine for maximum flexibility.</li>
+      <li>Vinyl emulation with Serato, Traktor, and Mixvibes timecode support.</li>
+      <li>Beat and key detection.</li>
+      <li>ReplayGain volume normalization.</li>
+      <li>Automatic crossfading with Auto DJ.</li>
+      <li>Skinnable interface with several skins bundled.</li>
+     </ul>
+     <p>For a full list of features go to:
+     <a href="http://mixxx.org/features/" target="_top">http://mixxx.org/features/</a>
+  </description>
+  <screenshots>
+    <screenshot type="default">http://www.mixxx.org/images/press_art/mixxx_1110_default_deere_skin.png</screenshot>
+    <caption>Mixxx 1.11.0 with the default Deere skin.</caption>
+  </screenshots>
+  <url type="homepage">http://mixxx.org</url>
+  <updatecontact>Mixxx Devel <mixxx-devel@lists.sourceforge.net></updatecontact>
+</component>

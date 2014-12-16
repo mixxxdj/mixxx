@@ -25,6 +25,7 @@ void SharedGLContext::setWidget(const QGLWidget* pWidget) {
         qDebug() << "Has overlay:" << format.hasOverlay();
         qDebug() << "RGBA:" << format.rgba();
         qDebug() << "Sample buffers:" << format.sampleBuffers();
+        qDebug() << "Samples:" << format.samples();
         qDebug() << "Stencil buffers:" << format.stencil();
         qDebug() << "Stereo:" << format.stereo();
     }

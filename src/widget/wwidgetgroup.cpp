@@ -3,6 +3,7 @@
 #include <QLayout>
 #include <QMap>
 #include <QStylePainter>
+#include <QStackedLayout>
 
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
@@ -82,7 +83,9 @@ void WWidgetGroup::setup(QDomNode node, const SkinContext& context) {
 
     // Set background pixmap if available
     if (context.hasNode(node, "BackPath")) {
-        setPixmapBackground(context.getSkinPath(context.selectString(node, "BackPath")));
+        QDomElement backPathNode = context.selectElement(node, "BackPath");
+        setPixmapBackground(context.getPixmapSource(backPathNode),
+                            context.selectScaleMode(backPathNode, Paintable::TILE));
     }
 
     QLayout* pLayout = NULL;
@@ -90,11 +93,16 @@ void WWidgetGroup::setup(QDomNode node, const SkinContext& context) {
         QString layout = context.selectString(node, "Layout");
         if (layout == "vertical") {
             pLayout = new QVBoxLayout();
-            pLayout->setSpacing(0);
-            pLayout->setContentsMargins(0, 0, 0, 0);
-            pLayout->setAlignment(Qt::AlignCenter);
         } else if (layout == "horizontal") {
             pLayout = new QHBoxLayout();
+        } else if (layout == "stacked") {
+            QStackedLayout* pStackedLayout = new QStackedLayout();
+            pStackedLayout->setStackingMode(QStackedLayout::StackAll);
+            pLayout = pStackedLayout;
+        }
+
+        // Set common layout parameters.
+        if (pLayout != NULL) {
             pLayout->setSpacing(0);
             pLayout->setContentsMargins(0, 0, 0, 0);
             pLayout->setAlignment(Qt::AlignCenter);
@@ -123,11 +131,11 @@ void WWidgetGroup::setup(QDomNode node, const SkinContext& context) {
     }
 }
 
-void WWidgetGroup::setPixmapBackground(const QString &filename) {
+void WWidgetGroup::setPixmapBackground(PixmapSource source, Paintable::DrawMode mode) {
     // Load background pixmap
-    m_pPixmapBack = WPixmapStore::getPaintable(filename);
+    m_pPixmapBack = WPixmapStore::getPaintable(source, mode);
     if (!m_pPixmapBack) {
-        qDebug() << "WWidgetGroup: Error loading background pixmap:" << filename;
+        qDebug() << "WWidgetGroup: Error loading background pixmap:" << source.getPath();
     }
 }
 

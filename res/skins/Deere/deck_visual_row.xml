@@ -1,0 +1,188 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Deck visual row (waveform and spinny).
+  Variables:
+    group: the group to connect to
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>VisualRow</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,max</SizePolicy>
+    <!-- Because the spinny hides itself and throws off the size
+         calculation we set our minimum size to the spinny size. -->
+    <MinimumSize>-1,118</MinimumSize>
+    <Children>
+      <Visual>
+        <TooltipId>waveform_display</TooltipId>
+        <Group><Variable name="group"/></Group>
+        <BgColor>#1C1C1C</BgColor>
+        <SignalHighColor></SignalHighColor>
+        <SignalMidColor></SignalMidColor>
+        <SignalLowColor></SignalLowColor>
+        <SignalColor><Variable name="DeckColor"/></SignalColor>
+        <BeatColor>#ffffff</BeatColor>
+        <PlayPosColor>#00FF00</PlayPosColor>
+        <EndOfTrackColor>#EA0000</EndOfTrackColor>
+        <AxesColor></AxesColor>
+        <Align></Align>
+        <DefaultMark>
+          <Align>top</Align>
+          <Color>#00FF00</Color>
+          <TextColor>#000000</TextColor>
+          <Text> %1 </Text>
+        </DefaultMark>
+        <MarkRange>
+          <StartControl>loop_start_position</StartControl>
+          <EndControl>loop_end_position</EndControl>
+          <EnabledControl>loop_enabled</EnabledControl>
+          <Color>#00FF00</Color>
+          <DisabledColor>#FFFFFF</DisabledColor>
+        </MarkRange>
+        <Mark>
+          <Control>loop_start_position</Control>
+          <Pixmap>image/marker_loop_in.png</Pixmap>
+          <Text>IN</Text>
+          <Align>bottom</Align>
+          <Color>#00FF00</Color>
+          <TextColor>#FFFFFF</TextColor>
+        </Mark>
+        <Mark>
+          <Control>loop_end_position</Control>
+          <Pixmap>image/marker_loop_out.png</Pixmap>
+          <Text>OUT</Text>
+          <Align>bottom</Align>
+          <Color>#00FF00</Color>
+          <TextColor>#FFFFFF</TextColor>
+        </Mark>
+        <!--
+        The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
+        - if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
+        - if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
+        -->
+        <Mark>
+          <Control>hotcue_1_position</Control>
+          <Pixmap>image/marker_hotcue_1.png</Pixmap>
+          <Text>1</Text>
+          <Align>bottom</Align>
+          <Color>#00FF00</Color>
+          <TextColor>#FFFFFF</TextColor>
+        </Mark>
+        <Mark>
+          <Control>hotcue_2_position</Control>
+          <Pixmap>image/marker_hotcue_2.png</Pixmap>
+          <Text>2</Text>
+          <Align>bottom</Align>
+          <Color>#00FF00</Color>
+          <TextColor>#FFFFFF</TextColor>
+        </Mark>
+        <Mark>
+          <Control>hotcue_3_position</Control>
+          <Pixmap>image/marker_hotcue_3.png</Pixmap>
+          <Text>3</Text>
+          <Align>bottom</Align>
+          <Color>#00FF00</Color>
+          <TextColor>#FFFFFF</TextColor>
+        </Mark>
+        <Mark>
+          <Control>hotcue_4_position</Control>
+          <Pixmap>image/marker_hotcue_4.png</Pixmap>
+          <Text>4</Text>
+          <Align>bottom</Align>
+          <Color>#00FF00</Color>
+          <TextColor>#FFFFFF</TextColor>
+        </Mark>
+        <Mark>
+          <Control>cue_point</Control>
+          <Pixmap>image/marker_cue.png</Pixmap>
+          <Text>CUE</Text>
+          <Align>bottom</Align>
+          <Color>#FF001C</Color>
+          <TextColor>#FFFFFF</TextColor>
+        </Mark>
+      </Visual>
+
+      <WidgetGroup>
+        <ObjectName>WaveformZoomContainer</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <PushButton>
+            <MinimumSize>20,20</MinimumSize>
+            <MaximumSize>30,30</MaximumSize>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text> + </Text>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text> + </Text>
+            </State>
+            <Connection>
+              <ConfigKey persist="true"><Variable name="group"/>,waveform_zoom_down</ConfigKey>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
+            <MinimumSize>20,20</MinimumSize>
+            <MaximumSize>30,30</MaximumSize>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text> O </Text>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text> O </Text>
+            </State>
+            <Connection>
+              <ConfigKey persist="true"><Variable name="group"/>,waveform_zoom_set_default</ConfigKey>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
+            <MinimumSize>20,20</MinimumSize>
+            <MaximumSize>30,30</MaximumSize>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text> - </Text>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text> - </Text>
+            </State>
+            <Connection>
+              <ConfigKey persist="true"><Variable name="group"/>,waveform_zoom_up</ConfigKey>
+            </Connection>
+          </PushButton>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>SpinnyHolder</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>max,max</SizePolicy>
+        <Children>
+          <Spinny>
+            <Group><Variable name="group"/></Group>
+            <PathBackground>image/vinyl_spinny_background.png</PathBackground>
+            <PathForeground>image/vinyl_spinny_foreground.png</PathForeground>
+            <PathGhost>image/vinyl_spinny_foreground_ghost.png</PathGhost>
+            <!--
+             If you want to have cover art beneath the spnning vinyl images,
+             set <ShowCover> to "true" AND make the <PathBackground> image semi-transparent.
+            -->
+            <ShowCover>false</ShowCover>
+          </Spinny>
+        </Children>
+        <Connection>
+          <ConfigKey><Variable name="control_show_spinny"/></ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

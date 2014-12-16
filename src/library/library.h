@@ -15,6 +15,7 @@
 #include "trackinfoobject.h"
 #include "recording/recordingmanager.h"
 #include "analysisfeature.h"
+#include "library/coverartcache.h"
 
 class TrackModel;
 class TrackCollection;
@@ -29,12 +30,14 @@ class PlaylistFeature;
 class CrateFeature;
 class LibraryControl;
 class MixxxKeyboard;
+class PlayerManagerInterface;
 
 class Library : public QObject {
     Q_OBJECT
 public:
     Library(QObject* parent,
             ConfigObject<ConfigValue>* pConfig,
+            PlayerManagerInterface* pPlayerManager,
             RecordingManager* pRecordingManager);
     virtual ~Library();
 
@@ -85,6 +88,9 @@ public:
     void search(const QString& text);
     void searchCleared();
     void searchStarting();
+    // emit this signal to enable/disable the cover art widget
+    void enableCoverArtDisplay(bool);
+    void trackSelected(TrackPointer pTrack);
 
   private:
     ConfigObject<ConfigValue>* m_pConfig;

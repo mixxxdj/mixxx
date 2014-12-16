@@ -6,7 +6,11 @@
 #include <QTime>
 
 #include "util/performancetimer.h"
+#include "util/threadcputimer.h"
 #include "util/timer.h"
+
+#define LLTIMER PerformanceTimer
+//#define LLTIMER ThreadCpuTimer
 
 class Time {
   public:
@@ -17,6 +21,10 @@ class Time {
     // Returns the time elapsed since Mixxx started up in nanoseconds.
     static qint64 elapsed() {
         return s_timer.elapsed();
+    }
+
+    static uint elapsedMsecs() {
+        return (uint)(s_timer.elapsed() / 1000);
     }
 
     // The standard way of formatting a time in seconds. Used for display of
@@ -38,7 +46,7 @@ class Time {
     }
 
   private:
-    static PerformanceTimer s_timer;
+    static LLTIMER s_timer;
 };
 
 #endif /* TIME_H */

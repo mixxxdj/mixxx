@@ -8,25 +8,25 @@
 
 class WaveformWidgetRenderer;
 
-class WaveformMarkSet
-{
-public:
+class WaveformMarkSet {
+  public:
     WaveformMarkSet();
-    ~WaveformMarkSet();
+    virtual ~WaveformMarkSet();
+
     void setup(const QString& group, const QDomNode& node,
                const SkinContext& context,
                const WaveformSignalColors& signalColors);
     void clear();
 
     int size() const { return m_marks.size();}
-    WaveformMark& operator[] (int i) { return m_marks[i];}
+    WaveformMark& operator[] (int i) { return m_marks[i]; }
 
     const WaveformMark& getDefaultMark() const { return m_defaultMark;}
-    const QList<WaveformMark>& getMarks() const { return m_marks;}
 
-private:
+  private:
     WaveformMark m_defaultMark;
     QList<WaveformMark> m_marks;
+    DISALLOW_COPY_AND_ASSIGN(WaveformMarkSet);
 };
 
 #endif // WAVEFORMMARKSET_H

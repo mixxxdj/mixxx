@@ -13,13 +13,13 @@
 #define CONTROLLER_H
 
 #include "controllers/controllerengine.h"
+#include "controllers/controllervisitor.h"
 #include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetinfo.h"
 #include "controllers/controllerpresetvisitor.h"
 #include "controllers/controllerpresetfilehandler.h"
-#include "controllers/mixxxcontrol.h"
 
-class Controller : public QObject, ControllerPresetVisitor {
+class Controller : public QObject, ConstControllerPresetVisitor {
     Q_OBJECT
   public:
     Controller();
@@ -36,11 +36,12 @@ class Controller : public QObject, ControllerPresetVisitor {
         preset.accept(this);
     }
 
+    virtual void accept(ControllerVisitor* visitor) = 0;
+
     virtual bool savePreset(const QString filename) const = 0;
 
     // Returns a clone of the Controller's loaded preset.
     virtual ControllerPresetPointer getPreset() const = 0;
-    virtual ControllerPresetFileHandler* getFileHandler() const = 0;
 
     inline bool isOpen() const {
         return m_bIsOpen;
@@ -68,7 +69,6 @@ class Controller : public QObject, ControllerPresetVisitor {
     virtual bool matchPreset(const PresetInfo& preset) = 0;
 
   signals:
-    void learnedMessage(QString message);
     // Emitted when a new preset is loaded. pPreset is a /clone/ of the loaded
     // preset, not a pointer to the preset itself.
     void presetLoaded(ControllerPresetPointer pPreset);
@@ -84,11 +84,9 @@ class Controller : public QObject, ControllerPresetVisitor {
     // Initializes the controller engine
     virtual void applyPreset(QList<QString> scriptPaths);
 
-    void learn(MixxxControl control);
-    void cancelLearn();
-
-    virtual void clearInputMappings() {}
-    virtual void clearOutputMappings() {}
+    // Puts the controller in and out of learning mode.
+    void startLearning();
+    void stopLearning();
 
   protected:
     Q_INVOKABLE void send(QList<int> data, unsigned int length);
@@ -119,13 +117,6 @@ class Controller : public QObject, ControllerPresetVisitor {
     inline void setOpen(bool open) {
         m_bIsOpen = open;
     }
-    inline MixxxControl controlToLearn() const {
-        return m_controlToLearn;
-    }
-    inline void setControlToLearn(MixxxControl control) {
-        m_controlToLearn = control;
-    }
-
 
   private slots:
     virtual int open() = 0;
@@ -163,7 +154,6 @@ class Controller : public QObject, ControllerPresetVisitor {
     // runtime. This is useful for end-user debugging and script-writing.
     bool m_bDebug;
     bool m_bLearning;
-    MixxxControl m_controlToLearn;
 
     friend class ControllerManager; // accesses lots of our stuff, but in the same thread
 };

@@ -28,26 +28,14 @@ TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const
         return TrackPointer();
     }
 
-    TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
-    int track_id = track_dao.getTrackId(location);
-    bool track_already_in_library = track_id >= 0;
-    if (track_id < 0) {
-        // Add Track to library
-        track_id = track_dao.addTrack(location, true);
-    }
-
-    TrackPointer pTrack;
-    if (track_id < 0) {
-        // Add Track to library failed, create a transient TrackInfoObject
-        pTrack = TrackPointer(new TrackInfoObject(location), &QObject::deleteLater);
-    } else {
-        pTrack = track_dao.getTrack(track_id);
-    }
+    bool track_already_in_library = false;
+    TrackPointer pTrack = m_pTrackCollection->getTrackDAO()
+            .getOrAddTrack(location, true, &track_already_in_library);
 
     // If this track was not in the Mixxx library it is now added and will be
     // saved with the metadata from iTunes. If it was already in the library
     // then we do not touch it so that we do not over-write the user's metadata.
-    if (!track_already_in_library) {
+    if (pTrack && !track_already_in_library) {
         QString artist = index.sibling(
                 index.row(), fieldIndex("artist")).data().toString();
         pTrack->setArtist(artist);
@@ -76,8 +64,9 @@ TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const
 }
 
 bool BaseExternalPlaylistModel::isColumnInternal(int column) {
-    if (column == fieldIndex("track_id") ||
-            (PlayerManager::numPreviewDecks() == 0 && column == fieldIndex("preview"))) {
+    if (column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_TRACKID) ||
+            (PlayerManager::numPreviewDecks() == 0 &&
+             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW))) {
         return true;
     }
     return false;
@@ -134,13 +123,9 @@ void BaseExternalPlaylistModel::setPlaylist(QString playlist_path) {
     }
 
     setTable(playlistViewTable, columns[0], columns, m_trackSource);
-    setDefaultSort(fieldIndex("position"), Qt::AscendingOrder);
+    setDefaultSort(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
+                   Qt::AscendingOrder);
     setSearch("");
-}
-
-bool BaseExternalPlaylistModel::isColumnHiddenByDefault(int column) {
-    Q_UNUSED(column);
-    return false;
 }
 
 TrackModel::CapabilitiesFlags BaseExternalPlaylistModel::getCapabilities() const {

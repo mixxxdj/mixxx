@@ -1,12 +1,11 @@
 // Tue Haste Andersen <haste@diku.dk>, (C) 2003
 
 #include <QTime>
-#include <math.h>
 
 #include "wnumberpos.h"
-#include "mathstuff.h"
 #include "controlobject.h"
 #include "controlobjectthread.h"
+#include "util/math.h"
 
 WNumberPos::WNumberPos(const char* group, QWidget* parent)
         : WNumber(parent),
@@ -22,9 +21,9 @@ WNumberPos::WNumberPos(const char* group, QWidget* parent)
             this, SLOT(slotSetRemain(double)));
     slotSetRemain(m_pShowTrackTimeRemaining->get());
 
-    // We cannot use the parameter from the skin because this would be
-    // normalized to parameter values -0.14 .. 1.14.  Instead we use the
-    // engine's playposition value which is normalized from 0 to 1.  As a
+    // We use the engine's playposition value directly because the parameter
+    // normalization done by the widget system used to be unusable for this
+    // because the range of playposition was -0.14 to 1.14 in 1.11.x. As a
     // result, the <Connection> parameter is no longer necessary in skin
     // definitions, but leaving it in is harmless.
     m_pVisualPlaypos = new ControlObjectThread(group, "playposition");

@@ -55,7 +55,6 @@ class Cue : public QObject {
     void setTrackId(int trackId);
 
     bool m_bDirty;
-    bool m_bDelete;
     int m_iId;
     int m_iTrackId;
     CueType m_type;

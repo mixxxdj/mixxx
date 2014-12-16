@@ -65,17 +65,19 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     bool setWaveformWidget(WWaveformViewer* viewer,
                            const QDomElement &node, const SkinContext& context);
 
-    void setFrameRate( int frameRate);
+    void setFrameRate(int frameRate);
     int getFrameRate() const { return m_frameRate;}
 //    bool getVSync() const { return m_vSyncType;}
+    void setEndOfTrackWarningTime(int endTime);
+    int getEndOfTrackWarningTime() const { return m_endOfTrackWarningTime;}
 
     bool isOpenGLAvailable() const { return m_openGLAvailable;}
     QString getOpenGLVersion() const { return m_openGLVersion;}
 
     bool isOpenGlShaderAvailable() const { return m_openGLShaderAvailable;}
 
-    bool setWidgetType( WaveformWidgetType::Type type);
-    bool setWidgetTypeFromHandle( int handleIndex);
+    bool setWidgetType(WaveformWidgetType::Type type);
+    bool setWidgetTypeFromHandle(int handleIndex);
     WaveformWidgetType::Type getType() const { return m_type;}
 
     void setDefaultZoom(int zoom);
@@ -84,7 +86,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void setZoomSync(bool sync);
     int isZoomSync() const { return m_zoomSync;}
 
-    void setVisualGain( FilterIndex index, double gain);
+    void setVisualGain(FilterIndex index, double gain);
     double getVisualGain(FilterIndex index) const;
 
     void setOverviewNormalized(bool normalize);
@@ -102,9 +104,11 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     void notifyZoomChange(WWaveformViewer *viewer);
 
+    WaveformWidgetType::Type autoChooseWidgetType() const;
+
   signals:
     void waveformUpdateTick();
-    void waveformMeasured(float frameRate, int rtErrorCnt);
+    void waveformMeasured(float frameRate, int droppedFrames);
 
   protected:
     WaveformWidgetFactory();
@@ -117,10 +121,9 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void swap();
 
   private:
-    WaveformWidgetType::Type autoChooseWidgetType() const;
     void evaluateWidgets();
-    WaveformWidgetAbstract* createWaveformWidget( WaveformWidgetType::Type type, WWaveformViewer* viewer);
-    int findIndexOf( WWaveformViewer* viewer) const;
+    WaveformWidgetAbstract* createWaveformWidget(WaveformWidgetType::Type type, WWaveformViewer* viewer);
+    int findIndexOf(WWaveformViewer* viewer) const;
 
     //All type of available widgets
 
@@ -135,7 +138,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     bool m_skipRender;
     int m_frameRate;
-    int m_mainTimerId;
+    int m_endOfTrackWarningTime;
     int m_defaultZoom;
     bool m_zoomSync;
     double m_visualGain[FilterCount];
@@ -149,12 +152,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     //Debug
     QTime m_time;
-    QTime m_delayTime;
     float m_frameCnt;
-    int m_lastRenderDuration;
     double m_actualFrameRate;
-    double m_minimumFrameRate;
-    double m_maximumlFrameRate;
     int m_vSyncType;
 };
 

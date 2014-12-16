@@ -43,7 +43,7 @@
 #define PERFORMANCETIMER_H
 
 //
-// This is a fork of QPerformanceTimer just without the Q prefix 
+// This is a fork of QPerformanceTimer just without the Q prefix
 // To fix interface changes issues in different QT versions
 // Added restart() function
 // return time in ns resolution
@@ -61,7 +61,9 @@ public:
 
 private:
     qint64 t1;
+#if defined(Q_OS_UNIX) && !defined(Q_OS_MAC)
     qint64 t2;
+#endif
 };
 
 #endif // PERFORMANCETIMER_H

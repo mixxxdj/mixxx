@@ -1,62 +1,60 @@
-
 #include <QThread>
 #include <QGLWidget>
 #include <QGLFormat>
 #include <QTime>
-#include <qdebug.h>
+#include <QtDebug>
 #include <QTime>
 
 #include "mixxx.h"
-#include "mathstuff.h"
 #include "vsyncthread.h"
 #include "util/performancetimer.h"
 #include "util/event.h"
 #include "util/counter.h"
+#include "util/math.h"
 #include "waveform/guitick.h"
 
 #if defined(__APPLE__)
-
 #elif defined(__WINDOWS__)
-
 #else
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
    extern const QX11Info *qt_x11Info(const QPaintDevice *pd);
+#endif
 #endif
 
 VSyncThread::VSyncThread(MixxxMainWindow* mixxxMainWindow)
         : QThread(mixxxMainWindow),
+          m_bDoRendering(true),
           m_vSyncTypeChanged(false),
           m_usSyncIntervalTime(33333),
           m_vSyncMode(ST_TIMER),
           m_syncOk(false),
-          m_rtErrorCnt(0),
+          m_droppedFrames(0),
           m_swapWait(0),
           m_displayFrameRate(60.0),
           m_vSyncPerRendering(1),
-          m_pGuiTick(mixxxMainWindow->getGuiTick()){
-    doRendering = true;
+          m_pGuiTick(mixxxMainWindow->getGuiTick()) {
 }
 
 VSyncThread::~VSyncThread() {
-    doRendering = false;
+    m_bDoRendering = false;
     m_semaVsyncSlot.release(2); // Two slots
     wait();
     //delete m_glw;
 }
 
-void VSyncThread::stop()
-{
-    doRendering = false;
+void VSyncThread::stop() {
+    m_bDoRendering = false;
 }
 
 
 void VSyncThread::run() {
-    Counter realTimeError("VsyncThread real time error");
+    Counter droppedFrames("VsyncThread real time error");
     QThread::currentThread()->setObjectName("VSyncThread");
 
     m_usWaitToSwap = m_usSyncIntervalTime;
     m_timer.start();
 
-    while (doRendering) {
+    while (m_bDoRendering) {
         if (m_vSyncMode == ST_FREE) {
             // for benchmark only!
 
@@ -107,8 +105,8 @@ void VSyncThread::run() {
             if (usRemainingForSwap < 0) {
                 // Our swapping call was already delayed
                 // The real swap might happens on the following VSync, depending on driver settings
-                m_rtErrorCnt++; // Count as Real Time Error
-                realTimeError.increment();
+                m_droppedFrames++; // Count as Real Time Error
+                droppedFrames.increment();
             }
             // try to stay in right intervals
             m_usWaitToSwap = m_usSyncIntervalTime +
@@ -132,8 +130,12 @@ void VSyncThread::swapGl(QGLWidget* glw, int index) {
 #elif defined(__WINDOWS__)
     glw->swapBuffers();
 #else
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     const QX11Info *xinfo = qt_x11Info(glw);
     glXSwapBuffers(xinfo->display(), glw->winId());
+#else
+    glw->swapBuffers();
+#endif // QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #endif
 }
 
@@ -151,7 +153,7 @@ void VSyncThread::setVSyncType(int type) {
         type = VSyncThread::ST_TIMER;
     }
     m_vSyncMode = (enum VSyncMode)type;
-    m_rtErrorCnt = 0;
+    m_droppedFrames = 0;
     m_vSyncTypeChanged = true;
 }
 
@@ -171,8 +173,8 @@ int VSyncThread::usFromTimerToNextSync(PerformanceTimer* timer) {
     return usDifference + m_usWaitToSwap;
 }
 
-int VSyncThread::rtErrorCnt() {
-    return m_rtErrorCnt;
+int VSyncThread::droppedFrames() {
+    return m_droppedFrames;
 }
 
 void VSyncThread::vsyncSlotFinished() {

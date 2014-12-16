@@ -15,7 +15,7 @@
 
 #include "util/performancetimer.h"
 
-GLSimpleWaveformWidget::GLSimpleWaveformWidget( const char* group, QWidget* parent)
+GLSimpleWaveformWidget::GLSimpleWaveformWidget(const char* group, QWidget* parent)
         : QGLWidget(parent, SharedGLContext::getWidget()),
           WaveformWidgetAbstract(group) {
     addRenderer<WaveformRenderBackground>();
@@ -40,7 +40,7 @@ GLSimpleWaveformWidget::GLSimpleWaveformWidget( const char* group, QWidget* pare
     m_initSuccess = init();
 }
 
-GLSimpleWaveformWidget::~GLSimpleWaveformWidget(){
+GLSimpleWaveformWidget::~GLSimpleWaveformWidget() {
     if (QGLContext::currentContext() != context()) {
         makeCurrent();
     }
@@ -50,7 +50,7 @@ void GLSimpleWaveformWidget::castToQWidget() {
     m_widget = static_cast<QWidget*>(static_cast<QGLWidget*>(this));
 }
 
-void GLSimpleWaveformWidget::paintEvent( QPaintEvent* event) {
+void GLSimpleWaveformWidget::paintEvent(QPaintEvent* event) {
     Q_UNUSED(event);
 }
 

@@ -23,9 +23,9 @@
 #include <QList>
 
 #include "configobject.h"
-#include "defs.h"
 #include "engine/sidechain/sidechainworker.h"
 #include "util/fifo.h"
+#include "util/types.h"
 
 class EngineSideChain : public QThread {
     Q_OBJECT

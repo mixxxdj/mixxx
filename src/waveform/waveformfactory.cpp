@@ -4,17 +4,13 @@
 #include "waveform/waveform.h"
 
 // static
-bool WaveformFactory::updateWaveformFromAnalysis(
-        Waveform* pWaveform, const AnalysisDao::AnalysisInfo& analysis) {
-    if (pWaveform) {
-        pWaveform->reset();
-        pWaveform->readByteArray(analysis.data);
-        pWaveform->setId(analysis.analysisId);
-        pWaveform->setVersion(analysis.version);
-        pWaveform->setDescription(analysis.description);
-        return true;
-    }
-    return false;
+Waveform* WaveformFactory::loadWaveformFromAnalysis(
+        const AnalysisDao::AnalysisInfo& analysis) {
+    Waveform* pWaveform = new Waveform(analysis.data);
+    pWaveform->setId(analysis.analysisId);
+    pWaveform->setVersion(analysis.version);
+    pWaveform->setDescription(analysis.description);
+    return pWaveform;
 }
 
 // static

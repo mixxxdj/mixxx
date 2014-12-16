@@ -24,6 +24,7 @@ VinylControlManager::VinylControlManager(QObject* pParent,
           m_pConfig(pConfig),
           m_pProcessor(new VinylControlProcessor(this, pConfig)),
           m_iTimerId(-1),
+          m_pNumDecks(NULL),
           m_iNumConfiguredDecks(0) {
     // Register every possible VC input with SoundManager to route to the
     // VinylControlProcessor.
@@ -88,7 +89,7 @@ void VinylControlManager::requestReloadConfig() {
     m_pProcessor->requestReloadConfig();
 }
 
-bool VinylControlManager::vinylInputEnabled(int deck) {
+bool VinylControlManager::vinylInputConnected(int deck) {
     if (deck < 0 || deck >= m_iNumConfiguredDecks) {
         return false;
     }
@@ -96,7 +97,7 @@ bool VinylControlManager::vinylInputEnabled(int deck) {
         qDebug() << "WARNING, tried to get vinyl enabled status for non-existant deck " << deck;
         return false;
     }
-    return m_pVcEnabled.at(deck)->get() != 0;
+    return m_pProcessor->deckConfigured(deck);
 }
 
 int VinylControlManager::vinylInputFromGroup(const QString& group) {

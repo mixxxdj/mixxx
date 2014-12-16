@@ -47,6 +47,7 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
   public slots:
     void slotUpdate();
     void slotApply();
+    void slotResetToDefaults();
 
     void slotSetRateRange(int pos);
     void slotSetRateDir(int pos);
@@ -63,32 +64,17 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     void slotSetAllowTrackLoadToPlayingDeck(int);
     void slotSetCueDefault(int);
     void slotSetCueRecall(int);
-    void slotSetAutoDjRequeue(int);
-    void slotSetAutoDjMinimumAvailable(int);
-    void slotSetAutoDjUseIgnoreTime(int);
-    void slotSetAutoDjIgnoreTime(const QTime &a_rTime);
     void slotSetRateRamp(bool);
     void slotSetRateRampSensitivity(int);
     void slotSetLocale(int);
-
-
-    void slotSetFrameRate(int frameRate);
-    void slotSetWaveformType(int index);
-    void slotSetWaveformOverviewType(int index);
-    void slotSetDefaultZoom(int index);
-    void slotSetZoomSynchronization(bool checked);
-    void slotSetVisualGainAll(double gain);
-    void slotSetVisualGainLow(double gain);
-    void slotSetVisualGainMid(double gain);
-    void slotSetVisualGainHigh(double gain);
-    void slotSetNormalizeOverview( bool normalize);
-    void slotWaveformMeasured(float frameRate, int rtErrorCnt);
+    void slotSetStartInFullscreen(int index);
 
     void slotNumDecksChanged(double);
     void slotNumSamplersChanged(double);
 
+    void slotRowHeightValueChanged(int);
+
   private:
-    void initWaveformControl();
     void notifyRebootNecessary();
     bool checkSkinResolution(QString skin);
 
@@ -106,6 +92,8 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
 
     int m_iNumConfiguredDecks;
     int m_iNumConfiguredSamplers;
+
+    bool m_rebootNotifiedRowHeight;
 };
 
 #endif

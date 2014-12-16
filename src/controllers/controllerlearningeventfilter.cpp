@@ -4,6 +4,7 @@
 
 #include "widget/wwidget.h"
 #include "widget/wknob.h"
+#include "widget/wknobcomposed.h"
 #include "widget/wslidercomposed.h"
 #include "controllers/controllerlearningeventfilter.h"
 
@@ -24,8 +25,9 @@ bool ControllerLearningEventFilter::eventFilter(QObject* pObject, QEvent* pEvent
     }
 
     WKnob* pKnob = dynamic_cast<WKnob*>(pObject);
+    WKnobComposed* pKnobComposed = dynamic_cast<WKnobComposed*>(pObject);
     WSliderComposed* pSlider = dynamic_cast<WSliderComposed*>(pObject);
-    bool has_right_click_reset = pKnob || pSlider;
+    bool has_right_click_reset = pKnob || pKnobComposed || pSlider;
 
     if (pEvent->type() == QEvent::KeyPress) {
         // TODO(XXX): handle keypresses?
@@ -87,7 +89,7 @@ bool ControllerLearningEventFilter::eventFilter(QObject* pObject, QEvent* pEvent
 void ControllerLearningEventFilter::addWidgetClickInfo(
         QWidget* pWidget, Qt::MouseButton buttonState,
         ControlObject* pControl,
-        ControlWidgetConnection::EmitOption emitOption) {
+        ControlParameterWidgetConnection::EmitOption emitOption) {
     ControlInfo& info = m_widgetControlInfo[pWidget];
 
     if (buttonState == Qt::LeftButton) {

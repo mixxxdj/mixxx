@@ -1,0 +1,19 @@
+short silent tracks can be generated with audacity. Select the `silence` option
+from the `generate menu`
+
+To add a new test file make a copy of `empty.mp3` and name it appropriately.
+Then you can prepare the id3 tags using `id3v2`. Please also write the commands
+in here used with `id3v2`
+
+artist.mp3
+    id3v2 --artist "Test Artist" artist.mp3
+
+TOAL_TPE2.mp3
+    id3v2 --artist "TITLE2" --TPE2 "TITLE" --TOAL "ARTIST" TOAL_TPE2.mp3
+
+cover-test.aiff
+cover-test.flac
+cover-test.mp3
+cover-test.ogg
+cover-test.wav
+    this is a exception because id3v2 can't set a cover. This was created using easytag

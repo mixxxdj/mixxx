@@ -20,12 +20,12 @@ class DlgPrefKey : public DlgPreferencePage, Ui::DlgPrefKeyDlg {
     // Apply changes to widget
     void slotApply();
     void slotUpdate();
+    void slotResetToDefaults();
 
   private slots:
     void pluginSelected(int i);
     void analyserEnabled(int i);
     void fastAnalysisEnabled(int i);
-    void setDefaults();
     void reanalyzeEnabled(int i);
 
     void setNotation(KeyUtils::KeyNotation notation);

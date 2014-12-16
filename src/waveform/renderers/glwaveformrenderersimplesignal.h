@@ -7,7 +7,7 @@ class ControlObject;
 
 class GLWaveformRendererSimpleSignal : public WaveformRendererSignalBase {
 public:
-    explicit GLWaveformRendererSimpleSignal( WaveformWidgetRenderer* waveformWidgetRenderer);
+    explicit GLWaveformRendererSimpleSignal(WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~GLWaveformRendererSimpleSignal();
 
     virtual void onSetup(const QDomNode &node);

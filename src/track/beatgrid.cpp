@@ -2,7 +2,7 @@
 #include <QtDebug>
 
 #include "track/beatgrid.h"
-#include "mathstuff.h"
+#include "util/math.h"
 
 static const int kFrameSize = 2;
 
@@ -35,12 +35,13 @@ class BeatGridIterator : public BeatIterator {
     double m_dEndSample;
 };
 
-BeatGrid::BeatGrid(TrackInfoObject* pTrack, const QByteArray* pByteArray)
+BeatGrid::BeatGrid(TrackInfoObject* pTrack, int iSampleRate,
+                   const QByteArray* pByteArray)
         : QObject(),
           m_mutex(QMutex::Recursive),
-          m_iSampleRate(pTrack->getSampleRate()),
+          m_iSampleRate(iSampleRate > 0 ? iSampleRate :
+                        pTrack->getSampleRate()),
           m_dBeatLength(0.0) {
-    qDebug() << "New BeatGrid";
     if (pByteArray != NULL) {
         readByteArray(pByteArray);
     }
@@ -144,8 +145,8 @@ double BeatGrid::findNthBeat(double dSamples, int n) const {
     }
 
     double beatFraction = (dSamples - firstBeatSample()) / m_dBeatLength;
-    const double prevBeat = floorf(beatFraction);
-    const double nextBeat = ceilf(beatFraction);
+    double prevBeat = floor(beatFraction);
+    double nextBeat = ceil(beatFraction);
 
     // If the position is within 1/100th of the next or previous beat, treat it
     // as if it is that beat.
@@ -153,25 +154,33 @@ double BeatGrid::findNthBeat(double dSamples, int n) const {
 
     if (fabs(nextBeat - beatFraction) < kEpsilon) {
         beatFraction = nextBeat;
+        // If we are going to pretend we were actually on nextBeat then prevBeat
+        // needs to be re-calculated. Since it is floor(beatFraction), that's
+        // the same as nextBeat.
+        prevBeat = nextBeat;
     } else if (fabs(prevBeat - beatFraction) < kEpsilon) {
         beatFraction = prevBeat;
+        // If we are going to pretend we were actually on prevBeat then nextBeat
+        // needs to be re-calculated. Since it is ceil(beatFraction), that's
+        // the same as prevBeat.
+        nextBeat = prevBeat;
     }
 
     double dClosestBeat;
     if (n > 0) {
-        // We're going forward, so use ceilf to round up to the next multiple of
+        // We're going forward, so use ceil to round up to the next multiple of
         // m_dBeatLength
         dClosestBeat = nextBeat * m_dBeatLength + firstBeatSample();
         n = n - 1;
     } else {
-        // We're going backward, so use floorf to round down to the next multiple
+        // We're going backward, so use floor to round down to the next multiple
         // of m_dBeatLength
         dClosestBeat = prevBeat * m_dBeatLength + firstBeatSample();
         n = n + 1;
     }
 
     double dResult = dClosestBeat + n * m_dBeatLength;
-    if (!even(dResult)) {
+    if (!even(static_cast<int>(dResult))) {
         dResult--;
     }
     return dResult;
@@ -214,6 +223,17 @@ double BeatGrid::getBpm() const {
 double BeatGrid::getBpmRange(double startSample, double stopSample) const {
     QMutexLocker locker(&m_mutex);
     if (!isValid() || startSample > stopSample) {
+        return -1;
+    }
+    return bpm();
+}
+
+double BeatGrid::getBpmAroundPosition(double curSample, int n) const {
+    Q_UNUSED(curSample);
+    Q_UNUSED(n);
+
+    QMutexLocker locker(&m_mutex);
+    if (!isValid()) {
         return -1;
     }
     return bpm();

@@ -1,6 +1,6 @@
 #include "test/mixxxtest.h"
-
 #include "util/singleton.h"
+
 
 // Specialize the Singleton template for QApplication because it doesn't have a
 // 0-args constructor.
@@ -18,9 +18,12 @@ MixxxTest::MixxxTest() {
     // Create QApplication as a singleton. This prevents issues with creating
     // and destroying the QApplication multiple times in the same process.
     // http://stackoverflow.com/questions/14243858/qapplication-segfaults-in-googletest
+
+    // This directory has to be deleted later to clean up the test env.
+    testDataDir = QDir::currentPath().append("/src/test/test_data/");
+
     m_pApplication = Singleton<QApplication>::create();
-    m_pConfig.reset(new ConfigObject<ConfigValue>(
-        QDir::currentPath().append("/src/test/test_data/test.cfg")));
+    m_pConfig.reset(new ConfigObject<ConfigValue>(testDataDir + "test.cfg"));
 
 }
 
@@ -37,4 +40,35 @@ MixxxTest::~MixxxTest() {
         qDebug() << "Warning: Test leaked control:" << key.group << key.item;
         delete pCDP->getCreatorCO();
     }
+
+    // recursivly delete all config files used for the test.
+    // TODO(kain88) --
+    //     switch to use QDir::removeRecursivly() once we switched to Qt5.
+    removeDir(testDataDir);
+}
+
+bool MixxxTest::removeDir(const QString& dirName) {
+    bool result = true;
+    QDir dir(dirName);
+
+    if (dir.exists()) {
+        qDebug() << "dir exists";
+        foreach (QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot |
+                                                   QDir::System |
+                                                   QDir::Hidden  |
+                                                   QDir::AllDirs |
+                                                   QDir::Files,
+                                                   QDir::DirsFirst)) {
+            if (info.isDir()) {
+                result = removeDir(info.absoluteFilePath());
+            } else {
+                result = QFile::remove(info.absoluteFilePath());
+            }
+            if (!result) {
+                return result;
+            }
+        }
+        result = dir.rmdir(dirName);
+    }
+    return result;
 }

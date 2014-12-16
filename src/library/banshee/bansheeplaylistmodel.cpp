@@ -32,9 +32,6 @@
 #define CLM_COMPOSER "composer"
 #define CLM_PREVIEW "preview"
 
-
-const bool sDebug = false;
-
 BansheePlaylistModel::BansheePlaylistModel(QObject* pParent, TrackCollection* pTrackCollection, BansheeDbConnection* pConnection)
         : BaseSqlTableModel(pParent, pTrackCollection, "mixxx.db.model.banshee_playlist"),
           m_pTrackCollection(pTrackCollection),
@@ -134,37 +131,39 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
         QList<struct BansheeDbConnection::PlaylistEntry> list =
                 m_pConnection->getPlaylistEntries(playlistId);
 
-        beginInsertRows(QModelIndex(), 0, list.size() - 1);
+        if (!list.isEmpty()) {
+            beginInsertRows(QModelIndex(), 0, list.size() - 1);
 
-        foreach (struct BansheeDbConnection::PlaylistEntry entry, list){
-            query.bindValue(":" CLM_VIEW_ORDER, entry.viewOrder + 1);
-            query.bindValue(":" CLM_ARTIST, entry.pArtist->name);
-            query.bindValue(":" CLM_TITLE, entry.pTrack->title);
-            query.bindValue(":" CLM_DURATION, entry.pTrack->duration / 1000);
-            query.bindValue(":" CLM_URI, entry.pTrack->uri);
-            query.bindValue(":" CLM_ALBUM, entry.pAlbum->title);
-            query.bindValue(":" CLM_ALBUM_ARTIST, entry.pAlbumArtist->name);
-            query.bindValue(":" CLM_YEAR, entry.pTrack->year);
-            query.bindValue(":" CLM_RATING, entry.pTrack->rating);
-            query.bindValue(":" CLM_GENRE, entry.pTrack->genre);
-            query.bindValue(":" CLM_GROUPING, entry.pTrack->grouping);
-            query.bindValue(":" CLM_TRACKNUMBER, entry.pTrack->tracknumber);
-            QDateTime timeAdded;
-            timeAdded.setTime_t(entry.pTrack->dateadded);
-            query.bindValue(":" CLM_DATEADDED, timeAdded.toString(Qt::ISODate));
-            query.bindValue(":" CLM_BPM, entry.pTrack->bpm);
-            query.bindValue(":" CLM_BITRATE, entry.pTrack->bitrate);
-            query.bindValue(":" CLM_COMMENT, entry.pTrack->comment);
-            query.bindValue(":" CLM_PLAYCOUNT, entry.pTrack->playcount);
-            query.bindValue(":" CLM_COMPOSER, entry.pTrack->composer);
+            foreach (struct BansheeDbConnection::PlaylistEntry entry, list) {
+                query.bindValue(":" CLM_VIEW_ORDER, entry.viewOrder + 1);
+                query.bindValue(":" CLM_ARTIST, entry.pArtist->name);
+                query.bindValue(":" CLM_TITLE, entry.pTrack->title);
+                query.bindValue(":" CLM_DURATION, entry.pTrack->duration / 1000);
+                query.bindValue(":" CLM_URI, entry.pTrack->uri);
+                query.bindValue(":" CLM_ALBUM, entry.pAlbum->title);
+                query.bindValue(":" CLM_ALBUM_ARTIST, entry.pAlbumArtist->name);
+                query.bindValue(":" CLM_YEAR, entry.pTrack->year);
+                query.bindValue(":" CLM_RATING, entry.pTrack->rating);
+                query.bindValue(":" CLM_GENRE, entry.pTrack->genre);
+                query.bindValue(":" CLM_GROUPING, entry.pTrack->grouping);
+                query.bindValue(":" CLM_TRACKNUMBER, entry.pTrack->tracknumber);
+                QDateTime timeAdded;
+                timeAdded.setTime_t(entry.pTrack->dateadded);
+                query.bindValue(":" CLM_DATEADDED, timeAdded.toString(Qt::ISODate));
+                query.bindValue(":" CLM_BPM, entry.pTrack->bpm);
+                query.bindValue(":" CLM_BITRATE, entry.pTrack->bitrate);
+                query.bindValue(":" CLM_COMMENT, entry.pTrack->comment);
+                query.bindValue(":" CLM_PLAYCOUNT, entry.pTrack->playcount);
+                query.bindValue(":" CLM_COMPOSER, entry.pTrack->composer);
 
-            if (!query.exec()) {
-                LOG_FAILED_QUERY(query);
+                if (!query.exec()) {
+                    LOG_FAILED_QUERY(query);
+                }
+                // qDebug() << "-----" << entry.pTrack->title << query.executedQuery();
             }
-            // qDebug() << "-----" << entry.pTrack->title << query.executedQuery();
-        }
 
-        endInsertRows();
+            endInsertRows();
+        }
     }
 
     QStringList tableColumns;
@@ -266,7 +265,7 @@ void BansheePlaylistModel::trackLoaded(QString group, TrackPointer pTrack) {
             }
         }
         if (pTrack) {
-            for (int row = 0; row < rowCount(); ++row ) {
+            for (int row = 0; row < rowCount(); ++row) {
                 QUrl rowUrl(getFieldString(index(row, 0), CLM_URI));
                 if (rowUrl.toLocalFile() == pTrack->getLocation()) {
                     m_iPreviewDeckTrackId = getFieldString(index(row, 0), CLM_VIEW_ORDER).toInt();
@@ -279,9 +278,7 @@ void BansheePlaylistModel::trackLoaded(QString group, TrackPointer pTrack) {
 
 QString BansheePlaylistModel::getFieldString(const QModelIndex& index,
         const QString& fieldName) const {
-    return index.sibling(
-            index.row(), fieldIndex(fieldName)
-            ).data().toString();
+    return index.sibling(index.row(), fieldIndex(fieldName)).data().toString();
 }
 
 TrackPointer BansheePlaylistModel::getTrack(const QModelIndex& index) const {
@@ -292,26 +289,14 @@ TrackPointer BansheePlaylistModel::getTrack(const QModelIndex& index) const {
         return TrackPointer();
     }
 
-    TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
-    int track_id = track_dao.getTrackId(location);
-    bool track_already_in_library = track_id >= 0;
-    if (track_id < 0) {
-        // Add Track to library
-        track_id = track_dao.addTrack(location, true);
-    }
-
-    TrackPointer pTrack;
-    if (track_id < 0) {
-        // Add Track to library failed, create a transient TrackInfoObject
-        pTrack = TrackPointer(new TrackInfoObject(location), &QObject::deleteLater);
-    } else {
-        pTrack = track_dao.getTrack(track_id);
-    }
+    bool track_already_in_library = false;
+    TrackPointer pTrack = m_pTrackCollection->getTrackDAO()
+            .getOrAddTrack(location, true, &track_already_in_library);
 
     // If this track was not in the Mixxx library it is now added and will be
     // saved with the metadata from Banshee. If it was already in the library
     // then we do not touch it so that we do not over-write the user's metadata.
-    if (!track_already_in_library) {
+    if (pTrack && !track_already_in_library) {
         pTrack->setArtist(getFieldString(index, CLM_ARTIST));
         pTrack->setTitle(getFieldString(index, CLM_TITLE));
         pTrack->setDuration(getFieldString(index, CLM_DURATION).toInt());
@@ -375,12 +360,6 @@ QString BansheePlaylistModel::getTrackLocation(const QModelIndex& index) const {
 }
 
 bool BansheePlaylistModel::isColumnInternal(int column) {
-    Q_UNUSED(column);
-    return false;
-}
-
-// if no header state exists, we may hide some columns so that the user can reactivate them
-bool BansheePlaylistModel::isColumnHiddenByDefault(int column) {
     Q_UNUSED(column);
     return false;
 }

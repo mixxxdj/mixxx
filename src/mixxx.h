@@ -37,16 +37,19 @@ class PlayerManager;
 class RecordingManager;
 class ShoutcastManager;
 class SkinLoader;
+class EffectsManager;
 class VinylControlManager;
 class GuiTick;
-
 class DlgPreferences;
 class SoundManager;
+class ControlPushButton;
+class DlgDeveloperTools;
 
 #include "configobject.h"
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
 
+class ControlObjectSlave;
 class ControlObjectThread;
 class QTranslator;
 
@@ -86,6 +89,8 @@ class MixxxMainWindow : public QMainWindow {
     // toggle vinyl control - Don't #ifdef this because MOC is dumb
     void slotControlVinylControl(int);
     void slotCheckboxVinylControl(int);
+    void slotControlPassthrough(int);
+    void slotControlAuxiliary(int);
     // toogle keyboard on-off
     void slotOptionsKeyboard(bool toggle);
     // Preference dialog
@@ -111,10 +116,18 @@ class MixxxMainWindow : public QMainWindow {
     void slotViewShowVinylControl(bool);
     void slotViewShowMicrophone(bool);
     void slotViewShowPreviewDeck(bool);
+    void slotViewShowCoverArt(bool);
     // toogle full screen mode
     void slotViewFullScreen(bool toggle);
     // Reload the skin.
     void slotDeveloperReloadSkin(bool toggle);
+    // Open the developer tools dialog.
+    void slotDeveloperTools();
+    void slotDeveloperToolsClosed();
+    void slotDeveloperStatsExperiment();
+    void slotDeveloperStatsBase();
+    // toogle the script debugger
+    void slotDeveloperDebugger(bool toggle);
 
     void slotToCenterOfPrimaryScreen();
 
@@ -123,13 +136,20 @@ class MixxxMainWindow : public QMainWindow {
     // Activated when the number of decks changed, so we can update the UI.
     void slotNumDecksChanged(double);
 
+    // Activated when the talkover button is pushed on a microphone so we
+    // can alert the user if a mic is not configured.
+    void slotTalkoverChanged(int);
+
   signals:
     void newSkinLoaded();
+    void libraryScanStarted();
+    void libraryScanFinished();
 
   protected:
     // Event filter to block certain events (eg. tooltips if tooltips are disabled)
     virtual bool eventFilter(QObject *obj, QEvent *event);
     virtual void closeEvent(QCloseEvent *event);
+    virtual bool event(QEvent* e);
 
   private:
     void logBuildDetails();
@@ -144,6 +164,9 @@ class MixxxMainWindow : public QMainWindow {
 
     // Pointer to the root GUI widget
     QWidget* m_pWidgetParent;
+
+    // The effects processing system
+    EffectsManager* m_pEffectsManager;
 
     // The mixing engine.
     EngineMaster* m_pEngine;
@@ -211,6 +234,7 @@ class MixxxMainWindow : public QMainWindow {
     QAction* m_pViewVinylControl;
     QAction* m_pViewShowMicrophone;
     QAction* m_pViewShowPreviewDeck;
+    QAction* m_pViewShowCoverArt;
     QAction* m_pViewFullScreen;
     QAction* m_pHelpAboutApp;
     QAction* m_pHelpSupport;
@@ -219,6 +243,11 @@ class MixxxMainWindow : public QMainWindow {
     QAction* m_pHelpManual;
 
     QAction* m_pDeveloperReloadSkin;
+    QAction* m_pDeveloperTools;
+    QAction* m_pDeveloperStatsExperiment;
+    QAction* m_pDeveloperStatsBase;
+    DlgDeveloperTools* m_pDeveloperToolsDlg;
+    QAction* m_pDeveloperDebugger;
 
     int m_iNoPlaylists;
 
@@ -240,11 +269,21 @@ class MixxxMainWindow : public QMainWindow {
 
     const CmdlineArgs& m_cmdLineArgs;
 
-    QList<ControlObjectThread*> m_pVinylControlEnabled;
+    ControlPushButton* m_pTouchShift;
+    QList<ControlObjectSlave*> m_pVinylControlEnabled;
+    QList<ControlObjectSlave*> m_pPassthroughEnabled;
+    QList<ControlObjectSlave*> m_pAuxiliaryPassthrough;
     ControlObjectThread* m_pNumDecks;
     int m_iNumConfiguredDecks;
+    QList<ControlObjectSlave*> m_micTalkoverControls;
     QSignalMapper* m_VCControlMapper;
     QSignalMapper* m_VCCheckboxMapper;
+    QSignalMapper* m_PassthroughMapper;
+    QSignalMapper* m_AuxiliaryMapper;
+    QSignalMapper* m_TalkoverMapper;
+
+    static const int kMicrophoneCount;
+    static const int kAuxiliaryCount;
 };
 
 #endif
