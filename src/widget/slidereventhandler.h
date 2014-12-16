@@ -16,7 +16,7 @@ class SliderEventHandler {
             : m_dStartHandlePos(0),
               m_dStartMousePos(0),
               m_bRightButtonPressed(false),
-              m_dOldCOValue(-1.0), // virgin
+              m_dOldParameter(-1.0), // virgin
               m_dPos(0.0),
               m_dHandleLength(0),
               m_dSliderLength(0),
@@ -52,15 +52,15 @@ class SliderEventHandler {
 
             // Clamp to the range [0, sliderLength - m_dHandleLength].
             m_dPos = math_clamp_unsafe(m_dPos, 0.0, m_dSliderLength - m_dHandleLength);
-            double newCOValue = positionToValue(m_dPos);
+            double newParameter = positionToParameter(m_dPos);
 
             // If we don't change this, then updates might be rejected in
             // onConnectedControlChanged.
-            m_dOldCOValue = newCOValue;
+            m_dOldParameter = newParameter;
 
             // Emit valueChanged signal
             if (m_bEventWhileDrag) {
-                pWidget->setControlParameter(newCOValue);
+                pWidget->setControlParameter(newParameter);
             }
 
             // Update display
@@ -98,20 +98,20 @@ class SliderEventHandler {
         if (e->button() == Qt::RightButton) {
             m_bRightButtonPressed = false;
         } else {
-            pWidget->setControlParameter(m_dOldCOValue);
+            pWidget->setControlParameter(m_dOldParameter);
         }
     }
 
     void wheelEvent(T* pWidget, QWheelEvent* e) {
         // For legacy (MIDI) reasons this is tuned to 127.
         double wheelAdjustment = ((QWheelEvent *)e)->delta() / (120.0 * 127.0);
-        double newValue = pWidget->getControlParameter() + wheelAdjustment;
+        double newParameter = pWidget->getControlParameter() + wheelAdjustment;
 
         // Clamp to [0.0, 1.0]
-        newValue = math_clamp_unsafe(newValue, 0.0, 1.0);
+        newParameter = math_clamp_unsafe(newParameter, 0.0, 1.0);
 
-        pWidget->setControlParameter(newValue);
-        onConnectedControlChanged(pWidget, newValue, 0);
+        pWidget->setControlParameter(newParameter);
+        onConnectedControlChanged(pWidget, newParameter, 0);
         pWidget->update();
         e->accept();
     }
@@ -128,10 +128,10 @@ class SliderEventHandler {
             return;
         }
 
-        if (m_dOldCOValue != dParameter) {
-            m_dOldCOValue = dParameter;
+        if (m_dOldParameter != dParameter) {
+            m_dOldParameter = dParameter;
 
-            double newPos = valueToPosition(dParameter);
+            double newPos = parameterToPosition(dParameter);
 
             // Clamp to [0.0, sliderLength - m_dHandleLength].
             newPos = math_clamp_unsafe(newPos, 0.0, m_dSliderLength - m_dHandleLength);
@@ -151,20 +151,20 @@ class SliderEventHandler {
     void resizeEvent(T* pWidget, QResizeEvent* pEvent) {
         Q_UNUSED(pEvent);
         // m_dSliderLength and m_dHandleLength are explicitly updated.
-        m_dPos = valueToPosition(pWidget->getControlParameter());
-        m_dOldCOValue = -1;
+        m_dPos = parameterToPosition(pWidget->getControlParameter());
+        m_dOldParameter = -1;
     }
 
-    // Convert CO value to a handle pixel position.
-    double valueToPosition(double value) const {
+    // Convert CO parameter value to a handle pixel position.
+    double parameterToPosition(double parameter) const {
         if (!m_bHorizontal) {
-            value = 1.0 - value;
+            parameter = 1.0 - parameter;
         }
-        return value * (m_dSliderLength - m_dHandleLength);
+        return parameter * (m_dSliderLength - m_dHandleLength);
     }
 
-    // Convert handle pixel position to a CO value.
-    double positionToValue(double pos) const {
+    // Convert handle pixel position to a CO parameter value.
+    double positionToParameter(double pos) const {
         double val = pos / (m_dSliderLength - m_dHandleLength);
         if (!m_bHorizontal) {
             return 1.0 - val;
@@ -180,8 +180,8 @@ class SliderEventHandler {
     double m_dStartMousePos;
     // True while right mouse button is pressed.
     bool m_bRightButtonPressed;
-    // Previous value of the control object, 0 to 1
-    double m_dOldCOValue;
+    // Previous parameter value of the control object, 0 to 1
+    double m_dOldParameter;
     // Internal storage of slider position in pixels
     double m_dPos;
     // Length of handle in pixels
