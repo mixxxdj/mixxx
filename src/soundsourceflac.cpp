@@ -190,8 +190,7 @@ Mixxx::AudioSource::size_type SoundSourceFLAC::readFrameSamplesInterleaved(
 }
 
 Result SoundSourceFLAC::parseMetadata(Mixxx::TrackMetadata* pMetadata) {
-    const QByteArray qBAFilename(getFilename().toLocal8Bit());
-    TagLib::FLAC::File f(qBAFilename.constData());
+    TagLib::FLAC::File f(getFilename().toLocal8Bit().constData());
 
     if (!readAudioProperties(pMetadata, f)) {
         return ERR;
@@ -219,8 +218,7 @@ Result SoundSourceFLAC::parseMetadata(Mixxx::TrackMetadata* pMetadata) {
 }
 
 QImage SoundSourceFLAC::parseCoverArt() {
-    const QByteArray qBAFilename(getFilename().toLocal8Bit());
-    TagLib::FLAC::File f(qBAFilename.constData());
+    TagLib::FLAC::File f(getFilename().toLocal8Bit().constData());
     QImage coverArt;
     TagLib::Ogg::XiphComment *xiph(f.xiphComment());
     if (xiph) {

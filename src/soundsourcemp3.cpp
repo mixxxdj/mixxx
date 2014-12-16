@@ -389,8 +389,7 @@ Mixxx::AudioSource::size_type SoundSourceMp3::readFrameSamplesInterleaved(
 }
 
 Result SoundSourceMp3::parseMetadata(Mixxx::TrackMetadata* pMetadata) {
-    QByteArray qBAFilename(getFilename().toLocal8Bit());
-    TagLib::MPEG::File f(qBAFilename.constData());
+    TagLib::MPEG::File f(getFilename().toLocal8Bit().constData());
 
     if (!readAudioProperties(pMetadata, f)) {
         return ERR;

@@ -355,9 +355,7 @@ Result SoundSourceFFmpeg::open() {
     unsigned int i;
     AVDictionary *l_iFormatOpts = NULL;
 
-    QByteArray qBAFilename = getFilename().toLocal8Bit();
-
-    qDebug() << "New SoundSourceFFmpeg :" << qBAFilename;
+    qDebug() << "New SoundSourceFFmpeg :" << getFilename();
 
     m_pFormatCtx = avformat_alloc_context();
 
@@ -366,9 +364,9 @@ Result SoundSourceFFmpeg::open() {
 #endif
 
     // Open file and make m_pFormatCtx
-    if (avformat_open_input(&m_pFormatCtx, qBAFilename.constData(), NULL,
+    if (avformat_open_input(&m_pFormatCtx, getFilename().toLocal8Bit().constData(), NULL,
                             &l_iFormatOpts)!=0) {
-        qDebug() << "av_open_input_file: cannot open" << qBAFilename;
+        qDebug() << "av_open_input_file: cannot open" << getFilename();
         return ERR;
     }
 
@@ -380,13 +378,13 @@ Result SoundSourceFFmpeg::open() {
 
     // Retrieve stream information
     if (avformat_find_stream_info(m_pFormatCtx, NULL)<0) {
-        qDebug() << "av_find_stream_info: cannot open" << qBAFilename;
+        qDebug() << "av_find_stream_info: cannot open" << getFilename();
         return ERR;
     }
 
 
     //debug only (Enable if needed)
-    //av_dump_format(m_pFormatCtx, 0, qBAFilename.constData(), false);
+    //av_dump_format(m_pFormatCtx, 0, getFilename().toLocal8Bit().constData(), false);
 
     // Find the first video stream
     m_iAudioStream=-1;
@@ -398,7 +396,7 @@ Result SoundSourceFFmpeg::open() {
         }
     if (m_iAudioStream==-1) {
         qDebug() << "ffmpeg: cannot find an audio stream: cannot open"
-                 << qBAFilename;
+                 << getFilename();
         return ERR;
     }
 
@@ -407,12 +405,12 @@ Result SoundSourceFFmpeg::open() {
 
     // Find the decoder for the audio stream
     if (!(m_pCodec=avcodec_find_decoder(m_pCodecCtx->codec_id))) {
-        qDebug() << "ffmpeg: cannot find a decoder for" << qBAFilename;
+        qDebug() << "ffmpeg: cannot find a decoder for" << getFilename();
         return ERR;
     }
 
     if (avcodec_open2(m_pCodecCtx, m_pCodec, NULL)<0) {
-        qDebug() << "ffmpeg:  cannot open" << qBAFilename;
+        qDebug() << "ffmpeg:  cannot open" << getFilename();
         return ERR;
     }
 
@@ -540,7 +538,6 @@ Result SoundSourceFFmpeg::parseHeader() {
 =======
 Result SoundSourceFFmpeg::parseMetadata(Mixxx::TrackMetadata* pMetadata) {
     qDebug() << "ffmpeg: SoundSourceFFmpeg::parseMetadata" << getFilename();
-    QByteArray qBAFilename = getFilename().toLocal8Bit();
 
     AVFormatContext *FmtCtx = avformat_alloc_context();
     AVCodecContext *CodecCtx;
@@ -549,7 +546,15 @@ Result SoundSourceFFmpeg::parseMetadata(Mixxx::TrackMetadata* pMetadata) {
     AVDictionary *l_iFormatOpts = NULL;
 >>>>>>> Move track metadata properties from SoundSource into separate DTO class
 
+<<<<<<< HEAD
     QByteArray qBAFilename = getFilename().toLocal8Bit();
+=======
+    if (avformat_open_input(&FmtCtx, getFilename().toLocal8Bit().constData(), NULL,
+                            &l_iFormatOpts) !=0) {
+        qDebug() << "av_open_input_file: cannot open" << getFilename();
+        return ERR;
+    }
+>>>>>>> Eliminate unnecessary local variables
 
     bool is_flac = location.endsWith("flac", Qt::CaseInsensitive);
     bool is_wav = location.endsWith("wav", Qt::CaseInsensitive);
@@ -609,6 +614,7 @@ Result SoundSourceFFmpeg::parseMetadata(Mixxx::TrackMetadata* pMetadata) {
         }
 #endif
 
+<<<<<<< HEAD
     } else if (is_aiff) {
         // Try AIFF
         TagLib::RIFF::AIFF::File f(qBAFilename.constData());
@@ -623,10 +629,26 @@ Result SoundSourceFFmpeg::parseMetadata(Mixxx::TrackMetadata* pMetadata) {
         }
     } else if (is_mp3) {
         TagLib::MPEG::File f(qBAFilename.constData());
+=======
+    // Retrieve stream information
+    if (avformat_find_stream_info(FmtCtx, NULL)<0) {
+        qDebug() << "av_find_stream_info: Can't find metadata" <<
+                getFilename();
+        return ERR;
+    }
+>>>>>>> Eliminate unnecessary local variables
 
         if (!readFileHeader(this, f)) {
             return ERR;
         }
+<<<<<<< HEAD
+=======
+    if (m_iAudioStream==-1) {
+        qDebug() << "cannot find an audio stream: Can't find stream" <<
+                getFilename();
+        return ERR;
+    }
+>>>>>>> Eliminate unnecessary local variables
 
 <<<<<<< HEAD
         // Now look for MP3 specific metadata (e.g. BPM)

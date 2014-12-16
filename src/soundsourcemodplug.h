@@ -7,8 +7,6 @@ namespace ModPlug {
 #include <libmodplug/modplug.h>
 }
 
-#include <QByteArray>
-
 #include <vector>
 
 // Class for reading tracker files using libmodplug.

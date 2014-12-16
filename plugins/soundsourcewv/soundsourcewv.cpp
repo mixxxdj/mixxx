@@ -24,11 +24,9 @@ SoundSourceWV::~SoundSourceWV() {
 }
 
 Result SoundSourceWV::open() {
-    QByteArray qBAFilename(getFilename().toLocal8Bit());
-    char msg[80];   //hold possible error message
-
-    m_wpc = WavpackOpenFileInput(qBAFilename.constData(), msg,
-    OPEN_2CH_MAX | OPEN_WVC | OPEN_NORMALIZE, 0);
+    char msg[80]; // hold possible error message
+    m_wpc = WavpackOpenFileInput(getFilename().toLocal8Bit().constData(), msg,
+            OPEN_2CH_MAX | OPEN_WVC | OPEN_NORMALIZE, 0);
     if (!m_wpc) {
         qDebug() << "SSWV::open: failed to open file : " << msg;
         return ERR;
@@ -77,8 +75,7 @@ AudioSource::size_type SoundSourceWV::readFrameSamplesInterleaved(
 }
 
 Result SoundSourceWV::parseMetadata(Mixxx::TrackMetadata* pMetadata) {
-    const QByteArray qBAFilename(getFilename().toLocal8Bit());
-    TagLib::WavPack::File f(qBAFilename.constData());
+    TagLib::WavPack::File f(getFilename().toLocal8Bit().constData());
 
     if (!readAudioProperties(pMetadata, f)) {
         return ERR;

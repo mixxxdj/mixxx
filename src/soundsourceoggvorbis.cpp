@@ -70,9 +70,8 @@ SoundSourceOggVorbis::~SoundSourceOggVorbis() {
 }
 
 Result SoundSourceOggVorbis::open() {
-    const QByteArray qBAFilename(getFilename().toLocal8Bit());
 
-    if (0 != ov_fopen(qBAFilename.constData(), &m_vf)) {
+    if (0 != ov_fopen(getFilename().toLocal8Bit().constData(), &m_vf)) {
         qWarning() << "Failed to open OggVorbis file:" << getFilename();
         return ERR;
     }
@@ -182,8 +181,7 @@ Mixxx::AudioSource::size_type SoundSourceOggVorbis::readFrameSamplesInterleaved(
  Parse the the file to get metadata
  */
 Result SoundSourceOggVorbis::parseMetadata(Mixxx::TrackMetadata* pMetadata) {
-    QByteArray qBAFilename = getFilename().toLocal8Bit();
-    TagLib::Ogg::Vorbis::File f(qBAFilename.constData());
+    TagLib::Ogg::Vorbis::File f(getFilename().toLocal8Bit().constData());
 
     if (!readAudioProperties(pMetadata, f)) {
         return ERR;
