@@ -22,6 +22,12 @@
 
 #include <vorbis/codec.h>
 
+QList<QString> SoundSourceOggVorbis::supportedFileExtensions() {
+    QList<QString> list;
+    list.push_back("ogg");
+    return list;
+}
+
 SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename)
 <<<<<<< HEAD
         : Mixxx::SoundSource(qFilename),
@@ -207,14 +213,4 @@ QImage SoundSourceOggVorbis::parseCoverArt() {
     } else {
         return QImage();
     }
-}
-
-/*
- Return the length of the file in samples.
- */
-
-QList<QString> SoundSourceOggVorbis::supportedFileExtensions() {
-    QList<QString> list;
-    list.push_back("ogg");
-    return list;
 }

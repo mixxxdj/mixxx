@@ -18,14 +18,10 @@
 #ifndef SOUNDSOURCEFFMPEG_H
 #define SOUNDSOURCEFFMPEG_H
 
+#include "soundsource.h"
+
 #include <encoder/encoderffmpegresample.h>
 
-#include <QString>
-#include <QByteArray>
-#include <QList>
-#include <QVector>
-
-#include "soundsource.h"
 extern "C" {
 // Needed to ensure that macros in <stdint.h> get defined.
 #ifndef __STDC_CONSTANT_MACROS

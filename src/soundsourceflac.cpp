@@ -23,6 +23,12 @@
 
 #include <QtDebug>
 
+QList<QString> SoundSourceFLAC::supportedFileExtensions() {
+    QList<QString> list;
+    list.push_back("flac");
+    return list;
+}
+
 SoundSourceFLAC::SoundSourceFLAC(QString filename)
 <<<<<<< HEAD
     : Mixxx::SoundSource(filename)
@@ -236,13 +242,6 @@ QImage SoundSourceFLAC::parseCoverArt() {
         }
     }
     return coverArt;
-}
-
-// static
-QList<QString> SoundSourceFLAC::supportedFileExtensions() {
-    QList<QString> list;
-    list.push_back("flac");
-    return list;
 }
 
 // flac callback methods

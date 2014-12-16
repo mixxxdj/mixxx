@@ -19,7 +19,8 @@
 #ifndef SOUNDSOURCECOREAUDIO_H
 #define SOUNDSOURCECOREAUDIO_H
 
-#include <QString>
+#include "soundsource.h"
+
 #include <AudioToolbox/AudioToolbox.h>
 //In our tree at lib/apple/
 #include "CAStreamBasicDescription.h"
@@ -34,12 +35,6 @@
 #include "AudioFile.h"
 #include "AudioFormat.h"
 #endif
-
-#include <fcntl.h>
-
-#include "soundsource.h"
-
-#include "util/defs.h"
 
 class SoundSourceCoreAudio : public Mixxx::SoundSource {
     typedef SoundSource Super;
