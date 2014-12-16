@@ -475,7 +475,6 @@
 						</Key>
 
 						<SliderComposed>
-							<TooltipId>rate</TooltipId>
 							<Style></Style>
 							<Handle>knob_visual_key.png</Handle>
 							<Slider>slider_visual_key.png</Slider>
