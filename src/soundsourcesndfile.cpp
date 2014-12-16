@@ -56,13 +56,15 @@ Result SoundSourceSndFile::open() {
 
 void SoundSourceSndFile::close() {
     if (m_pSndFile) {
-        if (0 != sf_close(m_pSndFile)) {
+        if (0 == sf_close(m_pSndFile)) {
+            m_pSndFile = NULL;
+            memset(&m_sfInfo, 0, sizeof(m_sfInfo));
+            Super::reset();
+        } else {
             qWarning() << "Failed to close file:" << getFilename()
                     << sf_strerror(m_pSndFile);
         }
-        memset(&m_sfInfo, 0, sizeof(m_sfInfo));
     }
-    Super::reset();
 }
 
 Mixxx::AudioSource::diff_type SoundSourceSndFile::seekFrame(
