@@ -36,6 +36,9 @@ public:
     static const sample_type kSampleValueZero;
     static const sample_type kSampleValuePeak;
 
+    static const size_type kBitrateZero = 0;
+    static const size_type kBitrateDefault = kBitrateZero;
+
     virtual ~AudioSource();
 
     // Returns the number of channels. The number of channels
@@ -70,6 +73,35 @@ public:
     }
     inline bool isFrameCountEmpty() const {
         return kFrameCountZero >= getFrameCount();
+    }
+
+    inline bool isValid() const {
+        return isChannelCountValid() && isFrameRateValid();
+    }
+
+    inline bool isEmpty() const {
+        return isFrameCountEmpty();
+    }
+
+    // The bitrate in kbit/s (optional).
+    // Derived classes may set the actual (average) bitrate when
+    // opening the file. The bitrate is not needed for decoding,
+    // it is only used for informational purposes.
+    inline bool hasBitrate() const {
+        return kBitrateZero < m_bitrate;
+    }
+    inline size_type getBitrate() const {
+        return m_bitrate;
+    }
+
+    // The actual duration in seconds.
+    // Only avalailable for valid files!
+    inline bool hasDuration() const {
+        return isValid();
+    }
+    inline size_type getDuration() const {
+        Q_ASSERT(hasDuration()); // prevents division by zero
+        return getFrameCount() / getFrameRate();
     }
 
     // #frames -> #samples
@@ -134,12 +166,18 @@ protected:
     void setFrameRate(size_type frameRate);
     void setFrameCount(size_type frameCount);
 
+    inline void setBitrate(size_type bitrate) {
+        m_bitrate = bitrate;
+    }
+
     void reset();
 
 private:
     size_type m_channelCount;
     size_type m_frameRate;
     size_type m_frameCount;
+
+    size_type m_bitrate;
 };
 
 typedef QSharedPointer<AudioSource> AudioSourcePointer;

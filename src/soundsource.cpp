@@ -21,11 +21,11 @@
 namespace Mixxx {
 
 SoundSource::SoundSource(QString sFilename)
-        : m_sFilename(sFilename), m_sType(m_sFilename.section(".", -1).toLower()), m_bitrate(0) {
+        : m_sFilename(sFilename), m_sType(m_sFilename.section(".", -1).toLower()) {
 }
 
 SoundSource::SoundSource(QString sFilename, QString sType)
-        : m_sFilename(sFilename), m_sType(sType), m_bitrate(0) {
+        : m_sFilename(sFilename), m_sType(sType) {
 }
 
 SoundSource::~SoundSource() {

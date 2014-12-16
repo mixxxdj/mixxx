@@ -82,37 +82,13 @@ public:
      */
     virtual Result open() = 0;
 
-    // The bitrate in kbit/s (optional).
-    // The actual bitrate might be determined and set when the file is opened.
-    inline bool hasBitrate() const {
-        return 0 < m_bitrate;
-    }
-    inline size_type getBitrate() const {
-        return m_bitrate;
-    }
-
-    // The actual duration in seconds.
-    // The actual duration can be calculated after the file has been opened.
-    inline bool hasDuration() const {
-        return !isFrameCountEmpty() && isFrameRateValid();
-    }
-    inline size_type getDuration() const {
-        return getFrameCount() / getFrameRate();
-    }
-
 protected:
     explicit SoundSource(QString sFilename);
     SoundSource(QString sFilename, QString sType);
 
-    inline void setBitrate(size_type bitrate) {
-        m_bitrate = bitrate;
-    }
-
 private:
     const QString m_sFilename;
     const QString m_sType;
-
-    size_type m_bitrate;
 };
 
 typedef QSharedPointer<SoundSource> SoundSourcePointer;

@@ -13,7 +13,7 @@ namespace Mixxx {
 
 AudioSource::AudioSource()
         : m_channelCount(kChannelCountDefault), m_frameRate(kFrameRateDefault), m_frameCount(
-                kFrameCountDefault) {
+                kFrameCountDefault), m_bitrate(kBitrateDefault) {
 }
 
 AudioSource::~AudioSource() {
@@ -33,6 +33,7 @@ void AudioSource::reset() {
     m_channelCount = kChannelCountDefault;
     m_frameRate = kFrameRateDefault;
     m_frameCount = kFrameCountDefault;
+    m_bitrate = kBitrateDefault;
 }
 
 AudioSource::size_type AudioSource::readStereoFrameSamplesInterleaved(

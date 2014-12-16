@@ -35,15 +35,15 @@
 
 #include <QtDebug>
 
+namespace
+{
+
+const bool sDebug = false;
+
 const int kNumChannels = 2;
 const int kSampleRate = 44100;
 const int kLeftoverSize = 4096; // in sample_type's, this seems to be the size MF AAC
-const int kBitsPerSampleForBitrate = 16; // for bitrate calculation
-// decoder likes to give
-
-const static bool sDebug = false;
-
-namespace {
+const int kBitsPerSampleForBitrate = 16; // for bitrate calculation decoder likes to give
 
 /**
  * Convert a 100ns Media Foundation value to a number of seconds.
@@ -148,11 +148,6 @@ Result SoundSourceMediaFoundation::open() {
 
     if (!configureAudioStream()) {
         qWarning() << "SSMF: Error configuring audio stream.";
-        return ERR;
-    }
-
-    if (!readProperties()) {
-        qWarning() << "SSMF::readProperties failed";
         return ERR;
     }
 
