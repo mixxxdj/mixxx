@@ -992,6 +992,14 @@ class MixxxCore(Feature):
         if not build.machine == 'alpha':
             build.env.Append(CPPDEFINES=build.machine)
 
+        if build.build_is_debug:
+            build.env.Append(CPPDEFINES='MIXXX_BUILD_DEBUG')
+        elif build.build_is_release:
+            build.env.Append(CPPDEFINES='MIXXX_BUILD_RELEASE')
+
+        if int(SCons.ARGUMENTS.get('debug_assertions_fatal', 0)):
+            build.env.Append(CPPDEFINES='MIXXX_DEBUG_ASSERTIONS_FATAL')
+
         if build.toolchain_is_gnu:
             # Default GNU Options
             build.env.Append(CCFLAGS='-pipe')
