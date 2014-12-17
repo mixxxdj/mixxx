@@ -11,7 +11,8 @@ Import('build')
 # On Posix default SCons.LIBPREFIX = 'lib', on Windows default SCons.LIBPREFIX = ''
 
 wv_sources = [
-    "soundsourcewv.cpp",  # Wavpack support
+    "soundsourcewv.cpp",  # Wavpack support (tags)
+    "audiosourcewv.cpp",  # Wavpack support (audio)
     "soundsource.cpp", # required to subclass SoundSource
     "audiosource.cpp", # required to subclass AudioSource
     "trackmetadatataglib.cpp", # TagLib dependencies

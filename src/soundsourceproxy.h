@@ -45,7 +45,7 @@ public:
     static QStringList supportedFileExtensionsByPlugins();
     static QString supportedFileExtensionsString();
     static QString supportedFileExtensionsRegex();
-    static bool isFilenameSupported(QString filename);
+    static bool isFilenameSupported(QString fileName);
 
     SoundSourceProxy(QString qFilename, SecurityTokenPointer pToken);
     explicit SoundSourceProxy(TrackPointer pTrack);
@@ -54,10 +54,10 @@ public:
         return m_pSoundSource;
     }
 
-    // Opens the audio data through the proxy will
+    // Opening the audio data through the proxy will
     // update the some metadata of the track object.
     // Returns a null pointer on failure.
-    Mixxx::SoundSourcePointer open() const;
+    Mixxx::AudioSourcePointer openAudioSource() const;
 
 private:
     static QRegExp m_supportedFileRegex;

@@ -21,45 +21,18 @@
 
 #include "soundsource.h"
 
-#include <AudioToolbox/AudioToolbox.h>
-//In our tree at lib/apple/
-#include "CAStreamBasicDescription.h"
-
-#if !defined(__COREAUDIO_USE_FLAT_INCLUDES__)
-#include <CoreServices/CoreServices.h>
-#include <CoreAudio/CoreAudioTypes.h>
-#include <AudioToolbox/AudioFile.h>
-#include <AudioToolbox/AudioFormat.h>
-#else
-#include "CoreAudioTypes.h"
-#include "AudioFile.h"
-#include "AudioFormat.h"
-#endif
-
 class SoundSourceCoreAudio : public Mixxx::SoundSource {
     typedef SoundSource Super;
 
 public:
     static QList<QString> supportedFileExtensions();
 
-    explicit SoundSourceCoreAudio(QString filename);
-    ~SoundSourceCoreAudio();
+    explicit SoundSourceCoreAudio(QString fileName);
 
-    Result parseMetadata(Mixxx::TrackMetadata* pMetadata);
-    QImage parseCoverArt();
+    Result parseMetadata(Mixxx::TrackMetadata* pMetadata) const /*override*/;
+    QImage parseCoverArt() const /*override*/;
 
-    Result open();
-
-    diff_type seekFrame(diff_type frameIndex) /*override*/;
-    size_type readFrameSamplesInterleaved(size_type frameCount,
-            sample_type* sampleBuffer) /*override*/;
-
-private:
-    ExtAudioFileRef m_audioFile;
-    CAStreamBasicDescription m_inputFormat;
-    CAStreamBasicDescription m_outputFormat;
-    SInt64 m_headerFrames;
+    Mixxx::AudioSourcePointer open() const /*override*/;
 };
-
 
 #endif // ifndef SOUNDSOURCECOREAUDIO_H

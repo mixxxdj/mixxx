@@ -1,5 +1,6 @@
 #include "soundsourcesndfile.h"
 
+#include "audiosourcesndfile.h"
 #include "trackmetadatataglib.h"
 
 #include <taglib/flacfile.h>
@@ -17,82 +18,10 @@ QList<QString> SoundSourceSndFile::supportedFileExtensions() {
 }
 
 SoundSourceSndFile::SoundSourceSndFile(QString qFilename)
-        : Super(qFilename), m_pSndFile(NULL) {
-    memset(&m_sfInfo, 0, sizeof(m_sfInfo));
+        : Super(qFilename) {
 }
 
-SoundSourceSndFile::~SoundSourceSndFile() {
-    close();
-}
-
-Result SoundSourceSndFile::open() {
-#ifdef __WINDOWS__
-    // Pointer valid until string changed
-    LPCWSTR lpcwFilename = (LPCWSTR)getFilename().utf16();
-    m_pSndFile = sf_wchar_open(lpcwFilename, SFM_READ, &m_sfInfo);
-#else
-    m_pSndFile = sf_open(getFilename().toLocal8Bit().constData(), SFM_READ, &m_sfInfo);
-#endif
-
-    if (m_pSndFile == NULL) {   // sf_format_check is only for writes
-        qWarning() << "libsndfile: Error opening file" << getFilename()
-                << sf_strerror(m_pSndFile);
-        return ERR;
-    }
-
-    if (sf_error(m_pSndFile) > 0) {
-        qWarning() << "libsndfile: Error opening file" << getFilename()
-                << sf_strerror(m_pSndFile);
-        close();
-        return ERR;
-    }
-
-    setChannelCount(m_sfInfo.channels);
-    setFrameRate(m_sfInfo.samplerate);
-    setFrameCount(m_sfInfo.frames);
-
-    return OK;
-}
-
-void SoundSourceSndFile::close() {
-    if (m_pSndFile) {
-        if (0 == sf_close(m_pSndFile)) {
-            m_pSndFile = NULL;
-            memset(&m_sfInfo, 0, sizeof(m_sfInfo));
-            Super::reset();
-        } else {
-            qWarning() << "Failed to close file:" << getFilename()
-                    << sf_strerror(m_pSndFile);
-        }
-    }
-}
-
-Mixxx::AudioSource::diff_type SoundSourceSndFile::seekFrame(
-        diff_type frameIndex) {
-    const sf_count_t seekResult = sf_seek(m_pSndFile, frameIndex, SEEK_SET);
-    if (0 <= seekResult) {
-        return seekResult;
-    } else {
-        qWarning() << "Failed to seek libsnd file:" << getFilename()
-                << sf_strerror(m_pSndFile);
-        return sf_seek(m_pSndFile, 0, SEEK_CUR);
-    }
-}
-
-Mixxx::AudioSource::size_type SoundSourceSndFile::readFrameSamplesInterleaved(
-        size_type frameCount, sample_type* sampleBuffer) {
-    sf_count_t readCount = sf_readf_float(m_pSndFile, sampleBuffer, frameCount);
-    if (0 <= readCount) {
-        return readCount;
-    } else {
-        qWarning() << "Failed to read sample data from libsnd file:"
-                << getFilename() << sf_strerror(m_pSndFile);
-        return 0;
-    }
-}
-
-Result SoundSourceSndFile::parseMetadata(Mixxx::TrackMetadata* pMetadata) {
-
+Result SoundSourceSndFile::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
     if (getType() == "flac") {
         TagLib::FLAC::File f(getFilename().toLocal8Bit().constData());
         if (!readAudioProperties(pMetadata, f)) {
@@ -132,25 +61,6 @@ Result SoundSourceSndFile::parseMetadata(Mixxx::TrackMetadata* pMetadata) {
                 return ERR;
             }
         }
-
-        if (pMetadata->getDuration() <= 0) {
-            // we're using a taglib version which doesn't know how to do wav
-            // durations, set it with m_sfInfo from sndfile -bkgood
-            // XXX remove this when ubuntu ships with an sufficiently
-            // intelligent version of taglib, should happen in 11.10
-
-            // Have to open the file for m_sfInfo to be valid.
-            if (m_pSndFile == NULL) {
-                open();
-            }
-
-            if (m_sfInfo.samplerate > 0) {
-                pMetadata->setDuration(m_sfInfo.frames / m_sfInfo.samplerate);
-            } else {
-                qDebug() << "WARNING: WAV file with invalid samplerate."
-                        << "Can't get duration using libsndfile.";
-            }
-        }
     } else if (getType().startsWith("aif")) {
         // Try AIFF
         TagLib::RIFF::AIFF::File f(getFilename().toLocal8Bit().constData());
@@ -170,7 +80,7 @@ Result SoundSourceSndFile::parseMetadata(Mixxx::TrackMetadata* pMetadata) {
     return OK;
 }
 
-QImage SoundSourceSndFile::parseCoverArt() {
+QImage SoundSourceSndFile::parseCoverArt() const {
     QImage coverArt;
 
     if (getType() == "flac") {
@@ -210,4 +120,8 @@ QImage SoundSourceSndFile::parseCoverArt() {
     }
 
     return coverArt;
+}
+
+Mixxx::AudioSourcePointer SoundSourceSndFile::open() const {
+    return Mixxx::AudioSourceSndFile::open(getFilename());
 }

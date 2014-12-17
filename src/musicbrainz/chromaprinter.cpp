@@ -95,7 +95,7 @@ ChromaPrinter::ChromaPrinter(QObject* parent)
 
 QString ChromaPrinter::getFingerPrint(TrackPointer pTrack) {
     SoundSourceProxy soundSourceProxy(pTrack);
-    Mixxx::AudioSourcePointer pAudioSource(soundSourceProxy.open());
+    Mixxx::AudioSourcePointer pAudioSource(soundSourceProxy.openAudioSource());
     if (pAudioSource.isNull()) {
         qDebug() << "Skipping invalid file:" << pTrack->getLocation();
         return QString();

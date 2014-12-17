@@ -5,7 +5,7 @@
 #include "ui_dlgprefmodplugdlg.h"
 
 #include "configobject.h"
-#include "soundsourcemodplug.h"
+#include "audiosourcemodplug.h"
 
 #define kConfigKey "[Modplug]"
 
@@ -180,5 +180,5 @@ void DlgPrefModplug::applySettings() {
     settings.mLoopCount = 0;
 
     // apply modplug settings
-    SoundSourceModPlug::configure(bufferSizeLimit, settings);
+    Mixxx::AudioSourceModPlug::configure(bufferSizeLimit, settings);
 }

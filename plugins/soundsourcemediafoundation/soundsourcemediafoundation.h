@@ -20,12 +20,8 @@
 #ifndef SOUNDSOURCEMEDIAFOUNDATION_H
 #define SOUNDSOURCEMEDIAFOUNDATION_H
 
-#include <QFile>
-#include <QString>
-
-#include "util/defs.h"
-#include "defs_version.h"
 #include "soundsource.h"
+#include "defs_version.h"
 
 #ifdef Q_OS_WIN
 #define MY_EXPORT __declspec(dllexport)
@@ -33,46 +29,18 @@
 #define MY_EXPORT
 #endif
 
-class IMFSourceReader;
-class IMFMediaType;
-class IMFMediaSource;
-
 class SoundSourceMediaFoundation : public Mixxx::SoundSource {
     typedef SoundSource Super;
 
 public:
     static QList<QString> supportedFileExtensions();
 
-    explicit SoundSourceMediaFoundation(QString filename);
-    ~SoundSourceMediaFoundation();
+    explicit SoundSourceMediaFoundation(QString fileName);
 
-    Result parseMetadata(Mixxx::TrackMetadata* pMetadata) /*override*/;
-    QImage parseCoverArt() /*override*/;
+    Result parseMetadata(Mixxx::TrackMetadata* pMetadata) const /*override*/;
+    QImage parseCoverArt() const /*override*/;
 
-    Result open();
-
-    diff_type seekFrame(diff_type frameIndex) /*override*/;
-    size_type readFrameSamplesInterleaved(size_type frameCount,
-            sample_type* sampleBuffer) /*override*/;
-
-private:
-    bool configureAudioStream();
-
-    void copyFrames(sample_type *dest, size_t *destFrames, const sample_type *src,
-            size_t srcFrames);
-
-    IMFSourceReader *m_pReader;
-    IMFMediaType *m_pAudioType;
-    wchar_t *m_wcFilename;
-    int m_nextFrame;
-    sample_type *m_leftoverBuffer;
-    size_t m_leftoverBufferSize;
-    size_t m_leftoverBufferLength;
-    int m_leftoverBufferPosition;
-    qint64 m_mfDuration;
-    long m_iCurrentPosition;
-    bool m_dead;
-    bool m_seeking;
+    Mixxx::AudioSourcePointer open() const /*override*/;
 };
 
 extern "C" MY_EXPORT const char* getMixxxVersion() {
@@ -83,8 +51,8 @@ extern "C" MY_EXPORT int getSoundSourceAPIVersion() {
     return MIXXX_SOUNDSOURCE_API_VERSION;
 }
 
-extern "C" MY_EXPORT Mixxx::SoundSource* getSoundSource(QString filename) {
-    return new SoundSourceMediaFoundation(filename);
+extern "C" MY_EXPORT Mixxx::SoundSource* getSoundSource(QString fileName) {
+    return new SoundSourceMediaFoundation(fileName);
 }
 
 extern "C" MY_EXPORT char** supportedFileExtensions() {

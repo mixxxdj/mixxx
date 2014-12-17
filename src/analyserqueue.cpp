@@ -283,17 +283,9 @@ void AnalyserQueue::run() {
 
         // Get the audio
         SoundSourceProxy soundSourceProxy(nextTrack);
-        Mixxx::AudioSourcePointer pAudioSource(soundSourceProxy.open());
-        if (pAudioSource.isNull()) {
+        Mixxx::AudioSourcePointer pAudioSource(soundSourceProxy.openAudioSource());
+        if (!pAudioSource) {
             qWarning() << "Failed to open file for analyzing:" << nextTrack->getLocation();
-            continue;
-        }
-
-        int iNumSamples = pAudioSource->getFrameCount() * kAnalysisChannels;
-        int iSampleRate = pAudioSource->getFrameRate();
-
-        if (iNumSamples == 0 || iSampleRate == 0) {
-            qWarning() << "Skipping invalid file:" << nextTrack->getLocation();
             continue;
         }
 
@@ -301,7 +293,7 @@ void AnalyserQueue::run() {
         bool processTrack = false;
         while (it.hasNext()) {
             // Make sure not to short-circuit initialise(...)
-            if (it.next()->initialise(nextTrack, iSampleRate, iNumSamples)) {
+            if (it.next()->initialise(nextTrack, pAudioSource->getFrameRate(), pAudioSource->frames2samples(pAudioSource->getFrameCount()))) {
                 processTrack = true;
             }
         }
