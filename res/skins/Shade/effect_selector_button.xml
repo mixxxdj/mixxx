@@ -53,7 +53,7 @@
 		      	<Style>
 		      		QLabel { qproperty-alignment: AlignCenter; }
 		      	</Style>
-		        <Size>100,-1</Size>
+		        <Size>100,e</Size>
 		        <EffectRack>1</EffectRack>
 		        <EffectUnit><Variable name="effectunitnum"/></EffectUnit>
 		        <Effect><Variable name="effectnum"/></Effect>
