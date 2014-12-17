@@ -46,6 +46,16 @@ void Tooltips::addStandardTooltips() {
             << QString("%1: %2").arg(scrollWheel, tr("Scroll to change the waveform zoom level."))
             << dropTracksHere;
 
+    add("waveform_zoom_up")
+            << tr("Waveform Zoom Out");
+
+    add("waveform_zoom_down")
+            << tr("Waveform Zoom In");
+
+    add("waveform_zoom_set_default")
+            << tr("Waveform Zoom")
+            << QString("%1").arg(resetToDefault);
+    
     add("spinny")
             << tr("Spinning Vinyl")
             << tr("Rotates during playback and shows the position of a track.")
@@ -128,6 +138,12 @@ void Tooltips::addStandardTooltips() {
             << tr("Controls what you hear on the headphone output.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
+    add("headSplit")
+            << tr("Headphone Split Cue")
+            << tr("If activated, the master signal plays in the right channel, while the cueing signal ")
+            << tr("plays in the left channel.")
+            << tr("Adjust the Headphone Mix so in the left channel is not the pure cueing signal.");
+    
     // Note, this is used for samplers and microphone only currently (that's why
     // center is the default).
     add("orientation")
