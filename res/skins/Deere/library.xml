@@ -34,6 +34,7 @@
                     <Layout>horizontal</Layout>
                     <Children>
                       <Template src="skin:hide_show_button.xml">
+                        <SetVariable name="TooltipId">show_library</SetVariable>
                         <SetVariable name="object_name">LibraryToggle</SetVariable>
                         <SetVariable name="control">[Library],show_library</SetVariable>
                       </Template>
@@ -168,6 +169,7 @@
         <SizePolicy>me,min</SizePolicy>
         <Children>
           <Template src="skin:hide_show_button.xml">
+            <SetVariable name="TooltipId">show_library</SetVariable>
             <SetVariable name="object_name">LibraryToggle</SetVariable>
             <SetVariable name="control">[Library],show_library</SetVariable>
           </Template>

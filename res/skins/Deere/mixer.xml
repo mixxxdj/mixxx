@@ -53,6 +53,7 @@
         <Layout>horizontal</Layout>
         <Children>
           <SliderComposed>
+            <TooltipId>crossfader</TooltipId>
             <SizePolicy>me,min</SizePolicy>
             <MinimumSize>-1,40</MinimumSize>
             <MaximumSize>-1,40</MaximumSize>
