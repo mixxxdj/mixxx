@@ -216,23 +216,6 @@
         </Children>
       </WidgetGroup>
 
-      <PushButton>
-        <Size>40f,20f</Size>
-        <NumberStates>2</NumberStates>
-        <Tooltip>Show/hide skin preferences</Tooltip>
-        <State>
-          <Number>0</Number>
-          <Text>&#9776;</Text>
-        </State>
-        <State>
-          <Number>1</Number>
-          <Text>&#8213;</Text>
-        </State>
-        <Connection>
-          <ConfigKey>[Preferences],show_preferences</ConfigKey>
-        </Connection>
-      </PushButton>
-
     </Children>
   </WidgetGroup>
 
