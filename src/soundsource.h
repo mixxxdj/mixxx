@@ -30,7 +30,6 @@
  */
 
 #include "audiosource.h"
-
 #include "util/defs.h"
 
 #include <QImage>
@@ -41,18 +40,18 @@ class SoundSource;
 class TrackMetadata;
 }
 
-typedef Mixxx::SoundSource* (*getSoundSourceFunc)(QString filename);
+typedef Mixxx::SoundSource* (*getSoundSourceFunc)(QString fileName);
 typedef char** (*getSupportedFileExtensionsFunc)();
 typedef int (*getSoundSourceAPIVersionFunc)();
 /* New in version 3 */
-typedef void (*freeFileExtensionsFunc)(char** exts);
+typedef void (*freeFileExtensionsFunc)(char** fileExts);
 
 namespace Mixxx {
 
 /*
  Base class for sound sources.
  */
-class SoundSource: public AudioSource {
+class SoundSource {
 public:
     virtual ~SoundSource();
 
@@ -69,18 +68,13 @@ public:
     // The implementation is free to set inaccurate estimated
     // values here that are overwritten when the AudioSource is
     // actually opened for reading.
-    virtual Result parseMetadata(Mixxx::TrackMetadata* pMetadata) = 0;
+    virtual Result parseMetadata(Mixxx::TrackMetadata* pMetadata) const = 0;
 
     // Returns the first cover art image embedded within the file (if any).
-    virtual QImage parseCoverArt() = 0;
+    virtual QImage parseCoverArt() const = 0;
 
-    /**
-     * Opens the SoundSource for reading audio data.
-     *
-     * When opening a SoundSource the corresponding
-     * AudioSource must be initialized.
-     */
-    virtual Result open() = 0;
+    // Opens the SoundSource for reading audio data.
+    virtual AudioSourcePointer open() const = 0;
 
 protected:
     explicit SoundSource(QString sFilename);

@@ -1,22 +1,36 @@
 #include "soundsourcemodplug.h"
 
+#include "audiosourcemodplug.h"
 #include "trackmetadata.h"
 #include "util/timer.h"
 
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <QFile>
 #include <QtDebug>
 
-/* read files in 512k chunks */
-#define CHUNKSIZE (1 << 18)
-
-// reserve some static space for settings...
 namespace
 {
-    static unsigned int s_bufferSizeLimit; // max track buffer length (bytes)
-    static ModPlug::ModPlug_Settings s_settings; // modplug decoder parameters
+QString getTypeFromFilename(QString fileName) {
+    const QString fileExt(fileName.section(".", -1).toLower());
+    if (fileExt == "mod") {
+        return "Protracker";
+    } else if (fileExt == "med") {
+        return "OctaMed";
+    } else if (fileExt == "okt") {
+        return "Oktalyzer";
+    } else if (fileExt == "s3m") {
+        return "Scream Tracker 3";
+    } else if (fileExt == "stm") {
+        return "Scream Tracker";
+    } else if (fileExt == "xm") {
+        return "FastTracker2";
+    } else if (fileExt == "it") {
+        return "Impulse Tracker";
+    } else {
+        return "Module";
+    }
+}
 }
 
 QList<QString> SoundSourceModPlug::supportedFileExtensions() {
@@ -33,70 +47,26 @@ QList<QString> SoundSourceModPlug::supportedFileExtensions() {
     return list;
 }
 
-void SoundSourceModPlug::configure(unsigned int bufferSizeLimit,
-        const ModPlug::ModPlug_Settings &settings) {
-    s_bufferSizeLimit = bufferSizeLimit;
-    s_settings = settings;
-    ModPlug::ModPlug_SetSettings(&s_settings);
+SoundSourceModPlug::SoundSourceModPlug(QString fileName)
+        : Super(fileName, getTypeFromFilename(fileName)) {
 }
 
-namespace
-{
-    QString getTypeFromFilename(QString filename) {
-        const QString fileext(filename.section(".", -1).toLower());
-        if (fileext == "mod") {
-            return "Protracker";
-        } else if (fileext == "med") {
-            return "OctaMed";
-        } else if (fileext == "okt") {
-            return "Oktalyzer";
-        } else if (fileext == "s3m") {
-            return "Scream Tracker 3";
-        } else if (fileext == "stm") {
-            return "Scream Tracker";
-        } else if (fileext == "xm") {
-            return "FastTracker2";
-        } else if (fileext == "it") {
-            return "Impulse Tracker";
-        } else {
-            return "Module";
-        }
-    }
-}
-
-SoundSourceModPlug::SoundSourceModPlug(QString qFilename)
-        : Super(qFilename, getTypeFromFilename(qFilename)), m_pModFile(NULL), m_fileLength(0), m_seekPos(0) {
-    setChannelCount(2); // always stereo
-    setFrameRate(44100); // always 44.1kHz
-}
-
-SoundSourceModPlug::~SoundSourceModPlug() {
-    if (m_pModFile) {
-        ModPlug::ModPlug_Unload(m_pModFile);
-    }
-}
-
-Result SoundSourceModPlug::open() {
-    ScopedTimer t("SoundSourceModPlug::open()");
-
-    qDebug() << "[ModPlug] Loading ModPlug module " << getFilename();
-
-    // read module file to byte array
+Result SoundSourceModPlug::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
     QFile modFile(getFilename());
     modFile.open(QIODevice::ReadOnly);
-    m_fileBuf = modFile.readAll();
+    const QByteArray fileBuf(modFile.readAll());
     modFile.close();
-    // get ModPlugFile descriptor for later access
-    m_pModFile = ModPlug::ModPlug_Load(m_fileBuf.constData(),
-            m_fileBuf.length());
 
-    if (m_pModFile == NULL) {
-        // an error occured
-        t.cancel();
-        qDebug() << "[ModPlug] Could not load module file: " << getFilename();
-        return ERR;
+    ModPlug::ModPlugFile* pModFile = ModPlug::ModPlug_Load(fileBuf.constData(), fileBuf.length());
+    if (NULL != pModFile) {
+        pMetadata->setComment(QString(ModPlug::ModPlug_GetMessage(pModFile)));
+        pMetadata->setTitle(QString(ModPlug::ModPlug_GetName(pModFile)));
+        pMetadata->setDuration(ModPlug::ModPlug_GetLength(pModFile) / 1000);
+        pMetadata->setBitrate(8); // not really, but fill in something...
+        ModPlug::ModPlug_Unload(pModFile);
     }
 
+<<<<<<< HEAD
     // estimate size of sample buffer (for better performance)
     // beware: module length estimation is unreliable due to loops
     // song milliseconds * 2 (bytes per sample)
@@ -179,10 +149,17 @@ Result SoundSourceModPlug::parseMetadata(Mixxx::TrackMetadata* pMetadata) {
     pMetadata->setBitrate(8); // not really, but fill in something...
 
     return OK;
+=======
+    return pModFile ? OK : ERR;
+>>>>>>> Split AudioSource from SoundSource
 }
 
-QImage SoundSourceModPlug::parseCoverArt() {
+QImage SoundSourceModPlug::parseCoverArt() const {
     // The modplug library currently does not support reading cover-art from
     // modplug files -- kain88 (Oct 2014)
     return QImage();
+}
+
+Mixxx::AudioSourcePointer SoundSourceModPlug::open() const {
+    return Mixxx::AudioSourceModPlug::open(getFilename());
 }

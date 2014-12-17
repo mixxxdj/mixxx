@@ -16,11 +16,10 @@
 
 #include "soundsourceoggvorbis.h"
 
+#include "audiosourceoggvorbis.h"
 #include "trackmetadatataglib.h"
 
 #include <taglib/vorbisfile.h>
-
-#include <vorbis/codec.h>
 
 QList<QString> SoundSourceOggVorbis::supportedFileExtensions() {
     QList<QString> list;
@@ -59,6 +58,7 @@ SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename)
     //vf.callbacks
 =======
         : Super(qFilename, "ogg") {
+<<<<<<< HEAD
     memset(&m_vf, 0, sizeof(m_vf));
 >>>>>>> New SoundSource/AudioSource API
 }
@@ -175,12 +175,14 @@ Mixxx::AudioSource::size_type SoundSourceOggVorbis::readFrameSamplesInterleaved(
         }
     }
     return readCount;
+=======
+>>>>>>> Split AudioSource from SoundSource
 }
 
 /*
  Parse the the file to get metadata
  */
-Result SoundSourceOggVorbis::parseMetadata(Mixxx::TrackMetadata* pMetadata) {
+Result SoundSourceOggVorbis::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
     TagLib::Ogg::Vorbis::File f(getFilename().toLocal8Bit().constData());
 
     if (!readAudioProperties(pMetadata, f)) {
@@ -203,7 +205,7 @@ Result SoundSourceOggVorbis::parseMetadata(Mixxx::TrackMetadata* pMetadata) {
     return OK;
 }
 
-QImage SoundSourceOggVorbis::parseCoverArt() {
+QImage SoundSourceOggVorbis::parseCoverArt() const {
     TagLib::Ogg::Vorbis::File f(getFilename().toLocal8Bit().constData());
     TagLib::Ogg::XiphComment *xiph = f.tag();
     if (xiph) {
@@ -211,4 +213,8 @@ QImage SoundSourceOggVorbis::parseCoverArt() {
     } else {
         return QImage();
     }
+}
+
+Mixxx::AudioSourcePointer SoundSourceOggVorbis::open() const {
+    return Mixxx::AudioSourceOggVorbis::open(getFilename());
 }

@@ -299,41 +299,41 @@ QLibrary* SoundSourceProxy::getPlugin(QString lib_filename)
 }
 
 
-Mixxx::SoundSourcePointer SoundSourceProxy::open() const {
+Mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource() const {
     if (!m_pSoundSource) {
-        return Mixxx::SoundSourcePointer();
+        return Mixxx::AudioSourcePointer();
     }
 
-    Result retVal = m_pSoundSource->open();
-    if (OK != retVal) {
+    Mixxx::AudioSourcePointer pAudioSource(m_pSoundSource->open());
+    if (!pAudioSource) {
         qWarning() << "Failed to open SoundSource";
-        return Mixxx::SoundSourcePointer();
+        return Mixxx::AudioSourcePointer();
     }
 
-    if (!m_pSoundSource->isValid()) {
+    if (!pAudioSource->isValid()) {
         qWarning() << "Invalid file:" << m_pSoundSource->getFilename()
-                << "channels" << m_pSoundSource->getChannelCount()
-                << "frame rate" << m_pSoundSource->getChannelCount();
-        return Mixxx::SoundSourcePointer();
+                << "channels" << pAudioSource->getChannelCount()
+                << "frame rate" << pAudioSource->getChannelCount();
+        return Mixxx::AudioSourcePointer();
     }
-    if (m_pSoundSource->isEmpty()) {
+    if (pAudioSource->isEmpty()) {
         qWarning() << "Empty file:" << m_pSoundSource->getFilename();
-        return Mixxx::SoundSourcePointer();
+        return Mixxx::AudioSourcePointer();
     }
 
     // Overwrite metadata with actual audio properties
     if (m_pTrack) {
-        m_pTrack->setChannels(m_pSoundSource->getChannelCount());
-        m_pTrack->setSampleRate(m_pSoundSource->getFrameRate());
-        if (m_pSoundSource->hasDuration()) {
-            m_pTrack->setDuration(m_pSoundSource->getDuration());
+        m_pTrack->setChannels(pAudioSource->getChannelCount());
+        m_pTrack->setSampleRate(pAudioSource->getFrameRate());
+        if (pAudioSource->hasDuration()) {
+            m_pTrack->setDuration(pAudioSource->getDuration());
         }
-        if (m_pSoundSource->hasBitrate()) {
-            m_pTrack->setBitrate(m_pSoundSource->getBitrate());
+        if (pAudioSource->hasBitrate()) {
+            m_pTrack->setBitrate(pAudioSource->getBitrate());
         }
     }
 
-    return m_pSoundSource;
+    return pAudioSource;
 }
 
 // static

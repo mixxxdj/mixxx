@@ -2,7 +2,6 @@
 #include <gtest/gtest.h>
 
 #include <QtDebug>
-#include <QScopedPointer>
 
 #include "test/mixxxtest.h"
 
@@ -11,12 +10,12 @@
 
 class SoundSourceProxyTest : public MixxxTest {
   protected:
-    Mixxx::SoundSourcePointer loadProxy(const QString& track) {
-        m_pProxy.reset(new SoundSourceProxy(track, SecurityTokenPointer()));
-        return m_pProxy->getSoundSource();
+    Mixxx::SoundSourcePointer openSoundSource(const QString& fileName) {
+        return SoundSourceProxy(fileName, SecurityTokenPointer()).getSoundSource();
     }
-
-    QScopedPointer<SoundSourceProxy> m_pProxy;
+    Mixxx::AudioSourcePointer openAudioSource(const QString& fileName) {
+        return SoundSourceProxy(fileName, SecurityTokenPointer()).openAudioSource();
+    }
 };
 
 TEST_F(SoundSourceProxyTest, ProxyCanOpen) {
@@ -35,30 +34,29 @@ TEST_F(SoundSourceProxyTest, ProxyCanOpen) {
         QString filePath = kCoverFilePath + extension;
         EXPECT_TRUE(SoundSourceProxy::isFilenameSupported(filePath));
 
-        Mixxx::SoundSourcePointer pSoundSource(loadProxy(filePath));
-        ASSERT_TRUE(!pSoundSource.isNull());
-        EXPECT_EQ(OK, pSoundSource->open());
-        EXPECT_LT(0UL, pSoundSource->getChannelCount());
-        EXPECT_LT(0UL, pSoundSource->getFrameRate());
-        EXPECT_LT(0UL, pSoundSource->getFrameCount());
+        Mixxx::AudioSourcePointer pAudioSource(openAudioSource(filePath));
+        ASSERT_TRUE(!pAudioSource.isNull());
+        EXPECT_LT(0UL, pAudioSource->getChannelCount());
+        EXPECT_LT(0UL, pAudioSource->getFrameRate());
+        EXPECT_LT(0UL, pAudioSource->getFrameCount());
     }
 }
 
 TEST_F(SoundSourceProxyTest, readArtist) {
-    Mixxx::SoundSourcePointer p(loadProxy(
+    Mixxx::SoundSourcePointer pSoundSource(openSoundSource(
         QDir::currentPath().append("/src/test/id3-test-data/artist.mp3")));
-    ASSERT_TRUE(!p.isNull());
+    ASSERT_TRUE(!pSoundSource.isNull());
     Mixxx::TrackMetadata trackMetadata;
-    EXPECT_EQ(OK, p->parseMetadata(&trackMetadata));
+    EXPECT_EQ(OK, pSoundSource->parseMetadata(&trackMetadata));
     EXPECT_EQ("Test Artist", trackMetadata.getArtist());
 }
 
 TEST_F(SoundSourceProxyTest, TOAL_TPE2) {
-    Mixxx::SoundSourcePointer p(loadProxy(
+    Mixxx::SoundSourcePointer pSoundSource(openSoundSource(
         QDir::currentPath().append("/src/test/id3-test-data/TOAL_TPE2.mp3")));
-    ASSERT_TRUE(!p.isNull());
+    ASSERT_TRUE(!pSoundSource.isNull());
     Mixxx::TrackMetadata trackMetadata;
-    EXPECT_EQ(OK, p->parseMetadata(&trackMetadata));
+    EXPECT_EQ(OK, pSoundSource->parseMetadata(&trackMetadata));
     EXPECT_EQ("TITLE2", trackMetadata.getArtist());
     EXPECT_EQ("ARTIST", trackMetadata.getAlbum());
     EXPECT_EQ("TITLE", trackMetadata.getAlbumArtist());
