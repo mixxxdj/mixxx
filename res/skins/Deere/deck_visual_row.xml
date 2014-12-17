@@ -167,6 +167,7 @@
         <SizePolicy>max,max</SizePolicy>
         <Children>
           <Spinny>
+            <TooltipId>spinny</TooltipId>
             <Group><Variable name="group"/></Group>
             <PathBackground>image/vinyl_spinny_background.png</PathBackground>
             <PathForeground>image/vinyl_spinny_foreground.png</PathForeground>
@@ -179,7 +180,7 @@
           </Spinny>
         </Children>
         <Connection>
-          <ConfigKey><Variable name="control_show_spinny"/></ConfigKey>
+          <ConfigKey persist="true"><Variable name="control_show_spinny"/></ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>

@@ -12,6 +12,7 @@
     <SizePolicy>me,max</SizePolicy>
     <Children>
       <CoverArt>
+        <TooltipId>coverart</TooltipId>
         <ObjectName>DeckCoverArt</ObjectName>
         <SizePolicy>min,min</SizePolicy>
         <MinimumSize>58,58</MinimumSize>
