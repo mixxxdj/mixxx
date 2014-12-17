@@ -1663,9 +1663,11 @@ void LegacySkinParser::setupBaseWidget(QDomNode node,
         QString toolTipId = m_pContext->selectString(node, "TooltipId");
         QString toolTip = m_tooltips.tooltipForId(toolTipId);
 
-        if (toolTipId.length() > 0) {
+        if (!toolTip.isEmpty()) {
             pBaseWidget->prependBaseTooltip(toolTip);
-        } else {
+        } else if (!toolTipId.isEmpty()) {
+            // Only warn if there was a tooltip ID specified and no tooltip for
+            // that ID.
             SKIN_WARNING(node, *m_pContext)
                     << "Invalid <TooltipId> in skin.xml:" << toolTipId;
         }
