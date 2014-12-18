@@ -13,8 +13,8 @@ Import('build')
 wv_sources = [
     "soundsourcewv.cpp",  # Wavpack support (tags)
     "audiosourcewv.cpp",  # Wavpack support (audio)
-    "soundsource.cpp", # required to subclass SoundSource
-    "audiosource.cpp", # required to subclass AudioSource
+    "sources/soundsource.cpp", # required to subclass SoundSource
+    "sources/audiosource.cpp", # required to subclass AudioSource
     "trackmetadatataglib.cpp", # TagLib dependencies
     "trackmetadata.cpp",
     "sampleutil.cpp", # utility functions

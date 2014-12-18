@@ -13,8 +13,8 @@ Import('build')
 m4a_sources = [
     "audiosourcem4a.cpp",  # MP4/M4A audio support through FAAD/libmp4v2
     "soundsourcem4a.cpp",  # MP4/M4A tag support
-    "audiosource.cpp", # required to subclass AudioSource
-    "soundsource.cpp", # required to subclass SoundSource
+    "sources/audiosource.cpp", # required to subclass AudioSource
+    "sources/soundsource.cpp", # required to subclass SoundSource
     "trackmetadatataglib.cpp", # TagLib dependencies
     "trackmetadata.cpp",
     "sampleutil.cpp", # utility functions

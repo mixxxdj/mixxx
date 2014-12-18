@@ -7,9 +7,9 @@
 #include <QThread>
 #include <QString>
 
-#include "audiosource.h"
 #include "trackinfoobject.h"
 #include "engine/engineworker.h"
+#include "sources/audiosource.h"
 #include "util/fifo.h"
 
 

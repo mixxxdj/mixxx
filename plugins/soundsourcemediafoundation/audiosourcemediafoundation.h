@@ -1,7 +1,7 @@
 #ifndef AUDIOSOURCEMEDIAFOUNDATIONMEDIAFOUNDATION_H
 #define AUDIOSOURCEMEDIAFOUNDATIONMEDIAFOUNDATION_H
 
-#include "audiosource.h"
+#include "sources/audiosource.h"
 #include "util/defs.h"
 
 #include <windows.h>

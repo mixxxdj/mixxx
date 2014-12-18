@@ -1,7 +1,7 @@
 #ifndef SOUNDSOURCEWV_H
 #define SOUNDSOURCEWV_H
 
-#include "soundsource.h"
+#include "sources/soundsource.h"
 #include "defs_version.h"
 
 #ifdef Q_OS_WIN

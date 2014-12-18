@@ -28,25 +28,25 @@
 #include "trackinfoobject.h"
 #include "soundsourceproxy.h"
 #ifdef __MAD__
-#include "soundsourcemp3.h"
+#include "sources/soundsourcemp3.h"
 #endif
-#include "soundsourceoggvorbis.h"
+#include "sources/soundsourceoggvorbis.h"
 #ifdef __OPUS__
-#include "soundsourceopus.h"
+#include "sources/soundsourceopus.h"
 #endif
 #ifdef __COREAUDIO__
-#include "soundsourcecoreaudio.h"
+#include "sources/soundsourcecoreaudio.h"
 #endif
 #ifdef __SNDFILE__
-#include "soundsourcesndfile.h"
+#include "sources/soundsourcesndfile.h"
 #endif
 #ifdef __FFMPEGFILE__
-#include "soundsourceffmpeg.h"
+#include "sources/soundsourceffmpeg.h"
 #endif
 #ifdef __MODPLUG__
-#include "soundsourcemodplug.h"
+#include "sources/soundsourcemodplug.h"
 #endif
-#include "soundsourceflac.h"
+#include "sources/soundsourceflac.h"
 #include "util/cmdlineargs.h"
 #include "util/regex.h"
 
