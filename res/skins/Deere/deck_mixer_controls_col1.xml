@@ -38,6 +38,8 @@
       </Template>
 
       <Template src="skin:quick_effect_superknob.xml">
+        <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
+        <SetVariable name="TooltipId"></SetVariable>
         <SetVariable name="QuickEffect">1</SetVariable>
       </Template>
 
