@@ -51,7 +51,7 @@ class SliderEventHandler {
             m_dPos = m_dStartHandlePos + (m_dPos - m_dStartMousePos);
 
             // Clamp to the range [0, sliderLength - m_dHandleLength].
-            m_dPos = math_clamp_unsafe(m_dPos, 0.0, m_dSliderLength - m_dHandleLength);
+            m_dPos = math_clamp(m_dPos, 0.0, m_dSliderLength - m_dHandleLength);
             double newParameter = positionToParameter(m_dPos);
 
             // If we don't change this, then updates might be rejected in
@@ -107,7 +107,7 @@ class SliderEventHandler {
         double newParameter = pWidget->getControlParameter() + wheelAdjustment;
 
         // Clamp to [0.0, 1.0]
-        newParameter = math_clamp_unsafe(newParameter, 0.0, 1.0);
+        newParameter = math_clamp(newParameter, 0.0, 1.0);
 
         pWidget->setControlParameter(newParameter);
         onConnectedControlChanged(pWidget, newParameter);
@@ -133,7 +133,7 @@ class SliderEventHandler {
             double newPos = parameterToPosition(dParameter);
 
             // Clamp to [0.0, sliderLength - m_dHandleLength].
-            newPos = math_clamp_unsafe(newPos, 0.0, m_dSliderLength - m_dHandleLength);
+            newPos = math_clamp(newPos, 0.0, m_dSliderLength - m_dHandleLength);
 
             // Check a second time for no-ops. It's possible the parameter changed
             // but the visible pixmap didn't. Only update() the widget if we're
