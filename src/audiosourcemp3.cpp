@@ -242,8 +242,8 @@ AudioSourceMp3::MadSeekFrameList::size_type AudioSourceMp3::findSeekFrameIndex(d
     AudioSourceMp3::MadSeekFrameList::size_type lowerBound = 0;
     AudioSourceMp3::MadSeekFrameList::size_type upperBound = m_seekFrameList.size();
     while ((upperBound - lowerBound) > 1) {
-        Q_ASSERT(seekFrameIndex >= lowerBound);
-        Q_ASSERT(seekFrameIndex < upperBound);
+        DEBUG_ASSERT(seekFrameIndex >= lowerBound);
+        DEBUG_ASSERT(seekFrameIndex < upperBound);
         if (m_seekFrameList[seekFrameIndex].frameIndex > frameIndex) {
             upperBound = seekFrameIndex;
         } else {
@@ -251,9 +251,9 @@ AudioSourceMp3::MadSeekFrameList::size_type AudioSourceMp3::findSeekFrameIndex(d
         }
         seekFrameIndex = lowerBound + (upperBound - lowerBound) / 2;
     }
-    Q_ASSERT(m_seekFrameList.size() > seekFrameIndex);
-    Q_ASSERT(m_seekFrameList[seekFrameIndex].frameIndex <= frameIndex);
-    Q_ASSERT(((seekFrameIndex + 1) >= m_seekFrameList.size()) || (m_seekFrameList[seekFrameIndex + 1].frameIndex > frameIndex));
+    DEBUG_ASSERT(m_seekFrameList.size() > seekFrameIndex);
+    DEBUG_ASSERT(m_seekFrameList[seekFrameIndex].frameIndex <= frameIndex);
+    DEBUG_ASSERT(((seekFrameIndex + 1) >= m_seekFrameList.size()) || (m_seekFrameList[seekFrameIndex + 1].frameIndex > frameIndex));
     return seekFrameIndex;
 }
 
@@ -272,7 +272,7 @@ AudioSource::diff_type AudioSourceMp3::seekFrame(diff_type frameIndex) {
         } else {
             seekFrameIndex -= kSeekFramePrefetchCount;
         }
-        Q_ASSERT(seekFrameIndex < m_seekFrameList.size());
+        DEBUG_ASSERT(seekFrameIndex < m_seekFrameList.size());
         const MadSeekFrameType& seekFrame(m_seekFrameList[seekFrameIndex]);
         // restart decoder
         mad_synth_finish(&m_madSynth);
@@ -287,9 +287,9 @@ AudioSource::diff_type AudioSourceMp3::seekFrame(diff_type frameIndex) {
         m_madSynthCount = 0;
     }
     // decode and discard prefetch data
-    Q_ASSERT(m_curFrameIndex <= frameIndex);
+    DEBUG_ASSERT(m_curFrameIndex <= frameIndex);
     skipFrameSamples(frameIndex - m_curFrameIndex);
-    Q_ASSERT(m_curFrameIndex == frameIndex);
+    DEBUG_ASSERT(m_curFrameIndex == frameIndex);
     return m_curFrameIndex;
 }
 

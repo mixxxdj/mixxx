@@ -15,6 +15,7 @@
 #include "analyserbeats.h"
 #include "analyserkey.h"
 #include "vamp/vampanalyser.h"
+#include "util/assert.h"
 #include "util/compatibility.h"
 #include "util/event.h"
 #include "util/trace.h"
@@ -178,7 +179,7 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, Mixxx::AudioSourcePointer pAudi
         // full block size.
         if (readFrameCount < kAnalysisFrameCount) {
             // The whole file should have been read now!
-            Q_ASSERT(pAudioSource->getFrameCount() == (progressFrameCount + readFrameCount));
+            DEBUG_ASSERT(pAudioSource->getFrameCount() == (progressFrameCount + readFrameCount));
             break; // done
         }
 
@@ -195,7 +196,7 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, Mixxx::AudioSourcePointer pAudi
         // because the finalise functions will take also some time
         //fp div here prevents insane signed overflow
         progressFrameCount += readFrameCount;
-        Q_ASSERT(progressFrameCount <= pAudioSource->getFrameCount());
+        DEBUG_ASSERT(progressFrameCount <= pAudioSource->getFrameCount());
         int progress = (int)(((float)progressFrameCount) / pAudioSource->getFrameCount() *
                          (1000 - FINALIZE_PERCENT));
 

@@ -363,8 +363,8 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
             //continue processing the rest of the chunks normally
 =======
         int zero_samples = math_min(-sample, samples_remaining);
-        Q_ASSERT(0 <= zero_samples);
-        Q_ASSERT(zero_samples <= samples_remaining);
+        DEBUG_ASSERT(0 <= zero_samples);
+        DEBUG_ASSERT(zero_samples <= samples_remaining);
         SampleUtil::clear(buffer, zero_samples);
         samples_remaining -= zero_samples;
         if (samples_remaining == 0) {
@@ -373,12 +373,12 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
         }
         buffer += zero_samples;
         sample += zero_samples;
-        Q_ASSERT(0 <= sample);
+        DEBUG_ASSERT(0 <= sample);
     }
 
-    Q_ASSERT(0 == (sample % CachingReaderWorker::kChunkChannels));
+    DEBUG_ASSERT(0 == (sample % CachingReaderWorker::kChunkChannels));
     const int frame = sample / CachingReaderWorker::kChunkChannels;
-    Q_ASSERT(0 == (samples_remaining % CachingReaderWorker::kChunkChannels));
+    DEBUG_ASSERT(0 == (samples_remaining % CachingReaderWorker::kChunkChannels));
     int frames_remaining = samples_remaining / CachingReaderWorker::kChunkChannels;
     const int start_frame = math_min(m_iTrackNumFramesCallbackSafe, frame);
     const int start_chunk = chunkForFrame(start_frame);
@@ -529,9 +529,9 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
             qDebug() << "ERROR: Negative hint length. Ignoring.";
             continue;
         }
-        Q_ASSERT(0 == (hint.sample % CachingReaderWorker::kChunkChannels));
+        DEBUG_ASSERT(0 == (hint.sample % CachingReaderWorker::kChunkChannels));
         const int frame = hint.sample / CachingReaderWorker::kChunkChannels;
-        Q_ASSERT(0 == (hint.length % CachingReaderWorker::kChunkChannels));
+        DEBUG_ASSERT(0 == (hint.length % CachingReaderWorker::kChunkChannels));
         const int frame_count = hint.length / CachingReaderWorker::kChunkChannels;
         const int start_frame = math_clamp(frame, 0,
                                       m_iTrackNumFramesCallbackSafe);
