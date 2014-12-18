@@ -24,8 +24,8 @@
 #include <QLibrary>
 #include <QRegExp>
 
-#include "soundsource.h"
 #include "trackinfoobject.h"
+#include "sources/soundsource.h"
 #include "util/sandbox.h"
 
 /**

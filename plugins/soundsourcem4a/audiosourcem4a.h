@@ -1,7 +1,7 @@
 #ifndef AUDIOSOURCEM4A_H
 #define AUDIOSOURCEM4A_H
 
-#include "audiosource.h"
+#include "sources/audiosource.h"
 #include "util/defs.h"
 
 #ifdef __MP4V2__

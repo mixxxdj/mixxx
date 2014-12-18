@@ -1,8 +1,9 @@
 /***************************************************************************
-                          soundsourcem4a.h  -  mp4/m4a decoder
+                          soundsourcemp3.h  -  description
                              -------------------
-    copyright            : (C) 2008 by Garth Dahlstrom
-    email                : ironstorm@users.sf.net
+    begin                : Wed Feb 20 2002
+    copyright            : (C) 2002 by Tue and Ken Haste Andersen
+    email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -14,42 +15,27 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef SOUNDSOURCEM4A_H
-#define SOUNDSOURCEM4A_H
+#ifndef SOUNDSOURCEMP3_H
+#define SOUNDSOURCEMP3_H
 
 #include "sources/soundsource.h"
-#include "defs_version.h"
 
-//As per QLibrary docs: http://doc.trolltech.com/4.6/qlibrary.html#resolve
-#ifdef Q_OS_WIN
-#define MY_EXPORT __declspec(dllexport)
-#else
-#define MY_EXPORT
-#endif
+/**
+  *@author Tue and Ken Haste Andersen
+  */
 
-
-namespace Mixxx {
-
-class SoundSourceM4A : public SoundSource {
+class SoundSourceMp3 : public Mixxx::SoundSource {
     typedef SoundSource Super;
 
 public:
     static QList<QString> supportedFileExtensions();
 
-    explicit SoundSourceM4A(QString fileName);
+    explicit SoundSourceMp3(QString qFilename);
 
     Result parseMetadata(Mixxx::TrackMetadata* pMetadata) const /*override*/;
     QImage parseCoverArt() const /*override*/;
 
     Mixxx::AudioSourcePointer open() const /*override*/;
 };
-
-} // namespace Mixxx
-
-extern "C" MY_EXPORT const char* getMixxxVersion();
-extern "C" MY_EXPORT int getSoundSourceAPIVersion();
-extern "C" MY_EXPORT Mixxx::SoundSource* getSoundSource(QString fileName);
-extern "C" MY_EXPORT char** supportedFileExtensions();
-extern "C" MY_EXPORT void freeFileExtensions(char **exts);
 
 #endif

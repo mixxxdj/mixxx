@@ -4,7 +4,7 @@
 #include "configobject.h"
 #include "analyser.h"
 #include "trackinfoobject.h"
-#include "audiosource.h"
+#include "sources/audiosource.h"
 
 #include <QList>
 #include <QThread>

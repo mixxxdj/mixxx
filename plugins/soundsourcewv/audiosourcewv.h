@@ -1,7 +1,7 @@
 #ifndef AUDIOSOURCEWV_H
 #define AUDIOSOURCEWV_H
 
-#include "audiosource.h"
+#include "sources/audiosource.h"
 #include "util/defs.h"
 
 #include "wavpack/wavpack.h"

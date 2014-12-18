@@ -5,7 +5,7 @@
 #include "ui_dlgprefmodplugdlg.h"
 
 #include "configobject.h"
-#include "audiosourcemodplug.h"
+#include "sources/audiosourcemodplug.h"
 
 #define kConfigKey "[Modplug]"
 

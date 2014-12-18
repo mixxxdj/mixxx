@@ -126,7 +126,7 @@ class OggVorbis(Dependence):
                     'Did not find libvorbisenc.a, libvorbisenc.lib, or the libvorbisenc development headers.')
 
     def sources(self, build):
-        return ['audiosourceoggvorbis.cpp','soundsourceoggvorbis.cpp']
+        return ['sources/audiosourceoggvorbis.cpp','sources/soundsourceoggvorbis.cpp']
 
 class SndFile(Dependence):
 
@@ -139,7 +139,7 @@ class SndFile(Dependence):
         build.env.Append(CPPDEFINES='__SNDFILE__')
 
     def sources(self, build):
-        return ['audiosourcesndfile.cpp','soundsourcesndfile.cpp']
+        return ['sources/audiosourcesndfile.cpp','sources/soundsourcesndfile.cpp']
 
 
 class FLAC(Dependence):
@@ -154,7 +154,7 @@ class FLAC(Dependence):
             build.env.Append(CPPDEFINES='FLAC__NO_DLL')
 
     def sources(self, build):
-        return ['audiosourceflac.cpp','soundsourceflac.cpp',]
+        return ['sources/audiosourceflac.cpp','sources/soundsourceflac.cpp',]
 
 
 class Qt(Dependence):
@@ -657,8 +657,9 @@ class MixxxCore(Feature):
                    "errordialoghandler.cpp",
                    "upgrade.cpp",
 
-                   "soundsource.cpp",
-                   "audiosource.cpp",
+                   "sources/soundsource.cpp",
+                   "sources/audiosource.cpp",
+
                    "trackmetadata.cpp",
                    "trackmetadatataglib.cpp",
 
