@@ -10,7 +10,7 @@
 
 #include "library/dao/trackdao.h"
 
-#include "audiotagger.h"
+#include "metadata/audiotagger.h"
 #include "library/queryutil.h"
 #include "soundsourceproxy.h"
 #include "track/beatfactory.h"

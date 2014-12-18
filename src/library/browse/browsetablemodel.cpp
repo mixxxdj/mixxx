@@ -15,7 +15,7 @@
 #include "playerinfo.h"
 #include "controlobject.h"
 #include "library/dao/trackdao.h"
-#include "audiotagger.h"
+#include "metadata/audiotagger.h"
 #include "util/dnd.h"
 
 BrowseTableModel::BrowseTableModel(QObject* parent,
