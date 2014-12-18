@@ -23,7 +23,7 @@
 #include "soundsourcemediafoundation.h"
 #include "audiosourcemediafoundation.h"
 
-#include "trackmetadatataglib.h"
+#include "metadata/trackmetadatataglib.h"
 
 #include <taglib/mp4file.h>
 

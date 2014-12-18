@@ -16,7 +16,7 @@
  ***************************************************************************/
 
 #include "sources/soundsource.h"
-#include "trackmetadata.h"
+#include "metadata/trackmetadata.h"
 
 namespace Mixxx {
 

@@ -1,7 +1,7 @@
 #include "sources/soundsourceopus.h"
 
 #include "sources/audiosourceopus.h"
-#include "trackmetadatataglib.h"
+#include "metadata/trackmetadatataglib.h"
 
 // Include this if taglib if new enough (version 1.9.1 have opusfile)
 #if (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))

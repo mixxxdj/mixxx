@@ -16,7 +16,7 @@
 #include "sources/soundsourcecoreaudio.h"
 
 #include "sources/audiosourcecoreaudio.h"
-#include "trackmetadatataglib.h"
+#include "metadata/trackmetadatataglib.h"
 
 #include <taglib/mpegfile.h>
 #include <taglib/mp4file.h>

@@ -6,7 +6,7 @@
 #include "test/mixxxtest.h"
 
 #include "soundsourceproxy.h"
-#include "trackmetadata.h"
+#include "metadata/trackmetadata.h"
 
 class SoundSourceProxyTest : public MixxxTest {
   protected:

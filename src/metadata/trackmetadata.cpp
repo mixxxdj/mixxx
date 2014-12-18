@@ -1,4 +1,4 @@
-#include "trackmetadata.h"
+#include "metadata/trackmetadata.h"
 
 #include "util/math.h"
 

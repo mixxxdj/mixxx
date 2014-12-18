@@ -18,7 +18,7 @@ if int(build.flags['mediafoundation']):
     else:
         env["LINKFLAGS"].remove("/subsystem:windows,5.01")
     ssmediafoundation_bin = env.SharedLibrary('soundsourcemediafoundation',
-        ['soundsourcemediafoundation.cpp', 'audiosourcemediafoundation.cpp', 'sources/soundsource.cpp', 'sources/audiosource.cpp', 'trackmetadatataglib.cpp', 'trackmetadata.cpp', 'sampleutil.cpp'],
+        ['soundsourcemediafoundation.cpp', 'audiosourcemediafoundation.cpp', 'sources/soundsource.cpp', 'sources/audiosource.cpp', 'metadata/trackmetadata.cpp', 'metadata/trackmetadatataglib.cpp', 'sampleutil.cpp'],
         LINKCOM  = [env['LINKCOM'],
             'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
     Return("ssmediafoundation_bin")

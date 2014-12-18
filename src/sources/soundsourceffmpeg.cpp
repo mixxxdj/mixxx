@@ -24,7 +24,7 @@
 #include "sources/soundsourceffmpeg.h"
 
 #include "sources/audiosourceffmpeg.h"
-#include "trackmetadata.h"
+#include "metadata/trackmetadata.h"
 
 #include <QtDebug>
 
