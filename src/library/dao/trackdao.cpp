@@ -1787,23 +1787,24 @@ void TrackDAO::markTracksAsMixxxDeleted(const QString& dir) {
 
 void TrackDAO::writeAudioMetaData(TrackInfoObject* pTrack) {
     if (m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1) {
+
+        Mixxx::TrackMetadata trackMetadata;
+        trackMetadata.setArtist(pTrack->getArtist());
+        trackMetadata.setTitle(pTrack->getTitle());
+        trackMetadata.setGenre(pTrack->getGenre());
+        trackMetadata.setComposer(pTrack->getComposer());
+        trackMetadata.setGrouping(pTrack->getGrouping());
+        trackMetadata.setAlbum(pTrack->getAlbum());
+        trackMetadata.setAlbumArtist(pTrack->getAlbumArtist());
+        trackMetadata.setComment(pTrack->getComment());
+        trackMetadata.setTrackNumber(pTrack->getTrackNumber());
+        trackMetadata.setBpm(pTrack->getBpm());
+        trackMetadata.setKey(pTrack->getKeyText());
+        trackMetadata.setComposer(pTrack->getComposer());
+        trackMetadata.setGrouping(pTrack->getGrouping());
+
         AudioTagger tagger(pTrack->getLocation(), pTrack->getSecurityToken());
-
-        tagger.setArtist(pTrack->getArtist());
-        tagger.setTitle(pTrack->getTitle());
-        tagger.setGenre(pTrack->getGenre());
-        tagger.setComposer(pTrack->getComposer());
-        tagger.setGrouping(pTrack->getGrouping());
-        tagger.setAlbum(pTrack->getAlbum());
-        tagger.setAlbumArtist(pTrack->getAlbumArtist());
-        tagger.setComment(pTrack->getComment());
-        tagger.setTracknumber(pTrack->getTrackNumber());
-        tagger.setBpm(pTrack->getBpmStr());
-        tagger.setKey(pTrack->getKeyText());
-        tagger.setComposer(pTrack->getComposer());
-        tagger.setGrouping(pTrack->getGrouping());
-
-        tagger.save();
+        tagger.save(trackMetadata);
     }
 }
 

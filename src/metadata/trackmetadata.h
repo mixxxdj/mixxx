@@ -121,7 +121,7 @@ public:
     }
 
     // beats / minute
-    inline float getBPM() const {
+    inline float getBpm() const {
         return m_bpm;
     }
     inline void setBpm(float bpm) {
