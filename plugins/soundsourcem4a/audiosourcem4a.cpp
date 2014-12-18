@@ -218,13 +218,13 @@ AudioSource::diff_type AudioSourceM4A::seekFrame(diff_type frameIndex) {
             m_inputBufferLength = 0;
         }
         // decoding starts before the actual target position
-        Q_ASSERT(m_curFrameIndex <= frameIndex);
+        DEBUG_ASSERT(m_curFrameIndex <= frameIndex);
         const size_type prefetchFrameCount = frameIndex - m_curFrameIndex;
         // prefetch (decode and discard) all samples up to the target position
-        Q_ASSERT(frames2samples(prefetchFrameCount) <= m_prefetchSampleBuffer.size());
+        DEBUG_ASSERT(frames2samples(prefetchFrameCount) <= m_prefetchSampleBuffer.size());
         readFrameSamplesInterleaved(prefetchFrameCount, &m_prefetchSampleBuffer[0]);
     }
-    Q_ASSERT(m_curFrameIndex == frameIndex);
+    DEBUG_ASSERT(m_curFrameIndex == frameIndex);
     return frameIndex;
 }
 
@@ -257,17 +257,17 @@ AudioSource::size_type AudioSourceM4A::readFrameSamplesInterleaved(
         const size_type readFrameCount = m_curFrameIndex - readFrameIndex;
         const size_type decodeBufferCapacityInBytes = frames2samples(
                 frameCount - readFrameCount) * sizeof(*sampleBuffer);
-        Q_ASSERT(0 < decodeBufferCapacityInBytes);
+        DEBUG_ASSERT(0 < decodeBufferCapacityInBytes);
         void* pDecodeBuffer = pSampleBuffer;
         NeAACDecDecode2(m_hDecoder, &decFrameInfo,
                 &m_inputBuffer[m_inputBufferOffset],
                 m_inputBufferLength / sizeof(m_inputBuffer[0]),
                 &pDecodeBuffer, decodeBufferCapacityInBytes);
         // samples should have been decoded into our own buffer
-        Q_ASSERT(pSampleBuffer == pDecodeBuffer);
+        DEBUG_ASSERT(pSampleBuffer == pDecodeBuffer);
         pSampleBuffer += decFrameInfo.samples;
         // only the input data that is available should have been read
-        Q_ASSERT(
+        DEBUG_ASSERT(
                 decFrameInfo.bytesconsumed
                         <= (m_inputBufferLength / sizeof(m_inputBuffer[0])));
         // consume input data

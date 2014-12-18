@@ -145,7 +145,7 @@ Mixxx::AudioSource::size_type AudioSourceFLAC::readFrameSamplesInterleaved(
     sample_type* outBuffer = sampleBuffer;
     size_type framesRemaining = frameCount;
     while (0 < framesRemaining) {
-        Q_ASSERT(
+        DEBUG_ASSERT(
                 m_decodeSampleBufferReadOffset
                         <= m_decodeSampleBufferWriteOffset);
         // if our buffer from libflac is empty (either because we explicitly cleared
@@ -165,7 +165,7 @@ Mixxx::AudioSource::size_type AudioSourceFLAC::readFrameSamplesInterleaved(
                 break;
             }
         }
-        Q_ASSERT(
+        DEBUG_ASSERT(
                 m_decodeSampleBufferReadOffset
                         <= m_decodeSampleBufferWriteOffset);
         const size_type decodeBufferSamples = m_decodeSampleBufferWriteOffset
@@ -193,7 +193,7 @@ Mixxx::AudioSource::size_type AudioSourceFLAC::readFrameSamplesInterleaved(
         }
         m_decodeSampleBufferReadOffset += samplesToCopy;
         framesRemaining -= framesToCopy;
-        Q_ASSERT(
+        DEBUG_ASSERT(
                 m_decodeSampleBufferReadOffset
                         <= m_decodeSampleBufferWriteOffset);
     }
@@ -255,14 +255,14 @@ FLAC__StreamDecoderWriteStatus AudioSourceFLAC::flacWrite(
                 << frame->header.channels;
         return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
     }
-    Q_ASSERT(m_decodeSampleBufferReadOffset <= m_decodeSampleBufferWriteOffset);
-    Q_ASSERT(
+    DEBUG_ASSERT(m_decodeSampleBufferReadOffset <= m_decodeSampleBufferWriteOffset);
+    DEBUG_ASSERT(
             (m_decodeSampleBuffer.size() - m_decodeSampleBufferWriteOffset)
                     >= frames2samples(frame->header.blocksize));
     switch (getChannelCount()) {
     case 1: {
         // optimized code for 1 channel (mono)
-        Q_ASSERT(1 <= frame->header.channels);
+        DEBUG_ASSERT(1 <= frame->header.channels);
         for (unsigned i = 0; i < frame->header.blocksize; ++i) {
             m_decodeSampleBuffer[m_decodeSampleBufferWriteOffset++] =
                     buffer[0][i] * m_sampleScale;
@@ -271,7 +271,7 @@ FLAC__StreamDecoderWriteStatus AudioSourceFLAC::flacWrite(
     }
     case 2: {
         // optimized code for 2 channels (stereo)
-        Q_ASSERT(2 <= frame->header.channels);
+        DEBUG_ASSERT(2 <= frame->header.channels);
         for (unsigned i = 0; i < frame->header.blocksize; ++i) {
             m_decodeSampleBuffer[m_decodeSampleBufferWriteOffset++] =
                     buffer[0][i] * m_sampleScale;
@@ -290,7 +290,7 @@ FLAC__StreamDecoderWriteStatus AudioSourceFLAC::flacWrite(
         }
     }
     }
-    Q_ASSERT(m_decodeSampleBufferReadOffset <= m_decodeSampleBufferWriteOffset);
+    DEBUG_ASSERT(m_decodeSampleBufferReadOffset <= m_decodeSampleBufferWriteOffset);
     return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
 

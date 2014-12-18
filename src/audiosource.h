@@ -1,6 +1,7 @@
 #ifndef MIXXX_AUDIOSOURCE_H
 #define MIXXX_AUDIOSOURCE_H
 
+#include "util/assert.h"
 #include "util/types.h" // CSAMPLE
 
 #include <QSharedPointer>
@@ -100,22 +101,22 @@ public:
         return isValid();
     }
     inline size_type getDuration() const {
-        Q_ASSERT(hasDuration()); // prevents division by zero
+        DEBUG_ASSERT(hasDuration()); // prevents division by zero
         return getFrameCount() / getFrameRate();
     }
 
     // #frames -> #samples
     template<typename T>
     inline T frames2samples(T frameCount) const {
-        Q_ASSERT(isChannelCountValid());
+        DEBUG_ASSERT(isChannelCountValid());
         return frameCount * getChannelCount();
     }
 
     // #samples -> #frames
     template<typename T>
     inline T samples2frames(T sampleCount) const {
-        Q_ASSERT(isChannelCountValid());
-        Q_ASSERT(0 == (sampleCount % getChannelCount()));
+        DEBUG_ASSERT(isChannelCountValid());
+        DEBUG_ASSERT(0 == (sampleCount % getChannelCount()));
         return sampleCount / getChannelCount();
     }
 
