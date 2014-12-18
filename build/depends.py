@@ -661,6 +661,7 @@ class MixxxCore(Feature):
 
                    "metadata/trackmetadata.cpp",
                    "metadata/trackmetadatataglib.cpp",
+                   "metadata/audiotagger.cpp",
 
                    "sharedglcontext.cpp",
                    "widget/controlwidgetconnection.cpp",
@@ -802,7 +803,6 @@ class MixxxCore(Feature):
                    "library/bpmdelegate.cpp",
                    "library/previewbuttondelegate.cpp",
                    "library/coverartdelegate.cpp",
-                   "audiotagger.cpp",
 
                    "library/treeitemmodel.cpp",
                    "library/treeitem.cpp",
