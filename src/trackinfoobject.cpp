@@ -226,7 +226,7 @@ void TrackInfoObject::parse(bool parseCoverArt) {
 
             // Need to set BPM after sample rate since beat grid creation depends on
             // knowing the sample rate. Bug #1020438.
-            float bpm = trackMetadata.getBPM();
+            float bpm = trackMetadata.getBpm();
             if (bpm > 0) {
                 // do not delete beat grid if bpm is not set in file
                 setBpm(bpm);
