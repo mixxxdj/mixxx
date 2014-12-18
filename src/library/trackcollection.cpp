@@ -13,6 +13,9 @@
 #include "xmlparse.h"
 #include "util/assert.h"
 
+// static
+const int TrackCollection::kRequiredSchemaVersion = 24;
+
 TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
         : m_pConfig(pConfig),
           m_db(QSqlDatabase::addDatabase("QSQLITE")), // defaultConnection
@@ -76,18 +79,17 @@ bool TrackCollection::checkForTables() {
     installSorting(m_db);
 #endif
 
-    int requiredSchemaVersion = 24;
     // The schema XML is baked into the binary via Qt resources.
     QString schemaFilename(":schema.xml");
     QString okToExit = tr("Click OK to exit.");
     QString upgradeFailed = tr("Cannot upgrade database schema");
     QString upgradeToVersionFailed = tr("Unable to upgrade your database schema to version %1")
-            .arg(QString::number(requiredSchemaVersion));
+            .arg(QString::number(kRequiredSchemaVersion));
     QString helpEmail = tr("For help with database issues contact "
-                      "mixxx-devel@lists.sourceforge.net.");
+                           "mixxx-devel@lists.sourceforge.net.");
 
     SchemaManager::Result result = SchemaManager::upgradeToSchemaVersion(
-            schemaFilename, m_db, requiredSchemaVersion);
+            schemaFilename, m_db, kRequiredSchemaVersion);
     switch (result) {
         case SchemaManager::RESULT_BACKWARDS_INCOMPATIBLE:
             QMessageBox::warning(
