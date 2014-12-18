@@ -10,8 +10,6 @@
 class LibraryTest : public MixxxTest {
   protected:
     LibraryTest() {
-        config()->set(ConfigKey("[Config]","Path"),
-                      QDir::currentPath().append("/res"));
         m_pTrackCollection.reset(new TrackCollection(config()));
     }
 
