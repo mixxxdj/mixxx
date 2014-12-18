@@ -49,6 +49,9 @@ void WSliderComposed::setup(QDomNode node, const SkinContext& context) {
         setSliderPixmap(sourceSlider, context.selectScaleMode(slider, Paintable::FIXED));
     }
 
+    m_dSliderLength = m_bHorizontal ? width() : height();
+    m_handler.setSliderLength(m_dSliderLength);
+
     QDomElement handle = context.selectElement(node, "Handle");
     PixmapSource sourceHandle = context.getPixmapSource(handle);
     bool h = context.selectBool(node, "Horizontal", false);
