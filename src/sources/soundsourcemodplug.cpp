@@ -1,7 +1,7 @@
 #include "sources/soundsourcemodplug.h"
 
 #include "sources/audiosourcemodplug.h"
-#include "trackmetadata.h"
+#include "metadata/trackmetadata.h"
 #include "util/timer.h"
 
 #include <stdlib.h>

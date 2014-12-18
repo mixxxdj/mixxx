@@ -1,7 +1,7 @@
 #include "sources/soundsourcesndfile.h"
 
 #include "sources/audiosourcesndfile.h"
-#include "trackmetadatataglib.h"
+#include "metadata/trackmetadatataglib.h"
 
 #include <taglib/flacfile.h>
 #include <taglib/aifffile.h>

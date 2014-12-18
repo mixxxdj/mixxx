@@ -17,7 +17,7 @@
 #include "soundsourcem4a.h"
 #include "audiosourcem4a.h"
 
-#include "trackmetadatataglib.h"
+#include "metadata/trackmetadatataglib.h"
 
 #include <taglib/mp4file.h>
 

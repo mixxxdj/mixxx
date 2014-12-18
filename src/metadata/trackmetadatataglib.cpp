@@ -1,4 +1,4 @@
-#include "trackmetadatataglib.h"
+#include "metadata/trackmetadatataglib.h"
 
 #include <taglib/tag.h>
 #include <taglib/audioproperties.h>

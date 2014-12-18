@@ -17,7 +17,7 @@
 #include "sources/soundsourceoggvorbis.h"
 
 #include "sources/audiosourceoggvorbis.h"
-#include "trackmetadatataglib.h"
+#include "metadata/trackmetadatataglib.h"
 
 #include <taglib/vorbisfile.h>
 

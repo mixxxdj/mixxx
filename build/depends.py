@@ -660,8 +660,8 @@ class MixxxCore(Feature):
                    "sources/soundsource.cpp",
                    "sources/audiosource.cpp",
 
-                   "trackmetadata.cpp",
-                   "trackmetadatataglib.cpp",
+                   "metadata/trackmetadata.cpp",
+                   "metadata/trackmetadatataglib.cpp",
 
                    "sharedglcontext.cpp",
                    "widget/controlwidgetconnection.cpp",

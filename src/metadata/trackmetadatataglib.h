@@ -10,7 +10,7 @@
 #ifndef SOUNDSOURCETAGLIB_H
 #define SOUNDSOURCETAGLIB_H
 
-#include "trackmetadata.h"
+#include "metadata/trackmetadata.h"
 
 #include <taglib/tfile.h>
 #include <taglib/apetag.h>

@@ -15,7 +15,7 @@
 
 #include "sources/soundsourceflac.h"
 
-#include "trackmetadatataglib.h"
+#include "metadata/trackmetadatataglib.h"
 #include "sources/audiosourceflac.h"
 
 #include <taglib/flacfile.h>

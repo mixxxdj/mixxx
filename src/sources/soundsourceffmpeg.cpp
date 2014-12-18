@@ -45,8 +45,12 @@
 #include "audiosourceffmpeg.h"
 =======
 #include "sources/audiosourceffmpeg.h"
+<<<<<<< HEAD
 >>>>>>> Move Audio-/SoundSources code into separate directory:src/sources/soundsourceffmpeg.cpp
 #include "trackmetadata.h"
+=======
+#include "metadata/trackmetadata.h"
+>>>>>>> Move metadata code into separate directory
 
 >>>>>>> Split AudioSource from SoundSource
 #include <QtDebug>

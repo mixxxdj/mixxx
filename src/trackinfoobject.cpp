@@ -31,9 +31,13 @@
 #include "controlobject.h"
 #include "soundsourceproxy.h"
 <<<<<<< HEAD
+<<<<<<< HEAD
 #include "util/xml.h"
 =======
 #include "trackmetadata.h"
+=======
+#include "metadata/trackmetadata.h"
+>>>>>>> Move metadata code into separate directory
 #include "xmlparse.h"
 >>>>>>> Move track metadata properties from SoundSource into separate DTO class
 #include "track/beatfactory.h"

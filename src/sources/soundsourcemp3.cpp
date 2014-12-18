@@ -17,7 +17,7 @@
 #include "sources/soundsourcemp3.h"
 
 #include "sources/audiosourcemp3.h"
-#include "trackmetadatataglib.h"
+#include "metadata/trackmetadatataglib.h"
 
 #include <taglib/mpegfile.h>
 

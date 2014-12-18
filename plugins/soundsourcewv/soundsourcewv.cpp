@@ -1,7 +1,7 @@
 #include "soundsourcewv.h"
 #include "audiosourcewv.h"
 
-#include "trackmetadatataglib.h"
+#include "metadata/trackmetadatataglib.h"
 
 #include <taglib/wavpackfile.h>
 
