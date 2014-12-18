@@ -181,9 +181,6 @@ binary_files = [mixxx_bin];
 if test_bin is not None:
         binary_files.append(test_bin)
 
-# Mixxx essential resource files
-resource_files = Glob('#res/schema.xml')
-
 #Soundsource plugins
 soundsource_plugin_files = soundsource_plugins
 
@@ -284,7 +281,6 @@ if build.platform_is_linux or build.platform_is_bsd:
                     env.get('LIBDIR', default='lib'))
 
                 binary = env.Install(unix_bin_path, binary_files)
-                resource = env.Install(os.path.join(unix_share_path, 'mixxx'), resource_files)
                 skins = env.Install(os.path.join(unix_share_path, 'mixxx', 'skins'), skin_files)
                 vamp_plugin =  env.Install(
                         os.path.join(unix_lib_path, 'mixxx', 'plugins', 'vamp'),
@@ -304,7 +300,6 @@ if build.platform_is_linux or build.platform_is_bsd:
 
                 #Makes each of those Install builders get fired off when you run "scons install" :)
                 env.Alias('install', binary)
-                env.Alias('install', resource)
                 env.Alias('install', skins)
                 env.Alias('install', soundsource_plugins)
                 env.Alias('install', controllermappings)
@@ -396,7 +391,6 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
         sources = [mixxx_bin,
                    '#res/osx/application.icns',
                    Dir('#res/skins/'),
-                   File('#res/schema.xml'),
                    Dir('#res/controllers/'),
                    translation_files,
                    Dir('#res/keyboard/'),
@@ -457,7 +451,6 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
 if build.platform_is_windows:
         base_dist_dir = '#' + dist_dir
         skins = env.Install(os.path.join(base_dist_dir, "skins"), skin_files)
-        resource = env.Install(base_dist_dir+"/", resource_files)
         controllermappings = env.Install(os.path.join(base_dist_dir, "controllers"), controllermappings_files)
         translations = env.Install(os.path.join(base_dist_dir, "translations"), translation_files)
         keyboardmappings = env.Install(os.path.join(base_dist_dir, "keyboard"), keyboardmappings_files)
@@ -473,7 +466,6 @@ if build.platform_is_windows:
 
         #Always trigger these install builders when compiling on Windows
         env.Alias('mixxx', skins)
-        env.Alias('mixxx', resource)
         env.Alias('mixxx', controllermappings)
         env.Alias('mixxx', translations)
         env.Alias('mixxx', keyboardmappings)
