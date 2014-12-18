@@ -11,6 +11,7 @@
 #include "library/schemamanager.h"
 #include "trackinfoobject.h"
 #include "xmlparse.h"
+#include "util/assert.h"
 
 TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
         : m_pConfig(pConfig),
@@ -142,7 +143,9 @@ QSharedPointer<BaseTrackCache> TrackCollection::getTrackSource() {
 }
 
 void TrackCollection::setTrackSource(QSharedPointer<BaseTrackCache> trackSource) {
-    Q_ASSERT(m_defaultTrackSource.isNull());
+    DEBUG_ASSERT_AND_HANDLE(m_defaultTrackSource.isNull()) {
+        return;
+    }
     m_defaultTrackSource = trackSource;
 }
 
@@ -219,7 +222,9 @@ int TrackCollection::sqliteLocaleAwareCompare(void* pArg,
 void TrackCollection::sqliteLike(sqlite3_context *context,
                                 int aArgc,
                                 sqlite3_value **aArgv) {
-    Q_ASSERT(aArgc == 2 || aArgc == 3);
+    DEBUG_ASSERT_AND_HANDLE(aArgc == 2 || aArgc == 3) {
+        return;
+    }
 
     const char* b = reinterpret_cast<const char*>(
             sqlite3_value_text(aArgv[0]));

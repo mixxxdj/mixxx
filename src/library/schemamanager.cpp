@@ -6,6 +6,7 @@
 #include "library/schemamanager.h"
 #include "library/queryutil.h"
 #include "xmlparse.h"
+#include "util/assert.h"
 
 const QString SchemaManager::SETTINGS_VERSION_STRING = "mixxx.schema.version";
 const QString SchemaManager::SETTINGS_MINCOMPATIBLE_STRING = "mixxx.schema.min_compatible_version";
@@ -16,7 +17,9 @@ int SchemaManager::upgradeToSchemaVersion(const QString& schemaFilename,
 
     SettingsDAO settings(db);
     int currentVersion = getCurrentSchemaVersion(settings);
-    Q_ASSERT(currentVersion >= 0);
+    DEBUG_ASSERT_AND_HANDLE(currentVersion >= 0) {
+        return -1;
+    }
 
     if (currentVersion == targetVersion) {
         qDebug() << "SchemaManager::upgradeToSchemaVersion already at version"
@@ -53,7 +56,10 @@ int SchemaManager::upgradeToSchemaVersion(const QString& schemaFilename,
     for (int i = 0; i < revisions.count(); i++) {
         QDomElement revision = revisions.at(i).toElement();
         QString version = revision.attribute("version");
-        Q_ASSERT(!version.isNull());
+        DEBUG_ASSERT_AND_HANDLE(!version.isNull()) {
+            // xml file is not valid
+            return -3;
+        }
         int iVersion = version.toInt();
         revisionMap[iVersion] = revision;
     }
@@ -90,11 +96,13 @@ int SchemaManager::upgradeToSchemaVersion(const QString& schemaFilename,
             minCompatibleVersion = QString::number(thisTarget);
         }
 
-        Q_ASSERT(!eDescription.isNull() && !eSql.isNull());
+        DEBUG_ASSERT_AND_HANDLE(!eSql.isNull()) {
+            // xml file is not valid
+            return -3;
+        }
 
         QString description = eDescription.text();
         QString sql = eSql.text();
-
 
         qDebug() << "Applying version" << thisTarget << ":"
                  << description.trimmed();

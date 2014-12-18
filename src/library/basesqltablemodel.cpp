@@ -18,6 +18,7 @@
 #include "track/keyutils.h"
 #include "util/time.h"
 #include "util/dnd.h"
+#include "util/assert.h"
 
 const bool sDebug = false;
 
@@ -251,8 +252,9 @@ void BaseSqlTableModel::select() {
 
     QLinkedList<int> tableColumnIndices;
     foreach (QString column, m_tableColumns) {
-        Q_ASSERT(record.indexOf(column) == m_tableColumnCache.fieldIndex(column));
-        tableColumnIndices.push_back(record.indexOf(column));
+        int recordIndex = record.indexOf(column);
+        DEBUG_ASSERT(recordIndex == m_tableColumnCache.fieldIndex(column));
+        tableColumnIndices.push_back(recordIndex);
     }
 
     // sqlite does not set size and m_rowInfo was just cleared

@@ -3,6 +3,7 @@
 #include "dlghidden.h"
 #include "library/hiddentablemodel.h"
 #include "widget/wtracktableview.h"
+#include "util/assert.h"
 
 DlgHidden::DlgHidden(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
                      TrackCollection* pTrackCollection, MixxxKeyboard* pKeyboard)
@@ -15,10 +16,12 @@ DlgHidden::DlgHidden(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
 
     // Install our own trackTable
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
-    Q_ASSERT(box); //Assumes the form layout is a QVBox/QHBoxLayout!
-    box->removeWidget(m_pTrackTablePlaceholder);
-    m_pTrackTablePlaceholder->hide();
-    box->insertWidget(1, m_pTrackTableView);
+    DEBUG_ASSERT_AND_HANDLE(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
+    } else {
+        box->removeWidget(m_pTrackTablePlaceholder);
+        m_pTrackTablePlaceholder->hide();
+        box->insertWidget(1, m_pTrackTableView);
+    }
 
     m_pHiddenTableModel = new HiddenTableModel(this, pTrackCollection);
     m_pTrackTableView->loadTrackModel(m_pHiddenTableModel);

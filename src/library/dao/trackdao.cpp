@@ -23,6 +23,7 @@
 #include "library/dao/analysisdao.h"
 #include "library/dao/libraryhashdao.h"
 #include "library/coverartcache.h"
+#include "util/assert.h"
 
 QHash<int, TrackWeakPointer> TrackDAO::m_sTracks;
 QMutex TrackDAO::m_sTracksMutex;
@@ -560,11 +561,13 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
         QVariant lastInsert = m_pQueryTrackLocationInsert->lastInsertId();
         trackLocationId = lastInsert.toInt();
 
-        //Failure of this assert indicates that we were unable to insert the track
-        //location into the table AND we could not retrieve the id of that track
-        //location from the same table. "It shouldn't happen"... unless I screwed up
-        //- Albert :)
-        Q_ASSERT(trackLocationId >= 0);
+        // Failure of this assert indicates that we were unable to insert the
+        // track location into the table AND we could not retrieve the id of
+        // that track location from the same table. "It shouldn't
+        // happen"... unless I screwed up - Albert :)
+        DEBUG_ASSERT_AND_HANDLE(trackLocationId >= 0) {
+            return false;
+        }
 
         bindTrackToLibraryInsert(pTrack, trackLocationId);
 
@@ -606,7 +609,10 @@ int TrackDAO::addTrack(const QString& file, bool unremove) {
 void TrackDAO::addTrack(TrackInfoObject* pTrack, bool unremove) {
     //qDebug() << "TrackDAO::addTrack" << QThread::currentThread() << m_database.connectionName();
     //qDebug() << "TrackCollection::addTrack(), inserting into DB";
-    Q_ASSERT(pTrack); //Why you be giving me NULL pTracks
+    // Why you be giving me NULL pTracks
+    DEBUG_ASSERT_AND_HANDLE(pTrack) {
+        return;
+    }
 
     // Check that track is a supported extension.
     if (!isTrackFormatSupported(pTrack)) {
@@ -878,7 +884,11 @@ void TrackDAO::purgeTracks(const QList<int>& ids) {
 }
 
 void TrackDAO::slotTrackDeleted(TrackInfoObject* pTrack) {
-    Q_ASSERT(pTrack);
+    // Should not be possible.
+    DEBUG_ASSERT_AND_HANDLE(pTrack != NULL) {
+        return;
+    }
+
     //qDebug() << "Garbage Collecting" << pTrack << "ID" << pTrack->getId() << pTrack->getInfo();
 
     // Save the track if it is dirty.
@@ -1165,16 +1175,21 @@ TrackPointer TrackDAO::getTrack(const int id, const bool cacheOnly) const {
 
 // Saves a track's info back to the database
 void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
+    DEBUG_ASSERT_AND_HANDLE(pTrack) {
+        return;
+    }
+
     ScopedTransaction transaction(m_database);
     QTime time;
     time.start();
-    Q_ASSERT(pTrack);
     //qDebug() << "TrackDAO::updateTrackInDatabase" << QThread::currentThread() << m_database.connectionName();
 
     //qDebug() << "Updating track" << pTrack->getInfo() << "in database...";
 
     int trackId = pTrack->getId();
-    Q_ASSERT(trackId >= 0);
+    DEBUG_ASSERT_AND_HANDLE(trackId >= 0) {
+        return;
+    }
 
     QSqlQuery query(m_database);
 

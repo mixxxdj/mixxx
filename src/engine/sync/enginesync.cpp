@@ -21,6 +21,7 @@
 #include <QStringList>
 
 #include "engine/sync/internalclock.h"
+#include "util/assert.h"
 
 EngineSync::EngineSync(ConfigObject<ConfigValue>* pConfig)
         : BaseSyncableListener(pConfig) {
@@ -32,7 +33,9 @@ EngineSync::~EngineSync() {
 void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
     //qDebug() << "EngineSync::requestSyncMode" << pSyncable->getGroup() << mode;
     // Based on the call hierarchy I don't think this is possible. (Famous last words.)
-    Q_ASSERT(pSyncable);
+    DEBUG_ASSERT_AND_HANDLE(pSyncable) {
+        return;
+    }
 
     const bool channelIsMaster = m_pMasterSyncable == pSyncable;
 

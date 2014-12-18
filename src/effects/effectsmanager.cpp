@@ -5,6 +5,7 @@
 
 #include "engine/effects/engineeffectsmanager.h"
 #include "engine/effects/engineeffect.h"
+#include "util/assert.h"
 
 const char* kEqualizerRackName = "[EqualizerChain]";
 const char* kQuickEffectRackName = "[QuickEffectChain]";
@@ -47,7 +48,9 @@ EffectsManager::~EffectsManager() {
 }
 
 void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {
-    Q_ASSERT(pBackend);
+    DEBUG_ASSERT_AND_HANDLE(pBackend) {
+        return;
+    }
     m_effectsBackends.append(pBackend);
     connect(pBackend, SIGNAL(effectRegistered()),
             this, SIGNAL(availableEffectsUpdated()));

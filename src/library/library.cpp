@@ -27,6 +27,7 @@
 #include "library/librarycontrol.h"
 #include "library/setlogfeature.h"
 #include "util/sandbox.h"
+#include "util/assert.h"
 
 #include "widget/wtracktableview.h"
 #include "widget/wlibrary.h"
@@ -176,7 +177,9 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
 }
 
 void Library::addFeature(LibraryFeature* feature) {
-    Q_ASSERT(feature);
+    DEBUG_ASSERT_AND_HANDLE(feature) {
+        return;
+    }
     m_features.push_back(feature);
     m_pSidebarModel->addLibraryFeature(feature);
     connect(feature, SIGNAL(showTrackModel(QAbstractItemModel*)),
@@ -198,7 +201,9 @@ void Library::addFeature(LibraryFeature* feature) {
 void Library::slotShowTrackModel(QAbstractItemModel* model) {
     //qDebug() << "Library::slotShowTrackModel" << model;
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
-    Q_ASSERT(trackModel);
+    DEBUG_ASSERT_AND_HANDLE(trackModel) {
+        return;
+    }
     emit(showTrackModel(model));
     emit(switchToView(m_sTrackViewName));
     emit(restoreSearch(trackModel->currentSearch()));

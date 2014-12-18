@@ -4,6 +4,7 @@
 
 #include "library/playlisttablemodel.h"
 #include "widget/wtracktableview.h"
+#include "util/assert.h"
 
 DlgAutoDJ::DlgAutoDJ(QWidget* parent,
                      ConfigObject<ConfigValue>* pConfig,
@@ -28,10 +29,12 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
             this, SIGNAL(trackSelected(TrackPointer)));
 
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
-    Q_ASSERT(box); //Assumes the form layout is a QVBox/QHBoxLayout!
-    box->removeWidget(m_pTrackTablePlaceholder);
-    m_pTrackTablePlaceholder->hide();
-    box->insertWidget(1, m_pTrackTableView);
+    DEBUG_ASSERT_AND_HANDLE(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
+    } else {
+        box->removeWidget(m_pTrackTablePlaceholder);
+        m_pTrackTablePlaceholder->hide();
+        box->insertWidget(1, m_pTrackTableView);
+    }
 
     // We do _NOT_ take ownership of this from AutoDJProcessor.
     m_pAutoDJTableModel = m_pAutoDJProcessor->getTableModel();

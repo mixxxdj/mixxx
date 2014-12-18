@@ -22,6 +22,7 @@
 #include "dlgpreflibrary.h"
 #include "waveform/guitick.h"
 #include "widget/wcoverartmenu.h"
+#include "util/assert.h"
 
 WTrackTableView::WTrackTableView(QWidget * parent,
                                  ConfigObject<ConfigValue> * pConfig,
@@ -201,8 +202,12 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
 
-    Q_ASSERT(model);
-    Q_ASSERT(trackModel);
+    DEBUG_ASSERT_AND_HANDLE(model) {
+        return;
+    }
+    DEBUG_ASSERT_AND_HANDLE(trackModel) {
+        return;
+    }
 
     /* If the model has not changed
      * there's no need to exchange the headers
@@ -356,8 +361,8 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 }
 
 void WTrackTableView::createActions() {
-    Q_ASSERT(m_pMenu);
-    Q_ASSERT(m_pSamplerMenu);
+    DEBUG_ASSERT(m_pMenu);
+    DEBUG_ASSERT(m_pSamplerMenu);
 
     m_pRemoveAct = new QAction(tr("Remove"), this);
     connect(m_pRemoveAct, SIGNAL(triggered()), this, SLOT(slotRemove()));

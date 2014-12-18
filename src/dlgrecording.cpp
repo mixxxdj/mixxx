@@ -6,6 +6,7 @@
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
 #include "widget/wtracktableview.h"
+#include "util/assert.h"
 
 DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
                            TrackCollection* pTrackCollection,
@@ -35,10 +36,12 @@ DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
             this, SLOT(slotDurationRecorded(QString)));
 
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
-    Q_ASSERT(box); //Assumes the form layout is a QVBox/QHBoxLayout!
-    box->removeWidget(m_pTrackTablePlaceholder);
-    m_pTrackTablePlaceholder->hide();
-    box->insertWidget(1, m_pTrackTableView);
+    DEBUG_ASSERT_AND_HANDLE(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
+    } else {
+        box->removeWidget(m_pTrackTablePlaceholder);
+        m_pTrackTablePlaceholder->hide();
+        box->insertWidget(1, m_pTrackTableView);
+    }
 
     m_recordingDir = m_pRecordingManager->getRecordingDir();
 

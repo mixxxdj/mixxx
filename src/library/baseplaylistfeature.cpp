@@ -15,6 +15,7 @@
 #include "mixxxkeyboard.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarytextbrowser.h"
+#include "util/assert.h"
 
 BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
                                          ConfigObject<ConfigValue>* pConfig,
@@ -298,7 +299,9 @@ void BasePlaylistFeature::slotDeletePlaylist() {
     }
 
     if (m_lastRightClickedIndex.isValid()) {
-        Q_ASSERT(playlistId >= 0);
+        DEBUG_ASSERT_AND_HANDLE(playlistId >= 0) {
+            return;
+        }
 
         m_playlistDao.deletePlaylist(playlistId);
         activate();

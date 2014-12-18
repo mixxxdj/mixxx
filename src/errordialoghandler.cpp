@@ -22,6 +22,7 @@
 #include <QtDebug>
 
 #include "errordialoghandler.h"
+#include "util/assert.h"
 
 ErrorDialogProperties::ErrorDialogProperties()
         : m_title("Mixxx"),
@@ -108,7 +109,9 @@ bool ErrorDialogHandler::requestErrorDialog(DialogType type, QString message,
 bool ErrorDialogHandler::requestErrorDialog(ErrorDialogProperties* props) {
     // Make sure the minimum items are set
     QString text = props->getText();
-    Q_ASSERT(!text.isEmpty());
+    DEBUG_ASSERT_AND_HANDLE(!text.isEmpty()) {
+        return false;
+    }
 
     // Skip if a dialog with the same key is already displayed
     QMutexLocker locker(&m_mutex);

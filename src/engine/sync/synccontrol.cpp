@@ -8,6 +8,7 @@
 #include "engine/enginechannel.h"
 #include "engine/ratecontrol.h"
 #include "util/math.h"
+#include "util/assert.h"
 
 const double kTrackPositionMasterHandoff = 0.99;
 
@@ -105,7 +106,7 @@ void SyncControl::setEngineControls(RateControl* pRateControl,
 
     // Throw a hissy fit if somebody moved us such that the vinylcontrol_enabled
     // control doesn't exist yet. This will blow up immediately, won't go unnoticed.
-    Q_ASSERT(m_pVCEnabled->valid());
+    DEBUG_ASSERT(m_pVCEnabled->valid());
 
     m_pVCEnabled->connectValueChanged(this, SLOT(slotVinylControlChanged(double)),
                                       Qt::DirectConnection);

@@ -51,6 +51,7 @@
 #include "track/keyutils.h"
 #include "controlobjectslave.h"
 #include "util/compatibility.h"
+#include "util/assert.h"
 
 #ifdef __VINYLCONTROL__
 #include "engine/vinylcontrolcontrol.h"
@@ -715,9 +716,11 @@ void EngineBuffer::slotKeylockEngineChanged(double d_index) {
 }
 
 
-void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
-{
-    Q_ASSERT(even(iBufferSize));
+void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
+    // Bail if we receive a non-even buffer size. Assert in debug builds.
+    DEBUG_ASSERT_AND_HANDLE(even(iBufferSize)) {
+        return;
+    }
     m_pReader->process();
     // Steps:
     // - Lookup new reader information
