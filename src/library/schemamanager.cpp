@@ -12,19 +12,19 @@ const QString SchemaManager::SETTINGS_VERSION_STRING = "mixxx.schema.version";
 const QString SchemaManager::SETTINGS_MINCOMPATIBLE_STRING = "mixxx.schema.min_compatible_version";
 
 // static
-int SchemaManager::upgradeToSchemaVersion(const QString& schemaFilename,
-                                           QSqlDatabase& db, int targetVersion) {
-
+SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
+        const QString& schemaFilename,
+        QSqlDatabase& db, const int targetVersion) {
     SettingsDAO settings(db);
     int currentVersion = getCurrentSchemaVersion(settings);
     DEBUG_ASSERT_AND_HANDLE(currentVersion >= 0) {
-        return -1;
+        return RESULT_UPGRADE_FAILED;
     }
 
     if (currentVersion == targetVersion) {
         qDebug() << "SchemaManager::upgradeToSchemaVersion already at version"
                  << targetVersion;
-        return 0;
+        return RESULT_OK;
     } else if (currentVersion < targetVersion) {
         qDebug() << "SchemaManager::upgradeToSchemaVersion upgrading"
                  << targetVersion-currentVersion << "versions to version"
@@ -37,7 +37,9 @@ int SchemaManager::upgradeToSchemaVersion(const QString& schemaFilename,
 
         if (isBackwardsCompatible(settings, currentVersion, targetVersion)) {
             qDebug() << "Current schema version is backwards-compatible with" << targetVersion;
-            return 0;
+            return RESULT_OK;
+        } else {
+            return RESULT_BACKWARDS_INCOMPATIBLE;
         }
     }
 
@@ -46,7 +48,7 @@ int SchemaManager::upgradeToSchemaVersion(const QString& schemaFilename,
 
     if (schemaRoot.isNull()) {
         // Error parsing xml file
-        return -3;
+        return RESULT_SCHEMA_ERROR;
     }
 
     QDomNodeList revisions = schemaRoot.childNodes();
@@ -58,31 +60,25 @@ int SchemaManager::upgradeToSchemaVersion(const QString& schemaFilename,
         QString version = revision.attribute("version");
         DEBUG_ASSERT_AND_HANDLE(!version.isNull()) {
             // xml file is not valid
-            return -3;
+            return RESULT_SCHEMA_ERROR;
         }
         int iVersion = version.toInt();
         revisionMap[iVersion] = revision;
     }
 
-    int success = 0;
+    // The checks above guarantee that currentVersion < targetVersion when we
+    // get here.
+    while (currentVersion < targetVersion) {
+        int thisTarget = currentVersion + 1;
 
-    while (currentVersion != targetVersion) {
-        int thisTarget;
-        if (currentVersion > targetVersion) {
-            thisTarget = currentVersion - 1;
-            qDebug() << "Downgrade not yet supported.";
-            success = -1;
-            break;
-        } else {
-            thisTarget = currentVersion + 1;
-        }
-
+        // Now that we bake the schema.xml into the binary it is a programming
+        // error if we include a schema.xml that does not have information on
+        // how to get all the way to targetVersion.
         if (!revisionMap.contains(thisTarget)) {
             qDebug() << "SchemaManager::upgradeToSchemaVersion"
                      << "Don't know how to get to"
                      << thisTarget << "from" << currentVersion;
-            success = -1;
-            break;
+            return RESULT_SCHEMA_ERROR;
         }
 
         QDomElement revision = revisionMap[thisTarget];
@@ -98,7 +94,7 @@ int SchemaManager::upgradeToSchemaVersion(const QString& schemaFilename,
 
         DEBUG_ASSERT_AND_HANDLE(!eSql.isNull()) {
             // xml file is not valid
-            return -3;
+            return RESULT_SCHEMA_ERROR;
         }
 
         QString description = eDescription.text();
@@ -136,15 +132,13 @@ int SchemaManager::upgradeToSchemaVersion(const QString& schemaFilename,
             settings.setValue(SETTINGS_MINCOMPATIBLE_STRING, minCompatibleVersion);
             transaction.commit();
         } else {
-            success = -2;
             qDebug() << "Failed to move from version" << currentVersion
                      << "to version" << thisTarget;
             transaction.rollback();
-            break;
+            return RESULT_UPGRADE_FAILED;
         }
     }
-
-    return success;
+    return RESULT_OK;
 }
 
 // static

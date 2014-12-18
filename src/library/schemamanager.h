@@ -11,8 +11,15 @@
 
 class SchemaManager {
   public:
-    static int upgradeToSchemaVersion(const QString& schemaFilename,
-                                       QSqlDatabase& db, int targetVersion);
+    enum Result {
+        RESULT_OK,
+        RESULT_BACKWARDS_INCOMPATIBLE,
+        RESULT_UPGRADE_FAILED,
+        RESULT_SCHEMA_ERROR
+    };
+
+    static Result upgradeToSchemaVersion(const QString& schemaFilename,
+                                         QSqlDatabase& db, const int targetVersion);
   private:
     static bool isBackwardsCompatible(SettingsDAO& settings,
                                       int currentVersion,
