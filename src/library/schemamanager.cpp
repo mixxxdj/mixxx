@@ -165,12 +165,13 @@ bool SchemaManager::isBackwardsCompatible(SettingsDAO& settings,
                                           int targetVersion) {
     QString backwardsCompatibleVersion =
             settings.getValue(SETTINGS_MINCOMPATIBLE_STRING);
-    int iBackwardsCompatibleVersion = -1;
+    bool ok = false;
+    int iBackwardsCompatibleVersion = backwardsCompatibleVersion.toInt(&ok);
 
     // If the current backwards compatible schema version is not stored in the
     // settings table, assume the current schema version is only backwards
     // compatible with itself.
-    if (backwardsCompatibleVersion.isNull()) {
+    if (backwardsCompatibleVersion.isNull() || !ok) {
         // rryan 11/2010 We just added the backwards compatible flags, and some
         // people using the Mixxx trunk are already on schema version 7. This
         // special case is for them. Schema version 7 is backwards compatible
