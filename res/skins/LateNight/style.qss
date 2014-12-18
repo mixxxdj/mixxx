@@ -852,6 +852,9 @@ QTableView, QTextBrowser, QTreeView {
   color: #cfb32c;
   background-color: #0f0f0f;
   alternate-background-color: #1a1a1a;
+
+  selection-color: #cfb32c;
+  selection-background-color: #725309;
 }
 
 /* checkbox in library "Played" column */
