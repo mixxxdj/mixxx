@@ -77,8 +77,8 @@ bool TrackCollection::checkForTables() {
 #endif
 
     int requiredSchemaVersion = 24;
-    QString schemaFilename = m_pConfig->getResourcePath();
-    schemaFilename.append("schema.xml");
+    // The schema XML is baked into the binary via Qt resources.
+    QString schemaFilename(":schema.xml");
     QString okToExit = tr("Click OK to exit.");
     QString upgradeFailed = tr("Cannot upgrade database schema");
     QString upgradeToVersionFailed = tr("Unable to upgrade your database schema to version %1")
