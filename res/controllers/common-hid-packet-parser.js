@@ -604,7 +604,7 @@ HIDPacket.prototype.parse = function(data) {
                     field_changes[bit_name] = changed_bits[bit_name];
 
             } else if (field.type=="control") {
-                if (field.value==value)
+                if (field.value==value && field.mindelta!=undefined)
                     continue;
                 if (field.ignored || field.value==undefined) {
                     field.value = value;
