@@ -58,8 +58,8 @@ template<class T> static void safeRelease(T **ppT) {
 
 }
 
-AudioSourceMediaFoundation::AudioSourceMediaFoundation(QString fileName)
-        : Super(fileName, "m4a"), m_hrCoInitialize(E_FAIL), m_hrMFStartup(E_FAIL),
+AudioSourceMediaFoundation::AudioSourceMediaFoundation()
+        : m_hrCoInitialize(E_FAIL), m_hrMFStartup(E_FAIL),
                 m_pReader(NULL), m_pAudioType(NULL), m_wcFilename(
                 NULL), m_nextFrame(0), m_leftoverBuffer(NULL), m_leftoverBufferSize(
                 0), m_leftoverBufferLength(0), m_leftoverBufferPosition(0), m_mfDuration(
@@ -121,7 +121,7 @@ Result AudioSourceMediaFoundation::postConstruct(QString fileName) {
     m_wcFilename[wcFilenameLength] = '\0';
 
     // Create the source reader to read the input file.
-    hr = MFCreateSourceReaderFromURL(m_wcFilename, NULL, &m_pReader);
+    HRESULT hr = MFCreateSourceReaderFromURL(m_wcFilename, NULL, &m_pReader);
     if (FAILED(hr)) {
         qWarning() << "SSMF: Error opening input file:" << fileName;
         return ERR;
@@ -248,10 +248,8 @@ Mixxx::AudioSource::size_type AudioSourceMediaFoundation::readFrameSamplesInterl
                 &timestamp,                     // [out] LONGLONG *pllTimestamp,
                 &pSample);                         // [out] IMFSample **ppSample
         if (FAILED(hr)) {
-            if (sDebug) {
-                qDebug() << "ReadSample failed.";
-            }
-            break;
+            qWarning() << "ReadSample failed!";
+            break; // abort
         }
 
         if (sDebug) {
