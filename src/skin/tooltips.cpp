@@ -140,8 +140,8 @@ void Tooltips::addStandardTooltips() {
 
     add("headSplit")
             << tr("Headphone Split Cue")
-            << tr("If activated, the master signal plays in the right channel, while the cueing signal ")
-            << tr("plays in the left channel.")
+            << tr("If activated, the master signal plays in the right channel, while the cueing signal "
+                  "plays in the left channel.")
             << tr("Adjust the Headphone Mix so in the left channel is not the pure cueing signal.");
     
     // Note, this is used for samplers and microphone only currently (that's why
@@ -373,10 +373,10 @@ void Tooltips::addStandardTooltips() {
     add("beatsync_beatsync_tempo")
             << tr("Old Synchronize")
             << tr("(This skin should be updated to use Master Sync!)")
-            << QString("%1: %2").arg(leftClick, tr("Syncs the tempo (BPM) and phase to that of the other track, "))
-            << tr("if BPM is detected on both.")
-            << QString("%1: %2").arg(rightClick, tr("Syncs the tempo (BPM) to that of the other track,"))
-            << tr("if BPM is detected on both.")
+            << QString("%1: %2").arg(leftClick, tr("Syncs the tempo (BPM) and phase to that of the other track, "
+                                                   "if BPM is detected on both."))
+            << QString("%1: %2").arg(rightClick, tr("Syncs the tempo (BPM) to that of the other track, "
+                                                    "if BPM is detected on both."))
             << tr("Syncs to the first deck (in numerical order) that is playing a track and has a BPM.")
             << tr("If no deck is playing, syncs to the first deck that has a BPM.")
             << tr("Decks can't sync to samplers and samplers can only sync to decks.");
