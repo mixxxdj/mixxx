@@ -700,8 +700,10 @@ void EngineBuffer::slotControlSlip(double v)
     m_slipEnabled = static_cast<int>(v > 0.0);
 }
 
-void EngineBuffer::slotKeylockEngineChanged(double d_index) {
-    KeylockEngine engine = static_cast<KeylockEngine>((int)d_index);
+void EngineBuffer::slotKeylockEngineChanged(double dIndex) {
+    // static_cast<KeylockEngine>(dIndex); direct cast produces a "not used" warning wit gcc
+    int iEngine = static_cast<int>(dIndex);
+    KeylockEngine engine = static_cast<KeylockEngine>(iEngine);
     if (engine == SOUNDTOUCH) {
         m_pScaleKeylock = m_pScaleST;
     } else {
