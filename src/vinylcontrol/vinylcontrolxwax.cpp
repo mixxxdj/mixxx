@@ -60,6 +60,7 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue>* pConfig, QString g
           m_dOldFilePos(0.0),
           m_dOldDuration(0.0),
           m_dOldDurationInaccurate(-1.0),
+          m_bWasReversed(false),
           m_pPitchRing(NULL),
           m_iPitchRingSize(0),
           m_iPitchRingPos(0),
@@ -273,10 +274,11 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
         // we were at record end, so turn it off and restore mode
         if(m_bAtRecordEnd) {
             disableRecordEndMode();
-            if (m_iOldVCMode == MIXXX_VCMODE_CONSTANT)
+            if (m_iOldVCMode == MIXXX_VCMODE_CONSTANT) {
                 m_iVCMode = MIXXX_VCMODE_RELATIVE;
-            else
+            } else {
                 m_iVCMode = m_iOldVCMode;
+            }
         }
     }
 
@@ -455,6 +457,13 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
             //add a value to the pitch ring (for averaging / smoothing the pitch)
             //qDebug() << fabs(((m_dVinylPosition - m_dVinylPositionOld) * (dVinylPitch / fabs(dVinylPitch))));
 
+            bool reversed = static_cast<bool>(reverseButton->get());
+            if (!reversed && m_bWasReversed) {
+                qDebug() << "Playback was reversed, resetting steady pitch";
+                resetSteadyPitch(dVinylPitch, m_dVinylPosition);
+            }
+            m_bWasReversed = reversed;
+
             //save the absolute amount of drift for when we need to estimate vinyl position
             m_dDriftAmt = m_dVinylPosition - filePosition;
 
@@ -478,8 +487,9 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                 //qDebug() << "Vinyl leadin";
                 syncPosition();
                 resetSteadyPitch(dVinylPitch, m_dVinylPosition);
-                if (uiUpdateTime(filePosition))
+                if (uiUpdateTime(filePosition)) {
                     rateSlider->slotSet(rateDir->get() * (fabs(dVinylPitch) - 1.0) / rateRange->get());
+                }
             } else if (m_iVCMode == MIXXX_VCMODE_ABSOLUTE &&
                        (fabs(m_dVinylPosition - m_dVinylPositionOld) >= 5.0)) {
                 //If the position from the timecode is more than a few seconds off, resync the position.
@@ -729,12 +739,18 @@ void VinylControlXwax::resetSteadyPitch(double pitch, double time) {
 }
 
 double VinylControlXwax::checkSteadyPitch(double pitch, double time) {
-    if (m_pSteadyGross->check(pitch, time, loopEnabled->get()) < 0.5) {
+    // If the track is in reverse we can't really know what's going on.
+    if (m_bWasReversed) {
+        return 0;
+    }
+    if (m_pSteadyGross->check(pitch, time,
+                              static_cast<bool>(loopEnabled->get())) < 0.5) {
         scratching->slotSet(1.0);
     } else {
         scratching->slotSet(0.0);
     }
-    return m_pSteadySubtle->check(pitch, time, loopEnabled->get());
+    return m_pSteadySubtle->check(pitch, time,
+                                  static_cast<bool>(loopEnabled->get()));
 }
 
 //Synchronize Mixxx's position to the position of the timecoded vinyl.
