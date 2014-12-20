@@ -355,9 +355,9 @@ void Tooltips::addStandardTooltips() {
 
     add("sync_reset_key")
             << tr("Sync and Reset Key")
-            << QString("%1: %2").arg(leftClick, tr("Syncs the pitch (Key) to be compatible with the the other track, "))
-            << tr("if a Key is detected on both.")
-            << QString("%1: %2").arg(rightClick, tr("Resets the pitch (Key) to original track pitch."));
+            << QString("%1: %2").arg(leftClick, tr("Syncs the pitch (key) to be compatible with the other track, "))
+            << tr("if a key is detected on both.")
+            << QString("%1: %2").arg(rightClick, tr("Resets the pitch (key) to original track pitch."));
 
     add("sync_master")
             << tr("Enable Sync Clock Master")

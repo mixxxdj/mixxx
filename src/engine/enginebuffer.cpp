@@ -796,7 +796,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
         // In this mode is usefull for controller mappings, because the pitch
         // knob is not changed by Mixxx itself and cannot go out of sync.
         //
-        // With preference mode PitchAndKeylock = kPakmAbsoluteScaleNoReset
+        // With preference mode PitchAndKeylock = kAbsoluteScaleLockCurrentKey
         // the speedSliderPitchRatio is not reseted when keylock is enabled,
         // but reflected in the pitch knob. The Pitch knob turns if the speed
         // slider is moved without keylock. This mode allows to enable keylock
