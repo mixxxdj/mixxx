@@ -208,3 +208,7 @@ bool WLibrarySidebar::event(QEvent* pEvent) {
     }
     return QTreeView::event(pEvent);
 }
+
+void WLibrarySidebar::slotSetFont(const QFont& font) {
+    setFont(font);
+}

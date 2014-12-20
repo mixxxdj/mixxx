@@ -848,7 +848,7 @@
 
 QTableView, QTextBrowser, QTreeView {
   border: 1px solid #585858;
-  font: 15px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  /*font: 15px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;*/
   color: #cfb32c;
   background-color: #0f0f0f;
   alternate-background-color: #1a1a1a;
@@ -883,9 +883,6 @@ QPushButton#LibraryPreviewButton {
 }
 /*QPushButton#LibraryPreviewButton:focus {
   background-color: #725309;
-}*/
-/*#LibraryBPMWidget, #LibraryBPMButton, #LibraryBPMSpinBox {
-  background-color: #ff0;
 }*/
 
 QPushButton#LibraryPreviewButton:!checked{ image: url(skin:/style/style_library_preview_play.png); }
@@ -953,15 +950,15 @@ QScrollBar::sub-line:horizontal, QScrollBar::sub-line:vertical {
 }
 
 /* transition time in Auto DJ tab */
-QSpinBox:editable { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: transparent; color: #cfb32c; }
+QSpinBox:editable { background: transparent; color: #cfb32c; }
 QSpinBox { min-height: 20px; max-height: 20px;min-width: 40px; max-width: 40px;}
 
 /* library search bar */
-WSearchLineEdit { padding: 2px; border: 1px solid #656565; font: 18px/20px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: #181818; color: #cfb32c; }
-WSearchLineEdit:focus { padding: 2px; border: 2px solid #FF6600; font: bold 18px/20px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: #0f0f0f; color: #eece33;}
+WSearchLineEdit { padding: 2px; border: 1px solid #656565; background: #181818; color: #cfb32c; }
+WSearchLineEdit:focus { padding: 2px; border: 2px solid #FF6600; background: #0f0f0f; color: #eece33;}
 
 /* cover art */
-WCoverArt { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: transparent; color: #ACACAC; }
+WCoverArt { background: transparent; color: #ACACAC; }
 
 /* splitter between treeview and library */
 QSplitter::handle { image: url(skin:/style/style_handle_unchecked.png); background-color: #1e1e1e; }
@@ -969,9 +966,8 @@ QSplitter::handle:pressed { image: url(skin:/style/style_handle_checked.png); ba
 QSplitter::handle:horizontal { width: 10px; background-color: #0e0e0e;}
 QSplitter::handle:vertical { height: 10px; background-color: #0e0e0e;}
 
-/*QPushButton { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }*/
 /* Extra declaration for QRadioButton otherwise it shows up with wrong colors in Linux with Gnome */
-QLabel, QRadioButton { font: 15px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: transparent; color: #cfb32c;}
+QLabel, QRadioButton { background: transparent; color: #cfb32c;}
 
 /* Spacing between treeview and searchbar */
 QTreeView { margin: 10px 0px 0px 0px; }

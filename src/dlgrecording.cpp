@@ -9,7 +9,7 @@
 #include "util/assert.h"
 
 DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
-                           TrackCollection* pTrackCollection,
+                           Library* pLibrary, TrackCollection* pTrackCollection,
                            RecordingManager* pRecordingManager, MixxxKeyboard* pKeyboard)
         : QWidget(parent),
           m_pConfig(pConfig),
@@ -27,6 +27,10 @@ DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
             this, SIGNAL(loadTrack(TrackPointer)));
     connect(m_pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
+    connect(pLibrary, SIGNAL(setTrackTableFont(QFont)),
+            m_pTrackTableView, SLOT(setTrackTableFont(QFont)));
+    connect(pLibrary, SIGNAL(setTrackTableRowHeight(int)),
+            m_pTrackTableView, SLOT(setTrackTableRowHeight(int)));
 
     connect(m_pRecordingManager, SIGNAL(isRecording(bool)),
             this, SLOT(slotRecordingEnabled(bool)));
@@ -134,3 +138,11 @@ void DlgRecording::refreshLabel() {
               .arg(m_durationRecordedStr);
     label->setText(text);
  }
+
+void DlgRecording::setTrackTableFont(const QFont& font) {
+    m_pTrackTableView->setTrackTableFont(font);
+}
+
+void DlgRecording::setTrackTableRowHeight(int rowHeight) {
+    m_pTrackTableView->setTrackTableRowHeight(rowHeight);
+}

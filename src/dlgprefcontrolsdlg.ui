@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>538</width>
+    <width>561</width>
     <height>690</height>
    </rect>
   </property>
@@ -245,8 +245,8 @@
    </item>
    <item row="0" column="0">
     <layout class="QGridLayout" name="GridLayout1">
-     <item row="9" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxRateDir">
+     <item row="2" column="1" rowspan="2" colspan="2">
+      <widget class="QComboBox" name="ComboBoxSchemeconf">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -256,32 +256,35 @@
        <property name="font">
         <font/>
        </property>
-      </widget>
-     </item>
-     <item row="7" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxPosition">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="font">
-        <font/>
+       <property name="toolTip">
+        <string>Select from different color schemes of a skin if available.</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="1" colspan="2">
-      <widget class="QLabel" name="warningLabel">
+     <item row="10" column="0">
+      <widget class="QLabel" name="labelCueMode">
        <property name="text">
-        <string/>
+        <string>Cue mode</string>
        </property>
-       <property name="alignment">
-        <set>Qt::AlignJustify|Qt::AlignVCenter</set>
+       <property name="openExternalLinks">
+        <bool>true</bool>
+       </property>
+       <property name="buddy">
+        <cstring>ComboBoxCueDefault</cstring>
        </property>
       </widget>
      </item>
-     <item row="11" column="1" colspan="2">
+     <item row="11" column="0">
+      <widget class="QLabel" name="textLabelAllowTrackLoadToPlayingDeck">
+       <property name="text">
+        <string>Track load behavior</string>
+       </property>
+       <property name="buddy">
+        <cstring>ComboBoxAllowTrackLoadToPlayingDeck</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxCueDefault">
        <property name="toolTip">
         <string>Mixxx mode: 
@@ -300,29 +303,45 @@ Numark mode:
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="labelFullscreenOption">
-       <property name="text">
-        <string>Start in full screen mode</string>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="0">
-      <widget class="QLabel" name="labelPositionDisplay">
-       <property name="enabled">
-        <bool>true</bool>
+     <item row="5" column="1" colspan="2">
+      <widget class="QComboBox" name="ComboBoxTooltips">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
        </property>
        <property name="font">
         <font/>
        </property>
-       <property name="text">
-        <string>Position display</string>
+       <property name="toolTip">
+        <string>A small pop-up box displays a brief description of a control's purpose when the cursor rests on the control.</string>
        </property>
-       <property name="wordWrap">
-        <bool>false</bool>
+      </widget>
+     </item>
+     <item row="6" column="1" colspan="2">
+      <widget class="QComboBox" name="ComboBoxPosition">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
        </property>
-       <property name="buddy">
-        <cstring>ComboBoxPosition</cstring>
+       <property name="font">
+        <font/>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="1" colspan="2">
+      <widget class="QComboBox" name="ComboBoxRateDir">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font/>
        </property>
       </widget>
      </item>
@@ -345,7 +364,43 @@ Numark mode:
        </property>
       </widget>
      </item>
-     <item row="8" column="0">
+     <item row="4" column="0">
+      <widget class="QLabel" name="labelFullscreenOption">
+       <property name="text">
+        <string>Start in full screen mode</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="labelPositionDisplay">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="font">
+        <font/>
+       </property>
+       <property name="text">
+        <string>Position display</string>
+       </property>
+       <property name="wordWrap">
+        <bool>false</bool>
+       </property>
+       <property name="buddy">
+        <cstring>ComboBoxPosition</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1" colspan="2">
+      <widget class="QLabel" name="warningLabel">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignJustify|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="0">
       <widget class="QLabel" name="TextLabel6">
        <property name="enabled">
         <bool>true</bool>
@@ -364,96 +419,18 @@ Numark mode:
        </property>
       </widget>
      </item>
-     <item row="6" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxTooltips">
+     <item row="4" column="1" colspan="2">
+      <widget class="QComboBox" name="ComboBoxStartInFullscreen">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="font">
-        <font/>
-       </property>
-       <property name="toolTip">
-        <string>A small pop-up box displays a brief description of a control's purpose when the cursor rests on the control.</string>
-       </property>
       </widget>
      </item>
-     <item row="2" column="1" rowspan="2" colspan="2">
-      <widget class="QComboBox" name="ComboBoxSchemeconf">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="font">
-        <font/>
-       </property>
-       <property name="toolTip">
-        <string>Select from different color schemes of a skin if available.</string>
-       </property>
-      </widget>
-     </item>
-     <item row="12" column="0">
-      <widget class="QLabel" name="textLabelAllowTrackLoadToPlayingDeck">
-       <property name="text">
-        <string>Track load behavior</string>
-       </property>
-       <property name="buddy">
-        <cstring>ComboBoxAllowTrackLoadToPlayingDeck</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="11" column="0">
-      <widget class="QLabel" name="labelCueMode">
-       <property name="text">
-        <string>Cue mode</string>
-       </property>
-       <property name="openExternalLinks">
-        <bool>true</bool>
-       </property>
-       <property name="buddy">
-        <cstring>ComboBoxCueDefault</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxRateRange">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="font">
-        <font/>
-       </property>
-       <property name="toolTip">
-        <string>Adjusts the range of the speed (Vinyl &quot;Pitch&quot;) slider.</string>
-       </property>
-      </widget>
-     </item>
-     <item row="13" column="0">
-      <widget class="QLabel" name="textLabelLocale">
-       <property name="text">
-        <string>Locale</string>
-       </property>
-       <property name="buddy">
-        <cstring>ComboBoxLocale</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="13" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxLocale">
-       <property name="toolTip">
-        <string>Locales determine country and language specific settings.</string>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="0">
-      <widget class="QLabel" name="TextLabel6_2">
+     <item row="5" column="0">
+      <widget class="QLabel" name="labelTooltips">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -461,13 +438,29 @@ Numark mode:
         <font/>
        </property>
        <property name="text">
-        <string>Speed slider direction</string>
+        <string>Tool tips</string>
        </property>
        <property name="wordWrap">
         <bool>false</bool>
        </property>
        <property name="buddy">
-        <cstring>ComboBoxRateDir</cstring>
+        <cstring>ComboBoxTooltips</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="1" colspan="2">
+      <widget class="QComboBox" name="ComboBoxCueRecall"/>
+     </item>
+     <item row="11" column="1" colspan="2">
+      <widget class="QComboBox" name="ComboBoxAllowTrackLoadToPlayingDeck"/>
+     </item>
+     <item row="9" column="0">
+      <widget class="QLabel" name="textLabelCueRecall">
+       <property name="text">
+        <string>Auto Recall Cue</string>
+       </property>
+       <property name="buddy">
+        <cstring>ComboBoxCueRecall</cstring>
        </property>
       </widget>
      </item>
@@ -503,24 +496,15 @@ Numark mode:
        </property>
       </widget>
      </item>
-     <item row="10" column="0">
-      <widget class="QLabel" name="textLabelCueRecall">
-       <property name="text">
-        <string>Auto Recall Cue</string>
-       </property>
-       <property name="buddy">
-        <cstring>ComboBoxCueRecall</cstring>
+     <item row="12" column="1" colspan="2">
+      <widget class="QComboBox" name="ComboBoxLocale">
+       <property name="toolTip">
+        <string>Locales determine country and language specific settings.</string>
        </property>
       </widget>
      </item>
-     <item row="12" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxAllowTrackLoadToPlayingDeck"/>
-     </item>
-     <item row="10" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxCueRecall"/>
-     </item>
-     <item row="6" column="0">
-      <widget class="QLabel" name="labelTooltips">
+     <item row="8" column="0">
+      <widget class="QLabel" name="TextLabel6_2">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -528,46 +512,39 @@ Numark mode:
         <font/>
        </property>
        <property name="text">
-        <string>Tool tips</string>
+        <string>Speed slider direction</string>
        </property>
        <property name="wordWrap">
         <bool>false</bool>
        </property>
        <property name="buddy">
-        <cstring>ComboBoxTooltips</cstring>
+        <cstring>ComboBoxRateDir</cstring>
        </property>
       </widget>
      </item>
-     <item row="4" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxStartInFullscreen">
+     <item row="12" column="0">
+      <widget class="QLabel" name="textLabelLocale">
+       <property name="text">
+        <string>Locale</string>
+       </property>
+       <property name="buddy">
+        <cstring>ComboBoxLocale</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="1" colspan="2">
+      <widget class="QComboBox" name="ComboBoxRateRange">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-      </widget>
-     </item>
-     <item row="5" column="0">
-      <widget class="QLabel" name="labelRowHeight">
-       <property name="text">
-        <string>Library Row Height</string>
+       <property name="font">
+        <font/>
        </property>
-      </widget>
-     </item>
-     <item row="5" column="1" colspan="2">
-      <widget class="QSpinBox" name="spinBoxRowHeight">
-       <property name="suffix">
-        <string> px</string>
-       </property>
-       <property name="minimum">
-        <number>10</number>
-       </property>
-       <property name="maximum">
-        <number>50</number>
-       </property>
-       <property name="value">
-        <number>20</number>
+       <property name="toolTip">
+        <string>Adjusts the range of the speed (Vinyl &quot;Pitch&quot;) slider.</string>
        </property>
       </widget>
      </item>

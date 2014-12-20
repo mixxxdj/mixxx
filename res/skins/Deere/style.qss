@@ -144,11 +144,11 @@ QSplitter::handle:vertical {
 
 #Mixxx {
   background-color: black;
+  font-family: "Open Sans";
 }
 
 WWidget, QLabel {
-  font: bold 16pt/18pt Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-  font-size: 7pt;
+  font-size: 6pt;
   text-transform: uppercase;
 }
 
@@ -246,12 +246,14 @@ WSliderComposed {
 }
 
 #DeckTextRow #ArtistGutter WLabel, #DeckTextRow #BPMGutter WLabel, #DeckTextRow #PositionGutter WLabel {
-  font: bold 16pt/18pt Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  font-weight: bold;
+  font-size: 15pt;
   text-transform: none;
 }
 
 #SamplerTextRow #ArtistGutter WLabel, #SamplerTextRow #BPMGutter WLabel, #SamplerTextRow #PositionGutter WLabel {
-  font: bold 12pt/14pt Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  font-weight: bold;
+  font-size: 11pt;
   text-transform: none;
 }
 
@@ -260,19 +262,22 @@ WSliderComposed {
 }
 
 #DeckTextRow #TitleGutter WLabel, #EffectRackExpanded #EffectUnitNameContainer WLabel {
-  font: bold 18pt/20pt Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  font-weight: bold;
+  font-size: 17pt;
   text-transform: none;
   text-align: left;
 }
 
 #SamplerTextRow #TitleGutter WLabel {
-  font: bold 14pt/12pt Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  font-weight: bold;
+  font-size: 13pt;
   text-transform: none;
   text-align: left;
 }
 
 #EffectRackCollapsed #EffectUnitNameContainer WLabel {
-  font: bold 16pt/18pt Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  font-weight: bold;
+  font-size: 15pt;
   text-transform: none;
   text-align: left;
 }
@@ -303,7 +308,7 @@ WSliderComposed {
 }
 
 #EffectUnitNextPrevContainer WPushButton {
-  font-size: 12pt;
+  font-size: 11pt;
 }
 
 #EffectKnob {
@@ -441,7 +446,7 @@ WWidget, WLabel {
 }
 
 #EffectUnit {
-  font-size: 16pt;
+  font-size: 15pt;
 }
 
 #EffectUnit1 {

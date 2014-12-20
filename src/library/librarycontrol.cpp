@@ -11,6 +11,7 @@
 #include "playermanager.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
+#include "library/library.h"
 #include "library/libraryview.h"
 #include "util/container.h"
 
@@ -46,8 +47,9 @@ void LoadToGroupController::slotLoadToGroupAndPlay(double v) {
     }
 }
 
-LibraryControl::LibraryControl(QObject* pParent)
-        : QObject(pParent),
+LibraryControl::LibraryControl(Library* pLibrary)
+        : QObject(pLibrary),
+          m_pLibrary(pLibrary),
           m_pLibraryWidget(NULL),
           m_pSidebarWidget(NULL),
           m_numDecks("[Master]", "num_decks"),
@@ -64,8 +66,7 @@ LibraryControl::LibraryControl(QObject* pParent)
     connect(&m_numPreviewDecks, SIGNAL(valueChanged(double)),
             this, SLOT(slotNumPreviewDecksChanged(double)));
 
-    // Make controls for library navigation and track loading. Leaking all these
-    // CO's, but oh well?
+    // Make controls for library navigation and track loading.
 
     m_pSelectNextTrack = new ControlPushButton(ConfigKey("[Playlist]", "SelectNextTrack"));
     connect(m_pSelectNextTrack, SIGNAL(valueChanged(double)),
@@ -101,7 +102,21 @@ LibraryControl::LibraryControl(QObject* pParent)
     connect(m_pLoadSelectedIntoFirstStopped, SIGNAL(valueChanged(double)),
             this, SLOT(slotLoadSelectedIntoFirstStopped(double)));
 
+    // Ignoring no-ops is important since this is for +/- tickers.
+    m_pFontSizeKnob = new ControlObject(
+            ConfigKey("[Library]", "font_size_knob"), false);
+    connect(m_pFontSizeKnob, SIGNAL(valueChanged(double)),
+            this, SLOT(slotFontSize(double)));
 
+    m_pFontSizeDecrement = new ControlPushButton(
+            ConfigKey("[Library]", "font_size_decrement"));
+    connect(m_pFontSizeDecrement, SIGNAL(valueChanged(double)),
+            this, SLOT(slotDecrementFontSize(double)));
+
+    m_pFontSizeIncrement = new ControlPushButton(
+            ConfigKey("[Library]", "font_size_increment"));
+    connect(m_pFontSizeIncrement, SIGNAL(valueChanged(double)),
+            this, SLOT(slotIncrementFontSize(double)));
 }
 
 LibraryControl::~LibraryControl() {
@@ -275,5 +290,26 @@ void LibraryControl::slotSelectPrevSidebarItem(double v) {
 void LibraryControl::slotToggleSelectedSidebarItem(double v) {
     if (m_pSidebarWidget != NULL && v > 0) {
         m_pSidebarWidget->toggleSelectedItem();
+    }
+}
+
+void LibraryControl::slotFontSize(double v) {
+    if (v == 0.0) {
+        return;
+    }
+    QFont font = m_pLibrary->getTrackTableFont();
+    font.setPointSizeF(font.pointSizeF() + v);
+    m_pLibrary->slotSetTrackTableFont(font);
+}
+
+void LibraryControl::slotIncrementFontSize(double v) {
+    if (v > 0.0) {
+        slotFontSize(1);
+    }
+}
+
+void LibraryControl::slotDecrementFontSize(double v) {
+    if (v > 0.0) {
+        slotFontSize(-1);
     }
 }
