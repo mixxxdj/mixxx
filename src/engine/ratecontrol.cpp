@@ -465,10 +465,8 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
                 if (useScratch2Value) {
                     rate = scratchFactor;
                 } else {
-
                     rate = speed + getTempRate();
                     rate += wheelFactor;
-
                 }
                 rate += jogFactor;
             }
