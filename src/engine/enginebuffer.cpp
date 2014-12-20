@@ -528,7 +528,6 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_pTrackSamples->set(iTrackNumSamples);
     m_pTrackSampleRate->set(iTrackSampleRate);
     // Reset the pitch value for the new track.
-    m_pKeyControl->resetPitchToLinear();
     m_pause.unlock();
 
     // All EngineControls are connected directly

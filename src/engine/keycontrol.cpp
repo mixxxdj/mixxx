@@ -116,10 +116,6 @@ KeyControl::PitchTempoRatio KeyControl::getPitchTempoRatio() const {
     return m_pitchRateInfo.getValue();
 }
 
-void KeyControl::resetPitchToLinear() {
-    // TODO(DSC)
-}
-
 double KeyControl::getKey() {
     return m_pEngineKey->get();
 }

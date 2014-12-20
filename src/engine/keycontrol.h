@@ -26,8 +26,6 @@ class KeyControl : public EngineControl {
     KeyControl(QString group, ConfigObject<ConfigValue>* pConfig);
     virtual ~KeyControl();
 
-    void resetPitchToLinear();
-
     // Returns a struct, with the results of the last pitch and tempo calculations
     KeyControl::PitchTempoRatio getPitchTempoRatio() const;
 
