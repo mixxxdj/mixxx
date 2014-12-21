@@ -131,7 +131,7 @@ TEST_F(SuperLinkTest, HalfLinkTakeover) {
     EffectManifestParameter* low = manifest.addParameter();
     low->setId("low");
     low->setName(QObject::tr("Low"));
-    low->setDescription(QObject::tr("Gain for Low Filter (neutral at 0.0)"));
+    low->setDescription(QObject::tr("Gain for Low Filter (neutral at 1.0)"));
     low->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     low->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     low->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
