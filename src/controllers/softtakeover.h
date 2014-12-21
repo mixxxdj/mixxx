@@ -13,12 +13,14 @@
 
 class ControlObject;
 
+static const double kDefaultTakeoverThreshold = 3.0 / 128;
 
 class SoftTakeover {
   public:
     SoftTakeover();
     bool ignore(ControlObject* control, double newParameter);
     void ignoreNext();
+    void setThreshold(double threshold);
 
   private:
     // If a new value is received within this amount of time, jump to it
@@ -29,6 +31,7 @@ class SoftTakeover {
 
     uint m_time;
     double m_prevParameter;
+    double m_dThreshold;
 };
 
 class SoftTakeoverCtrl {

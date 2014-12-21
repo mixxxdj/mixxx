@@ -95,6 +95,7 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
 
             connect(m_pEffectParameter, SIGNAL(valueChanged(double)),
                     this, SLOT(slotParameterValueChanged(double)));
+            syncSofttakeover();
         }
     }
     emit(updated());
@@ -112,6 +113,7 @@ void EffectParameterSlot::clear() {
     m_pControlValue->setDefaultValue(0.0);
     m_pControlType->setAndConfirm(0.0);
     m_pControlLinkType->setAndConfirm(EffectManifestParameter::LINK_NONE);
+    m_pSoftTakeover->setThreshold(kDefaultTakeoverThreshold);
     m_pControlLinkInverse->set(0.0);
     emit(updated());
 }
@@ -131,6 +133,12 @@ void EffectParameterSlot::slotLinkTypeChanging(double v) {
             // Toggle back to 0
             v = EffectManifestParameter::LINK_NONE;
         }
+    }
+    if (v == EffectManifestParameter::LINK_LINKED_LEFT ||
+            v == EffectManifestParameter::LINK_LINKED_RIGHT) {
+        m_pSoftTakeover->setThreshold(kDefaultTakeoverThreshold * 2.0);
+    } else {
+        m_pSoftTakeover->setThreshold(kDefaultTakeoverThreshold);
     }
     m_pControlLinkType->setAndConfirm(v);
 }
