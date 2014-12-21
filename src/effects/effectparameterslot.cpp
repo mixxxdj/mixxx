@@ -224,7 +224,7 @@ void EffectParameterSlot::onChainSuperParameterChanged(double parameter, bool fo
 }
 
 void EffectParameterSlot::syncSofttakeover() {
-    double parameter = m_pControlValue->get();
+    double parameter = m_pControlValue->getParameter();
     m_pSoftTakeover->ignore(m_pControlValue, parameter);
 }
 
