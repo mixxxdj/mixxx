@@ -337,6 +337,14 @@
 								<EmitOnDownPress>false</EmitOnDownPress>
 							</Connection>
 						</Overview>
+						
+						<CoverArt>
+							<Pos>4,5</Pos>
+							<TooltipId>coverart</TooltipId>
+							<ObjectName>DeckCoverArt</ObjectName>
+							<Size>35f,35f</Size>
+							<Group>[Channel<Variable name="channum"/>]</Group>
+						</CoverArt>
 	
 						<!--
 						**********************************************
@@ -355,7 +363,7 @@
 							</Style>
 							<Property>title</Property>
 							<Channel><Variable name="channum"/></Channel>
-							<Pos>0,4</Pos>
+							<Pos>39,4</Pos>
 							<Size>310f,18</Size>
 						</TrackProperty>
 	
@@ -371,7 +379,7 @@
 							</Style>
 							<Property>artist</Property>
 							<Channel><Variable name="channum"/></Channel>
-							<Pos>0,24</Pos>
+							<Pos>39,24</Pos>
 							<Size>230f,18</Size>
 						</TrackProperty>
 		

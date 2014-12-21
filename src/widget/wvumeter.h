@@ -36,9 +36,10 @@ class WVuMeter : public WWidget  {
     virtual ~WVuMeter();
 
     void setup(QDomNode node, const SkinContext& context);
-    void setPixmapBackground(PixmapSource source);
+    void setPixmapBackground(PixmapSource source, Paintable::DrawMode mode);
     void setPixmaps(PixmapSource source,
-                    bool bHorizontal=false);
+                    bool bHorizontal,
+                    Paintable::DrawMode mode);
     void onConnectedControlChanged(double dParameter, double dValue);
 
   protected slots:
@@ -46,35 +47,36 @@ class WVuMeter : public WWidget  {
     void maybeUpdate();
 
   private:
-    /** Set position number to zero and deallocate pixmaps */
-    void resetPositions();
     void paintEvent(QPaintEvent *);
-    void setPeak(int pos, double parameter);
+    void setPeak(double parameter);
 
-    // Current position in the pixmap.
-    int m_iPos;
+    // Current parameter and peak parameter.
     double m_dParameter;
-    // Number of positions in the pixmap.
-    int m_iNoPos;
-    // Current position in the widget.
-    int m_iWidgetPos;
+    double m_dPeakParameter;
 
+    // The last parameter and peak parameter values at the time of
+    // rendering. Used to check whether the widget state has changed since the
+    // last render in maybeUpdate.
+    double m_dLastParameter;
+    double m_dLastPeakParameter;
 
-    /** Associated pixmaps */
+    // Length of the VU-meter pixmap along the relevant axis.
+    int m_iPixmapLength;
+
+    // Associated pixmaps
     PaintablePointer m_pPixmapBack;
     PaintablePointer m_pPixmapVu;
-    /** True if it's a horizontal vu meter */
+
+    // True if it's a horizontal vu meter
     bool m_bHorizontal;
 
     int m_iPeakHoldSize;
     int m_iPeakFallStep;
     int m_iPeakHoldTime;
     int m_iPeakFallTime;
-    int m_iPeakPos;
-    double m_dPeakParameter;
-    int m_iPeakHoldCountdown;
-    int m_iLastPos;
-    int m_iLastPeakPos;
+
+    // The peak hold time remaining in milliseconds.
+    double m_dPeakHoldCountdownMs;
 
     PerformanceTimer m_timer;
 };

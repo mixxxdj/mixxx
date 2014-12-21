@@ -22,6 +22,7 @@
 #include "dlgpreflibrary.h"
 #include "waveform/guitick.h"
 #include "widget/wcoverartmenu.h"
+#include "util/assert.h"
 
 WTrackTableView::WTrackTableView(QWidget * parent,
                                  ConfigObject<ConfigValue> * pConfig,
@@ -39,6 +40,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_iCoverHashColumn(-1),
           m_iCoverColumn(-1),
           m_lastUserActionNanos(0),
+          m_selectionChangedSinceLastGuiTick(true),
           m_loadCachedOnly(false) {
     // Give a NULL parent because otherwise it inherits our style which can make
     // it unreadable. Bug #673411
@@ -164,6 +166,7 @@ void WTrackTableView::slotScrollValueChanged(int) {
 
 void WTrackTableView::selectionChanged(const QItemSelection& selected,
                                        const QItemSelection& deselected) {
+    m_selectionChangedSinceLastGuiTick = true;
     enableCachedOnly();
     QTableView::selectionChanged(selected, deselected);
 }
@@ -178,14 +181,19 @@ void WTrackTableView::slotGuiTick50ms(double) {
         // this in selectionChanged slows down scrolling performance so we wait
         // until the user has stopped interacting first.
         const QModelIndexList indices = selectionModel()->selectedRows();
-        if (indices.size() > 0 && indices.last().isValid()) {
-            TrackModel* trackModel = getTrackModel();
-            if (trackModel) {
-                TrackPointer pTrack = trackModel->getTrack(indices.last());
-                if (pTrack) {
-                    emit(trackSelected(pTrack));
+        if (m_selectionChangedSinceLastGuiTick) {
+            if (indices.size() > 0 && indices.last().isValid()) {
+                TrackModel* trackModel = getTrackModel();
+                if (trackModel) {
+                    TrackPointer pTrack = trackModel->getTrack(indices.last());
+                    if (pTrack) {
+                        emit(trackSelected(pTrack));
+                    }
                 }
+            } else {
+                emit(trackSelected(TrackPointer()));
             }
+            m_selectionChangedSinceLastGuiTick = false;
         }
 
         // This allows CoverArtDelegate to request that we load covers from disk
@@ -201,8 +209,12 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
 
-    Q_ASSERT(model);
-    Q_ASSERT(trackModel);
+    DEBUG_ASSERT_AND_HANDLE(model) {
+        return;
+    }
+    DEBUG_ASSERT_AND_HANDLE(trackModel) {
+        return;
+    }
 
     /* If the model has not changed
      * there's no need to exchange the headers
@@ -356,8 +368,8 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 }
 
 void WTrackTableView::createActions() {
-    Q_ASSERT(m_pMenu);
-    Q_ASSERT(m_pSamplerMenu);
+    DEBUG_ASSERT(m_pMenu);
+    DEBUG_ASSERT(m_pSamplerMenu);
 
     m_pRemoveAct = new QAction(tr("Remove"), this);
     connect(m_pRemoveAct, SIGNAL(triggered()), this, SLOT(slotRemove()));

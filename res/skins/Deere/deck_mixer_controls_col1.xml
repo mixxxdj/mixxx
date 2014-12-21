@@ -11,7 +11,9 @@
     <SizePolicy>min,min</SizePolicy>
     <Children>
       <Template src="skin:knob_with_button.xml">
+        <SetVariable name="TooltipId">pregain</SetVariable>
         <SetVariable name="control">pregain</SetVariable>
+        <SetVariable name="button_TooltipId">mute</SetVariable>
         <SetVariable name="button_control">mute</SetVariable>
         <SetVariable name="label">Gain</SetVariable>
       </Template>
@@ -21,28 +23,36 @@
       </Template>
 
       <Template src="skin:equalizer_rack_parameter.xml">
+        <SetVariable name="TooltipId">filterHighKill</SetVariable>
         <SetVariable name="parameter">3</SetVariable>
       </Template>
 
       <Template src="skin:equalizer_rack_parameter.xml">
+        <SetVariable name="TooltipId">filterMidKill</SetVariable>
         <SetVariable name="parameter">2</SetVariable>
       </Template>
 
       <Template src="skin:equalizer_rack_parameter.xml">
+        <SetVariable name="TooltipId">filterLowKill</SetVariable>
         <SetVariable name="parameter">1</SetVariable>
       </Template>
 
       <Template src="skin:quick_effect_superknob.xml">
+        <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
+        <SetVariable name="TooltipId"></SetVariable>
         <SetVariable name="QuickEffect">1</SetVariable>
       </Template>
 
       <Template src="skin:knob_with_button.xml">
+        <SetVariable name="TooltipId">pitch</SetVariable>
         <SetVariable name="control">pitch</SetVariable>
+        <SetVariable name="button_TooltipId">keylock</SetVariable>
         <SetVariable name="button_control">keylock</SetVariable>
         <SetVariable name="label">Key</SetVariable>
       </Template>
 
       <PushButton>
+        <TooltipId>pfl</TooltipId>
         <ObjectName>DeckPFL</ObjectName>
         <Size>40f,20f</Size>
         <NumberStates>2</NumberStates>

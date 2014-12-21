@@ -41,10 +41,9 @@ AnalyserQueue::AnalyserQueue(TrackCollection* pTrackCollection)
           m_qm(),
           m_qwait(),
           m_queue_size(0) {
+    Q_UNUSED(pTrackCollection);
     connect(this, SIGNAL(updateProgress()),
             this, SLOT(slotUpdateProgress()));
-    connect(this, SIGNAL(trackDone(TrackPointer)),
-            &pTrackCollection->getTrackDAO(), SLOT(saveTrack(TrackPointer)));
 }
 
 AnalyserQueue::~AnalyserQueue() {

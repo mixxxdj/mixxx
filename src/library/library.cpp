@@ -27,6 +27,7 @@
 #include "library/librarycontrol.h"
 #include "library/setlogfeature.h"
 #include "util/sandbox.h"
+#include "util/assert.h"
 
 #include "widget/wtracktableview.h"
 #include "widget/wlibrary.h"
@@ -38,13 +39,16 @@
 // WLibrary
 const QString Library::m_sTrackViewName = QString("WTrackTableView");
 
+// The default row height of the library.
+const int Library::kDefaultRowHeightPx = 20;
+
 Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig,
                  PlayerManagerInterface* pPlayerManager,
                  RecordingManager* pRecordingManager) :
         m_pConfig(pConfig),
         m_pSidebarModel(new SidebarModel(parent)),
         m_pTrackCollection(new TrackCollection(pConfig)),
-        m_pLibraryControl(new LibraryControl),
+        m_pLibraryControl(new LibraryControl(this)),
         m_pRecordingManager(pRecordingManager) {
     qRegisterMetaType<Library::RemovalType>("Library::RemovalType");
 
@@ -108,6 +112,16 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig,
         bool hasAccess = Sandbox::askForAccess(directory.canonicalFilePath());
         qDebug() << "Checking for access to" << directoryPath << ":" << hasAccess;
     }
+
+    m_iTrackTableRowHeight = m_pConfig->getValueString(
+            ConfigKey("[Library]", "RowHeight"),
+            QString::number(kDefaultRowHeightPx)).toInt();
+    QString fontStr = m_pConfig->getValueString(ConfigKey("[Library]", "Font"));
+    if (!fontStr.isEmpty()) {
+        m_trackTableFont.fromString(fontStr);
+    } else {
+        m_trackTableFont = QApplication::font();
+    }
 }
 
 Library::~Library() {
@@ -145,6 +159,10 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
 
     connect(pSidebarWidget, SIGNAL(rightClicked(const QPoint&, const QModelIndex&)),
             m_pSidebarModel, SLOT(rightClicked(const QPoint&, const QModelIndex&)));
+
+    pSidebarWidget->slotSetFont(m_trackTableFont);
+    connect(this, SIGNAL(setTrackTableFont(QFont)),
+            pSidebarWidget, SLOT(slotSetFont(QFont)));
 }
 
 void Library::bindWidget(WLibrary* pLibraryWidget,
@@ -166,6 +184,11 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
     connect(pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
 
+    connect(this, SIGNAL(setTrackTableFont(QFont)),
+            pTrackTableView, SLOT(setTrackTableFont(QFont)));
+    connect(this, SIGNAL(setTrackTableRowHeight(int)),
+            pTrackTableView, SLOT(setTrackTableRowHeight(int)));
+
     m_pLibraryControl->bindWidget(pLibraryWidget, pKeyboard);
 
     QListIterator<LibraryFeature*> feature_it(m_features);
@@ -173,10 +196,17 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
         LibraryFeature* feature = feature_it.next();
         feature->bindWidget(pLibraryWidget, pKeyboard);
     }
+
+    // Set the current font and row height on all the WTrackTableViews that were
+    // just connected to us.
+    emit(setTrackTableFont(m_trackTableFont));
+    emit(setTrackTableRowHeight(m_iTrackTableRowHeight));
 }
 
 void Library::addFeature(LibraryFeature* feature) {
-    Q_ASSERT(feature);
+    DEBUG_ASSERT_AND_HANDLE(feature) {
+        return;
+    }
     m_features.push_back(feature);
     m_pSidebarModel->addLibraryFeature(feature);
     connect(feature, SIGNAL(showTrackModel(QAbstractItemModel*)),
@@ -198,7 +228,9 @@ void Library::addFeature(LibraryFeature* feature) {
 void Library::slotShowTrackModel(QAbstractItemModel* model) {
     //qDebug() << "Library::slotShowTrackModel" << model;
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
-    Q_ASSERT(trackModel);
+    DEBUG_ASSERT_AND_HANDLE(trackModel) {
+        return;
+    }
     emit(showTrackModel(model));
     emit(switchToView(m_sTrackViewName));
     emit(restoreSearch(trackModel->currentSearch()));
@@ -329,4 +361,14 @@ void Library::slotRequestRelocateDir(QString oldDir, QString newDir) {
 
 QStringList Library::getDirs() {
     return m_pTrackCollection->getDirectoryDAO().getDirs();
+}
+
+void Library::slotSetTrackTableFont(const QFont& font) {
+    m_trackTableFont = font;
+    emit(setTrackTableFont(font));
+}
+
+void Library::slotSetTrackTableRowHeight(int rowHeight) {
+    m_iTrackTableRowHeight = rowHeight;
+    emit(setTrackTableRowHeight(rowHeight));
 }

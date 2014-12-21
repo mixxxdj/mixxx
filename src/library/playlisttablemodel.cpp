@@ -226,8 +226,10 @@ bool PlaylistTableModel::isColumnInternal(int column) {
 bool PlaylistTableModel::isColumnHiddenByDefault(int column) {
     if (column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
         return true;
+    } else if (column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION)) {
+        return false;
     }
-    return false;
+    return BaseSqlTableModel::isColumnHiddenByDefault(column);
 }
 
 TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {

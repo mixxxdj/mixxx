@@ -16,6 +16,7 @@
                         <Children>
                             <PushButton>
                                 <Size>50f,20f</Size>
+                                <TooltipId>toggle_4decks</TooltipId>
                                 <ObjectName>GuiToggleButton</ObjectName>
                                 <NumberStates>2</NumberStates>
                                 <State>
@@ -43,6 +44,7 @@
                         <Children>
                             <PushButton>
                                 <Size>40f,20f</Size>
+                                <TooltipId>show_mixer</TooltipId>
                                 <ObjectName>GuiToggleButton</ObjectName>
                                 <NumberStates>2</NumberStates>
                                 <State>

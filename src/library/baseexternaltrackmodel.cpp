@@ -67,11 +67,6 @@ Qt::ItemFlags BaseExternalTrackModel::flags(const QModelIndex &index) const {
     return readOnlyFlags(index);
 }
 
-bool BaseExternalTrackModel::isColumnHiddenByDefault(int column) {
-    Q_UNUSED(column);
-    return false;
-}
-
 TrackModel::CapabilitiesFlags BaseExternalTrackModel::getCapabilities() const {
     // See src/library/trackmodel.h for the list of TRACKMODELCAPS
     return TRACKMODELCAPS_NONE

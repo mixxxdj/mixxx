@@ -11,6 +11,7 @@
                 <Children>
                     <PushButton>
                         <Size>50f,20f</Size>
+                        <TooltipId>show_library</TooltipId>
                         <ObjectName>GuiToggleButton</ObjectName>
                         <NumberStates>2</NumberStates>
                         <State>
@@ -38,6 +39,7 @@
                 <Children>
                     <PushButton>
                         <Size>55f,20f</Size>
+                        <TooltipId>show_effects</TooltipId>
                         <ObjectName>GuiToggleButton</ObjectName>
                         <NumberStates>2</NumberStates>
                         <State>
@@ -65,6 +67,7 @@
                 <Children>
                     <PushButton>
                         <Size>62f,20f</Size>
+                        <TooltipId>show_samplers</TooltipId>
                         <ObjectName>GuiToggleButton</ObjectName>
                         <NumberStates>2</NumberStates>
                         <State>
@@ -92,6 +95,7 @@
                 <Children>
                     <PushButton>
                         <Size>40f,20f</Size>
+                        <TooltipId>show_vinylcontrol</TooltipId>
                         <ObjectName>GuiToggleButton</ObjectName>
                         <NumberStates>2</NumberStates>
                         <State>
@@ -128,6 +132,7 @@
                         is the pushed state.  So we have to invert everything so the
                         default is 'don't make the library huge' -->
                         <Size>80f,20f</Size>
+                        <TooltipId>toggle_expanded_library</TooltipId>
                         <ObjectName>GuiToggleButtonInverted</ObjectName>
                         <NumberStates>2</NumberStates>
                         <State>

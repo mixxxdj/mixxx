@@ -13,6 +13,7 @@
     <Children>
 
       <PushButton>
+        <TooltipId>sync_enabled</TooltipId>
         <ObjectName>DeckSync</ObjectName>
         <Size>40f,20f</Size>
         <NumberStates>2</NumberStates>
@@ -32,6 +33,7 @@
       </PushButton>
 
       <PushButton>
+        <TooltipId>sync_master</TooltipId>
         <ObjectName>DeckSyncMaster</ObjectName>
         <Size>40f,20f</Size>
         <NumberStates>2</NumberStates>
@@ -51,17 +53,19 @@
       </PushButton>
 
       <SliderComposed>
+        <TooltipId>rate</TooltipId>
         <MinimumSize>40,50</MinimumSize>
         <MaximumSize>40,-1</MaximumSize>
         <SizePolicy>,me</SizePolicy>
-        <Slider>slider-vertical.svg</Slider>
-        <Handle>handle-vertical.svg</Handle>
+        <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
+        <Handle scalemode="STRETCH_ASPECT">handle-vertical.svg</Handle>
         <Connection>
           <ConfigKey><Variable name="group"/>,rate</ConfigKey>
         </Connection>
       </SliderComposed>
 
       <PushButton>
+        <TooltipId>cue_default_cue_gotoandstop</TooltipId>
         <ObjectName>DeckCue</ObjectName>
         <Size>40f,20f</Size>
         <NumberStates>2</NumberStates>
@@ -84,6 +88,7 @@
       </PushButton>
 
       <Template src="skin:left_right_2state_button.xml">
+        <SetVariable name="TooltipId">play_cue_set</SetVariable>
         <SetVariable name="ObjectName">PlayToggle</SetVariable>
         <SetVariable name="MinimumSize">40,20</SetVariable>
         <SetVariable name="MaximumSize">40,20</SetVariable>

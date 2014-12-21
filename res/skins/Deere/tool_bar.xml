@@ -44,6 +44,7 @@
       </WidgetGroup>
 
       <PushButton>
+        <TooltipId>show_mixer</TooltipId>
         <Size>40f,20f</Size>
         <NumberStates>2</NumberStates>
         <State>
@@ -60,6 +61,7 @@
       </PushButton>
 
       <PushButton>
+        <TooltipId>toggle_expanded_library</TooltipId>
         <Size>40f,20f</Size>
         <NumberStates>2</NumberStates>
         <State>
@@ -77,6 +79,7 @@
       </PushButton>
 
       <PushButton>
+        <TooltipId>show_mixer</TooltipId>
         <Size>60f,20f</Size>
         <NumberStates>2</NumberStates>
         <State>
@@ -93,6 +96,7 @@
       </PushButton>
 
       <PushButton>
+        <TooltipId>toggle_4decks</TooltipId>
         <Size>40f,20f</Size>
         <NumberStates>2</NumberStates>
         <State>
@@ -117,12 +121,14 @@
         <Layout>horizontal</Layout>
         <Children>
           <Template src="skin:knob_label_horizontal.xml">
+            <SetVariable name="TooltipId">headMix</SetVariable>
             <SetVariable name="group">[Master]</SetVariable>
             <SetVariable name="control">headMix</SetVariable>
             <SetVariable name="label">Head Mix</SetVariable>
           </Template>
 
           <Template src="skin:knob_label_horizontal.xml">
+            <SetVariable name="TooltipId">headphone_gain</SetVariable>
             <SetVariable name="group">[Master]</SetVariable>
             <SetVariable name="control">headGain</SetVariable>
             <SetVariable name="label">Head Gain</SetVariable>
@@ -137,9 +143,9 @@
         <Children>
 
           <PushButton>
+            <TooltipId>headSplit</TooltipId>
             <ObjectName>HeadSplit</ObjectName>
             <Size>50f,20f</Size>
-            <TooltipId>headsplit</TooltipId>
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
@@ -156,12 +162,14 @@
           </PushButton>
 
           <Template src="skin:knob_label_horizontal.xml">
+            <SetVariable name="TooltipId">balance</SetVariable>
             <SetVariable name="group">[Master]</SetVariable>
             <SetVariable name="control">balance</SetVariable>
             <SetVariable name="label">Balance</SetVariable>
           </Template>
 
           <Template src="skin:knob_label_horizontal.xml">
+            <SetVariable name="TooltipId">master_gain</SetVariable>
             <SetVariable name="group">[Master]</SetVariable>
             <SetVariable name="control">gain</SetVariable>
             <SetVariable name="label">Gain</SetVariable>
@@ -176,12 +184,12 @@
           <Layout>vertical</Layout>
           <Children>
               <Template src="skin:vumeter.xml">
-                  <TooltipId>master_VuMeterL</TooltipId>
+                  <SetVariable name="TooltipId">master_VuMeterL</SetVariable>
                   <SetVariable name="group">[Master]</SetVariable>
                   <SetVariable name="control">VuMeterL</SetVariable>
               </Template>
               <Template src="skin:vumeter.xml">
-                  <TooltipId>master_VuMeterR</TooltipId>
+                  <SetVariable name="TooltipId">master_VuMeterR</SetVariable>
                   <SetVariable name="group">[Master]</SetVariable>
                   <SetVariable name="control">VuMeterR</SetVariable>
               </Template>
@@ -194,9 +202,9 @@
         <Layout>vertical</Layout>
         <Children>
           <Time>
+            <TooltipId>time</TooltipId>
             <ObjectName>Time</ObjectName>
             <Size>60f,20f</Size>
-            <TooltipId>time</TooltipId>
             <ShowSeconds>false</ShowSeconds>
           </Time>
 

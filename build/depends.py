@@ -797,7 +797,6 @@ class MixxxCore(Feature):
                    "library/stardelegate.cpp",
                    "library/stareditor.cpp",
                    "library/bpmdelegate.cpp",
-                   "library/bpmeditor.cpp",
                    "library/previewbuttondelegate.cpp",
                    "library/coverartdelegate.cpp",
                    "audiotagger.cpp",
@@ -992,6 +991,14 @@ class MixxxCore(Feature):
         # EM64T). We need to unify them together.
         if not build.machine == 'alpha':
             build.env.Append(CPPDEFINES=build.machine)
+
+        if build.build_is_debug:
+            build.env.Append(CPPDEFINES='MIXXX_BUILD_DEBUG')
+        elif build.build_is_release:
+            build.env.Append(CPPDEFINES='MIXXX_BUILD_RELEASE')
+
+        if int(SCons.ARGUMENTS.get('debug_assertions_fatal', 0)):
+            build.env.Append(CPPDEFINES='MIXXX_DEBUG_ASSERTIONS_FATAL')
 
         if build.toolchain_is_gnu:
             # Default GNU Options

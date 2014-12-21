@@ -11,6 +11,7 @@
 -->
 <Template>
   <Template src="skin:left_1state_button.xml">
+    <SetVariable name="TooltipId">loop_move</SetVariable>
     <SetVariable name="ObjectName">LoopMoveButton</SetVariable>
     <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
     <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>

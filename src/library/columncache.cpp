@@ -64,4 +64,13 @@ void ColumnCache::setColumns(const QStringList& columns) {
 
     m_columnIndexByEnum[COLUMN_CRATETRACKSTABLE_TRACKID] = fieldIndex(CRATETRACKSTABLE_TRACKID);
     m_columnIndexByEnum[COLUMN_CRATETRACKSTABLE_CRATEID] = fieldIndex(CRATETRACKSTABLE_CRATEID);
+
+    // Set up the reverse mapping, ignoring columns that don't get displayed.
+    for (int i = 0; i < NUM_COLUMNS; ++i) {
+        int index = m_columnIndexByEnum[i];
+        if (index < 0) {
+            continue;
+        }
+        m_columnByIndex[index] = static_cast<Column>(i);
+    }
 }

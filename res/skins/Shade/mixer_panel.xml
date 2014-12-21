@@ -573,8 +573,44 @@
 								}
 							</Style>
 							<Pos>113,15</Pos>
+							<CustomFormat>hh:mm</CustomFormat>
 							<ShowSeconds>false</ShowSeconds>
 						</Time>
+						
+						<StatusLight>
+							<Pos>113,27</Pos>
+							<TooltipId>audio_latency_usage</TooltipId>
+							<Style>
+							</Style>
+							<PathStatusLight>audio_latency/audio_latency_overload.png</PathStatusLight>
+							<PathBack>audio_latency/audio_latency_overload_back.png</PathBack>
+							<Connection>
+								<ConfigKey>[Master],audio_latency_overload</ConfigKey>
+							</Connection>
+						</StatusLight>
+        				
+						<VuMeter>
+				            <Pos>113,28</Pos>
+				            <Style>
+								WVuMeter {
+									background-color: #626f87;
+								}
+							</Style>
+							<TooltipId>audio_latency_usage</TooltipId>
+							<MinimumSize>26,1</MinimumSize>
+							<MaximumSize>26,1</MaximumSize>
+							<PathVu>audio_latency/audio_latency_usage.png</PathVu>
+							<PeakHoldSize>26</PeakHoldSize>
+							<PeakHoldTime>500</PeakHoldTime>
+							<PeakFallTime>50</PeakFallTime>
+							<PeakFallStep>1</PeakFallStep>
+							<Horizontal>true</Horizontal>
+							<Connection>
+								<ConfigKey>[Master],audio_latency_usage</ConfigKey>
+							</Connection>
+						</VuMeter>
+						
+
 
 						<!--
 						**********************************************
@@ -585,7 +621,7 @@
 							<TooltipId>master_gain</TooltipId>
 							<Style></Style>
 							<NumberStates>64</NumberStates>
-							<Path>knobs_no_center/knob_rotary_s%1.png</Path>
+							<Path>knobs/knob_rotary_s%1.png</Path>
 							<Pos>208,15</Pos>
 							<Connection>
 								<ConfigKey>[Master],gain</ConfigKey>

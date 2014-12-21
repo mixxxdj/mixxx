@@ -5,6 +5,7 @@
 #include <QtSql>
 #include <QImage>
 #include <QRegExp>
+#include <QCoreApplication>
 
 #include "library/dao/trackdao.h"
 
@@ -23,18 +24,41 @@
 #include "library/dao/analysisdao.h"
 #include "library/dao/libraryhashdao.h"
 #include "library/coverartcache.h"
+#include "util/assert.h"
 
 QHash<int, TrackWeakPointer> TrackDAO::m_sTracks;
 QMutex TrackDAO::m_sTracksMutex;
 
 enum { UndefinedRecordIndex = -2 };
 
-// The number of tracks to cache in memory at once. Once the n+1'th track is
-// created, the TrackDAO's QCache deletes its TrackPointer to the track, which
-// allows the track reference count to drop to zero. The track cache basically
-// functions to hold a reference to the track so its reference count stays above
-// 0.
-#define TRACK_CACHE_SIZE 5
+TrackCacheItem::TrackCacheItem(TrackPointer pTrack)
+        : m_pTrack(pTrack) {
+    DEBUG_ASSERT(m_pTrack);
+}
+
+TrackCacheItem::~TrackCacheItem() {
+    DEBUG_ASSERT_AND_HANDLE(!m_pTrack.isNull()) {
+        return;
+    }
+    // qDebug() << "~TrackCacheItem" << m_pTrack << "ID"
+    //          << m_pTrack->getId() << m_pTrack->getInfo();
+
+    // Signal to TrackDAO::saveTrack(TrackPointer) to save the track if it is
+    // dirty. Does not drop the strong reference to the track until saveTrack
+    // completes.
+    if (m_pTrack->isDirty()) {
+        emit(saveTrack(m_pTrack));
+    }
+}
+
+// The number of recently used tracks to cache strong references to at
+// once. Once the n+1'th track is created, the TrackDAO's QCache deletes its
+// TrackCacheItem which signals to TrackDAO::saveTrack(TrackPointer) to save the
+// track and drop the strong reference. The recent tracks cache basically
+// functions to prevent repeated getTrack() calls for the same track from
+// repeatedly deserializing / serializing a track to the database since this is
+// expensive.
+const int kRecentTracksCacheSize = 5;
 
 TrackDAO::TrackDAO(QSqlDatabase& database,
                    CueDAO& cueDao,
@@ -50,7 +74,7 @@ TrackDAO::TrackDAO(QSqlDatabase& database,
           m_analysisDao(analysisDao),
           m_libraryHashDao(libraryHashDao),
           m_pConfig(pConfig),
-          m_trackCache(TRACK_CACHE_SIZE),
+          m_recentTracksCache(kRecentTracksCacheSize),
           m_pQueryTrackLocationInsert(NULL),
           m_pQueryTrackLocationSelect(NULL),
           m_pQueryLibraryInsert(NULL),
@@ -69,28 +93,40 @@ TrackDAO::~TrackDAO() {
 }
 
 void TrackDAO::finish() {
-    // scope this critical code, if this is not scoped there is a chance
-    // to run in a lock of mixxx during shutdown - kain88 (July 2012)
-    {
-        // Save all tracks that haven't been saved yet.
-        QMutexLocker locker(&m_sTracksMutex);
-        QHashIterator<int, TrackWeakPointer> it(m_sTracks);
-        while (it.hasNext()) {
-            it.next();
-            // Auto-cast from TrackWeakPointer to TrackPointer
-            TrackPointer pTrack = it.value();
-            if (pTrack && pTrack->isDirty()) {
+    // Save all tracks that haven't been saved yet.
+    QMutexLocker locker(&m_sTracksMutex);
+    QHashIterator<int, TrackWeakPointer> it(m_sTracks);
+    while (it.hasNext()) {
+        it.next();
+        // Cast from TrackWeakPointer to TrackPointer. If the track still exists
+        // then pTrack will be non-NULL. If the track is dirty then save it.
+        TrackPointer pTrack = it.value();
+        if (!pTrack.isNull()) {
+            if (pTrack->isDirty()) {
                 saveTrack(pTrack);
-                // now pTrack->isDirty will return false
             }
+
+            // When this reference expires, tell the track to delete itself
+            // rather than signalling to TrackDAO.
+            pTrack->setDeleteOnReferenceExpiration(true);
         }
     }
+    m_sTracks.clear();
+    locker.unlock();
 
-    // Clear cache, so all cached tracks without other references where deleted
+    // Clear cache, so all cached tracks without other references are deleted.
+    // Will queue a bunch of saveTrack calls for every TrackCacheItem in
+    // m_recentTracksCache. The event loop is already stopped at this point so
+    // the queued signals won't be processed.
     clearCache();
 
-    //clear out played information on exit
-    //crash prevention: if mixxx crashes, played information will be maintained
+    // Clearing the cache should queue a bunch of save events for tracks still
+    // in the recent tracks cache. Deliver those events manually since we don't
+    // have an event loop running anymore.
+    QCoreApplication::sendPostedEvents(this, 0);
+
+    // clear out played information on exit
+    // crash prevention: if mixxx crashes, played information will be maintained
     qDebug() << "Clearing played information for this session";
     QSqlQuery query(m_database);
     if (!query.exec("UPDATE library SET played=0")) {
@@ -221,8 +257,7 @@ void TrackDAO::saveTrack(TrackPointer track) {
 }
 
 void TrackDAO::saveTrack(TrackInfoObject* pTrack) {
-    if (!pTrack) {
-        qWarning() << "TrackDAO::saveTrack() was given NULL track.";
+    DEBUG_ASSERT_AND_HANDLE(pTrack != NULL) {
         return;
     }
     //qDebug() << "TrackDAO::saveTrack" << pTrack->getId() << pTrack->getInfo();
@@ -245,38 +280,48 @@ void TrackDAO::saveTrack(TrackInfoObject* pTrack) {
             //qDebug() << "Skipping track update for track" << pTrack->getId();
         }
     } else {
+        //qDebug() << "TrackDAO::saveTrack. Adding track";
         addTrack(pTrack, false);
     }
 }
 
 void TrackDAO::slotTrackDirty(TrackInfoObject* pTrack) {
-    //qDebug() << "TrackDAO::slotTrackDirty" << pTrack->getInfo();
+    // Should not be possible.
+    DEBUG_ASSERT_AND_HANDLE(pTrack != NULL) {
+        return;
+    }
+
+    // qDebug() << "TrackDAO::slotTrackDirty" << pTrack << "ID"
+    //          << pTrack->getId() << pTrack->getInfo();
     // This is a private slot that is connected to TIO's created by this
-    // TrackDAO. It is a way for the track to ask that it be saved. The only
-    // time this could be unsafe is when the TIO's reference count drops to
-    // 0. When that happens, the TIO is deleted with QObject:deleteLater, so Qt
-    // will wait for this slot to complete.
-    if (pTrack) {
-        int id = pTrack->getId();
-        if (id != -1) {
-            emit(trackDirty(id));
-        }
+    // TrackDAO. It is a way for the track to notify us that it has been
+    // dirtied. It is invoked via a DirectConnection so we are sure that the
+    // TrackInfoObject* has not been deleted when this is invoked. The flip side
+    // of this is that this method runs in whatever thread the track was dirtied
+    // from.
+    int id = pTrack->getId();
+    if (id != -1) {
+        emit(trackDirty(id));
     }
 }
 
 void TrackDAO::slotTrackClean(TrackInfoObject* pTrack) {
-    //qDebug() << "TrackDAO::slotTrackClean" << pTrack->getInfo();
-    // This is a private slot that is connected to TIO's created by this
-    // TrackDAO. It is a way for the track to ask that it be saved. The only
-    // time this could be unsafe is when the TIO's reference count drops to
-    // 0. When that happens, the TIO is deleted with QObject:deleteLater, so Qt
-    // will wait for this slot to complete.
+    // Should not be possible.
+    DEBUG_ASSERT_AND_HANDLE(pTrack != NULL) {
+        return;
+    }
 
-    if (pTrack) {
-        int id = pTrack->getId();
-        if (id != -1) {
-            emit(trackClean(id));
-        }
+    // qDebug() << "TrackDAO::slotTrackClean" << pTrack << "ID"
+    //          << pTrack->getId() << pTrack->getInfo();
+    // This is a private slot that is connected to TIO's created by this
+    // TrackDAO. It is a way for the track to notify us that it has been cleaned
+    // (typically after it has been saved to the database). It is invoked via a
+    // DirectConnection so we are sure that the TrackInfoObject* has not been
+    // deleted when this is invoked. The flip side of this is that this method
+    // runs in whatever thread the track was cleaned from.
+    int id = pTrack->getId();
+    if (id != -1) {
+        emit(trackClean(id));
     }
 }
 
@@ -296,17 +341,21 @@ void TrackDAO::databaseTracksChanged(QSet<int> tracksChanged) {
 }
 
 void TrackDAO::slotTrackChanged(TrackInfoObject* pTrack) {
-    //qDebug() << "TrackDAO::slotTrackChanged" << pTrack->getInfo();
+    // Should not be possible.
+    DEBUG_ASSERT_AND_HANDLE(pTrack != NULL) {
+        return;
+    }
+
+    // qDebug() << "TrackDAO::slotTrackChanged" << pTrack << "ID"
+    //          << pTrack->getId() << pTrack->getInfo();
     // This is a private slot that is connected to TIO's created by this
-    // TrackDAO. It is a way for the track to ask that it be saved. The only
-    // time this could be unsafe is when the TIO's reference count drops to
-    // 0. When that happens, the TIO is deleted with QObject:deleteLater, so Qt
-    // will wait for this slot to complete.
-    if (pTrack) {
-        int id = pTrack->getId();
-        if (id != -1) {
-            emit(trackChanged(id));
-        }
+    // TrackDAO. It is a way for the track to notify us that it changed.  It is
+    // invoked via a DirectConnection so we are sure that the TrackInfoObject*
+    // has not been deleted when this is invoked. The flip side of this is that
+    // this method runs in whatever thread the track was changed from.
+    int id = pTrack->getId();
+    if (id != -1) {
+        emit(trackChanged(id));
     }
 }
 
@@ -560,11 +609,13 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
         QVariant lastInsert = m_pQueryTrackLocationInsert->lastInsertId();
         trackLocationId = lastInsert.toInt();
 
-        //Failure of this assert indicates that we were unable to insert the track
-        //location into the table AND we could not retrieve the id of that track
-        //location from the same table. "It shouldn't happen"... unless I screwed up
-        //- Albert :)
-        Q_ASSERT(trackLocationId >= 0);
+        // Failure of this assert indicates that we were unable to insert the
+        // track location into the table AND we could not retrieve the id of
+        // that track location from the same table. "It shouldn't
+        // happen"... unless I screwed up - Albert :)
+        DEBUG_ASSERT_AND_HANDLE(trackLocationId >= 0) {
+            return false;
+        }
 
         bindTrackToLibraryInsert(pTrack, trackLocationId);
 
@@ -606,7 +657,10 @@ int TrackDAO::addTrack(const QString& file, bool unremove) {
 void TrackDAO::addTrack(TrackInfoObject* pTrack, bool unremove) {
     //qDebug() << "TrackDAO::addTrack" << QThread::currentThread() << m_database.connectionName();
     //qDebug() << "TrackCollection::addTrack(), inserting into DB";
-    Q_ASSERT(pTrack); //Why you be giving me NULL pTracks
+    // Why you be giving me NULL pTracks
+    DEBUG_ASSERT_AND_HANDLE(pTrack) {
+        return;
+    }
 
     // Check that track is a supported extension.
     if (!isTrackFormatSupported(pTrack)) {
@@ -877,9 +931,19 @@ void TrackDAO::purgeTracks(const QList<int>& ids) {
     emit(tracksRemoved(tracksRemovedSet));
 }
 
-void TrackDAO::slotTrackDeleted(TrackInfoObject* pTrack) {
-    Q_ASSERT(pTrack);
-    //qDebug() << "Garbage Collecting" << pTrack << "ID" << pTrack->getId() << pTrack->getInfo();
+void TrackDAO::slotTrackReferenceExpired(TrackInfoObject* pTrack) {
+    // Should not be possible.
+    DEBUG_ASSERT_AND_HANDLE(pTrack != NULL) {
+        return;
+    }
+
+    // qDebug() << "TrackDAO::slotTrackReferenceExpired" << pTrack << "ID"
+    //          << pTrack->getId() << pTrack->getInfo();
+    // This is a private slot that is connected to TIO's created by this
+    // TrackDAO. It is a way for the track to notify us once its reference count
+    // has dropped to zero. This is invoked via a QueuedConnection so even
+    // though the track reference count can drop to zero in any thread this
+    // handler runs in the main thread.
 
     // Save the track if it is dirty.
     if (pTrack->isDirty()) {
@@ -890,6 +954,8 @@ void TrackDAO::slotTrackDeleted(TrackInfoObject* pTrack) {
     m_sTracksMutex.lock();
     m_sTracks.remove(pTrack->getId());
     m_sTracksMutex.unlock();
+
+    delete pTrack;
 }
 
 TrackPointer TrackDAO::getTrackFromDB(const int id) const {
@@ -994,8 +1060,9 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             coverInfo.hash = query.value(coverartHashColumn).toUInt();
 
             TrackPointer pTrack = TrackPointer(
-                    new TrackInfoObject(location, SecurityTokenPointer(), false),
-                    &QObject::deleteLater);
+                    new TrackInfoObject(location, SecurityTokenPointer(),
+                                        false),
+                    TrackInfoObject::onTrackReferenceExpired);
 
             // TIO already stats the file to see if it exists, what its length is,
             // etc. So don't bother setting it.
@@ -1076,16 +1143,28 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             connect(pTrack.data(), SIGNAL(changed(TrackInfoObject*)),
                     this, SLOT(slotTrackChanged(TrackInfoObject*)),
                     Qt::DirectConnection);
-            connect(pTrack.data(), SIGNAL(deleted(TrackInfoObject*)),
-                    this, SLOT(slotTrackDeleted(TrackInfoObject*)),
-                    Qt::DirectConnection);
+            // Queued connection. We are not in a rush to process reference
+            // count expirations and it can produce dangerous signal loops.
+            // See: https://bugs.launchpad.net/mixxx/+bug/1365708
+            connect(pTrack.data(), SIGNAL(referenceExpired(TrackInfoObject*)),
+                    this, SLOT(slotTrackReferenceExpired(TrackInfoObject*)),
+                    Qt::QueuedConnection);
 
             m_sTracksMutex.lock();
             // Automatic conversion to a weak pointer
             m_sTracks[id] = pTrack;
             qDebug() << "m_sTracks.count() =" << m_sTracks.count();
             m_sTracksMutex.unlock();
-            m_trackCache.insert(id, new TrackPointer(pTrack));
+            TrackCacheItem* pCacheItem = new TrackCacheItem(pTrack);
+
+            // Queued connection. We are not in a rush to process cache
+            // expirations and it can produce dangerous signal loops.
+            // See: https://bugs.launchpad.net/mixxx/+bug/1365708
+            connect(pCacheItem, SIGNAL(saveTrack(TrackPointer)),
+                    this, SLOT(saveTrack(TrackPointer)),
+                    Qt::QueuedConnection);
+
+            m_recentTracksCache.insert(id, pCacheItem);
 
             // If the track is dirty send dirty notifications after we inserted
             // it in the cache. BaseTrackCache cares about dirty notifications
@@ -1118,63 +1197,78 @@ TrackPointer TrackDAO::getTrack(const int id, const bool cacheOnly) const {
     //qDebug() << "TrackDAO::getTrack" << QThread::currentThread() << m_database.connectionName();
     TrackPointer pTrack;
 
-    // If the track cache contains the track, use it to get a strong reference
-    // to the track. We do this first so that the QCache keeps track of the
-    // least-recently-used track so that it expires them intelligently.
-    TrackPointer* pTrackPointer = m_trackCache.object(id);
-    if (pTrackPointer != NULL) {
-        pTrack = *pTrackPointer;
-        // If the strong reference is still valid (it should be), then return it.
+    // If the track cache contains the track ID, use it to get a strong
+    // reference to the track. We do this first so that the QCache keeps track
+    // of the least-recently-used track so that it expires them intelligently.
+    TrackCacheItem* pTrackCacheItem = m_recentTracksCache.object(id);
+    if (pTrackCacheItem != NULL) {
+        pTrack = pTrackCacheItem->getTrack();
+        // If the strong reference is still valid (it should be), then return
+        // it.
+        DEBUG_ASSERT(pTrack);
         if (pTrack) {
             return pTrack;
         }
     }
 
-    // scope this critical code so that is gets automatically unlocked
-    // if this is not scoped mixxx will freeze
-    {
-        // Next, check the weak-reference cache to see if the track was ever loaded
-        // into memory. It's possible that something is currently using this track,
-        // so its reference count is non-zero despite it not being present in the
-        // track cache. m_tracks is a map of weak pointers to the tracks.
-        QMutexLocker locker(&m_sTracksMutex);
-        QHash<int, TrackWeakPointer>::iterator it = m_sTracks.find(id);
-        if (it != m_sTracks.end()) {
-            //qDebug() << "Returning cached TIO for track" << id;
-            pTrack = it.value();
-        }
+    // Next, check the weak-reference cache to see if the track still has a
+    // strong reference somewhere. It's possible that something is currently
+    // using this track so its reference count is non-zero despite it not being
+    // present in the track cache.
+    QMutexLocker locker(&m_sTracksMutex);
+    QHash<int, TrackWeakPointer>::iterator it = m_sTracks.find(id);
+    if (it != m_sTracks.end()) {
+        //qDebug() << "Returning cached TIO for track" << id;
+        pTrack = it.value();
     }
 
-    // If the pointer to the cached copy is still valid, return
-    // it. Otherwise, re-query the DB for the track.
+    // Unlock the track cache mutex. Otherwise we can deadlock.
+    locker.unlock();
+
+    // If we were able to convert a weak reference to a strong reference then
+    // re-insert it into the recent tracks cache so that its least-recently-used
+    // tracking is accurate.
     if (pTrack) {
-        // Add pointer to Cache again.
-        // Never call insert() inside mutex to qCache, it may trigger a
-        // cache delete which requires mutex as well and cause deadlock.
-        m_trackCache.insert(id, new TrackPointer(pTrack));
+        // NOTE: Never call QCache::insert() while holding the weak-reference
+        // hash mutex. It may trigger a cache delete and trigger a deadlock.
+        TrackCacheItem* pCacheItem = new TrackCacheItem(pTrack);
+
+        // Queued connection. We are not in a rush to process cache
+        // expirations and it can produce dangerous signal loops.
+        // See: https://bugs.launchpad.net/mixxx/+bug/1365708
+        connect(pCacheItem, SIGNAL(saveTrack(TrackPointer)),
+                this, SLOT(saveTrack(TrackPointer)),
+                Qt::QueuedConnection);
+
+        m_recentTracksCache.insert(id, pCacheItem);
         return pTrack;
-    }
-    // The person only wanted the track if it was cached.
-    if (cacheOnly) {
+    } else if (cacheOnly) {
+        // The caller only wanted the track if it was cached.
         //qDebug() << "TrackDAO::getTrack()" << id << "Caller wanted track but only if it was cached. Returning null.";
         return TrackPointer();
     }
 
+    // Otherwise, deserialize the track from the database.
     return getTrackFromDB(id);
 }
 
 // Saves a track's info back to the database
 void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
+    DEBUG_ASSERT_AND_HANDLE(pTrack) {
+        return;
+    }
+
     ScopedTransaction transaction(m_database);
     QTime time;
     time.start();
-    Q_ASSERT(pTrack);
     //qDebug() << "TrackDAO::updateTrackInDatabase" << QThread::currentThread() << m_database.connectionName();
 
     //qDebug() << "Updating track" << pTrack->getInfo() << "in database...";
 
     int trackId = pTrack->getId();
-    Q_ASSERT(trackId >= 0);
+    DEBUG_ASSERT_AND_HANDLE(trackId >= 0) {
+        return;
+    }
 
     QSqlQuery query(m_database);
 
@@ -1511,8 +1605,9 @@ void TrackDAO::detectMovedFiles(QSet<int>* pTracksMovedSetOld, QSet<int>* pTrack
 }
 
 void TrackDAO::clearCache() {
-    m_trackCache.clear();
-    //m_dirtyTracks.clear();
+    // Triggers a deletion of all the TrackCacheItems which in turn calls
+    // saveTrack(TrackPointer) for all of the tracks in the recent tracks cache.
+    m_recentTracksCache.clear();
 }
 
 void TrackDAO::markTracksAsMixxxDeleted(const QString& dir) {

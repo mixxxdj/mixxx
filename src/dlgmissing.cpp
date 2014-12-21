@@ -2,22 +2,26 @@
 
 #include "library/missingtablemodel.h"
 #include "widget/wtracktableview.h"
+#include "util/assert.h"
 
 DlgMissing::DlgMissing(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
-                     TrackCollection* pTrackCollection, MixxxKeyboard* pKeyboard)
+                       Library* pLibrary,
+                       TrackCollection* pTrackCollection, MixxxKeyboard* pKeyboard)
          : QWidget(parent),
            Ui::DlgMissing(),
            m_pTrackTableView(
-               new WTrackTableView(this,pConfig,pTrackCollection, false)) {
+               new WTrackTableView(this, pConfig, pTrackCollection, false)) {
     setupUi(this);
     m_pTrackTableView->installEventFilter(pKeyboard);
 
     // Install our own trackTable
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
-    Q_ASSERT(box); //Assumes the form layout is a QVBox/QHBoxLayout!
-    box->removeWidget(m_pTrackTablePlaceholder);
-    m_pTrackTablePlaceholder->hide();
-    box->insertWidget(1, m_pTrackTableView);
+    DEBUG_ASSERT_AND_HANDLE(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
+    } else {
+        box->removeWidget(m_pTrackTablePlaceholder);
+        m_pTrackTablePlaceholder->hide();
+        box->insertWidget(1, m_pTrackTableView);
+    }
 
     m_pMissingTableModel = new MissingTableModel(this, pTrackCollection);
     m_pTrackTableView->loadTrackModel(m_pMissingTableModel);
@@ -32,6 +36,10 @@ DlgMissing::DlgMissing(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
             SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
             this,
             SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));
+    connect(pLibrary, SIGNAL(setTrackTableFont(QFont)),
+            m_pTrackTableView, SLOT(setTrackTableFont(QFont)));
+    connect(pLibrary, SIGNAL(setTrackTableRowHeight(int)),
+            m_pTrackTableView, SLOT(setTrackTableRowHeight(int)));
 
     connect(m_pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
@@ -70,4 +78,12 @@ void DlgMissing::selectionChanged(const QItemSelection &selected,
                                   const QItemSelection &deselected) {
     Q_UNUSED(deselected);
     activateButtons(!selected.indexes().isEmpty());
+}
+
+void DlgMissing::setTrackTableFont(const QFont& font) {
+    m_pTrackTableView->setTrackTableFont(font);
+}
+
+void DlgMissing::setTrackTableRowHeight(int rowHeight) {
+    m_pTrackTableView->setTrackTableRowHeight(rowHeight);
 }

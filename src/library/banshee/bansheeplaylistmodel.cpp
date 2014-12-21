@@ -363,9 +363,3 @@ bool BansheePlaylistModel::isColumnInternal(int column) {
     Q_UNUSED(column);
     return false;
 }
-
-// if no header state exists, we may hide some columns so that the user can reactivate them
-bool BansheePlaylistModel::isColumnHiddenByDefault(int column) {
-    Q_UNUSED(column);
-    return false;
-}

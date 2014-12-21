@@ -196,9 +196,6 @@ Section "Mixxx (required)" SecMixxx
   File "${BASE_BUILD_DIR}\dist${BITWIDTH}\mixxx.exe"
   File "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.dll"
 
-  ; Put other files there
-  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.xml"
-
   ; And documentation, licence etc.
   File "${BASE_BUILD_DIR}\Mixxx-Manual.pdf"
   File "${BASE_BUILD_DIR}\LICENSE"
@@ -307,7 +304,6 @@ Section "Uninstall"
   Delete $INSTDIR\mixxx.exe
   Delete $INSTDIR\mixxx.log
   Delete $INSTDIR\*.dll
-  Delete $INSTDIR\schema.xml
   Delete $INSTDIR\*.manifest
   Delete $INSTDIR\UninstallMixxx.exe
   Delete $INSTDIR\Mixxx-Manual.pdf

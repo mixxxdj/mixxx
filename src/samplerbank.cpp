@@ -6,11 +6,12 @@
 #include "trackinfoobject.h"
 #include "controlpushbutton.h"
 #include "playermanager.h"
+#include "util/assert.h"
 
 SamplerBank::SamplerBank(PlayerManager* pPlayerManager)
         : QObject(pPlayerManager),
           m_pPlayerManager(pPlayerManager) {
-    Q_ASSERT(pPlayerManager);
+    DEBUG_ASSERT(m_pPlayerManager);
     m_pLoadControl = new ControlPushButton(ConfigKey("[Sampler]", "LoadSamplerBank"));
     connect(m_pLoadControl, SIGNAL(valueChanged(double)),
             this, SLOT(slotLoadSamplerBank(double)));
@@ -25,8 +26,9 @@ SamplerBank::~SamplerBank() {
 }
 
 void SamplerBank::slotSaveSamplerBank(double v) {
-    if (v == 0.0)
+    if (v == 0.0 || m_pPlayerManager == NULL) {
         return;
+    }
 
     QString samplerBankPath = QFileDialog::getSaveFileName(
             NULL, tr("Save Sampler Bank"),
@@ -79,8 +81,9 @@ void SamplerBank::slotSaveSamplerBank(double v) {
 }
 
 void SamplerBank::slotLoadSamplerBank(double v) {
-    if (v == 0.0)
+    if (v == 0.0 || m_pPlayerManager == NULL) {
         return;
+    }
 
     QString samplerBankPath = QFileDialog::getOpenFileName(
             NULL,

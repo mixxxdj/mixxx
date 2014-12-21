@@ -20,12 +20,14 @@
 #include <QFileDialog>
 #include <QStringList>
 #include <QUrl>
+#include <QApplication>
+#include <QFontDialog>
+#include <QFontMetrics>
 
 #include "dlgpreflibrary.h"
 #include "soundsourceproxy.h"
 
 #define MIXXX_ADDONS_URL "http://www.mixxx.org/wiki/doku.php/add-ons"
-
 
 DlgPrefLibrary::DlgPrefLibrary(QWidget * parent,
                                ConfigObject<ConfigValue> * config, Library *pLibrary)
@@ -33,7 +35,8 @@ DlgPrefLibrary::DlgPrefLibrary(QWidget * parent,
           m_dirListModel(),
           m_pconfig(config),
           m_pLibrary(pLibrary),
-          m_baddedDirectory(false) {
+          m_baddedDirectory(false),
+          m_iOriginalTrackTableRowHeight(Library::kDefaultRowHeightPx) {
     setupUi(this);
     slotUpdate();
     checkbox_ID3_sync->setVisible(false);
@@ -60,6 +63,19 @@ DlgPrefLibrary::DlgPrefLibrary(QWidget * parent,
     if (plugins.length() > 0) {
         pluginsLabel->setText(plugins.join(", "));
     }
+
+    // Set default direction as stored in config file
+    int rowHeight = m_pLibrary->getTrackTableRowHeight();
+    spinBoxRowHeight->setValue(rowHeight);
+    connect(spinBoxRowHeight, SIGNAL(valueChanged(int)),
+            this, SLOT(slotRowHeightValueChanged(int)));
+
+    connect(libraryFontButton, SIGNAL(clicked()),
+            this, SLOT(slotSelectFont()));
+    connect(this, SIGNAL(setTrackTableFont(QFont)),
+            m_pLibrary, SLOT(slotSetTrackTableFont(QFont)));
+    connect(this, SIGNAL(setTrackTableRowHeight(int)),
+            m_pLibrary, SLOT(slotSetTrackTableRowHeight(int)));
 }
 
 DlgPrefLibrary::~DlgPrefLibrary() {
@@ -128,6 +144,8 @@ void DlgPrefLibrary::slotResetToDefaults() {
     radioButton_dbclick_bottom->setChecked(false);
     radioButton_dbclick_top->setChecked(false);
     radioButton_dbclick_deck->setChecked(true);
+    spinBoxRowHeight->setValue(Library::kDefaultRowHeightPx);
+    setLibraryFont(QApplication::font());
 }
 
 void DlgPrefLibrary::slotUpdate() {
@@ -159,6 +177,17 @@ void DlgPrefLibrary::slotUpdate() {
             radioButton_dbclick_deck->setChecked(true);
             break;
     }
+
+    m_originalTrackTableFont = m_pLibrary->getTrackTableFont();
+    m_iOriginalTrackTableRowHeight = m_pLibrary->getTrackTableRowHeight();
+    spinBoxRowHeight->setValue(m_iOriginalTrackTableRowHeight);
+    setLibraryFont(m_originalTrackTableFont);
+}
+
+void DlgPrefLibrary::slotCancel() {
+    // Undo any changes in the library font or row height.
+    emit(setTrackTableRowHeight(m_iOriginalTrackTableRowHeight));
+    emit(setTrackTableFont(m_originalTrackTableFont));
 }
 
 void DlgPrefLibrary::slotAddDir() {
@@ -279,5 +308,46 @@ void DlgPrefLibrary::slotApply() {
     m_pconfig->set(ConfigKey("[Library]","TrackLoadAction"),
                 ConfigValue(dbclick_status));
 
+    QFont font = m_pLibrary->getTrackTableFont();
+    if (m_originalTrackTableFont != font) {
+        m_pconfig->set(ConfigKey("[Library]", "Font"),
+                       ConfigValue(font.toString()));
+    }
+
+    int rowHeight = spinBoxRowHeight->value();
+    if (m_iOriginalTrackTableRowHeight != rowHeight) {
+        m_pconfig->set(ConfigKey("[Library]","RowHeight"),
+                       ConfigValue(rowHeight));
+    }
+
+    // TODO(rryan): Don't save here.
     m_pconfig->Save();
+}
+
+void DlgPrefLibrary::slotRowHeightValueChanged(int height) {
+    emit(setTrackTableRowHeight(height));
+}
+
+void DlgPrefLibrary::setLibraryFont(const QFont& font) {
+    libraryFont->setText(QString("%1 %2 %3pt").arg(
+        font.family(), font.styleName(), QString::number(font.pointSizeF())));
+    emit(setTrackTableFont(font));
+
+    // Don't let the row height exceed the library height.
+    QFontMetrics metrics(font);
+    int fontHeight = metrics.height();
+    if (fontHeight > spinBoxRowHeight->value()) {
+        spinBoxRowHeight->setValue(fontHeight);
+    }
+    spinBoxRowHeight->setMinimum(fontHeight);
+}
+
+void DlgPrefLibrary::slotSelectFont() {
+    // False if the user cancels font selection.
+    bool ok = false;
+    QFont font = QFontDialog::getFont(&ok, m_pLibrary->getTrackTableFont(),
+                                      this, tr("Select Library Font"));
+    if (ok) {
+        setLibraryFont(font);
+    }
 }
