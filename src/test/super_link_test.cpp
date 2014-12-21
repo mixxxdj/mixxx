@@ -121,6 +121,36 @@ TEST_F(SuperLinkTest, HalfLinkTakeover) {
     // An effect that is linked to half of a knob should be more tolerant of
     // takeover changes.
 
+    // We have to recreate the effect because we want a neutral point at
+    // 0 or 1.
+    QString group = StandardEffectRack::formatEffectSlotGroupString(
+        0, 0, 0);
+    EffectManifest manifest;
+    manifest.setId("org.mixxx.test.effect2");
+    manifest.setName("Test Effect2");
+    EffectManifestParameter* low = manifest.addParameter();
+    low->setId("low");
+    low->setName(QObject::tr("Low"));
+    low->setDescription(QObject::tr("Gain for Low Filter (neutral at 0.0)"));
+    low->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
+    low->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    low->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    low->setNeutralPointOnScale(1.0);
+    low->setDefault(1.0);
+    low->setMinimum(0);
+    low->setMaximum(1.0);
+    registerTestEffect(manifest, false);
+    // Check the controls reflect the state of their loaded effect.
+    EffectPointer pEffect = m_pEffectsManager->instantiateEffect(manifest.id());
+    m_pEffectSlot->loadEffect(pEffect);
+    QString itemPrefix = EffectParameterSlot::formatItemPrefix(0);
+    m_pControlValue.reset(new ControlObjectThread(group, itemPrefix));
+    m_pControlLinkType.reset(new ControlObjectThread(group,
+            itemPrefix + QString("_link_type")));
+    m_pControlLinkInverse.reset(new ControlObjectThread(group,
+            itemPrefix + QString("_link_inverse")));
+
+    // OK now the actual test.
     // 1.5 is a bit of a magic number, but it's enough that a regular
     // linked control will fail the soft takeover test and not change the
     // value...

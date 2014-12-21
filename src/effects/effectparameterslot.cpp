@@ -131,7 +131,9 @@ void EffectParameterSlot::slotLinkTypeChanging(double v) {
     if (v > EffectManifestParameter::LINK_LINKED) {
         double neutral = m_pEffectParameter->getNeutralPointOnScale();
         if (neutral > 0.0 && neutral < 1.0) {
-            // Button is already a split button
+            // Knob is already a split knob, meaning it has a positive and
+            // negative effect if it's twisted above the neutral point or
+            // below the neutral point.
             // Toggle back to 0
             v = EffectManifestParameter::LINK_NONE;
         }
@@ -173,8 +175,8 @@ void EffectParameterSlot::onChainSuperParameterChanged(double parameter, bool fo
                             // the neutral position must stick where it is
                             neutral = 1.0 - neutral;
                         }
-                        // Button is already a split button
-                        // Match to center position of Super button
+                        // Knob is already a split knob
+                        // Match to center position of Super knob
                         if (parameter <= 0.5) {
                             parameter /= 0.5;
                             parameter *= neutral;
