@@ -29,6 +29,7 @@ TEST_F(EngineBufferTest, DisableKeylockResetsPitch) {
     ASSERT_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup1, "pitch")));
 }
 
+// TODO(xxx) make EngineBufferTest::TrackLoadResetsPitch() work
 /* Does not work yet because we have no BaseTrackPlayerImpl in this test
 TEST_F(EngineBufferTest, TrackLoadResetsPitch) {
     // When a new track is loaded, the pitch value should be reset.
