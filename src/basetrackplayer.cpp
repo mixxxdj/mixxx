@@ -329,12 +329,12 @@ EngineDeck* BaseTrackPlayerImpl::getEngineDeck() const {
 
 void BaseTrackPlayerImpl::setupEqControls() {
     const QString group = getGroup();
-    m_pLowFilter = new ControlObjectSlave(group,"filterLow");
-    m_pMidFilter = new ControlObjectSlave(group,"filterMid");
-    m_pHighFilter = new ControlObjectSlave(group,"filterHigh");
-    m_pLowFilterKill = new ControlObjectSlave(group,"filterLowKill");
-    m_pMidFilterKill = new ControlObjectSlave(group,"filterMidKill");
-    m_pHighFilterKill = new ControlObjectSlave(group,"filterHighKill");
-    m_pSpeed = new ControlObjectSlave(group,"rate");
-    m_pPitch = new ControlObjectSlave(group,"pitch");
+    m_pLowFilter = new ControlObjectSlave(group, "filterLow");
+    m_pMidFilter = new ControlObjectSlave(group, "filterMid");
+    m_pHighFilter = new ControlObjectSlave(group, "filterHigh");
+    m_pLowFilterKill = new ControlObjectSlave(group, "filterLowKill");
+    m_pMidFilterKill = new ControlObjectSlave(group, "filterMidKill");
+    m_pHighFilterKill = new ControlObjectSlave(group, "filterHighKill");
+    m_pSpeed = new ControlObjectSlave(group, "rate");
+    m_pPitch = new ControlObjectSlave(group, "pitch");
 }
