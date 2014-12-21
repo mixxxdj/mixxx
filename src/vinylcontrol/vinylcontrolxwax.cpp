@@ -459,7 +459,6 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
 
             bool reversed = static_cast<bool>(reverseButton->get());
             if (!reversed && m_bWasReversed) {
-                qDebug() << "Playback was reversed, resetting steady pitch";
                 resetSteadyPitch(dVinylPitch, m_dVinylPosition);
             }
             m_bWasReversed = reversed;
