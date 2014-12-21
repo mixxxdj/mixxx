@@ -66,6 +66,8 @@ SoftTakeover::SoftTakeover()
       m_dThreshold(kDefaultTakeoverThreshold) {
 }
 
+const double SoftTakeover::kDefaultTakeoverThreshold = 3.0 / 128;
+
 void SoftTakeover::setThreshold(double threshold) {
     m_dThreshold = threshold;
 }

@@ -3,10 +3,11 @@
 #include <QtDebug>
 #include <QScopedPointer>
 
-#include "mixxxtest.h"
-#include "test/baseeffecttest.h"
+#include "controllers/softtakeover.h"
 #include "effects/effectparameterslot.h"
 #include "effects/effect.h"
+#include "mixxxtest.h"
+#include "test/baseeffecttest.h"
 
 class SuperLinkTest : public BaseEffectTest {
   public:
@@ -107,7 +108,6 @@ TEST_F(SuperLinkTest, LinkLinkedInverse) {
     EXPECT_EQ(0.25, m_pControlValue->get());
 }
 
-
 TEST_F(SuperLinkTest, Softtakeover) {
     m_pControlLinkType->set(EffectManifestParameter::LINK_LINKED);
     m_pEffectSlot->onChainSuperParameterChanged(0.5);
@@ -115,4 +115,35 @@ TEST_F(SuperLinkTest, Softtakeover) {
     m_pControlValue->set(0.1);
     m_pEffectSlot->onChainSuperParameterChanged(0.7);
     EXPECT_EQ(0.1, m_pControlValue->get());
+}
+
+TEST_F(SuperLinkTest, HalfLinkTakeover) {
+    // An effect that is linked to half of a knob should be more tolerant of
+    // takeover changes.
+
+    // 1.5 is a bit of a magic number, but it's enough that a regular
+    // linked control will fail the soft takeover test and not change the
+    // value...
+    double newParam = 0.5 - SoftTakeover::kDefaultTakeoverThreshold * 1.5;
+    m_pEffectSlot->onChainSuperParameterChanged(newParam);
+    EXPECT_EQ(1.0, m_pControlValue->get());
+
+    // ...but that value is still within the tolerance of a linked-left
+    // and linked-right control.  So if we set the exact same newParam,
+    // we should see the control change as expected.
+    m_pEffectSlot->onChainSuperParameterChanged(0.5);
+    m_pControlValue->set(1.0);
+    m_pControlLinkType->set(EffectManifestParameter::LINK_LINKED_LEFT);
+    m_pEffectSlot->syncSofttakeover();
+    m_pEffectSlot->onChainSuperParameterChanged(newParam);
+    EXPECT_EQ(newParam * 2.0, m_pControlValue->get());
+
+    // This tolerance change should also work for linked-right controls.
+    m_pEffectSlot->onChainSuperParameterChanged(0.5);
+    m_pControlValue->set(1.0);
+    m_pControlLinkType->set(EffectManifestParameter::LINK_LINKED_RIGHT);
+    m_pEffectSlot->syncSofttakeover();
+    newParam = 0.5 + SoftTakeover::kDefaultTakeoverThreshold * 1.5;
+    m_pEffectSlot->onChainSuperParameterChanged(newParam);
+    EXPECT_FLOAT_EQ(0.9296875, m_pControlValue->get());
 }

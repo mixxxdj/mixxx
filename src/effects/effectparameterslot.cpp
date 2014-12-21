@@ -95,6 +95,9 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
 
             connect(m_pEffectParameter, SIGNAL(valueChanged(double)),
                     this, SLOT(slotParameterValueChanged(double)));
+            // Setting the link type or link inverse calls soft takeover's
+            // ignoreNext method which ignores the first superknob update,
+            // so we need to sync softtakeover explicitly.
             syncSofttakeover();
         }
     }
@@ -113,7 +116,7 @@ void EffectParameterSlot::clear() {
     m_pControlValue->setDefaultValue(0.0);
     m_pControlType->setAndConfirm(0.0);
     m_pControlLinkType->setAndConfirm(EffectManifestParameter::LINK_NONE);
-    m_pSoftTakeover->setThreshold(kDefaultTakeoverThreshold);
+    m_pSoftTakeover->setThreshold(SoftTakeover::kDefaultTakeoverThreshold);
     m_pControlLinkInverse->set(0.0);
     emit(updated());
 }
@@ -124,7 +127,6 @@ void EffectParameterSlot::slotParameterValueChanged(double value) {
 }
 
 void EffectParameterSlot::slotLinkTypeChanging(double v) {
-    Q_UNUSED(v);
     m_pSoftTakeover->ignoreNext();
     if (v > EffectManifestParameter::LINK_LINKED) {
         double neutral = m_pEffectParameter->getNeutralPointOnScale();
@@ -134,11 +136,12 @@ void EffectParameterSlot::slotLinkTypeChanging(double v) {
             v = EffectManifestParameter::LINK_NONE;
         }
     }
-    if (v == EffectManifestParameter::LINK_LINKED_LEFT ||
-            v == EffectManifestParameter::LINK_LINKED_RIGHT) {
-        m_pSoftTakeover->setThreshold(kDefaultTakeoverThreshold * 2.0);
+    if (static_cast<int>(v) == EffectManifestParameter::LINK_LINKED_LEFT ||
+            static_cast<int>(v) == EffectManifestParameter::LINK_LINKED_RIGHT) {
+        m_pSoftTakeover->setThreshold(
+                SoftTakeover::kDefaultTakeoverThreshold * 2.0);
     } else {
-        m_pSoftTakeover->setThreshold(kDefaultTakeoverThreshold);
+        m_pSoftTakeover->setThreshold(SoftTakeover::kDefaultTakeoverThreshold);
     }
     m_pControlLinkType->setAndConfirm(v);
 }
