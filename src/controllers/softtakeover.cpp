@@ -63,8 +63,6 @@ bool SoftTakeoverCtrl::ignore(ControlObject* control, double newParameter) {
 SoftTakeover::SoftTakeover()
     : m_time(0),
       m_prevParameter(0),
-      // 3/128 units away from the current is enough to catch fast non-sequential moves
-      //  but not cause an audibly noticeable jump.
       m_dThreshold(kDefaultTakeoverThreshold) {
 }
 
