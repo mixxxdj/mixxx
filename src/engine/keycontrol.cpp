@@ -18,7 +18,6 @@ KeyControl::KeyControl(QString group,
           m_bOldKeylock(false),
           m_speedSliderPitchRatio(1.0),
           m_iPitchAndKeylockMode(kOffsetScaleLockOriginalKey) {
-
     struct PitchTempoRatio pitchRateInfo;
     pitchRateInfo.pitchRatio = 1.0;
     pitchRateInfo.tempoRatio = 1.0;
@@ -271,7 +270,6 @@ void KeyControl::setEngineKey(double key, double key_distance) {
 
 void KeyControl::slotPitchChanged(double pitch) {
     //qDebug() << "KeyControl::slotPitchChanged 1" << m_pitchRatio << m_speedSliderPitchRatio;
-
     double pitchTweakRatio = KeyUtils::octaveChangeToPowerOf2(pitch / 12);
     if (m_iPitchAndKeylockMode == kOffsetScaleLockOriginalKey) {
         // Pitch slider presents only the offset, calc absolute pitch
@@ -284,7 +282,6 @@ void KeyControl::slotPitchChanged(double pitch) {
 
     double dFileKey = m_pFileKey->get();
     updateKeyCOs(dFileKey, KeyUtils::powerOf2ToOctaveChange(pitchTweakRatio));
-
     //qDebug() << "KeyControl::slotPitchChanged 2" << m_pitchRatio << m_speedSliderPitchRatio;
 }
 
@@ -314,7 +311,6 @@ bool KeyControl::syncKey(EngineBuffer* pOtherEngineBuffer) {
     mixxx::track::io::key::ChromaticKey otherKey =
             KeyUtils::keyFromNumericValue(dKey);
     double otherDistance = ControlObject::get(ConfigKey(pOtherEngineBuffer->getGroup(), "visual_key_distance"));
-
 
     if (thisFileKey == mixxx::track::io::key::INVALID ||
         otherKey == mixxx::track::io::key::INVALID) {

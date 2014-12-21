@@ -740,7 +740,6 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
 
         bool paused = m_playButton->get() == 0.0;
 
-
         KeyControl::PitchTempoRatio pitchTempoRatio = m_pKeyControl->getPitchTempoRatio();
 
         // The pitch adjustment in Ratio (1.0 being normal
@@ -789,7 +788,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
         // If key lock is enabled, the speedSliderPitchRatio is decoupled from
         // the speed slider (const).
         //
-        // With preference mode PitchAndKeylockMode = kPakmOffsetScaleReseting
+        // With preference mode PitchAndKeylockMode = kOffsetScaleLockOriginalKey
         // the speedSliderPitchRatio is reset to 1 and back to the tempoRatio
         // (natural vinyl Pitch) when keylock is disabled and enabled.
         // The Pitch knob does not reflect the speedSliderPitchRatio.
