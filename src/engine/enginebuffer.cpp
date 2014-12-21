@@ -739,7 +739,6 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
         }
 
         bool paused = m_playButton->get() == 0.0;
-
         KeyControl::PitchTempoRatio pitchTempoRatio = m_pKeyControl->getPitchTempoRatio();
 
         // The pitch adjustment in Ratio (1.0 being normal
