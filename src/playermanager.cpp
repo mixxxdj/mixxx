@@ -19,6 +19,7 @@
 #include "effects/effectsmanager.h"
 #include "util/stat.h"
 #include "engine/enginedeck.h"
+#include "util/assert.h"
 
 PlayerManager::PlayerManager(ConfigObject<ConfigValue>* pConfig,
                              SoundManager* pSoundManager,
@@ -263,6 +264,10 @@ void PlayerManager::addConfiguredDecks() {
 void PlayerManager::addDeckInner() {
     // Do not lock m_mutex here.
     QString group = groupForDeck(m_decks.count());
+    DEBUG_ASSERT_AND_HANDLE(!m_players.contains(group)) {
+        return;
+    }
+
     int number = m_decks.count() + 1;
 
     EngineChannel::ChannelOrientation orientation = EngineChannel::LEFT;
@@ -277,7 +282,6 @@ void PlayerManager::addDeckInner() {
                 m_pAnalyserQueue, SLOT(slotAnalyseTrack(TrackPointer)));
     }
 
-    Q_ASSERT(!m_players.contains(group));
     m_players[group] = pDeck;
     m_decks.append(pDeck);
 
@@ -318,6 +322,10 @@ void PlayerManager::addSamplerInner() {
     // Do not lock m_mutex here.
     QString group = groupForSampler(m_samplers.count());
 
+    DEBUG_ASSERT_AND_HANDLE(!m_players.contains(group)) {
+        return;
+    }
+
     // All samplers are in the center
     EngineChannel::ChannelOrientation orientation = EngineChannel::CENTER;
 
@@ -328,7 +336,6 @@ void PlayerManager::addSamplerInner() {
                 m_pAnalyserQueue, SLOT(slotAnalyseTrack(TrackPointer)));
     }
 
-    Q_ASSERT(!m_players.contains(group));
     m_players[group] = pSampler;
     m_samplers.append(pSampler);
 }
@@ -342,6 +349,9 @@ void PlayerManager::addPreviewDeck() {
 void PlayerManager::addPreviewDeckInner() {
     // Do not lock m_mutex here.
     QString group = groupForPreviewDeck(m_preview_decks.count());
+    DEBUG_ASSERT_AND_HANDLE(!m_players.contains(group)) {
+        return;
+    }
 
     // All preview decks are in the center
     EngineChannel::ChannelOrientation orientation = EngineChannel::CENTER;
@@ -354,7 +364,6 @@ void PlayerManager::addPreviewDeckInner() {
                 m_pAnalyserQueue, SLOT(slotAnalyseTrack(TrackPointer)));
     }
 
-    Q_ASSERT(!m_players.contains(group));
     m_players[group] = pPreviewDeck;
     m_preview_decks.append(pPreviewDeck);
 }

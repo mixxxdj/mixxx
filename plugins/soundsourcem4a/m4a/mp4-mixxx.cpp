@@ -10,6 +10,7 @@
 #include <stdlib.h>
 
 #include "util/math.h"
+#include "util/assert.h"
 
 /*
  * Copyright 2006 dnk <dnk@bjum.net>
@@ -407,7 +408,10 @@ static int mp4_seek_sample(struct input_plugin_data *ip_data, int sample)
     struct mp4_private *priv;
     priv = (mp4_private*) ip_data->private_ipd;
 
-    Q_ASSERT(sample >= 0);
+    // Ignore the seek if the sample is invalid.
+    DEBUG_ASSERT_AND_HANDLE(sample >= 0) {
+        return mp4_current_sample(ip_data);
+    }
     // The first frame is samples 0 through 2047. The first sample of the second
     // frame is 2048. 2048 / 2048 = 1, so frame_for_sample will be 2 on the
     // 2048'th sample. The frame_offset_samples is how many samples into the frame

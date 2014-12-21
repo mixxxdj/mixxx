@@ -94,6 +94,15 @@ QTableView::indicator:unchecked {
   background: url(skin:/image/style_checkbox_unchecked.png);
 }
 
+/* BPM lock icon in the library "BPM" column. */
+#LibraryBPMButton::indicator:checked {
+  image: url(:/images/library/ic_library_checked.png);
+}
+
+#LibraryBPMButton::indicator:unchecked {
+  image: url(:/images/library/ic_library_unchecked.png);
+}
+
 /* Button in library "Preview" column */
 QPushButton#LibraryPreviewButton {
   width: 23px;
@@ -135,11 +144,11 @@ QSplitter::handle:vertical {
 
 #Mixxx {
   background-color: black;
+  font-family: "Open Sans";
 }
 
 WWidget, QLabel {
-  font: bold 16pt/18pt Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-  font-size: 7pt;
+  font-size: 6pt;
   text-transform: uppercase;
 }
 
@@ -237,12 +246,14 @@ WSliderComposed {
 }
 
 #DeckTextRow #ArtistGutter WLabel, #DeckTextRow #BPMGutter WLabel, #DeckTextRow #PositionGutter WLabel {
-  font: bold 16pt/18pt Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  font-weight: bold;
+  font-size: 15pt;
   text-transform: none;
 }
 
 #SamplerTextRow #ArtistGutter WLabel, #SamplerTextRow #BPMGutter WLabel, #SamplerTextRow #PositionGutter WLabel {
-  font: bold 12pt/14pt Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  font-weight: bold;
+  font-size: 11pt;
   text-transform: none;
 }
 
@@ -251,19 +262,22 @@ WSliderComposed {
 }
 
 #DeckTextRow #TitleGutter WLabel, #EffectRackExpanded #EffectUnitNameContainer WLabel {
-  font: bold 18pt/20pt Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  font-weight: bold;
+  font-size: 17pt;
   text-transform: none;
   text-align: left;
 }
 
 #SamplerTextRow #TitleGutter WLabel {
-  font: bold 14pt/12pt Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  font-weight: bold;
+  font-size: 13pt;
   text-transform: none;
   text-align: left;
 }
 
 #EffectRackCollapsed #EffectUnitNameContainer WLabel {
-  font: bold 16pt/18pt Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  font-weight: bold;
+  font-size: 15pt;
   text-transform: none;
   text-align: left;
 }
@@ -294,7 +308,7 @@ WSliderComposed {
 }
 
 #EffectUnitNextPrevContainer WPushButton {
-  font-size: 12pt;
+  font-size: 11pt;
 }
 
 #EffectKnob {
@@ -432,7 +446,7 @@ WWidget, WLabel {
 }
 
 #EffectUnit {
-  font-size: 16pt;
+  font-size: 15pt;
 }
 
 #EffectUnit1 {
@@ -467,6 +481,38 @@ WWidgetGroup {
   /*qproperty-layoutAlignment: 'AlignCenter';*/
 }
 
+WPushButton
+{
+    color: #999999;
+    background-color: QLinearGradient( x1: 0, y1: 1, x2: 0, y2: 0,
+    stop: 0 #484848, stop: 1 #484848);
+    border: 1px solid #4A4949;
+    border-radius: 1px;
+    outline: none;
+}
+
+WPushButton:hover
+{
+    color: #999999;
+    background-color: QLinearGradient( x1: 0, y1: 1, x2: 0, y2: 0,
+    stop: 0 #5E5D54, stop: 1 #5E5D54);
+    border: 0px solid #A4A4A4;
+}
+
+/*"Pressed" state*/
+WPushButton[value="1"] {
+    color: #E5E5E5;
+    background-color: QLinearGradient( x1: 0, y1: 1, x2: 0, y2: 0,
+    stop: 0 #006BA2, stop: 1 #006BA2);
+    border: 0px solid #A4A4A4;
+}
+
+WPushButton[value="1"]:hover {
+    color: #E5E5E5;
+    background-color: QLinearGradient( x1: 0, y1: 1, x2: 0, y2: 0,
+    stop: 0 #0085CA, stop: 1 #0085CA);
+    border: 0px solid #A4A4A4;
+}
 
 /*
 

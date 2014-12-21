@@ -1,37 +1,60 @@
 <Template>
-  <WidgetStack currentpage="[Master],spinny_size" persist="true">
-    <SizePolicy>max,min</SizePolicy>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
     <Children>
+      <WidgetStack currentpage="[Master],spinny_size" persist="true">
+        <SizePolicy>max,min</SizePolicy>
+        <Children>
+          <WidgetGroup>
+            <ObjectName>SpinnyContainer</ObjectName>
+            <Layout>horizontal</Layout>
+            <MinimumSize>96,96</MinimumSize>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <Spinny>
+                <Group>[Channel<Variable name="channum"/>]</Group>
+                <PathBackground>vinyl_spinny<Variable name="color"/>_background.png</PathBackground>
+                <PathForeground>vinyl_spinny<Variable name="color"/>_foreground.png</PathForeground>
+                <PathGhost>vinyl_spinny<Variable name="color"/>_foreground_ghost.png</PathGhost>
+                <ShowCover>true</ShowCover>
+              </Spinny>
+            </Children>
+          </WidgetGroup>
+          <WidgetGroup trigger="[Master],show_mixer">
+            <ObjectName>SpinnyContainer</ObjectName>
+            <Layout>horizontal</Layout>
+            <MinimumSize>50,50</MinimumSize>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <Spinny>
+                <Group>[Channel<Variable name="channum"/>]</Group>
+                <PathBackground>vinyl_spinny<Variable name="color"/>_background-s.png</PathBackground>
+                <PathForeground>vinyl_spinny<Variable name="color"/>_foreground-s.png</PathForeground>
+                <PathGhost>vinyl_spinny<Variable name="color"/>_foreground_ghost-s.png</PathGhost>
+                <ShowCover>true</ShowCover>
+              </Spinny>
+            </Children>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+            <ConfigKey>[Spinny],show_spinnies</ConfigKey>
+            <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetStack>
+      <!-- If the spinnies are hidden, create an invisible margin of the correct
+      height because the waveforms follow that height.  -->
       <WidgetGroup>
-        <ObjectName>SpinnyContainer</ObjectName>
         <Layout>horizontal</Layout>
-        <MinimumSize>95,95</MinimumSize>
-        <SizePolicy>min,min</SizePolicy>
-        <Children>
-          <Spinny>
-            <Group>[Channel<Variable name="channum"/>]</Group>
-            <PathBackground>vinyl_spinny<Variable name="color"/>_background.png</PathBackground>
-            <PathForeground>vinyl_spinny<Variable name="color"/>_foreground.png</PathForeground>
-            <PathGhost>vinyl_spinny<Variable name="color"/>_foreground_ghost.png</PathGhost>
-            <ShowCover>true</ShowCover>
-          </Spinny>
-        </Children>
-      </WidgetGroup>
-      <WidgetGroup trigger="[Master],show_mixer">
-        <ObjectName>SpinnyContainer</ObjectName>
-        <Layout>horizontal</Layout>
-        <MinimumSize>20,50</MinimumSize>
-        <SizePolicy>min,min</SizePolicy>
-        <Children>
-          <Spinny>
-            <Group>[Channel<Variable name="channum"/>]</Group>
-            <PathBackground>vinyl_spinny<Variable name="color"/>_background-s.png</PathBackground>
-            <PathForeground>vinyl_spinny<Variable name="color"/>_foreground-s.png</PathForeground>
-            <PathGhost>vinyl_spinny<Variable name="color"/>_foreground_ghost-s.png</PathGhost>
-            <ShowCover>true</ShowCover>
-          </Spinny>
-        </Children>
+        <Size>0f,96f</Size>
+        <Children/>
+        <Connection>
+            <ConfigKey>[Master],show_mixer</ConfigKey>
+            <BindProperty>visible</BindProperty>
+            <Transform>
+              <Not/>
+            </Transform>
+        </Connection>    
       </WidgetGroup>
     </Children>
-  </WidgetStack>
+  </WidgetGroup>
 </Template>

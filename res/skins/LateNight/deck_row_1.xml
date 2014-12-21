@@ -83,7 +83,7 @@
                                  <NumberStates>64</NumberStates>
                                  <Path>knobs/knob_rotary_s%1.png</Path>
                                  <Connection>
-                                     <ConfigKey>[QuickEffectRack1_[Channel<Variable name="channum"/>]],parameter</ConfigKey>
+                                     <ConfigKey>[QuickEffectRack1_[Channel<Variable name="channum"/>]],super1</ConfigKey>
                                  </Connection>
                              </Knob>
                          </Children>

@@ -36,7 +36,8 @@ void WEffectPushButton::setup(QDomNode node, const SkinContext& context) {
                 this, SLOT(parameterUpdated()));
         parameterUpdated();
     } else {
-        qDebug() << "EffectPushButton node could not attach to effect parameter.";
+        SKIN_WARNING(node, context)
+                << "EffectPushButton node could not attach to effect parameter.";
     }
 }
 

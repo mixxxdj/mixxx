@@ -51,6 +51,7 @@
 #include "track/keyutils.h"
 #include "controlobjectslave.h"
 #include "util/compatibility.h"
+#include "util/assert.h"
 
 #ifdef __VINYLCONTROL__
 #include "engine/vinylcontrolcontrol.h"
@@ -380,8 +381,8 @@ double EngineBuffer::getBpm()
     return m_pBpmControl->getBpm();
 }
 
-double EngineBuffer::getFileBpm() {
-    return m_pBpmControl->getFileBpm();
+double EngineBuffer::getLocalBpm() {
+    return m_pBpmControl->getLocalBpm();
 }
 
 void EngineBuffer::setEngineMaster(EngineMaster* pEngineMaster) {
@@ -712,9 +713,11 @@ void EngineBuffer::slotKeylockEngineChanged(double d_index) {
 }
 
 
-void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize)
-{
-    Q_ASSERT(even(iBufferSize));
+void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
+    // Bail if we receive a non-even buffer size. Assert in debug builds.
+    DEBUG_ASSERT_AND_HANDLE(even(iBufferSize)) {
+        return;
+    }
     m_pReader->process();
     // Steps:
     // - Lookup new reader information
@@ -1133,12 +1136,15 @@ void EngineBuffer::postProcess(const int iBufferSize) {
     // The order of events here is very delicate.  It's necessary to update
     // some values before others, because the later updates may require
     // values from the first update.
+    double local_bpm = m_pBpmControl->updateLocalBpm();
     double beat_distance = m_pBpmControl->updateBeatDistance();
     SyncMode mode = m_pSyncControl->getSyncMode();
     if (mode == SYNC_MASTER) {
+        m_pSyncControl->setLocalBpm(local_bpm);
         m_pEngineSync->notifyBeatDistanceChanged(m_pSyncControl, beat_distance);
     } else if (mode == SYNC_FOLLOWER) {
         // Report our speed to SyncControl.  If we are master, we already did this.
+        m_pSyncControl->setLocalBpm(local_bpm);
         m_pSyncControl->reportPlayerSpeed(m_speed_old, m_scratching_old);
         m_pSyncControl->setBeatDistance(beat_distance);
     }

@@ -5,8 +5,93 @@
 
 #include "widget/wtracktableviewheader.h"
 #include "library/trackmodel.h"
+#include "util/math.h"
 
 #define WTTVH_MINIMUM_SECTION_SIZE 20
+
+HeaderViewState::HeaderViewState(const QHeaderView& headers)
+{
+    QAbstractItemModel* model = headers.model();
+    for (int vi = 0; vi < headers.count(); ++vi) {
+        int li = headers.logicalIndex(vi);
+        mixxx::library::HeaderViewState::HeaderState* header_state =
+                m_view_state.add_header_state();
+        header_state->set_hidden(headers.isSectionHidden(li));
+        header_state->set_size(headers.sectionSize(li));
+        header_state->set_logical_index(li);
+        header_state->set_visual_index(vi);
+        QString column_name = model->headerData(
+                li, Qt::Horizontal, TrackModel::kHeaderNameRole).toString();
+        // If there was some sort of error getting the column id,
+        // we have to skip this one. (Happens with non-displayed columns)
+        if (column_name.isEmpty()) {
+            continue;
+        }
+        header_state->set_column_name(column_name.toStdString());
+    }
+    m_view_state.set_sort_indicator_shown(headers.isSortIndicatorShown());
+    if (m_view_state.sort_indicator_shown()) {
+        m_view_state.set_sort_indicator_section(headers.sortIndicatorSection());
+        m_view_state.set_sort_order(
+                static_cast<int>(headers.sortIndicatorOrder()));
+    }
+}
+
+HeaderViewState::HeaderViewState(const QString& base64serialized) {
+    QByteArray array;
+    array.append(base64serialized);
+    // First decode the array from Base64, then initialize the protobuf from it.
+    array = QByteArray::fromBase64(array);
+    m_view_state.ParseFromArray(array.constData(), array.size());
+}
+
+QString HeaderViewState::saveState() const {
+    // Serialize the proto to a byte array, then encode the array as Base64.
+    int size = m_view_state.ByteSize();
+    QByteArray array(size, '\0');
+    m_view_state.SerializeToArray(array.data(), size);
+    return QString(array.toBase64());
+}
+
+void HeaderViewState::restoreState(QHeaderView* headers) {
+    const int max_columns =
+            math_min(headers->count(), m_view_state.header_state_size());
+
+    typedef QMap<QString, mixxx::library::HeaderViewState::HeaderState*> state_map;
+    state_map map;
+    for (int i = 0; i < m_view_state.header_state_size(); ++i) {
+        map[QString::fromStdString(m_view_state.header_state(i).column_name())] =
+                m_view_state.mutable_header_state(i);
+    }
+
+    // First set all sections to be hidden and update logical
+    // indexes
+    for (int li = 0; li < headers->count(); ++li) {
+        headers->setSectionHidden(li, true);
+        // TODO(owilliams): replace with auto once we're building on c++11.
+        state_map::iterator it = map.find(
+                headers->model()->headerData(
+                        li, Qt::Horizontal, TrackModel::kHeaderNameRole).toString());
+        if (it != map.end()) {
+            it.value()->set_logical_index(li);
+        }
+    }
+
+    // Now restore
+    for (int vi = 0; vi < max_columns; ++vi) {
+        const mixxx::library::HeaderViewState::HeaderState& header =
+                m_view_state.header_state(vi);
+        const int li = header.logical_index();
+        headers->setSectionHidden(li, header.hidden());
+        headers->resizeSection(li, header.size());
+        headers->moveSection(headers->visualIndex(li), vi);
+    }
+    if (m_view_state.sort_indicator_shown()) {
+        headers->setSortIndicator(
+                m_view_state.sort_indicator_section(),
+                static_cast<Qt::SortOrder>(m_view_state.sort_order()));
+    }
+}
 
 WTrackTableViewHeader::WTrackTableViewHeader(Qt::Orientation orientation,
                                              QWidget* parent)
@@ -116,9 +201,8 @@ void WTrackTableViewHeader::saveHeaderState() {
         return;
     }
     // Convert the QByteArray to a Base64 string and save it.
-    const QString headerState = QString(saveState().toBase64());
-    //bool result =
-    track_model->setModelSetting("header_state", headerState);
+    HeaderViewState view_state(*this);
+    track_model->setModelSetting("header_state_pb", view_state.saveState());
     //qDebug() << "Saving old header state:" << result << headerState;
 }
 
@@ -129,14 +213,27 @@ void WTrackTableViewHeader::restoreHeaderState() {
         return;
     }
 
-    QString headerStateString = track_model->getModelSetting("header_state");
-    if (!headerStateString.isNull()) {
-        // Load the previous header state (stored as a Base 64 string). Decode
-        // it and restore it.
-        //qDebug() << "Restoring header state" << headerStateString;
-        QByteArray headerState = headerStateString.toAscii();
-        headerState = QByteArray::fromBase64(headerState);
-        restoreState(headerState);
+    QString headerStateString = track_model->getModelSetting("header_state_pb");
+    if (headerStateString.isNull()) {
+        loadDefaultHeaderState();
+    } else {
+        // Load the previous header state (stored as serialized protobuf).
+        // Decode it and restore it.
+        //qDebug() << "Restoring header state from proto" << headerStateString;
+        HeaderViewState view_state(headerStateString);
+        view_state.restoreState(this);
+    }
+}
+
+void WTrackTableViewHeader::loadDefaultHeaderState() {
+    // TODO: isColumnHiddenByDefault logic probably belongs here now.
+    QAbstractItemModel* m = model();
+    for (int i = 0; i < count(); ++i) {
+        int header_size = m->headerData(
+                i, orientation(), TrackModel::kHeaderWidthRole).toInt();
+        if (header_size > 0) {
+            resizeSection(i, header_size);
+        }
     }
 }
 
@@ -145,9 +242,10 @@ bool WTrackTableViewHeader::hasPersistedHeaderState() {
     if (!track_model) {
         return false;
     }
-    QString headerStateString = track_model->getModelSetting("header_state");
-
-    if (!headerStateString.isNull()) return true;
+    QString headerStateString = track_model->getModelSetting("header_state_pb");
+    if (!headerStateString.isNull()) {
+        return true;
+    }
     return false;
 }
 

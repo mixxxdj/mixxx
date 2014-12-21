@@ -30,6 +30,7 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
 
   public slots:
     void selectIndex(const QModelIndex&);
+    void slotSetFont(const QFont& font);
 
   signals:
     void rightClicked(const QPoint&, const QModelIndex&);

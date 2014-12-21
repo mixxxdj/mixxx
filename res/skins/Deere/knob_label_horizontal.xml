@@ -10,6 +10,7 @@
     <Layout>horizontal</Layout>
     <Children>
       <KnobComposed>
+        <TooltipId><Variable name="TooltipId"/></TooltipId>
         <Size>25f,25f</Size>
         <Knob>knob.svg</Knob>
         <MinAngle>-230</MinAngle>

@@ -100,15 +100,8 @@ TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const {
             + "\n" +track_location);
         return TrackPointer();
     }
-
-    TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
-    int track_id = track_dao.getTrackId(track_location);
-    if (track_id < 0) {
-        // Add Track to library
-        track_id = track_dao.addTrack(track_location, true);
-    }
-
-    return track_dao.getTrack(track_id);
+    return m_pTrackCollection->getTrackDAO()
+            .getOrAddTrack(track_location, true, NULL);
 }
 
 QString BrowseTableModel::getTrackLocation(const QModelIndex& index) const {

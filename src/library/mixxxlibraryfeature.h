@@ -18,10 +18,10 @@
 #include "library/dao/trackdao.h"
 #include "treeitemmodel.h"
 #include "configobject.h"
-#include "dlghidden.h"
-#include "dlgmissing.h"
 
-
+class DlgHidden;
+class DlgMissing;
+class Library;
 class BaseTrackCache;
 class LibraryTableModel;
 class TrackCollection;
@@ -29,7 +29,7 @@ class TrackCollection;
 class MixxxLibraryFeature : public LibraryFeature {
     Q_OBJECT
     public:
-    MixxxLibraryFeature(QObject* parent,
+    MixxxLibraryFeature(Library* pLibrary,
                         TrackCollection* pTrackCollection,
                         ConfigObject<ConfigValue>* pConfig);
     virtual ~MixxxLibraryFeature();
@@ -50,6 +50,7 @@ class MixxxLibraryFeature : public LibraryFeature {
   private:
     const QString kMissingTitle;
     const QString kHiddenTitle;
+    Library* m_pLibrary;
     QSharedPointer<BaseTrackCache> m_pBaseTrackCache;
     LibraryTableModel* m_pLibraryTableModel;
     DlgMissing* m_pMissingView;

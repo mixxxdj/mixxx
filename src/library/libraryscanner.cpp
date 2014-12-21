@@ -63,8 +63,6 @@ LibraryScanner::LibraryScanner(QWidget* pParentWidget, TrackCollection* collecti
     // connect them to our slots to run the command on the scanner thread.
     connect(this, SIGNAL(startScan()),
             this, SLOT(slotStartScan()));
-    connect(this, SIGNAL(shutdownScanner()),
-            this, SLOT(slotShutdownScanner()));
 
     // Force the GUI thread's TrackInfoObject cache to be cleared when a library
     // scan is finished, because we might have modified the database directly
@@ -104,18 +102,18 @@ LibraryScanner::~LibraryScanner() {
     if (m_scannerGlobal) {
         // Cancel any running library scan.
         cancel();
-
-        // Wait for the thread pool to empty. This is important because
-        // ScannerTasks have pointers to the LibraryScanner and can cause a
-        // segfault if they run after the LibraryScanner has been destroyed.
-        m_pool.waitForDone();
-
-        // Quit the event loop gracefully.
-        quit();
-
-        // Wait for thread to finish
-        wait();
     }
+
+    // Wait for the thread pool to empty. This is important because ScannerTasks
+    // have pointers to the LibraryScanner and can cause a segfault if they run
+    // after the LibraryScanner has been destroyed.
+    m_pool.waitForDone();
+
+    // Quit the event loop gracefully.
+    quit();
+
+    // Wait for thread to finish
+    wait();
 
     // There should never be an outstanding transaction when this code is
     // called. If there is, it means we probably aren't committing a transaction

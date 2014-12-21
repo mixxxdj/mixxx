@@ -75,6 +75,7 @@
 #include "waveform/guitick.h"
 #include "util/math.h"
 #include "util/experiment.h"
+#include "util/font.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/defs_vinylcontrol.h"
@@ -129,6 +130,8 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 
     QString resourcePath = m_pConfig->getResourcePath();
     initializeTranslations(pApp);
+
+    initializeFonts();
 
     // Set the visibility of tooltips, default "1" = ON
     m_toolTipsCfg = m_pConfig->getValueString(ConfigKey("[Controls]", "Tooltips"), "1").toInt();
@@ -339,41 +342,6 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_pPrefDlg->setHidden(true);
 
     initializeKeyboard();
-
-    // Try open player device If that fails, the preference panel is opened.
-    int setupDevices = m_pSoundManager->setupDevices();
-    unsigned int numDevices = m_pSoundManager->getConfig().getOutputs().count();
-    // test for at least one out device, if none, display another dlg that
-    // says "mixxx will barely work with no outs"
-    while (setupDevices != OK || numDevices == 0) {
-        // Exit when we press the Exit button in the noSoundDlg dialog
-        // only call it if setupDevices != OK
-        if (setupDevices != OK) {
-            if (noSoundDlg() != 0) {
-                exit(0);
-            }
-        } else if (numDevices == 0) {
-            bool continueClicked = false;
-            int noOutput = noOutputDlg(&continueClicked);
-            if (continueClicked) break;
-            if (noOutput != 0) {
-                exit(0);
-            }
-        }
-        setupDevices = m_pSoundManager->setupDevices();
-        numDevices = m_pSoundManager->getConfig().getOutputs().count();
-    }
-
-    // Load tracks in args.qlMusicFiles (command line arguments) into player
-    // 1 and 2:
-    const QList<QString>& musicFiles = args.getMusicFiles();
-    for (int i = 0; i < (int)m_pPlayerManager->numDecks()
-            && i < musicFiles.count(); ++i) {
-        if (SoundSourceProxy::isFilenameSupported(musicFiles.at(i))) {
-            m_pPlayerManager->slotLoadToDeck(musicFiles.at(i), i+1);
-        }
-    }
-
     initActions();
     initMenuBar();
 
@@ -457,6 +425,39 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     }
     slotNumDecksChanged(m_pNumDecks->get());
 
+    // Try open player device If that fails, the preference panel is opened.
+    int setupDevices = m_pSoundManager->setupDevices();
+    unsigned int numDevices = m_pSoundManager->getConfig().getOutputs().count();
+    // test for at least one out device, if none, display another dlg that
+    // says "mixxx will barely work with no outs"
+    while (setupDevices != OK || numDevices == 0) {
+        // Exit when we press the Exit button in the noSoundDlg dialog
+        // only call it if setupDevices != OK
+        if (setupDevices != OK) {
+            if (noSoundDlg() != 0) {
+                exit(0);
+            }
+        } else if (numDevices == 0) {
+            bool continueClicked = false;
+            int noOutput = noOutputDlg(&continueClicked);
+            if (continueClicked) break;
+            if (noOutput != 0) {
+                exit(0);
+            }
+        }
+        setupDevices = m_pSoundManager->setupDevices();
+        numDevices = m_pSoundManager->getConfig().getOutputs().count();
+    }
+
+    // Load tracks in args.qlMusicFiles (command line arguments) into player
+    // 1 and 2:
+    const QList<QString>& musicFiles = args.getMusicFiles();
+    for (int i = 0; i < (int)m_pPlayerManager->numDecks()
+            && i < musicFiles.count(); ++i) {
+        if (SoundSourceProxy::isFilenameSupported(musicFiles.at(i))) {
+            m_pPlayerManager->slotLoadToDeck(musicFiles.at(i), i+1);
+        }
+    }
 }
 
 MixxxMainWindow::~MixxxMainWindow() {
@@ -670,6 +671,28 @@ void MixxxMainWindow::initializeWindow() {
     setWindowTitle(tr("Mixxx %1").arg(version));
 #endif
     setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
+}
+
+void MixxxMainWindow::initializeFonts() {
+    QDir fontsDir(m_pConfig->getResourcePath());
+    if (!fontsDir.cd("fonts")) {
+        return;
+    }
+
+    QList<QFileInfo> files = fontsDir.entryInfoList(
+            QDir::NoDotAndDotDot | QDir::Files | QDir::Readable);
+    foreach (const QFileInfo& file, files) {
+        const QString& path = file.filePath();
+
+        // Skip text files (e.g. license files). For all others we let Qt tell
+        // us whether the font format is supported since there is no way to
+        // check other than adding.
+        if (path.endsWith(".txt", Qt::CaseInsensitive)) {
+            continue;
+        }
+
+        FontUtils::addFont(path);
+    }
 }
 
 void MixxxMainWindow::initializeTranslations(QApplication* pApp) {

@@ -12,6 +12,7 @@
     <SizePolicy>me,max</SizePolicy>
     <Children>
       <CoverArt>
+        <TooltipId>coverart</TooltipId>
         <ObjectName>DeckCoverArt</ObjectName>
         <SizePolicy>min,min</SizePolicy>
         <MinimumSize>58,58</MinimumSize>
@@ -91,6 +92,7 @@
                     <SizePolicy>min,max</SizePolicy>
                     <Children>
                       <NumberPos>
+                        <TooltipId>track_time</TooltipId>
                         <Group><Variable name="group"/></Group>
                       </NumberPos>
                     </Children>

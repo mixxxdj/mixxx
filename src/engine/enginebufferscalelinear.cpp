@@ -21,6 +21,7 @@
 #include "sampleutil.h"
 #include "track/keyutils.h"
 #include "util/math.h"
+#include "util/assert.h"
 
 EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager *pReadAheadManager)
     : EngineBufferScale(),
@@ -316,7 +317,6 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         while (static_cast<int>(ceil(m_dCurSampleIndex)) * 2 + 1 >=
                buffer_int_size) {
             int old_bufsize = buffer_int_size;
-            //Q_ASSERT(unscaled_samples_needed > 0);
             if (unscaled_samples_needed == 0) {
                 unscaled_samples_needed = 2;
                 screwups++;

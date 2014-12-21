@@ -1,0 +1,158 @@
+<Template>
+    <WidgetGroup>
+        <ObjectName>UIButtons</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>e,min</SizePolicy>
+        <Children>
+            <WidgetGroup>
+                <ObjectName>GuiToggleContainer</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                    <PushButton>
+                        <Size>50f,20f</Size>
+                        <TooltipId>show_library</TooltipId>
+                        <ObjectName>GuiToggleButton</ObjectName>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Text>LIBRARY</Text>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Text>LIBRARY</Text>
+                        </State>
+                        <Connection>
+                          <ConfigKey persist="true">[Library],show_library</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey persist="true">[Library],show_library</ConfigKey>
+                        </Connection>
+                    </PushButton>
+                </Children>
+            </WidgetGroup>
+            <WidgetGroup>
+                <ObjectName>GuiToggleContainer</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                    <PushButton>
+                        <Size>55f,20f</Size>
+                        <TooltipId>show_effects</TooltipId>
+                        <ObjectName>GuiToggleButton</ObjectName>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Text>EFFECTS</Text>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Text>EFFECTS</Text>
+                        </State>
+                        <Connection>
+                          <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
+                        </Connection>
+                    </PushButton>
+                </Children>
+            </WidgetGroup>
+            <WidgetGroup>
+                <ObjectName>GuiToggleContainer</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                    <PushButton>
+                        <Size>62f,20f</Size>
+                        <TooltipId>show_samplers</TooltipId>
+                        <ObjectName>GuiToggleButton</ObjectName>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Text>SAMPLERS</Text>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Text>SAMPLERS</Text>
+                        </State>
+                        <Connection>
+                          <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
+                        </Connection>
+                    </PushButton>
+                </Children>
+            </WidgetGroup>
+            <WidgetGroup>
+                <ObjectName>GuiToggleContainer</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                    <PushButton>
+                        <Size>40f,20f</Size>
+                        <TooltipId>show_vinylcontrol</TooltipId>
+                        <ObjectName>GuiToggleButton</ObjectName>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Text>VINYL</Text>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Text>VINYL</Text>
+                        </State>
+                        <Connection>
+                          <ConfigKey persist="true">[VinylControl],show_vinylcontrol</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey persist="true">[VinylControl],show_vinylcontrol</ConfigKey>
+                        </Connection>
+                    </PushButton>
+                </Children>
+            </WidgetGroup>
+            <WidgetGroup>  <!-- spacer -->
+                <ObjectName>UIButtonMargin</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,min</SizePolicy>
+                <Children></Children>
+            </WidgetGroup>
+            <WidgetGroup>
+                <ObjectName>GuiToggleContainer</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                    <PushButton>
+                        <!-- This is all weird because the default state for a widgetstack
+                        is the pushed state.  So we have to invert everything so the
+                        default is 'don't make the library huge' -->
+                        <Size>80f,20f</Size>
+                        <TooltipId>toggle_expanded_library</TooltipId>
+                        <ObjectName>GuiToggleButtonInverted</ObjectName>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Text>BIG LIBRARY</Text>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Text>BIG LIBRARY</Text>
+                        </State>
+                        <Connection>
+                          <ConfigKey persist="true">[Library],unshow_big</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey persist="true">[Library],unshow_big</ConfigKey>
+                        </Connection>
+                    </PushButton>
+                </Children>
+            </WidgetGroup>
+        </Children>
+    </WidgetGroup>
+</Template>

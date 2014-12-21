@@ -34,6 +34,7 @@
                     <Layout>horizontal</Layout>
                     <Children>
                       <Template src="skin:hide_show_button.xml">
+                        <SetVariable name="TooltipId">show_library</SetVariable>
                         <SetVariable name="object_name">LibraryToggle</SetVariable>
                         <SetVariable name="control">[Library],show_library</SetVariable>
                       </Template>
@@ -50,7 +51,7 @@
                     <SizePolicy>i,max</SizePolicy>
                     <Children>
                       <Template src="skin:vumeter.xml">
-                        <TooltipId>channel_VuMeter</TooltipId>
+                        <SetVariable name="TooltipId">channel_VuMeter</SetVariable>>
                         <SetVariable name="group">[PreviewDeck1]</SetVariable>
                         <SetVariable name="control">VuMeter</SetVariable>
                       </Template>
@@ -65,6 +66,7 @@
                             <Group>[PreviewDeck1]</Group>
                           </Text>
                           <PushButton>
+                            <TooltipId>eject</TooltipId>
                             <NumberStates>1</NumberStates>
                             <MinimumSize>20,20</MinimumSize>
                             <MaximumSize>30,30</MaximumSize>
@@ -84,6 +86,7 @@
                         <Layout>horizontal</Layout>
                         <Children>
                           <Template src="skin:left_right_2state_button.xml">
+                            <SetVariable name="TooltipId">play_start</SetVariable>
                             <SetVariable name="ObjectName">PlayToggle</SetVariable>
                             <SetVariable name="MinimumSize">20,20</SetVariable>
                             <SetVariable name="MaximumSize">20,20</SetVariable>
@@ -140,6 +143,7 @@
                   </LibrarySidebar>
 
                   <CoverArt>
+                    <TooltipId>coverart</TooltipId>
                     <SizePolicy>me,me</SizePolicy>
                     <MinimumSize>100,100</MinimumSize>
                     <Connection>
@@ -165,6 +169,7 @@
         <SizePolicy>me,min</SizePolicy>
         <Children>
           <Template src="skin:hide_show_button.xml">
+            <SetVariable name="TooltipId">show_library</SetVariable>
             <SetVariable name="object_name">LibraryToggle</SetVariable>
             <SetVariable name="control">[Library],show_library</SetVariable>
           </Template>

@@ -87,11 +87,6 @@ bool LibraryTableModel::isColumnInternal(int column) {
     return false;
 }
 
-bool LibraryTableModel::isColumnHiddenByDefault(int column) {
-    Q_UNUSED(column);
-    return false;
-}
-
 TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const {
     return TRACKMODELCAPS_NONE
             | TRACKMODELCAPS_RECEIVEDROPS
