@@ -701,7 +701,7 @@ void EngineBuffer::slotControlSlip(double v)
 }
 
 void EngineBuffer::slotKeylockEngineChanged(double dIndex) {
-    // static_cast<KeylockEngine>(dIndex); direct cast produces a "not used" warning wit gcc
+    // static_cast<KeylockEngine>(dIndex); direct cast produces a "not used" warning with gcc
     int iEngine = static_cast<int>(dIndex);
     KeylockEngine engine = static_cast<KeylockEngine>(iEngine);
     if (engine == SOUNDTOUCH) {
