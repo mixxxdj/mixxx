@@ -39,8 +39,6 @@ void VisualPlayPosition::set(double playPos, double rate,
 
     if (data.m_callbackEntrytoDac < 0 || data.m_callbackEntrytoDac > m_dAudioBufferSize * 1000) {
     	// m_timeInfo Invalid, Audio API broken
-    	// Assume we are in time
-    	data.m_callbackEntrytoDac = m_dAudioBufferSize * 1000;
     	if (!m_invalidTimeInfoWarned) {
     		qWarning() << "VisualPlayPosition: Audio API provides invalid time stamps,"
     				<< "waveform syncing disabled."
@@ -48,6 +46,8 @@ void VisualPlayPosition::set(double playPos, double rate,
 					<< "EntrytoDac:" << data.m_callbackEntrytoDac;
     		m_invalidTimeInfoWarned = true;
     	}
+    	// Assume we are in time
+    	data.m_callbackEntrytoDac = m_dAudioBufferSize * 1000;
     }
 
     // Atomic write
