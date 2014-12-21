@@ -119,8 +119,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
             this, SLOT(slotSetRateRange(int)));
 
     ComboBoxPitchAndKeylock->clear();
-    ComboBoxPitchAndKeylock->addItem(tr("Offset scale, lock original key"));
-    ComboBoxPitchAndKeylock->addItem(tr("Absolute scale, lock current key"));
+    ComboBoxPitchAndKeylock->addItem(tr("Lock original key, offset range"));
+    ComboBoxPitchAndKeylock->addItem(tr("Lock current key, absolute range"));
     connect(ComboBoxPitchAndKeylock, SIGNAL(activated(int)),
             this, SLOT(slotPitchAndKeylock(int)));
     m_pitchAndKeylockMode = m_pConfig->getValueString(
