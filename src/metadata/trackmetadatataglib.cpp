@@ -54,6 +54,12 @@ QString toQString(const TagLib::APE::Item& apeItem) {
     return toQString(apeItem.toString());
 }
 
+inline
+TagLib::String toTagLibString(const QString& str) {
+    const QByteArray qba(str.toUtf8());
+    return TagLib::String(qba.constData(), TagLib::String::UTF8);
+}
+
 template<typename T>
 inline
 QString formatString(const T& value) {
@@ -399,93 +405,71 @@ QImage readMP4TagCover(/*const*/ TagLib::MP4::Tag& tag) {
     return coverArt;
 }
 
+
 bool writeTag(TagLib::Tag* pTag, const TrackMetadata& trackMetadata) {
     if (NULL == pTag) {
         return false;
     }
 
-    pTag->setArtist(trackMetadata.getArtist().toStdString());
-    pTag->setTitle(trackMetadata.getTitle().toStdString());
-    pTag->setAlbum(trackMetadata.getAlbum().toStdString());
-    pTag->setGenre(trackMetadata.getGenre().toStdString());
-    pTag->setComment(trackMetadata.getComment().toStdString());
-    uint year =  trackMetadata.getYear().toUInt();
-    if (year >  0) {
+    pTag->setArtist(toTagLibString(trackMetadata.getArtist()));
+    pTag->setTitle(toTagLibString(trackMetadata.getTitle()));
+    pTag->setAlbum(toTagLibString(trackMetadata.getAlbum()));
+    pTag->setGenre(toTagLibString(trackMetadata.getGenre()));
+    pTag->setComment(toTagLibString(trackMetadata.getComment()));
+    bool yearValid = false;
+    uint year =  trackMetadata.getYear().toUInt(&yearValid);
+    if (yearValid && (year >  0)) {
         pTag->setYear(year);
     }
-    uint track = trackMetadata.getTrackNumber().toUInt();
-    if (track > 0) {
+    bool trackNumberValid = false;
+    uint track = trackMetadata.getTrackNumber().toUInt(&trackNumberValid);
+    if (trackNumberValid && (track > 0)) {
         pTag->setTrack(track);
     }
 
     return true;
 }
 
+namespace {
+    void replaceID3v2Frame(TagLib::ID3v2::Tag* pTag, TagLib::ID3v2::Frame* pFrame) {
+        pTag->removeFrames(pFrame->frameID());
+        pTag->addFrame(pFrame);
+    }
+
+    void writeID3v2TextIdentificationFrame(TagLib::ID3v2::Tag* pTag, const TagLib::ByteVector &id, const QString& text) {
+        TagLib::String::Type textType;
+        QByteArray textData;
+        if (4 <= pTag->header()->majorVersion()) {
+            // prefer UTF-8 for ID3v2.4.0 or higher
+            textType = TagLib::String::UTF8;
+            textData = text.toUtf8();
+        } else {
+            textType = TagLib::String::Latin1;
+            textData = text.toLatin1();
+        }
+        QScopedPointer<TagLib::ID3v2::TextIdentificationFrame> pNewFrame(
+            new TagLib::ID3v2::TextIdentificationFrame(id, textType));
+        pNewFrame->setText(toTagLibString(text));
+        replaceID3v2Frame(pTag, pNewFrame.data());
+        pNewFrame.take(); // release ownership
+    }
+}
+
 bool writeID3v2Tag(TagLib::ID3v2::Tag* pTag, const TrackMetadata& trackMetadata) {
     if (NULL == pTag) {
         return false;
     }
-
-    TagLib::ID3v2::FrameList albumArtistFrame = pTag->frameListMap()["TPE2"];
-    if (!albumArtistFrame.isEmpty()) {
-        albumArtistFrame.front()->setText(trackMetadata.getAlbumArtist().toStdString());
-    } else {
-        //add new frame
-        TagLib::ID3v2::TextIdentificationFrame* newFrame =
-                new TagLib::ID3v2::TextIdentificationFrame(
-                    "TPE2", TagLib::String::Latin1);
-        newFrame->setText(trackMetadata.getAlbumArtist().toStdString());
-        pTag->addFrame(newFrame);
+    const TagLib::ID3v2::Header* pHeader = pTag->header();
+    if ((NULL == pHeader) || (3 > pHeader->majorVersion())) {
+        // only ID3v2.3.x and higher (currently only ID3v2.4.x) are supported
+        return false;
     }
 
-    TagLib::ID3v2::FrameList bpmFrame = pTag->frameListMap()["TBPM"];
-    if (!bpmFrame.isEmpty()) {
-        bpmFrame.front()->setText(formatString(trackMetadata.getBpm()).toStdString());
-    } else {
-         // add new frame TextIdentificationFrame which is responsible for TKEY and TBPM
-         // see http://developer.kde.org/~wheeler/taglib/api/classTagLib_1_1ID3v2_1_1TextIdentificationFrame.html
-
-        TagLib::ID3v2::TextIdentificationFrame* newFrame = new TagLib::ID3v2::TextIdentificationFrame("TBPM", TagLib::String::Latin1);
-
-        newFrame->setText(formatString(trackMetadata.getBpm()).toStdString());
-        pTag->addFrame(newFrame);
-
-    }
-
-    TagLib::ID3v2::FrameList keyFrame = pTag->frameListMap()["TKEY"];
-    if (!keyFrame.isEmpty()) {
-        keyFrame.front()->setText(trackMetadata.getKey().toStdString());
-    } else {
-        //add new frame
-        TagLib::ID3v2::TextIdentificationFrame* newFrame = new TagLib::ID3v2::TextIdentificationFrame("TKEY", TagLib::String::Latin1);
-
-        newFrame->setText(trackMetadata.getKey().toStdString());
-        pTag->addFrame(newFrame);
-
-    }
-
-    TagLib::ID3v2::FrameList composerFrame = pTag->frameListMap()["TCOM"];
-    if (!composerFrame.isEmpty()) {
-        composerFrame.front()->setText(trackMetadata.getComposer().toStdString());
-    } else {
-        //add new frame
-        TagLib::ID3v2::TextIdentificationFrame* newFrame =
-                new TagLib::ID3v2::TextIdentificationFrame(
-                    "TCOM", TagLib::String::Latin1);
-        newFrame->setText(trackMetadata.getComposer().toStdString());
-        pTag->addFrame(newFrame);
-    }
-
-    TagLib::ID3v2::FrameList groupingFrame = pTag->frameListMap()["TIT1"];
-    if (!groupingFrame.isEmpty()) {
-        groupingFrame.front()->setText(trackMetadata.getGrouping().toStdString());
-    } else {
-        //add new frame
-        TagLib::ID3v2::TextIdentificationFrame* newFrame =
-                new TagLib::ID3v2::TextIdentificationFrame(
-                    "TIT1", TagLib::String::Latin1);
-        newFrame->setText(trackMetadata.getGrouping().toStdString());
-        pTag->addFrame(newFrame);
+    writeID3v2TextIdentificationFrame(pTag, "TPE2", trackMetadata.getAlbumArtist());
+    writeID3v2TextIdentificationFrame(pTag, "TBPM", formatString(trackMetadata.getBpm()));
+    writeID3v2TextIdentificationFrame(pTag, "TKEY", formatString(trackMetadata.getKey()));
+    writeID3v2TextIdentificationFrame(pTag, "TCOM", formatString(trackMetadata.getComposer()));
+    writeID3v2TextIdentificationFrame(pTag, "TIT1", formatString(trackMetadata.getGrouping()));
     }
 
     return true;
@@ -498,10 +482,10 @@ bool writeAPETag(TagLib::APE::Tag* pTag, const TrackMetadata& trackMetadata) {
 
     // Adds to the item specified by key the data value.
     // If replace is true, then all of the other values on the same key will be removed first.
-    pTag->addValue("BPM", formatString(trackMetadata.getBpm()).toStdString(), true);
-    pTag->addValue("Album Artist", trackMetadata.getAlbumArtist().toStdString(), true);
-    pTag->addValue("Composer", trackMetadata.getComposer().toStdString(), true);
-    pTag->addValue("Grouping", trackMetadata.getGrouping().toStdString(), true);
+    pTag->addValue("BPM", toTagLibString(formatString(trackMetadata.getBpm())), true);
+    pTag->addValue("Album Artist", toTagLibString(trackMetadata.getAlbumArtist()), true);
+    pTag->addValue("Composer", toTagLibString(trackMetadata.getComposer()), true);
+    pTag->addValue("Grouping", toTagLibString(trackMetadata.getGrouping()), true);
 
     return true;
 }
@@ -512,27 +496,27 @@ bool writeXiphComment(TagLib::Ogg::XiphComment* pTag, const TrackMetadata& track
     }
 
     // Taglib does not support the update of Vorbis comments.
-    // thus, we have to reomve the old comment and add the new one
+    // thus, we have to remove the old comment and add the new one
 
     pTag->removeField("ALBUMARTIST");
-    pTag->addField("ALBUMARTIST", trackMetadata.getAlbumArtist().toStdString());
+    pTag->addField("ALBUMARTIST", toTagLibString(trackMetadata.getAlbumArtist()));
 
     // Some tools use "BPM" so write that.
     pTag->removeField("BPM");
-    pTag->addField("BPM",formatString(trackMetadata.getBpm()).toStdString());
+    pTag->addField("BPM", toTagLibString(formatString(trackMetadata.getBpm())));
     pTag->removeField("TEMPO");
-    pTag->addField("TEMPO",formatString(trackMetadata.getBpm()).toStdString());
+    pTag->addField("TEMPO", toTagLibString(formatString(trackMetadata.getBpm())));
 
     pTag->removeField("INITIALKEY");
-    pTag->addField("INITIALKEY", trackMetadata.getKey().toStdString());
+    pTag->addField("INITIALKEY", toTagLibString(trackMetadata.getKey()));
     pTag->removeField("KEY");
-    pTag->addField("KEY", trackMetadata.getKey().toStdString());
+    pTag->addField("KEY", toTagLibString(trackMetadata.getKey()));
 
     pTag->removeField("COMPOSER");
-    pTag->addField("COMPOSER", trackMetadata.getComposer().toStdString());
+    pTag->addField("COMPOSER", toTagLibString(trackMetadata.getComposer()));
 
     pTag->removeField("GROUPING");
-    pTag->addField("GROUPING", trackMetadata.getGrouping().toStdString());
+    pTag->addField("GROUPING", toTagLibString(trackMetadata.getGrouping()));
 
     return true;
 }
@@ -542,12 +526,12 @@ bool writeMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& trackMetadata) {
         return false;
     }
 
-    pTag->itemListMap()["aART"] = TagLib::StringList(trackMetadata.getAlbumArtist().toStdString());
-    pTag->itemListMap()["tmpo"] = TagLib::StringList(formatString(trackMetadata.getBpm()).toStdString());
-    pTag->itemListMap()["----:com.apple.iTunes:BPM"] = TagLib::StringList(formatString(trackMetadata.getBpm()).toStdString());
-    pTag->itemListMap()["----:com.apple.iTunes:KEY"] = TagLib::StringList(trackMetadata.getKey().toStdString());
-    pTag->itemListMap()["\251wrt"] = TagLib::StringList(trackMetadata.getComposer().toStdString());
-    pTag->itemListMap()["\251grp"] = TagLib::StringList(trackMetadata.getGrouping().toStdString());
+    pTag->itemListMap()["aART"] = TagLib::StringList(toTagLibString(trackMetadata.getAlbumArtist()));
+    pTag->itemListMap()["tmpo"] = TagLib::StringList(toTagLibString(formatString(trackMetadata.getBpm())));
+    pTag->itemListMap()["----:com.apple.iTunes:BPM"] = TagLib::StringList(toTagLibString(formatString(trackMetadata.getBpm())));
+    pTag->itemListMap()["----:com.apple.iTunes:KEY"] = TagLib::StringList(toTagLibString(trackMetadata.getKey()));
+    pTag->itemListMap()["\251wrt"] = TagLib::StringList(toTagLibString(trackMetadata.getComposer()));
+    pTag->itemListMap()["\251grp"] = TagLib::StringList(toTagLibString(trackMetadata.getGrouping()));
 
     return true;
 }
