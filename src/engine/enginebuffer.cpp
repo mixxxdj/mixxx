@@ -762,6 +762,16 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
                 baserate, paused, iBufferSize, &is_scratching);
         double pitch = m_pKeyControl->getPitchAdjustOctaves();
 
+        // If we were scratching, and scratching is over, and we're a follower,
+        // and we're quantized, and not paused,
+        // we need to sync phase or we'll be totally out of whack and the sync
+        // adjuster will kick in and push the track back in to sync with the
+        // master.
+        if (m_scratching_old && !is_scratching && m_pQuantize->get() > 0.0
+                && m_pSyncControl->getSyncMode() == SYNC_FOLLOWER && !paused) {
+            requestSyncPhase();
+        }
+
         // Update the slipped position and seek if it was disabled.
         processSlip(iBufferSize);
 
