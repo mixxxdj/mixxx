@@ -95,7 +95,7 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     int m_iNumConfiguredDecks;
     int m_iNumConfiguredSamplers;
     
-    bool m_bSpeedAutoReset;
+    int m_speedAutoReset;
     int m_pitchAndKeylockMode;
 };
 

@@ -233,12 +233,12 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     connect(ComboBoxCueDefault,   SIGNAL(activated(int)), this, SLOT(slotSetCueDefault(int)));
 
     // Cue recall
-    ComboBoxCueRecall->addItem(tr("On"));
-    ComboBoxCueRecall->addItem(tr("Off"));
-    ComboBoxCueRecall->setCurrentIndex(m_pConfig->getValueString(
+    ComboBoxSeekToCue->addItem(tr("On track load"));
+    ComboBoxSeekToCue->addItem(tr("Off"));
+    ComboBoxSeekToCue->setCurrentIndex(m_pConfig->getValueString(
             ConfigKey("[Controls]", "CueRecall")).toInt());
     //NOTE: for CueRecall, 0 means ON....
-    connect(ComboBoxCueRecall, SIGNAL(activated(int)),
+    connect(ComboBoxSeekToCue, SIGNAL(activated(int)),
             this, SLOT(slotSetCueRecall(int)));
 
     //
@@ -326,11 +326,14 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
             ConfigKey("[Controls]", "RateRampSensitivity")).toInt());
     
     // Update Speed Auto Reset Slider Box
-    connect(CheckBoxSpeedAutoReset, SIGNAL(stateChanged(int)),
+    // Cue recall
+    ComboBoxResetSpeedAndPitch->addItem(tr("Off"));
+    ComboBoxResetSpeedAndPitch->addItem(tr("On track load"));
+    connect(ComboBoxResetSpeedAndPitch, SIGNAL(activated(int)),
             this, SLOT(slotUpdateSpeedAutoReset(int)));
-    m_bSpeedAutoReset = static_cast<bool>(m_pConfig->getValueString(
-            ConfigKey("[Controls]", "SpeedAutoReset")).toInt());
-    
+    m_speedAutoReset = static_cast<bool>(m_pConfig->getValueString(
+                    ConfigKey("[Controls]", "SpeedAutoReset")).toInt());
+
     slotUpdate();
 }
 
@@ -386,7 +389,7 @@ void DlgPrefControls::slotUpdate() {
 
     ComboBoxPitchAndKeylock->setCurrentIndex(m_pitchAndKeylockMode);
 
-    CheckBoxSpeedAutoReset->setChecked(m_bSpeedAutoReset);
+    ComboBoxResetSpeedAndPitch->setCurrentIndex(m_speedAutoReset);
 }
 
 void DlgPrefControls::slotResetToDefaults() {
@@ -409,7 +412,7 @@ void DlgPrefControls::slotResetToDefaults() {
     ComboBoxCueDefault->setCurrentIndex(0);
 
     // Cue recall on.
-    ComboBoxCueRecall->setCurrentIndex(0);
+    ComboBoxSeekToCue->setCurrentIndex(0);
 
     // Don't start in full screen.
     ComboBoxStartInFullscreen->setCurrentIndex(0);
@@ -430,8 +433,8 @@ void DlgPrefControls::slotResetToDefaults() {
     spinBoxPermRateRight->setValue(0.05);
 
     // Speed auto reset checkbox default un-checked.
-    m_bSpeedAutoReset = false;
-    CheckBoxSpeedAutoReset->setChecked(Qt::Unchecked);
+    m_speedAutoReset = 0;
+    ComboBoxResetSpeedAndPitch->setCurrentIndex(0);
 
     m_pitchAndKeylockMode = 0;
     ComboBoxPitchAndKeylock->setCurrentIndex(m_pitchAndKeylockMode);
@@ -506,7 +509,7 @@ void DlgPrefControls::slotSetCueDefault(int)
 
 void DlgPrefControls::slotSetCueRecall(int)
 {
-    m_pConfig->set(ConfigKey("[Controls]", "CueRecall"), ConfigValue(ComboBoxCueRecall->currentIndex()));
+    m_pConfig->set(ConfigKey("[Controls]", "CueRecall"), ConfigValue(ComboBoxSeekToCue->currentIndex()));
 }
 
 void DlgPrefControls::slotSetStartInFullscreen(int index) {
@@ -617,7 +620,7 @@ void DlgPrefControls::slotApply() {
     }
     
     m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
-            ConfigValue(m_bSpeedAutoReset ? 1 : 0));
+            ConfigValue(m_speedAutoReset));
 
     m_pConfig->set(ConfigKey("[Controls]", "PitchAndKeylockMode"),
             ConfigValue(m_pitchAndKeylockMode));
@@ -713,5 +716,5 @@ void DlgPrefControls::slotNumSamplersChanged(double new_count) {
 }
 
 void DlgPrefControls::slotUpdateSpeedAutoReset(int i) {
-    m_bSpeedAutoReset = static_cast<bool>(i);
+    m_speedAutoReset = static_cast<bool>(i);
 }

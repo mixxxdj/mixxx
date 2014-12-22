@@ -89,6 +89,19 @@
      </layout>
     </widget>
    </item>
+   <item row="3" column="0">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
    <item row="1" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
@@ -318,35 +331,29 @@
      </item>
     </layout>
    </item>
-   <item row="3" column="0">
-    <widget class="QCheckBox" name="CheckBoxSpeedAutoReset">
-     <property name="toolTip">
-      <string>Resets Speed Control Slider to default when a track is loaded.</string>
-     </property>
-     <property name="text">
-      <string>Reset speed and pitch on track load</string>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="0">
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
    <item row="0" column="0">
     <layout class="QGridLayout" name="GridLayout1">
-     <item row="12" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxAllowTrackLoadToPlayingDeck"/>
+     <item row="10" column="0">
+      <widget class="QLabel" name="labelResetSpeedAndPitch">
+       <property name="text">
+        <string>Reset speed and pitch </string>
+       </property>
+      </widget>
      </item>
-     <item row="8" column="1" colspan="2">
+     <item row="8" column="0">
+      <widget class="QLabel" name="labelCueMode">
+       <property name="text">
+        <string>Cue mode</string>
+       </property>
+       <property name="openExternalLinks">
+        <bool>true</bool>
+       </property>
+       <property name="buddy">
+        <cstring>ComboBoxCueDefault</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="13" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxRateDir">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -359,7 +366,7 @@
        </property>
       </widget>
      </item>
-     <item row="6" column="1" colspan="2">
+     <item row="7" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxPosition">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -382,25 +389,6 @@
        </property>
       </widget>
      </item>
-     <item row="11" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxCueDefault">
-       <property name="toolTip">
-        <string>Mixxx mode: 
-- Cue button while pause at cue point = preview
-- Cue button while pause not at cue point = set cue point
-- Cue button while playing = pause at cue point
-Pioneer mode:
-- Same as Mixxx mode with a flashing play button
-Denon mode:
-- Cue button at cue point = preview
-- Cue button not at cue point = pause at cue point
-- Play = set cue point
-Numark mode:
-- Same as Denon mode, but without a flashing play button
-        </string>
-       </property>
-      </widget>
-     </item>
      <item row="4" column="0">
       <widget class="QLabel" name="labelFullscreenOption">
        <property name="text">
@@ -408,7 +396,7 @@ Numark mode:
        </property>
       </widget>
      </item>
-     <item row="6" column="0">
+     <item row="7" column="0">
       <widget class="QLabel" name="labelPositionDisplay">
        <property name="enabled">
         <bool>true</bool>
@@ -428,7 +416,7 @@ Numark mode:
       </widget>
      </item>
      <item row="0" column="0">
-      <widget class="QLabel" name="TextLabel6_2_2">
+      <widget class="QLabel" name="lableSkin_2">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -446,8 +434,8 @@ Numark mode:
        </property>
       </widget>
      </item>
-     <item row="7" column="0">
-      <widget class="QLabel" name="TextLabel6">
+     <item row="12" column="0">
+      <widget class="QLabel" name="lableSpeedSliderrange">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -465,7 +453,7 @@ Numark mode:
        </property>
       </widget>
      </item>
-     <item row="5" column="1" colspan="2">
+     <item row="6" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxTooltips">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -497,30 +485,7 @@ Numark mode:
        </property>
       </widget>
      </item>
-     <item row="12" column="0">
-      <widget class="QLabel" name="textLabelAllowTrackLoadToPlayingDeck">
-       <property name="text">
-        <string>Track load behavior</string>
-       </property>
-       <property name="buddy">
-        <cstring>ComboBoxAllowTrackLoadToPlayingDeck</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="11" column="0">
-      <widget class="QLabel" name="labelCueMode">
-       <property name="text">
-        <string>Cue mode</string>
-       </property>
-       <property name="openExternalLinks">
-        <bool>true</bool>
-       </property>
-       <property name="buddy">
-        <cstring>ComboBoxCueDefault</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="1" colspan="2">
+     <item row="12" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxRateRange">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -537,24 +502,7 @@ Numark mode:
       </widget>
      </item>
      <item row="13" column="0">
-      <widget class="QLabel" name="textLabelLocale">
-       <property name="text">
-        <string>Locale</string>
-       </property>
-       <property name="buddy">
-        <cstring>ComboBoxLocale</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="13" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxLocale">
-       <property name="toolTip">
-        <string>Locales determine country and language specific settings.</string>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="0">
-      <widget class="QLabel" name="TextLabel6_2">
+      <widget class="QLabel" name="lableSpeedSliderDirection">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -573,7 +521,7 @@ Numark mode:
       </widget>
      </item>
      <item row="2" column="0" rowspan="2">
-      <widget class="QLabel" name="TextLabel6_2_2_4">
+      <widget class="QLabel" name="lableColorScheme">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -581,7 +529,7 @@ Numark mode:
         <font/>
        </property>
        <property name="text">
-        <string>Color Scheme</string>
+        <string>Color scheme</string>
        </property>
        <property name="wordWrap">
         <bool>false</bool>
@@ -604,20 +552,7 @@ Numark mode:
        </property>
       </widget>
      </item>
-     <item row="10" column="0">
-      <widget class="QLabel" name="textLabelCueRecall">
-       <property name="text">
-        <string>Auto Recall Cue</string>
-       </property>
-       <property name="buddy">
-        <cstring>ComboBoxCueRecall</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="10" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxCueRecall"/>
-     </item>
-     <item row="5" column="0">
+     <item row="6" column="0">
       <widget class="QLabel" name="labelTooltips">
        <property name="enabled">
         <bool>true</bool>
@@ -646,15 +581,80 @@ Numark mode:
        </property>
       </widget>
      </item>
-     <item row="9" column="1" colspan="2">
+     <item row="14" column="1" colspan="2">
       <widget class="QComboBox" name="ComboBoxPitchAndKeylock"/>
      </item>
-     <item row="9" column="0">
+     <item row="14" column="0">
       <widget class="QLabel" name="labelPitchAndKeylock">
        <property name="text">
         <string>Pitch and keylock mode</string>
        </property>
       </widget>
+     </item>
+     <item row="9" column="1" colspan="2">
+      <widget class="QComboBox" name="ComboBoxSeekToCue"/>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="textLabelLocale">
+       <property name="text">
+        <string>Locale</string>
+       </property>
+       <property name="buddy">
+        <cstring>ComboBoxLocale</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="1" colspan="2">
+      <widget class="QComboBox" name="ComboBoxCueDefault">
+       <property name="toolTip">
+        <string>Mixxx mode: 
+- Cue button while pause at cue point = preview
+- Cue button while pause not at cue point = set cue point
+- Cue button while playing = pause at cue point
+Pioneer mode:
+- Same as Mixxx mode with a flashing play button
+Denon mode:
+- Cue button at cue point = preview
+- Cue button not at cue point = pause at cue point
+- Play = set cue point
+Numark mode:
+- Same as Denon mode, but without a flashing play button
+        </string>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="0">
+      <widget class="QLabel" name="textLabelCueRecall">
+       <property name="text">
+        <string>Seek to cue</string>
+       </property>
+       <property name="buddy">
+        <cstring>ComboBoxSeekToCue</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1" colspan="2">
+      <widget class="QComboBox" name="ComboBoxLocale">
+       <property name="toolTip">
+        <string>Locales determine country and language specific settings.</string>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="0">
+      <widget class="QLabel" name="textLabelAllowTrackLoadToPlayingDeck">
+       <property name="text">
+        <string>Playing track protection</string>
+       </property>
+       <property name="buddy">
+        <cstring>ComboBoxAllowTrackLoadToPlayingDeck</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="1" colspan="2">
+      <widget class="QComboBox" name="ComboBoxAllowTrackLoadToPlayingDeck"/>
+     </item>
+     <item row="10" column="1" colspan="2">
+      <widget class="QComboBox" name="ComboBoxResetSpeedAndPitch"/>
      </item>
     </layout>
    </item>
@@ -669,10 +669,6 @@ Numark mode:
   <tabstop>ComboBoxPosition</tabstop>
   <tabstop>ComboBoxRateRange</tabstop>
   <tabstop>ComboBoxRateDir</tabstop>
-  <tabstop>ComboBoxCueRecall</tabstop>
-  <tabstop>ComboBoxCueDefault</tabstop>
-  <tabstop>ComboBoxAllowTrackLoadToPlayingDeck</tabstop>
-  <tabstop>ComboBoxLocale</tabstop>
   <tabstop>spinBoxPermRateLeft</tabstop>
   <tabstop>spinBoxPermRateRight</tabstop>
   <tabstop>spinBoxTempRateLeft</tabstop>
