@@ -230,6 +230,14 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
             return ADJ_BOTH_DECKS_PLAYING;
         }
 
+        // TODO: This is a total bandaid for making Auto DJ work with decks 3
+        // and 4.  We should design a nicer way to handle this.
+        for (int i = 2; i < m_decks.length(); ++i) {
+            if (m_decks[i] != NULL && m_decks[i]->isPlaying()) {
+                return ADJ_DECKS_3_4_PLAYING;
+            }
+        }
+
         // Never load the same track if it is already playing
         if (deck1Playing) {
             removeLoadedTrackFromTopOfQueue(leftDeck);

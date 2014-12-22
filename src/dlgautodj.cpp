@@ -139,6 +139,15 @@ void DlgAutoDJ::toggleAutoDJButton(bool enable) {
                     NULL, tr("Auto-DJ"),
                     tr("One deck must be stopped to enable Auto-DJ mode."),
                     QMessageBox::Ok);
+            // Make sure the button becomes unpushed.
+            pushButtonAutoDJ->setChecked(false);
+            break;
+        case AutoDJProcessor::ADJ_DECKS_3_4_PLAYING:
+            QMessageBox::warning(
+                    NULL, tr("Auto-DJ"),
+                    tr("Decks 3 and 4 must be stopped to enable Auto-DJ mode."),
+                    QMessageBox::Ok);
+            pushButtonAutoDJ->setChecked(false);
             break;
         case AutoDJProcessor::ADJ_OK:
         default:
