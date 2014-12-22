@@ -39,6 +39,7 @@ EngineAux::~EngineAux() {
     delete m_pEnabled;
     delete m_pPassing;
     delete m_pPregain;
+    delete m_pSampleRate;
 }
 
 bool EngineAux::isActive() {
