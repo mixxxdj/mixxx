@@ -40,7 +40,7 @@ EnginePregain::EnginePregain(QString group)
     m_pPassthroughEnabled = ControlObject::getControl(ConfigKey(group, "passthrough"));
 
     if (s_pReplayGainBoost == NULL) {
-        s_pReplayGainBoost = new ControlPotmeter(ConfigKey("[ReplayGain]", "ReplayGainBoost"), 1, 6);
+        s_pReplayGainBoost = new ControlPotmeter(ConfigKey("[ReplayGain]", "ReplayGainBoost"), -6, 15);
         s_pEnableReplayGain = new ControlObject(ConfigKey("[ReplayGain]", "ReplayGainEnabled"));
     }
     m_bSmoothFade = false;
