@@ -194,6 +194,13 @@ void readID3v2Tag(TrackMetadata* pTrackMetadata, const TagLib::ID3v2::Tag& tag) 
         QString sGrouping = toQString(groupingFrame.front()->toString());
         pTrackMetadata->setGrouping(sGrouping);
     }
+
+    // ID3v2.4.0: TDRC replaces TYER + TDAT
+    TagLib::ID3v2::FrameList recordingDateFrame = tag.frameListMap()["TDRC"];
+    if (!recordingDateFrame.isEmpty()) {
+        QString sRecordingDate = toQString(recordingDateFrame.front()->toString());
+        pTrackMetadata->setYear(sRecordingDate);
+    }
 }
 
 void readAPETag(TrackMetadata* pTrackMetadata, const TagLib::APE::Tag& tag) {
@@ -228,6 +235,10 @@ void readAPETag(TrackMetadata* pTrackMetadata, const TagLib::APE::Tag& tag) {
 
     if (tag.itemListMap().contains("Grouping")) {
         pTrackMetadata->setGrouping(toQString(tag.itemListMap()["Grouping"]));
+    }
+
+    if (tag.itemListMap().contains("Year")) {
+        pTrackMetadata->setYear(toQString(tag.itemListMap()["Year"]));
     }
 }
 
@@ -290,6 +301,10 @@ void readXiphComment(TrackMetadata* pTrackMetadata, const TagLib::Ogg::XiphComme
     if (tag.fieldListMap().contains("GROUPING")) {
         pTrackMetadata->setGrouping(toQString(tag.fieldListMap()["GROUPING"]));
     }
+
+    if (tag.fieldListMap().contains("DATE")) {
+        pTrackMetadata->setYear(toQString(tag.fieldListMap()["DATE"]));
+    }
 }
 
 void readMP4Tag(TrackMetadata* pTrackMetadata, /*const*/ TagLib::MP4::Tag& tag) {
@@ -324,6 +339,11 @@ void readMP4Tag(TrackMetadata* pTrackMetadata, /*const*/ TagLib::MP4::Tag& tag) 
     // Get Grouping
     if (tag.itemListMap().contains("\251grp")) {
         pTrackMetadata->setGrouping(toQString(tag.itemListMap()["\251grp"]));
+    }
+
+    // Get date/year as string
+    if (tag.itemListMap().contains("\251day")) {
+        pTrackMetadata->setYear(toQString(tag.itemListMap()["\251day"]));
     }
 
     // Get KEY (conforms to Rapid Evolution)
@@ -470,6 +490,9 @@ bool writeID3v2Tag(TagLib::ID3v2::Tag* pTag, const TrackMetadata& trackMetadata)
     writeID3v2TextIdentificationFrame(pTag, "TKEY", formatString(trackMetadata.getKey()));
     writeID3v2TextIdentificationFrame(pTag, "TCOM", formatString(trackMetadata.getComposer()));
     writeID3v2TextIdentificationFrame(pTag, "TIT1", formatString(trackMetadata.getGrouping()));
+    if (4 <= pHeader->majorVersion()) {
+        // ID3v2.4.0: TDRC replaces TYER + TDAT
+        writeID3v2TextIdentificationFrame(pTag, "TDRC", formatString(trackMetadata.getYear()));
     }
 
     return true;
@@ -486,6 +509,7 @@ bool writeAPETag(TagLib::APE::Tag* pTag, const TrackMetadata& trackMetadata) {
     pTag->addValue("Album Artist", toTagLibString(trackMetadata.getAlbumArtist()), true);
     pTag->addValue("Composer", toTagLibString(trackMetadata.getComposer()), true);
     pTag->addValue("Grouping", toTagLibString(trackMetadata.getGrouping()), true);
+    pTag->addValue("Year", toTagLibString(trackMetadata.getYear()), true);
 
     return true;
 }
@@ -518,6 +542,9 @@ bool writeXiphComment(TagLib::Ogg::XiphComment* pTag, const TrackMetadata& track
     pTag->removeField("GROUPING");
     pTag->addField("GROUPING", toTagLibString(trackMetadata.getGrouping()));
 
+    pTag->removeField("DATE");
+    pTag->addField("DATE", toTagLibString(trackMetadata.getYear()));
+
     return true;
 }
 
@@ -532,6 +559,7 @@ bool writeMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& trackMetadata) {
     pTag->itemListMap()["----:com.apple.iTunes:KEY"] = TagLib::StringList(toTagLibString(trackMetadata.getKey()));
     pTag->itemListMap()["\251wrt"] = TagLib::StringList(toTagLibString(trackMetadata.getComposer()));
     pTag->itemListMap()["\251grp"] = TagLib::StringList(toTagLibString(trackMetadata.getGrouping()));
+    pTag->itemListMap()["\251day"] = TagLib::StringList(toTagLibString(trackMetadata.getYear()));
 
     return true;
 }
