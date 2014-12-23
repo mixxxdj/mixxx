@@ -62,7 +62,14 @@ bool SoftTakeoverCtrl::ignore(ControlObject* control, double newParameter) {
 
 SoftTakeover::SoftTakeover()
     : m_time(0),
-      m_prevParameter(0) {
+      m_prevParameter(0),
+      m_dThreshold(kDefaultTakeoverThreshold) {
+}
+
+const double SoftTakeover::kDefaultTakeoverThreshold = 3.0 / 128;
+
+void SoftTakeover::setThreshold(double threshold) {
+    m_dThreshold = threshold;
 }
 
 bool SoftTakeover::ignore(ControlObject* control, double newParameter) {
@@ -71,10 +78,6 @@ bool SoftTakeover::ignore(ControlObject* control, double newParameter) {
     //  - its previous and new values are far away from and on the same side
     //      of the current value of the control
     //  - it's been awhile since the controller last affected this control
-
-    // 3/128 units away from the current is enough to catch fast non-sequential moves
-    //  but not cause an audibly noticeable jump.
-    const double threshold = 3.0f / 128;
 
     uint currentTime = Time::elapsedMsecs();
     // We will get a sudden jump if we don't ignore the first value.
@@ -92,8 +95,7 @@ bool SoftTakeover::ignore(ControlObject* control, double newParameter) {
         if ((prevDiff < 0 && difference < 0) ||
                 (prevDiff > 0 && difference > 0)) {
             // On same site (still on ignore site)
-            if (fabs(difference) > threshold &&
-                    fabs(prevDiff) > threshold) {
+            if (fabs(difference) > m_dThreshold && fabs(prevDiff) > m_dThreshold) {
                 // difference is above threshold
                 ignore = true;
                 //qDebug() << "ignoring, not near" << newParameter << m_prevParameter << currentParameter;
