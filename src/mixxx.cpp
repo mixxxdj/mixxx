@@ -43,7 +43,7 @@
 #include "library/coverartcache.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
-#include "library/libraryscanner.h"
+#include "library/scanner/libraryscanner.h"
 #include "library/librarytablemodel.h"
 #include "controllers/controllermanager.h"
 #include "mixxxkeyboard.h"

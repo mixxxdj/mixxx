@@ -771,11 +771,11 @@ class MixxxCore(Feature):
 
                    "library/cratefeature.cpp",
                    "library/sidebarmodel.cpp",
-                   "library/libraryscanner.cpp",
-                   "library/libraryscannerdlg.cpp",
                    "library/legacylibraryimporter.cpp",
                    "library/library.cpp",
 
+                   "library/scanner/libraryscanner.cpp",
+                   "library/scanner/libraryscannerdlg.cpp",
                    "library/scanner/scannertask.cpp",
                    "library/scanner/importfilestask.cpp",
                    "library/scanner/recursivescandirectorytask.cpp",

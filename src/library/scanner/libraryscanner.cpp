@@ -17,12 +17,12 @@
 
 #include <QtDebug>
 
-#include "library/libraryscanner.h"
+#include "library/scanner/libraryscanner.h"
 
 #include "soundsourceproxy.h"
 #include "library/legacylibraryimporter.h"
 #include "library/scanner/recursivescandirectorytask.h"
-#include "libraryscannerdlg.h"
+#include "library/scanner/libraryscannerdlg.h"
 #include "library/queryutil.h"
 #include "library/coverartutils.h"
 #include "library/trackcollection.h"
