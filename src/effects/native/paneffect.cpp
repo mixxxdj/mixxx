@@ -40,9 +40,9 @@ EffectManifest PanEffect::getManifest() {
     strength->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     strength->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     strength->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    strength->setMinimum(0.1);
-    strength->setMaximum(0.9);
-    strength->setDefault(0.5);
+    strength->setMinimum(0.0);
+    strength->setMaximum(0.5);
+    strength->setDefault(0.25);
     
     EffectManifestParameter* period = manifest.addParameter();
     period->setId("period");
@@ -87,68 +87,54 @@ void PanEffect::processGroup(const QString& group, PanGroupState* pGroupState,
     int read_position = gs.write_position;
     
     CSAMPLE lfoPeriod = roundf(m_pPeriodParameter->value());
-    CSAMPLE strength = m_pStrengthParameter->value();
+    CSAMPLE stepFrac = m_pStrengthParameter->value();
     
     gs.time++;
-    // gs.time += strength * ;
-    // gs.time += abs(lfoPeriod / 2.0f - gs.time) / lfoPeriod;
     if (gs.time > lfoPeriod) {
         gs.time = 0;
     }
     
     CSAMPLE periodFraction = CSAMPLE(gs.time) / lfoPeriod;
     
-    // size of a step (stuck on 0.25 or 0.75)
-    float stepSize = strength * lfoPeriod / 2.0;
+    // size of a step (while stuck on 0.25 or 0.75)
+    // todo rename as stepFrac
+    // float stepSize = stepFrac * lfoPeriod / 2.0;
     
     // coef of the slope
-    float a = 1 / 4 / (lfoPeriod - stepSize * 2);
+    // a = (y2 - y1) / (x2 - x1)
+    //       1  / ( 1 - 2 * stepfrac)
+    float a = 1.0 / (1.0 - stepFrac * 2.0);
     
     // merging of tests for 
-    float inInterval = CSAMPLE(gs.time);
-    // float inInterval = CSAMPLE(gs.time) % (lfoPeriod / 2.0);
+    // float inInterval = fmod( CSAMPLE(gs.time), (lfoPeriod / 2.0) );
+    float inInterval = fmod( periodFraction, 0.5 );
     
     // size of a segment of slope
-    float u = ( lfoPeriod / 2.0 - stepSize ) / 2.0;
+    float u = ( 0.5 - stepFrac ) / 2.0;
     
-    // bool firstHalf = (periodFraction > 0.5);
+    float quarter = floorf(periodFraction * 4.0);
+    
     CSAMPLE position;
-    if (inInterval > u && inInterval < ( u + stepSize)) {
-        position = 0.25;
-    } else if( inInterval > (3.0 * u + stepSize)
-                && inInterval < (3.0 * u + 2.0 * stepSize) ){
+    if (inInterval > u && inInterval < ( u + stepFrac)) {
         // position should be stuck on 0.25 or 0.75
         // Is the position in the first or second half of the period?
-        // position = periodFraction > 0.5 ? 0.25 : 0.75;
-        position = 0.75;
-    } else  {
+        position = quarter < 2.0 ? 0.25 : 0.75;
+    } else {
+        // qDebug() << "calcul | a : " << a << "| step : " << stepFrac;
         // position should be in the slope
-        position = periodFraction * a;
+        position = (periodFraction - (floorf((quarter+1.0)/2.0) * stepFrac )) * a;
     }
     
-    
-    // 0.8 > strength > 0.2
-    
-    /*
-    CSAMPLE clampedPeriod = roundf(strength * lfoPeriod);
-    CSAMPLE position = (periodFraction * clampedPeriod + (lfoPeriod - clampedPeriod) / 2) / lfoPeriod;
-    */
-    
-    
-    // get a sinusoid
-    // CSAMPLE frac1 = sin(M_PI * 2.0f * periodFraction);
-    // CSAMPLE frac1 = sin(M_PI * 2.0f * position);
-    // add strength to the signal (keep an impair as power to avoid loss of sign)
-    // CSAMPLE frac2 = frac1 * strength;
-    // CSAMPLE frac2 = frac1;
-    // CSAMPLE frac3 = CSAMPLE_clamp(frac2);
     // set the curve between 0 and 1
     CSAMPLE frac = (sin(M_PI * 2.0f * position) + 1.0f) / 2.0f;
-    // CSAMPLE frac = (frac1 + 1.0f) / 2.0f;
-    qDebug() << "strength" << strength << "| position :" << (roundf(position * 100.0) / 100.0)
-        << "| time :" << gs.time << "| period :" << lfoPeriod
-        // << "| clamped period :" << clampedPeriod
-        << "| frac :" << frac;
+    // frac = CSAMPLE_clamp(frac);
+    // frac = (roundf(frac * 100.0) / 100.0);
+    // qDebug() << "stepFrac" << stepFrac << "| position :" << (roundf(position * 100.0) / 100.0)
+        // << "| time :" << gs.time << "| period :" << lfoPeriod
+        // << "| a :" << a
+        // << "| q :" << quarter
+        // << "| q+ :" << floorf((quarter+1.0)/2.0)
+        // << "| frac :" << frac;
     
     // qDebug() << "frac" << frac << "| 1 :" << frac1 << "| 2: " << frac2 << "| 3 :" << frac3;
     
@@ -156,11 +142,13 @@ void PanEffect::processGroup(const QString& group, PanGroupState* pGroupState,
     // math below should result in a simple copy of delay buf to pOutput.
     for (unsigned int i = 0; i + 1 < numSamples; i += 2) {
         
-        pOutput[i] = 
-              (pInput[i] + pInput[i + 1]) * frac;
-        
-        pOutput[i + 1] =
-              (pInput[i] + pInput[i + 1]) * (1 - frac);
+        pOutput[i] = (pInput[i] + pInput[i + 1]) * frac;
+        pOutput[i + 1] = (pInput[i] + pInput[i + 1]) * (1 - frac);
         
     }
+}
+
+
+float fmod(float a, float b) {
+    return (a/b) - ( (int)(a/b) * b);
 }
