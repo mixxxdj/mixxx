@@ -169,6 +169,7 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
         m_deckQuickEffectSelectors[i]->setCurrentIndex(selectedQuickEffectIndex);
     }
     applySelections();
+    slotSingleEqChecked(CheckBoxSingleEqEffect->isChecked());
 }
 
 static bool isMixingEQ(EffectManifest* pManifest) {

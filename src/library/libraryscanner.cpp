@@ -102,18 +102,18 @@ LibraryScanner::~LibraryScanner() {
     if (m_scannerGlobal) {
         // Cancel any running library scan.
         cancel();
-
-        // Wait for the thread pool to empty. This is important because
-        // ScannerTasks have pointers to the LibraryScanner and can cause a
-        // segfault if they run after the LibraryScanner has been destroyed.
-        m_pool.waitForDone();
-
-        // Quit the event loop gracefully.
-        quit();
-
-        // Wait for thread to finish
-        wait();
     }
+
+    // Wait for the thread pool to empty. This is important because ScannerTasks
+    // have pointers to the LibraryScanner and can cause a segfault if they run
+    // after the LibraryScanner has been destroyed.
+    m_pool.waitForDone();
+
+    // Quit the event loop gracefully.
+    quit();
+
+    // Wait for thread to finish
+    wait();
 
     // There should never be an outstanding transaction when this code is
     // called. If there is, it means we probably aren't committing a transaction

@@ -86,6 +86,7 @@ bool SoftTakeover::ignore(ControlObject* control, double newParameter) {
         // Change the stored time (but keep it far away from the current time)
         //  so this block doesn't run again.
         m_time = 1;
+        //qDebug() << "ignoring the first value" << newParameter;
     } else if ((currentTime - m_time) > SUBSEQUENT_VALUE_OVERRIDE_TIME_MILLIS) {
         // don't ignore value if a previous one was not ignored in time
         const double currentParameter = control->getParameter();
@@ -97,6 +98,7 @@ bool SoftTakeover::ignore(ControlObject* control, double newParameter) {
             if (fabs(difference) > m_dThreshold && fabs(prevDiff) > m_dThreshold) {
                 // difference is above threshold
                 ignore = true;
+                //qDebug() << "ignoring, not near" << newParameter << m_prevParameter << currentParameter;
             }
         }
     }

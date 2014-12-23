@@ -230,14 +230,18 @@ void EffectParameterSlot::onChainSuperParameterChanged(double parameter, bool fo
         }
 
         //qDebug() << "onChainParameterChanged" << parameter;
-        if (force || !m_pSoftTakeover->ignore(m_pControlValue, parameter)) {
+        if (force) {
+            m_pControlValue->setParameterFrom(parameter, NULL);
+            // This ensures that softtakover is in sync for following updates
+            m_pSoftTakeover->ignore(m_pControlValue, parameter);
+        } else if (!m_pSoftTakeover->ignore(m_pControlValue, parameter)) {
             m_pControlValue->setParameterFrom(parameter, NULL);
         }
     }
 }
 
 void EffectParameterSlot::syncSofttakeover() {
-    double parameter = m_pControlValue->get();
+    double parameter = m_pControlValue->getParameter();
     m_pSoftTakeover->ignore(m_pControlValue, parameter);
 }
 
