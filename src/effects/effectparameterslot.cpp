@@ -95,10 +95,6 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
 
             connect(m_pEffectParameter, SIGNAL(valueChanged(double)),
                     this, SLOT(slotParameterValueChanged(double)));
-            // Setting the link type or link inverse calls soft takeover's
-            // ignoreNext method which ignores the first superknob update,
-            // so we need to sync softtakeover explicitly.
-            syncSofttakeover();
         }
     }
     emit(updated());
