@@ -32,7 +32,8 @@
         </Connection>
       </PushButton>
 
-      <!--<PushButton>
+      <!-- Disabled because Master Sync is not fully supported yet, see lp:1403232
+      <PushButton>
         <TooltipId>sync_master</TooltipId>
         <ObjectName>DeckSyncMaster</ObjectName>
         <Size>40f,20f</Size>
@@ -50,7 +51,8 @@
           <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
           <ButtonState>LeftButton</ButtonState>
         </Connection>
-      </PushButton>-->
+      </PushButton>
+      -->
 
       <SliderComposed>
         <TooltipId>rate</TooltipId>
