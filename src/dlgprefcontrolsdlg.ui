@@ -512,7 +512,7 @@ Numark mode:
         <cstring>ComboBoxCueRecall</cstring>
        </property>
        <property name="toolTip">
-        <string>Automatically jump to the first previously-saved cue point. If none exists, automatically set one where sound begins in the track and jump there.</string>
+        <string>Automatically jump to the first previously-saved cue point. If none exists, automatically jumps to the begining of the track.</string>
        </property>
       </widget>
      </item>
