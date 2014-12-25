@@ -1097,10 +1097,6 @@ class Tuned(Feature):
                 build.env.Append(CCFLAGS='/favor:blend')
             return
 
-        # SSE and SSE2 are core instructions on x64
-        if build.machine_is_64bit:
-            build.env.Append(CPPDEFINES=['__SSE__', '__SSE2__'])
-
         if build.toolchain_is_msvs:
             if build.machine_is_64bit:
                 if 'makerelease' in SCons.COMMAND_LINE_TARGETS:
