@@ -42,12 +42,13 @@ BPMDelegate::BPMDelegate(QObject* parent)
 
     // Register a custom QItemEditorFactory to override the default
     // QDoubleSpinBox editor.
-    QItemEditorFactory* pFactory = new QItemEditorFactory();
-    pFactory->registerEditor(QVariant::Double, new BpmEditorCreator());
-    setItemEditorFactory(pFactory);
+    m_pFactory = new QItemEditorFactory();
+    m_pFactory->registerEditor(QVariant::Double, new BpmEditorCreator());
+    setItemEditorFactory(m_pFactory);
 }
 
 BPMDelegate::~BPMDelegate() {
+    delete m_pFactory;
 }
 
 void BPMDelegate::paint(QPainter* painter,const QStyleOptionViewItem &option,

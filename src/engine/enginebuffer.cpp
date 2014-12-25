@@ -338,10 +338,7 @@ EngineBuffer::~EngineBuffer()
     SampleUtil::free(m_pDitherBuffer);
     SampleUtil::free(m_pCrossFadeBuffer);
 
-    while (m_engineControls.size() > 0) {
-        EngineControl* pControl = m_engineControls.takeLast();
-        delete pControl;
-    }
+    qDeleteAll(m_engineControls);
 }
 
 double EngineBuffer::fractionalPlayposFromAbsolute(double absolutePlaypos) {

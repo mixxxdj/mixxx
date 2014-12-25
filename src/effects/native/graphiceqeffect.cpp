@@ -106,6 +106,9 @@ GraphicEQEffectGroupState::~GraphicEQEffectGroupState() {
         delete filter;
     }
 
+    delete m_low;
+    delete m_high;
+
     foreach(CSAMPLE* buf, m_pBufs) {
         SampleUtil::free(buf);
     }

@@ -99,6 +99,8 @@ class EffectsManager : public QObject {
     ControlPotmeter* m_pLoEqFreq;
     ControlPotmeter* m_pHiEqFreq;
 
+    bool m_underDestruction;
+
     DISALLOW_COPY_AND_ASSIGN(EffectsManager);
 };
 

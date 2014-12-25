@@ -119,6 +119,7 @@ WTrackTableView::~WTrackTableView() {
     if (pHeader) {
         pHeader->saveHeaderState();
     }
+    delete m_pTrackInfo;
 
     delete m_pReloadMetadataAct;
     delete m_pReloadMetadataFromMusicBrainzAct;
