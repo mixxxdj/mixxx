@@ -951,7 +951,7 @@ class Optimize(Feature):
     def add_options(self, build, vars):
         if not build.platform_is_windows:
             vars.Add(
-                'optimize', 'Set to:\n  1 for -O3 compiler optimizations\n  2 for Pentium 4 optimizations\n  3 for Intel Core optimizations\n  4 for Intel Core 2 optimizations\n  5 for Athlon-4/XP/MP optimizations\n  6 for K8/Opteron/AMD64 optimizations\n  7 for K8/Opteron/AMD64 w/ SSE3\n  8 for Celeron D (generic SSE/SSE2/SSE3) optimizations.', 1)
+                'optimize', 'Set to:\n  1 portable-binary: sse2 CPU (>= Pentium 4)\n  2 native-binary: optimized exclusive for the CPU of this system\n  3 legacy-binary: pure i386 code', 1)
         else:
             if build.machine_is_64bit:
                 vars.Add(
@@ -1020,14 +1020,11 @@ class Optimize(Feature):
                     build.env.Append(CCFLAGS='/arch:SSE2')
                     build.env.Append(CPPDEFINES=['__SSE__', '__SSE2__'])
         elif build.toolchain_is_gnu:
-            if int(build.flags.get('tuned', 0)):
-                self.status = "Disabled (Overriden by tuned=1)"
-                return
-
             # Common flags to all optimizations. 
             # -ffast-math will pevent a performance penalty by denormals 
             # (floating point values almost Zero are treated as Zero) 
             # unfortunately that work only on 64 bit CPUs or with sse2 enabled  
+
             # Consider dropping -O3 to -O2
             # and getting rid of -fomit-frame-pointer and
             # -funroll-loops. We need to justify our use of these aggressive
@@ -1038,78 +1035,38 @@ class Optimize(Feature):
                 build.env.Append(CCFLAGS='-fomit-frame-pointer')
 
             if optimize_level == 1:
-                # only includes what we already applied
-                self.status = "Enabled -- Basic Optimizations (-03)"
+                # portable-binary: sse2 CPU (>= Pentium 4)
+                self.status = "portable: sse2 CPU (>= Pentium 4)"
+                build.env.Append(
+                    CCFLAGS='-mtune=generic -msse2 -mfpmath=sse')
+                # this sets __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
+                # This schould be our default build for distribution 
+                # It's a little sketchy, but turning on SSE will gain 
+                # 100 % performance in our filter code.
+                # We don't really support CPU's earlier than Pentium 4, 
+                # which is the class of CPUs this decision affects. 
+                # The downside of this is that we aren't truly
+                # i386 compatible, so builds that claim 'i386' will crash.
+                # Note: SSE2 is a core part of 64 bit CPUs 
             elif optimize_level == 2:
-                self.status = "Enabled (P4 MMX/SSE)"
+                self.status = "native: exclusive for this CPU"
                 build.env.Append(
-                    CCFLAGS='-march=pentium4 -mmmx -msse2 -mfpmath=sse')
-                build.env.Append(CPPDEFINES=['__SSE__', '__SSE2__'])
+                    CCFLAGS='-march=native -mfpmath=sse')
             elif optimize_level == 3:
-                self.status = "Enabled (Intel Core Solo/Duo)"
+                self.status = "legacy: pure i386 code'"
                 build.env.Append(
-                    CCFLAGS='-march=prescott -mmmx -msse3 -mfpmath=sse')
-                build.env.Append(
-                    CPPDEFINES=['__SSE__', '__SSE2__', '__SSE3__'])
-            elif optimize_level == 4:
-                self.status = "Enabled (Intel Core 2)"
-                build.env.Append(
-                    CCFLAGS='-march=nocona -mmmx -msse -msse2 -msse3 -mfpmath=sse -ffast-math -funroll-loops')
-                build.env.Append(
-                    CPPDEFINES=['__SSE__', '__SSE2__', '__SSE3__'])
-            elif optimize_level == 5:
-                self.status = "Enabled (Athlon Athlon-4/XP/MP)"
-                build.env.Append(
-                    CCFLAGS='-march=athlon-4 -mmmx -msse -m3dnow -mfpmath=sse')
-                build.env.Append(CPPDEFINES='__SSE__')
-            elif optimize_level == 6:
-                self.status = "Enabled (Athlon K8/Opteron/AMD64)"
-                build.env.Append(
-                    CCFLAGS='-march=k8 -mmmx -msse2 -m3dnow -mfpmath=sse')
-                build.env.Append(CPPDEFINES=['__SSE__', '__SSE2__'])
-            elif optimize_level == 7:
-                self.status = "Enabled (Athlon K8/Opteron/AMD64 + SSE3)"
-                build.env.Append(
-                    CCFLAGS='-march=k8-sse3 -mmmx -msse2 -msse3 -m3dnow -mfpmath=sse')
-                build.env.Append(
-                    CPPDEFINES=['__SSE__', '__SSE2__', '__SSE3__'])
-            elif optimize_level == 8:
-                self.status = "Enabled (Generic SSE/SSE2/SSE3)"
-                build.env.Append(CCFLAGS='-mmmx -msse2 -msse3 -mfpmath=sse')
-                build.env.Append(
-                    CPPDEFINES=['__SSE__', '__SSE2__', '__SSE3__'])
-            elif optimize_level == 9:
-                self.status = "Enabled (Tuned Generic)"
-                # This option is for release builds packaged for 64-bit. We
-                # don't know what kind of CPU they'll have, so let
+                    CCFLAGS='-mtune=generic')
                 # -mtune=generic pick the most common, but compatible options. 
                 # Used by the debian rules script.
 
-                # It's a little sketchy, but I'm turning on SSE and MMX by
-                # default. opt=9 is a distribution mode, we don't really support
-                # CPU's earlier than Pentium 3, which is the class of CPUs this
-                # decision affects. The downside of this is that we aren't truly
-                # i386 compatible, so builds that claim 'i386' will crash.
-                # -- rryan 2/2011
-                
-                # what others do: 
-                # soundtouch uses just -O3 in Ubuntu Trusty
-                # rubberband uses just -O2 in Ubuntu Trusty 
-                # fftw3 (used by rubberband) in Ubuntu Trusty 
-                # -O3 -fomit-frame-pointer -mtune=native -malign-double 
-                # -fstrict-aliasing -fno-schedule-insns -ffast-math 
-                       
-                build.env.Append(
-                    CCFLAGS='-mtune=generic -mmmx -msse -mfpmath=sse')
-                build.env.Append(CPPDEFINES='__SSE__')
+            # what others do: 
+            # soundtouch uses just -O3 in Ubuntu Trusty
+            # rubberband uses just -O2 in Ubuntu Trusty 
+            # fftw3 (used by rubberband) in Ubuntu Trusty
+            # -O3 -fomit-frame-pointer -mtune=native -malign-double 
+            # -fstrict-aliasing -fno-schedule-insns -ffast-math 
 
-                # Enable SSE2 on 64-bit machines. SSE3 is not a sure thing on
-                # 64-bit
-                if build.machine_is_64bit:
-                    build.env.Append(CCFLAGS='-msse2')
-                    build.env.Append(CPPDEFINES='__SSE2__')
-
-
+             
 class Tuned(Feature):
     def description(self):
         return "Optimizing for this CPU"
