@@ -6,6 +6,7 @@
 #include <QImage>
 #include <QRegExp>
 #include <QCoreApplication>
+#include <QChar>
 
 #include "library/dao/trackdao.h"
 
@@ -25,6 +26,8 @@
 #include "library/dao/libraryhashdao.h"
 #include "library/coverartcache.h"
 #include "util/assert.h"
+#include "util/timer.h"
+#include "util/math.h"
 
 QHash<int, TrackWeakPointer> TrackDAO::m_sTracks;
 QMutex TrackDAO::m_sTracksMutex;
@@ -958,239 +961,378 @@ void TrackDAO::slotTrackReferenceExpired(TrackInfoObject* pTrack) {
     delete pTrack;
 }
 
+namespace {
+typedef bool (*TrackPopulatorFn)(const QSqlRecord& record,
+                                 const int column,
+                                 TrackPointer pTrack);
+
+bool setTrackArtist(const QSqlRecord& record, const int column,
+                    TrackPointer pTrack) {
+    pTrack->setArtist(record.value(column).toString());
+    return false;
+}
+
+bool setTrackTitle(const QSqlRecord& record, const int column,
+                   TrackPointer pTrack) {
+    pTrack->setTitle(record.value(column).toString());
+    return false;
+}
+
+bool setTrackAlbum(const QSqlRecord& record, const int column,
+                   TrackPointer pTrack) {
+    pTrack->setAlbum(record.value(column).toString());
+    return false;
+}
+
+bool setTrackAlbumArtist(const QSqlRecord& record, const int column,
+                         TrackPointer pTrack) {
+    pTrack->setAlbumArtist(record.value(column).toString());
+    return false;
+}
+
+bool setTrackYear(const QSqlRecord& record, const int column,
+                  TrackPointer pTrack) {
+    pTrack->setYear(record.value(column).toString());
+    return false;
+}
+
+bool setTrackGenre(const QSqlRecord& record, const int column,
+                   TrackPointer pTrack) {
+    pTrack->setGenre(record.value(column).toString());
+    return false;
+}
+
+bool setTrackComposer(const QSqlRecord& record, const int column,
+                      TrackPointer pTrack) {
+    pTrack->setComposer(record.value(column).toString());
+    return false;
+}
+
+bool setTrackGrouping(const QSqlRecord& record, const int column,
+                      TrackPointer pTrack) {
+    pTrack->setGrouping(record.value(column).toString());
+    return false;
+}
+
+bool setTrackNumber(const QSqlRecord& record, const int column,
+                    TrackPointer pTrack) {
+    pTrack->setTrackNumber(record.value(column).toString());
+    return false;
+}
+
+bool setTrackComment(const QSqlRecord& record, const int column,
+                     TrackPointer pTrack) {
+    pTrack->setComment(record.value(column).toString());
+    return false;
+}
+
+bool setTrackUrl(const QSqlRecord& record, const int column,
+                 TrackPointer pTrack) {
+    pTrack->setURL(record.value(column).toString());
+    return false;
+}
+
+bool setTrackDuration(const QSqlRecord& record, const int column,
+                      TrackPointer pTrack) {
+    pTrack->setDuration(record.value(column).toInt());
+    return false;
+}
+
+bool setTrackBitrate(const QSqlRecord& record, const int column,
+                     TrackPointer pTrack) {
+    pTrack->setBitrate(record.value(column).toInt());
+    return false;
+}
+
+bool setTrackRating(const QSqlRecord& record, const int column,
+                    TrackPointer pTrack) {
+    pTrack->setRating(record.value(column).toInt());
+    return false;
+}
+
+bool setTrackSampleRate(const QSqlRecord& record, const int column,
+                        TrackPointer pTrack) {
+    pTrack->setSampleRate(record.value(column).toInt());
+    return false;
+}
+
+bool setTrackCuePoint(const QSqlRecord& record, const int column,
+                      TrackPointer pTrack) {
+    pTrack->setCuePoint(record.value(column).toInt());
+    return false;
+}
+
+bool setTrackReplayGain(const QSqlRecord& record, const int column,
+                        TrackPointer pTrack) {
+    pTrack->setReplayGain(record.value(column).toDouble());
+    return false;
+}
+
+bool setTrackTimesPlayed(const QSqlRecord& record, const int column,
+                         TrackPointer pTrack) {
+    pTrack->setTimesPlayed(record.value(column).toInt());
+    return false;
+}
+
+bool setTrackPlayed(const QSqlRecord& record, const int column,
+                    TrackPointer pTrack) {
+    pTrack->setPlayed(record.value(column).toBool());
+    return false;
+}
+
+bool setTrackChannels(const QSqlRecord& record, const int column,
+                      TrackPointer pTrack) {
+    pTrack->setChannels(record.value(column).toInt());
+    return false;
+}
+
+bool setTrackDateAdded(const QSqlRecord& record, const int column,
+                       TrackPointer pTrack) {
+    pTrack->setDateAdded(record.value(column).toDateTime());
+    return false;
+}
+
+bool setTrackFiletype(const QSqlRecord& record, const int column,
+                      TrackPointer pTrack) {
+    pTrack->setType(record.value(column).toString());
+    return false;
+}
+
+bool setTrackHeaderParsed(const QSqlRecord& record, const int column,
+                          TrackPointer pTrack) {
+    pTrack->setHeaderParsed(record.value(column).toBool());
+    return false;
+}
+
+bool setTrackBeats(const QSqlRecord& record, const int column,
+                   TrackPointer pTrack) {
+    double bpm = record.value(column).toDouble();
+    QString beatsVersion = record.value(column + 1).toString();
+    QString beatsSubVersion = record.value(column + 2).toString();
+    QByteArray beatsBlob = record.value(column + 3).toByteArray();
+    bool bpmLocked = record.value(column + 4).toBool();
+    BeatsPointer pBeats = BeatFactory::loadBeatsFromByteArray(
+            pTrack, beatsVersion, beatsSubVersion, &beatsBlob);
+    if (pBeats) {
+        pTrack->setBeats(pBeats);
+    } else {
+        pTrack->setBpm(bpm);
+    }
+    pTrack->setBpmLock(bpmLocked);
+    return false;
+}
+
+bool setTrackKey(const QSqlRecord& record, const int column,
+                 TrackPointer pTrack) {
+    QString keyText = record.value(column).toString();
+    QString keysVersion = record.value(column + 1).toString();
+    QString keysSubVersion = record.value(column + 2).toString();
+    QByteArray keysBlob = record.value(column + 3).toByteArray();
+    Keys keys = KeyFactory::loadKeysFromByteArray(
+            keysVersion, keysSubVersion, &keysBlob);
+
+    if (keys.isValid()) {
+        pTrack->setKeys(keys);
+    } else if (keyText.size() > 0) {
+        // Typically this happens if we are upgrading from an older (<1.12.0)
+        // version of Mixxx that didn't support Keys. We treat all legacy data
+        // as user-generated because that way it will be treated sensitively.
+        pTrack->setKeyText(keyText, mixxx::track::io::key::USER);
+        // The in-database data would change because of this. Mark the track
+        // dirty so we save it when it is deleted.
+        return true;
+    }
+    return false;
+}
+
+bool setTrackCoverInfo(const QSqlRecord& record, const int column,
+                       TrackPointer pTrack) {
+    CoverInfo coverInfo;
+    bool ok = false;
+    coverInfo.source = static_cast<CoverInfo::Source>(
+            record.value(column).toInt(&ok));
+    if (!ok) coverInfo.source = CoverInfo::UNKNOWN;
+    coverInfo.type = static_cast<CoverInfo::Type>(
+            record.value(column + 1).toInt(&ok));
+    if (!ok) coverInfo.type = CoverInfo::NONE;
+    coverInfo.coverLocation = record.value(column + 2).toString();
+    coverInfo.hash = record.value(column + 3).toUInt();
+    pTrack->setCoverInfo(coverInfo);
+    return false;
+}
+
+struct ColumnPopulator {
+    const char* name;
+    TrackPopulatorFn populator;
+};
+
+}  // namespace
+
+#define ARRAYLENGTH(x) (sizeof(x) / sizeof(*x))
+
 TrackPointer TrackDAO::getTrackFromDB(const int id) const {
-    QTime time;
-    time.start();
+    ScopedTimer t("TrackDAO::getTrackFromDB");
     QSqlQuery query(m_database);
 
-    query.prepare(
-        "SELECT library.id, artist, title, album, album_artist, year, genre, composer, "
-        "grouping, tracknumber, filetype, rating, key, track_locations.location as location, "
-        "track_locations.filesize as filesize, comment, url, duration, bitrate, "
-        "samplerate, cuepoint, bpm, replaygain, channels, "
-        "header_parsed, timesplayed, played, "
-        "beats_version, beats_sub_version, beats, datetime_added, bpm_lock, "
-        "keys_version, keys_sub_version, keys, "
-        "coverart_source, coverart_type, coverart_location, coverart_hash "
-        "FROM Library "
-        "INNER JOIN track_locations "
-            "ON library.location = track_locations.id "
-        "WHERE library.id=" + QString("%1").arg(id)
-    );
+    ColumnPopulator columns[] = {
+        // Location must be first.
+        { "track_locations.location", NULL },
+        { "artist", setTrackArtist },
+        { "title", setTrackTitle },
+        { "album", setTrackAlbum },
+        { "album_artist", setTrackAlbumArtist },
+        { "year", setTrackYear },
+        { "genre", setTrackGenre },
+        { "composer", setTrackComposer },
+        { "grouping", setTrackGrouping },
+        { "tracknumber", setTrackNumber },
+        { "filetype", setTrackFiletype },
+        { "rating", setTrackRating },
+        { "comment", setTrackComment },
+        { "url", setTrackUrl },
+        { "duration", setTrackDuration },
+        { "bitrate", setTrackBitrate },
+        { "samplerate", setTrackSampleRate },
+        { "cuepoint", setTrackCuePoint },
+        { "replaygain", setTrackReplayGain },
+        { "channels", setTrackChannels },
+        { "timesplayed", setTrackTimesPlayed },
+        { "played", setTrackPlayed },
+        { "datetime_added", setTrackDateAdded },
+        { "header_parsed", setTrackHeaderParsed },
 
-    if (query.exec()) {
-        QSqlRecord queryRecord = query.record();
-        const int artistColumn = queryRecord.indexOf("artist");
-        const int titleColumn = queryRecord.indexOf("title");
-        const int albumColumn = queryRecord.indexOf("album");
-        const int albumArtistColumn = queryRecord.indexOf("album_artist");
-        const int yearColumn = queryRecord.indexOf("year");
-        const int genreColumn = queryRecord.indexOf("genre");
-        const int composerColumn = queryRecord.indexOf("composer");
-        const int groupingColumn = queryRecord.indexOf("grouping");
-        const int trackNumberColumn = queryRecord.indexOf("tracknumber");
-        const int commentColumn = queryRecord.indexOf("comment");
-        const int urlColumn = queryRecord.indexOf("url");
-        const int keyColumn = queryRecord.indexOf("key");
-        const int durationColumn = queryRecord.indexOf("duration");
-        const int bitrateColumn = queryRecord.indexOf("bitrate");
-        const int ratingColumn = queryRecord.indexOf("rating");
-        const int samplerateColumn = queryRecord.indexOf("samplerate");
-        const int cuepointColumn = queryRecord.indexOf("cuepoint");
-        const int bpmColumn = queryRecord.indexOf("bpm");
-        const int replaygainColumn = queryRecord.indexOf("replaygain");
-        const int timesplayedColumn = queryRecord.indexOf("timesplayed");
-        const int datetimeAddedColumn = queryRecord.indexOf("datetime_added");
-        const int playedColumn = queryRecord.indexOf("played");
-        const int channelsColumn = queryRecord.indexOf("channels");
-        const int filetypeColumn = queryRecord.indexOf("filetype");
-        const int locationColumn = queryRecord.indexOf("location");
-        const int headerParsedColumn = queryRecord.indexOf("header_parsed");
-        const int bpmLockColumn = queryRecord.indexOf("bpm_lock");
+        // Beat detection columns are handled by setTrackBeats. Do not change
+        // the ordering of these columns or put other columns in between them!
+        { "bpm", setTrackBeats },
+        { "beats_version", NULL },
+        { "beats_sub_version", NULL },
+        { "beats", NULL },
+        { "bpm_lock", NULL },
 
-        const int beatsVersionColumn = queryRecord.indexOf("beats_version");
-        const int beatsSubVersionColumn = queryRecord.indexOf("beats_sub_version");
-        const int beatsColumn = queryRecord.indexOf("beats");
+        // Beat detection columns are handled by setTrackKey. Do not change the
+        // ordering of these columns or put other columns in between them!
+        { "key", setTrackKey },
+        { "keys_version", NULL },
+        { "keys_sub_version", NULL },
+        { "keys", NULL },
 
-        const int coverartSourceColumn = queryRecord.indexOf("coverart_source");
-        const int coverartTypeColumn = queryRecord.indexOf("coverart_type");
-        const int coverartPathColumn = queryRecord.indexOf("coverart_location");
-        const int coverartHashColumn = queryRecord.indexOf("coverart_hash");
+        // Cover art columns are handled by setTrackCoverInfo. Do not change the
+        // ordering of these columns or put other columns in between them!
+        { "coverart_source", setTrackCoverInfo },
+        { "coverart_type", NULL },
+        { "coverart_location", NULL },
+        { "coverart_hash", NULL }
+    };
 
-        while (query.next()) {
-            bool shouldDirty = false;
-
-            QString artist = query.value(artistColumn).toString();
-            QString title = query.value(titleColumn).toString();
-            QString album = query.value(albumColumn).toString();
-            QString albumArtist = query.value(albumArtistColumn).toString();
-            QString year = query.value(yearColumn).toString();
-            QString genre = query.value(genreColumn).toString();
-            QString composer = query.value(composerColumn).toString();
-            QString grouping = query.value(groupingColumn).toString();
-            QString tracknumber = query.value(trackNumberColumn).toString();
-            QString comment = query.value(commentColumn).toString();
-            QString url = query.value(urlColumn).toString();
-            QString keyText = query.value(keyColumn).toString();
-            int duration = query.value(durationColumn).toInt();
-            int bitrate = query.value(bitrateColumn).toInt();
-            int rating = query.value(ratingColumn).toInt();
-            int samplerate = query.value(samplerateColumn).toInt();
-            int cuepoint = query.value(cuepointColumn).toInt();
-            QString bpm = query.value(bpmColumn).toString();
-            QString replaygain = query.value(replaygainColumn).toString();
-            int timesplayed = query.value(timesplayedColumn).toInt();
-            QDateTime datetime_added = query.value(datetimeAddedColumn).toDateTime();
-            int played = query.value(playedColumn).toInt();
-            int channels = query.value(channelsColumn).toInt();
-            QString filetype = query.value(filetypeColumn).toString();
-            QString location = query.value(locationColumn).toString();
-            bool header_parsed = query.value(headerParsedColumn).toBool();
-            bool has_bpm_lock = query.value(bpmLockColumn).toBool();
-
-            CoverInfo coverInfo;
-            bool ok = false;
-            coverInfo.source = static_cast<CoverInfo::Source>(
-                query.value(coverartSourceColumn).toInt(&ok));
-            if (!ok) coverInfo.source = CoverInfo::UNKNOWN;
-            coverInfo.type = static_cast<CoverInfo::Type>(
-                query.value(coverartTypeColumn).toInt(&ok));
-            if (!ok) coverInfo.type = CoverInfo::NONE;
-            coverInfo.coverLocation = query.value(coverartPathColumn).toString();
-            coverInfo.hash = query.value(coverartHashColumn).toUInt();
-
-            TrackPointer pTrack = TrackPointer(
-                    new TrackInfoObject(location, SecurityTokenPointer(),
-                                        false),
-                    TrackInfoObject::onTrackReferenceExpired);
-
-            // TIO already stats the file to see if it exists, what its length is,
-            // etc. So don't bother setting it.
-            //track->setLength(filesize);
-
-            pTrack->setId(id);
-            pTrack->setArtist(artist);
-            pTrack->setTitle(title);
-            pTrack->setAlbum(album);
-            pTrack->setAlbumArtist(albumArtist);
-            pTrack->setYear(year);
-            pTrack->setGenre(genre);
-            pTrack->setComposer(composer);
-            pTrack->setGrouping(grouping);
-            pTrack->setTrackNumber(tracknumber);
-            pTrack->setRating(rating);
-
-            pTrack->setComment(comment);
-            pTrack->setURL(url);
-            pTrack->setDuration(duration);
-            pTrack->setBitrate(bitrate);
-            pTrack->setSampleRate(samplerate);
-            pTrack->setCuePoint((float)cuepoint);
-            pTrack->setReplayGain(replaygain.toFloat());
-
-            QString beatsVersion = query.value(beatsVersionColumn).toString();
-            QString beatsSubVersion = query.value(beatsSubVersionColumn).toString();
-            QByteArray beatsBlob = query.value(beatsColumn).toByteArray();
-            BeatsPointer pBeats = BeatFactory::loadBeatsFromByteArray(pTrack, beatsVersion, beatsSubVersion, &beatsBlob);
-            if (pBeats) {
-                pTrack->setBeats(pBeats);
-            } else {
-                pTrack->setBpm(bpm.toDouble());
-            }
-            pTrack->setBpmLock(has_bpm_lock);
-
-            QString keysVersion = query.value(query.record().indexOf("keys_version")).toString();
-            QString keysSubVersion = query.value(query.record().indexOf("keys_sub_version")).toString();
-            QByteArray keysBlob = query.value(query.record().indexOf("keys")).toByteArray();
-            Keys keys = KeyFactory::loadKeysFromByteArray(
-                keysVersion, keysSubVersion, &keysBlob);
-
-            if (keys.isValid()) {
-                pTrack->setKeys(keys);
-            } else if (keyText.size() > 0) {
-                // Typically this happens if we are upgrading from an older
-                // (<1.12.0) version of Mixxx that didn't support Keys. We treat
-                // all legacy data as user-generated because that way it will be
-                // treated sensitively.
-                pTrack->setKeyText(keyText, mixxx::track::io::key::USER);
-                // The in-database data would change because of this. Mark the
-                // track dirty so we save it when it is deleted.
-                shouldDirty = true;
-            }
-
-            pTrack->setTimesPlayed(timesplayed);
-            pTrack->setDateAdded(datetime_added);
-            pTrack->setPlayed(played);
-            pTrack->setChannels(channels);
-            pTrack->setType(filetype);
-            pTrack->setLocation(location);
-            pTrack->setHeaderParsed(header_parsed);
-            pTrack->setCuePoints(m_cueDao.getCuesForTrack(id));
-            pTrack->setCoverInfo(coverInfo);
-
-            // Normally we will set the track as clean but sometimes when
-            // loading from the database we need to perform upkeep that ought to
-            // be written back to the database when the track is deleted.
-            pTrack->setDirty(shouldDirty);
-
-            // Listen to dirty and changed signals
-            connect(pTrack.data(), SIGNAL(dirty(TrackInfoObject*)),
-                    this, SLOT(slotTrackDirty(TrackInfoObject*)),
-                    Qt::DirectConnection);
-            connect(pTrack.data(), SIGNAL(clean(TrackInfoObject*)),
-                    this, SLOT(slotTrackClean(TrackInfoObject*)),
-                    Qt::DirectConnection);
-            connect(pTrack.data(), SIGNAL(changed(TrackInfoObject*)),
-                    this, SLOT(slotTrackChanged(TrackInfoObject*)),
-                    Qt::DirectConnection);
-            // Queued connection. We are not in a rush to process reference
-            // count expirations and it can produce dangerous signal loops.
-            // See: https://bugs.launchpad.net/mixxx/+bug/1365708
-            connect(pTrack.data(), SIGNAL(referenceExpired(TrackInfoObject*)),
-                    this, SLOT(slotTrackReferenceExpired(TrackInfoObject*)),
-                    Qt::QueuedConnection);
-
-            m_sTracksMutex.lock();
-            // Automatic conversion to a weak pointer
-            m_sTracks[id] = pTrack;
-            qDebug() << "m_sTracks.count() =" << m_sTracks.count();
-            m_sTracksMutex.unlock();
-            TrackCacheItem* pCacheItem = new TrackCacheItem(pTrack);
-
-            // Queued connection. We are not in a rush to process cache
-            // expirations and it can produce dangerous signal loops.
-            // See: https://bugs.launchpad.net/mixxx/+bug/1365708
-            connect(pCacheItem, SIGNAL(saveTrack(TrackPointer)),
-                    this, SLOT(saveTrack(TrackPointer)),
-                    Qt::QueuedConnection);
-
-            m_recentTracksCache.insert(id, pCacheItem);
-
-            // If the track is dirty send dirty notifications after we inserted
-            // it in the cache. BaseTrackCache cares about dirty notifications
-            // and the setDirty call above happens before we connect to the
-            // track's signals.
-            if (shouldDirty) {
-                emit(trackDirty(id));
-            }
-
-            // If the header hasn't been parsed, parse it but only after we set the
-            // track clean and hooked it up to the track cache, because this will
-            // dirty it.
-            if (!header_parsed) {
-                pTrack->parse(false);
-            }
-
-            return pTrack;
-        } // while (query.next())
-
-    } else {
-        LOG_FAILED_QUERY(query)
-            << QString("getTrack(%1)").arg(id);
+    QString columnsStr;
+    int columnsSize = 0;
+    for (unsigned int i = 0; i < ARRAYLENGTH(columns); ++i) {
+        columnsSize += qstrlen(columns[i].name) + 1;
     }
-    //qDebug() << "getTrack hit the database, took " << time.elapsed() << "ms";
+    columnsStr.reserve(columnsSize);
+    for (unsigned int i = 0; i < ARRAYLENGTH(columns); ++i) {
+        if (i > 0) {
+            columnsStr.append(QChar(','));
+        }
+        columnsStr.append(columns[i].name);
+    }
 
-    return TrackPointer();
+    query.prepare(QString(
+            "SELECT %1 FROM Library "
+            "INNER JOIN track_locations ON library.location = track_locations.id "
+            "WHERE library.id = %2").arg(columnsStr, QString::number(id)));
+
+    if (!query.exec() || !query.next()) {
+        LOG_FAILED_QUERY(query)
+                << QString("getTrack(%1)").arg(id);
+        return TrackPointer();
+    }
+
+    QSqlRecord queryRecord = query.record();
+    unsigned long recordCount = queryRecord.count();
+    DEBUG_ASSERT_AND_HANDLE(recordCount == ARRAYLENGTH(columns)) {
+        recordCount = math_min(recordCount, ARRAYLENGTH(columns));
+    }
+
+    // Location is the first column.
+    QString location = queryRecord.value(0).toString();
+
+    TrackPointer pTrack = TrackPointer(
+            new TrackInfoObject(location, SecurityTokenPointer(),
+                                false),
+            TrackInfoObject::onTrackReferenceExpired);
+    pTrack->setId(id);
+
+    // TIO already stats the file to see if it exists, what its length is,
+    // etc. So don't bother setting it.
+
+    // For every column run its populator to fill the track in with the data.
+    bool shouldDirty = false;
+    for (unsigned int i = 0; i < recordCount; ++i) {
+        TrackPopulatorFn populator = columns[i].populator;
+        if (populator != NULL) {
+            // If any populator says the track should be dirty then we dirty it.
+            shouldDirty = (*populator)(queryRecord, i, pTrack) || shouldDirty;
+        }
+    }
+
+    // Populate track cues from the cues table.
+    pTrack->setCuePoints(m_cueDao.getCuesForTrack(id));
+
+    // Normally we will set the track as clean but sometimes when loading from
+    // the database we need to perform upkeep that ought to be written back to
+    // the database when the track is deleted.
+    pTrack->setDirty(shouldDirty);
+
+    // Listen to dirty and changed signals
+    connect(pTrack.data(), SIGNAL(dirty(TrackInfoObject*)),
+            this, SLOT(slotTrackDirty(TrackInfoObject*)),
+            Qt::DirectConnection);
+    connect(pTrack.data(), SIGNAL(clean(TrackInfoObject*)),
+            this, SLOT(slotTrackClean(TrackInfoObject*)),
+            Qt::DirectConnection);
+    connect(pTrack.data(), SIGNAL(changed(TrackInfoObject*)),
+            this, SLOT(slotTrackChanged(TrackInfoObject*)),
+            Qt::DirectConnection);
+    // Queued connection. We are not in a rush to process reference
+    // count expirations and it can produce dangerous signal loops.
+    // See: https://bugs.launchpad.net/mixxx/+bug/1365708
+    connect(pTrack.data(), SIGNAL(referenceExpired(TrackInfoObject*)),
+            this, SLOT(slotTrackReferenceExpired(TrackInfoObject*)),
+            Qt::QueuedConnection);
+
+    m_sTracksMutex.lock();
+    // Automatic conversion to a weak pointer
+    m_sTracks[id] = pTrack;
+    qDebug() << "m_sTracks.count() =" << m_sTracks.count();
+    m_sTracksMutex.unlock();
+    TrackCacheItem* pCacheItem = new TrackCacheItem(pTrack);
+
+    // Queued connection. We are not in a rush to process cache
+    // expirations and it can produce dangerous signal loops.
+    // See: https://bugs.launchpad.net/mixxx/+bug/1365708
+    connect(pCacheItem, SIGNAL(saveTrack(TrackPointer)),
+            this, SLOT(saveTrack(TrackPointer)),
+            Qt::QueuedConnection);
+
+    m_recentTracksCache.insert(id, pCacheItem);
+
+    // If the track is dirty send dirty notifications after we inserted
+    // it in the cache. BaseTrackCache cares about dirty notifications
+    // and the setDirty call above happens before we connect to the
+    // track's signals.
+    if (shouldDirty) {
+        emit(trackDirty(id));
+    }
+
+    // If the header hasn't been parsed, parse it but only after we set the
+    // track clean and hooked it up to the track cache, because this will
+    // dirty it.
+    if (!pTrack->getHeaderParsed()) {
+         pTrack->parse(false);
+    }
+
+    return pTrack;
 }
 
 TrackPointer TrackDAO::getTrack(const int id, const bool cacheOnly) const {
