@@ -1039,7 +1039,7 @@ class Optimize(Feature):
                 self.status = "portable: sse2 CPU (>= Pentium 4)"
                 build.env.Append(
                     CCFLAGS='-mtune=generic -msse2 -mfpmath=sse')
-                # this sets __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
+                # this sets macros __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
                 # This schould be our default build for distribution 
                 # It's a little sketchy, but turning on SSE will gain 
                 # 100 % performance in our filter code.
@@ -1047,11 +1047,15 @@ class Optimize(Feature):
                 # which is the class of CPUs this decision affects. 
                 # The downside of this is that we aren't truly
                 # i386 compatible, so builds that claim 'i386' will crash.
-                # Note: SSE2 is a core part of 64 bit CPUs 
+                # Note: SSE2 is a core part of x64 CPUs 
             elif optimize_level == 2:
                 self.status = "native: exclusive for this CPU"
                 build.env.Append(
                     CCFLAGS='-march=native -mfpmath=sse')
+                # http://en.chys.info/2010/04/what-exactly-marchnative-means/
+				# Note: requires gcc >= 4.2.0
+				# macros like __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
+				# are set automaticaly 
             elif optimize_level == 3:
                 self.status = "legacy: pure i386 code'"
                 build.env.Append(
@@ -1097,19 +1101,7 @@ class Tuned(Feature):
         if build.machine_is_64bit:
             build.env.Append(CPPDEFINES=['__SSE__', '__SSE2__'])
 
-        if build.toolchain_is_gnu:
-            ccv = build.env['CCVERSION'].split('.')
-            if int(ccv[0]) >= 4 and int(ccv[1]) >= 2:
-                # -march=native takes care of mtune
-                #   http://en.chys.info/2010/04/what-exactly-marchnative-means/
-                build.env.Append(CCFLAGS='-march=native')
-                # Doesn't make sense as a linkflag
-                build.env.Append(LINKFLAGS='-march=native')
-                # TODO(pegasus): Ask GCC if the CPU supports SSE, SSE2, SSE3, etc.
-                # so we can add the appropriate CPPDEFINES for Mixxx code paths
-            else:
-                self.status = "Disabled (requires gcc >= 4.2.0)"
-        elif build.toolchain_is_msvs:
+        if build.toolchain_is_msvs:
             if build.machine_is_64bit:
                 if 'makerelease' in SCons.COMMAND_LINE_TARGETS:
                     self.status = "Disabled (due to makerelease target)"
