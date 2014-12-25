@@ -1091,10 +1091,6 @@ class Tuned(Feature):
 
     def configure(self, build, conf):
         if not self.enabled(build):
-            # Even if not enabled, enable 'blending' for 64-bit because the
-            # instructions are emitted anyway.
-            if build.toolchain_is_msvs and build.machine_is_64bit:
-                build.env.Append(CCFLAGS='/favor:blend')
             return
 
         if build.toolchain_is_msvs:
@@ -1104,7 +1100,6 @@ class Tuned(Feature):
                     # AMD64 is for AMD CPUs, EM64T is for Intel x64 ones (as opposed to
                     # IA64 which uses a different compiler.)  For a release, we choose
                     # to have code run about the same on both
-                    build.env.Append(CCFLAGS='/favor:blend')
                 else:
                     # self.status = "Disabled (currently broken with Visual Studio)"
                     # build.env.Append(CCFLAGS = '/favor:blend')
