@@ -72,7 +72,7 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         m_actualFrameRate(0),
         m_vSyncType(0) {
 
-    m_visualGain[All] = 1.5;
+    m_visualGain[All] = 1.0;
     m_visualGain[Low] = 1.0;
     m_visualGain[Mid] = 1.0;
     m_visualGain[High] = 1.0;
