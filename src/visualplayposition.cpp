@@ -14,7 +14,7 @@ PerformanceTimer VisualPlayPosition::m_timeInfoTime;
 VisualPlayPosition::VisualPlayPosition(const QString& key)
         : m_valid(false),
           m_key(key),
-		  m_invalidTimeInfoWarned(false) {
+          m_invalidTimeInfoWarned(false) {
     m_audioBufferSize = new ControlObjectSlave("[Master]", "audio_buffer_size");
     m_audioBufferSize->connectValueChanged(
             this, SLOT(slotAudioBufferSizeChanged(double)));
@@ -38,16 +38,16 @@ void VisualPlayPosition::set(double playPos, double rate,
     data.m_pSlipPosition = pSlipPosition;
 
     if (data.m_callbackEntrytoDac < 0 || data.m_callbackEntrytoDac > m_dAudioBufferSize * 1000) {
-    	// m_timeInfo Invalid, Audio API broken
-    	if (!m_invalidTimeInfoWarned) {
-    		qWarning() << "VisualPlayPosition: Audio API provides invalid time stamps,"
-    				<< "waveform syncing disabled."
-    				<< "DacTime:" << m_timeInfo.outputBufferDacTime
-					<< "EntrytoDac:" << data.m_callbackEntrytoDac;
-    		m_invalidTimeInfoWarned = true;
-    	}
-    	// Assume we are in time
-    	data.m_callbackEntrytoDac = m_dAudioBufferSize * 1000;
+        // m_timeInfo Invalid, Audio API broken
+        if (!m_invalidTimeInfoWarned) {
+            qWarning() << "VisualPlayPosition: Audio API provides invalid time stamps,"
+                       << "waveform syncing disabled."
+                       << "DacTime:" << m_timeInfo.outputBufferDacTime
+                       << "EntrytoDac:" << data.m_callbackEntrytoDac;
+            m_invalidTimeInfoWarned = true;
+        }
+        // Assume we are in time
+        data.m_callbackEntrytoDac = m_dAudioBufferSize * 1000;
     }
 
     // Atomic write
