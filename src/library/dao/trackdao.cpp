@@ -1401,8 +1401,8 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     }
 
     ScopedTransaction transaction(m_database);
-    QTime time;
-    time.start();
+    // QTime time;
+    // time.start();
     //qDebug() << "TrackDAO::updateTrackInDatabase" << QThread::currentThread() << m_database.connectionName();
 
     //qDebug() << "Updating track" << pTrack->getInfo() << "in database...";
@@ -1520,13 +1520,13 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     }
 
     //qDebug() << "Update track took : " << time.elapsed() << "ms. Now updating cues";
-    time.start();
+    //time.start();
     m_analysisDao.saveTrackAnalyses(pTrack);
     m_cueDao.saveTrackCues(trackId, pTrack);
     transaction.commit();
 
     //qDebug() << "Update track in database took: " << time.elapsed() << "ms";
-    time.start();
+    //time.start();
     pTrack->setDirty(false);
     //qDebug() << "Dirtying track took: " << time.elapsed() << "ms";
 }
