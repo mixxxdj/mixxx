@@ -1000,11 +1000,11 @@ class Optimize(Feature):
                 build.env.Append(CCFLAGS='/arch:SSE2')
                 build.env.Append(CPPDEFINES=['__SSE__', '__SSE2__'])
             elif optimize_level == 2:
-            	if build.machine_is_64bit:
+                if build.machine_is_64bit:
                    self.status = "native: exclusive for this CPU (%s)" % build.machine
                    build.env.Append(CCFLAGS='/favor:' + build.machine)
-            	else:
-                	self.status = "Disabled (optimize=2 on 32-bit MSVC)"
+                else:
+                   self.status = "Disabled (optimize=2 on 32-bit MSVC)"
             elif optimize_level == 3:
                 self.status = "legacy: pure i386 code"
             else:
@@ -1048,9 +1048,9 @@ class Optimize(Feature):
                 build.env.Append(
                     CCFLAGS='-march=native -mfpmath=sse')
                 # http://en.chys.info/2010/04/what-exactly-marchnative-means/
-				# Note: requires gcc >= 4.2.0
-				# macros like __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
-				# are set automaticaly
+                # Note: requires gcc >= 4.2.0
+                # macros like __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
+                # are set automaticaly
             elif optimize_level == 3:
                 self.status = "legacy: pure i386 code"
                 build.env.Append(
