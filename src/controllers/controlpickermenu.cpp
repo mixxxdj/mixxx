@@ -128,7 +128,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                              tr("Playback speed control (Vinyl \"Pitch\" slider)"), speedMenu, true);
     addDeckAndSamplerControl("pitch", tr("Pitch (Musical key)"),
                              tr("Pitch control (does not affect tempo)"), speedMenu, true);
-    addDeckAndSamplerControl("sync_key", tr("Sync Key"), tr("Match musical key"), speedMenu, true);
+    addDeckAndSamplerControl("sync_key", tr("Match Key"), tr("Match musical key"), speedMenu, true);
+    addDeckAndSamplerControl("reset_key", tr("Reset Key"), tr("Resets key to original"), speedMenu, true);
     addDeckAndSamplerControl("rate_perm_up", tr("Increase Speed"),
                              tr("Adjust speed faster (coarse)"), speedMenu);
     addDeckAndSamplerControl("rate_perm_up_small", tr("Increase Speed (Fine)"),
