@@ -27,10 +27,6 @@
           </KnobComposed>
         </Children>
       </WidgetGroup>
-      <Label>
-        <ObjectName>KnobLabel</ObjectName>
-        <Text><Variable name="label"/></Text>
-      </Label>
     </Children>
   </WidgetGroup>
 </Template>

@@ -19,146 +19,143 @@
                 <Layout>vertical</Layout>
                 <SizePolicy>me,max</SizePolicy>
                 <Children>
-                    <WidgetGroup>
-                        <Layout>horizontal</Layout>
-                        <SizePolicy>me,max</SizePolicy>
-                        <Children>
-                           <WidgetGroup>
+                   <WidgetGroup>
+                     <ObjectName>MixerChannelControls</ObjectName>
+                     <Layout>horizontal</Layout>
+                     <SizePolicy>me,max</SizePolicy>
+                     <Children>
+                           <!-- <WidgetGroup>
+                              <ObjectName>MasterSync</ObjectName>
+                              <SizePolicy>f,me</SizePolicy>
+                              <Size>50,</Size>
                               <Layout>vertical</Layout>
                               <Children>
-                                 <!-- <WidgetGroup>
-                                    <ObjectName>MasterSync</ObjectName>
-                                    <SizePolicy>f,me</SizePolicy>
-                                    <Size>50,</Size>
-                                    <Layout>vertical</Layout>
-                                    <Children>
-                                        <PushButton>
-                                            <TooltipId>sync_master</TooltipId>
-                                            <Style></Style>
-                                            <NumberStates>2</NumberStates>
-                                            <State>
-                                                <Number>0</Number>
-                                                <Pressed>btn_mastersync_master_on.png</Pressed>
-                                                <Unpressed>btn_mastersync_master_off.png</Unpressed>
-                                            </State>
-                                            <State>
-                                                <Number>1</Number>
-                                                <Pressed>btn_mastersync_master_on.png</Pressed>
-                                                <Unpressed>btn_mastersync_master_on.png</Unpressed>
-                                            </State>
-                                            <Pos>4,4</Pos>
-                                            <Connection>
-                                                <ConfigKey>[InternalClock],sync_master</ConfigKey>
-                                                <ButtonState>LeftButton</ButtonState>
-                                            </Connection>
-                                        </PushButton>
-                                        <NumberBpm>
-                                            <TooltipId>visual_bpm</TooltipId>
-                                            <Style>QLabel { font: bold 18px/21px Lucida Grande, Lucida Sans
-                                                Unicode, Arial, Verdana, sans-serif;
-                                                background-color:
-                                                transparent; color: #EECE33; text-align: left;padding-left:
-                                                1px;
-                                                }
-                                            </Style>
-                                            <Channel>1</Channel>
-                                            <NumberOfDigits>2</NumberOfDigits>
-                                            <Connection>
-                                                <ConfigKey>[InternalClock],bpm</ConfigKey>
-                                            </Connection>
-                                        </NumberBpm>
-                                    </Children>
-                                </WidgetGroup> -->
+                                  <PushButton>
+                                      <TooltipId>sync_master</TooltipId>
+                                      <Style></Style>
+                                      <NumberStates>2</NumberStates>
+                                      <State>
+                                          <Number>0</Number>
+                                          <Pressed>btn_mastersync_master_on.png</Pressed>
+                                          <Unpressed>btn_mastersync_master_off.png</Unpressed>
+                                      </State>
+                                      <State>
+                                          <Number>1</Number>
+                                          <Pressed>btn_mastersync_master_on.png</Pressed>
+                                          <Unpressed>btn_mastersync_master_on.png</Unpressed>
+                                      </State>
+                                      <Pos>4,4</Pos>
+                                      <Connection>
+                                          <ConfigKey>[InternalClock],sync_master</ConfigKey>
+                                          <ButtonState>LeftButton</ButtonState>
+                                      </Connection>
+                                  </PushButton>
+                                  <NumberBpm>
+                                      <TooltipId>visual_bpm</TooltipId>
+                                      <Style>QLabel { font: bold 18px/21px Lucida Grande, Lucida Sans
+                                          Unicode, Arial, Verdana, sans-serif;
+                                          background-color:
+                                          transparent; color: #EECE33; text-align: left;padding-left:
+                                          1px;
+                                          }
+                                      </Style>
+                                      <Channel>1</Channel>
+                                      <NumberOfDigits>2</NumberOfDigits>
+                                      <Connection>
+                                          <ConfigKey>[InternalClock],bpm</ConfigKey>
+                                      </Connection>
+                                  </NumberBpm>
                               </Children>
-                           </WidgetGroup>
-					       <WidgetGroup>
-				                <ObjectName>MixerLeftMargin</ObjectName>
-				                <Layout>horizontal</Layout>
-				                <SizePolicy>me,min</SizePolicy>
-				                <MinimumSize>1,</MinimumSize>
-				                <Children>
-				                </Children>
-				            </WidgetGroup>
-							<WidgetGroup>
-								<ObjectName>MixerContainer</ObjectName>
-								<Layout>vertical</Layout>
-								<SizePolicy>e,max</SizePolicy>
-								<Children>
-									<WidgetGroup>
-									    <SizePolicy>max,min</SizePolicy>
-										<Layout>horizontal</Layout>
-                                        <MaximumSize>400,400</MaximumSize>
-										<Children>
-										   <WidgetGroup>
-										        <SizePolicy>max,min</SizePolicy>
-									            <Layout>horizontal</Layout>
-									            <Children>
-													<Template src="skin:mixer_channel_vertical.xml">
-														<SetVariable name="channum">3</SetVariable>
-		        									</Template>
-									            </Children>
-									            <Connection>
-									                <ConfigKey>[Master],show_4decks</ConfigKey>
-									                <BindProperty>visible</BindProperty>
-									            </Connection>
-									        </WidgetGroup>
-											<Template src="skin:mixer_channel.xml">
-												<SetVariable name="channum">1</SetVariable>
-											</Template>
-											<Template src="skin:mixer_channel_reversed.xml">
-												<SetVariable name="channum">2</SetVariable>
-											</Template>
-				                           <WidgetGroup>
-				                                <SizePolicy>max,min</SizePolicy>
-		                                        <Layout>horizontal</Layout>
-		                                        <Children>
-		                                            <Template src="skin:mixer_channel_vertical.xml">
-		                                                <SetVariable name="channum">4</SetVariable>
-		                                            </Template>
-		                                        </Children>
-		                                        <Connection>
-		                                            <ConfigKey>[Master],show_4decks</ConfigKey>
-		                                            <BindProperty>visible</BindProperty>
-		                                        </Connection>
-		                                    </WidgetGroup>
-										</Children>
-									</WidgetGroup>
-									<WidgetGroup>
-									    <ObjectName>CrossFadeContainer</ObjectName>
-										<Layout>horizontal</Layout>
-										<SizePolicy>me,max</SizePolicy>
-										<MinimumSize>150,50</MinimumSize>
-										<Children>
-										    <WidgetGroup>
-										        <ObjectName>Crossfader</ObjectName>
-										        <Layout>horizontal</Layout>
-										        <SizePolicy>me,min</SizePolicy>
-										        <Children>
-													<SliderComposed>
-														<TooltipId>crossfader</TooltipId>
-														<Handle>knob_crossfader.png</Handle>
-														<Slider>slider_crossfader.png</Slider>
-														<Horizontal>true</Horizontal>
-														<Connection>
-															<ConfigKey>[Master],crossfader</ConfigKey>
-														</Connection>
-													</SliderComposed>
-												</Children>
-											</WidgetGroup>
-										</Children>
-									</WidgetGroup>
-								</Children>
-							</WidgetGroup>
-							<WidgetGroup>
-                                <ObjectName>MixerRightMargin</ObjectName>
+                          </WidgetGroup> -->
+        		          <WidgetGroup>
+        	                <ObjectName>MixerLeftMargin</ObjectName>
+        	                <Layout>horizontal</Layout>
+        	                <SizePolicy>me,min</SizePolicy>
+        	                <MinimumSize>1,</MinimumSize>
+        	                <Children>
+        	                </Children>
+        	              </WidgetGroup>
+        				  <WidgetGroup>
+        					<ObjectName>MixerContainer</ObjectName>
+        					<Layout>vertical</Layout>
+        					<SizePolicy>e,max</SizePolicy>
+        					<Children>
+        						<WidgetGroup>
+        						    <SizePolicy>max,min</SizePolicy>
+        							<Layout>horizontal</Layout>
+                                    <MaximumSize>400,400</MaximumSize>
+        							<Children>
+        							   <WidgetGroup>
+        							        <SizePolicy>max,min</SizePolicy>
+        						            <Layout>horizontal</Layout>
+        						            <Children>
+        										<Template src="skin:mixer_channel_vertical.xml">
+        											<SetVariable name="channum">3</SetVariable>
+              									</Template>
+        						            </Children>
+        						            <Connection>
+        						                <ConfigKey>[Master],show_4decks</ConfigKey>
+        						                <BindProperty>visible</BindProperty>
+        						            </Connection>
+        						       </WidgetGroup>
+        							   <Template src="skin:mixer_channel.xml">
+        									<SetVariable name="channum">1</SetVariable>
+        							   </Template>
+        							   <Template src="skin:mixer_channel_reversed.xml">
+        									<SetVariable name="channum">2</SetVariable>
+        							   </Template>
+        	                           <WidgetGroup>
+      	                                  <SizePolicy>max,min</SizePolicy>
+                                          <Layout>horizontal</Layout>
+                                          <Children>
+                                              <Template src="skin:mixer_channel_vertical.xml">
+                                              <SetVariable name="channum">4</SetVariable>
+                                              </Template>
+                                          </Children>
+                                          <Connection>
+                                              <ConfigKey>[Master],show_4decks</ConfigKey>
+                                              <BindProperty>visible</BindProperty>
+                                          </Connection>
+                                       </WidgetGroup>
+        							</Children>
+        						</WidgetGroup>
+        					</Children>
+        				  </WidgetGroup>
+        				  <WidgetGroup>
+                            <ObjectName>MixerRightMargin</ObjectName>
+                            <Layout>horizontal</Layout>
+                            <SizePolicy>me,min</SizePolicy>
+                            <MinimumSize>1,</MinimumSize>
+                            <Children>
+                            </Children>
+                          </WidgetGroup>
+                      </Children>
+                    </WidgetGroup>
+                    <WidgetGroup>
+                        <ObjectName>CrossFadeContainer</ObjectName>
+                        <BackPath>background_tile.png</BackPath>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>me,max</SizePolicy>
+                        <MinimumSize>150,50</MinimumSize>
+                        <Children>
+                            <WidgetGroup>
+                                <ObjectName>Crossfader</ObjectName>
                                 <Layout>horizontal</Layout>
                                 <SizePolicy>me,min</SizePolicy>
-                                <MinimumSize>1,</MinimumSize>
                                 <Children>
+                                    <SliderComposed>
+                                        <TooltipId>crossfader</TooltipId>
+                                        <Handle>knob_crossfader.png</Handle>
+                                        <Slider>slider_crossfader.png</Slider>
+                                        <Horizontal>true</Horizontal>
+                                        <Connection>
+                                            <ConfigKey>[Master],crossfader</ConfigKey>
+                                        </Connection>
+                                    </SliderComposed>
                                 </Children>
                             </WidgetGroup>
-						</Children>
-					</WidgetGroup>
+                        </Children>
+                    </WidgetGroup>
 				</Children>
 			</WidgetGroup>
             <WidgetGroup>
@@ -184,30 +181,18 @@
                                       <SizePolicy>min,max</SizePolicy>
                                       <ObjectName>MasterKnobCol</ObjectName>
                                       <Children>
-                                        <Knob>
-                                          <TooltipId>master_gain</TooltipId>
-                                          <NumberStates>64</NumberStates>
-                                          <Path>knobs/knob_rotary_s%1.png</Path>
-                                          <Connection>
-                                              <ConfigKey>[Master],gain</ConfigKey>
-                                          </Connection>
-                                        </Knob>
-                                        <Label>
-                                          <ObjectName>KnobLabel</ObjectName>
-                                          <Text>Master</Text>
-                                        </Label>
-                                        <Knob>
-                                            <TooltipId>balance</TooltipId>
-                                            <NumberStates>63</NumberStates>
-                                            <Path>knobs/knob_rotary_s%1.png</Path>
-                                            <Connection>
-                                                <ConfigKey>[Master],balance</ConfigKey>
-                                            </Connection>
-                                        </Knob>
-                                        <Label>
-                                            <ObjectName>KnobLabel</ObjectName>
-                                            <Text>Balance</Text>
-                                        </Label>
+                                        <Template src="skin:knob.xml">
+                                            <SetVariable name="tooltip">master_gain</SetVariable>
+                                            <SetVariable name="group">[Master]</SetVariable>
+                                            <SetVariable name="control">gain</SetVariable>
+                                            <SetVariable name="label">Master</SetVariable>
+                                        </Template>
+                                        <Template src="skin:knob.xml">
+                                            <SetVariable name="tooltip">balance</SetVariable>
+                                            <SetVariable name="group">[Master]</SetVariable>
+                                            <SetVariable name="control">balance</SetVariable>
+                                            <SetVariable name="label">Balance</SetVariable>
+                                        </Template>
                                       </Children>
                                     </WidgetGroup>
                                     <WidgetGroup>
@@ -215,30 +200,18 @@
                                       <SizePolicy>min,max</SizePolicy>
                                       <ObjectName>MasterKnobCol</ObjectName>
                                       <Children>
-                                          <Knob>
-                                              <TooltipId>headphone_gain</TooltipId>
-                                              <NumberStates>64</NumberStates>
-                                              <Path>knobs/knob_rotary_s%1.png</Path>
-                                              <Connection>
-                                                  <ConfigKey>[Master],headGain</ConfigKey>
-                                              </Connection>
-                                          </Knob>
-                                          <Label>
-                                              <ObjectName>KnobLabel</ObjectName>
-                                              <Text>Head Gain</Text>
-                                          </Label>
-                                          <Knob>
-                                              <TooltipId>headMix</TooltipId>
-                                              <NumberStates>64</NumberStates>
-                                              <Path>knobs/knob_rotary_s%1.png</Path>
-                                              <Connection>
-                                                  <ConfigKey>[Master],headMix</ConfigKey>
-                                              </Connection>
-                                          </Knob>
-                                          <Label>
-                                              <ObjectName>KnobLabel</ObjectName>
-                                              <Text>Pre/Main</Text>
-                                          </Label>
+                                          <Template src="skin:knob.xml">
+                                            <SetVariable name="tooltip">headphone_gain</SetVariable>
+                                            <SetVariable name="group">[Master]</SetVariable>
+                                            <SetVariable name="control">headGain</SetVariable>
+                                            <SetVariable name="label">Head Gain</SetVariable>
+                                          </Template>
+                                          <Template src="skin:knob.xml">
+                                            <SetVariable name="tooltip">headMix</SetVariable>
+                                            <SetVariable name="group">[Master]</SetVariable>
+                                            <SetVariable name="control">headMix</SetVariable>
+                                            <SetVariable name="label">Pre/Main</SetVariable>
+                                          </Template>
                                       </Children>
                                     </WidgetGroup>
                                   </Children>

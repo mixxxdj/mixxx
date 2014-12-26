@@ -73,11 +73,11 @@ class EngineBufferScaleLinearTest : public MixxxTest {
     }
 
     void SetRate(double rate) {
-        double speed_adjust = rate;
-        double pitch_adjust = 0.0;
+        double tempoRatio = rate;
+        double pitchRatio = rate;
         m_pScaler->setScaleParameters(
-            44100, 1.0, true,
-            &speed_adjust, &pitch_adjust);
+            44100, 1.0,
+            &tempoRatio, &pitchRatio);
     }
 
     void SetRateNoLerp(double rate) {

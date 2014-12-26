@@ -32,7 +32,7 @@ class CoverArtUtilTest : public MixxxTest, public CoverArtCache {
     TrackCollection* m_pTrackCollection;
 };
 
-const QString kCoverLocationTest("res/images/library/default_cover.png");
+const QString kCoverLocationTest("res/images/library/cover_default.png");
 const QString kTrackLocationTest(QDir::currentPath() %
                                  "/src/test/id3-test-data/cover-test.mp3");
 

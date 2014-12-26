@@ -9,7 +9,7 @@
 		        <ObjectName>VinylControls</ObjectName>
                 <Layout>Horizontal</Layout>
                 <SizePolicy>me,min</SizePolicy>
-                <MinimumSize>-1,48</MinimumSize>
+                <MinimumSize>120,48</MinimumSize>
                 <Children>
 					<PushButton>
 						<TooltipId>vinylcontrol_mode</TooltipId>
@@ -79,13 +79,10 @@
                          <Layout>horizontal</Layout>
                          <SizePolicy>min,min</SizePolicy>
                          <Children>
-                             <Knob>
-                                 <NumberStates>64</NumberStates>
-                                 <Path>knobs/knob_rotary_s%1.png</Path>
-                                 <Connection>
-                                     <ConfigKey>[QuickEffectRack1_[Channel<Variable name="channum"/>]],super1</ConfigKey>
-                                 </Connection>
-                             </Knob>
+                             <Template src="skin:knob_textless.xml">
+                                <SetVariable name="group">[QuickEffectRack1_[Channel<Variable name="channum"/>]]</SetVariable>
+                                <SetVariable name="control">super1</SetVariable>
+                             </Template>
                          </Children>
                      </WidgetGroup>
                      <EffectName>
