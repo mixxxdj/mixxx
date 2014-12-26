@@ -1035,8 +1035,9 @@ class Optimize(Feature):
                     CCFLAGS='-mtune=generic -msse2 -mfpmath=sse')
                 # this sets macros __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
                 # This schould be our default build for distribution 
-                # It's a little sketchy, but turning on SSE will gain 
-                # 100 % performance in our filter code.
+                # It's a little sketchy, but turning on SSE2 will gain
+                # 100 % performance in our filter code and allows us to
+                # turns on denormal zeroing.
                 # We don't really support CPU's earlier than Pentium 4, 
                 # which is the class of CPUs this decision affects. 
                 # The downside of this is that we aren't truly
