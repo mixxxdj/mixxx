@@ -1007,6 +1007,9 @@ class Optimize(Feature):
                 	self.status = "Disabled (optimize=2 on 32-bit MSVC)"
             elif optimize_level == 3:
                 self.status = "legacy: pure i386 code"
+            else:
+                raise Exception("optimize=%s is not supported, use 1 .. 3." % optimize_level) 
+
 
             # SSE and SSE2 are core instructions on x64
             if build.machine_is_64bit:
@@ -1053,6 +1056,8 @@ class Optimize(Feature):
                     CCFLAGS='-mtune=generic')
                 # -mtune=generic pick the most common, but compatible options. 
                 # Used by the debian rules script.
+            else:
+                raise Exception("optimize=%s is not supported, use 1 .. 3." % optimize_level) 
 
             # what others do: 
             # soundtouch uses just -O3 in Ubuntu Trusty
