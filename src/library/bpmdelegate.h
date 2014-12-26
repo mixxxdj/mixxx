@@ -21,6 +21,7 @@ class BPMDelegate : public QStyledItemDelegate {
   private:
     QTableView* m_pTableView;
     QCheckBox* m_pCheckBox;
+    QItemEditorFactory* m_pFactory;
 };
 
 #endif // BUTTONCOLUMNDELEGATE_H

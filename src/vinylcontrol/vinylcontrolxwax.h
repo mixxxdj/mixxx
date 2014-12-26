@@ -86,6 +86,9 @@ class VinylControlXwax : public VinylControl {
     // The approximate duration used to tell if a new track is loaded.
     double m_dOldDurationInaccurate;
 
+    // Was the reverse button pressed last go-round?
+    bool m_bWasReversed;
+
     // The pitch ring buffer.
     // TODO(XXX): Replace with CircularBuffer instead of handling the ring logic
     // in VinylControlXwax.

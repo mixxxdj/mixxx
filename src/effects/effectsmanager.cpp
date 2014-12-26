@@ -5,6 +5,8 @@
 
 #include "engine/effects/engineeffectsmanager.h"
 #include "engine/effects/engineeffect.h"
+#include "engine/effects/engineeffectrack.h"
+#include "engine/effects/engineeffectchain.h"
 #include "util/assert.h"
 
 const char* kEqualizerRackName = "[EqualizerChain]";
@@ -15,7 +17,8 @@ EffectsManager::EffectsManager(QObject* pParent, ConfigObject<ConfigValue>* pCon
           m_pEffectChainManager(new EffectChainManager(pConfig, this)),
           m_nextRequestId(0),
           m_pLoEqFreq(NULL),
-          m_pHiEqFreq(NULL) {
+          m_pHiEqFreq(NULL),
+          m_underDestruction(false) {
     qRegisterMetaType<EffectChain::InsertionType>("EffectChain::InsertionType");
     QPair<EffectsRequestPipe*, EffectsResponsePipe*> requestPipes =
             TwoWayMessagePipe<EffectsRequest*, EffectsResponse>::makeTwoWayMessagePipe(
@@ -26,9 +29,12 @@ EffectsManager::EffectsManager(QObject* pParent, ConfigObject<ConfigValue>* pCon
 }
 
 EffectsManager::~EffectsManager() {
+    m_underDestruction = true;
     //m_pEffectChainManager->saveEffectChains();
-    processEffectsResponses();
     delete m_pEffectChainManager;
+    // This must be done here, since the engineRacks are deleted via
+    // the queue
+    processEffectsResponses();
     while (!m_effectsBackends.isEmpty()) {
         EffectsBackend* pBackend = m_effectsBackends.takeLast();
         delete pBackend;
@@ -259,7 +265,25 @@ void EffectsManager::setupDefaults() {
 }
 
 bool EffectsManager::writeRequest(EffectsRequest* request) {
+    if (m_underDestruction) {
+        // Catch all delete Messages since the engine is already down
+        // and we cannot what for a communication cycle
+        if (request->type == EffectsRequest::REMOVE_EFFECT_FROM_CHAIN) {
+            //qDebug() << debugString() << "delete" << request->RemoveEffectFromChain.pEffect;
+            delete request->RemoveEffectFromChain.pEffect;
+        } else if (request->type == EffectsRequest::REMOVE_CHAIN_FROM_RACK) {
+            //qDebug() << debugString() << "delete" << request->RemoveEffectFromChain.pEffect;
+            delete request->RemoveChainFromRack.pChain;
+        } else if (request->type == EffectsRequest::REMOVE_EFFECT_RACK) {
+            //qDebug() << debugString() << "delete" << request->RemoveEffectRack.pRack;
+            delete request->RemoveEffectRack.pRack;
+        }
+        delete request;
+        return false;
+    }
+
     if (m_pRequestPipe.isNull()) {
+        delete request;
         return false;
     }
 
@@ -268,10 +292,12 @@ bool EffectsManager::writeRequest(EffectsRequest* request) {
     processEffectsResponses();
 
     request->request_id = m_nextRequestId++;
+    // TODO(XXX) use preallocated requests to avoid delete calls from engine
     if (m_pRequestPipe->writeMessages(&request, 1) == 1) {
         m_activeRequests[request->request_id] = request;
         return true;
     }
+    delete request;
     return false;
 }
 
@@ -305,6 +331,12 @@ void EffectsManager::processEffectsResponses() {
                 if (pRequest->type == EffectsRequest::REMOVE_EFFECT_FROM_CHAIN) {
                     //qDebug() << debugString() << "delete" << pRequest->RemoveEffectFromChain.pEffect;
                     delete pRequest->RemoveEffectFromChain.pEffect;
+                } else if (pRequest->type == EffectsRequest::REMOVE_CHAIN_FROM_RACK) {
+                    //qDebug() << debugString() << "delete" << request->RemoveEffectFromChain.pEffect;
+                    delete pRequest->RemoveChainFromRack.pChain;
+                } else if (pRequest->type == EffectsRequest::REMOVE_EFFECT_RACK) {
+                    qDebug() << debugString() << "delete" << pRequest->RemoveEffectRack.pRack;
+                    delete pRequest->RemoveEffectRack.pRack;
                 }
             }
 

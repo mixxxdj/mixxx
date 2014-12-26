@@ -40,6 +40,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_iCoverHashColumn(-1),
           m_iCoverColumn(-1),
           m_lastUserActionNanos(0),
+          m_selectionChangedSinceLastGuiTick(true),
           m_loadCachedOnly(false) {
     // Give a NULL parent because otherwise it inherits our style which can make
     // it unreadable. Bug #673411
@@ -118,6 +119,7 @@ WTrackTableView::~WTrackTableView() {
     if (pHeader) {
         pHeader->saveHeaderState();
     }
+    delete m_pTrackInfo;
 
     delete m_pReloadMetadataAct;
     delete m_pReloadMetadataFromMusicBrainzAct;
@@ -165,6 +167,7 @@ void WTrackTableView::slotScrollValueChanged(int) {
 
 void WTrackTableView::selectionChanged(const QItemSelection& selected,
                                        const QItemSelection& deselected) {
+    m_selectionChangedSinceLastGuiTick = true;
     enableCachedOnly();
     QTableView::selectionChanged(selected, deselected);
 }
@@ -179,14 +182,19 @@ void WTrackTableView::slotGuiTick50ms(double) {
         // this in selectionChanged slows down scrolling performance so we wait
         // until the user has stopped interacting first.
         const QModelIndexList indices = selectionModel()->selectedRows();
-        if (indices.size() > 0 && indices.last().isValid()) {
-            TrackModel* trackModel = getTrackModel();
-            if (trackModel) {
-                TrackPointer pTrack = trackModel->getTrack(indices.last());
-                if (pTrack) {
-                    emit(trackSelected(pTrack));
+        if (m_selectionChangedSinceLastGuiTick) {
+            if (indices.size() > 0 && indices.last().isValid()) {
+                TrackModel* trackModel = getTrackModel();
+                if (trackModel) {
+                    TrackPointer pTrack = trackModel->getTrack(indices.last());
+                    if (pTrack) {
+                        emit(trackSelected(pTrack));
+                    }
                 }
+            } else {
+                emit(trackSelected(TrackPointer()));
             }
+            m_selectionChangedSinceLastGuiTick = false;
         }
 
         // This allows CoverArtDelegate to request that we load covers from disk

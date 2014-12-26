@@ -69,6 +69,7 @@ EngineDeck::~EngineDeck() {
     delete m_pPregain;
     delete m_pVinylSoundEmu;
     delete m_pVUMeter;
+    delete m_pSampleRate;
 }
 
 void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {

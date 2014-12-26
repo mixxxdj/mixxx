@@ -21,7 +21,7 @@
 #include <QVBoxLayout>
 #include <QtDebug>
 
-#include "library/libraryscannerdlg.h"
+#include "library/scanner/libraryscannerdlg.h"
 
 LibraryScannerDlg::LibraryScannerDlg(QWidget* parent, Qt::WindowFlags f)
         : QWidget(parent, f),

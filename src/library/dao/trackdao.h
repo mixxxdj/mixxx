@@ -72,6 +72,30 @@ class CueDAO;
 class CrateDAO;
 class LibraryHashDAO;
 
+// Holds a strong reference to a track while it is in the "recent tracks"
+// cache. Once it expires from the cache it signals to
+// TrackDAO::saveTrack(TrackPointer) to save the track if it is dirty and then
+// drops the strong reference. This prevents a race condition caused by caching
+// TrackPointers themselves within the QCache by holding a strong reference to
+// TrackPointer (and thereby serving it out of the weak pointer track cache) up
+// until the track has been saved to the database.
+class TrackCacheItem : public QObject {
+    Q_OBJECT
+  public:
+    TrackCacheItem(TrackPointer pTrack);
+    virtual ~TrackCacheItem();
+
+    TrackPointer getTrack() {
+        return m_pTrack;
+    }
+
+  signals:
+    void saveTrack(TrackPointer pTrack);
+
+  private:
+    TrackPointer m_pTrack;
+};
+
 class TrackDAO : public QObject, public virtual DAO {
     Q_OBJECT
   public:
@@ -103,6 +127,8 @@ class TrackDAO : public QObject, public virtual DAO {
     void purgeTracks(const QList<int>& ids);
     void purgeTracks(const QString& dir);
     void unhideTracks(const QList<int>& ids);
+
+    // WARNING: Only call this from the main thread instance of TrackDAO.
     TrackPointer getTrack(const int id, const bool cacheOnly=false) const;
 
     // Fetches trackLocation from the database or adds it. If searchForCoverArt
@@ -160,8 +186,7 @@ class TrackDAO : public QObject, public virtual DAO {
     void slotTrackDirty(TrackInfoObject* pTrack);
     void slotTrackChanged(TrackInfoObject* pTrack);
     void slotTrackClean(TrackInfoObject* pTrack);
-    // Called by ~TrackInfoObject right before the track is destroyed.
-    void slotTrackDeleted(TrackInfoObject* pTrack);
+    void slotTrackReferenceExpired(TrackInfoObject* pTrack);
 
   private:
     bool isTrackFormatSupported(TrackInfoObject* pTrack) const;
@@ -183,9 +208,18 @@ class TrackDAO : public QObject, public virtual DAO {
     AnalysisDao& m_analysisDao;
     LibraryHashDAO& m_libraryHashDao;
     ConfigObject<ConfigValue>* m_pConfig;
-    static QHash<int, TrackWeakPointer> m_sTracks;
+    // Mutex that protects m_sTracks.
     static QMutex m_sTracksMutex;
-    mutable QCache<int, TrackPointer> m_trackCache;
+    // Weak pointer cache of active tracks.
+    static QHash<int, TrackWeakPointer> m_sTracks;
+    // "Recent tracks" cache -- holds strong references to recently used
+    // tracks. When a track is expired, calls saveTrack(TrackPointer) without
+    // dropping the strong reference to the track. This prevents a race
+    // condition where the strong reference is dropped and therefore cache-only
+    // getTrack calls made by BaseSqlTableModel return null and serve stale
+    // results from BaseTrackCache before the newly expired TrackPointer has
+    // been saved to the database.
+    mutable QCache<int, TrackCacheItem> m_recentTracksCache;
 
     QSqlQuery* m_pQueryTrackLocationInsert;
     QSqlQuery* m_pQueryTrackLocationSelect;

@@ -121,7 +121,7 @@ void DlgPrefWaveform::slotResetToDefaults() {
         waveformTypeComboBox->setCurrentIndex(defaultIndex);
     }
 
-    allVisualGain->setValue(1.5);
+    allVisualGain->setValue(1.0);
     lowVisualGain->setValue(1.0);
     midVisualGain->setValue(1.0);
     highVisualGain->setValue(1.0);

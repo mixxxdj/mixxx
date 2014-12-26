@@ -37,7 +37,7 @@
           </WidgetGroup>
         </Children>
         <Connection>
-            <ConfigKey>[Spinny],show_spinnies</ConfigKey>
+            <ConfigKey persist="true">[Spinny],show_spinnies</ConfigKey>
             <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetStack>

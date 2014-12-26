@@ -40,7 +40,7 @@ EnginePregain::EnginePregain(QString group)
     m_pPassthroughEnabled = ControlObject::getControl(ConfigKey(group, "passthrough"));
 
     if (s_pReplayGainBoost == NULL) {
-        s_pReplayGainBoost = new ControlPotmeter(ConfigKey("[ReplayGain]", "ReplayGainBoost"), 1, 6);
+        s_pReplayGainBoost = new ControlPotmeter(ConfigKey("[ReplayGain]", "ReplayGainBoost"), -6, 15);
         s_pEnableReplayGain = new ControlObject(ConfigKey("[ReplayGain]", "ReplayGainEnabled"));
     }
     m_bSmoothFade = false;
@@ -68,10 +68,6 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
     float fReplayGain = m_pControlReplayGain->get();
     float fReplayGainCorrection = 1;
     float fPassing = m_pPassthroughEnabled->get();
-    // TODO(XXX) Why do we do this? Removing it results in clipping at unity
-    // gain so I think it was trying to compensate for some issue when we added
-    // replaygain but even at unity gain (no RG) we are clipping. rryan 5/2012
-    fGain = fGain/2;
 
     // Override replaygain value if passing through
     if (fPassing > 0) {
