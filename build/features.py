@@ -994,7 +994,8 @@ class Optimize(Feature):
             # In general, you should pick /O2 over /Ox
             build.env.Append(CCFLAGS='/O2')
 
-            if optimize_level == 1:
+            # Historicaly our release packages are built with optimize=9.
+            if optimize_level == 1 or optimize_level == 9:
                 # portable-binary: sse2 CPU (>= Pentium 4)
                 self.status = "portable: sse2 CPU (>= Pentium 4)"
                 build.env.Append(CCFLAGS='/arch:SSE2')
