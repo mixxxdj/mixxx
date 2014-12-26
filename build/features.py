@@ -993,7 +993,7 @@ class Optimize(Feature):
             # http://msdn.microsoft.com/en-us/library/59a3b321.aspx
             # In general, you should pick /O2 over /Ox
             build.env.Append(CCFLAGS='/O2')
-            
+
             if optimize_level == 1:
                 # portable-binary: sse2 CPU (>= Pentium 4)
                 self.status = "portable: sse2 CPU (>= Pentium 4)"
@@ -1008,7 +1008,7 @@ class Optimize(Feature):
             elif optimize_level == 3:
                 self.status = "legacy: pure i386 code"
             else:
-                raise Exception("optimize=%s is not supported, use 1 .. 3." % optimize_level) 
+                raise Exception("optimize=%s is not supported, use 1 .. 3." % optimize_level)
 
 
             # SSE and SSE2 are core instructions on x64
@@ -1016,13 +1016,13 @@ class Optimize(Feature):
                 build.env.Append(CPPDEFINES=['__SSE__', '__SSE2__'])
 
         elif build.toolchain_is_gnu:
-            # Common flags to all optimizations. 
-            # -ffast-math will pevent a performance penalty by denormals 
-            # (floating point values almost Zero are treated as Zero) 
-            # unfortunately that work only on 64 bit CPUs or with sse2 enabled  
+            # Common flags to all optimizations.
+            # -ffast-math will pevent a performance penalty by denormals
+            # (floating point values almost Zero are treated as Zero)
+            # unfortunately that work only on 64 bit CPUs or with sse2 enabled
 
-            # the following optimisation flags makes the engine code ~3 times 
-            # faster, measured on a Atom CPU.  
+            # the following optimisation flags makes the engine code ~3 times
+            # faster, measured on a Atom CPU.
             build.env.Append(
                 CCFLAGS='-O3 -ffast-math -funroll-loops')
             if not int(build.flags['profiling']):
@@ -1034,15 +1034,15 @@ class Optimize(Feature):
                 build.env.Append(
                     CCFLAGS='-mtune=generic -msse2 -mfpmath=sse')
                 # this sets macros __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
-                # This schould be our default build for distribution 
+                # This schould be our default build for distribution
                 # It's a little sketchy, but turning on SSE2 will gain
                 # 100 % performance in our filter code and allows us to
                 # turns on denormal zeroing.
-                # We don't really support CPU's earlier than Pentium 4, 
-                # which is the class of CPUs this decision affects. 
+                # We don't really support CPU's earlier than Pentium 4,
+                # which is the class of CPUs this decision affects.
                 # The downside of this is that we aren't truly
                 # i386 compatible, so builds that claim 'i386' will crash.
-                # Note: SSE2 is a core part of x64 CPUs 
+                # Note: SSE2 is a core part of x64 CPUs
             elif optimize_level == 2:
                 self.status = "native: exclusive for this CPU (%s)" % build.machine
                 build.env.Append(
@@ -1050,22 +1050,22 @@ class Optimize(Feature):
                 # http://en.chys.info/2010/04/what-exactly-marchnative-means/
 				# Note: requires gcc >= 4.2.0
 				# macros like __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
-				# are set automaticaly 
+				# are set automaticaly
             elif optimize_level == 3:
                 self.status = "legacy: pure i386 code"
                 build.env.Append(
                     CCFLAGS='-mtune=generic')
-                # -mtune=generic pick the most common, but compatible options. 
+                # -mtune=generic pick the most common, but compatible options.
                 # Used by the debian rules script.
             else:
-                raise Exception("optimize=%s is not supported, use 1 .. 3." % optimize_level) 
+                raise Exception("optimize=%s is not supported, use 1 .. 3." % optimize_level)
 
-            # what others do: 
+            # what others do:
             # soundtouch uses just -O3 in Ubuntu Trusty
-            # rubberband uses just -O2 in Ubuntu Trusty 
+            # rubberband uses just -O2 in Ubuntu Trusty
             # fftw3 (used by rubberband) in Ubuntu Trusty
-            # -O3 -fomit-frame-pointer -mtune=native -malign-double 
-            # -fstrict-aliasing -fno-schedule-insns -ffast-math 
+            # -O3 -fomit-frame-pointer -mtune=native -malign-double
+            # -fstrict-aliasing -fno-schedule-insns -ffast-math
 
 
 class AutoDjCrates(Feature):
