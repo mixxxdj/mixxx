@@ -327,8 +327,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     
     // Update Speed Auto Reset Slider Box
     // Cue recall
-    ComboBoxResetSpeedAndPitch->addItem(tr("Off"));
     ComboBoxResetSpeedAndPitch->addItem(tr("On track load"));
+    ComboBoxResetSpeedAndPitch->addItem(tr("Off"));
     connect(ComboBoxResetSpeedAndPitch, SIGNAL(activated(int)),
             this, SLOT(slotUpdateSpeedAutoReset(int)));
     m_speedAutoReset = static_cast<bool>(m_pConfig->getValueString(
@@ -389,7 +389,7 @@ void DlgPrefControls::slotUpdate() {
 
     ComboBoxPitchAndKeylock->setCurrentIndex(m_pitchAndKeylockMode);
 
-    ComboBoxResetSpeedAndPitch->setCurrentIndex(m_speedAutoReset);
+    ComboBoxResetSpeedAndPitch->setCurrentIndex(1 - m_speedAutoReset);
 }
 
 void DlgPrefControls::slotResetToDefaults() {
@@ -432,9 +432,9 @@ void DlgPrefControls::slotResetToDefaults() {
     spinBoxPermRateLeft->setValue(0.50);
     spinBoxPermRateRight->setValue(0.05);
 
-    // Speed auto reset checkbox default un-checked.
+    // Speed auto reset combobox 1 = off
     m_speedAutoReset = 0;
-    ComboBoxResetSpeedAndPitch->setCurrentIndex(0);
+    ComboBoxResetSpeedAndPitch->setCurrentIndex(1);
 
     m_pitchAndKeylockMode = 0;
     ComboBoxPitchAndKeylock->setCurrentIndex(m_pitchAndKeylockMode);
@@ -716,5 +716,6 @@ void DlgPrefControls::slotNumSamplersChanged(double new_count) {
 }
 
 void DlgPrefControls::slotUpdateSpeedAutoReset(int i) {
-    m_speedAutoReset = static_cast<bool>(i);
+    // 1 = off
+    m_speedAutoReset = 1 - i;
 }
