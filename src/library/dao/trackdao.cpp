@@ -1249,9 +1249,10 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
     }
 
     QSqlRecord queryRecord = query.record();
-    unsigned long recordCount = queryRecord.count();
-    DEBUG_ASSERT_AND_HANDLE(recordCount == ARRAYLENGTH(columns)) {
-        recordCount = math_min(recordCount, ARRAYLENGTH(columns));
+    int recordCount = queryRecord.count();
+    int coloumsCount = ARRAYLENGTH(columns);
+    DEBUG_ASSERT_AND_HANDLE(recordCount == coloumsCount) {
+        recordCount = math_min(recordCount, coloumsCount);
     }
 
     // Location is the first column.
