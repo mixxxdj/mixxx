@@ -994,8 +994,7 @@ class Optimize(Feature):
             # In general, you should pick /O2 over /Ox
             build.env.Append(CCFLAGS='/O2')
 
-            # Historicaly our release packages are built with optimize=9.
-            if optimize_level == 1 or optimize_level == 9:
+            if optimize_level == 1:
                 # portable-binary: sse2 CPU (>= Pentium 4)
                 self.status = "portable: sse2 CPU (>= Pentium 4)"
                 build.env.Append(CCFLAGS='/arch:SSE2')
@@ -1029,7 +1028,8 @@ class Optimize(Feature):
             if not int(build.flags['profiling']):
                 build.env.Append(CCFLAGS='-fomit-frame-pointer')
 
-            if optimize_level == 1:
+            # Historicaly our gcc release packages are built with optimize=9.
+            if optimize_level == 1 or optimize_level == 9:
                 # portable-binary: sse2 CPU (>= Pentium 4)
                 self.status = "portable: sse2 CPU (>= Pentium 4)"
                 build.env.Append(
