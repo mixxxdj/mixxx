@@ -949,16 +949,8 @@ class Optimize(Feature):
             return False
 
     def add_options(self, build, vars):
-        if not build.platform_is_windows:
-            vars.Add(
-                'optimize', 'Set to:\n  1 portable-binary: sse2 CPU (>= Pentium 4)\n  2 native-binary: optimized exclusive for the CPU of this system\n  3 legacy-binary: pure i386 code', 1)
-        else:
-            if build.machine_is_64bit:
-                vars.Add(
-                    'optimize', 'Set to:\n  1 to maximize speed (/O2)\n  2 for maximum optimizations (/Ox)', 1)
-            else:
-                vars.Add(
-                    'optimize', 'Set to:\n  1 to maximize speed (/O2)\n  2 for maximum optimizations (/Ox)\n  3 to use SSE instructions\n  4 to use SSE2 instructions', 1)
+        vars.Add(
+            'optimize', 'Set to:\n  1 portable-binary: sse2 CPU (>= Pentium 4)\n  2 native-binary: optimized exclusive for the CPU of this system\n  3 legacy-binary: pure i386 code', 1)
 
     def configure(self, build, conf):
         if not self.enabled(build):
@@ -1000,35 +992,34 @@ class Optimize(Feature):
 
             # http://msdn.microsoft.com/en-us/library/59a3b321.aspx
             # In general, you should pick /O2 over /Ox
-            if optimize_level >= 1:
-                self.status = "Enabled -- Maximize Speed (/O2)"
-                build.env.Append(CCFLAGS='/O2')
-            # elif optimize_level >= 2:
-            #    self.status = "Enabled -- Maximum Optimizations (/Ox)"
-            #    build.env.Append(CCFLAGS = '/Ox')
+            build.env.Append(CCFLAGS='/O2')
+            
+            if optimize_level == 1:
+                # portable-binary: sse2 CPU (>= Pentium 4)
+                self.status = "portable: sse2 CPU (>= Pentium 4)"
+                build.env.Append(CCFLAGS='/arch:SSE2')
+                build.env.Append(CPPDEFINES=['__SSE__', '__SSE2__'])
+            elif optimize_level == 2:
+            	if build.machine_is_64bit:
+                   self.status = "native: exclusive for this CPU (%s)" % build.machine
+                   build.env.Append(CCFLAGS='/favor:' + build.machine)
+            	else:
+                	self.status = "Disabled (optimize=2 on 32-bit MSVC)"
+            elif optimize_level == 3:
+                self.status = "legacy: pure i386 code"
 
             # SSE and SSE2 are core instructions on x64
             if build.machine_is_64bit:
                 build.env.Append(CPPDEFINES=['__SSE__', '__SSE2__'])
-            else:
-                if optimize_level == 3:
-                    self.status += ", SSE Instructions Enabled"
-                    build.env.Append(CCFLAGS='/arch:SSE')
-                    build.env.Append(CPPDEFINES='__SSE__')
-                elif optimize_level == 4:
-                    self.status += ", SSE2 Instructions Enabled"
-                    build.env.Append(CCFLAGS='/arch:SSE2')
-                    build.env.Append(CPPDEFINES=['__SSE__', '__SSE2__'])
+
         elif build.toolchain_is_gnu:
             # Common flags to all optimizations. 
             # -ffast-math will pevent a performance penalty by denormals 
             # (floating point values almost Zero are treated as Zero) 
             # unfortunately that work only on 64 bit CPUs or with sse2 enabled  
 
-            # Consider dropping -O3 to -O2
-            # and getting rid of -fomit-frame-pointer and
-            # -funroll-loops. We need to justify our use of these aggressive
-            # optimizations with data.
+            # the following optimisation flags makes the engine code ~3 times 
+            # faster, measured on a Atom CPU.  
             build.env.Append(
                 CCFLAGS='-O3 -ffast-math -funroll-loops')
             if not int(build.flags['profiling']):
@@ -1049,7 +1040,7 @@ class Optimize(Feature):
                 # i386 compatible, so builds that claim 'i386' will crash.
                 # Note: SSE2 is a core part of x64 CPUs 
             elif optimize_level == 2:
-                self.status = "native: exclusive for this CPU"
+                self.status = "native: exclusive for this CPU (%s)" % build.machine
                 build.env.Append(
                     CCFLAGS='-march=native -mfpmath=sse')
                 # http://en.chys.info/2010/04/what-exactly-marchnative-means/
@@ -1057,7 +1048,7 @@ class Optimize(Feature):
 				# macros like __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
 				# are set automaticaly 
             elif optimize_level == 3:
-                self.status = "legacy: pure i386 code'"
+                self.status = "legacy: pure i386 code"
                 build.env.Append(
                     CCFLAGS='-mtune=generic')
                 # -mtune=generic pick the most common, but compatible options. 
@@ -1069,46 +1060,6 @@ class Optimize(Feature):
             # fftw3 (used by rubberband) in Ubuntu Trusty
             # -O3 -fomit-frame-pointer -mtune=native -malign-double 
             # -fstrict-aliasing -fno-schedule-insns -ffast-math 
-
-             
-class Tuned(Feature):
-    def description(self):
-        return "Optimizing for this CPU"
-
-    def enabled(self, build):
-        build.flags['tuned'] = util.get_flags(build.env, 'tuned', 0)
-        if int(build.flags['tuned']):
-            return True
-        return False
-
-    def add_options(self, build, vars):
-        if not build.platform_is_windows:
-            vars.Add('tuned',
-                     'Set to 1 to optimize mixxx for this CPU (overrides "optimize")', 0)
-        elif build.machine_is_64bit:  # 64-bit windows
-            vars.Add(
-                'tuned', 'Set to 1 to optimize mixxx for this CPU class', 0)
-
-    def configure(self, build, conf):
-        if not self.enabled(build):
-            return
-
-        if build.toolchain_is_msvs:
-            if build.machine_is_64bit:
-                if 'makerelease' in SCons.COMMAND_LINE_TARGETS:
-                    self.status = "Disabled (due to makerelease target)"
-                    # AMD64 is for AMD CPUs, EM64T is for Intel x64 ones (as opposed to
-                    # IA64 which uses a different compiler.)  For a release, we choose
-                    # to have code run about the same on both
-                else:
-                    # self.status = "Disabled (currently broken with Visual Studio)"
-                    # build.env.Append(CCFLAGS = '/favor:blend')
-                    # Only valid choices are AMD64, EM64T (INTEL64 on later compilers,)
-                    # and blend.
-                    self.status = "Enabled (%s-optimized)" % build.machine
-                    build.env.Append(CCFLAGS='/favor:' + build.machine)
-            else:
-                self.status = "Disabled (not supported on 32-bit MSVC)"
 
 
 class AutoDjCrates(Feature):
