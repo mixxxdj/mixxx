@@ -761,6 +761,13 @@ int SoundDevicePortAudio::callbackProcessClkRef(const unsigned int framesPerBuff
         } else {
              qDebug() << "SSE: Flush to zero mode already enabled";
         }
+
+        if (!_MM_GET_FLUSH_ZERO_MODE()) {
+            qDebug() << "SSE: Enabling flush to zero mode";
+            _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+        } else {
+             qDebug() << "SSE: Flush to zero mode already enabled";
+        }
 #endif
     }
 
