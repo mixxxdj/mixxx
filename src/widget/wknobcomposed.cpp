@@ -21,7 +21,7 @@ void WKnobComposed::setup(QDomNode node, const SkinContext& context) {
     if (context.hasNode(node, "BackPath")) {
         QDomElement backPathElement = context.selectElement(node, "BackPath");
         setPixmapBackground(context.getPixmapSource(backPathElement),
-                            context.selectScaleMode(backPathElement, Paintable::TILE));
+                            context.selectScaleMode(backPathElement, Paintable::STRETCH));
     }
 
     // Set knob pixmap if available
@@ -86,7 +86,7 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
     p.drawPrimitive(QStyle::PE_Widget, option);
 
     if (m_pPixmapBack) {
-        m_pPixmapBack->draw(rect(), &p);
+        m_pPixmapBack->draw(rect(), &p, m_pPixmapBack->rect());
     }
 
     QTransform transform;

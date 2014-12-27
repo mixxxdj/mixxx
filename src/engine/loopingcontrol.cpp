@@ -841,7 +841,11 @@ void LoopingControl::slotLoopMove(double beats) {
         int old_loop_out = m_iLoopEndSample;
         int new_loop_in = m_iLoopStartSample + (beats * dBeatLength);
         int new_loop_out = m_iLoopEndSample + (beats * dBeatLength);
-        // Should we reject any shift that goes out of bounds?
+
+        // Reject any shift that goes out of bounds
+        if (new_loop_in < 0 || new_loop_out > m_pTrackSamples->get()) {
+            return;
+        }
 
         m_iLoopStartSample = new_loop_in;
         if (m_pActiveBeatLoop) {

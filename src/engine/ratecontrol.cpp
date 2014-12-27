@@ -411,7 +411,7 @@ SyncMode RateControl::getSyncMode() const {
     return syncModeFromDouble(m_pSyncMode->get());
 }
 
-double RateControl::calculateSpeed(double baserate, bool paused,
+double RateControl::calculateSpeed(double baserate, double speed, bool paused,
                                   int iSamplesPerBuffer,
                                   bool* reportScratching) {
     *reportScratching = false;
@@ -465,10 +465,8 @@ double RateControl::calculateSpeed(double baserate, bool paused,
                 if (useScratch2Value) {
                     rate = scratchFactor;
                 } else {
-
-                    rate = 1. + getRawRate() + getTempRate();
+                    rate = speed + getTempRate();
                     rate += wheelFactor;
-
                 }
                 rate += jogFactor;
             }
@@ -564,9 +562,8 @@ double RateControl::process(const double rate,
                 addRateTemp(csmall);
             else if (buttonRateTempDownSmall->get())
                 subRateTemp(csmall);
-        }
-        else
-        {
+        } else {
+            // m_eRateRampMode == RATERAMP_LINEAR
             m_dTempRateChange = ((double)latrate / ((double)m_iRateRampSensitivity / 100.));
 
             if (m_eRampBackMode == RATERAMP_RAMPBACK_PERIOD)
@@ -613,9 +610,9 @@ double RateControl::process(const double rate,
                 } else {
                     addRateTemp(m_dRateTempRampbackChange);
                 }
-            }
-            else
+            } else {
                 resetRateTemp();
+            }
         }
     }
     else if ((m_eRateRampMode == RATERAMP_STEP) && (m_bTempStarted))
