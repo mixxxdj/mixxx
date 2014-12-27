@@ -50,7 +50,7 @@ class PanEffect : public GroupEffectProcessor<PanGroupState> {
 
   private:
     // int getDelaySamples(double delay_time, const unsigned int sampleRate) const;
-
+    
     QString debugString() const {
         return getId();
     }

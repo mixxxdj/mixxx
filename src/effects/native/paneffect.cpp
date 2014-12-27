@@ -30,7 +30,7 @@ EffectManifest PanEffect::getManifest() {
     depth->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     depth->setMinimum(0.0);
     depth->setMaximum(1.0);
-    depth->setDefault(0.5);
+    depth->setDefault(1.0);
     
     EffectManifestParameter* strength = manifest.addParameter();
     strength->setId("strength");
@@ -42,7 +42,8 @@ EffectManifest PanEffect::getManifest() {
     strength->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     strength->setMinimum(0.0);
     strength->setMaximum(0.5);
-    strength->setDefault(0.25);
+    // strength->setDefault(0.25);
+    strength->setDefault(0.0);
     
     EffectManifestParameter* period = manifest.addParameter();
     period->setId("period");
@@ -51,9 +52,10 @@ EffectManifest PanEffect::getManifest() {
     period->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     period->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    period->setDefault(250.0);
     period->setMinimum(1.0);
     period->setMaximum(500.0);
+    // period->setDefault(250.0);
+    period->setDefault(150.0);
     
     return manifest;
 }
@@ -71,6 +73,10 @@ PanEffect::~PanEffect() {
     //qDebug() << debugString() << "destroyed";
 }
 
+// todo : ramping signal carré
+// todo : 
+
+
 void PanEffect::processGroup(const QString& group, PanGroupState* pGroupState,
                               const CSAMPLE* pInput,
                               CSAMPLE* pOutput, const unsigned int numSamples,
@@ -78,16 +84,24 @@ void PanEffect::processGroup(const QString& group, PanGroupState* pGroupState,
                               const EffectProcessor::EnableState enableState,
                               const GroupFeatureState& groupFeatures) {
     Q_UNUSED(group);
-    Q_UNUSED(enableState);
+    // Q_UNUSED(enableState);
     Q_UNUSED(groupFeatures);
     Q_UNUSED(sampleRate);
     
     PanGroupState& gs = *pGroupState;
     
+    // if (EnableState::DISABLED == enableState) {
+    if (2 == enableState) {
+    // if (true) {
+        gs.time = 0; // DISABLING = 2
+        return;
+    }
+    
     int read_position = gs.write_position;
     
     CSAMPLE lfoPeriod = roundf(m_pPeriodParameter->value());
     CSAMPLE stepFrac = m_pStrengthParameter->value();
+    CSAMPLE depth = m_pDepthParameter->value();
     
     gs.time++;
     if (gs.time > lfoPeriod) {
@@ -103,52 +117,68 @@ void PanEffect::processGroup(const QString& group, PanGroupState* pGroupState,
     // coef of the slope
     // a = (y2 - y1) / (x2 - x1)
     //       1  / ( 1 - 2 * stepfrac)
-    float a = 1.0 / (1.0 - stepFrac * 2.0);
+    float a = 1.0f / (1.0f - stepFrac * 2.0f);
     
     // merging of tests for 
     // float inInterval = fmod( CSAMPLE(gs.time), (lfoPeriod / 2.0) );
-    float inInterval = fmod( periodFraction, 0.5 );
+    float inInterval = fmod( periodFraction, 0.5f );
     
     // size of a segment of slope
-    float u = ( 0.5 - stepFrac ) / 2.0;
+    float u = ( 0.5f - stepFrac ) / 2.0f;
     
-    float quarter = floorf(periodFraction * 4.0);
+    float quarter = floorf(periodFraction * 4.0f);
     
     CSAMPLE position;
     if (inInterval > u && inInterval < ( u + stepFrac)) {
         // position should be stuck on 0.25 or 0.75
         // Is the position in the first or second half of the period?
-        position = quarter < 2.0 ? 0.25 : 0.75;
+        position = quarter < 2.0f ? 0.25f : 0.75f;
     } else {
         // qDebug() << "calcul | a : " << a << "| step : " << stepFrac;
         // position should be in the slope
-        position = (periodFraction - (floorf((quarter+1.0)/2.0) * stepFrac )) * a;
+        position = (periodFraction - (floorf((quarter+1.0f)/2.0f) * stepFrac )) * a;
     }
     
     // set the curve between 0 and 1
     CSAMPLE frac = (sin(M_PI * 2.0f * position) + 1.0f) / 2.0f;
+    // CSAMPLE frac = sin(M_PI * 2.0f * position) + 1.0f;
     // frac = CSAMPLE_clamp(frac);
-    // frac = (roundf(frac * 100.0) / 100.0);
-    // qDebug() << "stepFrac" << stepFrac << "| position :" << (roundf(position * 100.0) / 100.0)
-        // << "| time :" << gs.time << "| period :" << lfoPeriod
-        // << "| a :" << a
-        // << "| q :" << quarter
-        // << "| q+ :" << floorf((quarter+1.0)/2.0)
-        // << "| frac :" << frac;
+    float lawCoef =  1.0f / sqrtf(2.0f) * 2.0f;
+    // float lawCoef =  1.0f / sqrtf(2.0f);
+    
+    qDebug() << "stepFrac" << stepFrac
+        << "| position :" << (roundf(position * 100.0f) / 100.0f)
+        << "| time :" << gs.time
+        << "| period :" << lfoPeriod
+        // << "| a :" << a          // coef of slope between 1 and -1
+        // << "| q :" << quarter    // current quarter in the trigo circle
+        // << "| q+ :" << floorf((quarter+1.0f)/2.0f)
+        << "| vol_coef :" << frac
+        << "| pos_coef :" << frac
+        // << "| lawCoef :" << lawCoef
+        << "| enableState :" << enableState
+        << "| numSamples :" << numSamples;
     
     // qDebug() << "frac" << frac << "| 1 :" << frac1 << "| 2: " << frac2 << "| 3 :" << frac3;
+    
+    SampleUtil::mixStereoToMono(pOutput, pInput, numSamples);
     
     // Pingpong the output.  If the pingpong value is zero, all of the
     // math below should result in a simple copy of delay buf to pOutput.
     for (unsigned int i = 0; i + 1 < numSamples; i += 2) {
         
-        pOutput[i] = (pInput[i] + pInput[i + 1]) * frac;
-        pOutput[i + 1] = (pInput[i] + pInput[i + 1]) * (1 - frac);
+        pOutput[i] = pOutput[i] * (1 - depth)
+            + pOutput[i] * frac * lawCoef * depth;
+        pOutput[i+1] = pOutput[i+1] * (1 - depth)
+            + pOutput[i+1]  * (1.0f - frac) * lawCoef * depth;
         
     }
+    
+    // qDebug() << "pOutput[1]" << pOutput[1] << "| pOutput[2]" << pOutput[2];
 }
 
 
-float fmod(float a, float b) {
-    return (a/b) - ( (int)(a/b) * b);
-}
+// float fmod(float a, float b) {
+    // return (a/b) - ( (int)(a/b) * b);
+// }
+
