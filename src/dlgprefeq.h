@@ -42,6 +42,8 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     QString getQuickEffectGroupForDeck(int deck) const;
 
   public slots:
+    void slotEqEffectChangedOnDeck(int effectIndex);
+    void slotQuickEffectChangedOnDeck(int effectIndex);
     void slotNumDecksChanged(double numDecks);
     void slotSingleEqChecked(int checked);
     // Slot for toggling between advanced and basic views
