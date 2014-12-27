@@ -348,13 +348,6 @@ bool EqualizerRack::loadEffectToGroup(const QString& group,
     }
 
     pChain->replaceEffect(0, pEffect);
-
-    // Force update the new effect to match the current superknob position.
-    EffectSlotPointer pEffectSlot = pChainSlot->getEffectSlot(0);
-    if (pEffectSlot) {
-        pEffectSlot->onChainSuperParameterChanged(
-                pChainSlot->getSuperParameter(), true);
-    }
     return true;
 }
 
