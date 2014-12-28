@@ -66,12 +66,11 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
             this, SLOT(slotClear(BrowseTableModel*)),
             Qt::QueuedConnection);
 
-    connect(
-        BrowseThread::getInstance(),
-        SIGNAL(rowsAppended(const QList< QList<QStandardItem*> >&, BrowseTableModel*)),
-        this,
-        SLOT(slotInsert(const QList< QList<QStandardItem*> >&, BrowseTableModel*)),
-        Qt::QueuedConnection);
+    connect(BrowseThread::getInstance(),
+            SIGNAL(rowsAppended(const QList< QList<QStandardItem*> >&, BrowseTableModel*)),
+            this,
+            SLOT(slotInsert(const QList< QList<QStandardItem*> >&, BrowseTableModel*)),
+            Qt::QueuedConnection);
 }
 
 BrowseTableModel::~BrowseTableModel() {

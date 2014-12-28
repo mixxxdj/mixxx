@@ -46,21 +46,23 @@ BrowseThread::~BrowseThread() {
     wait();
     qDebug() << "Browser background thread terminated!";
 }
+
+// static
 BrowseThread* BrowseThread::getInstance() {
-    if (!m_instance)
-    {
+    if (!m_instance) {
         s_Mutex.lock();
-
-         if (!m_instance)
-               m_instance = new BrowseThread();
-
-         s_Mutex.unlock();
+        if (!m_instance) {
+        m_instance = new BrowseThread();
+        }
+        s_Mutex.unlock();
     }
     return m_instance;
 }
+
+// static
 void BrowseThread::destroyInstance() {
     s_Mutex.lock();
-    if(m_instance){
+    if (m_instance) {
         delete m_instance;
         m_instance = 0;
     }
