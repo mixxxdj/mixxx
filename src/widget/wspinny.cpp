@@ -95,6 +95,9 @@ WSpinny::~WSpinny() {
 
 void WSpinny::onVinylSignalQualityUpdate(const VinylSignalQualityReport& report) {
 #ifdef __VINYLCONTROL__
+    if (!m_bVinylActive || !m_bSignalActive) {
+        return;
+    }
     // Skip reports for vinyl inputs we don't care about.
     if (report.processor != m_iVinylInput) {
         return;
