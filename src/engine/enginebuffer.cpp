@@ -775,7 +775,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         // need to use pitch and time scaling.
         // Note: we have still click issue when changing the scaler
         bool useIndependentPitchAndTempoScaling =
-                (keylock_enabled || pitchRatio != speed);
+                (keylock_enabled || !qFuzzyCompare(pitchRatio, speed));
         enableIndependentPitchTempoScaling(useIndependentPitchAndTempoScaling);
 
         // How speed/tempo/pitch are related:
