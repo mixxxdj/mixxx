@@ -115,6 +115,8 @@ class BpmControl : public EngineControl {
     ControlObjectSlave* m_pLoopStartPosition;
     ControlObjectSlave* m_pLoopEndPosition;
 
+    ControlObjectSlave* m_pVCEnabled;
+
     // The current loaded file's detected BPM
     ControlObject* m_pFileBpm;
     // The average bpm around the current playposition;
