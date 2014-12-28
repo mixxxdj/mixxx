@@ -52,7 +52,7 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
           m_encoder(NULL),
           m_pShoutcastNeedUpdateFromPrefs(NULL),
           m_pUpdateShoutcastFromPrefs(NULL),
-          m_pMasterSamplerate(new ControlObjectThread("[Master]", "samplerate")),
+          m_pMasterSamplerate(new ControlObjectSlave("[Master]", "samplerate")),
           m_pShoutcastStatus(new ControlObject(ConfigKey(SHOUTCAST_PREF_KEY, "status"))),
           m_bQuit(false),
           m_custom_metadata(false),
@@ -73,7 +73,7 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
     m_pShoutcastStatus->set(SHOUTCAST_DISCONNECTED);
     m_pShoutcastNeedUpdateFromPrefs = new ControlObject(
             ConfigKey(SHOUTCAST_PREF_KEY,"update_from_prefs"));
-    m_pUpdateShoutcastFromPrefs = new ControlObjectThread(
+    m_pUpdateShoutcastFromPrefs = new ControlObjectSlave(
             m_pShoutcastNeedUpdateFromPrefs->getKey());
 
     // Initialize libshout
@@ -150,7 +150,7 @@ QByteArray EngineShoutcast::encodeString(const QString& string) {
 void EngineShoutcast::updateFromPreferences() {
     qDebug() << "EngineShoutcast: updating from preferences";
 
-    m_pUpdateShoutcastFromPrefs->slotSet(0.0);
+    m_pUpdateShoutcastFromPrefs->set(0.0);
 
     m_format_is_mp3 = false;
     m_format_is_ov = false;
