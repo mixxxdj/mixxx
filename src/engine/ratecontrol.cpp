@@ -82,7 +82,6 @@ RateControl::RateControl(QString group,
     m_pVCEnabled = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_enabled"));
     m_pVCScratching = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_scratching"));
     m_pVCMode = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_mode"));
-    m_pVCRate = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_rate"));
 
     // Permanent rate-change buttons
     buttonRatePermDown =
@@ -438,7 +437,7 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
             if (m_pVCScratching->toBool()) {
                 *reportScratching = true;
             }
-            rate = m_pVCRate->get();
+            rate = speed;
         } else {
             double scratchFactor = m_pScratch2->get();
             // Don't trust values from m_pScratch2

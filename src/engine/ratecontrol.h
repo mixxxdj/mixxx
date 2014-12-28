@@ -114,7 +114,6 @@ public:
 
     ControlPushButton* m_pScratch2Enable;
     ControlObject* m_pJog;
-    ControlObject* m_pVCRate;
     ControlObject* m_pVCEnabled;
     ControlObject* m_pVCScratching;
     ControlObject* m_pVCMode;
