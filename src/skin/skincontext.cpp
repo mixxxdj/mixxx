@@ -51,9 +51,6 @@ SkinContext::SkinContext(const SkinContext& parent)
 SkinContext::~SkinContext() {
     m_pScriptEngine->popContext();
     m_pScriptEngine->setGlobalObject(m_parentGlobal);
-
-    delete m_pScriptEngine;
-    delete m_pScriptDebugger;
 }
 
 QString SkinContext::variable(const QString& name) const {
