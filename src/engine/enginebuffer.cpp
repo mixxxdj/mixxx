@@ -321,6 +321,7 @@ EngineBuffer::~EngineBuffer()
 
     delete m_pSlipButton;
     delete m_pRepeat;
+    delete m_pSampleRate;
 
     delete m_pTrackSamples;
     delete m_pTrackSampleRate;
