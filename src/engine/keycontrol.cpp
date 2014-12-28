@@ -155,6 +155,14 @@ void KeyControl::slotRateChanged() {
 
     pitchRateInfo.keylock = m_pKeylock->toBool();
 
+    if (pitchRateInfo.tempoRatio == 0)
+        // no transport, no pitch
+        // so we can skip pitch calculation
+        m_pitchRateInfo.setValue(pitchRateInfo);
+        return;
+    }
+
+
     // |-----------------------|-----------------|
     //   SpeedSliderPitchRatio   pitchTweakRatio
     //
