@@ -169,7 +169,7 @@
 													<Style></Style>
 													<Channel><Variable name="channum"/></Channel>
 													<Pos>0,0</Pos>
-													<Size>i,i</Size>
+													<Size>82f,82f</Size>
 													<PathBackground>vinyl_spinny1_background.png</PathBackground>
 													<PathForeground>vinyl_spinny1_foreground.png</PathForeground>
 													<PathGhost>vinyl_spinny1_foreground_ghost.png</PathGhost>

@@ -2,6 +2,7 @@
 #include <QApplication>
 #include <QUrl>
 #include <QMimeData>
+#include <QStylePainter>
 
 #include "controlobject.h"
 #include "controlobjectthread.h"
@@ -22,9 +23,6 @@ WSpinny::WSpinny(QWidget* parent, const QString& group,
           WBaseWidget(this),
           m_group(group),
           m_pConfig(pConfig),
-          m_pBgImage(NULL),
-          m_pFgImage(NULL),
-          m_pGhostImage(NULL),
           m_pPlay(NULL),
           m_pPlayPos(NULL),
           m_pVisualPlayPos(NULL),
@@ -66,6 +64,9 @@ WSpinny::WSpinny(QWidget* parent, const QString& group,
              << "Valid:" << context()->isValid()
              << "Sharing:" << context()->isSharing();
 
+    // Enable antialiasing
+    QGLWidget::setFormat(QGLFormat(QGL::SampleBuffers));
+
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
         connect(pCache, SIGNAL(coverFound(const QObject*, const int,
@@ -80,9 +81,6 @@ WSpinny::~WSpinny() {
 #ifdef __VINYLCONTROL__
     m_pVCManager->removeSignalQualityListener(this);
 #endif
-    WImageStore::deleteImage(m_pBgImage);
-    WImageStore::deleteImage(m_pFgImage);
-    WImageStore::deleteImage(m_pGhostImage);
     delete m_pPlay;
     delete m_pPlayPos;
     delete m_pTrackSamples;
@@ -129,18 +127,34 @@ void WSpinny::onVinylSignalQualityUpdate(const VinylSignalQualityReport& report)
 #endif
 }
 
+PaintablePointer WSpinny::getPixmap(PixmapSource source,
+                                    Paintable::DrawMode mode) const {
+    PaintablePointer pixmap = WPixmapStore::getPaintable(source, mode);
+    if (pixmap.isNull() || pixmap->isNull()) {
+        qDebug() << metaObject()->className()
+                 << "Error loading pixmap:" << source.getPath();
+    }
+    return pixmap;
+}
+
 void WSpinny::setup(QDomNode node, const SkinContext& context) {
     // Set images
-    m_pBgImage = WImageStore::getImage(context.getPixmapSource(
-                        context.selectNode(node, "PathBackground")));
-    m_pFgImage = WImageStore::getImage(context.getPixmapSource(
-                        context.selectNode(node,"PathForeground")));
-    m_pGhostImage = WImageStore::getImage(context.getPixmapSource(
-                        context.selectNode(node,"PathGhost")));
-
-    if (m_pBgImage && !m_pBgImage->isNull()) {
-        setFixedSize(m_pBgImage->size());
-    }
+    QDomElement backPathElement = context.selectElement(node, "PathBackground");
+    m_pPixmapBack = getPixmap(context.getPixmapSource(backPathElement),
+                              context.selectScaleMode(backPathElement,
+                                                      Paintable::STRETCH));
+    QDomElement maskElement = context.selectElement(node, "PathMask");
+    m_pPixmapMask = getPixmap(context.getPixmapSource(maskElement),
+                              context.selectScaleMode(maskElement,
+                                                      Paintable::STRETCH));
+    QDomElement frontPathElement = context.selectElement(node, "PathForeground");
+    m_pPixmapFront = getPixmap(context.getPixmapSource(frontPathElement),
+                               context.selectScaleMode(frontPathElement,
+                                                       Paintable::STRETCH));
+    QDomElement ghostElement = context.selectElement(node, "PathGhost");
+    m_pPixmapGhost = getPixmap(context.getPixmapSource(ghostElement),
+                               context.selectScaleMode(ghostElement,
+                                                       Paintable::STRETCH));
 
     m_bShowCover = context.selectBool(node, "ShowCover", true);
 
@@ -282,15 +296,24 @@ void WSpinny::paintEvent(QPaintEvent *e) {
     Q_UNUSED(e); //ditch unused param warning
     m_bWidgetDirty = false;
 
-    QPainter p(this);
+    QStyleOption option;
+    option.initFrom(this);
+    QStylePainter p(this);
+    p.setRenderHint(QPainter::Antialiasing);
+    p.setRenderHint(QPainter::HighQualityAntialiasing);
     p.setRenderHint(QPainter::SmoothPixmapTransform);
+    p.drawPrimitive(QStyle::PE_Widget, option);
+
+    if (m_pPixmapBack && !m_pPixmapBack->isNull()) {
+        m_pPixmapBack->draw(rect(), &p, m_pPixmapBack->rect());
+    }
 
     if (m_bShowCover && !m_loadedCoverScaled.isNull()) {
         p.drawPixmap(0, 0, m_loadedCoverScaled);
     }
 
-    if (m_pBgImage) {
-        p.drawImage(0, 0, *m_pBgImage);
+    if (m_pPixmapMask && !m_pPixmapMask->isNull()) {
+        m_pPixmapMask->draw(rect(), &p, m_pPixmapMask->rect());
     }
 
 #ifdef __VINYLCONTROL__
@@ -305,9 +328,11 @@ void WSpinny::paintEvent(QPaintEvent *e) {
     // we use the classic trick of translating the coordinate system such that
     // the origin is at the center of the image. We then rotate the coordinate system,
     // and draw the image at the corner.
-    p.translate(width() / 2, height() / 2);
-
-
+    QTransform transform;
+    qreal tx = width() / 2.0;
+    qreal ty = height() / 2.0;
+    transform.translate(-tx, -ty);
+    p.translate(tx, ty);
 
     if (m_bGhostPlayback) {
         p.save();
@@ -323,19 +348,22 @@ void WSpinny::paintEvent(QPaintEvent *e) {
         m_dGhostAngleLastPlaypos = m_dGhostAngleCurrentPlaypos;
     }
 
-    if (m_pFgImage && !m_pFgImage->isNull()) {
+    if (m_pPixmapFront && !m_pPixmapFront->isNull()) {
         // Now rotate the image and draw it on the screen.
         p.rotate(m_fAngle);
-        p.drawImage(-(m_pFgImage->width() / 2),
-                -(m_pFgImage->height() / 2), *m_pFgImage);
+        QRectF targetRect = rect();
+        m_pPixmapFront->drawCentered(transform.mapRect(targetRect), &p,
+                                     m_pPixmapFront->rect());
     }
 
-    if (m_bGhostPlayback && m_pGhostImage && !m_pGhostImage->isNull()) {
+    if (m_bGhostPlayback && m_pPixmapGhost && !m_pPixmapGhost->isNull()) {
         p.restore();
         p.save();
         p.rotate(m_fGhostAngle);
-        p.drawImage(-(m_pGhostImage->width() / 2),
-                -(m_pGhostImage->height() / 2), *m_pGhostImage);
+
+        QRectF targetRect = rect();
+        m_pPixmapGhost->drawCentered(transform.mapRect(targetRect), &p,
+                                     m_pPixmapGhost->rect());
 
         //Rotate back to the playback position (not the ghost positon),
         //and draw the beat marks from there.

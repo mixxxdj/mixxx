@@ -60,6 +60,8 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     void showEvent(QShowEvent* event);
     void hideEvent(QHideEvent* event);
     bool event(QEvent* pEvent);
+    PaintablePointer getPixmap(PixmapSource source,
+                               Paintable::DrawMode mode) const;
 
     double calculateAngle(double playpos);
     int calculateFullRotations(double playpos);
@@ -69,9 +71,10 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
   private:
     QString m_group;
     ConfigObject<ConfigValue>* m_pConfig;
-    QImage* m_pBgImage;
-    QImage* m_pFgImage;
-    QImage* m_pGhostImage;
+    PaintablePointer m_pPixmapBack;
+    PaintablePointer m_pPixmapMask;
+    PaintablePointer m_pPixmapFront;
+    PaintablePointer m_pPixmapGhost;
     ControlObjectThread* m_pPlay;
     ControlObjectThread* m_pPlayPos;
     QSharedPointer<VisualPlayPosition> m_pVisualPlayPos;

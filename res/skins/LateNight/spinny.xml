@@ -8,14 +8,15 @@
           <WidgetGroup>
             <ObjectName>SpinnyContainer</ObjectName>
             <Layout>horizontal</Layout>
-            <MinimumSize>96,96</MinimumSize>
             <SizePolicy>min,min</SizePolicy>
             <Children>
               <Spinny>
+                <Size>96f,96f</Size>
                 <Group>[Channel<Variable name="channum"/>]</Group>
-                <PathBackground>vinyl_spinny<Variable name="color"/>_background.png</PathBackground>
-                <PathForeground>vinyl_spinny<Variable name="color"/>_foreground.png</PathForeground>
-                <PathGhost>vinyl_spinny<Variable name="color"/>_foreground_ghost.png</PathGhost>
+                <PathBackground>spinny_bg.svg</PathBackground>
+                <PathMask>spinny<Variable name="color"/>_mask.svg</PathMask>
+                <PathForeground>spinny_indicator.svg</PathForeground>
+                <PathGhost>spinny_indicator_ghost.svg</PathGhost>
                 <ShowCover>true</ShowCover>
               </Spinny>
             </Children>
@@ -23,14 +24,15 @@
           <WidgetGroup trigger="[Master],show_mixer">
             <ObjectName>SpinnyContainer</ObjectName>
             <Layout>horizontal</Layout>
-            <MinimumSize>50,50</MinimumSize>
             <SizePolicy>min,min</SizePolicy>
             <Children>
               <Spinny>
+                <Size>50f,50f</Size>
                 <Group>[Channel<Variable name="channum"/>]</Group>
-                <PathBackground>vinyl_spinny<Variable name="color"/>_background-s.png</PathBackground>
-                <PathForeground>vinyl_spinny<Variable name="color"/>_foreground-s.png</PathForeground>
-                <PathGhost>vinyl_spinny<Variable name="color"/>_foreground_ghost-s.png</PathGhost>
+                <PathBackground>spinny_bg.svg</PathBackground>
+                <PathMask>spinny<Variable name="color"/>_mask.svg</PathMask>
+                <PathForeground>spinny_indicator.svg</PathForeground>
+                <PathGhost>spinny_indicator_ghost.svg</PathGhost>
                 <ShowCover>true</ShowCover>
               </Spinny>
             </Children>
