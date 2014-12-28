@@ -15,7 +15,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="spinny1_bg.svg"
+   sodipodi:docname="spinny1_mask.svg"
    enable-background="new">
   <defs
      id="defs4">
@@ -72,7 +72,7 @@
      inkscape:cx="20.05825"
      inkscape:cy="42.101252"
      inkscape:document-units="px"
-     inkscape:current-layer="layer4"
+     inkscape:current-layer="layer2"
      showgrid="false"
      inkscape:window-width="1920"
      inkscape:window-height="1056"
@@ -159,6 +159,16 @@
        d="M 0,0 0,96 96,96 96,0 0,0 z M 48,2 C 73.405099,2 94,22.594902 94,48 94,73.405099 73.405099,94 48,94 22.594902,94 2,73.405099 2,48 2,22.594902 22.594902,2 48,2 z"
        id="rect3842"
        inkscape:connector-curvature="0" />
+    <path
+       sodipodi:type="arc"
+       style="fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#585858;stroke-opacity:1;stroke-width:1.89960931000000000;stroke-miterlimit:4;stroke-dasharray:none"
+       id="path4919"
+       sodipodi:cx="47.414036"
+       sodipodi:cy="48.144024"
+       sodipodi:rx="42.110733"
+       sodipodi:ry="45.330597"
+       d="m 89.524769,48.144024 a 42.110733,45.330597 0 1 1 -84.2214662,0 42.110733,45.330597 0 1 1 84.2214662,0 z"
+       transform="matrix(1.0923581,0,0,1.0147671,-3.7931057,-0.85497323)" />
   </g>
   <g
      inkscape:groupmode="layer"
