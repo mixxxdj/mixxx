@@ -158,7 +158,7 @@ void WSpinny::setup(QDomNode node, const SkinContext& context) {
                                context.selectScaleMode(ghostElement,
                                                        Paintable::STRETCH));
 
-    m_bShowCover = context.selectBool(node, "ShowCover", true);
+    m_bShowCover = context.selectBool(node, "ShowCover", false);
 
 #ifdef __VINYLCONTROL__
     // Find the vinyl input we should listen to reports about.
