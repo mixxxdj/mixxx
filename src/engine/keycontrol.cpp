@@ -93,6 +93,26 @@ KeyControl::KeyControl(QString group,
             this, SLOT(slotRateChanged()),
             Qt::DirectConnection);
 
+    m_pVCEnabled = ControlObject::getControl(ConfigKey(group, "vinylcontrol_enabled"));
+    if (m_pVCEnabled) {
+        connect(m_pVCEnabled, SIGNAL(valueChanged(double)),
+                this, SLOT(slotRateChanged()),
+                Qt::DirectConnection);
+        connect(m_pVCEnabled, SIGNAL(valueChangedFromEngine(double)),
+                this, SLOT(slotRateChanged()),
+                Qt::DirectConnection);
+    }
+
+    m_pVCRate = ControlObject::getControl(ConfigKey(group, "vinylcontrol_rate"));
+    if (m_pVCRate) {
+        connect(m_pVCRate, SIGNAL(valueChanged(double)),
+                this, SLOT(slotRateChanged()),
+                Qt::DirectConnection);
+        connect(m_pVCRate, SIGNAL(valueChangedFromEngine(double)),
+                this, SLOT(slotRateChanged()),
+                Qt::DirectConnection);
+    }
+
     m_pKeylock = ControlObject::getControl(ConfigKey(group, "keylock"));
     connect(m_pKeylock, SIGNAL(valueChanged(double)),
             this, SLOT(slotRateChanged()),
@@ -126,7 +146,13 @@ void KeyControl::slotRateChanged() {
 
     // If rate is not 1.0 then we have to try and calculate the octave change
     // caused by it.
-    pitchRateInfo.tempoRatio = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
+
+    if(m_pVCEnabled && m_pVCEnabled->toBool()) {
+        pitchRateInfo.tempoRatio = m_pVCRate->get();
+    } else {
+        pitchRateInfo.tempoRatio = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
+    }
+
     pitchRateInfo.keylock = m_pKeylock->toBool();
 
     // |-----------------------|-----------------|

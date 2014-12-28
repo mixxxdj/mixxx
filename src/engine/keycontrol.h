@@ -57,6 +57,10 @@ class KeyControl : public EngineControl {
     ControlObject* m_pRateSlider;
     ControlObject* m_pRateRange;
     ControlObject* m_pRateDir;
+
+    ControlObject* m_pVCRate;
+    ControlObject* m_pVCEnabled;
+
     ControlObject* m_pKeylock;
     ControlPotmeter* m_pPitch;
     ControlPushButton* m_pButtonSyncKey;
