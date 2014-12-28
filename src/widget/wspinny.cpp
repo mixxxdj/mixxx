@@ -64,6 +64,9 @@ WSpinny::WSpinny(QWidget* parent, const QString& group,
              << "Valid:" << context()->isValid()
              << "Sharing:" << context()->isSharing();
 
+    // Enable antialiasing
+    QGLWidget::setFormat(QGLFormat(QGL::SampleBuffers));
+
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
         connect(pCache, SIGNAL(coverFound(const QObject*, const int,
@@ -297,6 +300,7 @@ void WSpinny::paintEvent(QPaintEvent *e) {
     option.initFrom(this);
     QStylePainter p(this);
     p.setRenderHint(QPainter::Antialiasing);
+    p.setRenderHint(QPainter::HighQualityAntialiasing);
     p.setRenderHint(QPainter::SmoothPixmapTransform);
     p.drawPrimitive(QStyle::PE_Widget, option);
 
