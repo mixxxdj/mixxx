@@ -16,10 +16,11 @@
 #include "widget/wspinny.h"
 #include "wimagestore.h"
 
+// The SampleBuffers format enables antialiasing.
 WSpinny::WSpinny(QWidget* parent, const QString& group,
                  ConfigObject<ConfigValue>* pConfig,
                  VinylControlManager* pVCMan)
-        : QGLWidget(parent, SharedGLContext::getWidget()),
+        : QGLWidget(QGLFormat(QGL::SampleBuffers), parent, SharedGLContext::getWidget()),
           WBaseWidget(this),
           m_group(group),
           m_pConfig(pConfig),
@@ -63,9 +64,6 @@ WSpinny::WSpinny(QWidget* parent, const QString& group,
     qDebug() << "WSpinny(): Created QGLWidget, Context"
              << "Valid:" << context()->isValid()
              << "Sharing:" << context()->isSharing();
-
-    // Enable antialiasing
-    QGLWidget::setFormat(QGLFormat(QGL::SampleBuffers));
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
