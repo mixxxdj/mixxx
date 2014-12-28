@@ -7,13 +7,13 @@
 #include <QDateTime>
 #include <QDirIterator>
 
-#include "library/browse/browsethread.h"
 #include "library/browse/browsetablemodel.h"
 #include "soundsourceproxy.h"
 #include "util/time.h"
 #include "util/trace.h"
 
-BrowseThread* BrowseThread::m_instance = NULL;
+
+QWeakPointer<BrowseThread> BrowseThread::m_weakInstanceRef;
 static QMutex s_Mutex;
 
 /*
@@ -48,25 +48,18 @@ BrowseThread::~BrowseThread() {
 }
 
 // static
-BrowseThread* BrowseThread::getInstance() {
-    if (!m_instance) {
+BrowseThreadPointer BrowseThread::getInstanceRef() {
+    BrowseThreadPointer strong = m_weakInstanceRef.toStrongRef();
+    if (!strong) {
         s_Mutex.lock();
-        if (!m_instance) {
-        m_instance = new BrowseThread();
+        strong = m_weakInstanceRef.toStrongRef();
+        if (!strong) {
+            strong = BrowseThreadPointer(new BrowseThread());
+            m_weakInstanceRef = strong.toWeakRef();
         }
         s_Mutex.unlock();
     }
-    return m_instance;
-}
-
-// static
-void BrowseThread::destroyInstance() {
-    s_Mutex.lock();
-    if (m_instance) {
-        delete m_instance;
-        m_instance = 0;
-    }
-    s_Mutex.unlock();
+    return strong;
 }
 
 void BrowseThread::executePopulation(const MDir& path, BrowseTableModel* client) {
