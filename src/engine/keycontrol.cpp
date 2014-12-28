@@ -15,7 +15,6 @@ static const int kAbsoluteScaleLockCurrentKey = 1;
 KeyControl::KeyControl(QString group,
                        ConfigObject<ConfigValue>* pConfig)
         : EngineControl(group, pConfig),
-          m_bOldKeylock(false),
           m_speedSliderPitchRatio(1.0),
           m_iPitchAndKeylockMode(kOffsetScaleLockOriginalKey) {
     struct PitchTempoRatio pitchRateInfo;
@@ -153,8 +152,6 @@ void KeyControl::slotRateChanged() {
         pitchRateInfo.tempoRatio = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
     }
 
-    pitchRateInfo.keylock = m_pKeylock->toBool();
-
     if (pitchRateInfo.tempoRatio == 0) {
         // no transport, no pitch
         // so we can skip pitch calculation
@@ -180,8 +177,8 @@ void KeyControl::slotRateChanged() {
 
     double pitchTweakRatio = pitchRateInfo.pitchRatio / m_speedSliderPitchRatio;
 
-    if (pitchRateInfo.keylock) {
-        if (!m_bOldKeylock) {
+    if (m_pKeylock->toBool()) {
+        if (!pitchRateInfo.keylock) {
             // Enabling Keylock
             if (m_iPitchAndKeylockMode == kAbsoluteScaleLockCurrentKey) {
                 // Lock at current pitch
@@ -191,10 +188,11 @@ void KeyControl::slotRateChanged() {
                 // Lock at original track pitch
                 m_speedSliderPitchRatio = 1.0;
             }
+            pitchRateInfo.keylock = true;
         }
     } else {
         // !bKeylock
-        if (m_bOldKeylock) {
+        if (pitchRateInfo.keylock) {
             // Disabling Keylock
             if (m_iPitchAndKeylockMode == kAbsoluteScaleLockCurrentKey) {
                 // reset to linear pitch
@@ -203,10 +201,10 @@ void KeyControl::slotRateChanged() {
                 // Adopt speedPitchRatio change as pitchTweakRatio
                 //pitchTweakRatio *= (m_speedSliderPitchRatio / pitchRateInfo.tempoRatio);
             }
+            pitchRateInfo.keylock = false;
         }
         m_speedSliderPitchRatio = pitchRateInfo.tempoRatio;
     }
-    m_bOldKeylock = pitchRateInfo.keylock;
 
     pitchRateInfo.pitchRatio = pitchTweakRatio * m_speedSliderPitchRatio;
 
