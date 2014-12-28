@@ -138,9 +138,13 @@ PaintablePointer WSpinny::getPixmap(PixmapSource source,
 void WSpinny::setup(QDomNode node, const SkinContext& context) {
     // Set images
     QDomElement backPathElement = context.selectElement(node, "PathBackground");
-    m_pPixmapBack = getPixmap(context.getPixmapSource(backPathElement),
-                              context.selectScaleMode(backPathElement,
-                                                      Paintable::STRETCH));
+    Paintable::DrawMode bgmode = context.selectScaleMode(backPathElement,
+                                                         Paintable::FIXED);
+    m_pPixmapBack = getPixmap(context.getPixmapSource(backPathElement), bgmode);
+    if (m_pPixmapBack && bgmode == Paintable::FIXED) {
+        // Set size of widget equal to pixmap size
+        setFixedSize(m_pPixmapBack->size());
+    }
     QDomElement maskElement = context.selectElement(node, "PathMask");
     m_pPixmapMask = getPixmap(context.getPixmapSource(maskElement),
                               context.selectScaleMode(maskElement,
