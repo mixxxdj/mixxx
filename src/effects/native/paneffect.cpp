@@ -55,7 +55,7 @@ EffectManifest PanEffect::getManifest() {
     period->setMinimum(1.0);
     period->setMaximum(500.0);
     // period->setDefault(250.0);
-    period->setDefault(150.0);
+    period->setDefault(50.0);
     
     return manifest;
 }
@@ -91,10 +91,8 @@ void PanEffect::processGroup(const QString& group, PanGroupState* pGroupState,
     PanGroupState& gs = *pGroupState;
     
     // if (EnableState::DISABLED == enableState) {
-    if (2 == enableState) {
-    // if (true) {
-        gs.time = 0; // DISABLING = 2
-        return;
+    if (0x00 == enableState) {
+        return; // DISABLED = 0x00
     }
     
     int read_position = gs.write_position;
@@ -103,16 +101,14 @@ void PanEffect::processGroup(const QString& group, PanGroupState* pGroupState,
     CSAMPLE stepFrac = m_pStrengthParameter->value();
     CSAMPLE depth = m_pDepthParameter->value();
     
-    gs.time++;
-    if (gs.time > lfoPeriod) {
-        gs.time = 0;
+    if (gs.time > lfoPeriod || 0x03 == enableState) { // ENABLING = 0x03
+        // gs.time = 0;
+        gs.time = -1;
+    } else {
+        // gs.time++;
     }
     
     CSAMPLE periodFraction = CSAMPLE(gs.time) / lfoPeriod;
-    
-    // size of a step (while stuck on 0.25 or 0.75)
-    // todo rename as stepFrac
-    // float stepSize = stepFrac * lfoPeriod / 2.0;
     
     // coef of the slope
     // a = (y2 - y1) / (x2 - x1)
@@ -120,32 +116,30 @@ void PanEffect::processGroup(const QString& group, PanGroupState* pGroupState,
     float a = 1.0f / (1.0f - stepFrac * 2.0f);
     
     // merging of tests for 
-    // float inInterval = fmod( CSAMPLE(gs.time), (lfoPeriod / 2.0) );
-    float inInterval = fmod( periodFraction, 0.5f );
-    
     // size of a segment of slope
     float u = ( 0.5f - stepFrac ) / 2.0f;
     
+    // current quarter in the trigonometric circle
     float quarter = floorf(periodFraction * 4.0f);
     
+    // float inInterval = fmod( periodFraction, (lfoPeriod / 2.0) );
+    float inInterval = fmod( periodFraction, 0.5f );
+    
+    float lawCoef =  1.0f / sqrtf(2.0f) * 2.0f;
+    
     CSAMPLE position;
+    
     if (inInterval > u && inInterval < ( u + stepFrac)) {
-        // position should be stuck on 0.25 or 0.75
-        // Is the position in the first or second half of the period?
+        // at full left or full right
         position = quarter < 2.0f ? 0.25f : 0.75f;
     } else {
-        // qDebug() << "calcul | a : " << a << "| step : " << stepFrac;
-        // position should be in the slope
+        // in the slope (linear function)
         position = (periodFraction - (floorf((quarter+1.0f)/2.0f) * stepFrac )) * a;
     }
     
     // set the curve between 0 and 1
     CSAMPLE frac = (sin(M_PI * 2.0f * position) + 1.0f) / 2.0f;
-    // CSAMPLE frac = sin(M_PI * 2.0f * position) + 1.0f;
-    // frac = CSAMPLE_clamp(frac);
-    float lawCoef =  1.0f / sqrtf(2.0f) * 2.0f;
-    // float lawCoef =  1.0f / sqrtf(2.0f);
-    
+    /*
     qDebug() << "stepFrac" << stepFrac
         << "| position :" << (roundf(position * 100.0f) / 100.0f)
         << "| time :" << gs.time
@@ -158,14 +152,33 @@ void PanEffect::processGroup(const QString& group, PanGroupState* pGroupState,
         // << "| lawCoef :" << lawCoef
         << "| enableState :" << enableState
         << "| numSamples :" << numSamples;
+    */
     
-    // qDebug() << "frac" << frac << "| 1 :" << frac1 << "| 2: " << frac2 << "| 3 :" << frac3;
-    
+    // todo (jclaveau) : stereo
     SampleUtil::mixStereoToMono(pOutput, pInput, numSamples);
     
     // Pingpong the output.  If the pingpong value is zero, all of the
     // math below should result in a simple copy of delay buf to pOutput.
+    // todo (jclaveau) : ramping
+    
     for (unsigned int i = 0; i + 1 < numSamples; i += 2) {
+        
+        gs.time++;
+        /*
+        if (inInterval > u && inInterval < ( u + stepFrac)) {
+            // at full left or full right
+            position = quarter < 2.0f ? 0.25f : 0.75f;
+        } else {
+            // in the slope (linear function)
+            position = (periodFraction - (floorf((quarter+1.0f)/2.0f) * stepFrac )) * a;
+        }
+        
+        // set the curve between 0 and 1
+        CSAMPLE frac = (sin(M_PI * 2.0f * position) + 1.0f) / 2.0f;
+        */
+        
+        position = (periodFraction - (floorf((quarter+1.0f)/2.0f) * stepFrac )) * a;
+        CSAMPLE frac = (sin(M_PI * 2.0f * position) + 1.0f) / 2.0f;
         
         pOutput[i] = pOutput[i] * (1 - depth)
             + pOutput[i] * frac * lawCoef * depth;
@@ -174,11 +187,7 @@ void PanEffect::processGroup(const QString& group, PanGroupState* pGroupState,
         
     }
     
+    
     // qDebug() << "pOutput[1]" << pOutput[1] << "| pOutput[2]" << pOutput[2];
 }
-
-
-// float fmod(float a, float b) {
-    // return (a/b) - ( (int)(a/b) * b);
-// }
 
