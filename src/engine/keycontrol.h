@@ -48,8 +48,6 @@ class KeyControl : public EngineControl {
     bool syncKey(EngineBuffer* pOtherEngineBuffer);
     void updateKeyCOs(double fileKeyNumeric, double pitch);
 
-    // The previous rate slider rate.
-    bool m_bOldKeylock;
     // Pitch Ratio caused bay the speed slider (m_pRateSlider)
     double m_speedSliderPitchRatio;
 

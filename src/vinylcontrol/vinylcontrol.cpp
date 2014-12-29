@@ -1,5 +1,6 @@
 #include "vinylcontrol/vinylcontrol.h"
 #include "controlobjectthread.h"
+#include "controlobjectslave.h"
 #include "controlobject.h"
 
 VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, QString group)
@@ -21,7 +22,7 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, QString group)
     trackSamples        = new ControlObjectThread(group, "track_samples");
     trackSampleRate     = new ControlObjectThread(group, "track_samplerate");
     vinylSeek           = new ControlObjectThread(group, "vinylcontrol_seek");
-    controlScratch      = new ControlObjectThread(group, "vinylcontrol_rate");
+    m_pVCRate = new ControlObjectSlave(group, "vinylcontrol_rate");
     rateSlider          = new ControlObjectThread(group, "rate");    //Range -1.0 to 1.0
     playButton          = new ControlObjectThread(group, "play");
     duration            = new ControlObjectThread(group, "duration");
@@ -80,7 +81,7 @@ VinylControl::~VinylControl() {
     delete trackSamples;
     delete trackSampleRate;
     delete vinylSeek;
-    delete controlScratch;
+    delete m_pVCRate;
     delete rateSlider;
     delete playButton;
     delete duration;

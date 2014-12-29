@@ -8,6 +8,7 @@
 #include "vinylcontrol/vinylsignalquality.h"
 
 class ControlObjectThread;
+class ControlObjectSlave;
 
 class VinylControl : public QObject {
   public:
@@ -33,7 +34,7 @@ class VinylControl : public QObject {
     ControlObjectThread *trackSamples;
     ControlObjectThread *trackSampleRate;
     ControlObjectThread *vinylSeek; //The ControlObject used to change the playback position in the song.
-    ControlObjectThread *controlScratch; //The ControlObject used to seek when the record is spinning fast.
+    ControlObjectSlave* m_pVCRate; // The ControlObject used to seek when the record is spinning fast.
     ControlObjectThread *rateSlider; //The ControlObject used to change the speed/pitch of the song.
     ControlObjectThread *duration; //The ControlObject used to get the duration of the current song.
     ControlObjectThread *mode; //The ControlObject used to get the vinyl control mode (absolute/relative/scratch)
