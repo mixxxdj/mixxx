@@ -289,14 +289,18 @@ void KeyControl::slotPitchChanged(double pitch) {
     //        pitchRateInfo.pitchTweakRatio <<
     //        pitchRateInfo.tempoRatio;
 
+    double speedSliderPitchRatio = pitchRateInfo.pitchRatio / pitchRateInfo.pitchTweakRatio;
+
     double pitchRatio = KeyUtils::octaveChangeToPowerOf2(pitch / 12);
     if (m_iPitchAndKeylockMode == kOffsetScaleLockOriginalKey) {
         // Pitch slider presents only the offset, calc absolute pitch
-        double speedSliderPitchRatio = pitchRateInfo.pitchRatio / pitchRateInfo.pitchTweakRatio;
         pitchRatio *= speedSliderPitchRatio;
     }
 
     pitchRateInfo.pitchRatio = pitchRatio;
+    // speedSliderPitchRatio must be unchanged
+    pitchRateInfo.pitchTweakRatio =  pitchRateInfo.pitchRatio / speedSliderPitchRatio;
+
     m_pitchRateInfo.setValue(pitchRateInfo);
 
     double dFileKey = m_pFileKey->get();
