@@ -290,21 +290,20 @@ void KeyControl::slotPitchChanged(double pitch) {
     //        pitchRateInfo.tempoRatio;
 
     double speedSliderPitchRatio = pitchRateInfo.pitchRatio / pitchRateInfo.pitchTweakRatio;
-
-    double pitchRatio = KeyUtils::octaveChangeToPowerOf2(pitch / 12);
+    // speedSliderPitchRatio must be unchanged
+    double pitchKnobRatio = KeyUtils::octaveChangeToPowerOf2(pitch / 12);
     if (m_iPitchAndKeylockMode == kOffsetScaleLockOriginalKey) {
         // Pitch slider presents only the offset, calc absolute pitch
-        pitchRatio *= speedSliderPitchRatio;
+        pitchRateInfo.pitchRatio = pitchKnobRatio * speedSliderPitchRatio;
+        pitchRateInfo.pitchTweakRatio = pitchKnobRatio;
+    } else {
+        pitchRateInfo.pitchRatio = pitchKnobRatio;
+        pitchRateInfo.pitchTweakRatio = pitchKnobRatio / speedSliderPitchRatio;
     }
-
-    pitchRateInfo.pitchRatio = pitchRatio;
-    // speedSliderPitchRatio must be unchanged
-    pitchRateInfo.pitchTweakRatio =  pitchRateInfo.pitchRatio / speedSliderPitchRatio;
-
     m_pitchRateInfo.setValue(pitchRateInfo);
 
     double dFileKey = m_pFileKey->get();
-    updateKeyCOs(dFileKey, KeyUtils::powerOf2ToOctaveChange(pitchRatio));
+    updateKeyCOs(dFileKey, KeyUtils::powerOf2ToOctaveChange(pitchKnobRatio));
 
     //qDebug() << "KeyControl::slotPitchChanged 2" << pitch <<
     //        pitchRateInfo.pitchRatio <<
