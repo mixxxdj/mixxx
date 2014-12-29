@@ -540,8 +540,8 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
             }
 
             if (m_iVCMode == MIXXX_VCMODE_ABSOLUTE &&
-                fabs(dVinylPitch) < 0.05 &&
-                fabs(m_dDriftAmt) >= 0.3) {
+                    fabs(dVinylPitch) < 0.05 &&
+                    fabs(m_dDriftAmt) >= 0.3) {
                 //qDebug() << "slow, out of sync, syncing position";
                 syncPosition();
             }
