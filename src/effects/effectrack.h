@@ -192,6 +192,8 @@ class EqualizerRack : public PerGroupRack {
                   const unsigned int iRackNumber);
     virtual ~EqualizerRack() {}
 
+    bool loadEffectToGroup(const QString& group, EffectPointer pEffect);
+
     static QString formatGroupString(const unsigned int iRackNumber) {
         return QString("[EqualizerRack%1]")
                 .arg(QString::number(iRackNumber + 1));

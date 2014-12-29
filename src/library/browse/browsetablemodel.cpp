@@ -62,16 +62,16 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
         "QList< QList<QStandardItem*> >");
     qRegisterMetaType<BrowseTableModel*>("BrowseTableModel*");
 
-    connect(BrowseThread::getInstance(), SIGNAL(clearModel(BrowseTableModel*)),
+    m_pBrowseThread = BrowseThread::getInstanceRef();
+    connect(m_pBrowseThread.data(), SIGNAL(clearModel(BrowseTableModel*)),
             this, SLOT(slotClear(BrowseTableModel*)),
             Qt::QueuedConnection);
 
-    connect(
-        BrowseThread::getInstance(),
-        SIGNAL(rowsAppended(const QList< QList<QStandardItem*> >&, BrowseTableModel*)),
-        this,
-        SLOT(slotInsert(const QList< QList<QStandardItem*> >&, BrowseTableModel*)),
-        Qt::QueuedConnection);
+    connect(m_pBrowseThread.data(),
+            SIGNAL(rowsAppended(const QList< QList<QStandardItem*> >&, BrowseTableModel*)),
+            this,
+            SLOT(slotInsert(const QList< QList<QStandardItem*> >&, BrowseTableModel*)),
+            Qt::QueuedConnection);
 }
 
 BrowseTableModel::~BrowseTableModel() {
@@ -87,7 +87,7 @@ void BrowseTableModel::addSearchColumn(int index) {
 
 void BrowseTableModel::setPath(const MDir& path) {
     m_current_directory = path;
-    BrowseThread::getInstance()->executePopulation(m_current_directory, this);
+    m_pBrowseThread->executePopulation(m_current_directory, this);
 }
 
 TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const {
@@ -205,7 +205,7 @@ void BrowseTableModel::removeTracks(QStringList trackLocations) {
 
     // Repopulate model if any tracks were actually deleted
     if (any_deleted) {
-        BrowseThread::getInstance()->executePopulation(m_current_directory,
+        m_pBrowseThread->executePopulation(m_current_directory,
                                                        this);
     }
 }

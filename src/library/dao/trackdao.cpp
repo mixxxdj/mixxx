@@ -1226,11 +1226,12 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
 
     QString columnsStr;
     int columnsSize = 0;
-    for (unsigned int i = 0; i < ARRAYLENGTH(columns); ++i) {
+    const int columnsCount = ARRAYLENGTH(columns);
+    for (int i = 0; i < columnsCount; ++i) {
         columnsSize += qstrlen(columns[i].name) + 1;
     }
     columnsStr.reserve(columnsSize);
-    for (unsigned int i = 0; i < ARRAYLENGTH(columns); ++i) {
+    for (int i = 0; i < columnsCount; ++i) {
         if (i > 0) {
             columnsStr.append(QChar(','));
         }
@@ -1250,9 +1251,8 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
 
     QSqlRecord queryRecord = query.record();
     int recordCount = queryRecord.count();
-    int coloumsCount = ARRAYLENGTH(columns);
-    DEBUG_ASSERT_AND_HANDLE(recordCount == coloumsCount) {
-        recordCount = math_min(recordCount, coloumsCount);
+    DEBUG_ASSERT_AND_HANDLE(recordCount == columnsCount) {
+        recordCount = math_min(recordCount, columnsCount);
     }
 
     // Location is the first column.
@@ -1269,7 +1269,7 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
 
     // For every column run its populator to fill the track in with the data.
     bool shouldDirty = false;
-    for (unsigned int i = 0; i < recordCount; ++i) {
+    for (int i = 0; i < recordCount; ++i) {
         TrackPopulatorFn populator = columns[i].populator;
         if (populator != NULL) {
             // If any populator says the track should be dirty then we dirty it.
