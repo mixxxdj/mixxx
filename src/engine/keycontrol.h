@@ -50,9 +50,6 @@ class KeyControl : public EngineControl {
     bool syncKey(EngineBuffer* pOtherEngineBuffer);
     void updateKeyCOs(double fileKeyNumeric, double pitch);
 
-    // Pitch Ratio caused bay the speed slider (m_pRateSlider)
-    double m_speedSliderPitchRatio;
-
     // ControlObjects that come from EngineBuffer
     ControlObject* m_pRateSlider;
     ControlObject* m_pRateRange;
