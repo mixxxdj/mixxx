@@ -23,7 +23,7 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, QString group)
     trackSampleRate     = new ControlObjectThread(group, "track_samplerate");
     vinylSeek           = new ControlObjectThread(group, "vinylcontrol_seek");
     m_pVCRate = new ControlObjectSlave(group, "vinylcontrol_rate");
-    rateSlider          = new ControlObjectThread(group, "rate");    //Range -1.0 to 1.0
+    m_pRateSlider = new ControlObjectSlave(group, "rate");
     playButton          = new ControlObjectThread(group, "play");
     duration            = new ControlObjectThread(group, "duration");
     mode                = new ControlObjectThread(group, "vinylcontrol_mode");
@@ -82,7 +82,7 @@ VinylControl::~VinylControl() {
     delete trackSampleRate;
     delete vinylSeek;
     delete m_pVCRate;
-    delete rateSlider;
+    delete m_pRateSlider;
     delete playButton;
     delete duration;
     delete mode;
