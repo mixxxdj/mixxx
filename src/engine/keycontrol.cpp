@@ -20,6 +20,7 @@ KeyControl::KeyControl(QString group,
     struct PitchTempoRatio pitchRateInfo;
     pitchRateInfo.pitchRatio = 1.0;
     pitchRateInfo.tempoRatio = 1.0;
+    pitchRateInfo.pitchTweakRatio = 1.0;
     pitchRateInfo.keylock = false;
     m_pitchRateInfo.setValue(pitchRateInfo);
 
@@ -68,6 +69,7 @@ KeyControl::KeyControl(QString group,
             Qt::DirectConnection);
 
 
+    // In case of vinyl control "rate" is a filtered mean value for display
     m_pRateSlider = ControlObject::getControl(ConfigKey(group, "rate"));
     connect(m_pRateSlider, SIGNAL(valueChanged(double)),
             this, SLOT(slotRateChanged()),
@@ -91,26 +93,6 @@ KeyControl::KeyControl(QString group,
     connect(m_pRateDir, SIGNAL(valueChangedFromEngine(double)),
             this, SLOT(slotRateChanged()),
             Qt::DirectConnection);
-
-    m_pVCEnabled = ControlObject::getControl(ConfigKey(group, "vinylcontrol_enabled"));
-    if (m_pVCEnabled) {
-        connect(m_pVCEnabled, SIGNAL(valueChanged(double)),
-                this, SLOT(slotRateChanged()),
-                Qt::DirectConnection);
-        connect(m_pVCEnabled, SIGNAL(valueChangedFromEngine(double)),
-                this, SLOT(slotRateChanged()),
-                Qt::DirectConnection);
-    }
-
-    m_pVCRate = ControlObject::getControl(ConfigKey(group, "vinylcontrol_rate"));
-    if (m_pVCRate) {
-        connect(m_pVCRate, SIGNAL(valueChanged(double)),
-                this, SLOT(slotRateChanged()),
-                Qt::DirectConnection);
-        connect(m_pVCRate, SIGNAL(valueChangedFromEngine(double)),
-                this, SLOT(slotRateChanged()),
-                Qt::DirectConnection);
-    }
 
     m_pKeylock = ControlObject::getControl(ConfigKey(group, "keylock"));
     connect(m_pKeylock, SIGNAL(valueChanged(double)),
@@ -146,11 +128,7 @@ void KeyControl::slotRateChanged() {
     // If rate is not 1.0 then we have to try and calculate the octave change
     // caused by it.
 
-    if(m_pVCEnabled && m_pVCEnabled->toBool()) {
-        pitchRateInfo.tempoRatio = m_pVCRate->get();
-    } else {
-        pitchRateInfo.tempoRatio = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
-    }
+    pitchRateInfo.tempoRatio = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
 
     if (pitchRateInfo.tempoRatio == 0) {
         // no transport, no pitch
@@ -172,21 +150,18 @@ void KeyControl::slotRateChanged() {
     // |-----------------------------------------|
     //   m_pPitch (1)
 
-    // here is a possible race condition, if the pitch is changed in between.
-    // but it cannot happen if rate and pitch is set from the same thread
-
-    double pitchTweakRatio = pitchRateInfo.pitchRatio / m_speedSliderPitchRatio;
+    double speedSliderPitchRatio = pitchRateInfo.pitchRatio / pitchRateInfo.pitchTweakRatio;
 
     if (m_pKeylock->toBool()) {
         if (!pitchRateInfo.keylock) {
             // Enabling Keylock
             if (m_iPitchAndKeylockMode == kAbsoluteScaleLockCurrentKey) {
                 // Lock at current pitch
-                m_speedSliderPitchRatio = pitchRateInfo.tempoRatio;
+                speedSliderPitchRatio = pitchRateInfo.tempoRatio;
             } else {
                 // kOffsetScaleLockOriginalKey
                 // Lock at original track pitch
-                m_speedSliderPitchRatio = 1.0;
+                speedSliderPitchRatio = 1.0;
             }
             pitchRateInfo.keylock = true;
         }
@@ -196,17 +171,19 @@ void KeyControl::slotRateChanged() {
             // Disabling Keylock
             if (m_iPitchAndKeylockMode == kAbsoluteScaleLockCurrentKey) {
                 // reset to linear pitch
-                pitchTweakRatio = 1.0;
+                pitchRateInfo.pitchTweakRatio = 1.0;
                 // For not resetting to linear pitch:
                 // Adopt speedPitchRatio change as pitchTweakRatio
-                //pitchTweakRatio *= (m_speedSliderPitchRatio / pitchRateInfo.tempoRatio);
+                //pitchRateInfo.pitchTweakRatio *= (m_speedSliderPitchRatio / pitchRateInfo.tempoRatio);
             }
             pitchRateInfo.keylock = false;
         }
-        m_speedSliderPitchRatio = pitchRateInfo.tempoRatio;
+        speedSliderPitchRatio = pitchRateInfo.tempoRatio;
     }
 
-    pitchRateInfo.pitchRatio = pitchTweakRatio * m_speedSliderPitchRatio;
+    pitchRateInfo.pitchRatio = pitchRateInfo.pitchTweakRatio * speedSliderPitchRatio;
+    pitchRateInfo.pitchTweakRatio = pitchRateInfo.pitchRatio / speedSliderPitchRatio;
+    m_speedSliderPitchRatio = speedSliderPitchRatio;
 
     double pitchOctaves = KeyUtils::powerOf2ToOctaveChange(pitchRateInfo.pitchRatio);
     double dFileKey = m_pFileKey->get();
@@ -217,7 +194,7 @@ void KeyControl::slotRateChanged() {
         m_pPitch->set(pitchOctaves * 12);
     }
 
-    // store so that the results are availabe to the engine at once
+    // store so that the entire results are available to the engine at once
     m_pitchRateInfo.setValue(pitchRateInfo);
 
     // qDebug() << "KeyControl::slotRateChanged 2" << m_pitchRatio << m_speedSliderPitchRatio;
@@ -232,6 +209,7 @@ void KeyControl::slotPitchAndKeylockModeChanged(double value) {
         // absolute mode to offset mode
         if (pitchRateInfo.keylock) {
             m_speedSliderPitchRatio = 1.0;
+            pitchRateInfo.pitchTweakRatio = pitchRateInfo.pitchRatio;
         }
     }
     m_iPitchAndKeylockMode = (int)value;
@@ -245,6 +223,8 @@ void KeyControl::slotPitchAndKeylockModeChanged(double value) {
         double pitchTweakOctaves = KeyUtils::powerOf2ToOctaveChange(pitchTweakRatio);
         m_pPitch->set(pitchTweakOctaves * 12);
     }
+
+    m_pitchRateInfo.setValue(pitchRateInfo);
 
     //qDebug() << "KeyControl::slotPitchAndKeylockModeChanged 2" << m_pitchRatio << m_speedSliderPitchRatio;
 }
