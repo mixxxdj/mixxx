@@ -205,7 +205,6 @@ void KeyControl::slotRateChanged() {
     }
 
     pitchRateInfo.pitchRatio = pitchRateInfo.pitchTweakRatio * speedSliderPitchRatio;
-    pitchRateInfo.pitchTweakRatio = pitchRateInfo.pitchRatio / speedSliderPitchRatio;
 
     double pitchOctaves = KeyUtils::powerOf2ToOctaveChange(pitchRateInfo.pitchRatio);
     double dFileKey = m_pFileKey->get();
