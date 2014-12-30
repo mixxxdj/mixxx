@@ -145,6 +145,10 @@ double KeyControl::getKey() {
 }
 
 void KeyControl::slotRateChanged() {
+    updateRate();
+}
+
+void KeyControl::updateRate() {
     //qDebug() << "KeyControl::slotRateChanged 1" << m_pitchRatio << m_speedSliderPitchRatio;
 
     struct PitchTempoRatio pitchRateInfo = m_pitchRateInfo.getValue();
@@ -269,6 +273,12 @@ void KeyControl::setEngineKey(double key, double key_distance) {
 }
 
 void KeyControl::slotPitchChanged(double pitch) {
+    Q_UNUSED(pitch)
+    updatePitch();
+}
+
+void KeyControl::updatePitch() {
+    double pitch = m_pPitch->get();
     struct PitchTempoRatio pitchRateInfo = m_pitchRateInfo.getValue();
 
     //qDebug() << "KeyControl::slotPitchChanged 1" << pitch <<
@@ -297,6 +307,12 @@ void KeyControl::slotPitchChanged(double pitch) {
 }
 
 void KeyControl::slotPitchAdjustChanged(double pitchAdjust) {
+    Q_UNUSED(pitchAdjust);
+    updatePitchAdjust();
+}
+
+void KeyControl::updatePitchAdjust() {
+    double pitchAdjust = m_pPitchAdjust->get();
     struct PitchTempoRatio pitchRateInfo = m_pitchRateInfo.getValue();
 
     //qDebug() << "KeyControl::slotPitchAdjustChanged 1" << pitchAdjust <<

@@ -49,6 +49,9 @@ class KeyControl : public EngineControl {
     void setEngineKey(double key, double key_distance);
     bool syncKey(EngineBuffer* pOtherEngineBuffer);
     void updateKeyCOs(double fileKeyNumeric, double pitch);
+    void updatePitch();
+    void updatePitchAdjust();
+    void updateRate();
 
     // ControlObjects that come from EngineBuffer
     ControlObject* m_pRateSlider;
