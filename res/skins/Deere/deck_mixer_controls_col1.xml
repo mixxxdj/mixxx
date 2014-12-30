@@ -44,8 +44,8 @@
       </Template>
 
       <Template src="skin:knob_with_button.xml">
-        <SetVariable name="TooltipId">pitch</SetVariable>
-        <SetVariable name="control">pitch</SetVariable>
+        <SetVariable name="TooltipId">pitch_adjust</SetVariable>
+        <SetVariable name="control">pitch_adjust</SetVariable>
         <SetVariable name="button_TooltipId">keylock</SetVariable>
         <SetVariable name="button_control">keylock</SetVariable>
         <SetVariable name="label">Key</SetVariable>

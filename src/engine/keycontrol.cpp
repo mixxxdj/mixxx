@@ -345,7 +345,30 @@ void KeyControl::slotPitchChanged(double pitch) {
 }
 
 void KeyControl::slotPitchAdjustChanged(double pitchAdjust) {
+    struct PitchTempoRatio pitchRateInfo = m_pitchRateInfo.getValue();
 
+    //qDebug() << "KeyControl::slotPitchAdjustChanged 1" << pitch <<
+    //        pitchRateInfo.pitchRatio <<
+    //        pitchRateInfo.pitchTweakRatio <<
+    //        pitchRateInfo.tempoRatio;
+
+    double speedSliderPitchRatio = pitchRateInfo.pitchRatio / pitchRateInfo.pitchTweakRatio;
+    // speedSliderPitchRatio must be unchanged
+    double pitchKnobRatio = KeyUtils::semitoneChangeToPowerOf2(pitchAdjust);
+
+    // pitch_adjust is a ofset to the pitch set by the speed controls
+    // calc absolute pitch
+    pitchRateInfo.pitchTweakRatio = pitchKnobRatio;
+    pitchRateInfo.pitchRatio = pitchKnobRatio * speedSliderPitchRatio;
+    m_pitchRateInfo.setValue(pitchRateInfo);
+
+    double dFileKey = m_pFileKey->get();
+    updateKeyCOs(dFileKey, KeyUtils::powerOf2ToOctaveChange(pitchKnobRatio));
+
+    //qDebug() << "KeyControl::slotPitchAdjustChanged 2" << pitch <<
+    //        pitchRateInfo.pitchRatio <<
+    //        pitchRateInfo.pitchTweakRatio <<
+    //        pitchRateInfo.tempoRatio;
 }
 
 void KeyControl::slotSyncKey(double v) {

@@ -56,6 +56,7 @@ void EngineBufferScaleLinear::setScaleParameters(int iSampleRate,
                                                  double base_rate,
                                                  double* pTempoRatio,
                                                  double* pPitchRatio) {
+    Q_UNUSED(pPitchRatio);
     m_iSampleRate = iSampleRate;
 
     m_dOldRate = m_dRate;
