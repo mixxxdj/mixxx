@@ -282,15 +282,13 @@ void KeyControl::slotPitchChanged(double pitch) {
     double pitchKnobRatio = KeyUtils::semitoneChangeToPowerOf2(pitch);
     pitchRateInfo.pitchRatio = pitchKnobRatio;
     pitchRateInfo.pitchTweakRatio = pitchKnobRatio / speedSliderPitchRatio;
-    m_pitchRateInfo.setValue(pitchRateInfo);
 
     double dFileKey = m_pFileKey->get();
-    qDebug() << m_pPitchAdjust->get();
     m_pPitchAdjust->set(
             KeyUtils::powerOf2ToSemitoneChange(pitchRateInfo.pitchTweakRatio));
-    qDebug() << m_pPitchAdjust->get();
     updateKeyCOs(dFileKey, KeyUtils::powerOf2ToOctaveChange(pitchKnobRatio));
-    qDebug() << m_pPitchAdjust->get();
+
+    m_pitchRateInfo.setValue(pitchRateInfo);
 
     //qDebug() << "KeyControl::slotPitchChanged 2" << pitch <<
     //        pitchRateInfo.pitchRatio <<
