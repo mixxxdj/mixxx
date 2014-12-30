@@ -13,10 +13,21 @@
 
 struct PanGroupState {
     PanGroupState() {
+        delay_buf = SampleUtil::alloc(MAX_BUFFER_LEN);
+        SampleUtil::applyGain(delay_buf, 0, MAX_BUFFER_LEN);
+        prev_delay_time = 0.0;
+        prev_delay_samples = 0;
+        write_position = 0;
+        
         time = 0;
     }
     ~PanGroupState() {
+        SampleUtil::free(delay_buf);
     }
+    CSAMPLE* delay_buf;
+    double prev_delay_time;
+    int prev_delay_samples;
+    int write_position;
     unsigned int time;
 };
 
@@ -38,6 +49,7 @@ class PanEffect : public GroupEffectProcessor<PanGroupState> {
                       const GroupFeatureState& groupFeatures);
 
   private:
+    // int getDelaySamples(double delay_time, const unsigned int sampleRate) const;
     
     QString debugString() const {
         return getId();
@@ -46,10 +58,7 @@ class PanEffect : public GroupEffectProcessor<PanGroupState> {
     EngineEffectParameter* m_pDepthParameter;
     EngineEffectParameter* m_pStrengthParameter;
     EngineEffectParameter* m_pPeriodParameter;
-    EngineEffectParameter* m_pRampingParameter;
-    
-    CSAMPLE oldFrac;
-    
+
     DISALLOW_COPY_AND_ASSIGN(PanEffect);
 };
 
