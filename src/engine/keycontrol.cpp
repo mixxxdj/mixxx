@@ -27,8 +27,8 @@ KeyControl::KeyControl(QString group,
     m_pPitch = new ControlPotmeter(ConfigKey(group, "pitch"), -6.0, 6.0, true);
     // Course adjust by full semitone steps.
     m_pPitch->setStepCount(12);
-    // Fine adjust with semitone / 5 = 20 ct;.
-    m_pPitch->setSmallStepCount(60);
+    // Fine adjust with semitone / 10 = 10 ct;.
+    m_pPitch->setSmallStepCount(120);
     connect(m_pPitch, SIGNAL(valueChanged(double)),
             this, SLOT(slotPitchChanged(double)),
             Qt::DirectConnection);
@@ -37,8 +37,8 @@ KeyControl::KeyControl(QString group,
     m_pPitchAdjust = new ControlPotmeter(ConfigKey(group, "pitch_adjust"), -3.0, 3.0, true);
     // Course adjust by full semitone steps.
     m_pPitchAdjust->setStepCount(6);
-    // Fine adjust with semitone / 5 = 20 ct;.
-    m_pPitchAdjust->setSmallStepCount(30);
+    // Fine adjust with semitone / 10 = 10 ct;.
+    m_pPitchAdjust->setSmallStepCount(60);
     connect(m_pPitchAdjust, SIGNAL(valueChanged(double)),
             this, SLOT(slotPitchAdjustChanged(double)),
             Qt::DirectConnection);
