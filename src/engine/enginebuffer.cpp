@@ -103,6 +103,7 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
           m_bPlayAfterLoading(false),
           m_fRampValue(0.0),
           m_iRampState(ENGINE_RAMP_NONE),
+          m_bTrackLoaded(false),
           m_pDitherBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
           m_iDitherBufferReadIndex(0),
           m_pCrossFadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
@@ -522,6 +523,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_pause.lock();
     m_visualPlayPos->setInvalid();
     m_pCurrentTrack = pTrack;
+    m_bTrackLoaded = true;
     m_file_srate_old = iTrackSampleRate;
     m_file_length_old = iTrackNumSamples;
     m_pTrackSamples->set(iTrackNumSamples);
@@ -554,7 +556,7 @@ TrackPointer EngineBuffer::getLoadedTrack() const {
 void EngineBuffer::ejectTrack() {
     // Don't allow ejections while playing a track. We don't need to lock to
     // call ControlObject::get() so this is fine.
-    if (m_playButton->get() > 0 || !m_pCurrentTrack) {
+    if (m_playButton->get() > 0 || !m_bTrackLoaded) {
         return;
     }
 
@@ -563,6 +565,7 @@ void EngineBuffer::ejectTrack() {
     m_pTrackSamples->set(0);
     m_pTrackSampleRate->set(0);
     TrackPointer pTrack = m_pCurrentTrack;
+    m_bTrackLoaded = false;
     m_pCurrentTrack.clear();
     m_file_srate_old = 0;
     m_file_length_old = 0;
@@ -632,8 +635,8 @@ double EngineBuffer::updateIndicatorsAndModifyPlay(double v) {
     // allow the set since it might apply to a track we are loading due to the
     // asynchrony.
     bool playPossible = true;
-    if ((!m_pCurrentTrack && load_atomic(m_iTrackLoading) == 0) ||
-            (m_pCurrentTrack && load_atomic(m_iTrackLoading) == 0 &&
+    if ((!m_bTrackLoaded && load_atomic(m_iTrackLoading) == 0) ||
+            (m_bTrackLoaded && load_atomic(m_iTrackLoading) == 0 &&
              m_filepos_play >= m_file_length_old &&
              !load_atomic(m_iSeekQueued))) {
         // play not possible
@@ -1280,11 +1283,8 @@ void EngineBuffer::bindWorkers(EngineWorkerScheduler* pWorkerScheduler) {
     m_pReader->setScheduler(pWorkerScheduler);
 }
 
-bool EngineBuffer::isTrackLoaded() {
-    if (m_pCurrentTrack) {
-        return true;
-    }
-    return false;
+bool EngineBuffer::isTrackLoaded() const {
+    return m_bTrackLoaded;
 }
 
 void EngineBuffer::slotEjectTrack(double v) {

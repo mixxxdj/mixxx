@@ -147,7 +147,7 @@ class EngineBuffer : public EngineObject {
     void postProcess(const int iBufferSize);
 
     QString getGroup();
-    bool isTrackLoaded();
+    bool isTrackLoaded() const;
     TrackPointer getLoadedTrack() const;
 
     double getVisualPlayPos();
@@ -376,6 +376,7 @@ class EngineBuffer : public EngineObject {
     //int m_iRampIter;
 
     TrackPointer m_pCurrentTrack;
+    bool m_bTrackLoaded;
 #ifdef __SCALER_DEBUG__
     QFile df;
     QTextStream writer;
