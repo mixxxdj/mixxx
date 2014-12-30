@@ -420,7 +420,12 @@ void Tooltips::addStandardTooltips() {
             << tr("Pitch Control")
             << tr("Changes the track pitch independent of the tempo.")
             << QString("%1: %2").arg(leftClick, tr("Decreases the pitch by one semitone."))
-            << QString("%1: %2").arg(rightClick, tr("Decreases the pitch by 20 cents."));
+            << QString("%1: %2").arg(rightClick, tr("Decreases the pitch by 10 cents."));
+
+    add("pitch_adjust")
+            << tr("Pitch Adjust")
+            << tr("Adjust the pitch in addition to the speed slider pitch.")
+            << QString("%1: %2").arg(rightClick, resetToDefault);
 
 
     add("rate_display")
