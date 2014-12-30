@@ -40,6 +40,7 @@ class KeyControl : public EngineControl {
     void slotSetEngineKeyDistance(double);
     void slotFileKeyChanged(double);
     void slotPitchChanged(double);
+    void slotPitchAdjustChanged(double);
     void slotRateChanged();
     void slotSyncKey(double);
     void slotResetKey(double);
@@ -60,6 +61,7 @@ class KeyControl : public EngineControl {
 
     ControlObject* m_pKeylock;
     ControlPotmeter* m_pPitch;
+    ControlPotmeter* m_pPitchAdjust;
     ControlPushButton* m_pButtonSyncKey;
     ControlPushButton* m_pButtonResetKey;
     ControlPushButton* m_pitchAndKeylockMode;

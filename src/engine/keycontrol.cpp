@@ -23,15 +23,25 @@ KeyControl::KeyControl(QString group,
     pitchRateInfo.keylock = false;
     m_pitchRateInfo.setValue(pitchRateInfo);
 
-    // pitch knob in semitones [4.7 ct] allowOutOfBounds = true;
-    m_pPitch = new ControlPotmeter(ConfigKey(group, "pitch"), -3.0, 3.0, true);
-    // Course adjust by full step.
-    m_pPitch->setStepCount(6);
+    // pitch is the distance to the original pitch in semitones
+    // knob in semitones [4.7 ct] allowOutOfBounds = true;
+    m_pPitch = new ControlPotmeter(ConfigKey(group, "pitch"), -6.0, 6.0, true);
+    // Course adjust by full semitone steps.
+    m_pPitch->setStepCount(12);
     // Fine adjust with semitone / 5 = 20 ct;.
-    m_pPitch->setSmallStepCount(30);
-
+    m_pPitch->setSmallStepCount(60);
     connect(m_pPitch, SIGNAL(valueChanged(double)),
             this, SLOT(slotPitchChanged(double)),
+            Qt::DirectConnection);
+
+    // pitch knob in semitones [4.7 ct] allowOutOfBounds = true;
+    m_pPitchAdjust = new ControlPotmeter(ConfigKey(group, "pitch_adjust"), -3.0, 3.0, true);
+    // Course adjust by full semitone steps.
+    m_pPitchAdjust->setStepCount(6);
+    // Fine adjust with semitone / 5 = 20 ct;.
+    m_pPitchAdjust->setSmallStepCount(30);
+    connect(m_pPitchAdjust, SIGNAL(valueChanged(double)),
+            this, SLOT(slotPitchAdjustChanged(double)),
             Qt::DirectConnection);
 
     m_pButtonSyncKey = new ControlPushButton(ConfigKey(group, "sync_key"));
@@ -124,6 +134,7 @@ KeyControl::KeyControl(QString group,
 
 KeyControl::~KeyControl() {
     delete m_pPitch;
+    delete m_pPitchAdjust;
     delete m_pButtonSyncKey;
     delete m_pButtonResetKey;
     delete m_pFileKey;
@@ -331,6 +342,10 @@ void KeyControl::slotPitchChanged(double pitch) {
     //        pitchRateInfo.pitchRatio <<
     //        pitchRateInfo.pitchTweakRatio <<
     //        pitchRateInfo.tempoRatio;
+}
+
+void KeyControl::slotPitchAdjustChanged(double pitchAdjust) {
+
 }
 
 void KeyControl::slotSyncKey(double v) {
