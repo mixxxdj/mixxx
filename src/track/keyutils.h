@@ -101,6 +101,10 @@ class KeyUtils {
 #endif
     }
 
+    static inline double powerOf2ToSemitoneChange(const double& power_of_2) {
+        return powerOf2ToOctaveChange(power_of_2) * 12;
+    }
+
     static mixxx::track::io::key::ChromaticKey openKeyNumberToKey(int openKeyNumber, bool major);
 
     static inline int keyToOpenKeyNumber(mixxx::track::io::key::ChromaticKey key) {
