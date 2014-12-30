@@ -16,6 +16,14 @@ console = {
         for( ; i<arguments.length; i++ ){
             out.push( JSON.stringify(arguments[i]) );
         }
+        
+        var throwContent = new Error(out.join(' '));
+        
+        throwContent.name = 'Log';
+        throw(throwContent);
+        // throw(new Error(out.join(' ')));
+        // throw(new Error(out.join(' ')));
+        // dumpObject(new Error('lala'));
         print(out.join(' '));
     }
 }
