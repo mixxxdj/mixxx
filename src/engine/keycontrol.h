@@ -44,7 +44,6 @@ class KeyControl : public EngineControl {
     void slotRateChanged();
     void slotSyncKey(double);
     void slotResetKey(double);
-    void slotPitchAndKeylockModeChanged(double);
 
   private:
     void setEngineKey(double key, double key_distance);
@@ -74,8 +73,6 @@ class KeyControl : public EngineControl {
     ControlPotmeter* m_pEngineKeyDistance;
 
     TrackPointer m_pTrack;
-
-    int m_iPitchAndKeylockMode;
     ControlValueAtomic<struct PitchTempoRatio> m_pitchRateInfo;
 };
 
