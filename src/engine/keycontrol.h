@@ -29,7 +29,7 @@ class KeyControl : public EngineControl {
     virtual ~KeyControl();
 
     // Returns a struct, with the results of the last pitch and tempo calculations
-    KeyControl::PitchTempoRatio getPitchTempoRatio() const;
+    KeyControl::PitchTempoRatio getPitchTempoRatio();
 
     double getKey();
 
@@ -77,6 +77,9 @@ class KeyControl : public EngineControl {
 
     TrackPointer m_pTrack;
     ControlValueAtomic<struct PitchTempoRatio> m_pitchRateInfo;
+    QAtomicInt m_updatePitchRequest;
+    QAtomicInt m_updatePitchAdjustRequest;
+    QAtomicInt m_updateRateRequest;
 };
 
 #endif // KEYCONTROL_H

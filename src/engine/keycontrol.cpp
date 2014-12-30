@@ -136,7 +136,18 @@ KeyControl::~KeyControl() {
     delete m_pEngineKeyDistance;
 }
 
-KeyControl::PitchTempoRatio KeyControl::getPitchTempoRatio() const {
+KeyControl::PitchTempoRatio KeyControl::getPitchTempoRatio() {
+    // TODO(XXX) remove code duplication by adding this
+    // "Update pending" atomic flag to the ControlObject API
+    if (m_updatePitchRequest.fetchAndStoreAcquire(0)) {
+        updatePitch();
+    }
+    if (m_updatePitchAdjustRequest.fetchAndStoreAcquire(0)) {
+        updatePitchAdjust();
+    }
+    if (m_updateRateRequest.fetchAndStoreAcquire(0)) {
+        updateRate();
+    }
     return m_pitchRateInfo.getValue();
 }
 
@@ -145,6 +156,7 @@ double KeyControl::getKey() {
 }
 
 void KeyControl::slotRateChanged() {
+    m_updateRateRequest = 1;
     updateRate();
 }
 
@@ -274,6 +286,7 @@ void KeyControl::setEngineKey(double key, double key_distance) {
 
 void KeyControl::slotPitchChanged(double pitch) {
     Q_UNUSED(pitch)
+    m_updatePitchRequest = 1;
     updatePitch();
 }
 
@@ -308,6 +321,7 @@ void KeyControl::updatePitch() {
 
 void KeyControl::slotPitchAdjustChanged(double pitchAdjust) {
     Q_UNUSED(pitchAdjust);
+    m_updatePitchAdjustRequest = 1;
     updatePitchAdjust();
 }
 
