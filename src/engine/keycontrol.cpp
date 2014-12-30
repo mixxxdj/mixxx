@@ -225,13 +225,14 @@ void KeyControl::slotPitchAndKeylockModeChanged(double value) {
     //qDebug() << "KeyControl::slotPitchAndKeylockModeChanged 1" << m_pitchRatio << m_speedSliderPitchRatio;
 
     struct PitchTempoRatio pitchRateInfo = m_pitchRateInfo.getValue();
-
     if (value == 0.0 && m_iPitchAndKeylockMode == kAbsoluteScaleLockCurrentKey) {
         // absolute mode to offset mode
         if (pitchRateInfo.keylock) {
             pitchRateInfo.pitchTweakRatio = pitchRateInfo.pitchRatio;
         }
     }
+    m_pitchRateInfo.setValue(pitchRateInfo);
+
     m_iPitchAndKeylockMode = (int)value;
     slotRateChanged();
 
@@ -242,8 +243,6 @@ void KeyControl::slotPitchAndKeylockModeChanged(double value) {
         double pitchTweakOctaves = KeyUtils::powerOf2ToOctaveChange(pitchRateInfo.pitchTweakRatio);
         m_pPitch->set(pitchTweakOctaves * 12);
     }
-
-    m_pitchRateInfo.setValue(pitchRateInfo);
 
     //qDebug() << "KeyControl::slotPitchAndKeylockModeChanged 2" << m_pitchRatio << m_speedSliderPitchRatio;
 }
