@@ -63,7 +63,7 @@ class KeyControl : public EngineControl {
     ControlPotmeter* m_pPitchAdjust;
     ControlPushButton* m_pButtonSyncKey;
     ControlPushButton* m_pButtonResetKey;
-    ControlPushButton* m_pitchAndKeylockMode;
+    ControlPushButton* m_keylockMode;
 
     /** The current loaded file's detected key */
     ControlObject* m_pFileKey;

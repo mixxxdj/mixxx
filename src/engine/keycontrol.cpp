@@ -9,8 +9,8 @@
 #include "engine/enginebuffer.h"
 #include "track/keyutils.h"
 
-static const double kOffsetScaleLockOriginalKey = 0;
-static const double kAbsoluteScaleLockCurrentKey = 1;
+static const double kLockOriginalKey = 0;
+static const double kLockCurrentKey = 1;
 
 KeyControl::KeyControl(QString group,
                        ConfigObject<ConfigValue>* pConfig)
@@ -69,8 +69,8 @@ KeyControl::KeyControl(QString group,
             this, SLOT(slotSetEngineKeyDistance(double)),
             Qt::DirectConnection);
 
-    m_pitchAndKeylockMode = new ControlPushButton(ConfigKey(group, "pitchAndKeylockMode"));
-    m_pitchAndKeylockMode->setButtonMode(ControlPushButton::TOGGLE);
+    m_keylockMode = new ControlPushButton(ConfigKey(group, "keylockMode"));
+    m_keylockMode->setButtonMode(ControlPushButton::TOGGLE);
 
     // In case of vinyl control "rate" is a filtered mean value for display
     m_pRateSlider = ControlObject::getControl(ConfigKey(group, "rate"));
@@ -183,7 +183,7 @@ void KeyControl::slotRateChanged() {
     if (m_pKeylock->toBool()) {
         if (!pitchRateInfo.keylock) {
             // Enabling Keylock
-            if (m_pitchAndKeylockMode->get() == kAbsoluteScaleLockCurrentKey) {
+            if (m_keylockMode->get() == kLockCurrentKey) {
                 // Lock at current pitch
                 speedSliderPitchRatio = pitchRateInfo.tempoRatio;
             } else {
@@ -197,7 +197,7 @@ void KeyControl::slotRateChanged() {
         // !bKeylock
         if (pitchRateInfo.keylock) {
             // Disabling Keylock
-            if (m_pitchAndKeylockMode->get() == kAbsoluteScaleLockCurrentKey) {
+            if (m_keylockMode->get() == kLockCurrentKey) {
                 // reset to linear pitch
                 pitchRateInfo.pitchTweakRatio = 1.0;
                 // For not resetting to linear pitch:

@@ -51,7 +51,7 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
 
     void slotSetRateRange(int pos);
     void slotSetRateDir(int pos);
-    void slotPitchAndKeylock(int pos);
+    void slotKeylockMode(int pos);
     void slotSetRateTempLeft(double);
     void slotSetRateTempRight(double);
     void slotSetRatePermLeft(double);
@@ -87,7 +87,7 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     QList<ControlObjectThread*> m_rateControls;
     QList<ControlObjectThread*> m_rateDirControls;
     QList<ControlObjectThread*> m_rateRangeControls;
-    QList<ControlObjectThread*> m_pitchAndKeylockControls;
+    QList<ControlObjectThread*> m_keylockModeControls;
     MixxxMainWindow *m_mixxx;
     SkinLoader* m_pSkinLoader;
     PlayerManager* m_pPlayerManager;
@@ -96,7 +96,7 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     int m_iNumConfiguredSamplers;
     
     int m_speedAutoReset;
-    int m_pitchAndKeylockMode;
+    int m_keylockMode;
 };
 
 #endif
