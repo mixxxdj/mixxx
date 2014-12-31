@@ -788,21 +788,25 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         // If key lock is enabled, the speedSliderPitchRatio is decoupled from
         // the speed slider (const).
         //
-        // With preference mode PitchAndKeylockMode = kOffsetScaleLockOriginalKey
+        // With preference mode KeylockMode = kLockOriginalKey
         // the speedSliderPitchRatio is reset to 1 and back to the tempoRatio
         // (natural vinyl Pitch) when keylock is disabled and enabled.
-        // The Pitch knob does not reflect the speedSliderPitchRatio.
-        // In this mode is usefull for controller mappings, because the pitch
-        // knob is not changed by Mixxx itself and cannot go out of sync.
         //
-        // With preference mode PitchAndKeylock = kAbsoluteScaleLockCurrentKey
-        // the speedSliderPitchRatio is not reseted when keylock is enabled,
-        // but reflected in the pitch knob. The Pitch knob turns if the speed
-        // slider is moved without keylock. This mode allows to enable keylock
+        // With preference mode KeylockMode = kCurrentKey
+        // the speedSliderPitchRatio is not reseted when keylock is enabled.
+        // This mode allows to enable keylock
         // while the track is already played. You can reset to the tracks
         // original pitch by reseting the pitch knob to center. When disabling
         // keylock the pitch is reset to the linear vinyl pitch.
+
+        // The Pitch knob turns if the speed slider is moved without keylock.
+        // This is useful to get always an analog impression of current pitch,
+        // and its distance to the original track pitch
         //
+        // The Pitch_Adjust knob does not reflect the speedSliderPitchRatio.
+        // So it is is useful for controller mappings, because it is not
+        // changed by the speed slider or keylock.
+
         // In the second part all other speed changing controls are processed.
         // They may produce an additional pitch if keylock is disabled or
         // override the pitch in scratching case.
