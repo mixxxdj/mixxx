@@ -54,12 +54,12 @@ double TruncatedIQM::mean() {
         } else if (m_List.size()%4 == 0) {
             int quartileSize = m_List.size()/4;
             QLinkedList<double>::iterator i = m_List.begin();
-            i+quartileSize;
+            i=i+quartileSize;
             double d_sum = 0;
             for (int k=0; k < 2*quartileSize; ++k) {
                 d_sum += *(i++);
             }
-            m_dMean = d_sum / quartileSize;
+            m_dMean = d_sum / (2*quartileSize);
         } else {
             // http://en.wikipedia.org/wiki/Interquartile_mean#Dataset_not_divisible_by_four
             // TODO(Ferran Pujol): Make this more clear.
