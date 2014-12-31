@@ -313,7 +313,10 @@ void WSpinny::paintEvent(QPaintEvent *e) {
     }
 
     if (m_bShowCover && !m_loadedCoverScaled.isNull()) {
-        p.drawPixmap(0, 0, m_loadedCoverScaled);
+        // Some covers aren't square, so center them.
+        int x = (width() - m_loadedCoverScaled.width()) / 2;
+        int y = (height() - m_loadedCoverScaled.height()) / 2;
+        p.drawPixmap(x, y, m_loadedCoverScaled);
     }
 
     if (m_pMaskImage) {
