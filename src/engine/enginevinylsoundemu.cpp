@@ -60,6 +60,11 @@ void EngineVinylSoundEmu::process(CSAMPLE* pInOut, const int iBufferSize) {
     const CSAMPLE curQuieting =
             fabs(m_dSpeed) < thresholdSpeed ? fabs(m_dSpeed) / thresholdSpeed : 1.;
 
+    if (!wasDithering && !isDithering && !prevQuieting && !curQuieting) {
+        m_dOldSpeed = m_dSpeed;
+        return;
+    }
+
     // If necessary, process with the old parameters and crossfade.
     if (wasDithering != isDithering || prevQuieting != curQuieting) {
         for (int i = 0; i < iBufferSize; i += 2) {
