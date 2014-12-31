@@ -77,6 +77,7 @@ class MixxxMainWindow : public QMainWindow {
 
   public slots:
 
+    void slotGuiTick(double);
     //void slotQuitFullScreen();
     void slotFileLoadSongPlayer(int deck);
     // Opens a file in player 1
@@ -162,6 +163,7 @@ class MixxxMainWindow : public QMainWindow {
                           const QString& translationPath, QTranslator* pTranslator);
     void checkDirectRendering();
     bool confirmExit();
+    void checkOutputTickTime(double ticktime);
 
     // Pointer to the root GUI widget
     QWidget* m_pWidgetParent;
@@ -270,6 +272,8 @@ class MixxxMainWindow : public QMainWindow {
 
     const CmdlineArgs& m_cmdLineArgs;
 
+    ControlObjectSlave* m_pGuiTickCO;
+
     ControlPushButton* m_pTouchShift;
     QList<ControlObjectSlave*> m_pVinylControlEnabled;
     QList<ControlObjectSlave*> m_pPassthroughEnabled;
@@ -285,6 +289,11 @@ class MixxxMainWindow : public QMainWindow {
 
     static const int kMicrophoneCount;
     static const int kAuxiliaryCount;
+
+    // This is used to prevent the output device warning from popping up too
+    // many times, or when the user has already been warned, or when the library
+    // is being scanned.
+    bool m_bInhibitOutputDeviceWarning;
 };
 
 #endif

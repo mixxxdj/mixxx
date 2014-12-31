@@ -92,6 +92,7 @@ class SoundManager : public QObject {
     void checkConfig();
 
     void onDeviceOutputCallback(const unsigned int iFramesPerBuffer);
+    double lastOutputCallbackTick() const { return m_dOutputTickTime; }
 
     // Used by SoundDevices to "push" any audio from their inputs that they have
     // into the mixing engine.
@@ -132,6 +133,7 @@ class SoundManager : public QObject {
     QHash<AudioInput, AudioDestination*> m_registeredDestinations;
     ControlObject* m_pControlObjectSoundStatusCO;
     ControlObject* m_pControlObjectVinylControlGainCO;
+    double m_dOutputTickTime;
 };
 
 #endif
