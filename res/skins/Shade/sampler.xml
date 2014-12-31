@@ -214,7 +214,7 @@
 									</State>
 									<Pos>11,32</Pos>
 									<Connection>
-                                        <ConfigKey>[Sampler<Variable name="samplernum"/>],play_stutter</ConfigKey>
+                                        <ConfigKey>[Sampler<Variable name="samplernum"/>],cue_gotoandplay</ConfigKey>
                                         <ButtonState>LeftButton</ButtonState>
                                     </Connection>
                                     <Connection>
