@@ -76,7 +76,7 @@ class KeyControl : public EngineControl {
     ControlPotmeter* m_pEngineKeyDistance;
 
     TrackPointer m_pTrack;
-    ControlValueAtomic<struct PitchTempoRatio> m_pitchRateInfo;
+    struct PitchTempoRatio m_pitchRateInfo;
     QAtomicInt m_updatePitchRequest;
     QAtomicInt m_updatePitchAdjustRequest;
     QAtomicInt m_updateRateRequest;

@@ -15,12 +15,10 @@ static const double kLockCurrentKey = 1;
 KeyControl::KeyControl(QString group,
                        ConfigObject<ConfigValue>* pConfig)
         : EngineControl(group, pConfig) {
-    struct PitchTempoRatio pitchRateInfo;
-    pitchRateInfo.pitchRatio = 1.0;
-    pitchRateInfo.tempoRatio = 1.0;
-    pitchRateInfo.pitchTweakRatio = 1.0;
-    pitchRateInfo.keylock = false;
-    m_pitchRateInfo.setValue(pitchRateInfo);
+    m_pitchRateInfo.pitchRatio = 1.0;
+    m_pitchRateInfo.tempoRatio = 1.0;
+    m_pitchRateInfo.pitchTweakRatio = 1.0;
+    m_pitchRateInfo.keylock = false;
 
     // pitch is the distance to the original pitch in semitones
     // knob in semitones [4.7 ct] allowOutOfBounds = true;
@@ -148,7 +146,7 @@ KeyControl::PitchTempoRatio KeyControl::getPitchTempoRatio() {
     if (m_updateRateRequest.fetchAndStoreAcquire(0)) {
         updateRate();
     }
-    return m_pitchRateInfo.getValue();
+    return m_pitchRateInfo;
 }
 
 double KeyControl::getKey() {
@@ -163,21 +161,18 @@ void KeyControl::slotRateChanged() {
 void KeyControl::updateRate() {
     //qDebug() << "KeyControl::slotRateChanged 1" << m_pitchRatio << m_speedSliderPitchRatio;
 
-    struct PitchTempoRatio pitchRateInfo = m_pitchRateInfo.getValue();
-
     // If rate is not 1.0 then we have to try and calculate the octave change
     // caused by it.
 
     if(m_pVCEnabled && m_pVCEnabled->toBool()) {
-        pitchRateInfo.tempoRatio = m_pVCRate->get();
+        m_pitchRateInfo.tempoRatio = m_pVCRate->get();
     } else {
-        pitchRateInfo.tempoRatio = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
+        m_pitchRateInfo.tempoRatio = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
     }
 
-    if (pitchRateInfo.tempoRatio == 0) {
+    if (m_pitchRateInfo.tempoRatio == 0) {
         // no transport, no pitch
         // so we can skip pitch calculation
-        m_pitchRateInfo.setValue(pitchRateInfo);
         return;
     }
 
@@ -194,45 +189,43 @@ void KeyControl::updateRate() {
     // |-----------------------------------------|
     //   m_pPitch
 
-    double speedSliderPitchRatio = pitchRateInfo.pitchRatio / pitchRateInfo.pitchTweakRatio;
+    double speedSliderPitchRatio =
+            m_pitchRateInfo.pitchRatio / m_pitchRateInfo.pitchTweakRatio;
 
     if (m_pKeylock->toBool()) {
-        if (!pitchRateInfo.keylock) {
+        if (!m_pitchRateInfo.keylock) {
             // Enabling Keylock
             if (m_keylockMode->get() == kLockCurrentKey) {
                 // Lock at current pitch
-                speedSliderPitchRatio = pitchRateInfo.tempoRatio;
+                speedSliderPitchRatio = m_pitchRateInfo.tempoRatio;
             } else {
                 // kOffsetScaleLockOriginalKey
                 // Lock at original track pitch
                 speedSliderPitchRatio = 1.0;
             }
-            pitchRateInfo.keylock = true;
+            m_pitchRateInfo.keylock = true;
         }
     } else {
         // !bKeylock
-        if (pitchRateInfo.keylock) {
+        if (m_pitchRateInfo.keylock) {
             // Disabling Keylock
             if (m_keylockMode->get() == kLockCurrentKey) {
                 // reset to linear pitch
-                pitchRateInfo.pitchTweakRatio = 1.0;
+                m_pitchRateInfo.pitchTweakRatio = 1.0;
                 // For not resetting to linear pitch:
                 // Adopt speedPitchRatio change as pitchTweakRatio
                 //pitchRateInfo.pitchTweakRatio *= (m_speedSliderPitchRatio / pitchRateInfo.tempoRatio);
             }
-            pitchRateInfo.keylock = false;
+            m_pitchRateInfo.keylock = false;
         }
-        speedSliderPitchRatio = pitchRateInfo.tempoRatio;
+        speedSliderPitchRatio = m_pitchRateInfo.tempoRatio;
     }
 
-    pitchRateInfo.pitchRatio = pitchRateInfo.pitchTweakRatio * speedSliderPitchRatio;
+    m_pitchRateInfo.pitchRatio = m_pitchRateInfo.pitchTweakRatio * speedSliderPitchRatio;
 
-    double pitchOctaves = KeyUtils::powerOf2ToOctaveChange(pitchRateInfo.pitchRatio);
+    double pitchOctaves = KeyUtils::powerOf2ToOctaveChange(m_pitchRateInfo.pitchRatio);
     double dFileKey = m_pFileKey->get();
     updateKeyCOs(dFileKey, pitchOctaves);
-
-    // store so that the entire results are available to the engine at once
-    m_pitchRateInfo.setValue(pitchRateInfo);
 
     // qDebug() << "KeyControl::slotRateChanged 2" << m_pitchRatio << m_speedSliderPitchRatio;
 }
@@ -292,7 +285,6 @@ void KeyControl::slotPitchChanged(double pitch) {
 
 void KeyControl::updatePitch() {
     double pitch = m_pPitch->get();
-    struct PitchTempoRatio pitchRateInfo = m_pitchRateInfo.getValue();
 
     //qDebug() << "KeyControl::slotPitchChanged 1" << pitch <<
     //        pitchRateInfo.pitchRatio <<
@@ -300,18 +292,16 @@ void KeyControl::updatePitch() {
     //        pitchRateInfo.tempoRatio;
 
     double speedSliderPitchRatio =
-            pitchRateInfo.pitchRatio / pitchRateInfo.pitchTweakRatio;
+            m_pitchRateInfo.pitchRatio / m_pitchRateInfo.pitchTweakRatio;
     // speedSliderPitchRatio must be unchanged
     double pitchKnobRatio = KeyUtils::semitoneChangeToPowerOf2(pitch);
-    pitchRateInfo.pitchRatio = pitchKnobRatio;
-    pitchRateInfo.pitchTweakRatio = pitchKnobRatio / speedSliderPitchRatio;
+    m_pitchRateInfo.pitchRatio = pitchKnobRatio;
+    m_pitchRateInfo.pitchTweakRatio = pitchKnobRatio / speedSliderPitchRatio;
 
     double dFileKey = m_pFileKey->get();
     m_pPitchAdjust->set(
-            KeyUtils::powerOf2ToSemitoneChange(pitchRateInfo.pitchTweakRatio));
+            KeyUtils::powerOf2ToSemitoneChange(m_pitchRateInfo.pitchTweakRatio));
     updateKeyCOs(dFileKey, KeyUtils::powerOf2ToOctaveChange(pitchKnobRatio));
-
-    m_pitchRateInfo.setValue(pitchRateInfo);
 
     //qDebug() << "KeyControl::slotPitchChanged 2" << pitch <<
     //        pitchRateInfo.pitchRatio <<
@@ -327,22 +317,20 @@ void KeyControl::slotPitchAdjustChanged(double pitchAdjust) {
 
 void KeyControl::updatePitchAdjust() {
     double pitchAdjust = m_pPitchAdjust->get();
-    struct PitchTempoRatio pitchRateInfo = m_pitchRateInfo.getValue();
 
     //qDebug() << "KeyControl::slotPitchAdjustChanged 1" << pitchAdjust <<
     //        pitchRateInfo.pitchRatio <<
     //        pitchRateInfo.pitchTweakRatio <<
     //        pitchRateInfo.tempoRatio;
 
-    double speedSliderPitchRatio = pitchRateInfo.pitchRatio / pitchRateInfo.pitchTweakRatio;
+    double speedSliderPitchRatio = m_pitchRateInfo.pitchRatio / m_pitchRateInfo.pitchTweakRatio;
     // speedSliderPitchRatio must be unchanged
     double pitchKnobRatio = KeyUtils::semitoneChangeToPowerOf2(pitchAdjust);
 
     // pitch_adjust is a ofset to the pitch set by the speed controls
     // calc absolute pitch
-    pitchRateInfo.pitchTweakRatio = pitchKnobRatio;
-    pitchRateInfo.pitchRatio = pitchKnobRatio * speedSliderPitchRatio;
-    m_pitchRateInfo.setValue(pitchRateInfo);
+    m_pitchRateInfo.pitchTweakRatio = pitchKnobRatio;
+    m_pitchRateInfo.pitchRatio = pitchKnobRatio * speedSliderPitchRatio;
 
     double dFileKey = m_pFileKey->get();
     updateKeyCOs(dFileKey, KeyUtils::powerOf2ToOctaveChange(pitchKnobRatio));
