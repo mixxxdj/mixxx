@@ -902,7 +902,7 @@ class MixxxCore(Feature):
                    "encoder/encodervorbis.cpp",
 
                    "tapfilter.cpp",
-                   "truncatediqm.cpp",
+                   "movingtruncatediqm.cpp",
 
                    "util/pa_ringbuffer.c",
                    "util/sleepableqthread.cpp",

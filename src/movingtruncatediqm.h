@@ -1,5 +1,5 @@
-#ifndef TRUNCATEDIQM_H
-#define TRUNCATEDIQM_H
+#ifndef MOVINGTRUNCATEDIQM_H
+#define MOVINGTRUNCATEDIQM_H
 
 #include <QLinkedList>
 #include <QQueue>
@@ -11,11 +11,11 @@
 //! and the highest 25% values in order to reduce sensitivity to outliers.
 //!
 //! http://en.wikipedia.org/wiki/Interquartile_mean
-class TruncatedIQM {
+class MovingTruncatedIQM {
   public:
-    //! Constructs an empty TruncatedIQM.
-    TruncatedIQM(const unsigned int listLength);
-    virtual ~TruncatedIQM();
+    //! Constructs an empty MovingTruncatedIQM.
+    MovingTruncatedIQM(const unsigned int listLength);
+    virtual ~MovingTruncatedIQM();
     
     //! Inserts value to the list and returns the new truncated mean.
     double insert(double value);
@@ -41,4 +41,4 @@ class TruncatedIQM {
     bool m_bChanged;
 };
 
-#endif /* TRUNCATEDIQM_H */
+#endif /* MovingTruncatedIQM_H */

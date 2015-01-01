@@ -1,14 +1,14 @@
-#include "truncatediqm.h"
+#include "movingtruncatediqm.h"
 #include <QtDebug>
 
-TruncatedIQM::TruncatedIQM(const unsigned int listMaxSize)
+MovingTruncatedIQM::MovingTruncatedIQM(const unsigned int listMaxSize)
     : m_iListMaxSize(listMaxSize),
       m_bChanged(true) {
 }
 
-TruncatedIQM::~TruncatedIQM() {};
+MovingTruncatedIQM::~MovingTruncatedIQM() {};
 
-double TruncatedIQM::insert(double value) {
+double MovingTruncatedIQM::insert(double value) {
     m_bChanged = true;
 
     // Insert new value
@@ -36,13 +36,13 @@ double TruncatedIQM::insert(double value) {
     return mean();
 }
 
-void TruncatedIQM::clear() {
+void MovingTruncatedIQM::clear() {
     m_bChanged = true;
     m_Queue.clear();
     m_List.clear();
 }
 
-double TruncatedIQM::mean() {
+double MovingTruncatedIQM::mean() {
     if (m_bChanged) {
         m_bChanged = false;
         if (m_List.size() <=4) {
@@ -82,10 +82,10 @@ double TruncatedIQM::mean() {
     return m_dMean;
 }
 
-int TruncatedIQM::size() const {
+int MovingTruncatedIQM::size() const {
     return m_List.size();
 }
 
-int TruncatedIQM::listMaxSize() const {
+int MovingTruncatedIQM::listMaxSize() const {
     return m_iListMaxSize;
 }

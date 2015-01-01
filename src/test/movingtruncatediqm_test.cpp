@@ -1,19 +1,19 @@
 #include <gtest/gtest.h>
 #include <QDebug>
 
-#include "truncatediqm.h"
+#include "movingtruncatediqm.h"
 
 namespace {
 
 // The fixture for testing class Foo.
-class TruncatedIQMTest : public ::testing::Test {
+class MovingTruncatedIQMTest : public ::testing::Test {
  protected:
-  TruncatedIQMTest(): maxAcceptedError(0.5E-6) {
+  MovingTruncatedIQMTest(): maxAcceptedError(0.5E-6) {
       // This is the current lowest error that lets the class pass
       // tests doubles7 and doubles9.
   }
 
-  virtual ~TruncatedIQMTest() {
+  virtual ~MovingTruncatedIQMTest() {
   }
 
   virtual void SetUp() {
@@ -25,8 +25,8 @@ class TruncatedIQMTest : public ::testing::Test {
   const double maxAcceptedError;
 };
 
-TEST_F(TruncatedIQMTest, zeros1) {
-    TruncatedIQM iqm(1);
+TEST_F(MovingTruncatedIQMTest, zeros1) {
+    MovingTruncatedIQM iqm(1);
     double mean;
     for (int i=1; i<=50; ++i) {
         mean = iqm.insert(0);
@@ -37,8 +37,8 @@ TEST_F(TruncatedIQMTest, zeros1) {
     EXPECT_DOUBLE_EQ(-4, mean);
 }
 
-TEST_F(TruncatedIQMTest, zeros2) {
-    TruncatedIQM iqm(2);
+TEST_F(MovingTruncatedIQMTest, zeros2) {
+    MovingTruncatedIQM iqm(2);
     double mean = iqm.insert(0);
     EXPECT_DOUBLE_EQ(0, mean);
     for (int i=1; i<=50; ++i) {
@@ -50,8 +50,8 @@ TEST_F(TruncatedIQMTest, zeros2) {
     EXPECT_DOUBLE_EQ(-2, mean);
 }
 
-TEST_F(TruncatedIQMTest, integers1) {
-    TruncatedIQM iqm(1);
+TEST_F(MovingTruncatedIQMTest, integers1) {
+    MovingTruncatedIQM iqm(1);
     double mean;
     for (int i=1; i<=50; ++i) {
         mean = iqm.insert(i);
@@ -62,8 +62,8 @@ TEST_F(TruncatedIQMTest, integers1) {
     EXPECT_DOUBLE_EQ(-4, mean);
 }
 
-TEST_F(TruncatedIQMTest, integers2) {
-    TruncatedIQM iqm(2);
+TEST_F(MovingTruncatedIQMTest, integers2) {
+    MovingTruncatedIQM iqm(2);
     double mean = iqm.insert(0);
     EXPECT_DOUBLE_EQ(0, mean);
     for (int i=1; i<=50; ++i) {
@@ -75,8 +75,8 @@ TEST_F(TruncatedIQMTest, integers2) {
     EXPECT_DOUBLE_EQ(23, mean);
 }
 
-TEST_F(TruncatedIQMTest, integers9) {
-    TruncatedIQM iqm(9);
+TEST_F(MovingTruncatedIQMTest, integers9) {
+    MovingTruncatedIQM iqm(9);
     for (int i=0; i<=50; ++i) {
         double mean = iqm.insert(i);
         double expected = 0;
@@ -89,10 +89,10 @@ TEST_F(TruncatedIQMTest, integers9) {
     }
 }
 
-TEST_F(TruncatedIQMTest, doubles7) {
+TEST_F(MovingTruncatedIQMTest, doubles7) {
     // TODO(Ferran Pujol): Correctly rewrite all means[i]
     // with the same number of significant figures.
-    TruncatedIQM iqm(7);
+    MovingTruncatedIQM iqm(7);
     double input[9] = { 16.345, 2.129674, 77, -40.23, 12071, -12071,
                         -15, 0, 1};
     double means[9] = { 16.345, 9.237337, 31.8248913333, 13.8111685,
@@ -105,8 +105,8 @@ TEST_F(TruncatedIQMTest, doubles7) {
     }
 }
 
-TEST_F(TruncatedIQMTest, doubles9) {
-    TruncatedIQM iqm(9);
+TEST_F(MovingTruncatedIQMTest, doubles9) {
+    MovingTruncatedIQM iqm(9);
     double input[15] = { 0.0000567345, 1547.12, 2.12655, 2.12687,
                          -1.12354, -0.988888, 0.759845, 0.325784,
                          -0.00345781, 2.54123, 0.0000001, -0.845548,
