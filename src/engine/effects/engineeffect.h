@@ -26,6 +26,10 @@ class EngineEffect : public EffectsRequestHandler {
         return m_manifest.name();
     }
 
+    const QString& getId() const {
+        return m_pProcessor->getId();
+    }
+
     EngineEffectParameter* getParameterById(const QString& id) {
         return m_parametersById.value(id, NULL);
     }

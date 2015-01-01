@@ -20,6 +20,7 @@
 #include <QHBoxLayout>
 
 #include "dlgprefeq.h"
+#include "engine/effects/engineeffect.h"
 #include "engine/enginefilterbessel4.h"
 #include "controlobject.h"
 #include "controlobjectslave.h"
@@ -413,6 +414,7 @@ void DlgPrefEQ::slotQuickEffectChangedOnDeck(int effectIndex) {
 }
 
 void DlgPrefEQ::applySelections() {
+    qDebug() << "APPLY!";
     if (m_inSlotPopulateDeckEffectSelectors) {
         return;
     }
@@ -430,17 +432,39 @@ void DlgPrefEQ::applySelections() {
             box->setCurrentIndex(firstEffectIndex);
         }
         QString group = PlayerManager::groupForDeck(deck);
-        EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
-        m_pEQEffectRack->loadEffectToGroup(group, pEffect);
+        bool need_load = true;
+        if (m_pEQEffectRack->numEffectChainSlots() > deck) {
+            EffectChainSlotPointer chainslot =
+                    m_pEQEffectRack->getEffectChainSlot(deck);
+            if (chainslot->numSlots()) {
+                EffectPointer effectpointer =
+                        chainslot->getEffectSlot(0)->getEffect();
+                if (effectpointer) {
+                    qDebug() << "effect has a name!" << effectpointer->getEngineEffect()->getId();
+                            << "expecting" << effectId;
+                    if (effectpointer->getEngineEffect()->name() == effectId) {
+                        need_load = false;
+                    }
+                }
+            }
+        }
+        // Only apply the effect if it changed.
+        if (need_load) {
+            EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
 
-        m_pConfig->set(ConfigKey(kConfigKey, "EffectForGroup_" + group),
-                ConfigValue(effectId));
+            m_pEQEffectRack->loadEffectToGroup(group, pEffect);
 
-        m_filterWaveformEnableCOs[deck]->set(m_pEffectsManager->isEQ(effectId));
+            m_pConfig->set(ConfigKey(kConfigKey, "EffectForGroup_" + group),
+                    ConfigValue(effectId));
 
-        // This is required to remove a previous selected effect that does not
-        // fit to the current ShowAllEffects checkbox
-        slotPopulateDeckEffectSelectors();
+            m_filterWaveformEnableCOs[deck]->set(m_pEffectsManager->isEQ(effectId));
+
+            // This is required to remove a previous selected effect that does not
+            // fit to the current ShowAllEffects checkbox
+            slotPopulateDeckEffectSelectors();
+        } else {
+            qDebug() << "no change!";
+        }
         ++deck;
     }
 
