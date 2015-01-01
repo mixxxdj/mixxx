@@ -75,6 +75,20 @@ TEST_F(TruncatedIQMTest, integers2) {
     EXPECT_DOUBLE_EQ(23, mean);
 }
 
+TEST_F(TruncatedIQMTest, integers9) {
+    TruncatedIQM iqm(9);
+    for (int i=0; i<=50; ++i) {
+        double mean = iqm.insert(i);
+        double expected = 0;
+        int j;
+        for (j=i; j>=0 and j>=i-8; j--) {
+            expected += j;
+        }
+        expected /= i-j;
+        EXPECT_DOUBLE_EQ(expected, mean) << "Iteration i=" <<i;
+    }
+}
+
 TEST_F(TruncatedIQMTest, doubles7) {
     // TODO(Ferran Pujol): Correctly rewrite all means[i]
     // with the same number of significant figures.
@@ -85,10 +99,9 @@ TEST_F(TruncatedIQMTest, doubles7) {
                         30.2769022, 12.286558, 3.6191925714,
                         -1.0508074285, -1.3735714285};
     for (int i=0; i<9; ++i) {
-        qDebug() << "Testing i =" << i << ":";
         double mean = iqm.insert(input[i]);
         //TODO(Ferran Pujol): Why does EXPECT_DOUBLE_EQ fail here?
-        EXPECT_NEAR(means[i], mean, maxAcceptedError);
+        EXPECT_NEAR(means[i], mean, maxAcceptedError) << "Iteration i=" <<i;
     }
 }
 
@@ -103,11 +116,10 @@ TEST_F(TruncatedIQMTest, doubles9) {
                          0.905984867, 0.803058933625, 0.595112194889,
                          1.06771958722, 0.595099609444, 0.0573442311111,
                          0.0573442311111, 0.250574553889, 0.252138432222};
-    for (int i=0; i<13; ++i) {
-        qDebug() << "Testing i =" << i << ":";
+    for (int i=0; i<15; ++i) {
         double mean = iqm.insert(input[i]);
         //TODO(Ferran Pujol): Why does EXPECT_DOUBLE_EQ fail here?
-        EXPECT_NEAR(means[i], mean, maxAcceptedError);
+        EXPECT_NEAR(means[i], mean, maxAcceptedError) << "Iteration i=" <<i;
     }
 }
 
