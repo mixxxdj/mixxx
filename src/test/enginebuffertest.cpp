@@ -45,7 +45,7 @@ TEST_F(EngineBufferTest, TrackLoadResetsPitch) {
 */
 
 
-TEST_F(EngineBufferTest, PitchAndKeylockModeRoundtrip) {
+TEST_F(EngineBufferTest, PitchRoundtrip) {
     ControlObject::set(ConfigKey(m_sGroup1, "keylock"), 0.0);
     ControlObject::set(ConfigKey(m_sGroup1, "keylockMode"), 0.0); // kLockOriginalKey;
     ProcessBuffer();
@@ -53,9 +53,9 @@ TEST_F(EngineBufferTest, PitchAndKeylockModeRoundtrip) {
     ControlObject::set(ConfigKey(m_sGroup1, "rate"),0.5);
     ProcessBuffer();
     // pitch must not change
-    ASSERT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup1, "pitch")));
+    ASSERT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup1, "pitch_adjust")));
 
-    ControlObject::set(ConfigKey(m_sGroup1, "pitch"),0.5);
+    ControlObject::set(ConfigKey(m_sGroup1, "pitch_adjust"),0.5);
     ProcessBuffer();
     // rate must not change
     ASSERT_DOUBLE_EQ(0.5, ControlObject::get(ConfigKey(m_sGroup1, "rate")));
@@ -63,7 +63,7 @@ TEST_F(EngineBufferTest, PitchAndKeylockModeRoundtrip) {
     ControlObject::set(ConfigKey(m_sGroup1, "keylock"), 1.0);
     ProcessBuffer();
     // pitch and speed must not change
-    ASSERT_DOUBLE_EQ(0.5, ControlObject::get(ConfigKey(m_sGroup1, "pitch")));
+    ASSERT_DOUBLE_EQ(0.5, ControlObject::get(ConfigKey(m_sGroup1, "pitch_adjust")));
     ASSERT_DOUBLE_EQ(0.5, ControlObject::get(ConfigKey(m_sGroup1, "rate")));
 
     ControlObject::set(ConfigKey(m_sGroup1, "keylockMode"), 1.0); // kLockCurrentKey;

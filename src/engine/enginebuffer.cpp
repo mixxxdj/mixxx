@@ -770,7 +770,9 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         } else if (!keylock_enabled) {
             // We might have have temporary speed change, so adjust pitch if not locked
             // Note: This will not update key and tempo widgets
-            pitchRatio *= (speed/tempoRatio);
+            if (tempoRatio) {
+                pitchRatio *= (speed/tempoRatio);
+            }
         }
 
         // If either keylock is enabled or the pitch is tweaked we
@@ -786,7 +788,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             // in this case is it most likely that the user
             // will have an non linear pitch
             useIndependentPitchAndTempoScaling = true;
-        } else {
+        } else if (speed) {
             double offlinear = pitchRatio / speed;
             if (offlinear > kLinearScalerElipsis ||
                     offlinear < 1 / kLinearScalerElipsis) {
