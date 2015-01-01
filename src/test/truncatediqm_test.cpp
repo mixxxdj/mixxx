@@ -30,7 +30,7 @@ TEST_F(TruncatedIQMTest, zeros1) {
     double mean;
     for (int i=1; i<=50; ++i) {
         mean = iqm.insert(0);
-        EXPECT_DOUBLE_EQ(0, mean);
+        EXPECT_DOUBLE_EQ(0, mean) << "Iteration i=" << i;
     }
     iqm.insert(-4);
     mean = iqm.mean();
@@ -43,7 +43,7 @@ TEST_F(TruncatedIQMTest, zeros2) {
     EXPECT_DOUBLE_EQ(0, mean);
     for (int i=1; i<=50; ++i) {
         mean = iqm.insert(0);
-        EXPECT_DOUBLE_EQ(0, mean);
+        EXPECT_DOUBLE_EQ(0, mean) << "Iteration i=" << i;
     }
     iqm.insert(-4);
     mean = iqm.mean();
@@ -55,7 +55,7 @@ TEST_F(TruncatedIQMTest, integers1) {
     double mean;
     for (int i=1; i<=50; ++i) {
         mean = iqm.insert(i);
-        EXPECT_DOUBLE_EQ(i, mean);
+        EXPECT_DOUBLE_EQ(i, mean) << "Iteration i=" << i;
     }
     iqm.insert(-4);
     mean = iqm.mean();
@@ -68,7 +68,7 @@ TEST_F(TruncatedIQMTest, integers2) {
     EXPECT_DOUBLE_EQ(0, mean);
     for (int i=1; i<=50; ++i) {
         mean = iqm.insert(i);
-        EXPECT_DOUBLE_EQ((2*i-1)/2.0, mean);
+        EXPECT_DOUBLE_EQ((2*i-1)/2.0, mean) << "Iteration i=" <<i;
     }
     iqm.insert(-4);
     mean = iqm.mean();
@@ -85,7 +85,7 @@ TEST_F(TruncatedIQMTest, integers9) {
             expected += j;
         }
         expected /= i-j;
-        EXPECT_DOUBLE_EQ(expected, mean) << "Iteration i=" <<i;
+        EXPECT_DOUBLE_EQ(expected, mean) << "Iteration i=" << i;
     }
 }
 
@@ -101,7 +101,7 @@ TEST_F(TruncatedIQMTest, doubles7) {
     for (int i=0; i<9; ++i) {
         double mean = iqm.insert(input[i]);
         //TODO(Ferran Pujol): Why does EXPECT_DOUBLE_EQ fail here?
-        EXPECT_NEAR(means[i], mean, maxAcceptedError) << "Iteration i=" <<i;
+        EXPECT_NEAR(means[i], mean, maxAcceptedError) << "Iteration i=" << i;
     }
 }
 
@@ -119,7 +119,7 @@ TEST_F(TruncatedIQMTest, doubles9) {
     for (int i=0; i<15; ++i) {
         double mean = iqm.insert(input[i]);
         //TODO(Ferran Pujol): Why does EXPECT_DOUBLE_EQ fail here?
-        EXPECT_NEAR(means[i], mean, maxAcceptedError) << "Iteration i=" <<i;
+        EXPECT_NEAR(means[i], mean, maxAcceptedError) << "Iteration i=" << i;
     }
 }
 
