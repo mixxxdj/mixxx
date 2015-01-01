@@ -48,6 +48,7 @@
         <file>schema.xml</file>
         <file>shaders/filteredsignal.frag</file>
         <file>shaders/passthrough.vert</file>
+        <file>shaders/rgbsignal.frag</file>
         <file>skins/cross.png</file>
         <file>translations/mixxx_ar.qm</file>
         <file>translations/mixxx_ast.qm</file>
