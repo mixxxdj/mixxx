@@ -151,8 +151,6 @@ Mixxx::AudioSource::size_type AudioSourceFLAC::readFrameSamplesInterleaved(
         // if our buffer from libflac is empty (either because we explicitly cleared
         // it or because we've simply used all the samples), ask for a new buffer
         if (m_decodeSampleBufferReadOffset >= m_decodeSampleBufferWriteOffset) {
-            m_decodeSampleBufferReadOffset = 0;
-            m_decodeSampleBufferWriteOffset = 0;
             if (FLAC__stream_decoder_process_single(m_decoder)) {
                 if (m_decodeSampleBufferReadOffset
                         >= m_decodeSampleBufferWriteOffset) {
@@ -249,16 +247,29 @@ FLAC__bool AudioSourceFLAC::flacEOF() {
 
 FLAC__StreamDecoderWriteStatus AudioSourceFLAC::flacWrite(
         const FLAC__Frame *frame, const FLAC__int32 * const buffer[]) {
+    // decode buffer must be empty before decoding the next frame
+    DEBUG_ASSERT(m_decodeSampleBufferReadOffset >= m_decodeSampleBufferWriteOffset);
+    // reset decode buffer
+    m_decodeSampleBufferReadOffset = 0;
+    m_decodeSampleBufferWriteOffset = 0;
     if (getChannelCount() != frame->header.channels) {
-        qWarning() << "Invalid number of channels in FLAC frame header:"
-                << "expected" << getChannelCount() << "actual"
-                << frame->header.channels;
+        qWarning() << "Corrupt FLAC file:"
+                << "Invalid number of channels in FLAC frame header"
+                << frame->header.channels << "<>" << getChannelCount();
         return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
     }
-    DEBUG_ASSERT(m_decodeSampleBufferReadOffset <= m_decodeSampleBufferWriteOffset);
-    DEBUG_ASSERT(
-            (m_decodeSampleBuffer.size() - m_decodeSampleBufferWriteOffset)
-                    >= frames2samples(frame->header.blocksize));
+    if (getFrameRate() != frame->header.sample_rate) {
+        qWarning() << "Corrupt FLAC file:"
+                << "Invalid sample rate in FLAC frame header"
+                << frame->header.sample_rate << "<>" << getFrameRate();
+        return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
+    }
+    const SampleBuffer::size_type maxBlocksize = samples2frames(m_decodeSampleBuffer.size());
+    if (maxBlocksize < frame->header.blocksize) {
+        qWarning() << "Corrupt FLAC file:"
+                << "Block size in FLAC frame header exceeds the maximum block size"
+                << frame->header.blocksize << ">" << maxBlocksize;
+    }
     switch (getChannelCount()) {
     case 1: {
         // optimized code for 1 channel (mono)
