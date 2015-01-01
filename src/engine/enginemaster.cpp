@@ -390,11 +390,11 @@ void EngineMaster::process(const int iBufferSize) {
     if (m_pEngineEffectsManager) {
         GroupFeatureState busFeatures;
         m_pEngineEffectsManager->process(getBusLeftGroup(), m_pOutputBusBuffers[0],
-                                             iBufferSize, iSampleRate, busFeatures);
+                                         iBufferSize, iSampleRate, busFeatures);
         m_pEngineEffectsManager->process(getBusCenterGroup(), m_pOutputBusBuffers[1],
-                                             iBufferSize, iSampleRate, busFeatures);
+                                         iBufferSize, iSampleRate, busFeatures);
         m_pEngineEffectsManager->process(getBusRightGroup(), m_pOutputBusBuffers[2],
-                                             iBufferSize, iSampleRate, busFeatures);
+                                         iBufferSize, iSampleRate, busFeatures);
     }
 
     if (masterEnabled) {
