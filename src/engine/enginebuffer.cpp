@@ -48,6 +48,7 @@
 #include "util/timer.h"
 #include "util/math.h"
 #include "util/defs.h"
+#include "track/beatfactory.h"
 #include "track/keyutils.h"
 #include "controlobjectslave.h"
 #include "util/compatibility.h"
@@ -510,8 +511,12 @@ TrackPointer EngineBuffer::loadFakeTrack(double filebpm) {
     pTrack->setDuration(10);
     if (filebpm > 0) {
         pTrack->setBpm(filebpm);
+        BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack.data(), filebpm, 0.0);
+        pTrack->setBeats(pBeats);
     }
     slotTrackLoaded(pTrack, 44100, 44100 * 10);
+    m_pSyncControl->setLocalBpm(filebpm);
+    m_pSyncControl->trackLoaded(pTrack);
     return pTrack;
 }
 
@@ -519,6 +524,7 @@ TrackPointer EngineBuffer::loadFakeTrack(double filebpm) {
 void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
                                    int iTrackSampleRate,
                                    int iTrackNumSamples) {
+    //qDebug() << getGroup() << "EngineBuffer::slotTrackLoaded";
     m_pause.lock();
     m_visualPlayPos->setInvalid();
     m_pCurrentTrack = pTrack;
