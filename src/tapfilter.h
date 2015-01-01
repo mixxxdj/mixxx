@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QTime>
 
+#include "movingtruncatediqm.h"
 #include "util/types.h"
 
 class TapFilter : public QObject {
@@ -18,9 +19,8 @@ class TapFilter : public QObject {
 
   private:
     QTime m_timer;
-    CSAMPLE* m_pFilterBuffer;
-    int m_iFilterLength;
-    int m_iValidPresses;
+    MovingTruncatedIQM m_mean;
+    const int m_iMeanWindowSize;
     int m_iMaxInterval;
 };
 
