@@ -59,6 +59,8 @@
 
 #include "trackinfoobject.h"
 
+const double kLinearScalerElipsis = 1.00058; // changes < 1 cent allows a linear scaler
+
 EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
                            EngineChannel* pChannel, EngineMaster* pMixingEngine)
         : m_engineLock(QMutex::Recursive),
@@ -774,8 +776,25 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         // If either keylock is enabled or the pitch is tweaked we
         // need to use pitch and time scaling.
         // Note: we have still click issue when changing the scaler
-        bool useIndependentPitchAndTempoScaling =
-                (keylock_enabled || !qFuzzyCompare(pitchRatio, speed));
+
+        // const double kLinearScalerElipsis = 1.00058;
+
+        bool useIndependentPitchAndTempoScaling = false;
+        if (keylock_enabled) {
+            // use always IndependentPitchAndTempoScaling
+            // to avoid clicks when crossing the linear pitch
+            // in this case is it most likely that the user
+            // will have an non linear pitch
+            useIndependentPitchAndTempoScaling = true;
+        } else {
+            double offlinear = pitchRatio / speed;
+            if (offlinear > kLinearScalerElipsis ||
+                    offlinear < 1 / kLinearScalerElipsis) {
+                // offlinear > 1 cent
+                // everything below is not hearable
+                useIndependentPitchAndTempoScaling = true;
+            }
+        }
         enableIndependentPitchTempoScaling(useIndependentPitchAndTempoScaling);
 
         // How speed/tempo/pitch are related:
