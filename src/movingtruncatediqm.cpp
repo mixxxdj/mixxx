@@ -1,5 +1,4 @@
 #include "movingtruncatediqm.h"
-#include <QtDebug>
 
 MovingTruncatedIQM::MovingTruncatedIQM(const unsigned int listMaxSize)
     : m_iListMaxSize(listMaxSize),
