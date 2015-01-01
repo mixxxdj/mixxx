@@ -791,7 +791,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             if (offlinear > kLinearScalerElipsis ||
                     offlinear < 1 / kLinearScalerElipsis) {
                 // offlinear > 1 cent
-                // everything below is not hearable
+                // everything below is not hear-able
                 useIndependentPitchAndTempoScaling = true;
             }
         }
