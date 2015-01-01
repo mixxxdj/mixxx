@@ -145,7 +145,6 @@ class SliderEventHandler {
             // parents.
             if (newPos != m_dPos) {
                 m_dPos = newPos;
-                pWidget->setControlParameter(dParameter);
                 pWidget->update();
             }
         }
