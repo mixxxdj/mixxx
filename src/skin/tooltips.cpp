@@ -392,9 +392,9 @@ void Tooltips::addStandardTooltips() {
     // TODO(owen): find a better phrase for "the other deck"
     add("sync_reset_key")
             << tr("Sync and Reset Key")
-            << QString("%1: %2").arg(leftClick, tr("Syncs the pitch (key) to be compatible with the other track, "
+            << QString("%1: %2").arg(leftClick, tr("Sets the key to a compatible key with the other track key, "
                                                    "if a key is detected on both."))
-            << QString("%1: %2").arg(rightClick, tr("Sets the pitch (key) to original track pitch."));
+            << QString("%1: %2").arg(rightClick, tr("Resets the key to the original track key."));
 
     add("sync_master")
             << tr("Enable Sync Clock Master")
