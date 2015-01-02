@@ -107,15 +107,15 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     connect(ComboBoxRateRange, SIGNAL(activated(int)),
             this, SLOT(slotSetRateRange(int)));
 
-    ComboBoxPitchAndKeylock->clear();
-    ComboBoxPitchAndKeylock->addItem(tr("Lock original key, offset range"));
-    ComboBoxPitchAndKeylock->addItem(tr("Lock current key, absolute range"));
-    connect(ComboBoxPitchAndKeylock, SIGNAL(activated(int)),
-            this, SLOT(slotPitchAndKeylock(int)));
-    m_pitchAndKeylockMode = m_pConfig->getValueString(
-            ConfigKey("[Controls]", "PitchAndKeylockMode"), "0").toInt();
-    foreach (ControlObjectThread* pControl, m_pitchAndKeylockControls) {
-        pControl->slotSet(m_pitchAndKeylockMode);
+    ComboBoxKeylockMode->clear();
+    ComboBoxKeylockMode->addItem(tr("Lock original key"));
+    ComboBoxKeylockMode->addItem(tr("Lock current key"));
+    connect(ComboBoxKeylockMode, SIGNAL(activated(int)),
+            this, SLOT(slotKeylockMode(int)));
+    m_keylockMode = m_pConfig->getValueString(
+            ConfigKey("[Controls]", "keylockMode"), "0").toInt();
+    foreach (ControlObjectThread* pControl, m_keylockModeControls) {
+        pControl->slotSet(m_keylockMode);
     }
 
     //
@@ -343,7 +343,7 @@ DlgPrefControls::~DlgPrefControls() {
     qDeleteAll(m_rateDirControls);
     qDeleteAll(m_cueControls);
     qDeleteAll(m_rateRangeControls);
-    qDeleteAll(m_pitchAndKeylockControls);
+    qDeleteAll(m_keylockModeControls);
 }
 
 void DlgPrefControls::slotUpdateSchemes() {
@@ -387,7 +387,7 @@ void DlgPrefControls::slotUpdate() {
     else
         ComboBoxRateDir->setCurrentIndex(1);
 
-    ComboBoxPitchAndKeylock->setCurrentIndex(m_pitchAndKeylockMode);
+    ComboBoxKeylockMode->setCurrentIndex(m_keylockMode);
 
     ComboBoxResetSpeedAndPitch->setCurrentIndex(1 - m_speedAutoReset);
 }
@@ -436,8 +436,8 @@ void DlgPrefControls::slotResetToDefaults() {
     m_speedAutoReset = 0;
     ComboBoxResetSpeedAndPitch->setCurrentIndex(1);
 
-    m_pitchAndKeylockMode = 0;
-    ComboBoxPitchAndKeylock->setCurrentIndex(m_pitchAndKeylockMode);
+    m_keylockMode = 0;
+    ComboBoxKeylockMode->setCurrentIndex(m_keylockMode);
 }
 
 void DlgPrefControls::slotSetLocale(int pos) {
@@ -487,8 +487,8 @@ void DlgPrefControls::slotSetRateDir(int index) {
 
 }
 
-void DlgPrefControls::slotPitchAndKeylock(int index) {
-    m_pitchAndKeylockMode = index;
+void DlgPrefControls::slotKeylockMode(int index) {
+    m_keylockMode = index;
 }
 
 void DlgPrefControls::slotSetAllowTrackLoadToPlayingDeck(int) {
@@ -623,10 +623,10 @@ void DlgPrefControls::slotApply() {
             ConfigValue(m_speedAutoReset));
 
     m_pConfig->set(ConfigKey("[Controls]", "PitchAndKeylockMode"),
-            ConfigValue(m_pitchAndKeylockMode));
+            ConfigValue(m_keylockMode));
     // Set cue behavior for every group
-    foreach (ControlObjectThread* pControl, m_pitchAndKeylockControls) {
-        pControl->slotSet(m_pitchAndKeylockMode);
+    foreach (ControlObjectThread* pControl, m_keylockModeControls) {
+        pControl->slotSet(m_keylockMode);
     }
 }
 
@@ -679,9 +679,9 @@ void DlgPrefControls::slotNumDecksChanged(double new_count) {
                 group, "rate_dir"));
         m_cueControls.push_back(new ControlObjectThread(
                 group, "cue_mode"));
-        m_pitchAndKeylockControls.push_back(new ControlObjectThread(
-                        group, "pitchAndKeylockMode"));
-        m_pitchAndKeylockControls.last()->set(m_pitchAndKeylockMode);
+        m_keylockModeControls.push_back(new ControlObjectThread(
+                        group, "keylockMode"));
+        m_keylockModeControls.last()->set(m_keylockMode);
     }
 
     m_iNumConfiguredDecks = numdecks;
@@ -705,9 +705,9 @@ void DlgPrefControls::slotNumSamplersChanged(double new_count) {
                 group, "rate_dir"));
         m_cueControls.push_back(new ControlObjectThread(
                 group, "cue_mode"));
-        m_pitchAndKeylockControls.push_back(new ControlObjectThread(
-                        group, "pitchAndKeylockMode"));
-        m_pitchAndKeylockControls.last()->set(m_pitchAndKeylockMode);
+        m_keylockModeControls.push_back(new ControlObjectThread(
+                        group, "keylockMode"));
+        m_keylockModeControls.last()->set(m_keylockMode);
     }
 
     m_iNumConfiguredSamplers = numsamplers;
