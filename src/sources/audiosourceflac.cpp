@@ -253,20 +253,20 @@ FLAC__StreamDecoderWriteStatus AudioSourceFLAC::flacWrite(
     m_decodeSampleBufferReadOffset = 0;
     m_decodeSampleBufferWriteOffset = 0;
     if (getChannelCount() != frame->header.channels) {
-        qWarning() << "Corrupt FLAC file:"
+        qWarning() << "Corrupt or unsupported FLAC file:"
                 << "Invalid number of channels in FLAC frame header"
                 << frame->header.channels << "<>" << getChannelCount();
         return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
     }
     if (getFrameRate() != frame->header.sample_rate) {
-        qWarning() << "Corrupt FLAC file:"
+        qWarning() << "Corrupt or unsupported FLAC file:"
                 << "Invalid sample rate in FLAC frame header"
                 << frame->header.sample_rate << "<>" << getFrameRate();
         return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
     }
     const SampleBuffer::size_type maxBlocksize = samples2frames(m_decodeSampleBuffer.size());
     if (maxBlocksize < frame->header.blocksize) {
-        qWarning() << "Corrupt FLAC file:"
+        qWarning() << "Corrupt or unsupported FLAC file:"
                 << "Block size in FLAC frame header exceeds the maximum block size"
                 << frame->header.blocksize << ">" << maxBlocksize;
     }
@@ -293,6 +293,7 @@ FLAC__StreamDecoderWriteStatus AudioSourceFLAC::flacWrite(
     }
     default: {
         // generic code for multiple channels
+        DEBUG_ASSERT(getChannelCount() == frame->header.channels);
         for (unsigned i = 0; i < frame->header.blocksize; ++i) {
             for (unsigned j = 0; j < frame->header.channels; ++j) {
                 m_decodeSampleBuffer[m_decodeSampleBufferWriteOffset++] =
