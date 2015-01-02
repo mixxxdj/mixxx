@@ -19,7 +19,7 @@
 class CoverArtUtils {
   public:
     static QString defaultCoverLocation() {
-        return QString(":/images/library/cover_default.png");
+        return QString(":/images/library/cover_default.svg");
     }
 
     static QString pixmapCacheKey(const quint16 hash,
