@@ -51,25 +51,28 @@ private:
     mad_stream m_madStream;
 
     /** Struct used to store mad frames for seeking */
-    struct MadSeekFrameType {
+    struct SeekFrameType {
         diff_type frameIndex;
         const unsigned char* pFileData;
     };
 
     /** It is not possible to make a precise seek in an mp3 file without decoding the whole stream.
      * To have precise seek within a limited range from the current decode position, we keep track
-     * of past decodeded frame, and their exact position. If a seek occours and it is within the
-     * range of frames we keep track of a precise seek occours, otherwise an unprecise seek is performed
+     * of past decoded frame, and their exact position. If a seek occurs and it is within the
+     * range of frames we keep track of a precise seek occurs, otherwise an unprecise seek is performed
      */
-    typedef std::vector<MadSeekFrameType> MadSeekFrameList;
-    MadSeekFrameList m_seekFrameList; // ordered-by frameIndex
-    size_type m_avgSeekFrameCount; // avg. samples frames per MP3 frame
+    typedef std::vector<SeekFrameType> SeekFrameList;
+    SeekFrameList m_seekFrameList; // ordered-by frameIndex
+    size_type m_avgSeekFrameCount; // avg. sample frames per MP3 frame
 
-    /** Returns the position of the frame which was found. The found frame is set to
-     * the current element in m_qSeekList */
-    MadSeekFrameList::size_type findSeekFrameIndex(diff_type frameIndex) const;
+    /** Returns the position in m_seekFrameList of the requested frame index. */
+    SeekFrameList::size_type findSeekFrameIndex(diff_type frameIndex) const;
 
     diff_type m_curFrameIndex;
+
+    void initDecoding();
+    void finishDecoding();
+    void restartDecoding(const SeekFrameType& seekFrame);
 
     // current play position
     mad_frame m_madFrame;

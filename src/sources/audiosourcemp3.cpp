@@ -49,9 +49,8 @@ AudioSourceMp3::AudioSourceMp3(QString fileName)
           m_avgSeekFrameCount(0),
           m_curFrameIndex(0),
           m_madSynthCount(0) {
-    mad_stream_init(&m_madStream);
-    mad_frame_init(&m_madFrame);
-    mad_synth_init(&m_madSynth);
+    initDecoding();
+    m_seekFrameList.reserve(kSeekFrameListCapacity);
 }
 
 AudioSourceMp3::~AudioSourceMp3() {
@@ -79,13 +78,8 @@ Result AudioSourceMp3::postConstruct() {
     // Get a pointer to the file using memory mapped IO
     m_fileSize = m_file.size();
     m_pFileData = m_file.map(0, m_fileSize);
-
     // Transfer it to the mad stream-buffer:
-    mad_stream_init(&m_madStream);
-    mad_stream_options(&m_madStream, MAD_OPTION_IGNORECRC);
     mad_stream_buffer(&m_madStream, m_pFileData, m_fileSize);
-
-    m_seekFrameList.reserve(kSeekFrameListCapacity);
 
     // Decode all the headers and calculate audio properties
     unsigned long sumBitrate = 0;
@@ -180,7 +174,7 @@ Result AudioSourceMp3::postConstruct() {
         }
 
         // Add frame to list of frames
-        MadSeekFrameType seekFrame;
+        SeekFrameType seekFrame;
         seekFrame.pFileData = m_madStream.this_frame;
         seekFrame.frameIndex = mad_timer_count(madFileDuration, madUnits);
         m_seekFrameList.push_back(seekFrame);
@@ -204,22 +198,39 @@ Result AudioSourceMp3::postConstruct() {
         return ERR; // abort
     }
 
-    // restart decoding
-    m_curFrameIndex = getFrameCount();
-    seekFrame(0);
+    restartDecoding(m_seekFrameList.front());
 
     return OK;
 }
 
-void AudioSourceMp3::close() throw() {
-    m_seekFrameList.clear();
-    m_avgSeekFrameCount = 0;
-    m_curFrameIndex = 0;
+void AudioSourceMp3::initDecoding() {
+    mad_stream_init(&m_madStream);
+    mad_stream_options(&m_madStream, MAD_OPTION_IGNORECRC);
+    mad_frame_init(&m_madFrame);
+    mad_synth_init(&m_madSynth);
+}
 
+void AudioSourceMp3::finishDecoding() {
     mad_synth_finish(&m_madSynth);
     mad_frame_finish(&m_madFrame);
     mad_stream_finish(&m_madStream);
     m_madSynthCount = 0;
+    m_curFrameIndex = getFrameCount(); // invalidate
+}
+
+void AudioSourceMp3::restartDecoding(const SeekFrameType& seekFrame) {
+    finishDecoding();
+    initDecoding();
+    mad_stream_buffer(&m_madStream, seekFrame.pFileData, m_fileSize - (seekFrame.pFileData - m_pFileData));
+    m_curFrameIndex = seekFrame.frameIndex;
+}
+
+void AudioSourceMp3::close() throw() {
+    finishDecoding();
+
+    m_seekFrameList.clear();
+    m_avgSeekFrameCount = 0;
+    m_curFrameIndex = 0;
 
     m_file.unmap(m_pFileData);
     m_fileSize = 0;
@@ -229,18 +240,18 @@ void AudioSourceMp3::close() throw() {
     Super::reset();
 }
 
-AudioSourceMp3::MadSeekFrameList::size_type AudioSourceMp3::findSeekFrameIndex(diff_type frameIndex) const {
+AudioSourceMp3::SeekFrameList::size_type AudioSourceMp3::findSeekFrameIndex(diff_type frameIndex) const {
     if ((0 >= frameIndex) || m_seekFrameList.empty()) {
         return 0;
     }
     // Guess position of frame in m_seekFrameList based on average frame size
-    AudioSourceMp3::MadSeekFrameList::size_type seekFrameIndex = frameIndex / m_avgSeekFrameCount;
+    AudioSourceMp3::SeekFrameList::size_type seekFrameIndex = frameIndex / m_avgSeekFrameCount;
     if (seekFrameIndex >= m_seekFrameList.size()) {
         seekFrameIndex = m_seekFrameList.size() - 1;
     }
     // binary search starting at seekFrameIndex
-    AudioSourceMp3::MadSeekFrameList::size_type lowerBound = 0;
-    AudioSourceMp3::MadSeekFrameList::size_type upperBound = m_seekFrameList.size();
+    AudioSourceMp3::SeekFrameList::size_type lowerBound = 0;
+    AudioSourceMp3::SeekFrameList::size_type upperBound = m_seekFrameList.size();
     while ((upperBound - lowerBound) > 1) {
         DEBUG_ASSERT(seekFrameIndex >= lowerBound);
         DEBUG_ASSERT(seekFrameIndex < upperBound);
@@ -266,25 +277,14 @@ AudioSource::diff_type AudioSourceMp3::seekFrame(diff_type frameIndex) {
     }
     // simply skip frames when jumping no more than kMaxSkipFrameSamplesWhenSeeking frames forward
     if ((frameIndex < m_curFrameIndex) || ((frameIndex - m_curFrameIndex) > kMaxSkipFrameSamplesWhenSeeking)) {
-        MadSeekFrameList::size_type seekFrameIndex = findSeekFrameIndex(frameIndex);
+        SeekFrameList::size_type seekFrameIndex = findSeekFrameIndex(frameIndex);
         if (seekFrameIndex <= kSeekFramePrefetchCount) {
             seekFrameIndex = 0;
         } else {
             seekFrameIndex -= kSeekFramePrefetchCount;
         }
         DEBUG_ASSERT(seekFrameIndex < m_seekFrameList.size());
-        const MadSeekFrameType& seekFrame(m_seekFrameList[seekFrameIndex]);
-        // restart decoder
-        mad_synth_finish(&m_madSynth);
-        mad_frame_finish(&m_madFrame);
-        mad_stream_finish(&m_madStream);
-        mad_stream_init(&m_madStream);
-        mad_stream_options(&m_madStream, MAD_OPTION_IGNORECRC);
-        mad_stream_buffer(&m_madStream, seekFrame.pFileData, m_fileSize - (seekFrame.pFileData - m_pFileData));
-        mad_frame_init(&m_madFrame);
-        mad_synth_init(&m_madSynth);
-        m_curFrameIndex = seekFrame.frameIndex;
-        m_madSynthCount = 0;
+        restartDecoding(m_seekFrameList[seekFrameIndex]);
     }
     // decode and discard prefetch data
     DEBUG_ASSERT(m_curFrameIndex <= frameIndex);
