@@ -10,7 +10,7 @@
 #include "library/coverartutils.h"
 #include "library/dao/cue.h"
 
-const int kFilterLength = 600;
+const int kFilterLength = 80;
 const int kMinBPM = 30;
 const int kMaxBPM = 240;
 // Maximum allowed interval between beats in milli seconds (calculated from
