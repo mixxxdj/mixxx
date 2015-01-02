@@ -465,10 +465,10 @@ void DlgTrackInfo::slotBpmThreeFourth() {
 void DlgTrackInfo::slotBpmTap(double averageLength, int numSamples) {
     double averageBpm = 60.0 * 1000.0 / averageLength;
     // average bpm needs to be truncated for this comparison:
-    //~ if (averageBpm != m_dLastBpm) {
-        //~ m_dLastBpm = averageBpm;
+    if (averageBpm != m_dLastBpm) {
+        m_dLastBpm = averageBpm;
         spinBpm->setValue(averageBpm);
-    //~ }
+    }
 }
 
 void DlgTrackInfo::reloadTrackMetadata() {

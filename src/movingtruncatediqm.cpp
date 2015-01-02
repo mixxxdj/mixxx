@@ -17,11 +17,11 @@ double MovingTruncatedIQM::insert(double value) {
     } else if (value < m_List.first()) {
         m_List.prepend(value);
         m_Queue.enqueue(m_List.begin());
-    } else if (value > m_List.last()) {
+    } else if (value >= m_List.last()) {
         m_List.append(value);
         m_Queue.enqueue(--m_List.end());
     } else {
-        QLinkedList<double>::iterator i = m_List.begin();
+        QLinkedList<double>::iterator i = m_List.begin()++;
         while (value >= *i) ++i;
         m_Queue.enqueue(m_List.insert(i, value));
         // (If value already exists in the list, the new instance

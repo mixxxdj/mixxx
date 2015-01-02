@@ -1,10 +1,8 @@
 #include "tapfilter.h"
 
-#include <QDebug>
-
 TapFilter::TapFilter(QObject* pParent, int filterLength, int maxInterval)
         : QObject(pParent),
-          m_mean(MovingTruncatedIQM(4)),
+          m_mean(MovingTruncatedIQM(filterLength)),
           m_iMeanWindowSize(filterLength),
           m_iMaxInterval(maxInterval) {
     m_timer.start();
