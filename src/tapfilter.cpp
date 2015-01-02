@@ -1,5 +1,7 @@
 #include "tapfilter.h"
 
+#include <QDebug>
+
 TapFilter::TapFilter(QObject* pParent, int filterLength, int maxInterval)
         : QObject(pParent),
           m_mean(MovingTruncatedIQM(4)),

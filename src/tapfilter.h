@@ -12,6 +12,8 @@ class TapFilter : public QObject {
   public:
     TapFilter(QObject *pParent, int filterLength, int maxInterval);
     virtual ~TapFilter();
+
+  public slots:
     void tap();
 
   signals:
