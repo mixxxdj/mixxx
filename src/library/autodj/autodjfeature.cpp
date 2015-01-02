@@ -369,7 +369,9 @@ void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
 void AutoDJFeature::slotSignalEmitted(int a)
 {
     qDebug()<<"Request track signal emitted with "<<a<<endl;
-     slotAddRandomTrack(a);
+     slotAddRandomTrack(true);
+     //implement condition on a later , a is jsut to check if
+     //the multiple function calls are different interms of arguement
 }
 
 #endif // __AUTODJCRATES__
