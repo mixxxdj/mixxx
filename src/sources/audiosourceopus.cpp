@@ -77,6 +77,7 @@ AudioSource::size_type AudioSourceOpus::readFrameSamplesInterleaved(
                 sampleBuffer + frames2samples(readCount),
                 frames2samples(frameCount - readCount), NULL);
         if (0 == readResult) {
+            // EOF
             break; // done
         }
         if (0 < readResult) {

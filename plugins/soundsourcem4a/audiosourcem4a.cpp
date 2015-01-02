@@ -247,8 +247,8 @@ AudioSource::size_type AudioSourceM4A::readFrameSamplesInterleaved(
             }
         }
         if (0 == m_inputBufferLength) {
-            // no more input data available (EOF)
-            break;// done
+            // EOF
+            break; // done
         }
         faacDecFrameInfo decFrameInfo;
         decFrameInfo.bytesconsumed = 0;
@@ -263,6 +263,11 @@ AudioSource::size_type AudioSourceM4A::readFrameSamplesInterleaved(
                 &m_inputBuffer[m_inputBufferOffset],
                 m_inputBufferLength / sizeof(m_inputBuffer[0]),
                 &pDecodeBuffer, decodeBufferCapacityInBytes);
+        if (0 != decFrameInfo.error) {
+            qWarning() << "AAC decoding error:"
+                    << faacDecGetErrorMessage(decFrameInfo.error);
+            break; // abort
+        }
         // samples should have been decoded into our own buffer
         DEBUG_ASSERT(pSampleBuffer == pDecodeBuffer);
         pSampleBuffer += decFrameInfo.samples;
@@ -276,18 +281,17 @@ AudioSource::size_type AudioSourceM4A::readFrameSamplesInterleaved(
         m_inputBufferLength -= decFrameInfo.bytesconsumed
                 * sizeof(m_inputBuffer[0]);
         m_curFrameIndex += samples2frames(decFrameInfo.samples);
-        if (0 != decFrameInfo.error) {
-            qWarning() << "AAC decoding error:"
-                    << faacDecGetErrorMessage(decFrameInfo.error);
-            break; // abort
-        }
+        // verify output sample data for consistency
         if (getChannelCount() != decFrameInfo.channels) {
-            qWarning() << "Unexpected number of channels:"
-                    << decFrameInfo.channels;
+            qWarning() << "Corrupt or unsupported AAC file:"
+                    "Unexpected number of channels"
+                    << decFrameInfo.channels << "<>" << getChannelCount();
             break; // abort
         }
         if (getFrameRate() != decFrameInfo.samplerate) {
-            qWarning() << "Unexpected sample rate:" << decFrameInfo.samplerate;
+            qWarning() << "Corrupt or unsupported AAC file:"
+                    << "Unexpected sample rate"
+                    << decFrameInfo.samplerate << "<>" << getFrameRate();
             break; // abort
         }
     }
