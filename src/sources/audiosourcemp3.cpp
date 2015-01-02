@@ -197,7 +197,7 @@ Result AudioSourceMp3::postConstruct() {
         setFrameCount(mad_timer_count(madFileDuration, madUnits));
         m_avgSeekFrameCount = getFrameCount() / madFrameCount;
         int avgBitrate = sumBitrate / madFrameCount;
-        setBitrate(avgBitrate);
+        setBitrate(avgBitrate / 1000);
     } else {
         // This is not a working MP3 file.
         qWarning() << "SSMP3: This is not a working MP3 file:" << m_file.fileName();
