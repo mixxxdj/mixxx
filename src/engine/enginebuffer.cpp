@@ -59,7 +59,7 @@
 
 #include "trackinfoobject.h"
 
-const double kLinearScalerElipsis = 1.00058; // changes < 1 cent allows a linear scaler
+const double kLinearScalerElipsis = 1.00058; // 2^(0.01/12): changes < 1 cent allows a linear scaler
 
 EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
                            EngineChannel* pChannel, EngineMaster* pMixingEngine)
