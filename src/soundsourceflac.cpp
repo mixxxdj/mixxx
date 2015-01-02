@@ -289,6 +289,12 @@ FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
     const FLAC__Frame *frame, const FLAC__int32 *const buffer[]) {
     unsigned int i(0);
     m_flacBufferLength = 0;
+    if (getSampleRate() != frame->header.sample_rate) {
+        qWarning() << "Corrupt FLAC file:"
+                << "Invalid sample rate in FLAC frame header"
+                << frame->header.sample_rate << "<>" << getSampleRate();
+        return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
+    }
     if (frame->header.blocksize > m_maxBlocksize) {
         qWarning() << "Corrupt FLAC file:"
                    << "Block size in FLAC frame header exceeds the maximum block size"
