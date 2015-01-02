@@ -2,7 +2,7 @@
 
 TapFilter::TapFilter(QObject* pParent, int filterLength, int maxInterval)
         : QObject(pParent),
-          m_mean(MovingTruncatedIQM(filterLength)),
+          m_mean(MovingInterquartileMean(filterLength)),
           m_iMeanWindowSize(filterLength),
           m_iMaxInterval(maxInterval) {
     m_timer.start();
