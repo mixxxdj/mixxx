@@ -24,7 +24,7 @@
         <SetVariable name="state_1_text">▶</SetVariable>
         <SetVariable name="state_1_pressed"></SetVariable>
         <SetVariable name="state_1_unpressed"></SetVariable>
-        <SetVariable name="left_connection_control"><Variable name="group"/>,start_play</SetVariable>
+        <SetVariable name="left_connection_control"><Variable name="group"/>,cue_gotoandplay</SetVariable>
         <SetVariable name="right_connection_control"><Variable name="group"/>,start_stop</SetVariable>
       </Template>
 

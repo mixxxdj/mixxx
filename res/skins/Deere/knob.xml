@@ -6,25 +6,15 @@
     control: The control to connect to.
 -->
 <Template>
-  <WidgetGroup>
-    <Layout>vertical</Layout>
-    <Children>
-      <KnobComposed>
-        <TooltipId><Variable name="TooltipId"/></TooltipId>
-        <Size>40f,40f</Size>
-        <Knob>knob.svg</Knob>
-        <MinAngle>-230</MinAngle>
-        <MaxAngle>50</MaxAngle>
-        <Connection>
-          <ConfigKey><Variable name="group"/>,<Variable name="control"/></ConfigKey>
-        </Connection>
-      </KnobComposed>
-      <Label>
-        <Size>40f,10f</Size>
-        <ObjectName>KnobLabel</ObjectName>
-        <Text><Variable name="label"/></Text>
-      </Label>
-    </Children>
-  </WidgetGroup>
+  <KnobComposed>
+    <TooltipId><Variable name="TooltipId"/></TooltipId>
+    <Size>40f,34f</Size>
+    <Knob>knob.svg</Knob>
+    <BackPath>knob_bg.svg</BackPath>
+    <MinAngle>-135</MinAngle>
+    <MaxAngle>135</MaxAngle>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,<Variable name="control"/></ConfigKey>
+    </Connection>
+  </KnobComposed>
 </Template>
-
