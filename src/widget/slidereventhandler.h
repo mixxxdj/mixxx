@@ -51,7 +51,9 @@ class SliderEventHandler {
             m_dPos = m_dStartHandlePos + (m_dPos - m_dStartMousePos);
 
             // Clamp to the range [0, sliderLength - m_dHandleLength].
-            m_dPos = math_clamp(m_dPos, 0.0, m_dSliderLength - m_dHandleLength);
+            if (m_dSliderLength - m_dHandleLength > 0.0) {
+                m_dPos = math_clamp(m_dPos, 0.0, m_dSliderLength - m_dHandleLength);
+            }
             double newParameter = positionToParameter(m_dPos);
 
             // If we don't change this, then updates might be rejected in
@@ -133,7 +135,9 @@ class SliderEventHandler {
             double newPos = parameterToPosition(dParameter);
 
             // Clamp to [0.0, sliderLength - m_dHandleLength].
-            newPos = math_clamp(newPos, 0.0, m_dSliderLength - m_dHandleLength);
+            if (m_dSliderLength - m_dHandleLength > 0.0) {
+                newPos = math_clamp(newPos, 0.0, m_dSliderLength - m_dHandleLength);
+            }
 
             // Check a second time for no-ops. It's possible the parameter changed
             // but the visible pixmap didn't. Only update() the widget if we're
@@ -141,7 +145,6 @@ class SliderEventHandler {
             // parents.
             if (newPos != m_dPos) {
                 m_dPos = newPos;
-                pWidget->setControlParameter(dParameter);
                 pWidget->update();
             }
         }
@@ -156,6 +159,9 @@ class SliderEventHandler {
 
     // Convert CO parameter value to a handle pixel position.
     double parameterToPosition(double parameter) const {
+        if (m_dSliderLength - m_dHandleLength <= 0.0) {
+            return 0.0;
+        }
         if (!m_bHorizontal) {
             parameter = 1.0 - parameter;
         }
@@ -164,6 +170,9 @@ class SliderEventHandler {
 
     // Convert handle pixel position to a CO parameter value.
     double positionToParameter(double pos) const {
+        if (m_dSliderLength - m_dHandleLength <= 0.0) {
+            return 0.0;
+        }
         double val = pos / (m_dSliderLength - m_dHandleLength);
         if (!m_bHorizontal) {
             return 1.0 - val;

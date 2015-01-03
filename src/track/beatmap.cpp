@@ -82,6 +82,12 @@ void BeatMap::initialize(TrackPointer pTrack, int iSampleRate) {
     m_iSampleRate = iSampleRate > 0 ? iSampleRate : pTrack->getSampleRate();
     m_dCachedBpm = 0;
     m_dLastFrame = 0;
+
+    if (!pTrack.isNull()) {
+        // BeatMap should live in the same thread as the track it is associated
+        // with.
+        moveToThread(pTrack->thread());
+    }
 }
 
 BeatMap::~BeatMap() {
