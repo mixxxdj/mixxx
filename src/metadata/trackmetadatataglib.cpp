@@ -16,12 +16,10 @@
 
 #include <QDebug>
 
-namespace Mixxx
-{
+namespace Mixxx {
 
 // static
-namespace
-{
+namespace {
 const bool kDebugMetadata = false;
 
 // Taglib strings can be NULL and using it could cause some segfaults,
@@ -158,12 +156,12 @@ void readID3v2Tag(TrackMetadata* pTrackMetadata, const TagLib::ID3v2::Tag& tag) 
             QString desc = toQString(ReplayGainframe->description()).toLower();
             if (desc == "replaygain_album_gain") {
                 QString sReplayGain = toQString(ReplayGainframe->fieldList()[1]);
-                pTrackMetadata->setReplayGainString(sReplayGain);
+                pTrackMetadata->setReplayGainDbString(sReplayGain);
             }
             //Prefer track gain over album gain.
             if (desc == "replaygain_track_gain") {
                 QString sReplayGain = toQString(ReplayGainframe->fieldList()[1]);
-                pTrackMetadata->setReplayGainString(sReplayGain);
+                pTrackMetadata->setReplayGainDbString(sReplayGain);
             }
         }
     }
@@ -218,11 +216,11 @@ void readAPETag(TrackMetadata* pTrackMetadata, const TagLib::APE::Tag& tag) {
     }
 
     if (tag.itemListMap().contains("REPLAYGAIN_ALBUM_GAIN")) {
-        pTrackMetadata->setReplayGainString(toQString(tag.itemListMap()["REPLAYGAIN_ALBUM_GAIN"]));
+        pTrackMetadata->setReplayGainDbString(toQString(tag.itemListMap()["REPLAYGAIN_ALBUM_GAIN"]));
     }
     //Prefer track gain over album gain.
     if (tag.itemListMap().contains("REPLAYGAIN_TRACK_GAIN")) {
-        pTrackMetadata->setReplayGainString(toQString(tag.itemListMap()["REPLAYGAIN_TRACK_GAIN"]));
+        pTrackMetadata->setReplayGainDbString(toQString(tag.itemListMap()["REPLAYGAIN_TRACK_GAIN"]));
     }
 
     if (tag.itemListMap().contains("Album Artist")) {
@@ -263,11 +261,11 @@ void readXiphComment(TrackMetadata* pTrackMetadata, const TagLib::Ogg::XiphComme
     }
 
     if (tag.fieldListMap().contains("REPLAYGAIN_ALBUM_GAIN")) {
-        pTrackMetadata->setReplayGainString(toQString(tag.fieldListMap()["REPLAYGAIN_ALBUM_GAIN"]));
+        pTrackMetadata->setReplayGainDbString(toQString(tag.fieldListMap()["REPLAYGAIN_ALBUM_GAIN"]));
     }
     //Prefer track gain over album gain.
     if (tag.fieldListMap().contains("REPLAYGAIN_TRACK_GAIN")) {
-        pTrackMetadata->setReplayGainString(toQString(tag.fieldListMap()["REPLAYGAIN_TRACK_GAIN"]));
+        pTrackMetadata->setReplayGainDbString(toQString(tag.fieldListMap()["REPLAYGAIN_TRACK_GAIN"]));
     }
 
     /*

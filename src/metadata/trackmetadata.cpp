@@ -4,46 +4,39 @@
 
 namespace Mixxx {
 
-namespace {
-const float BPM_ZERO = 0.0f;
-const float BPM_MAX = 300.0f;
+TrackMetadata::TrackMetadata()
+        : m_channels(0), m_sampleRate(0), m_bitrate(0), m_duration(0), m_bpm(BPM_UNDEFINED), m_replayGain(REPLAYGAIN_UNDEFINED) {
+}
 
-float parseBpmString(const QString& sBpm) {
-    float bpm = sBpm.toFloat();
+double TrackMetadata::parseBpmString(const QString& sBpm) {
+    bool bpmValid = false;
+    double bpm = sBpm.toDouble(&bpmValid);
+    if ((!bpmValid) || (BPM_MIN > bpm)) {
+        return BPM_UNDEFINED;
+    }
     while (bpm > BPM_MAX) {
-        bpm /= 10.0f;
+        bpm /= 10.0;
     }
     return bpm;
 }
 
-float parseReplayGainString(QString sReplayGain) {
-    QString ReplayGainstring = sReplayGain.remove(" dB");
-    float fReplayGain = db2ratio(ReplayGainstring.toFloat());
+float TrackMetadata::parseReplayGainDbString(QString sReplayGainDb) {
+    sReplayGainDb.remove("dB");
+    bool replayGainDbValid = false;
+    const double replayGainDb = sReplayGainDb.toDouble(&replayGainDbValid);
+    if (!replayGainDbValid) {
+        return REPLAYGAIN_UNDEFINED;
+    }
+    float replayGain = db2ratio(replayGainDb);
+    if (REPLAYGAIN_MIN > replayGain) {
+        return REPLAYGAIN_UNDEFINED;
+    }
     // I found some mp3s of mine with replaygain tag set to 0dB even if not normalized.
     // This is because of Rapid Evolution 3, I suppose. I prefer to rescan them by setting value to 0 (i.e. rescan via analyserrg)
-    if (fReplayGain == 1.0f) {
-        fReplayGain = 0.0f;
+    if (replayGain == REPLAYGAIN_0DB) {
+        replayGain = REPLAYGAIN_UNDEFINED;
     }
-    return fReplayGain;
-}
-
-}
-
-TrackMetadata::TrackMetadata()
-        : m_channels(0), m_sampleRate(0), m_bitrate(0), m_duration(0), m_replayGain(0.0f), m_bpm(BPM_ZERO) {
-}
-
-void TrackMetadata::setBpmString(QString sBpm) {
-    if (!sBpm.isEmpty()) {
-        float fBpm = parseBpmString(sBpm);
-        if (BPM_ZERO < fBpm) {
-            setBpm(fBpm);
-        }
-    }
-}
-
-void TrackMetadata::setReplayGainString(QString sReplayGain) {
-    setReplayGain(parseReplayGainString(sReplayGain));
+    return replayGain;
 }
 
 } //namespace Mixxx

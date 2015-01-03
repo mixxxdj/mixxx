@@ -103,7 +103,7 @@ Result SoundSourceOpus::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
             pMetadata->setTitle(l_SPayload);
         } else if (!l_STag.compare("REPLAYGAIN_TRACK_PEAK")) {
         } else if (!l_STag.compare("REPLAYGAIN_TRACK_GAIN")) {
-            pMetadata->setReplayGainString (l_SPayload);
+            pMetadata->setReplayGainDbString (l_SPayload);
         } else if (!l_STag.compare("REPLAYGAIN_ALBUM_PEAK")) {
         } else if (!l_STag.compare("REPLAYGAIN_ALBUM_GAIN")) {
         }
