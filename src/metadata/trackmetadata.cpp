@@ -20,6 +20,16 @@ double TrackMetadata::parseBpmString(const QString& sBpm) {
     return bpm;
 }
 
+bool TrackMetadata::setBpmString(const QString& sBpm) {
+    const double bpm = parseBpmString(sBpm);
+    if (BPM_UNDEFINED != bpm) {
+        setBpm(parseBpmString(sBpm));
+        return true;
+    } else {
+        return false;
+    }
+}
+
 float TrackMetadata::parseReplayGainDbString(QString sReplayGainDb) {
     sReplayGainDb.remove("dB");
     bool replayGainDbValid = false;
@@ -27,16 +37,26 @@ float TrackMetadata::parseReplayGainDbString(QString sReplayGainDb) {
     if (!replayGainDbValid) {
         return REPLAYGAIN_UNDEFINED;
     }
-    float replayGain = db2ratio(replayGainDb);
+    const float replayGain = db2ratio(replayGainDb);
     if (REPLAYGAIN_MIN > replayGain) {
         return REPLAYGAIN_UNDEFINED;
     }
     // I found some mp3s of mine with replaygain tag set to 0dB even if not normalized.
     // This is because of Rapid Evolution 3, I suppose. I prefer to rescan them by setting value to 0 (i.e. rescan via analyserrg)
-    if (replayGain == REPLAYGAIN_0DB) {
-        replayGain = REPLAYGAIN_UNDEFINED;
+    if (REPLAYGAIN_0DB == replayGain) {
+        return REPLAYGAIN_UNDEFINED;
     }
     return replayGain;
+}
+
+bool TrackMetadata::setReplayGainDbString(QString sReplayGainDb) {
+    const float replayGain = parseReplayGainDbString(sReplayGainDb);
+    if (REPLAYGAIN_UNDEFINED != replayGain) {
+        setReplayGain(replayGain);
+        return true;
+    } else {
+        return false;
+    }
 }
 
 } //namespace Mixxx
