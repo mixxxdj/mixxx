@@ -511,11 +511,9 @@ WaveformWidgetType::Type WaveformWidgetFactory::autoChooseWidgetType() const {
     //default selection
     if (m_openGLAvailable) {
         if (m_openGLShaderAvailable) {
-            //TODO: (vrince) enable when ready
-            //return WaveformWidgetType::GLSLFilteredWaveform;
-            return WaveformWidgetType::GLFilteredWaveform;
+            return WaveformWidgetType::GLSLRGBWaveform;
         } else {
-            return WaveformWidgetType::GLFilteredWaveform;
+            return WaveformWidgetType::GLRGBWaveform;
         }
     }
     return WaveformWidgetType::SoftwareWaveform;
