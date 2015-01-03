@@ -134,9 +134,7 @@ public:
         m_bpm = BPM_UNDEFINED;
     }
     static double parseBpmString(const QString& sBpm);
-    inline void setBpmString(const QString& sBpm) {
-        setBpm(parseBpmString(sBpm));
-    }
+    bool setBpmString(const QString& sBpm);
 
     static const double REPLAYGAIN_UNDEFINED = 0.0f;
     static const double REPLAYGAIN_MIN = 0.0f;
@@ -151,9 +149,7 @@ public:
         m_replayGain = REPLAYGAIN_UNDEFINED;
     }
     static float parseReplayGainDbString(QString sReplayGainDb); // in dB
-    inline void setReplayGainDbString(QString sReplayGainDb) { // in dB
-        setReplayGain(parseReplayGainDbString(sReplayGainDb));
-    }
+    bool setReplayGainDbString(QString sReplayGainDb); // in dB
 
 private:
     QString m_artist;
