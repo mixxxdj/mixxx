@@ -121,21 +121,39 @@ public:
     }
 
     // beats / minute
-    inline float getBpm() const {
+    static const double BPM_UNDEFINED = 0.0;
+    static const double BPM_MIN = 0.0;
+    static const double BPM_MAX = 300.0;
+    inline double getBpm() const {
         return m_bpm;
     }
-    inline void setBpm(float bpm) {
+    inline void setBpm(double bpm) {
         m_bpm = bpm;
     }
-    void setBpmString(QString sBpm);
+    inline void resetBpm() {
+        m_bpm = BPM_UNDEFINED;
+    }
+    static double parseBpmString(const QString& sBpm);
+    inline void setBpmString(const QString& sBpm) {
+        setBpm(parseBpmString(sBpm));
+    }
 
+    static const double REPLAYGAIN_UNDEFINED = 0.0f;
+    static const double REPLAYGAIN_MIN = 0.0f;
+    static const double REPLAYGAIN_0DB = 1.0f;
     inline float getReplayGain() const {
         return m_replayGain;
     }
     inline void setReplayGain(float replayGain) {
         m_replayGain = replayGain;
     }
-    void setReplayGainString(QString sReplayGain);
+    inline void resetReplayGain() {
+        m_replayGain = REPLAYGAIN_UNDEFINED;
+    }
+    static float parseReplayGainDbString(QString sReplayGainDb); // in dB
+    inline void setReplayGainDbString(QString sReplayGainDb) { // in dB
+        setReplayGain(parseReplayGainDbString(sReplayGainDb));
+    }
 
 private:
     QString m_artist;
@@ -157,8 +175,8 @@ private:
     int m_sampleRate;
     int m_bitrate;
     int m_duration;
+    double m_bpm;
     float m_replayGain;
-    float m_bpm;
 };
 
 }
