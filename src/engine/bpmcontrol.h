@@ -9,7 +9,7 @@
 #include "controlobject.h"
 #include "engine/enginecontrol.h"
 #include "engine/sync/syncable.h"
-#include "tapfilter.h"
+#include "util/tapfilter.h"
 
 class ControlObject;
 class ControlLinPotmeter;

@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <QDebug>
 
-#include "movinginterquartilemean.h"
+#include "util/movinginterquartilemean.h"
 
 namespace {
 

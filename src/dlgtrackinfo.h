@@ -10,7 +10,7 @@
 #include "trackinfoobject.h"
 #include "dlgtagfetcher.h"
 #include "library/coverart.h"
-#include "tapfilter.h"
+#include "util/tapfilter.h"
 #include "util/types.h"
 #include "widget/wcoverartlabel.h"
 #include "widget/wcoverartmenu.h"

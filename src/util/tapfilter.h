@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QTime>
 
-#include "movinginterquartilemean.h"
+#include "util/movinginterquartilemean.h"
 #include "util/types.h"
 
 class TapFilter : public QObject {
