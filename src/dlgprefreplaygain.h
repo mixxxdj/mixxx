@@ -17,7 +17,8 @@ class DlgPrefReplayGain: public DlgPreferencePage,
 
   public slots:
     // Update initial gain increment
-    void slotUpdateBoost();
+    void slotUpdateReplayGainBoost();
+    void slotUpdateDefaultBoost();
     void slotSetRGEnabled();
     void slotSetRGAnalyserEnabled();
 
@@ -36,6 +37,7 @@ class DlgPrefReplayGain: public DlgPreferencePage,
     ConfigObject<ConfigValue>* config;
 
     ControlObjectSlave m_replayGainBoost;
+    ControlObjectSlave m_defaultBoost;
     ControlObjectSlave m_enabled;
 };
 

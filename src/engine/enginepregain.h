@@ -39,6 +39,7 @@ class EnginePregain : public EngineObject {
     ControlObject* m_pCOReplayGain;
     ControlObject* m_pPassthroughEnabled;
     static ControlPotmeter* s_pReplayGainBoost;
+    static ControlPotmeter* s_pDefaultBoost;
     static ControlObject* s_pEnableReplayGain;
     bool m_bSmoothFade;
     PerformanceTimer m_timer;

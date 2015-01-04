@@ -26,6 +26,7 @@
 #include "sampleutil.h"
 
 ControlPotmeter* EnginePregain::s_pReplayGainBoost = NULL;
+ControlPotmeter* EnginePregain::s_pDefaultBoost = NULL;
 ControlObject* EnginePregain::s_pEnableReplayGain = NULL;
 
 /*----------------------------------------------------------------
@@ -33,14 +34,15 @@ ControlObject* EnginePregain::s_pEnableReplayGain = NULL;
    ----------------------------------------------------------------*/
 EnginePregain::EnginePregain(QString group)
 {
-    m_pPotmeterPregain = new ControlAudioTaperPot(ConfigKey(group, "pregain"), -12, +12, 0.5);
+    m_pPotmeterPregain = new ControlAudioTaperPot(ConfigKey(group, "pregain"), -12, 12, 0.5);
     //Replay Gain things
     m_pCOReplayGain = new ControlObject(ConfigKey(group, "replaygain"));
     m_pTotalGain = new ControlObject(ConfigKey(group, "total_gain"));
     m_pPassthroughEnabled = ControlObject::getControl(ConfigKey(group, "passthrough"));
 
     if (s_pReplayGainBoost == NULL) {
-        s_pReplayGainBoost = new ControlPotmeter(ConfigKey("[ReplayGain]", "ReplayGainBoost"), -6, 15);
+        s_pReplayGainBoost = new ControlAudioTaperPot(ConfigKey("[ReplayGain]", "ReplayGainBoost"), -12, 12, 0.5);
+        s_pDefaultBoost = new ControlAudioTaperPot(ConfigKey("[ReplayGain]", "DefaultBoost"), -12, 12, 0.5);
         s_pEnableReplayGain = new ControlObject(ConfigKey("[ReplayGain]", "ReplayGainEnabled"));
     }
     m_bSmoothFade = false;
@@ -58,6 +60,8 @@ EnginePregain::~EnginePregain()
     s_pEnableReplayGain = NULL;
     delete s_pReplayGainBoost;
     s_pReplayGainBoost = NULL;
+    delete s_pDefaultBoost;
+    s_pDefaultBoost = NULL;
 }
 
 void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
@@ -71,7 +75,7 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
         fReplayGainCorrection = 1; // We expect a replaygain leveled input
     } else if (!s_pEnableReplayGain->toBool() || fReplayGain == 0) {
         // use predicted replaygain
-        fReplayGainCorrection = 0.5;
+        fReplayGainCorrection = (float)s_pDefaultBoost->get();
         // We prepare for smoothfading to ReplayGain suggested gain
         // if ReplayGain value changes or ReplayGain is enabled
         m_bSmoothFade = true;
