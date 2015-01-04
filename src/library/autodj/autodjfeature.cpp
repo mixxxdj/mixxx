@@ -121,7 +121,7 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
 #ifdef __AUTODJCRATES__
     // Be informed when the user wants to add another random track.
     connect(m_pAutoDJProcessor,SIGNAL(randomTrackRequested(bool)),
-                this,SLOT(slotRandomEnque(bool)));    
+                this,SLOT(slotRandomQueue(bool)));
     connect(m_pAutoDJView, SIGNAL(addRandomButton(bool)),
             this, SLOT(slotAddRandomTrack(bool)));
     connect(this, SIGNAL(enableAddRandom(bool)),
@@ -366,12 +366,10 @@ void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
     }
 }
 
-void AutoDJFeature::slotRandomEnque(bool a)
+void AutoDJFeature::slotRandomQueue(bool a)
 {
-    qDebug()<<"Request track signal emitted with "<<a<<endl;
+    // Re-routing through here for debug purposes
     slotAddRandomTrack(a);
-     //implement condition on a later , a is jsut to check if
-     //the multiple function calls are different interms of arguement
 }
 
 #endif // __AUTODJCRATES__

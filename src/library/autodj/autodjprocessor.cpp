@@ -513,13 +513,10 @@ TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
                
         if( randomQueueEnabled && minTracksLeft)
         {
-            //consider the case where already less than three tracks were allocated
-            //Would the DJ want to add more tracks randomly ? OR should I post a message to ask what he wants ?
-            //In any case should there be a message box ?
-            qDebug()<<"randomly adding tracks since remaining"<<minAutoDJCrateTracks<<endl;
+            qDebug() << "randomly adding tracks since ";
             emit(randomTrackRequested(minTracksLeft));
-                                    
         }
+                                    
         TrackPointer nextTrack = m_pAutoDJTableModel->getTrack(
             m_pAutoDJTableModel->index(0, 0));
       if (nextTrack) {
