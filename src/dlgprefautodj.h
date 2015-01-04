@@ -25,8 +25,8 @@ class DlgPrefAutoDJ : public DlgPreferencePage, public Ui::DlgPrefAutoDJDlg {
     void slotSetAutoDjIgnoreTime(const QTime &a_rTime);
     
     void slotSetAutoDJRandomQueueMin(int);
-    void slotAutoDJRandomQueueEnable(int);
-    void slotSetAutoDJRandomQueue(int);
+    void slotEnableAutoDJRandomQueueComboBox(int);
+    void slotEnableAutoDJRandomQueue(int);
     private:
     ConfigObject<ConfigValue>* m_pConfig;
 };

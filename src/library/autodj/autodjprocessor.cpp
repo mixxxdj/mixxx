@@ -505,20 +505,19 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
 TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
     // Get the track at the top of the playlist.
     while (true) {
-                int minAutoDJCrateTracks=m_pConfig->
+        qDebug() << "getNextTrackFromQueue"<<endl;
+        int minAutoDJCrateTracks=m_pConfig->
                 getValueString(ConfigKey(kConfigKey, "RandomQueueMinimumAllowed")).toInt();
-                bool randomQueue=(((m_pConfig->getValueString(ConfigKey("[Auto DJ]", "EnableRandomQueue")).toInt()))==1);
+        bool randomQueueEnabled=(((m_pConfig->getValueString(ConfigKey("[Auto DJ]", "EnableRandomQueue")).toInt()))==1);
+        bool minTracksLeft  =  (m_pAutoDJTableModel->rowCount()<=minAutoDJCrateTracks);
                
-        if( randomQueue && (m_pAutoDJTableModel->rowCount()<=minAutoDJCrateTracks))
+        if( randomQueueEnabled && minTracksLeft)
         {
             //consider the case where already less than three tracks were allocated
             //Would the DJ want to add more tracks randomly ? OR should I post a message to ask what he wants ?
             //In any case should there be a message box ?
-            //further the loaded track should exist in drive
-            qDebug()<<"\n\t\trandomly adding tracks\n";
-            
-            emit(randomTrackRequested( m_pAutoDJTableModel->rowCount()));
-            qDebug()<<" This means looped emits";
+            qDebug()<<"randomly adding tracks since remaining"<<minAutoDJCrateTracks<<endl;
+            emit(randomTrackRequested(minTracksLeft));
                                     
         }
         TrackPointer nextTrack = m_pAutoDJTableModel->getTrack(
