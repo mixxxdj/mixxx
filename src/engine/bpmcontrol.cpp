@@ -200,6 +200,7 @@ void BpmControl::slotTranslateBeatsLater(double v) {
 }
 
 void BpmControl::slotSetEngineBpm(double bpm) {
+    //qDebug() << getGroup() << "BpmControl::slotSetEngineBpm" << bpm;
     double localbpm = m_pLocalBpm->get();
     double ratedir = m_pRateDir->get();
     double raterange = m_pRateRange->get();

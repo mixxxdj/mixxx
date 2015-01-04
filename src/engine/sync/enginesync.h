@@ -45,7 +45,7 @@ class EngineSync : public BaseSyncableListener {
     void notifyBeatDistanceChanged(Syncable* pSyncable, double beatDistance);
     void notifyPlaying(Syncable* pSyncable, bool playing);
     void notifyScratching(Syncable* pSyncable, bool scratching);
-    void notifyTrackLoaded(Syncable* pSyncable);
+    void notifyTrackLoaded(Syncable* pSyncable, double suggested_bpm);
 
   private:
     // Activate a specific syncable as master.

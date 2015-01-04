@@ -13,15 +13,10 @@
   <WidgetGroup>
     <Layout>vertical</Layout>
     <Children>
-      <KnobComposed>
-        <Size>40f,40f</Size>
-        <Knob>knob.svg</Knob>
-        <MinAngle>-230</MinAngle>
-        <MaxAngle>50</MaxAngle>
-        <Connection>
-          <ConfigKey><Variable name="QuickEffectUnitGroup"/>,super1</ConfigKey>
-        </Connection>
-      </KnobComposed>
+      <Template src="skin:knob.xml">
+        <SetVariable name="group"><Variable name="QuickEffectUnitGroup"/></SetVariable>
+        <SetVariable name="control">super1</SetVariable>
+      </Template>
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>
@@ -68,4 +63,3 @@
     </Connection>
   </WidgetGroup>
 </Template>
-

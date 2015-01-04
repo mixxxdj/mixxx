@@ -207,7 +207,8 @@ void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
     }
 }
 
-void EngineSync::notifyTrackLoaded(Syncable* pSyncable) {
+void EngineSync::notifyTrackLoaded(Syncable* pSyncable, double suggested_bpm) {
+    //qDebug() << "EngineSync::notifyTrackLoaded";
     // If there are no other sync decks, initialize master based on this.
     // If there is, make sure to set our rate based on that.
 
@@ -228,7 +229,7 @@ void EngineSync::notifyTrackLoaded(Syncable* pSyncable) {
     }
 
     if (!sync_deck_exists) {
-        setMasterBpm(pSyncable, pSyncable->getBpm());
+        setMasterBpm(pSyncable, suggested_bpm);
     } else {
         pSyncable->setMasterBpm(masterBpm());
     }
@@ -241,7 +242,8 @@ void EngineSync::notifyScratching(Syncable* pSyncable, bool scratching) {
 }
 
 void EngineSync::notifyBpmChanged(Syncable* pSyncable, double bpm, bool fileChanged) {
-    //qDebug() << "EngineSync::notifyBpmChanged" << pSyncable->getGroup() << bpm;
+    //qDebug() << "EngineSync::notifyBpmChanged" << pSyncable->getGroup() << bpm
+    //         << fileChanged;
 
     SyncMode syncMode = pSyncable->getSyncMode();
     if (syncMode == SYNC_NONE) {

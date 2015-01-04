@@ -392,9 +392,9 @@ void Tooltips::addStandardTooltips() {
     // TODO(owen): find a better phrase for "the other deck"
     add("sync_reset_key")
             << tr("Sync and Reset Key")
-            << QString("%1: %2").arg(leftClick, tr("Syncs the pitch (key) to be compatible with the other track, "))
-            << tr("if a key is detected on both.")
-            << QString("%1: %2").arg(rightClick, tr("Sets the pitch (key) to original track pitch."));
+            << QString("%1: %2").arg(leftClick, tr("Sets the key to a compatible key with the other track key, "
+                                                   "if a key is detected on both."))
+            << QString("%1: %2").arg(rightClick, tr("Resets the key to the original track key."));
 
     add("sync_master")
             << tr("Enable Sync Clock Master")
@@ -414,13 +414,18 @@ void Tooltips::addStandardTooltips() {
             << tr("Pitch Control")
             << tr("Changes the track pitch independent of the tempo.")
             << QString("%1: %2").arg(leftClick, tr("Increases the pitch by one semitone."))
-            << QString("%1: %2").arg(rightClick, tr("Increases the pitch by 20 cents."));
+            << QString("%1: %2").arg(rightClick, tr("Increases the pitch by 10 cents."));
 
     add("pitch_down")
             << tr("Pitch Control")
             << tr("Changes the track pitch independent of the tempo.")
             << QString("%1: %2").arg(leftClick, tr("Decreases the pitch by one semitone."))
-            << QString("%1: %2").arg(rightClick, tr("Decreases the pitch by 20 cents."));
+            << QString("%1: %2").arg(rightClick, tr("Decreases the pitch by 10 cents."));
+
+    add("pitch_adjust")
+            << tr("Pitch Adjust")
+            << tr("Adjust the pitch in addition to the speed slider pitch.")
+            << QString("%1: %2").arg(rightClick, resetToDefault);
 
 
     add("rate_display")

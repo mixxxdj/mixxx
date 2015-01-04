@@ -987,7 +987,7 @@ void WTrackTableView::dragEnterEvent(QDragEnterEvent * event) {
                 return;
             }
         } else if (DragAndDropHelper::dragEnterAccept(*event->mimeData(),
-                                                      "library", false, true)) {
+                                                      "library", true, true)) {
             event->acceptProposedAction();
             return;
         }
@@ -996,8 +996,8 @@ void WTrackTableView::dragEnterEvent(QDragEnterEvent * event) {
 }
 
 // Drag move event, happens when a dragged item hovers over the track table view...
-// Why we need this is a little vague, but without it, drag-and-drop just doesn't work.
-// -- Albert June 8/08
+// It changes the drop handle to a "+" when the drag content is acceptable.
+// Without it, the following drop is ignored.
 void WTrackTableView::dragMoveEvent(QDragMoveEvent * event) {
     // Needed to allow auto-scrolling
     WLibraryTableView::dragMoveEvent(event);

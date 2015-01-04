@@ -42,6 +42,11 @@ BeatGrid::BeatGrid(TrackInfoObject* pTrack, int iSampleRate,
           m_iSampleRate(iSampleRate > 0 ? iSampleRate :
                         pTrack->getSampleRate()),
           m_dBeatLength(0.0) {
+    if (pTrack != NULL) {
+        // BeatGrid should live in the same thread as the track it is associated
+        // with.
+        moveToThread(pTrack->thread());
+    }
     if (pByteArray != NULL) {
         readByteArray(pByteArray);
     }

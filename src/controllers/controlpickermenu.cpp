@@ -127,7 +127,9 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckAndSamplerControl("rate", tr("Playback Speed"),
                              tr("Playback speed control (Vinyl \"Pitch\" slider)"), speedMenu, true);
     addDeckAndSamplerControl("pitch", tr("Pitch (Musical key)"),
-                             tr("Pitch control (does not affect tempo)"), speedMenu, true);
+                             tr("Pitch control (does not affect tempo), center is original pitch"), speedMenu, true);
+    addDeckAndSamplerControl("pitch_adjust", tr("Pitch Adjust"),
+                             tr("Adjust pitch from speed slider pitch"), speedMenu, true);
     addDeckAndSamplerControl("sync_key", tr("Match Key"), tr("Match musical key"), speedMenu, true);
     addDeckAndSamplerControl("reset_key", tr("Reset Key"), tr("Resets key to original"), speedMenu, true);
     addDeckAndSamplerControl("rate_perm_up", tr("Increase Speed"),

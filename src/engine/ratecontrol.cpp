@@ -82,7 +82,6 @@ RateControl::RateControl(QString group,
     m_pVCEnabled = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_enabled"));
     m_pVCScratching = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_scratching"));
     m_pVCMode = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_mode"));
-    m_pVCRate = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_rate"));
 
     // Permanent rate-change buttons
     buttonRatePermDown =
@@ -423,7 +422,7 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
     } else {
         double wheelFactor = getWheelFactor();
         double jogFactor = getJogFactor();
-        bool bVinylControlEnabled = m_pVCEnabled && m_pVCEnabled->get() > 0.0;
+        bool bVinylControlEnabled = m_pVCEnabled && m_pVCEnabled->toBool();
         bool useScratch2Value = m_pScratch2Enable->get() != 0;
 
         // By default scratch2_enable is enough to determine if the user is
@@ -435,10 +434,10 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
         }
 
         if (bVinylControlEnabled) {
-            if (m_pVCScratching && m_pVCScratching->get() > 0.0) {
+            if (m_pVCScratching->toBool()) {
                 *reportScratching = true;
             }
-            rate = m_pVCRate->get();
+            rate = speed;
         } else {
             double scratchFactor = m_pScratch2->get();
             // Don't trust values from m_pScratch2

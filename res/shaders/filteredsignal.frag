@@ -51,10 +51,9 @@ void main(void) {
     // to show other things (e.g. the axes lines) even when we are on a pixel
     // that does not have valid waveform data.
     if (new_currentIndex >= 0 && new_currentIndex <= waveformLength - 1) {
-      vec4 new_currentData = getWaveformData(new_currentIndex);
-      vec4 new_currentDataUnscaled = new_currentData;
+      vec4 new_currentDataUnscaled = getWaveformData(new_currentIndex) * allGain;
+      vec4 new_currentData = new_currentDataUnscaled;
 
-      new_currentData *= allGain;
       new_currentData.x *= lowGain;
       new_currentData.y *= midGain;
       new_currentData.z *= highGain;
@@ -67,20 +66,18 @@ void main(void) {
       // the signal data in new_currentData, we can tell if a signal band should
       // show in this pixel if the component is > 0.
       float ourDistance = abs((uv.y - 0.5) * 2.0);
-      vec4 signalDistance = new_currentData - ourDistance;
 
-      lowShowing = signalDistance.x > 0.0;
-      midShowing = signalDistance.y > 0.0;
-      highShowing = signalDistance.z > 0.0;
+      vec4 signalDistance = new_currentData - ourDistance;
+      lowShowing = signalDistance.x >= 0.0;
+      midShowing = signalDistance.y >= 0.0;
+      highShowing = signalDistance.z >= 0.0;
 
       // Now do it all over again for the unscaled version of the waveform,
       // which we will draw at very low opacity.
-      new_currentDataUnscaled *= allGain;
-      float ourDistanceUnscaled = abs((uv.y - 0.5) * 2.0);
-      vec4 signalDistanceUnscaled = new_currentDataUnscaled - ourDistanceUnscaled;
-      lowShowingUnscaled = signalDistanceUnscaled.x > 0.0;
-      midShowingUnscaled = signalDistanceUnscaled.y > 0.0;
-      highShowingUnscaled = signalDistanceUnscaled.z > 0.0;
+      vec4 signalDistanceUnscaled = new_currentDataUnscaled - ourDistance;
+      lowShowingUnscaled = signalDistanceUnscaled.x >= 0.0;
+      midShowingUnscaled = signalDistanceUnscaled.y >= 0.0;
+      highShowingUnscaled = signalDistanceUnscaled.z >= 0.0;
     }
 
     // Draw the axes color as the lowest item on the screen.
