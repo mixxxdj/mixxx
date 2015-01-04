@@ -1,10 +1,3 @@
-/*
- * dlgprefreplaygain.h
- *
- *  Created on: 18/ott/2010
- *      Author: Vittorio Colao
- */
-
 #ifndef DLGPREFREPLAYGAIN_H_
 #define DLGPREFREPLAYGAIN_H_
 
@@ -15,7 +8,8 @@
 #include "controlobjectslave.h"
 #include "preferences/dlgpreferencepage.h"
 
-class DlgPrefReplayGain: public DlgPreferencePage, public Ui::DlgPrefReplayGainDlg  {
+class DlgPrefReplayGain: public DlgPreferencePage,
+                         public Ui::DlgPrefReplayGainDlg {
     Q_OBJECT
   public:
     DlgPrefReplayGain(QWidget *parent, ConfigObject<ConfigValue> *_config);
@@ -41,9 +35,8 @@ class DlgPrefReplayGain: public DlgPreferencePage, public Ui::DlgPrefReplayGainD
     // Pointer to config object
     ConfigObject<ConfigValue>* config;
 
-    ControlObjectSlave m_COTReplayGainBoost;
-    ControlObjectSlave m_COTEnabled;
+    ControlObjectSlave m_replayGainBoost;
+    ControlObjectSlave m_enabled;
 };
-
 
 #endif /* DLGPREFREPLAYGAIN_H_ */
