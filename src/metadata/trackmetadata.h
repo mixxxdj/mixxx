@@ -122,10 +122,13 @@ public:
 
     // beats / minute
     static const double BPM_UNDEFINED = 0.0;
-    static const double BPM_MIN = 0.0;
-    static const double BPM_MAX = 300.0;
+    static const double BPM_MIN = 0.0; // exclusive lower bound
+    static const double BPM_MAX = 300.0; // inclusive upper bound
     inline double getBpm() const {
         return m_bpm;
+    }
+    inline bool isBpmValid() const {
+        return (BPM_MIN < getBpm()) && (BPM_MAX >= getBpm());
     }
     inline void setBpm(double bpm) {
         m_bpm = bpm;
@@ -137,10 +140,13 @@ public:
     bool setBpmString(const QString& sBpm);
 
     static const double REPLAYGAIN_UNDEFINED = 0.0f;
-    static const double REPLAYGAIN_MIN = 0.0f;
+    static const double REPLAYGAIN_MIN = 0.0f; // exclusive lower bound
     static const double REPLAYGAIN_0DB = 1.0f;
     inline float getReplayGain() const {
         return m_replayGain;
+    }
+    inline bool isReplayGainValid() const {
+        return REPLAYGAIN_MIN < getReplayGain();
     }
     inline void setReplayGain(float replayGain) {
         m_replayGain = replayGain;

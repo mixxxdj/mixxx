@@ -160,6 +160,87 @@ void TrackInfoObject::setDeleteOnReferenceExpiration(bool deleteOnReferenceExpir
     m_bDeleteOnReferenceExpiration = deleteOnReferenceExpiration;
 }
 
+namespace {
+    // Parses artist/title from the file name and returns the file type.
+    // Assumes that the file name is written like: "artist - title.xxx"
+    // or "artist_-_title.xxx",
+    void parseMetadataFromFileName(Mixxx::TrackMetadata& trackMetadata, QString fileName) {
+        fileName.replace("_", " ");
+        QString titleWithFileType;
+        if (fileName.count('-') == 1) {
+            const QString artist(fileName.section('-', 0, 0).trimmed());
+            if (!artist.isEmpty()) {
+                trackMetadata.setArtist(artist);
+            }
+            titleWithFileType = fileName.section('-', 1, 1).trimmed();
+        } else {
+            titleWithFileType = fileName.trimmed();
+        }
+        const QString title(titleWithFileType.section('.', 0, -2).trimmed());
+        if (!title.isEmpty()) {
+            trackMetadata.setTitle(title);
+        }
+    }
+}
+
+void TrackInfoObject::setMetadata(const Mixxx::TrackMetadata& trackMetadata) {
+    // TODO(XXX): This involves locking the mutex for every setXXX
+    // method. We should figure out an optimization where there are private
+    // setters that don't lock the mutex.
+    setArtist(trackMetadata.getArtist());
+    setTitle(trackMetadata.getTitle());
+    setAlbum(trackMetadata.getAlbum());
+    setAlbumArtist(trackMetadata.getAlbumArtist());
+    setYear(trackMetadata.getYear());
+    setGenre(trackMetadata.getGenre());
+    setComposer(trackMetadata.getComposer());
+    setGrouping(trackMetadata.getGrouping());
+    setComment(trackMetadata.getComment());
+    setTrackNumber(trackMetadata.getTrackNumber());
+    setChannels(trackMetadata.getChannels());
+    setSampleRate(trackMetadata.getSampleRate());
+    setDuration(trackMetadata.getDuration());
+    setBitrate(trackMetadata.getBitrate());
+
+    if (trackMetadata.isReplayGainValid()) {
+        setReplayGain(trackMetadata.getReplayGain());
+    }
+
+    // Need to set BPM after sample rate since beat grid creation depends on
+    // knowing the sample rate. Bug #1020438.
+    if (trackMetadata.isBpmValid()) {
+        setBpm(trackMetadata.getBpm());
+    }
+
+    const QString key(trackMetadata.getKey());
+    if (!key.isEmpty()) {
+        setKeyText(key, mixxx::track::io::key::FILE_METADATA);
+    }
+}
+
+void TrackInfoObject::getMetadata(Mixxx::TrackMetadata* pTrackMetadata) {
+    // TODO(XXX): This involves locking the mutex for every setXXX
+    // method. We should figure out an optimization where there are private
+    // getters that don't lock the mutex.
+    pTrackMetadata->setArtist(getArtist());
+    pTrackMetadata->setTitle(getTitle());
+    pTrackMetadata->setAlbum(getAlbum());
+    pTrackMetadata->setAlbumArtist(getAlbumArtist());
+    pTrackMetadata->setYear(getYear());
+    pTrackMetadata->setGenre(getGenre());
+    pTrackMetadata->setComposer(getComposer());
+    pTrackMetadata->setGrouping(getGrouping());
+    pTrackMetadata->setComment(getComment());
+    pTrackMetadata->setTrackNumber(getTrackNumber());
+    pTrackMetadata->setChannels(getChannels());
+    pTrackMetadata->setSampleRate(getSampleRate());
+    pTrackMetadata->setDuration(getDuration());
+    pTrackMetadata->setBitrate(getBitrate());
+    pTrackMetadata->setReplayGain(getReplayGain());
+    pTrackMetadata->setBpm(getBpm());
+    pTrackMetadata->setKey(getKeyText());
+}
+
 void TrackInfoObject::parse(bool parseCoverArt) {
     // Log parsing of header information in developer mode. This is useful for
     // tracking down corrupt files.
@@ -171,62 +252,25 @@ void TrackInfoObject::parse(bool parseCoverArt) {
     SoundSourceProxy proxy(canonicalLocation, m_pSecurityToken);
     Mixxx::SoundSourcePointer pSoundSource(proxy.getSoundSource());
     if (pSoundSource) {
+        // If we've got a SoundSource then it must have a type!
+        DEBUG_ASSERT(!pSoundSource->getType().isEmpty());
         setType(pSoundSource->getType());
 
         // Parse the information stored in the sound file.
         Mixxx::TrackMetadata trackMetadata;
         if (pSoundSource->parseMetadata(&trackMetadata) == OK) {
-
-            // Dump the metadata extracted from the file into the track.
-
-            // TODO(XXX): This involves locking the mutex for every setXXX
-            // method. We should figure out an optimization where there are private
-            // setters that don't lock the mutex.
-
             // If Artist, Title and Type fields are not blank, modify them.
             // Otherwise, keep their current values.
             // TODO(rryan): Should we re-visit this decision?
-            if (!(trackMetadata.getArtist().isEmpty())) {
-                setArtist(trackMetadata.getArtist());
-            } else {
-                parseArtist();
-            }
-
-            if (!(trackMetadata.getTitle().isEmpty())) {
-                setTitle(trackMetadata.getTitle());
-            } else {
-                parseTitle();
-            }
-
-            setAlbum(trackMetadata.getAlbum());
-            setAlbumArtist(trackMetadata.getAlbumArtist());
-            setYear(trackMetadata.getYear());
-            setGenre(trackMetadata.getGenre());
-            setComposer(trackMetadata.getComposer());
-            setGrouping(trackMetadata.getGrouping());
-            setComment(trackMetadata.getComment());
-            setTrackNumber(trackMetadata.getTrackNumber());
-            setChannels(trackMetadata.getChannels());
-            setSampleRate(trackMetadata.getSampleRate());
-            setDuration(trackMetadata.getDuration());
-            setBitrate(trackMetadata.getBitrate());
-
-            float replayGain = trackMetadata.getReplayGain();
-            if (replayGain != 0.0f) {
-                setReplayGain(replayGain);
-            }
-
-            // Need to set BPM after sample rate since beat grid creation depends on
-            // knowing the sample rate. Bug #1020438.
-            float bpm = trackMetadata.getBpm();
-            if (bpm > 0) {
-                // do not delete beat grid if bpm is not set in file
-                setBpm(bpm);
-            }
-
-            QString key = trackMetadata.getKey();
-            if (!key.isEmpty()) {
-                setKeyText(key, mixxx::track::io::key::FILE_METADATA);
+            if (trackMetadata.getArtist().isEmpty() || trackMetadata.getTitle().isEmpty()) {
+                Mixxx::TrackMetadata fileNameMetadata;
+                parseMetadataFromFileName(fileNameMetadata, m_fileInfo.fileName());
+                if (trackMetadata.getArtist().isEmpty()) {
+                    trackMetadata.setArtist(fileNameMetadata.getArtist());
+                }
+                if (trackMetadata.getTitle().isEmpty()) {
+                    trackMetadata.setTitle(fileNameMetadata.getTitle());
+                }
             }
 
             if (parseCoverArt) {
@@ -244,55 +288,19 @@ void TrackInfoObject::parse(bool parseCoverArt) {
         } else {
             qDebug() << "TrackInfoObject::parse() error at file"
                      << canonicalLocation;
-            setHeaderParsed(false);
 
-            // Add basic information derived from the filename:
-            parseFilename();
+            // Add basic information derived from the filename
+            parseMetadataFromFileName(trackMetadata, m_fileInfo.fileName());
+
+            setHeaderParsed(false);
         }
+        // Dump the metadata extracted from the file into the track.
+        setMetadata(trackMetadata);
     } else {
         qDebug() << "TrackInfoObject::parse() error at file"
                  << canonicalLocation;
         setHeaderParsed(false);
     }
-}
-
-void TrackInfoObject::parseArtist() {
-    QMutexLocker lock(&m_qMutex);
-    QString filename = m_fileInfo.fileName();
-    filename = filename.replace("_", " ");
-    if (filename.count('-') == 1) {
-        m_sArtist = filename.section('-', 0, 0).trimmed();
-    }
-    setDirty(true);
-}
-
-void TrackInfoObject::parseTitle() {
-    QMutexLocker lock(&m_qMutex);
-    QString filename = m_fileInfo.fileName();
-    filename = filename.replace("_", " ");
-    if (filename.count('-') == 1) {
-        m_sTitle = filename.section('-', 1, 1).trimmed();
-        // Remove the file type from m_sTitle
-        m_sTitle = m_sTitle.section('.', 0, -2).trimmed();
-    } else {
-        m_sTitle = filename.section('.', 0, -2).trimmed();
-    }
-    setDirty(true);
-}
-
-void TrackInfoObject::parseFilename() {
-    // If the file name has the following form: "Artist - Title.type", extract
-    // Artist, Title and type fields
-    parseArtist();
-    parseTitle();
-
-    // Add no comment
-    m_sComment.clear();
-
-    // Find the type
-    QString filename = m_fileInfo.fileName();
-    m_sType = filename.section(".",-1).toLower().trimmed();
-    setDirty(true);
 }
 
 QString TrackInfoObject::getDurationStr() const {
@@ -768,13 +776,13 @@ int TrackInfoObject::getId() const {
 
 void TrackInfoObject::setId(int iId) {
     QMutexLocker lock(&m_qMutex);
-    // changing the Id does not make the track drity because the Id is always
+    // changing the Id does not make the track dirty because the Id is always
     // generated by the Database itself
     m_iId = iId;
 }
 
 
-//TODO (vrince) remove clen-up when new summary is ready
+//TODO (vrince) remove clean-up when new summary is ready
 /*
 const QByteArray *TrackInfoObject::getWaveSummary()
 {
