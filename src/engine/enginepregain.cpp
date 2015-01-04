@@ -71,7 +71,7 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
         fReplayGainCorrection = 1; // We expect a replaygain leveled input
     } else if (!s_pEnableReplayGain->toBool() || fReplayGain == 0) {
         // use predicted replaygain
-        fReplayGainCorrection = 1;
+        fReplayGainCorrection = 0.5;
         // We prepare for smoothfading to ReplayGain suggested gain
         // if ReplayGain value changes or ReplayGain is enabled
         m_bSmoothFade = true;
@@ -96,7 +96,7 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
             if (seconds < kFadeSeconds) {
                 // Fade smoothly
                 double fadeFrac = seconds / kFadeSeconds;
-                fReplayGainCorrection = (1.0 - fadeFrac) +
+                fReplayGainCorrection = m_fPrevGain * (1.0 - fadeFrac) +
                         fadeFrac * fullReplayGainBoost;
             } else {
                 m_bSmoothFade = false;
