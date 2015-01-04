@@ -36,7 +36,7 @@ class EnginePregain : public EngineObject {
     float m_fPrevGain;
     ControlAudioTaperPot* m_pPotmeterPregain;
     ControlObject* m_pTotalGain;
-    ControlObject* m_pControlReplayGain;
+    ControlObject* m_pCOReplayGain;
     ControlObject* m_pPassthroughEnabled;
     static ControlPotmeter* s_pReplayGainBoost;
     static ControlObject* s_pEnableReplayGain;
