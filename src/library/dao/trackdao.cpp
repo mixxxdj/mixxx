@@ -273,8 +273,8 @@ void TrackDAO::saveTrack(TrackInfoObject* pTrack) {
             updateTrack(pTrack);
 
             // Write audio meta data, if enabled in the preferences
-            // TODO(DSC) Only wite tag if file Metatdate is dirty
-            writeAudioMetaData(pTrack);
+            // TODO(DSC) Only wite tag if file Metatdata is dirty
+            writeMetadataToFile(pTrack);
 
             //qDebug() << this << "Dirty tracks remaining after clean save:" << m_dirtyTracks.size();
         } else {
@@ -1789,23 +1789,11 @@ void TrackDAO::markTracksAsMixxxDeleted(const QString& dir) {
     }
 }
 
-void TrackDAO::writeAudioMetaData(TrackInfoObject* pTrack) {
+void TrackDAO::writeMetadataToFile(TrackInfoObject* pTrack) {
     if (m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1) {
 
         Mixxx::TrackMetadata trackMetadata;
-        trackMetadata.setArtist(pTrack->getArtist());
-        trackMetadata.setTitle(pTrack->getTitle());
-        trackMetadata.setGenre(pTrack->getGenre());
-        trackMetadata.setComposer(pTrack->getComposer());
-        trackMetadata.setGrouping(pTrack->getGrouping());
-        trackMetadata.setAlbum(pTrack->getAlbum());
-        trackMetadata.setAlbumArtist(pTrack->getAlbumArtist());
-        trackMetadata.setComment(pTrack->getComment());
-        trackMetadata.setTrackNumber(pTrack->getTrackNumber());
-        trackMetadata.setBpm(pTrack->getBpm());
-        trackMetadata.setKey(pTrack->getKeyText());
-        trackMetadata.setComposer(pTrack->getComposer());
-        trackMetadata.setGrouping(pTrack->getGrouping());
+        pTrack->getMetadata(&trackMetadata);
 
         AudioTagger tagger(pTrack->getLocation(), pTrack->getSecurityToken());
         tagger.save(trackMetadata);
