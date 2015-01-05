@@ -1,6 +1,3 @@
-// bpmcontrol.h
-// Created 7/5/2009 by RJ Ryan (rryan@mit.edu)
-
 #ifndef BPMCONTROL_H
 #define BPMCONTROL_H
 

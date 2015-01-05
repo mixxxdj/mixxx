@@ -1,6 +1,3 @@
-// dlgtrackinfo.cpp
-// Created 11/10/2009 by RJ Ryan (rryan@mit.edu)
-
 #include <QDesktopServices>
 #include <QtDebug>
 
