@@ -250,6 +250,14 @@ void readXiphComment(TrackMetadata* pTrackMetadata, const TagLib::Ogg::XiphComme
 
     readTag(pTrackMetadata, tag);
 
+    // Some applications (like puddletag up to version 1.0.5) write COMMENT
+    // instead DESCRIPTION. If the comment field (correctly populated by TagLib
+    // from DESCRIPTION) is still empty we will additionally read this field.
+    // Reference: http://www.xiph.org/vorbis/doc/v-comment.html
+    if (pTrackMetadata->getComment().isEmpty() && tag.fieldListMap().contains("COMMENT")) {
+        pTrackMetadata->setComment(toQString(tag.fieldListMap()["COMMENT"]));
+    }
+
     // Some tags use "BPM" so check for that.
     if (tag.fieldListMap().contains("BPM")) {
         pTrackMetadata->setBpmString(toQString(tag.fieldListMap()["BPM"]));
