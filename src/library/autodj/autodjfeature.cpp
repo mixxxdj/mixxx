@@ -279,7 +279,6 @@ void AutoDJFeature::slotCrateAutoDjChanged(int crateId, bool added) {
 
 void AutoDJFeature::slotAddRandomTrack(bool) {
 #ifdef __AUTODJCRATES__
-    qDebug()<<"\n\nslotAddRandomTrack";
     // Get access to the auto-DJ playlist.
     PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
     if (m_iAutoDJPlaylistId >= 0) {
