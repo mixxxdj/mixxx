@@ -2,7 +2,8 @@
 
 DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
         ConfigObject<ConfigValue>* pConfig)
-        : DlgPreferencePage(pParent), m_pConfig(pConfig) {
+        : DlgPreferencePage(pParent),
+          m_pConfig(pConfig) {
     setupUi(this);
 
     // Re-queue tracks in Auto DJ
@@ -86,7 +87,7 @@ void DlgPrefAutoDJ::slotApply() {
 }
 
 void DlgPrefAutoDJ::slotResetToDefaults() {
-// Re-queue tracks in AutoDJ
+    // Re-queue tracks in AutoDJ
     ComboBoxAutoDjRequeue->setCurrentIndex(0);
 
 #ifdef __AUTODJCRATES__
