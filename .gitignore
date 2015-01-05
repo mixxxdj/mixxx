@@ -22,8 +22,3 @@ mixxx-test
 src/test/test_data
 res/qrc_mixxx.cc
 res/developer_skins
-mixxx.config
-mixxx.creator
-mixxx.creator.user
-mixxx.files
-mixxx.includes
