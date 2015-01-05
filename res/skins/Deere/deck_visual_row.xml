@@ -17,7 +17,7 @@
       <Visual>
         <TooltipId>waveform_display</TooltipId>
         <Group><Variable name="group"/></Group>
-        <BgColor>#1C1C1C</BgColor>
+        <BgColor><Variable name="DeckColorMuted"/></BgColor>
         <SignalHighColor></SignalHighColor>
         <SignalMidColor></SignalMidColor>
         <SignalLowColor></SignalLowColor>
