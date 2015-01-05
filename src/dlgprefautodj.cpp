@@ -11,7 +11,7 @@ DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
     ComboBoxAutoDjRequeue->addItem(tr("On"));
     ComboBoxAutoDjRequeue->setCurrentIndex(m_pConfig->getValueString(ConfigKey("[Auto DJ]", "Requeue")).toInt());
     connect(ComboBoxAutoDjRequeue, SIGNAL(activated(int)),
-            this,SLOT(slotSetAutoDjRequeue(int)));
+            this, SLOT(slotSetAutoDjRequeue(int)));
 
 #ifdef __AUTODJCRATES__
 
@@ -98,7 +98,7 @@ void DlgPrefAutoDJ::slotResetToDefaults() {
 }
 
 void DlgPrefAutoDJ::slotSetAutoDjRequeue(int) {
-    m_pConfig->set(ConfigKey("[Auto DJ]", "Requeue"),ConfigValue(ComboBoxAutoDjRequeue->currentIndex()));
+    m_pConfig->set(ConfigKey("[Auto DJ]", "Requeue"), ConfigValue(ComboBoxAutoDjRequeue->currentIndex()));
 }
 
 void DlgPrefAutoDJ::slotSetAutoDjMinimumAvailable(int a_iValue) {
@@ -121,7 +121,7 @@ void DlgPrefAutoDJ::slotSetAutoDjUseIgnoreTime(int a_iState) {
 void DlgPrefAutoDJ::slotSetAutoDjIgnoreTime(const QTime &a_rTime) {
 #ifdef __AUTODJCRATES__
     QString str = a_rTime.toString(autoDjIgnoreTimeEdit->displayFormat());
-    m_pConfig->set(ConfigKey("[Auto DJ]","IgnoreTime"), str);
+    m_pConfig->set(ConfigKey("[Auto DJ]", "IgnoreTime"),str);
 #endif // __AUTODJCRATES__
 }
 
@@ -165,6 +165,5 @@ void DlgPrefAutoDJ::slotEnableAutoDJRandomQueue(int a_iValue) {
                 ConfigValue(1));
     }
 #endif // __AUTODJCRATES__
-
 }
 
