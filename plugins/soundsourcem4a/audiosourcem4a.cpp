@@ -32,8 +32,8 @@ const MP4SampleId kMinSampleId = 1;
 
 // Decoding will be restarted one or more blocks of samples
 // before the actual position to avoid audible glitches.
-// One block of samples seems to be enough here.
-const MP4SampleId kSampleIdPrefetchCount = 1;
+// Two blocks of samples seems to be enough here.
+const MP4SampleId kSampleIdPrefetchCount = 2;
 
 MP4TrackId findAacTrackId(MP4FileHandle hFile) {
     const MP4TrackId maxTrackId = MP4GetNumberOfTracks(hFile, NULL, 0);
@@ -206,9 +206,15 @@ AudioSource::diff_type AudioSourceM4A::seekFrame(diff_type frameIndex) {
             return m_curFrameIndex;
         }
         if ((m_curSampleId != sampleId) || (frameIndex < m_curFrameIndex)) {
-            // restart decoding one or more blocks of samples
-            // backwards to avoid audible glitches
-            m_curSampleId = math_max(sampleId - kSampleIdPrefetchCount, kMinSampleId);
+            // Restart decoding one or more blocks of samples
+            // backwards to avoid audible glitches.
+            // Implementation note: The type MP4SampleId is unsigned so we
+            // have to be careful when subtracting!
+            if ((kMinSampleId + kSampleIdPrefetchCount) < sampleId) {
+                m_curSampleId = sampleId - kSampleIdPrefetchCount;
+            } else {
+                m_curSampleId = kMinSampleId;
+            }
             m_curFrameIndex = (m_curSampleId - kMinSampleId) * kFramesPerSampleBlock;
             // rryan 9/2009 -- the documentation is sketchy on this, but I think that
             // it tells the decoder that you are seeking so it should flush its state
