@@ -178,12 +178,10 @@ void SampleUtil::copyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
 // static
 void SampleUtil::convertS16ToFloat32(CSAMPLE* pDest, const SAMPLE* pSrc,
         unsigned int iNumSamples) {
-    // Sample min can be -32768 instead of -32767, so make sure our conversion
-    // scale is picking the largest possible absolute value.
+    // -32768 is a valid low sample, whereas 32767 is the highest valid sample.
     // Note that this means that although some sample values convert to -1.0,
     // none will convert to +1.0.
-    static const CSAMPLE kConversionFactor = math_max(CSAMPLE(-SAMPLE_MIN),
-                                                      CSAMPLE(SAMPLE_MAX));
+    const CSAMPLE kConversionFactor = 0x8000;
     for (unsigned int i = 0; i < iNumSamples; ++i) {
         pDest[i] = CSAMPLE(pSrc[i]) / kConversionFactor;
     }
