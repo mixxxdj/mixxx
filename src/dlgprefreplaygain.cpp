@@ -40,7 +40,7 @@ void DlgPrefReplayGain::loadSettings() {
     SliderReplayGainBoost->setValue(iReplayGainBoost);
     LabelCurrentReplayGainBoost->setText(
             QString::fromUtf8("%1 dB (\xE2\x8C\x80 %2 dB)").arg(
-                  iReplayGainBoost, iReplayGainBoost - 14)); // e.g "0 dB (⌀ -14 dB)"
+                  iReplayGainBoost, iReplayGainBoost - 14)); // e.g "0 dB ("Diameter" -14 dB)"
 
 
     int iDefaultBoost = config->getValueString(
@@ -68,7 +68,7 @@ void DlgPrefReplayGain::slotResetToDefaults() {
     // delay on recent hardware (<5 years old).
     EnableAnalyser->setChecked(true);
     SliderReplayGainBoost->setValue(0);
-    LabelCurrentReplayGainBoost->setText(QString::fromUtf8("0 dB (\xE2\x8C\x80 -14 dB)")); // "0 dB (⌀ -14 dB)"
+    LabelCurrentReplayGainBoost->setText(QString::fromUtf8("0 dB (\xE2\x8C\x80 -14 dB)")); // "0 dB ("Diameter" -14 dB)"
     SliderDefaultBoost->setValue(-6);
     LabelCurrentDefaultBoost->setText("-6 dB");
 
@@ -109,7 +109,7 @@ void DlgPrefReplayGain::slotUpdateReplayGainBoost() {
     LabelCurrentReplayGainBoost->setText(
             QString::fromUtf8("%1 dB (\xE2\x8C\x80 %2 dB)").arg(
                   QString::number(value), QString::number(value - 14)));
-    // e.g "0 dB (⌀ -14 dB)"
+    // e.g "0 dB ("Diameter" -14 dB)"
     slotApply();
 }
 
