@@ -32,6 +32,7 @@ class DlgPrefReplayGain: public DlgPreferencePage,
   private:
     // Determines whether or not to gray out the preferences
     void loadSettings();
+    void setLabelCurrentReplayGainBoost(int value);
 
     // Pointer to config object
     ConfigObject<ConfigValue>* config;

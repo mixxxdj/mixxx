@@ -38,9 +38,7 @@ void DlgPrefReplayGain::loadSettings() {
     int iReplayGainBoost = config->getValueString(
             ConfigKey(kConfigKey, "InitialReplayGainBoost"), "0").toInt();
     SliderReplayGainBoost->setValue(iReplayGainBoost);
-    LabelCurrentReplayGainBoost->setText(
-            QString(tr("%1 dB (average %2 dB)")).arg(
-                  iReplayGainBoost, iReplayGainBoost - 14));
+    setLabelCurrentReplayGainBoost(iReplayGainBoost);
 
 
     int iDefaultBoost = config->getValueString(
@@ -68,7 +66,7 @@ void DlgPrefReplayGain::slotResetToDefaults() {
     // delay on recent hardware (<5 years old).
     EnableAnalyser->setChecked(true);
     SliderReplayGainBoost->setValue(0);
-    LabelCurrentReplayGainBoost->setText(tr("0 dB (average -14 dB)"));
+    setLabelCurrentReplayGainBoost(0);
     SliderDefaultBoost->setValue(-6);
     LabelCurrentDefaultBoost->setText("-6 dB");
 
@@ -106,10 +104,14 @@ void DlgPrefReplayGain::slotUpdateReplayGainBoost() {
     int value = SliderReplayGainBoost->value();
     config->set(ConfigKey(kConfigKey, "InitialReplayGainBoost"),
                 ConfigValue(value));
+    setLabelCurrentReplayGainBoost(value);
+    slotApply();
+}
+
+void DlgPrefReplayGain::setLabelCurrentReplayGainBoost(int value) {
     LabelCurrentReplayGainBoost->setText(
             QString(tr("%1 dB (average %2 dB)")).arg(
-                  QString::number(value), QString::number(value - 14)));
-    slotApply();
+                  QString().sprintf("%+d", value), QString::number(value - 14)));
 }
 
 void DlgPrefReplayGain::slotUpdateDefaultBoost() {
