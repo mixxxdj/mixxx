@@ -16,9 +16,7 @@ namespace
     const AudioSource::diff_type kMaxSkipFrameSamplesWhenSeeking = 2 * kSeekFramePrefetchCount * kMaxSamplesPerMp3Frame;
 
     const AudioSource::sample_type kMadScale =
-            AudioSource::kSampleValuePeak
-                    / AudioSource::sample_type(
-                            mad_fixed_t(1) << MAD_F_FRACBITS);
+            AudioSource::kSampleValuePeak / AudioSource::sample_type(MAD_F_ONE);
 
     inline AudioSource::sample_type madScale(mad_fixed_t sample) {
         return sample * kMadScale;
