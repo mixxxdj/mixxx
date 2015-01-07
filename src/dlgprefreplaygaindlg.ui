@@ -52,7 +52,7 @@
       </size>
      </property>
      <property name="title">
-      <string>Inital Boost</string>
+      <string>Initial Boost</string>
      </property>
      <layout class="QGridLayout">
       <item row="3" column="0">
@@ -156,7 +156,7 @@
       <item row="1" column="0">
        <widget class="QLabel" name="label_boost">
         <property name="text">
-         <string>For tracks with ReaplayGain</string>
+         <string>For tracks with ReplayGain</string>
         </property>
         <property name="buddy">
          <cstring>SliderReplayGainBoost</cstring>
