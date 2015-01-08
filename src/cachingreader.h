@@ -115,7 +115,7 @@ class CachingReader : public QObject {
 
     ReaderStatus m_readerStatus;
 
-    // Keeps track of free Chunks we've allocated
+    // Keeps track of all Chunks we've allocated.
     QVector<Chunk*> m_chunks;
     // List of free chunks available for use.
     QList<Chunk*> m_freeChunks;

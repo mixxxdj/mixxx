@@ -36,7 +36,7 @@ CachingReader::CachingReader(QString group,
     // Divide up the allocated raw memory buffer into total_chunks
     // chunks. Initialize each chunk to hold nothing and add it to the free
     // list.
-    for (int i=0; i < maximumChunksInMemory; i++) {
+    for (int i = 0; i < maximumChunksInMemory; ++i) {
         Chunk* c = new Chunk;
         c->chunk_number = -1;
         c->length = 0;
@@ -76,12 +76,7 @@ CachingReader::~CachingReader() {
     m_freeChunks.clear();
     m_allocatedChunks.clear();
     m_lruChunk = m_mruChunk = NULL;
-
-    for (int i=0; i < m_chunks.size(); i++) {
-        Chunk* c = m_chunks[i];
-        delete c;
-    }
-
+    qDeleteAll(m_chunks);
     delete [] m_pRawMemoryBuffer;
     m_pRawMemoryBuffer = NULL;
 }
@@ -202,11 +197,8 @@ Chunk* CachingReader::allocateChunkExpireLRU() {
 
 Chunk* CachingReader::lookupChunk(int chunk_number) {
     // Defaults to NULL if it's not in the hash.
-    Chunk* chunk = NULL;
-
-    if (m_allocatedChunks.contains(chunk_number)) {
-        chunk = m_allocatedChunks.value(chunk_number);
-
+    Chunk* chunk = m_allocatedChunks.value(chunk_number, NULL);
+    if (chunk != NULL) {
         // Make sure we're all in agreement here.
         if (chunk_number != chunk->chunk_number) {
             qDebug() << "ERROR: Inconsistent chunk has chunk_number that doesn't match allocated-chunks key.";
