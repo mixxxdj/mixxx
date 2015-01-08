@@ -60,6 +60,10 @@ EnginePregain::~EnginePregain()
     s_pReplayGainBoost = NULL;
 }
 
+void EnginePregain::setSpeed(double speed) {
+    m_dSpeed = speed;
+}
+
 void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
 
     float fEnableReplayGain = s_pEnableReplayGain->get();
@@ -107,9 +111,16 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
     // Clamp gain to within [0, 10.0] to prevent insane gains. This can happen
     // (some corrupt files get really high replay gain values).
     // 10 allows a maximum replay Gain Boost * calculated replay gain of ~2
-    fGain = fGain * math_clamp(fReplayGainCorrection, 0.0f, 10.0f);
+    fGain *= math_clamp(fReplayGainCorrection, 0.0f, 10.0f);
 
     m_pTotalGain->set(fGain);
+
+    // We have to Vinyl emulation near stop, because otherwise we have clicks when
+    // crossing zero, while changing from forward to backward
+    const float kThresholdSpeed = 0.070; // Scale volume if playback speed is below 7%.
+    if (fabs(m_dSpeed) < kThresholdSpeed) {
+        fGain *= fabs(m_dSpeed) / kThresholdSpeed;
+    }
 
     if (fGain != m_fPrevGain) {
         // Prevent soundwave discontinuities by interpolating from old to new gain.
