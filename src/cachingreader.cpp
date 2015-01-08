@@ -457,7 +457,10 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
     // that for stereo samples.
     const int default_samples = 2048;
 
-    QSet<int> chunksToFreshen;
+    // For every chunk that the hints indicated, check if it is in the cache. If
+    // any are not, then wake.
+    bool shouldWake = false;
+
     for (HintVector::const_iterator it = hintList.constBegin();
          it != hintList.constEnd(); ++it) {
         // Copy, don't use reference.
@@ -485,37 +488,27 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
         int end_chunk = chunkForSample(end_sample);
 
         for (int current = start_chunk; current <= end_chunk; ++current) {
-            chunksToFreshen.insert(current);
-        }
-    }
-
-    // For every chunk that the hints indicated, check if it is in the cache. If
-    // any are not, then wake.
-    bool shouldWake = false;
-    QSetIterator<int> setIterator(chunksToFreshen);
-    while (setIterator.hasNext()) {
-        int chunk = setIterator.next();
-
-        // This will cause the chunk to be 'freshened' in the cache. The
-        // chunk will be moved to the end of the LRU list.
-        if (!m_chunksBeingRead.contains(chunk) && lookupChunk(chunk) == NULL) {
-            shouldWake = true;
-            Chunk* pChunk = allocateChunkExpireLRU();
-            if (pChunk == NULL) {
-                qDebug() << "ERROR: Couldn't allocate spare Chunk to make ChunkReadRequest.";
-                continue;
+            // This will cause the chunk to be 'freshened' in the cache. The
+            // chunk will be moved to the end of the LRU list.
+            if (!m_chunksBeingRead.contains(current) && lookupChunk(current) == NULL) {
+                shouldWake = true;
+                Chunk* pChunk = allocateChunkExpireLRU();
+                if (pChunk == NULL) {
+                    qDebug() << "ERROR: Couldn't allocate spare Chunk to make ChunkReadRequest.";
+                    continue;
+                }
+                m_chunksBeingRead.insert(current, pChunk);
+                ChunkReadRequest request;
+                pChunk->chunk_number = current;
+                request.chunk = pChunk;
+                // qDebug() << "Requesting read of chunk" << current << "into" << pChunk;
+                // qDebug() << "Requesting read into " << request.chunk->data;
+                if (m_chunkReadRequestFIFO.write(&request, 1) != 1) {
+                    qDebug() << "ERROR: Could not submit read request for "
+                             << current;
+                }
+                //qDebug() << "Checking chunk " << current << " shouldWake:" << shouldWake << " chunksToRead" << m_chunksToRead.size();
             }
-            m_chunksBeingRead.insert(chunk, pChunk);
-            ChunkReadRequest request;
-            pChunk->chunk_number = chunk;
-            request.chunk = pChunk;
-            // qDebug() << "Requesting read of chunk" << chunk << "into" << pChunk;
-            // qDebug() << "Requesting read into " << request.chunk->data;
-            if (m_chunkReadRequestFIFO.write(&request, 1) != 1) {
-                qDebug() << "ERROR: Could not submit read request for "
-                         << chunk;
-            }
-            //qDebug() << "Checking chunk " << chunk << " shouldWake:" << shouldWake << " chunksToRead" << m_chunksToRead.size();
         }
     }
 
