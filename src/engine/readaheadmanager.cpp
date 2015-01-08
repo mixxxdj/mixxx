@@ -158,7 +158,7 @@ void ReadAheadManager::notifySeek(int iSeekPosition) {
     // }
 }
 
-void ReadAheadManager::hintReader(double dRate, QVector<Hint>* pHintList) {
+void ReadAheadManager::hintReader(double dRate, HintVector* pHintList) {
     bool in_reverse = dRate < 0;
     Hint current_position;
 

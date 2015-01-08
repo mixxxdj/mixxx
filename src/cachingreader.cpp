@@ -441,13 +441,11 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
     return zerosWritten + num_samples - samples_remaining;
 }
 
-void CachingReader::hintAndMaybeWake(const QVector<Hint>& hintList) {
+void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
     // If no file is loaded, skip.
     if (m_readerStatus != TRACK_LOADED) {
         return;
     }
-
-    QVectorIterator<Hint> iterator(hintList);
 
     // To prevent every bit of code having to guess how many samples
     // forward it makes sense to keep in memory, the hinter can provide
@@ -460,9 +458,10 @@ void CachingReader::hintAndMaybeWake(const QVector<Hint>& hintList) {
     const int default_samples = 2048;
 
     QSet<int> chunksToFreshen;
-    while (iterator.hasNext()) {
+    for (HintVector::const_iterator it = hintList.constBegin();
+         it != hintList.constEnd(); ++it) {
         // Copy, don't use reference.
-        Hint hint = iterator.next();
+        Hint hint = *it;
 
         if (hint.length == 0) {
             hint.length = default_samples;

@@ -11,8 +11,8 @@
 
 #include "util/types.h"
 #include "util/math.h"
+#include "cachingreader.h"
 
-struct Hint;
 class EngineControl;
 class CachingReader;
 
@@ -54,7 +54,7 @@ class ReadAheadManager {
 
     // hintReader allows the ReadAheadManager to provide hints to the reader to
     // indicate that the given portion of a song is about to be read.
-    virtual void hintReader(double dRate, QVector<Hint>* hintList);
+    virtual void hintReader(double dRate, HintVector* hintList);
 
     virtual int getEffectiveVirtualPlaypositionFromLog(double currentVirtualPlayposition,
                                                        double numConsumedSamples);

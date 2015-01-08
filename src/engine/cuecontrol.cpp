@@ -554,7 +554,7 @@ void CueControl::hotcuePositionChanged(HotcueControl* pControl, double newPositi
     }
 }
 
-void CueControl::hintReader(QVector<Hint>* pHintList) {
+void CueControl::hintReader(HintVector* pHintList) {
     QMutexLocker lock(&m_mutex);
 
     Hint cue_hint;
@@ -578,7 +578,7 @@ void CueControl::hintReader(QVector<Hint>* pHintList) {
                     cue_hint.sample--;
                 cue_hint.length = 0;
                 cue_hint.priority = 10;
-                pHintList->push_back(cue_hint);
+                pHintList->append(cue_hint);
             }
         }
     }

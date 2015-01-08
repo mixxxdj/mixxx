@@ -9,6 +9,7 @@
 #include <QVector>
 #include <QLinkedList>
 #include <QHash>
+#include <QVarLengthArray>
 
 #include "util/types.h"
 #include "configobject.h"
@@ -33,6 +34,8 @@ typedef struct Hint {
     // priority >10.
     int priority;
 } Hint;
+
+typedef QVarLengthArray<Hint, 512> HintVector;
 
 // CachingReader provides a layer on top of a SoundSource for reading samples
 // from a file. A cache is provided so that repeated reads to a certain section
@@ -60,7 +63,7 @@ class CachingReader : public QObject {
     // that is not in the cache. If any hints do request a chunk not in cache,
     // then wake the reader so that it can process them. Must only be called
     // from the engine callback.
-    virtual void hintAndMaybeWake(const QVector<Hint>& hintList);
+    virtual void hintAndMaybeWake(const HintVector& hintList);
 
     // Request that the CachingReader load a new track. These requests are
     // processed in the work thread, so the reader must be woken up via wake()
