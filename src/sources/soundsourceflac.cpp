@@ -53,8 +53,12 @@ SoundSourceFLAC::SoundSourceFLAC(QString filename)
 >>>>>>> New SoundSource/AudioSource API
 =======
 SoundSourceFLAC::SoundSourceFLAC(QString fileName)
+<<<<<<< HEAD
         : Super(fileName, "flac") {
 >>>>>>> Split AudioSource from SoundSource
+=======
+        : SoundSource(fileName, "flac") {
+>>>>>>> Delete typedef Super (review comments)
 }
 
 Result SoundSourceFLAC::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {

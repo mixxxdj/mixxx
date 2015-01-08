@@ -7,8 +7,6 @@
 // The whole file is decoded at once and saved
 // in RAM to allow seeking and smooth operation in Mixxx.
 class SoundSourceModPlug: public Mixxx::SoundSource {
-    typedef SoundSource Super;
-
 public:
     static QList<QString> supportedFileExtensions();
 

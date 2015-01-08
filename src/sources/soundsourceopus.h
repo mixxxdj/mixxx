@@ -4,6 +4,7 @@
 #include "sources/soundsource.h"
 
 class SoundSourceOpus: public Mixxx::SoundSource {
+<<<<<<< HEAD
     typedef SoundSource Super;
 
 <<<<<<< HEAD
@@ -24,6 +25,8 @@ class SoundSourceOpus : public Mixxx::SoundSource {
     OggOpusFile *m_ptrOpusFile;
     quint64 m_lFilelength;
 =======
+=======
+>>>>>>> Delete typedef Super (review comments)
 public:
     static QList<QString> supportedFileExtensions();
 

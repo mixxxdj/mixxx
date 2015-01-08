@@ -21,8 +21,6 @@
 #include "sources/soundsource.h"
 
 class SoundSourceFLAC : public Mixxx::SoundSource {
-    typedef SoundSource Super;
-
 public:
     static QList<QString> supportedFileExtensions();
 

@@ -42,8 +42,6 @@ struct ffmpegCacheObject {
 };
 
 class AudioSourceFFmpeg : public AudioSource {
-    typedef AudioSource Super;
-
 public:
     static AudioSourcePointer open(QString fileName);
 

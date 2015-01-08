@@ -58,7 +58,7 @@ void AudioSourceOpus::close() throw() {
         op_free(m_pOggOpusFile);
         m_pOggOpusFile = NULL;
     }
-    Super::reset();
+    reset();
 }
 
 AudioSource::diff_type AudioSourceOpus::seekFrame(diff_type frameIndex) {

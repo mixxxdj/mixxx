@@ -191,7 +191,7 @@ void AudioSourceM4A::close() throw() {
     m_inputBufferOffset = 0;
     m_inputBufferLength = 0;
     m_curFrameIndex = 0;
-    Super::reset();
+    reset();
 }
 
 bool AudioSourceM4A::isValidSampleId(MP4SampleId sampleId) const {

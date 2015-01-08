@@ -62,7 +62,7 @@ void AudioSourceOggVorbis::close() throw() {
     if (0 != clearResult) {
         qWarning() << "Failed to close OggVorbis file" << clearResult;
     }
-    Super::reset();
+    reset();
 }
 
 AudioSource::diff_type AudioSourceOggVorbis::seekFrame(

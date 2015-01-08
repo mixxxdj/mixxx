@@ -28,7 +28,7 @@ QList<QString> SoundSourceMp3::supportedFileExtensions() {
 }
 
 SoundSourceMp3::SoundSourceMp3(QString qFilename)
-        : Super(qFilename, "mp3") {
+        : SoundSource(qFilename, "mp3") {
 }
 
 Result SoundSourceMp3::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {

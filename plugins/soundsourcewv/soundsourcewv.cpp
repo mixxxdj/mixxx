@@ -14,7 +14,7 @@ QList<QString> SoundSourceWV::supportedFileExtensions() {
 }
 
 SoundSourceWV::SoundSourceWV(QString fileName)
-        : Super(fileName, "wv") {
+        : SoundSource(fileName, "wv") {
 }
 
 Result SoundSourceWV::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {

@@ -131,7 +131,7 @@ void AudioSourceModPlug::close() throw() {
         ModPlug::ModPlug_Unload(m_pModFile);
         m_pModFile = NULL;
     }
-    Super::reset();
+    reset();
 }
 
 AudioSource::diff_type AudioSourceModPlug::seekFrame(

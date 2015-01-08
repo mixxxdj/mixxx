@@ -4,8 +4,6 @@
 #include "sources/soundsource.h"
 
 class SoundSourceSndFile: public Mixxx::SoundSource {
-    typedef SoundSource Super;
-
 public:
     static QList<QString> supportedFileExtensions();
 

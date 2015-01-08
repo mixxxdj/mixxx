@@ -20,8 +20,6 @@ namespace Mixxx
 {
 
 class AudioSourceMp3 : public AudioSource {
-    typedef AudioSource Super;
-
 public:
     static AudioSourcePointer open(QString fileName);
 

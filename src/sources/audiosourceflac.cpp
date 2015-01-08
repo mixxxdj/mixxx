@@ -115,7 +115,7 @@ void AudioSourceFLAC::close() throw() {
     }
     m_decodeSampleBuffer.clear();
     m_file.close();
-    Super::reset();
+    reset();
 }
 
 Mixxx::AudioSource::diff_type AudioSourceFLAC::seekFrame(diff_type frameIndex) {

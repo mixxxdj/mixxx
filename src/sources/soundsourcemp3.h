@@ -25,8 +25,6 @@
   */
 
 class SoundSourceMp3 : public Mixxx::SoundSource {
-    typedef SoundSource Super;
-
 public:
     static QList<QString> supportedFileExtensions();
 

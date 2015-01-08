@@ -158,7 +158,7 @@ void AudioSourceMediaFoundation::close() throw() {
         m_hrCoInitialize = E_FAIL;
     }
 
-    Super::reset();
+    reset();
 }
 
 Mixxx::AudioSource::diff_type AudioSourceMediaFoundation::seekFrame(

@@ -22,8 +22,6 @@
 namespace Mixxx {
 
 class AudioSourceCoreAudio : public AudioSource {
-    typedef AudioSource Super;
-
 public:
     static AudioSourcePointer open(QString fileName);
 
