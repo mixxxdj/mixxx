@@ -2,7 +2,7 @@
 #define EFFECTPROCESSOR_H
 
 #include <QString>
-#include <QMap>
+#include <QLinkedList>
 
 #include "util/types.h"
 #include "engine/effects/groupfeaturestate.h"
@@ -44,13 +44,17 @@ class EffectProcessor {
 // of a group-specific process call.
 template <typename T>
 class GroupEffectProcessor : public EffectProcessor {
+    struct GroupStatePair {
+        QString group;
+        T* state;
+    };
   public:
     GroupEffectProcessor() {
     }
     virtual ~GroupEffectProcessor() {
-        for (typename QMap<QString, T*>::iterator it = m_groupState.begin();
+        for (typename QLinkedList<GroupStatePair>::iterator it = m_groupState.begin();
                 it != m_groupState.end();) {
-            T* pState = it.value();
+            T* pState = it->state;
             it = m_groupState.erase(it);
             delete pState;
         }
@@ -58,11 +62,7 @@ class GroupEffectProcessor : public EffectProcessor {
 
     virtual void initialize(const QSet<QString>& registeredGroups) {
         foreach (const QString& group, registeredGroups) {
-            T* pState = m_groupState.value(group, NULL);
-            if (pState == NULL) {
-                pState = new T();
-                m_groupState[group] = pState;
-            }
+            getOrCreateGroupState(group);
         }
     }
 
@@ -72,13 +72,9 @@ class GroupEffectProcessor : public EffectProcessor {
                          const unsigned int sampleRate,
                          const EffectProcessor::EnableState enableState,
                          const GroupFeatureState& groupFeatures) {
-        T* pState = m_groupState.value(group, NULL);
-        if (pState == NULL) {
-            pState = new T();
-            m_groupState[group] = pState;
-            qWarning() << "Allocated group state in the engine for" << group;
-        }
-        processGroup(group, pState, pInput, pOutput, numSamples, sampleRate, enableState, groupFeatures);
+        T* pState = getOrCreateGroupState(group);
+        processGroup(group, pState, pInput, pOutput, numSamples, sampleRate,
+                     enableState, groupFeatures);
     }
 
     virtual void processGroup(const QString& group,
@@ -90,7 +86,22 @@ class GroupEffectProcessor : public EffectProcessor {
                               const GroupFeatureState& groupFeatures) = 0;
 
   private:
-    QMap<QString, T*> m_groupState;
+    T* getOrCreateGroupState(const QString& group) {
+        for (typename QLinkedList<GroupStatePair>::const_iterator it = m_groupState.constBegin(),
+                     end = m_groupState.constEnd(); it != end; ++it) {
+            const GroupStatePair& pair = *it;
+            if (pair.group == group) {
+                return pair.state;
+            }
+        }
+        GroupStatePair pair;
+        pair.group = group;
+        pair.state = new T();
+        m_groupState.append(pair);
+        return pair.state;
+    }
+
+    QLinkedList<GroupStatePair> m_groupState;
 };
 
 #endif /* EFFECTPROCESSOR_H */
