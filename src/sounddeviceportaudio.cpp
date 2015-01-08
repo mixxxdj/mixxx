@@ -752,9 +752,9 @@ int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
 }
 
 int SoundDevicePortAudio::callbackProcessClkRef(const unsigned int framesPerBuffer,
-                                          CSAMPLE *out, const CSAMPLE *in,
-                                          const PaStreamCallbackTimeInfo *timeInfo,
-                                          PaStreamCallbackFlags statusFlags) {
+                                                CSAMPLE *out, const CSAMPLE *in,
+                                                const PaStreamCallbackTimeInfo *timeInfo,
+                                                PaStreamCallbackFlags statusFlags) {
     PerformanceTimer timer;
     timer.start();
     Trace trace("SoundDevicePortAudio::callbackProcessClkRef " + getInternalName());

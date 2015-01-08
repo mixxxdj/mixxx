@@ -541,8 +541,8 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
 }
 
 EngineChannel* EngineMaster::getChannel(QString group) {
-    for (QList<ChannelInfo*>::const_iterator i = m_channels.begin();
-         i != m_channels.end(); ++i) {
+    for (QList<ChannelInfo*>::const_iterator i = m_channels.constBegin();
+         i != m_channels.constEnd(); ++i) {
         ChannelInfo* pChannelInfo = *i;
         if (pChannelInfo->m_pChannel->getGroup() == group) {
             return pChannelInfo->m_pChannel;
