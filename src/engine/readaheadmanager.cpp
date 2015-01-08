@@ -36,7 +36,7 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
 
     // A loop will only limit the amount we can read in one shot.
 
-    const double loop_trigger = m_sEngineControls[0]->nextTrigger(
+    const double loop_trigger = m_sEngineControls.at(0)->nextTrigger(
         dRate, m_iCurrentPosition, 0, 0);
     bool loop_active = loop_trigger != kNoTrigger;
     int preloop_samples = 0;
@@ -83,7 +83,7 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
     if (loop_active) {
         // LoopingControl makes the decision about whether we should loop or
         // not.
-        const double loop_target = m_sEngineControls[0]->
+        const double loop_target = m_sEngineControls.at(0)->
                 process(dRate, m_iCurrentPosition, 0, 0);
 
         if (loop_target != kNoTrigger) {
