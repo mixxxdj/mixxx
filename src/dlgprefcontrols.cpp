@@ -324,7 +324,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
             this, SLOT(slotSetRateRampSensitivity(int)));
     SliderRateRampSensitivity->setValue(m_pConfig->getValueString(
             ConfigKey("[Controls]", "RateRampSensitivity")).toInt());
-    
+
     // Update Speed Auto Reset Slider Box
     // Cue recall
     ComboBoxResetSpeedAndPitch->addItem(tr("On track load"));
@@ -534,7 +534,7 @@ void DlgPrefControls::slotSetScheme(int) {
 }
 
 void DlgPrefControls::slotSetSkin(int) {
-    m_pConfig->set(ConfigKey("[Config]", "Skin"), ComboBoxSkinconf->currentText());
+    m_pConfig->set(ConfigKey("[Config]", "ResizableSkin"), ComboBoxSkinconf->currentText());
     m_mixxx->rebootMixxxView();
     checkSkinResolution(ComboBoxSkinconf->currentText())
             ? warningLabel->hide() : warningLabel->show();
@@ -618,7 +618,7 @@ void DlgPrefControls::slotApply() {
     } else {
         m_pConfig->set(ConfigKey("[Controls]", "RateDir"), ConfigValue(1));
     }
-    
+
     m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
             ConfigValue(m_speedAutoReset));
 
