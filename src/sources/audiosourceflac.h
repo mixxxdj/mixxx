@@ -14,8 +14,6 @@ namespace Mixxx
 {
 
 class AudioSourceFLAC : public AudioSource {
-    typedef AudioSource Super;
-
 public:
     static AudioSourcePointer open(QString fileName);
 

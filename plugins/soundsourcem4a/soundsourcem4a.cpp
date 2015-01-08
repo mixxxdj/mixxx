@@ -31,7 +31,7 @@ QList<QString> SoundSourceM4A::supportedFileExtensions() {
 }
 
 SoundSourceM4A::SoundSourceM4A(QString fileName)
-    : Super(fileName, "m4a") {
+    : SoundSource(fileName, "m4a") {
 }
 
 Result SoundSourceM4A::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {

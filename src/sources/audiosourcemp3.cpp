@@ -235,7 +235,7 @@ void AudioSourceMp3::close() throw() {
     m_pFileData = NULL;
     m_file.close();
 
-    Super::reset();
+    reset();
 }
 
 AudioSourceMp3::SeekFrameList::size_type AudioSourceMp3::findSeekFrameIndex(diff_type frameIndex) const {

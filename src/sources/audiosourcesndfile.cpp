@@ -63,7 +63,7 @@ void AudioSourceSndFile::close() throw() {
         m_pSndFile = NULL;
         memset(&m_sfInfo, 0, sizeof(m_sfInfo));
     }
-    Super::reset();
+    reset();
 }
 
 AudioSource::diff_type AudioSourceSndFile::seekFrame(

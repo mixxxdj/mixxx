@@ -20,8 +20,6 @@
 #include "sources/soundsource.h"
 
 class SoundSourceOggVorbis: public Mixxx::SoundSource {
-    typedef SoundSource Super;
-
 public:
     static QList<QString> supportedFileExtensions();
 

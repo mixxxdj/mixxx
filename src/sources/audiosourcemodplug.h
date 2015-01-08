@@ -17,8 +17,6 @@ namespace Mixxx
 // The whole file is decoded at once and saved
 // in RAM to allow seeking and smooth operation in Mixxx.
 class AudioSourceModPlug: public AudioSource {
-    typedef AudioSource Super;
-
 public:
     static const size_type kChannelCount = 2; // always stereo
     static const size_type kFrameRate = 44100; // always 44.1kHz

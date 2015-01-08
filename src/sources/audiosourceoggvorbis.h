@@ -11,8 +11,6 @@ namespace Mixxx
 {
 
 class AudioSourceOggVorbis: public AudioSource {
-    typedef AudioSource Super;
-
 public:
     static AudioSourcePointer open(QString fileName);
 

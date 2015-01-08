@@ -31,8 +31,6 @@
 namespace Mixxx {
 
 class SoundSourceM4A : public SoundSource {
-    typedef SoundSource Super;
-
 public:
     static QList<QString> supportedFileExtensions();
 

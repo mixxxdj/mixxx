@@ -13,8 +13,6 @@
 namespace Mixxx {
 
 class SoundSourceWV: public SoundSource {
-    typedef SoundSource Super;
-
 public:
     static QList<QString> supportedFileExtensions();
 

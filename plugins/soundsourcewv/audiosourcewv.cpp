@@ -53,7 +53,7 @@ void AudioSourceWV::close() throw() {
         WavpackCloseFile(m_wpc);
         m_wpc = NULL;
     }
-    Super::reset();
+    reset();
 }
 
 AudioSource::diff_type AudioSourceWV::seekFrame(diff_type frameIndex) {

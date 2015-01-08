@@ -11,8 +11,6 @@ namespace Mixxx
 {
 
 class AudioSourceOpus: public AudioSource {
-    typedef AudioSource Super;
-
 public:
     // All Opus audio is encoded at 48 kHz
     static const size_type kFrameRate = 48000;

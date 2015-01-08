@@ -48,7 +48,7 @@ QList<QString> SoundSourceModPlug::supportedFileExtensions() {
 }
 
 SoundSourceModPlug::SoundSourceModPlug(QString fileName)
-        : Super(fileName, getTypeFromFilename(fileName)) {
+        : SoundSource(fileName, getTypeFromFilename(fileName)) {
 }
 
 Result SoundSourceModPlug::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {

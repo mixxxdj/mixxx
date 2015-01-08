@@ -18,7 +18,7 @@ QList<QString> SoundSourceSndFile::supportedFileExtensions() {
 }
 
 SoundSourceSndFile::SoundSourceSndFile(QString qFilename)
-        : Super(qFilename) {
+        : SoundSource(qFilename) {
 }
 
 Result SoundSourceSndFile::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {

@@ -15,8 +15,6 @@
 namespace Mixxx {
 
 class AudioSourceWV: public AudioSource {
-    typedef AudioSource Super;
-
 public:
     static AudioSourcePointer open(QString fileName);
 

@@ -30,8 +30,6 @@
 #endif
 
 class SoundSourceMediaFoundation : public Mixxx::SoundSource {
-    typedef SoundSource Super;
-
 public:
     static QList<QString> supportedFileExtensions();
 

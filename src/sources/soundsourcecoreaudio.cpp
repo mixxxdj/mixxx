@@ -37,7 +37,7 @@ QList<QString> SoundSourceCoreAudio::supportedFileExtensions() {
 }
 
 SoundSourceCoreAudio::SoundSourceCoreAudio(QString fileName)
-        : Super(fileName) {
+        : SoundSource(fileName) {
 }
 
 Result SoundSourceCoreAudio::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {

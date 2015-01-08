@@ -19,8 +19,6 @@ class IMFMediaSource;
 namespace Mixxx {
 
 class AudioSourceMediaFoundation : public AudioSource {
-    typedef AudioSource Super;
-
 public:
     static AudioSourcePointer open(QString fileName);
 

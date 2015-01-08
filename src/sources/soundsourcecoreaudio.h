@@ -22,8 +22,6 @@
 #include "sources/soundsource.h"
 
 class SoundSourceCoreAudio : public Mixxx::SoundSource {
-    typedef SoundSource Super;
-
 public:
     static QList<QString> supportedFileExtensions();
 
