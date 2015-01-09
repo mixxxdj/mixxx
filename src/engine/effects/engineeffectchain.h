@@ -3,7 +3,7 @@
 
 #include <QString>
 #include <QList>
-#include <QLinkedList>
+#include <QHash>
 
 #include "util.h"
 #include "util/types.h"
@@ -36,12 +36,10 @@ class EngineEffectChain : public EffectsRequestHandler {
 
   private:
     struct GroupStatus {
-        GroupStatus(const QString& group)
-                : group(group),
-                  old_gain(0),
+        GroupStatus()
+                : old_gain(0),
                   enable_state(EffectProcessor::DISABLED) {
         }
-        QString group;
         CSAMPLE old_gain;
         EffectProcessor::EnableState enable_state;
     };
@@ -56,17 +54,13 @@ class EngineEffectChain : public EffectsRequestHandler {
     bool enableForGroup(const QString& group);
     bool disableForGroup(const QString& group);
 
-    // Gets or creates a GroupStatus entry in m_groupStatus for the provided
-    // group.
-    GroupStatus& getGroupStatus(const QString& group);
-
     QString m_id;
     EffectProcessor::EnableState m_enableState;
     EffectChain::InsertionType m_insertionType;
     CSAMPLE m_dMix;
     QList<EngineEffect*> m_effects;
     CSAMPLE* m_pBuffer;
-    QLinkedList<GroupStatus> m_groupStatus;
+    QHash<QString, GroupStatus> m_groupStatus;
 
     DISALLOW_COPY_AND_ASSIGN(EngineEffectChain);
 };

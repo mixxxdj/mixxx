@@ -2,7 +2,7 @@
 #define EFFECTPROCESSOR_H
 
 #include <QString>
-#include <QLinkedList>
+#include <QHash>
 
 #include "util/types.h"
 #include "engine/effects/groupfeaturestate.h"
@@ -44,16 +44,16 @@ class EffectProcessor {
 // of a group-specific process call.
 template <typename T>
 class GroupEffectProcessor : public EffectProcessor {
-    struct GroupStatePair {
-        QString group;
+    struct GroupStateHolder {
+        GroupStateHolder() : state(NULL) { }
         T* state;
     };
   public:
     GroupEffectProcessor() {
     }
     virtual ~GroupEffectProcessor() {
-        for (typename QLinkedList<GroupStatePair>::iterator it = m_groupState.begin();
-                it != m_groupState.end();) {
+        for (typename QHash<QString, GroupStateHolder>::iterator it =
+                     m_groupState.begin(); it != m_groupState.end();) {
             T* pState = it->state;
             it = m_groupState.erase(it);
             delete pState;
@@ -86,22 +86,15 @@ class GroupEffectProcessor : public EffectProcessor {
                               const GroupFeatureState& groupFeatures) = 0;
 
   private:
-    T* getOrCreateGroupState(const QString& group) {
-        for (typename QLinkedList<GroupStatePair>::const_iterator it = m_groupState.constBegin(),
-                     end = m_groupState.constEnd(); it != end; ++it) {
-            const GroupStatePair& pair = *it;
-            if (pair.group == group) {
-                return pair.state;
-            }
+    inline T* getOrCreateGroupState(const QString& group) {
+        GroupStateHolder& holder = m_groupState[group];
+        if (holder.state == NULL) {
+            holder.state = new T();
         }
-        GroupStatePair pair;
-        pair.group = group;
-        pair.state = new T();
-        m_groupState.append(pair);
-        return pair.state;
+        return holder.state;
     }
 
-    QLinkedList<GroupStatePair> m_groupState;
+    QHash<QString, GroupStateHolder> m_groupState;
 };
 
 #endif /* EFFECTPROCESSOR_H */
