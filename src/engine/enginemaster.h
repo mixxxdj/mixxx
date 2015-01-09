@@ -19,6 +19,7 @@
 #define ENGINEMASTER_H
 
 #include <QObject>
+#include <QVarLengthArray>
 
 #include "controlobject.h"
 #include "controlpushbutton.h"
@@ -205,7 +206,7 @@ class EngineMaster : public QObject, public AudioSource {
     EngineEffectsManager* m_pEngineEffectsManager;
     bool m_bRampingGain;
     QList<ChannelInfo*> m_channels;
-    QList<ChannelInfo*> m_activeChannels;
+    QVarLengthArray<ChannelInfo*, 128> m_activeChannels;
     QList<CSAMPLE> m_channelMasterGainCache;
     QList<CSAMPLE> m_channelHeadphoneGainCache;
 

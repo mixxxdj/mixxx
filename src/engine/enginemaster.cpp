@@ -244,10 +244,9 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
 
     EngineChannel* pMasterChannel = m_pMasterSync->getMaster();
     m_activeChannels.clear();
-    m_activeChannels.reserve(m_channels.size());
-    QList<ChannelInfo*>::iterator it = m_channels.begin();
-    for (unsigned int channel_number = 0;
-         it != m_channels.end(); ++it, ++channel_number) {
+    QList<ChannelInfo*>::const_iterator it = m_channels.constBegin();
+    QList<ChannelInfo*>::const_iterator end = m_channels.constEnd();
+    for (unsigned int channel_number = 0; it != end; ++it, ++channel_number) {
         ChannelInfo* pChannelInfo = *it;
         EngineChannel* pChannel = pChannelInfo->m_pChannel;
 
