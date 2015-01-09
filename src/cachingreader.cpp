@@ -10,6 +10,7 @@
 #include "sampleutil.h"
 #include "util/counter.h"
 #include "util/math.h"
+#include "util/assert.h"
 
 // currently CachingReaderWorker::kChunkLength is 65536 (0x10000);
 // For 80 chunks we need 5242880 (0x500000) bytes (5 MiB) of Memory
@@ -43,6 +44,7 @@ CachingReader::CachingReader(QString group,
         c->data = bufferStart;
         c->next_lru = NULL;
         c->prev_lru = NULL;
+        c->state = Chunk::FREE;
 
         m_chunks.push_back(c);
         m_freeChunks.push_back(c);
@@ -147,7 +149,7 @@ void CachingReader::freeChunk(Chunk* pChunk) {
     }
 
     m_mruChunk = removeFromLRUList(pChunk, m_mruChunk);
-
+    pChunk->state = Chunk::FREE;
     pChunk->chunk_number = -1;
     pChunk->length = 0;
     m_freeChunks.push_back(pChunk);
@@ -157,63 +159,90 @@ void CachingReader::freeAllChunks() {
     m_allocatedChunks.clear();
     m_mruChunk = NULL;
 
-    QSet<Chunk*> reserved = QSet<Chunk*>::fromList(m_chunksBeingRead.values());
+    for (QVector<Chunk*>::const_iterator it = m_chunks.constBegin();
+         it != m_chunks.constEnd(); ++it) {
+        Chunk* pChunk = *it;
 
-    for (int i=0; i < m_chunks.size(); i++) {
-        Chunk* c = m_chunks[i];
-        if (reserved.contains(c)) {
+        // We will receive CHUNK_READ_INVALID for all pending chunk reads which
+        // should free the chunks individually.
+        if (pChunk->state == Chunk::READ_IN_PROGRESS) {
             continue;
         }
-        if (!m_freeChunks.contains(c)) {
-            c->chunk_number = -1;
-            c->length = 0;
-            c->next_lru = NULL;
-            c->prev_lru = NULL;
-            m_freeChunks.push_back(c);
+
+        if (pChunk->state != Chunk::FREE) {
+            pChunk->state = Chunk::FREE;
+            pChunk->chunk_number = -1;
+            pChunk->length = 0;
+            pChunk->next_lru = NULL;
+            pChunk->prev_lru = NULL;
+            m_freeChunks.append(pChunk);
         }
     }
 }
 
-Chunk* CachingReader::allocateChunk() {
-    if (m_freeChunks.count() == 0)
+Chunk* CachingReader::allocateChunk(int chunk) {
+    if (m_freeChunks.isEmpty()) {
         return NULL;
-    return m_freeChunks.takeFirst();
+    }
+    Chunk* pChunk = m_freeChunks.takeFirst();
+    pChunk->state = Chunk::ALLOCATED;
+    pChunk->chunk_number = chunk;
+
+    //qDebug() << "Inserting chunk" << pChunk << pChunk->chunk_number;
+    m_allocatedChunks.insert(pChunk->chunk_number, pChunk);
+
+    // Insert the chunk into the LRU list
+    m_mruChunk = insertIntoLRUList(pChunk, m_mruChunk);
+
+    // If this chunk has no next LRU then it is the LRU. This only
+    // happens if this is the first allocated chunk.
+    if (pChunk->next_lru == NULL) {
+        m_lruChunk = pChunk;
+    }
+    return pChunk;
 }
 
-Chunk* CachingReader::allocateChunkExpireLRU() {
-    Chunk* chunk = allocateChunk();
-    if (chunk == NULL) {
+Chunk* CachingReader::allocateChunkExpireLRU(int chunk) {
+    Chunk* pChunk = allocateChunk(chunk);
+    if (pChunk == NULL) {
         if (m_lruChunk == NULL) {
             qDebug() << "ERROR: No LRU chunk to free in allocateChunkExpireLRU.";
             return NULL;
         }
         //qDebug() << "Expiring LRU" << m_lruChunk << m_lruChunk->chunk_number;
         freeChunk(m_lruChunk);
-        chunk = allocateChunk();
+        pChunk = allocateChunk(chunk);
     }
-    //qDebug() << "allocateChunkExpireLRU" << chunk;
-    return chunk;
+    //qDebug() << "allocateChunkExpireLRU" << chunk << pChunk;
+    return pChunk;
 }
 
 Chunk* CachingReader::lookupChunk(int chunk_number) {
     // Defaults to NULL if it's not in the hash.
     Chunk* chunk = m_allocatedChunks.value(chunk_number, NULL);
-    if (chunk != NULL) {
-        // Make sure we're all in agreement here.
-        if (chunk_number != chunk->chunk_number) {
-            qDebug() << "ERROR: Inconsistent chunk has chunk_number that doesn't match allocated-chunks key.";
-        }
 
-        // If this is the LRU chunk then set the previous LRU to the new LRU
-        if (chunk == m_lruChunk && chunk->prev_lru != NULL) {
-            m_lruChunk = chunk->prev_lru;
-        }
-        // Remove the chunk from the list and insert it at the head.
-        m_mruChunk = removeFromLRUList(chunk, m_mruChunk);
-        m_mruChunk = insertIntoLRUList(chunk, m_mruChunk);
-    }
+    // Make sure the allocated number matches the indexed chunk number.
+    DEBUG_ASSERT(chunk == NULL || chunk_number == chunk->chunk_number);
 
     return chunk;
+}
+
+void CachingReader::freshenChunk(Chunk* pChunk) {
+    // If this is the LRU chunk then set the previous LRU to the new LRU
+    if (pChunk == m_lruChunk && pChunk->prev_lru != NULL) {
+        m_lruChunk = pChunk->prev_lru;
+    }
+    // Remove the chunk from the list and insert it at the head.
+    m_mruChunk = removeFromLRUList(pChunk, m_mruChunk);
+    m_mruChunk = insertIntoLRUList(pChunk, m_mruChunk);
+}
+
+Chunk* CachingReader::lookupChunkAndFreshen(int chunk_number) {
+    Chunk* pChunk = lookupChunk(chunk_number);
+    if (pChunk != NULL) {
+        freshenChunk(pChunk);
+    }
+    return pChunk;
 }
 
 void CachingReader::newTrack(TrackPointer pTrack) {
@@ -238,40 +267,20 @@ void CachingReader::process() {
                 qDebug() << "ERROR: status.chunk is NULL in CHUNK_READ_SUCCESS ReaderStatusUpdate. Ignoring update.";
                 continue;
             }
-            Chunk* pChunk2 = m_chunksBeingRead.take(pChunk->chunk_number);
-            if (pChunk2 != pChunk) {
-                qDebug() << "Mismatch in requested chunk to read!";
-            }
 
-            Chunk* pAlreadyExisting = lookupChunk(pChunk->chunk_number);
-            // If this chunk is already in the cache, then we just freshened
-            // it. Free this chunk.
-            if (pAlreadyExisting != NULL) {
-                qDebug() << "CHUNK" << pChunk->chunk_number << "ALREADY EXISTS!";
-                freeChunk(pChunk);
-            } else {
-                //qDebug() << "Inserting chunk" << pChunk << pChunk->chunk_number;
-                m_allocatedChunks.insert(pChunk->chunk_number, pChunk);
+            // After a read success the state ought to be READ_IN_PROGRESS.
+            DEBUG_ASSERT(pChunk->state == Chunk::READ_IN_PROGRESS);
 
-                // Insert the chunk into the LRU list
-                m_mruChunk = insertIntoLRUList(pChunk, m_mruChunk);
-
-                // If this chunk has no next LRU then it is the LRU. This only
-                // happens if this is the first allocated chunk.
-                if (pChunk->next_lru == NULL) {
-                    m_lruChunk = pChunk;
-                }
-            }
+            // Switch state to READ.
+            pChunk->state = Chunk::READ;
         } else if (status.status == CHUNK_READ_EOF) {
             Chunk* pChunk = status.chunk;
             if (pChunk == NULL) {
                 qDebug() << "ERROR: status.chunk is NULL in CHUNK_READ_EOF ReaderStatusUpdate. Ignoring update.";
                 continue;
             }
-            Chunk* pChunk2 = m_chunksBeingRead.take(pChunk->chunk_number);
-            if (pChunk2 != pChunk) {
-                qDebug() << "Mismatch in requested chunk to read!";
-            }
+
+            DEBUG_ASSERT(pChunk->state == Chunk::READ_IN_PROGRESS);
             freeChunk(pChunk);
         } else if (status.status == CHUNK_READ_INVALID) {
             qDebug() << "WARNING: READER THREAD RECEIVED INVALID CHUNK READ";
@@ -280,10 +289,7 @@ void CachingReader::process() {
                 qDebug() << "ERROR: status.chunk is NULL in CHUNK_READ_INVALID ReaderStatusUpdate. Ignoring update.";
                 continue;
             }
-            Chunk* pChunk2 = m_chunksBeingRead.take(pChunk->chunk_number);
-            if (pChunk2 != pChunk) {
-                qDebug() << "Mismatch in requested chunk to read!";
-            }
+            DEBUG_ASSERT(pChunk->state == Chunk::READ_IN_PROGRESS);
             freeChunk(pChunk);
         }
     }
@@ -348,10 +354,10 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
     }
 
     for (int chunk_num = start_chunk; chunk_num <= end_chunk; chunk_num++) {
-        Chunk* current = lookupChunk(chunk_num);
+        Chunk* current = lookupChunkAndFreshen(chunk_num);
 
         // If the chunk is not in cache, then we must return an error.
-        if (current == NULL) {
+        if (current == NULL || current->state != Chunk::READ) {
             // qDebug() << "Couldn't get chunk " << chunk_num
             //          << " in read() of [" << sample << "," << sample + num_samples
             //          << "] chunks " << start_chunk << "-" << end_chunk;
@@ -488,18 +494,16 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
         int end_chunk = chunkForSample(end_sample);
 
         for (int current = start_chunk; current <= end_chunk; ++current) {
-            // This will cause the chunk to be 'freshened' in the cache. The
-            // chunk will be moved to the end of the LRU list.
-            if (!m_chunksBeingRead.contains(current) && lookupChunk(current) == NULL) {
+            Chunk* pChunk = lookupChunk(current);
+            if (pChunk == NULL) {
                 shouldWake = true;
-                Chunk* pChunk = allocateChunkExpireLRU();
+                Chunk* pChunk = allocateChunkExpireLRU(current);
                 if (pChunk == NULL) {
                     qDebug() << "ERROR: Couldn't allocate spare Chunk to make ChunkReadRequest.";
                     continue;
                 }
-                m_chunksBeingRead.insert(current, pChunk);
+                pChunk->state = Chunk::READ_IN_PROGRESS;
                 ChunkReadRequest request;
-                pChunk->chunk_number = current;
                 request.chunk = pChunk;
                 // qDebug() << "Requesting read of chunk" << current << "into" << pChunk;
                 // qDebug() << "Requesting read into " << request.chunk->data;
@@ -508,6 +512,10 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
                              << current;
                 }
                 //qDebug() << "Checking chunk " << current << " shouldWake:" << shouldWake << " chunksToRead" << m_chunksToRead.size();
+            } else if (pChunk->state == Chunk::READ) {
+                // This will cause the chunk to be 'freshened' in the cache. The
+                // chunk will be moved to the end of the LRU list.
+                freshenChunk(pChunk);
             }
         }
     }
