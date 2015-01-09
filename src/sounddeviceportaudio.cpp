@@ -833,7 +833,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(const unsigned int framesPerBuff
 
     m_pSoundManager->writeProcess();
 
-    m_nsInAudioCb += (int)timer.elapsed();
+    m_nsInAudioCb += timer.elapsed();
     return paContinue;
 }
 

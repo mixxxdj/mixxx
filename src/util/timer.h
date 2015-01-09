@@ -53,7 +53,7 @@ class ScopedTimer {
             : m_pTimer(NULL),
               m_cancel(false) {
         if (CmdlineArgs::Instance().getDeveloper()) {
-            initalize(QString(key), QString::number(i), compute);
+            initialize(QString(key), QString::number(i), compute);
         }
     }
 
@@ -62,7 +62,7 @@ class ScopedTimer {
             : m_pTimer(NULL),
               m_cancel(false) {
         if (CmdlineArgs::Instance().getDeveloper()) {
-            initalize(QString(key), arg ? QString(arg) : QString(), compute);
+            initialize(QString(key), arg ? QString(arg) : QString(), compute);
         }
     }
 
@@ -71,7 +71,7 @@ class ScopedTimer {
             : m_pTimer(NULL),
               m_cancel(false) {
         if (CmdlineArgs::Instance().getDeveloper()) {
-            initalize(QString(key), arg, compute);
+            initialize(QString(key), arg, compute);
         }
     }
 
@@ -84,7 +84,7 @@ class ScopedTimer {
         }
     }
 
-    inline void initalize(const QString& key, const QString& arg,
+    inline void initialize(const QString& key, const QString& arg,
                 Stat::ComputeFlags compute = kDefaultComputeFlags) {
         QString strKey;
         if (arg.isEmpty()) {
