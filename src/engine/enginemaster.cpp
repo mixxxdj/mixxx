@@ -54,7 +54,12 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
           m_bRampingGain(bRampingGain),
           m_masterVolumeOld(0.0),
           m_headphoneMasterGainOld(0.0),
-          m_headphoneVolumeOld(1.0) {
+          m_headphoneVolumeOld(1.0),
+          m_masterGroup("[Master]"),
+          m_headphoneGroup("[Headphone]"),
+          m_busLeftGroup("[BusLeft]"),
+          m_busCenterGroup("[BusCenter]"),
+          m_busRightGroup("[BusRight]") {
     m_bBusOutputConnected[0] = false;
     m_bBusOutputConnected[1] = false;
     m_bBusOutputConnected[2] = false;

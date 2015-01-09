@@ -60,26 +60,25 @@ class EngineMaster : public QObject, public AudioSource {
     // be called by SoundManager.
     const CSAMPLE* buffer(AudioOutput output) const;
 
-    const QString getMasterGroup() const {
-        return QString("[Master]");
+    inline const QString& getMasterGroup() const {
+        return m_masterGroup;
     }
 
-    const QString getHeadphoneGroup() const {
-        return QString("[Headphone]");
+    inline const QString& getHeadphoneGroup() const {
+        return m_headphoneGroup;
     }
 
-    const QString getBusLeftGroup() const {
-        return QString("[BusLeft]");
+    inline const QString& getBusLeftGroup() const {
+        return m_busLeftGroup;
     }
 
-    const QString getBusCenterGroup() const {
-        return QString("[BusCenter]");
+    inline const QString& getBusCenterGroup() const {
+        return m_busCenterGroup;
     }
 
-    const QString getBusRightGroup() const {
-        return QString("[BusRight]");
+    inline const QString& getBusRightGroup() const {
+        return m_busRightGroup;
     }
-
 
     // WARNING: These methods are called by the main thread. They should only
     // touch the volatile bool connected indicators (see below). However, when
@@ -248,6 +247,12 @@ class EngineMaster : public QObject, public AudioSource {
     CSAMPLE m_masterVolumeOld;
     CSAMPLE m_headphoneMasterGainOld;
     CSAMPLE m_headphoneVolumeOld;
+
+    const QString m_masterGroup;
+    const QString m_headphoneGroup;
+    const QString m_busLeftGroup;
+    const QString m_busCenterGroup;
+    const QString m_busRightGroup;
 
     // Produce the Master Mixxx, not Required if connected to left
     // and right Bus and no recording and broadcast active
