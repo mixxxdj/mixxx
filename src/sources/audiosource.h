@@ -93,7 +93,7 @@ public:
         return isFrameCountEmpty();
     }
 
-    // The bitrate in kbit/s (optional).
+    // The optional bitrate in kbit/s (kbps).
     // Derived classes may set the actual (average) bitrate when
     // opening the file. The bitrate is not needed for decoding,
     // it is only used for informational purposes.
@@ -140,36 +140,54 @@ public:
     // Fills the buffer with samples from each channel starting
     // at the current frame seek position.
     //
-    // The required size of the sampleBuffer is numberOfSamples =
-    // frames2samples(numberOfFrames). The samples in the sampleBuffer
-    // are stored as consecutive sample frames with samples from
-    // each channel interleaved.
+    // The implicit  minimum required capacity of the sampleBuffer is
+    //     sampleBufferSize = frames2samples(numberOfFrames)
+    // Samples in the sampleBuffer are stored as consecutive sample
+    // frames with samples from each channel interleaved.
     //
     // Returns the actual number of frames that have been read which
-    // may be lower than the requested number of frames. The current
-    // frame seek position is moved forward to the next unread frame.
-    virtual size_type readSampleFrames(size_type numberOfFrames,
+    // might be lower than the requested number of frames when the end
+    // of the audio stream has been reached. The current frame seek
+    // position is moved forward towards the next unread frame.
+    virtual size_type readSampleFrames(
+            size_type numberOfFrames,
             sample_type* sampleBuffer) = 0;
 
     // Specialized function for explicitly reading stereo (= 2 channels)
-    // frames from an AudioSource. This is commonly used in Mixxx!
+    // frames from an AudioSource. This is the preferred method in Mixxx
+    // to read a stereo signal.
     //
     // If the source provides only a single channel (mono) the samples
     // of that channel will be doubled. If the source provides more
-    // than 2 channels only the first 2 channels will be read. The
-    // minimum required capacity of the sampleBuffer is numberOfFrames * 2.
+    // than 2 channels only the first 2 channels will be read.
+    //
+    // Most audio sources in Mixxx implicitly reduce multi-channel output
+    // to stereo during decoding. Other audio sources override this method
+    // with an optimized version that does not require a second pass through
+    // the sample data or that avoids the allocation of a temporary buffer
+    // when reducing multi-channel data to stereo.
+    // 
+    // The minimum required capacity of the sampleBuffer is
+    //     sampleBufferSize = numberOfFrames * 2
+    // In order to avoid the implicit allocation of a temporary buffer
+    // when reducing multi-channel to stereo the caller must provide
+    // a sample buffer of size
+    //     sampleBufferSize = frames2samples(numberOfFrames)
     //
     // Returns the actual number of frames that have been read which
-    // may be lower than the requested number of frames. The current
-    // frame seek position is moved forward towards the next unread
-    // frame.
+    // might be lower than the requested number of frames when the end
+    // of the audio stream has been reached. The current frame seek
+    // position is moved forward towards the next unread frame.
     //
     // Derived classes may provide an optimized version that doesn't
     // require any post-processing as done by this default implementation.
-    // Please note that the default implementation performs poorly when
-    // reducing more than 2 channels to stereo!
-    virtual size_type readSampleFramesStereo(size_type numberOfFrames,
-            sample_type* sampleBuffer);
+    // They may also have reduced space requirements on sampleBuffer,
+    // i.e. only the minimum size is required for an in-place
+    // transformation without temporary allocations.
+    virtual size_type readSampleFramesStereo(
+            size_type numberOfFrames,
+            sample_type* sampleBuffer,
+            size_type sampleBufferSize);
 
 protected:
     AudioSource();

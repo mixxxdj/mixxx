@@ -91,25 +91,26 @@ AudioSource::size_type AudioSourceOpus::readSampleFrames(
 }
 
 AudioSource::size_type AudioSourceOpus::readSampleFramesStereo(
-        size_type numberOfFrames, sample_type* sampleBuffer) {
-    size_type readCount = 0;
-    while (readCount < numberOfFrames) {
+        size_type numberOfFrames, sample_type* sampleBuffer, size_type sampleBufferSize) {
+    const size_type numberOfFramesTotal = math_min(numberOfFrames, samples2frames(sampleBufferSize));
+    size_type numberOfFramesRead = 0;
+    while (numberOfFramesTotal > numberOfFramesRead) {
         int readResult = op_read_float_stereo(m_pOggOpusFile,
-                sampleBuffer + (readCount * 2),
-                (numberOfFrames - readCount) * 2);
+                sampleBuffer + (numberOfFramesRead * 2),
+                (numberOfFramesTotal - numberOfFramesRead) * 2);
         if (0 == readResult) {
             // EOF
             break; // done
         }
         if (0 < readResult) {
-            readCount += readResult;
+            numberOfFramesRead += readResult;
         } else {
             qWarning() << "Failed to read sample data from OggOpus file:"
                     << readResult;
             break; // abort
         }
     }
-    return readCount;
+    return numberOfFramesRead;
 }
 
 } // namespace Mixxx

@@ -22,7 +22,7 @@ public:
     diff_type seekSampleFrame(diff_type frameIndex) /*override*/;
 
     size_type readSampleFrames(size_type numberOfFrames, sample_type* sampleBuffer) /*override*/;
-    size_type readSampleFramesStereo(size_type numberOfFrames, sample_type* sampleBuffer) /*override*/;
+    size_type readSampleFramesStereo(size_type numberOfFrames, sample_type* sampleBuffer, size_type sampleBufferSize) /*override*/;
 
     // callback methods
     FLAC__StreamDecoderReadStatus flacRead(FLAC__byte buffer[], size_t *bytes);
@@ -41,7 +41,7 @@ private:
 
     void close();
 
-    size_type readSampleFrames(size_type numberOfFrames, sample_type* sampleBuffer, bool readStereoSamples);
+    size_type readSampleFrames(size_type numberOfFrames, sample_type* sampleBuffer, size_type sampleBufferSize, bool readStereoSamples);
 
     QFile m_file;
 

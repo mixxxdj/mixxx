@@ -6,6 +6,8 @@
 
 #include <QtDebug>
 
+#include <vector>
+
 
 namespace
 {
@@ -16,7 +18,7 @@ namespace
     const Mixxx::AudioSource::size_type kFingerprintDuration = 120; // in seconds
     const Mixxx::AudioSource::size_type kFingerprintChannels = 2; // stereo
 
-    QString calcFingerPrint(const Mixxx::AudioSourcePointer& pAudioSource) {
+    QString calcFingerprint(const Mixxx::AudioSourcePointer& pAudioSource) {
 
         Mixxx::AudioSource::size_type numFrames =
                 kFingerprintDuration * pAudioSource->getFrameRate();
@@ -28,35 +30,33 @@ namespace
         QTime timerReadingFile;
         timerReadingFile.start();
 
-        const Mixxx::AudioSource::size_type numSamples = numFrames * kFingerprintChannels;
-        Mixxx::AudioSource::sample_type* sampleBuffer = new Mixxx::AudioSource::sample_type[numSamples];
+        // Allocate a sample buffer with maximum size to avoid the
+        // implicit allocation of a temporary buffer when reducing
+        // to the audio signal to stereo.
+        std::vector<Mixxx::AudioSource::sample_type> sampleBuffer(
+                math_max(numFrames * kFingerprintChannels, pAudioSource->frames2samples(numFrames)));
 
-        const Mixxx::AudioSource::size_type readFrames = pAudioSource->readSampleFramesStereo(numFrames, sampleBuffer);
-
-        const Mixxx::AudioSource::size_type readSamples = readFrames * kFingerprintChannels;
-        SAMPLE *pData = new SAMPLE[readSamples];
-
-        for (Mixxx::AudioSource::size_type i = 0; i < readSamples; ++i) {
-            pData[i] = SAMPLE(sampleBuffer[i] * SAMPLE_MAX);
-        }
-
-        delete[] sampleBuffer;
-
+        DEBUG_ASSERT(2 == kFingerprintChannels); // implicit assumption of the next line
+        const Mixxx::AudioSource::size_type readFrames = pAudioSource->readSampleFramesStereo(numFrames, &sampleBuffer[0], sampleBuffer.size());
         if (readFrames != numFrames) {
-            qDebug() << "oh that's embarrasing I couldn't read the track";
-            delete[] pData;
+            qDebug() << "oh that's embarrassing I couldn't read the track";
             return QString();
         }
+
+        std::vector<SAMPLE> fingerprintSamples(readFrames * kFingerprintChannels);
+        // Convert floating-point to integer
+        for (Mixxx::AudioSource::size_type i = 0; i < fingerprintSamples.size(); ++i) {
+            fingerprintSamples[i] = SAMPLE(sampleBuffer[i] * SAMPLE_MAX);
+        }
+
         qDebug("reading file took: %d ms" , timerReadingFile.elapsed());
 
         ChromaprintContext* ctx = chromaprint_new(CHROMAPRINT_ALGORITHM_DEFAULT);
-        // we have 2 channels in mixxx always
         chromaprint_start(ctx, pAudioSource->getFrameRate(), kFingerprintChannels);
 
-        QTime timerGeneratingFingerPrint;
-        timerGeneratingFingerPrint.start();
-        int success = chromaprint_feed(ctx, pData, readSamples);
-        delete [] pData;
+        QTime timerGeneratingFingerprint;
+        timerGeneratingFingerprint.start();
+        int success = chromaprint_feed(ctx, &fingerprintSamples[0], fingerprintSamples.size());
         chromaprint_finish(ctx);
         if (!success) {
             qDebug() << "could not generate fingerprint";
@@ -83,7 +83,7 @@ namespace
         }
         chromaprint_free(ctx);
 
-        qDebug("generating fingerprint took: %d ms" , timerGeneratingFingerPrint.elapsed());
+        qDebug("generating fingerprint took: %d ms" , timerGeneratingFingerprint.elapsed());
 
         return fingerprint;
     }
@@ -93,12 +93,12 @@ ChromaPrinter::ChromaPrinter(QObject* parent)
              : QObject(parent) {
 }
 
-QString ChromaPrinter::getFingerPrint(TrackPointer pTrack) {
+QString ChromaPrinter::getFingerprint(TrackPointer pTrack) {
     SoundSourceProxy soundSourceProxy(pTrack);
     Mixxx::AudioSourcePointer pAudioSource(soundSourceProxy.openAudioSource());
     if (pAudioSource.isNull()) {
         qDebug() << "Skipping invalid file:" << pTrack->getLocation();
         return QString();
     }
-    return calcFingerPrint(pAudioSource);
+    return calcFingerprint(pAudioSource);
 }

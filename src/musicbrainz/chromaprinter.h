@@ -10,7 +10,7 @@ class ChromaPrinter: public QObject {
 
 public:
       explicit ChromaPrinter(QObject* parent = NULL);
-      QString getFingerPrint(TrackPointer pTrack);
+      QString getFingerprint(TrackPointer pTrack);
 };
 
 #endif //CHROMAPRINTER_H

@@ -75,24 +75,28 @@ AudioSource::diff_type AudioSourceOggVorbis::seekSampleFrame(
 
 AudioSource::size_type AudioSourceOggVorbis::readSampleFrames(
         size_type numberOfFrames, sample_type* sampleBuffer) {
-    return readSampleFrames(numberOfFrames, sampleBuffer, false);
+    return readSampleFrames(numberOfFrames, sampleBuffer, frames2samples(numberOfFrames), false);
 }
 
 AudioSource::size_type AudioSourceOggVorbis::readSampleFramesStereo(
-        size_type numberOfFrames, sample_type* sampleBuffer) {
-    return readSampleFrames(numberOfFrames, sampleBuffer, true);
+        size_type numberOfFrames,
+        sample_type* sampleBuffer,
+        size_type sampleBufferSize) {
+    return readSampleFrames(numberOfFrames, sampleBuffer, sampleBufferSize, true);
 }
 
 AudioSource::size_type AudioSourceOggVorbis::readSampleFrames(
-        size_type numberOfFrames, sample_type* sampleBuffer,
+        size_type numberOfFrames,
+        sample_type* sampleBuffer, size_type sampleBufferSize,
         bool readStereoSamples) {
-    size_type readCount = 0;
     sample_type* nextSample = sampleBuffer;
-    while (readCount < numberOfFrames) {
+    const size_type numberOfFramesTotal = math_min(numberOfFrames, samples2frames(sampleBufferSize));
+    size_type numberOfFramesRead = 0;
+    while (numberOfFramesTotal > numberOfFramesRead) {
         float** pcmChannels;
         int currentSection;
         const long readResult = ov_read_float(&m_vf, &pcmChannels,
-                numberOfFrames - readCount, &currentSection);
+                numberOfFramesTotal - numberOfFramesRead, &currentSection);
         if (0 == readResult) {
             // EOF
             break; // done
@@ -121,13 +125,13 @@ AudioSource::size_type AudioSourceOggVorbis::readSampleFrames(
                     }
                 }
             }
-            readCount += readResult;
+            numberOfFramesRead += readResult;
         } else {
             qWarning() << "Failed to read from OggVorbis file:" << readResult;
             break; // abort
         }
     }
-    return readCount;
+    return numberOfFramesRead;
 }
 
 } // namespace Mixxx

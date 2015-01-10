@@ -173,7 +173,7 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, Mixxx::AudioSourcePointer pAudi
     do {
         ScopedTimer t("AnalyserQueue::doAnalysis block");
 
-        const Mixxx::AudioSource::size_type readFrameCount = pAudioSource->readSampleFramesStereo(kAnalysisFrameCount, &m_sampleBuffer[0]);
+        const Mixxx::AudioSource::size_type readFrameCount = pAudioSource->readSampleFramesStereo(kAnalysisFrameCount, &m_sampleBuffer[0], m_sampleBuffer.size());
 
         // To compare apples to apples, let's only look at blocks that are the
         // full block size.
