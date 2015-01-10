@@ -60,7 +60,7 @@ void AudioSourceOpus::close() {
     reset();
 }
 
-AudioSource::diff_type AudioSourceOpus::seekFrame(diff_type frameIndex) {
+AudioSource::diff_type AudioSourceOpus::seekSampleFrame(diff_type frameIndex) {
     int seekResult = op_pcm_seek(m_pOggOpusFile, frameIndex);
     if (0 != seekResult) {
         qWarning() << "Failed to seek OggOpus file:" << seekResult;
@@ -68,13 +68,13 @@ AudioSource::diff_type AudioSourceOpus::seekFrame(diff_type frameIndex) {
     return op_pcm_tell(m_pOggOpusFile);
 }
 
-AudioSource::size_type AudioSourceOpus::readFrameSamplesInterleaved(
-        size_type frameCount, sample_type* sampleBuffer) {
+AudioSource::size_type AudioSourceOpus::readSampleFrames(
+        size_type numberOfFrames, sample_type* sampleBuffer) {
     size_type readCount = 0;
-    while (readCount < frameCount) {
+    while (readCount < numberOfFrames) {
         int readResult = op_read_float(m_pOggOpusFile,
                 sampleBuffer + frames2samples(readCount),
-                frames2samples(frameCount - readCount), NULL);
+                frames2samples(numberOfFrames - readCount), NULL);
         if (0 == readResult) {
             // EOF
             break; // done
@@ -90,13 +90,13 @@ AudioSource::size_type AudioSourceOpus::readFrameSamplesInterleaved(
     return readCount;
 }
 
-AudioSource::size_type AudioSourceOpus::readStereoFrameSamplesInterleaved(
-        size_type frameCount, sample_type* sampleBuffer) {
+AudioSource::size_type AudioSourceOpus::readSampleFramesStereo(
+        size_type numberOfFrames, sample_type* sampleBuffer) {
     size_type readCount = 0;
-    while (readCount < frameCount) {
+    while (readCount < numberOfFrames) {
         int readResult = op_read_float_stereo(m_pOggOpusFile,
                 sampleBuffer + (readCount * 2),
-                (frameCount - readCount) * 2);
+                (numberOfFrames - readCount) * 2);
         if (0 == readResult) {
             // EOF
             break; // done

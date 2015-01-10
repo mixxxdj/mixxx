@@ -65,7 +65,7 @@ void AudioSourceSndFile::close() {
     reset();
 }
 
-AudioSource::diff_type AudioSourceSndFile::seekFrame(
+AudioSource::diff_type AudioSourceSndFile::seekSampleFrame(
         diff_type frameIndex) {
     const sf_count_t seekResult = sf_seek(m_pSndFile, frameIndex, SEEK_SET);
     if (0 <= seekResult) {
@@ -77,9 +77,9 @@ AudioSource::diff_type AudioSourceSndFile::seekFrame(
     }
 }
 
-AudioSource::size_type AudioSourceSndFile::readFrameSamplesInterleaved(
-        size_type frameCount, sample_type* sampleBuffer) {
-    const sf_count_t readCount = sf_readf_float(m_pSndFile, sampleBuffer, frameCount);
+AudioSource::size_type AudioSourceSndFile::readSampleFrames(
+        size_type numberOfFrames, sample_type* sampleBuffer) {
+    const sf_count_t readCount = sf_readf_float(m_pSndFile, sampleBuffer, numberOfFrames);
     if (0 <= readCount) {
         return readCount;
     } else {

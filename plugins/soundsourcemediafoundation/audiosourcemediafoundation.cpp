@@ -134,7 +134,7 @@ Result AudioSourceMediaFoundation::open(QString fileName) {
     //Seek to position 0, which forces us to skip over all the header frames.
     //This makes sure we're ready to just let the Analyser rip and it'll
     //get the number of samples it expects (ie. no header frames).
-    seekFrame(0);
+    seekSampleFrame(0);
 
     return OK;
 }
@@ -160,10 +160,10 @@ void AudioSourceMediaFoundation::close() {
     reset();
 }
 
-Mixxx::AudioSource::diff_type AudioSourceMediaFoundation::seekFrame(
+Mixxx::AudioSource::diff_type AudioSourceMediaFoundation::seekSampleFrame(
         diff_type frameIndex) {
     if (sDebug) {
-        qDebug() << "seekFrame()" << frameIndex;
+        qDebug() << "seekSampleFrame()" << frameIndex;
     }
     qint64 mfSeekTarget(mfFromFrame(frameIndex) - 1);
     // minus 1 here seems to make our seeking work properly, otherwise we will
@@ -208,12 +208,12 @@ Mixxx::AudioSource::diff_type AudioSourceMediaFoundation::seekFrame(
     return result;
 }
 
-Mixxx::AudioSource::size_type AudioSourceMediaFoundation::readFrameSamplesInterleaved(
-        size_type frameCount, sample_type* sampleBuffer) {
+Mixxx::AudioSource::size_type AudioSourceMediaFoundation::readSampleFrames(
+        size_type numberOfFrames, sample_type* sampleBuffer) {
     if (sDebug) {
-        qDebug() << "read()" << frameCount;
+        qDebug() << "read()" << numberOfFrames;
     }
-    size_type framesNeeded(frameCount);
+    size_type framesNeeded(numberOfFrames);
 
     // first, copy frames from leftover buffer IF the leftover buffer is at
     // the correct frame
@@ -226,7 +226,7 @@ Mixxx::AudioSource::size_type AudioSourceMediaFoundation::readFrameSamplesInterl
                         << "WARNING: Expected frames needed to be 0. Abandoning this file.";
                 m_dead = true;
             }
-            m_leftoverBufferPosition += frameCount;
+            m_leftoverBufferPosition += numberOfFrames;
         }
     } else {
         // leftoverBuffer already empty or in the wrong position, clear it
@@ -303,7 +303,7 @@ Mixxx::AudioSource::size_type AudioSourceMediaFoundation::readFrameSamplesInterl
                 // Uh oh. We are farther forward than our seek target. Emit
                 // silence? We can't seek backwards here.
                 sample_type* pBufferCurpos = sampleBuffer
-                        + frames2samples(frameCount - framesNeeded);
+                        + frames2samples(numberOfFrames - framesNeeded);
                 qint64 offshootFrames = bufferPosition - m_nextFrame;
 
                 // If we can correct this immediately, write zeros and adjust
@@ -359,7 +359,7 @@ Mixxx::AudioSource::size_type AudioSourceMediaFoundation::readFrameSamplesInterl
             m_leftoverBufferSize = newSize;
         }
         copyFrames(
-                sampleBuffer + frames2samples(frameCount - framesNeeded),
+                sampleBuffer + frames2samples(numberOfFrames - framesNeeded),
                 &framesNeeded,
                 buffer, bufferLength);
 
@@ -374,7 +374,7 @@ Mixxx::AudioSource::size_type AudioSourceMediaFoundation::readFrameSamplesInterl
             break;
     }
 
-    size_type framesRead = frameCount - framesNeeded;
+    size_type framesRead = numberOfFrames - framesNeeded;
     m_iCurrentPosition += framesRead;
     m_nextFrame += framesRead;
     if (m_leftoverBufferLength > 0) {
@@ -386,7 +386,7 @@ Mixxx::AudioSource::size_type AudioSourceMediaFoundation::readFrameSamplesInterl
         m_leftoverBufferPosition = m_nextFrame;
     }
     if (sDebug) {
-        qDebug() << "read()" << frameCount << "returning" << framesRead;
+        qDebug() << "read()" << numberOfFrames << "returning" << framesRead;
     }
     return framesRead;
 }

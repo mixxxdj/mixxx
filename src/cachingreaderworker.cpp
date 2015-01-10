@@ -62,9 +62,9 @@ void CachingReaderWorker::processChunkReadRequest(ChunkReadRequest* request,
         return;
     }
 
-    frame_position = m_pAudioSource->seekFrame(frame_position);
+    frame_position = m_pAudioSource->seekSampleFrame(frame_position);
 
-    const Mixxx::AudioSource::size_type frames_read = m_pAudioSource->readStereoFrameSamplesInterleaved(frames_to_read, request->chunk->stereoSamples);
+    const Mixxx::AudioSource::size_type frames_read = m_pAudioSource->readSampleFramesStereo(frames_to_read, request->chunk->stereoSamples);
 
     // If we've run out of music, the AudioSource can return 0 frames/samples.
     // Remember that AudioSource->getFrameCount() can lie to us about

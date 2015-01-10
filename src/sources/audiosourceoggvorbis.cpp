@@ -64,7 +64,7 @@ void AudioSourceOggVorbis::close() {
     reset();
 }
 
-AudioSource::diff_type AudioSourceOggVorbis::seekFrame(
+AudioSource::diff_type AudioSourceOggVorbis::seekSampleFrame(
         diff_type frameIndex) {
     const int seekResult = ov_pcm_seek(&m_vf, frameIndex);
     if (0 != seekResult) {
@@ -73,26 +73,26 @@ AudioSource::diff_type AudioSourceOggVorbis::seekFrame(
     return ov_pcm_tell(&m_vf);
 }
 
-AudioSource::size_type AudioSourceOggVorbis::readFrameSamplesInterleaved(
-        size_type frameCount, sample_type* sampleBuffer) {
-    return readFrameSamplesInterleaved(frameCount, sampleBuffer, false);
+AudioSource::size_type AudioSourceOggVorbis::readSampleFrames(
+        size_type numberOfFrames, sample_type* sampleBuffer) {
+    return readSampleFrames(numberOfFrames, sampleBuffer, false);
 }
 
-AudioSource::size_type AudioSourceOggVorbis::readStereoFrameSamplesInterleaved(
-        size_type frameCount, sample_type* sampleBuffer) {
-    return readFrameSamplesInterleaved(frameCount, sampleBuffer, true);
+AudioSource::size_type AudioSourceOggVorbis::readSampleFramesStereo(
+        size_type numberOfFrames, sample_type* sampleBuffer) {
+    return readSampleFrames(numberOfFrames, sampleBuffer, true);
 }
 
-AudioSource::size_type AudioSourceOggVorbis::readFrameSamplesInterleaved(
-        size_type frameCount, sample_type* sampleBuffer,
+AudioSource::size_type AudioSourceOggVorbis::readSampleFrames(
+        size_type numberOfFrames, sample_type* sampleBuffer,
         bool readStereoSamples) {
     size_type readCount = 0;
     sample_type* nextSample = sampleBuffer;
-    while (readCount < frameCount) {
+    while (readCount < numberOfFrames) {
         float** pcmChannels;
         int currentSection;
         const long readResult = ov_read_float(&m_vf, &pcmChannels,
-                frameCount - readCount, &currentSection);
+                numberOfFrames - readCount, &currentSection);
         if (0 == readResult) {
             // EOF
             break; // done

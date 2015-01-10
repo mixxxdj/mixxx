@@ -55,7 +55,7 @@ void AudioSourceWV::close() {
     reset();
 }
 
-AudioSource::diff_type AudioSourceWV::seekFrame(diff_type frameIndex) {
+AudioSource::diff_type AudioSourceWV::seekSampleFrame(diff_type frameIndex) {
     if (WavpackSeekSample(m_wpc, frameIndex) == TRUE) {
         return frameIndex;
     } else {
@@ -64,11 +64,11 @@ AudioSource::diff_type AudioSourceWV::seekFrame(diff_type frameIndex) {
     }
 }
 
-AudioSource::size_type AudioSourceWV::readFrameSamplesInterleaved(
-        size_type frameCount, sample_type* sampleBuffer) {
+AudioSource::size_type AudioSourceWV::readSampleFrames(
+        size_type numberOfFrames, sample_type* sampleBuffer) {
     // static assert: sizeof(sample_type) == sizeof(int32_t)
     size_type unpackCount = WavpackUnpackSamples(m_wpc,
-            reinterpret_cast<int32_t*>(sampleBuffer), frameCount);
+            reinterpret_cast<int32_t*>(sampleBuffer), numberOfFrames);
     if (!(WavpackGetMode(m_wpc) & MODE_FLOAT)) {
         // signed integer -> float
         const size_type sampleCount = frames2samples(unpackCount);
