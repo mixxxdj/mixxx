@@ -68,7 +68,7 @@ QImage SoundSourceM4A::parseCoverArt() const {
 }
 
 Mixxx::AudioSourcePointer SoundSourceM4A::open() const {
-    return Mixxx::AudioSourceM4A::open(getFilename());
+    return Mixxx::AudioSourceM4A::create(getFilename());
 }
 
 } // namespace Mixxx

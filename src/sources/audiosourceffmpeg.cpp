@@ -29,7 +29,7 @@ AudioSourceFFmpeg::~AudioSourceFFmpeg() {
     preDestroy();
 }
 
-AudioSourcePointer AudioSourceFFmpeg::open(QString fileName) {
+AudioSourcePointer AudioSourceFFmpeg::create(QString fileName) {
     QSharedPointer<AudioSourceFFmpeg> pAudioSource(new AudioSourceFFmpeg);
     if (OK == pAudioSource->postConstruct(fileName)) {
         // success

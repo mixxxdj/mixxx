@@ -86,5 +86,5 @@ QImage SoundSourceFLAC::parseCoverArt() const {
 }
 
 Mixxx::AudioSourcePointer SoundSourceFLAC::open() const {
-    return Mixxx::AudioSourceFLAC::open(getFilename());
+    return Mixxx::AudioSourceFLAC::create(getFilename());
 }

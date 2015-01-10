@@ -123,5 +123,5 @@ QImage SoundSourceSndFile::parseCoverArt() const {
 }
 
 Mixxx::AudioSourcePointer SoundSourceSndFile::open() const {
-    return Mixxx::AudioSourceSndFile::open(getFilename());
+    return Mixxx::AudioSourceSndFile::create(getFilename());
 }

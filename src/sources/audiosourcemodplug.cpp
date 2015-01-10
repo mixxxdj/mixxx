@@ -47,7 +47,7 @@ AudioSourceModPlug::~AudioSourceModPlug() {
     preDestroy();
 }
 
-AudioSourcePointer AudioSourceModPlug::open(QString fileName) {
+AudioSourcePointer AudioSourceModPlug::create(QString fileName) {
     QSharedPointer<AudioSourceModPlug> pAudioSource(new AudioSourceModPlug);
     if (OK == pAudioSource->postConstruct(fileName)) {
         // success
@@ -59,7 +59,7 @@ AudioSourcePointer AudioSourceModPlug::open(QString fileName) {
 }
 
 Result AudioSourceModPlug::postConstruct(QString fileName) {
-    ScopedTimer t("AudioSourceModPlug::open()");
+    ScopedTimer t("AudioSourceModPlug::postConstruct()");
 
     qDebug() << "[ModPlug] Loading ModPlug module " << fileName;
 

@@ -15,7 +15,7 @@ namespace Mixxx
 
 class AudioSourceFLAC : public AudioSource {
 public:
-    static AudioSourcePointer open(QString fileName);
+    static AudioSourcePointer create(QString fileName);
 
     ~AudioSourceFLAC();
 

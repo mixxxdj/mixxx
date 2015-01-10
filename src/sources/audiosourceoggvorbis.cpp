@@ -13,7 +13,7 @@ AudioSourceOggVorbis::~AudioSourceOggVorbis() {
     preDestroy();
 }
 
-AudioSourcePointer AudioSourceOggVorbis::open(QString fileName) {
+AudioSourcePointer AudioSourceOggVorbis::create(QString fileName) {
     QSharedPointer<AudioSourceOggVorbis> pAudioSource(new AudioSourceOggVorbis);
     if (OK == pAudioSource->postConstruct(fileName)) {
         // success

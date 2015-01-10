@@ -77,5 +77,5 @@ QImage SoundSourceMp3::parseCoverArt() const {
 }
 
 Mixxx::AudioSourcePointer SoundSourceMp3::open() const {
-    return Mixxx::AudioSourceMp3::open(getFilename());
+    return Mixxx::AudioSourceMp3::create(getFilename());
 }

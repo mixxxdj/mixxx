@@ -25,7 +25,7 @@ public:
     static void configure(unsigned int bufferSizeLimit,
             const ModPlug::ModPlug_Settings &settings);
 
-    static AudioSourcePointer open(QString fileName);
+    static AudioSourcePointer create(QString fileName);
 
     ~AudioSourceModPlug();
 

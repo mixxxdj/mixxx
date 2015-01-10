@@ -17,7 +17,7 @@ namespace Mixxx
 
 class AudioSourceSndFile: public AudioSource {
 public:
-    static AudioSourcePointer open(QString fileName);
+    static AudioSourcePointer create(QString fileName);
 
     ~AudioSourceSndFile();
 

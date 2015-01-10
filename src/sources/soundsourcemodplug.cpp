@@ -76,5 +76,5 @@ QImage SoundSourceModPlug::parseCoverArt() const {
 }
 
 Mixxx::AudioSourcePointer SoundSourceModPlug::open() const {
-    return Mixxx::AudioSourceModPlug::open(getFilename());
+    return Mixxx::AudioSourceModPlug::create(getFilename());
 }

@@ -16,7 +16,7 @@ namespace Mixxx {
 
 class AudioSourceWV: public AudioSource {
 public:
-    static AudioSourcePointer open(QString fileName);
+    static AudioSourcePointer create(QString fileName);
 
     ~AudioSourceWV();
 

@@ -81,7 +81,7 @@ AudioSourceMediaFoundation::~AudioSourceMediaFoundation() {
     preDestroy();
 }
 
-AudioSourcePointer AudioSourceMediaFoundation::open(QString fileName) {
+AudioSourcePointer AudioSourceMediaFoundation::create(QString fileName) {
     QSharedPointer<AudioSourceMediaFoundation> pAudioSource(new AudioSourceMediaFoundation);
     if (OK == pAudioSource->postConstruct(fileName)) {
         // success

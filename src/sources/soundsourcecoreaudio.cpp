@@ -117,5 +117,5 @@ QImage SoundSourceCoreAudio::parseCoverArt() const {
 }
 
 Mixxx::AudioSourcePointer SoundSourceCoreAudio::open() const {
-    return Mixxx::AudioSourceCoreAudio::open(getFilename());
+    return Mixxx::AudioSourceCoreAudio::create(getFilename());
 }
