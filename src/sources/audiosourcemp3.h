@@ -30,12 +30,11 @@ public:
     size_type readFrameSamplesInterleaved(size_type frameCount, sample_type* sampleBuffer) /*override*/;
     size_type readStereoFrameSamplesInterleaved(size_type frameCount, sample_type* sampleBuffer) /*override*/;
 
-    void close() throw() /*override*/;
-
 private:
     explicit AudioSourceMp3(QString fileName);
 
     Result postConstruct();
+    void preDestroy();
 
     inline size_type skipFrameSamples(size_type frameCount) {
         return readFrameSamplesInterleaved(frameCount, NULL);

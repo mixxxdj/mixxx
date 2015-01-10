@@ -78,7 +78,7 @@ AudioSourceMediaFoundation::AudioSourceMediaFoundation()
 }
 
 AudioSourceMediaFoundation::~AudioSourceMediaFoundation() {
-    close();
+    preDestroy();
 }
 
 AudioSourcePointer AudioSourceMediaFoundation::open(QString fileName) {
@@ -140,7 +140,7 @@ Result AudioSourceMediaFoundation::postConstruct(QString fileName) {
     return OK;
 }
 
-void AudioSourceMediaFoundation::close() throw() {
+void AudioSourceMediaFoundation::preDestroy() {
     delete[] m_wcFilename;
     m_wcFilename = NULL;
     delete[] m_leftoverBuffer;

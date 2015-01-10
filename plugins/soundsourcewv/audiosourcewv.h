@@ -24,12 +24,11 @@ public:
 
     size_type readFrameSamplesInterleaved(size_type frameCount, sample_type* sampleBuffer) /*override*/;
 
-    void close() throw() /* override*/;
-
 private:
     AudioSourceWV();
 
     Result postConstruct(QString fileName);
+    void preDestroy();
 
     WavpackContext* m_wpc;
 

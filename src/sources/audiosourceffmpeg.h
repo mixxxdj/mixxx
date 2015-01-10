@@ -51,12 +51,11 @@ public:
 
     size_type readFrameSamplesInterleaved(size_type frameCount, sample_type* sampleBuffer) /*override*/;
 
-    void close() throw() /*override*/;
-
 private:
     AudioSourceFFmpeg();
 
     Result postConstruct(QString fileName);
+    void preDestroy();
 
     bool readFramesToCache(unsigned int count, qint64 offset);
     bool getBytesFromCache(char *buffer, quint64 offset, quint64 size);

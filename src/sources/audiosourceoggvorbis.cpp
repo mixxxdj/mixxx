@@ -10,7 +10,7 @@ AudioSourceOggVorbis::AudioSourceOggVorbis() {
 }
 
 AudioSourceOggVorbis::~AudioSourceOggVorbis() {
-    close();
+    preDestroy();
 }
 
 AudioSourcePointer AudioSourceOggVorbis::open(QString fileName) {
@@ -57,7 +57,7 @@ Result AudioSourceOggVorbis::postConstruct(QString fileName) {
     return OK;
 }
 
-void AudioSourceOggVorbis::close() throw() {
+void AudioSourceOggVorbis::preDestroy() {
     const int clearResult = ov_clear(&m_vf);
     if (0 != clearResult) {
         qWarning() << "Failed to close OggVorbis file" << clearResult;

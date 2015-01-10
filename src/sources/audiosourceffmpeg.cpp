@@ -26,7 +26,7 @@ AudioSourceFFmpeg::AudioSourceFFmpeg()
 }
 
 AudioSourceFFmpeg::~AudioSourceFFmpeg() {
-    close();
+    preDestroy();
 }
 
 AudioSourcePointer AudioSourceFFmpeg::open(QString fileName) {
@@ -120,7 +120,7 @@ Result AudioSourceFFmpeg::postConstruct(QString fileName) {
     return OK;
 }
 
-void AudioSourceFFmpeg::close() throw() {
+void AudioSourceFFmpeg::preDestroy() {
     clearCache();
 
     if (m_pCodecCtx != NULL) {

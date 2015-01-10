@@ -160,12 +160,6 @@ public:
     virtual size_type readStereoFrameSamplesInterleaved(size_type frameCount,
             sample_type* sampleBuffer);
 
-    // Explicitly closes the audio sources. It is safe to
-    // close an audio source repeatedly. Should be invoked
-    // in the destructor of derived classes and therefore
-    // must not throw any exceptions
-    virtual void close() throw() = 0;
-
 protected:
     AudioSource();
 

@@ -24,8 +24,6 @@ public:
     size_type readFrameSamplesInterleaved(size_type frameCount, sample_type* sampleBuffer) /*override*/;
     size_type readStereoFrameSamplesInterleaved(size_type frameCount, sample_type* sampleBuffer) /*override*/;
 
-    void close() throw() /* override*/;
-
     // callback methods
     FLAC__StreamDecoderReadStatus flacRead(FLAC__byte buffer[], size_t *bytes);
     FLAC__StreamDecoderSeekStatus flacSeek(FLAC__uint64 offset);
@@ -40,6 +38,7 @@ private:
     explicit AudioSourceFLAC(QString fileName);
 
     Result postConstruct();
+    void preDestroy();
 
     size_type readFrameSamplesInterleaved(size_type frameCount, sample_type* sampleBuffer, bool readStereoSamples);
 

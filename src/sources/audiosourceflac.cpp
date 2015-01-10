@@ -63,7 +63,7 @@ AudioSourceFLAC::AudioSourceFLAC(QString fileName)
 }
 
 AudioSourceFLAC::~AudioSourceFLAC() {
-    close();
+    preDestroy();
 }
 
 AudioSourcePointer AudioSourceFLAC::open(QString fileName) {
@@ -107,7 +107,7 @@ Result AudioSourceFLAC::postConstruct() {
     return OK;
 }
 
-void AudioSourceFLAC::close() throw() {
+void AudioSourceFLAC::preDestroy() {
     if (m_decoder) {
         FLAC__stream_decoder_finish(m_decoder);
         FLAC__stream_decoder_delete(m_decoder); // frees memory

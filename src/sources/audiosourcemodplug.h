@@ -33,14 +33,13 @@ public:
 
     size_type readFrameSamplesInterleaved(size_type frameCount, sample_type* sampleBuffer) /*override*/;
 
-    void close() throw() /* override*/;
-
 private:
     static unsigned int s_bufferSizeLimit; // max track buffer length (bytes)
 
     AudioSourceModPlug();
 
     Result postConstruct(QString fileName);
+    void preDestroy();
 
     ModPlug::ModPlugFile *m_pModFile; // modplug file descriptor
     unsigned long m_fileLength; // length of file in samples

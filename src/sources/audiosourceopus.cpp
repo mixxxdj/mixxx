@@ -8,7 +8,7 @@ AudioSourceOpus::AudioSourceOpus()
 }
 
 AudioSourceOpus::~AudioSourceOpus() {
-    close();
+    preDestroy();
 }
 
 AudioSourcePointer AudioSourceOpus::open(QString fileName) {
@@ -53,7 +53,7 @@ Result AudioSourceOpus::postConstruct(QString fileName) {
     return OK;
 }
 
-void AudioSourceOpus::close() throw() {
+void AudioSourceOpus::preDestroy() {
     if (m_pOggOpusFile) {
         op_free(m_pOggOpusFile);
         m_pOggOpusFile = NULL;

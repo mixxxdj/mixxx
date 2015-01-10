@@ -44,7 +44,7 @@ AudioSourceModPlug::AudioSourceModPlug()
 }
 
 AudioSourceModPlug::~AudioSourceModPlug() {
-    close();
+    preDestroy();
 }
 
 AudioSourcePointer AudioSourceModPlug::open(QString fileName) {
@@ -126,7 +126,7 @@ Result AudioSourceModPlug::postConstruct(QString fileName) {
     return OK;
 }
 
-void AudioSourceModPlug::close() throw() {
+void AudioSourceModPlug::preDestroy() {
     if (m_pModFile) {
         ModPlug::ModPlug_Unload(m_pModFile);
         m_pModFile = NULL;
