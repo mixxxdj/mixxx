@@ -14,7 +14,7 @@ QList<QString> SoundSourceWV::supportedFileExtensions() {
 }
 
 SoundSourceWV::SoundSourceWV(QString fileName)
-        : SoundSource(fileName, "wv") {
+        : SoundSourcePlugin(fileName, "wv") {
 }
 
 Result SoundSourceWV::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
@@ -69,25 +69,12 @@ extern "C" MY_EXPORT Mixxx::SoundSource* getSoundSource(QString fileName) {
 }
 
 extern "C" MY_EXPORT char** supportedFileExtensions() {
-    QList<QString> exts = Mixxx::SoundSourceWV::supportedFileExtensions();
-    //Convert to C string array.
-    char** c_exts = (char**)malloc((exts.count() + 1) * sizeof(char*));
-    for (int i = 0; i < exts.count(); i++)
-    {
-        QByteArray qba = exts[i].toUtf8();
-        c_exts[i] = strdup(qba.constData());
-        qDebug() << c_exts[i];
-    }
-    c_exts[exts.count()] = NULL; //NULL terminate the list
-
-    return c_exts;
+    const QList<QString> supportedFileExtensions(
+            Mixxx::SoundSourceWV::supportedFileExtensions());
+    return Mixxx::SoundSourcePlugin::allocFileExtensions(
+            supportedFileExtensions);
 }
 
-extern "C" MY_EXPORT void freeFileExtensions(char **exts) {
-    if (exts) {
-        for (int i(0); exts[i]; ++i) {
-            free(exts[i]);
-        }
-        free(exts);
-    }
+extern "C" MY_EXPORT void freeFileExtensions(char** fileExtensions) {
+    Mixxx::SoundSourcePlugin::freeFileExtensions(fileExtensions);
 }
