@@ -30,9 +30,8 @@ AudioSourceFFmpeg::~AudioSourceFFmpeg() {
 }
 
 AudioSourcePointer AudioSourceFFmpeg::open(QString fileName) {
-    AudioSourceFFmpeg* pAudioSourceFFmpeg(new AudioSourceFFmpeg);
-    AudioSourcePointer pAudioSource(pAudioSourceFFmpeg); // take ownership
-    if (OK == pAudioSourceFFmpeg->postConstruct(fileName)) {
+    QSharedPointer<AudioSourceFFmpeg> pAudioSource(new AudioSourceFFmpeg);
+    if (OK == pAudioSource->postConstruct(fileName)) {
         // success
         return pAudioSource;
     } else {

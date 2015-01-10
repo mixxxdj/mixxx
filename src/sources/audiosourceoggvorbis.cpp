@@ -14,9 +14,8 @@ AudioSourceOggVorbis::~AudioSourceOggVorbis() {
 }
 
 AudioSourcePointer AudioSourceOggVorbis::open(QString fileName) {
-    AudioSourceOggVorbis* pAudioSourceOggVorbis(new AudioSourceOggVorbis);
-    AudioSourcePointer pAudioSource(pAudioSourceOggVorbis); // take ownership
-    if (OK == pAudioSourceOggVorbis->postConstruct(fileName)) {
+    QSharedPointer<AudioSourceOggVorbis> pAudioSource(new AudioSourceOggVorbis);
+    if (OK == pAudioSource->postConstruct(fileName)) {
         // success
         return pAudioSource;
     } else {

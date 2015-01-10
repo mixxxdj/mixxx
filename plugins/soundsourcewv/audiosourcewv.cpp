@@ -13,9 +13,8 @@ AudioSourceWV::~AudioSourceWV() {
 }
 
 AudioSourcePointer AudioSourceWV::open(QString fileName) {
-    AudioSourceWV* pAudioSourceWV(new AudioSourceWV);
-    AudioSourcePointer pAudioSource(pAudioSourceWV); // take ownership
-    if (OK == pAudioSourceWV->postConstruct(fileName)) {
+    QSharedPointer<AudioSourceWV> pAudioSource(new AudioSourceWV);
+    if (OK == pAudioSource->postConstruct(fileName)) {
         // success
         return pAudioSource;
     } else {

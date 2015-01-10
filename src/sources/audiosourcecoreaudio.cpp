@@ -20,9 +20,8 @@ AudioSourceCoreAudio::~AudioSourceCoreAudio() {
 }
 
 AudioSourcePointer AudioSourceCoreAudio::open(QString fileName) {
-    AudioSourceCoreAudio* pAudioSourceCoreAudio(new AudioSourceCoreAudio);
-    AudioSourcePointer pAudioSource(pAudioSourceCoreAudio); // take ownership
-    if (OK == pAudioSourceCoreAudio->postConstruct(fileName)) {
+    QSharedPointer<AudioSourceCoreAudio> pAudioSource(new AudioSourceCoreAudio);
+    if (OK == pAudioSource->postConstruct(fileName)) {
         // success
         return pAudioSource;
     } else {

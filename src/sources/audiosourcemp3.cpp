@@ -56,9 +56,8 @@ AudioSourceMp3::~AudioSourceMp3() {
 }
 
 AudioSourcePointer AudioSourceMp3::open(QString fileName) {
-    AudioSourceMp3* pAudioSourceMp3(new AudioSourceMp3(fileName));
-    AudioSourcePointer pAudioSource(pAudioSourceMp3); // take ownership
-    if (OK == pAudioSourceMp3->postConstruct()) {
+    QSharedPointer<AudioSourceMp3> pAudioSource(new AudioSourceMp3(fileName));
+    if (OK == pAudioSource->postConstruct()) {
         // success
         return pAudioSource;
     } else {
