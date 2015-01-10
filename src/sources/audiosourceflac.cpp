@@ -67,9 +67,8 @@ AudioSourceFLAC::~AudioSourceFLAC() {
 }
 
 AudioSourcePointer AudioSourceFLAC::open(QString fileName) {
-    AudioSourceFLAC* pAudioSourceFLAC(new AudioSourceFLAC(fileName));
-    AudioSourcePointer pAudioSource(pAudioSourceFLAC); // take ownership
-    if (OK == pAudioSourceFLAC->postConstruct()) {
+    QSharedPointer<AudioSourceFLAC> pAudioSource(new AudioSourceFLAC(fileName));
+    if (OK == pAudioSource->postConstruct()) {
         // success
         return pAudioSource;
     } else {

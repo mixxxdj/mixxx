@@ -14,9 +14,8 @@ AudioSourceSndFile::~AudioSourceSndFile() {
 }
 
 AudioSourcePointer AudioSourceSndFile::open(QString fileName) {
-    AudioSourceSndFile* pAudioSourceSndFile(new AudioSourceSndFile);
-    AudioSourcePointer pAudioSource(pAudioSourceSndFile); // take ownership
-    if (OK == pAudioSourceSndFile->postConstruct(fileName)) {
+    QSharedPointer<AudioSourceSndFile> pAudioSource(new AudioSourceSndFile);
+    if (OK == pAudioSource->postConstruct(fileName)) {
         // success
         return pAudioSource;
     } else {

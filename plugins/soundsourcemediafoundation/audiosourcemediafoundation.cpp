@@ -82,9 +82,8 @@ AudioSourceMediaFoundation::~AudioSourceMediaFoundation() {
 }
 
 AudioSourcePointer AudioSourceMediaFoundation::open(QString fileName) {
-    AudioSourceMediaFoundation* pAudioSourceMediaFoundation(new AudioSourceMediaFoundation);
-    AudioSourcePointer pAudioSource(pAudioSourceMediaFoundation); // take ownership
-    if (OK == pAudioSourceMediaFoundation->postConstruct(fileName)) {
+    QSharedPointer<AudioSourceMediaFoundation> pAudioSource(new AudioSourceMediaFoundation);
+    if (OK == pAudioSource->postConstruct(fileName)) {
         // success
         return pAudioSource;
     } else {

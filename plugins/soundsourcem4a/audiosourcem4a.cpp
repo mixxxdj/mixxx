@@ -77,9 +77,8 @@ AudioSourceM4A::~AudioSourceM4A() {
 }
 
 AudioSourcePointer AudioSourceM4A::open(QString fileName) {
-    AudioSourceM4A* pAudioSourceM4A(new AudioSourceM4A);
-    AudioSourcePointer pAudioSource(pAudioSourceM4A); // take ownership
-    if (OK == pAudioSourceM4A->postConstruct(fileName)) {
+    QSharedPointer<AudioSourceM4A> pAudioSource(new AudioSourceM4A);
+    if (OK == pAudioSource->postConstruct(fileName)) {
         // success
         return pAudioSource;
     } else {

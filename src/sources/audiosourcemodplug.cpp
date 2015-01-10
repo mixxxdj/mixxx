@@ -48,9 +48,8 @@ AudioSourceModPlug::~AudioSourceModPlug() {
 }
 
 AudioSourcePointer AudioSourceModPlug::open(QString fileName) {
-    AudioSourceModPlug* pAudioSourceModPlug(new AudioSourceModPlug);
-    AudioSourcePointer pAudioSource(pAudioSourceModPlug); // take ownership
-    if (OK == pAudioSourceModPlug->postConstruct(fileName)) {
+    QSharedPointer<AudioSourceModPlug> pAudioSource(new AudioSourceModPlug);
+    if (OK == pAudioSource->postConstruct(fileName)) {
         // success
         return pAudioSource;
     } else {
