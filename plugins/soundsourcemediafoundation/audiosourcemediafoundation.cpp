@@ -1,3 +1,9 @@
+// TODO(XXX): This implementation has been copied from the
+// original file soundsourcemediafoundation.cpp and needs
+// a major refactoring! Please refer to the helpful comments
+// of daschuer in the following pull requests:
+// https://github.com/mixxxdj/mixxx/pull/411
+
 #include "audiosourcemediafoundation.h"
 
 #include <mfapi.h>

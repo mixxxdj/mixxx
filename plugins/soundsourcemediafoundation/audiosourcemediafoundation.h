@@ -1,3 +1,9 @@
+// TODO(XXX): This implementation has been copied from the
+// original file soundsourcemediafoundation.h and needs
+// a major refactoring! Please refer to the helpful comments
+// of daschuer in the following pull requests:
+// https://github.com/mixxxdj/mixxx/pull/411
+
 #ifndef AUDIOSOURCEMEDIAFOUNDATIONMEDIAFOUNDATION_H
 #define AUDIOSOURCEMEDIAFOUNDATIONMEDIAFOUNDATION_H
 
