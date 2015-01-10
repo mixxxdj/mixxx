@@ -130,20 +130,22 @@ Mixxx::AudioSource::diff_type AudioSourceFLAC::seekSampleFrame(diff_type frameIn
 
 Mixxx::AudioSource::size_type AudioSourceFLAC::readSampleFrames(
         size_type numberOfFrames, sample_type* sampleBuffer) {
-    return readSampleFrames(numberOfFrames, sampleBuffer, false);
+    return readSampleFrames(numberOfFrames, sampleBuffer, frames2samples(numberOfFrames), false);
 }
 
 Mixxx::AudioSource::size_type AudioSourceFLAC::readSampleFramesStereo(
-        size_type numberOfFrames, sample_type* sampleBuffer) {
-    return readSampleFrames(numberOfFrames, sampleBuffer, true);
+        size_type numberOfFrames, sample_type* sampleBuffer, size_type sampleBufferSize) {
+    return readSampleFrames(numberOfFrames, sampleBuffer, sampleBufferSize, true);
 }
 
 Mixxx::AudioSource::size_type AudioSourceFLAC::readSampleFrames(
         size_type numberOfFrames, sample_type* sampleBuffer,
+        size_type sampleBufferSize,
         bool readStereoSamples) {
     sample_type* outBuffer = sampleBuffer;
-    size_type framesRemaining = numberOfFrames;
-    while (0 < framesRemaining) {
+    const size_type numberOfFramesTotal = math_min(numberOfFrames, samples2frames(sampleBufferSize));
+    size_type numberOfFramesRead = 0;
+    while (numberOfFramesTotal > numberOfFramesRead) {
         DEBUG_ASSERT(
                 m_decodeSampleBufferReadOffset
                         <= m_decodeSampleBufferWriteOffset);
@@ -169,7 +171,7 @@ Mixxx::AudioSource::size_type AudioSourceFLAC::readSampleFrames(
                 - m_decodeSampleBufferReadOffset;
         const size_type decodeBufferFrames = samples2frames(
                 decodeBufferSamples);
-        const size_type framesToCopy = math_min(framesRemaining, decodeBufferFrames);
+        const size_type framesToCopy = math_min(decodeBufferFrames, numberOfFramesTotal - numberOfFramesRead);
         const size_type samplesToCopy = frames2samples(framesToCopy);
         if (readStereoSamples && !isChannelCountStereo()) {
             if (isChannelCountMono()) {
@@ -189,12 +191,12 @@ Mixxx::AudioSource::size_type AudioSourceFLAC::readSampleFrames(
             outBuffer += samplesToCopy;
         }
         m_decodeSampleBufferReadOffset += samplesToCopy;
-        framesRemaining -= framesToCopy;
+        numberOfFramesRead += framesToCopy;
         DEBUG_ASSERT(
                 m_decodeSampleBufferReadOffset
                         <= m_decodeSampleBufferWriteOffset);
     }
-    return numberOfFrames - framesRemaining;
+    return numberOfFramesRead;
 }
 
 // flac callback methods

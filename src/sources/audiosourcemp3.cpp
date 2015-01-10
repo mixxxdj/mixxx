@@ -84,7 +84,7 @@ Result AudioSourceMp3::open() {
     setChannelCount(kChannelCountDefault);
     setFrameRate(kFrameRateDefault);
     mad_timer_t madFileDuration = mad_timer_zero;
-    mad_units madUnits;
+    mad_units madUnits = MAD_UNITS_44100_HZ; // default value
     while ((m_madStream.bufend - m_madStream.this_frame) > 0) {
         mad_header madHeader;
         mad_header_init(&madHeader);
@@ -292,20 +292,23 @@ AudioSource::diff_type AudioSourceMp3::seekSampleFrame(diff_type frameIndex) {
 
 AudioSource::size_type AudioSourceMp3::readSampleFrames(
         size_type numberOfFrames, sample_type* sampleBuffer) {
-    return readSampleFrames(numberOfFrames, sampleBuffer, false);
+    return readSampleFrames(numberOfFrames, sampleBuffer, frames2samples(numberOfFrames), false);
 }
 
 AudioSource::size_type AudioSourceMp3::readSampleFramesStereo(
-        size_type numberOfFrames, sample_type* sampleBuffer) {
-    return readSampleFrames(numberOfFrames, sampleBuffer, true);
+        size_type numberOfFrames, sample_type* sampleBuffer, size_type sampleBufferSize) {
+    return readSampleFrames(numberOfFrames, sampleBuffer, sampleBufferSize, true);
 }
 
 AudioSource::size_type AudioSourceMp3::readSampleFrames(
-        size_type numberOfFrames, sample_type* sampleBuffer,
+        size_type numberOfFrames,
+        sample_type* sampleBuffer,
+        size_type sampleBufferSize,
         bool readStereoSamples) {
-    size_type framesRemaining = numberOfFrames;
     sample_type* pSampleBuffer = sampleBuffer;
-    while (0 < framesRemaining) {
+    const size_type numberOfFramesTotal = math_min(numberOfFrames, samples2frames(sampleBufferSize));
+    size_type numberOfFramesRead = 0;
+    while (numberOfFramesTotal > numberOfFramesRead) {
         if (0 >= m_madSynthCount) {
             if (0 != mad_frame_decode(&m_madFrame, &m_madStream)) {
                 if (MAD_RECOVERABLE(m_madStream.error)) {
@@ -330,10 +333,10 @@ AudioSource::size_type AudioSourceMp3::readSampleFrames(
             m_madSynthCount = m_madSynth.pcm.length;
         }
         const size_type madSynthOffset = m_madSynth.pcm.length - m_madSynthCount;
-        const size_type framesRead = math_min(m_madSynthCount, framesRemaining);
+        const size_type framesRead = math_min(m_madSynthCount, numberOfFramesTotal - numberOfFramesRead);
         m_madSynthCount -= framesRead;
         m_curFrameIndex += framesRead;
-        framesRemaining -= framesRead;
+        numberOfFramesRead += framesRead;
         if (NULL != pSampleBuffer) {
             if (isChannelCountMono()) {
                 for (size_type i = 0; i < framesRead; ++i) {
@@ -361,7 +364,7 @@ AudioSource::size_type AudioSourceMp3::readSampleFrames(
             }
         }
     }
-    return numberOfFrames - framesRemaining;
+    return numberOfFramesRead;
 }
 
 } // namespace Mixxx
