@@ -38,8 +38,9 @@ private:
 
     AudioSourceModPlug();
 
-    Result postConstruct(QString fileName);
-    void preDestroy();
+    Result open(QString fileName);
+
+    void close();
 
     ModPlug::ModPlugFile *m_pModFile; // modplug file descriptor
     unsigned long m_fileLength; // length of file in samples

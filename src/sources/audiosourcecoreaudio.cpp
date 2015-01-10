@@ -16,12 +16,12 @@ AudioSourceCoreAudio::AudioSourceCoreAudio()
 }
 
 AudioSourceCoreAudio::~AudioSourceCoreAudio() {
-    preDestroy();
+    close();
 }
 
 AudioSourcePointer AudioSourceCoreAudio::create(QString fileName) {
     QSharedPointer<AudioSourceCoreAudio> pAudioSource(new AudioSourceCoreAudio);
-    if (OK == pAudioSource->postConstruct(fileName)) {
+    if (OK == pAudioSource->open(fileName)) {
         // success
         return pAudioSource;
     } else {
@@ -31,7 +31,7 @@ AudioSourcePointer AudioSourceCoreAudio::create(QString fileName) {
 }
 
 // soundsource overrides
-Result AudioSourceCoreAudio::postConstruct(QString fileName) {
+Result AudioSourceCoreAudio::open(QString fileName) {
     //Open the audio file.
     OSStatus err;
 
@@ -116,7 +116,7 @@ Result AudioSourceCoreAudio::postConstruct(QString fileName) {
     return OK;
 }
 
-void AudioSourceCoreAudio::preDestroy() {
+void AudioSourceCoreAudio::close() {
     ExtAudioFileDispose(m_audioFile);
 }
 

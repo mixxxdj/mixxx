@@ -10,12 +10,12 @@ AudioSourceSndFile::AudioSourceSndFile()
 }
 
 AudioSourceSndFile::~AudioSourceSndFile() {
-    preDestroy();
+    close();
 }
 
 AudioSourcePointer AudioSourceSndFile::create(QString fileName) {
     QSharedPointer<AudioSourceSndFile> pAudioSource(new AudioSourceSndFile);
-    if (OK == pAudioSource->postConstruct(fileName)) {
+    if (OK == pAudioSource->open(fileName)) {
         // success
         return pAudioSource;
     } else {
@@ -24,7 +24,7 @@ AudioSourcePointer AudioSourceSndFile::create(QString fileName) {
     }
 }
 
-Result AudioSourceSndFile::postConstruct(QString fileName) {
+Result AudioSourceSndFile::open(QString fileName) {
 #ifdef __WINDOWS__
     // Pointer valid until string changed
     LPCWSTR lpcwFilename = (LPCWSTR)fileName.utf16();
@@ -52,7 +52,7 @@ Result AudioSourceSndFile::postConstruct(QString fileName) {
     return OK;
 }
 
-void AudioSourceSndFile::preDestroy() {
+void AudioSourceSndFile::close() {
     if (m_pSndFile) {
         const int closeResult = sf_close(m_pSndFile);
         if (0 != closeResult) {

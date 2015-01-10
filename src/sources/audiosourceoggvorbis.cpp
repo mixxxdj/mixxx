@@ -10,12 +10,12 @@ AudioSourceOggVorbis::AudioSourceOggVorbis() {
 }
 
 AudioSourceOggVorbis::~AudioSourceOggVorbis() {
-    preDestroy();
+    close();
 }
 
 AudioSourcePointer AudioSourceOggVorbis::create(QString fileName) {
     QSharedPointer<AudioSourceOggVorbis> pAudioSource(new AudioSourceOggVorbis);
-    if (OK == pAudioSource->postConstruct(fileName)) {
+    if (OK == pAudioSource->open(fileName)) {
         // success
         return pAudioSource;
     } else {
@@ -24,7 +24,7 @@ AudioSourcePointer AudioSourceOggVorbis::create(QString fileName) {
     }
 }
 
-Result AudioSourceOggVorbis::postConstruct(QString fileName) {
+Result AudioSourceOggVorbis::open(QString fileName) {
     const QByteArray qbaFilename(fileName.toLocal8Bit());
     if (0 != ov_fopen(qbaFilename.constData(), &m_vf)) {
         qWarning() << "Failed to open OggVorbis file:" << fileName;
@@ -56,7 +56,7 @@ Result AudioSourceOggVorbis::postConstruct(QString fileName) {
     return OK;
 }
 
-void AudioSourceOggVorbis::preDestroy() {
+void AudioSourceOggVorbis::close() {
     const int clearResult = ov_clear(&m_vf);
     if (0 != clearResult) {
         qWarning() << "Failed to close OggVorbis file" << clearResult;

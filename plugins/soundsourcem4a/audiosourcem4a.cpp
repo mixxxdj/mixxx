@@ -73,12 +73,12 @@ AudioSourceM4A::AudioSourceM4A()
 }
 
 AudioSourceM4A::~AudioSourceM4A() {
-    preDestroy();
+    close();
 }
 
 AudioSourcePointer AudioSourceM4A::create(QString fileName) {
     QSharedPointer<AudioSourceM4A> pAudioSource(new AudioSourceM4A);
-    if (OK == pAudioSource->postConstruct(fileName)) {
+    if (OK == pAudioSource->open(fileName)) {
         // success
         return pAudioSource;
     } else {
@@ -87,7 +87,7 @@ AudioSourcePointer AudioSourceM4A::create(QString fileName) {
     }
 }
 
-Result AudioSourceM4A::postConstruct(QString fileName) {
+Result AudioSourceM4A::open(QString fileName) {
     /* open MP4 file, check for >= ver 1.9.1 */
 #if MP4V2_PROJECT_version_hex <= 0x00010901
     m_hFile = MP4Read(fileName.toLocal8Bit().constData(), 0);
@@ -174,7 +174,7 @@ Result AudioSourceM4A::postConstruct(QString fileName) {
     return OK;
 }
 
-void AudioSourceM4A::preDestroy() {
+void AudioSourceM4A::close() {
     if (m_hDecoder) {
         NeAACDecClose(m_hDecoder);
         m_hDecoder = NULL;

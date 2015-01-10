@@ -8,12 +8,12 @@ AudioSourceOpus::AudioSourceOpus()
 }
 
 AudioSourceOpus::~AudioSourceOpus() {
-    preDestroy();
+    close();
 }
 
 AudioSourcePointer AudioSourceOpus::create(QString fileName) {
     QSharedPointer<AudioSourceOpus> pAudioSource(new AudioSourceOpus);
-    if (OK == pAudioSource->postConstruct(fileName)) {
+    if (OK == pAudioSource->open(fileName)) {
         // success
         return pAudioSource;
     } else {
@@ -22,7 +22,7 @@ AudioSourcePointer AudioSourceOpus::create(QString fileName) {
     }
 }
 
-Result AudioSourceOpus::postConstruct(QString fileName) {
+Result AudioSourceOpus::open(QString fileName) {
 
     int errorCode = 0;
     const QByteArray qbaFilename(fileName.toLocal8Bit());
@@ -52,7 +52,7 @@ Result AudioSourceOpus::postConstruct(QString fileName) {
     return OK;
 }
 
-void AudioSourceOpus::preDestroy() {
+void AudioSourceOpus::close() {
     if (m_pOggOpusFile) {
         op_free(m_pOggOpusFile);
         m_pOggOpusFile = NULL;

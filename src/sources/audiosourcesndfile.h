@@ -28,8 +28,9 @@ public:
 private:
     AudioSourceSndFile();
 
-    Result postConstruct(QString fileName);
-    void preDestroy();
+    Result open(QString fileName);
+
+    void close();
 
     SNDFILE* m_pSndFile;
     SF_INFO m_sfInfo;

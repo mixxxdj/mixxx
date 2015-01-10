@@ -33,8 +33,9 @@ public:
 private:
     explicit AudioSourceMp3(QString fileName);
 
-    Result postConstruct();
-    void preDestroy();
+    Result open();
+
+    void close();
 
     inline size_type skipFrameSamples(size_type frameCount) {
         return readFrameSamplesInterleaved(frameCount, NULL);

@@ -31,8 +31,9 @@ public:
 private:
     AudioSourceMediaFoundation();
 
-    Result postConstruct(QString fileName);
-    void preDestroy();
+    Result open(QString fileName);
+
+    void close();
 
     bool configureAudioStream();
 

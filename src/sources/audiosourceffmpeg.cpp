@@ -26,12 +26,12 @@ AudioSourceFFmpeg::AudioSourceFFmpeg()
 }
 
 AudioSourceFFmpeg::~AudioSourceFFmpeg() {
-    preDestroy();
+    close();
 }
 
 AudioSourcePointer AudioSourceFFmpeg::create(QString fileName) {
     QSharedPointer<AudioSourceFFmpeg> pAudioSource(new AudioSourceFFmpeg);
-    if (OK == pAudioSource->postConstruct(fileName)) {
+    if (OK == pAudioSource->open(fileName)) {
         // success
         return pAudioSource;
     } else {
@@ -40,7 +40,7 @@ AudioSourcePointer AudioSourceFFmpeg::create(QString fileName) {
     }
 }
 
-Result AudioSourceFFmpeg::postConstruct(QString fileName) {
+Result AudioSourceFFmpeg::open(QString fileName) {
     unsigned int i;
     AVDictionary *l_iFormatOpts = NULL;
 
@@ -119,7 +119,7 @@ Result AudioSourceFFmpeg::postConstruct(QString fileName) {
     return OK;
 }
 
-void AudioSourceFFmpeg::preDestroy() {
+void AudioSourceFFmpeg::close() {
     clearCache();
 
     if (m_pCodecCtx != NULL) {
