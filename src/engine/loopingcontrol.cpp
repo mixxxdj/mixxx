@@ -226,14 +226,15 @@ void LoopingControl::slotLoopScale(double scale) {
             m_iLoopEndSample += 2;
     }
     // Do not allow loops to go past the end of the song
-    else if (m_iLoopEndSample > samples)
+    else if (m_iLoopEndSample > samples) {
         m_iLoopEndSample = samples;
+    }
 
     // Update CO for loop end marker
     m_pCOLoopEndPosition->set(m_iLoopEndSample);
 
     // Reseek if the loop shrank out from under the playposition.
-    if (scale < 1.0) {
+    if (m_bLoopingEnabled && scale < 1.0) {
         seekInsideAdjustedLoop(
                 m_iLoopStartSample, old_loop_end,
                 m_iLoopStartSample, m_iLoopEndSample);
@@ -839,8 +840,8 @@ void LoopingControl::slotLoopMove(double beats) {
                                    NULL, NULL, &dBeatLength, NULL)) {
         int old_loop_in = m_iLoopStartSample;
         int old_loop_out = m_iLoopEndSample;
-        int new_loop_in = m_iLoopStartSample + (beats * dBeatLength);
-        int new_loop_out = m_iLoopEndSample + (beats * dBeatLength);
+        int new_loop_in = old_loop_in + (beats * dBeatLength);
+        int new_loop_out = old_loop_out + (beats * dBeatLength);
 
         // Reject any shift that goes out of bounds
         if (new_loop_in < 0 || new_loop_out >= m_pTrackSamples->get()) {
@@ -848,18 +849,16 @@ void LoopingControl::slotLoopMove(double beats) {
         }
 
         m_iLoopStartSample = new_loop_in;
-        if (m_pActiveBeatLoop) {
-            // Ugly hack -- slotBeatLoop takes "true" to mean "keep starting
-            // point".  It gets that in-point from m_iLoopStartSample,
-            // which we just changed so that the loop actually shifts.
-            slotBeatLoop(m_pActiveBeatLoop->getSize(), true);
-        } else {
-            m_pCOLoopStartPosition->set(new_loop_in);
-            m_iLoopEndSample = new_loop_out;
-            m_pCOLoopEndPosition->set(new_loop_out);
+        m_pCOLoopStartPosition->set(new_loop_in);
+        m_iLoopEndSample = new_loop_out;
+        m_pCOLoopEndPosition->set(new_loop_out);
+
+        // If we are looping make sure that the play head does not leave the
+        // loop as a result of our adjustment.
+        if (m_bLoopingEnabled) {
+            seekInsideAdjustedLoop(old_loop_in, old_loop_out,
+                                   new_loop_in, new_loop_out);
         }
-        seekInsideAdjustedLoop(old_loop_in, old_loop_out,
-                               new_loop_in, new_loop_out);
     }
 }
 
