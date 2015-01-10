@@ -36,7 +36,9 @@ const MP4SampleId kMinSampleBlockId = 1;
 // Two blocks of samples seems to be enough here.
 const MP4SampleId kNumberOfPrefetchSampleBlocks = 2;
 
-MP4TrackId findAacTrackId(MP4FileHandle hFile) {
+// Searches for the first audio track in the MP4 file that
+// suits our needs.
+MP4TrackId findFirstAudioTrackId(MP4FileHandle hFile) {
     const MP4TrackId maxTrackId = MP4GetNumberOfTracks(hFile, NULL, 0);
     for (MP4TrackId trackId = 1; trackId <= maxTrackId; ++trackId) {
         const char* trackType = MP4GetTrackType(hFile, trackId);
@@ -104,7 +106,7 @@ Result AudioSourceM4A::open(QString fileName) {
         return ERR;
     }
 
-    m_trackId = findAacTrackId(m_hFile);
+    m_trackId = findFirstAudioTrackId(m_hFile);
     if (MP4_INVALID_TRACK_ID == m_trackId) {
         qWarning() << "No AAC track found in file:" << fileName;
         return ERR;
@@ -117,7 +119,12 @@ Result AudioSourceM4A::open(QString fileName) {
     }
     m_curSampleBlockId = MP4_INVALID_SAMPLE_ID;
 
-    m_inputBuffer.resize(MP4GetTrackMaxSampleSize(m_hFile, m_trackId), 0);
+    // Determine the maximum input size (in bytes) of a
+    // sample block for the selected track.
+    const u_int32_t maxSampleBlockInputSize =
+            MP4GetTrackMaxSampleSize(m_hFile, m_trackId);
+    m_inputBuffer.resize(maxSampleBlockInputSize, 0);
+    // Initially the input buffer is empty
     m_inputBufferOffset = 0;
     m_inputBufferLength = 0;
 
@@ -167,7 +174,8 @@ Result AudioSourceM4A::open(QString fileName) {
 
     // Allocate one block more than the number of sample blocks
     // that are prefetched
-    const SampleBuffer::size_type prefetchSampleBufferSize = (kNumberOfPrefetchSampleBlocks + 1) * frames2samples(kFramesPerSampleBlock);
+    const SampleBuffer::size_type prefetchSampleBufferSize =
+            (kNumberOfPrefetchSampleBlocks + 1) * frames2samples(kFramesPerSampleBlock);
     m_prefetchSampleBuffer.resize(prefetchSampleBufferSize);
 
     // invalidate current frame index
