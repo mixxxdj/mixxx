@@ -21,12 +21,11 @@ public:
     size_type readFrameSamplesInterleaved(size_type frameCount, sample_type* sampleBuffer) /*override*/;
     size_type readStereoFrameSamplesInterleaved(size_type frameCount, sample_type* sampleBuffer) /*override*/;
 
-    void close() throw() /*override*/;
-
 private:
     AudioSourceOggVorbis();
 
     Result postConstruct(QString fileName);
+    void preDestroy();
 
     size_type readFrameSamplesInterleaved(size_type frameCount,
             sample_type* sampleBuffer, bool readStereoSamples);

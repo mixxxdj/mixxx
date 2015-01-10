@@ -10,7 +10,7 @@ AudioSourceSndFile::AudioSourceSndFile()
 }
 
 AudioSourceSndFile::~AudioSourceSndFile() {
-    close();
+    preDestroy();
 }
 
 AudioSourcePointer AudioSourceSndFile::open(QString fileName) {
@@ -53,7 +53,7 @@ Result AudioSourceSndFile::postConstruct(QString fileName) {
     return OK;
 }
 
-void AudioSourceSndFile::close() throw() {
+void AudioSourceSndFile::preDestroy() {
     if (m_pSndFile) {
         const int closeResult = sf_close(m_pSndFile);
         if (0 != closeResult) {

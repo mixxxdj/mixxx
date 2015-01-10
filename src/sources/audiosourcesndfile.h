@@ -25,12 +25,11 @@ public:
 
     size_type readFrameSamplesInterleaved(size_type frameCount, sample_type* sampleBuffer) /*override*/;
 
-    void close() throw() /*override*/;
-
 private:
     AudioSourceSndFile();
 
     Result postConstruct(QString fileName);
+    void preDestroy();
 
     SNDFILE* m_pSndFile;
     SF_INFO m_sfInfo;

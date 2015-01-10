@@ -16,7 +16,7 @@ AudioSourceCoreAudio::AudioSourceCoreAudio()
 }
 
 AudioSourceCoreAudio::~AudioSourceCoreAudio() {
-    close();
+    preDestroy();
 }
 
 AudioSourcePointer AudioSourceCoreAudio::open(QString fileName) {
@@ -117,7 +117,7 @@ Result AudioSourceCoreAudio::postConstruct(QString fileName) {
     return OK;
 }
 
-void AudioSourceCoreAudio::close() throw() {
+void AudioSourceCoreAudio::preDestroy() {
     ExtAudioFileDispose(m_audioFile);
 }
 

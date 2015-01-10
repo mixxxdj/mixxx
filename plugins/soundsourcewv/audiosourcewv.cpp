@@ -9,7 +9,7 @@ AudioSourceWV::AudioSourceWV()
 }
 
 AudioSourceWV::~AudioSourceWV() {
-    close();
+    preDestroy();
 }
 
 AudioSourcePointer AudioSourceWV::open(QString fileName) {
@@ -48,7 +48,7 @@ Result AudioSourceWV::postConstruct(QString fileName) {
     return OK;
 }
 
-void AudioSourceWV::close() throw() {
+void AudioSourceWV::preDestroy() {
     if (m_wpc) {
         WavpackCloseFile(m_wpc);
         m_wpc = NULL;

@@ -52,7 +52,7 @@ AudioSourceMp3::AudioSourceMp3(QString fileName)
 }
 
 AudioSourceMp3::~AudioSourceMp3() {
-    close();
+    preDestroy();
 }
 
 AudioSourcePointer AudioSourceMp3::open(QString fileName) {
@@ -223,7 +223,7 @@ void AudioSourceMp3::restartDecoding(const SeekFrameType& seekFrame) {
     m_curFrameIndex = seekFrame.frameIndex;
 }
 
-void AudioSourceMp3::close() throw() {
+void AudioSourceMp3::preDestroy() {
     finishDecoding();
 
     m_seekFrameList.clear();

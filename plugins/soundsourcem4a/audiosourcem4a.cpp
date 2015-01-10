@@ -73,7 +73,7 @@ AudioSourceM4A::AudioSourceM4A()
 }
 
 AudioSourceM4A::~AudioSourceM4A() {
-    close();
+    preDestroy();
 }
 
 AudioSourcePointer AudioSourceM4A::open(QString fileName) {
@@ -175,7 +175,7 @@ Result AudioSourceM4A::postConstruct(QString fileName) {
     return OK;
 }
 
-void AudioSourceM4A::close() throw() {
+void AudioSourceM4A::preDestroy() {
     if (m_hDecoder) {
         NeAACDecClose(m_hDecoder);
         m_hDecoder = NULL;

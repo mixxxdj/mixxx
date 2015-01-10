@@ -28,12 +28,11 @@ public:
 
     size_type readFrameSamplesInterleaved(size_type frameCount, sample_type* sampleBuffer) /*override*/;
 
-    void close() throw() /* override*/;
-
 private:
     AudioSourceMediaFoundation();
 
     Result postConstruct(QString fileName);
+    void preDestroy();
 
     bool configureAudioStream();
 
