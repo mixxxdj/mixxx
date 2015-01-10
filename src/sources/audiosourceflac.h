@@ -37,8 +37,9 @@ public:
 private:
     explicit AudioSourceFLAC(QString fileName);
 
-    Result postConstruct();
-    void preDestroy();
+    Result open();
+
+    void close();
 
     size_type readFrameSamplesInterleaved(size_type frameCount, sample_type* sampleBuffer, bool readStereoSamples);
 

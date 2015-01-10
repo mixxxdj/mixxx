@@ -34,8 +34,9 @@ public:
 private:
     AudioSourceCoreAudio();
 
-    Result postConstruct(QString fileName);
-    void preDestroy();
+    Result open(QString fileName);
+
+    void close();
 
     ExtAudioFileRef m_audioFile;
     CAStreamBasicDescription m_inputFormat;

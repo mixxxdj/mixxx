@@ -63,12 +63,12 @@ AudioSourceFLAC::AudioSourceFLAC(QString fileName)
 }
 
 AudioSourceFLAC::~AudioSourceFLAC() {
-    preDestroy();
+    close();
 }
 
 AudioSourcePointer AudioSourceFLAC::create(QString fileName) {
     QSharedPointer<AudioSourceFLAC> pAudioSource(new AudioSourceFLAC(fileName));
-    if (OK == pAudioSource->postConstruct()) {
+    if (OK == pAudioSource->open()) {
         // success
         return pAudioSource;
     } else {
@@ -77,7 +77,7 @@ AudioSourcePointer AudioSourceFLAC::create(QString fileName) {
     }
 }
 
-Result AudioSourceFLAC::postConstruct() {
+Result AudioSourceFLAC::open() {
     if (!m_file.open(QIODevice::ReadOnly)) {
         qWarning() << "SSFLAC: Could not read file!";
         return ERR;
@@ -106,7 +106,7 @@ Result AudioSourceFLAC::postConstruct() {
     return OK;
 }
 
-void AudioSourceFLAC::preDestroy() {
+void AudioSourceFLAC::close() {
     if (m_decoder) {
         FLAC__stream_decoder_finish(m_decoder);
         FLAC__stream_decoder_delete(m_decoder); // frees memory

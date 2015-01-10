@@ -27,8 +27,9 @@ public:
 private:
     AudioSourceOpus();
 
-    Result postConstruct(QString fileName);
-    void preDestroy();
+    Result open(QString fileName);
+
+    void close();
 
     OggOpusFile *m_pOggOpusFile;
 };

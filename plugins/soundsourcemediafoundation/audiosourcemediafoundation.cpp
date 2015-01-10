@@ -78,12 +78,12 @@ AudioSourceMediaFoundation::AudioSourceMediaFoundation()
 }
 
 AudioSourceMediaFoundation::~AudioSourceMediaFoundation() {
-    preDestroy();
+    close();
 }
 
 AudioSourcePointer AudioSourceMediaFoundation::create(QString fileName) {
     QSharedPointer<AudioSourceMediaFoundation> pAudioSource(new AudioSourceMediaFoundation);
-    if (OK == pAudioSource->postConstruct(fileName)) {
+    if (OK == pAudioSource->open(fileName)) {
         // success
         return pAudioSource;
     } else {
@@ -92,7 +92,7 @@ AudioSourcePointer AudioSourceMediaFoundation::create(QString fileName) {
     }
 }
 
-Result AudioSourceMediaFoundation::postConstruct(QString fileName) {
+Result AudioSourceMediaFoundation::open(QString fileName) {
     if (sDebug) {
         qDebug() << "open()" << fileName;
     }
@@ -139,7 +139,7 @@ Result AudioSourceMediaFoundation::postConstruct(QString fileName) {
     return OK;
 }
 
-void AudioSourceMediaFoundation::preDestroy() {
+void AudioSourceMediaFoundation::close() {
     delete[] m_wcFilename;
     m_wcFilename = NULL;
     delete[] m_leftoverBuffer;

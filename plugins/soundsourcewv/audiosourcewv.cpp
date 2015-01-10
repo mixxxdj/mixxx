@@ -9,12 +9,12 @@ AudioSourceWV::AudioSourceWV()
 }
 
 AudioSourceWV::~AudioSourceWV() {
-    preDestroy();
+    close();
 }
 
 AudioSourcePointer AudioSourceWV::create(QString fileName) {
     QSharedPointer<AudioSourceWV> pAudioSource(new AudioSourceWV);
-    if (OK == pAudioSource->postConstruct(fileName)) {
+    if (OK == pAudioSource->open(fileName)) {
         // success
         return pAudioSource;
     } else {
@@ -23,7 +23,7 @@ AudioSourcePointer AudioSourceWV::create(QString fileName) {
     }
 }
 
-Result AudioSourceWV::postConstruct(QString fileName) {
+Result AudioSourceWV::open(QString fileName) {
     char msg[80]; // hold possible error message
     m_wpc = WavpackOpenFileInput(fileName.toLocal8Bit().constData(), msg,
             OPEN_2CH_MAX | OPEN_WVC | OPEN_NORMALIZE, 0);
@@ -47,7 +47,7 @@ Result AudioSourceWV::postConstruct(QString fileName) {
     return OK;
 }
 
-void AudioSourceWV::preDestroy() {
+void AudioSourceWV::close() {
     if (m_wpc) {
         WavpackCloseFile(m_wpc);
         m_wpc = NULL;

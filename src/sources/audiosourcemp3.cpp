@@ -52,12 +52,12 @@ AudioSourceMp3::AudioSourceMp3(QString fileName)
 }
 
 AudioSourceMp3::~AudioSourceMp3() {
-    preDestroy();
+    close();
 }
 
 AudioSourcePointer AudioSourceMp3::create(QString fileName) {
     QSharedPointer<AudioSourceMp3> pAudioSource(new AudioSourceMp3(fileName));
-    if (OK == pAudioSource->postConstruct()) {
+    if (OK == pAudioSource->open()) {
         // success
         return pAudioSource;
     } else {
@@ -66,7 +66,7 @@ AudioSourcePointer AudioSourceMp3::create(QString fileName) {
     }
 }
 
-Result AudioSourceMp3::postConstruct() {
+Result AudioSourceMp3::open() {
     if (!m_file.open(QIODevice::ReadOnly)) {
         qWarning() << "Failed to open file:" << m_file.fileName();
         return ERR;
@@ -222,7 +222,7 @@ void AudioSourceMp3::restartDecoding(const SeekFrameType& seekFrame) {
     m_curFrameIndex = seekFrame.frameIndex;
 }
 
-void AudioSourceMp3::preDestroy() {
+void AudioSourceMp3::close() {
     finishDecoding();
 
     m_seekFrameList.clear();

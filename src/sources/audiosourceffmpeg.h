@@ -54,8 +54,9 @@ public:
 private:
     AudioSourceFFmpeg();
 
-    Result postConstruct(QString fileName);
-    void preDestroy();
+    Result open(QString fileName);
+
+    void close();
 
     bool readFramesToCache(unsigned int count, qint64 offset);
     bool getBytesFromCache(char *buffer, quint64 offset, quint64 size);

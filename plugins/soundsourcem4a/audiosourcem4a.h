@@ -37,8 +37,9 @@ public:
 private:
     AudioSourceM4A();
 
-    Result postConstruct(QString fileName);
-    void preDestroy();
+    Result open(QString fileName);
+
+    void close();
 
     bool isValidSampleId(MP4SampleId sampleId) const;
 

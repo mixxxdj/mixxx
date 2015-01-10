@@ -27,8 +27,9 @@ public:
 private:
     AudioSourceWV();
 
-    Result postConstruct(QString fileName);
-    void preDestroy();
+    Result open(QString fileName);
+
+    void close();
 
     WavpackContext* m_wpc;
 

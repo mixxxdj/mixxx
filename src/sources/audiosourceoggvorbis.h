@@ -24,8 +24,9 @@ public:
 private:
     AudioSourceOggVorbis();
 
-    Result postConstruct(QString fileName);
-    void preDestroy();
+    Result open(QString fileName);
+
+    void close();
 
     size_type readFrameSamplesInterleaved(size_type frameCount,
             sample_type* sampleBuffer, bool readStereoSamples);
