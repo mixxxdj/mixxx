@@ -20,7 +20,7 @@ namespace Mixxx {
 
 class AudioSourceMediaFoundation : public AudioSource {
 public:
-    static AudioSourcePointer open(QString fileName);
+    static AudioSourcePointer create(QString fileName);
 
     ~AudioSourceMediaFoundation();
 

@@ -11,7 +11,7 @@ AudioSourceOpus::~AudioSourceOpus() {
     preDestroy();
 }
 
-AudioSourcePointer AudioSourceOpus::open(QString fileName) {
+AudioSourcePointer AudioSourceOpus::create(QString fileName) {
     QSharedPointer<AudioSourceOpus> pAudioSource(new AudioSourceOpus);
     if (OK == pAudioSource->postConstruct(fileName)) {
         // success

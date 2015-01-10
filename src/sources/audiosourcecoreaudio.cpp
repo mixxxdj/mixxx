@@ -19,7 +19,7 @@ AudioSourceCoreAudio::~AudioSourceCoreAudio() {
     preDestroy();
 }
 
-AudioSourcePointer AudioSourceCoreAudio::open(QString fileName) {
+AudioSourcePointer AudioSourceCoreAudio::create(QString fileName) {
     QSharedPointer<AudioSourceCoreAudio> pAudioSource(new AudioSourceCoreAudio);
     if (OK == pAudioSource->postConstruct(fileName)) {
         // success

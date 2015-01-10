@@ -43,7 +43,7 @@ struct ffmpegCacheObject {
 
 class AudioSourceFFmpeg : public AudioSource {
 public:
-    static AudioSourcePointer open(QString fileName);
+    static AudioSourcePointer create(QString fileName);
 
     ~AudioSourceFFmpeg();
 

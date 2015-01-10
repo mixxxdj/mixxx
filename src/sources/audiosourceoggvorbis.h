@@ -12,7 +12,7 @@ namespace Mixxx
 
 class AudioSourceOggVorbis: public AudioSource {
 public:
-    static AudioSourcePointer open(QString fileName);
+    static AudioSourcePointer create(QString fileName);
 
     ~AudioSourceOggVorbis();
 

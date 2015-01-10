@@ -13,7 +13,7 @@ AudioSourceSndFile::~AudioSourceSndFile() {
     preDestroy();
 }
 
-AudioSourcePointer AudioSourceSndFile::open(QString fileName) {
+AudioSourcePointer AudioSourceSndFile::create(QString fileName) {
     QSharedPointer<AudioSourceSndFile> pAudioSource(new AudioSourceSndFile);
     if (OK == pAudioSource->postConstruct(fileName)) {
         // success

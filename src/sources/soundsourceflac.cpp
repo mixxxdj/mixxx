@@ -329,6 +329,10 @@ void FLAC_error_cb(const FLAC__StreamDecoder*,
     ((SoundSourceFLAC*) client_data)->flacError(status);
 =======
 Mixxx::AudioSourcePointer SoundSourceFLAC::open() const {
+<<<<<<< HEAD
     return Mixxx::AudioSourceFLAC::open(getFilename());
 >>>>>>> Split AudioSource from SoundSource
+=======
+    return Mixxx::AudioSourceFLAC::create(getFilename());
+>>>>>>> Rename static factory method of AudioSources: open() -> create()
 }

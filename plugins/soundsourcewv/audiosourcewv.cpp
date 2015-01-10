@@ -12,7 +12,7 @@ AudioSourceWV::~AudioSourceWV() {
     preDestroy();
 }
 
-AudioSourcePointer AudioSourceWV::open(QString fileName) {
+AudioSourcePointer AudioSourceWV::create(QString fileName) {
     QSharedPointer<AudioSourceWV> pAudioSource(new AudioSourceWV);
     if (OK == pAudioSource->postConstruct(fileName)) {
         // success

@@ -26,7 +26,7 @@ namespace Mixxx {
 
 class AudioSourceM4A : public AudioSource {
 public:
-    static AudioSourcePointer open(QString fileName);
+    static AudioSourcePointer create(QString fileName);
 
     ~AudioSourceM4A();
 
