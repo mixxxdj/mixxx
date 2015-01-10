@@ -656,6 +656,7 @@ class MixxxCore(Feature):
                    "errordialoghandler.cpp",
                    "upgrade.cpp",
 
+                   "sources/soundsourceplugin.cpp",
                    "sources/soundsource.cpp",
                    "sources/audiosource.cpp",
 

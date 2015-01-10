@@ -38,7 +38,7 @@ QList<QString> SoundSourceMediaFoundation::supportedFileExtensions() {
 }
 
 SoundSourceMediaFoundation::SoundSourceMediaFoundation(QString fileName)
-        : SoundSource(fileName, "m4a") {
+        : SoundSourcePlugin(fileName, "m4a") {
 }
 
 Result SoundSourceMediaFoundation::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
@@ -77,4 +77,27 @@ QImage SoundSourceMediaFoundation::parseCoverArt() const {
 
 Mixxx::AudioSourcePointer SoundSourceMediaFoundation::open() const {
     return Mixxx::AudioSourceMediaFoundation::create(getFilename());
+}
+
+extern "C" MY_EXPORT const char* getMixxxVersion() {
+    return VERSION;
+}
+
+extern "C" MY_EXPORT int getSoundSourceAPIVersion() {
+    return MIXXX_SOUNDSOURCE_API_VERSION;
+}
+
+extern "C" MY_EXPORT Mixxx::SoundSource* getSoundSource(QString fileName) {
+    return new SoundSourceMediaFoundation(fileName);
+}
+
+extern "C" MY_EXPORT char** supportedFileExtensions() {
+    const QList<QString> supportedFileExtensions(
+            SoundSourceMediaFoundation::supportedFileExtensions());
+    return Mixxx::SoundSourcePlugin::allocFileExtensions(
+            supportedFileExtensions);
+}
+
+extern "C" MY_EXPORT void freeFileExtensions(char** fileExtensions) {
+    Mixxx::SoundSourcePlugin::freeFileExtensions(fileExtensions);
 }

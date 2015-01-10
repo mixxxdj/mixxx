@@ -31,7 +31,7 @@ QList<QString> SoundSourceM4A::supportedFileExtensions() {
 }
 
 SoundSourceM4A::SoundSourceM4A(QString fileName)
-    : SoundSource(fileName, "m4a") {
+    : SoundSourcePlugin(fileName, "m4a") {
 }
 
 Result SoundSourceM4A::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
@@ -86,25 +86,12 @@ extern "C" MY_EXPORT Mixxx::SoundSource* getSoundSource(QString fileName) {
 }
 
 extern "C" MY_EXPORT char** supportedFileExtensions() {
-    QList<QString> exts = Mixxx::SoundSourceM4A::supportedFileExtensions();
-    //Convert to C string array.
-    char** c_exts = (char**)malloc((exts.count() + 1) * sizeof(char*));
-    for (int i = 0; i < exts.count(); i++)
-    {
-        QByteArray qba = exts[i].toUtf8();
-        c_exts[i] = strdup(qba.constData());
-        qDebug() << c_exts[i];
-    }
-    c_exts[exts.count()] = NULL; //NULL terminate the list
-
-    return c_exts;
+    const QList<QString> supportedFileExtensions(
+            Mixxx::SoundSourceM4A::supportedFileExtensions());
+    return Mixxx::SoundSourcePlugin::allocFileExtensions(
+            supportedFileExtensions);
 }
 
-extern "C" MY_EXPORT void freeFileExtensions(char **exts) {
-    if (exts) {
-        for (int i(0); exts[i]; ++i) {
-            free(exts[i]);
-        }
-        free(exts);
-    }
+extern "C" MY_EXPORT void freeFileExtensions(char** fileExtensions) {
+    Mixxx::SoundSourcePlugin::freeFileExtensions(fileExtensions);
 }

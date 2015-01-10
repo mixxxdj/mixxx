@@ -20,7 +20,7 @@
 #ifndef SOUNDSOURCEMEDIAFOUNDATION_H
 #define SOUNDSOURCEMEDIAFOUNDATION_H
 
-#include "sources/soundsource.h"
+#include "sources/soundsourceplugin.h"
 #include "defs_version.h"
 
 #ifdef Q_OS_WIN
@@ -29,7 +29,7 @@
 #define MY_EXPORT
 #endif
 
-class SoundSourceMediaFoundation : public Mixxx::SoundSource {
+class SoundSourceMediaFoundation : public Mixxx::SoundSourcePlugin {
 public:
     static QList<QString> supportedFileExtensions();
 
@@ -41,36 +41,10 @@ public:
     Mixxx::AudioSourcePointer open() const /*override*/;
 };
 
-extern "C" MY_EXPORT const char* getMixxxVersion() {
-    return VERSION;
-}
-
-extern "C" MY_EXPORT int getSoundSourceAPIVersion() {
-    return MIXXX_SOUNDSOURCE_API_VERSION;
-}
-
-extern "C" MY_EXPORT Mixxx::SoundSource* getSoundSource(QString fileName) {
-    return new SoundSourceMediaFoundation(fileName);
-}
-
-extern "C" MY_EXPORT char** supportedFileExtensions() {
-    QList<QString> exts = SoundSourceMediaFoundation::supportedFileExtensions();
-    //Convert to C string array.
-    char** c_exts = (char**) malloc((exts.count() + 1) * sizeof(char*));
-    for (int i = 0; i < exts.count(); i++) {
-        QByteArray qba = exts[i].toUtf8();
-        c_exts[i] = strdup(qba.constData());
-        qDebug() << c_exts[i];
-    }
-    c_exts[exts.count()] = NULL; //NULL terminate the list
-
-    return c_exts;
-}
-
-extern "C" MY_EXPORT void freeFileExtensions(char **exts) {
-    for (int i(0); exts[i]; ++i)
-        free(exts[i]);
-    free(exts);
-}
+extern "C" MY_EXPORT const char* getMixxxVersion();
+extern "C" MY_EXPORT int getSoundSourceAPIVersion();
+extern "C" MY_EXPORT Mixxx::SoundSource* getSoundSource(QString fileName);
+extern "C" MY_EXPORT char** supportedFileExtensions();
+extern "C" MY_EXPORT void freeFileExtensions(char** fileExtensions);
 
 #endif // ifndef SOUNDSOURCEMEDIAFOUNDATION_H

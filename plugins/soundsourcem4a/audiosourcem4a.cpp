@@ -1,7 +1,5 @@
 #include "audiosourcem4a.h"
 
-#include "sampleutil.h"
-
 #ifdef __WINDOWS__
 #include <io.h>
 #include <fcntl.h>

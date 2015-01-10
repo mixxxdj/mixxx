@@ -1,7 +1,7 @@
 #ifndef SOUNDSOURCEWV_H
 #define SOUNDSOURCEWV_H
 
-#include "sources/soundsource.h"
+#include "sources/soundsourceplugin.h"
 #include "defs_version.h"
 
 #ifdef Q_OS_WIN
@@ -12,7 +12,7 @@
 
 namespace Mixxx {
 
-class SoundSourceWV: public SoundSource {
+class SoundSourceWV: public SoundSourcePlugin {
 public:
     static QList<QString> supportedFileExtensions();
 
@@ -30,6 +30,6 @@ extern "C" MY_EXPORT const char* getMixxxVersion();
 extern "C" MY_EXPORT int getSoundSourceAPIVersion();
 extern "C" MY_EXPORT Mixxx::SoundSource* getSoundSource(QString fileName);
 extern "C" MY_EXPORT char** supportedFileExtensions();
-extern "C" MY_EXPORT void freeFileExtensions(char **exts);
+extern "C" MY_EXPORT void freeFileExtensions(char** fileExtensions);
 
 #endif
