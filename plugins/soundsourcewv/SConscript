@@ -16,8 +16,7 @@ wv_sources = [
     "sources/soundsource.cpp",
     "sources/audiosource.cpp",
     "metadata/trackmetadata.cpp",
-    "metadata/trackmetadatataglib.cpp",
-    "sampleutil.cpp"
+    "metadata/trackmetadatataglib.cpp"
 ]
 
 
