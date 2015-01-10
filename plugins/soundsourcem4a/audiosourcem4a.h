@@ -41,17 +41,17 @@ private:
 
     void close();
 
-    bool isValidSampleId(MP4SampleId sampleId) const;
+    bool isValidSampleBlockId(MP4SampleId sampleBlockId) const;
 
     MP4FileHandle m_hFile;
     MP4TrackId m_trackId;
-    MP4SampleId m_maxSampleId;
-    MP4SampleId m_curSampleId;
+    MP4SampleId m_maxSampleBlockId;
+    MP4SampleId m_curSampleBlockId;
 
     typedef std::vector<u_int8_t> InputBuffer;
     InputBuffer m_inputBuffer;
     InputBuffer::size_type m_inputBufferOffset;
-    u_int32_t m_inputBufferLength;
+    InputBuffer::size_type m_inputBufferLength;
 
     faacDecHandle m_hDecoder;
 
