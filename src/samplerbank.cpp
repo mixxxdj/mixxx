@@ -40,6 +40,7 @@ void SamplerBank::slotSaveSamplerBank(double v) {
     }
     // Manually add extension due to bug in QFileDialog
     // via https://bugreports.qt-project.org/browse/QTBUG-27186
+    // Can be removed after switch to Qt5
     QFileInfo fileName(samplerBankPath);
     if (fileName.suffix().isNull() || fileName.suffix().isEmpty()) {
     	QString ext = filefilter.section(".",1,1);
