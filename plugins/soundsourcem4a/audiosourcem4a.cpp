@@ -166,7 +166,7 @@ Result AudioSourceM4A::open(QString fileName) {
     // invalidate current frame index
     m_curFrameIndex = getFrameCount();
     // seek to beginning of file
-    if (0 != seekFrame(0)) {
+    if (0 != seekSampleFrame(0)) {
         qWarning() << "Failed to seek to the beginning of the file!";
         return ERR;
     }
@@ -197,7 +197,7 @@ bool AudioSourceM4A::isValidSampleId(MP4SampleId sampleId) const {
     return (sampleId >= kMinSampleId) && (sampleId <= m_maxSampleId);
 }
 
-AudioSource::diff_type AudioSourceM4A::seekFrame(diff_type frameIndex) {
+AudioSource::diff_type AudioSourceM4A::seekSampleFrame(diff_type frameIndex) {
     if (m_curFrameIndex != frameIndex) {
         const MP4SampleId sampleId = kMinSampleId
                 + (frameIndex / kFramesPerSampleBlock);
@@ -227,18 +227,18 @@ AudioSource::diff_type AudioSourceM4A::seekFrame(diff_type frameIndex) {
         const size_type prefetchFrameCount = frameIndex - m_curFrameIndex;
         // prefetch (decode and discard) all samples up to the target position
         DEBUG_ASSERT(frames2samples(prefetchFrameCount) <= m_prefetchSampleBuffer.size());
-        readFrameSamplesInterleaved(prefetchFrameCount, &m_prefetchSampleBuffer[0]);
+        readSampleFrames(prefetchFrameCount, &m_prefetchSampleBuffer[0]);
     }
     DEBUG_ASSERT(m_curFrameIndex == frameIndex);
     return frameIndex;
 }
 
-AudioSource::size_type AudioSourceM4A::readFrameSamplesInterleaved(
-        size_type frameCount, sample_type* sampleBuffer) {
+AudioSource::size_type AudioSourceM4A::readSampleFrames(
+        size_type numberOfFrames, sample_type* sampleBuffer) {
     sample_type* pSampleBuffer = sampleBuffer;
     const diff_type readFrameIndex = m_curFrameIndex;
     size_type readFrameCount = m_curFrameIndex - readFrameIndex;
-    while ((readFrameCount = m_curFrameIndex - readFrameIndex) < frameCount) {
+    while ((readFrameCount = m_curFrameIndex - readFrameIndex) < numberOfFrames) {
         if (isValidSampleId(m_curSampleId) && (0 == m_inputBufferLength)) {
             // fill input buffer with block of samples
             InputBuffer::value_type* pInputBuffer = &m_inputBuffer[0];
@@ -261,7 +261,7 @@ AudioSource::size_type AudioSourceM4A::readFrameSamplesInterleaved(
         // decode samples into sampleBuffer
         const size_type readFrameCount = m_curFrameIndex - readFrameIndex;
         const size_type decodeBufferCapacityInBytes = frames2samples(
-                frameCount - readFrameCount) * sizeof(*sampleBuffer);
+                numberOfFrames - readFrameCount) * sizeof(*sampleBuffer);
         DEBUG_ASSERT(0 < decodeBufferCapacityInBytes);
         void* pDecodeBuffer = pSampleBuffer;
         NeAACDecDecode2(m_hDecoder, &decFrameInfo,

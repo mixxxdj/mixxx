@@ -265,12 +265,12 @@ AudioSourceMp3::SeekFrameList::size_type AudioSourceMp3::findSeekFrameIndex(diff
     return seekFrameIndex;
 }
 
-AudioSource::diff_type AudioSourceMp3::seekFrame(diff_type frameIndex) {
+AudioSource::diff_type AudioSourceMp3::seekSampleFrame(diff_type frameIndex) {
     if (m_curFrameIndex == frameIndex) {
         return m_curFrameIndex;
     }
     if (0 > frameIndex) {
-        return seekFrame(0);
+        return seekSampleFrame(0);
     }
     // simply skip frames when jumping no more than kMaxSkipFrameSamplesWhenSeeking frames forward
     if ((frameIndex < m_curFrameIndex) || ((frameIndex - m_curFrameIndex) > kMaxSkipFrameSamplesWhenSeeking)) {
@@ -290,20 +290,20 @@ AudioSource::diff_type AudioSourceMp3::seekFrame(diff_type frameIndex) {
     return m_curFrameIndex;
 }
 
-AudioSource::size_type AudioSourceMp3::readFrameSamplesInterleaved(
-        size_type frameCount, sample_type* sampleBuffer) {
-    return readFrameSamplesInterleaved(frameCount, sampleBuffer, false);
+AudioSource::size_type AudioSourceMp3::readSampleFrames(
+        size_type numberOfFrames, sample_type* sampleBuffer) {
+    return readSampleFrames(numberOfFrames, sampleBuffer, false);
 }
 
-AudioSource::size_type AudioSourceMp3::readStereoFrameSamplesInterleaved(
-        size_type frameCount, sample_type* sampleBuffer) {
-    return readFrameSamplesInterleaved(frameCount, sampleBuffer, true);
+AudioSource::size_type AudioSourceMp3::readSampleFramesStereo(
+        size_type numberOfFrames, sample_type* sampleBuffer) {
+    return readSampleFrames(numberOfFrames, sampleBuffer, true);
 }
 
-AudioSource::size_type AudioSourceMp3::readFrameSamplesInterleaved(
-        size_type frameCount, sample_type* sampleBuffer,
+AudioSource::size_type AudioSourceMp3::readSampleFrames(
+        size_type numberOfFrames, sample_type* sampleBuffer,
         bool readStereoSamples) {
-    size_type framesRemaining = frameCount;
+    size_type framesRemaining = numberOfFrames;
     sample_type* pSampleBuffer = sampleBuffer;
     while (0 < framesRemaining) {
         if (0 >= m_madSynthCount) {
@@ -361,7 +361,7 @@ AudioSource::size_type AudioSourceMp3::readFrameSamplesInterleaved(
             }
         }
     }
-    return frameCount - framesRemaining;
+    return numberOfFrames - framesRemaining;
 }
 
 } // namespace Mixxx

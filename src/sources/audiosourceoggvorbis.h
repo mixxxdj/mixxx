@@ -16,10 +16,10 @@ public:
 
     ~AudioSourceOggVorbis();
 
-    diff_type seekFrame(diff_type frameIndex) /*override*/;
+    diff_type seekSampleFrame(diff_type frameIndex) /*override*/;
 
-    size_type readFrameSamplesInterleaved(size_type frameCount, sample_type* sampleBuffer) /*override*/;
-    size_type readStereoFrameSamplesInterleaved(size_type frameCount, sample_type* sampleBuffer) /*override*/;
+    size_type readSampleFrames(size_type numberOfFrames, sample_type* sampleBuffer) /*override*/;
+    size_type readSampleFramesStereo(size_type numberOfFrames, sample_type* sampleBuffer) /*override*/;
 
 private:
     AudioSourceOggVorbis();
@@ -28,7 +28,7 @@ private:
 
     void close();
 
-    size_type readFrameSamplesInterleaved(size_type frameCount,
+    size_type readSampleFrames(size_type numberOfFrames,
             sample_type* sampleBuffer, bool readStereoSamples);
 
     OggVorbis_File m_vf;

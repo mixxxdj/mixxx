@@ -111,7 +111,7 @@ Result AudioSourceCoreAudio::open(QString fileName) {
     //Seek to position 0, which forces us to skip over all the header frames.
     //This makes sure we're ready to just let the Analyser rip and it'll
     //get the number of samples it expects (ie. no header frames).
-    seekFrame(0);
+    seekSampleFrame(0);
 
     return OK;
 }
@@ -120,7 +120,7 @@ void AudioSourceCoreAudio::close() {
     ExtAudioFileDispose(m_audioFile);
 }
 
-AudioSource::diff_type AudioSourceCoreAudio::seekFrame(diff_type frameIndex) {
+AudioSource::diff_type AudioSourceCoreAudio::seekSampleFrame(diff_type frameIndex) {
     OSStatus err = ExtAudioFileSeek(m_audioFile, frameIndex + m_headerFrames);
     //_ThrowExceptionIfErr(@"ExtAudioFileSeek", err);
     //qDebug() << "SSCA: Seeking to" << frameIndex;
@@ -130,13 +130,13 @@ AudioSource::diff_type AudioSourceCoreAudio::seekFrame(diff_type frameIndex) {
     return frameIndex;
 }
 
-AudioSource::size_type AudioSourceCoreAudio::readFrameSamplesInterleaved(size_type frameCount,
+AudioSource::size_type AudioSourceCoreAudio::readSampleFrames(size_type numberOfFrames,
         sample_type* sampleBuffer) {
     //if (!m_decoder) return 0;
     size_type numFramesRead = 0;
 
-    while (numFramesRead < frameCount) {
-        size_type numFramesToRead = frameCount - numFramesRead;
+    while (numFramesRead < numberOfFrames) {
+        size_type numFramesToRead = numberOfFrames - numFramesRead;
 
         AudioBufferList fillBufList;
         fillBufList.mNumberBuffers = 1;

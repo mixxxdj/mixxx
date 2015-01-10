@@ -16,7 +16,16 @@ namespace Mixxx {
 // be constant and are not allowed to change over time.
 //
 // The length of audio data is measured in frames. A frame
-// is a tuple that contains one sample for each channel.
+// is a tuple containing samples from each channel that are
+// coincident in time. A frame for a mono signal contains a
+// single sample. A frame for a stereo signal contains a pair
+// of samples, one for the left and right channel respectively.
+//
+// Samples in a sample buffer are stored as consecutive frames,
+// i.e. the samples of the channels are interleaved.
+//
+// Audio sources are implicitly opened upon creation and
+// closed upon destruction.
 class AudioSource {
 public:
     typedef std::size_t size_type;
@@ -96,7 +105,7 @@ public:
     }
 
     // The actual duration in seconds.
-    // Only avalailable for valid files!
+    // Only available for valid files!
     inline bool hasDuration() const {
         return isValid();
     }
@@ -105,14 +114,14 @@ public:
         return getFrameCount() / getFrameRate();
     }
 
-    // #frames -> #samples
+    // Conversion: #frames -> #samples
     template<typename T>
     inline T frames2samples(T frameCount) const {
         DEBUG_ASSERT(isChannelCountValid());
         return frameCount * getChannelCount();
     }
 
-    // #samples -> #frames
+    // Conversion: #samples -> #frames
     template<typename T>
     inline T samples2frames(T sampleCount) const {
         DEBUG_ASSERT(isChannelCountValid());
@@ -126,38 +135,40 @@ public:
     // - The seek position in seconds is frameIndex / frameRate()
     // Returns the actual current frame index which may differ from the
     // requested index if the source does not support accurate seeking.
-    virtual diff_type seekFrame(diff_type frameIndex) = 0;
+    virtual diff_type seekSampleFrame(diff_type frameIndex) = 0;
 
     // Fills the buffer with samples from each channel starting
     // at the current frame seek position.
     //
-    // The required size of the sampleBuffer is sampleCount =
-    // frames2samples(frameCount). The samples in the sampleBuffer
-    // are stored as consecutive frames with the samples for each
-    // channel interleaved.
+    // The required size of the sampleBuffer is numberOfSamples =
+    // frames2samples(numberOfFrames). The samples in the sampleBuffer
+    // are stored as consecutive sample frames with samples from
+    // each channel interleaved.
     //
     // Returns the actual number of frames that have been read which
     // may be lower than the requested number of frames. The current
     // frame seek position is moved forward to the next unread frame.
-    virtual size_type readFrameSamplesInterleaved(size_type frameCount,
+    virtual size_type readSampleFrames(size_type numberOfFrames,
             sample_type* sampleBuffer) = 0;
 
-    // Utility function for explicitly reading stereo (= 2 channels)
+    // Specialized function for explicitly reading stereo (= 2 channels)
     // frames from an AudioSource. This is commonly used in Mixxx!
     //
-    // If this source provides only a single channel (mono) the samples
+    // If the source provides only a single channel (mono) the samples
     // of that channel will be doubled. If the source provides more
     // than 2 channels only the first 2 channels will be read. The
-    // minimum required capacity of the sampleBuffer is frameCount * 2.
+    // minimum required capacity of the sampleBuffer is numberOfFrames * 2.
     //
     // Returns the actual number of frames that have been read which
     // may be lower than the requested number of frames. The current
-    // frame seek position is moved forward to the next unread frame.
+    // frame seek position is moved forward towards the next unread
+    // frame.
     //
     // Derived classes may provide an optimized version that doesn't
     // require any post-processing as done by this default implementation.
-    // Especially down-mixing multiple channels to stereo is inefficient!
-    virtual size_type readStereoFrameSamplesInterleaved(size_type frameCount,
+    // Please note that the default implementation performs poorly when
+    // reducing more than 2 channels to stereo!
+    virtual size_type readSampleFramesStereo(size_type numberOfFrames,
             sample_type* sampleBuffer);
 
 protected:

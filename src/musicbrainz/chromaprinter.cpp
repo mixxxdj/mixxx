@@ -31,7 +31,7 @@ namespace
         const Mixxx::AudioSource::size_type numSamples = numFrames * kFingerprintChannels;
         Mixxx::AudioSource::sample_type* sampleBuffer = new Mixxx::AudioSource::sample_type[numSamples];
 
-        const Mixxx::AudioSource::size_type readFrames = pAudioSource->readStereoFrameSamplesInterleaved(numFrames, sampleBuffer);
+        const Mixxx::AudioSource::size_type readFrames = pAudioSource->readSampleFramesStereo(numFrames, sampleBuffer);
 
         const Mixxx::AudioSource::size_type readSamples = readFrames * kFingerprintChannels;
         SAMPLE *pData = new SAMPLE[readSamples];

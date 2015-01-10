@@ -25,10 +25,10 @@ public:
 
     ~AudioSourceMp3();
 
-    diff_type seekFrame(diff_type frameIndex) /*override*/;
+    diff_type seekSampleFrame(diff_type frameIndex) /*override*/;
 
-    size_type readFrameSamplesInterleaved(size_type frameCount, sample_type* sampleBuffer) /*override*/;
-    size_type readStereoFrameSamplesInterleaved(size_type frameCount, sample_type* sampleBuffer) /*override*/;
+    size_type readSampleFrames(size_type numberOfFrames, sample_type* sampleBuffer) /*override*/;
+    size_type readSampleFramesStereo(size_type numberOfFrames, sample_type* sampleBuffer) /*override*/;
 
 private:
     explicit AudioSourceMp3(QString fileName);
@@ -37,10 +37,10 @@ private:
 
     void close();
 
-    inline size_type skipFrameSamples(size_type frameCount) {
-        return readFrameSamplesInterleaved(frameCount, NULL);
+    inline size_type skipFrameSamples(size_type numberOfFrames) {
+        return readSampleFrames(numberOfFrames, NULL);
     }
-    size_type readFrameSamplesInterleaved(size_type frameCount, sample_type* sampleBuffer, bool readStereoSamples);
+    size_type readSampleFrames(size_type numberOfFrames, sample_type* sampleBuffer, bool readStereoSamples);
 
     QFile m_file;
     quint64 m_fileSize;

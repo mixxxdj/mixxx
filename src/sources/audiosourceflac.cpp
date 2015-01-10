@@ -117,7 +117,7 @@ void AudioSourceFLAC::close() {
     reset();
 }
 
-Mixxx::AudioSource::diff_type AudioSourceFLAC::seekFrame(diff_type frameIndex) {
+Mixxx::AudioSource::diff_type AudioSourceFLAC::seekSampleFrame(diff_type frameIndex) {
     // clear decode buffer before seeking
     m_decodeSampleBufferReadOffset = 0;
     m_decodeSampleBufferWriteOffset = 0;
@@ -128,21 +128,21 @@ Mixxx::AudioSource::diff_type AudioSourceFLAC::seekFrame(diff_type frameIndex) {
     return frameIndex;
 }
 
-Mixxx::AudioSource::size_type AudioSourceFLAC::readFrameSamplesInterleaved(
-        size_type frameCount, sample_type* sampleBuffer) {
-    return readFrameSamplesInterleaved(frameCount, sampleBuffer, false);
+Mixxx::AudioSource::size_type AudioSourceFLAC::readSampleFrames(
+        size_type numberOfFrames, sample_type* sampleBuffer) {
+    return readSampleFrames(numberOfFrames, sampleBuffer, false);
 }
 
-Mixxx::AudioSource::size_type AudioSourceFLAC::readStereoFrameSamplesInterleaved(
-        size_type frameCount, sample_type* sampleBuffer) {
-    return readFrameSamplesInterleaved(frameCount, sampleBuffer, true);
+Mixxx::AudioSource::size_type AudioSourceFLAC::readSampleFramesStereo(
+        size_type numberOfFrames, sample_type* sampleBuffer) {
+    return readSampleFrames(numberOfFrames, sampleBuffer, true);
 }
 
-Mixxx::AudioSource::size_type AudioSourceFLAC::readFrameSamplesInterleaved(
-        size_type frameCount, sample_type* sampleBuffer,
+Mixxx::AudioSource::size_type AudioSourceFLAC::readSampleFrames(
+        size_type numberOfFrames, sample_type* sampleBuffer,
         bool readStereoSamples) {
     sample_type* outBuffer = sampleBuffer;
-    size_type framesRemaining = frameCount;
+    size_type framesRemaining = numberOfFrames;
     while (0 < framesRemaining) {
         DEBUG_ASSERT(
                 m_decodeSampleBufferReadOffset
@@ -194,7 +194,7 @@ Mixxx::AudioSource::size_type AudioSourceFLAC::readFrameSamplesInterleaved(
                 m_decodeSampleBufferReadOffset
                         <= m_decodeSampleBufferWriteOffset);
     }
-    return frameCount - framesRemaining;
+    return numberOfFrames - framesRemaining;
 }
 
 // flac callback methods

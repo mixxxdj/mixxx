@@ -133,15 +133,15 @@ void AudioSourceModPlug::close() {
     reset();
 }
 
-AudioSource::diff_type AudioSourceModPlug::seekFrame(
+AudioSource::diff_type AudioSourceModPlug::seekSampleFrame(
         diff_type frameIndex) {
     return m_seekPos = frameIndex;
 }
 
-AudioSource::size_type AudioSourceModPlug::readFrameSamplesInterleaved(
-        size_type frameCount, sample_type* sampleBuffer) {
+AudioSource::size_type AudioSourceModPlug::readSampleFrames(
+        size_type numberOfFrames, sample_type* sampleBuffer) {
     const size_type maxFrames = samples2frames(m_sampleBuf.size());
-    const size_type readFrames = math_min(maxFrames - m_seekPos, frameCount);
+    const size_type readFrames = math_min(maxFrames - m_seekPos, numberOfFrames);
 
     const size_type readSamples = frames2samples(readFrames);
     const size_type readOffset = frames2samples(m_seekPos);

@@ -36,26 +36,26 @@ void AudioSource::reset() {
     m_bitrate = kBitrateDefault;
 }
 
-AudioSource::size_type AudioSource::readStereoFrameSamplesInterleaved(
-        size_type frameCount, sample_type* sampleBuffer) {
+AudioSource::size_type AudioSource::readSampleFramesStereo(
+        size_type numberOfFrames, sample_type* sampleBuffer) {
     switch (getChannelCount()) {
     case 1: // mono channel
     {
-        const AudioSource::size_type readCount = readFrameSamplesInterleaved(
-                frameCount, sampleBuffer);
+        const AudioSource::size_type readCount = readSampleFrames(
+                numberOfFrames, sampleBuffer);
         SampleUtil::doubleMonoToDualMono(sampleBuffer, readCount);
         return readCount;
     }
     case 2: // stereo channel(s)
     {
-        return readFrameSamplesInterleaved(frameCount, sampleBuffer);
+        return readSampleFrames(numberOfFrames, sampleBuffer);
     }
     default: // multiple channels
     {
         typedef std::vector<sample_type> SampleBuffer;
-        SampleBuffer tempBuffer(frames2samples(frameCount));
-        const AudioSource::size_type readCount = readFrameSamplesInterleaved(
-                frameCount, &tempBuffer[0]);
+        SampleBuffer tempBuffer(frames2samples(numberOfFrames));
+        const AudioSource::size_type readCount = readSampleFrames(
+                numberOfFrames, &tempBuffer[0]);
         SampleUtil::copyMultiToStereo(sampleBuffer, &tempBuffer[0], readCount,
                 getChannelCount());
         return readCount;
