@@ -1,7 +1,5 @@
 #include "audiosourcewv.h"
 
-#include "sampleutil.h"
-
 namespace Mixxx {
 
 AudioSourceWV::AudioSourceWV()
@@ -37,11 +35,11 @@ Result AudioSourceWV::open(QString fileName) {
     setFrameCount(WavpackGetNumSamples(m_wpc));
 
     if (WavpackGetMode(m_wpc) & MODE_FLOAT) {
-        m_sampleScale = 1.0f;
+        m_sampleScale = kSampleValuePeak;
     } else {
         const int bitsPerSample = WavpackGetBitsPerSample(m_wpc);
-        const uint32_t maxSampleValue = uint32_t(1) << (bitsPerSample - 1);
-        m_sampleScale = 1.0f / (0.5f + sample_type(maxSampleValue));
+        const uint32_t peakSampleValue = uint32_t(1) << (bitsPerSample - 1);
+        m_sampleScale = kSampleValuePeak / sample_type(peakSampleValue);
     }
 
     return OK;
@@ -75,8 +73,7 @@ AudioSource::size_type AudioSourceWV::readSampleFrames(
         for (size_type i = 0; i < sampleCount; ++i) {
             const int32_t sampleValue =
                     reinterpret_cast<int32_t*>(sampleBuffer)[i];
-            sampleBuffer[i] = SampleUtil::clampSample(
-                    sampleValue * m_sampleScale);
+            sampleBuffer[i] = sample_type(sampleValue) * m_sampleScale;
         }
     }
     return unpackCount;
