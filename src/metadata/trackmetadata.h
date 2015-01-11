@@ -121,9 +121,9 @@ public:
     }
 
     // beats / minute
-    static const double BPM_UNDEFINED = 0.0;
-    static const double BPM_MIN = 0.0; // exclusive lower bound
-    static const double BPM_MAX = 300.0; // inclusive upper bound
+    static const double BPM_UNDEFINED;
+    static const double BPM_MIN; // exclusive lower bound
+    static const double BPM_MAX; // inclusive upper bound
     inline double getBpm() const {
         return m_bpm;
     }
