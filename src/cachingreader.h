@@ -37,7 +37,7 @@ typedef struct Hint {
 
 // Note that we use a QVarLengthArray here instead of a QVector. Since this list
 // is cleared on every callback and potentially referenced multiples times it's
-// nicer to use a QVector over a QVarLengthArray because of two things:
+// nicer to use a QVarLengthArray over a QVector because of two things:
 //
 // 1) No copy-on-write / implicit sharing behavior. If the reference count rises
 //    above 1 then every non-const operation on a QVector clones it. We'd like
