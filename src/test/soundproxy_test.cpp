@@ -56,3 +56,38 @@ TEST_F(SoundSourceProxyTest, TOAL_TPE2) {
     EXPECT_EQ("ARTIST", p->getAlbum());
     EXPECT_EQ("TITLE", p->getAlbumArtist());
 }
+
+TEST_F(SoundSourceProxyTest, seekTheSame) {
+    const int kTestSampleCount = 10;
+    const int kSeekSample = 10000;
+
+    const QString kFilePath(
+            QDir::currentPath() + "/src/test/id3-test-data/cover-test.");
+
+    QStringList extensions;
+    extensions << "aiff" << "flac" << "mp3" << "ogg" << "wav";
+
+    foreach (const QString& extension, extensions) {
+        QString filePath = kFilePath + extension;
+
+        Mixxx::SoundSourcePointer pSoundSource1(loadProxy(filePath));
+        EXPECT_EQ(OK, pSoundSource1->open());
+        SAMPLE *pData1 = new SAMPLE[kTestSampleCount];
+        pSoundSource1->seek(kSeekSample);
+        unsigned int read1 = pSoundSource1->read(kTestSampleCount, pData1);
+        EXPECT_EQ(read1, kTestSampleCount);
+
+        Mixxx::SoundSourcePointer pSoundSource2(loadProxy(filePath));
+        EXPECT_EQ(OK, pSoundSource2->open());
+        SAMPLE *pData2 = new SAMPLE[kTestSampleCount];
+        pSoundSource2->seek(kSeekSample);
+        unsigned int read2 = pSoundSource2->read(kTestSampleCount, pData2);
+        EXPECT_EQ(read2, kTestSampleCount);
+
+        for( int i = 0; i < kTestSampleCount; i++) {
+            EXPECT_EQ(pData1[i], pData2[i]);
+            //qDebug() << pData1[i];
+        }
+    }
+}
+
