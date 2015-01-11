@@ -14,7 +14,7 @@
 // This class provides a float value that cannot be increased or decreased
 // by more than a given value to avoid clicks.
 // Finally I use it with only one value but i wonder if it can be useful
-// somewhere else (I here clicks when I change the period of flanger for example).
+// somewhere else (I hear clicks when I change the period of flanger for example).
 class RampedSample {
   public:
     
