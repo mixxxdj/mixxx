@@ -11,14 +11,53 @@
 #include "effects/effectprocessor.h"
 #include "sampleutil.h"
 
-struct PanSquarySinusoid {
-    PanSquarySinusoid() {
-        lastFract = -1;
+// This class provides a float value that cannot be increased or decreased
+// by more than a given value to avoid clicks.
+// Finally I use it with only one value but i wonder if it can be useful
+// somewhere else (I here clicks when I change the period of flanger for example).
+class RampedSample {
+  public:
+    
+    inline RampedSample()
+        : ramped(false),
+          maxDifference(1.0f),
+          initialized(false) {}
+    
+    virtual ~RampedSample(){};
+    
+    inline void setRamping(const float newMaxDifference) {
+        maxDifference = newMaxDifference;
     }
-    ~PanSquarySinusoid() {
+    
+    inline RampedSample & operator=(const float newValue) {
+        if (!initialized) {
+            currentValue = newValue;
+            initialized = true;
+        } else {
+            float difference = newValue - currentValue;
+            if (fabs(difference) > maxDifference) {
+                currentValue += difference / fabs(difference) * maxDifference;
+                ramped = true;
+            } else {
+                currentValue = newValue;
+            }
+        }
+        return *this;
     }
-    CSAMPLE lastFract;
+    
+    inline operator float() {
+        return currentValue;
+    }
+    
+    // TODO(jclaveau) : remove when maxDiff value is fixed
+    bool ramped;
+    
+  private:
+    float maxDifference;
+    float currentValue;
+    bool initialized;
 };
+
 
 struct PanGroupState {
     PanGroupState() {
@@ -27,75 +66,9 @@ struct PanGroupState {
     ~PanGroupState() {
     }
     unsigned int time;
+    RampedSample frac;
 };
 
-class RampedSample {
-  public:
-    RampedSample();
-    inline RampedSample(const float newMaxDifference){
-        setRamping(newMaxDifference);
-    }
-    
-    virtual ~RampedSample();
-    inline void setRamping(const float newMaxDifference){
-        maxDifference = newMaxDifference;
-    }
-    
-    inline RampedSample & operator=(const float &newValue) {
-        CSAMPLE difference = currentValue - newValue;
-        if (difference > maxDifference)
-            currentValue = maxDifference;
-        else
-            currentValue = newValue;
-        
-        return *this;
-    }
-    
-    inline RampedSample & operator-(float diff) {
-        CSAMPLE newValue = currentValue - diff;
-        CSAMPLE difference = currentValue - newValue;
-        if (difference > maxDifference)
-            currentValue = maxDifference;
-        else
-            currentValue = newValue;
-        
-        return *this;
-    }
-    
-    inline RampedSample & operator*(float times) {
-        CSAMPLE newValue = times * currentValue;
-        
-        CSAMPLE difference = currentValue - newValue;
-        if (difference > maxDifference)
-            currentValue = maxDifference;
-        else
-            currentValue = newValue;
-        
-        return *this;
-    }
-    
-    inline operator float() {
-        return value();
-    }
-    
-    inline RampedSample & operator=(const RampedSample &that){
-        CSAMPLE difference = currentValue - that.value();
-        if (difference > maxDifference)
-            currentValue = maxDifference;
-        else
-            currentValue = that.value();
-        
-        return *this;
-    }
-    
-    inline CSAMPLE value() const {
-        return currentValue;
-    }
-    
-  private:
-    float maxDifference;
-    CSAMPLE currentValue;
-};
 
 class PanEffect : public GroupEffectProcessor<PanGroupState> {
   public:
@@ -124,8 +97,6 @@ class PanEffect : public GroupEffectProcessor<PanGroupState> {
     EngineEffectParameter* m_pStrengthParameter;
     EngineEffectParameter* m_pPeriodParameter;
     EngineEffectParameter* m_pRampingParameter;
-    
-    CSAMPLE oldFrac;
     
     DISALLOW_COPY_AND_ASSIGN(PanEffect);
 };
