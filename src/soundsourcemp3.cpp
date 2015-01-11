@@ -22,6 +22,7 @@
 
 #include <QtDebug>
 
+const int kPreSeekFrames = 4; // Start four frames before wanted frame to get in sync...
 
 SoundSourceMp3::SoundSourceMp3(QString qFilename) :
         Mixxx::SoundSource(qFilename),
@@ -185,11 +186,12 @@ Result SoundSourceMp3::open() {
     //TODO: Emit metadata updated signal?
 
 /*
-    qDebug() << "length  = " << filelength.seconds << "d sec.";
-    qDebug() << "frames  = " << framecount;
-    qDebug() << "bitrate = " << bitrate/1000;
-    qDebug() << "Size    = " << length();
- */
+    qDebug() << "length    = " << filelength.seconds << "d sec.";
+    qDebug() << "frames    = " << framecount;
+    qDebug() << "bitrate   = " << bitrate/1000;
+    qDebug() << "Size      = " << length();
+    qDebug() << "framesize = " << m_iAvgFrameSize;
+*/
 
     // Re-init buffer:
     seek(0);
@@ -255,8 +257,8 @@ long SoundSourceMp3::seek(long filepos) {
          */
 
         int framePos = findFrame(filepos);
-        if (framePos == 0 || framePos > filepos || m_currentSeekFrameIndex < 5) {
-            //qDebug() << "Problem finding good seek frame (wanted " << filepos << ", got " << framePos << "), starting from 0";
+        if (framePos == 0 || framePos > filepos || m_currentSeekFrameIndex <= kPreSeekFrames) {
+            qDebug() << "Problem finding good seek frame (wanted " << filepos << ", got " << framePos << "), starting from 0";
 
             // Re-init buffer:
             mad_stream_finish(Stream);
@@ -269,10 +271,12 @@ long SoundSourceMp3::seek(long filepos) {
             m_currentSeekFrameIndex = 0;
             cur = getSeekFrame(m_currentSeekFrameIndex);
         } else {
-            //qDebug() << "frame pos " << cur->pos;
+            //if (cur != NULL) {
+            //    qDebug() << "frame pos " << cur->pos;
+            //}
 
             // Start four frames before wanted frame to get in sync...
-            m_currentSeekFrameIndex -= 4;
+            m_currentSeekFrameIndex -= kPreSeekFrames;
             cur = getSeekFrame(m_currentSeekFrameIndex);
             if (cur != NULL) {
                 // Start from the new frame
@@ -300,7 +304,7 @@ long SoundSourceMp3::seek(long filepos) {
 
                 // Set current position
                 rest = -1;
-                m_currentSeekFrameIndex += 4;
+                m_currentSeekFrameIndex += kPreSeekFrames;
                 cur = getSeekFrame(m_currentSeekFrameIndex);
             }
         }
