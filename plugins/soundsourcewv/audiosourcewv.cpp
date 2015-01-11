@@ -38,8 +38,8 @@ Result AudioSourceWV::open(QString fileName) {
         m_sampleScale = kSampleValuePeak;
     } else {
         const int bitsPerSample = WavpackGetBitsPerSample(m_wpc);
-        const uint32_t peakSampleValue = uint32_t(1) << (bitsPerSample - 1);
-        m_sampleScale = kSampleValuePeak / sample_type(peakSampleValue);
+        const uint32_t wavpackPeakSampleValue = uint32_t(1) << (bitsPerSample - 1);
+        m_sampleScale = kSampleValuePeak / sample_type(wavpackPeakSampleValue);
     }
 
     return OK;
