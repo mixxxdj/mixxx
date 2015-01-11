@@ -188,13 +188,15 @@ Chunk* CachingReader::allocateChunk(int chunk) {
     pChunk->state = Chunk::ALLOCATED;
     pChunk->chunk_number = chunk;
 
-    //qDebug() << "Inserting chunk" << pChunk << pChunk->chunk_number;
+    //qDebug() << "Allocating chunk" << pChunk << pChunk->chunk_number;
     m_allocatedChunks.insert(pChunk->chunk_number, pChunk);
 
-    // Insert the chunk into the LRU list
+    // Insert the chunk into the least-recently-used linked list as the "most
+    // recently used" item.
     m_mruChunk = insertIntoLRUList(pChunk, m_mruChunk);
 
-    // If this chunk has no next LRU then it is the LRU. This only
+    // If this chunk has no next least-recently-used pointer then it is the
+    // least recently used chunk despite having just been allocated. This only
     // happens if this is the first allocated chunk.
     if (pChunk->next_lru == NULL) {
         m_lruChunk = pChunk;
@@ -228,11 +230,12 @@ Chunk* CachingReader::lookupChunk(int chunk_number) {
 }
 
 void CachingReader::freshenChunk(Chunk* pChunk) {
-    // If this is the LRU chunk then set the previous LRU to the new LRU
+    // If this is the LRU chunk then set its previous LRU to be the new LRU.
     if (pChunk == m_lruChunk && pChunk->prev_lru != NULL) {
         m_lruChunk = pChunk->prev_lru;
     }
-    // Remove the chunk from the list and insert it at the head.
+    // Remove the chunk from the LRU list and insert it at the head so that it
+    // is now the most recently used chunk.
     m_mruChunk = removeFromLRUList(pChunk, m_mruChunk);
     m_mruChunk = insertIntoLRUList(pChunk, m_mruChunk);
 }
@@ -263,8 +266,11 @@ void CachingReader::process() {
             m_iTrackNumSamplesCallbackSafe = status.trackNumSamples;
         } else if (status.status == CHUNK_READ_SUCCESS) {
             Chunk* pChunk = status.chunk;
-            if (pChunk == NULL) {
-                qDebug() << "ERROR: status.chunk is NULL in CHUNK_READ_SUCCESS ReaderStatusUpdate. Ignoring update.";
+
+            // This should not be possible unless there is a bug in
+            // CachingReaderWorker. If it is NULL then the only thing we can do
+            // is to skip this ReaderStatusUpdate.
+            DEBUG_ASSERT_AND_HANDLE(pChunk != NULL) {
                 continue;
             }
 
