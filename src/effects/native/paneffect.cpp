@@ -4,9 +4,6 @@
 
 #include "sampleutil.h"
 
-#define INCREMENT_RING(index, increment, length) index = (index + increment) % length
-#define RAMP_LENGTH 500
-
 // static
 QString PanEffect::getId() {
     return "org.mixxx.effects.pan";
@@ -19,8 +16,11 @@ EffectManifest PanEffect::getManifest() {
     manifest.setName(QObject::tr("Pan"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
-    manifest.setDescription(QObject::tr("Simple Pan"));
+    manifest.setDescription(QObject::tr("Bounce the sound from a channel to another"));
     
+    // TODO(jclaveau) : this doesn't look like a good name but doesn't exist on
+    //  my mixer. Any suggestion?
+    // This parameter controls the easing of the sound from a side to another.
     EffectManifestParameter* strength = manifest.addParameter();
     strength->setId("strength");
     strength->setName(QObject::tr("Strength"));
@@ -30,8 +30,7 @@ EffectManifest PanEffect::getManifest() {
     strength->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     strength->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     strength->setMinimum(0.0);
-    strength->setMaximum(0.5);
-    // strength->setDefault(0.25);
+    strength->setMaximum(0.5);  // there are two steps per period so max is half
     strength->setDefault(0.5);
     
     EffectManifestParameter* period = manifest.addParameter();
@@ -43,9 +42,12 @@ EffectManifest PanEffect::getManifest() {
     period->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     period->setMinimum(1.0);
     period->setMaximum(500.0);
-    // period->setDefault(250.0);
     period->setDefault(50.0);
     
+    // This only extists for testing and finding the best value
+    // TODO : remove when a satisfying value is chosen
+    // The current value is taken with a simple laptop soundcard a sample rate
+    // of 44100
     EffectManifestParameter* ramping = manifest.addParameter();
     ramping->setId("ramping_treshold");
     ramping->setName(QObject::tr("Ramping"));
@@ -54,11 +56,10 @@ EffectManifest PanEffect::getManifest() {
     ramping->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     ramping->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     ramping->setMinimum(0.000000000001f);
-    ramping->setMaximum(0.015978f);
-    // ramping->setDefault(250.0);
-    ramping->setDefault(0.003f);
-    // 0.00387852 => other good value
+    ramping->setMaximum(0.015978f); // max good value with my soundcard 
+    ramping->setDefault(0.003f);    // best value
     
+    // This control is hidden for the moment in Deere (replace by the previous one)
     EffectManifestParameter* depth = manifest.addParameter();
     depth->setId("depth");
     depth->setName(QObject::tr("Depth"));
@@ -80,7 +81,6 @@ PanEffect::PanEffect(EngineEffect* pEffect, const EffectManifest& manifest)
           m_pPeriodParameter(pEffect->getParameterById("period")),
           m_pRampingParameter(pEffect->getParameterById("ramping_treshold"))
            {
-    oldFrac = -1.0f;
     Q_UNUSED(manifest);
 }
 
@@ -99,9 +99,8 @@ void PanEffect::processGroup(const QString& group, PanGroupState* pGroupState,
     
     PanGroupState& gs = *pGroupState;
     
-    // if (EnableState::DISABLED == enableState) {
-    if (0x00 == enableState) {
-        return; // DISABLED = 0x00
+    if (enableState == EffectProcessor::DISABLED) {
+        return;
     }
     
     CSAMPLE period = roundf(m_pPeriodParameter->value()) * (float)numSamples / 2.0f;
@@ -109,7 +108,7 @@ void PanEffect::processGroup(const QString& group, PanGroupState* pGroupState,
     CSAMPLE depth = m_pDepthParameter->value();
     float rampingTreshold = m_pRampingParameter->value();
     
-    if (gs.time > period || 0x03 == enableState) { // ENABLING = 0x03
+    if (gs.time > period || enableState == EffectProcessor::ENABLING) {
         gs.time = 0;
     }
     
@@ -123,34 +122,15 @@ void PanEffect::processGroup(const QString& group, PanGroupState* pGroupState,
         a = 0.0001f;
     }
     
-    // define the increasing of gain when only one output channel is used
-    float lawCoef =  1.0f / sqrtf(2.0f) * 2.0f;
+    // define the increasing of gain. 
+    float lawCoef = 1.0f / sqrtf(2.0f) * 2.0f;
     
-    // size of a segment of slope
-    float u = ( 0.5f - stepFrac ) / 2.0f;
+    // size of a segment of slope (controled by the "strength" parameter)
+    float u = (0.5f - stepFrac) / 2.0f;
     
-    // todo (jclaveau) : stereo
-    SampleUtil::mixStereoToMono(pOutput, pInput, numSamples);
+    gs.frac.setRamping(rampingTreshold);
+    gs.frac.ramped = false;     // just for debug
     
-    /** stereo : 
-     * + position 0 <=> 0.5 <=> 1 => gauche et droite au milieu
-     * + position 0.25 => droite à droite et gauche à droite
-     * + position 0.75 => droite à gauche et gauche à gauche
-     * law coef         : sqrt(2)   1           sqrt(2)
-     * position         : 1         0           0.5
-     * 
-     * position left    : 
-     * channel left     : 0     ->  pi/4    ->  pi/2    ->  pi/4
-     * 
-     * position right   : 
-     * channel right    : pi/2  ->  3pi/4   ->  pi      ->  3pi/4
-     * 
-     */
-    
-    // RampedSample* frac = new RampedSample();
-    // frac->setRamping(rampingTreshold);
-    RampedSample frac(rampingTreshold);
-    // frac.setRamping(rampingTreshold);
     for (unsigned int i = 0; i + 1 < numSamples; i += 2) {
         
         CSAMPLE periodFraction = CSAMPLE(gs.time) / period;
@@ -158,15 +138,14 @@ void PanEffect::processGroup(const QString& group, PanGroupState* pGroupState,
         // current quarter in the trigonometric circle
         float quarter = floorf(periodFraction * 4.0f);
         
-        // part of the period fraction being steps (not in the slope)
+        // part of the period fraction being step (not in the slope)
         CSAMPLE stepsFractionPart = floorf((quarter+1.0f)/2.0f) * stepFrac;
         
         // float inInterval = fmod( periodFraction, (period / 2.0) );
         float inInterval = fmod( periodFraction, 0.5f );
         
-        
         CSAMPLE position;
-        if (inInterval > u && inInterval < ( u + stepFrac)) {
+        if (inInterval > u && inInterval < (u + stepFrac)) {
             // at full left or full right
             position = quarter < 2.0f ? 0.25f : 0.75f;
         } else {
@@ -174,70 +153,25 @@ void PanEffect::processGroup(const QString& group, PanGroupState* pGroupState,
             position = (periodFraction - stepsFractionPart) * a;
         }
         
-        // transform the position into a sinusoid (between 0 and 1)
-        frac = (sinf(M_PI * 2.0f * position) + 1.0f) / 2.0f;
+        // transform the position into a sinusoid (but between 0 and 1)
+        gs.frac = (sin(M_PI * 2.0f * position) + 1.0f) / 2.0f;
         
-        // todo (jclaveau) for stereo :
-        // frac left in left
-        // frac left in right
-        // frac right in left
-        // frac right in right
+        pOutput[i] = pInput[i] * (1 - depth)
+            + pInput[i] * gs.frac * lawCoef * depth;
         
-        
-        // 
-        /*
-        if (oldFrac != -1.0f) {
-            float diff = frac - oldFrac;
-            
-            if( fabs(diff) >= rampingTreshold ){
-                frac = oldFrac + (diff / fabs(diff) * rampingTreshold);
-            }
-            
-            if( fabs(diff) > maxDiff ){
-                maxDiff = fabs(diff);
-            }
-        } 
-        
-        oldFrac = frac;
-        */
-        
-        
-        pOutput[i] = pOutput[i] * (1 - depth)
-            + pOutput[i] * frac * lawCoef * depth;
-        
-        pOutput[i+1] = pOutput[i+1] * (1 - depth)
-            + pOutput[i+1]  * (1.0f - frac) * lawCoef * depth;
+        pOutput[i+1] = pInput[i+1] * (1 - depth)
+            + pInput[i+1]  * (1.0f - gs.frac) * lawCoef * depth;
         
         
         gs.time++;
     }
     
     
-    /** /
-    qDebug() << "stepFrac" << stepFrac
-        << "| time :" << gs.time
-        // << "| period :" << period
-        << "| a :" << a          // coef of slope between 1 and -1
-        // << "| lawCoef :" << lawCoef
-        // << "| enableState :" << enableState
-        // << "| numSamples :" << numSamples
-        ;
-    
-    /**/
-    
-    
     qDebug()
-        // <    < "| position :" << (roundf(position * 100.0f) / 100.0f)
-        << "| frac :" << frac
-        // << "| maxDiff :" << maxDiff
-        // << "| maxDiff2 :" << maxDiff2
+        << "| ramped :" << gs.frac.ramped
+        << "| frac :" << gs.frac
         << "| time :" << gs.time
         << "| rampingTreshold :" << rampingTreshold
         ;
-        // << "| a :" << a          // coef of slope between 1 and -1
-        // << "| numSamples :" << numSamples;
-    
-    /**/
-    // qDebug() << "pOutput[1]" << pOutput[1] << "| pOutput[2]" << pOutput[2];
 }
 
