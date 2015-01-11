@@ -64,6 +64,22 @@ QString formatString(const T& value) {
     return QString("%1").arg(value);
 }
 
+template<typename T>
+inline
+QString formatString(const T& value, const T& emptyValue) {
+    if (value == emptyValue) {
+        return QString(); /// empty string
+    } else {
+        return formatString(value);
+    }
+}
+
+template<typename T>
+inline
+QString formatBpmString(const T& bpm) {
+    return formatString(bpm, TrackMetadata::BPM_UNDEFINED);
+}
+
 } // anonymous namespace
 
 bool readAudioProperties(TrackMetadata* pTrackMetadata, const TagLib::File& file) {
@@ -498,10 +514,10 @@ bool writeID3v2Tag(TagLib::ID3v2::Tag* pTag, const TrackMetadata& trackMetadata)
 
     // additional tags
     writeID3v2TextIdentificationFrame(pTag, "TPE2", trackMetadata.getAlbumArtist());
-    writeID3v2TextIdentificationFrame(pTag, "TBPM", formatString(trackMetadata.getBpm()));
-    writeID3v2TextIdentificationFrame(pTag, "TKEY", formatString(trackMetadata.getKey()));
-    writeID3v2TextIdentificationFrame(pTag, "TCOM", formatString(trackMetadata.getComposer()));
-    writeID3v2TextIdentificationFrame(pTag, "TIT1", formatString(trackMetadata.getGrouping()));
+    writeID3v2TextIdentificationFrame(pTag, "TBPM", formatBpmString(trackMetadata.getBpm()));
+    writeID3v2TextIdentificationFrame(pTag, "TKEY", trackMetadata.getKey());
+    writeID3v2TextIdentificationFrame(pTag, "TCOM", trackMetadata.getComposer());
+    writeID3v2TextIdentificationFrame(pTag, "TIT1", trackMetadata.getGrouping());
     if (4 <= pHeader->majorVersion()) {
         // ID3v2.4.0: TDRC replaces TYER + TDAT
         writeID3v2TextIdentificationFrame(pTag, "TDRC", formatString(trackMetadata.getYear()));
@@ -518,7 +534,7 @@ bool writeAPETag(TagLib::APE::Tag* pTag, const TrackMetadata& trackMetadata) {
     // Write common metadata
     writeTag(pTag, trackMetadata);
 
-    pTag->addValue("BPM", toTagLibString(formatString(trackMetadata.getBpm())), true);
+    pTag->addValue("BPM", toTagLibString(formatBpmString(trackMetadata.getBpm())), true);
     pTag->addValue("Album Artist", toTagLibString(trackMetadata.getAlbumArtist()), true);
     pTag->addValue("Composer", toTagLibString(trackMetadata.getComposer()), true);
     pTag->addValue("Grouping", toTagLibString(trackMetadata.getGrouping()), true);
@@ -543,9 +559,9 @@ bool writeXiphComment(TagLib::Ogg::XiphComment* pTag, const TrackMetadata& track
 
     // Some tools use "BPM" so write that.
     pTag->removeField("BPM");
-    pTag->addField("BPM", toTagLibString(formatString(trackMetadata.getBpm())));
+    pTag->addField("BPM", toTagLibString(formatBpmString(trackMetadata.getBpm())));
     pTag->removeField("TEMPO");
-    pTag->addField("TEMPO", toTagLibString(formatString(trackMetadata.getBpm())));
+    pTag->addField("TEMPO", toTagLibString(formatBpmString(trackMetadata.getBpm())));
 
     pTag->removeField("INITIALKEY");
     pTag->addField("INITIALKEY", toTagLibString(trackMetadata.getKey()));
@@ -564,6 +580,18 @@ bool writeXiphComment(TagLib::Ogg::XiphComment* pTag, const TrackMetadata& track
     return true;
 }
 
+namespace {
+
+    void writeMP4Atom(TagLib::MP4::Tag* pTag, const TagLib::String& key, const QString& value) {
+        if (value.isEmpty()) {
+            pTag->itemListMap().erase(key);
+        } else {
+            pTag->itemListMap()[key] = TagLib::StringList(toTagLibString(value));
+        }
+    }
+
+} // anonymous namespace
+
 bool writeMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& trackMetadata) {
     if (NULL == pTag) {
         return false;
@@ -572,15 +600,15 @@ bool writeMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& trackMetadata) {
     // Write common metadata
     writeTag(pTag, trackMetadata);
 
-    pTag->itemListMap()["aART"] = TagLib::StringList(toTagLibString(trackMetadata.getAlbumArtist()));
+    writeMP4Atom(pTag, "aART", trackMetadata.getAlbumArtist());
+    writeMP4Atom(pTag, "\251wrt", trackMetadata.getComposer());
+    writeMP4Atom(pTag, "\251grp", trackMetadata.getGrouping());
+    writeMP4Atom(pTag, "\251day", trackMetadata.getYear());
     // Delete the legacy atom "tmpo" that does not seem to be supported
     // very well. Replace it with the new atom "----:com.apple.iTunes:BPM".
     pTag->itemListMap().erase("tmpo");
-    pTag->itemListMap()["----:com.apple.iTunes:BPM"] = TagLib::StringList(toTagLibString(formatString(trackMetadata.getBpm())));
-    pTag->itemListMap()["----:com.apple.iTunes:KEY"] = TagLib::StringList(toTagLibString(trackMetadata.getKey()));
-    pTag->itemListMap()["\251wrt"] = TagLib::StringList(toTagLibString(trackMetadata.getComposer()));
-    pTag->itemListMap()["\251grp"] = TagLib::StringList(toTagLibString(trackMetadata.getGrouping()));
-    pTag->itemListMap()["\251day"] = TagLib::StringList(toTagLibString(trackMetadata.getYear()));
+    writeMP4Atom(pTag, "----:com.apple.iTunes:BPM", formatBpmString(trackMetadata.getBpm()));
+    writeMP4Atom(pTag, "----:com.apple.iTunes:KEY", trackMetadata.getKey());
 
     return true;
 }

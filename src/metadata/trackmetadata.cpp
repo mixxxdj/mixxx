@@ -4,6 +4,10 @@
 
 namespace Mixxx {
 
+const double TrackMetadata::BPM_UNDEFINED = 0.0;
+const double TrackMetadata::BPM_MIN = 0.0; // exclusive lower bound
+const double TrackMetadata::BPM_MAX = 300.0; // inclusive upper bound
+
 TrackMetadata::TrackMetadata()
         : m_channels(0), m_sampleRate(0), m_bitrate(0), m_duration(0), m_bpm(BPM_UNDEFINED), m_replayGain(REPLAYGAIN_UNDEFINED) {
 }
