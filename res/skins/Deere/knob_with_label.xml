@@ -7,7 +7,7 @@
 -->
 <Template>
   <WidgetGroup>
-    <Layout>horizontal</Layout>
+    <Layout>vertical</Layout>
     <Children>
       <Template src="skin:knob.xml"/>
       <Label>

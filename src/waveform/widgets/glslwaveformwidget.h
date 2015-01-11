@@ -10,15 +10,9 @@ class GLSLWaveformRendererSignal;
 class GLSLWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
     Q_OBJECT
   public:
-    GLSLWaveformWidget(const char* group, QWidget* parent);
+    GLSLWaveformWidget(const char* group, QWidget* parent,
+                       bool rgbRenderer);
     virtual ~GLSLWaveformWidget();
-
-    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::GLSLWaveform; }
-
-    static inline QString getWaveformWidgetName() { return tr("Filtered") + " - " + tr("experimental"); }
-    static inline bool useOpenGl() { return true; }
-    static inline bool useOpenGLShaders() { return true; }
-    static inline bool developerOnly() { return false; }
 
     virtual void resize(int width, int height);
 
@@ -33,5 +27,32 @@ class GLSLWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
 
     friend class WaveformWidgetFactory;
 };
+
+class GLSLFilteredWaveformWidget : public GLSLWaveformWidget {
+  public:
+    GLSLFilteredWaveformWidget(const char* group, QWidget* parent);
+    virtual ~GLSLFilteredWaveformWidget() {}
+
+    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::GLSLFilteredWaveform; }
+
+    static inline QString getWaveformWidgetName() { return tr("Filtered"); }
+    static inline bool useOpenGl() { return true; }
+    static inline bool useOpenGLShaders() { return true; }
+    static inline bool developerOnly() { return false; }
+};
+
+class GLSLRGBWaveformWidget : public GLSLWaveformWidget {
+  public:
+    GLSLRGBWaveformWidget(const char* group, QWidget* parent);
+    virtual ~GLSLRGBWaveformWidget() {}
+
+    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::GLSLRGBWaveform; }
+
+    static inline QString getWaveformWidgetName() { return tr("RGB"); }
+    static inline bool useOpenGl() { return true; }
+    static inline bool useOpenGLShaders() { return true; }
+    static inline bool developerOnly() { return false; }
+};
+
 
 #endif // GLWAVEFORMWIDGETSHADER_H

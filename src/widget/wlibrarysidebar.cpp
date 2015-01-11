@@ -84,13 +84,17 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event) {
             SidebarModel* sidebarModel = dynamic_cast<SidebarModel*>(model());
             bool accepted = true;
             if (sidebarModel) {
+                accepted = false;
                 foreach (QUrl url, urls) {
                     QModelIndex destIndex = this->indexAt(event->pos());
-                    if (!sidebarModel->dragMoveAccept(destIndex, url)) {
-                        //We only need one URL to be invalid for us
-                        //to reject the whole drag...
-                        //(eg. you may have tried to drag two MP3's and an EXE)
-                        accepted = false;
+                    if (sidebarModel->dragMoveAccept(destIndex, url)) {
+                        // We only need one URL to be valid for us
+                        // to accept the whole drag...
+                        // consider we have a long list of valid files, checking all will
+                        // take a lot of time that stales Mixxx and this makes the drop feature useless
+                        // Eg. you may have tried to drag two MP3's and an EXE, the drop is accepted here,
+                        // but the EXE is sorted out later after dropping
+                        accepted = true;
                         break;
                     }
                 }

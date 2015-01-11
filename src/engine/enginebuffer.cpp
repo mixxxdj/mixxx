@@ -48,6 +48,7 @@
 #include "util/timer.h"
 #include "util/math.h"
 #include "util/defs.h"
+#include "track/beatfactory.h"
 #include "track/keyutils.h"
 #include "controlobjectslave.h"
 #include "util/compatibility.h"
@@ -58,6 +59,8 @@
 #endif
 
 #include "trackinfoobject.h"
+
+const double kLinearScalerElipsis = 1.00058; // 2^(0.01/12): changes < 1 cent allows a linear scaler
 
 EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
                            EngineChannel* pChannel, EngineMaster* pMixingEngine)
@@ -510,8 +513,12 @@ TrackPointer EngineBuffer::loadFakeTrack(double filebpm) {
     pTrack->setDuration(10);
     if (filebpm > 0) {
         pTrack->setBpm(filebpm);
+        BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack.data(), filebpm, 0.0);
+        pTrack->setBeats(pBeats);
     }
     slotTrackLoaded(pTrack, 44100, 44100 * 10);
+    m_pSyncControl->setLocalBpm(filebpm);
+    m_pSyncControl->trackLoaded(pTrack);
     return pTrack;
 }
 
@@ -519,6 +526,7 @@ TrackPointer EngineBuffer::loadFakeTrack(double filebpm) {
 void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
                                    int iTrackSampleRate,
                                    int iTrackNumSamples) {
+    //qDebug() << getGroup() << "EngineBuffer::slotTrackLoaded";
     m_pause.lock();
     m_visualPlayPos->setInvalid();
     m_pCurrentTrack = pTrack;
@@ -768,14 +776,33 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         } else if (!keylock_enabled) {
             // We might have have temporary speed change, so adjust pitch if not locked
             // Note: This will not update key and tempo widgets
-            pitchRatio *= (speed/tempoRatio);
+            if (tempoRatio) {
+                pitchRatio *= (speed/tempoRatio);
+            }
         }
 
         // If either keylock is enabled or the pitch is tweaked we
         // need to use pitch and time scaling.
         // Note: we have still click issue when changing the scaler
-        bool useIndependentPitchAndTempoScaling =
-                (keylock_enabled || pitchRatio != speed);
+
+        // const double kLinearScalerElipsis = 1.00058;
+
+        bool useIndependentPitchAndTempoScaling = false;
+        if (keylock_enabled) {
+            // use always IndependentPitchAndTempoScaling
+            // to avoid clicks when crossing the linear pitch
+            // in this case is it most likely that the user
+            // will have an non linear pitch
+            useIndependentPitchAndTempoScaling = true;
+        } else if (speed) {
+            double offlinear = pitchRatio / speed;
+            if (offlinear > kLinearScalerElipsis ||
+                    offlinear < 1 / kLinearScalerElipsis) {
+                // offlinear > 1 cent
+                // everything below is not hear-able
+                useIndependentPitchAndTempoScaling = true;
+            }
+        }
         enableIndependentPitchTempoScaling(useIndependentPitchAndTempoScaling);
 
         // How speed/tempo/pitch are related:
@@ -788,21 +815,25 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         // If key lock is enabled, the speedSliderPitchRatio is decoupled from
         // the speed slider (const).
         //
-        // With preference mode PitchAndKeylockMode = kOffsetScaleLockOriginalKey
+        // With preference mode KeylockMode = kLockOriginalKey
         // the speedSliderPitchRatio is reset to 1 and back to the tempoRatio
         // (natural vinyl Pitch) when keylock is disabled and enabled.
-        // The Pitch knob does not reflect the speedSliderPitchRatio.
-        // In this mode is usefull for controller mappings, because the pitch
-        // knob is not changed by Mixxx itself and cannot go out of sync.
         //
-        // With preference mode PitchAndKeylock = kAbsoluteScaleLockCurrentKey
-        // the speedSliderPitchRatio is not reseted when keylock is enabled,
-        // but reflected in the pitch knob. The Pitch knob turns if the speed
-        // slider is moved without keylock. This mode allows to enable keylock
+        // With preference mode KeylockMode = kCurrentKey
+        // the speedSliderPitchRatio is not reseted when keylock is enabled.
+        // This mode allows to enable keylock
         // while the track is already played. You can reset to the tracks
         // original pitch by reseting the pitch knob to center. When disabling
         // keylock the pitch is reset to the linear vinyl pitch.
+
+        // The Pitch knob turns if the speed slider is moved without keylock.
+        // This is useful to get always an analog impression of current pitch,
+        // and its distance to the original track pitch
         //
+        // The Pitch_Adjust knob does not reflect the speedSliderPitchRatio.
+        // So it is is useful for controller mappings, because it is not
+        // changed by the speed slider or keylock.
+
         // In the second part all other speed changing controls are processed.
         // They may produce an additional pitch if keylock is disabled or
         // override the pitch in scratching case.

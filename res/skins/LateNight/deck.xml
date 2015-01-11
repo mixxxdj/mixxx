@@ -80,11 +80,11 @@
                                         <ConfigKey persist="true">[Channel<Variable name="channum"/>],pitch_up_small</ConfigKey>
                                       </Connection>
                                   </PushButton>
-                                  <Connection>
-                                      <ConfigKey>[Channel<Variable name="channum"/>],visual_key</ConfigKey>
-                                      <BindProperty>visible</BindProperty>
-                                  </Connection>
                                </Children>
+                               <Connection>
+                                   <ConfigKey>[Channel<Variable name="channum"/>],visual_key</ConfigKey>
+                                   <BindProperty>visible</BindProperty>
+                               </Connection>
                            </WidgetGroup>
                            <Key>
                               <ObjectName>TextColor<Variable name="channum" /></ObjectName>

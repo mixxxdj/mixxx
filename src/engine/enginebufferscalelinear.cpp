@@ -56,13 +56,8 @@ void EngineBufferScaleLinear::setScaleParameters(int iSampleRate,
                                                  double base_rate,
                                                  double* pTempoRatio,
                                                  double* pPitchRatio) {
+    Q_UNUSED(pPitchRatio);
     m_iSampleRate = iSampleRate;
-
-    // EBSL doesn't support pitch-independent tempo adjustment.
-    if (*pPitchRatio != *pTempoRatio) {
-        qWarning() << "WARNING: EngineBufferScaleLinear requested to adjust"
-                   << "tempo independent of pitch. Ignoring pitch.";
-    }
 
     m_dOldRate = m_dRate;
     m_dRate = base_rate * *pTempoRatio;

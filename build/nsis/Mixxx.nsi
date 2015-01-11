@@ -208,6 +208,9 @@ Section "Mixxx (required)" SecMixxx
   SetOutPath $INSTDIR\sqldrivers
   File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\sqldrivers\*"
 
+  SetOutPath $INSTDIR\fonts
+  File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\fonts\*"
+
   SetOutPath $INSTDIR\plugins
   File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\plugins\*.dll"
 
@@ -312,6 +315,8 @@ Section "Uninstall"
   Delete $INSTDIR\COPYING
   Delete $INSTDIR\sqldrivers\*.dll
   RMDir "$INSTDIR\sqldrivers"
+  Delete $INSTDIR\fonts\*
+  RMDir "$INSTDIR\fonts"
   Delete $INSTDIR\plugins\soundsource\*
   RMDir "$INSTDIR\plugins\soundsource"
   Delete $INSTDIR\plugins\vamp\*

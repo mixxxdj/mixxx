@@ -16,15 +16,10 @@
   <WidgetGroup>
     <Layout>vertical</Layout>
     <Children>
-      <KnobComposed>
-        <Size>40f,40f</Size>
-        <Knob>knob.svg</Knob>
-        <MinAngle>-230</MinAngle>
-        <MaxAngle>50</MaxAngle>
-        <Connection>
-          <ConfigKey><Variable name="EqualizerEffectGroup"/>,parameter<Variable name="parameter"/></ConfigKey>
-        </Connection>
-      </KnobComposed>
+      <Template src="skin:knob.xml">
+        <SetVariable name="group"><Variable name="EqualizerEffectGroup"/></SetVariable>
+        <SetVariable name="control">parameter<Variable name="parameter"/></SetVariable>
+      </Template>
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>

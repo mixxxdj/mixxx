@@ -20,6 +20,8 @@ class KeyControl : public EngineControl {
         // this is the value of the speed slider and speed slider
         // effecting controls at the moment of calculation
         double tempoRatio;
+        // the offeset factor to the natural pitch set by the rate slider
+        double pitchTweakRatio;
         bool keylock;
     };
 
@@ -27,7 +29,7 @@ class KeyControl : public EngineControl {
     virtual ~KeyControl();
 
     // Returns a struct, with the results of the last pitch and tempo calculations
-    KeyControl::PitchTempoRatio getPitchTempoRatio() const;
+    KeyControl::PitchTempoRatio getPitchTempoRatio();
 
     double getKey();
 
@@ -38,30 +40,33 @@ class KeyControl : public EngineControl {
     void slotSetEngineKeyDistance(double);
     void slotFileKeyChanged(double);
     void slotPitchChanged(double);
+    void slotPitchAdjustChanged(double);
     void slotRateChanged();
     void slotSyncKey(double);
     void slotResetKey(double);
-    void slotPitchAndKeylockModeChanged(double);
 
   private:
     void setEngineKey(double key, double key_distance);
     bool syncKey(EngineBuffer* pOtherEngineBuffer);
     void updateKeyCOs(double fileKeyNumeric, double pitch);
-
-    // The previous rate slider rate.
-    bool m_bOldKeylock;
-    // Pitch Ratio caused bay the speed slider (m_pRateSlider)
-    double m_speedSliderPitchRatio;
+    void updatePitch();
+    void updatePitchAdjust();
+    void updateRate();
 
     // ControlObjects that come from EngineBuffer
     ControlObject* m_pRateSlider;
     ControlObject* m_pRateRange;
     ControlObject* m_pRateDir;
+
+    ControlObject* m_pVCRate;
+    ControlObject* m_pVCEnabled;
+
     ControlObject* m_pKeylock;
     ControlPotmeter* m_pPitch;
+    ControlPotmeter* m_pPitchAdjust;
     ControlPushButton* m_pButtonSyncKey;
     ControlPushButton* m_pButtonResetKey;
-    ControlPushButton* m_pitchAndKeylockMode;
+    ControlPushButton* m_keylockMode;
 
     /** The current loaded file's detected key */
     ControlObject* m_pFileKey;
@@ -71,9 +76,10 @@ class KeyControl : public EngineControl {
     ControlPotmeter* m_pEngineKeyDistance;
 
     TrackPointer m_pTrack;
-
-    int m_iPitchAndKeylockMode;
-    ControlValueAtomic<struct PitchTempoRatio> m_pitchRateInfo;
+    struct PitchTempoRatio m_pitchRateInfo;
+    QAtomicInt m_updatePitchRequest;
+    QAtomicInt m_updatePitchAdjustRequest;
+    QAtomicInt m_updateRateRequest;
 };
 
 #endif // KEYCONTROL_H
