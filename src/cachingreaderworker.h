@@ -25,6 +25,14 @@ typedef struct Chunk {
     Mixxx::AudioSource::sample_type* stereoSamples;
     Chunk* prev_lru;
     Chunk* next_lru;
+
+    enum State {
+        FREE,
+        ALLOCATED,
+        READ_IN_PROGRESS,
+        READ
+    };
+    State state;
 } Chunk;
 
 typedef struct ChunkReadRequest {
