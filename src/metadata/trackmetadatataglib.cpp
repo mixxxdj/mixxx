@@ -573,7 +573,9 @@ bool writeMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& trackMetadata) {
     writeTag(pTag, trackMetadata);
 
     pTag->itemListMap()["aART"] = TagLib::StringList(toTagLibString(trackMetadata.getAlbumArtist()));
-    pTag->itemListMap()["tmpo"] = TagLib::StringList(toTagLibString(formatString(trackMetadata.getBpm())));
+    // Delete the legacy atom "tmpo" that does not seem to be supported
+    // very well. Replace it with the new atom "----:com.apple.iTunes:BPM".
+    pTag->itemListMap().erase("tmpo");
     pTag->itemListMap()["----:com.apple.iTunes:BPM"] = TagLib::StringList(toTagLibString(formatString(trackMetadata.getBpm())));
     pTag->itemListMap()["----:com.apple.iTunes:KEY"] = TagLib::StringList(toTagLibString(trackMetadata.getKey()));
     pTag->itemListMap()["\251wrt"] = TagLib::StringList(toTagLibString(trackMetadata.getComposer()));
