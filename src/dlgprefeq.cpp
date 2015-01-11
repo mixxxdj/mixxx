@@ -20,7 +20,6 @@
 #include <QHBoxLayout>
 
 #include "dlgprefeq.h"
-#include "engine/effects/engineeffect.h"
 #include "engine/enginefilterbessel4.h"
 #include "controlobject.h"
 #include "controlobjectslave.h"
@@ -414,7 +413,6 @@ void DlgPrefEQ::slotQuickEffectChangedOnDeck(int effectIndex) {
 }
 
 void DlgPrefEQ::applySelections() {
-    qDebug() << "APPLY!";
     if (m_inSlotPopulateDeckEffectSelectors) {
         return;
     }
@@ -432,38 +430,34 @@ void DlgPrefEQ::applySelections() {
             box->setCurrentIndex(firstEffectIndex);
         }
         QString group = PlayerManager::groupForDeck(deck);
+
+        // Only apply the effect if it changed -- so first interrogate the
+        // loaded effect if any.
         bool need_load = true;
         if (m_pEQEffectRack->numEffectChainSlots() > deck) {
+            // It's not correct to get a chainslot by index number -- get by
+            // group name instead.
             EffectChainSlotPointer chainslot =
-                    m_pEQEffectRack->getEffectChainSlot(deck);
-            if (chainslot->numSlots()) {
+                    m_pEQEffectRack->getGroupEffectChainSlot(group);
+            if (chainslot && chainslot->numSlots()) {
                 EffectPointer effectpointer =
                         chainslot->getEffectSlot(0)->getEffect();
-                if (effectpointer) {
-                    qDebug() << "effect has a name!" << effectpointer->getEngineEffect()->getId();
-                            << "expecting" << effectId;
-                    if (effectpointer->getEngineEffect()->name() == effectId) {
-                        need_load = false;
-                    }
+                if (effectpointer &&
+                        effectpointer->getManifest().id() == effectId) {
+                    need_load = false;
                 }
             }
         }
-        // Only apply the effect if it changed.
         if (need_load) {
             EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
-
             m_pEQEffectRack->loadEffectToGroup(group, pEffect);
-
             m_pConfig->set(ConfigKey(kConfigKey, "EffectForGroup_" + group),
                     ConfigValue(effectId));
-
             m_filterWaveformEnableCOs[deck]->set(m_pEffectsManager->isEQ(effectId));
 
             // This is required to remove a previous selected effect that does not
             // fit to the current ShowAllEffects checkbox
             slotPopulateDeckEffectSelectors();
-        } else {
-            qDebug() << "no change!";
         }
         ++deck;
     }

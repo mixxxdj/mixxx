@@ -21,8 +21,6 @@ class EffectProcessor {
 
     virtual ~EffectProcessor() { }
 
-    virtual static QString getId() = 0;
-
     virtual void initialize(const QSet<QString>& registeredGroups) = 0;
 
     // Take a buffer of numSamples samples of audio from group, provided as
@@ -67,8 +65,6 @@ class GroupEffectProcessor : public EffectProcessor {
             getOrCreateGroupState(group);
         }
     }
-
-    virtual static QString getId() = 0;
 
     virtual void process(const QString& group,
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
