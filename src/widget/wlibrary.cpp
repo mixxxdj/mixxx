@@ -12,6 +12,9 @@ WLibrary::WLibrary(QWidget* parent)
         : QStackedWidget(parent),
           WBaseWidget(this),
           m_mutex(QMutex::Recursive) {
+
+    setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    setMaximumSize(1920, 1080);
 }
 
 WLibrary::~WLibrary() {

@@ -15,6 +15,7 @@
 
 class WBaseWidget;
 class Library;
+class WLibrary;
 class MixxxKeyboard;
 class PlayerManager;
 class EffectsManager;
@@ -126,6 +127,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     PlayerManager* m_pPlayerManager;
     ControllerManager* m_pControllerManager;
     Library* m_pLibrary;
+    WLibrary* m_pLibraryWidget;
     VinylControlManager* m_pVCManager;
     EffectsManager* m_pEffectsManager;
     QWidget* m_pParent;

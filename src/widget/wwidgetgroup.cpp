@@ -81,6 +81,8 @@ void WWidgetGroup::setLayoutAlignment(int alignment) {
 void WWidgetGroup::setup(QDomNode node, const SkinContext& context) {
     setContentsMargins(0, 0, 0, 0);
 
+
+    qDebug() << "widget group setup!";
     // Set background pixmap if available
     if (context.hasNode(node, "BackPath")) {
         QDomElement backPathNode = context.selectElement(node, "BackPath");

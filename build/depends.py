@@ -704,6 +704,7 @@ class MixxxCore(Feature):
                    "widget/wcoverart.cpp",
                    "widget/wcoverartlabel.cpp",
                    "widget/wcoverartmenu.cpp",
+                   "widget/wlibrarycontainer.cpp",
 
                    "network.cpp",
                    "musicbrainz/tagfetcher.cpp",
