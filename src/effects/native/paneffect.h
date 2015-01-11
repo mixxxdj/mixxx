@@ -11,6 +11,15 @@
 #include "effects/effectprocessor.h"
 #include "sampleutil.h"
 
+struct PanSquarySinusoid {
+    PanSquarySinusoid() {
+        lastFract = -1;
+    }
+    ~PanSquarySinusoid() {
+    }
+    CSAMPLE lastFract;
+};
+
 struct PanGroupState {
     PanGroupState() {
         time = 0;
@@ -18,6 +27,74 @@ struct PanGroupState {
     ~PanGroupState() {
     }
     unsigned int time;
+};
+
+class RampedSample {
+  public:
+    RampedSample();
+    inline RampedSample(const float newMaxDifference){
+        setRamping(newMaxDifference);
+    }
+    
+    virtual ~RampedSample();
+    inline void setRamping(const float newMaxDifference){
+        maxDifference = newMaxDifference;
+    }
+    
+    inline RampedSample & operator=(const float &newValue) {
+        CSAMPLE difference = currentValue - newValue;
+        if (difference > maxDifference)
+            currentValue = maxDifference;
+        else
+            currentValue = newValue;
+        
+        return *this;
+    }
+    
+    inline RampedSample & operator-(float diff) {
+        CSAMPLE newValue = currentValue - diff;
+        CSAMPLE difference = currentValue - newValue;
+        if (difference > maxDifference)
+            currentValue = maxDifference;
+        else
+            currentValue = newValue;
+        
+        return *this;
+    }
+    
+    inline RampedSample & operator*(float times) {
+        CSAMPLE newValue = times * currentValue;
+        
+        CSAMPLE difference = currentValue - newValue;
+        if (difference > maxDifference)
+            currentValue = maxDifference;
+        else
+            currentValue = newValue;
+        
+        return *this;
+    }
+    
+    inline operator float() {
+        return value();
+    }
+    
+    inline RampedSample & operator=(const RampedSample &that){
+        CSAMPLE difference = currentValue - that.value();
+        if (difference > maxDifference)
+            currentValue = maxDifference;
+        else
+            currentValue = that.value();
+        
+        return *this;
+    }
+    
+    inline CSAMPLE value() const {
+        return currentValue;
+    }
+    
+  private:
+    float maxDifference;
+    CSAMPLE currentValue;
 };
 
 class PanEffect : public GroupEffectProcessor<PanGroupState> {

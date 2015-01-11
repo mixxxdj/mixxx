@@ -104,12 +104,12 @@ void PanEffect::processGroup(const QString& group, PanGroupState* pGroupState,
         return; // DISABLED = 0x00
     }
     
-    CSAMPLE lfoPeriod = roundf(m_pPeriodParameter->value()) * (float)numSamples / 2.0f;
+    CSAMPLE period = roundf(m_pPeriodParameter->value()) * (float)numSamples / 2.0f;
     CSAMPLE stepFrac = m_pStrengthParameter->value();
     CSAMPLE depth = m_pDepthParameter->value();
     float rampingTreshold = m_pRampingParameter->value();
     
-    if (gs.time > lfoPeriod || 0x03 == enableState) { // ENABLING = 0x03
+    if (gs.time > period || 0x03 == enableState) { // ENABLING = 0x03
         gs.time = 0;
     }
     
@@ -132,17 +132,28 @@ void PanEffect::processGroup(const QString& group, PanGroupState* pGroupState,
     // todo (jclaveau) : stereo
     SampleUtil::mixStereoToMono(pOutput, pInput, numSamples);
     
-    // Pingpong the output.  If the pingpong value is zero, all of the
-    // math below should result in a simple copy of delay buf to pOutput.
-    // todo (jclaveau) : ramping if period changes
-    // todo (jclaveau) : ramping if curve is square
-     
-    CSAMPLE maxDiff = 0.0f; 
-    CSAMPLE maxDiff2 = 0.0f; 
-    CSAMPLE frac;
+    /** stereo : 
+     * + position 0 <=> 0.5 <=> 1 => gauche et droite au milieu
+     * + position 0.25 => droite à droite et gauche à droite
+     * + position 0.75 => droite à gauche et gauche à gauche
+     * law coef         : sqrt(2)   1           sqrt(2)
+     * position         : 1         0           0.5
+     * 
+     * position left    : 
+     * channel left     : 0     ->  pi/4    ->  pi/2    ->  pi/4
+     * 
+     * position right   : 
+     * channel right    : pi/2  ->  3pi/4   ->  pi      ->  3pi/4
+     * 
+     */
+    
+    // RampedSample* frac = new RampedSample();
+    // frac->setRamping(rampingTreshold);
+    RampedSample frac(rampingTreshold);
+    // frac.setRamping(rampingTreshold);
     for (unsigned int i = 0; i + 1 < numSamples; i += 2) {
         
-        CSAMPLE periodFraction = CSAMPLE(gs.time) / lfoPeriod;
+        CSAMPLE periodFraction = CSAMPLE(gs.time) / period;
         
         // current quarter in the trigonometric circle
         float quarter = floorf(periodFraction * 4.0f);
@@ -150,8 +161,9 @@ void PanEffect::processGroup(const QString& group, PanGroupState* pGroupState,
         // part of the period fraction being steps (not in the slope)
         CSAMPLE stepsFractionPart = floorf((quarter+1.0f)/2.0f) * stepFrac;
         
-        // float inInterval = fmod( periodFraction, (lfoPeriod / 2.0) );
+        // float inInterval = fmod( periodFraction, (period / 2.0) );
         float inInterval = fmod( periodFraction, 0.5f );
+        
         
         CSAMPLE position;
         if (inInterval > u && inInterval < ( u + stepFrac)) {
@@ -162,10 +174,18 @@ void PanEffect::processGroup(const QString& group, PanGroupState* pGroupState,
             position = (periodFraction - stepsFractionPart) * a;
         }
         
-        // set the curve between 0 and 1
-        frac = (sin(M_PI * 2.0f * position) + 1.0f) / 2.0f;
+        // transform the position into a sinusoid (between 0 and 1)
+        frac = (sinf(M_PI * 2.0f * position) + 1.0f) / 2.0f;
+        
+        // todo (jclaveau) for stereo :
+        // frac left in left
+        // frac left in right
+        // frac right in left
+        // frac right in right
+        
         
         // 
+        /*
         if (oldFrac != -1.0f) {
             float diff = frac - oldFrac;
             
@@ -179,6 +199,8 @@ void PanEffect::processGroup(const QString& group, PanGroupState* pGroupState,
         } 
         
         oldFrac = frac;
+        */
+        
         
         pOutput[i] = pOutput[i] * (1 - depth)
             + pOutput[i] * frac * lawCoef * depth;
@@ -194,7 +216,7 @@ void PanEffect::processGroup(const QString& group, PanGroupState* pGroupState,
     /** /
     qDebug() << "stepFrac" << stepFrac
         << "| time :" << gs.time
-        // << "| period :" << lfoPeriod
+        // << "| period :" << period
         << "| a :" << a          // coef of slope between 1 and -1
         // << "| lawCoef :" << lawCoef
         // << "| enableState :" << enableState
