@@ -14,6 +14,8 @@
 #include <taglib/attachedpictureframe.h>
 #include <taglib/flacpicture.h>
 
+#include <cmath>
+
 #include <QDebug>
 
 namespace Mixxx {
@@ -582,11 +584,16 @@ bool writeXiphComment(TagLib::Ogg::XiphComment* pTag, const TrackMetadata& track
 
 namespace {
 
+    template<typename T>
+    inline void writeMP4Atom(TagLib::MP4::Tag* pTag, const TagLib::String& key, const T& value) {
+        pTag->itemListMap()[key] = value;
+    }
+
     void writeMP4Atom(TagLib::MP4::Tag* pTag, const TagLib::String& key, const QString& value) {
         if (value.isEmpty()) {
             pTag->itemListMap().erase(key);
         } else {
-            pTag->itemListMap()[key] = TagLib::StringList(toTagLibString(value));
+            writeMP4Atom(pTag, key, TagLib::StringList(toTagLibString(value)));
         }
     }
 
@@ -604,9 +611,12 @@ bool writeMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& trackMetadata) {
     writeMP4Atom(pTag, "\251wrt", trackMetadata.getComposer());
     writeMP4Atom(pTag, "\251grp", trackMetadata.getGrouping());
     writeMP4Atom(pTag, "\251day", trackMetadata.getYear());
-    // Delete the legacy atom "tmpo" that does not seem to be supported
-    // very well. Replace it with the new atom "----:com.apple.iTunes:BPM".
-    pTag->itemListMap().erase("tmpo");
+    if (trackMetadata.isBpmValid()) {
+        const int tmpoValue = round(trackMetadata.getBpm());
+        writeMP4Atom(pTag, "tmpo", tmpoValue);
+    } else {
+        pTag->itemListMap().erase("tmpo");
+    }
     writeMP4Atom(pTag, "----:com.apple.iTunes:BPM", formatBpmString(trackMetadata.getBpm()));
     writeMP4Atom(pTag, "----:com.apple.iTunes:KEY", trackMetadata.getKey());
 
