@@ -19,34 +19,35 @@
 
 #include <QImage>
 
-namespace Mixxx
-{
-    bool readAudioProperties(TrackMetadata* pTrackMetadata, const TagLib::File& taglibFile);
+namespace Mixxx {
 
-    // Read common metadata (will implicitly be invoked from the specialized functions)
-    void readTag(TrackMetadata* pTrackMetadata, const TagLib::Tag& tag);
+// Read common audio properties of a file
+bool readAudioProperties(TrackMetadata* pTrackMetadata, const TagLib::File& file);
 
-    // Read additional metadata
-    void readID3v2Tag(TrackMetadata* pTrackMetadata, const TagLib::ID3v2::Tag& tag);
-    void readAPETag(TrackMetadata* pTrackMetadata, const TagLib::APE::Tag& tag);
-    void readXiphComment(TrackMetadata* pTrackMetadata, const TagLib::Ogg::XiphComment& tag);
-    void readMP4Tag(TrackMetadata* pTrackMetadata, /*const*/ TagLib::MP4::Tag& tag);
+// Read metadata
+// The general function readTag() is implicitly invoked
+// from the specialized tag reading functions!
+void readTag(TrackMetadata* pTrackMetadata, const TagLib::Tag& tag);
+void readID3v2Tag(TrackMetadata* pTrackMetadata, const TagLib::ID3v2::Tag& tag);
+void readAPETag(TrackMetadata* pTrackMetadata, const TagLib::APE::Tag& tag);
+void readXiphComment(TrackMetadata* pTrackMetadata, const TagLib::Ogg::XiphComment& tag);
+void readMP4Tag(TrackMetadata* pTrackMetadata, /*const*/ TagLib::MP4::Tag& tag);
 
-    // Write common metadata
-    bool writeTag(TagLib::Tag* pTag, const TrackMetadata& trackMetadata);
+// Write metadata
+// The general function writeTag() is implicitly invoked
+// from the specialized tag writing functions!
+bool writeID3v2Tag(TagLib::ID3v2::Tag* pTag, const TrackMetadata& trackMetadata);
+bool writeAPETag(TagLib::APE::Tag* pTag, const TrackMetadata& trackMetadata);
+bool writeXiphComment(TagLib::Ogg::XiphComment* pTag, const TrackMetadata& trackMetadata);
+bool writeMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& trackMetadata);
 
-    // Write additional metadata
-    bool writeID3v2Tag(TagLib::ID3v2::Tag* pTag, const TrackMetadata& trackMetadata);
-    bool writeAPETag(TagLib::APE::Tag* pTag, const TrackMetadata& trackMetadata);
-    bool writeXiphComment(TagLib::Ogg::XiphComment* pTag, const TrackMetadata& trackMetadata);
-    bool writeMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& trackMetadata);
-
-    // In order to avoid processing images when it's not
-    // needed (TIO building), we must process it separately.
-    QImage readID3v2TagCover(const TagLib::ID3v2::Tag& tag);
-    QImage readAPETagCover(const TagLib::APE::Tag& tag);
-    QImage readXiphCommentCover(const TagLib::Ogg::XiphComment& tag);
-    QImage readMP4TagCover(/*const*/ TagLib::MP4::Tag& tag);
+// Read cover art
+// In order to avoid processing images when it's not
+// needed (TIO building), we must process it separately.
+QImage readID3v2TagCover(const TagLib::ID3v2::Tag& tag);
+QImage readAPETagCover(const TagLib::APE::Tag& tag);
+QImage readXiphCommentCover(const TagLib::Ogg::XiphComment& tag);
+QImage readMP4TagCover(/*const*/ TagLib::MP4::Tag& tag);
 
 } //namespace Mixxx
 

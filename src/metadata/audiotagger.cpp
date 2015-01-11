@@ -2,6 +2,8 @@
 
 #include "metadata/trackmetadatataglib.h"
 
+#include "util/assert.h"
+
 #include <taglib/vorbisfile.h>
 #include <taglib/wavpackfile.h>
 #include <taglib/mpegfile.h>
@@ -11,6 +13,9 @@
 #include <taglib/aifffile.h>
 #include <taglib/rifffile.h>
 #include <taglib/wavfile.h>
+#if (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
+#include <taglib/opusfile.h>
+#endif
 
 #include <QtDebug>
 
@@ -24,70 +29,64 @@ AudioTagger::~AudioTagger() {
 }
 
 bool AudioTagger::save(const Mixxx::TrackMetadata& trackMetadata) {
-    TagLib::File* file = NULL;
+    QScopedPointer<TagLib::File> pFile;
 
-    const QString& filePath = m_file.canonicalFilePath();
-    QByteArray fileBA = filePath.toLocal8Bit();
+    const QString filePath(m_file.canonicalFilePath());
+    const QByteArray filePathByteArray(m_file.canonicalFilePath().toLocal8Bit());
+    const char* filePathChars = filePathByteArray.constData();
 
     if (filePath.endsWith(".mp3", Qt::CaseInsensitive)) {
-        file = new TagLib::MPEG::File(fileBA.constData());
-        // process special ID3 fields, APEv2 fiels, etc
-
-        // If the mp3 has no ID3v2 tag, we create a new one and add the TBPM and TKEY frame
-        writeID3v2Tag(((TagLib::MPEG::File*) file)->ID3v2Tag(true), trackMetadata);
-        // If the mp3 has an APE tag, we update
-        writeAPETag(((TagLib::MPEG::File*) file)->APETag(false), trackMetadata);
-    }
-
-    if (filePath.endsWith(".m4a", Qt::CaseInsensitive)) {
-        file = new TagLib::MP4::File(fileBA.constData());
-        // process special ID3 fields, APEv2 fiels, etc
-        writeMP4Tag(((TagLib::MP4::File*) file)->tag(), trackMetadata);
-    }
-    if (filePath.endsWith(".ogg", Qt::CaseInsensitive)) {
-        file = new TagLib::Ogg::Vorbis::File(fileBA.constData());
-        // process special ID3 fields, APEv2 fiels, etc
-        writeXiphComment(((TagLib::Ogg::Vorbis::File*)file)->tag(), trackMetadata);
-    }
-    if (filePath.endsWith(".wav", Qt::CaseInsensitive)) {
-        file = new TagLib::RIFF::WAV::File(fileBA.constData());
-        //If the flac has no ID3v2 tag, we create a new one and add the TBPM and TKEY frame
-        writeID3v2Tag(((TagLib::RIFF::WAV::File*)file)->tag(), trackMetadata);
-    }
-    if (filePath.endsWith(".flac", Qt::CaseInsensitive)) {
-        file = new TagLib::FLAC::File(fileBA.constData());
-
-        //If the flac has no ID3v2 tag, we create a new one and add the TBPM and TKEY frame
-        writeID3v2Tag(((TagLib::FLAC::File*)file)->ID3v2Tag(true), trackMetadata);
-        //If the flac has no APE tag, we create a new one and add the TBPM and TKEY frame
-        writeXiphComment(((TagLib::FLAC::File*) file)->xiphComment(true), trackMetadata);
-
-    }
-    if (filePath.endsWith(".aif", Qt::CaseInsensitive) ||
+        QScopedPointer<TagLib::MPEG::File> pMpegFile(
+                new TagLib::MPEG::File(filePathChars));
+        writeID3v2Tag(pMpegFile->ID3v2Tag(true), trackMetadata); // mandatory
+        writeAPETag(pMpegFile->APETag(false), trackMetadata); // optional
+        pFile.reset(pMpegFile.take()); // transfer ownership
+    } else if (filePath.endsWith(".m4a", Qt::CaseInsensitive)) {
+        QScopedPointer<TagLib::MP4::File> pMp4File(
+                new TagLib::MP4::File(filePathChars));
+        writeMP4Tag(pMp4File->tag(), trackMetadata);
+        pFile.reset(pMp4File.take()); // transfer ownership
+    } else if (filePath.endsWith(".ogg", Qt::CaseInsensitive)) {
+        QScopedPointer<TagLib::Ogg::Vorbis::File> pOggFile(
+                new TagLib::Ogg::Vorbis::File(filePathChars));
+        writeXiphComment(pOggFile->tag(), trackMetadata);
+        pFile.reset(pOggFile.take()); // transfer ownership
+    } else if (filePath.endsWith(".flac", Qt::CaseInsensitive)) {
+        QScopedPointer<TagLib::FLAC::File> pFlacFile(
+                new TagLib::FLAC::File(filePathChars));
+        writeXiphComment(pFlacFile->xiphComment(true), trackMetadata); // mandatory
+        writeID3v2Tag(pFlacFile->ID3v2Tag(false), trackMetadata); // optional
+        pFile.reset(pFlacFile.take()); // transfer ownership
+    } else if (filePath.endsWith(".wav", Qt::CaseInsensitive)) {
+        QScopedPointer<TagLib::RIFF::WAV::File> pWavFile(
+                new TagLib::RIFF::WAV::File(filePathChars));
+        writeID3v2Tag(pWavFile->tag(), trackMetadata);
+        pFile.reset(pWavFile.take()); // transfer ownership
+    } else if (filePath.endsWith(".aif", Qt::CaseInsensitive) ||
             filePath.endsWith(".aiff", Qt::CaseInsensitive)) {
-        file = new TagLib::RIFF::AIFF::File(fileBA.constData());
-        //If the flac has no ID3v2 tag, we create a new one and add the TBPM and TKEY frame
-        writeID3v2Tag(((TagLib::RIFF::AIFF::File*)file)->tag(), trackMetadata);
-
+        QScopedPointer<TagLib::RIFF::AIFF::File> pAiffFile(
+                new TagLib::RIFF::AIFF::File(filePathChars));
+        writeID3v2Tag(pAiffFile->tag(), trackMetadata);
+        pFile.reset(pAiffFile.take()); // transfer ownership
+#if (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
+    } else if (filePath.endsWith(".opus", Qt::CaseInsensitive)) {
+        QScopedPointer<TagLib::Ogg::Opus::File> pOpusFile(
+                new TagLib::Ogg::Opus::File(filePathChars));
+        writeXiphComment(pOpusFile->tag(), trackMetadata);
+        pFile.reset(pOpusFile.take()); // transfer ownership
+#endif
+    } else {
+        qWarning() << "Unsupported file type! Could not update metadata of track " << filePath;
+        return false;
     }
 
-    //process standard tags
-    if (file) {
-        TagLib::Tag *tag = file->tag();
-        if (tag) {
-            writeTag(tag, trackMetadata);
-        }
-        //write audio tags to file
-        int success = file->save();
-        if (success) {
-            qDebug() << "Successfully updated metadata of track " << filePath;
-        } else {
-            qDebug() << "Could not update metadata of track " << filePath;
-        }
-        //delete file and return
-        delete file;
-        return success;
+    // write audio tags to file
+    DEBUG_ASSERT(pFile);
+    if (pFile->save()) {
+        qDebug() << "Successfully updated metadata of track " << filePath;
+        return true;
     } else {
+        qWarning() << "Failed to update metadata of track " << filePath;
         return false;
     }
 }

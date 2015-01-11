@@ -63,15 +63,16 @@ inline
 QString formatString(const T& value) {
     return QString("%1").arg(value);
 }
-}
 
-bool readAudioProperties(TrackMetadata* pTrackMetadata, const TagLib::File& f) {
+} // anonymous namespace
+
+bool readAudioProperties(TrackMetadata* pTrackMetadata, const TagLib::File& file) {
     if (kDebugMetadata) {
-        qDebug() << "Parsing" << f.name();
+        qDebug() << "Parsing" << file.name();
     }
 
-    if (f.isValid()) {
-        const TagLib::AudioProperties *properties = f.audioProperties();
+    if (file.isValid()) {
+        const TagLib::AudioProperties *properties = file.audioProperties();
         if (properties) {
             pTrackMetadata->setChannels(properties->channels());
             pTrackMetadata->setSampleRate(properties->sampleRate());
@@ -431,6 +432,32 @@ QImage readMP4TagCover(/*const*/ TagLib::MP4::Tag& tag) {
     return coverArt;
 }
 
+namespace {
+
+void replaceID3v2Frame(TagLib::ID3v2::Tag* pTag, TagLib::ID3v2::Frame* pFrame) {
+    pTag->removeFrames(pFrame->frameID());
+    pTag->addFrame(pFrame);
+}
+
+void writeID3v2TextIdentificationFrame(TagLib::ID3v2::Tag* pTag, const TagLib::ByteVector &id, const QString& text) {
+    TagLib::String::Type textType;
+    QByteArray textData;
+    if (4 <= pTag->header()->majorVersion()) {
+        // prefer UTF-8 for ID3v2.4.0 or higher
+        textType = TagLib::String::UTF8;
+        textData = text.toUtf8();
+    } else {
+        textType = TagLib::String::Latin1;
+        textData = text.toLatin1();
+    }
+    QScopedPointer<TagLib::ID3v2::TextIdentificationFrame> pNewFrame(
+        new TagLib::ID3v2::TextIdentificationFrame(id, textType));
+    pNewFrame->setText(toTagLibString(text));
+    replaceID3v2Frame(pTag, pNewFrame.data());
+    pNewFrame.take(); // release ownership
+}
+
+} // anonymous namespace
 
 bool writeTag(TagLib::Tag* pTag, const TrackMetadata& trackMetadata) {
     if (NULL == pTag) {
@@ -456,31 +483,6 @@ bool writeTag(TagLib::Tag* pTag, const TrackMetadata& trackMetadata) {
     return true;
 }
 
-namespace {
-    void replaceID3v2Frame(TagLib::ID3v2::Tag* pTag, TagLib::ID3v2::Frame* pFrame) {
-        pTag->removeFrames(pFrame->frameID());
-        pTag->addFrame(pFrame);
-    }
-
-    void writeID3v2TextIdentificationFrame(TagLib::ID3v2::Tag* pTag, const TagLib::ByteVector &id, const QString& text) {
-        TagLib::String::Type textType;
-        QByteArray textData;
-        if (4 <= pTag->header()->majorVersion()) {
-            // prefer UTF-8 for ID3v2.4.0 or higher
-            textType = TagLib::String::UTF8;
-            textData = text.toUtf8();
-        } else {
-            textType = TagLib::String::Latin1;
-            textData = text.toLatin1();
-        }
-        QScopedPointer<TagLib::ID3v2::TextIdentificationFrame> pNewFrame(
-            new TagLib::ID3v2::TextIdentificationFrame(id, textType));
-        pNewFrame->setText(toTagLibString(text));
-        replaceID3v2Frame(pTag, pNewFrame.data());
-        pNewFrame.take(); // release ownership
-    }
-}
-
 bool writeID3v2Tag(TagLib::ID3v2::Tag* pTag, const TrackMetadata& trackMetadata) {
     if (NULL == pTag) {
         return false;
@@ -491,6 +493,10 @@ bool writeID3v2Tag(TagLib::ID3v2::Tag* pTag, const TrackMetadata& trackMetadata)
         return false;
     }
 
+    // Write common metadata
+    writeTag(pTag, trackMetadata);
+
+    // additional tags
     writeID3v2TextIdentificationFrame(pTag, "TPE2", trackMetadata.getAlbumArtist());
     writeID3v2TextIdentificationFrame(pTag, "TBPM", formatString(trackMetadata.getBpm()));
     writeID3v2TextIdentificationFrame(pTag, "TKEY", formatString(trackMetadata.getKey()));
@@ -509,8 +515,9 @@ bool writeAPETag(TagLib::APE::Tag* pTag, const TrackMetadata& trackMetadata) {
         return false;
     }
 
-    // Adds to the item specified by key the data value.
-    // If replace is true, then all of the other values on the same key will be removed first.
+    // Write common metadata
+    writeTag(pTag, trackMetadata);
+
     pTag->addValue("BPM", toTagLibString(formatString(trackMetadata.getBpm())), true);
     pTag->addValue("Album Artist", toTagLibString(trackMetadata.getAlbumArtist()), true);
     pTag->addValue("Composer", toTagLibString(trackMetadata.getComposer()), true);
@@ -524,6 +531,9 @@ bool writeXiphComment(TagLib::Ogg::XiphComment* pTag, const TrackMetadata& track
     if (NULL == pTag) {
         return false;
     }
+
+    // Write common metadata
+    writeTag(pTag, trackMetadata);
 
     // Taglib does not support the update of Vorbis comments.
     // thus, we have to remove the old comment and add the new one
@@ -558,6 +568,9 @@ bool writeMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& trackMetadata) {
     if (NULL == pTag) {
         return false;
     }
+
+    // Write common metadata
+    writeTag(pTag, trackMetadata);
 
     pTag->itemListMap()["aART"] = TagLib::StringList(toTagLibString(trackMetadata.getAlbumArtist()));
     pTag->itemListMap()["tmpo"] = TagLib::StringList(toTagLibString(formatString(trackMetadata.getBpm())));
