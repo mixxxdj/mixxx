@@ -1101,7 +1101,6 @@ QWidget* LegacySkinParser::parseLibrary(QDomElement node) {
                 m_pLibraryWidget, SLOT(search(const QString&)));
 
         m_pLibrary->bindWidget(m_pLibraryWidget, m_pKeyboard);
-
     } else {
         qDebug() << "we already have a library, using it instead";
     }
@@ -1111,14 +1110,15 @@ QWidget* LegacySkinParser::parseLibrary(QDomElement node) {
     qDebug() << "CONTAINER SETUP";
     commonWidgetSetup(node, container, false);
 
-    //container->setup(node, *m_pContext);
     qDebug() << "adding the library widget or something";
-    //m_pLibraryWidget->setParent(container);
+
+    // hm, putting this out here makes it so the splitter is in the correct
+    // place for all the views.
+    container->addWidget(m_pLibraryWidget);
 
     if (widget_created) {
         qDebug() << "adding widget to container" << container << m_pLibraryWidget;
         //container->setLayout(m_pLibraryWidget->layout());
-        container->addWidget(m_pLibraryWidget);
         // This must come after the bindWidget or we will not style any of the
         // LibraryView's because they have not been added yet.
         qDebug() << "LIBRARY WIDGET SETUP";

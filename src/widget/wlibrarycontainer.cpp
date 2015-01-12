@@ -12,13 +12,13 @@ WLibraryContainer::WLibraryContainer(WLibrary* library,
         : WWidgetGroup(pParent), m_pLibrary(library) {
     setContentsMargins(0, 0, 0, 0);
 
-    QLayout* pLayout = new QVBoxLayout();
-    pLayout->setSpacing(0);
-    pLayout->setContentsMargins(0, 0, 0, 0);
-    pLayout->setAlignment(Qt::AlignCenter);
+    m_pLayout = new QVBoxLayout();
+    m_pLayout->setSpacing(0);
+    m_pLayout->setContentsMargins(0, 0, 0, 0);
+    m_pLayout->setAlignment(Qt::AlignCenter);
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-    setMaximumSize(1920, 1080);
-    pLayout->setSizeConstraint(QLayout::SetNoConstraint);
+    //setMaximumSize(1920, 1080);
+    //m_pLayout->setSizeConstraint(QLayout::SetNoConstraint);
 
 //    if (pLayout && context.hasNode(node, "SizeConstraint")) {
 //        QMap<QString, QLayout::SizeConstraint> constraints;
@@ -37,20 +37,18 @@ WLibraryContainer::WLibraryContainer(WLibrary* library,
 //        }
 //    }
 
-    if (pLayout) {
-        setLayout(pLayout);
-    }
+    setLayout(m_pLayout);
 }
 
 void WLibraryContainer::setVisible(bool visible) {
     if (visible) {
         qDebug() << this << "REPARENTING!" << m_pLibrary->layout();
 
-//        m_pLibrary->layout()->removeWidget(m_pLibrary);
-//        m_pLayout->addWidget(m_pLibrary);
+        m_pLibrary->parentWidget()->layout()->removeWidget(m_pLibrary);
         m_pLibrary->setParent(this);
+        m_pLayout->addWidget(m_pLibrary);
 
-        m_pLibrary->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+        //m_pLibrary->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
 //        m_pLibrary->setMaximumSize(1920,1080);
         //m_pLibrary->setFixedSize(1920,1080);
 //        m_pLibrary->setMinimumSize(size());
@@ -60,6 +58,7 @@ void WLibraryContainer::setVisible(bool visible) {
         //qDebug() << "new layout?" << m_pLibrary->layout();
         m_pLibrary->show();
     } else {
+        // this never happens
         qDebug() << this << "gone invisible";
     }
 }

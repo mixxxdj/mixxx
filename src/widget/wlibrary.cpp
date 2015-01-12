@@ -13,8 +13,8 @@ WLibrary::WLibrary(QWidget* parent)
           WBaseWidget(this),
           m_mutex(QMutex::Recursive) {
 
-    setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-    setMaximumSize(1920, 1080);
+    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    //setMaximumSize(1920, 1080);
     //setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
     //setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 //        m_pLibrary->setMaximumSize(1920,1080);
