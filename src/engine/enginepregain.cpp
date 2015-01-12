@@ -32,7 +32,9 @@ ControlObject* EnginePregain::s_pEnableReplayGain = NULL;
    A pregaincontrol is ... a pregain.
    ----------------------------------------------------------------*/
 EnginePregain::EnginePregain(QString group)
-{
+        : m_dSpeed(0),
+          m_fPrevGain(1.0),
+          m_bSmoothFade(false) {
     m_pPotmeterPregain = new ControlAudioTaperPot(ConfigKey(group, "pregain"), -12, +12, 0.5);
     //Replay Gain things
     m_pControlReplayGain = new ControlObject(ConfigKey(group, "replaygain"));
@@ -43,13 +45,9 @@ EnginePregain::EnginePregain(QString group)
         s_pReplayGainBoost = new ControlPotmeter(ConfigKey("[ReplayGain]", "ReplayGainBoost"), -6, 15);
         s_pEnableReplayGain = new ControlObject(ConfigKey("[ReplayGain]", "ReplayGainEnabled"));
     }
-    m_bSmoothFade = false;
-
-    m_fPrevGain = 1.0;
 }
 
-EnginePregain::~EnginePregain()
-{
+EnginePregain::~EnginePregain() {
     delete m_pPotmeterPregain;
     delete m_pControlReplayGain;
     delete m_pTotalGain;
@@ -65,7 +63,6 @@ void EnginePregain::setSpeed(double speed) {
 }
 
 void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
-
     float fEnableReplayGain = s_pEnableReplayGain->get();
     const float fReplayGainBoost = s_pReplayGainBoost->get();
     float fGain = m_pPotmeterPregain->get();
