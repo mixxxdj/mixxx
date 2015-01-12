@@ -53,7 +53,7 @@ private:
     InputBuffer::size_type m_inputBufferOffset;
     InputBuffer::size_type m_inputBufferLength;
 
-    faacDecHandle m_hDecoder;
+    NeAACDecHandle m_hDecoder;
 
     typedef std::vector<sample_type> SampleBuffer;
     SampleBuffer m_prefetchSampleBuffer;
