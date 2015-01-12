@@ -139,9 +139,9 @@ public:
     static double parseBpmString(const QString& sBpm);
     bool setBpmString(const QString& sBpm);
 
-    static const double REPLAYGAIN_UNDEFINED = 0.0f;
-    static const double REPLAYGAIN_MIN = 0.0f; // exclusive lower bound
-    static const double REPLAYGAIN_0DB = 1.0f;
+    static const double REPLAYGAIN_UNDEFINED;
+    static const double REPLAYGAIN_MIN; // exclusive lower bound
+    static const double REPLAYGAIN_0DB;
     inline float getReplayGain() const {
         return m_replayGain;
     }
