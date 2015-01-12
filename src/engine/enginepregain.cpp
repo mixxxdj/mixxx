@@ -115,8 +115,10 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
 
     m_pTotalGain->set(fGain);
 
-    // We have to Vinyl emulation near stop, because otherwise we have clicks when
-    // crossing zero, while changing from forward to backward
+    // Vinylsoundemu:
+    // As the speed approaches zero, hearing small bursts of sound at full volume
+    // is distracting and doesn't mimic the way that vinyl sounds when played slowly.
+    // Instead, reduce gain to provide a soft rolloff.
     const float kThresholdSpeed = 0.070; // Scale volume if playback speed is below 7%.
     if (fabs(m_dSpeed) < kThresholdSpeed) {
         fGain *= fabs(m_dSpeed) / kThresholdSpeed;
