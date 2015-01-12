@@ -345,9 +345,15 @@ void readMP4Tag(TrackMetadata* pTrackMetadata, /*const*/ TagLib::MP4::Tag& tag) 
 
     // Get BPM
     if (tag.itemListMap().contains("tmpo")) {
-        pTrackMetadata->setBpmString(toQString(tag.itemListMap()["tmpo"]));
-    } else if (tag.itemListMap().contains("----:com.apple.iTunes:BPM")) {
-        // This is an alternate way of storing BPM.
+        // Read the BPM as an integer value.
+        pTrackMetadata->setBpm(tag.itemListMap()["tmpo"].toInt());
+    }
+    if (tag.itemListMap().contains("----:com.apple.iTunes:BPM")) {
+        // This is the preferred field for storing the BPM
+        // with fractional digits as a floating-point value.
+        // If this field contains a valid value the integer
+        // BPM value that might have been read before is
+        // overwritten.
         pTrackMetadata->setBpmString(toQString(tag.itemListMap()["----:com.apple.iTunes:BPM"]));
     }
 
