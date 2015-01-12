@@ -14,7 +14,7 @@ QList<QString> SoundSourceWV::supportedFileExtensions() {
 }
 
 SoundSourceWV::SoundSourceWV(QString fileName)
-        : SoundSourcePlugin(fileName, "wv") {
+    : SoundSourcePlugin(fileName, "wv") {
 }
 
 Result SoundSourceWV::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
@@ -70,9 +70,9 @@ extern "C" MY_EXPORT Mixxx::SoundSource* getSoundSource(QString fileName) {
 
 extern "C" MY_EXPORT char** supportedFileExtensions() {
     const QList<QString> supportedFileExtensions(
-            Mixxx::SoundSourceWV::supportedFileExtensions());
+        Mixxx::SoundSourceWV::supportedFileExtensions());
     return Mixxx::SoundSourcePlugin::allocFileExtensions(
-            supportedFileExtensions);
+        supportedFileExtensions);
 }
 
 extern "C" MY_EXPORT void freeFileExtensions(char** fileExtensions) {

@@ -3,7 +3,8 @@
 namespace Mixxx {
 
 AudioSourceWV::AudioSourceWV()
-        : m_wpc(NULL), m_sampleScale(0.0f) {
+        : m_wpc(NULL),
+          m_sampleScale(0.0f) {
 }
 
 AudioSourceWV::~AudioSourceWV() {
@@ -23,8 +24,9 @@ AudioSourcePointer AudioSourceWV::create(QString fileName) {
 
 Result AudioSourceWV::open(QString fileName) {
     char msg[80]; // hold possible error message
-    m_wpc = WavpackOpenFileInput(fileName.toLocal8Bit().constData(), msg,
-            OPEN_2CH_MAX | OPEN_WVC | OPEN_NORMALIZE, 0);
+    m_wpc = WavpackOpenFileInput(
+        fileName.toLocal8Bit().constData(), msg,
+        OPEN_2CH_MAX | OPEN_WVC | OPEN_NORMALIZE, 0);
     if (!m_wpc) {
         qDebug() << "SSWV::open: failed to open file : " << msg;
         return ERR;
@@ -66,13 +68,13 @@ AudioSource::size_type AudioSourceWV::readSampleFrames(
         size_type numberOfFrames, sample_type* sampleBuffer) {
     // static assert: sizeof(sample_type) == sizeof(int32_t)
     size_type unpackCount = WavpackUnpackSamples(m_wpc,
-            reinterpret_cast<int32_t*>(sampleBuffer), numberOfFrames);
+        reinterpret_cast<int32_t*>(sampleBuffer), numberOfFrames);
     if (!(WavpackGetMode(m_wpc) & MODE_FLOAT)) {
         // signed integer -> float
         const size_type sampleCount = frames2samples(unpackCount);
         for (size_type i = 0; i < sampleCount; ++i) {
             const int32_t sampleValue =
-                    reinterpret_cast<int32_t*>(sampleBuffer)[i];
+                reinterpret_cast<int32_t*>(sampleBuffer)[i];
             sampleBuffer[i] = sample_type(sampleValue) * m_sampleScale;
         }
     }

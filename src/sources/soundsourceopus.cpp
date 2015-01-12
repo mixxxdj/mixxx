@@ -15,7 +15,7 @@ QList<QString> SoundSourceOpus::supportedFileExtensions() {
 }
 
 SoundSourceOpus::SoundSourceOpus(QString qFilename)
-        : SoundSource(qFilename, "opus") {
+    : SoundSource(qFilename, "opus") {
 }
 
 namespace

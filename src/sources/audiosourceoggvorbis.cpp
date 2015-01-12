@@ -14,7 +14,8 @@ AudioSourceOggVorbis::~AudioSourceOggVorbis() {
 }
 
 AudioSourcePointer AudioSourceOggVorbis::create(QString fileName) {
-    QSharedPointer<AudioSourceOggVorbis> pAudioSource(new AudioSourceOggVorbis);
+    QSharedPointer<AudioSourceOggVorbis> pAudioSource(
+        new AudioSourceOggVorbis);
     if (OK == pAudioSource->open(fileName)) {
         // success
         return pAudioSource;
@@ -65,7 +66,7 @@ void AudioSourceOggVorbis::close() {
 }
 
 AudioSource::diff_type AudioSourceOggVorbis::seekSampleFrame(
-        diff_type frameIndex) {
+    diff_type frameIndex) {
     const int seekResult = ov_pcm_seek(&m_vf, frameIndex);
     if (0 != seekResult) {
         qWarning() << "Failed to seek OggVorbis file:" << seekResult;
@@ -74,21 +75,21 @@ AudioSource::diff_type AudioSourceOggVorbis::seekSampleFrame(
 }
 
 AudioSource::size_type AudioSourceOggVorbis::readSampleFrames(
-        size_type numberOfFrames, sample_type* sampleBuffer) {
+    size_type numberOfFrames, sample_type* sampleBuffer) {
     return readSampleFrames(numberOfFrames, sampleBuffer, frames2samples(numberOfFrames), false);
 }
 
 AudioSource::size_type AudioSourceOggVorbis::readSampleFramesStereo(
-        size_type numberOfFrames,
-        sample_type* sampleBuffer,
-        size_type sampleBufferSize) {
+    size_type numberOfFrames,
+    sample_type* sampleBuffer,
+    size_type sampleBufferSize) {
     return readSampleFrames(numberOfFrames, sampleBuffer, sampleBufferSize, true);
 }
 
 AudioSource::size_type AudioSourceOggVorbis::readSampleFrames(
-        size_type numberOfFrames,
-        sample_type* sampleBuffer, size_type sampleBufferSize,
-        bool readStereoSamples) {
+    size_type numberOfFrames,
+    sample_type* sampleBuffer, size_type sampleBufferSize,
+    bool readStereoSamples) {
     sample_type* nextSample = sampleBuffer;
     const size_type numberOfFramesTotal = math_min(numberOfFrames, samples2frames(sampleBufferSize));
     size_type numberOfFramesRead = 0;
@@ -96,7 +97,7 @@ AudioSource::size_type AudioSourceOggVorbis::readSampleFrames(
         float** pcmChannels;
         int currentSection;
         const long readResult = ov_read_float(&m_vf, &pcmChannels,
-                numberOfFramesTotal - numberOfFramesRead, &currentSection);
+            numberOfFramesTotal - numberOfFramesRead, &currentSection);
         if (0 == readResult) {
             // EOF
             break; // done

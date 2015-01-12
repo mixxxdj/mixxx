@@ -28,7 +28,7 @@ QList<QString> SoundSourceOggVorbis::supportedFileExtensions() {
 }
 
 SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename)
-        : SoundSource(qFilename, "ogg") {
+    : SoundSource(qFilename, "ogg") {
 }
 
 /*

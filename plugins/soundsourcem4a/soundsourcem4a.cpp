@@ -87,9 +87,9 @@ extern "C" MY_EXPORT Mixxx::SoundSource* getSoundSource(QString fileName) {
 
 extern "C" MY_EXPORT char** supportedFileExtensions() {
     const QList<QString> supportedFileExtensions(
-            Mixxx::SoundSourceM4A::supportedFileExtensions());
+        Mixxx::SoundSourceM4A::supportedFileExtensions());
     return Mixxx::SoundSourcePlugin::allocFileExtensions(
-            supportedFileExtensions);
+        supportedFileExtensions);
 }
 
 extern "C" MY_EXPORT void freeFileExtensions(char** fileExtensions) {
