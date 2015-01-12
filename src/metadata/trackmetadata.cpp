@@ -13,9 +13,13 @@ TrackMetadata::TrackMetadata()
 }
 
 double TrackMetadata::parseBpmString(const QString& sBpm) {
+    if (sBpm.trimmed().isEmpty()) {
+        return BPM_UNDEFINED;
+    }
     bool bpmValid = false;
     double bpm = sBpm.toDouble(&bpmValid);
     if ((!bpmValid) || (BPM_MIN > bpm)) {
+        qDebug() << "Failed to parse BPM:" << sBpm;
         return BPM_UNDEFINED;
     }
     while (bpm > BPM_MAX) {
