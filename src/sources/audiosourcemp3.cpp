@@ -10,7 +10,7 @@ namespace Mixxx
 namespace
 {
     const AudioSource::size_type kSeekFramePrefetchCount =
-        2; // required for synchronization
+        5; // required for synchronization
 
     const AudioSource::size_type kMaxSamplesPerMp3Frame =
         1152;
