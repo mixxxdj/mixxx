@@ -30,6 +30,7 @@ QList<QString> SoundSourceOggVorbis::supportedFileExtensions() {
 SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         : Mixxx::SoundSource(qFilename),
           channels(0),
           filelength(0),
@@ -181,6 +182,9 @@ Mixxx::AudioSource::size_type SoundSourceOggVorbis::readFrameSamplesInterleaved(
 =======
         : SoundSource(qFilename, "ogg") {
 >>>>>>> Delete typedef Super (review comments)
+=======
+    : SoundSource(qFilename, "ogg") {
+>>>>>>> Fix coding style issues (indentation)
 }
 
 /*

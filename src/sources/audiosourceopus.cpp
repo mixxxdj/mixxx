@@ -28,8 +28,9 @@ Result AudioSourceOpus::open(QString fileName) {
     const QByteArray qbaFilename(fileName.toLocal8Bit());
     m_pOggOpusFile = op_open_file(qbaFilename.constData(), &errorCode);
     if (!m_pOggOpusFile) {
-        qDebug() << "Failed to open OggOpus file:" << fileName
-                << "errorCode" << errorCode;
+        qDebug()
+            << "Failed to open OggOpus file:" << fileName
+            << "errorCode" << errorCode;
         return ERR;
     }
 
@@ -73,8 +74,8 @@ AudioSource::size_type AudioSourceOpus::readSampleFrames(
     size_type readCount = 0;
     while (readCount < numberOfFrames) {
         int readResult = op_read_float(m_pOggOpusFile,
-                sampleBuffer + frames2samples(readCount),
-                frames2samples(numberOfFrames - readCount), NULL);
+            sampleBuffer + frames2samples(readCount),
+            frames2samples(numberOfFrames - readCount), NULL);
         if (0 == readResult) {
             // EOF
             break; // done
@@ -82,8 +83,9 @@ AudioSource::size_type AudioSourceOpus::readSampleFrames(
         if (0 < readResult) {
             readCount += readResult;
         } else {
-            qWarning() << "Failed to read sample data from OggOpus file:"
-                    << readResult;
+            qWarning()
+                << "Failed to read sample data from OggOpus file:"
+                << readResult;
             break; // abort
         }
     }
@@ -91,13 +93,14 @@ AudioSource::size_type AudioSourceOpus::readSampleFrames(
 }
 
 AudioSource::size_type AudioSourceOpus::readSampleFramesStereo(
-        size_type numberOfFrames, sample_type* sampleBuffer, size_type sampleBufferSize) {
-    const size_type numberOfFramesTotal = math_min(numberOfFrames, samples2frames(sampleBufferSize));
+    size_type numberOfFrames, sample_type* sampleBuffer, size_type sampleBufferSize) {
+    const size_type numberOfFramesTotal =
+        math_min(numberOfFrames, samples2frames(sampleBufferSize));
     size_type numberOfFramesRead = 0;
     while (numberOfFramesTotal > numberOfFramesRead) {
         int readResult = op_read_float_stereo(m_pOggOpusFile,
-                sampleBuffer + (numberOfFramesRead * 2),
-                (numberOfFramesTotal - numberOfFramesRead) * 2);
+            sampleBuffer + (numberOfFramesRead * 2),
+            (numberOfFramesTotal - numberOfFramesRead) * 2);
         if (0 == readResult) {
             // EOF
             break; // done
@@ -105,8 +108,9 @@ AudioSource::size_type AudioSourceOpus::readSampleFramesStereo(
         if (0 < readResult) {
             numberOfFramesRead += readResult;
         } else {
-            qWarning() << "Failed to read sample data from OggOpus file:"
-                    << readResult;
+            qWarning()
+                << "Failed to read sample data from OggOpus file:"
+                << readResult;
             break; // abort
         }
     }

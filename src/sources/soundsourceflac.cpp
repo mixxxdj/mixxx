@@ -54,11 +54,15 @@ SoundSourceFLAC::SoundSourceFLAC(QString filename)
 =======
 SoundSourceFLAC::SoundSourceFLAC(QString fileName)
 <<<<<<< HEAD
+<<<<<<< HEAD
         : Super(fileName, "flac") {
 >>>>>>> Split AudioSource from SoundSource
 =======
         : SoundSource(fileName, "flac") {
 >>>>>>> Delete typedef Super (review comments)
+=======
+    : SoundSource(fileName, "flac") {
+>>>>>>> Fix coding style issues (indentation)
 }
 
 Result SoundSourceFLAC::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
