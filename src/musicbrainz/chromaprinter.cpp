@@ -32,12 +32,14 @@ namespace
 
         // Allocate a sample buffer with maximum size to avoid the
         // implicit allocation of a temporary buffer when reducing
-        // to the audio signal to stereo.
+        // the audio signal to stereo.
         std::vector<Mixxx::AudioSource::sample_type> sampleBuffer(
                 math_max(numFrames * kFingerprintChannels, pAudioSource->frames2samples(numFrames)));
 
         DEBUG_ASSERT(2 == kFingerprintChannels); // implicit assumption of the next line
-        const Mixxx::AudioSource::size_type readFrames = pAudioSource->readSampleFramesStereo(numFrames, &sampleBuffer[0], sampleBuffer.size());
+        const Mixxx::AudioSource::size_type readFrames =
+                pAudioSource->readSampleFramesStereo(
+                        numFrames, &sampleBuffer[0], sampleBuffer.size());
         if (readFrames != numFrames) {
             qDebug() << "oh that's embarrassing I couldn't read the track";
             return QString();
