@@ -44,11 +44,20 @@ WLibraryContainer::WLibraryContainer(WLibrary* library,
 
 void WLibraryContainer::setVisible(bool visible) {
     if (visible) {
-        qDebug() << this << "REPARENTING!";
+        qDebug() << this << "REPARENTING!" << m_pLibrary->layout();
+
+//        m_pLibrary->layout()->removeWidget(m_pLibrary);
+//        m_pLayout->addWidget(m_pLibrary);
         m_pLibrary->setParent(this);
-        m_pLibrary->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-        m_pLibrary->setMaximumSize(1920,1080);
+
+        m_pLibrary->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+//        m_pLibrary->setMaximumSize(1920,1080);
         //m_pLibrary->setFixedSize(1920,1080);
+//        m_pLibrary->setMinimumSize(size());
+        //setLayout(m_pLayout);
+        //delete layout();
+        //setLayout(m_pLibrary->layout());
+        //qDebug() << "new layout?" << m_pLibrary->layout();
         m_pLibrary->show();
     } else {
         qDebug() << this << "gone invisible";

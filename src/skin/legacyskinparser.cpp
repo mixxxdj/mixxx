@@ -1087,6 +1087,7 @@ QWidget* LegacySkinParser::parseCoverArt(QDomElement node) {
 }
 
 QWidget* LegacySkinParser::parseLibrary(QDomElement node) {
+    qDebug() << "parselibrary!";
     bool widget_created = false;
     if (m_pLibraryWidget == NULL) {
         qDebug() << "Creating library!";
@@ -1115,6 +1116,8 @@ QWidget* LegacySkinParser::parseLibrary(QDomElement node) {
     //m_pLibraryWidget->setParent(container);
 
     if (widget_created) {
+        qDebug() << "adding widget to container" << container << m_pLibraryWidget;
+        //container->setLayout(m_pLibraryWidget->layout());
         container->addWidget(m_pLibraryWidget);
         // This must come after the bindWidget or we will not style any of the
         // LibraryView's because they have not been added yet.
@@ -1122,6 +1125,7 @@ QWidget* LegacySkinParser::parseLibrary(QDomElement node) {
         commonWidgetSetup(node, m_pLibraryWidget, false);
     }
 
+    qDebug() << "LIBRARY DONE";
     return container;
 }
 

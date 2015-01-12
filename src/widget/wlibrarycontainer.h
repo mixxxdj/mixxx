@@ -20,6 +20,7 @@ class WLibraryContainer : public WWidgetGroup {
     virtual void setVisible(bool visible);
 
   private:
+    //QLayout* m_pLayout;
     WLibrary* m_pLibrary;
 };
 

@@ -143,6 +143,7 @@ void WWidgetGroup::setPixmapBackground(PixmapSource source, Paintable::DrawMode 
 
 void WWidgetGroup::addWidget(QWidget* pChild) {
     QLayout* pLayout = layout();
+    qDebug() << "asked for the layout" << pLayout;
     if (pLayout && pChild) {
         pLayout->addWidget(pChild);
     }

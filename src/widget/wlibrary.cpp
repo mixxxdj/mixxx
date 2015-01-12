@@ -15,6 +15,10 @@ WLibrary::WLibrary(QWidget* parent)
 
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     setMaximumSize(1920, 1080);
+    //setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+    //setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+//        m_pLibrary->setMaximumSize(1920,1080);
+    //setFixedSize(1920,1080);
 }
 
 WLibrary::~WLibrary() {
