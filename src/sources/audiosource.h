@@ -129,9 +129,19 @@ public:
         return sampleCount / getChannelCount();
     }
 
+    // The (sample) frame index only valid in the range
+    // [0, getFrameCount()]. The value frameIndex = getFrameCount()
+    // points behind of the audio data stream, but is a valid
+    // parameter for seeking.
+    inline bool isValidFrameIndex(diff_type frameIndex) const {
+        return (0 <= frameIndex) &&
+            (getFrameCount() >= size_type(frameIndex));
+    }
+
     // Adjusts the current frame seek index:
-    // - Index of first frame: frameIndex = 0
-    // - Index of last frame: frameIndex = totalFrames() - 1
+    // - Precondition: isValidFrameIndex(frameIndex) == true
+    //   - Index of first frame: frameIndex = 0
+    //   - Index of last frame: frameIndex = getFrameCount() - 1
     // - The seek position in seconds is frameIndex / frameRate()
     // Returns the actual current frame index which may differ from the
     // requested index if the source does not support accurate seeking.

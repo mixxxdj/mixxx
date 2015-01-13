@@ -121,6 +121,7 @@ void AudioSourceCoreAudio::close() {
 }
 
 AudioSource::diff_type AudioSourceCoreAudio::seekSampleFrame(diff_type frameIndex) {
+    DEBUG_ASSERT(isValidFrameIndex(frameIndex));
     OSStatus err = ExtAudioFileSeek(m_audioFile, frameIndex + m_headerFrames);
     //_ThrowExceptionIfErr(@"ExtAudioFileSeek", err);
     //qDebug() << "SSCA: Seeking to" << frameIndex;

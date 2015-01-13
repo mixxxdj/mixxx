@@ -62,15 +62,18 @@ void AudioSourceOpus::close() {
 }
 
 AudioSource::diff_type AudioSourceOpus::seekSampleFrame(diff_type frameIndex) {
+    DEBUG_ASSERT(isValidFrameIndex(frameIndex));
     int seekResult = op_pcm_seek(m_pOggOpusFile, frameIndex);
     if (0 != seekResult) {
         qWarning() << "Failed to seek OggOpus file:" << seekResult;
     }
-    return op_pcm_tell(m_pOggOpusFile);
+    return getCurrentFrameIndex();
 }
 
 AudioSource::size_type AudioSourceOpus::readSampleFrames(
         size_type numberOfFrames, sample_type* sampleBuffer) {
+    DEBUG_ASSERT(isValidFrameIndex(getCurrentFrameIndex()));
+
     size_type readCount = 0;
     while (readCount < numberOfFrames) {
         int readResult = op_read_float(m_pOggOpusFile,
@@ -94,6 +97,8 @@ AudioSource::size_type AudioSourceOpus::readSampleFrames(
 
 AudioSource::size_type AudioSourceOpus::readSampleFramesStereo(
     size_type numberOfFrames, sample_type* sampleBuffer, size_type sampleBufferSize) {
+    DEBUG_ASSERT(isValidFrameIndex(getCurrentFrameIndex()));
+
     const size_type numberOfFramesTotal =
         math_min(numberOfFrames, samples2frames(sampleBufferSize));
     size_type numberOfFramesRead = 0;

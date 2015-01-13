@@ -209,6 +209,7 @@ bool AudioSourceM4A::isValidSampleBlockId(MP4SampleId sampleBlockId) const {
 }
 
 AudioSource::diff_type AudioSourceM4A::seekSampleFrame(diff_type frameIndex) {
+    DEBUG_ASSERT(isValidFrameIndex(frameIndex));
     if (m_curFrameIndex != frameIndex) {
         const MP4SampleId sampleBlockId =
             kMinSampleBlockId + (frameIndex / kFramesPerSampleBlock);
@@ -246,6 +247,7 @@ AudioSource::diff_type AudioSourceM4A::seekSampleFrame(diff_type frameIndex) {
 
 AudioSource::size_type AudioSourceM4A::readSampleFrames(
         size_type numberOfFrames, sample_type* sampleBuffer) {
+    DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     if (!isValidSampleBlockId(m_curSampleBlockId)) {
         qWarning() << "Invalid MP4 sample block" << m_curSampleBlockId;
         return 0;

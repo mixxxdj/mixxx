@@ -69,6 +69,7 @@ void AudioSourceSndFile::close() {
 
 AudioSource::diff_type AudioSourceSndFile::seekSampleFrame(
     diff_type frameIndex) {
+    DEBUG_ASSERT(isValidFrameIndex(frameIndex));
     const sf_count_t seekResult = sf_seek(m_pSndFile, frameIndex, SEEK_SET);
     if (0 <= seekResult) {
         return seekResult;

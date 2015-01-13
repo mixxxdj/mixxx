@@ -56,6 +56,7 @@ void AudioSourceWV::close() {
 }
 
 AudioSource::diff_type AudioSourceWV::seekSampleFrame(diff_type frameIndex) {
+    DEBUG_ASSERT(isValidFrameIndex(frameIndex));
     if (WavpackSeekSample(m_wpc, frameIndex) == TRUE) {
         return frameIndex;
     } else {

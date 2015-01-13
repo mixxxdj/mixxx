@@ -168,6 +168,7 @@ void AudioSourceMediaFoundation::close() {
 
 Mixxx::AudioSource::diff_type AudioSourceMediaFoundation::seekSampleFrame(
         diff_type frameIndex) {
+    DEBUG_ASSERT(isValidFrameIndex(frameIndex));
     if (sDebug) {
         qDebug() << "seekSampleFrame()" << frameIndex;
     }

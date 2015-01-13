@@ -31,6 +31,11 @@ private:
 
     void close();
 
+    inline diff_type getCurrentFrameIndex() const {
+        DEBUG_ASSERT(NULL != m_pOggOpusFile);
+        return op_pcm_tell(m_pOggOpusFile);
+    }
+
     OggOpusFile *m_pOggOpusFile;
 };
 

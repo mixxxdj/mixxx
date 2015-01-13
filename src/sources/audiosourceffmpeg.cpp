@@ -404,6 +404,8 @@ bool AudioSourceFFmpeg::getBytesFromCache(char *buffer, quint64 offset,
 }
 
 AudioSource::diff_type AudioSourceFFmpeg::seekSampleFrame(diff_type frameIndex) {
+    DEBUG_ASSERT(isValidFrameIndex(frameIndex));
+
     const diff_type filepos = frames2samples(frameIndex);
 
     int ret = 0;
