@@ -27,14 +27,15 @@ QList<QString> SoundSourceOggVorbis::supportedFileExtensions() {
     return list;
 }
 
-SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename)
-    : SoundSource(qFilename, "ogg") {
+SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename) :
+        SoundSource(qFilename, "ogg") {
 }
 
 /*
  Parse the the file to get metadata
  */
-Result SoundSourceOggVorbis::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
+Result SoundSourceOggVorbis::parseMetadata(
+        Mixxx::TrackMetadata* pMetadata) const {
     TagLib::Ogg::Vorbis::File f(getFilename().toLocal8Bit().constData());
 
     if (!readAudioProperties(pMetadata, f)) {

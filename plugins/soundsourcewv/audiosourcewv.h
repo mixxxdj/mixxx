@@ -22,7 +22,8 @@ public:
 
     diff_type seekSampleFrame(diff_type frameIndex) /*override*/;
 
-    size_type readSampleFrames(size_type numberOfFrames, sample_type* sampleBuffer) /*override*/;
+    size_type readSampleFrames(size_type numberOfFrames,
+            sample_type* sampleBuffer) /*override*/;
 
 private:
     AudioSourceWV();

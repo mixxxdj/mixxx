@@ -14,26 +14,26 @@ QList<QString> SoundSourceOpus::supportedFileExtensions() {
     return list;
 }
 
-SoundSourceOpus::SoundSourceOpus(QString qFilename)
-    : SoundSource(qFilename, "opus") {
+SoundSourceOpus::SoundSourceOpus(QString qFilename) :
+        SoundSource(qFilename, "opus") {
 }
 
-namespace
-{
-    class OggOpusFileOwner {
-    public:
-        explicit OggOpusFileOwner(OggOpusFile* pFile): m_pFile(pFile) {
-        }
-        ~OggOpusFileOwner() {
-            op_free(m_pFile);
-        }
-        operator OggOpusFile*() const {
-            return m_pFile;
-        }
-    private:
-        OggOpusFileOwner(const OggOpusFileOwner&); // disable copy constructor
-        OggOpusFile* const m_pFile;
-    };
+namespace {
+class OggOpusFileOwner {
+public:
+    explicit OggOpusFileOwner(OggOpusFile* pFile) :
+            m_pFile(pFile) {
+    }
+    ~OggOpusFileOwner() {
+        op_free(m_pFile);
+    }
+    operator OggOpusFile*() const {
+        return m_pFile;
+    }
+private:
+    OggOpusFileOwner(const OggOpusFileOwner&); // disable copy constructor
+    OggOpusFile* const m_pFile;
+};
 }
 
 /*
@@ -43,12 +43,14 @@ Result SoundSourceOpus::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
     const QByteArray qbaFilename(getFilename().toLocal8Bit());
 
     int error = 0;
-    OggOpusFileOwner l_ptrOpusFile(op_open_file(qbaFilename.constData(), &error));
+    OggOpusFileOwner l_ptrOpusFile(
+            op_open_file(qbaFilename.constData(), &error));
 
     pMetadata->setChannels(op_channel_count(l_ptrOpusFile, -1));
     pMetadata->setSampleRate(Mixxx::AudioSourceOpus::kFrameRate);
     pMetadata->setBitrate(op_bitrate(l_ptrOpusFile, -1) / 1000);
-    pMetadata->setDuration(op_pcm_total(l_ptrOpusFile, -1) / pMetadata->getSampleRate());
+    pMetadata->setDuration(
+            op_pcm_total(l_ptrOpusFile, -1) / pMetadata->getSampleRate());
 
 // If we don't have new enough Taglib we use libopusfile parser!
 #if (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))

@@ -9,8 +9,7 @@
 
 #include <QtDebug>
 
-namespace
-{
+namespace {
 QString getTypeFromFilename(QString fileName) {
     const QString fileExt(fileName.section(".", -1).toLower());
     if (fileExt == "mod") {
@@ -47,17 +46,19 @@ QList<QString> SoundSourceModPlug::supportedFileExtensions() {
     return list;
 }
 
-SoundSourceModPlug::SoundSourceModPlug(QString fileName)
-        : SoundSource(fileName, getTypeFromFilename(fileName)) {
+SoundSourceModPlug::SoundSourceModPlug(QString fileName) :
+        SoundSource(fileName, getTypeFromFilename(fileName)) {
 }
 
-Result SoundSourceModPlug::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
+Result SoundSourceModPlug::parseMetadata(
+        Mixxx::TrackMetadata* pMetadata) const {
     QFile modFile(getFilename());
     modFile.open(QIODevice::ReadOnly);
     const QByteArray fileBuf(modFile.readAll());
     modFile.close();
 
-    ModPlug::ModPlugFile* pModFile = ModPlug::ModPlug_Load(fileBuf.constData(), fileBuf.length());
+    ModPlug::ModPlugFile* pModFile = ModPlug::ModPlug_Load(fileBuf.constData(),
+            fileBuf.length());
     if (NULL != pModFile) {
         pMetadata->setComment(QString(ModPlug::ModPlug_GetMessage(pModFile)));
         pMetadata->setTitle(QString(ModPlug::ModPlug_GetName(pModFile)));

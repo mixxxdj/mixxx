@@ -7,8 +7,7 @@
 #define OV_EXCLUDE_STATIC_CALLBACKS
 #include <opus/opusfile.h>
 
-namespace Mixxx
-{
+namespace Mixxx {
 
 class AudioSourceOpus: public AudioSource {
 public:
@@ -21,8 +20,10 @@ public:
 
     diff_type seekSampleFrame(diff_type frameIndex) /*override*/;
 
-    size_type readSampleFrames(size_type numberOfFrames, sample_type* sampleBuffer) /*override*/;
-    size_type readSampleFramesStereo(size_type numberOfFrames, sample_type* sampleBuffer, size_type sampleBufferSize) /*override*/;
+    size_type readSampleFrames(size_type numberOfFrames,
+            sample_type* sampleBuffer) /*override*/;
+    size_type readSampleFramesStereo(size_type numberOfFrames,
+            sample_type* sampleBuffer, size_type sampleBufferSize) /*override*/;
 
 private:
     AudioSourceOpus();
@@ -39,6 +40,7 @@ private:
     OggOpusFile *m_pOggOpusFile;
 };
 
-};
+}
+;
 
 #endif

@@ -10,8 +10,7 @@ namespace ModPlug {
 
 #include <vector>
 
-namespace Mixxx
-{
+namespace Mixxx {
 
 // Class for reading tracker files using libmodplug.
 // The whole file is decoded at once and saved
@@ -31,7 +30,8 @@ public:
 
     diff_type seekSampleFrame(diff_type frameIndex) /*override*/;
 
-    size_type readSampleFrames(size_type numberOfFrames, sample_type* sampleBuffer) /*override*/;
+    size_type readSampleFrames(size_type numberOfFrames,
+            sample_type* sampleBuffer) /*override*/;
 
 private:
     static unsigned int s_bufferSizeLimit; // max track buffer length (bytes)

@@ -124,8 +124,7 @@ public:
     // Conversion: #samples -> #frames
     template<typename T>
     inline T samples2frames(T sampleCount) const {
-        DEBUG_ASSERT(isChannelCountValid());
-        DEBUG_ASSERT(0 == (sampleCount % getChannelCount()));
+        DEBUG_ASSERT(isChannelCountValid()); DEBUG_ASSERT(0 == (sampleCount % getChannelCount()));
         return sampleCount / getChannelCount();
     }
 
@@ -134,8 +133,7 @@ public:
     // points behind of the audio data stream, but is a valid
     // parameter for seeking.
     inline bool isValidFrameIndex(diff_type frameIndex) const {
-        return (0 <= frameIndex) &&
-            (getFrameCount() >= size_type(frameIndex));
+        return (0 <= frameIndex) && (getFrameCount() >= size_type(frameIndex));
     }
 
     // Adjusts the current frame seek index:
@@ -159,8 +157,7 @@ public:
     // might be lower than the requested number of frames when the end
     // of the audio stream has been reached. The current frame seek
     // position is moved forward towards the next unread frame.
-    virtual size_type readSampleFrames(
-            size_type numberOfFrames,
+    virtual size_type readSampleFrames(size_type numberOfFrames,
             sample_type* sampleBuffer) = 0;
 
     // Specialized function for explicitly reading stereo (= 2 channels)
@@ -194,10 +191,8 @@ public:
     // They may also have reduced space requirements on sampleBuffer,
     // i.e. only the minimum size is required for an in-place
     // transformation without temporary allocations.
-    virtual size_type readSampleFramesStereo(
-            size_type numberOfFrames,
-            sample_type* sampleBuffer,
-            size_type sampleBufferSize);
+    virtual size_type readSampleFramesStereo(size_type numberOfFrames,
+            sample_type* sampleBuffer, size_type sampleBufferSize);
 
 protected:
     AudioSource();

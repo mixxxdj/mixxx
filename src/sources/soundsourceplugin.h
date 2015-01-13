@@ -6,17 +6,18 @@
 namespace Mixxx {
 
 // Common base class for SoundSource plugins
-class SoundSourcePlugin : public SoundSource {
+class SoundSourcePlugin: public SoundSource {
 public:
-    static char** allocFileExtensions(const QList<QString>& supportedFileExtensions);
+    static char** allocFileExtensions(
+            const QList<QString>& supportedFileExtensions);
     static void freeFileExtensions(char** fileExtensions);
 
 protected:
-    inline explicit SoundSourcePlugin(QString sFilename)
-        : SoundSource(sFilename) {
+    inline explicit SoundSourcePlugin(QString sFilename) :
+            SoundSource(sFilename) {
     }
-    inline SoundSourcePlugin(QString sFilename, QString sType)
-        : SoundSource(sFilename, sType) {
+    inline SoundSourcePlugin(QString sFilename, QString sType) :
+            SoundSource(sFilename, sType) {
     }
 };
 

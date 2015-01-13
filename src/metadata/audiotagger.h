@@ -1,4 +1,3 @@
-
 #ifndef AUDIOTAGGER_H
 #define AUDIOTAGGER_H
 
@@ -8,13 +7,13 @@
 #include <QFileInfo>
 
 class AudioTagger {
-  public:
+public:
     AudioTagger(const QString& file, SecurityTokenPointer pToken);
     virtual ~AudioTagger();
 
     bool save(const Mixxx::TrackMetadata& trackMetadata);
 
-  private:
+private:
     QFileInfo m_file;
     SecurityTokenPointer m_pSecurityToken;
 };

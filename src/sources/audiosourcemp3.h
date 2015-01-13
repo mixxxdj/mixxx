@@ -5,10 +5,10 @@
 #include "util/defs.h"
 
 #ifdef _MSC_VER
-  // So mad.h doesn't try to use inline assembly which MSVC doesn't support. 
-  // Notably, FPM_64BIT does not require a 64-bit machine. It merely requires a 
-  // compiler that supports 64-bit types.
-  #define FPM_64BIT 
+// So mad.h doesn't try to use inline assembly which MSVC doesn't support.
+// Notably, FPM_64BIT does not require a 64-bit machine. It merely requires a
+// compiler that supports 64-bit types.
+#define FPM_64BIT
 #endif
 #include <mad.h>
 
@@ -16,10 +16,9 @@
 
 #include <vector>
 
-namespace Mixxx
-{
+namespace Mixxx {
 
-class AudioSourceMp3 : public AudioSource {
+class AudioSourceMp3: public AudioSource {
 public:
     static AudioSourcePointer create(QString fileName);
 
@@ -27,8 +26,10 @@ public:
 
     diff_type seekSampleFrame(diff_type frameIndex) /*override*/;
 
-    size_type readSampleFrames(size_type numberOfFrames, sample_type* sampleBuffer) /*override*/;
-    size_type readSampleFramesStereo(size_type numberOfFrames, sample_type* sampleBuffer, size_type sampleBufferSize) /*override*/;
+    size_type readSampleFrames(size_type numberOfFrames,
+            sample_type* sampleBuffer) /*override*/;
+    size_type readSampleFramesStereo(size_type numberOfFrames,
+            sample_type* sampleBuffer, size_type sampleBufferSize) /*override*/;
 
 private:
     explicit AudioSourceMp3(QString fileName);
@@ -40,7 +41,9 @@ private:
     inline size_type skipFrameSamples(size_type numberOfFrames) {
         return readSampleFrames(numberOfFrames, NULL);
     }
-    size_type readSampleFrames(size_type numberOfFrames, sample_type* sampleBuffer, size_type sampleBufferSize, bool readStereoSamples);
+    size_type readSampleFrames(size_type numberOfFrames,
+            sample_type* sampleBuffer, size_type sampleBufferSize,
+            bool readStereoSamples);
 
     QFile m_file;
     quint64 m_fileSize;

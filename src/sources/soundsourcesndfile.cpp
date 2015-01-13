@@ -17,11 +17,12 @@ QList<QString> SoundSourceSndFile::supportedFileExtensions() {
     return list;
 }
 
-SoundSourceSndFile::SoundSourceSndFile(QString qFilename)
-    : SoundSource(qFilename) {
+SoundSourceSndFile::SoundSourceSndFile(QString qFilename) :
+        SoundSource(qFilename) {
 }
 
-Result SoundSourceSndFile::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
+Result SoundSourceSndFile::parseMetadata(
+        Mixxx::TrackMetadata* pMetadata) const {
     if (getType() == "flac") {
         TagLib::FLAC::File f(getFilename().toLocal8Bit().constData());
         if (!readAudioProperties(pMetadata, f)) {
@@ -101,7 +102,7 @@ QImage SoundSourceSndFile::parseCoverArt() const {
                 std::list<TagLib::FLAC::Picture*>::iterator it = covers.begin();
                 TagLib::FLAC::Picture* cover = *it;
                 coverArt = QImage::fromData(
-                    QByteArray(cover->data().data(), cover->data().size()));
+                        QByteArray(cover->data().data(), cover->data().size()));
             }
         }
     } else if (getType() == "wav") {

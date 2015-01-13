@@ -28,8 +28,8 @@ QList<QString> SoundSourceFLAC::supportedFileExtensions() {
     return list;
 }
 
-SoundSourceFLAC::SoundSourceFLAC(QString fileName)
-    : SoundSource(fileName, "flac") {
+SoundSourceFLAC::SoundSourceFLAC(QString fileName) :
+        SoundSource(fileName, "flac") {
 }
 
 Result SoundSourceFLAC::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
