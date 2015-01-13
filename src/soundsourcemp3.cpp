@@ -22,7 +22,7 @@
 
 #include <QtDebug>
 
-const int kPreSeekFrames = 4; // Start four frames before wanted frame to get in sync...
+const int kPreSeekFrames = 29; // Start four frames before wanted frame to get in sync...
 
 SoundSourceMp3::SoundSourceMp3(QString qFilename) :
         Mixxx::SoundSource(qFilename),
@@ -151,9 +151,9 @@ Result SoundSourceMp3::open() {
         p->m_pStreamPos = (unsigned char *)Stream->this_frame;
         p->pos = length();
         mad_timer_add (&filelength, Header.duration);
-        //if (m_qSeekList.size() < 11) {
-        //    qDebug() << p->m_pStreamPos << *p->m_pStreamPos << p->pos << m_qSeekList.size();
-        //}
+        if (m_qSeekList.size() < 40) {
+            qDebug() << p->m_pStreamPos << *p->m_pStreamPos << p->pos << m_qSeekList.size();
+        }
         m_qSeekList.append(p);
         currentframe++;
     }
@@ -461,7 +461,7 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
     while (Total_samples_decoded < samples_wanted)
     {
         // qDebug() << "no " << Total_samples_decoded;
-        //qDebug() << "mad_frame_decode" << "read" << Stream->this_frame;
+        qDebug() << "mad_frame_decode" << "read" << Stream->this_frame;
         unsigned char const *frameBefore = Stream->this_frame;
         if(mad_frame_decode(Frame,Stream))
         {
