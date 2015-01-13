@@ -68,6 +68,16 @@ AudioSourcePointer AudioSourceMp3::create(QString fileName) {
     }
 }
 
+void AudioSourceMp3::addSeekFrame(
+        mad_timer_t madDuration,
+        mad_units madUnits,
+        const unsigned char* pInputData) {
+    SeekFrameType seekFrame;
+    seekFrame.pInputData = pInputData;
+    seekFrame.frameIndex = mad_timer_count(madDuration, madUnits);
+    m_seekFrameList.push_back(seekFrame);
+}
+
 Result AudioSourceMp3::open() {
     if (!m_file.open(QIODevice::ReadOnly)) {
         qWarning() << "Failed to open file:" << m_file.fileName();
@@ -79,17 +89,24 @@ Result AudioSourceMp3::open() {
     m_pFileData = m_file.map(0, m_fileSize);
     // Transfer it to the mad stream-buffer:
     mad_stream_buffer(&m_madStream, m_pFileData, m_fileSize);
+    DEBUG_ASSERT(m_pFileData == m_madStream.this_frame);
 
     // Decode all the headers and calculate audio properties
     unsigned long sumBitrate = 0;
-    unsigned int madFrameCount = 0;
     setChannelCount(kChannelCountDefault);
     setFrameRate(kFrameRateDefault);
-    mad_timer_t madFileDuration = mad_timer_zero;
+
     mad_units madUnits = MAD_UNITS_44100_HZ; // default value
+    mad_timer_t madDuration = mad_timer_zero;
+
+    // Add first frame to list of frames
+    addSeekFrame(madDuration, madUnits, m_madStream.this_frame);
+
+    DEBUG_ASSERT(quint64(m_madStream.bufend - m_madStream.this_frame) == m_fileSize);
     while ((m_madStream.bufend - m_madStream.this_frame) > 0) {
         mad_header madHeader;
         mad_header_init(&madHeader);
+
         if (0 != mad_header_decode(&madHeader, &m_madStream)) {
             if (MAD_RECOVERABLE(m_madStream.error)) {
                 if (MAD_ERROR_LOSTSYNC == m_madStream.error) {
@@ -174,24 +191,18 @@ Result AudioSourceMp3::open() {
             }
         }
 
-        // Add frame to list of frames
-        SeekFrameType seekFrame;
-        seekFrame.pFileData = m_madStream.this_frame;
-        seekFrame.frameIndex = mad_timer_count(madFileDuration, madUnits);
-        m_seekFrameList.push_back(seekFrame);
-
-        mad_timer_add(&madFileDuration, madHeader.duration);
+        mad_timer_add(&madDuration, madHeader.duration);
         sumBitrate += madHeader.bitrate;
-
         mad_header_finish(&madHeader);
 
-        ++madFrameCount;
+        // Add next frame to list of frames
+        addSeekFrame(madDuration, madUnits, m_madStream.this_frame);
     }
 
-    if (0 < madFrameCount) {
-        setFrameCount(mad_timer_count(madFileDuration, madUnits));
-        m_avgSeekFrameCount = getFrameCount() / madFrameCount;
-        int avgBitrate = sumBitrate / madFrameCount;
+    if (1 < m_seekFrameList.size()) {
+        setFrameCount(mad_timer_count(madDuration, madUnits));
+        m_avgSeekFrameCount = getFrameCount() / (m_seekFrameList.size() - 1);
+        int avgBitrate = sumBitrate / (m_seekFrameList.size() - 1);
         setBitrate(avgBitrate / 1000);
     } else {
         // This is not a working MP3 file.
