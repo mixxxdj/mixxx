@@ -174,13 +174,8 @@ Result AudioSourceM4A::open(QString fileName) {
                     * frames2samples(kFramesPerSampleBlock);
     m_prefetchSampleBuffer.resize(prefetchSampleBufferSize);
 
-    m_curSampleBlockId = MP4_INVALID_SAMPLE_ID;
-    m_curFrameIndex = getFrameCount();
-    // Seek to the beginning of the file
-    if (0 != seekSampleFrame(0)) {
-        qWarning() << "Failed to seek to the beginning of the file!";
-        return ERR;
-    }
+    m_curSampleBlockId = 0;
+    m_curFrameIndex = 0;
 
     return OK;
 }
@@ -209,14 +204,22 @@ bool AudioSourceM4A::isValidSampleBlockId(MP4SampleId sampleBlockId) const {
             && (sampleBlockId <= m_maxSampleBlockId);
 }
 
+void AudioSourceM4A::restartDecoding(MP4SampleId sampleBlockId) {
+    NeAACDecPostSeekReset(m_hDecoder, sampleBlockId);
+    m_curSampleBlockId = sampleBlockId;
+    m_curFrameIndex = (m_curSampleBlockId - kMinSampleBlockId)
+            * kFramesPerSampleBlock;
+    // discard input buffer
+    m_inputBufferOffset = 0;
+    m_inputBufferLength = 0;
+}
+
 AudioSource::diff_type AudioSourceM4A::seekSampleFrame(diff_type frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(frameIndex));
     if (m_curFrameIndex != frameIndex) {
-        const MP4SampleId sampleBlockId = kMinSampleBlockId
+        MP4SampleId sampleBlockId = kMinSampleBlockId
                 + (frameIndex / kFramesPerSampleBlock);
-        if (!isValidSampleBlockId(sampleBlockId)) {
-            return m_curFrameIndex;
-        }
+        DEBUG_ASSERT(isValidSampleBlockId(sampleBlockId));
         if ((frameIndex < m_curFrameIndex) || // seeking backwards?
                 !isValidSampleBlockId(m_curSampleBlockId) || // invalid seek position?
                 (sampleBlockId
@@ -227,17 +230,12 @@ AudioSource::diff_type AudioSourceM4A::seekSampleFrame(diff_type frameIndex) {
             // need to be careful when subtracting!
             if ((kMinSampleBlockId + kNumberOfPrefetchSampleBlocks)
                     < sampleBlockId) {
-                m_curSampleBlockId = sampleBlockId
-                        - kNumberOfPrefetchSampleBlocks;
+                sampleBlockId -= kNumberOfPrefetchSampleBlocks;
             } else {
-                m_curSampleBlockId = kMinSampleBlockId;
+                sampleBlockId = kMinSampleBlockId;
             }
-            NeAACDecPostSeekReset(m_hDecoder, m_curSampleBlockId);
-            m_curFrameIndex = (m_curSampleBlockId - kMinSampleBlockId)
-                    * kFramesPerSampleBlock;
-            // discard input buffer
-            m_inputBufferOffset = 0;
-            m_inputBufferLength = 0;
+            restartDecoding(sampleBlockId);
+            DEBUG_ASSERT(m_curSampleBlockId == sampleBlockId);
         }
         // decoding starts before the actual target position
         DEBUG_ASSERT(m_curFrameIndex <= frameIndex);
@@ -252,10 +250,11 @@ AudioSource::diff_type AudioSourceM4A::seekSampleFrame(diff_type frameIndex) {
 AudioSource::size_type AudioSourceM4A::readSampleFrames(
         size_type numberOfFrames, sample_type* sampleBuffer) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
+
     if (!isValidSampleBlockId(m_curSampleBlockId)) {
-        qWarning() << "Invalid MP4 sample block" << m_curSampleBlockId;
         return 0;
     }
+
     sample_type* pSampleBuffer = sampleBuffer;
     size_type numberOfFramesRemaining = numberOfFrames;
     while (0 < numberOfFramesRemaining) {
@@ -322,13 +321,14 @@ AudioSource::size_type AudioSourceM4A::readSampleFrames(
         }
         // consume input data
         m_inputBufferOffset += decFrameInfo.bytesconsumed;
-        // consume decoded samples
+        // consume decoded output data
         pSampleBuffer += decFrameInfo.samples;
-        const size_type numberOfFramesDecoded = samples2frames(
-                decFrameInfo.samples);
-        numberOfFramesRemaining -= numberOfFramesDecoded;
+        const size_type numberOfFramesDecoded =
+                samples2frames(decFrameInfo.samples);
         m_curFrameIndex += numberOfFramesDecoded;
+        numberOfFramesRemaining -= numberOfFramesDecoded;
     }
+    DEBUG_ASSERT(numberOfFrames >= numberOfFramesRemaining);
     return numberOfFrames - numberOfFramesRemaining;
 }
 

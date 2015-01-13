@@ -43,6 +43,8 @@ private:
 
     bool isValidSampleBlockId(MP4SampleId sampleBlockId) const;
 
+    void restartDecoding(MP4SampleId sampleBlockId);
+
     MP4FileHandle m_hFile;
     MP4TrackId m_trackId;
     MP4SampleId m_maxSampleBlockId;
