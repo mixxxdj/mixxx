@@ -27,6 +27,7 @@ QList<QString> SoundSourceOggVorbis::supportedFileExtensions() {
     return list;
 }
 
+<<<<<<< HEAD
 SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename)
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -185,12 +186,17 @@ Mixxx::AudioSource::size_type SoundSourceOggVorbis::readFrameSamplesInterleaved(
 =======
     : SoundSource(qFilename, "ogg") {
 >>>>>>> Fix coding style issues (indentation)
+=======
+SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename) :
+        SoundSource(qFilename, "ogg") {
+>>>>>>> Reformat source code (roughly K&R + spaces)
 }
 
 /*
  Parse the the file to get metadata
  */
-Result SoundSourceOggVorbis::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
+Result SoundSourceOggVorbis::parseMetadata(
+        Mixxx::TrackMetadata* pMetadata) const {
     TagLib::Ogg::Vorbis::File f(getFilename().toLocal8Bit().constData());
 
     if (!readAudioProperties(pMetadata, f)) {

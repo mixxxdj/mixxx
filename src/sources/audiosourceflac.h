@@ -10,10 +10,9 @@
 
 #include <vector>
 
-namespace Mixxx
-{
+namespace Mixxx {
 
-class AudioSourceFLAC : public AudioSource {
+class AudioSourceFLAC: public AudioSource {
 public:
     static AudioSourcePointer create(QString fileName);
 
@@ -21,8 +20,10 @@ public:
 
     diff_type seekSampleFrame(diff_type frameIndex) /*override*/;
 
-    size_type readSampleFrames(size_type numberOfFrames, sample_type* sampleBuffer) /*override*/;
-    size_type readSampleFramesStereo(size_type numberOfFrames, sample_type* sampleBuffer, size_type sampleBufferSize) /*override*/;
+    size_type readSampleFrames(size_type numberOfFrames,
+            sample_type* sampleBuffer) /*override*/;
+    size_type readSampleFramesStereo(size_type numberOfFrames,
+            sample_type* sampleBuffer, size_type sampleBufferSize) /*override*/;
 
     // callback methods
     FLAC__StreamDecoderReadStatus flacRead(FLAC__byte buffer[], size_t *bytes);
@@ -30,7 +31,8 @@ public:
     FLAC__StreamDecoderTellStatus flacTell(FLAC__uint64 *offset);
     FLAC__StreamDecoderLengthStatus flacLength(FLAC__uint64 *length);
     FLAC__bool flacEOF();
-    FLAC__StreamDecoderWriteStatus flacWrite(const FLAC__Frame *frame, const FLAC__int32 *const buffer[]);
+    FLAC__StreamDecoderWriteStatus flacWrite(const FLAC__Frame *frame,
+            const FLAC__int32 * const buffer[]);
     void flacMetadata(const FLAC__StreamMetadata *metadata);
     void flacError(FLAC__StreamDecoderErrorStatus status);
 
@@ -41,7 +43,9 @@ private:
 
     void close();
 
-    size_type readSampleFrames(size_type numberOfFrames, sample_type* sampleBuffer, size_type sampleBufferSize, bool readStereoSamples);
+    size_type readSampleFrames(size_type numberOfFrames,
+            sample_type* sampleBuffer, size_type sampleBufferSize,
+            bool readStereoSamples);
 
     QFile m_file;
 

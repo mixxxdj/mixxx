@@ -11,12 +11,10 @@
 /* read files in 512k chunks */
 #define CHUNKSIZE (1 << 18)
 
-namespace Mixxx
-{
+namespace Mixxx {
 
 // reserve some static space for settings...
-namespace
-{
+namespace {
 // identification of modplug module type
 enum ModuleTypes {
     NONE = 0x00,
@@ -32,15 +30,16 @@ enum ModuleTypes {
 
 unsigned int AudioSourceModPlug::s_bufferSizeLimit = 0;
 
-void AudioSourceModPlug::configure(
-        unsigned int bufferSizeLimit,
+void AudioSourceModPlug::configure(unsigned int bufferSizeLimit,
         const ModPlug::ModPlug_Settings &settings) {
     s_bufferSizeLimit = bufferSizeLimit;
     ModPlug::ModPlug_SetSettings(&settings);
 }
 
-AudioSourceModPlug::AudioSourceModPlug()
-        : m_pModFile(NULL), m_fileLength(0), m_seekPos(0) {
+AudioSourceModPlug::AudioSourceModPlug() :
+        m_pModFile(NULL),
+        m_fileLength(0),
+        m_seekPos(0) {
 }
 
 AudioSourceModPlug::~AudioSourceModPlug() {
@@ -89,11 +88,11 @@ Result AudioSourceModPlug::open(QString fileName) {
     // (((milliseconds << 1) >> 10 /* to seconds */)
     //      div 11 /* samples to chunksize ratio */)
     //      << 19 /* align to chunksize */
-    unsigned int estimate = ((ModPlug::ModPlug_GetLength(m_pModFile) >> 8) / 11) << 18;
+    unsigned int estimate = ((ModPlug::ModPlug_GetLength(m_pModFile) >> 8) / 11)
+            << 18;
     estimate = math_min(estimate, s_bufferSizeLimit);
     m_sampleBuf.reserve(estimate);
-    qDebug() << "[ModPlug] Reserved " << m_sampleBuf.capacity()
-            << " #samples";
+    qDebug() << "[ModPlug] Reserved " << m_sampleBuf.capacity() << " #samples";
 
     // decode samples to sample buffer
     int samplesRead = -1;
@@ -146,7 +145,8 @@ AudioSource::size_type AudioSourceModPlug::readSampleFrames(
     const size_type readSamples = frames2samples(readFrames);
     const size_type readOffset = frames2samples(m_seekPos);
     for (size_type i = 0; i < readSamples; ++i) {
-        sampleBuffer[i] = SAMPLE_clampSymmetric(m_sampleBuf[readOffset + i]) / sample_type(SAMPLE_MAX);
+        sampleBuffer[i] = SAMPLE_clampSymmetric(m_sampleBuf[readOffset + i])
+                / sample_type(SAMPLE_MAX);
     }
 
     m_seekPos += readFrames;

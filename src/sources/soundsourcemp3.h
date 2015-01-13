@@ -1,9 +1,9 @@
 /***************************************************************************
-                          soundsourcemp3.h  -  description
-                             -------------------
-    begin                : Wed Feb 20 2002
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                :
+ soundsourcemp3.h  -  description
+ -------------------
+ begin                : Wed Feb 20 2002
+ copyright            : (C) 2002 by Tue and Ken Haste Andersen
+ email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -21,10 +21,10 @@
 #include "sources/soundsource.h"
 
 /**
-  *@author Tue and Ken Haste Andersen
-  */
+ *@author Tue and Ken Haste Andersen
+ */
 
-class SoundSourceMp3 : public Mixxx::SoundSource {
+class SoundSourceMp3: public Mixxx::SoundSource {
 public:
     static QList<QString> supportedFileExtensions();
 

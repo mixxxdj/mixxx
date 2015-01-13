@@ -12,13 +12,13 @@ namespace Mixxx {
 /*static*/ const double TrackMetadata::REPLAYGAIN_MIN = 0.0f; // exclusive lower bound
 /*static*/ const double TrackMetadata::REPLAYGAIN_0DB = 1.0f;
 
-TrackMetadata::TrackMetadata()
-    : m_channels(0),
-      m_sampleRate(0),
-      m_bitrate(0),
-      m_duration(0),
-      m_bpm(BPM_UNDEFINED),
-      m_replayGain(REPLAYGAIN_UNDEFINED) {
+TrackMetadata::TrackMetadata() :
+        m_channels(0),
+        m_sampleRate(0),
+        m_bitrate(0),
+        m_duration(0),
+        m_bpm(BPM_UNDEFINED),
+        m_replayGain(REPLAYGAIN_UNDEFINED) {
 }
 
 double TrackMetadata::parseBpmString(const QString& sBpm) {

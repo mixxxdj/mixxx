@@ -5,9 +5,9 @@
 #include "util/defs.h"
 
 #ifdef __MP4V2__
-    #include <mp4v2/mp4v2.h>
+#include <mp4v2/mp4v2.h>
 #else
-    #include <mp4.h>
+#include <mp4.h>
 #endif
 
 #include <neaacdec.h>
@@ -21,10 +21,9 @@
 #define MY_EXPORT
 #endif
 
-
 namespace Mixxx {
 
-class AudioSourceM4A : public AudioSource {
+class AudioSourceM4A: public AudioSource {
 public:
     static AudioSourcePointer create(QString fileName);
 
@@ -32,7 +31,8 @@ public:
 
     diff_type seekSampleFrame(diff_type frameIndex) /*override*/;
 
-    size_type readSampleFrames(size_type numberOfFrames, sample_type* sampleBuffer) /*override*/;
+    size_type readSampleFrames(size_type numberOfFrames,
+            sample_type* sampleBuffer) /*override*/;
 
 private:
     AudioSourceM4A();

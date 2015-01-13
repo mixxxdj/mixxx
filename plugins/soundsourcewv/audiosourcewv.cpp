@@ -2,9 +2,9 @@
 
 namespace Mixxx {
 
-AudioSourceWV::AudioSourceWV()
-        : m_wpc(NULL),
-          m_sampleScale(0.0f) {
+AudioSourceWV::AudioSourceWV() :
+        m_wpc(NULL),
+        m_sampleScale(0.0f) {
 }
 
 AudioSourceWV::~AudioSourceWV() {
@@ -25,8 +25,8 @@ AudioSourcePointer AudioSourceWV::create(QString fileName) {
 Result AudioSourceWV::open(QString fileName) {
     char msg[80]; // hold possible error message
     m_wpc = WavpackOpenFileInput(
-        fileName.toLocal8Bit().constData(), msg,
-        OPEN_2CH_MAX | OPEN_WVC | OPEN_NORMALIZE, 0);
+            fileName.toLocal8Bit().constData(), msg,
+            OPEN_2CH_MAX | OPEN_WVC | OPEN_NORMALIZE, 0);
     if (!m_wpc) {
         qDebug() << "SSWV::open: failed to open file : " << msg;
         return ERR;
@@ -40,7 +40,8 @@ Result AudioSourceWV::open(QString fileName) {
         m_sampleScale = kSampleValuePeak;
     } else {
         const int bitsPerSample = WavpackGetBitsPerSample(m_wpc);
-        const uint32_t wavpackPeakSampleValue = uint32_t(1) << (bitsPerSample - 1);
+        const uint32_t wavpackPeakSampleValue = uint32_t(1)
+                << (bitsPerSample - 1);
         m_sampleScale = kSampleValuePeak / sample_type(wavpackPeakSampleValue);
     }
 
@@ -69,13 +70,13 @@ AudioSource::size_type AudioSourceWV::readSampleFrames(
         size_type numberOfFrames, sample_type* sampleBuffer) {
     // static assert: sizeof(sample_type) == sizeof(int32_t)
     size_type unpackCount = WavpackUnpackSamples(m_wpc,
-        reinterpret_cast<int32_t*>(sampleBuffer), numberOfFrames);
+            reinterpret_cast<int32_t*>(sampleBuffer), numberOfFrames);
     if (!(WavpackGetMode(m_wpc) & MODE_FLOAT)) {
         // signed integer -> float
         const size_type sampleCount = frames2samples(unpackCount);
         for (size_type i = 0; i < sampleCount; ++i) {
             const int32_t sampleValue =
-                reinterpret_cast<int32_t*>(sampleBuffer)[i];
+                    reinterpret_cast<int32_t*>(sampleBuffer)[i];
             sampleBuffer[i] = sample_type(sampleValue) * m_sampleScale;
         }
     }

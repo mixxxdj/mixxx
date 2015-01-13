@@ -29,6 +29,7 @@ QList<QString> SoundSourceFLAC::supportedFileExtensions() {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 SoundSourceFLAC::SoundSourceFLAC(QString filename)
 <<<<<<< HEAD
     : Mixxx::SoundSource(filename)
@@ -63,6 +64,10 @@ SoundSourceFLAC::SoundSourceFLAC(QString fileName)
 =======
     : SoundSource(fileName, "flac") {
 >>>>>>> Fix coding style issues (indentation)
+=======
+SoundSourceFLAC::SoundSourceFLAC(QString fileName) :
+        SoundSource(fileName, "flac") {
+>>>>>>> Reformat source code (roughly K&R + spaces)
 }
 
 Result SoundSourceFLAC::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {

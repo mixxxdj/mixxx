@@ -21,7 +21,7 @@
 
 namespace Mixxx {
 
-class AudioSourceCoreAudio : public AudioSource {
+class AudioSourceCoreAudio: public AudioSource {
 public:
     static AudioSourcePointer create(QString fileName);
 

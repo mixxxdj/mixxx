@@ -20,7 +20,7 @@
 
 #include "sources/soundsource.h"
 
-class SoundSourceFLAC : public Mixxx::SoundSource {
+class SoundSourceFLAC: public Mixxx::SoundSource {
 public:
     static QList<QString> supportedFileExtensions();
 

@@ -1,8 +1,8 @@
 /***************************************************************************
-                          soundsourcem4a.h  -  mp4/m4a decoder
-                             -------------------
-    copyright            : (C) 2008 by Garth Dahlstrom
-    email                : ironstorm@users.sf.net
+ soundsourcem4a.h  -  mp4/m4a decoder
+ -------------------
+ copyright            : (C) 2008 by Garth Dahlstrom
+ email                : ironstorm@users.sf.net
  ***************************************************************************/
 
 /***************************************************************************
@@ -27,10 +27,9 @@
 #define MY_EXPORT
 #endif
 
-
 namespace Mixxx {
 
-class SoundSourceM4A : public SoundSourcePlugin {
+class SoundSourceM4A: public SoundSourcePlugin {
 public:
     static QList<QString> supportedFileExtensions();
 

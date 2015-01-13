@@ -20,12 +20,14 @@
 
 namespace Mixxx {
 
-SoundSource::SoundSource(QString sFilename)
-        : m_sFilename(sFilename), m_sType(m_sFilename.section(".", -1).toLower()) {
+SoundSource::SoundSource(QString sFilename) :
+        m_sFilename(sFilename),
+        m_sType(m_sFilename.section(".", -1).toLower()) {
 }
 
-SoundSource::SoundSource(QString sFilename, QString sType)
-        : m_sFilename(sFilename), m_sType(sType) {
+SoundSource::SoundSource(QString sFilename, QString sType) :
+        m_sFilename(sFilename),
+        m_sType(sType) {
 }
 
 SoundSource::~SoundSource() {
