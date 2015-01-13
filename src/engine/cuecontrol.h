@@ -87,7 +87,7 @@ class CueControl : public EngineControl {
                ConfigObject<ConfigValue>* _config);
     virtual ~CueControl();
 
-    virtual void hintReader(QVector<Hint>* pHintList);
+    virtual void hintReader(HintVector* pHintList);
     double updateIndicatorsAndModifyPlay(double play, bool playPossible);
     void updateIndicators();
     bool isTrackAtCue();

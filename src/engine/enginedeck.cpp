@@ -19,7 +19,6 @@
 #include "effects/effectsmanager.h"
 #include "engine/effects/engineeffectsmanager.h"
 #include "engine/enginebuffer.h"
-#include "engine/enginevinylsoundemu.h"
 #include "engine/enginedeck.h"
 #include "engine/enginepregain.h"
 #include "engine/enginevumeter.h"
@@ -59,7 +58,6 @@ EngineDeck::EngineDeck(QString group,
     m_pPregain = new EnginePregain(group);
     m_pVUMeter = new EngineVuMeter(group);
     m_pBuffer = new EngineBuffer(group, pConfig, this, pMixingEngine);
-    m_pVinylSoundEmu = new EngineVinylSoundEmu(group);
 }
 
 EngineDeck::~EngineDeck() {
@@ -67,7 +65,6 @@ EngineDeck::~EngineDeck() {
 
     delete m_pBuffer;
     delete m_pPregain;
-    delete m_pVinylSoundEmu;
     delete m_pVUMeter;
     delete m_pSampleRate;
 }
@@ -80,6 +77,7 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
         SampleUtil::copy(pOut, sampleBuffer, iBufferSize);
         m_bPassthroughWasActive = true;
         m_sampleBuffer = NULL;
+        m_pPregain->setSpeed(1);
     } else {
         // If passthrough is no longer enabled, zero out the buffer
         if (m_bPassthroughWasActive) {
@@ -91,9 +89,7 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
         // Process the raw audio
         m_pBuffer->process(pOut, iBufferSize);
         m_pBuffer->collectFeatures(&features);
-        // Emulate vinyl sounds
-        m_pVinylSoundEmu->setSpeed(m_pBuffer->getSpeed());
-        m_pVinylSoundEmu->process(pOut, iBufferSize);
+        m_pPregain->setSpeed(m_pBuffer->getSpeed());
         m_bPassthroughWasActive = false;
     }
 
