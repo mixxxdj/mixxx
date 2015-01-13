@@ -249,6 +249,10 @@ long SoundSourceMp3::seek(long filepos) {
                           inputbuf_len-(long int)(cur->m_pStreamPos-(unsigned char *)inputbuf));
         mad_synth_init(Synth);
         mad_frame_init(Frame);
+        // Decode first header here, to start without extra mad_frame_decode
+        if (mad_header_decode(&Frame->header, Stream)) {
+            // TODO(error)
+        }
     } else {
         // Start four frames before wanted frame to get in sync...
         m_currentSeekFrameIndex -= kPreSeekFrames;
@@ -262,6 +266,10 @@ long SoundSourceMp3::seek(long filepos) {
             //        qDebug() << "mp3 restore " << cur->m_pStreamPos;
             mad_stream_buffer(Stream, (const unsigned char *)(cur->m_pStreamPos),
                               inputbuf_len-(long int)(cur->m_pStreamPos-(unsigned char *)inputbuf));
+            // Decode first header here, to start without extra mad_frame_decode
+            if (mad_header_decode(&Frame->header, Stream)) {
+                // TODO(error)
+            }
 
             // Mute'ing is done here to eliminate potential pops/clicks from skipping
             // Rob Leslie explains why here:
