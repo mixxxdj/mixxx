@@ -185,8 +185,8 @@ Result AudioSourceMp3::open() {
             // check for consistent frame/sample rate
             if ((0 < madSampleRate) && (getFrameRate() != madSampleRate)) {
                 qWarning() << "Differing sample rate in some headers:"
-                        << m_file.fileName() << getFrameRate() << "<>"
-                        << madSampleRate;
+                        << m_file.fileName()
+                        << getFrameRate() << "<>" << madSampleRate;
                 return ERR; // abort
             }
         }
@@ -311,16 +311,13 @@ AudioSourceMp3::SeekFrameList::size_type AudioSourceMp3::findSeekFrameIndex(
 }
 
 AudioSource::diff_type AudioSourceMp3::seekSampleFrame(diff_type frameIndex) {
-//    qDebug() << "seekSampleFrame(): frameIndex =" << frameIndex;
     DEBUG_ASSERT(isValidFrameIndex(frameIndex));
     if (!m_seekFrameList.empty()) {
         SeekFrameList::size_type seekFrameIndex = findSeekFrameIndex(
                 frameIndex);
         DEBUG_ASSERT(m_seekFrameList.size() > seekFrameIndex);
-//        qDebug() << "seekFrameIndex" << seekFrameIndex;
         const SeekFrameList::size_type curSeekFrameIndex = findSeekFrameIndex(
                 m_curFrameIndex);
-//        qDebug() << "curSeekFrameIndex" << curSeekFrameIndex;
         DEBUG_ASSERT(m_seekFrameList.size() > curSeekFrameIndex);
         // some consistency checks
         DEBUG_ASSERT((curSeekFrameIndex >= seekFrameIndex) || (m_curFrameIndex < frameIndex));
@@ -335,7 +332,6 @@ AudioSource::diff_type AudioSourceMp3::seekSampleFrame(diff_type frameIndex) {
             } else {
                 seekFrameIndex = 0;
             }
-//            qDebug() << "restarting at seekFrameIndex" << seekFrameIndex;
             restartDecoding(m_seekFrameList[seekFrameIndex]);
             DEBUG_ASSERT(findSeekFrameIndex(m_curFrameIndex) == seekFrameIndex);
         }
@@ -365,9 +361,6 @@ AudioSource::size_type AudioSourceMp3::readSampleFramesStereo(
 AudioSource::size_type AudioSourceMp3::readSampleFrames(
         size_type numberOfFrames, sample_type* sampleBuffer,
         size_type sampleBufferSize, bool readStereoSamples) {
-//    qDebug() << "readSampleFrames():"
-//             << "m_curFrameIndex =" << m_curFrameIndex
-//             << "numberOfFrames =" << numberOfFrames;
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
 
     sample_type* pSampleBuffer = sampleBuffer;
