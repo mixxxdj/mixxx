@@ -71,8 +71,6 @@ private:
 
     diff_type m_curFrameIndex;
 
-    void initDecoding();
-    void finishDecoding();
     void restartDecoding(const SeekFrameType& seekFrame);
 
     // current play position
