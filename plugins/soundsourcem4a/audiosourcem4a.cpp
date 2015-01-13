@@ -30,8 +30,8 @@ const MP4SampleId kMinSampleBlockId = 1;
 
 // Decoding will be restarted one or more blocks of samples
 // before the actual position to avoid audible glitches.
-// Two blocks of samples seems to be enough here.
-const MP4SampleId kNumberOfPrefetchSampleBlocks = 2;
+// One block of samples seems to be enough here!
+const MP4SampleId kNumberOfPrefetchSampleBlocks = 1;
 
 // Searches for the first audio track in the MP4 file that
 // suits our needs.
