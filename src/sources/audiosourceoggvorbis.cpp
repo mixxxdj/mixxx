@@ -1,7 +1,5 @@
 #include "sources/audiosourceoggvorbis.h"
 
-#include <vorbis/codec.h>
-
 namespace Mixxx
 {
 
@@ -67,11 +65,12 @@ void AudioSourceOggVorbis::close() {
 
 AudioSource::diff_type AudioSourceOggVorbis::seekSampleFrame(
     diff_type frameIndex) {
+    DEBUG_ASSERT(isValidFrameIndex(frameIndex));
     const int seekResult = ov_pcm_seek(&m_vf, frameIndex);
     if (0 != seekResult) {
         qWarning() << "Failed to seek OggVorbis file:" << seekResult;
     }
-    return ov_pcm_tell(&m_vf);
+    return getCurrentFrameIndex();
 }
 
 AudioSource::size_type AudioSourceOggVorbis::readSampleFrames(
@@ -90,6 +89,8 @@ AudioSource::size_type AudioSourceOggVorbis::readSampleFrames(
     size_type numberOfFrames,
     sample_type* sampleBuffer, size_type sampleBufferSize,
     bool readStereoSamples) {
+    DEBUG_ASSERT(isValidFrameIndex(getCurrentFrameIndex()));
+
     sample_type* nextSample = sampleBuffer;
     const size_type numberOfFramesTotal = math_min(numberOfFrames, samples2frames(sampleBufferSize));
     size_type numberOfFramesRead = 0;
