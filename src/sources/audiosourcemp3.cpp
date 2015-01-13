@@ -217,11 +217,24 @@ Result AudioSourceMp3::open() {
 }
 
 void AudioSourceMp3::restartDecoding(const SeekFrameType& seekFrame) {
-    mad_stream_buffer(&m_madStream, seekFrame.pFileData,
-            m_fileSize - (seekFrame.pFileData - m_pFileData));
+    // Reset the MAD decoder completely. Otherwise
+    // audible artifacts and glitches occur when
+    // seeking through the stream no matter how
+    // many MP3 frames are prefetched!
+    mad_synth_finish(&m_madSynth);
+    mad_frame_finish(&m_madFrame);
+    mad_stream_finish(&m_madStream);
+    mad_stream_init(&m_madStream);
+    mad_stream_options(&m_madStream, MAD_OPTION_IGNORECRC);
+    mad_frame_init(&m_madFrame);
+    mad_synth_init(&m_madSynth);
+
+    mad_stream_buffer(&m_madStream, seekFrame.pInputData,
+            m_fileSize - (seekFrame.pInputData - m_pFileData));
     m_curFrameIndex = seekFrame.frameIndex;
     // discard input buffer
     m_madSynthCount = 0;
+
     // Calling mad_synth_mute() and mad_frame_mute() is not
     // necessary, because we will prefetch (decode and skip)
     // some frames before actually reading any audio samples
