@@ -182,7 +182,7 @@ TEST_F(SoundSourceProxyTest, seekForward) {
             EXPECT_EQ(read2, kTestFrameCount);
 
             for( int i = 0; i < kTestFrameCount; i++) {
-                EXPECT_EQ(pData1[i], pData2[i]);
+                ASSERT_EQ(pData1[i], pData2[i]);
                 if (pData1[i] != pData2[i]) {
                     qDebug() << filePath << "Test Sample" << i;
                     break;

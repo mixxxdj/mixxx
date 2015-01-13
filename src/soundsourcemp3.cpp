@@ -151,9 +151,9 @@ Result SoundSourceMp3::open() {
         p->m_pStreamPos = (unsigned char *)Stream->this_frame;
         p->pos = length();
         mad_timer_add (&filelength, Header.duration);
-        if (m_qSeekList.size() < 40) {
+        //if (m_qSeekList.size() < 40) {
             qDebug() << p->m_pStreamPos << *p->m_pStreamPos << p->pos << m_qSeekList.size();
-        }
+        //}
         m_qSeekList.append(p);
         currentframe++;
     }
