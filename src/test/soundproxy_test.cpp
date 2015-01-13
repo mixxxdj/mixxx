@@ -66,20 +66,21 @@ TEST_F(SoundSourceProxyTest, seekTheSame) {
 
     QStringList extensions;
     extensions << "aiff" << "flac" << "mp3" << "ogg" << "wav";
+    
+    SAMPLE *pData1 = new SAMPLE[kTestSampleCount];
+    SAMPLE *pData2 = new SAMPLE[kTestSampleCount];
 
     foreach (const QString& extension, extensions) {
         QString filePath = kFilePath + extension;
 
         Mixxx::SoundSourcePointer pSoundSource1(loadProxy(filePath));
         EXPECT_EQ(OK, pSoundSource1->open());
-        SAMPLE *pData1 = new SAMPLE[kTestSampleCount];
         pSoundSource1->seek(kSeekSample);
         unsigned int read1 = pSoundSource1->read(kTestSampleCount, pData1);
         EXPECT_EQ(read1, kTestSampleCount);
 
         Mixxx::SoundSourcePointer pSoundSource2(loadProxy(filePath));
         EXPECT_EQ(OK, pSoundSource2->open());
-        SAMPLE *pData2 = new SAMPLE[kTestSampleCount];
         pSoundSource2->seek(kSeekSample);
         unsigned int read2 = pSoundSource2->read(kTestSampleCount, pData2);
         EXPECT_EQ(read2, kTestSampleCount);
@@ -93,6 +94,8 @@ TEST_F(SoundSourceProxyTest, seekTheSame) {
             //qDebug() << pData1[i];
         }
     }
+    delete[] pData1;
+    delete[] pData2;
 }
 
 
@@ -105,6 +108,9 @@ TEST_F(SoundSourceProxyTest, readBeforeSeek) {
 
     QStringList extensions;
     extensions << "aiff" << "flac" << "mp3" << "ogg" << "wav";
+
+    SAMPLE *pData1 = new SAMPLE[kTestSampleCount];
+    SAMPLE *pData2 = new SAMPLE[kTestSampleCount];
 
     foreach (const QString& extension, extensions) {
         QString filePath = kFilePath + extension;
@@ -134,6 +140,8 @@ TEST_F(SoundSourceProxyTest, readBeforeSeek) {
             //qDebug() << pData1[i];
         }
     }
+    delete[] pData1;
+    delete[] pData2;
 }
 
 TEST_F(SoundSourceProxyTest, seekForward) {
@@ -146,12 +154,14 @@ TEST_F(SoundSourceProxyTest, seekForward) {
     QStringList extensions;
     extensions << "aiff" << "flac" << "wav"  << "ogg" << "mp3";
 
+    SAMPLE *pData1 = new SAMPLE[kTestSampleCount];
+    SAMPLE *pData2 = new SAMPLE[kTestSampleCount];
+
     foreach (const QString& extension, extensions) {
         QString filePath = kFilePath + extension;
 
         Mixxx::SoundSourcePointer pSoundSource1(loadProxy(filePath));
         EXPECT_EQ(OK, pSoundSource1->open());
-        SAMPLE *pData1 = new SAMPLE[kTestSampleCount];
         for(int i = 0; i <= kSeekSample / kTestSampleCount; ++i) {
             unsigned int read1 = pSoundSource1->read(kTestSampleCount, pData1);
             EXPECT_EQ(read1, kTestSampleCount);
@@ -159,7 +169,6 @@ TEST_F(SoundSourceProxyTest, seekForward) {
 
         Mixxx::SoundSourcePointer pSoundSource2(loadProxy(filePath));
         EXPECT_EQ(OK, pSoundSource2->open());
-        SAMPLE *pData2 = new SAMPLE[kTestSampleCount];
         pSoundSource2->seek(kSeekSample);
         unsigned int read2 = pSoundSource2->read(kTestSampleCount, pData2);
         EXPECT_EQ(read2, kTestSampleCount);
@@ -172,7 +181,6 @@ TEST_F(SoundSourceProxyTest, seekForward) {
             }
         }
     }
+    delete[] pData1;
+    delete[] pData2;
 }
-
-
-
