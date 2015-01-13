@@ -54,7 +54,7 @@ private:
     /** Struct used to store mad frames for seeking */
     struct SeekFrameType {
         diff_type frameIndex;
-        const unsigned char* pFileData;
+        const unsigned char* pInputData;
     };
 
     /** It is not possible to make a precise seek in an mp3 file without decoding the whole stream.
@@ -65,6 +65,8 @@ private:
     typedef std::vector<SeekFrameType> SeekFrameList;
     SeekFrameList m_seekFrameList; // ordered-by frameIndex
     size_type m_avgSeekFrameCount; // avg. sample frames per MP3 frame
+
+    void addSeekFrame(mad_timer_t madDuration, mad_units madUnits, const unsigned char* pInputData);
 
     /** Returns the position in m_seekFrameList of the requested frame index. */
     SeekFrameList::size_type findSeekFrameIndex(diff_type frameIndex) const;
