@@ -1,3 +1,4 @@
+#include "util/math.h"
 #include <QtDebug>
 
 #include "effects/native/paneffect.h"
