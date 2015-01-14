@@ -29,9 +29,18 @@ const AudioSource::size_type kFramesPerSampleBlock = 1024;
 const MP4SampleId kMinSampleBlockId = 1;
 
 // Decoding will be restarted one or more blocks of samples
-// before the actual position to avoid audible glitches.
-// One block of samples seems to be enough here!
-const MP4SampleId kNumberOfPrefetchSampleBlocks = 1;
+// before the actual position after seeking randomly in the
+// audio stream to avoid audible glitches.
+//
+// TODO(XXX): Replace with the smallest possible value that
+// allows accurate seeking in any audio stream compliant with
+// the AAC specification! This theoretical value has to be
+// confirmed practically by appropriate unit tests.
+//
+// For the time being simply use the current value of 2 which
+// seems to be enough as experimental listening tests with some
+// M4A example files revealed.
+const MP4SampleId kNumberOfPrefetchSampleBlocks = 2;
 
 // Searches for the first audio track in the MP4 file that
 // suits our needs.
