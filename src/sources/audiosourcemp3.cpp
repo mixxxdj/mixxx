@@ -370,6 +370,7 @@ AudioSource::size_type AudioSourceMp3::readSampleFrames(
         if (0 >= m_madSynthCount) {
             // all decoded output data has been consumed
             DEBUG_ASSERT(0 == m_madSynthCount);
+            unsigned char const* madThisFrame = m_madStream.this_frame;
             if (0 != mad_frame_decode(&m_madFrame, &m_madStream)) {
                 if (MAD_RECOVERABLE(m_madStream.error)) {
                     if (NULL != pSampleBuffer) {
@@ -387,6 +388,12 @@ AudioSource::size_type AudioSourceMp3::readSampleFrames(
                     qWarning() << "Unrecoverable MP3 decoding error:"
                             << mad_stream_errorstr(&m_madStream);
                     break;
+                }
+            } else {
+                if (madThisFrame == m_madStream.this_frame) {
+                    // still at the same frame after decoding although
+                    // mad_frame_decode() returned 0 -> retry (why???)
+                    continue;
                 }
             }
             const mad_header* const pMadFrameHeader = &m_madFrame.header;
