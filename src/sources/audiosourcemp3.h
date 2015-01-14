@@ -73,7 +73,7 @@ private:
 
     diff_type m_curFrameIndex;
 
-    bool restartDecoding(const SeekFrameType& seekFrame);
+    diff_type restartDecoding(const SeekFrameType& seekFrame);
 
     // current play position
     mad_frame m_madFrame;

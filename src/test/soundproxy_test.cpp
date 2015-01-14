@@ -91,7 +91,8 @@ TEST_F(SoundSourceProxyTest, seekForward) {
                 frameIndex1 += readCount1;
             }
             EXPECT_EQ(seekFrameIndex, frameIndex1);
-            unsigned int readCount1 = pAudioSource1->readSampleFrames(kTestFrameCount, pData1);
+            const unsigned int readCount1 = pAudioSource1->readSampleFrames(kTestFrameCount, pData1);
+            EXPECT_EQ(kTestFrameCount, readCount1);
 
             Mixxx::AudioSourcePointer pAudioSource2(
                 openAudioSource(filePath));
@@ -101,17 +102,18 @@ TEST_F(SoundSourceProxyTest, seekForward) {
             }
             const unsigned int sampleCount2 = pAudioSource2->frames2samples(kTestFrameCount);
             CSAMPLE *pData2 = new CSAMPLE[sampleCount2];
-            pAudioSource2->seekSampleFrame(seekFrameIndex);
-            unsigned int readCount2 = pAudioSource2->readSampleFrames(kTestFrameCount, pData2);
+            unsigned int frameIndex2 = pAudioSource2->seekSampleFrame(seekFrameIndex);
+            EXPECT_EQ(seekFrameIndex, frameIndex2);
+            const unsigned int readCount2 = pAudioSource2->readSampleFrames(kTestFrameCount, pData2);
             EXPECT_EQ(kTestFrameCount, readCount2);
 
-            EXPECT_EQ(readCount1, readCount2);
-            for (unsigned int i = 0; i < readCount1; i++) {
+            for (unsigned int i = 0; i < kTestFrameCount; i++) {
                 if (pData1[i] != pData2[i]) {
-                    qDebug() << filePath << "Test Sample"  << i;
+                    qDebug() << filePath;
+                    qDebug() << "seekFrameIndex =" << seekFrameIndex;
+                    qDebug() << "readFrameIndex =" << (seekFrameIndex + i);
                 }
                 EXPECT_EQ(pData1[i], pData2[i]);
-                //qDebug() << pData1[i];
             }
 
             delete[] pData1;
