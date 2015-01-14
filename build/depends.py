@@ -595,7 +595,6 @@ class MixxxCore(Feature):
                    "engine/enginemaster.cpp",
                    "engine/enginedelay.cpp",
                    "engine/enginevumeter.cpp",
-                   "engine/enginevinylsoundemu.cpp",
                    "engine/enginesidechaincompressor.cpp",
                    "engine/sidechain/enginesidechain.cpp",
                    "engine/enginexfader.cpp",
