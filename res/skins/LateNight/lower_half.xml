@@ -1,5 +1,5 @@
 <Template>
-    <SizeAwareStack currentpage="[Master],lower_half_size" persist="true">
+    <SizeAwareStack currentpage="[Master],lower_half_size">
         <Children>
             <WidgetGroup>
                 <ObjectName>UILowerHalf</ObjectName>

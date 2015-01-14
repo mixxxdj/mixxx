@@ -51,6 +51,13 @@ ValueTransformer* ValueTransformer::parseFromXml(QDomElement transformElement,
             }
         } else if (element.nodeName() == "Not") {
             pTransformer->addTransformer(new TransformNot());
+        } else if (element.nodeName() == "Match") {
+            QString value = context.nodeToString(element);
+            bool ok = false;
+            double match = value.toDouble(&ok);
+            if (ok) {
+                pTransformer->addTransformer(new TransformMatch(match));
+            }
         }
     }
 

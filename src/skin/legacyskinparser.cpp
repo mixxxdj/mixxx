@@ -660,7 +660,14 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
 }
 
 QWidget* LegacySkinParser::parseSizeAwareStack(QDomElement node) {
-    WSizeAwareStack* pStack = new WSizeAwareStack(m_pParent);
+    ControlObject* pCurrentPageControl = NULL;
+    QString currentpage_co = node.attribute("currentpage");
+    if (currentpage_co.length() > 0) {
+        ConfigKey configKey = ConfigKey::parseCommaSeparated(currentpage_co);
+        pCurrentPageControl = controlFromConfigKey(configKey, false, NULL);
+    }
+
+    WSizeAwareStack* pStack = new WSizeAwareStack(m_pParent, pCurrentPageControl);
     pStack->setObjectName("SizeAwareStack");
     pStack->setContentsMargins(0, 0, 0, 0);
     commonWidgetSetup(node, pStack);

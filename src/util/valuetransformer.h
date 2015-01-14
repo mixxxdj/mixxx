@@ -56,6 +56,31 @@ class TransformNot : public TransformNode {
     }
 };
 
+class TransformMatch : public TransformNode {
+  public:
+    TransformMatch(double match) : m_match(match) { }
+
+    double transform(double argument) const {
+        return argument == m_match ? 1.0 : 0.0;
+    }
+
+    double transformInverse(double argument) const {
+        if (argument) {
+            return m_match;
+        }
+        // Inverse is lossy -- we don't know what the original value
+        // was based on the matched boolean success or failure.  But we can
+        // at least return a value that would correctly fail a match.
+        if (m_match == 0) {
+            return 1.0;
+        }
+        return 0;
+    }
+
+  private:
+    double m_match;
+};
+
 class ValueTransformer {
   public:
     double transform(double argument) const;
