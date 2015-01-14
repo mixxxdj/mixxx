@@ -229,11 +229,15 @@ void AudioSourceMp3::restartDecoding(const SeekFrameType& seekFrame) {
     mad_frame_init(&m_madFrame);
     mad_synth_init(&m_madSynth);
 
+    // Reset stream position
+    m_curFrameIndex = seekFrame.frameIndex;
+
+    // Discard decoded output
+    m_madSynthCount = 0;
+
+    // Fill input buffer
     mad_stream_buffer(&m_madStream, seekFrame.pInputData,
             m_fileSize - (seekFrame.pInputData - m_pFileData));
-    m_curFrameIndex = seekFrame.frameIndex;
-    // discard input buffer
-    m_madSynthCount = 0;
 
     // Calling mad_synth_mute() and mad_frame_mute() is not
     // necessary, because we will prefetch (decode and skip)
@@ -354,13 +358,20 @@ AudioSource::size_type AudioSourceMp3::readSampleFrames(
 
     sample_type* pSampleBuffer = sampleBuffer;
     size_type numberOfFramesRemaining =
-            math_min(numberOfFrames, samples2frames(sampleBufferSize));
+            math_min(numberOfFrames, getFrameCount() - m_curFrameIndex);
+    numberOfFramesRemaining =
+            math_min(numberOfFramesRemaining, samples2frames(sampleBufferSize));
     while (0 < numberOfFramesRemaining) {
         if (0 >= m_madSynthCount) {
-            // all decoded output data has been consumed
+            // When all decoded output data has been consumed...
             DEBUG_ASSERT(0 == m_madSynthCount);
+            // ...decode the next MP3 frame
+            DEBUG_ASSERT(NULL != m_madStream.buffer);
+            DEBUG_ASSERT(NULL != m_madStream.this_frame);
             unsigned char const* madThisFrame = m_madStream.this_frame;
             if (0 != mad_frame_decode(&m_madFrame, &m_madStream)) {
+                qDebug() << "MP3 decoding error:"
+                        << mad_stream_errorstr(&m_madStream);
                 if (MAD_RECOVERABLE(m_madStream.error)) {
                     if (NULL != pSampleBuffer) {
                         qWarning() << "Recoverable MP3 decoding error:"

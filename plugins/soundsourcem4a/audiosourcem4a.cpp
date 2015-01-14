@@ -256,7 +256,8 @@ AudioSource::size_type AudioSourceM4A::readSampleFrames(
     }
 
     sample_type* pSampleBuffer = sampleBuffer;
-    size_type numberOfFramesRemaining = numberOfFrames;
+    size_type numberOfFramesRemaining =
+            math_min(numberOfFrames, getFrameCount() - m_curFrameIndex);
     while (0 < numberOfFramesRemaining) {
         DEBUG_ASSERT(m_inputBufferOffset <= m_inputBufferLength);
         if (m_inputBufferOffset >= m_inputBufferLength) {
