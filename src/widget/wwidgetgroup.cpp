@@ -81,8 +81,6 @@ void WWidgetGroup::setLayoutAlignment(int alignment) {
 void WWidgetGroup::setup(QDomNode node, const SkinContext& context) {
     setContentsMargins(0, 0, 0, 0);
 
-
-    qDebug() << "widget group setup!";
     // Set background pixmap if available
     if (context.hasNode(node, "BackPath")) {
         QDomElement backPathNode = context.selectElement(node, "BackPath");
@@ -143,7 +141,6 @@ void WWidgetGroup::setPixmapBackground(PixmapSource source, Paintable::DrawMode 
 
 void WWidgetGroup::addWidget(QWidget* pChild) {
     QLayout* pLayout = layout();
-    qDebug() << "asked for the layout" << pLayout;
     if (pLayout && pChild) {
         pLayout->addWidget(pChild);
     }

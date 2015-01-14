@@ -10,14 +10,12 @@ class WLibraryContainer : public WWidgetGroup {
     Q_OBJECT
 
   public:
-    WLibraryContainer(WLibrary* library,
-                      QDomNode node,
-                      const SkinContext& context,
-                      QWidget* pParent=NULL);
+    WLibraryContainer(WLibrary* library, QDomNode node,
+                      const SkinContext& context, QWidget* pParent=NULL);
     virtual ~WLibraryContainer() { }
 
   public slots:
-    virtual void setVisible(bool visible);
+    virtual void showEvent(QShowEvent* event) override;
 
   private:
     QLayout* m_pLayout;

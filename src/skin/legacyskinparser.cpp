@@ -1087,10 +1087,8 @@ QWidget* LegacySkinParser::parseCoverArt(QDomElement node) {
 }
 
 QWidget* LegacySkinParser::parseLibrary(QDomElement node) {
-    qDebug() << "parselibrary!";
     bool widget_created = false;
     if (m_pLibraryWidget == NULL) {
-        qDebug() << "Creating library!";
         widget_created = true;
         m_pLibraryWidget = new WLibrary(m_pParent);
         m_pLibraryWidget->installEventFilter(m_pKeyboard);
@@ -1101,31 +1099,26 @@ QWidget* LegacySkinParser::parseLibrary(QDomElement node) {
                 m_pLibraryWidget, SLOT(search(const QString&)));
 
         m_pLibrary->bindWidget(m_pLibraryWidget, m_pKeyboard);
-    } else {
-        qDebug() << "we already have a library, using it instead";
     }
 
     WLibraryContainer* container =
             new WLibraryContainer(m_pLibraryWidget, node, *m_pContext, m_pParent);
-    qDebug() << "CONTAINER SETUP";
     commonWidgetSetup(node, container, false);
 
-    qDebug() << "adding the library widget or something";
-
-    // hm, putting this out here makes it so the splitter is in the correct
+    // Adding the widget every time makes it so the splitter is in the correct
     // place for all the views.
+    if (!widget_created) {
+        // Unparent the widget while we do this to avoid QT error messages.
+        m_pLibraryWidget->parentWidget()->layout()->removeWidget(m_pLibraryWidget);
+    }
     container->addWidget(m_pLibraryWidget);
 
     if (widget_created) {
-        qDebug() << "adding widget to container" << container << m_pLibraryWidget;
-        //container->setLayout(m_pLibraryWidget->layout());
         // This must come after the bindWidget or we will not style any of the
         // LibraryView's because they have not been added yet.
-        qDebug() << "LIBRARY WIDGET SETUP";
         commonWidgetSetup(node, m_pLibraryWidget, false);
     }
 
-    qDebug() << "LIBRARY DONE";
     return container;
 }
 
@@ -1163,7 +1156,6 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
     QWidget* oldParent = m_pParent;
 
     m_pParent = pSplitter;
-    qDebug() << "official library parsing is here, or something";
     QWidget* pLibraryWidget = parseLibrary(node);
 
     QWidget* pLibrarySidebarPage = new QWidget(pSplitter);
@@ -1502,7 +1494,6 @@ bool parseSizePolicy(QString* input, QSizePolicy::Policy* policy) {
 }
 
 void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
-    qDebug() << "herperp setup size";
     if (m_pContext->hasNode(node, "MinimumSize")) {
         QString size = m_pContext->selectString(node, "MinimumSize");
         int comma = size.indexOf(",");
@@ -1514,8 +1505,6 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
 
         bool heightOk = false;
         int y = ys.toInt(&heightOk);
-
-        qDebug() << "minimumsize" << x << y;
 
         // -1 means do not set.
         if (widthOk && heightOk && x >= 0 && y >= 0) {
@@ -1542,8 +1531,6 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
         bool heightOk = false;
         int y = ys.toInt(&heightOk);
 
-        qDebug() << "max size" << x << y;
-
         // -1 means do not set.
         if (widthOk && heightOk && x >= 0 && y >= 0) {
             pWidget->setMaximumSize(x, y);
@@ -1565,8 +1552,6 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
         QString ys = size.mid(comma+1);
 
         QSizePolicy sizePolicy = pWidget->sizePolicy();
-
-        qDebug() << "size policy" << size;
 
         QSizePolicy::Policy horizontalPolicy;
         if (parseSizePolicy(&xs, &horizontalPolicy)) {
@@ -1593,8 +1578,6 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
         int comma = size.indexOf(",");
         QString xs = size.left(comma);
         QString ys = size.mid(comma+1);
-
-        qDebug() << "explicit size" << size;
 
         QSizePolicy sizePolicy = pWidget->sizePolicy();
 
