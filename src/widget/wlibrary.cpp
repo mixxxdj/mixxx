@@ -18,6 +18,8 @@ WLibrary::WLibrary(QWidget* parent)
     //setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
     //setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 //        m_pLibrary->setMaximumSize(1920,1080);
+
+    // If I set fixedsize here, it does indeed take that size.
     //setFixedSize(1920,1080);
 }
 
