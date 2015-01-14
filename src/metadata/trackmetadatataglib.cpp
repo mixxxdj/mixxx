@@ -34,60 +34,40 @@ inline QString toQString(const TagLib::String& tString) {
     }
 }
 
-// Concatenates the elements of a TagLib string list
-// into a single string.
-inline QString toQStringConcat(const TagLib::StringList& strList) {
-    return toQString(strList.toString());
+// Returns the first element of TagLib string list.
+inline QString toQStringFirst(const TagLib::StringList& strList) {
+    if (strList.isEmpty()) {
+        return QString();
+    } else {
+        return toQString(strList.front());
+    }
 }
 
-// Concatenates the frame list of an ID3v2 tag into a
-// single string.
+// Returns the text of an ID3v2 frame as a string.
 inline QString toQString(const TagLib::ID3v2::Frame& frame) {
     return toQString(frame.toString());
 }
 
-// Concatenates the frame list of an ID3v2 tag into a
-// single string.
-QString toQStringConcat(const TagLib::ID3v2::FrameList& frameList) {
-    QString result;
-    for (TagLib::ID3v2::FrameList::ConstIterator i(frameList.begin());
-            frameList.end() != i; ++i) {
-        result += toQString(**i);
+// Returns the first frame of an ID3v2 tag as a string.
+inline QString toQStringFirst(const TagLib::ID3v2::FrameList& frameList) {
+    if (frameList.isEmpty() || (NULL == frameList.front())) {
+        return QString();
+    } else {
+        return toQString(*frameList.front());
     }
-    return result;
 }
 
-// Returns the first ID3v2 frame that is not empty.
-QString toQStringFirst(const TagLib::ID3v2::FrameList& frameList) {
-    for (TagLib::ID3v2::FrameList::ConstIterator i(frameList.begin());
-            frameList.end() != i; ++i) {
-        const QString value(toQString(**i).trimmed());
-        if (!value.isEmpty()) {
-            return value;
-        }
-    }
-    return QString();
-}
-
-// Concatenates the string list of an MP4 item
-// into a single string.
-inline QString toQStringConcat(const TagLib::MP4::Item& mp4Item) {
-    return toQStringConcat(mp4Item.toStringList());
-}
-
-// Returns the first MP4 item string that is not empty.
-QString toQStringFirst(const TagLib::MP4::Item& mp4Item) {
+// Returns the first value of an MP4 item as a string.
+inline QString toQStringFirst(const TagLib::MP4::Item& mp4Item) {
     const TagLib::StringList strList(mp4Item.toStringList());
-    for (TagLib::StringList::ConstIterator i(strList.begin());
-            strList.end() != i; ++i) {
-        const QString value(toQString(*i).trimmed());
-        if (!value.isEmpty()) {
-            return value;
-        }
+    if (strList.isEmpty()) {
+        return QString();
+    } else {
+        return toQString(strList.front());
     }
-    return QString();
 }
 
+// Returns an APE item as a string.
 inline QString toQString(const TagLib::APE::Item& apeItem) {
     return toQString(apeItem.toString());
 }
@@ -222,23 +202,23 @@ void readID3v2Tag(TrackMetadata* pTrackMetadata,
 
     const TagLib::ID3v2::FrameList albumArtistFrame(tag.frameListMap()["TPE2"]);
     if (!albumArtistFrame.isEmpty()) {
-        pTrackMetadata->setAlbumArtist(toQStringConcat(albumArtistFrame));
+        pTrackMetadata->setAlbumArtist(toQStringFirst(albumArtistFrame));
     }
 
     if (pTrackMetadata->getAlbum().isEmpty()) {
         const TagLib::ID3v2::FrameList originalAlbumFrame(
                 tag.frameListMap()["TOAL"]);
-        pTrackMetadata->setAlbum(toQStringConcat(originalAlbumFrame));
+        pTrackMetadata->setAlbum(toQStringFirst(originalAlbumFrame));
     }
 
     const TagLib::ID3v2::FrameList composerFrame(tag.frameListMap()["TCOM"]);
     if (!composerFrame.isEmpty()) {
-        pTrackMetadata->setComposer(toQStringConcat(composerFrame));
+        pTrackMetadata->setComposer(toQStringFirst(composerFrame));
     }
 
     const TagLib::ID3v2::FrameList groupingFrame(tag.frameListMap()["TIT1"]);
     if (!groupingFrame.isEmpty()) {
-        pTrackMetadata->setGrouping(toQStringConcat(groupingFrame));
+        pTrackMetadata->setGrouping(toQStringFirst(groupingFrame));
     }
 
     // ID3v2.4.0: TDRC replaces TYER + TDAT
@@ -313,7 +293,7 @@ void readXiphComment(TrackMetadata* pTrackMetadata,
     if (pTrackMetadata->getComment().isEmpty()
             && tag.fieldListMap().contains("COMMENT")) {
         pTrackMetadata->setComment(
-                toQStringConcat(tag.fieldListMap()["COMMENT"]));
+                toQStringFirst(tag.fieldListMap()["COMMENT"]));
     }
 
     // Some tags use "BPM" so check for that.
@@ -357,29 +337,29 @@ void readXiphComment(TrackMetadata* pTrackMetadata,
 
     if (tag.fieldListMap().contains("ALBUMARTIST")) {
         pTrackMetadata->setAlbumArtist(
-                toQStringConcat(tag.fieldListMap()["ALBUMARTIST"]));
+                toQStringFirst(tag.fieldListMap()["ALBUMARTIST"]));
     }
     if (pTrackMetadata->getAlbumArtist().isEmpty()
             && tag.fieldListMap().contains("ALBUM_ARTIST")) {
         // try alternative field name
         pTrackMetadata->setAlbumArtist(
-                toQStringConcat(tag.fieldListMap()["ALBUM_ARTIST"]));
+                toQStringFirst(tag.fieldListMap()["ALBUM_ARTIST"]));
     }
     if (pTrackMetadata->getAlbumArtist().isEmpty()
             && tag.fieldListMap().contains("ALBUM ARTIST")) {
         // try alternative field name
         pTrackMetadata->setAlbumArtist(
-                toQStringConcat(tag.fieldListMap()["ALBUM ARTIST"]));
+                toQStringFirst(tag.fieldListMap()["ALBUM ARTIST"]));
     }
 
     if (tag.fieldListMap().contains("COMPOSER")) {
         pTrackMetadata->setComposer(
-                toQStringConcat(tag.fieldListMap()["COMPOSER"]));
+                toQStringFirst(tag.fieldListMap()["COMPOSER"]));
     }
 
     if (tag.fieldListMap().contains("GROUPING")) {
         pTrackMetadata->setGrouping(
-                toQStringConcat(tag.fieldListMap()["GROUPING"]));
+                toQStringFirst(tag.fieldListMap()["GROUPING"]));
     }
 
     if (tag.fieldListMap().contains("DATE")) {
@@ -393,7 +373,7 @@ void readMP4Tag(TrackMetadata* pTrackMetadata, /*const*/TagLib::MP4::Tag& tag) {
                 tag.itemListMap().begin()); it != tag.itemListMap().end();
                 ++it) {
             qDebug() << "MP4" << toQString((*it).first) << "-"
-                    << toQStringConcat((*it).second);
+                    << toQStringFirst((*it).second);
         }
     }
 
@@ -417,19 +397,19 @@ void readMP4Tag(TrackMetadata* pTrackMetadata, /*const*/TagLib::MP4::Tag& tag) {
     // Get Album Artist
     if (tag.itemListMap().contains("aART")) {
         pTrackMetadata->setAlbumArtist(
-                toQStringConcat(tag.itemListMap()["aART"]));
+                toQStringFirst(tag.itemListMap()["aART"]));
     }
 
     // Get Composer
     if (tag.itemListMap().contains("\251wrt")) {
         pTrackMetadata->setComposer(
-                toQStringConcat(tag.itemListMap()["\251wrt"]));
+                toQStringFirst(tag.itemListMap()["\251wrt"]));
     }
 
     // Get Grouping
     if (tag.itemListMap().contains("\251grp")) {
         pTrackMetadata->setGrouping(
-                toQStringConcat(tag.itemListMap()["\251grp"]));
+                toQStringFirst(tag.itemListMap()["\251grp"]));
     }
 
     // Get date/year as string
