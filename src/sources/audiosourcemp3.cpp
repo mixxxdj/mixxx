@@ -261,36 +261,21 @@ void AudioSourceMp3::close() {
 
 AudioSourceMp3::SeekFrameList::size_type AudioSourceMp3::findSeekFrameIndex(
         diff_type frameIndex) const {
+    // Check preconditions
     DEBUG_ASSERT(0 < m_avgSeekFrameCount);
     DEBUG_ASSERT(!m_seekFrameList.empty());
     DEBUG_ASSERT(0 == m_seekFrameList.front().frameIndex);
     DEBUG_ASSERT(diff_type(getFrameCount()) == m_seekFrameList.back().frameIndex);
-    // Guess position of frame in m_seekFrameList based on average frame size
-    AudioSourceMp3::SeekFrameList::size_type seekFrameIndex = frameIndex
-            / m_avgSeekFrameCount;
-    if (seekFrameIndex >= m_seekFrameList.size()) {
-        seekFrameIndex = m_seekFrameList.size() - 1;
-    }
-    // binary search starting at seekFrameIndex
+
     AudioSourceMp3::SeekFrameList::size_type lowerBound =
-            seekFrameIndex;
-    while (0 < lowerBound) {
-        if (m_seekFrameList[lowerBound].frameIndex <= frameIndex) {
-            break;
-        } else {
-            lowerBound /= 2;
-        }
-    }
+            0;
     AudioSourceMp3::SeekFrameList::size_type upperBound =
             m_seekFrameList.size();
-    while (seekFrameIndex < upperBound) {
-        AudioSourceMp3::SeekFrameList::size_type medianBound =
-                seekFrameIndex + (upperBound - seekFrameIndex) / 2;
-        if (m_seekFrameList[medianBound].frameIndex <= frameIndex) {
-            break;
-        } else {
-            upperBound = medianBound;
-        }
+    // Initial guess based on average frame size
+    AudioSourceMp3::SeekFrameList::size_type seekFrameIndex =
+            frameIndex / m_avgSeekFrameCount;
+    if (seekFrameIndex >= m_seekFrameList.size()) {
+        seekFrameIndex = m_seekFrameList.size() - 1;
     }
     while ((upperBound - lowerBound) > 1) {
         DEBUG_ASSERT(seekFrameIndex >= lowerBound);
@@ -300,13 +285,17 @@ AudioSourceMp3::SeekFrameList::size_type AudioSourceMp3::findSeekFrameIndex(
         } else {
             upperBound = seekFrameIndex;
         }
+        // Next guess halfway between lower and upper bound
         seekFrameIndex = lowerBound + (upperBound - lowerBound) / 2;
     }
+
+    // Check postconditions
     DEBUG_ASSERT(seekFrameIndex == lowerBound);
     DEBUG_ASSERT(m_seekFrameList.size() > seekFrameIndex);
     DEBUG_ASSERT(m_seekFrameList[seekFrameIndex].frameIndex <= frameIndex);
     DEBUG_ASSERT(((seekFrameIndex + 1) >= m_seekFrameList.size()) ||
             (m_seekFrameList[seekFrameIndex + 1].frameIndex > frameIndex));
+
     return seekFrameIndex;
 }
 
