@@ -239,10 +239,16 @@ void AudioSourceMp3::restartDecoding(const SeekFrameType& seekFrame) {
     mad_stream_buffer(&m_madStream, seekFrame.pInputData,
             m_fileSize - (seekFrame.pInputData - m_pFileData));
 
-    // Calling mad_synth_mute() and mad_frame_mute() is not
-    // necessary, because we will prefetch (decode and skip)
-    // some frames before actually reading any audio samples
-    // from the stream.
+    // Muting is done here to eliminate potential pops/clicks
+    // from skipping Rob Leslie explains why here:
+    // http://www.mars.org/mailman/public/mad-dev/2001-August/000321.html
+    //
+    // TODO(XXX): Should not be necessary since both members
+    // m_madFrame and m_madSynth have been initialized just
+    // before. Might be removed after reliable unit tests show
+    // that those calls are really not needed anymore.
+    mad_synth_mute(&m_madSynth);
+    mad_frame_mute(&m_madFrame);
 }
 
 void AudioSourceMp3::close() {
