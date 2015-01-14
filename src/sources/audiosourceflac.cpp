@@ -128,9 +128,12 @@ Mixxx::AudioSource::diff_type AudioSourceFLAC::seekSampleFrame(
     // clear decode buffer before seeking
     m_decodeSampleBufferReadOffset = 0;
     m_decodeSampleBufferWriteOffset = 0;
-    bool result = FLAC__stream_decoder_seek_absolute(m_decoder, frameIndex);
-    if (!result) {
+    if (!FLAC__stream_decoder_seek_absolute(m_decoder, frameIndex)) {
         qWarning() << "SSFLAC: Seeking error at file" << m_file.fileName();
+    }
+    if ((FLAC__STREAM_DECODER_SEEK_ERROR == FLAC__stream_decoder_get_state(m_decoder)) &&
+        !FLAC__stream_decoder_flush(m_decoder)) {
+        qWarning() << "SSFLAC: Failed to flush the decoder's input buffer after seeking" << m_file.fileName();
     }
     return frameIndex;
 }
