@@ -66,14 +66,14 @@ private:
     SeekFrameList m_seekFrameList; // ordered-by frameIndex
     size_type m_avgSeekFrameCount; // avg. sample frames per MP3 frame
 
-    void addSeekFrame(mad_timer_t madDuration, mad_units madUnits, const unsigned char* pInputData);
+    void addSeekFrame(diff_type frameIndex, const unsigned char* pInputData);
 
     /** Returns the position in m_seekFrameList of the requested frame index. */
     SeekFrameList::size_type findSeekFrameIndex(diff_type frameIndex) const;
 
     diff_type m_curFrameIndex;
 
-    void restartDecoding(const SeekFrameType& seekFrame);
+    bool restartDecoding(const SeekFrameType& seekFrame);
 
     // current play position
     mad_frame m_madFrame;
