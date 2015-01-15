@@ -43,10 +43,11 @@ DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
     ComboBoxAutoDjRandomQueue->addItem(tr("On"));
     ComboBoxAutoDjRandomQueue->setCurrentIndex(
             m_pConfig->getValueString(
-                    ConfigKey("[Auto DJ]", "EnableRandomQueue")).toInt());
+                    ConfigKey("[Auto DJ]", "EnableRandomQueue"),"0").toInt());
+    // Assign a minimum value here with some logic , 5-arbitrary
     autoDJRandomQueueMinimumSpinBox->setValue(
             m_pConfig->getValueString(
-                    ConfigKey("[Auto DJ]", "RandomQueueMinimumAllowed")).toInt());
+                    ConfigKey("[Auto DJ]", "RandomQueueMinimumAllowed"),"5").toInt());
     slotEnableAutoDJRandomQueueComboBox(
             m_pConfig->getValueString(ConfigKey("[Auto DJ]", "Requeue")).toInt());
     slotEnableAutoDJRandomQueue(
@@ -88,12 +89,17 @@ void DlgPrefAutoDJ::slotApply() {
 void DlgPrefAutoDJ::slotResetToDefaults() {
     // Re-queue tracks in AutoDJ
     ComboBoxAutoDjRequeue->setCurrentIndex(0);
-
 #ifdef __AUTODJCRATES__
+    // **delete** Should't the config objects values be updated
     autoDjMinimumAvailableSpinBox->setValue(20);
     autoDjIgnoreTimeEdit->setTime(QTime::fromString(
             "23:59", autoDjIgnoreTimeEdit->displayFormat()));
     autoDjIgnoreTimeCheckBox->setChecked(false);
+    autoDJRandomQueueMinimumSpinBox->setValue(5);
+    ComboBoxAutoDjRandomQueue->setCurrentIndex(0);
+    autoDJRandomQueueMinimumSpinBox->setEnabled(false);
+    ComboBoxAutoDjRandomQueue->setEnabled(true);
+
 #endif
 }
 

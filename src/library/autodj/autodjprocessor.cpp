@@ -505,17 +505,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
 TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
     // Get the track at the top of the playlist.
     while (true) {
-        int minAutoDJCrateTracks = m_pConfig->getValueString(
-                ConfigKey(kConfigKey, "RandomQueueMinimumAllowed")).toInt();
-        bool randomQueueEnabled = (((m_pConfig->getValueString(
-                ConfigKey("[Auto DJ]", "EnableRandomQueue")).toInt())) == 1);
-        bool minTracksLeft = (m_pAutoDJTableModel->rowCount()
-                <= minAutoDJCrateTracks);
 
-        if (randomQueueEnabled && minTracksLeft) {
-            qDebug() << "Randomly adding tracks";
-            emit(randomTrackRequested(minTracksLeft));
-        }
         TrackPointer nextTrack = m_pAutoDJTableModel->getTrack(
             m_pAutoDJTableModel->index(0, 0));
 
@@ -581,11 +571,13 @@ bool AutoDJProcessor::removeTrackFromTopOfQueue(TrackPointer pTrack) {
             m_pAutoDJTableModel->index(0, 0));
 
     // No track at the top of the queue.
+    // **delete** How can this happen ?
     if (nextId == -1) {
         return false;
     }
 
     // If the loaded track is not the next track in the queue then do nothing.
+    // **delete** again How can this happen ?
     if (trackId != nextId) {
         return false;
     }
@@ -597,6 +589,20 @@ bool AutoDJProcessor::removeTrackFromTopOfQueue(TrackPointer pTrack) {
     if (m_pConfig->getValueString(ConfigKey(kConfigKey, "Requeue")).toInt()) {
         m_pAutoDJTableModel->appendTrack(nextId);
     }
+
+    // Fill random tracks if configured
+    int minAutoDJCrateTracks = m_pConfig->getValueString(
+            ConfigKey(kConfigKey, "RandomQueueMinimumAllowed")).toInt();
+    bool randomQueueEnabled = (((m_pConfig->getValueString(
+            ConfigKey("[Auto DJ]", "EnableRandomQueue")).toInt())) == 1);
+
+    bool minTracksLeft = (m_pAutoDJTableModel->rowCount() <= minAutoDJCrateTracks);
+
+    if (randomQueueEnabled && minTracksLeft) {
+        qDebug() << "Randomly adding tracks";
+        emit(randomTrackRequested(minTracksLeft));
+    }
+
     return true;
 }
 
