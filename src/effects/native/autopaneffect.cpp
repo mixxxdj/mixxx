@@ -7,7 +7,7 @@
 
 // static
 QString AutoPanEffect::getId() {
-    return "org.mixxx.effects.pan";
+    return "org.mixxx.effects.autopan";
 }
 
 // static
