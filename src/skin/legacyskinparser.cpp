@@ -63,7 +63,6 @@
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/wsearchlineedit.h"
 #include "widget/wlibrary.h"
-#include "widget/wlibrarycontainer.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wskincolor.h"
 #include "widget/wpixmapstore.h"
@@ -73,6 +72,7 @@
 #include "widget/wkey.h"
 #include "widget/wcombobox.h"
 #include "widget/wsplitter.h"
+#include "widget/wsingletoncontainer.h"
 #include "util/valuetransformer.h"
 #include "util/cmdlineargs.h"
 
@@ -490,6 +490,10 @@ QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
         m_pContext->updateVariable(node);
     } else if (nodeName == "Template") {
         result = parseTemplate(node);
+    } else if (nodeName == "DefineSingleton") {
+        parseSingletonDefinition(node);
+    } else if (nodeName == "Singleton") {
+        result = wrapWidget(parseSingletonContainer(node));
     } else {
         SKIN_WARNING(node, *m_pContext) << "Invalid node name in skin:"
                                        << nodeName;
@@ -1086,40 +1090,45 @@ QWidget* LegacySkinParser::parseCoverArt(QDomElement node) {
     return pCoverArt;
 }
 
+void LegacySkinParser::parseSingletonDefinition(QDomElement node) {
+    // The actual singleton definition is identical to any other WWidgetGroup.
+    QWidget* child_group = parseWidgetGroup(node);
+    WSingletonContainer::defineSingleton(child_group->objectName(),
+                                         child_group);
+}
+
+QWidget* LegacySkinParser::parseSingletonContainer(QDomElement node) {
+    if (!node.hasAttribute("objectName")) {
+        qWarning() << "Need objectName attribute for Singleton tag.";
+        return new QWidget();
+    }
+    QString objectName = node.attribute("objectName");
+    WSingletonContainer* pContainer =
+            WSingletonContainer::getSingleton(objectName, m_pParent);
+    if (pContainer == NULL) {
+        qWarning() << "ERROR: Singleton" << objectName
+                   << "not found, probably about to crash.";
+    }
+    commonWidgetSetup(node, pContainer);
+    return pContainer;
+}
+
 QWidget* LegacySkinParser::parseLibrary(QDomElement node) {
-    bool widget_created = false;
-    if (m_pLibraryWidget == NULL) {
-        widget_created = true;
-        m_pLibraryWidget = new WLibrary(m_pParent);
-        m_pLibraryWidget->installEventFilter(m_pKeyboard);
-        m_pLibraryWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    WLibrary* pLibraryWidget = new WLibrary(m_pParent);
+    pLibraryWidget->installEventFilter(m_pKeyboard);
+    pLibraryWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
 
-        // Connect Library search signals to the WLibrary
-        connect(m_pLibrary, SIGNAL(search(const QString&)),
-                m_pLibraryWidget, SLOT(search(const QString&)));
+    // Connect Library search signals to the WLibrary
+    connect(m_pLibrary, SIGNAL(search(const QString&)),
+            pLibraryWidget, SLOT(search(const QString&)));
 
-        m_pLibrary->bindWidget(m_pLibraryWidget, m_pKeyboard);
-    }
+    m_pLibrary->bindWidget(pLibraryWidget, m_pKeyboard);
 
-    WLibraryContainer* container =
-            new WLibraryContainer(m_pLibraryWidget, node, *m_pContext, m_pParent);
-    commonWidgetSetup(node, container, false);
+    // This must come after the bindWidget or we will not style any of the
+    // LibraryView's because they have not been added yet.
+    commonWidgetSetup(node, pLibraryWidget, false);
 
-    // Adding the widget every time makes it so the splitter is in the correct
-    // place for all the views.
-    if (!widget_created) {
-        // Unparent the widget while we do this to avoid QT error messages.
-        m_pLibraryWidget->parentWidget()->layout()->removeWidget(m_pLibraryWidget);
-    }
-    container->addWidget(m_pLibraryWidget);
-
-    if (widget_created) {
-        // This must come after the bindWidget or we will not style any of the
-        // LibraryView's because they have not been added yet.
-        commonWidgetSetup(node, m_pLibraryWidget, false);
-    }
-
-    return container;
+    return pLibraryWidget;
 }
 
 QWidget* LegacySkinParser::parseLibrarySidebar(QDomElement node) {

@@ -64,6 +64,15 @@
   <Layout>vertical</Layout>
 
   <Children>
+    <DefineSingleton>
+        <ObjectName>LibrarySingleton</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
+            <Template src="skin:library.xml"/>
+        </Children>
+    </DefineSingleton>
+
     <WidgetGroup>
         <ObjectName>SkinContainer</ObjectName>
         <Layout>horizontal</Layout>
