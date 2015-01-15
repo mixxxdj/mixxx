@@ -109,7 +109,15 @@ void AutoPanEffect::processGroup(const QString& group, PanGroupState* pGroupStat
         return;
     }
     
-    CSAMPLE period = roundf(m_pPeriodParameter->value()) * (float)numSamples / 2.0f;
+    CSAMPLE period = roundf(m_pPeriodParameter->value());
+    if (groupFeatures.has_beat_length) {
+        // 1/8, 1/4, 1/2, 1, 2, 4, 8, 16, 32, 64
+        double beats = pow(2, floor(period * 9 / 500) - 3);
+        period = groupFeatures.beat_length * beats;
+    } else {
+        period *= (float)numSamples / 2.0f;
+    }
+    
     CSAMPLE stepFrac = m_pStrengthParameter->value();
     CSAMPLE depth = m_pDepthParameter->value();
     float rampingTreshold = m_pRampingParameter->value();
@@ -138,6 +146,7 @@ void AutoPanEffect::processGroup(const QString& group, PanGroupState* pGroupStat
     
     gs.frac.setRamping(rampingTreshold);
     gs.frac.ramped = false;     // just for debug
+    
     
     for (unsigned int i = 0; i + 1 < numSamples; i += 2) {
         
@@ -176,7 +185,9 @@ void AutoPanEffect::processGroup(const QString& group, PanGroupState* pGroupStat
     
     
     qDebug()
-        << "| ramped :" << gs.frac.ramped
+        // << "| ramped :" << gs.frac.ramped
+        // << "| beat_length :" << groupFeatures.beat_length
+        // << "| period :" << period
         << "| frac :" << gs.frac
         << "| time :" << gs.time
         << "| rampingTreshold :" << rampingTreshold
