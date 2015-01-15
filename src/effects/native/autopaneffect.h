@@ -1,5 +1,5 @@
-#ifndef PANEFFECT_H
-#define PANEFFECT_H
+#ifndef AUTOPANEFFECT_H
+#define AUTOPANEFFECT_H
 
 #include <QMap>
 
@@ -70,10 +70,10 @@ struct PanGroupState {
 };
 
 
-class PanEffect : public GroupEffectProcessor<PanGroupState> {
+class AutoPanEffect : public GroupEffectProcessor<PanGroupState> {
   public:
-    PanEffect(EngineEffect* pEffect, const EffectManifest& manifest);
-    virtual ~PanEffect();
+    AutoPanEffect(EngineEffect* pEffect, const EffectManifest& manifest);
+    virtual ~AutoPanEffect();
 
     static QString getId();
     static EffectManifest getManifest();
@@ -98,7 +98,7 @@ class PanEffect : public GroupEffectProcessor<PanGroupState> {
     EngineEffectParameter* m_pPeriodParameter;
     EngineEffectParameter* m_pRampingParameter;
     
-    DISALLOW_COPY_AND_ASSIGN(PanEffect);
+    DISALLOW_COPY_AND_ASSIGN(AutoPanEffect);
 };
 
-#endif /* PANEFFECT_H */
+#endif /* AUTOPANEFFECT_H */
