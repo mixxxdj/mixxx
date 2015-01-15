@@ -50,18 +50,26 @@ Result SoundSourceSndFile::parseMetadata(
         if (!readAudioProperties(pMetadata, f)) {
             return ERR;
         }
-        TagLib::ID3v2::Tag *id3v2(f.ID3v2Tag());
+        // Taglib 1.8.x doesn't provide an ID3v2Tag method for WAV files.
+#if TAGLIB_MAJOR_VERSION == 1 && TAGLIB_MINOR_VERSION == 8
+        TagLib::ID3v2::Tag* id3v2(f.tag());
+        if (id3v2) {
+            readID3v2Tag(this, *id3v2);
+        }
+#else
+        TagLib::ID3v2::Tag* id3v2(f.ID3v2Tag());
         if (id3v2) {
             readID3v2Tag(pMetadata, *id3v2);
         } else {
             // fallback
-            const TagLib::Tag *tag(f.tag());
+            const TagLib::Tag* tag(f.tag());
             if (tag) {
                 readTag(pMetadata, *tag);
             } else {
                 return ERR;
             }
         }
+#endif
     } else if (getType().startsWith("aif")) {
         // Try AIFF
         TagLib::RIFF::AIFF::File f(getFilename().toLocal8Bit().constData());
