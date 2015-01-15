@@ -1,20 +1,20 @@
 #include "util/math.h"
 #include <QtDebug>
 
-#include "effects/native/paneffect.h"
+#include "effects/native/autopaneffect.h"
 
 #include "sampleutil.h"
 
 // static
-QString PanEffect::getId() {
+QString AutoPanEffect::getId() {
     return "org.mixxx.effects.pan";
 }
 
 // static
-EffectManifest PanEffect::getManifest() {
+EffectManifest AutoPanEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
-    manifest.setName(QObject::tr("Pan"));
+    manifest.setName(QObject::tr("AutoPan"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
@@ -80,7 +80,7 @@ EffectManifest PanEffect::getManifest() {
     return manifest;
 }
 
-PanEffect::PanEffect(EngineEffect* pEffect, const EffectManifest& manifest)
+AutoPanEffect::AutoPanEffect(EngineEffect* pEffect, const EffectManifest& manifest)
         : 
           m_pDepthParameter(pEffect->getParameterById("depth")),
           m_pStrengthParameter(pEffect->getParameterById("strength")),
@@ -90,10 +90,10 @@ PanEffect::PanEffect(EngineEffect* pEffect, const EffectManifest& manifest)
     Q_UNUSED(manifest);
 }
 
-PanEffect::~PanEffect() {
+AutoPanEffect::~AutoPanEffect() {
 }
 
-void PanEffect::processGroup(const QString& group, PanGroupState* pGroupState,
+void AutoPanEffect::processGroup(const QString& group, PanGroupState* pGroupState,
                               const CSAMPLE* pInput,
                               CSAMPLE* pOutput, const unsigned int numSamples,
                               const unsigned int sampleRate,

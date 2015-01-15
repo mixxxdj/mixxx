@@ -14,7 +14,7 @@
 #endif
 #include "effects/native/echoeffect.h"
 #include "effects/native/phasereffect.h"
-#include "effects/native/paneffect.h"
+#include "effects/native/autopaneffect.h"
 
 NativeBackend::NativeBackend(QObject* pParent)
         : EffectsBackend(pParent, tr("Native")) {
@@ -32,7 +32,7 @@ NativeBackend::NativeBackend(QObject* pParent)
     // Fancy effects    
     registerEffect<FlangerEffect>();
     registerEffect<EchoEffect>();
-    registerEffect<PanEffect>();
+    registerEffect<AutoPanEffect>();
 #ifndef __MACAPPSTORE__
     registerEffect<ReverbEffect>();
 #endif
