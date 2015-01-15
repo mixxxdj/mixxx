@@ -2,7 +2,7 @@
 // but may appear in multiple places in a skin definition.  This is useful
 // for complex widgets like the library, which are memory intensive. The
 // container mostly looks like a special WidgetGroup which is defined in
-// special ways
+// special ways.
 //
 // Usage:
 // First, the Singleton container is defined, meaning it is described to the
@@ -34,7 +34,7 @@
 //    </Children>
 // </WidgetGroup
 //
-// The skin system sees the SingletonContainer tag, and any time the containing
+// The skin system sees the Singleton tag, and any time the containing
 // group gets a show event, the Singleton widget is reparented to this location
 // in the skin.  Note that if a Singleton is visible twice at the same time,
 // behavior is undefined and could be crashy.
