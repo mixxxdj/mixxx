@@ -251,6 +251,13 @@ void EffectsManager::setupDefaults() {
     pChain->addEffect(pEffect);
     m_pEffectChainManager->addEffectChain(pChain);
 
+    pChain = EffectChainPointer(new EffectChain(
+            this, "org.mixxx.effectchain.autopan"));
+    pChain->setName(tr("AutoPan"));
+    pEffect = instantiateEffect("org.mixxx.effects.autopan");
+    pChain->addEffect(pEffect);
+    m_pEffectChainManager->addEffectChain(pChain);
+
     // These controls are used inside EQ Effects
     m_pLoEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "LoEQFrequency"), 0., 22040);
     m_pHiEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040);
