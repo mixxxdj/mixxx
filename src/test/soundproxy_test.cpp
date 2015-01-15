@@ -74,10 +74,11 @@ TEST_F(SoundSourceProxyTest, seekForward) {
     QStringList extensions;
     extensions << "aiff" << "flac" << "mp3" << "ogg" << "wav";
 
-    for (unsigned int seekFrameIndex = 0; ; seekFrameIndex += kSeekFrameIndex) {
-        qDebug() << "seekFrameIndex =" << seekFrameIndex;
-        foreach (const QString& extension, extensions) {
-            QString filePath = kFilePath + extension;
+    foreach (const QString& extension, extensions) {
+        QString filePath = kFilePath + extension;
+
+        for (unsigned int seekFrameIndex = 0; ; seekFrameIndex += kSeekFrameIndex) {
+            qDebug() << "seekFrameIndex =" << seekFrameIndex;
 
             Mixxx::AudioSourcePointer pAudioSource1(
                 openAudioSource(filePath));
