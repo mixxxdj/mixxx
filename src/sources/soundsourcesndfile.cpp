@@ -50,9 +50,19 @@ Result SoundSourceSndFile::parseMetadata(
         if (!readAudioProperties(pMetadata, f)) {
             return ERR;
         }
+<<<<<<< HEAD
 
         // Taglib provides the ID3v2Tag method for WAV files since Version 1.9
 #if (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
+=======
+        // Taglib 1.8.x doesn't provide an ID3v2Tag method for WAV files.
+#if TAGLIB_MAJOR_VERSION == 1 && TAGLIB_MINOR_VERSION == 8
+        TagLib::ID3v2::Tag* id3v2(f.tag());
+        if (id3v2) {
+            readID3v2Tag(this, *id3v2);
+        }
+#else
+>>>>>>> Add workaround for Taglib 1.8.x.
         TagLib::ID3v2::Tag* id3v2(f.ID3v2Tag());
         if (id3v2) {
             readID3v2Tag(pMetadata, *id3v2);
@@ -65,6 +75,7 @@ Result SoundSourceSndFile::parseMetadata(
                 return ERR;
             }
         }
+<<<<<<< HEAD
 <<<<<<< HEAD
 #else
         TagLib::ID3v2::Tag* id3v2(f.tag());
@@ -93,6 +104,9 @@ Result SoundSourceSndFile::parseMetadata(
         }
 =======
 >>>>>>> Split AudioSource from SoundSource
+=======
+#endif
+>>>>>>> Add workaround for Taglib 1.8.x.
     } else if (getType().startsWith("aif")) {
         // Try AIFF
         TagLib::RIFF::AIFF::File f(getFilename().toLocal8Bit().constData());
