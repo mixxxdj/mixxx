@@ -32,7 +32,7 @@
 //      <Singleton objectName="LibrarySingleton"/>
 //      ...
 //    </Children>
-// </WidgetGroup
+// </WidgetGroup>
 //
 // The skin system sees the Singleton tag, and any time the containing
 // group gets a show event, the Singleton widget is reparented to this location
