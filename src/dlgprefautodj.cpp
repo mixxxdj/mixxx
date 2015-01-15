@@ -90,7 +90,6 @@ void DlgPrefAutoDJ::slotResetToDefaults() {
     // Re-queue tracks in AutoDJ
     ComboBoxAutoDjRequeue->setCurrentIndex(0);
 #ifdef __AUTODJCRATES__
-    // **delete** Should't the config objects values be updated
     autoDjMinimumAvailableSpinBox->setValue(20);
     autoDjIgnoreTimeEdit->setTime(QTime::fromString(
             "23:59", autoDjIgnoreTimeEdit->displayFormat()));

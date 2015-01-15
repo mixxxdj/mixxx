@@ -571,13 +571,11 @@ bool AutoDJProcessor::removeTrackFromTopOfQueue(TrackPointer pTrack) {
             m_pAutoDJTableModel->index(0, 0));
 
     // No track at the top of the queue.
-    // **delete** How can this happen ?
     if (nextId == -1) {
         return false;
     }
 
     // If the loaded track is not the next track in the queue then do nothing.
-    // **delete** again How can this happen ?
     if (trackId != nextId) {
         return false;
     }
