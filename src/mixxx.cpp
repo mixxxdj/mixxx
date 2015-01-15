@@ -1289,15 +1289,15 @@ void MixxxMainWindow::initActions()
     connect(m_pViewShowPreviewDeck, SIGNAL(toggled(bool)),
             this, SLOT(slotViewShowPreviewDeck(bool)));
 
-    QString showEffectsTitle = tr("Show Effects Rack");
-    QString showEffectsText = tr("Show the effects rack in the Mixxx interface.") +
+    QString showEffectsTitle = tr("Show Effect Rack");
+    QString showEffectsText = tr("Show the effect rack in the Mixxx interface.") +
     " " + mayNotBeSupported;
     m_pViewShowEffects = new QAction(showEffectsTitle, this);
     m_pViewShowEffects->setCheckable(true);
     m_pViewShowEffects->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
                                                   "ViewMenu_ShowEffects"),
-                                                  tr("Ctrl+5", "Menubar|View|Show Effects Rack"))));
+                                                  tr("Ctrl+5", "Menubar|View|Show Effect Rack"))));
     m_pViewShowEffects->setStatusTip(showEffectsText);
     m_pViewShowEffects->setWhatsThis(buildWhatsThis(showEffectsTitle, showEffectsText));
     connect(m_pViewShowEffects, SIGNAL(toggled(bool)),
