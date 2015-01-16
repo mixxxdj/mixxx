@@ -64,7 +64,8 @@ AudioSourceFLAC::AudioSourceFLAC(QString fileName) :
         m_maxFramesize(0),
         m_sampleScale(kSampleValueZero),
         m_decodeSampleBufferReadOffset(0),
-        m_decodeSampleBufferWriteOffset(0) {
+        m_decodeSampleBufferWriteOffset(0),
+        m_curFrameIndex(kFrameIndexMin) {
 }
 
 AudioSourceFLAC::~AudioSourceFLAC() {
@@ -108,6 +109,8 @@ Result AudioSourceFLAC::open() {
         return ERR;
     }
 
+    m_curFrameIndex = kFrameIndexMin;
+
     return OK;
 }
 
@@ -124,6 +127,7 @@ void AudioSourceFLAC::close() {
 
 Mixxx::AudioSource::diff_type AudioSourceFLAC::seekSampleFrame(
         diff_type frameIndex) {
+    DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(isValidFrameIndex(frameIndex));
 
     // clear decode buffer before seeking
@@ -136,7 +140,10 @@ Mixxx::AudioSource::diff_type AudioSourceFLAC::seekSampleFrame(
         !FLAC__stream_decoder_flush(m_decoder)) {
         qWarning() << "SSFLAC: Failed to flush the decoder's input buffer after seeking" << m_file.fileName();
     }
-    return frameIndex;
+    m_curFrameIndex = frameIndex;
+
+    DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
+    return m_curFrameIndex;
 }
 
 Mixxx::AudioSource::size_type AudioSourceFLAC::readSampleFrames(
@@ -155,10 +162,15 @@ Mixxx::AudioSource::size_type AudioSourceFLAC::readSampleFramesStereo(
 Mixxx::AudioSource::size_type AudioSourceFLAC::readSampleFrames(
         size_type numberOfFrames, sample_type* sampleBuffer,
         size_type sampleBufferSize, bool readStereoSamples) {
+    DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
+    DEBUG_ASSERT(isValidSampleBufferSize(numberOfFrames,
+            sampleBufferSize, readStereoSamples));
+
+    const size_type numberOfFramesTotal = numberOfFrames;
+
     sample_type* outBuffer = sampleBuffer;
-    const size_type numberOfFramesTotal = math_min(numberOfFrames, samples2frames(sampleBufferSize));
-    size_type numberOfFramesRead = 0;
-    while (numberOfFramesTotal > numberOfFramesRead) {
+    size_type numberOfFramesRemaining = numberOfFramesTotal;
+    while (0 < numberOfFramesRemaining) {
         DEBUG_ASSERT(
                 m_decodeSampleBufferReadOffset <= m_decodeSampleBufferWriteOffset);
         // if our buffer from libflac is empty (either because we explicitly cleared
@@ -182,7 +194,7 @@ Mixxx::AudioSource::size_type AudioSourceFLAC::readSampleFrames(
         const size_type decodeBufferFrames = samples2frames(
                 decodeBufferSamples);
         const size_type framesToCopy =
-        math_min(decodeBufferFrames, numberOfFramesTotal - numberOfFramesRead);
+                math_min(decodeBufferFrames, numberOfFramesRemaining);
         const size_type samplesToCopy = frames2samples(framesToCopy);
         if (readStereoSamples && !isChannelCountStereo()) {
             if (isChannelCountMono()) {
@@ -202,11 +214,15 @@ Mixxx::AudioSource::size_type AudioSourceFLAC::readSampleFrames(
             outBuffer += samplesToCopy;
         }
         m_decodeSampleBufferReadOffset += samplesToCopy;
-        numberOfFramesRead += framesToCopy;
+        m_curFrameIndex += framesToCopy;
+        numberOfFramesRemaining -= framesToCopy;
         DEBUG_ASSERT(
                 m_decodeSampleBufferReadOffset <= m_decodeSampleBufferWriteOffset);
     }
-    return numberOfFramesRead;
+
+    DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
+    DEBUG_ASSERT(numberOfFramesTotal >= numberOfFramesRemaining);
+    return numberOfFramesTotal - numberOfFramesRemaining;
 }
 
 // flac callback methods

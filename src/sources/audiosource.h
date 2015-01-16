@@ -220,6 +220,11 @@ protected:
 
     void reset();
 
+    bool isValidSampleBufferSize(
+            size_type sampleBufferSize,
+            size_type numberOfFrames,
+            bool readStereoSamples) const;
+
 private:
     size_type m_channelCount;
     size_type m_frameRate;
