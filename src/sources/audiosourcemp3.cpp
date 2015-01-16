@@ -37,7 +37,8 @@ int decodeFrameHeader(
         mad_stream* pMadStream,
         bool skipId3Tag) {
     const int result = mad_header_decode(pMadHeader, pMadStream);
-    if ((0 != result) && (MAD_ERROR_LOSTSYNC == pMadStream->error) && skipId3Tag) {
+    if ((0 != result) && (MAD_ERROR_LOSTSYNC == pMadStream->error)
+            && skipId3Tag) {
         long tagsize = id3_tag_query(pMadStream->this_frame,
                 pMadStream->bufend - pMadStream->this_frame);
         if (0 < tagsize) {
@@ -50,13 +51,14 @@ int decodeFrameHeader(
 
 } // anonymous namespace
 
-AudioSourceMp3::AudioSourceMp3(QString fileName) :
-        m_file(fileName),
-        m_fileSize(0),
-        m_pFileData(NULL),
-        m_avgSeekFrameCount(0),
-        m_curFrameIndex(0),
-        m_madSynthCount(0) {
+AudioSourceMp3::AudioSourceMp3(QString fileName)
+        :
+                m_file(fileName),
+                m_fileSize(0),
+                m_pFileData(NULL),
+                m_avgSeekFrameCount(0),
+                m_curFrameIndex(kFrameIndexMin),
+                m_madSynthCount(0) {
     mad_stream_init(&m_madStream);
     mad_stream_options(&m_madStream, MAD_OPTION_IGNORECRC);
     mad_frame_init(&m_madFrame);
@@ -101,8 +103,8 @@ Result AudioSourceMp3::open() {
     mad_timer_t madDuration = mad_timer_zero;
     unsigned long sumBitrate = 0;
 
-    m_curFrameIndex = 0;
-    
+    m_curFrameIndex = kFrameIndexMin;
+
     mad_header madHeader;
     mad_header_init(&madHeader);
 
@@ -128,7 +130,8 @@ Result AudioSourceMp3::open() {
             setChannelCount(madChannelCount);
         } else {
             // check for consistent number of channels
-            if ((0 < madChannelCount) && (getChannelCount() != madChannelCount)) {
+            if ((0 < madChannelCount)
+                    && (getChannelCount() != madChannelCount)) {
                 qWarning() << "Differing number of channels in some headers:"
                         << m_file.fileName() << getChannelCount() << "<>"
                         << madChannelCount;
@@ -190,9 +193,10 @@ Result AudioSourceMp3::open() {
         // Accumulate data from the header
         sumBitrate += madHeader.bitrate;
         mad_timer_add(&madDuration, madHeader.duration);
-        
+
         // Update current stream position
-        m_curFrameIndex = mad_timer_count(madDuration, madUnits);
+        m_curFrameIndex = kFrameIndexMin +
+                mad_timer_count(madDuration, madUnits);
 
         DEBUG_ASSERT(NULL != m_madStream.this_frame);
         DEBUG_ASSERT(0 < (m_madStream.this_frame - m_pFileData));
@@ -238,7 +242,8 @@ Result AudioSourceMp3::open() {
     return OK;
 }
 
-AudioSource::diff_type AudioSourceMp3::restartDecoding(const SeekFrameType& seekFrame) {
+AudioSource::diff_type AudioSourceMp3::restartDecoding(
+        const SeekFrameType& seekFrame) {
     qDebug() << "restartDecoding @" << seekFrame.frameIndex;
 
     if (0 == seekFrame.frameIndex) {
@@ -267,7 +272,7 @@ AudioSource::diff_type AudioSourceMp3::restartDecoding(const SeekFrameType& seek
     }
 
     if ((0 != decodeFrameHeader(&m_madFrame.header, &m_madStream, false)) &&
-        !MAD_RECOVERABLE(m_madStream.error)) {
+            !MAD_RECOVERABLE(m_madStream.error)) {
         qWarning() << "Unrecoverable MP3 frame header decoding error:"
                 << mad_stream_errorstr(&m_madStream);
         // failure
@@ -285,7 +290,7 @@ void AudioSourceMp3::close() {
 
     m_seekFrameList.clear();
     m_avgSeekFrameCount = 0;
-    m_curFrameIndex = 0;
+    m_curFrameIndex = kFrameIndexMin;
 
     m_file.unmap(m_pFileData);
     m_fileSize = 0;
@@ -314,8 +319,8 @@ AudioSourceMp3::SeekFrameList::size_type AudioSourceMp3::findSeekFrameIndex(
     // Check preconditions
     DEBUG_ASSERT(0 < m_avgSeekFrameCount);
     DEBUG_ASSERT(!m_seekFrameList.empty());
-    DEBUG_ASSERT(0 == m_seekFrameList.front().frameIndex);
-    DEBUG_ASSERT(diff_type(getFrameCount()) == m_seekFrameList.back().frameIndex);
+    DEBUG_ASSERT(kFrameIndexMin == m_seekFrameList.front().frameIndex);
+    DEBUG_ASSERT(diff_type(kFrameIndexMin + getFrameCount()) == m_seekFrameList.back().frameIndex);
 
     SeekFrameList::size_type lowerBound =
             0;
@@ -362,13 +367,13 @@ AudioSource::diff_type AudioSourceMp3::seekSampleFrame(diff_type frameIndex) {
     // some consistency checks
     DEBUG_ASSERT((curSeekFrameIndex >= seekFrameIndex) || (m_curFrameIndex < frameIndex));
     DEBUG_ASSERT((curSeekFrameIndex <= seekFrameIndex) || (m_curFrameIndex > frameIndex));
-    if ((diff_type(getFrameCount()) <= m_curFrameIndex) || // out of range
-        (frameIndex < m_curFrameIndex) || // seek backward
-        (seekFrameIndex > (curSeekFrameIndex + kSeekFramePrefetchCount))) { // jump forward
-        
+    if ((getFrameIndexMax() <= m_curFrameIndex) || // out of range
+            (frameIndex < m_curFrameIndex) || // seek backward
+            (seekFrameIndex > (curSeekFrameIndex + kSeekFramePrefetchCount))) { // jump forward
+
         // Discard decoded output
         m_madSynthCount = 0;
-        
+
         // Adjust the seek frame index for prefetching
         // Implementation note: The type size_type is unsigned so
         // need to be careful when subtracting!
@@ -380,15 +385,15 @@ AudioSource::diff_type AudioSourceMp3::seekSampleFrame(diff_type frameIndex) {
             // Restart decoding at the beginnig of the audio stream
             seekFrameIndex = 0;
         }
-        
+
         m_curFrameIndex = restartDecoding(m_seekFrameList[seekFrameIndex]);
-        if (m_curFrameIndex >= diff_type(getFrameCount())) {
+        if (getFrameIndexMax() <= m_curFrameIndex) {
             // out of range -> abort
             return m_curFrameIndex;
         }
         DEBUG_ASSERT(findSeekFrameIndex(m_curFrameIndex) == seekFrameIndex);
     }
-    
+
     // Decoding starts before the actual target position
     DEBUG_ASSERT(m_curFrameIndex <= frameIndex);
 
@@ -396,7 +401,7 @@ AudioSource::diff_type AudioSourceMp3::seekSampleFrame(diff_type frameIndex) {
     const size_type skipFrameCount = frameIndex - m_curFrameIndex;
     skipFrameSamples(skipFrameCount);
     DEBUG_ASSERT(m_curFrameIndex == frameIndex);
-    
+
     return m_curFrameIndex;
 }
 
@@ -419,10 +424,10 @@ AudioSource::size_type AudioSourceMp3::readSampleFrames(
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
 
     sample_type* pSampleBuffer = sampleBuffer;
-    size_type numberOfFramesRemaining =
-            math_min(numberOfFrames, getFrameCount() - m_curFrameIndex);
+    size_type numberOfFramesRemaining = math_min(
+            numberOfFrames, size_type(getFrameIndexMax() - m_curFrameIndex));
     numberOfFramesRemaining =
-            math_min(numberOfFramesRemaining, samples2frames(sampleBufferSize));
+    math_min(numberOfFramesRemaining, samples2frames(sampleBufferSize));
     while (0 < numberOfFramesRemaining) {
         if (0 >= m_madSynthCount) {
             // When all decoded output data has been consumed...
@@ -439,9 +444,9 @@ AudioSource::size_type AudioSourceMp3::readSampleFrames(
             if (0 != mad_frame_decode(&m_madFrame, &m_madStream)) {
                 if (MAD_RECOVERABLE(m_madStream.error)) {
                     if ((pMadThisFrame != m_madStream.this_frame) &&
-                        (NULL != pSampleBuffer)) {
-                            qWarning() << "Recoverable MP3 frame decoding error:"
-                                    << mad_stream_errorstr(&m_madStream);
+                            (NULL != pSampleBuffer)) {
+                        qWarning() << "Recoverable MP3 frame decoding error:"
+                                << mad_stream_errorstr(&m_madStream);
                     }
                     // Acknowledge error...
                     m_madStream.error = MAD_ERROR_NONE;
@@ -456,8 +461,6 @@ AudioSource::size_type AudioSourceMp3::readSampleFrames(
                 }
             }
             if (pMadThisFrame == m_madStream.this_frame) {
-                // Only seems to occur at the beginning of a stream!?
-                DEBUG_ASSERT(0 == m_curFrameIndex);
                 qDebug() << "Retry decoding MP3 frame @" << m_curFrameIndex;
                 // Retry
                 continue;
@@ -473,7 +476,7 @@ AudioSource::size_type AudioSourceMp3::readSampleFrames(
         }
 
         const size_type synthReadCount = math_min(
-                m_madSynthCount, numberOfFramesRemaining);
+        m_madSynthCount, numberOfFramesRemaining);
         if (NULL != pSampleBuffer) {
             DEBUG_ASSERT(m_madSynthCount <= m_madSynth.pcm.length);
             const size_type madSynthOffset =

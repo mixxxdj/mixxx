@@ -26,7 +26,7 @@ namespace {
 const AudioSource::size_type kFramesPerSampleBlock = 1024;
 
 // MP4SampleId is 1-based
-const MP4SampleId kMinSampleBlockId = 1;
+const MP4SampleId kSampleBlockIdMin = 1;
 
 // Decoding will be restarted one or more blocks of samples
 // before the actual position after seeking randomly in the
@@ -82,7 +82,7 @@ AudioSourceM4A::AudioSourceM4A() :
         m_inputBufferOffset(0),
         m_inputBufferLength(0),
         m_hDecoder(NULL),
-        m_curFrameIndex(0) {
+        m_curFrameIndex(kFrameIndexMin) {
 }
 
 AudioSourceM4A::~AudioSourceM4A() {
@@ -184,7 +184,7 @@ Result AudioSourceM4A::open(QString fileName) {
     m_prefetchSampleBuffer.resize(prefetchSampleBufferSize);
 
     m_curSampleBlockId = 0;
-    m_curFrameIndex = 0;
+    m_curFrameIndex = kFrameIndexMin;
 
     return OK;
 }
@@ -204,20 +204,20 @@ void AudioSourceM4A::close() {
     m_inputBuffer.clear();
     m_inputBufferOffset = 0;
     m_inputBufferLength = 0;
-    m_curFrameIndex = 0;
+    m_curFrameIndex = kFrameIndexMin;
     reset();
 }
 
 bool AudioSourceM4A::isValidSampleBlockId(MP4SampleId sampleBlockId) const {
-    return (sampleBlockId >= kMinSampleBlockId)
+    return (sampleBlockId >= kSampleBlockIdMin)
             && (sampleBlockId <= m_maxSampleBlockId);
 }
 
 void AudioSourceM4A::restartDecoding(MP4SampleId sampleBlockId) {
     NeAACDecPostSeekReset(m_hDecoder, sampleBlockId);
     m_curSampleBlockId = sampleBlockId;
-    m_curFrameIndex = (m_curSampleBlockId - kMinSampleBlockId)
-            * kFramesPerSampleBlock;
+    m_curFrameIndex = kFrameIndexMin +
+            (m_curSampleBlockId - kSampleBlockIdMin) * kFramesPerSampleBlock;
     // discard input buffer
     m_inputBufferOffset = 0;
     m_inputBufferLength = 0;
@@ -225,8 +225,9 @@ void AudioSourceM4A::restartDecoding(MP4SampleId sampleBlockId) {
 
 AudioSource::diff_type AudioSourceM4A::seekSampleFrame(diff_type frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(frameIndex));
+
     if (m_curFrameIndex != frameIndex) {
-        MP4SampleId sampleBlockId = kMinSampleBlockId
+        MP4SampleId sampleBlockId = kSampleBlockIdMin
                 + (frameIndex / kFramesPerSampleBlock);
         DEBUG_ASSERT(isValidSampleBlockId(sampleBlockId));
         if ((frameIndex < m_curFrameIndex) || // seeking backwards?
@@ -237,11 +238,11 @@ AudioSource::diff_type AudioSourceM4A::seekSampleFrame(diff_type frameIndex) {
             // from the calculated starting block to avoid audible glitches.
             // Implementation note: The type MP4SampleId is unsigned so we
             // need to be careful when subtracting!
-            if ((kMinSampleBlockId + kNumberOfPrefetchSampleBlocks)
+            if ((kSampleBlockIdMin + kNumberOfPrefetchSampleBlocks)
                     < sampleBlockId) {
                 sampleBlockId -= kNumberOfPrefetchSampleBlocks;
             } else {
-                sampleBlockId = kMinSampleBlockId;
+                sampleBlockId = kSampleBlockIdMin;
             }
             restartDecoding(sampleBlockId);
             DEBUG_ASSERT(m_curSampleBlockId == sampleBlockId);
@@ -266,7 +267,7 @@ AudioSource::size_type AudioSourceM4A::readSampleFrames(
 
     sample_type* pSampleBuffer = sampleBuffer;
     size_type numberOfFramesRemaining =
-            math_min(numberOfFrames, getFrameCount() - m_curFrameIndex);
+            math_min(numberOfFrames, size_type(getFrameIndexMax() - m_curFrameIndex));
     while (0 < numberOfFramesRemaining) {
         DEBUG_ASSERT(m_inputBufferOffset <= m_inputBufferLength);
         if (m_inputBufferOffset >= m_inputBufferLength) {
@@ -283,7 +284,7 @@ AudioSource::size_type AudioSourceM4A::readSampleFrames(
                     qWarning()
                             << "Failed to read MP4 input data for sample block"
                             << m_curSampleBlockId << "(" << "min ="
-                            << kMinSampleBlockId << "," << "max ="
+                            << kSampleBlockIdMin << "," << "max ="
                             << m_maxSampleBlockId << ")";
                     break; // abort
                 }

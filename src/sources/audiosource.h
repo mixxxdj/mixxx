@@ -43,6 +43,9 @@ public:
     static const size_type kFrameCountZero = 0;
     static const size_type kFrameCountDefault = kFrameCountZero;
 
+    // 0-based indexing of sample frames
+    static const diff_type kFrameIndexMin = 0;
+
     static const sample_type kSampleValueZero;
     static const sample_type kSampleValuePeak;
 
@@ -128,12 +131,22 @@ public:
         return sampleCount / getChannelCount();
     }
 
-    // The (sample) frame index only valid in the range
-    // [0, getFrameCount()]. The value frameIndex = getFrameCount()
-    // points behind of the audio data stream, but is a valid
-    // parameter for seeking.
+    // Index of the first sample frame.
+    diff_type getFrameIndexMin() const {
+        return kFrameIndexMin;
+    }
+
+    // Index of the sample frame following the last
+    // sample frame.
+    diff_type getFrameIndexMax() const {
+        return kFrameIndexMin + getFrameCount();
+    }
+
+    // The sample frame index is valid in the range
+    // [getFrameIndexMin(), getFrameIndexMax()].
     inline bool isValidFrameIndex(diff_type frameIndex) const {
-        return (0 <= frameIndex) && (getFrameCount() >= size_type(frameIndex));
+        return (getFrameIndexMin() <= frameIndex) &&
+                (getFrameIndexMax() >= frameIndex);
     }
 
     // Adjusts the current frame seek index:

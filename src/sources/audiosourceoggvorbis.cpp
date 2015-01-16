@@ -64,6 +64,7 @@ void AudioSourceOggVorbis::close() {
 AudioSource::diff_type AudioSourceOggVorbis::seekSampleFrame(
         diff_type frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(frameIndex));
+
     const int seekResult = ov_pcm_seek(&m_vf, frameIndex);
     if (0 != seekResult) {
         qWarning() << "Failed to seek OggVorbis file:" << seekResult;
