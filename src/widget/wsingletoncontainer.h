@@ -11,14 +11,14 @@
 // actually appear where it is defined.
 //
 // Example definition:
-// <DefineSingleton>
+// <SingletonDefinition>
 //   <ObjectName>LibrarySingleton</ObjectName>
 //   <Layout>horizontal</Layout>
 //   <SizePolicy>me,me</SizePolicy>
 //   <Children>
 //     <Template src="skin:library.xml"/>
 //   </Children>
-//  </DefineSingleton>
+// </SingletonDefinition>
 //
 // The ObjectName is used to identify this singleton elsewhere in the skin
 // files.
@@ -29,7 +29,7 @@
 //    <Layout>vertical</Layout>
 //    <SizePolicy>min,i</SizePolicy>
 //    <Children>
-//      <Singleton objectName="LibrarySingleton"/>
+//      <SingletonContainer objectName="LibrarySingleton"/>
 //      ...
 //    </Children>
 // </WidgetGroup>

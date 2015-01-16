@@ -97,7 +97,7 @@ class SkinContext {
     QSharedPointer<QScriptEngineDebugger> m_pScriptDebugger;
     QScriptValue m_parentGlobal;
 
-    // The SingletonWidget map is passed to child SkinContexts, so that all
+    // The SingletonContainer map is passed to child SkinContexts, so that all
     // templates in the tree can share a single map.
     QSharedPointer<SingletonMap> m_pSingletons;
 };
