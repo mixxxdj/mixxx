@@ -172,15 +172,13 @@ bool BaseSqlTableModel::isColumnHiddenByDefault(int column) {
 
 QString BaseSqlTableModel::orderByClause() const {
     bool tableColumnSort = m_iSortColumn < m_tableColumns.size();
-
     if (m_iSortColumn < 0 || !tableColumnSort) {
+        // orderByClause is empty, if the sorting column
+        // is in the Track cache only
         return "";
     }
 
-    QString field = m_idColumn;
-    if (m_iSortColumn != 0) {
-        field = m_tableColumns[m_iSortColumn];
-    }
+    QString field = m_tableColumns[m_iSortColumn];
 
     QString s;
     s.append(QLatin1String("ORDER BY "));
@@ -217,7 +215,7 @@ void BaseSqlTableModel::select() {
     QTime time;
     time.start();
 
-    // Prepare query for id and all columns not in tackSource
+    // Prepare query for id and all columns not in m_trackSource
     QString orderBy = orderByClause();
     QString queryString = QString("SELECT %1 FROM %2 %3")
             .arg(m_tableColumnsJoined, m_tableName, orderBy);
@@ -259,7 +257,8 @@ void BaseSqlTableModel::select() {
 
         RowInfo thisRowInfo;
         thisRowInfo.trackId = id;
-        thisRowInfo.order = rowInfo.size(); // save rows where this currently track id is located
+        // save rows where this currently track id is located
+        thisRowInfo.order = rowInfo.size();
         // Get all the table columns and store them in the hash for this
         // row-info section.
 
@@ -274,11 +273,12 @@ void BaseSqlTableModel::select() {
         qDebug() << "Rows actually received:" << rowInfo.size();
     }
 
-    // Adjust sort column to remove table columns and add 1 to add an id column.
-    int sortColumn = m_iSortColumn - m_tableColumns.size() + 1;
 
-    if (sortColumn < 0) {
-        sortColumn = 0;
+    int sortColumn = 0;
+    if (m_iSortColumn > m_tableColumns.size()) {
+        // We have to sort by a column of m_trackSource
+        // Adjust sort column to remove table columns and add 1 to add an id column.
+        sortColumn = m_iSortColumn - m_tableColumns.size() + 1;
     }
 
     if (m_trackSource) {
@@ -293,7 +293,7 @@ void BaseSqlTableModel::select() {
         // Re-sort the track IDs since filterAndSort can change their order or mark
         // them for removal (by setting their row to -1).
         for (QVector<RowInfo>::iterator it = rowInfo.begin();
-             it != rowInfo.end(); ++it) {
+                it != rowInfo.end(); ++it) {
             // If the sort column is not a track column then we will sort only to
             // separate removed tracks (order == -1) from present tracks (order ==
             // 0). Otherwise we sort by the order that filterAndSort returned to us.
