@@ -1093,7 +1093,7 @@ void LegacySkinParser::parseSingletonDefinition(QDomElement node) {
     // The actual singleton definition is identical to any other WWidgetGroup.
     QWidget* child_group = parseWidgetGroup(node);
     m_pContext->getSingletonMap()->defineSingleton(child_group->objectName(),
-                                         child_group);
+                                                   child_group);
     child_group->hide();
 }
 
