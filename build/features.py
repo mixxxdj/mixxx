@@ -942,8 +942,8 @@ class Optimize(Feature):
         return "Optimization and Tuning"
 
     def enabled(self, build):
-        build.flags['optimize'] = util.get_flags(build.env, 'optimize', 1)
-        if int(build.flags['optimize']):
+        build.flags['optimize'] = SCons.ARGUMENTS.get('optimize', None)
+        if build.flags['optimize'] is not None:
             return True
         else:
             return False
@@ -956,7 +956,11 @@ class Optimize(Feature):
         if not self.enabled(build):
             return
 
-        optimize_level = int(build.flags['optimize'])
+        optimize_level = SCons.ARGUMENTS.get('optimize', 'portable')
+        try:
+            optimize_level_int = int(build.flags['optimize'])
+        except:
+            optimize_level_int = 0
 
         if build.toolchain_is_msvs:
             if build.build_is_debug:
@@ -994,22 +998,22 @@ class Optimize(Feature):
             # In general, you should pick /O2 over /Ox
             build.env.Append(CCFLAGS='/O2')
 
-            if optimize_level == 1:
+            if optimize_level_int == 1:
                 # portable-binary: sse2 CPU (>= Pentium 4)
                 self.status = "portable: sse2 CPU (>= Pentium 4)"
                 build.env.Append(CCFLAGS='/arch:SSE2')
                 build.env.Append(CPPDEFINES=['__SSE__', '__SSE2__'])
-            elif optimize_level == 2:
+            elif optimize_level_int == 2:
                 if build.machine_is_64bit:
-                   self.status = "native: exclusive for this CPU (%s)" % build.machine
-                   build.env.Append(CCFLAGS='/favor:' + build.machine)
+                    self.status = "native: exclusive for this CPU (%s)" % build.machine
+                    build.env.Append(CCFLAGS='/favor:' + build.machine)
                 else:
-                   self.status = "Disabled (optimize=2 on 32-bit MSVC)"
-            elif optimize_level == 3:
+                    self.status = "Disabled (optimize=2 on 32-bit MSVC)"
+            elif optimize_level_int == 3:
                 self.status = "legacy: pure i386 code"
             else:
-                raise Exception("optimize=%s is not supported, use 1 .. 3." % optimize_level)
-
+                raise Exception("optimize={} is not supported on windows, "
+                                "use 1 .. 3.".format(optimize_level_int))
 
             # SSE and SSE2 are core instructions on x64
             if build.machine_is_64bit:
@@ -1029,7 +1033,7 @@ class Optimize(Feature):
                 build.env.Append(CCFLAGS='-fomit-frame-pointer')
 
             # Historicaly our gcc release packages are built with optimize=9.
-            if optimize_level == 1 or optimize_level == 9:
+            if 1 <= optimize_level_int <= 9 or optimize_level == 'legacy':
                 # portable-binary: sse2 CPU (>= Pentium 4)
                 self.status = "portable: sse2 CPU (>= Pentium 4)"
                 build.env.Append(
@@ -1044,7 +1048,7 @@ class Optimize(Feature):
                 # The downside of this is that we aren't truly
                 # i386 compatible, so builds that claim 'i386' will crash.
                 # Note: SSE2 is a core part of x64 CPUs
-            elif optimize_level == 2:
+            elif optimize_level == 'portable':
                 self.status = "native: exclusive for this CPU (%s)" % build.machine
                 build.env.Append(
                     CCFLAGS='-march=native -mfpmath=sse')
@@ -1052,14 +1056,15 @@ class Optimize(Feature):
                 # Note: requires gcc >= 4.2.0
                 # macros like __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
                 # are set automaticaly
-            elif optimize_level == 3:
+            elif optimize_level == 'tuned':
                 self.status = "legacy: pure i386 code"
                 build.env.Append(
                     CCFLAGS='-mtune=generic')
                 # -mtune=generic pick the most common, but compatible options.
                 # Used by the debian rules script.
             else:
-                raise Exception("optimize=%s is not supported, use 1 .. 3." % optimize_level)
+                raise Exception("optimize={} is not supported, use legacy,"
+                                "portable, tuned".format(optimize_level))
 
             # what others do:
             # soundtouch uses just -O3 in Ubuntu Trusty
