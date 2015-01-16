@@ -18,17 +18,18 @@ WSingletonContainer::WSingletonContainer(QWidget* widget, QWidget* pParent)
 
 void WSingletonContainer::showEvent(QShowEvent* event) {
     Q_UNUSED(event);
-    QWidget* parent = m_pWidget->parentWidget();
-    if (parent && parent->layout()) {
-        parent->layout()->removeWidget(m_pWidget);
-        m_pLayout->addWidget(m_pWidget);
-        m_pWidget->show();
+    if (m_pWidget) {
+        QWidget* parent = m_pWidget->parentWidget();
+        if (parent && parent->layout()) {
+            parent->layout()->removeWidget(m_pWidget);
+            m_pLayout->addWidget(m_pWidget);
+            m_pWidget->show();
+        }
     }
 }
 
 void SingletonMap::defineSingleton(QString objectName, QWidget* widget) {
-    WidgetMap::const_iterator widget_it = m_singletons.find(objectName);
-    if (widget_it != m_singletons.end()) {
+    if (m_singletons.contains(objectName)){
         qWarning() << "ERROR: Tried to define a singleton with a name that has"
                    << "already been defined:" << objectName;
         return;
