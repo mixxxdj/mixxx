@@ -125,6 +125,7 @@ void AudioSourceFLAC::close() {
 Mixxx::AudioSource::diff_type AudioSourceFLAC::seekSampleFrame(
         diff_type frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(frameIndex));
+
     // clear decode buffer before seeking
     m_decodeSampleBufferReadOffset = 0;
     m_decodeSampleBufferWriteOffset = 0;

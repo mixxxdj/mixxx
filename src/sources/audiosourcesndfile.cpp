@@ -67,6 +67,7 @@ void AudioSourceSndFile::close() {
 AudioSource::diff_type AudioSourceSndFile::seekSampleFrame(
         diff_type frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(frameIndex));
+
     const sf_count_t seekResult = sf_seek(m_pSndFile, frameIndex, SEEK_SET);
     if (0 <= seekResult) {
         return seekResult;
@@ -79,8 +80,8 @@ AudioSource::diff_type AudioSourceSndFile::seekSampleFrame(
 
 AudioSource::size_type AudioSourceSndFile::readSampleFrames(
         size_type numberOfFrames, sample_type* sampleBuffer) {
-    const sf_count_t readCount = sf_readf_float(m_pSndFile, sampleBuffer,
-            numberOfFrames);
+    const sf_count_t readCount =
+            sf_readf_float(m_pSndFile, sampleBuffer, numberOfFrames);
     if (0 <= readCount) {
         return readCount;
     } else {

@@ -22,7 +22,6 @@ AudioSourcePointer AudioSourceOpus::create(QString fileName) {
 }
 
 Result AudioSourceOpus::open(QString fileName) {
-
     int errorCode = 0;
     const QByteArray qbaFilename(fileName.toLocal8Bit());
     m_pOggOpusFile = op_open_file(qbaFilename.constData(), &errorCode);
@@ -61,6 +60,7 @@ void AudioSourceOpus::close() {
 
 AudioSource::diff_type AudioSourceOpus::seekSampleFrame(diff_type frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(frameIndex));
+
     int seekResult = op_pcm_seek(m_pOggOpusFile, frameIndex);
     if (0 != seekResult) {
         qWarning() << "Failed to seek OggOpus file:" << seekResult;
@@ -98,7 +98,7 @@ AudioSource::size_type AudioSourceOpus::readSampleFramesStereo(
     DEBUG_ASSERT(isValidFrameIndex(getCurrentFrameIndex()));
 
     const size_type numberOfFramesTotal =
-    math_min(numberOfFrames, samples2frames(sampleBufferSize));
+            math_min(numberOfFrames, samples2frames(sampleBufferSize));
     size_type numberOfFramesRead = 0;
     while (numberOfFramesTotal > numberOfFramesRead) {
         int readResult = op_read_float_stereo(m_pOggOpusFile,
