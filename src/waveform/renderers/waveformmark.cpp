@@ -8,7 +8,8 @@
 #include "widget/wskincolor.h"
 
 WaveformMark::WaveformMark()
-    : m_pPointCos(nullptr) {
+    : m_pPointCos(nullptr),
+      m_iIndex(-1) {
 }
 
 WaveformMark::~WaveformMark() {
@@ -59,4 +60,5 @@ void WaveformMark::setKeyAndIndex(const ConfigKey& key, int i) {
     DEBUG_ASSERT(m_pPointCos == NULL);
     m_pPointCos = new ControlProxy(key);
     m_text = m_text.arg(i);
+    m_iIndex = i;
 }

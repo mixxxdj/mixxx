@@ -12,6 +12,8 @@
 #include "widget/wwidget.h"
 #include "widget/wimagestore.h"
 
+const int iMaxCueLabelLenght = 23;
+
 WaveformRenderMark::WaveformRenderMark(WaveformWidgetRenderer* waveformWidgetRenderer) :
     WaveformRendererAbstract(waveformWidgetRenderer) {
 }
@@ -63,6 +65,44 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
     painter->restore();
 }
 
+void WaveformRenderMark::onSetTrack() {
+    slotCuesUpdated();
+
+    TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
+    if (!trackInfo) {
+        return;
+    }
+    connect(trackInfo.data(), SIGNAL(cuesUpdated(void)),
+                  this, SLOT(slotCuesUpdated(void)));
+}
+
+void WaveformRenderMark::slotCuesUpdated() {
+    TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
+    if (!trackInfo){
+        return;
+    }
+
+    QList<CuePointer> loadedCues = trackInfo->getCuePoints();
+
+    // This assumes no two cues can have the same hotcue assigned.
+    QList<CuePointer>::iterator it = loadedCues.begin();
+    while (it != loadedCues.end()) {
+        int hotCue = (*it)->getHotCue();
+        if (hotCue == -1) {
+            ++it;
+            continue;
+        }
+
+        QString newLabel = (*it)->getLabel();
+        WaveformMark& mark = m_marks.getHotCueMark(hotCue);
+        if (newLabel != mark.m_text) {
+            mark.m_text = newLabel;
+            generateMarkImage(mark);
+        }
+        ++it;
+    }
+}
+
 void WaveformRenderMark::generateMarkImage(WaveformMark& mark) {
     // Load the pixmap from file -- takes precedence over text.
     if (mark.m_pixmapPath != "") {
@@ -84,6 +124,16 @@ void WaveformRenderMark::generateMarkImage(WaveformMark& mark) {
 
     // If no text is provided, leave m_markImage as a null image
     if (!mark.m_text.isNull()) {
+        // Determine mark text.
+        QString label =  mark.m_text;
+        if (mark.m_iIndex != -1) {
+            if (label != "") label.prepend(": ");
+            label.prepend(QString::number(mark.m_iIndex));
+            if (label.size() > iMaxCueLabelLenght) {
+                label = label.left(iMaxCueLabelLenght - 3) + "...";
+            }
+        }
+
         //QFont font("Bitstream Vera Sans");
         //QFont font("Helvetica");
         QFont font; // Uses the application default
@@ -93,7 +143,7 @@ void WaveformRenderMark::generateMarkImage(WaveformMark& mark) {
         QFontMetrics metrics(font);
 
         //fixed margin ...
-        QRect wordRect = metrics.tightBoundingRect(mark.m_text);
+        QRect wordRect = metrics.tightBoundingRect(label);
         const int marginX = 1;
         const int marginY = 1;
         wordRect.moveTop(marginX + 1);
@@ -136,7 +186,7 @@ void WaveformRenderMark::generateMarkImage(WaveformMark& mark) {
         font.setWeight(75);
         painter.setFont(font);
         painter.setPen(mark.m_textColor);
-        painter.drawText(labelRect, Qt::AlignCenter, mark.m_text);
+        painter.drawText(labelRect, Qt::AlignCenter, label);
 
         //draw line
         QColor lineColor = mark.m_color;

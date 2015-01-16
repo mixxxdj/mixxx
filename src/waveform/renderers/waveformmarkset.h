@@ -22,10 +22,13 @@ class WaveformMarkSet {
     WaveformMark& operator[] (int i) { return m_marks[i]; }
 
     const WaveformMark& getDefaultMark() const { return m_defaultMark;}
+    // hotCue must be valid (>= 0)
+    WaveformMark& getHotCueMark(int hotCue);
 
   private:
     WaveformMark m_defaultMark;
     QList<WaveformMark> m_marks;
+    int m_iFirstHotCue;
     DISALLOW_COPY_AND_ASSIGN(WaveformMarkSet);
 };
 

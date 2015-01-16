@@ -30,6 +30,8 @@ class WaveformMark {
     Qt::Alignment m_align;
     QString m_pixmapPath;
     QImage m_image;
+    // Number of the corresponding Hotcue.
+    int m_iIndex;
 
     friend class WaveformMarkSet;
     friend class WaveformRenderMark;

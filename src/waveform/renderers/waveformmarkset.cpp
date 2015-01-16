@@ -5,7 +5,8 @@
 #include "engine/cuecontrol.h"
 #include "control/controlobject.h"
 
-WaveformMarkSet::WaveformMarkSet() {
+WaveformMarkSet::WaveformMarkSet()
+    : m_iFirstHotCue(-1) {
 }
 
 WaveformMarkSet::~WaveformMarkSet() {
@@ -47,6 +48,8 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
         child = child.nextSibling();
     }
 
+    if (NUM_HOT_CUES >= 1) m_iFirstHotCue = m_marks.size();
+
     // check if there is a default mark and compare declared
     // and to create all missing hot_cues
     if (hasDefaultMark) {
@@ -71,4 +74,8 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
 void WaveformMarkSet::clear() {
     m_defaultMark = WaveformMark();
     m_marks.clear();
+}
+
+WaveformMark& WaveformMarkSet::getHotCueMark(int hotCue) {
+    return m_marks[m_iFirstHotCue + hotCue];
 }
