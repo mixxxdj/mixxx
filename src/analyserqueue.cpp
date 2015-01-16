@@ -173,29 +173,27 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, Mixxx::AudioSourcePointer pAudi
     do {
         ScopedTimer t("AnalyserQueue::doAnalysis block");
 
+        DEBUG_ASSERT(progressFrameCount < pAudioSource->getFrameCount());
         const Mixxx::AudioSource::size_type readFrameCount = pAudioSource->readSampleFramesStereo(kAnalysisFrameCount, &m_sampleBuffer[0], m_sampleBuffer.size());
+        progressFrameCount += readFrameCount;
+        DEBUG_ASSERT(progressFrameCount <= pAudioSource->getFrameCount());
 
         // To compare apples to apples, let's only look at blocks that are the
         // full block size.
-        if (readFrameCount < kAnalysisFrameCount) {
-            // The whole file should have been read now!
-            DEBUG_ASSERT(pAudioSource->getFrameCount() == (progressFrameCount + readFrameCount));
-            break; // done
-        }
-
-        QListIterator<Analyser*> it(m_aq);
-        while (it.hasNext()) {
-            Analyser* an =  it.next();
-            //qDebug() << typeid(*an).name() << ".process()";
-            an->process(&m_sampleBuffer[0], readFrameCount * kAnalysisChannels);
-            //qDebug() << "Done " << typeid(*an).name() << ".process()";
+        if (kAnalysisFrameCount == readFrameCount) {
+            QListIterator<Analyser*> it(m_aq);
+            while (it.hasNext()) {
+                Analyser* an =  it.next();
+                //qDebug() << typeid(*an).name() << ".process()";
+                an->process(&m_sampleBuffer[0], readFrameCount * kAnalysisChannels);
+                //qDebug() << "Done " << typeid(*an).name() << ".process()";
+            }
         }
 
         // emit progress updates
         // During the doAnalysis function it goes only to 100% - FINALIZE_PERCENT
         // because the finalise functions will take also some time
         //fp div here prevents insane signed overflow
-        progressFrameCount += readFrameCount;
         DEBUG_ASSERT(progressFrameCount <= pAudioSource->getFrameCount());
         int progress = (int)(((float)progressFrameCount) / pAudioSource->getFrameCount() *
                          (1000 - FINALIZE_PERCENT));
