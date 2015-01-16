@@ -14,7 +14,7 @@ SkinContext::SkinContext(ConfigObject<ConfigValue>* pConfig,
           m_pConfig(pConfig),
           m_pScriptEngine(new QScriptEngine()),
           m_pScriptDebugger(new QScriptEngineDebugger()),
-          m_pSingletons(new WSingletonContainer::WidgetMap) {
+          m_pSingletons(new SingletonMap) {
     enableDebugger(true);
     // the extensions are imported once and will be passed to the children
     // global object as properties of the parent's global object.

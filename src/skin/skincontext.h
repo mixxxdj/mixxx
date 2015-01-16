@@ -81,7 +81,7 @@ class SkinContext {
     QDebug logWarning(const char* file, const int line, const QDomNode& node) const;
 
     // Not const because WSingletonContainer needs to mutate the map.
-    QSharedPointer<WSingletonContainer::WidgetMap> getSingletonMap() {
+    QSharedPointer<SingletonMap> getSingletonMap() {
         return m_pSingletons;
     }
 
@@ -99,7 +99,7 @@ class SkinContext {
 
     // The SingletonWidget map is passed to child SkinContexts, so that all
     // templates in the tree can share a single map.
-    QSharedPointer<WSingletonContainer::WidgetMap> m_pSingletons;
+    QSharedPointer<SingletonMap> m_pSingletons;
 };
 
 #endif /* SKINCONTEXT_H */

@@ -5,17 +5,6 @@
 #include "util/assert.h"
 #include "widget/wlibrary.h"
 
-// static
-WSingletonContainer* WSingletonContainer::getSingleton(
-        QString objectName, WidgetMap* widgetMap, QWidget* pParent) {
-   WidgetMap::const_iterator widget_it = widgetMap->find(objectName);
-    if (widget_it == widgetMap->end()) {
-        qWarning() << "ERROR: Asked for an unknown singleton widget:"
-                   << objectName;
-        return NULL;
-    }
-    return new WSingletonContainer(*widget_it, pParent);
-}
 
 WSingletonContainer::WSingletonContainer(QWidget* widget, QWidget* pParent)
         : WWidgetGroup(pParent), m_pWidget(widget) {
@@ -37,14 +26,23 @@ void WSingletonContainer::showEvent(QShowEvent* event) {
     }
 }
 
-// static
-void WSingletonContainer::defineSingleton(QString objectName, QWidget* widget,
-                                         WidgetMap* widgetMap) {
-    WidgetMap::const_iterator widget_it = widgetMap->find(objectName);
-    if (widget_it != widgetMap->end()) {
+void SingletonMap::defineSingleton(QString objectName, QWidget* widget) {
+    WidgetMap::const_iterator widget_it = m_singletons.find(objectName);
+    if (widget_it != m_singletons.end()) {
         qWarning() << "ERROR: Tried to define a singleton with a name that has"
                    << "already been defined:" << objectName;
         return;
     }
-    widgetMap->insert(objectName, widget);
+    m_singletons.insert(objectName, widget);
+}
+
+WSingletonContainer* SingletonMap::getSingleton(
+        QString objectName, QWidget* pParent) {
+    WidgetMap::const_iterator widget_it = m_singletons.find(objectName);
+    if (widget_it == m_singletons.end()) {
+        qWarning() << "ERROR: Asked for an unknown singleton widget:"
+                   << objectName;
+        return NULL;
+    }
+    return new WSingletonContainer(*widget_it, pParent);
 }

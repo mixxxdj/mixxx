@@ -1092,9 +1092,8 @@ QWidget* LegacySkinParser::parseCoverArt(QDomElement node) {
 void LegacySkinParser::parseSingletonDefinition(QDomElement node) {
     // The actual singleton definition is identical to any other WWidgetGroup.
     QWidget* child_group = parseWidgetGroup(node);
-    WSingletonContainer::defineSingleton(child_group->objectName(),
-                                         child_group,
-                                         m_pContext->getSingletonMap().data());
+    m_pContext->getSingletonMap()->defineSingleton(child_group->objectName(),
+                                         child_group);
     child_group->hide();
 }
 
@@ -1105,9 +1104,7 @@ QWidget* LegacySkinParser::parseSingletonContainer(QDomElement node) {
     }
     QString objectName = node.attribute("objectName");
     WSingletonContainer* pContainer =
-            WSingletonContainer::getSingleton(
-                    objectName, m_pContext->getSingletonMap().data(),
-                    m_pParent);
+            m_pContext->getSingletonMap()->getSingleton(objectName, m_pParent);
     if (pContainer == NULL) {
         qWarning() << "ERROR: Singleton" << objectName << "not found";
         return NULL;

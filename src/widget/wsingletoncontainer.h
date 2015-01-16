@@ -47,34 +47,38 @@
 #include "widget/wwidgetgroup.h"
 
 class WSingletonContainer : public WWidgetGroup {
-
     Q_OBJECT
-
-
   public:
-    typedef QMap<QString, QWidget*> WidgetMap;
-
-    virtual ~WSingletonContainer() { }
-
-    // We don't want to end up with badly-constructed containers, so only
-    // provide a factory function.
-    static WSingletonContainer* getSingleton(QString objectName,
-                                             WidgetMap* widgetMap,
-                                             QWidget* pParent=NULL);
-
-    // Takes a constructed QWidget and inserts it in the map of available
-    // singletons.
-    static void defineSingleton(QString objectName, QWidget* widget,
-                                WidgetMap* widgetMap);
+    // Prepares the container and remembers the widget, but does not add the
+    // widget to the container.
+    WSingletonContainer(QWidget* widget, QWidget* pParent=NULL);
 
   public slots:
     virtual void showEvent(QShowEvent* event);
 
   private:
-    WSingletonContainer(QWidget* widget, QWidget* pParent=NULL);
-
     QPointer<QWidget> m_pWidget;
     QLayout* m_pLayout;
 };
+
+class SingletonMap {
+  public:
+    typedef QMap<QString, QWidget*> WidgetMap;
+
+    // Takes a constructed QWidget and inserts it in the map of available
+    // singletons.  Checks that an object of that name hasn't already been
+    // defined.
+    void defineSingleton(QString objectName, QWidget* widget);
+
+    // We don't want to end up with badly-constructed containers, so only
+    // provide a factory function.  Returns NULL if the objectName is not in
+    // the map.
+    WSingletonContainer* getSingleton(QString objectName,
+                                      QWidget* pParent=NULL);
+
+  private:
+    WidgetMap m_singletons;
+};
+
 
 #endif  // WSINGLETONCONTAINER_H
