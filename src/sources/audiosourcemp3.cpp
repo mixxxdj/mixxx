@@ -52,13 +52,12 @@ int decodeFrameHeader(
 } // anonymous namespace
 
 AudioSourceMp3::AudioSourceMp3(QString fileName)
-        :
-                m_file(fileName),
-                m_fileSize(0),
-                m_pFileData(NULL),
-                m_avgSeekFrameCount(0),
-                m_curFrameIndex(kFrameIndexMin),
-                m_madSynthCount(0) {
+        : m_file(fileName),
+          m_fileSize(0),
+          m_pFileData(NULL),
+          m_avgSeekFrameCount(0),
+          m_curFrameIndex(kFrameIndexMin),
+          m_madSynthCount(0) {
     mad_stream_init(&m_madStream);
     mad_stream_options(&m_madStream, MAD_OPTION_IGNORECRC);
     mad_frame_init(&m_madFrame);
@@ -356,6 +355,7 @@ AudioSourceMp3::SeekFrameList::size_type AudioSourceMp3::findSeekFrameIndex(
 }
 
 AudioSource::diff_type AudioSourceMp3::seekSampleFrame(diff_type frameIndex) {
+    DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(isValidFrameIndex(frameIndex));
 
     SeekFrameList::size_type seekFrameIndex = findSeekFrameIndex(
@@ -402,19 +402,22 @@ AudioSource::diff_type AudioSourceMp3::seekSampleFrame(diff_type frameIndex) {
     skipFrameSamples(skipFrameCount);
     DEBUG_ASSERT(m_curFrameIndex == frameIndex);
 
+    DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     return m_curFrameIndex;
 }
 
 AudioSource::size_type AudioSourceMp3::readSampleFrames(
         size_type numberOfFrames, sample_type* sampleBuffer) {
-    return readSampleFrames(numberOfFrames, sampleBuffer,
-            frames2samples(numberOfFrames), false);
+    return readSampleFrames(numberOfFrames,
+            sampleBuffer, frames2samples(numberOfFrames),
+            false);
 }
 
 AudioSource::size_type AudioSourceMp3::readSampleFramesStereo(
         size_type numberOfFrames, sample_type* sampleBuffer,
         size_type sampleBufferSize) {
-    return readSampleFrames(numberOfFrames, sampleBuffer, sampleBufferSize,
+    return readSampleFrames(numberOfFrames,
+            sampleBuffer, sampleBufferSize,
             true);
 }
 
@@ -422,12 +425,14 @@ AudioSource::size_type AudioSourceMp3::readSampleFrames(
         size_type numberOfFrames, sample_type* sampleBuffer,
         size_type sampleBufferSize, bool readStereoSamples) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
+    DEBUG_ASSERT(isValidSampleBufferSize(numberOfFrames,
+            sampleBufferSize, readStereoSamples));
+
+    const size_type numberOfFramesTotal = math_min(numberOfFrames,
+            size_type(getFrameIndexMax() - m_curFrameIndex));
 
     sample_type* pSampleBuffer = sampleBuffer;
-    size_type numberOfFramesRemaining = math_min(
-            numberOfFrames, size_type(getFrameIndexMax() - m_curFrameIndex));
-    numberOfFramesRemaining =
-    math_min(numberOfFramesRemaining, samples2frames(sampleBufferSize));
+    size_type numberOfFramesRemaining = numberOfFramesTotal;
     while (0 < numberOfFramesRemaining) {
         if (0 >= m_madSynthCount) {
             // When all decoded output data has been consumed...
@@ -517,8 +522,10 @@ AudioSource::size_type AudioSourceMp3::readSampleFrames(
         m_madSynthCount -= synthReadCount;
         m_curFrameIndex += synthReadCount;
     }
-    DEBUG_ASSERT(numberOfFrames >= numberOfFramesRemaining);
-    return numberOfFrames - numberOfFramesRemaining;
+
+    DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
+    DEBUG_ASSERT(numberOfFramesTotal >= numberOfFramesRemaining);
+    return numberOfFramesTotal - numberOfFramesRemaining;
 }
 
 } // namespace Mixxx

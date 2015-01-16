@@ -65,6 +65,8 @@ private:
     std::vector<sample_type> m_decodeSampleBuffer;
     SampleBuffer::size_type m_decodeSampleBufferReadOffset;
     SampleBuffer::size_type m_decodeSampleBufferWriteOffset;
+
+    diff_type m_curFrameIndex;
 };
 
 }
