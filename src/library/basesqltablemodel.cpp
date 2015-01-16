@@ -217,6 +217,7 @@ void BaseSqlTableModel::select() {
     QTime time;
     time.start();
 
+    // Prepare query for id and all columns not in tackSource
     QString orderBy = orderByClause();
     QString queryString = QString("SELECT %1 FROM %2 %3")
             .arg(m_tableColumnsJoined, m_tableName, orderBy);
@@ -245,17 +246,6 @@ void BaseSqlTableModel::select() {
         m_trackIdToRows.clear();
         endRemoveRows();
     }
-
-    QSqlRecord record = query.record();
-    int idColumn = record.indexOf(m_idColumn);
-
-    QLinkedList<int> tableColumnIndices;
-    foreach (QString column, m_tableColumns) {
-        int recordIndex = record.indexOf(column);
-        DEBUG_ASSERT(recordIndex == m_tableColumnCache.fieldIndex(column));
-        tableColumnIndices.push_back(recordIndex);
-    }
-
     // sqlite does not set size and m_rowInfo was just cleared
     //if (sDebug) {
     //    qDebug() << "Rows returned" << rows << m_rowInfo.size();
@@ -264,7 +254,7 @@ void BaseSqlTableModel::select() {
     QVector<RowInfo> rowInfo;
     QSet<int> trackIds;
     while (query.next()) {
-        int id = query.value(idColumn).toInt();
+        int id = query.value(0).toInt();
         trackIds.insert(id);
 
         RowInfo thisRowInfo;
@@ -273,9 +263,9 @@ void BaseSqlTableModel::select() {
         // Get all the table columns and store them in the hash for this
         // row-info section.
 
-        thisRowInfo.metadata.reserve(tableColumnIndices.size());
-        foreach (int tableColumnIndex, tableColumnIndices) {
-            thisRowInfo.metadata << query.value(tableColumnIndex);
+        thisRowInfo.metadata.reserve(m_tableColumns.size());
+        for (int i = 0;  i < m_tableColumns.size(); ++i) {
+            thisRowInfo.metadata << query.value(i);
         }
         rowInfo.push_back(thisRowInfo);
     }
