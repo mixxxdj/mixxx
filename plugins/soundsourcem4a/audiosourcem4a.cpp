@@ -183,8 +183,12 @@ Result AudioSourceM4A::open(QString fileName) {
                     * frames2samples(kFramesPerSampleBlock);
     m_prefetchSampleBuffer.resize(prefetchSampleBufferSize);
 
-    m_curSampleBlockId = 0;
-    m_curFrameIndex = kFrameIndexMin;
+    // Invalidate current position
+    m_curSampleBlockId = MP4_INVALID_SAMPLE_ID;
+    m_curFrameIndex = getFrameIndexMax();
+
+    // Start decoding at the beginning of the file
+    seekSampleFrame(kFrameIndexMin);
 
     return OK;
 }
@@ -214,6 +218,8 @@ bool AudioSourceM4A::isValidSampleBlockId(MP4SampleId sampleBlockId) const {
 }
 
 void AudioSourceM4A::restartDecoding(MP4SampleId sampleBlockId) {
+    DEBUG_ASSERT(MP4_INVALID_SAMPLE_ID != sampleBlockId);
+
     NeAACDecPostSeekReset(m_hDecoder, sampleBlockId);
     m_curSampleBlockId = sampleBlockId;
     m_curFrameIndex = kFrameIndexMin +
@@ -260,10 +266,6 @@ AudioSource::diff_type AudioSourceM4A::seekSampleFrame(diff_type frameIndex) {
 AudioSource::size_type AudioSourceM4A::readSampleFrames(
         size_type numberOfFrames, sample_type* sampleBuffer) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
-
-    if (!isValidSampleBlockId(m_curSampleBlockId)) {
-        return 0;
-    }
 
     sample_type* pSampleBuffer = sampleBuffer;
     size_type numberOfFramesRemaining =
