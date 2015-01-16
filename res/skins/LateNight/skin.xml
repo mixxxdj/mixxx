@@ -67,14 +67,14 @@
     <!-- Define singletons as early in the skin as possible.  Note that the
     library doesn't actually appear here, it's just instantiated and configured.
     -->
-    <DefineSingleton>
+    <SingletonDefinition>
         <ObjectName>LibrarySingleton</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>me,me</SizePolicy>
         <Children>
             <Template src="skin:library.xml"/>
         </Children>
-    </DefineSingleton>
+    </SingletonDefinition>
 
     <WidgetGroup>
         <ObjectName>SkinContainer</ObjectName>

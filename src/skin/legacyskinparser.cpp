@@ -489,9 +489,9 @@ QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
         m_pContext->updateVariable(node);
     } else if (nodeName == "Template") {
         result = parseTemplate(node);
-    } else if (nodeName == "DefineSingleton") {
+    } else if (nodeName == "SingletonDefinition") {
         parseSingletonDefinition(node);
-    } else if (nodeName == "Singleton") {
+    } else if (nodeName == "SingletonContainer") {
         result = wrapWidget(parseSingletonContainer(node));
     } else {
         SKIN_WARNING(node, *m_pContext) << "Invalid node name in skin:"
@@ -1093,20 +1093,24 @@ void LegacySkinParser::parseSingletonDefinition(QDomElement node) {
     // The actual singleton definition is identical to any other WWidgetGroup.
     QWidget* child_group = parseWidgetGroup(node);
     WSingletonContainer::defineSingleton(child_group->objectName(),
-                                         child_group);
+                                         child_group,
+                                         m_pContext->getSingletonMap().data());
+    child_group->hide();
 }
 
 QWidget* LegacySkinParser::parseSingletonContainer(QDomElement node) {
     if (!node.hasAttribute("objectName")) {
         qWarning() << "Need objectName attribute for Singleton tag.";
-        return new QWidget();
+        return NULL;
     }
     QString objectName = node.attribute("objectName");
     WSingletonContainer* pContainer =
-            WSingletonContainer::getSingleton(objectName, m_pParent);
+            WSingletonContainer::getSingleton(
+                    objectName, m_pContext->getSingletonMap().data(),
+                    m_pParent);
     if (pContainer == NULL) {
-        qWarning() << "ERROR: Singleton" << objectName
-                   << "not found, probably about to crash.";
+        qWarning() << "ERROR: Singleton" << objectName << "not found";
+        return NULL;
     }
     commonWidgetSetup(node, pContainer);
     return pContainer;

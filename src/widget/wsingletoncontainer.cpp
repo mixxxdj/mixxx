@@ -6,26 +6,19 @@
 #include "widget/wlibrary.h"
 
 // static
-WSingletonContainer::WidgetMap WSingletonContainer::m_singletons;
-
-// static
 WSingletonContainer* WSingletonContainer::getSingleton(
-        QString objectname, QWidget* pParent) {
-   WidgetMap::const_iterator widget_it = m_singletons.find(objectname);
-    if (widget_it == m_singletons.end()) {
+        QString objectName, WidgetMap* widgetMap, QWidget* pParent) {
+   WidgetMap::const_iterator widget_it = widgetMap->find(objectName);
+    if (widget_it == widgetMap->end()) {
         qWarning() << "ERROR: Asked for an unknown singleton widget:"
-                   << objectname;
+                   << objectName;
         return NULL;
     }
-    return new WSingletonContainer(objectname, pParent);
+    return new WSingletonContainer(*widget_it, pParent);
 }
 
-WSingletonContainer::WSingletonContainer(QString objectname, QWidget* pParent)
-        : WWidgetGroup(pParent), m_pWidget(NULL) {
-    WidgetMap::const_iterator widget_it = m_singletons.find(objectname);
-    DEBUG_ASSERT(widget_it != m_singletons.end());
-
-    m_pWidget = *widget_it;
+WSingletonContainer::WSingletonContainer(QWidget* widget, QWidget* pParent)
+        : WWidgetGroup(pParent), m_pWidget(widget) {
     setContentsMargins(0, 0, 0, 0);
     m_pLayout = new QVBoxLayout();
     m_pLayout->setSpacing(0);
@@ -40,16 +33,18 @@ void WSingletonContainer::showEvent(QShowEvent* event) {
     if (parent && parent->layout()) {
         parent->layout()->removeWidget(m_pWidget);
         m_pLayout->addWidget(m_pWidget);
+        m_pWidget->show();
     }
 }
 
 // static
-void WSingletonContainer::defineSingleton(QString objectname, QWidget* widget) {
-    WidgetMap::const_iterator widget_it = m_singletons.find(objectname);
-    if (widget_it != m_singletons.end()) {
+void WSingletonContainer::defineSingleton(QString objectName, QWidget* widget,
+                                         WidgetMap* widgetMap) {
+    WidgetMap::const_iterator widget_it = widgetMap->find(objectName);
+    if (widget_it != widgetMap->end()) {
         qWarning() << "ERROR: Tried to define a singleton with a name that has"
-                   << "already been defined:" << objectname;
+                   << "already been defined:" << objectName;
         return;
     }
-    m_singletons[objectname] = widget;
+    widgetMap->insert(objectName, widget);
 }

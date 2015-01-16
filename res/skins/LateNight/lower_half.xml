@@ -20,7 +20,7 @@
                 <MaximumSize>1920,429</MaximumSize>
                 <Children>
                     <Template src="skin:fx_samplers_container_med.xml"/>
-                    <Singleton objectName="LibrarySingleton"/>
+                    <SingletonContainer objectName="LibrarySingleton"/>
                     <Template src="skin:toolbar_med.xml"/>
                 </Children>
             </WidgetGroup>
@@ -31,7 +31,7 @@
                 <MinimumSize>0,431</MinimumSize>
                 <Children>
                     <Template src="skin:fx_samplers_container_full.xml"/>
-                    <Singleton objectName="LibrarySingleton"/>
+                    <SingletonContainer objectName="LibrarySingleton"/>
                     <Template src="skin:toolbar_full.xml"/>
                 </Children>
             </WidgetGroup>

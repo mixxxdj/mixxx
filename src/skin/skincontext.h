@@ -12,6 +12,7 @@
 
 #include "configobject.h"
 #include "skin/pixmapsource.h"
+#include "widget/wsingletoncontainer.h"
 #include "widget/wpixmapstore.h"
 
 #define SKIN_WARNING(node, context) (context).logWarning(__FILE__, __LINE__, (node))
@@ -79,6 +80,11 @@ class SkinContext {
 
     QDebug logWarning(const char* file, const int line, const QDomNode& node) const;
 
+    // Not const because WSingletonContainer needs to mutate the map.
+    QSharedPointer<WSingletonContainer::WidgetMap> getSingletonMap() {
+        return m_pSingletons;
+    }
+
   private:
     QString variableNodeToText(const QDomElement& element) const;
 
@@ -90,6 +96,10 @@ class SkinContext {
     QSharedPointer<QScriptEngine> m_pScriptEngine;
     QSharedPointer<QScriptEngineDebugger> m_pScriptDebugger;
     QScriptValue m_parentGlobal;
+
+    // The SingletonWidget map is passed to child SkinContexts, so that all
+    // templates in the tree can share a single map.
+    QSharedPointer<WSingletonContainer::WidgetMap> m_pSingletons;
 };
 
 #endif /* SKINCONTEXT_H */

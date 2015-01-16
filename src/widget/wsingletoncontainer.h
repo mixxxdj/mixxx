@@ -42,6 +42,8 @@
 #ifndef WSINGLETONCONTAINER_H
 #define WSINGLETONCONTAINER_H
 
+#include <QPointer>
+
 #include "widget/wwidgetgroup.h"
 
 class WSingletonContainer : public WWidgetGroup {
@@ -56,21 +58,22 @@ class WSingletonContainer : public WWidgetGroup {
 
     // We don't want to end up with badly-constructed containers, so only
     // provide a factory function.
-    static WSingletonContainer* getSingleton(QString objectname,
+    static WSingletonContainer* getSingleton(QString objectName,
+                                             WidgetMap* widgetMap,
                                              QWidget* pParent=NULL);
 
     // Takes a constructed QWidget and inserts it in the map of available
     // singletons.
-    static void defineSingleton(QString objectname, QWidget* widget);
+    static void defineSingleton(QString objectName, QWidget* widget,
+                                WidgetMap* widgetMap);
 
   public slots:
     virtual void showEvent(QShowEvent* event);
 
   private:
-    WSingletonContainer(QString objectname, QWidget* pParent=NULL);
+    WSingletonContainer(QWidget* widget, QWidget* pParent=NULL);
 
-    static WidgetMap m_singletons;
-    QWidget* m_pWidget;
+    QPointer<QWidget> m_pWidget;
     QLayout* m_pLayout;
 };
 

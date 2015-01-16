@@ -9,7 +9,7 @@
                     <WidgetGroup trigger="[Library],show_library_tab_small" persist="true">
                         <Layout>vertical</Layout>
                         <Children>
-                            <Singleton objectName="LibrarySingleton"/>
+                            <SingletonContainer objectName="LibrarySingleton"/>
                         </Children>
                     </WidgetGroup>
                     <WidgetGroup trigger="[EffectRack1],show_tab_small" persist="true">
