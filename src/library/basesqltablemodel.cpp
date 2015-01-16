@@ -217,10 +217,9 @@ void BaseSqlTableModel::select() {
     QTime time;
     time.start();
 
-    QString columns = m_tableColumnsJoined;
     QString orderBy = orderByClause();
     QString queryString = QString("SELECT %1 FROM %2 %3")
-            .arg(columns, m_tableName, orderBy);
+            .arg(m_tableColumnsJoined, m_tableName, orderBy);
 
     if (sDebug) {
         qDebug() << this << "select() executing:" << queryString;
@@ -274,9 +273,9 @@ void BaseSqlTableModel::select() {
         // Get all the table columns and store them in the hash for this
         // row-info section.
 
+        thisRowInfo.metadata.reserve(tableColumnIndices.size());
         foreach (int tableColumnIndex, tableColumnIndices) {
-            thisRowInfo.metadata[tableColumnIndex] =
-                    query.value(tableColumnIndex);
+            thisRowInfo.metadata << query.value(tableColumnIndex);
         }
         rowInfo.push_back(thisRowInfo);
     }
@@ -642,8 +641,7 @@ bool BaseSqlTableModel::setData(
 
     // You can't set something in the table columns because we have no way of
     // persisting it.
-    const QHash<int, QVariant>& columns = rowInfo.metadata;
-    if (columns.contains(column)) {
+    if (column < m_tableColumns.size()) {
         return false;
     }
 
@@ -849,8 +847,7 @@ QVariant BaseSqlTableModel::getBaseValue(
     int trackId = rowInfo.trackId;
 
     // If the row info has the row-specific column, return that.
-    const QHash<int, QVariant>& columns = rowInfo.metadata;
-    if (columns.contains(column)) {
+    if (column < m_tableColumns.size()) {
         // Special case for preview column. Return whether trackId is the
         // current preview deck track.
         if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
@@ -860,8 +857,9 @@ QVariant BaseSqlTableModel::getBaseValue(
             return m_iPreviewDeckTrackId == trackId;
         }
 
+        const QVector<QVariant>& columns = rowInfo.metadata;
         if (sDebug) {
-            qDebug() << "Returning table-column value" << columns[column]
+            qDebug() << "Returning table-column value" << columns.at(column)
                      << "for column" << column << "role" << role;
         }
         return columns[column];

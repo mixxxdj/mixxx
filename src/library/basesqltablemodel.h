@@ -115,7 +115,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     struct RowInfo {
         int trackId;
         int order;
-        QHash<int, QVariant> metadata;
+        QVector<QVariant> metadata;
 
         bool operator<(const RowInfo& other) const {
             // -1 is greater than anything
