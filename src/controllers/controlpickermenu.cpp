@@ -691,6 +691,9 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addControl("[PreviewDeck]", "show_previewdeck",
                tr("Preview Deck Show/Hide"),
                tr("Show/hide the preview deck"), guiMenu);
+    addControl("[EffectRack1]", "show",
+               tr("Effect Rack Show/Hide"),
+               tr("Show/hide the effect rack"), guiMenu);
     addControl("[Library]", "show_coverart",
                tr("Cover Art Show/Hide"),
                tr("Show/hide cover art"), guiMenu);

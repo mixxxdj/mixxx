@@ -31,7 +31,7 @@
 				<group>[EffectRack1_EffectUnit2]</group>
 				<midino>0x66</midino>
 				<status>0xB0</status>
-				<key>parameter</key>
+				<key>super1</key>
 			</control>
 			<!-- right filter efx (deck 2+4) -->
 			<control>
@@ -44,7 +44,7 @@
 				<group>[EffectRack1_EffectUnit3]</group>
 				<midino>0x67</midino>
 				<status>0xB0</status>
-				<key>parameter</key>
+				<key>super1</key>
 			</control>
 			<!-- left efx unit -->
 			<control>
