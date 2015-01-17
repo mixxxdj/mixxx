@@ -51,7 +51,9 @@ class WSingletonContainer : public WWidgetGroup {
   public:
     // Prepares the container and remembers the widget, but does not add the
     // widget to the container.
-    WSingletonContainer(QWidget* widget, QWidget* pParent=NULL);
+    WSingletonContainer(QWidget* pParent=NULL);
+
+    virtual void setup(QDomNode node, const SkinContext& context);
 
   public slots:
     virtual void showEvent(QShowEvent* event);
@@ -73,8 +75,7 @@ class SingletonMap {
     // We don't want to end up with badly-constructed containers, so only
     // provide a factory function.  Returns NULL if the objectName is not in
     // the map.
-    WSingletonContainer* getSingleton(QString objectName,
-                                      QWidget* pParent=NULL);
+    QWidget* getSingletonWidget(QString objectName) const;
 
   private:
     WidgetMap m_singletons;

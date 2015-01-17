@@ -80,9 +80,12 @@ class SkinContext {
 
     QDebug logWarning(const char* file, const int line, const QDomNode& node) const;
 
-    // Not const because WSingletonContainer needs to mutate the map.
-    QSharedPointer<SingletonMap> getSingletonMap() {
-        return m_pSingletons;
+    void defineSingleton(QString objectName, QWidget* widget) {
+        return m_pSingletons->defineSingleton(objectName, widget);
+    }
+
+    QWidget* getSingletonWidget(QString objectName) const {
+        return m_pSingletons->getSingletonWidget(objectName);
     }
 
   private:

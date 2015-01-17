@@ -3,24 +3,39 @@
 #include <QLayout>
 
 #include "util/assert.h"
+#include "skin/skincontext.h"
 #include "widget/wlibrary.h"
 
 
-WSingletonContainer::WSingletonContainer(QWidget* widget, QWidget* pParent)
-        : WWidgetGroup(pParent), m_pWidget(widget) {
+WSingletonContainer::WSingletonContainer(QWidget* pParent)
+        : WWidgetGroup(pParent), m_pWidget(NULL), m_pLayout(NULL) { }
+
+void WSingletonContainer::setup(QDomNode node, const SkinContext& context) {
     setContentsMargins(0, 0, 0, 0);
     m_pLayout = new QVBoxLayout();
     m_pLayout->setSpacing(0);
     m_pLayout->setContentsMargins(0, 0, 0, 0);
-    m_pLayout->setAlignment(Qt::AlignCenter);
     setLayout(m_pLayout);
+
+    QDomElement containerNode = node.toElement();
+    if (!containerNode.hasAttribute("objectName")) {
+        SKIN_WARNING(node, context)
+                << "Need objectName attribute for Singleton tag";
+        return;
+    }
+    QString objectName = containerNode.attribute("objectName");
+    m_pWidget = context.getSingletonWidget(objectName);
+    if (m_pWidget == NULL) {
+        SKIN_WARNING(node, context)
+                << "Asked for an unknown singleton widget:" << objectName;
+    }
 }
 
 void WSingletonContainer::showEvent(QShowEvent* event) {
     Q_UNUSED(event);
     if (m_pWidget) {
         QWidget* parent = m_pWidget->parentWidget();
-        if (parent && parent->layout()) {
+        if (parent && parent->layout() && m_pLayout) {
             parent->layout()->removeWidget(m_pWidget);
             m_pLayout->addWidget(m_pWidget);
             m_pWidget->show();
@@ -37,13 +52,10 @@ void SingletonMap::defineSingleton(QString objectName, QWidget* widget) {
     m_singletons.insert(objectName, widget);
 }
 
-WSingletonContainer* SingletonMap::getSingleton(
-        QString objectName, QWidget* pParent) {
+QWidget* SingletonMap::getSingletonWidget(QString objectName) const {
     WidgetMap::const_iterator widget_it = m_singletons.find(objectName);
     if (widget_it == m_singletons.end()) {
-        qWarning() << "ERROR: Asked for an unknown singleton widget:"
-                   << objectName;
         return NULL;
     }
-    return new WSingletonContainer(*widget_it, pParent);
+    return *widget_it;
 }
