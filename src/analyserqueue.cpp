@@ -188,6 +188,13 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, Mixxx::AudioSourcePointer pAudi
                 an->process(&m_sampleBuffer[0], readFrameCount * kAnalysisChannels);
                 //qDebug() << "Done " << typeid(*an).name() << ".process()";
             }
+        } else {
+            if (progressFrameCount < pAudioSource->getFrameCount()) {
+                qWarning() << "Failed to read sample data from file:"
+                        << tio->getFilename();
+                dieflag = true; // abort
+                cancelled = false; // completed, no retry
+            }
         }
 
         // emit progress updates

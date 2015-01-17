@@ -35,15 +35,17 @@ public:
             sample_type* sampleBuffer) /*override*/;
 
 private:
-    AudioSourceM4A();
+    explicit AudioSourceM4A(QString fileName);
 
-    Result open(QString fileName);
+    Result open();
 
     void close();
 
     bool isValidSampleBlockId(MP4SampleId sampleBlockId) const;
 
     void restartDecoding(MP4SampleId sampleBlockId);
+
+    const QString m_fileName;
 
     MP4FileHandle m_hFile;
     MP4TrackId m_trackId;

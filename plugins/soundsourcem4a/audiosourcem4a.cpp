@@ -74,8 +74,9 @@ MP4TrackId findFirstAudioTrackId(MP4FileHandle hFile) {
 
 }
 
-AudioSourceM4A::AudioSourceM4A()
-        : m_hFile(MP4_INVALID_FILE_HANDLE),
+AudioSourceM4A::AudioSourceM4A(QString fileName)
+        : m_fileName(fileName),
+          m_hFile(MP4_INVALID_FILE_HANDLE),
           m_trackId(MP4_INVALID_TRACK_ID),
           m_maxSampleBlockId(MP4_INVALID_SAMPLE_ID),
           m_curSampleBlockId(MP4_INVALID_SAMPLE_ID),
@@ -90,8 +91,8 @@ AudioSourceM4A::~AudioSourceM4A() {
 }
 
 AudioSourcePointer AudioSourceM4A::create(QString fileName) {
-    QSharedPointer<AudioSourceM4A> pAudioSource(new AudioSourceM4A);
-    if (OK == pAudioSource->open(fileName)) {
+    QSharedPointer<AudioSourceM4A> pAudioSource(new AudioSourceM4A(fileName));
+    if (OK == pAudioSource->open()) {
         // success
         return pAudioSource;
     } else {
@@ -100,27 +101,27 @@ AudioSourcePointer AudioSourceM4A::create(QString fileName) {
     }
 }
 
-Result AudioSourceM4A::open(QString fileName) {
+Result AudioSourceM4A::open() {
     /* open MP4 file, check for >= ver 1.9.1 */
 #if MP4V2_PROJECT_version_hex <= 0x00010901
-    m_hFile = MP4Read(fileName.toLocal8Bit().constData(), 0);
+    m_hFile = MP4Read(m_fileName.toLocal8Bit().constData(), 0);
 #else
-    m_hFile = MP4Read(fileName.toLocal8Bit().constData());
+    m_hFile = MP4Read(m_fileName.toLocal8Bit().constData());
 #endif
     if (MP4_INVALID_FILE_HANDLE == m_hFile) {
-        qWarning() << "Failed to open file for reading:" << fileName;
+        qWarning() << "Failed to open file for reading:" << m_fileName;
         return ERR;
     }
 
     m_trackId = findFirstAudioTrackId(m_hFile);
     if (MP4_INVALID_TRACK_ID == m_trackId) {
-        qWarning() << "No AAC track found in file:" << fileName;
+        qWarning() << "No AAC track found in file:" << m_fileName;
         return ERR;
     }
 
     m_maxSampleBlockId = MP4GetTrackNumberOfSamples(m_hFile, m_trackId);
     if (MP4_INVALID_SAMPLE_ID == m_maxSampleBlockId) {
-        qWarning() << "Failed to read file structure:" << fileName;
+        qWarning() << "Failed to read file structure:" << m_fileName;
         return ERR;
     }
 
@@ -312,17 +313,19 @@ AudioSource::size_type AudioSourceM4A::readSampleFrames(
                 &m_inputBuffer[m_inputBufferOffset],
                 m_inputBufferLength - m_inputBufferOffset, &pDecodeBuffer,
                 decodeBufferCapacityInBytes);
+        // verify the decoding result
+        if (0 != decFrameInfo.error) {
+            qWarning() << "AAC decoding error:"
+                    << decFrameInfo.error
+                    << NeAACDecGetErrorMessage(decFrameInfo.error)
+                    << m_fileName;
+            break; // abort
+        }
 
         // verify our assumptions about the decoding API
         DEBUG_ASSERT(pSampleBuffer == pDecodeBuffer); // verify the in/out parameter
         DEBUG_ASSERT(pSampleBuffer == pDecodeResult); // verify the result pointer
 
-        // verify the decoding result
-        if (0 != decFrameInfo.error) {
-            qWarning() << "AAC decoding error:"
-                    << NeAACDecGetErrorMessage(decFrameInfo.error);
-            break; // abort
-        }
         // verify the decoded sample data for consistency
         if (getChannelCount() != decFrameInfo.channels) {
             qWarning() << "Corrupt or unsupported AAC file:"
