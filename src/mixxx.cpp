@@ -823,6 +823,10 @@ void MixxxMainWindow::slotViewShowPreviewDeck(bool enable) {
     toggleVisibility(ConfigKey("[PreviewDeck]", "show_previewdeck"), enable);
 }
 
+void MixxxMainWindow::slotViewShowEffects(bool enable) {
+    toggleVisibility(ConfigKey("[EffectRack1]", "show"), enable);
+}
+
 void MixxxMainWindow::slotViewShowCoverArt(bool enable) {
     toggleVisibility(ConfigKey("[Library]", "show_coverart"), enable);
 }
@@ -844,6 +848,8 @@ void MixxxMainWindow::onNewSkinLoaded() {
                              ConfigKey("[Microphone]", "show_microphone"));
     setVisibilityOptionState(m_pViewShowPreviewDeck,
                              ConfigKey("[PreviewDeck]", "show_previewdeck"));
+    setVisibilityOptionState(m_pViewShowEffects,
+                             ConfigKey("[EffectRack1]", "show"));
     setVisibilityOptionState(m_pViewShowCoverArt,
                              ConfigKey("[Library]", "show_coverart"));
 }
@@ -1283,6 +1289,20 @@ void MixxxMainWindow::initActions()
     connect(m_pViewShowPreviewDeck, SIGNAL(toggled(bool)),
             this, SLOT(slotViewShowPreviewDeck(bool)));
 
+    QString showEffectsTitle = tr("Show Effect Rack");
+    QString showEffectsText = tr("Show the effect rack in the Mixxx interface.") +
+    " " + mayNotBeSupported;
+    m_pViewShowEffects = new QAction(showEffectsTitle, this);
+    m_pViewShowEffects->setCheckable(true);
+    m_pViewShowEffects->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_ShowEffects"),
+                                                  tr("Ctrl+5", "Menubar|View|Show Effect Rack"))));
+    m_pViewShowEffects->setStatusTip(showEffectsText);
+    m_pViewShowEffects->setWhatsThis(buildWhatsThis(showEffectsTitle, showEffectsText));
+    connect(m_pViewShowEffects, SIGNAL(toggled(bool)),
+            this, SLOT(slotViewShowEffects(bool)));
+
     QString showCoverArtTitle = tr("Show Cover Art");
     QString showCoverArtText = tr("Show cover art in the Mixxx interface.") +
             " " + mayNotBeSupported;
@@ -1291,7 +1311,7 @@ void MixxxMainWindow::initActions()
     m_pViewShowCoverArt->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
                                                   "ViewMenu_ShowCoverArt"),
-                                                  tr("Ctrl+5", "Menubar|View|Show Cover Art"))));
+                                                  tr("Ctrl+6", "Menubar|View|Show Cover Art"))));
     m_pViewShowCoverArt->setStatusTip(showCoverArtText);
     m_pViewShowCoverArt->setWhatsThis(buildWhatsThis(showCoverArtTitle, showCoverArtText));
     connect(m_pViewShowCoverArt, SIGNAL(toggled(bool)),
@@ -1464,6 +1484,7 @@ void MixxxMainWindow::initMenuBar()
     m_pViewMenu->addAction(m_pViewVinylControl);
 #endif
     m_pViewMenu->addAction(m_pViewShowPreviewDeck);
+    m_pViewMenu->addAction(m_pViewShowEffects);
     m_pViewMenu->addAction(m_pViewShowCoverArt);
     m_pViewMenu->addSeparator();
     m_pViewMenu->addAction(m_pViewFullScreen);
