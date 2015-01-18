@@ -29,7 +29,7 @@
                 <SingletonContainer>
                     <Size>96f,96f</Size>
                     <ObjectName>SpinnySingleton<Variable name="channum"/></ObjectName>
-                </SingletonContainer>              
+                </SingletonContainer>
             </Children>
           </WidgetGroup>
           <WidgetGroup trigger="[Master],show_mixer">
@@ -61,7 +61,7 @@
             <Transform>
               <Not/>
             </Transform>
-        </Connection>    
+        </Connection>
       </WidgetGroup>
     </Children>
   </WidgetGroup>
