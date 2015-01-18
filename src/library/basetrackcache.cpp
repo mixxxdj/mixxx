@@ -413,7 +413,7 @@ void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
         qDebug() << "Rows returned:" << rows;
     }
 
-    m_trackOrder.resize(0);
+    m_trackOrder.resize(0); // keeps alocated memory
     trackToIndex->clear();
     if (rows > 0) {
         trackToIndex->reserve(rows);
@@ -514,58 +514,6 @@ QueryNode* BaseTrackCache::parseQuery(QString query, QString extraFilter,
 
     return m_pQueryParser->parseQuery(query, m_searchColumns,
                                       queryFragments.join(" AND "));
-}
-
-QString BaseTrackCache::orderByClause(int sortColumn,
-                                      Qt::SortOrder sortOrder) const {
-    // This is all stolen from QSqlTableModel::orderByClause(), just rigged to
-    // sort case-insensitively.
-
-    QSqlQuery query(m_database);
-    QString queryString = QString("SELECT %1 FROM %2 LIMIT 1")
-            .arg(m_columnsJoined, m_tableName);
-    query.prepare(queryString);
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-    }
-
-    QString s;
-    QSqlField f = query.record().field(sortColumn);
-    if (!f.isValid()) {
-        if (sDebug) {
-            qDebug() << "field not valid";
-        }
-        return QString();
-    }
-
-    QString field = m_database.driver()->escapeIdentifier(
-        f.name(), QSqlDriver::FieldName);
-
-    s.append(QLatin1String("ORDER BY "));
-    QString sort_field = QString("%1.%2").arg(m_tableName, field);
-
-    // If the field is a string, sort using its lowercase form so sort is
-    // case-insensitive.
-    QVariant::Type type = f.type();
-
-    // TODO(XXX) Instead of special-casing tracknumber here, we should ask the
-    // child class to format the expression for sorting.
-    if (sort_field.contains("tracknumber")) {
-        sort_field = QString("cast(%1 as integer)").arg(sort_field);
-    } else if (type == QVariant::String) {
-        sort_field = QString("lower(%1)").arg(sort_field);
-    }
-    s.append(sort_field);
-
-#ifdef __SQLITE3__
-    if (type == QVariant::String) {
-        s.append(" COLLATE localeAwareCompare");
-    }
-#endif
-
-    s.append((sortOrder == Qt::AscendingOrder) ? QLatin1String(" ASC") :
-            QLatin1String(" DESC"));
-    return s;
 }
 
 int BaseTrackCache::findSortInsertionPoint(TrackPointer pTrack,

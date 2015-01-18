@@ -83,7 +83,6 @@ class BaseTrackCache : public QObject {
 
     QueryNode* parseQuery(QString query, QString extraFilter,
                           QStringList idStrings) const;
-    QString orderByClause(int sortColumn, Qt::SortOrder sortOrder) const;
     int findSortInsertionPoint(TrackPointer pTrack,
                                const int sortColumn,
                                const Qt::SortOrder sortOrder,
