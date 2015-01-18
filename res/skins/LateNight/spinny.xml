@@ -1,6 +1,5 @@
 <Template>
   <WidgetGroup>
-    <ObjectName>debugbg</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Children>
@@ -26,7 +25,6 @@
             <ObjectName>SpinnyContainer</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
-            <Size>96f,96f</Size>
             <Children>
                 <SingletonContainer>
                     <Size>96f,96f</Size>
@@ -38,7 +36,6 @@
             <ObjectName>SpinnyContainer</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
-            <Size>50f,50f</Size>
             <Children>
               <SingletonContainer>
                   <Size>50f,50f</Size>
@@ -54,18 +51,10 @@
       </WidgetStack>
       <!-- If the spinnies are hidden, create an invisible margin of the correct
       height because the waveforms follow that height.  -->
-      <!-- <WidgetGroup>
+      <WidgetGroup>
         <Layout>horizontal</Layout>
-        <SizePolicy>f,f</SizePolicy>
-        <Size>96f,96f</Size>
-        <Children>
-          <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <SizePolicy>f,f</SizePolicy>
-            <Size>96f,0f</Size>
-            <Children/>
-          </WidgetGroup>
-        </Children>
+        <Size>0f,96f</Size>
+        <Children/>
         <Connection>
             <ConfigKey>[Master],show_mixer</ConfigKey>
             <BindProperty>visible</BindProperty>
@@ -74,31 +63,6 @@
             </Transform>
         </Connection>    
       </WidgetGroup>
-      <WidgetGroup>
-        <Layout>horizontal</Layout>
-        <SizePolicy>f,f</SizePolicy>
-        <Size>0f,50f</Size>
-        <Children>
-          <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <SizePolicy>f,f</SizePolicy>
-            <Size>50f,0f</Size>
-            <Children/>
-          </WidgetGroup>
-        </Children>
-        <Connection>
-            <ConfigKey>[Master],show_mixer</ConfigKey>
-            <BindProperty>visible</BindProperty>
-        </Connection>    
-      </WidgetGroup>
-      <Spinny>
-        <Group>[Channel<Variable name="channum"/>]</Group>
-        <PathBackground scalemode="STRETCH">spinny_bg.svg</PathBackground>
-        <PathMask>spinny<Variable name="color"/>_mask.svg</PathMask>
-        <PathForeground>spinny_indicator.svg</PathForeground>
-        <PathGhost>spinny_indicator_ghost.svg</PathGhost>
-        <ShowCover>true</ShowCover>
-      </Spinny> -->
     </Children>
   </WidgetGroup>
 </Template>

@@ -18,12 +18,12 @@ void WSingletonContainer::setup(QDomNode node, const SkinContext& context) {
     setLayout(m_pLayout);
 
     QDomElement containerNode = node.toElement();
-    if (!containerNode.hasAttribute("objectName")) {
+    if (!context.hasNode(node, "ObjectName")) {
         SKIN_WARNING(node, context)
                 << "Need objectName attribute for Singleton tag";
         return;
     }
-    QString objectName = containerNode.attribute("objectName");
+    QString objectName = context.selectString(node, "ObjectName");
     m_pWidget = context.getSingletonWidget(objectName);
     if (m_pWidget == NULL) {
         SKIN_WARNING(node, context)
@@ -49,7 +49,6 @@ void SingletonMap::defineSingleton(QString objectName, QWidget* widget) {
                    << "already been defined:" << objectName;
         return;
     }
-    qDebug() << "Defined Singleton widget" << objectName;
     m_singletons.insert(objectName, widget);
 }
 
