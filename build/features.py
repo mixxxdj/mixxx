@@ -951,10 +951,10 @@ class Optimize(Feature):
     def add_options(self, build, vars):
         vars.Add(
             'optimize', 'Set to:\n' \
-                        '  portable (9): sse2 CPU (>= Pentium 4)\n' \
+                        '  portable (alias 9): sse2 CPU (>= Pentium 4)\n' \
                         '  native: optimized exclusive for the CPU of this system\n' \
                         '  legacy: pure i386 code' \
-                        '  disabled: no optimazion, for debug only' \
+                        '  disabled: no optimization, for debug only' \
                         , 1)
 
     def configure(self, build, conf):
