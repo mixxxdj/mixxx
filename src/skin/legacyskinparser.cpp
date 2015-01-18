@@ -1098,11 +1098,11 @@ void LegacySkinParser::parseSingletonDefinition(QDomElement node) {
 }
 
 QWidget* LegacySkinParser::parseSingletonContainer(QDomElement node) {
-    if (!node.hasAttribute("objectName")) {
+    if (!m_pContext->hasNode(node, "ObjectName")) {
         qWarning() << "Need objectName attribute for Singleton tag.";
         return NULL;
     }
-    QString objectName = node.attribute("objectName");
+    QString objectName = m_pContext->selectString(node, "ObjectName");
     WSingletonContainer* pContainer =
             m_pContext->getSingletonMap()->getSingleton(objectName, m_pParent);
     if (pContainer == NULL) {

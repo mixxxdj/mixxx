@@ -34,6 +34,7 @@ void SingletonMap::defineSingleton(QString objectName, QWidget* widget) {
                    << "already been defined:" << objectName;
         return;
     }
+    qDebug() << "Defined Singleton widget" << objectName;
     m_singletons.insert(objectName, widget);
 }
 
