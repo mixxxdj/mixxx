@@ -37,6 +37,9 @@ class AutoDJCratesDAO : public QObject, public virtual DAO {
     // Get the ID of a random track.
     int getRandomTrackId(void);
 
+    // Get random track from library
+    int getRandomTrackFromLibrary(void);
+
   private:
 
     // Disallow copy and assign.

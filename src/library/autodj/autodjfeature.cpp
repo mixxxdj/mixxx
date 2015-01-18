@@ -132,7 +132,7 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
             m_pAutoDJView, SLOT(enableRandomButton(bool)));
 
     // Let subscribers know whether it's possible to add a random track.
-    emit(enableAddRandom(m_crateList.length() > 0));
+    emit(enableAddRandom(true));
 #endif // __AUTODJCRATES__
 }
 
@@ -283,9 +283,11 @@ void AutoDJFeature::slotCrateAutoDjChanged(int crateId, bool added) {
 void AutoDJFeature::slotAddRandomTrack(bool) {
 #ifdef __AUTODJCRATES__
     int retriveAttempts = 0;
+
+    // Get access to the auto-DJ playlist.
+    PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
+
     while (retriveAttempts < kMaxRetiveAttempts) {
-        // Get access to the auto-DJ playlist.
-        PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
         if (m_iAutoDJPlaylistId >= 0) {
             // Get the ID of a randomly-selected track.
             int iTrackId = m_autoDjCratesDao.getRandomTrackId();
@@ -304,12 +306,21 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
                     qDebug () <<"Track does not exist " << addedTrack->getTitle();
                 }
             }
-        }
         retriveAttempts += 1;
     }
-
-    if (retriveAttempts == kMaxRetiveAttempts)
-        qDebug () << "Could Not Load Random Tracks";
+	//TODO: Check if tracks exist here as well
+    if (retriveAttempts == kMaxRetiveAttempts || iTrackId == -1) {
+        qDebug () << "Could Not Load Random Tracks From Crate."
+    				"Attempting to load from library";
+    
+    	iTrackId = m_autoDjCratesDao.getRandomTrackFromLibrary();
+    	if (iTrackId != -1) {
+            playlistDao.appendTrackToPlaylist(iTrackId, m_iAutoDJPlaylistId);
+            m_pAutoDJView->onShow();
+    	}
+    	else
+    		qDebug() << "Could not load random track!"
+    }
 #endif // __AUTODJCRATES__
 }
 

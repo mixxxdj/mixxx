@@ -881,3 +881,22 @@ void AutoDJCratesDAO::slotPlayerInfoTrackUnloaded(QString group,
         }
     }
 }
+
+int AutoDJCratesDAO::getRandomTrackFromLibrary(void) {
+
+    QSqlQuery oQuery(m_rDatabase);
+    oQuery.prepare("SELECT library.id  "
+            "FROM library "
+            "ORDER BY RANDOM() "
+            "LIMIT 1");
+    if (oQuery.exec()) {
+        if (oQuery.next()) {
+            // Give our caller the randomly-selected track.
+            return oQuery.value(0).toInt();
+        }
+    } else {
+        LOG_FAILED_QUERY(oQuery);
+    }
+    // Let our caller know that a random track couldn't be picked.
+    return -1;
+}
