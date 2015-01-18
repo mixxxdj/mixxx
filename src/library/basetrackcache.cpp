@@ -64,6 +64,10 @@ int BaseTrackCache::fieldIndex(const QString& columnName) const {
     return m_columnCache.fieldIndex(columnName);
 }
 
+QString BaseTrackCache::columnNameForFieldIndex(int index) const {
+    return m_columnCache.columnNameForFieldIndex(index);
+}
+
 void BaseTrackCache::slotTracksAdded(QSet<int> trackIds) {
     if (sDebug) {
         qDebug() << this << "slotTracksAdded" << trackIds.size();
@@ -351,7 +355,9 @@ QVariant BaseTrackCache::data(int trackId, int column) const {
 
 void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
                                    QString searchQuery,
-                                   QString extraFilter, int sortColumn,
+                                   QString extraFilter,
+                                   QString orderByClause,
+                                   const int sortColumn,
                                    Qt::SortOrder sortOrder,
                                    QHash<int, int>* trackToIndex) {
     // Skip processing if there are no tracks to filter or sort.
@@ -364,11 +370,6 @@ void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
     }
 
     QStringList idStrings;
-
-    if (sortColumn < 0 || sortColumn >= columnCount()) {
-        qDebug() << "ERROR: Invalid sort column provided to BaseTrackCache::filterAndSort";
-        return;
-    }
 
     // TODO(rryan) consider making this the data passed in and a separate
     // QVector for output
@@ -388,13 +389,12 @@ void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
         filter.prepend("WHERE ");
     }
 
-    QString orderBy = orderByClause(sortColumn, sortOrder);
     QString queryString = QString("SELECT %1 FROM %2 %3 %4")
-            .arg(m_idColumn, m_tableName, filter, orderBy);
+            .arg(m_idColumn, m_tableName, filter, orderByClause);
 
-    if (sDebug) {
+//    if (sDebug) {
         qDebug() << this << "select() executing:" << queryString;
-    }
+//    }
 
     QSqlQuery query(m_database);
     // This causes a memory savings since QSqlCachedResult (what QtSQLite uses)

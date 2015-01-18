@@ -32,10 +32,10 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
           m_database(pTrackCollection->getDatabase()),
           m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
           m_iPreviewDeckTrackId(-1),
-          m_currentSearch("") {
-    m_bInitialized = false;
-    m_iSortColumn = 0;
-    m_eSortOrder = Qt::AscendingOrder;
+          m_bInitialized(false),
+          m_currentSearch(""),
+          m_trackSourceSortColumn(0),
+          m_trackSourceSortOrder(Qt::AscendingOrder) {
     connect(&PlayerInfo::instance(), SIGNAL(trackLoaded(QString, TrackPointer)),
             this, SLOT(trackLoaded(QString, TrackPointer)));
     trackLoaded(m_previewDeckGroup, PlayerInfo::instance().getTrackInfo(m_previewDeckGroup));
@@ -170,29 +170,6 @@ bool BaseSqlTableModel::isColumnHiddenByDefault(int column) {
     return false;
 }
 
-QString BaseSqlTableModel::orderByClause() const {
-    bool tableColumnSort = m_iSortColumn < m_tableColumns.size();
-    if (m_iSortColumn < 0 || !tableColumnSort) {
-        // orderByClause is empty, if the sorting column
-        // is in the Track cache only
-        return "";
-    }
-
-    QString field = m_tableColumns[m_iSortColumn];
-
-    QString s;
-    s.append(QLatin1String("ORDER BY "));
-    QString sort_field = QString("%1.%2").arg(m_tableName, field);
-    s.append(sort_field);
-
-#ifdef __SQLITE3__
-    s.append(" COLLATE localeAwareCompare");
-#endif
-    s.append((m_eSortOrder == Qt::AscendingOrder) ? QLatin1String(" ASC") :
-             QLatin1String(" DESC"));
-    return s;
-}
-
 void BaseSqlTableModel::select() {
     if (!m_bInitialized) {
         return;
@@ -216,9 +193,8 @@ void BaseSqlTableModel::select() {
     time.start();
 
     // Prepare query for id and all columns not in m_trackSource
-    QString orderBy = orderByClause();
     QString queryString = QString("SELECT %1 FROM %2 %3")
-            .arg(m_tableColumnsJoined, m_tableName, orderBy);
+            .arg(m_tableColumnsJoined, m_tableName, m_tableOrderBy);
 
     if (sDebug) {
         qDebug() << this << "select() executing:" << queryString;
@@ -273,31 +249,22 @@ void BaseSqlTableModel::select() {
         qDebug() << "Rows actually received:" << rowInfo.size();
     }
 
-
-    int sortColumn = 0;
-    if (m_iSortColumn > m_tableColumns.size()) {
-        // We have to sort by a column of m_trackSource
-        // Adjust sort column to remove table columns and add 1 to add an id column.
-        sortColumn = m_iSortColumn - m_tableColumns.size() + 1;
-    }
-
     if (m_trackSource) {
-        // If we were sorting a table column, then secondary sort by id. TODO(rryan)
-        // we should look into being able to drop the secondary sort to save time
-        // but going for correctness first.
         m_trackSource->filterAndSort(trackIds, m_currentSearch,
                                      m_currentSearchFilter,
-                                     sortColumn, m_eSortOrder,
+                                     m_trackSourceOrderBy,
+                                     m_trackSourceSortColumn,
+                                     m_trackSourceSortOrder,
                                      &m_trackSortOrder);
 
         // Re-sort the track IDs since filterAndSort can change their order or mark
         // them for removal (by setting their row to -1).
         for (QVector<RowInfo>::iterator it = rowInfo.begin();
                 it != rowInfo.end(); ++it) {
-            // If the sort column is not a track column then we will sort only to
+            // If the sort is not a track column then we will sort only to
             // separate removed tracks (order == -1) from present tracks (order ==
             // 0). Otherwise we sort by the order that filterAndSort returned to us.
-            if (sortColumn == 0) {
+            if (m_trackSourceOrderBy.isEmpty()) {
                 it->order = m_trackSortOrder.contains(it->trackId) ? 0 : -1;
             } else {
                 it->order = m_trackSortOrder.value(it->trackId, -1);
@@ -408,19 +375,102 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
         qDebug() << this << "setSort()" << column << order;
     }
 
-    bool sortColumnChanged = m_iSortColumn != column;
-    bool sortOrderChanged = m_eSortOrder != order;
+    int trackSourceColumnCount = m_trackSource ? m_trackSource->columnCount() : 0;
 
-    if (!sortColumnChanged && !sortOrderChanged) {
-        // Do nothing if the sort is not different.
+    if (column < 0 ||
+            column >= trackSourceColumnCount + m_sortColumns.size() - 1) {
+        // -1 because id column is in both tables
+        qWarning() << "BaseSqlTableModel::setSort invalid column:" << column;
         return;
     }
 
-    // TODO(rryan) optimization: if the sort column has not changed but the
-    // order has, just reverse our ordering of the rows.
+    if (m_sortColumns.size() > 0 &&
+            m_sortColumns.at(0).column == column) {
+        // Only the order has changed
+        SortColumn sc;
+        sc.column = column;
+        sc.order = order;
+        m_sortColumns.replace(0, sc);
+    } else {
+        // remove column if already in history
+        for (int i = 0; i < m_sortColumns.size(); ++i) {
+            if (m_sortColumns.at(i).column == column) {
+                m_sortColumns.removeAt(i);
+                break;
+            }
+        }
 
-    m_iSortColumn = column;
-    m_eSortOrder = order;
+        // set new sort as head and shift out old sort
+        SortColumn sc;
+        sc.column = column;
+        sc.order = order;
+        m_sortColumns.prepend(sc);
+
+        if (m_sortColumns.size() > 3) {
+            m_sortColumns.removeLast();
+        }
+    }
+
+    // we have two selects for sorting, since keeping the select history
+    // across the two selects is hard, we do this only for the trackSource
+    // this is OK, because the coloums of the table are virtual in cas of
+    // preview column or individual like playlist track number so that we
+    // do not need the history anyway.
+
+    // reset the old order by clauses
+    m_trackSourceOrderBy.clear();
+    m_tableOrderBy.clear();
+    m_trackSourceSortColumn = 0;
+    m_trackSourceSortOrder = Qt::AscendingOrder;
+
+    if (column > 0 && column < m_tableColumns.size()) {
+        // Table sorting, no history
+        m_tableOrderBy.append(QLatin1String("ORDER BY "));
+        QString field = m_tableColumns[column];
+        QString sort_field = QString("%1.%2").arg(m_tableName, field);
+        m_tableOrderBy.append(sort_field);
+    #ifdef __SQLITE3__
+        m_tableOrderBy.append(QLatin1String(" COLLATE localeAwareCompare"));
+    #endif
+        m_tableOrderBy.append((order == Qt::AscendingOrder) ?
+                QLatin1String(" ASC") :
+                QLatin1String(" DESC"));
+        m_sortColumns.clear();
+    } else if (m_trackSource) {
+        foreach (SortColumn sc, m_sortColumns) {
+            // TrackSource Sorting, current sort + two from history
+            if (!m_trackSourceOrderBy.isEmpty()) {
+                // second cycle
+                m_trackSourceOrderBy.append(QLatin1String(", "));
+            }
+            QString field;
+            if (sc.column == 0) {
+                field = m_trackSource->columnNameForFieldIndex(0);
+            } else {
+                // + 1 to skip id coloumn
+                int ccColumn = sc.column - m_tableColumns.size() + 1;
+                field = m_trackSource->columnNameForFieldIndex(ccColumn);
+                if (m_trackSourceOrderBy.isEmpty()) {
+                    // first cycle
+                    m_trackSourceSortColumn = ccColumn;
+                    m_trackSourceSortOrder = sc.order;
+                }
+            }
+            QString sort_field = field;
+            m_trackSourceOrderBy.append(sort_field);
+
+    #ifdef __SQLITE3__
+            m_trackSourceOrderBy.append(QLatin1String(" COLLATE localeAwareCompare"));
+    #endif
+            m_trackSourceOrderBy.append((sc.order == Qt::AscendingOrder) ?
+                    QLatin1String(" ASC") :
+                    QLatin1String(" DESC"));
+            qDebug() << m_trackSourceOrderBy << sc.order;
+        }
+        if (!m_trackSourceOrderBy.isEmpty()) {
+            m_trackSourceOrderBy.prepend(QLatin1String("ORDER BY "));
+        }
+    }
 }
 
 void BaseSqlTableModel::sort(int column, Qt::SortOrder order) {

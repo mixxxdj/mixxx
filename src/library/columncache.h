@@ -95,6 +95,10 @@ class ColumnCache {
         return m_columnIndexByName.key(fieldIndex(column));
     }
 
+    inline QString columnNameForFieldIndex(int index) const {
+        return m_columnIndexByName.key(index);
+    }
+
     QMap<QString, int> m_columnIndexByName;
     // A mapping from logical index aka field index to Column enum.
     QMap<int, Column> m_columnByIndex;

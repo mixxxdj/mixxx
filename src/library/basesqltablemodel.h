@@ -127,6 +127,12 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
             return order < other.order;
         }
     };
+
+    struct SortColumn {
+        int column;
+        Qt::SortOrder order;
+    };
+
     QVector<RowInfo> m_rowInfo;
 
     QString m_tableName;
@@ -135,8 +141,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     QStringList m_tableColumns;
     QString m_tableColumnsJoined;
     ColumnCache m_tableColumnCache;
-    int m_iSortColumn;
-    Qt::SortOrder m_eSortOrder;
+    QList<SortColumn> m_sortColumns;
     bool m_bInitialized;
     QSqlRecord m_queryRecord;
     QHash<int, int> m_trackSortOrder;
@@ -144,6 +149,10 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     QString m_currentSearch;
     QString m_currentSearchFilter;
     QVector<QHash<int, QVariant> > m_headerInfo;
+    QString m_trackSourceOrderBy;
+    QString m_tableOrderBy;
+    int m_trackSourceSortColumn;
+    Qt::SortOrder m_trackSourceSortOrder;
 
     DISALLOW_COPY_AND_ASSIGN(BaseSqlTableModel);
 };
