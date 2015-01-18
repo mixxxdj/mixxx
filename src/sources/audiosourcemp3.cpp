@@ -425,8 +425,7 @@ AudioSource::size_type AudioSourceMp3::readSampleFrames(
         size_type numberOfFrames, sample_type* sampleBuffer,
         size_type sampleBufferSize, bool readStereoSamples) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
-    DEBUG_ASSERT(isValidSampleBufferSize(numberOfFrames,
-            sampleBufferSize, readStereoSamples));
+    DEBUG_ASSERT(getSampleBufferSize(numberOfFrames, readStereoSamples) >= sampleBufferSize);
 
     const size_type numberOfFramesTotal = math_min(numberOfFrames,
             size_type(getFrameIndexMax() - m_curFrameIndex));
