@@ -64,12 +64,22 @@ template<class T> static void safeRelease(T **ppT) {
 
 }
 
-AudioSourceMediaFoundation::AudioSourceMediaFoundation()
-        : m_hrCoInitialize(E_FAIL), m_hrMFStartup(E_FAIL),
-                m_pReader(NULL), m_pAudioType(NULL), m_wcFilename(
-                NULL), m_nextFrame(0), m_leftoverBuffer(NULL), m_leftoverBufferSize(
-                0), m_leftoverBufferLength(0), m_leftoverBufferPosition(0), m_mfDuration(
-                0), m_iCurrentPosition(0), m_dead(false), m_seeking(false) {
+AudioSourceMediaFoundation::AudioSourceMediaFoundation(QUrl url)
+        : AudioSource(url),
+          m_hrCoInitialize(E_FAIL),
+          m_hrMFStartup(E_FAIL),
+          m_pReader(NULL),
+          m_pAudioType(NULL),
+          m_wcFilename(NULL),
+          m_nextFrame(0),
+          m_leftoverBuffer(NULL),
+          m_leftoverBufferSize(0),
+          m_leftoverBufferLength(0),
+          m_leftoverBufferPosition(0),
+          m_mfDuration(0),
+          m_iCurrentPosition(0),
+          m_dead(false),
+          m_seeking(false) {
 
     // these are always the same, might as well just stick them here
     // -bkgood
@@ -87,9 +97,9 @@ AudioSourceMediaFoundation::~AudioSourceMediaFoundation() {
     close();
 }
 
-AudioSourcePointer AudioSourceMediaFoundation::create(QString fileName) {
-    QSharedPointer<AudioSourceMediaFoundation> pAudioSource(new AudioSourceMediaFoundation);
-    if (OK == pAudioSource->open(fileName)) {
+AudioSourcePointer AudioSourceMediaFoundation::create(QUrl url) {
+    QSharedPointer<AudioSourceMediaFoundation> pAudioSource(new AudioSourceMediaFoundation(url));
+    if (OK == pAudioSource->open()) {
         // success
         return pAudioSource;
     } else {
@@ -98,7 +108,9 @@ AudioSourcePointer AudioSourceMediaFoundation::create(QString fileName) {
     }
 }
 
-Result AudioSourceMediaFoundation::open(QString fileName) {
+Result AudioSourceMediaFoundation::open() {
+    const QString fileName(getUrl().toLocalFile());
+
     if (sDebug) {
         qDebug() << "open()" << fileName;
     }

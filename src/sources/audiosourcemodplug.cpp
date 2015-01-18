@@ -36,19 +36,20 @@ void AudioSourceModPlug::configure(unsigned int bufferSizeLimit,
     ModPlug::ModPlug_SetSettings(&settings);
 }
 
-AudioSourceModPlug::AudioSourceModPlug() :
-        m_pModFile(NULL),
-        m_fileLength(0),
-        m_seekPos(0) {
+AudioSourceModPlug::AudioSourceModPlug(QUrl url)
+        : AudioSource(url),
+          m_pModFile(NULL),
+          m_fileLength(0),
+          m_seekPos(0) {
 }
 
 AudioSourceModPlug::~AudioSourceModPlug() {
     close();
 }
 
-AudioSourcePointer AudioSourceModPlug::create(QString fileName) {
-    QSharedPointer<AudioSourceModPlug> pAudioSource(new AudioSourceModPlug);
-    if (OK == pAudioSource->open(fileName)) {
+AudioSourcePointer AudioSourceModPlug::create(QUrl url) {
+    QSharedPointer<AudioSourceModPlug> pAudioSource(new AudioSourceModPlug(url));
+    if (OK == pAudioSource->open()) {
         // success
         return pAudioSource;
     } else {
@@ -57,7 +58,9 @@ AudioSourcePointer AudioSourceModPlug::create(QString fileName) {
     }
 }
 
-Result AudioSourceModPlug::open(QString fileName) {
+Result AudioSourceModPlug::open() {
+    const QString fileName(getUrl().toLocalFile());
+
     ScopedTimer t("AudioSourceModPlug::open()");
 
     qDebug() << "[ModPlug] Loading ModPlug module " << fileName;

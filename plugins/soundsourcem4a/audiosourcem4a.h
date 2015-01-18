@@ -25,7 +25,7 @@ namespace Mixxx {
 
 class AudioSourceM4A: public AudioSource {
 public:
-    static AudioSourcePointer create(QString fileName);
+    static AudioSourcePointer create(QUrl url);
 
     ~AudioSourceM4A();
 
@@ -35,7 +35,7 @@ public:
             sample_type* sampleBuffer) /*override*/;
 
 private:
-    explicit AudioSourceM4A(QString fileName);
+    explicit AudioSourceM4A(QUrl url);
 
     Result open();
 
@@ -44,8 +44,6 @@ private:
     bool isValidSampleBlockId(MP4SampleId sampleBlockId) const;
 
     void restartDecoding(MP4SampleId sampleBlockId);
-
-    const QString m_fileName;
 
     MP4FileHandle m_hFile;
     MP4TrackId m_trackId;

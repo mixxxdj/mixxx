@@ -76,7 +76,7 @@ QImage SoundSourceMediaFoundation::parseCoverArt() const {
 }
 
 Mixxx::AudioSourcePointer SoundSourceMediaFoundation::open() const {
-    return Mixxx::AudioSourceMediaFoundation::create(getFilename());
+    return Mixxx::AudioSourceMediaFoundation::create(QUrl::fromLocalFile(getFilename()));
 }
 
 extern "C" MY_EXPORT const char* getMixxxVersion() {

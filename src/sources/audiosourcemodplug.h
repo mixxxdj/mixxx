@@ -24,7 +24,7 @@ public:
     static void configure(unsigned int bufferSizeLimit,
             const ModPlug::ModPlug_Settings &settings);
 
-    static AudioSourcePointer create(QString fileName);
+    static AudioSourcePointer create(QUrl url);
 
     ~AudioSourceModPlug();
 
@@ -36,9 +36,9 @@ public:
 private:
     static unsigned int s_bufferSizeLimit; // max track buffer length (bytes)
 
-    AudioSourceModPlug();
+    explicit AudioSourceModPlug(QUrl url);
 
-    Result open(QString fileName);
+    Result open();
 
     void close();
 

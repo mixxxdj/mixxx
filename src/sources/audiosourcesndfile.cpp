@@ -2,8 +2,9 @@
 
 namespace Mixxx {
 
-AudioSourceSndFile::AudioSourceSndFile() :
-        m_pSndFile(NULL) {
+AudioSourceSndFile::AudioSourceSndFile(QUrl url)
+        : AudioSource(url),
+          m_pSndFile(NULL) {
     memset(&m_sfInfo, 0, sizeof(m_sfInfo));
 }
 
@@ -11,9 +12,9 @@ AudioSourceSndFile::~AudioSourceSndFile() {
     close();
 }
 
-AudioSourcePointer AudioSourceSndFile::create(QString fileName) {
-    QSharedPointer<AudioSourceSndFile> pAudioSource(new AudioSourceSndFile);
-    if (OK == pAudioSource->open(fileName)) {
+AudioSourcePointer AudioSourceSndFile::create(QUrl url) {
+    QSharedPointer<AudioSourceSndFile> pAudioSource(new AudioSourceSndFile(url));
+    if (OK == pAudioSource->open()) {
         // success
         return pAudioSource;
     } else {
@@ -22,7 +23,8 @@ AudioSourcePointer AudioSourceSndFile::create(QString fileName) {
     }
 }
 
-Result AudioSourceSndFile::open(QString fileName) {
+Result AudioSourceSndFile::open() {
+    const QString fileName(getUrl().toLocalFile());
 #ifdef __WINDOWS__
     // Pointer valid until string changed
     LPCWSTR lpcwFilename = (LPCWSTR)fileName.utf16();

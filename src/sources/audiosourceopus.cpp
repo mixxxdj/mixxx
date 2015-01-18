@@ -2,17 +2,18 @@
 
 namespace Mixxx {
 
-AudioSourceOpus::AudioSourceOpus() :
-        m_pOggOpusFile(NULL) {
+AudioSourceOpus::AudioSourceOpus(QUrl url)
+        : AudioSource(url),
+          m_pOggOpusFile(NULL) {
 }
 
 AudioSourceOpus::~AudioSourceOpus() {
     close();
 }
 
-AudioSourcePointer AudioSourceOpus::create(QString fileName) {
-    QSharedPointer<AudioSourceOpus> pAudioSource(new AudioSourceOpus);
-    if (OK == pAudioSource->open(fileName)) {
+AudioSourcePointer AudioSourceOpus::create(QUrl url) {
+    QSharedPointer<AudioSourceOpus> pAudioSource(new AudioSourceOpus(url));
+    if (OK == pAudioSource->open()) {
         // success
         return pAudioSource;
     } else {
@@ -21,9 +22,10 @@ AudioSourcePointer AudioSourceOpus::create(QString fileName) {
     }
 }
 
-Result AudioSourceOpus::open(QString fileName) {
-    int errorCode = 0;
+Result AudioSourceOpus::open() {
+    const QString fileName(getUrl().toLocalFile());
     const QByteArray qbaFilename(fileName.toLocal8Bit());
+    int errorCode = 0;
     m_pOggOpusFile = op_open_file(qbaFilename.constData(), &errorCode);
     if (!m_pOggOpusFile) {
         qDebug() << "Failed to open OggOpus file:" << fileName << "errorCode"

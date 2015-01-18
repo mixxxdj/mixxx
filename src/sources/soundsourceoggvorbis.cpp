@@ -230,5 +230,5 @@ QImage SoundSourceOggVorbis::parseCoverArt() const {
 }
 
 Mixxx::AudioSourcePointer SoundSourceOggVorbis::open() const {
-    return Mixxx::AudioSourceOggVorbis::create(getFilename());
+    return Mixxx::AudioSourceOggVorbis::create(QUrl::fromLocalFile(getFilename()));
 }

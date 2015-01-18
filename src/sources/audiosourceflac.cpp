@@ -55,25 +55,26 @@ void FLAC_error_cb(const FLAC__StreamDecoder*,
 // end callbacks
 }
 
-AudioSourceFLAC::AudioSourceFLAC(QString fileName) :
-        m_file(fileName),
-        m_decoder(NULL),
-        m_minBlocksize(0),
-        m_maxBlocksize(0),
-        m_minFramesize(0),
-        m_maxFramesize(0),
-        m_sampleScale(kSampleValueZero),
-        m_decodeSampleBufferReadOffset(0),
-        m_decodeSampleBufferWriteOffset(0),
-        m_curFrameIndex(kFrameIndexMin) {
+AudioSourceFLAC::AudioSourceFLAC(QUrl url)
+        : AudioSource(url),
+          m_file(getUrl().toLocalFile()),
+          m_decoder(NULL),
+          m_minBlocksize(0),
+          m_maxBlocksize(0),
+          m_minFramesize(0),
+          m_maxFramesize(0),
+          m_sampleScale(kSampleValueZero),
+          m_decodeSampleBufferReadOffset(0),
+          m_decodeSampleBufferWriteOffset(0),
+          m_curFrameIndex(kFrameIndexMin) {
 }
 
 AudioSourceFLAC::~AudioSourceFLAC() {
     close();
 }
 
-AudioSourcePointer AudioSourceFLAC::create(QString fileName) {
-    QSharedPointer<AudioSourceFLAC> pAudioSource(new AudioSourceFLAC(fileName));
+AudioSourcePointer AudioSourceFLAC::create(QUrl url) {
+    QSharedPointer<AudioSourceFLAC> pAudioSource(new AudioSourceFLAC(url));
     if (OK == pAudioSource->open()) {
         // success
         return pAudioSource;

@@ -9,29 +9,30 @@
 
 namespace Mixxx {
 
-AudioSourceFFmpeg::AudioSourceFFmpeg()
-    : m_pFormatCtx(NULL)
-    , m_iAudioStream(-1)
-    , m_pCodecCtx(NULL)
-    , m_pCodec(NULL)
-    , m_pResample(NULL)
-    , m_iCurrentMixxTs(0)
-    , m_bIsSeeked(false)
-    , m_lCacheBytePos(0)
-    , m_lCacheStartByte(0)
-    , m_lCacheEndByte(0)
-    , m_lCacheLastPos(0)
-    , m_lLastStoredPos(0)
-    , m_lStoredSeekPoint(-1) {
+AudioSourceFFmpeg::AudioSourceFFmpeg(QUrl url)
+    : AudioSource(url),
+      m_pFormatCtx(NULL),
+      m_iAudioStream(-1),
+      m_pCodecCtx(NULL),
+      m_pCodec(NULL),
+      m_pResample(NULL),
+      m_iCurrentMixxTs(0),
+      m_bIsSeeked(false),
+      m_lCacheBytePos(0),
+      m_lCacheStartByte(0),
+      m_lCacheEndByte(0),
+      m_lCacheLastPos(0),
+      m_lLastStoredPos(0),
+      m_lStoredSeekPoint(-1) {
 }
 
 AudioSourceFFmpeg::~AudioSourceFFmpeg() {
     close();
 }
 
-AudioSourcePointer AudioSourceFFmpeg::create(QString fileName) {
-    QSharedPointer<AudioSourceFFmpeg> pAudioSource(new AudioSourceFFmpeg);
-    if (OK == pAudioSource->open(fileName)) {
+AudioSourcePointer AudioSourceFFmpeg::create(QUrl url) {
+    QSharedPointer<AudioSourceFFmpeg> pAudioSource(new AudioSourceFFmpeg(url));
+    if (OK == pAudioSource->open()) {
         // success
         return pAudioSource;
     } else {
@@ -40,11 +41,12 @@ AudioSourcePointer AudioSourceFFmpeg::create(QString fileName) {
     }
 }
 
-Result AudioSourceFFmpeg::open(QString fileName) {
+Result AudioSourceFFmpeg::open() {
     unsigned int i;
     AVDictionary *l_iFormatOpts = NULL;
 
-    QByteArray qBAFilename = fileName.toLocal8Bit();
+    const QString fileName(getUrl().toLocalFile());
+    const QByteArray qBAFilename = fileName.toLocal8Bit();
 
     qDebug() << "New AudioSourceFFmpeg :" << qBAFilename;
 

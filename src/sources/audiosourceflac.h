@@ -14,7 +14,7 @@ namespace Mixxx {
 
 class AudioSourceFLAC: public AudioSource {
 public:
-    static AudioSourcePointer create(QString fileName);
+    static AudioSourcePointer create(QUrl url);
 
     ~AudioSourceFLAC();
 
@@ -37,7 +37,7 @@ public:
     void flacError(FLAC__StreamDecoderErrorStatus status);
 
 private:
-    explicit AudioSourceFLAC(QString fileName);
+    explicit AudioSourceFLAC(QUrl url);
 
     Result open();
 

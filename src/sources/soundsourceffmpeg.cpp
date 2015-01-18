@@ -463,5 +463,5 @@ QImage SoundSourceFFmpeg::parseCoverArt() const {
 }
 
 Mixxx::AudioSourcePointer SoundSourceFFmpeg::open() const {
-    return Mixxx::AudioSourceFFmpeg::create(getFilename());
+    return Mixxx::AudioSourceFFmpeg::create(QUrl::fromLocalFile(getFilename()));
 }

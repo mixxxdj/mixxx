@@ -5,6 +5,7 @@
 #include "util/types.h" // CSAMPLE
 
 #include <QSharedPointer>
+#include <QUrl>
 
 #include <cstddef> // size_t / diff_t
 
@@ -53,6 +54,10 @@ public:
     static const size_type kBitrateDefault = kBitrateZero;
 
     virtual ~AudioSource();
+
+    const QUrl& getUrl() const {
+        return m_url;
+    }
 
     // Returns the number of channels. The number of channels
     // must be constant over time.
@@ -208,7 +213,7 @@ public:
             sample_type* sampleBuffer, size_type sampleBufferSize);
 
 protected:
-    AudioSource();
+    explicit AudioSource(QUrl url);
 
     void setChannelCount(size_type channelCount);
     void setFrameRate(size_type frameRate);
@@ -225,6 +230,8 @@ protected:
             bool readStereoSamples = false) const;
 
 private:
+    const QUrl m_url;
+
     size_type m_channelCount;
     size_type m_frameRate;
     size_type m_frameCount;

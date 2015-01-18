@@ -20,7 +20,7 @@ namespace Mixxx {
 
 class AudioSourceMp3: public AudioSource {
 public:
-    static AudioSourcePointer create(QString fileName);
+    static AudioSourcePointer create(QUrl url);
 
     ~AudioSourceMp3();
 
@@ -32,7 +32,7 @@ public:
             sample_type* sampleBuffer, size_type sampleBufferSize) /*override*/;
 
 private:
-    explicit AudioSourceMp3(QString fileName);
+    explicit AudioSourceMp3(QUrl url);
 
     Result open();
 

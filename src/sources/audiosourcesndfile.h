@@ -16,7 +16,7 @@ namespace Mixxx {
 
 class AudioSourceSndFile: public AudioSource {
 public:
-    static AudioSourcePointer create(QString fileName);
+    static AudioSourcePointer create(QUrl url);
 
     ~AudioSourceSndFile();
 
@@ -26,9 +26,9 @@ public:
             sample_type* sampleBuffer) /*override*/;
 
 private:
-    AudioSourceSndFile();
+    explicit AudioSourceSndFile(QUrl url);
 
-    Result open(QString fileName);
+    Result open();
 
     void close();
 

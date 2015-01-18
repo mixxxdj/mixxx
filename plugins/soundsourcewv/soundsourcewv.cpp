@@ -51,7 +51,7 @@ QImage SoundSourceWV::parseCoverArt() const {
 }
 
 Mixxx::AudioSourcePointer SoundSourceWV::open() const {
-    return Mixxx::AudioSourceWV::create(getFilename());
+    return Mixxx::AudioSourceWV::create(QUrl::fromLocalFile(getFilename()));
 }
 
 }  // namespace Mixxx

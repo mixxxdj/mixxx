@@ -11,7 +11,8 @@ namespace Mixxx {
 /*static*/const AudioSource::sample_type AudioSource::kSampleValuePeak =
         CSAMPLE_PEAK;
 
-AudioSource::AudioSource() :
+AudioSource::AudioSource(QUrl url) :
+        m_url(url),
         m_channelCount(kChannelCountDefault),
         m_frameRate(kFrameRateDefault),
         m_frameCount(kFrameCountDefault),

@@ -2,7 +2,8 @@
 
 namespace Mixxx {
 
-AudioSourceOggVorbis::AudioSourceOggVorbis() {
+AudioSourceOggVorbis::AudioSourceOggVorbis(QUrl url)
+        : AudioSource(url) {
     memset(&m_vf, 0, sizeof(m_vf));
 }
 
@@ -10,9 +11,9 @@ AudioSourceOggVorbis::~AudioSourceOggVorbis() {
     close();
 }
 
-AudioSourcePointer AudioSourceOggVorbis::create(QString fileName) {
-    QSharedPointer<AudioSourceOggVorbis> pAudioSource(new AudioSourceOggVorbis);
-    if (OK == pAudioSource->open(fileName)) {
+AudioSourcePointer AudioSourceOggVorbis::create(QUrl url) {
+    QSharedPointer<AudioSourceOggVorbis> pAudioSource(new AudioSourceOggVorbis(url));
+    if (OK == pAudioSource->open()) {
         // success
         return pAudioSource;
     } else {
@@ -21,7 +22,8 @@ AudioSourcePointer AudioSourceOggVorbis::create(QString fileName) {
     }
 }
 
-Result AudioSourceOggVorbis::open(QString fileName) {
+Result AudioSourceOggVorbis::open() {
+    const QString fileName(getUrl().toLocalFile());
     const QByteArray qbaFilename(fileName.toLocal8Bit());
     if (0 != ov_fopen(qbaFilename.constData(), &m_vf)) {
         qWarning() << "Failed to open OggVorbis file:" << fileName;
