@@ -1,27 +1,29 @@
 // WSingletonContainer defines widgets that should only be instantiated once
 // but may appear in multiple places in a skin definition.  This is useful
 // for complex widgets like the library, which are memory intensive. The
-// container mostly looks like a special WidgetGroup which is defined in
-// special ways.
+// container mostly looks similar to a WidgetGroup, but is very lightweight
+// and only supports the ObjectName and Children tags, and only one child
+// can be specified.  More complicated layout should be done inside the
+// defined child itself or the SingletonContainer.
 //
 // Usage:
 // First, the Singleton container is defined, meaning it is described to the
 // skin system by name, and what the singleton consists of.  This definition
-// should be very early in the skin file.  Note that the singleton does not
-// actually appear where it is defined.
+// must occur before the SingletonContainer elements which define where the
+// singleton will appear.  Note that the singleton does not actually appear
+// where it is defined.
 //
 // Example definition:
 // <SingletonDefinition>
 //   <ObjectName>LibrarySingleton</ObjectName>
-//   <Layout>horizontal</Layout>
-//   <SizePolicy>me,me</SizePolicy>
 //   <Children>
 //     <Template src="skin:library.xml"/>
 //   </Children>
 // </SingletonDefinition>
 //
 // The ObjectName is used to identify this singleton elsewhere in the skin
-// files.
+// files.  The SingletonContainer does obey standard widget properties like
+// SizePolicy and TooltipId.
 //
 // Example usage:
 // <WidgetGroup>
@@ -29,7 +31,10 @@
 //    <Layout>vertical</Layout>
 //    <SizePolicy>min,i</SizePolicy>
 //    <Children>
-//      <SingletonContainer objectName="LibrarySingleton"/>
+//      <SingletonContainer>
+//        <SizePolicy>me,me</SizePolicy>
+//        <ObjectName>LibrarySingleton</ObjectName>
+//      </SingletonContainer
 //      ...
 //    </Children>
 // </WidgetGroup>
