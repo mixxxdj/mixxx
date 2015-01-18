@@ -14,7 +14,7 @@ public:
     // All Opus audio is encoded at 48 kHz
     static const size_type kFrameRate = 48000;
 
-    static AudioSourcePointer create(QString fileName);
+    static AudioSourcePointer create(QUrl url);
 
     ~AudioSourceOpus();
 
@@ -26,9 +26,9 @@ public:
             sample_type* sampleBuffer, size_type sampleBufferSize) /*override*/;
 
 private:
-    AudioSourceOpus();
+    explicit AudioSourceOpus(QUrl url);
 
-    Result open(QString fileName);
+    Result open();
 
     void close();
 

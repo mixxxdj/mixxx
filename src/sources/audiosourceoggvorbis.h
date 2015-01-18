@@ -11,7 +11,7 @@ namespace Mixxx {
 
 class AudioSourceOggVorbis: public AudioSource {
 public:
-    static AudioSourcePointer create(QString fileName);
+    static AudioSourcePointer create(QUrl url);
 
     ~AudioSourceOggVorbis();
 
@@ -23,9 +23,9 @@ public:
             sample_type* sampleBuffer, size_type sampleBufferSize) /*override*/;
 
 private:
-    AudioSourceOggVorbis();
+    explicit AudioSourceOggVorbis(QUrl url);
 
-    Result open(QString fileName);
+    Result open();
 
     void close();
 

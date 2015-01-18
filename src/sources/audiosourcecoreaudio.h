@@ -23,7 +23,7 @@ namespace Mixxx {
 
 class AudioSourceCoreAudio: public AudioSource {
 public:
-    static AudioSourcePointer create(QString fileName);
+    static AudioSourcePointer create(QUrl url);
 
     ~AudioSourceCoreAudio();
 
@@ -32,9 +32,9 @@ public:
             sample_type* sampleBuffer) /*override*/;
 
 private:
-    AudioSourceCoreAudio();
+    explicit AudioSourceCoreAudio(QUrl url);
 
-    Result open(QString fileName);
+    Result open();
 
     void close();
 

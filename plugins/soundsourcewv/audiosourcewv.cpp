@@ -2,18 +2,19 @@
 
 namespace Mixxx {
 
-AudioSourceWV::AudioSourceWV() :
-        m_wpc(NULL),
-        m_sampleScale(0.0f) {
+AudioSourceWV::AudioSourceWV(QUrl url)
+        : AudioSource(url),
+          m_wpc(NULL),
+          m_sampleScale(0.0f) {
 }
 
 AudioSourceWV::~AudioSourceWV() {
     close();
 }
 
-AudioSourcePointer AudioSourceWV::create(QString fileName) {
-    QSharedPointer<AudioSourceWV> pAudioSource(new AudioSourceWV);
-    if (OK == pAudioSource->open(fileName)) {
+AudioSourcePointer AudioSourceWV::create(QUrl url) {
+    QSharedPointer<AudioSourceWV> pAudioSource(new AudioSourceWV(url));
+    if (OK == pAudioSource->open()) {
         // success
         return pAudioSource;
     } else {
@@ -22,7 +23,8 @@ AudioSourcePointer AudioSourceWV::create(QString fileName) {
     }
 }
 
-Result AudioSourceWV::open(QString fileName) {
+Result AudioSourceWV::open() {
+    const QString fileName(getUrl().toLocalFile());
     char msg[80]; // hold possible error message
     m_wpc = WavpackOpenFileInput(
             fileName.toLocal8Bit().constData(), msg,

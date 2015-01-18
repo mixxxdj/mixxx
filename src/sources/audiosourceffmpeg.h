@@ -43,7 +43,7 @@ struct ffmpegCacheObject {
 
 class AudioSourceFFmpeg : public AudioSource {
 public:
-    static AudioSourcePointer create(QString fileName);
+    static AudioSourcePointer create(QUrl url);
 
     ~AudioSourceFFmpeg();
 
@@ -52,9 +52,9 @@ public:
     size_type readSampleFrames(size_type numberOfFrames, sample_type* sampleBuffer) /*override*/;
 
 private:
-    AudioSourceFFmpeg();
+    explicit AudioSourceFFmpeg(QUrl url);
 
-    Result open(QString fileName);
+    Result open();
 
     void close();
 

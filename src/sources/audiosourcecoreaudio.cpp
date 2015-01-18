@@ -10,17 +10,18 @@ namespace {
 AudioSource::size_type kChannelCount = 2;
 }
 
-AudioSourceCoreAudio::AudioSourceCoreAudio() :
-        m_headerFrames(0) {
+AudioSourceCoreAudio::AudioSourceCoreAudio(QUrl url)
+        : AudioSource(url),
+          m_headerFrames(0) {
 }
 
 AudioSourceCoreAudio::~AudioSourceCoreAudio() {
     close();
 }
 
-AudioSourcePointer AudioSourceCoreAudio::create(QString fileName) {
-    QSharedPointer<AudioSourceCoreAudio> pAudioSource(new AudioSourceCoreAudio);
-    if (OK == pAudioSource->open(fileName)) {
+AudioSourcePointer AudioSourceCoreAudio::create(QUrl url) {
+    QSharedPointer<AudioSourceCoreAudio> pAudioSource(new AudioSourceCoreAudio(url));
+    if (OK == pAudioSource->open()) {
         // success
         return pAudioSource;
     } else {
@@ -30,7 +31,9 @@ AudioSourcePointer AudioSourceCoreAudio::create(QString fileName) {
 }
 
 // soundsource overrides
-Result AudioSourceCoreAudio::open(QString fileName) {
+Result AudioSourceCoreAudio::open() {
+    const QString fileName(getUrl().toLocalFile());
+
     //Open the audio file.
     OSStatus err;
 

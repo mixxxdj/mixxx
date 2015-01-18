@@ -51,8 +51,9 @@ int decodeFrameHeader(
 
 } // anonymous namespace
 
-AudioSourceMp3::AudioSourceMp3(QString fileName)
-        : m_file(fileName),
+AudioSourceMp3::AudioSourceMp3(QUrl url)
+        : AudioSource(url),
+          m_file(getUrl().toLocalFile()),
           m_fileSize(0),
           m_pFileData(NULL),
           m_avgSeekFrameCount(0),
@@ -69,8 +70,8 @@ AudioSourceMp3::~AudioSourceMp3() {
     close();
 }
 
-AudioSourcePointer AudioSourceMp3::create(QString fileName) {
-    QSharedPointer<AudioSourceMp3> pAudioSource(new AudioSourceMp3(fileName));
+AudioSourcePointer AudioSourceMp3::create(QUrl url) {
+    QSharedPointer<AudioSourceMp3> pAudioSource(new AudioSourceMp3(url));
     if (OK == pAudioSource->open()) {
         // success
         return pAudioSource;

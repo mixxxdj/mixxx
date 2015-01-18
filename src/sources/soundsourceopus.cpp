@@ -131,5 +131,5 @@ QImage SoundSourceOpus::parseCoverArt() const {
 }
 
 Mixxx::AudioSourcePointer SoundSourceOpus::open() const {
-    return Mixxx::AudioSourceOpus::create(getFilename());
+    return Mixxx::AudioSourceOpus::create(QUrl::fromLocalFile(getFilename()));
 }

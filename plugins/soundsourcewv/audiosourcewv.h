@@ -16,7 +16,7 @@ namespace Mixxx {
 
 class AudioSourceWV: public AudioSource {
 public:
-    static AudioSourcePointer create(QString fileName);
+    static AudioSourcePointer create(QUrl url);
 
     ~AudioSourceWV();
 
@@ -26,9 +26,9 @@ public:
             sample_type* sampleBuffer) /*override*/;
 
 private:
-    AudioSourceWV();
+    explicit AudioSourceWV(QUrl url);
 
-    Result open(QString fileName);
+    Result open();
 
     void close();
 
