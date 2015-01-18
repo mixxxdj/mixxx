@@ -69,8 +69,6 @@
     -->
     <SingletonDefinition>
         <ObjectName>LibrarySingleton</ObjectName>
-        <Layout>horizontal</Layout>
-        <SizePolicy>me,me</SizePolicy>
         <Children>
             <Template src="skin:library.xml"/>
         </Children>

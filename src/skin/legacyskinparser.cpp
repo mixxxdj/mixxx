@@ -622,20 +622,20 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
             }
             QDomElement element = node.toElement();
 
-            QList<QWidget*> children = parseNode(element);
+            QList<QWidget*> child_widgets = parseNode(element);
 
-            if (children.empty()) {
+            if (child_widgets.empty()) {
                 SKIN_WARNING(node, *m_pContext)
                         << "WidgetStack child produced no widget.";
                 continue;
             }
 
-            if (children.size() > 1) {
+            if (child_widgets.size() > 1) {
                 SKIN_WARNING(node, *m_pContext)
                         << "WidgetStack child produced multiple widgets."
                         << "All but the first are ignored.";
             }
-            QWidget* pChild = children[0];
+            QWidget* pChild = child_widgets[0];
 
             if (pChild == NULL) {
                 continue;
@@ -1090,10 +1090,56 @@ QWidget* LegacySkinParser::parseCoverArt(QDomElement node) {
 }
 
 void LegacySkinParser::parseSingletonDefinition(QDomElement node) {
-    // The actual singleton definition is identical to any other WWidgetGroup.
-    QWidget* child_group = parseWidgetGroup(node);
-    m_pContext->defineSingleton(child_group->objectName(), child_group);
-    child_group->hide();
+    QString objectName = m_pContext->selectString(node, "ObjectName");
+    if (!objectName.isEmpty()) {
+        SKIN_WARNING(node, *m_pContext)
+                << "SingletonDefinition requires an ObjectName";
+    }
+
+    QDomNode childrenNode = m_pContext->selectNode(node, "Children");
+    if (childrenNode.isNull()) {
+        SKIN_WARNING(node, *m_pContext)
+                << "SingletonDefinition requires a Children tag with one child";
+    }
+
+    // Descend chilren, taking the first valid element.
+    QDomNode child_node;
+    QDomNodeList children = childrenNode.childNodes();
+    for (int i = 0; i < children.count(); ++i) {
+        child_node = children.at(i);
+        if (child_node.isElement()) {
+            break;
+        }
+    }
+
+    if (child_node.isNull()) {
+        SKIN_WARNING(node, *m_pContext)
+                << "SingletonDefinition child node is NULL";
+        return;
+    }
+
+    QDomElement element = child_node.toElement();
+    QList<QWidget*> child_widgets = parseNode(element);
+    if (child_widgets.empty()) {
+        SKIN_WARNING(node, *m_pContext)
+                << "SingletonDefinition child produced no widget.";
+        return;
+    } else if (child_widgets.size() > 1) {
+        SKIN_WARNING(node, *m_pContext)
+                << "SingletonDefinition child produced multiple widgets."
+                << "All but the first are ignored.";
+    }
+
+    QWidget* pChild = child_widgets[0];
+    if (pChild == NULL) {
+        SKIN_WARNING(node, *m_pContext)
+                << "SingletonDefinition child widget is NULL";
+        return;
+    }
+
+    pChild->setObjectName(objectName);
+    m_pContext->defineSingleton(objectName, pChild);
+    pChild->hide();
 }
 
 QWidget* LegacySkinParser::parseLibrary(QDomElement node) {

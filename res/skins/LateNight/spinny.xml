@@ -5,8 +5,6 @@
     <Children>
       <SingletonDefinition>
         <ObjectName>SpinnySingleton<Variable name="channum"/></ObjectName>
-        <SizePolicy>me,me</SizePolicy>
-        <Layout>vertical</Layout>
         <Children>
           <Spinny>
             <Group>[Channel<Variable name="channum"/>]</Group>
