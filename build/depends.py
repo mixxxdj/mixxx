@@ -381,10 +381,10 @@ class SoundTouch(Dependence):
     SOUNDTOUCH_PATH = 'soundtouch-1.8.0'
 
     def sse_enabled(self, build):
-        optimize = SCons.ARGUMENTS.get('optimize', None)
+        optimize = SCons.ARGUMENTS.get('optimize', 'portable')
         return (build.machine_is_64bit or
-                (build.toolchain_is_msvs and optimize == 'tuned') or
-                (build.toolchain_is_gnu and optimize == 'tuned'))
+                (optimize == 'portable') or
+                (optimize == 'tuned'))
 
     def sources(self, build):
         sources = ['engine/enginebufferscalest.cpp',

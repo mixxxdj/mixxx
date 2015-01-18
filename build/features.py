@@ -942,31 +942,32 @@ class Optimize(Feature):
         return "Optimization and Tuning"
 
     def enabled(self, build):
-        build.flags['optimize'] = SCons.ARGUMENTS.get('optimize', None)
-        if build.flags['optimize'] is not None:
+        build.flags['optimize'] = SCons.ARGUMENTS.get('optimize', 'portable')
+        if build.flags['optimize'] is not 'portable':
             return True
         else:
             return False
 
     def add_options(self, build, vars):
         vars.Add(
-            'optimize', 'Set to:\n  1 portable-binary: sse2 CPU (>= Pentium 4)\n  2 native-binary: optimized exclusive for the CPU of this system\n  3 legacy-binary: pure i386 code', 1)
+            'optimize', 'Set to:\n' \
+                        '  portable (9): sse2 CPU (>= Pentium 4)\n' \
+                        '  native: optimized exclusive for the CPU of this system\n' \
+                        '  legacy: pure i386 code' \
+                        '  disabled: no optimazion, for debug only' \
+                        , 1)
 
     def configure(self, build, conf):
         if not self.enabled(build):
             return
 
         optimize_level = SCons.ARGUMENTS.get('optimize', 'portable')
-        try:
-            optimize_level_int = int(build.flags['optimize'])
-        except:
-            optimize_level_int = 0
+
+        if optimize_level == 'disabled':
+            self.status = "disabled: no optimazion, for debug only"
+            return
 
         if build.toolchain_is_msvs:
-            if build.build_is_debug:
-                self.status = "Disabled (debug build)"
-                return
-
             # /GL : http://msdn.microsoft.com/en-us/library/0zza0de8.aspx
             # !!! /GL is incompatible with /ZI, which is set by mscvdebug
             build.env.Append(CCFLAGS='/GL')
@@ -998,22 +999,20 @@ class Optimize(Feature):
             # In general, you should pick /O2 over /Ox
             build.env.Append(CCFLAGS='/O2')
 
-            if optimize_level_int == 1:
+            # Historicaly our release packages are built with optimize=9.
+            if optimize_level == 'portable' or optimize_level == '' or optimize_level == 9:
                 # portable-binary: sse2 CPU (>= Pentium 4)
                 self.status = "portable: sse2 CPU (>= Pentium 4)"
                 build.env.Append(CCFLAGS='/arch:SSE2')
                 build.env.Append(CPPDEFINES=['__SSE__', '__SSE2__'])
-            elif optimize_level_int == 2:
-                if build.machine_is_64bit:
-                    self.status = "native: exclusive for this CPU (%s)" % build.machine
-                    build.env.Append(CCFLAGS='/favor:' + build.machine)
-                else:
-                    self.status = "Disabled (optimize=2 on 32-bit MSVC)"
-            elif optimize_level_int == 3:
+            elif optimize_level == 'native':
+                self.status = "native: exclusive for this CPU (%s)" % build.machine
+                build.env.Append(CCFLAGS='/favor:' + build.machine)
+            elif optimize_level == 'legacy':
                 self.status = "legacy: pure i386 code"
             else:
-                raise Exception("optimize={} is not supported on windows, "
-                                "use 1 .. 3.".format(optimize_level_int))
+                raise Exception("optimize={} is not supported. "
+                                "Use portable, native, legacy or disabled".format(optimize_level))
 
             # SSE and SSE2 are core instructions on x64
             if build.machine_is_64bit:
@@ -1033,8 +1032,8 @@ class Optimize(Feature):
                 build.env.Append(CCFLAGS='-fomit-frame-pointer')
 
             # Historicaly our gcc release packages are built with optimize=9.
-            if 1 <= optimize_level_int <= 9 or optimize_level == 'legacy':
-                # portable-binary: sse2 CPU (>= Pentium 4)
+            if optimize_level == '9'  or optimize_level == '' or optimize_level == 'portable':
+                # portable: sse2 CPU (>= Pentium 4)
                 self.status = "portable: sse2 CPU (>= Pentium 4)"
                 build.env.Append(
                     CCFLAGS='-mtune=generic -msse2 -mfpmath=sse')
@@ -1048,7 +1047,7 @@ class Optimize(Feature):
                 # The downside of this is that we aren't truly
                 # i386 compatible, so builds that claim 'i386' will crash.
                 # Note: SSE2 is a core part of x64 CPUs
-            elif optimize_level == 'portable':
+            elif optimize_level == 'native':
                 self.status = "native: exclusive for this CPU (%s)" % build.machine
                 build.env.Append(
                     CCFLAGS='-march=native -mfpmath=sse')
@@ -1056,15 +1055,15 @@ class Optimize(Feature):
                 # Note: requires gcc >= 4.2.0
                 # macros like __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
                 # are set automaticaly
-            elif optimize_level == 'tuned':
+            elif optimize_level == 'legacy':
                 self.status = "legacy: pure i386 code"
                 build.env.Append(
                     CCFLAGS='-mtune=generic')
                 # -mtune=generic pick the most common, but compatible options.
                 # Used by the debian rules script.
             else:
-                raise Exception("optimize={} is not supported, use legacy,"
-                                "portable, tuned".format(optimize_level))
+               raise Exception("optimize={} is not supported. "
+                                "Use portable, native, legacy or disabled".format(optimize_level))
 
             # what others do:
             # soundtouch uses just -O3 in Ubuntu Trusty
