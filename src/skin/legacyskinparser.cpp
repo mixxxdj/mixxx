@@ -1096,6 +1096,22 @@ void LegacySkinParser::parseSingletonDefinition(QDomElement node) {
     child_group->hide();
 }
 
+QWidget* LegacySkinParser::parseSingletonContainer(QDomElement node) {
+    if (!m_pContext->hasNode(node, "ObjectName")) {
+        qWarning() << "Need objectName attribute for Singleton tag.";
+        return NULL;
+    }
+    QString objectName = m_pContext->selectString(node, "ObjectName");
+    WSingletonContainer* pContainer =
+            m_pContext->getSingletonMap()->getSingleton(objectName, m_pParent);
+    if (pContainer == NULL) {
+        qWarning() << "ERROR: Singleton" << objectName << "not found";
+        return NULL;
+    }
+    commonWidgetSetup(node, pContainer);
+    return pContainer;
+}
+
 QWidget* LegacySkinParser::parseLibrary(QDomElement node) {
     WLibrary* pLibraryWidget = new WLibrary(m_pParent);
     pLibraryWidget->installEventFilter(m_pKeyboard);

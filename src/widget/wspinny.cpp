@@ -378,7 +378,8 @@ QPixmap WSpinny::scaledCoverArt(const QPixmap& normal) {
     return normal.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 }
 
-void WSpinny::resizeEvent(QResizeEvent*) {
+void WSpinny::resizeEvent(QResizeEvent* event) {
+    qDebug() << "RESIZE EVENT" << event->size();
     m_loadedCoverScaled = scaledCoverArt(m_loadedCover);
     if (m_pFgImage && !m_pFgImage->isNull()) {
         m_fgImageScaled = m_pFgImage->scaled(
