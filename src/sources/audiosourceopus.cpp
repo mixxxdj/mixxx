@@ -107,8 +107,7 @@ AudioSource::size_type AudioSourceOpus::readSampleFramesStereo(
         size_type numberOfFrames, sample_type* sampleBuffer,
         size_type sampleBufferSize) {
     DEBUG_ASSERT(isValidFrameIndex(getCurrentFrameIndex()));
-    DEBUG_ASSERT(isValidSampleBufferSize(numberOfFrames,
-            sampleBufferSize, true));
+    DEBUG_ASSERT(getSampleBufferSize(numberOfFrames, true) >= sampleBufferSize);
 
     const size_type numberOfFramesTotal = math_min(numberOfFrames,
             size_type(getFrameIndexMax() - getCurrentFrameIndex()));

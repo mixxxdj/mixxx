@@ -38,14 +38,13 @@ void AudioSource::reset() {
     m_bitrate = kBitrateDefault;
 }
 
-bool AudioSource::isValidSampleBufferSize(
+AudioSource::size_type AudioSource::getSampleBufferSize(
         size_type numberOfFrames,
-        size_type sampleBufferSize,
         bool readStereoSamples) const {
     if (readStereoSamples) {
-        return sampleBufferSize >= numberOfFrames * 2;
+        return numberOfFrames * 2;
     } else {
-        return sampleBufferSize >= frames2samples(numberOfFrames);
+        return frames2samples(numberOfFrames);
     }
 }
 
@@ -53,7 +52,7 @@ AudioSource::size_type AudioSource::readSampleFramesStereo(
         size_type numberOfFrames,
         sample_type* sampleBuffer,
         size_type sampleBufferSize) {
-    DEBUG_ASSERT(isValidSampleBufferSize(numberOfFrames, sampleBufferSize, true));
+    DEBUG_ASSERT(getSampleBufferSize(numberOfFrames, true) >= sampleBufferSize);
 
     switch (getChannelCount()) {
         case 1: // mono channel
