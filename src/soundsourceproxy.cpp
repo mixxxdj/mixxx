@@ -164,51 +164,52 @@ void SoundSourceProxy::loadPlugins() {
 
 // static
 Mixxx::SoundSourcePointer SoundSourceProxy::initialize(const QString& qFilename) {
-    QString extension(qFilename);
-    extension = extension.remove(0, (qFilename.lastIndexOf(".") + 1)).toLower().trimmed();
-    if (extension.isEmpty()) {
-        qWarning() << "Missing file extension:" << qFilename;
+    const QUrl url(QUrl::fromLocalFile(qFilename));
+
+    const QString type(Mixxx::SoundSource::getTypeFromUrl(url));
+    if (type.isEmpty()) {
+        qWarning() << "Unknown file type:" << qFilename;
         return Mixxx::SoundSourcePointer();
     }
 
 #ifdef __FFMPEGFILE__
-    return Mixxx::SoundSourcePointer(new SoundSourceFFmpeg(qFilename));
+    return Mixxx::SoundSourcePointer(new SoundSourceFFmpeg(url));
 #endif
-    if (SoundSourceOggVorbis::supportedFileExtensions().contains(extension)) {
-        return Mixxx::SoundSourcePointer(new SoundSourceOggVorbis(qFilename));
+    if (SoundSourceOggVorbis::supportedFileExtensions().contains(type)) {
+        return Mixxx::SoundSourcePointer(new SoundSourceOggVorbis(url));
 #ifdef __OPUS__
-    } else if (SoundSourceOpus::supportedFileExtensions().contains(extension)) {
-        return Mixxx::SoundSourcePointer(new SoundSourceOpus(qFilename));
+    } else if (SoundSourceOpus::supportedFileExtensions().contains(type)) {
+        return Mixxx::SoundSourcePointer(new SoundSourceOpus(url));
 #endif
 #ifdef __MAD__
-    } else if (SoundSourceMp3::supportedFileExtensions().contains(extension)) {
-        return Mixxx::SoundSourcePointer(new SoundSourceMp3(qFilename));
+    } else if (SoundSourceMp3::supportedFileExtensions().contains(type)) {
+        return Mixxx::SoundSourcePointer(new SoundSourceMp3(url));
 #endif
-    } else if (SoundSourceFLAC::supportedFileExtensions().contains(extension)) {
-        return Mixxx::SoundSourcePointer(new SoundSourceFLAC(qFilename));
+    } else if (SoundSourceFLAC::supportedFileExtensions().contains(type)) {
+        return Mixxx::SoundSourcePointer(new SoundSourceFLAC(url));
 #ifdef __COREAUDIO__
-    } else if (SoundSourceCoreAudio::supportedFileExtensions().contains(extension)) {
-        return Mixxx::SoundSourcePointer(new SoundSourceCoreAudio(qFilename));
+    } else if (SoundSourceCoreAudio::supportedFileExtensions().contains(type)) {
+        return Mixxx::SoundSourcePointer(new SoundSourceCoreAudio(url));
 #endif
 #ifdef __MODPLUG__
-    } else if (SoundSourceModPlug::supportedFileExtensions().contains(extension)) {
-        return Mixxx::SoundSourcePointer(new SoundSourceModPlug(qFilename));
+    } else if (SoundSourceModPlug::supportedFileExtensions().contains(type)) {
+        return Mixxx::SoundSourcePointer(new SoundSourceModPlug(url));
 #endif
-    } else if (m_extensionsSupportedByPlugins.contains(extension)) {
-        getSoundSourceFunc getter = m_extensionsSupportedByPlugins.value(extension);
+    } else if (m_extensionsSupportedByPlugins.contains(type)) {
+        getSoundSourceFunc getter = m_extensionsSupportedByPlugins.value(type);
         if (getter)
         {
-            qDebug() << "Getting SoundSource plugin object for" << extension;
-            return Mixxx::SoundSourcePointer(getter(qFilename));
+            qDebug() << "Getting SoundSource plugin object for" << type;
+            return Mixxx::SoundSourcePointer(getter(url.toLocalFile()));
         }
         else {
             qDebug() << "Failed to resolve getSoundSource in plugin for" <<
-                        extension;
+                    type;
             return Mixxx::SoundSourcePointer(); //Failed to load plugin
         }
 #ifdef __SNDFILE__
-    } else if (SoundSourceSndFile::supportedFileExtensions().contains(extension)) {
-        return Mixxx::SoundSourcePointer(new SoundSourceSndFile(qFilename));
+    } else if (SoundSourceSndFile::supportedFileExtensions().contains(type)) {
+        return Mixxx::SoundSourcePointer(new SoundSourceSndFile(url));
 #endif
     } else { //Unsupported filetype
         return Mixxx::SoundSourcePointer();
@@ -315,13 +316,13 @@ Mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource() const {
     }
 
     if (!pAudioSource->isValid()) {
-        qWarning() << "Invalid file:" << m_pSoundSource->getFilename()
+        qWarning() << "Invalid file:" << m_pSoundSource->getUrl()
                 << "channels" << pAudioSource->getChannelCount()
                 << "frame rate" << pAudioSource->getChannelCount();
         return Mixxx::AudioSourcePointer();
     }
     if (pAudioSource->isEmpty()) {
-        qWarning() << "Empty file:" << m_pSoundSource->getFilename();
+        qWarning() << "Empty file:" << m_pSoundSource->getUrl();
         return Mixxx::AudioSourcePointer();
     }
 

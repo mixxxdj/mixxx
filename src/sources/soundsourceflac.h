@@ -24,7 +24,7 @@ class SoundSourceFLAC: public Mixxx::SoundSource {
 public:
     static QList<QString> supportedFileExtensions();
 
-    explicit SoundSourceFLAC(QString fileName);
+    explicit SoundSourceFLAC(QUrl url);
 
     Result parseMetadata(Mixxx::TrackMetadata* pMetadata) const /*override*/;
     QImage parseCoverArt() const /*override*/;

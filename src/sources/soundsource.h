@@ -55,11 +55,13 @@ class SoundSource {
 public:
     virtual ~SoundSource();
 
-    inline const QString& getFilename() const {
-        return m_sFilename;
+    static QString getTypeFromUrl(QUrl url);
+
+    inline const QUrl& getUrl() const {
+        return m_url;
     }
     inline const QString& getType() const {
-        return m_sType;
+        return m_type;
     }
 
     // Parses metadata before opening the SoundSource for reading.
@@ -77,12 +79,17 @@ public:
     virtual AudioSourcePointer open() const = 0;
 
 protected:
-    explicit SoundSource(QString sFilename);
-    SoundSource(QString sFilename, QString sType);
+    explicit SoundSource(QUrl url);
+    SoundSource(QUrl url, QString type);
+
+    inline QByteArray getLocalFilePath() const {
+        DEBUG_ASSERT(getUrl().isLocalFile());
+        return getUrl().toLocalFile().toLocal8Bit();
+    }
 
 private:
-    const QString m_sFilename;
-    const QString m_sType;
+    const QUrl m_url;
+    const QString m_type;
 };
 
 typedef QSharedPointer<SoundSource> SoundSourcePointer;

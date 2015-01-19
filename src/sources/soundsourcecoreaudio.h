@@ -25,7 +25,7 @@ class SoundSourceCoreAudio : public Mixxx::SoundSource {
 public:
     static QList<QString> supportedFileExtensions();
 
-    explicit SoundSourceCoreAudio(QString fileName);
+    explicit SoundSourceCoreAudio(QUrl url);
 
     Result parseMetadata(Mixxx::TrackMetadata* pMetadata) const /*override*/;
     QImage parseCoverArt() const /*override*/;

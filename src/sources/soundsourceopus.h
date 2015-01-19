@@ -30,7 +30,7 @@ class SoundSourceOpus : public Mixxx::SoundSource {
 public:
     static QList<QString> supportedFileExtensions();
 
-    explicit SoundSourceOpus(QString qFilename);
+    explicit SoundSourceOpus(QUrl url);
 
     Result parseMetadata(Mixxx::TrackMetadata* pMetadata) const /*override*/;
     QImage parseCoverArt() const /*override*/;

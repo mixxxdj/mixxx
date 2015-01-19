@@ -33,7 +33,7 @@ class SoundSourceMediaFoundation : public Mixxx::SoundSourcePlugin {
 public:
     static QList<QString> supportedFileExtensions();
 
-    explicit SoundSourceMediaFoundation(QString fileName);
+    explicit SoundSourceMediaFoundation(QUrl url);
 
     Result parseMetadata(Mixxx::TrackMetadata* pMetadata) const /*override*/;
     QImage parseCoverArt() const /*override*/;

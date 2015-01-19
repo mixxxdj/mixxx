@@ -30,6 +30,7 @@ QList<QString> SoundSourceFLAC::supportedFileExtensions() {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 SoundSourceFLAC::SoundSourceFLAC(QString filename)
 <<<<<<< HEAD
     : Mixxx::SoundSource(filename)
@@ -68,10 +69,14 @@ SoundSourceFLAC::SoundSourceFLAC(QString fileName)
 SoundSourceFLAC::SoundSourceFLAC(QString fileName) :
         SoundSource(fileName, "flac") {
 >>>>>>> Reformat source code (roughly K&R + spaces)
+=======
+SoundSourceFLAC::SoundSourceFLAC(QUrl url)
+        : SoundSource(url, "flac") {
+>>>>>>> Create SoundSource from URL
 }
 
 Result SoundSourceFLAC::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
-    TagLib::FLAC::File f(getFilename().toLocal8Bit().constData());
+    TagLib::FLAC::File f(getLocalFilePath().constData());
 
     if (!readAudioProperties(pMetadata, f)) {
         return ERR;
@@ -99,7 +104,7 @@ Result SoundSourceFLAC::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
 }
 
 QImage SoundSourceFLAC::parseCoverArt() const {
-    TagLib::FLAC::File f(getFilename().toLocal8Bit().constData());
+    TagLib::FLAC::File f(getLocalFilePath().constData());
     QImage coverArt;
     TagLib::Ogg::XiphComment *xiph(f.xiphComment());
     if (xiph) {
@@ -340,6 +345,7 @@ void FLAC_error_cb(const FLAC__StreamDecoder*,
 Mixxx::AudioSourcePointer SoundSourceFLAC::open() const {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     return Mixxx::AudioSourceFLAC::open(getFilename());
 >>>>>>> Split AudioSource from SoundSource
 =======
@@ -348,4 +354,7 @@ Mixxx::AudioSourcePointer SoundSourceFLAC::open() const {
 =======
     return Mixxx::AudioSourceFLAC::create(QUrl::fromLocalFile(getFilename()));
 >>>>>>> Create AudioSources from URLs
+=======
+    return Mixxx::AudioSourceFLAC::create(getUrl());
+>>>>>>> Create SoundSource from URL
 }

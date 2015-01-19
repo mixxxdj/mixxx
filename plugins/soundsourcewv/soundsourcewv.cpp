@@ -13,12 +13,12 @@ QList<QString> SoundSourceWV::supportedFileExtensions() {
     return list;
 }
 
-SoundSourceWV::SoundSourceWV(QString fileName) :
-        SoundSourcePlugin(fileName, "wv") {
+SoundSourceWV::SoundSourceWV(QUrl url)
+        : SoundSourcePlugin(url, "wv") {
 }
 
 Result SoundSourceWV::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
-    TagLib::WavPack::File f(getFilename().toLocal8Bit().constData());
+    TagLib::WavPack::File f(getLocalFilePath().constData());
 
     if (!readAudioProperties(pMetadata, f)) {
         return ERR;
@@ -41,7 +41,7 @@ Result SoundSourceWV::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
 }
 
 QImage SoundSourceWV::parseCoverArt() const {
-    TagLib::WavPack::File f(getFilename().toLocal8Bit().constData());
+    TagLib::WavPack::File f(getLocalFilePath().constData());
     TagLib::APE::Tag *ape = f.APETag();
     if (ape) {
         return Mixxx::readAPETagCover(*ape);
@@ -51,7 +51,7 @@ QImage SoundSourceWV::parseCoverArt() const {
 }
 
 Mixxx::AudioSourcePointer SoundSourceWV::open() const {
-    return Mixxx::AudioSourceWV::create(QUrl::fromLocalFile(getFilename()));
+    return Mixxx::AudioSourceWV::create(getUrl());
 }
 
 }  // namespace Mixxx

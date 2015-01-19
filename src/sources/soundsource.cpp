@@ -20,14 +20,20 @@
 
 namespace Mixxx {
 
-SoundSource::SoundSource(QString sFilename) :
-        m_sFilename(sFilename),
-        m_sType(m_sFilename.section(".", -1).toLower()) {
+/*static*/ QString SoundSource::getTypeFromUrl(QUrl url) {
+    return url.toString().section(".", -1).toLower().trimmed();
 }
 
-SoundSource::SoundSource(QString sFilename, QString sType) :
-        m_sFilename(sFilename),
-        m_sType(sType) {
+SoundSource::SoundSource(QUrl url)
+        : m_url(url),
+          m_type(getTypeFromUrl(url)) {
+    DEBUG_ASSERT(getUrl().isValid());
+}
+
+SoundSource::SoundSource(QUrl url, QString type)
+        : m_url(url),
+          m_type(type) {
+    DEBUG_ASSERT(getUrl().isValid());
 }
 
 SoundSource::~SoundSource() {

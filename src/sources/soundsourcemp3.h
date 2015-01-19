@@ -28,7 +28,7 @@ class SoundSourceMp3: public Mixxx::SoundSource {
 public:
     static QList<QString> supportedFileExtensions();
 
-    explicit SoundSourceMp3(QString qFilename);
+    explicit SoundSourceMp3(QUrl url);
 
     Result parseMetadata(Mixxx::TrackMetadata* pMetadata) const /*override*/;
     QImage parseCoverArt() const /*override*/;

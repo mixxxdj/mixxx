@@ -16,7 +16,7 @@ class SoundSourceWV: public SoundSourcePlugin {
 public:
     static QList<QString> supportedFileExtensions();
 
-    explicit SoundSourceWV(QString fileName);
+    explicit SoundSourceWV(QUrl url);
 
     Result parseMetadata(Mixxx::TrackMetadata* pMetadata) const /*override*/;
     QImage parseCoverArt() const /*override*/;
