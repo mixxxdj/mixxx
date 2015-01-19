@@ -7,7 +7,7 @@ class SoundSourceSndFile: public Mixxx::SoundSource {
 public:
     static QList<QString> supportedFileExtensions();
 
-    explicit SoundSourceSndFile(QString qFilename);
+    explicit SoundSourceSndFile(QUrl url);
 
     Result parseMetadata(Mixxx::TrackMetadata* pMetadata) const /*override*/;
     QImage parseCoverArt() const /*override*/;

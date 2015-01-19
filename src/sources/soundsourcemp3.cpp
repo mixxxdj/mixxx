@@ -27,12 +27,12 @@ QList<QString> SoundSourceMp3::supportedFileExtensions() {
     return list;
 }
 
-SoundSourceMp3::SoundSourceMp3(QString qFilename) :
-        SoundSource(qFilename, "mp3") {
+SoundSourceMp3::SoundSourceMp3(QUrl url)
+        : SoundSource(url, "mp3") {
 }
 
 Result SoundSourceMp3::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
-    TagLib::MPEG::File f(getFilename().toLocal8Bit().constData());
+    TagLib::MPEG::File f(getLocalFilePath().constData());
 
     if (!readAudioProperties(pMetadata, f)) {
         return ERR;
@@ -62,7 +62,7 @@ Result SoundSourceMp3::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
 
 QImage SoundSourceMp3::parseCoverArt() const {
     QImage coverArt;
-    TagLib::MPEG::File f(getFilename().toLocal8Bit().constData());
+    TagLib::MPEG::File f(getLocalFilePath().constData());
     TagLib::ID3v2::Tag* id3v2 = f.ID3v2Tag();
     if (id3v2) {
         coverArt = Mixxx::readID3v2TagCover(*id3v2);
@@ -77,5 +77,5 @@ QImage SoundSourceMp3::parseCoverArt() const {
 }
 
 Mixxx::AudioSourcePointer SoundSourceMp3::open() const {
-    return Mixxx::AudioSourceMp3::create(QUrl::fromLocalFile(getFilename()));
+    return Mixxx::AudioSourceMp3::create(getUrl());
 }

@@ -13,11 +13,11 @@ public:
     static void freeFileExtensions(char** fileExtensions);
 
 protected:
-    inline explicit SoundSourcePlugin(QString sFilename) :
-            SoundSource(sFilename) {
+    inline explicit SoundSourcePlugin(QUrl url)
+            : SoundSource(url) {
     }
-    inline SoundSourcePlugin(QString sFilename, QString sType) :
-            SoundSource(sFilename, sType) {
+    inline SoundSourcePlugin(QUrl url, QString type)
+            : SoundSource(url, type) {
     }
 };
 

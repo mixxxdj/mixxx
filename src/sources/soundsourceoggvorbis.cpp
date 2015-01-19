@@ -27,8 +27,8 @@ QList<QString> SoundSourceOggVorbis::supportedFileExtensions() {
     return list;
 }
 
-SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename) :
-        SoundSource(qFilename, "ogg") {
+SoundSourceOggVorbis::SoundSourceOggVorbis(QUrl url) :
+        SoundSource(url, "ogg") {
 }
 
 /*
@@ -36,7 +36,7 @@ SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename) :
  */
 Result SoundSourceOggVorbis::parseMetadata(
         Mixxx::TrackMetadata* pMetadata) const {
-    TagLib::Ogg::Vorbis::File f(getFilename().toLocal8Bit().constData());
+    TagLib::Ogg::Vorbis::File f(getLocalFilePath().constData());
 
     if (!readAudioProperties(pMetadata, f)) {
         return ERR;
@@ -59,7 +59,7 @@ Result SoundSourceOggVorbis::parseMetadata(
 }
 
 QImage SoundSourceOggVorbis::parseCoverArt() const {
-    TagLib::Ogg::Vorbis::File f(getFilename().toLocal8Bit().constData());
+    TagLib::Ogg::Vorbis::File f(getLocalFilePath().constData());
     TagLib::Ogg::XiphComment *xiph = f.tag();
     if (xiph) {
         return Mixxx::readXiphCommentCover(*xiph);
@@ -69,5 +69,5 @@ QImage SoundSourceOggVorbis::parseCoverArt() const {
 }
 
 Mixxx::AudioSourcePointer SoundSourceOggVorbis::open() const {
-    return Mixxx::AudioSourceOggVorbis::create(QUrl::fromLocalFile(getFilename()));
+    return Mixxx::AudioSourceOggVorbis::create(getUrl());
 }

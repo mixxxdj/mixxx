@@ -33,7 +33,7 @@ class SoundSourceM4A: public SoundSourcePlugin {
 public:
     static QList<QString> supportedFileExtensions();
 
-    explicit SoundSourceM4A(QString fileName);
+    explicit SoundSourceM4A(QUrl url);
 
     Result parseMetadata(Mixxx::TrackMetadata* pMetadata) const /*override*/;
     QImage parseCoverArt() const /*override*/;

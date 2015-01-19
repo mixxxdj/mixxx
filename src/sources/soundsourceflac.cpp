@@ -28,12 +28,12 @@ QList<QString> SoundSourceFLAC::supportedFileExtensions() {
     return list;
 }
 
-SoundSourceFLAC::SoundSourceFLAC(QString fileName) :
-        SoundSource(fileName, "flac") {
+SoundSourceFLAC::SoundSourceFLAC(QUrl url)
+        : SoundSource(url, "flac") {
 }
 
 Result SoundSourceFLAC::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
-    TagLib::FLAC::File f(getFilename().toLocal8Bit().constData());
+    TagLib::FLAC::File f(getLocalFilePath().constData());
 
     if (!readAudioProperties(pMetadata, f)) {
         return ERR;
@@ -61,7 +61,7 @@ Result SoundSourceFLAC::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
 }
 
 QImage SoundSourceFLAC::parseCoverArt() const {
-    TagLib::FLAC::File f(getFilename().toLocal8Bit().constData());
+    TagLib::FLAC::File f(getLocalFilePath().constData());
     QImage coverArt;
     TagLib::Ogg::XiphComment *xiph(f.xiphComment());
     if (xiph) {
@@ -86,5 +86,5 @@ QImage SoundSourceFLAC::parseCoverArt() const {
 }
 
 Mixxx::AudioSourcePointer SoundSourceFLAC::open() const {
-    return Mixxx::AudioSourceFLAC::create(QUrl::fromLocalFile(getFilename()));
+    return Mixxx::AudioSourceFLAC::create(getUrl());
 }

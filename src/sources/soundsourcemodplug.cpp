@@ -9,27 +9,25 @@
 
 #include <QtDebug>
 
-namespace {
-QString getTypeFromFilename(QString fileName) {
-    const QString fileExt(fileName.section(".", -1).toLower());
-    if (fileExt == "mod") {
+QString SoundSourceModPlug::getTypeFromUrl(QUrl url) {
+    const QString type(SoundSource::getTypeFromUrl(url));
+    if (type == "mod") {
         return "Protracker";
-    } else if (fileExt == "med") {
+    } else if (type == "med") {
         return "OctaMed";
-    } else if (fileExt == "okt") {
+    } else if (type == "okt") {
         return "Oktalyzer";
-    } else if (fileExt == "s3m") {
+    } else if (type == "s3m") {
         return "Scream Tracker 3";
-    } else if (fileExt == "stm") {
+    } else if (type == "stm") {
         return "Scream Tracker";
-    } else if (fileExt == "xm") {
+    } else if (type == "xm") {
         return "FastTracker2";
-    } else if (fileExt == "it") {
+    } else if (type == "it") {
         return "Impulse Tracker";
     } else {
         return "Module";
     }
-}
 }
 
 QList<QString> SoundSourceModPlug::supportedFileExtensions() {
@@ -46,13 +44,13 @@ QList<QString> SoundSourceModPlug::supportedFileExtensions() {
     return list;
 }
 
-SoundSourceModPlug::SoundSourceModPlug(QString fileName) :
-        SoundSource(fileName, getTypeFromFilename(fileName)) {
+SoundSourceModPlug::SoundSourceModPlug(QUrl url) :
+        SoundSource(url, getTypeFromUrl(url)) {
 }
 
 Result SoundSourceModPlug::parseMetadata(
         Mixxx::TrackMetadata* pMetadata) const {
-    QFile modFile(getFilename());
+    QFile modFile(getLocalFilePath());
     modFile.open(QIODevice::ReadOnly);
     const QByteArray fileBuf(modFile.readAll());
     modFile.close();
@@ -77,5 +75,5 @@ QImage SoundSourceModPlug::parseCoverArt() const {
 }
 
 Mixxx::AudioSourcePointer SoundSourceModPlug::open() const {
-    return Mixxx::AudioSourceModPlug::create(QUrl::fromLocalFile(getFilename()));
+    return Mixxx::AudioSourceModPlug::create(getUrl());
 }

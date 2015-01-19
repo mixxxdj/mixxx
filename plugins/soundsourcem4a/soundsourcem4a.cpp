@@ -30,12 +30,12 @@ QList<QString> SoundSourceM4A::supportedFileExtensions() {
     return list;
 }
 
-SoundSourceM4A::SoundSourceM4A(QString fileName) :
-        SoundSourcePlugin(fileName, "m4a") {
+SoundSourceM4A::SoundSourceM4A(QUrl url)
+        : SoundSourcePlugin(url, "m4a") {
 }
 
 Result SoundSourceM4A::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
-    TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
+    TagLib::MP4::File f(getLocalFilePath().constData());
 
     if (!readAudioProperties(pMetadata, f)) {
         return ERR;
@@ -58,7 +58,7 @@ Result SoundSourceM4A::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
 }
 
 QImage SoundSourceM4A::parseCoverArt() const {
-    TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
+    TagLib::MP4::File f(getLocalFilePath().constData());
     TagLib::MP4::Tag *mp4(f.tag());
     if (mp4) {
         return readMP4TagCover(*mp4);
@@ -68,7 +68,7 @@ QImage SoundSourceM4A::parseCoverArt() const {
 }
 
 Mixxx::AudioSourcePointer SoundSourceM4A::open() const {
-    return Mixxx::AudioSourceM4A::create(QUrl::fromLocalFile(getFilename()));
+    return Mixxx::AudioSourceM4A::create(getUrl());
 }
 
 } // namespace Mixxx

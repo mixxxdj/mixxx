@@ -37,13 +37,13 @@ QList<QString> SoundSourceMediaFoundation::supportedFileExtensions() {
     return list;
 }
 
-SoundSourceMediaFoundation::SoundSourceMediaFoundation(QString fileName)
-        : SoundSourcePlugin(fileName, "m4a") {
+SoundSourceMediaFoundation::SoundSourceMediaFoundation(QUrl url)
+        : SoundSourcePlugin(url, "m4a") {
 }
 
 Result SoundSourceMediaFoundation::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
     // Must be toLocal8Bit since Windows fopen does not do UTF-8
-    TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
+    TagLib::MP4::File f(getLocalFilePath().constData());
 
     if (!readAudioProperties(pMetadata, f)) {
         return ERR;
@@ -66,7 +66,7 @@ Result SoundSourceMediaFoundation::parseMetadata(Mixxx::TrackMetadata* pMetadata
 }
 
 QImage SoundSourceMediaFoundation::parseCoverArt() const {
-    TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
+    TagLib::MP4::File f(getLocalFilePath().constData());
     TagLib::MP4::Tag *mp4(f.tag());
     if (mp4) {
         return Mixxx::readMP4TagCover(*mp4);
@@ -76,7 +76,7 @@ QImage SoundSourceMediaFoundation::parseCoverArt() const {
 }
 
 Mixxx::AudioSourcePointer SoundSourceMediaFoundation::open() const {
-    return Mixxx::AudioSourceMediaFoundation::create(QUrl::fromLocalFile(getFilename()));
+    return Mixxx::AudioSourceMediaFoundation::create(getUrl());
 }
 
 extern "C" MY_EXPORT const char* getMixxxVersion() {

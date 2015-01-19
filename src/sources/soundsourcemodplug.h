@@ -10,7 +10,9 @@ class SoundSourceModPlug: public Mixxx::SoundSource {
 public:
     static QList<QString> supportedFileExtensions();
 
-    explicit SoundSourceModPlug(QString fileName);
+    static QString getTypeFromUrl(QUrl url);
+
+    explicit SoundSourceModPlug(QUrl url);
 
     Result parseMetadata(Mixxx::TrackMetadata* pMetadata) const /*override*/;
 

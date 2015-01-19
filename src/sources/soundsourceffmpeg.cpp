@@ -60,8 +60,8 @@ QList<QString> SoundSourceFFmpeg::supportedFileExtensions() {
     return list;
 }
 
-SoundSourceFFmpeg::SoundSourceFFmpeg(QString fileName)
-    : Mixxx::SoundSource(fileName) {
+SoundSourceFFmpeg::SoundSourceFFmpeg(QUrl url)
+        : SoundSource(url) {
 }
 
 Result SoundSourceFFmpeg::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
@@ -73,7 +73,7 @@ Result SoundSourceFFmpeg::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
     unsigned int i;
     AVDictionary *l_iFormatOpts = NULL;
 
-    if (avformat_open_input(&FmtCtx, getFilename().toLocal8Bit().constData(), NULL,
+    if (avformat_open_input(&FmtCtx, getLocalFilePath().constData(), NULL,
                             &l_iFormatOpts) !=0) {
         qDebug() << "av_open_input_file: cannot open" << getFilename();
         return ERR;
@@ -189,5 +189,5 @@ QImage SoundSourceFFmpeg::parseCoverArt() const {
 }
 
 Mixxx::AudioSourcePointer SoundSourceFFmpeg::open() const {
-    return Mixxx::AudioSourceFFmpeg::create(QUrl::fromLocalFile(getFilename()));
+    return Mixxx::AudioSourceFFmpeg::create(getUrl());
 }

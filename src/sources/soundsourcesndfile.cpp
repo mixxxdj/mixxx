@@ -17,14 +17,14 @@ QList<QString> SoundSourceSndFile::supportedFileExtensions() {
     return list;
 }
 
-SoundSourceSndFile::SoundSourceSndFile(QString qFilename) :
-        SoundSource(qFilename) {
+SoundSourceSndFile::SoundSourceSndFile(QUrl url)
+        : SoundSource(url) {
 }
 
 Result SoundSourceSndFile::parseMetadata(
         Mixxx::TrackMetadata* pMetadata) const {
     if (getType() == "flac") {
-        TagLib::FLAC::File f(getFilename().toLocal8Bit().constData());
+        TagLib::FLAC::File f(getLocalFilePath().constData());
         if (!readAudioProperties(pMetadata, f)) {
             return ERR;
         }
@@ -46,7 +46,7 @@ Result SoundSourceSndFile::parseMetadata(
             }
         }
     } else if (getType() == "wav") {
-        TagLib::RIFF::WAV::File f(getFilename().toLocal8Bit().constData());
+        TagLib::RIFF::WAV::File f(getLocalFilePath().constData());
         if (!readAudioProperties(pMetadata, f)) {
             return ERR;
         }
@@ -72,7 +72,7 @@ Result SoundSourceSndFile::parseMetadata(
 #endif
     } else if (getType().startsWith("aif")) {
         // Try AIFF
-        TagLib::RIFF::AIFF::File f(getFilename().toLocal8Bit().constData());
+        TagLib::RIFF::AIFF::File f(getLocalFilePath().constData());
         if (!readAudioProperties(pMetadata, f)) {
             return ERR;
         }
@@ -93,7 +93,7 @@ QImage SoundSourceSndFile::parseCoverArt() const {
     QImage coverArt;
 
     if (getType() == "flac") {
-        TagLib::FLAC::File f(getFilename().toLocal8Bit().constData());
+        TagLib::FLAC::File f(getLocalFilePath().constData());
         TagLib::ID3v2::Tag* id3v2 = f.ID3v2Tag();
         if (id3v2) {
             coverArt = Mixxx::readID3v2TagCover(*id3v2);
@@ -114,14 +114,14 @@ QImage SoundSourceSndFile::parseCoverArt() const {
             }
         }
     } else if (getType() == "wav") {
-        TagLib::RIFF::WAV::File f(getFilename().toLocal8Bit().constData());
+        TagLib::RIFF::WAV::File f(getLocalFilePath().constData());
         TagLib::ID3v2::Tag* id3v2 = f.tag();
         if (id3v2) {
             coverArt = Mixxx::readID3v2TagCover(*id3v2);
         }
     } else if (getType().startsWith("aif")) {
         // Try AIFF
-        TagLib::RIFF::AIFF::File f(getFilename().toLocal8Bit().constData());
+        TagLib::RIFF::AIFF::File f(getLocalFilePath().constData());
         TagLib::ID3v2::Tag* id3v2 = f.tag();
         if (id3v2) {
             coverArt = Mixxx::readID3v2TagCover(*id3v2);
@@ -132,5 +132,5 @@ QImage SoundSourceSndFile::parseCoverArt() const {
 }
 
 Mixxx::AudioSourcePointer SoundSourceSndFile::open() const {
-    return Mixxx::AudioSourceSndFile::create(QUrl::fromLocalFile(getFilename()));
+    return Mixxx::AudioSourceSndFile::create(getUrl());
 }

@@ -14,8 +14,8 @@ QList<QString> SoundSourceOpus::supportedFileExtensions() {
     return list;
 }
 
-SoundSourceOpus::SoundSourceOpus(QString qFilename) :
-        SoundSource(qFilename, "opus") {
+SoundSourceOpus::SoundSourceOpus(QUrl url) :
+        SoundSource(url, "opus") {
 }
 
 namespace {
@@ -40,7 +40,7 @@ private:
  Parse the the file to get metadata
  */
 Result SoundSourceOpus::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
-    const QByteArray qbaFilename(getFilename().toLocal8Bit());
+    const QByteArray qbaFilename(getLocalFilePath());
 
     int error = 0;
     OggOpusFileOwner l_ptrOpusFile(
@@ -121,7 +121,7 @@ Result SoundSourceOpus::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
 
 QImage SoundSourceOpus::parseCoverArt() const {
 #if (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
-    TagLib::Ogg::Opus::File f(getFilename().toLocal8Bit().constData());
+    TagLib::Ogg::Opus::File f(getLocalFilePath().constData());
     TagLib::Ogg::XiphComment *xiph = f.tag();
     if (xiph) {
         return Mixxx::readXiphCommentCover(*xiph);
@@ -131,5 +131,5 @@ QImage SoundSourceOpus::parseCoverArt() const {
 }
 
 Mixxx::AudioSourcePointer SoundSourceOpus::open() const {
-    return Mixxx::AudioSourceOpus::create(QUrl::fromLocalFile(getFilename()));
+    return Mixxx::AudioSourceOpus::create(getUrl());
 }

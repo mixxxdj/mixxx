@@ -23,7 +23,7 @@ class SoundSourceOggVorbis: public Mixxx::SoundSource {
 public:
     static QList<QString> supportedFileExtensions();
 
-    explicit SoundSourceOggVorbis(QString qFilename);
+    explicit SoundSourceOggVorbis(QUrl url);
 
     Result parseMetadata(Mixxx::TrackMetadata* pMetadata) const /*override*/;
     QImage parseCoverArt() const /*override*/;
