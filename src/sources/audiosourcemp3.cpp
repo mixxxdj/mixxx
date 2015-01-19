@@ -111,8 +111,11 @@ Result AudioSourceMp3::open() {
     do {
         if (0 != decodeFrameHeader(&madHeader, &m_madStream, true)) {
             if (MAD_RECOVERABLE(m_madStream.error)) {
-                qWarning() << "Recoverable MP3 header decoding error:"
-                        << mad_stream_errorstr(&m_madStream);
+                // Suppress "lost synchronization" warnings
+                if (MAD_ERROR_LOSTSYNC != m_madStream.error) {
+                    qWarning() << "Recoverable MP3 header decoding error:"
+                            << mad_stream_errorstr(&m_madStream);
+                }
                 continue;
             } else {
                 if (MAD_ERROR_BUFLEN != m_madStream.error) {
@@ -449,7 +452,8 @@ AudioSource::size_type AudioSourceMp3::readSampleFrames(
             if (0 != mad_frame_decode(&m_madFrame, &m_madStream)) {
                 if (MAD_RECOVERABLE(m_madStream.error)) {
                     if ((pMadThisFrame != m_madStream.this_frame) &&
-                            (NULL != pSampleBuffer)) {
+                            // Suppress "lost synchronization" warnings
+                            (MAD_ERROR_LOSTSYNC != m_madStream.error)) {
                         qWarning() << "Recoverable MP3 frame decoding error:"
                                 << mad_stream_errorstr(&m_madStream);
                     }
@@ -481,7 +485,7 @@ AudioSource::size_type AudioSourceMp3::readSampleFrames(
         }
 
         const size_type synthReadCount = math_min(
-        m_madSynthCount, numberOfFramesRemaining);
+                m_madSynthCount, numberOfFramesRemaining);
         if (NULL != pSampleBuffer) {
             DEBUG_ASSERT(m_madSynthCount <= m_madSynth.pcm.length);
             const size_type madSynthOffset =
