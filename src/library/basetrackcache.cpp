@@ -123,6 +123,10 @@ void BaseTrackCache::ensureCached(QSet<int> trackIds) {
     updateTracksInIndex(trackIds);
 }
 
+void BaseTrackCache::setSearchColumns(const QStringList& columns) {
+    m_searchColumns = columns;
+}
+
 TrackPointer BaseTrackCache::lookupCachedTrack(int trackId) const {
     // Only get the track from the TrackDAO if it's in the cache and marked as
     // dirty.
