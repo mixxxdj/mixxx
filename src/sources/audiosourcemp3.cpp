@@ -111,8 +111,13 @@ Result AudioSourceMp3::open() {
     do {
         if (0 != decodeFrameHeader(&madHeader, &m_madStream, true)) {
             if (MAD_RECOVERABLE(m_madStream.error)) {
-                // Suppress "lost synchronization" warnings
-                if (MAD_ERROR_LOSTSYNC != m_madStream.error) {
+                if (MAD_ERROR_LOSTSYNC == m_madStream.error) {
+                    // When seeking through the file "lost synchronization"
+                    // warnings are expected. Just log them for debugging
+                    // purposes.
+                    qDebug() << "Recoverable MP3 header decoding error:"
+                            << mad_stream_errorstr(&m_madStream);
+                } else {
                     qWarning() << "Recoverable MP3 header decoding error:"
                             << mad_stream_errorstr(&m_madStream);
                 }
@@ -451,11 +456,18 @@ AudioSource::size_type AudioSourceMp3::readSampleFrames(
             unsigned char const* pMadThisFrame = m_madStream.this_frame;
             if (0 != mad_frame_decode(&m_madFrame, &m_madStream)) {
                 if (MAD_RECOVERABLE(m_madStream.error)) {
-                    if ((pMadThisFrame != m_madStream.this_frame) &&
-                            // Suppress "lost synchronization" warnings
-                            (MAD_ERROR_LOSTSYNC != m_madStream.error)) {
-                        qWarning() << "Recoverable MP3 frame decoding error:"
+                    if (pMadThisFrame != m_madStream.this_frame) {
+                        // Suppress "lost synchronization" warnings
+                        if (MAD_ERROR_LOSTSYNC == m_madStream.error) {
+                            // When seeking through the file "lost synchronization"
+                            // warnings are expected. Just log them for debugging
+                            // purposes.
+                            qDebug() << "Recoverable MP3 frame decoding error:"
                                 << mad_stream_errorstr(&m_madStream);
+                        } else {
+                            qWarning() << "Recoverable MP3 frame decoding error:"
+                                    << mad_stream_errorstr(&m_madStream);
+                        }
                     }
                     // Acknowledge error...
                     m_madStream.error = MAD_ERROR_NONE;
