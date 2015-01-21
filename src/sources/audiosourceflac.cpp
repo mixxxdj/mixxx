@@ -103,8 +103,6 @@ Result AudioSourceFLAC::postConstruct() {
         return ERR;
     }
 
-    m_curFrameIndex = kFrameIndexMin;
-
     return OK;
 }
 

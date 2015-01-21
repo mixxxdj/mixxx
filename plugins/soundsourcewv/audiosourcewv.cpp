@@ -5,7 +5,7 @@ namespace Mixxx {
 AudioSourceWV::AudioSourceWV(QUrl url)
         : AudioSource(url),
           m_wpc(NULL),
-          m_sampleScale(0.0f) {
+          m_sampleScale(kSampleValueZero) {
 }
 
 AudioSourceWV::~AudioSourceWV() {

@@ -124,9 +124,6 @@ Result AudioSourceM4A::postConstruct() {
     const u_int32_t maxSampleBlockInputSize = MP4GetTrackMaxSampleSize(m_hFile,
             m_trackId);
     m_inputBuffer.resize(maxSampleBlockInputSize, 0);
-    // Initially the input buffer is empty
-    m_inputBufferOffset = 0;
-    m_inputBufferLength = 0;
 
     DEBUG_ASSERT(NULL == m_hDecoder); // not already opened
     m_hDecoder = NeAACDecOpen();
@@ -178,11 +175,11 @@ Result AudioSourceM4A::postConstruct() {
                     * frames2samples(kFramesPerSampleBlock);
     m_prefetchSampleBuffer.resize(prefetchSampleBufferSize);
 
-    // Invalidate current position
-    m_curSampleBlockId = MP4_INVALID_SAMPLE_ID;
+    // Invalidate current position to enforce the following
+    // seek operation
     m_curFrameIndex = getFrameIndexMax();
 
-    // Start decoding at the beginning of the file
+    // (Re-)Start decoding at the beginning of the file
     seekSampleFrame(kFrameIndexMin);
 
     return OK;
