@@ -11,6 +11,17 @@ namespace Mixxx {
 /*static*/const AudioSource::sample_type AudioSource::kSampleValuePeak =
         CSAMPLE_PEAK;
 
+AudioSourcePointer AudioSource::onCreate(AudioSource* pNewAudioSource) {
+    AudioSourcePointer pAudioSource(pNewAudioSource); // take ownership
+    if (OK == pAudioSource->postConstruct()) {
+        // success
+        return pAudioSource;
+    } else {
+        // failure
+        return AudioSourcePointer();
+    }
+}
+
 AudioSource::AudioSource(QUrl url) :
         m_url(url),
         m_channelCount(kChannelCountDefault),

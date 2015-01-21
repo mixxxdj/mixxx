@@ -2,7 +2,6 @@
 #define AUDIOSOURCEMP3_H
 
 #include "sources/audiosource.h"
-#include "util/defs.h"
 
 #ifdef _MSC_VER
 // So mad.h doesn't try to use inline assembly which MSVC doesn't support.
@@ -34,7 +33,7 @@ public:
 private:
     explicit AudioSourceMp3(QUrl url);
 
-    Result open();
+    Result postConstruct() /*override*/;
 
     void close();
 

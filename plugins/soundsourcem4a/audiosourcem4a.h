@@ -2,7 +2,6 @@
 #define AUDIOSOURCEM4A_H
 
 #include "sources/audiosource.h"
-#include "util/defs.h"
 
 #ifdef __MP4V2__
 #include <mp4v2/mp4v2.h>
@@ -37,7 +36,7 @@ public:
 private:
     explicit AudioSourceM4A(QUrl url);
 
-    Result open();
+    Result postConstruct() /*override*/;
 
     void close();
 

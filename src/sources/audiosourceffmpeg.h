@@ -2,7 +2,6 @@
 #define AUDIOSOURCEFFMPEG_H
 
 #include "sources/audiosource.h"
-#include "util/defs.h"
 
 #include <encoder/encoderffmpegresample.h>
 
@@ -54,7 +53,7 @@ public:
 private:
     explicit AudioSourceFFmpeg(QUrl url);
 
-    Result open();
+    Result postConstruct() /*override*/;
 
     void close();
 

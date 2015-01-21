@@ -3,6 +3,7 @@
 
 #include "util/assert.h"
 #include "util/types.h" // CSAMPLE
+#include "util/defs.h" // Result
 
 #include <QSharedPointer>
 #include <QUrl>
@@ -10,6 +11,9 @@
 #include <cstddef> // size_t / diff_t
 
 namespace Mixxx {
+
+class AudioSource;
+typedef QSharedPointer<AudioSource> AudioSourcePointer;
 
 // Common interface and base class for audio sources.
 //
@@ -215,6 +219,10 @@ public:
 protected:
     explicit AudioSource(QUrl url);
 
+    static AudioSourcePointer onCreate(AudioSource* pNewAudioSource);
+
+    virtual Result postConstruct() /*override*/ = 0;
+
     void setChannelCount(size_type channelCount);
     void setFrameRate(size_type frameRate);
     void setFrameCount(size_type frameCount);
@@ -238,8 +246,6 @@ private:
 
     size_type m_bitrate;
 };
-
-typedef QSharedPointer<AudioSource> AudioSourcePointer;
 
 } // namespace Mixxx
 

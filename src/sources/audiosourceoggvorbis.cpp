@@ -12,17 +12,10 @@ AudioSourceOggVorbis::~AudioSourceOggVorbis() {
 }
 
 AudioSourcePointer AudioSourceOggVorbis::create(QUrl url) {
-    QSharedPointer<AudioSourceOggVorbis> pAudioSource(new AudioSourceOggVorbis(url));
-    if (OK == pAudioSource->open()) {
-        // success
-        return pAudioSource;
-    } else {
-        // failure
-        return AudioSourcePointer();
-    }
+    return onCreate(new AudioSourceOggVorbis(url));
 }
 
-Result AudioSourceOggVorbis::open() {
+Result AudioSourceOggVorbis::postConstruct() {
     const QString fileName(getUrl().toLocalFile());
     const QByteArray qbaFilename(fileName.toLocal8Bit());
     if (0 != ov_fopen(qbaFilename.constData(), &m_vf)) {

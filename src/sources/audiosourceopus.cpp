@@ -12,17 +12,10 @@ AudioSourceOpus::~AudioSourceOpus() {
 }
 
 AudioSourcePointer AudioSourceOpus::create(QUrl url) {
-    QSharedPointer<AudioSourceOpus> pAudioSource(new AudioSourceOpus(url));
-    if (OK == pAudioSource->open()) {
-        // success
-        return pAudioSource;
-    } else {
-        // failure
-        return AudioSourcePointer();
-    }
+    return onCreate(new AudioSourceOpus(url));
 }
 
-Result AudioSourceOpus::open() {
+Result AudioSourceOpus::postConstruct() {
     const QString fileName(getUrl().toLocalFile());
     const QByteArray qbaFilename(fileName.toLocal8Bit());
     int errorCode = 0;

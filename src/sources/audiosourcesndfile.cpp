@@ -13,17 +13,10 @@ AudioSourceSndFile::~AudioSourceSndFile() {
 }
 
 AudioSourcePointer AudioSourceSndFile::create(QUrl url) {
-    QSharedPointer<AudioSourceSndFile> pAudioSource(new AudioSourceSndFile(url));
-    if (OK == pAudioSource->open()) {
-        // success
-        return pAudioSource;
-    } else {
-        // failure
-        return AudioSourcePointer();
-    }
+    return onCreate(new AudioSourceSndFile(url));
 }
 
-Result AudioSourceSndFile::open() {
+Result AudioSourceSndFile::postConstruct() {
     const QString fileName(getUrl().toLocalFile());
 #ifdef __WINDOWS__
     // Pointer valid until string changed

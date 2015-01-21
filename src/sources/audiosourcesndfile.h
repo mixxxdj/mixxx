@@ -2,7 +2,6 @@
 #define AUDIOSOURCESNDFILE_H
 
 #include "sources/audiosource.h"
-#include "util/defs.h"
 
 #ifdef Q_OS_WIN
 //Enable unicode in libsndfile on Windows
@@ -28,7 +27,7 @@ public:
 private:
     explicit AudioSourceSndFile(QUrl url);
 
-    Result open();
+    Result postConstruct() /*override*/;
 
     void close();
 

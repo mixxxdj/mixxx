@@ -30,7 +30,6 @@
  */
 
 #include "sources/audiosource.h"
-#include "util/defs.h"
 
 #include <QImage>
 

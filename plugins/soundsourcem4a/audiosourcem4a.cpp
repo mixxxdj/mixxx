@@ -91,17 +91,10 @@ AudioSourceM4A::~AudioSourceM4A() {
 }
 
 AudioSourcePointer AudioSourceM4A::create(QUrl url) {
-    QSharedPointer<AudioSourceM4A> pAudioSource(new AudioSourceM4A(url));
-    if (OK == pAudioSource->open()) {
-        // success
-        return pAudioSource;
-    } else {
-        // failure
-        return AudioSourcePointer();
-    }
+    return onCreate(new AudioSourceM4A(url));
 }
 
-Result AudioSourceM4A::open() {
+Result AudioSourceM4A::postConstruct() {
     const QString fileName(getUrl().toLocalFile());
     /* open MP4 file, check for >= ver 1.9.1 */
 #if MP4V2_PROJECT_version_hex <= 0x00010901

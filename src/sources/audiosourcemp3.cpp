@@ -71,17 +71,10 @@ AudioSourceMp3::~AudioSourceMp3() {
 }
 
 AudioSourcePointer AudioSourceMp3::create(QUrl url) {
-    QSharedPointer<AudioSourceMp3> pAudioSource(new AudioSourceMp3(url));
-    if (OK == pAudioSource->open()) {
-        // success
-        return pAudioSource;
-    } else {
-        // failure
-        return AudioSourcePointer();
-    }
+    return onCreate(new AudioSourceMp3(url));
 }
 
-Result AudioSourceMp3::open() {
+Result AudioSourceMp3::postConstruct() {
     if (!m_file.open(QIODevice::ReadOnly)) {
         qWarning() << "Failed to open file:" << m_file.fileName();
         return ERR;

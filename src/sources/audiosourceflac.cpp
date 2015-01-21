@@ -74,17 +74,10 @@ AudioSourceFLAC::~AudioSourceFLAC() {
 }
 
 AudioSourcePointer AudioSourceFLAC::create(QUrl url) {
-    QSharedPointer<AudioSourceFLAC> pAudioSource(new AudioSourceFLAC(url));
-    if (OK == pAudioSource->open()) {
-        // success
-        return pAudioSource;
-    } else {
-        // failure
-        return AudioSourcePointer();
-    }
+    return onCreate(new AudioSourceFLAC(url));
 }
 
-Result AudioSourceFLAC::open() {
+Result AudioSourceFLAC::postConstruct() {
     if (!m_file.open(QIODevice::ReadOnly)) {
         qWarning() << "SSFLAC: Could not read file!";
         return ERR;

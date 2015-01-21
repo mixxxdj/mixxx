@@ -2,7 +2,6 @@
 #define AUDIOSOURCEMODPLUG_H
 
 #include "sources/audiosource.h"
-#include "util/defs.h"
 
 namespace ModPlug {
 #include <libmodplug/modplug.h>
@@ -38,7 +37,7 @@ private:
 
     explicit AudioSourceModPlug(QUrl url);
 
-    Result open();
+    Result postConstruct() /*override*/;
 
     void close();
 
