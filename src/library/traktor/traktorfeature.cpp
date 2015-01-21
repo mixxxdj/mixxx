@@ -72,8 +72,16 @@ TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollectio
             << "bpm"
             << "key";
     m_trackSource = QSharedPointer<BaseTrackCache>(
-        new BaseTrackCache(m_pTrackCollection, tableName, idColumn,
+            new BaseTrackCache(m_pTrackCollection, tableName, idColumn,
                            columns, false));
+    QStringList searchColumns;
+    searchColumns << "artist"
+                  << "album"
+                  << "location"
+                  << "comment"
+                  << "title"
+                  << "genre";
+    m_trackSource->setSearchColumns(searchColumns);
 
     m_isActivated = false;
     m_pTraktorTableModel = new TraktorTrackModel(this, m_pTrackCollection, m_trackSource);

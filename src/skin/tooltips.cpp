@@ -181,8 +181,8 @@ void Tooltips::addStandardTooltips() {
             << tr("Show or hide the track library.");
 
     add("show_effects")
-            << tr("Show Effects Rack")
-            << tr("Show or hide the effects rack.");
+            << tr("Show Effect Rack")
+            << tr("Show or hide the effect rack.");
 
     add("toggle_expanded_library")
             << tr("Toggle Big Library")
