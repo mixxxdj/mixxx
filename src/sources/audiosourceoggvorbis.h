@@ -2,7 +2,6 @@
 #define AUDIOSOURCEOGGVORBIS_H
 
 #include "sources/audiosource.h"
-#include "util/defs.h"
 
 #define OV_EXCLUDE_STATIC_CALLBACKS
 #include <vorbis/vorbisfile.h>
@@ -25,7 +24,7 @@ public:
 private:
     explicit AudioSourceOggVorbis(QUrl url);
 
-    Result open();
+    Result postConstruct() /*override*/;
 
     void close();
 

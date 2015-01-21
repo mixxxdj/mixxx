@@ -2,7 +2,6 @@
 #define AUDIOSOURCEWV_H
 
 #include "sources/audiosource.h"
-#include "util/defs.h"
 
 #include "wavpack/wavpack.h"
 
@@ -28,7 +27,7 @@ public:
 private:
     explicit AudioSourceWV(QUrl url);
 
-    Result open();
+    Result postConstruct() /*override*/;
 
     void close();
 

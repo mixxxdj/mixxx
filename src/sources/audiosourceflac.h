@@ -2,7 +2,6 @@
 #define AUDIOSOURCEFLAC_H
 
 #include "sources/audiosource.h"
-#include "util/defs.h"
 
 #include <FLAC/stream_decoder.h>
 
@@ -39,7 +38,7 @@ public:
 private:
     explicit AudioSourceFLAC(QUrl url);
 
-    Result open();
+    Result postConstruct() /*override*/;
 
     void close();
 

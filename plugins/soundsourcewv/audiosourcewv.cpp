@@ -13,17 +13,10 @@ AudioSourceWV::~AudioSourceWV() {
 }
 
 AudioSourcePointer AudioSourceWV::create(QUrl url) {
-    QSharedPointer<AudioSourceWV> pAudioSource(new AudioSourceWV(url));
-    if (OK == pAudioSource->open()) {
-        // success
-        return pAudioSource;
-    } else {
-        // failure
-        return AudioSourcePointer();
-    }
+    return onCreate(new AudioSourceWV(url));
 }
 
-Result AudioSourceWV::open() {
+Result AudioSourceWV::postConstruct() {
     const QString fileName(getUrl().toLocalFile());
     char msg[80]; // hold possible error message
     m_wpc = WavpackOpenFileInput(

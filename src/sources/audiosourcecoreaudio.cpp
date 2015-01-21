@@ -20,18 +20,11 @@ AudioSourceCoreAudio::~AudioSourceCoreAudio() {
 }
 
 AudioSourcePointer AudioSourceCoreAudio::create(QUrl url) {
-    QSharedPointer<AudioSourceCoreAudio> pAudioSource(new AudioSourceCoreAudio(url));
-    if (OK == pAudioSource->open()) {
-        // success
-        return pAudioSource;
-    } else {
-        // failure
-        return AudioSourcePointer();
-    }
+    return onCreate(new AudioSourceCoreAudio(url));
 }
 
 // soundsource overrides
-Result AudioSourceCoreAudio::open() {
+Result AudioSourceCoreAudio::postConstruct() {
     const QString fileName(getUrl().toLocalFile());
 
     //Open the audio file.

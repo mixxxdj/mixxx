@@ -98,17 +98,10 @@ AudioSourceMediaFoundation::~AudioSourceMediaFoundation() {
 }
 
 AudioSourcePointer AudioSourceMediaFoundation::create(QUrl url) {
-    QSharedPointer<AudioSourceMediaFoundation> pAudioSource(new AudioSourceMediaFoundation(url));
-    if (OK == pAudioSource->open()) {
-        // success
-        return pAudioSource;
-    } else {
-        // failure
-        return AudioSourcePointer();
-    }
+    return onCreate(new AudioSourceMediaFoundation(url));
 }
 
-Result AudioSourceMediaFoundation::open() {
+Result AudioSourceMediaFoundation::postConstruct() {
     const QString fileName(getUrl().toLocalFile());
 
     if (sDebug) {

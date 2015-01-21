@@ -31,17 +31,10 @@ AudioSourceFFmpeg::~AudioSourceFFmpeg() {
 }
 
 AudioSourcePointer AudioSourceFFmpeg::create(QUrl url) {
-    QSharedPointer<AudioSourceFFmpeg> pAudioSource(new AudioSourceFFmpeg(url));
-    if (OK == pAudioSource->open()) {
-        // success
-        return pAudioSource;
-    } else {
-        // failure
-        return AudioSourcePointer();
-    }
+    return onCreate(new AudioSourceFFmpeg(url));
 }
 
-Result AudioSourceFFmpeg::open() {
+Result AudioSourceFFmpeg::postConstruct() {
     unsigned int i;
     AVDictionary *l_iFormatOpts = NULL;
 

@@ -8,7 +8,6 @@
 #define AUDIOSOURCEMEDIAFOUNDATIONMEDIAFOUNDATION_H
 
 #include "sources/audiosource.h"
-#include "util/defs.h"
 
 #include <windows.h>
 
@@ -37,7 +36,7 @@ public:
 private:
     explicit AudioSourceMediaFoundation(QUrl url);
 
-    Result open();
+    Result postConstruct() /*override*/;
 
     void close();
 

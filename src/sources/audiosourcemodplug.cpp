@@ -48,17 +48,10 @@ AudioSourceModPlug::~AudioSourceModPlug() {
 }
 
 AudioSourcePointer AudioSourceModPlug::create(QUrl url) {
-    QSharedPointer<AudioSourceModPlug> pAudioSource(new AudioSourceModPlug(url));
-    if (OK == pAudioSource->open()) {
-        // success
-        return pAudioSource;
-    } else {
-        // failure
-        return AudioSourcePointer();
-    }
+    return onCreate(new AudioSourceModPlug(url));
 }
 
-Result AudioSourceModPlug::open() {
+Result AudioSourceModPlug::postConstruct() {
     const QString fileName(getUrl().toLocalFile());
 
     ScopedTimer t("AudioSourceModPlug::open()");

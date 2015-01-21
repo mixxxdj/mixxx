@@ -2,7 +2,6 @@
 #define AUDIOSOURCECOREAUDIO_H
 
 #include "sources/audiosource.h"
-#include "util/defs.h"
 
 #include <AudioToolbox/AudioToolbox.h>
 //In our tree at lib/apple/
@@ -34,7 +33,7 @@ public:
 private:
     explicit AudioSourceCoreAudio(QUrl url);
 
-    Result open();
+    Result postConstruct() /*override*/;
 
     void close();
 
