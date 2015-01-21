@@ -96,8 +96,6 @@ Result AudioSourceMp3::postConstruct() {
     mad_timer_t madDuration = mad_timer_zero;
     unsigned long sumBitrate = 0;
 
-    m_curFrameIndex = kFrameIndexMin;
-
     mad_header madHeader;
     mad_header_init(&madHeader);
 
@@ -222,7 +220,7 @@ Result AudioSourceMp3::postConstruct() {
         return ERR; // abort
     }
 
-    // Initialize audio stream length
+    // Initialize the audio stream length
     setFrameCount(m_curFrameIndex);
 
     // Calculate average values
