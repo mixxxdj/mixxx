@@ -26,23 +26,22 @@
 // 100 for 10% step after finalize
 #define FINALIZE_PROMILLE 1
 
-namespace
-{
+namespace {
+    // Analysis is done in blocks.
+    // We need to use a smaller block size, because on Linux the AnalyserQueue
+    // can starve the CPU of its resources, resulting in xruns. A block size
+    // of 4096 frames per block seems to do fine.
     const Mixxx::AudioSource::size_type kAnalysisChannels = 2; // stereo
-
-    // We need to use a smaller block size because on Linux, the AnalyserQueue
-    // can starve the CPU of its resources, resulting in xruns. A block size of
-    // 4096 samples per channel seems to do fine.
-    const Mixxx::AudioSource::size_type kAnalysisFrameCount = 4096;
-
-    const Mixxx::AudioSource::size_type kAnalysisSampleCount = kAnalysisFrameCount * kAnalysisChannels;
-}
+    const Mixxx::AudioSource::size_type kAnalysisFramesPerBlock = 4096;
+    const Mixxx::AudioSource::size_type kAnalysisSamplesPerBlock =
+            kAnalysisFramesPerBlock * kAnalysisChannels;
+} // anonymous namespace
 
 AnalyserQueue::AnalyserQueue(TrackCollection* pTrackCollection)
         : m_aq(),
           m_exit(false),
           m_aiCheckPriorities(false),
-          m_sampleBuffer(kAnalysisSampleCount),
+          m_sampleBuffer(kAnalysisSamplesPerBlock),
           m_tioq(),
           m_qm(),
           m_qwait(),
@@ -167,29 +166,45 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, Mixxx::AudioSourcePointer pAudi
     QTime progressUpdateInhibitTimer;
     progressUpdateInhibitTimer.start(); // Inhibit Updates for 60 milliseconds
 
-    Mixxx::AudioSource::size_type progressFrameCount = 0;
+    Mixxx::AudioSource::size_type frameIndex = 0;
     bool dieflag = false;
     bool cancelled = false;
     do {
         ScopedTimer t("AnalyserQueue::doAnalysis block");
 
-        DEBUG_ASSERT(progressFrameCount < pAudioSource->getFrameCount());
-        const Mixxx::AudioSource::size_type readFrameCount = pAudioSource->readSampleFramesStereo(kAnalysisFrameCount, &m_sampleBuffer[0], m_sampleBuffer.size());
-        progressFrameCount += readFrameCount;
-        DEBUG_ASSERT(progressFrameCount <= pAudioSource->getFrameCount());
+        DEBUG_ASSERT(frameIndex < pAudioSource->getFrameCount());
+        const Mixxx::AudioSource::size_type framesToRead =
+                math_min(kAnalysisFramesPerBlock,
+                        pAudioSource->getFrameCount() - frameIndex);
+        DEBUG_ASSERT(0 < framesToRead);
 
-        // To compare apples to apples, let's only look at blocks that are the
-        // full block size.
-        if (kAnalysisFrameCount == readFrameCount) {
+        const Mixxx::AudioSource::size_type framesRead =
+                pAudioSource->readSampleFramesStereo(
+                        kAnalysisFramesPerBlock,
+                        &m_sampleBuffer[0],
+                        m_sampleBuffer.size());
+        frameIndex += framesRead;
+        DEBUG_ASSERT(pAudioSource->isValidFrameIndex(frameIndex));
+
+        // To compare apples to apples, let's only look at blocks that are
+        // the full block size.
+        DEBUG_ASSERT(kAnalysisFramesPerBlock >= framesRead);
+        if (kAnalysisFramesPerBlock == framesRead) {
+            // A complete block of audio samples has been read
             QListIterator<Analyser*> it(m_aq);
             while (it.hasNext()) {
                 Analyser* an =  it.next();
                 //qDebug() << typeid(*an).name() << ".process()";
-                an->process(&m_sampleBuffer[0], readFrameCount * kAnalysisChannels);
+                an->process(&m_sampleBuffer[0], framesRead * kAnalysisChannels);
                 //qDebug() << "Done " << typeid(*an).name() << ".process()";
             }
         } else {
-            if (progressFrameCount < pAudioSource->getFrameCount()) {
+            // a partial block of audio samples has been read
+            if (frameIndex < pAudioSource->getFrameCount()) {
+                // Fewer frames than actually expected have been read
+                // from the AudioSource. This indicates an error while
+                // decoding the audio stream and the analysis should
+                // stop now.
                 qWarning() << "Failed to read sample data from file:"
                         << tio->getFilename();
                 dieflag = true; // abort
@@ -201,8 +216,8 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, Mixxx::AudioSourcePointer pAudi
         // During the doAnalysis function it goes only to 100% - FINALIZE_PERCENT
         // because the finalise functions will take also some time
         //fp div here prevents insane signed overflow
-        DEBUG_ASSERT(progressFrameCount <= pAudioSource->getFrameCount());
-        int progress = (int)(((float)progressFrameCount) / pAudioSource->getFrameCount() *
+        DEBUG_ASSERT(frameIndex <= pAudioSource->getFrameCount());
+        int progress = (int)(((float)frameIndex) / pAudioSource->getFrameCount() *
                          (1000 - FINALIZE_PROMILLE));
 
         if (m_progressInfo.track_progress != progress) {
@@ -239,7 +254,7 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, Mixxx::AudioSourcePointer pAudi
         if (dieflag || cancelled) {
             t.cancel();
         }
-    } while (!dieflag && (progressFrameCount < pAudioSource->getFrameCount()));
+    } while (!dieflag && (frameIndex < pAudioSource->getFrameCount()));
 
     return !cancelled; //don't return !dieflag or we might reanalyze over and over
 }
