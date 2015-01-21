@@ -82,8 +82,7 @@ class CachingReaderWorker : public EngineWorker {
 
     // A Chunk is a memory-resident section of audio that has been cached. Each
     // chunk holds a fixed number of stereo frames given by kFramesPerChunk.
-    static const Mixxx::AudioSource::size_type kChunkLength;
-    static const Mixxx::AudioSource::size_type kChunkChannels = 2; // stereo
+    static const Mixxx::AudioSource::size_type kChunkChannels;
     static const Mixxx::AudioSource::size_type kFramesPerChunk;
     static const Mixxx::AudioSource::size_type kSamplesPerChunk; // = kFramesPerChunk * kChunkChannels
 
