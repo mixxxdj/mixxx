@@ -20,11 +20,11 @@
 #include "util/event.h"
 #include "util/trace.h"
 
-// Measured in 0.1%,
+// Measured in 0.1%
 // 0 for no progress during finalize
 // 1 to display the text "finalizing"
 // 100 for 10% step after finalize
-#define FINALIZE_PERCENT 1
+#define FINALIZE_PROMILLE 1
 
 namespace
 {
@@ -203,7 +203,7 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, Mixxx::AudioSourcePointer pAudi
         //fp div here prevents insane signed overflow
         DEBUG_ASSERT(progressFrameCount <= pAudioSource->getFrameCount());
         int progress = (int)(((float)progressFrameCount) / pAudioSource->getFrameCount() *
-                         (1000 - FINALIZE_PERCENT));
+                         (1000 - FINALIZE_PROMILLE));
 
         if (m_progressInfo.track_progress != progress) {
             if (progressUpdateInhibitTimer.elapsed() > 60) {
@@ -321,7 +321,7 @@ void AnalyserQueue::run() {
                 emitUpdateProgress(nextTrack, 0);
             } else {
                 // 100% - FINALIZE_PERCENT finished
-                emitUpdateProgress(nextTrack, 1000 - FINALIZE_PERCENT);
+                emitUpdateProgress(nextTrack, 1000 - FINALIZE_PROMILLE);
                 // This takes around 3 sec on a Atom Netbook
                 QListIterator<Analyser*> itf(m_aq);
                 while (itf.hasNext()) {
@@ -352,7 +352,7 @@ void AnalyserQueue::emitUpdateProgress(TrackPointer tio, int progress) {
         // The following tries will success if the previous signal was processed in the GUI Thread
         // This prevent the AnalysisQueue from filling up the GUI Thread event Queue
         // 100 % is emitted in any case
-        if (progress < 1000 - FINALIZE_PERCENT && progress > 0) {
+        if (progress < 1000 - FINALIZE_PROMILLE && progress > 0) {
             // Signals during processing are not required in any case
             if (!m_progressInfo.sema.tryAcquire()) {
                return;
