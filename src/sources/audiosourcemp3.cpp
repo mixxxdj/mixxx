@@ -241,6 +241,18 @@ Result AudioSourceMp3::postConstruct() {
     return OK;
 }
 
+void AudioSourceMp3::preDestroy() {
+    mad_synth_finish(&m_madSynth);
+    mad_frame_finish(&m_madFrame);
+    mad_stream_finish(&m_madStream);
+
+    if (NULL != m_pFileData) {
+        m_file.unmap(m_pFileData);
+        m_file.close();
+        m_pFileData = NULL;
+    }
+}
+
 AudioSource::diff_type AudioSourceMp3::restartDecoding(
         const SeekFrameType& seekFrame) {
     qDebug() << "restartDecoding @" << seekFrame.frameIndex;
@@ -270,27 +282,19 @@ AudioSource::diff_type AudioSourceMp3::restartDecoding(
         mad_synth_mute(&m_madSynth);
     }
 
-    if ((0 != decodeFrameHeader(&m_madFrame.header, &m_madStream, false)) &&
-            !MAD_RECOVERABLE(m_madStream.error)) {
-        qWarning() << "Unrecoverable MP3 frame header decoding error:"
-                << mad_stream_errorstr(&m_madStream);
-        // failure
-        return getFrameCount();
+    if (0 != decodeFrameHeader(&m_madFrame.header, &m_madStream, false)) {
+        if (MAD_RECOVERABLE(m_madStream.error)) {
+            qDebug() << "Recoverable MP3 frame header decoding error after restart:"
+                    << mad_stream_errorstr(&m_madStream);
+        } else {
+            qWarning() << "Unrecoverable MP3 frame header decoding error after restart:"
+                    << mad_stream_errorstr(&m_madStream);
+            // failure
+            return getFrameCount();
+        }
     }
 
     return seekFrame.frameIndex;
-}
-
-void AudioSourceMp3::preDestroy() {
-    mad_synth_finish(&m_madSynth);
-    mad_frame_finish(&m_madFrame);
-    mad_stream_finish(&m_madStream);
-
-    if (NULL != m_pFileData) {
-        m_file.unmap(m_pFileData);
-        m_file.close();
-        m_pFileData = NULL;
-    }
 }
 
 void AudioSourceMp3::addSeekFrame(
@@ -519,9 +523,9 @@ AudioSource::size_type AudioSourceMp3::readSampleFrames(
             }
         }
         // consume decoded output data
-        numberOfFramesRemaining -= synthReadCount;
         m_madSynthCount -= synthReadCount;
         m_curFrameIndex += synthReadCount;
+        numberOfFramesRemaining -= synthReadCount;
     }
 
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
