@@ -17,6 +17,7 @@ void ColumnCache::setColumns(const QStringList& columns) {
     m_columnIndexByEnum[COLUMN_LIBRARYTABLE_ID] = fieldIndex(LIBRARYTABLE_ID);
     m_columnIndexByEnum[COLUMN_LIBRARYTABLE_ARTIST] = fieldIndex(LIBRARYTABLE_ARTIST);
     m_columnIndexByEnum[COLUMN_LIBRARYTABLE_TITLE] = fieldIndex(LIBRARYTABLE_TITLE);
+    m_columnIndexByEnum[COLUMN_LIBRARYTABLE_COLOR] = fieldIndex(LIBRARYTABLE_COLOR);
     m_columnIndexByEnum[COLUMN_LIBRARYTABLE_ALBUM] = fieldIndex(LIBRARYTABLE_ALBUM);
     m_columnIndexByEnum[COLUMN_LIBRARYTABLE_ALBUMARTIST] = fieldIndex(LIBRARYTABLE_ALBUMARTIST);
     m_columnIndexByEnum[COLUMN_LIBRARYTABLE_YEAR] = fieldIndex(LIBRARYTABLE_YEAR);
