@@ -55,12 +55,12 @@ private:
 
     Result postConstruct() /*override*/;
 
-    void close();
+    void preDestroy();
 
     bool readFramesToCache(unsigned int count, qint64 offset);
     bool getBytesFromCache(char *buffer, quint64 offset, quint64 size);
     quint64 getSizeofCache();
-    void clearCache() throw();
+    void clearCache();
 
     unsigned int read(unsigned long size, SAMPLE*);
 

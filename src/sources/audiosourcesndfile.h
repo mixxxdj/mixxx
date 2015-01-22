@@ -29,7 +29,7 @@ private:
 
     Result postConstruct() /*override*/;
 
-    void close();
+    void preDestroy();
 
     SNDFILE* m_pSndFile;
     SF_INFO m_sfInfo;

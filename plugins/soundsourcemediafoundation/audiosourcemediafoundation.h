@@ -38,7 +38,7 @@ private:
 
     Result postConstruct() /*override*/;
 
-    void close();
+    void preDestroy();
 
     bool configureAudioStream();
 

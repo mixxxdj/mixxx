@@ -39,7 +39,7 @@ private:
 
     Result postConstruct() /*override*/;
 
-    void close();
+    void preDestroy();
 
     ModPlug::ModPlugFile *m_pModFile; // modplug file descriptor
     unsigned long m_fileLength; // length of file in samples

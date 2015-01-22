@@ -29,7 +29,7 @@ private:
 
     Result postConstruct() /*override*/;
 
-    void close();
+    void preDestroy();
 
     WavpackContext* m_wpc;
 

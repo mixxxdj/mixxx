@@ -70,7 +70,7 @@ AudioSourceFLAC::AudioSourceFLAC(QUrl url)
 }
 
 AudioSourceFLAC::~AudioSourceFLAC() {
-    close();
+    preDestroy();
 }
 
 AudioSourcePointer AudioSourceFLAC::create(QUrl url) {
@@ -106,15 +106,13 @@ Result AudioSourceFLAC::postConstruct() {
     return OK;
 }
 
-void AudioSourceFLAC::close() {
+void AudioSourceFLAC::preDestroy() {
     if (m_decoder) {
         FLAC__stream_decoder_finish(m_decoder);
         FLAC__stream_decoder_delete(m_decoder); // frees memory
         m_decoder = NULL;
     }
-    m_decodeSampleBuffer.clear();
     m_file.close();
-    reset();
 }
 
 Mixxx::AudioSource::diff_type AudioSourceFLAC::seekSampleFrame(

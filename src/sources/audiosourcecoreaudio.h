@@ -35,7 +35,7 @@ private:
 
     Result postConstruct() /*override*/;
 
-    void close();
+    void preDestroy();
 
     ExtAudioFileRef m_audioFile;
     CAStreamBasicDescription m_inputFormat;

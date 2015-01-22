@@ -26,7 +26,7 @@ private:
 
     Result postConstruct() /*override*/;
 
-    void close();
+    void preDestroy();
 
     inline diff_type getCurrentFrameIndex() {
         return ov_pcm_tell(&m_vf);

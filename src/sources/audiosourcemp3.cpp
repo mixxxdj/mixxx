@@ -67,7 +67,7 @@ AudioSourceMp3::AudioSourceMp3(QUrl url)
 }
 
 AudioSourceMp3::~AudioSourceMp3() {
-    close();
+    preDestroy();
 }
 
 AudioSourcePointer AudioSourceMp3::create(QUrl url) {
@@ -281,22 +281,16 @@ AudioSource::diff_type AudioSourceMp3::restartDecoding(
     return seekFrame.frameIndex;
 }
 
-void AudioSourceMp3::close() {
+void AudioSourceMp3::preDestroy() {
     mad_synth_finish(&m_madSynth);
     mad_frame_finish(&m_madFrame);
     mad_stream_finish(&m_madStream);
-    m_madSynthCount = 0;
 
-    m_seekFrameList.clear();
-    m_avgSeekFrameCount = 0;
-    m_curFrameIndex = kFrameIndexMin;
-
-    m_file.unmap(m_pFileData);
-    m_fileSize = 0;
-    m_pFileData = NULL;
-    m_file.close();
-
-    reset();
+    if (NULL != m_pFileData) {
+        m_file.unmap(m_pFileData);
+        m_file.close();
+        m_pFileData = NULL;
+    }
 }
 
 void AudioSourceMp3::addSeekFrame(

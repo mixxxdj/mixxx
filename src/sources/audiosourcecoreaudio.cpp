@@ -119,7 +119,7 @@ Result AudioSourceCoreAudio::postConstruct() {
     return OK;
 }
 
-void AudioSourceCoreAudio::close() {
+void AudioSourceCoreAudio::preDestroy() {
     ExtAudioFileDispose(m_audioFile);
 }
 

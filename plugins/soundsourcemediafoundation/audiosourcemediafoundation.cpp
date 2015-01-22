@@ -94,7 +94,7 @@ AudioSourceMediaFoundation::AudioSourceMediaFoundation(QUrl url)
 }
 
 AudioSourceMediaFoundation::~AudioSourceMediaFoundation() {
-    close();
+    preDestroy();
 }
 
 AudioSourcePointer AudioSourceMediaFoundation::create(QUrl url) {
@@ -150,7 +150,7 @@ Result AudioSourceMediaFoundation::postConstruct() {
     return OK;
 }
 
-void AudioSourceMediaFoundation::close() {
+void AudioSourceMediaFoundation::preDestroy() {
     delete[] m_wcFilename;
     m_wcFilename = NULL;
     delete[] m_leftoverBuffer;
@@ -167,8 +167,6 @@ void AudioSourceMediaFoundation::close() {
         CoUninitialize();
         m_hrCoInitialize = E_FAIL;
     }
-
-    reset();
 }
 
 Mixxx::AudioSource::diff_type AudioSourceMediaFoundation::seekSampleFrame(

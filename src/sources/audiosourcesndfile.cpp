@@ -9,7 +9,7 @@ AudioSourceSndFile::AudioSourceSndFile(QUrl url)
 }
 
 AudioSourceSndFile::~AudioSourceSndFile() {
-    close();
+    preDestroy();
 }
 
 AudioSourcePointer AudioSourceSndFile::create(QUrl url) {
@@ -46,17 +46,16 @@ Result AudioSourceSndFile::postConstruct() {
     return OK;
 }
 
-void AudioSourceSndFile::close() {
+void AudioSourceSndFile::preDestroy() {
     if (m_pSndFile) {
         const int closeResult = sf_close(m_pSndFile);
-        if (0 != closeResult) {
+        if (0 == closeResult) {
+            m_pSndFile = NULL;
+        } else {
             qWarning() << "Failed to close libsnd file:" << closeResult
                     << sf_strerror(m_pSndFile);
         }
-        m_pSndFile = NULL;
-        memset(&m_sfInfo, 0, sizeof(m_sfInfo));
     }
-    reset();
 }
 
 AudioSource::diff_type AudioSourceSndFile::seekSampleFrame(

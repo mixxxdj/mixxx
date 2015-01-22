@@ -9,7 +9,7 @@ AudioSourceWV::AudioSourceWV(QUrl url)
 }
 
 AudioSourceWV::~AudioSourceWV() {
-    close();
+    preDestroy();
 }
 
 AudioSourcePointer AudioSourceWV::create(QUrl url) {
@@ -43,12 +43,11 @@ Result AudioSourceWV::postConstruct() {
     return OK;
 }
 
-void AudioSourceWV::close() {
+void AudioSourceWV::preDestroy() {
     if (m_wpc) {
         WavpackCloseFile(m_wpc);
         m_wpc = NULL;
     }
-    reset();
 }
 
 AudioSource::diff_type AudioSourceWV::seekSampleFrame(diff_type frameIndex) {
