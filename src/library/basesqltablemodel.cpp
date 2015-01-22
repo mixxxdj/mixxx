@@ -54,6 +54,8 @@ void BaseSqlTableModel::initHeaderData() {
                         tr("Artist"), 200);
     setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_TITLE,
                         tr("Title"), 300);
+     setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_COLOR,
+                        tr("COLOR"), 300);
     setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_ALBUM,
                         tr("Album"), 200);
     setHeaderProperties(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST,
@@ -784,6 +786,8 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
         pTrack->setArtist(value.toString());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TITLE) == column) {
         pTrack->setTitle(value.toString());
+      else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR) == column) {
+        pTrack->setColor(value.toString());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUM) == column) {
         pTrack->setAlbum(value.toString());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST) == column) {
