@@ -87,7 +87,7 @@ AudioSourceM4A::AudioSourceM4A(QUrl url)
 }
 
 AudioSourceM4A::~AudioSourceM4A() {
-    close();
+    preDestroy();
 }
 
 AudioSourcePointer AudioSourceM4A::create(QUrl url) {
@@ -185,7 +185,7 @@ Result AudioSourceM4A::postConstruct() {
     return OK;
 }
 
-void AudioSourceM4A::close() {
+void AudioSourceM4A::preDestroy() {
     if (m_hDecoder) {
         NeAACDecClose(m_hDecoder);
         m_hDecoder = NULL;
@@ -194,14 +194,6 @@ void AudioSourceM4A::close() {
         MP4Close(m_hFile);
         m_hFile = MP4_INVALID_FILE_HANDLE;
     }
-    m_trackId = MP4_INVALID_TRACK_ID;
-    m_maxSampleBlockId = MP4_INVALID_SAMPLE_ID;
-    m_curSampleBlockId = MP4_INVALID_SAMPLE_ID;
-    m_inputBuffer.clear();
-    m_inputBufferOffset = 0;
-    m_inputBufferLength = 0;
-    m_curFrameIndex = kFrameIndexMin;
-    reset();
 }
 
 bool AudioSourceM4A::isValidSampleBlockId(MP4SampleId sampleBlockId) const {

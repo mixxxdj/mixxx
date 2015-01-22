@@ -35,7 +35,7 @@ private:
 
     Result postConstruct() /*override*/;
 
-    void close();
+    void preDestroy();
 
     inline size_type skipFrameSamples(size_type numberOfFrames) {
         return readSampleFrames(numberOfFrames, NULL);

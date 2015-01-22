@@ -44,7 +44,7 @@ AudioSourceModPlug::AudioSourceModPlug(QUrl url)
 }
 
 AudioSourceModPlug::~AudioSourceModPlug() {
-    close();
+    preDestroy();
 }
 
 AudioSourcePointer AudioSourceModPlug::create(QUrl url) {
@@ -120,12 +120,11 @@ Result AudioSourceModPlug::postConstruct() {
     return OK;
 }
 
-void AudioSourceModPlug::close() {
+void AudioSourceModPlug::preDestroy() {
     if (m_pModFile) {
         ModPlug::ModPlug_Unload(m_pModFile);
         m_pModFile = NULL;
     }
-    reset();
 }
 
 AudioSource::diff_type AudioSourceModPlug::seekSampleFrame(

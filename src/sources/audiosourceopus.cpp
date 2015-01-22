@@ -8,7 +8,7 @@ AudioSourceOpus::AudioSourceOpus(QUrl url)
 }
 
 AudioSourceOpus::~AudioSourceOpus() {
-    close();
+    preDestroy();
 }
 
 AudioSourcePointer AudioSourceOpus::create(QUrl url) {
@@ -45,12 +45,11 @@ Result AudioSourceOpus::postConstruct() {
     return OK;
 }
 
-void AudioSourceOpus::close() {
+void AudioSourceOpus::preDestroy() {
     if (m_pOggOpusFile) {
         op_free(m_pOggOpusFile);
         m_pOggOpusFile = NULL;
     }
-    reset();
 }
 
 AudioSource::diff_type AudioSourceOpus::seekSampleFrame(diff_type frameIndex) {

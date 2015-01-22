@@ -27,7 +27,7 @@ AudioSourceFFmpeg::AudioSourceFFmpeg(QUrl url)
 }
 
 AudioSourceFFmpeg::~AudioSourceFFmpeg() {
-    close();
+    preDestroy();
 }
 
 AudioSourcePointer AudioSourceFFmpeg::create(QUrl url) {
@@ -114,7 +114,7 @@ Result AudioSourceFFmpeg::postConstruct() {
     return OK;
 }
 
-void AudioSourceFFmpeg::close() {
+void AudioSourceFFmpeg::preDestroy() {
     clearCache();
 
     if (m_pCodecCtx != NULL) {
@@ -122,11 +122,13 @@ void AudioSourceFFmpeg::close() {
         avcodec_close(m_pCodecCtx);
         avformat_close_input(&m_pFormatCtx);
         av_free(m_pFormatCtx);
+        m_pFormatCtx = NULL;
     }
 
     if (m_pResample != NULL) {
         qDebug() << "~AudioSourceFFmpeg(): Delete FFMPEG Resampler";
         delete m_pResample;
+        m_pResample = NULL;
     }
 
     while (m_SJumpPoints.size() > 0) {
@@ -136,7 +138,7 @@ void AudioSourceFFmpeg::close() {
     }
 }
 
-void AudioSourceFFmpeg::clearCache() throw() {
+void AudioSourceFFmpeg::clearCache() {
     while (m_SCache.size() > 0) {
         struct ffmpegCacheObject* l_SRmObj = m_SCache[0];
         m_SCache.remove(0);

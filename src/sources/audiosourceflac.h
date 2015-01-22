@@ -40,7 +40,7 @@ private:
 
     Result postConstruct() /*override*/;
 
-    void close();
+    void preDestroy();
 
     size_type readSampleFrames(size_type numberOfFrames,
             sample_type* sampleBuffer, size_type sampleBufferSize,

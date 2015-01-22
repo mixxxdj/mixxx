@@ -8,7 +8,7 @@ AudioSourceOggVorbis::AudioSourceOggVorbis(QUrl url)
 }
 
 AudioSourceOggVorbis::~AudioSourceOggVorbis() {
-    close();
+    preDestroy();
 }
 
 AudioSourcePointer AudioSourceOggVorbis::create(QUrl url) {
@@ -48,12 +48,11 @@ Result AudioSourceOggVorbis::postConstruct() {
     return OK;
 }
 
-void AudioSourceOggVorbis::close() {
+void AudioSourceOggVorbis::preDestroy() {
     const int clearResult = ov_clear(&m_vf);
     if (0 != clearResult) {
         qWarning() << "Failed to close OggVorbis file" << clearResult;
     }
-    reset();
 }
 
 AudioSource::diff_type AudioSourceOggVorbis::seekSampleFrame(

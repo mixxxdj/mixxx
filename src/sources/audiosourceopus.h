@@ -29,7 +29,7 @@ private:
 
     Result postConstruct() /*override*/;
 
-    void close();
+    void preDestroy();
 
     inline diff_type getCurrentFrameIndex() const {
         DEBUG_ASSERT(NULL != m_pOggOpusFile);

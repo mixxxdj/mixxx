@@ -43,13 +43,6 @@ void AudioSource::setFrameCount(size_type frameCount) {
     m_frameCount = frameCount;
 }
 
-void AudioSource::reset() {
-    m_channelCount = kChannelCountDefault;
-    m_frameRate = kFrameRateDefault;
-    m_frameCount = kFrameCountDefault;
-    m_bitrate = kBitrateDefault;
-}
-
 AudioSource::size_type AudioSource::getSampleBufferSize(
         size_type numberOfFrames,
         bool readStereoSamples) const {

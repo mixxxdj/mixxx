@@ -231,8 +231,6 @@ protected:
         m_bitrate = bitrate;
     }
 
-    void reset();
-
     size_type getSampleBufferSize(
             size_type numberOfFrames,
             bool readStereoSamples = false) const;
