@@ -264,6 +264,8 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
         trackValue.setValue(pTrack->getArtist());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TITLE) == column) {
         trackValue.setValue(pTrack->getTitle());
+    }else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR) == column) {
+        trackValue.setValue(pTrack->getColor());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUM) == column) {
         trackValue.setValue(pTrack->getAlbum());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST) == column) {
