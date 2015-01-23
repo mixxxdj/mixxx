@@ -105,7 +105,7 @@ Result AudioSourceMp3::postConstruct() {
                 if (MAD_ERROR_LOSTSYNC == m_madStream.error) {
                     // When seeking through the file "lost synchronization"
                     // warnings are expected. Just log them for debugging
-                    // purposes.
+                    // purposes and suppress them in the release version.
                     qDebug() << "Recoverable MP3 header decoding error:"
                             << mad_stream_errorstr(&m_madStream);
                 } else {
@@ -446,11 +446,10 @@ AudioSource::size_type AudioSourceMp3::readSampleFrames(
             if (0 != mad_frame_decode(&m_madFrame, &m_madStream)) {
                 if (MAD_RECOVERABLE(m_madStream.error)) {
                     if (pMadThisFrame != m_madStream.this_frame) {
-                        // Suppress "lost synchronization" warnings
                         if (MAD_ERROR_LOSTSYNC == m_madStream.error) {
                             // When seeking through the file "lost synchronization"
                             // warnings are expected. Just log them for debugging
-                            // purposes.
+                            // purposes and suppress them in the release version.
                             qDebug() << "Recoverable MP3 frame decoding error:"
                                 << mad_stream_errorstr(&m_madStream);
                         } else {
