@@ -30,6 +30,7 @@ const int COLUMN_ALBUMARTIST = 15;
 const int COLUMN_GROUPING = 16;
 const int COLUMN_FILE_MODIFIED_TIME = 17;
 const int COLUMN_FILE_CREATION_TIME = 18;
+const int COLUMN_PREVIEW = 19;
 
 // The BrowseTable models displays tracks
 // of given directory on the HDD.

@@ -7,6 +7,7 @@
 
 #include "library/browse/browsetablemodel.h"
 #include "library/browse/browsethread.h"
+#include "library/previewbuttondelegate.h"
 #include "soundsourceproxy.h"
 #include "playerinfo.h"
 #include "controlobject.h"
@@ -42,6 +43,7 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
     header_data.insert(COLUMN_GROUPING, tr("Grouping"));
     header_data.insert(COLUMN_FILE_MODIFIED_TIME, tr("File Modified"));
     header_data.insert(COLUMN_FILE_CREATION_TIME, tr("File Created"));
+    header_data.insert(COLUMN_PREVIEW, tr("Preview"));
 
     addSearchColumn(COLUMN_FILENAME);
     addSearchColumn(COLUMN_ARTIST);
@@ -390,7 +392,8 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
 }
 
 QAbstractItemDelegate* BrowseTableModel::delegateForColumn(const int i, QObject* pParent) {
-    Q_UNUSED(i);
-    Q_UNUSED(pParent);
+    if (PlayerManager::numPreviewDecks() > 0 && i == COLUMN_PREVIEW) {
+        return new PreviewButtonDelegate(pParent, i);
+    }
     return NULL;
 }
