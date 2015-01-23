@@ -1,5 +1,6 @@
 #include "library/baseexternaltrackmodel.h"
 #include "library/trackcollection.h"
+#include "library/queryutil.h"
 #include "playermanager.h"
 
 BaseExternalTrackModel::BaseExternalTrackModel(QObject* parent,
@@ -7,12 +8,30 @@ BaseExternalTrackModel::BaseExternalTrackModel(QObject* parent,
                                                const char* settingsNamespace,
                                                const QString& trackTable,
                                                QSharedPointer<BaseTrackCache> trackSource)
-        : BaseSqlTableModel(parent, pTrackCollection, settingsNamespace),
-          m_trackTable(trackTable) {
+        : BaseSqlTableModel(parent, pTrackCollection, settingsNamespace) {
+    QString viewTable = trackTable + "_view";
     QStringList columns;
     columns << "id";
-    // TODO(XXX) preview column, needs a temporary view
-    setTable(m_trackTable, columns[0], columns, trackSource);
+    columns << "'' AS " + LIBRARYTABLE_PREVIEW;
+
+    QSqlQuery query(m_database);
+    FieldEscaper f(m_database);
+    QString queryString = QString(
+        "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+        "SELECT %2 FROM %3")
+            .arg(f.escapeString(viewTable),
+                 columns.join(","),
+                 f.escapeString(trackTable));
+    query.prepare(queryString);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) <<
+                "Error creating temporary view for" << trackTable;
+        return;
+    }
+
+    columns[1] = LIBRARYTABLE_PREVIEW;
+    setTable(viewTable, columns[0], columns, trackSource);
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 }
 
