@@ -37,6 +37,12 @@ DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
             autoDjIgnoreTimeCheckBox->checkState() == Qt::Checked);
     connect(autoDjIgnoreTimeEdit, SIGNAL(timeChanged(const QTime &)), this,
             SLOT(slotSetAutoDjIgnoreTime(const QTime &)));
+    // Adding random tracks from library when needed
+    autoDjIncludeLibTracksCheckBox->setChecked(
+            (bool) m_pConfig->getValueString(
+                    ConfigKey("[Auto DJ]", "IncludeLibTracks"), "0").toInt());
+    connect(autoDjIncludeLibTracksCheckBox, SIGNAL(stateChanged(int)), this,
+                SLOT(slotSetAutoDjIncludeLibTracks(int)));
 
     // Auto DJ random enqueue
     ComboBoxAutoDjRandomQueue->addItem(tr("Off"));
@@ -243,4 +249,5 @@ void DlgPrefAutoDJ::slotEnableAutoDJRandomQueue(int a_iValue) {
     }
 #endif // __AUTODJCRATES__
 }
+
 

@@ -86,7 +86,6 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
     m_pRemoveCrateFromAutoDj = new QAction(tr("Remove Crate as Track Source"), this);
     connect(m_pRemoveCrateFromAutoDj, SIGNAL(triggered()),
             this, SLOT(slotRemoveCrateFromAutoDj()));
-
 #endif // __AUTODJCRATES__
 }
 
@@ -132,7 +131,8 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
             m_pAutoDJView, SLOT(enableRandomButton(bool)));
 
     // Let subscribers know whether it's possible to add a random track.
-    emit(enableAddRandom(true));
+    bool addLibTracks = m_pConfig->getValueString(ConfigKey("[Auto DJ]", "IncludeLibTracks")).toInt();
+    emit(enableAddRandom(m_crateList.length() > 0 || addLibTracks));
 #endif // __AUTODJCRATES__
 }
 
@@ -276,7 +276,8 @@ void AutoDJFeature::slotCrateAutoDjChanged(int crateId, bool added) {
         }
     }
     // Let subscribers know whether it's possible to add a random track.
-    emit(enableAddRandom(m_crateList.length() > 0));
+    bool addLibTracks = m_pConfig->getValueString(ConfigKey("[Auto DJ]", "IncludeLibTracks")).toInt();
+    emit(enableAddRandom(m_crateList.length() > 0 || addLibTracks));
 #endif // __AUTODJCRATES__
 }
 
@@ -285,6 +286,9 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
     int retriveAttempts = 0;
 
     // Get access to the auto-DJ playlist.
+    // **delete** We expect the caller to check if the track returned is actually available
+    //            Incase of those from library ,this method can determine whetther a returned
+    //            track is existing or not though such a check wont be exhaustive .(suggestions ?)
     PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
 
     while (retriveAttempts < kMaxRetiveAttempts) {
