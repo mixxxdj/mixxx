@@ -165,9 +165,16 @@ void SampleUtil::copyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
     const CSAMPLE_GAIN gain_delta = (new_gain - old_gain)
             / CSAMPLE_GAIN(iNumSamples / 2);
     CSAMPLE_GAIN gain = old_gain;
-    for (unsigned int i = 0; i < iNumSamples; i += 2, gain += gain_delta) {
-        pDest[i] = pSrc[i] * gain;
-        pDest[i + 1] = pSrc[i + 1] * gain;
+    if (gain_delta) {
+        for (unsigned int i = 0; i < iNumSamples; i += 2) {
+            gain += gain_delta;
+            pDest[i] = pSrc[i] * gain;
+            pDest[i + 1] = pSrc[i + 1] * gain;
+        }
+    } else {
+        for (unsigned int i = 0; i < iNumSamples; ++i) {
+            pDest[i] = pSrc[i] * gain;
+        }
     }
 
     // OR! need to test which fares better
