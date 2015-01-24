@@ -166,16 +166,17 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, Mixxx::AudioSourcePointer pAudi
     QTime progressUpdateInhibitTimer;
     progressUpdateInhibitTimer.start(); // Inhibit Updates for 60 milliseconds
 
-    Mixxx::AudioSource::size_type frameIndex = 0;
+    Mixxx::AudioSource::diff_type frameIndex = pAudioSource->getFrameIndexMin();
     bool dieflag = false;
     bool cancelled = false;
     do {
         ScopedTimer t("AnalyserQueue::doAnalysis block");
 
-        DEBUG_ASSERT(frameIndex < pAudioSource->getFrameCount());
+        DEBUG_ASSERT(frameIndex < pAudioSource->getFrameIndexMax());
+        const Mixxx::AudioSource::size_type framesRemaining =
+                pAudioSource->getFrameIndexMax() - frameIndex;
         const Mixxx::AudioSource::size_type framesToRead =
-                math_min(kAnalysisFramesPerBlock,
-                        pAudioSource->getFrameCount() - frameIndex);
+                math_min(kAnalysisFramesPerBlock, framesRemaining);
         DEBUG_ASSERT(0 < framesToRead);
 
         const Mixxx::AudioSource::size_type framesRead =
@@ -200,7 +201,7 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, Mixxx::AudioSourcePointer pAudi
             }
         } else {
             // a partial block of audio samples has been read
-            if (frameIndex < pAudioSource->getFrameCount()) {
+            if (frameIndex < pAudioSource->getFrameIndexMax()) {
                 // Fewer frames than actually expected have been read
                 // from the AudioSource. This indicates an error while
                 // decoding the audio stream and the analysis should
@@ -216,14 +217,15 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, Mixxx::AudioSourcePointer pAudi
         // During the doAnalysis function it goes only to 100% - FINALIZE_PERCENT
         // because the finalise functions will take also some time
         //fp div here prevents insane signed overflow
-        DEBUG_ASSERT(frameIndex <= pAudioSource->getFrameCount());
-        int progress = (int)(((float)frameIndex) / pAudioSource->getFrameCount() *
-                         (1000 - FINALIZE_PROMILLE));
+        DEBUG_ASSERT(pAudioSource->isValidFrameIndex(frameIndex));
+        const double frameProgress =
+                double(frameIndex) / double(pAudioSource->getFrameIndexMax());
+        int progressPromille = frameProgress * (1000 - FINALIZE_PROMILLE);
 
-        if (m_progressInfo.track_progress != progress) {
+        if (m_progressInfo.track_progress != progressPromille) {
             if (progressUpdateInhibitTimer.elapsed() > 60) {
                 // Inhibit Updates for 60 milliseconds
-                emitUpdateProgress(tio, progress);
+                emitUpdateProgress(tio, progressPromille);
                 progressUpdateInhibitTimer.start();
             }
         }
@@ -254,7 +256,7 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, Mixxx::AudioSourcePointer pAudi
         if (dieflag || cancelled) {
             t.cancel();
         }
-    } while (!dieflag && (frameIndex < pAudioSource->getFrameCount()));
+    } while (!dieflag && (frameIndex < pAudioSource->getFrameIndexMax()));
 
     return !cancelled; //don't return !dieflag or we might reanalyze over and over
 }

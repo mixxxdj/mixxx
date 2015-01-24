@@ -49,9 +49,9 @@ Result AudioSourceOpus::postConstruct() {
         return ERR;
     }
 
-    ogg_int64_t frameCount = op_pcm_total(m_pOggOpusFile, kLogicalBitstreamIndex);
-    if (0 <= frameCount) {
-        setFrameCount(frameCount);
+    const ogg_int64_t pcmTotal = op_pcm_total(m_pOggOpusFile, kLogicalBitstreamIndex);
+    if (0 <= pcmTotal) {
+        setFrameCount(pcmTotal);
     } else {
         qWarning() << "Failed to read total length of OggOpus file:" << fileName;
         return ERR;
@@ -61,7 +61,7 @@ Result AudioSourceOpus::postConstruct() {
     if (0 < bitrate) {
         setBitrate(bitrate / 1000);
     } else {
-        qWarning() << "Failed to calculate bitrate of OggOpus file:" << fileName;
+        qWarning() << "Failed to determine bitrate of OggOpus file:" << fileName;
         return ERR;
     }
 
@@ -142,7 +142,7 @@ AudioSource::size_type AudioSourceOpus::readSampleFramesStereo(
     while (0 < numberOfFramesRemaining) {
         int readResult = op_read_float_stereo(m_pOggOpusFile,
                 pSampleBuffer,
-                numberOfFramesRemaining * 2);
+                numberOfFramesRemaining * 2); // stereo
         if (0 < readResult) {
             m_curFrameIndex += readResult;
             pSampleBuffer += readResult * 2; // stereo
