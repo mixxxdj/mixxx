@@ -51,11 +51,11 @@ Result AudioSourceOggVorbis::postConstruct() {
         }
     }
 
-    ogg_int64_t frameCount = ov_pcm_total(&m_vf, kLogicalBitstreamIndex);
-    if (0 <= frameCount) {
-        setFrameCount(frameCount);
+    ogg_int64_t pcmTotal = ov_pcm_total(&m_vf, kLogicalBitstreamIndex);
+    if (0 <= pcmTotal) {
+        setFrameCount(pcmTotal);
     } else {
-        qWarning() << "Failed to read OggVorbis file:" << fileName;
+        qWarning() << "Failed to read total length of OggVorbis file:" << fileName;
         return ERR;
     }
 
