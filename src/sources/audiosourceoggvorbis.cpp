@@ -119,10 +119,6 @@ AudioSource::size_type AudioSourceOggVorbis::readSampleFrames(
         int currentSection;
         const long readResult = ov_read_float(&m_vf, &pcmChannels,
                 numberOfFramesRemaining, &currentSection);
-        if (0 == readResult) {
-            // EOF
-            break;// done
-        }
         if (0 < readResult) {
             m_curFrameIndex += readResult;
             if (isChannelCountMono()) {
