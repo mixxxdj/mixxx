@@ -133,6 +133,11 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
     // Let subscribers know whether it's possible to add a random track.
     bool addLibTracks = m_pConfig->getValueString(ConfigKey("[Auto DJ]", "IncludeLibTracks")).toInt();
     emit(enableAddRandom(m_crateList.length() > 0 || addLibTracks));
+
+    // Be informed when include library tracks -addrandom is disabled
+    // TODO :Figure this out
+    //connect(??, SIGNAL(toggleAddRandom(bool)),
+      //          m_pAutoDJView, SLOT(slotToggleAddRandom(bool)));
 #endif // __AUTODJCRATES__
 }
 
@@ -405,5 +410,4 @@ void AutoDJFeature::slotRandomQueue(int tracksToAdd) {
         tracksToAdd -= 1;
     }
 }
-
 #endif // __AUTODJCRATES__

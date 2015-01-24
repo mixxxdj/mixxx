@@ -168,6 +168,7 @@ void DlgPrefAutoDJ::slotResetToDefaults() {
     autoDjIgnoreTimeEdit->setTime(QTime::fromString(
             "23:59", autoDjIgnoreTimeEdit->displayFormat()));
     autoDjIgnoreTimeCheckBox->setChecked(false);
+
     m_pConfig->set(ConfigKey("[Auto DJ]", "UseIgnoreTimeBuff"),QString("0"));
     autoDjIgnoreTimeEdit->setEnabled(false);
 
@@ -176,6 +177,7 @@ void DlgPrefAutoDJ::slotResetToDefaults() {
     m_pConfig->set(ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"),QString("0"));
     autoDJRandomQueueMinimumSpinBox->setEnabled(false);
     ComboBoxAutoDjRandomQueue->setEnabled(true);
+
 #endif
 }
 
@@ -232,6 +234,7 @@ void DlgPrefAutoDJ::slotEnableAutoDJRandomQueueComboBox(int a_iValue) {
                 m_pConfig->getValueString(
                         ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"),"0").toInt());
     }
+
 #endif // __AUTODJCRATES__
 }
 
