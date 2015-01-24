@@ -28,15 +28,13 @@ private:
 
     void preDestroy();
 
-    inline diff_type getCurrentFrameIndex() {
-        return ov_pcm_tell(&m_vf);
-    }
-
     size_type readSampleFrames(size_type numberOfFrames,
             sample_type* sampleBuffer, size_type sampleBufferSize,
             bool readStereoSamples);
 
     OggVorbis_File m_vf;
+
+    diff_type m_curFrameIndex;
 };
 
 }

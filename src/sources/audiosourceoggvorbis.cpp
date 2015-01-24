@@ -2,8 +2,15 @@
 
 namespace Mixxx {
 
+namespace {
+
+const int kLogicalBitstreamIndex = -1; // whole stream/file
+
+} // anonymous namespace
+
 AudioSourceOggVorbis::AudioSourceOggVorbis(QUrl url)
-        : AudioSource(url) {
+        : AudioSource(url),
+          m_curFrameIndex(0) {
     memset(&m_vf, 0, sizeof(m_vf));
 }
 
@@ -28,8 +35,8 @@ Result AudioSourceOggVorbis::postConstruct() {
         return ERR;
     }
 
-    // lookup the ogg's channels and samplerate
-    const vorbis_info* vi = ov_info(&m_vf, -1);
+    // lookup the ogg's channels and sample rate
+    const vorbis_info* vi = ov_info(&m_vf, kLogicalBitstreamIndex);
     if (!vi) {
         qWarning() << "Failed to read OggVorbis file:" << fileName;
         return ERR;
@@ -37,7 +44,7 @@ Result AudioSourceOggVorbis::postConstruct() {
     setChannelCount(vi->channels);
     setFrameRate(vi->rate);
 
-    ogg_int64_t frameCount = ov_pcm_total(&m_vf, -1);
+    ogg_int64_t frameCount = ov_pcm_total(&m_vf, kLogicalBitstreamIndex);
     if (0 <= frameCount) {
         setFrameCount(frameCount);
     } else {
@@ -57,16 +64,23 @@ void AudioSourceOggVorbis::preDestroy() {
 
 AudioSource::diff_type AudioSourceOggVorbis::seekSampleFrame(
         diff_type frameIndex) {
-    DEBUG_ASSERT(isValidFrameIndex(getCurrentFrameIndex()));
+    DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(isValidFrameIndex(frameIndex));
 
     const int seekResult = ov_pcm_seek(&m_vf, frameIndex);
     if (0 != seekResult) {
         qWarning() << "Failed to seek OggVorbis file:" << seekResult;
+        const ogg_int64_t pcmOffset = ov_pcm_tell(&m_vf);
+        if (0 <= pcmOffset) {
+            m_curFrameIndex = pcmOffset;
+        } else {
+            // Reset to EOF
+            m_curFrameIndex = getFrameIndexMax();
+        }
     }
 
-    DEBUG_ASSERT(isValidFrameIndex(getCurrentFrameIndex()));
-    return getCurrentFrameIndex();
+    DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
+    return m_curFrameIndex;
 }
 
 AudioSource::size_type AudioSourceOggVorbis::readSampleFrames(
@@ -85,11 +99,11 @@ AudioSource::size_type AudioSourceOggVorbis::readSampleFramesStereo(
 AudioSource::size_type AudioSourceOggVorbis::readSampleFrames(
         size_type numberOfFrames, sample_type* sampleBuffer,
         size_type sampleBufferSize, bool readStereoSamples) {
-    DEBUG_ASSERT(isValidFrameIndex(getCurrentFrameIndex()));
+    DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(getSampleBufferSize(numberOfFrames, readStereoSamples) >= sampleBufferSize);
 
     const size_type numberOfFramesTotal = math_min(numberOfFrames,
-            size_type(getFrameIndexMax() - getCurrentFrameIndex()));
+            size_type(getFrameIndexMax() - m_curFrameIndex));
 
     sample_type* pSampleBuffer = sampleBuffer;
     size_type numberOfFramesRemaining = numberOfFramesTotal;
@@ -103,6 +117,7 @@ AudioSource::size_type AudioSourceOggVorbis::readSampleFrames(
             break;// done
         }
         if (0 < readResult) {
+            m_curFrameIndex += readResult;
             if (isChannelCountMono()) {
                 if (readStereoSamples) {
                     for (long i = 0; i < readResult; ++i) {
@@ -133,7 +148,7 @@ AudioSource::size_type AudioSourceOggVorbis::readSampleFrames(
         }
     }
 
-    DEBUG_ASSERT(isValidFrameIndex(getCurrentFrameIndex()));
+    DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(numberOfFramesTotal >= numberOfFramesRemaining);
     return numberOfFramesTotal - numberOfFramesRemaining;
 }

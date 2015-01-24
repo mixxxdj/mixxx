@@ -10,8 +10,7 @@ namespace Mixxx {
 
 class AudioSourceOpus: public AudioSource {
 public:
-    // All Opus audio is encoded at 48 kHz
-    static const size_type kFrameRate = 48000;
+    static const size_type kFrameRate;
 
     static AudioSourcePointer create(QUrl url);
 
@@ -31,12 +30,9 @@ private:
 
     void preDestroy();
 
-    inline diff_type getCurrentFrameIndex() const {
-        DEBUG_ASSERT(NULL != m_pOggOpusFile);
-        return op_pcm_tell(m_pOggOpusFile);
-    }
-
     OggOpusFile *m_pOggOpusFile;
+
+    diff_type m_curFrameIndex;
 };
 
 }
