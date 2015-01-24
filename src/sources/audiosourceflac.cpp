@@ -332,17 +332,10 @@ void AudioSourceFLAC::flacMetadata(const FLAC__StreamMetadata *metadata) {
                 / sample_type(
                         FLAC__int32(1)
                                 << metadata->data.stream_info.bits_per_sample);
-        qDebug() << "FLAC file " << m_file.fileName();
-        qDebug() << getChannelCount() << " ch," << getFrameRate() << " Hz,"
-                << getFrameCount() << " total," << "bit depth"
-                << metadata->data.stream_info.bits_per_sample;
         m_minBlocksize = metadata->data.stream_info.min_blocksize;
         m_maxBlocksize = metadata->data.stream_info.max_blocksize;
         m_minFramesize = metadata->data.stream_info.min_framesize;
         m_maxFramesize = metadata->data.stream_info.max_framesize;
-        qDebug() << "Blocksize in [" << m_minBlocksize << "," << m_maxBlocksize
-                << "], Framesize in [" << m_minFramesize << ","
-                << m_maxFramesize << "]";
         m_decodeSampleBufferReadOffset = 0;
         m_decodeSampleBufferWriteOffset = 0;
         m_decodeSampleBuffer.resize(m_maxBlocksize * getChannelCount());
