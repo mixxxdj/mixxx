@@ -83,7 +83,7 @@ TEST_F(SoundSourceProxyTest, seekForward) {
             Mixxx::AudioSourcePointer pAudioSource1(
                 openAudioSource(filePath));
             EXPECT_FALSE(pAudioSource1.isNull());
-            if ((seekFrameIndex + kTestFrameCount) > pAudioSource1->getFrameCount()) {
+            if ((seekFrameIndex + kTestFrameCount) > pAudioSource1->getFrameIndexMax()) {
                 break; // finished
             }
             const unsigned int sampleCount1 = pAudioSource1->frames2samples(kTestFrameCount);
@@ -101,7 +101,7 @@ TEST_F(SoundSourceProxyTest, seekForward) {
             Mixxx::AudioSourcePointer pAudioSource2(
                 openAudioSource(filePath));
             EXPECT_FALSE(pAudioSource2.isNull());
-            if ((seekFrameIndex + kTestFrameCount) > pAudioSource2->getFrameCount()) {
+            if ((seekFrameIndex + kTestFrameCount) > pAudioSource2->getFrameIndexMax()) {
                 break; // finished
             }
             const unsigned int sampleCount2 = pAudioSource2->frames2samples(kTestFrameCount);
