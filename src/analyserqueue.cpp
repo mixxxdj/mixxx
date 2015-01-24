@@ -314,7 +314,7 @@ void AnalyserQueue::run() {
         bool processTrack = false;
         while (it.hasNext()) {
             // Make sure not to short-circuit initialise(...)
-            if (it.next()->initialise(nextTrack, pAudioSource->getFrameRate(), pAudioSource->frames2samples(pAudioSource->getFrameCount()))) {
+            if (it.next()->initialise(nextTrack, pAudioSource->getFrameRate(), pAudioSource->getFrameCount() * kAnalysisChannels)) {
                 processTrack = true;
             }
         }
