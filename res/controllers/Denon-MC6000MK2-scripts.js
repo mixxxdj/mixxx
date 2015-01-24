@@ -901,7 +901,6 @@ DenonMC6000MK2.Deck.prototype.scratchJog = function (jogDelta) {
 
 DenonMC6000MK2.Deck.prototype.onVinylModeValue = function () {
 	this.vinylModeLed.setStateBoolean(this.vinylMode);
-	engine.setValue("[Spinny" + this.number + "]", "show_spinny", this.vinylMode);
 };
 
 DenonMC6000MK2.Deck.prototype.updateVinylMode = function () {
