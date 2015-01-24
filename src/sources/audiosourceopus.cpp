@@ -57,6 +57,14 @@ Result AudioSourceOpus::postConstruct() {
         return ERR;
     }
 
+    const opus_int32 bitrate = op_bitrate(m_pOggOpusFile, kLogicalBitstreamIndex);
+    if (0 < bitrate) {
+        setBitrate(bitrate / 1000);
+    } else {
+        qWarning() << "Failed to calculate bitrate of OggOpus file:" << fileName;
+        return ERR;
+    }
+
     setFrameRate(kFrameRate);
 
     return OK;
