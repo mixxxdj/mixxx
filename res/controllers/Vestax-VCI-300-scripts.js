@@ -192,6 +192,9 @@
  * 2014-08-18 Sync mapping with push-and-hold
  *            - Use MIDI mapping for "sync_enabled" to support push-and-hold
  *            - Use setParameter() instead of setValue() for effect parameters
+ * 2015-01-16 Filter effect parameter update
+ *            - Rename filter effect parameter from "parameter"
+ *              to "super1"
  * ...to be continued...
  **********************************************************************/
 
@@ -534,7 +537,7 @@ VestaxVCI300.Deck.prototype.loadFilterPreset = function () {
 
 VestaxVCI300.Deck.prototype.initFilterParameters = function () {
 	engine.setParameter(this.filterGroup, "mix", 1.0); // wet
-	engine.setParameter(this.filterGroup, "parameter", VestaxVCI300.FILTER_PARAMETER_DEFAULT);
+	engine.setParameter(this.filterGroup, "super1", VestaxVCI300.FILTER_PARAMETER_DEFAULT);
 	engine.setValue(this.filterGroup, "group_" + this.group + "_enable", true);
 	engine.setValue(this.filterGroup, "enabled", false);
 };
@@ -611,7 +614,7 @@ VestaxVCI300.Deck.prototype.triggerCensorFilter = function () {
 VestaxVCI300.Deck.prototype.setFilterMidValue = function (value) {
 	this.filterMidValue = value;
 	if (engine.getValue(this.filterGroup, "enabled")) {
-		engine.setValue(this.filterGroup, "parameter", script.absoluteLin(value, 0.0, 1.0));
+		engine.setValue(this.filterGroup, "super1", script.absoluteLin(value, 0.0, 1.0));
 	} else {
 		engine.setValue(this.group, "filterMid", script.absoluteNonLin(value, 0.0, 1.0, 4.0));
 	}

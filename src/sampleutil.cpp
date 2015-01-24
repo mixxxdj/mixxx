@@ -165,9 +165,16 @@ void SampleUtil::copyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
     const CSAMPLE_GAIN gain_delta = (new_gain - old_gain)
             / CSAMPLE_GAIN(iNumSamples / 2);
     CSAMPLE_GAIN gain = old_gain;
-    for (unsigned int i = 0; i < iNumSamples; i += 2, gain += gain_delta) {
-        pDest[i] = pSrc[i] * gain;
-        pDest[i + 1] = pSrc[i + 1] * gain;
+    if (gain_delta) {
+        for (unsigned int i = 0; i < iNumSamples; i += 2) {
+            gain += gain_delta;
+            pDest[i] = pSrc[i] * gain;
+            pDest[i + 1] = pSrc[i + 1] * gain;
+        }
+    } else {
+        for (unsigned int i = 0; i < iNumSamples; ++i) {
+            pDest[i] = pSrc[i] * gain;
+        }
     }
 
     // OR! need to test which fares better
@@ -178,8 +185,12 @@ void SampleUtil::copyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
 // static
 void SampleUtil::convertS16ToFloat32(CSAMPLE* pDest, const SAMPLE* pSrc,
         unsigned int iNumSamples) {
+    // -32768 is a valid low sample, whereas 32767 is the highest valid sample.
+    // Note that this means that although some sample values convert to -1.0,
+    // none will convert to +1.0.
+    const CSAMPLE kConversionFactor = 0x8000;
     for (unsigned int i = 0; i < iNumSamples; ++i) {
-        pDest[i] = CSAMPLE(pSrc[i]) / CSAMPLE(SAMPLE_MAX);
+        pDest[i] = CSAMPLE(pSrc[i]) / kConversionFactor;
     }
 }
 

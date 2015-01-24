@@ -201,8 +201,10 @@ void EngineShoutcast::updateFromPreferences() {
             ConfigKey(SHOUTCAST_PREF_KEY, "stream_desc")));
     QByteArray baStreamGenre = encodeString(m_pConfig->getValueString(
             ConfigKey(SHOUTCAST_PREF_KEY, "stream_genre")));
-    QByteArray baStreamPublic = encodeString(m_pConfig->getValueString(
-            ConfigKey(SHOUTCAST_PREF_KEY, "stream_public")));
+
+    // Whether the stream is public.
+    bool streamPublic = m_pConfig->getValueString(
+            ConfigKey(SHOUTCAST_PREF_KEY, "stream_public")).toInt() > 0;
 
     // Dynamic Ogg metadata update
     m_ogg_dynamic_update = (bool)m_pConfig->getValueString(
@@ -270,6 +272,11 @@ void EngineShoutcast::updateFromPreferences() {
 
     if (shout_set_url(m_pShout, baStreamWebsite.constData()) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting stream url!"), shout_get_error(m_pShout));
+        return;
+    }
+
+    if (shout_set_public(m_pShout, streamPublic ? 1 : 0) != SHOUTERR_SUCCESS) {
+        errorDialog(tr("Error setting stream public!"), shout_get_error(m_pShout));
         return;
     }
 

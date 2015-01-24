@@ -33,7 +33,9 @@ ControlObject* EnginePregain::s_pEnableReplayGain = NULL;
    A pregaincontrol is ... a pregain.
    ----------------------------------------------------------------*/
 EnginePregain::EnginePregain(QString group)
-{
+        : m_dSpeed(0),
+          m_fPrevGain(1.0),
+          m_bSmoothFade(false) {
     m_pPotmeterPregain = new ControlAudioTaperPot(ConfigKey(group, "pregain"), -12, 12, 0.5);
     //Replay Gain things
     m_pCOReplayGain = new ControlObject(ConfigKey(group, "replaygain"));
@@ -45,13 +47,9 @@ EnginePregain::EnginePregain(QString group)
         s_pDefaultBoost = new ControlAudioTaperPot(ConfigKey("[ReplayGain]", "DefaultBoost"), -12, 12, 0.5);
         s_pEnableReplayGain = new ControlObject(ConfigKey("[ReplayGain]", "ReplayGainEnabled"));
     }
-    m_bSmoothFade = false;
-
-    m_fPrevGain = 1.0;
 }
 
-EnginePregain::~EnginePregain()
-{
+EnginePregain::~EnginePregain() {
     delete m_pPotmeterPregain;
     delete m_pCOReplayGain;
     delete m_pTotalGain;
@@ -62,6 +60,10 @@ EnginePregain::~EnginePregain()
     s_pReplayGainBoost = NULL;
     delete s_pDefaultBoost;
     s_pDefaultBoost = NULL;
+}
+
+void EnginePregain::setSpeed(double speed) {
+    m_dSpeed = speed;
 }
 
 void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
@@ -119,6 +121,15 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
             math_clamp(fReplayGainCorrection, 0.0f, 10.0f);
 
     m_pTotalGain->set(totalGain);
+
+    // Vinylsoundemu:
+    // As the speed approaches zero, hearing small bursts of sound at full volume
+    // is distracting and doesn't mimic the way that vinyl sounds when played slowly.
+    // Instead, reduce gain to provide a soft rolloff.
+    const float kThresholdSpeed = 0.070; // Scale volume if playback speed is below 7%.
+    if (fabs(m_dSpeed) < kThresholdSpeed) {
+        totalGain *= fabs(m_dSpeed) / kThresholdSpeed;
+    }
 
     if (totalGain != m_fPrevGain) {
         // Prevent sound wave discontinuities by interpolating from old to new gain.

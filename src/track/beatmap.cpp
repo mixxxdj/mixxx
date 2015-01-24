@@ -69,7 +69,7 @@ BeatMap::BeatMap(TrackPointer pTrack, int iSampleRate,
 }
 
 BeatMap::BeatMap(TrackPointer pTrack, int iSampleRate,
-                 const QVector<double> beats)
+                 const QVector<double>& beats)
         : QObject(),
           m_mutex(QMutex::Recursive) {
     initialize(pTrack, iSampleRate);
@@ -123,7 +123,7 @@ void BeatMap::readByteArray(const QByteArray* pByteArray) {
     onBeatlistChanged();
 }
 
-void BeatMap::createFromBeatVector(QVector<double> beats) {
+void BeatMap::createFromBeatVector(const QVector<double>& beats) {
     if (beats.isEmpty()) {
        return;
     }
@@ -534,7 +534,7 @@ double BeatMap::calculateBpm(const Beat& startBeat, const Beat& stopBeat) const 
         }
     }
 
-    if (beatvect.size() == 0) {
+    if (beatvect.isEmpty()) {
         return -1;
     }
 

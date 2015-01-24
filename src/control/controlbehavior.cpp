@@ -161,7 +161,7 @@ double ControlAudioTaperPotBehavior::valueToParameter(double dValue) {
     } else if (dValue < 1.0) {
         // db + linear overlay to reach
         // m_minDB = 0
-        // 0 dB = m_neutralParame;
+        // 0 dB = m_neutralParameter
         double overlay = m_offset * (1 - dValue);
         if (m_minDB) {
             dParam = (ratio2db(dValue + overlay) - m_minDB) / m_minDB * m_neutralParameter * -1;
@@ -172,7 +172,7 @@ double ControlAudioTaperPotBehavior::valueToParameter(double dValue) {
         dParam = m_neutralParameter;
     } else if (dValue < m_dMaxValue) {
         // m_maxDB = 1
-        // 0 dB = m_neutralParame;
+        // 0 dB = m_neutralParameter
         dParam = (ratio2db(dValue) / m_maxDB * (1 - m_neutralParameter)) + m_neutralParameter;
     }
     //qDebug() << "ControlAudioTaperPotBehavior::valueToParameter" << "value =" << dValue << "dParam =" << dParam;
@@ -186,7 +186,7 @@ double ControlAudioTaperPotBehavior::parameterToValue(double dParam) {
     } else if (dParam < m_neutralParameter) {
         // db + linear overlay to reach
         // m_minDB = 0
-        // 0 dB = m_neutralParame;
+        // 0 dB = m_neutralParameter;
         if (m_minDB) {
             double db = (dParam * m_minDB / (m_neutralParameter * -1)) + m_minDB;
             dValue = (db2ratio(db) - m_offset) / (1 - m_offset) ;

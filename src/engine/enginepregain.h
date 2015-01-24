@@ -30,9 +30,11 @@ class EnginePregain : public EngineObject {
     EnginePregain(QString group);
     virtual ~EnginePregain();
 
+    void setSpeed(double speed);
     void process(CSAMPLE* pInOut, const int iBufferSize);
 
   private:
+    double m_dSpeed;
     float m_fPrevGain;
     ControlAudioTaperPot* m_pPotmeterPregain;
     ControlObject* m_pTotalGain;

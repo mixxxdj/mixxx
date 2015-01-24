@@ -105,6 +105,8 @@ void BaseExternalPlaylistModel::setPlaylist(QString playlist_path) {
     QStringList columns;
     columns << "track_id";
     columns << "position";
+    columns << "'' AS " + LIBRARYTABLE_PREVIEW;
+
 
     QSqlQuery query(m_database);
     FieldEscaper f(m_database);
@@ -122,6 +124,7 @@ void BaseExternalPlaylistModel::setPlaylist(QString playlist_path) {
         return;
     }
 
+    columns[2] = LIBRARYTABLE_PREVIEW;
     setTable(playlistViewTable, columns[0], columns, m_trackSource);
     setDefaultSort(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
                    Qt::AscendingOrder);
