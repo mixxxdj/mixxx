@@ -82,7 +82,9 @@ AudioSource::diff_type AudioSourceOpus::seekSampleFrame(diff_type frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(frameIndex));
 
     int seekResult = op_pcm_seek(m_pOggOpusFile, frameIndex);
-    if (0 != seekResult) {
+    if (0 == seekResult) {
+        m_curFrameIndex = frameIndex;
+    } else {
         qWarning() << "Failed to seek OggOpus file:" << seekResult;
         const ogg_int64_t pcmOffset = op_pcm_tell(m_pOggOpusFile);
         if (0 <= pcmOffset) {
@@ -91,8 +93,6 @@ AudioSource::diff_type AudioSourceOpus::seekSampleFrame(diff_type frameIndex) {
             // Reset to EOF
             m_curFrameIndex = getFrameIndexMax();
         }
-    } else {
-        m_curFrameIndex = frameIndex;
     }
 
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
