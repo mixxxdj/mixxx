@@ -157,10 +157,6 @@ DenonMC6000MK2.RIGHT_EFX_GROUP = "[EffectRack1_EffectUnit4]";
 DenonMC6000MK2.MIDI_JOG_DELTA_BIAS = 0x40; // center value of relative movements
 DenonMC6000MK2.MIDI_JOG_DELTA_RANGE = 0x3F; // both forward (= positive) and reverse (= negative)
 
-DenonMC6000MK2.JOG_SPIN_CUE_SCALE = 1.0 / (DenonMC6000MK2.MIDI_JOG_DELTA_RANGE * DenonMC6000MK2.JOG_SPIN_CUE_PEAK);
-DenonMC6000MK2.JOG_SPIN_PLAY_SCALE = 1.0 / (DenonMC6000MK2.MIDI_JOG_DELTA_RANGE * DenonMC6000MK2.JOG_SPIN_PLAY_PEAK);
-DenonMC6000MK2.JOG_SEEK_SCALE = 1.0 / (DenonMC6000MK2.JOG_SEEK_REVOLUTIONS * DenonMC6000MK2.JOG_RESOLUTION);
-
 // Mixxx constants
 DenonMC6000MK2.MIXXX_JOG_RANGE = 3.0;
 DenonMC6000MK2.MIXXX_SYNC_NONE = 0;
@@ -839,22 +835,31 @@ DenonMC6000MK2.Deck.prototype.touchJog = function (isJogTouched) {
 	this.jogTouchState = isJogTouched;
 };
 
-DenonMC6000MK2.Deck.prototype.spinJog = function (jogDelta) {
-	if (this.getShiftState()) {
-		// seeking
+DenonMC6000MK2.Deck.prototype.seekJog = function (jogDelta) {
+	if (this.getShiftState() && !this.isPlaying()) {
 		var playPos = engine.getValue(this.group, "playposition");
 		if (undefined !== playPos) {
-			var seekPos = playPos + (jogDelta * DenonMC6000MK2.JOG_SEEK_SCALE);
+			var seekPos = playPos + (jogDelta / (DenonMC6000MK2.JOG_RESOLUTION * DenonMC6000MK2.JOG_SEEK_REVOLUTIONS));
 			this.setValue("playposition", Math.max(0.0, Math.min(1.0, seekPos)));
 		}
+		return true;
 	} else {
+		return false;
+	}
+}
+
+DenonMC6000MK2.Deck.prototype.spinJog = function (jogDelta) {
+	if (!this.seekJog(jogDelta)) {
+		var normalizedDelta = jogDelta / DenonMC6000MK2.MIDI_JOG_DELTA_RANGE;
 		var scaledDelta;
 		var jogExponent;
 		if (this.isPlaying()) {
-			scaledDelta = jogDelta * DenonMC6000MK2.JOG_SPIN_PLAY_SCALE;
+			// bending
+			scaledDelta = normalizedDelta / DenonMC6000MK2.JOG_SPIN_PLAY_PEAK;
 			jogExponent = DenonMC6000MK2.JOG_SPIN_PLAY_EXPONENT;
 		} else {
-			scaledDelta = jogDelta * DenonMC6000MK2.JOG_SPIN_CUE_SCALE;
+			// cueing
+			scaledDelta = normalizedDelta / DenonMC6000MK2.JOG_SPIN_CUE_PEAK;
 			jogExponent = DenonMC6000MK2.JOG_SPIN_CUE_EXPONENT;
 		}
 		var direction;
