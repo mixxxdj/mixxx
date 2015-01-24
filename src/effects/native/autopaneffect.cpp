@@ -5,7 +5,7 @@
 
 #include "sampleutil.h"
 
-const float positionRampingThreshold = 0.016f;
+const float positionRampingThreshold = 0.005f;
 
 
 // static
@@ -52,25 +52,11 @@ EffectManifest AutoPanEffect::getManifest() {
     period->setMaximum(500.0);
     period->setDefault(50.0);
     
-    // This control is hidden for the moment in Deere (replace by the previous
-    // one wich would be useless soon)
-    EffectManifestParameter* depth = manifest.addParameter();
-    depth->setId("depth");
-    depth->setName(QObject::tr("Depth"));
-    depth->setDescription("Controls the intensity of the effect.");
-    depth->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    depth->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    depth->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    depth->setMinimum(0.0);
-    depth->setMaximum(1.0);
-    depth->setDefault(1.0);
-    
     return manifest;
 }
 
 AutoPanEffect::AutoPanEffect(EngineEffect* pEffect, const EffectManifest& manifest)
         : 
-          m_pDepthParameter(pEffect->getParameterById("depth")),
           m_pCurveParameter(pEffect->getParameterById("curve")),
           m_pPeriodParameter(pEffect->getParameterById("period"))
            {
@@ -107,7 +93,6 @@ void AutoPanEffect::processGroup(const QString& group, PanGroupState* pGroupStat
     }
     
     CSAMPLE stepFrac = m_pCurveParameter->value();
-    CSAMPLE depth = m_pDepthParameter->value();
     
     if (gs.time > period || enableState == EffectProcessor::ENABLING) {
         gs.time = 0;
@@ -147,21 +132,21 @@ void AutoPanEffect::processGroup(const QString& group, PanGroupState* pGroupStat
         // float inInterval = fmod( periodFraction, (period / 2.0) );
         float inStepInterval = fmod(periodFraction, 0.5f);
         
-        CSAMPLE position;
+        CSAMPLE angleFraction;
         if (inStepInterval > u && inStepInterval < (u + stepFrac)) {
             // at full left or full right
-            position = quarter < 2.0f ? 0.25f : 0.75f;
+            angleFraction = quarter < 2.0f ? 0.25f : 0.75f;
         } else {
             // in the slope (linear function)
-            position = (periodFraction - stepsFractionPart) * a;
+            angleFraction = (periodFraction - stepsFractionPart) * a;
         }
         
-        // transform the position into a sinusoid (but between 0 and 1)
-        gs.frac.setWithRampingApplied((sin(M_PI * 2.0f * position) + 1.0f) / 2.0f);
+        // transform the angleFraction into a sinusoid (but between 0 and 1)
+        gs.frac.setWithRampingApplied(
+            (sin(M_PI * 2.0f * angleFraction) + 1.0f) / 2.0f);
         
-        pOutput[i] = pInput[i] * (1 - depth + gs.frac * lawCoef * depth);
-        
-        pOutput[i+1] =  pInput[i+1] * (1 - depth + (1.0f - gs.frac) * lawCoef * depth);
+        pOutput[i] = pInput[i] * gs.frac * lawCoef;
+        pOutput[i+1] =  pInput[i+1] * (1.0f - gs.frac) * lawCoef;
         
         gs.time++;
     }

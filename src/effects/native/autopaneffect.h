@@ -92,7 +92,6 @@ class AutoPanEffect : public GroupEffectProcessor<PanGroupState> {
         return getId();
     }
 
-    EngineEffectParameter* m_pDepthParameter;
     EngineEffectParameter* m_pCurveParameter;
     EngineEffectParameter* m_pPeriodParameter;
     
