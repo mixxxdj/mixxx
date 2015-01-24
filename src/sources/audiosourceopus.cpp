@@ -112,10 +112,6 @@ AudioSource::size_type AudioSourceOpus::readSampleFrames(
         int readResult = op_read_float(m_pOggOpusFile,
                 pSampleBuffer,
                 frames2samples(numberOfFramesRemaining), NULL);
-        if (0 == readResult) {
-            // EOF
-            break;// done
-        }
         if (0 < readResult) {
             m_curFrameIndex += readResult;
             pSampleBuffer += frames2samples(readResult);
@@ -147,10 +143,6 @@ AudioSource::size_type AudioSourceOpus::readSampleFramesStereo(
         int readResult = op_read_float_stereo(m_pOggOpusFile,
                 pSampleBuffer,
                 numberOfFramesRemaining * 2);
-        if (0 == readResult) {
-            // EOF
-            break;// done
-        }
         if (0 < readResult) {
             m_curFrameIndex += readResult;
             pSampleBuffer += readResult * 2; // stereo

@@ -279,11 +279,8 @@ AudioSource::size_type AudioSourceM4A::readSampleFrames(
                 ++m_curSampleBlockId;
                 m_inputBufferLength = inputBufferLength;
             }
-        } DEBUG_ASSERT(m_inputBufferOffset <= m_inputBufferLength);
-        if (m_inputBufferOffset >= m_inputBufferLength) {
-            // EOF
-            break;// done
         }
+        DEBUG_ASSERT(m_inputBufferOffset <= m_inputBufferLength);
 
         // decode samples into sampleBuffer
         const size_type decodeBufferCapacityInBytes = frames2samples(
