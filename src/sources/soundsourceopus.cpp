@@ -3,8 +3,11 @@
 #include "sources/audiosourceopus.h"
 #include "metadata/trackmetadatataglib.h"
 
-// Include this if taglib if new enough (version 1.9.1 have opusfile)
-#if (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
+// TagLib has support for the Ogg Opus file format since version 1.9
+#define TAGLIB_HAS_OPUSFILE \
+    ((TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9)))
+
+#if TAGLIB_HAS_OPUSFILE
 #include <taglib/opusfile.h>
 #endif
 
@@ -37,23 +40,13 @@ private:
 }
 
 /*
- Parse the the file to get metadata
+ Parse the file to get metadata
  */
 Result SoundSourceOpus::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
     const QByteArray qbaFilename(getLocalFilePath());
 
-    int error = 0;
-    OggOpusFileOwner l_ptrOpusFile(
-            op_open_file(qbaFilename.constData(), &error));
-
-    pMetadata->setChannels(op_channel_count(l_ptrOpusFile, -1));
-    pMetadata->setSampleRate(Mixxx::AudioSourceOpus::kFrameRate);
-    pMetadata->setBitrate(op_bitrate(l_ptrOpusFile, -1) / 1000);
-    pMetadata->setDuration(
-            op_pcm_total(l_ptrOpusFile, -1) / pMetadata->getSampleRate());
-
 // If we don't have new enough Taglib we use libopusfile parser!
-#if (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
+#if TAGLIB_HAS_OPUSFILE
     TagLib::Ogg::Opus::File f(qbaFilename.constData());
 
     if (!readAudioProperties(pMetadata, f)) {
@@ -73,10 +66,20 @@ Result SoundSourceOpus::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
         }
     }
 #else
+    int error = 0;
+    OggOpusFileOwner l_ptrOpusFile(
+            op_open_file(qbaFilename.constData(), &error));
+
     // From Taglib 1.9.x Opus is supported
     // Before that we have parse tags by this code
     int i = 0;
     const OpusTags *l_ptrOpusTags = op_tags(l_ptrOpusFile, -1);
+
+    pMetadata->setChannels(op_channel_count(l_ptrOpusFile, -1));
+    pMetadata->setSampleRate(Mixxx::AudioSourceOpus::kFrameRate);
+    pMetadata->setBitrate(op_bitrate(l_ptrOpusFile, -1) / 1000);
+    pMetadata->setDuration(
+            op_pcm_total(l_ptrOpusFile, -1) / pMetadata->getSampleRate());
 
     // This is left for debug reasons !!
     // qDebug() << "opus: We have " << l_ptrOpusTags->comments;
@@ -120,7 +123,7 @@ Result SoundSourceOpus::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
 }
 
 QImage SoundSourceOpus::parseCoverArt() const {
-#if (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
+#if TAGLIB_HAS_OPUSFILE
     TagLib::Ogg::Opus::File f(getLocalFilePath().constData());
     TagLib::Ogg::XiphComment *xiph = f.tag();
     if (xiph) {
