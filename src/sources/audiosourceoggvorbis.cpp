@@ -75,7 +75,9 @@ AudioSource::diff_type AudioSourceOggVorbis::seekSampleFrame(
     DEBUG_ASSERT(isValidFrameIndex(frameIndex));
 
     const int seekResult = ov_pcm_seek(&m_vf, frameIndex);
-    if (0 != seekResult) {
+    if (0 == seekResult) {
+        m_curFrameIndex = frameIndex;
+    } else {
         qWarning() << "Failed to seek OggVorbis file:" << seekResult;
         const ogg_int64_t pcmOffset = ov_pcm_tell(&m_vf);
         if (0 <= pcmOffset) {
