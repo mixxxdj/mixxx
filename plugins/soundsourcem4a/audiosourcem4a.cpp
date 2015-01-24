@@ -326,9 +326,6 @@ AudioSource::size_type AudioSourceM4A::readSampleFrames(
         // consume decoded output data
         pSampleBuffer += decFrameInfo.samples;
 
-        // NeAACDecDecode2 always returns a complete sample block.
-        // As a consequence the last block is padded with 0.0 samples
-        // and
         const size_type numberOfFramesDecoded =
                 samples2frames(decFrameInfo.samples);
         m_curFrameIndex += numberOfFramesDecoded;
