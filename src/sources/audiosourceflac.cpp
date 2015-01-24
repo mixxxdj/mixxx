@@ -153,7 +153,7 @@ Mixxx::AudioSource::size_type AudioSourceFLAC::readSampleFrames(
         size_type numberOfFrames, sample_type* sampleBuffer,
         size_type sampleBufferSize, bool readStereoSamples) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
-    DEBUG_ASSERT(getSampleBufferSize(numberOfFrames, readStereoSamples) >= sampleBufferSize);
+    DEBUG_ASSERT(getSampleBufferSize(numberOfFrames, readStereoSamples) <= sampleBufferSize);
 
     const size_type numberOfFramesTotal = numberOfFrames;
 

@@ -57,7 +57,7 @@ AudioSource::size_type AudioSource::readSampleFramesStereo(
         size_type numberOfFrames,
         sample_type* sampleBuffer,
         size_type sampleBufferSize) {
-    DEBUG_ASSERT(getSampleBufferSize(numberOfFrames, true) >= sampleBufferSize);
+    DEBUG_ASSERT(getSampleBufferSize(numberOfFrames, true) <= sampleBufferSize);
 
     switch (getChannelCount()) {
         case 1: // mono channel
