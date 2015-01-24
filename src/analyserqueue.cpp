@@ -184,14 +184,14 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, Mixxx::AudioSourcePointer pAudi
                         kAnalysisFramesPerBlock,
                         &m_sampleBuffer[0],
                         m_sampleBuffer.size());
+        DEBUG_ASSERT(framesRead <= framesToRead);
         frameIndex += framesRead;
         DEBUG_ASSERT(pAudioSource->isValidFrameIndex(frameIndex));
 
         // To compare apples to apples, let's only look at blocks that are
         // the full block size.
-        DEBUG_ASSERT(kAnalysisFramesPerBlock >= framesRead);
         if (kAnalysisFramesPerBlock == framesRead) {
-            // A complete block of audio samples has been read
+            // Complete analysis block of audio samples has been read.
             QListIterator<Analyser*> it(m_aq);
             while (it.hasNext()) {
                 Analyser* an =  it.next();
@@ -200,16 +200,19 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, Mixxx::AudioSourcePointer pAudi
                 //qDebug() << "Done " << typeid(*an).name() << ".process()";
             }
         } else {
-            // a partial block of audio samples has been read
+            // Partial analysis block of audio samples has been read.
+            // This should only happen at the end of an audio stream,
+            // otherwise a decoding error must have occurred.
             if (frameIndex < pAudioSource->getFrameIndexMax()) {
-                // Fewer frames than actually expected have been read
-                // from the AudioSource. This indicates an error while
-                // decoding the audio stream and the analysis should
-                // stop now.
+                // EOF not reached
                 qWarning() << "Failed to read sample data from file:"
-                        << tio->getFilename();
-                dieflag = true; // abort
-                cancelled = false; // completed, no retry
+                        << tio->getFilename()
+                        << "@" << frameIndex;
+                if (0 >= framesRead) {
+                    // If no frames have been read, abort the analysis
+                    dieflag = true; // abort
+                    cancelled = false; // completed, no retry
+                }
             }
         }
 
