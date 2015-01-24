@@ -5,6 +5,9 @@
 
 #include "sampleutil.h"
 
+const float positionRampingThreshold = 0.016f;
+
+
 // static
 QString AutoPanEffect::getId() {
     return "org.mixxx.effects.autopan";
@@ -24,8 +27,8 @@ EffectManifest AutoPanEffect::getManifest() {
     //  my mixer. Any suggestion?
     // This parameter controls the easing of the sound from a side to another.
     EffectManifestParameter* strength = manifest.addParameter();
-    strength->setId("strength");
-    strength->setName(QObject::tr("Strength"));
+    strength->setId("curve");
+    strength->setName(QObject::tr("Curve"));
     strength->setDescription(
             QObject::tr("How fast the signal goes from a channel to an other"));
     strength->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
@@ -49,21 +52,6 @@ EffectManifest AutoPanEffect::getManifest() {
     period->setMaximum(500.0);
     period->setDefault(50.0);
     
-    // This only extists for testing and finding the best value
-    // TODO(jclaveau) : remove when a satisfying value is chosen
-    // The current value is taken with a simple laptop soundcard with a sample
-    // rate of 44100
-    EffectManifestParameter* ramping = manifest.addParameter();
-    ramping->setId("ramping_threshold");
-    ramping->setName(QObject::tr("Ramping"));
-    ramping->setDescription("");
-    ramping->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    ramping->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    ramping->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    ramping->setMinimum(0.000000000001f);
-    ramping->setMaximum(0.015978f); // max good value with my soundcard 
-    ramping->setDefault(0.003f);    // best value
-    
     // This control is hidden for the moment in Deere (replace by the previous
     // one wich would be useless soon)
     EffectManifestParameter* depth = manifest.addParameter();
@@ -83,9 +71,8 @@ EffectManifest AutoPanEffect::getManifest() {
 AutoPanEffect::AutoPanEffect(EngineEffect* pEffect, const EffectManifest& manifest)
         : 
           m_pDepthParameter(pEffect->getParameterById("depth")),
-          m_pStrengthParameter(pEffect->getParameterById("strength")),
-          m_pPeriodParameter(pEffect->getParameterById("period")),
-          m_pRampingParameter(pEffect->getParameterById("ramping_threshold"))
+          m_pCurveParameter(pEffect->getParameterById("curve")),
+          m_pPeriodParameter(pEffect->getParameterById("period"))
            {
     Q_UNUSED(manifest);
 }
@@ -115,12 +102,12 @@ void AutoPanEffect::processGroup(const QString& group, PanGroupState* pGroupStat
         double beats = pow(2, floor(period * 9 / 500) - 3);
         period = groupFeatures.beat_length * beats;
     } else {
-        period *= (float)numSamples / 2.0f;
+        // 500 * 2048 as max period as number of samples
+        period *= 2048.0f;
     }
     
-    CSAMPLE stepFrac = m_pStrengthParameter->value();
+    CSAMPLE stepFrac = m_pCurveParameter->value();
     CSAMPLE depth = m_pDepthParameter->value();
-    float rampingTreshold = m_pRampingParameter->value();
     
     if (gs.time > period || enableState == EffectProcessor::ENABLING) {
         gs.time = 0;
@@ -144,9 +131,8 @@ void AutoPanEffect::processGroup(const QString& group, PanGroupState* pGroupStat
     // size of a segment of slope (controled by the "strength" parameter)
     float u = (0.5f - stepFrac) / 2.0f;
     
-    gs.frac.setRamping(rampingTreshold);
+    gs.frac.setRampingThreshold(positionRampingThreshold);
     gs.frac.ramped = false;     // just for debug
-    
     
     for (unsigned int i = 0; i + 1 < numSamples; i += 2) {
         
@@ -171,26 +157,22 @@ void AutoPanEffect::processGroup(const QString& group, PanGroupState* pGroupStat
         }
         
         // transform the position into a sinusoid (but between 0 and 1)
-        gs.frac = (sin(M_PI * 2.0f * position) + 1.0f) / 2.0f;
+        gs.frac.setWithRampingApplied((sin(M_PI * 2.0f * position) + 1.0f) / 2.0f);
         
-        pOutput[i] = pInput[i] * (1 - depth)
-            + pInput[i] * gs.frac * lawCoef * depth;
+        pOutput[i] = pInput[i] * (1 - depth + gs.frac * lawCoef * depth);
         
-        pOutput[i+1] = pInput[i+1] * (1 - depth)
-            + pInput[i+1]  * (1.0f - gs.frac) * lawCoef * depth;
-        
+        pOutput[i+1] =  pInput[i+1] * (1 - depth + (1.0f - gs.frac) * lawCoef * depth);
         
         gs.time++;
     }
     
     
     qDebug()
-        // << "| ramped :" << gs.frac.ramped
+        << "| ramped :" << gs.frac.ramped
         // << "| beat_length :" << groupFeatures.beat_length
         // << "| period :" << period
         << "| frac :" << gs.frac
         << "| time :" << gs.time
-        << "| rampingTreshold :" << rampingTreshold
         ;
 }
 

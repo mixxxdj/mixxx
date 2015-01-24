@@ -25,11 +25,11 @@ class RampedSample {
     
     virtual ~RampedSample(){};
     
-    inline void setRamping(const float newMaxDifference) {
+    inline void setRampingThreshold(const float newMaxDifference) {
         maxDifference = newMaxDifference;
     }
     
-    inline RampedSample & operator=(const float newValue) {
+    inline void setWithRampingApplied(const float newValue) {
         if (!initialized) {
             currentValue = newValue;
             initialized = true;
@@ -42,7 +42,6 @@ class RampedSample {
                 currentValue = newValue;
             }
         }
-        return *this;
     }
     
     inline operator float() {
@@ -94,9 +93,8 @@ class AutoPanEffect : public GroupEffectProcessor<PanGroupState> {
     }
 
     EngineEffectParameter* m_pDepthParameter;
-    EngineEffectParameter* m_pStrengthParameter;
+    EngineEffectParameter* m_pCurveParameter;
     EngineEffectParameter* m_pPeriodParameter;
-    EngineEffectParameter* m_pRampingParameter;
     
     DISALLOW_COPY_AND_ASSIGN(AutoPanEffect);
 };
