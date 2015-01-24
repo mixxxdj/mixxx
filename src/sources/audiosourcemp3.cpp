@@ -323,7 +323,7 @@ AudioSourceMp3::SeekFrameList::size_type AudioSourceMp3::findSeekFrameIndex(
     DEBUG_ASSERT(0 < m_avgSeekFrameCount);
     DEBUG_ASSERT(!m_seekFrameList.empty());
     DEBUG_ASSERT(kFrameIndexMin == m_seekFrameList.front().frameIndex);
-    DEBUG_ASSERT(diff_type(kFrameIndexMin + getFrameCount()) == m_seekFrameList.back().frameIndex);
+    DEBUG_ASSERT(diff_type(kFrameIndexMin + getFrameIndexMax()) == m_seekFrameList.back().frameIndex);
 
     SeekFrameList::size_type lowerBound =
             0;

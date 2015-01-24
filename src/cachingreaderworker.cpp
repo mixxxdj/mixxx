@@ -65,7 +65,7 @@ void CachingReaderWorker::processChunkReadRequest(
             m_pAudioSource->seekSampleFrame(chunkFrameIndex);
     DEBUG_ASSERT(m_pAudioSource->isValidFrameIndex(seekFrameIndex));
     const Mixxx::AudioSource::size_type framesRemaining =
-            m_pAudioSource->getFrameCount() - seekFrameIndex;
+            m_pAudioSource->getFrameIndexMax() - seekFrameIndex;
     const Mixxx::AudioSource::size_type framesToRead =
             math_min(kFramesPerChunk, framesRemaining);
     if (0 >= framesToRead) {
