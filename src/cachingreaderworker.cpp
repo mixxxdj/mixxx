@@ -63,12 +63,20 @@ void CachingReaderWorker::processChunkReadRequest(
 
     const Mixxx::AudioSource::size_type seekFrameIndex =
             m_pAudioSource->seekSampleFrame(chunkFrameIndex);
-    DEBUG_ASSERT(m_pAudioSource->isValidFrameIndex(seekFrameIndex));
+    if (seekFrameIndex != chunkFrameIndex) {
+        // Failed to seek to the requested index.
+        // Corrupt file? -> Stop reading!
+        qWarning() << "Failed to seek chunk position";
+        update->status = CHUNK_READ_INVALID;
+        return;
+    }
+
     const Mixxx::AudioSource::size_type framesRemaining =
             m_pAudioSource->getFrameIndexMax() - seekFrameIndex;
     const Mixxx::AudioSource::size_type framesToRead =
             math_min(kFramesPerChunk, framesRemaining);
     if (0 >= framesToRead) {
+        // No more data available for reading
         update->status = CHUNK_READ_EOF;
         return;
     }
@@ -76,18 +84,13 @@ void CachingReaderWorker::processChunkReadRequest(
     const Mixxx::AudioSource::size_type framesRead =
             m_pAudioSource->readSampleFramesStereo(
                     framesToRead, request->chunk->stereoSamples, kSamplesPerChunk);
-
-    // If the AudioSource does not return any samples although
-    // there should still be some available at this position
-    // a read error must have occurred!
     DEBUG_ASSERT(framesRead <= framesToRead);
-    if (0 >= framesRead) {
+    if (framesRead < framesToRead) {
+        // Failed to read data! Corrupt file?
+        qWarning() << "Failed to read chunk samples";
         update->status = CHUNK_READ_INVALID;
         return;
     }
-    // Otherwise all requested samples should have been
-    // read entirely (according to the frame calculations
-    // above)
     DEBUG_ASSERT(framesRead == framesToRead);
 
     update->status = CHUNK_READ_SUCCESS;

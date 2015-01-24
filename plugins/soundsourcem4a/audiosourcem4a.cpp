@@ -242,9 +242,17 @@ AudioSource::diff_type AudioSourceM4A::seekSampleFrame(diff_type frameIndex) {
         const size_type prefetchFrameCount = frameIndex - m_curFrameIndex;
         // prefetch (decode and discard) all samples up to the target position
         DEBUG_ASSERT(frames2samples(prefetchFrameCount) <= m_prefetchSampleBuffer.size());
-        readSampleFrames(prefetchFrameCount, &m_prefetchSampleBuffer[0]);
-    } DEBUG_ASSERT(m_curFrameIndex == frameIndex);
-    return frameIndex;
+        const size_type skipFrameCount =
+                readSampleFrames(prefetchFrameCount, &m_prefetchSampleBuffer[0]);
+        DEBUG_ASSERT(skipFrameCount <= prefetchFrameCount);
+        if (skipFrameCount != prefetchFrameCount) {
+            qWarning() << "Failed to skip over prefetched sample frames after seeking @" << m_curFrameIndex;
+            // Abort
+            return m_curFrameIndex;
+        }
+    }
+    DEBUG_ASSERT(m_curFrameIndex == frameIndex);
+    return m_curFrameIndex;
 }
 
 AudioSource::size_type AudioSourceM4A::readSampleFrames(
