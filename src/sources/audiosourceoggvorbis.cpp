@@ -43,6 +43,13 @@ Result AudioSourceOggVorbis::postConstruct() {
     }
     setChannelCount(vi->channels);
     setFrameRate(vi->rate);
+    if (0 < vi->bitrate_nominal) {
+        setBitrate(vi->bitrate_nominal / 1000);
+    } else {
+        if ((0 < vi->bitrate_lower) && (vi->bitrate_lower == vi->bitrate_upper)) {
+            setBitrate(vi->bitrate_lower / 1000);
+        }
+    }
 
     ogg_int64_t frameCount = ov_pcm_total(&m_vf, kLogicalBitstreamIndex);
     if (0 <= frameCount) {
