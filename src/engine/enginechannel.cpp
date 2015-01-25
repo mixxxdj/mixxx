@@ -82,6 +82,12 @@ bool EngineChannel::isTalkoverEnabled() const {
     return m_pTalkover->toBool();
 }
 
+bool EngineChannel::isProcessingRequred() const {
+    return isTalkoverEnabled() ||
+                isMasterEnabled() ||
+                isPflEnabled();
+}
+
 void EngineChannel::slotOrientationLeft(double v) {
     if (v > 0) {
         m_pOrientation->set(LEFT);

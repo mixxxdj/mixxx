@@ -50,6 +50,7 @@ class EngineChannel : public EngineObject {
     virtual bool isMasterEnabled() const;
     void setTalkover(bool enabled);
     virtual bool isTalkoverEnabled() const;
+    bool isProcessingRequred() const;
 
     virtual void process(CSAMPLE* pOut, const int iBufferSize) = 0;
     virtual void postProcess(const int iBuffersize) = 0;

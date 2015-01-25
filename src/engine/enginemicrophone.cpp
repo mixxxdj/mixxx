@@ -24,11 +24,7 @@ EngineMicrophone::EngineMicrophone(QString pGroup, EffectsManager* pEffectsManag
         pEffectsManager->registerGroup(getGroup());
     }
 
-    // You normally don't expect to hear yourself in the headphones. Default PFL
-    // setting for mic to false. User can over-ride by setting the "pfl" or
-    // "master" controls.
-    setMaster(true);
-    setPfl(false);
+    setMaster(false); // Use "talkover" button to enable microphones
 
     m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
 
@@ -76,12 +72,7 @@ void EngineMicrophone::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
                                      unsigned int nFrames) {
     Q_UNUSED(input);
     Q_UNUSED(nFrames);
-    if (!isTalkoverEnabled()) {
-        m_sampleBuffer = NULL;
-        return;
-    } else {
-        m_sampleBuffer = pBuffer;
-    }
+    m_sampleBuffer = pBuffer;
 }
 
 void EngineMicrophone::process(CSAMPLE* pOut, const int iBufferSize) {
@@ -89,12 +80,12 @@ void EngineMicrophone::process(CSAMPLE* pOut, const int iBufferSize) {
     // the appropriate number of samples to throw them away.
     const CSAMPLE* sampleBuffer = m_sampleBuffer; // save pointer on stack
     double pregain =  m_pPregain->get();
-    if (isTalkoverEnabled() && sampleBuffer) {
+    if (isProcessingRequred() && sampleBuffer) {
         SampleUtil::copyWithGain(pOut, sampleBuffer, pregain, iBufferSize);
-        m_sampleBuffer = NULL;
     } else {
         SampleUtil::clear(pOut, iBufferSize);
     }
+    m_sampleBuffer = NULL;
 
     if (m_pEngineEffectsManager != NULL) {
         // Process effects enabled for this channel
