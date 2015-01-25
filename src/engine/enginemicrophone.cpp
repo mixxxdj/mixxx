@@ -28,7 +28,7 @@ EngineMicrophone::EngineMicrophone(QString pGroup, EffectsManager* pEffectsManag
     // setting for mic to false. User can over-ride by setting the "pfl" or
     // "master" controls.
     setMaster(true);
-    setPFL(false);
+    setPfl(false);
 
     m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
 
@@ -76,7 +76,7 @@ void EngineMicrophone::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
                                      unsigned int nFrames) {
     Q_UNUSED(input);
     Q_UNUSED(nFrames);
-    if (!isTalkover()) {
+    if (!isTalkoverEnabled()) {
         m_sampleBuffer = NULL;
         return;
     } else {
@@ -89,7 +89,7 @@ void EngineMicrophone::process(CSAMPLE* pOut, const int iBufferSize) {
     // the appropriate number of samples to throw them away.
     const CSAMPLE* sampleBuffer = m_sampleBuffer; // save pointer on stack
     double pregain =  m_pPregain->get();
-    if (isTalkover() && sampleBuffer) {
+    if (isTalkoverEnabled() && sampleBuffer) {
         SampleUtil::copyWithGain(pOut, sampleBuffer, pregain, iBufferSize);
         m_sampleBuffer = NULL;
     } else {

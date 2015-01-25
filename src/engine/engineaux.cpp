@@ -29,7 +29,6 @@ EngineAux::EngineAux(const QString& group, EffectsManager* pEffectsManager)
     // Default passthrough to enabled on the master and disabled on PFL. User
     // can over-ride by setting the "pfl" or "master" controls.
     setMaster(true);
-    setPFL(false);
 
     m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
 }

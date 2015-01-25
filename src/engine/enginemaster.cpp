@@ -261,7 +261,7 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
         }
 
         bool needsProcessing = false;
-        if (pChannel->isMaster()) {
+        if (pChannel->isMasterEnabled()) {
             busChannelConnectionFlags[pChannel->getOrientation()] |=
                     (1 << channel_number);
             needsProcessing = true;
@@ -269,7 +269,7 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
 
         // If the channel is enabled for previewing in headphones, copy it
         // over to the headphone buffer
-        if (pChannel->isPFL()) {
+        if (pChannel->isPflEnabled()) {
             *headphoneOutput |= (1 << channel_number);
             needsProcessing = true;
         }
@@ -291,7 +291,7 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
         pChannel->process(pChannelInfo->m_pBuffer, iBufferSize);
 
         if (m_pTalkoverDucking->getMode() != EngineTalkoverDucking::OFF &&
-                pChannel->isTalkover()) {
+                pChannel->isTalkoverEnabled()) {
             m_pTalkoverDucking->processKey(pChannelInfo->m_pBuffer, iBufferSize);
         }
     }

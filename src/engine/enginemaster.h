@@ -145,7 +145,7 @@ class EngineMaster : public QObject, public AudioSource {
     class ConstantGainCalculator : public GainCalculator {
       public:
         inline double getGain(ChannelInfo* pChannelInfo) const {
-            return pChannelInfo->m_pChannel->isTalkover() ?
+            return pChannelInfo->m_pChannel->isTalkoverEnabled() ?
                     m_dTalkoverGain : m_dGain;
         }
         inline void setGain(double dGain) {
@@ -172,7 +172,7 @@ class EngineMaster : public QObject, public AudioSource {
             if (pChannelInfo->m_pMuteControl->get() > 0.0) {
                 return 0.0;
             }
-            if (pChannelInfo->m_pChannel->isTalkover()) {
+            if (pChannelInfo->m_pChannel->isTalkoverEnabled()) {
                 return m_dTalkoverGain;
             }
             const double channelVolume = pChannelInfo->m_pVolumeControl->get();
