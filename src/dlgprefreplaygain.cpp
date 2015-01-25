@@ -7,11 +7,11 @@
 
 
 DlgPrefReplayGain::DlgPrefReplayGain(QWidget * parent, ConfigObject<ConfigValue> * _config)
-        :  DlgPreferencePage(parent),
-           config(_config),
-           m_replayGainBoost(kConfigKey, "ReplayGainBoost"),
-           m_defaultBoost(kConfigKey, "DefaultBoost"),
-           m_enabled(kConfigKey, "ReplayGainEnabled") {
+        : DlgPreferencePage(parent),
+          config(_config),
+          m_replayGainBoost(kConfigKey, "ReplayGainBoost"),
+          m_defaultBoost(kConfigKey, "DefaultBoost"),
+          m_enabled(kConfigKey, "ReplayGainEnabled") {
     setupUi(this);
 
     //Connections
@@ -86,8 +86,6 @@ void DlgPrefReplayGain::slotSetRGEnabled() {
         config->set(ConfigKey(kConfigKey,"ReplayGainEnabled"), ConfigValue(1));
     } else {
         config->set(ConfigKey(kConfigKey,"ReplayGainEnabled"), ConfigValue(0));
-        config->set(ConfigKey(kConfigKey,"ReplayGainAnalyserEnabled"),
-                    ConfigValue(0));
     }
     slotUpdate();
     slotApply();
@@ -126,11 +124,8 @@ void DlgPrefReplayGain::slotUpdateDefaultBoost() {
 void DlgPrefReplayGain::slotUpdate() {
     if (config->getValueString(
             ConfigKey(kConfigKey,"ReplayGainEnabled")).toInt() == 1) {
-        EnableAnalyser->setEnabled(true);
         SliderReplayGainBoost->setEnabled(true);
     } else {
-        EnableAnalyser->setChecked(false);
-        EnableAnalyser->setEnabled(false);
         SliderReplayGainBoost->setEnabled(false);
     }
 }
