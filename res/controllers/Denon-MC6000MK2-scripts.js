@@ -577,7 +577,6 @@ DenonMC6000MK2.Deck = function (number, midiChannel) {
 	this.side = undefined;
 	this.number = number;
 	this.group = "[Channel" + number + "]";
-	this.eqGroup = "[EqualizerEffectRack1_" + this.group + "]"
 	this.filterGroup = "[QuickEffectRack1_" + this.group + "]"
 	this.midiChannel = midiChannel;
 	this.jogTouchState = false;
