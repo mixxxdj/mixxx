@@ -2,7 +2,7 @@ language: c++
 # command to install dependencies
 before_install:
   # Dependencies from  <http://mixxx.org/wiki/doku.php/compiling_on_linux>
-  - sudo apt-get install git scons libqt4-dev libqt4-sql-sqlite libportmidi-dev libshout3-dev libtag1-dev libprotobuf-dev protobuf-compiler libvamp-hostsdk3 vamp-plugin-sdk libusb-1.0-0-dev libfftw3-dev libmad0-dev portaudio19-dev libchromaprint-dev librubberband-dev libsqlite3-dev libsndfile1-dev libflac-dev libtag1-dev
+  - sudo apt-get install git scons libqt4-dev libqt4-sql-sqlite libportmidi-dev libshout3-dev libtag1-dev libprotobuf-dev protobuf-compiler libvamp-hostsdk3 vamp-plugin-sdk libusb-1.0-0-dev libfftw3-dev libmad0-dev portaudio19-dev libchromaprint-dev librubberband-dev libsqlite3-dev libsndfile1-dev libflac-dev libid3tag0-dev
   # Virtual X
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
