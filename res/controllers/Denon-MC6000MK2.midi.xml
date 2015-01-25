@@ -120,6 +120,14 @@
 				</options>
 			</control>
 			<control>
+				<midino>0x40</midino>
+				<status>0x90</status>
+				<key>DenonMC6000MK2.leftSide.onEfxBeatsButton</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
 				<midino>0x46</midino>
 				<status>0x90</status>
 				<key>DenonMC6000MK2.leftSide.onEfxTapButton</key>
@@ -180,6 +188,14 @@
 				<midino>0x5C</midino>
 				<status>0xB0</status>
 				<key>DenonMC6000MK2.rightSide.onEfxBeatsKnob</key>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<control>
+				<midino>0x41</midino>
+				<status>0x90</status>
+				<key>DenonMC6000MK2.rightSide.onEfxBeatsButton</key>
 				<options>
 					<script-binding/>
 				</options>

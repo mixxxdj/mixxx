@@ -660,6 +660,12 @@ DenonMC6000MK2.Deck.prototype.onKeyLockValue = function (value) {
 	this.keyLockLed.setStateBoolean(value);
 };
 
+/* Key Control */
+
+DenonMC6000MK2.Deck.prototype.resetKey = function () {
+	this.setValue("reset_key", true);
+};
+
 /* Sync Mode */
 
 DenonMC6000MK2.Deck.prototype.disableSyncMode = function () {
@@ -1248,7 +1254,7 @@ DenonMC6000MK2.Side.prototype.onEfxBeatsKnobDelta = function (delta) {
 	if (this.getShiftState()) {
 		engine.setValue(this.efxGroup, "chain_selector", delta);
 	} else {
-		// TODO
+		// TODO: Change key of current deck
 	}
 };
 
@@ -1662,6 +1668,20 @@ DenonMC6000MK2.leftSide.onEfxBeatsKnob = function (channel, control, value, stat
 DenonMC6000MK2.rightSide.onEfxBeatsKnob = function (channel, control, value, status, group) {
 	var delta = DenonMC6000MK2.getKnobDelta(value);
 	DenonMC6000MK2.rightSide.onEfxBeatsKnobDelta(delta);
+};
+
+DenonMC6000MK2.leftSide.onEfxBeatsButton = function (channel, control, value, status, group) {
+	var isButtonPressed = DenonMC6000MK2.isButtonPressed(value);
+	if (isButtonPressed) {
+		DenonMC6000MK2.leftSide.activeDeck.resetKey();
+	}
+};
+
+DenonMC6000MK2.rightSide.onEfxBeatsButton = function (channel, control, value, status, group) {
+	var isButtonPressed = DenonMC6000MK2.isButtonPressed(value);
+	if (isButtonPressed) {
+		DenonMC6000MK2.rightSide.activeDeck.resetKey();
+	}
 };
 
 DenonMC6000MK2.leftSide.onEfxTapButton = function (channel, control, value, status, group) {
