@@ -179,11 +179,6 @@ class SampleUtil {
     // In-place doubles the mono samples in pBuffer to dual mono samples.
     // (numFrames) samples will be read from pBuffer
     // (numFrames * 2) samples will be written into pBuffer
-    static void doubleMonoToDualMono(SAMPLE* pBuffer, unsigned int numFrames);
-
-    // In-place doubles the mono samples in pBuffer to dual mono samples.
-    // (numFrames) samples will be read from pBuffer
-    // (numFrames * 2) samples will be written into pBuffer
     static void doubleMonoToDualMono(CSAMPLE* pBuffer, unsigned int numFrames);
 
     // Copies and doubles the mono samples in pSrc to dual mono samples

@@ -288,16 +288,6 @@ void SampleUtil::mixStereoToMono(CSAMPLE* pDest, const CSAMPLE* pSrc,
 }
 
 // static
-void SampleUtil::doubleMonoToDualMono(SAMPLE* pBuffer, unsigned int numFrames) {
-    // backward loop
-    unsigned int i = numFrames;
-    while (0 < i--) {
-        pBuffer[i * 2] = pBuffer[i];
-        pBuffer[i * 2 + 1] = pBuffer[i];
-    }
-}
-
-// static
 void SampleUtil::doubleMonoToDualMono(CSAMPLE* pBuffer, unsigned int numFrames) {
     // backward loop
     unsigned int i = numFrames;
