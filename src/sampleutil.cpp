@@ -377,6 +377,7 @@ void SampleUtil::mixStereoToMono(CSAMPLE* pDest, const CSAMPLE* pSrc,
 }
 
 // static
+<<<<<<< HEAD
 void SampleUtil::doubleMonoToDualMono(SAMPLE* pBuffer, int numFrames) {
     // backward loop
     int i = numFrames;
@@ -397,6 +398,14 @@ void SampleUtil::copyMonoToDualMono(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _RE
         CSAMPLE s = pSrc[i];
         pDest[i * 2] = s;
         pDest[i * 2 + 1] = s;
+=======
+void SampleUtil::doubleMonoToDualMono(CSAMPLE* pBuffer, unsigned int numFrames) {
+    // backward loop
+    unsigned int i = numFrames;
+    while (0 < i--) {
+        pBuffer[i * 2] = pBuffer[i];
+        pBuffer[i * 2 + 1] = pBuffer[i];
+>>>>>>> Delete obsolete functions from SampleUtil
     }
 }
 
