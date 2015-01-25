@@ -142,21 +142,18 @@ class EngineMaster : public QObject, public AudioSource {
       public:
         virtual double getGain(ChannelInfo* pChannelInfo) const = 0;
     };
-    class ConstantGainCalculator : public GainCalculator {
+    class PflGainCalculator : public GainCalculator {
       public:
         inline double getGain(ChannelInfo* pChannelInfo) const {
+            // Talkover channels are muted in Pfl mix
             return pChannelInfo->m_pChannel->isTalkoverEnabled() ?
-                    m_dTalkoverGain : m_dGain;
+                    0.0 : m_dGain;
         }
         inline void setGain(double dGain) {
             m_dGain = dGain;
         }
-        //inline void setTalkoverGain(double dGain) {
-        //    m_dTalkoverGain = dGain;
-        //}
       private:
         double m_dGain;
-        double m_dTalkoverGain;
     };
     class OrientationVolumeGainCalculator : public GainCalculator {
       public:
@@ -177,8 +174,8 @@ class EngineMaster : public QObject, public AudioSource {
             }
             const double channelVolume = pChannelInfo->m_pVolumeControl->get();
             const double orientationGain = EngineMaster::gainForOrientation(
-                pChannelInfo->m_pChannel->getOrientation(),
-                m_dLeftGain, m_dCenterGain, m_dRightGain);
+                    pChannelInfo->m_pChannel->getOrientation(),
+                    m_dLeftGain, m_dCenterGain, m_dRightGain);
             return m_dVolume * channelVolume * orientationGain;
         }
 
@@ -251,7 +248,7 @@ class EngineMaster : public QObject, public AudioSource {
     ControlPushButton* m_pHeadSplitEnabled;
     ControlObject* m_pKeylockEngine;
 
-    ConstantGainCalculator m_headphoneGain;
+    PflGainCalculator m_headphoneGain;
     OrientationVolumeGainCalculator m_masterGain;
     CSAMPLE m_masterVolumeOld;
     CSAMPLE m_headphoneMasterGainOld;
