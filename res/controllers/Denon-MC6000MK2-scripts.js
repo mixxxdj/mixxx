@@ -11,9 +11,14 @@
 ////////////////////////////////////////////////////////////////////////
 // Controller: Denon MC6000MK2
 // Author: Uwe Klotz a/k/a tapir
-// Revision: 2015-01-16
+// Revision: 2015-01-25
 //
 // Changelog:
+// 2015-01-25 Reconnect controls for version 1.12
+//    - Connect filter effect to QuickEffectRack
+//    - Connect channel EQs to EqualizerRack
+//    - Connect FX Beats knob to musical key controls (next/prev/reset)
+//    - Fine-tune jog wheel parameters
 // 2015-01-16 Filter effect parameter update
 //    - Rename filter effect parameter from "parameter" to "super1"
 // 2014-08-20 Sync mapping with push-and-hold
