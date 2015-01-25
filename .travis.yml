@@ -10,4 +10,5 @@ install:
   - scons
   - scons test=1
 script:
-  - scons test
+  # `scons test` can't connect to X server for some reason
+  - ./mixxx-test
