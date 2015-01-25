@@ -1254,7 +1254,14 @@ DenonMC6000MK2.Side.prototype.onEfxBeatsKnobDelta = function (delta) {
 	if (this.getShiftState()) {
 		engine.setValue(this.efxGroup, "chain_selector", delta);
 	} else {
-		// TODO: Change key of current deck
+		var newKey = this.activeDeck.getValue("key") + delta;
+		if (newKey < 1) {
+			newKey = 12;
+		}
+		if (newKey > 12) {
+			newKey = 1;
+		}
+		this.activeDeck.setValue("key", newKey);
 	}
 };
 
