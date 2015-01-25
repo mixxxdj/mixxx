@@ -577,7 +577,7 @@ DenonMC6000MK2.Deck = function (number, midiChannel) {
 	this.side = undefined;
 	this.number = number;
 	this.group = "[Channel" + number + "]";
-	this.filterGroup = "[QuickEffectRack1_" + this.group + "]"
+	this.filterGroup = "[QuickEffectRack1_" + this.group + "]";
 	this.midiChannel = midiChannel;
 	this.jogTouchState = false;
 	this.jogTouchVinylState = false;
@@ -856,7 +856,7 @@ DenonMC6000MK2.Deck.prototype.seekJog = function (jogDelta) {
 	} else {
 		return false;
 	}
-}
+};
 
 DenonMC6000MK2.Deck.prototype.spinJog = function (jogDelta) {
 	if (!this.seekJog(jogDelta)) {
@@ -1355,20 +1355,21 @@ DenonMC6000MK2.connectLeds = function () {
 };
 
 DenonMC6000MK2.connectControls = function () {
+	var deck, deckGroup;
 	DenonMC6000MK2.leftSide.connectControls();
 	//DenonMC6000MK2.connectControl("", "", DenonMC6000MK2.leftSide.onEfx1EnabledValueCB);
 	//DenonMC6000MK2.connectControl("", "", DenonMC6000MK2.leftSide.onEfx2EnabledValueCB);
 	DenonMC6000MK2.connectControl(DenonMC6000MK2.leftSide.efxGroup, "enabled", DenonMC6000MK2.leftSide.onEfx3EnabledValueCB);
-	for (var deckGroup in DenonMC6000MK2.leftSide.decksByGroup) {
-		var deck = this.decksByGroup[deckGroup];
+	for (deckGroup in DenonMC6000MK2.leftSide.decksByGroup) {
+		deck = this.decksByGroup[deckGroup];
 		DenonMC6000MK2.connectControl(deck.filterGroup, "enabled", DenonMC6000MK2.leftSide.onFilterEnabledValueCB);
 	}
 	DenonMC6000MK2.rightSide.connectControls();
 	//DenonMC6000MK2.connectControl("", "", DenonMC6000MK2.rightSide.onEfx1EnabledValueCB);
 	//DenonMC6000MK2.connectControl("", "", DenonMC6000MK2.rightSide.onEfx2EnabledValueCB);
 	DenonMC6000MK2.connectControl(DenonMC6000MK2.rightSide.efxGroup, "enabled", DenonMC6000MK2.rightSide.onEfx3EnabledValueCB);
-	for (var deckGroup in DenonMC6000MK2.rightSide.decksByGroup) {
-		var deck = this.decksByGroup[deckGroup];
+	for (deckGroup in DenonMC6000MK2.rightSide.decksByGroup) {
+		deck = this.decksByGroup[deckGroup];
 		DenonMC6000MK2.connectControl(deck.filterGroup, "enabled", DenonMC6000MK2.rightSide.onFilterEnabledValueCB);
 	}
 };
