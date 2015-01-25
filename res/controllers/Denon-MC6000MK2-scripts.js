@@ -884,20 +884,16 @@ DenonMC6000MK2.Deck.prototype.isScratching = function () {
 };
 
 DenonMC6000MK2.Deck.prototype.enableScratching = function () {
-	if (!this.isScratching()) {
-		engine.scratchEnable(this.number,
-			DenonMC6000MK2.JOG_RESOLUTION,
-			DenonMC6000MK2.JOG_SCRATCH_RPM,
-			DenonMC6000MK2.JOG_SCRATCH_ALPHA,
-			DenonMC6000MK2.JOG_SCRATCH_BETA,
-			DenonMC6000MK2.JOG_SCRATCH_RAMP);
-	}
+	engine.scratchEnable(this.number,
+		DenonMC6000MK2.JOG_RESOLUTION,
+		DenonMC6000MK2.JOG_SCRATCH_RPM,
+		DenonMC6000MK2.JOG_SCRATCH_ALPHA,
+		DenonMC6000MK2.JOG_SCRATCH_BETA,
+		DenonMC6000MK2.JOG_SCRATCH_RAMP);
 };
 
 DenonMC6000MK2.Deck.prototype.disableScratching = function () {
-	if (this.isScratching()) {
-		engine.scratchDisable(this.number, DenonMC6000MK2.JOG_SCRATCH_RAMP);
-	}
+	engine.scratchDisable(this.number, DenonMC6000MK2.JOG_SCRATCH_RAMP);
 };
 
 DenonMC6000MK2.Deck.prototype.scratchJog = function (jogDelta) {
@@ -943,7 +939,9 @@ DenonMC6000MK2.Deck.prototype.spinJogVinyl = function (jogDelta) {
 	if (this.isScratching()) {
 		this.scratchJog(jogDelta);
 	} else {
-		this.spinJog(jogDelta);
+		if (this.isPlaying()) {
+			this.spinJog(jogDelta);
+		}
 	}
 };
 
