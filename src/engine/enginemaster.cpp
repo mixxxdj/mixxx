@@ -262,7 +262,8 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
 
         bool needsProcessing = false;
         if (pChannel->isMaster()) {
-            busChannelConnectionFlags[pChannel->getOrientation()] |= (1 << channel_number);
+            busChannelConnectionFlags[pChannel->getOrientation()] |=
+                    (1 << channel_number);
             needsProcessing = true;
         }
 

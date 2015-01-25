@@ -79,7 +79,7 @@ void EngineChannel::setTalkover(bool enabled) {
 }
 
 bool EngineChannel::isTalkover() const {
-    return m_pTalkover->get() > 0.0;
+    return m_pTalkover->toBool();
 }
 
 void EngineChannel::slotOrientationLeft(double v) {

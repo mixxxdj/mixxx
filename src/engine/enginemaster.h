@@ -145,14 +145,15 @@ class EngineMaster : public QObject, public AudioSource {
     class ConstantGainCalculator : public GainCalculator {
       public:
         inline double getGain(ChannelInfo* pChannelInfo) const {
-            return pChannelInfo->m_pChannel->isTalkover() ? m_dTalkoverGain : m_dGain;
+            return pChannelInfo->m_pChannel->isTalkover() ?
+                    m_dTalkoverGain : m_dGain;
         }
         inline void setGain(double dGain) {
             m_dGain = dGain;
         }
-        inline void setTalkoverGain(double dGain) {
-            m_dTalkoverGain = dGain;
-        }
+        //inline void setTalkoverGain(double dGain) {
+        //    m_dTalkoverGain = dGain;
+        //}
       private:
         double m_dGain;
         double m_dTalkoverGain;
@@ -160,8 +161,12 @@ class EngineMaster : public QObject, public AudioSource {
     class OrientationVolumeGainCalculator : public GainCalculator {
       public:
         OrientationVolumeGainCalculator()
-                : m_dVolume(1.0), m_dLeftGain(1.0), m_dCenterGain(1.0), m_dRightGain(1.0),
-                  m_dTalkoverGain(1.0) { }
+                : m_dVolume(1.0),
+                  m_dLeftGain(1.0),
+                  m_dCenterGain(1.0),
+                  m_dRightGain(1.0),
+                  m_dTalkoverGain(1.0) {
+        }
 
         inline double getGain(ChannelInfo* pChannelInfo) const {
             if (pChannelInfo->m_pMuteControl->get() > 0.0) {
@@ -177,8 +182,8 @@ class EngineMaster : public QObject, public AudioSource {
             return m_dVolume * channelVolume * orientationGain;
         }
 
-        inline void setGains(double dVolume, double leftGain, double centerGain, double rightGain,
-                             double talkoverGain) {
+        inline void setGains(double dVolume, double leftGain,
+                double centerGain, double rightGain, double talkoverGain) {
             m_dVolume = dVolume;
             m_dLeftGain = leftGain;
             m_dCenterGain = centerGain;
@@ -187,7 +192,11 @@ class EngineMaster : public QObject, public AudioSource {
         }
 
       private:
-        double m_dVolume, m_dLeftGain, m_dCenterGain, m_dRightGain, m_dTalkoverGain;
+        double m_dVolume;
+        double m_dLeftGain;
+        double m_dCenterGain;
+        double m_dRightGain;
+        double m_dTalkoverGain;
     };
 
   private:
