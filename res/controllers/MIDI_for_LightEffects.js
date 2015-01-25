@@ -17,10 +17,20 @@ var vu_array_mono = new Array(vu_array_fill_maximum);
 var vu_array_left = new Array(vu_array_fill_maximum);
 var vu_array_right = new Array(vu_array_fill_maximum);
 
+<<<<<<< HEAD
 // rudimentary debug print with timestamp
 printDebug = function ( tag, text ) {
     var date = new Date();
     var timestamp = ('0'+date.getHours()).slice(-2)+":"+('0'+date.getMinutes()).slice(-2)+":"+('0'+date.getSeconds()).slice(-2);
+=======
+//var oldtag="";
+
+printDebug = function ( tag, text ) {
+    var date = new Date();
+    var timestamp = date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
+//    if (tag == oldtag) { print("."); }
+//    else { print (timestamp + " " + tag + ": " + text); oldtag=tag;}
+>>>>>>> ef03fec613575beab6a0dcb3e7a17e523f4ba1ab
     print (timestamp + " " + tag + ": " + text); oldtag=tag;
 }
 
@@ -70,7 +80,11 @@ MIDI_for_LightEffects.init = function(id) {	// called when the MIDI device is op
 }
 
 MIDI_for_LightEffects.shutdown = function(id) {	// called when the MIDI device is closed
+<<<<<<< HEAD
     printDebug("shutdown","MIDI_for_LightEffects shutdown");
+=======
+    printDebug("init","MIDI_for_LightEffects shutdown");
+>>>>>>> ef03fec613575beab6a0dcb3e7a17e523f4ba1ab
     // Stop the callbacks properly
     engine.connectControl("[Master]",   "crossfader", "MIDI_for_LightEffects.CrossfaderChange", true);
     engine.connectControl("[Channel1]", "volume", "MIDI_for_LightEffects.VolumeChange", true);
