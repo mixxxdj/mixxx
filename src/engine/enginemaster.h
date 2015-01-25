@@ -49,6 +49,12 @@ class EngineDelay;
 class EngineMaster : public QObject, public AudioSource {
     Q_OBJECT
   public:
+    enum MicrophoneMix {
+        MM_NO_MUTE = 0,
+        MM_MUTE_HEADPHONE = 1,
+        MM_BROADCAST_AND_RECORD_ONLY = 2
+    };
+
     EngineMaster(ConfigObject<ConfigValue>* pConfig,
                  const char* pGroup,
                  EffectsManager* pEffectsManager,
@@ -265,6 +271,7 @@ class EngineMaster : public QObject, public AudioSource {
     ControlObject* m_pMasterEnabled;
     // Mix two Mono channels. This is useful for outdoor gigs
     ControlObject* m_pMasterMonoMixdown;
+    ControlObject* m_pMasterMicrophoneMix;
     ControlObject* m_pHeadphoneEnabled;
 
     volatile bool m_bBusOutputConnected[3];

@@ -136,6 +136,15 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
             this, SLOT(masterOutputModeComboBoxChanged(int)));
     m_pMasterMonoMixdown->connectValueChanged(this, SLOT(masterMonoMixdownChanged(double)));
 
+    m_pMasterMicrophoneMix = new ControlObjectSlave("[Master]", "mono_mixdown", this);
+    micMixComboBox->addItem(tr("No Mute"));
+    micMixComboBox->addItem(tr("Mute Headphone"));
+    micMixComboBox->addItem(tr("Broadcast and Recording only"));
+    micMixComboBox->setCurrentIndex((int)m_pMasterMicrophoneMix->get());
+    connect(micMixComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(masterOutputModeComboBoxChanged(int)));
+    m_pMasterMicrophoneMix->connectValueChanged(this, SLOT(microphoneMixChanged(double)));
+
 
     m_pKeylockEngine =
             new ControlObjectSlave("[Master]", "keylock_engine", this);
@@ -559,6 +568,10 @@ void DlgPrefSound::masterEnabledChanged(double value) {
 
 void DlgPrefSound::masterOutputModeComboBoxChanged(int value) {
     m_pMasterMonoMixdown->set((double)value);
+}
+
+void DlgPrefSound::microphoneMixComboBoxChanged(int value) {
+    m_pMasterMicrophoneMix->set((double)value);
 }
 
 void DlgPrefSound::masterMonoMixdownChanged(double value) {

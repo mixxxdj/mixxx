@@ -172,6 +172,8 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
             true, false, true);  // persist = true
     m_pMasterMonoMixdown = new ControlObject(ConfigKey(group, "mono_mixdown"),
             true, false, true);  // persist = true
+    m_pMasterMicrophoneMix = new ControlObject(ConfigKey(group, "microphone_mixxx"),
+            true, false, true);  // persist = true
     m_pHeadphoneEnabled = new ControlObject(ConfigKey(group, "headEnabled"));
 
 
@@ -209,6 +211,7 @@ EngineMaster::~EngineMaster() {
 
     delete m_pMasterEnabled;
     delete m_pMasterMonoMixdown;
+    delete m_pMasterMicrophoneMix;
     delete m_pHeadphoneEnabled;
 
     SampleUtil::free(m_pHead);
