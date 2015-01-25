@@ -444,22 +444,22 @@
 				<key>pregain</key>
 			</control>
 			<control>
-				<group>[Channel1]</group>
-				<midino>0x02</midino>
-				<status>0xB0</status>
-				<key>filterHigh</key>
-			</control>
-			<control>
-				<group>[Channel1]</group>
-				<midino>0x03</midino>
-				<status>0xB0</status>
-				<key>filterMid</key>
-			</control>
-			<control>
-				<group>[Channel1]</group>
+				<group>[EqualizerRack1_[Channel1]_Effect1]</group>
 				<midino>0x04</midino>
 				<status>0xB0</status>
-				<key>filterLow</key>
+				<key>parameter1</key>
+			</control>
+			<control>
+				<group>[EqualizerRack1_[Channel1]_Effect1]</group>
+				<midino>0x03</midino>
+				<status>0xB0</status>
+				<key>parameter2</key>
+			</control>
+			<control>
+				<group>[EqualizerRack1_[Channel1]_Effect1]</group>
+				<midino>0x02</midino>
+				<status>0xB0</status>
+				<key>parameter3</key>
 			</control>
 			<control>
 				<group>[Channel1]</group>
@@ -867,22 +867,22 @@
 				<key>pregain</key>
 			</control>
 			<control>
-				<group>[Channel2]</group>
-				<midino>0x08</midino>
-				<status>0xB0</status>
-				<key>filterHigh</key>
-			</control>
-			<control>
-				<group>[Channel2]</group>
-				<midino>0x09</midino>
-				<status>0xB0</status>
-				<key>filterMid</key>
-			</control>
-			<control>
-				<group>[Channel2]</group>
+				<group>[EqualizerRack1_[Channel2]_Effect1]</group>
 				<midino>0x0A</midino>
 				<status>0xB0</status>
-				<key>filterLow</key>
+				<key>parameter1</key>
+			</control>
+			<control>
+				<group>[EqualizerRack1_[Channel2]_Effect1]</group>
+				<midino>0x09</midino>
+				<status>0xB0</status>
+				<key>parameter2</key>
+			</control>
+			<control>
+				<group>[EqualizerRack1_[Channel2]_Effect1]</group>
+				<midino>0x08</midino>
+				<status>0xB0</status>
+				<key>parameter3</key>
 			</control>
 			<control>
 				<group>[Channel2]</group>
@@ -1290,22 +1290,22 @@
 				<key>pregain</key>
 			</control>
 			<control>
-				<group>[Channel3]</group>
-				<midino>0x0D</midino>
-				<status>0xB0</status>
-				<key>filterHigh</key>
-			</control>
-			<control>
-				<group>[Channel3]</group>
-				<midino>0x0E</midino>
-				<status>0xB0</status>
-				<key>filterMid</key>
-			</control>
-			<control>
-				<group>[Channel3]</group>
+				<group>[EqualizerRack1_[Channel3]_Effect1]</group>
 				<midino>0x0F</midino>
 				<status>0xB0</status>
-				<key>filterLow</key>
+				<key>parameter1</key>
+			</control>
+			<control>
+				<group>[EqualizerRack1_[Channel3]_Effect1]</group>
+				<midino>0x0E</midino>
+				<status>0xB0</status>
+				<key>parameter2</key>
+			</control>
+			<control>
+				<group>[EqualizerRack1_[Channel3]_Effect1]</group>
+				<midino>0x0D</midino>
+				<status>0xB0</status>
+				<key>parameter3</key>
 			</control>
 			<control>
 				<group>[Channel3]</group>
@@ -1713,22 +1713,22 @@
 				<key>pregain</key>
 			</control>
 			<control>
-				<group>[Channel4]</group>
-				<midino>0x12</midino>
-				<status>0xB0</status>
-				<key>filterHigh</key>
-			</control>
-			<control>
-				<group>[Channel4]</group>
-				<midino>0x13</midino>
-				<status>0xB0</status>
-				<key>filterMid</key>
-			</control>
-			<control>
-				<group>[Channel4]</group>
+				<group>[EqualizerRack1_[Channel4]_Effect1]</group>
 				<midino>0x14</midino>
 				<status>0xB0</status>
-				<key>filterLow</key>
+				<key>parameter1</key>
+			</control>
+			<control>
+				<group>[EqualizerRack1_[Channel4]_Effect1]</group>
+				<midino>0x13</midino>
+				<status>0xB0</status>
+				<key>parameter2</key>
+			</control>
+			<control>
+				<group>[EqualizerRack1_[Channel4]_Effect1]</group>
+				<midino>0x12</midino>
+				<status>0xB0</status>
+				<key>parameter3</key>
 			</control>
 			<control>
 				<group>[Channel4]</group>
