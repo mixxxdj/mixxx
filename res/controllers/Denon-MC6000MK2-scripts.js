@@ -1123,6 +1123,7 @@ DenonMC6000MK2.Side = function (decks, efxGroup, filterGroup, samplerMidiChannel
 		this.decksByGroup[deck.group] = deck;
 		DenonMC6000MK2.sidesByGroup[deck.group] = this;
 	}
+	this.activeDeck = decks[0];
 	this.shiftState = false;
 	this.efxGroup = efxGroup;
 	DenonMC6000MK2.sidesByGroup[efxGroup] = this;
@@ -1157,6 +1158,10 @@ DenonMC6000MK2.Side.prototype.getDeckByGroup = function (group) {
 		DenonMC6000MK2.logError("No deck found for " + group);
 	}
 	return deck;
+};
+
+DenonMC6000MK2.Side.prototype.activateDeckByGroup = function (group) {
+	this.activeDeck = this.getDeckByGroup(group);
 };
 
 /* Startup */
@@ -1667,6 +1672,20 @@ DenonMC6000MK2.leftSide.onEfxTapButton = function (channel, control, value, stat
 DenonMC6000MK2.rightSide.onEfxTapButton = function (channel, control, value, status, group) {
 	var isButtonPressed = DenonMC6000MK2.isButtonPressed(value);
 	DenonMC6000MK2.rightSide.onEfxTapButton(isButtonPressed);
+};
+
+DenonMC6000MK2.leftSide.onDeckButton = function (channel, control, value, status, group) {
+	var isButtonPressed = DenonMC6000MK2.isButtonPressed(value);
+	if (isButtonPressed) {
+		DenonMC6000MK2.leftSide.activateDeckByGroup(group);
+	}
+};
+
+DenonMC6000MK2.rightSide.onDeckButton = function (channel, control, value, status, group) {
+	var isButtonPressed = DenonMC6000MK2.isButtonPressed(value);
+	if (isButtonPressed) {
+		DenonMC6000MK2.rightSide.activateDeckByGroup(group);
+	}
 };
 
 
