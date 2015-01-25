@@ -7,6 +7,11 @@
  *
  *  (c) 2014 - DG3NEC / Michael Stahl 
  *  (c) 2015 - Markus Baertschi, markus@markus.org
+ *
+ * Changelog
+ * 25.01.2015  Initial version
+ * 25.01.2015  Improved printDebug with debuglevel
+ *             Improved Play callback to determine beatdeck only from 'play' buttons
  */
 
 function MIDI_for_LightEffects () {}
@@ -18,9 +23,11 @@ var vu_array_left = new Array(vu_array_fill_maximum);
 var vu_array_right = new Array(vu_array_fill_maximum);
 
 // rudimentary debug print with timestamp
-printDebug = function ( tag, text ) {
+maxdebuglevel=2; // 0-always, 1-minimal, 2-more details in some routines, 5-includes beat
+printDebug = function ( level, tag, text ) {
     var date = new Date();
     var timestamp = ('0'+date.getHours()).slice(-2)+":"+('0'+date.getMinutes()).slice(-2)+":"+('0'+date.getSeconds()).slice(-2);
+    if (level<=maxdebuglevel) print(timestamp+" "+tag+"("+level+"): "+text);
 }
 
 // Extract the numerical deck number from the channel string
@@ -28,17 +35,24 @@ deckNo = function (deck) {
     return deck.match(/\d+/)[0];
 }
 
+// Stop a timer if it is defined
 stopTimerIf = function ( timer ) {
-//    printDebug("stopTimerIf","timer="+timer);
+    printDebug(2,"stopTimerIf","timer="+timer);
     if (timer==undefined) { return; }
     engine.stopTimer(timer);
 }
 
-MIDI_for_LightEffects.init = function(id) {	// called when the MIDI device is opened & set up
-    MIDI_for_LightEffects.id = id;	        // Store the ID of this device for later use
-    MIDI_for_LightEffects.beatdeck = "";         // The deck we take the beat from
-    MIDI_for_LightEffects.faderlock = false;    // Stops fader changes from changing the beatdeck again within 1 sec
-    MIDI_for_LightEffects.volumebeat = false;   // Allow volume changes to changes the beatdeck
+otherDeck = function(deck) {
+    if (deck == "[Channel1]") return "[Channel2]";
+    if (deck == "[Channel2]") return "[Channel1]";
+    printDebug(0,"otherDeck","Error: other deck for "+deck+" is not defined");
+}
+
+MIDI_for_LightEffects.init = function(id,debug) {  // called when the MIDI device is opened & set up
+    MIDI_for_LightEffects.id = id;	           // Store the ID of this device
+    MIDI_for_LightEffects.beatdeck = "";           // The deck we take the beat from, "[Channel1]" or "[Channel2]"
+    MIDI_for_LightEffects.faderlock = false;       // Stops fader changes from changing the beatdeck again within 1 sec
+    MIDI_for_LightEffects.volumebeat = false;      // Allow volume changes to changes the beatdeck
     MIDI_for_LightEffects.volumebeatlock = false;  // Stops volume changes from changing the beatdeck again within 1 sec
     MIDI_for_LightEffects.CrossfaderChangeLockTimer = [-1, -1];
     MIDI_for_LightEffects.VolumeBeatLockTimer = [-1, -1];
@@ -65,11 +79,16 @@ MIDI_for_LightEffects.init = function(id) {	// called when the MIDI device is op
     engine.connectControl("[Channel2]", "play",         "MIDI_for_LightEffects.Play");
 
     MIDI_for_LightEffects.VuMeterTimer = engine.beginTimer(40,"MIDI_for_LightEffects.VuMeter()",false);
-    printDebug("init","MIDI_for_LightEffects initialized");
+    if (debug) {
+        maxdebuglevel=4;	// Enable debugging up to level 4
+        printDebug(0,"init","MIDI_for_LightEffects initialized with debugging");
+    } else {
+        printDebug(0,"init","MIDI_for_LightEffects initialized");
+    }
 }
 
 MIDI_for_LightEffects.shutdown = function(id) {	// called when the MIDI device is closed
-    printDebug("shutdown","MIDI_for_LightEffects shutdown");
+    printDebug(0,"shutdown","MIDI_for_LightEffects shutdown");
     // Stop the callbacks properly
     engine.connectControl("[Master]",   "crossfader", "MIDI_for_LightEffects.CrossfaderChange", true);
     engine.connectControl("[Channel1]", "volume", "MIDI_for_LightEffects.VolumeChange", true);
@@ -336,32 +355,46 @@ MIDI_for_LightEffects.VuMeter= function() { // called every 40 ms by a timer
  */
 
 /*
- * Initial beatdeck selection: Set the beatdeck to the 1st deck we press play on.
- * This is irrelevant after the first key press.
+ * beatdeck selection from Play button: 
+ * - Set the beatdeck to the 1st deck we press play on
+ * - Set beatdeck to other deck if we stop the current deck
+ * - Set the beatdeck to the current deck if we press play and the other deck is stopped
  */
 MIDI_for_LightEffects.Play = function(value, deck, control) {
-    printDebug("Play","deck="+deck);
+    printDebug(1,"Play","deck="+deck+" val="+value+" contr="+control);
+    // After initial startup beatdeck is empty, set it
     if (MIDI_for_LightEffects.beatdeck == "") MIDI_for_LightEffects.beatdeck=deck;
+    var otherdeck=otherDeck(deck);
+    if ((MIDI_for_LightEffects.beatdeck == deck) && (value==0)) {
+        // The active deck was stopped, switch to the other deck immediately
+        printDebug(2,"Play"," Deck "+deck+" stopped, switching to "+otherdeck);
+        MIDI_for_LightEffects.beatdeck = otherdeck;
+    }
+    var othervalue = engine.getValue(otherdeck, "play");
+    if ((MIDI_for_LightEffects.beatdeck == otherdeck) && (othervalue==0) && (value==1)) {
+        printDebug(2,"Play"," Other deck "+otherdeck+" stopped and we pressed play on "+deck+" -> switch deck to "+deck);
+        MIDI_for_LightEffects.beatdeck = deck;
+    }
 }
 
 /*
  * Called on each volume change (both decks)
  */
 MIDI_for_LightEffects.VolumeChange = function(volume,deck,control) { // Deck volume was changed
-//    printDebug("VolumeChange","");
+    printDebug(1,"VolumeChange",deck+" volume="+volume);
     if (MIDI_for_LightEffects.volumebeat == false) { return; }      // exit if Volumebeat not active
     if (MIDI_for_LightEffects.volumebeatlock == true) { return; } // exit if Lock active
     // Fetch deck volumes
     deck1volume = engine.getValue("[Channel1]", "volume");
     deck2volume = engine.getValue("[Channel2]", "volume");
-//    printDebug("VolumeChange","deck 1 vol="+deck1volume+" deck 2 vol="+deck2volume);
+    printDebug(2,"VolumeChange","deck 1 vol="+deck1volume+" deck 2 vol="+deck2volume);
     if (deck1volume == deck2volume) { return; } // exit if Volume is the same
     // Determine beatdeck by comparing their volume
     var newdeck;
     if (deck2volume > deck1volume) { newdeck = "[Channel2]"; } else { newdeck = "[Channel1]"; } // Deck2 Volume is larger
     // Check if the active deck changes
     if (newdeck != MIDI_for_LightEffects.beatdeck) {
-//        printDebug("VolumeChange","deckchange old="+MIDI_for_LightEffects.beatdeck+" new="+newdeck+" vol1="+deck1volume+" vol2="+deck2volume);
+        printDebug(2,"VolumeChange","deckchange old="+MIDI_for_LightEffects.beatdeck+" new="+newdeck+" vol1="+deck1volume+" vol2="+deck2volume);
         MIDI_for_LightEffects.beatdeck = newdeck;
         midi.sendShortMsg(0x90,48,0x64+deckNo(newdeck));         // Deckchange: Send note C mit 64+deckno
         MIDI_for_LightEffects.volumebeatlock = true;     // Prevent change for 1 s
@@ -370,7 +403,7 @@ MIDI_for_LightEffects.VolumeChange = function(volume,deck,control) { // Deck vol
 }
 
 MIDI_for_LightEffects.VolumeBeatLock = function() { // Timer callback re-enable deck change
-//    printDebug("VolumeBeatLock","");
+    printDebug(1,"VolumeBeatLock","");
 //    engine.stopTimer(MIDI_for_LightEffects.VolumeBeatLockTimer);
     MIDI_for_LightEffects.volumebeatlock = false;
     MIDI_for_LightEffects.VolumeBeatLockTimer = undefined;
@@ -380,16 +413,14 @@ MIDI_for_LightEffects.VolumeBeatLock = function() { // Timer callback re-enable 
 }
 
 MIDI_for_LightEffects.VolumeBeatOnDelay = function() { // Turn on volume dependent desk change
-//    printDebug("VolumeBeatOnDelay","volumebeat=true");
+    printDebug(1,"VolumeBeatOnDelay","volumebeat=true");
     MIDI_for_LightEffects.volumebeat = true;
     MIDI_for_LightEffects.VolumeBeatOnDelayTimer=undefined;
 }
 
-MIDI_for_LightEffects.CrossfaderChange = function() { // Fader was moved, check deck
-//    printDebug("CrossfaderChange","");
+MIDI_for_LightEffects.CrossfaderChange = function(fader,group,control) { // Fader was moved, check deck
+    printDebug(1,"CrossfaderChange","fader="+fader);
     if (MIDI_for_LightEffects.faderlock == true) { return; }  // exit if faderlock active
-    var fader = engine.getValue("[Master]", "crossfader");
-//    printDebug("CrossfaderChange","fader="+fader);
 
     //
     // We allow volume changes to override the fader deck selection
@@ -401,7 +432,8 @@ MIDI_for_LightEffects.CrossfaderChange = function() { // Fader was moved, check 
     MIDI_for_LightEffects.volumebeat = false;     // Disallow volume to select beatdeck
     if (fader > -0.25) {      // Fader is less than 25% to the left
         if (fader < 0.25) {   // Fader is less than 25% to the right
-            // Set timer to re-enable volumebeat after 2 seconds
+            // Set timer to re-enable volumebeat after 3 seconds
+            printDebug(2,"CrossfaderChange","Fader in central area, volume active in 3s");
             MIDI_for_LightEffects.VolumeBeatOnDelayTimer = engine.beginTimer(3000,"MIDI_for_LightEffects.VolumeBeatOnDelay()",true);
         }
     }
@@ -411,12 +443,13 @@ MIDI_for_LightEffects.CrossfaderChange = function() { // Fader was moved, check 
     //
     if (fader == 0) { return; }   // If fader in the center, do not change
 
-    // Determine current deck from fader, center position = 0, counts as left
+    // Determine active deck from fader, center position = 0, counts as left
     var newdeck;
-    if (fader > 0) { newdeck = "[Channel1]"; }  else { newdeck = "[Channel2]"; } // Fader is to the right of the center
+    if (fader > 0) { newdeck = "[Channel2]"; }  else { newdeck = "[Channel1]"; } // Fader is to the right of the center
 
     // Check if the deck changes
     if (newdeck != MIDI_for_LightEffects.beatdeck){
+        printDebug(2,"CrossfaderChange","Deckchange, new deck is "+newdeck);
         MIDI_for_LightEffects.beatdeck = newdeck;
         midi.sendShortMsg(0x90,48,0x64+deckNo(newdeck));       // Deckchange: Send note C mit 64+deckno
         MIDI_for_LightEffects.faderlock = true;
@@ -425,12 +458,13 @@ MIDI_for_LightEffects.CrossfaderChange = function() { // Fader was moved, check 
 }
 
 MIDI_for_LightEffects.CrossfaderChangeLock = function() { // Unlock the faderlock
-//    printDebug("CrossfaderChangeLock","");
+    printDebug(1,"CrossfaderChangeLock","");
     MIDI_for_LightEffects.faderlock = false;
     MIDI_for_LightEffects.CrossfaderChangeLockTimer = undefined;
     midi.sendShortMsg(0x90,48,0x0);                 // Deckchange: Note C on value 0
     midi.sendShortMsg(0x80,48,0x0);                 // Deckchange: Note C off value 0
-    MIDI_for_LightEffects.CrossfaderChange();       // Recheck after timeout
+    // Recheck after timeout, CrossfaderChange depends on fader value, so we need to pass it
+    MIDI_for_LightEffects.CrossfaderChange(engine.getValue("[Master]", "crossfader"));
 }
 
 /*
@@ -467,11 +501,11 @@ MIDI_for_LightEffects.BeatOutputToMidi = function(beat_active,deck,control) {   
     if (deckbpm <= 0) { deckbpm = 0; }
     if (deckbpm >= 127) { deckbpm = 127; }
     if (beat_active == true ) { // Beat is on, send note on
-//        printDebug("BeatOutputToMidi:"," Deck="+deck+" BPM="+deckbpm);
+        printDebug(5,"BeatOutputToMidi:"," Deck="+deck+" BPM="+deckbpm);
         midi.sendShortMsg(0x90,50,0x64);   // Beat: Note D on value 64
         midi.sendShortMsg(0x90,52,deckbpm);   // BPM: Note E on value = BPM
     } else { // Beat ist aus, sende Note aus
-//        printDebug("BeatOutputToMidi:"," Deck="+deck+" beat off");
+        printDebug(5,"BeatOutputToMidi:"," Deck="+deck+" beat off");
         midi.sendShortMsg(0x90,50,0x0);   // Nobeat: Note D on value 0
         midi.sendShortMsg(0x80,50,0x0);   // Nobeat: Note D off value 0
     }
