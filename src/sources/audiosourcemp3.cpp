@@ -455,11 +455,11 @@ AudioSource::size_type AudioSourceMp3::readSampleFrames(
             if (0 != mad_frame_decode(&m_madFrame, &m_madStream)) {
                 if (MAD_RECOVERABLE(m_madStream.error)) {
                     if (pMadThisFrame != m_madStream.this_frame) {
-                        // Suppress common cases of "lost synchronization"
-                        // warnings. When seeking through the file those
-                        // warnings are expected while skipping over
-                        // prefetched frames.
-                        if ((MAD_ERROR_LOSTSYNC == m_madStream.error) && (NULL == pSampleBuffer)) {
+                        // Ignore all recoverable errors (and especially
+                        // "lost synchronization" warnings) while skipping
+                        // over prefetched frames after seeking.
+                        if (NULL == pSampleBuffer) {
+                            // Decoded samples will simply be discarded
                             qDebug() << "Recoverable MP3 frame decoding error while skipping:"
                                 << mad_stream_errorstr(&m_madStream);
                         } else {
