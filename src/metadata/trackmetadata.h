@@ -127,8 +127,11 @@ public:
     inline double getBpm() const {
         return m_bpm;
     }
+    inline static bool isBpmValid(double bpm) {
+        return (BPM_MIN < bpm) && (BPM_MAX >= bpm);
+    }
     inline bool isBpmValid() const {
-        return (BPM_MIN < getBpm()) && (BPM_MAX >= getBpm());
+        return isBpmValid(getBpm());
     }
     inline void setBpm(double bpm) {
         m_bpm = bpm;
@@ -136,7 +139,6 @@ public:
     inline void resetBpm() {
         m_bpm = BPM_UNDEFINED;
     }
-    static double parseBpmString(const QString& sBpm);
     bool setBpmString(const QString& sBpm);
 
     static const float REPLAYGAIN_UNDEFINED;
@@ -145,8 +147,11 @@ public:
     inline float getReplayGain() const {
         return m_replayGain;
     }
+    inline static bool isReplayGainValid(float replayGain) {
+        return REPLAYGAIN_MIN < replayGain;
+    }
     inline bool isReplayGainValid() const {
-        return REPLAYGAIN_MIN < getReplayGain();
+        return isReplayGainValid(getReplayGain());
     }
     inline void setReplayGain(float replayGain) {
         m_replayGain = replayGain;
@@ -154,7 +159,6 @@ public:
     inline void resetReplayGain() {
         m_replayGain = REPLAYGAIN_UNDEFINED;
     }
-    static float parseReplayGainDbString(QString sReplayGainDb); // in dB
     bool setReplayGainDbString(QString sReplayGainDb); // in dB
 
 private:
