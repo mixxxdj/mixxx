@@ -5,12 +5,12 @@
 namespace Mixxx {
 
 /*static*/ const double TrackMetadata::BPM_UNDEFINED = 0.0;
-/*static*/ const double TrackMetadata::BPM_MIN = 0.0; // exclusive lower bound
-/*static*/ const double TrackMetadata::BPM_MAX = 300.0; // inclusive upper bound
+/*static*/ const double TrackMetadata::BPM_MIN = 0.0; // lower bound (inclusive)
+/*static*/ const double TrackMetadata::BPM_MAX = 300.0; // lower bound (inclusive)
 
-/*static*/ const double TrackMetadata::REPLAYGAIN_UNDEFINED = 0.0f;
-/*static*/ const double TrackMetadata::REPLAYGAIN_MIN = 0.0f; // exclusive lower bound
-/*static*/ const double TrackMetadata::REPLAYGAIN_0DB = 1.0f;
+/*static*/ const float TrackMetadata::REPLAYGAIN_UNDEFINED = 0.0f;
+/*static*/ const float TrackMetadata::REPLAYGAIN_MIN = 0.0f; // lower bound (inclusive)
+/*static*/ const float TrackMetadata::REPLAYGAIN_0DB = 1.0f;
 
 TrackMetadata::TrackMetadata() :
         m_channels(0),
