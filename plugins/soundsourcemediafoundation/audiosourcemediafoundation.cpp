@@ -102,7 +102,7 @@ AudioSourcePointer AudioSourceMediaFoundation::create(QUrl url) {
 }
 
 Result AudioSourceMediaFoundation::postConstruct() {
-    const QString fileName(getUrl().toLocalFile());
+    const QString fileName(getLocalFileName());
 
     if (sDebug) {
         qDebug() << "open()" << fileName;

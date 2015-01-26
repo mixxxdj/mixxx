@@ -17,10 +17,9 @@ AudioSourcePointer AudioSourceWV::create(QUrl url) {
 }
 
 Result AudioSourceWV::postConstruct() {
-    const QString fileName(getUrl().toLocalFile());
     char msg[80]; // hold possible error message
     m_wpc = WavpackOpenFileInput(
-            fileName.toLocal8Bit().constData(), msg,
+            getLocalFileNameBytes().constData(), msg,
             OPEN_2CH_MAX | OPEN_WVC | OPEN_NORMALIZE, 0);
     if (!m_wpc) {
         qDebug() << "SSWV::open: failed to open file : " << msg;

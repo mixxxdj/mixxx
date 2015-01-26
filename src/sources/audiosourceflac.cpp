@@ -57,7 +57,7 @@ void FLAC_error_cb(const FLAC__StreamDecoder*,
 
 AudioSourceFLAC::AudioSourceFLAC(QUrl url)
         : AudioSource(url),
-          m_file(getUrl().toLocalFile()),
+          m_file(getLocalFileName()),
           m_decoder(NULL),
           m_minBlocksize(0),
           m_maxBlocksize(0),

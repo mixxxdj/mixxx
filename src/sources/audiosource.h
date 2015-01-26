@@ -1,12 +1,13 @@
 #ifndef MIXXX_AUDIOSOURCE_H
 #define MIXXX_AUDIOSOURCE_H
 
+#include "urlresource.h"
+
 #include "util/assert.h"
 #include "util/types.h" // CSAMPLE
 #include "util/defs.h" // Result
 
 #include <QSharedPointer>
-#include <QUrl>
 
 #include <cstddef> // size_t / diff_t
 
@@ -31,7 +32,7 @@ typedef QSharedPointer<AudioSource> AudioSourcePointer;
 //
 // Audio sources are implicitly opened upon creation and
 // closed upon destruction.
-class AudioSource {
+class AudioSource: public UrlResource {
 public:
     typedef std::size_t size_type;
     typedef std::ptrdiff_t diff_type;
@@ -56,12 +57,6 @@ public:
 
     static const size_type kBitrateZero = 0;
     static const size_type kBitrateDefault = kBitrateZero;
-
-    virtual ~AudioSource();
-
-    const QUrl& getUrl() const {
-        return m_url;
-    }
 
     // Returns the number of channels. The number of channels
     // must be constant over time.
@@ -236,8 +231,6 @@ protected:
             bool readStereoSamples = false) const;
 
 private:
-    const QUrl m_url;
-
     size_type m_channelCount;
     size_type m_frameRate;
     size_type m_frameCount;

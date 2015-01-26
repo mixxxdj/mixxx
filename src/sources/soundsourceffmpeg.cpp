@@ -65,7 +65,7 @@ SoundSourceFFmpeg::SoundSourceFFmpeg(QUrl url)
 }
 
 Result SoundSourceFFmpeg::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
-    qDebug() << "ffmpeg: SoundSourceFFmpeg::parseMetadata" << getFilename();
+    qDebug() << "ffmpeg: SoundSourceFFmpeg::parseMetadata" << getLocalFileName();
 
     AVFormatContext *FmtCtx = avformat_alloc_context();
     AVCodecContext *CodecCtx = NULL;
@@ -73,9 +73,9 @@ Result SoundSourceFFmpeg::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
     unsigned int i;
     AVDictionary *l_iFormatOpts = NULL;
 
-    if (avformat_open_input(&FmtCtx, getLocalFilePath().constData(), NULL,
+    if (avformat_open_input(&FmtCtx, getLocalFileNameBytes().constData(), NULL,
                             &l_iFormatOpts) !=0) {
-        qDebug() << "av_open_input_file: cannot open" << getFilename();
+        qDebug() << "av_open_input_file: cannot open" << getLocalFileName();
         return ERR;
     }
 
@@ -92,7 +92,7 @@ Result SoundSourceFFmpeg::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
     // Retrieve stream information
     if (avformat_find_stream_info(FmtCtx, NULL)<0) {
         qDebug() << "av_find_stream_info: Can't find metadata" <<
-                getFilename();
+                getLocalFileName();
         avcodec_close(CodecCtx);
         avformat_close_input(&FmtCtx);
         av_free(FmtCtx);
@@ -108,7 +108,7 @@ Result SoundSourceFFmpeg::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
     }
     if (iAudioStream == -1) {
         qDebug() << "cannot find an audio stream: Can't find stream" <<
-                getFilename();
+                getLocalFileName();
         avcodec_close(CodecCtx);
         avformat_close_input(&FmtCtx);
         av_free(FmtCtx);

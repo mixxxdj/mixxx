@@ -25,7 +25,7 @@ AudioSourcePointer AudioSourceCoreAudio::create(QUrl url) {
 
 // soundsource overrides
 Result AudioSourceCoreAudio::postConstruct() {
-    const QString fileName(getUrl().toLocalFile());
+    const QString fileName(getLocalFileName());
 
     //Open the audio file.
     OSStatus err;

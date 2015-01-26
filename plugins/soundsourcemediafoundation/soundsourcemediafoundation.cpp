@@ -43,7 +43,7 @@ SoundSourceMediaFoundation::SoundSourceMediaFoundation(QUrl url)
 
 Result SoundSourceMediaFoundation::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
     // Must be toLocal8Bit since Windows fopen does not do UTF-8
-    TagLib::MP4::File f(getLocalFilePath().constData());
+    TagLib::MP4::File f(getLocalFileNameBytes().constData());
 
     if (!readAudioProperties(pMetadata, f)) {
         return ERR;
@@ -66,7 +66,7 @@ Result SoundSourceMediaFoundation::parseMetadata(Mixxx::TrackMetadata* pMetadata
 }
 
 QImage SoundSourceMediaFoundation::parseCoverArt() const {
-    TagLib::MP4::File f(getLocalFilePath().constData());
+    TagLib::MP4::File f(getLocalFileNameBytes().constData());
     TagLib::MP4::Tag *mp4(f.tag());
     if (mp4) {
         return Mixxx::readMP4TagCover(*mp4);

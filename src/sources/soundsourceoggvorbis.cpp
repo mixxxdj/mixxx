@@ -36,7 +36,7 @@ SoundSourceOggVorbis::SoundSourceOggVorbis(QUrl url) :
  */
 Result SoundSourceOggVorbis::parseMetadata(
         Mixxx::TrackMetadata* pMetadata) const {
-    TagLib::Ogg::Vorbis::File f(getLocalFilePath().constData());
+    TagLib::Ogg::Vorbis::File f(getLocalFileNameBytes().constData());
 
     if (!readAudioProperties(pMetadata, f)) {
         return ERR;
@@ -59,7 +59,7 @@ Result SoundSourceOggVorbis::parseMetadata(
 }
 
 QImage SoundSourceOggVorbis::parseCoverArt() const {
-    TagLib::Ogg::Vorbis::File f(getLocalFilePath().constData());
+    TagLib::Ogg::Vorbis::File f(getLocalFileNameBytes().constData());
     TagLib::Ogg::XiphComment *xiph = f.tag();
     if (xiph) {
         return Mixxx::readXiphCommentCover(*xiph);

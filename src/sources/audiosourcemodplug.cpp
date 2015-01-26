@@ -52,14 +52,12 @@ AudioSourcePointer AudioSourceModPlug::create(QUrl url) {
 }
 
 Result AudioSourceModPlug::postConstruct() {
-    const QString fileName(getUrl().toLocalFile());
-
     ScopedTimer t("AudioSourceModPlug::open()");
 
-    qDebug() << "[ModPlug] Loading ModPlug module " << fileName;
-
     // read module file to byte array
+    const QString fileName(getLocalFileName());
     QFile modFile(fileName);
+    qDebug() << "[ModPlug] Loading ModPlug module " << modFile.fileName();
     modFile.open(QIODevice::ReadOnly);
     m_fileBuf = modFile.readAll();
     modFile.close();

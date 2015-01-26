@@ -42,7 +42,7 @@ SoundSourceCoreAudio::SoundSourceCoreAudio(QUrl url)
 
 Result SoundSourceCoreAudio::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
     if (getType() == "m4a") {
-        TagLib::MP4::File f(getLocalFilePath().constData());
+        TagLib::MP4::File f(getLocalFileNameBytes().constData());
         if (!readAudioProperties(pMetadata, f)) {
             return ERR;
         }
@@ -59,7 +59,7 @@ Result SoundSourceCoreAudio::parseMetadata(Mixxx::TrackMetadata* pMetadata) cons
             }
         }
     } else if (getType() == "mp3") {
-        TagLib::MPEG::File f(getLocalFilePath().constData());
+        TagLib::MPEG::File f(getLocalFileNameBytes().constData());
         if (!readAudioProperties(pMetadata, f)) {
             return ERR;
         }
@@ -92,7 +92,7 @@ Result SoundSourceCoreAudio::parseMetadata(Mixxx::TrackMetadata* pMetadata) cons
 QImage SoundSourceCoreAudio::parseCoverArt() const {
     QImage coverArt;
     if (getType() == "m4a") {
-        TagLib::MP4::File f(getLocalFilePath().constData());
+        TagLib::MP4::File f(getLocalFileNameBytes().constData());
         TagLib::MP4::Tag *mp4(f.tag());
         if (mp4) {
             return Mixxx::readMP4TagCover(*mp4);
@@ -100,7 +100,7 @@ QImage SoundSourceCoreAudio::parseCoverArt() const {
             return QImage();
         }
     } else if (getType() == "mp3") {
-        TagLib::MPEG::File f(getLocalFilePath().constData());
+        TagLib::MPEG::File f(getLocalFileNameBytes().constData());
         TagLib::ID3v2::Tag* id3v2 = f.ID3v2Tag();
         if (id3v2) {
             coverArt = Mixxx::readID3v2TagCover(*id3v2);

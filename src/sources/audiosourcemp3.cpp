@@ -65,7 +65,7 @@ int decodeFrameHeader(
 
 AudioSourceMp3::AudioSourceMp3(QUrl url)
         : AudioSource(url),
-          m_file(getUrl().toLocalFile()),
+          m_file(getLocalFileName()),
           m_fileSize(0),
           m_pFileData(NULL),
           m_avgSeekFrameCount(0),

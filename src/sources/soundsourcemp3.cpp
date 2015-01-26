@@ -32,7 +32,7 @@ SoundSourceMp3::SoundSourceMp3(QUrl url)
 }
 
 Result SoundSourceMp3::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
-    TagLib::MPEG::File f(getLocalFilePath().constData());
+    TagLib::MPEG::File f(getLocalFileNameBytes().constData());
 
     if (!readAudioProperties(pMetadata, f)) {
         return ERR;
@@ -62,7 +62,7 @@ Result SoundSourceMp3::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
 
 QImage SoundSourceMp3::parseCoverArt() const {
     QImage coverArt;
-    TagLib::MPEG::File f(getLocalFilePath().constData());
+    TagLib::MPEG::File f(getLocalFileNameBytes().constData());
     TagLib::ID3v2::Tag* id3v2 = f.ID3v2Tag();
     if (id3v2) {
         coverArt = Mixxx::readID3v2TagCover(*id3v2);
