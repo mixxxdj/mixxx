@@ -122,8 +122,8 @@ public:
 
     // beats / minute
     static const double BPM_UNDEFINED;
-    static const double BPM_MIN; // exclusive lower bound
-    static const double BPM_MAX; // inclusive upper bound
+    static const double BPM_MIN; // lower bound (exclusive)
+    static const double BPM_MAX; // upper bound (inclusive)
     inline double getBpm() const {
         return m_bpm;
     }
@@ -139,9 +139,9 @@ public:
     static double parseBpmString(const QString& sBpm);
     bool setBpmString(const QString& sBpm);
 
-    static const double REPLAYGAIN_UNDEFINED;
-    static const double REPLAYGAIN_MIN; // exclusive lower bound
-    static const double REPLAYGAIN_0DB;
+    static const float REPLAYGAIN_UNDEFINED;
+    static const float REPLAYGAIN_MIN; // lower bound (exclusive)
+    static const float REPLAYGAIN_0DB;
     inline float getReplayGain() const {
         return m_replayGain;
     }
