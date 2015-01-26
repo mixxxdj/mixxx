@@ -22,15 +22,12 @@ AudioSourcePointer AudioSource::onCreate(AudioSource* pNewAudioSource) {
     }
 }
 
-AudioSource::AudioSource(QUrl url) :
-        m_url(url),
-        m_channelCount(kChannelCountDefault),
-        m_frameRate(kFrameRateDefault),
-        m_frameCount(kFrameCountDefault),
-        m_bitrate(kBitrateDefault) {
-}
-
-AudioSource::~AudioSource() {
+AudioSource::AudioSource(QUrl url)
+        : UrlResource(url),
+          m_channelCount(kChannelCountDefault),
+          m_frameRate(kFrameRateDefault),
+          m_frameCount(kFrameCountDefault),
+          m_bitrate(kBitrateDefault) {
 }
 
 void AudioSource::setChannelCount(size_type channelCount) {

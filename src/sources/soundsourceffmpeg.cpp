@@ -100,8 +100,12 @@ Result SoundSourceFFmpeg::parseHeader() {
 Result SoundSourceFFmpeg::parseMetadata(Mixxx::TrackMetadata* pMetadata) {
 =======
 Result SoundSourceFFmpeg::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
+<<<<<<< HEAD
 >>>>>>> Split AudioSource from SoundSource
     qDebug() << "ffmpeg: SoundSourceFFmpeg::parseMetadata" << getFilename();
+=======
+    qDebug() << "ffmpeg: SoundSourceFFmpeg::parseMetadata" << getLocalFileName();
+>>>>>>> Harmonize handling of URL (re-)sources
 
     AVFormatContext *FmtCtx = avformat_alloc_context();
     AVCodecContext *CodecCtx = NULL;
@@ -112,14 +116,18 @@ Result SoundSourceFFmpeg::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     QByteArray qBAFilename = getFilename().toLocal8Bit();
 =======
     if (avformat_open_input(&FmtCtx, getFilename().toLocal8Bit().constData(), NULL,
 =======
     if (avformat_open_input(&FmtCtx, getLocalFilePath().constData(), NULL,
 >>>>>>> Create SoundSource from URL
+=======
+    if (avformat_open_input(&FmtCtx, getLocalFileNameBytes().constData(), NULL,
+>>>>>>> Harmonize handling of URL (re-)sources
                             &l_iFormatOpts) !=0) {
-        qDebug() << "av_open_input_file: cannot open" << getFilename();
+        qDebug() << "av_open_input_file: cannot open" << getLocalFileName();
         return ERR;
     }
 >>>>>>> Eliminate unnecessary local variables
@@ -201,7 +209,7 @@ Result SoundSourceFFmpeg::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
     // Retrieve stream information
     if (avformat_find_stream_info(FmtCtx, NULL)<0) {
         qDebug() << "av_find_stream_info: Can't find metadata" <<
-                getFilename();
+                getLocalFileName();
         avcodec_close(CodecCtx);
         avformat_close_input(&FmtCtx);
         av_free(FmtCtx);
@@ -227,7 +235,7 @@ Result SoundSourceFFmpeg::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
     if (iAudioStream == -1) {
 >>>>>>> Split AudioSource from SoundSource
         qDebug() << "cannot find an audio stream: Can't find stream" <<
-                getFilename();
+                getLocalFileName();
         avcodec_close(CodecCtx);
         avformat_close_input(&FmtCtx);
         av_free(FmtCtx);

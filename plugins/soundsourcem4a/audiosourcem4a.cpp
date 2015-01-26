@@ -95,15 +95,14 @@ AudioSourcePointer AudioSourceM4A::create(QUrl url) {
 }
 
 Result AudioSourceM4A::postConstruct() {
-    const QString fileName(getUrl().toLocalFile());
     /* open MP4 file, check for >= ver 1.9.1 */
 #if MP4V2_PROJECT_version_hex <= 0x00010901
-    m_hFile = MP4Read(fileName.toLocal8Bit().constData(), 0);
+    m_hFile = MP4Read(getLocalFileNameBytes().constData(), 0);
 #else
-    m_hFile = MP4Read(fileName.toLocal8Bit().constData());
+    m_hFile = MP4Read(getLocalFileNameBytes().constData());
 #endif
     if (MP4_INVALID_FILE_HANDLE == m_hFile) {
-        qWarning() << "Failed to open file for reading:" << fileName;
+        qWarning() << "Failed to open file for reading:" << getUrl();
         return ERR;
     }
 

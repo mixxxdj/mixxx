@@ -18,7 +18,7 @@ SoundSourceWV::SoundSourceWV(QUrl url)
 }
 
 Result SoundSourceWV::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
-    TagLib::WavPack::File f(getLocalFilePath().constData());
+    TagLib::WavPack::File f(getLocalFileNameBytes().constData());
 
     if (!readAudioProperties(pMetadata, f)) {
         return ERR;
@@ -41,7 +41,7 @@ Result SoundSourceWV::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
 }
 
 QImage SoundSourceWV::parseCoverArt() const {
-    TagLib::WavPack::File f(getLocalFilePath().constData());
+    TagLib::WavPack::File f(getLocalFileNameBytes().constData());
     TagLib::APE::Tag *ape = f.APETag();
     if (ape) {
         return Mixxx::readAPETagCover(*ape);

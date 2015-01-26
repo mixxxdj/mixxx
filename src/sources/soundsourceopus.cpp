@@ -43,7 +43,7 @@ private:
  Parse the file to get metadata
  */
 Result SoundSourceOpus::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
-    const QByteArray qbaFilename(getLocalFilePath());
+    const QByteArray qbaFilename(getLocalFileNameBytes());
 
 // If we don't have new enough Taglib we use libopusfile parser!
 #if TAGLIB_HAS_OPUSFILE
@@ -124,7 +124,7 @@ Result SoundSourceOpus::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
 
 QImage SoundSourceOpus::parseCoverArt() const {
 #if TAGLIB_HAS_OPUSFILE
-    TagLib::Ogg::Opus::File f(getLocalFilePath().constData());
+    TagLib::Ogg::Opus::File f(getLocalFileNameBytes().constData());
     TagLib::Ogg::XiphComment *xiph = f.tag();
     if (xiph) {
         return Mixxx::readXiphCommentCover(*xiph);

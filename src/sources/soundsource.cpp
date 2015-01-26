@@ -25,18 +25,15 @@ namespace Mixxx {
 }
 
 SoundSource::SoundSource(QUrl url)
-        : m_url(url),
+        : UrlResource(url),
           m_type(getTypeFromUrl(url)) {
     DEBUG_ASSERT(getUrl().isValid());
 }
 
 SoundSource::SoundSource(QUrl url, QString type)
-        : m_url(url),
+        : UrlResource(url),
           m_type(type) {
     DEBUG_ASSERT(getUrl().isValid());
-}
-
-SoundSource::~SoundSource() {
 }
 
 } //namespace Mixxx

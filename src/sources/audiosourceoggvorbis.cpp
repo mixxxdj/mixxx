@@ -23,22 +23,21 @@ AudioSourcePointer AudioSourceOggVorbis::create(QUrl url) {
 }
 
 Result AudioSourceOggVorbis::postConstruct() {
-    const QString fileName(getUrl().toLocalFile());
-    const QByteArray qbaFilename(fileName.toLocal8Bit());
+    const QByteArray qbaFilename(getLocalFileNameBytes());
     if (0 != ov_fopen(qbaFilename.constData(), &m_vf)) {
-        qWarning() << "Failed to open OggVorbis file:" << fileName;
+        qWarning() << "Failed to open OggVorbis file:" << getUrl();
         return ERR;
     }
 
     if (!ov_seekable(&m_vf)) {
-        qWarning() << "OggVorbis file is not seekable:" << fileName;
+        qWarning() << "OggVorbis file is not seekable:" << getUrl();
         return ERR;
     }
 
     // lookup the ogg's channels and sample rate
     const vorbis_info* vi = ov_info(&m_vf, kLogicalBitstreamIndex);
     if (!vi) {
-        qWarning() << "Failed to read OggVorbis file:" << fileName;
+        qWarning() << "Failed to read OggVorbis file:" << getUrl();
         return ERR;
     }
     setChannelCount(vi->channels);
@@ -55,7 +54,7 @@ Result AudioSourceOggVorbis::postConstruct() {
     if (0 <= pcmTotal) {
         setFrameCount(pcmTotal);
     } else {
-        qWarning() << "Failed to read total length of OggVorbis file:" << fileName;
+        qWarning() << "Failed to read total length of OggVorbis file:" << getUrl();
         return ERR;
     }
 

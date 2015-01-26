@@ -17,24 +17,24 @@ AudioSourcePointer AudioSourceSndFile::create(QUrl url) {
 }
 
 Result AudioSourceSndFile::postConstruct() {
-    const QString fileName(getUrl().toLocalFile());
 #ifdef __WINDOWS__
     // Pointer valid until string changed
-    LPCWSTR lpcwFilename = (LPCWSTR)fileName.utf16();
+    const QString fileName(getLocalFileName());
+    LPCWSTR lpcwFilename = (LPCWSTR) fileName.utf16();
     m_pSndFile = sf_wchar_open(lpcwFilename, SFM_READ, &m_sfInfo);
 #else
-    m_pSndFile = sf_open(fileName.toLocal8Bit().constData(), SFM_READ,
+    m_pSndFile = sf_open(getLocalFileNameBytes().constData(), SFM_READ,
             &m_sfInfo);
 #endif
 
     if (m_pSndFile == NULL) {   // sf_format_check is only for writes
-        qWarning() << "Error opening libsndfile file:" << fileName
+        qWarning() << "Error opening libsndfile file:" << getUrl()
                 << sf_strerror(m_pSndFile);
         return ERR;
     }
 
     if (sf_error(m_pSndFile) > 0) {
-        qWarning() << "Error opening libsndfile file:" << fileName
+        qWarning() << "Error opening libsndfile file:" << getUrl()
                 << sf_strerror(m_pSndFile);
         return ERR;
     }

@@ -50,15 +50,10 @@ namespace Mixxx {
 /*
  Base class for sound sources.
  */
-class SoundSource {
+class SoundSource: public UrlResource {
 public:
-    virtual ~SoundSource();
-
     static QString getTypeFromUrl(QUrl url);
 
-    inline const QUrl& getUrl() const {
-        return m_url;
-    }
     inline const QString& getType() const {
         return m_type;
     }
@@ -81,13 +76,7 @@ protected:
     explicit SoundSource(QUrl url);
     SoundSource(QUrl url, QString type);
 
-    inline QByteArray getLocalFilePath() const {
-        DEBUG_ASSERT(getUrl().isLocalFile());
-        return getUrl().toLocalFile().toLocal8Bit();
-    }
-
 private:
-    const QUrl m_url;
     const QString m_type;
 };
 

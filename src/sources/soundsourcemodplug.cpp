@@ -50,7 +50,7 @@ SoundSourceModPlug::SoundSourceModPlug(QUrl url) :
 
 Result SoundSourceModPlug::parseMetadata(
         Mixxx::TrackMetadata* pMetadata) const {
-    QFile modFile(getLocalFilePath());
+    QFile modFile(getLocalFileNameBytes());
     modFile.open(QIODevice::ReadOnly);
     const QByteArray fileBuf(modFile.readAll());
     modFile.close();

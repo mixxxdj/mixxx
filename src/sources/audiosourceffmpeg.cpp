@@ -38,8 +38,7 @@ Result AudioSourceFFmpeg::postConstruct() {
     unsigned int i;
     AVDictionary *l_iFormatOpts = NULL;
 
-    const QString fileName(getUrl().toLocalFile());
-    const QByteArray qBAFilename = fileName.toLocal8Bit();
+    const QByteArray qBAFilename(getLocalFileNameBytes());
 
     qDebug() << "New AudioSourceFFmpeg :" << qBAFilename;
 
