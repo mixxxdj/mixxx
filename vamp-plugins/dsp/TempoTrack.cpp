@@ -544,7 +544,7 @@ int TempoTrack::findMeter(double *ACF, unsigned int len, double period)
 	tsig = 4;
     }
 
-
+    delete(dbf);
     return tsig;
 }
 
