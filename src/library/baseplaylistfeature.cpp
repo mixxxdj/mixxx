@@ -395,6 +395,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
     }
     // Manually add extension due to bug in QFileDialog
     // via https://bugreports.qt-project.org/browse/QTBUG-27186
+    // Can be removed after switch to Qt5
     QFileInfo fileName(file_location);
     if (fileName.suffix().isNull() || fileName.suffix().isEmpty()) {
     	QString ext = filefilter.section(".",1,1);

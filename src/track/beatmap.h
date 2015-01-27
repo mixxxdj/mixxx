@@ -33,7 +33,7 @@ class BeatMap : public QObject, public Beats {
     // zero then the track's sample rate will be used. A list of beat locations
     // in audio frames may be provided.
     BeatMap(TrackPointer pTrack, int iSampleRate,
-            const QVector<double> beats = QVector<double>());
+            const QVector<double>& beats);
     virtual ~BeatMap();
 
     // See method comments in beats.h
@@ -80,7 +80,7 @@ class BeatMap : public QObject, public Beats {
   private:
     void initialize(TrackPointer pTrack, int iSampleRate);
     void readByteArray(const QByteArray* pByteArray);
-    void createFromBeatVector(QVector<double> beats);
+    void createFromBeatVector(const QVector<double>& beats);
     void onBeatlistChanged();
 
     double calculateBpm(const mixxx::track::io::Beat& startBeat,

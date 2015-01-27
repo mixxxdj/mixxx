@@ -430,17 +430,35 @@ void DlgPrefEQ::applySelections() {
             box->setCurrentIndex(firstEffectIndex);
         }
         QString group = PlayerManager::groupForDeck(deck);
-        EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
-        m_pEQEffectRack->loadEffectToGroup(group, pEffect);
 
-        m_pConfig->set(ConfigKey(kConfigKey, "EffectForGroup_" + group),
-                ConfigValue(effectId));
+        // Only apply the effect if it changed -- so first interrogate the
+        // loaded effect if any.
+        bool need_load = true;
+        if (m_pEQEffectRack->numEffectChainSlots() > deck) {
+            // It's not correct to get a chainslot by index number -- get by
+            // group name instead.
+            EffectChainSlotPointer chainslot =
+                    m_pEQEffectRack->getGroupEffectChainSlot(group);
+            if (chainslot && chainslot->numSlots()) {
+                EffectPointer effectpointer =
+                        chainslot->getEffectSlot(0)->getEffect();
+                if (effectpointer &&
+                        effectpointer->getManifest().id() == effectId) {
+                    need_load = false;
+                }
+            }
+        }
+        if (need_load) {
+            EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
+            m_pEQEffectRack->loadEffectToGroup(group, pEffect);
+            m_pConfig->set(ConfigKey(kConfigKey, "EffectForGroup_" + group),
+                    ConfigValue(effectId));
+            m_filterWaveformEnableCOs[deck]->set(m_pEffectsManager->isEQ(effectId));
 
-        m_filterWaveformEnableCOs[deck]->set(m_pEffectsManager->isEQ(effectId));
-
-        // This is required to remove a previous selected effect that does not
-        // fit to the current ShowAllEffects checkbox
-        slotPopulateDeckEffectSelectors();
+            // This is required to remove a previous selected effect that does not
+            // fit to the current ShowAllEffects checkbox
+            slotPopulateDeckEffectSelectors();
+        }
         ++deck;
     }
 
