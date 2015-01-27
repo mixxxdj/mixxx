@@ -53,13 +53,13 @@ public:
 			    const vector<double> &y,
 			    vector<double> &coef);
 
-                   
+
 private:
     TPolyFit &operator = (const TPolyFit &);   // disable assignment
     TPolyFit();                                // and instantiation
     TPolyFit(const TPolyFit&);                 // and copying
 
-  
+
     static void Square (const Matrix &x,              // Matrix multiplication routine
 			const vector<double> &y,
 			Matrix &a,                    // A = transpose X times X
@@ -260,8 +260,8 @@ bool TPolyFit::GaussJordan (Matrix &b,
 
     for( int i = 0; i < ncol; ++i)
 	coef[i] = w[i][0];
- 
- 
+
+
     return true;
 }   // end;	{ procedure GaussJordan }
 //----------------------------------------------------------------------------------------------
@@ -274,7 +274,7 @@ bool TPolyFit::GaussJordan2(Matrix &b,
 {
     //GaussJordan2;         // first half of GaussJordan
     // actual start of gaussj
- 
+
     double big, t;
     double pivot;
     double determ;
@@ -404,4 +404,4 @@ void NSUtility::zeroise(vector<vector<int> > &matrix, int m, int n)
 
 
 #endif
- 
+
