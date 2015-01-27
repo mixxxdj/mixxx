@@ -54,32 +54,41 @@ float parseReplayGainDbString(QString sReplayGainDb, bool* pValid = 0) {
     if (pValid) {
         *pValid = false;
     }
-    sReplayGainDb.remove("dB"); // TODO(XXX): Why?
-    if (sReplayGainDb.trimmed().isEmpty()) {
+    QString normalizedReplayGainDb(sReplayGainDb.toLower().trimmed());
+    const int plusIndex = normalizedReplayGainDb.indexOf('+');
+    if (0 == plusIndex) {
+        // strip leading "+"
+        normalizedReplayGainDb = normalizedReplayGainDb.mid(plusIndex + 1).trimmed();
+    }
+    const int dbIndex = normalizedReplayGainDb.indexOf("db");
+    if ((0 <= dbIndex) && ((normalizedReplayGainDb.length() - 2) == dbIndex)) {
+        // strip trailing "db"
+        normalizedReplayGainDb = normalizedReplayGainDb.left(dbIndex).trimmed();
+    }
+    if (normalizedReplayGainDb.isEmpty()) {
         return TrackMetadata::REPLAYGAIN_UNDEFINED;
     }
     bool replayGainDbValid = false;
-    const float replayGainDb = sReplayGainDb.toFloat(&replayGainDbValid);
+    const double replayGainDb = normalizedReplayGainDb.toDouble(&replayGainDbValid);
     if (replayGainDbValid) {
-        if (TrackMetadata::REPLAYGAIN_UNDEFINED == replayGainDb) {
-            // special case
-            if (pValid) {
-                *pValid = true;
-            }
-            return replayGainDb;
-        }
+        const float replayGain = db2ratio(replayGainDb);
+        DEBUG_ASSERT(TrackMetadata::REPLAYGAIN_UNDEFINED != replayGain); // impossible
         // I found some mp3s of mine with replaygain tag set to 0dB even if not normalized.
         // This is because of Rapid Evolution 3, I suppose. I prefer to rescan them by
         // setting value to 0 (i.e. rescan via analyserrg)
-        if (TrackMetadata::REPLAYGAIN_0DB == replayGainDb) {
+        if (TrackMetadata::REPLAYGAIN_0DB == replayGain) {
+            // special case
             qDebug() << "Ignoring 0dB replay gain:" << replayGainDb;
-            return TrackMetadata::REPLAYGAIN_UNDEFINED;
-        }
-        if (TrackMetadata::isReplayGainValid(replayGainDb)) {
             if (pValid) {
                 *pValid = true;
             }
-            return replayGainDb;
+            return TrackMetadata::REPLAYGAIN_UNDEFINED;
+        }
+        if (TrackMetadata::isReplayGainValid(replayGain)) {
+            if (pValid) {
+                *pValid = true;
+            }
+            return replayGain;
         } else {
             qDebug() << "Replay gain out of range:" << replayGainDb;
         }
