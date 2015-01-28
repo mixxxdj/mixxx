@@ -283,6 +283,7 @@ void SampleUtil::copyWithRampingGain(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _R
 }
 
 // static
+<<<<<<< HEAD
 void SampleUtil::convertS16ToFloat32(CSAMPLE* _RESTRICT pDest, const SAMPLE* _RESTRICT pSrc,
         int iNumSamples) {
     // -32768 is a valid low sample, whereas 32767 is the highest valid sample.
@@ -291,7 +292,25 @@ void SampleUtil::convertS16ToFloat32(CSAMPLE* _RESTRICT pDest, const SAMPLE* _RE
     const CSAMPLE kConversionFactor = 0x8000;
     // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
+=======
+void SampleUtil::convertS16ToFloat32(CSAMPLE* pDest, const SAMPLE* pSrc,
+        unsigned int iNumSamples) {
+    // SAMPLE_MIN = -32768 is a valid low sample, whereas SAMPLE_MAX = 32767
+    // is the highest valid sample. Note that this means that although some
+    // sample values convert to -1.0, none will convert to +1.0.
+    const CSAMPLE kConversionFactor = SAMPLE_MAX;
+    for (unsigned int i = 0; i < iNumSamples; ++i) {
+>>>>>>> Move sample conversion code to SampleUtil
         pDest[i] = CSAMPLE(pSrc[i]) / kConversionFactor;
+    }
+}
+
+//static
+void SampleUtil::convertFloat32ToS16(SAMPLE* pDest, const CSAMPLE* pSrc,
+        unsigned int iNumSamples) {
+    const CSAMPLE kConversionFactor = SAMPLE_MAX;
+    for (unsigned int i = 0; i < iNumSamples; ++i) {
+        pDest[i] = SAMPLE(pSrc[i] * kConversionFactor);
     }
 }
 

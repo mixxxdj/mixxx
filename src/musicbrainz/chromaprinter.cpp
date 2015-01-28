@@ -1,6 +1,7 @@
 #include "musicbrainz/chromaprinter.h"
 
 #include "soundsourceproxy.h"
+#include "sampleutil.h"
 
 #include <chromaprint.h>
 
@@ -47,9 +48,10 @@ namespace
 
         std::vector<SAMPLE> fingerprintSamples(readFrames * kFingerprintChannels);
         // Convert floating-point to integer
-        for (Mixxx::AudioSource::size_type i = 0; i < fingerprintSamples.size(); ++i) {
-            fingerprintSamples[i] = SAMPLE(sampleBuffer[i] * SAMPLE_MAX);
-        }
+        SampleUtil::convertFloat32ToS16(
+                &fingerprintSamples[0],
+                &sampleBuffer[0],
+                fingerprintSamples.size());
 
         qDebug("reading file took: %d ms" , timerReadingFile.elapsed());
 
