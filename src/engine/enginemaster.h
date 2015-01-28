@@ -49,12 +49,6 @@ class EngineDelay;
 class EngineMaster : public QObject, public AudioSource {
     Q_OBJECT
   public:
-    enum MicrophoneMix {
-        MM_NO_MUTE = 0,
-        MM_MUTE_HEADPHONE = 1,
-        MM_BROADCAST_AND_RECORD_ONLY = 2
-    };
-
     EngineMaster(ConfigObject<ConfigValue>* pConfig,
                  const char* pGroup,
                  EffectsManager* pEffectsManager,
@@ -151,9 +145,8 @@ class EngineMaster : public QObject, public AudioSource {
     class PflGainCalculator : public GainCalculator {
       public:
         inline double getGain(ChannelInfo* pChannelInfo) const {
-            // Talkover channels are muted in Pfl mix
-            return pChannelInfo->m_pChannel->isTalkoverEnabled() ?
-                    0.0 : m_dGain;
+            Q_UNUSED(pChannelInfo);
+            return m_dGain;
         }
         inline void setGain(double dGain) {
             m_dGain = dGain;
@@ -161,23 +154,23 @@ class EngineMaster : public QObject, public AudioSource {
       private:
         double m_dGain;
     };
+    class TalkoverGainCalculator : public GainCalculator {
+      public:
+        inline double getGain(ChannelInfo* pChannelInfo) const {
+            Q_UNUSED(pChannelInfo);
+            return 1.0;
+        }
+    };
     class OrientationVolumeGainCalculator : public GainCalculator {
       public:
         OrientationVolumeGainCalculator()
                 : m_dVolume(1.0),
                   m_dLeftGain(1.0),
                   m_dCenterGain(1.0),
-                  m_dRightGain(1.0),
-                  m_dTalkoverGain(1.0) {
+                  m_dRightGain(1.0) {
         }
 
         inline double getGain(ChannelInfo* pChannelInfo) const {
-            if (pChannelInfo->m_pMuteControl->get() > 0.0) {
-                return 0.0;
-            }
-            if (pChannelInfo->m_pChannel->isTalkoverEnabled()) {
-                return m_dTalkoverGain;
-            }
             const double channelVolume = pChannelInfo->m_pVolumeControl->get();
             const double orientationGain = EngineMaster::gainForOrientation(
                     pChannelInfo->m_pChannel->getOrientation(),
@@ -186,12 +179,11 @@ class EngineMaster : public QObject, public AudioSource {
         }
 
         inline void setGains(double dVolume, double leftGain,
-                double centerGain, double rightGain, double talkoverGain) {
+                double centerGain, double rightGain) {
             m_dVolume = dVolume;
             m_dLeftGain = leftGain;
             m_dCenterGain = centerGain;
             m_dRightGain = rightGain;
-            m_dTalkoverGain = talkoverGain;
         }
 
       private:
@@ -199,7 +191,6 @@ class EngineMaster : public QObject, public AudioSource {
         double m_dLeftGain;
         double m_dCenterGain;
         double m_dRightGain;
-        double m_dTalkoverGain;
     };
 
   private:
@@ -212,6 +203,7 @@ class EngineMaster : public QObject, public AudioSource {
     // master output or headphone output, respectively.
     void processChannels(unsigned int* busChannelConnectionFlags,
                          unsigned int* headphoneOutput,
+                         unsigned int* talkoverOutput,
                          int iBufferSize);
 
     EngineEffectsManager* m_pEngineEffectsManager;
@@ -220,10 +212,12 @@ class EngineMaster : public QObject, public AudioSource {
     QVarLengthArray<ChannelInfo*, 128> m_activeChannels;
     QList<CSAMPLE> m_channelMasterGainCache;
     QList<CSAMPLE> m_channelHeadphoneGainCache;
+    QList<CSAMPLE> m_channelTalkoverGainCache;
 
     CSAMPLE* m_pOutputBusBuffers[3];
     CSAMPLE* m_pMaster;
     CSAMPLE* m_pHead;
+    CSAMPLE* m_pTalkover;
 
     EngineWorkerScheduler* m_pWorkerScheduler;
     EngineSync* m_pMasterSync;
@@ -255,10 +249,11 @@ class EngineMaster : public QObject, public AudioSource {
     ControlObject* m_pKeylockEngine;
 
     PflGainCalculator m_headphoneGain;
+    TalkoverGainCalculator m_talkoverGain;
     OrientationVolumeGainCalculator m_masterGain;
-    CSAMPLE m_masterVolumeOld;
+    CSAMPLE m_masterGainOld;
     CSAMPLE m_headphoneMasterGainOld;
-    CSAMPLE m_headphoneVolumeOld;
+    CSAMPLE m_headphoneGainOld;
 
     const QString m_masterGroup;
     const QString m_headphoneGroup;
@@ -271,7 +266,7 @@ class EngineMaster : public QObject, public AudioSource {
     ControlObject* m_pMasterEnabled;
     // Mix two Mono channels. This is useful for outdoor gigs
     ControlObject* m_pMasterMonoMixdown;
-    ControlObject* m_pMasterMicrophoneMix;
+    ControlObject* m_pMasterTalkoverMix;
     ControlObject* m_pHeadphoneEnabled;
 
     volatile bool m_bBusOutputConnected[3];
