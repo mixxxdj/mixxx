@@ -50,17 +50,20 @@ double parseBpmString(const QString& sBpm, bool* pValid = 0) {
     return TrackMetadata::BPM_UNDEFINED;
 }
 
+const QString REPLAYGAIN_UNIT("dB");
+const QString REPLAYGAIN_SUFFIX(" " + REPLAYGAIN_UNIT);
+
 float parseReplayGainDbString(QString sReplayGainDb, bool* pValid = 0) {
     if (pValid) {
         *pValid = false;
     }
-    QString normalizedReplayGainDb(sReplayGainDb.toLower().trimmed());
+    QString normalizedReplayGainDb(sReplayGainDb.trimmed());
     const int plusIndex = normalizedReplayGainDb.indexOf('+');
     if (0 == plusIndex) {
         // strip leading "+"
         normalizedReplayGainDb = normalizedReplayGainDb.mid(plusIndex + 1).trimmed();
     }
-    const int dbIndex = normalizedReplayGainDb.indexOf("db");
+    const int dbIndex = normalizedReplayGainDb.indexOf(REPLAYGAIN_UNIT, Qt::CaseInsensitive);
     if ((0 <= dbIndex) && ((normalizedReplayGainDb.length() - 2) == dbIndex)) {
         // strip trailing "db"
         normalizedReplayGainDb = normalizedReplayGainDb.left(dbIndex).trimmed();
@@ -118,6 +121,14 @@ bool TrackMetadata::setBpmString(const QString& sBpm) {
     return bpmValid;
 }
 
+QString TrackMetadata::getBpmString() const {
+    if (isBpmValid()) {
+        return QString::number(getBpm(), 'f');
+    } else {
+        return QString();
+    }
+}
+
 bool TrackMetadata::setReplayGainDbString(QString sReplayGainDb) {
     bool replayGainValid;
     const float replayGain = parseReplayGainDbString(sReplayGainDb, &replayGainValid);
@@ -125,6 +136,14 @@ bool TrackMetadata::setReplayGainDbString(QString sReplayGainDb) {
         setReplayGain(replayGain);
     }
     return replayGainValid;
+}
+
+QString TrackMetadata::getReplayGainDbString() const {
+    if (isReplayGainValid()) {
+        return QString::number(ratio2db(getReplayGain()), 'f') + REPLAYGAIN_SUFFIX;
+    } else {
+        return QString();
+    }
 }
 
 } //namespace Mixxx

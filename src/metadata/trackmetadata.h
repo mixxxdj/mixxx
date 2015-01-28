@@ -140,6 +140,7 @@ public:
         m_bpm = BPM_UNDEFINED;
     }
     bool setBpmString(const QString& sBpm);
+    QString getBpmString() const;
 
     static const float REPLAYGAIN_UNDEFINED;
     static const float REPLAYGAIN_MIN; // lower bound (exclusive)
@@ -160,6 +161,7 @@ public:
         m_replayGain = REPLAYGAIN_UNDEFINED;
     }
     bool setReplayGainDbString(QString sReplayGainDb); // in dB
+    QString getReplayGainDbString() const; // in dB
 
 private:
     QString m_artist;
