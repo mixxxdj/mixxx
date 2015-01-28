@@ -14,7 +14,15 @@ namespace Mixxx {
 
 namespace {
 
-double parseBpmString(const QString& sBpm, bool* pValid = 0) {
+QString formatBpm(double bpm) {
+    if (TrackMetadata::isBpmValid(bpm)) {
+        return QString::number(bpm, 'f');
+    } else {
+        return QString();
+    }
+}
+
+double parseBpm(const QString& sBpm, bool* pValid = 0) {
     if (pValid) {
         *pValid = false;
     }
@@ -33,7 +41,7 @@ double parseBpmString(const QString& sBpm, bool* pValid = 0) {
         }
         while (TrackMetadata::BPM_MAX < bpm) {
             // TODO(XXX): Why?
-            qDebug() << "Scaling BPM:" << bpm;
+            qDebug() << "Scaling BPM value:" << bpm;
             bpm /= 10.0;
         }
         if (TrackMetadata::isBpmValid(bpm)) {
@@ -42,7 +50,7 @@ double parseBpmString(const QString& sBpm, bool* pValid = 0) {
             }
             return bpm;
         } else {
-            qDebug() << "BPM out of range:" << bpm;
+            qDebug() << "Invalid BPM value:" << sBpm << "->" << bpm;
         }
     } else {
         qDebug() << "Failed to parse BPM:" << sBpm;
@@ -53,7 +61,15 @@ double parseBpmString(const QString& sBpm, bool* pValid = 0) {
 const QString REPLAYGAIN_UNIT("dB");
 const QString REPLAYGAIN_SUFFIX(" " + REPLAYGAIN_UNIT);
 
-float parseReplayGainDbString(QString sReplayGainDb, bool* pValid = 0) {
+QString formatReplayGainDb(double replayGain) {
+    if (TrackMetadata::isReplayGainValid(replayGain)) {
+        return QString::number(ratio2db(replayGain), 'f') + REPLAYGAIN_SUFFIX;
+    } else {
+        return QString();
+    }
+}
+
+double parseReplayGainDb(QString sReplayGainDb, bool* pValid = 0) {
     if (pValid) {
         *pValid = false;
     }
@@ -63,10 +79,10 @@ float parseReplayGainDbString(QString sReplayGainDb, bool* pValid = 0) {
         // strip leading "+"
         normalizedReplayGainDb = normalizedReplayGainDb.mid(plusIndex + 1).trimmed();
     }
-    const int dbIndex = normalizedReplayGainDb.indexOf(REPLAYGAIN_UNIT, Qt::CaseInsensitive);
-    if ((0 <= dbIndex) && ((normalizedReplayGainDb.length() - 2) == dbIndex)) {
-        // strip trailing "db"
-        normalizedReplayGainDb = normalizedReplayGainDb.left(dbIndex).trimmed();
+    const int unitIndex = normalizedReplayGainDb.lastIndexOf(REPLAYGAIN_UNIT, -1, Qt::CaseInsensitive);
+    if ((0 <= unitIndex) && ((normalizedReplayGainDb.length() - 2) == unitIndex)) {
+        // strip trailing unit suffix
+        normalizedReplayGainDb = normalizedReplayGainDb.left(unitIndex).trimmed();
     }
     if (normalizedReplayGainDb.isEmpty()) {
         return TrackMetadata::REPLAYGAIN_UNDEFINED;
@@ -74,14 +90,14 @@ float parseReplayGainDbString(QString sReplayGainDb, bool* pValid = 0) {
     bool replayGainDbValid = false;
     const double replayGainDb = normalizedReplayGainDb.toDouble(&replayGainDbValid);
     if (replayGainDbValid) {
-        const float replayGain = db2ratio(replayGainDb);
+        const double replayGain = db2ratio(replayGainDb);
         DEBUG_ASSERT(TrackMetadata::REPLAYGAIN_UNDEFINED != replayGain); // impossible
         // I found some mp3s of mine with replaygain tag set to 0dB even if not normalized.
         // This is because of Rapid Evolution 3, I suppose. I prefer to rescan them by
         // setting value to 0 (i.e. rescan via analyserrg)
         if (TrackMetadata::REPLAYGAIN_0DB == replayGain) {
             // special case
-            qDebug() << "Ignoring 0dB replay gain:" << replayGainDb;
+            qDebug() << "Ignoring replay gain:" << formatReplayGainDb(replayGain);
             if (pValid) {
                 *pValid = true;
             }
@@ -93,7 +109,7 @@ float parseReplayGainDbString(QString sReplayGainDb, bool* pValid = 0) {
             }
             return replayGain;
         } else {
-            qDebug() << "Replay gain out of range:" << replayGainDb;
+            qDebug() << "Invalid replay gain value:" << sReplayGainDb << " -> "<< replayGain;
         }
     } else {
         qDebug() << "Failed to parse replay gain:" << sReplayGainDb;
@@ -114,7 +130,7 @@ TrackMetadata::TrackMetadata() :
 
 bool TrackMetadata::setBpmString(const QString& sBpm) {
     bool bpmValid;
-    const double bpm = parseBpmString(sBpm, &bpmValid);
+    const double bpm = parseBpm(sBpm, &bpmValid);
     if (bpmValid) {
         setBpm(bpm);
     }
@@ -122,16 +138,12 @@ bool TrackMetadata::setBpmString(const QString& sBpm) {
 }
 
 QString TrackMetadata::getBpmString() const {
-    if (isBpmValid()) {
-        return QString::number(getBpm(), 'f');
-    } else {
-        return QString();
-    }
+    return formatBpm(getBpm());
 }
 
 bool TrackMetadata::setReplayGainDbString(QString sReplayGainDb) {
     bool replayGainValid;
-    const float replayGain = parseReplayGainDbString(sReplayGainDb, &replayGainValid);
+    const float replayGain = parseReplayGainDb(sReplayGainDb, &replayGainValid);
     if (replayGainValid) {
         setReplayGain(replayGain);
     }
@@ -139,11 +151,7 @@ bool TrackMetadata::setReplayGainDbString(QString sReplayGainDb) {
 }
 
 QString TrackMetadata::getReplayGainDbString() const {
-    if (isReplayGainValid()) {
-        return QString::number(ratio2db(getReplayGain()), 'f') + REPLAYGAIN_SUFFIX;
-    } else {
-        return QString();
-    }
+    return formatReplayGainDb(getReplayGain());
 }
 
 } //namespace Mixxx
