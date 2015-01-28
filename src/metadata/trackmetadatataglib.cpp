@@ -388,7 +388,8 @@ void readMP4Tag(TrackMetadata* pTrackMetadata, /*const*/TagLib::MP4::Tag& tag) {
     // Only read track gain (not album gain)
     if (tag.itemListMap().contains(
             "----:com.apple.iTunes:replaygain_track_gain")) {
-        // TODO(XXX) find tracks with this property and check what it looks like
+        pTrackMetadata->setReplayGainDbString(
+                toQStringFirst(tag.itemListMap()["----:com.apple.iTunes:replaygain_track_gain"]));
     }
 
     // Read musical key (conforms to Rapid Evolution)
@@ -659,6 +660,8 @@ bool writeMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& trackMetadata) {
     }
     writeMP4Atom(pTag, "----:com.apple.iTunes:BPM",
             trackMetadata.getBpmString());
+    writeMP4Atom(pTag, "----:com.apple.iTunes:replaygain_track_gain",
+            trackMetadata.getReplayGainDbString());
     writeMP4Atom(pTag, "----:com.apple.iTunes:initialkey",
             trackMetadata.getKey());
     writeMP4Atom(pTag, "----:com.apple.iTunes:KEY",
