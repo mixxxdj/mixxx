@@ -26,7 +26,6 @@ QSize WStarRating::sizeHint() const {
     option.initFrom(this);
     QSize widgetSize = style()->sizeFromContents(QStyle::CT_PushButton, &option,
                                                  m_starRating.sizeHint(), this);
-    widgetSize.expandedTo(QApplication::globalStrut());
 
     m_contentRect.setRect(
         (widgetSize.width() - m_starRating.sizeHint().width()) / 2,
