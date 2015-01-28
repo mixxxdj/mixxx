@@ -57,6 +57,14 @@ QString TrackMetadata::formatBpm(double bpm) {
     }
 }
 
+QString TrackMetadata::formatBpm(int bpm) {
+    if (TrackMetadata::isBpmValid(bpm)) {
+        return QString::number(bpm);
+    } else {
+        return QString();
+    }
+}
+
 namespace {
 
 const QString REPLAYGAIN_UNIT("dB");

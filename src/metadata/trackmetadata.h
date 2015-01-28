@@ -3,6 +3,8 @@
 
 #include <QString>
 
+#include <cmath>
+
 namespace Mixxx {
 
 // DTO for track metadata properties. Must not be subclassed (no virtual destructor)!
@@ -127,6 +129,9 @@ public:
     inline double getBpm() const {
         return m_bpm;
     }
+    inline int getBpmAsInteger() const {
+        return round(getBpm());
+    }
     inline static bool isBpmValid(double bpm) {
         return (BPM_MIN < bpm) && (BPM_MAX >= bpm);
     }
@@ -162,6 +167,7 @@ public:
     // Parse and format BPM metadata
     static double parseBpm(const QString& sBpm, bool* pValid = 0);
     static QString formatBpm(double bpm);
+    static QString formatBpm(int bpm);
 
     // Parse and format replay gain metadata according to the
     // ReplayGain 1.0 specification.

@@ -14,8 +14,6 @@
 #include <taglib/attachedpictureframe.h>
 #include <taglib/flacpicture.h>
 
-#include <cmath>
-
 #include <QDebug>
 
 namespace Mixxx {
@@ -554,7 +552,7 @@ bool writeID3v2Tag(TagLib::ID3v2::Tag* pTag,
     writeID3v2TextIdentificationFrame(pTag, "TBPM",
             TrackMetadata::formatBpm(trackMetadata.getBpm()));
     writeID3v2TextIdentificationFrame(pTag, "TBPM",
-            TrackMetadata::formatBpm(trackMetadata.getBpm()));
+            TrackMetadata::formatBpm(trackMetadata.getBpmAsInteger()));
     writeID3v2TextIdentificationFrame(pTag, "TKEY", trackMetadata.getKey());
     writeID3v2TextIdentificationFrame(pTag, "TCOM",
             trackMetadata.getComposer());
@@ -671,7 +669,7 @@ bool writeMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& trackMetadata) {
     writeMP4Atom(pTag, "\251grp", trackMetadata.getGrouping());
     writeMP4Atom(pTag, "\251day", trackMetadata.getYear());
     if (trackMetadata.isBpmValid()) {
-        writeMP4Atom(pTag, "tmpo", (int) round(trackMetadata.getBpm()));
+        writeMP4Atom(pTag, "tmpo", trackMetadata.getBpmAsInteger());
     } else {
         pTag->itemListMap().erase("tmpo");
     }
