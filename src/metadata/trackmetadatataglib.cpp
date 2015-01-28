@@ -188,11 +188,7 @@ void readID3v2Tag(TrackMetadata* pTrackMetadata,
         if (replaygainFrame && replaygainFrame->fieldList().size() >= 2) {
             const QString desc(
                     toQString(replaygainFrame->description()).toLower());
-            if (desc == "replaygain_album_gain") {
-                pTrackMetadata->setReplayGainDbString(
-                        toQString(replaygainFrame->fieldList()[1]));
-            }
-            // Prefer track gain over album gain.
+            // Only read track gain (not album gain)
             if (desc == "replaygain_track_gain") {
                 pTrackMetadata->setReplayGainDbString(
                         toQString(replaygainFrame->fieldList()[1]));
@@ -245,11 +241,7 @@ void readAPETag(TrackMetadata* pTrackMetadata, const TagLib::APE::Tag& tag) {
         pTrackMetadata->setBpmString(toQString(tag.itemListMap()["BPM"]));
     }
 
-    if (tag.itemListMap().contains("REPLAYGAIN_ALBUM_GAIN")) {
-        pTrackMetadata->setReplayGainDbString(
-                toQString(tag.itemListMap()["REPLAYGAIN_ALBUM_GAIN"]));
-    }
-    //Prefer track gain over album gain.
+    // Only read track gain (not album gain)
     if (tag.itemListMap().contains("REPLAYGAIN_TRACK_GAIN")) {
         pTrackMetadata->setReplayGainDbString(
                 toQString(tag.itemListMap()["REPLAYGAIN_TRACK_GAIN"]));
@@ -307,11 +299,7 @@ void readXiphComment(TrackMetadata* pTrackMetadata,
                 toQStringFirst(tag.fieldListMap()["TEMPO"]));
     }
 
-    if (tag.fieldListMap().contains("REPLAYGAIN_ALBUM_GAIN")) {
-        pTrackMetadata->setReplayGainDbString(
-                toQStringFirst(tag.fieldListMap()["REPLAYGAIN_ALBUM_GAIN"]));
-    }
-    //Prefer track gain over album gain.
+    // Only read track gain (not album gain)
     if (tag.fieldListMap().contains("REPLAYGAIN_TRACK_GAIN")) {
         pTrackMetadata->setReplayGainDbString(
                 toQStringFirst(tag.fieldListMap()["REPLAYGAIN_TRACK_GAIN"]));
@@ -423,15 +411,10 @@ void readMP4Tag(TrackMetadata* pTrackMetadata, /*const*/TagLib::MP4::Tag& tag) {
                 toQStringFirst(tag.itemListMap()["----:com.apple.iTunes:KEY"]));
     }
 
-    // Apparently iTunes stores replaygain in this property.
-    if (tag.itemListMap().contains(
-            "----:com.apple.iTunes:replaygain_album_gain")) {
-        // TODO(XXX) find tracks with this property and check what it looks
-    }
-    //Prefer track gain over album gain.
+    // Only read track gain (not album gain)
     if (tag.itemListMap().contains(
             "----:com.apple.iTunes:replaygain_track_gain")) {
-        // TODO(XXX) find tracks with this property and check what it looks
+        // TODO(XXX) find tracks with this property and check what it looks like
     }
 }
 
