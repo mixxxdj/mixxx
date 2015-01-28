@@ -6,7 +6,8 @@
 
 WEffectPushButton::WEffectPushButton(QWidget* pParent, EffectsManager* pEffectsManager)
         : WPushButton(pParent),
-          m_pEffectsManager(pEffectsManager) {
+          m_pEffectsManager(pEffectsManager),
+          m_pButtonMenu(NULL) {
 }
 
 WEffectPushButton::~WEffectPushButton() {

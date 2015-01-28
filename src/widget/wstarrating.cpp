@@ -8,7 +8,8 @@
 WStarRating::WStarRating(QString group, QWidget* pParent)
         : WBaseWidget(pParent),
           m_starRating(0,5),
-          m_pGroup(group) {
+          m_pGroup(group),
+          m_focused(false) {
 }
 
 WStarRating::~WStarRating() {
