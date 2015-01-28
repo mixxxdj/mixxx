@@ -30,8 +30,9 @@ double TrackMetadata::parseBpm(const QString& sBpm, bool* pValid) {
             return bpm;
         }
         while (BPM_MAX < bpm) {
-            // TODO(XXX): Why do we need to scale values that
-            // exceed the reasonable range?
+            // Some applications might store the BPM as an
+            // integer scaled by a factor of 10 or 100 to
+            // preserve fractional digits.
             qDebug() << "Scaling BPM value:" << bpm;
             bpm /= 10.0;
         }
@@ -94,7 +95,7 @@ double TrackMetadata::parseReplayGain(QString sReplayGain, bool* pValid) {
     const double replayGainDb = normalizedReplayGain.toDouble(&replayGainValid);
     if (replayGainValid) {
         const double replayGain = db2ratio(replayGainDb);
-        DEBUG_ASSERT(REPLAYGAIN_UNDEFINED != replayGain); // impossible
+        DEBUG_ASSERT(REPLAYGAIN_UNDEFINED != replayGain);
         // Some applications (e.g. Rapid Evolution 3) write a replay gain
         // of 0 dB even if the replay gain is undefined. To be safe we
         // ignore this special value and instead prefer to recalculate

@@ -70,9 +70,9 @@ inline QString toQString(const TagLib::APE::Item& apeItem) {
     return toQString(apeItem.toString());
 }
 
-inline TagLib::String toTagLibString(const QString& str) {
+inline TagLib::String toTagLibString(const QString& str, TagLib::String::Type textType = TagLib::String::UTF8) {
     const QByteArray qba(str.toUtf8());
-    return TagLib::String(qba.constData(), TagLib::String::UTF8);
+    return TagLib::String(qba.constData(), textType);
 }
 
 inline bool parseBpm(TrackMetadata* pTrackMetadata, QString sBpm) {
@@ -388,7 +388,10 @@ void readMP4Tag(TrackMetadata* pTrackMetadata, /*const*/TagLib::MP4::Tag& tag) {
     // Get BPM
     if (tag.itemListMap().contains("tmpo")) {
         // Read the BPM as an integer value.
-        pTrackMetadata->setBpm(tag.itemListMap()["tmpo"].toInt());
+        const TagLib::MP4::Item& item = tag.itemListMap()["tmpo"];
+        if (item.atomDataType() == TagLib::MP4::TypeInteger) {
+            pTrackMetadata->setBpm(tag.itemListMap()["tmpo"].toInt());
+        }
     }
     if (tag.itemListMap().contains("----:com.apple.iTunes:BPM")) {
         // This is the preferred field for storing the BPM
@@ -490,20 +493,21 @@ void replaceID3v2Frame(TagLib::ID3v2::Tag* pTag, TagLib::ID3v2::Frame* pFrame) {
 void writeID3v2TextIdentificationFrame(TagLib::ID3v2::Tag* pTag,
         const TagLib::ByteVector &id, const QString& text) {
     TagLib::String::Type textType;
-    QByteArray textData;
     if (4 <= pTag->header()->majorVersion()) {
-        // prefer UTF-8 for ID3v2.4.0 or higher
+        // For ID3v2.4.0 or higher use UTF-8
         textType = TagLib::String::UTF8;
-        textData = text.toUtf8();
     } else {
-        textType = TagLib::String::Latin1;
-        textData = text.toLatin1();
+        // For ID3v2.3.0/ID3v2.2.0 use UTF-16 with byte order mark
+        textType = TagLib::String::UTF16;
     }
     QScopedPointer<TagLib::ID3v2::TextIdentificationFrame> pNewFrame(
             new TagLib::ID3v2::TextIdentificationFrame(id, textType));
     pNewFrame->setText(toTagLibString(text));
     replaceID3v2Frame(pTag, pNewFrame.data());
-    pNewFrame.take(); // release ownership
+    // Now the plain pointer in pNewFrame is owned and
+    // managed by pTag. We need to release the ownership
+    // to avoid double deletion!
+    pNewFrame.take();
 }
 
 } // anonymous namespace
