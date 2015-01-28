@@ -28,9 +28,9 @@ class MetadataTest : public testing::Test {
         EXPECT_EQ(expectedResult, actualResult);
         EXPECT_DOUBLE_EQ(expectedValue, actualValue);
 
-        if (actualResult) {
-            qDebug() << "BPM:" << inputValue << "->" << Mixxx::TrackMetadata::formatBpm(actualValue);
-        }
+//        if (actualResult) {
+//            qDebug() << "BPM:" << inputValue << "->" << Mixxx::TrackMetadata::formatBpm(actualValue);
+//        }
 
         return actualResult;
     }
@@ -44,9 +44,9 @@ class MetadataTest : public testing::Test {
         EXPECT_EQ(expectedResult, actualResult);
         EXPECT_FLOAT_EQ(expectedValue, actualValue);
 
-        if (actualResult) {
-            qDebug() << "ReplayGain:" << inputValue << "->" << Mixxx::TrackMetadata::formatReplayGain(actualValue);
-        }
+//        if (actualResult) {
+//            qDebug() << "ReplayGain:" << inputValue << "->" << Mixxx::TrackMetadata::formatReplayGain(actualValue);
+//        }
 
         return actualResult;
     }
