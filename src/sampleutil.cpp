@@ -188,7 +188,8 @@ void SampleUtil::convertS16ToFloat32(CSAMPLE* pDest, const SAMPLE* pSrc,
     // SAMPLE_MIN = -32768 is a valid low sample, whereas SAMPLE_MAX = 32767
     // is the highest valid sample. Note that this means that although some
     // sample values convert to -1.0, none will convert to +1.0.
-    const CSAMPLE kConversionFactor = SAMPLE_MAX;
+    DEBUG_ASSERT(-SAMPLE_MIN >= SAMPLE_MAX);
+    const CSAMPLE kConversionFactor = -SAMPLE_MIN;
     for (unsigned int i = 0; i < iNumSamples; ++i) {
         pDest[i] = CSAMPLE(pSrc[i]) / kConversionFactor;
     }
@@ -197,7 +198,8 @@ void SampleUtil::convertS16ToFloat32(CSAMPLE* pDest, const SAMPLE* pSrc,
 //static
 void SampleUtil::convertFloat32ToS16(SAMPLE* pDest, const CSAMPLE* pSrc,
         unsigned int iNumSamples) {
-    const CSAMPLE kConversionFactor = SAMPLE_MAX;
+    DEBUG_ASSERT(-SAMPLE_MIN >= SAMPLE_MAX);
+    const CSAMPLE kConversionFactor = -SAMPLE_MIN;
     for (unsigned int i = 0; i < iNumSamples; ++i) {
         pDest[i] = SAMPLE(pSrc[i] * kConversionFactor);
     }
