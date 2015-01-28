@@ -19,7 +19,7 @@ class MetadataTest : public testing::Test {
     virtual void TearDown() {
     }
 
-    void parseBpm(double initialValue, QString inputValue, bool expectedResult, double expectedValue) {
+    double parseBpm(double initialValue, QString inputValue, bool expectedResult, double expectedValue) {
         //qDebug() << "parseBpm" << initialValue << inputValue << expectedResult << expectedValue;
 
         Mixxx::TrackMetadata trackMetadata;
@@ -29,9 +29,11 @@ class MetadataTest : public testing::Test {
 
         EXPECT_EQ(expectedResult, actualResult);
         EXPECT_DOUBLE_EQ(trackMetadata.getBpm(), expectedValue);
+
+        return actualResult;
     }
 
-    void parseReplayGainDb(float initialValue, QString inputValue, bool expectedResult, float expectedValue) {
+    float parseReplayGainDb(float initialValue, QString inputValue, bool expectedResult, float expectedValue) {
         //qDebug() << "parseReplayGainDb" << initialValue << inputValue << expectedResult << expectedValue;
 
         Mixxx::TrackMetadata trackMetadata;
@@ -41,6 +43,8 @@ class MetadataTest : public testing::Test {
 
         EXPECT_EQ(expectedResult, actualResult);
         EXPECT_FLOAT_EQ(trackMetadata.getReplayGain(), expectedValue);
+
+        return actualResult;
     }
 };
 
