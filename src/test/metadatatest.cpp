@@ -19,74 +19,69 @@ class MetadataTest : public testing::Test {
     virtual void TearDown() {
     }
 
-    double parseBpm(double initialValue, QString inputValue, bool expectedResult, double expectedValue) {
-        //qDebug() << "parseBpm" << initialValue << inputValue << expectedResult << expectedValue;
+    double parseBpm(QString inputValue, bool expectedResult, double expectedValue) {
+        //qDebug() << "parseBpm" << inputValue << expectedResult << expectedValue;
 
-        Mixxx::TrackMetadata trackMetadata;
-        trackMetadata.setBpm(initialValue);
-
-        const bool actualResult = trackMetadata.setBpmString(inputValue);
+        bool actualResult;
+        const double actualValue = Mixxx::TrackMetadata::parseBpm(inputValue, &actualResult);
 
         EXPECT_EQ(expectedResult, actualResult);
-        EXPECT_DOUBLE_EQ(trackMetadata.getBpm(), expectedValue);
+        EXPECT_DOUBLE_EQ(expectedValue, actualValue);
+
+        if (actualResult) {
+            qDebug() << "BPM:" << inputValue << "->" << Mixxx::TrackMetadata::formatBpm(actualValue);
+        }
 
         return actualResult;
     }
 
-    float parseReplayGainDb(float initialValue, QString inputValue, bool expectedResult, float expectedValue) {
-        //qDebug() << "parseReplayGainDb" << initialValue << inputValue << expectedResult << expectedValue;
+    double parseReplayGain(QString inputValue, bool expectedResult, float expectedValue) {
+        //qDebug() << "parseReplayGain" << inputValue << expectedResult << expectedValue;
 
-        Mixxx::TrackMetadata trackMetadata;
-        trackMetadata.setReplayGain(initialValue);
-
-        const bool actualResult = trackMetadata.setReplayGainDbString(inputValue);
+        bool actualResult;
+        const double actualValue = Mixxx::TrackMetadata::parseReplayGain(inputValue, &actualResult);
 
         EXPECT_EQ(expectedResult, actualResult);
-        EXPECT_FLOAT_EQ(trackMetadata.getReplayGain(), expectedValue);
+        EXPECT_FLOAT_EQ(expectedValue, actualValue);
+
+        if (actualResult) {
+            qDebug() << "ReplayGain:" << inputValue << "->" << Mixxx::TrackMetadata::formatReplayGain(actualValue);
+        }
 
         return actualResult;
     }
 };
 
 TEST_F(MetadataTest, ParseBpmPrecision) {
-    parseBpm(100.0, "128.1234", true, 128.1234); // 4 fractional digits
+    parseBpm("128.1234", true, 128.1234); // 4 fractional digits
 }
 
 TEST_F(MetadataTest, ParseBpmValidRange) {
     for (int bpm100 = int(Mixxx::TrackMetadata::BPM_MIN) * 100; int(Mixxx::TrackMetadata::BPM_MAX) * 100 >= bpm100; ++bpm100) {
         const double expectedValue = bpm100 / 100.0;
-        const double initialValues[] = {
-                Mixxx::TrackMetadata::BPM_UNDEFINED,
-                128.5
-        };
         const QString inputValues[] = {
                 QString("%1").arg(expectedValue),
                 QString("  %1 ").arg(expectedValue),
         };
-        for (size_t i = 0; i < sizeof(initialValues) / sizeof(initialValues[0]); ++i) {
-            for (size_t j = 0; j < sizeof(inputValues) / sizeof(inputValues[0]); ++j) {
-                parseBpm(initialValues[i], inputValues[j], true, expectedValue);
-            }
+        for (size_t i = 0; i < sizeof(inputValues) / sizeof(inputValues[0]); ++i) {
+            parseBpm(inputValues[i], true, expectedValue);
         }
     }
 }
 
 TEST_F(MetadataTest, ParseBpmDecimalScaling) {
-    parseBpm(100.0, "345678", true, 34.5678);
-    parseBpm(100.0, "2345678", true, 234.5678);
+    parseBpm("345678", true, 34.5678);
+    parseBpm("2345678", true, 234.5678);
 }
 
 TEST_F(MetadataTest, ParseBpmInvalid) {
-    parseBpm(Mixxx::TrackMetadata::BPM_UNDEFINED, "", false, Mixxx::TrackMetadata::BPM_UNDEFINED);
-    parseBpm(123.45, "abcde", false, 123.45);
+    parseBpm("", false, Mixxx::TrackMetadata::BPM_UNDEFINED);
+    parseBpm("abcde", false, Mixxx::TrackMetadata::BPM_UNDEFINED);
+    parseBpm("0 dBA", false, Mixxx::TrackMetadata::BPM_UNDEFINED);
 }
 
 TEST_F(MetadataTest, ParseReplayGainDbValidRange) {
     for (int replayGainDb = -100; 100 >= replayGainDb; ++replayGainDb) {
-        const float initialValues[] = {
-                Mixxx::TrackMetadata::REPLAYGAIN_UNDEFINED,
-                0.5f
-        };
         const QString inputValues[] = {
                 QString("%1 ").arg(replayGainDb),
                 QString("  %1dB ").arg(replayGainDb),
@@ -101,20 +96,19 @@ TEST_F(MetadataTest, ParseReplayGainDbValidRange) {
             // special case: 0 dB -> undefined
             expectedValue = Mixxx::TrackMetadata::REPLAYGAIN_UNDEFINED;
         }
-        for (size_t i = 0; i < sizeof(initialValues) / sizeof(initialValues[0]); ++i) {
-            for (size_t j = 0; j < sizeof(inputValues) / sizeof(inputValues[0]); ++j) {
-                parseReplayGainDb(initialValues[i], inputValues[j], true, expectedValue);
-                if (0 <= replayGainDb) {
-                    parseReplayGainDb(initialValues[i], QString("  + ") + inputValues[j], true, expectedValue);
-                }
+        for (size_t i = 0; i < sizeof(inputValues) / sizeof(inputValues[0]); ++i) {
+            parseReplayGain(inputValues[i], true, expectedValue);
+            if (0 <= replayGainDb) {
+                parseReplayGain(QString("  + ") + inputValues[i], true, expectedValue);
             }
         }
     }
 }
 
 TEST_F(MetadataTest, ParseReplayGainDbInvalid) {
-    parseReplayGainDb(Mixxx::TrackMetadata::REPLAYGAIN_UNDEFINED, "", false, Mixxx::TrackMetadata::REPLAYGAIN_UNDEFINED);
-    parseReplayGainDb(0.5, "abcde", false, 0.5);
+    parseReplayGain("", false, Mixxx::TrackMetadata::REPLAYGAIN_UNDEFINED);
+    parseReplayGain("abcde", false, Mixxx::TrackMetadata::REPLAYGAIN_UNDEFINED);
+    parseReplayGain("0 dBA", false, Mixxx::TrackMetadata::REPLAYGAIN_UNDEFINED);
 }
 
 }  // namespace

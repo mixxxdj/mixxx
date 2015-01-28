@@ -139,29 +139,35 @@ public:
     inline void resetBpm() {
         m_bpm = BPM_UNDEFINED;
     }
-    bool setBpmString(const QString& sBpm);
-    QString getBpmString() const;
 
-    static const float REPLAYGAIN_UNDEFINED;
-    static const float REPLAYGAIN_MIN; // lower bound (exclusive)
-    static const float REPLAYGAIN_0DB;
-    inline float getReplayGain() const {
+    static const double REPLAYGAIN_UNDEFINED;
+    static const double REPLAYGAIN_MIN; // lower bound (exclusive)
+    static const double REPLAYGAIN_0DB;
+    inline double getReplayGain() const {
         return m_replayGain;
     }
-    inline static bool isReplayGainValid(float replayGain) {
+    inline static bool isReplayGainValid(double replayGain) {
         return REPLAYGAIN_MIN < replayGain;
     }
     inline bool isReplayGainValid() const {
         return isReplayGainValid(getReplayGain());
     }
-    inline void setReplayGain(float replayGain) {
+    inline void setReplayGain(double replayGain) {
         m_replayGain = replayGain;
     }
     inline void resetReplayGain() {
         m_replayGain = REPLAYGAIN_UNDEFINED;
     }
-    bool setReplayGainDbString(QString sReplayGainDb); // in dB
-    QString getReplayGainDbString() const; // in dB
+
+    // Parse and format BPM metadata
+    static double parseBpm(const QString& sBpm, bool* pValid = 0);
+    static QString formatBpm(double bpm);
+
+    // Parse and format replay gain metadata according to the
+    // ReplayGain 1.0 specification.
+    // http://wiki.hydrogenaud.io/index.php?title=ReplayGain_1.0_specification
+    static double parseReplayGain(QString sReplayGain, bool* pValid = 0);
+    static QString formatReplayGain(double replayGain);
 
 private:
     QString m_artist;
@@ -184,7 +190,7 @@ private:
     int m_bitrate;
     int m_duration;
     double m_bpm;
-    float m_replayGain;
+    double m_replayGain;
 };
 
 }
