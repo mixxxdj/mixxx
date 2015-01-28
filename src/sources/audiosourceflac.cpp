@@ -176,7 +176,8 @@ Mixxx::AudioSource::size_type AudioSourceFLAC::readSampleFrames(
                         << m_file.fileName() << ")";
                 break;
             }
-        } DEBUG_ASSERT(
+        }
+        DEBUG_ASSERT(
                 m_decodeSampleBufferReadOffset <= m_decodeSampleBufferWriteOffset);
         const size_type decodeBufferSamples = m_decodeSampleBufferWriteOffset
                 - m_decodeSampleBufferReadOffset;
@@ -318,7 +319,8 @@ FLAC__StreamDecoderWriteStatus AudioSourceFLAC::flacWrite(
             }
         }
     }
-    } DEBUG_ASSERT(m_decodeSampleBufferReadOffset <= m_decodeSampleBufferWriteOffset);
+    }
+    DEBUG_ASSERT(m_decodeSampleBufferReadOffset <= m_decodeSampleBufferWriteOffset);
     return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
 
