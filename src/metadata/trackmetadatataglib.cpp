@@ -549,8 +549,10 @@ bool writeID3v2Tag(TagLib::ID3v2::Tag* pTag,
     // additional tags
     writeID3v2TextIdentificationFrame(pTag, "TPE2",
             trackMetadata.getAlbumArtist());
-    writeID3v2TextIdentificationFrame(pTag, "TBPM",
-            TrackMetadata::formatBpm(trackMetadata.getBpm()));
+    // According to the specification "The 'TBPM' frame contains the number
+    // of beats per minute in the mainpart of the audio. The BPM is an integer
+    // and represented as a numerical string."
+    // Reference: http://id3.org/id3v2.3.0
     writeID3v2TextIdentificationFrame(pTag, "TBPM",
             TrackMetadata::formatBpm(trackMetadata.getBpmAsInteger()));
     writeID3v2TextIdentificationFrame(pTag, "TKEY", trackMetadata.getKey());
