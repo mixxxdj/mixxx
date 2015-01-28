@@ -306,11 +306,6 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
     foreach (ChannelInfo* pChannelInfo, m_activeChannels) {
         EngineChannel* pChannel = pChannelInfo->m_pChannel;
         pChannel->process(pChannelInfo->m_pBuffer, iBufferSize);
-
-        if (m_pTalkoverDucking->getMode() != EngineTalkoverDucking::OFF &&
-                pChannel->isTalkoverEnabled()) {
-            m_pTalkoverDucking->processKey(pChannelInfo->m_pBuffer, iBufferSize);
-        }
     }
 
     // After all the engines have been processed, trigger post-processing
@@ -390,6 +385,10 @@ void EngineMaster::process(const int iBufferSize) {
                 m_channels, m_talkoverGain, talkoverOutput,
                 maxChannels, &m_channelTalkoverGainCache,
                 m_pTalkover, iBufferSize);
+    }
+
+    if (m_pTalkoverDucking->getMode() != EngineTalkoverDucking::OFF) {
+        m_pTalkoverDucking->processKey(m_pTalkover, iBufferSize);
     }
 
     // Calculate the crossfader gains for left and right side of the crossfader
