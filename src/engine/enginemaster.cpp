@@ -267,38 +267,32 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
             continue;
         }
 
-        bool needsProcessing = false;
         if (pChannel->isTalkoverEnabled()) {
             // talkover is an exclusive channel
             // once talkover is anabled it is not used in
             // xFader mix and headphone
             *talkoverOutput |= (1 << channel_number);
-            needsProcessing = true;
         } else {
             if (pChannel->isMasterEnabled() &&
                     !pChannelInfo->m_pMuteControl->toBool()) {
                 // the xFader mix
                 busChannelConnectionFlags[pChannel->getOrientation()] |=
                         (1 << channel_number);
-                needsProcessing = true;
             }
 
             // If the channel is enabled for previewing in headphones, copy it
             // over to the headphone buffer
             if (pChannel->isPflEnabled()) {
                 *headphoneOutput |= (1 << channel_number);
-                needsProcessing = true;
             }
         }
 
         // If necessary, add the channel to the list of buffers to process.
-        if (needsProcessing) {
-            if (pChannel == pMasterChannel) {
-                // If this is the sync master, it should be processed first.
-                m_activeChannels.prepend(pChannelInfo);
-            } else {
-                m_activeChannels.append(pChannelInfo);
-            }
+        if (pChannel == pMasterChannel) {
+            // If this is the sync master, it should be processed first.
+            m_activeChannels.prepend(pChannelInfo);
+        } else {
+            m_activeChannels.append(pChannelInfo);
         }
     }
 
