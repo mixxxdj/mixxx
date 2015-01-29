@@ -45,6 +45,8 @@
 #include "playermanager.h"
 #include "engine/channelmixer.h"
 
+static const unsigned int kMaxChannels = 32;
+
 EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
                            const char* group,
                            EffectsManager* pEffectsManager,
@@ -250,9 +252,12 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
                                    unsigned int* talkoverOutput,
                                    int iBufferSize) {
     ScopedTimer timer("EngineMaster::processChannels");
-
+    FastVector<ChannelInfo*, kMaxChannels> activeChannels;
     EngineChannel* pMasterChannel = m_pMasterSync->getMaster();
-    m_activeChannels.clear();
+    // Reserve the first place for the master channel which
+    // should be processed first
+    activeChannels.append(NULL);
+    unsigned int activeChannelsStartIndex = 1; // Nothing at 0 yet
     QList<ChannelInfo*>::const_iterator it = m_channels.constBegin();
     QList<ChannelInfo*>::const_iterator end = m_channels.constEnd();
     for (unsigned int channel_number = 0; it != end; ++it, ++channel_number) {
@@ -287,14 +292,17 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
         // If necessary, add the channel to the list of buffers to process.
         if (pChannel == pMasterChannel) {
             // If this is the sync master, it should be processed first.
-            m_activeChannels.prepend(pChannelInfo);
+            activeChannels.replace(0, pChannelInfo);
+            activeChannelsStartIndex = 0;
         } else {
-            m_activeChannels.append(pChannelInfo);
+            activeChannels.append(pChannelInfo);
         }
     }
 
     // Now that the list is built and ordered, do the processing.
-    foreach (ChannelInfo* pChannelInfo, m_activeChannels) {
+    for (unsigned int i = activeChannelsStartIndex;
+            i < activeChannels.size(); ++i) {
+        ChannelInfo* pChannelInfo = activeChannels[i];
         EngineChannel* pChannel = pChannelInfo->m_pChannel;
         pChannel->process(pChannelInfo->m_pBuffer, iBufferSize);
     }
@@ -303,8 +311,9 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
     // which ensures that all channels are updating certain values at the
     // same point in time.  This prevents sync from failing depending on
     // if the sync target was processed before or after the sync origin.
-    foreach (ChannelInfo* pChannelInfo, m_activeChannels) {
-        pChannelInfo->m_pChannel->postProcess(iBufferSize);
+    for (unsigned int i = activeChannelsStartIndex;
+            i < activeChannels.size(); ++i) {
+        activeChannels[i]->m_pChannel->postProcess(iBufferSize);
     }
 }
 

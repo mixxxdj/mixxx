@@ -192,6 +192,26 @@ class EngineMaster : public QObject, public AudioSource {
         double m_dCenterGain;
         double m_dRightGain;
     };
+    template<typename T, unsigned int CAPACITY>
+    class FastVector {
+      public:
+        FastVector() : m_size(0) {};
+        inline void append(const T& t) {
+            m_data[m_size++] = t;
+        };
+        inline T& operator[](unsigned int i) {
+            return m_data[i];
+        }
+        inline void replace(unsigned int i, const T& t) {
+            m_data[i] = t;
+        }
+        inline unsigned int size () const {
+            return m_size;
+        }
+      private:
+        T m_data[CAPACITY];
+        unsigned int m_size;
+    };
 
   private:
     void mixChannels(unsigned int channelBitvector, unsigned int maxChannels,
@@ -209,7 +229,6 @@ class EngineMaster : public QObject, public AudioSource {
     EngineEffectsManager* m_pEngineEffectsManager;
     bool m_bRampingGain;
     QList<ChannelInfo*> m_channels;
-    QVarLengthArray<ChannelInfo*, 128> m_activeChannels;
     QList<CSAMPLE> m_channelMasterGainCache;
     QList<CSAMPLE> m_channelHeadphoneGainCache;
     QList<CSAMPLE> m_channelTalkoverGainCache;
