@@ -142,7 +142,7 @@ class AutoDJProcessor : public QObject {
                                    bool play);
     virtual void transitionTimeChanged(int time);
     virtual void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
-    virtual void randomTrackRequested(bool);
+    virtual void randomTrackRequested();
 
   private slots:
     void playerPositionChanged(DeckAttributes* pDeck, double position);
