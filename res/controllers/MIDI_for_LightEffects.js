@@ -23,11 +23,14 @@ var vu_array_left = new Array(vu_array_fill_maximum);
 var vu_array_right = new Array(vu_array_fill_maximum);
 
 // rudimentary debug print with timestamp
-maxdebuglevel=2; // 0-always, 1-minimal, 2-more details in some routines, 5-includes beat
+maxdebuglevel=0; // 0-always, 1-minimal, 2-more details in some routines, 5-includes beat
 printDebug = function ( level, tag, text ) {
     var date = new Date();
     var timestamp = ('0'+date.getHours()).slice(-2)+":"+('0'+date.getMinutes()).slice(-2)+":"+('0'+date.getSeconds()).slice(-2);
-    if (level<=maxdebuglevel) print(timestamp+" "+tag+"("+level+"): "+text);
+    if (level<=maxdebuglevel) { 
+        print(timestamp+" "+tag+"("+level+"): "+text);
+//        script.midiDebug(0,0,0,timestamp+" "+tag+"("+level+"): "+text,0);
+    }
 }
 
 // Extract the numerical deck number from the channel string
@@ -79,6 +82,7 @@ MIDI_for_LightEffects.init = function(id,debug) {  // called when the MIDI devic
     engine.connectControl("[Channel2]", "play",         "MIDI_for_LightEffects.Play");
 
     MIDI_for_LightEffects.VuMeterTimer = engine.beginTimer(40,"MIDI_for_LightEffects.VuMeter()",false);
+
     if (debug) {
         maxdebuglevel=4;	// Enable debugging up to level 4
         printDebug(0,"init","MIDI_for_LightEffects initialized with debugging");
@@ -103,8 +107,8 @@ MIDI_for_LightEffects.shutdown = function(id) {	// called when the MIDI device i
     engine.stopTimer(MIDI_for_LightEffects.VuMeterTimer);
     engine.stopTimer(MIDI_for_LightEffects.CrossfaderChangeLockTimer);
     engine.stopTimer(MIDI_for_LightEffects.VolumeBeatLockTimer);
-    engine.stopTimer(MIDI_for_LightEffects.VuMeterTimer);
 }
+
 
 /*
  *  VU-Meter
