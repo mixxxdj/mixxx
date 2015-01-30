@@ -271,7 +271,6 @@ void AutoDJFeature::slotCrateAutoDjChanged(int crateId, bool added) {
             }
         }
     }
-
     // Let subscribers know whether it's possible to add a random track.
     emit(enableAddRandom(m_crateList.length() > 0));
 #endif // __AUTODJCRATES__
@@ -279,19 +278,36 @@ void AutoDJFeature::slotCrateAutoDjChanged(int crateId, bool added) {
 
 void AutoDJFeature::slotAddRandomTrack(bool) {
 #ifdef __AUTODJCRATES__
-    // Get access to the auto-DJ playlist.
-    PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
-    if (m_iAutoDJPlaylistId >= 0) {
-        // Get the ID of a randomly-selected track.
-        int iTrackId = m_autoDjCratesDao.getRandomTrackId();
-        if (iTrackId != -1) {
-            // Add this randomly-selected track to the auto-DJ playlist.
-            playlistDao.appendTrackToPlaylist(iTrackId, m_iAutoDJPlaylistId);
+    int retriveAttempts = 0;
+    while (retriveAttempts < 3) {
+        // Get access to the auto-DJ playlist.
+        PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
+        if (m_iAutoDJPlaylistId >= 0) {
+            // Get the ID of a randomly-selected track.
+            int iTrackId = m_autoDjCratesDao.getRandomTrackId();
+            //qDebug() << "we got iTrackid " <<iTrackId;
+            if (iTrackId != -1) {
+                // Get Track Information
+                TrackPointer addedTrack = (m_pTrackCollection->getTrackDAO()).getTrack(iTrackId);
 
-            // Display the newly-added track.
-            m_pAutoDJView->onShow();
+                if(addedTrack->exists()) {
+                    //qDebug() << addedTrack->getTitle() << " Exists";
+
+                    // Add this randomly-selected track to the auto-DJ playlist.
+                    playlistDao.appendTrackToPlaylist(iTrackId, m_iAutoDJPlaylistId);
+                    m_pAutoDJView->onShow();
+                    return;
+                }
+                else {
+                    qDebug () <<"Track does not exist " << addedTrack->getTitle();
+                }
+            }
         }
+        retriveAttempts += 1;
     }
+
+    if (retriveAttempts == 3)
+        qDebug () << "Could Not Load Random Tracks";
 #endif // __AUTODJCRATES__
 }
 

@@ -508,9 +508,9 @@ TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
         // Incase we start off with zero tracks
         bool randomQueueEnabled = (((m_pConfig->getValueString(
                     ConfigKey("[Auto DJ]", "EnableRandomQueue")).toInt())) == 1);
+
         if(m_pAutoDJTableModel->rowCount() <= 0 && randomQueueEnabled) {
             emit(randomTrackRequested());
-            // **DELETE** make sure that randomTrackRequested() returns a valid tracks only
             // Once 1 track is loaded , the mechanisim in removeTrackFromTopOfQueue will kick in
             // and add the remaining tracks
         }
