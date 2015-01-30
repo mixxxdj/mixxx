@@ -60,9 +60,9 @@ def write_channelmixer_autogen(output, num_channels):
                 write('EngineMaster::ChannelInfo* pChannel%(j)d = activeChannels->at(%(j)d);' % {'j': j}, depth=2)
                 write('const int pChannelIndex%(j)d = pChannel%(j)d->m_index;' % {'j': j}, depth=2)
                 if ramping:
-                    write('CSAMPLE_GAIN oldGain%(j)d = (*channelGainCache)[pChannelIndex%(j)d];' % {'j': j}, depth=2)
+                    write('CSAMPLE_GAIN oldGain%(j)d = channelGainCache->at(pChannelIndex%(j)d);' % {'j': j}, depth=2)
                 write('CSAMPLE_GAIN newGain%(j)d = gainCalculator.getGain(pChannel%(j)d);' % {'j': j}, depth=2)
-                write('(*channelGainCache)[pChannelIndex%(j)d] = newGain%(j)d;' % {'j': j}, depth=2)
+                write('channelGainCache->replace(pChannelIndex%(j)d, newGain%(j)d);' % {'j': j}, depth=2)
                 write('CSAMPLE* pBuffer%(j)d = pChannel%(j)d->m_pBuffer;' % {'j': j}, depth=2)
 
             if ramping:

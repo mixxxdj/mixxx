@@ -227,10 +227,8 @@ EngineMaster::~EngineMaster() {
 
     delete m_pWorkerScheduler;
 
-    QMutableListIterator<ChannelInfo*> channel_it(m_channels);
-    while (channel_it.hasNext()) {
-        ChannelInfo* pChannelInfo = channel_it.next();
-        channel_it.remove();
+    for (unsigned int i = 0; i < m_channels.size(); ++i) {
+        ChannelInfo* pChannelInfo = m_channels[i];
         SampleUtil::free(pChannelInfo->m_pBuffer);
         delete pChannelInfo->m_pChannel;
         delete pChannelInfo->m_pVolumeControl;
@@ -259,10 +257,8 @@ void EngineMaster::processChannels(
     // should be processed first
     activeChannels.append(NULL);
     unsigned int activeChannelsStartIndex = 1; // Nothing at 0 yet
-    QList<ChannelInfo*>::const_iterator it = m_channels.constBegin();
-    QList<ChannelInfo*>::const_iterator end = m_channels.constEnd();
-    for (unsigned int channel_number = 0; it != end; ++it, ++channel_number) {
-        ChannelInfo* pChannelInfo = *it;
+    for (unsigned int i = 0; i < m_channels.size(); ++i) {
+        ChannelInfo* pChannelInfo = m_channels[i];
         EngineChannel* pChannel = pChannelInfo->m_pChannel;
 
         // Skip inactive channels.
@@ -584,7 +580,7 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     pChannelInfo->m_pMuteControl->setButtonMode(ControlPushButton::POWERWINDOW);
     pChannelInfo->m_pBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
     SampleUtil::clear(pChannelInfo->m_pBuffer, MAX_BUFFER_LEN);
-    m_channels.push_back(pChannelInfo);
+    m_channels.append(pChannelInfo);
     m_channelHeadphoneGainCache.append(0);
     m_channelTalkoverGainCache.append(0);
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
@@ -599,9 +595,8 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
 }
 
 EngineChannel* EngineMaster::getChannel(QString group) {
-    for (QList<ChannelInfo*>::const_iterator i = m_channels.constBegin();
-         i != m_channels.constEnd(); ++i) {
-        ChannelInfo* pChannelInfo = *i;
+    for (unsigned int i = 0; i < m_channels.size(); ++i) {
+        ChannelInfo* pChannelInfo = m_channels[i];
         if (pChannelInfo->m_pChannel->getGroup() == group) {
             return pChannelInfo->m_pChannel;
         }
@@ -620,9 +615,8 @@ const CSAMPLE* EngineMaster::getOutputBusBuffer(unsigned int i) const {
 }
 
 const CSAMPLE* EngineMaster::getChannelBuffer(QString group) const {
-    for (QList<ChannelInfo*>::const_iterator i = m_channels.constBegin();
-         i != m_channels.constEnd(); ++i) {
-        const ChannelInfo* pChannelInfo = *i;
+    for (unsigned int i = 0; i < m_channels.size(); ++i) {
+        const ChannelInfo* pChannelInfo = m_channels[i];
         if (pChannelInfo->m_pChannel->getGroup() == group) {
             return pChannelInfo->m_pBuffer;
         }

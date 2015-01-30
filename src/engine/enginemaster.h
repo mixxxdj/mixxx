@@ -203,10 +203,10 @@ class EngineMaster : public QObject, public AudioSource {
         inline void append(const T& t) {
             m_data[m_size++] = t;
         };
-        inline T& operator[](unsigned int i) {
+        inline const T& operator[](unsigned int i) const {
             return m_data[i];
         }
-        inline T& at(unsigned int i) {
+        inline const T& at(unsigned int i) const {
             return m_data[i];
         }
         inline void replace(unsigned int i, const T& t) {
@@ -236,7 +236,7 @@ class EngineMaster : public QObject, public AudioSource {
 
     EngineEffectsManager* m_pEngineEffectsManager;
     bool m_bRampingGain;
-    QList<ChannelInfo*> m_channels;
+    FastVector<ChannelInfo*, kMaxChannels> m_channels;
     FastVector<CSAMPLE, kMaxChannels> m_channelMasterGainCache;
     FastVector<CSAMPLE, kMaxChannels> m_channelHeadphoneGainCache;
     FastVector<CSAMPLE, kMaxChannels> m_channelTalkoverGainCache;
