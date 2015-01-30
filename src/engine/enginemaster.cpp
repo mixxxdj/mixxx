@@ -569,6 +569,9 @@ void EngineMaster::process(const int iBufferSize) {
 }
 
 void EngineMaster::addChannel(EngineChannel* pChannel) {
+    DEBUG_ASSERT_AND_HANDLE(m_channels.size() < kMaxChannels) {
+        return;
+    }
     ChannelInfo* pChannelInfo = new ChannelInfo(m_channels.size());
     pChannelInfo->m_pChannel = pChannel;
     pChannelInfo->m_pVolumeControl = new ControlAudioTaperPot(
