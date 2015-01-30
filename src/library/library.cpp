@@ -189,6 +189,13 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
     connect(this, SIGNAL(setTrackTableRowHeight(int)),
             pTrackTableView, SLOT(setTrackTableRowHeight(int)));
 
+    connect(this, SIGNAL(searchStarting()),
+            pTrackTableView, SLOT(onSearchStarting()));
+    connect(this, SIGNAL(searchCleared()),
+            pTrackTableView, SLOT(onSearchCleared()));
+    connect(this, SIGNAL(textChanged(const QString&)),
+            pTrackTableView, SLOT(isTextEmpty(QString)));
+
     m_pLibraryControl->bindWidget(pLibraryWidget, pKeyboard);
 
     QListIterator<LibraryFeature*> feature_it(m_features);

@@ -5,6 +5,7 @@
 #include <QPalette>
 #include <QScrollBar>
 #include <QFontMetrics>
+#include <QCoreApplication>
 
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
@@ -66,6 +67,7 @@ void WLibraryTableView::loadVScrollBarPosState() {
 void WLibraryTableView::restoreVScrollBarPos() {
     //Restore the scrollbar's position (scroll to that spot)
     //when the search has been cleared
+    QCoreApplication::processEvents();
     verticalScrollBar()->setValue(m_iSavedVScrollBarPos);
 }
 

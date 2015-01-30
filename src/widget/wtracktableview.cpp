@@ -1622,3 +1622,9 @@ void WTrackTableView::slotReloadCoverArt() {
         pCache->requestGuessCovers(selectedTracks);
     }
 }
+
+void WTrackTableView::isTextEmpty(const QString& text) {
+    if (text.isEmpty()) {
+        onSearchCleared();
+    }
+}

@@ -1048,6 +1048,8 @@ QWidget* LegacySkinParser::parseSearchBox(QDomElement node) {
             m_pLibrary, SIGNAL(searchStarting()));
     connect(m_pLibrary, SIGNAL(restoreSearch(const QString&)),
             pLineEditSearch, SLOT(restoreSearch(const QString&)));
+    connect(pLineEditSearch, SIGNAL(signalTextChanged(const QString&)),
+            m_pLibrary, SIGNAL(textChanged(const QString&)));
 
     return pLineEditSearch;
 }

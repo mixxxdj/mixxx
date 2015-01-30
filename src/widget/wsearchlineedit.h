@@ -31,6 +31,7 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     void search(const QString& text);
     void searchCleared();
     void searchStarting();
+    void signalTextChanged(const QString& text);
 
   public slots:
     void restoreSearch(const QString& text);
@@ -39,6 +40,7 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     void updateCloseButton(const QString& text);
     void slotSetupTimer(const QString& text);
     void triggerSearch();
+    void onSearchTextCleared();
 
   private:
     void showPlaceholder();
