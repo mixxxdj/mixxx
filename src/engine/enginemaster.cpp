@@ -585,10 +585,10 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     pChannelInfo->m_pBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
     SampleUtil::clear(pChannelInfo->m_pBuffer, MAX_BUFFER_LEN);
     m_channels.push_back(pChannelInfo);
-    m_channelHeadphoneGainCache.push_back(0);
-    m_channelTalkoverGainCache.push_back(0);
+    m_channelHeadphoneGainCache.append(0);
+    m_channelTalkoverGainCache.append(0);
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
-        m_channelMasterGainCache.push_back(0);
+        m_channelMasterGainCache.append(0);
     }
 
     EngineBuffer* pBuffer = pChannelInfo->m_pChannel->getEngineBuffer();

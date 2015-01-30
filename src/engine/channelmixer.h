@@ -9,13 +9,13 @@ class ChannelMixer {
     static void mixChannels(
         const EngineMaster::GainCalculator& gainCalculator,
         EngineMaster::FastVector<EngineMaster::ChannelInfo*, kMaxChannels>* activeChannels,
-        QList<CSAMPLE>* channelGainCache,
+        EngineMaster::FastVector<CSAMPLE, kMaxChannels>* channelGainCache,
         CSAMPLE* pOutput,
         unsigned int iBufferSize);
     static void mixChannelsRamping(
         const EngineMaster::GainCalculator& gainCalculator,
         EngineMaster::FastVector<EngineMaster::ChannelInfo*, kMaxChannels>* activeChannels,
-        QList<CSAMPLE>* channelGainCache,
+        EngineMaster::FastVector<CSAMPLE, kMaxChannels>* channelGainCache,
         CSAMPLE* pOutput,
         unsigned int iBufferSize);
 };

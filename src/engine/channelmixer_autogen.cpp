@@ -9,7 +9,7 @@
 // static
 void ChannelMixer::mixChannels(const EngineMaster::GainCalculator& gainCalculator,
                                EngineMaster::FastVector<EngineMaster::ChannelInfo*, kMaxChannels>* activeChannels,
-                               QList<CSAMPLE>* channelGainCache,
+                               EngineMaster::FastVector<CSAMPLE, kMaxChannels>* channelGainCache,
                                CSAMPLE* pOutput,
                                unsigned int iBufferSize) {
     unsigned int totalActive = activeChannels->size();
@@ -3325,7 +3325,7 @@ void ChannelMixer::mixChannels(const EngineMaster::GainCalculator& gainCalculato
 }
 void ChannelMixer::mixChannelsRamping(const EngineMaster::GainCalculator& gainCalculator,
                                       EngineMaster::FastVector<EngineMaster::ChannelInfo*, kMaxChannels>* activeChannels,
-                                      QList<CSAMPLE>* channelGainCache,
+                                      EngineMaster::FastVector<CSAMPLE, kMaxChannels>* channelGainCache,
                                       CSAMPLE* pOutput,
                                       unsigned int iBufferSize) {
     unsigned int totalActive = activeChannels->size();

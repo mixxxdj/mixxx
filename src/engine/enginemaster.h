@@ -237,9 +237,9 @@ class EngineMaster : public QObject, public AudioSource {
     EngineEffectsManager* m_pEngineEffectsManager;
     bool m_bRampingGain;
     QList<ChannelInfo*> m_channels;
-    QList<CSAMPLE> m_channelMasterGainCache;
-    QList<CSAMPLE> m_channelHeadphoneGainCache;
-    QList<CSAMPLE> m_channelTalkoverGainCache;
+    FastVector<CSAMPLE, kMaxChannels> m_channelMasterGainCache;
+    FastVector<CSAMPLE, kMaxChannels> m_channelHeadphoneGainCache;
+    FastVector<CSAMPLE, kMaxChannels> m_channelTalkoverGainCache;
 
     CSAMPLE* m_pOutputBusBuffers[3];
     CSAMPLE* m_pMaster;
