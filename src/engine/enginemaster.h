@@ -46,6 +46,8 @@ class EngineSync;
 class EngineTalkoverDucking;
 class EngineDelay;
 
+static const unsigned int kMaxChannels = 32;
+
 class EngineMaster : public QObject, public AudioSource {
     Q_OBJECT
   public:
@@ -126,16 +128,18 @@ class EngineMaster : public QObject, public AudioSource {
     }
 
     struct ChannelInfo {
-        ChannelInfo()
+        ChannelInfo(int index)
                 : m_pChannel(NULL),
                   m_pBuffer(NULL),
                   m_pVolumeControl(NULL),
-                  m_pMuteControl(NULL) {
+                  m_pMuteControl(NULL),
+                  m_index(index) {
         }
         EngineChannel* m_pChannel;
         CSAMPLE* m_pBuffer;
         ControlObject* m_pVolumeControl;
         ControlPushButton* m_pMuteControl;
+        int m_index;
     };
 
     class GainCalculator {
@@ -202,6 +206,9 @@ class EngineMaster : public QObject, public AudioSource {
         inline T& operator[](unsigned int i) {
             return m_data[i];
         }
+        inline T& at(unsigned int i) {
+            return m_data[i];
+        }
         inline void replace(unsigned int i, const T& t) {
             m_data[i] = t;
         }
@@ -221,10 +228,11 @@ class EngineMaster : public QObject, public AudioSource {
     // first and all others are processed after. Sets the i'th bit of
     // masterOutput and headphoneOutput if the i'th channel is enabled for the
     // master output or headphone output, respectively.
-    void processChannels(unsigned int* busChannelConnectionFlags,
-                         unsigned int* headphoneOutput,
-                         unsigned int* talkoverOutput,
-                         int iBufferSize);
+    void processChannels(
+            FastVector<ChannelInfo*, kMaxChannels>* busChannels,
+            FastVector<ChannelInfo*, kMaxChannels>* headphoneChannels,
+            FastVector<ChannelInfo*, kMaxChannels>* talkoverChannels,
+            int iBufferSize);
 
     EngineEffectsManager* m_pEngineEffectsManager;
     bool m_bRampingGain;
