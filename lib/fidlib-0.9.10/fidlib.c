@@ -311,7 +311,7 @@ strdupf(char *fmt, ...) {
    int len;
    va_start(ap, fmt);
    len= vsnprintf(buf, sizeof(buf), fmt, ap);
-   if (len < 0 || len >= sizeof(buf)-1)
+   if (len < 0 || len >= (int)sizeof(buf)-1)
       error("strdupf exceeded buffer");
    rv= strdup(buf);
    if (!rv) error("Out of memory");
@@ -695,7 +695,7 @@ stack_filter(int order, int n_head, int n_val, ...) {
 
    // Check length
    len= ((char*)p)-((char*)q);
-   if (len != FFCSIZE(n_head-1, n_val))
+   if (len != (int)FFCSIZE(n_head-1, n_val))
       error("Internal error; bad call to stack_filter(); length mismatch (%d,%d)",
 	    len, FFCSIZE(n_head-1, n_val));
 
@@ -825,24 +825,41 @@ do_bandstop(int mz, double f0, double f1) {
 
 static FidFilter*
 des_bpre(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate;
+   (void)f1;
+   (void)order; 
+   (void)n_arg;       
    bandpass_res(f0, arg[0]);
    return z2fidfilter(1.0, ~0);	// FIR constant
 }
 
 static FidFilter*
 des_bsre(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate;
+   (void)f1;
+   (void)order; 
+   (void)n_arg;     
    bandstop_res(f0, arg[0]);
    return z2fidfilter(1.0, 0);	// FIR not constant, depends on freq
 }
 
 static FidFilter*
 des_apre(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate;
+   (void)f1;
+   (void)order; 
+   (void)n_arg;     
    allpass_res(f0, arg[0]);
    return z2fidfilter(1.0, 0);	// FIR not constant, depends on freq
 }
 
 static FidFilter*
 des_pi(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate;
+   (void)f1;
+   (void)order; 
+   (void)n_arg;   
+   (void)arg;    
    prop_integral(prewarp(f0));
    s2z_bilinear();
    return z2fidfilter(1.0, 0);	// FIR not constant, depends on freq
@@ -850,6 +867,11 @@ des_pi(double rate, double f0, double f1, int order, int n_arg, double *arg) {
 
 static FidFilter*
 des_piz(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate;
+   (void)f1;
+   (void)order; 
+   (void)n_arg;   
+   (void)arg;    
    prop_integral(prewarp(f0));
    s2z_matchedZ();
    return z2fidfilter(1.0, 0);	// FIR not constant, depends on freq
@@ -857,54 +879,85 @@ des_piz(double rate, double f0, double f1, int order, int n_arg, double *arg) {
 
 static FidFilter*
 des_lpbe(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate;
+   (void)f1; 
+   (void)n_arg;   
+   (void)arg;    
    bessel(order);
    return do_lowpass(BL, f0);
 }
 
 static FidFilter*
 des_hpbe(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate;
+   (void)f1; 
+   (void)n_arg;   
+   (void)arg; 
    bessel(order);
    return do_highpass(BL, f0);
 }
 
 static FidFilter*
 des_bpbe(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate;
+   (void)n_arg;   
+   (void)arg; 
    bessel(order);
    return do_bandpass(BL, f0, f1);
 }
 
 static FidFilter*
 des_bsbe(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate;
+   (void)n_arg;   
+   (void)arg; 
    bessel(order);
    return do_bandstop(BL, f0, f1);
 }
 
 static FidFilter*
 des_lpbez(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate;
+   (void)f1; 
+   (void)n_arg;   
+   (void)arg; 
    bessel(order);
    return do_lowpass(MZ, f0);
 }
 
 static FidFilter*
 des_hpbez(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate;
+   (void)f1; 
+   (void)n_arg;   
+   (void)arg; 
    bessel(order);
    return do_highpass(MZ, f0);
 }
 
 static FidFilter*
 des_bpbez(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate;
+   (void)n_arg;   
+   (void)arg; 
    bessel(order);
    return do_bandpass(MZ, f0, f1);
 }
 
 static FidFilter*
 des_bsbez(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate;
+   (void)n_arg;   
+   (void)arg; 
    bessel(order);
    return do_bandstop(MZ, f0, f1);
 }
 
 static FidFilter*	// Butterworth-Bessel cross
 des_lpbube(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate;
+   (void)f1;   
+   (void)n_arg; 
    double tmp[MAXPZ];
    int a;
    bessel(order); memcpy(tmp, pol, order * sizeof(double));
@@ -916,102 +969,153 @@ des_lpbube(double rate, double f0, double f1, int order, int n_arg, double *arg)
 
 static FidFilter*
 des_lpbu(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate;
+   (void)f1; 
+   (void)n_arg;   
+   (void)arg;    
    butterworth(order);
    return do_lowpass(BL, f0);
 }
 
 static FidFilter*
 des_hpbu(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate;
+   (void)f1; 
+   (void)n_arg;   
+   (void)arg; 
    butterworth(order);
    return do_highpass(BL, f0);
 }
 
 static FidFilter*
 des_bpbu(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate;
+   (void)n_arg;   
+   (void)arg; 
    butterworth(order);
    return do_bandpass(BL, f0, f1);
 }
 
 static FidFilter*
 des_bsbu(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate;
+   (void)n_arg;   
+   (void)arg; 
    butterworth(order);
    return do_bandstop(BL, f0, f1);
 }
 
 static FidFilter*
 des_lpbuz(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate;
+   (void)f1; 
+   (void)n_arg;   
+   (void)arg; 
    butterworth(order);
    return do_lowpass(MZ, f0);
 }
 
 static FidFilter*
 des_hpbuz(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate;
+   (void)f1; 
+   (void)n_arg;   
+   (void)arg;   
    butterworth(order);
    return do_highpass(MZ, f0);
 }
 
 static FidFilter*
 des_bpbuz(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate;
+   (void)n_arg;   
+   (void)arg;
    butterworth(order);
    return do_bandpass(MZ, f0, f1);
 }
 
 static FidFilter*
 des_bsbuz(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate;
+   (void)n_arg;   
+   (void)arg;
    butterworth(order);
    return do_bandstop(MZ, f0, f1);
 }
 
 static FidFilter*
 des_lpch(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate;
+   (void)f1;   
+   (void)n_arg;
    chebyshev(order, arg[0]);
    return do_lowpass(BL, f0);
 }
 
 static FidFilter*
 des_hpch(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate;
+   (void)f1;   
+   (void)n_arg;   
    chebyshev(order, arg[0]);
    return do_highpass(BL, f0);
 }
 
 static FidFilter*
 des_bpch(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate;
+   (void)n_arg;
    chebyshev(order, arg[0]);
    return do_bandpass(BL, f0, f1);
 }
 
 static FidFilter*
 des_bsch(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate;  
+   (void)n_arg;
    chebyshev(order, arg[0]);
    return do_bandstop(BL, f0, f1);
 }
 
 static FidFilter*
 des_lpchz(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate;
+   (void)f1;   
+   (void)n_arg; 
    chebyshev(order, arg[0]);
    return do_lowpass(MZ, f0);
 }
 
 static FidFilter*
 des_hpchz(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate;
+   (void)f1;   
+   (void)n_arg;
    chebyshev(order, arg[0]);
    return do_highpass(MZ, f0);
 }
 
 static FidFilter*
 des_bpchz(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate;   
+   (void)n_arg;
    chebyshev(order, arg[0]);
    return do_bandpass(MZ, f0, f1);
 }
 
 static FidFilter*
 des_bschz(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate;   
+   (void)n_arg; 
    chebyshev(order, arg[0]);
    return do_bandstop(MZ, f0, f1);
 }
 
 static FidFilter*
 des_lpbq(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate; 
+   (void)f1;   
+   (void)n_arg; 
    double omega= 2 * M_PI * f0;
    double cosv= cos(omega);
    double alpha= sin(omega) / 2 / arg[0];
@@ -1023,6 +1127,9 @@ des_lpbq(double rate, double f0, double f1, int order, int n_arg, double *arg) {
 
 static FidFilter*
 des_hpbq(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate; 
+   (void)f1;   
+   (void)n_arg; 
    double omega= 2 * M_PI * f0;
    double cosv= cos(omega);
    double alpha= sin(omega) / 2 / arg[0];
@@ -1034,6 +1141,9 @@ des_hpbq(double rate, double f0, double f1, int order, int n_arg, double *arg) {
 
 static FidFilter*
 des_bpbq(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate; 
+   (void)f1;   
+   (void)n_arg; 
    double omega= 2 * M_PI * f0;
    double cosv= cos(omega);
    double alpha= sin(omega) / 2 / arg[0];
@@ -1045,6 +1155,9 @@ des_bpbq(double rate, double f0, double f1, int order, int n_arg, double *arg) {
 
 static FidFilter*
 des_bsbq(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate; 
+   (void)f1;   
+   (void)n_arg;    
    double omega= 2 * M_PI * f0;
    double cosv= cos(omega);
    double alpha= sin(omega) / 2 / arg[0];
@@ -1055,6 +1168,9 @@ des_bsbq(double rate, double f0, double f1, int order, int n_arg, double *arg) {
 
 static FidFilter*
 des_apbq(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate; 
+   (void)f1;   
+   (void)n_arg;    
    double omega= 2 * M_PI * f0;
    double cosv= cos(omega);
    double alpha= sin(omega) / 2 / arg[0];
@@ -1065,6 +1181,9 @@ des_apbq(double rate, double f0, double f1, int order, int n_arg, double *arg) {
 
 static FidFilter*
 des_pkbq(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate; 
+   (void)f1;   
+   (void)n_arg;    
    double omega= 2 * M_PI * f0;
    double cosv= cos(omega);
    double alpha= sin(omega) / 2 / arg[0];
@@ -1076,6 +1195,9 @@ des_pkbq(double rate, double f0, double f1, int order, int n_arg, double *arg) {
 
 static FidFilter*
 des_lsbq(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate; 
+   (void)f1;   
+   (void)n_arg; 
    double omega= 2 * M_PI * f0;
    double cosv= cos(omega);
    double sinv= sin(omega);
@@ -1094,6 +1216,9 @@ des_lsbq(double rate, double f0, double f1, int order, int n_arg, double *arg) {
 
 static FidFilter*
 des_hsbq(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate; 
+   (void)f1;   
+   (void)n_arg;   
    double omega= 2 * M_PI * f0;
    double cosv= cos(omega);
    double sinv= sin(omega);
@@ -1112,6 +1237,11 @@ des_hsbq(double rate, double f0, double f1, int order, int n_arg, double *arg) {
 
 static FidFilter*
 des_lpbl(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate; 
+   (void)f1;   
+   (void)order;
+   (void)n_arg;   
+   (void)arg;  
    double wid= 0.4109205/f0;
    double tot, adj;
    int max= (int)floor(wid);
@@ -1136,6 +1266,11 @@ des_lpbl(double rate, double f0, double f1, int order, int n_arg, double *arg) {
 
 static FidFilter*
 des_lphm(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate; 
+   (void)f1;   
+   (void)order;
+   (void)n_arg;   
+   (void)arg;  
    double wid= 0.3262096/f0;
    double tot, adj;
    int max= (int)floor(wid);
@@ -1159,6 +1294,11 @@ des_lphm(double rate, double f0, double f1, int order, int n_arg, double *arg) {
 
 static FidFilter*
 des_lphn(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate; 
+   (void)f1;   
+   (void)order;
+   (void)n_arg;   
+   (void)arg;    
    double wid= 0.360144/f0;
    double tot, adj;
    int max= (int)floor(wid);
@@ -1182,6 +1322,11 @@ des_lphn(double rate, double f0, double f1, int order, int n_arg, double *arg) {
 
 static FidFilter*
 des_lpba(double rate, double f0, double f1, int order, int n_arg, double *arg) {
+   (void)rate; 
+   (void)f1;   
+   (void)order;
+   (void)n_arg;   
+   (void)arg;  
    double wid= 0.3189435/f0;
    double tot, adj;
    int max= (int)floor(wid);
@@ -1338,7 +1483,7 @@ static FidFilter *auto_adjust_single(Spec *sp, double rate, double f0);
 static FidFilter *auto_adjust_dual(Spec *sp, double rate, double f0, double f1);
 struct Spec {
 #define MAXARG 10
-   char *spec;
+   const char *spec;
    double in_f0, in_f1;
    int in_adj;
    double argarr[MAXARG];
@@ -1826,7 +1971,7 @@ parse_spec(Spec *sp) {
 
    for (a= 0; 1; a++) {
       char *fmt= filter[a].fmt;
-      char *p= sp->spec;
+      const char *p= sp->spec;
       char ch, *q;
 
       if (!fmt) return strdupf("Spec-string \"%s\" matches no known format", sp->spec);

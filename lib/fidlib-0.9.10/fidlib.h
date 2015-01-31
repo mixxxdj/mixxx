@@ -36,7 +36,7 @@ typedef double (FidFunc)(void*, double);
 //
 //	Prototypes
 //
-#ifdef MIXXX
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -71,7 +71,7 @@ extern void fid_run_zapbuf(void *buf);
 extern void fid_run_freebuf(void *runbuf);
 extern void fid_run_free(void *run);
 
-#ifdef MIXXX
+#ifdef __cplusplus
 }
 #endif
 #endif
