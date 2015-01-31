@@ -142,6 +142,11 @@ class EngineMaster : public QObject, public AudioSource {
         int m_index;
     };
 
+    struct GainCache {
+        CSAMPLE m_gain;
+        bool m_fadeout;
+    };
+
     class GainCalculator {
       public:
         virtual double getGain(ChannelInfo* pChannelInfo) const = 0;
@@ -206,6 +211,9 @@ class EngineMaster : public QObject, public AudioSource {
         inline const T& operator[](unsigned int i) const {
             return m_data[i];
         }
+        inline T& operator[](unsigned int i) {
+            return m_data[i];
+        }
         inline const T& at(unsigned int i) const {
             return m_data[i];
         }
@@ -237,9 +245,9 @@ class EngineMaster : public QObject, public AudioSource {
     EngineEffectsManager* m_pEngineEffectsManager;
     bool m_bRampingGain;
     FastVector<ChannelInfo*, kMaxChannels> m_channels;
-    FastVector<CSAMPLE, kMaxChannels> m_channelMasterGainCache;
-    FastVector<CSAMPLE, kMaxChannels> m_channelHeadphoneGainCache;
-    FastVector<CSAMPLE, kMaxChannels> m_channelTalkoverGainCache;
+    FastVector<GainCache, kMaxChannels> m_channelMasterGainCache;
+    FastVector<GainCache, kMaxChannels> m_channelHeadphoneGainCache;
+    FastVector<GainCache, kMaxChannels> m_channelTalkoverGainCache;
 
     CSAMPLE* m_pOutputBusBuffers[3];
     CSAMPLE* m_pMaster;

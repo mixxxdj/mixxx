@@ -40,7 +40,7 @@ def write_channelmixer_autogen(output, num_channels):
             header = 'void ChannelMixer::mixChannels('
         args = ['const EngineMaster::GainCalculator& gainCalculator',
                 'EngineMaster::FastVector<EngineMaster::ChannelInfo*, kMaxChannels>* activeChannels',
-                'EngineMaster::FastVector<CSAMPLE, kMaxChannels>* channelGainCache',
+                'EngineMaster::FastVector<EngineMaster::GainCache, kMaxChannels>* channelGainCache',
                 'CSAMPLE* pOutput',
                 'unsigned int iBufferSize']
         output.extend(hanging_indent(header, args, ',', ') {'))
@@ -59,12 +59,18 @@ def write_channelmixer_autogen(output, num_channels):
             for j in xrange(i):
                 write('EngineMaster::ChannelInfo* pChannel%(j)d = activeChannels->at(%(j)d);' % {'j': j}, depth=2)
                 write('const int pChannelIndex%(j)d = pChannel%(j)d->m_index;' % {'j': j}, depth=2)
+                write('EngineMaster::GainCache& gainCache%(j)d = (*channelGainCache)[pChannelIndex%(j)d];' % {'j': j}, depth=2)
                 if ramping:
-                    write('CSAMPLE_GAIN oldGain%(j)d = channelGainCache->at(pChannelIndex%(j)d);' % {'j': j}, depth=2)
-                write('CSAMPLE_GAIN newGain%(j)d = gainCalculator.getGain(pChannel%(j)d);' % {'j': j}, depth=2)
-                write('channelGainCache->replace(pChannelIndex%(j)d, newGain%(j)d);' % {'j': j}, depth=2)
+                    write('CSAMPLE_GAIN oldGain%(j)d = gainCache%(j)d.m_gain;' % {'j': j}, depth=2)
+                write('CSAMPLE_GAIN newGain%(j)d;' % {'j': j}, depth=2)
+                write('if (gainCache%(j)d.m_fadeout) {' % {'j': j}, depth=2)
+                write('newGain%(j)d = 0;' % {'j': j}, depth=3)
+                write('gainCache%(j)d.m_fadeout = false;' % {'j': j}, depth=3)
+                write('} else {', depth=2)
+                write('newGain%(j)d = gainCalculator.getGain(pChannel%(j)d);' % {'j': j}, depth=3)
+                write('}', depth=2)
+                write('gainCache%(j)d.m_gain = newGain%(j)d;' % {'j': j}, depth=2)
                 write('CSAMPLE* pBuffer%(j)d = pChannel%(j)d->m_pBuffer;' % {'j': j}, depth=2)
-
             if ramping:
                 arg_groups = ['pOutput'] + ['pBuffer%(j)d, oldGain%(j)d, newGain%(j)d' % {'j': j} for j in xrange(i)] + ['iBufferSize']
                 call_prefix = "SampleUtil::" + copy_with_ramping_gain_method_name(i) + '('
@@ -75,6 +81,7 @@ def write_channelmixer_autogen(output, num_channels):
 
 
         write('} else {', depth=1)
+        write('DEBUG_ASSERT(kMaxChannels <= %(i)d);' % {'i': i}, depth=2)
         write('// Set pOutput to all 0s', depth=2)
         write('SampleUtil::clear(pOutput, iBufferSize);', depth=2)
         write('for (unsigned int i = 0; i < activeChannels->size(); ++i) {', depth=2)
