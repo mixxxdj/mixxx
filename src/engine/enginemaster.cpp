@@ -277,15 +277,13 @@ void EngineMaster::processChannels(
             if (gainCache.m_gain) {
                 gainCache.m_fadeout = true;
                 busChannels[pChannel->getOrientation()].append(pChannelInfo);
-                qDebug() << "1" << gainCache.m_gain;
-            }
+             }
         } else {
             // Check if we need to fade out the channel
             GainCache& gainCache = m_channelTalkoverGainCache[i];
             if (gainCache.m_gain) {
                 gainCache.m_fadeout = true;
                 talkoverChannels->append(pChannelInfo);
-                qDebug() << "2" << gainCache.m_gain;
             }
             if (pChannel->isMasterEnabled() &&
                     !pChannelInfo->m_pMuteControl->toBool()) {
@@ -440,7 +438,7 @@ void EngineMaster::process(const int iBufferSize) {
             ChannelMixer::mixChannelsRamping(
                     m_masterGain,
                     &busChannels[o],
-                    &m_channelMasterGainCache,
+                    &m_channelMasterGainCache, // no [o] because the old gain follows an orientation switch
                     m_pOutputBusBuffers[o], iBufferSize);
         } else {
             ChannelMixer::mixChannels(
@@ -617,9 +615,7 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     const GainCache gainCacheDefault = {0, false};
     m_channelHeadphoneGainCache.append(gainCacheDefault);
     m_channelTalkoverGainCache.append(gainCacheDefault);
-    for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
-        m_channelMasterGainCache.append(gainCacheDefault);
-    }
+    m_channelMasterGainCache.append(gainCacheDefault);
 
     EngineBuffer* pBuffer = pChannelInfo->m_pChannel->getEngineBuffer();
     if (pBuffer != NULL) {
