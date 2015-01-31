@@ -80,7 +80,7 @@ void EngineMicrophone::process(CSAMPLE* pOut, const int iBufferSize) {
     // the appropriate number of samples to throw them away.
     const CSAMPLE* sampleBuffer = m_sampleBuffer; // save pointer on stack
     double pregain =  m_pPregain->get();
-    if (isProcessingRequred() && sampleBuffer) {
+    if (sampleBuffer) {
         SampleUtil::copyWithGain(pOut, sampleBuffer, pregain, iBufferSize);
     } else {
         SampleUtil::clear(pOut, iBufferSize);
