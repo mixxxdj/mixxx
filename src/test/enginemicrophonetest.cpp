@@ -91,27 +91,6 @@ TEST_F(EngineMicrophoneTest, TestInputMatchesOutput) {
     AssertWholeBufferEquals(output, 0.1f, outputLength);
 }
 
-TEST_F(EngineMicrophoneTest, TestTalkoverDisablesOutput) {
-    ClearBuffer(output, outputLength);
-    AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 1, 0);
-
-    m_pTalkover->set(0.0);
-    FillBuffer(input, 0.1f, inputLength);
-    m_pMicrophone->receiveBuffer(micInput, input, inputLength);
-    m_pMicrophone->process(output, outputLength);
-    // Check that the output matches the input data.
-    AssertWholeBufferEquals(output, 0.0f, outputLength);
-
-    // Now fill the buffer with 2's and turn talkover on. Verify that 2's come
-    // out.
-    m_pTalkover->set(1.0);
-    FillBuffer(input, 0.2f, inputLength);
-    m_pMicrophone->receiveBuffer(micInput, input, inputLength);
-    m_pMicrophone->process(output, outputLength);
-    // Check that the output matches the input data.
-    AssertWholeBufferEquals(output, 0.2f, outputLength);
-}
-
 TEST_F(EngineMicrophoneTest, TestRepeatedInputMatchesOutput) {
     ClearBuffer(output, outputLength);
     AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 1, 0);
