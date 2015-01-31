@@ -66,14 +66,13 @@ DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
 
     // Remove the preferences.
     autoDjMinimumAvailableLabel->setVisible(false);
-    GridLayout1->removeWidget(autoDjMinimumAvailableLabel);
+    GridLayout->removeWidget(autoDjMinimumAvailableLabel);
     autoDjMinimumAvailableSpinBox->setVisible(false);
-    GridLayout1->removeWidget(autoDjMinimumAvailableSpinBox);
+    GridLayout->removeWidget(autoDjMinimumAvailableSpinBox);
     autoDjIgnoreTimeCheckBox->setVisible(false);
-    GridLayout1->removeWidget(autoDjIgnoreTimeCheckBox);
+    GridLayout->removeWidget(autoDjIgnoreTimeCheckBox);
     autoDjIgnoreTimeEdit->setVisible(false);
-    GridLayout1->removeWidget(autoDjIgnoreTimeEdit);
-
+    GridLayout->removeWidget(autoDjIgnoreTimeEdit);
 #endif // __AUTODJCRATES__
     // Connect the global cancell signal
        connect(this,SIGNAL(cancelPreferences()),this,
@@ -96,18 +95,18 @@ void DlgPrefAutoDJ::slotApply() {
                     ConfigKey("[Auto DJ]", "MinimumAvailableBuff"), "20"));
 
     m_pConfig->set(ConfigKey("[Auto DJ]", "IgnoreTime"),
-                m_pConfig->getValueString(
-                        ConfigKey("[Auto DJ]", "IgnoreTimeBuff"), "23:59"));
+            m_pConfig->getValueString(
+                    ConfigKey("[Auto DJ]", "IgnoreTimeBuff"), "23:59"));
     m_pConfig->set(ConfigKey("[Auto DJ]", "UseIgnoreTime"),
             m_pConfig->getValueString(
                     ConfigKey("[Auto DJ]", "UseIgnoreTimeBuff"), "0"));
 
     m_pConfig->set(ConfigKey("[Auto DJ]", "RandomQueueMinimumAllowed"),
             m_pConfig->getValueString(
-                        ConfigKey("[Auto DJ]", "RandomQueueMinimumAllowedBuff"),"5"));
+                    ConfigKey("[Auto DJ]", "RandomQueueMinimumAllowedBuff"),"5"));
     m_pConfig->set(ConfigKey("[Auto DJ]", "EnableRandomQueue"),
             m_pConfig->getValueString(
-                        ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"),"0"));
+                    ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"),"0"));
 #endif //__AUTODJCRATES__
 }
 
@@ -124,9 +123,9 @@ void DlgPrefAutoDJ::slotCancel() {
 
     autoDjIgnoreTimeEdit->setTime(
             QTime::fromString(
-                    m_pConfig->getValueString(
-                            ConfigKey("[Auto DJ]", "IgnoreTime"), "23:59"),
-                                  autoDjIgnoreTimeEdit->displayFormat()));
+            m_pConfig->getValueString(
+                        ConfigKey("[Auto DJ]", "IgnoreTime"), "23:59"),
+                                autoDjIgnoreTimeEdit->displayFormat()));
     autoDjIgnoreTimeCheckBox->setChecked(
             (bool) m_pConfig->getValueString(
                     ConfigKey("[Auto DJ]", "UseIgnoreTime"), "0").toInt());
@@ -217,7 +216,7 @@ void DlgPrefAutoDJ::slotEnableAutoDJRandomQueueComboBox(int a_iValue) {
     if (a_iValue == 1) {
         // Requeue is enabled
         m_pConfig->set(ConfigKey("[Auto DJ]", "EnableRandomQueueBuff"),
-                        ConfigValue(0));
+                ConfigValue(0));
         ComboBoxAutoDjRandomQueue->setCurrentIndex(0);
         ComboBoxAutoDjRandomQueue->setEnabled(false);
         autoDJRandomQueueMinimumSpinBox->setEnabled(false);

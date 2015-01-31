@@ -289,10 +289,8 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
             if (iTrackId != -1) {
                 // Get Track Information
                 TrackPointer addedTrack = (m_pTrackCollection->getTrackDAO()).getTrack(iTrackId);
-
                 if(addedTrack->exists()) {
                     //qDebug() << addedTrack->getTitle() << " Exists";
-
                     // Add this randomly-selected track to the auto-DJ playlist.
                     playlistDao.appendTrackToPlaylist(iTrackId, m_iAutoDJPlaylistId);
                     m_pAutoDJView->onShow();

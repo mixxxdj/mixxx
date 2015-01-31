@@ -96,6 +96,9 @@
      <property name="enabled">
       <bool>true</bool>
      </property>
+     <property name="toolTip">
+      <string>Minimum no of tracks after which random tracks may be added</string>
+     </property>
      <property name="minimum">
       <number>1</number>
      </property>
@@ -130,7 +133,7 @@
    <item row="4" column="1">
     <widget class="QComboBox" name="ComboBoxAutoDjRandomQueue">
      <property name="toolTip">
-      <string>Add a track to the end of the Auto DJ playlist once it is played, instead of removing it.</string>
+      <string>Add random tracks from crate if the specified minimun tracks remain</string>
      </property>
     </widget>
    </item>
