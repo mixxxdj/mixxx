@@ -271,16 +271,48 @@ void EngineMaster::processChannels(
             // once talkover is anabled it is not used in
             // xFader-Mix
             talkoverChannels->append(pChannelInfo);
-        } else if (pChannel->isMasterEnabled() &&
+
+            // Check if we need to fade out the master channel
+            GainCache& gainCache = m_channelMasterGainCache[i];
+            if (gainCache.m_gain) {
+                gainCache.m_fadeout = true;
+                busChannels[pChannel->getOrientation()].append(pChannelInfo);
+                qDebug() << "1" << gainCache.m_gain;
+            }
+        } else {
+            // Check if we need to fade out the channel
+            GainCache& gainCache = m_channelTalkoverGainCache[i];
+            if (gainCache.m_gain) {
+                gainCache.m_fadeout = true;
+                talkoverChannels->append(pChannelInfo);
+                qDebug() << "2" << gainCache.m_gain;
+            }
+            if (pChannel->isMasterEnabled() &&
                     !pChannelInfo->m_pMuteControl->toBool()) {
-            // the xFader mix
-            busChannels[pChannel->getOrientation()].append(pChannelInfo);
+                // the xFader-Mix
+                busChannels[pChannel->getOrientation()].append(pChannelInfo);
+            } else {
+                // Check if we need to fade out the channel
+                GainCache& gainCache = m_channelMasterGainCache[i];
+                if (gainCache.m_gain) {
+                    gainCache.m_fadeout = true;
+                    busChannels[pChannel->getOrientation()].append(pChannelInfo);
+                    qDebug() << "3" << gainCache.m_gain;
+                }
+            }
         }
 
         // If the channel is enabled for previewing in headphones, copy it
         // over to the headphone buffer
         if (pChannel->isPflEnabled()) {
             headphoneChannels->append(pChannelInfo);
+        } else {
+            // Check if we need to fade out the channel
+            GainCache& gainCache = m_channelHeadphoneGainCache[i];
+            if (gainCache.m_gain) {
+                m_channelHeadphoneGainCache[i].m_fadeout = true;
+                headphoneChannels->append(pChannelInfo);
+            }
         }
 
         // If necessary, add the channel to the list of buffers to process.
