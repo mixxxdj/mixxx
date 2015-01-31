@@ -17,6 +17,7 @@ class DlgPrefAutoDJ : public DlgPreferencePage, public Ui::DlgPrefAutoDJDlg {
     void slotUpdate();
     void slotApply();
     void slotResetToDefaults();
+    void slotCancel() ;
 
   private slots:
     void slotSetAutoDjRequeue(int);
