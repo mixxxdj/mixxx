@@ -28,7 +28,7 @@ class SchemaManagerTest : public MixxxTest {
 
 TEST_F(SchemaManagerTest, CanUpgradeFreshDatabaseToRequiredVersion) {
     SchemaManager::Result result = SchemaManager::upgradeToSchemaVersion(
-            ":schema.xml", m_db, TrackCollection::kRequiredSchemaVersion);
+            ":/schema.xml", m_db, TrackCollection::kRequiredSchemaVersion);
     EXPECT_EQ(SchemaManager::RESULT_OK, result);
 }
 
@@ -42,7 +42,7 @@ TEST_F(SchemaManagerTest, NonExistentSchema) {
 TEST_F(SchemaManagerTest, BackwardsCompatibleVersion) {
     // Upgrade to version 1 to get the settings table.
     SchemaManager::Result result = SchemaManager::upgradeToSchemaVersion(
-            ":schema.xml", m_db, 1);
+            ":/schema.xml", m_db, 1);
     EXPECT_EQ(SchemaManager::RESULT_OK, result);
 
     SettingsDAO settings(m_db);
@@ -56,14 +56,14 @@ TEST_F(SchemaManagerTest, BackwardsCompatibleVersion) {
                       TrackCollection::kRequiredSchemaVersion);
 
     result = SchemaManager::upgradeToSchemaVersion(
-            ":schema.xml", m_db, TrackCollection::kRequiredSchemaVersion);
+            ":/schema.xml", m_db, TrackCollection::kRequiredSchemaVersion);
     EXPECT_EQ(SchemaManager::RESULT_OK, result);
 }
 
 TEST_F(SchemaManagerTest, BackwardsIncompatibleVersion) {
     // Upgrade to version 1 to get the settings table.
     SchemaManager::Result result = SchemaManager::upgradeToSchemaVersion(
-            ":schema.xml", m_db, 1);
+            ":/schema.xml", m_db, 1);
     EXPECT_EQ(SchemaManager::RESULT_OK, result);
 
     SettingsDAO settings(m_db);
@@ -77,14 +77,14 @@ TEST_F(SchemaManagerTest, BackwardsIncompatibleVersion) {
                       TrackCollection::kRequiredSchemaVersion + 1);
 
     result = SchemaManager::upgradeToSchemaVersion(
-            ":schema.xml", m_db, TrackCollection::kRequiredSchemaVersion);
+            ":/schema.xml", m_db, TrackCollection::kRequiredSchemaVersion);
     EXPECT_EQ(SchemaManager::RESULT_BACKWARDS_INCOMPATIBLE, result);
 }
 
 TEST_F(SchemaManagerTest, FailedUpgrade) {
     // Upgrade to version 3 to get the modern library table.
     SchemaManager::Result result = SchemaManager::upgradeToSchemaVersion(
-            ":schema.xml", m_db, 3);
+            ":/schema.xml", m_db, 3);
     EXPECT_EQ(SchemaManager::RESULT_OK, result);
 
     // Add a column that is added in verison 24.
@@ -93,6 +93,6 @@ TEST_F(SchemaManagerTest, FailedUpgrade) {
             "ALTER TABLE library ADD COLUMN coverart_source TEXT"));
 
     result = SchemaManager::upgradeToSchemaVersion(
-            ":schema.xml", m_db, TrackCollection::kRequiredSchemaVersion);
+            ":/schema.xml", m_db, TrackCollection::kRequiredSchemaVersion);
     EXPECT_EQ(SchemaManager::RESULT_UPGRADE_FAILED, result);
 }
