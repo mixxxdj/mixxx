@@ -269,20 +269,18 @@ void EngineMaster::processChannels(
         if (pChannel->isTalkoverEnabled()) {
             // talkover is an exclusive channel
             // once talkover is anabled it is not used in
-            // xFader mix and headphone
+            // xFader-Mix
             talkoverChannels->append(pChannelInfo);
-        } else {
-            if (pChannel->isMasterEnabled() &&
+        } else if (pChannel->isMasterEnabled() &&
                     !pChannelInfo->m_pMuteControl->toBool()) {
-                // the xFader mix
-                busChannels[pChannel->getOrientation()].append(pChannelInfo);
-            }
+            // the xFader mix
+            busChannels[pChannel->getOrientation()].append(pChannelInfo);
+        }
 
-            // If the channel is enabled for previewing in headphones, copy it
-            // over to the headphone buffer
-            if (pChannel->isPflEnabled()) {
-                headphoneChannels->append(pChannelInfo);
-            }
+        // If the channel is enabled for previewing in headphones, copy it
+        // over to the headphone buffer
+        if (pChannel->isPflEnabled()) {
+            headphoneChannels->append(pChannelInfo);
         }
 
         // If necessary, add the channel to the list of buffers to process.
