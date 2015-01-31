@@ -119,12 +119,12 @@ void DlgPrefAutoDJ::slotCancel() {
 #ifdef __AUTODJCRATES__
     autoDjMinimumAvailableSpinBox->setValue(
             m_pConfig->getValueString(
-                        ConfigKey("[Auto DJ]", "MinimumAvailable"), "20").toInt());
+                      ConfigKey("[Auto DJ]", "MinimumAvailable"), "20").toInt());
 
     autoDjIgnoreTimeEdit->setTime(
             QTime::fromString(
             m_pConfig->getValueString(
-                        ConfigKey("[Auto DJ]", "IgnoreTime"), "23:59"),
+                      ConfigKey("[Auto DJ]", "IgnoreTime"), "23:59"),
                                 autoDjIgnoreTimeEdit->displayFormat()));
     autoDjIgnoreTimeCheckBox->setChecked(
             (bool) m_pConfig->getValueString(
