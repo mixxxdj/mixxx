@@ -393,8 +393,9 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
         sc.order = order;
         m_sortColumns.replace(0, sc);
     } else {
-        // remove column if already in history
-        for (int i = 0; i < m_sortColumns.size(); ++i) {
+        // Remove column if already in history
+        // As reverse loop to not skip an entry when removing the previous
+        for (int i = m_sortColumns.size() - 1; i >= 0; --i) {
             if (m_sortColumns.at(i).column == column) {
                 m_sortColumns.removeAt(i);
                 break;
@@ -414,7 +415,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
 
     // we have two selects for sorting, since keeping the select history
     // across the two selects is hard, we do this only for the trackSource
-    // this is OK, because the coloums of the table are virtual in cas of
+    // this is OK, because the colums of the table are virtual in case of
     // preview column or individual like playlist track number so that we
     // do not need the history anyway.
 
