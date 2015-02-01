@@ -384,6 +384,7 @@ class SoundTouch(Dependence):
         optimize = SCons.ARGUMENTS.get('optimize', 'portable')
         return (build.machine_is_64bit or
                 (optimize == 'portable') or
+                (optimize == '9') or
                 (optimize == 'tuned'))
 
     def sources(self, build):
