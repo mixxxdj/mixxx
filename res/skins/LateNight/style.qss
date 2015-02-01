@@ -40,6 +40,11 @@
   background-color: #0f0f0f;
 }
 
+#LibrarySingleton {
+  padding-top: 5px;
+  padding-bottom: 2px;
+}
+
 #Library {
   border-left: 0px solid #585858;
   background-color: #0e0e0e;
