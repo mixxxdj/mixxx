@@ -384,7 +384,7 @@ void AutoDJFeature::slotRandomQueue(int tracksToAdd) {
     while (tracksToAdd > 0) {
         //Will attempt to add tracks
         slotAddRandomTrack(true);
-        tracksToAdd -=1;
+        tracksToAdd -= 1;
     }
 }
 

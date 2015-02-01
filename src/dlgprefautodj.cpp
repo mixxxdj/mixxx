@@ -66,13 +66,13 @@ DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
 
     // Remove the preferences.
     autoDjMinimumAvailableLabel->setVisible(false);
-    GridLayout->removeWidget(autoDjMinimumAvailableLabel);
+    GridLayout1->removeWidget(autoDjMinimumAvailableLabel);
     autoDjMinimumAvailableSpinBox->setVisible(false);
-    GridLayout->removeWidget(autoDjMinimumAvailableSpinBox);
+    GridLayout1->removeWidget(autoDjMinimumAvailableSpinBox);
     autoDjIgnoreTimeCheckBox->setVisible(false);
-    GridLayout->removeWidget(autoDjIgnoreTimeCheckBox);
+    GridLayout1->removeWidget(autoDjIgnoreTimeCheckBox);
     autoDjIgnoreTimeEdit->setVisible(false);
-    GridLayout->removeWidget(autoDjIgnoreTimeEdit);
+    GridLayout1->removeWidget(autoDjIgnoreTimeEdit);
 #endif // __AUTODJCRATES__
     // Connect the global cancell signal
        connect(this,SIGNAL(cancelPreferences()),this,
