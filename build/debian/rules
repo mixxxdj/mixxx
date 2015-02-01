@@ -21,6 +21,9 @@ DEB_BUILD_OPTIONS= noopt
 # virtualize=0 switches of keeping build files in the cache folder 
 MIXXX_SCONS_FLAGS = optimize=portable virtualize=0
 
+# If ARCH is set to a different architecture when running pbuilder, pbuilder
+# will be set to create an environment to build packages for the architecture 
+# specified in ARCH. 
 ifneq (,$(findstring i386,$(ARCH)))
 	MIXXX_SCONS_FLAGS += machine=x86
 endif
