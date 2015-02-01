@@ -22,7 +22,8 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
                      "mixxx.db.model.browse"),
           QStandardItemModel(parent),
           m_pTrackCollection(pTrackCollection),
-          m_pRecordingManager(pRecordingManager) {
+          m_pRecordingManager(pRecordingManager),
+          m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)) {
     QStringList header_data;
     header_data.insert(COLUMN_PREVIEW, tr("Preview"));
     header_data.insert(COLUMN_FILENAME, tr("Filename"));
@@ -74,6 +75,10 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
             this,
             SLOT(slotInsert(const QList< QList<QStandardItem*> >&, BrowseTableModel*)),
             Qt::QueuedConnection);
+
+    connect(&PlayerInfo::instance(), SIGNAL(trackLoaded(QString, TrackPointer)),
+            this, SLOT(trackLoaded(QString, TrackPointer)));
+    trackLoaded(m_previewDeckGroup, PlayerInfo::instance().getTrackInfo(m_previewDeckGroup));
 }
 
 BrowseTableModel::~BrowseTableModel() {
@@ -388,6 +393,29 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
             tr("Could not update file metadata.")
             + "\n" +track_location);
         return false;
+    }
+}
+
+void BrowseTableModel::trackLoaded(QString group, TrackPointer pTrack) {
+    if (group == m_previewDeckGroup) {
+        const int numColumns = columnCount();
+        for (int row = 0; row < rowCount(); ++row) {
+            QModelIndex i = index(row, COLUMN_PREVIEW);
+            setData(i, "0", Qt::EditRole);
+        }
+        if (pTrack) {
+            for (int row = 0; row < rowCount(); ++row) {
+                QModelIndex i = index(row, COLUMN_PREVIEW);
+                QString location = index(row, COLUMN_LOCATION).data().toString();
+                if (location == pTrack->getLocation()) {
+                    setData(i, "1", Qt::EditRole);
+                    break;
+                }
+            }
+        }
+        QModelIndex top = index(0, COLUMN_PREVIEW);
+        QModelIndex bottom = index(rowCount() - 1, numColumns);
+        emit(dataChanged(top, bottom));
     }
 }
 

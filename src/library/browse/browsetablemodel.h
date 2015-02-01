@@ -68,6 +68,7 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel {
   public slots:
     void slotClear(BrowseTableModel*);
     void slotInsert(const QList< QList<QStandardItem*> >&, BrowseTableModel*);
+    void trackLoaded(QString group, TrackPointer pTrack);
 
   private:
     void removeTracks(QStringList trackLocations);
