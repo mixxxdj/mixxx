@@ -43,9 +43,9 @@ HeaderViewState::HeaderViewState(const QString& base64serialized) {
     // First decode the array from Base64, then initialize the protobuf from it.
     array = QByteArray::fromBase64(array);
     if (!m_view_state.ParseFromArray(array.constData(), array.size())) {
-      qDebug() << "ERROR: Could not parse m_view_state from QByteArray of size "
-        << array.size();
-      return;
+        qDebug() << "ERROR: Could not parse m_view_state from QByteArray of size "
+                 << array.size();
+        return;
     }
 }
 
