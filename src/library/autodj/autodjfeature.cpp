@@ -22,6 +22,7 @@
 #include "util/dnd.h"
 
 const QString AutoDJFeature::m_sAutoDJViewName = QString("Auto DJ");
+static const int kMaxRetiveAttempts = 3;
 
 AutoDJFeature::AutoDJFeature(QObject* parent,
                              ConfigObject<ConfigValue>* pConfig,
@@ -120,8 +121,8 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
 
 #ifdef __AUTODJCRATES__
     // Be informed when the user wants to add another random track.
-    connect(m_pAutoDJProcessor,SIGNAL(randomTrackRequested()),
-            this,SLOT(slotRandomQueue()));
+    connect(m_pAutoDJProcessor,SIGNAL(randomTrackRequested(int)),
+            this,SLOT(slotRandomQueue(int)));
     connect(m_pAutoDJView, SIGNAL(addRandomButton(bool)),
             this, SLOT(slotAddRandomTrack(bool)));
     connect(this, SIGNAL(enableAddRandom(bool)),
@@ -279,7 +280,7 @@ void AutoDJFeature::slotCrateAutoDjChanged(int crateId, bool added) {
 void AutoDJFeature::slotAddRandomTrack(bool) {
 #ifdef __AUTODJCRATES__
     int retriveAttempts = 0;
-    while (retriveAttempts < 3) {
+    while (retriveAttempts < kMaxRetiveAttempts) {
         // Get access to the auto-DJ playlist.
         PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
         if (m_iAutoDJPlaylistId >= 0) {
@@ -304,7 +305,7 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
         retriveAttempts += 1;
     }
 
-    if (retriveAttempts == 3)
+    if (retriveAttempts == kMaxRetiveAttempts)
         qDebug () << "Could Not Load Random Tracks";
 #endif // __AUTODJCRATES__
 }
@@ -379,9 +380,12 @@ void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
     }
 }
 
-void AutoDJFeature::slotRandomQueue() {
-    // Re-routing through here for debug purposes
-    slotAddRandomTrack(true);
+void AutoDJFeature::slotRandomQueue(int tracksToAdd) {
+    while (tracksToAdd > 0) {
+        //Will attempt to add tracks
+        slotAddRandomTrack(true);
+        tracksToAdd -=1;
+    }
 }
 
 #endif // __AUTODJCRATES__

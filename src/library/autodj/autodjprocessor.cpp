@@ -504,18 +504,17 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
 
 TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
     // Get the track at the top of the playlist.
-    while (true) {
-        // Incase we start off with < minimum tracks
-        bool randomQueueEnabled = (((m_pConfig->getValueString(
-                    ConfigKey("[Auto DJ]", "EnableRandomQueue")).toInt())) == 1);
-        int minAutoDJCrateTracks = m_pConfig->getValueString(
-                    ConfigKey(kConfigKey, "RandomQueueMinimumAllowed")).toInt();
-        int tracksToAdd = minAutoDJCrateTracks - m_pAutoDJTableModel->rowCount();
-        while (randomQueueEnabled && (tracksToAdd > 0)) {
-            emit(randomTrackRequested());
-            tracksToAdd = minAutoDJCrateTracks - m_pAutoDJTableModel->rowCount();
-        }
+    bool randomQueueEnabled = (((m_pConfig->getValueString(
+                ConfigKey("[Auto DJ]", "EnableRandomQueue")).toInt())) == 1);
+    int minAutoDJCrateTracks = m_pConfig->getValueString(
+                ConfigKey(kConfigKey, "RandomQueueMinimumAllowed")).toInt();
+    int tracksToAdd = minAutoDJCrateTracks - m_pAutoDJTableModel->rowCount();
+    // Incase we start off with < minimum tracks
+    if (randomQueueEnabled && (tracksToAdd > 0)) {
+        emit(randomTrackRequested(tracksToAdd));
+    }
 
+    while (true) {
         TrackPointer nextTrack = m_pAutoDJTableModel->getTrack(
             m_pAutoDJTableModel->index(0, 0));
 
@@ -607,7 +606,7 @@ bool AutoDJProcessor::removeTrackFromTopOfQueue(TrackPointer pTrack) {
     int tracksToAdd = minAutoDJCrateTracks - m_pAutoDJTableModel->rowCount();
     if (randomQueueEnabled && (tracksToAdd > 0)) {
         qDebug() << "Randomly adding tracks";
-        emit(randomTrackRequested());
+        emit(randomTrackRequested(tracksToAdd));
     }
 
     return true;
