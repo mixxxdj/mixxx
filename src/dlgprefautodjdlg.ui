@@ -99,14 +99,14 @@
      <item row="4" column="1">
       <widget class="QComboBox" name="ComboBoxAutoDjRandomQueue">
        <property name="toolTip">
-        <string>Add random tracks from crate if the specified minimun tracks remain</string>
+        <string>Add random tracks from Track Source if the specified minimum tracks remain</string>
        </property>
       </widget>
      </item>
      <item row="5" column="0">
       <widget class="QLabel" name="autoDJRandomQueueMinimumLabel">
        <property name="text">
-        <string>Minumum allowed tracks before addition</string>
+        <string>Minimum allowed tracks before addition</string>
        </property>
       </widget>
      </item>
@@ -116,7 +116,7 @@
         <bool>true</bool>
        </property>
        <property name="toolTip">
-        <string>Minimum no of tracks after which random tracks may be added</string>
+        <string>Minimum number of tracks after which random tracks may be added</string>
        </property>
        <property name="minimum">
         <number>1</number>
