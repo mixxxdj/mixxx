@@ -392,9 +392,9 @@ void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
     QString queryString = QString("SELECT %1 FROM %2 %3 %4")
             .arg(m_idColumn, m_tableName, filter, orderByClause);
 
-//    if (sDebug) {
+    if (sDebug) {
         qDebug() << this << "select() executing:" << queryString;
-//    }
+    }
 
     QSqlQuery query(m_database);
     // This causes a memory savings since QSqlCachedResult (what QtSQLite uses)
