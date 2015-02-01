@@ -428,23 +428,22 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
 
     if (column > 0 && column < m_tableColumns.size()) {
         // Table sorting, no history
-        m_tableOrderBy.append(QLatin1String("ORDER BY "));
+        m_tableOrderBy.append("ORDER BY ");
         QString field = m_tableColumns[column];
         QString sort_field = QString("%1.%2").arg(m_tableName, field);
         m_tableOrderBy.append(sort_field);
     #ifdef __SQLITE3__
-        m_tableOrderBy.append(QLatin1String(" COLLATE localeAwareCompare"));
+        m_tableOrderBy.append(" COLLATE localeAwareCompare");
     #endif
         m_tableOrderBy.append((order == Qt::AscendingOrder) ?
-                QLatin1String(" ASC") :
-                QLatin1String(" DESC"));
+                " ASC" : " DESC");
         m_sortColumns.clear();
     } else if (m_trackSource) {
         foreach (SortColumn sc, m_sortColumns) {
             // TrackSource Sorting, current sort + two from history
             if (!m_trackSourceOrderBy.isEmpty()) {
                 // second cycle
-                m_trackSourceOrderBy.append(QLatin1String(", "));
+                m_trackSourceOrderBy.append(", ");
             }
             QString field;
             if (sc.column == kIdColumn) {
@@ -463,15 +462,14 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
             m_trackSourceOrderBy.append(sort_field);
 
     #ifdef __SQLITE3__
-            m_trackSourceOrderBy.append(QLatin1String(" COLLATE localeAwareCompare"));
+            m_trackSourceOrderBy.append(" COLLATE localeAwareCompare");
     #endif
             m_trackSourceOrderBy.append((sc.order == Qt::AscendingOrder) ?
-                    QLatin1String(" ASC") :
-                    QLatin1String(" DESC"));
+                    " ASC" : " DESC");
             qDebug() << m_trackSourceOrderBy << sc.order;
         }
         if (!m_trackSourceOrderBy.isEmpty()) {
-            m_trackSourceOrderBy.prepend(QLatin1String("ORDER BY "));
+            m_trackSourceOrderBy.prepend("ORDER BY ");
         }
     }
 }
