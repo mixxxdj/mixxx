@@ -81,7 +81,7 @@ class SkinContext {
     QDebug logWarning(const char* file, const int line, const QDomNode& node) const;
 
     void defineSingleton(QString objectName, QWidget* widget) {
-        return m_pSingletons->defineSingleton(objectName, widget);
+        return m_pSingletons->insertSingleton(objectName, widget);
     }
 
     QWidget* getSingletonWidget(QString objectName) const {

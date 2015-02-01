@@ -70,12 +70,10 @@ class WSingletonContainer : public WWidgetGroup {
 
 class SingletonMap {
   public:
-    typedef QMap<QString, QWidget*> WidgetMap;
-
     // Takes a constructed QWidget and inserts it in the map of available
     // singletons.  Checks that an object of that name hasn't already been
     // defined.
-    void defineSingleton(QString objectName, QWidget* widget);
+    void insertSingleton(QString objectName, QWidget* widget);
 
     // We don't want to end up with badly-constructed containers, so only
     // provide a factory function.  Returns NULL if the objectName is not in
@@ -83,7 +81,7 @@ class SingletonMap {
     QWidget* getSingletonWidget(QString objectName) const;
 
   private:
-    WidgetMap m_singletons;
+    QMap<QString, QWidget*> m_singletons;
 };
 
 

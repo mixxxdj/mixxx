@@ -24,6 +24,11 @@ void WSingletonContainer::setup(QDomNode node, const SkinContext& context) {
         return;
     }
     QString objectName = context.selectString(node, "ObjectName");
+    if (objectName.isEmpty()) {
+        SKIN_WARNING(node, context)
+                << "Singleton tag's ObjectName is empty";
+        return;
+    }
     m_pWidget = context.getSingletonWidget(objectName);
     if (m_pWidget == NULL) {
         SKIN_WARNING(node, context)
@@ -34,7 +39,17 @@ void WSingletonContainer::setup(QDomNode node, const SkinContext& context) {
 void WSingletonContainer::showEvent(QShowEvent* event) {
     Q_UNUSED(event);
     if (m_pWidget) {
+        // The widget's current parent is some other SingletonContainer,
+        // or some other widget in the skin if the widget has been newly
+        // constructed.  (The widget will be hidden so it will never appear in
+        // the place it was defined).
+        // First confirm that the parentage is valid, and then
+        // reparent the widget to our container.
         QWidget* parent = m_pWidget->parentWidget();
+        if (parent == this) {
+            // The widget is already owned by us, no need to reparent.
+            return;
+        }
         if (parent && parent->layout() && m_pLayout) {
             parent->layout()->removeWidget(m_pWidget);
             m_pLayout->addWidget(m_pWidget);
@@ -43,19 +58,15 @@ void WSingletonContainer::showEvent(QShowEvent* event) {
     }
 }
 
-void SingletonMap::defineSingleton(QString objectName, QWidget* widget) {
+void SingletonMap::insertSingleton(QString objectName, QWidget* widget) {
     if (m_singletons.contains(objectName)){
-        qWarning() << "ERROR: Tried to define a singleton with a name that has"
-                   << "already been defined:" << objectName;
+        qWarning() << "ERROR: Tried to insert a singleton with a name that has"
+                   << "already been inserted:" << objectName;
         return;
     }
     m_singletons.insert(objectName, widget);
 }
 
 QWidget* SingletonMap::getSingletonWidget(QString objectName) const {
-    WidgetMap::const_iterator widget_it = m_singletons.find(objectName);
-    if (widget_it == m_singletons.end()) {
-        return NULL;
-    }
-    return *widget_it;
+    return m_singletons.value(objectName, NULL);
 }

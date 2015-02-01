@@ -1114,7 +1114,7 @@ void LegacySkinParser::parseSingletonDefinition(QDomElement node) {
 
     if (child_node.isNull()) {
         SKIN_WARNING(node, *m_pContext)
-                << "SingletonDefinition child node is NULL";
+                << "SingletonDefinition Children node is empty";
         return;
     }
 
