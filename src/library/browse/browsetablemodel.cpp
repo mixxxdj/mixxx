@@ -24,6 +24,7 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
           m_pTrackCollection(pTrackCollection),
           m_pRecordingManager(pRecordingManager) {
     QStringList header_data;
+    header_data.insert(COLUMN_PREVIEW, tr("Preview"));
     header_data.insert(COLUMN_FILENAME, tr("Filename"));
     header_data.insert(COLUMN_ARTIST, tr("Artist"));
     header_data.insert(COLUMN_TITLE, tr("Title"));
@@ -43,7 +44,6 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
     header_data.insert(COLUMN_GROUPING, tr("Grouping"));
     header_data.insert(COLUMN_FILE_MODIFIED_TIME, tr("File Modified"));
     header_data.insert(COLUMN_FILE_CREATION_TIME, tr("File Created"));
-    header_data.insert(COLUMN_PREVIEW, tr("Preview"));
 
     addSearchColumn(COLUMN_FILENAME);
     addSearchColumn(COLUMN_ARTIST);
