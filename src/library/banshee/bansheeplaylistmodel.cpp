@@ -264,11 +264,13 @@ void BansheePlaylistModel::trackLoaded(QString group, TrackPointer pTrack) {
                 emit(dataChanged(left, right));
             }
         }
+        m_iPreviewDeckTrackId = -1;
         if (pTrack) {
             for (int row = 0; row < rowCount(); ++row) {
                 QUrl rowUrl(getFieldString(index(row, 0), CLM_URI));
                 if (rowUrl.toLocalFile() == pTrack->getLocation()) {
-                    m_iPreviewDeckTrackId = getFieldString(index(row, 0), CLM_VIEW_ORDER).toInt();
+                    m_iPreviewDeckTrackId =
+                            getFieldString(index(row, 0), CLM_VIEW_ORDER).toInt();
                     break;
                 }
             }
