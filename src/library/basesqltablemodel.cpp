@@ -20,7 +20,8 @@
 #include "util/dnd.h"
 #include "util/assert.h"
 
-const bool sDebug = false;
+static const bool sDebug = false;
+static const int kIdColumn = 0; // Must not be changed
 
 BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
                                      TrackCollection* pTrackCollection,
@@ -34,7 +35,7 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
           m_iPreviewDeckTrackId(-1),
           m_bInitialized(false),
           m_currentSearch(""),
-          m_trackSourceSortColumn(0),
+          m_trackSourceSortColumn(kIdColumn),
           m_trackSourceSortOrder(Qt::AscendingOrder) {
     connect(&PlayerInfo::instance(), SIGNAL(trackLoaded(QString, TrackPointer)),
             this, SLOT(trackLoaded(QString, TrackPointer)));
@@ -228,7 +229,7 @@ void BaseSqlTableModel::select() {
     QVector<RowInfo> rowInfo;
     QSet<int> trackIds;
     while (query.next()) {
-        int id = query.value(0).toInt();
+        int id = query.value(kIdColumn).toInt();
         trackIds.insert(id);
 
         RowInfo thisRowInfo;
@@ -444,8 +445,8 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
                 m_trackSourceOrderBy.append(QLatin1String(", "));
             }
             QString field;
-            if (sc.column == 0) {
-                field = m_trackSource->columnNameForFieldIndex(0);
+            if (sc.column == kIdColumn) {
+                field = m_trackSource->columnNameForFieldIndex(kIdColumn);
             } else {
                 // + 1 to skip id coloumn
                 int ccColumn = sc.column - m_tableColumns.size() + 1;
