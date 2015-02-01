@@ -122,7 +122,7 @@ TEST_F(SampleUtilTest, addWithGain) {
             AssertWholeBufferEquals(buffer, 2.0f, size);
             SampleUtil::addWithGain(buffer, buffer2, 2.0, size);
             AssertWholeBufferEquals(buffer, 4.0f, size);
-            delete buffer2;
+            delete [] buffer2;
         }
     }
 }
@@ -148,8 +148,8 @@ TEST_F(SampleUtilTest, add2WithGain) {
                                      buffer3, 3.0,
                                      size);
             AssertWholeBufferEquals(buffer, 8.0f, size);
-            delete buffer2;
-            delete buffer3;
+            delete [] buffer2;
+            delete [] buffer3;
         }
     }
 }
@@ -178,9 +178,9 @@ TEST_F(SampleUtilTest, add3WithGain) {
                                      buffer4, 4.0,
                                      size);
             AssertWholeBufferEquals(buffer, 13.0f, size);
-            delete buffer2;
-            delete buffer3;
-            delete buffer4;
+            delete [] buffer2;
+            delete [] buffer3;
+            delete [] buffer4;
         }
     }
 }
@@ -197,7 +197,7 @@ TEST_F(SampleUtilTest, copyWithGain) {
             AssertWholeBufferEquals(buffer, 1.0f, size);
             SampleUtil::copyWithGain(buffer, buffer2, 2.0, size);
             AssertWholeBufferEquals(buffer, 2.0f, size);
-            delete buffer2;
+            delete [] buffer2;
         }
     }
 }
@@ -234,8 +234,8 @@ TEST_F(SampleUtilTest, copy2WithGain) {
                                       buffer3, 3.0,
                                       size);
             AssertWholeBufferEquals(buffer, 5.0f, size);
-            delete buffer2;
-            delete buffer3;
+            delete [] buffer2;
+            delete [] buffer3;
         }
     }
 }
@@ -285,9 +285,9 @@ TEST_F(SampleUtilTest, copy3WithGain) {
                                       buffer4, 4.0,
                                       size);
             AssertWholeBufferEquals(buffer, 9.0f, size);
-            delete buffer2;
-            delete buffer3;
-            delete buffer4;
+            delete [] buffer2;
+            delete [] buffer3;
+            delete [] buffer4;
         }
     }
 }
@@ -413,8 +413,8 @@ TEST_F(SampleUtilTest, deinterleaveBuffer) {
                 EXPECT_FLOAT_EQ(buffer2[j], -j);
             }
 
-            delete buffer2;
-            delete buffer3;
+            delete [] buffer2;
+            delete [] buffer3;
         }
     }
 }
