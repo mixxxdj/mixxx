@@ -267,6 +267,9 @@ void WPushButton::onConnectedControlChanged(double dParameter, double dValue) {
     Q_UNUSED(dParameter);
     // Enums are not currently represented using parameter space so it doesn't
     // make sense to use the parameter here yet.
+    // TODO(owen): This only happens because the CO default value causes this to
+    // get called before the widget is totally set up.  That seems to be a harmless
+    // side-effect, however.
     if (m_iNoStates == 0) {
         return;
     }
