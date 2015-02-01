@@ -22,6 +22,7 @@
 
 static const bool sDebug = false;
 static const int kIdColumn = 0; // Must not be changed
+static const int kMaxSortColumns = 3;
 
 BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
                                      TrackCollection* pTrackCollection,
@@ -408,7 +409,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
         sc.order = order;
         m_sortColumns.prepend(sc);
 
-        if (m_sortColumns.size() > 3) {
+        if (m_sortColumns.size() > kMaxSortColumns) {
             m_sortColumns.removeLast();
         }
     }
