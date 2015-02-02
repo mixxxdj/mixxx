@@ -1002,12 +1002,14 @@ class MixxxCore(Feature):
             build.env.Append(CPPDEFINES='MIXXX_DEBUG_ASSERTIONS_FATAL')
 
         if build.toolchain_is_gnu:
-            # Default GNU Options
-            build.env.Append(CCFLAGS='-pipe')
-            build.env.Append(CCFLAGS='-Wall')
-            build.env.Append(CCFLAGS='-Wextra')
-            # TODO(XXX) always generate debugging info?
-            build.env.Append(CCFLAGS='-g')
+            if build.build_is_debug or build.build_is_release:
+                build.env.Append(CPPDEFINES='MIXXX_BUILD_RELEASE')
+                # Default GNU Options
+                build.env.Append(CCFLAGS='-pipe')
+                build.env.Append(CCFLAGS='-Wall')
+                build.env.Append(CCFLAGS='-Wextra')
+                # TODO(XXX) always generate debugging info?
+                build.env.Append(CCFLAGS='-g')
         elif build.toolchain_is_msvs:
             # Validate the specified winlib directory exists
             mixxx_lib_path = SCons.ARGUMENTS.get(

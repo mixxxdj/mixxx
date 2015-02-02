@@ -39,8 +39,8 @@ class MixxxBuild(object):
         if build is None:
             build = 'debug'
 
-        if not build in ['debug', 'release']:
-            raise Exception("invalid build type")
+        if not build in ['debug', 'release', 'none']:
+            raise Exception("invalid build type '" + build + "' use 'debug' 'release' or 'none'")
 
         if target not in ['windows', 'osx', 'linux', 'bsd']:
             raise Exception("invalid target platform")

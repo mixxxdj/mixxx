@@ -80,8 +80,9 @@ class HID(Feature):
             conf.CheckLib(['rt', 'librt'])
 
             # -pthread tells GCC to do the right thing regardless of system
-            build.env.Append(CCFLAGS='-pthread')
-            build.env.Append(LINKFLAGS='-pthread')
+            if build.build_is_debug or build.build_is_release:
+                build.env.Append(CCFLAGS='-pthread')
+                build.env.Append(LINKFLAGS='-pthread')
 
         elif build.platform_is_windows and not conf.CheckLib(['setupapi', 'libsetupapi']):
             raise Exception('Did not find the setupapi library, exiting.')
@@ -942,7 +943,7 @@ class Optimize(Feature):
         return "Optimization and Tuning"
 
     def enabled(self, build):
-        build.flags['optimize'] = SCons.ARGUMENTS.get('optimize', 'portable')
+        build.flags['optimize'] = SCons.ARGUMENTS.get('optimize', '')
         if build.flags['optimize'] is not 'portable':
             return True
         else:
@@ -965,6 +966,10 @@ class Optimize(Feature):
 
         if optimize_level == 'disabled':
             self.status = "disabled: no optimazion, for debug only"
+            return
+
+        if not build.build_is_debug and not build.build_is_release and optimize_level == '':
+            self.status = "disabled: no optimazion set with build=none"
             return
 
         if build.toolchain_is_msvs:
