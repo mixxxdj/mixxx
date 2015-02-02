@@ -1028,6 +1028,9 @@ class Optimize(Feature):
             # faster, measured on a Atom CPU.
             build.env.Append(
                 CCFLAGS='-O3 -ffast-math -funroll-loops')
+            # set -fomit-frame-pointer when we don't profile. 
+            # Note: It is only included in -O on machines where it does not 
+            # interfere with debugging    
             if not int(build.flags['profiling']):
                 build.env.Append(CCFLAGS='-fomit-frame-pointer')
 
