@@ -308,7 +308,7 @@ QString TrackInfoObject::getDurationStr() const {
     int iDuration = m_iDuration;
     lock.unlock();
 
-    return Time::formatSeconds(iDuration, true);
+    return Time::formatSeconds(iDuration, false);
 }
 
 void TrackInfoObject::setLocation(const QString& location) {

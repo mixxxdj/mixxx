@@ -72,7 +72,10 @@ BulkController::BulkController(libusb_context* context,
                                libusb_device_handle *handle,
                                struct libusb_device_descriptor *desc)
         : m_context(context),
-          m_phandle(handle) {
+          m_phandle(handle),
+          in_epaddr(0),
+          out_epaddr(0)
+{
     vendor_id = desc->idVendor;
     product_id = desc->idProduct;
 

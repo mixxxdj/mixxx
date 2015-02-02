@@ -41,7 +41,11 @@ EngineRecord::EngineRecord(ConfigObject<ConfigValue>* _config)
         : m_pConfig(_config),
           m_pEncoder(NULL),
           m_pSndfile(NULL),
-          m_iMetaDataLife(0) {
+          m_frames(0),
+          m_recordedDuration(0),
+          m_iMetaDataLife(0),
+          m_cueTrack(0),
+          m_bCueIsEnabled(false) {
     m_pRecReady = new ControlObjectSlave(RECORDING_PREF_KEY, "status", this);
     m_pSamplerate = new ControlObjectSlave("[Master]", "samplerate", this);
     m_sampleRate = m_pSamplerate->get();

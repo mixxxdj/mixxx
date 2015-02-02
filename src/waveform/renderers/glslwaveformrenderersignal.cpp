@@ -58,8 +58,8 @@ bool GLSLWaveformRendererSignal::loadShaders() {
         return false;
     }
     QString fragmentShader = m_rgbShader ?
-            ":shaders/rgbsignal.frag" :
-            ":shaders/filteredsignal.frag";
+            ":/shaders/rgbsignal.frag" :
+            ":/shaders/filteredsignal.frag";
     if (!m_frameShaderProgram->addShaderFromSourceFile(
             QGLShader::Fragment, fragmentShader)) {
         qDebug() << "GLWaveformRendererSignalShader::loadShaders - "
