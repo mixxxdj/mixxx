@@ -37,6 +37,7 @@
 #include "sampleutil.h"
 #include "controlobjectslave.h"
 #include "util/performancetimer.h"
+#include "util/denormalsarezero.h"
 
 static const int kDriftReserve = 1; // Buffer for drift correction 1 full, 1 for r/w, 1 empty
 static const int kFifoSize = 2 * kDriftReserve + 1; // Buffer for drift correction 1 full, 1 for r/w, 1 empty
@@ -561,14 +562,6 @@ int SoundDevicePortAudio::callbackProcessDrift(const unsigned int framesPerBuffe
     Q_UNUSED(timeInfo);
     Trace trace("SoundDevicePortAudio::callbackProcessDrift %1", getInternalName());
 
-    //qDebug() << "SoundDevicePortAudio::callbackProcess:" << getInternalName();
-    // Turn on TimeCritical priority for the callback thread. If we are running
-    // in Linux userland, for example, this will have no effect.
-    if (!m_bSetThreadPriority) {
-        QThread::currentThread()->setPriority(QThread::TimeCriticalPriority);
-        m_bSetThreadPriority = true;
-    }
-
     if (statusFlags & (paOutputUnderflow | paInputOverflow)) {
         m_underflowHappend = 1;
     }
@@ -697,14 +690,6 @@ int SoundDevicePortAudio::callbackProcess(const unsigned int framesPerBuffer,
     Q_UNUSED(timeInfo);
     Trace trace("SoundDevicePortAudio::callbackProcess %1", getInternalName());
 
-    //qDebug() << "SoundDevicePortAudio::callbackProcess:" << getInternalName();
-    // Turn on TimeCritical priority for the callback thread. If we are running
-    // in Linux userland, for example, this will have no effect.
-    if (!m_bSetThreadPriority) {
-        QThread::currentThread()->setPriority(QThread::TimeCriticalPriority);
-        m_bSetThreadPriority = true;
-    }
-
     if (statusFlags & (paOutputUnderflow | paInputOverflow)) {
         m_underflowHappend = 1;
         //qDebug() << "callbackProcess read:" << "Underflow";
@@ -766,6 +751,25 @@ int SoundDevicePortAudio::callbackProcessClkRef(const unsigned int framesPerBuff
     if (!m_bSetThreadPriority) {
         QThread::currentThread()->setPriority(QThread::TimeCriticalPriority);
         m_bSetThreadPriority = true;
+
+        // This disables the denormals calculations, to avoid a
+        // performance penalty of ~20
+        // https://bugs.launchpad.net/mixxx/+bug/1404401
+#ifdef __SSE__
+        if (!_MM_GET_DENORMALS_ZERO_MODE()) {
+            qDebug() << "SSE: Enabling flush to zero mode";
+            _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
+        } else {
+             qDebug() << "SSE: Flush to zero mode already enabled";
+        }
+
+        if (!_MM_GET_FLUSH_ZERO_MODE()) {
+            qDebug() << "SSE: Enabling flush to zero mode";
+            _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+        } else {
+             qDebug() << "SSE: Flush to zero mode already enabled";
+        }
+#endif
     }
 
     VisualPlayPosition::setTimeInfo(timeInfo);
