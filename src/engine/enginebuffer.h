@@ -29,6 +29,7 @@
 #include "configobject.h"
 #include "rotary.h"
 #include "control/controlvalue.h"
+#include "cachingreader.h"
 
 //for the writer
 #ifdef __SCALER_DEBUG__
@@ -65,8 +66,6 @@ class EngineSync;
 class EngineWorkerScheduler;
 class VisualPlayPosition;
 class EngineMaster;
-
-struct Hint;
 
 /**
   *@author Tue and Ken Haste Andersen
@@ -266,7 +265,7 @@ class EngineBuffer : public EngineObject {
     CachingReader* m_pReader;
 
     // List of hints to provide to the CachingReader
-    QVector<Hint> m_hintList;
+    HintVector m_hintList;
 
     // The current sample to play in the file.
     double m_filepos_play;
@@ -310,8 +309,6 @@ class EngineBuffer : public EngineObject {
     QAtomicInt m_slipEnabled;
     // m_bSlipEnabledProcessing is only used by the engine processing thread.
     bool m_bSlipEnabledProcessing;
-    bool m_bWasKeylocked;
-
 
     ControlObject* m_pTrackSamples;
     ControlObject* m_pTrackSampleRate;
@@ -333,7 +330,6 @@ class EngineBuffer : public EngineObject {
     ControlPotmeter* m_playposSlider;
     ControlObjectSlave* m_pSampleRate;
     ControlObjectSlave* m_pKeylockEngine;
-    ControlObjectSlave* m_pPitchControl;
     ControlPushButton* m_pKeylock;
     QScopedPointer<ControlObjectSlave> m_pPassthroughEnabled;
 

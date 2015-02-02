@@ -87,6 +87,10 @@ class KeyUtils {
         return pow(2.0, octaveChange);
     }
 
+    static inline double semitoneChangeToPowerOf2(const double& semitones) {
+        return octaveChangeToPowerOf2(semitones / 12);
+    }
+
     static inline double powerOf2ToOctaveChange(const double& power_of_2) {
         // log2 is in the C99 standard, MSVC only supports C90.
 #ifdef _MSC_VER
@@ -95,6 +99,10 @@ class KeyUtils {
 #else
         return log2(power_of_2);
 #endif
+    }
+
+    static inline double powerOf2ToSemitoneChange(const double& power_of_2) {
+        return powerOf2ToOctaveChange(power_of_2) * 12;
     }
 
     static mixxx::track::io::key::ChromaticKey openKeyNumberToKey(int openKeyNumber, bool major);

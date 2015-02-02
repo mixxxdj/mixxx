@@ -25,6 +25,7 @@
 #include "configobject.h"
 #include "controlobject.h"
 #include "controlobjectthread.h"
+#include "controlobjectslave.h"
 #include "encoder/encodercallback.h"
 #include "engine/sidechain/sidechainworker.h"
 #include "errordialoghandler.h"
@@ -97,8 +98,8 @@ class EngineShoutcast : public QObject, public EncoderCallback, public SideChain
     ConfigObject<ConfigValue>* m_pConfig;
     Encoder *m_encoder;
     ControlObject* m_pShoutcastNeedUpdateFromPrefs;
-    ControlObjectThread* m_pUpdateShoutcastFromPrefs;
-    ControlObjectThread* m_pMasterSamplerate;
+    ControlObjectSlave* m_pUpdateShoutcastFromPrefs;
+    ControlObjectSlave* m_pMasterSamplerate;
     ControlObject* m_pShoutcastStatus;
     volatile bool m_bQuit;
     // static metadata according to prefereneces

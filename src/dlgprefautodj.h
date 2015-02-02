@@ -17,12 +17,16 @@ class DlgPrefAutoDJ : public DlgPreferencePage, public Ui::DlgPrefAutoDJDlg {
     void slotUpdate();
     void slotApply();
     void slotResetToDefaults();
+    void slotCancel() ;
 
   private slots:
     void slotSetAutoDjRequeue(int);
     void slotSetAutoDjMinimumAvailable(int);
     void slotSetAutoDjUseIgnoreTime(int);
     void slotSetAutoDjIgnoreTime(const QTime &a_rTime);
+    void slotSetAutoDJRandomQueueMin(int);
+    void slotEnableAutoDJRandomQueueComboBox(int);
+    void slotEnableAutoDJRandomQueue(int);
 
   private:
     ConfigObject<ConfigValue>* m_pConfig;

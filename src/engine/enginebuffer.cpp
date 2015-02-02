@@ -48,6 +48,7 @@
 #include "util/timer.h"
 #include "util/math.h"
 #include "util/defs.h"
+#include "track/beatfactory.h"
 #include "track/keyutils.h"
 #include "controlobjectslave.h"
 #include "util/compatibility.h"
@@ -58,6 +59,8 @@
 #endif
 
 #include "trackinfoobject.h"
+
+const double kLinearScalerElipsis = 1.00058; // 2^(0.01/12): changes < 1 cent allows a linear scaler
 
 EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
                            EngineChannel* pChannel, EngineMaster* pMixingEngine)
@@ -85,7 +88,6 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
           m_dSlipRate(1.0),
           m_slipEnabled(0),
           m_bSlipEnabledProcessing(false),
-          m_bWasKeylocked(false),
           m_pRepeat(NULL),
           m_startButton(NULL),
           m_endButton(NULL),
@@ -190,7 +192,7 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
     m_visualKey = new ControlObject(ConfigKey(m_group, "visual_key"));
 
     m_playposSlider = new ControlLinPotmeter(
-        ConfigKey(m_group, "playposition"), 0.0, 1.0, true);
+        ConfigKey(m_group, "playposition"), 0.0, 1.0, 0, 0, true);
     connect(m_playposSlider, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlSeek(double)),
             Qt::DirectConnection);
@@ -259,7 +261,6 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
 
     m_pKeyControl = new KeyControl(group, _config);
     addControl(m_pKeyControl);
-    m_pPitchControl = new ControlObjectSlave(m_group, "pitch", this);
 
     // Create the clock controller
     m_pClockControl = new ClockControl(group, _config);
@@ -295,9 +296,6 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
     df.open(QIODevice::WriteOnly | QIODevice::Text);
     writer.setDevice(&df);
 #endif
-
-
-    m_hintList.reserve(256); // Avoid reallocation
 }
 
 EngineBuffer::~EngineBuffer()
@@ -323,6 +321,7 @@ EngineBuffer::~EngineBuffer()
 
     delete m_pSlipButton;
     delete m_pRepeat;
+    delete m_pSampleRate;
 
     delete m_pTrackSamples;
     delete m_pTrackSampleRate;
@@ -511,8 +510,12 @@ TrackPointer EngineBuffer::loadFakeTrack(double filebpm) {
     pTrack->setDuration(10);
     if (filebpm > 0) {
         pTrack->setBpm(filebpm);
+        BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack.data(), filebpm, 0.0);
+        pTrack->setBeats(pBeats);
     }
     slotTrackLoaded(pTrack, 44100, 44100 * 10);
+    m_pSyncControl->setLocalBpm(filebpm);
+    m_pSyncControl->trackLoaded(pTrack);
     return pTrack;
 }
 
@@ -520,6 +523,7 @@ TrackPointer EngineBuffer::loadFakeTrack(double filebpm) {
 void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
                                    int iTrackSampleRate,
                                    int iTrackNumSamples) {
+    //qDebug() << getGroup() << "EngineBuffer::slotTrackLoaded";
     m_pause.lock();
     m_visualPlayPos->setInvalid();
     m_pCurrentTrack = pTrack;
@@ -528,7 +532,6 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_pTrackSamples->set(iTrackNumSamples);
     m_pTrackSampleRate->set(iTrackSampleRate);
     // Reset the pitch value for the new track.
-    m_pPitchControl->set(0.0);
     m_pause.unlock();
 
     // All EngineControls are connected directly
@@ -701,17 +704,16 @@ void EngineBuffer::slotControlSlip(double v)
     m_slipEnabled = static_cast<int>(v > 0.0);
 }
 
-void EngineBuffer::slotKeylockEngineChanged(double d_index) {
-    // GCC is dumb, it doesn't think d_index is being used.
-    Q_UNUSED(d_index);
-    KeylockEngine engine = static_cast<KeylockEngine>(int(d_index));
+void EngineBuffer::slotKeylockEngineChanged(double dIndex) {
+    // static_cast<KeylockEngine>(dIndex); direct cast produces a "not used" warning with gcc
+    int iEngine = static_cast<int>(dIndex);
+    KeylockEngine engine = static_cast<KeylockEngine>(iEngine);
     if (engine == SOUNDTOUCH) {
         m_pScaleKeylock = m_pScaleST;
     } else {
         m_pScaleKeylock = m_pScaleRB;
     }
 }
-
 
 void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
     // Bail if we receive a non-even buffer size. Assert in debug builds.
@@ -743,21 +745,97 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         }
 
         bool paused = m_playButton->get() == 0.0;
-        bool is_scratching = false;
-        bool keylock_enabled = m_pKeylock->toBool();
+        KeyControl::PitchTempoRatio pitchTempoRatio = m_pKeyControl->getPitchTempoRatio();
 
-        // If keylock was on, and the user disabled it, also reset the pitch.
-        if (m_bWasKeylocked && !keylock_enabled) {
-            m_pPitchControl->set(0.0);
+        // The pitch adjustment in Ratio (1.0 being normal
+        // pitch. 2.0 is a full octave shift up).
+        double pitchRatio = pitchTempoRatio.pitchRatio;
+        double tempoRatio = pitchTempoRatio.tempoRatio;
+        bool keylock_enabled = pitchTempoRatio.keylock;
+
+        bool is_scratching = false;
+
+        // speed is the ratio between track-time and real-time
+        // (1.0 being normal rate. 2.0 plays at 2x speed -- 2 track seconds
+        // pass for every 1 real second). Depending on whether
+        // keylock is enabled, this is applied to either the rate or the tempo.
+        double speed = m_pRateControl->calculateSpeed(
+                baserate, tempoRatio, paused, iBufferSize, &is_scratching);
+
+        if (is_scratching || fabs(speed) > 1.9) {
+            // Scratching always disables keylock because keylock sounds
+            // terrible when not going at a constant rate.
+            // High seek speeds also disables keylock.  Our pitch slider could go
+            // to 90%, so that's the cutoff point.
+            pitchRatio = speed;
+            keylock_enabled = false;
+            // This is for the natural speed pitch found on turn tables
+        } else if (!keylock_enabled) {
+            // We might have have temporary speed change, so adjust pitch if not locked
+            // Note: This will not update key and tempo widgets
+            if (tempoRatio) {
+                pitchRatio *= (speed/tempoRatio);
+            }
         }
 
-        // Speed is the resulting Speed of all Speed controls (rate_* COs),
-        // the percentage change in player speed. Depending on whether
-        // keylock is enabled, this is applied to either the rate
-        // (pitch and tempo) or the tempo only.
-        double speed = m_pRateControl->calculateSpeed(
-                baserate, paused, iBufferSize, &is_scratching);
-        double pitch = m_pKeyControl->getPitchAdjustOctaves();
+        // If either keylock is enabled or the pitch is tweaked we
+        // need to use pitch and time scaling.
+        // Note: we have still click issue when changing the scaler
+
+        // const double kLinearScalerElipsis = 1.00058;
+
+        bool useIndependentPitchAndTempoScaling = false;
+        if (keylock_enabled) {
+            // use always IndependentPitchAndTempoScaling
+            // to avoid clicks when crossing the linear pitch
+            // in this case is it most likely that the user
+            // will have an non linear pitch
+            useIndependentPitchAndTempoScaling = true;
+        } else if (speed) {
+            double offlinear = pitchRatio / speed;
+            if (offlinear > kLinearScalerElipsis ||
+                    offlinear < 1 / kLinearScalerElipsis) {
+                // offlinear > 1 cent
+                // everything below is not hear-able
+                useIndependentPitchAndTempoScaling = true;
+            }
+        }
+        enableIndependentPitchTempoScaling(useIndependentPitchAndTempoScaling);
+
+        // How speed/tempo/pitch are related:
+        // Processing is done in two parts, the first part is calculated inside
+        // the KeyKontrol class and effects the visual key/pitch widgets.
+        // The Speed slider controls the tempoRatio and a speedSliderPitchRatio,
+        // the pitch amount caused by it.
+        // By default the speed slider controls pitch and tempo with the same
+        // value.
+        // If key lock is enabled, the speedSliderPitchRatio is decoupled from
+        // the speed slider (const).
+        //
+        // With preference mode KeylockMode = kLockOriginalKey
+        // the speedSliderPitchRatio is reset to 1 and back to the tempoRatio
+        // (natural vinyl Pitch) when keylock is disabled and enabled.
+        //
+        // With preference mode KeylockMode = kCurrentKey
+        // the speedSliderPitchRatio is not reseted when keylock is enabled.
+        // This mode allows to enable keylock
+        // while the track is already played. You can reset to the tracks
+        // original pitch by reseting the pitch knob to center. When disabling
+        // keylock the pitch is reset to the linear vinyl pitch.
+
+        // The Pitch knob turns if the speed slider is moved without keylock.
+        // This is useful to get always an analog impression of current pitch,
+        // and its distance to the original track pitch
+        //
+        // The Pitch_Adjust knob does not reflect the speedSliderPitchRatio.
+        // So it is is useful for controller mappings, because it is not
+        // changed by the speed slider or keylock.
+
+        // In the second part all other speed changing controls are processed.
+        // They may produce an additional pitch if keylock is disabled or
+        // override the pitch in scratching case.
+        // If pitch ratio and tempo ratio are equal, a linear scaler is used,
+        // otherwise tempo and pitch are processed individual
 
         // If we were scratching, and scratching is over, and we're a follower,
         // and we're quantized, and not paused,
@@ -772,17 +850,6 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         // Update the slipped position and seek if it was disabled.
         processSlip(iBufferSize);
 
-        // If either keylock is enabled or the (musical) pitch control is non-zero then we
-        // need to use independent pitch and tempo scaling.
-        // Scratching always uses pitch and tempo because tempo scratching sounds terrible
-        // High seek speeds also disables independent pitch and tempo scaling.
-        // Our speed (rate) slider could go to 90%, so that's the cutoff point.
-        bool useIndependentPitchAndTempoScaling =
-                !is_scratching &&
-                (keylock_enabled || pitch != 0) &&
-                fabs(speed) <= 1.9;
-        enableIndependentPitchTempoScaling(useIndependentPitchAndTempoScaling);
-
         processSyncRequests();
         processSeek();
 
@@ -790,7 +857,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         // scaler. Also, if we have changed scalers then we need to update the
         // scaler.
         if (baserate != m_baserate_old || speed != m_speed_old ||
-                pitch != m_pitch_old || m_bScalerChanged) {
+                pitchRatio != m_pitch_old || m_bScalerChanged) {
             // The rate returned by the scale object can be different from the
             // wanted rate!  Make sure new scaler has proper position. This also
             // crossfades between the old scaler and new scaler to prevent
@@ -806,44 +873,26 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
                 }
             }
 
+            m_baserate_old = baserate;
+            m_speed_old = speed;
+            m_pitch_old = pitchRatio;
 
             // Now we need to update the scaler with the master sample rate, the
             // base rate (ratio between sample rate of the source audio and the
             // master samplerate), the deck speed, the pitch shift, and whether
             // the deck speed should affect the pitch.
 
-            // The speed adjustment for the deck as calculated by
-            // RateControl. This is the ratio between track-time and real-time
-            // (1.0 being normal rate. 2.0 plays at 2x speed -- 2 track seconds
-            // pass for every 1 real second)
-            double speed_adjust = speed;
-
-            // The pitch adjustment in percentage of octaves (0.0 being normal
-            // pitch. 1.0 is a full octave shift up).
-            double pitch_adjust = pitch;
-
-            // Whether or not the speed change calculated by RateControl should
-            // affect the pitch of the song (e.g. as a traditional style pitch
-            // fader does) or whether the pitch change should purely affect the
-            // tempo.
-            bool speed_affects_pitch = is_scratching || !keylock_enabled;
-
             m_pScale->setScaleParameters(m_pSampleRate->get(),
-                                         baserate, speed_affects_pitch,
-                                         &speed_adjust,
-                                         &pitch_adjust);
-
-            m_baserate_old = baserate;
-            m_speed_old = speed;
-            m_pitch_old = pitch;
-            m_bWasKeylocked = keylock_enabled;
+                                         baserate,
+                                         &speed,
+                                         &pitchRatio);
 
             // The way we treat rate inside of EngineBuffer is actually a
             // description of "sample consumption rate" or percentage of samples
             // consumed relative to playing back the track at its native sample
             // rate and normal speed. pitch_adjust does not change the playback
             // rate.
-            m_rate_old = rate = baserate * speed_adjust;
+            m_rate_old = rate = baserate * speed;
 
             // Scaler is up to date now.
             m_bScalerChanged = false;

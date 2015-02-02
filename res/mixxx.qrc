@@ -1,8 +1,8 @@
 <RCC>
     <qresource prefix="/">
         <file>images/ic_mixxx_window.png</file>
+        <file>images/library/cover_default.png</file>
         <file>images/library/crates_art.png</file>
-        <file>images/library/default_cover.png</file>
         <file>images/library/ic_library_autodj.png</file>
         <file>images/library/ic_library_banshee.png</file>
         <file>images/library/ic_library_browse.png</file>
@@ -48,6 +48,7 @@
         <file>schema.xml</file>
         <file>shaders/filteredsignal.frag</file>
         <file>shaders/passthrough.vert</file>
+        <file>shaders/rgbsignal.frag</file>
         <file>skins/cross.png</file>
         <file>translations/mixxx_ar.qm</file>
         <file>translations/mixxx_ast.qm</file>

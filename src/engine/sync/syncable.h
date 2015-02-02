@@ -99,7 +99,11 @@ class SyncableListener {
         Syncable* pSyncable, double beatDistance) = 0;
 
     virtual void notifyPlaying(Syncable* pSyncable, bool playing) = 0;
-    virtual void notifyTrackLoaded(Syncable* pSyncable) = 0;
+    // A syncable can notify that a track has been loaded, and passes in the bpm
+    // that it would be set at if the rate slider were left alone.  This allows
+    // the master sync engine to either use that rate, if it pleases, or sets
+    // the syncable to the existing master bpm.
+    virtual void notifyTrackLoaded(Syncable* pSyncable, double suggested_bpm) = 0;
 };
 
 #endif /* SYNCABLE_H */

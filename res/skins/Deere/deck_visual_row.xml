@@ -17,7 +17,7 @@
       <Visual>
         <TooltipId>waveform_display</TooltipId>
         <Group><Variable name="group"/></Group>
-        <BgColor>#1C1C1C</BgColor>
+        <BgColor><Variable name="DeckColorMuted"/></BgColor>
         <SignalHighColor></SignalHighColor>
         <SignalMidColor></SignalMidColor>
         <SignalLowColor></SignalLowColor>
@@ -171,6 +171,7 @@
         <Children>
           <Spinny>
             <TooltipId>spinny</TooltipId>
+            <Size>118f,118f</Size>
             <Group><Variable name="group"/></Group>
             <PathBackground>image/vinyl_spinny_background.png</PathBackground>
             <PathForeground>image/vinyl_spinny_foreground.png</PathForeground>

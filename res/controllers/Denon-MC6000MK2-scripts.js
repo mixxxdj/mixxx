@@ -11,9 +11,11 @@
 ////////////////////////////////////////////////////////////////////////
 // Controller: Denon MC6000MK2
 // Author: Uwe Klotz a/k/a tapir
-// Revision: 2014-08-20
+// Revision: 2015-01-16
 //
 // Changelog:
+// 2015-01-16 Filter effect parameter update
+//    - Rename filter effect parameter from "parameter" to "super1"
 // 2014-08-20 Sync mapping with push-and-hold
 //    - Use MIDI mapping for "sync_enabled" to support push-and-hold
 //    - Change sync mode indicator LED:
@@ -1190,7 +1192,7 @@ DenonMC6000MK2.Side.prototype.loadFilterPreset = function () {
 
 DenonMC6000MK2.Side.prototype.initFilterParameters = function () {
 	engine.setParameter(this.filterGroup, "mix", 1.0); // wet
-	engine.setParameter(this.filterGroup, "parameter", 0.5); // centered
+	engine.setParameter(this.filterGroup, "super1", 0.5); // centered
 	for (var deckGroup in this.decksByGroup) {
 		engine.setValue(this.filterGroup, "group_" + deckGroup + "_enable", true);
 	}
@@ -1227,7 +1229,7 @@ DenonMC6000MK2.Side.prototype.onEfxKnobValue = function (index, value) {
 			// TODO
 			break;
 		case 2:
-			engine.setParameter(this.efxGroup, "parameter", script.absoluteLin(value, 0.0, 1.0));
+			engine.setParameter(this.efxGroup, "super1", script.absoluteLin(value, 0.0, 1.0));
 			break;
 		case 3:
 			engine.setParameter(this.efxGroup, "mix", script.absoluteLin(value, 0.0, 1.0));

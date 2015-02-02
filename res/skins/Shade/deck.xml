@@ -169,7 +169,7 @@
 													<Style></Style>
 													<Channel><Variable name="channum"/></Channel>
 													<Pos>0,0</Pos>
-													<Size>i,i</Size>
+													<Size>82f,82f</Size>
 													<PathBackground>vinyl_spinny1_background.png</PathBackground>
 													<PathForeground>vinyl_spinny1_foreground.png</PathForeground>
 													<PathGhost>vinyl_spinny1_foreground_ghost.png</PathGhost>
@@ -447,7 +447,7 @@
 								}
 							</Style>
 							<Channel><Variable name="channum"/></Channel>
-							<Pos>318,28</Pos>
+							<Pos>318,33</Pos>
 							<Size>47,14</Size>
 							<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 							<Alignment>center</Alignment>
@@ -473,7 +473,7 @@
 								}
 							</Style>
 							<Channel><Variable name="channum"/></Channel>
-							<Pos>318,42</Pos>
+							<Pos>318,44</Pos>
 							<Size>47,14</Size>
 							<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 							<Alignment>center</Alignment>
@@ -481,6 +481,79 @@
 								<ConfigKey>[Channel<Variable name="channum"/>],visual_key</ConfigKey>
 							</Connection>
 						</Key>
+
+						<SliderComposed>
+							<Style></Style>
+							<Handle>knob_visual_key.png</Handle>
+							<Slider>slider_visual_key.png</Slider>
+							<Pos>333,57</Pos>
+							<Horizontal>true</Horizontal>
+							<Connection>
+								<ConfigKey>[Channel<Variable name="channum"/>],visual_key_distance</ConfigKey>
+								<EmitOnDownPress>false</EmitOnDownPress>
+							</Connection>
+						</SliderComposed>
+
+						<SliderComposed>
+							<TooltipId>pitch</TooltipId>
+							<Style></Style>
+							<Handle>knob_visual_key.png</Handle>
+							<Slider>slider_visual_key.png</Slider>
+							<Pos>333,61</Pos>
+							<Horizontal>true</Horizontal>
+							<Connection>
+								<ConfigKey>[Channel<Variable name="channum"/>],pitch</ConfigKey>
+								<EmitOnDownPress>false</EmitOnDownPress>
+							</Connection>
+						</SliderComposed>
+
+						<PushButton>
+							<TooltipId>pitch_up</TooltipId>
+                            <Size>10f,10f</Size>							
+                            <Style></Style>
+							<NumberStates>2</NumberStates>
+							<State>
+								<Number>0</Number>
+                                <Text>►</Text>
+							</State>
+						    <State>
+								<Number>0</Number>
+                                <Text>►</Text>
+							</State>
+							<Pos>353,55</Pos>
+							<Connection>
+								<ConfigKey>[Channel<Variable name="channum"/>],pitch_up</ConfigKey>
+								<ButtonState>LeftButton</ButtonState>
+							</Connection>
+							<Connection>
+								<ConfigKey>[Channel<Variable name="channum"/>],pitch_up_small</ConfigKey>
+								<ButtonState>RightButton</ButtonState>
+							</Connection>
+						</PushButton>
+
+						<PushButton>
+							<TooltipId>pitch_down</TooltipId>
+                            <Size>10f,10f</Size>
+							<Style></Style>
+							<NumberStates>2</NumberStates>
+							<State>
+								<Number>0</Number>
+                                <Text>◄</Text>
+							</State>
+							<State>
+								<Number>1</Number>
+                                <Text>◄</Text>
+							</State>
+							<Pos>320,55</Pos>
+							<Connection>
+								<ConfigKey>[Channel<Variable name="channum"/>],pitch_down</ConfigKey>
+								<ButtonState>LeftButton</ButtonState>
+							</Connection>
+							<Connection>
+								<ConfigKey>[Channel<Variable name="channum"/>],pitch_down_small</ConfigKey>
+								<ButtonState>RightButton</ButtonState>
+							</Connection>
+						</PushButton>
 	
 						<!--
 						**********************************************
@@ -492,7 +565,7 @@
 							<Style></Style>
 							<Handle>knob_pitch1.png</Handle>
 							<Slider>slider_pitch1.png</Slider>
-							<Pos>335,62</Pos>
+							<Pos>335,65</Pos>
 							<Horizontal>false</Horizontal>
 							<Connection>
 								<ConfigKey>[Channel<Variable name="channum"/>],rate</ConfigKey>
@@ -506,26 +579,51 @@
 						**********************************************
 						-->
 						<PushButton>
-							<TooltipId>beatsync_beatsync_tempo</TooltipId>
+							<TooltipId>sync_enabled</TooltipId>
 							<Style></Style>
 							<NumberStates>2</NumberStates>
 							<State>
 								<Number>0</Number>
-								<Pressed>btn_sync_sampler_down.png</Pressed>
-								<Unpressed>btn_sync_sampler.png</Unpressed>
+								<Pressed>btn_kill_down.png</Pressed>
+								<Unpressed>btn_kill.png</Unpressed>
 							</State>
 							<State>
 								<Number>1</Number>
-								<Pressed>btn_sync_sampler_overdown.png</Pressed>
-								<Unpressed>btn_sync_sampler_over.png</Unpressed>
+								<Pressed>btn_kill_overdown.png</Pressed>
+								<Unpressed>btn_kill_over.png</Unpressed>
 							</State>
-							<Pos>321,7</Pos>
+							<Pos>321,19</Pos>
 							<Connection>
 								<ConfigKey>[Channel<Variable name="channum"/>],sync_enabled</ConfigKey>
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
 							<Connection>
 								<ConfigKey>[Channel<Variable name="channum"/>],beatsync_tempo</ConfigKey>
+								<ButtonState>RightButton</ButtonState>
+							</Connection>
+						</PushButton>
+
+						<PushButton>
+							<TooltipId>sync_reset_key</TooltipId>
+							<Style></Style>
+							<NumberStates>2</NumberStates>
+							<State>
+								<Number>0</Number>
+								<Pressed>btn_kill_down.png</Pressed>
+								<Unpressed>btn_kill.png</Unpressed>
+							</State>
+							<State>
+								<Number>1</Number>
+								<Pressed>btn_kill_overdown.png</Pressed>
+								<Unpressed>btn_kill_over.png</Unpressed>
+							</State>
+							<Pos>347,19</Pos>
+							<Connection>
+								<ConfigKey>[Channel<Variable name="channum"/>],sync_key</ConfigKey>
+								<ButtonState>LeftButton</ButtonState>
+							</Connection>
+							<Connection>
+								<ConfigKey>[Channel<Variable name="channum"/>],reset_key</ConfigKey>
 								<ButtonState>RightButton</ButtonState>
 							</Connection>
 						</PushButton>

@@ -70,8 +70,11 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     QString m_group;
     ConfigObject<ConfigValue>* m_pConfig;
     QImage* m_pBgImage;
+    QImage* m_pMaskImage;
     QImage* m_pFgImage;
+    QImage m_fgImageScaled;
     QImage* m_pGhostImage;
+    QImage m_ghostImageScaled;
     ControlObjectThread* m_pPlay;
     ControlObjectThread* m_pPlayPos;
     QSharedPointer<VisualPlayPosition> m_pVisualPlayPos;

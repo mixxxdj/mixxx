@@ -48,6 +48,8 @@ BpmControl::BpmControl(QString group,
     m_pLoopStartPosition = new ControlObjectSlave(group, "loop_start_position", this);
     m_pLoopEndPosition = new ControlObjectSlave(group, "loop_end_position", this);
 
+    m_pVCEnabled = new ControlObjectSlave(group, "vinylcontrol_enabled", this);
+
     m_pFileBpm = new ControlObject(ConfigKey(group, "file_bpm"));
     connect(m_pFileBpm, SIGNAL(valueChanged(double)),
             this, SLOT(slotFileBpmChanged(double)),
@@ -128,6 +130,7 @@ BpmControl::~BpmControl() {
     delete m_pLoopEnabled;
     delete m_pLoopStartPosition;
     delete m_pLoopEndPosition;
+    delete m_pVCEnabled;
     delete m_pFileBpm;
     delete m_pLocalBpm;
     delete m_pEngineBpm;
@@ -197,6 +200,7 @@ void BpmControl::slotTranslateBeatsLater(double v) {
 }
 
 void BpmControl::slotSetEngineBpm(double bpm) {
+    //qDebug() << getGroup() << "BpmControl::slotSetEngineBpm" << bpm;
     double localbpm = m_pLocalBpm->get();
     double ratedir = m_pRateDir->get();
     double raterange = m_pRateRange->get();
@@ -233,7 +237,7 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
 
 void BpmControl::slotControlPlay(double v) {
     if (v > 0.0) {
-        if (m_pQuantize->get() > 0.0) {
+        if (m_pQuantize->get() > 0.0 && m_pVCEnabled->get() == 0) {
             getEngineBuffer()->requestSyncPhase();
         }
     }

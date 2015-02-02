@@ -10,19 +10,14 @@ BeatsPointer BeatFactory::loadBeatsFromByteArray(TrackPointer pTrack,
                                                  QString beatsVersion,
                                                  QString beatsSubVersion,
                                                  QByteArray* beatsSerialized) {
-
     if (beatsVersion == BEAT_GRID_1_VERSION ||
         beatsVersion == BEAT_GRID_2_VERSION) {
         BeatGrid* pGrid = new BeatGrid(pTrack.data(), 0, beatsSerialized);
-        pGrid->moveToThread(pTrack->thread());
-        pGrid->setParent(pTrack.data());
         pGrid->setSubVersion(beatsSubVersion);
         qDebug() << "Successfully deserialized BeatGrid";
         return BeatsPointer(pGrid, &BeatFactory::deleteBeats);
     } else if (beatsVersion == BEAT_MAP_VERSION) {
         BeatMap* pMap = new BeatMap(pTrack, 0, beatsSerialized);
-        pMap->moveToThread(pTrack->thread());
-        pMap->setParent(pTrack.data());
         pMap->setSubVersion(beatsSubVersion);
         qDebug() << "Successfully deserialized BeatMap";
         return BeatsPointer(pMap, &BeatFactory::deleteBeats);
@@ -96,7 +91,6 @@ BeatsPointer BeatFactory::makePreferredBeats(
     const bool bEnableFixedTempoCorrection, const bool bEnableOffsetCorrection,
     const int iSampleRate, const int iTotalSamples,
     const int iMinBpm, const int iMaxBpm) {
-
     const QString version = getPreferredVersion(bEnableFixedTempoCorrection);
     const QString subVersion = getPreferredSubVersion(bEnableFixedTempoCorrection,
                                                       bEnableOffsetCorrection,
@@ -109,7 +103,6 @@ BeatsPointer BeatFactory::makePreferredBeats(
         double firstBeat = BeatUtils::calculateFixedTempoFirstBeat(
             bEnableOffsetCorrection,
             beats, iSampleRate, iTotalSamples, globalBpm);
-
         BeatGrid* pGrid = new BeatGrid(pTrack.data(), iSampleRate);
         // firstBeat is in frames here and setGrid() takes samples.
         pGrid->setGrid(globalBpm, firstBeat * 2);
@@ -126,15 +119,10 @@ BeatsPointer BeatFactory::makePreferredBeats(
 }
 
 void BeatFactory::deleteBeats(Beats* pBeats) {
-    // This assumes all Beats* variants multiply-inherit from QObject. Kind of
-    // ugly. Oh well.
-    QObject* pObject = dynamic_cast<QObject*>(pBeats);
-
-    if (pObject != NULL) {
-        // BeatGrid/BeatMap objects have no parent so they live in the thread
-        // that created them (sometimes the analyzer
-        // thread). QObject::deleteLater does not have the desired effect when
-        // for threads (like the analyzer thread) without an event loop.
-        delete pObject;
-    }
+    // BeatGrid/BeatMap objects have no parent and live in the same thread as
+    // their associated TIO. QObject::deleteLater does not have the desired
+    // effect when the QObject's thread does not have an event loop (i.e. when
+    // the main thread has already shut down) so we delete the BeatMap/BeatGrid
+    // directly when its reference count drops to zero.
+    delete pBeats;
 }

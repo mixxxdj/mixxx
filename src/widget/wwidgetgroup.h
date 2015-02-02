@@ -12,7 +12,8 @@
 
 #include "widget/wbasewidget.h"
 #include "widget/wpixmapstore.h"
-#include "skin/skincontext.h"
+
+class SkinContext;
 
 class WWidgetGroup : public QFrame, public WBaseWidget {
     Q_OBJECT

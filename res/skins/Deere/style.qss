@@ -148,7 +148,7 @@ QSplitter::handle:vertical {
 }
 
 WWidget, QLabel {
-  font-size: 6pt;
+  font-size: 6px;
   text-transform: uppercase;
 }
 
@@ -247,13 +247,13 @@ WSliderComposed {
 
 #DeckTextRow #ArtistGutter WLabel, #DeckTextRow #BPMGutter WLabel, #DeckTextRow #PositionGutter WLabel {
   font-weight: bold;
-  font-size: 15pt;
+  font-size: 15px;
   text-transform: none;
 }
 
 #SamplerTextRow #ArtistGutter WLabel, #SamplerTextRow #BPMGutter WLabel, #SamplerTextRow #PositionGutter WLabel {
   font-weight: bold;
-  font-size: 11pt;
+  font-size: 11px;
   text-transform: none;
 }
 
@@ -263,21 +263,21 @@ WSliderComposed {
 
 #DeckTextRow #TitleGutter WLabel, #EffectRackExpanded #EffectUnitNameContainer WLabel {
   font-weight: bold;
-  font-size: 17pt;
+  font-size: 17px;
   text-transform: none;
   text-align: left;
 }
 
 #SamplerTextRow #TitleGutter WLabel {
   font-weight: bold;
-  font-size: 13pt;
+  font-size: 13px;
   text-transform: none;
   text-align: left;
 }
 
 #EffectRackCollapsed #EffectUnitNameContainer WLabel {
   font-weight: bold;
-  font-size: 15pt;
+  font-size: 15px;
   text-transform: none;
   text-align: left;
 }
@@ -308,7 +308,7 @@ WSliderComposed {
 }
 
 #EffectUnitNextPrevContainer WPushButton {
-  font-size: 11pt;
+  font-size: 11px;
 }
 
 #EffectKnob {
@@ -368,7 +368,7 @@ WWidget, WLabel {
 }
 
 #DeckMixer1 {
-  background-color: #0099FF;
+  background-color: #001726;
 }
 
 /* Track text, etc. should be in the deck color. */
@@ -377,7 +377,7 @@ WWidget, WLabel {
 }
 
 #DeckMixer2 {
-  background-color: #E17800;
+  background-color: #261400;
 }
 
 #Deck3 WLabel {
@@ -385,7 +385,7 @@ WWidget, WLabel {
 }
 
 #DeckMixer3 {
-  background-color: violet;
+  background-color: #261526;
 }
 
 #Deck4 WLabel {
@@ -393,7 +393,7 @@ WWidget, WLabel {
 }
 
 #DeckMixer4 {
-  background-color: #CDDC39;
+  background-color: #24260A;
 }
 
 #SampleDecksContainer, #PreviewDeckContainer {
@@ -446,7 +446,7 @@ WWidget, WLabel {
 }
 
 #EffectUnit {
-  font-size: 15pt;
+  font-size: 15px;
 }
 
 #EffectUnit1 {

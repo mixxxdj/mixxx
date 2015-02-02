@@ -26,7 +26,6 @@ class EngineBuffer;
 class EnginePregain;
 class EngineFilterBlock;
 class EngineVuMeter;
-class EngineVinylSoundEmu;
 class ControlPushButton;
 
 class EngineChannel : public EngineObject {

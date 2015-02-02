@@ -122,7 +122,7 @@ TEST_F(SampleUtilTest, addWithGain) {
             AssertWholeBufferEquals(buffer, 2.0f, size);
             SampleUtil::addWithGain(buffer, buffer2, 2.0, size);
             AssertWholeBufferEquals(buffer, 4.0f, size);
-            delete buffer2;
+            delete [] buffer2;
         }
     }
 }
@@ -148,8 +148,8 @@ TEST_F(SampleUtilTest, add2WithGain) {
                                      buffer3, 3.0,
                                      size);
             AssertWholeBufferEquals(buffer, 8.0f, size);
-            delete buffer2;
-            delete buffer3;
+            delete [] buffer2;
+            delete [] buffer3;
         }
     }
 }
@@ -178,9 +178,9 @@ TEST_F(SampleUtilTest, add3WithGain) {
                                      buffer4, 4.0,
                                      size);
             AssertWholeBufferEquals(buffer, 13.0f, size);
-            delete buffer2;
-            delete buffer3;
-            delete buffer4;
+            delete [] buffer2;
+            delete [] buffer3;
+            delete [] buffer4;
         }
     }
 }
@@ -197,7 +197,7 @@ TEST_F(SampleUtilTest, copyWithGain) {
             AssertWholeBufferEquals(buffer, 1.0f, size);
             SampleUtil::copyWithGain(buffer, buffer2, 2.0, size);
             AssertWholeBufferEquals(buffer, 2.0f, size);
-            delete buffer2;
+            delete [] buffer2;
         }
     }
 }
@@ -234,8 +234,8 @@ TEST_F(SampleUtilTest, copy2WithGain) {
                                       buffer3, 3.0,
                                       size);
             AssertWholeBufferEquals(buffer, 5.0f, size);
-            delete buffer2;
-            delete buffer3;
+            delete [] buffer2;
+            delete [] buffer3;
         }
     }
 }
@@ -285,9 +285,9 @@ TEST_F(SampleUtilTest, copy3WithGain) {
                                       buffer4, 4.0,
                                       size);
             AssertWholeBufferEquals(buffer, 9.0f, size);
-            delete buffer2;
-            delete buffer3;
-            delete buffer4;
+            delete [] buffer2;
+            delete [] buffer3;
+            delete [] buffer4;
         }
     }
 }
@@ -315,6 +315,9 @@ TEST_F(SampleUtilTest, copy3WithGainAliased) {
 }
 
 TEST_F(SampleUtilTest, convertS16ToFloat32) {
+    // Shorts are asymmetric, so SAMPLE_MAX is less than -SAMPLE_MIN.
+    const float expectedMax = static_cast<float>(SAMPLE_MAX) /
+                              static_cast<float>(-SAMPLE_MIN);
     while (sseAvailable-- >= 0) {
         for (int i = 0; i < buffers.size(); ++i) {
             CSAMPLE* buffer = buffers[i];
@@ -326,7 +329,7 @@ TEST_F(SampleUtilTest, convertS16ToFloat32) {
             }
             SampleUtil::convertS16ToFloat32(buffer, s16, size);
             for (int j = 0; j < size; ++j) {
-                EXPECT_FLOAT_EQ(1.0f, buffer[j]);
+                EXPECT_FLOAT_EQ(expectedMax, buffer[j]);
             }
             FillBuffer(buffer, 0.0f, size);
             for (int j = 0; j < size; ++j) {
@@ -338,7 +341,7 @@ TEST_F(SampleUtilTest, convertS16ToFloat32) {
             }
             FillBuffer(buffer, -1.0f, size);
             for (int j = 0; j < size; ++j) {
-                s16[j] = -SAMPLE_MAX;
+                s16[j] = SAMPLE_MIN;
             }
             SampleUtil::convertS16ToFloat32(buffer, s16, size);
             for (int j = 0; j < size; ++j) {
@@ -410,8 +413,8 @@ TEST_F(SampleUtilTest, deinterleaveBuffer) {
                 EXPECT_FLOAT_EQ(buffer2[j], -j);
             }
 
-            delete buffer2;
-            delete buffer3;
+            delete [] buffer2;
+            delete [] buffer3;
         }
     }
 }

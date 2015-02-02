@@ -64,6 +64,16 @@
   <Layout>vertical</Layout>
 
   <Children>
+    <!-- Define singletons as early in the skin as possible.  Note that the
+    library doesn't actually appear here, it's just instantiated and configured.
+    -->
+    <SingletonDefinition>
+        <ObjectName>LibrarySingleton</ObjectName>
+        <Children>
+            <Template src="skin:library.xml"/>
+        </Children>
+    </SingletonDefinition>
+
     <WidgetGroup>
         <ObjectName>SkinContainer</ObjectName>
         <Layout>horizontal</Layout>

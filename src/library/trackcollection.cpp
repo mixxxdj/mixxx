@@ -80,13 +80,14 @@ bool TrackCollection::checkForTables() {
 #endif
 
     // The schema XML is baked into the binary via Qt resources.
-    QString schemaFilename(":schema.xml");
+    QString schemaFilename(":/schema.xml");
     QString okToExit = tr("Click OK to exit.");
     QString upgradeFailed = tr("Cannot upgrade database schema");
-    QString upgradeToVersionFailed = tr("Unable to upgrade your database schema to version %1")
+    QString upgradeToVersionFailed =
+            tr("Unable to upgrade your database schema to version %1")
             .arg(QString::number(kRequiredSchemaVersion));
-    QString helpEmail = tr("For help with database issues contact "
-                           "mixxx-devel@lists.sourceforge.net.");
+    QString helpEmail = tr("For help with database issues contact:") + "\n" +
+                           "mixxx-devel@lists.sourceforge.net";
 
     SchemaManager::Result result = SchemaManager::upgradeToSchemaVersion(
             schemaFilename, m_db, kRequiredSchemaVersion);

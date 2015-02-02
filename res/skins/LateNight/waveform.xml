@@ -26,9 +26,12 @@
 				<Pos>0,0</Pos>
 				<!--See comment about <Size> above-->
 				<!--<Size>i,110</Size>-->
-				<BgColor>#0e0e0e</BgColor>
+				<BgColor><Variable name="SignalBgColor"/></BgColor>
 				<!--<BgPixmap>style/style_bg_waveform1.png</BgPixmap>-->
 				<SignalColor><Variable name="deck_color"/></SignalColor>
+                <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>
+                <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>
+                <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
 				<BeatColor>#ffffff</BeatColor>
 				<BeatHighlightColor></BeatHighlightColor>
 				<PlayPosColor>#00FF00</PlayPosColor>

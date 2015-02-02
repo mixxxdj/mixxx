@@ -14,6 +14,7 @@
         <SetVariable name="i">1</SetVariable>
         <!-- Traditional Blue -->
         <SetVariable name="DeckColor">#0099FF</SetVariable>
+        <SetVariable name="DeckColorMuted">#001726</SetVariable>
       </Template>
 
       <WidgetGroup>
@@ -23,6 +24,7 @@
             <SetVariable name="i">3</SetVariable>
             <!-- Violet -->
             <SetVariable name="DeckColor">#EE82EE</SetVariable>
+            <SetVariable name="DeckColorMuted">#261526</SetVariable>
           </Template>
         </Children>
         <Connection>
