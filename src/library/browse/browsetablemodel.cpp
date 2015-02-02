@@ -376,6 +376,9 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
         tagger.setAlbumArtist(value.toString());
     } else if (col == COLUMN_GROUPING) {
         tagger.setGrouping(value.toString());
+    } else {
+        qWarning() << "BrowseTableModel::setData(): no tagger column";
+        return false;
     }
 
     QStandardItem* item = itemFromIndex(index);
@@ -401,14 +404,16 @@ void BrowseTableModel::trackLoaded(QString group, TrackPointer pTrack) {
         const int numColumns = columnCount();
         for (int row = 0; row < rowCount(); ++row) {
             QModelIndex i = index(row, COLUMN_PREVIEW);
-            setData(i, "0", Qt::EditRole);
+            QStandardItem* item = itemFromIndex(i);
+            item->setText("0");
         }
         if (pTrack) {
             for (int row = 0; row < rowCount(); ++row) {
                 QModelIndex i = index(row, COLUMN_PREVIEW);
                 QString location = index(row, COLUMN_LOCATION).data().toString();
                 if (location == pTrack->getLocation()) {
-                    setData(i, "1", Qt::EditRole);
+                    QStandardItem* item = itemFromIndex(i);
+                    item->setText("1");
                     break;
                 }
             }
