@@ -59,6 +59,8 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
     addSearchColumn(COLUMN_FILE_MODIFIED_TIME);
     addSearchColumn(COLUMN_FILE_CREATION_TIME);
 
+    setDefaultSort(COLUMN_FILENAME, Qt::AscendingOrder);
+
     setHorizontalHeaderLabels(header_data);
     // register the QList<T> as a metatype since we use QueuedConnection below
     qRegisterMetaType< QList< QList<QStandardItem*> > >(
@@ -401,11 +403,12 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
 
 void BrowseTableModel::trackLoaded(QString group, TrackPointer pTrack) {
     if (group == m_previewDeckGroup) {
-        const int numColumns = columnCount();
         for (int row = 0; row < rowCount(); ++row) {
             QModelIndex i = index(row, COLUMN_PREVIEW);
-            QStandardItem* item = itemFromIndex(i);
-            item->setText("0");
+            if (i.data().toBool()) {
+                QStandardItem* item = itemFromIndex(i);
+                item->setText("0");
+            }
         }
         if (pTrack) {
             for (int row = 0; row < rowCount(); ++row) {
@@ -418,9 +421,6 @@ void BrowseTableModel::trackLoaded(QString group, TrackPointer pTrack) {
                 }
             }
         }
-        QModelIndex top = index(0, COLUMN_PREVIEW);
-        QModelIndex bottom = index(rowCount() - 1, numColumns);
-        emit(dataChanged(top, bottom));
     }
 }
 
