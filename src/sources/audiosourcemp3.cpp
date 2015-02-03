@@ -101,9 +101,6 @@ Result AudioSourceMp3::postConstruct() {
 
     // Decode all the headers and calculate audio properties
 
-    setChannelCount(kChannelCountDefault);
-    setFrameRate(kFrameRateDefault);
-
     mad_units madUnits = MAD_UNITS_44100_HZ; // default value
     mad_timer_t madDuration = mad_timer_zero;
     unsigned long sumBitrate = 0;
