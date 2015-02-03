@@ -25,14 +25,14 @@ public:
             sample_type* sampleBuffer, size_type sampleBufferSize) /*override*/;
 
     // callback methods
-    FLAC__StreamDecoderReadStatus flacRead(FLAC__byte buffer[], size_t *bytes);
+    FLAC__StreamDecoderReadStatus flacRead(FLAC__byte buffer[], size_t* bytes);
     FLAC__StreamDecoderSeekStatus flacSeek(FLAC__uint64 offset);
-    FLAC__StreamDecoderTellStatus flacTell(FLAC__uint64 *offset);
-    FLAC__StreamDecoderLengthStatus flacLength(FLAC__uint64 *length);
+    FLAC__StreamDecoderTellStatus flacTell(FLAC__uint64* offset);
+    FLAC__StreamDecoderLengthStatus flacLength(FLAC__uint64* length);
     FLAC__bool flacEOF();
     FLAC__StreamDecoderWriteStatus flacWrite(const FLAC__Frame *frame,
-            const FLAC__int32 * const buffer[]);
-    void flacMetadata(const FLAC__StreamMetadata *metadata);
+            const FLAC__int32* const buffer[]);
+    void flacMetadata(const FLAC__StreamMetadata* metadata);
     void flacError(FLAC__StreamDecoderErrorStatus status);
 
 private:
@@ -58,6 +58,8 @@ private:
     size_type m_maxBlocksize;
     size_type m_minFramesize;
     size_type m_maxFramesize;
+    unsigned m_bitsPerSample;
+
     sample_type m_sampleScale;
 
     typedef std::vector<sample_type> SampleBuffer;
