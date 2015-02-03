@@ -11,49 +11,53 @@ namespace {
 // begin callbacks (have to be regular functions because normal libFLAC isn't C++-aware)
 
 FLAC__StreamDecoderReadStatus FLAC_read_cb(const FLAC__StreamDecoder*,
-        FLAC__byte buffer[], size_t *bytes, void *client_data) {
+        FLAC__byte buffer[], size_t* bytes, void* client_data) {
     return static_cast<AudioSourceFLAC*>(client_data)->flacRead(buffer, bytes);
 }
 
 FLAC__StreamDecoderSeekStatus FLAC_seek_cb(const FLAC__StreamDecoder*,
-        FLAC__uint64 absolute_byte_offset, void *client_data) {
+        FLAC__uint64 absolute_byte_offset, void* client_data) {
     return static_cast<AudioSourceFLAC*>(client_data)->flacSeek(
             absolute_byte_offset);
 }
 
 FLAC__StreamDecoderTellStatus FLAC_tell_cb(const FLAC__StreamDecoder*,
-        FLAC__uint64 *absolute_byte_offset, void *client_data) {
+        FLAC__uint64 *absolute_byte_offset, void* client_data) {
     return static_cast<AudioSourceFLAC*>(client_data)->flacTell(
             absolute_byte_offset);
 }
 
 FLAC__StreamDecoderLengthStatus FLAC_length_cb(const FLAC__StreamDecoder*,
-        FLAC__uint64 *stream_length, void *client_data) {
+        FLAC__uint64 *stream_length, void* client_data) {
     return static_cast<AudioSourceFLAC*>(client_data)->flacLength(stream_length);
 }
 
-FLAC__bool FLAC_eof_cb(const FLAC__StreamDecoder*, void *client_data) {
+FLAC__bool FLAC_eof_cb(const FLAC__StreamDecoder*, void* client_data) {
     return static_cast<AudioSourceFLAC*>(client_data)->flacEOF();
 }
 
 FLAC__StreamDecoderWriteStatus FLAC_write_cb(const FLAC__StreamDecoder*,
-        const FLAC__Frame *frame, const FLAC__int32 * const buffer[],
-        void *client_data) {
+        const FLAC__Frame* frame, const FLAC__int32* const buffer[],
+        void* client_data) {
     return static_cast<AudioSourceFLAC*>(client_data)->flacWrite(frame, buffer);
 }
 
 void FLAC_metadata_cb(const FLAC__StreamDecoder*,
-        const FLAC__StreamMetadata *metadata, void *client_data) {
+        const FLAC__StreamMetadata* metadata, void* client_data) {
     static_cast<AudioSourceFLAC*>(client_data)->flacMetadata(metadata);
 }
 
 void FLAC_error_cb(const FLAC__StreamDecoder*,
-        FLAC__StreamDecoderErrorStatus status, void *client_data) {
+        FLAC__StreamDecoderErrorStatus status, void* client_data) {
     static_cast<AudioSourceFLAC*>(client_data)->flacError(status);
 }
 
 // end callbacks
+
+const unsigned kBitsPerSampleDefault = 0;
+
 }
+
 
 AudioSourceFLAC::AudioSourceFLAC(QUrl url)
         : AudioSource(url),
@@ -63,6 +67,7 @@ AudioSourceFLAC::AudioSourceFLAC(QUrl url)
           m_maxBlocksize(0),
           m_minFramesize(0),
           m_maxFramesize(0),
+          m_bitsPerSample(kBitsPerSampleDefault),
           m_sampleScale(kSampleValueZero),
           m_decodeSampleBufferReadOffset(0),
           m_decodeSampleBufferWriteOffset(0),
@@ -165,6 +170,10 @@ Mixxx::AudioSource::size_type AudioSourceFLAC::readSampleFrames(
         // if our buffer from libflac is empty (either because we explicitly cleared
         // it or because we've simply used all the samples), ask for a new buffer
         if (m_decodeSampleBufferReadOffset >= m_decodeSampleBufferWriteOffset) {
+            // Documentation of FLAC__stream_decoder_process_single():
+            // "Depending on what was decoded, the metadata or write callback
+            // will be called with the decoded metadata block or audio frame."
+            // See also: https://xiph.org/flac/api/group__flac__stream__decoder.html#ga9d6df4a39892c05955122cf7f987f856
             if (FLAC__stream_decoder_process_single(m_decoder)) {
                 if (m_decodeSampleBufferReadOffset
                         >= m_decodeSampleBufferWriteOffset) {
@@ -217,7 +226,7 @@ Mixxx::AudioSource::size_type AudioSourceFLAC::readSampleFrames(
 
 // flac callback methods
 FLAC__StreamDecoderReadStatus AudioSourceFLAC::flacRead(FLAC__byte buffer[],
-        size_t *bytes) {
+        size_t* bytes) {
     *bytes = m_file.read((char*) buffer, *bytes);
     if (*bytes > 0) {
         return FLAC__STREAM_DECODER_READ_STATUS_CONTINUE;
@@ -238,7 +247,7 @@ FLAC__StreamDecoderSeekStatus AudioSourceFLAC::flacSeek(FLAC__uint64 offset) {
     }
 }
 
-FLAC__StreamDecoderTellStatus AudioSourceFLAC::flacTell(FLAC__uint64 *offset) {
+FLAC__StreamDecoderTellStatus AudioSourceFLAC::flacTell(FLAC__uint64* offset) {
     if (m_file.isSequential()) {
         return FLAC__STREAM_DECODER_TELL_STATUS_UNSUPPORTED;
     }
@@ -247,7 +256,7 @@ FLAC__StreamDecoderTellStatus AudioSourceFLAC::flacTell(FLAC__uint64 *offset) {
 }
 
 FLAC__StreamDecoderLengthStatus AudioSourceFLAC::flacLength(
-        FLAC__uint64 *length) {
+        FLAC__uint64* length) {
     if (m_file.isSequential()) {
         return FLAC__STREAM_DECODER_LENGTH_STATUS_UNSUPPORTED;
     }
@@ -263,7 +272,7 @@ FLAC__bool AudioSourceFLAC::flacEOF() {
 }
 
 FLAC__StreamDecoderWriteStatus AudioSourceFLAC::flacWrite(
-        const FLAC__Frame *frame, const FLAC__int32 * const buffer[]) {
+        const FLAC__Frame* frame, const FLAC__int32* const buffer[]) {
     // decode buffer must be empty before decoding the next frame
     DEBUG_ASSERT(m_decodeSampleBufferReadOffset >= m_decodeSampleBufferWriteOffset);
     // reset decode buffer
@@ -324,16 +333,64 @@ FLAC__StreamDecoderWriteStatus AudioSourceFLAC::flacWrite(
     return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
 
-void AudioSourceFLAC::flacMetadata(const FLAC__StreamMetadata *metadata) {
+void AudioSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
+    // https://xiph.org/flac/api/group__flac__stream__decoder.html#ga43e2329c15731c002ac4182a47990f85
+    // "...one STREAMINFO block, followed by zero or more other metadata blocks."
+    // "...by default the decoder only calls the metadata callback for the STREAMINFO block..."
+    // "...always before the first audio frame (i.e. write callback)."
     switch (metadata->type) {
     case FLAC__METADATA_TYPE_STREAMINFO:
-        setChannelCount(metadata->data.stream_info.channels);
-        setFrameRate(metadata->data.stream_info.sample_rate);
-        setFrameCount(metadata->data.stream_info.total_samples);
-        m_sampleScale = kSampleValuePeak
-                / sample_type(
-                        FLAC__int32(1)
-                                << metadata->data.stream_info.bits_per_sample);
+    {
+        const size_type channelCount = metadata->data.stream_info.channels;
+        DEBUG_ASSERT(kChannelCountDefault != channelCount);
+        if (getChannelCount() == kChannelCountDefault) {
+            // not set before
+            setChannelCount(channelCount);
+        } else {
+            // already set before -> check for consistency
+            if (getChannelCount() != channelCount) {
+                qWarning() << "Unexpected channel count:"
+                        << channelCount << " <> " << getChannelCount();
+            }
+        }
+        const size_type frameRate = metadata->data.stream_info.sample_rate;
+        DEBUG_ASSERT(kFrameRateDefault != frameRate);
+        if (getFrameRate() == kFrameRateDefault) {
+            // not set before
+            setFrameRate(frameRate);
+        } else {
+            // already set before -> check for consistency
+            if (getFrameRate() != frameRate) {
+                qWarning() << "Unexpected frame/sample rate:"
+                        << frameRate << " <> " << getFrameRate();
+            }
+        }
+        const size_type frameCount = metadata->data.stream_info.total_samples;
+        DEBUG_ASSERT(kFrameCountDefault != frameCount);
+        if (getFrameCount() == kFrameCountDefault) {
+            // not set before
+            setFrameCount(frameCount);
+        } else {
+            // already set before -> check for consistency
+            if (getFrameCount() != frameCount) {
+                qWarning() << "Unexpected frame count:"
+                        << frameCount << " <> " << getFrameCount();
+            }
+        }
+        const unsigned bitsPerSample = metadata->data.stream_info.bits_per_sample;
+        DEBUG_ASSERT(kBitsPerSampleDefault != bitsPerSample);
+        if (kBitsPerSampleDefault == m_bitsPerSample) {
+            // not set before
+            m_bitsPerSample = bitsPerSample;
+            m_sampleScale = kSampleValuePeak
+                    / sample_type(FLAC__int32(1) << bitsPerSample);
+        } else {
+            // already set before -> check for consistency
+            if (bitsPerSample != m_bitsPerSample) {
+                qWarning() << "Unexpected bits per sample:"
+                        << bitsPerSample << " <> " << m_bitsPerSample;
+            }
+        }
         m_minBlocksize = metadata->data.stream_info.min_blocksize;
         m_maxBlocksize = metadata->data.stream_info.max_blocksize;
         m_minFramesize = metadata->data.stream_info.min_framesize;
@@ -342,7 +399,9 @@ void AudioSourceFLAC::flacMetadata(const FLAC__StreamMetadata *metadata) {
         m_decodeSampleBufferWriteOffset = 0;
         m_decodeSampleBuffer.resize(m_maxBlocksize * getChannelCount());
         break;
+    }
     default:
+        // Ignore all other metadata types
         break;
     }
 }
