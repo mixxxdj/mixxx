@@ -343,6 +343,9 @@ void readXiphComment(TrackMetadata* pTrackMetadata,
                 toQStringFirst(tag.fieldListMap()["GROUPING"]));
     }
 
+    // The release date formatted according to ISO 8601. Might
+    // be followed by a space character and arbitrary text.
+    // http://age.hobba.nl/audio/mirroredpages/ogg-tagging.html
     if (tag.fieldListMap().contains("DATE")) {
         pTrackMetadata->setYear(toQStringFirst(tag.fieldListMap()["DATE"]));
     }
