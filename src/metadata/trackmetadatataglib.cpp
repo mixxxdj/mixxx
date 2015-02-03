@@ -493,11 +493,22 @@ void replaceID3v2Frame(TagLib::ID3v2::Tag* pTag, TagLib::ID3v2::Frame* pFrame) {
 void writeID3v2TextIdentificationFrame(TagLib::ID3v2::Tag* pTag,
         const TagLib::ByteVector &id, const QString& text) {
     TagLib::String::Type textType;
+    // For an overview of the character encodings supported by
+    // the different ID3v2 versions please refer to the following
+    // resources:
+    // http://en.wikipedia.org/wiki/ID3#ID3v2
+    // http://id3.org/id3v2.3.0
+    // http://id3.org/id3v2.4.0-structure
     if (4 <= pTag->header()->majorVersion()) {
-        // For ID3v2.4.0 or higher use UTF-8
+        // For ID3v2.4.0 or higher prefer UTF-8, because it is a
+        // very compact representation for common cases and it is
+        // independent of the byte order.
         textType = TagLib::String::UTF8;
     } else {
-        // For ID3v2.3.0/ID3v2.2.0 use UTF-16 with byte order mark
+        // For ID3v2.3.0/ID3v2.2.0 use UCS-2 (UTF-16 encoded Unicode
+        // with BOM), because UTF-8 and UTF-16BE are only supported
+        // since ID3v2.4.0 and the alternative ISO-8859-1 does not
+        // cover all Unicode characters.
         textType = TagLib::String::UTF16;
     }
     QScopedPointer<TagLib::ID3v2::TextIdentificationFrame> pNewFrame(
