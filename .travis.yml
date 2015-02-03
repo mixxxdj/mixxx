@@ -12,6 +12,6 @@ before_install:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
 install:
-  - scons test=1 mad=1 opus=1 localecompare=1
+  - scons test=1 mad=1 localecompare=1
 script:
   - ./mixxx-test
