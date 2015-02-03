@@ -109,6 +109,10 @@ Result AudioSourceCoreAudio::postConstruct() {
 
     setChannelCount(m_outputFormat.NumberChannels());
     setFrameRate(m_inputFormat.mSampleRate);
+    // NOTE(uklotzde): This is what I found when migrating
+    // the code from SoundSource (sample-oriented) to the new
+    // AudioSource (frame-oriented) API. It is not documented
+    // when m_headerFrames > 0 and what the consequences are.
     setFrameCount(totalFrameCount/* - m_headerFrames*/);
 
     //Seek to position 0, which forces us to skip over all the header frames.
