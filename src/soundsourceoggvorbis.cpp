@@ -51,9 +51,12 @@ inline int getByteOrder() {
  */
 
 SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename)
-: Mixxx::SoundSource(qFilename)
+: Mixxx::SoundSource(qFilename),
+  channels(0),
+  filelength(0),
+  vf(),
+  current_section(0)
 {
-    filelength = 0;
     setType("ogg");
 }
 

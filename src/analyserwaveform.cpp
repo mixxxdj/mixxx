@@ -16,6 +16,7 @@ AnalyserWaveform::AnalyserWaveform(ConfigObject<ConfigValue>* pConfig) :
         m_skipProcessing(false),
         m_waveformData(NULL),
         m_waveformSummaryData(NULL),
+        m_stride(),
         m_currentStride(0),
         m_currentSummaryStride(0) {
     qDebug() << "AnalyserWaveform::AnalyserWaveform()";

@@ -37,10 +37,18 @@ http://svn.xiph.org/trunk/vorbis/examples/encoder_example.c
 
 EncoderVorbis::EncoderVorbis(EncoderCallback* pCallback)
         : m_bStreamInitialized(false),
+          m_oggs(),
+          m_oggpage(),
+          m_oggpacket(),
+          m_vblock(),
+          m_vdsp(),
+          m_vinfo(),
+          m_vcomment(),
+          m_header_write(false),
           m_pCallback(pCallback),
           m_metaDataTitle(NULL),
           m_metaDataArtist(NULL),
-          m_metaDataAlbum(NULL) {
+          m_metaDataAlbum(NULL){
 }
 
 EncoderVorbis::~EncoderVorbis() {

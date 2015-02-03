@@ -19,7 +19,8 @@ PortMidiController::PortMidiController(const PmDeviceInfo* inputDeviceInfo,
           m_iInputDeviceIndex(inputDeviceIndex),
           m_iOutputDeviceIndex(outputDeviceIndex),
           m_pInputStream(NULL),
-          m_pOutputStream(NULL) {
+          m_pOutputStream(NULL),
+          m_midiBuffer() {
     // Note: We prepend the input stream's index to the device's name to prevent
     // duplicate devices from causing mayhem.
     //setDeviceName(QString("%1. %2").arg(QString::number(m_iInputDeviceIndex), inputDeviceInfo->name));
