@@ -41,6 +41,7 @@ EngineRecord::EngineRecord(ConfigObject<ConfigValue>* _config)
         : m_pConfig(_config),
           m_pEncoder(NULL),
           m_pSndfile(NULL),
+          m_sfInfo(),
           m_frames(0),
           m_recordedDuration(0),
           m_iMetaDataLife(0),
