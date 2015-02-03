@@ -23,7 +23,9 @@
 #include "MathUtilities.h"
 
 TCSGram::TCSGram() :
-	m_uNumBins(6)
+        m_VectorList(),
+	m_uNumBins(6),
+        m_dFrameDurationMS(0.0)
 {
 }
 
