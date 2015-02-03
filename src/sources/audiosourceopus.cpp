@@ -4,7 +4,13 @@ namespace Mixxx {
 
 namespace {
 
-const int kLogicalBitstreamIndex = -1; // whole stream/file
+// Parameter for op_channel_count()
+// See also: https://mf4.xiph.org/jenkins/view/opus/job/opusfile-unix/ws/doc/html/group__stream__info.html
+const int kCurrentStreamLink = -1; // get ... of the current (stream) link
+
+// Parameter for op_pcm_total() and op_bitrate()
+// See also: https://mf4.xiph.org/jenkins/view/opus/job/opusfile-unix/ws/doc/html/group__stream__info.html
+const int kEntireStreamLink  = -1; // get ... of the whole/entire stream
 
 } // anonymous namespace
 
@@ -40,7 +46,7 @@ Result AudioSourceOpus::postConstruct() {
         return ERR;
     }
 
-    const int channelCount = op_channel_count(m_pOggOpusFile, kLogicalBitstreamIndex);
+    const int channelCount = op_channel_count(m_pOggOpusFile, kCurrentStreamLink);
     if (0 < channelCount) {
         setChannelCount(channelCount);
     } else {
@@ -48,7 +54,7 @@ Result AudioSourceOpus::postConstruct() {
         return ERR;
     }
 
-    const ogg_int64_t pcmTotal = op_pcm_total(m_pOggOpusFile, kLogicalBitstreamIndex);
+    const ogg_int64_t pcmTotal = op_pcm_total(m_pOggOpusFile, kEntireStreamLink);
     if (0 <= pcmTotal) {
         setFrameCount(pcmTotal);
     } else {
@@ -56,7 +62,7 @@ Result AudioSourceOpus::postConstruct() {
         return ERR;
     }
 
-    const opus_int32 bitrate = op_bitrate(m_pOggOpusFile, kLogicalBitstreamIndex);
+    const opus_int32 bitrate = op_bitrate(m_pOggOpusFile, kEntireStreamLink);
     if (0 < bitrate) {
         setBitrate(bitrate / 1000);
     } else {

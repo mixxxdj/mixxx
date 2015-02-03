@@ -4,7 +4,13 @@ namespace Mixxx {
 
 namespace {
 
-const int kLogicalBitstreamIndex = -1; // whole stream/file
+// Parameter for ov_info()
+// See also: https://xiph.org/vorbis/doc/vorbisfile/ov_info.html
+const int kCurrentBitstreamLink = -1; // retrieve ... for the current bitstream
+
+// Parameter for ov_pcm_total()
+// See also: https://xiph.org/vorbis/doc/vorbisfile/ov_pcm_total.html
+const int kEntireBitstreamLink  = -1; // retrieve ... for the entire physical bitstream
 
 } // anonymous namespace
 
@@ -35,7 +41,7 @@ Result AudioSourceOggVorbis::postConstruct() {
     }
 
     // lookup the ogg's channels and sample rate
-    const vorbis_info* vi = ov_info(&m_vf, kLogicalBitstreamIndex);
+    const vorbis_info* vi = ov_info(&m_vf, kCurrentBitstreamLink);
     if (!vi) {
         qWarning() << "Failed to read OggVorbis file:" << getUrl();
         return ERR;
@@ -50,7 +56,7 @@ Result AudioSourceOggVorbis::postConstruct() {
         }
     }
 
-    ogg_int64_t pcmTotal = ov_pcm_total(&m_vf, kLogicalBitstreamIndex);
+    ogg_int64_t pcmTotal = ov_pcm_total(&m_vf, kEntireBitstreamLink);
     if (0 <= pcmTotal) {
         setFrameCount(pcmTotal);
     } else {
