@@ -567,11 +567,20 @@ bool writeTag(TagLib::Tag* pTag, const TrackMetadata& trackMetadata) {
     pTag->setAlbum(toTagLibString(trackMetadata.getAlbum()));
     pTag->setGenre(toTagLibString(trackMetadata.getGenre()));
     pTag->setComment(toTagLibString(trackMetadata.getComment()));
-    bool yearValid = false;
-    uint year = trackMetadata.getYear().toUInt(&yearValid);
-    if (yearValid && (year > 0)) {
-        pTag->setYear(year);
+
+    // Only write the year into the common tag if the corresponding
+    // field contains a 4-character numeric string.
+    const QString yearString(trackMetadata.getYear().trimmed());
+    if (4 == yearString.length()) {
+        bool yearValid = false;
+        uint year = trackMetadata.getYear().toUInt(&yearValid);
+        if (yearValid && (year > 0)) {
+            pTag->setYear(year);
+        }
     }
+    // Derived tags might be able to write the complete string
+    // from trackMetadata.getYear() into the corresponding field.
+
     bool trackNumberValid = false;
     uint track = trackMetadata.getTrackNumber().toUInt(&trackNumberValid);
     if (trackNumberValid && (track > 0)) {
