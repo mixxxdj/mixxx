@@ -127,7 +127,6 @@ void BrowseThread::populateModel() {
         QList<QStandardItem*> row_data;
 
         QStandardItem* item = new QStandardItem("0");
-        item->setToolTip("0");
         item->setData("0", Qt::UserRole);
         row_data.insert(COLUMN_PREVIEW, item);
 

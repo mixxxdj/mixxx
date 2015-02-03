@@ -424,6 +424,13 @@ void BrowseTableModel::trackLoaded(QString group, TrackPointer pTrack) {
     }
 }
 
+bool BrowseTableModel::getIsClolumnSortable(int column) {
+    if (COLUMN_PREVIEW == column) {
+        return false;
+    }
+    return true;
+}
+
 QAbstractItemDelegate* BrowseTableModel::delegateForColumn(const int i, QObject* pParent) {
     if (PlayerManager::numPreviewDecks() > 0 && i == COLUMN_PREVIEW) {
         return new PreviewButtonDelegate(pParent, i);
