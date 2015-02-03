@@ -2,7 +2,8 @@ language: c++
 # to run compilation/tests with gcc and clang
 compiler:
     - gcc
-    - clang
+# Clang yields compile errors due to http://llvm.org/bugs/show_bug.cgi?id=13745. Wait for an upgrade of GCC on travis
+#    - clang
 before_install:
   # update virtual machine
   - sudo apt-get update -qq
