@@ -274,6 +274,10 @@ void readAPETag(TrackMetadata* pTrackMetadata, const TagLib::APE::Tag& tag) {
         pTrackMetadata->setGrouping(toQString(tag.itemListMap()["Grouping"]));
     }
 
+    // The release date (ISO 8601 without 'T' separator between date and time)
+    // according to the mapping used by MusicBrainz Picard.
+    // http://wiki.hydrogenaud.io/index.php?title=APE_date
+    // https://picard.musicbrainz.org/docs/mappings
     if (tag.itemListMap().contains("Year")) {
         pTrackMetadata->setYear(toQString(tag.itemListMap()["Year"]));
     }
