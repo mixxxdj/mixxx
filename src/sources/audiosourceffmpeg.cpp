@@ -68,7 +68,7 @@ Result AudioSourceFFmpeg::postConstruct() {
     //debug only (Enable if needed)
     //av_dump_format(m_pFormatCtx, 0, qBAFilename.constData(), false);
 
-    // Find the first video stream
+    // Find the first audio stream
     m_iAudioStream=-1;
 
     for (i=0; i<m_pFormatCtx->nb_streams; i++)
@@ -82,7 +82,7 @@ Result AudioSourceFFmpeg::postConstruct() {
         return ERR;
     }
 
-    // Get a pointer to the codec context for the video stream
+    // Get a pointer to the codec context for the audio stream
     m_pCodecCtx=m_pFormatCtx->streams[m_iAudioStream]->codec;
 
     // Find the decoder for the audio stream
@@ -97,6 +97,7 @@ Result AudioSourceFFmpeg::postConstruct() {
     }
 
     m_pResample = new EncoderFfmpegResample(m_pCodecCtx);
+    // TODO(XXX): Use AV_SAMPLE_FMT_FLT instead of AV_SAMPLE_FMT_S16
     m_pResample->open(m_pCodecCtx->sample_fmt, AV_SAMPLE_FMT_S16);
 
     setChannelCount(m_pCodecCtx->channels);
