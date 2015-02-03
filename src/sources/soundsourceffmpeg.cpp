@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* -*- mode:C++; indent-tabs-mode:t; tab-width:8; c-basic-offset:4; -*- */
 /***************************************************************************
                           soundsourceffmpeg.cpp -  ffmpeg decoder
@@ -21,6 +22,8 @@
 *                                                                         *
 ***************************************************************************/
 
+=======
+>>>>>>> Review: Delete old file headers
 #include "sources/soundsourceffmpeg.h"
 
 <<<<<<< HEAD:src/soundsourceffmpeg.cpp

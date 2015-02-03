@@ -1,20 +1,3 @@
-/***************************************************************************
- soundsource.h  -  description
- -------------------
- begin                : Wed Feb 20 2002
- copyright            : (C) 2002 by Tue and Ken Haste Andersen
- email                :
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
 #ifndef SOUNDSOURCE_H
 #define SOUNDSOURCE_H
 
@@ -26,7 +9,7 @@
  4 - Mixxx 1.11.0 Pre (added composer field to SoundSource)
  5 - Mixxx 1.12.0 Pre (added album artist and grouping fields to SoundSource)
  6 - Mixxx 1.12.0 Pre (added cover art suppport)
- 7 - Mixxx 1.13.0 New AudioSource API
+ 7 - Mixxx 1.13.0 New SoundSource/AudioSource API
  */
 
 #include "sources/audiosource.h"
