@@ -66,12 +66,19 @@ Result SoundSourceOpus::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
         }
     }
 #else
+    // Beginning with version 1.9.0 TagLib supports the Opus format.
+    // Until this becomes the minimum version required by Mixxx tags
+    // in .opus files must also be parsed using opusfile. The following
+    // code should removed as soon as it is no longer needed!
+    //
+    // NOTE(uklotzde): The following code has been found in SoundSourceOpus
+    // and will not be improved. We are aware of its shortcomings like
+    // the lack of proper error handling.
+
     int error = 0;
     OggOpusFileOwner l_ptrOpusFile(
             op_open_file(qbaFilename.constData(), &error));
 
-    // From Taglib 1.9.x Opus is supported
-    // Before that we have parse tags by this code
     int i = 0;
     const OpusTags *l_ptrOpusTags = op_tags(l_ptrOpusFile, -1);
 
@@ -81,8 +88,7 @@ Result SoundSourceOpus::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
     pMetadata->setDuration(
             op_pcm_total(l_ptrOpusFile, -1) / pMetadata->getSampleRate());
 
-    // This is left for debug reasons !!
-    // qDebug() << "opus: We have " << l_ptrOpusTags->comments;
+    bool hasDate = false;
     for (i = 0; i < l_ptrOpusTags->comments; ++i) {
         QString l_SWholeTag = QString(l_ptrOpusTags->user_comments[i]);
         QString l_STag = l_SWholeTag.left(l_SWholeTag.indexOf("="));
@@ -94,8 +100,13 @@ Result SoundSourceOpus::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
             pMetadata->setAlbum(l_SPayload);
         } else if (!l_STag.compare("BPM")) {
             pMetadata->setBpm(l_SPayload.toFloat());
-        } else if (!l_STag.compare("YEAR") || !l_STag.compare("DATE")) {
-            pMetadata->setYear(l_SPayload);
+        } else if (!l_STag.compare("DATE")) {
+            // Prefer "DATE" over "YEAR"
+            pMetadata->setYear(l_SPayload.trimmed());
+            // Avoid to overwrite "DATE" with "YEAR"
+            hasDate |= !pMetadata->getYear().isEmpty();
+        } else if (!hasDate && !l_STag.compare("YEAR")) {
+            pMetadata->setYear(l_SPayload.trimmed());
         } else if (!l_STag.compare("GENRE")) {
             pMetadata->setGenre(l_SPayload);
         } else if (!l_STag.compare("TRACKNUMBER")) {
@@ -106,11 +117,8 @@ Result SoundSourceOpus::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
             pMetadata->setAlbumArtist(l_SPayload);
         } else if (!l_STag.compare("TITLE")) {
             pMetadata->setTitle(l_SPayload);
-        } else if (!l_STag.compare("REPLAYGAIN_TRACK_PEAK")) {
         } else if (!l_STag.compare("REPLAYGAIN_TRACK_GAIN")) {
             pMetadata->setReplayGainDbString (l_SPayload);
-        } else if (!l_STag.compare("REPLAYGAIN_ALBUM_PEAK")) {
-        } else if (!l_STag.compare("REPLAYGAIN_ALBUM_GAIN")) {
         }
 
         // This is left fot debug reasons!!
