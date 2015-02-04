@@ -14,14 +14,25 @@
 #include <taglib/attachedpictureframe.h>
 #include <taglib/flacpicture.h>
 
-#include <QStringList>
 #include <QDebug>
 
 namespace Mixxx {
 
-// static
 namespace {
+
 const bool kDebugMetadata = false;
+
+// http://id3.org/id3v2.3.0
+// "TYER: The 'Year' frame is a numeric string with a year of the
+// recording. This frame is always four characters long (until
+// the year 10000)."
+const QString ID3V2_TYER_FORMAT("yyyy");
+
+// http://id3.org/id3v2.3.0
+// "TDAT:  The 'Date' frame is a numeric string in the DDMM
+// format containing the date for the recording. This field
+// is always four characters long."
+const QString ID3V2_TDAT_FORMAT("ddMM");
 
 // Taglib strings can be NULL and using it could cause some segfaults,
 // so in this case it will return a QString()
@@ -193,26 +204,16 @@ void readID3v2Tag(TrackMetadata* pTrackMetadata,
     if (!recordingTime.isEmpty()) {
         pTrackMetadata->setYear(recordingTime);
     } else {
-        // Fallback to TYER + TDAT according to http://id3.org/id3v2.3.0
-        // NOTE(uklotzde): We only check the length of both fields, but
-        // not if they actually contain numeric strings.
+        // Fallback to TYER + TDAT
         const QString recordingYear(
                 toQStringFirst(tag.frameListMap()["TYER"]).trimmed());
-        // "TYER: The 'Year' frame is a numeric string with a year of the
-        // recording. This frame is always four characters long (until
-        // the year 10000)."
         QString year(recordingYear);
         if (4 == recordingYear.length()) {
-            // "TDAT:  The 'Date' frame is a numeric string in the DDMM
-            // format containing the date for the recording. This field
-            // is always four characters long.
             const QString recordingDate(
                     toQStringFirst(tag.frameListMap()["TDAT"]).trimmed());
             if (4 == recordingDate.length()) {
-                year += '-';
-                year += recordingDate.left(2);
-                year += '-';
-                year += recordingDate.right(2);
+                const QDate date(QDate::fromString(recordingYear + recordingDate, ID3V2_TYER_FORMAT + ID3V2_TDAT_FORMAT));
+                year = TrackMetadata::formatDate(date);
             }
         }
         if (!year.isEmpty()) {
@@ -623,23 +624,11 @@ bool writeID3v2Tag(TagLib::ID3v2::Tag* pTag,
         writeID3v2TextIdentificationFrame(pTag, "TDRC",
                 trackMetadata.getYear());
     } else {
-        // Fallback: Write TYER and TDAT
-        const QStringList yearParts(trackMetadata.getYear().split('-'));
-        if (0 < yearParts.length()) {
-            const QString year(yearParts[0].trimmed());
-            if (4 == year.length()) {
-                writeID3v2TextIdentificationFrame(pTag, "TYER",
-                        year); // yyyy
-                if (3 == yearParts.length()) {
-                    const QString month(yearParts[1].trimmed());
-                    const QString day(yearParts[2].trimmed());
-                    if ((2 == month.length()) && (2 == day.length())) {
-                        // yyyy-MM-dd
-                        writeID3v2TextIdentificationFrame(pTag, "TDAT",
-                                month + day); // MMdd
-                    }
-                }
-            }
+        // Fallback to TYER + TDAT
+        const QDate date(TrackMetadata::parseDate(trackMetadata.getYear()));
+        if (date.isValid()) {
+            writeID3v2TextIdentificationFrame(pTag, "TYER", date.toString(ID3V2_TYER_FORMAT));
+            writeID3v2TextIdentificationFrame(pTag, "TDAT", date.toString(ID3V2_TDAT_FORMAT));
         }
     }
 
