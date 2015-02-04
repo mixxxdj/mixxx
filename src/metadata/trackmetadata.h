@@ -1,7 +1,7 @@
 #ifndef TRACKMETADATA_H
 #define TRACKMETADATA_H
 
-#include <QString>
+#include <QDateTime>
 
 #include <cmath>
 
@@ -54,7 +54,7 @@ public:
         m_comment = comment;
     }
 
-    // year, date or date/time
+    // year, date or date/time formatted according to ISO 8601
     inline const QString& getYear() const {
         return m_year;
     }
@@ -174,6 +174,25 @@ public:
     // http://wiki.hydrogenaud.io/index.php?title=ReplayGain_1.0_specification
     static double parseReplayGain(QString sReplayGain, bool* pValid = 0);
     static QString formatReplayGain(double replayGain);
+
+    // Normalize a year string
+    inline static QString normalizeYear(QString year) {
+        return year.simplified().replace(" ", "");
+    }
+
+    // Parse an format date/time values according to ISO 8601
+    inline static QDate parseDate(QString str) {
+        return QDate::fromString(normalizeYear(str), Qt::ISODate);
+    }
+    inline static QDateTime parseDateTime(QString str) {
+        return QDateTime::fromString(normalizeYear(str), Qt::ISODate);
+    }
+    inline static QString formatDate(QDate date) {
+        return date.toString(Qt::ISODate);
+    }
+    inline static QString formatDateTime(QDateTime dateTime) {
+        return dateTime.toString(Qt::ISODate);
+    }
 
 private:
     QString m_artist;
