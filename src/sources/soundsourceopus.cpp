@@ -3,14 +3,6 @@
 #include "sources/audiosourceopus.h"
 #include "metadata/trackmetadatataglib.h"
 
-// TagLib has support for the Ogg Opus file format since version 1.9
-#define TAGLIB_HAS_OPUSFILE \
-    ((TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9)))
-
-#if TAGLIB_HAS_OPUSFILE
-#include <taglib/opusfile.h>
-#endif
-
 QList<QString> SoundSourceOpus::supportedFileExtensions() {
     QList<QString> list;
     list.push_back("opus");
@@ -43,29 +35,10 @@ private:
  Parse the file to get metadata
  */
 Result SoundSourceOpus::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
-    const QByteArray qbaFilename(getLocalFileNameBytes());
-
-// If we don't have new enough Taglib we use libopusfile parser!
-#if TAGLIB_HAS_OPUSFILE
-    TagLib::Ogg::Opus::File f(qbaFilename.constData());
-
-    if (!readAudioProperties(pMetadata, f)) {
-        return ERR;
+    if (OK == readTrackMetadataFromFile(pMetadata, getLocalFileName())) {
+        return OK;
     }
 
-    TagLib::Ogg::XiphComment *xiph = f.tag();
-    if (xiph) {
-        readXiphComment(pMetadata, *xiph);
-    } else {
-        // fallback
-        const TagLib::Tag *tag(f.tag());
-        if (tag) {
-            readTag(pMetadata, *tag);
-        } else {
-            return ERR;
-        }
-    }
-#else
     // Beginning with version 1.9.0 TagLib supports the Opus format.
     // Until this becomes the minimum version required by Mixxx tags
     // in .opus files must also be parsed using opusfile. The following
@@ -77,7 +50,7 @@ Result SoundSourceOpus::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
 
     int error = 0;
     OggOpusFileOwner l_ptrOpusFile(
-            op_open_file(qbaFilename.constData(), &error));
+            op_open_file(getLocalFileNameBytes().constData(), &error));
 
     int i = 0;
     const OpusTags *l_ptrOpusTags = op_tags(l_ptrOpusFile, -1);
@@ -125,20 +98,8 @@ Result SoundSourceOpus::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
         //qDebug() << "Comment" << i << l_ptrOpusTags->comment_lengths[i] <<
         //" (" << l_ptrOpusTags->user_comments[i] << ")" << l_STag << "*" << l_SPayload;
     }
-#endif
 
     return OK;
-}
-
-QImage SoundSourceOpus::parseCoverArt() const {
-#if TAGLIB_HAS_OPUSFILE
-    TagLib::Ogg::Opus::File f(getLocalFileNameBytes().constData());
-    TagLib::Ogg::XiphComment *xiph = f.tag();
-    if (xiph) {
-        return Mixxx::readXiphCommentCover(*xiph);
-    }
-#endif
-    return QImage();
 }
 
 Mixxx::AudioSourcePointer SoundSourceOpus::open() const {

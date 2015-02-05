@@ -3,8 +3,6 @@
 
 #include "metadata/trackmetadatataglib.h"
 
-#include <taglib/wavpackfile.h>
-
 namespace Mixxx {
 
 QList<QString> SoundSourceWV::supportedFileExtensions() {
@@ -15,39 +13,6 @@ QList<QString> SoundSourceWV::supportedFileExtensions() {
 
 SoundSourceWV::SoundSourceWV(QUrl url)
         : SoundSourcePlugin(url, "wv") {
-}
-
-Result SoundSourceWV::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
-    TagLib::WavPack::File f(getLocalFileNameBytes().constData());
-
-    if (!readAudioProperties(pMetadata, f)) {
-        return ERR;
-    }
-
-    TagLib::APE::Tag *ape = f.APETag();
-    if (ape) {
-        readAPETag(pMetadata, *ape);
-    } else {
-        // fallback
-        const TagLib::Tag *tag(f.tag());
-        if (tag) {
-            readTag(pMetadata, *tag);
-        } else {
-            return ERR;
-        }
-    }
-
-    return OK;
-}
-
-QImage SoundSourceWV::parseCoverArt() const {
-    TagLib::WavPack::File f(getLocalFileNameBytes().constData());
-    TagLib::APE::Tag *ape = f.APETag();
-    if (ape) {
-        return Mixxx::readAPETagCover(*ape);
-    } else {
-        return QImage();
-    }
 }
 
 Mixxx::AudioSourcePointer SoundSourceWV::open() const {

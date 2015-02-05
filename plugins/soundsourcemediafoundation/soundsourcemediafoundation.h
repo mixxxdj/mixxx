@@ -35,9 +35,6 @@ public:
 
     explicit SoundSourceMediaFoundation(QUrl url);
 
-    Result parseMetadata(Mixxx::TrackMetadata* pMetadata) const /*override*/;
-    QImage parseCoverArt() const /*override*/;
-
     Mixxx::AudioSourcePointer open() const /*override*/;
 };
 
