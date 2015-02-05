@@ -33,7 +33,6 @@ public:
     explicit SoundSourceOpus(QUrl url);
 
     Result parseMetadata(Mixxx::TrackMetadata* pMetadata) const /*override*/;
-    QImage parseCoverArt() const /*override*/;
 
 <<<<<<< HEAD
     OggOpusFile *m_pOggOpusFile;

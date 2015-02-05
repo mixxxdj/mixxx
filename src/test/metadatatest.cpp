@@ -131,10 +131,10 @@ TEST_F(MetadataTest, ID3v2Year) {
             {
                 Mixxx::TrackMetadata trackMetadata;
                 trackMetadata.setYear(year);
-                writeID3v2Tag(&tag, trackMetadata);
+                writeTrackMetadataIntoID3v2Tag(&tag, trackMetadata);
             }
             Mixxx::TrackMetadata trackMetadata;
-            readID3v2Tag(&trackMetadata, tag);
+            readTrackMetadataFromID3v2Tag(&trackMetadata, tag);
             if (4 > majorVersion) {
                 // ID3v2.3.0: parsed + formatted
                 const QString expectedYear(Mixxx::TrackMetadata::normalizeYear(year));

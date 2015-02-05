@@ -1,5 +1,6 @@
 #include "sources/soundsource.h"
-#include "metadata/trackmetadata.h"
+
+#include "metadata/trackmetadatataglib.h"
 
 namespace Mixxx {
 
@@ -17,6 +18,16 @@ SoundSource::SoundSource(QUrl url, QString type)
         : UrlResource(url),
           m_type(type) {
     DEBUG_ASSERT(getUrl().isValid());
+}
+
+Result SoundSource::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
+    return readTrackMetadataFromFile(pMetadata, getLocalFileName());
+}
+
+QImage SoundSource::parseCoverArt() const {
+    QImage coverArt;
+    readCoverArtFromFile(&coverArt, getLocalFileName());
+    return coverArt;
 }
 
 } //namespace Mixxx

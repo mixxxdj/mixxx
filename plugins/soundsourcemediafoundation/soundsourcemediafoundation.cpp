@@ -25,8 +25,6 @@
 
 #include "metadata/trackmetadatataglib.h"
 
-#include <taglib/mp4file.h>
-
 #include <QtDebug>
 
 // static
@@ -39,40 +37,6 @@ QList<QString> SoundSourceMediaFoundation::supportedFileExtensions() {
 
 SoundSourceMediaFoundation::SoundSourceMediaFoundation(QUrl url)
         : SoundSourcePlugin(url, "m4a") {
-}
-
-Result SoundSourceMediaFoundation::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
-    // Must be toLocal8Bit since Windows fopen does not do UTF-8
-    TagLib::MP4::File f(getLocalFileNameBytes().constData());
-
-    if (!readAudioProperties(pMetadata, f)) {
-        return ERR;
-    }
-
-    TagLib::MP4::Tag *mp4(f.tag());
-    if (mp4) {
-        readMP4Tag(pMetadata, *mp4);
-    } else {
-        // fallback
-        const TagLib::Tag *tag(f.tag());
-        if (tag) {
-            readTag(pMetadata, *tag);
-        } else {
-            return ERR;
-        }
-    }
-
-    return OK;
-}
-
-QImage SoundSourceMediaFoundation::parseCoverArt() const {
-    TagLib::MP4::File f(getLocalFileNameBytes().constData());
-    TagLib::MP4::Tag *mp4(f.tag());
-    if (mp4) {
-        return Mixxx::readMP4TagCover(*mp4);
-    } else {
-        return QImage();
-    }
 }
 
 Mixxx::AudioSourcePointer SoundSourceMediaFoundation::open() const {

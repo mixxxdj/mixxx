@@ -47,10 +47,10 @@ public:
     // The implementation is free to set inaccurate estimated
     // values here that are overwritten when the AudioSource is
     // actually opened for reading.
-    virtual Result parseMetadata(Mixxx::TrackMetadata* pMetadata) const = 0;
+    virtual Result parseMetadata(Mixxx::TrackMetadata* pMetadata) const;
 
     // Returns the first cover art image embedded within the file (if any).
-    virtual QImage parseCoverArt() const = 0;
+    virtual QImage parseCoverArt() const;
 
     // Opens the SoundSource for reading audio data.
     virtual AudioSourcePointer open() const = 0;

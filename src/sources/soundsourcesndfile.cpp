@@ -1,12 +1,6 @@
 #include "sources/soundsourcesndfile.h"
 
 #include "sources/audiosourcesndfile.h"
-#include "metadata/trackmetadatataglib.h"
-
-#include <taglib/flacfile.h>
-#include <taglib/aifffile.h>
-#include <taglib/rifffile.h>
-#include <taglib/wavfile.h>
 
 QList<QString> SoundSourceSndFile::supportedFileExtensions() {
     QList<QString> list;
@@ -21,6 +15,7 @@ SoundSourceSndFile::SoundSourceSndFile(QUrl url)
         : SoundSource(url) {
 }
 
+<<<<<<< HEAD
 Result SoundSourceSndFile::parseMetadata(
         Mixxx::TrackMetadata* pMetadata) const {
     if (getType() == "flac") {
@@ -168,6 +163,8 @@ QImage SoundSourceSndFile::parseCoverArt() const {
     return coverArt;
 }
 
+=======
+>>>>>>> Universal tag reading function for all TagLib file types
 Mixxx::AudioSourcePointer SoundSourceSndFile::open() const {
     return Mixxx::AudioSourceSndFile::create(getUrl());
 }

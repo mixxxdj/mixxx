@@ -1,11 +1,6 @@
 #include "sources/soundsourceflac.h"
 
-#include "metadata/trackmetadatataglib.h"
 #include "sources/audiosourceflac.h"
-
-#include <taglib/flacfile.h>
-
-#include <QtDebug>
 
 QList<QString> SoundSourceFLAC::supportedFileExtensions() {
     QList<QString> list;
@@ -60,6 +55,7 @@ SoundSourceFLAC::SoundSourceFLAC(QUrl url)
 >>>>>>> Create SoundSource from URL
 }
 
+<<<<<<< HEAD
 Result SoundSourceFLAC::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
     TagLib::FLAC::File f(getLocalFileNameBytes().constData());
 
@@ -327,6 +323,8 @@ void FLAC_error_cb(const FLAC__StreamDecoder*,
         FLAC__StreamDecoderErrorStatus status, void *client_data) {
     ((SoundSourceFLAC*) client_data)->flacError(status);
 =======
+=======
+>>>>>>> Universal tag reading function for all TagLib file types
 Mixxx::AudioSourcePointer SoundSourceFLAC::open() const {
 <<<<<<< HEAD
 <<<<<<< HEAD
