@@ -340,7 +340,7 @@ Result SoundSourceFFmpeg::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
             pMetadata->setTitle(strValue);
         } else if (!strncmp(FmtTag->key, "REPLAYGAIN_TRACK_PEAK", 20)) {
         } else if (!strncmp(FmtTag->key, "REPLAYGAIN_TRACK_GAIN", 20)) {
-            pMetadata->setReplayGainDbString (strValue);
+            pMetadata->setReplayGain(Mixxx::TrackMetadata::parseReplayGain(strValue));
         } else if (!strncmp(FmtTag->key, "REPLAYGAIN_ALBUM_PEAK", 20)) {
         } else if (!strncmp(FmtTag->key, "REPLAYGAIN_ALBUM_GAIN", 20)) {
 >>>>>>> Move track metadata properties from SoundSource into separate DTO class
