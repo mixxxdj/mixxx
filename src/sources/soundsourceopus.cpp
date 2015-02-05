@@ -118,7 +118,7 @@ Result SoundSourceOpus::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
         } else if (!l_STag.compare("TITLE")) {
             pMetadata->setTitle(l_SPayload);
         } else if (!l_STag.compare("REPLAYGAIN_TRACK_GAIN")) {
-            pMetadata->setReplayGainDbString (l_SPayload);
+            pMetadata->setReplayGain(Mixxx::TrackMetadata::parseReplayGain(l_SPayload));
         }
 
         // This is left fot debug reasons!!
