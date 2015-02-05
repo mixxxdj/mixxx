@@ -17,14 +17,60 @@ typedef qint32 int32_t;
 // When changing, be carefull to not prevent the vectorizing
 // https://gcc.gnu.org/projects/tree-ssa/vectorization.html
 
+
+static inline bool useAlignedAlloc() {
+	return (sizeof(long double) == 8 && sizeof(CSAMPLE*) <= 8 &&
+			sizeof(CSAMPLE*) == sizeof(size_t));
+}
+
 // static
 CSAMPLE* SampleUtil::alloc(unsigned int size) {
-    // TODO(XXX) align the array
-    return new CSAMPLE[size];
+    // For optimal use of SSE registers, it is required to align
+	// the sample buffers to 16 Byte (128 bit) boundary
+
+	// Pointers returned by malloc are aligned for the largest scalar type,
+	// which is long double with usually 16 byte.
+	// An exception is MSVC X86 where long double is mapped to double.
+
+	// In case of sizeof(long double) = 8
+	// this code over allocates the requested buffer to be able to
+	// shift the returned pointer to a 16 byte alignment
+	// In the memory before, a pointer to the original
+	// malloced area is stored used to free the memory
+	// This code can be replaced by C11 <stdlib.h> aligned_alloc()
+	// or MSVC ::_aligned_malloc(size, alignment) and  ::_aligned_free(ptr);
+
+	if (useAlignedAlloc()) {
+		// We need to shift the alignment to 16
+		const size_t alignment = 16;
+		const size_t unaligned_size = sizeof(CSAMPLE[size]) + alignment;
+		void* pUnaligned = std::malloc(unaligned_size);
+		if (pUnaligned == NULL) {
+			return NULL;
+		}
+		// Shift
+		void* pAlligned = (void*)(((size_t)pUnaligned & ~(alignment - 1)) + alignment);
+		// Store pointer to original relative to the shifted pointer
+		*((void**)(pAlligned) - 1) = pUnaligned;
+		return (CSAMPLE*)pAlligned;
+	} else {
+		// We are either correct aligned or on an exotic architecture
+		return new CSAMPLE[size];
+	}
 }
 
 void SampleUtil::free(CSAMPLE* pBuffer) {
-    delete[] pBuffer;
+	// See SampleUtil::alloc() for details
+	if (useAlignedAlloc()) {
+		if (pBuffer == NULL) {
+			return;
+		}
+		// Pointer to the original memory is stored before pBuffer
+		std::free(*((void**)((void*)pBuffer) - 1));
+	} else {
+		// We are either correct aligned or on an exotic architecture
+		delete[] pBuffer;
+	}
 }
 
 // static
@@ -68,7 +114,6 @@ void SampleUtil::applyRampingGain(CSAMPLE* pBuffer, CSAMPLE_GAIN old_gain,
             pBuffer[i] *= gain;
         }
     }
-
 }
 
 // static
