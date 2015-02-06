@@ -32,7 +32,10 @@ Result readCoverArtFromFile(QImage* pCoverArt, QString fileName);
 //(both parameters are optional and might be NULL)
 Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImage* pCoverArt, QString fileName);
 
-// Low-level tag read/write functions for testing purposes
+// Write track metadata into the file with the given name
+Result writeTrackMetadataIntoFile(const TrackMetadata& trackMetadata, QString fileName);
+
+// Low-level tag read/write functions are exposed only for testing purposes!
 void readTrackMetadataFromID3v2Tag(TrackMetadata* pTrackMetadata, const TagLib::ID3v2::Tag& tag);
 void readTrackMetadataFromAPETag(TrackMetadata* pTrackMetadata, const TagLib::APE::Tag& tag);
 void readTrackMetadataFromXiphComment(TrackMetadata* pTrackMetadata,
