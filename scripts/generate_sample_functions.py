@@ -225,7 +225,9 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        description='Auto-generate sample processing and mixing functions.')
+        description='Auto-generate sample processing and mixing functions.' + 
+        'Example Call:' +
+        './generate_sample_functions.py --sampleutil_autogen_h ../src/sampleutil_autogen.h --channelmixer_autogen_cpp ../src/engine/channelmixer_autogen.cpp')
     parser.add_argument('--sampleutil_autogen_h')
     parser.add_argument('--channelmixer_autogen_cpp')
     parser.add_argument('--max_channels', type=int, default=32)
