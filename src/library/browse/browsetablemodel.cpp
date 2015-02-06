@@ -372,7 +372,7 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
     QStandardItem* item = itemFromIndex(index);
     QString track_location = getTrackLocation(index);
     AudioTagger tagger(track_location, m_current_directory.token());
-    if (tagger.save(trackMetadata)) {
+    if (OK == tagger.save(trackMetadata)) {
         // Modify underlying interalPointer object
         item->setText(value.toString());
         item->setToolTip(item->text());

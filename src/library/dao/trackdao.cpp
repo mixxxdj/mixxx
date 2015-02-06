@@ -1792,7 +1792,9 @@ void TrackDAO::writeMetadataToFile(TrackInfoObject* pTrack) {
         pTrack->getMetadata(&trackMetadata);
 
         AudioTagger tagger(pTrack->getLocation(), pTrack->getSecurityToken());
-        tagger.save(trackMetadata);
+        if (OK != tagger.save(trackMetadata)) {
+            qWarning() << "Failed to write track metadata:" << pTrack->getLocation();
+        }
     }
 }
 
