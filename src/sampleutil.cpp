@@ -152,7 +152,7 @@ void SampleUtil::copyWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
 // static
 void SampleUtil::copyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
         CSAMPLE_GAIN old_gain, CSAMPLE_GAIN new_gain,
-        unsigned int iNumSamples) {
+        unsigned int iNumSamples, bool left/*=true*/, bool right/*=true*/) {
     if (old_gain == CSAMPLE_GAIN_ONE && new_gain == CSAMPLE_GAIN_ONE) {
         copy(pDest, pSrc, iNumSamples);
         return;
@@ -166,8 +166,12 @@ void SampleUtil::copyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
             / CSAMPLE_GAIN(iNumSamples / 2);
     CSAMPLE_GAIN gain = old_gain;
     for (unsigned int i = 0; i < iNumSamples; i += 2, gain += gain_delta) {
-        pDest[i] = pSrc[i] * gain;
-        pDest[i + 1] = pSrc[i + 1] * gain;
+        if( left ){
+            pDest[i] = pSrc[i] * gain;
+        }
+        if( right ){
+            pDest[i + 1] = pSrc[i + 1] * gain;
+        }
     }
 
     // OR! need to test which fares better

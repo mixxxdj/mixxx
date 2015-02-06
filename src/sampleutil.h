@@ -99,7 +99,7 @@ class SampleUtil {
     // if pDest == pSrc!
     static void copyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
             CSAMPLE_GAIN old_gain, CSAMPLE_GAIN new_gain,
-            unsigned int iNumSamples);
+            unsigned int iNumSamples, bool left=true, bool right=true);
 
     // Add each sample of pSrc, multiplied by the gain, to pDest
     static void addWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
