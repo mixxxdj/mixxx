@@ -32,27 +32,12 @@ Result readCoverArtFromFile(QImage* pCoverArt, QString fileName);
 //(both parameters are optional and might be NULL)
 Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImage* pCoverArt, QString fileName);
 
-// Read metadata
-// The general function readTag() is implicitly invoked
-// from the specialized tag reading functions!
-void readTrackMetadataFromTag(TrackMetadata* pTrackMetadata, const TagLib::Tag& tag);
+// Low-level tag read/write functions for testing purposes
 void readTrackMetadataFromID3v2Tag(TrackMetadata* pTrackMetadata, const TagLib::ID3v2::Tag& tag);
 void readTrackMetadataFromAPETag(TrackMetadata* pTrackMetadata, const TagLib::APE::Tag& tag);
 void readTrackMetadataFromXiphComment(TrackMetadata* pTrackMetadata,
         const TagLib::Ogg::XiphComment& tag);
 void readTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::MP4::Tag& tag);
-
-// Read cover art
-// In order to avoid processing images when it's not
-// needed (TIO building), we must process it separately.
-bool readCoverArtFromID3v2Tag(QImage* pCoverArt, const TagLib::ID3v2::Tag& tag);
-bool readCoverArtFromAPETag(QImage* pCoverArt, const TagLib::APE::Tag& tag);
-bool readCoverArtFromXiphComment(QImage* pCoverArt, const TagLib::Ogg::XiphComment& tag);
-bool readCoverArtFromMP4Tag(QImage* pCoverArt, const TagLib::MP4::Tag& tag);
-
-// Write metadata
-// The general function writeTag() is implicitly invoked
-// from the specialized tag writing functions!
 bool writeTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
         const TrackMetadata& trackMetadata);
 bool writeTrackMetadataIntoAPETag(TagLib::APE::Tag* pTag, const TrackMetadata& trackMetadata);
