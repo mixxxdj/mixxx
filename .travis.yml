@@ -2,7 +2,8 @@ language: c++
 # to run compilation/tests with gcc and clang
 compiler:
     - gcc
-    - clang
+# Clang yields compile errors due to http://llvm.org/bugs/show_bug.cgi?id=13745. Wait for an upgrade of GCC on travis
+#    - clang
 before_install:
   # update virtual machine
   - sudo apt-get update -qq
@@ -12,6 +13,6 @@ before_install:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
 install:
-  - scons test=1 mad=1 opus=1 localecompare=1
+  - scons test=1 mad=1 localecompare=1
 script:
   - ./mixxx-test
