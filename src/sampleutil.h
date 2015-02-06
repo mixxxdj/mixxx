@@ -60,8 +60,16 @@ class SampleUtil {
     inline
     static void copy(CSAMPLE* pDest, const CSAMPLE* pSrc,
             unsigned int iNumSamples) {
-        // Roughly equivalent to memcpy in a benchmark test.
-        std::copy(pSrc, pSrc + iNumSamples, pDest);
+        // Benchmark results from a i5 64 bit Linux machine:
+        // memcpy() calls __memcpy_sse2() on 64 bit build only
+        // (not available on Debian 32 bit builds)
+        // We pick the loop version because we this is always sse2 optimized
+        // and features an overlap check which is the cause for the small penalty
+        //memcpy(pDest, pSrc, iNumSamples * sizeof(CSAMPLE)); // 489 ns
+        //std::copy(pSrc, pSrc + iNumSamples, pDest); // 684 ns
+        for (unsigned int i = 0; i < iNumSamples; ++i) { // 571 ns
+            pDest[i] = pSrc[i];
+        }
     }
 
     // Limits a CSAMPLE value to the valid range [-CSAMPLE_PEAK, CSAMPLE_PEAK]
