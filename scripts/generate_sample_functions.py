@@ -2,6 +2,9 @@
 import argparse
 import sys
 
+# Usage: 
+# ./generate_sample_functions.py --sampleutil_autogen_h ../src/sampleutil_autogen.h --channelmixer_autogen_cpp ../src/engine/channelmixer_autogen.cpp
+
 BASIC_INDENT = 4
 
 COPY_WITH_GAIN_METHOD_PATTERN = 'copy%(i)dWithGain'
@@ -187,9 +190,11 @@ def copy_with_ramping_gain(output, base_indent_depth, num_channels):
         write('const CSAMPLE_GAIN gain_delta%(i)d = (gain%(i)dout - gain%(i)din) / (iNumSamples / 2);' % {'i': i}, depth=1)
         write('CSAMPLE_GAIN gain%(i)d = gain%(i)din;' % {'i': i}, depth=1)
 
-    increments = ['i += 2',] + ['gain%(i)d += gain_delta%(i)d' % {'i': i} for i in xrange(num_channels)]
+    write('for (unsigned int i = 0; i < iNumSamples; i += 2) {', depth=1)
 
-    write('for (unsigned int i = 0; i < iNumSamples; %s) {' % ', '.join(increments), depth=1)
+    increments = ['gain%(i)d += gain_delta%(i)d' % {'i': i} for i in xrange(num_channels)]
+    for i in xrange(num_channels):
+        write('gain%(i)d += gain_delta%(i)d;' % {'i': i}, depth=2)
 
     terms1 = []
     terms2 = []
