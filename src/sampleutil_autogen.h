@@ -7,14 +7,28 @@
 static inline void copy1WithGain(CSAMPLE* pDest,
                                  const CSAMPLE* pSrc0, CSAMPLE_GAIN gain0,
                                  unsigned int iNumSamples) {
-    copyWithGain(pDest, pSrc0, gain0, iNumSamples);
-    return;
+    if (gain0 == CSAMPLE_GAIN_ZERO) {
+        clear(pDest, iNumSamples);
+        return;
+    }
+    for (unsigned int i = 0; i < iNumSamples; ++i) {
+        pDest[i] = pSrc0[i] * gain0;
+    }
 }
 static inline void copy1WithRampingGain(CSAMPLE* pDest,
                                         const CSAMPLE* pSrc0, CSAMPLE_GAIN gain0in, CSAMPLE_GAIN gain0out,
                                         unsigned int iNumSamples) {
-    copyWithRampingGain(pDest, pSrc0, gain0in, gain0out, iNumSamples);
-    return;
+    if (gain0in == CSAMPLE_GAIN_ZERO && gain0out == CSAMPLE_GAIN_ZERO) {
+        clear(pDest, iNumSamples);
+        return;
+    }
+    const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
+    CSAMPLE_GAIN gain0 = gain0in;
+    for (unsigned int i = 0; i < iNumSamples; i += 2) {
+        gain0 += gain_delta0;
+        pDest[i] = pSrc0[i] * gain0;
+        pDest[i + 1] = pSrc0[i + 1] * gain0;
+    }
 }
 static inline void copy2WithGain(CSAMPLE* pDest,
                                  const CSAMPLE* pSrc0, CSAMPLE_GAIN gain0,

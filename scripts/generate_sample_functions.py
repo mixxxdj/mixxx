@@ -137,16 +137,14 @@ def copy_with_gain(output, base_indent_depth, num_channels):
     output.extend(hanging_indent(header, arg_groups, ',', ') {',
                                  depth=base_indent_depth))
 
-    if (num_channels == 1):
-        write('copyWithGain(pDest, pSrc0, gain0, iNumSamples);', depth=1)
-        write('return;', depth=1)
-        write('}')
-        return
 
     for i in xrange(num_channels):
         write('if (gain%(i)d == CSAMPLE_GAIN_ZERO) {' % {'i': i}, depth=1)
-        args = ['pDest',] + ['pSrc%(i)d, gain%(i)d' % {'i': j} for j in xrange(num_channels) if i != j] + ['iNumSamples',]
-        write('%s;' %method_call(copy_with_gain_method_name(num_channels - 1), args), depth=2)
+        if (num_channels > 1):
+            args = ['pDest',] + ['pSrc%(i)d, gain%(i)d' % {'i': j} for j in xrange(num_channels) if i != j] + ['iNumSamples',]
+            write('%s;' %method_call(copy_with_gain_method_name(num_channels - 1), args), depth=2)
+        else:
+            write('clear(pDest, iNumSamples);', depth=2)
         write('return;', depth=2)
         write('}', depth=1)
 
@@ -171,18 +169,15 @@ def copy_with_ramping_gain(output, base_indent_depth, num_channels):
     output.extend(hanging_indent(header, arg_groups, ',', ') {',
                                  depth=base_indent_depth))
 
-    if (num_channels == 1):
-        write('copyWithRampingGain(pDest, pSrc0, gain0in, gain0out, iNumSamples);', depth=1)
-        write('return;', depth=1)
-        write('}')
-        return
-
 
     for i in xrange(num_channels):
         write('if (gain%(i)din == CSAMPLE_GAIN_ZERO && gain%(i)dout == CSAMPLE_GAIN_ZERO) {' % {'i': i}, depth=1)
-        args = ['pDest',] + ['pSrc%(i)d, gain%(i)din, gain%(i)dout' % {'i': j} for j in xrange(num_channels) if i != j] + ['iNumSamples',]
-        write('%s;' % method_call(copy_with_ramping_gain_method_name(num_channels - 1), args),
-              depth=2)
+        if (num_channels > 1):
+            args = ['pDest',] + ['pSrc%(i)d, gain%(i)din, gain%(i)dout' % {'i': j} for j in xrange(num_channels) if i != j] + ['iNumSamples',]
+            write('%s;' % method_call(copy_with_ramping_gain_method_name(num_channels - 1), args),
+                  depth=2)
+        else:
+           write('clear(pDest, iNumSamples);', depth=2)
         write('return;', depth=2)
         write('}', depth=1)
 
