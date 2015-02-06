@@ -19,6 +19,8 @@ typedef qint32 int32_t;
 
 
 static inline bool useAlignedAlloc() {
+    // Will return true on MSVC 32 bit builds and falls for
+    // Linux 32 and 64 bit builds
     return (sizeof(long double) == 8 && sizeof(CSAMPLE*) <= 8 &&
             sizeof(CSAMPLE*) == sizeof(size_t));
 }
