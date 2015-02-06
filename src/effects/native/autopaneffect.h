@@ -10,6 +10,8 @@
 #include "engine/effects/engineeffectparameter.h"
 #include "effects/effectprocessor.h"
 #include "sampleutil.h"
+#include "engine/enginefilterdelay.h"
+
 
 // This class provides a float value that cannot be increased or decreased
 // by more than a given value to avoid clicks.
@@ -57,15 +59,21 @@ class RampedSample {
     bool initialized;
 };
 
+static const int panMaxDelay = 3300; // allows a 30 Hz filter at 97346;
 
 struct PanGroupState {
     PanGroupState() {
         time = 0;
+        delay = new EngineFilterDelay<panMaxDelay>();
+        m_pDelayBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
     }
     ~PanGroupState() {
+        // todo delete buffer
     }
     unsigned int time;
     RampedSample frac;
+    EngineFilterDelay<panMaxDelay>* delay;
+    CSAMPLE* m_pDelayBuf;
 };
 
 
@@ -94,6 +102,7 @@ class AutoPanEffect : public GroupEffectProcessor<PanGroupState> {
 
     EngineEffectParameter* m_pCurveParameter;
     EngineEffectParameter* m_pPeriodParameter;
+    EngineEffectParameter* m_pDelayParameter;
     
     DISALLOW_COPY_AND_ASSIGN(AutoPanEffect);
 };

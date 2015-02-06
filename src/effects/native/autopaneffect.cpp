@@ -4,6 +4,7 @@
 #include "effects/native/autopaneffect.h"
 
 #include "sampleutil.h"
+#include "util/experiment.h"
 
 const float positionRampingThreshold = 0.005f;
 
@@ -36,7 +37,7 @@ EffectManifest AutoPanEffect::getManifest() {
     strength->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     strength->setMinimum(0.0);
     strength->setMaximum(0.5);  // there are two steps per period so max is half
-    strength->setDefault(0.5);
+    strength->setDefault(0.25);
     
     // On my mixer, the period is defined as a multiple of the BPM
     // I wonder if I should implement it as the bouncing is really nice
@@ -50,7 +51,21 @@ EffectManifest AutoPanEffect::getManifest() {
     period->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     period->setMinimum(1.0);
     period->setMaximum(500.0);
-    period->setDefault(50.0);
+    period->setDefault(220.0);
+    
+    // On my mixer, the period is defined as a multiple of the BPM
+    // I wonder if I should implement it as the bouncing is really nice
+    // when it is synced.
+    EffectManifestParameter* delay = manifest.addParameter();
+    delay->setId("delay");
+    delay->setName(QObject::tr("delay"));
+    delay->setDescription("Controls length of the delay");
+    delay->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
+    delay->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    delay->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    delay->setMinimum(0.0);
+    delay->setMaximum(500.0);
+    delay->setDefault(300.0);
     
     return manifest;
 }
@@ -58,7 +73,8 @@ EffectManifest AutoPanEffect::getManifest() {
 AutoPanEffect::AutoPanEffect(EngineEffect* pEffect, const EffectManifest& manifest)
         : 
           m_pCurveParameter(pEffect->getParameterById("curve")),
-          m_pPeriodParameter(pEffect->getParameterById("period"))
+          m_pPeriodParameter(pEffect->getParameterById("period")),
+          m_pDelayParameter(pEffect->getParameterById("delay"))
            {
     Q_UNUSED(manifest);
 }
@@ -119,12 +135,19 @@ void AutoPanEffect::processGroup(const QString& group, PanGroupState* pGroupStat
     gs.frac.setRampingThreshold(positionRampingThreshold);
     gs.frac.ramped = false;     // just for debug
     
+    // float delay = round(m_pDelayParameter->value());
+    // gs.delay->setDelay(delay);
+    // gs.delay->process(pInput, gs.m_pDelayBuf, 2048);
+    
+    float quarter;
+    
     for (unsigned int i = 0; i + 1 < numSamples; i += 2) {
         
-        CSAMPLE periodFraction = CSAMPLE(gs.time) / period;
+        CSAMPLE periodFraction = (CSAMPLE(gs.time) / period);
         
         // current quarter in the trigonometric circle
-        float quarter = floorf(periodFraction * 4.0f);
+        // float quarter = floorf(periodFraction * 4.0f);
+        quarter = floorf(periodFraction * 4.0f);
         
         // part of the period fraction being a step (not in the slope)
         CSAMPLE stepsFractionPart = floorf((quarter+1.0f)/2.0f) * stepFrac;
@@ -145,19 +168,58 @@ void AutoPanEffect::processGroup(const QString& group, PanGroupState* pGroupStat
         gs.frac.setWithRampingApplied(
             (sin(M_PI * 2.0f * angleFraction) + 1.0f) / 2.0f);
         
-        pOutput[i] = pInput[i] * gs.frac * lawCoef;
-        pOutput[i+1] =  pInput[i+1] * (1.0f - gs.frac) * lawCoef;
+        if (Experiment::isExperiment()) {
+            // delay on the reducing channel
+            
+            if ( quarter == 0.0 || quarter == 3.0 ){
+                // channel 1 increasing
+                pOutput[i] = pInput[i] * gs.frac * lawCoef;
+                pOutput[i+1] = (gs.m_pDelayBuf[i+1] + pInput[i+1]) / 2
+                    * (1.0f - gs.frac) * lawCoef;
+                // pOutput[i+1] = gs.m_pDelayBuf[i+1] * (1.0f - gs.frac) * lawCoef;
+                
+            } else {
+                // channel 2 increasing
+                // pOutput[i] = pInput[i] * gs.frac * lawCoef;
+                pOutput[i] = (gs.m_pDelayBuf[i] + pInput[i]) / 2
+                    * gs.frac * lawCoef;
+                pOutput[i+1] = pInput[i+1] * (1.0f - gs.frac) * lawCoef;
+            }
+            
+        } else if (Experiment::isBase()) {
+            // delay on both sides
+            pOutput[i] = (gs.m_pDelayBuf[i] + pInput[i]) / 2 * gs.frac * lawCoef;
+            pOutput[i+1] = (gs.m_pDelayBuf[i+1] + pInput[i+1]) / 2 * (1.0f - gs.frac) * lawCoef;
+        
+        } else {
+            // no delay
+            pOutput[i] = pInput[i] * gs.frac * lawCoef;
+            pOutput[i+1] = pInput[i+1] * (1.0f - gs.frac) * lawCoef;
+        }
         
         gs.time++;
     }
     
+    /**
+     * todo
+     * apply delay with ramping 
+     * 
+     */
+    float delay = round(m_pDelayParameter->value());
+    gs.delay->setDelay(delay);
+    gs.delay->process(pInput, gs.m_pDelayBuf, 2048);
     
+    /**/
     qDebug()
-        << "| ramped :" << gs.frac.ramped
+        // << "| ramped :" << gs.frac.ramped
+        << "| quarter :" << quarter
+        << "| delay :" << delay
         // << "| beat_length :" << groupFeatures.beat_length
         // << "| period :" << period
         << "| frac :" << gs.frac
         << "| time :" << gs.time
+        << "| numSamples :" << numSamples
         ;
+    /**/
 }
 
