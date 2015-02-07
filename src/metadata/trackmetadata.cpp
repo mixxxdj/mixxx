@@ -155,6 +155,15 @@ QString TrackMetadata::normalizeYear(QString year) {
     return year;
 }
 
+uint TrackMetadata::parseNumericYear(QString year) {
+    const QDateTime yearDateTime(parseDateTime(year));
+    if (yearDateTime.date().isValid()) {
+        return yearDateTime.date().year();
+    } else {
+        return year.toUInt();
+    }
+}
+
 TrackMetadata::TrackMetadata() :
         m_channels(0),
         m_sampleRate(0),
