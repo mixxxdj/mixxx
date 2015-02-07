@@ -191,7 +191,11 @@ public:
 
     // Normalize a year string
     static QString normalizeYear(QString year);
-    static uint parseNumericYear(QString year);
+
+    // Parse and format the calendar year (for simplified display)
+    static const uint kCalendarYearInvalid = 0;
+    static uint parseCalendarYear(QString year);
+    static QString formatCalendarYear(QString year);
 
 private:
     QString m_artist;

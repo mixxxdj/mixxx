@@ -155,13 +155,40 @@ QString TrackMetadata::normalizeYear(QString year) {
     return year;
 }
 
-uint TrackMetadata::parseNumericYear(QString year) {
+uint TrackMetadata::parseCalendarYear(QString year) {
     const QDateTime yearDateTime(parseDateTime(year));
     if (yearDateTime.date().isValid()) {
         return yearDateTime.date().year();
     } else {
-        return year.toUInt();
+        bool uintValid = false;
+        uint uintYear = year.toUInt(&uintValid);
+        if (uintValid) {
+            return uintYear;
+        }
     }
+    return kCalendarYearInvalid;
+}
+
+QString TrackMetadata::formatCalendarYear(QString year) {
+    const QDateTime yearDateTime(parseDateTime(year));
+    if (yearDateTime.date().isValid()) {
+        // numeric year
+        return QString::number(yearDateTime.date().year());
+    } else {
+        bool uintValid = false;
+        uint uintYear = year.toUInt(&uintValid);
+        if (uintValid) {
+            if (kCalendarYearInvalid == uintYear) {
+                // empty string
+                return QString();
+            } else {
+                // numeric string
+                return QString::number(uintYear);
+            }
+        }
+    }
+    // unmodified
+    return year;
 }
 
 TrackMetadata::TrackMetadata() :

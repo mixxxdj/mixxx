@@ -9,6 +9,7 @@
 
 #include "library/browse/browsetablemodel.h"
 #include "soundsourceproxy.h"
+#include "metadata/trackmetadata.h"
 #include "util/time.h"
 #include "util/trace.h"
 
@@ -156,9 +157,10 @@ void BrowseThread::populateModel() {
         item->setData(item->text().toInt(), Qt::UserRole);
         row_data.insert(COLUMN_TRACK_NUMBER, item);
 
-        item = new QStandardItem(tio.getYear());
-        item->setToolTip(item->text());
-        item->setData(item->text().toInt(), Qt::UserRole);
+        const QString year(tio.getYear());
+        item = new QStandardItem(year);
+        item->setToolTip(year);
+        item->setData(Mixxx::TrackMetadata::formatCalendarYear(year), Qt::UserRole);
         row_data.insert(COLUMN_YEAR, item);
 
         item = new QStandardItem(tio.getGenre());
