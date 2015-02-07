@@ -272,7 +272,7 @@ void replaceID3v2Frame(TagLib::ID3v2::Tag* pTag, TagLib::ID3v2::Frame* pFrame) {
 }
 
 void writeID3v2TextIdentificationFrame(TagLib::ID3v2::Tag* pTag,
-        const TagLib::ByteVector &id, const QString& text) {
+        const TagLib::ByteVector &id, const QString& text, bool isNumericOrURL = false) {
     DEBUG_ASSERT(pTag);
 
     TagLib::String::Type textType;
@@ -288,11 +288,17 @@ void writeID3v2TextIdentificationFrame(TagLib::ID3v2::Tag* pTag,
         // independent of the byte order.
         textType = TagLib::String::UTF8;
     } else {
-        // For ID3v2.3.0/ID3v2.2.0 use UCS-2 (UTF-16 encoded Unicode
-        // with BOM), because UTF-8 and UTF-16BE are only supported
-        // since ID3v2.4.0 and the alternative ISO-8859-1 does not
-        // cover all Unicode characters.
-        textType = TagLib::String::UTF16;
+        if (isNumericOrURL) {
+            // According to the ID3v2.3.0 specification: "All numeric
+            // strings and URLs are always encoded as ISO-8859-1."
+            textType = TagLib::String::Latin1;
+        } else {
+            // For ID3v2.3.0 use UCS-2 (UTF-16 encoded Unicode with BOM)
+            // for arbitrary text, because UTF-8 and UTF-16BE are only
+            // supported since ID3v2.4.0 and the alternative ISO-8859-1
+            // does not cover all Unicode characters.
+            textType = TagLib::String::UTF16;
+        }
     }
     QScopedPointer<TagLib::ID3v2::TextIdentificationFrame> pNewFrame(
             new TagLib::ID3v2::TextIdentificationFrame(id, textType));
@@ -378,19 +384,24 @@ void readTrackMetadataFromID3v2Tag(TrackMetadata* pTrackMetadata,
     // ID3v2.4.0: TDRC replaces TYER + TDAT
     const QString recordingTime(
             toQStringFirst(tag.frameListMap()["TDRC"]));
-    if (!recordingTime.isEmpty()) {
-        pTrackMetadata->setYear(recordingTime);
+    if ((4 <= tag.header()->majorVersion()) && !recordingTime.isEmpty()) {
+            pTrackMetadata->setYear(recordingTime);
     } else {
         // Fallback to TYER + TDAT
         const QString recordingYear(
                 toQStringFirst(tag.frameListMap()["TYER"]).trimmed());
         QString year(recordingYear);
-        if (4 == recordingYear.length()) {
+        if (ID3V2_TYER_FORMAT.length() == recordingYear.length()) {
             const QString recordingDate(
                     toQStringFirst(tag.frameListMap()["TDAT"]).trimmed());
-            if (4 == recordingDate.length()) {
-                const QDate date(QDate::fromString(recordingYear + recordingDate, ID3V2_TYER_FORMAT + ID3V2_TDAT_FORMAT));
-                year = TrackMetadata::formatDate(date);
+            if (ID3V2_TDAT_FORMAT.length() == recordingDate.length()) {
+                const QDate date(
+                        QDate::fromString(
+                                recordingYear + recordingDate,
+                                ID3V2_TYER_FORMAT + ID3V2_TDAT_FORMAT));
+                if (date.isValid()) {
+                    year = TrackMetadata::formatDate(date);
+                }
             }
         }
         if (!year.isEmpty()) {
@@ -640,22 +651,36 @@ bool writeTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
     // integer and represented as a numerical string."
     // Reference: http://id3.org/id3v2.3.0
     writeID3v2TextIdentificationFrame(pTag, "TBPM",
-            TrackMetadata::formatBpm(trackMetadata.getBpmAsInteger()));
+            TrackMetadata::formatBpm(trackMetadata.getBpmAsInteger()), true);
     writeID3v2TextIdentificationFrame(pTag, "TKEY", trackMetadata.getKey());
     writeID3v2TextIdentificationFrame(pTag, "TCOM",
             trackMetadata.getComposer());
     writeID3v2TextIdentificationFrame(pTag, "TIT1",
             trackMetadata.getGrouping());
-    if (4 <= pHeader->majorVersion()) {
-        // ID3v2.4.0: TDRC replaces TYER + TDAT
+    // NOTE(uklotz): Need to overwrite the TDRC frame if it
+    // already exists. TagLib (1.9.x) writes a TDRC frame
+    // even for ID3v2.3.0 tags if the numeric year is set.
+    if ((4 <= pHeader->majorVersion()) || !pTag->frameList("TDRC").isEmpty()) {
         writeID3v2TextIdentificationFrame(pTag, "TDRC",
                 trackMetadata.getYear());
-    } else {
+    }
+    if (4 > pHeader->majorVersion()) {
         // Fallback to TYER + TDAT
         const QDate date(TrackMetadata::parseDate(trackMetadata.getYear()));
         if (date.isValid()) {
-            writeID3v2TextIdentificationFrame(pTag, "TYER", date.toString(ID3V2_TYER_FORMAT));
-            writeID3v2TextIdentificationFrame(pTag, "TDAT", date.toString(ID3V2_TDAT_FORMAT));
+            // Valid date
+            writeID3v2TextIdentificationFrame(pTag, "TYER", date.toString(ID3V2_TYER_FORMAT), true);
+            writeID3v2TextIdentificationFrame(pTag, "TDAT", date.toString(ID3V2_TDAT_FORMAT), true);
+        } else {
+            // Numeric year
+            bool yearUIntValid = false;
+            const int yearUInt = trackMetadata.getYear().toUInt(&yearUIntValid);
+            if (yearUIntValid) {
+                const QString tyer(QString::number(yearUInt));
+                if (ID3V2_TYER_FORMAT.length() == tyer.length()) {
+                    writeID3v2TextIdentificationFrame(pTag, "TYER", tyer, true);
+                }
+            }
         }
     }
 
