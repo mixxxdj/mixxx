@@ -130,6 +130,18 @@ QString TrackMetadata::formatReplayGain(double replayGain) {
     }
 }
 
+QString TrackMetadata::normalizeYear(QString year) {
+    const QDateTime dateTime(parseDateTime(year));
+    if (dateTime.isValid()) {
+        return dateTime.toString();
+    }
+    const QDate date(dateTime.date());
+    if (date.isValid()) {
+        return date.toString();
+    }
+    return year;
+}
+
 TrackMetadata::TrackMetadata() :
         m_channels(0),
         m_sampleRate(0),

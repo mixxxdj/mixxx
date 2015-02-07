@@ -175,17 +175,12 @@ public:
     static double parseReplayGain(QString sReplayGain, bool* pValid = 0);
     static QString formatReplayGain(double replayGain);
 
-    // Normalize a year string
-    inline static QString normalizeYear(QString year) {
-        return year.simplified().replace(" ", "");
-    }
-
     // Parse an format date/time values according to ISO 8601
     inline static QDate parseDate(QString str) {
-        return QDate::fromString(normalizeYear(str), Qt::ISODate);
+        return QDate::fromString(str, Qt::ISODate);
     }
     inline static QDateTime parseDateTime(QString str) {
-        return QDateTime::fromString(normalizeYear(str), Qt::ISODate);
+        return QDateTime::fromString(str, Qt::ISODate);
     }
     inline static QString formatDate(QDate date) {
         return date.toString(Qt::ISODate);
@@ -193,6 +188,9 @@ public:
     inline static QString formatDateTime(QDateTime dateTime) {
         return dateTime.toString(Qt::ISODate);
     }
+
+    // Normalize a year string
+    static QString normalizeYear(QString year);
 
 private:
     QString m_artist;
