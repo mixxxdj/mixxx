@@ -976,7 +976,7 @@ QString buildWhatsThis(const QString& title, const QString& text) {
 // initializes all QActions of the application
 void MixxxMainWindow::initActions()
 {
-    QString loadTrackText = tr("Load Track to Deck %1");
+    QString loadTrackText = tr("Load Track to Deck &%1");
     QString loadTrackStatusText = tr("Loads a track in deck %1");
     QString openText = tr("Open");
 
@@ -1160,7 +1160,7 @@ void MixxxMainWindow::initActions()
 
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
         vinylControlTitle.push_back(
-                tr("Enable Vinyl Control %1").arg(i + 1));
+                tr("Enable Vinyl Control &%1").arg(i + 1));
 
         m_pOptionsVinylControl.push_back(
                 new QAction(vinylControlTitle.back(), this));
