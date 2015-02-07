@@ -494,6 +494,7 @@ class MixxxCore(Feature):
                    "control/control.cpp",
                    "control/controlbehavior.cpp",
                    "control/controlmodel.cpp",
+                   "control/stringatom.cpp",
                    "controlobject.cpp",
                    "controlobjectslave.cpp",
                    "controlobjectthread.cpp",
