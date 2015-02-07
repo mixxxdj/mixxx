@@ -10,6 +10,13 @@ typedef qint64 int64_t;
 typedef qint32 int32_t;
 #endif
 
+// the note: LOOP VECTORIZED below marks
+// the loops that are processed with the 128 bit SSE registers
+// it was tested with gcc 4.6 with the -ftree-vectorizer-verbose=2 flag
+// on an Intel i5 CPU
+// When changing, be carefull to not prevent the vectorizing
+// https://gcc.gnu.org/projects/tree-ssa/vectorization.html
+
 // static
 CSAMPLE* SampleUtil::alloc(unsigned int size) {
     // TODO(XXX) align the array
@@ -29,6 +36,8 @@ void SampleUtil::applyGain(CSAMPLE* pBuffer, CSAMPLE_GAIN gain,
         clear(pBuffer, iNumSamples);
         return;
     }
+
+    // note: LOOP VECTORIZED.
     for (unsigned int i = 0; i < iNumSamples; ++i) {
         pBuffer[i] *= gain;
     }
@@ -48,10 +57,18 @@ void SampleUtil::applyRampingGain(CSAMPLE* pBuffer, CSAMPLE_GAIN old_gain,
     const CSAMPLE_GAIN gain_delta = (new_gain - old_gain)
             / CSAMPLE_GAIN(iNumSamples / 2);
     CSAMPLE_GAIN gain = old_gain;
-    for (unsigned int i = 0; i < iNumSamples; i += 2, gain += gain_delta) {
-        pBuffer[i] *= gain;
-        pBuffer[i + 1] *= gain;
+    if (gain_delta) {
+        for (unsigned int i = 0; i < iNumSamples; i += 2) {
+            gain += gain_delta;
+            pBuffer[i] *= gain;
+            pBuffer[i + 1] *= gain;
+        }
+    } else {
+        for (unsigned int i = 0; i < iNumSamples; ++i) {
+            pBuffer[i] *= gain;
+        }
     }
+
 }
 
 // static
@@ -75,6 +92,7 @@ void SampleUtil::addWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
         return;
     }
 
+    // note: LOOP VECTORIZED.
     for (unsigned int i = 0; i < iNumSamples; ++i) {
         pDest[i] += pSrc[i] * gain;
     }
@@ -90,9 +108,17 @@ void SampleUtil::addWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
     const CSAMPLE_GAIN gain_delta = (new_gain - old_gain)
             / CSAMPLE_GAIN(iNumSamples / 2);
     CSAMPLE_GAIN gain = old_gain;
-    for (unsigned int i = 0; i < iNumSamples; i += 2, gain += gain_delta) {
-        pDest[i] += pSrc[i] * gain;
-        pDest[i + 1] += pSrc[i + 1] * gain;
+    if (gain_delta) {
+        for (unsigned int i = 0; i < iNumSamples; i += 2) {
+            gain += gain_delta;
+            pDest[i] += pSrc[i] * gain;
+            pDest[i + 1] += pSrc[i + 1] * gain;
+        }
+    } else {
+        // note: LOOP VECTORIZED.
+        for (unsigned int i = 0; i < iNumSamples; ++i) {
+            pDest[i] += pSrc[i] * gain;
+        }
     }
 }
 
@@ -106,6 +132,7 @@ void SampleUtil::add2WithGain(CSAMPLE* pDest, const CSAMPLE* pSrc1,
         return addWithGain(pDest, pSrc1, gain1, iNumSamples);
     }
 
+    // note: LOOP VECTORIZED.
     for (unsigned int i = 0; i < iNumSamples; ++i) {
         pDest[i] += pSrc1[i] * gain1 + pSrc2[i] * gain2;
     }
@@ -123,6 +150,7 @@ void SampleUtil::add3WithGain(CSAMPLE* pDest, const CSAMPLE* pSrc1,
         return add2WithGain(pDest, pSrc1, gain1, pSrc2, gain2, iNumSamples);
     }
 
+    // note: LOOP VECTORIZED.
     for (unsigned int i = 0; i < iNumSamples; ++i) {
         pDest[i] += pSrc1[i] * gain1 + pSrc2[i] * gain2 + pSrc3[i] * gain3;
     }
@@ -140,6 +168,7 @@ void SampleUtil::copyWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
         return;
     }
 
+    // note: LOOP VECTORIZED.
     for (unsigned int i = 0; i < iNumSamples; ++i) {
         pDest[i] = pSrc[i] * gain;
     }
@@ -172,6 +201,7 @@ void SampleUtil::copyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
             pDest[i + 1] = pSrc[i + 1] * gain;
         }
     } else {
+        // note: LOOP VECTORIZED.
         for (unsigned int i = 0; i < iNumSamples; ++i) {
             pDest[i] = pSrc[i] * gain;
         }
@@ -189,6 +219,7 @@ void SampleUtil::convertS16ToFloat32(CSAMPLE* pDest, const SAMPLE* pSrc,
     // Note that this means that although some sample values convert to -1.0,
     // none will convert to +1.0.
     const CSAMPLE kConversionFactor = 0x8000;
+    // note: LOOP VECTORIZED.
     for (unsigned int i = 0; i < iNumSamples; ++i) {
         pDest[i] = CSAMPLE(pSrc[i]) / kConversionFactor;
     }
@@ -333,3 +364,4 @@ void SampleUtil::copyMultiToStereo(CSAMPLE* pDest, const CSAMPLE* pSrc,
         pDest[i * 2 + 1] = pSrc[i * numChannels + 1];
     }
 }
+
