@@ -981,7 +981,7 @@ QString buildWhatsThis(const QString& title, const QString& text) {
 // initializes all QActions of the application
 void MixxxMainWindow::initActions()
 {
-    QString loadTrackText = tr("Load Track to Deck %1");
+    QString loadTrackText = tr("Load Track to Deck &%1");
     QString loadTrackStatusText = tr("Loads a track in deck %1");
     QString openText = tr("Open");
 
@@ -1339,14 +1339,12 @@ void MixxxMainWindow::initActions()
                                                   "OptionsMenu_ReloadSkin"),
                                                   tr("Ctrl+Shift+R"))));
     m_pDeveloperReloadSkin->setShortcutContext(Qt::ApplicationShortcut);
-    m_pDeveloperReloadSkin->setCheckable(true);
-    m_pDeveloperReloadSkin->setChecked(false);
     m_pDeveloperReloadSkin->setStatusTip(reloadSkinText);
     m_pDeveloperReloadSkin->setWhatsThis(buildWhatsThis(reloadSkinTitle, reloadSkinText));
-    connect(m_pDeveloperReloadSkin, SIGNAL(toggled(bool)),
+    connect(m_pDeveloperReloadSkin, SIGNAL(triggered(bool)),
             this, SLOT(slotDeveloperReloadSkin(bool)));
 
-    QString developerToolsTitle = tr("Developer Tools");
+    QString developerToolsTitle = tr("Developer &Tools");
     QString developerToolsText = tr("Opens the developer tools dialog");
     m_pDeveloperTools = new QAction(developerToolsTitle, this);
     m_pDeveloperTools->setShortcut(
@@ -1354,12 +1352,14 @@ void MixxxMainWindow::initActions()
                                                   "OptionsMenu_DeveloperTools"),
                                                   tr("Ctrl+Shift+T"))));
     m_pDeveloperTools->setShortcutContext(Qt::ApplicationShortcut);
+    m_pDeveloperTools->setCheckable(true);
+    m_pDeveloperTools->setChecked(false);
     m_pDeveloperTools->setStatusTip(developerToolsText);
     m_pDeveloperTools->setWhatsThis(buildWhatsThis(developerToolsTitle, developerToolsText));
     connect(m_pDeveloperTools, SIGNAL(triggered()),
             this, SLOT(slotDeveloperTools()));
 
-    QString enableExperimentTitle = tr("Stats: Experiment Bucket");
+    QString enableExperimentTitle = tr("Stats: &Experiment Bucket");
     QString enableExperimentToolsText = tr(
         "Enables experiment mode. Collects stats in the EXPERIMENT tracking bucket.");
     m_pDeveloperStatsExperiment = new QAction(enableExperimentTitle, this);
@@ -1376,7 +1376,7 @@ void MixxxMainWindow::initActions()
     connect(m_pDeveloperStatsExperiment, SIGNAL(triggered()),
             this, SLOT(slotDeveloperStatsExperiment()));
 
-    QString enableBaseTitle = tr("Stats: Base Bucket");
+    QString enableBaseTitle = tr("Stats: &Base Bucket");
     QString enableBaseToolsText = tr(
         "Enables base mode. Collects stats in the BASE tracking bucket.");
     m_pDeveloperStatsBase = new QAction(enableBaseTitle, this);
@@ -1395,8 +1395,8 @@ void MixxxMainWindow::initActions()
 
 
 
-
-    QString scriptDebuggerTitle = tr("Debugger Enabled");
+    // "D" cannont be used with Alt here as it is already by the Developer menu
+    QString scriptDebuggerTitle = tr("Deb&ugger Enabled");
     QString scriptDebuggerText = tr("Enables the debugger during skin parsing");
     bool scriptDebuggerEnabled = m_pConfig->getValueString(
         ConfigKey("[ScriptDebugger]", "Enabled")) == "1";
@@ -1441,7 +1441,7 @@ void MixxxMainWindow::initMenuBar()
     m_pLibraryMenu = new QMenu(tr("&Library"),menuBar());
     m_pViewMenu = new QMenu(tr("&View"), menuBar());
     m_pHelpMenu = new QMenu(tr("&Help"), menuBar());
-    m_pDeveloperMenu = new QMenu(tr("Developer"), menuBar());
+    m_pDeveloperMenu = new QMenu(tr("&Developer"), menuBar());
     connect(m_pOptionsMenu, SIGNAL(aboutToShow()),
             this, SLOT(slotOptionsMenuShow()));
     // menuBar entry fileMenu
@@ -1592,18 +1592,23 @@ void MixxxMainWindow::slotDeveloperReloadSkin(bool toggle) {
 }
 
 void MixxxMainWindow::slotDeveloperTools() {
-    if (m_pDeveloperToolsDlg == NULL) {
-        m_pDeveloperToolsDlg = new DlgDeveloperTools(this, m_pConfig);
-        connect(m_pDeveloperToolsDlg, SIGNAL(destroyed()),
-                this, SLOT(slotDeveloperToolsClosed()));
+    if (m_pDeveloperTools->isChecked()) {
+        if (m_pDeveloperToolsDlg == NULL) {
+            m_pDeveloperToolsDlg = new DlgDeveloperTools(this, m_pConfig);
+            connect(m_pDeveloperToolsDlg, SIGNAL(destroyed()),
+                    this, SLOT(slotDeveloperToolsClosed()));
+            connect(this, SIGNAL(closeDeveloperToolsDlgChecked(int)),
+                    m_pDeveloperToolsDlg, SLOT(done(int)));
+            connect(m_pDeveloperToolsDlg, SIGNAL(destroyed()),
+                    m_pDeveloperTools, SLOT(toggle()));
+        }
+        m_pDeveloperToolsDlg->show();
+        m_pDeveloperToolsDlg->activateWindow();
+    } else {
+        disconnect(m_pDeveloperToolsDlg, SIGNAL(destroyed()),
+                m_pDeveloperTools, SLOT(toggle()));
+        emit closeDeveloperToolsDlgChecked(0);
     }
-    m_pDeveloperToolsDlg->show();
-    m_pDeveloperToolsDlg->activateWindow();
-}
-
-void MixxxMainWindow::slotDeveloperDebugger(bool toggle) {
-    m_pConfig->set(ConfigKey("[ScriptDebugger]","Enabled"),
-                   ConfigValue(toggle ? 1 : 0));
 }
 
 void MixxxMainWindow::slotDeveloperToolsClosed() {
@@ -1628,6 +1633,10 @@ void MixxxMainWindow::slotDeveloperStatsBase() {
     }
 }
 
+void MixxxMainWindow::slotDeveloperDebugger(bool toggle) {
+    m_pConfig->set(ConfigKey("[ScriptDebugger]","Enabled"),
+                   ConfigValue(toggle ? 1 : 0));
+}
 
 
 void MixxxMainWindow::slotViewFullScreen(bool toggle)
