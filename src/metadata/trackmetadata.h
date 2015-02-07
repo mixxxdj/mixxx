@@ -191,6 +191,7 @@ public:
 
     // Normalize a year string
     static QString normalizeYear(QString year);
+    static uint parseNumericYear(QString year);
 
 private:
     QString m_artist;
