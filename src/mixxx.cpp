@@ -1160,7 +1160,7 @@ void MixxxMainWindow::initActions()
 
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
         vinylControlTitle.push_back(
-                tr("Enable Vinyl Control &%1").arg(i + 1));
+                tr("Enable Vinyl Control %1").arg(i + 1));
 
         m_pOptionsVinylControl.push_back(
                 new QAction(vinylControlTitle.back(), this));
@@ -1325,7 +1325,7 @@ void MixxxMainWindow::initActions()
     connect(m_pDeveloperReloadSkin, SIGNAL(triggered(bool)),
             this, SLOT(slotDeveloperReloadSkin(bool)));
 
-    QString developerToolsTitle = tr("Developer Tools");
+    QString developerToolsTitle = tr("Developer &Tools");
     QString developerToolsText = tr("Opens the developer tools dialog");
     m_pDeveloperTools = new QAction(developerToolsTitle, this);
     m_pDeveloperTools->setShortcut(
@@ -1340,7 +1340,7 @@ void MixxxMainWindow::initActions()
     connect(m_pDeveloperTools, SIGNAL(triggered()),
             this, SLOT(slotDeveloperTools()));
 
-    QString enableExperimentTitle = tr("Stats: Experiment Bucket");
+    QString enableExperimentTitle = tr("Stats: &Experiment Bucket");
     QString enableExperimentToolsText = tr(
         "Enables experiment mode. Collects stats in the EXPERIMENT tracking bucket.");
     m_pDeveloperStatsExperiment = new QAction(enableExperimentTitle, this);
@@ -1357,7 +1357,7 @@ void MixxxMainWindow::initActions()
     connect(m_pDeveloperStatsExperiment, SIGNAL(triggered()),
             this, SLOT(slotDeveloperStatsExperiment()));
 
-    QString enableBaseTitle = tr("Stats: Base Bucket");
+    QString enableBaseTitle = tr("Stats: &Base Bucket");
     QString enableBaseToolsText = tr(
         "Enables base mode. Collects stats in the BASE tracking bucket.");
     m_pDeveloperStatsBase = new QAction(enableBaseTitle, this);
@@ -1377,7 +1377,7 @@ void MixxxMainWindow::initActions()
 
 
 
-    QString scriptDebuggerTitle = tr("Debugger Enabled");
+    QString scriptDebuggerTitle = tr("&Debugger Enabled");
     QString scriptDebuggerText = tr("Enables the debugger during skin parsing");
     bool scriptDebuggerEnabled = m_pConfig->getValueString(
         ConfigKey("[ScriptDebugger]", "Enabled")) == "1";
