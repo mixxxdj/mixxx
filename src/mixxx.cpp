@@ -1422,7 +1422,7 @@ void MixxxMainWindow::initMenuBar()
     m_pLibraryMenu = new QMenu(tr("&Library"),menuBar());
     m_pViewMenu = new QMenu(tr("&View"), menuBar());
     m_pHelpMenu = new QMenu(tr("&Help"), menuBar());
-    m_pDeveloperMenu = new QMenu(tr("Developer"), menuBar());
+    m_pDeveloperMenu = new QMenu(tr("&Developer"), menuBar());
     connect(m_pOptionsMenu, SIGNAL(aboutToShow()),
             this, SLOT(slotOptionsMenuShow()));
     // menuBar entry fileMenu
