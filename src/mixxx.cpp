@@ -1320,11 +1320,9 @@ void MixxxMainWindow::initActions()
                                                   "OptionsMenu_ReloadSkin"),
                                                   tr("Ctrl+Shift+R"))));
     m_pDeveloperReloadSkin->setShortcutContext(Qt::ApplicationShortcut);
-    m_pDeveloperReloadSkin->setCheckable(true);
-    m_pDeveloperReloadSkin->setChecked(false);
     m_pDeveloperReloadSkin->setStatusTip(reloadSkinText);
     m_pDeveloperReloadSkin->setWhatsThis(buildWhatsThis(reloadSkinTitle, reloadSkinText));
-    connect(m_pDeveloperReloadSkin, SIGNAL(toggled(bool)),
+    connect(m_pDeveloperReloadSkin, SIGNAL(triggered(bool)),
             this, SLOT(slotDeveloperReloadSkin(bool)));
 
     QString developerToolsTitle = tr("Developer Tools");
@@ -1335,6 +1333,8 @@ void MixxxMainWindow::initActions()
                                                   "OptionsMenu_DeveloperTools"),
                                                   tr("Ctrl+Shift+T"))));
     m_pDeveloperTools->setShortcutContext(Qt::ApplicationShortcut);
+    m_pDeveloperTools->setCheckable(true);
+    m_pDeveloperTools->setChecked(false);
     m_pDeveloperTools->setStatusTip(developerToolsText);
     m_pDeveloperTools->setWhatsThis(buildWhatsThis(developerToolsTitle, developerToolsText));
     connect(m_pDeveloperTools, SIGNAL(triggered()),
@@ -1572,23 +1572,30 @@ void MixxxMainWindow::slotDeveloperReloadSkin(bool toggle) {
 }
 
 void MixxxMainWindow::slotDeveloperTools() {
-    if (m_pDeveloperToolsDlg == NULL) {
-        m_pDeveloperToolsDlg = new DlgDeveloperTools(this, m_pConfig);
-        connect(m_pDeveloperToolsDlg, SIGNAL(destroyed()),
-                this, SLOT(slotDeveloperToolsClosed()));
+    if (m_pDeveloperTools->isChecked()) {
+        if (m_pDeveloperToolsDlg == NULL) {
+            m_pDeveloperToolsDlg = new DlgDeveloperTools(this, m_pConfig);
+            connect(m_pDeveloperToolsDlg, SIGNAL(destroyed()),
+                    this, SLOT(slotDeveloperToolsClosed()));
+            connect(this, SIGNAL(closeDeveloperToolsDlgChecked(int)),
+                    m_pDeveloperToolsDlg, SLOT(done(int)));
+            connect(m_pDeveloperToolsDlg, SIGNAL(destroyed()),
+                    m_pDeveloperTools, SLOT(toggle()));
+        }
+        m_pDeveloperToolsDlg->show();
+        m_pDeveloperToolsDlg->activateWindow();
+    } else {
+        disconnect(m_pDeveloperToolsDlg, SIGNAL(destroyed()),
+                m_pDeveloperTools, SLOT(toggle()));
+        emit closeDeveloperToolsDlgChecked(0);
+        slotDeveloperToolsClosed();
     }
-    m_pDeveloperToolsDlg->show();
-    m_pDeveloperToolsDlg->activateWindow();
-}
-
-void MixxxMainWindow::slotDeveloperDebugger(bool toggle) {
-    m_pConfig->set(ConfigKey("[ScriptDebugger]","Enabled"),
-                   ConfigValue(toggle ? 1 : 0));
 }
 
 void MixxxMainWindow::slotDeveloperToolsClosed() {
     m_pDeveloperToolsDlg = NULL;
 }
+
 
 void MixxxMainWindow::slotDeveloperStatsExperiment() {
     if (m_pDeveloperStatsExperiment->isChecked()) {
@@ -1608,6 +1615,10 @@ void MixxxMainWindow::slotDeveloperStatsBase() {
     }
 }
 
+void MixxxMainWindow::slotDeveloperDebugger(bool toggle) {
+    m_pConfig->set(ConfigKey("[ScriptDebugger]","Enabled"),
+                   ConfigValue(toggle ? 1 : 0));
+}
 
 
 void MixxxMainWindow::slotViewFullScreen(bool toggle)
