@@ -313,15 +313,11 @@ void writeTrackMetadataIntoTag(TagLib::Tag* pTag, const TrackMetadata& trackMeta
     pTag->setGenre(toTagLibString(trackMetadata.getGenre()));
     pTag->setComment(toTagLibString(trackMetadata.getComment()));
 
-    // Only write the year into the common tag if the corresponding
-    // field contains a 4-character numeric string.
-    const QString yearString(trackMetadata.getYear().trimmed());
-    if (4 == yearString.length()) {
-        bool yearValid = false;
-        uint year = trackMetadata.getYear().toUInt(&yearValid);
-        if (yearValid && (year > 0)) {
-            pTag->setYear(year);
-        }
+    // Set the numeric year if available
+    const QDate yearDate(
+            TrackMetadata::parseDateTime(trackMetadata.getYear()).date());
+    if (yearDate.isValid()) {
+        pTag->setYear(yearDate.year());
     }
     // Derived tags might be able to write the complete string
     // from trackMetadata.getYear() into the corresponding field.
