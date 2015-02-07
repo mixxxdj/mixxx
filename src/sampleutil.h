@@ -58,7 +58,7 @@ class SampleUtil {
 
     // Copies every sample from pSrc to pDest
     inline
-    static void copy(CSAMPLE* __restrict__ pDest, const CSAMPLE* __restrict__ pSrc,
+    static void copy(CSAMPLE* pDest, const CSAMPLE* pSrc,
             unsigned int iNumSamples) {
         // Benchmark results on 32 bit SSE2 Atom Cpu (Linux) 
         // memcpy 7263 ns 
@@ -73,7 +73,7 @@ class SampleUtil {
         // memcpy() calls __memcpy_sse2() on 64 bit build only
         // (not available on Debian 32 bit builds)
         #ifdef __SSE2__
-        if (sizeof(void*) == 8) {
+        if (sizeof(void*) == 4) { // 32 bit 
             // note: LOOP VECTORIZED.
             for (unsigned int i = 0; i < iNumSamples; ++i) { // 571 ns
                 pDest[i] = pSrc[i];

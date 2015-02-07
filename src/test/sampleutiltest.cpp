@@ -422,50 +422,87 @@ TEST_F(SampleUtilTest, deinterleaveBuffer) {
 }
 
 TEST_F(SampleUtilTest, memcpyspeed) {
-	CSAMPLE* buffer = buffers[0];
-	int size = sizes[0] - (rand() % 2) * 16; // preven predicting loop size
-	FillBuffer(buffer, 0.0f, size);
-	CSAMPLE* buffer2 = new CSAMPLE[size];
-	FillBuffer(buffer2, 0.0f, size);
-	CSAMPLE* buffer3 = new CSAMPLE[size*2];
-	FillBuffer(buffer3, 1.0f, size*2);
-	for (int j = 0; j < size; j++) {
-	buffer3[j*2] = j;
-	buffer3[j*2+1] = -j;
-	}
+    CSAMPLE* buffer = buffers[0];
 
-SampleUtil::copy(buffer, buffer2, size);
+    int size = sizes[0] - (rand() % 2) * 8; // preven predicting loop size
+    FillBuffer(buffer, 0.0f, size);
+    CSAMPLE* buffer2 = new CSAMPLE[size];
+    FillBuffer(buffer2, 0.0f, size);
+    CSAMPLE* buffer3 = new CSAMPLE[size*2];
+    FillBuffer(buffer3, 1.0f, size*2);
+    for (int j = 0; j < size; j++) {
+        buffer3[j*2] = j;
+        buffer3[j*2+1] = -j;
+    }
 
-	qint64 elapsed; 
-	Timer t(""); 
-	t.start(); 
+    // For ensure data is cahed and equal start conditions 
+    SampleUtil::copy(buffer, buffer2, size);
 
-	memcpy(buffer, buffer2, size * sizeof(CSAMPLE));
+    qint64 elapsed; 
+    Timer t(""); 
+    t.start(); 
 
-	elapsed = t.elapsed("");
-	qDebug() << "memcpy" << elapsed << "ns";
+    memcpy(buffer, buffer2, size * sizeof(CSAMPLE));
+
+    elapsed = t.elapsed("");
+    qDebug() << "memcpy" << elapsed << "ns" << size;
 
 //#########
 	
-	t.start(); 
+    t.start(); 
 
-	std::copy(buffer2, buffer2 + size, buffer);
+    std::copy(buffer2, buffer2 + size, buffer);
 
-	elapsed = t.elapsed("");
-	qDebug() << "std::copy" << elapsed << "ns";
+    elapsed = t.elapsed("");
+    qDebug() << "std::copy" << elapsed << "ns" << size;
 
 //############
 
-	t.start(); 
+    t.start(); 
 
-	SampleUtil::copy(buffer, buffer2, size);
+    SampleUtil::copy(buffer, buffer2, size);
 
-	elapsed = t.elapsed("");
-	qDebug() << "SampleUtil::copy" << elapsed << "ns";
+    elapsed = t.elapsed("");
+    qDebug() << "SampleUtil::copy" << elapsed << "ns" << size;
+
+//############
+    
+    // Smalles Mixxx audio buffer 
+    size = 64 - (rand() % 2) * 8; // preven predicting loop size
+
+    // For ensure data is cahed and equal start conditions 
+    SampleUtil::copy(buffer, buffer2, size);
+
+//############
+
+    t.start(); 
+
+    SampleUtil::copy(buffer, buffer2, size);
+
+    elapsed = t.elapsed("");
+    qDebug() << "SampleUtil::copy" << elapsed << "ns" << size;
+
+//############
+
+    t.start(); 
+
+    memcpy(buffer, buffer2, size * sizeof(CSAMPLE));
+
+    elapsed = t.elapsed("");
+    qDebug() << "memcpy" << elapsed << "ns" << size;
+
+//#########
+	
+    t.start(); 
+
+    std::copy(buffer2, buffer2 + size, buffer);
+
+    elapsed = t.elapsed("");
+    qDebug() << "std::copy" << elapsed << "ns" << size;
 
 
-	delete [] buffer2;
-	delete [] buffer3;
+    delete [] buffer2;
+    delete [] buffer3;
 }
 
 }
