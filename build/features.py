@@ -1032,7 +1032,7 @@ class Optimize(Feature):
             # -funroll-loops. We need to justify our use of these aggressive
             # optimizations with data.
             build.env.Append(
-                CCFLAGS='-O3 -ffast-math -funroll-loops')
+                CCFLAGS='-O3 -ffast-math -funroll-loops -falign-loops=16')
             if not int(build.flags['profiling']):
                 build.env.Append(CCFLAGS='-fomit-frame-pointer')
 
