@@ -54,7 +54,6 @@ SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename)
 : Mixxx::SoundSource(qFilename),
   channels(0),
   filelength(0),
-  vf(),
   current_section(0)
 {
     setType("ogg");
