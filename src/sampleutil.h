@@ -58,22 +58,30 @@ class SampleUtil {
 
     // Copies every sample from pSrc to pDest
     inline
-    static void copy(CSAMPLE* pDest, const CSAMPLE* pSrc,
+    static void copy(CSAMPLE* __restrict__ pDest, const CSAMPLE* __restrict__ pSrc,
             unsigned int iNumSamples) {
-	// Benchmark results on 32 bit SSE2 Atom Cpu 
-	// memcpy 7263 ns 
+        // Benchmark results on 32 bit SSE2 Atom Cpu (Linux) 
+        // memcpy 7263 ns 
         // std::copy 9289 ns 
-	// SampleUtil::copy 6565 ns 
+        // SampleUtil::copy 6565 ns 
         //
-        // Benchmark results from a i5 64 bit Linux machine:
+        // Benchmark results from a 64 bit i5 Cpu (Linux)
+        // memcpy 518 ns 
+        // std::copy 664 ns 
+        // SampleUtil::copy 661 ns 
+        //  
         // memcpy() calls __memcpy_sse2() on 64 bit build only
         // (not available on Debian 32 bit builds)
-        // We pick the loop version because we this is always sse2 optimized
-        // and features an overlap check which is the cause for the small penalty
-        //memcpy(pDest, pSrc, iNumSamples * sizeof(CSAMPLE)); // 489 ns
-        //std::copy(pSrc, pSrc + iNumSamples, pDest); // 684 ns
-        for (unsigned int i = 0; i < iNumSamples; ++i) { // 571 ns
-            pDest[i] = pSrc[i];
+        #ifdef __SSE2__
+        if (sizeof(void*) == 8) {
+            // note: LOOP VECTORIZED.
+            for (unsigned int i = 0; i < iNumSamples; ++i) { // 571 ns
+                pDest[i] = pSrc[i];
+            }
+        } else
+        #endif 
+        {
+            memcpy(pDest, pSrc, iNumSamples * sizeof(CSAMPLE));
         }
     }
 

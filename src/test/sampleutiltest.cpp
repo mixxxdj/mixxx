@@ -4,7 +4,7 @@
 #include <QPair>
 #include "util/timer.h"
 
-#include "sampleutil_autogen_.h"
+//#include "sampleutil_autogen_.h"
 #include "sampleutil.h"
 
 namespace {
