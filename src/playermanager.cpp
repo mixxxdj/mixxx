@@ -264,7 +264,7 @@ void PlayerManager::addConfiguredDecks() {
 
 void PlayerManager::addDeckInner() {
     // Do not lock m_mutex here.
-    QString group = groupForDeck(m_decks.count());
+    StringAtom group = groupForDeck(m_decks.count());
     DEBUG_ASSERT_AND_HANDLE(!m_players.contains(group)) {
         return;
     }
@@ -283,7 +283,7 @@ void PlayerManager::addDeckInner() {
                 m_pAnalyserQueue, SLOT(slotAnalyseTrack(TrackPointer)));
     }
 
-    m_players[group] = pDeck;
+    m_players.insert(group, pDeck);
     m_decks.append(pDeck);
 
     // Register the deck output with SoundManager (deck is 0-indexed to SoundManager)
@@ -321,7 +321,7 @@ void PlayerManager::addSampler() {
 
 void PlayerManager::addSamplerInner() {
     // Do not lock m_mutex here.
-    QString group = groupForSampler(m_samplers.count());
+    StringAtom group = groupForSampler(m_samplers.count());
 
     DEBUG_ASSERT_AND_HANDLE(!m_players.contains(group)) {
         return;
@@ -337,7 +337,7 @@ void PlayerManager::addSamplerInner() {
                 m_pAnalyserQueue, SLOT(slotAnalyseTrack(TrackPointer)));
     }
 
-    m_players[group] = pSampler;
+    m_players.insert(group, pSampler);
     m_samplers.append(pSampler);
 }
 
@@ -349,7 +349,7 @@ void PlayerManager::addPreviewDeck() {
 
 void PlayerManager::addPreviewDeckInner() {
     // Do not lock m_mutex here.
-    QString group = groupForPreviewDeck(m_preview_decks.count());
+    StringAtom group = groupForPreviewDeck(m_preview_decks.count());
     DEBUG_ASSERT_AND_HANDLE(!m_players.contains(group)) {
         return;
     }
@@ -365,16 +365,13 @@ void PlayerManager::addPreviewDeckInner() {
                 m_pAnalyserQueue, SLOT(slotAnalyseTrack(TrackPointer)));
     }
 
-    m_players[group] = pPreviewDeck;
+    m_players.insert(group, pPreviewDeck);
     m_preview_decks.append(pPreviewDeck);
 }
 
-BaseTrackPlayer* PlayerManager::getPlayer(QString group) const {
+BaseTrackPlayer* PlayerManager::getPlayer(const StringAtom& group) const {
     QMutexLocker locker(&m_mutex);
-    if (m_players.contains(group)) {
-        return m_players[group];
-    }
-    return NULL;
+    return m_players.value(group, NULL);
 }
 
 Deck* PlayerManager::getDeck(unsigned int deck) const {

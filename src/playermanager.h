@@ -28,7 +28,7 @@ class TrackCollection;
 class PlayerManagerInterface {
   public:
     // Get a BaseTrackPlayer (i.e. a Deck or a Sampler) by its group
-    virtual BaseTrackPlayer* getPlayer(QString group) const = 0;
+    virtual BaseTrackPlayer* getPlayer(const StringAtom& group) const = 0;
 
     // Get the deck by its deck number. Decks are numbered starting with 1.
     virtual Deck* getDeck(unsigned int player) const = 0;
@@ -101,7 +101,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     }
 
     // Get a BaseTrackPlayer (i.e. a Deck or a Sampler) by its group
-    BaseTrackPlayer* getPlayer(QString group) const;
+    BaseTrackPlayer* getPlayer(const StringAtom& group) const;
 
     // Get the deck by its deck number. Decks are numbered starting with 1.
     Deck* getDeck(unsigned int player) const;
@@ -184,7 +184,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     QList<Deck*> m_decks;
     QList<Sampler*> m_samplers;
     QList<PreviewDeck*> m_preview_decks;
-    QMap<QString, BaseTrackPlayer*> m_players;
+    QMap<StringAtom, BaseTrackPlayer*> m_players;
 };
 
 #endif // PLAYERMANAGER_H

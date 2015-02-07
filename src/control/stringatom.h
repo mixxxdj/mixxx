@@ -23,8 +23,17 @@ class StringAtom {
         return m_pString ? true : false;
     }
 
-    inline bool operator==(const StringAtom& other) {
+    inline bool operator==(const StringAtom& other) const {
         return this->m_pString == other.m_pString;
+    }
+
+    inline bool operator==(const QString& other) const {
+        return this->m_pString == get(other).m_pString;
+    }
+
+    // For QMap
+    inline bool operator<(const StringAtom& other) const {
+        return this->m_pString < other.m_pString;
     }
 
     inline operator QString() {
