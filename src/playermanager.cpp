@@ -21,6 +21,7 @@
 #include "engine/enginedeck.h"
 #include "util/assert.h"
 
+
 PlayerManager::PlayerManager(ConfigObject<ConfigValue>* pConfig,
                              SoundManager* pSoundManager,
                              EffectsManager* pEffectsManager,
