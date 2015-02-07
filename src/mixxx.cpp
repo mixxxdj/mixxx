@@ -1376,8 +1376,8 @@ void MixxxMainWindow::initActions()
 
 
 
-
-    QString scriptDebuggerTitle = tr("&Debugger Enabled");
+    // "D" cannont be used with Alt here as it is already by the Developer menu
+    QString scriptDebuggerTitle = tr("Deb&ugger Enabled");
     QString scriptDebuggerText = tr("Enables the debugger during skin parsing");
     bool scriptDebuggerEnabled = m_pConfig->getValueString(
         ConfigKey("[ScriptDebugger]", "Enabled")) == "1";
@@ -1594,7 +1594,6 @@ void MixxxMainWindow::slotDeveloperTools() {
 void MixxxMainWindow::slotDeveloperToolsClosed() {
     m_pDeveloperToolsDlg = NULL;
 }
-
 
 void MixxxMainWindow::slotDeveloperStatsExperiment() {
     if (m_pDeveloperStatsExperiment->isChecked()) {
