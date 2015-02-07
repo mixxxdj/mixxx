@@ -1588,7 +1588,6 @@ void MixxxMainWindow::slotDeveloperTools() {
         disconnect(m_pDeveloperToolsDlg, SIGNAL(destroyed()),
                 m_pDeveloperTools, SLOT(toggle()));
         emit closeDeveloperToolsDlgChecked(0);
-        slotDeveloperToolsClosed();
     }
 }
 
