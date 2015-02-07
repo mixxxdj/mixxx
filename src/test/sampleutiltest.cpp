@@ -2,7 +2,9 @@
 #include <QtDebug>
 #include <QList>
 #include <QPair>
+#include "util/timer.h"
 
+#include "sampleutil_autogen_.h"
 #include "sampleutil.h"
 
 namespace {
@@ -417,6 +419,53 @@ TEST_F(SampleUtilTest, deinterleaveBuffer) {
             delete [] buffer3;
         }
     }
+}
+
+TEST_F(SampleUtilTest, memcpyspeed) {
+	CSAMPLE* buffer = buffers[0];
+	int size = sizes[0] - (rand() % 2) * 16; // preven predicting loop size
+	FillBuffer(buffer, 0.0f, size);
+	CSAMPLE* buffer2 = new CSAMPLE[size];
+	FillBuffer(buffer2, 0.0f, size);
+	CSAMPLE* buffer3 = new CSAMPLE[size*2];
+	FillBuffer(buffer3, 1.0f, size*2);
+	for (int j = 0; j < size; j++) {
+	buffer3[j*2] = j;
+	buffer3[j*2+1] = -j;
+	}
+
+SampleUtil::copy(buffer, buffer2, size);
+
+	qint64 elapsed; 
+	Timer t(""); 
+	t.start(); 
+
+	memcpy(buffer, buffer2, size * sizeof(CSAMPLE));
+
+	elapsed = t.elapsed("");
+	qDebug() << "memcpy" << elapsed << "ns";
+
+//#########
+	
+	t.start(); 
+
+	std::copy(buffer2, buffer2 + size, buffer);
+
+	elapsed = t.elapsed("");
+	qDebug() << "std::copy" << elapsed << "ns";
+
+//############
+
+	t.start(); 
+
+	SampleUtil::copy(buffer, buffer2, size);
+
+	elapsed = t.elapsed("");
+	qDebug() << "SampleUtil::copy" << elapsed << "ns";
+
+
+	delete [] buffer2;
+	delete [] buffer3;
 }
 
 }

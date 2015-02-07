@@ -60,6 +60,11 @@ class SampleUtil {
     inline
     static void copy(CSAMPLE* pDest, const CSAMPLE* pSrc,
             unsigned int iNumSamples) {
+	// Benchmark results on 32 bit SSE2 Atom Cpu 
+	// memcpy 7263 ns 
+        // std::copy 9289 ns 
+	// SampleUtil::copy 6565 ns 
+        //
         // Benchmark results from a i5 64 bit Linux machine:
         // memcpy() calls __memcpy_sse2() on 64 bit build only
         // (not available on Debian 32 bit builds)
