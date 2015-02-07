@@ -131,14 +131,27 @@ QString TrackMetadata::formatReplayGain(double replayGain) {
 }
 
 QString TrackMetadata::normalizeYear(QString year) {
-    const QDateTime dateTime(parseDateTime(year));
-    if (dateTime.isValid()) {
-        return dateTime.toString();
+    const QDateTime yearDateTime(parseDateTime(year));
+    if (yearDateTime.isValid()) {
+        return yearDateTime.toString();
     }
-    const QDate date(dateTime.date());
-    if (date.isValid()) {
-        return date.toString();
+    const QDate yearDate(yearDateTime.date());
+    if (yearDate.isValid()) {
+        return yearDate.toString();
     }
+    bool yearUIntValid = false;
+    const int yearUInt = year.toUInt(&yearUIntValid);
+    if (yearUIntValid) {
+        if (0 == yearUInt) {
+            // special case: empty
+            return QString();
+        }
+        const QString yyyy(QString::number(yearUInt));
+        if (4 == yyyy.length()) {
+            return yyyy;
+        }
+    }
+    // unmodified
     return year;
 }
 

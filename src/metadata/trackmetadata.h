@@ -177,10 +177,10 @@ public:
 
     // Parse an format date/time values according to ISO 8601
     inline static QDate parseDate(QString str) {
-        return QDate::fromString(str, Qt::ISODate);
+        return QDate::fromString(str.trimmed().replace(" ", ""), Qt::ISODate);
     }
     inline static QDateTime parseDateTime(QString str) {
-        return QDateTime::fromString(str, Qt::ISODate);
+        return QDateTime::fromString(str.trimmed().replace(" ", ""), Qt::ISODate);
     }
     inline static QString formatDate(QDate date) {
         return date.toString(Qt::ISODate);

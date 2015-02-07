@@ -117,7 +117,7 @@ TEST_F(MetadataTest, ID3v2Year) {
             " 2001-01-01",
             "2002 -12 - 31 ",
             "2015 -02 - 04T 18:43",
-            "2015 -02 - 04  18:43"
+            "2015 -02 - 04  18:43",
             "2015 -02 - 04  18:43 followed by arbitrary text"
     };
     // Only ID3v2.3.0 and ID3v2.4.0 are supported for writing
@@ -125,7 +125,6 @@ TEST_F(MetadataTest, ID3v2Year) {
         qDebug() << "majorVersion" << majorVersion;
         for (size_t i = 0; i < sizeof(kYears) / sizeof(kYears[0]); ++i) {
             const QString year(kYears[i]);
-            qDebug() << "year" << year;
             TagLib::ID3v2::Tag tag;
             tag.header()->setMajorVersion(majorVersion);
             {
@@ -137,14 +136,14 @@ TEST_F(MetadataTest, ID3v2Year) {
             readTrackMetadataFromID3v2Tag(&trackMetadata, tag);
             if (4 > majorVersion) {
                 // ID3v2.3.0: parsed + formatted
-                const QString expectedYear(Mixxx::TrackMetadata::normalizeYear(year));
                 const QString actualYear(trackMetadata.getYear());
-                const QDate expectedDate(Mixxx::TrackMetadata::parseDate(expectedYear));
+                const QDate expectedDate(Mixxx::TrackMetadata::parseDate(year));
                 if (expectedDate.isValid()) {
                     // Only the date part can be stored in an ID3v2.3.0 tag
                     EXPECT_EQ(Mixxx::TrackMetadata::formatDate(expectedDate), actualYear);
                 } else {
-                    EXPECT_EQ(expectedYear, actualYear);
+                    // numeric year (without month/day)
+                    EXPECT_EQ(Mixxx::TrackMetadata::normalizeYear(year), actualYear);
                 }
             } else {
                 // ID3v2.4.0: currently unverified/unmodified
