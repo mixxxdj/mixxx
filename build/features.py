@@ -967,10 +967,6 @@ class Optimize(Feature):
         optimize_level = int(build.flags['optimize'])
 
         if build.toolchain_is_msvs:
-            if build.build_is_debug:
-                self.status = "Disabled (debug build)"
-                return
-
             # /GL : http://msdn.microsoft.com/en-us/library/0zza0de8.aspx
             # !!! /GL is incompatible with /ZI, which is set by mscvdebug
             build.env.Append(CCFLAGS='/GL')
@@ -998,9 +994,12 @@ class Optimize(Feature):
             # build.env.Append(LINKFLAGS = '/OPT:NOWIN98')
             # ALBERT: NOWIN98 is not supported in MSVC 2010.
 
+            if build.build_is_debug:
+                self.status = "Disabled (debug build)"
+            
             # http://msdn.microsoft.com/en-us/library/59a3b321.aspx
             # In general, you should pick /O2 over /Ox
-            if optimize_level >= 1:
+            elif optimize_level >= 1:
                 self.status = "Enabled -- Maximize Speed (/O2)"
                 build.env.Append(CCFLAGS='/O2')
             # elif optimize_level >= 2:

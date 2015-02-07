@@ -9,7 +9,9 @@
                     <WidgetGroup trigger="[Library],show_library_tab_small" persist="true">
                         <Layout>vertical</Layout>
                         <Children>
-                            <Template src="skin:library.xml"/>
+                            <SingletonContainer>
+                                <ObjectName>LibrarySingleton</ObjectName>
+                            </SingletonContainer>
                         </Children>
                     </WidgetGroup>
                     <WidgetGroup trigger="[EffectRack1],show_tab_small" persist="true">

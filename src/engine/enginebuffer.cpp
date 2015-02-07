@@ -192,7 +192,7 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
     m_visualKey = new ControlObject(ConfigKey(m_group, "visual_key"));
 
     m_playposSlider = new ControlLinPotmeter(
-        ConfigKey(m_group, "playposition"), 0.0, 1.0, true);
+        ConfigKey(m_group, "playposition"), 0.0, 1.0, 0, 0, true);
     connect(m_playposSlider, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlSeek(double)),
             Qt::DirectConnection);

@@ -490,15 +490,11 @@ int TempoTrack::findMeter(double *ACF, unsigned int len, double period)
     double temp4A = 0.0;
     double temp4B = 0.0;
 
-    double* dbf = new double[ len ]; int t = 0;
-    for( unsigned int u = 0; u < len; u++ ){ dbf[ u ] = 0.0; }
-
     if( (double)len < 6 * p + 2 )
     {
 	for( i = ( 3 * p - 2 ); i < ( 3 * p + 2 ) + 1; i++ )
 	{
 	    temp3A += ACF[ i ];
-	    dbf[ t++ ] = ACF[ i ];
 	}
 	
 	for( i = ( 4 * p - 2 ); i < ( 4 * p + 2 ) + 1; i++ )
@@ -543,7 +539,6 @@ int TempoTrack::findMeter(double *ACF, unsigned int len, double period)
     {
 	tsig = 4;
     }
-
 
     return tsig;
 }
