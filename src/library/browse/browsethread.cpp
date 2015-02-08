@@ -157,10 +157,18 @@ void BrowseThread::populateModel() {
         item->setData(item->text().toInt(), Qt::UserRole);
         row_data.insert(COLUMN_TRACK_NUMBER, item);
 
+        // TODO(XXX): Display the calendar year
+        //   calendarYear = Mixxx::TrackMetadata::formatCalendarYear(year)
+        // in the overview instead of the complete ISO 8601 year string.
+        // The complete year string should only be displayed when editing
+        // the year cell.
+        // NOTE(uklotzde): QStandardItem does not distinguish between
+        // Qt::DisplayRole and Qt::EditRole!
         const QString year(tio.getYear());
         item = new QStandardItem(year);
         item->setToolTip(year);
-        item->setData(Mixxx::TrackMetadata::formatCalendarYear(year), Qt::UserRole);
+        // Column is sorted according to the numeric calendar year
+        item->setData(Mixxx::TrackMetadata::parseCalendarYear(year), Qt::UserRole);
         row_data.insert(COLUMN_YEAR, item);
 
         item = new QStandardItem(tio.getGenre());
