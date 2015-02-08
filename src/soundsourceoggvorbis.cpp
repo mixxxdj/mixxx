@@ -50,11 +50,11 @@ inline int getByteOrder() {
    Class for reading Ogg Vorbis
  */
 
-SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename)
-: Mixxx::SoundSource(qFilename),
-  channels(0),
-  filelength(0),
-  current_section(0)
+SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename) :
+    Mixxx::SoundSource(qFilename),
+    channels(0),
+    filelength(0),
+    current_section(0)
 {
     setType("ogg");
 }
