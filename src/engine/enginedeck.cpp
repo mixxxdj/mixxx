@@ -56,7 +56,6 @@ EngineDeck::EngineDeck(QString group,
 
     // Set up additional engines
     m_pPregain = new EnginePregain(group);
-    m_pVinylSoundEmu = NULL;
     m_pVUMeter = new EngineVuMeter(group);
     m_pBuffer = new EngineBuffer(group, pConfig, this, pMixingEngine);
 }
