@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>560</width>
+    <width>625</width>
     <height>399</height>
    </rect>
   </property>
@@ -56,7 +56,7 @@
      <item>
       <widget class="QPushButton" name="pushButtonAddRandom">
        <property name="toolTip">
-        <string>Add a random track from track sources (crates) to the Auto DJ playlist.</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add a random track from track sources (crates) or Library to the Auto DJ playlist.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string>Add Random</string>
