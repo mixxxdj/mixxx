@@ -168,7 +168,7 @@ TrackPointer PlayerInfo::getCurrentPlayingTrack() {
 }
 
 PlayerInfo::DeckControls* PlayerInfo::getDeckControls(int i) {
-    if (m_deckControlList.count() >= i) {
+    if (m_deckControlList.count() == i) {
         QString group = PlayerManager::groupForDeck(i);
         m_deckControlList.append(new DeckControls(group));
     }
