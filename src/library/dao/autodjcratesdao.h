@@ -38,7 +38,7 @@ class AutoDJCratesDAO : public QObject, public virtual DAO {
     int getRandomTrackId(void);
 
     // Get random track from library
-    int getRandomTrackFromLibrary(void);
+    int getRandomTrackIdFromLibrary(void);
 
   private:
 

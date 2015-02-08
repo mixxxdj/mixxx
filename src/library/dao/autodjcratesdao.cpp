@@ -882,10 +882,13 @@ void AutoDJCratesDAO::slotPlayerInfoTrackUnloaded(QString group,
     }
 }
 
-int AutoDJCratesDAO::getRandomTrackFromLibrary(void) {
+int AutoDJCratesDAO::getRandomTrackIdFromLibrary(void) {
 
+    // getRandomTrackId() would have already created
+    // the temporary auto-DJ-crates database.
     QSqlQuery oQuery(m_rDatabase);
-    // Implementing same scheme as in getRandomTrackId()
+
+    int iTrackId = -1;
     // Get total as well as unplayed tracks
     int iUnplayedTracks = 0, iTotalTracks = 0;
     oQuery.prepare("SELECT COUNT(*) AS count FROM library"
@@ -903,108 +906,46 @@ int AutoDJCratesDAO::getRandomTrackFromLibrary(void) {
         return -1;
     }
 
-  qDebug() << "total "<<iTotalTracks<<" unplayed "<<iUnplayedTracks;
+    qDebug() << "total "<<iTotalTracks<<" unplayed "<<iUnplayedTracks;
 
-  // Get the active percentage (default 20%).
-  int iMinimumAvailable = m_pConfig->getValueString (ConfigKey("[Auto DJ]",
-      "MinimumAvailable"), "20").toInt();
-  qDebug() << iMinimumAvailable << "iMinimumAvailable";
-  // Calculate the number of active-tracks.  This is either the number of
- // tracks that have never been played, or the active
- // percentage of the total number of tracks, whichever is larger.
- int iMinAvailable = 0;
- if (iMinimumAvailable) {
-     // if minimum is not disabled (= 0), have a min of one at least
-     iMinAvailable = qMax((iTotalTracks * iMinimumAvailable / 100), 1);
- }
- int iActiveTracks = qMax(iUnplayedTracks, iMinAvailable);
- // The number of active-tracks might also be tracks that haven't been played
- // in a while.
- /*if (m_bUseIgnoreTime) {
-        // Get the current time, in UTC (since that's what sqlite uses).
-        QDateTime timCurrent = QDateTime::currentDateTime().toUTC();
-
-        // Subtract the replay age.
-        QTime timIgnoreTime = (QTime::fromString(m_pConfig->getValueString
-            (ConfigKey("[Auto DJ]", "IgnoreTime"), "23:59"), "hh:mm"));
-        timCurrent = timCurrent.addSecs(-(timIgnoreTime.hour() * 3600
-            + timIgnoreTime.minute() * 60));
-
-        // Convert the time to sqlite's format, which is similar to ISO date,
-        // but not quite.
-        QString strDateTime = timCurrent.toString("yyyy-MM-dd hh:mm:ss");
-
-        // Count the number of tracks that haven't been played since this time.
-        // SELECT COUNT(*) FROM temp_autodj_activetracks WHERE lastplayed < :lastplayed;
-        int iIgnoreTimeTracks = 0;
-        oQuery.prepare("SELECT COUNT(*) FROM " AUTODJACTIVETRACKS_TABLE
-            " WHERE " AUTODJCRATESTABLE_LASTPLAYED " < :lastplayed");
-        oQuery.bindValue (":lastplayed", strDateTime);
+    if ( iUnplayedTracks != 0) {
+        // Get an unplayed track id
+        oQuery.prepare("SELECT library.id  "
+                "FROM library "
+                "WHERE timesplayed = 0 "
+                "ORDER BY RANDOM() "
+                "LIMIT 1");
         if (oQuery.exec()) {
             if (oQuery.next()) {
-                iIgnoreTimeTracks = oQuery.value(0).toInt();
+                //Get the trackId
+                qDebug() << "Random unplayed Track retrieved from library";
+                iTrackId = oQuery.value(0).toInt();
             }
         } else {
             LOG_FAILED_QUERY(oQuery);
-            return -1;
         }
-
-        // Allow that to be a new maximum.
-        iActiveTracks = qMax(iActiveTracks, iIgnoreTimeTracks);
-    }
-*/
-
- if (iActiveTracks == 0){
-     // Return a random track, do not let autoDj stop
-     oQuery.prepare("SELECT library.id  "
+    } else if ( iTotalTracks != 0) {
+        // Pick a random track from the library, dont let autoDJ stop
+        oQuery.prepare("SELECT library.id "
                 "FROM library "
                 "ORDER BY RANDOM() "
                 "LIMIT 1");
-    if (oQuery.exec()) {
-        if (oQuery.next()) {
-            // Give our caller the randomly-selected track.
-            qDebug() <<"Random Track returnned from lib";
-            return oQuery.value(0).toInt();
+        if (oQuery.exec()) {
+            if (oQuery.next()) {
+                qDebug() << "Could not find unplayed track in library, retriving other track";
+                iTrackId = oQuery.value(0).toInt();
+            }
+        } else {
+            LOG_FAILED_QUERY(oQuery);
         }
-    } else {
-        LOG_FAILED_QUERY(oQuery);
     }
- }
- // Pick a random track from the subset
- oQuery.prepare("SELECT library.id "
-         "FROM library"
-         " LIMIT 1 OFFSET ABS (RANDOM() % :active)");
- oQuery.bindValue (":active", iActiveTracks);
- if (oQuery.exec()) {
-     if (oQuery.next()) {
-         // Give our caller the randomly-selected track.
-         qDebug() <<"Subset returnned from subset";
-         return oQuery.value(0).toInt();
-     }
- } else {
-     LOG_FAILED_QUERY(oQuery);
- }
+    else
+        // Let our caller know that a random track couldn't be picked.
+        return -1;
+    // At this point we have a track id from the library
+    // just return the track id, the playlistDao will take care of adding it to the
+    // temp_auto_Dj playlist and update is played info accordingly
 
- // Let our caller know that a random track couldn't be picked.
- return -1;
+    return iTrackId;
 }
-
-
-    // If there are no tracks, let our caller know.
- /*
-  oQuery.prepare("SELECT library.id  "
-            "FROM library "
-            "ORDER BY RANDOM() "
-            "LIMIT 1");
-    if (oQuery.exec()) {
-        if (oQuery.next()) {
-            // Give our caller the randomly-selected track.
-            return oQuery.value(0).toInt();
-        }
-    } else {
-        LOG_FAILED_QUERY(oQuery);
-    }
-    // Let our caller know that a random track couldn't be picked.
-    return -1;
-    */
 
