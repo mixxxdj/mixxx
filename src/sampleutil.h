@@ -30,6 +30,16 @@
 #error Please email mixxx-devel@lists.sourceforge.net and tell us what is the equivalent of __attribute__((aligned(16))) for your compiler.
 #endif
 
+#if !_RESTRICT
+#define _RESTRICT
+#elif (defined __GNUC__)
+#define _RESTRICT __restrict__
+#elif (defined _MSC_VER)
+#define _RESTRICT __restrict
+#else
+#error Please email mixxx-devel@lists.sourceforge.net and tell us what is the equivalent of __restrict__ for your compiler.
+#endif
+
 // A group of utilities for working with samples.
 class SampleUtil {
   public:
@@ -58,7 +68,7 @@ class SampleUtil {
 
     // Copies every sample from pSrc to pDest
     inline
-    static void copy(CSAMPLE* __restrict__ pDest, const CSAMPLE* __restrict__ pSrc,
+    static void copy(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _RESTRICT pSrc,
             unsigned int iNumSamples) {
         // Benchmark results on 32 bit SSE2 Atom Cpu (Linux) 
         // memcpy 7263 ns 
