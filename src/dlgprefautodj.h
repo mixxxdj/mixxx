@@ -19,15 +19,11 @@ class DlgPrefAutoDJ : public DlgPreferencePage, public Ui::DlgPrefAutoDJDlg {
     void slotResetToDefaults();
     void slotCancel() ;
 
-    //signals:
-    //void toggleAddRandom(bool);
-
-  private slots:
+ private slots:
     void slotSetAutoDjRequeue(int);
     void slotSetAutoDjMinimumAvailable(int);
     void slotSetAutoDjUseIgnoreTime(int);
     void slotSetAutoDjIgnoreTime(const QTime &a_rTime);
-
     void slotSetAutoDJRandomQueueMin(int);
     void slotEnableAutoDJRandomQueueComboBox(int);
     void slotEnableAutoDJRandomQueue(int);
