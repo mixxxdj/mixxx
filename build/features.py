@@ -1031,8 +1031,11 @@ class Optimize(Feature):
             # and getting rid of -fomit-frame-pointer and
             # -funroll-loops. We need to justify our use of these aggressive
             # optimizations with data.
+            # -falign-loops=16 -falign-functions=16 does no significant change 
+            # the default -falign-loops and -falign-functions flags included 
+            # in -O2 and -03 just works 
             build.env.Append(
-                CCFLAGS='-O3 -ffast-math -funroll-loops -falign-loops=16')
+                CCFLAGS='-O3 -ffast-math -funroll-loops')
             if not int(build.flags['profiling']):
                 build.env.Append(CCFLAGS='-fomit-frame-pointer')
 
