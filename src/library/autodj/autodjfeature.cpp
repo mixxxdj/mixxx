@@ -132,13 +132,7 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
             m_pAutoDJView, SLOT(enableRandomButton(bool)));
 
     // Let subscribers know whether it's possible to add a random track.
-    //bool addLibTracks = m_pConfig->getValueString(ConfigKey("[Auto DJ]", "IncludeLibTracks")).toInt();
-    emit(enableAddRandom(true )) ;//|| addLibTracks));
-
-    // Be informed when include library tracks -addrandom is disabled
-    // TODO :Figure this out
-    //connect(??, SIGNAL(toggleAddRandom(bool)),
-      //          m_pAutoDJView, SLOT(slotToggleAddRandom(bool)));
+    emit(enableAddRandom(true));
 #endif // __AUTODJCRATES__
 }
 
@@ -282,8 +276,7 @@ void AutoDJFeature::slotCrateAutoDjChanged(int crateId, bool added) {
         }
     }
     // Let subscribers know whether it's possible to add a random track.
-    //bool addLibTracks = m_pConfig->getValueString(ConfigKey("[Auto DJ]", "IncludeLibTracks")).toInt();
-    emit(enableAddRandom(true )); // || addLibTracks));
+    emit(enableAddRandom(true));
 #endif // __AUTODJCRATES__
 }
 
@@ -319,7 +312,7 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
 
     if (retriveAttempts == kMaxRetiveAttempts || iTrackId == -1) {
         qDebug () << "Could Not Load Random Tracks From Crate."
-    				"Attempting to load from library";
+    	        " Attempting to load from library";
     	iTrackId = m_autoDjCratesDao.getRandomTrackIdFromLibrary();
     	if (iTrackId != -1) {
     	    // Get the track info

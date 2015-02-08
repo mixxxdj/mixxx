@@ -891,10 +891,10 @@ int AutoDJCratesDAO::getRandomTrackIdFromLibrary(void) {
     int iTrackId = -1;
     // Get total as well as unplayed tracks
     int iUnplayedTracks = 0, iTotalTracks = 0;
-    oQuery.prepare("SELECT COUNT(*) AS count FROM library"
-          " WHERE timesplayed = 0"
-          " UNION ALL SELECT COUNT(*) AS count FROM "
-          " library");
+    oQuery.prepare("SELECT COUNT(*) AS count FROM library "
+          "WHERE timesplayed = 0 "
+          "UNION ALL SELECT COUNT(*) AS count FROM "
+          "library ");
     if (oQuery.exec()) {
         if (oQuery.next()) {
             iUnplayedTracks = oQuery.value(0).toInt();
@@ -906,7 +906,7 @@ int AutoDJCratesDAO::getRandomTrackIdFromLibrary(void) {
         return -1;
     }
 
-    qDebug() << "total "<<iTotalTracks<<" unplayed "<<iUnplayedTracks;
+    qDebug() << "total "<< iTotalTracks<< "unplayed " << iUnplayedTracks;
 
     if ( iUnplayedTracks != 0) {
         // Get an unplayed track id
@@ -932,7 +932,7 @@ int AutoDJCratesDAO::getRandomTrackIdFromLibrary(void) {
                 "LIMIT 1");
         if (oQuery.exec()) {
             if (oQuery.next()) {
-                qDebug() << "Could not find unplayed track in library, retriving other track";
+                qDebug() << "Could not find unplayed track in library, retriving another track";
                 iTrackId = oQuery.value(0).toInt();
             }
         } else {
