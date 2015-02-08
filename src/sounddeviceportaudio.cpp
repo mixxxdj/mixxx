@@ -757,10 +757,10 @@ int SoundDevicePortAudio::callbackProcessClkRef(const unsigned int framesPerBuff
         // https://bugs.launchpad.net/mixxx/+bug/1404401
 #ifdef __SSE__
         if (!_MM_GET_DENORMALS_ZERO_MODE()) {
-            qDebug() << "SSE: Enabling flush to zero mode";
+            qDebug() << "SSE: Enabling denormals to zero mode";
             _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
         } else {
-             qDebug() << "SSE: Flush to zero mode already enabled";
+             qDebug() << "SSE: Denormals to zero mode already enabled";
         }
 
         if (!_MM_GET_FLUSH_ZERO_MODE()) {
