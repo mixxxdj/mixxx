@@ -171,7 +171,8 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
     tmp_string = m_pConfig->getValueString(
         ConfigKey(SHOUTCAST_PREF_KEY,"metadata_format"));
     if (tmp_string.isEmpty())
-        tmp_string = tr("$artist - $title");
+        //No tr() here, see https://bugs.launchpad.net/mixxx/+bug/1419500
+        tmp_string = ($artist - $title);
     metadata_format->setText(tmp_string);
 
     slotApply();
@@ -202,7 +203,8 @@ void DlgPrefShoutcast::slotResetToDefaults() {
     comboBoxEncodingChannels->setCurrentIndex(0);
     enableUtf8Metadata->setChecked(false);
     enableCustomMetadata->setChecked(false);
-    metadata_format->setText(tr("$artist - $title"));
+    //No tr() here, see https://bugs.launchpad.net/mixxx/+bug/1419500
+    metadata_format->setText("$artist - $title");
     custom_artist->setText("");
     custom_title->setText("");
 }
