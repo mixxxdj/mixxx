@@ -21,7 +21,11 @@
 #include "util/assert.h"
 
 static const bool sDebug = false;
-static const int kIdColumn = 0; // Must not be changed
+
+// The logic in the following code relies to a track column = 0
+// Do not change it without changing the logic
+// Column 0 is skipped when calculating the the columns of the view table
+static const int kIdColumn = 0;
 static const int kMaxSortColumns = 3;
 
 BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
