@@ -968,7 +968,7 @@ class Optimize(Feature):
             self.status = "disabled: no optimazion, for debug only"
             return
 
-        if not build.build_is_debug and not build.build_is_release and optimize_level == '':
+        if not build.build_is_debug and not build.build_is_release:
             self.status = "disabled: no optimazion set with build=none"
             return
 
