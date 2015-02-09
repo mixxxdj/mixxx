@@ -354,7 +354,7 @@
 
 #GuiToggleButton[displayValue="0"] {
     border: 1px solid #585858;
-    border-radius: 3px;
+    border-radius: 2px;
     font: bold 10px/12px Lucida Grande,
           Lucida Sans Unicode, Arial,
           Verdana, sans-serif;
@@ -364,7 +364,7 @@
 
 #GuiToggleButton[displayValue="1"] {
     border: 1px solid #585858;
-    border-radius: 3px;
+    border-radius: 2px;
     font: bold 10px/12px Lucida Grande,
           Lucida Sans Unicode, Arial,
           Verdana, sans-serif;
@@ -374,7 +374,7 @@
 
 #GuiToggleButtonInverted[displayValue="0"] {
     border: 1px solid #585858;
-    border-radius: 3px;
+    border-radius: 2px;
     font: bold 10px/12px Lucida Grande,
           Lucida Sans Unicode, Arial,
           Verdana, sans-serif;
@@ -384,7 +384,7 @@
 
 #GuiToggleButtonInverted[displayValue="1"] {
     border: 1px solid #585858;
-    border-radius: 3px;
+    border-radius: 2px;
     font: bold 10px/12px Lucida Grande,
           Lucida Sans Unicode, Arial,
           Verdana, sans-serif;
@@ -394,7 +394,7 @@
 
 #VinylToggleButtonUL[displayValue="0"] {
     border: 1px solid #585858;
-    border-radius: 3px;
+    border-radius: 2px;
     margin: 1px;
     font: bold 10px/12px Lucida Grande,
           Lucida Sans Unicode, Arial,
@@ -405,7 +405,7 @@
 
 #VinylToggleButtonUL[displayValue="1"] {
     border: 1px solid #585858;
-    border-radius: 3px;
+    border-radius: 2px;
     margin: 1px;
     font: bold 10px/12px Lucida Grande,
           Lucida Sans Unicode, Arial,
@@ -416,7 +416,7 @@
 
 #VinylToggleButtonLL[displayValue="0"] {
     border: 1px solid #585858;
-    border-radius: 3px;
+    border-radius: 2px;
     margin: 1px;
     font: bold 10px/12px Lucida Grande,
           Lucida Sans Unicode, Arial,
@@ -427,7 +427,7 @@
 
 #VinylToggleButtonLL[displayValue="1"] {
     border: 1px solid #585858;
-    border-radius: 3px;
+    border-radius: 2px;
     margin: 1px;
     font: bold 10px/12px Lucida Grande,
           Lucida Sans Unicode, Arial,
@@ -438,7 +438,7 @@
 
 #TristateButton {
     border: 1px solid #585858;
-    border-radius: 3px;
+    border-radius: 2px;
     margin: 1px;
     font: bold 10px/12px Lucida Grande,
           Lucida Sans Unicode, Arial,
@@ -449,7 +449,7 @@
 
 #VinylCueButton[displayValue="0"] {
     border: 1px solid #585858;
-    border-radius: 3px;
+    border-radius: 2px;
     margin: 1px;
     font: bold 10px/12px Lucida Grande,
           Lucida Sans Unicode, Arial,
@@ -460,7 +460,7 @@
 
 #VinylCueButton[displayValue="1"] {
     border: 1px solid #585858;
-    border-radius: 3px;
+    border-radius: 2px;
     margin: 1px;
     font: bold 10px/12px Lucida Grande,
           Lucida Sans Unicode, Arial,
@@ -471,7 +471,7 @@
 
 #VinylCueButton[displayValue="2"] {
     border: 1px solid #585858;
-    border-radius: 3px;
+    border-radius: 2px;
     margin: 1px;
     font: bold 10px/12px Lucida Grande,
           Lucida Sans Unicode, Arial,
@@ -482,7 +482,7 @@
 
 #PitchTweakButton[displayValue="0"] {
     border: 1px solid #585858;
-    border-radius: 3px;
+    border-radius: 2px;
     font: bold 10px Lucida Grande,
           Lucida Sans Unicode, Arial,
           Verdana, sans-serif;
@@ -494,7 +494,7 @@
 
 #PitchTweakButton[displayValue="1"] {
     border: 1px solid #585858;
-    border-radius: 3px;
+    border-radius: 2px;
     font: bold 10px Lucida Grande,
           Lucida Sans Unicode, Arial,
           Verdana, sans-serif;
