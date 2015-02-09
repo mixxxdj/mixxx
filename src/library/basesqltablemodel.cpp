@@ -391,27 +391,21 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
     }
 
     if (m_sortColumns.size() > 0 &&
-            m_sortColumns.at(0).column == column) {
+            m_sortColumns.at(0).m_column == column) {
         // Only the order has changed
-        SortColumn sc;
-        sc.column = column;
-        sc.order = order;
-        m_sortColumns.replace(0, sc);
+        m_sortColumns.replace(0, SortColumn(column, order));
     } else {
         // Remove column if already in history
         // As reverse loop to not skip an entry when removing the previous
         for (int i = m_sortColumns.size() - 1; i >= 0; --i) {
-            if (m_sortColumns.at(i).column == column) {
+            if (m_sortColumns.at(i).m_column == column) {
                 m_sortColumns.removeAt(i);
                 break;
             }
         }
 
         // set new sort as head and shift out old sort
-        SortColumn sc;
-        sc.column = column;
-        sc.order = order;
-        m_sortColumns.prepend(sc);
+        m_sortColumns.prepend(SortColumn(column, order));
 
         if (m_sortColumns.size() > kMaxSortColumns) {
             m_sortColumns.removeLast();
@@ -450,16 +444,16 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
                 m_trackSourceOrderBy.append(", ");
             }
             QString field;
-            if (sc.column == kIdColumn) {
+            if (sc.m_column == kIdColumn) {
                 field = m_trackSource->columnNameForFieldIndex(kIdColumn);
             } else {
                 // + 1 to skip id coloumn
-                int ccColumn = sc.column - m_tableColumns.size() + 1;
+                int ccColumn = sc.m_column - m_tableColumns.size() + 1;
                 field = m_trackSource->columnNameForFieldIndex(ccColumn);
                 if (m_trackSourceOrderBy.isEmpty()) {
                     // first cycle
                     m_trackSourceSortColumn = ccColumn;
-                    m_trackSourceSortOrder = sc.order;
+                    m_trackSourceSortOrder = sc.m_order;
                 }
             }
             QString sort_field = field;
@@ -468,7 +462,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
     #ifdef __SQLITE3__
             m_trackSourceOrderBy.append(" COLLATE localeAwareCompare");
     #endif
-            m_trackSourceOrderBy.append((sc.order == Qt::AscendingOrder) ?
+            m_trackSourceOrderBy.append((sc.m_order == Qt::AscendingOrder) ?
                     " ASC" : " DESC");
             //qDebug() << m_trackSourceOrderBy << sc.order;
         }
