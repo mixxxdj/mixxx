@@ -446,20 +446,31 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
                 // second cycle
                 m_trackSourceOrderBy.append(", ");
             }
-            QString field;
+            QString sort_field;
             if (sc.m_column == kIdColumn) {
-                field = m_trackSource->columnNameForFieldIndex(kIdColumn);
+                sort_field = m_trackSource->columnNameForFieldIndex(kIdColumn);
             } else {
                 // + 1 to skip id coloumn
                 int ccColumn = sc.m_column - m_tableColumns.size() + 1;
-                field = m_trackSource->columnNameForFieldIndex(ccColumn);
+                sort_field = m_trackSource->columnNameForFieldIndex(ccColumn);
                 if (i == 0) {
                     // first cycle: main sort criteria
                     m_trackSourceSortColumn = ccColumn;
                     m_trackSourceSortOrder = sc.m_order;
                 }
             }
-            QString sort_field = field;
+
+            // TODO(XXX) Instead of special-casing tracknumber here, we should
+            // introduce a format the expression for sorting.
+            if (sort_field.contains("tracknumber")) {
+                sort_field = QString("cast(%1 as integer)").arg(sort_field);
+            }
+    #ifndef __SQLITE3__
+            else if (type == QVariant::String) {
+                sort_field = QString("lower(%1)").arg(sort_field);
+            }
+    #endif
+
             m_trackSourceOrderBy.append(sort_field);
 
     #ifdef __SQLITE3__
