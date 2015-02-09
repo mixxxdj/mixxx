@@ -10,6 +10,7 @@
 #include "util.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 #include "waveform/renderers/waveformsignalcolors.h"
+#include "control/stringatom.h"
 
 //#define WAVEFORMWIDGETRENDERER_DEBUG
 
@@ -24,7 +25,7 @@ class WaveformWidgetRenderer {
     static const int s_waveformMaxZoom;
 
   public:
-    explicit WaveformWidgetRenderer(const char* group);
+    explicit WaveformWidgetRenderer(const StringAtom& group);
     virtual ~WaveformWidgetRenderer();
 
     bool init();
@@ -34,7 +35,7 @@ class WaveformWidgetRenderer {
     void onPreRender(VSyncThread* vsyncThread);
     void draw(QPainter* painter, QPaintEvent* event);
 
-    inline const char* getGroup() const { return m_group;}
+    inline const StringAtom getGroup() const { return m_group;}
     const TrackPointer getTrackInfo() const { return m_pTrack;}
 
     double getFirstDisplayedPosition() const { return m_firstDisplayedPosition;}
@@ -84,7 +85,7 @@ class WaveformWidgetRenderer {
     void setTrack(TrackPointer track);
 
   protected:
-    const char* m_group;
+    StringAtom m_group;
     TrackPointer m_pTrack;
     QList<WaveformRendererAbstract*> m_rendererStack;
     int m_height;

@@ -26,7 +26,7 @@ class EmptyWaveformWidget : public QWidget, public WaveformWidgetAbstract {
     virtual int render();
 
   private:
-    EmptyWaveformWidget(const char* group, QWidget* parent);
+    EmptyWaveformWidget(const StringAtom& group, QWidget* parent);
     friend class WaveformWidgetFactory;
 };
 

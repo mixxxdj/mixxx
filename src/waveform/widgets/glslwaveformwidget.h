@@ -10,7 +10,7 @@ class GLSLWaveformRendererSignal;
 class GLSLWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
     Q_OBJECT
   public:
-    GLSLWaveformWidget(const char* group, QWidget* parent,
+    GLSLWaveformWidget(const StringAtom& group, QWidget* parent,
                        bool rgbRenderer);
     virtual ~GLSLWaveformWidget();
 
@@ -30,7 +30,7 @@ class GLSLWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
 
 class GLSLFilteredWaveformWidget : public GLSLWaveformWidget {
   public:
-    GLSLFilteredWaveformWidget(const char* group, QWidget* parent);
+    GLSLFilteredWaveformWidget(const StringAtom& group, QWidget* parent);
     virtual ~GLSLFilteredWaveformWidget() {}
 
     virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::GLSLFilteredWaveform; }
@@ -43,7 +43,7 @@ class GLSLFilteredWaveformWidget : public GLSLWaveformWidget {
 
 class GLSLRGBWaveformWidget : public GLSLWaveformWidget {
   public:
-    GLSLRGBWaveformWidget(const char* group, QWidget* parent);
+    GLSLRGBWaveformWidget(const StringAtom& group, QWidget* parent);
     virtual ~GLSLRGBWaveformWidget() {}
 
     virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::GLSLRGBWaveform; }

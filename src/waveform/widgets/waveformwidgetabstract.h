@@ -7,6 +7,7 @@
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveformwidgettype.h"
 #include "trackinfoobject.h"
+#include "control/stringatom.h"
 
 class VSyncThread;
 
@@ -17,7 +18,7 @@ class VSyncThread;
 
 class WaveformWidgetAbstract : public WaveformWidgetRenderer {
   public:
-    WaveformWidgetAbstract(const char* group);
+    WaveformWidgetAbstract(const StringAtom& group);
     virtual ~WaveformWidgetAbstract();
 
     //Type is use by the factory to safely up-cast waveform widgets

@@ -36,8 +36,8 @@ class StringAtom {
         return this->m_pString < other.m_pString;
     }
 
-    inline operator QString() {
-        return QString(*m_pString);
+    inline operator const QString&() const {
+        return *m_pString;
     }
 /*
     StringAtom& operator= (char* asciiString);

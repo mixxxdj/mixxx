@@ -11,6 +11,7 @@
 #include "trackinfoobject.h"
 #include "widget/wwidget.h"
 #include "skin/skincontext.h"
+#include "control/stringatom.h"
 
 class ControlObjectSlave;
 class WaveformWidgetAbstract;
@@ -22,7 +23,7 @@ class WWaveformViewer : public WWidget {
     WWaveformViewer(const char *group, ConfigObject<ConfigValue>* pConfig, QWidget *parent=0);
     virtual ~WWaveformViewer();
 
-    const char* getGroup() const { return m_pGroup;}
+    const StringAtom& getGroup() const { return m_pGroup;}
     void setup(QDomNode node, const SkinContext& context);
 
     void dragEnterEvent(QDragEnterEvent *event);
@@ -58,7 +59,7 @@ private:
     void setZoom(int zoom);
 
 private:
-    const char* m_pGroup;
+    StringAtom m_pGroup;
     ConfigObject<ConfigValue>* m_pConfig;
     int m_zoomZoneWidth;
     ControlObjectSlave* m_pZoom;

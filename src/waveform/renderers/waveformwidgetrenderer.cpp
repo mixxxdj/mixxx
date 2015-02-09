@@ -12,7 +12,7 @@
 const int WaveformWidgetRenderer::s_waveformMinZoom = 1;
 const int WaveformWidgetRenderer::s_waveformMaxZoom = 6;
 
-WaveformWidgetRenderer::WaveformWidgetRenderer(const char* group)
+WaveformWidgetRenderer::WaveformWidgetRenderer(const StringAtom& group)
     : m_group(group),
       m_height(-1),
       m_width(-1),

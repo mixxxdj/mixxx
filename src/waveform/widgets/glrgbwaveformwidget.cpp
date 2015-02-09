@@ -13,7 +13,7 @@
 
 #include "util/performancetimer.h"
 
-GLRGBWaveformWidget::GLRGBWaveformWidget(const char* group, QWidget* parent)
+GLRGBWaveformWidget::GLRGBWaveformWidget(const StringAtom& group, QWidget* parent)
         : QGLWidget(parent, SharedGLContext::getWidget()),
           WaveformWidgetAbstract(group) {
 
