@@ -1068,7 +1068,6 @@ class Optimize(Feature):
                 build.env.Append(
                     CCFLAGS='-mtune=generic')
                 # -mtune=generic pick the most common, but compatible options.
-                # Used by the debian rules script.
             else:
                raise Exception("optimize={} is not supported. "
                                 "Use portable, native, legacy or disabled".format(optimize_level))
