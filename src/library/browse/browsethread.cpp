@@ -90,6 +90,29 @@ void BrowseThread::run() {
     m_mutex.unlock();
 }
 
+namespace {
+
+class YearItem: public QStandardItem {
+public:
+    explicit YearItem(QString year):
+        QStandardItem(year) {
+    }
+
+    QVariant data(int role) const {
+        switch (role) {
+        case Qt::DisplayRole:
+        {
+            const QString year(QStandardItem::data(role).toString());
+            return Mixxx::TrackMetadata::formatCalendarYear(year);
+        }
+        default:
+            return QStandardItem::data(role);
+        }
+    }
+};
+
+}
+
 void BrowseThread::populateModel() {
     m_path_mutex.lock();
     MDir thisPath = m_path;
@@ -157,17 +180,10 @@ void BrowseThread::populateModel() {
         item->setData(item->text().toInt(), Qt::UserRole);
         row_data.insert(COLUMN_TRACK_NUMBER, item);
 
-        // TODO(XXX): Display the calendar year
-        //   calendarYear = Mixxx::TrackMetadata::formatCalendarYear(year)
-        // in the overview instead of the complete ISO 8601 year string.
-        // The complete year string should only be displayed when editing
-        // the year cell.
-        // NOTE(uklotzde): QStandardItem does not distinguish between
-        // Qt::DisplayRole and Qt::EditRole!
         const QString year(tio.getYear());
-        item = new QStandardItem(year);
+        item = new YearItem(year);
         item->setToolTip(year);
-        // Column is sorted according to the numeric calendar year
+        // The year column is sorted according to the numeric calendar year
         item->setData(Mixxx::TrackMetadata::parseCalendarYear(year), Qt::UserRole);
         row_data.insert(COLUMN_YEAR, item);
 
