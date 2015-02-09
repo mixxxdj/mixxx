@@ -39,7 +39,7 @@ TCSGram::~TCSGram()
 
 void TCSGram::getTCSVector(int iPosition, TCSVector& rTCSVector) const
 {
-	if (iPosition < 0)
+	if (iPosition < 0) 
 		rTCSVector = TCSVector();
 	else if (iPosition >= m_VectorList.size())
 		rTCSVector = TCSVector();
@@ -57,10 +57,10 @@ void TCSGram::addTCSVector(const TCSVector& rTCSVector)
 {
 	size_t uSize = m_VectorList.size();
 	long lMilliSeconds = static_cast<long>(uSize*m_dFrameDurationMS);
-	std::pair<long, TCSVector> p;
+	std::pair<long, TCSVector> p; 
 	p.first = lMilliSeconds;
 	p.second = rTCSVector;
-
+	
 	m_VectorList.push_back(p);
 }
 
@@ -73,7 +73,7 @@ long TCSGram::getDuration() const
 void TCSGram::printDebug()
 {
 	vectorlist_t::iterator vectorIterator = m_VectorList.begin();
-
+	
 	while (vectorIterator != m_VectorList.end())
 	{
 		vectorIterator->second.printDebug();
