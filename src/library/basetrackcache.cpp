@@ -369,8 +369,12 @@ void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
         buildIndex();
     }
 
-    QStringList idStrings;
+    if (sortColumn < 0 || sortColumn >= columnCount()) {
+        qDebug() << "ERROR: Invalid sort column provided to BaseTrackCache::filterAndSort";
+        return;
+    }
 
+    QStringList idStrings;
     // TODO(rryan) consider making this the data passed in and a separate
     // QVector for output
     QSet<int> dirtyTracks;
