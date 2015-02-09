@@ -60,7 +60,7 @@ void PlayerInfo::setTrackInfo(const QString& group, const TrackPointer& track) {
     TrackPointer pOld;
     { // Scope
         QMutexLocker locker(&m_mutex);
-        TrackPointer pOld = m_loadedTrackMap.value(group);
+        pOld = m_loadedTrackMap.value(group);
         m_loadedTrackMap.insert(group, track);
     }
     if (pOld) {
