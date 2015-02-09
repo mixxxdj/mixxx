@@ -16,11 +16,10 @@ AnalyserWaveform::AnalyserWaveform(ConfigObject<ConfigValue>* pConfig) :
         m_skipProcessing(false),
         m_waveformData(NULL),
         m_waveformSummaryData(NULL),
+        m_stride(0, 0),
         m_currentStride(0),
         m_currentSummaryStride(0) {
     qDebug() << "AnalyserWaveform::AnalyserWaveform()";
-
-    m_stride.init(0,0);
 
     m_filter[0] = 0;
     m_filter[1] = 0;
@@ -91,8 +90,8 @@ bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
         m_waveformData = m_waveform->data();
         m_waveformSummaryData = m_waveformSummary->data();
 
-        m_stride.init(m_waveform->getAudioVisualRatio(),
-                      m_waveformSummary->getAudioVisualRatio());
+        m_stride = WaveformStride(m_waveform->getAudioVisualRatio(),
+                                  m_waveformSummary->getAudioVisualRatio());
 
         m_currentStride = 0;
         m_currentSummaryStride = 0;
