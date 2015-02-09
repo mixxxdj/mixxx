@@ -1003,7 +1003,6 @@ class MixxxCore(Feature):
 
         if build.toolchain_is_gnu:
             if build.build_is_debug or build.build_is_release:
-                build.env.Append(CPPDEFINES='MIXXX_BUILD_RELEASE')
                 # Default GNU Options
                 build.env.Append(CCFLAGS='-pipe')
                 build.env.Append(CCFLAGS='-Wall')
