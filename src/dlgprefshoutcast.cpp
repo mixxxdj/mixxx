@@ -172,7 +172,7 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
         ConfigKey(SHOUTCAST_PREF_KEY,"metadata_format"));
     if (tmp_string.isEmpty())
         //No tr() here, see https://bugs.launchpad.net/mixxx/+bug/1419500
-        tmp_string = ("$artist - $title");
+        tmp_string = ($artist - $title);
     metadata_format->setText(tmp_string);
 
     slotApply();
