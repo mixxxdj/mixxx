@@ -36,7 +36,6 @@ class EngineFlanger;
 class EngineVuMeter;
 class ControlPotmeter;
 class ControlPushButton;
-class EngineVinylSoundEmu;
 class EngineSideChain;
 class EffectsManager;
 class EngineEffectsManager;
