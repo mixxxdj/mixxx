@@ -448,12 +448,12 @@ void Tooltips::addStandardTooltips() {
             << QString("%1: %2").arg(rightClick, tr("If hotcue is set, clears the hotcue."));
 
     add("vinylcontrol_enabled")
-            << tr("Vinyl Control Enabled")
+            << tr("Enable Vinyl Control")
             << tr("When disabled, the track is controlled by Mixxx playback controls.")
             << tr("When enabled, the track responds to external vinyl control.");
 
-    add("passthrough")
-            << tr("Passthrough")
+    add("passthrough_enabled")
+            << tr("Enable Passthrough")
             << tr("When enabled, the deck directly plays the audio arriving on the input.");
 
     add("vinylcontrol_mode")

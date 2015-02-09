@@ -34,7 +34,7 @@
         <PushButton>
           <Size>60f,22f</Size>
           <ObjectName>VinylToggleButtonLL</ObjectName>
-          <TooltipId>passthrough</TooltipId>
+          <TooltipId>passthrough_enabled</TooltipId>
           <NumberStates>2</NumberStates>
           <State>
             <Number>0</Number>
