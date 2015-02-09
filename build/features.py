@@ -1005,7 +1005,7 @@ class Optimize(Feature):
             build.env.Append(CCFLAGS='/O2')
 
             # Historicaly our release packages are built with optimize=9.
-            if optimize_level == 'portable' or optimize_level == '' or optimize_level == 9:
+            if optimize_level == 'portable' or optimize_level == '' or optimize_level == '9':
                 # portable-binary: sse2 CPU (>= Pentium 4)
                 self.status = "portable: sse2 CPU (>= Pentium 4)"
                 build.env.Append(CCFLAGS='/arch:SSE2')
