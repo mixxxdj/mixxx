@@ -145,6 +145,9 @@ class MixxxMainWindow : public QMainWindow {
     void newSkinLoaded();
     void libraryScanStarted();
     void libraryScanFinished();
+    // used to uncheck the menu when the dialog of develeoper tools is closed
+    void developerToolsDlgClosed(int r);
+    void closeDeveloperToolsDlgChecked(int r);
 
   protected:
     // Event filter to block certain events (eg. tooltips if tooltips are disabled)
