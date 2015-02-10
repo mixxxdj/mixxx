@@ -144,7 +144,14 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
             this, SLOT(slotControlPlayRequest(double)),
             Qt::DirectConnection);
 
-    //Play from Start Button (for sampler)
+    // Play and momentarily engage sync to line up with the other deck(s).
+    // Also syncs phase.
+    m_playSyncButton = new ControlPushButton(ConfigKey(m_group, "play_sync"));
+    connect(m_playSyncButton, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlPlaySync(double)),
+            Qt::DirectConnection);
+
+    // Play from Start Button (for sampler)
     m_playStartButton = new ControlPushButton(ConfigKey(m_group, "start_play"));
     connect(m_playStartButton, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlPlayFromStart(double)),
@@ -308,6 +315,7 @@ EngineBuffer::~EngineBuffer()
     delete m_pReader;
 
     delete m_playButton;
+    delete m_playSyncButton;
     delete m_playStartButton;
     delete m_stopStartButton;
 
@@ -673,6 +681,26 @@ void EngineBuffer::slotControlEnd(double v)
 {
     if (v > 0.0) {
         doSeek(1., SEEK_EXACT);
+    }
+}
+
+void EngineBuffer::slotControlPlaySync(double v)
+{
+    if (v > 0.0) {
+        // Momentarily enable/disable sync, unless sync mode is already
+        // on or has been requested.
+        if (m_pSyncControl->getSyncMode() == SYNC_NONE) {
+            // Set the request to enable/disable, but if the existing request
+            // was already an enable request, restore that original request.
+            // This should prevent a race condition from causing an existing
+            // sync-enable request from being overwritten.
+            const int existing_request = m_iEnableSyncQueued.fetchAndStoreAcquire(
+                    SYNC_REQUEST_ENABLEDISABLE);
+            if (existing_request == SYNC_REQUEST_ENABLE) {
+                m_iEnableSyncQueued = SYNC_REQUEST_ENABLE;
+            }
+        }
+        slotControlPlayRequest(v);
     }
 }
 
