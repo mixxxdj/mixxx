@@ -889,62 +889,19 @@ int AutoDJCratesDAO::getRandomTrackIdFromLibrary(void) {
     QSqlQuery oQuery(m_rDatabase);
 
     int iTrackId = -1;
-    // Get total as well as unplayed tracks
-    int iUnplayedTracks = 0, iTotalTracks = 0;
-    oQuery.prepare("SELECT COUNT(*) AS count FROM library "
-          "WHERE timesplayed = 0 "
-          "UNION ALL SELECT COUNT(*) AS count FROM "
-          "library ");
+
+    oQuery.prepare("SELECT library.id  "
+                "FROM library "
+                "ORDER BY RANDOM() "
+                "LIMIT 1");
     if (oQuery.exec()) {
         if (oQuery.next()) {
-            iUnplayedTracks = oQuery.value(0).toInt();
-            if (oQuery.next())
-                iTotalTracks = oQuery.value(0).toInt();
+            //Get the trackId
+            iTrackId = oQuery.value(0).toInt();
         }
     } else {
         LOG_FAILED_QUERY(oQuery);
-        return -1;
     }
-
-    qDebug() << "total "<< iTotalTracks<< "unplayed " << iUnplayedTracks;
-
-    if ( iUnplayedTracks != 0) {
-        // Get an unplayed track id
-        oQuery.prepare("SELECT library.id  "
-                "FROM library "
-                "WHERE timesplayed = 0 "
-                "ORDER BY RANDOM() "
-                "LIMIT 1");
-        if (oQuery.exec()) {
-            if (oQuery.next()) {
-                //Get the trackId
-                qDebug() << "Random unplayed Track retrieved from library";
-                iTrackId = oQuery.value(0).toInt();
-            }
-        } else {
-            LOG_FAILED_QUERY(oQuery);
-        }
-    } else if ( iTotalTracks != 0) {
-        // Pick a random track from the library, dont let autoDJ stop
-        oQuery.prepare("SELECT library.id "
-                "FROM library "
-                "ORDER BY RANDOM() "
-                "LIMIT 1");
-        if (oQuery.exec()) {
-            if (oQuery.next()) {
-                qDebug() << "Could not find unplayed track in library, retriving another track";
-                iTrackId = oQuery.value(0).toInt();
-            }
-        } else {
-            LOG_FAILED_QUERY(oQuery);
-        }
-    }
-    else
-        // Let our caller know that a random track couldn't be picked.
-        return -1;
-    // At this point we have a track id from the library
-    // just return the track id, the playlistDao will take care of adding it to the
-    // temp_auto_Dj playlist and update is played info accordingly
 
     return iTrackId;
 }
