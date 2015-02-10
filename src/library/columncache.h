@@ -85,17 +85,25 @@ class ColumnCache {
     }
 
     inline QString columnName(Column column) const {
-        return m_columnIndexByName.key(fieldIndex(column));
+        return columnNameForFieldIndex(fieldIndex(column));
     }
 
     inline QString columnNameForFieldIndex(int index) const {
-        return m_columnIndexByName.key(index);
+        if (index < 0 || index >= m_columnsByIndex.size()) {
+            return QString();
+        }
+        return m_columnsByIndex.at(index);
     }
 
     inline QString columnSortForFieldIndex(int index) const {
-        return m_columnIndexByName.key(index);
+        if (index < 0 || index >= m_columnSortByIndex.size()) {
+            return QString();
+        }
+        return m_columnSortByIndex.at(index);
     }
 
+    QStringList m_columnsByIndex;
+    QStringList m_columnSortByIndex;
     QMap<QString, int> m_columnIndexByName;
     // A mapping from column enum to logical index.
     int m_columnIndexByEnum[NUM_COLUMNS];

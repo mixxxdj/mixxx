@@ -5,6 +5,9 @@
 #include "library/dao/cratedao.h"
 
 void ColumnCache::setColumns(const QStringList& columns) {
+    m_columnsByIndex.clear();
+    m_columnsByIndex.append(columns);
+
     m_columnIndexByName.clear();
     for (int i = 0; i < columns.size(); ++i) {
         m_columnIndexByName[columns[i]] = i;
