@@ -50,6 +50,7 @@ class BaseTrackCache : public QObject {
     virtual int columnCount() const;
     virtual int fieldIndex(const QString& column) const;
     QString columnNameForFieldIndex(int index) const;
+    QString columnSortForFieldIndex(int index) const;
     int fieldIndex(ColumnCache::Column column) const;
     virtual void filterAndSort(const QSet<int>& trackIds,
                                QString query, QString extraFilter,

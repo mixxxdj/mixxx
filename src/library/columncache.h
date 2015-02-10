@@ -96,14 +96,12 @@ class ColumnCache {
     }
 
     inline QString columnSortForFieldIndex(int index) const {
-        if (index < 0 || index >= m_columnSortByIndex.size()) {
-            return QString();
-        }
-        return m_columnSortByIndex.at(index);
+        QString format = m_columnSortByIndex.value(index, "%1");
+        return format.arg(columnNameForFieldIndex(index));
     }
 
     QStringList m_columnsByIndex;
-    QStringList m_columnSortByIndex;
+    QMap<int, QString> m_columnSortByIndex;
     QMap<QString, int> m_columnIndexByName;
     // A mapping from column enum to logical index.
     int m_columnIndexByEnum[NUM_COLUMNS];
