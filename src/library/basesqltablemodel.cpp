@@ -467,7 +467,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
     #endif
             m_trackSourceOrderBy.append((sc.m_order == Qt::AscendingOrder) ?
                     " ASC" : " DESC");
-            qDebug() << m_trackSourceOrderBy;
+            //qDebug() << m_trackSourceOrderBy;
         }
     }
 }
