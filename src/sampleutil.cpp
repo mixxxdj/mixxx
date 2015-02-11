@@ -284,25 +284,21 @@ bool SampleUtil::sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
         const CSAMPLE* pBuffer, int iNumSamples) {
     CSAMPLE fAbsL = CSAMPLE_ZERO;
     CSAMPLE fAbsR = CSAMPLE_ZERO;
-    bool clipped = false;
+    CSAMPLE clipped = 0;
 
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
         CSAMPLE absl = fabs(pBuffer[i * 2]);
-        if (absl > CSAMPLE_PEAK) {
-            clipped = true;
-        }
         fAbsL += absl;
-
+        clipped += absl > CSAMPLE_PEAK ? 1 : 0;       
         CSAMPLE absr = fabs(pBuffer[i * 2 + 1]);
-        if (absr > CSAMPLE_PEAK) {
-            clipped = true;
-        }
         fAbsR += absr;
+        clipped += absr > CSAMPLE_PEAK ? 1 : 0;     
     }
 
     *pfAbsL = fAbsL;
     *pfAbsR = fAbsR;
-    return clipped;
+    return (clipped != 0);
 }
 
 // static
