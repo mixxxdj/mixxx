@@ -512,7 +512,7 @@ void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         if (isConnected()) {
             // We are conneced but shoutcast is disabled. Disconnect.
             serverDisconnect();
-            infoDialog(tr("Mixxx has successfully disconnected from the shoutcast server"), "");
+            infoDialog(tr("Mixxx has successfully disconnected from the streaming server"), "");
         }
         return;
     }
@@ -533,7 +533,7 @@ void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         updateFromPreferences();
 
         if (serverConnect()) {
-            infoDialog(tr("Mixxx has successfully connected to the shoutcast server"), "");
+            infoDialog(tr("Mixxx has successfully connected to the streaming server"), "");
         } else {
             errorDialog(tr("Mixxx could not connect to streaming server"),
                         tr("Please check your connection to the Internet and verify that your username and password are correct."));
