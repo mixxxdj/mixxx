@@ -128,11 +128,11 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
             this,SLOT(slotRandomQueue(int)));
     connect(m_pAutoDJView, SIGNAL(addRandomButton(bool)),
             this, SLOT(slotAddRandomTrack(bool)));
-    connect(this, SIGNAL(enableAddRandom(bool)),
-            m_pAutoDJView, SLOT(enableRandomButton(bool)));
+    /*connect(this, SIGNAL(enableAddRandom(bool)),
+            m_pAutoDJView, SLOT(enableRandomButton(bool)));*/
 
     // Let subscribers know whether it's possible to add a random track.
-    emit(enableAddRandom(true));
+    /*emit(enableAddRandom(true));*/
 #endif // __AUTODJCRATES__
 }
 
@@ -276,7 +276,7 @@ void AutoDJFeature::slotCrateAutoDjChanged(int crateId, bool added) {
         }
     }
     // Let subscribers know whether it's possible to add a random track.
-    emit(enableAddRandom(true));
+    // emit(enableAddRandom(true));
 #endif // __AUTODJCRATES__
 }
 
@@ -291,13 +291,10 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
         if (m_iAutoDJPlaylistId >= 0) {
             // Get the ID of a randomly-selected track.
             iTrackId = m_autoDjCratesDao.getRandomTrackId();
-            //qDebug() << "we got iTrackid " <<iTrackId;
             if (iTrackId != -1) {
                 // Get Track Information
                 TrackPointer addedTrack = (m_pTrackCollection->getTrackDAO()).getTrack(iTrackId);
                 if(addedTrack->exists()) {
-                    //qDebug() << addedTrack->getTitle() << " Exists";
-                    // Add this randomly-selected track to the auto-DJ playlist.
                     playlistDao.appendTrackToPlaylist(iTrackId, m_iAutoDJPlaylistId);
                     m_pAutoDJView->onShow();
                     return;
