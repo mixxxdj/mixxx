@@ -87,14 +87,14 @@ class SampleUtil {
         // requires some checks that can be omitted when inlining the 
         // following vectorized loop. Btw.: memcpy() calls from the Qt 
         // library are not using SSE istructions.     
-        #ifdef __SSE__
+#ifdef __SSE__
         if (sizeof(void*) == 4) { // 32 bit 
             // note: LOOP VECTORIZED.
             for (unsigned int i = 0; i < iNumSamples; ++i) { // 571 ns
                 pDest[i] = pSrc[i];
             }
         } else
-        #endif 
+#endif 
         {
             memcpy(pDest, pSrc, iNumSamples * sizeof(CSAMPLE));
         }
