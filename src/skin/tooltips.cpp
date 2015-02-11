@@ -55,7 +55,7 @@ void Tooltips::addStandardTooltips() {
     add("waveform_zoom_set_default")
             << tr("Waveform Zoom")
             << QString("%1").arg(resetToDefault);
-    
+
     add("spinny")
             << tr("Spinning Vinyl")
             << tr("Rotates during playback and shows the position of a track.")
@@ -143,7 +143,7 @@ void Tooltips::addStandardTooltips() {
             << tr("If activated, the master signal plays in the right channel, while the cueing signal "
                   "plays in the left channel.")
             << tr("Adjust the Headphone Mix so in the left channel is not the pure cueing signal.");
-    
+
     // Note, this is used for samplers and microphone only currently (that's why
     // center is the default).
     add("orientation")
@@ -446,6 +446,15 @@ void Tooltips::addStandardTooltips() {
             << tr("If hotcue is not set, sets the hotcue to the current play position.")
             << quantizeSnap
             << QString("%1: %2").arg(rightClick, tr("If hotcue is set, clears the hotcue."));
+
+    add("vinylcontrol_enabled")
+            << tr("Enable Vinyl Control")
+            << tr("When disabled, the track is controlled by Mixxx playback controls.")
+            << tr("When enabled, the track responds to external vinyl control.");
+
+    add("passthrough_enabled")
+            << tr("Enable Passthrough")
+            << tr("When enabled, the deck directly plays the audio arriving on the input.");
 
     add("vinylcontrol_mode")
             << tr("Vinyl Control Mode")

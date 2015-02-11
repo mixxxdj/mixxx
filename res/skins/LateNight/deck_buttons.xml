@@ -463,10 +463,6 @@
 							<ConfigKey>[Channel<Variable name="channum" />],play</ConfigKey>
 							<ButtonState>LeftButton</ButtonState>
 						</Connection>
-						<Connection>
-							<ConfigKey>[Channel<Variable name="channum" />],play_sync</ConfigKey>
-							<ButtonState>RightButton</ButtonState>
-						</Connection>
 					</PushButton>
 				</Children>
 			</WidgetGroup>

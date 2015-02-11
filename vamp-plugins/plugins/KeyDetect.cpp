@@ -36,7 +36,8 @@ KeyDetector::KeyDetector(float inputSampleRate) :
     m_length(10),
     m_getKeyMode(0),
     m_inputFrame(0),
-    m_prevKey(-1)
+    m_prevKey(-1),
+    m_first(false)
 {
 }
 
