@@ -17,9 +17,11 @@ typedef qint32 int32_t;
 // When changing, be carefull to not prevent the vectorizing
 // https://gcc.gnu.org/projects/tree-ssa/vectorization.html
 
-
+// TODO() Check if uintptr_t is availabe on all our build targets and use that
+// instead of size_t, we can remove the sizeof(size_t) check than 
 static inline bool useAlignedAlloc() {
-    // Will return true on MSVC 32 bit builds and falls for
+    // This will work on all targets and compilers. 
+    // It will return true on MSVC 32 bit builds and false for
     // Linux 32 and 64 bit builds
     return (sizeof(long double) == 8 && sizeof(CSAMPLE*) <= 8 &&
             sizeof(CSAMPLE*) == sizeof(size_t));
