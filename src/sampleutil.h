@@ -172,11 +172,6 @@ class SampleUtil {
     static bool sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
             const CSAMPLE* pBuffer, int iNumSamples);
 
-    // Returns true if the buffer contains any samples outside of the range
-    // [fMin,fMax].
-    static bool isOutsideRange(CSAMPLE fMax, CSAMPLE fMin,
-            const CSAMPLE* pBuffer, int iNumSamples);
-
     // Copies every sample in pSrc to pDest, limiting the values in pDest
     // to the valid range of CSAMPLE. If pDest and pSrc are aliases, will
     // not copy will only clamp. Returns true if any samples in pSrc were

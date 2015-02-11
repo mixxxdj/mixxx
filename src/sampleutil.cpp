@@ -106,17 +106,18 @@ void SampleUtil::applyRampingGain(CSAMPLE* pBuffer, CSAMPLE_GAIN old_gain,
 
     const CSAMPLE_GAIN gain_delta = (new_gain - old_gain)
             / CSAMPLE_GAIN(iNumSamples / 2);
-    CSAMPLE_GAIN gain = old_gain;
     if (gain_delta) {
+        const CSAMPLE_GAIN start_gain = old_gain + gain_delta;
+        // note: LOOP VECTORIZED.
         for (int i = 0; i < iNumSamples / 2; ++i) {
-            gain += gain_delta;
+            const CSAMPLE_GAIN gain = start_gain + gain_delta * i;
             pBuffer[i * 2] *= gain;
             pBuffer[i * 2 + 1] *= gain;
         }
     } else {
         // note: LOOP VECTORIZED.
         for (int i = 0; i < iNumSamples; ++i) {
-            pBuffer[i] *= gain;
+            pBuffer[i] *= old_gain;
         }
     }
 }
@@ -158,17 +159,18 @@ void SampleUtil::addWithRampingGain(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _RE
 
     const CSAMPLE_GAIN gain_delta = (new_gain - old_gain)
             / CSAMPLE_GAIN(iNumSamples / 2);
-    CSAMPLE_GAIN gain = old_gain;
     if (gain_delta) {
+        const CSAMPLE_GAIN start_gain = old_gain + gain_delta;
+        // note: LOOP VECTORIZED.
         for (int i = 0; i < iNumSamples / 2; ++i) {
-            gain += gain_delta;
+            const CSAMPLE_GAIN gain = start_gain + gain_delta * i;
             pDest[i * 2] += pSrc[i * 2] * gain;
             pDest[i * 2 + 1] += pSrc[i * 2 + 1] * gain;
         }
     } else {
         // note: LOOP VECTORIZED.
         for (int i = 0; i < iNumSamples; ++i) {
-            pDest[i] += pSrc[i] * gain;
+            pDest[i] += pSrc[i] * old_gain;
         }
     }
 }
@@ -244,17 +246,18 @@ void SampleUtil::copyWithRampingGain(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _R
 
     const CSAMPLE_GAIN gain_delta = (new_gain - old_gain)
             / CSAMPLE_GAIN(iNumSamples / 2);
-    CSAMPLE_GAIN gain = old_gain;
     if (gain_delta) {
+        const CSAMPLE_GAIN start_gain = old_gain + gain_delta;
+        // note: LOOP VECTORIZED.        
         for (int i = 0; i < iNumSamples / 2; ++i) {
-            gain += gain_delta;
+            const CSAMPLE_GAIN gain = start_gain + gain_delta * i;
             pDest[i * 2] = pSrc[i * 2] * gain;
             pDest[i * 2 + 1] = pSrc[i * 2 + 1] * gain;
         }
     } else {
         // note: LOOP VECTORIZED.
         for (int i = 0; i < iNumSamples; ++i) {
-            pDest[i] = pSrc[i] * gain;
+            pDest[i] = pSrc[i] * old_gain;
         }
     }
 
@@ -303,20 +306,6 @@ bool SampleUtil::sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
 }
 
 // static
-bool SampleUtil::isOutsideRange(CSAMPLE fMax, CSAMPLE fMin,
-        const CSAMPLE* pBuffer, int iNumSamples) {
-    for (int i = 0; i < iNumSamples; ++i) {
-        CSAMPLE sample = pBuffer[i];
-        if (sample > fMax) {
-            return true;
-        } else if (sample < fMin) {
-            return true;
-        }
-    }
-    return false;
-}
-
-// static
 void SampleUtil::copyClampBuffer(CSAMPLE* _RESTRICT pDest, const _RESTRICT CSAMPLE* pSrc,
         int iNumSamples) {
     // note: LOOP VECTORIZED.
@@ -351,13 +340,14 @@ void SampleUtil::linearCrossfadeBuffers(CSAMPLE* pDest,
         int iNumSamples) {
     const CSAMPLE_GAIN cross_inc = CSAMPLE_GAIN_ONE
             / CSAMPLE_GAIN(iNumSamples / 2);
-    CSAMPLE_GAIN cross_mix = CSAMPLE_GAIN_ZERO;
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
+        const CSAMPLE_GAIN cross_mix = cross_inc * i;
         pDest[i * 2] = pSrcFadeIn[i * 2] * cross_mix
                 + pSrcFadeOut[i * 2] * (CSAMPLE_GAIN_ONE - cross_mix);
         pDest[i * 2 + 1] = pSrcFadeIn[i * 2 + 1] * cross_mix
                 + pSrcFadeOut[i * 2 + 1] * (CSAMPLE_GAIN_ONE - cross_mix);
-        cross_mix += cross_inc;
+        
     }
 }
 
