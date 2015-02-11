@@ -421,6 +421,9 @@ TEST_F(SampleUtilTest, deinterleaveBuffer) {
     }
 }
 
+/*
+// deactivated since it is benchmark only and cannot fail
+// Note: the order of the calls matters  
 TEST_F(SampleUtilTest, memcpyspeed) {
     CSAMPLE* buffer = buffers[0];
 
@@ -504,5 +507,163 @@ TEST_F(SampleUtilTest, memcpyspeed) {
     delete [] buffer2;
     delete [] buffer3;
 }
+
+TEST_F(SampleUtilTest, copy3WithGainSpeed) {
+    CSAMPLE* buffer = buffers[0];
+
+    int size = sizes[0] - (rand() % 2) * 8; // preven predicting loop size
+    FillBuffer(buffer, 0.0f, size);
+    CSAMPLE* buffer2 = new CSAMPLE[size];
+    FillBuffer(buffer2, 0.0f, size);
+    CSAMPLE* buffer3 = new CSAMPLE[size*2];
+    FillBuffer(buffer3, 1.0f, size*2);
+    for (int j = 0; j < size; j++) {
+        buffer3[j*2] = j;
+        buffer3[j*2+1] = -j;
+    }
+
+    // For ensure data is cached and equal start conditions 
+    SampleUtil::copy(buffer, buffer2, size);
+    SampleUtil::copy2WithGain(buffer, buffer2, 1.1f, buffer3, 1.1f, size); 
+
+    qint64 elapsed; 
+    Timer t(""); 
+    t.start(); 
+
+    SampleUtil::copy2WithGain(buffer, buffer2, 1.1f, buffer3, 1.1f, size); 
+
+    elapsed = t.elapsed("");
+    qDebug() << "copy2WithGain" << elapsed << "ns" << size;
+
+//#########
+	
+    t.start(); 
+
+    SampleUtil::copy1WithGain(buffer, buffer2, 1.1f, size); 
+
+    elapsed = t.elapsed("");
+    qDebug() << "SampleUtil::copy1WithGain" << elapsed << "ns" << size;
+
+//############
+
+    t.start(); 
+
+    SampleUtil::copy1WithGain(buffer, buffer2, 1.1f, size); 
+
+    elapsed = t.elapsed("");
+    qDebug() << "SampleUtil::copy1WithGain" << elapsed << "ns" << size;
+
+//############
+
+    t.start(); 
+
+    SampleUtil::addWithGain(buffer, buffer2, 1.1f, size); 
+
+    elapsed = t.elapsed("");
+    qDebug() << "SampleUtil::addWithGain" << elapsed << "ns" << size;
+
+
+//############
+
+    t.start(); 
+
+    CSAMPLE* __restrict__ buffer_ = buffer;
+    CSAMPLE* __restrict__ buffer1_ = buffer2;
+    CSAMPLE* __restrict__ buffer2_ = buffer3;
+
+    for (int i = 0; i < size; ++i) {
+        buffer_[i] += buffer1_[i] * 1.1f;
+    }
+
+    elapsed = t.elapsed("");
+    qDebug() << "addWithGain as for loop" << elapsed << "ns" << size;
+
+//############
+
+    t.start(); 
+
+    SampleUtil::addWithGain(buffer, buffer2, 1.1f, size); 
+
+    elapsed = t.elapsed("");
+    qDebug() << "SampleUtil::addWithGain" << elapsed << "ns" << size;
+
+//############
+
+
+
+    t.start(); 
+
+    SampleUtil::copy2WithGain(buffer, buffer2, 1.1f, buffer3, 1.1f, size); 
+
+    elapsed = t.elapsed("");
+    qDebug() << "copy2WithGain" << elapsed << "ns" << size;
+
+//#########
+
+    delete [] buffer2;
+    delete [] buffer3;
+}
+*/
+
+TEST_F(SampleUtilTest, copy3WithRampingGainSpeed) {
+    CSAMPLE* buffer = buffers[0];
+
+    int size = sizes[0] - (rand() % 2) * 8; // preven predicting loop size
+    FillBuffer(buffer, 0.0f, size);
+    CSAMPLE* buffer2 = new CSAMPLE[size];
+    FillBuffer(buffer2, 0.0f, size);
+    CSAMPLE* buffer3 = new CSAMPLE[size*2];
+    FillBuffer(buffer3, 1.0f, size*2);
+    for (int j = 0; j < size; j++) {
+        buffer3[j*2] = j;
+        buffer3[j*2+1] = -j;
+    }
+
+    // For ensure data is cached and equal start conditions 
+    SampleUtil::copy(buffer, buffer2, size);
+    SampleUtil::copy2WithGain(buffer, buffer2, 1.1f, buffer3, 1.1f, size); 
+
+    qint64 elapsed; 
+    Timer t(""); 
+    t.start(); 
+
+    SampleUtil::copy2WithGain(buffer, buffer2, 1.1f, buffer3, 1.1f, size); 
+
+    elapsed = t.elapsed("");
+    qDebug() << "copy2WithGain" << elapsed << "ns" << size;
+
+//#########
+	
+    t.start(); 
+
+    SampleUtil::copy2WithRampingGain(buffer, buffer2, 1.1f, 1.2f, buffer3, 1.1f, 1.2f, size); 
+
+    elapsed = t.elapsed("");
+    qDebug() << "copy2WithRampingGain" << elapsed << "ns" << size;
+
+//#########
+	
+    t.start(); 
+
+    SampleUtil::copy2WithRampingGain(buffer, buffer2, 1.1f, 1.2f, buffer3, 1.1f, 1.2f, size); 
+
+    elapsed = t.elapsed("");
+    qDebug() << "copy2WithRampingGain" << elapsed << "ns" << size;
+
+//#########
+	
+    t.start(); 
+
+    SampleUtil::copy2WithRampingGain(buffer, buffer2, 1.1f, 1.2f, buffer3, 1.1f, 1.2f, size); 
+
+    elapsed = t.elapsed("");
+    qDebug() << "copy2WithRampingGain" << elapsed << "ns" << size;
+
+
+
+    delete [] buffer2;
+    delete [] buffer3;
+}
+
 
 }
