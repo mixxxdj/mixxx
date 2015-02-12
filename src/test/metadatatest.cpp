@@ -158,6 +158,8 @@ TEST_F(MetadataTest, CalendarYear) {
     EXPECT_EQ(2014, Mixxx::TrackMetadata::parseCalendarYear("2014-04-29T07:00:00Z"));
     EXPECT_EQ(2014, Mixxx::TrackMetadata::parseCalendarYear("2014-04-29"));
     EXPECT_EQ(2014, Mixxx::TrackMetadata::parseCalendarYear("2014"));
+    EXPECT_EQ(2015, Mixxx::TrackMetadata::parseCalendarYear("2015-02"));
+    EXPECT_EQ(1997, Mixxx::TrackMetadata::parseCalendarYear("1997-W43"));
     EXPECT_EQ(1, Mixxx::TrackMetadata::parseCalendarYear("1"));
     EXPECT_EQ(0, Mixxx::TrackMetadata::parseCalendarYear("0"));
     EXPECT_EQ(-1, Mixxx::TrackMetadata::parseCalendarYear("-1"));
@@ -167,6 +169,8 @@ TEST_F(MetadataTest, CalendarYear) {
     EXPECT_EQ("2014", Mixxx::TrackMetadata::formatCalendarYear("2014-04-29T07:00:00Z"));
     EXPECT_EQ("2014", Mixxx::TrackMetadata::formatCalendarYear("2014-04-29"));
     EXPECT_EQ("2014", Mixxx::TrackMetadata::formatCalendarYear("2014"));
+    EXPECT_EQ("2015", Mixxx::TrackMetadata::formatCalendarYear("2015-02"));
+    EXPECT_EQ("1997", Mixxx::TrackMetadata::formatCalendarYear("1997-W43"));
     EXPECT_EQ("", Mixxx::TrackMetadata::formatCalendarYear("0"));
     EXPECT_EQ("-1", Mixxx::TrackMetadata::formatCalendarYear("-1"));
     EXPECT_EQ("year", Mixxx::TrackMetadata::formatCalendarYear("year"));
