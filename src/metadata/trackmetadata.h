@@ -190,7 +190,7 @@ public:
     }
 
     // Parse and format the calendar year (for simplified display)
-    static const int kCalendarYearEmpty; // displayed as an empty string
+    static const int kCalendarYearInvalid;
     static int parseCalendarYear(QString year, bool* pValid = 0);
     static QString formatCalendarYear(QString year, bool* pValid = 0);
 

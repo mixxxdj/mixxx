@@ -12,7 +12,7 @@ namespace Mixxx {
 /*static*/ const double TrackMetadata::kReplayGainMin = 0.0; // lower bound (inclusive)
 /*static*/ const double TrackMetadata::kReplayGain0dB = 1.0;
 
-/*static*/ const int TrackMetadata::kCalendarYearEmpty = 0; // displayed as an empty string
+/*static*/ const int TrackMetadata::kCalendarYearInvalid = 0;
 
 double TrackMetadata::parseBpm(const QString& sBpm, bool* pValid) {
     if (pValid) {
@@ -145,13 +145,9 @@ int TrackMetadata::parseCalendarYear(QString year, bool* pValid) {
         // to successfully parse the calendar year of incomplete
         // dates like yyyy-MM or 2015-W07.
         const QString calendarYearSection(year.section('-', 0, 0).trimmed());
-        int calendarYear = kCalendarYearEmpty;
-        if (calendarYearSection.isEmpty()) {
-            // leading '-' minus sign -> parse the whole string
-            calendarYear = year.toInt(&calendarYearValid);
-        } else {
-            // parse only the 1st non-empty section
-            calendarYear = calendarYearSection.toInt(&calendarYearValid);
+        const int calendarYear = calendarYearSection.toInt(&calendarYearValid);
+        if (calendarYearValid) {
+            calendarYearValid = 0 < calendarYear;
         }
         if (pValid) {
             *pValid = calendarYearValid;
@@ -159,7 +155,7 @@ int TrackMetadata::parseCalendarYear(QString year, bool* pValid) {
         if (calendarYearValid) {
             return calendarYear;
         } else {
-            return kCalendarYearEmpty;
+            return kCalendarYearInvalid;
         }
     }
 }
@@ -171,13 +167,9 @@ QString TrackMetadata::formatCalendarYear(QString year, bool* pValid) {
         *pValid = calendarYearValid;
     }
     if (calendarYearValid) {
-        if (kCalendarYearEmpty == calendarYear) {
-            return QString(); // empty string
-        } else {
-            return QString::number(calendarYear);
-        }
+        return QString::number(calendarYear);
     } else {
-        return year; // unmodified
+        return QString(); // empty string
     }
 }
 
