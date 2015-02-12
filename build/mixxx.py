@@ -17,7 +17,7 @@ import util
 
 class MixxxBuild(object):
 
-    def __init__(self, target, machine, build, toolchain, available_features=[]):
+    def __init__(self, target, machine, build, toolchain, available_features):
         self.available_features = available_features
         self.host_platform = self.detect_platform()
         self.host_machine = self.detect_machine()
@@ -39,8 +39,8 @@ class MixxxBuild(object):
         if build is None:
             build = 'debug'
 
-        if not build in ['debug', 'release', 'none']:
-            raise Exception("invalid build type '" + build + "' use 'debug' 'release' or 'none'")
+        if not build in ['debug', 'release']:
+            raise Exception("invalid build type")
 
         if target not in ['windows', 'osx', 'linux', 'bsd']:
             raise Exception("invalid target platform")

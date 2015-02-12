@@ -80,9 +80,8 @@ class HID(Feature):
             conf.CheckLib(['rt', 'librt'])
 
             # -pthread tells GCC to do the right thing regardless of system
-            if build.build_is_debug or build.build_is_release:
-                build.env.Append(CCFLAGS='-pthread')
-                build.env.Append(LINKFLAGS='-pthread')
+            build.env.Append(CCFLAGS='-pthread')
+            build.env.Append(LINKFLAGS='-pthread')
 
         elif build.platform_is_windows and not conf.CheckLib(['setupapi', 'libsetupapi']):
             raise Exception('Did not find the setupapi library, exiting.')
@@ -939,37 +938,64 @@ class FFMPEG(Feature):
 
 
 class Optimize(Feature):
+    LEVEL_OFF = 'off'
+    LEVEL_PORTABLE = 'portable'
+    LEVEL_NATIVE = 'native'
+    LEVEL_LEGACY = 'legacy'
+
+    LEVEL_DEFAULT = LEVEL_PORTABLE
+
     def description(self):
         return "Optimization and Tuning"
 
+    @staticmethod
+    def get_optimization_level():
+        optimize_level = SCons.ARGUMENTS.get('optimize', Optimize.LEVEL_DEFAULT)
+        try:
+            optimize_integer = int(optimize_level)
+            if optimize_integer == 0:
+                optimize_level = Optimize.LEVEL_OFF
+            elif optimize_integer == 1:
+                # Level 1 was a legacy (compiler optimizations only) build.
+                optimize_level = Optimize.LEVEL_LEGACY
+            elif optimize_integer in xrange(2, 10):
+                # Levels 2 through 9 map to portable.
+                optimize_level = Optimize.LEVEL_PORTABLE
+        except:
+            pass
+
+        # Support common aliases for off.
+        if optimize_level in ('none', 'disable', 'disabled'):
+            optimize_level = Optimize.LEVEL_OFF
+
+        if optimize_level not in (Optimize.LEVEL_OFF, Optimize.LEVEL_PORTABLE,
+                                  Optimize.LEVEL_NATIVE, Optimize.LEVEL_LEGACY):
+            raise Exception("optimize={} is not supported. "
+                            "Use portable, native, legacy or off"
+                            .format(optimize_level))
+        return optimize_level
+
     def enabled(self, build):
-        build.flags['optimize'] = SCons.ARGUMENTS.get('optimize', '')
-        if build.flags['optimize'] is not 'portable':
-            return True
-        else:
-            return False
+        build.flags['optimize'] = Optimize.get_optimization_level()
+        return build.flags['optimize'] != Optimize.LEVEL_OFF
 
     def add_options(self, build, vars):
         vars.Add(
             'optimize', 'Set to:\n' \
-                        '  portable (alias 9): sse2 CPU (>= Pentium 4)\n' \
-                        '  native: optimized exclusive for the CPU of this system\n' \
+                        '  portable: sse2 CPU (>= Pentium 4)\n' \
+                        '  native: optimized for the CPU of this system\n' \
                         '  legacy: pure i386 code' \
-                        '  disabled: no optimization, for debug only' \
-                        , 1)
+                        '  off: no optimization' \
+                        , Optimize.LEVEL_DEFAULT)
 
     def configure(self, build, conf):
         if not self.enabled(build):
             return
 
-        optimize_level = SCons.ARGUMENTS.get('optimize', 'portable')
+        optimize_level = build.flags['optimize']
 
-        if optimize_level == 'disabled':
-            self.status = "disabled: no optimazion, for debug only"
-            return
-
-        if not build.build_is_debug and not build.build_is_release:
-            self.status = "disabled: no optimazion set with build=none"
+        if optimize_level == Optimize.LEVEL_OFF:
+            self.status = "off: no optimization"
             return
 
         if build.toolchain_is_msvs:
@@ -1004,20 +1030,22 @@ class Optimize(Feature):
             # In general, you should pick /O2 over /Ox
             build.env.Append(CCFLAGS='/O2')
 
-            # Historicaly our release packages are built with optimize=9.
-            if optimize_level == 'portable' or optimize_level == '' or optimize_level == '9':
+            if optimize_level == Optimize.LEVEL_PORTABLE:
                 # portable-binary: sse2 CPU (>= Pentium 4)
                 self.status = "portable: sse2 CPU (>= Pentium 4)"
                 build.env.Append(CCFLAGS='/arch:SSE2')
                 build.env.Append(CPPDEFINES=['__SSE__', '__SSE2__'])
-            elif optimize_level == 'native':
-                self.status = "native: exclusive for this CPU (%s)" % build.machine
+            elif optimize_level == Optimize.LEVEL_NATIVE:
+                self.status = "native: tuned for this CPU (%s)" % build.machine
                 build.env.Append(CCFLAGS='/favor:' + build.machine)
-            elif optimize_level == 'legacy':
+            elif optimize_level == Optimize.LEVEL_LEGACY:
                 self.status = "legacy: pure i386 code"
             else:
+                # Not possible to reach this code if enabled is written
+                # correctly.
                 raise Exception("optimize={} is not supported. "
-                                "Use portable, native, legacy or disabled".format(optimize_level))
+                                "Use portable, native, legacy or off"
+                                .format(optimize_level))
 
             # SSE and SSE2 are core instructions on x64
             if build.machine_is_64bit:
@@ -1031,46 +1059,46 @@ class Optimize(Feature):
 
             # the following optimisation flags makes the engine code ~3 times
             # faster, measured on a Atom CPU.
-            build.env.Append(
-                CCFLAGS='-O3 -ffast-math -funroll-loops')
-            # set -fomit-frame-pointer when we don't profile. 
-            # Note: It is only included in -O on machines where it does not 
-            # interfere with debugging    
+            build.env.Append(CCFLAGS='-O3 -ffast-math -funroll-loops')
+
+            # set -fomit-frame-pointer when we don't profile.
+            # Note: It is only included in -O on machines where it does not
+            # interfere with debugging
             if not int(build.flags['profiling']):
                 build.env.Append(CCFLAGS='-fomit-frame-pointer')
 
-            # Historicaly our gcc release packages are built with optimize=9.
-            if optimize_level == '9'  or optimize_level == '' or optimize_level == 'portable':
+            if optimize_level == Optimize.LEVEL_PORTABLE:
                 # portable: sse2 CPU (>= Pentium 4)
                 self.status = "portable: sse2 CPU (>= Pentium 4)"
-                build.env.Append(
-                    CCFLAGS='-mtune=generic -msse2 -mfpmath=sse')
+                build.env.Append(CCFLAGS='-mtune=generic -msse2 -mfpmath=sse')
                 # this sets macros __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
-                # This schould be our default build for distribution
+                # This should be our default build for distribution
                 # It's a little sketchy, but turning on SSE2 will gain
-                # 100 % performance in our filter code and allows us to
+                # 100% performance in our filter code and allows us to
                 # turns on denormal zeroing.
                 # We don't really support CPU's earlier than Pentium 4,
                 # which is the class of CPUs this decision affects.
                 # The downside of this is that we aren't truly
                 # i386 compatible, so builds that claim 'i386' will crash.
+                # -- rryan 2/2011
                 # Note: SSE2 is a core part of x64 CPUs
-            elif optimize_level == 'native':
-                self.status = "native: exclusive for this CPU (%s)" % build.machine
-                build.env.Append(
-                    CCFLAGS='-march=native -mfpmath=sse')
+            elif optimize_level == Optimize.LEVEL_NATIVE:
+                self.status = "native: tuned for this CPU (%s)" % build.machine
+                build.env.Append(CCFLAGS='-march=native -mfpmath=sse')
                 # http://en.chys.info/2010/04/what-exactly-marchnative-means/
                 # Note: requires gcc >= 4.2.0
                 # macros like __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
                 # are set automaticaly
-            elif optimize_level == 'legacy':
+            elif optimize_level == Optimize.LEVEL_LEGACY:
                 self.status = "legacy: pure i386 code"
-                build.env.Append(
-                    CCFLAGS='-mtune=generic')
+                build.env.Append(CCFLAGS='-mtune=generic')
                 # -mtune=generic pick the most common, but compatible options.
             else:
-               raise Exception("optimize={} is not supported. "
-                                "Use portable, native, legacy or disabled".format(optimize_level))
+                # Not possible to reach this code if enabled is written
+                # correctly.
+                raise Exception("optimize={} is not supported. "
+                                "Use portable, native, legacy or off"
+                                .format(optimize_level))
 
             # what others do:
             # soundtouch uses just -O3 in Ubuntu Trusty

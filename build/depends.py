@@ -381,11 +381,12 @@ class SoundTouch(Dependence):
     SOUNDTOUCH_PATH = 'soundtouch-1.8.0'
 
     def sse_enabled(self, build):
-        optimize = SCons.ARGUMENTS.get('optimize', 'portable')
+        # Prevents circular import.
+        from features import Optimize
+        optimize = (build.flags['optimize'] if 'optimize' in build.flags
+                    else Optimize.get_optimization_level())
         return (build.machine_is_64bit or
-                (optimize == 'portable') or
-                (optimize == '9') or
-                (optimize == 'tuned'))
+                optimize in (Optimize.LEVEL_PORTABLE, Optimize.LEVEL_NATIVE))
 
     def sources(self, build):
         sources = ['engine/enginebufferscalest.cpp',
@@ -1002,13 +1003,13 @@ class MixxxCore(Feature):
             build.env.Append(CPPDEFINES='MIXXX_DEBUG_ASSERTIONS_FATAL')
 
         if build.toolchain_is_gnu:
-            if build.build_is_debug or build.build_is_release:
-                # Default GNU Options
-                build.env.Append(CCFLAGS='-pipe')
-                build.env.Append(CCFLAGS='-Wall')
-                build.env.Append(CCFLAGS='-Wextra')
-                # TODO(XXX) always generate debugging info?
-                build.env.Append(CCFLAGS='-g')
+            # Default GNU Options
+            build.env.Append(CCFLAGS='-pipe')
+            build.env.Append(CCFLAGS='-Wall')
+            build.env.Append(CCFLAGS='-Wextra')
+
+            # Always generate debugging info.
+            build.env.Append(CCFLAGS='-g')
         elif build.toolchain_is_msvs:
             # Validate the specified winlib directory exists
             mixxx_lib_path = SCons.ARGUMENTS.get(
