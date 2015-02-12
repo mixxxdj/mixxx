@@ -1,14 +1,5 @@
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef SOUNDSOURCETAGLIB_H
-#define SOUNDSOURCETAGLIB_H
+#ifndef TRACKMETADATATAGLIB_H
+#define TRACKMETADATATAGLIB_H
 
 #include "metadata/trackmetadata.h"
 #include "util/defs.h" // Result
