@@ -16,6 +16,7 @@
 #include "trackinfoobject.h"
 #include "treeitemmodel.h"
 #include "library/coverartcache.h"
+#include "control/stringatom.h"
 
 class TrackModel;
 class WLibrarySidebar;
@@ -84,7 +85,7 @@ class LibraryFeature : public QObject {
     void showTrackModel(QAbstractItemModel* model);
     void switchToView(const QString& view);
     void loadTrack(TrackPointer pTrack);
-    void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
+    void loadTrackToPlayer(TrackPointer pTrack, StringAtom group, bool play = false);
     void restoreSearch(const QString&);
     // emit this signal before you parse a large music collection, e.g., iTunes, Traktor.
     // The second arg indicates if the feature should be "selected" when loading starts

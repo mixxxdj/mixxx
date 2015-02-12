@@ -8,6 +8,7 @@
 #include "configobject.h"
 #include "trackinfoobject.h"
 #include "widget/wlabel.h"
+#include "control/stringatom.h"
 
 class WTrackText : public WLabel {
     Q_OBJECT
@@ -16,7 +17,7 @@ class WTrackText : public WLabel {
     virtual ~WTrackText();
 
   signals:
-    void trackDropped(QString fileName, QString group);
+    void trackDropped(QString fileName, StringAtom group);
 
   public slots:
     void slotTrackLoaded(TrackPointer track);

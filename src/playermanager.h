@@ -135,8 +135,8 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
   public slots:
     // Slots for loading tracks into a Player, which is either a Sampler or a Deck
-    void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
-    void slotLoadToPlayer(QString location, QString group);
+    void slotLoadTrackToPlayer(TrackPointer pTrack, StringAtom group, bool play = false);
+    void slotLoadToPlayer(QString location, StringAtom group);
 
     // Slots for loading tracks to decks
     void slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack);
@@ -155,7 +155,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     void slotNumPreviewDecksControlChanged(double v);
 
   signals:
-    void loadLocationToPlayer(QString location, QString group);
+    void loadLocationToPlayer(QString location, StringAtom group);
 
   private:
     TrackPointer lookupTrack(QString location);

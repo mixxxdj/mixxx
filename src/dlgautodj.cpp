@@ -24,8 +24,8 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
     m_pTrackTableView->installEventFilter(pKeyboard);
     connect(m_pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
-    connect(m_pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
+    connect(m_pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, StringAtom, bool)),
+            this, SIGNAL(loadTrackToPlayer(TrackPointer, StringAtom, bool)));
     connect(m_pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
     connect(pLibrary, SIGNAL(setTrackTableFont(QFont)),

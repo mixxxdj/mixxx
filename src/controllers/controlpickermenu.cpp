@@ -466,7 +466,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                 ConfigKey("[Master]", "num_decks"));
             for (int iDeckNumber = 1; iDeckNumber <= iNumDecks; ++iDeckNumber) {
                 // PlayerManager::groupForDeck is 0-indexed.
-                QString playerGroup = PlayerManager::groupForDeck(iDeckNumber - 1);
+                StringAtom playerGroup = PlayerManager::groupForDeck(iDeckNumber - 1);
                 // TODO(owen): Fix bad i18n here.
                 addPrefixedControl(effectUnitGroup,
                                    QString("group_%1_enable").arg(playerGroup),

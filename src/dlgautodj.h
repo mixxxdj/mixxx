@@ -46,7 +46,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
   signals:
     void addRandomButton(bool buttonChecked);
     void loadTrack(TrackPointer tio);
-    void loadTrackToPlayer(TrackPointer tio, QString group, bool);
+    void loadTrackToPlayer(TrackPointer tio, StringAtom group, bool);
     void trackSelected(TrackPointer pTrack);
 
   private:

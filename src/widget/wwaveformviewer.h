@@ -34,7 +34,7 @@ class WWaveformViewer : public WWidget {
     void mouseReleaseEvent(QMouseEvent *);
 
 signals:
-    void trackDropped(QString filename, QString group);
+    void trackDropped(QString filename, StringAtom group);
 
 public slots:
     void onTrackLoaded(TrackPointer track);

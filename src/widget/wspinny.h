@@ -13,6 +13,7 @@
 #include "vinylcontrol/vinylsignalquality.h"
 #include "widget/wbasewidget.h"
 #include "widget/wwidget.h"
+#include "control/stringatom.h"
 
 class ControlObjectThread;
 class VisualPlayPosition;
@@ -48,7 +49,7 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
 
 
   signals:
-    void trackDropped(QString filename, QString group);
+    void trackDropped(QString filename, StringAtom group);
 
   protected:
     //QWidget:

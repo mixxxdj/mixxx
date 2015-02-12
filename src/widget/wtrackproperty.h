@@ -9,6 +9,7 @@
 #include "skin/skincontext.h"
 #include "trackinfoobject.h"
 #include "widget/wlabel.h"
+#include "control/stringatom.h"
 
 class WTrackProperty : public WLabel {
     Q_OBJECT
@@ -19,7 +20,7 @@ class WTrackProperty : public WLabel {
     void setup(QDomNode node, const SkinContext& context);
 
   signals:
-    void trackDropped(QString filename, QString group);
+    void trackDropped(QString filename, StringAtom group);
 
   public slots:
     void slotTrackLoaded(TrackPointer track);

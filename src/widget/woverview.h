@@ -25,6 +25,7 @@
 #include "waveform/renderers/waveformmarkset.h"
 #include "waveform/renderers/waveformmarkrange.h"
 #include "skin/skincontext.h"
+#include "control/stringatom.h"
 
 // Waveform overview display
 // @author Tue Haste Andersen
@@ -45,7 +46,7 @@ class WOverview : public WWidget {
     void slotUnloadTrack(TrackPointer pTrack);
 
   signals:
-    void trackDropped(QString filename, QString group);
+    void trackDropped(QString filename, StringAtom group);
 
   protected:
     void mouseMoveEvent(QMouseEvent *e);

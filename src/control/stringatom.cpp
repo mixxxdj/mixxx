@@ -32,6 +32,7 @@ StringAtom::~StringAtom() {
 }
 
 void StringAtom::initalize(const QString& string) {
+    qDebug() << "StringAtom::initalize()" << string;
     QMutexLocker locker(&s_stringHashMutex);
     const QString* pString = getInner(string);
     if (!pString) {

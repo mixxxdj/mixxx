@@ -6,6 +6,7 @@
 #include <QTableView>
 
 #include "trackinfoobject.h"
+#include "control/stringatom.h"
 
 class ControlObjectThread;
 
@@ -31,7 +32,7 @@ class PreviewButtonDelegate : public QStyledItemDelegate {
                               const QModelIndex &index) const;
 
   signals:
-    void loadTrackToPlayer(TrackPointer Track, QString group, bool play);
+    void loadTrackToPlayer(TrackPointer Track, StringAtom group, bool play);
     void buttonSetChecked(bool);
 
   public slots:

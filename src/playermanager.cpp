@@ -86,12 +86,12 @@ PlayerManager::~PlayerManager() {
 
 void PlayerManager::bindToLibrary(Library* pLibrary) {
     QMutexLocker locker(&m_mutex);
-    connect(pLibrary, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
-            this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString, bool)));
+    connect(pLibrary, SIGNAL(loadTrackToPlayer(TrackPointer, StringAtom, bool)),
+            this, SLOT(slotLoadTrackToPlayer(TrackPointer, StringAtom, bool)));
     connect(pLibrary, SIGNAL(loadTrack(TrackPointer)),
             this, SLOT(slotLoadTrackIntoNextAvailableDeck(TrackPointer)));
-    connect(this, SIGNAL(loadLocationToPlayer(QString, QString)),
-            pLibrary, SLOT(slotLoadLocationToPlayer(QString, QString)));
+    connect(this, SIGNAL(loadLocationToPlayer(QString, StringAtom)),
+            pLibrary, SLOT(slotLoadLocationToPlayer(QString, StringAtom)));
 
     m_pAnalyserQueue = AnalyserQueue::createDefaultAnalyserQueue(m_pConfig,
             pLibrary->getTrackCollection());
@@ -409,7 +409,7 @@ bool PlayerManager::hasVinylInput(int inputnum) const {
     return m_pSoundManager->getConfig().getInputs().values().contains(vinyl_input);
 }
 
-void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play) {
+void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, StringAtom group, bool play) {
     // Do not lock mutex in this method unless it is changed to access
     // PlayerManager state.
     BaseTrackPlayer* pPlayer = getPlayer(group);
@@ -422,7 +422,7 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bo
     pPlayer->slotLoadTrack(pTrack, play);
 }
 
-void PlayerManager::slotLoadToPlayer(QString location, QString group) {
+void PlayerManager::slotLoadToPlayer(QString location, StringAtom group) {
     // The library will get the track and then signal back to us to load the
     // track via slotLoadTrackToPlayer.
     emit(loadLocationToPlayer(location, group));

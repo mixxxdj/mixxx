@@ -12,6 +12,7 @@
 #include "library/libraryview.h"
 #include "trackinfoobject.h"
 #include "library/coverartcache.h"
+#include "control/stringatom.h"
 
 
 class WLibraryTableView : public QTableView, public virtual LibraryView {
@@ -26,7 +27,7 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
 
   signals:
     void loadTrack(TrackPointer pTrack);
-    void loadTrackToPlayer(TrackPointer pTrack, QString group,
+    void loadTrackToPlayer(TrackPointer pTrack, StringAtom group,
             bool play = false);
     void trackSelected(TrackPointer pTrack);
     void onlyCachedCoverArt(bool);

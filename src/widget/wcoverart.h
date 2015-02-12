@@ -13,6 +13,7 @@
 #include "skin/skincontext.h"
 #include "widget/wbasewidget.h"
 #include "widget/wcoverartmenu.h"
+#include "control/stringatom.h"
 
 class WCoverArt : public QWidget, public WBaseWidget {
     Q_OBJECT
@@ -29,7 +30,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
     void slotEnable(bool);
 
   signals:
-    void trackDropped(QString filename, QString group);
+    void trackDropped(QString filename, StringAtom group);
 
   private slots:
     void slotCoverFound(const QObject* pRequestor, int requestReference,

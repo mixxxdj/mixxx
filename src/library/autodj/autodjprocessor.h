@@ -11,6 +11,7 @@
 #include "library/playlisttablemodel.h"
 #include "engine/enginechannel.h"
 #include "controlobjectslave.h"
+#include "control/stringatom.h"
 
 class ControlPushButton;
 class TrackCollection;
@@ -139,11 +140,11 @@ class AutoDJProcessor : public QObject {
     AutoDJError toggleAutoDJ(bool enable);
 
   signals:
-    virtual void loadTrackToPlayer(TrackPointer pTrack, QString group,
+    void loadTrackToPlayer(TrackPointer pTrack, StringAtom group,
                                    bool play);
-    virtual void transitionTimeChanged(int time);
-    virtual void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
-    virtual void randomTrackRequested(int);
+    void transitionTimeChanged(int time);
+    void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
+    void randomTrackRequested(int);
 
   private slots:
     void playerPositionChanged(DeckAttributes* pDeck, double position);

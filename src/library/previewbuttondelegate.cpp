@@ -20,8 +20,8 @@ PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent, int column)
             this, SLOT(previewDeckPlayChanged(double)));
 
     // This assumes that the parent is wtracktableview
-    connect(this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
-            parent, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
+    connect(this, SIGNAL(loadTrackToPlayer(TrackPointer, StringAtom, bool)),
+            parent, SIGNAL(loadTrackToPlayer(TrackPointer, StringAtom, bool)));
 
     if (QTableView *tableView = qobject_cast<QTableView*>(parent)) {
         m_pTableView = tableView;
