@@ -133,15 +133,26 @@ QString TrackMetadata::formatReplayGain(double replayGain) {
 }
 
 int TrackMetadata::parseCalendarYear(QString year, bool* pValid) {
-    const QDateTime yearDateTime(parseDateTime(year));
-    if (yearDateTime.date().isValid()) {
+    const QDateTime dateTime(parseDateTime(year));
+    if (0 < dateTime.date().year()) {
         if (pValid) {
             *pValid = true;
         }
-        return yearDateTime.date().year();
+        return dateTime.date().year();
     } else {
         bool calendarYearValid = false;
-        const int calendarYear = year.toInt(&calendarYearValid);
+        // Ignore everything beginning with the first dash '-'
+        // to successfully parse the calendar year of incomplete
+        // dates like yyyy-MM or 2015-W07.
+        const QString calendarYearSection(year.section('-', 0, 0).trimmed());
+        int calendarYear = kCalendarYearEmpty;
+        if (calendarYearSection.isEmpty()) {
+            // leading '-' minus sign -> parse the whole string
+            calendarYear = year.toInt(&calendarYearValid);
+        } else {
+            // parse only the 1st non-empty section
+            calendarYear = calendarYearSection.toInt(&calendarYearValid);
+        }
         if (pValid) {
             *pValid = calendarYearValid;
         }
