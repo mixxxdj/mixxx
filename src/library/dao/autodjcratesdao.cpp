@@ -10,6 +10,10 @@
 #include "library/trackcollection.h"
 #include "library/dao/autodjcratesdao.h"
 
+// Make sure there are enough tracks in library such that
+// kPreferedPercent of them is a sufficiently large no.
+static const int kPreferredPercent = 25;
+
 AutoDJCratesDAO::AutoDJCratesDAO(QSqlDatabase& a_rDatabase,
                                  TrackDAO& a_rTrackDAO, CrateDAO& a_rCrateDAO,
                                  PlaylistDAO &a_rPlaylistDAO,
@@ -881,7 +885,29 @@ void AutoDJCratesDAO::slotPlayerInfoTrackUnloaded(QString group,
         }
     }
 }
-
+//
+// We are selecting the track in the following manner.
+// We divide the library tracks into two section . For which
+// we sort the library according to times_played and select a
+// percentage_of_prefered_tracks (25% by default) .
+//
+// What we do then is either select a random track from this %25
+// or a random track from the remaining 75% both with equal
+// probability .
+//
+// (Im assuming that 25% tracks are unplayed or very rarely played)
+//
+// This ensures that there is a 50% chance that an rarely played
+// track is returned .
+//
+// This is better than returning the least played track because
+// in that case there may be instances where the same track is
+// returned by this function on multiple successive calls which is
+// not desired.
+//
+// Further this also does not restrict our function to only retrieve
+// unplayed tracks (there is probably a reason they are unplayed).
+///
 int AutoDJCratesDAO::getRandomTrackIdFromLibrary(void) {
 
     // getRandomTrackId() would have already created
@@ -889,11 +915,44 @@ int AutoDJCratesDAO::getRandomTrackIdFromLibrary(void) {
     QSqlQuery oQuery(m_rDatabase);
 
     int iTrackId = -1;
+    int iTotalTracks = 0 ;
+    int beginIndex = 0;
+    int offset = 0;
+    int lastPreferredIndex = 0;
 
-    oQuery.prepare("SELECT library.id  "
-                "FROM library "
-                "ORDER BY RANDOM() "
-                "LIMIT 1");
+    oQuery.prepare("SELECT COUNT(*) FROM library ");
+    if (oQuery.exec()) {
+        if (oQuery.next()) {
+            iTotalTracks = oQuery.value(0).toInt();
+        }
+    } else {
+        LOG_FAILED_QUERY(oQuery);
+        return -1;
+    }
+
+    lastPreferredIndex = (kPreferredPercent * iTotalTracks)/100;
+
+    if ( qrand()% 2 == 0 ) {
+        // Select a track from the first [1, lastPreferedIndex]
+        beginIndex = 0;
+        offset = qrand()% lastPreferredIndex ;
+        qDebug() << "first part offs:" <<offset;
+    }
+    else {
+        // Select from [lastPreferredIdex+1,iTotalTracks];
+        beginIndex = lastPreferredIndex;
+        // We need a number between [0,Total-lastPreferedIndex]
+        offset = qrand() % (iTotalTracks-lastPreferredIndex);
+        qDebug() << "sec offs:" <<offset+beginIndex;
+    }
+    offset = beginIndex + offset;
+
+    oQuery.prepare("SELECT library.id"
+                " FROM library"
+                " ORDER BY timesplayed"
+                " LIMIT 1"
+                " OFFSET :offset");
+    oQuery.bindValue(":offset",offset);
     if (oQuery.exec()) {
         if (oQuery.next()) {
             //Get the trackId

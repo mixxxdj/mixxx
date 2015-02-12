@@ -128,11 +128,8 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
             this,SLOT(slotRandomQueue(int)));
     connect(m_pAutoDJView, SIGNAL(addRandomButton(bool)),
             this, SLOT(slotAddRandomTrack(bool)));
-    /*connect(this, SIGNAL(enableAddRandom(bool)),
-            m_pAutoDJView, SLOT(enableRandomButton(bool)));*/
-
+    
     // Let subscribers know whether it's possible to add a random track.
-    /*emit(enableAddRandom(true));*/
 #endif // __AUTODJCRATES__
 }
 
@@ -276,9 +273,10 @@ void AutoDJFeature::slotCrateAutoDjChanged(int crateId, bool added) {
         }
     }
     // Let subscribers know whether it's possible to add a random track.
-    // emit(enableAddRandom(true));
 #endif // __AUTODJCRATES__
 }
+// Adds a random track : this will be faster when there are sufficiently large 
+// tracks in the crates
 
 void AutoDJFeature::slotAddRandomTrack(bool) {
 #ifdef __AUTODJCRATES__
@@ -305,28 +303,27 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
             }
             failedRetriveAttempts += 1;
         }
-    }
+        // If we couldn't get a track from the crates , get one from the library
+        if (failedRetriveAttempts == kMaxRetriveAttempts || iTrackId == -1) {
+            qDebug () << "Could Not Load Random Tracks From Crate."
+                         " Attempting to load from library";
 
-    // If we couldn't get a track from the crates , get one from the library
-    if (failedRetriveAttempts == kMaxRetriveAttempts || iTrackId == -1) {
-        qDebug () << "Could Not Load Random Tracks From Crate."
-    	             " Attempting to load from library";
+            failedRetriveAttempts = 0;
+            while ( failedRetriveAttempts < kMaxRetriveAttempts ) {
 
-        failedRetriveAttempts = 0;
-        while ( failedRetriveAttempts < kMaxRetriveAttempts ) {
-
-            iTrackId = m_autoDjCratesDao.getRandomTrackIdFromLibrary();
-            if (iTrackId != -1) {
-                // Get the track info
-                TrackPointer addedTrack = (m_pTrackCollection->getTrackDAO()).getTrack(iTrackId);
-                playlistHasTrack = playlistDao.playlistHasTrack(iTrackId, m_iAutoDJPlaylistId);
-                if(addedTrack->exists() && !playlistHasTrack) {
-                    playlistDao.appendTrackToPlaylist(iTrackId, m_iAutoDJPlaylistId);
-                    m_pAutoDJView->onShow();
-                    return;
+                iTrackId = m_autoDjCratesDao.getRandomTrackIdFromLibrary();
+                if (iTrackId != -1) {
+                    // Get the track info
+                    TrackPointer addedTrack = (m_pTrackCollection->getTrackDAO()).getTrack(iTrackId);
+                    playlistHasTrack = playlistDao.playlistHasTrack(iTrackId, m_iAutoDJPlaylistId);
+                    if(addedTrack->exists() && !playlistHasTrack) {
+                        playlistDao.appendTrackToPlaylist(iTrackId, m_iAutoDJPlaylistId);
+                        m_pAutoDJView->onShow();
+                        return;
+                    }
                 }
+                failedRetriveAttempts += 1;
             }
-            failedRetriveAttempts += 1;
         }
     }
     // If control reaches here we it implies we couldn't load track from anywhere
