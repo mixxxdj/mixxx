@@ -10,9 +10,10 @@
 #include "library/trackcollection.h"
 #include "library/dao/autodjcratesdao.h"
 
-// Make sure there are enough tracks in library such that
-// kPreferedPercent of them is a sufficiently large no.
+
 static const int kPreferredPercent = 25;
+// This requires that there are enough tracks in library such that
+// kPrefered_Percent of them is a sufficiently large no.
 
 AutoDJCratesDAO::AutoDJCratesDAO(QSqlDatabase& a_rDatabase,
                                  TrackDAO& a_rTrackDAO, CrateDAO& a_rCrateDAO,
@@ -895,7 +896,7 @@ void AutoDJCratesDAO::slotPlayerInfoTrackUnloaded(QString group,
 // or a random track from the remaining 75% both with equal
 // probability .
 //
-// (Im assuming that 25% tracks are unplayed or very rarely played)
+// (Assuming that 25% tracks are unplayed or very rarely played)
 //
 // This ensures that there is a 50% chance that an rarely played
 // track is returned .
@@ -936,14 +937,12 @@ int AutoDJCratesDAO::getRandomTrackIdFromLibrary(void) {
         // Select a track from the first [1, lastPreferedIndex]
         beginIndex = 0;
         offset = qrand()% lastPreferredIndex ;
-        qDebug() << "first part offs:" <<offset;
     }
     else {
         // Select from [lastPreferredIdex+1,iTotalTracks];
         beginIndex = lastPreferredIndex;
         // We need a number between [0,Total-lastPreferedIndex]
         offset = qrand() % (iTotalTracks-lastPreferredIndex);
-        qDebug() << "sec offs:" <<offset+beginIndex;
     }
     offset = beginIndex + offset;
 

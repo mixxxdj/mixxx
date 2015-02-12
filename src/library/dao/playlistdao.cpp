@@ -961,7 +961,6 @@ bool PlaylistDAO::playlistHasTrack(const int trackId , const int playlistId) {
        LOG_FAILED_QUERY(query);
        return -1;
     }
-    qDebug() << "No of occurance of "<<noOfOccurancesOfTrack;
     return ( noOfOccurancesOfTrack > 0);
 }
 

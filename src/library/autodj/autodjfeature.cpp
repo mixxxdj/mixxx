@@ -129,7 +129,6 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
     connect(m_pAutoDJView, SIGNAL(addRandomButton(bool)),
             this, SLOT(slotAddRandomTrack(bool)));
     
-    // Let subscribers know whether it's possible to add a random track.
 #endif // __AUTODJCRATES__
 }
 
@@ -272,7 +271,6 @@ void AutoDJFeature::slotCrateAutoDjChanged(int crateId, bool added) {
             }
         }
     }
-    // Let subscribers know whether it's possible to add a random track.
 #endif // __AUTODJCRATES__
 }
 // Adds a random track : this will be faster when there are sufficiently large 
@@ -408,4 +406,5 @@ void AutoDJFeature::slotRandomQueue(int tracksToAdd) {
         tracksToAdd -= 1;
     }
 }
+
 #endif // __AUTODJCRATES__
