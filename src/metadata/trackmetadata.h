@@ -123,9 +123,9 @@ public:
     }
 
     // beats / minute
-    static const double BPM_UNDEFINED;
-    static const double BPM_MIN; // lower bound (exclusive)
-    static const double BPM_MAX; // upper bound (inclusive)
+    static const double kBpmUndefined;
+    static const double kBpmMin; // lower bound (exclusive)
+    static const double kBpmMax; // upper bound (inclusive)
     inline double getBpm() const {
         return m_bpm;
     }
@@ -133,7 +133,7 @@ public:
         return round(getBpm());
     }
     inline static bool isBpmValid(double bpm) {
-        return (BPM_MIN < bpm) && (BPM_MAX >= bpm);
+        return (kBpmMin < bpm) && (kBpmMax >= bpm);
     }
     inline bool isBpmValid() const {
         return isBpmValid(getBpm());
@@ -142,17 +142,17 @@ public:
         m_bpm = bpm;
     }
     inline void resetBpm() {
-        m_bpm = BPM_UNDEFINED;
+        m_bpm = kBpmUndefined;
     }
 
-    static const double REPLAYGAIN_UNDEFINED;
-    static const double REPLAYGAIN_MIN; // lower bound (exclusive)
-    static const double REPLAYGAIN_0DB;
+    static const double kReplayGainUndefined;
+    static const double kReplayGainMin; // lower bound (exclusive)
+    static const double kReplayGain0dB;
     inline double getReplayGain() const {
         return m_replayGain;
     }
     inline static bool isReplayGainValid(double replayGain) {
-        return REPLAYGAIN_MIN < replayGain;
+        return kReplayGainMin < replayGain;
     }
     inline bool isReplayGainValid() const {
         return isReplayGainValid(getReplayGain());
@@ -161,7 +161,7 @@ public:
         m_replayGain = replayGain;
     }
     inline void resetReplayGain() {
-        m_replayGain = REPLAYGAIN_UNDEFINED;
+        m_replayGain = kReplayGainUndefined;
     }
 
     // Parse and format BPM metadata

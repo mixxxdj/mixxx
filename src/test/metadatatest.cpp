@@ -57,7 +57,7 @@ TEST_F(MetadataTest, ParseBpmPrecision) {
 }
 
 TEST_F(MetadataTest, ParseBpmValidRange) {
-    for (int bpm100 = int(Mixxx::TrackMetadata::BPM_MIN) * 100; int(Mixxx::TrackMetadata::BPM_MAX) * 100 >= bpm100; ++bpm100) {
+    for (int bpm100 = int(Mixxx::TrackMetadata::kBpmMin) * 100; int(Mixxx::TrackMetadata::kBpmMax) * 100 >= bpm100; ++bpm100) {
         const double expectedValue = bpm100 / 100.0;
         const QString inputValues[] = {
                 QString("%1").arg(expectedValue),
@@ -75,9 +75,9 @@ TEST_F(MetadataTest, ParseBpmDecimalScaling) {
 }
 
 TEST_F(MetadataTest, ParseBpmInvalid) {
-    parseBpm("", false, Mixxx::TrackMetadata::BPM_UNDEFINED);
-    parseBpm("abcde", false, Mixxx::TrackMetadata::BPM_UNDEFINED);
-    parseBpm("0 dBA", false, Mixxx::TrackMetadata::BPM_UNDEFINED);
+    parseBpm("", false, Mixxx::TrackMetadata::kBpmUndefined);
+    parseBpm("abcde", false, Mixxx::TrackMetadata::kBpmUndefined);
+    parseBpm("0 dBA", false, Mixxx::TrackMetadata::kBpmUndefined);
 }
 
 TEST_F(MetadataTest, ParseReplayGainDbValidRange) {
@@ -94,7 +94,7 @@ TEST_F(MetadataTest, ParseReplayGainDbValidRange) {
             expectedValue = db2ratio(double(replayGainDb));
         } else {
             // special case: 0 dB -> undefined
-            expectedValue = Mixxx::TrackMetadata::REPLAYGAIN_UNDEFINED;
+            expectedValue = Mixxx::TrackMetadata::kReplayGainUndefined;
         }
         for (size_t i = 0; i < sizeof(inputValues) / sizeof(inputValues[0]); ++i) {
             parseReplayGain(inputValues[i], true, expectedValue);
@@ -106,9 +106,9 @@ TEST_F(MetadataTest, ParseReplayGainDbValidRange) {
 }
 
 TEST_F(MetadataTest, ParseReplayGainDbInvalid) {
-    parseReplayGain("", false, Mixxx::TrackMetadata::REPLAYGAIN_UNDEFINED);
-    parseReplayGain("abcde", false, Mixxx::TrackMetadata::REPLAYGAIN_UNDEFINED);
-    parseReplayGain("0 dBA", false, Mixxx::TrackMetadata::REPLAYGAIN_UNDEFINED);
+    parseReplayGain("", false, Mixxx::TrackMetadata::kReplayGainUndefined);
+    parseReplayGain("abcde", false, Mixxx::TrackMetadata::kReplayGainUndefined);
+    parseReplayGain("0 dBA", false, Mixxx::TrackMetadata::kReplayGainUndefined);
 }
 
 TEST_F(MetadataTest, ID3v2Year) {
