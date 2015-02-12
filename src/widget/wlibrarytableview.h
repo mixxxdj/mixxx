@@ -23,6 +23,7 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
                       ConfigKey vScrollBarPosKey);
     virtual ~WLibraryTableView();
     virtual void moveSelection(int delta);
+    virtual void updateGeometries();
 
   signals:
     void loadTrack(TrackPointer pTrack);
