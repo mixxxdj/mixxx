@@ -189,13 +189,12 @@ public:
         return dateTime.toString(Qt::ISODate);
     }
 
-    // Normalize a year string
-    static QString normalizeYear(QString year);
-
     // Parse and format the calendar year (for simplified display)
-    static const uint kCalendarYearInvalid = 0;
-    static uint parseCalendarYear(QString year);
-    static QString formatCalendarYear(QString year);
+    static const int kCalendarYearEmpty; // displayed as an empty string
+    static int parseCalendarYear(QString year, bool* pValid = 0);
+    static QString formatCalendarYear(QString year, bool* pValid = 0);
+
+    static QString reformatYear(QString year);
 
 private:
     QString m_artist;

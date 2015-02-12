@@ -226,7 +226,7 @@ void TrackInfoObject::getMetadata(Mixxx::TrackMetadata* pTrackMetadata) {
     pTrackMetadata->setTitle(getTitle());
     pTrackMetadata->setAlbum(getAlbum());
     pTrackMetadata->setAlbumArtist(getAlbumArtist());
-    pTrackMetadata->setYear(Mixxx::TrackMetadata::normalizeYear(getYear()));
+    pTrackMetadata->setYear(Mixxx::TrackMetadata::reformatYear(getYear()));
     pTrackMetadata->setGenre(getGenre());
     pTrackMetadata->setComposer(getComposer());
     pTrackMetadata->setGrouping(getGrouping());

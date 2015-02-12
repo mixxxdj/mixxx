@@ -12,6 +12,8 @@ namespace Mixxx {
 /*static*/ const double TrackMetadata::kReplayGainMin = 0.0; // lower bound (inclusive)
 /*static*/ const double TrackMetadata::kReplayGain0dB = 1.0;
 
+/*static*/ const int TrackMetadata::kCalendarYearEmpty = 0; // displayed as an empty string
+
 double TrackMetadata::parseBpm(const QString& sBpm, bool* pValid) {
     if (pValid) {
         *pValid = false;
@@ -130,65 +132,63 @@ QString TrackMetadata::formatReplayGain(double replayGain) {
     }
 }
 
-QString TrackMetadata::normalizeYear(QString year) {
-    const QDateTime yearDateTime(parseDateTime(year));
-    if (yearDateTime.isValid()) {
-        return yearDateTime.toString();
-    }
-    const QDate yearDate(yearDateTime.date());
-    if (yearDate.isValid()) {
-        return yearDate.toString();
-    }
-    bool yearUIntValid = false;
-    const int yearUInt = year.toUInt(&yearUIntValid);
-    if (yearUIntValid) {
-        if (0 == yearUInt) {
-            // special case: empty
-            return QString();
-        }
-        const QString yyyy(QString::number(yearUInt));
-        if (4 == yyyy.length()) {
-            return yyyy;
-        }
-    }
-    // unmodified
-    return year;
-}
-
-uint TrackMetadata::parseCalendarYear(QString year) {
+int TrackMetadata::parseCalendarYear(QString year, bool* pValid) {
     const QDateTime yearDateTime(parseDateTime(year));
     if (yearDateTime.date().isValid()) {
+        if (pValid) {
+            *pValid = true;
+        }
         return yearDateTime.date().year();
     } else {
-        bool uintValid = false;
-        uint uintYear = year.toUInt(&uintValid);
-        if (uintValid) {
-            return uintYear;
+        bool calendarYearValid = false;
+        const int calendarYear = year.toInt(&calendarYearValid);
+        if (pValid) {
+            *pValid = calendarYearValid;
+        }
+        if (calendarYearValid) {
+            return calendarYear;
+        } else {
+            return kCalendarYearEmpty;
         }
     }
-    return kCalendarYearInvalid;
 }
 
-QString TrackMetadata::formatCalendarYear(QString year) {
-    const QDateTime yearDateTime(parseDateTime(year));
-    if (yearDateTime.date().isValid()) {
-        // numeric year
-        return QString::number(yearDateTime.date().year());
-    } else {
-        bool uintValid = false;
-        uint uintYear = year.toUInt(&uintValid);
-        if (uintValid) {
-            if (kCalendarYearInvalid == uintYear) {
-                // empty string
-                return QString();
-            } else {
-                // numeric string
-                return QString::number(uintYear);
-            }
-        }
+QString TrackMetadata::formatCalendarYear(QString year, bool* pValid) {
+    bool calendarYearValid = false;
+    int calendarYear = parseCalendarYear(year, &calendarYearValid);
+    if (pValid) {
+        *pValid = calendarYearValid;
     }
-    // unmodified
-    return year;
+    if (calendarYearValid) {
+        if (kCalendarYearEmpty == calendarYear) {
+            return QString(); // empty string
+        } else {
+            return QString::number(calendarYear);
+        }
+    } else {
+        return year; // unmodified
+    }
+}
+
+QString TrackMetadata::reformatYear(QString year) {
+    const QDateTime dateTime(parseDateTime(year));
+    if (dateTime.isValid()) {
+        // date/time
+        return formatDateTime(dateTime);
+    }
+    const QDate date(dateTime.date());
+    if (date.isValid()) {
+        // only date
+        return formatDate(date);
+    }
+    bool calendarYearValid = false;
+    const QString calendarYear(formatCalendarYear(year, &calendarYearValid));
+    if (calendarYearValid) {
+        // only calendar year
+        return calendarYear;
+    }
+    // just trim and simplify whitespaces
+    return year.simplified();
 }
 
 TrackMetadata::TrackMetadata() :
