@@ -672,14 +672,11 @@ bool writeTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
             writeID3v2TextIdentificationFrame(pTag, "TYER", date.toString(ID3V2_TYER_FORMAT), true);
             writeID3v2TextIdentificationFrame(pTag, "TDAT", date.toString(ID3V2_TDAT_FORMAT), true);
         } else {
-            // Numeric year
-            bool yearUIntValid = false;
-            const int yearUInt = trackMetadata.getYear().toUInt(&yearUIntValid);
-            if (yearUIntValid) {
-                const QString tyer(QString::number(yearUInt));
-                if (ID3V2_TYER_FORMAT.length() == tyer.length()) {
-                    writeID3v2TextIdentificationFrame(pTag, "TYER", tyer, true);
-                }
+            // Fallback to calendar year
+            bool calendarYearValid = false;
+            const QString calendarYear(TrackMetadata::formatCalendarYear(trackMetadata.getYear(), &calendarYearValid));
+            if (calendarYearValid) {
+                writeID3v2TextIdentificationFrame(pTag, "TYER", calendarYear, true);
             }
         }
     }

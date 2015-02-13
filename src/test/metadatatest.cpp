@@ -115,6 +115,8 @@ TEST_F(MetadataTest, ID3v2Year) {
     const char* kYears[] = {
             " 1987  ",
             " 2001-01-01",
+            "1997-12", // yyyy-MM
+            "1977-W43", // year + week
             "2002 -12 - 31 ",
             "2015 -02 - 04T 18:43",
             "2015 -02 - 04  18:43",
