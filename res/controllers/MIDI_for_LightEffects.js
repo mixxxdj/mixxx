@@ -12,6 +12,7 @@
  * 25.01.2015  Initial version
  * 25.01.2015  Improved printDebug with debuglevel
  *             Improved Play callback to determine beatdeck only from 'play' buttons
+ * 13.02.2015  Improved printDebug with script name
  */
 
 function MIDI_for_LightEffects () {}
@@ -28,7 +29,7 @@ printDebug = function ( level, tag, text ) {
     var date = new Date();
     var timestamp = ('0'+date.getHours()).slice(-2)+":"+('0'+date.getMinutes()).slice(-2)+":"+('0'+date.getSeconds()).slice(-2);
     if (level<=maxdebuglevel) { 
-        print(timestamp+" "+tag+"("+level+"): "+text);
+        print("MIDI_for_LightEffects "+timestamp+" "+tag+"("+level+"): "+text);
 //        script.midiDebug(0,0,0,timestamp+" "+tag+"("+level+"): "+text,0);
     }
 }
@@ -505,11 +506,11 @@ MIDI_for_LightEffects.BeatOutputToMidi = function(beat_active,deck,control) {   
     if (deckbpm <= 0) { deckbpm = 0; }
     if (deckbpm >= 127) { deckbpm = 127; }
     if (beat_active == true ) { // Beat is on, send note on
-        printDebug(5,"BeatOutputToMidi:"," Deck="+deck+" BPM="+deckbpm);
+        printDebug(5,"BeatOutputToMidi"," Deck="+deck+" BPM="+deckbpm);
         midi.sendShortMsg(0x90,50,0x64);   // Beat: Note D on value 64
         midi.sendShortMsg(0x90,52,deckbpm);   // BPM: Note E on value = BPM
     } else { // Beat ist aus, sende Note aus
-        printDebug(5,"BeatOutputToMidi:"," Deck="+deck+" beat off");
+        printDebug(5,"BeatOutputToMidi"," Deck="+deck+" beat off");
         midi.sendShortMsg(0x90,50,0x0);   // Nobeat: Note D on value 0
         midi.sendShortMsg(0x80,50,0x0);   // Nobeat: Note D off value 0
     }
