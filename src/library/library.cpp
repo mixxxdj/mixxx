@@ -188,8 +188,6 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
             pTrackTableView, SLOT(setTrackTableFont(QFont)));
     connect(this, SIGNAL(setTrackTableRowHeight(int)),
             pTrackTableView, SLOT(setTrackTableRowHeight(int)));
-    connect(this, SIGNAL(updateTrackModel()),
-            pTrackTableView, SLOT(slotUpdateTrackModel()));
 
     m_pLibraryControl->bindWidget(pLibraryWidget, pKeyboard);
 
@@ -322,7 +320,6 @@ void Library::slotRequestRemoveDir(QString dir, RemovalType removalType) {
     // Remove the directory from the directory list.
     m_pTrackCollection->getDirectoryDAO().removeDirectory(dir);
 
-    emit(updateTrackModel());
     // Also update the config file if necessary so that downgrading is still
     // possible.
     QString confDir = m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR);

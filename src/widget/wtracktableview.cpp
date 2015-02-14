@@ -500,13 +500,6 @@ void WTrackTableView::loadSelectionToGroup(QString group, bool play) {
     }
 }
 
-void WTrackTableView::slotUpdateTrackModel() {
-    TrackModel* trackModel = getTrackModel();
-    if (trackModel) {
-        trackModel->select();
-    }
-}
-
 void WTrackTableView::slotRemove() {
     QModelIndexList indices = selectionModel()->selectedRows();
     if (indices.size() > 0) {

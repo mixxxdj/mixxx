@@ -95,7 +95,6 @@ public:
   signals:
     void showTrackModel(QAbstractItemModel* model);
     void switchToView(const QString& view);
-    void updateTrackModel();
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
     void restoreSearch(const QString&);

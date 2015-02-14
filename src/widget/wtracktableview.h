@@ -49,7 +49,6 @@ class WTrackTableView : public WLibraryTableView {
     void slotMouseDoubleClicked(const QModelIndex &);
     void slotUnhide();
     void slotPurge();
-    void slotUpdateTrackModel();
 
   private slots:
     void slotRemove();
