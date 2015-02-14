@@ -12,10 +12,18 @@
 # no thanks dpkg-buildpackage, we will handle our own C++ optimizations
 DEB_BUILD_OPTIONS= noopt
 
-# By default, optimize=9 will turn on basic GCC optimizations combined with
-# -mtune=generic, which should be safe.
-MIXXX_SCONS_FLAGS = optimize=9 virtualize=0
+# optimize=portable 
+# for sse2 CPUs (>= Pentium 4) which is the minimum requiremnt for using Mixxx
+# this will set CCFLAGS=-mtune=generic -msse2 -mfpmath=sse
+# If you need a pure i386 code which is the Debian standard use 
+# optimize=legacy (not recomended) 
+# this sets CCFLAGS=-mtune=generic only 
+# virtualize=0 switches of keeping build files in the cache folder 
+MIXXX_SCONS_FLAGS = optimize=portable virtualize=0
 
+# If ARCH is set to a different architecture when running pbuilder, pbuilder
+# will be set to create an environment to build packages for the architecture 
+# specified in ARCH. 
 ifneq (,$(findstring i386,$(ARCH)))
 	MIXXX_SCONS_FLAGS += machine=x86
 endif
