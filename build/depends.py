@@ -381,10 +381,12 @@ class SoundTouch(Dependence):
     SOUNDTOUCH_PATH = 'soundtouch-1.8.0'
 
     def sse_enabled(self, build):
-        optimize = int(util.get_flags(build.env, 'optimize', 1))
+        # Prevents circular import.
+        from features import Optimize
+        optimize = (build.flags['optimize'] if 'optimize' in build.flags
+                    else Optimize.get_optimization_level())
         return (build.machine_is_64bit or
-                (build.toolchain_is_msvs and optimize > 2) or
-                (build.toolchain_is_gnu and optimize > 1))
+                optimize in (Optimize.LEVEL_PORTABLE, Optimize.LEVEL_NATIVE))
 
     def sources(self, build):
         sources = ['engine/enginebufferscalest.cpp',
@@ -1006,7 +1008,8 @@ class MixxxCore(Feature):
             build.env.Append(CCFLAGS='-pipe')
             build.env.Append(CCFLAGS='-Wall')
             build.env.Append(CCFLAGS='-Wextra')
-            # TODO(XXX) always generate debugging info?
+
+            # Always generate debugging info.
             build.env.Append(CCFLAGS='-g')
         elif build.toolchain_is_msvs:
             # Validate the specified winlib directory exists
