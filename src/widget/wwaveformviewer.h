@@ -20,7 +20,7 @@ class ControlPotmeter;
 class WWaveformViewer : public WWidget {
     Q_OBJECT
   public:
-    WWaveformViewer(const char *group, ConfigObject<ConfigValue>* pConfig, QWidget *parent=0);
+    WWaveformViewer(const StringAtom& group, ConfigObject<ConfigValue>* pConfig, QWidget *parent=0);
     virtual ~WWaveformViewer();
 
     const StringAtom& getGroup() const { return m_pGroup;}

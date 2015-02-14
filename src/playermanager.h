@@ -10,6 +10,7 @@
 #include "configobject.h"
 #include "trackinfoobject.h"
 #include "control/stringatom.h"
+#include "util/assert.h"
 
 class ControlObject;
 class Deck;
@@ -116,19 +117,11 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     void bindToLibrary(Library* pLibrary);
 
     // Returns the group for the ith sampler where i is zero indexed
-    static StringAtom groupForSampler(int i) {
-        return StringAtom(QString("[Sampler%1]").arg(i+1));
-    }
-
+    static StringAtom groupForSampler(int i, bool add = false);
     // Returns the group for the ith deck where i is zero indexed
-    static StringAtom groupForDeck(int i) {
-        return StringAtom(QString("[Channel%1]").arg(i+1));
-    }
-
+    static StringAtom groupForDeck(int i, bool add = false);
     // Returns the group for the ith PreviewDeck where i is zero indexed
-    static StringAtom groupForPreviewDeck(int i) {
-        return StringAtom(QString("[PreviewDeck%1]").arg(i+1));
-    }
+    static StringAtom groupForPreviewDeck(int i, bool add = false);
 
     // Used to determine if the user has configured an input for the given vinyl deck.
     bool hasVinylInput(int inputnum) const;

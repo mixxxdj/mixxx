@@ -34,7 +34,7 @@ class Waveform;
 class WOverview : public WWidget {
     Q_OBJECT
   public:
-    WOverview(const char* pGroup, ConfigObject<ConfigValue>* pConfig, QWidget* parent=NULL);
+    WOverview(const StringAtom& group, ConfigObject<ConfigValue>* pConfig, QWidget* parent=NULL);
     virtual ~WOverview();
 
     void setup(QDomNode node, const SkinContext& context);
@@ -94,7 +94,7 @@ class WOverview : public WWidget {
         return (static_cast<double>(position) + m_b) / m_a;
     }
 
-    const QString m_group;
+    const StringAtom m_group;
     ConfigObject<ConfigValue>* m_pConfig;
     ControlObjectThread* m_endOfTrackControl;
     double m_endOfTrack;

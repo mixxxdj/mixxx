@@ -23,6 +23,13 @@ class StringAtom {
         return m_pString ? true : false;
     }
 
+    inline bool isEmpty() {
+        if (m_pString) {
+            return m_pString->isEmpty();
+        }
+        return true;
+    }
+
     inline bool operator==(const StringAtom& other) const {
         return this->m_pString == other.m_pString;
     }

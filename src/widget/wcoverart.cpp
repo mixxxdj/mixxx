@@ -16,7 +16,7 @@
 
 WCoverArt::WCoverArt(QWidget* parent,
                      ConfigObject<ConfigValue>* pConfig,
-                     const QString& group)
+                     const StringAtom& group)
         : QWidget(parent),
           WBaseWidget(this),
           m_group(group),

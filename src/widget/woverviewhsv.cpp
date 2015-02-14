@@ -7,9 +7,9 @@
 #include "util/math.h"
 #include "waveform/waveform.h"
 
-WOverviewHSV::WOverviewHSV(const char* pGroup,
+WOverviewHSV::WOverviewHSV(const StringAtom& group,
                            ConfigObject<ConfigValue>* pConfig, QWidget* parent)
-        : WOverview(pGroup, pConfig, parent)  {
+        : WOverview(group, pConfig, parent)  {
 }
 
 bool WOverviewHSV::drawNextPixmapPart() {

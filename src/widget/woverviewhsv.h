@@ -5,7 +5,7 @@
 
 class WOverviewHSV : public WOverview {
   public:
-    WOverviewHSV(const char *pGroup, ConfigObject<ConfigValue>* pConfig, QWidget* parent);
+    WOverviewHSV(const StringAtom& pGroup, ConfigObject<ConfigValue>* pConfig, QWidget* parent);
 
   private:
     virtual bool drawNextPixmapPart();

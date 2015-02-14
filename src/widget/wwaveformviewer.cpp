@@ -16,7 +16,7 @@
 #include "util/dnd.h"
 #include "util/math.h"
 
-WWaveformViewer::WWaveformViewer(const char *group, ConfigObject<ConfigValue>* pConfig, QWidget * parent)
+WWaveformViewer::WWaveformViewer(const StringAtom& group, ConfigObject<ConfigValue>* pConfig, QWidget * parent)
         : WWidget(parent),
           m_pGroup(group),
           m_pConfig(pConfig),

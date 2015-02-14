@@ -19,7 +19,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
     Q_OBJECT
   public:
     WCoverArt(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
-              const QString& group);
+              const StringAtom& group);
     virtual ~WCoverArt();
 
     void setup(QDomNode node, const SkinContext& context);
@@ -52,7 +52,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
   private:
     QPixmap scaledCoverArt(const QPixmap& normal);
 
-    QString m_group;
+    StringAtom m_group;
     ConfigObject<ConfigValue>* m_pConfig;
     bool m_bEnable;
     WCoverArtMenu* m_pMenu;

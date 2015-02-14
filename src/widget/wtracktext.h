@@ -13,7 +13,7 @@
 class WTrackText : public WLabel {
     Q_OBJECT
   public:
-    WTrackText(const char* group, ConfigObject<ConfigValue>* pConfig, QWidget *parent);
+    WTrackText(const StringAtom& group, ConfigObject<ConfigValue>* pConfig, QWidget *parent);
     virtual ~WTrackText();
 
   signals:
@@ -31,7 +31,7 @@ class WTrackText : public WLabel {
     void dropEvent(QDropEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
 
-    const char* m_pGroup;
+    const StringAtom m_pGroup;
     ConfigObject<ConfigValue>* m_pConfig;
     TrackPointer m_pCurrentTrack;
 };

@@ -17,7 +17,7 @@
 #include "wimagestore.h"
 
 // The SampleBuffers format enables antialiasing.
-WSpinny::WSpinny(QWidget* parent, const QString& group,
+WSpinny::WSpinny(QWidget* parent, const StringAtom& group,
                  ConfigObject<ConfigValue>* pConfig,
                  VinylControlManager* pVCMan)
         : QGLWidget(QGLFormat(QGL::SampleBuffers), parent, SharedGLContext::getWidget()),

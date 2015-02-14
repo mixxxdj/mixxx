@@ -6,9 +6,9 @@
 #include "util/math.h"
 #include "waveform/waveform.h"
 
-WOverviewRGB::WOverviewRGB(const char* pGroup,
+WOverviewRGB::WOverviewRGB(const StringAtom& group,
                            ConfigObject<ConfigValue>* pConfig, QWidget* parent)
-        : WOverview(pGroup, pConfig, parent)  {
+        : WOverview(group, pConfig, parent)  {
 }
 
 bool WOverviewRGB::drawNextPixmapPart() {

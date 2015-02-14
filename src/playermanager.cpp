@@ -264,7 +264,7 @@ void PlayerManager::addConfiguredDecks() {
 
 void PlayerManager::addDeckInner() {
     // Do not lock m_mutex here.
-    StringAtom group = groupForDeck(m_decks.count());
+    StringAtom group = groupForDeck(m_decks.count(), true);
     DEBUG_ASSERT_AND_HANDLE(!m_players.contains(group)) {
         return;
     }
@@ -321,7 +321,7 @@ void PlayerManager::addSampler() {
 
 void PlayerManager::addSamplerInner() {
     // Do not lock m_mutex here.
-    StringAtom group = groupForSampler(m_samplers.count());
+    StringAtom group = groupForSampler(m_samplers.count(), true);
 
     DEBUG_ASSERT_AND_HANDLE(!m_players.contains(group)) {
         return;
@@ -349,7 +349,7 @@ void PlayerManager::addPreviewDeck() {
 
 void PlayerManager::addPreviewDeckInner() {
     // Do not lock m_mutex here.
-    StringAtom group = groupForPreviewDeck(m_preview_decks.count());
+    StringAtom group = groupForPreviewDeck(m_preview_decks.count(), true);
     DEBUG_ASSERT_AND_HANDLE(!m_players.contains(group)) {
         return;
     }
@@ -470,4 +470,55 @@ void PlayerManager::slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack) {
         }
         ++it;
     }
+}
+
+// static
+StringAtom PlayerManager::groupForSampler(int i, bool add) {
+    static QList<StringAtom> groupForSamplerList;
+    if (add) {
+        DEBUG_ASSERT_AND_HANDLE(i == groupForSamplerList.count()) {
+            return StringAtom();
+        }
+        StringAtom group = StringAtom(QString("[Sampler%1]").arg(i+1));
+        groupForSamplerList.append(group);
+        return group;
+    }
+    DEBUG_ASSERT_AND_HANDLE(i < groupForSamplerList.count()) {
+        return StringAtom();
+    }
+    return groupForSamplerList.at(i);
+}
+
+//static
+StringAtom PlayerManager::groupForDeck(int i, bool add) {
+    static QList<StringAtom> groupForDeckList;
+    if (add) {
+        DEBUG_ASSERT_AND_HANDLE(i == groupForDeckList.count()) {
+            return StringAtom();
+        }
+        StringAtom group = StringAtom(QString("[Channel%1]").arg(i+1));
+        groupForDeckList.append(group);
+        return group;
+    }
+    DEBUG_ASSERT_AND_HANDLE(i < groupForDeckList.count()) {
+        return StringAtom();
+    }
+    return groupForDeckList.at(i);
+}
+
+//static
+StringAtom PlayerManager::groupForPreviewDeck(int i, bool add) {
+    static QList<StringAtom> groupForPreviewDeckList;
+    if (add) {
+        DEBUG_ASSERT_AND_HANDLE(i == groupForPreviewDeckList.count()) {
+            return StringAtom();
+        }
+        StringAtom group = StringAtom(QString("[PreviewDeck%1]").arg(i+1));
+        groupForPreviewDeckList.append(group);
+        return group;
+    }
+    DEBUG_ASSERT_AND_HANDLE(i < groupForPreviewDeckList.count()) {
+        return StringAtom();
+    }
+    return groupForPreviewDeckList.at(i);
 }

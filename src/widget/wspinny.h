@@ -22,7 +22,7 @@ class VinylControlManager;
 class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityListener {
     Q_OBJECT
   public:
-    WSpinny(QWidget* parent, const QString& group,
+    WSpinny(QWidget* parent, const StringAtom& group,
             ConfigObject<ConfigValue>* pConfig,
             VinylControlManager* pVCMan);
     virtual ~WSpinny();
@@ -68,7 +68,7 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     QPixmap scaledCoverArt(const QPixmap& normal);
 
   private:
-    QString m_group;
+    StringAtom m_group;
     ConfigObject<ConfigValue>* m_pConfig;
     QImage* m_pBgImage;
     QImage* m_pMaskImage;

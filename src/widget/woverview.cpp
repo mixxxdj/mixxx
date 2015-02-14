@@ -29,18 +29,19 @@
 #include "util/math.h"
 #include "util/timer.h"
 #include "util/dnd.h"
+#include "control/stringatom.h"
 
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
 
-WOverview::WOverview(const char *pGroup, ConfigObject<ConfigValue>* pConfig, QWidget* parent) :
+WOverview::WOverview(const StringAtom& group, ConfigObject<ConfigValue>* pConfig, QWidget* parent) :
         WWidget(parent),
         m_pWaveformSourceImage(NULL),
         m_actualCompletion(0),
         m_pixmapDone(false),
         m_waveformPeak(-1.0),
         m_diffGain(0),
-        m_group(pGroup),
+        m_group(group),
         m_pConfig(pConfig),
         m_endOfTrack(0),
         m_bDrag(false),
