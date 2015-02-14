@@ -1044,7 +1044,7 @@ Result writeTrackMetadataIntoFile(const TrackMetadata& trackMetadata, QString fi
         qWarning() << "Failed to write track metadata into file" << fileName << "of type" << fileType;
         return ERR;
     }
-    if (pFile->save()) {
+    if (!pFile->save()) {
         qWarning() << "Failed to save file" << fileName;
         return ERR;
     }
