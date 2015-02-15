@@ -1086,8 +1086,17 @@ class Optimize(Feature):
 
             if optimize_level == Optimize.LEVEL_PORTABLE:
                 # portable: sse2 CPU (>= Pentium 4)
-                self.status = "portable: sse2 CPU (>= Pentium 4)"
-                build.env.Append(CCFLAGS='-mtune=generic -msse2 -mfpmath=sse')
+                if build.architecture_is_x86: 
+                    self.status = "portable: sse2 CPU (>= Pentium 4)"
+                    build.env.Append(CCFLAGS='-mtune=generic')
+                    # -mtune=generic pick the most common, but compatible options.
+                    # on arm platforms equivalent to -march=arch 
+                    if not build.machine_is_64bit:
+                        # the sse flags are not set by default on 32 bit bilds 
+                        # but are not supported on arm builds                     
+                        build.env.Append(CCFLAGS='-msse2 -mfpmath=sse') 
+                else:
+                    self.status = "portable"
                 # this sets macros __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
                 # This should be our default build for distribution
                 # It's a little sketchy, but turning on SSE2 will gain
@@ -1101,15 +1110,23 @@ class Optimize(Feature):
                 # Note: SSE2 is a core part of x64 CPUs
             elif optimize_level == Optimize.LEVEL_NATIVE:
                 self.status = "native: tuned for this CPU (%s)" % build.machine
-                build.env.Append(CCFLAGS='-march=native -mfpmath=sse')
+                build.env.Append(CCFLAGS='-march=native')
                 # http://en.chys.info/2010/04/what-exactly-marchnative-means/
                 # Note: requires gcc >= 4.2.0
                 # macros like __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
                 # are set automaticaly
+                if build.architecture_is_x86 and not build.machine_is_64bit:
+                    # the sse flags are not set by default on 32 bit bilds 
+                    # but are not supported on arm builds  
+                    build.env.Append(CCFLAGS='-msse2 -mfpmath=sse')
             elif optimize_level == Optimize.LEVEL_LEGACY:
-                self.status = "legacy: pure i386 code"
-                build.env.Append(CCFLAGS='-mtune=generic')
-                # -mtune=generic pick the most common, but compatible options.
+                if build.architecture_is_x86:
+                    self.status = "legacy: pure i386 code"
+                    build.env.Append(CCFLAGS='-mtune=generic')
+                    # -mtune=generic pick the most common, but compatible options.
+                    # on arm platforms equivalent to -march=arch 
+                else: 
+                    self.status = "legacy"    
             else:
                 # Not possible to reach this code if enabled is written
                 # correctly.
