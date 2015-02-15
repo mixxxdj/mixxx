@@ -488,7 +488,6 @@
           Verdana, sans-serif;
     color: #ddd;
     background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
-    padding: 1px;
     margin: 1px;
 }
 
@@ -500,7 +499,6 @@
           Verdana, sans-serif;
     color: #ddd;
     background-color: #c00a09;
-    padding: 1px;
     margin: 1px;
 }
 
