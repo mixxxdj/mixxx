@@ -380,14 +380,6 @@ class ReplayGain(Dependence):
 class SoundTouch(Dependence):
     SOUNDTOUCH_PATH = 'soundtouch-1.8.0'
 
-    def sse_enabled(self, build):
-        # Prevents circular import.
-        from features import Optimize
-        optimize = (build.flags['optimize'] if 'optimize' in build.flags
-                    else Optimize.get_optimization_level())
-        return (build.machine_is_64bit or
-                optimize in (Optimize.LEVEL_PORTABLE, Optimize.LEVEL_NATIVE))
-
     def sources(self, build):
         return ['engine/enginebufferscalest.cpp',
                 '#lib/%s/AAFilter.cpp' % self.SOUNDTOUCH_PATH,
