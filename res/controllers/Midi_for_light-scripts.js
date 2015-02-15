@@ -12,7 +12,7 @@
 function midi_for_light() {}
 
 // make here your personal settings
-var midi_channel = 11;               // set midi_channel. Valid range: 1 to 16.  
+var midi_channel = 1;                // set midi_channel. Valid range: 1 to 16.  
 var enable_mtc_timecode = true;      // set to false if you not need midi time code
 var enable_vu_meter_global = true;   // set to false if you not need VU-Meter
 // END make here your personal settings
@@ -453,5 +453,5 @@ midi_for_light.deckBeatOutputToMidi = function(value, group, control) { // send 
 
 
 // ----------- examples & source WWW
-// http://mixxx.org/wiki/doku.php/midi_scripting  bei MyController.elapsedTime = function (deck) {
+// http://mixxx.org/wiki/doku.php/midi_scripting
 // http://mixxx.org/wiki/doku.php/mixxxcontrols
