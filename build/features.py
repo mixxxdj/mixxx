@@ -778,24 +778,41 @@ class Opus(Feature):
         return "Opus (RFC 6716) support"
 
     def enabled(self, build):
-        build.flags['opus'] = util.get_flags(build.env, 'opus', 0)
+        # Default Opus to on but only throw an error if it was explicitly
+        # requested.
+        if 'opus' in build.flags:
+            return int(build.flags['opus']) > 0
+        build.flags['opus'] = util.get_flags(build.env, 'opus', 1)
         if int(build.flags['opus']):
             return True
         return False
 
     def add_options(self, build, vars):
         vars.Add('opus', 'Set to 1 to enable Opus (RFC 6716) support \
-                           (supported are Opus 1.0 and above and Opusfile 0.2 and above)', 0)
+                           (supported are Opus 1.0 and above and Opusfile 0.2 and above)', 1)
 
     def configure(self, build, conf):
         if not self.enabled(build):
             return
+
+        # Only block the configure if opus was explicitly requested.
+        explicit = 'opus' in SCons.ARGUMENTS
+
         # Support for Opus (RFC 6716)
         # More info http://http://www.opus-codec.org/
         if not conf.CheckLib(['opus', 'libopus']):
-            raise Exception('Could not find libopus.')
+            if explicit:
+                raise Exception('Could not find libopus.')
+            else:
+                build.flags['opus'] = 0
+            return
         if not conf.CheckLib(['opusfile', 'libopusfile']):
-            raise Exception('Could not find libopusfile.')
+            if explicit:
+                raise Exception('Could not find libopusfile.')
+            else:
+                build.flags['opus'] = 0
+            return
+
         build.env.Append(CPPDEFINES='__OPUS__')
 
         if build.platform_is_linux or build.platform_is_bsd:
