@@ -10,10 +10,8 @@
 #include "library/trackcollection.h"
 #include "library/dao/autodjcratesdao.h"
 
-
-static const int kPreferredPercent = 25;
-// This requires that there are enough tracks in library such that
-// kPrefered_Percent of them is a sufficiently large no.
+// Percentage of most and least played tracks to ignore
+static const int kLeastPreferredPercent = 15;
 
 AutoDJCratesDAO::AutoDJCratesDAO(QSqlDatabase& a_rDatabase,
                                  TrackDAO& a_rTrackDAO, CrateDAO& a_rCrateDAO,
@@ -888,40 +886,34 @@ void AutoDJCratesDAO::slotPlayerInfoTrackUnloaded(QString group,
 }
 //
 // We are selecting the track in the following manner.
-// We divide the library tracks into two section . For which
+// We divide the library tracks into three section . For which
 // we sort the library according to times_played and select a
-// percentage_of_prefered_tracks (25% by default) .
-//
-// What we do then is either select a random track from this %25
-// or a random track from the remaining 75% both with equal
-// probability .
-//
-// (Assuming that 25% tracks are unplayed or very rarely played)
-//
-// This ensures that there is a 50% chance that an rarely played
-// track is returned .
-//
-// This is better than returning the least played track because
-// in that case there may be instances where the same track is
-// returned by this function on multiple successive calls which is
-// not desired.
-//
+// percentage_of_prefered_tracks (70% by default ignoring the least .
+// played 15% and most played 15% ) We select a random track from this %70
+// or a random track from the remaining 30%  3 Times more preference to
+// the middle 70% as per this scheme
+// This is better than returning the least played track 
 // Further this also does not restrict our function to only retrieve
 // unplayed tracks (there is probably a reason they are unplayed).
-///
-int AutoDJCratesDAO::getRandomTrackIdFromLibrary(void) {
+//
+int AutoDJCratesDAO::getRandomTrackIdFromLibrary(const int iPlaylistId) {
 
     // getRandomTrackId() would have already created
     // the temporary auto-DJ-crates database.
     QSqlQuery oQuery(m_rDatabase);
 
-    int iTrackId = -1;
-    int iTotalTracks = 0 ;
-    int beginIndex = 0;
-    int offset = 0;
-    int lastPreferredIndex = 0;
+    int iTrackId = -1, iTotalTracks = 0,beginIndex = 0,offset = 0;
+    // We ignore traks from [0,ignoreIndex1] and [ignoreIndex2+1,most_played_Track]
+    int iIgnoreIndex1 = 0,iIgnoreIndex2 = 0;
 
-    oQuery.prepare("SELECT COUNT(*) FROM library ");
+    oQuery.prepare("SELECT COUNT(*)"
+                   " FROM library"
+                   " WHERE id NOT IN"
+                   " ( SELECT track_id "
+                   " FROM PlaylistTracks"
+                   " WHERE playlist_id = :id )"
+                   " AND mixxx_deleted != 1");
+    oQuery.bindValue(":id",iPlaylistId);
     if (oQuery.exec()) {
         if (oQuery.next()) {
             iTotalTracks = oQuery.value(0).toInt();
@@ -930,27 +922,44 @@ int AutoDJCratesDAO::getRandomTrackIdFromLibrary(void) {
         LOG_FAILED_QUERY(oQuery);
         return -1;
     }
+    
+    iIgnoreIndex1 = (kLeastPreferredPercent * iTotalTracks)/100;
+    iIgnoreIndex2 = iTotalTracks - iIgnoreIndex1;
+    int iRandomNo = qrand()% 8 ;
 
-    lastPreferredIndex = (kPreferredPercent * iTotalTracks)/100;
-
-    if ( qrand()% 2 == 0 ) {
-        // Select a track from the first [1, lastPreferedIndex]
+    if (iRandomNo == 0  ) {
+        // Select a track from the first [1, iIgnoredIndex1]
         beginIndex = 0;
-        offset = qrand()% lastPreferredIndex ;
+        offset = qrand()% iIgnoreIndex1 +1 ;
+    }
+    else if (iRandomNo == 1 ){
+        // Select from [iIgnoredIndex2+1,iTotalTracks];
+        beginIndex = iIgnoreIndex2;
+        // We need a number between [0,Total-lastPreferedIndex]
+        offset = qrand() % (iTotalTracks-iIgnoreIndex2)+1;
     }
     else {
-        // Select from [lastPreferredIdex+1,iTotalTracks];
-        beginIndex = lastPreferredIndex;
-        // We need a number between [0,Total-lastPreferedIndex]
-        offset = qrand() % (iTotalTracks-lastPreferredIndex);
+        // Select from [iIgnoreIndex1+1,iIgnoreIndex2];
+        beginIndex = iIgnoreIndex1;
+        // We need a number between [1,iIgnoreIndex2-iIgnoreIndex1]
+        offset = qrand() % (iIgnoreIndex2-iIgnoreIndex1)+1;
     }
     offset = beginIndex + offset;
 
-    oQuery.prepare("SELECT library.id"
-                " FROM library"
-                " ORDER BY timesplayed"
-                " LIMIT 1"
-                " OFFSET :offset");
+    // Select tracks from library no in autoDJ playlist
+    // Return track at the random offset
+
+    oQuery.prepare("SELECT id"
+                   " FROM library"
+                   " WHERE id NOT IN"
+                   " ( SELECT track_id "
+                   " FROM PlaylistTracks"
+                   " WHERE playlist_id = :id )"
+                   " AND mixxx_deleted != 1"
+                   " ORDER BY timesplayed"
+                   " LIMIT 1"
+                   " OFFSET :offset");
+    oQuery.bindValue(":id",iPlaylistId);
     oQuery.bindValue(":offset",offset);
     if (oQuery.exec()) {
         if (oQuery.next()) {
@@ -960,7 +969,6 @@ int AutoDJCratesDAO::getRandomTrackIdFromLibrary(void) {
     } else {
         LOG_FAILED_QUERY(oQuery);
     }
-
     return iTrackId;
 }
 

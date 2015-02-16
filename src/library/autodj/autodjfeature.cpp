@@ -279,8 +279,6 @@ void AutoDJFeature::slotCrateAutoDjChanged(int crateId, bool added) {
 void AutoDJFeature::slotAddRandomTrack(bool) {
 #ifdef __AUTODJCRATES__
     int failedRetriveAttempts = 0;
-    bool playlistHasTrack = false;
-
     // Get access to the auto-DJ playlist
     PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
     int iTrackId = -1;
@@ -292,8 +290,7 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
             if (iTrackId != -1) {
                 // Get Track Information
                 TrackPointer addedTrack = (m_pTrackCollection->getTrackDAO()).getTrack(iTrackId);
-                playlistHasTrack = playlistDao.playlistHasTrack(iTrackId, m_iAutoDJPlaylistId);
-                if(addedTrack->exists() && !playlistHasTrack) {
+                if(addedTrack->exists()) {
                     playlistDao.appendTrackToPlaylist(iTrackId, m_iAutoDJPlaylistId);
                     m_pAutoDJView->onShow();
                     return;
@@ -309,12 +306,11 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
             failedRetriveAttempts = 0;
             while ( failedRetriveAttempts < kMaxRetriveAttempts ) {
 
-                iTrackId = m_autoDjCratesDao.getRandomTrackIdFromLibrary();
+                iTrackId = m_autoDjCratesDao.getRandomTrackIdFromLibrary(m_iAutoDJPlaylistId);
                 if (iTrackId != -1) {
                     // Get the track info
                     TrackPointer addedTrack = (m_pTrackCollection->getTrackDAO()).getTrack(iTrackId);
-                    playlistHasTrack = playlistDao.playlistHasTrack(iTrackId, m_iAutoDJPlaylistId);
-                    if(addedTrack->exists() && !playlistHasTrack) {
+                    if(addedTrack->exists()) {
                         playlistDao.appendTrackToPlaylist(iTrackId, m_iAutoDJPlaylistId);
                         m_pAutoDJView->onShow();
                         return;
