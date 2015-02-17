@@ -12,7 +12,7 @@
 function midi_for_light() {}
 
 // make here your personal settings
-var midi_channel = 1;                // set midi_channel. Valid range: 1 to 16.  
+var midi_channel = 1;               // set midi_channel. Valid range: 1 to 16.  
 var enable_mtc_timecode = true;      // set to false if you not need midi time code
 var enable_vu_meter_global = true;   // set to false if you not need VU-Meter
 // END make here your personal settings
@@ -36,7 +36,7 @@ midi_for_light.init = function(id) { // called when the MIDI device is opened & 
     midi_for_light.crossfader_block = false;
     midi_for_light.crossfader_change_block_timer = [-1, -1];
     midi_for_light.volumebeat = false;
-    midi_for_light.volumeBeatBlock = false;
+    midi_for_light.volumeBeatBlockStatus = false;
     midi_for_light.volumeBeatBlock_timer = [-1, -1];
     midi_for_light.vu_meter_timer = [-1, -1];
     midi_for_light.volumebeat_on_delay_timer = [-1, -1];
@@ -319,7 +319,7 @@ midi_for_light.vuMeter = function() { // read, calculate and send vu-meter value
 
 midi_for_light.deckVolumeChange = function(value, group, control) { // deck volume changed
     if (midi_for_light.volumebeat == false) return; // out if volumebeat is not active
-    if (midi_for_light.volumeBeatBlock == true) return; // out if volumebeat is blocked
+    if (midi_for_light.volumeBeatBlockStatus == true) return; // out if volumebeat is blocked
   
     var deckvolume = new Array(0, 0, 0, 0);
     var volumemax = 0;
@@ -341,14 +341,14 @@ midi_for_light.deckVolumeChange = function(value, group, control) { // deck volu
     if (deckneu != midi_for_light.deck_current){
         midi_for_light.deck_current = deckneu;
         midi.sendShortMsg(0x8F + midi_channel,0x30,0x64+deckneu);   // Note C on with 64 and add deck
-        midi_for_light.volumeBeatBlock = true;
+        midi_for_light.volumeBeatBlockStatus = true;
         midi_for_light.volumeBeatBlock_timer = engine.beginTimer(1000,"midi_for_light.volumeBeatBlock()");
     }
 }
 
 midi_for_light.volumeBeatBlock = function() { // prevent deck change for one second
     engine.stopTimer(midi_for_light.volumeBeatBlock_timer);
-    midi_for_light.volumeBeatBlock = false;
+    midi_for_light.volumeBeatBlockStatus = false;
     midi.sendShortMsg(0x8F + midi_channel,0x30,0x0);   // note C on with value 0
     midi.sendShortMsg(0x7F + midi_channel,0x30,0x0);   // note C off with value 0
 }
@@ -453,5 +453,5 @@ midi_for_light.deckBeatOutputToMidi = function(value, group, control) { // send 
 
 
 // ----------- examples & source WWW
-// http://mixxx.org/wiki/doku.php/midi_scripting
+// http://mixxx.org/wiki/doku.php/midi_scripting  bei MyController.elapsedTime = function (deck) {
 // http://mixxx.org/wiki/doku.php/mixxxcontrols
