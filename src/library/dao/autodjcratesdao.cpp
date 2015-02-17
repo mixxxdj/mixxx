@@ -890,8 +890,14 @@ void AutoDJCratesDAO::slotPlayerInfoTrackUnloaded(QString group,
 // we sort the library according to times_played and select a
 // percentage_of_prefered_tracks (70% by default ignoring the least .
 // played 15% and most played 15% ) We select a random track from this %70
-// or a random track from the remaining 30%  3 Times more preference to
-// the middle 70% as per this scheme
+// or a random track from the remaining 30% .
+//
+// 7 Times more preference to the middle 70% as per this scheme.
+// Example : For 100 random additions this will have
+//           6 Tracks from first 15% (not favored)
+//           88 from the middle 70%  (favored)
+//           6  from the last 15%    (not favored)
+// There for 88 favored tracks in 100 random addition.
 // This is better than returning the least played track 
 // Further this also does not restrict our function to only retrieve
 // unplayed tracks (there is probably a reason they are unplayed).
@@ -925,7 +931,7 @@ int AutoDJCratesDAO::getRandomTrackIdFromLibrary(const int iPlaylistId) {
     
     iIgnoreIndex1 = (kLeastPreferredPercent * iTotalTracks)/100;
     iIgnoreIndex2 = iTotalTracks - iIgnoreIndex1;
-    int iRandomNo = qrand() % 8 ;
+    int iRandomNo = qrand() % 16 ;
 
     if (iRandomNo == 0  ) {
         // Select a track from the first [1, iIgnoredIndex1]
