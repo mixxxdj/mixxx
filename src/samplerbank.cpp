@@ -42,9 +42,9 @@ void SamplerBank::slotSaveSamplerBank(double v) {
     // via https://bugreports.qt-project.org/browse/QTBUG-27186
     // Can be removed after switch to Qt5
     QFileInfo fileName(samplerBankPath);
-    if (fileName.suffix().isNull() || fileName.suffix().isEmpty()) {
+    if (fileName.suffix().isEmpty()) {
     	QString ext = filefilter.section(".",1,1);
-        ext.chop(1);
+    	ext.chop(1);
         samplerBankPath.append(".").append(ext);
         }
 
