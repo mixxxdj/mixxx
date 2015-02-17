@@ -925,24 +925,22 @@ int AutoDJCratesDAO::getRandomTrackIdFromLibrary(const int iPlaylistId) {
     
     iIgnoreIndex1 = (kLeastPreferredPercent * iTotalTracks)/100;
     iIgnoreIndex2 = iTotalTracks - iIgnoreIndex1;
-    int iRandomNo = qrand()% 8 ;
+    int iRandomNo = qrand() % 8 ;
 
     if (iRandomNo == 0  ) {
         // Select a track from the first [1, iIgnoredIndex1]
         beginIndex = 0;
-        offset = qrand()% iIgnoreIndex1 +1 ;
-    }
-    else if (iRandomNo == 1 ){
-        // Select from [iIgnoredIndex2+1,iTotalTracks];
+        offset = qrand() % iIgnoreIndex1 + 1 ;
+    } else if (iRandomNo == 1 ){
+        // Select from [iIgnoredIndex2 + 1, iTotalTracks];
         beginIndex = iIgnoreIndex2;
-        // We need a number between [0,Total-lastPreferedIndex]
-        offset = qrand() % (iTotalTracks-iIgnoreIndex2)+1;
-    }
-    else {
-        // Select from [iIgnoreIndex1+1,iIgnoreIndex2];
+        // We need a number between [0, Total - lastPreferedIndex]
+        offset = qrand() % (iTotalTracks - iIgnoreIndex2) + 1;
+    } else {
+        // Select from [iIgnoreIndex1 + 1, iIgnoreIndex2];
         beginIndex = iIgnoreIndex1;
-        // We need a number between [1,iIgnoreIndex2-iIgnoreIndex1]
-        offset = qrand() % (iIgnoreIndex2-iIgnoreIndex1)+1;
+        // We need a number between [1, iIgnoreIndex2 - iIgnoreIndex1]
+        offset = qrand() % (iIgnoreIndex2 - iIgnoreIndex1) + 1;
     }
     offset = beginIndex + offset;
 
