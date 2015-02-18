@@ -4,7 +4,7 @@
 #include "library/dao/cue.h"
 #include "util/math.h"
 
-VinylControlControl::VinylControlControl(QString group, ConfigObject<ConfigValue>* pConfig)
+VinylControlControl::VinylControlControl(const StringAtom& group, ConfigObject<ConfigValue>* pConfig)
         : EngineControl(group, pConfig),
           m_bSeekRequested(false) {
     m_pControlVinylStatus = new ControlObject(ConfigKey(group, "vinylcontrol_status"));

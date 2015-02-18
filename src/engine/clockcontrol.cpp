@@ -6,7 +6,7 @@
 #include "engine/enginecontrol.h"
 #include "controlobjectslave.h"
 
-ClockControl::ClockControl(QString group, ConfigObject<ConfigValue>* pConfig)
+ClockControl::ClockControl(const StringAtom& group, ConfigObject<ConfigValue>* pConfig)
         : EngineControl(group, pConfig) {
     m_pCOBeatActive = new ControlObject(ConfigKey(group, "beat_active"));
     m_pCOBeatActive->set(0.0);
