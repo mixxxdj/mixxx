@@ -22,9 +22,9 @@ const int filterLength = 5;
 // the actual number of beats is this x2.
 const int kLocalBpmSpan = 4;
 
-BpmControl::BpmControl(QString group,
-                       ConfigObject<ConfigValue>* _config) :
-        EngineControl(group, _config),
+BpmControl::BpmControl(const StringAtom& group,
+                       ConfigObject<ConfigValue>* pConfig) :
+        EngineControl(group, pConfig),
         m_dPreviousSample(0),
         m_dSyncTargetBeatDistance(0.0),
         m_dSyncInstantaneousBpm(0.0),

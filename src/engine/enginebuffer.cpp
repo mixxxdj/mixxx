@@ -62,11 +62,11 @@
 
 const double kLinearScalerElipsis = 1.00058; // 2^(0.01/12): changes < 1 cent allows a linear scaler
 
-EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
+EngineBuffer::EngineBuffer(const StringAtom& group, ConfigObject<ConfigValue>* pConfig,
                            EngineChannel* pChannel, EngineMaster* pMixingEngine)
         : m_engineLock(QMutex::Recursive),
           m_group(group),
-          m_pConfig(_config),
+          m_pConfig(pConfig),
           m_pLoopingControl(NULL),
           m_pSyncControl(NULL),
           m_pVinylControlControl(NULL),
@@ -126,7 +126,7 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
     m_fLastSampleValue[0] = 0;
     m_fLastSampleValue[1] = 0;
 
-    m_pReader = new CachingReader(group, _config);
+    m_pReader = new CachingReader(group, pConfig);
     connect(m_pReader, SIGNAL(trackLoading()),
             this, SLOT(slotTrackLoading()),
             Qt::DirectConnection);
@@ -226,29 +226,29 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
     // Quantization Controller for enabling and disabling the
     // quantization (alignment) of loop in/out positions and (hot)cues with
     // beats.
-    addControl(new QuantizeControl(group, _config));
+    addControl(new QuantizeControl(group, pConfig));
     m_pQuantize = ControlObject::getControl(ConfigKey(group, "quantize"));
 
     // Create the Loop Controller
-    m_pLoopingControl = new LoopingControl(group, _config);
+    m_pLoopingControl = new LoopingControl(group, pConfig);
     addControl(m_pLoopingControl);
 
     m_pEngineSync = pMixingEngine->getEngineSync();
 
-    m_pSyncControl = new SyncControl(group, _config, pChannel, m_pEngineSync);
+    m_pSyncControl = new SyncControl(group, pConfig, pChannel, m_pEngineSync);
     addControl(m_pSyncControl);
 
 #ifdef __VINYLCONTROL__
-    m_pVinylControlControl = new VinylControlControl(group, _config);
+    m_pVinylControlControl = new VinylControlControl(group, pConfig);
     addControl(m_pVinylControlControl);
 #endif
 
-    m_pRateControl = new RateControl(group, _config);
+    m_pRateControl = new RateControl(group, pConfig);
     // Add the Rate Controller
     addControl(m_pRateControl);
 
     // Create the BPM Controller
-    m_pBpmControl = new BpmControl(group, _config);
+    m_pBpmControl = new BpmControl(group, pConfig);
     addControl(m_pBpmControl);
 
     // TODO(rryan) remove this dependence?
@@ -259,15 +259,15 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
     m_fwdButton = ControlObject::getControl(ConfigKey(group, "fwd"));
     m_backButton = ControlObject::getControl(ConfigKey(group, "back"));
 
-    m_pKeyControl = new KeyControl(group, _config);
+    m_pKeyControl = new KeyControl(group, pConfig);
     addControl(m_pKeyControl);
 
     // Create the clock controller
-    m_pClockControl = new ClockControl(group, _config);
+    m_pClockControl = new ClockControl(group, pConfig);
     addControl(m_pClockControl);
 
     // Create the cue controller
-    m_pCueControl = new CueControl(group, _config);
+    m_pCueControl = new CueControl(group, pConfig);
     addControl(m_pCueControl);
 
     m_pReadAheadManager = new ReadAheadManager(m_pReader);

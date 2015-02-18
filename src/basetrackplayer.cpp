@@ -15,8 +15,9 @@
 #include "analyserqueue.h"
 #include "util/sandbox.h"
 #include "effects/effectsmanager.h"
+#include "control/stringatom.h"
 
-BaseTrackPlayer::BaseTrackPlayer(QObject* pParent, const QString& group)
+BaseTrackPlayer::BaseTrackPlayer(QObject* pParent, const StringAtom& group)
         : BasePlayer(pParent, group) {
 }
 
@@ -25,7 +26,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
                                          EngineMaster* pMixingEngine,
                                          EffectsManager* pEffectsManager,
                                          EngineChannel::ChannelOrientation defaultOrientation,
-                                         QString group,
+                                         const StringAtom& group,
                                          bool defaultMaster,
                                          bool defaultHeadphones)
         : BaseTrackPlayer(pParent, group),

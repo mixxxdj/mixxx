@@ -22,7 +22,7 @@ class BpmControl : public EngineControl {
     Q_OBJECT
 
   public:
-    BpmControl(QString group, ConfigObject<ConfigValue>* _config);
+    BpmControl(const StringAtom& group, ConfigObject<ConfigValue>* pConfig);
     virtual ~BpmControl();
 
     double getBpm() const;

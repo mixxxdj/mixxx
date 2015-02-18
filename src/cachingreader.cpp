@@ -17,7 +17,7 @@
 //static
 const int CachingReader::maximumChunksInMemory = 80;
 
-CachingReader::CachingReader(QString group,
+CachingReader::CachingReader(const StringAtom& group,
                              ConfigObject<ConfigValue>* config)
         : m_pConfig(config),
           m_chunkReadRequestFIFO(1024),

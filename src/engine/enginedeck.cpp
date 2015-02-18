@@ -26,7 +26,7 @@
 
 #include "sampleutil.h"
 
-EngineDeck::EngineDeck(QString group,
+EngineDeck::EngineDeck(const StringAtom& group,
                        ConfigObject<ConfigValue>* pConfig,
                        EngineMaster* pMixingEngine,
                        EffectsManager* pEffectsManager,

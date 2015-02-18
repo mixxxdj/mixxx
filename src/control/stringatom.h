@@ -63,6 +63,7 @@ class StringAtom {
     // Mutex guarding access to s_stringHash
     static QMutex s_stringHashMutex;
 };
+
 Q_DECLARE_METATYPE(StringAtom);
 
 #endif // STRINGATOM_H

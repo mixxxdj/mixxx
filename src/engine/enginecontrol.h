@@ -35,8 +35,8 @@ const double kNoTrigger = -1;
 class EngineControl : public QObject {
     Q_OBJECT
   public:
-    EngineControl(QString group,
-                  ConfigObject<ConfigValue>* _config);
+    EngineControl(const StringAtom& group,
+                  ConfigObject<ConfigValue>* pConfig);
     virtual ~EngineControl();
 
     // Called by EngineBuffer::process every latency period. See the above
@@ -95,7 +95,7 @@ class EngineControl : public QObject {
     EngineMaster* getEngineMaster();
     EngineBuffer* getEngineBuffer();
 
-    QString m_group;
+    StringAtom m_group;
     ConfigObject<ConfigValue>* m_pConfig;
 
   private:

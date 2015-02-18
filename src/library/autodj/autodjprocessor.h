@@ -80,7 +80,7 @@ class DeckAttributes : public QObject {
 
   public:
     int index;
-    QString group;
+    StringAtom group;
     double posThreshold;
     double fadeDuration;
 

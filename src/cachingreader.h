@@ -17,6 +17,7 @@
 #include "engine/engineworker.h"
 #include "util/fifo.h"
 #include "cachingreaderworker.h"
+#include "control/stringatom.h"
 
 // A Hint is an indication to the CachingReader that a certain section of a
 // SoundSource will be used 'soon' and so it should be brought into memory by
@@ -71,8 +72,8 @@ class CachingReader : public QObject {
 
   public:
     // Construct a CachingReader with the given group.
-    CachingReader(QString group,
-                  ConfigObject<ConfigValue>* _config);
+    CachingReader(const StringAtom& group,
+                  ConfigObject<ConfigValue>* config);
     virtual ~CachingReader();
 
     virtual void process();
