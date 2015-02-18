@@ -2,16 +2,18 @@
 #include "track/keys.h"
 #include "track/keyutils.h"
 
-WKey::WKey(const char* group, QWidget* pParent)
+WKey::WKey(const StringAtom& group, QWidget* pParent)
         : WLabel(pParent),
-          m_dOldValue(0),
-          m_preferencesUpdated(ConfigKey("[Preferences]", "updated")),
-          m_engineKeyDistance(ConfigKey(group, "visual_key_distance")) {
+          m_dOldValue(0) {
     setValue(m_dOldValue);
-    connect(&m_preferencesUpdated, SIGNAL(valueChanged(double)),
-            this, SLOT(preferencesUpdated(double)));
-    connect(&m_engineKeyDistance, SIGNAL(valueChanged(double)),
-            this, SLOT(setCents()));
+    m_pPreferencesUpdated = new ControlObjectSlave(
+            "[Preferences]", "updated", this);
+    m_pPreferencesUpdated->connectValueChanged(SLOT(preferencesUpdated(double)));
+
+    m_pEngineKeyDistance = new ControlObjectSlave(
+            group, "visual_key_distance", this);
+
+    m_pEngineKeyDistance->connectValueChanged(SLOT(setCents()));
 }
 
 WKey::~WKey() {
@@ -37,7 +39,7 @@ void WKey::setValue(double dValue) {
         // Render this key with the user-provided notation.
         QString keyStr = KeyUtils::keyToString(key);
         if (m_displayCents) {
-            double diff_cents = m_engineKeyDistance.get();
+            double diff_cents = m_pEngineKeyDistance->get();
             int cents_to_display = static_cast<int>(diff_cents * 100);
             char sign = ' ';
             if (diff_cents < 0) {

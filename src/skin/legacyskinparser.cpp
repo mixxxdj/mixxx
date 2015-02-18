@@ -978,17 +978,14 @@ QWidget* LegacySkinParser::parseNumberRate(QDomElement node) {
 QWidget* LegacySkinParser::parseNumberPos(QDomElement node) {
     StringAtom channelStr = lookupNodeGroup(node);
 
-    const char* pSafeChannelStr = safeChannelString(channelStr);
-
-    WNumberPos* p = new WNumberPos(pSafeChannelStr, m_pParent);
+    WNumberPos* p = new WNumberPos(channelStr, m_pParent);
     setupLabelWidget(node, p);
     return p;
 }
 
 QWidget* LegacySkinParser::parseEngineKey(QDomElement node) {
     StringAtom channelStr = lookupNodeGroup(node);
-    const char* pSafeChannelStr = safeChannelString(channelStr);
-    WKey* pEngineKey = new WKey(pSafeChannelStr, m_pParent);
+    WKey* pEngineKey = new WKey(channelStr, m_pParent);
     setupLabelWidget(node, pEngineKey);
     return pEngineKey;
 }
