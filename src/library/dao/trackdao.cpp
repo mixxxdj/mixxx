@@ -932,6 +932,8 @@ void TrackDAO::purgeTracks(const QList<int>& ids) {
 
     QSet<int> tracksRemovedSet = QSet<int>::fromList(ids);
     emit(tracksRemoved(tracksRemovedSet));
+    // notify trackmodels that they should update their cache as well.
+    emit(forceModelUpdate());
 }
 
 void TrackDAO::slotTrackReferenceExpired(TrackInfoObject* pTrack) {
