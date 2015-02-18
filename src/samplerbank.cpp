@@ -43,10 +43,10 @@ void SamplerBank::slotSaveSamplerBank(double v) {
     // Can be removed after switch to Qt5
     QFileInfo fileName(samplerBankPath);
     if (fileName.suffix().isEmpty()) {
-    	QString ext = filefilter.section(".",1,1);
-    	ext.chop(1);
+        QString ext = filefilter.section(".",1,1);
+        ext.chop(1);
         samplerBankPath.append(".").append(ext);
-        }
+    }
 
     // The user has picked a new directory via a file dialog. This means the
     // system sandboxer (if we are sandboxed) has granted us permission to this
