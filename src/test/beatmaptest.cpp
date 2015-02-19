@@ -193,6 +193,8 @@ TEST_F(BeatMapTest, TestNthBeatWhenOnBeat_AfterEpsilon) {
     // The spec dictates that a value of 0 is always invalid and returns -1
     EXPECT_EQ(-1, pMap->findNthBeat(position, 0));
 
+    EXPECT_EQ(kClosestBeat, pMap->findClosestBeat(position));
+
     // findNthBeat should return exactly the current beat if we ask for 1 or
     // -1. For all other values, it should return n times the beat length.
     for (int i = 1; i < curBeat; ++i) {
@@ -208,7 +210,6 @@ TEST_F(BeatMapTest, TestNthBeatWhenOnBeat_AfterEpsilon) {
     // Both previous and next beat should return the closest beat.
     EXPECT_EQ(kClosestBeat, pMap->findNextBeat(position));
     EXPECT_EQ(kClosestBeat, pMap->findPrevBeat(position));
-
 }
 
 TEST_F(BeatMapTest, TestNthBeatWhenNotOnBeat) {
@@ -240,7 +241,6 @@ TEST_F(BeatMapTest, TestNthBeatWhenNotOnBeat) {
         EXPECT_DOUBLE_EQ(previousBeat - beatLengthSamples*(i-1),
                          pMap->findNthBeat(position, -i));
     }
-
 
     // Also test prev/next beat calculation
     QPair<double, double> beat_pair = pMap->findPrevNextBeats(position);

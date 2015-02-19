@@ -180,8 +180,8 @@ double BeatMap::findClosestBeat(double dSamples) const {
     if (beat_pair.first == -1 || beat_pair.second == -1) {
         return -1;
     }
-    double nextBeat = beat_pair.first;
-    double prevBeat = beat_pair.second;
+    double prevBeat = beat_pair.first;
+    double nextBeat = beat_pair.second;
     return (nextBeat - dSamples > dSamples - prevBeat) ? prevBeat : nextBeat;
 }
 
