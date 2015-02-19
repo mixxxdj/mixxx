@@ -10,6 +10,7 @@
 
 #include "util/performancetimer.h"
 #include "control/controlvalue.h"
+#include "control/stringatom.h"
 
 class ControlObjectSlave;
 class VSyncThread;
@@ -42,7 +43,7 @@ class VisualPlayPositionData {
 class VisualPlayPosition : public QObject {
     Q_OBJECT
   public:
-    VisualPlayPosition(const QString& m_key);
+    VisualPlayPosition(const StringAtom& group);
     virtual ~VisualPlayPosition();
 
     // WARNING: Not thread safe. This function must be called only from the
@@ -54,7 +55,7 @@ class VisualPlayPosition : public QObject {
 
     // WARNING: Not thread safe. This function must only be called from the main
     // thread.
-    static QSharedPointer<VisualPlayPosition> getVisualPlayPosition(QString group);
+    static QSharedPointer<VisualPlayPosition> getVisualPlayPosition(const StringAtom& group);
 
     // This is called by SoundDevicePortAudio just after the callback starts.
     static void setTimeInfo(const PaStreamCallbackTimeInfo *timeInfo);
@@ -69,10 +70,11 @@ class VisualPlayPosition : public QObject {
     ControlObjectSlave* m_audioBufferSize;
     double m_dAudioBufferSize; // Audio buffer size in ms
     bool m_valid;
-    QString m_key;
+    StringAtom m_group;
     bool m_invalidTimeInfoWarned;
 
-    static QMap<QString, QWeakPointer<VisualPlayPosition> > m_listVisualPlayPosition;
+    static QMap<StringAtom, QWeakPointer<VisualPlayPosition> >
+            m_listVisualPlayPosition;
     // Time info from the Sound device, updated just after audio callback is called
     static PaStreamCallbackTimeInfo m_timeInfo;
     // Time stamp for m_timeInfo in main CPU time

@@ -27,6 +27,7 @@
 #include <QMetaType>
 
 #include "util/debug.h"
+#include "control/stringatom.h"
 
 
 // Class for the key for a specific configuration element. A key consists of a
@@ -35,8 +36,10 @@
 class ConfigKey {
   public:
     ConfigKey();
+    ConfigKey(const StringAtom& g, const QString& i);
     ConfigKey(const QString& g, const QString& i);
     ConfigKey(const char* g, const char* i);
+    ConfigKey(const char* g, const QString& i);
     static ConfigKey parseCommaSeparated(QString key);
 
     inline bool isNull() const {

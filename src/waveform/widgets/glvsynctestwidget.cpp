@@ -15,7 +15,7 @@
 
 #include "util/performancetimer.h"
 
-GLVSyncTestWidget::GLVSyncTestWidget(const char* group, QWidget* parent)
+GLVSyncTestWidget::GLVSyncTestWidget(const StringAtom& group, QWidget* parent)
     : QGLWidget(parent, SharedGLContext::getWidget()),
       WaveformWidgetAbstract(group) {
 

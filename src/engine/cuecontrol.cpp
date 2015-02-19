@@ -17,9 +17,9 @@ static const double CUE_MODE_PIONEER = 1.0;
 static const double CUE_MODE_DENON = 2.0;
 static const double CUE_MODE_NUMARK = 3.0;
 
-CueControl::CueControl(QString group,
-                       ConfigObject<ConfigValue>* _config) :
-        EngineControl(group, _config),
+CueControl::CueControl(const StringAtom& group,
+                       ConfigObject<ConfigValue>* pConfig) :
+        EngineControl(group, pConfig),
         m_bHotcueCancel(false),
         m_bPreviewing(false),
         m_bPreviewingHotcue(false),

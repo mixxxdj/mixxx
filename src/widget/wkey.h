@@ -4,12 +4,12 @@
 #include <QLabel>
 
 #include "widget/wlabel.h"
-#include "controlobjectthread.h"
+#include "controlobjectslave.h"
 
 class WKey : public WLabel  {
     Q_OBJECT
   public:
-    WKey(const char* group, QWidget* pParent=NULL);
+    WKey(const StringAtom& group, QWidget* pParent = NULL);
     virtual ~WKey();
 
     virtual void onConnectedControlChanged(double dParameter, double dValue);
@@ -23,8 +23,8 @@ class WKey : public WLabel  {
   private:
     double m_dOldValue;
     bool m_displayCents;
-    ControlObjectThread m_preferencesUpdated;
-    ControlObjectThread m_engineKeyDistance;
+    ControlObjectSlave* m_pPreferencesUpdated;
+    ControlObjectSlave* m_pEngineKeyDistance;
 };
 
 #endif /* WKEY_H */

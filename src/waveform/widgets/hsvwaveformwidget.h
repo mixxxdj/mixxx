@@ -22,7 +22,7 @@ class HSVWaveformWidget : public QWidget, public WaveformWidgetAbstract {
     virtual void paintEvent(QPaintEvent* event);
 
   private:
-    HSVWaveformWidget(const char* group, QWidget* parent);
+    HSVWaveformWidget(const StringAtom& group, QWidget* parent);
     friend class WaveformWidgetFactory;
 };
 

@@ -37,9 +37,9 @@ QList<double> LoopingControl::getBeatSizes() {
     return result;
 }
 
-LoopingControl::LoopingControl(QString group,
-                               ConfigObject<ConfigValue>* _config)
-        : EngineControl(group, _config) {
+LoopingControl::LoopingControl(const StringAtom& group,
+                               ConfigObject<ConfigValue>* config)
+        : EngineControl(group, config) {
     m_bLoopingEnabled = false;
     m_bLoopRollActive = false;
     m_iLoopStartSample = kNoTrigger;
@@ -903,7 +903,7 @@ void LoopingControl::seekInsideAdjustedLoop(int old_loop_in, int old_loop_out,
     }
 }
 
-BeatJumpControl::BeatJumpControl(QString group, double size)
+BeatJumpControl::BeatJumpControl(const StringAtom& group, double size)
         : m_dBeatJumpSize(size) {
     m_pJumpForward = new ControlPushButton(
             keyForControl(group, "beatjump_%1_forward", size));
@@ -934,7 +934,7 @@ void BeatJumpControl::slotJumpForward(double v) {
     }
 }
 
-LoopMoveControl::LoopMoveControl(QString group, double size)
+LoopMoveControl::LoopMoveControl(const StringAtom& group, double size)
         : m_dLoopMoveSize(size) {
     m_pMoveForward = new ControlPushButton(
             keyForControl(group, "loop_move_%1_forward", size));
@@ -965,7 +965,7 @@ void LoopMoveControl::slotMoveForward(double v) {
     }
 }
 
-BeatLoopingControl::BeatLoopingControl(QString group, double size)
+BeatLoopingControl::BeatLoopingControl(const StringAtom& group, double size)
         : m_dBeatLoopSize(size),
           m_bActive(false) {
     // This is the original beatloop control which is now deprecated. Its value

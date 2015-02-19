@@ -9,17 +9,18 @@
 #include "skin/skincontext.h"
 #include "trackinfoobject.h"
 #include "widget/wlabel.h"
+#include "control/stringatom.h"
 
 class WTrackProperty : public WLabel {
     Q_OBJECT
   public:
-    WTrackProperty(const char* group, ConfigObject<ConfigValue>* pConfig, QWidget* pParent);
+    WTrackProperty(const StringAtom& group, ConfigObject<ConfigValue>* pConfig, QWidget* pParent);
     virtual ~WTrackProperty();
 
     void setup(QDomNode node, const SkinContext& context);
 
   signals:
-    void trackDropped(QString filename, QString group);
+    void trackDropped(QString filename, StringAtom group);
 
   public slots:
     void slotTrackLoaded(TrackPointer track);
@@ -33,7 +34,7 @@ class WTrackProperty : public WLabel {
     void dropEvent(QDropEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
 
-    const char* m_pGroup;
+    StringAtom m_pGroup;
     ConfigObject<ConfigValue>* m_pConfig;
     TrackPointer m_pCurrentTrack;
     QString m_property;

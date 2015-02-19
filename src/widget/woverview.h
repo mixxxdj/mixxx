@@ -25,6 +25,7 @@
 #include "waveform/renderers/waveformmarkset.h"
 #include "waveform/renderers/waveformmarkrange.h"
 #include "skin/skincontext.h"
+#include "control/stringatom.h"
 
 // Waveform overview display
 // @author Tue Haste Andersen
@@ -33,7 +34,7 @@ class Waveform;
 class WOverview : public WWidget {
     Q_OBJECT
   public:
-    WOverview(const char* pGroup, ConfigObject<ConfigValue>* pConfig, QWidget* parent=NULL);
+    WOverview(const StringAtom& group, ConfigObject<ConfigValue>* pConfig, QWidget* parent=NULL);
     virtual ~WOverview();
 
     void setup(QDomNode node, const SkinContext& context);
@@ -45,7 +46,7 @@ class WOverview : public WWidget {
     void slotUnloadTrack(TrackPointer pTrack);
 
   signals:
-    void trackDropped(QString filename, QString group);
+    void trackDropped(QString filename, StringAtom group);
 
   protected:
     void mouseMoveEvent(QMouseEvent *e);
@@ -93,12 +94,12 @@ class WOverview : public WWidget {
         return (static_cast<double>(position) + m_b) / m_a;
     }
 
-    const QString m_group;
+    const StringAtom m_group;
     ConfigObject<ConfigValue>* m_pConfig;
-    ControlObjectThread* m_endOfTrackControl;
+    ControlObjectSlave* m_endOfTrackControl;
     double m_endOfTrack;
-    ControlObjectThread* m_trackSamplesControl;
-    ControlObjectThread* m_playControl;
+    ControlObjectSlave* m_trackSamplesControl;
+    ControlObjectSlave* m_playControl;
 
     // Current active track
     TrackPointer m_pCurrentTrack;

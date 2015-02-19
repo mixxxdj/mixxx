@@ -26,7 +26,7 @@ const int CachingReaderWorker::kChunkLength = CHUNK_LENGTH;
 const int CachingReaderWorker::kSamplesPerChunk = CHUNK_LENGTH / sizeof(CSAMPLE);
 
 
-CachingReaderWorker::CachingReaderWorker(QString group,
+CachingReaderWorker::CachingReaderWorker(const StringAtom& group,
         FIFO<ChunkReadRequest>* pChunkReadRequestFIFO,
         FIFO<ReaderStatusUpdate>* pReaderStatusFIFO)
         : m_group(group),

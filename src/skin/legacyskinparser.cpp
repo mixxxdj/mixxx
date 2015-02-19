@@ -75,6 +75,7 @@
 #include "widget/wsingletoncontainer.h"
 #include "util/valuetransformer.h"
 #include "util/cmdlineargs.h"
+#include "control/stringatom.h"
 
 using mixxx::skin::SkinManifest;
 
@@ -793,9 +794,7 @@ void LegacySkinParser::setupLabelWidget(QDomElement element, WLabel* pLabel) {
 }
 
 QWidget* LegacySkinParser::parseOverview(QDomElement node) {
-    QString channelStr = lookupNodeGroup(node);
-
-    const char* pSafeChannelStr = safeChannelString(channelStr);
+    StringAtom channelStr = lookupNodeGroup(node);
 
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
 
@@ -807,15 +806,15 @@ QWidget* LegacySkinParser::parseOverview(QDomElement node) {
     // "RGB" = "2", "HSV" = "1" or "Filtered" = "0" (LMH) waveform overview type
     int type = m_pConfig->getValueString(ConfigKey("[Waveform]","WaveformOverviewType"), "0").toInt();
     if (type == 0) {
-        overviewWidget = new WOverviewLMH(pSafeChannelStr, m_pConfig, m_pParent);
+        overviewWidget = new WOverviewLMH(channelStr, m_pConfig, m_pParent);
     } else if (type == 1) {
-        overviewWidget = new WOverviewHSV(pSafeChannelStr, m_pConfig, m_pParent);
+        overviewWidget = new WOverviewHSV(channelStr, m_pConfig, m_pParent);
     } else {
-        overviewWidget = new WOverviewRGB(pSafeChannelStr, m_pConfig, m_pParent);
+        overviewWidget = new WOverviewRGB(channelStr, m_pConfig, m_pParent);
     }
 
-    connect(overviewWidget, SIGNAL(trackDropped(QString, QString)),
-            m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
+    connect(overviewWidget, SIGNAL(trackDropped(QString, StringAtom)),
+            m_pPlayerManager, SLOT(slotLoadToPlayer(QString, StringAtom)));
 
     commonWidgetSetup(node, overviewWidget);
     overviewWidget->setup(node, *m_pContext);
@@ -840,15 +839,13 @@ QWidget* LegacySkinParser::parseOverview(QDomElement node) {
 }
 
 QWidget* LegacySkinParser::parseVisual(QDomElement node) {
-    QString channelStr = lookupNodeGroup(node);
+    StringAtom channelStr(lookupNodeGroup(node));
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
-
-    const char* pSafeChannelStr = safeChannelString(channelStr);
 
     if (pPlayer == NULL)
         return NULL;
 
-    WWaveformViewer* viewer = new WWaveformViewer(pSafeChannelStr, m_pConfig, m_pParent);
+    WWaveformViewer* viewer = new WWaveformViewer(channelStr, m_pConfig, m_pParent);
     viewer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
     factory->setWaveformWidget(viewer, node, *m_pContext);
@@ -867,8 +864,8 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
     QObject::connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
                      viewer, SLOT(onTrackUnloaded(TrackPointer)));
 
-    connect(viewer, SIGNAL(trackDropped(QString, QString)),
-            m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
+    connect(viewer, SIGNAL(trackDropped(QString, StringAtom)),
+            m_pPlayerManager, SLOT(slotLoadToPlayer(QString, StringAtom)));
 
     // if any already loaded
     viewer->onTrackLoaded(pPlayer->getLoadedTrack());
@@ -877,23 +874,22 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
 }
 
 QWidget* LegacySkinParser::parseText(QDomElement node) {
-    QString channelStr = lookupNodeGroup(node);
-    const char* pSafeChannelStr = safeChannelString(channelStr);
+    StringAtom channelStr = lookupNodeGroup(node);
 
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
 
     if (!pPlayer)
         return NULL;
 
-    WTrackText* p = new WTrackText(pSafeChannelStr, m_pConfig, m_pParent);
+    WTrackText* p = new WTrackText(channelStr, m_pConfig, m_pParent);
     setupLabelWidget(node, p);
 
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
             p, SLOT(slotTrackLoaded(TrackPointer)));
     connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
             p, SLOT(slotTrackUnloaded(TrackPointer)));
-    connect(p, SIGNAL(trackDropped(QString,QString)),
-            m_pPlayerManager, SLOT(slotLoadToPlayer(QString,QString)));
+    connect(p, SIGNAL(trackDropped(QString, StringAtom)),
+            m_pPlayerManager, SLOT(slotLoadToPlayer(QString, StringAtom)));
 
     TrackPointer pTrack = pPlayer->getLoadedTrack();
     if (pTrack) {
@@ -904,23 +900,21 @@ QWidget* LegacySkinParser::parseText(QDomElement node) {
 }
 
 QWidget* LegacySkinParser::parseTrackProperty(QDomElement node) {
-    QString channelStr = lookupNodeGroup(node);
-    const char* pSafeChannelStr = safeChannelString(channelStr);
-
+    StringAtom channelStr = lookupNodeGroup(node);
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
 
     if (!pPlayer)
         return NULL;
 
-    WTrackProperty* p = new WTrackProperty(pSafeChannelStr, m_pConfig, m_pParent);
+    WTrackProperty* p = new WTrackProperty(channelStr, m_pConfig, m_pParent);
     setupLabelWidget(node, p);
 
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
             p, SLOT(slotTrackLoaded(TrackPointer)));
     connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
             p, SLOT(slotTrackUnloaded(TrackPointer)));
-    connect(p, SIGNAL(trackDropped(QString,QString)),
-            m_pPlayerManager, SLOT(slotLoadToPlayer(QString,QString)));
+    connect(p, SIGNAL(trackDropped(QString, StringAtom)),
+            m_pPlayerManager, SLOT(slotLoadToPlayer(QString, StringAtom)));
 
     TrackPointer pTrack = pPlayer->getLoadedTrack();
     if (pTrack) {
@@ -931,7 +925,7 @@ QWidget* LegacySkinParser::parseTrackProperty(QDomElement node) {
 }
 
 QWidget* LegacySkinParser::parseStarRating(QDomElement node) {
-    QString channelStr = lookupNodeGroup(node);
+    StringAtom channelStr = lookupNodeGroup(node);
     const char* pSafeChannelStr = safeChannelString(channelStr);
 
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
@@ -958,7 +952,7 @@ QWidget* LegacySkinParser::parseStarRating(QDomElement node) {
 
 
 QWidget* LegacySkinParser::parseNumberRate(QDomElement node) {
-    QString channelStr = lookupNodeGroup(node);
+    StringAtom channelStr = lookupNodeGroup(node);
 
     const char* pSafeChannelStr = safeChannelString(channelStr);
 
@@ -982,25 +976,22 @@ QWidget* LegacySkinParser::parseNumberRate(QDomElement node) {
 }
 
 QWidget* LegacySkinParser::parseNumberPos(QDomElement node) {
-    QString channelStr = lookupNodeGroup(node);
+    StringAtom channelStr = lookupNodeGroup(node);
 
-    const char* pSafeChannelStr = safeChannelString(channelStr);
-
-    WNumberPos* p = new WNumberPos(pSafeChannelStr, m_pParent);
+    WNumberPos* p = new WNumberPos(channelStr, m_pParent);
     setupLabelWidget(node, p);
     return p;
 }
 
 QWidget* LegacySkinParser::parseEngineKey(QDomElement node) {
-    QString channelStr = lookupNodeGroup(node);
-    const char* pSafeChannelStr = safeChannelString(channelStr);
-    WKey* pEngineKey = new WKey(pSafeChannelStr, m_pParent);
+    StringAtom channelStr = lookupNodeGroup(node);
+    WKey* pEngineKey = new WKey(channelStr, m_pParent);
     setupLabelWidget(node, pEngineKey);
     return pEngineKey;
 }
 
 QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
-    QString channelStr = lookupNodeGroup(node);
+    StringAtom channelStr = lookupNodeGroup(node);
     if (CmdlineArgs::Instance().getSafeMode()) {
         WLabel* dummy = new WLabel(m_pParent);
         //: Shown when Mixxx is running in safe mode.
@@ -1019,8 +1010,8 @@ QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
     commonWidgetSetup(node, spinny);
 
     WaveformWidgetFactory::instance()->addTimerListener(spinny);
-    connect(spinny, SIGNAL(trackDropped(QString, QString)),
-            m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
+    connect(spinny, SIGNAL(trackDropped(QString, StringAtom)),
+            m_pPlayerManager, SLOT(slotLoadToPlayer(QString, StringAtom)));
 
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
     if (pPlayer != NULL) {
@@ -1058,7 +1049,7 @@ QWidget* LegacySkinParser::parseSearchBox(QDomElement node) {
 }
 
 QWidget* LegacySkinParser::parseCoverArt(QDomElement node) {
-    QString channel = lookupNodeGroup(node);
+    StringAtom channel = lookupNodeGroup(node);
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channel);
 
     WCoverArt* pCoverArt = new WCoverArt(m_pParent, m_pConfig, channel);
@@ -1079,8 +1070,8 @@ QWidget* LegacySkinParser::parseCoverArt(QDomElement node) {
                 pCoverArt, SLOT(slotLoadTrack(TrackPointer)));
         connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
                 pCoverArt, SLOT(slotReset()));
-        connect(pCoverArt, SIGNAL(trackDropped(QString, QString)),
-                m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
+        connect(pCoverArt, SIGNAL(trackDropped(QString, StringAtom)),
+                m_pPlayerManager, SLOT(slotLoadToPlayer(QString, StringAtom)));
 
         // just in case a track is already loaded
         pCoverArt->slotLoadTrack(pPlayer->getLoadedTrack());
@@ -1426,20 +1417,21 @@ QList<QWidget*> LegacySkinParser::parseTemplate(QDomElement node) {
     return widgets;
 }
 
-QString LegacySkinParser::lookupNodeGroup(QDomElement node) {
-    QString group = m_pContext->selectString(node, "Group");
+StringAtom LegacySkinParser::lookupNodeGroup(QDomElement node) {
+    QString groupString = m_pContext->selectString(node, "Group");
+    if (groupString.size() > 0) {
+        return StringAtom(groupString);
+    }
 
     // If the group is not present, then check for a Channel, since legacy skins
     // will specify the channel as either 1 or 2.
-    if (group.size() == 0) {
-        int channel = m_pContext->selectInt(node, "Channel");
-        if (channel > 0) {
-            // groupForDeck is 0-indexed
-            group = PlayerManager::groupForDeck(channel - 1);
-        }
+    int channel = m_pContext->selectInt(node, "Channel");
+    if (channel > 0) {
+        // groupForDeck is 0-indexed
+        return PlayerManager::groupForDeck(channel - 1);
     }
 
-    return group;
+    return StringAtom();
 }
 
 // static

@@ -11,7 +11,7 @@
 #include "engine/quantizecontrol.h"
 #include "engine/enginecontrol.h"
 
-QuantizeControl::QuantizeControl(QString group,
+QuantizeControl::QuantizeControl(const StringAtom& group,
                                  ConfigObject<ConfigValue>* pConfig)
         : EngineControl(group, pConfig) {
     // Turn quantize OFF by default. See Bug #898213

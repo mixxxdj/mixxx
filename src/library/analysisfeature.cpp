@@ -65,8 +65,8 @@ void AnalysisFeature::bindWidget(WLibrary* libraryWidget,
                                       m_pTrackCollection);
     connect(m_pAnalysisView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
-    connect(m_pAnalysisView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
+    connect(m_pAnalysisView, SIGNAL(loadTrackToPlayer(TrackPointer, StringAtom)),
+            this, SIGNAL(loadTrackToPlayer(TrackPointer, StringAtom)));
     connect(m_pAnalysisView, SIGNAL(analyzeTracks(QList<int>)),
             this, SLOT(analyzeTracks(QList<int>)));
     connect(m_pAnalysisView, SIGNAL(stopAnalysis()),

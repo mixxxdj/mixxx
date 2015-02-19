@@ -27,7 +27,7 @@ class ControlObject;
 
 class EnginePregain : public EngineObject {
   public:
-    EnginePregain(QString group);
+    EnginePregain(const StringAtom& group);
     virtual ~EnginePregain();
 
     void setSpeed(double speed);

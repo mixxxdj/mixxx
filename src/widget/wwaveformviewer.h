@@ -11,6 +11,7 @@
 #include "trackinfoobject.h"
 #include "widget/wwidget.h"
 #include "skin/skincontext.h"
+#include "control/stringatom.h"
 
 class ControlObjectSlave;
 class WaveformWidgetAbstract;
@@ -19,10 +20,10 @@ class ControlPotmeter;
 class WWaveformViewer : public WWidget {
     Q_OBJECT
   public:
-    WWaveformViewer(const char *group, ConfigObject<ConfigValue>* pConfig, QWidget *parent=0);
+    WWaveformViewer(const StringAtom& group, ConfigObject<ConfigValue>* pConfig, QWidget *parent=0);
     virtual ~WWaveformViewer();
 
-    const char* getGroup() const { return m_pGroup;}
+    const StringAtom& getGroup() const { return m_pGroup;}
     void setup(QDomNode node, const SkinContext& context);
 
     void dragEnterEvent(QDragEnterEvent *event);
@@ -33,7 +34,7 @@ class WWaveformViewer : public WWidget {
     void mouseReleaseEvent(QMouseEvent *);
 
 signals:
-    void trackDropped(QString filename, QString group);
+    void trackDropped(QString filename, StringAtom group);
 
 public slots:
     void onTrackLoaded(TrackPointer track);
@@ -58,7 +59,7 @@ private:
     void setZoom(int zoom);
 
 private:
-    const char* m_pGroup;
+    StringAtom m_pGroup;
     ConfigObject<ConfigValue>* m_pConfig;
     int m_zoomZoneWidth;
     ControlObjectSlave* m_pZoom;

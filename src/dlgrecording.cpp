@@ -25,8 +25,8 @@ DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
 
     connect(m_pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
-    connect(m_pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
+    connect(m_pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, StringAtom, bool)),
+            this, SIGNAL(loadTrackToPlayer(TrackPointer, StringAtom, bool)));
     connect(pLibrary, SIGNAL(setTrackTableFont(QFont)),
             m_pTrackTableView, SLOT(setTrackTableFont(QFont)));
     connect(pLibrary, SIGNAL(setTrackTableRowHeight(int)),

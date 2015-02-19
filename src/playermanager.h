@@ -9,6 +9,8 @@
 
 #include "configobject.h"
 #include "trackinfoobject.h"
+#include "control/stringatom.h"
+#include "util/assert.h"
 
 class ControlObject;
 class Deck;
@@ -27,7 +29,7 @@ class TrackCollection;
 class PlayerManagerInterface {
   public:
     // Get a BaseTrackPlayer (i.e. a Deck or a Sampler) by its group
-    virtual BaseTrackPlayer* getPlayer(QString group) const = 0;
+    virtual BaseTrackPlayer* getPlayer(const StringAtom& group) const = 0;
 
     // Get the deck by its deck number. Decks are numbered starting with 1.
     virtual Deck* getDeck(unsigned int player) const = 0;
@@ -100,7 +102,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     }
 
     // Get a BaseTrackPlayer (i.e. a Deck or a Sampler) by its group
-    BaseTrackPlayer* getPlayer(QString group) const;
+    BaseTrackPlayer* getPlayer(const StringAtom& group) const;
 
     // Get the deck by its deck number. Decks are numbered starting with 1.
     Deck* getDeck(unsigned int player) const;
@@ -115,27 +117,19 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     void bindToLibrary(Library* pLibrary);
 
     // Returns the group for the ith sampler where i is zero indexed
-    static QString groupForSampler(int i) {
-        return QString("[Sampler%1]").arg(i+1);
-    }
-
+    static StringAtom groupForSampler(int i, bool add = false);
     // Returns the group for the ith deck where i is zero indexed
-    static QString groupForDeck(int i) {
-        return QString("[Channel%1]").arg(i+1);
-    }
-
+    static StringAtom groupForDeck(int i, bool add = false);
     // Returns the group for the ith PreviewDeck where i is zero indexed
-    static QString groupForPreviewDeck(int i) {
-        return QString("[PreviewDeck%1]").arg(i+1);
-    }
+    static StringAtom groupForPreviewDeck(int i, bool add = false);
 
     // Used to determine if the user has configured an input for the given vinyl deck.
     bool hasVinylInput(int inputnum) const;
 
   public slots:
     // Slots for loading tracks into a Player, which is either a Sampler or a Deck
-    void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
-    void slotLoadToPlayer(QString location, QString group);
+    void slotLoadTrackToPlayer(TrackPointer pTrack, StringAtom group, bool play = false);
+    void slotLoadToPlayer(QString location, StringAtom group);
 
     // Slots for loading tracks to decks
     void slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack);
@@ -154,7 +148,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     void slotNumPreviewDecksControlChanged(double v);
 
   signals:
-    void loadLocationToPlayer(QString location, QString group);
+    void loadLocationToPlayer(QString location, StringAtom group);
 
   private:
     TrackPointer lookupTrack(QString location);
@@ -183,7 +177,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     QList<Deck*> m_decks;
     QList<Sampler*> m_samplers;
     QList<PreviewDeck*> m_preview_decks;
-    QMap<QString, BaseTrackPlayer*> m_players;
+    QMap<StringAtom, BaseTrackPlayer*> m_players;
 };
 
 #endif // PLAYERMANAGER_H

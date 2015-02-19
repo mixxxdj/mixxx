@@ -7,6 +7,7 @@
 #include "library/libraryview.h"
 #include "library/trackcollection.h"
 #include "library/analysislibrarytablemodel.h"
+#include "control/stringatom.h"
 
 class AnalysisLibraryTableModel;
 class WAnalysisLibraryTableView;
@@ -44,7 +45,7 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
 
   signals:
     void loadTrack(TrackPointer pTrack);
-    void loadTrackToPlayer(TrackPointer pTrack, QString player);
+    void loadTrackToPlayer(TrackPointer pTrack, StringAtom group);
     void analyzeTracks(QList<int> trackIds);
     void stopAnalysis();
     void trackSelected(TrackPointer pTrack);

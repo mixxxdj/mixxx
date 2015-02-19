@@ -9,12 +9,20 @@ ControlObjectSlave::ControlObjectSlave(QObject* pParent)
           m_pControl(NULL) {
 }
 
-ControlObjectSlave::ControlObjectSlave(const QString& g, const QString& i, QObject* pParent)
+ControlObjectSlave::ControlObjectSlave(const StringAtom& g, const QString& i,
+                                       QObject* pParent)
         : QObject(pParent) {
     initialize(ConfigKey(g, i));
 }
 
-ControlObjectSlave::ControlObjectSlave(const char* g, const char* i, QObject* pParent)
+ControlObjectSlave::ControlObjectSlave(const QString& g, const QString& i,
+                                       QObject* pParent)
+        : QObject(pParent) {
+    initialize(ConfigKey(g, i));
+}
+
+ControlObjectSlave::ControlObjectSlave(const char* g, const char* i,
+                                       QObject* pParent)
         : QObject(pParent) {
     initialize(ConfigKey(g, i));
 }

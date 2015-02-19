@@ -5,7 +5,7 @@ Deck::Deck(QObject* pParent,
            EngineMaster* pMixingEngine,
            EffectsManager* pEffectsManager,
            EngineChannel::ChannelOrientation defaultOrientation,
-           QString group) :
+           const StringAtom& group) :
         BaseTrackPlayerImpl(pParent, pConfig, pMixingEngine, pEffectsManager,
                             defaultOrientation, group, true, false) {
 }

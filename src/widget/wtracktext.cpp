@@ -6,7 +6,7 @@
 #include "widget/wtracktext.h"
 #include "util/dnd.h"
 
-WTrackText::WTrackText(const char *group, ConfigObject<ConfigValue> *pConfig, QWidget* pParent)
+WTrackText::WTrackText(const StringAtom& group, ConfigObject<ConfigValue> *pConfig, QWidget* pParent)
         : WLabel(pParent),
           m_pGroup(group),
           m_pConfig(pConfig) {

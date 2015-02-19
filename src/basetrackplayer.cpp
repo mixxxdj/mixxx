@@ -15,8 +15,9 @@
 #include "analyserqueue.h"
 #include "util/sandbox.h"
 #include "effects/effectsmanager.h"
+#include "control/stringatom.h"
 
-BaseTrackPlayer::BaseTrackPlayer(QObject* pParent, const QString& group)
+BaseTrackPlayer::BaseTrackPlayer(QObject* pParent, const StringAtom& group)
         : BasePlayer(pParent, group) {
 }
 
@@ -25,7 +26,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
                                          EngineMaster* pMixingEngine,
                                          EffectsManager* pEffectsManager,
                                          EngineChannel::ChannelOrientation defaultOrientation,
-                                         QString group,
+                                         const StringAtom& group,
                                          bool defaultMaster,
                                          bool defaultHeadphones)
         : BaseTrackPlayer(pParent, group),
@@ -65,9 +66,9 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
             this, SLOT(slotUnloadTrack(TrackPointer)));
 
     // Get loop point control objects
-    m_pLoopInPoint = new ControlObjectThread(
+    m_pLoopInPoint = new ControlObjectSlave(
             getGroup(),"loop_start_position");
-    m_pLoopOutPoint = new ControlObjectThread(
+    m_pLoopOutPoint = new ControlObjectSlave(
             getGroup(),"loop_end_position");
 
     // Duration of the current song, we create this one because nothing else does.
@@ -88,12 +89,11 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
 
     m_pPreGain = new ControlObjectSlave(ConfigKey(group, "pregain"));
     //BPM of the current song
-    m_pBPM = new ControlObjectThread(group, "file_bpm");
-    m_pKey = new ControlObjectThread(group, "file_key");
-    m_pReplayGain = new ControlObjectThread(group, "replaygain");
-    m_pPlay = new ControlObjectThread(group, "play");
-    connect(m_pPlay, SIGNAL(valueChanged(double)),
-            this, SLOT(slotPlayToggled(double)));
+    m_pBPM = new ControlObjectSlave(group, "file_bpm");
+    m_pKey = new ControlObjectSlave(group, "file_key");
+    m_pReplayGain = new ControlObjectSlave(group, "replaygain");
+    m_pPlay = new ControlObjectSlave(group, "play", this);
+    m_pPlay->connectValueChanged(SLOT(slotPlayToggled(double)));
 }
 
 BaseTrackPlayerImpl::~BaseTrackPlayerImpl() {
@@ -113,7 +113,6 @@ BaseTrackPlayerImpl::~BaseTrackPlayerImpl() {
     delete m_pBPM;
     delete m_pKey;
     delete m_pReplayGain;
-    delete m_pPlay;
     delete m_pLowFilter;
     delete m_pMidFilter;
     delete m_pHighFilter;

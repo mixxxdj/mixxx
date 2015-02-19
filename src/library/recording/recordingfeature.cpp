@@ -52,8 +52,8 @@ void RecordingFeature::bindWidget(WLibrary* pLibraryWidget,
     pLibraryWidget->registerView(m_sRecordingViewName, pRecordingView);
     connect(pRecordingView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
-    connect(pRecordingView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
+    connect(pRecordingView, SIGNAL(loadTrackToPlayer(TrackPointer, StringAtom, bool)),
+            this, SIGNAL(loadTrackToPlayer(TrackPointer, StringAtom, bool)));
     connect(this, SIGNAL(refreshBrowseModel()),
             pRecordingView, SLOT(refreshBrowseModel()));
     connect(this, SIGNAL(requestRestoreSearch()),

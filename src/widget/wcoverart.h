@@ -13,12 +13,13 @@
 #include "skin/skincontext.h"
 #include "widget/wbasewidget.h"
 #include "widget/wcoverartmenu.h"
+#include "control/stringatom.h"
 
 class WCoverArt : public QWidget, public WBaseWidget {
     Q_OBJECT
   public:
     WCoverArt(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
-              const QString& group);
+              const StringAtom& group);
     virtual ~WCoverArt();
 
     void setup(QDomNode node, const SkinContext& context);
@@ -29,7 +30,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
     void slotEnable(bool);
 
   signals:
-    void trackDropped(QString filename, QString group);
+    void trackDropped(QString filename, StringAtom group);
 
   private slots:
     void slotCoverFound(const QObject* pRequestor, int requestReference,
@@ -51,7 +52,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
   private:
     QPixmap scaledCoverArt(const QPixmap& normal);
 
-    QString m_group;
+    StringAtom m_group;
     ConfigObject<ConfigValue>* m_pConfig;
     bool m_bEnable;
     WCoverArtMenu* m_pMenu;

@@ -20,11 +20,11 @@ class SyncControl : public EngineControl, public Syncable {
     static const double kBpmUnity;
     static const double kBpmHalve;
     static const double kBpmDouble;
-    SyncControl(QString group, ConfigObject<ConfigValue>* pConfig,
+    SyncControl(const StringAtom& group, ConfigObject<ConfigValue>* pConfig,
                 EngineChannel* pChannel, SyncableListener* pEngineSync);
     virtual ~SyncControl();
 
-    const QString& getGroup() const { return m_sGroup; }
+    const QString& getGroup() const { return m_group; }
     EngineChannel* getChannel() const { return m_pChannel; }
     double getBpm() const;
 
@@ -95,7 +95,7 @@ class SyncControl : public EngineControl, public Syncable {
     double determineBpmMultiplier(double myBpm, double targetBpm) const;
     void updateTargetBeatDistance();
 
-    QString m_sGroup;
+    const StringAtom m_group;
     // The only reason we have this pointer is an optimzation so that the
     // EngineSync can ask us what our EngineChannel is. EngineMaster in turn
     // asks EngineSync what EngineChannel is the "master" channel.

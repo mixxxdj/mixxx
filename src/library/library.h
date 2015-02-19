@@ -17,6 +17,7 @@
 #include "recording/recordingmanager.h"
 #include "analysisfeature.h"
 #include "library/coverartcache.h"
+#include "control/stringatom.h"
 
 class TrackModel;
 class TrackCollection;
@@ -79,8 +80,8 @@ public:
     void slotShowTrackModel(QAbstractItemModel* model);
     void slotSwitchToView(const QString& view);
     void slotLoadTrack(TrackPointer pTrack);
-    void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play);
-    void slotLoadLocationToPlayer(QString location, QString group);
+    void slotLoadTrackToPlayer(TrackPointer pTrack, StringAtom group, bool play);
+    void slotLoadLocationToPlayer(QString location, StringAtom group);
     void slotRestoreSearch(const QString& text);
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
@@ -96,7 +97,7 @@ public:
     void showTrackModel(QAbstractItemModel* model);
     void switchToView(const QString& view);
     void loadTrack(TrackPointer pTrack);
-    void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
+    void loadTrackToPlayer(TrackPointer pTrack, StringAtom group, bool play = false);
     void restoreSearch(const QString&);
     void search(const QString& text);
     void searchCleared();

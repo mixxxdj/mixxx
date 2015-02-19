@@ -16,10 +16,10 @@ const double SyncControl::kBpmUnity = 1.0;
 const double SyncControl::kBpmHalve = 0.5;
 const double SyncControl::kBpmDouble = 2.0;
 
-SyncControl::SyncControl(QString group, ConfigObject<ConfigValue>* pConfig,
+SyncControl::SyncControl(const StringAtom& group, ConfigObject<ConfigValue>* pConfig,
                          EngineChannel* pChannel, SyncableListener* pEngineSync)
         : EngineControl(group, pConfig),
-          m_sGroup(group),
+          m_group(group),
           m_pChannel(pChannel),
           m_pEngineSync(pEngineSync),
           m_pBpmControl(NULL),

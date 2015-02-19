@@ -12,6 +12,7 @@
 #include "vinylcontrol/vinylcontrolmanager.h"
 #include "skin/tooltips.h"
 #include "proto/skin.pb.h"
+#include "control/stringatom.h"
 
 class WBaseWidget;
 class Library;
@@ -117,7 +118,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     QString getLibraryStyle(QDomNode node);
     QString getStyleFromNode(QDomNode node);
 
-    QString lookupNodeGroup(QDomElement node);
+    StringAtom lookupNodeGroup(QDomElement node);
     static const char* safeChannelString(QString channelStr);
     ControlObject* controlFromConfigNode(QDomElement element,
                                          const QString& nodeName,

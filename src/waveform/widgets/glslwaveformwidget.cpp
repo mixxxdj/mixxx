@@ -15,16 +15,16 @@
 
 #include "util/performancetimer.h"
 
-GLSLFilteredWaveformWidget::GLSLFilteredWaveformWidget(const char* group,
+GLSLFilteredWaveformWidget::GLSLFilteredWaveformWidget(const StringAtom& group,
                                                        QWidget* parent)
         : GLSLWaveformWidget(group, parent, false) {
 }
 
-GLSLRGBWaveformWidget::GLSLRGBWaveformWidget(const char* group, QWidget* parent)
+GLSLRGBWaveformWidget::GLSLRGBWaveformWidget(const StringAtom& group, QWidget* parent)
         : GLSLWaveformWidget(group, parent, true) {
 }
 
-GLSLWaveformWidget::GLSLWaveformWidget(const char* group, QWidget* parent,
+GLSLWaveformWidget::GLSLWaveformWidget(const StringAtom& group, QWidget* parent,
                                        bool rgbRenderer)
         : QGLWidget(parent, SharedGLContext::getWidget()),
           WaveformWidgetAbstract(group) {

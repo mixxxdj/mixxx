@@ -8,9 +8,9 @@
 #include "util/math.h"
 #include "waveform/waveform.h"
 
-WOverviewLMH::WOverviewLMH(const char *pGroup,
+WOverviewLMH::WOverviewLMH(const StringAtom& group,
                            ConfigObject<ConfigValue>* pConfig, QWidget * parent)
-        : WOverview(pGroup, pConfig, parent)  {
+        : WOverview(group, pConfig, parent)  {
 }
 
 

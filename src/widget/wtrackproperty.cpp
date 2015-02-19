@@ -6,7 +6,7 @@
 #include "widget/wtrackproperty.h"
 #include "util/dnd.h"
 
-WTrackProperty::WTrackProperty(const char* group,
+WTrackProperty::WTrackProperty(const StringAtom& group,
                                ConfigObject<ConfigValue>* pConfig,
                                QWidget* pParent)
         : WLabel(pParent),

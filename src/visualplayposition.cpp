@@ -7,22 +7,23 @@
 #include "waveform/vsyncthread.h"
 
 //static
-QMap<QString, QWeakPointer<VisualPlayPosition> > VisualPlayPosition::m_listVisualPlayPosition;
+QMap<StringAtom, QWeakPointer<VisualPlayPosition> > VisualPlayPosition::m_listVisualPlayPosition;
 PaStreamCallbackTimeInfo VisualPlayPosition::m_timeInfo = { 0.0, 0.0, 0.0 };
 PerformanceTimer VisualPlayPosition::m_timeInfoTime;
 
-VisualPlayPosition::VisualPlayPosition(const QString& key)
+VisualPlayPosition::VisualPlayPosition(const StringAtom& group)
         : m_valid(false),
-          m_key(key),
+          m_group(group),
           m_invalidTimeInfoWarned(false) {
     m_audioBufferSize = new ControlObjectSlave("[Master]", "audio_buffer_size");
     m_audioBufferSize->connectValueChanged(
             this, SLOT(slotAudioBufferSizeChanged(double)));
+    // TODO() m_dAudioBufferSize can become static
     m_dAudioBufferSize = m_audioBufferSize->get();
 }
 
 VisualPlayPosition::~VisualPlayPosition() {
-    m_listVisualPlayPosition.remove(m_key);
+    m_listVisualPlayPosition.remove(m_group);
     delete m_audioBufferSize;
 }
 
@@ -106,7 +107,7 @@ void VisualPlayPosition::slotAudioBufferSizeChanged(double size) {
 }
 
 //static
-QSharedPointer<VisualPlayPosition> VisualPlayPosition::getVisualPlayPosition(QString group) {
+QSharedPointer<VisualPlayPosition> VisualPlayPosition::getVisualPlayPosition(const StringAtom& group) {
     QSharedPointer<VisualPlayPosition> vpp = m_listVisualPlayPosition.value(group);
     if (vpp.isNull()) {
         vpp = QSharedPointer<VisualPlayPosition>(new VisualPlayPosition(group));

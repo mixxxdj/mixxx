@@ -1,6 +1,6 @@
 #include "baseplayer.h"
 
-BasePlayer::BasePlayer(QObject* pParent, QString group)
+BasePlayer::BasePlayer(QObject* pParent, const StringAtom& group)
         : QObject(pParent),
           m_group(group) {
 }
@@ -9,6 +9,6 @@ BasePlayer::~BasePlayer() {
 
 }
 
-const QString BasePlayer::getGroup() {
+const StringAtom& BasePlayer::getGroup() {
     return m_group;
 }

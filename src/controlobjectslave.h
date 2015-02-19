@@ -6,6 +6,7 @@
 #include <QString>
 
 #include "control/control.h"
+#include "control/stringatom.h"
 #include "configobject.h"
 
 // This class is the successor of ControlObjectThread. It should be used for new
@@ -17,6 +18,7 @@ class ControlObjectSlave : public QObject {
     Q_OBJECT
   public:
     ControlObjectSlave(QObject* pParent = NULL);
+    ControlObjectSlave(const StringAtom& g, const QString& i, QObject* pParent = NULL);
     ControlObjectSlave(const QString& g, const QString& i, QObject* pParent = NULL);
     ControlObjectSlave(const char* g, const char* i, QObject* pParent = NULL);
     ControlObjectSlave(const ConfigKey& key, QObject* pParent = NULL);

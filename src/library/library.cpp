@@ -174,8 +174,8 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
             pTrackTableView, SLOT(loadTrackModel(QAbstractItemModel*)));
     connect(pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
             this, SLOT(slotLoadTrack(TrackPointer)));
-    connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
-            this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString, bool)));
+    connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, StringAtom, bool)),
+            this, SLOT(slotLoadTrackToPlayer(TrackPointer, StringAtom, bool)));
     pLibraryWidget->registerView(m_sTrackViewName, pTrackTableView);
 
     connect(this, SIGNAL(switchToView(const QString&)),
@@ -215,8 +215,8 @@ void Library::addFeature(LibraryFeature* feature) {
             this, SLOT(slotSwitchToView(const QString&)));
     connect(feature, SIGNAL(loadTrack(TrackPointer)),
             this, SLOT(slotLoadTrack(TrackPointer)));
-    connect(feature, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
-            this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString, bool)));
+    connect(feature, SIGNAL(loadTrackToPlayer(TrackPointer, StringAtom, bool)),
+            this, SLOT(slotLoadTrackToPlayer(TrackPointer, StringAtom, bool)));
     connect(feature, SIGNAL(restoreSearch(const QString&)),
             this, SLOT(slotRestoreSearch(const QString&)));
     connect(feature, SIGNAL(enableCoverArtDisplay(bool)),
@@ -245,13 +245,13 @@ void Library::slotLoadTrack(TrackPointer pTrack) {
     emit(loadTrack(pTrack));
 }
 
-void Library::slotLoadLocationToPlayer(QString location, QString group) {
+void Library::slotLoadLocationToPlayer(QString location, StringAtom group) {
     TrackPointer pTrack = m_pTrackCollection->getTrackDAO()
             .getOrAddTrack(location, true, NULL);
     emit(loadTrackToPlayer(pTrack, group));
 }
 
-void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play) {
+void Library::slotLoadTrackToPlayer(TrackPointer pTrack, StringAtom group, bool play) {
     emit(loadTrackToPlayer(pTrack, group, play));
 }
 

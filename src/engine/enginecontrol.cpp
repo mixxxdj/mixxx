@@ -6,10 +6,10 @@
 #include "engine/enginebuffer.h"
 #include "playermanager.h"
 
-EngineControl::EngineControl(QString group,
-                             ConfigObject<ConfigValue>* _config)
+EngineControl::EngineControl(const StringAtom& group,
+                             ConfigObject<ConfigValue>* pConfig)
         : m_group(group),
-          m_pConfig(_config),
+          m_pConfig(pConfig),
           m_dTotalSamples(0),
           m_pEngineMaster(NULL),
           m_pEngineBuffer(NULL),
@@ -71,7 +71,7 @@ double EngineControl::getTotalSamples() const {
     return m_dTotalSamples;
 }
 
-QString EngineControl::getGroup() const {
+const StringAtom& EngineControl::getGroup() const {
     return m_group;
 }
 

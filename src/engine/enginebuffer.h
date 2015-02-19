@@ -29,6 +29,7 @@
 #include "configobject.h"
 #include "rotary.h"
 #include "control/controlvalue.h"
+#include "control/stringatom.h"
 #include "cachingreader.h"
 
 //for the writer
@@ -117,7 +118,7 @@ class EngineBuffer : public EngineObject {
         KEYLOCK_ENGINE_COUNT,
     };
 
-    EngineBuffer(QString _group, ConfigObject<ConfigValue>* _config,
+    EngineBuffer(const StringAtom& group, ConfigObject<ConfigValue>* config,
                  EngineChannel* pChannel, EngineMaster* pMixingEngine);
     virtual ~EngineBuffer();
 
@@ -237,7 +238,7 @@ class EngineBuffer : public EngineObject {
     QMutex m_engineLock;
 
     // Holds the name of the control group
-    QString m_group;
+    StringAtom m_group;
     ConfigObject<ConfigValue>* m_pConfig;
 
     LoopingControl* m_pLoopingControl;

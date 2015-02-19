@@ -55,8 +55,8 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
     qRegisterMetaType<AutoDJProcessor::AutoDJState>("AutoDJState");
     m_pAutoDJProcessor = new AutoDJProcessor(
             this, m_pConfig, pPlayerManager, m_iAutoDJPlaylistId, m_pTrackCollection);
-    connect(m_pAutoDJProcessor, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
+    connect(m_pAutoDJProcessor, SIGNAL(loadTrackToPlayer(TrackPointer, StringAtom, bool)),
+            this, SIGNAL(loadTrackToPlayer(TrackPointer, StringAtom, bool)));
 
 #ifdef __AUTODJCRATES__
 
@@ -116,8 +116,8 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
     libraryWidget->registerView(m_sAutoDJViewName, m_pAutoDJView);
     connect(m_pAutoDJView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
-    connect(m_pAutoDJView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
+    connect(m_pAutoDJView, SIGNAL(loadTrackToPlayer(TrackPointer, StringAtom, bool)),
+            this, SIGNAL(loadTrackToPlayer(TrackPointer, StringAtom, bool)));
 
     connect(m_pAutoDJView, SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));

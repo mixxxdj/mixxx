@@ -6,13 +6,14 @@
 #include <QMouseEvent>
 
 #include "wnumber.h"
+#include "control/stringatom.h"
 
-class ControlObjectThread;
+class ControlObjectSlave;
 
 class WNumberPos : public WNumber {
     Q_OBJECT
   public:
-    WNumberPos(const char *group, QWidget *parent=0);
+    WNumberPos(const StringAtom& group, QWidget *parent = NULL);
     virtual ~WNumberPos();
 
     // Set if the display shows remaining time (true) or position (false)
@@ -35,11 +36,11 @@ class WNumberPos : public WNumber {
     double m_dTrackSampleRate;
     // True if remaining content is being shown
     bool m_bRemain;
-    ControlObjectThread* m_pShowTrackTimeRemaining;
+    ControlObjectSlave* m_pShowTrackTimeRemaining;
     // Pointer to control object for position, rate, and track info
-    ControlObjectThread* m_pVisualPlaypos;
-    ControlObjectThread* m_pTrackSamples;
-    ControlObjectThread* m_pTrackSampleRate;
+    ControlObjectSlave* m_pVisualPlaypos;
+    ControlObjectSlave* m_pTrackSamples;
+    ControlObjectSlave* m_pTrackSampleRate;
 };
 
 #endif

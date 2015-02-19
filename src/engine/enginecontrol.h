@@ -35,8 +35,8 @@ const double kNoTrigger = -1;
 class EngineControl : public QObject {
     Q_OBJECT
   public:
-    EngineControl(QString group,
-                  ConfigObject<ConfigValue>* _config);
+    EngineControl(const StringAtom& group,
+                  ConfigObject<ConfigValue>* pConfig);
     virtual ~EngineControl();
 
     // Called by EngineBuffer::process every latency period. See the above
@@ -70,7 +70,7 @@ class EngineControl : public QObject {
     virtual void setCurrentSample(const double dCurrentSample, const double dTotalSamples);
     double getCurrentSample() const;
     double getTotalSamples() const;
-    QString getGroup() const;
+    const StringAtom& getGroup() const;
 
     // Called to collect player features for effects processing.
     virtual void collectFeatureState(GroupFeatureState* pGroupFeatures) const {
@@ -95,7 +95,7 @@ class EngineControl : public QObject {
     EngineMaster* getEngineMaster();
     EngineBuffer* getEngineBuffer();
 
-    QString m_group;
+    StringAtom m_group;
     ConfigObject<ConfigValue>* m_pConfig;
 
   private:

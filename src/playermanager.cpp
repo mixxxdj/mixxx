@@ -21,6 +21,7 @@
 #include "engine/enginedeck.h"
 #include "util/assert.h"
 
+
 PlayerManager::PlayerManager(ConfigObject<ConfigValue>* pConfig,
                              SoundManager* pSoundManager,
                              EffectsManager* pEffectsManager,
@@ -85,12 +86,12 @@ PlayerManager::~PlayerManager() {
 
 void PlayerManager::bindToLibrary(Library* pLibrary) {
     QMutexLocker locker(&m_mutex);
-    connect(pLibrary, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
-            this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString, bool)));
+    connect(pLibrary, SIGNAL(loadTrackToPlayer(TrackPointer, StringAtom, bool)),
+            this, SLOT(slotLoadTrackToPlayer(TrackPointer, StringAtom, bool)));
     connect(pLibrary, SIGNAL(loadTrack(TrackPointer)),
             this, SLOT(slotLoadTrackIntoNextAvailableDeck(TrackPointer)));
-    connect(this, SIGNAL(loadLocationToPlayer(QString, QString)),
-            pLibrary, SLOT(slotLoadLocationToPlayer(QString, QString)));
+    connect(this, SIGNAL(loadLocationToPlayer(QString, StringAtom)),
+            pLibrary, SLOT(slotLoadLocationToPlayer(QString, StringAtom)));
 
     m_pAnalyserQueue = AnalyserQueue::createDefaultAnalyserQueue(m_pConfig,
             pLibrary->getTrackCollection());
@@ -263,7 +264,7 @@ void PlayerManager::addConfiguredDecks() {
 
 void PlayerManager::addDeckInner() {
     // Do not lock m_mutex here.
-    QString group = groupForDeck(m_decks.count());
+    StringAtom group = groupForDeck(m_decks.count(), true);
     DEBUG_ASSERT_AND_HANDLE(!m_players.contains(group)) {
         return;
     }
@@ -282,7 +283,7 @@ void PlayerManager::addDeckInner() {
                 m_pAnalyserQueue, SLOT(slotAnalyseTrack(TrackPointer)));
     }
 
-    m_players[group] = pDeck;
+    m_players.insert(group, pDeck);
     m_decks.append(pDeck);
 
     // Register the deck output with SoundManager (deck is 0-indexed to SoundManager)
@@ -320,7 +321,7 @@ void PlayerManager::addSampler() {
 
 void PlayerManager::addSamplerInner() {
     // Do not lock m_mutex here.
-    QString group = groupForSampler(m_samplers.count());
+    StringAtom group = groupForSampler(m_samplers.count(), true);
 
     DEBUG_ASSERT_AND_HANDLE(!m_players.contains(group)) {
         return;
@@ -336,7 +337,7 @@ void PlayerManager::addSamplerInner() {
                 m_pAnalyserQueue, SLOT(slotAnalyseTrack(TrackPointer)));
     }
 
-    m_players[group] = pSampler;
+    m_players.insert(group, pSampler);
     m_samplers.append(pSampler);
 }
 
@@ -348,7 +349,7 @@ void PlayerManager::addPreviewDeck() {
 
 void PlayerManager::addPreviewDeckInner() {
     // Do not lock m_mutex here.
-    QString group = groupForPreviewDeck(m_preview_decks.count());
+    StringAtom group = groupForPreviewDeck(m_preview_decks.count(), true);
     DEBUG_ASSERT_AND_HANDLE(!m_players.contains(group)) {
         return;
     }
@@ -364,16 +365,13 @@ void PlayerManager::addPreviewDeckInner() {
                 m_pAnalyserQueue, SLOT(slotAnalyseTrack(TrackPointer)));
     }
 
-    m_players[group] = pPreviewDeck;
+    m_players.insert(group, pPreviewDeck);
     m_preview_decks.append(pPreviewDeck);
 }
 
-BaseTrackPlayer* PlayerManager::getPlayer(QString group) const {
+BaseTrackPlayer* PlayerManager::getPlayer(const StringAtom& group) const {
     QMutexLocker locker(&m_mutex);
-    if (m_players.contains(group)) {
-        return m_players[group];
-    }
-    return NULL;
+    return m_players.value(group, NULL);
 }
 
 Deck* PlayerManager::getDeck(unsigned int deck) const {
@@ -411,7 +409,7 @@ bool PlayerManager::hasVinylInput(int inputnum) const {
     return m_pSoundManager->getConfig().getInputs().values().contains(vinyl_input);
 }
 
-void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play) {
+void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, StringAtom group, bool play) {
     // Do not lock mutex in this method unless it is changed to access
     // PlayerManager state.
     BaseTrackPlayer* pPlayer = getPlayer(group);
@@ -424,7 +422,7 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bo
     pPlayer->slotLoadTrack(pTrack, play);
 }
 
-void PlayerManager::slotLoadToPlayer(QString location, QString group) {
+void PlayerManager::slotLoadToPlayer(QString location, StringAtom group) {
     // The library will get the track and then signal back to us to load the
     // track via slotLoadTrackToPlayer.
     emit(loadLocationToPlayer(location, group));
@@ -472,4 +470,55 @@ void PlayerManager::slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack) {
         }
         ++it;
     }
+}
+
+// static
+StringAtom PlayerManager::groupForSampler(int i, bool add) {
+    static QList<StringAtom> groupForSamplerList;
+    if (add) {
+        DEBUG_ASSERT_AND_HANDLE(i == groupForSamplerList.count()) {
+            return StringAtom();
+        }
+        StringAtom group = StringAtom(QString("[Sampler%1]").arg(i+1));
+        groupForSamplerList.append(group);
+        return group;
+    }
+    DEBUG_ASSERT_AND_HANDLE(i < groupForSamplerList.count()) {
+        return StringAtom();
+    }
+    return groupForSamplerList.at(i);
+}
+
+//static
+StringAtom PlayerManager::groupForDeck(int i, bool add) {
+    static QList<StringAtom> groupForDeckList;
+    if (add) {
+        DEBUG_ASSERT_AND_HANDLE(i == groupForDeckList.count()) {
+            return StringAtom();
+        }
+        StringAtom group = StringAtom(QString("[Channel%1]").arg(i+1));
+        groupForDeckList.append(group);
+        return group;
+    }
+    DEBUG_ASSERT_AND_HANDLE(i < groupForDeckList.count()) {
+        return StringAtom();
+    }
+    return groupForDeckList.at(i);
+}
+
+//static
+StringAtom PlayerManager::groupForPreviewDeck(int i, bool add) {
+    static QList<StringAtom> groupForPreviewDeckList;
+    if (add) {
+        DEBUG_ASSERT_AND_HANDLE(i == groupForPreviewDeckList.count()) {
+            return StringAtom();
+        }
+        StringAtom group = StringAtom(QString("[PreviewDeck%1]").arg(i+1));
+        groupForPreviewDeckList.append(group);
+        return group;
+    }
+    DEBUG_ASSERT_AND_HANDLE(i < groupForPreviewDeckList.count()) {
+        return StringAtom();
+    }
+    return groupForPreviewDeckList.at(i);
 }
