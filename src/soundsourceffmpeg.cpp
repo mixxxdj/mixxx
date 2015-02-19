@@ -3,7 +3,7 @@
                           soundsourceffmpeg.cpp -  ffmpeg decoder
                              -------------------
     copyright            : (C) 2007 by Cedric GESTES
-                           (C) 2012-2014 by Tuukka Pasanen
+                           (C) 2012-2015 by Tuukka Pasanen
     email                : tuukka.pasanen@ilmi.fi
 
     This one tested with FFMPEG 0.10/0.11/1.0/1.1/1.2/2,0/2,1/GIT
@@ -582,13 +582,8 @@ Result SoundSourceFFmpeg::parseHeader() {
             return ERR;
         }
 
-        // Taglib 1.8.x doesn't provide an ID3v2Tag method for WAV files.
-#if TAGLIB_MAJOR_VERSION == 1 && TAGLIB_MINOR_VERSION == 8
-        TagLib::ID3v2::Tag* id3v2(f.tag());
-        if (id3v2) {
-            readID3v2Tag(this, *id3v2);
-        }
-#else
+        // Taglib provides the ID3v2Tag method for WAV files since Version 1.9
+#if (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
         TagLib::ID3v2::Tag* id3v2(f.ID3v2Tag());
         if (id3v2) {
             readID3v2Tag(this, *id3v2);
@@ -601,22 +596,13 @@ Result SoundSourceFFmpeg::parseHeader() {
                 return ERR;
             }
         }
+#else
+        TagLib::ID3v2::Tag* id3v2(f.tag());
+        if (id3v2) {
+            readID3v2Tag(this, *id3v2);
+        }
 #endif
 
-        // Is this really needed
-        //if (getDuration() <= 0) {
-            // we're using a taglib version which doesn't know how to do wav
-            // durations, set it with info from sndfile -bkgood
-            // XXX remove this when ubuntu ships with an sufficiently
-            // intelligent version of taglib, should happen in 11.10
-
-        //    if (info.samplerate > 0) {
-        //        setDuration(info.frames / info.samplerate);
-        //    } else {
-        //        qDebug() << "WARNING: WAV file with invalid samplerate."
-        //                 << "Can't get duration using libsndfile.";
-        //    }
-        //}
     } else if (is_aiff) {
         // Try AIFF
         TagLib::RIFF::AIFF::File f(qBAFilename.constData());
