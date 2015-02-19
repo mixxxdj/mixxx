@@ -81,9 +81,19 @@ TEST_F(BeatMapTest, TestNthBeat) {
     double firstBeat = startOffsetSamples + beatLengthSamples * 0;
     double lastBeat = startOffsetSamples + beatLengthSamples * (numBeats - 1);
     EXPECT_EQ(lastBeat, pMap->findNthBeat(lastBeat, 1));
+    EXPECT_EQ(lastBeat, pMap->findNextBeat(lastBeat));
     EXPECT_EQ(-1, pMap->findNthBeat(lastBeat, 2));
     EXPECT_EQ(firstBeat, pMap->findNthBeat(firstBeat, -1));
+    EXPECT_EQ(firstBeat, pMap->findPrevBeat(firstBeat));
     EXPECT_EQ(-1, pMap->findNthBeat(firstBeat, -2));
+
+    QPair<double, double> beat_pair = pMap->findPrevNextBeats(lastBeat);
+    EXPECT_EQ(lastBeat, beat_pair.first);
+    EXPECT_EQ(-1, beat_pair.second);
+
+    beat_pair = pMap->findPrevNextBeats(firstBeat);
+    EXPECT_EQ(firstBeat, beat_pair.first);
+    EXPECT_EQ(firstBeat + beatLengthSamples, beat_pair.second);
 }
 
 TEST_F(BeatMapTest, TestNthBeatWhenOnBeat) {
@@ -112,6 +122,15 @@ TEST_F(BeatMapTest, TestNthBeatWhenOnBeat) {
         EXPECT_DOUBLE_EQ(position + beatLengthSamples*(i-1), pMap->findNthBeat(position, i));
         EXPECT_DOUBLE_EQ(position + beatLengthSamples*(-i+1), pMap->findNthBeat(position, -i));
     }
+
+    // Also test prev/next beat calculation.
+    QPair<double, double> beat_pair = pMap->findPrevNextBeats(position);
+    EXPECT_EQ(position, beat_pair.first);
+    EXPECT_EQ(position + beatLengthSamples, beat_pair.second);
+
+    // Both previous and next beat should return the current position.
+    EXPECT_EQ(position, pMap->findNextBeat(position));
+    EXPECT_EQ(position, pMap->findPrevBeat(position));
 }
 
 TEST_F(BeatMapTest, TestNthBeatWhenOnBeat_BeforeEpsilon) {
@@ -141,6 +160,16 @@ TEST_F(BeatMapTest, TestNthBeatWhenOnBeat_BeforeEpsilon) {
         EXPECT_DOUBLE_EQ(kClosestBeat + beatLengthSamples*(i-1), pMap->findNthBeat(position, i));
         EXPECT_DOUBLE_EQ(kClosestBeat + beatLengthSamples*(-i+1), pMap->findNthBeat(position, -i));
     }
+
+    // Also test prev/next beat calculation
+    QPair<double, double> beat_pair = pMap->findPrevNextBeats(position);
+    EXPECT_EQ(kClosestBeat, beat_pair.first);
+    EXPECT_EQ(kClosestBeat + beatLengthSamples, beat_pair.second);
+
+    // Both previous and next beat should return the closest beat.
+    EXPECT_EQ(kClosestBeat, pMap->findNextBeat(position));
+    EXPECT_EQ(kClosestBeat, pMap->findPrevBeat(position));
+
 }
 
 TEST_F(BeatMapTest, TestNthBeatWhenOnBeat_AfterEpsilon) {
@@ -170,6 +199,16 @@ TEST_F(BeatMapTest, TestNthBeatWhenOnBeat_AfterEpsilon) {
         EXPECT_DOUBLE_EQ(kClosestBeat + beatLengthSamples*(i-1), pMap->findNthBeat(position, i));
         EXPECT_DOUBLE_EQ(kClosestBeat + beatLengthSamples*(-i+1), pMap->findNthBeat(position, -i));
     }
+
+    // Also test prev/next beat calculation.
+    QPair<double, double> beat_pair = pMap->findPrevNextBeats(position);
+    EXPECT_EQ(kClosestBeat, beat_pair.first);
+    EXPECT_EQ(kClosestBeat + beatLengthSamples, beat_pair.second);
+
+    // Both previous and next beat should return the closest beat.
+    EXPECT_EQ(kClosestBeat, pMap->findNextBeat(position));
+    EXPECT_EQ(kClosestBeat, pMap->findPrevBeat(position));
+
 }
 
 TEST_F(BeatMapTest, TestNthBeatWhenNotOnBeat) {
@@ -201,6 +240,12 @@ TEST_F(BeatMapTest, TestNthBeatWhenNotOnBeat) {
         EXPECT_DOUBLE_EQ(previousBeat - beatLengthSamples*(i-1),
                          pMap->findNthBeat(position, -i));
     }
+
+
+    // Also test prev/next beat calculation
+    QPair<double, double> beat_pair = pMap->findPrevNextBeats(position);
+    EXPECT_EQ(previousBeat, beat_pair.first);
+    EXPECT_EQ(nextBeat, beat_pair.second);
 }
 
 TEST_F(BeatMapTest, TestBpmAround) {

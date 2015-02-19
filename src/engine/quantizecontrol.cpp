@@ -84,7 +84,13 @@ double QuantizeControl::process(const double dRate,
     double prevBeat = m_pCOPrevBeat->get();
     double nextBeat = m_pCONextBeat->get();
     double closestBeat = m_pCOClosestBeat->get();
-    double currentClosestBeat = floor(m_pBeats->findClosestBeat(iCurrentSample));
+
+    // Calculate this by hand since we may also want the beat locations themselves
+    // and duplicating the work would double the number of mutex locks.
+    QPair<double, double> beat_pair = m_pBeats->findPrevNextBeats(iCurrentSample);
+    double currentClosestBeat =
+            (beat_pair.second - iCurrentSample > iCurrentSample - beat_pair.first) ?
+                    beat_pair.first : beat_pair.second;
 
     if (closestBeat != currentClosestBeat) {
         if (!even(static_cast<int>(currentClosestBeat))) {
@@ -95,17 +101,8 @@ double QuantizeControl::process(const double dRate,
 
     if (prevBeat == -1 || nextBeat == -1 ||
         currentSample >= nextBeat || currentSample <= prevBeat) {
-        // TODO(XXX) are the floor and even checks necessary?
-        nextBeat = floor(m_pBeats->findNextBeat(iCurrentSample));
-        prevBeat = floor(m_pBeats->findPrevBeat(iCurrentSample));
-
-        if (!even(static_cast<int>(nextBeat)))
-            nextBeat--;
-        if (!even(static_cast<int>(prevBeat)))
-            prevBeat--;
-
-        m_pCONextBeat->set(nextBeat);
-        m_pCOPrevBeat->set(prevBeat);
+        m_pCOPrevBeat->set(beat_pair.first);
+        m_pCONextBeat->set(beat_pair.second);
     }
 
     return kNoTrigger;

@@ -138,8 +138,12 @@ double BeatGrid::findClosestBeat(double dSamples) const {
     if (!isValid()) {
         return -1;
     }
-    double nextBeat = findNextBeat(dSamples);
-    double prevBeat = findPrevBeat(dSamples);
+    QPair<double, double> beat_pair = findPrevNextBeats(dSamples);
+    if (beat_pair.first == -1 || beat_pair.second == -1) {
+        return -1;
+    }
+    double prevBeat = beat_pair.first;
+    double nextBeat = beat_pair.second;
     return (nextBeat - dSamples > dSamples - prevBeat) ? prevBeat : nextBeat;
 }
 
@@ -161,13 +165,15 @@ double BeatGrid::findNthBeat(double dSamples, int n) const {
         beatFraction = nextBeat;
         // If we are going to pretend we were actually on nextBeat then prevBeat
         // needs to be re-calculated. Since it is floor(beatFraction), that's
-        // the same as nextBeat.
+        // the same as nextBeat.  We only use prevBeat so no need to increment
+        // nextBeat.
         prevBeat = nextBeat;
     } else if (fabs(prevBeat - beatFraction) < kEpsilon) {
         beatFraction = prevBeat;
         // If we are going to pretend we were actually on prevBeat then nextBeat
         // needs to be re-calculated. Since it is ceil(beatFraction), that's
-        // the same as prevBeat.
+        // the same as prevBeat.  We will only use nextBeat so no need to
+        // decrement prevBeat.
         nextBeat = prevBeat;
     }
 
@@ -184,12 +190,48 @@ double BeatGrid::findNthBeat(double dSamples, int n) const {
         n = n + 1;
     }
 
-    double dResult = dClosestBeat + n * m_dBeatLength;
+    double dResult = floor(dClosestBeat + n * m_dBeatLength);
     if (!even(static_cast<int>(dResult))) {
         dResult--;
     }
     return dResult;
 }
+
+QPair<double, double> BeatGrid::findPrevNextBeats(double dSamples) const {
+    QMutexLocker locker(&m_mutex);
+    if (!isValid()) {
+        return qMakePair(-1.0, -1.0);
+    }
+
+    double beatFraction = (dSamples - firstBeatSample()) / m_dBeatLength;
+    double prevBeat = floor(beatFraction);
+    double nextBeat = ceil(beatFraction);
+
+    // If the position is within 1/100th of the next or previous beat, treat it
+    // as if it is that beat.
+    const double kEpsilon = .01;
+
+    if (fabs(nextBeat - beatFraction) < kEpsilon) {
+        beatFraction = nextBeat;
+        // If we are going to pretend we were actually on nextBeat then prevBeatFraction
+        // needs to be re-calculated. Since it is floor(beatFraction), that's
+        // the same as nextBeat.
+        prevBeat = nextBeat;
+        // And nextBeat needs to be incremented.
+        ++nextBeat;
+    }
+    double prevBeatSamples = floor(prevBeat * m_dBeatLength + firstBeatSample());
+    double nextBeatSamples = floor(nextBeat * m_dBeatLength + firstBeatSample());
+    if (!even(static_cast<int>(prevBeatSamples))) {
+        prevBeatSamples--;
+    }
+    if (!even(static_cast<int>(nextBeatSamples))) {
+        nextBeatSamples--;
+    }
+
+    return qMakePair(prevBeatSamples, nextBeatSamples);
+}
+
 
 BeatIterator* BeatGrid::findBeats(double startSample, double stopSample) const {
     QMutexLocker locker(&m_mutex);
