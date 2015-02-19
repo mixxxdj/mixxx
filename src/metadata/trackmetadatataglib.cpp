@@ -114,9 +114,9 @@ inline QString toQString(const TagLib::APE::Item& apeItem) {
     return toQString(apeItem.toString());
 }
 
-inline TagLib::String toTagLibString(const QString& str, TagLib::String::Type textType = TagLib::String::UTF8) {
+inline TagLib::String toTagLibString(const QString& str, TagLib::String::Type stringType = TagLib::String::UTF8) {
     const QByteArray qba(str.toUtf8());
-    return TagLib::String(qba.constData(), textType);
+    return TagLib::String(qba.constData(), stringType);
 }
 
 inline bool parseBpm(TrackMetadata* pTrackMetadata, QString sBpm) {
@@ -271,43 +271,94 @@ void replaceID3v2Frame(TagLib::ID3v2::Tag* pTag, TagLib::ID3v2::Frame* pFrame) {
     pTag->addFrame(pFrame);
 }
 
-void writeID3v2TextIdentificationFrame(TagLib::ID3v2::Tag* pTag,
-        const TagLib::ByteVector &id, const QString& text, bool isNumericOrURL = false) {
-    DEBUG_ASSERT(pTag);
-
-    TagLib::String::Type textType;
+TagLib::String::Type getID3v2StringType(const TagLib::ID3v2::Tag& tag, bool isNumericOrURL = false) {
+    TagLib::String::Type stringType;
     // For an overview of the character encodings supported by
     // the different ID3v2 versions please refer to the following
     // resources:
     // http://en.wikipedia.org/wiki/ID3#ID3v2
     // http://id3.org/id3v2.3.0
     // http://id3.org/id3v2.4.0-structure
-    if (4 <= pTag->header()->majorVersion()) {
+    if (4 <= tag.header()->majorVersion()) {
         // For ID3v2.4.0 or higher prefer UTF-8, because it is a
         // very compact representation for common cases and it is
         // independent of the byte order.
-        textType = TagLib::String::UTF8;
+        stringType = TagLib::String::UTF8;
     } else {
         if (isNumericOrURL) {
             // According to the ID3v2.3.0 specification: "All numeric
             // strings and URLs are always encoded as ISO-8859-1."
-            textType = TagLib::String::Latin1;
+            stringType = TagLib::String::Latin1;
         } else {
             // For ID3v2.3.0 use UCS-2 (UTF-16 encoded Unicode with BOM)
             // for arbitrary text, because UTF-8 and UTF-16BE are only
             // supported since ID3v2.4.0 and the alternative ISO-8859-1
             // does not cover all Unicode characters.
-            textType = TagLib::String::UTF16;
+            stringType = TagLib::String::UTF16;
         }
     }
-    QScopedPointer<TagLib::ID3v2::TextIdentificationFrame> pNewFrame(
-            new TagLib::ID3v2::TextIdentificationFrame(id, textType));
-    pNewFrame->setText(toTagLibString(text));
-    replaceID3v2Frame(pTag, pNewFrame.data());
-    // Now the plain pointer in pNewFrame is owned and
+    return stringType;
+}
+
+TagLib::ID3v2::UserTextIdentificationFrame* findUserTextIdentificationFrame(
+        const TagLib::ID3v2::Tag& tag, QString description) {
+    TagLib::ID3v2::FrameList textFrames(tag.frameListMap()["TXXX"]);
+    for (TagLib::ID3v2::FrameList::ConstIterator it(textFrames.begin());
+            it != textFrames.end(); ++it) {
+        TagLib::ID3v2::UserTextIdentificationFrame* pTextFrame =
+                dynamic_cast<TagLib::ID3v2::UserTextIdentificationFrame*>(*it);
+        if (pTextFrame) {
+            const QString textFrameDescription(
+                    toQString(pTextFrame->description()));
+            if (0 == textFrameDescription.compare(
+                    description, Qt::CaseInsensitive)) {
+                return pTextFrame; // found
+            }
+        }
+    }
+    return 0; // not found
+}
+
+void writeID3v2TextIdentificationFrame(TagLib::ID3v2::Tag* pTag,
+        const TagLib::ByteVector &id, const QString& text, bool isNumericOrURL = false) {
+    DEBUG_ASSERT(pTag);
+
+    const TagLib::String::Type stringType =
+            getID3v2StringType(*pTag, isNumericOrURL);
+    QScopedPointer<TagLib::ID3v2::TextIdentificationFrame> pTextFrame(
+            new TagLib::ID3v2::TextIdentificationFrame(id, stringType));
+    pTextFrame->setText(toTagLibString(text, stringType));
+    replaceID3v2Frame(pTag, pTextFrame.data());
+    // Now the plain pointer in pTextFrame is owned and
     // managed by pTag. We need to release the ownership
     // to avoid double deletion!
-    pNewFrame.take();
+    pTextFrame.take();
+}
+
+void writeID3v2UserTextIdentificationFrame(TagLib::ID3v2::Tag* pTag,
+        const QString& description, const QString& text, bool isNumericOrURL = false) {
+    TagLib::ID3v2::UserTextIdentificationFrame* pTextFrame =
+            findUserTextIdentificationFrame(*pTag, description);
+    if (pTextFrame) {
+        // Modify existing frame
+        const TagLib::String::Type stringType =
+                pTextFrame->textEncoding();
+        pTextFrame->setDescription(toTagLibString(description, stringType));
+        pTextFrame->setText(toTagLibString(text, stringType));
+    } else {
+        // Add a new frame
+        const TagLib::String::Type stringType =
+                getID3v2StringType(*pTag, isNumericOrURL);
+        QScopedPointer<TagLib::ID3v2::UserTextIdentificationFrame> pTextFrame(
+                new TagLib::ID3v2::UserTextIdentificationFrame(stringType));
+        pTextFrame->setDescription(toTagLibString(description, stringType));
+        pTextFrame->setText(toTagLibString(text, stringType));
+        pTag->addFrame(pTextFrame.data());
+        // Now the plain pointer in pTextFrame is owned and
+        // managed by pTag. We need to release the ownership
+        // to avoid double deletion!
+        pTextFrame.take();
+    }
 }
 
 void writeTrackMetadataIntoTag(TagLib::Tag* pTag, const TrackMetadata& trackMetadata) {
@@ -414,27 +465,18 @@ void readTrackMetadataFromID3v2Tag(TrackMetadata* pTrackMetadata,
         parseBpm(pTrackMetadata, toQStringFirst(bpmFrame));
     }
 
-    // Foobar2000-style ID3v2.3.0 tags
-    // TODO: Check if everything is ok.
-    TagLib::ID3v2::FrameList textFrames(tag.frameListMap()["TXXX"]);
-    for (TagLib::ID3v2::FrameList::ConstIterator it(textFrames.begin());
-            it != textFrames.end(); ++it) {
-        TagLib::ID3v2::UserTextIdentificationFrame* replaygainFrame =
-                dynamic_cast<TagLib::ID3v2::UserTextIdentificationFrame*>(*it);
-        if (replaygainFrame && replaygainFrame->fieldList().size() >= 2) {
-            const QString desc(
-                    toQString(replaygainFrame->description()));
-            // Only read track gain (not album gain)
-            if (0 == desc.compare("REPLAYGAIN_TRACK_GAIN", Qt::CaseInsensitive)) {
-                parseReplayGain(pTrackMetadata,
-                        toQString(replaygainFrame->fieldList()[1]));
-            }
-        }
-    }
-
     const TagLib::ID3v2::FrameList keyFrame(tag.frameListMap()["TKEY"]);
     if (!keyFrame.isEmpty()) {
         pTrackMetadata->setKey(toQStringFirst(keyFrame));
+    }
+
+    // Only read track gain (not album gain)
+    TagLib::ID3v2::UserTextIdentificationFrame* pReplayGainFrame =
+            findUserTextIdentificationFrame(tag, "REPLAYGAIN_TRACK_GAIN");
+    if (pReplayGainFrame && (2 <= pReplayGainFrame->fieldList().size())) {
+        // The value is stored in the 2nd field
+        parseReplayGain(pTrackMetadata,
+                toQString(pReplayGainFrame->fieldList()[1]));
     }
 }
 
@@ -681,7 +723,11 @@ bool writeTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
         }
     }
 
-    // TODO(uklotzde): Write TXXX - REPLAYGAIN_TRACK_GAIN
+    // Only write track gain (not album gain)
+    const QString replayGain(
+            TrackMetadata::formatReplayGain(trackMetadata.getReplayGain()));
+    writeID3v2UserTextIdentificationFrame(
+            pTag, "REPLAYGAIN_TRACK_GAIN", replayGain, true);
 
     return true;
 }
