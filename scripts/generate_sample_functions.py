@@ -130,8 +130,8 @@ def copy_with_gain(output, base_indent_depth, num_channels):
         output.append(' ' * (BASIC_INDENT * (depth + base_indent_depth)) + data)
 
     header = "static inline void %s(" % copy_with_gain_method_name(num_channels)
-    arg_groups = ['CSAMPLE* pDest'] + [
-        "const CSAMPLE* pSrc%(i)d, CSAMPLE_GAIN gain%(i)d" % {'i': i}
+    arg_groups = ['CSAMPLE* _RESTRICT pDest'] + [
+        "const CSAMPLE* _RESTRICT pSrc%(i)d, CSAMPLE_GAIN gain%(i)d" % {'i': i}
         for i in xrange(num_channels)] + ['int iNumSamples']
 
     output.extend(hanging_indent(header, arg_groups, ',', ') {',
@@ -162,8 +162,8 @@ def copy_with_ramping_gain(output, base_indent_depth, num_channels):
         output.append(' ' * (BASIC_INDENT * (depth + base_indent_depth)) + data)
 
     header = "static inline void %s(" % copy_with_ramping_gain_method_name(num_channels)
-    arg_groups = ['CSAMPLE* pDest'] + [
-        "const CSAMPLE* pSrc%(i)d, CSAMPLE_GAIN gain%(i)din, CSAMPLE_GAIN gain%(i)dout" % {'i': i}
+    arg_groups = ['CSAMPLE* _RESTRICT pDest'] + [
+        "const CSAMPLE* _RESTRICT pSrc%(i)d, CSAMPLE_GAIN gain%(i)din, CSAMPLE_GAIN gain%(i)dout" % {'i': i}
         for i in xrange(num_channels)] + ['int iNumSamples']
 
     output.extend(hanging_indent(header, arg_groups, ',', ') {',
