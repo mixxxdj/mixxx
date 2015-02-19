@@ -70,7 +70,7 @@ class EngineControl : public QObject {
     virtual void setCurrentSample(const double dCurrentSample, const double dTotalSamples);
     double getCurrentSample() const;
     double getTotalSamples() const;
-    QString getGroup() const;
+    const StringAtom& getGroup() const;
 
     // Called to collect player features for effects processing.
     virtual void collectFeatureState(GroupFeatureState* pGroupFeatures) const {

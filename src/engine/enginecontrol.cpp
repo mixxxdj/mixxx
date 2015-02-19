@@ -71,7 +71,7 @@ double EngineControl::getTotalSamples() const {
     return m_dTotalSamples;
 }
 
-QString EngineControl::getGroup() const {
+const StringAtom& EngineControl::getGroup() const {
     return m_group;
 }
 

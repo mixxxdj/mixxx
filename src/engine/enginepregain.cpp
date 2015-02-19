@@ -31,7 +31,7 @@ ControlObject* EnginePregain::s_pEnableReplayGain = NULL;
 /*----------------------------------------------------------------
    A pregaincontrol is ... a pregain.
    ----------------------------------------------------------------*/
-EnginePregain::EnginePregain(QString group)
+EnginePregain::EnginePregain(const StringAtom& group)
         : m_dSpeed(0),
           m_fPrevGain(1.0),
           m_bSmoothFade(false) {

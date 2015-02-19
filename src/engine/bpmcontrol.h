@@ -160,7 +160,7 @@ class BpmControl : public EngineControl {
     TrackPointer m_pTrack;
     BeatsPointer m_pBeats;
 
-    QString m_sGroup;
+    const StringAtom m_group;
 };
 
 

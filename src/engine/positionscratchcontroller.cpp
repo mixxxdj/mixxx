@@ -62,7 +62,7 @@ class RateIIFilter {
     double m_last_rate;
 };
 
-PositionScratchController::PositionScratchController(QString group)
+PositionScratchController::PositionScratchController(const StringAtom& group)
     : m_group(group),
       m_bScratching(false),
       m_bEnableInertia(false),

@@ -65,7 +65,7 @@ class CachingReaderWorker : public EngineWorker {
 
   public:
     // Construct a CachingReader with the given group.
-    CachingReaderWorker(QString group,
+    CachingReaderWorker(const StringAtom& group,
             FIFO<ChunkReadRequest>* pChunkReadRequestFIFO,
             FIFO<ReaderStatusUpdate>* pReaderStatusFIFO);
     virtual ~CachingReaderWorker();

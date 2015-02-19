@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QString>
+#include "control/stringatom.h"
 
 class BasePlayer : public QObject {
     Q_OBJECT
@@ -10,10 +11,10 @@ class BasePlayer : public QObject {
     BasePlayer(QObject* pParent, QString group);
     virtual ~BasePlayer();
 
-    const QString getGroup();
+    const StringAtom& getGroup();
 
   private:
-    const QString m_group;
+    const StringAtom m_group;
 };
 
 #endif /* BASEPLAYER_H */

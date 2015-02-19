@@ -32,7 +32,7 @@ BpmControl::BpmControl(const StringAtom& group,
         m_resetSyncAdjustment(false),
         m_dUserOffset(0.0),
         m_tapFilter(this, filterLength, maxInterval),
-        m_sGroup(group) {
+        m_group(group) {
     m_pPlayButton = new ControlObjectSlave(group, "play", this);
     m_pPlayButton->connectValueChanged(SLOT(slotControlPlay(double)), Qt::DirectConnection);
     m_pReverseButton = new ControlObjectSlave(group, "reverse", this);

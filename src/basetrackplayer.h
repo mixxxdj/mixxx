@@ -72,13 +72,13 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     ControlPotmeter* m_pWaveformZoom;
     ControlObject* m_pEndOfTrack;
 
-    ControlObjectThread* m_pLoopInPoint;
-    ControlObjectThread* m_pLoopOutPoint;
+    ControlObjectSlave* m_pLoopInPoint;
+    ControlObjectSlave* m_pLoopOutPoint;
     ControlObject* m_pDuration;
-    ControlObjectThread* m_pBPM;
-    ControlObjectThread* m_pKey;
-    ControlObjectThread* m_pReplayGain;
-    ControlObjectThread* m_pPlay;
+    ControlObjectSlave* m_pBPM;
+    ControlObjectSlave* m_pKey;
+    ControlObjectSlave* m_pReplayGain;
+    ControlObjectSlave* m_pPlay;
     ControlObjectSlave* m_pLowFilter;
     ControlObjectSlave* m_pMidFilter;
     ControlObjectSlave* m_pHighFilter;

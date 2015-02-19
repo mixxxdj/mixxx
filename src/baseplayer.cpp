@@ -9,6 +9,6 @@ BasePlayer::~BasePlayer() {
 
 }
 
-const QString BasePlayer::getGroup() {
+const StringAtom& BasePlayer::getGroup() {
     return m_group;
 }

@@ -12,7 +12,7 @@
 static const double kLockOriginalKey = 0;
 static const double kLockCurrentKey = 1;
 
-KeyControl::KeyControl(QString group,
+KeyControl::KeyControl(const StringAtom& group,
                        ConfigObject<ConfigValue>* pConfig)
         : EngineControl(group, pConfig) {
     m_pitchRateInfo.pitchRatio = 1.0;

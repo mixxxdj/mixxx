@@ -5,6 +5,7 @@
 #include <QMutex>
 #include <QString>
 #include <QAtomicPointer>
+#include <QMetaType>
 
 class StringAtom {
   public:
