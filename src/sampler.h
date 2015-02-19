@@ -11,7 +11,7 @@ class Sampler : public BaseTrackPlayerImpl {
             EngineMaster* pMixingEngine,
             EffectsManager* pEffectsManager,
             EngineChannel::ChannelOrientation defaultOrientation,
-            QString group);
+            const StringAtom& group);
     virtual ~Sampler();
 };
 

@@ -8,7 +8,7 @@
 class BasePlayer : public QObject {
     Q_OBJECT
   public:
-    BasePlayer(QObject* pParent, QString group);
+    BasePlayer(QObject* pParent, const StringAtom& group);
     virtual ~BasePlayer();
 
     const StringAtom& getGroup();
