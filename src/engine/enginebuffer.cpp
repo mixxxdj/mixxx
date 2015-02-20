@@ -1197,15 +1197,6 @@ void EngineBuffer::postProcess(const int iBufferSize) {
     // some values before others, because the later updates may require
     // values from the first update.
 
-    // First run the postProcess function on the EngineControls.
-    m_engineLock.lock();
-    QListIterator<EngineControl*> it(m_engineControls);
-    while (it.hasNext()) {
-        EngineControl* pControl = it.next();
-        pControl->postProcess(m_filepos_play, iBufferSize);
-    }
-    m_engineLock.unlock();
-
     double local_bpm = m_pBpmControl->updateLocalBpm();
     double beat_distance = m_pBpmControl->updateBeatDistance();
     SyncMode mode = m_pSyncControl->getSyncMode();

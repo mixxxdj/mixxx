@@ -27,11 +27,6 @@ double EngineControl::process(const double,
     return kNoTrigger;
 }
 
-double EngineControl::postProcess(const double,
-                                  const int) {
-    return kNoTrigger;
-}
-
 double EngineControl::nextTrigger(const double,
                                   const double,
                                   const double,

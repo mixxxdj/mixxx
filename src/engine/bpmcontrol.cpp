@@ -13,6 +13,7 @@
 #include "engine/enginechannel.h"
 #include "engine/enginemaster.h"
 #include "controlobjectslave.h"
+#include "util/assert.h"
 #include "util/math.h"
 
 const int minBpm = 30;
@@ -603,10 +604,20 @@ double BpmControl::getPhaseOffset(double dThisPosition) {
     double dThisPrevBeat = m_pPrevBeat->get();
     double dThisNextBeat = m_pNextBeat->get();
     double dThisBeatLength;
-    if (!getBeatContextNoLookup(dThisPosition,
-                        dThisPrevBeat, dThisNextBeat,
-                        &dThisBeatLength, NULL)) {
-        return 0;
+    DEBUG_ASSERT_AND_HANDLE(dThisPosition <= dThisNextBeat &&
+                            dThisPosition >= dThisPrevBeat) {
+        // There's a chance the COs might be out of date, so do a lookup.
+        if (!getBeatContext(m_pBeats, dThisPosition,
+                            &dThisPrevBeat, &dThisNextBeat,
+                            &dThisBeatLength, NULL)) {
+            return 0;
+        }
+    } else {
+        if (!getBeatContextNoLookup(dThisPosition,
+                                    dThisPrevBeat, dThisNextBeat,
+                                    &dThisBeatLength, NULL)) {
+            return 0;
+        }
     }
 
     double dOtherBeatFraction;

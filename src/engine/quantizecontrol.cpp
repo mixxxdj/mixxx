@@ -45,7 +45,7 @@ void QuantizeControl::trackLoaded(TrackPointer pTrack) {
                 this, SLOT(slotBeatsUpdated()));
         // Initialize prev and next beat as if current position was zero.
         // If there is a cue point, the value will be updated.
-        postProcess(0, 0);
+        setCurrentSample(0, 0);
     }
 }
 
@@ -65,19 +65,24 @@ void QuantizeControl::trackUnloaded(TrackPointer pTrack) {
 void QuantizeControl::slotBeatsUpdated() {
     if (m_pTrack) {
         m_pBeats = m_pTrack->getBeats();
-        postProcess(0, 0);
+        setCurrentSample(0, 0);
     }
 }
 
-double QuantizeControl::postProcess(const double currentSample,
-                                    const int iBufferSize) {
-    Q_UNUSED(iBufferSize);
-
-    if (!m_pBeats) {
-        return kNoTrigger;
+void QuantizeControl::setCurrentSample(const double dCurrentSample,
+                                       const double dTotalSamples) {
+    if (dCurrentSample == getCurrentSample()) {
+        // No need to recalculate.
+        return;
     }
 
-    int iCurrentSample = currentSample;
+    EngineControl::setCurrentSample(dCurrentSample, dTotalSamples);
+
+    if (!m_pBeats) {
+        return;
+    }
+
+    int iCurrentSample = dCurrentSample;
     DEBUG_ASSERT_AND_HANDLE(even(iCurrentSample)) {
         iCurrentSample--;
     }
@@ -94,18 +99,18 @@ double QuantizeControl::postProcess(const double currentSample,
                     beat_pair.first : beat_pair.second;
 
     if (closestBeat != currentClosestBeat) {
-        // findXBeats claims to guarantee evenness.
-        DEBUG_ASSERT_AND_HANDLE(even(static_cast<int>(currentClosestBeat))) {
-            currentClosestBeat--;
+        // findXBeats claims to guarantee evenness, except in the case of -1.
+        if (currentClosestBeat != -1) {
+            DEBUG_ASSERT_AND_HANDLE(even(static_cast<int>(currentClosestBeat))) {
+                currentClosestBeat--;
+            }
         }
         m_pCOClosestBeat->set(currentClosestBeat);
     }
 
     if (prevBeat == -1 || nextBeat == -1 ||
-        currentSample >= nextBeat || currentSample <= prevBeat) {
+        dCurrentSample >= nextBeat || dCurrentSample <= prevBeat) {
         m_pCOPrevBeat->set(beat_pair.first);
         m_pCONextBeat->set(beat_pair.second);
     }
-
-    return kNoTrigger;
 }
