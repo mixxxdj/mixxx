@@ -11,6 +11,7 @@ static inline void copy1WithGain(CSAMPLE* _RESTRICT pDest,
         clear(pDest, iNumSamples);
         return;
     }
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] = pSrc0[i] * gain0;
     }
@@ -23,11 +24,11 @@ static inline void copy1WithRampingGain(CSAMPLE* _RESTRICT pDest,
         return;
     }
     const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain0 = gain0in;
-    for (int i = 0; i < iNumSamples; i += 2) {
-        gain0 += gain_delta0;
-        pDest[i] = pSrc0[i] * gain0;
-        pDest[i + 1] = pSrc0[i + 1] * gain0;
+    const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
+    for (int i = 0; i < iNumSamples / 2; ++i) {
+        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
+        pDest[i * 2] = pSrc0[i * 2] * gain0;
+        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0;
     }
 }
 static inline void copy2WithGain(CSAMPLE* _RESTRICT pDest,
@@ -42,6 +43,7 @@ static inline void copy2WithGain(CSAMPLE* _RESTRICT pDest,
         copy1WithGain(pDest, pSrc0, gain0, iNumSamples);
         return;
     }
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] = pSrc0[i] * gain0 +
                    pSrc1[i] * gain1;
@@ -60,16 +62,16 @@ static inline void copy2WithRampingGain(CSAMPLE* _RESTRICT pDest,
         return;
     }
     const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain0 = gain0in;
+    const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
     const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain1 = gain1in;
-    for (int i = 0; i < iNumSamples; i += 2) {
-        gain0 += gain_delta0;
-        gain1 += gain_delta1;
-        pDest[i] = pSrc0[i] * gain0 +
-                   pSrc1[i] * gain1;
-        pDest[i + 1] = pSrc0[i + 1] * gain0 +
-                       pSrc1[i + 1] * gain1;
+    const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
+    for (int i = 0; i < iNumSamples / 2; ++i) {
+        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
+        const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
+        pDest[i * 2] = pSrc0[i * 2] * gain0 +
+                       pSrc1[i * 2] * gain1;
+        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
+                           pSrc1[i * 2 + 1] * gain1;
     }
 }
 static inline void copy3WithGain(CSAMPLE* _RESTRICT pDest,
@@ -89,6 +91,7 @@ static inline void copy3WithGain(CSAMPLE* _RESTRICT pDest,
         copy2WithGain(pDest, pSrc0, gain0, pSrc1, gain1, iNumSamples);
         return;
     }
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] = pSrc0[i] * gain0 +
                    pSrc1[i] * gain1 +
@@ -113,21 +116,21 @@ static inline void copy3WithRampingGain(CSAMPLE* _RESTRICT pDest,
         return;
     }
     const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain0 = gain0in;
+    const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
     const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain1 = gain1in;
+    const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
     const CSAMPLE_GAIN gain_delta2 = (gain2out - gain2in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain2 = gain2in;
-    for (int i = 0; i < iNumSamples; i += 2) {
-        gain0 += gain_delta0;
-        gain1 += gain_delta1;
-        gain2 += gain_delta2;
-        pDest[i] = pSrc0[i] * gain0 +
-                   pSrc1[i] * gain1 +
-                   pSrc2[i] * gain2;
-        pDest[i + 1] = pSrc0[i + 1] * gain0 +
-                       pSrc1[i + 1] * gain1 +
-                       pSrc2[i + 1] * gain2;
+    const CSAMPLE_GAIN start_gain2 = gain2in + gain_delta2;
+    for (int i = 0; i < iNumSamples / 2; ++i) {
+        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
+        const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
+        const CSAMPLE_GAIN gain2 = start_gain2 + gain_delta2 * i;
+        pDest[i * 2] = pSrc0[i * 2] * gain0 +
+                       pSrc1[i * 2] * gain1 +
+                       pSrc2[i * 2] * gain2;
+        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
+                           pSrc1[i * 2 + 1] * gain1 +
+                           pSrc2[i * 2 + 1] * gain2;
     }
 }
 static inline void copy4WithGain(CSAMPLE* _RESTRICT pDest,
@@ -152,6 +155,7 @@ static inline void copy4WithGain(CSAMPLE* _RESTRICT pDest,
         copy3WithGain(pDest, pSrc0, gain0, pSrc1, gain1, pSrc2, gain2, iNumSamples);
         return;
     }
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] = pSrc0[i] * gain0 +
                    pSrc1[i] * gain1 +
@@ -182,26 +186,26 @@ static inline void copy4WithRampingGain(CSAMPLE* _RESTRICT pDest,
         return;
     }
     const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain0 = gain0in;
+    const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
     const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain1 = gain1in;
+    const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
     const CSAMPLE_GAIN gain_delta2 = (gain2out - gain2in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain2 = gain2in;
+    const CSAMPLE_GAIN start_gain2 = gain2in + gain_delta2;
     const CSAMPLE_GAIN gain_delta3 = (gain3out - gain3in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain3 = gain3in;
-    for (int i = 0; i < iNumSamples; i += 2) {
-        gain0 += gain_delta0;
-        gain1 += gain_delta1;
-        gain2 += gain_delta2;
-        gain3 += gain_delta3;
-        pDest[i] = pSrc0[i] * gain0 +
-                   pSrc1[i] * gain1 +
-                   pSrc2[i] * gain2 +
-                   pSrc3[i] * gain3;
-        pDest[i + 1] = pSrc0[i + 1] * gain0 +
-                       pSrc1[i + 1] * gain1 +
-                       pSrc2[i + 1] * gain2 +
-                       pSrc3[i + 1] * gain3;
+    const CSAMPLE_GAIN start_gain3 = gain3in + gain_delta3;
+    for (int i = 0; i < iNumSamples / 2; ++i) {
+        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
+        const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
+        const CSAMPLE_GAIN gain2 = start_gain2 + gain_delta2 * i;
+        const CSAMPLE_GAIN gain3 = start_gain3 + gain_delta3 * i;
+        pDest[i * 2] = pSrc0[i * 2] * gain0 +
+                       pSrc1[i * 2] * gain1 +
+                       pSrc2[i * 2] * gain2 +
+                       pSrc3[i * 2] * gain3;
+        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
+                           pSrc1[i * 2 + 1] * gain1 +
+                           pSrc2[i * 2 + 1] * gain2 +
+                           pSrc3[i * 2 + 1] * gain3;
     }
 }
 static inline void copy5WithGain(CSAMPLE* _RESTRICT pDest,
@@ -231,6 +235,7 @@ static inline void copy5WithGain(CSAMPLE* _RESTRICT pDest,
         copy4WithGain(pDest, pSrc0, gain0, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3, iNumSamples);
         return;
     }
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] = pSrc0[i] * gain0 +
                    pSrc1[i] * gain1 +
@@ -267,31 +272,31 @@ static inline void copy5WithRampingGain(CSAMPLE* _RESTRICT pDest,
         return;
     }
     const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain0 = gain0in;
+    const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
     const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain1 = gain1in;
+    const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
     const CSAMPLE_GAIN gain_delta2 = (gain2out - gain2in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain2 = gain2in;
+    const CSAMPLE_GAIN start_gain2 = gain2in + gain_delta2;
     const CSAMPLE_GAIN gain_delta3 = (gain3out - gain3in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain3 = gain3in;
+    const CSAMPLE_GAIN start_gain3 = gain3in + gain_delta3;
     const CSAMPLE_GAIN gain_delta4 = (gain4out - gain4in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain4 = gain4in;
-    for (int i = 0; i < iNumSamples; i += 2) {
-        gain0 += gain_delta0;
-        gain1 += gain_delta1;
-        gain2 += gain_delta2;
-        gain3 += gain_delta3;
-        gain4 += gain_delta4;
-        pDest[i] = pSrc0[i] * gain0 +
-                   pSrc1[i] * gain1 +
-                   pSrc2[i] * gain2 +
-                   pSrc3[i] * gain3 +
-                   pSrc4[i] * gain4;
-        pDest[i + 1] = pSrc0[i + 1] * gain0 +
-                       pSrc1[i + 1] * gain1 +
-                       pSrc2[i + 1] * gain2 +
-                       pSrc3[i + 1] * gain3 +
-                       pSrc4[i + 1] * gain4;
+    const CSAMPLE_GAIN start_gain4 = gain4in + gain_delta4;
+    for (int i = 0; i < iNumSamples / 2; ++i) {
+        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
+        const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
+        const CSAMPLE_GAIN gain2 = start_gain2 + gain_delta2 * i;
+        const CSAMPLE_GAIN gain3 = start_gain3 + gain_delta3 * i;
+        const CSAMPLE_GAIN gain4 = start_gain4 + gain_delta4 * i;
+        pDest[i * 2] = pSrc0[i * 2] * gain0 +
+                       pSrc1[i * 2] * gain1 +
+                       pSrc2[i * 2] * gain2 +
+                       pSrc3[i * 2] * gain3 +
+                       pSrc4[i * 2] * gain4;
+        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
+                           pSrc1[i * 2 + 1] * gain1 +
+                           pSrc2[i * 2 + 1] * gain2 +
+                           pSrc3[i * 2 + 1] * gain3 +
+                           pSrc4[i * 2 + 1] * gain4;
     }
 }
 static inline void copy6WithGain(CSAMPLE* _RESTRICT pDest,
@@ -326,6 +331,7 @@ static inline void copy6WithGain(CSAMPLE* _RESTRICT pDest,
         copy5WithGain(pDest, pSrc0, gain0, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4, iNumSamples);
         return;
     }
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] = pSrc0[i] * gain0 +
                    pSrc1[i] * gain1 +
@@ -368,36 +374,36 @@ static inline void copy6WithRampingGain(CSAMPLE* _RESTRICT pDest,
         return;
     }
     const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain0 = gain0in;
+    const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
     const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain1 = gain1in;
+    const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
     const CSAMPLE_GAIN gain_delta2 = (gain2out - gain2in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain2 = gain2in;
+    const CSAMPLE_GAIN start_gain2 = gain2in + gain_delta2;
     const CSAMPLE_GAIN gain_delta3 = (gain3out - gain3in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain3 = gain3in;
+    const CSAMPLE_GAIN start_gain3 = gain3in + gain_delta3;
     const CSAMPLE_GAIN gain_delta4 = (gain4out - gain4in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain4 = gain4in;
+    const CSAMPLE_GAIN start_gain4 = gain4in + gain_delta4;
     const CSAMPLE_GAIN gain_delta5 = (gain5out - gain5in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain5 = gain5in;
-    for (int i = 0; i < iNumSamples; i += 2) {
-        gain0 += gain_delta0;
-        gain1 += gain_delta1;
-        gain2 += gain_delta2;
-        gain3 += gain_delta3;
-        gain4 += gain_delta4;
-        gain5 += gain_delta5;
-        pDest[i] = pSrc0[i] * gain0 +
-                   pSrc1[i] * gain1 +
-                   pSrc2[i] * gain2 +
-                   pSrc3[i] * gain3 +
-                   pSrc4[i] * gain4 +
-                   pSrc5[i] * gain5;
-        pDest[i + 1] = pSrc0[i + 1] * gain0 +
-                       pSrc1[i + 1] * gain1 +
-                       pSrc2[i + 1] * gain2 +
-                       pSrc3[i + 1] * gain3 +
-                       pSrc4[i + 1] * gain4 +
-                       pSrc5[i + 1] * gain5;
+    const CSAMPLE_GAIN start_gain5 = gain5in + gain_delta5;
+    for (int i = 0; i < iNumSamples / 2; ++i) {
+        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
+        const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
+        const CSAMPLE_GAIN gain2 = start_gain2 + gain_delta2 * i;
+        const CSAMPLE_GAIN gain3 = start_gain3 + gain_delta3 * i;
+        const CSAMPLE_GAIN gain4 = start_gain4 + gain_delta4 * i;
+        const CSAMPLE_GAIN gain5 = start_gain5 + gain_delta5 * i;
+        pDest[i * 2] = pSrc0[i * 2] * gain0 +
+                       pSrc1[i * 2] * gain1 +
+                       pSrc2[i * 2] * gain2 +
+                       pSrc3[i * 2] * gain3 +
+                       pSrc4[i * 2] * gain4 +
+                       pSrc5[i * 2] * gain5;
+        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
+                           pSrc1[i * 2 + 1] * gain1 +
+                           pSrc2[i * 2 + 1] * gain2 +
+                           pSrc3[i * 2 + 1] * gain3 +
+                           pSrc4[i * 2 + 1] * gain4 +
+                           pSrc5[i * 2 + 1] * gain5;
     }
 }
 static inline void copy7WithGain(CSAMPLE* _RESTRICT pDest,
@@ -437,6 +443,7 @@ static inline void copy7WithGain(CSAMPLE* _RESTRICT pDest,
         copy6WithGain(pDest, pSrc0, gain0, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4, pSrc5, gain5, iNumSamples);
         return;
     }
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] = pSrc0[i] * gain0 +
                    pSrc1[i] * gain1 +
@@ -485,41 +492,41 @@ static inline void copy7WithRampingGain(CSAMPLE* _RESTRICT pDest,
         return;
     }
     const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain0 = gain0in;
+    const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
     const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain1 = gain1in;
+    const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
     const CSAMPLE_GAIN gain_delta2 = (gain2out - gain2in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain2 = gain2in;
+    const CSAMPLE_GAIN start_gain2 = gain2in + gain_delta2;
     const CSAMPLE_GAIN gain_delta3 = (gain3out - gain3in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain3 = gain3in;
+    const CSAMPLE_GAIN start_gain3 = gain3in + gain_delta3;
     const CSAMPLE_GAIN gain_delta4 = (gain4out - gain4in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain4 = gain4in;
+    const CSAMPLE_GAIN start_gain4 = gain4in + gain_delta4;
     const CSAMPLE_GAIN gain_delta5 = (gain5out - gain5in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain5 = gain5in;
+    const CSAMPLE_GAIN start_gain5 = gain5in + gain_delta5;
     const CSAMPLE_GAIN gain_delta6 = (gain6out - gain6in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain6 = gain6in;
-    for (int i = 0; i < iNumSamples; i += 2) {
-        gain0 += gain_delta0;
-        gain1 += gain_delta1;
-        gain2 += gain_delta2;
-        gain3 += gain_delta3;
-        gain4 += gain_delta4;
-        gain5 += gain_delta5;
-        gain6 += gain_delta6;
-        pDest[i] = pSrc0[i] * gain0 +
-                   pSrc1[i] * gain1 +
-                   pSrc2[i] * gain2 +
-                   pSrc3[i] * gain3 +
-                   pSrc4[i] * gain4 +
-                   pSrc5[i] * gain5 +
-                   pSrc6[i] * gain6;
-        pDest[i + 1] = pSrc0[i + 1] * gain0 +
-                       pSrc1[i + 1] * gain1 +
-                       pSrc2[i + 1] * gain2 +
-                       pSrc3[i + 1] * gain3 +
-                       pSrc4[i + 1] * gain4 +
-                       pSrc5[i + 1] * gain5 +
-                       pSrc6[i + 1] * gain6;
+    const CSAMPLE_GAIN start_gain6 = gain6in + gain_delta6;
+    for (int i = 0; i < iNumSamples / 2; ++i) {
+        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
+        const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
+        const CSAMPLE_GAIN gain2 = start_gain2 + gain_delta2 * i;
+        const CSAMPLE_GAIN gain3 = start_gain3 + gain_delta3 * i;
+        const CSAMPLE_GAIN gain4 = start_gain4 + gain_delta4 * i;
+        const CSAMPLE_GAIN gain5 = start_gain5 + gain_delta5 * i;
+        const CSAMPLE_GAIN gain6 = start_gain6 + gain_delta6 * i;
+        pDest[i * 2] = pSrc0[i * 2] * gain0 +
+                       pSrc1[i * 2] * gain1 +
+                       pSrc2[i * 2] * gain2 +
+                       pSrc3[i * 2] * gain3 +
+                       pSrc4[i * 2] * gain4 +
+                       pSrc5[i * 2] * gain5 +
+                       pSrc6[i * 2] * gain6;
+        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
+                           pSrc1[i * 2 + 1] * gain1 +
+                           pSrc2[i * 2 + 1] * gain2 +
+                           pSrc3[i * 2 + 1] * gain3 +
+                           pSrc4[i * 2 + 1] * gain4 +
+                           pSrc5[i * 2 + 1] * gain5 +
+                           pSrc6[i * 2 + 1] * gain6;
     }
 }
 static inline void copy8WithGain(CSAMPLE* _RESTRICT pDest,
@@ -564,6 +571,7 @@ static inline void copy8WithGain(CSAMPLE* _RESTRICT pDest,
         copy7WithGain(pDest, pSrc0, gain0, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4, pSrc5, gain5, pSrc6, gain6, iNumSamples);
         return;
     }
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] = pSrc0[i] * gain0 +
                    pSrc1[i] * gain1 +
@@ -618,46 +626,46 @@ static inline void copy8WithRampingGain(CSAMPLE* _RESTRICT pDest,
         return;
     }
     const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain0 = gain0in;
+    const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
     const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain1 = gain1in;
+    const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
     const CSAMPLE_GAIN gain_delta2 = (gain2out - gain2in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain2 = gain2in;
+    const CSAMPLE_GAIN start_gain2 = gain2in + gain_delta2;
     const CSAMPLE_GAIN gain_delta3 = (gain3out - gain3in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain3 = gain3in;
+    const CSAMPLE_GAIN start_gain3 = gain3in + gain_delta3;
     const CSAMPLE_GAIN gain_delta4 = (gain4out - gain4in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain4 = gain4in;
+    const CSAMPLE_GAIN start_gain4 = gain4in + gain_delta4;
     const CSAMPLE_GAIN gain_delta5 = (gain5out - gain5in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain5 = gain5in;
+    const CSAMPLE_GAIN start_gain5 = gain5in + gain_delta5;
     const CSAMPLE_GAIN gain_delta6 = (gain6out - gain6in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain6 = gain6in;
+    const CSAMPLE_GAIN start_gain6 = gain6in + gain_delta6;
     const CSAMPLE_GAIN gain_delta7 = (gain7out - gain7in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain7 = gain7in;
-    for (int i = 0; i < iNumSamples; i += 2) {
-        gain0 += gain_delta0;
-        gain1 += gain_delta1;
-        gain2 += gain_delta2;
-        gain3 += gain_delta3;
-        gain4 += gain_delta4;
-        gain5 += gain_delta5;
-        gain6 += gain_delta6;
-        gain7 += gain_delta7;
-        pDest[i] = pSrc0[i] * gain0 +
-                   pSrc1[i] * gain1 +
-                   pSrc2[i] * gain2 +
-                   pSrc3[i] * gain3 +
-                   pSrc4[i] * gain4 +
-                   pSrc5[i] * gain5 +
-                   pSrc6[i] * gain6 +
-                   pSrc7[i] * gain7;
-        pDest[i + 1] = pSrc0[i + 1] * gain0 +
-                       pSrc1[i + 1] * gain1 +
-                       pSrc2[i + 1] * gain2 +
-                       pSrc3[i + 1] * gain3 +
-                       pSrc4[i + 1] * gain4 +
-                       pSrc5[i + 1] * gain5 +
-                       pSrc6[i + 1] * gain6 +
-                       pSrc7[i + 1] * gain7;
+    const CSAMPLE_GAIN start_gain7 = gain7in + gain_delta7;
+    for (int i = 0; i < iNumSamples / 2; ++i) {
+        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
+        const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
+        const CSAMPLE_GAIN gain2 = start_gain2 + gain_delta2 * i;
+        const CSAMPLE_GAIN gain3 = start_gain3 + gain_delta3 * i;
+        const CSAMPLE_GAIN gain4 = start_gain4 + gain_delta4 * i;
+        const CSAMPLE_GAIN gain5 = start_gain5 + gain_delta5 * i;
+        const CSAMPLE_GAIN gain6 = start_gain6 + gain_delta6 * i;
+        const CSAMPLE_GAIN gain7 = start_gain7 + gain_delta7 * i;
+        pDest[i * 2] = pSrc0[i * 2] * gain0 +
+                       pSrc1[i * 2] * gain1 +
+                       pSrc2[i * 2] * gain2 +
+                       pSrc3[i * 2] * gain3 +
+                       pSrc4[i * 2] * gain4 +
+                       pSrc5[i * 2] * gain5 +
+                       pSrc6[i * 2] * gain6 +
+                       pSrc7[i * 2] * gain7;
+        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
+                           pSrc1[i * 2 + 1] * gain1 +
+                           pSrc2[i * 2 + 1] * gain2 +
+                           pSrc3[i * 2 + 1] * gain3 +
+                           pSrc4[i * 2 + 1] * gain4 +
+                           pSrc5[i * 2 + 1] * gain5 +
+                           pSrc6[i * 2 + 1] * gain6 +
+                           pSrc7[i * 2 + 1] * gain7;
     }
 }
 static inline void copy9WithGain(CSAMPLE* _RESTRICT pDest,
@@ -707,6 +715,7 @@ static inline void copy9WithGain(CSAMPLE* _RESTRICT pDest,
         copy8WithGain(pDest, pSrc0, gain0, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4, pSrc5, gain5, pSrc6, gain6, pSrc7, gain7, iNumSamples);
         return;
     }
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] = pSrc0[i] * gain0 +
                    pSrc1[i] * gain1 +
@@ -767,51 +776,51 @@ static inline void copy9WithRampingGain(CSAMPLE* _RESTRICT pDest,
         return;
     }
     const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain0 = gain0in;
+    const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
     const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain1 = gain1in;
+    const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
     const CSAMPLE_GAIN gain_delta2 = (gain2out - gain2in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain2 = gain2in;
+    const CSAMPLE_GAIN start_gain2 = gain2in + gain_delta2;
     const CSAMPLE_GAIN gain_delta3 = (gain3out - gain3in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain3 = gain3in;
+    const CSAMPLE_GAIN start_gain3 = gain3in + gain_delta3;
     const CSAMPLE_GAIN gain_delta4 = (gain4out - gain4in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain4 = gain4in;
+    const CSAMPLE_GAIN start_gain4 = gain4in + gain_delta4;
     const CSAMPLE_GAIN gain_delta5 = (gain5out - gain5in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain5 = gain5in;
+    const CSAMPLE_GAIN start_gain5 = gain5in + gain_delta5;
     const CSAMPLE_GAIN gain_delta6 = (gain6out - gain6in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain6 = gain6in;
+    const CSAMPLE_GAIN start_gain6 = gain6in + gain_delta6;
     const CSAMPLE_GAIN gain_delta7 = (gain7out - gain7in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain7 = gain7in;
+    const CSAMPLE_GAIN start_gain7 = gain7in + gain_delta7;
     const CSAMPLE_GAIN gain_delta8 = (gain8out - gain8in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain8 = gain8in;
-    for (int i = 0; i < iNumSamples; i += 2) {
-        gain0 += gain_delta0;
-        gain1 += gain_delta1;
-        gain2 += gain_delta2;
-        gain3 += gain_delta3;
-        gain4 += gain_delta4;
-        gain5 += gain_delta5;
-        gain6 += gain_delta6;
-        gain7 += gain_delta7;
-        gain8 += gain_delta8;
-        pDest[i] = pSrc0[i] * gain0 +
-                   pSrc1[i] * gain1 +
-                   pSrc2[i] * gain2 +
-                   pSrc3[i] * gain3 +
-                   pSrc4[i] * gain4 +
-                   pSrc5[i] * gain5 +
-                   pSrc6[i] * gain6 +
-                   pSrc7[i] * gain7 +
-                   pSrc8[i] * gain8;
-        pDest[i + 1] = pSrc0[i + 1] * gain0 +
-                       pSrc1[i + 1] * gain1 +
-                       pSrc2[i + 1] * gain2 +
-                       pSrc3[i + 1] * gain3 +
-                       pSrc4[i + 1] * gain4 +
-                       pSrc5[i + 1] * gain5 +
-                       pSrc6[i + 1] * gain6 +
-                       pSrc7[i + 1] * gain7 +
-                       pSrc8[i + 1] * gain8;
+    const CSAMPLE_GAIN start_gain8 = gain8in + gain_delta8;
+    for (int i = 0; i < iNumSamples / 2; ++i) {
+        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
+        const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
+        const CSAMPLE_GAIN gain2 = start_gain2 + gain_delta2 * i;
+        const CSAMPLE_GAIN gain3 = start_gain3 + gain_delta3 * i;
+        const CSAMPLE_GAIN gain4 = start_gain4 + gain_delta4 * i;
+        const CSAMPLE_GAIN gain5 = start_gain5 + gain_delta5 * i;
+        const CSAMPLE_GAIN gain6 = start_gain6 + gain_delta6 * i;
+        const CSAMPLE_GAIN gain7 = start_gain7 + gain_delta7 * i;
+        const CSAMPLE_GAIN gain8 = start_gain8 + gain_delta8 * i;
+        pDest[i * 2] = pSrc0[i * 2] * gain0 +
+                       pSrc1[i * 2] * gain1 +
+                       pSrc2[i * 2] * gain2 +
+                       pSrc3[i * 2] * gain3 +
+                       pSrc4[i * 2] * gain4 +
+                       pSrc5[i * 2] * gain5 +
+                       pSrc6[i * 2] * gain6 +
+                       pSrc7[i * 2] * gain7 +
+                       pSrc8[i * 2] * gain8;
+        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
+                           pSrc1[i * 2 + 1] * gain1 +
+                           pSrc2[i * 2 + 1] * gain2 +
+                           pSrc3[i * 2 + 1] * gain3 +
+                           pSrc4[i * 2 + 1] * gain4 +
+                           pSrc5[i * 2 + 1] * gain5 +
+                           pSrc6[i * 2 + 1] * gain6 +
+                           pSrc7[i * 2 + 1] * gain7 +
+                           pSrc8[i * 2 + 1] * gain8;
     }
 }
 static inline void copy10WithGain(CSAMPLE* _RESTRICT pDest,
@@ -866,6 +875,7 @@ static inline void copy10WithGain(CSAMPLE* _RESTRICT pDest,
         copy9WithGain(pDest, pSrc0, gain0, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4, pSrc5, gain5, pSrc6, gain6, pSrc7, gain7, pSrc8, gain8, iNumSamples);
         return;
     }
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] = pSrc0[i] * gain0 +
                    pSrc1[i] * gain1 +
@@ -932,56 +942,56 @@ static inline void copy10WithRampingGain(CSAMPLE* _RESTRICT pDest,
         return;
     }
     const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain0 = gain0in;
+    const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
     const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain1 = gain1in;
+    const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
     const CSAMPLE_GAIN gain_delta2 = (gain2out - gain2in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain2 = gain2in;
+    const CSAMPLE_GAIN start_gain2 = gain2in + gain_delta2;
     const CSAMPLE_GAIN gain_delta3 = (gain3out - gain3in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain3 = gain3in;
+    const CSAMPLE_GAIN start_gain3 = gain3in + gain_delta3;
     const CSAMPLE_GAIN gain_delta4 = (gain4out - gain4in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain4 = gain4in;
+    const CSAMPLE_GAIN start_gain4 = gain4in + gain_delta4;
     const CSAMPLE_GAIN gain_delta5 = (gain5out - gain5in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain5 = gain5in;
+    const CSAMPLE_GAIN start_gain5 = gain5in + gain_delta5;
     const CSAMPLE_GAIN gain_delta6 = (gain6out - gain6in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain6 = gain6in;
+    const CSAMPLE_GAIN start_gain6 = gain6in + gain_delta6;
     const CSAMPLE_GAIN gain_delta7 = (gain7out - gain7in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain7 = gain7in;
+    const CSAMPLE_GAIN start_gain7 = gain7in + gain_delta7;
     const CSAMPLE_GAIN gain_delta8 = (gain8out - gain8in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain8 = gain8in;
+    const CSAMPLE_GAIN start_gain8 = gain8in + gain_delta8;
     const CSAMPLE_GAIN gain_delta9 = (gain9out - gain9in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain9 = gain9in;
-    for (int i = 0; i < iNumSamples; i += 2) {
-        gain0 += gain_delta0;
-        gain1 += gain_delta1;
-        gain2 += gain_delta2;
-        gain3 += gain_delta3;
-        gain4 += gain_delta4;
-        gain5 += gain_delta5;
-        gain6 += gain_delta6;
-        gain7 += gain_delta7;
-        gain8 += gain_delta8;
-        gain9 += gain_delta9;
-        pDest[i] = pSrc0[i] * gain0 +
-                   pSrc1[i] * gain1 +
-                   pSrc2[i] * gain2 +
-                   pSrc3[i] * gain3 +
-                   pSrc4[i] * gain4 +
-                   pSrc5[i] * gain5 +
-                   pSrc6[i] * gain6 +
-                   pSrc7[i] * gain7 +
-                   pSrc8[i] * gain8 +
-                   pSrc9[i] * gain9;
-        pDest[i + 1] = pSrc0[i + 1] * gain0 +
-                       pSrc1[i + 1] * gain1 +
-                       pSrc2[i + 1] * gain2 +
-                       pSrc3[i + 1] * gain3 +
-                       pSrc4[i + 1] * gain4 +
-                       pSrc5[i + 1] * gain5 +
-                       pSrc6[i + 1] * gain6 +
-                       pSrc7[i + 1] * gain7 +
-                       pSrc8[i + 1] * gain8 +
-                       pSrc9[i + 1] * gain9;
+    const CSAMPLE_GAIN start_gain9 = gain9in + gain_delta9;
+    for (int i = 0; i < iNumSamples / 2; ++i) {
+        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
+        const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
+        const CSAMPLE_GAIN gain2 = start_gain2 + gain_delta2 * i;
+        const CSAMPLE_GAIN gain3 = start_gain3 + gain_delta3 * i;
+        const CSAMPLE_GAIN gain4 = start_gain4 + gain_delta4 * i;
+        const CSAMPLE_GAIN gain5 = start_gain5 + gain_delta5 * i;
+        const CSAMPLE_GAIN gain6 = start_gain6 + gain_delta6 * i;
+        const CSAMPLE_GAIN gain7 = start_gain7 + gain_delta7 * i;
+        const CSAMPLE_GAIN gain8 = start_gain8 + gain_delta8 * i;
+        const CSAMPLE_GAIN gain9 = start_gain9 + gain_delta9 * i;
+        pDest[i * 2] = pSrc0[i * 2] * gain0 +
+                       pSrc1[i * 2] * gain1 +
+                       pSrc2[i * 2] * gain2 +
+                       pSrc3[i * 2] * gain3 +
+                       pSrc4[i * 2] * gain4 +
+                       pSrc5[i * 2] * gain5 +
+                       pSrc6[i * 2] * gain6 +
+                       pSrc7[i * 2] * gain7 +
+                       pSrc8[i * 2] * gain8 +
+                       pSrc9[i * 2] * gain9;
+        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
+                           pSrc1[i * 2 + 1] * gain1 +
+                           pSrc2[i * 2 + 1] * gain2 +
+                           pSrc3[i * 2 + 1] * gain3 +
+                           pSrc4[i * 2 + 1] * gain4 +
+                           pSrc5[i * 2 + 1] * gain5 +
+                           pSrc6[i * 2 + 1] * gain6 +
+                           pSrc7[i * 2 + 1] * gain7 +
+                           pSrc8[i * 2 + 1] * gain8 +
+                           pSrc9[i * 2 + 1] * gain9;
     }
 }
 static inline void copy11WithGain(CSAMPLE* _RESTRICT pDest,
@@ -1041,6 +1051,7 @@ static inline void copy11WithGain(CSAMPLE* _RESTRICT pDest,
         copy10WithGain(pDest, pSrc0, gain0, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4, pSrc5, gain5, pSrc6, gain6, pSrc7, gain7, pSrc8, gain8, pSrc9, gain9, iNumSamples);
         return;
     }
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] = pSrc0[i] * gain0 +
                    pSrc1[i] * gain1 +
@@ -1113,61 +1124,61 @@ static inline void copy11WithRampingGain(CSAMPLE* _RESTRICT pDest,
         return;
     }
     const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain0 = gain0in;
+    const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
     const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain1 = gain1in;
+    const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
     const CSAMPLE_GAIN gain_delta2 = (gain2out - gain2in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain2 = gain2in;
+    const CSAMPLE_GAIN start_gain2 = gain2in + gain_delta2;
     const CSAMPLE_GAIN gain_delta3 = (gain3out - gain3in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain3 = gain3in;
+    const CSAMPLE_GAIN start_gain3 = gain3in + gain_delta3;
     const CSAMPLE_GAIN gain_delta4 = (gain4out - gain4in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain4 = gain4in;
+    const CSAMPLE_GAIN start_gain4 = gain4in + gain_delta4;
     const CSAMPLE_GAIN gain_delta5 = (gain5out - gain5in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain5 = gain5in;
+    const CSAMPLE_GAIN start_gain5 = gain5in + gain_delta5;
     const CSAMPLE_GAIN gain_delta6 = (gain6out - gain6in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain6 = gain6in;
+    const CSAMPLE_GAIN start_gain6 = gain6in + gain_delta6;
     const CSAMPLE_GAIN gain_delta7 = (gain7out - gain7in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain7 = gain7in;
+    const CSAMPLE_GAIN start_gain7 = gain7in + gain_delta7;
     const CSAMPLE_GAIN gain_delta8 = (gain8out - gain8in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain8 = gain8in;
+    const CSAMPLE_GAIN start_gain8 = gain8in + gain_delta8;
     const CSAMPLE_GAIN gain_delta9 = (gain9out - gain9in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain9 = gain9in;
+    const CSAMPLE_GAIN start_gain9 = gain9in + gain_delta9;
     const CSAMPLE_GAIN gain_delta10 = (gain10out - gain10in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain10 = gain10in;
-    for (int i = 0; i < iNumSamples; i += 2) {
-        gain0 += gain_delta0;
-        gain1 += gain_delta1;
-        gain2 += gain_delta2;
-        gain3 += gain_delta3;
-        gain4 += gain_delta4;
-        gain5 += gain_delta5;
-        gain6 += gain_delta6;
-        gain7 += gain_delta7;
-        gain8 += gain_delta8;
-        gain9 += gain_delta9;
-        gain10 += gain_delta10;
-        pDest[i] = pSrc0[i] * gain0 +
-                   pSrc1[i] * gain1 +
-                   pSrc2[i] * gain2 +
-                   pSrc3[i] * gain3 +
-                   pSrc4[i] * gain4 +
-                   pSrc5[i] * gain5 +
-                   pSrc6[i] * gain6 +
-                   pSrc7[i] * gain7 +
-                   pSrc8[i] * gain8 +
-                   pSrc9[i] * gain9 +
-                   pSrc10[i] * gain10;
-        pDest[i + 1] = pSrc0[i + 1] * gain0 +
-                       pSrc1[i + 1] * gain1 +
-                       pSrc2[i + 1] * gain2 +
-                       pSrc3[i + 1] * gain3 +
-                       pSrc4[i + 1] * gain4 +
-                       pSrc5[i + 1] * gain5 +
-                       pSrc6[i + 1] * gain6 +
-                       pSrc7[i + 1] * gain7 +
-                       pSrc8[i + 1] * gain8 +
-                       pSrc9[i + 1] * gain9 +
-                       pSrc10[i + 1] * gain10;
+    const CSAMPLE_GAIN start_gain10 = gain10in + gain_delta10;
+    for (int i = 0; i < iNumSamples / 2; ++i) {
+        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
+        const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
+        const CSAMPLE_GAIN gain2 = start_gain2 + gain_delta2 * i;
+        const CSAMPLE_GAIN gain3 = start_gain3 + gain_delta3 * i;
+        const CSAMPLE_GAIN gain4 = start_gain4 + gain_delta4 * i;
+        const CSAMPLE_GAIN gain5 = start_gain5 + gain_delta5 * i;
+        const CSAMPLE_GAIN gain6 = start_gain6 + gain_delta6 * i;
+        const CSAMPLE_GAIN gain7 = start_gain7 + gain_delta7 * i;
+        const CSAMPLE_GAIN gain8 = start_gain8 + gain_delta8 * i;
+        const CSAMPLE_GAIN gain9 = start_gain9 + gain_delta9 * i;
+        const CSAMPLE_GAIN gain10 = start_gain10 + gain_delta10 * i;
+        pDest[i * 2] = pSrc0[i * 2] * gain0 +
+                       pSrc1[i * 2] * gain1 +
+                       pSrc2[i * 2] * gain2 +
+                       pSrc3[i * 2] * gain3 +
+                       pSrc4[i * 2] * gain4 +
+                       pSrc5[i * 2] * gain5 +
+                       pSrc6[i * 2] * gain6 +
+                       pSrc7[i * 2] * gain7 +
+                       pSrc8[i * 2] * gain8 +
+                       pSrc9[i * 2] * gain9 +
+                       pSrc10[i * 2] * gain10;
+        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
+                           pSrc1[i * 2 + 1] * gain1 +
+                           pSrc2[i * 2 + 1] * gain2 +
+                           pSrc3[i * 2 + 1] * gain3 +
+                           pSrc4[i * 2 + 1] * gain4 +
+                           pSrc5[i * 2 + 1] * gain5 +
+                           pSrc6[i * 2 + 1] * gain6 +
+                           pSrc7[i * 2 + 1] * gain7 +
+                           pSrc8[i * 2 + 1] * gain8 +
+                           pSrc9[i * 2 + 1] * gain9 +
+                           pSrc10[i * 2 + 1] * gain10;
     }
 }
 static inline void copy12WithGain(CSAMPLE* _RESTRICT pDest,
@@ -1232,6 +1243,7 @@ static inline void copy12WithGain(CSAMPLE* _RESTRICT pDest,
         copy11WithGain(pDest, pSrc0, gain0, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4, pSrc5, gain5, pSrc6, gain6, pSrc7, gain7, pSrc8, gain8, pSrc9, gain9, pSrc10, gain10, iNumSamples);
         return;
     }
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] = pSrc0[i] * gain0 +
                    pSrc1[i] * gain1 +
@@ -1310,66 +1322,66 @@ static inline void copy12WithRampingGain(CSAMPLE* _RESTRICT pDest,
         return;
     }
     const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain0 = gain0in;
+    const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
     const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain1 = gain1in;
+    const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
     const CSAMPLE_GAIN gain_delta2 = (gain2out - gain2in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain2 = gain2in;
+    const CSAMPLE_GAIN start_gain2 = gain2in + gain_delta2;
     const CSAMPLE_GAIN gain_delta3 = (gain3out - gain3in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain3 = gain3in;
+    const CSAMPLE_GAIN start_gain3 = gain3in + gain_delta3;
     const CSAMPLE_GAIN gain_delta4 = (gain4out - gain4in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain4 = gain4in;
+    const CSAMPLE_GAIN start_gain4 = gain4in + gain_delta4;
     const CSAMPLE_GAIN gain_delta5 = (gain5out - gain5in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain5 = gain5in;
+    const CSAMPLE_GAIN start_gain5 = gain5in + gain_delta5;
     const CSAMPLE_GAIN gain_delta6 = (gain6out - gain6in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain6 = gain6in;
+    const CSAMPLE_GAIN start_gain6 = gain6in + gain_delta6;
     const CSAMPLE_GAIN gain_delta7 = (gain7out - gain7in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain7 = gain7in;
+    const CSAMPLE_GAIN start_gain7 = gain7in + gain_delta7;
     const CSAMPLE_GAIN gain_delta8 = (gain8out - gain8in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain8 = gain8in;
+    const CSAMPLE_GAIN start_gain8 = gain8in + gain_delta8;
     const CSAMPLE_GAIN gain_delta9 = (gain9out - gain9in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain9 = gain9in;
+    const CSAMPLE_GAIN start_gain9 = gain9in + gain_delta9;
     const CSAMPLE_GAIN gain_delta10 = (gain10out - gain10in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain10 = gain10in;
+    const CSAMPLE_GAIN start_gain10 = gain10in + gain_delta10;
     const CSAMPLE_GAIN gain_delta11 = (gain11out - gain11in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain11 = gain11in;
-    for (int i = 0; i < iNumSamples; i += 2) {
-        gain0 += gain_delta0;
-        gain1 += gain_delta1;
-        gain2 += gain_delta2;
-        gain3 += gain_delta3;
-        gain4 += gain_delta4;
-        gain5 += gain_delta5;
-        gain6 += gain_delta6;
-        gain7 += gain_delta7;
-        gain8 += gain_delta8;
-        gain9 += gain_delta9;
-        gain10 += gain_delta10;
-        gain11 += gain_delta11;
-        pDest[i] = pSrc0[i] * gain0 +
-                   pSrc1[i] * gain1 +
-                   pSrc2[i] * gain2 +
-                   pSrc3[i] * gain3 +
-                   pSrc4[i] * gain4 +
-                   pSrc5[i] * gain5 +
-                   pSrc6[i] * gain6 +
-                   pSrc7[i] * gain7 +
-                   pSrc8[i] * gain8 +
-                   pSrc9[i] * gain9 +
-                   pSrc10[i] * gain10 +
-                   pSrc11[i] * gain11;
-        pDest[i + 1] = pSrc0[i + 1] * gain0 +
-                       pSrc1[i + 1] * gain1 +
-                       pSrc2[i + 1] * gain2 +
-                       pSrc3[i + 1] * gain3 +
-                       pSrc4[i + 1] * gain4 +
-                       pSrc5[i + 1] * gain5 +
-                       pSrc6[i + 1] * gain6 +
-                       pSrc7[i + 1] * gain7 +
-                       pSrc8[i + 1] * gain8 +
-                       pSrc9[i + 1] * gain9 +
-                       pSrc10[i + 1] * gain10 +
-                       pSrc11[i + 1] * gain11;
+    const CSAMPLE_GAIN start_gain11 = gain11in + gain_delta11;
+    for (int i = 0; i < iNumSamples / 2; ++i) {
+        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
+        const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
+        const CSAMPLE_GAIN gain2 = start_gain2 + gain_delta2 * i;
+        const CSAMPLE_GAIN gain3 = start_gain3 + gain_delta3 * i;
+        const CSAMPLE_GAIN gain4 = start_gain4 + gain_delta4 * i;
+        const CSAMPLE_GAIN gain5 = start_gain5 + gain_delta5 * i;
+        const CSAMPLE_GAIN gain6 = start_gain6 + gain_delta6 * i;
+        const CSAMPLE_GAIN gain7 = start_gain7 + gain_delta7 * i;
+        const CSAMPLE_GAIN gain8 = start_gain8 + gain_delta8 * i;
+        const CSAMPLE_GAIN gain9 = start_gain9 + gain_delta9 * i;
+        const CSAMPLE_GAIN gain10 = start_gain10 + gain_delta10 * i;
+        const CSAMPLE_GAIN gain11 = start_gain11 + gain_delta11 * i;
+        pDest[i * 2] = pSrc0[i * 2] * gain0 +
+                       pSrc1[i * 2] * gain1 +
+                       pSrc2[i * 2] * gain2 +
+                       pSrc3[i * 2] * gain3 +
+                       pSrc4[i * 2] * gain4 +
+                       pSrc5[i * 2] * gain5 +
+                       pSrc6[i * 2] * gain6 +
+                       pSrc7[i * 2] * gain7 +
+                       pSrc8[i * 2] * gain8 +
+                       pSrc9[i * 2] * gain9 +
+                       pSrc10[i * 2] * gain10 +
+                       pSrc11[i * 2] * gain11;
+        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
+                           pSrc1[i * 2 + 1] * gain1 +
+                           pSrc2[i * 2 + 1] * gain2 +
+                           pSrc3[i * 2 + 1] * gain3 +
+                           pSrc4[i * 2 + 1] * gain4 +
+                           pSrc5[i * 2 + 1] * gain5 +
+                           pSrc6[i * 2 + 1] * gain6 +
+                           pSrc7[i * 2 + 1] * gain7 +
+                           pSrc8[i * 2 + 1] * gain8 +
+                           pSrc9[i * 2 + 1] * gain9 +
+                           pSrc10[i * 2 + 1] * gain10 +
+                           pSrc11[i * 2 + 1] * gain11;
     }
 }
 static inline void copy13WithGain(CSAMPLE* _RESTRICT pDest,
@@ -1439,6 +1451,7 @@ static inline void copy13WithGain(CSAMPLE* _RESTRICT pDest,
         copy12WithGain(pDest, pSrc0, gain0, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4, pSrc5, gain5, pSrc6, gain6, pSrc7, gain7, pSrc8, gain8, pSrc9, gain9, pSrc10, gain10, pSrc11, gain11, iNumSamples);
         return;
     }
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] = pSrc0[i] * gain0 +
                    pSrc1[i] * gain1 +
@@ -1523,71 +1536,71 @@ static inline void copy13WithRampingGain(CSAMPLE* _RESTRICT pDest,
         return;
     }
     const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain0 = gain0in;
+    const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
     const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain1 = gain1in;
+    const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
     const CSAMPLE_GAIN gain_delta2 = (gain2out - gain2in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain2 = gain2in;
+    const CSAMPLE_GAIN start_gain2 = gain2in + gain_delta2;
     const CSAMPLE_GAIN gain_delta3 = (gain3out - gain3in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain3 = gain3in;
+    const CSAMPLE_GAIN start_gain3 = gain3in + gain_delta3;
     const CSAMPLE_GAIN gain_delta4 = (gain4out - gain4in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain4 = gain4in;
+    const CSAMPLE_GAIN start_gain4 = gain4in + gain_delta4;
     const CSAMPLE_GAIN gain_delta5 = (gain5out - gain5in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain5 = gain5in;
+    const CSAMPLE_GAIN start_gain5 = gain5in + gain_delta5;
     const CSAMPLE_GAIN gain_delta6 = (gain6out - gain6in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain6 = gain6in;
+    const CSAMPLE_GAIN start_gain6 = gain6in + gain_delta6;
     const CSAMPLE_GAIN gain_delta7 = (gain7out - gain7in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain7 = gain7in;
+    const CSAMPLE_GAIN start_gain7 = gain7in + gain_delta7;
     const CSAMPLE_GAIN gain_delta8 = (gain8out - gain8in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain8 = gain8in;
+    const CSAMPLE_GAIN start_gain8 = gain8in + gain_delta8;
     const CSAMPLE_GAIN gain_delta9 = (gain9out - gain9in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain9 = gain9in;
+    const CSAMPLE_GAIN start_gain9 = gain9in + gain_delta9;
     const CSAMPLE_GAIN gain_delta10 = (gain10out - gain10in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain10 = gain10in;
+    const CSAMPLE_GAIN start_gain10 = gain10in + gain_delta10;
     const CSAMPLE_GAIN gain_delta11 = (gain11out - gain11in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain11 = gain11in;
+    const CSAMPLE_GAIN start_gain11 = gain11in + gain_delta11;
     const CSAMPLE_GAIN gain_delta12 = (gain12out - gain12in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain12 = gain12in;
-    for (int i = 0; i < iNumSamples; i += 2) {
-        gain0 += gain_delta0;
-        gain1 += gain_delta1;
-        gain2 += gain_delta2;
-        gain3 += gain_delta3;
-        gain4 += gain_delta4;
-        gain5 += gain_delta5;
-        gain6 += gain_delta6;
-        gain7 += gain_delta7;
-        gain8 += gain_delta8;
-        gain9 += gain_delta9;
-        gain10 += gain_delta10;
-        gain11 += gain_delta11;
-        gain12 += gain_delta12;
-        pDest[i] = pSrc0[i] * gain0 +
-                   pSrc1[i] * gain1 +
-                   pSrc2[i] * gain2 +
-                   pSrc3[i] * gain3 +
-                   pSrc4[i] * gain4 +
-                   pSrc5[i] * gain5 +
-                   pSrc6[i] * gain6 +
-                   pSrc7[i] * gain7 +
-                   pSrc8[i] * gain8 +
-                   pSrc9[i] * gain9 +
-                   pSrc10[i] * gain10 +
-                   pSrc11[i] * gain11 +
-                   pSrc12[i] * gain12;
-        pDest[i + 1] = pSrc0[i + 1] * gain0 +
-                       pSrc1[i + 1] * gain1 +
-                       pSrc2[i + 1] * gain2 +
-                       pSrc3[i + 1] * gain3 +
-                       pSrc4[i + 1] * gain4 +
-                       pSrc5[i + 1] * gain5 +
-                       pSrc6[i + 1] * gain6 +
-                       pSrc7[i + 1] * gain7 +
-                       pSrc8[i + 1] * gain8 +
-                       pSrc9[i + 1] * gain9 +
-                       pSrc10[i + 1] * gain10 +
-                       pSrc11[i + 1] * gain11 +
-                       pSrc12[i + 1] * gain12;
+    const CSAMPLE_GAIN start_gain12 = gain12in + gain_delta12;
+    for (int i = 0; i < iNumSamples / 2; ++i) {
+        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
+        const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
+        const CSAMPLE_GAIN gain2 = start_gain2 + gain_delta2 * i;
+        const CSAMPLE_GAIN gain3 = start_gain3 + gain_delta3 * i;
+        const CSAMPLE_GAIN gain4 = start_gain4 + gain_delta4 * i;
+        const CSAMPLE_GAIN gain5 = start_gain5 + gain_delta5 * i;
+        const CSAMPLE_GAIN gain6 = start_gain6 + gain_delta6 * i;
+        const CSAMPLE_GAIN gain7 = start_gain7 + gain_delta7 * i;
+        const CSAMPLE_GAIN gain8 = start_gain8 + gain_delta8 * i;
+        const CSAMPLE_GAIN gain9 = start_gain9 + gain_delta9 * i;
+        const CSAMPLE_GAIN gain10 = start_gain10 + gain_delta10 * i;
+        const CSAMPLE_GAIN gain11 = start_gain11 + gain_delta11 * i;
+        const CSAMPLE_GAIN gain12 = start_gain12 + gain_delta12 * i;
+        pDest[i * 2] = pSrc0[i * 2] * gain0 +
+                       pSrc1[i * 2] * gain1 +
+                       pSrc2[i * 2] * gain2 +
+                       pSrc3[i * 2] * gain3 +
+                       pSrc4[i * 2] * gain4 +
+                       pSrc5[i * 2] * gain5 +
+                       pSrc6[i * 2] * gain6 +
+                       pSrc7[i * 2] * gain7 +
+                       pSrc8[i * 2] * gain8 +
+                       pSrc9[i * 2] * gain9 +
+                       pSrc10[i * 2] * gain10 +
+                       pSrc11[i * 2] * gain11 +
+                       pSrc12[i * 2] * gain12;
+        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
+                           pSrc1[i * 2 + 1] * gain1 +
+                           pSrc2[i * 2 + 1] * gain2 +
+                           pSrc3[i * 2 + 1] * gain3 +
+                           pSrc4[i * 2 + 1] * gain4 +
+                           pSrc5[i * 2 + 1] * gain5 +
+                           pSrc6[i * 2 + 1] * gain6 +
+                           pSrc7[i * 2 + 1] * gain7 +
+                           pSrc8[i * 2 + 1] * gain8 +
+                           pSrc9[i * 2 + 1] * gain9 +
+                           pSrc10[i * 2 + 1] * gain10 +
+                           pSrc11[i * 2 + 1] * gain11 +
+                           pSrc12[i * 2 + 1] * gain12;
     }
 }
 static inline void copy14WithGain(CSAMPLE* _RESTRICT pDest,
@@ -1662,6 +1675,7 @@ static inline void copy14WithGain(CSAMPLE* _RESTRICT pDest,
         copy13WithGain(pDest, pSrc0, gain0, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4, pSrc5, gain5, pSrc6, gain6, pSrc7, gain7, pSrc8, gain8, pSrc9, gain9, pSrc10, gain10, pSrc11, gain11, pSrc12, gain12, iNumSamples);
         return;
     }
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] = pSrc0[i] * gain0 +
                    pSrc1[i] * gain1 +
@@ -1752,76 +1766,76 @@ static inline void copy14WithRampingGain(CSAMPLE* _RESTRICT pDest,
         return;
     }
     const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain0 = gain0in;
+    const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
     const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain1 = gain1in;
+    const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
     const CSAMPLE_GAIN gain_delta2 = (gain2out - gain2in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain2 = gain2in;
+    const CSAMPLE_GAIN start_gain2 = gain2in + gain_delta2;
     const CSAMPLE_GAIN gain_delta3 = (gain3out - gain3in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain3 = gain3in;
+    const CSAMPLE_GAIN start_gain3 = gain3in + gain_delta3;
     const CSAMPLE_GAIN gain_delta4 = (gain4out - gain4in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain4 = gain4in;
+    const CSAMPLE_GAIN start_gain4 = gain4in + gain_delta4;
     const CSAMPLE_GAIN gain_delta5 = (gain5out - gain5in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain5 = gain5in;
+    const CSAMPLE_GAIN start_gain5 = gain5in + gain_delta5;
     const CSAMPLE_GAIN gain_delta6 = (gain6out - gain6in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain6 = gain6in;
+    const CSAMPLE_GAIN start_gain6 = gain6in + gain_delta6;
     const CSAMPLE_GAIN gain_delta7 = (gain7out - gain7in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain7 = gain7in;
+    const CSAMPLE_GAIN start_gain7 = gain7in + gain_delta7;
     const CSAMPLE_GAIN gain_delta8 = (gain8out - gain8in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain8 = gain8in;
+    const CSAMPLE_GAIN start_gain8 = gain8in + gain_delta8;
     const CSAMPLE_GAIN gain_delta9 = (gain9out - gain9in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain9 = gain9in;
+    const CSAMPLE_GAIN start_gain9 = gain9in + gain_delta9;
     const CSAMPLE_GAIN gain_delta10 = (gain10out - gain10in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain10 = gain10in;
+    const CSAMPLE_GAIN start_gain10 = gain10in + gain_delta10;
     const CSAMPLE_GAIN gain_delta11 = (gain11out - gain11in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain11 = gain11in;
+    const CSAMPLE_GAIN start_gain11 = gain11in + gain_delta11;
     const CSAMPLE_GAIN gain_delta12 = (gain12out - gain12in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain12 = gain12in;
+    const CSAMPLE_GAIN start_gain12 = gain12in + gain_delta12;
     const CSAMPLE_GAIN gain_delta13 = (gain13out - gain13in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain13 = gain13in;
-    for (int i = 0; i < iNumSamples; i += 2) {
-        gain0 += gain_delta0;
-        gain1 += gain_delta1;
-        gain2 += gain_delta2;
-        gain3 += gain_delta3;
-        gain4 += gain_delta4;
-        gain5 += gain_delta5;
-        gain6 += gain_delta6;
-        gain7 += gain_delta7;
-        gain8 += gain_delta8;
-        gain9 += gain_delta9;
-        gain10 += gain_delta10;
-        gain11 += gain_delta11;
-        gain12 += gain_delta12;
-        gain13 += gain_delta13;
-        pDest[i] = pSrc0[i] * gain0 +
-                   pSrc1[i] * gain1 +
-                   pSrc2[i] * gain2 +
-                   pSrc3[i] * gain3 +
-                   pSrc4[i] * gain4 +
-                   pSrc5[i] * gain5 +
-                   pSrc6[i] * gain6 +
-                   pSrc7[i] * gain7 +
-                   pSrc8[i] * gain8 +
-                   pSrc9[i] * gain9 +
-                   pSrc10[i] * gain10 +
-                   pSrc11[i] * gain11 +
-                   pSrc12[i] * gain12 +
-                   pSrc13[i] * gain13;
-        pDest[i + 1] = pSrc0[i + 1] * gain0 +
-                       pSrc1[i + 1] * gain1 +
-                       pSrc2[i + 1] * gain2 +
-                       pSrc3[i + 1] * gain3 +
-                       pSrc4[i + 1] * gain4 +
-                       pSrc5[i + 1] * gain5 +
-                       pSrc6[i + 1] * gain6 +
-                       pSrc7[i + 1] * gain7 +
-                       pSrc8[i + 1] * gain8 +
-                       pSrc9[i + 1] * gain9 +
-                       pSrc10[i + 1] * gain10 +
-                       pSrc11[i + 1] * gain11 +
-                       pSrc12[i + 1] * gain12 +
-                       pSrc13[i + 1] * gain13;
+    const CSAMPLE_GAIN start_gain13 = gain13in + gain_delta13;
+    for (int i = 0; i < iNumSamples / 2; ++i) {
+        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
+        const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
+        const CSAMPLE_GAIN gain2 = start_gain2 + gain_delta2 * i;
+        const CSAMPLE_GAIN gain3 = start_gain3 + gain_delta3 * i;
+        const CSAMPLE_GAIN gain4 = start_gain4 + gain_delta4 * i;
+        const CSAMPLE_GAIN gain5 = start_gain5 + gain_delta5 * i;
+        const CSAMPLE_GAIN gain6 = start_gain6 + gain_delta6 * i;
+        const CSAMPLE_GAIN gain7 = start_gain7 + gain_delta7 * i;
+        const CSAMPLE_GAIN gain8 = start_gain8 + gain_delta8 * i;
+        const CSAMPLE_GAIN gain9 = start_gain9 + gain_delta9 * i;
+        const CSAMPLE_GAIN gain10 = start_gain10 + gain_delta10 * i;
+        const CSAMPLE_GAIN gain11 = start_gain11 + gain_delta11 * i;
+        const CSAMPLE_GAIN gain12 = start_gain12 + gain_delta12 * i;
+        const CSAMPLE_GAIN gain13 = start_gain13 + gain_delta13 * i;
+        pDest[i * 2] = pSrc0[i * 2] * gain0 +
+                       pSrc1[i * 2] * gain1 +
+                       pSrc2[i * 2] * gain2 +
+                       pSrc3[i * 2] * gain3 +
+                       pSrc4[i * 2] * gain4 +
+                       pSrc5[i * 2] * gain5 +
+                       pSrc6[i * 2] * gain6 +
+                       pSrc7[i * 2] * gain7 +
+                       pSrc8[i * 2] * gain8 +
+                       pSrc9[i * 2] * gain9 +
+                       pSrc10[i * 2] * gain10 +
+                       pSrc11[i * 2] * gain11 +
+                       pSrc12[i * 2] * gain12 +
+                       pSrc13[i * 2] * gain13;
+        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
+                           pSrc1[i * 2 + 1] * gain1 +
+                           pSrc2[i * 2 + 1] * gain2 +
+                           pSrc3[i * 2 + 1] * gain3 +
+                           pSrc4[i * 2 + 1] * gain4 +
+                           pSrc5[i * 2 + 1] * gain5 +
+                           pSrc6[i * 2 + 1] * gain6 +
+                           pSrc7[i * 2 + 1] * gain7 +
+                           pSrc8[i * 2 + 1] * gain8 +
+                           pSrc9[i * 2 + 1] * gain9 +
+                           pSrc10[i * 2 + 1] * gain10 +
+                           pSrc11[i * 2 + 1] * gain11 +
+                           pSrc12[i * 2 + 1] * gain12 +
+                           pSrc13[i * 2 + 1] * gain13;
     }
 }
 static inline void copy15WithGain(CSAMPLE* _RESTRICT pDest,
@@ -1901,6 +1915,7 @@ static inline void copy15WithGain(CSAMPLE* _RESTRICT pDest,
         copy14WithGain(pDest, pSrc0, gain0, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4, pSrc5, gain5, pSrc6, gain6, pSrc7, gain7, pSrc8, gain8, pSrc9, gain9, pSrc10, gain10, pSrc11, gain11, pSrc12, gain12, pSrc13, gain13, iNumSamples);
         return;
     }
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] = pSrc0[i] * gain0 +
                    pSrc1[i] * gain1 +
@@ -1997,81 +2012,81 @@ static inline void copy15WithRampingGain(CSAMPLE* _RESTRICT pDest,
         return;
     }
     const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain0 = gain0in;
+    const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
     const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain1 = gain1in;
+    const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
     const CSAMPLE_GAIN gain_delta2 = (gain2out - gain2in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain2 = gain2in;
+    const CSAMPLE_GAIN start_gain2 = gain2in + gain_delta2;
     const CSAMPLE_GAIN gain_delta3 = (gain3out - gain3in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain3 = gain3in;
+    const CSAMPLE_GAIN start_gain3 = gain3in + gain_delta3;
     const CSAMPLE_GAIN gain_delta4 = (gain4out - gain4in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain4 = gain4in;
+    const CSAMPLE_GAIN start_gain4 = gain4in + gain_delta4;
     const CSAMPLE_GAIN gain_delta5 = (gain5out - gain5in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain5 = gain5in;
+    const CSAMPLE_GAIN start_gain5 = gain5in + gain_delta5;
     const CSAMPLE_GAIN gain_delta6 = (gain6out - gain6in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain6 = gain6in;
+    const CSAMPLE_GAIN start_gain6 = gain6in + gain_delta6;
     const CSAMPLE_GAIN gain_delta7 = (gain7out - gain7in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain7 = gain7in;
+    const CSAMPLE_GAIN start_gain7 = gain7in + gain_delta7;
     const CSAMPLE_GAIN gain_delta8 = (gain8out - gain8in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain8 = gain8in;
+    const CSAMPLE_GAIN start_gain8 = gain8in + gain_delta8;
     const CSAMPLE_GAIN gain_delta9 = (gain9out - gain9in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain9 = gain9in;
+    const CSAMPLE_GAIN start_gain9 = gain9in + gain_delta9;
     const CSAMPLE_GAIN gain_delta10 = (gain10out - gain10in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain10 = gain10in;
+    const CSAMPLE_GAIN start_gain10 = gain10in + gain_delta10;
     const CSAMPLE_GAIN gain_delta11 = (gain11out - gain11in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain11 = gain11in;
+    const CSAMPLE_GAIN start_gain11 = gain11in + gain_delta11;
     const CSAMPLE_GAIN gain_delta12 = (gain12out - gain12in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain12 = gain12in;
+    const CSAMPLE_GAIN start_gain12 = gain12in + gain_delta12;
     const CSAMPLE_GAIN gain_delta13 = (gain13out - gain13in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain13 = gain13in;
+    const CSAMPLE_GAIN start_gain13 = gain13in + gain_delta13;
     const CSAMPLE_GAIN gain_delta14 = (gain14out - gain14in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain14 = gain14in;
-    for (int i = 0; i < iNumSamples; i += 2) {
-        gain0 += gain_delta0;
-        gain1 += gain_delta1;
-        gain2 += gain_delta2;
-        gain3 += gain_delta3;
-        gain4 += gain_delta4;
-        gain5 += gain_delta5;
-        gain6 += gain_delta6;
-        gain7 += gain_delta7;
-        gain8 += gain_delta8;
-        gain9 += gain_delta9;
-        gain10 += gain_delta10;
-        gain11 += gain_delta11;
-        gain12 += gain_delta12;
-        gain13 += gain_delta13;
-        gain14 += gain_delta14;
-        pDest[i] = pSrc0[i] * gain0 +
-                   pSrc1[i] * gain1 +
-                   pSrc2[i] * gain2 +
-                   pSrc3[i] * gain3 +
-                   pSrc4[i] * gain4 +
-                   pSrc5[i] * gain5 +
-                   pSrc6[i] * gain6 +
-                   pSrc7[i] * gain7 +
-                   pSrc8[i] * gain8 +
-                   pSrc9[i] * gain9 +
-                   pSrc10[i] * gain10 +
-                   pSrc11[i] * gain11 +
-                   pSrc12[i] * gain12 +
-                   pSrc13[i] * gain13 +
-                   pSrc14[i] * gain14;
-        pDest[i + 1] = pSrc0[i + 1] * gain0 +
-                       pSrc1[i + 1] * gain1 +
-                       pSrc2[i + 1] * gain2 +
-                       pSrc3[i + 1] * gain3 +
-                       pSrc4[i + 1] * gain4 +
-                       pSrc5[i + 1] * gain5 +
-                       pSrc6[i + 1] * gain6 +
-                       pSrc7[i + 1] * gain7 +
-                       pSrc8[i + 1] * gain8 +
-                       pSrc9[i + 1] * gain9 +
-                       pSrc10[i + 1] * gain10 +
-                       pSrc11[i + 1] * gain11 +
-                       pSrc12[i + 1] * gain12 +
-                       pSrc13[i + 1] * gain13 +
-                       pSrc14[i + 1] * gain14;
+    const CSAMPLE_GAIN start_gain14 = gain14in + gain_delta14;
+    for (int i = 0; i < iNumSamples / 2; ++i) {
+        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
+        const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
+        const CSAMPLE_GAIN gain2 = start_gain2 + gain_delta2 * i;
+        const CSAMPLE_GAIN gain3 = start_gain3 + gain_delta3 * i;
+        const CSAMPLE_GAIN gain4 = start_gain4 + gain_delta4 * i;
+        const CSAMPLE_GAIN gain5 = start_gain5 + gain_delta5 * i;
+        const CSAMPLE_GAIN gain6 = start_gain6 + gain_delta6 * i;
+        const CSAMPLE_GAIN gain7 = start_gain7 + gain_delta7 * i;
+        const CSAMPLE_GAIN gain8 = start_gain8 + gain_delta8 * i;
+        const CSAMPLE_GAIN gain9 = start_gain9 + gain_delta9 * i;
+        const CSAMPLE_GAIN gain10 = start_gain10 + gain_delta10 * i;
+        const CSAMPLE_GAIN gain11 = start_gain11 + gain_delta11 * i;
+        const CSAMPLE_GAIN gain12 = start_gain12 + gain_delta12 * i;
+        const CSAMPLE_GAIN gain13 = start_gain13 + gain_delta13 * i;
+        const CSAMPLE_GAIN gain14 = start_gain14 + gain_delta14 * i;
+        pDest[i * 2] = pSrc0[i * 2] * gain0 +
+                       pSrc1[i * 2] * gain1 +
+                       pSrc2[i * 2] * gain2 +
+                       pSrc3[i * 2] * gain3 +
+                       pSrc4[i * 2] * gain4 +
+                       pSrc5[i * 2] * gain5 +
+                       pSrc6[i * 2] * gain6 +
+                       pSrc7[i * 2] * gain7 +
+                       pSrc8[i * 2] * gain8 +
+                       pSrc9[i * 2] * gain9 +
+                       pSrc10[i * 2] * gain10 +
+                       pSrc11[i * 2] * gain11 +
+                       pSrc12[i * 2] * gain12 +
+                       pSrc13[i * 2] * gain13 +
+                       pSrc14[i * 2] * gain14;
+        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
+                           pSrc1[i * 2 + 1] * gain1 +
+                           pSrc2[i * 2 + 1] * gain2 +
+                           pSrc3[i * 2 + 1] * gain3 +
+                           pSrc4[i * 2 + 1] * gain4 +
+                           pSrc5[i * 2 + 1] * gain5 +
+                           pSrc6[i * 2 + 1] * gain6 +
+                           pSrc7[i * 2 + 1] * gain7 +
+                           pSrc8[i * 2 + 1] * gain8 +
+                           pSrc9[i * 2 + 1] * gain9 +
+                           pSrc10[i * 2 + 1] * gain10 +
+                           pSrc11[i * 2 + 1] * gain11 +
+                           pSrc12[i * 2 + 1] * gain12 +
+                           pSrc13[i * 2 + 1] * gain13 +
+                           pSrc14[i * 2 + 1] * gain14;
     }
 }
 static inline void copy16WithGain(CSAMPLE* _RESTRICT pDest,
@@ -2156,6 +2171,7 @@ static inline void copy16WithGain(CSAMPLE* _RESTRICT pDest,
         copy15WithGain(pDest, pSrc0, gain0, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4, pSrc5, gain5, pSrc6, gain6, pSrc7, gain7, pSrc8, gain8, pSrc9, gain9, pSrc10, gain10, pSrc11, gain11, pSrc12, gain12, pSrc13, gain13, pSrc14, gain14, iNumSamples);
         return;
     }
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] = pSrc0[i] * gain0 +
                    pSrc1[i] * gain1 +
@@ -2258,86 +2274,86 @@ static inline void copy16WithRampingGain(CSAMPLE* _RESTRICT pDest,
         return;
     }
     const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain0 = gain0in;
+    const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
     const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain1 = gain1in;
+    const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
     const CSAMPLE_GAIN gain_delta2 = (gain2out - gain2in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain2 = gain2in;
+    const CSAMPLE_GAIN start_gain2 = gain2in + gain_delta2;
     const CSAMPLE_GAIN gain_delta3 = (gain3out - gain3in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain3 = gain3in;
+    const CSAMPLE_GAIN start_gain3 = gain3in + gain_delta3;
     const CSAMPLE_GAIN gain_delta4 = (gain4out - gain4in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain4 = gain4in;
+    const CSAMPLE_GAIN start_gain4 = gain4in + gain_delta4;
     const CSAMPLE_GAIN gain_delta5 = (gain5out - gain5in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain5 = gain5in;
+    const CSAMPLE_GAIN start_gain5 = gain5in + gain_delta5;
     const CSAMPLE_GAIN gain_delta6 = (gain6out - gain6in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain6 = gain6in;
+    const CSAMPLE_GAIN start_gain6 = gain6in + gain_delta6;
     const CSAMPLE_GAIN gain_delta7 = (gain7out - gain7in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain7 = gain7in;
+    const CSAMPLE_GAIN start_gain7 = gain7in + gain_delta7;
     const CSAMPLE_GAIN gain_delta8 = (gain8out - gain8in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain8 = gain8in;
+    const CSAMPLE_GAIN start_gain8 = gain8in + gain_delta8;
     const CSAMPLE_GAIN gain_delta9 = (gain9out - gain9in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain9 = gain9in;
+    const CSAMPLE_GAIN start_gain9 = gain9in + gain_delta9;
     const CSAMPLE_GAIN gain_delta10 = (gain10out - gain10in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain10 = gain10in;
+    const CSAMPLE_GAIN start_gain10 = gain10in + gain_delta10;
     const CSAMPLE_GAIN gain_delta11 = (gain11out - gain11in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain11 = gain11in;
+    const CSAMPLE_GAIN start_gain11 = gain11in + gain_delta11;
     const CSAMPLE_GAIN gain_delta12 = (gain12out - gain12in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain12 = gain12in;
+    const CSAMPLE_GAIN start_gain12 = gain12in + gain_delta12;
     const CSAMPLE_GAIN gain_delta13 = (gain13out - gain13in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain13 = gain13in;
+    const CSAMPLE_GAIN start_gain13 = gain13in + gain_delta13;
     const CSAMPLE_GAIN gain_delta14 = (gain14out - gain14in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain14 = gain14in;
+    const CSAMPLE_GAIN start_gain14 = gain14in + gain_delta14;
     const CSAMPLE_GAIN gain_delta15 = (gain15out - gain15in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain15 = gain15in;
-    for (int i = 0; i < iNumSamples; i += 2) {
-        gain0 += gain_delta0;
-        gain1 += gain_delta1;
-        gain2 += gain_delta2;
-        gain3 += gain_delta3;
-        gain4 += gain_delta4;
-        gain5 += gain_delta5;
-        gain6 += gain_delta6;
-        gain7 += gain_delta7;
-        gain8 += gain_delta8;
-        gain9 += gain_delta9;
-        gain10 += gain_delta10;
-        gain11 += gain_delta11;
-        gain12 += gain_delta12;
-        gain13 += gain_delta13;
-        gain14 += gain_delta14;
-        gain15 += gain_delta15;
-        pDest[i] = pSrc0[i] * gain0 +
-                   pSrc1[i] * gain1 +
-                   pSrc2[i] * gain2 +
-                   pSrc3[i] * gain3 +
-                   pSrc4[i] * gain4 +
-                   pSrc5[i] * gain5 +
-                   pSrc6[i] * gain6 +
-                   pSrc7[i] * gain7 +
-                   pSrc8[i] * gain8 +
-                   pSrc9[i] * gain9 +
-                   pSrc10[i] * gain10 +
-                   pSrc11[i] * gain11 +
-                   pSrc12[i] * gain12 +
-                   pSrc13[i] * gain13 +
-                   pSrc14[i] * gain14 +
-                   pSrc15[i] * gain15;
-        pDest[i + 1] = pSrc0[i + 1] * gain0 +
-                       pSrc1[i + 1] * gain1 +
-                       pSrc2[i + 1] * gain2 +
-                       pSrc3[i + 1] * gain3 +
-                       pSrc4[i + 1] * gain4 +
-                       pSrc5[i + 1] * gain5 +
-                       pSrc6[i + 1] * gain6 +
-                       pSrc7[i + 1] * gain7 +
-                       pSrc8[i + 1] * gain8 +
-                       pSrc9[i + 1] * gain9 +
-                       pSrc10[i + 1] * gain10 +
-                       pSrc11[i + 1] * gain11 +
-                       pSrc12[i + 1] * gain12 +
-                       pSrc13[i + 1] * gain13 +
-                       pSrc14[i + 1] * gain14 +
-                       pSrc15[i + 1] * gain15;
+    const CSAMPLE_GAIN start_gain15 = gain15in + gain_delta15;
+    for (int i = 0; i < iNumSamples / 2; ++i) {
+        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
+        const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
+        const CSAMPLE_GAIN gain2 = start_gain2 + gain_delta2 * i;
+        const CSAMPLE_GAIN gain3 = start_gain3 + gain_delta3 * i;
+        const CSAMPLE_GAIN gain4 = start_gain4 + gain_delta4 * i;
+        const CSAMPLE_GAIN gain5 = start_gain5 + gain_delta5 * i;
+        const CSAMPLE_GAIN gain6 = start_gain6 + gain_delta6 * i;
+        const CSAMPLE_GAIN gain7 = start_gain7 + gain_delta7 * i;
+        const CSAMPLE_GAIN gain8 = start_gain8 + gain_delta8 * i;
+        const CSAMPLE_GAIN gain9 = start_gain9 + gain_delta9 * i;
+        const CSAMPLE_GAIN gain10 = start_gain10 + gain_delta10 * i;
+        const CSAMPLE_GAIN gain11 = start_gain11 + gain_delta11 * i;
+        const CSAMPLE_GAIN gain12 = start_gain12 + gain_delta12 * i;
+        const CSAMPLE_GAIN gain13 = start_gain13 + gain_delta13 * i;
+        const CSAMPLE_GAIN gain14 = start_gain14 + gain_delta14 * i;
+        const CSAMPLE_GAIN gain15 = start_gain15 + gain_delta15 * i;
+        pDest[i * 2] = pSrc0[i * 2] * gain0 +
+                       pSrc1[i * 2] * gain1 +
+                       pSrc2[i * 2] * gain2 +
+                       pSrc3[i * 2] * gain3 +
+                       pSrc4[i * 2] * gain4 +
+                       pSrc5[i * 2] * gain5 +
+                       pSrc6[i * 2] * gain6 +
+                       pSrc7[i * 2] * gain7 +
+                       pSrc8[i * 2] * gain8 +
+                       pSrc9[i * 2] * gain9 +
+                       pSrc10[i * 2] * gain10 +
+                       pSrc11[i * 2] * gain11 +
+                       pSrc12[i * 2] * gain12 +
+                       pSrc13[i * 2] * gain13 +
+                       pSrc14[i * 2] * gain14 +
+                       pSrc15[i * 2] * gain15;
+        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
+                           pSrc1[i * 2 + 1] * gain1 +
+                           pSrc2[i * 2 + 1] * gain2 +
+                           pSrc3[i * 2 + 1] * gain3 +
+                           pSrc4[i * 2 + 1] * gain4 +
+                           pSrc5[i * 2 + 1] * gain5 +
+                           pSrc6[i * 2 + 1] * gain6 +
+                           pSrc7[i * 2 + 1] * gain7 +
+                           pSrc8[i * 2 + 1] * gain8 +
+                           pSrc9[i * 2 + 1] * gain9 +
+                           pSrc10[i * 2 + 1] * gain10 +
+                           pSrc11[i * 2 + 1] * gain11 +
+                           pSrc12[i * 2 + 1] * gain12 +
+                           pSrc13[i * 2 + 1] * gain13 +
+                           pSrc14[i * 2 + 1] * gain14 +
+                           pSrc15[i * 2 + 1] * gain15;
     }
 }
 static inline void copy17WithGain(CSAMPLE* _RESTRICT pDest,
@@ -2427,6 +2443,7 @@ static inline void copy17WithGain(CSAMPLE* _RESTRICT pDest,
         copy16WithGain(pDest, pSrc0, gain0, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4, pSrc5, gain5, pSrc6, gain6, pSrc7, gain7, pSrc8, gain8, pSrc9, gain9, pSrc10, gain10, pSrc11, gain11, pSrc12, gain12, pSrc13, gain13, pSrc14, gain14, pSrc15, gain15, iNumSamples);
         return;
     }
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] = pSrc0[i] * gain0 +
                    pSrc1[i] * gain1 +
@@ -2535,91 +2552,91 @@ static inline void copy17WithRampingGain(CSAMPLE* _RESTRICT pDest,
         return;
     }
     const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain0 = gain0in;
+    const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
     const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain1 = gain1in;
+    const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
     const CSAMPLE_GAIN gain_delta2 = (gain2out - gain2in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain2 = gain2in;
+    const CSAMPLE_GAIN start_gain2 = gain2in + gain_delta2;
     const CSAMPLE_GAIN gain_delta3 = (gain3out - gain3in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain3 = gain3in;
+    const CSAMPLE_GAIN start_gain3 = gain3in + gain_delta3;
     const CSAMPLE_GAIN gain_delta4 = (gain4out - gain4in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain4 = gain4in;
+    const CSAMPLE_GAIN start_gain4 = gain4in + gain_delta4;
     const CSAMPLE_GAIN gain_delta5 = (gain5out - gain5in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain5 = gain5in;
+    const CSAMPLE_GAIN start_gain5 = gain5in + gain_delta5;
     const CSAMPLE_GAIN gain_delta6 = (gain6out - gain6in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain6 = gain6in;
+    const CSAMPLE_GAIN start_gain6 = gain6in + gain_delta6;
     const CSAMPLE_GAIN gain_delta7 = (gain7out - gain7in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain7 = gain7in;
+    const CSAMPLE_GAIN start_gain7 = gain7in + gain_delta7;
     const CSAMPLE_GAIN gain_delta8 = (gain8out - gain8in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain8 = gain8in;
+    const CSAMPLE_GAIN start_gain8 = gain8in + gain_delta8;
     const CSAMPLE_GAIN gain_delta9 = (gain9out - gain9in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain9 = gain9in;
+    const CSAMPLE_GAIN start_gain9 = gain9in + gain_delta9;
     const CSAMPLE_GAIN gain_delta10 = (gain10out - gain10in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain10 = gain10in;
+    const CSAMPLE_GAIN start_gain10 = gain10in + gain_delta10;
     const CSAMPLE_GAIN gain_delta11 = (gain11out - gain11in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain11 = gain11in;
+    const CSAMPLE_GAIN start_gain11 = gain11in + gain_delta11;
     const CSAMPLE_GAIN gain_delta12 = (gain12out - gain12in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain12 = gain12in;
+    const CSAMPLE_GAIN start_gain12 = gain12in + gain_delta12;
     const CSAMPLE_GAIN gain_delta13 = (gain13out - gain13in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain13 = gain13in;
+    const CSAMPLE_GAIN start_gain13 = gain13in + gain_delta13;
     const CSAMPLE_GAIN gain_delta14 = (gain14out - gain14in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain14 = gain14in;
+    const CSAMPLE_GAIN start_gain14 = gain14in + gain_delta14;
     const CSAMPLE_GAIN gain_delta15 = (gain15out - gain15in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain15 = gain15in;
+    const CSAMPLE_GAIN start_gain15 = gain15in + gain_delta15;
     const CSAMPLE_GAIN gain_delta16 = (gain16out - gain16in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain16 = gain16in;
-    for (int i = 0; i < iNumSamples; i += 2) {
-        gain0 += gain_delta0;
-        gain1 += gain_delta1;
-        gain2 += gain_delta2;
-        gain3 += gain_delta3;
-        gain4 += gain_delta4;
-        gain5 += gain_delta5;
-        gain6 += gain_delta6;
-        gain7 += gain_delta7;
-        gain8 += gain_delta8;
-        gain9 += gain_delta9;
-        gain10 += gain_delta10;
-        gain11 += gain_delta11;
-        gain12 += gain_delta12;
-        gain13 += gain_delta13;
-        gain14 += gain_delta14;
-        gain15 += gain_delta15;
-        gain16 += gain_delta16;
-        pDest[i] = pSrc0[i] * gain0 +
-                   pSrc1[i] * gain1 +
-                   pSrc2[i] * gain2 +
-                   pSrc3[i] * gain3 +
-                   pSrc4[i] * gain4 +
-                   pSrc5[i] * gain5 +
-                   pSrc6[i] * gain6 +
-                   pSrc7[i] * gain7 +
-                   pSrc8[i] * gain8 +
-                   pSrc9[i] * gain9 +
-                   pSrc10[i] * gain10 +
-                   pSrc11[i] * gain11 +
-                   pSrc12[i] * gain12 +
-                   pSrc13[i] * gain13 +
-                   pSrc14[i] * gain14 +
-                   pSrc15[i] * gain15 +
-                   pSrc16[i] * gain16;
-        pDest[i + 1] = pSrc0[i + 1] * gain0 +
-                       pSrc1[i + 1] * gain1 +
-                       pSrc2[i + 1] * gain2 +
-                       pSrc3[i + 1] * gain3 +
-                       pSrc4[i + 1] * gain4 +
-                       pSrc5[i + 1] * gain5 +
-                       pSrc6[i + 1] * gain6 +
-                       pSrc7[i + 1] * gain7 +
-                       pSrc8[i + 1] * gain8 +
-                       pSrc9[i + 1] * gain9 +
-                       pSrc10[i + 1] * gain10 +
-                       pSrc11[i + 1] * gain11 +
-                       pSrc12[i + 1] * gain12 +
-                       pSrc13[i + 1] * gain13 +
-                       pSrc14[i + 1] * gain14 +
-                       pSrc15[i + 1] * gain15 +
-                       pSrc16[i + 1] * gain16;
+    const CSAMPLE_GAIN start_gain16 = gain16in + gain_delta16;
+    for (int i = 0; i < iNumSamples / 2; ++i) {
+        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
+        const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
+        const CSAMPLE_GAIN gain2 = start_gain2 + gain_delta2 * i;
+        const CSAMPLE_GAIN gain3 = start_gain3 + gain_delta3 * i;
+        const CSAMPLE_GAIN gain4 = start_gain4 + gain_delta4 * i;
+        const CSAMPLE_GAIN gain5 = start_gain5 + gain_delta5 * i;
+        const CSAMPLE_GAIN gain6 = start_gain6 + gain_delta6 * i;
+        const CSAMPLE_GAIN gain7 = start_gain7 + gain_delta7 * i;
+        const CSAMPLE_GAIN gain8 = start_gain8 + gain_delta8 * i;
+        const CSAMPLE_GAIN gain9 = start_gain9 + gain_delta9 * i;
+        const CSAMPLE_GAIN gain10 = start_gain10 + gain_delta10 * i;
+        const CSAMPLE_GAIN gain11 = start_gain11 + gain_delta11 * i;
+        const CSAMPLE_GAIN gain12 = start_gain12 + gain_delta12 * i;
+        const CSAMPLE_GAIN gain13 = start_gain13 + gain_delta13 * i;
+        const CSAMPLE_GAIN gain14 = start_gain14 + gain_delta14 * i;
+        const CSAMPLE_GAIN gain15 = start_gain15 + gain_delta15 * i;
+        const CSAMPLE_GAIN gain16 = start_gain16 + gain_delta16 * i;
+        pDest[i * 2] = pSrc0[i * 2] * gain0 +
+                       pSrc1[i * 2] * gain1 +
+                       pSrc2[i * 2] * gain2 +
+                       pSrc3[i * 2] * gain3 +
+                       pSrc4[i * 2] * gain4 +
+                       pSrc5[i * 2] * gain5 +
+                       pSrc6[i * 2] * gain6 +
+                       pSrc7[i * 2] * gain7 +
+                       pSrc8[i * 2] * gain8 +
+                       pSrc9[i * 2] * gain9 +
+                       pSrc10[i * 2] * gain10 +
+                       pSrc11[i * 2] * gain11 +
+                       pSrc12[i * 2] * gain12 +
+                       pSrc13[i * 2] * gain13 +
+                       pSrc14[i * 2] * gain14 +
+                       pSrc15[i * 2] * gain15 +
+                       pSrc16[i * 2] * gain16;
+        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
+                           pSrc1[i * 2 + 1] * gain1 +
+                           pSrc2[i * 2 + 1] * gain2 +
+                           pSrc3[i * 2 + 1] * gain3 +
+                           pSrc4[i * 2 + 1] * gain4 +
+                           pSrc5[i * 2 + 1] * gain5 +
+                           pSrc6[i * 2 + 1] * gain6 +
+                           pSrc7[i * 2 + 1] * gain7 +
+                           pSrc8[i * 2 + 1] * gain8 +
+                           pSrc9[i * 2 + 1] * gain9 +
+                           pSrc10[i * 2 + 1] * gain10 +
+                           pSrc11[i * 2 + 1] * gain11 +
+                           pSrc12[i * 2 + 1] * gain12 +
+                           pSrc13[i * 2 + 1] * gain13 +
+                           pSrc14[i * 2 + 1] * gain14 +
+                           pSrc15[i * 2 + 1] * gain15 +
+                           pSrc16[i * 2 + 1] * gain16;
     }
 }
 static inline void copy18WithGain(CSAMPLE* _RESTRICT pDest,
@@ -2714,6 +2731,7 @@ static inline void copy18WithGain(CSAMPLE* _RESTRICT pDest,
         copy17WithGain(pDest, pSrc0, gain0, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4, pSrc5, gain5, pSrc6, gain6, pSrc7, gain7, pSrc8, gain8, pSrc9, gain9, pSrc10, gain10, pSrc11, gain11, pSrc12, gain12, pSrc13, gain13, pSrc14, gain14, pSrc15, gain15, pSrc16, gain16, iNumSamples);
         return;
     }
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] = pSrc0[i] * gain0 +
                    pSrc1[i] * gain1 +
@@ -2828,96 +2846,96 @@ static inline void copy18WithRampingGain(CSAMPLE* _RESTRICT pDest,
         return;
     }
     const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain0 = gain0in;
+    const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
     const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain1 = gain1in;
+    const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
     const CSAMPLE_GAIN gain_delta2 = (gain2out - gain2in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain2 = gain2in;
+    const CSAMPLE_GAIN start_gain2 = gain2in + gain_delta2;
     const CSAMPLE_GAIN gain_delta3 = (gain3out - gain3in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain3 = gain3in;
+    const CSAMPLE_GAIN start_gain3 = gain3in + gain_delta3;
     const CSAMPLE_GAIN gain_delta4 = (gain4out - gain4in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain4 = gain4in;
+    const CSAMPLE_GAIN start_gain4 = gain4in + gain_delta4;
     const CSAMPLE_GAIN gain_delta5 = (gain5out - gain5in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain5 = gain5in;
+    const CSAMPLE_GAIN start_gain5 = gain5in + gain_delta5;
     const CSAMPLE_GAIN gain_delta6 = (gain6out - gain6in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain6 = gain6in;
+    const CSAMPLE_GAIN start_gain6 = gain6in + gain_delta6;
     const CSAMPLE_GAIN gain_delta7 = (gain7out - gain7in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain7 = gain7in;
+    const CSAMPLE_GAIN start_gain7 = gain7in + gain_delta7;
     const CSAMPLE_GAIN gain_delta8 = (gain8out - gain8in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain8 = gain8in;
+    const CSAMPLE_GAIN start_gain8 = gain8in + gain_delta8;
     const CSAMPLE_GAIN gain_delta9 = (gain9out - gain9in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain9 = gain9in;
+    const CSAMPLE_GAIN start_gain9 = gain9in + gain_delta9;
     const CSAMPLE_GAIN gain_delta10 = (gain10out - gain10in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain10 = gain10in;
+    const CSAMPLE_GAIN start_gain10 = gain10in + gain_delta10;
     const CSAMPLE_GAIN gain_delta11 = (gain11out - gain11in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain11 = gain11in;
+    const CSAMPLE_GAIN start_gain11 = gain11in + gain_delta11;
     const CSAMPLE_GAIN gain_delta12 = (gain12out - gain12in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain12 = gain12in;
+    const CSAMPLE_GAIN start_gain12 = gain12in + gain_delta12;
     const CSAMPLE_GAIN gain_delta13 = (gain13out - gain13in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain13 = gain13in;
+    const CSAMPLE_GAIN start_gain13 = gain13in + gain_delta13;
     const CSAMPLE_GAIN gain_delta14 = (gain14out - gain14in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain14 = gain14in;
+    const CSAMPLE_GAIN start_gain14 = gain14in + gain_delta14;
     const CSAMPLE_GAIN gain_delta15 = (gain15out - gain15in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain15 = gain15in;
+    const CSAMPLE_GAIN start_gain15 = gain15in + gain_delta15;
     const CSAMPLE_GAIN gain_delta16 = (gain16out - gain16in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain16 = gain16in;
+    const CSAMPLE_GAIN start_gain16 = gain16in + gain_delta16;
     const CSAMPLE_GAIN gain_delta17 = (gain17out - gain17in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain17 = gain17in;
-    for (int i = 0; i < iNumSamples; i += 2) {
-        gain0 += gain_delta0;
-        gain1 += gain_delta1;
-        gain2 += gain_delta2;
-        gain3 += gain_delta3;
-        gain4 += gain_delta4;
-        gain5 += gain_delta5;
-        gain6 += gain_delta6;
-        gain7 += gain_delta7;
-        gain8 += gain_delta8;
-        gain9 += gain_delta9;
-        gain10 += gain_delta10;
-        gain11 += gain_delta11;
-        gain12 += gain_delta12;
-        gain13 += gain_delta13;
-        gain14 += gain_delta14;
-        gain15 += gain_delta15;
-        gain16 += gain_delta16;
-        gain17 += gain_delta17;
-        pDest[i] = pSrc0[i] * gain0 +
-                   pSrc1[i] * gain1 +
-                   pSrc2[i] * gain2 +
-                   pSrc3[i] * gain3 +
-                   pSrc4[i] * gain4 +
-                   pSrc5[i] * gain5 +
-                   pSrc6[i] * gain6 +
-                   pSrc7[i] * gain7 +
-                   pSrc8[i] * gain8 +
-                   pSrc9[i] * gain9 +
-                   pSrc10[i] * gain10 +
-                   pSrc11[i] * gain11 +
-                   pSrc12[i] * gain12 +
-                   pSrc13[i] * gain13 +
-                   pSrc14[i] * gain14 +
-                   pSrc15[i] * gain15 +
-                   pSrc16[i] * gain16 +
-                   pSrc17[i] * gain17;
-        pDest[i + 1] = pSrc0[i + 1] * gain0 +
-                       pSrc1[i + 1] * gain1 +
-                       pSrc2[i + 1] * gain2 +
-                       pSrc3[i + 1] * gain3 +
-                       pSrc4[i + 1] * gain4 +
-                       pSrc5[i + 1] * gain5 +
-                       pSrc6[i + 1] * gain6 +
-                       pSrc7[i + 1] * gain7 +
-                       pSrc8[i + 1] * gain8 +
-                       pSrc9[i + 1] * gain9 +
-                       pSrc10[i + 1] * gain10 +
-                       pSrc11[i + 1] * gain11 +
-                       pSrc12[i + 1] * gain12 +
-                       pSrc13[i + 1] * gain13 +
-                       pSrc14[i + 1] * gain14 +
-                       pSrc15[i + 1] * gain15 +
-                       pSrc16[i + 1] * gain16 +
-                       pSrc17[i + 1] * gain17;
+    const CSAMPLE_GAIN start_gain17 = gain17in + gain_delta17;
+    for (int i = 0; i < iNumSamples / 2; ++i) {
+        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
+        const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
+        const CSAMPLE_GAIN gain2 = start_gain2 + gain_delta2 * i;
+        const CSAMPLE_GAIN gain3 = start_gain3 + gain_delta3 * i;
+        const CSAMPLE_GAIN gain4 = start_gain4 + gain_delta4 * i;
+        const CSAMPLE_GAIN gain5 = start_gain5 + gain_delta5 * i;
+        const CSAMPLE_GAIN gain6 = start_gain6 + gain_delta6 * i;
+        const CSAMPLE_GAIN gain7 = start_gain7 + gain_delta7 * i;
+        const CSAMPLE_GAIN gain8 = start_gain8 + gain_delta8 * i;
+        const CSAMPLE_GAIN gain9 = start_gain9 + gain_delta9 * i;
+        const CSAMPLE_GAIN gain10 = start_gain10 + gain_delta10 * i;
+        const CSAMPLE_GAIN gain11 = start_gain11 + gain_delta11 * i;
+        const CSAMPLE_GAIN gain12 = start_gain12 + gain_delta12 * i;
+        const CSAMPLE_GAIN gain13 = start_gain13 + gain_delta13 * i;
+        const CSAMPLE_GAIN gain14 = start_gain14 + gain_delta14 * i;
+        const CSAMPLE_GAIN gain15 = start_gain15 + gain_delta15 * i;
+        const CSAMPLE_GAIN gain16 = start_gain16 + gain_delta16 * i;
+        const CSAMPLE_GAIN gain17 = start_gain17 + gain_delta17 * i;
+        pDest[i * 2] = pSrc0[i * 2] * gain0 +
+                       pSrc1[i * 2] * gain1 +
+                       pSrc2[i * 2] * gain2 +
+                       pSrc3[i * 2] * gain3 +
+                       pSrc4[i * 2] * gain4 +
+                       pSrc5[i * 2] * gain5 +
+                       pSrc6[i * 2] * gain6 +
+                       pSrc7[i * 2] * gain7 +
+                       pSrc8[i * 2] * gain8 +
+                       pSrc9[i * 2] * gain9 +
+                       pSrc10[i * 2] * gain10 +
+                       pSrc11[i * 2] * gain11 +
+                       pSrc12[i * 2] * gain12 +
+                       pSrc13[i * 2] * gain13 +
+                       pSrc14[i * 2] * gain14 +
+                       pSrc15[i * 2] * gain15 +
+                       pSrc16[i * 2] * gain16 +
+                       pSrc17[i * 2] * gain17;
+        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
+                           pSrc1[i * 2 + 1] * gain1 +
+                           pSrc2[i * 2 + 1] * gain2 +
+                           pSrc3[i * 2 + 1] * gain3 +
+                           pSrc4[i * 2 + 1] * gain4 +
+                           pSrc5[i * 2 + 1] * gain5 +
+                           pSrc6[i * 2 + 1] * gain6 +
+                           pSrc7[i * 2 + 1] * gain7 +
+                           pSrc8[i * 2 + 1] * gain8 +
+                           pSrc9[i * 2 + 1] * gain9 +
+                           pSrc10[i * 2 + 1] * gain10 +
+                           pSrc11[i * 2 + 1] * gain11 +
+                           pSrc12[i * 2 + 1] * gain12 +
+                           pSrc13[i * 2 + 1] * gain13 +
+                           pSrc14[i * 2 + 1] * gain14 +
+                           pSrc15[i * 2 + 1] * gain15 +
+                           pSrc16[i * 2 + 1] * gain16 +
+                           pSrc17[i * 2 + 1] * gain17;
     }
 }
 static inline void copy19WithGain(CSAMPLE* _RESTRICT pDest,
@@ -3017,6 +3035,7 @@ static inline void copy19WithGain(CSAMPLE* _RESTRICT pDest,
         copy18WithGain(pDest, pSrc0, gain0, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4, pSrc5, gain5, pSrc6, gain6, pSrc7, gain7, pSrc8, gain8, pSrc9, gain9, pSrc10, gain10, pSrc11, gain11, pSrc12, gain12, pSrc13, gain13, pSrc14, gain14, pSrc15, gain15, pSrc16, gain16, pSrc17, gain17, iNumSamples);
         return;
     }
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] = pSrc0[i] * gain0 +
                    pSrc1[i] * gain1 +
@@ -3137,101 +3156,101 @@ static inline void copy19WithRampingGain(CSAMPLE* _RESTRICT pDest,
         return;
     }
     const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain0 = gain0in;
+    const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
     const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain1 = gain1in;
+    const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
     const CSAMPLE_GAIN gain_delta2 = (gain2out - gain2in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain2 = gain2in;
+    const CSAMPLE_GAIN start_gain2 = gain2in + gain_delta2;
     const CSAMPLE_GAIN gain_delta3 = (gain3out - gain3in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain3 = gain3in;
+    const CSAMPLE_GAIN start_gain3 = gain3in + gain_delta3;
     const CSAMPLE_GAIN gain_delta4 = (gain4out - gain4in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain4 = gain4in;
+    const CSAMPLE_GAIN start_gain4 = gain4in + gain_delta4;
     const CSAMPLE_GAIN gain_delta5 = (gain5out - gain5in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain5 = gain5in;
+    const CSAMPLE_GAIN start_gain5 = gain5in + gain_delta5;
     const CSAMPLE_GAIN gain_delta6 = (gain6out - gain6in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain6 = gain6in;
+    const CSAMPLE_GAIN start_gain6 = gain6in + gain_delta6;
     const CSAMPLE_GAIN gain_delta7 = (gain7out - gain7in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain7 = gain7in;
+    const CSAMPLE_GAIN start_gain7 = gain7in + gain_delta7;
     const CSAMPLE_GAIN gain_delta8 = (gain8out - gain8in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain8 = gain8in;
+    const CSAMPLE_GAIN start_gain8 = gain8in + gain_delta8;
     const CSAMPLE_GAIN gain_delta9 = (gain9out - gain9in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain9 = gain9in;
+    const CSAMPLE_GAIN start_gain9 = gain9in + gain_delta9;
     const CSAMPLE_GAIN gain_delta10 = (gain10out - gain10in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain10 = gain10in;
+    const CSAMPLE_GAIN start_gain10 = gain10in + gain_delta10;
     const CSAMPLE_GAIN gain_delta11 = (gain11out - gain11in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain11 = gain11in;
+    const CSAMPLE_GAIN start_gain11 = gain11in + gain_delta11;
     const CSAMPLE_GAIN gain_delta12 = (gain12out - gain12in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain12 = gain12in;
+    const CSAMPLE_GAIN start_gain12 = gain12in + gain_delta12;
     const CSAMPLE_GAIN gain_delta13 = (gain13out - gain13in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain13 = gain13in;
+    const CSAMPLE_GAIN start_gain13 = gain13in + gain_delta13;
     const CSAMPLE_GAIN gain_delta14 = (gain14out - gain14in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain14 = gain14in;
+    const CSAMPLE_GAIN start_gain14 = gain14in + gain_delta14;
     const CSAMPLE_GAIN gain_delta15 = (gain15out - gain15in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain15 = gain15in;
+    const CSAMPLE_GAIN start_gain15 = gain15in + gain_delta15;
     const CSAMPLE_GAIN gain_delta16 = (gain16out - gain16in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain16 = gain16in;
+    const CSAMPLE_GAIN start_gain16 = gain16in + gain_delta16;
     const CSAMPLE_GAIN gain_delta17 = (gain17out - gain17in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain17 = gain17in;
+    const CSAMPLE_GAIN start_gain17 = gain17in + gain_delta17;
     const CSAMPLE_GAIN gain_delta18 = (gain18out - gain18in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain18 = gain18in;
-    for (int i = 0; i < iNumSamples; i += 2) {
-        gain0 += gain_delta0;
-        gain1 += gain_delta1;
-        gain2 += gain_delta2;
-        gain3 += gain_delta3;
-        gain4 += gain_delta4;
-        gain5 += gain_delta5;
-        gain6 += gain_delta6;
-        gain7 += gain_delta7;
-        gain8 += gain_delta8;
-        gain9 += gain_delta9;
-        gain10 += gain_delta10;
-        gain11 += gain_delta11;
-        gain12 += gain_delta12;
-        gain13 += gain_delta13;
-        gain14 += gain_delta14;
-        gain15 += gain_delta15;
-        gain16 += gain_delta16;
-        gain17 += gain_delta17;
-        gain18 += gain_delta18;
-        pDest[i] = pSrc0[i] * gain0 +
-                   pSrc1[i] * gain1 +
-                   pSrc2[i] * gain2 +
-                   pSrc3[i] * gain3 +
-                   pSrc4[i] * gain4 +
-                   pSrc5[i] * gain5 +
-                   pSrc6[i] * gain6 +
-                   pSrc7[i] * gain7 +
-                   pSrc8[i] * gain8 +
-                   pSrc9[i] * gain9 +
-                   pSrc10[i] * gain10 +
-                   pSrc11[i] * gain11 +
-                   pSrc12[i] * gain12 +
-                   pSrc13[i] * gain13 +
-                   pSrc14[i] * gain14 +
-                   pSrc15[i] * gain15 +
-                   pSrc16[i] * gain16 +
-                   pSrc17[i] * gain17 +
-                   pSrc18[i] * gain18;
-        pDest[i + 1] = pSrc0[i + 1] * gain0 +
-                       pSrc1[i + 1] * gain1 +
-                       pSrc2[i + 1] * gain2 +
-                       pSrc3[i + 1] * gain3 +
-                       pSrc4[i + 1] * gain4 +
-                       pSrc5[i + 1] * gain5 +
-                       pSrc6[i + 1] * gain6 +
-                       pSrc7[i + 1] * gain7 +
-                       pSrc8[i + 1] * gain8 +
-                       pSrc9[i + 1] * gain9 +
-                       pSrc10[i + 1] * gain10 +
-                       pSrc11[i + 1] * gain11 +
-                       pSrc12[i + 1] * gain12 +
-                       pSrc13[i + 1] * gain13 +
-                       pSrc14[i + 1] * gain14 +
-                       pSrc15[i + 1] * gain15 +
-                       pSrc16[i + 1] * gain16 +
-                       pSrc17[i + 1] * gain17 +
-                       pSrc18[i + 1] * gain18;
+    const CSAMPLE_GAIN start_gain18 = gain18in + gain_delta18;
+    for (int i = 0; i < iNumSamples / 2; ++i) {
+        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
+        const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
+        const CSAMPLE_GAIN gain2 = start_gain2 + gain_delta2 * i;
+        const CSAMPLE_GAIN gain3 = start_gain3 + gain_delta3 * i;
+        const CSAMPLE_GAIN gain4 = start_gain4 + gain_delta4 * i;
+        const CSAMPLE_GAIN gain5 = start_gain5 + gain_delta5 * i;
+        const CSAMPLE_GAIN gain6 = start_gain6 + gain_delta6 * i;
+        const CSAMPLE_GAIN gain7 = start_gain7 + gain_delta7 * i;
+        const CSAMPLE_GAIN gain8 = start_gain8 + gain_delta8 * i;
+        const CSAMPLE_GAIN gain9 = start_gain9 + gain_delta9 * i;
+        const CSAMPLE_GAIN gain10 = start_gain10 + gain_delta10 * i;
+        const CSAMPLE_GAIN gain11 = start_gain11 + gain_delta11 * i;
+        const CSAMPLE_GAIN gain12 = start_gain12 + gain_delta12 * i;
+        const CSAMPLE_GAIN gain13 = start_gain13 + gain_delta13 * i;
+        const CSAMPLE_GAIN gain14 = start_gain14 + gain_delta14 * i;
+        const CSAMPLE_GAIN gain15 = start_gain15 + gain_delta15 * i;
+        const CSAMPLE_GAIN gain16 = start_gain16 + gain_delta16 * i;
+        const CSAMPLE_GAIN gain17 = start_gain17 + gain_delta17 * i;
+        const CSAMPLE_GAIN gain18 = start_gain18 + gain_delta18 * i;
+        pDest[i * 2] = pSrc0[i * 2] * gain0 +
+                       pSrc1[i * 2] * gain1 +
+                       pSrc2[i * 2] * gain2 +
+                       pSrc3[i * 2] * gain3 +
+                       pSrc4[i * 2] * gain4 +
+                       pSrc5[i * 2] * gain5 +
+                       pSrc6[i * 2] * gain6 +
+                       pSrc7[i * 2] * gain7 +
+                       pSrc8[i * 2] * gain8 +
+                       pSrc9[i * 2] * gain9 +
+                       pSrc10[i * 2] * gain10 +
+                       pSrc11[i * 2] * gain11 +
+                       pSrc12[i * 2] * gain12 +
+                       pSrc13[i * 2] * gain13 +
+                       pSrc14[i * 2] * gain14 +
+                       pSrc15[i * 2] * gain15 +
+                       pSrc16[i * 2] * gain16 +
+                       pSrc17[i * 2] * gain17 +
+                       pSrc18[i * 2] * gain18;
+        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
+                           pSrc1[i * 2 + 1] * gain1 +
+                           pSrc2[i * 2 + 1] * gain2 +
+                           pSrc3[i * 2 + 1] * gain3 +
+                           pSrc4[i * 2 + 1] * gain4 +
+                           pSrc5[i * 2 + 1] * gain5 +
+                           pSrc6[i * 2 + 1] * gain6 +
+                           pSrc7[i * 2 + 1] * gain7 +
+                           pSrc8[i * 2 + 1] * gain8 +
+                           pSrc9[i * 2 + 1] * gain9 +
+                           pSrc10[i * 2 + 1] * gain10 +
+                           pSrc11[i * 2 + 1] * gain11 +
+                           pSrc12[i * 2 + 1] * gain12 +
+                           pSrc13[i * 2 + 1] * gain13 +
+                           pSrc14[i * 2 + 1] * gain14 +
+                           pSrc15[i * 2 + 1] * gain15 +
+                           pSrc16[i * 2 + 1] * gain16 +
+                           pSrc17[i * 2 + 1] * gain17 +
+                           pSrc18[i * 2 + 1] * gain18;
     }
 }
 static inline void copy20WithGain(CSAMPLE* _RESTRICT pDest,
@@ -3336,6 +3355,7 @@ static inline void copy20WithGain(CSAMPLE* _RESTRICT pDest,
         copy19WithGain(pDest, pSrc0, gain0, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4, pSrc5, gain5, pSrc6, gain6, pSrc7, gain7, pSrc8, gain8, pSrc9, gain9, pSrc10, gain10, pSrc11, gain11, pSrc12, gain12, pSrc13, gain13, pSrc14, gain14, pSrc15, gain15, pSrc16, gain16, pSrc17, gain17, pSrc18, gain18, iNumSamples);
         return;
     }
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] = pSrc0[i] * gain0 +
                    pSrc1[i] * gain1 +
@@ -3462,106 +3482,106 @@ static inline void copy20WithRampingGain(CSAMPLE* _RESTRICT pDest,
         return;
     }
     const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain0 = gain0in;
+    const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
     const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain1 = gain1in;
+    const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
     const CSAMPLE_GAIN gain_delta2 = (gain2out - gain2in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain2 = gain2in;
+    const CSAMPLE_GAIN start_gain2 = gain2in + gain_delta2;
     const CSAMPLE_GAIN gain_delta3 = (gain3out - gain3in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain3 = gain3in;
+    const CSAMPLE_GAIN start_gain3 = gain3in + gain_delta3;
     const CSAMPLE_GAIN gain_delta4 = (gain4out - gain4in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain4 = gain4in;
+    const CSAMPLE_GAIN start_gain4 = gain4in + gain_delta4;
     const CSAMPLE_GAIN gain_delta5 = (gain5out - gain5in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain5 = gain5in;
+    const CSAMPLE_GAIN start_gain5 = gain5in + gain_delta5;
     const CSAMPLE_GAIN gain_delta6 = (gain6out - gain6in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain6 = gain6in;
+    const CSAMPLE_GAIN start_gain6 = gain6in + gain_delta6;
     const CSAMPLE_GAIN gain_delta7 = (gain7out - gain7in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain7 = gain7in;
+    const CSAMPLE_GAIN start_gain7 = gain7in + gain_delta7;
     const CSAMPLE_GAIN gain_delta8 = (gain8out - gain8in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain8 = gain8in;
+    const CSAMPLE_GAIN start_gain8 = gain8in + gain_delta8;
     const CSAMPLE_GAIN gain_delta9 = (gain9out - gain9in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain9 = gain9in;
+    const CSAMPLE_GAIN start_gain9 = gain9in + gain_delta9;
     const CSAMPLE_GAIN gain_delta10 = (gain10out - gain10in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain10 = gain10in;
+    const CSAMPLE_GAIN start_gain10 = gain10in + gain_delta10;
     const CSAMPLE_GAIN gain_delta11 = (gain11out - gain11in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain11 = gain11in;
+    const CSAMPLE_GAIN start_gain11 = gain11in + gain_delta11;
     const CSAMPLE_GAIN gain_delta12 = (gain12out - gain12in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain12 = gain12in;
+    const CSAMPLE_GAIN start_gain12 = gain12in + gain_delta12;
     const CSAMPLE_GAIN gain_delta13 = (gain13out - gain13in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain13 = gain13in;
+    const CSAMPLE_GAIN start_gain13 = gain13in + gain_delta13;
     const CSAMPLE_GAIN gain_delta14 = (gain14out - gain14in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain14 = gain14in;
+    const CSAMPLE_GAIN start_gain14 = gain14in + gain_delta14;
     const CSAMPLE_GAIN gain_delta15 = (gain15out - gain15in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain15 = gain15in;
+    const CSAMPLE_GAIN start_gain15 = gain15in + gain_delta15;
     const CSAMPLE_GAIN gain_delta16 = (gain16out - gain16in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain16 = gain16in;
+    const CSAMPLE_GAIN start_gain16 = gain16in + gain_delta16;
     const CSAMPLE_GAIN gain_delta17 = (gain17out - gain17in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain17 = gain17in;
+    const CSAMPLE_GAIN start_gain17 = gain17in + gain_delta17;
     const CSAMPLE_GAIN gain_delta18 = (gain18out - gain18in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain18 = gain18in;
+    const CSAMPLE_GAIN start_gain18 = gain18in + gain_delta18;
     const CSAMPLE_GAIN gain_delta19 = (gain19out - gain19in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain19 = gain19in;
-    for (int i = 0; i < iNumSamples; i += 2) {
-        gain0 += gain_delta0;
-        gain1 += gain_delta1;
-        gain2 += gain_delta2;
-        gain3 += gain_delta3;
-        gain4 += gain_delta4;
-        gain5 += gain_delta5;
-        gain6 += gain_delta6;
-        gain7 += gain_delta7;
-        gain8 += gain_delta8;
-        gain9 += gain_delta9;
-        gain10 += gain_delta10;
-        gain11 += gain_delta11;
-        gain12 += gain_delta12;
-        gain13 += gain_delta13;
-        gain14 += gain_delta14;
-        gain15 += gain_delta15;
-        gain16 += gain_delta16;
-        gain17 += gain_delta17;
-        gain18 += gain_delta18;
-        gain19 += gain_delta19;
-        pDest[i] = pSrc0[i] * gain0 +
-                   pSrc1[i] * gain1 +
-                   pSrc2[i] * gain2 +
-                   pSrc3[i] * gain3 +
-                   pSrc4[i] * gain4 +
-                   pSrc5[i] * gain5 +
-                   pSrc6[i] * gain6 +
-                   pSrc7[i] * gain7 +
-                   pSrc8[i] * gain8 +
-                   pSrc9[i] * gain9 +
-                   pSrc10[i] * gain10 +
-                   pSrc11[i] * gain11 +
-                   pSrc12[i] * gain12 +
-                   pSrc13[i] * gain13 +
-                   pSrc14[i] * gain14 +
-                   pSrc15[i] * gain15 +
-                   pSrc16[i] * gain16 +
-                   pSrc17[i] * gain17 +
-                   pSrc18[i] * gain18 +
-                   pSrc19[i] * gain19;
-        pDest[i + 1] = pSrc0[i + 1] * gain0 +
-                       pSrc1[i + 1] * gain1 +
-                       pSrc2[i + 1] * gain2 +
-                       pSrc3[i + 1] * gain3 +
-                       pSrc4[i + 1] * gain4 +
-                       pSrc5[i + 1] * gain5 +
-                       pSrc6[i + 1] * gain6 +
-                       pSrc7[i + 1] * gain7 +
-                       pSrc8[i + 1] * gain8 +
-                       pSrc9[i + 1] * gain9 +
-                       pSrc10[i + 1] * gain10 +
-                       pSrc11[i + 1] * gain11 +
-                       pSrc12[i + 1] * gain12 +
-                       pSrc13[i + 1] * gain13 +
-                       pSrc14[i + 1] * gain14 +
-                       pSrc15[i + 1] * gain15 +
-                       pSrc16[i + 1] * gain16 +
-                       pSrc17[i + 1] * gain17 +
-                       pSrc18[i + 1] * gain18 +
-                       pSrc19[i + 1] * gain19;
+    const CSAMPLE_GAIN start_gain19 = gain19in + gain_delta19;
+    for (int i = 0; i < iNumSamples / 2; ++i) {
+        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
+        const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
+        const CSAMPLE_GAIN gain2 = start_gain2 + gain_delta2 * i;
+        const CSAMPLE_GAIN gain3 = start_gain3 + gain_delta3 * i;
+        const CSAMPLE_GAIN gain4 = start_gain4 + gain_delta4 * i;
+        const CSAMPLE_GAIN gain5 = start_gain5 + gain_delta5 * i;
+        const CSAMPLE_GAIN gain6 = start_gain6 + gain_delta6 * i;
+        const CSAMPLE_GAIN gain7 = start_gain7 + gain_delta7 * i;
+        const CSAMPLE_GAIN gain8 = start_gain8 + gain_delta8 * i;
+        const CSAMPLE_GAIN gain9 = start_gain9 + gain_delta9 * i;
+        const CSAMPLE_GAIN gain10 = start_gain10 + gain_delta10 * i;
+        const CSAMPLE_GAIN gain11 = start_gain11 + gain_delta11 * i;
+        const CSAMPLE_GAIN gain12 = start_gain12 + gain_delta12 * i;
+        const CSAMPLE_GAIN gain13 = start_gain13 + gain_delta13 * i;
+        const CSAMPLE_GAIN gain14 = start_gain14 + gain_delta14 * i;
+        const CSAMPLE_GAIN gain15 = start_gain15 + gain_delta15 * i;
+        const CSAMPLE_GAIN gain16 = start_gain16 + gain_delta16 * i;
+        const CSAMPLE_GAIN gain17 = start_gain17 + gain_delta17 * i;
+        const CSAMPLE_GAIN gain18 = start_gain18 + gain_delta18 * i;
+        const CSAMPLE_GAIN gain19 = start_gain19 + gain_delta19 * i;
+        pDest[i * 2] = pSrc0[i * 2] * gain0 +
+                       pSrc1[i * 2] * gain1 +
+                       pSrc2[i * 2] * gain2 +
+                       pSrc3[i * 2] * gain3 +
+                       pSrc4[i * 2] * gain4 +
+                       pSrc5[i * 2] * gain5 +
+                       pSrc6[i * 2] * gain6 +
+                       pSrc7[i * 2] * gain7 +
+                       pSrc8[i * 2] * gain8 +
+                       pSrc9[i * 2] * gain9 +
+                       pSrc10[i * 2] * gain10 +
+                       pSrc11[i * 2] * gain11 +
+                       pSrc12[i * 2] * gain12 +
+                       pSrc13[i * 2] * gain13 +
+                       pSrc14[i * 2] * gain14 +
+                       pSrc15[i * 2] * gain15 +
+                       pSrc16[i * 2] * gain16 +
+                       pSrc17[i * 2] * gain17 +
+                       pSrc18[i * 2] * gain18 +
+                       pSrc19[i * 2] * gain19;
+        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
+                           pSrc1[i * 2 + 1] * gain1 +
+                           pSrc2[i * 2 + 1] * gain2 +
+                           pSrc3[i * 2 + 1] * gain3 +
+                           pSrc4[i * 2 + 1] * gain4 +
+                           pSrc5[i * 2 + 1] * gain5 +
+                           pSrc6[i * 2 + 1] * gain6 +
+                           pSrc7[i * 2 + 1] * gain7 +
+                           pSrc8[i * 2 + 1] * gain8 +
+                           pSrc9[i * 2 + 1] * gain9 +
+                           pSrc10[i * 2 + 1] * gain10 +
+                           pSrc11[i * 2 + 1] * gain11 +
+                           pSrc12[i * 2 + 1] * gain12 +
+                           pSrc13[i * 2 + 1] * gain13 +
+                           pSrc14[i * 2 + 1] * gain14 +
+                           pSrc15[i * 2 + 1] * gain15 +
+                           pSrc16[i * 2 + 1] * gain16 +
+                           pSrc17[i * 2 + 1] * gain17 +
+                           pSrc18[i * 2 + 1] * gain18 +
+                           pSrc19[i * 2 + 1] * gain19;
     }
 }
 static inline void copy21WithGain(CSAMPLE* _RESTRICT pDest,
@@ -3671,6 +3691,7 @@ static inline void copy21WithGain(CSAMPLE* _RESTRICT pDest,
         copy20WithGain(pDest, pSrc0, gain0, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4, pSrc5, gain5, pSrc6, gain6, pSrc7, gain7, pSrc8, gain8, pSrc9, gain9, pSrc10, gain10, pSrc11, gain11, pSrc12, gain12, pSrc13, gain13, pSrc14, gain14, pSrc15, gain15, pSrc16, gain16, pSrc17, gain17, pSrc18, gain18, pSrc19, gain19, iNumSamples);
         return;
     }
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] = pSrc0[i] * gain0 +
                    pSrc1[i] * gain1 +
@@ -3803,111 +3824,111 @@ static inline void copy21WithRampingGain(CSAMPLE* _RESTRICT pDest,
         return;
     }
     const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain0 = gain0in;
+    const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
     const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain1 = gain1in;
+    const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
     const CSAMPLE_GAIN gain_delta2 = (gain2out - gain2in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain2 = gain2in;
+    const CSAMPLE_GAIN start_gain2 = gain2in + gain_delta2;
     const CSAMPLE_GAIN gain_delta3 = (gain3out - gain3in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain3 = gain3in;
+    const CSAMPLE_GAIN start_gain3 = gain3in + gain_delta3;
     const CSAMPLE_GAIN gain_delta4 = (gain4out - gain4in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain4 = gain4in;
+    const CSAMPLE_GAIN start_gain4 = gain4in + gain_delta4;
     const CSAMPLE_GAIN gain_delta5 = (gain5out - gain5in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain5 = gain5in;
+    const CSAMPLE_GAIN start_gain5 = gain5in + gain_delta5;
     const CSAMPLE_GAIN gain_delta6 = (gain6out - gain6in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain6 = gain6in;
+    const CSAMPLE_GAIN start_gain6 = gain6in + gain_delta6;
     const CSAMPLE_GAIN gain_delta7 = (gain7out - gain7in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain7 = gain7in;
+    const CSAMPLE_GAIN start_gain7 = gain7in + gain_delta7;
     const CSAMPLE_GAIN gain_delta8 = (gain8out - gain8in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain8 = gain8in;
+    const CSAMPLE_GAIN start_gain8 = gain8in + gain_delta8;
     const CSAMPLE_GAIN gain_delta9 = (gain9out - gain9in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain9 = gain9in;
+    const CSAMPLE_GAIN start_gain9 = gain9in + gain_delta9;
     const CSAMPLE_GAIN gain_delta10 = (gain10out - gain10in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain10 = gain10in;
+    const CSAMPLE_GAIN start_gain10 = gain10in + gain_delta10;
     const CSAMPLE_GAIN gain_delta11 = (gain11out - gain11in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain11 = gain11in;
+    const CSAMPLE_GAIN start_gain11 = gain11in + gain_delta11;
     const CSAMPLE_GAIN gain_delta12 = (gain12out - gain12in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain12 = gain12in;
+    const CSAMPLE_GAIN start_gain12 = gain12in + gain_delta12;
     const CSAMPLE_GAIN gain_delta13 = (gain13out - gain13in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain13 = gain13in;
+    const CSAMPLE_GAIN start_gain13 = gain13in + gain_delta13;
     const CSAMPLE_GAIN gain_delta14 = (gain14out - gain14in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain14 = gain14in;
+    const CSAMPLE_GAIN start_gain14 = gain14in + gain_delta14;
     const CSAMPLE_GAIN gain_delta15 = (gain15out - gain15in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain15 = gain15in;
+    const CSAMPLE_GAIN start_gain15 = gain15in + gain_delta15;
     const CSAMPLE_GAIN gain_delta16 = (gain16out - gain16in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain16 = gain16in;
+    const CSAMPLE_GAIN start_gain16 = gain16in + gain_delta16;
     const CSAMPLE_GAIN gain_delta17 = (gain17out - gain17in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain17 = gain17in;
+    const CSAMPLE_GAIN start_gain17 = gain17in + gain_delta17;
     const CSAMPLE_GAIN gain_delta18 = (gain18out - gain18in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain18 = gain18in;
+    const CSAMPLE_GAIN start_gain18 = gain18in + gain_delta18;
     const CSAMPLE_GAIN gain_delta19 = (gain19out - gain19in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain19 = gain19in;
+    const CSAMPLE_GAIN start_gain19 = gain19in + gain_delta19;
     const CSAMPLE_GAIN gain_delta20 = (gain20out - gain20in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain20 = gain20in;
-    for (int i = 0; i < iNumSamples; i += 2) {
-        gain0 += gain_delta0;
-        gain1 += gain_delta1;
-        gain2 += gain_delta2;
-        gain3 += gain_delta3;
-        gain4 += gain_delta4;
-        gain5 += gain_delta5;
-        gain6 += gain_delta6;
-        gain7 += gain_delta7;
-        gain8 += gain_delta8;
-        gain9 += gain_delta9;
-        gain10 += gain_delta10;
-        gain11 += gain_delta11;
-        gain12 += gain_delta12;
-        gain13 += gain_delta13;
-        gain14 += gain_delta14;
-        gain15 += gain_delta15;
-        gain16 += gain_delta16;
-        gain17 += gain_delta17;
-        gain18 += gain_delta18;
-        gain19 += gain_delta19;
-        gain20 += gain_delta20;
-        pDest[i] = pSrc0[i] * gain0 +
-                   pSrc1[i] * gain1 +
-                   pSrc2[i] * gain2 +
-                   pSrc3[i] * gain3 +
-                   pSrc4[i] * gain4 +
-                   pSrc5[i] * gain5 +
-                   pSrc6[i] * gain6 +
-                   pSrc7[i] * gain7 +
-                   pSrc8[i] * gain8 +
-                   pSrc9[i] * gain9 +
-                   pSrc10[i] * gain10 +
-                   pSrc11[i] * gain11 +
-                   pSrc12[i] * gain12 +
-                   pSrc13[i] * gain13 +
-                   pSrc14[i] * gain14 +
-                   pSrc15[i] * gain15 +
-                   pSrc16[i] * gain16 +
-                   pSrc17[i] * gain17 +
-                   pSrc18[i] * gain18 +
-                   pSrc19[i] * gain19 +
-                   pSrc20[i] * gain20;
-        pDest[i + 1] = pSrc0[i + 1] * gain0 +
-                       pSrc1[i + 1] * gain1 +
-                       pSrc2[i + 1] * gain2 +
-                       pSrc3[i + 1] * gain3 +
-                       pSrc4[i + 1] * gain4 +
-                       pSrc5[i + 1] * gain5 +
-                       pSrc6[i + 1] * gain6 +
-                       pSrc7[i + 1] * gain7 +
-                       pSrc8[i + 1] * gain8 +
-                       pSrc9[i + 1] * gain9 +
-                       pSrc10[i + 1] * gain10 +
-                       pSrc11[i + 1] * gain11 +
-                       pSrc12[i + 1] * gain12 +
-                       pSrc13[i + 1] * gain13 +
-                       pSrc14[i + 1] * gain14 +
-                       pSrc15[i + 1] * gain15 +
-                       pSrc16[i + 1] * gain16 +
-                       pSrc17[i + 1] * gain17 +
-                       pSrc18[i + 1] * gain18 +
-                       pSrc19[i + 1] * gain19 +
-                       pSrc20[i + 1] * gain20;
+    const CSAMPLE_GAIN start_gain20 = gain20in + gain_delta20;
+    for (int i = 0; i < iNumSamples / 2; ++i) {
+        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
+        const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
+        const CSAMPLE_GAIN gain2 = start_gain2 + gain_delta2 * i;
+        const CSAMPLE_GAIN gain3 = start_gain3 + gain_delta3 * i;
+        const CSAMPLE_GAIN gain4 = start_gain4 + gain_delta4 * i;
+        const CSAMPLE_GAIN gain5 = start_gain5 + gain_delta5 * i;
+        const CSAMPLE_GAIN gain6 = start_gain6 + gain_delta6 * i;
+        const CSAMPLE_GAIN gain7 = start_gain7 + gain_delta7 * i;
+        const CSAMPLE_GAIN gain8 = start_gain8 + gain_delta8 * i;
+        const CSAMPLE_GAIN gain9 = start_gain9 + gain_delta9 * i;
+        const CSAMPLE_GAIN gain10 = start_gain10 + gain_delta10 * i;
+        const CSAMPLE_GAIN gain11 = start_gain11 + gain_delta11 * i;
+        const CSAMPLE_GAIN gain12 = start_gain12 + gain_delta12 * i;
+        const CSAMPLE_GAIN gain13 = start_gain13 + gain_delta13 * i;
+        const CSAMPLE_GAIN gain14 = start_gain14 + gain_delta14 * i;
+        const CSAMPLE_GAIN gain15 = start_gain15 + gain_delta15 * i;
+        const CSAMPLE_GAIN gain16 = start_gain16 + gain_delta16 * i;
+        const CSAMPLE_GAIN gain17 = start_gain17 + gain_delta17 * i;
+        const CSAMPLE_GAIN gain18 = start_gain18 + gain_delta18 * i;
+        const CSAMPLE_GAIN gain19 = start_gain19 + gain_delta19 * i;
+        const CSAMPLE_GAIN gain20 = start_gain20 + gain_delta20 * i;
+        pDest[i * 2] = pSrc0[i * 2] * gain0 +
+                       pSrc1[i * 2] * gain1 +
+                       pSrc2[i * 2] * gain2 +
+                       pSrc3[i * 2] * gain3 +
+                       pSrc4[i * 2] * gain4 +
+                       pSrc5[i * 2] * gain5 +
+                       pSrc6[i * 2] * gain6 +
+                       pSrc7[i * 2] * gain7 +
+                       pSrc8[i * 2] * gain8 +
+                       pSrc9[i * 2] * gain9 +
+                       pSrc10[i * 2] * gain10 +
+                       pSrc11[i * 2] * gain11 +
+                       pSrc12[i * 2] * gain12 +
+                       pSrc13[i * 2] * gain13 +
+                       pSrc14[i * 2] * gain14 +
+                       pSrc15[i * 2] * gain15 +
+                       pSrc16[i * 2] * gain16 +
+                       pSrc17[i * 2] * gain17 +
+                       pSrc18[i * 2] * gain18 +
+                       pSrc19[i * 2] * gain19 +
+                       pSrc20[i * 2] * gain20;
+        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
+                           pSrc1[i * 2 + 1] * gain1 +
+                           pSrc2[i * 2 + 1] * gain2 +
+                           pSrc3[i * 2 + 1] * gain3 +
+                           pSrc4[i * 2 + 1] * gain4 +
+                           pSrc5[i * 2 + 1] * gain5 +
+                           pSrc6[i * 2 + 1] * gain6 +
+                           pSrc7[i * 2 + 1] * gain7 +
+                           pSrc8[i * 2 + 1] * gain8 +
+                           pSrc9[i * 2 + 1] * gain9 +
+                           pSrc10[i * 2 + 1] * gain10 +
+                           pSrc11[i * 2 + 1] * gain11 +
+                           pSrc12[i * 2 + 1] * gain12 +
+                           pSrc13[i * 2 + 1] * gain13 +
+                           pSrc14[i * 2 + 1] * gain14 +
+                           pSrc15[i * 2 + 1] * gain15 +
+                           pSrc16[i * 2 + 1] * gain16 +
+                           pSrc17[i * 2 + 1] * gain17 +
+                           pSrc18[i * 2 + 1] * gain18 +
+                           pSrc19[i * 2 + 1] * gain19 +
+                           pSrc20[i * 2 + 1] * gain20;
     }
 }
 static inline void copy22WithGain(CSAMPLE* _RESTRICT pDest,
@@ -4022,6 +4043,7 @@ static inline void copy22WithGain(CSAMPLE* _RESTRICT pDest,
         copy21WithGain(pDest, pSrc0, gain0, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4, pSrc5, gain5, pSrc6, gain6, pSrc7, gain7, pSrc8, gain8, pSrc9, gain9, pSrc10, gain10, pSrc11, gain11, pSrc12, gain12, pSrc13, gain13, pSrc14, gain14, pSrc15, gain15, pSrc16, gain16, pSrc17, gain17, pSrc18, gain18, pSrc19, gain19, pSrc20, gain20, iNumSamples);
         return;
     }
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] = pSrc0[i] * gain0 +
                    pSrc1[i] * gain1 +
@@ -4160,116 +4182,116 @@ static inline void copy22WithRampingGain(CSAMPLE* _RESTRICT pDest,
         return;
     }
     const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain0 = gain0in;
+    const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
     const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain1 = gain1in;
+    const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
     const CSAMPLE_GAIN gain_delta2 = (gain2out - gain2in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain2 = gain2in;
+    const CSAMPLE_GAIN start_gain2 = gain2in + gain_delta2;
     const CSAMPLE_GAIN gain_delta3 = (gain3out - gain3in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain3 = gain3in;
+    const CSAMPLE_GAIN start_gain3 = gain3in + gain_delta3;
     const CSAMPLE_GAIN gain_delta4 = (gain4out - gain4in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain4 = gain4in;
+    const CSAMPLE_GAIN start_gain4 = gain4in + gain_delta4;
     const CSAMPLE_GAIN gain_delta5 = (gain5out - gain5in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain5 = gain5in;
+    const CSAMPLE_GAIN start_gain5 = gain5in + gain_delta5;
     const CSAMPLE_GAIN gain_delta6 = (gain6out - gain6in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain6 = gain6in;
+    const CSAMPLE_GAIN start_gain6 = gain6in + gain_delta6;
     const CSAMPLE_GAIN gain_delta7 = (gain7out - gain7in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain7 = gain7in;
+    const CSAMPLE_GAIN start_gain7 = gain7in + gain_delta7;
     const CSAMPLE_GAIN gain_delta8 = (gain8out - gain8in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain8 = gain8in;
+    const CSAMPLE_GAIN start_gain8 = gain8in + gain_delta8;
     const CSAMPLE_GAIN gain_delta9 = (gain9out - gain9in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain9 = gain9in;
+    const CSAMPLE_GAIN start_gain9 = gain9in + gain_delta9;
     const CSAMPLE_GAIN gain_delta10 = (gain10out - gain10in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain10 = gain10in;
+    const CSAMPLE_GAIN start_gain10 = gain10in + gain_delta10;
     const CSAMPLE_GAIN gain_delta11 = (gain11out - gain11in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain11 = gain11in;
+    const CSAMPLE_GAIN start_gain11 = gain11in + gain_delta11;
     const CSAMPLE_GAIN gain_delta12 = (gain12out - gain12in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain12 = gain12in;
+    const CSAMPLE_GAIN start_gain12 = gain12in + gain_delta12;
     const CSAMPLE_GAIN gain_delta13 = (gain13out - gain13in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain13 = gain13in;
+    const CSAMPLE_GAIN start_gain13 = gain13in + gain_delta13;
     const CSAMPLE_GAIN gain_delta14 = (gain14out - gain14in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain14 = gain14in;
+    const CSAMPLE_GAIN start_gain14 = gain14in + gain_delta14;
     const CSAMPLE_GAIN gain_delta15 = (gain15out - gain15in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain15 = gain15in;
+    const CSAMPLE_GAIN start_gain15 = gain15in + gain_delta15;
     const CSAMPLE_GAIN gain_delta16 = (gain16out - gain16in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain16 = gain16in;
+    const CSAMPLE_GAIN start_gain16 = gain16in + gain_delta16;
     const CSAMPLE_GAIN gain_delta17 = (gain17out - gain17in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain17 = gain17in;
+    const CSAMPLE_GAIN start_gain17 = gain17in + gain_delta17;
     const CSAMPLE_GAIN gain_delta18 = (gain18out - gain18in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain18 = gain18in;
+    const CSAMPLE_GAIN start_gain18 = gain18in + gain_delta18;
     const CSAMPLE_GAIN gain_delta19 = (gain19out - gain19in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain19 = gain19in;
+    const CSAMPLE_GAIN start_gain19 = gain19in + gain_delta19;
     const CSAMPLE_GAIN gain_delta20 = (gain20out - gain20in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain20 = gain20in;
+    const CSAMPLE_GAIN start_gain20 = gain20in + gain_delta20;
     const CSAMPLE_GAIN gain_delta21 = (gain21out - gain21in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain21 = gain21in;
-    for (int i = 0; i < iNumSamples; i += 2) {
-        gain0 += gain_delta0;
-        gain1 += gain_delta1;
-        gain2 += gain_delta2;
-        gain3 += gain_delta3;
-        gain4 += gain_delta4;
-        gain5 += gain_delta5;
-        gain6 += gain_delta6;
-        gain7 += gain_delta7;
-        gain8 += gain_delta8;
-        gain9 += gain_delta9;
-        gain10 += gain_delta10;
-        gain11 += gain_delta11;
-        gain12 += gain_delta12;
-        gain13 += gain_delta13;
-        gain14 += gain_delta14;
-        gain15 += gain_delta15;
-        gain16 += gain_delta16;
-        gain17 += gain_delta17;
-        gain18 += gain_delta18;
-        gain19 += gain_delta19;
-        gain20 += gain_delta20;
-        gain21 += gain_delta21;
-        pDest[i] = pSrc0[i] * gain0 +
-                   pSrc1[i] * gain1 +
-                   pSrc2[i] * gain2 +
-                   pSrc3[i] * gain3 +
-                   pSrc4[i] * gain4 +
-                   pSrc5[i] * gain5 +
-                   pSrc6[i] * gain6 +
-                   pSrc7[i] * gain7 +
-                   pSrc8[i] * gain8 +
-                   pSrc9[i] * gain9 +
-                   pSrc10[i] * gain10 +
-                   pSrc11[i] * gain11 +
-                   pSrc12[i] * gain12 +
-                   pSrc13[i] * gain13 +
-                   pSrc14[i] * gain14 +
-                   pSrc15[i] * gain15 +
-                   pSrc16[i] * gain16 +
-                   pSrc17[i] * gain17 +
-                   pSrc18[i] * gain18 +
-                   pSrc19[i] * gain19 +
-                   pSrc20[i] * gain20 +
-                   pSrc21[i] * gain21;
-        pDest[i + 1] = pSrc0[i + 1] * gain0 +
-                       pSrc1[i + 1] * gain1 +
-                       pSrc2[i + 1] * gain2 +
-                       pSrc3[i + 1] * gain3 +
-                       pSrc4[i + 1] * gain4 +
-                       pSrc5[i + 1] * gain5 +
-                       pSrc6[i + 1] * gain6 +
-                       pSrc7[i + 1] * gain7 +
-                       pSrc8[i + 1] * gain8 +
-                       pSrc9[i + 1] * gain9 +
-                       pSrc10[i + 1] * gain10 +
-                       pSrc11[i + 1] * gain11 +
-                       pSrc12[i + 1] * gain12 +
-                       pSrc13[i + 1] * gain13 +
-                       pSrc14[i + 1] * gain14 +
-                       pSrc15[i + 1] * gain15 +
-                       pSrc16[i + 1] * gain16 +
-                       pSrc17[i + 1] * gain17 +
-                       pSrc18[i + 1] * gain18 +
-                       pSrc19[i + 1] * gain19 +
-                       pSrc20[i + 1] * gain20 +
-                       pSrc21[i + 1] * gain21;
+    const CSAMPLE_GAIN start_gain21 = gain21in + gain_delta21;
+    for (int i = 0; i < iNumSamples / 2; ++i) {
+        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
+        const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
+        const CSAMPLE_GAIN gain2 = start_gain2 + gain_delta2 * i;
+        const CSAMPLE_GAIN gain3 = start_gain3 + gain_delta3 * i;
+        const CSAMPLE_GAIN gain4 = start_gain4 + gain_delta4 * i;
+        const CSAMPLE_GAIN gain5 = start_gain5 + gain_delta5 * i;
+        const CSAMPLE_GAIN gain6 = start_gain6 + gain_delta6 * i;
+        const CSAMPLE_GAIN gain7 = start_gain7 + gain_delta7 * i;
+        const CSAMPLE_GAIN gain8 = start_gain8 + gain_delta8 * i;
+        const CSAMPLE_GAIN gain9 = start_gain9 + gain_delta9 * i;
+        const CSAMPLE_GAIN gain10 = start_gain10 + gain_delta10 * i;
+        const CSAMPLE_GAIN gain11 = start_gain11 + gain_delta11 * i;
+        const CSAMPLE_GAIN gain12 = start_gain12 + gain_delta12 * i;
+        const CSAMPLE_GAIN gain13 = start_gain13 + gain_delta13 * i;
+        const CSAMPLE_GAIN gain14 = start_gain14 + gain_delta14 * i;
+        const CSAMPLE_GAIN gain15 = start_gain15 + gain_delta15 * i;
+        const CSAMPLE_GAIN gain16 = start_gain16 + gain_delta16 * i;
+        const CSAMPLE_GAIN gain17 = start_gain17 + gain_delta17 * i;
+        const CSAMPLE_GAIN gain18 = start_gain18 + gain_delta18 * i;
+        const CSAMPLE_GAIN gain19 = start_gain19 + gain_delta19 * i;
+        const CSAMPLE_GAIN gain20 = start_gain20 + gain_delta20 * i;
+        const CSAMPLE_GAIN gain21 = start_gain21 + gain_delta21 * i;
+        pDest[i * 2] = pSrc0[i * 2] * gain0 +
+                       pSrc1[i * 2] * gain1 +
+                       pSrc2[i * 2] * gain2 +
+                       pSrc3[i * 2] * gain3 +
+                       pSrc4[i * 2] * gain4 +
+                       pSrc5[i * 2] * gain5 +
+                       pSrc6[i * 2] * gain6 +
+                       pSrc7[i * 2] * gain7 +
+                       pSrc8[i * 2] * gain8 +
+                       pSrc9[i * 2] * gain9 +
+                       pSrc10[i * 2] * gain10 +
+                       pSrc11[i * 2] * gain11 +
+                       pSrc12[i * 2] * gain12 +
+                       pSrc13[i * 2] * gain13 +
+                       pSrc14[i * 2] * gain14 +
+                       pSrc15[i * 2] * gain15 +
+                       pSrc16[i * 2] * gain16 +
+                       pSrc17[i * 2] * gain17 +
+                       pSrc18[i * 2] * gain18 +
+                       pSrc19[i * 2] * gain19 +
+                       pSrc20[i * 2] * gain20 +
+                       pSrc21[i * 2] * gain21;
+        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
+                           pSrc1[i * 2 + 1] * gain1 +
+                           pSrc2[i * 2 + 1] * gain2 +
+                           pSrc3[i * 2 + 1] * gain3 +
+                           pSrc4[i * 2 + 1] * gain4 +
+                           pSrc5[i * 2 + 1] * gain5 +
+                           pSrc6[i * 2 + 1] * gain6 +
+                           pSrc7[i * 2 + 1] * gain7 +
+                           pSrc8[i * 2 + 1] * gain8 +
+                           pSrc9[i * 2 + 1] * gain9 +
+                           pSrc10[i * 2 + 1] * gain10 +
+                           pSrc11[i * 2 + 1] * gain11 +
+                           pSrc12[i * 2 + 1] * gain12 +
+                           pSrc13[i * 2 + 1] * gain13 +
+                           pSrc14[i * 2 + 1] * gain14 +
+                           pSrc15[i * 2 + 1] * gain15 +
+                           pSrc16[i * 2 + 1] * gain16 +
+                           pSrc17[i * 2 + 1] * gain17 +
+                           pSrc18[i * 2 + 1] * gain18 +
+                           pSrc19[i * 2 + 1] * gain19 +
+                           pSrc20[i * 2 + 1] * gain20 +
+                           pSrc21[i * 2 + 1] * gain21;
     }
 }
 static inline void copy23WithGain(CSAMPLE* _RESTRICT pDest,
@@ -4389,6 +4411,7 @@ static inline void copy23WithGain(CSAMPLE* _RESTRICT pDest,
         copy22WithGain(pDest, pSrc0, gain0, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4, pSrc5, gain5, pSrc6, gain6, pSrc7, gain7, pSrc8, gain8, pSrc9, gain9, pSrc10, gain10, pSrc11, gain11, pSrc12, gain12, pSrc13, gain13, pSrc14, gain14, pSrc15, gain15, pSrc16, gain16, pSrc17, gain17, pSrc18, gain18, pSrc19, gain19, pSrc20, gain20, pSrc21, gain21, iNumSamples);
         return;
     }
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] = pSrc0[i] * gain0 +
                    pSrc1[i] * gain1 +
@@ -4533,121 +4556,121 @@ static inline void copy23WithRampingGain(CSAMPLE* _RESTRICT pDest,
         return;
     }
     const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain0 = gain0in;
+    const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
     const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain1 = gain1in;
+    const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
     const CSAMPLE_GAIN gain_delta2 = (gain2out - gain2in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain2 = gain2in;
+    const CSAMPLE_GAIN start_gain2 = gain2in + gain_delta2;
     const CSAMPLE_GAIN gain_delta3 = (gain3out - gain3in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain3 = gain3in;
+    const CSAMPLE_GAIN start_gain3 = gain3in + gain_delta3;
     const CSAMPLE_GAIN gain_delta4 = (gain4out - gain4in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain4 = gain4in;
+    const CSAMPLE_GAIN start_gain4 = gain4in + gain_delta4;
     const CSAMPLE_GAIN gain_delta5 = (gain5out - gain5in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain5 = gain5in;
+    const CSAMPLE_GAIN start_gain5 = gain5in + gain_delta5;
     const CSAMPLE_GAIN gain_delta6 = (gain6out - gain6in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain6 = gain6in;
+    const CSAMPLE_GAIN start_gain6 = gain6in + gain_delta6;
     const CSAMPLE_GAIN gain_delta7 = (gain7out - gain7in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain7 = gain7in;
+    const CSAMPLE_GAIN start_gain7 = gain7in + gain_delta7;
     const CSAMPLE_GAIN gain_delta8 = (gain8out - gain8in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain8 = gain8in;
+    const CSAMPLE_GAIN start_gain8 = gain8in + gain_delta8;
     const CSAMPLE_GAIN gain_delta9 = (gain9out - gain9in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain9 = gain9in;
+    const CSAMPLE_GAIN start_gain9 = gain9in + gain_delta9;
     const CSAMPLE_GAIN gain_delta10 = (gain10out - gain10in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain10 = gain10in;
+    const CSAMPLE_GAIN start_gain10 = gain10in + gain_delta10;
     const CSAMPLE_GAIN gain_delta11 = (gain11out - gain11in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain11 = gain11in;
+    const CSAMPLE_GAIN start_gain11 = gain11in + gain_delta11;
     const CSAMPLE_GAIN gain_delta12 = (gain12out - gain12in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain12 = gain12in;
+    const CSAMPLE_GAIN start_gain12 = gain12in + gain_delta12;
     const CSAMPLE_GAIN gain_delta13 = (gain13out - gain13in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain13 = gain13in;
+    const CSAMPLE_GAIN start_gain13 = gain13in + gain_delta13;
     const CSAMPLE_GAIN gain_delta14 = (gain14out - gain14in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain14 = gain14in;
+    const CSAMPLE_GAIN start_gain14 = gain14in + gain_delta14;
     const CSAMPLE_GAIN gain_delta15 = (gain15out - gain15in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain15 = gain15in;
+    const CSAMPLE_GAIN start_gain15 = gain15in + gain_delta15;
     const CSAMPLE_GAIN gain_delta16 = (gain16out - gain16in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain16 = gain16in;
+    const CSAMPLE_GAIN start_gain16 = gain16in + gain_delta16;
     const CSAMPLE_GAIN gain_delta17 = (gain17out - gain17in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain17 = gain17in;
+    const CSAMPLE_GAIN start_gain17 = gain17in + gain_delta17;
     const CSAMPLE_GAIN gain_delta18 = (gain18out - gain18in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain18 = gain18in;
+    const CSAMPLE_GAIN start_gain18 = gain18in + gain_delta18;
     const CSAMPLE_GAIN gain_delta19 = (gain19out - gain19in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain19 = gain19in;
+    const CSAMPLE_GAIN start_gain19 = gain19in + gain_delta19;
     const CSAMPLE_GAIN gain_delta20 = (gain20out - gain20in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain20 = gain20in;
+    const CSAMPLE_GAIN start_gain20 = gain20in + gain_delta20;
     const CSAMPLE_GAIN gain_delta21 = (gain21out - gain21in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain21 = gain21in;
+    const CSAMPLE_GAIN start_gain21 = gain21in + gain_delta21;
     const CSAMPLE_GAIN gain_delta22 = (gain22out - gain22in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain22 = gain22in;
-    for (int i = 0; i < iNumSamples; i += 2) {
-        gain0 += gain_delta0;
-        gain1 += gain_delta1;
-        gain2 += gain_delta2;
-        gain3 += gain_delta3;
-        gain4 += gain_delta4;
-        gain5 += gain_delta5;
-        gain6 += gain_delta6;
-        gain7 += gain_delta7;
-        gain8 += gain_delta8;
-        gain9 += gain_delta9;
-        gain10 += gain_delta10;
-        gain11 += gain_delta11;
-        gain12 += gain_delta12;
-        gain13 += gain_delta13;
-        gain14 += gain_delta14;
-        gain15 += gain_delta15;
-        gain16 += gain_delta16;
-        gain17 += gain_delta17;
-        gain18 += gain_delta18;
-        gain19 += gain_delta19;
-        gain20 += gain_delta20;
-        gain21 += gain_delta21;
-        gain22 += gain_delta22;
-        pDest[i] = pSrc0[i] * gain0 +
-                   pSrc1[i] * gain1 +
-                   pSrc2[i] * gain2 +
-                   pSrc3[i] * gain3 +
-                   pSrc4[i] * gain4 +
-                   pSrc5[i] * gain5 +
-                   pSrc6[i] * gain6 +
-                   pSrc7[i] * gain7 +
-                   pSrc8[i] * gain8 +
-                   pSrc9[i] * gain9 +
-                   pSrc10[i] * gain10 +
-                   pSrc11[i] * gain11 +
-                   pSrc12[i] * gain12 +
-                   pSrc13[i] * gain13 +
-                   pSrc14[i] * gain14 +
-                   pSrc15[i] * gain15 +
-                   pSrc16[i] * gain16 +
-                   pSrc17[i] * gain17 +
-                   pSrc18[i] * gain18 +
-                   pSrc19[i] * gain19 +
-                   pSrc20[i] * gain20 +
-                   pSrc21[i] * gain21 +
-                   pSrc22[i] * gain22;
-        pDest[i + 1] = pSrc0[i + 1] * gain0 +
-                       pSrc1[i + 1] * gain1 +
-                       pSrc2[i + 1] * gain2 +
-                       pSrc3[i + 1] * gain3 +
-                       pSrc4[i + 1] * gain4 +
-                       pSrc5[i + 1] * gain5 +
-                       pSrc6[i + 1] * gain6 +
-                       pSrc7[i + 1] * gain7 +
-                       pSrc8[i + 1] * gain8 +
-                       pSrc9[i + 1] * gain9 +
-                       pSrc10[i + 1] * gain10 +
-                       pSrc11[i + 1] * gain11 +
-                       pSrc12[i + 1] * gain12 +
-                       pSrc13[i + 1] * gain13 +
-                       pSrc14[i + 1] * gain14 +
-                       pSrc15[i + 1] * gain15 +
-                       pSrc16[i + 1] * gain16 +
-                       pSrc17[i + 1] * gain17 +
-                       pSrc18[i + 1] * gain18 +
-                       pSrc19[i + 1] * gain19 +
-                       pSrc20[i + 1] * gain20 +
-                       pSrc21[i + 1] * gain21 +
-                       pSrc22[i + 1] * gain22;
+    const CSAMPLE_GAIN start_gain22 = gain22in + gain_delta22;
+    for (int i = 0; i < iNumSamples / 2; ++i) {
+        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
+        const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
+        const CSAMPLE_GAIN gain2 = start_gain2 + gain_delta2 * i;
+        const CSAMPLE_GAIN gain3 = start_gain3 + gain_delta3 * i;
+        const CSAMPLE_GAIN gain4 = start_gain4 + gain_delta4 * i;
+        const CSAMPLE_GAIN gain5 = start_gain5 + gain_delta5 * i;
+        const CSAMPLE_GAIN gain6 = start_gain6 + gain_delta6 * i;
+        const CSAMPLE_GAIN gain7 = start_gain7 + gain_delta7 * i;
+        const CSAMPLE_GAIN gain8 = start_gain8 + gain_delta8 * i;
+        const CSAMPLE_GAIN gain9 = start_gain9 + gain_delta9 * i;
+        const CSAMPLE_GAIN gain10 = start_gain10 + gain_delta10 * i;
+        const CSAMPLE_GAIN gain11 = start_gain11 + gain_delta11 * i;
+        const CSAMPLE_GAIN gain12 = start_gain12 + gain_delta12 * i;
+        const CSAMPLE_GAIN gain13 = start_gain13 + gain_delta13 * i;
+        const CSAMPLE_GAIN gain14 = start_gain14 + gain_delta14 * i;
+        const CSAMPLE_GAIN gain15 = start_gain15 + gain_delta15 * i;
+        const CSAMPLE_GAIN gain16 = start_gain16 + gain_delta16 * i;
+        const CSAMPLE_GAIN gain17 = start_gain17 + gain_delta17 * i;
+        const CSAMPLE_GAIN gain18 = start_gain18 + gain_delta18 * i;
+        const CSAMPLE_GAIN gain19 = start_gain19 + gain_delta19 * i;
+        const CSAMPLE_GAIN gain20 = start_gain20 + gain_delta20 * i;
+        const CSAMPLE_GAIN gain21 = start_gain21 + gain_delta21 * i;
+        const CSAMPLE_GAIN gain22 = start_gain22 + gain_delta22 * i;
+        pDest[i * 2] = pSrc0[i * 2] * gain0 +
+                       pSrc1[i * 2] * gain1 +
+                       pSrc2[i * 2] * gain2 +
+                       pSrc3[i * 2] * gain3 +
+                       pSrc4[i * 2] * gain4 +
+                       pSrc5[i * 2] * gain5 +
+                       pSrc6[i * 2] * gain6 +
+                       pSrc7[i * 2] * gain7 +
+                       pSrc8[i * 2] * gain8 +
+                       pSrc9[i * 2] * gain9 +
+                       pSrc10[i * 2] * gain10 +
+                       pSrc11[i * 2] * gain11 +
+                       pSrc12[i * 2] * gain12 +
+                       pSrc13[i * 2] * gain13 +
+                       pSrc14[i * 2] * gain14 +
+                       pSrc15[i * 2] * gain15 +
+                       pSrc16[i * 2] * gain16 +
+                       pSrc17[i * 2] * gain17 +
+                       pSrc18[i * 2] * gain18 +
+                       pSrc19[i * 2] * gain19 +
+                       pSrc20[i * 2] * gain20 +
+                       pSrc21[i * 2] * gain21 +
+                       pSrc22[i * 2] * gain22;
+        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
+                           pSrc1[i * 2 + 1] * gain1 +
+                           pSrc2[i * 2 + 1] * gain2 +
+                           pSrc3[i * 2 + 1] * gain3 +
+                           pSrc4[i * 2 + 1] * gain4 +
+                           pSrc5[i * 2 + 1] * gain5 +
+                           pSrc6[i * 2 + 1] * gain6 +
+                           pSrc7[i * 2 + 1] * gain7 +
+                           pSrc8[i * 2 + 1] * gain8 +
+                           pSrc9[i * 2 + 1] * gain9 +
+                           pSrc10[i * 2 + 1] * gain10 +
+                           pSrc11[i * 2 + 1] * gain11 +
+                           pSrc12[i * 2 + 1] * gain12 +
+                           pSrc13[i * 2 + 1] * gain13 +
+                           pSrc14[i * 2 + 1] * gain14 +
+                           pSrc15[i * 2 + 1] * gain15 +
+                           pSrc16[i * 2 + 1] * gain16 +
+                           pSrc17[i * 2 + 1] * gain17 +
+                           pSrc18[i * 2 + 1] * gain18 +
+                           pSrc19[i * 2 + 1] * gain19 +
+                           pSrc20[i * 2 + 1] * gain20 +
+                           pSrc21[i * 2 + 1] * gain21 +
+                           pSrc22[i * 2 + 1] * gain22;
     }
 }
 static inline void copy24WithGain(CSAMPLE* _RESTRICT pDest,
@@ -4772,6 +4795,7 @@ static inline void copy24WithGain(CSAMPLE* _RESTRICT pDest,
         copy23WithGain(pDest, pSrc0, gain0, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4, pSrc5, gain5, pSrc6, gain6, pSrc7, gain7, pSrc8, gain8, pSrc9, gain9, pSrc10, gain10, pSrc11, gain11, pSrc12, gain12, pSrc13, gain13, pSrc14, gain14, pSrc15, gain15, pSrc16, gain16, pSrc17, gain17, pSrc18, gain18, pSrc19, gain19, pSrc20, gain20, pSrc21, gain21, pSrc22, gain22, iNumSamples);
         return;
     }
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] = pSrc0[i] * gain0 +
                    pSrc1[i] * gain1 +
@@ -4922,126 +4946,126 @@ static inline void copy24WithRampingGain(CSAMPLE* _RESTRICT pDest,
         return;
     }
     const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain0 = gain0in;
+    const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
     const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain1 = gain1in;
+    const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
     const CSAMPLE_GAIN gain_delta2 = (gain2out - gain2in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain2 = gain2in;
+    const CSAMPLE_GAIN start_gain2 = gain2in + gain_delta2;
     const CSAMPLE_GAIN gain_delta3 = (gain3out - gain3in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain3 = gain3in;
+    const CSAMPLE_GAIN start_gain3 = gain3in + gain_delta3;
     const CSAMPLE_GAIN gain_delta4 = (gain4out - gain4in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain4 = gain4in;
+    const CSAMPLE_GAIN start_gain4 = gain4in + gain_delta4;
     const CSAMPLE_GAIN gain_delta5 = (gain5out - gain5in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain5 = gain5in;
+    const CSAMPLE_GAIN start_gain5 = gain5in + gain_delta5;
     const CSAMPLE_GAIN gain_delta6 = (gain6out - gain6in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain6 = gain6in;
+    const CSAMPLE_GAIN start_gain6 = gain6in + gain_delta6;
     const CSAMPLE_GAIN gain_delta7 = (gain7out - gain7in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain7 = gain7in;
+    const CSAMPLE_GAIN start_gain7 = gain7in + gain_delta7;
     const CSAMPLE_GAIN gain_delta8 = (gain8out - gain8in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain8 = gain8in;
+    const CSAMPLE_GAIN start_gain8 = gain8in + gain_delta8;
     const CSAMPLE_GAIN gain_delta9 = (gain9out - gain9in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain9 = gain9in;
+    const CSAMPLE_GAIN start_gain9 = gain9in + gain_delta9;
     const CSAMPLE_GAIN gain_delta10 = (gain10out - gain10in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain10 = gain10in;
+    const CSAMPLE_GAIN start_gain10 = gain10in + gain_delta10;
     const CSAMPLE_GAIN gain_delta11 = (gain11out - gain11in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain11 = gain11in;
+    const CSAMPLE_GAIN start_gain11 = gain11in + gain_delta11;
     const CSAMPLE_GAIN gain_delta12 = (gain12out - gain12in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain12 = gain12in;
+    const CSAMPLE_GAIN start_gain12 = gain12in + gain_delta12;
     const CSAMPLE_GAIN gain_delta13 = (gain13out - gain13in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain13 = gain13in;
+    const CSAMPLE_GAIN start_gain13 = gain13in + gain_delta13;
     const CSAMPLE_GAIN gain_delta14 = (gain14out - gain14in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain14 = gain14in;
+    const CSAMPLE_GAIN start_gain14 = gain14in + gain_delta14;
     const CSAMPLE_GAIN gain_delta15 = (gain15out - gain15in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain15 = gain15in;
+    const CSAMPLE_GAIN start_gain15 = gain15in + gain_delta15;
     const CSAMPLE_GAIN gain_delta16 = (gain16out - gain16in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain16 = gain16in;
+    const CSAMPLE_GAIN start_gain16 = gain16in + gain_delta16;
     const CSAMPLE_GAIN gain_delta17 = (gain17out - gain17in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain17 = gain17in;
+    const CSAMPLE_GAIN start_gain17 = gain17in + gain_delta17;
     const CSAMPLE_GAIN gain_delta18 = (gain18out - gain18in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain18 = gain18in;
+    const CSAMPLE_GAIN start_gain18 = gain18in + gain_delta18;
     const CSAMPLE_GAIN gain_delta19 = (gain19out - gain19in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain19 = gain19in;
+    const CSAMPLE_GAIN start_gain19 = gain19in + gain_delta19;
     const CSAMPLE_GAIN gain_delta20 = (gain20out - gain20in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain20 = gain20in;
+    const CSAMPLE_GAIN start_gain20 = gain20in + gain_delta20;
     const CSAMPLE_GAIN gain_delta21 = (gain21out - gain21in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain21 = gain21in;
+    const CSAMPLE_GAIN start_gain21 = gain21in + gain_delta21;
     const CSAMPLE_GAIN gain_delta22 = (gain22out - gain22in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain22 = gain22in;
+    const CSAMPLE_GAIN start_gain22 = gain22in + gain_delta22;
     const CSAMPLE_GAIN gain_delta23 = (gain23out - gain23in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain23 = gain23in;
-    for (int i = 0; i < iNumSamples; i += 2) {
-        gain0 += gain_delta0;
-        gain1 += gain_delta1;
-        gain2 += gain_delta2;
-        gain3 += gain_delta3;
-        gain4 += gain_delta4;
-        gain5 += gain_delta5;
-        gain6 += gain_delta6;
-        gain7 += gain_delta7;
-        gain8 += gain_delta8;
-        gain9 += gain_delta9;
-        gain10 += gain_delta10;
-        gain11 += gain_delta11;
-        gain12 += gain_delta12;
-        gain13 += gain_delta13;
-        gain14 += gain_delta14;
-        gain15 += gain_delta15;
-        gain16 += gain_delta16;
-        gain17 += gain_delta17;
-        gain18 += gain_delta18;
-        gain19 += gain_delta19;
-        gain20 += gain_delta20;
-        gain21 += gain_delta21;
-        gain22 += gain_delta22;
-        gain23 += gain_delta23;
-        pDest[i] = pSrc0[i] * gain0 +
-                   pSrc1[i] * gain1 +
-                   pSrc2[i] * gain2 +
-                   pSrc3[i] * gain3 +
-                   pSrc4[i] * gain4 +
-                   pSrc5[i] * gain5 +
-                   pSrc6[i] * gain6 +
-                   pSrc7[i] * gain7 +
-                   pSrc8[i] * gain8 +
-                   pSrc9[i] * gain9 +
-                   pSrc10[i] * gain10 +
-                   pSrc11[i] * gain11 +
-                   pSrc12[i] * gain12 +
-                   pSrc13[i] * gain13 +
-                   pSrc14[i] * gain14 +
-                   pSrc15[i] * gain15 +
-                   pSrc16[i] * gain16 +
-                   pSrc17[i] * gain17 +
-                   pSrc18[i] * gain18 +
-                   pSrc19[i] * gain19 +
-                   pSrc20[i] * gain20 +
-                   pSrc21[i] * gain21 +
-                   pSrc22[i] * gain22 +
-                   pSrc23[i] * gain23;
-        pDest[i + 1] = pSrc0[i + 1] * gain0 +
-                       pSrc1[i + 1] * gain1 +
-                       pSrc2[i + 1] * gain2 +
-                       pSrc3[i + 1] * gain3 +
-                       pSrc4[i + 1] * gain4 +
-                       pSrc5[i + 1] * gain5 +
-                       pSrc6[i + 1] * gain6 +
-                       pSrc7[i + 1] * gain7 +
-                       pSrc8[i + 1] * gain8 +
-                       pSrc9[i + 1] * gain9 +
-                       pSrc10[i + 1] * gain10 +
-                       pSrc11[i + 1] * gain11 +
-                       pSrc12[i + 1] * gain12 +
-                       pSrc13[i + 1] * gain13 +
-                       pSrc14[i + 1] * gain14 +
-                       pSrc15[i + 1] * gain15 +
-                       pSrc16[i + 1] * gain16 +
-                       pSrc17[i + 1] * gain17 +
-                       pSrc18[i + 1] * gain18 +
-                       pSrc19[i + 1] * gain19 +
-                       pSrc20[i + 1] * gain20 +
-                       pSrc21[i + 1] * gain21 +
-                       pSrc22[i + 1] * gain22 +
-                       pSrc23[i + 1] * gain23;
+    const CSAMPLE_GAIN start_gain23 = gain23in + gain_delta23;
+    for (int i = 0; i < iNumSamples / 2; ++i) {
+        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
+        const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
+        const CSAMPLE_GAIN gain2 = start_gain2 + gain_delta2 * i;
+        const CSAMPLE_GAIN gain3 = start_gain3 + gain_delta3 * i;
+        const CSAMPLE_GAIN gain4 = start_gain4 + gain_delta4 * i;
+        const CSAMPLE_GAIN gain5 = start_gain5 + gain_delta5 * i;
+        const CSAMPLE_GAIN gain6 = start_gain6 + gain_delta6 * i;
+        const CSAMPLE_GAIN gain7 = start_gain7 + gain_delta7 * i;
+        const CSAMPLE_GAIN gain8 = start_gain8 + gain_delta8 * i;
+        const CSAMPLE_GAIN gain9 = start_gain9 + gain_delta9 * i;
+        const CSAMPLE_GAIN gain10 = start_gain10 + gain_delta10 * i;
+        const CSAMPLE_GAIN gain11 = start_gain11 + gain_delta11 * i;
+        const CSAMPLE_GAIN gain12 = start_gain12 + gain_delta12 * i;
+        const CSAMPLE_GAIN gain13 = start_gain13 + gain_delta13 * i;
+        const CSAMPLE_GAIN gain14 = start_gain14 + gain_delta14 * i;
+        const CSAMPLE_GAIN gain15 = start_gain15 + gain_delta15 * i;
+        const CSAMPLE_GAIN gain16 = start_gain16 + gain_delta16 * i;
+        const CSAMPLE_GAIN gain17 = start_gain17 + gain_delta17 * i;
+        const CSAMPLE_GAIN gain18 = start_gain18 + gain_delta18 * i;
+        const CSAMPLE_GAIN gain19 = start_gain19 + gain_delta19 * i;
+        const CSAMPLE_GAIN gain20 = start_gain20 + gain_delta20 * i;
+        const CSAMPLE_GAIN gain21 = start_gain21 + gain_delta21 * i;
+        const CSAMPLE_GAIN gain22 = start_gain22 + gain_delta22 * i;
+        const CSAMPLE_GAIN gain23 = start_gain23 + gain_delta23 * i;
+        pDest[i * 2] = pSrc0[i * 2] * gain0 +
+                       pSrc1[i * 2] * gain1 +
+                       pSrc2[i * 2] * gain2 +
+                       pSrc3[i * 2] * gain3 +
+                       pSrc4[i * 2] * gain4 +
+                       pSrc5[i * 2] * gain5 +
+                       pSrc6[i * 2] * gain6 +
+                       pSrc7[i * 2] * gain7 +
+                       pSrc8[i * 2] * gain8 +
+                       pSrc9[i * 2] * gain9 +
+                       pSrc10[i * 2] * gain10 +
+                       pSrc11[i * 2] * gain11 +
+                       pSrc12[i * 2] * gain12 +
+                       pSrc13[i * 2] * gain13 +
+                       pSrc14[i * 2] * gain14 +
+                       pSrc15[i * 2] * gain15 +
+                       pSrc16[i * 2] * gain16 +
+                       pSrc17[i * 2] * gain17 +
+                       pSrc18[i * 2] * gain18 +
+                       pSrc19[i * 2] * gain19 +
+                       pSrc20[i * 2] * gain20 +
+                       pSrc21[i * 2] * gain21 +
+                       pSrc22[i * 2] * gain22 +
+                       pSrc23[i * 2] * gain23;
+        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
+                           pSrc1[i * 2 + 1] * gain1 +
+                           pSrc2[i * 2 + 1] * gain2 +
+                           pSrc3[i * 2 + 1] * gain3 +
+                           pSrc4[i * 2 + 1] * gain4 +
+                           pSrc5[i * 2 + 1] * gain5 +
+                           pSrc6[i * 2 + 1] * gain6 +
+                           pSrc7[i * 2 + 1] * gain7 +
+                           pSrc8[i * 2 + 1] * gain8 +
+                           pSrc9[i * 2 + 1] * gain9 +
+                           pSrc10[i * 2 + 1] * gain10 +
+                           pSrc11[i * 2 + 1] * gain11 +
+                           pSrc12[i * 2 + 1] * gain12 +
+                           pSrc13[i * 2 + 1] * gain13 +
+                           pSrc14[i * 2 + 1] * gain14 +
+                           pSrc15[i * 2 + 1] * gain15 +
+                           pSrc16[i * 2 + 1] * gain16 +
+                           pSrc17[i * 2 + 1] * gain17 +
+                           pSrc18[i * 2 + 1] * gain18 +
+                           pSrc19[i * 2 + 1] * gain19 +
+                           pSrc20[i * 2 + 1] * gain20 +
+                           pSrc21[i * 2 + 1] * gain21 +
+                           pSrc22[i * 2 + 1] * gain22 +
+                           pSrc23[i * 2 + 1] * gain23;
     }
 }
 static inline void copy25WithGain(CSAMPLE* _RESTRICT pDest,
@@ -5171,6 +5195,7 @@ static inline void copy25WithGain(CSAMPLE* _RESTRICT pDest,
         copy24WithGain(pDest, pSrc0, gain0, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4, pSrc5, gain5, pSrc6, gain6, pSrc7, gain7, pSrc8, gain8, pSrc9, gain9, pSrc10, gain10, pSrc11, gain11, pSrc12, gain12, pSrc13, gain13, pSrc14, gain14, pSrc15, gain15, pSrc16, gain16, pSrc17, gain17, pSrc18, gain18, pSrc19, gain19, pSrc20, gain20, pSrc21, gain21, pSrc22, gain22, pSrc23, gain23, iNumSamples);
         return;
     }
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] = pSrc0[i] * gain0 +
                    pSrc1[i] * gain1 +
@@ -5327,131 +5352,131 @@ static inline void copy25WithRampingGain(CSAMPLE* _RESTRICT pDest,
         return;
     }
     const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain0 = gain0in;
+    const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
     const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain1 = gain1in;
+    const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
     const CSAMPLE_GAIN gain_delta2 = (gain2out - gain2in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain2 = gain2in;
+    const CSAMPLE_GAIN start_gain2 = gain2in + gain_delta2;
     const CSAMPLE_GAIN gain_delta3 = (gain3out - gain3in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain3 = gain3in;
+    const CSAMPLE_GAIN start_gain3 = gain3in + gain_delta3;
     const CSAMPLE_GAIN gain_delta4 = (gain4out - gain4in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain4 = gain4in;
+    const CSAMPLE_GAIN start_gain4 = gain4in + gain_delta4;
     const CSAMPLE_GAIN gain_delta5 = (gain5out - gain5in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain5 = gain5in;
+    const CSAMPLE_GAIN start_gain5 = gain5in + gain_delta5;
     const CSAMPLE_GAIN gain_delta6 = (gain6out - gain6in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain6 = gain6in;
+    const CSAMPLE_GAIN start_gain6 = gain6in + gain_delta6;
     const CSAMPLE_GAIN gain_delta7 = (gain7out - gain7in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain7 = gain7in;
+    const CSAMPLE_GAIN start_gain7 = gain7in + gain_delta7;
     const CSAMPLE_GAIN gain_delta8 = (gain8out - gain8in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain8 = gain8in;
+    const CSAMPLE_GAIN start_gain8 = gain8in + gain_delta8;
     const CSAMPLE_GAIN gain_delta9 = (gain9out - gain9in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain9 = gain9in;
+    const CSAMPLE_GAIN start_gain9 = gain9in + gain_delta9;
     const CSAMPLE_GAIN gain_delta10 = (gain10out - gain10in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain10 = gain10in;
+    const CSAMPLE_GAIN start_gain10 = gain10in + gain_delta10;
     const CSAMPLE_GAIN gain_delta11 = (gain11out - gain11in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain11 = gain11in;
+    const CSAMPLE_GAIN start_gain11 = gain11in + gain_delta11;
     const CSAMPLE_GAIN gain_delta12 = (gain12out - gain12in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain12 = gain12in;
+    const CSAMPLE_GAIN start_gain12 = gain12in + gain_delta12;
     const CSAMPLE_GAIN gain_delta13 = (gain13out - gain13in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain13 = gain13in;
+    const CSAMPLE_GAIN start_gain13 = gain13in + gain_delta13;
     const CSAMPLE_GAIN gain_delta14 = (gain14out - gain14in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain14 = gain14in;
+    const CSAMPLE_GAIN start_gain14 = gain14in + gain_delta14;
     const CSAMPLE_GAIN gain_delta15 = (gain15out - gain15in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain15 = gain15in;
+    const CSAMPLE_GAIN start_gain15 = gain15in + gain_delta15;
     const CSAMPLE_GAIN gain_delta16 = (gain16out - gain16in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain16 = gain16in;
+    const CSAMPLE_GAIN start_gain16 = gain16in + gain_delta16;
     const CSAMPLE_GAIN gain_delta17 = (gain17out - gain17in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain17 = gain17in;
+    const CSAMPLE_GAIN start_gain17 = gain17in + gain_delta17;
     const CSAMPLE_GAIN gain_delta18 = (gain18out - gain18in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain18 = gain18in;
+    const CSAMPLE_GAIN start_gain18 = gain18in + gain_delta18;
     const CSAMPLE_GAIN gain_delta19 = (gain19out - gain19in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain19 = gain19in;
+    const CSAMPLE_GAIN start_gain19 = gain19in + gain_delta19;
     const CSAMPLE_GAIN gain_delta20 = (gain20out - gain20in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain20 = gain20in;
+    const CSAMPLE_GAIN start_gain20 = gain20in + gain_delta20;
     const CSAMPLE_GAIN gain_delta21 = (gain21out - gain21in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain21 = gain21in;
+    const CSAMPLE_GAIN start_gain21 = gain21in + gain_delta21;
     const CSAMPLE_GAIN gain_delta22 = (gain22out - gain22in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain22 = gain22in;
+    const CSAMPLE_GAIN start_gain22 = gain22in + gain_delta22;
     const CSAMPLE_GAIN gain_delta23 = (gain23out - gain23in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain23 = gain23in;
+    const CSAMPLE_GAIN start_gain23 = gain23in + gain_delta23;
     const CSAMPLE_GAIN gain_delta24 = (gain24out - gain24in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain24 = gain24in;
-    for (int i = 0; i < iNumSamples; i += 2) {
-        gain0 += gain_delta0;
-        gain1 += gain_delta1;
-        gain2 += gain_delta2;
-        gain3 += gain_delta3;
-        gain4 += gain_delta4;
-        gain5 += gain_delta5;
-        gain6 += gain_delta6;
-        gain7 += gain_delta7;
-        gain8 += gain_delta8;
-        gain9 += gain_delta9;
-        gain10 += gain_delta10;
-        gain11 += gain_delta11;
-        gain12 += gain_delta12;
-        gain13 += gain_delta13;
-        gain14 += gain_delta14;
-        gain15 += gain_delta15;
-        gain16 += gain_delta16;
-        gain17 += gain_delta17;
-        gain18 += gain_delta18;
-        gain19 += gain_delta19;
-        gain20 += gain_delta20;
-        gain21 += gain_delta21;
-        gain22 += gain_delta22;
-        gain23 += gain_delta23;
-        gain24 += gain_delta24;
-        pDest[i] = pSrc0[i] * gain0 +
-                   pSrc1[i] * gain1 +
-                   pSrc2[i] * gain2 +
-                   pSrc3[i] * gain3 +
-                   pSrc4[i] * gain4 +
-                   pSrc5[i] * gain5 +
-                   pSrc6[i] * gain6 +
-                   pSrc7[i] * gain7 +
-                   pSrc8[i] * gain8 +
-                   pSrc9[i] * gain9 +
-                   pSrc10[i] * gain10 +
-                   pSrc11[i] * gain11 +
-                   pSrc12[i] * gain12 +
-                   pSrc13[i] * gain13 +
-                   pSrc14[i] * gain14 +
-                   pSrc15[i] * gain15 +
-                   pSrc16[i] * gain16 +
-                   pSrc17[i] * gain17 +
-                   pSrc18[i] * gain18 +
-                   pSrc19[i] * gain19 +
-                   pSrc20[i] * gain20 +
-                   pSrc21[i] * gain21 +
-                   pSrc22[i] * gain22 +
-                   pSrc23[i] * gain23 +
-                   pSrc24[i] * gain24;
-        pDest[i + 1] = pSrc0[i + 1] * gain0 +
-                       pSrc1[i + 1] * gain1 +
-                       pSrc2[i + 1] * gain2 +
-                       pSrc3[i + 1] * gain3 +
-                       pSrc4[i + 1] * gain4 +
-                       pSrc5[i + 1] * gain5 +
-                       pSrc6[i + 1] * gain6 +
-                       pSrc7[i + 1] * gain7 +
-                       pSrc8[i + 1] * gain8 +
-                       pSrc9[i + 1] * gain9 +
-                       pSrc10[i + 1] * gain10 +
-                       pSrc11[i + 1] * gain11 +
-                       pSrc12[i + 1] * gain12 +
-                       pSrc13[i + 1] * gain13 +
-                       pSrc14[i + 1] * gain14 +
-                       pSrc15[i + 1] * gain15 +
-                       pSrc16[i + 1] * gain16 +
-                       pSrc17[i + 1] * gain17 +
-                       pSrc18[i + 1] * gain18 +
-                       pSrc19[i + 1] * gain19 +
-                       pSrc20[i + 1] * gain20 +
-                       pSrc21[i + 1] * gain21 +
-                       pSrc22[i + 1] * gain22 +
-                       pSrc23[i + 1] * gain23 +
-                       pSrc24[i + 1] * gain24;
+    const CSAMPLE_GAIN start_gain24 = gain24in + gain_delta24;
+    for (int i = 0; i < iNumSamples / 2; ++i) {
+        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
+        const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
+        const CSAMPLE_GAIN gain2 = start_gain2 + gain_delta2 * i;
+        const CSAMPLE_GAIN gain3 = start_gain3 + gain_delta3 * i;
+        const CSAMPLE_GAIN gain4 = start_gain4 + gain_delta4 * i;
+        const CSAMPLE_GAIN gain5 = start_gain5 + gain_delta5 * i;
+        const CSAMPLE_GAIN gain6 = start_gain6 + gain_delta6 * i;
+        const CSAMPLE_GAIN gain7 = start_gain7 + gain_delta7 * i;
+        const CSAMPLE_GAIN gain8 = start_gain8 + gain_delta8 * i;
+        const CSAMPLE_GAIN gain9 = start_gain9 + gain_delta9 * i;
+        const CSAMPLE_GAIN gain10 = start_gain10 + gain_delta10 * i;
+        const CSAMPLE_GAIN gain11 = start_gain11 + gain_delta11 * i;
+        const CSAMPLE_GAIN gain12 = start_gain12 + gain_delta12 * i;
+        const CSAMPLE_GAIN gain13 = start_gain13 + gain_delta13 * i;
+        const CSAMPLE_GAIN gain14 = start_gain14 + gain_delta14 * i;
+        const CSAMPLE_GAIN gain15 = start_gain15 + gain_delta15 * i;
+        const CSAMPLE_GAIN gain16 = start_gain16 + gain_delta16 * i;
+        const CSAMPLE_GAIN gain17 = start_gain17 + gain_delta17 * i;
+        const CSAMPLE_GAIN gain18 = start_gain18 + gain_delta18 * i;
+        const CSAMPLE_GAIN gain19 = start_gain19 + gain_delta19 * i;
+        const CSAMPLE_GAIN gain20 = start_gain20 + gain_delta20 * i;
+        const CSAMPLE_GAIN gain21 = start_gain21 + gain_delta21 * i;
+        const CSAMPLE_GAIN gain22 = start_gain22 + gain_delta22 * i;
+        const CSAMPLE_GAIN gain23 = start_gain23 + gain_delta23 * i;
+        const CSAMPLE_GAIN gain24 = start_gain24 + gain_delta24 * i;
+        pDest[i * 2] = pSrc0[i * 2] * gain0 +
+                       pSrc1[i * 2] * gain1 +
+                       pSrc2[i * 2] * gain2 +
+                       pSrc3[i * 2] * gain3 +
+                       pSrc4[i * 2] * gain4 +
+                       pSrc5[i * 2] * gain5 +
+                       pSrc6[i * 2] * gain6 +
+                       pSrc7[i * 2] * gain7 +
+                       pSrc8[i * 2] * gain8 +
+                       pSrc9[i * 2] * gain9 +
+                       pSrc10[i * 2] * gain10 +
+                       pSrc11[i * 2] * gain11 +
+                       pSrc12[i * 2] * gain12 +
+                       pSrc13[i * 2] * gain13 +
+                       pSrc14[i * 2] * gain14 +
+                       pSrc15[i * 2] * gain15 +
+                       pSrc16[i * 2] * gain16 +
+                       pSrc17[i * 2] * gain17 +
+                       pSrc18[i * 2] * gain18 +
+                       pSrc19[i * 2] * gain19 +
+                       pSrc20[i * 2] * gain20 +
+                       pSrc21[i * 2] * gain21 +
+                       pSrc22[i * 2] * gain22 +
+                       pSrc23[i * 2] * gain23 +
+                       pSrc24[i * 2] * gain24;
+        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
+                           pSrc1[i * 2 + 1] * gain1 +
+                           pSrc2[i * 2 + 1] * gain2 +
+                           pSrc3[i * 2 + 1] * gain3 +
+                           pSrc4[i * 2 + 1] * gain4 +
+                           pSrc5[i * 2 + 1] * gain5 +
+                           pSrc6[i * 2 + 1] * gain6 +
+                           pSrc7[i * 2 + 1] * gain7 +
+                           pSrc8[i * 2 + 1] * gain8 +
+                           pSrc9[i * 2 + 1] * gain9 +
+                           pSrc10[i * 2 + 1] * gain10 +
+                           pSrc11[i * 2 + 1] * gain11 +
+                           pSrc12[i * 2 + 1] * gain12 +
+                           pSrc13[i * 2 + 1] * gain13 +
+                           pSrc14[i * 2 + 1] * gain14 +
+                           pSrc15[i * 2 + 1] * gain15 +
+                           pSrc16[i * 2 + 1] * gain16 +
+                           pSrc17[i * 2 + 1] * gain17 +
+                           pSrc18[i * 2 + 1] * gain18 +
+                           pSrc19[i * 2 + 1] * gain19 +
+                           pSrc20[i * 2 + 1] * gain20 +
+                           pSrc21[i * 2 + 1] * gain21 +
+                           pSrc22[i * 2 + 1] * gain22 +
+                           pSrc23[i * 2 + 1] * gain23 +
+                           pSrc24[i * 2 + 1] * gain24;
     }
 }
 static inline void copy26WithGain(CSAMPLE* _RESTRICT pDest,
@@ -5586,6 +5611,7 @@ static inline void copy26WithGain(CSAMPLE* _RESTRICT pDest,
         copy25WithGain(pDest, pSrc0, gain0, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4, pSrc5, gain5, pSrc6, gain6, pSrc7, gain7, pSrc8, gain8, pSrc9, gain9, pSrc10, gain10, pSrc11, gain11, pSrc12, gain12, pSrc13, gain13, pSrc14, gain14, pSrc15, gain15, pSrc16, gain16, pSrc17, gain17, pSrc18, gain18, pSrc19, gain19, pSrc20, gain20, pSrc21, gain21, pSrc22, gain22, pSrc23, gain23, pSrc24, gain24, iNumSamples);
         return;
     }
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] = pSrc0[i] * gain0 +
                    pSrc1[i] * gain1 +
@@ -5748,136 +5774,136 @@ static inline void copy26WithRampingGain(CSAMPLE* _RESTRICT pDest,
         return;
     }
     const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain0 = gain0in;
+    const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
     const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain1 = gain1in;
+    const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
     const CSAMPLE_GAIN gain_delta2 = (gain2out - gain2in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain2 = gain2in;
+    const CSAMPLE_GAIN start_gain2 = gain2in + gain_delta2;
     const CSAMPLE_GAIN gain_delta3 = (gain3out - gain3in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain3 = gain3in;
+    const CSAMPLE_GAIN start_gain3 = gain3in + gain_delta3;
     const CSAMPLE_GAIN gain_delta4 = (gain4out - gain4in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain4 = gain4in;
+    const CSAMPLE_GAIN start_gain4 = gain4in + gain_delta4;
     const CSAMPLE_GAIN gain_delta5 = (gain5out - gain5in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain5 = gain5in;
+    const CSAMPLE_GAIN start_gain5 = gain5in + gain_delta5;
     const CSAMPLE_GAIN gain_delta6 = (gain6out - gain6in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain6 = gain6in;
+    const CSAMPLE_GAIN start_gain6 = gain6in + gain_delta6;
     const CSAMPLE_GAIN gain_delta7 = (gain7out - gain7in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain7 = gain7in;
+    const CSAMPLE_GAIN start_gain7 = gain7in + gain_delta7;
     const CSAMPLE_GAIN gain_delta8 = (gain8out - gain8in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain8 = gain8in;
+    const CSAMPLE_GAIN start_gain8 = gain8in + gain_delta8;
     const CSAMPLE_GAIN gain_delta9 = (gain9out - gain9in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain9 = gain9in;
+    const CSAMPLE_GAIN start_gain9 = gain9in + gain_delta9;
     const CSAMPLE_GAIN gain_delta10 = (gain10out - gain10in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain10 = gain10in;
+    const CSAMPLE_GAIN start_gain10 = gain10in + gain_delta10;
     const CSAMPLE_GAIN gain_delta11 = (gain11out - gain11in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain11 = gain11in;
+    const CSAMPLE_GAIN start_gain11 = gain11in + gain_delta11;
     const CSAMPLE_GAIN gain_delta12 = (gain12out - gain12in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain12 = gain12in;
+    const CSAMPLE_GAIN start_gain12 = gain12in + gain_delta12;
     const CSAMPLE_GAIN gain_delta13 = (gain13out - gain13in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain13 = gain13in;
+    const CSAMPLE_GAIN start_gain13 = gain13in + gain_delta13;
     const CSAMPLE_GAIN gain_delta14 = (gain14out - gain14in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain14 = gain14in;
+    const CSAMPLE_GAIN start_gain14 = gain14in + gain_delta14;
     const CSAMPLE_GAIN gain_delta15 = (gain15out - gain15in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain15 = gain15in;
+    const CSAMPLE_GAIN start_gain15 = gain15in + gain_delta15;
     const CSAMPLE_GAIN gain_delta16 = (gain16out - gain16in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain16 = gain16in;
+    const CSAMPLE_GAIN start_gain16 = gain16in + gain_delta16;
     const CSAMPLE_GAIN gain_delta17 = (gain17out - gain17in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain17 = gain17in;
+    const CSAMPLE_GAIN start_gain17 = gain17in + gain_delta17;
     const CSAMPLE_GAIN gain_delta18 = (gain18out - gain18in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain18 = gain18in;
+    const CSAMPLE_GAIN start_gain18 = gain18in + gain_delta18;
     const CSAMPLE_GAIN gain_delta19 = (gain19out - gain19in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain19 = gain19in;
+    const CSAMPLE_GAIN start_gain19 = gain19in + gain_delta19;
     const CSAMPLE_GAIN gain_delta20 = (gain20out - gain20in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain20 = gain20in;
+    const CSAMPLE_GAIN start_gain20 = gain20in + gain_delta20;
     const CSAMPLE_GAIN gain_delta21 = (gain21out - gain21in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain21 = gain21in;
+    const CSAMPLE_GAIN start_gain21 = gain21in + gain_delta21;
     const CSAMPLE_GAIN gain_delta22 = (gain22out - gain22in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain22 = gain22in;
+    const CSAMPLE_GAIN start_gain22 = gain22in + gain_delta22;
     const CSAMPLE_GAIN gain_delta23 = (gain23out - gain23in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain23 = gain23in;
+    const CSAMPLE_GAIN start_gain23 = gain23in + gain_delta23;
     const CSAMPLE_GAIN gain_delta24 = (gain24out - gain24in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain24 = gain24in;
+    const CSAMPLE_GAIN start_gain24 = gain24in + gain_delta24;
     const CSAMPLE_GAIN gain_delta25 = (gain25out - gain25in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain25 = gain25in;
-    for (int i = 0; i < iNumSamples; i += 2) {
-        gain0 += gain_delta0;
-        gain1 += gain_delta1;
-        gain2 += gain_delta2;
-        gain3 += gain_delta3;
-        gain4 += gain_delta4;
-        gain5 += gain_delta5;
-        gain6 += gain_delta6;
-        gain7 += gain_delta7;
-        gain8 += gain_delta8;
-        gain9 += gain_delta9;
-        gain10 += gain_delta10;
-        gain11 += gain_delta11;
-        gain12 += gain_delta12;
-        gain13 += gain_delta13;
-        gain14 += gain_delta14;
-        gain15 += gain_delta15;
-        gain16 += gain_delta16;
-        gain17 += gain_delta17;
-        gain18 += gain_delta18;
-        gain19 += gain_delta19;
-        gain20 += gain_delta20;
-        gain21 += gain_delta21;
-        gain22 += gain_delta22;
-        gain23 += gain_delta23;
-        gain24 += gain_delta24;
-        gain25 += gain_delta25;
-        pDest[i] = pSrc0[i] * gain0 +
-                   pSrc1[i] * gain1 +
-                   pSrc2[i] * gain2 +
-                   pSrc3[i] * gain3 +
-                   pSrc4[i] * gain4 +
-                   pSrc5[i] * gain5 +
-                   pSrc6[i] * gain6 +
-                   pSrc7[i] * gain7 +
-                   pSrc8[i] * gain8 +
-                   pSrc9[i] * gain9 +
-                   pSrc10[i] * gain10 +
-                   pSrc11[i] * gain11 +
-                   pSrc12[i] * gain12 +
-                   pSrc13[i] * gain13 +
-                   pSrc14[i] * gain14 +
-                   pSrc15[i] * gain15 +
-                   pSrc16[i] * gain16 +
-                   pSrc17[i] * gain17 +
-                   pSrc18[i] * gain18 +
-                   pSrc19[i] * gain19 +
-                   pSrc20[i] * gain20 +
-                   pSrc21[i] * gain21 +
-                   pSrc22[i] * gain22 +
-                   pSrc23[i] * gain23 +
-                   pSrc24[i] * gain24 +
-                   pSrc25[i] * gain25;
-        pDest[i + 1] = pSrc0[i + 1] * gain0 +
-                       pSrc1[i + 1] * gain1 +
-                       pSrc2[i + 1] * gain2 +
-                       pSrc3[i + 1] * gain3 +
-                       pSrc4[i + 1] * gain4 +
-                       pSrc5[i + 1] * gain5 +
-                       pSrc6[i + 1] * gain6 +
-                       pSrc7[i + 1] * gain7 +
-                       pSrc8[i + 1] * gain8 +
-                       pSrc9[i + 1] * gain9 +
-                       pSrc10[i + 1] * gain10 +
-                       pSrc11[i + 1] * gain11 +
-                       pSrc12[i + 1] * gain12 +
-                       pSrc13[i + 1] * gain13 +
-                       pSrc14[i + 1] * gain14 +
-                       pSrc15[i + 1] * gain15 +
-                       pSrc16[i + 1] * gain16 +
-                       pSrc17[i + 1] * gain17 +
-                       pSrc18[i + 1] * gain18 +
-                       pSrc19[i + 1] * gain19 +
-                       pSrc20[i + 1] * gain20 +
-                       pSrc21[i + 1] * gain21 +
-                       pSrc22[i + 1] * gain22 +
-                       pSrc23[i + 1] * gain23 +
-                       pSrc24[i + 1] * gain24 +
-                       pSrc25[i + 1] * gain25;
+    const CSAMPLE_GAIN start_gain25 = gain25in + gain_delta25;
+    for (int i = 0; i < iNumSamples / 2; ++i) {
+        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
+        const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
+        const CSAMPLE_GAIN gain2 = start_gain2 + gain_delta2 * i;
+        const CSAMPLE_GAIN gain3 = start_gain3 + gain_delta3 * i;
+        const CSAMPLE_GAIN gain4 = start_gain4 + gain_delta4 * i;
+        const CSAMPLE_GAIN gain5 = start_gain5 + gain_delta5 * i;
+        const CSAMPLE_GAIN gain6 = start_gain6 + gain_delta6 * i;
+        const CSAMPLE_GAIN gain7 = start_gain7 + gain_delta7 * i;
+        const CSAMPLE_GAIN gain8 = start_gain8 + gain_delta8 * i;
+        const CSAMPLE_GAIN gain9 = start_gain9 + gain_delta9 * i;
+        const CSAMPLE_GAIN gain10 = start_gain10 + gain_delta10 * i;
+        const CSAMPLE_GAIN gain11 = start_gain11 + gain_delta11 * i;
+        const CSAMPLE_GAIN gain12 = start_gain12 + gain_delta12 * i;
+        const CSAMPLE_GAIN gain13 = start_gain13 + gain_delta13 * i;
+        const CSAMPLE_GAIN gain14 = start_gain14 + gain_delta14 * i;
+        const CSAMPLE_GAIN gain15 = start_gain15 + gain_delta15 * i;
+        const CSAMPLE_GAIN gain16 = start_gain16 + gain_delta16 * i;
+        const CSAMPLE_GAIN gain17 = start_gain17 + gain_delta17 * i;
+        const CSAMPLE_GAIN gain18 = start_gain18 + gain_delta18 * i;
+        const CSAMPLE_GAIN gain19 = start_gain19 + gain_delta19 * i;
+        const CSAMPLE_GAIN gain20 = start_gain20 + gain_delta20 * i;
+        const CSAMPLE_GAIN gain21 = start_gain21 + gain_delta21 * i;
+        const CSAMPLE_GAIN gain22 = start_gain22 + gain_delta22 * i;
+        const CSAMPLE_GAIN gain23 = start_gain23 + gain_delta23 * i;
+        const CSAMPLE_GAIN gain24 = start_gain24 + gain_delta24 * i;
+        const CSAMPLE_GAIN gain25 = start_gain25 + gain_delta25 * i;
+        pDest[i * 2] = pSrc0[i * 2] * gain0 +
+                       pSrc1[i * 2] * gain1 +
+                       pSrc2[i * 2] * gain2 +
+                       pSrc3[i * 2] * gain3 +
+                       pSrc4[i * 2] * gain4 +
+                       pSrc5[i * 2] * gain5 +
+                       pSrc6[i * 2] * gain6 +
+                       pSrc7[i * 2] * gain7 +
+                       pSrc8[i * 2] * gain8 +
+                       pSrc9[i * 2] * gain9 +
+                       pSrc10[i * 2] * gain10 +
+                       pSrc11[i * 2] * gain11 +
+                       pSrc12[i * 2] * gain12 +
+                       pSrc13[i * 2] * gain13 +
+                       pSrc14[i * 2] * gain14 +
+                       pSrc15[i * 2] * gain15 +
+                       pSrc16[i * 2] * gain16 +
+                       pSrc17[i * 2] * gain17 +
+                       pSrc18[i * 2] * gain18 +
+                       pSrc19[i * 2] * gain19 +
+                       pSrc20[i * 2] * gain20 +
+                       pSrc21[i * 2] * gain21 +
+                       pSrc22[i * 2] * gain22 +
+                       pSrc23[i * 2] * gain23 +
+                       pSrc24[i * 2] * gain24 +
+                       pSrc25[i * 2] * gain25;
+        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
+                           pSrc1[i * 2 + 1] * gain1 +
+                           pSrc2[i * 2 + 1] * gain2 +
+                           pSrc3[i * 2 + 1] * gain3 +
+                           pSrc4[i * 2 + 1] * gain4 +
+                           pSrc5[i * 2 + 1] * gain5 +
+                           pSrc6[i * 2 + 1] * gain6 +
+                           pSrc7[i * 2 + 1] * gain7 +
+                           pSrc8[i * 2 + 1] * gain8 +
+                           pSrc9[i * 2 + 1] * gain9 +
+                           pSrc10[i * 2 + 1] * gain10 +
+                           pSrc11[i * 2 + 1] * gain11 +
+                           pSrc12[i * 2 + 1] * gain12 +
+                           pSrc13[i * 2 + 1] * gain13 +
+                           pSrc14[i * 2 + 1] * gain14 +
+                           pSrc15[i * 2 + 1] * gain15 +
+                           pSrc16[i * 2 + 1] * gain16 +
+                           pSrc17[i * 2 + 1] * gain17 +
+                           pSrc18[i * 2 + 1] * gain18 +
+                           pSrc19[i * 2 + 1] * gain19 +
+                           pSrc20[i * 2 + 1] * gain20 +
+                           pSrc21[i * 2 + 1] * gain21 +
+                           pSrc22[i * 2 + 1] * gain22 +
+                           pSrc23[i * 2 + 1] * gain23 +
+                           pSrc24[i * 2 + 1] * gain24 +
+                           pSrc25[i * 2 + 1] * gain25;
     }
 }
 static inline void copy27WithGain(CSAMPLE* _RESTRICT pDest,
@@ -6017,6 +6043,7 @@ static inline void copy27WithGain(CSAMPLE* _RESTRICT pDest,
         copy26WithGain(pDest, pSrc0, gain0, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4, pSrc5, gain5, pSrc6, gain6, pSrc7, gain7, pSrc8, gain8, pSrc9, gain9, pSrc10, gain10, pSrc11, gain11, pSrc12, gain12, pSrc13, gain13, pSrc14, gain14, pSrc15, gain15, pSrc16, gain16, pSrc17, gain17, pSrc18, gain18, pSrc19, gain19, pSrc20, gain20, pSrc21, gain21, pSrc22, gain22, pSrc23, gain23, pSrc24, gain24, pSrc25, gain25, iNumSamples);
         return;
     }
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] = pSrc0[i] * gain0 +
                    pSrc1[i] * gain1 +
@@ -6185,141 +6212,141 @@ static inline void copy27WithRampingGain(CSAMPLE* _RESTRICT pDest,
         return;
     }
     const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain0 = gain0in;
+    const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
     const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain1 = gain1in;
+    const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
     const CSAMPLE_GAIN gain_delta2 = (gain2out - gain2in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain2 = gain2in;
+    const CSAMPLE_GAIN start_gain2 = gain2in + gain_delta2;
     const CSAMPLE_GAIN gain_delta3 = (gain3out - gain3in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain3 = gain3in;
+    const CSAMPLE_GAIN start_gain3 = gain3in + gain_delta3;
     const CSAMPLE_GAIN gain_delta4 = (gain4out - gain4in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain4 = gain4in;
+    const CSAMPLE_GAIN start_gain4 = gain4in + gain_delta4;
     const CSAMPLE_GAIN gain_delta5 = (gain5out - gain5in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain5 = gain5in;
+    const CSAMPLE_GAIN start_gain5 = gain5in + gain_delta5;
     const CSAMPLE_GAIN gain_delta6 = (gain6out - gain6in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain6 = gain6in;
+    const CSAMPLE_GAIN start_gain6 = gain6in + gain_delta6;
     const CSAMPLE_GAIN gain_delta7 = (gain7out - gain7in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain7 = gain7in;
+    const CSAMPLE_GAIN start_gain7 = gain7in + gain_delta7;
     const CSAMPLE_GAIN gain_delta8 = (gain8out - gain8in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain8 = gain8in;
+    const CSAMPLE_GAIN start_gain8 = gain8in + gain_delta8;
     const CSAMPLE_GAIN gain_delta9 = (gain9out - gain9in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain9 = gain9in;
+    const CSAMPLE_GAIN start_gain9 = gain9in + gain_delta9;
     const CSAMPLE_GAIN gain_delta10 = (gain10out - gain10in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain10 = gain10in;
+    const CSAMPLE_GAIN start_gain10 = gain10in + gain_delta10;
     const CSAMPLE_GAIN gain_delta11 = (gain11out - gain11in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain11 = gain11in;
+    const CSAMPLE_GAIN start_gain11 = gain11in + gain_delta11;
     const CSAMPLE_GAIN gain_delta12 = (gain12out - gain12in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain12 = gain12in;
+    const CSAMPLE_GAIN start_gain12 = gain12in + gain_delta12;
     const CSAMPLE_GAIN gain_delta13 = (gain13out - gain13in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain13 = gain13in;
+    const CSAMPLE_GAIN start_gain13 = gain13in + gain_delta13;
     const CSAMPLE_GAIN gain_delta14 = (gain14out - gain14in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain14 = gain14in;
+    const CSAMPLE_GAIN start_gain14 = gain14in + gain_delta14;
     const CSAMPLE_GAIN gain_delta15 = (gain15out - gain15in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain15 = gain15in;
+    const CSAMPLE_GAIN start_gain15 = gain15in + gain_delta15;
     const CSAMPLE_GAIN gain_delta16 = (gain16out - gain16in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain16 = gain16in;
+    const CSAMPLE_GAIN start_gain16 = gain16in + gain_delta16;
     const CSAMPLE_GAIN gain_delta17 = (gain17out - gain17in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain17 = gain17in;
+    const CSAMPLE_GAIN start_gain17 = gain17in + gain_delta17;
     const CSAMPLE_GAIN gain_delta18 = (gain18out - gain18in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain18 = gain18in;
+    const CSAMPLE_GAIN start_gain18 = gain18in + gain_delta18;
     const CSAMPLE_GAIN gain_delta19 = (gain19out - gain19in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain19 = gain19in;
+    const CSAMPLE_GAIN start_gain19 = gain19in + gain_delta19;
     const CSAMPLE_GAIN gain_delta20 = (gain20out - gain20in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain20 = gain20in;
+    const CSAMPLE_GAIN start_gain20 = gain20in + gain_delta20;
     const CSAMPLE_GAIN gain_delta21 = (gain21out - gain21in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain21 = gain21in;
+    const CSAMPLE_GAIN start_gain21 = gain21in + gain_delta21;
     const CSAMPLE_GAIN gain_delta22 = (gain22out - gain22in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain22 = gain22in;
+    const CSAMPLE_GAIN start_gain22 = gain22in + gain_delta22;
     const CSAMPLE_GAIN gain_delta23 = (gain23out - gain23in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain23 = gain23in;
+    const CSAMPLE_GAIN start_gain23 = gain23in + gain_delta23;
     const CSAMPLE_GAIN gain_delta24 = (gain24out - gain24in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain24 = gain24in;
+    const CSAMPLE_GAIN start_gain24 = gain24in + gain_delta24;
     const CSAMPLE_GAIN gain_delta25 = (gain25out - gain25in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain25 = gain25in;
+    const CSAMPLE_GAIN start_gain25 = gain25in + gain_delta25;
     const CSAMPLE_GAIN gain_delta26 = (gain26out - gain26in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain26 = gain26in;
-    for (int i = 0; i < iNumSamples; i += 2) {
-        gain0 += gain_delta0;
-        gain1 += gain_delta1;
-        gain2 += gain_delta2;
-        gain3 += gain_delta3;
-        gain4 += gain_delta4;
-        gain5 += gain_delta5;
-        gain6 += gain_delta6;
-        gain7 += gain_delta7;
-        gain8 += gain_delta8;
-        gain9 += gain_delta9;
-        gain10 += gain_delta10;
-        gain11 += gain_delta11;
-        gain12 += gain_delta12;
-        gain13 += gain_delta13;
-        gain14 += gain_delta14;
-        gain15 += gain_delta15;
-        gain16 += gain_delta16;
-        gain17 += gain_delta17;
-        gain18 += gain_delta18;
-        gain19 += gain_delta19;
-        gain20 += gain_delta20;
-        gain21 += gain_delta21;
-        gain22 += gain_delta22;
-        gain23 += gain_delta23;
-        gain24 += gain_delta24;
-        gain25 += gain_delta25;
-        gain26 += gain_delta26;
-        pDest[i] = pSrc0[i] * gain0 +
-                   pSrc1[i] * gain1 +
-                   pSrc2[i] * gain2 +
-                   pSrc3[i] * gain3 +
-                   pSrc4[i] * gain4 +
-                   pSrc5[i] * gain5 +
-                   pSrc6[i] * gain6 +
-                   pSrc7[i] * gain7 +
-                   pSrc8[i] * gain8 +
-                   pSrc9[i] * gain9 +
-                   pSrc10[i] * gain10 +
-                   pSrc11[i] * gain11 +
-                   pSrc12[i] * gain12 +
-                   pSrc13[i] * gain13 +
-                   pSrc14[i] * gain14 +
-                   pSrc15[i] * gain15 +
-                   pSrc16[i] * gain16 +
-                   pSrc17[i] * gain17 +
-                   pSrc18[i] * gain18 +
-                   pSrc19[i] * gain19 +
-                   pSrc20[i] * gain20 +
-                   pSrc21[i] * gain21 +
-                   pSrc22[i] * gain22 +
-                   pSrc23[i] * gain23 +
-                   pSrc24[i] * gain24 +
-                   pSrc25[i] * gain25 +
-                   pSrc26[i] * gain26;
-        pDest[i + 1] = pSrc0[i + 1] * gain0 +
-                       pSrc1[i + 1] * gain1 +
-                       pSrc2[i + 1] * gain2 +
-                       pSrc3[i + 1] * gain3 +
-                       pSrc4[i + 1] * gain4 +
-                       pSrc5[i + 1] * gain5 +
-                       pSrc6[i + 1] * gain6 +
-                       pSrc7[i + 1] * gain7 +
-                       pSrc8[i + 1] * gain8 +
-                       pSrc9[i + 1] * gain9 +
-                       pSrc10[i + 1] * gain10 +
-                       pSrc11[i + 1] * gain11 +
-                       pSrc12[i + 1] * gain12 +
-                       pSrc13[i + 1] * gain13 +
-                       pSrc14[i + 1] * gain14 +
-                       pSrc15[i + 1] * gain15 +
-                       pSrc16[i + 1] * gain16 +
-                       pSrc17[i + 1] * gain17 +
-                       pSrc18[i + 1] * gain18 +
-                       pSrc19[i + 1] * gain19 +
-                       pSrc20[i + 1] * gain20 +
-                       pSrc21[i + 1] * gain21 +
-                       pSrc22[i + 1] * gain22 +
-                       pSrc23[i + 1] * gain23 +
-                       pSrc24[i + 1] * gain24 +
-                       pSrc25[i + 1] * gain25 +
-                       pSrc26[i + 1] * gain26;
+    const CSAMPLE_GAIN start_gain26 = gain26in + gain_delta26;
+    for (int i = 0; i < iNumSamples / 2; ++i) {
+        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
+        const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
+        const CSAMPLE_GAIN gain2 = start_gain2 + gain_delta2 * i;
+        const CSAMPLE_GAIN gain3 = start_gain3 + gain_delta3 * i;
+        const CSAMPLE_GAIN gain4 = start_gain4 + gain_delta4 * i;
+        const CSAMPLE_GAIN gain5 = start_gain5 + gain_delta5 * i;
+        const CSAMPLE_GAIN gain6 = start_gain6 + gain_delta6 * i;
+        const CSAMPLE_GAIN gain7 = start_gain7 + gain_delta7 * i;
+        const CSAMPLE_GAIN gain8 = start_gain8 + gain_delta8 * i;
+        const CSAMPLE_GAIN gain9 = start_gain9 + gain_delta9 * i;
+        const CSAMPLE_GAIN gain10 = start_gain10 + gain_delta10 * i;
+        const CSAMPLE_GAIN gain11 = start_gain11 + gain_delta11 * i;
+        const CSAMPLE_GAIN gain12 = start_gain12 + gain_delta12 * i;
+        const CSAMPLE_GAIN gain13 = start_gain13 + gain_delta13 * i;
+        const CSAMPLE_GAIN gain14 = start_gain14 + gain_delta14 * i;
+        const CSAMPLE_GAIN gain15 = start_gain15 + gain_delta15 * i;
+        const CSAMPLE_GAIN gain16 = start_gain16 + gain_delta16 * i;
+        const CSAMPLE_GAIN gain17 = start_gain17 + gain_delta17 * i;
+        const CSAMPLE_GAIN gain18 = start_gain18 + gain_delta18 * i;
+        const CSAMPLE_GAIN gain19 = start_gain19 + gain_delta19 * i;
+        const CSAMPLE_GAIN gain20 = start_gain20 + gain_delta20 * i;
+        const CSAMPLE_GAIN gain21 = start_gain21 + gain_delta21 * i;
+        const CSAMPLE_GAIN gain22 = start_gain22 + gain_delta22 * i;
+        const CSAMPLE_GAIN gain23 = start_gain23 + gain_delta23 * i;
+        const CSAMPLE_GAIN gain24 = start_gain24 + gain_delta24 * i;
+        const CSAMPLE_GAIN gain25 = start_gain25 + gain_delta25 * i;
+        const CSAMPLE_GAIN gain26 = start_gain26 + gain_delta26 * i;
+        pDest[i * 2] = pSrc0[i * 2] * gain0 +
+                       pSrc1[i * 2] * gain1 +
+                       pSrc2[i * 2] * gain2 +
+                       pSrc3[i * 2] * gain3 +
+                       pSrc4[i * 2] * gain4 +
+                       pSrc5[i * 2] * gain5 +
+                       pSrc6[i * 2] * gain6 +
+                       pSrc7[i * 2] * gain7 +
+                       pSrc8[i * 2] * gain8 +
+                       pSrc9[i * 2] * gain9 +
+                       pSrc10[i * 2] * gain10 +
+                       pSrc11[i * 2] * gain11 +
+                       pSrc12[i * 2] * gain12 +
+                       pSrc13[i * 2] * gain13 +
+                       pSrc14[i * 2] * gain14 +
+                       pSrc15[i * 2] * gain15 +
+                       pSrc16[i * 2] * gain16 +
+                       pSrc17[i * 2] * gain17 +
+                       pSrc18[i * 2] * gain18 +
+                       pSrc19[i * 2] * gain19 +
+                       pSrc20[i * 2] * gain20 +
+                       pSrc21[i * 2] * gain21 +
+                       pSrc22[i * 2] * gain22 +
+                       pSrc23[i * 2] * gain23 +
+                       pSrc24[i * 2] * gain24 +
+                       pSrc25[i * 2] * gain25 +
+                       pSrc26[i * 2] * gain26;
+        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
+                           pSrc1[i * 2 + 1] * gain1 +
+                           pSrc2[i * 2 + 1] * gain2 +
+                           pSrc3[i * 2 + 1] * gain3 +
+                           pSrc4[i * 2 + 1] * gain4 +
+                           pSrc5[i * 2 + 1] * gain5 +
+                           pSrc6[i * 2 + 1] * gain6 +
+                           pSrc7[i * 2 + 1] * gain7 +
+                           pSrc8[i * 2 + 1] * gain8 +
+                           pSrc9[i * 2 + 1] * gain9 +
+                           pSrc10[i * 2 + 1] * gain10 +
+                           pSrc11[i * 2 + 1] * gain11 +
+                           pSrc12[i * 2 + 1] * gain12 +
+                           pSrc13[i * 2 + 1] * gain13 +
+                           pSrc14[i * 2 + 1] * gain14 +
+                           pSrc15[i * 2 + 1] * gain15 +
+                           pSrc16[i * 2 + 1] * gain16 +
+                           pSrc17[i * 2 + 1] * gain17 +
+                           pSrc18[i * 2 + 1] * gain18 +
+                           pSrc19[i * 2 + 1] * gain19 +
+                           pSrc20[i * 2 + 1] * gain20 +
+                           pSrc21[i * 2 + 1] * gain21 +
+                           pSrc22[i * 2 + 1] * gain22 +
+                           pSrc23[i * 2 + 1] * gain23 +
+                           pSrc24[i * 2 + 1] * gain24 +
+                           pSrc25[i * 2 + 1] * gain25 +
+                           pSrc26[i * 2 + 1] * gain26;
     }
 }
 static inline void copy28WithGain(CSAMPLE* _RESTRICT pDest,
@@ -6464,6 +6491,7 @@ static inline void copy28WithGain(CSAMPLE* _RESTRICT pDest,
         copy27WithGain(pDest, pSrc0, gain0, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4, pSrc5, gain5, pSrc6, gain6, pSrc7, gain7, pSrc8, gain8, pSrc9, gain9, pSrc10, gain10, pSrc11, gain11, pSrc12, gain12, pSrc13, gain13, pSrc14, gain14, pSrc15, gain15, pSrc16, gain16, pSrc17, gain17, pSrc18, gain18, pSrc19, gain19, pSrc20, gain20, pSrc21, gain21, pSrc22, gain22, pSrc23, gain23, pSrc24, gain24, pSrc25, gain25, pSrc26, gain26, iNumSamples);
         return;
     }
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] = pSrc0[i] * gain0 +
                    pSrc1[i] * gain1 +
@@ -6638,146 +6666,146 @@ static inline void copy28WithRampingGain(CSAMPLE* _RESTRICT pDest,
         return;
     }
     const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain0 = gain0in;
+    const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
     const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain1 = gain1in;
+    const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
     const CSAMPLE_GAIN gain_delta2 = (gain2out - gain2in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain2 = gain2in;
+    const CSAMPLE_GAIN start_gain2 = gain2in + gain_delta2;
     const CSAMPLE_GAIN gain_delta3 = (gain3out - gain3in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain3 = gain3in;
+    const CSAMPLE_GAIN start_gain3 = gain3in + gain_delta3;
     const CSAMPLE_GAIN gain_delta4 = (gain4out - gain4in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain4 = gain4in;
+    const CSAMPLE_GAIN start_gain4 = gain4in + gain_delta4;
     const CSAMPLE_GAIN gain_delta5 = (gain5out - gain5in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain5 = gain5in;
+    const CSAMPLE_GAIN start_gain5 = gain5in + gain_delta5;
     const CSAMPLE_GAIN gain_delta6 = (gain6out - gain6in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain6 = gain6in;
+    const CSAMPLE_GAIN start_gain6 = gain6in + gain_delta6;
     const CSAMPLE_GAIN gain_delta7 = (gain7out - gain7in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain7 = gain7in;
+    const CSAMPLE_GAIN start_gain7 = gain7in + gain_delta7;
     const CSAMPLE_GAIN gain_delta8 = (gain8out - gain8in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain8 = gain8in;
+    const CSAMPLE_GAIN start_gain8 = gain8in + gain_delta8;
     const CSAMPLE_GAIN gain_delta9 = (gain9out - gain9in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain9 = gain9in;
+    const CSAMPLE_GAIN start_gain9 = gain9in + gain_delta9;
     const CSAMPLE_GAIN gain_delta10 = (gain10out - gain10in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain10 = gain10in;
+    const CSAMPLE_GAIN start_gain10 = gain10in + gain_delta10;
     const CSAMPLE_GAIN gain_delta11 = (gain11out - gain11in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain11 = gain11in;
+    const CSAMPLE_GAIN start_gain11 = gain11in + gain_delta11;
     const CSAMPLE_GAIN gain_delta12 = (gain12out - gain12in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain12 = gain12in;
+    const CSAMPLE_GAIN start_gain12 = gain12in + gain_delta12;
     const CSAMPLE_GAIN gain_delta13 = (gain13out - gain13in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain13 = gain13in;
+    const CSAMPLE_GAIN start_gain13 = gain13in + gain_delta13;
     const CSAMPLE_GAIN gain_delta14 = (gain14out - gain14in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain14 = gain14in;
+    const CSAMPLE_GAIN start_gain14 = gain14in + gain_delta14;
     const CSAMPLE_GAIN gain_delta15 = (gain15out - gain15in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain15 = gain15in;
+    const CSAMPLE_GAIN start_gain15 = gain15in + gain_delta15;
     const CSAMPLE_GAIN gain_delta16 = (gain16out - gain16in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain16 = gain16in;
+    const CSAMPLE_GAIN start_gain16 = gain16in + gain_delta16;
     const CSAMPLE_GAIN gain_delta17 = (gain17out - gain17in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain17 = gain17in;
+    const CSAMPLE_GAIN start_gain17 = gain17in + gain_delta17;
     const CSAMPLE_GAIN gain_delta18 = (gain18out - gain18in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain18 = gain18in;
+    const CSAMPLE_GAIN start_gain18 = gain18in + gain_delta18;
     const CSAMPLE_GAIN gain_delta19 = (gain19out - gain19in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain19 = gain19in;
+    const CSAMPLE_GAIN start_gain19 = gain19in + gain_delta19;
     const CSAMPLE_GAIN gain_delta20 = (gain20out - gain20in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain20 = gain20in;
+    const CSAMPLE_GAIN start_gain20 = gain20in + gain_delta20;
     const CSAMPLE_GAIN gain_delta21 = (gain21out - gain21in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain21 = gain21in;
+    const CSAMPLE_GAIN start_gain21 = gain21in + gain_delta21;
     const CSAMPLE_GAIN gain_delta22 = (gain22out - gain22in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain22 = gain22in;
+    const CSAMPLE_GAIN start_gain22 = gain22in + gain_delta22;
     const CSAMPLE_GAIN gain_delta23 = (gain23out - gain23in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain23 = gain23in;
+    const CSAMPLE_GAIN start_gain23 = gain23in + gain_delta23;
     const CSAMPLE_GAIN gain_delta24 = (gain24out - gain24in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain24 = gain24in;
+    const CSAMPLE_GAIN start_gain24 = gain24in + gain_delta24;
     const CSAMPLE_GAIN gain_delta25 = (gain25out - gain25in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain25 = gain25in;
+    const CSAMPLE_GAIN start_gain25 = gain25in + gain_delta25;
     const CSAMPLE_GAIN gain_delta26 = (gain26out - gain26in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain26 = gain26in;
+    const CSAMPLE_GAIN start_gain26 = gain26in + gain_delta26;
     const CSAMPLE_GAIN gain_delta27 = (gain27out - gain27in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain27 = gain27in;
-    for (int i = 0; i < iNumSamples; i += 2) {
-        gain0 += gain_delta0;
-        gain1 += gain_delta1;
-        gain2 += gain_delta2;
-        gain3 += gain_delta3;
-        gain4 += gain_delta4;
-        gain5 += gain_delta5;
-        gain6 += gain_delta6;
-        gain7 += gain_delta7;
-        gain8 += gain_delta8;
-        gain9 += gain_delta9;
-        gain10 += gain_delta10;
-        gain11 += gain_delta11;
-        gain12 += gain_delta12;
-        gain13 += gain_delta13;
-        gain14 += gain_delta14;
-        gain15 += gain_delta15;
-        gain16 += gain_delta16;
-        gain17 += gain_delta17;
-        gain18 += gain_delta18;
-        gain19 += gain_delta19;
-        gain20 += gain_delta20;
-        gain21 += gain_delta21;
-        gain22 += gain_delta22;
-        gain23 += gain_delta23;
-        gain24 += gain_delta24;
-        gain25 += gain_delta25;
-        gain26 += gain_delta26;
-        gain27 += gain_delta27;
-        pDest[i] = pSrc0[i] * gain0 +
-                   pSrc1[i] * gain1 +
-                   pSrc2[i] * gain2 +
-                   pSrc3[i] * gain3 +
-                   pSrc4[i] * gain4 +
-                   pSrc5[i] * gain5 +
-                   pSrc6[i] * gain6 +
-                   pSrc7[i] * gain7 +
-                   pSrc8[i] * gain8 +
-                   pSrc9[i] * gain9 +
-                   pSrc10[i] * gain10 +
-                   pSrc11[i] * gain11 +
-                   pSrc12[i] * gain12 +
-                   pSrc13[i] * gain13 +
-                   pSrc14[i] * gain14 +
-                   pSrc15[i] * gain15 +
-                   pSrc16[i] * gain16 +
-                   pSrc17[i] * gain17 +
-                   pSrc18[i] * gain18 +
-                   pSrc19[i] * gain19 +
-                   pSrc20[i] * gain20 +
-                   pSrc21[i] * gain21 +
-                   pSrc22[i] * gain22 +
-                   pSrc23[i] * gain23 +
-                   pSrc24[i] * gain24 +
-                   pSrc25[i] * gain25 +
-                   pSrc26[i] * gain26 +
-                   pSrc27[i] * gain27;
-        pDest[i + 1] = pSrc0[i + 1] * gain0 +
-                       pSrc1[i + 1] * gain1 +
-                       pSrc2[i + 1] * gain2 +
-                       pSrc3[i + 1] * gain3 +
-                       pSrc4[i + 1] * gain4 +
-                       pSrc5[i + 1] * gain5 +
-                       pSrc6[i + 1] * gain6 +
-                       pSrc7[i + 1] * gain7 +
-                       pSrc8[i + 1] * gain8 +
-                       pSrc9[i + 1] * gain9 +
-                       pSrc10[i + 1] * gain10 +
-                       pSrc11[i + 1] * gain11 +
-                       pSrc12[i + 1] * gain12 +
-                       pSrc13[i + 1] * gain13 +
-                       pSrc14[i + 1] * gain14 +
-                       pSrc15[i + 1] * gain15 +
-                       pSrc16[i + 1] * gain16 +
-                       pSrc17[i + 1] * gain17 +
-                       pSrc18[i + 1] * gain18 +
-                       pSrc19[i + 1] * gain19 +
-                       pSrc20[i + 1] * gain20 +
-                       pSrc21[i + 1] * gain21 +
-                       pSrc22[i + 1] * gain22 +
-                       pSrc23[i + 1] * gain23 +
-                       pSrc24[i + 1] * gain24 +
-                       pSrc25[i + 1] * gain25 +
-                       pSrc26[i + 1] * gain26 +
-                       pSrc27[i + 1] * gain27;
+    const CSAMPLE_GAIN start_gain27 = gain27in + gain_delta27;
+    for (int i = 0; i < iNumSamples / 2; ++i) {
+        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
+        const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
+        const CSAMPLE_GAIN gain2 = start_gain2 + gain_delta2 * i;
+        const CSAMPLE_GAIN gain3 = start_gain3 + gain_delta3 * i;
+        const CSAMPLE_GAIN gain4 = start_gain4 + gain_delta4 * i;
+        const CSAMPLE_GAIN gain5 = start_gain5 + gain_delta5 * i;
+        const CSAMPLE_GAIN gain6 = start_gain6 + gain_delta6 * i;
+        const CSAMPLE_GAIN gain7 = start_gain7 + gain_delta7 * i;
+        const CSAMPLE_GAIN gain8 = start_gain8 + gain_delta8 * i;
+        const CSAMPLE_GAIN gain9 = start_gain9 + gain_delta9 * i;
+        const CSAMPLE_GAIN gain10 = start_gain10 + gain_delta10 * i;
+        const CSAMPLE_GAIN gain11 = start_gain11 + gain_delta11 * i;
+        const CSAMPLE_GAIN gain12 = start_gain12 + gain_delta12 * i;
+        const CSAMPLE_GAIN gain13 = start_gain13 + gain_delta13 * i;
+        const CSAMPLE_GAIN gain14 = start_gain14 + gain_delta14 * i;
+        const CSAMPLE_GAIN gain15 = start_gain15 + gain_delta15 * i;
+        const CSAMPLE_GAIN gain16 = start_gain16 + gain_delta16 * i;
+        const CSAMPLE_GAIN gain17 = start_gain17 + gain_delta17 * i;
+        const CSAMPLE_GAIN gain18 = start_gain18 + gain_delta18 * i;
+        const CSAMPLE_GAIN gain19 = start_gain19 + gain_delta19 * i;
+        const CSAMPLE_GAIN gain20 = start_gain20 + gain_delta20 * i;
+        const CSAMPLE_GAIN gain21 = start_gain21 + gain_delta21 * i;
+        const CSAMPLE_GAIN gain22 = start_gain22 + gain_delta22 * i;
+        const CSAMPLE_GAIN gain23 = start_gain23 + gain_delta23 * i;
+        const CSAMPLE_GAIN gain24 = start_gain24 + gain_delta24 * i;
+        const CSAMPLE_GAIN gain25 = start_gain25 + gain_delta25 * i;
+        const CSAMPLE_GAIN gain26 = start_gain26 + gain_delta26 * i;
+        const CSAMPLE_GAIN gain27 = start_gain27 + gain_delta27 * i;
+        pDest[i * 2] = pSrc0[i * 2] * gain0 +
+                       pSrc1[i * 2] * gain1 +
+                       pSrc2[i * 2] * gain2 +
+                       pSrc3[i * 2] * gain3 +
+                       pSrc4[i * 2] * gain4 +
+                       pSrc5[i * 2] * gain5 +
+                       pSrc6[i * 2] * gain6 +
+                       pSrc7[i * 2] * gain7 +
+                       pSrc8[i * 2] * gain8 +
+                       pSrc9[i * 2] * gain9 +
+                       pSrc10[i * 2] * gain10 +
+                       pSrc11[i * 2] * gain11 +
+                       pSrc12[i * 2] * gain12 +
+                       pSrc13[i * 2] * gain13 +
+                       pSrc14[i * 2] * gain14 +
+                       pSrc15[i * 2] * gain15 +
+                       pSrc16[i * 2] * gain16 +
+                       pSrc17[i * 2] * gain17 +
+                       pSrc18[i * 2] * gain18 +
+                       pSrc19[i * 2] * gain19 +
+                       pSrc20[i * 2] * gain20 +
+                       pSrc21[i * 2] * gain21 +
+                       pSrc22[i * 2] * gain22 +
+                       pSrc23[i * 2] * gain23 +
+                       pSrc24[i * 2] * gain24 +
+                       pSrc25[i * 2] * gain25 +
+                       pSrc26[i * 2] * gain26 +
+                       pSrc27[i * 2] * gain27;
+        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
+                           pSrc1[i * 2 + 1] * gain1 +
+                           pSrc2[i * 2 + 1] * gain2 +
+                           pSrc3[i * 2 + 1] * gain3 +
+                           pSrc4[i * 2 + 1] * gain4 +
+                           pSrc5[i * 2 + 1] * gain5 +
+                           pSrc6[i * 2 + 1] * gain6 +
+                           pSrc7[i * 2 + 1] * gain7 +
+                           pSrc8[i * 2 + 1] * gain8 +
+                           pSrc9[i * 2 + 1] * gain9 +
+                           pSrc10[i * 2 + 1] * gain10 +
+                           pSrc11[i * 2 + 1] * gain11 +
+                           pSrc12[i * 2 + 1] * gain12 +
+                           pSrc13[i * 2 + 1] * gain13 +
+                           pSrc14[i * 2 + 1] * gain14 +
+                           pSrc15[i * 2 + 1] * gain15 +
+                           pSrc16[i * 2 + 1] * gain16 +
+                           pSrc17[i * 2 + 1] * gain17 +
+                           pSrc18[i * 2 + 1] * gain18 +
+                           pSrc19[i * 2 + 1] * gain19 +
+                           pSrc20[i * 2 + 1] * gain20 +
+                           pSrc21[i * 2 + 1] * gain21 +
+                           pSrc22[i * 2 + 1] * gain22 +
+                           pSrc23[i * 2 + 1] * gain23 +
+                           pSrc24[i * 2 + 1] * gain24 +
+                           pSrc25[i * 2 + 1] * gain25 +
+                           pSrc26[i * 2 + 1] * gain26 +
+                           pSrc27[i * 2 + 1] * gain27;
     }
 }
 static inline void copy29WithGain(CSAMPLE* _RESTRICT pDest,
@@ -6927,6 +6955,7 @@ static inline void copy29WithGain(CSAMPLE* _RESTRICT pDest,
         copy28WithGain(pDest, pSrc0, gain0, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4, pSrc5, gain5, pSrc6, gain6, pSrc7, gain7, pSrc8, gain8, pSrc9, gain9, pSrc10, gain10, pSrc11, gain11, pSrc12, gain12, pSrc13, gain13, pSrc14, gain14, pSrc15, gain15, pSrc16, gain16, pSrc17, gain17, pSrc18, gain18, pSrc19, gain19, pSrc20, gain20, pSrc21, gain21, pSrc22, gain22, pSrc23, gain23, pSrc24, gain24, pSrc25, gain25, pSrc26, gain26, pSrc27, gain27, iNumSamples);
         return;
     }
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] = pSrc0[i] * gain0 +
                    pSrc1[i] * gain1 +
@@ -7107,151 +7136,151 @@ static inline void copy29WithRampingGain(CSAMPLE* _RESTRICT pDest,
         return;
     }
     const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain0 = gain0in;
+    const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
     const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain1 = gain1in;
+    const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
     const CSAMPLE_GAIN gain_delta2 = (gain2out - gain2in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain2 = gain2in;
+    const CSAMPLE_GAIN start_gain2 = gain2in + gain_delta2;
     const CSAMPLE_GAIN gain_delta3 = (gain3out - gain3in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain3 = gain3in;
+    const CSAMPLE_GAIN start_gain3 = gain3in + gain_delta3;
     const CSAMPLE_GAIN gain_delta4 = (gain4out - gain4in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain4 = gain4in;
+    const CSAMPLE_GAIN start_gain4 = gain4in + gain_delta4;
     const CSAMPLE_GAIN gain_delta5 = (gain5out - gain5in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain5 = gain5in;
+    const CSAMPLE_GAIN start_gain5 = gain5in + gain_delta5;
     const CSAMPLE_GAIN gain_delta6 = (gain6out - gain6in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain6 = gain6in;
+    const CSAMPLE_GAIN start_gain6 = gain6in + gain_delta6;
     const CSAMPLE_GAIN gain_delta7 = (gain7out - gain7in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain7 = gain7in;
+    const CSAMPLE_GAIN start_gain7 = gain7in + gain_delta7;
     const CSAMPLE_GAIN gain_delta8 = (gain8out - gain8in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain8 = gain8in;
+    const CSAMPLE_GAIN start_gain8 = gain8in + gain_delta8;
     const CSAMPLE_GAIN gain_delta9 = (gain9out - gain9in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain9 = gain9in;
+    const CSAMPLE_GAIN start_gain9 = gain9in + gain_delta9;
     const CSAMPLE_GAIN gain_delta10 = (gain10out - gain10in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain10 = gain10in;
+    const CSAMPLE_GAIN start_gain10 = gain10in + gain_delta10;
     const CSAMPLE_GAIN gain_delta11 = (gain11out - gain11in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain11 = gain11in;
+    const CSAMPLE_GAIN start_gain11 = gain11in + gain_delta11;
     const CSAMPLE_GAIN gain_delta12 = (gain12out - gain12in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain12 = gain12in;
+    const CSAMPLE_GAIN start_gain12 = gain12in + gain_delta12;
     const CSAMPLE_GAIN gain_delta13 = (gain13out - gain13in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain13 = gain13in;
+    const CSAMPLE_GAIN start_gain13 = gain13in + gain_delta13;
     const CSAMPLE_GAIN gain_delta14 = (gain14out - gain14in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain14 = gain14in;
+    const CSAMPLE_GAIN start_gain14 = gain14in + gain_delta14;
     const CSAMPLE_GAIN gain_delta15 = (gain15out - gain15in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain15 = gain15in;
+    const CSAMPLE_GAIN start_gain15 = gain15in + gain_delta15;
     const CSAMPLE_GAIN gain_delta16 = (gain16out - gain16in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain16 = gain16in;
+    const CSAMPLE_GAIN start_gain16 = gain16in + gain_delta16;
     const CSAMPLE_GAIN gain_delta17 = (gain17out - gain17in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain17 = gain17in;
+    const CSAMPLE_GAIN start_gain17 = gain17in + gain_delta17;
     const CSAMPLE_GAIN gain_delta18 = (gain18out - gain18in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain18 = gain18in;
+    const CSAMPLE_GAIN start_gain18 = gain18in + gain_delta18;
     const CSAMPLE_GAIN gain_delta19 = (gain19out - gain19in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain19 = gain19in;
+    const CSAMPLE_GAIN start_gain19 = gain19in + gain_delta19;
     const CSAMPLE_GAIN gain_delta20 = (gain20out - gain20in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain20 = gain20in;
+    const CSAMPLE_GAIN start_gain20 = gain20in + gain_delta20;
     const CSAMPLE_GAIN gain_delta21 = (gain21out - gain21in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain21 = gain21in;
+    const CSAMPLE_GAIN start_gain21 = gain21in + gain_delta21;
     const CSAMPLE_GAIN gain_delta22 = (gain22out - gain22in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain22 = gain22in;
+    const CSAMPLE_GAIN start_gain22 = gain22in + gain_delta22;
     const CSAMPLE_GAIN gain_delta23 = (gain23out - gain23in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain23 = gain23in;
+    const CSAMPLE_GAIN start_gain23 = gain23in + gain_delta23;
     const CSAMPLE_GAIN gain_delta24 = (gain24out - gain24in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain24 = gain24in;
+    const CSAMPLE_GAIN start_gain24 = gain24in + gain_delta24;
     const CSAMPLE_GAIN gain_delta25 = (gain25out - gain25in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain25 = gain25in;
+    const CSAMPLE_GAIN start_gain25 = gain25in + gain_delta25;
     const CSAMPLE_GAIN gain_delta26 = (gain26out - gain26in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain26 = gain26in;
+    const CSAMPLE_GAIN start_gain26 = gain26in + gain_delta26;
     const CSAMPLE_GAIN gain_delta27 = (gain27out - gain27in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain27 = gain27in;
+    const CSAMPLE_GAIN start_gain27 = gain27in + gain_delta27;
     const CSAMPLE_GAIN gain_delta28 = (gain28out - gain28in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain28 = gain28in;
-    for (int i = 0; i < iNumSamples; i += 2) {
-        gain0 += gain_delta0;
-        gain1 += gain_delta1;
-        gain2 += gain_delta2;
-        gain3 += gain_delta3;
-        gain4 += gain_delta4;
-        gain5 += gain_delta5;
-        gain6 += gain_delta6;
-        gain7 += gain_delta7;
-        gain8 += gain_delta8;
-        gain9 += gain_delta9;
-        gain10 += gain_delta10;
-        gain11 += gain_delta11;
-        gain12 += gain_delta12;
-        gain13 += gain_delta13;
-        gain14 += gain_delta14;
-        gain15 += gain_delta15;
-        gain16 += gain_delta16;
-        gain17 += gain_delta17;
-        gain18 += gain_delta18;
-        gain19 += gain_delta19;
-        gain20 += gain_delta20;
-        gain21 += gain_delta21;
-        gain22 += gain_delta22;
-        gain23 += gain_delta23;
-        gain24 += gain_delta24;
-        gain25 += gain_delta25;
-        gain26 += gain_delta26;
-        gain27 += gain_delta27;
-        gain28 += gain_delta28;
-        pDest[i] = pSrc0[i] * gain0 +
-                   pSrc1[i] * gain1 +
-                   pSrc2[i] * gain2 +
-                   pSrc3[i] * gain3 +
-                   pSrc4[i] * gain4 +
-                   pSrc5[i] * gain5 +
-                   pSrc6[i] * gain6 +
-                   pSrc7[i] * gain7 +
-                   pSrc8[i] * gain8 +
-                   pSrc9[i] * gain9 +
-                   pSrc10[i] * gain10 +
-                   pSrc11[i] * gain11 +
-                   pSrc12[i] * gain12 +
-                   pSrc13[i] * gain13 +
-                   pSrc14[i] * gain14 +
-                   pSrc15[i] * gain15 +
-                   pSrc16[i] * gain16 +
-                   pSrc17[i] * gain17 +
-                   pSrc18[i] * gain18 +
-                   pSrc19[i] * gain19 +
-                   pSrc20[i] * gain20 +
-                   pSrc21[i] * gain21 +
-                   pSrc22[i] * gain22 +
-                   pSrc23[i] * gain23 +
-                   pSrc24[i] * gain24 +
-                   pSrc25[i] * gain25 +
-                   pSrc26[i] * gain26 +
-                   pSrc27[i] * gain27 +
-                   pSrc28[i] * gain28;
-        pDest[i + 1] = pSrc0[i + 1] * gain0 +
-                       pSrc1[i + 1] * gain1 +
-                       pSrc2[i + 1] * gain2 +
-                       pSrc3[i + 1] * gain3 +
-                       pSrc4[i + 1] * gain4 +
-                       pSrc5[i + 1] * gain5 +
-                       pSrc6[i + 1] * gain6 +
-                       pSrc7[i + 1] * gain7 +
-                       pSrc8[i + 1] * gain8 +
-                       pSrc9[i + 1] * gain9 +
-                       pSrc10[i + 1] * gain10 +
-                       pSrc11[i + 1] * gain11 +
-                       pSrc12[i + 1] * gain12 +
-                       pSrc13[i + 1] * gain13 +
-                       pSrc14[i + 1] * gain14 +
-                       pSrc15[i + 1] * gain15 +
-                       pSrc16[i + 1] * gain16 +
-                       pSrc17[i + 1] * gain17 +
-                       pSrc18[i + 1] * gain18 +
-                       pSrc19[i + 1] * gain19 +
-                       pSrc20[i + 1] * gain20 +
-                       pSrc21[i + 1] * gain21 +
-                       pSrc22[i + 1] * gain22 +
-                       pSrc23[i + 1] * gain23 +
-                       pSrc24[i + 1] * gain24 +
-                       pSrc25[i + 1] * gain25 +
-                       pSrc26[i + 1] * gain26 +
-                       pSrc27[i + 1] * gain27 +
-                       pSrc28[i + 1] * gain28;
+    const CSAMPLE_GAIN start_gain28 = gain28in + gain_delta28;
+    for (int i = 0; i < iNumSamples / 2; ++i) {
+        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
+        const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
+        const CSAMPLE_GAIN gain2 = start_gain2 + gain_delta2 * i;
+        const CSAMPLE_GAIN gain3 = start_gain3 + gain_delta3 * i;
+        const CSAMPLE_GAIN gain4 = start_gain4 + gain_delta4 * i;
+        const CSAMPLE_GAIN gain5 = start_gain5 + gain_delta5 * i;
+        const CSAMPLE_GAIN gain6 = start_gain6 + gain_delta6 * i;
+        const CSAMPLE_GAIN gain7 = start_gain7 + gain_delta7 * i;
+        const CSAMPLE_GAIN gain8 = start_gain8 + gain_delta8 * i;
+        const CSAMPLE_GAIN gain9 = start_gain9 + gain_delta9 * i;
+        const CSAMPLE_GAIN gain10 = start_gain10 + gain_delta10 * i;
+        const CSAMPLE_GAIN gain11 = start_gain11 + gain_delta11 * i;
+        const CSAMPLE_GAIN gain12 = start_gain12 + gain_delta12 * i;
+        const CSAMPLE_GAIN gain13 = start_gain13 + gain_delta13 * i;
+        const CSAMPLE_GAIN gain14 = start_gain14 + gain_delta14 * i;
+        const CSAMPLE_GAIN gain15 = start_gain15 + gain_delta15 * i;
+        const CSAMPLE_GAIN gain16 = start_gain16 + gain_delta16 * i;
+        const CSAMPLE_GAIN gain17 = start_gain17 + gain_delta17 * i;
+        const CSAMPLE_GAIN gain18 = start_gain18 + gain_delta18 * i;
+        const CSAMPLE_GAIN gain19 = start_gain19 + gain_delta19 * i;
+        const CSAMPLE_GAIN gain20 = start_gain20 + gain_delta20 * i;
+        const CSAMPLE_GAIN gain21 = start_gain21 + gain_delta21 * i;
+        const CSAMPLE_GAIN gain22 = start_gain22 + gain_delta22 * i;
+        const CSAMPLE_GAIN gain23 = start_gain23 + gain_delta23 * i;
+        const CSAMPLE_GAIN gain24 = start_gain24 + gain_delta24 * i;
+        const CSAMPLE_GAIN gain25 = start_gain25 + gain_delta25 * i;
+        const CSAMPLE_GAIN gain26 = start_gain26 + gain_delta26 * i;
+        const CSAMPLE_GAIN gain27 = start_gain27 + gain_delta27 * i;
+        const CSAMPLE_GAIN gain28 = start_gain28 + gain_delta28 * i;
+        pDest[i * 2] = pSrc0[i * 2] * gain0 +
+                       pSrc1[i * 2] * gain1 +
+                       pSrc2[i * 2] * gain2 +
+                       pSrc3[i * 2] * gain3 +
+                       pSrc4[i * 2] * gain4 +
+                       pSrc5[i * 2] * gain5 +
+                       pSrc6[i * 2] * gain6 +
+                       pSrc7[i * 2] * gain7 +
+                       pSrc8[i * 2] * gain8 +
+                       pSrc9[i * 2] * gain9 +
+                       pSrc10[i * 2] * gain10 +
+                       pSrc11[i * 2] * gain11 +
+                       pSrc12[i * 2] * gain12 +
+                       pSrc13[i * 2] * gain13 +
+                       pSrc14[i * 2] * gain14 +
+                       pSrc15[i * 2] * gain15 +
+                       pSrc16[i * 2] * gain16 +
+                       pSrc17[i * 2] * gain17 +
+                       pSrc18[i * 2] * gain18 +
+                       pSrc19[i * 2] * gain19 +
+                       pSrc20[i * 2] * gain20 +
+                       pSrc21[i * 2] * gain21 +
+                       pSrc22[i * 2] * gain22 +
+                       pSrc23[i * 2] * gain23 +
+                       pSrc24[i * 2] * gain24 +
+                       pSrc25[i * 2] * gain25 +
+                       pSrc26[i * 2] * gain26 +
+                       pSrc27[i * 2] * gain27 +
+                       pSrc28[i * 2] * gain28;
+        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
+                           pSrc1[i * 2 + 1] * gain1 +
+                           pSrc2[i * 2 + 1] * gain2 +
+                           pSrc3[i * 2 + 1] * gain3 +
+                           pSrc4[i * 2 + 1] * gain4 +
+                           pSrc5[i * 2 + 1] * gain5 +
+                           pSrc6[i * 2 + 1] * gain6 +
+                           pSrc7[i * 2 + 1] * gain7 +
+                           pSrc8[i * 2 + 1] * gain8 +
+                           pSrc9[i * 2 + 1] * gain9 +
+                           pSrc10[i * 2 + 1] * gain10 +
+                           pSrc11[i * 2 + 1] * gain11 +
+                           pSrc12[i * 2 + 1] * gain12 +
+                           pSrc13[i * 2 + 1] * gain13 +
+                           pSrc14[i * 2 + 1] * gain14 +
+                           pSrc15[i * 2 + 1] * gain15 +
+                           pSrc16[i * 2 + 1] * gain16 +
+                           pSrc17[i * 2 + 1] * gain17 +
+                           pSrc18[i * 2 + 1] * gain18 +
+                           pSrc19[i * 2 + 1] * gain19 +
+                           pSrc20[i * 2 + 1] * gain20 +
+                           pSrc21[i * 2 + 1] * gain21 +
+                           pSrc22[i * 2 + 1] * gain22 +
+                           pSrc23[i * 2 + 1] * gain23 +
+                           pSrc24[i * 2 + 1] * gain24 +
+                           pSrc25[i * 2 + 1] * gain25 +
+                           pSrc26[i * 2 + 1] * gain26 +
+                           pSrc27[i * 2 + 1] * gain27 +
+                           pSrc28[i * 2 + 1] * gain28;
     }
 }
 static inline void copy30WithGain(CSAMPLE* _RESTRICT pDest,
@@ -7406,6 +7435,7 @@ static inline void copy30WithGain(CSAMPLE* _RESTRICT pDest,
         copy29WithGain(pDest, pSrc0, gain0, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4, pSrc5, gain5, pSrc6, gain6, pSrc7, gain7, pSrc8, gain8, pSrc9, gain9, pSrc10, gain10, pSrc11, gain11, pSrc12, gain12, pSrc13, gain13, pSrc14, gain14, pSrc15, gain15, pSrc16, gain16, pSrc17, gain17, pSrc18, gain18, pSrc19, gain19, pSrc20, gain20, pSrc21, gain21, pSrc22, gain22, pSrc23, gain23, pSrc24, gain24, pSrc25, gain25, pSrc26, gain26, pSrc27, gain27, pSrc28, gain28, iNumSamples);
         return;
     }
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] = pSrc0[i] * gain0 +
                    pSrc1[i] * gain1 +
@@ -7592,156 +7622,156 @@ static inline void copy30WithRampingGain(CSAMPLE* _RESTRICT pDest,
         return;
     }
     const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain0 = gain0in;
+    const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
     const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain1 = gain1in;
+    const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
     const CSAMPLE_GAIN gain_delta2 = (gain2out - gain2in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain2 = gain2in;
+    const CSAMPLE_GAIN start_gain2 = gain2in + gain_delta2;
     const CSAMPLE_GAIN gain_delta3 = (gain3out - gain3in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain3 = gain3in;
+    const CSAMPLE_GAIN start_gain3 = gain3in + gain_delta3;
     const CSAMPLE_GAIN gain_delta4 = (gain4out - gain4in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain4 = gain4in;
+    const CSAMPLE_GAIN start_gain4 = gain4in + gain_delta4;
     const CSAMPLE_GAIN gain_delta5 = (gain5out - gain5in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain5 = gain5in;
+    const CSAMPLE_GAIN start_gain5 = gain5in + gain_delta5;
     const CSAMPLE_GAIN gain_delta6 = (gain6out - gain6in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain6 = gain6in;
+    const CSAMPLE_GAIN start_gain6 = gain6in + gain_delta6;
     const CSAMPLE_GAIN gain_delta7 = (gain7out - gain7in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain7 = gain7in;
+    const CSAMPLE_GAIN start_gain7 = gain7in + gain_delta7;
     const CSAMPLE_GAIN gain_delta8 = (gain8out - gain8in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain8 = gain8in;
+    const CSAMPLE_GAIN start_gain8 = gain8in + gain_delta8;
     const CSAMPLE_GAIN gain_delta9 = (gain9out - gain9in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain9 = gain9in;
+    const CSAMPLE_GAIN start_gain9 = gain9in + gain_delta9;
     const CSAMPLE_GAIN gain_delta10 = (gain10out - gain10in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain10 = gain10in;
+    const CSAMPLE_GAIN start_gain10 = gain10in + gain_delta10;
     const CSAMPLE_GAIN gain_delta11 = (gain11out - gain11in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain11 = gain11in;
+    const CSAMPLE_GAIN start_gain11 = gain11in + gain_delta11;
     const CSAMPLE_GAIN gain_delta12 = (gain12out - gain12in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain12 = gain12in;
+    const CSAMPLE_GAIN start_gain12 = gain12in + gain_delta12;
     const CSAMPLE_GAIN gain_delta13 = (gain13out - gain13in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain13 = gain13in;
+    const CSAMPLE_GAIN start_gain13 = gain13in + gain_delta13;
     const CSAMPLE_GAIN gain_delta14 = (gain14out - gain14in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain14 = gain14in;
+    const CSAMPLE_GAIN start_gain14 = gain14in + gain_delta14;
     const CSAMPLE_GAIN gain_delta15 = (gain15out - gain15in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain15 = gain15in;
+    const CSAMPLE_GAIN start_gain15 = gain15in + gain_delta15;
     const CSAMPLE_GAIN gain_delta16 = (gain16out - gain16in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain16 = gain16in;
+    const CSAMPLE_GAIN start_gain16 = gain16in + gain_delta16;
     const CSAMPLE_GAIN gain_delta17 = (gain17out - gain17in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain17 = gain17in;
+    const CSAMPLE_GAIN start_gain17 = gain17in + gain_delta17;
     const CSAMPLE_GAIN gain_delta18 = (gain18out - gain18in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain18 = gain18in;
+    const CSAMPLE_GAIN start_gain18 = gain18in + gain_delta18;
     const CSAMPLE_GAIN gain_delta19 = (gain19out - gain19in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain19 = gain19in;
+    const CSAMPLE_GAIN start_gain19 = gain19in + gain_delta19;
     const CSAMPLE_GAIN gain_delta20 = (gain20out - gain20in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain20 = gain20in;
+    const CSAMPLE_GAIN start_gain20 = gain20in + gain_delta20;
     const CSAMPLE_GAIN gain_delta21 = (gain21out - gain21in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain21 = gain21in;
+    const CSAMPLE_GAIN start_gain21 = gain21in + gain_delta21;
     const CSAMPLE_GAIN gain_delta22 = (gain22out - gain22in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain22 = gain22in;
+    const CSAMPLE_GAIN start_gain22 = gain22in + gain_delta22;
     const CSAMPLE_GAIN gain_delta23 = (gain23out - gain23in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain23 = gain23in;
+    const CSAMPLE_GAIN start_gain23 = gain23in + gain_delta23;
     const CSAMPLE_GAIN gain_delta24 = (gain24out - gain24in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain24 = gain24in;
+    const CSAMPLE_GAIN start_gain24 = gain24in + gain_delta24;
     const CSAMPLE_GAIN gain_delta25 = (gain25out - gain25in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain25 = gain25in;
+    const CSAMPLE_GAIN start_gain25 = gain25in + gain_delta25;
     const CSAMPLE_GAIN gain_delta26 = (gain26out - gain26in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain26 = gain26in;
+    const CSAMPLE_GAIN start_gain26 = gain26in + gain_delta26;
     const CSAMPLE_GAIN gain_delta27 = (gain27out - gain27in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain27 = gain27in;
+    const CSAMPLE_GAIN start_gain27 = gain27in + gain_delta27;
     const CSAMPLE_GAIN gain_delta28 = (gain28out - gain28in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain28 = gain28in;
+    const CSAMPLE_GAIN start_gain28 = gain28in + gain_delta28;
     const CSAMPLE_GAIN gain_delta29 = (gain29out - gain29in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain29 = gain29in;
-    for (int i = 0; i < iNumSamples; i += 2) {
-        gain0 += gain_delta0;
-        gain1 += gain_delta1;
-        gain2 += gain_delta2;
-        gain3 += gain_delta3;
-        gain4 += gain_delta4;
-        gain5 += gain_delta5;
-        gain6 += gain_delta6;
-        gain7 += gain_delta7;
-        gain8 += gain_delta8;
-        gain9 += gain_delta9;
-        gain10 += gain_delta10;
-        gain11 += gain_delta11;
-        gain12 += gain_delta12;
-        gain13 += gain_delta13;
-        gain14 += gain_delta14;
-        gain15 += gain_delta15;
-        gain16 += gain_delta16;
-        gain17 += gain_delta17;
-        gain18 += gain_delta18;
-        gain19 += gain_delta19;
-        gain20 += gain_delta20;
-        gain21 += gain_delta21;
-        gain22 += gain_delta22;
-        gain23 += gain_delta23;
-        gain24 += gain_delta24;
-        gain25 += gain_delta25;
-        gain26 += gain_delta26;
-        gain27 += gain_delta27;
-        gain28 += gain_delta28;
-        gain29 += gain_delta29;
-        pDest[i] = pSrc0[i] * gain0 +
-                   pSrc1[i] * gain1 +
-                   pSrc2[i] * gain2 +
-                   pSrc3[i] * gain3 +
-                   pSrc4[i] * gain4 +
-                   pSrc5[i] * gain5 +
-                   pSrc6[i] * gain6 +
-                   pSrc7[i] * gain7 +
-                   pSrc8[i] * gain8 +
-                   pSrc9[i] * gain9 +
-                   pSrc10[i] * gain10 +
-                   pSrc11[i] * gain11 +
-                   pSrc12[i] * gain12 +
-                   pSrc13[i] * gain13 +
-                   pSrc14[i] * gain14 +
-                   pSrc15[i] * gain15 +
-                   pSrc16[i] * gain16 +
-                   pSrc17[i] * gain17 +
-                   pSrc18[i] * gain18 +
-                   pSrc19[i] * gain19 +
-                   pSrc20[i] * gain20 +
-                   pSrc21[i] * gain21 +
-                   pSrc22[i] * gain22 +
-                   pSrc23[i] * gain23 +
-                   pSrc24[i] * gain24 +
-                   pSrc25[i] * gain25 +
-                   pSrc26[i] * gain26 +
-                   pSrc27[i] * gain27 +
-                   pSrc28[i] * gain28 +
-                   pSrc29[i] * gain29;
-        pDest[i + 1] = pSrc0[i + 1] * gain0 +
-                       pSrc1[i + 1] * gain1 +
-                       pSrc2[i + 1] * gain2 +
-                       pSrc3[i + 1] * gain3 +
-                       pSrc4[i + 1] * gain4 +
-                       pSrc5[i + 1] * gain5 +
-                       pSrc6[i + 1] * gain6 +
-                       pSrc7[i + 1] * gain7 +
-                       pSrc8[i + 1] * gain8 +
-                       pSrc9[i + 1] * gain9 +
-                       pSrc10[i + 1] * gain10 +
-                       pSrc11[i + 1] * gain11 +
-                       pSrc12[i + 1] * gain12 +
-                       pSrc13[i + 1] * gain13 +
-                       pSrc14[i + 1] * gain14 +
-                       pSrc15[i + 1] * gain15 +
-                       pSrc16[i + 1] * gain16 +
-                       pSrc17[i + 1] * gain17 +
-                       pSrc18[i + 1] * gain18 +
-                       pSrc19[i + 1] * gain19 +
-                       pSrc20[i + 1] * gain20 +
-                       pSrc21[i + 1] * gain21 +
-                       pSrc22[i + 1] * gain22 +
-                       pSrc23[i + 1] * gain23 +
-                       pSrc24[i + 1] * gain24 +
-                       pSrc25[i + 1] * gain25 +
-                       pSrc26[i + 1] * gain26 +
-                       pSrc27[i + 1] * gain27 +
-                       pSrc28[i + 1] * gain28 +
-                       pSrc29[i + 1] * gain29;
+    const CSAMPLE_GAIN start_gain29 = gain29in + gain_delta29;
+    for (int i = 0; i < iNumSamples / 2; ++i) {
+        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
+        const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
+        const CSAMPLE_GAIN gain2 = start_gain2 + gain_delta2 * i;
+        const CSAMPLE_GAIN gain3 = start_gain3 + gain_delta3 * i;
+        const CSAMPLE_GAIN gain4 = start_gain4 + gain_delta4 * i;
+        const CSAMPLE_GAIN gain5 = start_gain5 + gain_delta5 * i;
+        const CSAMPLE_GAIN gain6 = start_gain6 + gain_delta6 * i;
+        const CSAMPLE_GAIN gain7 = start_gain7 + gain_delta7 * i;
+        const CSAMPLE_GAIN gain8 = start_gain8 + gain_delta8 * i;
+        const CSAMPLE_GAIN gain9 = start_gain9 + gain_delta9 * i;
+        const CSAMPLE_GAIN gain10 = start_gain10 + gain_delta10 * i;
+        const CSAMPLE_GAIN gain11 = start_gain11 + gain_delta11 * i;
+        const CSAMPLE_GAIN gain12 = start_gain12 + gain_delta12 * i;
+        const CSAMPLE_GAIN gain13 = start_gain13 + gain_delta13 * i;
+        const CSAMPLE_GAIN gain14 = start_gain14 + gain_delta14 * i;
+        const CSAMPLE_GAIN gain15 = start_gain15 + gain_delta15 * i;
+        const CSAMPLE_GAIN gain16 = start_gain16 + gain_delta16 * i;
+        const CSAMPLE_GAIN gain17 = start_gain17 + gain_delta17 * i;
+        const CSAMPLE_GAIN gain18 = start_gain18 + gain_delta18 * i;
+        const CSAMPLE_GAIN gain19 = start_gain19 + gain_delta19 * i;
+        const CSAMPLE_GAIN gain20 = start_gain20 + gain_delta20 * i;
+        const CSAMPLE_GAIN gain21 = start_gain21 + gain_delta21 * i;
+        const CSAMPLE_GAIN gain22 = start_gain22 + gain_delta22 * i;
+        const CSAMPLE_GAIN gain23 = start_gain23 + gain_delta23 * i;
+        const CSAMPLE_GAIN gain24 = start_gain24 + gain_delta24 * i;
+        const CSAMPLE_GAIN gain25 = start_gain25 + gain_delta25 * i;
+        const CSAMPLE_GAIN gain26 = start_gain26 + gain_delta26 * i;
+        const CSAMPLE_GAIN gain27 = start_gain27 + gain_delta27 * i;
+        const CSAMPLE_GAIN gain28 = start_gain28 + gain_delta28 * i;
+        const CSAMPLE_GAIN gain29 = start_gain29 + gain_delta29 * i;
+        pDest[i * 2] = pSrc0[i * 2] * gain0 +
+                       pSrc1[i * 2] * gain1 +
+                       pSrc2[i * 2] * gain2 +
+                       pSrc3[i * 2] * gain3 +
+                       pSrc4[i * 2] * gain4 +
+                       pSrc5[i * 2] * gain5 +
+                       pSrc6[i * 2] * gain6 +
+                       pSrc7[i * 2] * gain7 +
+                       pSrc8[i * 2] * gain8 +
+                       pSrc9[i * 2] * gain9 +
+                       pSrc10[i * 2] * gain10 +
+                       pSrc11[i * 2] * gain11 +
+                       pSrc12[i * 2] * gain12 +
+                       pSrc13[i * 2] * gain13 +
+                       pSrc14[i * 2] * gain14 +
+                       pSrc15[i * 2] * gain15 +
+                       pSrc16[i * 2] * gain16 +
+                       pSrc17[i * 2] * gain17 +
+                       pSrc18[i * 2] * gain18 +
+                       pSrc19[i * 2] * gain19 +
+                       pSrc20[i * 2] * gain20 +
+                       pSrc21[i * 2] * gain21 +
+                       pSrc22[i * 2] * gain22 +
+                       pSrc23[i * 2] * gain23 +
+                       pSrc24[i * 2] * gain24 +
+                       pSrc25[i * 2] * gain25 +
+                       pSrc26[i * 2] * gain26 +
+                       pSrc27[i * 2] * gain27 +
+                       pSrc28[i * 2] * gain28 +
+                       pSrc29[i * 2] * gain29;
+        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
+                           pSrc1[i * 2 + 1] * gain1 +
+                           pSrc2[i * 2 + 1] * gain2 +
+                           pSrc3[i * 2 + 1] * gain3 +
+                           pSrc4[i * 2 + 1] * gain4 +
+                           pSrc5[i * 2 + 1] * gain5 +
+                           pSrc6[i * 2 + 1] * gain6 +
+                           pSrc7[i * 2 + 1] * gain7 +
+                           pSrc8[i * 2 + 1] * gain8 +
+                           pSrc9[i * 2 + 1] * gain9 +
+                           pSrc10[i * 2 + 1] * gain10 +
+                           pSrc11[i * 2 + 1] * gain11 +
+                           pSrc12[i * 2 + 1] * gain12 +
+                           pSrc13[i * 2 + 1] * gain13 +
+                           pSrc14[i * 2 + 1] * gain14 +
+                           pSrc15[i * 2 + 1] * gain15 +
+                           pSrc16[i * 2 + 1] * gain16 +
+                           pSrc17[i * 2 + 1] * gain17 +
+                           pSrc18[i * 2 + 1] * gain18 +
+                           pSrc19[i * 2 + 1] * gain19 +
+                           pSrc20[i * 2 + 1] * gain20 +
+                           pSrc21[i * 2 + 1] * gain21 +
+                           pSrc22[i * 2 + 1] * gain22 +
+                           pSrc23[i * 2 + 1] * gain23 +
+                           pSrc24[i * 2 + 1] * gain24 +
+                           pSrc25[i * 2 + 1] * gain25 +
+                           pSrc26[i * 2 + 1] * gain26 +
+                           pSrc27[i * 2 + 1] * gain27 +
+                           pSrc28[i * 2 + 1] * gain28 +
+                           pSrc29[i * 2 + 1] * gain29;
     }
 }
 static inline void copy31WithGain(CSAMPLE* _RESTRICT pDest,
@@ -7901,6 +7931,7 @@ static inline void copy31WithGain(CSAMPLE* _RESTRICT pDest,
         copy30WithGain(pDest, pSrc0, gain0, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4, pSrc5, gain5, pSrc6, gain6, pSrc7, gain7, pSrc8, gain8, pSrc9, gain9, pSrc10, gain10, pSrc11, gain11, pSrc12, gain12, pSrc13, gain13, pSrc14, gain14, pSrc15, gain15, pSrc16, gain16, pSrc17, gain17, pSrc18, gain18, pSrc19, gain19, pSrc20, gain20, pSrc21, gain21, pSrc22, gain22, pSrc23, gain23, pSrc24, gain24, pSrc25, gain25, pSrc26, gain26, pSrc27, gain27, pSrc28, gain28, pSrc29, gain29, iNumSamples);
         return;
     }
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] = pSrc0[i] * gain0 +
                    pSrc1[i] * gain1 +
@@ -8093,161 +8124,161 @@ static inline void copy31WithRampingGain(CSAMPLE* _RESTRICT pDest,
         return;
     }
     const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain0 = gain0in;
+    const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
     const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain1 = gain1in;
+    const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
     const CSAMPLE_GAIN gain_delta2 = (gain2out - gain2in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain2 = gain2in;
+    const CSAMPLE_GAIN start_gain2 = gain2in + gain_delta2;
     const CSAMPLE_GAIN gain_delta3 = (gain3out - gain3in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain3 = gain3in;
+    const CSAMPLE_GAIN start_gain3 = gain3in + gain_delta3;
     const CSAMPLE_GAIN gain_delta4 = (gain4out - gain4in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain4 = gain4in;
+    const CSAMPLE_GAIN start_gain4 = gain4in + gain_delta4;
     const CSAMPLE_GAIN gain_delta5 = (gain5out - gain5in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain5 = gain5in;
+    const CSAMPLE_GAIN start_gain5 = gain5in + gain_delta5;
     const CSAMPLE_GAIN gain_delta6 = (gain6out - gain6in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain6 = gain6in;
+    const CSAMPLE_GAIN start_gain6 = gain6in + gain_delta6;
     const CSAMPLE_GAIN gain_delta7 = (gain7out - gain7in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain7 = gain7in;
+    const CSAMPLE_GAIN start_gain7 = gain7in + gain_delta7;
     const CSAMPLE_GAIN gain_delta8 = (gain8out - gain8in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain8 = gain8in;
+    const CSAMPLE_GAIN start_gain8 = gain8in + gain_delta8;
     const CSAMPLE_GAIN gain_delta9 = (gain9out - gain9in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain9 = gain9in;
+    const CSAMPLE_GAIN start_gain9 = gain9in + gain_delta9;
     const CSAMPLE_GAIN gain_delta10 = (gain10out - gain10in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain10 = gain10in;
+    const CSAMPLE_GAIN start_gain10 = gain10in + gain_delta10;
     const CSAMPLE_GAIN gain_delta11 = (gain11out - gain11in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain11 = gain11in;
+    const CSAMPLE_GAIN start_gain11 = gain11in + gain_delta11;
     const CSAMPLE_GAIN gain_delta12 = (gain12out - gain12in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain12 = gain12in;
+    const CSAMPLE_GAIN start_gain12 = gain12in + gain_delta12;
     const CSAMPLE_GAIN gain_delta13 = (gain13out - gain13in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain13 = gain13in;
+    const CSAMPLE_GAIN start_gain13 = gain13in + gain_delta13;
     const CSAMPLE_GAIN gain_delta14 = (gain14out - gain14in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain14 = gain14in;
+    const CSAMPLE_GAIN start_gain14 = gain14in + gain_delta14;
     const CSAMPLE_GAIN gain_delta15 = (gain15out - gain15in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain15 = gain15in;
+    const CSAMPLE_GAIN start_gain15 = gain15in + gain_delta15;
     const CSAMPLE_GAIN gain_delta16 = (gain16out - gain16in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain16 = gain16in;
+    const CSAMPLE_GAIN start_gain16 = gain16in + gain_delta16;
     const CSAMPLE_GAIN gain_delta17 = (gain17out - gain17in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain17 = gain17in;
+    const CSAMPLE_GAIN start_gain17 = gain17in + gain_delta17;
     const CSAMPLE_GAIN gain_delta18 = (gain18out - gain18in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain18 = gain18in;
+    const CSAMPLE_GAIN start_gain18 = gain18in + gain_delta18;
     const CSAMPLE_GAIN gain_delta19 = (gain19out - gain19in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain19 = gain19in;
+    const CSAMPLE_GAIN start_gain19 = gain19in + gain_delta19;
     const CSAMPLE_GAIN gain_delta20 = (gain20out - gain20in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain20 = gain20in;
+    const CSAMPLE_GAIN start_gain20 = gain20in + gain_delta20;
     const CSAMPLE_GAIN gain_delta21 = (gain21out - gain21in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain21 = gain21in;
+    const CSAMPLE_GAIN start_gain21 = gain21in + gain_delta21;
     const CSAMPLE_GAIN gain_delta22 = (gain22out - gain22in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain22 = gain22in;
+    const CSAMPLE_GAIN start_gain22 = gain22in + gain_delta22;
     const CSAMPLE_GAIN gain_delta23 = (gain23out - gain23in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain23 = gain23in;
+    const CSAMPLE_GAIN start_gain23 = gain23in + gain_delta23;
     const CSAMPLE_GAIN gain_delta24 = (gain24out - gain24in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain24 = gain24in;
+    const CSAMPLE_GAIN start_gain24 = gain24in + gain_delta24;
     const CSAMPLE_GAIN gain_delta25 = (gain25out - gain25in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain25 = gain25in;
+    const CSAMPLE_GAIN start_gain25 = gain25in + gain_delta25;
     const CSAMPLE_GAIN gain_delta26 = (gain26out - gain26in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain26 = gain26in;
+    const CSAMPLE_GAIN start_gain26 = gain26in + gain_delta26;
     const CSAMPLE_GAIN gain_delta27 = (gain27out - gain27in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain27 = gain27in;
+    const CSAMPLE_GAIN start_gain27 = gain27in + gain_delta27;
     const CSAMPLE_GAIN gain_delta28 = (gain28out - gain28in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain28 = gain28in;
+    const CSAMPLE_GAIN start_gain28 = gain28in + gain_delta28;
     const CSAMPLE_GAIN gain_delta29 = (gain29out - gain29in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain29 = gain29in;
+    const CSAMPLE_GAIN start_gain29 = gain29in + gain_delta29;
     const CSAMPLE_GAIN gain_delta30 = (gain30out - gain30in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain30 = gain30in;
-    for (int i = 0; i < iNumSamples; i += 2) {
-        gain0 += gain_delta0;
-        gain1 += gain_delta1;
-        gain2 += gain_delta2;
-        gain3 += gain_delta3;
-        gain4 += gain_delta4;
-        gain5 += gain_delta5;
-        gain6 += gain_delta6;
-        gain7 += gain_delta7;
-        gain8 += gain_delta8;
-        gain9 += gain_delta9;
-        gain10 += gain_delta10;
-        gain11 += gain_delta11;
-        gain12 += gain_delta12;
-        gain13 += gain_delta13;
-        gain14 += gain_delta14;
-        gain15 += gain_delta15;
-        gain16 += gain_delta16;
-        gain17 += gain_delta17;
-        gain18 += gain_delta18;
-        gain19 += gain_delta19;
-        gain20 += gain_delta20;
-        gain21 += gain_delta21;
-        gain22 += gain_delta22;
-        gain23 += gain_delta23;
-        gain24 += gain_delta24;
-        gain25 += gain_delta25;
-        gain26 += gain_delta26;
-        gain27 += gain_delta27;
-        gain28 += gain_delta28;
-        gain29 += gain_delta29;
-        gain30 += gain_delta30;
-        pDest[i] = pSrc0[i] * gain0 +
-                   pSrc1[i] * gain1 +
-                   pSrc2[i] * gain2 +
-                   pSrc3[i] * gain3 +
-                   pSrc4[i] * gain4 +
-                   pSrc5[i] * gain5 +
-                   pSrc6[i] * gain6 +
-                   pSrc7[i] * gain7 +
-                   pSrc8[i] * gain8 +
-                   pSrc9[i] * gain9 +
-                   pSrc10[i] * gain10 +
-                   pSrc11[i] * gain11 +
-                   pSrc12[i] * gain12 +
-                   pSrc13[i] * gain13 +
-                   pSrc14[i] * gain14 +
-                   pSrc15[i] * gain15 +
-                   pSrc16[i] * gain16 +
-                   pSrc17[i] * gain17 +
-                   pSrc18[i] * gain18 +
-                   pSrc19[i] * gain19 +
-                   pSrc20[i] * gain20 +
-                   pSrc21[i] * gain21 +
-                   pSrc22[i] * gain22 +
-                   pSrc23[i] * gain23 +
-                   pSrc24[i] * gain24 +
-                   pSrc25[i] * gain25 +
-                   pSrc26[i] * gain26 +
-                   pSrc27[i] * gain27 +
-                   pSrc28[i] * gain28 +
-                   pSrc29[i] * gain29 +
-                   pSrc30[i] * gain30;
-        pDest[i + 1] = pSrc0[i + 1] * gain0 +
-                       pSrc1[i + 1] * gain1 +
-                       pSrc2[i + 1] * gain2 +
-                       pSrc3[i + 1] * gain3 +
-                       pSrc4[i + 1] * gain4 +
-                       pSrc5[i + 1] * gain5 +
-                       pSrc6[i + 1] * gain6 +
-                       pSrc7[i + 1] * gain7 +
-                       pSrc8[i + 1] * gain8 +
-                       pSrc9[i + 1] * gain9 +
-                       pSrc10[i + 1] * gain10 +
-                       pSrc11[i + 1] * gain11 +
-                       pSrc12[i + 1] * gain12 +
-                       pSrc13[i + 1] * gain13 +
-                       pSrc14[i + 1] * gain14 +
-                       pSrc15[i + 1] * gain15 +
-                       pSrc16[i + 1] * gain16 +
-                       pSrc17[i + 1] * gain17 +
-                       pSrc18[i + 1] * gain18 +
-                       pSrc19[i + 1] * gain19 +
-                       pSrc20[i + 1] * gain20 +
-                       pSrc21[i + 1] * gain21 +
-                       pSrc22[i + 1] * gain22 +
-                       pSrc23[i + 1] * gain23 +
-                       pSrc24[i + 1] * gain24 +
-                       pSrc25[i + 1] * gain25 +
-                       pSrc26[i + 1] * gain26 +
-                       pSrc27[i + 1] * gain27 +
-                       pSrc28[i + 1] * gain28 +
-                       pSrc29[i + 1] * gain29 +
-                       pSrc30[i + 1] * gain30;
+    const CSAMPLE_GAIN start_gain30 = gain30in + gain_delta30;
+    for (int i = 0; i < iNumSamples / 2; ++i) {
+        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
+        const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
+        const CSAMPLE_GAIN gain2 = start_gain2 + gain_delta2 * i;
+        const CSAMPLE_GAIN gain3 = start_gain3 + gain_delta3 * i;
+        const CSAMPLE_GAIN gain4 = start_gain4 + gain_delta4 * i;
+        const CSAMPLE_GAIN gain5 = start_gain5 + gain_delta5 * i;
+        const CSAMPLE_GAIN gain6 = start_gain6 + gain_delta6 * i;
+        const CSAMPLE_GAIN gain7 = start_gain7 + gain_delta7 * i;
+        const CSAMPLE_GAIN gain8 = start_gain8 + gain_delta8 * i;
+        const CSAMPLE_GAIN gain9 = start_gain9 + gain_delta9 * i;
+        const CSAMPLE_GAIN gain10 = start_gain10 + gain_delta10 * i;
+        const CSAMPLE_GAIN gain11 = start_gain11 + gain_delta11 * i;
+        const CSAMPLE_GAIN gain12 = start_gain12 + gain_delta12 * i;
+        const CSAMPLE_GAIN gain13 = start_gain13 + gain_delta13 * i;
+        const CSAMPLE_GAIN gain14 = start_gain14 + gain_delta14 * i;
+        const CSAMPLE_GAIN gain15 = start_gain15 + gain_delta15 * i;
+        const CSAMPLE_GAIN gain16 = start_gain16 + gain_delta16 * i;
+        const CSAMPLE_GAIN gain17 = start_gain17 + gain_delta17 * i;
+        const CSAMPLE_GAIN gain18 = start_gain18 + gain_delta18 * i;
+        const CSAMPLE_GAIN gain19 = start_gain19 + gain_delta19 * i;
+        const CSAMPLE_GAIN gain20 = start_gain20 + gain_delta20 * i;
+        const CSAMPLE_GAIN gain21 = start_gain21 + gain_delta21 * i;
+        const CSAMPLE_GAIN gain22 = start_gain22 + gain_delta22 * i;
+        const CSAMPLE_GAIN gain23 = start_gain23 + gain_delta23 * i;
+        const CSAMPLE_GAIN gain24 = start_gain24 + gain_delta24 * i;
+        const CSAMPLE_GAIN gain25 = start_gain25 + gain_delta25 * i;
+        const CSAMPLE_GAIN gain26 = start_gain26 + gain_delta26 * i;
+        const CSAMPLE_GAIN gain27 = start_gain27 + gain_delta27 * i;
+        const CSAMPLE_GAIN gain28 = start_gain28 + gain_delta28 * i;
+        const CSAMPLE_GAIN gain29 = start_gain29 + gain_delta29 * i;
+        const CSAMPLE_GAIN gain30 = start_gain30 + gain_delta30 * i;
+        pDest[i * 2] = pSrc0[i * 2] * gain0 +
+                       pSrc1[i * 2] * gain1 +
+                       pSrc2[i * 2] * gain2 +
+                       pSrc3[i * 2] * gain3 +
+                       pSrc4[i * 2] * gain4 +
+                       pSrc5[i * 2] * gain5 +
+                       pSrc6[i * 2] * gain6 +
+                       pSrc7[i * 2] * gain7 +
+                       pSrc8[i * 2] * gain8 +
+                       pSrc9[i * 2] * gain9 +
+                       pSrc10[i * 2] * gain10 +
+                       pSrc11[i * 2] * gain11 +
+                       pSrc12[i * 2] * gain12 +
+                       pSrc13[i * 2] * gain13 +
+                       pSrc14[i * 2] * gain14 +
+                       pSrc15[i * 2] * gain15 +
+                       pSrc16[i * 2] * gain16 +
+                       pSrc17[i * 2] * gain17 +
+                       pSrc18[i * 2] * gain18 +
+                       pSrc19[i * 2] * gain19 +
+                       pSrc20[i * 2] * gain20 +
+                       pSrc21[i * 2] * gain21 +
+                       pSrc22[i * 2] * gain22 +
+                       pSrc23[i * 2] * gain23 +
+                       pSrc24[i * 2] * gain24 +
+                       pSrc25[i * 2] * gain25 +
+                       pSrc26[i * 2] * gain26 +
+                       pSrc27[i * 2] * gain27 +
+                       pSrc28[i * 2] * gain28 +
+                       pSrc29[i * 2] * gain29 +
+                       pSrc30[i * 2] * gain30;
+        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
+                           pSrc1[i * 2 + 1] * gain1 +
+                           pSrc2[i * 2 + 1] * gain2 +
+                           pSrc3[i * 2 + 1] * gain3 +
+                           pSrc4[i * 2 + 1] * gain4 +
+                           pSrc5[i * 2 + 1] * gain5 +
+                           pSrc6[i * 2 + 1] * gain6 +
+                           pSrc7[i * 2 + 1] * gain7 +
+                           pSrc8[i * 2 + 1] * gain8 +
+                           pSrc9[i * 2 + 1] * gain9 +
+                           pSrc10[i * 2 + 1] * gain10 +
+                           pSrc11[i * 2 + 1] * gain11 +
+                           pSrc12[i * 2 + 1] * gain12 +
+                           pSrc13[i * 2 + 1] * gain13 +
+                           pSrc14[i * 2 + 1] * gain14 +
+                           pSrc15[i * 2 + 1] * gain15 +
+                           pSrc16[i * 2 + 1] * gain16 +
+                           pSrc17[i * 2 + 1] * gain17 +
+                           pSrc18[i * 2 + 1] * gain18 +
+                           pSrc19[i * 2 + 1] * gain19 +
+                           pSrc20[i * 2 + 1] * gain20 +
+                           pSrc21[i * 2 + 1] * gain21 +
+                           pSrc22[i * 2 + 1] * gain22 +
+                           pSrc23[i * 2 + 1] * gain23 +
+                           pSrc24[i * 2 + 1] * gain24 +
+                           pSrc25[i * 2 + 1] * gain25 +
+                           pSrc26[i * 2 + 1] * gain26 +
+                           pSrc27[i * 2 + 1] * gain27 +
+                           pSrc28[i * 2 + 1] * gain28 +
+                           pSrc29[i * 2 + 1] * gain29 +
+                           pSrc30[i * 2 + 1] * gain30;
     }
 }
 static inline void copy32WithGain(CSAMPLE* _RESTRICT pDest,
@@ -8412,6 +8443,7 @@ static inline void copy32WithGain(CSAMPLE* _RESTRICT pDest,
         copy31WithGain(pDest, pSrc0, gain0, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4, pSrc5, gain5, pSrc6, gain6, pSrc7, gain7, pSrc8, gain8, pSrc9, gain9, pSrc10, gain10, pSrc11, gain11, pSrc12, gain12, pSrc13, gain13, pSrc14, gain14, pSrc15, gain15, pSrc16, gain16, pSrc17, gain17, pSrc18, gain18, pSrc19, gain19, pSrc20, gain20, pSrc21, gain21, pSrc22, gain22, pSrc23, gain23, pSrc24, gain24, pSrc25, gain25, pSrc26, gain26, pSrc27, gain27, pSrc28, gain28, pSrc29, gain29, pSrc30, gain30, iNumSamples);
         return;
     }
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] = pSrc0[i] * gain0 +
                    pSrc1[i] * gain1 +
@@ -8610,166 +8642,166 @@ static inline void copy32WithRampingGain(CSAMPLE* _RESTRICT pDest,
         return;
     }
     const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain0 = gain0in;
+    const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
     const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain1 = gain1in;
+    const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
     const CSAMPLE_GAIN gain_delta2 = (gain2out - gain2in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain2 = gain2in;
+    const CSAMPLE_GAIN start_gain2 = gain2in + gain_delta2;
     const CSAMPLE_GAIN gain_delta3 = (gain3out - gain3in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain3 = gain3in;
+    const CSAMPLE_GAIN start_gain3 = gain3in + gain_delta3;
     const CSAMPLE_GAIN gain_delta4 = (gain4out - gain4in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain4 = gain4in;
+    const CSAMPLE_GAIN start_gain4 = gain4in + gain_delta4;
     const CSAMPLE_GAIN gain_delta5 = (gain5out - gain5in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain5 = gain5in;
+    const CSAMPLE_GAIN start_gain5 = gain5in + gain_delta5;
     const CSAMPLE_GAIN gain_delta6 = (gain6out - gain6in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain6 = gain6in;
+    const CSAMPLE_GAIN start_gain6 = gain6in + gain_delta6;
     const CSAMPLE_GAIN gain_delta7 = (gain7out - gain7in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain7 = gain7in;
+    const CSAMPLE_GAIN start_gain7 = gain7in + gain_delta7;
     const CSAMPLE_GAIN gain_delta8 = (gain8out - gain8in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain8 = gain8in;
+    const CSAMPLE_GAIN start_gain8 = gain8in + gain_delta8;
     const CSAMPLE_GAIN gain_delta9 = (gain9out - gain9in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain9 = gain9in;
+    const CSAMPLE_GAIN start_gain9 = gain9in + gain_delta9;
     const CSAMPLE_GAIN gain_delta10 = (gain10out - gain10in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain10 = gain10in;
+    const CSAMPLE_GAIN start_gain10 = gain10in + gain_delta10;
     const CSAMPLE_GAIN gain_delta11 = (gain11out - gain11in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain11 = gain11in;
+    const CSAMPLE_GAIN start_gain11 = gain11in + gain_delta11;
     const CSAMPLE_GAIN gain_delta12 = (gain12out - gain12in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain12 = gain12in;
+    const CSAMPLE_GAIN start_gain12 = gain12in + gain_delta12;
     const CSAMPLE_GAIN gain_delta13 = (gain13out - gain13in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain13 = gain13in;
+    const CSAMPLE_GAIN start_gain13 = gain13in + gain_delta13;
     const CSAMPLE_GAIN gain_delta14 = (gain14out - gain14in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain14 = gain14in;
+    const CSAMPLE_GAIN start_gain14 = gain14in + gain_delta14;
     const CSAMPLE_GAIN gain_delta15 = (gain15out - gain15in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain15 = gain15in;
+    const CSAMPLE_GAIN start_gain15 = gain15in + gain_delta15;
     const CSAMPLE_GAIN gain_delta16 = (gain16out - gain16in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain16 = gain16in;
+    const CSAMPLE_GAIN start_gain16 = gain16in + gain_delta16;
     const CSAMPLE_GAIN gain_delta17 = (gain17out - gain17in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain17 = gain17in;
+    const CSAMPLE_GAIN start_gain17 = gain17in + gain_delta17;
     const CSAMPLE_GAIN gain_delta18 = (gain18out - gain18in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain18 = gain18in;
+    const CSAMPLE_GAIN start_gain18 = gain18in + gain_delta18;
     const CSAMPLE_GAIN gain_delta19 = (gain19out - gain19in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain19 = gain19in;
+    const CSAMPLE_GAIN start_gain19 = gain19in + gain_delta19;
     const CSAMPLE_GAIN gain_delta20 = (gain20out - gain20in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain20 = gain20in;
+    const CSAMPLE_GAIN start_gain20 = gain20in + gain_delta20;
     const CSAMPLE_GAIN gain_delta21 = (gain21out - gain21in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain21 = gain21in;
+    const CSAMPLE_GAIN start_gain21 = gain21in + gain_delta21;
     const CSAMPLE_GAIN gain_delta22 = (gain22out - gain22in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain22 = gain22in;
+    const CSAMPLE_GAIN start_gain22 = gain22in + gain_delta22;
     const CSAMPLE_GAIN gain_delta23 = (gain23out - gain23in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain23 = gain23in;
+    const CSAMPLE_GAIN start_gain23 = gain23in + gain_delta23;
     const CSAMPLE_GAIN gain_delta24 = (gain24out - gain24in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain24 = gain24in;
+    const CSAMPLE_GAIN start_gain24 = gain24in + gain_delta24;
     const CSAMPLE_GAIN gain_delta25 = (gain25out - gain25in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain25 = gain25in;
+    const CSAMPLE_GAIN start_gain25 = gain25in + gain_delta25;
     const CSAMPLE_GAIN gain_delta26 = (gain26out - gain26in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain26 = gain26in;
+    const CSAMPLE_GAIN start_gain26 = gain26in + gain_delta26;
     const CSAMPLE_GAIN gain_delta27 = (gain27out - gain27in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain27 = gain27in;
+    const CSAMPLE_GAIN start_gain27 = gain27in + gain_delta27;
     const CSAMPLE_GAIN gain_delta28 = (gain28out - gain28in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain28 = gain28in;
+    const CSAMPLE_GAIN start_gain28 = gain28in + gain_delta28;
     const CSAMPLE_GAIN gain_delta29 = (gain29out - gain29in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain29 = gain29in;
+    const CSAMPLE_GAIN start_gain29 = gain29in + gain_delta29;
     const CSAMPLE_GAIN gain_delta30 = (gain30out - gain30in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain30 = gain30in;
+    const CSAMPLE_GAIN start_gain30 = gain30in + gain_delta30;
     const CSAMPLE_GAIN gain_delta31 = (gain31out - gain31in) / (iNumSamples / 2);
-    CSAMPLE_GAIN gain31 = gain31in;
-    for (int i = 0; i < iNumSamples; i += 2) {
-        gain0 += gain_delta0;
-        gain1 += gain_delta1;
-        gain2 += gain_delta2;
-        gain3 += gain_delta3;
-        gain4 += gain_delta4;
-        gain5 += gain_delta5;
-        gain6 += gain_delta6;
-        gain7 += gain_delta7;
-        gain8 += gain_delta8;
-        gain9 += gain_delta9;
-        gain10 += gain_delta10;
-        gain11 += gain_delta11;
-        gain12 += gain_delta12;
-        gain13 += gain_delta13;
-        gain14 += gain_delta14;
-        gain15 += gain_delta15;
-        gain16 += gain_delta16;
-        gain17 += gain_delta17;
-        gain18 += gain_delta18;
-        gain19 += gain_delta19;
-        gain20 += gain_delta20;
-        gain21 += gain_delta21;
-        gain22 += gain_delta22;
-        gain23 += gain_delta23;
-        gain24 += gain_delta24;
-        gain25 += gain_delta25;
-        gain26 += gain_delta26;
-        gain27 += gain_delta27;
-        gain28 += gain_delta28;
-        gain29 += gain_delta29;
-        gain30 += gain_delta30;
-        gain31 += gain_delta31;
-        pDest[i] = pSrc0[i] * gain0 +
-                   pSrc1[i] * gain1 +
-                   pSrc2[i] * gain2 +
-                   pSrc3[i] * gain3 +
-                   pSrc4[i] * gain4 +
-                   pSrc5[i] * gain5 +
-                   pSrc6[i] * gain6 +
-                   pSrc7[i] * gain7 +
-                   pSrc8[i] * gain8 +
-                   pSrc9[i] * gain9 +
-                   pSrc10[i] * gain10 +
-                   pSrc11[i] * gain11 +
-                   pSrc12[i] * gain12 +
-                   pSrc13[i] * gain13 +
-                   pSrc14[i] * gain14 +
-                   pSrc15[i] * gain15 +
-                   pSrc16[i] * gain16 +
-                   pSrc17[i] * gain17 +
-                   pSrc18[i] * gain18 +
-                   pSrc19[i] * gain19 +
-                   pSrc20[i] * gain20 +
-                   pSrc21[i] * gain21 +
-                   pSrc22[i] * gain22 +
-                   pSrc23[i] * gain23 +
-                   pSrc24[i] * gain24 +
-                   pSrc25[i] * gain25 +
-                   pSrc26[i] * gain26 +
-                   pSrc27[i] * gain27 +
-                   pSrc28[i] * gain28 +
-                   pSrc29[i] * gain29 +
-                   pSrc30[i] * gain30 +
-                   pSrc31[i] * gain31;
-        pDest[i + 1] = pSrc0[i + 1] * gain0 +
-                       pSrc1[i + 1] * gain1 +
-                       pSrc2[i + 1] * gain2 +
-                       pSrc3[i + 1] * gain3 +
-                       pSrc4[i + 1] * gain4 +
-                       pSrc5[i + 1] * gain5 +
-                       pSrc6[i + 1] * gain6 +
-                       pSrc7[i + 1] * gain7 +
-                       pSrc8[i + 1] * gain8 +
-                       pSrc9[i + 1] * gain9 +
-                       pSrc10[i + 1] * gain10 +
-                       pSrc11[i + 1] * gain11 +
-                       pSrc12[i + 1] * gain12 +
-                       pSrc13[i + 1] * gain13 +
-                       pSrc14[i + 1] * gain14 +
-                       pSrc15[i + 1] * gain15 +
-                       pSrc16[i + 1] * gain16 +
-                       pSrc17[i + 1] * gain17 +
-                       pSrc18[i + 1] * gain18 +
-                       pSrc19[i + 1] * gain19 +
-                       pSrc20[i + 1] * gain20 +
-                       pSrc21[i + 1] * gain21 +
-                       pSrc22[i + 1] * gain22 +
-                       pSrc23[i + 1] * gain23 +
-                       pSrc24[i + 1] * gain24 +
-                       pSrc25[i + 1] * gain25 +
-                       pSrc26[i + 1] * gain26 +
-                       pSrc27[i + 1] * gain27 +
-                       pSrc28[i + 1] * gain28 +
-                       pSrc29[i + 1] * gain29 +
-                       pSrc30[i + 1] * gain30 +
-                       pSrc31[i + 1] * gain31;
+    const CSAMPLE_GAIN start_gain31 = gain31in + gain_delta31;
+    for (int i = 0; i < iNumSamples / 2; ++i) {
+        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
+        const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
+        const CSAMPLE_GAIN gain2 = start_gain2 + gain_delta2 * i;
+        const CSAMPLE_GAIN gain3 = start_gain3 + gain_delta3 * i;
+        const CSAMPLE_GAIN gain4 = start_gain4 + gain_delta4 * i;
+        const CSAMPLE_GAIN gain5 = start_gain5 + gain_delta5 * i;
+        const CSAMPLE_GAIN gain6 = start_gain6 + gain_delta6 * i;
+        const CSAMPLE_GAIN gain7 = start_gain7 + gain_delta7 * i;
+        const CSAMPLE_GAIN gain8 = start_gain8 + gain_delta8 * i;
+        const CSAMPLE_GAIN gain9 = start_gain9 + gain_delta9 * i;
+        const CSAMPLE_GAIN gain10 = start_gain10 + gain_delta10 * i;
+        const CSAMPLE_GAIN gain11 = start_gain11 + gain_delta11 * i;
+        const CSAMPLE_GAIN gain12 = start_gain12 + gain_delta12 * i;
+        const CSAMPLE_GAIN gain13 = start_gain13 + gain_delta13 * i;
+        const CSAMPLE_GAIN gain14 = start_gain14 + gain_delta14 * i;
+        const CSAMPLE_GAIN gain15 = start_gain15 + gain_delta15 * i;
+        const CSAMPLE_GAIN gain16 = start_gain16 + gain_delta16 * i;
+        const CSAMPLE_GAIN gain17 = start_gain17 + gain_delta17 * i;
+        const CSAMPLE_GAIN gain18 = start_gain18 + gain_delta18 * i;
+        const CSAMPLE_GAIN gain19 = start_gain19 + gain_delta19 * i;
+        const CSAMPLE_GAIN gain20 = start_gain20 + gain_delta20 * i;
+        const CSAMPLE_GAIN gain21 = start_gain21 + gain_delta21 * i;
+        const CSAMPLE_GAIN gain22 = start_gain22 + gain_delta22 * i;
+        const CSAMPLE_GAIN gain23 = start_gain23 + gain_delta23 * i;
+        const CSAMPLE_GAIN gain24 = start_gain24 + gain_delta24 * i;
+        const CSAMPLE_GAIN gain25 = start_gain25 + gain_delta25 * i;
+        const CSAMPLE_GAIN gain26 = start_gain26 + gain_delta26 * i;
+        const CSAMPLE_GAIN gain27 = start_gain27 + gain_delta27 * i;
+        const CSAMPLE_GAIN gain28 = start_gain28 + gain_delta28 * i;
+        const CSAMPLE_GAIN gain29 = start_gain29 + gain_delta29 * i;
+        const CSAMPLE_GAIN gain30 = start_gain30 + gain_delta30 * i;
+        const CSAMPLE_GAIN gain31 = start_gain31 + gain_delta31 * i;
+        pDest[i * 2] = pSrc0[i * 2] * gain0 +
+                       pSrc1[i * 2] * gain1 +
+                       pSrc2[i * 2] * gain2 +
+                       pSrc3[i * 2] * gain3 +
+                       pSrc4[i * 2] * gain4 +
+                       pSrc5[i * 2] * gain5 +
+                       pSrc6[i * 2] * gain6 +
+                       pSrc7[i * 2] * gain7 +
+                       pSrc8[i * 2] * gain8 +
+                       pSrc9[i * 2] * gain9 +
+                       pSrc10[i * 2] * gain10 +
+                       pSrc11[i * 2] * gain11 +
+                       pSrc12[i * 2] * gain12 +
+                       pSrc13[i * 2] * gain13 +
+                       pSrc14[i * 2] * gain14 +
+                       pSrc15[i * 2] * gain15 +
+                       pSrc16[i * 2] * gain16 +
+                       pSrc17[i * 2] * gain17 +
+                       pSrc18[i * 2] * gain18 +
+                       pSrc19[i * 2] * gain19 +
+                       pSrc20[i * 2] * gain20 +
+                       pSrc21[i * 2] * gain21 +
+                       pSrc22[i * 2] * gain22 +
+                       pSrc23[i * 2] * gain23 +
+                       pSrc24[i * 2] * gain24 +
+                       pSrc25[i * 2] * gain25 +
+                       pSrc26[i * 2] * gain26 +
+                       pSrc27[i * 2] * gain27 +
+                       pSrc28[i * 2] * gain28 +
+                       pSrc29[i * 2] * gain29 +
+                       pSrc30[i * 2] * gain30 +
+                       pSrc31[i * 2] * gain31;
+        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
+                           pSrc1[i * 2 + 1] * gain1 +
+                           pSrc2[i * 2 + 1] * gain2 +
+                           pSrc3[i * 2 + 1] * gain3 +
+                           pSrc4[i * 2 + 1] * gain4 +
+                           pSrc5[i * 2 + 1] * gain5 +
+                           pSrc6[i * 2 + 1] * gain6 +
+                           pSrc7[i * 2 + 1] * gain7 +
+                           pSrc8[i * 2 + 1] * gain8 +
+                           pSrc9[i * 2 + 1] * gain9 +
+                           pSrc10[i * 2 + 1] * gain10 +
+                           pSrc11[i * 2 + 1] * gain11 +
+                           pSrc12[i * 2 + 1] * gain12 +
+                           pSrc13[i * 2 + 1] * gain13 +
+                           pSrc14[i * 2 + 1] * gain14 +
+                           pSrc15[i * 2 + 1] * gain15 +
+                           pSrc16[i * 2 + 1] * gain16 +
+                           pSrc17[i * 2 + 1] * gain17 +
+                           pSrc18[i * 2 + 1] * gain18 +
+                           pSrc19[i * 2 + 1] * gain19 +
+                           pSrc20[i * 2 + 1] * gain20 +
+                           pSrc21[i * 2 + 1] * gain21 +
+                           pSrc22[i * 2 + 1] * gain22 +
+                           pSrc23[i * 2 + 1] * gain23 +
+                           pSrc24[i * 2 + 1] * gain24 +
+                           pSrc25[i * 2 + 1] * gain25 +
+                           pSrc26[i * 2 + 1] * gain26 +
+                           pSrc27[i * 2 + 1] * gain27 +
+                           pSrc28[i * 2 + 1] * gain28 +
+                           pSrc29[i * 2 + 1] * gain29 +
+                           pSrc30[i * 2 + 1] * gain30 +
+                           pSrc31[i * 2 + 1] * gain31;
     }
 }
 #endif /* SAMPLEUTILAUTOGEN_H */

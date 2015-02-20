@@ -148,6 +148,7 @@ def copy_with_gain(output, base_indent_depth, num_channels):
         write('return;', depth=2)
         write('}', depth=1)
 
+    write('// note: LOOP VECTORIZED.', depth=1)
     write('for (int i = 0; i < iNumSamples; ++i) {', depth=1)
     terms = ['pSrc%(i)d[i] * gain%(i)d' % {'i': i} for i in xrange(num_channels)]
     assign = 'pDest[i] = '
@@ -183,22 +184,23 @@ def copy_with_ramping_gain(output, base_indent_depth, num_channels):
 
     for i in xrange(num_channels):
         write('const CSAMPLE_GAIN gain_delta%(i)d = (gain%(i)dout - gain%(i)din) / (iNumSamples / 2);' % {'i': i}, depth=1)
-        write('CSAMPLE_GAIN gain%(i)d = gain%(i)din;' % {'i': i}, depth=1)
+        write('const CSAMPLE_GAIN start_gain%(i)d = gain%(i)din + gain_delta%(i)d;' % {'i': i}, depth=1)
 
-    write('for (int i = 0; i < iNumSamples; i += 2) {', depth=1)
+    write('// note: LOOP VECTORIZED.', depth=1)
+    write('for (int i = 0; i < iNumSamples / 2; ++i) {', depth=1)
 
-    increments = ['gain%(i)d += gain_delta%(i)d' % {'i': i} for i in xrange(num_channels)]
+    increments = ['const CSAMPLE_GAIN gain%(i)d = start_gain%(i)d + gain_delta%(i)d * i;' % {'i': i} for i in xrange(num_channels)]
     for i in xrange(num_channels):
-        write('gain%(i)d += gain_delta%(i)d;' % {'i': i}, depth=2)
+        write('const CSAMPLE_GAIN gain%(i)d = start_gain%(i)d + gain_delta%(i)d * i;' % {'i': i}, depth=2)
 
     terms1 = []
     terms2 = []
     for i in xrange(num_channels):
-        terms1.append('pSrc%(i)d[i] * gain%(i)d' % {'i': i})
-        terms2.append('pSrc%(i)d[i + 1] * gain%(i)d' % {'i': i})
+        terms1.append('pSrc%(i)d[i * 2] * gain%(i)d' % {'i': i})
+        terms2.append('pSrc%(i)d[i * 2 + 1] * gain%(i)d' % {'i': i})
 
-    assign1 = 'pDest[i] = '
-    assign2 = 'pDest[i + 1] = '
+    assign1 = 'pDest[i * 2] = '
+    assign2 = 'pDest[i * 2 + 1] = '
 
     output.extend(hanging_indent(assign1, terms1, ' +', ';', depth=2))
     output.extend(hanging_indent(assign2, terms2, ' +', ';', depth=2))
