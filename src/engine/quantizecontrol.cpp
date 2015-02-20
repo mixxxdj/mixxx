@@ -91,12 +91,21 @@ void QuantizeControl::setCurrentSample(const double dCurrentSample,
     double nextBeat = m_pCONextBeat->get();
     double closestBeat = m_pCOClosestBeat->get();
 
-    // Calculate this by hand since we may also want the beat locations themselves
-    // and duplicating the work would double the number of mutex locks.
-    QPair<double, double> beat_pair = m_pBeats->findPrevNextBeats(iCurrentSample);
+    // We only need to update the prev or next if the current sample is
+    // out of range of the existing beat positions.  This bypasses the epsilon
+    // calculation, but is there a way that could actually cause a problem?
+    if (dCurrentSample < prevBeat || dCurrentSample > nextBeat) {
+        // Calculate this by hand since we may also want the beat locations themselves
+        // and duplicating the work would double the number of mutex locks.
+        QPair<double, double> beat_pair = m_pBeats->findPrevNextBeats(iCurrentSample);
+        prevBeat = beat_pair.first;
+        nextBeat = beat_pair.second;
+        m_pCOPrevBeat->set(prevBeat);
+        m_pCONextBeat->set(nextBeat);
+    }
     double currentClosestBeat =
-            (beat_pair.second - iCurrentSample > iCurrentSample - beat_pair.first) ?
-                    beat_pair.first : beat_pair.second;
+            (nextBeat - iCurrentSample > iCurrentSample - prevBeat) ?
+                    prevBeat : nextBeat;
 
     if (closestBeat != currentClosestBeat) {
         // findXBeats claims to guarantee evenness, except in the case of -1.
@@ -106,11 +115,5 @@ void QuantizeControl::setCurrentSample(const double dCurrentSample,
             }
         }
         m_pCOClosestBeat->set(currentClosestBeat);
-    }
-
-    if (prevBeat == -1 || nextBeat == -1 ||
-        dCurrentSample >= nextBeat || dCurrentSample <= prevBeat) {
-        m_pCOPrevBeat->set(beat_pair.first);
-        m_pCONextBeat->set(beat_pair.second);
     }
 }
