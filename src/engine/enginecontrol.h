@@ -50,6 +50,9 @@ class EngineControl : public QObject {
                            const double dTotalSamples,
                            const int iBufferSize);
 
+    virtual double postProcess(const double dCurrentSample,
+                               const int iBufferSize);
+
     virtual double nextTrigger(const double dRate,
                                const double dCurrentSample,
                                const double dTotalSamples,

@@ -226,7 +226,8 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
     // Quantization Controller for enabling and disabling the
     // quantization (alignment) of loop in/out positions and (hot)cues with
     // beats.
-    addControl(new QuantizeControl(group, _config));
+    m_pQuantizeControl = new QuantizeControl(group, _config);
+    addControl(m_pQuantizeControl);
     m_pQuantize = ControlObject::getControl(ConfigKey(group, "quantize"));
 
     // Create the Loop Controller
@@ -1195,6 +1196,16 @@ void EngineBuffer::postProcess(const int iBufferSize) {
     // The order of events here is very delicate.  It's necessary to update
     // some values before others, because the later updates may require
     // values from the first update.
+
+    // First run the postProcess function on the EngineControls.
+    m_engineLock.lock();
+    QListIterator<EngineControl*> it(m_engineControls);
+    while (it.hasNext()) {
+        EngineControl* pControl = it.next();
+        pControl->postProcess(m_filepos_play, iBufferSize);
+    }
+    m_engineLock.unlock();
+
     double local_bpm = m_pBpmControl->updateLocalBpm();
     double beat_distance = m_pBpmControl->updateBeatDistance();
     SyncMode mode = m_pSyncControl->getSyncMode();

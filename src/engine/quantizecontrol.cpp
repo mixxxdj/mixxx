@@ -10,6 +10,7 @@
 #include "cachingreader.h"
 #include "engine/quantizecontrol.h"
 #include "engine/enginecontrol.h"
+#include "util/assert.h"
 
 QuantizeControl::QuantizeControl(QString group,
                                  ConfigObject<ConfigValue>* pConfig)
@@ -42,6 +43,9 @@ void QuantizeControl::trackLoaded(TrackPointer pTrack) {
         m_pBeats = m_pTrack->getBeats();
         connect(m_pTrack.data(), SIGNAL(beatsUpdated()),
                 this, SLOT(slotBeatsUpdated()));
+        // Initialize prev and next beat as if current position was zero.
+        // If there is a cue point, the value will be updated.
+        postProcess(0, 0);
     }
 }
 
@@ -61,15 +65,12 @@ void QuantizeControl::trackUnloaded(TrackPointer pTrack) {
 void QuantizeControl::slotBeatsUpdated() {
     if (m_pTrack) {
         m_pBeats = m_pTrack->getBeats();
+        postProcess(0, 0);
     }
 }
 
-double QuantizeControl::process(const double dRate,
-                                const double currentSample,
-                                const double totalSamples,
-                                const int iBufferSize) {
-    Q_UNUSED(dRate);
-    Q_UNUSED(totalSamples);
+double QuantizeControl::postProcess(const double currentSample,
+                                    const int iBufferSize) {
     Q_UNUSED(iBufferSize);
 
     if (!m_pBeats) {
@@ -77,7 +78,7 @@ double QuantizeControl::process(const double dRate,
     }
 
     int iCurrentSample = currentSample;
-    if (!even(iCurrentSample)) {
+    DEBUG_ASSERT_AND_HANDLE(even(iCurrentSample)) {
         iCurrentSample--;
     }
 
@@ -93,7 +94,8 @@ double QuantizeControl::process(const double dRate,
                     beat_pair.first : beat_pair.second;
 
     if (closestBeat != currentClosestBeat) {
-        if (!even(static_cast<int>(currentClosestBeat))) {
+        // findXBeats claims to guarantee evenness.
+        DEBUG_ASSERT_AND_HANDLE(even(static_cast<int>(currentClosestBeat))) {
             currentClosestBeat--;
         }
         m_pCOClosestBeat->set(currentClosestBeat);
