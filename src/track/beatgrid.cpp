@@ -138,12 +138,14 @@ double BeatGrid::findClosestBeat(double dSamples) const {
     if (!isValid()) {
         return -1;
     }
-    QPair<double, double> beat_pair = findPrevNextBeats(dSamples);
-    if (beat_pair.first == -1 || beat_pair.second == -1) {
-        return -1;
+    double prevBeat;
+    double nextBeat;
+    findPrevNextBeats(dSamples, &prevBeat, &nextBeat);
+    if (prevBeat == -1) {
+        return nextBeat == -1 ? -1 : nextBeat;
+    } else if (nextBeat == -1) {
+        return prevBeat;
     }
-    double prevBeat = beat_pair.first;
-    double nextBeat = beat_pair.second;
     return (nextBeat - dSamples > dSamples - prevBeat) ? prevBeat : nextBeat;
 }
 
@@ -197,13 +199,21 @@ double BeatGrid::findNthBeat(double dSamples, int n) const {
     return dResult;
 }
 
-QPair<double, double> BeatGrid::findPrevNextBeats(double dSamples) const {
-    QMutexLocker locker(&m_mutex);
-    if (!isValid()) {
-        return qMakePair(-1.0, -1.0);
+bool BeatGrid::findPrevNextBeats(double dSamples,
+                                 double* dpPrevBeatSamples,
+                                 double* dpNextBeatSamples) const {
+    double dFirstBeatSample;
+    {
+        QMutexLocker locker(&m_mutex);
+        if (!isValid()) {
+            *dpPrevBeatSamples = -1.0;
+            *dpNextBeatSamples = -1.0;
+            return false;
+        }
+        dFirstBeatSample = firstBeatSample();
     }
 
-    double beatFraction = (dSamples - firstBeatSample()) / m_dBeatLength;
+    double beatFraction = (dSamples - dFirstBeatSample) / m_dBeatLength;
     double prevBeat = floor(beatFraction);
     double nextBeat = ceil(beatFraction);
 
@@ -220,16 +230,15 @@ QPair<double, double> BeatGrid::findPrevNextBeats(double dSamples) const {
         // And nextBeat needs to be incremented.
         ++nextBeat;
     }
-    double prevBeatSamples = floor(prevBeat * m_dBeatLength + firstBeatSample());
-    double nextBeatSamples = floor(nextBeat * m_dBeatLength + firstBeatSample());
-    if (!even(static_cast<int>(prevBeatSamples))) {
-        prevBeatSamples--;
+    *dpPrevBeatSamples = floor(prevBeat * m_dBeatLength + dFirstBeatSample);
+    *dpNextBeatSamples = floor(nextBeat * m_dBeatLength + dFirstBeatSample);
+    if (!even(static_cast<int>(*dpPrevBeatSamples))) {
+        --*dpPrevBeatSamples;
     }
-    if (!even(static_cast<int>(nextBeatSamples))) {
-        nextBeatSamples--;
+    if (!even(static_cast<int>(*dpNextBeatSamples))) {
+        --*dpNextBeatSamples;
     }
-
-    return qMakePair(prevBeatSamples, nextBeatSamples);
+    return true;
 }
 
 

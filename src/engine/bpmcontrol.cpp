@@ -535,11 +535,9 @@ bool BpmControl::getBeatContext(const BeatsPointer& pBeats,
         return false;
     }
 
-    QPair<double, double> beat_pair = pBeats->findPrevNextBeats(dPosition);
-    double dPrevBeat = beat_pair.first;
-    double dNextBeat = beat_pair.second;
-
-    if (dPrevBeat == -1 || dNextBeat == -1) {
+    double dPrevBeat;
+    double dNextBeat;
+    if (!pBeats->findPrevNextBeats(dPosition, &dPrevBeat, &dNextBeat)) {
         return false;
     }
 

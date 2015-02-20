@@ -87,10 +87,12 @@ double QuantizeControl::process(const double dRate,
 
     // Calculate this by hand since we may also want the beat locations themselves
     // and duplicating the work would double the number of mutex locks.
-    QPair<double, double> beat_pair = m_pBeats->findPrevNextBeats(iCurrentSample);
+    double updatedPrev;
+    double updatedNext;
+    m_pBeats->findPrevNextBeats(iCurrentSample, &updatedPrev, &updatedNext);
     double currentClosestBeat =
-            (beat_pair.second - iCurrentSample > iCurrentSample - beat_pair.first) ?
-                    beat_pair.first : beat_pair.second;
+            (updatedNext - iCurrentSample > iCurrentSample - updatedPrev) ?
+                    updatedPrev : updatedNext;
 
     if (closestBeat != currentClosestBeat) {
         if (!even(static_cast<int>(currentClosestBeat))) {
@@ -101,8 +103,8 @@ double QuantizeControl::process(const double dRate,
 
     if (prevBeat == -1 || nextBeat == -1 ||
         currentSample >= nextBeat || currentSample <= prevBeat) {
-        m_pCOPrevBeat->set(beat_pair.first);
-        m_pCONextBeat->set(beat_pair.second);
+        m_pCOPrevBeat->set(updatedPrev);
+        m_pCONextBeat->set(updatedNext);
     }
 
     return kNoTrigger;

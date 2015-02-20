@@ -54,7 +54,9 @@ class BeatMap : public QObject, public Beats {
 
     virtual double findNextBeat(double dSamples) const;
     virtual double findPrevBeat(double dSamples) const;
-    virtual QPair<double, double> findPrevNextBeats(double dSamples) const;
+    virtual bool findPrevNextBeats(double dSamples,
+                                   double* dpPrevBeatSamples,
+                                   double* dpNextBeatSamples) const;
     virtual double findClosestBeat(double dSamples) const;
     virtual double findNthBeat(double dSamples, int n) const;
     virtual BeatIterator* findBeats(double startSample, double stopSample) const;
