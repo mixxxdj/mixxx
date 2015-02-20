@@ -60,7 +60,7 @@ def write_channelmixer_autogen(output, num_channels):
             else:
                 write('-1,', depth=2)
 
-        write('unsigned int totalActive = 0;', depth=1)
+        write('int totalActive = 0;', depth=1)
         write('for (unsigned int i = 0; i < maxChannels; ++i) {', depth=1)
         write('if ((channelBitvector & (1 << i)) == 0) {', depth=2)
         write('continue;', depth=3)
@@ -77,23 +77,37 @@ def write_channelmixer_autogen(output, num_channels):
         for i in xrange(1, num_channels+1):
             write('} else if (totalActive == %d) {' % i, depth=1)
             write('ScopedTimer t("EngineMaster::mixChannels_%(i)dactive");' % {'i': i}, depth=2)
+            if ramping:
+                write('CSAMPLE_GAIN oldGain[%(i)d];' % {'i': i}, depth=2)
+            write('CSAMPLE_GAIN newGain[%(i)d];' % {'i': i}, depth=2)
             for j in xrange(i):
                 write('const int pChannelIndex%(j)d = activeChannels[%(j)d];' % {'j': j}, depth=2)
                 write('EngineMaster::ChannelInfo* pChannel%(j)d = channels[pChannelIndex%(j)d];' % {'j': j}, depth=2)
                 if ramping:
-                    write('CSAMPLE_GAIN oldGain%(j)d = (*channelGainCache)[pChannelIndex%(j)d];' % {'j': j}, depth=2)
-                write('CSAMPLE_GAIN newGain%(j)d = gainCalculator.getGain(pChannel%(j)d);' % {'j': j}, depth=2)
-                write('(*channelGainCache)[pChannelIndex%(j)d] = newGain%(j)d;' % {'j': j}, depth=2)
+                    write('oldGain[%(j)d] = (*channelGainCache)[pChannelIndex%(j)d];' % {'j': j}, depth=2)
+                write('newGain[%(j)d] = gainCalculator.getGain(pChannel%(j)d);' % {'j': j}, depth=2)
+                write('(*channelGainCache)[pChannelIndex%(j)d] = newGain[%(j)d];' % {'j': j}, depth=2)
                 write('CSAMPLE* pBuffer%(j)d = pChannel%(j)d->m_pBuffer;' % {'j': j}, depth=2)
 
-            if ramping:
-                arg_groups = ['pOutput'] + ['pBuffer%(j)d, oldGain%(j)d, newGain%(j)d' % {'j': j} for j in xrange(i)] + ['iBufferSize']
-                call_prefix = "SampleUtil::" + copy_with_ramping_gain_method_name(i) + '('
-            else:
-                arg_groups = ['pOutput'] + ['pBuffer%(j)d, newGain%(j)d' % {'j': j} for j in xrange(i)] + ['iBufferSize']
-                call_prefix = "SampleUtil::" + copy_with_gain_method_name(i) + '('
-            output.extend(hanging_indent(call_prefix, arg_groups, ',', ');', depth=2))
+            arg_groups = ['pOutput'] + ['pBuffer%(j)d, newGain[%(j)d]' % {'j': j} for j in xrange(i)] + ['iBufferSize']
+            call_prefix = "SampleUtil::" + copy_with_gain_method_name(i) + '('
 
+            if ramping:
+                arg_groups_ramping = ['pOutput'] + ['pBuffer%(j)d, oldGain[%(j)d], newGain[%(j)d]' % {'j': j} for j in xrange(i)] + ['iBufferSize']
+                call_prefix_ramping = "SampleUtil::" + copy_with_ramping_gain_method_name(i) + '('
+                write('int i = 0;', depth=2)                
+                write('for(; i < totalActive; ++i) {', depth=2)
+                write('if (oldGain[i] != newGain[i]) {', depth=3)
+                write('break;', depth=4)
+                write('}', depth=3)
+                write('}', depth=2)
+                write('if (i == totalActive) {', depth=2)
+                output.extend(hanging_indent(call_prefix, arg_groups, ',', ');', depth=3))
+                write('} else {', depth=2)
+                output.extend(hanging_indent(call_prefix_ramping, arg_groups_ramping, ',', ');', depth=3))
+                write('}', depth=2)
+            else:
+                output.extend(hanging_indent(call_prefix, arg_groups, ',', ');', depth=2))
 
         write('} else {', depth=1)
         write('// Set pOutput to all 0s', depth=2)

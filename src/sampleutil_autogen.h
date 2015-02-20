@@ -25,6 +25,7 @@ static inline void copy1WithRampingGain(CSAMPLE* _RESTRICT pDest,
     }
     const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / (iNumSamples / 2);
     const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
         const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
         pDest[i * 2] = pSrc0[i * 2] * gain0;
@@ -65,6 +66,7 @@ static inline void copy2WithRampingGain(CSAMPLE* _RESTRICT pDest,
     const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
     const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / (iNumSamples / 2);
     const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
         const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
         const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
@@ -121,6 +123,7 @@ static inline void copy3WithRampingGain(CSAMPLE* _RESTRICT pDest,
     const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
     const CSAMPLE_GAIN gain_delta2 = (gain2out - gain2in) / (iNumSamples / 2);
     const CSAMPLE_GAIN start_gain2 = gain2in + gain_delta2;
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
         const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
         const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
@@ -193,6 +196,7 @@ static inline void copy4WithRampingGain(CSAMPLE* _RESTRICT pDest,
     const CSAMPLE_GAIN start_gain2 = gain2in + gain_delta2;
     const CSAMPLE_GAIN gain_delta3 = (gain3out - gain3in) / (iNumSamples / 2);
     const CSAMPLE_GAIN start_gain3 = gain3in + gain_delta3;
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
         const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
         const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
@@ -281,6 +285,7 @@ static inline void copy5WithRampingGain(CSAMPLE* _RESTRICT pDest,
     const CSAMPLE_GAIN start_gain3 = gain3in + gain_delta3;
     const CSAMPLE_GAIN gain_delta4 = (gain4out - gain4in) / (iNumSamples / 2);
     const CSAMPLE_GAIN start_gain4 = gain4in + gain_delta4;
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
         const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
         const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
@@ -385,6 +390,7 @@ static inline void copy6WithRampingGain(CSAMPLE* _RESTRICT pDest,
     const CSAMPLE_GAIN start_gain4 = gain4in + gain_delta4;
     const CSAMPLE_GAIN gain_delta5 = (gain5out - gain5in) / (iNumSamples / 2);
     const CSAMPLE_GAIN start_gain5 = gain5in + gain_delta5;
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
         const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
         const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
@@ -505,6 +511,7 @@ static inline void copy7WithRampingGain(CSAMPLE* _RESTRICT pDest,
     const CSAMPLE_GAIN start_gain5 = gain5in + gain_delta5;
     const CSAMPLE_GAIN gain_delta6 = (gain6out - gain6in) / (iNumSamples / 2);
     const CSAMPLE_GAIN start_gain6 = gain6in + gain_delta6;
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
         const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
         const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
@@ -641,6 +648,7 @@ static inline void copy8WithRampingGain(CSAMPLE* _RESTRICT pDest,
     const CSAMPLE_GAIN start_gain6 = gain6in + gain_delta6;
     const CSAMPLE_GAIN gain_delta7 = (gain7out - gain7in) / (iNumSamples / 2);
     const CSAMPLE_GAIN start_gain7 = gain7in + gain_delta7;
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
         const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
         const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
@@ -793,6 +801,7 @@ static inline void copy9WithRampingGain(CSAMPLE* _RESTRICT pDest,
     const CSAMPLE_GAIN start_gain7 = gain7in + gain_delta7;
     const CSAMPLE_GAIN gain_delta8 = (gain8out - gain8in) / (iNumSamples / 2);
     const CSAMPLE_GAIN start_gain8 = gain8in + gain_delta8;
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
         const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
         const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
@@ -961,6 +970,7 @@ static inline void copy10WithRampingGain(CSAMPLE* _RESTRICT pDest,
     const CSAMPLE_GAIN start_gain8 = gain8in + gain_delta8;
     const CSAMPLE_GAIN gain_delta9 = (gain9out - gain9in) / (iNumSamples / 2);
     const CSAMPLE_GAIN start_gain9 = gain9in + gain_delta9;
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
         const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
         const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
@@ -1145,6 +1155,7 @@ static inline void copy11WithRampingGain(CSAMPLE* _RESTRICT pDest,
     const CSAMPLE_GAIN start_gain9 = gain9in + gain_delta9;
     const CSAMPLE_GAIN gain_delta10 = (gain10out - gain10in) / (iNumSamples / 2);
     const CSAMPLE_GAIN start_gain10 = gain10in + gain_delta10;
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
         const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
         const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
@@ -1345,6 +1356,7 @@ static inline void copy12WithRampingGain(CSAMPLE* _RESTRICT pDest,
     const CSAMPLE_GAIN start_gain10 = gain10in + gain_delta10;
     const CSAMPLE_GAIN gain_delta11 = (gain11out - gain11in) / (iNumSamples / 2);
     const CSAMPLE_GAIN start_gain11 = gain11in + gain_delta11;
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
         const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
         const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
@@ -1561,6 +1573,7 @@ static inline void copy13WithRampingGain(CSAMPLE* _RESTRICT pDest,
     const CSAMPLE_GAIN start_gain11 = gain11in + gain_delta11;
     const CSAMPLE_GAIN gain_delta12 = (gain12out - gain12in) / (iNumSamples / 2);
     const CSAMPLE_GAIN start_gain12 = gain12in + gain_delta12;
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
         const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
         const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
@@ -1793,6 +1806,7 @@ static inline void copy14WithRampingGain(CSAMPLE* _RESTRICT pDest,
     const CSAMPLE_GAIN start_gain12 = gain12in + gain_delta12;
     const CSAMPLE_GAIN gain_delta13 = (gain13out - gain13in) / (iNumSamples / 2);
     const CSAMPLE_GAIN start_gain13 = gain13in + gain_delta13;
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
         const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
         const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
@@ -2041,6 +2055,7 @@ static inline void copy15WithRampingGain(CSAMPLE* _RESTRICT pDest,
     const CSAMPLE_GAIN start_gain13 = gain13in + gain_delta13;
     const CSAMPLE_GAIN gain_delta14 = (gain14out - gain14in) / (iNumSamples / 2);
     const CSAMPLE_GAIN start_gain14 = gain14in + gain_delta14;
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
         const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
         const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
@@ -2305,6 +2320,7 @@ static inline void copy16WithRampingGain(CSAMPLE* _RESTRICT pDest,
     const CSAMPLE_GAIN start_gain14 = gain14in + gain_delta14;
     const CSAMPLE_GAIN gain_delta15 = (gain15out - gain15in) / (iNumSamples / 2);
     const CSAMPLE_GAIN start_gain15 = gain15in + gain_delta15;
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
         const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
         const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
@@ -2585,6 +2601,7 @@ static inline void copy17WithRampingGain(CSAMPLE* _RESTRICT pDest,
     const CSAMPLE_GAIN start_gain15 = gain15in + gain_delta15;
     const CSAMPLE_GAIN gain_delta16 = (gain16out - gain16in) / (iNumSamples / 2);
     const CSAMPLE_GAIN start_gain16 = gain16in + gain_delta16;
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
         const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
         const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
@@ -2881,6 +2898,7 @@ static inline void copy18WithRampingGain(CSAMPLE* _RESTRICT pDest,
     const CSAMPLE_GAIN start_gain16 = gain16in + gain_delta16;
     const CSAMPLE_GAIN gain_delta17 = (gain17out - gain17in) / (iNumSamples / 2);
     const CSAMPLE_GAIN start_gain17 = gain17in + gain_delta17;
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
         const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
         const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
@@ -3193,6 +3211,7 @@ static inline void copy19WithRampingGain(CSAMPLE* _RESTRICT pDest,
     const CSAMPLE_GAIN start_gain17 = gain17in + gain_delta17;
     const CSAMPLE_GAIN gain_delta18 = (gain18out - gain18in) / (iNumSamples / 2);
     const CSAMPLE_GAIN start_gain18 = gain18in + gain_delta18;
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
         const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
         const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
@@ -3521,6 +3540,7 @@ static inline void copy20WithRampingGain(CSAMPLE* _RESTRICT pDest,
     const CSAMPLE_GAIN start_gain18 = gain18in + gain_delta18;
     const CSAMPLE_GAIN gain_delta19 = (gain19out - gain19in) / (iNumSamples / 2);
     const CSAMPLE_GAIN start_gain19 = gain19in + gain_delta19;
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
         const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
         const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
@@ -3865,6 +3885,7 @@ static inline void copy21WithRampingGain(CSAMPLE* _RESTRICT pDest,
     const CSAMPLE_GAIN start_gain19 = gain19in + gain_delta19;
     const CSAMPLE_GAIN gain_delta20 = (gain20out - gain20in) / (iNumSamples / 2);
     const CSAMPLE_GAIN start_gain20 = gain20in + gain_delta20;
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
         const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
         const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
@@ -4225,6 +4246,7 @@ static inline void copy22WithRampingGain(CSAMPLE* _RESTRICT pDest,
     const CSAMPLE_GAIN start_gain20 = gain20in + gain_delta20;
     const CSAMPLE_GAIN gain_delta21 = (gain21out - gain21in) / (iNumSamples / 2);
     const CSAMPLE_GAIN start_gain21 = gain21in + gain_delta21;
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
         const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
         const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
@@ -4601,6 +4623,7 @@ static inline void copy23WithRampingGain(CSAMPLE* _RESTRICT pDest,
     const CSAMPLE_GAIN start_gain21 = gain21in + gain_delta21;
     const CSAMPLE_GAIN gain_delta22 = (gain22out - gain22in) / (iNumSamples / 2);
     const CSAMPLE_GAIN start_gain22 = gain22in + gain_delta22;
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
         const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
         const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
@@ -4993,6 +5016,7 @@ static inline void copy24WithRampingGain(CSAMPLE* _RESTRICT pDest,
     const CSAMPLE_GAIN start_gain22 = gain22in + gain_delta22;
     const CSAMPLE_GAIN gain_delta23 = (gain23out - gain23in) / (iNumSamples / 2);
     const CSAMPLE_GAIN start_gain23 = gain23in + gain_delta23;
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
         const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
         const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
@@ -5401,6 +5425,7 @@ static inline void copy25WithRampingGain(CSAMPLE* _RESTRICT pDest,
     const CSAMPLE_GAIN start_gain23 = gain23in + gain_delta23;
     const CSAMPLE_GAIN gain_delta24 = (gain24out - gain24in) / (iNumSamples / 2);
     const CSAMPLE_GAIN start_gain24 = gain24in + gain_delta24;
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
         const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
         const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
@@ -5825,6 +5850,7 @@ static inline void copy26WithRampingGain(CSAMPLE* _RESTRICT pDest,
     const CSAMPLE_GAIN start_gain24 = gain24in + gain_delta24;
     const CSAMPLE_GAIN gain_delta25 = (gain25out - gain25in) / (iNumSamples / 2);
     const CSAMPLE_GAIN start_gain25 = gain25in + gain_delta25;
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
         const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
         const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
@@ -6265,6 +6291,7 @@ static inline void copy27WithRampingGain(CSAMPLE* _RESTRICT pDest,
     const CSAMPLE_GAIN start_gain25 = gain25in + gain_delta25;
     const CSAMPLE_GAIN gain_delta26 = (gain26out - gain26in) / (iNumSamples / 2);
     const CSAMPLE_GAIN start_gain26 = gain26in + gain_delta26;
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
         const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
         const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
@@ -6721,6 +6748,7 @@ static inline void copy28WithRampingGain(CSAMPLE* _RESTRICT pDest,
     const CSAMPLE_GAIN start_gain26 = gain26in + gain_delta26;
     const CSAMPLE_GAIN gain_delta27 = (gain27out - gain27in) / (iNumSamples / 2);
     const CSAMPLE_GAIN start_gain27 = gain27in + gain_delta27;
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
         const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
         const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
@@ -7193,6 +7221,7 @@ static inline void copy29WithRampingGain(CSAMPLE* _RESTRICT pDest,
     const CSAMPLE_GAIN start_gain27 = gain27in + gain_delta27;
     const CSAMPLE_GAIN gain_delta28 = (gain28out - gain28in) / (iNumSamples / 2);
     const CSAMPLE_GAIN start_gain28 = gain28in + gain_delta28;
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
         const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
         const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
@@ -7681,6 +7710,7 @@ static inline void copy30WithRampingGain(CSAMPLE* _RESTRICT pDest,
     const CSAMPLE_GAIN start_gain28 = gain28in + gain_delta28;
     const CSAMPLE_GAIN gain_delta29 = (gain29out - gain29in) / (iNumSamples / 2);
     const CSAMPLE_GAIN start_gain29 = gain29in + gain_delta29;
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
         const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
         const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
@@ -8185,6 +8215,7 @@ static inline void copy31WithRampingGain(CSAMPLE* _RESTRICT pDest,
     const CSAMPLE_GAIN start_gain29 = gain29in + gain_delta29;
     const CSAMPLE_GAIN gain_delta30 = (gain30out - gain30in) / (iNumSamples / 2);
     const CSAMPLE_GAIN start_gain30 = gain30in + gain_delta30;
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
         const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
         const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
@@ -8705,6 +8736,7 @@ static inline void copy32WithRampingGain(CSAMPLE* _RESTRICT pDest,
     const CSAMPLE_GAIN start_gain30 = gain30in + gain_delta30;
     const CSAMPLE_GAIN gain_delta31 = (gain31out - gain31in) / (iNumSamples / 2);
     const CSAMPLE_GAIN start_gain31 = gain31in + gain_delta31;
+    // note: LOOP VECTORIZED.
     for (int i = 0; i < iNumSamples / 2; ++i) {
         const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * i;
         const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * i;
