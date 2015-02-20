@@ -604,9 +604,10 @@ double BpmControl::getPhaseOffset(double dThisPosition) {
     double dThisPrevBeat = m_pPrevBeat->get();
     double dThisNextBeat = m_pNextBeat->get();
     double dThisBeatLength;
-    DEBUG_ASSERT_AND_HANDLE(dThisPosition <= dThisNextBeat &&
-                            dThisPosition >= dThisPrevBeat) {
+    if (dThisPosition > dThisNextBeat || dThisPosition < dThisPrevBeat) {
         // There's a chance the COs might be out of date, so do a lookup.
+        qDebug() << getGroup()
+                 << "BpmControl::getPhaseOffset beat positions out date, doing lookup";
         if (!getBeatContext(m_pBeats, dThisPosition,
                             &dThisPrevBeat, &dThisNextBeat,
                             &dThisBeatLength, NULL)) {
