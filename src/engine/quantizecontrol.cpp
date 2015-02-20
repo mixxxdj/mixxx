@@ -82,11 +82,6 @@ void QuantizeControl::setCurrentSample(const double dCurrentSample,
         return;
     }
 
-    int iCurrentSample = dCurrentSample;
-    DEBUG_ASSERT_AND_HANDLE(even(iCurrentSample)) {
-        iCurrentSample--;
-    }
-
     double prevBeat = m_pCOPrevBeat->get();
     double nextBeat = m_pCONextBeat->get();
     double closestBeat = m_pCOClosestBeat->get();
@@ -97,14 +92,12 @@ void QuantizeControl::setCurrentSample(const double dCurrentSample,
     if (dCurrentSample < prevBeat || dCurrentSample > nextBeat) {
         // Calculate this by hand since we may also want the beat locations themselves
         // and duplicating the work would double the number of mutex locks.
-        QPair<double, double> beat_pair = m_pBeats->findPrevNextBeats(iCurrentSample);
-        prevBeat = beat_pair.first;
-        nextBeat = beat_pair.second;
+        m_pBeats->findPrevNextBeats(dCurrentSample, &prevBeat, &nextBeat);
         m_pCOPrevBeat->set(prevBeat);
         m_pCONextBeat->set(nextBeat);
     }
     double currentClosestBeat =
-            (nextBeat - iCurrentSample > iCurrentSample - prevBeat) ?
+            (nextBeat - dCurrentSample > dCurrentSample - prevBeat) ?
                     prevBeat : nextBeat;
 
     if (closestBeat != currentClosestBeat) {

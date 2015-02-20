@@ -176,12 +176,14 @@ double BeatMap::findClosestBeat(double dSamples) const {
     if (!isValid()) {
         return -1;
     }
-    QPair<double, double> beat_pair = findPrevNextBeats(dSamples);
-    if (beat_pair.first == -1 || beat_pair.second == -1) {
-        return -1;
+    double prevBeat;
+    double nextBeat;
+    findPrevNextBeats(dSamples, &prevBeat, &nextBeat);
+    if (prevBeat == -1) {
+        return nextBeat == -1 ? -1 : nextBeat;
+    } else if (nextBeat == -1) {
+        return prevBeat;
     }
-    double prevBeat = beat_pair.first;
-    double nextBeat = beat_pair.second;
     return (nextBeat - dSamples > dSamples - prevBeat) ? prevBeat : nextBeat;
 }
 
@@ -272,11 +274,15 @@ double BeatMap::findNthBeat(double dSamples, int n) const {
     return -1;
 }
 
-QPair<double, double> BeatMap::findPrevNextBeats(double dSamples) const {
+bool BeatMap::findPrevNextBeats(double dSamples,
+                                double* dpPrevBeatSamples,
+                                double* dpNextBeatSamples) const {
     QMutexLocker locker(&m_mutex);
 
     if (!isValid()) {
-        return qMakePair(-1.0, -1.0);
+        *dpPrevBeatSamples = -1;
+        *dpNextBeatSamples = -1;
+        return false;
     }
 
     Beat beat;
@@ -329,20 +335,20 @@ QPair<double, double> BeatMap::findPrevNextBeats(double dSamples) const {
         next_beat = on_beat + 1;
     }
 
-    double dPrevSamples = -1;
-    double dNextSamples = -1;
+    *dpPrevBeatSamples = -1;
+    *dpNextBeatSamples = -1;
 
     for (; next_beat != m_beats.end(); ++next_beat) {
         if (!next_beat->enabled()) {
             continue;
         }
-        dNextSamples = framesToSamples(next_beat->frame_position());
+        *dpNextBeatSamples = framesToSamples(next_beat->frame_position());
         break;
     }
     if (previous_beat != m_beats.end()) {
         for (; true; --previous_beat) {
             if (previous_beat->enabled()) {
-                dPrevSamples = framesToSamples(previous_beat->frame_position());
+                *dpPrevBeatSamples = framesToSamples(previous_beat->frame_position());
                 break;
             }
 
@@ -352,7 +358,7 @@ QPair<double, double> BeatMap::findPrevNextBeats(double dSamples) const {
             }
         }
     }
-    return qMakePair(dPrevSamples, dNextSamples);
+    return *dpPrevBeatSamples != -1 && *dpNextBeatSamples != -1;
 }
 
 BeatIterator* BeatMap::findBeats(double startSample, double stopSample) const {

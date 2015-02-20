@@ -414,12 +414,9 @@ double BpmControl::calcSyncedRate(double userTweak) {
     double dThisPosition = getCurrentSample();
     double dBeatLength;
     double my_percentage;
-
-    double dPrevBeat = m_pPrevBeat->get();
-    double dNextBeat = m_pNextBeat->get();
     if (!BpmControl::getBeatContextNoLookup(dThisPosition,
-                                    dPrevBeat, dNextBeat,
-                                    &dBeatLength, &my_percentage)) {
+                                            m_pPrevBeat->get(), m_pNextBeat->get(),
+                                            &dBeatLength, &my_percentage)) {
         m_resetSyncAdjustment = true;
         return rate + userTweak;
     }
@@ -547,9 +544,12 @@ bool BpmControl::getBeatContext(const BeatsPointer& pBeats,
         return false;
     }
 
-    QPair<double, double> beat_pair = pBeats->findPrevNextBeats(dPosition);
-    double dPrevBeat = beat_pair.first;
-    double dNextBeat = beat_pair.second;
+    double dPrevBeat;
+    double dNextBeat;
+    if (!pBeats->findPrevNextBeats(dPosition, &dPrevBeat, &dNextBeat)) {
+        return false;
+    }
+
     if (dpPrevBeat != NULL) {
         *dpPrevBeat = dPrevBeat;
     }

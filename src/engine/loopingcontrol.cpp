@@ -729,9 +729,9 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint) {
             // closest beat might be ahead of play position which would cause a seek.
             // TODO: If in reverse, should probably choose nextBeat.
             double cur_pos = getCurrentSample();
-            QPair<double, double> beat_pair = m_pBeats->findPrevNextBeats(cur_pos);
-            double prevBeat = floor(beat_pair.first);
-            double nextBeat = floor(beat_pair.second);
+            double prevBeat;
+            double nextBeat;
+            m_pBeats->findPrevNextBeats(cur_pos, &prevBeat, &nextBeat);
 
             if (m_pQuantizeEnabled->get() > 0.0 && prevBeat != -1) {
                 if (beats >= 1.0) {
