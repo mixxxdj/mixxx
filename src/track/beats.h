@@ -51,6 +51,9 @@ class Beats {
     // Beat calculations
     ////////////////////////////////////////////////////////////////////////////
 
+    // TODO: We may want all of these find functions to return an integer
+    //       instead of a double.
+
     // Starting from sample dSamples, return the sample of the next beat in the
     // track, or -1 if none exists. If dSamples refers to the location of a
     // beat, dSamples is returned.
