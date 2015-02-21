@@ -71,6 +71,18 @@ SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config, So
     m_pMasterAudioLatencyOverloadCount = new ControlObjectSlave("[Master]", "audio_latency_overload_count");
     m_pMasterAudioLatencyUsage = new ControlObjectSlave("[Master]", "audio_latency_usage");
     m_pMasterAudioLatencyOverload  = new ControlObjectSlave("[Master]", "audio_latency_overload");
+
+    m_inputParams.device = 0;
+    m_inputParams.channelCount = 0;
+    m_inputParams.sampleFormat = 0;
+    m_inputParams.suggestedLatency = 0.0;
+    m_inputParams.hostApiSpecificStreamInfo = NULL;
+
+    m_outputParams.device = 0;
+    m_outputParams.channelCount = 0;
+    m_outputParams.sampleFormat = 0;
+    m_outputParams.suggestedLatency = 0.0;
+    m_outputParams.hostApiSpecificStreamInfo = NULL;
 }
 
 SoundDevicePortAudio::~SoundDevicePortAudio() {
