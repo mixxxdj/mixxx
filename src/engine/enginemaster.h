@@ -92,7 +92,7 @@ class EngineMaster : public QObject, public AudioSource {
     // Add an EngineChannel to the mixing engine. This is not thread safe --
     // only call it before the engine has started mixing.
     void addChannel(EngineChannel* pChannel);
-    EngineChannel* getChannel(QString group);
+    EngineChannel* getChannel(const QString& group);
     static inline double gainForOrientation(EngineChannel::ChannelOrientation orientation,
                                             double leftGain,
                                             double centerGain,
