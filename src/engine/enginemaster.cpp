@@ -540,7 +540,6 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     EngineBuffer* pBuffer = pChannelInfo->m_pChannel->getEngineBuffer();
     if (pBuffer != NULL) {
         pBuffer->bindWorkers(m_pWorkerScheduler);
-        pBuffer->setEngineMaster(this);
     }
 }
 
