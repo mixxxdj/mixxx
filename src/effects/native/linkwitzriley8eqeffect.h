@@ -48,7 +48,7 @@ class LinkwitzRiley8EQEffect : public GroupEffectProcessor<LinkwitzRiley8EQEffec
     static EffectManifest getManifest();
 
     // See effectprocessor.h
-    void processGroup(const QString& group,
+    void processGroup(const ChannelHandle& group,
                       LinkwitzRiley8EQEffectGroupState* pState,
                       const CSAMPLE* pInput, CSAMPLE *pOutput,
                       const unsigned int numSamples,

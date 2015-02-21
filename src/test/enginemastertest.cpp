@@ -19,8 +19,11 @@ namespace {
 
 class EngineChannelMock : public EngineChannel {
   public:
-    EngineChannelMock(const char* group, ChannelOrientation defaultOrientation)
-            : EngineChannel(group, defaultOrientation) {
+    EngineChannelMock(const QString& group,
+                      ChannelOrientation defaultOrientation,
+                      EngineMaster* pMaster)
+            : EngineChannel(pMaster->registerChannelGroup(group),
+                            defaultOrientation) {
     }
 
     void applyVolume(CSAMPLE* pBuff, const int iBufferSize) {
@@ -73,7 +76,8 @@ class EngineMasterTest : public MixxxTest {
 };
 
 TEST_F(EngineMasterTest, SingleChannelOutputWorks) {
-    EngineChannelMock* pChannel = new EngineChannelMock("[Test1]", EngineChannel::CENTER);
+    EngineChannelMock* pChannel = new EngineChannelMock(
+            "[Test1]", EngineChannel::CENTER, m_pMaster);
     m_pMaster->addChannel(pChannel);
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
@@ -109,9 +113,11 @@ TEST_F(EngineMasterTest, SingleChannelOutputWorks) {
 }
 
 TEST_F(EngineMasterTest, TwoChannelOutputWorks) {
-    EngineChannelMock* pChannel1 = new EngineChannelMock("[Test1]", EngineChannel::CENTER);
+    EngineChannelMock* pChannel1 = new EngineChannelMock(
+            "[Test1]", EngineChannel::CENTER, m_pMaster);
     m_pMaster->addChannel(pChannel1);
-    EngineChannelMock* pChannel2 = new EngineChannelMock("[Test2]", EngineChannel::CENTER);
+    EngineChannelMock* pChannel2 = new EngineChannelMock(
+            "[Test2]", EngineChannel::CENTER, m_pMaster);
     m_pMaster->addChannel(pChannel2);
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
@@ -164,9 +170,11 @@ TEST_F(EngineMasterTest, TwoChannelOutputWorks) {
 }
 
 TEST_F(EngineMasterTest, TwoChannelPFLOutputWorks) {
-    EngineChannelMock* pChannel1 = new EngineChannelMock("[Test1]", EngineChannel::CENTER);
+    EngineChannelMock* pChannel1 = new EngineChannelMock(
+            "[Test1]", EngineChannel::CENTER, m_pMaster);
     m_pMaster->addChannel(pChannel1);
-    EngineChannelMock* pChannel2 = new EngineChannelMock("[Test2]", EngineChannel::CENTER);
+    EngineChannelMock* pChannel2 = new EngineChannelMock(
+            "[Test2]", EngineChannel::CENTER, m_pMaster);
     m_pMaster->addChannel(pChannel2);
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
@@ -219,11 +227,14 @@ TEST_F(EngineMasterTest, TwoChannelPFLOutputWorks) {
 }
 
 TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
-    EngineChannelMock* pChannel1 = new EngineChannelMock("[Test1]", EngineChannel::CENTER);
+    EngineChannelMock* pChannel1 = new EngineChannelMock(
+            "[Test1]", EngineChannel::CENTER, m_pMaster);
     m_pMaster->addChannel(pChannel1);
-    EngineChannelMock* pChannel2 = new EngineChannelMock("[Test2]", EngineChannel::CENTER);
+    EngineChannelMock* pChannel2 = new EngineChannelMock(
+            "[Test2]", EngineChannel::CENTER, m_pMaster);
     m_pMaster->addChannel(pChannel2);
-    EngineChannelMock* pChannel3 = new EngineChannelMock("[Test3]", EngineChannel::CENTER);
+    EngineChannelMock* pChannel3 = new EngineChannelMock(
+            "[Test3]", EngineChannel::CENTER, m_pMaster);
     m_pMaster->addChannel(pChannel3);
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
@@ -292,11 +303,14 @@ TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
 }
 
 TEST_F(EngineMasterTest, ThreeChannelPFLOutputWorks) {
-    EngineChannelMock* pChannel1 = new EngineChannelMock("[Test1]", EngineChannel::CENTER);
+    EngineChannelMock* pChannel1 = new EngineChannelMock(
+            "[Test1]", EngineChannel::CENTER, m_pMaster);
     m_pMaster->addChannel(pChannel1);
-    EngineChannelMock* pChannel2 = new EngineChannelMock("[Test2]", EngineChannel::CENTER);
+    EngineChannelMock* pChannel2 = new EngineChannelMock(
+            "[Test2]", EngineChannel::CENTER, m_pMaster);
     m_pMaster->addChannel(pChannel2);
-    EngineChannelMock* pChannel3 = new EngineChannelMock("[Test3]", EngineChannel::CENTER);
+    EngineChannelMock* pChannel3 = new EngineChannelMock(
+            "[Test3]", EngineChannel::CENTER, m_pMaster);
     m_pMaster->addChannel(pChannel3);
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
@@ -365,7 +379,8 @@ TEST_F(EngineMasterTest, ThreeChannelPFLOutputWorks) {
 }
 
 TEST_F(EngineMasterTest, SingleChannelPFLOutputWorks) {
-    EngineChannelMock* pChannel = new EngineChannelMock("[Test1]", EngineChannel::CENTER);
+    EngineChannelMock* pChannel = new EngineChannelMock(
+            "[Test1]", EngineChannel::CENTER, m_pMaster);
     m_pMaster->addChannel(pChannel);
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's

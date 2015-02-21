@@ -93,7 +93,8 @@ MoogLadder4FilterEffect::~MoogLadder4FilterEffect() {
     //qDebug() << debugString() << "destroyed";
 }
 
-void MoogLadder4FilterEffect::processGroup(const QString& group,
+void MoogLadder4FilterEffect::processGroup(
+        const ChannelHandle& group,
         MoogLadder4FilterGroupState* pState,
         const CSAMPLE* pInput, CSAMPLE* pOutput,
         const unsigned int numSamples,

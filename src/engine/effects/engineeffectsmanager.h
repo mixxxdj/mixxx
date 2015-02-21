@@ -7,6 +7,7 @@
 #include "util/fifo.h"
 #include "engine/effects/message.h"
 #include "engine/effects/groupfeaturestate.h"
+#include "engine/channelhandle.h"
 
 class EngineEffectRack;
 class EngineEffectChain;
@@ -26,7 +27,7 @@ class EngineEffectsManager : public EffectsRequestHandler {
     // represented as stereo interleaved samples. There are numSamples total
     // samples, so numSamples/2 left channel samples and numSamples/2 right
     // channel samples.
-    virtual void process(const QString& group,
+    virtual void process(const ChannelHandle& group,
                          CSAMPLE* pInOut,
                          const unsigned int numSamples,
                          const unsigned int sampleRate,

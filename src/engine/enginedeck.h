@@ -39,7 +39,7 @@ class ControlPushButton;
 class EngineDeck : public EngineChannel, public AudioDestination {
     Q_OBJECT
   public:
-    EngineDeck(QString group, ConfigObject<ConfigValue>* pConfig,
+    EngineDeck(const ChannelHandleAndGroup& group, ConfigObject<ConfigValue>* pConfig,
                EngineMaster* pMixingEngine, EffectsManager* pEffectsManager,
                EngineChannel::ChannelOrientation defaultOrientation = CENTER);
     virtual ~EngineDeck();

@@ -61,7 +61,7 @@ BitCrusherEffect::~BitCrusherEffect() {
     //qDebug() << debugString() << "destroyed";
 }
 
-void BitCrusherEffect::processGroup(const QString& group,
+void BitCrusherEffect::processGroup(const ChannelHandle& group,
                                     BitCrusherGroupState* pState,
                                     const CSAMPLE* pInput, CSAMPLE* pOutput,
                                     const unsigned int numSamples,

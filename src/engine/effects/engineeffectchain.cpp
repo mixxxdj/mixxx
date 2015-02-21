@@ -107,19 +107,19 @@ bool EngineEffectChain::processEffectsRequest(const EffectsRequest& message,
             }
             response.success = updateParameters(message);
             break;
-        case EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_GROUP:
+        case EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_CHANNEL:
             if (kEffectDebugOutput) {
-                qDebug() << debugString() << "ENABLE_EFFECT_CHAIN_FOR_GROUP"
-                         << message.group;
+                qDebug() << debugString() << "ENABLE_EFFECT_CHAIN_FOR_CHANNEL"
+                         << message.channel;
             }
-            response.success = enableForGroup(message.group);
+            response.success = enableForChannel(message.channel);
             break;
-        case EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_GROUP:
+        case EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_CHANNEL:
             if (kEffectDebugOutput) {
-                qDebug() << debugString() << "DISABLE_EFFECT_CHAIN_FOR_GROUP"
-                         << message.group;
+                qDebug() << debugString() << "DISABLE_EFFECT_CHAIN_FOR_CHANNEL"
+                         << message.channel;
             }
-            response.success = disableForGroup(message.group);
+            response.success = disableForChannel(message.channel);
             break;
         default:
             return false;
@@ -128,50 +128,42 @@ bool EngineEffectChain::processEffectsRequest(const EffectsRequest& message,
     return true;
 }
 
-bool EngineEffectChain::enableForGroup(const QString& group) {
-    GroupStatus& status = getGroupStatus(group);
+bool EngineEffectChain::enableForChannel(const ChannelHandle& group) {
+    ChannelStatus& status = getChannelStatus(group);
     if (status.enable_state != EffectProcessor::ENABLED) {
         status.enable_state = EffectProcessor::ENABLING;
     }
     return true;
 }
 
-bool EngineEffectChain::disableForGroup(const QString& group) {
-    GroupStatus& status = getGroupStatus(group);
+bool EngineEffectChain::disableForChannel(const ChannelHandle& group) {
+    ChannelStatus& status = getChannelStatus(group);
     if (status.enable_state != EffectProcessor::DISABLED) {
         status.enable_state = EffectProcessor::DISABLING;
     }
     return true;
 }
 
-EngineEffectChain::GroupStatus& EngineEffectChain::getGroupStatus(const QString& group) {
-    for (QLinkedList<GroupStatus>::iterator it = m_groupStatus.begin(),
-                 end = m_groupStatus.end(); it != end; ++it) {
-        GroupStatus& status = *it;
-        if (status.group == group) {
-            return status;
-        }
-    }
-    GroupStatus status(group);
-    m_groupStatus.append(status);
-    return m_groupStatus.last();
+EngineEffectChain::ChannelStatus& EngineEffectChain::getChannelStatus(
+        const ChannelHandle& group) {
+    return m_channelStatus[group];
 }
 
-void EngineEffectChain::process(const QString& group,
+void EngineEffectChain::process(const ChannelHandle& group,
                                 CSAMPLE* pInOut,
                                 const unsigned int numSamples,
                                 const unsigned int sampleRate,
                                 const GroupFeatureState& groupFeatures) {
-    GroupStatus& group_info = getGroupStatus(group);
+    ChannelStatus& channel_info = getChannelStatus(group);
 
     if (m_enableState == EffectProcessor::DISABLED
-            || group_info.enable_state == EffectProcessor::DISABLED) {
+            || channel_info.enable_state == EffectProcessor::DISABLED) {
         // If the chain is not enabled and the group is not enabled and we are not
         // ramping out then do nothing.
         return;
     }
 
-    EffectProcessor::EnableState effectiveEnableState = group_info.enable_state;
+    EffectProcessor::EnableState effectiveEnableState = channel_info.enable_state;
 
     if (m_enableState == EffectProcessor::DISABLING) {
         effectiveEnableState = EffectProcessor::DISABLING;
@@ -182,7 +174,7 @@ void EngineEffectChain::process(const QString& group,
     // At this point either the chain and group are enabled or we are ramping
     // out. If we are ramping out then ramp to 0 instead of m_dMix.
     CSAMPLE wet_gain = m_dMix;
-    CSAMPLE wet_gain_old = group_info.old_gain;
+    CSAMPLE wet_gain_old = channel_info.old_gain;
 
     // INSERT mode: output = input * (1-wet) + effect(input) * wet
     if (m_insertionType == EffectChain::INSERT) {
@@ -253,8 +245,8 @@ void EngineEffectChain::process(const QString& group,
         }
     }
 
-    // Update GroupStatus with the latest values.
-    group_info.old_gain = wet_gain;
+    // Update ChannelStatus with the latest values.
+    channel_info.old_gain = wet_gain;
 
     if (m_enableState == EffectProcessor::DISABLING) {
         m_enableState = EffectProcessor::DISABLED;
@@ -262,9 +254,9 @@ void EngineEffectChain::process(const QString& group,
         m_enableState = EffectProcessor::ENABLED;
     }
 
-    if (group_info.enable_state == EffectProcessor::DISABLING) {
-        group_info.enable_state = EffectProcessor::DISABLED;
-    } else if (group_info.enable_state == EffectProcessor::ENABLING) {
-        group_info.enable_state = EffectProcessor::ENABLED;
+    if (channel_info.enable_state == EffectProcessor::DISABLING) {
+        channel_info.enable_state = EffectProcessor::DISABLED;
+    } else if (channel_info.enable_state == EffectProcessor::ENABLING) {
+        channel_info.enable_state = EffectProcessor::ENABLED;
     }
 }

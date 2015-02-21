@@ -73,7 +73,7 @@ FlangerEffect::~FlangerEffect() {
     //qDebug() << debugString() << "destroyed";
 }
 
-void FlangerEffect::processGroup(const QString& group,
+void FlangerEffect::processGroup(const ChannelHandle& group,
                                  FlangerGroupState* pState,
                                  const CSAMPLE* pInput, CSAMPLE* pOutput,
                                  const unsigned int numSamples,

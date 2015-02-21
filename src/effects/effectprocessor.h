@@ -3,9 +3,11 @@
 
 #include <QString>
 #include <QHash>
+#include <QPair>
 
 #include "util/types.h"
 #include "engine/effects/groupfeaturestate.h"
+#include "engine/channelhandle.h"
 
 class EngineEffect;
 
@@ -21,7 +23,8 @@ class EffectProcessor {
 
     virtual ~EffectProcessor() { }
 
-    virtual void initialize(const QSet<QString>& registeredGroups) = 0;
+    virtual void initialize(
+            const QSet<ChannelHandleAndGroup>& registeredChannels) = 0;
 
     // Take a buffer of numSamples samples of audio from group, provided as
     // pInput, process the buffer according to Effect-specific logic, and output
@@ -32,7 +35,7 @@ class EffectProcessor {
     // samples. The group provided allows the effect to maintain state on a
     // per-group basis. This is important because one Effect instance may be
     // used to process the audio of multiple channels.
-    virtual void process(const QString& group,
+    virtual void process(const ChannelHandle& group,
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
                          const unsigned int numSamples,
                          const unsigned int sampleRate,
@@ -52,21 +55,23 @@ class GroupEffectProcessor : public EffectProcessor {
     GroupEffectProcessor() {
     }
     virtual ~GroupEffectProcessor() {
-        for (typename QHash<QString, GroupStateHolder>::iterator it =
-                     m_groupState.begin(); it != m_groupState.end();) {
+        for (typename ChannelHandleMap<GroupStateHolder>::iterator it =
+                     m_groupState.begin();
+             it != m_groupState.end(); ++it) {
             T* pState = it->state;
-            it = m_groupState.erase(it);
             delete pState;
         }
+        m_groupState.clear();
     }
 
-    virtual void initialize(const QSet<QString>& registeredGroups) {
-        foreach (const QString& group, registeredGroups) {
-            getOrCreateGroupState(group);
+    virtual void initialize(
+            const QSet<ChannelHandleAndGroup>& registeredChannels) {
+        foreach (const ChannelHandleAndGroup& group, registeredChannels) {
+            getOrCreateGroupState(group.handle());
         }
     }
 
-    virtual void process(const QString& group,
+    virtual void process(const ChannelHandle& group,
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
                          const unsigned int numSamples,
                          const unsigned int sampleRate,
@@ -77,7 +82,7 @@ class GroupEffectProcessor : public EffectProcessor {
                      enableState, groupFeatures);
     }
 
-    virtual void processGroup(const QString& group,
+    virtual void processGroup(const ChannelHandle& group,
                               T* groupState,
                               const CSAMPLE* pInput, CSAMPLE* pOutput,
                               const unsigned int numSamples,
@@ -86,7 +91,7 @@ class GroupEffectProcessor : public EffectProcessor {
                               const GroupFeatureState& groupFeatures) = 0;
 
   private:
-    inline T* getOrCreateGroupState(const QString& group) {
+    inline T* getOrCreateGroupState(const ChannelHandle& group) {
         GroupStateHolder& holder = m_groupState[group];
         if (holder.state == NULL) {
             holder.state = new T();
@@ -94,7 +99,7 @@ class GroupEffectProcessor : public EffectProcessor {
         return holder.state;
     }
 
-    QHash<QString, GroupStateHolder> m_groupState;
+    ChannelHandleMap<GroupStateHolder> m_groupState;
 };
 
 #endif /* EFFECTPROCESSOR_H */

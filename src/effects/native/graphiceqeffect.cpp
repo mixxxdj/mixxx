@@ -139,7 +139,7 @@ GraphicEQEffect::GraphicEQEffect(EngineEffect* pEffect,
 GraphicEQEffect::~GraphicEQEffect() {
 }
 
-void GraphicEQEffect::processGroup(const QString& group,
+void GraphicEQEffect::processGroup(const ChannelHandle& group,
                                    GraphicEQEffectGroupState* pState,
                                    const CSAMPLE* pInput, CSAMPLE* pOutput,
                                    const unsigned int numSamples,

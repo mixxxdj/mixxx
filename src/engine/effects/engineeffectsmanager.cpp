@@ -63,8 +63,8 @@ void EngineEffectsManager::onCallbackStart() {
             case EffectsRequest::ADD_EFFECT_TO_CHAIN:
             case EffectsRequest::REMOVE_EFFECT_FROM_CHAIN:
             case EffectsRequest::SET_EFFECT_CHAIN_PARAMETERS:
-            case EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_GROUP:
-            case EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_GROUP:
+            case EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_CHANNEL:
+            case EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_CHANNEL:
                 if (!m_chains.contains(request->pTargetChain)) {
                     if (kEffectDebugOutput) {
                         qDebug() << debugString()
@@ -130,7 +130,7 @@ void EngineEffectsManager::onCallbackStart() {
     }
 }
 
-void EngineEffectsManager::process(const QString& group,
+void EngineEffectsManager::process(const ChannelHandle& group,
                                    CSAMPLE* pInOut,
                                    const unsigned int numSamples,
                                    const unsigned int sampleRate,

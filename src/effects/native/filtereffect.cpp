@@ -89,7 +89,7 @@ FilterEffect::~FilterEffect() {
     //qDebug() << debugString() << "destroyed";
 }
 
-void FilterEffect::processGroup(const QString& group,
+void FilterEffect::processGroup(const ChannelHandle& group,
                                 FilterGroupState* pState,
                                 const CSAMPLE* pInput, CSAMPLE* pOutput,
                                 const unsigned int numSamples,

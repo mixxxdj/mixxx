@@ -44,7 +44,7 @@ void Effect::addToEngine(EngineEffectChain* pChain, int iIndex) {
         return;
     }
     m_pEngineEffect = new EngineEffect(m_manifest,
-            m_pEffectsManager->registeredGroups(),
+            m_pEffectsManager->registeredChannels(),
             m_pInstantiator);
     EffectsRequest* request = new EffectsRequest();
     request->type = EffectsRequest::ADD_EFFECT_TO_CHAIN;

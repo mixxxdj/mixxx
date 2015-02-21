@@ -29,7 +29,7 @@ class Bessel4LVMixEQEffect : public GroupEffectProcessor<Bessel4LVMixEQEffectGro
     static EffectManifest getManifest();
 
     // See effectprocessor.h
-    void processGroup(const QString& group,
+    void processGroup(const ChannelHandle& group,
                       Bessel4LVMixEQEffectGroupState* pState,
                       const CSAMPLE* pInput, CSAMPLE* pOutput,
                       const unsigned int numSamples,

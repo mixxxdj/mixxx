@@ -8,6 +8,7 @@
 
 #include "util.h"
 #include "effects/effect.h"
+#include "engine/channelhandle.h"
 
 class EffectsManager;
 class EngineEffectRack;
@@ -37,10 +38,10 @@ class EffectChain : public QObject {
     void setEnabled(bool enabled);
 
     // Activates EffectChain processing for the provided group.
-    void enableForGroup(const QString& group);
-    bool enabledForGroup(const QString& group) const;
-    const QSet<QString>& enabledGroups() const;
-    void disableForGroup(const QString& group);
+    void enableForChannel(const ChannelHandleAndGroup& group);
+    bool enabledForChannel(const ChannelHandleAndGroup& group) const;
+    const QSet<ChannelHandleAndGroup>& enabledChannels() const;
+    void disableForChannel(const ChannelHandleAndGroup& group);
 
     EffectChainPointer prototype() const;
 
@@ -105,7 +106,7 @@ class EffectChain : public QObject {
     void enabledChanged(bool enabled);
     void mixChanged(double v);
     void insertionTypeChanged(EffectChain::InsertionType type);
-    void groupStatusChanged(const QString& group, bool enabled);
+    void channelStatusChanged(const QString& group, bool enabled);
 
   private:
     QString debugString() const {
@@ -124,7 +125,7 @@ class EffectChain : public QObject {
     InsertionType m_insertionType;
     double m_dMix;
 
-    QSet<QString> m_enabledGroups;
+    QSet<ChannelHandleAndGroup> m_enabledChannels;
     QList<EffectPointer> m_effects;
     EngineEffectChain* m_pEngineEffectChain;
     bool m_bAddedToEngine;

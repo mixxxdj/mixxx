@@ -98,7 +98,7 @@ int EchoEffect::getDelaySamples(double delay_time, const unsigned int sampleRate
     return delay_samples;
 }
 
-void EchoEffect::processGroup(const QString& group, EchoGroupState* pGroupState,
+void EchoEffect::processGroup(const ChannelHandle& group, EchoGroupState* pGroupState,
                               const CSAMPLE* pInput,
                               CSAMPLE* pOutput, const unsigned int numSamples,
                               const unsigned int sampleRate,

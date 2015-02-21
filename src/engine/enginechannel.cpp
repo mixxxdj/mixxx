@@ -20,27 +20,27 @@
 #include "controlobject.h"
 #include "controlpushbutton.h"
 
-EngineChannel::EngineChannel(QString pGroup,
+EngineChannel::EngineChannel(const ChannelHandleAndGroup& group,
                              EngineChannel::ChannelOrientation defaultOrientation)
-        : m_group(pGroup) {
-    m_pPFL = new ControlPushButton(ConfigKey(m_group, "pfl"));
+        : m_group(group) {
+    m_pPFL = new ControlPushButton(ConfigKey(getGroup(), "pfl"));
     m_pPFL->setButtonMode(ControlPushButton::TOGGLE);
-    m_pMaster = new ControlPushButton(ConfigKey(m_group, "master"));
+    m_pMaster = new ControlPushButton(ConfigKey(getGroup(), "master"));
     m_pMaster->setButtonMode(ControlPushButton::TOGGLE);
-    m_pOrientation = new ControlPushButton(ConfigKey(m_group, "orientation"));
+    m_pOrientation = new ControlPushButton(ConfigKey(getGroup(), "orientation"));
     m_pOrientation->setButtonMode(ControlPushButton::TOGGLE);
     m_pOrientation->setStates(3);
     m_pOrientation->set(defaultOrientation);
-    m_pOrientationLeft = new ControlPushButton(ConfigKey(m_group, "orientation_left"));
+    m_pOrientationLeft = new ControlPushButton(ConfigKey(getGroup(), "orientation_left"));
     connect(m_pOrientationLeft, SIGNAL(valueChanged(double)),
             this, SLOT(slotOrientationLeft(double)), Qt::DirectConnection);
-    m_pOrientationRight = new ControlPushButton(ConfigKey(m_group, "orientation_right"));
+    m_pOrientationRight = new ControlPushButton(ConfigKey(getGroup(), "orientation_right"));
     connect(m_pOrientationRight, SIGNAL(valueChanged(double)),
             this, SLOT(slotOrientationRight(double)), Qt::DirectConnection);
-    m_pOrientationCenter = new ControlPushButton(ConfigKey(m_group, "orientation_center"));
+    m_pOrientationCenter = new ControlPushButton(ConfigKey(getGroup(), "orientation_center"));
     connect(m_pOrientationCenter, SIGNAL(valueChanged(double)),
             this, SLOT(slotOrientationCenter(double)), Qt::DirectConnection);
-    m_pTalkover = new ControlPushButton(ConfigKey(pGroup, "talkover"));
+    m_pTalkover = new ControlPushButton(ConfigKey(getGroup(), "talkover"));
     m_pTalkover->setButtonMode(ControlPushButton::POWERWINDOW);
 }
 

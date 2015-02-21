@@ -19,6 +19,7 @@
 #define ENGINECHANNEL_H
 
 #include "engine/engineobject.h"
+#include "engine/channelhandle.h"
 #include "configobject.h"
 
 class ControlObject;
@@ -37,13 +38,18 @@ class EngineChannel : public EngineObject {
         RIGHT,
     };
 
-    EngineChannel(QString pGroup, ChannelOrientation defaultOrientation = CENTER);
+    EngineChannel(const ChannelHandleAndGroup& group,
+                  ChannelOrientation defaultOrientation = CENTER);
     virtual ~EngineChannel();
 
     virtual ChannelOrientation getOrientation() const;
 
+    inline const ChannelHandle& getHandle() const {
+        return m_group.handle();
+    }
+
     virtual const QString& getGroup() const {
-        return m_group;
+        return m_group.name();
     }
 
     virtual bool isActive() = 0;
@@ -68,7 +74,7 @@ class EngineChannel : public EngineObject {
     void slotOrientationCenter(double v);
 
   private:
-    const QString m_group;
+    const ChannelHandleAndGroup m_group;
     ControlPushButton* m_pMaster;
     ControlPushButton* m_pPFL;
     ControlPushButton* m_pOrientation;

@@ -42,7 +42,7 @@ bool EngineEffectRack::processEffectsRequest(const EffectsRequest& message,
     return true;
 }
 
-void EngineEffectRack::process(const QString& group,
+void EngineEffectRack::process(const ChannelHandle& group,
                                CSAMPLE* pInOut,
                                const unsigned int numSamples,
                                const unsigned int sampleRate,

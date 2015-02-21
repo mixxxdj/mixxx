@@ -33,7 +33,7 @@ class FlangerEffect : public GroupEffectProcessor<FlangerGroupState> {
     static EffectManifest getManifest();
 
     // See effectprocessor.h
-    void processGroup(const QString& group,
+    void processGroup(const ChannelHandle& group,
                       FlangerGroupState* pState,
                       const CSAMPLE* pInput, CSAMPLE* pOutput,
                       const unsigned int numSamples,

@@ -31,7 +31,7 @@ class Bessel8LVMixEQEffect : public GroupEffectProcessor<Bessel8LVMixEQEffectGro
     static EffectManifest getManifest();
 
     // See effectprocessor.h
-    void processGroup(const QString& group,
+    void processGroup(const ChannelHandle& group,
                       Bessel8LVMixEQEffectGroupState* pState,
                       const CSAMPLE* pInput, CSAMPLE* pOutput,
                       const unsigned int numSamples,

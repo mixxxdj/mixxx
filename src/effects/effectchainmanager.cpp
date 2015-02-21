@@ -19,16 +19,16 @@ EffectChainManager::~EffectChainManager() {
     //qDebug() << debugString() << "destroyed";
 }
 
-void EffectChainManager::registerGroup(const QString& group) {
-    if (m_registeredGroups.contains(group)) {
-        qWarning() << debugString() << "WARNING: Group already registered:"
-                   << group;
+void EffectChainManager::registerChannel(const ChannelHandleAndGroup& group) {
+    if (m_registeredChannels.contains(group)) {
+        qWarning() << debugString() << "WARNING: Channel already registered:"
+                   << group.name();
         return;
     }
-    m_registeredGroups.insert(group);
+    m_registeredChannels.insert(group);
 
     foreach (StandardEffectRackPointer pRack, m_standardEffectRacks) {
-        pRack->registerGroup(group);
+        pRack->registerChannel(group);
     }
 }
 

@@ -37,7 +37,7 @@ class FilterEffect : public GroupEffectProcessor<FilterGroupState> {
     static EffectManifest getManifest();
 
     // See effectprocessor.h
-    void processGroup(const QString& group,
+    void processGroup(const ChannelHandle& group,
                       FilterGroupState* pState,
                       const CSAMPLE* pInput, CSAMPLE *pOutput,
                       const unsigned int numSamples,

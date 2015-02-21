@@ -31,7 +31,7 @@ class BitCrusherEffect : public GroupEffectProcessor<BitCrusherGroupState> {
     static EffectManifest getManifest();
 
     // See effectprocessor.h
-    void processGroup(const QString& group,
+    void processGroup(const ChannelHandle& group,
                       BitCrusherGroupState* pState,
                       const CSAMPLE* pInput, CSAMPLE *pOutput,
                       const unsigned int numSamples,
