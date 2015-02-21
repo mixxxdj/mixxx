@@ -308,6 +308,9 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
         // complained about loudly.
         --sample;
     }
+    DEBUG_ASSERT_AND_HANDLE(num_samples % 2 == 0) {
+        --num_samples;
+    }
     if (num_samples < 0 || !buffer) {
         QString temp = QString("Sample = %1").arg(sample);
         qDebug() << "CachingReader::read() invalid arguments sample:" << sample
