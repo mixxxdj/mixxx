@@ -544,7 +544,7 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     }
 }
 
-EngineChannel* EngineMaster::getChannel(QString group) {
+EngineChannel* EngineMaster::getChannel(const QString& group) {
     for (QList<ChannelInfo*>::const_iterator i = m_channels.constBegin();
          i != m_channels.constEnd(); ++i) {
         ChannelInfo* pChannelInfo = *i;
