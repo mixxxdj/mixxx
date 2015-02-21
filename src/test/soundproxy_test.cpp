@@ -10,16 +10,26 @@
 
 class SoundSourceProxyTest : public MixxxTest {
   protected:
-    Mixxx::SoundSourcePointer openSoundSource(const QString& fileName) {
+    static QStringList getFileExtensions() {
+        QStringList extensions;
+        extensions << "aiff" << "flac" << "mp3" << "ogg" << "wav";
+#ifdef __OPUS__
+        extensions << "opus";
+#endif
+        return extensions;
+    }
+
+    static Mixxx::SoundSourcePointer openSoundSource(const QString& fileName) {
         return SoundSourceProxy(fileName, SecurityTokenPointer()).getSoundSource();
     }
-    Mixxx::AudioSourcePointer openAudioSource(const QString& fileName) {
+    static Mixxx::AudioSourcePointer openAudioSource(const QString& fileName) {
         return SoundSourceProxy(fileName, SecurityTokenPointer()).openAudioSource();
     }
 };
 
-TEST_F(SoundSourceProxyTest, ProxyCanOpen) {
+TEST_F(SoundSourceProxyTest, open) {
     // This test piggy-backs off of the cover-test files.
+<<<<<<< HEAD
     const QString kCoverFilePath(
             QDir::currentPath() + "/src/test/id3-test-data/cover-test");
 
@@ -33,6 +43,14 @@ TEST_F(SoundSourceProxyTest, ProxyCanOpen) {
     foreach (const QString& extension, extensions) {
         QString filePath = kCoverFilePath + extension;
         EXPECT_TRUE(SoundSourceProxy::isFilenameSupported(filePath));
+=======
+    const QString kFilePathPrefix(
+            QDir::currentPath() + "/src/test/id3-test-data/cover-test.");
+
+    foreach (const QString& fileExtension, getFileExtensions()) {
+        const QString filePath(kFilePathPrefix + fileExtension);
+        ASSERT_TRUE(SoundSourceProxy::isFilenameSupported(filePath));
+>>>>>>> Improve and extend seek tests
 
         Mixxx::AudioSourcePointer pAudioSource(openAudioSource(filePath));
         ASSERT_TRUE(!pAudioSource.isNull());
@@ -63,65 +81,75 @@ TEST_F(SoundSourceProxyTest, TOAL_TPE2) {
 }
 
 TEST_F(SoundSourceProxyTest, seekForward) {
-    const unsigned int kSeekFrameIndex = 10000;
-    const unsigned int kTestFrameCount = 100;
+    const Mixxx::AudioSource::size_type kReadFrameCount = 10000;
 
-    EXPECT_EQ(0, int(kSeekFrameIndex % kTestFrameCount));
+    // According to API documentation of op_pcm_seek():
+    // "...decoding after seeking may not return exactly the same
+    // values as would be obtained by decoding the stream straight
+    // through. However, such differences are expected to be smaller
+    // than the loss introduced by Opus's lossy compression."
+    // NOTE(uklotzde): The current version 0.6 of opusfile doesn't
+    // seem to support sample accurate seeking. The differences
+    // between the samples decoded with continuous reading and
+    // those samples decoded after seeking are quite noticeable!
+    const Mixxx::AudioSource::sample_type kOpusSeekDecodingError = 0.2f;
 
-    const QString kFilePath(
+    const QString kFilePathPrefix(
             QDir::currentPath() + "/src/test/id3-test-data/cover-test.");
 
-    QStringList extensions;
-    extensions << "aiff" << "flac" << "mp3" << "ogg" << "wav";
+    foreach (const QString& fileExtension, getFileExtensions()) {
+        const QString filePath(kFilePathPrefix + fileExtension);
+        ASSERT_TRUE(SoundSourceProxy::isFilenameSupported(filePath));
 
-    foreach (const QString& extension, extensions) {
-        QString filePath = kFilePath + extension;
+        Mixxx::AudioSourcePointer pContReadSource(
+            openAudioSource(filePath));
+        ASSERT_FALSE(pContReadSource.isNull());
+        const Mixxx::AudioSource::size_type readSampleCount = pContReadSource->frames2samples(kReadFrameCount);
+        std::vector<Mixxx::AudioSource::sample_type> contReadData(readSampleCount);
+        std::vector<Mixxx::AudioSource::sample_type> seekReadData(readSampleCount);
 
-        for (unsigned int seekFrameIndex = 0; ; seekFrameIndex += kSeekFrameIndex) {
-            qDebug() << "seekFrameIndex =" << seekFrameIndex;
+        for (Mixxx::AudioSource::diff_type contFrameIndex = 0;
+                pContReadSource->isValidFrameIndex(contFrameIndex);
+                contFrameIndex += kReadFrameCount) {
 
-            Mixxx::AudioSourcePointer pAudioSource1(
+            const Mixxx::AudioSource::size_type contReadFrameCount =
+                    pContReadSource->readSampleFrames(kReadFrameCount, &contReadData[0]);
+
+            Mixxx::AudioSourcePointer pSeekReadSource(
                 openAudioSource(filePath));
-            EXPECT_FALSE(pAudioSource1.isNull());
-            if ((seekFrameIndex + kTestFrameCount) > pAudioSource1->getFrameIndexMax()) {
-                break; // finished
-            }
-            const unsigned int sampleCount1 = pAudioSource1->frames2samples(kTestFrameCount);
-            CSAMPLE *pData1 = new CSAMPLE[sampleCount1];
-            unsigned int frameIndex1 = 0;
-            while (frameIndex1 < seekFrameIndex) {
-                unsigned int readCount1 = pAudioSource1->readSampleFrames(kTestFrameCount, pData1);
-                EXPECT_EQ(kTestFrameCount, readCount1);
-                frameIndex1 += readCount1;
-            }
-            EXPECT_EQ(seekFrameIndex, frameIndex1);
-            const unsigned int readCount1 = pAudioSource1->readSampleFrames(kTestFrameCount, pData1);
-            EXPECT_EQ(kTestFrameCount, readCount1);
+            ASSERT_FALSE(pSeekReadSource.isNull());
+            ASSERT_EQ(pContReadSource->getChannelCount(), pSeekReadSource->getChannelCount());
+            ASSERT_EQ(pContReadSource->getFrameCount(), pSeekReadSource->getFrameCount());
 
-            Mixxx::AudioSourcePointer pAudioSource2(
-                openAudioSource(filePath));
-            EXPECT_FALSE(pAudioSource2.isNull());
-            if ((seekFrameIndex + kTestFrameCount) > pAudioSource2->getFrameIndexMax()) {
-                break; // finished
-            }
-            const unsigned int sampleCount2 = pAudioSource2->frames2samples(kTestFrameCount);
-            CSAMPLE *pData2 = new CSAMPLE[sampleCount2];
-            unsigned int frameIndex2 = pAudioSource2->seekSampleFrame(seekFrameIndex);
-            EXPECT_EQ(seekFrameIndex, frameIndex2);
-            const unsigned int readCount2 = pAudioSource2->readSampleFrames(kTestFrameCount, pData2);
-            EXPECT_EQ(kTestFrameCount, readCount2);
+            const Mixxx::AudioSource::diff_type seekFrameIndex =
+                    pSeekReadSource->seekSampleFrame(contFrameIndex);
+            ASSERT_EQ(contFrameIndex, seekFrameIndex);
 
-            for (unsigned int i = 0; i < kTestFrameCount; i++) {
-                if (pData1[i] != pData2[i]) {
-                    qDebug() << filePath;
-                    qDebug() << "seekFrameIndex =" << seekFrameIndex;
-                    qDebug() << "readFrameIndex =" << (seekFrameIndex + i);
+            const Mixxx::AudioSource::size_type seekReadFrameCount =
+                    pSeekReadSource->readSampleFrames(kReadFrameCount, &seekReadData[0]);
+
+            ASSERT_EQ(contReadFrameCount, seekReadFrameCount);
+            const Mixxx::AudioSource::size_type readSampleCount =
+                    pContReadSource->frames2samples(contReadFrameCount);
+            for (Mixxx::AudioSource::size_type readSampleOffset = 0;
+                    readSampleOffset < readSampleCount;
+                    ++readSampleOffset) {
+                if ("opus" == fileExtension) {
+                    EXPECT_NEAR(contReadData[readSampleOffset], seekReadData[readSampleOffset], kOpusSeekDecodingError)
+                            << "Mismatch in " << filePath.toStdString()
+                            << " at seek frame index " << seekFrameIndex
+                            << " for read sample offset " << readSampleOffset;
+                } else {
+                    // NOTE(uklotzde): The comparison EXPECT_EQ might be
+                    // replaced with EXPECT_FLOAT_EQ to guarantee almost
+                    // accurate seeking. Currently EXPECT_EQ works for all
+                    // tested file formats except Opus.
+                    EXPECT_EQ(contReadData[readSampleOffset], seekReadData[readSampleOffset])
+                            << "Mismatch in " << filePath.toStdString()
+                            << " at seek frame index " << seekFrameIndex
+                            << " for read sample offset " << readSampleOffset;
                 }
-                EXPECT_EQ(pData1[i], pData2[i]);
             }
-
-            delete[] pData1;
-            delete[] pData2;
         }
     }
 
