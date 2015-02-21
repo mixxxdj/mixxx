@@ -202,13 +202,11 @@ void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
         // not of the chain. Propagate the current settings to the chain.
         m_pEffectChain->setMix(m_pControlChainMix->get());
         m_pEffectChain->setEnabled(m_pControlChainEnabled->get() > 0.0);
-        for (QMap<QString, ChannelInfo*>::iterator it = m_channelInfoByName.begin();
-             it != m_channelInfoByName.end(); ++it) {
-            const ChannelInfo& channelInfo = *it.value();
-            if (channelInfo.pEnabled->toBool()) {
-                m_pEffectChain->enableForChannel(channelInfo.group);
+        foreach (ChannelInfo* pChannelInfo, m_channelInfoByName) {
+            if (pChannelInfo->pEnabled->toBool()) {
+                m_pEffectChain->enableForChannel(pChannelInfo->group);
             } else {
-                m_pEffectChain->disableForChannel(channelInfo.group);
+                m_pEffectChain->disableForChannel(pChannelInfo->group);
             }
         }
 

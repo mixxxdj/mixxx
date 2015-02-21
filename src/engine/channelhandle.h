@@ -1,5 +1,20 @@
 #ifndef CHANNELHANDLE_H
 #define CHANNELHANDLE_H
+// ChannelHandle defines a unique identifier for channels of audio in the engine
+// (e.g. headphone output, master output, deck 1, microphone 3). Previously we
+// used the group string of the channel in the engine to uniquely identify it
+// and key associative containers (e.g. QMap, QHash) but the downside to this is
+// that we waste a lot of callback time hashing and re-hashing the strings.
+//
+// To solve this problem we introduce ChannelHandle, a thin wrapper around an
+// integer. As engine channels are registered they are assigned a ChannelHandle
+// starting at 0 and incrementing. The benefit to this scheme is that the hash
+// and equality of ChannelHandles are simple to calculate and a QVarLengthArray
+// can be used to create a fast associative container backed by a simple array
+// (since the keys are numbered [0, num_channels]).
+//
+// A helper class, ChannelHandleFactory, keeps a running count of handles that
+// have been assigned.
 
 #include <QtDebug>
 #include <QHash>
@@ -8,6 +23,9 @@
 
 #include "util/assert.h"
 
+// A wrapper around an integer handle. Used to uniquely identify and refer to
+// channels (headphone output, master output, deck 1, microphone 4, etc.) of
+// audio in the engine.
 class ChannelHandle {
   public:
     ChannelHandle() : m_iHandle(-1) {
@@ -69,8 +87,8 @@ class ChannelHandleAndGroup {
         return m_handle;
     }
 
-    ChannelHandle m_handle;
-    QString m_name;
+    const ChannelHandle m_handle;
+    const QString m_name;
 };
 
 inline bool operator==(const ChannelHandleAndGroup& g1, const ChannelHandleAndGroup& g2) {
@@ -90,6 +108,11 @@ inline uint qHash(const ChannelHandleAndGroup& group) {
     return qHash(group.handle());
 }
 
+// A helper class used by EngineMaster to assign ChannelHandles to channel group
+// strings. Warning: ChannelHandles produced by different ChannelHandleFactory
+// objects are not compatible and will produce incorrect results when compared,
+// stored in the same container, etc. In practice we only use one instance in
+// EngineMaster.
 class ChannelHandleFactory {
   public:
     ChannelHandleFactory() : m_iNextHandle(0) {
@@ -120,6 +143,12 @@ class ChannelHandleFactory {
     QHash<ChannelHandle, QString> m_handleToGroup;
 };
 
+// An associative container mapping ChannelHandle to a template type T. Backed
+// by a QVarLengthArray with ChannelHandleMap::kMaxExpectedGroups pre-allocated
+// entries. Insertions are amortized O(1) time (if less than kMaxExpectedGroups
+// exist then no allocation will occur -- insertion is a mere copy). Lookups are
+// O(1) and quite fast -- a simple index into an array using the handle's
+// integer value.
 template <class T>
 class ChannelHandleMap {
     static const int kMaxExpectedGroups = 256;
