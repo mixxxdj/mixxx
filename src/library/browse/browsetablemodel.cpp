@@ -424,7 +424,7 @@ void BrowseTableModel::trackLoaded(QString group, TrackPointer pTrack) {
     }
 }
 
-bool BrowseTableModel::getIsClolumnSortable(int column) {
+bool BrowseTableModel::isColumnSortable(int column) {
     if (COLUMN_PREVIEW == column) {
         return false;
     }

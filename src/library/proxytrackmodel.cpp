@@ -140,7 +140,7 @@ bool ProxyTrackModel::setModelSetting(QString name, QVariant value) {
 }
 
 void ProxyTrackModel::sort(int column, Qt::SortOrder order) {
-    if (m_pTrackModel->getIsClolumnSortable(column)) {
+    if (m_pTrackModel->isColumnSortable(column)) {
         QSortFilterProxyModel::sort(column, order);
     }
 }

@@ -64,7 +64,7 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel {
     Qt::ItemFlags flags(const QModelIndex &index) const;
     bool setData(const QModelIndex& index, const QVariant& value, int role=Qt::EditRole);
     QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent);
-    virtual bool getIsClolumnSortable(int column);
+    virtual bool isColumnSortable(int column);
 
   public slots:
     void slotClear(BrowseTableModel*);

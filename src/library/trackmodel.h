@@ -131,7 +131,7 @@ class TrackModel {
         m_eDefaultSortOrder = sortOrder;
     }
 
-    virtual bool getIsClolumnSortable(int column) {
+    virtual bool isColumnSortable(int column) {
         Q_UNUSED(column);
         return true;
     }
