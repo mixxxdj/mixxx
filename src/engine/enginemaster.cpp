@@ -268,7 +268,7 @@ void EngineMaster::processChannels(
 
         if (pChannel->isTalkoverEnabled()) {
             // talkover is an exclusive channel
-            // once talkover is anabled it is not used in
+            // once talkover is enabled it is not used in
             // xFader-Mix
             talkoverChannels->append(pChannelInfo);
 
@@ -427,7 +427,7 @@ void EngineMaster::process(const int iBufferSize) {
                                 &c1_gain, &c2_gain);
 
     // All other channels should be adjusted by ducking gain.
-    // The talover channels are mixed in later
+    // The talkover channels are mixed in later
     m_masterGain.setGains(m_pTalkoverDucking->getGain(iBufferSize / 2),
                           c1_gain, 1.0, c2_gain);
 
