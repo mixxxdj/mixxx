@@ -644,7 +644,37 @@ Result SoundSourceFFmpeg::parseHeader() {
 }
 
 QImage SoundSourceFFmpeg::parseCoverArt() {
-    return QImage();
+    qDebug() << "ffmpeg: SoundSourceFFmpeg::parseCoverArt" << getFilename();
+    QImage coverArt;
+    setType("ffmpeg");
+
+    AVFormatContext *FmtCtx = avformat_alloc_context();
+
+    if (avformat_open_input(&FmtCtx, getFilename().toLocal8Bit().constData(), NULL, NULL) != 0) {
+        qDebug() << "avformat_open_input: cannot open" << getFilename().toLocal8Bit().constData();
+        goto end_alloc;
+    }
+
+    if (FmtCtx->iformat->read_header(FmtCtx) < 0) {
+        qDebug() << "AVFormatContext: cannot read format header";
+        goto end_open;
+    }
+
+    // find the first attached picture
+    for (unsigned int i = 0; i < FmtCtx->nb_streams; i++) {
+        if (FmtCtx->streams[i]->disposition & AV_DISPOSITION_ATTACHED_PIC) {
+            qDebug() << "Found image. Stream:" << i << "Size:" << FmtCtx->streams[i]->attached_pic.size;
+            coverArt.loadFromData(FmtCtx->streams[i]->attached_pic.data,
+                                  FmtCtx->streams[i]->attached_pic.size, 0);
+            break;
+        }
+    }
+
+end_open:
+    avformat_close_input(&FmtCtx);
+end_alloc:
+    av_free(FmtCtx);
+    return coverArt;
 }
 
 inline long unsigned SoundSourceFFmpeg::length() {
