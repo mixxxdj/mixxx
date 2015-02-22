@@ -76,8 +76,8 @@ void EngineMicrophone::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
 }
 
 void EngineMicrophone::process(CSAMPLE* pOut, const int iBufferSize) {
-    // If talkover is enabled, then read into the output buffer. Otherwise, skip
-    // the appropriate number of samples to throw them away.
+    // If configured read into the output buffer.
+    // Otherwise, skip the appropriate number of samples to throw them away.
     const CSAMPLE* sampleBuffer = m_sampleBuffer; // save pointer on stack
     double pregain =  m_pPregain->get();
     if (sampleBuffer) {
