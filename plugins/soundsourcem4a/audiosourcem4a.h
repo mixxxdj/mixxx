@@ -57,7 +57,9 @@ private:
     NeAACDecHandle m_hDecoder;
 
     typedef std::vector<sample_type> SampleBuffer;
-    SampleBuffer m_prefetchSampleBuffer;
+    SampleBuffer m_decodeSampleBuffer;
+    SampleBuffer::size_type m_decodeSampleBufferReadOffset;
+    SampleBuffer::size_type m_decodeSampleBufferWriteOffset;
 
     diff_type m_curFrameIndex;
 };

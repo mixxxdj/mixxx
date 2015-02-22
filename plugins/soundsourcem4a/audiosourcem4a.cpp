@@ -1,5 +1,7 @@
 #include "audiosourcem4a.h"
 
+#include "sampleutil.h"
+
 #ifdef __WINDOWS__
 #include <io.h>
 #include <fcntl.h>
@@ -22,8 +24,9 @@ namespace Mixxx {
 
 namespace {
 
-// AAC: "... each block decodes to 1024 time-domain samples."
-const AudioSource::size_type kFramesPerSampleBlock = 1024;
+// According to the specification each AAC sample block decodes
+// to either 1024 or 960 sample frames.
+const AudioSource::size_type kMaxFramesPerSampleBlock = 1024;
 
 // MP4SampleId is 1-based
 const MP4SampleId kSampleBlockIdMin = 1;
@@ -83,6 +86,8 @@ AudioSourceM4A::AudioSourceM4A(QUrl url)
           m_inputBufferOffset(0),
           m_inputBufferLength(0),
           m_hDecoder(NULL),
+          m_decodeSampleBufferReadOffset(0),
+          m_decodeSampleBufferWriteOffset(0),
           m_curFrameIndex(kFrameIndexMin) {
 }
 
@@ -153,8 +158,7 @@ Result AudioSourceM4A::postConstruct() {
 
     SAMPLERATE_TYPE sampleRate;
     unsigned char channelCount;
-    if (0
-            > NeAACDecInit2(m_hDecoder, configBuffer, configBufferSize,
+    if (0 > NeAACDecInit2(m_hDecoder, configBuffer, configBufferSize,
                     &sampleRate, &channelCount)) {
         free(configBuffer);
         qWarning() << "Failed to initialize the AAC decoder!";
@@ -165,14 +169,10 @@ Result AudioSourceM4A::postConstruct() {
 
     setChannelCount(channelCount);
     setFrameRate(sampleRate);
-    setFrameCount(m_maxSampleBlockId * kFramesPerSampleBlock);
+    setFrameCount(m_maxSampleBlockId * kMaxFramesPerSampleBlock);
 
-    // Allocate one block more than the number of sample blocks
-    // that are prefetched
-    const SampleBuffer::size_type prefetchSampleBufferSize =
-            (kNumberOfPrefetchSampleBlocks + 1)
-                    * frames2samples(kFramesPerSampleBlock);
-    m_prefetchSampleBuffer.resize(prefetchSampleBufferSize);
+    // Resize temporary buffer for decoded sample data
+    m_decodeSampleBuffer.resize(frames2samples(kMaxFramesPerSampleBlock));
 
     // Invalidate current position to enforce the following
     // seek operation
@@ -206,10 +206,14 @@ void AudioSourceM4A::restartDecoding(MP4SampleId sampleBlockId) {
     NeAACDecPostSeekReset(m_hDecoder, sampleBlockId);
     m_curSampleBlockId = sampleBlockId;
     m_curFrameIndex = kFrameIndexMin +
-            (m_curSampleBlockId - kSampleBlockIdMin) * kFramesPerSampleBlock;
+            (m_curSampleBlockId - kSampleBlockIdMin) * kMaxFramesPerSampleBlock;
     // discard input buffer
     m_inputBufferOffset = 0;
     m_inputBufferLength = 0;
+    // discard previously decoded sample data
+    m_decodeSampleBufferReadOffset = 0;
+    m_decodeSampleBufferWriteOffset = 0;
+
 }
 
 AudioSource::diff_type AudioSourceM4A::seekSampleFrame(diff_type frameIndex) {
@@ -217,7 +221,7 @@ AudioSource::diff_type AudioSourceM4A::seekSampleFrame(diff_type frameIndex) {
 
     if (m_curFrameIndex != frameIndex) {
         MP4SampleId sampleBlockId = kSampleBlockIdMin
-                + (frameIndex / kFramesPerSampleBlock);
+                + (frameIndex / kMaxFramesPerSampleBlock);
         DEBUG_ASSERT(isValidSampleBlockId(sampleBlockId));
         if ((frameIndex < m_curFrameIndex) || // seeking backwards?
                 !isValidSampleBlockId(m_curSampleBlockId) || // invalid seek position?
@@ -238,11 +242,10 @@ AudioSource::diff_type AudioSourceM4A::seekSampleFrame(diff_type frameIndex) {
         }
         // decoding starts before the actual target position
         DEBUG_ASSERT(m_curFrameIndex <= frameIndex);
-        const size_type prefetchFrameCount = frameIndex - m_curFrameIndex;
         // prefetch (decode and discard) all samples up to the target position
-        DEBUG_ASSERT(frames2samples(prefetchFrameCount) <= m_prefetchSampleBuffer.size());
+        const size_type prefetchFrameCount = frameIndex - m_curFrameIndex;
         const size_type skipFrameCount =
-                readSampleFrames(prefetchFrameCount, &m_prefetchSampleBuffer[0]);
+                readSampleFrames(prefetchFrameCount, NULL);
         DEBUG_ASSERT(skipFrameCount <= prefetchFrameCount);
         if (skipFrameCount != prefetchFrameCount) {
             qWarning() << "Failed to skip over prefetched sample frames after seeking @" << m_curFrameIndex;
@@ -264,6 +267,38 @@ AudioSource::size_type AudioSourceM4A::readSampleFrames(
     sample_type* pSampleBuffer = sampleBuffer;
     size_type numberOfFramesRemaining = numberOfFramesTotal;
     while (0 < numberOfFramesRemaining) {
+        DEBUG_ASSERT(m_decodeSampleBufferReadOffset <=
+                m_decodeSampleBufferWriteOffset);
+        if (m_decodeSampleBufferReadOffset < m_decodeSampleBufferWriteOffset) {
+            // Consume previously decoded sample data
+            const size_type numberOfSamplesDecoded =
+                    m_decodeSampleBufferWriteOffset -
+                    m_decodeSampleBufferReadOffset;
+            const size_type numberOfFramesDecoded =
+                    samples2frames(numberOfSamplesDecoded);
+            const size_type numberOfFramesRead =
+                    math_min(numberOfFramesRemaining, numberOfFramesDecoded);
+            const size_type numberOfSamplesRead =
+                    frames2samples(numberOfFramesRead);
+            if (pSampleBuffer) {
+                const sample_type* const pDecodeBuffer =
+                        &m_decodeSampleBuffer[m_decodeSampleBufferReadOffset];
+                SampleUtil::copy(pSampleBuffer, pDecodeBuffer, numberOfSamplesRead);
+                pSampleBuffer += numberOfSamplesRead;
+                m_decodeSampleBufferReadOffset += numberOfSamplesRead;
+            }
+            m_curFrameIndex += numberOfFramesRead;
+            DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
+            numberOfFramesRemaining -= numberOfFramesRead;
+            if (0 == numberOfFramesRemaining) {
+                break; // exit loop
+            }
+            // All previously decoded sample data has been consumed
+            DEBUG_ASSERT(m_decodeSampleBufferReadOffset == m_decodeSampleBufferWriteOffset);
+        }
+        m_decodeSampleBufferReadOffset = 0;
+        m_decodeSampleBufferWriteOffset = 0;
+
         DEBUG_ASSERT(m_inputBufferOffset <= m_inputBufferLength);
         if (m_inputBufferOffset >= m_inputBufferLength) {
             // reset input buffer
@@ -289,16 +324,35 @@ AudioSource::size_type AudioSourceM4A::readSampleFrames(
         }
         DEBUG_ASSERT(m_inputBufferOffset <= m_inputBufferLength);
 
-        // decode samples into sampleBuffer
-        const size_type decodeBufferCapacityInBytes = frames2samples(
-                numberOfFramesRemaining) * sizeof(*sampleBuffer);
-        DEBUG_ASSERT(0 < decodeBufferCapacityInBytes);
-        void* pDecodeBuffer = pSampleBuffer; // in/out parameter
+        // NOTE(uklotzde): The sample buffer for NeAACDecDecode2 has to
+        // be big enough for a whole block of decoded samples, which
+        // contains up to kMaxFramesPerSampleBlock frames. Otherwise
+        // we need to use a temporary buffer.
+        sample_type* pDecodeBuffer; // in/out parameter
+        size_type decodeBufferCapacityInBytes;
+        if (pSampleBuffer && (numberOfFramesRemaining >= kMaxFramesPerSampleBlock)) {
+            // decode samples directly into sampleBuffer
+            pDecodeBuffer = pSampleBuffer;
+            decodeBufferCapacityInBytes = frames2samples(
+                    numberOfFramesRemaining) * sizeof(*pSampleBuffer);
+        } else {
+            // decode next block of samples into temporary buffer
+            pDecodeBuffer = &m_decodeSampleBuffer[m_decodeSampleBufferWriteOffset];
+            const SampleBuffer::size_type decodeSampleBufferCapacity =
+                    m_decodeSampleBuffer.size() -
+                    m_decodeSampleBufferWriteOffset;
+            DEBUG_ASSERT(decodeSampleBufferCapacity >=
+                    frames2samples(kMaxFramesPerSampleBlock));
+            decodeBufferCapacityInBytes =
+                    decodeSampleBufferCapacity *
+                    sizeof(*pDecodeBuffer);
+        }
 
         NeAACDecFrameInfo decFrameInfo;
         void* pDecodeResult = NeAACDecDecode2(m_hDecoder, &decFrameInfo,
                 &m_inputBuffer[m_inputBufferOffset],
-                m_inputBufferLength - m_inputBufferOffset, &pDecodeBuffer,
+                m_inputBufferLength - m_inputBufferOffset,
+                reinterpret_cast<void**>(&pDecodeBuffer),
                 decodeBufferCapacityInBytes);
         // verify the decoding result
         if (0 != decFrameInfo.error) {
@@ -308,10 +362,7 @@ AudioSource::size_type AudioSourceM4A::readSampleFrames(
                     << getUrl();
             break; // abort
         }
-
-        // verify our assumptions about the decoding API
-        DEBUG_ASSERT(pSampleBuffer == pDecodeBuffer); // verify the in/out parameter
-        DEBUG_ASSERT(pSampleBuffer == pDecodeResult); // verify the result pointer
+        DEBUG_ASSERT(pDecodeResult == pDecodeBuffer); // verify the in/out parameter
 
         // verify the decoded sample data for consistency
         if (getChannelCount() != decFrameInfo.channels) {
@@ -331,13 +382,28 @@ AudioSource::size_type AudioSourceM4A::readSampleFrames(
         m_inputBufferOffset += decFrameInfo.bytesconsumed;
 
         // consume decoded output data
-        pSampleBuffer += decFrameInfo.samples;
-
+        const size_type numberOfSamplesDecoded =
+                decFrameInfo.samples;
         const size_type numberOfFramesDecoded =
-                samples2frames(decFrameInfo.samples);
-        m_curFrameIndex += numberOfFramesDecoded;
+                samples2frames(numberOfSamplesDecoded);
+        const size_type numberOfFramesRead =
+                math_min(numberOfFramesRemaining, numberOfFramesDecoded);
+        const size_type numberOfSamplesRead =
+                frames2samples(numberOfFramesRead);
+        if (pDecodeBuffer == pSampleBuffer) {
+            pSampleBuffer += numberOfSamplesRead;
+        } else {
+            m_decodeSampleBufferWriteOffset += numberOfSamplesDecoded;
+            if (pSampleBuffer) {
+                SampleUtil::copy(pSampleBuffer, pDecodeBuffer, numberOfSamplesRead);
+                pSampleBuffer += numberOfSamplesRead;
+            }
+            m_decodeSampleBufferReadOffset += numberOfSamplesRead;
+        }
+
+        m_curFrameIndex += numberOfFramesRead;
         DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
-        numberOfFramesRemaining -= numberOfFramesDecoded;
+        numberOfFramesRemaining -= numberOfFramesRead;
     }
 
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
