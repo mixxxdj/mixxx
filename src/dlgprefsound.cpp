@@ -536,6 +536,10 @@ void DlgPrefSound::slotResetToDefaults() {
     headDelaySpinBox->setValue(0.0);
     m_pHeadDelay->set(0.0);
 
+    // Enable talkover mix
+    m_pMasterTalkoverMix->set(0.0);
+    micMixComboBox->setCurrentIndex(0);
+
     settingChanged(); // force the apply button to enable
 }
 
