@@ -295,7 +295,6 @@ void EngineMaster::processChannels(
                 if (gainCache.m_gain) {
                     gainCache.m_fadeout = true;
                     busChannels[pChannel->getOrientation()].append(pChannelInfo);
-                    qDebug() << "3" << gainCache.m_gain;
                 }
             }
         }
