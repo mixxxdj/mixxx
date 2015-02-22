@@ -297,10 +297,15 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
     df.open(QIODevice::WriteOnly | QIODevice::Text);
     writer.setDevice(&df);
 #endif
+
+    // Now that all EngineControls have been created call setEngineMaster.
+    // TODO(XXX): Get rid of EngineControl::setEngineMaster and
+    // EngineControl::setEngineBuffer entirely and pass them through the
+    // constructor.
+    setEngineMaster(pMixingEngine);
 }
 
-EngineBuffer::~EngineBuffer()
-{
+EngineBuffer::~EngineBuffer() {
 #ifdef __SCALER_DEBUG__
     //close the writer
     df.close();
