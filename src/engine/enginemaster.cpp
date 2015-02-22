@@ -619,11 +619,10 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     EngineBuffer* pBuffer = pChannelInfo->m_pChannel->getEngineBuffer();
     if (pBuffer != NULL) {
         pBuffer->bindWorkers(m_pWorkerScheduler);
-        pBuffer->setEngineMaster(this);
     }
 }
 
-EngineChannel* EngineMaster::getChannel(QString group) {
+EngineChannel* EngineMaster::getChannel(const QString& group) {
     for (unsigned int i = 0; i < m_channels.size(); ++i) {
         ChannelInfo* pChannelInfo = m_channels[i];
         if (pChannelInfo->m_pChannel->getGroup() == group) {

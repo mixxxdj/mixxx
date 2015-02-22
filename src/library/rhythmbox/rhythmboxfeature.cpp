@@ -258,6 +258,7 @@ TreeItem* RhythmboxFeature::importPlaylists() {
         // do error handling
         qDebug() << "Cannot process Rhythmbox music collection";
         qDebug() << "XML ERROR: " << xml.errorString();
+        delete rootItem;
         return NULL;
     }
     db.close();

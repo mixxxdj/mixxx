@@ -154,7 +154,7 @@ class DragAndDropHelper {
 
         QDrag* drag = new QDrag(pDragSource);
         drag->setMimeData(mimeData);
-        drag->setPixmap(QPixmap(":images/library/ic_library_drag_and_drop.png"));
+        drag->setPixmap(QPixmap(":/images/library/ic_library_drag_and_drop.png"));
         drag->exec(Qt::CopyAction);
 
         return drag;

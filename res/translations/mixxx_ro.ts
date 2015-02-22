@@ -19,22 +19,22 @@
 <context>
     <name>AutoDJFeature</name>
     <message>
-        <location filename="../../src/library/autodj/autodjfeature.cpp" line="64"/>
+        <location filename="../../src/library/autodj/autodjfeature.cpp" line="65"/>
         <source>Crates</source>
         <translation>Colecții</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/autodjfeature.cpp" line="85"/>
+        <location filename="../../src/library/autodj/autodjfeature.cpp" line="86"/>
         <source>Remove Crate as Track Source</source>
         <translation>Elimină colecția ca sursă pistă</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/autodjfeature.cpp" line="100"/>
+        <location filename="../../src/library/autodj/autodjfeature.cpp" line="101"/>
         <source>Auto DJ</source>
         <translation>Auto DJ</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/autodjfeature.cpp" line="350"/>
+        <location filename="../../src/library/autodj/autodjfeature.cpp" line="367"/>
         <source>Add Crate as Track Source</source>
         <translation>Adaugă colecția ca sursă pistă</translation>
     </message>
@@ -523,9 +523,9 @@
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="97"/>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="172"/>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="188"/>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="376"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="181"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="197"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="385"/>
         <source>Mixxx Library</source>
         <translation>Biblioteca Mixxx</translation>
     </message>
@@ -535,22 +535,22 @@
         <translation>Nu s-a putut încărca fișierul următor deoarece este utilizat de Mixxx sau altă aplicație.</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="173"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="182"/>
         <source>Warning: This will permanently delete the following files:</source>
         <translation>Atenție: Aceasta va șterge permanent următoarele fișiere:</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="175"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="184"/>
         <source>Are you sure you want to delete these files from your computer?</source>
         <translation>Sigur vreţi să ştergeţi aceste fişiere din computerul dumneavoastră?</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="189"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="198"/>
         <source>Could not delete the following file because it is in use by Mixxx or another application:</source>
         <translation>Nu s-a putut şterge fişierul următor deoarece este folosit de Mixxx sau o altă aplicaţie:</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="377"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="386"/>
         <source>Could not update file metadata.</source>
         <translation>Nu se pot actualiza metadatele fișierului.</translation>
     </message>
@@ -558,7 +558,7 @@
 <context>
     <name>BulkController</name>
     <message>
-        <location filename="../../src/controllers/bulk/bulkcontroller.cpp" line="83"/>
+        <location filename="../../src/controllers/bulk/bulkcontroller.cpp" line="86"/>
         <source>USB Controller</source>
         <translation>Control USB</translation>
     </message>
@@ -3208,11 +3208,13 @@ You tried to learn: %1,%2</source>
     <name>DlgPrefAutoDJ</name>
     <message>
         <location filename="../../src/dlgprefautodj.cpp" line="10"/>
+        <location filename="../../src/dlgprefautodj.cpp" line="42"/>
         <source>Off</source>
         <translation>Oprit</translation>
     </message>
     <message>
         <location filename="../../src/dlgprefautodj.cpp" line="11"/>
+        <location filename="../../src/dlgprefautodj.cpp" line="43"/>
         <source>On</source>
         <translation>Pornit</translation>
     </message>
@@ -3225,54 +3227,74 @@ You tried to learn: %1,%2</source>
         <translation>Preferințe Auto DJ</translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefautodjdlg.ui" line="35"/>
+        <location filename="../../src/dlgprefautodjdlg.ui" line="22"/>
         <source>Re-queue tracks after playback</source>
         <translation>Re încarcă pistele după redare</translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefautodjdlg.ui" line="45"/>
+        <location filename="../../src/dlgprefautodjdlg.ui" line="32"/>
         <source>Add a track to the end of the Auto DJ playlist once it is played, instead of removing it.</source>
         <translation>Adaugă pista la sfârșitul listei de redare Auto DJ odată ce aceasta este redată, în schimbul eliminării ei.</translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefautodjdlg.ui" line="52"/>
+        <location filename="../../src/dlgprefautodjdlg.ui" line="79"/>
         <source>Duration after which a track is eligible for selection by Auto DJ again</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/dlgprefautodjdlg.ui" line="55"/>
+        <location filename="../../src/dlgprefautodjdlg.ui" line="82"/>
         <source>hh:mm</source>
         <translation>hh:mm</translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefautodjdlg.ui" line="65"/>
+        <location filename="../../src/dlgprefautodjdlg.ui" line="39"/>
         <source>Minimum available tracks in Track Source</source>
         <translation>Număr minim de piste disponibile în sursa pistelor</translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefautodjdlg.ui" line="72"/>
+        <location filename="../../src/dlgprefautodjdlg.ui" line="46"/>
         <source>This percentage of tracks are always available for selecting, regardless of when they were last played.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/dlgprefautodjdlg.ui" line="75"/>
+        <location filename="../../src/dlgprefautodjdlg.ui" line="49"/>
         <source>%</source>
         <translation>%</translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefautodjdlg.ui" line="88"/>
+        <location filename="../../src/dlgprefautodjdlg.ui" line="62"/>
         <source>Uncheck, to ignore all played tracks.</source>
         <translation>Debifați, pentru a se ignora toate pistele redate.</translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefautodjdlg.ui" line="91"/>
+        <location filename="../../src/dlgprefautodjdlg.ui" line="65"/>
         <source>Suspend track in Track Source from re-queue</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/dlgprefautodjdlg.ui" line="98"/>
+        <location filename="../../src/dlgprefautodjdlg.ui" line="72"/>
         <source>Suspension period for track selection</source>
         <translation>Perioada de suspendare pentru selecția pistei</translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefautodjdlg.ui" line="92"/>
+        <source>Enable random track addition to queue</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefautodjdlg.ui" line="102"/>
+        <source>Add random tracks from Track Source if the specified minimum tracks remain</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefautodjdlg.ui" line="109"/>
+        <source>Minimum allowed tracks before addition</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefautodjdlg.ui" line="119"/>
+        <source>Minimum number of tracks after which random tracks may be added</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -4994,13 +5016,13 @@ href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; pentru mai multe inform
     </message>
     <message>
         <location filename="../../src/dlgprefshoutcast.cpp" line="88"/>
-        <location filename="../../src/dlgprefshoutcast.cpp" line="195"/>
+        <location filename="../../src/dlgprefshoutcast.cpp" line="196"/>
         <source>This stream is online for testing purposes!</source>
         <translation>Acest flux este online numai pentru teste!</translation>
     </message>
     <message>
         <location filename="../../src/dlgprefshoutcast.cpp" line="95"/>
-        <location filename="../../src/dlgprefshoutcast.cpp" line="196"/>
+        <location filename="../../src/dlgprefshoutcast.cpp" line="197"/>
         <source>Live Mix</source>
         <translation>Live Mix</translation>
     </message>
@@ -5018,12 +5040,6 @@ href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; pentru mai multe inform
         <location filename="../../src/dlgprefshoutcast.cpp" line="145"/>
         <source>Stereo</source>
         <translation>Stereo</translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefshoutcast.cpp" line="174"/>
-        <location filename="../../src/dlgprefshoutcast.cpp" line="205"/>
-        <source>$artist - $title</source>
-        <translation>$artist - $titlu</translation>
     </message>
 </context>
 <context>
@@ -5187,11 +5203,6 @@ href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; pentru mai multe inform
         <location filename="../../src/dlgprefshoutcastdlg.ui" line="528"/>
         <source>Shoutcast metadata format</source>
         <translation>Format metadate shoutcast</translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefshoutcastdlg.ui" line="537"/>
-        <source>$artist - $title</source>
-        <translation>$artist - $titlu</translation>
     </message>
 </context>
 <context>
@@ -6302,22 +6313,22 @@ href=&quot;http://www.mixxx.org/wiki/doku.php/troubleshooting?s[]=limits&quot;&g
 <context>
     <name>EngineRecord</name>
     <message>
-        <location filename="../../src/engine/sidechain/enginerecord.cpp" line="335"/>
+        <location filename="../../src/engine/sidechain/enginerecord.cpp" line="346"/>
         <source>Recording</source>
         <translation>Înregistrare</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginerecord.cpp" line="336"/>
+        <location filename="../../src/engine/sidechain/enginerecord.cpp" line="347"/>
         <source>Could not create audio file for recording!</source>
         <translation>Nu se poate crea fișierul audio pentru înregistrare!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginerecord.cpp" line="337"/>
+        <location filename="../../src/engine/sidechain/enginerecord.cpp" line="348"/>
         <source>Ensure there is enough free disk space and you have write permission for the Recordings folder.</source>
         <translation>Asigurați-vă că este suficient spațiu liber pe disc și că aveți permisiuni de scriere pentru dosarul Înregistrări.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginerecord.cpp" line="338"/>
+        <location filename="../../src/engine/sidechain/enginerecord.cpp" line="349"/>
         <source>You can change the location of the Recordings folder in Preferences &gt; Recording.</source>
         <translation>Puteți schimba locația dosarului Înregistrări în Preferințe &gt; Înregistrare.</translation>
     </message>
@@ -6602,7 +6613,7 @@ href=&quot;http://www.mixxx.org/wiki/doku.php/troubleshooting?s[]=limits&quot;&g
     <name>ITunesFeature</name>
     <message>
         <location filename="../../src/library/itunes/itunesfeature.cpp" line="69"/>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="753"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="755"/>
         <source>iTunes</source>
         <translation>iTunes</translation>
     </message>
@@ -6628,12 +6639,12 @@ href=&quot;http://www.mixxx.org/wiki/doku.php/troubleshooting?s[]=limits&quot;&g
         <translation>Alege biblioteca...</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="748"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="750"/>
         <source>Error Loading iTunes Library</source>
         <translation>Eroare la încărcarea bibliotecii iTunes</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="749"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="751"/>
         <source>There was an error loading your iTunes library. Some of your iTunes tracks or playlists may not have loaded.</source>
         <translation>A intervenit o eroare la încărcarea bibliotecii iTunes. Unele dintre pistele sau listele de redare iTunes este posibil să nu se fi încărcat.</translation>
     </message>
@@ -6641,13 +6652,13 @@ href=&quot;http://www.mixxx.org/wiki/doku.php/troubleshooting?s[]=limits&quot;&g
 <context>
     <name>LegacySkinParser</name>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1002"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1007"/>
         <source>Safe Mode Enabled</source>
         <extracomment>Shown when Mixxx is running in safe mode.</extracomment>
         <translation>Este activat modul sigur</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1011"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1016"/>
         <source>No OpenGL
 support.</source>
         <extracomment>Shown when Spinny can not be displayed. Please keep 
@@ -6656,57 +6667,57 @@ support.</source>
 OpenGL.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1864"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1922"/>
         <source>activate</source>
         <translation>activează</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1869"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1927"/>
         <source>toggle</source>
         <translation>comută</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1879"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1937"/>
         <source>right</source>
         <translation>dreapta</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1884"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1942"/>
         <source>left</source>
         <translation>stânga</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1889"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1947"/>
         <source>right small</source>
         <translation>dreapta mic</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1894"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1952"/>
         <source>left small</source>
         <translation>stânga mic</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1899"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1957"/>
         <source>up</source>
         <translation>sus</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1904"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1962"/>
         <source>down</source>
         <translation>jos</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1909"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1967"/>
         <source>up small</source>
         <translation>sus mic</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1914"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1972"/>
         <source>down small</source>
         <translation>jos mic</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1946"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2004"/>
         <source>Shortcut</source>
         <translation>Scurtătură</translation>
     </message>
@@ -6814,10 +6825,10 @@ OpenGL.</translation>
     <message>
         <location filename="../../src/mixxx.cpp" line="665"/>
         <location filename="../../src/mixxx.cpp" line="1529"/>
-        <location filename="../../src/mixxx.cpp" line="1707"/>
-        <location filename="../../src/mixxx.cpp" line="1741"/>
-        <location filename="../../src/mixxx.cpp" line="1770"/>
-        <location filename="../../src/mixxx.cpp" line="1839"/>
+        <location filename="../../src/mixxx.cpp" line="1716"/>
+        <location filename="../../src/mixxx.cpp" line="1750"/>
+        <location filename="../../src/mixxx.cpp" line="1779"/>
+        <location filename="../../src/mixxx.cpp" line="1848"/>
         <source>Mixxx</source>
         <translation>Mixxx</translation>
     </message>
@@ -6912,8 +6923,8 @@ OpenGL.</translation>
     </message>
     <message>
         <location filename="../../src/mixxx.cpp" line="984"/>
-        <source>Load Track to Deck %1</source>
-        <translation>Încarcă pista în Deck-ul %1</translation>
+        <source>Load Track to Deck &amp;%1</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/mixxx.cpp" line="985"/>
@@ -7266,23 +7277,23 @@ OpenGL.</translation>
         <translation>Ctrl+Shift+R</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1349"/>
-        <source>Developer Tools</source>
-        <translation>Unelte dezvoltator</translation>
+        <location filename="../../src/mixxx.cpp" line="1379"/>
+        <source>Stats: &amp;Base Bucket</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1350"/>
+        <location filename="../../src/mixxx.cpp" line="1444"/>
+        <source>&amp;Developer</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/mixxx.cpp" line="1348"/>
         <source>Opens the developer tools dialog</source>
         <translation>Deschide dialogul uneltelor dezvoltatorului</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1355"/>
+        <location filename="../../src/mixxx.cpp" line="1353"/>
         <source>Ctrl+Shift+T</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/mixxx.cpp" line="1399"/>
-        <source>Debugger Enabled</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -7296,14 +7307,19 @@ OpenGL.</translation>
         <translation>Ctrl+Shift+D</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1362"/>
-        <source>Stats: Experiment Bucket</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <location filename="../../src/mixxx.cpp" line="1314"/>
         <source>Ctrl+6</source>
         <comment>Menubar|View|Show Cover Art</comment>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/mixxx.cpp" line="1347"/>
+        <source>Developer &amp;Tools</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/mixxx.cpp" line="1362"/>
+        <source>Stats: &amp;Experiment Bucket</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -7317,11 +7333,6 @@ OpenGL.</translation>
         <translation>Ctrl+Shift+E</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1379"/>
-        <source>Stats: Base Bucket</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <location filename="../../src/mixxx.cpp" line="1380"/>
         <source>Enables base mode. Collects stats in the BASE tracking bucket.</source>
         <translation type="unfinished"/>
@@ -7330,6 +7341,11 @@ OpenGL.</translation>
         <location filename="../../src/mixxx.cpp" line="1386"/>
         <source>Ctrl+Shift+B</source>
         <translation>Ctrl+Shift+B</translation>
+    </message>
+    <message>
+        <location filename="../../src/mixxx.cpp" line="1399"/>
+        <source>Deb&amp;ugger Enabled</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/mixxx.cpp" line="1439"/>
@@ -7357,11 +7373,6 @@ OpenGL.</translation>
         <translation>&amp;Ajutor</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1444"/>
-        <source>Developer</source>
-        <translation>Dezvoltator</translation>
-    </message>
-    <message>
         <location filename="../../src/mixxx.cpp" line="1456"/>
         <source>&amp;Vinyl Control</source>
         <translation>Control disc &amp;vinil</translation>
@@ -7382,76 +7393,76 @@ OpenGL.</translation>
         <translation>Sigur doriți să încărcați o nouă pistă?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1708"/>
+        <location filename="../../src/mixxx.cpp" line="1717"/>
         <source>There is no input device selected for this vinyl control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>Nu este selectat nici un dispozitiv de intrare pentru acest control disc vinil.
 Selectați întâi un dispozitiv de intrare din preferințele plăcii de sunet.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1742"/>
+        <location filename="../../src/mixxx.cpp" line="1751"/>
         <source>There is no input device selected for this passthrough control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1771"/>
+        <location filename="../../src/mixxx.cpp" line="1780"/>
         <source>There is no input device selected for this auxiliary input.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>Nu este selectat nici un dispozitiv de intrare pentru această intrare auxiliară.
 Selectați întâi un dispozitiv de intrare din preferințele plăcii de sunet.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1840"/>
+        <location filename="../../src/mixxx.cpp" line="1849"/>
         <source>There is no input device selected for this microphone.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>Nu este selectat nici un dispozitiv de intrare pentru acest microfon.
 Selectați întâi un dispozitiv de intrare din preferințele plăcii de sunet.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1932"/>
+        <location filename="../../src/mixxx.cpp" line="1941"/>
         <source>Error in skin file</source>
         <translation>Eroare în fișier aspect aplicație</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1933"/>
+        <location filename="../../src/mixxx.cpp" line="1942"/>
         <source>The selected skin cannot be loaded.</source>
         <translation>Aspectul aplicației selectat nu poate fi încărcat.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="2059"/>
+        <location filename="../../src/mixxx.cpp" line="2068"/>
         <source>OpenGL Direct Rendering</source>
         <translation>Randare directă OpenGL</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="2060"/>
+        <location filename="../../src/mixxx.cpp" line="2069"/>
         <source>Direct rendering is not enabled on your machine.&lt;br&gt;&lt;br&gt;This means that the waveform displays will be very&lt;br&gt;&lt;b&gt;slow and may tax your CPU heavily&lt;/b&gt;. Either update your&lt;br&gt;configuration to enable direct rendering, or disable&lt;br&gt;the waveform displays in the Mixxx preferences by selecting&lt;br&gt;&quot;Empty&quot; as the waveform display in the &apos;Interface&apos; section.&lt;br&gt;&lt;br&gt;NOTE: If you use NVIDIA hardware,&lt;br&gt;direct rendering may not be present, but you should&lt;br&gt;not experience degraded performance.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="2094"/>
-        <location filename="../../src/mixxx.cpp" line="2102"/>
+        <location filename="../../src/mixxx.cpp" line="2103"/>
         <location filename="../../src/mixxx.cpp" line="2111"/>
+        <location filename="../../src/mixxx.cpp" line="2120"/>
         <source>Confirm Exit</source>
         <translation>Confirmare ieșire</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="2095"/>
+        <location filename="../../src/mixxx.cpp" line="2104"/>
         <source>A deck is currently playing. Exit Mixxx?</source>
         <translation>Un deck actualmente redă. Se oprește Mixxx?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="2103"/>
+        <location filename="../../src/mixxx.cpp" line="2112"/>
         <source>A sampler is currently playing. Exit Mixxx?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="2112"/>
+        <location filename="../../src/mixxx.cpp" line="2121"/>
         <source>The preferences window is still open.</source>
         <translation>Fereastra preferințe este încă deschisă.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="2113"/>
+        <location filename="../../src/mixxx.cpp" line="2122"/>
         <source>Discard any changes and exit Mixxx?</source>
         <translation>Se descarcă orice modificări și se închide Mixxx?</translation>
     </message>
@@ -7835,7 +7846,7 @@ To abort this action, press Cancel on the file dialog.</source>
     <message>
         <location filename="../../src/effects/native/bitcrushereffect.cpp" line="13"/>
         <source>BitCrusher</source>
-        <translation type="unfinished"/>
+        <translation>BitCrusher</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/bitcrushereffect.cpp" line="16"/>
@@ -8210,8 +8221,8 @@ To abort this action, press Cancel on the file dialog.</source>
 <context>
     <name>RhythmboxFeature</name>
     <message>
-        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="50"/>
-        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="443"/>
+        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="58"/>
+        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="452"/>
         <source>Rhythmbox</source>
         <translation>Rhythmbox</translation>
     </message>
@@ -8702,7 +8713,7 @@ To abort this action, press Cancel on the file dialog.</source>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="172"/>
-        <location filename="../../src/skin/tooltips.cpp" line="573"/>
+        <location filename="../../src/skin/tooltips.cpp" line="582"/>
         <source>Cover Art</source>
         <translation>Copertă</translation>
     </message>
@@ -9095,27 +9106,52 @@ To abort this action, press Cancel on the file dialog.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="570"/>
-        <source>Indicates that the audio buffer is too small to do all audio processing.</source>
-        <translation>Indică faptul că buffer-ul audio este prea mic pentru a efectua toate procesările audio.</translation>
-    </message>
-    <message>
-        <location filename="../../src/skin/tooltips.cpp" line="574"/>
-        <source>Displays cover artwork of the loaded track.</source>
+        <location filename="../../src/skin/tooltips.cpp" line="451"/>
+        <source>Enable Vinyl Control</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="575"/>
-        <source>Displays options for editing cover artwork.</source>
+        <location filename="../../src/skin/tooltips.cpp" line="452"/>
+        <source>When disabled, the track is controlled by Mixxx playback controls.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="578"/>
-        <source>Star Rating</source>
+        <location filename="../../src/skin/tooltips.cpp" line="453"/>
+        <source>When enabled, the track responds to external vinyl control.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="456"/>
+        <source>Enable Passthrough</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="457"/>
+        <source>When enabled, the deck directly plays the audio arriving on the input.</source>
         <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="579"/>
+        <source>Indicates that the audio buffer is too small to do all audio processing.</source>
+        <translation>Indică faptul că buffer-ul audio este prea mic pentru a efectua toate procesările audio.</translation>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="583"/>
+        <source>Displays cover artwork of the loaded track.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="584"/>
+        <source>Displays options for editing cover artwork.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="587"/>
+        <source>Star Rating</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="588"/>
         <source>Assign ratings to individual tracks by clicking the stars.</source>
         <translation type="unfinished"/>
     </message>
@@ -9287,108 +9323,108 @@ To abort this action, press Cancel on the file dialog.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="484"/>
+        <location filename="../../src/skin/tooltips.cpp" line="493"/>
         <source>Setup a loop over the set number of beats.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="486"/>
+        <location filename="../../src/skin/tooltips.cpp" line="495"/>
         <source>Temporarily setup a rolling loop over the set number of beats.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="487"/>
+        <location filename="../../src/skin/tooltips.cpp" line="496"/>
         <source>Playback will resume where the track would have been if it had not entered the loop.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="490"/>
+        <location filename="../../src/skin/tooltips.cpp" line="499"/>
         <source>Beatjump</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="491"/>
+        <location filename="../../src/skin/tooltips.cpp" line="500"/>
         <source>Jump forward or backward by the set number of beats.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="494"/>
+        <location filename="../../src/skin/tooltips.cpp" line="503"/>
         <source>Loop Move</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="495"/>
+        <location filename="../../src/skin/tooltips.cpp" line="504"/>
         <source>Adjust the loop in and out points by the set number of beats.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="498"/>
+        <location filename="../../src/skin/tooltips.cpp" line="507"/>
         <source>Loop Exit</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="499"/>
+        <location filename="../../src/skin/tooltips.cpp" line="508"/>
         <source>Turns the current loop off.</source>
         <translation>Oprește bucla curentă.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="508"/>
+        <location filename="../../src/skin/tooltips.cpp" line="517"/>
         <source>Slip Mode</source>
         <translation>Mod adormire</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="509"/>
+        <location filename="../../src/skin/tooltips.cpp" line="518"/>
         <source>When active, the playback continues muted in the background during a loop, reverse, scratch etc.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="510"/>
+        <location filename="../../src/skin/tooltips.cpp" line="519"/>
         <source>Once disabled, the audible playback will resume where the track would have been.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="548"/>
+        <location filename="../../src/skin/tooltips.cpp" line="557"/>
         <source>Track Key</source>
         <extracomment>The musical key of a track</extracomment>
         <translation>Cheie pistă</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="549"/>
+        <location filename="../../src/skin/tooltips.cpp" line="558"/>
         <source>Displays the musical key of the loaded track.</source>
         <translation>Afișează cheia muzicală a pistei încărcate.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="559"/>
+        <location filename="../../src/skin/tooltips.cpp" line="568"/>
         <source>Clock</source>
         <translation>Ceas</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="560"/>
+        <location filename="../../src/skin/tooltips.cpp" line="569"/>
         <source>Displays the current time.</source>
         <translation>Afișează ora actuală.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="563"/>
+        <location filename="../../src/skin/tooltips.cpp" line="572"/>
         <source>Audio Latency Usage Meter</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="564"/>
+        <location filename="../../src/skin/tooltips.cpp" line="573"/>
         <source>Displays the fraction of latency used for audio processing.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="565"/>
+        <location filename="../../src/skin/tooltips.cpp" line="574"/>
         <source>A high value indicates that audible glitches are likely.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="566"/>
+        <location filename="../../src/skin/tooltips.cpp" line="575"/>
         <source>Do not enable keylock, effects or additional decks in this situation.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="569"/>
+        <location filename="../../src/skin/tooltips.cpp" line="578"/>
         <source>Audio Latency Overload Indicator</source>
         <translation type="unfinished"/>
     </message>
@@ -9520,108 +9556,108 @@ To abort this action, press Cancel on the file dialog.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="451"/>
+        <location filename="../../src/skin/tooltips.cpp" line="460"/>
         <source>Vinyl Control Mode</source>
         <translation>Mod control disc vinil</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="452"/>
+        <location filename="../../src/skin/tooltips.cpp" line="461"/>
         <source>Absolute mode - track position equals needle position and speed.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="453"/>
+        <location filename="../../src/skin/tooltips.cpp" line="462"/>
         <source>Relative mode - track speed equals needle speed regardless of needle position.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="454"/>
+        <location filename="../../src/skin/tooltips.cpp" line="463"/>
         <source>Constant mode - track speed equals last known-steady speed regardless of needle input.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="457"/>
+        <location filename="../../src/skin/tooltips.cpp" line="466"/>
         <source>Vinyl Status</source>
         <translation>Stare disc vinil</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="458"/>
+        <location filename="../../src/skin/tooltips.cpp" line="467"/>
         <source>Provides visual feedback for vinyl control status:</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="459"/>
+        <location filename="../../src/skin/tooltips.cpp" line="468"/>
         <source>Green for control enabled.</source>
         <translation>Verde pentru activare control.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="460"/>
+        <location filename="../../src/skin/tooltips.cpp" line="469"/>
         <source>Blinking yellow for when the needle reaches the end of the record.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="463"/>
+        <location filename="../../src/skin/tooltips.cpp" line="472"/>
         <source>Loop-In Marker</source>
         <translation>Marcaj intrare buclă</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="464"/>
+        <location filename="../../src/skin/tooltips.cpp" line="473"/>
         <source>Sets the deck loop-in position to the current play position.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="468"/>
+        <location filename="../../src/skin/tooltips.cpp" line="477"/>
         <source>Loop-Out Marker</source>
         <translation>Marcaj ieșire buclă</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="469"/>
+        <location filename="../../src/skin/tooltips.cpp" line="478"/>
         <source>Sets the deck loop-out position to the current play position.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="473"/>
+        <location filename="../../src/skin/tooltips.cpp" line="482"/>
         <source>Loop Halve</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="474"/>
+        <location filename="../../src/skin/tooltips.cpp" line="483"/>
         <source>Halves the current loop&apos;s length by moving the end marker.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="475"/>
+        <location filename="../../src/skin/tooltips.cpp" line="484"/>
         <source>Deck immediately loops if past the new endpoint.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="478"/>
+        <location filename="../../src/skin/tooltips.cpp" line="487"/>
         <source>Loop Double</source>
         <translation>Buclă dublă</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="479"/>
+        <location filename="../../src/skin/tooltips.cpp" line="488"/>
         <source>Doubles the current loop&apos;s length by moving the end marker.</source>
         <translation>Dublează lungimea buclei curente mutând marcajul de sfârșit.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="483"/>
+        <location filename="../../src/skin/tooltips.cpp" line="492"/>
         <source>Beatloop</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="503"/>
+        <location filename="../../src/skin/tooltips.cpp" line="512"/>
         <source>Reloop/Exit</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="504"/>
+        <location filename="../../src/skin/tooltips.cpp" line="513"/>
         <source>Toggles the current loop on or off.</source>
         <translation>Comută bucla actuală pornit sau oprit.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="500"/>
-        <location filename="../../src/skin/tooltips.cpp" line="505"/>
+        <location filename="../../src/skin/tooltips.cpp" line="509"/>
+        <location filename="../../src/skin/tooltips.cpp" line="514"/>
         <source>Works only if Loop-In and Loop-Out marker are set.</source>
         <translation type="unfinished"/>
     </message>
@@ -9641,97 +9677,97 @@ To abort this action, press Cancel on the file dialog.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="513"/>
+        <location filename="../../src/skin/tooltips.cpp" line="522"/>
         <source>Vinyl Cueing Mode</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="514"/>
+        <location filename="../../src/skin/tooltips.cpp" line="523"/>
         <source>Determines how cue points are treated in vinyl control Relative mode:</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="515"/>
+        <location filename="../../src/skin/tooltips.cpp" line="524"/>
         <source>Off - Cue points ignored.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="516"/>
+        <location filename="../../src/skin/tooltips.cpp" line="525"/>
         <source>One Cue - If needle is dropped after the cue point, track will seek to that cue point.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="517"/>
+        <location filename="../../src/skin/tooltips.cpp" line="526"/>
         <source>Hot Cue - Track will seek to nearest previous hot cue point.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="520"/>
+        <location filename="../../src/skin/tooltips.cpp" line="529"/>
         <source>Track Time</source>
         <translation>Timp pistă</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="521"/>
+        <location filename="../../src/skin/tooltips.cpp" line="530"/>
         <source>Displays the elapsed or remaining time of the track loaded.</source>
         <translation>Afișează timpul scurs sau rămas al pistei încărcate.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="522"/>
+        <location filename="../../src/skin/tooltips.cpp" line="531"/>
         <source>Click to toggle between time elapsed/remaining time.</source>
         <translation>Apăsați pentru a comuta între timpul trecut/rămas.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="525"/>
+        <location filename="../../src/skin/tooltips.cpp" line="534"/>
         <source>Track Duration</source>
         <translation>Durată pistă</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="526"/>
+        <location filename="../../src/skin/tooltips.cpp" line="535"/>
         <source>Displays the duration of the loaded track.</source>
         <translation>Afișează durata pistei încărcate.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="528"/>
+        <location filename="../../src/skin/tooltips.cpp" line="537"/>
         <source>Information is loaded from the track&apos;s metadata tags.</source>
         <translation>Informația este încărcată din metadata etichetelor pistei.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="530"/>
+        <location filename="../../src/skin/tooltips.cpp" line="539"/>
         <source>Track Artist</source>
         <translation>Artist piesă</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="531"/>
+        <location filename="../../src/skin/tooltips.cpp" line="540"/>
         <source>Displays the artist of the loaded track.</source>
         <translation>Afișează artistul pistei încărcate.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="536"/>
+        <location filename="../../src/skin/tooltips.cpp" line="545"/>
         <source>Track Title</source>
         <translation>Titlu piesă</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="537"/>
+        <location filename="../../src/skin/tooltips.cpp" line="546"/>
         <source>Displays the title of the loaded track.</source>
         <translation>Afișează titlul pistei încărcate.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="542"/>
+        <location filename="../../src/skin/tooltips.cpp" line="551"/>
         <source>Track Album</source>
         <translation>Album</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="543"/>
+        <location filename="../../src/skin/tooltips.cpp" line="552"/>
         <source>Displays the album name of the loaded track.</source>
         <translation>Afișează numele albumului pistei încărcate.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="553"/>
+        <location filename="../../src/skin/tooltips.cpp" line="562"/>
         <source>Track Artist/Title</source>
         <translation>Artist/titlu pistă</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="554"/>
+        <location filename="../../src/skin/tooltips.cpp" line="563"/>
         <source>Displays the artist and title of the loaded track.</source>
         <translation>Afișează artistul și titlul pistei încărcate.</translation>
     </message>
@@ -9765,32 +9801,32 @@ Apăsați OK să ieșiți.</translation>
         <translation>Nu se poate actualiza schema bazei de date</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackcollection.cpp" line="86"/>
+        <location filename="../../src/library/trackcollection.cpp" line="87"/>
         <source>Unable to upgrade your database schema to version %1</source>
         <translation>Nu se poate actualiza schema bazei de date la versiunea %1</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackcollection.cpp" line="88"/>
-        <source>For help with database issues contact mixxx-devel@lists.sourceforge.net.</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/library/trackcollection.cpp" line="98"/>
+        <location filename="../../src/library/trackcollection.cpp" line="99"/>
         <source>Your mixxxdb.sqlite file was created by a newer version of Mixxx and is incompatible.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/trackcollection.cpp" line="116"/>
+        <location filename="../../src/library/trackcollection.cpp" line="117"/>
         <source>The database schema file is invalid.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/trackcollection.cpp" line="107"/>
+        <location filename="../../src/library/trackcollection.cpp" line="108"/>
         <source>Your mixxxdb.sqlite file may be corrupt.</source>
         <translation>Fișierul mixxxdb.sqlite poate fi corupt.</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackcollection.cpp" line="108"/>
+        <location filename="../../src/library/trackcollection.cpp" line="89"/>
+        <source>For help with database issues contact:</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/library/trackcollection.cpp" line="109"/>
         <source>Try renaming it and restarting Mixxx.</source>
         <translation>Încercați redenumirea și reporniți Mixxx.</translation>
     </message>
@@ -9798,23 +9834,23 @@ Apăsați OK să ieșiți.</translation>
 <context>
     <name>TraktorFeature</name>
     <message>
-        <location filename="../../src/library/traktor/traktorfeature.cpp" line="82"/>
-        <location filename="../../src/library/traktor/traktorfeature.cpp" line="614"/>
+        <location filename="../../src/library/traktor/traktorfeature.cpp" line="90"/>
+        <location filename="../../src/library/traktor/traktorfeature.cpp" line="622"/>
         <source>Traktor</source>
         <translation>Traktor</translation>
     </message>
     <message>
-        <location filename="../../src/library/traktor/traktorfeature.cpp" line="147"/>
+        <location filename="../../src/library/traktor/traktorfeature.cpp" line="155"/>
         <source>(loading) Traktor</source>
         <translation>(încărcare) Traktor</translation>
     </message>
     <message>
-        <location filename="../../src/library/traktor/traktorfeature.cpp" line="608"/>
+        <location filename="../../src/library/traktor/traktorfeature.cpp" line="616"/>
         <source>Error Loading Traktor Library</source>
         <translation>Eroare la încărcarea bibliotecii Traktor</translation>
     </message>
     <message>
-        <location filename="../../src/library/traktor/traktorfeature.cpp" line="609"/>
+        <location filename="../../src/library/traktor/traktorfeature.cpp" line="617"/>
         <source>There was an error loading your Traktor library. Some of your Traktor tracks or playlists may not have loaded.</source>
         <translation>A apărut o eroare la încărcarea bibliotecii Traktor. Unele dintre pistele sau listele de redare Traktor este posibil să nu fie încărcate.</translation>
     </message>
@@ -10198,7 +10234,7 @@ Apăsați OK să ieșiți.</translation>
 <context>
     <name>WTrackTableViewHeader</name>
     <message>
-        <location filename="../../src/widget/wtracktableviewheader.cpp" line="99"/>
+        <location filename="../../src/widget/wtracktableviewheader.cpp" line="102"/>
         <source>Show or hide columns.</source>
         <translation>Arată sau ascunde coloane.</translation>
     </message>

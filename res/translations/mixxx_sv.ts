@@ -19,22 +19,22 @@
 <context>
     <name>AutoDJFeature</name>
     <message>
-        <location filename="../../src/library/autodj/autodjfeature.cpp" line="64"/>
+        <location filename="../../src/library/autodj/autodjfeature.cpp" line="65"/>
         <source>Crates</source>
         <translation>Backar</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/autodjfeature.cpp" line="85"/>
+        <location filename="../../src/library/autodj/autodjfeature.cpp" line="86"/>
         <source>Remove Crate as Track Source</source>
         <translation>Avlägsna back som låtkälla</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/autodjfeature.cpp" line="100"/>
+        <location filename="../../src/library/autodj/autodjfeature.cpp" line="101"/>
         <source>Auto DJ</source>
         <translation>Auto DJ</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/autodjfeature.cpp" line="350"/>
+        <location filename="../../src/library/autodj/autodjfeature.cpp" line="367"/>
         <source>Add Crate as Track Source</source>
         <translation>Lägg till back som låtkälla</translation>
     </message>
@@ -524,9 +524,9 @@
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="97"/>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="172"/>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="188"/>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="376"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="181"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="197"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="385"/>
         <source>Mixxx Library</source>
         <translation>Mixxx-bibliotek</translation>
     </message>
@@ -536,22 +536,22 @@
         <translation>Följande fil kunde inte laddas in för att den används av Mixxx eller ett annat program.</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="173"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="182"/>
         <source>Warning: This will permanently delete the following files:</source>
         <translation>Varning! Följande filer kommer raderas permanent:</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="175"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="184"/>
         <source>Are you sure you want to delete these files from your computer?</source>
         <translation>Är du säker på att du vill radera dessa filer från datorn?</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="189"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="198"/>
         <source>Could not delete the following file because it is in use by Mixxx or another application:</source>
         <translation>Följande fil kunde inte raderas för att den används av Mixxx eller ett annat program:</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="377"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="386"/>
         <source>Could not update file metadata.</source>
         <translation>Uppdatering av metiadatan misslyckades</translation>
     </message>
@@ -559,7 +559,7 @@
 <context>
     <name>BulkController</name>
     <message>
-        <location filename="../../src/controllers/bulk/bulkcontroller.cpp" line="83"/>
+        <location filename="../../src/controllers/bulk/bulkcontroller.cpp" line="86"/>
         <source>USB Controller</source>
         <translation>USB-styrenhet</translation>
     </message>
@@ -3218,11 +3218,13 @@ Du försökte lära in: %1,%2</translation>
     <name>DlgPrefAutoDJ</name>
     <message>
         <location filename="../../src/dlgprefautodj.cpp" line="10"/>
+        <location filename="../../src/dlgprefautodj.cpp" line="42"/>
         <source>Off</source>
         <translation>Av</translation>
     </message>
     <message>
         <location filename="../../src/dlgprefautodj.cpp" line="11"/>
+        <location filename="../../src/dlgprefautodj.cpp" line="43"/>
         <source>On</source>
         <translation>På</translation>
     </message>
@@ -3235,54 +3237,74 @@ Du försökte lära in: %1,%2</translation>
         <translation>AutoDJ-inställningar</translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefautodjdlg.ui" line="35"/>
+        <location filename="../../src/dlgprefautodjdlg.ui" line="22"/>
         <source>Re-queue tracks after playback</source>
         <translation>Lägg till låtar till väntelistan efter spelning</translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefautodjdlg.ui" line="45"/>
+        <location filename="../../src/dlgprefautodjdlg.ui" line="32"/>
         <source>Add a track to the end of the Auto DJ playlist once it is played, instead of removing it.</source>
         <translation>Lägg till en låt till slutet av Auto DJ-spellistan när den har spelats, i stället för att ta bort den.</translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefautodjdlg.ui" line="52"/>
+        <location filename="../../src/dlgprefautodjdlg.ui" line="79"/>
         <source>Duration after which a track is eligible for selection by Auto DJ again</source>
         <translation>Tidsfrist efter att en låt är berättigad för val av Auto-DJ igen</translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefautodjdlg.ui" line="55"/>
+        <location filename="../../src/dlgprefautodjdlg.ui" line="82"/>
         <source>hh:mm</source>
         <translation>tt:mm</translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefautodjdlg.ui" line="65"/>
+        <location filename="../../src/dlgprefautodjdlg.ui" line="39"/>
         <source>Minimum available tracks in Track Source</source>
         <translation>Minsta antal tillgängliga låtar i spårkälla</translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefautodjdlg.ui" line="72"/>
+        <location filename="../../src/dlgprefautodjdlg.ui" line="46"/>
         <source>This percentage of tracks are always available for selecting, regardless of when they were last played.</source>
         <translation>Denna procentuella andel av låtar kan alltid väljas ut, oberoende av när dom spelats senast.</translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefautodjdlg.ui" line="75"/>
+        <location filename="../../src/dlgprefautodjdlg.ui" line="49"/>
         <source>%</source>
         <translation>%</translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefautodjdlg.ui" line="88"/>
+        <location filename="../../src/dlgprefautodjdlg.ui" line="62"/>
         <source>Uncheck, to ignore all played tracks.</source>
         <translation>Avmarkera för att ignorera alla spelade låtar.</translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefautodjdlg.ui" line="91"/>
+        <location filename="../../src/dlgprefautodjdlg.ui" line="65"/>
         <source>Suspend track in Track Source from re-queue</source>
         <translation>Låt tillfälligt bli att lägga till låtar från spårkällan till väntelistan.</translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefautodjdlg.ui" line="98"/>
+        <location filename="../../src/dlgprefautodjdlg.ui" line="72"/>
         <source>Suspension period for track selection</source>
         <translation>Tid innan en låt kan väljas</translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefautodjdlg.ui" line="92"/>
+        <source>Enable random track addition to queue</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefautodjdlg.ui" line="102"/>
+        <source>Add random tracks from Track Source if the specified minimum tracks remain</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefautodjdlg.ui" line="109"/>
+        <source>Minimum allowed tracks before addition</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefautodjdlg.ui" line="119"/>
+        <source>Minimum number of tracks after which random tracks may be added</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -5015,13 +5037,13 @@ så att du kan justera tonhöjden för harmonisk mixning.</translation>
     </message>
     <message>
         <location filename="../../src/dlgprefshoutcast.cpp" line="88"/>
-        <location filename="../../src/dlgprefshoutcast.cpp" line="195"/>
+        <location filename="../../src/dlgprefshoutcast.cpp" line="196"/>
         <source>This stream is online for testing purposes!</source>
         <translation>Denna stream är uppkopplad endast för testning!</translation>
     </message>
     <message>
         <location filename="../../src/dlgprefshoutcast.cpp" line="95"/>
-        <location filename="../../src/dlgprefshoutcast.cpp" line="196"/>
+        <location filename="../../src/dlgprefshoutcast.cpp" line="197"/>
         <source>Live Mix</source>
         <translation>Live Mix</translation>
     </message>
@@ -5039,12 +5061,6 @@ så att du kan justera tonhöjden för harmonisk mixning.</translation>
         <location filename="../../src/dlgprefshoutcast.cpp" line="145"/>
         <source>Stereo</source>
         <translation>Stereo</translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefshoutcast.cpp" line="174"/>
-        <location filename="../../src/dlgprefshoutcast.cpp" line="205"/>
-        <source>$artist - $title</source>
-        <translation>$artist - $title</translation>
     </message>
 </context>
 <context>
@@ -5208,11 +5224,6 @@ så att du kan justera tonhöjden för harmonisk mixning.</translation>
         <location filename="../../src/dlgprefshoutcastdlg.ui" line="528"/>
         <source>Shoutcast metadata format</source>
         <translation>Shoutcast metadata-format</translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefshoutcastdlg.ui" line="537"/>
-        <source>$artist - $title</source>
-        <translation>$artist - $title</translation>
     </message>
 </context>
 <context>
@@ -6322,22 +6333,22 @@ milliseconds</extracomment>
 <context>
     <name>EngineRecord</name>
     <message>
-        <location filename="../../src/engine/sidechain/enginerecord.cpp" line="335"/>
+        <location filename="../../src/engine/sidechain/enginerecord.cpp" line="346"/>
         <source>Recording</source>
         <translation>Inspelning</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginerecord.cpp" line="336"/>
+        <location filename="../../src/engine/sidechain/enginerecord.cpp" line="347"/>
         <source>Could not create audio file for recording!</source>
         <translation>Kunde inte skapa audiofilen för inspelning!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginerecord.cpp" line="337"/>
+        <location filename="../../src/engine/sidechain/enginerecord.cpp" line="348"/>
         <source>Ensure there is enough free disk space and you have write permission for the Recordings folder.</source>
         <translation>Kontrollera att du har tillräckligt med skivutrymme och att du har skrivbehörighet till inspelningsmappen.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginerecord.cpp" line="338"/>
+        <location filename="../../src/engine/sidechain/enginerecord.cpp" line="349"/>
         <source>You can change the location of the Recordings folder in Preferences &gt; Recording.</source>
         <translation>Du kan ändra orten för inspelningsmappen i Inställningar &gt; Inspelning.</translation>
     </message>
@@ -6622,7 +6633,7 @@ milliseconds</extracomment>
     <name>ITunesFeature</name>
     <message>
         <location filename="../../src/library/itunes/itunesfeature.cpp" line="69"/>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="753"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="755"/>
         <source>iTunes</source>
         <translation>iTunes</translation>
     </message>
@@ -6648,12 +6659,12 @@ milliseconds</extracomment>
         <translation>Välj bibliotek...</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="748"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="750"/>
         <source>Error Loading iTunes Library</source>
         <translation>Kunde inte ladda iTunes-bibliotek</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="749"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="751"/>
         <source>There was an error loading your iTunes library. Some of your iTunes tracks or playlists may not have loaded.</source>
         <translation>Det uppstod ett fel när ditt iTunes-bibliotek laddades. Vissa av dina iTunes-låtar eller spellistor kanske inte lästes in.</translation>
     </message>
@@ -6661,13 +6672,13 @@ milliseconds</extracomment>
 <context>
     <name>LegacySkinParser</name>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1002"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1007"/>
         <source>Safe Mode Enabled</source>
         <extracomment>Shown when Mixxx is running in safe mode.</extracomment>
         <translation>Felsäker modus aktiverad</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1011"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1016"/>
         <source>No OpenGL
 support.</source>
         <extracomment>Shown when Spinny can not be displayed. Please keep 
@@ -6676,57 +6687,57 @@ support.</source>
 stöd.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1864"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1922"/>
         <source>activate</source>
         <translation>aktivera</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1869"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1927"/>
         <source>toggle</source>
         <translation>växla</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1879"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1937"/>
         <source>right</source>
         <translation>höger</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1884"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1942"/>
         <source>left</source>
         <translation>vänster</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1889"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1947"/>
         <source>right small</source>
         <translation>höger liten</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1894"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1952"/>
         <source>left small</source>
         <translation>vänster liten</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1899"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1957"/>
         <source>up</source>
         <translation>upp</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1904"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1962"/>
         <source>down</source>
         <translation>ner</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1909"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1967"/>
         <source>up small</source>
         <translation>upp liten</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1914"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1972"/>
         <source>down small</source>
         <translation>ner liten</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1946"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2004"/>
         <source>Shortcut</source>
         <translation>Genväg</translation>
     </message>
@@ -6835,10 +6846,10 @@ stöd.</translation>
     <message>
         <location filename="../../src/mixxx.cpp" line="665"/>
         <location filename="../../src/mixxx.cpp" line="1529"/>
-        <location filename="../../src/mixxx.cpp" line="1707"/>
-        <location filename="../../src/mixxx.cpp" line="1741"/>
-        <location filename="../../src/mixxx.cpp" line="1770"/>
-        <location filename="../../src/mixxx.cpp" line="1839"/>
+        <location filename="../../src/mixxx.cpp" line="1716"/>
+        <location filename="../../src/mixxx.cpp" line="1750"/>
+        <location filename="../../src/mixxx.cpp" line="1779"/>
+        <location filename="../../src/mixxx.cpp" line="1848"/>
         <source>Mixxx</source>
         <translation>Mixxx</translation>
     </message>
@@ -6933,8 +6944,8 @@ stöd.</translation>
     </message>
     <message>
         <location filename="../../src/mixxx.cpp" line="984"/>
-        <source>Load Track to Deck %1</source>
-        <translation>Ladda låt till tallrik %1</translation>
+        <source>Load Track to Deck &amp;%1</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/mixxx.cpp" line="985"/>
@@ -7287,23 +7298,23 @@ stöd.</translation>
         <translation>Ctrl+Shift+R</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1349"/>
-        <source>Developer Tools</source>
-        <translation>Utvecklarverktyg</translation>
+        <location filename="../../src/mixxx.cpp" line="1379"/>
+        <source>Stats: &amp;Base Bucket</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1350"/>
+        <location filename="../../src/mixxx.cpp" line="1444"/>
+        <source>&amp;Developer</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/mixxx.cpp" line="1348"/>
         <source>Opens the developer tools dialog</source>
         <translation>Öppnar dialogrutan för utvecklingsverktyg</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1355"/>
+        <location filename="../../src/mixxx.cpp" line="1353"/>
         <source>Ctrl+Shift+T</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/mixxx.cpp" line="1399"/>
-        <source>Debugger Enabled</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -7317,14 +7328,19 @@ stöd.</translation>
         <translation>Ctrl+Shift+D</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1362"/>
-        <source>Stats: Experiment Bucket</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <location filename="../../src/mixxx.cpp" line="1314"/>
         <source>Ctrl+6</source>
         <comment>Menubar|View|Show Cover Art</comment>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/mixxx.cpp" line="1347"/>
+        <source>Developer &amp;Tools</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/mixxx.cpp" line="1362"/>
+        <source>Stats: &amp;Experiment Bucket</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -7338,11 +7354,6 @@ stöd.</translation>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1379"/>
-        <source>Stats: Base Bucket</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <location filename="../../src/mixxx.cpp" line="1380"/>
         <source>Enables base mode. Collects stats in the BASE tracking bucket.</source>
         <translation type="unfinished"/>
@@ -7350,6 +7361,11 @@ stöd.</translation>
     <message>
         <location filename="../../src/mixxx.cpp" line="1386"/>
         <source>Ctrl+Shift+B</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/mixxx.cpp" line="1399"/>
+        <source>Deb&amp;ugger Enabled</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -7378,11 +7394,6 @@ stöd.</translation>
         <translation>&amp;Hjälp</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1444"/>
-        <source>Developer</source>
-        <translation>Utvecklare</translation>
-    </message>
-    <message>
         <location filename="../../src/mixxx.cpp" line="1456"/>
         <source>&amp;Vinyl Control</source>
         <translation>&amp;Vinylstyrning</translation>
@@ -7403,77 +7414,77 @@ stöd.</translation>
         <translation>Är du säker på att du vill ladda en nytt låt?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1708"/>
+        <location filename="../../src/mixxx.cpp" line="1717"/>
         <source>There is no input device selected for this vinyl control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>Ingen enhet för ljudingång är utvald för den här vinylstyrningsenheten.
 Välj först en ingångsenhet i inställningarna för ljudhårdvara.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1742"/>
+        <location filename="../../src/mixxx.cpp" line="1751"/>
         <source>There is no input device selected for this passthrough control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>Ingen ingångsenhet utvald för den här genomgångsstyrenheten.
 Välj först ut en ingångsenhet i inställningarna för ljudhårdvara.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1771"/>
+        <location filename="../../src/mixxx.cpp" line="1780"/>
         <source>There is no input device selected for this auxiliary input.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>Ingen ingångsutrustning vald för denna extraingång.
 Välj först en ingångsutrustning i inställningarna för ljudhårdvara.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1840"/>
+        <location filename="../../src/mixxx.cpp" line="1849"/>
         <source>There is no input device selected for this microphone.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>Ingen ingångsenhet utvald för den här mikrofonen.
 Välj först en ingångsenhet i inställningarna för ljudhårdvara.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1932"/>
+        <location filename="../../src/mixxx.cpp" line="1941"/>
         <source>Error in skin file</source>
         <translation>Fel hittat i skinn-filen</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1933"/>
+        <location filename="../../src/mixxx.cpp" line="1942"/>
         <source>The selected skin cannot be loaded.</source>
         <translation>Kunde inte ladda in det utvalda skinnet.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="2059"/>
+        <location filename="../../src/mixxx.cpp" line="2068"/>
         <source>OpenGL Direct Rendering</source>
         <translation>OpenGL Direct Rendering</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="2060"/>
+        <location filename="../../src/mixxx.cpp" line="2069"/>
         <source>Direct rendering is not enabled on your machine.&lt;br&gt;&lt;br&gt;This means that the waveform displays will be very&lt;br&gt;&lt;b&gt;slow and may tax your CPU heavily&lt;/b&gt;. Either update your&lt;br&gt;configuration to enable direct rendering, or disable&lt;br&gt;the waveform displays in the Mixxx preferences by selecting&lt;br&gt;&quot;Empty&quot; as the waveform display in the &apos;Interface&apos; section.&lt;br&gt;&lt;br&gt;NOTE: If you use NVIDIA hardware,&lt;br&gt;direct rendering may not be present, but you should&lt;br&gt;not experience degraded performance.</source>
         <translation>Direkt Rendering är inte aktiv på din maskin.&lt;br&gt;&lt;br&gt;Detta leder till att vågformsvisningen blir mycket&lt;br&gt;&lt;b&gt;långsam och den kan belasta din CPU hårt.&lt;/b&gt;. Ändra antingen din&lt;br&gt;konfiguration och aktivera Direkt Rendering, eller stäng av&lt;br&gt;visningen av vågformer i Mixxx inställningar genom att välja&lt;br&gt;&quot;Tom&quot; som vågformsvisning i &apos;Gränssnitt&apos;-sektionen.&lt;br&gt;&lt;br&gt;OBS: om du har ett NVIDIA-grafikkort,&lt;br&gt;är möjligtvis Direkt Rendering inte synligt som alternativ, men du borde&lt;br&gt;ändå inte märka någon minskning av prestandan.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="2094"/>
-        <location filename="../../src/mixxx.cpp" line="2102"/>
+        <location filename="../../src/mixxx.cpp" line="2103"/>
         <location filename="../../src/mixxx.cpp" line="2111"/>
+        <location filename="../../src/mixxx.cpp" line="2120"/>
         <source>Confirm Exit</source>
         <translation>Bekräfta avsluta</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="2095"/>
+        <location filename="../../src/mixxx.cpp" line="2104"/>
         <source>A deck is currently playing. Exit Mixxx?</source>
         <translation>En tallrik spelar fortfarande. Vill du avsluta Mixxx?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="2103"/>
+        <location filename="../../src/mixxx.cpp" line="2112"/>
         <source>A sampler is currently playing. Exit Mixxx?</source>
         <translation>En samplare spelar fortfarande. Vill du avsluta Mixxx?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="2112"/>
+        <location filename="../../src/mixxx.cpp" line="2121"/>
         <source>The preferences window is still open.</source>
         <translation>Inställningsfönstret är fortfarande öppnat.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="2113"/>
+        <location filename="../../src/mixxx.cpp" line="2122"/>
         <source>Discard any changes and exit Mixxx?</source>
         <translation>Kassera eventuella ändringar och avsluta Mixxx?</translation>
     </message>
@@ -8239,8 +8250,8 @@ För att avbryta denna funktion, klicka på Avbryt i Filfönstret.</translation>
 <context>
     <name>RhythmboxFeature</name>
     <message>
-        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="50"/>
-        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="443"/>
+        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="58"/>
+        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="452"/>
         <source>Rhythmbox</source>
         <translation>Rhythmbox</translation>
     </message>
@@ -8731,7 +8742,7 @@ För att avbryta denna funktion, klicka på Avbryt i Filfönstret.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="172"/>
-        <location filename="../../src/skin/tooltips.cpp" line="573"/>
+        <location filename="../../src/skin/tooltips.cpp" line="582"/>
         <source>Cover Art</source>
         <translation type="unfinished"/>
     </message>
@@ -9124,27 +9135,52 @@ För att avbryta denna funktion, klicka på Avbryt i Filfönstret.</translation>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="570"/>
-        <source>Indicates that the audio buffer is too small to do all audio processing.</source>
-        <translation>Indikerar att ljudbufferten är för liten för att kunna bearbeta allt ljud korrekt.</translation>
-    </message>
-    <message>
-        <location filename="../../src/skin/tooltips.cpp" line="574"/>
-        <source>Displays cover artwork of the loaded track.</source>
+        <location filename="../../src/skin/tooltips.cpp" line="451"/>
+        <source>Enable Vinyl Control</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="575"/>
-        <source>Displays options for editing cover artwork.</source>
+        <location filename="../../src/skin/tooltips.cpp" line="452"/>
+        <source>When disabled, the track is controlled by Mixxx playback controls.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="578"/>
-        <source>Star Rating</source>
+        <location filename="../../src/skin/tooltips.cpp" line="453"/>
+        <source>When enabled, the track responds to external vinyl control.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="456"/>
+        <source>Enable Passthrough</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="457"/>
+        <source>When enabled, the deck directly plays the audio arriving on the input.</source>
         <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="579"/>
+        <source>Indicates that the audio buffer is too small to do all audio processing.</source>
+        <translation>Indikerar att ljudbufferten är för liten för att kunna bearbeta allt ljud korrekt.</translation>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="583"/>
+        <source>Displays cover artwork of the loaded track.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="584"/>
+        <source>Displays options for editing cover artwork.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="587"/>
+        <source>Star Rating</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/tooltips.cpp" line="588"/>
         <source>Assign ratings to individual tracks by clicking the stars.</source>
         <translation type="unfinished"/>
     </message>
@@ -9316,108 +9352,108 @@ För att avbryta denna funktion, klicka på Avbryt i Filfönstret.</translation>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="484"/>
+        <location filename="../../src/skin/tooltips.cpp" line="493"/>
         <source>Setup a loop over the set number of beats.</source>
         <translation>Skapa en slinga som omfattar ett givet antal taktslag.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="486"/>
+        <location filename="../../src/skin/tooltips.cpp" line="495"/>
         <source>Temporarily setup a rolling loop over the set number of beats.</source>
         <translation>Skapar temporärt en rullande slinga över valt antal taktslag.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="487"/>
+        <location filename="../../src/skin/tooltips.cpp" line="496"/>
         <source>Playback will resume where the track would have been if it had not entered the loop.</source>
         <translation>Uppspelningen fortsätter från den position den skulle ha varit om låten inte hade lagts in i slingan.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="490"/>
+        <location filename="../../src/skin/tooltips.cpp" line="499"/>
         <source>Beatjump</source>
         <translation>Beatjump</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="491"/>
+        <location filename="../../src/skin/tooltips.cpp" line="500"/>
         <source>Jump forward or backward by the set number of beats.</source>
         <translation>Hoppa framåt eller bakåt med det angivna antalet taktslag.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="494"/>
+        <location filename="../../src/skin/tooltips.cpp" line="503"/>
         <source>Loop Move</source>
         <translation>Förflytta slinga</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="495"/>
+        <location filename="../../src/skin/tooltips.cpp" line="504"/>
         <source>Adjust the loop in and out points by the set number of beats.</source>
         <translation>Justerar sling-start- och sling-stoppunkter om definierat antal taktslag.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="498"/>
+        <location filename="../../src/skin/tooltips.cpp" line="507"/>
         <source>Loop Exit</source>
         <translation>Avsluta slinga</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="499"/>
+        <location filename="../../src/skin/tooltips.cpp" line="508"/>
         <source>Turns the current loop off.</source>
         <translation>Stänger av aktuell slinga.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="508"/>
+        <location filename="../../src/skin/tooltips.cpp" line="517"/>
         <source>Slip Mode</source>
         <translation>Spela-vidare-sätt</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="509"/>
+        <location filename="../../src/skin/tooltips.cpp" line="518"/>
         <source>When active, the playback continues muted in the background during a loop, reverse, scratch etc.</source>
         <translation>Uppspelningen fortsätter tyst samtidigt som du använder slingor, baklängesspelning, scratchning, o.s.v. när denna funktion är aktiverad.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="510"/>
+        <location filename="../../src/skin/tooltips.cpp" line="519"/>
         <source>Once disabled, the audible playback will resume where the track would have been.</source>
         <translation>Vid avstängning fortsätter uppspelningen från det ställe låten skulle ha varit.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="548"/>
+        <location filename="../../src/skin/tooltips.cpp" line="557"/>
         <source>Track Key</source>
         <extracomment>The musical key of a track</extracomment>
         <translation>Låttonart</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="549"/>
+        <location filename="../../src/skin/tooltips.cpp" line="558"/>
         <source>Displays the musical key of the loaded track.</source>
         <translation>Visar den laddade låtens tonarten.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="559"/>
+        <location filename="../../src/skin/tooltips.cpp" line="568"/>
         <source>Clock</source>
         <translation>Klocka</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="560"/>
+        <location filename="../../src/skin/tooltips.cpp" line="569"/>
         <source>Displays the current time.</source>
         <translation>Visar aktuell tid.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="563"/>
+        <location filename="../../src/skin/tooltips.cpp" line="572"/>
         <source>Audio Latency Usage Meter</source>
         <translation>Ljudlatensanvändningsmätare</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="564"/>
+        <location filename="../../src/skin/tooltips.cpp" line="573"/>
         <source>Displays the fraction of latency used for audio processing.</source>
         <translation>Visar hur stor del av latensen som används för ljudbehandlingen.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="565"/>
+        <location filename="../../src/skin/tooltips.cpp" line="574"/>
         <source>A high value indicates that audible glitches are likely.</source>
         <translation>Ett högt värde tyder på att hörbara störningar är troliga.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="566"/>
+        <location filename="../../src/skin/tooltips.cpp" line="575"/>
         <source>Do not enable keylock, effects or additional decks in this situation.</source>
         <translation>Aktivera inte tonhöjdslås, effekter eller ytterligare tallrikar i denna situation.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="569"/>
+        <location filename="../../src/skin/tooltips.cpp" line="578"/>
         <source>Audio Latency Overload Indicator</source>
         <translation>Indikator för ljudlatensöverbelastning</translation>
     </message>
@@ -9549,108 +9585,108 @@ För att avbryta denna funktion, klicka på Avbryt i Filfönstret.</translation>
         <translation>Ta bort eventuell snabbmarkering.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="451"/>
+        <location filename="../../src/skin/tooltips.cpp" line="460"/>
         <source>Vinyl Control Mode</source>
         <translation>Vinylstyrningssätt</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="452"/>
+        <location filename="../../src/skin/tooltips.cpp" line="461"/>
         <source>Absolute mode - track position equals needle position and speed.</source>
         <translation>Absolut modus - låtpositionen är samma som nålpositionen och -hastigheten.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="453"/>
+        <location filename="../../src/skin/tooltips.cpp" line="462"/>
         <source>Relative mode - track speed equals needle speed regardless of needle position.</source>
         <translation>Relativ modus - låthastigheten är samma som nålhastigheten, oavsett av nålpositionen.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="454"/>
+        <location filename="../../src/skin/tooltips.cpp" line="463"/>
         <source>Constant mode - track speed equals last known-steady speed regardless of needle input.</source>
         <translation>Konstant modus - låthastigheten är samma som den sist använda, jämna hastigheten, oavsett nålinformationen.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="457"/>
+        <location filename="../../src/skin/tooltips.cpp" line="466"/>
         <source>Vinyl Status</source>
         <translation>Vinylstatus</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="458"/>
+        <location filename="../../src/skin/tooltips.cpp" line="467"/>
         <source>Provides visual feedback for vinyl control status:</source>
         <translation>Tillhandahåller visuell feed-back av vinylstyrning:</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="459"/>
+        <location filename="../../src/skin/tooltips.cpp" line="468"/>
         <source>Green for control enabled.</source>
         <translation>Grönt för aktiverad styrenhet.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="460"/>
+        <location filename="../../src/skin/tooltips.cpp" line="469"/>
         <source>Blinking yellow for when the needle reaches the end of the record.</source>
         <translation>Blinkande gult när nålen når slutet av skivan.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="463"/>
+        <location filename="../../src/skin/tooltips.cpp" line="472"/>
         <source>Loop-In Marker</source>
         <translation>Loop-in-markering</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="464"/>
+        <location filename="../../src/skin/tooltips.cpp" line="473"/>
         <source>Sets the deck loop-in position to the current play position.</source>
         <translation>Sätter tallrikens sling-startpunkt vid aktuell uppspelningsposition.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="468"/>
+        <location filename="../../src/skin/tooltips.cpp" line="477"/>
         <source>Loop-Out Marker</source>
         <translation>Loop-out-markering</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="469"/>
+        <location filename="../../src/skin/tooltips.cpp" line="478"/>
         <source>Sets the deck loop-out position to the current play position.</source>
         <translation>Sätter tallrikens sling-stoppunkt vid aktuell uppspelningsposition.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="473"/>
+        <location filename="../../src/skin/tooltips.cpp" line="482"/>
         <source>Loop Halve</source>
         <translation>Halv slinga</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="474"/>
+        <location filename="../../src/skin/tooltips.cpp" line="483"/>
         <source>Halves the current loop&apos;s length by moving the end marker.</source>
         <translation>Halverar längden av den aktuella slingan genom att flytta slutmarkeringen.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="475"/>
+        <location filename="../../src/skin/tooltips.cpp" line="484"/>
         <source>Deck immediately loops if past the new endpoint.</source>
         <translation>Om bortom den nya slutpunkten hoppar tallriken genast tillbaks i slingan.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="478"/>
+        <location filename="../../src/skin/tooltips.cpp" line="487"/>
         <source>Loop Double</source>
         <translation>Dubbel slinga</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="479"/>
+        <location filename="../../src/skin/tooltips.cpp" line="488"/>
         <source>Doubles the current loop&apos;s length by moving the end marker.</source>
         <translation>Dubblar längden av den aktuella slingan genom att flytta slutmarkeringen.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="483"/>
+        <location filename="../../src/skin/tooltips.cpp" line="492"/>
         <source>Beatloop</source>
         <translation>Taktslinga</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="503"/>
+        <location filename="../../src/skin/tooltips.cpp" line="512"/>
         <source>Reloop/Exit</source>
         <translation>Upprepa/avsluta slinga</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="504"/>
+        <location filename="../../src/skin/tooltips.cpp" line="513"/>
         <source>Toggles the current loop on or off.</source>
         <translation>Slår på/av aktuell slinga</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="500"/>
-        <location filename="../../src/skin/tooltips.cpp" line="505"/>
+        <location filename="../../src/skin/tooltips.cpp" line="509"/>
+        <location filename="../../src/skin/tooltips.cpp" line="514"/>
         <source>Works only if Loop-In and Loop-Out marker are set.</source>
         <translation>Fungerar bara om både loop-in- och loop-out-markeringar har satts.</translation>
     </message>
@@ -9670,97 +9706,97 @@ För att avbryta denna funktion, klicka på Avbryt i Filfönstret.</translation>
         <translation>Ledtråd: Du kan ställa in önskat standardbeteende för markeringar i menyn Inställningar -&gt; Gränssnitt</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="513"/>
+        <location filename="../../src/skin/tooltips.cpp" line="522"/>
         <source>Vinyl Cueing Mode</source>
         <translation>Vinylmarkeringssätt</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="514"/>
+        <location filename="../../src/skin/tooltips.cpp" line="523"/>
         <source>Determines how cue points are treated in vinyl control Relative mode:</source>
         <translation>Bestämmer hur markeringspunkter behandlas i relativ modus för vinylstyrning:</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="515"/>
+        <location filename="../../src/skin/tooltips.cpp" line="524"/>
         <source>Off - Cue points ignored.</source>
         <translation>Av - Markeringspunkter ignoreras.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="516"/>
+        <location filename="../../src/skin/tooltips.cpp" line="525"/>
         <source>One Cue - If needle is dropped after the cue point, track will seek to that cue point.</source>
         <translation>Enkelmarkering - om du släpper ner nålen efter markeringen, kommer låten att hoppa till denna markering.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="517"/>
+        <location filename="../../src/skin/tooltips.cpp" line="526"/>
         <source>Hot Cue - Track will seek to nearest previous hot cue point.</source>
         <translation>Snabbmarkering - låten kommer att leta upp närmsta föregående markering.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="520"/>
+        <location filename="../../src/skin/tooltips.cpp" line="529"/>
         <source>Track Time</source>
         <translation>Låtens tidsläge</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="521"/>
+        <location filename="../../src/skin/tooltips.cpp" line="530"/>
         <source>Displays the elapsed or remaining time of the track loaded.</source>
         <translation>Visar den spelade eller återstående speltiden för den laddade låten.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="522"/>
+        <location filename="../../src/skin/tooltips.cpp" line="531"/>
         <source>Click to toggle between time elapsed/remaining time.</source>
         <translation>Klicka för att växla mellan spelad/återstående tid.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="525"/>
+        <location filename="../../src/skin/tooltips.cpp" line="534"/>
         <source>Track Duration</source>
         <translation>Låtens speltid</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="526"/>
+        <location filename="../../src/skin/tooltips.cpp" line="535"/>
         <source>Displays the duration of the loaded track.</source>
         <translation>Visar speltiden för den laddade låten.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="528"/>
+        <location filename="../../src/skin/tooltips.cpp" line="537"/>
         <source>Information is loaded from the track&apos;s metadata tags.</source>
         <translation>Informationen laddas från låtens metadatataggar.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="530"/>
+        <location filename="../../src/skin/tooltips.cpp" line="539"/>
         <source>Track Artist</source>
         <translation>Låtens artist</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="531"/>
+        <location filename="../../src/skin/tooltips.cpp" line="540"/>
         <source>Displays the artist of the loaded track.</source>
         <translation>Visar artisten för den laddade låten.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="536"/>
+        <location filename="../../src/skin/tooltips.cpp" line="545"/>
         <source>Track Title</source>
         <translation>Låtens titel</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="537"/>
+        <location filename="../../src/skin/tooltips.cpp" line="546"/>
         <source>Displays the title of the loaded track.</source>
         <translation>Visar titeln för den laddade låten.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="542"/>
+        <location filename="../../src/skin/tooltips.cpp" line="551"/>
         <source>Track Album</source>
         <translation>Låtens album</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="543"/>
+        <location filename="../../src/skin/tooltips.cpp" line="552"/>
         <source>Displays the album name of the loaded track.</source>
         <translation>Visar albumnamnet för den laddade låten.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="553"/>
+        <location filename="../../src/skin/tooltips.cpp" line="562"/>
         <source>Track Artist/Title</source>
         <translation>Låtens artist/titel</translation>
     </message>
     <message>
-        <location filename="../../src/skin/tooltips.cpp" line="554"/>
+        <location filename="../../src/skin/tooltips.cpp" line="563"/>
         <source>Displays the artist and title of the loaded track.</source>
         <translation>Visar artisten och titeln för den laddade låten.</translation>
     </message>
@@ -9794,32 +9830,32 @@ Klicka på OK för att avsluta.</translation>
         <translation>Går inte att uppgradera databasschemat</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackcollection.cpp" line="86"/>
+        <location filename="../../src/library/trackcollection.cpp" line="87"/>
         <source>Unable to upgrade your database schema to version %1</source>
         <translation>Det går inte att uppgradera ditt databasschema till version %1</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackcollection.cpp" line="88"/>
-        <source>For help with database issues contact mixxx-devel@lists.sourceforge.net.</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/library/trackcollection.cpp" line="98"/>
+        <location filename="../../src/library/trackcollection.cpp" line="99"/>
         <source>Your mixxxdb.sqlite file was created by a newer version of Mixxx and is incompatible.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/trackcollection.cpp" line="116"/>
+        <location filename="../../src/library/trackcollection.cpp" line="117"/>
         <source>The database schema file is invalid.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/trackcollection.cpp" line="107"/>
+        <location filename="../../src/library/trackcollection.cpp" line="108"/>
         <source>Your mixxxdb.sqlite file may be corrupt.</source>
         <translation>Mixxxdb.sqlite-filen kan vara skadad.</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackcollection.cpp" line="108"/>
+        <location filename="../../src/library/trackcollection.cpp" line="89"/>
+        <source>For help with database issues contact:</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/library/trackcollection.cpp" line="109"/>
         <source>Try renaming it and restarting Mixxx.</source>
         <translation>Försök byta namn på den och starta sedan Mixxx på nytt.</translation>
     </message>
@@ -9827,23 +9863,23 @@ Klicka på OK för att avsluta.</translation>
 <context>
     <name>TraktorFeature</name>
     <message>
-        <location filename="../../src/library/traktor/traktorfeature.cpp" line="82"/>
-        <location filename="../../src/library/traktor/traktorfeature.cpp" line="614"/>
+        <location filename="../../src/library/traktor/traktorfeature.cpp" line="90"/>
+        <location filename="../../src/library/traktor/traktorfeature.cpp" line="622"/>
         <source>Traktor</source>
         <translation>Traktor</translation>
     </message>
     <message>
-        <location filename="../../src/library/traktor/traktorfeature.cpp" line="147"/>
+        <location filename="../../src/library/traktor/traktorfeature.cpp" line="155"/>
         <source>(loading) Traktor</source>
         <translation>(laddar) Traktor</translation>
     </message>
     <message>
-        <location filename="../../src/library/traktor/traktorfeature.cpp" line="608"/>
+        <location filename="../../src/library/traktor/traktorfeature.cpp" line="616"/>
         <source>Error Loading Traktor Library</source>
         <translation>Kunde inte ladda Traktor-bibliotek</translation>
     </message>
     <message>
-        <location filename="../../src/library/traktor/traktorfeature.cpp" line="609"/>
+        <location filename="../../src/library/traktor/traktorfeature.cpp" line="617"/>
         <source>There was an error loading your Traktor library. Some of your Traktor tracks or playlists may not have loaded.</source>
         <translation>Det uppstod ett fel när ditt Traktor-bibliotek laddades. Vissa av dina Traktor-låtar eller spellistor kanske inte lästes in.</translation>
     </message>
@@ -10227,7 +10263,7 @@ Klicka på OK för att avsluta.</translation>
 <context>
     <name>WTrackTableViewHeader</name>
     <message>
-        <location filename="../../src/widget/wtracktableviewheader.cpp" line="99"/>
+        <location filename="../../src/widget/wtracktableviewheader.cpp" line="102"/>
         <source>Show or hide columns.</source>
         <translation>Visa eller dölj kolumner.</translation>
     </message>

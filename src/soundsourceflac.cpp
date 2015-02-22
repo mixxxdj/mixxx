@@ -36,6 +36,7 @@ SoundSourceFLAC::SoundSourceFLAC(QString filename)
     , m_flacBufferLength(0)
     , m_leftoverBuffer(NULL)
     , m_leftoverBufferLength(0) {
+    setType("flac");
 }
 
 SoundSourceFLAC::~SoundSourceFLAC() {

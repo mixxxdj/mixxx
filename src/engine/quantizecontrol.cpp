@@ -84,28 +84,38 @@ double QuantizeControl::process(const double dRate,
     double prevBeat = m_pCOPrevBeat->get();
     double nextBeat = m_pCONextBeat->get();
     double closestBeat = m_pCOClosestBeat->get();
-    double currentClosestBeat = floor(m_pBeats->findClosestBeat(iCurrentSample));
 
-    if (closestBeat != currentClosestBeat) {
-        if (!even(static_cast<int>(currentClosestBeat))) {
-            currentClosestBeat--;
+    // Calculate this by hand since we may also want the beat locations themselves
+    // and duplicating the work would double the number of mutex locks.
+    double updatedPrev;
+    double updatedNext;
+    m_pBeats->findPrevNextBeats(iCurrentSample, &updatedPrev, &updatedNext);
+
+    if (updatedPrev == -1) {
+        if (updatedNext != -1) {
+            m_pCOClosestBeat->set(updatedNext);
+        } else {
+            // Likely no beat information -- can't set closest beat value.
         }
-        m_pCOClosestBeat->set(currentClosestBeat);
+    } else if (updatedNext == -1) {
+        m_pCOClosestBeat->set(updatedPrev);
+    } else {
+        double currentClosestBeat =
+                (updatedNext - iCurrentSample > iCurrentSample - updatedPrev) ?
+                        updatedPrev : updatedNext;
+
+        if (closestBeat != currentClosestBeat) {
+            if (!even(static_cast<int>(currentClosestBeat))) {
+                currentClosestBeat--;
+            }
+            m_pCOClosestBeat->set(currentClosestBeat);
+        }
     }
 
     if (prevBeat == -1 || nextBeat == -1 ||
         currentSample >= nextBeat || currentSample <= prevBeat) {
-        // TODO(XXX) are the floor and even checks necessary?
-        nextBeat = floor(m_pBeats->findNextBeat(iCurrentSample));
-        prevBeat = floor(m_pBeats->findPrevBeat(iCurrentSample));
-
-        if (!even(static_cast<int>(nextBeat)))
-            nextBeat--;
-        if (!even(static_cast<int>(prevBeat)))
-            prevBeat--;
-
-        m_pCONextBeat->set(nextBeat);
-        m_pCOPrevBeat->set(prevBeat);
+        m_pCOPrevBeat->set(updatedPrev);
+        m_pCONextBeat->set(updatedNext);
     }
 
     return kNoTrigger;

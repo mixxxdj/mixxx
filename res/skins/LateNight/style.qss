@@ -40,6 +40,11 @@
   background-color: #0f0f0f;
 }
 
+#LibrarySingleton {
+  padding-top: 5px;
+  padding-bottom: 2px;
+}
+
 #Library {
   border-left: 0px solid #585858;
   background-color: #0e0e0e;
@@ -326,7 +331,10 @@
 
 #VinylControls {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  padding: 10px;
+}
+
+#VinylControls2 {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
 }
 
 #KnobLabel {
@@ -346,15 +354,17 @@
 
 #GuiToggleButton[displayValue="0"] {
     border: 1px solid #585858;
+    border-radius: 2px;
     font: bold 10px/12px Lucida Grande,
           Lucida Sans Unicode, Arial,
           Verdana, sans-serif;
-    color: #585858;
-    background-color: #0e0e0e;
+    color: #ddd;
+    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
 }
 
 #GuiToggleButton[displayValue="1"] {
     border: 1px solid #585858;
+    border-radius: 2px;
     font: bold 10px/12px Lucida Grande,
           Lucida Sans Unicode, Arial,
           Verdana, sans-serif;
@@ -364,6 +374,7 @@
 
 #GuiToggleButtonInverted[displayValue="0"] {
     border: 1px solid #585858;
+    border-radius: 2px;
     font: bold 10px/12px Lucida Grande,
           Lucida Sans Unicode, Arial,
           Verdana, sans-serif;
@@ -373,32 +384,121 @@
 
 #GuiToggleButtonInverted[displayValue="1"] {
     border: 1px solid #585858;
+    border-radius: 2px;
     font: bold 10px/12px Lucida Grande,
           Lucida Sans Unicode, Arial,
           Verdana, sans-serif;
-    color: #585858;
+    color: #ddd;
+    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
+}
+
+#VinylToggleButtonUL[displayValue="0"] {
+    border: 1px solid #585858;
+    border-radius: 2px;
+    margin: 1px;
+    font: bold 10px/12px Lucida Grande,
+          Lucida Sans Unicode, Arial,
+          Verdana, sans-serif;
+    color: #ddd;
+    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
+}
+
+#VinylToggleButtonUL[displayValue="1"] {
+    border: 1px solid #585858;
+    border-radius: 2px;
+    margin: 1px;
+    font: bold 10px/12px Lucida Grande,
+          Lucida Sans Unicode, Arial,
+          Verdana, sans-serif;
+    color: #0e0e0e;
+    background-color: #eece33;
+}
+
+#VinylToggleButtonLL[displayValue="0"] {
+    border: 1px solid #585858;
+    border-radius: 2px;
+    margin: 1px;
+    font: bold 10px/12px Lucida Grande,
+          Lucida Sans Unicode, Arial,
+          Verdana, sans-serif;
+    color: #ddd;
+    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
+}
+
+#VinylToggleButtonLL[displayValue="1"] {
+    border: 1px solid #585858;
+    border-radius: 2px;
+    margin: 1px;
+    font: bold 10px/12px Lucida Grande,
+          Lucida Sans Unicode, Arial,
+          Verdana, sans-serif;
+    color: #0e0e0e;
+    background-color: #eece33;
+}
+
+#TristateButton {
+    border: 1px solid #585858;
+    border-radius: 2px;
+    margin: 1px;
+    font: bold 10px/12px Lucida Grande,
+          Lucida Sans Unicode, Arial,
+          Verdana, sans-serif;
+    color: #eece33;
+    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
+}
+
+#VinylCueButton[displayValue="0"] {
+    border: 1px solid #585858;
+    border-radius: 2px;
+    margin: 1px;
+    font: bold 10px/12px Lucida Grande,
+          Lucida Sans Unicode, Arial,
+          Verdana, sans-serif;
+    color: #ddd;
     background-color: #0e0e0e;
+}
+
+#VinylCueButton[displayValue="1"] {
+    border: 1px solid #585858;
+    border-radius: 2px;
+    margin: 1px;
+    font: bold 10px/12px Lucida Grande,
+          Lucida Sans Unicode, Arial,
+          Verdana, sans-serif;
+    color: #0e0e0e;
+    background-color: #eece33;
+}
+
+#VinylCueButton[displayValue="2"] {
+    border: 1px solid #585858;
+    border-radius: 2px;
+    margin: 1px;
+    font: bold 10px/12px Lucida Grande,
+          Lucida Sans Unicode, Arial,
+          Verdana, sans-serif;
+    color: #0e0e0e;
+    background-color: #eece33;
 }
 
 #PitchTweakButton[displayValue="0"] {
     border: 1px solid #585858;
+    border-radius: 2px;
     font: bold 10px Lucida Grande,
           Lucida Sans Unicode, Arial,
           Verdana, sans-serif;
-    color: #c1c1c1;
-    background-color: #0e0e0e;
-    padding: 1px;
+    color: #ddd;
+    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
     margin: 1px;
 }
 
 #PitchTweakButton[displayValue="1"] {
     border: 1px solid #585858;
+    border-radius: 2px;
     font: bold 10px Lucida Grande,
           Lucida Sans Unicode, Arial,
           Verdana, sans-serif;
-    color: #c1c1c1;
+    color: #ddd;
     background-color: #c00a09;
-    padding: 1px;
     margin: 1px;
 }
 

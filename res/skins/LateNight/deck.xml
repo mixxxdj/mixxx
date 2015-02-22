@@ -21,7 +21,7 @@
                                <SizePolicy>min,min</SizePolicy>
                                <Children>
                                    <PushButton>
-                                      <Size>18f,18f</Size>
+                                      <Size>16f,16f</Size>
                                       <ObjectName>PitchTweakButton</ObjectName>
                                       <NumberStates>2</NumberStates>
                                       <State>
@@ -41,7 +41,7 @@
                                       </Connection>
                                    </PushButton>
                                    <PushButton>
-                                      <Size>30f,18f</Size>
+                                      <Size>28f,16f</Size>
                                       <ObjectName>PitchTweakButton</ObjectName>
                                       <NumberStates>2</NumberStates>
                                       <State>
@@ -61,7 +61,7 @@
                                       </Connection>
                                    </PushButton>
                                    <PushButton>
-                                      <Size>18f,18f</Size>
+                                      <Size>16f,16f</Size>
                                       <ObjectName>PitchTweakButton</ObjectName>
                                       <NumberStates>2</NumberStates>
                                       <State>
@@ -89,12 +89,13 @@
                            <Key>
                               <ObjectName>TextColor<Variable name="channum" /></ObjectName>
                               <Style>QLabel { qproperty-alignment: 'AlignCenter';
-                                  font: bold 16px/18px Lucida Grande, Lucida Sans
+                                  font: bold 13px/16px Lucida Grande, Lucida Sans
                                   Unicode, Arial, Verdana, sans-serif;
                                   background-color: transparent; padding: 0px; margin: 0px;}
                               </Style>
                               <Group>[Channel<Variable name="channum"/>]</Group>
-                              <SizePolicy>min,min</SizePolicy>
+                              <SizePolicy>min,fx</SizePolicy>
+                              <Size>-1,17</Size>
                               <Connection>
                                 <ConfigKey>[Channel<Variable name="channum"/>],visual_key</ConfigKey>
                               </Connection>

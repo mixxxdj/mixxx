@@ -15,6 +15,7 @@ Effect::Effect(EffectsManager* pEffectsManager,
           m_manifest(manifest),
           m_pInstantiator(pInstantiator),
           m_pEngineEffect(NULL),
+          m_bAddedToEngine(false),
           m_bEnabled(true) {
     foreach (const EffectManifestParameter& parameter, m_manifest.parameters()) {
         EffectParameter* pParameter = new EffectParameter(

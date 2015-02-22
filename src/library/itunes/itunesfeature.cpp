@@ -367,6 +367,8 @@ TreeItem* ITunesFeature::importLibrary() {
                     }
                 } else if (key == "Tracks") {
                     parseTracks(xml);
+                    if (playlist_root != NULL)
+                        delete playlist_root;
                     playlist_root = parsePlaylists(xml);
                 }
             }
