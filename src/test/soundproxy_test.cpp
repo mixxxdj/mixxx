@@ -1,14 +1,13 @@
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
-
-#include <QtDebug>
-
 #include "test/mixxxtest.h"
 
 #include "soundsourceproxy.h"
 #include "metadata/trackmetadata.h"
 
-class SoundSourceProxyTest : public MixxxTest {
+#include <gmock/gmock.h>
+
+#include <QtDebug>
+
+class SoundSourceProxyTest: public MixxxTest {
   protected:
     static QStringList getFileExtensions() {
         QStringList extensions;
@@ -16,7 +15,14 @@ class SoundSourceProxyTest : public MixxxTest {
 #ifdef __OPUS__
         extensions << "opus";
 #endif
+        if (SoundSourceProxy::isFilenameSupported("filename.m4a")) {
+            extensions << "m4a";
+        }
         return extensions;
+    }
+
+    static void SetUpTestCase() {
+        SoundSourceProxy::loadPlugins();
     }
 
     static Mixxx::SoundSourcePointer openSoundSource(const QString& fileName) {
