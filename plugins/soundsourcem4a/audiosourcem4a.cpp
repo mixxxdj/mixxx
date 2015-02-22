@@ -25,11 +25,23 @@ namespace Mixxx {
 namespace {
 
 // According to the specification each AAC sample block decodes
-// to either 1024 or 960 sample frames.
-const AudioSource::size_type kMaxFramesPerSampleBlock = 1024;
+// to 1024 sample frames. The rarely used AAC-960 profile with
+// a block size of 960 frames is not supported.
+const AudioSource::size_type kFramesPerSampleBlock = 1024;
 
 // MP4SampleId is 1-based
 const MP4SampleId kSampleBlockIdMin = 1;
+
+inline AudioSource::diff_type getFrameIndexForSampleBlockId(
+        MP4SampleId sampleBlockId) {
+    return AudioSource::kFrameIndexMin +
+        (sampleBlockId - kSampleBlockIdMin) * kFramesPerSampleBlock;
+}
+
+inline AudioSource::size_type getFrameCountForSampleBlockId(
+        MP4SampleId sampleBlockId) {
+    return ((sampleBlockId - kSampleBlockIdMin) + 1) * kFramesPerSampleBlock;
+}
 
 // Decoding will be restarted one or more blocks of samples
 // before the actual position after seeking randomly in the
@@ -168,10 +180,10 @@ Result AudioSourceM4A::postConstruct() {
 
     setChannelCount(channelCount);
     setFrameRate(sampleRate);
-    setFrameCount(m_maxSampleBlockId * kMaxFramesPerSampleBlock);
+    setFrameCount(getFrameCountForSampleBlockId(m_maxSampleBlockId));
 
     // Resize temporary buffer for decoded sample data
-    m_decodeSampleBuffer.resize(frames2samples(kMaxFramesPerSampleBlock));
+    m_decodeSampleBuffer.resize(frames2samples(kFramesPerSampleBlock));
 
     // Invalidate current position to enforce the following
     // seek operation
@@ -204,8 +216,7 @@ void AudioSourceM4A::restartDecoding(MP4SampleId sampleBlockId) {
 
     NeAACDecPostSeekReset(m_hDecoder, sampleBlockId);
     m_curSampleBlockId = sampleBlockId;
-    m_curFrameIndex = kFrameIndexMin +
-            (m_curSampleBlockId - kSampleBlockIdMin) * kMaxFramesPerSampleBlock;
+    m_curFrameIndex = getFrameIndexForSampleBlockId(m_curSampleBlockId);
     // discard input buffer
     m_inputBufferOffset = 0;
     m_inputBufferLength = 0;
@@ -220,7 +231,7 @@ AudioSource::diff_type AudioSourceM4A::seekSampleFrame(diff_type frameIndex) {
 
     if (m_curFrameIndex != frameIndex) {
         MP4SampleId sampleBlockId = kSampleBlockIdMin
-                + (frameIndex / kMaxFramesPerSampleBlock);
+                + (frameIndex / kFramesPerSampleBlock);
         DEBUG_ASSERT(isValidSampleBlockId(sampleBlockId));
         if ((frameIndex < m_curFrameIndex) || // seeking backwards?
                 !isValidSampleBlockId(m_curSampleBlockId) || // invalid seek position?
@@ -325,11 +336,11 @@ AudioSource::size_type AudioSourceM4A::readSampleFrames(
 
         // NOTE(uklotzde): The sample buffer for NeAACDecDecode2 has to
         // be big enough for a whole block of decoded samples, which
-        // contains up to kMaxFramesPerSampleBlock frames. Otherwise
+        // contains up to kFramesPerSampleBlock frames. Otherwise
         // we need to use a temporary buffer.
         sample_type* pDecodeBuffer; // in/out parameter
         size_type decodeBufferCapacityInBytes;
-        if (pSampleBuffer && (numberOfFramesRemaining >= kMaxFramesPerSampleBlock)) {
+        if (pSampleBuffer && (numberOfFramesRemaining >= kFramesPerSampleBlock)) {
             // decode samples directly into sampleBuffer
             pDecodeBuffer = pSampleBuffer;
             decodeBufferCapacityInBytes = frames2samples(
@@ -341,7 +352,7 @@ AudioSource::size_type AudioSourceM4A::readSampleFrames(
                     m_decodeSampleBuffer.size() -
                     m_decodeSampleBufferWriteOffset;
             DEBUG_ASSERT(decodeSampleBufferCapacity >=
-                    frames2samples(kMaxFramesPerSampleBlock));
+                    frames2samples(kFramesPerSampleBlock));
             decodeBufferCapacityInBytes =
                     decodeSampleBufferCapacity *
                     sizeof(*pDecodeBuffer);
