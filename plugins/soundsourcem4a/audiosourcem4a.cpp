@@ -47,14 +47,18 @@ inline AudioSource::size_type getFrameCountForSampleBlockId(
 // before the actual position after seeking randomly in the
 // audio stream to avoid audible glitches.
 //
-// TODO(XXX): Replace with the smallest possible value that
-// allows accurate seeking in any audio stream compliant with
-// the AAC specification! This theoretical value has to be
-// confirmed practically by appropriate unit tests.
+// "AAC Audio - Encoder Delay and Synchronization: The 2112 Sample Assumption"
+// https://developer.apple.com/library/ios/technotes/tn2258/_index.html
+// "It must also be assumed that without an explicit value, the playback
+// system will trim 2112 samples from the AAC decoder output when starting
+// playback from any point in the bistream."
 //
-// For the time being simply use the experimental value of
-// 1 bloack which has been confirmed by unit tests.
-const MP4SampleId kNumberOfPrefetchSampleBlocks = 1;
+// 2112 frames = 2 * 1024 + 64 < 3 * 1024 = 3 sample blocks
+//
+// Decoding 3 blocks of samples in advance after seeking should
+// compensate for the encoding delay and allow sample accurate
+// seeking.
+const MP4SampleId kNumberOfPrefetchSampleBlocks = 3;
 
 // Searches for the first audio track in the MP4 file that
 // suits our needs.
