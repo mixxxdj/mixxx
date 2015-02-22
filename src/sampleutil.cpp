@@ -120,6 +120,7 @@ void SampleUtil::applyRampingGain(CSAMPLE* pBuffer, CSAMPLE_GAIN old_gain,
         // note: LOOP VECTORIZED.
         for (int i = 0; i < iNumSamples / 2; ++i) {
             const CSAMPLE_GAIN gain = start_gain + gain_delta * i;
+            // a loop counter i += 2 prevents vectorizing. 
             pBuffer[i * 2] *= gain;
             pBuffer[i * 2 + 1] *= gain;
         }
@@ -302,6 +303,7 @@ bool SampleUtil::sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
         clipped += absl > CSAMPLE_PEAK ? 1 : 0;       
         CSAMPLE absr = fabs(pBuffer[i * 2 + 1]);
         fAbsR += absr;
+        // Replacing the code with a bool clipped will prevent vetorizing 
         clipped += absr > CSAMPLE_PEAK ? 1 : 0;     
     }
 
