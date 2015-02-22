@@ -23,6 +23,6 @@ AudioTagger::AudioTagger(const QString& file, SecurityTokenPointer pToken) :
 AudioTagger::~AudioTagger() {
 }
 
-bool AudioTagger::save(const Mixxx::TrackMetadata& trackMetadata) {
-    return OK == writeTrackMetadataIntoFile(trackMetadata, m_file.canonicalFilePath());
+Result AudioTagger::save(const Mixxx::TrackMetadata& trackMetadata) {
+    return writeTrackMetadataIntoFile(trackMetadata, m_file.canonicalFilePath());
 }
