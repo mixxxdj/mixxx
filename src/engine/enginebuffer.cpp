@@ -849,10 +849,6 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         // If pitch ratio and tempo ratio are equal, a linear scaler is used,
         // otherwise tempo and pitch are processed individual
 
-        // If the baserate, speed, or pitch has changed, we need to update the
-        // scaler. Also, if we have changed scalers then we need to update the
-        // scaler.
-
         // If we were scratching, and scratching is over, and we're a follower,
         // and we're quantized, and not paused,
         // we need to sync phase or we'll be totally out of whack and the sync
@@ -863,6 +859,9 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             requestSyncPhase();
         }
 
+        // If the baserate, speed, or pitch has changed, we need to update the
+        // scaler. Also, if we have changed scalers then we need to update the
+        // scaler.
         if (baserate != m_baserate_old || speed != m_speed_old ||
                 pitchRatio != m_pitch_old || m_bScalerChanged) {
             // The rate returned by the scale object can be different from the
