@@ -535,18 +535,9 @@ bool BpmControl::getBeatContext(const BeatsPointer& pBeats,
         return false;
     }
 
-    double dPrevBeat = pBeats->findPrevBeat(dPosition);
-    double dNextBeat = pBeats->findNextBeat(dPosition);
-
-    if (dPrevBeat == -1 || dNextBeat == -1) {
-        return false;
-    }
-
-    if (fabs(dPrevBeat - dNextBeat) <= beatEpsilon) {
-        dNextBeat = pBeats->findNthBeat(dPosition, 2);
-    }
-
-    if (dNextBeat == -1) {
+    double dPrevBeat;
+    double dNextBeat;
+    if (!pBeats->findPrevNextBeats(dPosition, &dPrevBeat, &dNextBeat)) {
         return false;
     }
 
