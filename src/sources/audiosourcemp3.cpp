@@ -11,10 +11,6 @@ namespace {
 // In the worst case up to 29 MP3 frames need to be prefetched
 // for accurate seeking:
 // http://www.mars.org/mailman/public/mad-dev/2002-May/000634.html
-//
-// TODO (XXX): Fix the implementation and determine the minimum
-// required value for passing all unit tests. Currently even the
-// theoretical maximum of 29 is not sufficient!?
 const AudioSource::size_type kSeekFramePrefetchCount = 29;
 
 const AudioSource::sample_type kMadScale = AudioSource::kSampleValuePeak
