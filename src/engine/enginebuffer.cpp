@@ -226,8 +226,7 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
     // Quantization Controller for enabling and disabling the
     // quantization (alignment) of loop in/out positions and (hot)cues with
     // beats.
-    m_pQuantizeControl = new QuantizeControl(group, _config);
-    addControl(m_pQuantizeControl);
+    addControl(new QuantizeControl(group, _config));
     m_pQuantize = ControlObject::getControl(ConfigKey(group, "quantize"));
 
     // Create the Loop Controller

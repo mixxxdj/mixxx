@@ -606,8 +606,8 @@ double BpmControl::getPhaseOffset(double dThisPosition) {
     double dThisBeatLength;
     if (dThisPosition > dThisNextBeat || dThisPosition < dThisPrevBeat) {
         // There's a chance the COs might be out of date, so do a lookup.
-        qDebug() << getGroup()
-                 << "BpmControl::getPhaseOffset beat positions out date, doing lookup";
+        // TODO: figure out a way so that quantized control can take care of
+        // this so this call isn't necessary.
         if (!getBeatContext(m_pBeats, dThisPosition,
                             &dThisPrevBeat, &dThisNextBeat,
                             &dThisBeatLength, NULL)) {
