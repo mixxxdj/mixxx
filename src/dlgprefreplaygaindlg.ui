@@ -248,7 +248,7 @@
       <item row="4" column="0">
        <widget class="QLabel" name="label_26">
         <property name="text">
-         <string>It may take a few seconds after track analysis is finished for a newly calculated ReplayGain to be applied. To avoid abrupt volume changes, Mixxx does not apply the ReplayGain to playing tracks. </string>
+         <string>While an unanalyzed track is playing, Mixxx won't apply the a newly calculated ReplayGain to avoid an abrupt volume change. </string>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
@@ -258,7 +258,7 @@
       <item row="0" column="0">
        <widget class="QLabel" name="label_8">
         <property name="text">
-         <string>The normal average ReplayGain playback level is -14 dB. This offers enough headroom for the dynamic peaks of almost all tracks. However it might be not enough for mixing or adding effects without clipping or it might sound to quiet for modern pop music that is normalized to 0 db and compressed to an average playback level of -7 dB or more.  So you may tweak the Initial Boost to solve these issues.</string>
+         <string>The normal average ReplayGain playback level is -14 dB. You may increase it using the inital boost, if your tracks does not require the full dynamic headroom, or reduce it if you experience that your tracks are clipping by default. For more information about headroom and clipping have a look at the manual.</string>
         </property>
         <property name="scaledContents">
          <bool>true</bool>
