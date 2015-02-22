@@ -3,6 +3,7 @@
 
 #include "metadata/trackmetadata.h"
 #include "util/sandbox.h"
+#include "util/defs.h" // Result
 
 #include <QFileInfo>
 
@@ -11,7 +12,7 @@ public:
     AudioTagger(const QString& file, SecurityTokenPointer pToken);
     virtual ~AudioTagger();
 
-    bool save(const Mixxx::TrackMetadata& trackMetadata);
+    Result save(const Mixxx::TrackMetadata& trackMetadata);
 
 private:
     QFileInfo m_file;
