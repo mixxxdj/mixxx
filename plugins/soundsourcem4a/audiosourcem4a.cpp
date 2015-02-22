@@ -40,10 +40,9 @@ const MP4SampleId kSampleBlockIdMin = 1;
 // the AAC specification! This theoretical value has to be
 // confirmed practically by appropriate unit tests.
 //
-// For the time being simply use the current value of 2 which
-// seems to be enough as experimental listening tests with some
-// M4A example files revealed.
-const MP4SampleId kNumberOfPrefetchSampleBlocks = 2;
+// For the time being simply use the experimental value of
+// 1 bloack which has been confirmed by unit tests.
+const MP4SampleId kNumberOfPrefetchSampleBlocks = 1;
 
 // Searches for the first audio track in the MP4 file that
 // suits our needs.
