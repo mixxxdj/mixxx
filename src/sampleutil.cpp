@@ -154,7 +154,7 @@ void SampleUtil::addWithGain(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _RESTRICT 
     }
 
     // note: LOOP VECTORIZED. 
-    for (int i = 0; i < (int)iNumSamples; ++i) {
+    for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] += pSrc[i] * gain;
     }
 }
