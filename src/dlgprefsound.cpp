@@ -137,7 +137,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     m_pMasterMonoMixdown->connectValueChanged(this, SLOT(masterMonoMixdownChanged(double)));
 
     m_pMasterTalkoverMix = new ControlObjectSlave("[Master]", "talkover_mix", this);
-    micMixComboBox->addItem(tr("Enabled"));
+    micMixComboBox->addItem(tr("Master output"));
     micMixComboBox->addItem(tr("Broadcast and Recording only"));
     micMixComboBox->setCurrentIndex((int)m_pMasterTalkoverMix->get());
     connect(micMixComboBox, SIGNAL(currentIndexChanged(int)),
@@ -536,7 +536,7 @@ void DlgPrefSound::slotResetToDefaults() {
     headDelaySpinBox->setValue(0.0);
     m_pHeadDelay->set(0.0);
 
-    // Enable talkover mix
+    // Enable talkover master output
     m_pMasterTalkoverMix->set(0.0);
     micMixComboBox->setCurrentIndex(0);
 
