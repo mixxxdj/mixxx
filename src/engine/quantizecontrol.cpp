@@ -90,12 +90,12 @@ void QuantizeControl::setCurrentSample(const double dCurrentSample,
     // out of range of the existing beat positions.  This bypasses the epsilon
     // calculation, but is there a way that could actually cause a problem?
     if (dCurrentSample < prevBeat || dCurrentSample > nextBeat) {
-        // Calculate this by hand since we may also want the beat locations themselves
-        // and duplicating the work would double the number of mutex locks.
         m_pBeats->findPrevNextBeats(dCurrentSample, &prevBeat, &nextBeat);
         m_pCOPrevBeat->set(prevBeat);
         m_pCONextBeat->set(nextBeat);
     }
+    // Calculate closest beat by hand since we want the beat locations themselves
+    // and duplicating the work would double the number of mutex locks.
     if (prevBeat == -1) {
         if (nextBeat != -1) {
             m_pCOClosestBeat->set(nextBeat);
