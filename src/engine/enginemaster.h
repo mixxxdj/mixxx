@@ -204,7 +204,7 @@ class EngineMaster : public QObject, public AudioSource {
     template<typename T, unsigned int CAPACITY>
     class FastVector {
       public:
-        FastVector() : m_size(0) {};
+        FastVector() : m_size(0), m_data((T*)((void *)m_buffer)) {};
         inline void append(const T& t) {
             m_data[m_size++] = t;
         };
@@ -220,12 +220,16 @@ class EngineMaster : public QObject, public AudioSource {
         inline void replace(unsigned int i, const T& t) {
             m_data[i] = t;
         }
-        inline unsigned int size () const {
+        inline int size () const {
             return m_size;
         }
       private:
-        T m_data[CAPACITY];
-        unsigned int m_size;
+        int m_size;
+        T* const m_data;
+        // Using a long double buffer guarantees the alignment for any type
+        // but avoids the constructor call T();
+        long double m_buffer[(CAPACITY * sizeof(T) + sizeof(long double) - 1) /
+                             sizeof(long double)];
     };
 
   private:
