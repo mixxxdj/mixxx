@@ -96,17 +96,24 @@ void QuantizeControl::setCurrentSample(const double dCurrentSample,
         m_pCOPrevBeat->set(prevBeat);
         m_pCONextBeat->set(nextBeat);
     }
-    double currentClosestBeat =
-            (nextBeat - dCurrentSample > dCurrentSample - prevBeat) ?
-                    prevBeat : nextBeat;
+    if (prevBeat == -1) {
+        if (nextBeat != -1) {
+            m_pCOClosestBeat->set(nextBeat);
+        } else {
+            // Likely no beat information -- can't set closest beat value.
+        }
+    } else if (nextBeat == -1) {
+        m_pCOClosestBeat->set(prevBeat);
+    } else {
+        double currentClosestBeat =
+                (nextBeat - dCurrentSample > dCurrentSample - prevBeat) ?
+                        prevBeat : nextBeat;
 
-    if (closestBeat != currentClosestBeat) {
-        // findXBeats claims to guarantee evenness, except in the case of -1.
-        if (currentClosestBeat != -1) {
+        if (closestBeat != currentClosestBeat) {
             DEBUG_ASSERT_AND_HANDLE(even(static_cast<int>(currentClosestBeat))) {
                 currentClosestBeat--;
             }
+            m_pCOClosestBeat->set(currentClosestBeat);
         }
-        m_pCOClosestBeat->set(currentClosestBeat);
     }
 }

@@ -142,7 +142,8 @@ double BeatGrid::findClosestBeat(double dSamples) const {
     double nextBeat;
     findPrevNextBeats(dSamples, &prevBeat, &nextBeat);
     if (prevBeat == -1) {
-        return nextBeat == -1 ? -1 : nextBeat;
+        // If both values are -1, we correctly return -1.
+        return nextBeat;
     } else if (nextBeat == -1) {
         return prevBeat;
     }
@@ -203,6 +204,7 @@ bool BeatGrid::findPrevNextBeats(double dSamples,
                                  double* dpPrevBeatSamples,
                                  double* dpNextBeatSamples) const {
     double dFirstBeatSample;
+    double dBeatLength;
     {
         QMutexLocker locker(&m_mutex);
         if (!isValid()) {
@@ -211,9 +213,10 @@ bool BeatGrid::findPrevNextBeats(double dSamples,
             return false;
         }
         dFirstBeatSample = firstBeatSample();
+        dBeatLength = m_dBeatLength;
     }
 
-    double beatFraction = (dSamples - dFirstBeatSample) / m_dBeatLength;
+    double beatFraction = (dSamples - dFirstBeatSample) / dBeatLength;
     double prevBeat = floor(beatFraction);
     double nextBeat = ceil(beatFraction);
 
@@ -230,8 +233,8 @@ bool BeatGrid::findPrevNextBeats(double dSamples,
         // And nextBeat needs to be incremented.
         ++nextBeat;
     }
-    *dpPrevBeatSamples = floor(prevBeat * m_dBeatLength + dFirstBeatSample);
-    *dpNextBeatSamples = floor(nextBeat * m_dBeatLength + dFirstBeatSample);
+    *dpPrevBeatSamples = floor(prevBeat * dBeatLength + dFirstBeatSample);
+    *dpNextBeatSamples = floor(nextBeat * dBeatLength + dFirstBeatSample);
     if (!even(static_cast<int>(*dpPrevBeatSamples))) {
         --*dpPrevBeatSamples;
     }
