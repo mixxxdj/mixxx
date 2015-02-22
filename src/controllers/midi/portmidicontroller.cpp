@@ -19,7 +19,9 @@ PortMidiController::PortMidiController(const PmDeviceInfo* inputDeviceInfo,
           m_iInputDeviceIndex(inputDeviceIndex),
           m_iOutputDeviceIndex(outputDeviceIndex),
           m_pInputStream(NULL),
-          m_pOutputStream(NULL) {
+          m_pOutputStream(NULL),
+          m_cReceiveMsg_index(0),
+          m_bInSysex(false) {
     for (unsigned int k = 0; k < MIXXX_PORTMIDI_BUFFER_LEN; ++k) {
         // Can be shortened to `m_midiBuffer[k] = {}` with C++11.
         m_midiBuffer[k].message = 0;

@@ -54,10 +54,6 @@ EngineChannel::~EngineChannel() {
     delete m_pTalkover;
 }
 
-const QString& EngineChannel::getGroup() const {
-    return m_group;
-}
-
 void EngineChannel::setPFL(bool enabled) {
     m_pPFL->set(enabled ? 1.0 : 0.0);
 }
