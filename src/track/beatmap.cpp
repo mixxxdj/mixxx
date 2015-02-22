@@ -21,8 +21,8 @@ inline double samplesToFrames(const double samples) {
     return floor(samples / kFrameSize);
 }
 
-inline double framesToSamples(const double frames) {
-    return floor(frames) * kFrameSize;
+inline double framesToSamples(const int frames) {
+    return frames * kFrameSize;
 }
 
 bool BeatLessThan(const Beat& beat1, const Beat& beat2) {
@@ -180,7 +180,8 @@ double BeatMap::findClosestBeat(double dSamples) const {
     double nextBeat;
     findPrevNextBeats(dSamples, &prevBeat, &nextBeat);
     if (prevBeat == -1) {
-        return nextBeat == -1 ? -1 : nextBeat;
+        // If both values are -1, we correctly return -1.
+        return nextBeat;
     } else if (nextBeat == -1) {
         return prevBeat;
     }

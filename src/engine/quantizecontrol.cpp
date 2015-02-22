@@ -90,15 +90,26 @@ double QuantizeControl::process(const double dRate,
     double updatedPrev;
     double updatedNext;
     m_pBeats->findPrevNextBeats(iCurrentSample, &updatedPrev, &updatedNext);
-    double currentClosestBeat =
-            (updatedNext - iCurrentSample > iCurrentSample - updatedPrev) ?
-                    updatedPrev : updatedNext;
 
-    if (closestBeat != currentClosestBeat) {
-        if (!even(static_cast<int>(currentClosestBeat))) {
-            currentClosestBeat--;
+    if (updatedPrev == -1) {
+        if (updatedNext != -1) {
+            m_pCOClosestBeat->set(updatedNext);
+        } else {
+            // Likely no beat information -- can't set closest beat value.
         }
-        m_pCOClosestBeat->set(currentClosestBeat);
+    } else if (updatedNext == -1) {
+        m_pCOClosestBeat->set(updatedPrev);
+    } else {
+        double currentClosestBeat =
+                (updatedNext - iCurrentSample > iCurrentSample - updatedPrev) ?
+                        updatedPrev : updatedNext;
+
+        if (closestBeat != currentClosestBeat) {
+            if (!even(static_cast<int>(currentClosestBeat))) {
+                currentClosestBeat--;
+            }
+            m_pCOClosestBeat->set(currentClosestBeat);
+        }
     }
 
     if (prevBeat == -1 || nextBeat == -1 ||
