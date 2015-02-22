@@ -162,29 +162,6 @@ bool ConfigObject<ValueType>::exists(ConfigKey k) {
 }
 
 template <class ValueType>
-ConfigKey *ConfigObject<ValueType>::get(ValueType v) {
-    QListIterator<ConfigOption<ValueType>* > iterator(m_list);
-    ConfigOption<ValueType>* it;
-    while (iterator.hasNext()) {
-        it = iterator.next();
-        if (QString::compare(it->val->value, v.value, Qt::CaseInsensitive) == 0) {
-            //qDebug() << "ConfigObject #534: QString::compare match for " << it->key->group << it->key->item;
-            return it->key;
-        }
-        if (((ValueType)*it->val) == ((ValueType)v))  {
-            //qDebug() << "ConfigObject: match" << it->val->value.toUpper() << "with" << v.value.toUpper();
-            return it->key;
-        }
-
-        if (it == m_list.last()) {
-            //qDebug() << "ConfigObject: last match attempted" << it->val->value.toUpper() << "with" << v.value.toUpper();
-        }
-    }
-    //qDebug() << "No match for ConfigObject:" << v.value;
-    return 0;
-}
-
-template <class ValueType>
 QString ConfigObject<ValueType>::getValueString(ConfigKey k) {
     return get(k)->val->value;
 }
@@ -237,19 +214,6 @@ template <class ValueType> bool ConfigObject<ValueType>::Parse() {
         configfile.close();
     }
     return true;
-}
-
-template <class ValueType> void ConfigObject<ValueType>::clear() {
-    //Delete the pointers, because that's what we did before we
-    //purged Mixxx of Qt3 code. -- Albert, June 18th 2010 (at 30,000 ft)
-    for (int i = 0; i < m_list.count(); i++) {
-        delete m_list[i];
-    }
-
-    // This shouldn't be done, since objects might have references to
-    // members of list. Instead all member values should be set to some
-    // null value.
-    m_list.clear();
 }
 
 template <class ValueType> void ConfigObject<ValueType>::reopen(QString file) {

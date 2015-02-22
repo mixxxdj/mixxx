@@ -128,12 +128,10 @@ template <class ValueType> class ConfigObject {
     ConfigOption<ValueType>* set(ConfigKey, ValueType);
     ConfigOption<ValueType>* get(ConfigKey key);
     bool exists(ConfigKey key);
-    ConfigKey *get(ValueType v);
     QString getValueString(ConfigKey k);
     QString getValueString(ConfigKey k, const QString& default_string);
     QHash<ConfigKey, ValueType> toHash() const;
 
-    void clear();
     void reopen(QString file);
     void Save();
 
