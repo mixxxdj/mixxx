@@ -878,6 +878,8 @@ class MixxxCore(Feature):
                    "skin/pixmapsource.cpp",
 
                    "sampleutil.cpp",
+                   "samplebuffer.cpp",
+
                    "trackinfoobject.cpp",
                    "track/beatgrid.cpp",
                    "track/beatmap.cpp",
