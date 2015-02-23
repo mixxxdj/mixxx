@@ -191,53 +191,6 @@
     </layout>
    </item>
    <item>
-    <widget class="QTabWidget" name="ioTabs">
-     <property name="currentIndex">
-      <number>0</number>
-     </property>
-     <widget class="QWidget" name="outputTab">
-      <attribute name="title">
-       <string>Output</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="outputVLayout">
-       <item>
-        <spacer name="outputVSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="inputTab">
-      <attribute name="title">
-       <string>Input</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="inputVLayout">
-       <item>
-        <spacer name="inputVSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </widget>
-    </widget>
-   </item>
-   <item>
     <widget class="QGroupBox" name="Hints">
      <property name="title">
       <string>Hints</string>
@@ -302,6 +255,53 @@
       </spacer>
      </item>
     </layout>
+   </item>
+   <item>
+    <widget class="QTabWidget" name="ioTabs">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="outputTab">
+      <attribute name="title">
+       <string>Output</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="outputVLayout">
+       <item>
+        <spacer name="outputVSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="inputTab">
+      <attribute name="title">
+       <string>Input</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="inputVLayout">
+       <item>
+        <spacer name="inputVSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </widget>
    </item>
    <item>
     <spacer name="verticalSpacer">
