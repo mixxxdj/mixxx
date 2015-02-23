@@ -2,12 +2,11 @@
 #define AUDIOSOURCEFLAC_H
 
 #include "sources/audiosource.h"
+#include "samplebuffer.h"
 
 #include <FLAC/stream_decoder.h>
 
 #include <QFile>
-
-#include <vector>
 
 namespace Mixxx {
 
@@ -62,8 +61,7 @@ private:
 
     sample_type m_sampleScale;
 
-    typedef std::vector<sample_type> SampleBuffer;
-    std::vector<sample_type> m_decodeSampleBuffer;
+    SampleBuffer m_decodeSampleBuffer;
     SampleBuffer::size_type m_decodeSampleBufferReadOffset;
     SampleBuffer::size_type m_decodeSampleBufferWriteOffset;
 

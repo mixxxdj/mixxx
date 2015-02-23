@@ -1,5 +1,6 @@
 #include "sources/audiosource.h"
 
+#include "samplebuffer.h"
 #include "sampleutil.h"
 
 #include <vector>
@@ -85,11 +86,10 @@ AudioSource::size_type AudioSource::readSampleFramesStereo(
                         << numberOfSamplesToRead << "for reading stereo samples."
                         << "The size of the provided sample buffer is"
                         << sampleBufferSize;
-                typedef std::vector<sample_type> SampleBuffer;
                 SampleBuffer tempBuffer(numberOfSamplesToRead);
                 const AudioSource::size_type readFrameCount = readSampleFrames(
-                        numberOfFrames, &tempBuffer[0]);
-                SampleUtil::copyMultiToStereo(sampleBuffer, &tempBuffer[0],
+                        numberOfFrames, tempBuffer.data());
+                SampleUtil::copyMultiToStereo(sampleBuffer, tempBuffer.data(),
                         readFrameCount, getChannelCount());
                 return readFrameCount;
             }

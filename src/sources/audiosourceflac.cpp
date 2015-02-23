@@ -397,7 +397,9 @@ void AudioSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
         m_maxFramesize = metadata->data.stream_info.max_framesize;
         m_decodeSampleBufferReadOffset = 0;
         m_decodeSampleBufferWriteOffset = 0;
-        m_decodeSampleBuffer.resize(m_maxBlocksize * getChannelCount());
+        const SampleBuffer::size_type decodeSampleBufferSize =
+                m_maxBlocksize * getChannelCount();
+        SampleBuffer(decodeSampleBufferSize).swap(m_decodeSampleBuffer);
         break;
     }
     default:
