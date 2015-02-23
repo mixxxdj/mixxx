@@ -1,6 +1,8 @@
 // sampleutil.cpp
 // Created 10/5/2009 by RJ Ryan (rryan@mit.edu)
 
+#include <cstdlib>
+
 #include "sampleutil.h"
 #include "util/math.h"
 
