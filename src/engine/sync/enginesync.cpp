@@ -109,7 +109,7 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
                     // skip this deck
                     continue;
                 }
-                if (!other_deck->getChannel()->isMaster()) {
+                if (!other_deck->getChannel()->isMasterEnabled()) {
                     // skip non-master decks, like preview decks.
                     continue;
                 }

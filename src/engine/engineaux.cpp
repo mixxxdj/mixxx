@@ -26,10 +26,9 @@ EngineAux::EngineAux(const QString& group, EffectsManager* pEffectsManager)
     }
     m_pPassing->setButtonMode(ControlPushButton::POWERWINDOW);
 
-    // Default passthrough to enabled on the master and disabled on PFL. User
+    // by default Aux is enabled on the master and disabled on PFL. User
     // can over-ride by setting the "pfl" or "master" controls.
     setMaster(true);
-    setPFL(false);
 
     m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
 }

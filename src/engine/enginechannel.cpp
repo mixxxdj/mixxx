@@ -54,28 +54,28 @@ EngineChannel::~EngineChannel() {
     delete m_pTalkover;
 }
 
-void EngineChannel::setPFL(bool enabled) {
+void EngineChannel::setPfl(bool enabled) {
     m_pPFL->set(enabled ? 1.0 : 0.0);
 }
 
-bool EngineChannel::isPFL() const {
-    return m_pPFL->get() > 0.0;
+bool EngineChannel::isPflEnabled() const {
+    return m_pPFL->toBool();
 }
 
 void EngineChannel::setMaster(bool enabled) {
     m_pMaster->set(enabled ? 1.0 : 0.0);
 }
 
-bool EngineChannel::isMaster() const {
-    return m_pMaster->get() > 0.0;
+bool EngineChannel::isMasterEnabled() const {
+    return m_pMaster->toBool();
 }
 
 void EngineChannel::setTalkover(bool enabled) {
     m_pTalkover->set(enabled ? 1.0 : 0.0);
 }
 
-bool EngineChannel::isTalkover() const {
-    return m_pTalkover->get() > 0.0;
+bool EngineChannel::isTalkoverEnabled() const {
+    return m_pTalkover->toBool();
 }
 
 void EngineChannel::slotOrientationLeft(double v) {
