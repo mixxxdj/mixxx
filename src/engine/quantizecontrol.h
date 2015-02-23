@@ -30,6 +30,12 @@ class QuantizeControl : public EngineControl {
     void slotBeatsUpdated();
 
   private:
+    // Update positions of previous and next beats from beatgrid.
+    void lookupBeatPositions(double dCurrentSample);
+    // Update position of the closest beat based on existing previous and
+    // next beat values.  Usually callers will call lookupBeatPositions first.
+    void updateClosestBeat(double dCurrentSample);
+
     ControlPushButton* m_pCOQuantizeEnabled;
     ControlObject* m_pCONextBeat;
     ControlObject* m_pCOPrevBeat;
