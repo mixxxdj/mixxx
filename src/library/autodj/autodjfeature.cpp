@@ -278,12 +278,12 @@ void AutoDJFeature::slotCrateAutoDjChanged(int crateId, bool added) {
 
 void AutoDJFeature::slotAddRandomTrack(bool) {
 #ifdef __AUTODJCRATES__
-    int failedRetriveAttempts = 0;
+    int failedRetrieveAttempts = 0;
     // Get access to the auto-DJ playlist
     PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
     int iTrackId = -1;
     if (m_iAutoDJPlaylistId >= 0) {
-        while (failedRetriveAttempts < kMaxRetrieveAttempts) {
+        while (failedRetrieveAttempts < kMaxRetrieveAttempts) {
             // Get the ID of a randomly-selected track.
             iTrackId = m_autoDjCratesDao.getRandomTrackId();
             if (iTrackId != -1) {
@@ -298,12 +298,12 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
                              << " " << addedTrack->getDirectory();
                 }
             }
-            failedRetriveAttempts += 1;
+            failedRetrieveAttempts += 1;
         }
         // If we couldn't get a track from the crates , get one from the library
         qDebug () << "Could not load tracks from crates, attempting to load from library.";
-        failedRetriveAttempts = 0;
-        while ( failedRetriveAttempts < kMaxRetrieveAttempts ) {
+        failedRetrieveAttempts = 0;
+        while ( failedRetrieveAttempts < kMaxRetrieveAttempts ) {
             iTrackId = m_autoDjCratesDao.getRandomTrackIdFromLibrary(m_iAutoDJPlaylistId);
             if (iTrackId != -1) {
                 TrackPointer addedTrack = m_pTrackCollection->getTrackDAO().getTrack(iTrackId);
@@ -318,7 +318,7 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
                              << addedTrack->getDirectory();
                 }
             }
-            failedRetriveAttempts += 1;
+            failedRetrieveAttempts += 1;
         }
     }
     // If control reaches here it implies that we couldn't load track
