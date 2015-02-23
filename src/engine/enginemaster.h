@@ -45,7 +45,7 @@ class EngineSync;
 class EngineTalkoverDucking;
 class EngineDelay;
 
-static const unsigned int kMaxChannels = 32;
+static const int kMaxChannels = 32;
 
 class EngineMaster : public QObject, public AudioSource {
     Q_OBJECT

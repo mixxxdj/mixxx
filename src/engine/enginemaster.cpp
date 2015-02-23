@@ -227,7 +227,7 @@ EngineMaster::~EngineMaster() {
 
     delete m_pWorkerScheduler;
 
-    for (unsigned int i = 0; i < m_channels.size(); ++i) {
+    for (int i = 0; i < m_channels.size(); ++i) {
         ChannelInfo* pChannelInfo = m_channels[i];
         SampleUtil::free(pChannelInfo->m_pBuffer);
         delete pChannelInfo->m_pChannel;
@@ -256,8 +256,8 @@ void EngineMaster::processChannels(
     // Reserve the first place for the master channel which
     // should be processed first
     activeChannels.append(NULL);
-    unsigned int activeChannelsStartIndex = 1; // Nothing at 0 yet
-    for (unsigned int i = 0; i < m_channels.size(); ++i) {
+    int activeChannelsStartIndex = 1; // Nothing at 0 yet
+    for (int i = 0; i < m_channels.size(); ++i) {
         ChannelInfo* pChannelInfo = m_channels[i];
         EngineChannel* pChannel = pChannelInfo->m_pChannel;
 
@@ -323,7 +323,7 @@ void EngineMaster::processChannels(
     }
 
     // Now that the list is built and ordered, do the processing.
-    for (unsigned int i = activeChannelsStartIndex;
+    for (int i = activeChannelsStartIndex;
             i < activeChannels.size(); ++i) {
         ChannelInfo* pChannelInfo = activeChannels[i];
         EngineChannel* pChannel = pChannelInfo->m_pChannel;
@@ -334,7 +334,7 @@ void EngineMaster::processChannels(
     // which ensures that all channels are updating certain values at the
     // same point in time.  This prevents sync from failing depending on
     // if the sync target was processed before or after the sync origin.
-    for (unsigned int i = activeChannelsStartIndex;
+    for (int i = activeChannelsStartIndex;
             i < activeChannels.size(); ++i) {
         activeChannels[i]->m_pChannel->postProcess(iBufferSize);
     }
@@ -623,7 +623,7 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
 }
 
 EngineChannel* EngineMaster::getChannel(const QString& group) {
-    for (unsigned int i = 0; i < m_channels.size(); ++i) {
+    for (int i = 0; i < m_channels.size(); ++i) {
         ChannelInfo* pChannelInfo = m_channels[i];
         if (pChannelInfo->m_pChannel->getGroup() == group) {
             return pChannelInfo->m_pChannel;
@@ -643,7 +643,7 @@ const CSAMPLE* EngineMaster::getOutputBusBuffer(unsigned int i) const {
 }
 
 const CSAMPLE* EngineMaster::getChannelBuffer(QString group) const {
-    for (unsigned int i = 0; i < m_channels.size(); ++i) {
+    for (int i = 0; i < m_channels.size(); ++i) {
         const ChannelInfo* pChannelInfo = m_channels[i];
         if (pChannelInfo->m_pChannel->getGroup() == group) {
             return pChannelInfo->m_pBuffer;
