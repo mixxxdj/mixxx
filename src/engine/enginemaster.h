@@ -206,7 +206,7 @@ class EngineMaster : public QObject, public AudioSource {
         inline FastVector() : m_size(0), m_data((T*)((void *)m_buffer)) {};
         inline ~FastVector() {
             if (QTypeInfo<T>::isComplex) {
-                for (int i; i < m_size; ++i) {
+                for (int i = 0; i < m_size; ++i) {
                     m_data[i].~T();
                 }
             }
@@ -228,7 +228,7 @@ class EngineMaster : public QObject, public AudioSource {
             return m_data[i];
         }
         inline void replace(unsigned int i, const T& t) {
-            T copy(t);         
+            T copy(t);
             m_data[i] = copy;
         }
         inline int size () const {
