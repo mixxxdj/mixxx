@@ -98,38 +98,16 @@ class ConfigValueKbd : public ConfigValue {
     QKeySequence m_qKey;
 };
 
-template <class ValueType> class ConfigOption {
-  public:
-    ConfigOption()
-        : key(NULL),
-          val(NULL) {
-    };
-    ConfigOption(ConfigKey* pKey, ValueType* pVal)
-        : key(pKey),
-          val(pVal){
-    };
-    virtual ~ConfigOption() {
-        delete key;
-        delete val;
-    }
-    ConfigKey* key;
-    ValueType* val;
-};
-
 template <class ValueType> class ConfigObject {
   public:
-    ConfigKey key;
-    ValueType value;
-    ConfigOption<ValueType> option;
-
     ConfigObject(QString file);
     ConfigObject(QDomNode node);
     ~ConfigObject();
-    ConfigOption<ValueType>* set(ConfigKey, ValueType);
-    ConfigOption<ValueType>* get(ConfigKey key);
-    bool exists(ConfigKey key);
-    QString getValueString(ConfigKey k);
-    QString getValueString(ConfigKey k, const QString& default_string);
+    void set(const ConfigKey& k, ValueType);
+    ValueType get(const ConfigKey& k);
+    bool exists(const ConfigKey& key);
+    QString getValueString(const ConfigKey& k);
+    QString getValueString(const ConfigKey& k, const QString& default_string);
     QHash<ConfigKey, ValueType> toHash() const;
 
     void reopen(QString file);
@@ -144,12 +122,12 @@ template <class ValueType> class ConfigObject {
     QString getSettingsPath() const;
 
   protected:
-    QList<ConfigOption<ValueType>*> m_list;
+    QHash<ConfigKey, ValueType> m_valueHash;
     QString m_filename;
 
     // Loads and parses the configuration file. Returns false if the file could
     // not be opened; otherwise true.
-    bool Parse();
+    bool parse();
 };
 
 #endif
