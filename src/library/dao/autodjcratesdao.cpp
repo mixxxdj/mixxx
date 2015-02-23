@@ -909,12 +909,15 @@ int AutoDJCratesDAO::getRandomTrackIdFromLibrary(const int iPlaylistId) {
     QSqlQuery oQuery(m_rDatabase);
     // We ignore tracks from [0,ignoreIndex1] and [ignoreIndex2+1,most_played_Track]
     int iTrackId = -1, iTotalTracks = 0, beginIndex = 0, offset = 0, iIgnoreIndex1 = 0, iIgnoreIndex2 = 0;
-    oQuery.prepare("SELECT COUNT(*)"
+    oQuery.prepare(" SELECT COUNT(*)"
                    " FROM library"
                    " WHERE id NOT IN"
                    " ( SELECT track_id "
                    " FROM PlaylistTracks"
                    " WHERE playlist_id = :id )"
+                   " AND location NOT IN"
+                   " ( SELECT id FROM track_locations"
+                   " WHERE fs_deleted == 1 )"
                    " AND mixxx_deleted != 1" );
     oQuery.bindValue(":id",iPlaylistId);
     if (oQuery.exec()) {
@@ -954,12 +957,15 @@ int AutoDJCratesDAO::getRandomTrackIdFromLibrary(const int iPlaylistId) {
             offset= 0 ;
     }
     // Select tracks from library not in autoDJ playlist. Return track at the random offset
-    oQuery.prepare("SELECT id"
+    oQuery.prepare(" SELECT id"
                    " FROM library"
                    " WHERE id NOT IN"
                    " ( SELECT track_id "
                    " FROM PlaylistTracks"
                    " WHERE playlist_id = :id )"
+                   " AND location NOT IN"
+                   " ( SELECT id FROM track_locations"
+                   " WHERE fs_deleted == 1 )"
                    " AND mixxx_deleted != 1"
                    " ORDER BY timesplayed"
                    " LIMIT 1"
