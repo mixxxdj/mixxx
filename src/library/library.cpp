@@ -193,8 +193,6 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
             pTrackTableView, SLOT(onSearchStarting()));
     connect(this, SIGNAL(searchCleared()),
             pTrackTableView, SLOT(onSearchCleared()));
-    connect(this, SIGNAL(textChanged(const QString&)),
-            pTrackTableView, SLOT(isTextEmpty(QString)));
 
     m_pLibraryControl->bindWidget(pLibraryWidget, pKeyboard);
 

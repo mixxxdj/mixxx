@@ -49,7 +49,6 @@ class WTrackTableView : public WLibraryTableView {
     void slotPurge();
     void onSearchStarting();
     void onSearchCleared();
-    void isTextEmpty(const QString& text);
 
   private slots:
     void slotRemove();

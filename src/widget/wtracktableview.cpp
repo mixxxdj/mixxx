@@ -1623,8 +1623,3 @@ void WTrackTableView::slotReloadCoverArt() {
     }
 }
 
-void WTrackTableView::isTextEmpty(const QString& text) {
-    if (text.isEmpty()) {
-        onSearchCleared();
-    }
-}

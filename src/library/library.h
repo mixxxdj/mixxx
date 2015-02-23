@@ -101,7 +101,6 @@ public:
     void search(const QString& text);
     void searchCleared();
     void searchStarting();
-    void textChanged(const QString& text);
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer pTrack);

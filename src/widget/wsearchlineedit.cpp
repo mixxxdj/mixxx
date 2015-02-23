@@ -33,12 +33,12 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
             this, SLOT(onSearchTextCleared()));
 
     connect(this, SIGNAL(textChanged(const QString&)),
-            this, SIGNAL(signalTextChanged(const QString&)));
+            this, SLOT(slotTextChanged(const QString&)));
 
     // Set up a timer to search after a few hundred milliseconds timeout.  This
     // stops us from thrashing the database if you type really fast.
-    m_searchTimer.setSingleShot(true);
-    connect(&m_searchTimer, SIGNAL(timeout()),
+     m_searchTimer.setSingleShot(true);
+     connect(&m_searchTimer, SIGNAL(timeout()),
             this, SLOT(triggerSearch()));
 
     connect(this, SIGNAL(textChanged(const QString&)),
@@ -197,5 +197,12 @@ bool WSearchLineEdit::event(QEvent* pEvent) {
 
 void WSearchLineEdit::onSearchTextCleared() {
     QLineEdit::clear();
-    emit(signalTextChanged(text()));
+    emit(searchCleared());
+}
+
+void WSearchLineEdit::slotTextChanged(const QString& text) {
+    if (text.isEmpty()) {
+        triggerSearch();
+        emit(searchCleared());
+    }
 }
