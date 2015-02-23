@@ -46,10 +46,8 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
     pMixingEngine->addChannel(m_pChannel);
 
     // Set the routing option defaults for the master and headphone mixes.
-    {
-        ControlObject::set(ConfigKey(getGroup(), "master"), (double)defaultMaster);
-        ControlObject::set(ConfigKey(getGroup(), "pfl"), (double)defaultHeadphones);
-    }
+    m_pChannel->setMaster(defaultMaster);
+    m_pChannel->setPfl(defaultHeadphones);
 
     // Connect our signals and slots with the EngineBuffer's signals and
     // slots. This will let us know when the reader is done loading a track, and

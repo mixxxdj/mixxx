@@ -45,6 +45,8 @@
 #include "playermanager.h"
 #include "engine/channelmixer.h"
 
+
+
 EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
                            const char* group,
                            EffectsManager* pEffectsManager,
@@ -52,9 +54,9 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
                            bool bRampingGain)
         : m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
           m_bRampingGain(bRampingGain),
-          m_masterVolumeOld(0.0),
+          m_masterGainOld(0.0),
           m_headphoneMasterGainOld(0.0),
-          m_headphoneVolumeOld(1.0),
+          m_headphoneGainOld(1.0),
           m_masterGroup("[Master]"),
           m_headphoneGroup("[Headphone]"),
           m_busLeftGroup("[BusLeft]"),
@@ -139,8 +141,10 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     // Allocate buffers
     m_pHead = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pMaster = SampleUtil::alloc(MAX_BUFFER_LEN);
+    m_pTalkover = SampleUtil::alloc(MAX_BUFFER_LEN);
     SampleUtil::clear(m_pHead, MAX_BUFFER_LEN);
     SampleUtil::clear(m_pMaster, MAX_BUFFER_LEN);
+    SampleUtil::clear(m_pTalkover, MAX_BUFFER_LEN);
 
     // Setup the output buses
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; ++o) {
@@ -171,6 +175,8 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_pMasterEnabled = new ControlObject(ConfigKey(group, "enabled"),
             true, false, true);  // persist = true
     m_pMasterMonoMixdown = new ControlObject(ConfigKey(group, "mono_mixdown"),
+            true, false, true);  // persist = true
+    m_pMasterTalkoverMix = new ControlObject(ConfigKey(group, "talkover_mix"),
             true, false, true);  // persist = true
     m_pHeadphoneEnabled = new ControlObject(ConfigKey(group, "headEnabled"));
 
@@ -209,20 +215,20 @@ EngineMaster::~EngineMaster() {
 
     delete m_pMasterEnabled;
     delete m_pMasterMonoMixdown;
+    delete m_pMasterTalkoverMix;
     delete m_pHeadphoneEnabled;
 
     SampleUtil::free(m_pHead);
     SampleUtil::free(m_pMaster);
+    SampleUtil::free(m_pTalkover);
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
         SampleUtil::free(m_pOutputBusBuffers[o]);
     }
 
     delete m_pWorkerScheduler;
 
-    QMutableListIterator<ChannelInfo*> channel_it(m_channels);
-    while (channel_it.hasNext()) {
-        ChannelInfo* pChannelInfo = channel_it.next();
-        channel_it.remove();
+    for (int i = 0; i < m_channels.size(); ++i) {
+        ChannelInfo* pChannelInfo = m_channels[i];
         SampleUtil::free(pChannelInfo->m_pBuffer);
         delete pChannelInfo->m_pChannel;
         delete pChannelInfo->m_pVolumeControl;
@@ -239,20 +245,20 @@ const CSAMPLE* EngineMaster::getHeadphoneBuffer() const {
     return m_pHead;
 }
 
-void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
-                                   unsigned int* headphoneOutput,
-                                   int iBufferSize) {
+void EngineMaster::processChannels(
+        FastVector<ChannelInfo*, kMaxChannels>* busChannels,
+        FastVector<ChannelInfo*, kMaxChannels>* headphoneChannels,
+        FastVector<ChannelInfo*, kMaxChannels>* talkoverChannels,
+        int iBufferSize) {
     ScopedTimer timer("EngineMaster::processChannels");
-
-    // Clear talkover compressor for the next round of gain calculation.
-    m_pTalkoverDucking->clearKeys();
-
+    FastVector<ChannelInfo*, kMaxChannels> activeChannels;
     EngineChannel* pMasterChannel = m_pMasterSync->getMaster();
-    m_activeChannels.clear();
-    QList<ChannelInfo*>::const_iterator it = m_channels.constBegin();
-    QList<ChannelInfo*>::const_iterator end = m_channels.constEnd();
-    for (unsigned int channel_number = 0; it != end; ++it, ++channel_number) {
-        ChannelInfo* pChannelInfo = *it;
+    // Reserve the first place for the master channel which
+    // should be processed first
+    activeChannels.append(NULL);
+    int activeChannelsStartIndex = 1; // Nothing at 0 yet
+    for (int i = 0; i < m_channels.size(); ++i) {
+        ChannelInfo* pChannelInfo = m_channels[i];
         EngineChannel* pChannel = pChannelInfo->m_pChannel;
 
         // Skip inactive channels.
@@ -260,47 +266,77 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
             continue;
         }
 
-        bool needsProcessing = false;
-        if (pChannel->isMaster()) {
-            busChannelConnectionFlags[pChannel->getOrientation()] |= (1 << channel_number);
-            needsProcessing = true;
+        if (pChannel->isTalkoverEnabled()) {
+            // talkover is an exclusive channel
+            // once talkover is enabled it is not used in
+            // xFader-Mix
+            talkoverChannels->append(pChannelInfo);
+
+            // Check if we need to fade out the master channel
+            GainCache& gainCache = m_channelMasterGainCache[i];
+            if (gainCache.m_gain) {
+                gainCache.m_fadeout = true;
+                busChannels[pChannel->getOrientation()].append(pChannelInfo);
+             }
+        } else {
+            // Check if we need to fade out the channel
+            GainCache& gainCache = m_channelTalkoverGainCache[i];
+            if (gainCache.m_gain) {
+                gainCache.m_fadeout = true;
+                talkoverChannels->append(pChannelInfo);
+            }
+            if (pChannel->isMasterEnabled() &&
+                    !pChannelInfo->m_pMuteControl->toBool()) {
+                // the xFader-Mix
+                busChannels[pChannel->getOrientation()].append(pChannelInfo);
+            } else {
+                // Check if we need to fade out the channel
+                GainCache& gainCache = m_channelMasterGainCache[i];
+                if (gainCache.m_gain) {
+                    gainCache.m_fadeout = true;
+                    busChannels[pChannel->getOrientation()].append(pChannelInfo);
+                }
+            }
         }
 
         // If the channel is enabled for previewing in headphones, copy it
         // over to the headphone buffer
-        if (pChannel->isPFL()) {
-            *headphoneOutput |= (1 << channel_number);
-            needsProcessing = true;
+        if (pChannel->isPflEnabled()) {
+            headphoneChannels->append(pChannelInfo);
+        } else {
+            // Check if we need to fade out the channel
+            GainCache& gainCache = m_channelHeadphoneGainCache[i];
+            if (gainCache.m_gain) {
+                m_channelHeadphoneGainCache[i].m_fadeout = true;
+                headphoneChannels->append(pChannelInfo);
+            }
         }
 
         // If necessary, add the channel to the list of buffers to process.
-        if (needsProcessing) {
-            if (pChannel == pMasterChannel) {
-                // If this is the sync master, it should be processed first.
-                m_activeChannels.prepend(pChannelInfo);
-            } else {
-                m_activeChannels.append(pChannelInfo);
-            }
+        if (pChannel == pMasterChannel) {
+            // If this is the sync master, it should be processed first.
+            activeChannels.replace(0, pChannelInfo);
+            activeChannelsStartIndex = 0;
+        } else {
+            activeChannels.append(pChannelInfo);
         }
     }
 
     // Now that the list is built and ordered, do the processing.
-    foreach (ChannelInfo* pChannelInfo, m_activeChannels) {
+    for (int i = activeChannelsStartIndex;
+            i < activeChannels.size(); ++i) {
+        ChannelInfo* pChannelInfo = activeChannels[i];
         EngineChannel* pChannel = pChannelInfo->m_pChannel;
         pChannel->process(pChannelInfo->m_pBuffer, iBufferSize);
-
-        if (m_pTalkoverDucking->getMode() != EngineTalkoverDucking::OFF &&
-                pChannel->isTalkover()) {
-            m_pTalkoverDucking->processKey(pChannelInfo->m_pBuffer, iBufferSize);
-        }
     }
 
     // After all the engines have been processed, trigger post-processing
     // which ensures that all channels are updating certain values at the
     // same point in time.  This prevents sync from failing depending on
     // if the sync target was processed before or after the sync origin.
-    foreach (ChannelInfo* pChannelInfo, m_activeChannels) {
-        pChannelInfo->m_pChannel->postProcess(iBufferSize);
+    for (int i = activeChannelsStartIndex;
+            i < activeChannels.size(); ++i) {
+        activeChannels[i]->m_pChannel->postProcess(iBufferSize);
     }
 }
 
@@ -320,15 +356,18 @@ void EngineMaster::process(const int iBufferSize) {
         m_pEngineEffectsManager->onCallbackStart();
     }
 
-    // Bitvector of enabled channels
-    const unsigned int maxChannels = 32;
-    unsigned int busChannelConnectionFlags[3] = { 0, 0, 0 };
-    unsigned int headphoneOutput = 0;
+    // Vector of enabled channels
+    FastVector<ChannelInfo*, kMaxChannels> busChannels[3];
+    FastVector<ChannelInfo*, kMaxChannels> headphoneChannels;
+    FastVector<ChannelInfo*, kMaxChannels> talkoverChannels;
 
     // Update internal master sync rate.
     m_pMasterSync->onCallbackStart(iSampleRate, iBufferSize);
     // Prepare each channel for output
-    processChannels(busChannelConnectionFlags, &headphoneOutput, iBufferSize);
+    processChannels(busChannels,
+                    &headphoneChannels,
+                    &talkoverChannels,
+                    iBufferSize);
     // Do internal master sync post-processing
     m_pMasterSync->onCallbackEnd(iSampleRate, iBufferSize);
 
@@ -344,19 +383,38 @@ void EngineMaster::process(const int iBufferSize) {
         //          << ", master " << cmaster_gain;
     }
 
-    // Mix all the enabled headphone channels together.
+    // Mix all the PFL enabled channels together.
     m_headphoneGain.setGain(chead_gain);
 
     if (m_bRampingGain) {
         ChannelMixer::mixChannelsRamping(
-            m_channels, m_headphoneGain, headphoneOutput,
-            maxChannels, &m_channelHeadphoneGainCache,
-            m_pHead, iBufferSize);
+                m_headphoneGain, &headphoneChannels,
+                &m_channelHeadphoneGainCache,
+                m_pHead, iBufferSize);
     } else {
         ChannelMixer::mixChannels(
-            m_channels, m_headphoneGain, headphoneOutput,
-            maxChannels, &m_channelHeadphoneGainCache,
-            m_pHead, iBufferSize);
+                m_headphoneGain, &headphoneChannels,
+                &m_channelHeadphoneGainCache,
+                m_pHead, iBufferSize);
+    }
+
+    // Mix all the talkover enabled channels together.
+    if (m_bRampingGain) {
+        ChannelMixer::mixChannelsRamping(
+                m_talkoverGain, &talkoverChannels,
+                &m_channelTalkoverGainCache,
+                m_pTalkover, iBufferSize);
+    } else {
+        ChannelMixer::mixChannels(
+                m_talkoverGain, &talkoverChannels,
+                &m_channelTalkoverGainCache,
+                m_pTalkover, iBufferSize);
+    }
+
+    // Clear talkover compressor for the next round of gain calculation.
+    m_pTalkoverDucking->clearKeys();
+    if (m_pTalkoverDucking->getMode() != EngineTalkoverDucking::OFF) {
+        m_pTalkoverDucking->processKey(m_pTalkover, iBufferSize);
     }
 
     // Calculate the crossfader gains for left and right side of the crossfader
@@ -367,26 +425,26 @@ void EngineMaster::process(const int iBufferSize) {
                                 m_pXFaderReverse->toBool(),
                                 &c1_gain, &c2_gain);
 
-    // Channels with the talkover flag should be mixed with the master signal at
-    // full master volume.  All other channels should be adjusted by ducking gain.
+    // All other channels should be adjusted by ducking gain.
+    // The talkover channels are mixed in later
     m_masterGain.setGains(m_pTalkoverDucking->getGain(iBufferSize / 2),
-                          c1_gain, 1.0, c2_gain, 1.0);
+                          c1_gain, 1.0, c2_gain);
 
     // Make the mix for each output bus. m_masterGain takes care of applying the
     // master volume, the channel volume, and the orientation gain.
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
         if (m_bRampingGain) {
             ChannelMixer::mixChannelsRamping(
-                m_channels, m_masterGain,
-                busChannelConnectionFlags[o], maxChannels,
-                &m_channelMasterGainCache,
-                m_pOutputBusBuffers[o], iBufferSize);
+                    m_masterGain,
+                    &busChannels[o],
+                    &m_channelMasterGainCache, // no [o] because the old gain follows an orientation switch
+                    m_pOutputBusBuffers[o], iBufferSize);
         } else {
             ChannelMixer::mixChannels(
-                m_channels, m_masterGain,
-                busChannelConnectionFlags[o], maxChannels,
-                &m_channelMasterGainCache,
-                m_pOutputBusBuffers[o], iBufferSize);
+                    m_masterGain,
+                    &busChannels[o],
+                    &m_channelMasterGainCache,
+                    m_pOutputBusBuffers[o], iBufferSize);
         }
     }
 
@@ -404,11 +462,21 @@ void EngineMaster::process(const int iBufferSize) {
     if (masterEnabled) {
         // Mix the three channels together. We already mixed the busses together
         // with the channel gains and overall master gain.
-        SampleUtil::copy3WithGain(m_pMaster,
-                                  m_pOutputBusBuffers[EngineChannel::LEFT], 1.0,
-                                  m_pOutputBusBuffers[EngineChannel::CENTER], 1.0,
-                                  m_pOutputBusBuffers[EngineChannel::RIGHT], 1.0,
-                                  iBufferSize);
+        if (!m_pMasterTalkoverMix->toBool()) {
+            // Add Talkover to Master output
+            SampleUtil::copy4WithGain(m_pMaster,
+                    m_pOutputBusBuffers[EngineChannel::LEFT], 1.0,
+                    m_pOutputBusBuffers[EngineChannel::CENTER], 1.0,
+                    m_pOutputBusBuffers[EngineChannel::RIGHT], 1.0,
+                    m_pTalkover, 1.0,
+                    iBufferSize);
+        } else {
+            SampleUtil::copy3WithGain(m_pMaster,
+                    m_pOutputBusBuffers[EngineChannel::LEFT], 1.0,
+                    m_pOutputBusBuffers[EngineChannel::CENTER], 1.0,
+                    m_pOutputBusBuffers[EngineChannel::RIGHT], 1.0,
+                    iBufferSize);
+        }
 
         // Process master channel effects
         if (m_pEngineEffectsManager) {
@@ -423,15 +491,15 @@ void EngineMaster::process(const int iBufferSize) {
                                              masterFeatures);
         }
 
-        // Apply master volume after effects.
-        CSAMPLE master_volume = m_pMasterGain->get();
+        // Apply master gain after effects.
+        CSAMPLE master_gain = m_pMasterGain->get();
         if (m_bRampingGain) {
-            SampleUtil::applyRampingGain(m_pMaster, m_masterVolumeOld,
-                                         master_volume, iBufferSize);
+            SampleUtil::applyRampingGain(m_pMaster, m_masterGainOld,
+                                         master_gain, iBufferSize);
         } else {
-            SampleUtil::applyGain(m_pMaster, master_volume, iBufferSize);
+            SampleUtil::applyGain(m_pMaster, master_gain, iBufferSize);
         }
-        m_masterVolumeOld = master_volume;
+        m_masterGainOld = master_gain;
 
         // Balance values
         CSAMPLE balright = 1.;
@@ -446,15 +514,24 @@ void EngineMaster::process(const int iBufferSize) {
         // Perform balancing on main out
         SampleUtil::applyAlternatingGain(m_pMaster, balleft, balright, iBufferSize);
 
-        // Update VU meter (it does not return anything). Needs to be here so that
-        // master balance is reflected in the VU meter.
-        if (m_pVumeter != NULL) {
-            m_pVumeter->process(m_pMaster, iBufferSize);
-        }
         // Submit master samples to the side chain to do shoutcasting, recording,
         // etc. (cpu intensive non-realtime tasks)
+        CSAMPLE* pSidechain = m_pMaster;
         if (m_pSideChain != NULL) {
-            m_pSideChain->writeSamples(m_pMaster, iBufferSize);
+            if (m_pMasterTalkoverMix->toBool()) {
+                // Add Talkover to Sidechain output, re-use the talkover buffer
+                SampleUtil::addWithGain(m_pTalkover,
+                        m_pMaster, 1.0,
+                        iBufferSize);
+                pSidechain = m_pTalkover;
+            }
+            m_pSideChain->writeSamples(pSidechain, iBufferSize);
+        }
+
+        // Update VU meter (it does not return anything). Needs to be here so that
+        // master balance and talkover is reflected in the VU meter.
+        if (m_pVumeter != NULL) {
+            m_pVumeter->process(pSidechain, iBufferSize);
         }
 
         // Add master to headphone with appropriate gain
@@ -470,7 +547,6 @@ void EngineMaster::process(const int iBufferSize) {
         }
     }
 
-
     if (headphoneEnabled) {
         // Process headphone channel effects
         if (m_pEngineEffectsManager) {
@@ -479,14 +555,14 @@ void EngineMaster::process(const int iBufferSize) {
                                              iBufferSize, iSampleRate, headphoneFeatures);
         }
         // Head volume
-        CSAMPLE headphoneVolume = m_pHeadGain->get();
+        CSAMPLE headphoneGain = m_pHeadGain->get();
         if (m_bRampingGain) {
-            SampleUtil::applyRampingGain(m_pHead, m_headphoneVolumeOld,
-                                         headphoneVolume, iBufferSize);
+            SampleUtil::applyRampingGain(m_pHead, m_headphoneGainOld,
+                                         headphoneGain, iBufferSize);
         } else {
-            SampleUtil::applyGain(m_pHead, headphoneVolume, iBufferSize);
+            SampleUtil::applyGain(m_pHead, headphoneGain, iBufferSize);
         }
-        m_headphoneVolumeOld = headphoneVolume;
+        m_headphoneGainOld = headphoneGain;
     }
 
     if (masterEnabled && headphoneEnabled) {
@@ -520,7 +596,10 @@ void EngineMaster::process(const int iBufferSize) {
 }
 
 void EngineMaster::addChannel(EngineChannel* pChannel) {
-    ChannelInfo* pChannelInfo = new ChannelInfo();
+    DEBUG_ASSERT_AND_HANDLE(m_channels.size() < kMaxChannels) {
+        return;
+    }
+    ChannelInfo* pChannelInfo = new ChannelInfo(m_channels.size());
     pChannelInfo->m_pChannel = pChannel;
     pChannelInfo->m_pVolumeControl = new ControlAudioTaperPot(
             ConfigKey(pChannel->getGroup(), "volume"), -20, 0, 1);
@@ -531,11 +610,11 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     pChannelInfo->m_pMuteControl->setButtonMode(ControlPushButton::POWERWINDOW);
     pChannelInfo->m_pBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
     SampleUtil::clear(pChannelInfo->m_pBuffer, MAX_BUFFER_LEN);
-    m_channels.push_back(pChannelInfo);
-    m_channelHeadphoneGainCache.push_back(0);
-    for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
-        m_channelMasterGainCache.push_back(0);
-    }
+    m_channels.append(pChannelInfo);
+    const GainCache gainCacheDefault = {0, false};
+    m_channelHeadphoneGainCache.append(gainCacheDefault);
+    m_channelTalkoverGainCache.append(gainCacheDefault);
+    m_channelMasterGainCache.append(gainCacheDefault);
 
     EngineBuffer* pBuffer = pChannelInfo->m_pChannel->getEngineBuffer();
     if (pBuffer != NULL) {
@@ -544,9 +623,8 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
 }
 
 EngineChannel* EngineMaster::getChannel(const QString& group) {
-    for (QList<ChannelInfo*>::const_iterator i = m_channels.constBegin();
-         i != m_channels.constEnd(); ++i) {
-        ChannelInfo* pChannelInfo = *i;
+    for (int i = 0; i < m_channels.size(); ++i) {
+        ChannelInfo* pChannelInfo = m_channels[i];
         if (pChannelInfo->m_pChannel->getGroup() == group) {
             return pChannelInfo->m_pChannel;
         }
@@ -565,9 +643,8 @@ const CSAMPLE* EngineMaster::getOutputBusBuffer(unsigned int i) const {
 }
 
 const CSAMPLE* EngineMaster::getChannelBuffer(QString group) const {
-    for (QList<ChannelInfo*>::const_iterator i = m_channels.constBegin();
-         i != m_channels.constEnd(); ++i) {
-        const ChannelInfo* pChannelInfo = *i;
+    for (int i = 0; i < m_channels.size(); ++i) {
+        const ChannelInfo* pChannelInfo = m_channels[i];
         if (pChannelInfo->m_pChannel->getGroup() == group) {
             return pChannelInfo->m_pBuffer;
         }
