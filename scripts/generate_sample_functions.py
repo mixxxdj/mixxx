@@ -2,7 +2,7 @@
 import argparse
 import sys
 
-# Usage: 
+# Usage:
 # ./generate_sample_functions.py --sampleutil_autogen_h ../src/sampleutil_autogen.h --channelmixer_autogen_cpp ../src/engine/channelmixer_autogen.cpp
 
 BASIC_INDENT = 4
@@ -83,7 +83,7 @@ def write_channelmixer_autogen(output, num_channels):
             if ramping:
                 arg_groups_ramping = ['pOutput'] + ['pBuffer%(j)d, oldGain[%(j)d], newGain[%(j)d]' % {'j': j} for j in xrange(i)] + ['iBufferSize']
                 call_prefix_ramping = "SampleUtil::" + copy_with_ramping_gain_method_name(i) + '('
-                write('int i = 0;', depth=2)                
+                write('int i = 0;', depth=2)
                 write('for(; i < totalActive; ++i) {', depth=2)
                 write('if (oldGain[i] != newGain[i]) {', depth=3)
                 write('break;', depth=4)
@@ -98,7 +98,6 @@ def write_channelmixer_autogen(output, num_channels):
                 output.extend(hanging_indent(call_prefix, arg_groups, ',', ');', depth=2))
 
         write('} else {', depth=1)
-        write('DEBUG_ASSERT(kMaxChannels <= %(i)d);' % {'i': i}, depth=2)
         write('// Set pOutput to all 0s', depth=2)
         write('SampleUtil::clear(pOutput, iBufferSize);', depth=2)
         write('for (int i = 0; i < activeChannels->size(); ++i) {', depth=2)
@@ -228,7 +227,7 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        description='Auto-generate sample processing and mixing functions.' + 
+        description='Auto-generate sample processing and mixing functions.' +
         'Example Call:' +
         './generate_sample_functions.py --sampleutil_autogen_h ../src/sampleutil_autogen.h --channelmixer_autogen_cpp ../src/engine/channelmixer_autogen.cpp')
     parser.add_argument('--sampleutil_autogen_h')
