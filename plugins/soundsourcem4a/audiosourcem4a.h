@@ -2,6 +2,7 @@
 #define AUDIOSOURCEM4A_H
 
 #include "sources/audiosource.h"
+#include "samplebuffer.h"
 
 #ifdef __MP4V2__
 #include <mp4v2/mp4v2.h>
@@ -56,7 +57,6 @@ private:
 
     NeAACDecHandle m_hDecoder;
 
-    typedef std::vector<sample_type> SampleBuffer;
     SampleBuffer m_decodeSampleBuffer;
     SampleBuffer::size_type m_decodeSampleBufferReadOffset;
     SampleBuffer::size_type m_decodeSampleBufferWriteOffset;
