@@ -203,7 +203,14 @@ class EngineMaster : public QObject, public AudioSource {
     template<typename T, unsigned int CAPACITY>
     class FastVector {
       public:
-        FastVector() : m_size(0), m_data((T*)((void *)m_buffer)) {};
+        inline FastVector() : m_size(0), m_data((T*)((void *)m_buffer)) {};
+        inline ~FastVector() {
+            if (QTypeInfo<T>::isComplex) {
+                for (int i; i < m_size; ++i) {
+                    m_data[i].~T();
+                }
+            }
+        }
         inline void append(const T& t) {
             if (QTypeInfo<T>::isComplex) {
                 new (&m_data[m_size++]) T(t);
