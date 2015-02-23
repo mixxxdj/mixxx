@@ -205,7 +205,11 @@ class EngineMaster : public QObject, public AudioSource {
       public:
         FastVector() : m_size(0), m_data((T*)((void *)m_buffer)) {};
         inline void append(const T& t) {
-            m_data[m_size++] = t;
+            if (QTypeInfo<T>::isComplex) {
+                new (&m_data[m_size++]) T(t);
+            } else {
+                m_data[m_size++] = t;
+            }
         };
         inline const T& operator[](unsigned int i) const {
             return m_data[i];
@@ -217,7 +221,8 @@ class EngineMaster : public QObject, public AudioSource {
             return m_data[i];
         }
         inline void replace(unsigned int i, const T& t) {
-            m_data[i] = t;
+            T copy(t);         
+            m_data[i] = copy;
         }
         inline int size () const {
             return m_size;
