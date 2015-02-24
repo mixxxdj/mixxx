@@ -28,7 +28,7 @@
 				<!--<Size>i,110</Size>-->
 				<BgColor><Variable name="SignalBgColor"/></BgColor>
 				<!--<BgPixmap>style/style_bg_waveform1.png</BgPixmap>-->
-				<SignalColor><Variable name="deck_color"/></SignalColor>
+				<SignalColor><Variable name="signal_color"/></SignalColor>
                 <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>
                 <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>
                 <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
