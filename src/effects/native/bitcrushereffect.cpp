@@ -61,14 +61,14 @@ BitCrusherEffect::~BitCrusherEffect() {
     //qDebug() << debugString() << "destroyed";
 }
 
-void BitCrusherEffect::processGroup(const QString& group,
-                                    BitCrusherGroupState* pState,
-                                    const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                    const unsigned int numSamples,
-                                    const unsigned int sampleRate,
-                                    const EffectProcessor::EnableState enableState,
-                                    const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(group);
+void BitCrusherEffect::processChannel(const ChannelHandle& handle,
+                                      BitCrusherGroupState* pState,
+                                      const CSAMPLE* pInput, CSAMPLE* pOutput,
+                                      const unsigned int numSamples,
+                                      const unsigned int sampleRate,
+                                      const EffectProcessor::EnableState enableState,
+                                      const GroupFeatureState& groupFeatures) {
+    Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
     Q_UNUSED(sampleRate); // we are normalized to 1
     Q_UNUSED(enableState); // no need to ramp, it is just a bitcrusher ;-)

@@ -11,6 +11,7 @@
 #include "effects/effectmanifest.h"
 #include "effects/effectprocessor.h"
 #include "effects/effectinstantiator.h"
+#include "engine/channelhandle.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/effects/message.h"
 #include "engine/effects/groupfeaturestate.h"
@@ -18,7 +19,7 @@
 class EngineEffect : public EffectsRequestHandler {
   public:
     EngineEffect(const EffectManifest& manifest,
-                 const QSet<QString>& registeredGroups,
+                 const QSet<ChannelHandleAndGroup>& registeredChannels,
                  EffectInstantiatorPointer pInstantiator);
     virtual ~EngineEffect();
 
@@ -34,7 +35,7 @@ class EngineEffect : public EffectsRequestHandler {
         const EffectsRequest& message,
         EffectsResponsePipe* pResponsePipe);
 
-    void process(const QString& group,
+    void process(const ChannelHandle& handle,
                  const CSAMPLE* pInput, CSAMPLE* pOutput,
                  const unsigned int numSamples,
                  const unsigned int sampleRate,

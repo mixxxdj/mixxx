@@ -17,6 +17,7 @@
 
 #include "engine/enginebufferscale.h"
 #include "util/defs.h"
+#include "sampleutil.h"
 
 EngineBufferScale::EngineBufferScale()
         : m_iSampleRate(44100),
@@ -24,12 +25,12 @@ EngineBufferScale::EngineBufferScale()
           m_bSpeedAffectsPitch(false),
           m_dTempo(1.0),
           m_dPitch(1.0),
-          m_buffer(new CSAMPLE[MAX_BUFFER_LEN]),
+          m_buffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
           m_samplesRead(0) {
 }
 
 EngineBufferScale::~EngineBufferScale() {
-    delete [] m_buffer;
+    SampleUtil::free(m_buffer);
 }
 
 double EngineBufferScale::getSamplesRead() {

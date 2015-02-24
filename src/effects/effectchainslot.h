@@ -10,6 +10,7 @@
 #include "effects/effect.h"
 #include "effects/effectslot.h"
 #include "effects/effectchain.h"
+#include "engine/channelhandle.h"
 
 class ControlObject;
 class ControlPushButton;
@@ -35,7 +36,7 @@ class EffectChainSlot : public QObject {
     void loadEffectChain(EffectChainPointer pEffectChain);
     EffectChainPointer getEffectChain() const;
 
-    void registerGroup(const QString& group);
+    void registerChannel(const ChannelHandleAndGroup& handle_group);
 
     double getSuperParameter() const;
     void setSuperParameter(double value);
@@ -98,7 +99,7 @@ class EffectChainSlot : public QObject {
     void slotChainEnabledChanged(bool enabled);
     void slotChainMixChanged(double mix);
     void slotChainInsertionTypeChanged(EffectChain::InsertionType type);
-    void slotChainGroupStatusChanged(const QString& group, bool enabled);
+    void slotChainChannelStatusChanged(const QString& group, bool enabled);
 
     void slotEffectLoaded(EffectPointer pEffect, unsigned int slotNumber);
     // Clears the effect in the given position in the loaded EffectChain.
@@ -115,7 +116,7 @@ class EffectChainSlot : public QObject {
     void slotControlChainSelector(double v);
     void slotControlChainNextPreset(double v);
     void slotControlChainPrevPreset(double v);
-    void slotGroupStatusChanged(const QString& group);
+    void slotChannelStatusChanged(const QString& group);
 
   private:
     QString debugString() const {
@@ -140,10 +141,23 @@ class EffectChainSlot : public QObject {
     ControlPushButton* m_pControlChainNextPreset;
     ControlPushButton* m_pControlChainPrevPreset;
 
-    QMap<QString, ControlObject*> m_groupEnableControls;
+    struct ChannelInfo {
+        // Takes ownership of pEnabled.
+        ChannelInfo(const ChannelHandleAndGroup& handle_group, ControlObject* pEnabled)
+                : handle_group(handle_group),
+                  pEnabled(pEnabled) {
+
+        }
+        ~ChannelInfo() {
+            delete pEnabled;
+        }
+        ChannelHandleAndGroup handle_group;
+        ControlObject* pEnabled;
+    };
+    QMap<QString, ChannelInfo*> m_channelInfoByName;
 
     QList<EffectSlotPointer> m_slots;
-    QSignalMapper m_groupStatusMapper;
+    QSignalMapper m_channelStatusMapper;
 
     DISALLOW_COPY_AND_ASSIGN(EffectChainSlot);
 };

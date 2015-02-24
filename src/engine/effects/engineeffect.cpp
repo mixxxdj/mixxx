@@ -3,7 +3,7 @@
 
 
 EngineEffect::EngineEffect(const EffectManifest& manifest,
-                           const QSet<QString>& registeredGroups,
+                           const QSet<ChannelHandleAndGroup>& registeredChannels,
                            EffectInstantiatorPointer pInstantiator)
         : m_manifest(manifest),
           m_enableState(EffectProcessor::ENABLING),
@@ -19,7 +19,7 @@ EngineEffect::EngineEffect(const EffectManifest& manifest,
 
     // Creating the processor must come last.
     m_pProcessor = pInstantiator->instantiate(this, manifest);
-    m_pProcessor->initialize(registeredGroups);
+    m_pProcessor->initialize(registeredChannels);
     m_effectRampsFromDry = manifest.effectRampsFromDry();
 }
 
@@ -87,7 +87,7 @@ bool EngineEffect::processEffectsRequest(const EffectsRequest& message,
     return false;
 }
 
-void EngineEffect::process(const QString& group,
+void EngineEffect::process(const ChannelHandle& handle,
                            const CSAMPLE* pInput, CSAMPLE* pOutput,
                            const unsigned int numSamples,
                            const unsigned int sampleRate,
@@ -100,7 +100,7 @@ void EngineEffect::process(const QString& group,
         effectiveEnableState = EffectProcessor::ENABLING;
     }
 
-    m_pProcessor->process(group, pInput, pOutput, numSamples, sampleRate,
+    m_pProcessor->process(handle, pInput, pOutput, numSamples, sampleRate,
             effectiveEnableState, groupFeatures);
     if (!m_effectRampsFromDry) {
         // the effect does not fade, so we care for it

@@ -70,31 +70,31 @@ class SampleUtil {
     inline
     static void copy(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _RESTRICT pSrc,
             int iNumSamples) {
-        // Benchmark results on 32 bit SSE2 Atom Cpu (Linux) 
-        // memcpy 7263 ns 
-        // std::copy 9289 ns 
-        // SampleUtil::copy 6565 ns 
+        // Benchmark results on 32 bit SSE2 Atom Cpu (Linux)
+        // memcpy 7263 ns
+        // std::copy 9289 ns
+        // SampleUtil::copy 6565 ns
         //
         // Benchmark results from a 64 bit i5 Cpu (Linux)
-        // memcpy 518 ns 
-        // std::copy 664 ns 
-        // SampleUtil::copy 661 ns 
-        //  
+        // memcpy 518 ns
+        // std::copy 664 ns
+        // SampleUtil::copy 661 ns
+        //
         // memcpy() calls __memcpy_sse2() on 64 bit build only
         // (not available on Debian 32 bit builds)
-        // However the Debian 32 bit memcpy() uses a SSE version of 
-        // memcpy() when called directly from Mixxx source but this 
-        // requires some checks that can be omitted when inlining the 
-        // following vectorized loop. Btw.: memcpy() calls from the Qt 
-        // library are not using SSE istructions.     
+        // However the Debian 32 bit memcpy() uses a SSE version of
+        // memcpy() when called directly from Mixxx source but this
+        // requires some checks that can be omitted when inlining the
+        // following vectorized loop. Btw.: memcpy() calls from the Qt
+        // library are not using SSE istructions.
 #ifdef __SSE__
-        if (sizeof(void*) == 4) { // 32 bit 
+        if (sizeof(void*) == 4) { // 32 bit
             // note: LOOP VECTORIZED.
             for (int i = 0; i < iNumSamples; ++i) { // 571 ns
                 pDest[i] = pSrc[i];
             }
         } else
-#endif 
+#endif
         {
             memcpy(pDest, pSrc, iNumSamples * sizeof(CSAMPLE));
         }

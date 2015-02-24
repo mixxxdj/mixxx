@@ -1622,3 +1622,4 @@ void WTrackTableView::slotReloadCoverArt() {
         pCache->requestGuessCovers(selectedTracks);
     }
 }
+

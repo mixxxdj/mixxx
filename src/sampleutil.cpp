@@ -12,14 +12,12 @@ typedef qint64 int64_t;
 typedef qint32 int32_t;
 #endif
 
-// the note: LOOP VECTORIZED below marks
-// the loops that are processed with the 128 bit SSE registers
-// it was tested with gcc 4.6 with the -ftree-vectorizer-verbose=2 flag
-// on an Intel i5 CPU
-// When changing, be carefull to not prevent the vectorizing
+// LOOP VECTORIZED below marks the loops that are processed with the 128 bit SSE
+// registers as tested with gcc 4.6 and the -ftree-vectorizer-verbose=2 flag on
+// an Intel i5 CPU. When changing, be careful to not disturb the vectorization.
 // https://gcc.gnu.org/projects/tree-ssa/vectorization.html
 
-// TODO() Check if uintptr_t is availabe on all our build targets and use that
+// TODO() Check if uintptr_t is available on all our build targets and use that
 // instead of size_t, we can remove the sizeof(size_t) check than
 static inline bool useAlignedAlloc() {
     // This will work on all targets and compilers.
@@ -31,27 +29,28 @@ static inline bool useAlignedAlloc() {
 
 // static
 CSAMPLE* SampleUtil::alloc(int size) {
-    // For optimal use of SSE registers, it is required to align
-    // the sample buffers to 16 Byte (128 bit) boundary
-
-    // Pointers returned by malloc are aligned for the largest scalar type,
-    // which is long double with usually 16 byte.
-    // An exception is MSVC X86 where long double is mapped to double.
-
-    // In case of sizeof(long double) = 8
-    // this code over allocates the requested buffer to be able to
-    // shift the returned pointer to a 16 byte alignment
-    // In the memory before, a pointer to the original
-    // malloced area is stored used to free the memory
-    // This code can be replaced by C11 <stdlib.h> aligned_alloc()
-    // or MSVC ::_aligned_malloc(size, alignment) and  ::_aligned_free(ptr);
-
+    // To speed up vectorization we align our sample buffers to 16-byte (128
+    // bit) boundaries so that vectorized loops doesn't have to do a serial
+    // ramp-up before going parallel.
+    //
+    // Pointers returned by malloc are aligned for the largest scalar type. On
+    // most platforms the largest scalar type is long double (16 bytes).
+    // However, on MSVC x86 long double is 8 bytes.
+    //
+    // On MSVC, we use _aligned_malloc to handle aligning pointers to 16-byte
+    // boundaries. On other platforms where long double is 8 bytes this code
+    // allocates 16 additional slack bytes so we can adjust the pointer we
+    // return to the caller to be 16-byte aligned. We record a pointer to the
+    // true start of the buffer in the slack space as well so that we can free
+    // it correctly.
+    // TODO(XXX): Replace with C++11 aligned_alloc.
     if (useAlignedAlloc()) {
-#if(_MSC_VER)
-        return (CSAMPLE*)_aligned_malloc(size, 16);
+#ifdef _MSC_VER
+        return static_cast<CSAMPLE*>(_aligned_malloc(sizeof(CSAMPLE)*size, 16));
 #else
-        // This block will be only used on exotic builds
-        // We need to shift the alignment to 16
+        // This block will be only used on non-Windows platforms that don't
+        // produce 16-byte aligned pointers via malloc. We allocate 16 bytes of
+        // slack space so that we can align the pointer we return to the caller.
         const size_t alignment = 16;
         const size_t unaligned_size = sizeof(CSAMPLE[size]) + alignment;
         void* pUnaligned = std::malloc(unaligned_size);
@@ -59,13 +58,16 @@ CSAMPLE* SampleUtil::alloc(int size) {
             return NULL;
         }
         // Shift
-        void* pAlligned = (void*)(((size_t)pUnaligned & ~(alignment - 1)) + alignment);
-        // Store pointer to original relative to the shifted pointer
-        *((void**)(pAlligned) - 1) = pUnaligned;
-        return (CSAMPLE*)pAlligned;
+        void* pAligned = (void*)(((size_t)pUnaligned & ~(alignment - 1)) + alignment);
+        // Store pointer to the original buffer in the slack space before the
+        // shifted pointer.
+        *((void**)(pAligned) - 1) = pUnaligned;
+        return static_cast<CSAMPLE*>(pAligned);
 #endif
     } else {
-        // We are either correct aligned or on an exotic architecture
+        // We assume that our platform produces 16-byte aligned pointers
+        // here. We should be explicit about what we want from the system.
+        // TODO(XXX): Use posix_memalign, memalign, or aligned_alloc.
         return new CSAMPLE[size];
     }
 }
@@ -76,14 +78,13 @@ void SampleUtil::free(CSAMPLE* pBuffer) {
         if (pBuffer == NULL) {
             return;
         }
-#if(_MSC_VER)
+#ifdef _MSC_VER
         _aligned_free(pBuffer);
 #else
         // Pointer to the original memory is stored before pBuffer
         std::free(*((void**)((void*)pBuffer) - 1));
 #endif
     } else {
-        // We are either correct aligned or on an exotic architecture
         delete[] pBuffer;
     }
 }

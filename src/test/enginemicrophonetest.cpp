@@ -21,7 +21,9 @@ class EngineMicrophoneTest : public testing::Test {
         output = SampleUtil::alloc(outputLength);
         test = SampleUtil::alloc(outputLength);
 
-        m_pMicrophone = new EngineMicrophone("[Microphone]", NULL);
+        // No need for a real handle in this test.
+        m_pMicrophone = new EngineMicrophone(
+                ChannelHandleAndGroup(ChannelHandle(), "[Microphone]"), NULL);
         m_pTalkover = ControlObject::getControl(ConfigKey("[Microphone]", "talkover"));
     }
 

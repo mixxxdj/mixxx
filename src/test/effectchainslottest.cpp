@@ -17,10 +17,16 @@ using ::testing::_;
 
 class EffectChainSlotTest : public BaseEffectTest {
   protected:
-    virtual void SetUp() {
-        m_pEffectsManager->registerGroup("[Master]");
-        m_pEffectsManager->registerGroup("[Headphone]");
+    EffectChainSlotTest()
+            : m_master(m_factory.getOrCreateHandle("[Master]"), "[Master]"),
+              m_headphone(m_factory.getOrCreateHandle("[Headphone]"), "[Headphone]") {
+        m_pEffectsManager->registerChannel(m_master);
+        m_pEffectsManager->registerChannel(m_headphone);
     }
+
+    ChannelHandleFactory m_factory;
+    ChannelHandleAndGroup m_master;
+    ChannelHandleAndGroup m_headphone;
 };
 
 TEST_F(EffectChainSlotTest, ChainSlotMirrorsLoadedChain) {
@@ -68,12 +74,12 @@ TEST_F(EffectChainSlotTest, ChainSlotMirrorsLoadedChain) {
     ControlObject::set(ConfigKey(group, "insertion_type"), EffectChain::INSERT);
     EXPECT_DOUBLE_EQ(EffectChain::INSERT, pChain->insertionType());
 
-    EXPECT_FALSE(pChain->enabledForGroup("[Master]"));
-    pChain->enableForGroup("[Master]");
+    EXPECT_FALSE(pChain->enabledForChannel(m_master));
+    pChain->enableForChannel(m_master);
     EXPECT_LT(0.0, ControlObject::get(ConfigKey(group, "group_[Master]_enable")));
 
     ControlObject::set(ConfigKey(group, "group_[Master]_enable"), 0);
-    EXPECT_FALSE(pChain->enabledForGroup("[Master]"));
+    EXPECT_FALSE(pChain->enabledForChannel(m_master));
 }
 
 TEST_F(EffectChainSlotTest, ChainSlotMirrorsLoadedChain_StartsWithChainLoaded) {
