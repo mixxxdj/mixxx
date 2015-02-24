@@ -50,7 +50,7 @@ const QString kFileTypeOggOpus("opus");
 const QString kFileTypeWAV("wav");
 const QString kFileTypeWavPack("wv");
 
-inline bool hasID3v2Tag(const TagLib::MPEG::File& file) {
+inline bool hasID3v2Tag(TagLib::MPEG::File& file) {
 #if TAGLIB_HAS_TAG_CHECK
     return file.hasID3v2Tag();
 #else
@@ -58,7 +58,7 @@ inline bool hasID3v2Tag(const TagLib::MPEG::File& file) {
 #endif
 }
 
-inline bool hasAPETag(const TagLib::MPEG::File& file) {
+inline bool hasAPETag(TagLib::MPEG::File& file) {
 #if TAGLIB_HAS_TAG_CHECK
     return file.hasAPETag();
 #else
@@ -66,7 +66,7 @@ inline bool hasAPETag(const TagLib::MPEG::File& file) {
 #endif
 }
 
-inline bool hasID3v2Tag(const TagLib::FLAC::File& file) {
+inline bool hasID3v2Tag(TagLib::FLAC::File& file) {
 #if TAGLIB_HAS_TAG_CHECK
     return file.hasID3v2Tag();
 #else
@@ -74,7 +74,7 @@ inline bool hasID3v2Tag(const TagLib::FLAC::File& file) {
 #endif
 }
 
-inline bool hasXiphComment(const TagLib::FLAC::File& file) {
+inline bool hasXiphComment(TagLib::FLAC::File& file) {
 #if TAGLIB_HAS_TAG_CHECK
     return file.hasXiphComment();
 #else
@@ -82,7 +82,7 @@ inline bool hasXiphComment(const TagLib::FLAC::File& file) {
 #endif
 }
 
-inline bool hasAPETag(const TagLib::WavPack::File& file) {
+inline bool hasAPETag(TagLib::WavPack::File& file) {
 #if TAGLIB_HAS_TAG_CHECK
     return file.hasAPETag();
 #else
@@ -689,10 +689,10 @@ void readTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::MP
         const TagLib::MP4::Item& item = getItemListMap(tag)["tmpo"];
 #if TAGLIB_HAS_MP4_ATOM_TYPES
         if (item.atomDataType() == TagLib::MP4::TypeInteger) {
-            pTrackMetadata->setBpm(getItemListMap(tag)["tmpo"].toInt());
+            pTrackMetadata->setBpm(item.toInt());
         }
 #else
-        pTrackMetadata->setBpm(getItemListMap(tag)["tmpo"].toInt());
+        pTrackMetadata->setBpm(item.toInt());
 #endif
     }
     if (getItemListMap(tag).contains("----:com.apple.iTunes:BPM")) {
@@ -1083,12 +1083,12 @@ Result writeTrackMetadataIntoFile(const TrackMetadata& trackMetadata, QString fi
         QScopedPointer<TagLib::MPEG::File> pMPEGFile(
                 new TagLib::MPEG::File(fileName.toLocal8Bit().constData()));
         bool defaultID3V2 = true;
-        if (pMPEGFile->hasAPETag()) {
+        if (hasAPETag(*pMPEGFile)) {
             writeTrackMetadataIntoAPETag(pMPEGFile->APETag(), trackMetadata);
             // Only write ID3v2 tag if it already exists
             defaultID3V2 = false;
         }
-        if (defaultID3V2 || pMPEGFile->hasID3v2Tag()) {
+        if (defaultID3V2 || hasID3v2Tag(*pMPEGFile)) {
             writeTrackMetadataIntoID3v2Tag(pMPEGFile->ID3v2Tag(defaultID3V2), trackMetadata);
         }
         pFile.reset(pMPEGFile.take()); // transfer ownership
@@ -1101,12 +1101,12 @@ Result writeTrackMetadataIntoFile(const TrackMetadata& trackMetadata, QString fi
         QScopedPointer<TagLib::FLAC::File> pFLACFile(
                 new TagLib::FLAC::File(fileName.toLocal8Bit().constData()));
         bool defaultXiphComment = true;
-        if (pFLACFile->hasID3v2Tag()) {
+        if (hasID3v2Tag(*pFLACFile)) {
             writeTrackMetadataIntoID3v2Tag(pFLACFile->ID3v2Tag(), trackMetadata);
             // Only write Xiph Comment if it already exists
             defaultXiphComment = false;
         }
-        if (defaultXiphComment || pFLACFile->hasXiphComment()) {
+        if (defaultXiphComment || hasXiphComment(*pFLACFile)) {
             writeTrackMetadataIntoXiphComment(pFLACFile->xiphComment(defaultXiphComment), trackMetadata);
         }
         pFile.reset(pFLACFile.take()); // transfer ownership
