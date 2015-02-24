@@ -163,16 +163,14 @@ class SampleBuffer {
         return m_data + m_size;
     }
 
-    // Fill the whole buffer with zeroes
-    void clear();
-
-    // Fill the whole buffer with the same value
-    void fill(value_type value);
-
   private:
     value_type* m_data;
     size_type m_size;
 };
 
+<<<<<<< HEAD
 #endif /* SAMPLEBUFFER_H */
 >>>>>>> Memory-aligned SampleBuffer to utilize SSE optimizations
+=======
+#endif // SAMPLEBUFFER_H
+>>>>>>> Move utility functions for SampleBuffer into separate file

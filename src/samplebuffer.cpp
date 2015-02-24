@@ -15,6 +15,7 @@ SampleBuffer::SampleBuffer(size_type size)
 SampleBuffer::~SampleBuffer() {
     SampleUtil::free(m_data);
 }
+<<<<<<< HEAD
 
 void SampleBuffer::clear() {
 <<<<<<< HEAD
@@ -32,3 +33,5 @@ void SampleBuffer::fill(value_type value) {
     SampleUtil::fill(m_data, value, m_size);
 >>>>>>> Memory-aligned SampleBuffer to utilize SSE optimizations
 }
+=======
+>>>>>>> Move utility functions for SampleBuffer into separate file
