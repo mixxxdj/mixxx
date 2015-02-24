@@ -34,9 +34,9 @@
 
 class ConfigKey {
   public:
-    ConfigKey();
+    ConfigKey(); // is required for qMetaTypeConstructHelper()
+    ConfigKey(const ConfigKey& key);
     ConfigKey(const QString& g, const QString& i);
-    ConfigKey(const char* g, const char* i);
     static ConfigKey parseCommaSeparated(QString key);
 
     inline bool isNull() const {
@@ -73,12 +73,12 @@ inline uint qHash(const QKeySequence& key) {
 class ConfigValue {
   public:
     ConfigValue();
-    ConfigValue(QString _value);
-    ConfigValue(int _value);
+    ConfigValue(QString value);
+    ConfigValue(int value);
     inline ConfigValue(QDomNode /* node */) {
         reportFatalErrorAndQuit("ConfigValue from QDomNode not implemented here");
     }
-    void valCopy(const ConfigValue& _value);
+    void valCopy(const ConfigValue& value);
 
     QString value;
     friend bool operator==(const ConfigValue& s1, const ConfigValue& s2);
@@ -100,14 +100,20 @@ class ConfigValueKbd : public ConfigValue {
 
 template <class ValueType> class ConfigOption {
   public:
-    ConfigOption() { val = NULL; key = NULL;};
-    ConfigOption(ConfigKey* _key, ValueType* _val) { key = _key ; val = _val; };
+    ConfigOption()
+        : key(NULL),
+          val(NULL) {
+    };
+    ConfigOption(ConfigKey* pKey, ValueType* pVal)
+        : key(pKey),
+          val(pVal){
+    };
     virtual ~ConfigOption() {
         delete key;
         delete val;
     }
-    ValueType* val;
     ConfigKey* key;
+    ValueType* val;
 };
 
 template <class ValueType> class ConfigObject {
@@ -119,8 +125,8 @@ template <class ValueType> class ConfigObject {
     ConfigObject(QString file);
     ConfigObject(QDomNode node);
     ~ConfigObject();
-    ConfigOption<ValueType> *set(ConfigKey, ValueType);
-    ConfigOption<ValueType> *get(ConfigKey key);
+    ConfigOption<ValueType>* set(ConfigKey, ValueType);
+    ConfigOption<ValueType>* get(ConfigKey key);
     bool exists(ConfigKey key);
     ConfigKey *get(ValueType v);
     QString getValueString(ConfigKey k);
