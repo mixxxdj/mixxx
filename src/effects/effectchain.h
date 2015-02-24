@@ -37,11 +37,11 @@ class EffectChain : public QObject {
     bool enabled() const;
     void setEnabled(bool enabled);
 
-    // Activates EffectChain processing for the provided group.
-    void enableForChannel(const ChannelHandleAndGroup& group);
-    bool enabledForChannel(const ChannelHandleAndGroup& group) const;
+    // Activates EffectChain processing for the provided channel.
+    void enableForChannel(const ChannelHandleAndGroup& handle_group);
+    bool enabledForChannel(const ChannelHandleAndGroup& handle_group) const;
     const QSet<ChannelHandleAndGroup>& enabledChannels() const;
-    void disableForChannel(const ChannelHandleAndGroup& group);
+    void disableForChannel(const ChannelHandleAndGroup& handle_group);
 
     EffectChainPointer prototype() const;
 

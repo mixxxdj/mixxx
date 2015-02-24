@@ -68,9 +68,9 @@ void EffectRack::removeFromEngine() {
     m_pEngineEffectRack = NULL;
 }
 
-void EffectRack::registerChannel(const ChannelHandleAndGroup& group) {
+void EffectRack::registerChannel(const ChannelHandleAndGroup& handle_group) {
     foreach (EffectChainSlotPointer pChainSlot, m_effectChainSlots) {
-        pChainSlot->registerChannel(group);
+        pChainSlot->registerChannel(handle_group);
     }
 }
 
@@ -220,8 +220,8 @@ EffectChainSlotPointer StandardEffectRack::addEffectChainSlot() {
     // Register all the existing channels with the new EffectChain.
     const QSet<ChannelHandleAndGroup>& registeredChannels =
             m_pEffectChainManager->registeredChannels();
-    foreach (const ChannelHandleAndGroup& group, registeredChannels) {
-        pChainSlot->registerChannel(group);
+    foreach (const ChannelHandleAndGroup& handle_group, registeredChannels) {
+        pChainSlot->registerChannel(handle_group);
     }
 
     EffectChainSlotPointer pChainSlotPointer = EffectChainSlotPointer(pChainSlot);
@@ -259,10 +259,10 @@ EffectChainSlotPointer PerGroupRack::addEffectChainSlotForGroup(const QString& g
     m_groupToChainSlot[groupName] = pChainSlotPointer;
 
     // TODO(rryan): remove.
-    foreach (const ChannelHandleAndGroup& group,
+    foreach (const ChannelHandleAndGroup& handle_group,
              m_pEffectChainManager->registeredChannels()) {
-        if (group.name() == groupName) {
-            configureEffectChainSlotForGroup(pChainSlotPointer, group);
+        if (handle_group.name() == groupName) {
+            configureEffectChainSlotForGroup(pChainSlotPointer, handle_group);
             return pChainSlotPointer;
         }
     }
@@ -285,13 +285,13 @@ QuickEffectRack::QuickEffectRack(EffectsManager* pEffectsManager,
 }
 
 void QuickEffectRack::configureEffectChainSlotForGroup(
-        EffectChainSlotPointer pSlot, const ChannelHandleAndGroup& group) {
-    // Register this group alone with the chain slot.
-    pSlot->registerChannel(group);
+        EffectChainSlotPointer pSlot, const ChannelHandleAndGroup& handle_group) {
+    // Register this channel alone with the chain slot.
+    pSlot->registerChannel(handle_group);
 
     // Add a single EffectSlot for the quick effect.
     pSlot->addEffectSlot(QuickEffectRack::formatEffectSlotGroupString(
-            getRackNumber(), group.name()));
+            getRackNumber(), handle_group.name()));
 
     // TODO(rryan): Set up next/prev signals.
 
@@ -300,8 +300,8 @@ void QuickEffectRack::configureEffectChainSlotForGroup(
     EffectChainPointer pChain = makeEmptyChain();
     pSlot->loadEffectChain(pChain);
 
-    // Enable the chain for the group by default.
-    pChain->enableForChannel(group);
+    // Enable the chain for the channel by default.
+    pChain->enableForChannel(handle_group);
 
     // Set the chain to be fully wet.
     pChain->setMix(1.0);
@@ -324,10 +324,10 @@ bool QuickEffectRack::loadEffectToGroup(const QString& groupName,
         pChain = makeEmptyChain();
         pChainSlot->loadEffectChain(pChain);
         // TODO(rryan): remove.
-        foreach (const ChannelHandleAndGroup& group,
+        foreach (const ChannelHandleAndGroup& handle_group,
                  m_pEffectChainManager->registeredChannels()) {
-            if (group.name() == groupName) {
-                pChain->enableForChannel(group);
+            if (handle_group.name() == groupName) {
+                pChain->enableForChannel(handle_group);
             }
         }
         pChain->setMix(1.0);
@@ -364,10 +364,10 @@ bool EqualizerRack::loadEffectToGroup(const QString& groupName,
         pChain = makeEmptyChain();
         pChainSlot->loadEffectChain(pChain);
         // TODO(rryan): remove.
-        foreach (const ChannelHandleAndGroup& group,
+        foreach (const ChannelHandleAndGroup& handle_group,
                  m_pEffectChainManager->registeredChannels()) {
-            if (group.name() == groupName) {
-                pChain->enableForChannel(group);
+            if (handle_group.name() == groupName) {
+                pChain->enableForChannel(handle_group);
             }
         }
         pChain->setMix(1.0);
@@ -379,15 +379,15 @@ bool EqualizerRack::loadEffectToGroup(const QString& groupName,
 
 
 void EqualizerRack::configureEffectChainSlotForGroup(EffectChainSlotPointer pSlot,
-                                                     const ChannelHandleAndGroup& group) {
-    const QString& groupName = group.name();
+                                                     const ChannelHandleAndGroup& handle_group) {
+    const QString& groupName = handle_group.name();
 
     // Register this channel alone with the chain slot.
-    pSlot->registerChannel(group);
+    pSlot->registerChannel(handle_group);
 
     // Add a single EffectSlot for the equalizer effect.
     pSlot->addEffectSlot(EqualizerRack::formatEffectSlotGroupString(
-        getRackNumber(), groupName));
+            getRackNumber(), groupName));
 
     // TODO(rryan): Set up next/prev signals.
 
@@ -396,8 +396,8 @@ void EqualizerRack::configureEffectChainSlotForGroup(EffectChainSlotPointer pSlo
     EffectChainPointer pChain = makeEmptyChain();
     pSlot->loadEffectChain(pChain);
 
-    // Enable the chain for the group by default.
-    pChain->enableForChannel(group);
+    // Enable the chain for the channel by default.
+    pChain->enableForChannel(handle_group);
 
     // Set the chain to be fully wet.
     pChain->setMix(1.0);

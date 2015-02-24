@@ -12,8 +12,8 @@
 #include "engine/effects/engineeffectsmanager.h"
 #include "controlaudiotaperpot.h"
 
-EngineAux::EngineAux(const ChannelHandleAndGroup& group, EffectsManager* pEffectsManager)
-        : EngineChannel(group, EngineChannel::CENTER),
+EngineAux::EngineAux(const ChannelHandleAndGroup& handle_group, EffectsManager* pEffectsManager)
+        : EngineChannel(handle_group, EngineChannel::CENTER),
           m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
           m_vuMeter(getGroup()),
           m_pEnabled(new ControlObject(ConfigKey(getGroup(), "enabled"))),
@@ -22,7 +22,7 @@ EngineAux::EngineAux(const ChannelHandleAndGroup& group, EffectsManager* pEffect
           m_sampleBuffer(NULL),
           m_wasActive(false) {
     if (pEffectsManager != NULL) {
-        pEffectsManager->registerChannel(group);
+        pEffectsManager->registerChannel(handle_group);
     }
     m_pPassing->setButtonMode(ControlPushButton::POWERWINDOW);
 

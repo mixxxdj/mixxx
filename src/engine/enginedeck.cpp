@@ -26,12 +26,12 @@
 
 #include "sampleutil.h"
 
-EngineDeck::EngineDeck(const ChannelHandleAndGroup& group,
+EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
                        ConfigObject<ConfigValue>* pConfig,
                        EngineMaster* pMixingEngine,
                        EffectsManager* pEffectsManager,
                        EngineChannel::ChannelOrientation defaultOrientation)
-        : EngineChannel(group, defaultOrientation),
+        : EngineChannel(handle_group, defaultOrientation),
           m_pConfig(pConfig),
           m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
           m_pPassing(new ControlPushButton(ConfigKey(getGroup(), "passthrough"))),
@@ -39,7 +39,7 @@ EngineDeck::EngineDeck(const ChannelHandleAndGroup& group,
           // items to be held at once (it keeps a blank spot open persistently)
           m_sampleBuffer(NULL) {
     if (pEffectsManager != NULL) {
-        pEffectsManager->registerChannel(group);
+        pEffectsManager->registerChannel(handle_group);
     }
 
     // Set up passthrough utilities and fields

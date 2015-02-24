@@ -36,7 +36,7 @@ class EffectChainSlot : public QObject {
     void loadEffectChain(EffectChainPointer pEffectChain);
     EffectChainPointer getEffectChain() const;
 
-    void registerChannel(const ChannelHandleAndGroup& group);
+    void registerChannel(const ChannelHandleAndGroup& handle_group);
 
     double getSuperParameter() const;
     void setSuperParameter(double value);
@@ -143,15 +143,15 @@ class EffectChainSlot : public QObject {
 
     struct ChannelInfo {
         // Takes ownership of pEnabled.
-        ChannelInfo(const ChannelHandleAndGroup& group, ControlObject* pEnabled)
-                : group(group),
+        ChannelInfo(const ChannelHandleAndGroup& handle_group, ControlObject* pEnabled)
+                : handle_group(handle_group),
                   pEnabled(pEnabled) {
 
         }
         ~ChannelInfo() {
             delete pEnabled;
         }
-        ChannelHandleAndGroup group;
+        ChannelHandleAndGroup handle_group;
         ControlObject* pEnabled;
     };
     QMap<QString, ChannelInfo*> m_channelInfoByName;

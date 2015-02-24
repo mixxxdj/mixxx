@@ -109,14 +109,14 @@ Bessel4LVMixEQEffect::~Bessel4LVMixEQEffect() {
     delete m_pHiFreqCorner;
 }
 
-void Bessel4LVMixEQEffect::processGroup(const ChannelHandle& group,
-                                        Bessel4LVMixEQEffectGroupState* pState,
-                                        const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                        const unsigned int numSamples,
-                                        const unsigned int sampleRate,
-                                        const EffectProcessor::EnableState enableState,
-                                        const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(group);
+void Bessel4LVMixEQEffect::processChannel(const ChannelHandle& handle,
+                                          Bessel4LVMixEQEffectGroupState* pState,
+                                          const CSAMPLE* pInput, CSAMPLE* pOutput,
+                                          const unsigned int numSamples,
+                                          const unsigned int sampleRate,
+                                          const EffectProcessor::EnableState enableState,
+                                          const GroupFeatureState& groupFeatures) {
+    Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
 
     double fLow;

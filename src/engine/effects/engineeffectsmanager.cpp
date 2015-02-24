@@ -130,13 +130,13 @@ void EngineEffectsManager::onCallbackStart() {
     }
 }
 
-void EngineEffectsManager::process(const ChannelHandle& group,
+void EngineEffectsManager::process(const ChannelHandle& handle,
                                    CSAMPLE* pInOut,
                                    const unsigned int numSamples,
                                    const unsigned int sampleRate,
                                    const GroupFeatureState& groupFeatures) {
     foreach (EngineEffectRack* pRack, m_racks) {
-        pRack->process(group, pInOut, numSamples, sampleRate, groupFeatures);
+        pRack->process(handle, pInOut, numSamples, sampleRate, groupFeatures);
     }
 }
 

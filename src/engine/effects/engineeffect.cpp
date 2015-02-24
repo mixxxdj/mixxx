@@ -87,7 +87,7 @@ bool EngineEffect::processEffectsRequest(const EffectsRequest& message,
     return false;
 }
 
-void EngineEffect::process(const ChannelHandle& group,
+void EngineEffect::process(const ChannelHandle& handle,
                            const CSAMPLE* pInput, CSAMPLE* pOutput,
                            const unsigned int numSamples,
                            const unsigned int sampleRate,
@@ -100,7 +100,7 @@ void EngineEffect::process(const ChannelHandle& group,
         effectiveEnableState = EffectProcessor::ENABLING;
     }
 
-    m_pProcessor->process(group, pInput, pOutput, numSamples, sampleRate,
+    m_pProcessor->process(handle, pInput, pOutput, numSamples, sampleRate,
             effectiveEnableState, groupFeatures);
     if (!m_effectRampsFromDry) {
         // the effect does not fade, so we care for it

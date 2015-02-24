@@ -35,7 +35,7 @@ class EngineEffect : public EffectsRequestHandler {
         const EffectsRequest& message,
         EffectsResponsePipe* pResponsePipe);
 
-    void process(const ChannelHandle& group,
+    void process(const ChannelHandle& handle,
                  const CSAMPLE* pInput, CSAMPLE* pOutput,
                  const unsigned int numSamples,
                  const unsigned int sampleRate,

@@ -18,7 +18,7 @@ class EngineEffectRack : public EffectsRequestHandler {
         const EffectsRequest& message,
         EffectsResponsePipe* pResponsePipe);
 
-    void process(const ChannelHandle& group,
+    void process(const ChannelHandle& handle,
                  CSAMPLE* pInOut,
                  const unsigned int numSamples,
                  const unsigned int sampleRate,

@@ -36,7 +36,7 @@ class EffectRack : public QObject {
     void removeFromEngine();
     EngineEffectRack* getEngineEffectRack();
 
-    void registerChannel(const ChannelHandleAndGroup& group);
+    void registerChannel(const ChannelHandleAndGroup& handle_group);
     int numEffectChainSlots() const;
     EffectChainSlotPointer getEffectChainSlot(int i);
 
@@ -128,7 +128,7 @@ class PerGroupRack : public EffectRack {
 
   protected:
     virtual void configureEffectChainSlotForGroup(EffectChainSlotPointer pSlot,
-                                                  const ChannelHandleAndGroup& group) = 0;
+                                                  const ChannelHandleAndGroup& handle_group) = 0;
     virtual QString formatEffectChainSlotGroupForGroup(const unsigned int iRackNumber,
                                                        const unsigned int iChainSlotNumber,
                                                        const QString& group) const = 0;
@@ -176,7 +176,7 @@ class QuickEffectRack : public PerGroupRack {
 
   protected:
     virtual void configureEffectChainSlotForGroup(EffectChainSlotPointer pSlot,
-                                                  const ChannelHandleAndGroup& group);
+                                                  const ChannelHandleAndGroup& handle_group);
     virtual QString formatEffectChainSlotGroupForGroup(const unsigned int iRackNumber,
                                                        const unsigned int iChainSlotNumber,
                                                        const QString& group) const {
@@ -224,7 +224,7 @@ class EqualizerRack : public PerGroupRack {
 
   protected:
     virtual void configureEffectChainSlotForGroup(EffectChainSlotPointer pSlot,
-                                                  const ChannelHandleAndGroup& group);
+                                                  const ChannelHandleAndGroup& handle_group);
     virtual QString formatEffectChainSlotGroupForGroup(const unsigned int iRackNumber,
                                                        const unsigned int iChainSlotNumber,
                                                        const QString& group) const {

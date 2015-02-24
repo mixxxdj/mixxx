@@ -148,14 +148,14 @@ LinkwitzRiley8EQEffect::~LinkwitzRiley8EQEffect() {
     delete m_pHiFreqCorner;
 }
 
-void LinkwitzRiley8EQEffect::processGroup(const ChannelHandle& group,
-        LinkwitzRiley8EQEffectGroupState* pState,
-        const CSAMPLE* pInput, CSAMPLE* pOutput,
-        const unsigned int numSamples,
-        const unsigned int sampleRate,
-        const EffectProcessor::EnableState enableState,
-        const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(group);
+void LinkwitzRiley8EQEffect::processChannel(const ChannelHandle& handle,
+                                            LinkwitzRiley8EQEffectGroupState* pState,
+                                            const CSAMPLE* pInput, CSAMPLE* pOutput,
+                                            const unsigned int numSamples,
+                                            const unsigned int sampleRate,
+                                            const EffectProcessor::EnableState enableState,
+                                            const GroupFeatureState& groupFeatures) {
+    Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
 
     float fLow = 0.f, fMid = 0.f, fHigh = 0.f;

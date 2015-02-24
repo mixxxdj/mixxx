@@ -94,8 +94,8 @@ EffectChainPointer EffectChain::clone(EffectChainPointer pChain) {
     pClone->setEnabled(pChain->enabled());
     pClone->setName(pChain->name());
     pClone->setMix(pChain->mix());
-    foreach (const ChannelHandleAndGroup& group, pChain->enabledChannels()) {
-        pClone->enableForChannel(group);
+    foreach (const ChannelHandleAndGroup& handle_group, pChain->enabledChannels()) {
+        pClone->enableForChannel(handle_group);
     }
     foreach (EffectPointer pEffect, pChain->effects()) {
         EffectPointer pClonedEffect = pChain->m_pEffectsManager
@@ -141,37 +141,37 @@ void EffectChain::setEnabled(bool enabled) {
     emit(enabledChanged(enabled));
 }
 
-void EffectChain::enableForChannel(const ChannelHandleAndGroup& group) {
-    if (!m_enabledChannels.contains(group)) {
-        m_enabledChannels.insert(group);
+void EffectChain::enableForChannel(const ChannelHandleAndGroup& handle_group) {
+    if (!m_enabledChannels.contains(handle_group)) {
+        m_enabledChannels.insert(handle_group);
 
         EffectsRequest* request = new EffectsRequest();
         request->type = EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_CHANNEL;
         request->pTargetChain = m_pEngineEffectChain;
-        request->channel = group.handle();
+        request->channel = handle_group.handle();
         m_pEffectsManager->writeRequest(request);
 
-        emit(channelStatusChanged(group.name(), true));
+        emit(channelStatusChanged(handle_group.name(), true));
     }
 }
 
-bool EffectChain::enabledForChannel(const ChannelHandleAndGroup& group) const {
-    return m_enabledChannels.contains(group);
+bool EffectChain::enabledForChannel(const ChannelHandleAndGroup& handle_group) const {
+    return m_enabledChannels.contains(handle_group);
 }
 
 const QSet<ChannelHandleAndGroup>& EffectChain::enabledChannels() const {
     return m_enabledChannels;
 }
 
-void EffectChain::disableForChannel(const ChannelHandleAndGroup& group) {
-    if (m_enabledChannels.remove(group)) {
+void EffectChain::disableForChannel(const ChannelHandleAndGroup& handle_group) {
+    if (m_enabledChannels.remove(handle_group)) {
         EffectsRequest* request = new EffectsRequest();
         request->type = EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_CHANNEL;
         request->pTargetChain = m_pEngineEffectChain;
-        request->channel = group.handle();
+        request->channel = handle_group.handle();
         m_pEffectsManager->writeRequest(request);
 
-        emit(channelStatusChanged(group.name(), false));
+        emit(channelStatusChanged(handle_group.name(), false));
     }
 }
 

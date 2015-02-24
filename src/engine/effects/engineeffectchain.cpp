@@ -128,16 +128,16 @@ bool EngineEffectChain::processEffectsRequest(const EffectsRequest& message,
     return true;
 }
 
-bool EngineEffectChain::enableForChannel(const ChannelHandle& group) {
-    ChannelStatus& status = getChannelStatus(group);
+bool EngineEffectChain::enableForChannel(const ChannelHandle& handle) {
+    ChannelStatus& status = getChannelStatus(handle);
     if (status.enable_state != EffectProcessor::ENABLED) {
         status.enable_state = EffectProcessor::ENABLING;
     }
     return true;
 }
 
-bool EngineEffectChain::disableForChannel(const ChannelHandle& group) {
-    ChannelStatus& status = getChannelStatus(group);
+bool EngineEffectChain::disableForChannel(const ChannelHandle& handle) {
+    ChannelStatus& status = getChannelStatus(handle);
     if (status.enable_state != EffectProcessor::DISABLED) {
         status.enable_state = EffectProcessor::DISABLING;
     }
@@ -145,20 +145,20 @@ bool EngineEffectChain::disableForChannel(const ChannelHandle& group) {
 }
 
 EngineEffectChain::ChannelStatus& EngineEffectChain::getChannelStatus(
-        const ChannelHandle& group) {
-    return m_channelStatus[group];
+        const ChannelHandle& handle) {
+    return m_channelStatus[handle];
 }
 
-void EngineEffectChain::process(const ChannelHandle& group,
+void EngineEffectChain::process(const ChannelHandle& handle,
                                 CSAMPLE* pInOut,
                                 const unsigned int numSamples,
                                 const unsigned int sampleRate,
                                 const GroupFeatureState& groupFeatures) {
-    ChannelStatus& channel_info = getChannelStatus(group);
+    ChannelStatus& channel_info = getChannelStatus(handle);
 
     if (m_enableState == EffectProcessor::DISABLED
             || channel_info.enable_state == EffectProcessor::DISABLED) {
-        // If the chain is not enabled and the group is not enabled and we are not
+        // If the chain is not enabled and the channel is not enabled and we are not
         // ramping out then do nothing.
         return;
     }
@@ -171,7 +171,7 @@ void EngineEffectChain::process(const ChannelHandle& group,
         effectiveEnableState = EffectProcessor::ENABLING;
     }
 
-    // At this point either the chain and group are enabled or we are ramping
+    // At this point either the chain and channel are enabled or we are ramping
     // out. If we are ramping out then ramp to 0 instead of m_dMix.
     CSAMPLE wet_gain = m_dMix;
     CSAMPLE wet_gain_old = channel_info.old_gain;
@@ -185,7 +185,7 @@ void EngineEffectChain::process(const ChannelHandle& group,
                 if (pEffect == NULL || !pEffect->enabled()) {
                     continue;
                 }
-                pEffect->process(group, pInOut, pInOut,
+                pEffect->process(handle, pInOut, pInOut,
                                  numSamples, sampleRate,
                                  effectiveEnableState, groupFeatures);
             }
@@ -204,7 +204,7 @@ void EngineEffectChain::process(const ChannelHandle& group,
                 }
                 const CSAMPLE* pIntermediateInput = (i == 0) ? pInOut : m_pBuffer;
                 CSAMPLE* pIntermediateOutput = m_pBuffer;
-                pEffect->process(group, pIntermediateInput, pIntermediateOutput,
+                pEffect->process(handle, pIntermediateInput, pIntermediateOutput,
                                  numSamples, sampleRate,
                                  effectiveEnableState, groupFeatures);
                 anyProcessed = true;
@@ -232,7 +232,7 @@ void EngineEffectChain::process(const ChannelHandle& group,
             }
             const CSAMPLE* pIntermediateInput = (i == 0) ? pInOut : m_pBuffer;
             CSAMPLE* pIntermediateOutput = m_pBuffer;
-            pEffect->process(group, pIntermediateInput,
+            pEffect->process(handle, pIntermediateInput,
                              pIntermediateOutput, numSamples, sampleRate,
                              effectiveEnableState, groupFeatures);
             anyProcessed = true;

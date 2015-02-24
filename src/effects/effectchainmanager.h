@@ -23,7 +23,7 @@ class EffectChainManager : public QObject {
                        EffectsManager* pEffectsManager);
     virtual ~EffectChainManager();
 
-    void registerChannel(const ChannelHandleAndGroup& group);
+    void registerChannel(const ChannelHandleAndGroup& handle_group);
     const QSet<ChannelHandleAndGroup>& registeredChannels() const {
         return m_registeredChannels;
     }

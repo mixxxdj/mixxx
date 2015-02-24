@@ -12,9 +12,9 @@
 #include "controlaudiotaperpot.h"
 
 
-EngineMicrophone::EngineMicrophone(const ChannelHandleAndGroup& group,
+EngineMicrophone::EngineMicrophone(const ChannelHandleAndGroup& handle_group,
                                    EffectsManager* pEffectsManager)
-        : EngineChannel(group, EngineChannel::CENTER),
+        : EngineChannel(handle_group, EngineChannel::CENTER),
           m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
           m_vuMeter(getGroup()),
           m_pEnabled(new ControlObject(ConfigKey(getGroup(), "enabled"))),
@@ -22,7 +22,7 @@ EngineMicrophone::EngineMicrophone(const ChannelHandleAndGroup& group,
           m_sampleBuffer(NULL),
           m_wasActive(false) {
     if (pEffectsManager != NULL) {
-        pEffectsManager->registerChannel(group);
+        pEffectsManager->registerChannel(handle_group);
     }
 
     setMaster(false); // Use "talkover" button to enable microphones

@@ -23,7 +23,7 @@ class EngineEffectChain : public EffectsRequestHandler {
         const EffectsRequest& message,
         EffectsResponsePipe* pResponsePipe);
 
-    void process(const ChannelHandle& group,
+    void process(const ChannelHandle& handle,
                  CSAMPLE* pInOut,
                  const unsigned int numSamples,
                  const unsigned int sampleRate,
@@ -33,7 +33,7 @@ class EngineEffectChain : public EffectsRequestHandler {
         return m_id;
     }
 
-    bool enabledForChannel(const ChannelHandle& group) const;
+    bool enabledForChannel(const ChannelHandle& handle) const;
 
   private:
     struct ChannelStatus {
@@ -52,12 +52,12 @@ class EngineEffectChain : public EffectsRequestHandler {
     bool updateParameters(const EffectsRequest& message);
     bool addEffect(EngineEffect* pEffect, int iIndex);
     bool removeEffect(EngineEffect* pEffect, int iIndex);
-    bool enableForChannel(const ChannelHandle& group);
-    bool disableForChannel(const ChannelHandle& group);
+    bool enableForChannel(const ChannelHandle& handle);
+    bool disableForChannel(const ChannelHandle& handle);
 
     // Gets or creates a ChannelStatus entry in m_channelStatus for the provided
-    // group.
-    ChannelStatus& getChannelStatus(const ChannelHandle& group);
+    // handle.
+    ChannelStatus& getChannelStatus(const ChannelHandle& handle);
 
     QString m_id;
     EffectProcessor::EnableState m_enableState;

@@ -204,9 +204,9 @@ void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
         m_pEffectChain->setEnabled(m_pControlChainEnabled->get() > 0.0);
         foreach (ChannelInfo* pChannelInfo, m_channelInfoByName) {
             if (pChannelInfo->pEnabled->toBool()) {
-                m_pEffectChain->enableForChannel(pChannelInfo->group);
+                m_pEffectChain->enableForChannel(pChannelInfo->handle_group);
             } else {
-                m_pEffectChain->disableForChannel(pChannelInfo->group);
+                m_pEffectChain->disableForChannel(pChannelInfo->handle_group);
             }
         }
 
@@ -265,20 +265,20 @@ EffectSlotPointer EffectChainSlot::addEffectSlot(const QString& group) {
     return pSlot;
 }
 
-void EffectChainSlot::registerChannel(const ChannelHandleAndGroup& group) {
-    if (m_channelInfoByName.contains(group.name())) {
+void EffectChainSlot::registerChannel(const ChannelHandleAndGroup& handle_group) {
+    if (m_channelInfoByName.contains(handle_group.name())) {
         qWarning() << debugString()
                    << "WARNING: registerChannel already has channel registered:"
-                   << group.name();
+                   << handle_group.name();
         return;
     }
     ControlPushButton* pEnableControl = new ControlPushButton(
-            ConfigKey(m_group, QString("group_%1_enable").arg(group.name())));
+            ConfigKey(m_group, QString("group_%1_enable").arg(handle_group.name())));
     pEnableControl->setButtonMode(ControlPushButton::POWERWINDOW);
 
-    ChannelInfo* pInfo = new ChannelInfo(group, pEnableControl);
-    m_channelInfoByName[group.name()] = pInfo;
-    m_channelStatusMapper.setMapping(pEnableControl, group.name());
+    ChannelInfo* pInfo = new ChannelInfo(handle_group, pEnableControl);
+    m_channelInfoByName[handle_group.name()] = pInfo;
+    m_channelStatusMapper.setMapping(pEnableControl, handle_group.name());
     connect(pEnableControl, SIGNAL(valueChanged(double)),
             &m_channelStatusMapper, SLOT(map()));
 }
@@ -404,9 +404,9 @@ void EffectChainSlot::slotChannelStatusChanged(const QString& group) {
         if (pChannelInfo != NULL && pChannelInfo->pEnabled != NULL) {
             bool bEnable = pChannelInfo->pEnabled->toBool();
             if (bEnable) {
-                m_pEffectChain->enableForChannel(pChannelInfo->group);
+                m_pEffectChain->enableForChannel(pChannelInfo->handle_group);
             } else {
-                m_pEffectChain->disableForChannel(pChannelInfo->group);
+                m_pEffectChain->disableForChannel(pChannelInfo->handle_group);
             }
         }
     }
