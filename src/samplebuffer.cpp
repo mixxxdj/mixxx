@@ -11,11 +11,3 @@ SampleBuffer::SampleBuffer(size_type size)
 SampleBuffer::~SampleBuffer() {
     SampleUtil::free(m_data);
 }
-
-void SampleBuffer::clear() {
-    SampleUtil::clear(m_data, m_size);
-}
-
-void SampleBuffer::fill(value_type value) {
-    SampleUtil::fill(m_data, value, m_size);
-}

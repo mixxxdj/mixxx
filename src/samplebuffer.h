@@ -76,15 +76,9 @@ class SampleBuffer {
         return m_data + m_size;
     }
 
-    // Fill the whole buffer with zeroes
-    void clear();
-
-    // Fill the whole buffer with the same value
-    void fill(value_type value);
-
   private:
     value_type* m_data;
     size_type m_size;
 };
 
-#endif /* SAMPLEBUFFER_H */
+#endif // SAMPLEBUFFER_H
