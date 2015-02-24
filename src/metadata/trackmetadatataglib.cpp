@@ -10,6 +10,14 @@
 #define TAGLIB_HAS_WAV_ID3V2TAG \
     (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
 
+// TagLib has full support for MP4 atom types since version 1.8
+#define TAGLIB_HAS_MP4_ATOM_TYPES \
+    (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 8))
+
+// TagLib has support for has<TagType>() style functions since version 1.9
+#define TAGLIB_HAS_TAG_CHECK \
+    (TAGLIB_MAJOR_VERSION > 1) || ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION >= 9))
+
 #include <taglib/tfile.h>
 #include <taglib/tmap.h>
 #include <taglib/tstringlist.h>
@@ -41,6 +49,46 @@ const QString kFileTypeOggVorbis("ogg");
 const QString kFileTypeOggOpus("opus");
 const QString kFileTypeWAV("wav");
 const QString kFileTypeWavPack("wv");
+
+inline bool hasID3v2Tag(const TagLib::MPEG::File& file) {
+#if TAGLIB_HAS_TAG_CHECK
+    return file.hasID3v2Tag();
+#else
+    return NULL != file.ID3v2Tag();
+#endif
+}
+
+inline bool hasAPETag(const TagLib::MPEG::File& file) {
+#if TAGLIB_HAS_TAG_CHECK
+    return file.hasAPETag();
+#else
+    return NULL != file.APETag();
+#endif
+}
+
+inline bool hasID3v2Tag(const TagLib::FLAC::File& file) {
+#if TAGLIB_HAS_TAG_CHECK
+    return file.hasID3v2Tag();
+#else
+    return NULL != file.ID3v2Tag();
+#endif
+}
+
+inline bool hasXiphComment(const TagLib::FLAC::File& file) {
+#if TAGLIB_HAS_TAG_CHECK
+    return file.hasXiphComment();
+#else
+    return NULL != file.xiphComment();
+#endif
+}
+
+inline bool hasAPETag(const TagLib::WavPack::File& file) {
+#if TAGLIB_HAS_TAG_CHECK
+    return file.hasAPETag();
+#else
+    return NULL != file.APETag();
+#endif
+}
 
 // Deduce the file type from the file name
 QString getFileTypeFromFileName(QString fileName) {
@@ -639,9 +687,13 @@ void readTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::MP
     if (getItemListMap(tag).contains("tmpo")) {
         // Read the BPM as an integer value.
         const TagLib::MP4::Item& item = getItemListMap(tag)["tmpo"];
+#if TAGLIB_HAS_MP4_ATOM_TYPES
         if (item.atomDataType() == TagLib::MP4::TypeInteger) {
             pTrackMetadata->setBpm(getItemListMap(tag)["tmpo"].toInt());
         }
+#else
+        pTrackMetadata->setBpm(getItemListMap(tag)["tmpo"].toInt());
+#endif
     }
     if (getItemListMap(tag).contains("----:com.apple.iTunes:BPM")) {
         // This is the preferred field for storing the BPM
@@ -843,13 +895,15 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
     if (kFileTypeMP3 == fileType) {
         TagLib::MPEG::File file(fileName.toLocal8Bit().constData());
         if (readAudioProperties(pTrackMetadata, file)) {
-            const TagLib::ID3v2::Tag* pID3v2Tag = file.ID3v2Tag();
+            const TagLib::ID3v2::Tag* pID3v2Tag =
+                    hasID3v2Tag(file) ? file.ID3v2Tag() : NULL;
             if (pID3v2Tag) {
                 readTrackMetadataFromID3v2Tag(pTrackMetadata, *pID3v2Tag);
                 readCoverArtFromID3v2Tag(pCoverArt, *pID3v2Tag);
                 return OK;
             } else {
-                const TagLib::APE::Tag* pAPETag = file.APETag();
+                const TagLib::APE::Tag* pAPETag =
+                        hasAPETag(file) ? file.APETag() : NULL;
                 if (pAPETag) {
                     readTrackMetadataFromAPETag(pTrackMetadata, *pAPETag);
                     readCoverArtFromAPETag(pCoverArt, *pAPETag);
@@ -897,14 +951,14 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
         }
         if (readAudioProperties(pTrackMetadata, file)) {
             const TagLib::Ogg::XiphComment* pXiphComment =
-                    file.hasXiphComment() ? file.xiphComment() : NULL;
+                    hasXiphComment(file) ? file.xiphComment() : NULL;
             if (pXiphComment) {
                 readTrackMetadataFromXiphComment(pTrackMetadata, *pXiphComment);
                 readCoverArtFromXiphComment(pCoverArt, *pXiphComment);
                 return OK;
             } else {
                 const TagLib::ID3v2::Tag* pID3v2Tag =
-                        file.hasID3v2Tag() ? file.ID3v2Tag() : NULL;
+                        hasID3v2Tag(file) ? file.ID3v2Tag() : NULL;
                 if (pID3v2Tag) {
                     readTrackMetadataFromID3v2Tag(pTrackMetadata, *pID3v2Tag);
                     readCoverArtFromID3v2Tag(pCoverArt, *pID3v2Tag);
@@ -958,7 +1012,8 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
     } else if (kFileTypeWavPack == fileType) {
         TagLib::WavPack::File file(fileName.toLocal8Bit().constData());
         if (readAudioProperties(pTrackMetadata, file)) {
-            const TagLib::APE::Tag* pAPETag = file.APETag();
+            const TagLib::APE::Tag* pAPETag =
+                    hasAPETag(file) ? file.APETag() : NULL;
             if (pAPETag) {
                 readTrackMetadataFromAPETag(pTrackMetadata, *pAPETag);
                 readCoverArtFromAPETag(pCoverArt, *pAPETag);
@@ -976,7 +1031,8 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
         TagLib::RIFF::WAV::File file(fileName.toLocal8Bit().constData());
         if (readAudioProperties(pTrackMetadata, file)) {
 #if TAGLIB_HAS_WAV_ID3V2TAG
-            const TagLib::ID3v2::Tag* pID3v2Tag = file.hasID3v2Tag() ? file.ID3v2Tag() : NULL;
+            const TagLib::ID3v2::Tag* pID3v2Tag =
+                    file.hasID3v2Tag() ? file.ID3v2Tag() : NULL;
 #else
             const TagLib::ID3v2::Tag* pID3v2Tag = file.tag();
 #endif
@@ -1077,7 +1133,7 @@ Result writeTrackMetadataIntoFile(const TrackMetadata& trackMetadata, QString fi
 #if TAGLIB_HAS_WAV_ID3V2TAG
         writeTrackMetadataIntoID3v2Tag(pWAVFile->ID3v2Tag(), trackMetadata);
 #else
-        writeTrackMetadataIntoID3v2Tag(pWavFile->tag(), trackMetadata);
+        writeTrackMetadataIntoID3v2Tag(pWAVFile->tag(), trackMetadata);
 #endif
         pFile.reset(pWAVFile.take()); // transfer ownership
     } else if (kFileTypeAIFF == fileType) {
