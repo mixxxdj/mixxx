@@ -26,12 +26,12 @@
 
 #include "sampleutil.h"
 
-EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
+EngineDeck::EngineDeck(const QString& group,
                        ConfigObject<ConfigValue>* pConfig,
                        EngineMaster* pMixingEngine,
                        EffectsManager* pEffectsManager,
                        EngineChannel::ChannelOrientation defaultOrientation)
-        : EngineChannel(handle_group, defaultOrientation),
+        : EngineChannel(group, defaultOrientation),
           m_pConfig(pConfig),
           m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
           m_pPassing(new ControlPushButton(ConfigKey(getGroup(), "passthrough"))),
@@ -39,7 +39,8 @@ EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
           // items to be held at once (it keeps a blank spot open persistently)
           m_sampleBuffer(NULL) {
     if (pEffectsManager != NULL) {
-        pEffectsManager->registerChannel(handle_group);
+        ChannelHandle handle = pEffectsManager->registerChannel(group);
+        setEffectChannelHandle(handle);
     }
 
     // Set up passthrough utilities and fields
@@ -101,7 +102,7 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
         // volume.
         m_pVUMeter->collectFeatures(&features);
         m_pEngineEffectsManager->process(
-                getHandle(), pOut, iBufferSize,
+                getEffectChannelHandle(), pOut, iBufferSize,
                 static_cast<unsigned int>(m_pSampleRate->get()), features);
     }
     // Update VU meter

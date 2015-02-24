@@ -12,9 +12,9 @@
 #include "controlaudiotaperpot.h"
 
 
-EngineMicrophone::EngineMicrophone(const ChannelHandleAndGroup& handle_group,
+EngineMicrophone::EngineMicrophone(const QString& group,
                                    EffectsManager* pEffectsManager)
-        : EngineChannel(handle_group, EngineChannel::CENTER),
+        : EngineChannel(group, EngineChannel::CENTER),
           m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
           m_vuMeter(getGroup()),
           m_pEnabled(new ControlObject(ConfigKey(getGroup(), "enabled"))),
@@ -22,7 +22,8 @@ EngineMicrophone::EngineMicrophone(const ChannelHandleAndGroup& handle_group,
           m_sampleBuffer(NULL),
           m_wasActive(false) {
     if (pEffectsManager != NULL) {
-        pEffectsManager->registerChannel(handle_group);
+        ChannelHandle handle = pEffectsManager->registerChannel(group);
+        setEffectChannelHandle(handle);
     }
 
     setMaster(false); // Use "talkover" button to enable microphones
@@ -93,7 +94,7 @@ void EngineMicrophone::process(CSAMPLE* pOut, const int iBufferSize) {
         // This is out of date by a callback but some effects will want the RMS
         // volume.
         m_vuMeter.collectFeatures(&features);
-        m_pEngineEffectsManager->process(getHandle(), pOut, iBufferSize,
+        m_pEngineEffectsManager->process(getEffectChannelHandle(), pOut, iBufferSize,
                                          m_pSampleRate->get(), features);
     }
     // Update VU meter

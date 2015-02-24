@@ -38,18 +38,22 @@ class EngineChannel : public EngineObject {
         RIGHT,
     };
 
-    EngineChannel(const ChannelHandleAndGroup& handle_group,
+    EngineChannel(const QString& group,
                   ChannelOrientation defaultOrientation = CENTER);
     virtual ~EngineChannel();
 
     virtual ChannelOrientation getOrientation() const;
 
-    inline const ChannelHandle& getHandle() const {
-        return m_group.handle();
+    inline const ChannelHandle& getEffectChannelHandle() const {
+        return m_effectChannelHandle;
+    }
+
+    inline void setEffectChannelHandle(const ChannelHandle& handle) {
+        m_effectChannelHandle = handle;
     }
 
     virtual const QString& getGroup() const {
-        return m_group.name();
+        return m_group;
     }
 
     virtual bool isActive() = 0;
@@ -74,7 +78,8 @@ class EngineChannel : public EngineObject {
     void slotOrientationCenter(double v);
 
   private:
-    const ChannelHandleAndGroup m_group;
+    ChannelHandle m_effectChannelHandle;
+    const QString m_group;
     ControlPushButton* m_pMaster;
     ControlPushButton* m_pPFL;
     ControlPushButton* m_pOrientation;

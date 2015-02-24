@@ -62,8 +62,8 @@ void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {
             this, SIGNAL(availableEffectsUpdated()));
 }
 
-void EffectsManager::registerChannel(const ChannelHandleAndGroup& handle_group) {
-    m_pEffectChainManager->registerChannel(handle_group);
+ChannelHandle EffectsManager::registerChannel(const QString& group) {
+    return m_pEffectChainManager->registerChannel(group);
 }
 
 const QSet<ChannelHandleAndGroup>& EffectsManager::registeredChannels() const {

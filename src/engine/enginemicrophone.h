@@ -21,7 +21,7 @@ class ControlAudioTaperPot;
 class EngineMicrophone : public EngineChannel, public AudioDestination {
     Q_OBJECT
   public:
-    EngineMicrophone(const ChannelHandleAndGroup& handle_group,
+    EngineMicrophone(const QString& group,
                      EffectsManager* pEffectsManager);
     virtual ~EngineMicrophone();
 

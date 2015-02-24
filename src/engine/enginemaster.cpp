@@ -57,11 +57,11 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
           m_masterGainOld(0.0),
           m_headphoneMasterGainOld(0.0),
           m_headphoneGainOld(1.0),
-          m_masterHandle(registerChannelGroup("[Master]")),
-          m_headphoneHandle(registerChannelGroup("[Headphone]")),
-          m_busLeftHandle(registerChannelGroup("[BusLeft]")),
-          m_busCenterHandle(registerChannelGroup("[BusCenter]")),
-          m_busRightHandle(registerChannelGroup("[BusRight]")) {
+          m_masterGroup("[Master]"),
+          m_headphoneGroup("[Headphone]"),
+          m_busLeftGroup("[BusLeft]"),
+          m_busCenterGroup("[BusCenter]"),
+          m_busRightGroup("[BusRight]") {
     m_bBusOutputConnected[0] = false;
     m_bBusOutputConnected[1] = false;
     m_bBusOutputConnected[2] = false;
@@ -69,11 +69,11 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_pWorkerScheduler->start(QThread::HighPriority);
 
     if (pEffectsManager) {
-        pEffectsManager->registerChannel(m_masterHandle);
-        pEffectsManager->registerChannel(m_headphoneHandle);
-        pEffectsManager->registerChannel(m_busLeftHandle);
-        pEffectsManager->registerChannel(m_busCenterHandle);
-        pEffectsManager->registerChannel(m_busRightHandle);
+        m_masterHandle = pEffectsManager->registerChannel("[Master]");
+        m_headphoneHandle = pEffectsManager->registerChannel("[Headphone]");
+        m_busLeftHandle = pEffectsManager->registerChannel("[BusLeft]");
+        m_busCenterHandle = pEffectsManager->registerChannel("[BusCenter]");
+        m_busRightHandle = pEffectsManager->registerChannel("[BusRight]");
     }
 
     // Master sample rate
@@ -451,13 +451,13 @@ void EngineMaster::process(const int iBufferSize) {
     // Process master channel effects
     if (m_pEngineEffectsManager) {
         GroupFeatureState busFeatures;
-        m_pEngineEffectsManager->process(m_busLeftHandle.handle(),
+        m_pEngineEffectsManager->process(m_busLeftHandle,
                                          m_pOutputBusBuffers[0],
                                          iBufferSize, iSampleRate, busFeatures);
-        m_pEngineEffectsManager->process(m_busCenterHandle.handle(),
+        m_pEngineEffectsManager->process(m_busCenterHandle,
                                          m_pOutputBusBuffers[1],
                                          iBufferSize, iSampleRate, busFeatures);
-        m_pEngineEffectsManager->process(m_busRightHandle.handle(),
+        m_pEngineEffectsManager->process(m_busRightHandle,
                                          m_pOutputBusBuffers[2],
                                          iBufferSize, iSampleRate, busFeatures);
     }
@@ -489,7 +489,7 @@ void EngineMaster::process(const int iBufferSize) {
             if (m_pVumeter != NULL) {
                 m_pVumeter->collectFeatures(&masterFeatures);
             }
-            m_pEngineEffectsManager->process(m_masterHandle.handle(), m_pMaster,
+            m_pEngineEffectsManager->process(m_masterHandle, m_pMaster,
                                              iBufferSize, iSampleRate,
                                              masterFeatures);
         }
@@ -554,7 +554,7 @@ void EngineMaster::process(const int iBufferSize) {
         // Process headphone channel effects
         if (m_pEngineEffectsManager) {
             GroupFeatureState headphoneFeatures;
-            m_pEngineEffectsManager->process(m_headphoneHandle.handle(),
+            m_pEngineEffectsManager->process(m_headphoneHandle,
                                              m_pHead,
                                              iBufferSize, iSampleRate,
                                              headphoneFeatures);
@@ -607,7 +607,6 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     ChannelInfo* pChannelInfo = new ChannelInfo(m_channels.size());
     pChannelInfo->m_pChannel = pChannel;
     const QString& group = pChannel->getGroup();
-    pChannelInfo->m_handle = m_groupHandleFactory.getOrCreateHandle(group);
     pChannelInfo->m_pVolumeControl = new ControlAudioTaperPot(
             ConfigKey(group, "volume"), -20, 0, 1);
     pChannelInfo->m_pVolumeControl->setDefaultValue(1.0);
