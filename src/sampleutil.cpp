@@ -59,7 +59,7 @@ CSAMPLE* SampleUtil::alloc(int size) {
         }
         // Shift
         void* pAligned = (void*)(((size_t)pUnaligned & ~(alignment - 1)) + alignment);
-        // Store pointer to the original buffer in the slack spcae before the
+        // Store pointer to the original buffer in the slack space before the
         // shifted pointer.
         *((void**)(pAligned) - 1) = pUnaligned;
         return static_cast<CSAMPLE*>(pAligned);
