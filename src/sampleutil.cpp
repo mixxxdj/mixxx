@@ -47,8 +47,8 @@ CSAMPLE* SampleUtil::alloc(int size) {
     // or MSVC ::_aligned_malloc(size, alignment) and  ::_aligned_free(ptr);
 
     if (useAlignedAlloc()) {
-#if(_MSC_VER)
-        return (CSAMPLE*)_aligned_malloc(size, 16);
+#ifdef _MSC_VER
+        return (CSAMPLE*)_aligned_malloc(sizeof(CSAMPLE)*size, 16);
 #else
         // This block will be only used on exotic builds
         // We need to shift the alignment to 16
@@ -59,10 +59,10 @@ CSAMPLE* SampleUtil::alloc(int size) {
             return NULL;
         }
         // Shift
-        void* pAlligned = (void*)(((size_t)pUnaligned & ~(alignment - 1)) + alignment);
+        void* pAligned = (void*)(((size_t)pUnaligned & ~(alignment - 1)) + alignment);
         // Store pointer to original relative to the shifted pointer
-        *((void**)(pAlligned) - 1) = pUnaligned;
-        return (CSAMPLE*)pAlligned;
+        *((void**)(pAligned) - 1) = pUnaligned;
+        return (CSAMPLE*)pAligned;
 #endif
     } else {
         // We are either correct aligned or on an exotic architecture
@@ -76,7 +76,7 @@ void SampleUtil::free(CSAMPLE* pBuffer) {
         if (pBuffer == NULL) {
             return;
         }
-#if(_MSC_VER)
+#ifdef _MSC_VER
         _aligned_free(pBuffer);
 #else
         // Pointer to the original memory is stored before pBuffer
