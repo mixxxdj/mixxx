@@ -6,21 +6,28 @@
 #include <algorithm> // std::swap
 
 // A sample buffer with properly aligned memory to enable SSE optimizations.
+// The public interface closely follows that of std::vector.
 //
 // No resize operation is provided intentionally for maximum efficiency!
 // If the size of an existing sample buffer needs to be altered after
 // construction this can simply be achieved by swapping the contents with
-// a temporary sample buffer that has been constructed with the appropriate
+// a temporary sample buffer that has been constructed with the desired
 // size:
 //
 //     SampleBuffer sampleBuffer(oldSize);
 //     ...
-//     SampleBuffer(newSize).swap(sampleBuffer);
-//     // Now the data in sampleBuffer is uninitialized and
-//     // sampleBuffer.size() == newSize
+//     SampleBuffer tempBuffer(newSize)
+//     ... copy data from sampleBuffer to tempBuffer...
+//     sampleBuffer.swap(sampleBuffer);
 //
-// No sample data is copied when swapping the contents of two samples buffers
-// for resizing!
+// The local variable tempBuffer can be omitted if no data needs to be
+// copied from the existing sampleBuffer:
+//
+//     SampleBuffer sampleBuffer(oldSize);
+//     ...
+//     SampleBuffer(newSize).swap(sampleBuffer);
+//
+// After construction the content of the buffer is uninitialized.
 class SampleBuffer {
     Q_DISABLE_COPY(SampleBuffer);
 
@@ -28,9 +35,15 @@ class SampleBuffer {
     typedef size_t size_type;
     typedef CSAMPLE value_type;
 
+    typedef value_type& reference;
+    typedef const value_type& const_reference;
+
+    typedef value_type* pointer;
+    typedef const value_type* const_pointer;
+
     // random access iterators
-    typedef value_type* iterator;
-    typedef const value_type* const_iterator;
+    typedef pointer iterator;
+    typedef const_pointer const_iterator;
 
     SampleBuffer():
         m_data(NULL),
@@ -48,17 +61,17 @@ class SampleBuffer {
         return m_size;
     }
 
-    value_type* data() {
+    pointer data() {
         return m_data;
     }
-    const value_type* data() const {
+    const_pointer data() const {
         return m_data;
     }
 
-    value_type& operator[](size_type index) {
+    reference operator[](size_type index) {
         return m_data[index];
     }
-    value_type operator[](size_type index) const {
+    const_reference operator[](size_type index) const {
         return m_data[index];
     }
 
@@ -77,7 +90,7 @@ class SampleBuffer {
     }
 
   private:
-    value_type* m_data;
+    pointer m_data;
     size_type m_size;
 };
 
