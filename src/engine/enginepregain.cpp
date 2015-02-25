@@ -69,13 +69,13 @@ void EnginePregain::setSpeed(double speed) {
 void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
     const float fReplayGain = m_pCOReplayGain->get();
     float fReplayGainCorrection;
-    if (m_pPassthroughEnabled->toBool()) {
+    if (!s_pEnableReplayGain->toBool() || m_pPassthroughEnabled->toBool()) {
         // Override replaygain value if passing through
         // TODO(XXX): consider a good default.
         // Do we expect an replaygain leveled input or
         // Normalized to 1 input?
         fReplayGainCorrection = 1; // We expect a replaygain leveled input
-    } else if (!s_pEnableReplayGain->toBool() || fReplayGain == 0) {
+    } else if (fReplayGain == 0) {
         // use predicted replaygain
         fReplayGainCorrection = (float)s_pDefaultBoost->get();
         // We prepare for smoothfading to ReplayGain suggested gain
