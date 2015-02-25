@@ -16,6 +16,8 @@ typedef qint32 int32_t;
 // registers as tested with gcc 4.6 and the -ftree-vectorizer-verbose=2 flag on
 // an Intel i5 CPU. When changing, be careful to not disturb the vectorization.
 // https://gcc.gnu.org/projects/tree-ssa/vectorization.html
+// This also utilizes AVX registers wehn compiled for a recent 64 bit CPU 
+// using scons optimize=native.  
 
 // TODO() Check if uintptr_t is available on all our build targets and use that
 // instead of size_t, we can remove the sizeof(size_t) check than
@@ -44,6 +46,7 @@ CSAMPLE* SampleUtil::alloc(int size) {
     // true start of the buffer in the slack space as well so that we can free
     // it correctly.
     // TODO(XXX): Replace with C++11 aligned_alloc.
+    // TODO(XXX): consider 32 byte alignement to optimize for AVX builds 
     if (useAlignedAlloc()) {
 #ifdef _MSC_VER
         return static_cast<CSAMPLE*>(_aligned_malloc(sizeof(CSAMPLE)*size, 16));
@@ -65,8 +68,8 @@ CSAMPLE* SampleUtil::alloc(int size) {
         return static_cast<CSAMPLE*>(pAligned);
 #endif
     } else {
-        // We assume that our platform produces 16-byte aligned pointers
-        // here. We should be explicit about what we want from the system.
+        // Our platform already produces 16-byte aligned pointers (or is an exotic target) 
+        // We should be explicit about what we want from the system.
         // TODO(XXX): Use posix_memalign, memalign, or aligned_alloc.
         return new CSAMPLE[size];
     }

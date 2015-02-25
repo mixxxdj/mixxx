@@ -123,6 +123,3 @@ void WLibraryTableView::setTrackTableRowHeight(int rowHeight) {
             rowHeight, fontHeightPx));
 }
 
-void WLibraryTableView::updateGeometries() {
-    QTableView::updateGeometries();
-}
