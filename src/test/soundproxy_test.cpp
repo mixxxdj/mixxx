@@ -2,6 +2,7 @@
 
 #include "soundsourceproxy.h"
 #include "metadata/trackmetadata.h"
+#include "samplebuffer.h"
 
 #include <gmock/gmock.h>
 
@@ -95,8 +96,8 @@ TEST_F(SoundSourceProxyTest, seekForward) {
             openAudioSource(filePath));
         ASSERT_FALSE(pContReadSource.isNull());
         const Mixxx::AudioSource::size_type readSampleCount = pContReadSource->frames2samples(kReadFrameCount);
-        std::vector<Mixxx::AudioSource::sample_type> contReadData(readSampleCount);
-        std::vector<Mixxx::AudioSource::sample_type> seekReadData(readSampleCount);
+        SampleBuffer contReadData(readSampleCount);
+        SampleBuffer seekReadData(readSampleCount);
 
         for (Mixxx::AudioSource::diff_type contFrameIndex = 0;
                 pContReadSource->isValidFrameIndex(contFrameIndex);

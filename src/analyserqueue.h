@@ -5,6 +5,7 @@
 #include "analyser.h"
 #include "trackinfoobject.h"
 #include "sources/audiosource.h"
+#include "samplebuffer.h"
 
 #include <QList>
 #include <QThread>
@@ -66,7 +67,6 @@ class AnalyserQueue : public QThread {
     bool m_exit;
     QAtomicInt m_aiCheckPriorities;
 
-    typedef std::vector<Mixxx::AudioSource::sample_type> SampleBuffer;
     SampleBuffer m_sampleBuffer;
 
     // The processing queue and associated mutex

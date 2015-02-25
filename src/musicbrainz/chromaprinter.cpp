@@ -1,7 +1,7 @@
 #include "musicbrainz/chromaprinter.h"
 
 #include "soundsourceproxy.h"
-#include "sampleutil.h"
+#include "samplebufferutil.h"
 
 #include <chromaprint.h>
 
@@ -34,7 +34,7 @@ namespace
         // Allocate a sample buffer with maximum size to avoid the
         // implicit allocation of a temporary buffer when reducing
         // the audio signal to stereo.
-        std::vector<Mixxx::AudioSource::sample_type> sampleBuffer(
+        SampleBuffer sampleBuffer(
                 math_max(numFrames * kFingerprintChannels, pAudioSource->frames2samples(numFrames)));
 
         DEBUG_ASSERT(2 == kFingerprintChannels); // implicit assumption of the next line
