@@ -32,18 +32,8 @@ class SampleBuffer {
     Q_DISABLE_COPY(SampleBuffer);
 
   public:
-    typedef size_t size_type;
     typedef CSAMPLE value_type;
-
-    typedef value_type& reference;
-    typedef const value_type& const_reference;
-
-    typedef value_type* pointer;
-    typedef const value_type* const_pointer;
-
-    // random access iterators
-    typedef pointer iterator;
-    typedef const_pointer const_iterator;
+    typedef int size_type;
 
     SampleBuffer():
         m_data(NULL),
@@ -61,36 +51,22 @@ class SampleBuffer {
         return m_size;
     }
 
-    pointer data() {
+    value_type* data() {
         return m_data;
     }
-    const_pointer data() const {
+    const value_type* data() const {
         return m_data;
     }
 
-    reference operator[](size_type index) {
+    value_type& operator[](size_type index) {
         return m_data[index];
     }
-    const_reference operator[](size_type index) const {
+    const value_type& operator[](size_type index) const {
         return m_data[index];
-    }
-
-    iterator begin() {
-        return m_data;
-    }
-    const_iterator begin() const {
-        return m_data;
-    }
-
-    iterator end() {
-        return m_data + m_size;
-    }
-    const_iterator end() const {
-        return m_data + m_size;
     }
 
   private:
-    pointer m_data;
+    value_type* m_data;
     size_type m_size;
 };
 
