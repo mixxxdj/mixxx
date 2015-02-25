@@ -51,6 +51,7 @@ class ChannelHandle {
     int m_iHandle;
 
     friend class ChannelHandleFactory;
+    friend class EffectChainManager;
 };
 
 inline bool operator==(const ChannelHandle& h1, const ChannelHandle& h2) {
@@ -153,6 +154,7 @@ template <class T>
 class ChannelHandleMap {
     static const int kMaxExpectedGroups = 256;
     typedef QVarLengthArray<T, kMaxExpectedGroups> container_type;
+
   public:
     typedef typename QVarLengthArray<T, kMaxExpectedGroups>::const_iterator const_iterator;
     typedef typename QVarLengthArray<T, kMaxExpectedGroups>::iterator iterator;
@@ -206,6 +208,8 @@ class ChannelHandleMap {
   private:
     inline void maybeExpand(int iSize) {
         if (m_data.size() < iSize) {
+            // resize adds uninitialized POT types
+            // or calls T() for complex types
             m_data.resize(iSize);
         }
     }

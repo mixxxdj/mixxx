@@ -20,17 +20,19 @@ EffectChainManager::~EffectChainManager() {
 }
 
 ChannelHandle EffectChainManager::registerChannel(const QString& group) {
-    ChannelHandle handle = m_groupHandleFactory.getOrCreateHandle(group);
+    ChannelHandle handle(m_registeredChannels.size());
     ChannelHandleAndGroup handle_group(handle, group);
-    if (m_registeredChannels.contains(handle_group)) {
-        qWarning() << debugString() << "WARNING: Channel already registered:"
-                   << handle_group.name();
-    } else {
-        m_registeredChannels.insert(handle_group);
-
-        foreach (StandardEffectRackPointer pRack, m_standardEffectRacks) {
-            pRack->registerChannel(handle_group);
+    foreach(ChannelHandleAndGroup hg, m_registeredChannels) {
+        if (group == hg.name()) {
+            qWarning() << debugString() << "WARNING: Channel already registered:"
+                       << handle_group.name();
+            return hg.handle();
         }
+    }
+    m_registeredChannels.append(handle_group);
+
+    foreach (StandardEffectRackPointer pRack, m_standardEffectRacks) {
+        pRack->registerChannel(handle_group);
     }
     return handle;
 }

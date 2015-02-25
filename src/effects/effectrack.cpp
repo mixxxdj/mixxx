@@ -218,9 +218,8 @@ EffectChainSlotPointer StandardEffectRack::addEffectChainSlot() {
             this, SLOT(loadPrevEffect(unsigned int, unsigned int, EffectPointer)));
 
     // Register all the existing channels with the new EffectChain.
-    const QSet<ChannelHandleAndGroup>& registeredChannels =
-            m_pEffectChainManager->registeredChannels();
-    foreach (const ChannelHandleAndGroup& handle_group, registeredChannels) {
+    foreach (const ChannelHandleAndGroup& handle_group,
+            m_pEffectChainManager->registeredChannels()) {
         pChainSlot->registerChannel(handle_group);
     }
 

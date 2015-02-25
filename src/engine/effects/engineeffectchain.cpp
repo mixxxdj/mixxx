@@ -215,8 +215,8 @@ void EngineEffectChain::process(const ChannelHandle& handle,
                 // TODO(rryan): benchmark applyGain followed by addWithGain versus
                 // copy2WithGain.
                 SampleUtil::copy2WithRampingGain(
-                    pInOut, pInOut, 1.0 - wet_gain_old, 1.0 - wet_gain,
-                    m_pBuffer, wet_gain_old, wet_gain, numSamples);
+                        pInOut, pInOut, 1.0 - wet_gain_old, 1.0 - wet_gain,
+                        m_pBuffer, wet_gain_old, wet_gain, numSamples);
             }
         }
     } else { // SEND mode: output = input + effect(input) * wet

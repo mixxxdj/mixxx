@@ -3,7 +3,7 @@
 
 
 EngineEffect::EngineEffect(const EffectManifest& manifest,
-                           const QSet<ChannelHandleAndGroup>& registeredChannels,
+                           const QList<ChannelHandleAndGroup>& registeredChannels,
                            EffectInstantiatorPointer pInstantiator)
         : m_manifest(manifest),
           m_enableState(EffectProcessor::ENABLING),
