@@ -75,13 +75,13 @@ inline uint qHash(const ChannelHandle& handle) {
 // custom equality and hash methods that save the cost of touching the QString.
 class ChannelHandleAndGroup {
   public:
-    ChannelHandleAndGroup(const ChannelHandle& handle, const QString& name)
+    ChannelHandleAndGroup(const ChannelHandle& handle, const QString& group)
             : m_handle(handle),
-              m_name(name) {
+              m_group(group) {
     }
 
-    inline const QString& name() const {
-        return m_name;
+    inline const QString& group() const {
+        return m_group;
     }
 
     inline const ChannelHandle& handle() const {
@@ -89,7 +89,7 @@ class ChannelHandleAndGroup {
     }
 
     const ChannelHandle m_handle;
-    const QString m_name;
+    const QString m_group;
 };
 
 inline bool operator==(const ChannelHandleAndGroup& g1, const ChannelHandleAndGroup& g2) {
@@ -101,7 +101,7 @@ inline bool operator!=(const ChannelHandleAndGroup& g1, const ChannelHandleAndGr
 }
 
 inline QDebug operator<<(QDebug stream, const ChannelHandleAndGroup& g) {
-    stream << "ChannelHandleAndGroup(" << g.name() << "," << g.handle() << ")";
+    stream << "ChannelHandleAndGroup(" << g.group() << "," << g.handle() << ")";
     return stream;
 }
 

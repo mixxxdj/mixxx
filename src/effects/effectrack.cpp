@@ -260,7 +260,7 @@ EffectChainSlotPointer PerGroupRack::addEffectChainSlotForGroup(const QString& g
     // TODO(rryan): remove.
     foreach (const ChannelHandleAndGroup& handle_group,
              m_pEffectChainManager->registeredChannels()) {
-        if (handle_group.name() == groupName) {
+        if (handle_group.group() == groupName) {
             configureEffectChainSlotForGroup(pChainSlotPointer, handle_group);
             return pChainSlotPointer;
         }
@@ -290,7 +290,7 @@ void QuickEffectRack::configureEffectChainSlotForGroup(
 
     // Add a single EffectSlot for the quick effect.
     pSlot->addEffectSlot(QuickEffectRack::formatEffectSlotGroupString(
-            getRackNumber(), handle_group.name()));
+            getRackNumber(), handle_group.group()));
 
     // TODO(rryan): Set up next/prev signals.
 
@@ -325,7 +325,7 @@ bool QuickEffectRack::loadEffectToGroup(const QString& groupName,
         // TODO(rryan): remove.
         foreach (const ChannelHandleAndGroup& handle_group,
                  m_pEffectChainManager->registeredChannels()) {
-            if (handle_group.name() == groupName) {
+            if (handle_group.group() == groupName) {
                 pChain->enableForChannel(handle_group);
             }
         }
@@ -365,7 +365,7 @@ bool EqualizerRack::loadEffectToGroup(const QString& groupName,
         // TODO(rryan): remove.
         foreach (const ChannelHandleAndGroup& handle_group,
                  m_pEffectChainManager->registeredChannels()) {
-            if (handle_group.name() == groupName) {
+            if (handle_group.group() == groupName) {
                 pChain->enableForChannel(handle_group);
             }
         }
@@ -379,7 +379,7 @@ bool EqualizerRack::loadEffectToGroup(const QString& groupName,
 
 void EqualizerRack::configureEffectChainSlotForGroup(EffectChainSlotPointer pSlot,
                                                      const ChannelHandleAndGroup& handle_group) {
-    const QString& groupName = handle_group.name();
+    const QString& groupName = handle_group.group();
 
     // Register this channel alone with the chain slot.
     pSlot->registerChannel(handle_group);

@@ -23,9 +23,9 @@ ChannelHandle EffectChainManager::registerChannel(const QString& group) {
     ChannelHandle handle(m_registeredChannels.size());
     ChannelHandleAndGroup handle_group(handle, group);
     foreach(ChannelHandleAndGroup hg, m_registeredChannels) {
-        if (group == hg.name()) {
+        if (group == hg.group()) {
             qWarning() << debugString() << "WARNING: Channel already registered:"
-                       << handle_group.name();
+                       << handle_group.group();
             return hg.handle();
         }
     }
