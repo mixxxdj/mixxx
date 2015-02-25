@@ -604,7 +604,12 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                 // For extremely small changes, converge very slowly.
                 m_dDisplayPitch += pitch_difference * .01;
             }
-            m_pRateSlider->slotSet(rateDir->get() * (m_dDisplayPitch - 1.0) / rateRange->get());
+            // Don't show extremely high or low speeds in the UI.
+            if (m_dDisplayPitch < 1.9 && m_dDisplayPitch > 0.2) {
+                m_pRateSlider->set(rateDir->get() * (m_dDisplayPitch - 1.0) / rateRange->get());
+            } else {
+                m_pRateSlider->set(0.0);
+            }
             m_dUiUpdateTime = filePosition;
         }
 
@@ -743,14 +748,12 @@ double VinylControlXwax::checkSteadyPitch(double pitch, double time) {
     if (m_bWasReversed) {
         return 0;
     }
-    if (m_pSteadyGross->check(pitch, time,
-                              static_cast<bool>(loopEnabled->get())) < 0.5) {
+    if (m_pSteadyGross->check(pitch, time) < 0.5) {
         scratching->slotSet(1.0);
     } else {
         scratching->slotSet(0.0);
     }
-    return m_pSteadySubtle->check(pitch, time,
-                                  static_cast<bool>(loopEnabled->get()));
+    return m_pSteadySubtle->check(pitch, time);
 }
 
 //Synchronize Mixxx's position to the position of the timecoded vinyl.
