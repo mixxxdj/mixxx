@@ -399,7 +399,7 @@ AudioSource::diff_type AudioSourceMp3::seekSampleFrame(diff_type frameIndex) {
 
     // Skip (= decode and discard) prefetch data
     const size_type skipFrameCount = frameIndex - m_curFrameIndex;
-    skipFrameSamples(skipFrameCount);
+    skipSampleFrames(skipFrameCount);
     DEBUG_ASSERT(m_curFrameIndex == frameIndex);
 
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));

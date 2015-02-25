@@ -261,7 +261,7 @@ AudioSource::diff_type AudioSourceM4A::seekSampleFrame(diff_type frameIndex) {
         // prefetch (decode and discard) all samples up to the target position
         const size_type prefetchFrameCount = frameIndex - m_curFrameIndex;
         const size_type skipFrameCount =
-                readSampleFrames(prefetchFrameCount, NULL);
+                skipSampleFrames(prefetchFrameCount);
         DEBUG_ASSERT(skipFrameCount <= prefetchFrameCount);
         if (skipFrameCount != prefetchFrameCount) {
             qWarning() << "Failed to skip over prefetched sample frames after seeking @" << m_curFrameIndex;

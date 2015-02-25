@@ -39,8 +39,7 @@ namespace
 
         DEBUG_ASSERT(2 == kFingerprintChannels); // implicit assumption of the next line
         const Mixxx::AudioSource::size_type readFrames =
-                pAudioSource->readSampleFramesStereo(
-                        numFrames, &sampleBuffer[0], sampleBuffer.size());
+                pAudioSource->readSampleFramesStereo(numFrames, &sampleBuffer);
         if (readFrames != numFrames) {
             qDebug() << "oh that's embarrassing I couldn't read the track";
             return QString();

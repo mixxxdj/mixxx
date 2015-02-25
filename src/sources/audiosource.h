@@ -3,8 +3,9 @@
 
 #include "urlresource.h"
 
+#include "samplebuffer.h"
+
 #include "util/assert.h"
-#include "util/types.h" // CSAMPLE
 #include "util/defs.h" // Result
 
 #include <QSharedPointer>
@@ -36,7 +37,7 @@ class AudioSource: public UrlResource {
 public:
     typedef std::size_t size_type;
     typedef std::ptrdiff_t diff_type;
-    typedef CSAMPLE sample_type;
+    typedef SampleBuffer::value_type sample_type;
 
     static const size_type kChannelCountZero = 0;
     static const size_type kChannelCountMono = 1;
@@ -174,8 +175,25 @@ public:
     // might be lower than the requested number of frames when the end
     // of the audio stream has been reached. The current frame seek
     // position is moved forward towards the next unread frame.
-    virtual size_type readSampleFrames(size_type numberOfFrames,
+    virtual size_type readSampleFrames(
+            size_type numberOfFrames,
             sample_type* sampleBuffer) = 0;
+
+    inline size_type skipSampleFrames(
+            size_type numberOfFrames) {
+        return readSampleFrames(numberOfFrames, static_cast<sample_type*>(NULL));
+    }
+
+    inline size_type readSampleFrames(
+            size_type numberOfFrames,
+            SampleBuffer* pSampleBuffer) {
+        if (pSampleBuffer) {
+            DEBUG_ASSERT(frames2samples(numberOfFrames) <= size_type(pSampleBuffer->size()));
+            return readSampleFrames(numberOfFrames, pSampleBuffer->data());
+        } else {
+            return skipSampleFrames(numberOfFrames);
+        }
+    }
 
     // Specialized function for explicitly reading stereo (= 2 channels)
     // frames from an AudioSource. This is the preferred method in Mixxx
@@ -208,8 +226,21 @@ public:
     // They may also have reduced space requirements on sampleBuffer,
     // i.e. only the minimum size is required for an in-place
     // transformation without temporary allocations.
-    virtual size_type readSampleFramesStereo(size_type numberOfFrames,
-            sample_type* sampleBuffer, size_type sampleBufferSize);
+    virtual size_type readSampleFramesStereo(
+            size_type numberOfFrames,
+            sample_type* sampleBuffer,
+            size_type sampleBufferSize);
+
+    inline size_type readSampleFramesStereo(
+            size_type numberOfFrames,
+            SampleBuffer* pSampleBuffer) {
+        if (pSampleBuffer) {
+            return readSampleFramesStereo(numberOfFrames,
+                    pSampleBuffer->data(), pSampleBuffer->size());
+        } else {
+            return skipSampleFrames(numberOfFrames);
+        }
+    }
 
 protected:
     explicit AudioSource(QUrl url);

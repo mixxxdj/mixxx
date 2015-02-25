@@ -182,8 +182,7 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, Mixxx::AudioSourcePointer pAudi
         const Mixxx::AudioSource::size_type framesRead =
                 pAudioSource->readSampleFramesStereo(
                         kAnalysisFramesPerBlock,
-                        &m_sampleBuffer[0],
-                        m_sampleBuffer.size());
+                        &m_sampleBuffer);
         DEBUG_ASSERT(framesRead <= framesToRead);
         frameIndex += framesRead;
         DEBUG_ASSERT(pAudioSource->isValidFrameIndex(frameIndex));

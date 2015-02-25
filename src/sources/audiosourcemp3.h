@@ -37,9 +37,6 @@ private:
 
     void preDestroy();
 
-    inline size_type skipFrameSamples(size_type numberOfFrames) {
-        return readSampleFrames(numberOfFrames, NULL);
-    }
     size_type readSampleFrames(size_type numberOfFrames,
             sample_type* sampleBuffer, size_type sampleBufferSize,
             bool readStereoSamples);
