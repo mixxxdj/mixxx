@@ -774,7 +774,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         double speed = m_pRateControl->calculateSpeed(
                 baserate, tempoRatio, paused, iBufferSize, &is_scratching);
 
-        if (m_pScale == m_pScaleST && (is_scratching || fabs(speed) > 1.9)) {
+        if (m_pScaleKeylock == m_pScaleST && (is_scratching || fabs(speed) > 1.9)) {
             // Scratching and high speeds with Soundtouch always disables keylock
             // because Soundtouch sounds terrible in these conditions.  Rubberband
             // works ok.
