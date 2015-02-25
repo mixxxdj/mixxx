@@ -66,7 +66,6 @@ class EffectChainManager : public QObject {
     QList<EffectChainPointer> m_effectChains;
     QSet<ChannelHandleAndGroup> m_registeredChannelsSet;
     QList<ChannelHandleAndGroup> m_registeredChannels;
-    ChannelHandleFactory m_groupHandleFactory;
     DISALLOW_COPY_AND_ASSIGN(EffectChainManager);
 };
 
