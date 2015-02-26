@@ -9,7 +9,7 @@ class SteadyPitch {
     public:
         SteadyPitch(double threshold);
         void reset(double pitch, double time);
-        double check(double pitch, double time, bool looping);
+        double check(double pitch, double time);
         double steadyValue(void);
         bool directionChanged(double pitch);
         bool resyncDetected(double new_time);

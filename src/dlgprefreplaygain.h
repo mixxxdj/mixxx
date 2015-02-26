@@ -1,10 +1,3 @@
-/*
- * dlgprefreplaygain.h
- *
- *  Created on: 18/ott/2010
- *      Author: Vittorio Colao
- */
-
 #ifndef DLGPREFREPLAYGAIN_H_
 #define DLGPREFREPLAYGAIN_H_
 
@@ -15,7 +8,8 @@
 #include "controlobjectslave.h"
 #include "preferences/dlgpreferencepage.h"
 
-class DlgPrefReplayGain: public DlgPreferencePage, public Ui::DlgPrefReplayGainDlg  {
+class DlgPrefReplayGain: public DlgPreferencePage,
+                         public Ui::DlgPrefReplayGainDlg {
     Q_OBJECT
   public:
     DlgPrefReplayGain(QWidget *parent, ConfigObject<ConfigValue> *_config);
@@ -23,7 +17,8 @@ class DlgPrefReplayGain: public DlgPreferencePage, public Ui::DlgPrefReplayGainD
 
   public slots:
     // Update initial gain increment
-    void slotUpdateBoost();
+    void slotUpdateReplayGainBoost();
+    void slotUpdateDefaultBoost();
     void slotSetRGEnabled();
     void slotSetRGAnalyserEnabled();
 
@@ -37,13 +32,14 @@ class DlgPrefReplayGain: public DlgPreferencePage, public Ui::DlgPrefReplayGainD
   private:
     // Determines whether or not to gray out the preferences
     void loadSettings();
+    void setLabelCurrentReplayGainBoost(int value);
 
     // Pointer to config object
     ConfigObject<ConfigValue>* config;
 
-    ControlObjectSlave m_COTReplayGainBoost;
-    ControlObjectSlave m_COTEnabled;
+    ControlObjectSlave m_replayGainBoost;
+    ControlObjectSlave m_defaultBoost;
+    ControlObjectSlave m_enabled;
 };
-
 
 #endif /* DLGPREFREPLAYGAIN_H_ */
