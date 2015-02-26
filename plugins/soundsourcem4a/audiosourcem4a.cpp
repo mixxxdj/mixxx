@@ -27,18 +27,18 @@ namespace {
 // According to the specification each AAC sample block decodes
 // to 1024 sample frames. The rarely used AAC-960 profile with
 // a block size of 960 frames is not supported.
-const AudioSource::size_type kFramesPerSampleBlock = 1024;
+const SINT kFramesPerSampleBlock = 1024;
 
 // MP4SampleId is 1-based
 const MP4SampleId kSampleBlockIdMin = 1;
 
-inline AudioSource::diff_type getFrameIndexForSampleBlockId(
+inline SINT getFrameIndexForSampleBlockId(
         MP4SampleId sampleBlockId) {
     return AudioSource::kFrameIndexMin +
         (sampleBlockId - kSampleBlockIdMin) * kFramesPerSampleBlock;
 }
 
-inline AudioSource::size_type getFrameCountForSampleBlockId(
+inline SINT getFrameCountForSampleBlockId(
         MP4SampleId sampleBlockId) {
     return ((sampleBlockId - kSampleBlockIdMin) + 1) * kFramesPerSampleBlock;
 }
@@ -187,7 +187,7 @@ Result AudioSourceM4A::postConstruct() {
     setFrameCount(getFrameCountForSampleBlockId(m_maxSampleBlockId));
 
     // Resize temporary buffer for decoded sample data
-    const size_type decodeSampleBufferSize =
+    const SINT decodeSampleBufferSize =
             frames2samples(kFramesPerSampleBlock);
     SampleBuffer(decodeSampleBufferSize).swap(m_decodeSampleBuffer);
 
@@ -232,7 +232,7 @@ void AudioSourceM4A::restartDecoding(MP4SampleId sampleBlockId) {
 
 }
 
-AudioSource::diff_type AudioSourceM4A::seekSampleFrame(diff_type frameIndex) {
+SINT AudioSourceM4A::seekSampleFrame(SINT frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(frameIndex));
 
     if (m_curFrameIndex != frameIndex) {
@@ -259,8 +259,8 @@ AudioSource::diff_type AudioSourceM4A::seekSampleFrame(diff_type frameIndex) {
         // decoding starts before the actual target position
         DEBUG_ASSERT(m_curFrameIndex <= frameIndex);
         // prefetch (decode and discard) all samples up to the target position
-        const size_type prefetchFrameCount = frameIndex - m_curFrameIndex;
-        const size_type skipFrameCount =
+        const SINT prefetchFrameCount = frameIndex - m_curFrameIndex;
+        const SINT skipFrameCount =
                 skipSampleFrames(prefetchFrameCount);
         DEBUG_ASSERT(skipFrameCount <= prefetchFrameCount);
         if (skipFrameCount != prefetchFrameCount) {
@@ -273,28 +273,28 @@ AudioSource::diff_type AudioSourceM4A::seekSampleFrame(diff_type frameIndex) {
     return m_curFrameIndex;
 }
 
-AudioSource::size_type AudioSourceM4A::readSampleFrames(
-        size_type numberOfFrames, CSAMPLE* sampleBuffer) {
+SINT AudioSourceM4A::readSampleFrames(
+        SINT numberOfFrames, CSAMPLE* sampleBuffer) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
 
-    const size_type numberOfFramesTotal = math_min(numberOfFrames,
-            size_type(getFrameIndexMax() - m_curFrameIndex));
+    const SINT numberOfFramesTotal = math_min(numberOfFrames,
+            SINT(getFrameIndexMax() - m_curFrameIndex));
 
     CSAMPLE* pSampleBuffer = sampleBuffer;
-    size_type numberOfFramesRemaining = numberOfFramesTotal;
+    SINT numberOfFramesRemaining = numberOfFramesTotal;
     while (0 < numberOfFramesRemaining) {
         DEBUG_ASSERT(m_decodeSampleBufferReadOffset <=
                 m_decodeSampleBufferWriteOffset);
         if (m_decodeSampleBufferReadOffset < m_decodeSampleBufferWriteOffset) {
             // Consume previously decoded sample data
-            const size_type numberOfSamplesDecoded =
+            const SINT numberOfSamplesDecoded =
                     m_decodeSampleBufferWriteOffset -
                     m_decodeSampleBufferReadOffset;
-            const size_type numberOfFramesDecoded =
+            const SINT numberOfFramesDecoded =
                     samples2frames(numberOfSamplesDecoded);
-            const size_type numberOfFramesRead =
+            const SINT numberOfFramesRead =
                     math_min(numberOfFramesRemaining, numberOfFramesDecoded);
-            const size_type numberOfSamplesRead =
+            const SINT numberOfSamplesRead =
                     frames2samples(numberOfFramesRead);
             if (pSampleBuffer) {
                 const CSAMPLE* const pDecodeBuffer =
@@ -345,7 +345,7 @@ AudioSource::size_type AudioSourceM4A::readSampleFrames(
         // contains up to kFramesPerSampleBlock frames. Otherwise
         // we need to use a temporary buffer.
         CSAMPLE* pDecodeBuffer; // in/out parameter
-        size_type decodeBufferCapacityInBytes;
+        SINT decodeBufferCapacityInBytes;
         if (pSampleBuffer && (numberOfFramesRemaining >= kFramesPerSampleBlock)) {
             // decode samples directly into sampleBuffer
             pDecodeBuffer = pSampleBuffer;
@@ -387,7 +387,7 @@ AudioSource::size_type AudioSourceM4A::readSampleFrames(
                     << "<>" << getChannelCount();
             break; // abort
         }
-        if (getFrameRate() != decFrameInfo.samplerate) {
+        if (getFrameRate() != SINT(decFrameInfo.samplerate)) {
             qWarning() << "Corrupt or unsupported AAC file:"
                     << "Unexpected sample rate" << decFrameInfo.samplerate
                     << "<>" << getFrameRate();
@@ -398,13 +398,13 @@ AudioSource::size_type AudioSourceM4A::readSampleFrames(
         m_inputBufferOffset += decFrameInfo.bytesconsumed;
 
         // consume decoded output data
-        const size_type numberOfSamplesDecoded =
+        const SINT numberOfSamplesDecoded =
                 decFrameInfo.samples;
-        const size_type numberOfFramesDecoded =
+        const SINT numberOfFramesDecoded =
                 samples2frames(numberOfSamplesDecoded);
-        const size_type numberOfFramesRead =
+        const SINT numberOfFramesRead =
                 math_min(numberOfFramesRemaining, numberOfFramesDecoded);
-        const size_type numberOfSamplesRead =
+        const SINT numberOfSamplesRead =
                 frames2samples(numberOfFramesRead);
         if (pDecodeBuffer == pSampleBuffer) {
             pSampleBuffer += numberOfSamplesRead;

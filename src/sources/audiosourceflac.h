@@ -16,12 +16,12 @@ public:
 
     ~AudioSourceFLAC();
 
-    diff_type seekSampleFrame(diff_type frameIndex) /*override*/;
+    SINT seekSampleFrame(SINT frameIndex) /*override*/;
 
-    size_type readSampleFrames(size_type numberOfFrames,
+    SINT readSampleFrames(SINT numberOfFrames,
             CSAMPLE* sampleBuffer) /*override*/;
-    size_type readSampleFramesStereo(size_type numberOfFrames,
-            CSAMPLE* sampleBuffer, size_type sampleBufferSize) /*override*/;
+    SINT readSampleFramesStereo(SINT numberOfFrames,
+            CSAMPLE* sampleBuffer, SINT sampleBufferSize) /*override*/;
 
     // callback methods
     FLAC__StreamDecoderReadStatus flacRead(FLAC__byte buffer[], size_t* bytes);
@@ -41,8 +41,8 @@ private:
 
     void preDestroy();
 
-    size_type readSampleFrames(size_type numberOfFrames,
-            CSAMPLE* sampleBuffer, size_type sampleBufferSize,
+    SINT readSampleFrames(SINT numberOfFrames,
+            CSAMPLE* sampleBuffer, SINT sampleBufferSize,
             bool readStereoSamples);
 
     QFile m_file;
@@ -65,7 +65,7 @@ private:
     int m_decodeSampleBufferReadOffset;
     int m_decodeSampleBufferWriteOffset;
 
-    diff_type m_curFrameIndex;
+    SINT m_curFrameIndex;
 };
 
 }

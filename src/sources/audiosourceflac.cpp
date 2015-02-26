@@ -120,8 +120,8 @@ void AudioSourceFLAC::preDestroy() {
     m_file.close();
 }
 
-Mixxx::AudioSource::diff_type AudioSourceFLAC::seekSampleFrame(
-        diff_type frameIndex) {
+SINT AudioSourceFLAC::seekSampleFrame(
+        SINT frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(isValidFrameIndex(frameIndex));
 
@@ -141,29 +141,29 @@ Mixxx::AudioSource::diff_type AudioSourceFLAC::seekSampleFrame(
     return m_curFrameIndex;
 }
 
-Mixxx::AudioSource::size_type AudioSourceFLAC::readSampleFrames(
-        size_type numberOfFrames, CSAMPLE* sampleBuffer) {
+SINT AudioSourceFLAC::readSampleFrames(
+        SINT numberOfFrames, CSAMPLE* sampleBuffer) {
     return readSampleFrames(numberOfFrames, sampleBuffer,
             frames2samples(numberOfFrames), false);
 }
 
-Mixxx::AudioSource::size_type AudioSourceFLAC::readSampleFramesStereo(
-        size_type numberOfFrames, CSAMPLE* sampleBuffer,
-        size_type sampleBufferSize) {
+SINT AudioSourceFLAC::readSampleFramesStereo(
+        SINT numberOfFrames, CSAMPLE* sampleBuffer,
+        SINT sampleBufferSize) {
     return readSampleFrames(numberOfFrames, sampleBuffer, sampleBufferSize,
             true);
 }
 
-Mixxx::AudioSource::size_type AudioSourceFLAC::readSampleFrames(
-        size_type numberOfFrames, CSAMPLE* sampleBuffer,
-        size_type sampleBufferSize, bool readStereoSamples) {
+SINT AudioSourceFLAC::readSampleFrames(
+        SINT numberOfFrames, CSAMPLE* sampleBuffer,
+        SINT sampleBufferSize, bool readStereoSamples) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(getSampleBufferSize(numberOfFrames, readStereoSamples) <= sampleBufferSize);
 
-    const size_type numberOfFramesTotal = numberOfFrames;
+    const SINT numberOfFramesTotal = numberOfFrames;
 
     CSAMPLE* outBuffer = sampleBuffer;
-    size_type numberOfFramesRemaining = numberOfFramesTotal;
+    SINT numberOfFramesRemaining = numberOfFramesTotal;
     while (0 < numberOfFramesRemaining) {
         DEBUG_ASSERT(
                 m_decodeSampleBufferReadOffset <= m_decodeSampleBufferWriteOffset);
@@ -188,13 +188,13 @@ Mixxx::AudioSource::size_type AudioSourceFLAC::readSampleFrames(
         }
         DEBUG_ASSERT(
                 m_decodeSampleBufferReadOffset <= m_decodeSampleBufferWriteOffset);
-        const size_type decodeBufferSamples = m_decodeSampleBufferWriteOffset
+        const SINT decodeBufferSamples = m_decodeSampleBufferWriteOffset
                 - m_decodeSampleBufferReadOffset;
-        const size_type decodeBufferFrames = samples2frames(
+        const SINT decodeBufferFrames = samples2frames(
                 decodeBufferSamples);
-        const size_type framesToCopy =
+        const SINT framesToCopy =
                 math_min(decodeBufferFrames, numberOfFramesRemaining);
-        const size_type samplesToCopy = frames2samples(framesToCopy);
+        const SINT samplesToCopy = frames2samples(framesToCopy);
         if (readStereoSamples && !isChannelCountStereo()) {
             if (isChannelCountMono()) {
                 SampleUtil::copyMonoToDualMono(outBuffer,
@@ -341,7 +341,7 @@ void AudioSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
     switch (metadata->type) {
     case FLAC__METADATA_TYPE_STREAMINFO:
     {
-        const size_type channelCount = metadata->data.stream_info.channels;
+        const SINT channelCount = metadata->data.stream_info.channels;
         DEBUG_ASSERT(kChannelCountDefault != channelCount);
         if (getChannelCount() == kChannelCountDefault) {
             // not set before
@@ -353,7 +353,7 @@ void AudioSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
                         << channelCount << " <> " << getChannelCount();
             }
         }
-        const size_type frameRate = metadata->data.stream_info.sample_rate;
+        const SINT frameRate = metadata->data.stream_info.sample_rate;
         DEBUG_ASSERT(kFrameRateDefault != frameRate);
         if (getFrameRate() == kFrameRateDefault) {
             // not set before
@@ -365,7 +365,7 @@ void AudioSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
                         << frameRate << " <> " << getFrameRate();
             }
         }
-        const size_type frameCount = metadata->data.stream_info.total_samples;
+        const SINT frameCount = metadata->data.stream_info.total_samples;
         DEBUG_ASSERT(kFrameCountDefault != frameCount);
         if (getFrameCount() == kFrameCountDefault) {
             // not set before

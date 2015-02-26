@@ -169,8 +169,8 @@ void AudioSourceMediaFoundation::preDestroy() {
     }
 }
 
-Mixxx::AudioSource::diff_type AudioSourceMediaFoundation::seekSampleFrame(
-        diff_type frameIndex) {
+SINT AudioSourceMediaFoundation::seekSampleFrame(
+        SINT frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(frameIndex));
     if (sDebug) {
         qDebug() << "seekSampleFrame()" << frameIndex;
@@ -218,12 +218,12 @@ Mixxx::AudioSource::diff_type AudioSourceMediaFoundation::seekSampleFrame(
     return result;
 }
 
-Mixxx::AudioSource::size_type AudioSourceMediaFoundation::readSampleFrames(
-        size_type numberOfFrames, CSAMPLE* sampleBuffer) {
+SINT AudioSourceMediaFoundation::readSampleFrames(
+        SINT numberOfFrames, CSAMPLE* sampleBuffer) {
     if (sDebug) {
         qDebug() << "read()" << numberOfFrames;
     }
-    size_type framesNeeded(numberOfFrames);
+    SINT framesNeeded(numberOfFrames);
 
     // first, copy frames from leftover buffer IF the leftover buffer is at
     // the correct frame
@@ -300,7 +300,7 @@ Mixxx::AudioSource::size_type AudioSourceMediaFoundation::readSampleFrames(
             error = true;
             goto releaseMBuffer;
         }
-        size_type bufferLength = samples2frames(bufferLengthInBytes / sizeof(buffer[0]));
+        SINT bufferLength = samples2frames(bufferLengthInBytes / sizeof(buffer[0]));
 
         if (m_seeking) {
             qint64 bufferPosition(frameFromMF(timestamp));
@@ -384,7 +384,7 @@ Mixxx::AudioSource::size_type AudioSourceMediaFoundation::readSampleFrames(
             break;
     }
 
-    size_type framesRead = numberOfFrames - framesNeeded;
+    SINT framesRead = numberOfFrames - framesNeeded;
     m_iCurrentPosition += framesRead;
     m_nextFrame += framesRead;
     if (m_leftoverBufferLength > 0) {

@@ -7,7 +7,7 @@
 namespace Mixxx {
 
 namespace {
-AudioSource::size_type kChannelCount = 2;
+SINT kChannelCount = 2;
 }
 
 AudioSourceCoreAudio::AudioSourceCoreAudio(QUrl url)
@@ -127,8 +127,8 @@ void AudioSourceCoreAudio::preDestroy() {
     ExtAudioFileDispose(m_audioFile);
 }
 
-AudioSource::diff_type AudioSourceCoreAudio::seekSampleFrame(
-        diff_type frameIndex) {
+SINT AudioSourceCoreAudio::seekSampleFrame(
+        SINT frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(frameIndex));
     OSStatus err = ExtAudioFileSeek(m_audioFile, frameIndex + m_headerFrames);
     //_ThrowExceptionIfErr(@"ExtAudioFileSeek", err);
@@ -139,13 +139,13 @@ AudioSource::diff_type AudioSourceCoreAudio::seekSampleFrame(
     return frameIndex;
 }
 
-AudioSource::size_type AudioSourceCoreAudio::readSampleFrames(
-        size_type numberOfFrames, CSAMPLE* sampleBuffer) {
+SINT AudioSourceCoreAudio::readSampleFrames(
+        SINT numberOfFrames, CSAMPLE* sampleBuffer) {
     //if (!m_decoder) return 0;
-    size_type numFramesRead = 0;
+    SINT numFramesRead = 0;
 
     while (numFramesRead < numberOfFrames) {
-        size_type numFramesToRead = numberOfFrames - numFramesRead;
+        SINT numFramesToRead = numberOfFrames - numFramesRead;
 
         AudioBufferList fillBufList;
         fillBufList.mNumberBuffers = 1;

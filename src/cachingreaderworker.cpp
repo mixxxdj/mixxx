@@ -21,9 +21,9 @@
 // TODO(XXX): The optimum value of the "constant" kFramesPerChunk
 // depends on the properties of the AudioSource as the remarks
 // above suggest!
-const Mixxx::AudioSource::size_type CachingReaderWorker::kChunkChannels = 2; // stereo
-const Mixxx::AudioSource::size_type CachingReaderWorker::kFramesPerChunk = 8192; // ~ 170 ms at 48 kHz
-const Mixxx::AudioSource::size_type CachingReaderWorker::kSamplesPerChunk = kFramesPerChunk * kChunkChannels;
+const SINT CachingReaderWorker::kChunkChannels = 2; // stereo
+const SINT CachingReaderWorker::kFramesPerChunk = 8192; // ~ 170 ms at 48 kHz
+const SINT CachingReaderWorker::kSamplesPerChunk = kFramesPerChunk * kChunkChannels;
 
 CachingReaderWorker::CachingReaderWorker(QString group,
         FIFO<ChunkReadRequest>* pChunkReadRequestFIFO,
@@ -53,7 +53,7 @@ void CachingReaderWorker::processChunkReadRequest(
         return;
     }
 
-    const Mixxx::AudioSource::size_type chunkFrameIndex =
+    const SINT chunkFrameIndex =
             frameForChunk(chunk_number);
     if (!m_pAudioSource->isValidFrameIndex(chunkFrameIndex)) {
         // Frame index out of range
@@ -61,7 +61,7 @@ void CachingReaderWorker::processChunkReadRequest(
         return;
     }
 
-    const Mixxx::AudioSource::size_type seekFrameIndex =
+    const SINT seekFrameIndex =
             m_pAudioSource->seekSampleFrame(chunkFrameIndex);
     if (seekFrameIndex != chunkFrameIndex) {
         // Failed to seek to the requested index.
@@ -71,9 +71,9 @@ void CachingReaderWorker::processChunkReadRequest(
         return;
     }
 
-    const Mixxx::AudioSource::size_type framesRemaining =
+    const SINT framesRemaining =
             m_pAudioSource->getFrameIndexMax() - seekFrameIndex;
-    const Mixxx::AudioSource::size_type framesToRead =
+    const SINT framesToRead =
             math_min(kFramesPerChunk, framesRemaining);
     if (0 >= framesToRead) {
         // No more data available for reading
@@ -81,7 +81,7 @@ void CachingReaderWorker::processChunkReadRequest(
         return;
     }
 
-    const Mixxx::AudioSource::size_type framesRead =
+    const SINT framesRead =
             m_pAudioSource->readSampleFramesStereo(
                     framesToRead, request->chunk->stereoSamples, kSamplesPerChunk);
     DEBUG_ASSERT(framesRead <= framesToRead);
@@ -194,7 +194,7 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     }
 
     // Emit that the track is loaded.
-    const Mixxx::AudioSource::size_type sampleCount =
+    const SINT sampleCount =
             m_pAudioSource->getFrameCount() * kChunkChannels;
     emit(trackLoaded(pTrack, m_pAudioSource->getFrameRate(), sampleCount));
 }

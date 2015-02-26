@@ -61,9 +61,9 @@ TEST_F(SoundSourceProxyTest, open) {
 
         Mixxx::AudioSourcePointer pAudioSource(openAudioSource(filePath));
         ASSERT_TRUE(!pAudioSource.isNull());
-        EXPECT_LT(0UL, pAudioSource->getChannelCount());
-        EXPECT_LT(0UL, pAudioSource->getFrameRate());
-        EXPECT_LT(0UL, pAudioSource->getFrameCount());
+        EXPECT_LT(0, pAudioSource->getChannelCount());
+        EXPECT_LT(0, pAudioSource->getFrameRate());
+        EXPECT_LT(0, pAudioSource->getFrameCount());
     }
 }
 
@@ -88,7 +88,7 @@ TEST_F(SoundSourceProxyTest, TOAL_TPE2) {
 }
 
 TEST_F(SoundSourceProxyTest, seekForward) {
-    const Mixxx::AudioSource::size_type kReadFrameCount = 10000;
+    const SINT kReadFrameCount = 10000;
 
     // According to API documentation of op_pcm_seek():
     // "...decoding after seeking may not return exactly the same
@@ -111,15 +111,15 @@ TEST_F(SoundSourceProxyTest, seekForward) {
         Mixxx::AudioSourcePointer pContReadSource(
             openAudioSource(filePath));
         ASSERT_FALSE(pContReadSource.isNull());
-        const Mixxx::AudioSource::size_type readSampleCount = pContReadSource->frames2samples(kReadFrameCount);
+        const SINT readSampleCount = pContReadSource->frames2samples(kReadFrameCount);
         SampleBuffer contReadData(readSampleCount);
         SampleBuffer seekReadData(readSampleCount);
 
-        for (Mixxx::AudioSource::diff_type contFrameIndex = 0;
+        for (SINT contFrameIndex = 0;
                 pContReadSource->isValidFrameIndex(contFrameIndex);
                 contFrameIndex += kReadFrameCount) {
 
-            const Mixxx::AudioSource::size_type contReadFrameCount =
+            const SINT contReadFrameCount =
                     pContReadSource->readSampleFrames(kReadFrameCount, &contReadData[0]);
 
             Mixxx::AudioSourcePointer pSeekReadSource(
@@ -128,17 +128,17 @@ TEST_F(SoundSourceProxyTest, seekForward) {
             ASSERT_EQ(pContReadSource->getChannelCount(), pSeekReadSource->getChannelCount());
             ASSERT_EQ(pContReadSource->getFrameCount(), pSeekReadSource->getFrameCount());
 
-            const Mixxx::AudioSource::diff_type seekFrameIndex =
+            const SINT seekFrameIndex =
                     pSeekReadSource->seekSampleFrame(contFrameIndex);
             ASSERT_EQ(contFrameIndex, seekFrameIndex);
 
-            const Mixxx::AudioSource::size_type seekReadFrameCount =
+            const SINT seekReadFrameCount =
                     pSeekReadSource->readSampleFrames(kReadFrameCount, &seekReadData[0]);
 
             ASSERT_EQ(contReadFrameCount, seekReadFrameCount);
-            const Mixxx::AudioSource::size_type readSampleCount =
+            const SINT readSampleCount =
                     pContReadSource->frames2samples(contReadFrameCount);
-            for (Mixxx::AudioSource::size_type readSampleOffset = 0;
+            for (SINT readSampleOffset = 0;
                     readSampleOffset < readSampleCount;
                     ++readSampleOffset) {
                 if ("opus" == fileExtension) {

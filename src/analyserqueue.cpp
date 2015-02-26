@@ -31,9 +31,9 @@ namespace {
     // We need to use a smaller block size, because on Linux the AnalyserQueue
     // can starve the CPU of its resources, resulting in xruns. A block size
     // of 4096 frames per block seems to do fine.
-    const Mixxx::AudioSource::size_type kAnalysisChannels = 2; // stereo
-    const Mixxx::AudioSource::size_type kAnalysisFramesPerBlock = 4096;
-    const Mixxx::AudioSource::size_type kAnalysisSamplesPerBlock =
+    const SINT kAnalysisChannels = 2; // stereo
+    const SINT kAnalysisFramesPerBlock = 4096;
+    const SINT kAnalysisSamplesPerBlock =
             kAnalysisFramesPerBlock * kAnalysisChannels;
 } // anonymous namespace
 
@@ -166,20 +166,20 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, Mixxx::AudioSourcePointer pAudi
     QTime progressUpdateInhibitTimer;
     progressUpdateInhibitTimer.start(); // Inhibit Updates for 60 milliseconds
 
-    Mixxx::AudioSource::diff_type frameIndex = pAudioSource->getFrameIndexMin();
+    SINT frameIndex = pAudioSource->getFrameIndexMin();
     bool dieflag = false;
     bool cancelled = false;
     do {
         ScopedTimer t("AnalyserQueue::doAnalysis block");
 
         DEBUG_ASSERT(frameIndex < pAudioSource->getFrameIndexMax());
-        const Mixxx::AudioSource::size_type framesRemaining =
+        const SINT framesRemaining =
                 pAudioSource->getFrameIndexMax() - frameIndex;
-        const Mixxx::AudioSource::size_type framesToRead =
+        const SINT framesToRead =
                 math_min(kAnalysisFramesPerBlock, framesRemaining);
         DEBUG_ASSERT(0 < framesToRead);
 
-        const Mixxx::AudioSource::size_type framesRead =
+        const SINT framesRead =
                 pAudioSource->readSampleFramesStereo(
                         kAnalysisFramesPerBlock,
                         &m_sampleBuffer);

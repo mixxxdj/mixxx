@@ -15,7 +15,7 @@ const int kEntireStreamLink  = -1; // get ... of the whole/entire stream
 } // anonymous namespace
 
 // Decoded output of opusfile has a fixed sample rate of 48 kHz
-const AudioSource::size_type AudioSourceOpus::kFrameRate = 48000;
+const SINT AudioSourceOpus::kFrameRate = 48000;
 
 AudioSourceOpus::AudioSourceOpus(QUrl url)
         : AudioSource(url),
@@ -82,7 +82,7 @@ void AudioSourceOpus::preDestroy() {
     }
 }
 
-AudioSource::diff_type AudioSourceOpus::seekSampleFrame(diff_type frameIndex) {
+SINT AudioSourceOpus::seekSampleFrame(SINT frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(isValidFrameIndex(frameIndex));
 
@@ -104,15 +104,15 @@ AudioSource::diff_type AudioSourceOpus::seekSampleFrame(diff_type frameIndex) {
     return m_curFrameIndex;
 }
 
-AudioSource::size_type AudioSourceOpus::readSampleFrames(
-        size_type numberOfFrames, CSAMPLE* sampleBuffer) {
+SINT AudioSourceOpus::readSampleFrames(
+        SINT numberOfFrames, CSAMPLE* sampleBuffer) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
 
-    const size_type numberOfFramesTotal = math_min(numberOfFrames,
-            size_type(getFrameIndexMax() - m_curFrameIndex));
+    const SINT numberOfFramesTotal = math_min(numberOfFrames,
+            SINT(getFrameIndexMax() - m_curFrameIndex));
 
     CSAMPLE* pSampleBuffer = sampleBuffer;
-    size_type numberOfFramesRemaining = numberOfFramesTotal;
+    SINT numberOfFramesRemaining = numberOfFramesTotal;
     while (0 < numberOfFramesRemaining) {
         int readResult = op_read_float(m_pOggOpusFile,
                 pSampleBuffer,
@@ -133,17 +133,17 @@ AudioSource::size_type AudioSourceOpus::readSampleFrames(
     return numberOfFramesTotal - numberOfFramesRemaining;
 }
 
-AudioSource::size_type AudioSourceOpus::readSampleFramesStereo(
-        size_type numberOfFrames, CSAMPLE* sampleBuffer,
-        size_type sampleBufferSize) {
+SINT AudioSourceOpus::readSampleFramesStereo(
+        SINT numberOfFrames, CSAMPLE* sampleBuffer,
+        SINT sampleBufferSize) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(getSampleBufferSize(numberOfFrames, true) <= sampleBufferSize);
 
-    const size_type numberOfFramesTotal = math_min(numberOfFrames,
-            size_type(getFrameIndexMax() - m_curFrameIndex));
+    const SINT numberOfFramesTotal = math_min(numberOfFrames,
+            SINT(getFrameIndexMax() - m_curFrameIndex));
 
     CSAMPLE* pSampleBuffer = sampleBuffer;
-    size_type numberOfFramesRemaining = numberOfFramesTotal;
+    SINT numberOfFramesRemaining = numberOfFramesTotal;
     while (0 < numberOfFramesRemaining) {
         int readResult = op_read_float_stereo(m_pOggOpusFile,
                 pSampleBuffer,

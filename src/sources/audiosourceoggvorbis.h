@@ -14,12 +14,12 @@ public:
 
     ~AudioSourceOggVorbis();
 
-    diff_type seekSampleFrame(diff_type frameIndex) /*override*/;
+    SINT seekSampleFrame(SINT frameIndex) /*override*/;
 
-    size_type readSampleFrames(size_type numberOfFrames,
+    SINT readSampleFrames(SINT numberOfFrames,
             CSAMPLE* sampleBuffer) /*override*/;
-    size_type readSampleFramesStereo(size_type numberOfFrames,
-            CSAMPLE* sampleBuffer, size_type sampleBufferSize) /*override*/;
+    SINT readSampleFramesStereo(SINT numberOfFrames,
+            CSAMPLE* sampleBuffer, SINT sampleBufferSize) /*override*/;
 
 private:
     explicit AudioSourceOggVorbis(QUrl url);
@@ -28,13 +28,13 @@ private:
 
     void preDestroy();
 
-    size_type readSampleFrames(size_type numberOfFrames,
-            CSAMPLE* sampleBuffer, size_type sampleBufferSize,
+    SINT readSampleFrames(SINT numberOfFrames,
+            CSAMPLE* sampleBuffer, SINT sampleBufferSize,
             bool readStereoSamples);
 
     OggVorbis_File m_vf;
 
-    diff_type m_curFrameIndex;
+    SINT m_curFrameIndex;
 };
 
 }

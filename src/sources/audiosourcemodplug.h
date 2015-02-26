@@ -16,8 +16,8 @@ namespace Mixxx {
 // in RAM to allow seeking and smooth operation in Mixxx.
 class AudioSourceModPlug: public AudioSource {
 public:
-    static const size_type kChannelCount = 2; // always stereo
-    static const size_type kFrameRate = 44100; // always 44.1kHz
+    static const SINT kChannelCount = 2; // always stereo
+    static const SINT kFrameRate = 44100; // always 44.1kHz
 
     // apply settings for decoding
     static void configure(unsigned int bufferSizeLimit,
@@ -27,9 +27,9 @@ public:
 
     ~AudioSourceModPlug();
 
-    diff_type seekSampleFrame(diff_type frameIndex) /*override*/;
+    SINT seekSampleFrame(SINT frameIndex) /*override*/;
 
-    size_type readSampleFrames(size_type numberOfFrames,
+    SINT readSampleFrames(SINT numberOfFrames,
             CSAMPLE* sampleBuffer) /*override*/;
 
 private:
@@ -42,8 +42,8 @@ private:
     void preDestroy();
 
     ModPlug::ModPlugFile *m_pModFile; // modplug file descriptor
-    unsigned long m_fileLength; // length of file in samples
-    unsigned long m_seekPos; // current read position
+    SINT m_fileLength; // length of file in samples
+    SINT m_seekPos; // current read position
     QByteArray m_fileBuf; // original module file data
     std::vector<SAMPLE> m_sampleBuf; // 16bit stereo samples, 44.1kHz
 };
