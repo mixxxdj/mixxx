@@ -290,7 +290,7 @@ FLAC__StreamDecoderWriteStatus AudioSourceFLAC::flacWrite(
                 << frame->header.sample_rate << "<>" << getFrameRate();
         return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
     }
-    const SampleBuffer::size_type maxBlocksize = samples2frames(
+    const unsigned maxBlocksize = samples2frames(
             m_decodeSampleBuffer.size());
     if (maxBlocksize < frame->header.blocksize) {
         qWarning() << "Corrupt or unsupported FLAC file:"
@@ -397,7 +397,7 @@ void AudioSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
         m_maxFramesize = metadata->data.stream_info.max_framesize;
         m_decodeSampleBufferReadOffset = 0;
         m_decodeSampleBufferWriteOffset = 0;
-        const SampleBuffer::size_type decodeSampleBufferSize =
+        const unsigned decodeSampleBufferSize =
                 m_maxBlocksize * getChannelCount();
         SampleBuffer(decodeSampleBufferSize).swap(m_decodeSampleBuffer);
         break;

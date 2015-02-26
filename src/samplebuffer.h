@@ -120,17 +120,15 @@ inline void swap(SampleBuffer& lhs, SampleBuffer& rhs) {
 //
 // After construction the content of the buffer is uninitialized.
 class SampleBuffer {
-    Q_DISABLE_COPY(SampleBuffer);
+    Q_DISABLE_COPY(SampleBuffer)
+    ;
 
-  public:
-    typedef CSAMPLE value_type;
-    typedef int size_type;
-
-    SampleBuffer():
-        m_data(NULL),
-        m_size(0) {
+public:
+    SampleBuffer()
+            : m_data(NULL),
+              m_size(0) {
     }
-    explicit SampleBuffer(size_type size);
+    explicit SampleBuffer(int size);
     virtual ~SampleBuffer();
 
     void swap(SampleBuffer& other) {
@@ -138,27 +136,33 @@ class SampleBuffer {
         std::swap(m_size, other.m_size);
     }
 
-    size_type size() const {
+    int size() const {
         return m_size;
     }
 
-    value_type* data() {
+    CSAMPLE* data() {
         return m_data;
     }
-    const value_type* data() const {
+    const CSAMPLE* data() const {
         return m_data;
     }
 
-    value_type& operator[](size_type index) {
+    CSAMPLE& operator[](int index) {
         return m_data[index];
     }
-    const value_type& operator[](size_type index) const {
+    const CSAMPLE& operator[](int index) const {
         return m_data[index];
     }
 
-  private:
-    value_type* m_data;
-    size_type m_size;
+    // Fills the whole buffer with zeroes
+    void clear();
+
+    // Fills the whole buffer with the same value
+    void fill(CSAMPLE value);
+
+private:
+    CSAMPLE* m_data;
+    int m_size;
 };
 
 <<<<<<< HEAD
