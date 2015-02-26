@@ -30,7 +30,7 @@ public:
     diff_type seekSampleFrame(diff_type frameIndex) /*override*/;
 
     size_type readSampleFrames(size_type numberOfFrames,
-            sample_type* sampleBuffer) /*override*/;
+            CSAMPLE* sampleBuffer) /*override*/;
 
 private:
     static unsigned int s_bufferSizeLimit; // max track buffer length (bytes)

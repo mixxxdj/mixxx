@@ -37,7 +37,6 @@ class AudioSource: public UrlResource {
 public:
     typedef std::size_t size_type;
     typedef std::ptrdiff_t diff_type;
-    typedef CSAMPLE sample_type;
 
     static const size_type kChannelCountZero = 0;
     static const size_type kChannelCountMono = 1;
@@ -53,8 +52,8 @@ public:
     // 0-based indexing of sample frames
     static const diff_type kFrameIndexMin = 0;
 
-    static const sample_type kSampleValueZero;
-    static const sample_type kSampleValuePeak;
+    static const CSAMPLE kSampleValueZero;
+    static const CSAMPLE kSampleValuePeak;
 
     static const size_type kBitrateZero = 0;
     static const size_type kBitrateDefault = kBitrateZero;
@@ -177,11 +176,11 @@ public:
     // position is moved forward towards the next unread frame.
     virtual size_type readSampleFrames(
             size_type numberOfFrames,
-            sample_type* sampleBuffer) = 0;
+            CSAMPLE* sampleBuffer) = 0;
 
     inline size_type skipSampleFrames(
             size_type numberOfFrames) {
-        return readSampleFrames(numberOfFrames, static_cast<sample_type*>(NULL));
+        return readSampleFrames(numberOfFrames, static_cast<CSAMPLE*>(NULL));
     }
 
     inline size_type readSampleFrames(
@@ -228,7 +227,7 @@ public:
     // transformation without temporary allocations.
     virtual size_type readSampleFramesStereo(
             size_type numberOfFrames,
-            sample_type* sampleBuffer,
+            CSAMPLE* sampleBuffer,
             size_type sampleBufferSize);
 
     inline size_type readSampleFramesStereo(

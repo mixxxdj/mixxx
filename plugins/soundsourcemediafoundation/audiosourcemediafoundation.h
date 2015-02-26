@@ -31,7 +31,7 @@ public:
 
     diff_type seekSampleFrame(diff_type frameIndex) /*override*/;
 
-    size_type readSampleFrames(size_type numberOfFrames, sample_type* sampleBuffer) /*override*/;
+    size_type readSampleFrames(size_type numberOfFrames, CSAMPLE* sampleBuffer) /*override*/;
 
 private:
     explicit AudioSourceMediaFoundation(QUrl url);
@@ -42,7 +42,7 @@ private:
 
     bool configureAudioStream();
 
-    void copyFrames(sample_type *dest, size_t *destFrames, const sample_type *src,
+    void copyFrames(CSAMPLE *dest, size_t *destFrames, const CSAMPLE *src,
             size_t srcFrames);
 
     HRESULT m_hrCoInitialize;
@@ -51,7 +51,7 @@ private:
     IMFMediaType *m_pAudioType;
     wchar_t *m_wcFilename;
     int m_nextFrame;
-    sample_type *m_leftoverBuffer;
+    CSAMPLE *m_leftoverBuffer;
     size_t m_leftoverBufferSize;
     size_t m_leftoverBufferLength;
     int m_leftoverBufferPosition;

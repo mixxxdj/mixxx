@@ -7,9 +7,9 @@
 
 namespace Mixxx {
 
-/*static*/const AudioSource::sample_type AudioSource::kSampleValueZero =
+/*static*/const CSAMPLE AudioSource::kSampleValueZero =
         CSAMPLE_ZERO;
-/*static*/const AudioSource::sample_type AudioSource::kSampleValuePeak =
+/*static*/const CSAMPLE AudioSource::kSampleValuePeak =
         CSAMPLE_PEAK;
 
 AudioSourcePointer AudioSource::onCreate(AudioSource* pNewAudioSource) {
@@ -53,7 +53,7 @@ AudioSource::size_type AudioSource::getSampleBufferSize(
 
 AudioSource::size_type AudioSource::readSampleFramesStereo(
         size_type numberOfFrames,
-        sample_type* sampleBuffer,
+        CSAMPLE* sampleBuffer,
         size_type sampleBufferSize) {
     DEBUG_ASSERT(getSampleBufferSize(numberOfFrames, true) <= sampleBufferSize);
 

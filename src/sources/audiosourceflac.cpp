@@ -142,27 +142,27 @@ Mixxx::AudioSource::diff_type AudioSourceFLAC::seekSampleFrame(
 }
 
 Mixxx::AudioSource::size_type AudioSourceFLAC::readSampleFrames(
-        size_type numberOfFrames, sample_type* sampleBuffer) {
+        size_type numberOfFrames, CSAMPLE* sampleBuffer) {
     return readSampleFrames(numberOfFrames, sampleBuffer,
             frames2samples(numberOfFrames), false);
 }
 
 Mixxx::AudioSource::size_type AudioSourceFLAC::readSampleFramesStereo(
-        size_type numberOfFrames, sample_type* sampleBuffer,
+        size_type numberOfFrames, CSAMPLE* sampleBuffer,
         size_type sampleBufferSize) {
     return readSampleFrames(numberOfFrames, sampleBuffer, sampleBufferSize,
             true);
 }
 
 Mixxx::AudioSource::size_type AudioSourceFLAC::readSampleFrames(
-        size_type numberOfFrames, sample_type* sampleBuffer,
+        size_type numberOfFrames, CSAMPLE* sampleBuffer,
         size_type sampleBufferSize, bool readStereoSamples) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(getSampleBufferSize(numberOfFrames, readStereoSamples) <= sampleBufferSize);
 
     const size_type numberOfFramesTotal = numberOfFrames;
 
-    sample_type* outBuffer = sampleBuffer;
+    CSAMPLE* outBuffer = sampleBuffer;
     size_type numberOfFramesRemaining = numberOfFramesTotal;
     while (0 < numberOfFramesRemaining) {
         DEBUG_ASSERT(
@@ -383,7 +383,7 @@ void AudioSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
             // not set before
             m_bitsPerSample = bitsPerSample;
             m_sampleScale = kSampleValuePeak
-                    / sample_type(FLAC__int32(1) << bitsPerSample);
+                    / CSAMPLE(FLAC__int32(1) << bitsPerSample);
         } else {
             // already set before -> check for consistency
             if (bitsPerSample != m_bitsPerSample) {

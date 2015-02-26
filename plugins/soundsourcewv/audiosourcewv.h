@@ -22,7 +22,7 @@ public:
     diff_type seekSampleFrame(diff_type frameIndex) /*override*/;
 
     size_type readSampleFrames(size_type numberOfFrames,
-            sample_type* sampleBuffer) /*override*/;
+            CSAMPLE* sampleBuffer) /*override*/;
 
 private:
     explicit AudioSourceWV(QUrl url);
@@ -33,7 +33,7 @@ private:
 
     WavpackContext* m_wpc;
 
-    sample_type m_sampleScale;
+    CSAMPLE m_sampleScale;
 };
 
 }  // namespace Mixxx

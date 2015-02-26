@@ -274,13 +274,13 @@ AudioSource::diff_type AudioSourceM4A::seekSampleFrame(diff_type frameIndex) {
 }
 
 AudioSource::size_type AudioSourceM4A::readSampleFrames(
-        size_type numberOfFrames, sample_type* sampleBuffer) {
+        size_type numberOfFrames, CSAMPLE* sampleBuffer) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
 
     const size_type numberOfFramesTotal = math_min(numberOfFrames,
             size_type(getFrameIndexMax() - m_curFrameIndex));
 
-    sample_type* pSampleBuffer = sampleBuffer;
+    CSAMPLE* pSampleBuffer = sampleBuffer;
     size_type numberOfFramesRemaining = numberOfFramesTotal;
     while (0 < numberOfFramesRemaining) {
         DEBUG_ASSERT(m_decodeSampleBufferReadOffset <=
@@ -297,7 +297,7 @@ AudioSource::size_type AudioSourceM4A::readSampleFrames(
             const size_type numberOfSamplesRead =
                     frames2samples(numberOfFramesRead);
             if (pSampleBuffer) {
-                const sample_type* const pDecodeBuffer =
+                const CSAMPLE* const pDecodeBuffer =
                         &m_decodeSampleBuffer[m_decodeSampleBufferReadOffset];
                 SampleUtil::copy(pSampleBuffer, pDecodeBuffer, numberOfSamplesRead);
                 pSampleBuffer += numberOfSamplesRead;
@@ -344,7 +344,7 @@ AudioSource::size_type AudioSourceM4A::readSampleFrames(
         // be big enough for a whole block of decoded samples, which
         // contains up to kFramesPerSampleBlock frames. Otherwise
         // we need to use a temporary buffer.
-        sample_type* pDecodeBuffer; // in/out parameter
+        CSAMPLE* pDecodeBuffer; // in/out parameter
         size_type decodeBufferCapacityInBytes;
         if (pSampleBuffer && (numberOfFramesRemaining >= kFramesPerSampleBlock)) {
             // decode samples directly into sampleBuffer
