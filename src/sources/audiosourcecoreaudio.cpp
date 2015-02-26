@@ -140,7 +140,7 @@ AudioSource::diff_type AudioSourceCoreAudio::seekSampleFrame(
 }
 
 AudioSource::size_type AudioSourceCoreAudio::readSampleFrames(
-        size_type numberOfFrames, sample_type* sampleBuffer) {
+        size_type numberOfFrames, CSAMPLE* sampleBuffer) {
     //if (!m_decoder) return 0;
     size_type numFramesRead = 0;
 

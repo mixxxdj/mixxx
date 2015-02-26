@@ -73,7 +73,7 @@ AudioSource::diff_type AudioSourceSndFile::seekSampleFrame(
 }
 
 AudioSource::size_type AudioSourceSndFile::readSampleFrames(
-        size_type numberOfFrames, sample_type* sampleBuffer) {
+        size_type numberOfFrames, CSAMPLE* sampleBuffer) {
     const sf_count_t readCount =
             sf_readf_float(m_pSndFile, sampleBuffer, numberOfFrames);
     if (0 <= readCount) {

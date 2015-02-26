@@ -98,20 +98,20 @@ AudioSource::diff_type AudioSourceOggVorbis::seekSampleFrame(
 }
 
 AudioSource::size_type AudioSourceOggVorbis::readSampleFrames(
-        size_type numberOfFrames, sample_type* sampleBuffer) {
+        size_type numberOfFrames, CSAMPLE* sampleBuffer) {
     return readSampleFrames(numberOfFrames, sampleBuffer,
             frames2samples(numberOfFrames), false);
 }
 
 AudioSource::size_type AudioSourceOggVorbis::readSampleFramesStereo(
-        size_type numberOfFrames, sample_type* sampleBuffer,
+        size_type numberOfFrames, CSAMPLE* sampleBuffer,
         size_type sampleBufferSize) {
     return readSampleFrames(numberOfFrames, sampleBuffer, sampleBufferSize,
             true);
 }
 
 AudioSource::size_type AudioSourceOggVorbis::readSampleFrames(
-        size_type numberOfFrames, sample_type* sampleBuffer,
+        size_type numberOfFrames, CSAMPLE* sampleBuffer,
         size_type sampleBufferSize, bool readStereoSamples) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(getSampleBufferSize(numberOfFrames, readStereoSamples) <= sampleBufferSize);
@@ -119,7 +119,7 @@ AudioSource::size_type AudioSourceOggVorbis::readSampleFrames(
     const size_type numberOfFramesTotal = math_min(numberOfFrames,
             size_type(getFrameIndexMax() - m_curFrameIndex));
 
-    sample_type* pSampleBuffer = sampleBuffer;
+    CSAMPLE* pSampleBuffer = sampleBuffer;
     size_type numberOfFramesRemaining = numberOfFramesTotal;
     while (0 < numberOfFramesRemaining) {
         float** pcmChannels;

@@ -485,7 +485,7 @@ unsigned int AudioSourceFFmpeg::read(unsigned long size, SAMPLE* destination) {
 }
 
 AudioSource::size_type AudioSourceFFmpeg::readSampleFrames(size_type numberOfFrames,
-        sample_type* sampleBuffer) {
+        CSAMPLE* sampleBuffer) {
     // This is just a hack that simply reuses existing
     // functionality. Sample data should be resampled
     // directly into AV_SAMPLE_FMT_FLT instead of
@@ -494,7 +494,7 @@ AudioSource::size_type AudioSourceFFmpeg::readSampleFrames(size_type numberOfFra
     TempBuffer tempBuffer(frames2samples(numberOfFrames));
     const size_type readSamples = read(tempBuffer.size(), &tempBuffer[0]);
     for (size_type i = 0; i < readSamples; ++i) {
-        sampleBuffer[i] = SAMPLE_clampSymmetric(tempBuffer[i]) / sample_type(SAMPLE_MAX);
+        sampleBuffer[i] = SAMPLE_clampSymmetric(tempBuffer[i]) / CSAMPLE(SAMPLE_MAX);
     }
     return samples2frames(readSamples);
 }

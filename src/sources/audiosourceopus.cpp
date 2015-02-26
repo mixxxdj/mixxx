@@ -105,13 +105,13 @@ AudioSource::diff_type AudioSourceOpus::seekSampleFrame(diff_type frameIndex) {
 }
 
 AudioSource::size_type AudioSourceOpus::readSampleFrames(
-        size_type numberOfFrames, sample_type* sampleBuffer) {
+        size_type numberOfFrames, CSAMPLE* sampleBuffer) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
 
     const size_type numberOfFramesTotal = math_min(numberOfFrames,
             size_type(getFrameIndexMax() - m_curFrameIndex));
 
-    sample_type* pSampleBuffer = sampleBuffer;
+    CSAMPLE* pSampleBuffer = sampleBuffer;
     size_type numberOfFramesRemaining = numberOfFramesTotal;
     while (0 < numberOfFramesRemaining) {
         int readResult = op_read_float(m_pOggOpusFile,
@@ -134,7 +134,7 @@ AudioSource::size_type AudioSourceOpus::readSampleFrames(
 }
 
 AudioSource::size_type AudioSourceOpus::readSampleFramesStereo(
-        size_type numberOfFrames, sample_type* sampleBuffer,
+        size_type numberOfFrames, CSAMPLE* sampleBuffer,
         size_type sampleBufferSize) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(getSampleBufferSize(numberOfFrames, true) <= sampleBufferSize);
@@ -142,7 +142,7 @@ AudioSource::size_type AudioSourceOpus::readSampleFramesStereo(
     const size_type numberOfFramesTotal = math_min(numberOfFrames,
             size_type(getFrameIndexMax() - m_curFrameIndex));
 
-    sample_type* pSampleBuffer = sampleBuffer;
+    CSAMPLE* pSampleBuffer = sampleBuffer;
     size_type numberOfFramesRemaining = numberOfFramesTotal;
     while (0 < numberOfFramesRemaining) {
         int readResult = op_read_float_stereo(m_pOggOpusFile,

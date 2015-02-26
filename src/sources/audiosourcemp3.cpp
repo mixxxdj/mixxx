@@ -13,10 +13,10 @@ namespace {
 // http://www.mars.org/mailman/public/mad-dev/2002-May/000634.html
 const AudioSource::size_type kSeekFramePrefetchCount = 29;
 
-const AudioSource::sample_type kMadScale = AudioSource::kSampleValuePeak
-        / AudioSource::sample_type(MAD_F_ONE);
+const CSAMPLE kMadScale = AudioSource::kSampleValuePeak
+        / CSAMPLE(MAD_F_ONE);
 
-inline AudioSource::sample_type madScale(mad_fixed_t sample) {
+inline CSAMPLE madScale(mad_fixed_t sample) {
     return sample * kMadScale;
 
 } // anonymous namespace
@@ -407,14 +407,14 @@ AudioSource::diff_type AudioSourceMp3::seekSampleFrame(diff_type frameIndex) {
 }
 
 AudioSource::size_type AudioSourceMp3::readSampleFrames(
-        size_type numberOfFrames, sample_type* sampleBuffer) {
+        size_type numberOfFrames, CSAMPLE* sampleBuffer) {
     return readSampleFrames(numberOfFrames,
             sampleBuffer, frames2samples(numberOfFrames),
             false);
 }
 
 AudioSource::size_type AudioSourceMp3::readSampleFramesStereo(
-        size_type numberOfFrames, sample_type* sampleBuffer,
+        size_type numberOfFrames, CSAMPLE* sampleBuffer,
         size_type sampleBufferSize) {
     return readSampleFrames(numberOfFrames,
             sampleBuffer, sampleBufferSize,
@@ -422,7 +422,7 @@ AudioSource::size_type AudioSourceMp3::readSampleFramesStereo(
 }
 
 AudioSource::size_type AudioSourceMp3::readSampleFrames(
-        size_type numberOfFrames, sample_type* sampleBuffer,
+        size_type numberOfFrames, CSAMPLE* sampleBuffer,
         size_type sampleBufferSize, bool readStereoSamples) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(getSampleBufferSize(numberOfFrames, readStereoSamples) <= sampleBufferSize);
@@ -430,7 +430,7 @@ AudioSource::size_type AudioSourceMp3::readSampleFrames(
     const size_type numberOfFramesTotal = math_min(numberOfFrames,
             size_type(getFrameIndexMax() - m_curFrameIndex));
 
-    sample_type* pSampleBuffer = sampleBuffer;
+    CSAMPLE* pSampleBuffer = sampleBuffer;
     size_type numberOfFramesRemaining = numberOfFramesTotal;
     while (0 < numberOfFramesRemaining) {
         if (0 >= m_madSynthCount) {
@@ -496,7 +496,7 @@ AudioSource::size_type AudioSourceMp3::readSampleFrames(
             DEBUG_ASSERT(madSynthOffset < m_madSynth.pcm.length);
             if (isChannelCountMono()) {
                 for (size_type i = 0; i < synthReadCount; ++i) {
-                    const sample_type sampleValue = madScale(
+                    const CSAMPLE sampleValue = madScale(
                             m_madSynth.pcm.samples[0][madSynthOffset + i]);
                     *pSampleBuffer = sampleValue;
                     ++pSampleBuffer;

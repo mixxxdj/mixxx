@@ -23,7 +23,7 @@ const bool sDebug = false;
 
 const int kNumChannels = 2;
 const int kSampleRate = 44100;
-const int kLeftoverSize = 4096; // in sample_type's, this seems to be the size MF AAC
+const int kLeftoverSize = 4096; // in CSAMPLE's, this seems to be the size MF AAC
 const int kBitsPerSampleForBitrate = 16; // for bitrate calculation decoder likes to give
 
 /**
@@ -219,7 +219,7 @@ Mixxx::AudioSource::diff_type AudioSourceMediaFoundation::seekSampleFrame(
 }
 
 Mixxx::AudioSource::size_type AudioSourceMediaFoundation::readSampleFrames(
-        size_type numberOfFrames, sample_type* sampleBuffer) {
+        size_type numberOfFrames, CSAMPLE* sampleBuffer) {
     if (sDebug) {
         qDebug() << "read()" << numberOfFrames;
     }
@@ -293,7 +293,7 @@ Mixxx::AudioSource::size_type AudioSourceMediaFoundation::readSampleFrames(
             error = true;
             goto releaseSample;
         }
-        sample_type *buffer(NULL);
+        CSAMPLE *buffer(NULL);
         DWORD bufferLengthInBytes(0);
         hr = pMBuffer->Lock(reinterpret_cast<quint8**>(&buffer), NULL, &bufferLengthInBytes);
         if (FAILED(hr)) {
@@ -312,7 +312,7 @@ Mixxx::AudioSource::size_type AudioSourceMediaFoundation::readSampleFrames(
             if (m_nextFrame < bufferPosition) {
                 // Uh oh. We are farther forward than our seek target. Emit
                 // silence? We can't seek backwards here.
-                sample_type* pBufferCurpos = sampleBuffer
+                CSAMPLE* pBufferCurpos = sampleBuffer
                         + frames2samples(numberOfFrames - framesNeeded);
                 qint64 offshootFrames = bufferPosition - m_nextFrame;
 
@@ -361,7 +361,7 @@ Mixxx::AudioSource::size_type AudioSourceMediaFoundation::readSampleFrames(
             while (newSize < frames2samples(bufferLength)) {
                 newSize *= 2;
             }
-            sample_type* newBuffer = new sample_type[newSize];
+            CSAMPLE* newBuffer = new CSAMPLE[newSize];
             memcpy(newBuffer, m_leftoverBuffer,
                     sizeof(m_leftoverBuffer[0]) * m_leftoverBufferSize);
             delete[] m_leftoverBuffer;
@@ -533,8 +533,8 @@ bool AudioSourceMediaFoundation::configureAudioStream() {
         return false;
     }
     m_leftoverBufferSize = leftoverBufferSize;
-    m_leftoverBufferSize /= sizeof(sample_type); // convert size in bytes to sizeof(sample_type)
-    m_leftoverBuffer = new sample_type[m_leftoverBufferSize];
+    m_leftoverBufferSize /= sizeof(CSAMPLE); // convert size in bytes to sizeof(CSAMPLE)
+    m_leftoverBuffer = new CSAMPLE[m_leftoverBufferSize];
 
     return true;
 }
@@ -544,8 +544,8 @@ bool AudioSourceMediaFoundation::configureAudioStream() {
  * is moved to the beginning of m_leftoverBuffer, so empty it first (possibly
  * with this method). If src and dest overlap, I'll hurt you.
  */
-void AudioSourceMediaFoundation::copyFrames(sample_type *dest, size_t *destFrames,
-        const sample_type *src, size_t srcFrames) {
+void AudioSourceMediaFoundation::copyFrames(CSAMPLE *dest, size_t *destFrames,
+        const CSAMPLE *src, size_t srcFrames) {
     if (srcFrames > *destFrames) {
         int samplesToCopy(*destFrames * kNumChannels);
         memcpy(dest, src, samplesToCopy * sizeof(*src));
