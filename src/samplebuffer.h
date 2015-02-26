@@ -1,14 +1,14 @@
 #ifndef SAMPLEBUFFER_H
 #define SAMPLEBUFFER_H
 
-#include "util/types.h" // CSAMPLE
+#include "util/types.h"
 
 #include <algorithm> // std::swap
 
 // A sample buffer with properly aligned memory to enable SSE optimizations.
-// The public interface closely follows that of std::vector.
+// The public SINTerface closely follows that of std::vector.
 //
-// No resize operation is provided intentionally for maximum efficiency!
+// No resize operation is provided SINTentionally for maximum efficiency!
 // If the size of an existing sample buffer needs to be altered after
 // construction this can simply be achieved by swapping the contents with
 // a temporary sample buffer that has been constructed with the desired
@@ -37,7 +37,7 @@ public:
             : m_data(NULL),
               m_size(0) {
     }
-    explicit SampleBuffer(int size);
+    explicit SampleBuffer(SINT size);
     virtual ~SampleBuffer();
 
     void swap(SampleBuffer& other) {
@@ -45,7 +45,7 @@ public:
         std::swap(m_size, other.m_size);
     }
 
-    int size() const {
+    SINT size() const {
         return m_size;
     }
 
@@ -56,10 +56,10 @@ public:
         return m_data;
     }
 
-    CSAMPLE& operator[](int index) {
+    CSAMPLE& operator[](SINT index) {
         return m_data[index];
     }
-    const CSAMPLE& operator[](int index) const {
+    const CSAMPLE& operator[](SINT index) const {
         return m_data[index];
     }
 
@@ -71,7 +71,7 @@ public:
 
 private:
     CSAMPLE* m_data;
-    int m_size;
+    SINT m_size;
 };
 
 #endif // SAMPLEBUFFER_H

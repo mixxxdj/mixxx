@@ -2,7 +2,7 @@
 
 #include "sampleutil.h"
 
-SampleBuffer::SampleBuffer(int size)
+SampleBuffer::SampleBuffer(SINT size)
         : m_data(SampleUtil::alloc(size)),
           m_size(m_data ? size : 0) {
 }

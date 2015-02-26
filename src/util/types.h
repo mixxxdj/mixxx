@@ -3,7 +3,12 @@
 
 #include "util/math.h"
 
+#include <cstddef>
 #include <climits>
+
+// Signed integer type for all kinds of sizes, array indices and pointer
+// arithmetic. Its size (32-/64-bit) depends on the CPU architecture.
+typedef std::ptrdiff_t SINT;
 
 // 16-bit integer sample data within the asymmetric
 // range [SHRT_MIN, SHRT_MAX].
