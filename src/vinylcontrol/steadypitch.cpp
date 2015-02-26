@@ -66,7 +66,7 @@ bool SteadyPitch::resyncDetected(double new_time)
     }
 }
 
-double SteadyPitch::check(double pitch, double time, bool looping=false)
+double SteadyPitch::check(double pitch, double time)
 {
     //return length of time pitch has been steady, 0 if not steady
     if (directionChanged(pitch))
@@ -79,17 +79,14 @@ double SteadyPitch::check(double pitch, double time, bool looping=false)
     if (resyncDetected(time))
     {
         m_dLastTime = time;
-        if (looping)
+        // Rereport the last value since we don't want to interrupt steady
+        // pitch in case of resync due to looping or cuepoints.
+        if (fabs(pitch - m_dSteadyPitch) < m_dPitchThreshold)
         {
-            //if looping, rereport the last value since we don't know where the
-            //loop actually is
-            if (fabs(pitch - m_dSteadyPitch) < m_dPitchThreshold)
-            {
-                //fabricate an old time by take current time and applying
-                //last known duration
-                m_dSteadyPitchTime = time - (m_dLastSteadyDur * m_iPlayDirection);
-                return m_dLastSteadyDur;
-            }
+            //fabricate an old time by take current time and applying
+            //last known duration
+            m_dSteadyPitchTime = time - (m_dLastSteadyDur * m_iPlayDirection);
+            return m_dLastSteadyDur;
         }
         reset(pitch, time);
         return 0.0;

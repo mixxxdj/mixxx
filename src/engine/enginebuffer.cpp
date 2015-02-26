@@ -774,9 +774,12 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         double speed = m_pRateControl->calculateSpeed(
                 baserate, tempoRatio, paused, iBufferSize, &is_scratching);
 
+        // TODO(owen): Maybe change this so that rubberband doesn't disable
+        // keylock on scratch. (just check m_pScaleKeylock == m_pScaleST)
         if (is_scratching || fabs(speed) > 1.9) {
-            // Scratching always disables keylock because keylock sounds
-            // terrible when not going at a constant rate.
+            // Scratching and high speeds with Soundtouch always disables keylock
+            // because Soundtouch sounds terrible in these conditions.  Rubberband
+            // sounds better, but still has some problems.
             // High seek speeds also disables keylock.  Our pitch slider could go
             // to 90%, so that's the cutoff point.
             pitchRatio = speed;
