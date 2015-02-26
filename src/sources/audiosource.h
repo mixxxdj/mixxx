@@ -37,7 +37,7 @@ class AudioSource: public UrlResource {
 public:
     typedef std::size_t size_type;
     typedef std::ptrdiff_t diff_type;
-    typedef SampleBuffer::value_type sample_type;
+    typedef CSAMPLE sample_type;
 
     static const size_type kChannelCountZero = 0;
     static const size_type kChannelCountMono = 1;

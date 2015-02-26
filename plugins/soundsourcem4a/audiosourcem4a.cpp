@@ -187,7 +187,7 @@ Result AudioSourceM4A::postConstruct() {
     setFrameCount(getFrameCountForSampleBlockId(m_maxSampleBlockId));
 
     // Resize temporary buffer for decoded sample data
-    const SampleBuffer::size_type decodeSampleBufferSize =
+    const size_type decodeSampleBufferSize =
             frames2samples(kFramesPerSampleBlock);
     SampleBuffer(decodeSampleBufferSize).swap(m_decodeSampleBuffer);
 
@@ -354,11 +354,11 @@ AudioSource::size_type AudioSourceM4A::readSampleFrames(
         } else {
             // decode next block of samples into temporary buffer
             pDecodeBuffer = &m_decodeSampleBuffer[m_decodeSampleBufferWriteOffset];
-            const SampleBuffer::size_type decodeSampleBufferCapacity =
+            const int decodeSampleBufferCapacity =
                     m_decodeSampleBuffer.size() -
                     m_decodeSampleBufferWriteOffset;
             DEBUG_ASSERT(decodeSampleBufferCapacity >=
-                    frames2samples(kFramesPerSampleBlock));
+                    int(frames2samples(kFramesPerSampleBlock)));
             decodeBufferCapacityInBytes =
                     decodeSampleBufferCapacity *
                     sizeof(*pDecodeBuffer);

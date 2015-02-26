@@ -62,8 +62,8 @@ private:
     sample_type m_sampleScale;
 
     SampleBuffer m_decodeSampleBuffer;
-    SampleBuffer::size_type m_decodeSampleBufferReadOffset;
-    SampleBuffer::size_type m_decodeSampleBufferWriteOffset;
+    int m_decodeSampleBufferReadOffset;
+    int m_decodeSampleBufferWriteOffset;
 
     diff_type m_curFrameIndex;
 };
