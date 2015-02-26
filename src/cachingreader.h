@@ -79,7 +79,7 @@ class CachingReader : public QObject {
 
     // Read num_samples from the SoundSource starting with sample into
     // buffer. Returns the total number of samples actually written to buffer.
-    virtual int read(int sample, int num_samples, Mixxx::AudioSource::sample_type* buffer);
+    virtual int read(int sample, int num_samples, CSAMPLE* buffer);
 
     // Issue a list of hints, but check whether any of the hints request a chunk
     // that is not in the cache. If any hints do request a chunk not in cache,
@@ -164,7 +164,7 @@ class CachingReader : public QObject {
     Chunk* m_lruChunk;
 
     // The raw memory buffer which is divided up into chunks.
-    Mixxx::AudioSource::sample_type* m_pRawMemoryBuffer;
+    SampleBuffer m_sampleBuffer;
 
     int m_iTrackNumFramesCallbackSafe;
 
