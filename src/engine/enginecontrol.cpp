@@ -125,7 +125,7 @@ EngineBuffer* EngineControl::pickSyncTarget() {
         EngineChannel* pChannel = pMaster->getChannel(deckGroup);
         // Only consider channels that have a track loaded and are in the master
         // mix.
-        if (pChannel && pChannel->isActive() && pChannel->isMaster()) {
+        if (pChannel && pChannel->isActive() && pChannel->isMasterEnabled()) {
             EngineBuffer* pBuffer = pChannel->getEngineBuffer();
             if (pBuffer && pBuffer->getBpm() > 0) {
                 // If the deck is playing then go with it immediately.

@@ -380,49 +380,39 @@ class ReplayGain(Dependence):
 class SoundTouch(Dependence):
     SOUNDTOUCH_PATH = 'soundtouch-1.8.0'
 
-    def sse_enabled(self, build):
-        # Prevents circular import.
-        from features import Optimize
-        optimize = (build.flags['optimize'] if 'optimize' in build.flags
-                    else Optimize.get_optimization_level())
-        return (build.machine_is_64bit or
-                optimize in (Optimize.LEVEL_PORTABLE, Optimize.LEVEL_NATIVE))
-
     def sources(self, build):
-        sources = ['engine/enginebufferscalest.cpp',
-                   '#lib/%s/AAFilter.cpp' % self.SOUNDTOUCH_PATH,
-                   '#lib/%s/BPMDetect.cpp' % self.SOUNDTOUCH_PATH,
-                   '#lib/%s/FIFOSampleBuffer.cpp' % self.SOUNDTOUCH_PATH,
-                   '#lib/%s/FIRFilter.cpp' % self.SOUNDTOUCH_PATH,
-                   '#lib/%s/InterpolateCubic.cpp' % self.SOUNDTOUCH_PATH,
-                   '#lib/%s/InterpolateLinear.cpp' % self.SOUNDTOUCH_PATH,
-                   '#lib/%s/InterpolateShannon.cpp' % self.SOUNDTOUCH_PATH,
-                   '#lib/%s/PeakFinder.cpp' % self.SOUNDTOUCH_PATH,
-                   '#lib/%s/RateTransposer.cpp' % self.SOUNDTOUCH_PATH,
-                   '#lib/%s/SoundTouch.cpp' % self.SOUNDTOUCH_PATH,
-                   '#lib/%s/TDStretch.cpp' % self.SOUNDTOUCH_PATH]
-
-        # SoundTouch CPU optimizations are only for x86
-        # architectures. SoundTouch automatically ignores these files when it is
-        # not being built for an architecture that supports them.
-        sources.append('#lib/%s/cpu_detect_x86.cpp' % self.SOUNDTOUCH_PATH)
-
-        # Check if the compiler has SSE extention enabled
-        # Allways the case on x64 (core instructions)
-        if self.sse_enabled(build):
-            sources.extend(
-                ['#lib/%s/mmx_optimized.cpp' % self.SOUNDTOUCH_PATH,
-                 '#lib/%s/sse_optimized.cpp' % self.SOUNDTOUCH_PATH, ])
-        return sources
+        return ['engine/enginebufferscalest.cpp',
+                '#lib/%s/AAFilter.cpp' % self.SOUNDTOUCH_PATH,
+                '#lib/%s/BPMDetect.cpp' % self.SOUNDTOUCH_PATH,
+                '#lib/%s/FIFOSampleBuffer.cpp' % self.SOUNDTOUCH_PATH,
+                '#lib/%s/FIRFilter.cpp' % self.SOUNDTOUCH_PATH,
+                '#lib/%s/InterpolateCubic.cpp' % self.SOUNDTOUCH_PATH,
+                '#lib/%s/InterpolateLinear.cpp' % self.SOUNDTOUCH_PATH,
+                '#lib/%s/InterpolateShannon.cpp' % self.SOUNDTOUCH_PATH,
+                '#lib/%s/PeakFinder.cpp' % self.SOUNDTOUCH_PATH,
+                '#lib/%s/RateTransposer.cpp' % self.SOUNDTOUCH_PATH,
+                '#lib/%s/SoundTouch.cpp' % self.SOUNDTOUCH_PATH,
+                '#lib/%s/TDStretch.cpp' % self.SOUNDTOUCH_PATH,
+                # SoundTouch CPU optimizations are only for x86
+                # architectures. SoundTouch automatically ignores these files
+                # when it is not being built for an architecture that supports
+                # them.
+                '#lib/%s/cpu_detect_x86.cpp' % self.SOUNDTOUCH_PATH,
+                '#lib/%s/mmx_optimized.cpp' % self.SOUNDTOUCH_PATH,
+                '#lib/%s/sse_optimized.cpp' % self.SOUNDTOUCH_PATH]
 
     def configure(self, build, conf, env=None):
         if env is None:
             env = build.env
         env.Append(CPPPATH=['#lib/%s' % self.SOUNDTOUCH_PATH])
 
-        # If we do not want SSE optimizations (either the architecture does not
-        # support it or we are running a non-optimized build) then disable them.
-        if not self.sse_enabled(build):
+        # Prevents circular import.
+        from features import Optimize
+
+        # If we do not want optimizations then disable them.
+        optimize = (build.flags['optimize'] if 'optimize' in build.flags
+                    else Optimize.get_optimization_level())
+        if optimize == Optimize.LEVEL_OFF:
             env.Append(CPPDEFINES='SOUNDTOUCH_DISABLE_X86_OPTIMIZATIONS')
 
 

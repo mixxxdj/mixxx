@@ -29,7 +29,7 @@ struct MoogLadder4FilterGroupState {
 
 };
 
-class MoogLadder4FilterEffect : public GroupEffectProcessor<MoogLadder4FilterGroupState> {
+class MoogLadder4FilterEffect : public PerChannelEffectProcessor<MoogLadder4FilterGroupState> {
   public:
     MoogLadder4FilterEffect(EngineEffect* pEffect, const EffectManifest& manifest);
     virtual ~MoogLadder4FilterEffect();
@@ -38,13 +38,13 @@ class MoogLadder4FilterEffect : public GroupEffectProcessor<MoogLadder4FilterGro
     static EffectManifest getManifest();
 
     // See effectprocessor.h
-    void processGroup(const QString& group,
-                      MoogLadder4FilterGroupState* pState,
-                      const CSAMPLE* pInput, CSAMPLE *pOutput,
-                      const unsigned int numSamples,
-                      const unsigned int sampleRate,
-                      const EffectProcessor::EnableState enableState,
-                      const GroupFeatureState& groupFeatures);
+    void processChannel(const ChannelHandle& handle,
+                        MoogLadder4FilterGroupState* pState,
+                        const CSAMPLE* pInput, CSAMPLE *pOutput,
+                        const unsigned int numSamples,
+                        const unsigned int sampleRate,
+                        const EffectProcessor::EnableState enableState,
+                        const GroupFeatureState& groupFeatures);
 
   private:
     QString debugString() const {

@@ -12,24 +12,23 @@
 #include "engine/effects/engineeffectsmanager.h"
 #include "controlaudiotaperpot.h"
 
-EngineAux::EngineAux(const QString& group, EffectsManager* pEffectsManager)
-        : EngineChannel(group, EngineChannel::CENTER),
+EngineAux::EngineAux(const ChannelHandleAndGroup& handle_group, EffectsManager* pEffectsManager)
+        : EngineChannel(handle_group, EngineChannel::CENTER),
           m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
-          m_vuMeter(group),
-          m_pEnabled(new ControlObject(ConfigKey(group, "enabled"))),
-          m_pPassing(new ControlPushButton(ConfigKey(group, "passthrough"))),
-          m_pPregain(new ControlAudioTaperPot(ConfigKey(group, "pregain"), -12, 12, 0.5)),
+          m_vuMeter(getGroup()),
+          m_pEnabled(new ControlObject(ConfigKey(getGroup(), "enabled"))),
+          m_pPassing(new ControlPushButton(ConfigKey(getGroup(), "passthrough"))),
+          m_pPregain(new ControlAudioTaperPot(ConfigKey(getGroup(), "pregain"), -12, 12, 0.5)),
           m_sampleBuffer(NULL),
           m_wasActive(false) {
     if (pEffectsManager != NULL) {
-        pEffectsManager->registerGroup(getGroup());
+        pEffectsManager->registerChannel(handle_group);
     }
     m_pPassing->setButtonMode(ControlPushButton::POWERWINDOW);
 
-    // Default passthrough to enabled on the master and disabled on PFL. User
+    // by default Aux is enabled on the master and disabled on PFL. User
     // can over-ride by setting the "pfl" or "master" controls.
     setMaster(true);
-    setPFL(false);
 
     m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
 }
@@ -74,7 +73,7 @@ void EngineAux::onInputUnconfigured(AudioInput input) {
 }
 
 void EngineAux::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
-                                      unsigned int nFrames) {
+                              unsigned int nFrames) {
     Q_UNUSED(input);
     Q_UNUSED(nFrames);
     if (m_pPassing->get() <= 0.0) {
@@ -100,7 +99,7 @@ void EngineAux::process(CSAMPLE* pOut, const int iBufferSize) {
         // volume.
         m_vuMeter.collectFeatures(&features);
         // Process effects enabled for this channel
-        m_pEngineEffectsManager->process(getGroup(), pOut, iBufferSize,
+        m_pEngineEffectsManager->process(getHandle(), pOut, iBufferSize,
                                          m_pSampleRate->get(), features);
     }
     // Update VU meter

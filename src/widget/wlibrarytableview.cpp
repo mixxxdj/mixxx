@@ -66,6 +66,7 @@ void WLibraryTableView::loadVScrollBarPosState() {
 void WLibraryTableView::restoreVScrollBarPos() {
     //Restore the scrollbar's position (scroll to that spot)
     //when the search has been cleared
+    updateGeometries();
     verticalScrollBar()->setValue(m_iSavedVScrollBarPos);
 }
 
@@ -121,3 +122,4 @@ void WLibraryTableView::setTrackTableRowHeight(int rowHeight) {
     verticalHeader()->setDefaultSectionSize(math_max(
             rowHeight, fontHeightPx));
 }
+

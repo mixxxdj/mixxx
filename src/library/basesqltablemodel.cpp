@@ -38,6 +38,8 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
     m_eSortOrder = Qt::AscendingOrder;
     connect(&PlayerInfo::instance(), SIGNAL(trackLoaded(QString, TrackPointer)),
             this, SLOT(trackLoaded(QString, TrackPointer)));
+    connect(&m_trackDAO, SIGNAL(forceModelUpdate()),
+            this, SLOT(select()));
     trackLoaded(m_previewDeckGroup, PlayerInfo::instance().getTrackInfo(m_previewDeckGroup));
 }
 

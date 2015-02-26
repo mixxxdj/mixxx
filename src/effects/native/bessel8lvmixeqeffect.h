@@ -22,7 +22,7 @@ class Bessel8LVMixEQEffectGroupState :
         public LVMixEQEffectGroupState<EngineFilterBessel8Low> {
 };
 
-class Bessel8LVMixEQEffect : public GroupEffectProcessor<Bessel8LVMixEQEffectGroupState> {
+class Bessel8LVMixEQEffect : public PerChannelEffectProcessor<Bessel8LVMixEQEffectGroupState> {
   public:
     Bessel8LVMixEQEffect(EngineEffect* pEffect, const EffectManifest& manifest);
     virtual ~Bessel8LVMixEQEffect();
@@ -31,13 +31,13 @@ class Bessel8LVMixEQEffect : public GroupEffectProcessor<Bessel8LVMixEQEffectGro
     static EffectManifest getManifest();
 
     // See effectprocessor.h
-    void processGroup(const QString& group,
-                      Bessel8LVMixEQEffectGroupState* pState,
-                      const CSAMPLE* pInput, CSAMPLE* pOutput,
-                      const unsigned int numSamples,
-                      const unsigned int sampleRate,
-                      const EffectProcessor::EnableState enableState,
-                      const GroupFeatureState& groupFeatureState);
+    void processChannel(const ChannelHandle& handle,
+                        Bessel8LVMixEQEffectGroupState* pState,
+                        const CSAMPLE* pInput, CSAMPLE* pOutput,
+                        const unsigned int numSamples,
+                        const unsigned int sampleRate,
+                        const EffectProcessor::EnableState enableState,
+                        const GroupFeatureState& groupFeatureState);
 
   private:
     QString debugString() const {

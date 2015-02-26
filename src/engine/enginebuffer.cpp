@@ -226,12 +226,14 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
     // Quantization Controller for enabling and disabling the
     // quantization (alignment) of loop in/out positions and (hot)cues with
     // beats.
-    addControl(new QuantizeControl(group, _config));
-    m_pQuantize = ControlObject::getControl(ConfigKey(group, "quantize"));
+    QuantizeControl* quantize_control = new QuantizeControl(group, _config);
 
     // Create the Loop Controller
     m_pLoopingControl = new LoopingControl(group, _config);
     addControl(m_pLoopingControl);
+
+    addControl(quantize_control);
+    m_pQuantize = ControlObject::getControl(ConfigKey(group, "quantize"));
 
     m_pEngineSync = pMixingEngine->getEngineSync();
 
@@ -296,10 +298,15 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
     df.open(QIODevice::WriteOnly | QIODevice::Text);
     writer.setDevice(&df);
 #endif
+
+    // Now that all EngineControls have been created call setEngineMaster.
+    // TODO(XXX): Get rid of EngineControl::setEngineMaster and
+    // EngineControl::setEngineBuffer entirely and pass them through the
+    // constructor.
+    setEngineMaster(pMixingEngine);
 }
 
-EngineBuffer::~EngineBuffer()
-{
+EngineBuffer::~EngineBuffer() {
 #ifdef __SCALER_DEBUG__
     //close the writer
     df.close();
@@ -755,6 +762,11 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
 
         bool is_scratching = false;
 
+        // Update the slipped position and seek if it was disabled.
+        processSlip(iBufferSize);
+        processSyncRequests();
+        processSeek();
+
         // speed is the ratio between track-time and real-time
         // (1.0 being normal rate. 2.0 plays at 2x speed -- 2 track seconds
         // pass for every 1 real second). Depending on whether
@@ -846,12 +858,6 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
                 && m_pSyncControl->getSyncMode() == SYNC_FOLLOWER && !paused) {
             requestSyncPhase();
         }
-
-        // Update the slipped position and seek if it was disabled.
-        processSlip(iBufferSize);
-
-        processSyncRequests();
-        processSeek();
 
         // If the baserate, speed, or pitch has changed, we need to update the
         // scaler. Also, if we have changed scalers then we need to update the

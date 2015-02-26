@@ -778,24 +778,41 @@ class Opus(Feature):
         return "Opus (RFC 6716) support"
 
     def enabled(self, build):
-        build.flags['opus'] = util.get_flags(build.env, 'opus', 0)
+        # Default Opus to on but only throw an error if it was explicitly
+        # requested.
+        if 'opus' in build.flags:
+            return int(build.flags['opus']) > 0
+        build.flags['opus'] = util.get_flags(build.env, 'opus', 1)
         if int(build.flags['opus']):
             return True
         return False
 
     def add_options(self, build, vars):
         vars.Add('opus', 'Set to 1 to enable Opus (RFC 6716) support \
-                           (supported are Opus 1.0 and above and Opusfile 0.2 and above)', 0)
+                           (supported are Opus 1.0 and above and Opusfile 0.2 and above)', 1)
 
     def configure(self, build, conf):
         if not self.enabled(build):
             return
+
+        # Only block the configure if opus was explicitly requested.
+        explicit = 'opus' in SCons.ARGUMENTS
+
         # Support for Opus (RFC 6716)
         # More info http://http://www.opus-codec.org/
         if not conf.CheckLib(['opus', 'libopus']):
-            raise Exception('Could not find libopus.')
+            if explicit:
+                raise Exception('Could not find libopus.')
+            else:
+                build.flags['opus'] = 0
+            return
         if not conf.CheckLib(['opusfile', 'libopusfile']):
-            raise Exception('Could not find libopusfile.')
+            if explicit:
+                raise Exception('Could not find libopusfile.')
+            else:
+                build.flags['opus'] = 0
+            return
+
         build.env.Append(CPPDEFINES='__OPUS__')
 
         if build.platform_is_linux or build.platform_is_bsd:
@@ -1069,8 +1086,17 @@ class Optimize(Feature):
 
             if optimize_level == Optimize.LEVEL_PORTABLE:
                 # portable: sse2 CPU (>= Pentium 4)
-                self.status = "portable: sse2 CPU (>= Pentium 4)"
-                build.env.Append(CCFLAGS='-mtune=generic -msse2 -mfpmath=sse')
+                if build.architecture_is_x86: 
+                    self.status = "portable: sse2 CPU (>= Pentium 4)"
+                    build.env.Append(CCFLAGS='-mtune=generic')
+                    # -mtune=generic pick the most common, but compatible options.
+                    # on arm platforms equivalent to -march=arch 
+                    if not build.machine_is_64bit:
+                        # the sse flags are not set by default on 32 bit bilds 
+                        # but are not supported on arm builds                     
+                        build.env.Append(CCFLAGS='-msse2 -mfpmath=sse') 
+                else:
+                    self.status = "portable"
                 # this sets macros __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
                 # This should be our default build for distribution
                 # It's a little sketchy, but turning on SSE2 will gain
@@ -1084,15 +1110,23 @@ class Optimize(Feature):
                 # Note: SSE2 is a core part of x64 CPUs
             elif optimize_level == Optimize.LEVEL_NATIVE:
                 self.status = "native: tuned for this CPU (%s)" % build.machine
-                build.env.Append(CCFLAGS='-march=native -mfpmath=sse')
+                build.env.Append(CCFLAGS='-march=native')
                 # http://en.chys.info/2010/04/what-exactly-marchnative-means/
                 # Note: requires gcc >= 4.2.0
                 # macros like __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
                 # are set automaticaly
+                if build.architecture_is_x86 and not build.machine_is_64bit:
+                    # the sse flags are not set by default on 32 bit bilds 
+                    # but are not supported on arm builds  
+                    build.env.Append(CCFLAGS='-msse2 -mfpmath=sse')
             elif optimize_level == Optimize.LEVEL_LEGACY:
-                self.status = "legacy: pure i386 code"
-                build.env.Append(CCFLAGS='-mtune=generic')
-                # -mtune=generic pick the most common, but compatible options.
+                if build.architecture_is_x86:
+                    self.status = "legacy: pure i386 code"
+                    build.env.Append(CCFLAGS='-mtune=generic')
+                    # -mtune=generic pick the most common, but compatible options.
+                    # on arm platforms equivalent to -march=arch 
+                else: 
+                    self.status = "legacy"    
             else:
                 # Not possible to reach this code if enabled is written
                 # correctly.

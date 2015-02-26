@@ -16,7 +16,7 @@ EffectManifest Bessel4LVMixEQEffect::getManifest() {
     manifest.setDescription(QObject::tr(
         "A Bessel 4th order filter equalizer with Lipshitz and Vanderkooy mix (bit perfect unity, roll-off -24 db/Oct). "
         "To adjust frequency shelves see the Equalizer preferences."));
-    manifest.setIsMixingEQ(true); 
+    manifest.setIsMixingEQ(true);
     manifest.setEffectRampsFromDry(true);
 
     EffectManifestParameter* low = manifest.addParameter();
@@ -109,14 +109,14 @@ Bessel4LVMixEQEffect::~Bessel4LVMixEQEffect() {
     delete m_pHiFreqCorner;
 }
 
-void Bessel4LVMixEQEffect::processGroup(const QString& group,
-                                        Bessel4LVMixEQEffectGroupState* pState,
-                                        const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                        const unsigned int numSamples,
-                                        const unsigned int sampleRate,
-                                        const EffectProcessor::EnableState enableState,
-                                        const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(group);
+void Bessel4LVMixEQEffect::processChannel(const ChannelHandle& handle,
+                                          Bessel4LVMixEQEffectGroupState* pState,
+                                          const CSAMPLE* pInput, CSAMPLE* pOutput,
+                                          const unsigned int numSamples,
+                                          const unsigned int sampleRate,
+                                          const EffectProcessor::EnableState enableState,
+                                          const GroupFeatureState& groupFeatures) {
+    Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
 
     double fLow;
