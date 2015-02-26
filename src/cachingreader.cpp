@@ -24,14 +24,12 @@ CachingReader::CachingReader(QString group,
           m_readerStatus(INVALID),
           m_mruChunk(NULL),
           m_lruChunk(NULL),
-          m_pRawMemoryBuffer(NULL),
+          m_sampleBuffer(CachingReaderWorker::kSamplesPerChunk * maximumChunksInMemory),
           m_iTrackNumFramesCallbackSafe(0) {
-    int rawMemoryBufferLength = CachingReaderWorker::kSamplesPerChunk * maximumChunksInMemory;
-    m_pRawMemoryBuffer = new CSAMPLE[rawMemoryBufferLength];
 
-    m_allocatedChunks.reserve(maximumChunksInMemory);
+    m_allocatedChunks.reserve(m_sampleBuffer.size());
 
-    CSAMPLE* bufferStart = m_pRawMemoryBuffer;
+    CSAMPLE* bufferStart = m_sampleBuffer.data();
 
     // Divide up the allocated raw memory buffer into total_chunks
     // chunks. Initialize each chunk to hold nothing and add it to the free
@@ -78,8 +76,6 @@ CachingReader::~CachingReader() {
     m_allocatedChunks.clear();
     m_lruChunk = m_mruChunk = NULL;
     qDeleteAll(m_chunks);
-    delete [] m_pRawMemoryBuffer;
-    m_pRawMemoryBuffer = NULL;
 }
 
 // static
