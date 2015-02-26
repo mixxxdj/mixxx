@@ -10,8 +10,6 @@
 
 #include <QSharedPointer>
 
-#include <cstddef> // size_t / diff_t
-
 namespace Mixxx {
 
 class AudioSource;
@@ -35,32 +33,29 @@ typedef QSharedPointer<AudioSource> AudioSourcePointer;
 // closed upon destruction.
 class AudioSource: public UrlResource {
 public:
-    typedef std::size_t size_type;
-    typedef std::ptrdiff_t diff_type;
+    static const SINT kChannelCountZero = 0;
+    static const SINT kChannelCountMono = 1;
+    static const SINT kChannelCountStereo = 2;
+    static const SINT kChannelCountDefault = kChannelCountZero;
 
-    static const size_type kChannelCountZero = 0;
-    static const size_type kChannelCountMono = 1;
-    static const size_type kChannelCountStereo = 2;
-    static const size_type kChannelCountDefault = kChannelCountZero;
+    static const SINT kFrameRateZero = 0;
+    static const SINT kFrameRateDefault = kFrameRateZero;
 
-    static const size_type kFrameRateZero = 0;
-    static const size_type kFrameRateDefault = kFrameRateZero;
-
-    static const size_type kFrameCountZero = 0;
-    static const size_type kFrameCountDefault = kFrameCountZero;
+    static const SINT kFrameCountZero = 0;
+    static const SINT kFrameCountDefault = kFrameCountZero;
 
     // 0-based indexing of sample frames
-    static const diff_type kFrameIndexMin = 0;
+    static const SINT kFrameIndexMin = 0;
 
     static const CSAMPLE kSampleValueZero;
     static const CSAMPLE kSampleValuePeak;
 
-    static const size_type kBitrateZero = 0;
-    static const size_type kBitrateDefault = kBitrateZero;
+    static const SINT kBitrateZero = 0;
+    static const SINT kBitrateDefault = kBitrateZero;
 
     // Returns the number of channels. The number of channels
     // must be constant over time.
-    inline size_type getChannelCount() const {
+    inline SINT getChannelCount() const {
         return m_channelCount;
     }
     inline bool isChannelCountValid() const {
@@ -77,7 +72,7 @@ public:
     // the number samples for each channel per second, which
     // must be uniform among all channels. The frame rate
     // must be constant over time.
-    inline size_type getFrameRate() const {
+    inline SINT getFrameRate() const {
         return m_frameRate;
     }
     inline bool isFrameRateValid() const {
@@ -85,7 +80,7 @@ public:
     }
 
     // Returns the total number of frames.
-    inline size_type getFrameCount() const {
+    inline SINT getFrameCount() const {
         return m_frameCount;
     }
     inline bool isFrameCountEmpty() const {
@@ -107,7 +102,7 @@ public:
     inline bool hasBitrate() const {
         return kBitrateZero < m_bitrate;
     }
-    inline size_type getBitrate() const {
+    inline SINT getBitrate() const {
         return m_bitrate;
     }
 
@@ -116,7 +111,7 @@ public:
     inline bool hasDuration() const {
         return isValid();
     }
-    inline size_type getDuration() const {
+    inline SINT getDuration() const {
         DEBUG_ASSERT(hasDuration()); // prevents division by zero
         return getFrameCount() / getFrameRate();
     }
@@ -136,19 +131,19 @@ public:
     }
 
     // Index of the first sample frame.
-    diff_type getFrameIndexMin() const {
+    SINT getFrameIndexMin() const {
         return kFrameIndexMin;
     }
 
     // Index of the sample frame following the last
     // sample frame.
-    diff_type getFrameIndexMax() const {
+    SINT getFrameIndexMax() const {
         return kFrameIndexMin + getFrameCount();
     }
 
     // The sample frame index is valid in the range
     // [getFrameIndexMin(), getFrameIndexMax()].
-    inline bool isValidFrameIndex(diff_type frameIndex) const {
+    inline bool isValidFrameIndex(SINT frameIndex) const {
         return (getFrameIndexMin() <= frameIndex) &&
                 (getFrameIndexMax() >= frameIndex);
     }
@@ -160,7 +155,7 @@ public:
     // - The seek position in seconds is frameIndex / frameRate()
     // Returns the actual current frame index which may differ from the
     // requested index if the source does not support accurate seeking.
-    virtual diff_type seekSampleFrame(diff_type frameIndex) = 0;
+    virtual SINT seekSampleFrame(SINT frameIndex) = 0;
 
     // Fills the buffer with samples from each channel starting
     // at the current frame seek position.
@@ -174,20 +169,20 @@ public:
     // might be lower than the requested number of frames when the end
     // of the audio stream has been reached. The current frame seek
     // position is moved forward towards the next unread frame.
-    virtual size_type readSampleFrames(
-            size_type numberOfFrames,
+    virtual SINT readSampleFrames(
+            SINT numberOfFrames,
             CSAMPLE* sampleBuffer) = 0;
 
-    inline size_type skipSampleFrames(
-            size_type numberOfFrames) {
+    inline SINT skipSampleFrames(
+            SINT numberOfFrames) {
         return readSampleFrames(numberOfFrames, static_cast<CSAMPLE*>(NULL));
     }
 
-    inline size_type readSampleFrames(
-            size_type numberOfFrames,
+    inline SINT readSampleFrames(
+            SINT numberOfFrames,
             SampleBuffer* pSampleBuffer) {
         if (pSampleBuffer) {
-            DEBUG_ASSERT(frames2samples(numberOfFrames) <= size_type(pSampleBuffer->size()));
+            DEBUG_ASSERT(frames2samples(numberOfFrames) <= SINT(pSampleBuffer->size()));
             return readSampleFrames(numberOfFrames, pSampleBuffer->data());
         } else {
             return skipSampleFrames(numberOfFrames);
@@ -225,13 +220,13 @@ public:
     // They may also have reduced space requirements on sampleBuffer,
     // i.e. only the minimum size is required for an in-place
     // transformation without temporary allocations.
-    virtual size_type readSampleFramesStereo(
-            size_type numberOfFrames,
+    virtual SINT readSampleFramesStereo(
+            SINT numberOfFrames,
             CSAMPLE* sampleBuffer,
-            size_type sampleBufferSize);
+            SINT sampleBufferSize);
 
-    inline size_type readSampleFramesStereo(
-            size_type numberOfFrames,
+    inline SINT readSampleFramesStereo(
+            SINT numberOfFrames,
             SampleBuffer* pSampleBuffer) {
         if (pSampleBuffer) {
             return readSampleFramesStereo(numberOfFrames,
@@ -248,24 +243,24 @@ protected:
 
     virtual Result postConstruct() /*override*/ = 0;
 
-    void setChannelCount(size_type channelCount);
-    void setFrameRate(size_type frameRate);
-    void setFrameCount(size_type frameCount);
+    void setChannelCount(SINT channelCount);
+    void setFrameRate(SINT frameRate);
+    void setFrameCount(SINT frameCount);
 
-    inline void setBitrate(size_type bitrate) {
+    inline void setBitrate(SINT bitrate) {
         m_bitrate = bitrate;
     }
 
-    size_type getSampleBufferSize(
-            size_type numberOfFrames,
+    SINT getSampleBufferSize(
+            SINT numberOfFrames,
             bool readStereoSamples = false) const;
 
 private:
-    size_type m_channelCount;
-    size_type m_frameRate;
-    size_type m_frameCount;
+    SINT m_channelCount;
+    SINT m_frameRate;
+    SINT m_frameCount;
 
-    size_type m_bitrate;
+    SINT m_bitrate;
 };
 
 } // namespace Mixxx

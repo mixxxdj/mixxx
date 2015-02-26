@@ -23,12 +23,12 @@ public:
 
     ~AudioSourceMp3();
 
-    diff_type seekSampleFrame(diff_type frameIndex) /*override*/;
+    SINT seekSampleFrame(SINT frameIndex) /*override*/;
 
-    size_type readSampleFrames(size_type numberOfFrames,
+    SINT readSampleFrames(SINT numberOfFrames,
             CSAMPLE* sampleBuffer) /*override*/;
-    size_type readSampleFramesStereo(size_type numberOfFrames,
-            CSAMPLE* sampleBuffer, size_type sampleBufferSize) /*override*/;
+    SINT readSampleFramesStereo(SINT numberOfFrames,
+            CSAMPLE* sampleBuffer, SINT sampleBufferSize) /*override*/;
 
 private:
     explicit AudioSourceMp3(QUrl url);
@@ -37,8 +37,8 @@ private:
 
     void preDestroy();
 
-    size_type readSampleFrames(size_type numberOfFrames,
-            CSAMPLE* sampleBuffer, size_type sampleBufferSize,
+    SINT readSampleFrames(SINT numberOfFrames,
+            CSAMPLE* sampleBuffer, SINT sampleBufferSize,
             bool readStereoSamples);
 
     QFile m_file;
@@ -49,7 +49,7 @@ private:
 
     /** Struct used to store mad frames for seeking */
     struct SeekFrameType {
-        diff_type frameIndex;
+        SINT frameIndex;
         const unsigned char* pInputData;
     };
 
@@ -60,21 +60,21 @@ private:
      */
     typedef std::vector<SeekFrameType> SeekFrameList;
     SeekFrameList m_seekFrameList; // ordered-by frameIndex
-    size_type m_avgSeekFrameCount; // avg. sample frames per MP3 frame
+    SINT m_avgSeekFrameCount; // avg. sample frames per MP3 frame
 
-    void addSeekFrame(diff_type frameIndex, const unsigned char* pInputData);
+    void addSeekFrame(SINT frameIndex, const unsigned char* pInputData);
 
     /** Returns the position in m_seekFrameList of the requested frame index. */
-    SeekFrameList::size_type findSeekFrameIndex(diff_type frameIndex) const;
+    SINT findSeekFrameIndex(SINT frameIndex) const;
 
-    diff_type m_curFrameIndex;
+    SINT m_curFrameIndex;
 
-    diff_type restartDecoding(const SeekFrameType& seekFrame);
+    SINT restartDecoding(const SeekFrameType& seekFrame);
 
     // current play position
     mad_frame m_madFrame;
     mad_synth m_madSynth;
-    size_type m_madSynthCount; // left overs from the previous read
+    SINT m_madSynthCount; // left overs from the previous read
 };
 
 }

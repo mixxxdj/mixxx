@@ -19,9 +19,9 @@ public:
 
     ~AudioSourceSndFile();
 
-    diff_type seekSampleFrame(diff_type frameIndex) /*override*/;
+    SINT seekSampleFrame(SINT frameIndex) /*override*/;
 
-    size_type readSampleFrames(size_type numberOfFrames,
+    SINT readSampleFrames(SINT numberOfFrames,
             CSAMPLE* sampleBuffer) /*override*/;
 
 private:

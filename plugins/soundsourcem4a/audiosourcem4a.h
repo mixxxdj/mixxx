@@ -29,9 +29,9 @@ public:
 
     ~AudioSourceM4A();
 
-    diff_type seekSampleFrame(diff_type frameIndex) /*override*/;
+    SINT seekSampleFrame(SINT frameIndex) /*override*/;
 
-    size_type readSampleFrames(size_type numberOfFrames,
+    SINT readSampleFrames(SINT numberOfFrames,
             CSAMPLE* sampleBuffer) /*override*/;
 
 private:
@@ -52,8 +52,8 @@ private:
 
     typedef std::vector<u_int8_t> InputBuffer;
     InputBuffer m_inputBuffer;
-    InputBuffer::size_type m_inputBufferOffset;
-    InputBuffer::size_type m_inputBufferLength;
+    SINT m_inputBufferOffset;
+    SINT m_inputBufferLength;
 
     NeAACDecHandle m_hDecoder;
 
@@ -61,7 +61,7 @@ private:
     int m_decodeSampleBufferReadOffset;
     int m_decodeSampleBufferWriteOffset;
 
-    diff_type m_curFrameIndex;
+    SINT m_curFrameIndex;
 };
 
 }

@@ -400,10 +400,10 @@ bool AudioSourceFFmpeg::getBytesFromCache(char *buffer, quint64 offset,
     return false;
 }
 
-AudioSource::diff_type AudioSourceFFmpeg::seekSampleFrame(diff_type frameIndex) {
+SINT AudioSourceFFmpeg::seekSampleFrame(SINT frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(frameIndex));
 
-    const diff_type filepos = frames2samples(frameIndex);
+    const SINT filepos = frames2samples(frameIndex);
 
     int ret = 0;
     qint64 i = 0;
@@ -484,7 +484,7 @@ unsigned int AudioSourceFFmpeg::read(unsigned long size, SAMPLE* destination) {
     return size;
 }
 
-AudioSource::size_type AudioSourceFFmpeg::readSampleFrames(size_type numberOfFrames,
+SINT AudioSourceFFmpeg::readSampleFrames(SINT numberOfFrames,
         CSAMPLE* sampleBuffer) {
     // This is just a hack that simply reuses existing
     // functionality. Sample data should be resampled
@@ -492,8 +492,8 @@ AudioSource::size_type AudioSourceFFmpeg::readSampleFrames(size_type numberOfFra
     // AV_SAMPLE_FMT_S16!
     typedef std::vector<SAMPLE> TempBuffer;
     TempBuffer tempBuffer(frames2samples(numberOfFrames));
-    const size_type readSamples = read(tempBuffer.size(), &tempBuffer[0]);
-    for (size_type i = 0; i < readSamples; ++i) {
+    const SINT readSamples = read(tempBuffer.size(), &tempBuffer[0]);
+    for (SINT i = 0; i < readSamples; ++i) {
         sampleBuffer[i] = SAMPLE_clampSymmetric(tempBuffer[i]) / CSAMPLE(SAMPLE_MAX);
     }
     return samples2frames(readSamples);

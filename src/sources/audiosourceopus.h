@@ -10,18 +10,18 @@ namespace Mixxx {
 
 class AudioSourceOpus: public AudioSource {
 public:
-    static const size_type kFrameRate;
+    static const SINT kFrameRate;
 
     static AudioSourcePointer create(QUrl url);
 
     ~AudioSourceOpus();
 
-    diff_type seekSampleFrame(diff_type frameIndex) /*override*/;
+    SINT seekSampleFrame(SINT frameIndex) /*override*/;
 
-    size_type readSampleFrames(size_type numberOfFrames,
+    SINT readSampleFrames(SINT numberOfFrames,
             CSAMPLE* sampleBuffer) /*override*/;
-    size_type readSampleFramesStereo(size_type numberOfFrames,
-            CSAMPLE* sampleBuffer, size_type sampleBufferSize) /*override*/;
+    SINT readSampleFramesStereo(SINT numberOfFrames,
+            CSAMPLE* sampleBuffer, SINT sampleBufferSize) /*override*/;
 
 private:
     explicit AudioSourceOpus(QUrl url);
@@ -32,7 +32,7 @@ private:
 
     OggOpusFile *m_pOggOpusFile;
 
-    diff_type m_curFrameIndex;
+    SINT m_curFrameIndex;
 };
 
 }

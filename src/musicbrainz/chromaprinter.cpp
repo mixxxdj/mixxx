@@ -17,12 +17,12 @@ namespace
     // AcoustID only stores a fingerprint for the first two minutes of a song
     // on their server so we need only a fingerprint of the first two minutes
     // --kain88 July 2012
-    const Mixxx::AudioSource::size_type kFingerprintDuration = 120; // in seconds
-    const Mixxx::AudioSource::size_type kFingerprintChannels = 2; // stereo
+    const SINT kFingerprintDuration = 120; // in seconds
+    const SINT kFingerprintChannels = 2; // stereo
 
     QString calcFingerprint(const Mixxx::AudioSourcePointer& pAudioSource) {
 
-        Mixxx::AudioSource::size_type numFrames =
+        SINT numFrames =
                 kFingerprintDuration * pAudioSource->getFrameRate();
         // check that the song is actually longer then the amount of audio we use
         if (numFrames > pAudioSource->getFrameCount()) {
@@ -39,7 +39,7 @@ namespace
                 math_max(numFrames * kFingerprintChannels, pAudioSource->frames2samples(numFrames)));
 
         DEBUG_ASSERT(2 == kFingerprintChannels); // implicit assumption of the next line
-        const Mixxx::AudioSource::size_type readFrames =
+        const SINT readFrames =
                 pAudioSource->readSampleFramesStereo(numFrames, &sampleBuffer);
         if (readFrames != numFrames) {
             qDebug() << "oh that's embarrassing I couldn't read the track";

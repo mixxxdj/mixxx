@@ -31,18 +31,18 @@ AudioSource::AudioSource(QUrl url)
           m_bitrate(kBitrateDefault) {
 }
 
-void AudioSource::setChannelCount(size_type channelCount) {
+void AudioSource::setChannelCount(SINT channelCount) {
     m_channelCount = channelCount;
 }
-void AudioSource::setFrameRate(size_type frameRate) {
+void AudioSource::setFrameRate(SINT frameRate) {
     m_frameRate = frameRate;
 }
-void AudioSource::setFrameCount(size_type frameCount) {
+void AudioSource::setFrameCount(SINT frameCount) {
     m_frameCount = frameCount;
 }
 
-AudioSource::size_type AudioSource::getSampleBufferSize(
-        size_type numberOfFrames,
+SINT AudioSource::getSampleBufferSize(
+        SINT numberOfFrames,
         bool readStereoSamples) const {
     if (readStereoSamples) {
         return numberOfFrames * 2;
@@ -51,16 +51,16 @@ AudioSource::size_type AudioSource::getSampleBufferSize(
     }
 }
 
-AudioSource::size_type AudioSource::readSampleFramesStereo(
-        size_type numberOfFrames,
+SINT AudioSource::readSampleFramesStereo(
+        SINT numberOfFrames,
         CSAMPLE* sampleBuffer,
-        size_type sampleBufferSize) {
+        SINT sampleBufferSize) {
     DEBUG_ASSERT(getSampleBufferSize(numberOfFrames, true) <= sampleBufferSize);
 
     switch (getChannelCount()) {
         case 1: // mono channel
         {
-            const AudioSource::size_type readFrameCount = readSampleFrames(
+            const SINT readFrameCount = readSampleFrames(
                     numberOfFrames, sampleBuffer);
             SampleUtil::doubleMonoToDualMono(sampleBuffer, readFrameCount);
             return readFrameCount;
@@ -71,10 +71,10 @@ AudioSource::size_type AudioSource::readSampleFramesStereo(
         }
         default: // multiple (3 or more) channels
         {
-            const size_type numberOfSamplesToRead = frames2samples(numberOfFrames);
+            const SINT numberOfSamplesToRead = frames2samples(numberOfFrames);
             if (numberOfSamplesToRead <= sampleBufferSize) {
                 // efficient in-place transformation
-                const AudioSource::size_type readFrameCount = readSampleFrames(
+                const SINT readFrameCount = readSampleFrames(
                         numberOfFrames, sampleBuffer);
                 SampleUtil::copyMultiToStereo(sampleBuffer, sampleBuffer,
                         readFrameCount, getChannelCount());
@@ -87,7 +87,7 @@ AudioSource::size_type AudioSource::readSampleFramesStereo(
                         << "The size of the provided sample buffer is"
                         << sampleBufferSize;
                 SampleBuffer tempBuffer(numberOfSamplesToRead);
-                const AudioSource::size_type readFrameCount = readSampleFrames(
+                const SINT readFrameCount = readSampleFrames(
                         numberOfFrames, tempBuffer.data());
                 SampleUtil::copyMultiToStereo(sampleBuffer, tempBuffer.data(),
                         readFrameCount, getChannelCount());

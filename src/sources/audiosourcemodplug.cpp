@@ -125,19 +125,19 @@ void AudioSourceModPlug::preDestroy() {
     }
 }
 
-AudioSource::diff_type AudioSourceModPlug::seekSampleFrame(
-        diff_type frameIndex) {
+SINT AudioSourceModPlug::seekSampleFrame(
+        SINT frameIndex) {
     return m_seekPos = frameIndex;
 }
 
-AudioSource::size_type AudioSourceModPlug::readSampleFrames(
-        size_type numberOfFrames, CSAMPLE* sampleBuffer) {
-    const size_type maxFrames = samples2frames(m_sampleBuf.size());
-    const size_type readFrames = math_min(maxFrames - m_seekPos, numberOfFrames);
+SINT AudioSourceModPlug::readSampleFrames(
+        SINT numberOfFrames, CSAMPLE* sampleBuffer) {
+    const SINT maxFrames = samples2frames(m_sampleBuf.size());
+    const SINT readFrames = math_min(maxFrames - m_seekPos, numberOfFrames);
 
-    const size_type readSamples = frames2samples(readFrames);
-    const size_type readOffset = frames2samples(m_seekPos);
-    for (size_type i = 0; i < readSamples; ++i) {
+    const SINT readSamples = frames2samples(readFrames);
+    const SINT readOffset = frames2samples(m_seekPos);
+    for (SINT i = 0; i < readSamples; ++i) {
         sampleBuffer[i] = SAMPLE_clampSymmetric(m_sampleBuf[readOffset + i])
                 / CSAMPLE(SAMPLE_MAX);
     }

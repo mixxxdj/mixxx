@@ -29,9 +29,9 @@ public:
 
     ~AudioSourceMediaFoundation();
 
-    diff_type seekSampleFrame(diff_type frameIndex) /*override*/;
+    SINT seekSampleFrame(SINT frameIndex) /*override*/;
 
-    size_type readSampleFrames(size_type numberOfFrames, CSAMPLE* sampleBuffer) /*override*/;
+    SINT readSampleFrames(SINT numberOfFrames, CSAMPLE* sampleBuffer) /*override*/;
 
 private:
     explicit AudioSourceMediaFoundation(QUrl url);

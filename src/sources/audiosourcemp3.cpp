@@ -11,7 +11,7 @@ namespace {
 // In the worst case up to 29 MP3 frames need to be prefetched
 // for accurate seeking:
 // http://www.mars.org/mailman/public/mad-dev/2002-May/000634.html
-const AudioSource::size_type kSeekFramePrefetchCount = 29;
+const SINT kSeekFramePrefetchCount = 29;
 
 const CSAMPLE kMadScale = AudioSource::kSampleValuePeak
         / CSAMPLE(MAD_F_ONE);
@@ -22,10 +22,10 @@ inline CSAMPLE madScale(mad_fixed_t sample) {
 } // anonymous namespace
 
 // Optimization: Reserve initial capacity for seek frame list
-const AudioSource::size_type kMinutesPerFile = 10; // enough for the majority of files (tunable)
-const AudioSource::size_type kSecondsPerMinute = 60; // fixed
-const AudioSource::size_type kMaxMp3FramesPerSecond = 39; // fixed: 1 MP3 frame = 26 ms -> ~ 1000 / 26
-const AudioSource::size_type kSeekFrameListCapacity = kMinutesPerFile
+const SINT kMinutesPerFile = 10; // enough for the majority of files (tunable)
+const SINT kSecondsPerMinute = 60; // fixed
+const SINT kMaxMp3FramesPerSecond = 39; // fixed: 1 MP3 frame = 26 ms -> ~ 1000 / 26
+const SINT kSeekFrameListCapacity = kMinutesPerFile
         * kSecondsPerMinute * kMaxMp3FramesPerSecond;
 
 int decodeFrameHeader(
@@ -121,7 +121,7 @@ Result AudioSourceMp3::postConstruct() {
         }
 
         // Grab data from madHeader
-        const size_type madChannelCount = MAD_NCHANNELS(&madHeader);
+        const SINT madChannelCount = MAD_NCHANNELS(&madHeader);
         if (kChannelCountDefault == getChannelCount()) {
             // initially set the number of channels
             setChannelCount(madChannelCount);
@@ -137,7 +137,7 @@ Result AudioSourceMp3::postConstruct() {
                 return ERR;
             }
         }
-        const size_type madSampleRate = madHeader.samplerate;
+        const SINT madSampleRate = madHeader.samplerate;
         if (kFrameRateDefault == getFrameRate()) {
             // initially set the frame/sample rate
             setFrameRate(madSampleRate);
@@ -257,7 +257,7 @@ void AudioSourceMp3::preDestroy() {
     }
 }
 
-AudioSource::diff_type AudioSourceMp3::restartDecoding(
+SINT AudioSourceMp3::restartDecoding(
         const SeekFrameType& seekFrame) {
     qDebug() << "restartDecoding @" << seekFrame.frameIndex;
 
@@ -297,7 +297,7 @@ AudioSource::diff_type AudioSourceMp3::restartDecoding(
 }
 
 void AudioSourceMp3::addSeekFrame(
-        diff_type frameIndex,
+        SINT frameIndex,
         const unsigned char* pInputData) {
     DEBUG_ASSERT(m_seekFrameList.empty() ||
             (m_seekFrameList.back().frameIndex < frameIndex));
@@ -310,22 +310,22 @@ void AudioSourceMp3::addSeekFrame(
     m_seekFrameList.push_back(seekFrame);
 }
 
-AudioSourceMp3::SeekFrameList::size_type AudioSourceMp3::findSeekFrameIndex(
-        diff_type frameIndex) const {
+SINT AudioSourceMp3::findSeekFrameIndex(
+        SINT frameIndex) const {
     // Check preconditions
     DEBUG_ASSERT(0 < m_avgSeekFrameCount);
     DEBUG_ASSERT(!m_seekFrameList.empty());
     DEBUG_ASSERT(kFrameIndexMin == m_seekFrameList.front().frameIndex);
-    DEBUG_ASSERT(diff_type(kFrameIndexMin + getFrameIndexMax()) == m_seekFrameList.back().frameIndex);
+    DEBUG_ASSERT(SINT(kFrameIndexMin + getFrameIndexMax()) == m_seekFrameList.back().frameIndex);
 
-    SeekFrameList::size_type lowerBound =
+    SINT lowerBound =
             0;
-    SeekFrameList::size_type upperBound =
+    SINT upperBound =
             m_seekFrameList.size();
     DEBUG_ASSERT(lowerBound < upperBound);
 
     // Initial guess based on average frame size
-    SeekFrameList::size_type seekFrameIndex =
+    SINT seekFrameIndex =
             frameIndex / m_avgSeekFrameCount;
     if (seekFrameIndex >= upperBound) {
         seekFrameIndex = upperBound - 1;
@@ -346,24 +346,24 @@ AudioSourceMp3::SeekFrameList::size_type AudioSourceMp3::findSeekFrameIndex(
 
     // Check postconditions
     DEBUG_ASSERT(seekFrameIndex == lowerBound);
-    DEBUG_ASSERT(m_seekFrameList.size() > seekFrameIndex);
+    DEBUG_ASSERT(SINT(m_seekFrameList.size()) > seekFrameIndex);
     DEBUG_ASSERT(m_seekFrameList[seekFrameIndex].frameIndex <= frameIndex);
-    DEBUG_ASSERT(((seekFrameIndex + 1) >= m_seekFrameList.size()) ||
+    DEBUG_ASSERT(((seekFrameIndex + 1) >= SINT(m_seekFrameList.size())) ||
             (m_seekFrameList[seekFrameIndex + 1].frameIndex > frameIndex));
 
     return seekFrameIndex;
 }
 
-AudioSource::diff_type AudioSourceMp3::seekSampleFrame(diff_type frameIndex) {
+SINT AudioSourceMp3::seekSampleFrame(SINT frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(isValidFrameIndex(frameIndex));
 
-    SeekFrameList::size_type seekFrameIndex = findSeekFrameIndex(
+    SINT seekFrameIndex = findSeekFrameIndex(
             frameIndex);
-    DEBUG_ASSERT(m_seekFrameList.size() > seekFrameIndex);
-    const SeekFrameList::size_type curSeekFrameIndex = findSeekFrameIndex(
+    DEBUG_ASSERT(SINT(m_seekFrameList.size()) > seekFrameIndex);
+    const SINT curSeekFrameIndex = findSeekFrameIndex(
             m_curFrameIndex);
-    DEBUG_ASSERT(m_seekFrameList.size() > curSeekFrameIndex);
+    DEBUG_ASSERT(SINT(m_seekFrameList.size()) > curSeekFrameIndex);
     // some consistency checks
     DEBUG_ASSERT((curSeekFrameIndex >= seekFrameIndex) || (m_curFrameIndex < frameIndex));
     DEBUG_ASSERT((curSeekFrameIndex <= seekFrameIndex) || (m_curFrameIndex > frameIndex));
@@ -375,7 +375,7 @@ AudioSource::diff_type AudioSourceMp3::seekSampleFrame(diff_type frameIndex) {
         m_madSynthCount = 0;
 
         // Adjust the seek frame index for prefetching
-        // Implementation note: The type size_type is unsigned so
+        // Implementation note: The type SINT is unsigned so
         // need to be careful when subtracting!
         if (kSeekFramePrefetchCount < seekFrameIndex) {
             // Restart decoding kSeekFramePrefetchCount seek frames
@@ -398,7 +398,7 @@ AudioSource::diff_type AudioSourceMp3::seekSampleFrame(diff_type frameIndex) {
     DEBUG_ASSERT(m_curFrameIndex <= frameIndex);
 
     // Skip (= decode and discard) prefetch data
-    const size_type skipFrameCount = frameIndex - m_curFrameIndex;
+    const SINT skipFrameCount = frameIndex - m_curFrameIndex;
     skipSampleFrames(skipFrameCount);
     DEBUG_ASSERT(m_curFrameIndex == frameIndex);
 
@@ -406,32 +406,32 @@ AudioSource::diff_type AudioSourceMp3::seekSampleFrame(diff_type frameIndex) {
     return m_curFrameIndex;
 }
 
-AudioSource::size_type AudioSourceMp3::readSampleFrames(
-        size_type numberOfFrames, CSAMPLE* sampleBuffer) {
+SINT AudioSourceMp3::readSampleFrames(
+        SINT numberOfFrames, CSAMPLE* sampleBuffer) {
     return readSampleFrames(numberOfFrames,
             sampleBuffer, frames2samples(numberOfFrames),
             false);
 }
 
-AudioSource::size_type AudioSourceMp3::readSampleFramesStereo(
-        size_type numberOfFrames, CSAMPLE* sampleBuffer,
-        size_type sampleBufferSize) {
+SINT AudioSourceMp3::readSampleFramesStereo(
+        SINT numberOfFrames, CSAMPLE* sampleBuffer,
+        SINT sampleBufferSize) {
     return readSampleFrames(numberOfFrames,
             sampleBuffer, sampleBufferSize,
             true);
 }
 
-AudioSource::size_type AudioSourceMp3::readSampleFrames(
-        size_type numberOfFrames, CSAMPLE* sampleBuffer,
-        size_type sampleBufferSize, bool readStereoSamples) {
+SINT AudioSourceMp3::readSampleFrames(
+        SINT numberOfFrames, CSAMPLE* sampleBuffer,
+        SINT sampleBufferSize, bool readStereoSamples) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(getSampleBufferSize(numberOfFrames, readStereoSamples) <= sampleBufferSize);
 
-    const size_type numberOfFramesTotal = math_min(numberOfFrames,
-            size_type(getFrameIndexMax() - m_curFrameIndex));
+    const SINT numberOfFramesTotal = math_min(numberOfFrames,
+            SINT(getFrameIndexMax() - m_curFrameIndex));
 
     CSAMPLE* pSampleBuffer = sampleBuffer;
-    size_type numberOfFramesRemaining = numberOfFramesTotal;
+    SINT numberOfFramesRemaining = numberOfFramesTotal;
     while (0 < numberOfFramesRemaining) {
         if (0 >= m_madSynthCount) {
             // When all decoded output data has been consumed...
@@ -487,15 +487,15 @@ AudioSource::size_type AudioSourceMp3::readSampleFrames(
             DEBUG_ASSERT(0 < m_madSynthCount);
         }
 
-        const size_type synthReadCount = math_min(
+        const SINT synthReadCount = math_min(
                 m_madSynthCount, numberOfFramesRemaining);
         if (NULL != pSampleBuffer) {
             DEBUG_ASSERT(m_madSynthCount <= m_madSynth.pcm.length);
-            const size_type madSynthOffset =
+            const SINT madSynthOffset =
                     m_madSynth.pcm.length - m_madSynthCount;
             DEBUG_ASSERT(madSynthOffset < m_madSynth.pcm.length);
             if (isChannelCountMono()) {
-                for (size_type i = 0; i < synthReadCount; ++i) {
+                for (SINT i = 0; i < synthReadCount; ++i) {
                     const CSAMPLE sampleValue = madScale(
                             m_madSynth.pcm.samples[0][madSynthOffset + i]);
                     *pSampleBuffer = sampleValue;
@@ -506,7 +506,7 @@ AudioSource::size_type AudioSourceMp3::readSampleFrames(
                     }
                 }
             } else if (isChannelCountStereo() || readStereoSamples) {
-                for (size_type i = 0; i < synthReadCount; ++i) {
+                for (SINT i = 0; i < synthReadCount; ++i) {
                     *pSampleBuffer = madScale(
                             m_madSynth.pcm.samples[0][madSynthOffset + i]);
                     ++pSampleBuffer;
@@ -515,8 +515,8 @@ AudioSource::size_type AudioSourceMp3::readSampleFrames(
                     ++pSampleBuffer;
                 }
             } else {
-                for (size_type i = 0; i < synthReadCount; ++i) {
-                    for (size_type j = 0; j < getChannelCount(); ++j) {
+                for (SINT i = 0; i < synthReadCount; ++i) {
+                    for (SINT j = 0; j < getChannelCount(); ++j) {
                         *pSampleBuffer = madScale(
                                 m_madSynth.pcm.samples[j][madSynthOffset + i]);
                         ++pSampleBuffer;
