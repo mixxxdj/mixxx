@@ -64,7 +64,6 @@ class EffectChainManager : public QObject {
     QList<QuickEffectRackPointer> m_quickEffectRacks;
     QHash<QString, EffectRackPointer> m_effectRacksByGroup;
     QList<EffectChainPointer> m_effectChains;
-    QSet<ChannelHandleAndGroup> m_registeredChannelsSet;
     QList<ChannelHandleAndGroup> m_registeredChannels;
     DISALLOW_COPY_AND_ASSIGN(EffectChainManager);
 };
