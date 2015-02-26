@@ -12,10 +12,10 @@
 class SuperLinkTest : public BaseEffectTest {
   protected:
     SuperLinkTest()
-            : m_master(m_factory.getOrCreateHandle("[Master]"), "[Master]"),
-              m_headphone(m_factory.getOrCreateHandle("[Headphone]"), "[Headphone]") {
-        m_pEffectsManager->registerChannel(m_master);
-        m_pEffectsManager->registerChannel(m_headphone);
+            : m_master(ChannelHandleAndGroup(
+                    m_pEffectsManager->registerChannel("[Master]"), "[Master]")),
+              m_headphone(ChannelHandleAndGroup(
+                      m_pEffectsManager->registerChannel("[Headphone]"), "[Headphone]")) {
         registerTestBackend();
 
         EffectChainPointer pChain(new EffectChain(m_pEffectsManager.data(),
@@ -68,7 +68,6 @@ class SuperLinkTest : public BaseEffectTest {
                 itemPrefix + QString("_link_inverse")));
     }
 
-    ChannelHandleFactory m_factory;
     ChannelHandleAndGroup m_master;
     ChannelHandleAndGroup m_headphone;
 
