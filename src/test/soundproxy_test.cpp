@@ -99,7 +99,7 @@ TEST_F(SoundSourceProxyTest, seekForward) {
     // seem to support sample accurate seeking. The differences
     // between the samples decoded with continuous reading and
     // those samples decoded after seeking are quite noticeable!
-    const Mixxx::AudioSource::sample_type kOpusSeekDecodingError = 0.2f;
+    const CSAMPLE kOpusSeekDecodingError = 0.2f;
 
     const QString kFilePathPrefix(
             QDir::currentPath() + "/src/test/id3-test-data/cover-test.");

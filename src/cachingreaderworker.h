@@ -22,7 +22,7 @@ class AudioSourceProxy;
 typedef struct Chunk {
     int chunk_number;
     int frameCount;
-    Mixxx::AudioSource::sample_type* stereoSamples;
+    CSAMPLE* stereoSamples;
     Chunk* prev_lru;
     Chunk* next_lru;
 
