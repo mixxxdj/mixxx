@@ -51,15 +51,15 @@ class MockedEngineBackendTest : public MixxxTest {
                                            m_pEffectsManager, false, false);
 
         m_pChannel1 = new EngineDeck(
-                m_pEngineMaster->registerChannelGroup(m_sGroup1),
+                m_sGroup1,
                 m_pConfig.data(), m_pEngineMaster, m_pEffectsManager,
                 EngineChannel::CENTER);
         m_pChannel2 = new EngineDeck(
-                m_pEngineMaster->registerChannelGroup(m_sGroup2),
+                m_sGroup2,
                 m_pConfig.data(), m_pEngineMaster, m_pEffectsManager,
                 EngineChannel::CENTER);
         m_pChannel3 = new EngineDeck(
-                m_pEngineMaster->registerChannelGroup(m_sGroup3),
+                m_sGroup3,
                 m_pConfig.data(), m_pEngineMaster, m_pEffectsManager,
                 EngineChannel::CENTER);
         m_pPreview1 = new PreviewDeck(NULL, m_pConfig.data(),

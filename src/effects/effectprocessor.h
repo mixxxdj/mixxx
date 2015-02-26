@@ -24,7 +24,7 @@ class EffectProcessor {
     virtual ~EffectProcessor() { }
 
     virtual void initialize(
-            const QSet<ChannelHandleAndGroup>& registeredChannels) = 0;
+            const QList<ChannelHandleAndGroup>& registeredChannels) = 0;
 
     // Take a buffer of numSamples samples of audio from a channel, provided as
     // pInput, process the buffer according to Effect-specific logic, and output
@@ -65,7 +65,7 @@ class PerChannelEffectProcessor : public EffectProcessor {
     }
 
     virtual void initialize(
-            const QSet<ChannelHandleAndGroup>& registeredChannels) {
+            const QList<ChannelHandleAndGroup>& registeredChannels) {
         foreach (const ChannelHandleAndGroup& channel, registeredChannels) {
             getOrCreateChannelState(channel.handle());
         }
@@ -94,6 +94,8 @@ class PerChannelEffectProcessor : public EffectProcessor {
     inline T* getOrCreateChannelState(const ChannelHandle& handle) {
         ChannelStateHolder& holder = m_channelState[handle];
         if (holder.state == NULL) {
+            // holder is the reference to fresh constructed the array
+            // element. Now we link a new ChannelState object to it.
             holder.state = new T();
         }
         return holder.state;

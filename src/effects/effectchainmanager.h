@@ -23,8 +23,8 @@ class EffectChainManager : public QObject {
                        EffectsManager* pEffectsManager);
     virtual ~EffectChainManager();
 
-    void registerChannel(const ChannelHandleAndGroup& handle_group);
-    const QSet<ChannelHandleAndGroup>& registeredChannels() const {
+    ChannelHandle registerChannel(const QString& group);
+    const QList<ChannelHandleAndGroup>& registeredChannels() const {
         return m_registeredChannels;
     }
 
@@ -64,7 +64,7 @@ class EffectChainManager : public QObject {
     QList<QuickEffectRackPointer> m_quickEffectRacks;
     QHash<QString, EffectRackPointer> m_effectRacksByGroup;
     QList<EffectChainPointer> m_effectChains;
-    QSet<ChannelHandleAndGroup> m_registeredChannels;
+    QList<ChannelHandleAndGroup> m_registeredChannels;
     DISALLOW_COPY_AND_ASSIGN(EffectChainManager);
 };
 

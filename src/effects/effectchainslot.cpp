@@ -266,19 +266,19 @@ EffectSlotPointer EffectChainSlot::addEffectSlot(const QString& group) {
 }
 
 void EffectChainSlot::registerChannel(const ChannelHandleAndGroup& handle_group) {
-    if (m_channelInfoByName.contains(handle_group.name())) {
+    if (m_channelInfoByName.contains(handle_group.group())) {
         qWarning() << debugString()
                    << "WARNING: registerChannel already has channel registered:"
-                   << handle_group.name();
+                   << handle_group.group();
         return;
     }
     ControlPushButton* pEnableControl = new ControlPushButton(
-            ConfigKey(m_group, QString("group_%1_enable").arg(handle_group.name())));
+            ConfigKey(m_group, QString("group_%1_enable").arg(handle_group.group())));
     pEnableControl->setButtonMode(ControlPushButton::POWERWINDOW);
 
     ChannelInfo* pInfo = new ChannelInfo(handle_group, pEnableControl);
-    m_channelInfoByName[handle_group.name()] = pInfo;
-    m_channelStatusMapper.setMapping(pEnableControl, handle_group.name());
+    m_channelInfoByName[handle_group.group()] = pInfo;
+    m_channelStatusMapper.setMapping(pEnableControl, handle_group.group());
     connect(pEnableControl, SIGNAL(valueChanged(double)),
             &m_channelStatusMapper, SLOT(map()));
 }

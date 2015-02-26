@@ -41,7 +41,7 @@ class MockEffectProcessor : public EffectProcessor {
                                const EffectProcessor::EnableState enableState,
                                const GroupFeatureState& groupFeatures));
 
-    MOCK_METHOD1(initialize, void(const QSet<ChannelHandleAndGroup>& registeredChannels));
+    MOCK_METHOD1(initialize, void(const QList<ChannelHandleAndGroup>& registeredChannels));
 };
 
 class MockEffectInstantiator : public EffectInstantiator {

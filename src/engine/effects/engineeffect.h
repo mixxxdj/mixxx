@@ -19,7 +19,7 @@
 class EngineEffect : public EffectsRequestHandler {
   public:
     EngineEffect(const EffectManifest& manifest,
-                 const QSet<ChannelHandleAndGroup>& registeredChannels,
+                 const QList<ChannelHandleAndGroup>& registeredChannels,
                  EffectInstantiatorPointer pInstantiator);
     virtual ~EngineEffect();
 

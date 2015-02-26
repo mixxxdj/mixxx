@@ -17,14 +17,12 @@ using ::testing::_;
 
 class EffectChainSlotTest : public BaseEffectTest {
   protected:
-    EffectChainSlotTest()
-            : m_master(m_factory.getOrCreateHandle("[Master]"), "[Master]"),
-              m_headphone(m_factory.getOrCreateHandle("[Headphone]"), "[Headphone]") {
-        m_pEffectsManager->registerChannel(m_master);
-        m_pEffectsManager->registerChannel(m_headphone);
+    EffectChainSlotTest() :
+        m_master(ChannelHandleAndGroup(
+               m_pEffectsManager->registerChannel("[Master]"), "[Master]")),
+        m_headphone(ChannelHandleAndGroup(
+               m_pEffectsManager->registerChannel("[Headphone]"), "[Headphone]")) {
     }
-
-    ChannelHandleFactory m_factory;
     ChannelHandleAndGroup m_master;
     ChannelHandleAndGroup m_headphone;
 };

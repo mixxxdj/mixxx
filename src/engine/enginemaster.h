@@ -63,28 +63,23 @@ class EngineMaster : public QObject, public AudioSource {
     const CSAMPLE* buffer(AudioOutput output) const;
 
     inline const QString& getMasterGroup() const {
-        return m_masterHandle.name();
+        return m_masterGroup;
     }
 
     inline const QString& getHeadphoneGroup() const {
-        return m_headphoneHandle.name();
+        return m_headphoneGroup;
     }
 
     inline const QString& getBusLeftGroup() const {
-        return m_busLeftHandle.name();
+        return m_busLeftGroup;
     }
 
     inline const QString& getBusCenterGroup() const {
-        return m_busCenterHandle.name();
+        return m_busCenterGroup;
     }
 
     inline const QString& getBusRightGroup() const {
-        return m_busRightHandle.name();
-    }
-
-    ChannelHandleAndGroup registerChannelGroup(const QString& group) {
-        return ChannelHandleAndGroup(
-                m_groupHandleFactory.getOrCreateHandle(group), group);
+        return m_busRightGroup;
     }
 
     // WARNING: These methods are called by the main thread. They should only
@@ -140,7 +135,6 @@ class EngineMaster : public QObject, public AudioSource {
                   m_pMuteControl(NULL),
                   m_index(index) {
         }
-        ChannelHandle m_handle;
         EngineChannel* m_pChannel;
         CSAMPLE* m_pBuffer;
         ControlObject* m_pVolumeControl;
@@ -264,7 +258,6 @@ class EngineMaster : public QObject, public AudioSource {
             FastVector<ChannelInfo*, kMaxChannels>* talkoverChannels,
             int iBufferSize);
 
-    ChannelHandleFactory m_groupHandleFactory;
     EngineEffectsManager* m_pEngineEffectsManager;
     bool m_bRampingGain;
     FastVector<ChannelInfo*, kMaxChannels> m_channels;
@@ -313,11 +306,17 @@ class EngineMaster : public QObject, public AudioSource {
     CSAMPLE m_headphoneMasterGainOld;
     CSAMPLE m_headphoneGainOld;
 
-    const ChannelHandleAndGroup m_masterHandle;
-    const ChannelHandleAndGroup m_headphoneHandle;
-    const ChannelHandleAndGroup m_busLeftHandle;
-    const ChannelHandleAndGroup m_busCenterHandle;
-    const ChannelHandleAndGroup m_busRightHandle;
+    const QString m_masterGroup;
+    const QString m_headphoneGroup;
+    const QString m_busLeftGroup;
+    const QString m_busCenterGroup;
+    const QString m_busRightGroup;
+
+    ChannelHandle m_masterHandle;
+    ChannelHandle m_headphoneHandle;
+    ChannelHandle m_busLeftHandle;
+    ChannelHandle m_busCenterHandle;
+    ChannelHandle m_busRightHandle;
 
     // Produce the Master Mixxx, not Required if connected to left
     // and right Bus and no recording and broadcast active

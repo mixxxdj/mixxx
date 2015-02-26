@@ -151,7 +151,7 @@ void EffectChain::enableForChannel(const ChannelHandleAndGroup& handle_group) {
         request->channel = handle_group.handle();
         m_pEffectsManager->writeRequest(request);
 
-        emit(channelStatusChanged(handle_group.name(), true));
+        emit(channelStatusChanged(handle_group.group(), true));
     }
 }
 
@@ -171,7 +171,7 @@ void EffectChain::disableForChannel(const ChannelHandleAndGroup& handle_group) {
         request->channel = handle_group.handle();
         m_pEffectsManager->writeRequest(request);
 
-        emit(channelStatusChanged(handle_group.name(), false));
+        emit(channelStatusChanged(handle_group.group(), false));
     }
 }
 
