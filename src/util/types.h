@@ -6,11 +6,16 @@
 #include <cstddef>
 #include <climits>
 
+<<<<<<< HEAD
 // Signed integer type for POT array indices, sizes and pointer
 // arithmetic. Its size (32-/64-bit) depends on the CPU architecture.
 // This should be used for all CSAMLE operations since it is fast and
 // allows compiler auto vectorizing. For Qt container operations use
 // just int as before.
+=======
+// Signed integer type for all kinds of sizes, array indices and pointer
+// arithmetic. Its size (32-/64-bit) depends on the CPU architecture.
+>>>>>>> Update SampleBuffer: Use SINT
 typedef std::ptrdiff_t SINT;
 
 // 16-bit integer sample data within the asymmetric

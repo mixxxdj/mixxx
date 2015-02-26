@@ -4,6 +4,7 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 SampleBuffer::SampleBuffer(SINT size)
 =======
 
@@ -12,6 +13,9 @@ SampleBuffer::SampleBuffer(size_type size)
 =======
 SampleBuffer::SampleBuffer(int size)
 >>>>>>> Update SampleBuffer
+=======
+SampleBuffer::SampleBuffer(SINT size)
+>>>>>>> Update SampleBuffer: Use SINT
         : m_data(SampleUtil::alloc(size)),
           m_size(m_data ? size : 0) {
 }
