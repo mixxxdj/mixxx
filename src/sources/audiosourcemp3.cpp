@@ -252,16 +252,17 @@ void AudioSourceMp3::preDestroy() {
 
     if (NULL != m_pFileData) {
         m_file.unmap(m_pFileData);
-        m_file.close();
         m_pFileData = NULL;
     }
+
+    m_file.close();
 }
 
 SINT AudioSourceMp3::restartDecoding(
         const SeekFrameType& seekFrame) {
     qDebug() << "restartDecoding @" << seekFrame.frameIndex;
 
-    if (0 == seekFrame.frameIndex) {
+    if (kFrameIndexMin == seekFrame.frameIndex) {
         mad_frame_finish(&m_madFrame);
         mad_synth_finish(&m_madSynth);
     }
@@ -269,7 +270,7 @@ SINT AudioSourceMp3::restartDecoding(
 
     mad_stream_init(&m_madStream);
     mad_stream_options(&m_madStream, MAD_OPTION_IGNORECRC);
-    if (0 == seekFrame.frameIndex) {
+    if (kFrameIndexMin == seekFrame.frameIndex) {
         mad_synth_init(&m_madSynth);
         mad_frame_init(&m_madFrame);
     }
@@ -278,7 +279,7 @@ SINT AudioSourceMp3::restartDecoding(
     mad_stream_buffer(&m_madStream, seekFrame.pInputData,
             m_fileSize - (seekFrame.pInputData - m_pFileData));
 
-    if (0 < seekFrame.frameIndex) {
+    if (kFrameIndexMin < seekFrame.frameIndex) {
         // Muting is done here to eliminate potential pops/clicks
         // from skipping Rob Leslie explains why here:
         // http://www.mars.org/mailman/public/mad-dev/2001-August/000321.html
