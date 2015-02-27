@@ -6,12 +6,12 @@
 #include <algorithm> // std::swap
 
 // A sample buffer with properly aligned memory to enable SSE optimizations.
-// The public SINTerface closely follows that of std::vector.
+// After construction the content of the buffer is uninitialized. No resize
+// operation is provided intentionally because malloc might block!
 //
-// No resize operation is provided SINTentionally for maximum efficiency!
-// If the size of an existing sample buffer needs to be altered after
-// construction this can simply be achieved by swapping the contents with
-// a temporary sample buffer that has been constructed with the desired
+// Hint: If the size of an existing sample buffer ever needs to be altered
+// after construction this can simply be achieved by swapping the contents
+// with a temporary sample buffer that has been constructed with the desired
 // size:
 //
 //     SampleBuffer sampleBuffer(oldSize);
@@ -27,7 +27,6 @@
 //     ...
 //     SampleBuffer(newSize).swap(sampleBuffer);
 //
-// After construction the content of the buffer is uninitialized.
 class SampleBuffer {
     Q_DISABLE_COPY(SampleBuffer)
     ;
@@ -39,11 +38,6 @@ public:
     }
     explicit SampleBuffer(SINT size);
     virtual ~SampleBuffer();
-
-    void swap(SampleBuffer& other) {
-        std::swap(m_data, other.m_data);
-        std::swap(m_size, other.m_size);
-    }
 
     SINT size() const {
         return m_size;
@@ -63,6 +57,15 @@ public:
         return m_data[index];
     }
 
+    // Exchanges the members of two buffers in conformance with the
+    // implementation of all STL containers. Required for exception
+    // safe programming and as a workaround for the missing resize
+    // operation.
+    void swap(SampleBuffer& other) {
+        std::swap(m_data, other.m_data);
+        std::swap(m_size, other.m_size);
+    }
+
     // Fills the whole buffer with zeroes
     void clear();
 
@@ -73,5 +76,15 @@ private:
     CSAMPLE* m_data;
     SINT m_size;
 };
+
+namespace std
+{
+// Template specialization of std::swap for SampleBuffer.
+template<>
+inline void swap(SampleBuffer& lhs, SampleBuffer& rhs)
+{
+    lhs.swap(rhs);
+}
+}
 
 #endif // SAMPLEBUFFER_H
