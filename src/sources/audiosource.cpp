@@ -1,9 +1,6 @@
 #include "sources/audiosource.h"
 
-#include "samplebuffer.h"
 #include "sampleutil.h"
-
-#include <vector>
 
 namespace Mixxx {
 
