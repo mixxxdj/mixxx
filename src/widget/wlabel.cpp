@@ -86,7 +86,8 @@ QString WLabel::text() const {
 void WLabel::setText(const QString& text) {
     m_longText = text;
     QFontMetrics metrics(font());
-    QString elidedText = metrics.elidedText(m_longText, m_elideMode, width());
+    // Measure the text for label width - 2 for 1 pixel border
+    QString elidedText = metrics.elidedText(m_longText, m_elideMode, width() - 2);
     QLabel::setText(elidedText);
 }
 
