@@ -258,15 +258,12 @@ void TrackInfoObject::parse(bool parseCoverArt) {
     }
 
     SoundSourceProxy proxy(canonicalLocation, m_pSecurityToken);
-    Mixxx::SoundSourcePointer pSoundSource(proxy.getSoundSource());
-    if (pSoundSource) {
-        // If we've got a SoundSource then it must have a type!
-        DEBUG_ASSERT(!pSoundSource->getType().isEmpty());
-        setType(pSoundSource->getType());
+    if (!proxy.getType().isEmpty()) {
+        setType(proxy.getType());
 
         // Parse the information stored in the sound file.
         Mixxx::TrackMetadata trackMetadata;
-        if (pSoundSource->parseMetadata(&trackMetadata) == OK) {
+        if (proxy.parseTrackMetadata(&trackMetadata) == OK) {
             // If Artist, Title and Type fields are not blank, modify them.
             // Otherwise, keep their current values.
             // TODO(rryan): Should we re-visit this decision?
@@ -282,7 +279,7 @@ void TrackInfoObject::parse(bool parseCoverArt) {
             }
 
             if (parseCoverArt) {
-                m_coverArt.image = pSoundSource->parseCoverArt();
+                m_coverArt.image = proxy.parseCoverArt();
                 if (!m_coverArt.image.isNull()) {
                     m_coverArt.info.hash = CoverArtUtils::calculateHash(
                         m_coverArt.image);

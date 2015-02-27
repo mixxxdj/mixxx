@@ -126,7 +126,7 @@ class OggVorbis(Dependence):
                     'Did not find libvorbisenc.a, libvorbisenc.lib, or the libvorbisenc development headers.')
 
     def sources(self, build):
-        return ['sources/audiosourceoggvorbis.cpp','sources/soundsourceoggvorbis.cpp']
+        return ['sources/soundsourceoggvorbis.cpp']
 
 class SndFile(Dependence):
 
@@ -139,7 +139,7 @@ class SndFile(Dependence):
         build.env.Append(CPPDEFINES='__SNDFILE__')
 
     def sources(self, build):
-        return ['sources/audiosourcesndfile.cpp','sources/soundsourcesndfile.cpp']
+        return ['sources/soundsourcesndfile.cpp']
 
 
 class FLAC(Dependence):
@@ -154,7 +154,7 @@ class FLAC(Dependence):
             build.env.Append(CPPDEFINES='FLAC__NO_DLL')
 
     def sources(self, build):
-        return ['sources/audiosourceflac.cpp','sources/soundsourceflac.cpp',]
+        return ['sources/soundsourceflac.cpp',]
 
 
 class Qt(Dependence):

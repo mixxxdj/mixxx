@@ -179,7 +179,7 @@ class Mad(Feature):
         build.env.Append(CPPDEFINES='__MAD__')
 
     def sources(self, build):
-        return ['sources/soundsourcemp3.cpp','sources/audiosourcemp3.cpp']
+        return ['sources/soundsourcemp3.cpp']
 
 
 class CoreAudio(Feature):
@@ -214,7 +214,7 @@ class CoreAudio(Feature):
         build.env.Append(CPPDEFINES='__COREAUDIO__')
 
     def sources(self, build):
-        return ['sources/soundsourcecoreaudio.cpp','sources/audiosourcecoreaudio.cpp',
+        return ['sources/soundsourcecoreaudio.cpp',
                 '#lib/apple/CAStreamBasicDescription.cpp']
 
 
@@ -429,7 +429,7 @@ class ModPlug(Feature):
 
     def sources(self, build):
         depends.Qt.uic(build)('dlgprefmodplugdlg.ui')
-        return ['sources/soundsourcemodplug.cpp', 'sources/audiosourcemodplug.cpp', 'dlgprefmodplug.cpp']
+        return ['sources/soundsourcemodplug.cpp', 'dlgprefmodplug.cpp']
 
 
 class FAAD(Feature):
@@ -820,7 +820,7 @@ class Opus(Feature):
             build.env.ParseConfig('pkg-config opusfile opus --silence-errors --cflags --libs')
 
     def sources(self, build):
-        return ['sources/soundsourceopus.cpp','sources/audiosourceopus.cpp']
+        return ['sources/soundsourceopus.cpp']
 
 
 class FFMPEG(Feature):
@@ -949,7 +949,6 @@ class FFMPEG(Feature):
 
     def sources(self, build):
         return ['sources/soundsourceffmpeg.cpp',
-		'sources/audiosourceffmpeg.cpp',
                 'encoder/encoderffmpegresample.cpp',
                 'encoder/encoderffmpegcore.cpp',
                 'encoder/encoderffmpegmp3.cpp',

@@ -239,10 +239,6 @@ public:
 protected:
     explicit AudioSource(QUrl url);
 
-    static AudioSourcePointer onCreate(AudioSource* pNewAudioSource);
-
-    virtual Result postConstruct() /*override*/ = 0;
-
     void setChannelCount(SINT channelCount);
     void setFrameRate(SINT frameRate);
     void setFrameCount(SINT frameCount);

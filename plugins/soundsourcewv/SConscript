@@ -12,7 +12,6 @@ Import('build')
 
 wv_sources = [
     "soundsourcewv.cpp",
-    "audiosourcewv.cpp",
     "sources/soundsource.cpp",
     "sources/soundsourceplugin.cpp",
     "sources/audiosource.cpp",

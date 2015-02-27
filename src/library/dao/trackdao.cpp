@@ -1850,12 +1850,7 @@ namespace
     QImage parseCoverArt(const QFileInfo& fileInfo) {
         SecurityTokenPointer pToken = Sandbox::openSecurityToken(fileInfo, true);
         SoundSourceProxy proxy(fileInfo.filePath(), pToken);
-        Mixxx::SoundSourcePointer pSoundSource(proxy.getSoundSource());
-        if (pSoundSource) {
-            return pSoundSource->parseCoverArt();
-        } else {
-            return QImage();
-        }
+        return proxy.parseCoverArt();
     }
 }
 
