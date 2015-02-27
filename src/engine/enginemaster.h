@@ -46,7 +46,9 @@ class EngineSync;
 class EngineTalkoverDucking;
 class EngineDelay;
 
-static const int kMaxChannels = 32;
+// The number of channels to pre-allocate in various structures in the
+// engine. Prevents memory allocation in EngineMaster::addChannel.
+static const int kPreallocatedChannels = 64;
 
 class EngineMaster : public QObject, public AudioSource {
     Q_OBJECT
@@ -255,23 +257,32 @@ class EngineMaster : public QObject, public AudioSource {
                      CSAMPLE* pOutput, unsigned int iBufferSize, GainCalculator* pGainCalculator);
 
     // Processes active channels. The master sync channel (if any) is processed
-    // first and all others are processed after. Sets the i'th bit of
-    // masterOutput and headphoneOutput if the i'th channel is enabled for the
-    // master output or headphone output, respectively.
-    void processChannels(
-            FastVector<ChannelInfo*, kMaxChannels>* busChannels,
-            FastVector<ChannelInfo*, kMaxChannels>* headphoneChannels,
-            FastVector<ChannelInfo*, kMaxChannels>* talkoverChannels,
-            int iBufferSize);
+    // first and all others are processed after. Populates m_activeChannels,
+    // m_activeBusChannels, m_activeHeadphoneChannels, and
+    // m_activeTalkoverChannels with each channel that is active for the
+    // respective output.
+    void processChannels(int iBufferSize);
 
     ChannelHandleFactory m_channelHandleFactory;
     EngineEffectsManager* m_pEngineEffectsManager;
     bool m_bRampingGain;
-    FastVector<ChannelInfo*, kMaxChannels> m_channels;
-    FastVector<GainCache, kMaxChannels> m_channelMasterGainCache;
-    FastVector<GainCache, kMaxChannels> m_channelHeadphoneGainCache;
-    FastVector<GainCache, kMaxChannels> m_channelTalkoverGainCache;
 
+    // List of channels added to the engine.
+    QVarLengthArray<ChannelInfo*, kPreallocatedChannels> m_channels;
+
+    // The previous gain of each channel for each mixing output (master,
+    // headphone, talkover).
+    QVarLengthArray<GainCache, kPreallocatedChannels> m_channelMasterGainCache;
+    QVarLengthArray<GainCache, kPreallocatedChannels> m_channelHeadphoneGainCache;
+    QVarLengthArray<GainCache, kPreallocatedChannels> m_channelTalkoverGainCache;
+
+    // Pre-allocated buffers for performing channel mixing in the callback.
+    QVarLengthArray<ChannelInfo*, kPreallocatedChannels> m_activeChannels;
+    QVarLengthArray<ChannelInfo*, kPreallocatedChannels> m_activeBusChannels[3];
+    QVarLengthArray<ChannelInfo*, kPreallocatedChannels> m_activeHeadphoneChannels;
+    QVarLengthArray<ChannelInfo*, kPreallocatedChannels> m_activeTalkoverChannels;
+
+    // Mixing buffers for each output.
     CSAMPLE* m_pOutputBusBuffers[3];
     CSAMPLE* m_pMaster;
     CSAMPLE* m_pHead;

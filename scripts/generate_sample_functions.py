@@ -42,8 +42,8 @@ def write_channelmixer_autogen(output, num_channels):
         else:
             header = 'void ChannelMixer::mixChannels('
         args = ['const EngineMaster::GainCalculator& gainCalculator',
-                'EngineMaster::FastVector<EngineMaster::ChannelInfo*, kMaxChannels>* activeChannels',
-                'EngineMaster::FastVector<EngineMaster::GainCache, kMaxChannels>* channelGainCache',
+                'QVarLengthArray<EngineMaster::ChannelInfo*, kPreallocatedChannels>* activeChannels',
+                'QVarLengthArray<EngineMaster::GainCache, kPreallocatedChannels>* channelGainCache',
                 'CSAMPLE* pOutput',
                 'unsigned int iBufferSize']
         output.extend(hanging_indent(header, args, ',', ') {'))
