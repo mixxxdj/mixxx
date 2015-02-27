@@ -348,27 +348,6 @@
 	
 						<!--
 						**********************************************
-						Text- Track Title
-						**********************************************
-						-->
-						<TrackProperty>
-							<TooltipId>track_title</TooltipId>
-							<Style>QLabel { 
-								font: bold 14px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: transparent; 
-								color: #191F24; 
-								text-align: left; 
-								padding-left: 1px; 
-							}
-							</Style>
-							<Property>title</Property>
-							<Channel><Variable name="channum"/></Channel>
-							<Pos>39,4</Pos>
-							<Size>310f,18</Size>
-						</TrackProperty>
-	
-						<!--
-						**********************************************
 						Text- Track Artist
 						**********************************************
 						-->
@@ -402,34 +381,6 @@
 								<ConfigKey>[Channel<Variable name="channum"/>],playposition</ConfigKey>
 							</Connection>
 						</NumberPos>
-	
-						<!--
-						**********************************************
-						Button- BPM Tap
-						**********************************************
-						-->
-						<!-- Little trickery here:
-							 BPM tap is transparent png directly over BPM display, so it became BPM and TAP at once,
-							 changed tooltip accordingly
-						-->
-						<PushButton>
-						<!-- Original:
-							<TooltipId>bpm_tap</TooltipId>
-						-->
-							<TooltipId>bpm_tap_visual_bpm</TooltipId>
-							<Style></Style>
-							<NumberStates>1</NumberStates>
-							<State>
-								<Number>0</Number>
-								<Pressed>btn_tap1_over.png</Pressed>
-								<Unpressed>btn_tap1.png</Unpressed>
-							</State>
-							<Pos>232,2</Pos>
-							<Connection>
-								<ConfigKey>[Channel<Variable name="channum"/>],bpm_tap</ConfigKey>
-								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-							</Connection>
-						</PushButton>
 						
 						<!--
 						**********************************************
