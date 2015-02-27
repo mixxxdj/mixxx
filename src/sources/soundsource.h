@@ -1,5 +1,5 @@
-#ifndef SOUNDSOURCE_H
-#define SOUNDSOURCE_H
+#ifndef MIXXX_SOUNDSOURCE_H
+#define MIXXX_SOUNDSOURCE_H
 
 #define MIXXX_SOUNDSOURCE_API_VERSION 7
 /** @note SoundSource API Version history:
@@ -13,47 +13,30 @@
  */
 
 #include "sources/audiosource.h"
+#include "sources/metadatasource.h"
 
 #include <QImage>
 
-/** Getter function to be declared by all SoundSource plugins */
-namespace Mixxx {
-class SoundSource;
-class TrackMetadata;
-}
-
-typedef Mixxx::SoundSource* (*getSoundSourceFunc)(QString fileName);
-typedef char** (*getSupportedFileExtensionsFunc)();
-typedef int (*getSoundSourceAPIVersionFunc)();
-/* New in version 3 */
-typedef void (*freeFileExtensionsFunc)(char** fileExts);
-
 namespace Mixxx {
 
-/*
- Base class for sound sources.
- */
-class SoundSource: public UrlResource {
+// Base class for sound sources.
+class SoundSource: public MetadataSource, public AudioSource {
 public:
     static QString getTypeFromUrl(QUrl url);
 
-    inline const QString& getType() const {
+    const QString& getType() const {
         return m_type;
     }
 
-    // Parses metadata before opening the SoundSource for reading.
-    //
-    // Only metadata that is quickly readable should be read.
-    // The implementation is free to set inaccurate estimated
-    // values here that are overwritten when the AudioSource is
-    // actually opened for reading.
-    virtual Result parseMetadata(Mixxx::TrackMetadata* pMetadata) const;
+    Result parseTrackMetadata(Mixxx::TrackMetadata* pMetadata) const /*override*/;
 
-    // Returns the first cover art image embedded within the file (if any).
-    virtual QImage parseCoverArt() const;
+    QImage parseCoverArt() const /*override*/;
 
-    // Opens the SoundSource for reading audio data.
-    virtual AudioSourcePointer open() const = 0;
+    // Opens the AudioSource for reading audio data.
+    virtual Result open() = 0;
+
+    // Closes the AudioSource.
+    virtual void close() = 0;
 
 protected:
     explicit SoundSource(QUrl url);
@@ -67,4 +50,4 @@ typedef QSharedPointer<SoundSource> SoundSourcePointer;
 
 } //namespace Mixxx
 
-#endif
+#endif // MIXXX_SOUNDSOURCE_H

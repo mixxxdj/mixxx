@@ -12,7 +12,6 @@ Import('build')
 
 m4a_sources = [
     "soundsourcem4a.cpp",
-    "audiosourcem4a.cpp",
     "sources/soundsource.cpp",
     "sources/soundsourceplugin.cpp",
     "sources/audiosource.cpp",

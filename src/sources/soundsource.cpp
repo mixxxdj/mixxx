@@ -9,18 +9,18 @@ namespace Mixxx {
 }
 
 SoundSource::SoundSource(QUrl url)
-        : UrlResource(url),
+        : AudioSource(url),
           m_type(getTypeFromUrl(url)) {
     DEBUG_ASSERT(getUrl().isValid());
 }
 
 SoundSource::SoundSource(QUrl url, QString type)
-        : UrlResource(url),
+        : AudioSource(url),
           m_type(type) {
     DEBUG_ASSERT(getUrl().isValid());
 }
 
-Result SoundSource::parseMetadata(Mixxx::TrackMetadata* pMetadata) const {
+Result SoundSource::parseTrackMetadata(Mixxx::TrackMetadata* pMetadata) const {
     return readTrackMetadataFromFile(pMetadata, getLocalFileName());
 }
 
