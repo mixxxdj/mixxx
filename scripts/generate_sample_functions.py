@@ -54,18 +54,20 @@ def write_channelmixer_autogen(output, num_channels):
         write('int totalActive = activeChannels->size();', depth=1)
 
         write('if (totalActive == 0) {', depth=1)
-        write('ScopedTimer t("EngineMaster::mixChannels_0active");', depth=2)
+        write('ScopedTimer t("EngineMaster::mixChannels%(variant)s_0active");' %
+              {'variant': 'Ramping' if ramping else ''}, depth=2)
         write('SampleUtil::clear(pOutput, iBufferSize);', depth=2)
         for i in xrange(1, num_channels+1):
             write('} else if (totalActive == %d) {' % i, depth=1)
-            write('ScopedTimer t("EngineMaster::mixChannels_%(i)dactive");' % {'i': i}, depth=2)
+            write('ScopedTimer t("EngineMaster::mixChannels%(variant)s_%(i)dactive");' %
+                  {'variant': 'Ramping' if ramping else '', 'i': i}, depth=2)
             if ramping:
                 write('CSAMPLE_GAIN oldGain[%(i)d];' % {'i': i}, depth=2)
             write('CSAMPLE_GAIN newGain[%(i)d];' % {'i': i}, depth=2)
             for j in xrange(i):
                 write('EngineMaster::ChannelInfo* pChannel%(j)d = activeChannels->at(%(j)d);' % {'j': j}, depth=2)
-                write('const int pChannelIndex%(j)d = pChannel%(j)d->m_index;' % {'j': j}, depth=2)
-                write('EngineMaster::GainCache& gainCache%(j)d = (*channelGainCache)[pChannelIndex%(j)d];' % {'j': j}, depth=2)
+                write('const int channelIndex%(j)d = pChannel%(j)d->m_index;' % {'j': j}, depth=2)
+                write('EngineMaster::GainCache& gainCache%(j)d = (*channelGainCache)[channelIndex%(j)d];' % {'j': j}, depth=2)
                 if ramping:
                     write('oldGain[%(j)d] = gainCache%(j)d.m_gain;' % {'j': j}, depth=2)
                 write('if (gainCache%(j)d.m_fadeout) {' % {'j': j}, depth=2)
@@ -98,13 +100,31 @@ def write_channelmixer_autogen(output, num_channels):
                 output.extend(hanging_indent(call_prefix, arg_groups, ',', ');', depth=2))
 
         write('} else {', depth=1)
+        write('ScopedTimer t("EngineMaster::mixChannels%(variant)s_%%1active", activeChannels->size());' %
+              {'variant': 'Ramping' if ramping else ''}, depth=2)
         write('// Set pOutput to all 0s', depth=2)
         write('SampleUtil::clear(pOutput, iBufferSize);', depth=2)
         write('for (int i = 0; i < activeChannels->size(); ++i) {', depth=2)
         write('EngineMaster::ChannelInfo* pChannelInfo = activeChannels->at(i);', depth=3)
+
+        write('const int channelIndex = pChannelInfo->m_index;', depth=3)
+        write('EngineMaster::GainCache& gainCache = (*channelGainCache)[channelIndex];', depth=3)
+        if ramping:
+            write('CSAMPLE_GAIN oldGain = gainCache.m_gain;', depth=3)
+        write('CSAMPLE_GAIN newGain;', depth=3)
+        write('if (gainCache.m_fadeout) {', depth=3)
+        write('newGain = 0;', depth=4)
+        write('gainCache.m_fadeout = false;', depth=4)
+        write('} else {', depth=3)
+        write('newGain = gainCalculator.getGain(pChannelInfo);', depth=4)
+        write('}', depth=3)
+        write('gainCache.m_gain = newGain;', depth=3)
+
         write('CSAMPLE* pBuffer = pChannelInfo->m_pBuffer;', depth=3)
-        write('CSAMPLE gain = gainCalculator.getGain(pChannelInfo);', depth=3)
-        write('SampleUtil::addWithGain(pOutput, pBuffer, gain, iBufferSize);', depth=3)
+        if ramping:
+            write('SampleUtil::addWithRampingGain(pOutput, pBuffer, oldGain, newGain, iBufferSize);', depth=3)
+        else:
+            write('SampleUtil::addWithGain(pOutput, pBuffer, newGain, iBufferSize);', depth=3)
         write('}', depth=2)
         write('}', depth=1)
         output.append('}')
