@@ -62,9 +62,9 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
           m_busLeftHandle(registerChannelGroup("[BusLeft]")),
           m_busCenterHandle(registerChannelGroup("[BusCenter]")),
           m_busRightHandle(registerChannelGroup("[BusRight]")) {
-    m_bBusOutputConnected[0] = false;
-    m_bBusOutputConnected[1] = false;
-    m_bBusOutputConnected[2] = false;
+    m_bBusOutputConnected[EngineChannel::LEFT] = false;
+    m_bBusOutputConnected[EngineChannel::CENTER] = false;
+    m_bBusOutputConnected[EngineChannel::RIGHT] = false;
     m_pWorkerScheduler = new EngineWorkerScheduler(this);
     m_pWorkerScheduler->start(QThread::HighPriority);
 
@@ -452,13 +452,13 @@ void EngineMaster::process(const int iBufferSize) {
     if (m_pEngineEffectsManager) {
         GroupFeatureState busFeatures;
         m_pEngineEffectsManager->process(m_busLeftHandle.handle(),
-                                         m_pOutputBusBuffers[0],
+                                         m_pOutputBusBuffers[EngineChannel::LEFT],
                                          iBufferSize, iSampleRate, busFeatures);
         m_pEngineEffectsManager->process(m_busCenterHandle.handle(),
-                                         m_pOutputBusBuffers[1],
+                                         m_pOutputBusBuffers[EngineChannel::CENTER],
                                          iBufferSize, iSampleRate, busFeatures);
         m_pEngineEffectsManager->process(m_busRightHandle.handle(),
-                                         m_pOutputBusBuffers[2],
+                                         m_pOutputBusBuffers[EngineChannel::RIGHT],
                                          iBufferSize, iSampleRate, busFeatures);
     }
 
@@ -575,7 +575,7 @@ void EngineMaster::process(const int iBufferSize) {
         // with a mono mix of the headphone buffer, and the right channel of the pfl
         // buffer with a mono mix of the master output buffer.
         if (m_pHeadSplitEnabled->get()) {
-            // note: NOT VECTORIZED because of in place copy 
+            // note: NOT VECTORIZED because of in place copy
 	    for (int i = 0; i + 1 < iBufferSize; i += 2) {
                 m_pHead[i] = (m_pHead[i] + m_pHead[i + 1]) / 2;
                 m_pHead[i + 1] = (m_pMaster[i] + m_pMaster[i + 1]) / 2;
@@ -608,7 +608,7 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     ChannelInfo* pChannelInfo = new ChannelInfo(m_channels.size());
     pChannelInfo->m_pChannel = pChannel;
     const QString& group = pChannel->getGroup();
-    pChannelInfo->m_handle = m_groupHandleFactory.getOrCreateHandle(group);
+    pChannelInfo->m_handle = m_channelHandleFactory.getOrCreateHandle(group);
     pChannelInfo->m_pVolumeControl = new ControlAudioTaperPot(
             ConfigKey(group, "volume"), -20, 0, 1);
     pChannelInfo->m_pVolumeControl->setDefaultValue(1.0);

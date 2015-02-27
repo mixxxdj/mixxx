@@ -84,7 +84,7 @@ class EngineMaster : public QObject, public AudioSource {
 
     ChannelHandleAndGroup registerChannelGroup(const QString& group) {
         return ChannelHandleAndGroup(
-                m_groupHandleFactory.getOrCreateHandle(group), group);
+                m_channelHandleFactory.getOrCreateHandle(group), group);
     }
 
     // WARNING: These methods are called by the main thread. They should only
@@ -264,7 +264,7 @@ class EngineMaster : public QObject, public AudioSource {
             FastVector<ChannelInfo*, kMaxChannels>* talkoverChannels,
             int iBufferSize);
 
-    ChannelHandleFactory m_groupHandleFactory;
+    ChannelHandleFactory m_channelHandleFactory;
     EngineEffectsManager* m_pEngineEffectsManager;
     bool m_bRampingGain;
     FastVector<ChannelInfo*, kMaxChannels> m_channels;
