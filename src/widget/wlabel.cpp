@@ -24,7 +24,8 @@
 WLabel::WLabel(QWidget* pParent)
         : QLabel(pParent),
           WBaseWidget(this),
-          m_qsText("") {
+          m_skinText(),
+          m_longText() {
 }
 
 WLabel::~WLabel() {
@@ -43,10 +44,10 @@ void WLabel::setup(QDomNode node, const SkinContext& context) {
     setPalette(pal);
 
     // Text
-    if (context.hasNode(node, "Text"))
-        m_qsText = context.selectString(node, "Text");
-    setText(m_qsText);
-
+    if (context.hasNode(node, "Text")) {
+        m_skinText = context.selectString(node, "Text");
+        setText(m_skinText);
+    }
     // Font size
     if (context.hasNode(node, "FontSize")) {
         int fontsize = context.selectString(node, "FontSize").toInt();
@@ -65,11 +66,27 @@ void WLabel::setup(QDomNode node, const SkinContext& context) {
     }
 }
 
+QString WLabel::text() const {
+    return m_longText;
+}
+
+void WLabel::setText(const QString& text) {
+    m_longText = text;
+    QFontMetrics metrics(font());
+    QString elidedText = metrics.elidedText(m_longText, Qt::ElideRight, width());
+    QLabel::setText(elidedText);
+}
+
 bool WLabel::event(QEvent* pEvent) {
     if (pEvent->type() == QEvent::ToolTip) {
         updateTooltip();
     }
     return QLabel::event(pEvent);
+}
+
+void WLabel::resizeEvent(QResizeEvent* event) {
+    QLabel::resizeEvent(event);
+    setText(m_longText);
 }
 
 void WLabel::fillDebugTooltip(QStringList* debug) {

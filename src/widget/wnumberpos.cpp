@@ -14,8 +14,6 @@ WNumberPos::WNumberPos(const char* group, QWidget* parent)
           m_dTrackSamples(0.0),
           m_dTrackSampleRate(0.0),
           m_bRemain(false) {
-    m_qsText = "";
-
     m_pShowTrackTimeRemaining = new ControlObjectThread(
             "[Controls]", "ShowDurationRemaining");
     m_pShowTrackTimeRemaining->connectValueChanged(
@@ -98,10 +96,10 @@ void WNumberPos::slotSetValue(double dValue) {
 
     QString valueString;
     if (valueMillis >= 0) {
-        valueString = m_qsText % Time::formatSeconds(
+        valueString = m_skinText % Time::formatSeconds(
                 valueMillis / Time::kMillisPerSecond, true);
     } else {
-        valueString = m_qsText % QLatin1String("-") % Time::formatSeconds(
+        valueString = m_skinText % QLatin1String("-") % Time::formatSeconds(
                 -valueMillis / Time::kMillisPerSecond, true);
     }
     setText(valueString);
@@ -111,16 +109,15 @@ void WNumberPos::slotSetRemain(double remain) {
     setRemain(remain > 0.0);
 }
 
-void WNumberPos::setRemain(bool bRemain)
-{
+void WNumberPos::setRemain(bool bRemain) {
     m_bRemain = bRemain;
 
     // Shift display state between showing position and remaining
-    if (m_bRemain)
-        m_qsText = "-";
-    else
-        m_qsText = "";
-
+    if (m_bRemain) {
+        m_skinText = "-";
+    } else {
+        m_skinText = "";
+    }
     // Have the widget redraw itself with its current value.
     slotSetValue(m_dOldValue);
 }
