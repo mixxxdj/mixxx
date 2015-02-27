@@ -365,7 +365,7 @@
 							<Channel><Variable name="channum"/></Channel>
 							<Pos>39,4</Pos>
 							<Size>275f,18</Size>
-                            <Ellipsis>right</Ellipsis>
+							<Ellipsis>right</Ellipsis>
 						</TrackProperty>
 	
 						<!--
@@ -382,7 +382,7 @@
 							<Channel><Variable name="channum"/></Channel>
 							<Pos>39,24</Pos>
 							<Size>210f,18</Size>
-                            <Ellipsis>right</Ellipsis>
+							<Ellipsis>right</Ellipsis>
 						</TrackProperty>
 		
 						<!--
