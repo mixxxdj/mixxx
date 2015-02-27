@@ -25,7 +25,8 @@ WLabel::WLabel(QWidget* pParent)
         : QLabel(pParent),
           WBaseWidget(this),
           m_skinText(),
-          m_longText() {
+          m_longText(),
+          m_elideMode(Qt::ElideNone) {
 }
 
 WLabel::~WLabel() {
@@ -64,6 +65,18 @@ void WLabel::setup(QDomNode node, const SkinContext& context) {
             setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
         }
     }
+    // Ellipsis
+    if (context.hasNode(node, "Ellipsis")) {
+        if (context.selectString(node, "Ellipsis").toLower() == "right") {
+            m_elideMode = Qt::ElideRight;
+        } else if (context.selectString(node, "Ellipsis").toLower() == "center") {
+            m_elideMode = Qt::ElideMiddle;
+        } else if (context.selectString(node, "Ellipsis").toLower() == "middle") {
+            m_elideMode = Qt::ElideMiddle;
+        } else if (context.selectString(node, "Ellipsis").toLower() == "left") {
+            m_elideMode = Qt::ElideLeft;
+        }
+    }
 }
 
 QString WLabel::text() const {
@@ -73,7 +86,7 @@ QString WLabel::text() const {
 void WLabel::setText(const QString& text) {
     m_longText = text;
     QFontMetrics metrics(font());
-    QString elidedText = metrics.elidedText(m_longText, Qt::ElideRight, width());
+    QString elidedText = metrics.elidedText(m_longText, m_elideMode, width());
     QLabel::setText(elidedText);
 }
 
