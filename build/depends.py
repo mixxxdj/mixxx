@@ -796,7 +796,6 @@ class MixxxCore(Feature):
                    "library/treeitemmodel.cpp",
                    "library/treeitem.cpp",
 
-                   "xmlparse.cpp",
                    "library/parser.cpp",
                    "library/parserpls.cpp",
                    "library/parserm3u.cpp",
@@ -912,6 +911,7 @@ class MixxxCore(Feature):
                    "util/mac.cpp",
                    "util/task.cpp",
                    "util/experiment.cpp",
+                   "util/xml.cpp",
 
                    '#res/mixxx.qrc'
                    ]

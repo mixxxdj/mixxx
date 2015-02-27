@@ -6,7 +6,7 @@
 #include <QDir>
 
 #include "effects/effectsmanager.h"
-#include "xmlparse.h"
+#include "util/xml.h"
 
 EffectChainManager::EffectChainManager(ConfigObject<ConfigValue>* pConfig,
                                        EffectsManager* pEffectsManager)

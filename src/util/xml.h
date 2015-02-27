@@ -1,5 +1,5 @@
-#ifndef XMLPARSE_H
-#define XMLPARSE_H
+#ifndef XML_H
+#define XML_H
 
 #include <QDomNode>
 #include <QDomElement>

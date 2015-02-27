@@ -10,7 +10,7 @@
 #include "library/librarytablemodel.h"
 #include "library/schemamanager.h"
 #include "trackinfoobject.h"
-#include "xmlparse.h"
+#include "util/xml.h"
 #include "util/assert.h"
 
 // static
