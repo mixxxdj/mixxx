@@ -360,7 +360,7 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
         for x in soundsource_plugins:
                 plugins.append(x.get_abspath())
 
-	for x in mixxxminimal_plugins:
+        for x in mixxxminimal_plugins:
                 plugins.append(x.get_abspath())
 
         resource_map = {}
