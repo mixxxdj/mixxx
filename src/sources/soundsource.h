@@ -12,10 +12,8 @@
  7 - Mixxx 1.13.0 New SoundSource/AudioSource API
  */
 
-#include "sources/audiosource.h"
 #include "sources/metadatasource.h"
-
-#include <QImage>
+#include "sources/audiosource.h"
 
 namespace Mixxx {
 

@@ -84,18 +84,18 @@ SoundSourceFLAC::~SoundSourceFLAC() {
 
 Result SoundSourceFLAC::open() {
     if (m_file.isOpen()) {
-        qWarning() << "File is already open:" << m_file.fileName();
+        qWarning() << "Cannot reopen FLAC file:" << m_file.fileName();
         return ERR;
     }
 
     if (!m_file.open(QIODevice::ReadOnly)) {
-        qWarning() << "Failed to open file:" << m_file.fileName();
+        qWarning() << "Failed to open FLAC file:" << m_file.fileName();
         return ERR;
     }
 
     m_decoder = FLAC__stream_decoder_new();
     if (m_decoder == NULL) {
-        qWarning() << "SSFLAC: decoder allocation failed!";
+        qWarning() << "Failed to create FLAC decoder!";
         return ERR;
     }
     FLAC__stream_decoder_set_md5_checking(m_decoder, FALSE);
@@ -104,11 +104,11 @@ Result SoundSourceFLAC::open() {
                     FLAC_seek_cb, FLAC_tell_cb, FLAC_length_cb, FLAC_eof_cb,
                     FLAC_write_cb, FLAC_metadata_cb, FLAC_error_cb, this));
     if (initStatus != FLAC__STREAM_DECODER_INIT_STATUS_OK) {
-        qWarning() << "SSFLAC: decoder init failed:" << initStatus;
+        qWarning() << "Failed to initialize FLAC decoder:" << initStatus;
         return ERR;
     }
     if (!FLAC__stream_decoder_process_until_end_of_metadata(m_decoder)) {
-        qWarning() << "SSFLAC: process to end of meta failed:"
+        qWarning() << "Failed to process FLAC metadata:"
                 << FLAC__stream_decoder_get_state(m_decoder);
         return ERR;
     }

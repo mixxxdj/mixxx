@@ -2,6 +2,7 @@
 #define METADATASOURCE_H
 
 #include "metadata/trackmetadata.h"
+#include "util/defs.h" // Result
 
 #include <QImage>
 
