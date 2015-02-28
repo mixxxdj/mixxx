@@ -309,7 +309,7 @@ void AnalyserQueue::run() {
 
         // Get the audio
         SoundSourceProxy soundSourceProxy(nextTrack);
-        Mixxx::AudioSourcePointer pAudioSource(soundSourceProxy.open());
+        Mixxx::AudioSourcePointer pAudioSource(soundSourceProxy.openAudioSource());
         if (!pAudioSource) {
             qWarning() << "Failed to open file for analyzing:" << nextTrack->getLocation();
             continue;

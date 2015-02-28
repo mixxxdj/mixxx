@@ -26,8 +26,8 @@ class SoundSourceProxyTest: public MixxxTest {
         SoundSourceProxy::loadPlugins();
     }
 
-    static Mixxx::AudioSourcePointer open(const QString& fileName) {
-        return SoundSourceProxy(fileName).open();
+    static Mixxx::AudioSourcePointer openAudioSource(const QString& fileName) {
+        return SoundSourceProxy(fileName).openAudioSource();
     }
 };
 
@@ -56,7 +56,7 @@ TEST_F(SoundSourceProxyTest, open) {
         ASSERT_TRUE(SoundSourceProxy::isFilenameSupported(filePath));
 >>>>>>> Improve and extend seek tests
 
-        Mixxx::AudioSourcePointer pAudioSource(open(filePath));
+        Mixxx::AudioSourcePointer pAudioSource(openAudioSource(filePath));
         ASSERT_TRUE(!pAudioSource.isNull());
         EXPECT_LT(0, pAudioSource->getChannelCount());
         EXPECT_LT(0, pAudioSource->getFrameRate());
@@ -103,7 +103,7 @@ TEST_F(SoundSourceProxyTest, seekForward) {
         const QString filePath(kFilePathPrefix + fileExtension);
         ASSERT_TRUE(SoundSourceProxy::isFilenameSupported(filePath));
 
-        Mixxx::AudioSourcePointer pContReadSource(open(filePath));
+        Mixxx::AudioSourcePointer pContReadSource(openAudioSource(filePath));
         ASSERT_FALSE(pContReadSource.isNull());
         const SINT readSampleCount = pContReadSource->frames2samples(kReadFrameCount);
         SampleBuffer contReadData(readSampleCount);
@@ -116,7 +116,7 @@ TEST_F(SoundSourceProxyTest, seekForward) {
             const SINT contReadFrameCount =
                     pContReadSource->readSampleFrames(kReadFrameCount, &contReadData[0]);
 
-            Mixxx::AudioSourcePointer pSeekReadSource(open(filePath));
+            Mixxx::AudioSourcePointer pSeekReadSource(openAudioSource(filePath));
             ASSERT_FALSE(pSeekReadSource.isNull());
             ASSERT_EQ(pContReadSource->getChannelCount(), pSeekReadSource->getChannelCount());
             ASSERT_EQ(pContReadSource->getFrameCount(), pSeekReadSource->getFrameCount());

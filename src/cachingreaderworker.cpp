@@ -136,7 +136,7 @@ namespace
 {
     Mixxx::AudioSourcePointer openAudioSourceForReading(const TrackPointer& pTrack) {
         SoundSourceProxy soundSourceProxy(pTrack);
-        Mixxx::AudioSourcePointer pAudioSource(soundSourceProxy.open());
+        Mixxx::AudioSourcePointer pAudioSource(soundSourceProxy.openAudioSource());
         if (pAudioSource.isNull()) {
             qWarning() << "Failed to open file:" << pTrack->getLocation();
             return Mixxx::AudioSourcePointer();
