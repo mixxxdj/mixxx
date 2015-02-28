@@ -398,9 +398,9 @@ void BasePlaylistFeature::slotExportPlaylist() {
     // Can be removed after switch to Qt5
     QFileInfo fileName(file_location);
     if (fileName.suffix().isNull() || fileName.suffix().isEmpty()) {
-    	QString ext = filefilter.section(".",1,1);
-    	ext.chop(1);
-    	file_location.append(".").append(ext);
+        QString ext = filefilter.section(".",1,1);
+        ext.chop(1);
+        file_location.append(".").append(ext);
     }
     // Update the import/export playlist directory
     //QFileInfo fileName(file_location);

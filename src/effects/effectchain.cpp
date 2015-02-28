@@ -4,7 +4,8 @@
 #include "engine/effects/message.h"
 #include "engine/effects/engineeffectrack.h"
 #include "engine/effects/engineeffectchain.h"
-#include "xmlparse.h"
+#include "sampleutil.h"
+#include "util/xml.h"
 
 EffectChain::EffectChain(EffectsManager* pEffectsManager, const QString& id,
                          EffectChainPointer pPrototype)

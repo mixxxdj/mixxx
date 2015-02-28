@@ -31,7 +31,7 @@
 #include "controlobject.h"
 #include "soundsourceproxy.h"
 #include "metadata/trackmetadata.h"
-#include "xmlparse.h"
+#include "util/xml.h"
 #include "track/beatfactory.h"
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
