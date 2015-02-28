@@ -312,25 +312,32 @@ QLibrary* SoundSourceProxy::getPlugin(QString lib_filename)
     return pPlugin;
 }
 
-Mixxx::AudioSourcePointer SoundSourceProxy::open() const {
+Mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource() {
+    if (m_pAudioSource) {
+        qDebug() << "AudioSource is already open";
+        return m_pAudioSource;
+    }
+
     if (!m_pSoundSource) {
-        return Mixxx::AudioSourcePointer();
+        qDebug() << "No SoundSource available";
+        DEBUG_ASSERT(!m_pAudioSource);
+        return m_pAudioSource;
     }
 
     if (OK != m_pSoundSource->open()) {
         qWarning() << "Failed to open SoundSource";
-        return Mixxx::AudioSourcePointer();
+        return m_pAudioSource;
     }
 
     if (!m_pSoundSource->isValid()) {
         qWarning() << "Invalid file:" << m_pSoundSource->getUrl()
                 << "channels" << m_pSoundSource->getChannelCount()
                 << "frame rate" << m_pSoundSource->getChannelCount();
-        return Mixxx::AudioSourcePointer();
+        return m_pAudioSource;
     }
     if (m_pSoundSource->isEmpty()) {
         qWarning() << "Empty file:" << m_pSoundSource->getUrl();
-        return Mixxx::AudioSourcePointer();
+        return m_pAudioSource;
     }
 
     // Overwrite metadata with actual audio properties
@@ -345,7 +352,17 @@ Mixxx::AudioSourcePointer SoundSourceProxy::open() const {
         }
     }
 
-    return m_pSoundSource;
+    m_pAudioSource = m_pSoundSource;
+
+    return m_pAudioSource;
+}
+
+void SoundSourceProxy::closeAudioSource() {
+    if (m_pAudioSource) {
+        DEBUG_ASSERT(m_pSoundSource);
+        m_pSoundSource->close();
+        m_pAudioSource.clear();
+    }
 }
 
 // static

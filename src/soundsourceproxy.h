@@ -59,13 +59,9 @@ public:
     // Opening the audio data through the proxy will
     // update the some metadata of the track object.
     // Returns a null pointer on failure.
-    Mixxx::AudioSourcePointer open() const;
+    Mixxx::AudioSourcePointer openAudioSource();
 
-    void close() const {
-        if (m_pSoundSource) {
-            m_pSoundSource->close();
-        }
-    }
+    void closeAudioSource();
 
 private:
     static QRegExp m_supportedFileRegex;
@@ -81,6 +77,10 @@ private:
     const SecurityTokenPointer m_pSecurityToken;
 
     const Mixxx::SoundSourcePointer m_pSoundSource;
+
+    // Just an alias that keeps track of opening and closing
+    // the corresponding SoundSource.
+    Mixxx::AudioSourcePointer m_pAudioSource;
 };
 
 #endif

@@ -12,9 +12,6 @@
 
 namespace Mixxx {
 
-class AudioSource;
-typedef QSharedPointer<AudioSource> AudioSourcePointer;
-
 // Common interface and base class for audio sources.
 //
 // Both the number of channels and the frame rate must
@@ -258,6 +255,8 @@ private:
 
     SINT m_bitrate;
 };
+
+typedef QSharedPointer<AudioSource> AudioSourcePointer;
 
 } // namespace Mixxx
 
