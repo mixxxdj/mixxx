@@ -82,7 +82,7 @@ SoundSourceMp3::~SoundSourceMp3() {
 
 Result SoundSourceMp3::open() {
     if (m_file.isOpen()) {
-        qWarning() << "File is already open:" << m_file.fileName();
+        qWarning() << "Cannot reopen MP3 file:" << m_file.fileName();
         return ERR;
     }
 
@@ -100,6 +100,8 @@ Result SoundSourceMp3::open() {
     mad_stream_options(&m_madStream, MAD_OPTION_IGNORECRC);
     mad_stream_buffer(&m_madStream, m_pFileData, m_fileSize);
     DEBUG_ASSERT(m_pFileData == m_madStream.this_frame);
+    mad_frame_init(&m_madFrame);
+    mad_synth_init(&m_madSynth);
 
     DEBUG_ASSERT(m_seekFrameList.empty());
     m_avgSeekFrameCount = 0;
@@ -245,8 +247,6 @@ Result SoundSourceMp3::open() {
 
     // Reset positions
     m_curFrameIndex = kFrameIndexMin;
-    mad_frame_init(&m_madFrame);
-    mad_synth_init(&m_madSynth);
 
     // Restart decoding at the beginning of the audio stream
     m_curFrameIndex = restartDecoding(m_seekFrameList.front());
@@ -260,18 +260,17 @@ Result SoundSourceMp3::open() {
 }
 
 void SoundSourceMp3::close() {
-    mad_synth_finish(&m_madSynth);
-    mad_frame_finish(&m_madFrame);
-    mad_stream_finish(&m_madStream);
-
-    m_seekFrameList.clear();
-
-    if (NULL != m_pFileData) {
+    if (m_pFileData) {
+        mad_synth_finish(&m_madSynth);
+        mad_frame_finish(&m_madFrame);
+        mad_stream_finish(&m_madStream);
         m_file.unmap(m_pFileData);
         m_pFileData = NULL;
     }
 
     m_file.close();
+
+    m_seekFrameList.clear();
 }
 
 SINT SoundSourceMp3::restartDecoding(

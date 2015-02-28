@@ -83,7 +83,7 @@ SoundSourceOggVorbis::~SoundSourceOggVorbis() {
 }
 
 Result SoundSourceOggVorbis::open() {
-    close(); // re-open if already open
+    close(); // reopen if already open
 
     const QByteArray qbaFilename(getLocalFileNameBytes());
     if (0 != ov_fopen(qbaFilename.constData(), &m_vf)) {

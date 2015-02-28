@@ -177,7 +177,7 @@ SoundSourceSndFile::~SoundSourceSndFile() {
 
 Result SoundSourceSndFile::open() {
     if (m_pSndFile) {
-        qWarning() << "File is already open:" << getUrl();
+        qWarning() << "Cannot reopen file:" << getUrl();
         return ERR;
     }
 
@@ -217,7 +217,7 @@ void SoundSourceSndFile::close() {
         if (0 == closeResult) {
             m_pSndFile = NULL;
         } else {
-            qWarning() << "Failed to close libsnd file:" << closeResult
+            qWarning() << "Failed to close file:" << closeResult
                     << sf_strerror(m_pSndFile)
                     << getUrl();
         }

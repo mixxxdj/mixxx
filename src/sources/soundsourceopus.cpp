@@ -124,7 +124,7 @@ Result SoundSourceOpus::parseTrackMetadata(Mixxx::TrackMetadata* pMetadata) cons
 
 Result SoundSourceOpus::open() {
     if (m_pOggOpusFile) {
-        qWarning() << "OggOpus file is already open:" << getUrl();
+        qWarning() << "Cannot reopen OggOpus file:" << getUrl();
         return ERR;
     }
 
