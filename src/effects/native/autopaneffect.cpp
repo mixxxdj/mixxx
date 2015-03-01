@@ -82,13 +82,13 @@ AutoPanEffect::AutoPanEffect(EngineEffect* pEffect, const EffectManifest& manife
 AutoPanEffect::~AutoPanEffect() {
 }
 
-void AutoPanEffect::processGroup(const QString& group, PanGroupState* pGroupState,
+void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* pGroupState,
                               const CSAMPLE* pInput,
                               CSAMPLE* pOutput, const unsigned int numSamples,
                               const unsigned int sampleRate,
                               const EffectProcessor::EnableState enableState,
                               const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(group);
+    Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
     Q_UNUSED(sampleRate);
     
