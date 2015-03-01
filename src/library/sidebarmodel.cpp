@@ -383,8 +383,9 @@ void SidebarModel::slotModelReset() {
  */
 void SidebarModel::slotFeatureIsLoading(LibraryFeature * feature, bool selectFeature) {
     featureRenamed(feature);
-    if(selectFeature)
-    	slotFeatureSelect(feature);
+    if (selectFeature) {
+        slotFeatureSelect(feature);
+    }
 }
 
 /* Tobias: This slot is somewhat redundant but I decided

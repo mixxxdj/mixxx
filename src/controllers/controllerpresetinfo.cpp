@@ -14,7 +14,7 @@
 #include "controllers/controllerpresetinfo.h"
 
 #include "controllers/defs_controllers.h"
-#include "xmlparse.h"
+#include "util/xml.h"
 
 PresetInfo::PresetInfo()
         : m_valid(false) {

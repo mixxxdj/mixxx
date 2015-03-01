@@ -153,7 +153,7 @@ void DlgAnalysis::trackAnalysisProgress(int progress) {
 }
 
 int DlgAnalysis::getNumTracks() {
-	return m_tracksInQueue;
+    return m_tracksInQueue;
 }
 
 void DlgAnalysis::trackAnalysisStarted(int size) {

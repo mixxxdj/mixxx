@@ -8,18 +8,19 @@
 #include "library/trackcollection.h"
 #include "library/schemamanager.h"
 #include "library/dao/settingsdao.h"
+#include "util/assert.h"
 
 class SchemaManagerTest : public MixxxTest {
   protected:
     SchemaManagerTest()
             : m_dbFile("mixxxdb.sqlite") {
-        Q_ASSERT(m_dbFile.open());
+        RELEASE_ASSERT(m_dbFile.open());
         m_db = QSqlDatabase::addDatabase("QSQLITE");
         m_db.setHostName("localhost");
         m_db.setUserName("mixxx");
         m_db.setPassword("mixxx");
         m_db.setDatabaseName(m_dbFile.fileName());
-        Q_ASSERT(m_db.open());
+        RELEASE_ASSERT(m_db.open());
     }
 
     QTemporaryFile m_dbFile;

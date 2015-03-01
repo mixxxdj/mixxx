@@ -5,7 +5,7 @@
 #include "effects/effectsmanager.h"
 #include "engine/effects/engineeffectchain.h"
 #include "engine/effects/engineeffect.h"
-#include "xmlparse.h"
+#include "util/xml.h"
 
 Effect::Effect(EffectsManager* pEffectsManager,
                const EffectManifest& manifest,

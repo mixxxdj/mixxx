@@ -797,7 +797,6 @@ class MixxxCore(Feature):
                    "library/treeitemmodel.cpp",
                    "library/treeitem.cpp",
 
-                   "xmlparse.cpp",
                    "library/parser.cpp",
                    "library/parserpls.cpp",
                    "library/parserm3u.cpp",
@@ -913,6 +912,7 @@ class MixxxCore(Feature):
                    "util/mac.cpp",
                    "util/task.cpp",
                    "util/experiment.cpp",
+                   "util/xml.cpp",
 
                    '#res/mixxx.qrc'
                    ]
@@ -989,6 +989,12 @@ class MixxxCore(Feature):
             build.env.Append(CPPDEFINES='MIXXX_BUILD_DEBUG')
         elif build.build_is_release:
             build.env.Append(CPPDEFINES='MIXXX_BUILD_RELEASE')
+
+            # In a release build we want to disable all Q_ASSERTs in Qt headers
+            # that we include. We can't define QT_NO_DEBUG because that would
+            # mean turning off QDebug output. qt_noop() is what Qt defines
+            # Q_ASSERT to be when QT_NO_DEBUG is defined.
+            build.env.Append(CPPDEFINES="'Q_ASSERT(x)=qt_noop()'")
 
         if int(SCons.ARGUMENTS.get('debug_assertions_fatal', 0)):
             build.env.Append(CPPDEFINES='MIXXX_DEBUG_ASSERTIONS_FATAL')
