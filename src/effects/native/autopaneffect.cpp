@@ -24,20 +24,18 @@ EffectManifest AutoPanEffect::getManifest() {
     manifest.setDescription(QObject::tr(
         "Bounce the sound from a channel to another, fastly or softly"));
     
-    // TODO(jclaveau) : this doesn't look like a good name but doesn't exist on
-    //  my mixer. Any suggestion?
     // This parameter controls the easing of the sound from a side to another.
-    EffectManifestParameter* strength = manifest.addParameter();
-    strength->setId("curve");
-    strength->setName(QObject::tr("Curve"));
-    strength->setDescription(
+    EffectManifestParameter* smoothing = manifest.addParameter();
+    smoothing->setId("smoothing");
+    smoothing->setName(QObject::tr("Smoothing"));
+    smoothing->setDescription(
             QObject::tr("How fast the signal goes from a channel to an other"));
-    strength->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    strength->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    strength->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    strength->setMinimum(0.0);
-    strength->setMaximum(0.5);  // there are two steps per period so max is half
-    strength->setDefault(0.25);
+    smoothing->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
+    smoothing->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    smoothing->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    smoothing->setMinimum(0.0);
+    smoothing->setMaximum(0.5);  // there are two steps per period so max is half
+    smoothing->setDefault(0.25);
     
     // On my mixer, the period is defined as a multiple of the BPM
     // I wonder if I should implement it as the bouncing is really nice
@@ -72,7 +70,7 @@ EffectManifest AutoPanEffect::getManifest() {
 
 AutoPanEffect::AutoPanEffect(EngineEffect* pEffect, const EffectManifest& manifest)
         : 
-          m_pCurveParameter(pEffect->getParameterById("curve")),
+          m_pSmoothingParameter(pEffect->getParameterById("smoothing")),
           m_pPeriodParameter(pEffect->getParameterById("period")),
           m_pDelayParameter(pEffect->getParameterById("delay"))
            {
@@ -108,7 +106,7 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
         period *= 2048.0f;
     }
     
-    CSAMPLE stepFrac = m_pCurveParameter->value();
+    CSAMPLE stepFrac = m_pSmoothingParameter->value();
     
     if (gs.time > period || enableState == EffectProcessor::ENABLING) {
         gs.time = 0;
