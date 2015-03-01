@@ -60,6 +60,7 @@ class RampedSample {
 };
 
 static const int panMaxDelay = 3300; // allows a 30 Hz filter at 97346;
+// static const int panMaxDelay = 50000; // high for debug;
 
 struct PanGroupState {
     PanGroupState() {
