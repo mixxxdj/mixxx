@@ -99,7 +99,7 @@ class AutoPanEffect : public PerChannelEffectProcessor<PanGroupState> {
         return getId();
     }
 
-    EngineEffectParameter* m_pCurveParameter;
+    EngineEffectParameter* m_pSmoothingParameter;
     EngineEffectParameter* m_pPeriodParameter;
     EngineEffectParameter* m_pDelayParameter;
     
