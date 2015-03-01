@@ -35,11 +35,9 @@ EffectManifest AutoPanEffect::getManifest() {
     smoothing->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     smoothing->setMinimum(0.0);
     smoothing->setMaximum(0.5);  // there are two steps per period so max is half
-    smoothing->setDefault(0.25);
+    smoothing->setDefault(0.0);
     
-    // On my mixer, the period is defined as a multiple of the BPM
-    // I wonder if I should implement it as the bouncing is really nice
-    // when it is synced.
+    // Period
     EffectManifestParameter* period = manifest.addParameter();
     period->setId("period");
     period->setName(QObject::tr("Period"));
@@ -47,13 +45,11 @@ EffectManifest AutoPanEffect::getManifest() {
     period->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     period->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    period->setMinimum(1.0);
-    period->setMaximum(500.0);
-    period->setDefault(220.0);
+    period->setMinimum(0.01);
+    period->setMaximum(1.0);
+    period->setDefault(2.0);
     
-    // On my mixer, the period is defined as a multiple of the BPM
-    // I wonder if I should implement it as the bouncing is really nice
-    // when it is synced.
+    // Delay : applied on the channel with gain reducing.
     EffectManifestParameter* delay = manifest.addParameter();
     delay->setId("delay");
     delay->setName(QObject::tr("delay"));
@@ -62,8 +58,8 @@ EffectManifest AutoPanEffect::getManifest() {
     delay->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     delay->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     delay->setMinimum(0.0);
-    delay->setMaximum(500.0);
-    delay->setDefault(300.0);
+    delay->setMaximum(0.02);    // 0.02 * sampleRate => 20ms
+    delay->setDefault(0.01);
     
     return manifest;
 }
@@ -87,8 +83,6 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
                               const EffectProcessor::EnableState enableState,
                               const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
-    Q_UNUSED(groupFeatures);
-    Q_UNUSED(sampleRate);
     
     PanGroupState& gs = *pGroupState;
     
@@ -96,14 +90,14 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
         return;
     }
     
-    CSAMPLE period = roundf(m_pPeriodParameter->value());
+    CSAMPLE period = m_pPeriodParameter->value();
     if (groupFeatures.has_beat_length) {
         // 1/8, 1/4, 1/2, 1, 2, 4, 8, 16, 32, 64
-        double beats = pow(2, floor(period * 9 / 500) - 3);
+        double beats = pow(2, floor(period * 9 / m_pPeriodParameter->maximum()) - 3);
         period = groupFeatures.beat_length * beats;
     } else {
-        // 500 * 2048 as max period as number of samples
-        period *= 2048.0f;
+        // max period is 50 seconds
+        period *= sampleRate * 25.0;
     }
     
     CSAMPLE stepFrac = m_pSmoothingParameter->value();
@@ -133,19 +127,17 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
     gs.frac.setRampingThreshold(positionRampingThreshold);
     gs.frac.ramped = false;     // just for debug
     
-    // float delay = round(m_pDelayParameter->value());
-    // gs.delay->setDelay(delay);
-    // gs.delay->process(pInput, gs.m_pDelayBuf, 2048);
-    
-    float quarter;
+    // prepare the delay buffer
+    float delay = round(m_pDelayParameter->value() * sampleRate);
+    gs.delay->setDelay(delay);
+    gs.delay->process(pInput, gs.m_pDelayBuf, numSamples);
     
     for (unsigned int i = 0; i + 1 < numSamples; i += 2) {
         
-        CSAMPLE periodFraction = (CSAMPLE(gs.time) / period);
+        CSAMPLE periodFraction = CSAMPLE(gs.time) / period;
         
         // current quarter in the trigonometric circle
-        // float quarter = floorf(periodFraction * 4.0f);
-        quarter = floorf(periodFraction * 4.0f);
+        float quarter = floorf(periodFraction * 4.0f);
         
         // part of the period fraction being a step (not in the slope)
         CSAMPLE stepsFractionPart = floorf((quarter+1.0f)/2.0f) * stepFrac;
@@ -162,57 +154,34 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
             angleFraction = (periodFraction - stepsFractionPart) * a;
         }
         
-        // transform the angleFraction into a sinusoid (but between 0 and 1)
+        // transforms the angleFraction into a sinusoid (but between 0 and 1)
         gs.frac.setWithRampingApplied(
             (sin(M_PI * 2.0f * angleFraction) + 1.0f) / 2.0f);
         
-        if (Experiment::isExperiment()) {
-            // delay on the reducing channel
-            
-            if ( quarter == 0.0 || quarter == 3.0 ){
-                // channel 1 increasing
-                pOutput[i] = pInput[i] * gs.frac * lawCoef;
-                pOutput[i+1] = (gs.m_pDelayBuf[i+1] + pInput[i+1]) / 2
-                    * (1.0f - gs.frac) * lawCoef;
-                // pOutput[i+1] = gs.m_pDelayBuf[i+1] * (1.0f - gs.frac) * lawCoef;
-                
-            } else {
-                // channel 2 increasing
-                // pOutput[i] = pInput[i] * gs.frac * lawCoef;
-                pOutput[i] = (gs.m_pDelayBuf[i] + pInput[i]) / 2
-                    * gs.frac * lawCoef;
-                pOutput[i+1] = pInput[i+1] * (1.0f - gs.frac) * lawCoef;
-            }
-            
-        } else if (Experiment::isBase()) {
-            // delay on both sides
-            pOutput[i] = (gs.m_pDelayBuf[i] + pInput[i]) / 2 * gs.frac * lawCoef;
-            pOutput[i+1] = (gs.m_pDelayBuf[i+1] + pInput[i+1]) / 2 * (1.0f - gs.frac) * lawCoef;
-        
-        } else {
-            // no delay
+        // delay on the reducing channel
+        // todo (jclaveau) : this produces clics, especially when the period 
+        // is short.
+        if (quarter == 0.0 || quarter == 3.0){
+            // channel 1 increasing (left)
             pOutput[i] = pInput[i] * gs.frac * lawCoef;
+            pOutput[i+1] = gs.m_pDelayBuf[i+1] * (1.0f - gs.frac) * lawCoef;
+            
+        } else {
+            // channel 2 increasing (right)
+            pOutput[i] = gs.m_pDelayBuf[i] * gs.frac * lawCoef;
             pOutput[i+1] = pInput[i+1] * (1.0f - gs.frac) * lawCoef;
         }
         
         gs.time++;
     }
     
-    /**
-     * todo
-     * apply delay with ramping 
-     * 
-     */
-    float delay = round(m_pDelayParameter->value());
-    gs.delay->setDelay(delay);
-    gs.delay->process(pInput, gs.m_pDelayBuf, 2048);
-    
     /**/
     qDebug()
         // << "| ramped :" << gs.frac.ramped
-        << "| quarter :" << quarter
+        << "| quarter :" << floorf(CSAMPLE(gs.time) / period * 4.0f)
         << "| delay :" << delay
         // << "| beat_length :" << groupFeatures.beat_length
+        << "| beats :" << pow(2, floor(m_pPeriodParameter->value() * 9 / m_pPeriodParameter->maximum()) - 3)
         // << "| period :" << period
         << "| frac :" << gs.frac
         << "| time :" << gs.time
