@@ -76,8 +76,7 @@ struct PanGroupState {
     CSAMPLE* m_pDelayBuf;
 };
 
-
-class AutoPanEffect : public GroupEffectProcessor<PanGroupState> {
+class AutoPanEffect : public PerChannelEffectProcessor<PanGroupState> {
   public:
     AutoPanEffect(EngineEffect* pEffect, const EffectManifest& manifest);
     virtual ~AutoPanEffect();
@@ -86,7 +85,7 @@ class AutoPanEffect : public GroupEffectProcessor<PanGroupState> {
     static EffectManifest getManifest();
 
     // See effectprocessor.h
-    void processGroup(const QString& group,
+    void processChannel(const ChannelHandle& handle,
                       PanGroupState* pState,
                       const CSAMPLE* pInput, CSAMPLE* pOutput,
                       const unsigned int numSamples,
