@@ -38,11 +38,6 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
 
     setupUi(this);
 
-    //Set up a button group for the vinyl control behavior options
-    QButtonGroup vinylControlMode;
-    vinylControlMode.addButton(AbsoluteMode);
-    vinylControlMode.addButton(RelativeMode);
-
     delete groupBoxSignalQuality->layout();
     QHBoxLayout *layout = new QHBoxLayout;
 
@@ -187,8 +182,6 @@ void DlgPrefVinyl::slotResetToDefaults() {
     LeadinTime2->setText(QString("%1").arg(MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN));
     LeadinTime3->setText(QString("%1").arg(MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN));
     LeadinTime4->setText(QString("%1").arg(MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN));
-    AbsoluteMode->setChecked(false);
-    RelativeMode->setChecked(true);
     SignalQualityEnable->setChecked(true);
     VinylGain->setValue(0);
 }
@@ -254,13 +247,6 @@ void DlgPrefVinyl::slotUpdate() {
     LeadinTime4->setText(config->getValueString(ConfigKey("[Channel4]",
                                                           "vinylcontrol_lead_in_time"), "0"));
 
-    // set Relative mode
-    int iMode = config->getValueString(ConfigKey(VINYL_PREF_KEY,"mode")).toInt();
-    if (iMode == MIXXX_VCMODE_ABSOLUTE)
-        AbsoluteMode->setChecked(true);
-    else if (iMode == MIXXX_VCMODE_RELATIVE)
-        RelativeMode->setChecked(true);
-
     SignalQualityEnable->setChecked(
             (bool)config->getValueString(ConfigKey(VINYL_PREF_KEY, "show_signal_quality")).toInt());
 
@@ -316,13 +302,6 @@ void DlgPrefVinyl::slotApply()
     VinylTypeSlotApply();
     VinylGainSlotApply();
 
-    int iMode = 0;
-    if (AbsoluteMode->isChecked())
-        iMode = MIXXX_VCMODE_ABSOLUTE;
-    if (RelativeMode->isChecked())
-        iMode = MIXXX_VCMODE_RELATIVE;
-
-    config->set(ConfigKey(VINYL_PREF_KEY, "mode"), ConfigValue(iMode));
     config->set(ConfigKey(VINYL_PREF_KEY,"show_signal_quality"),
                 ConfigValue((int)(SignalQualityEnable->isChecked())));
 
