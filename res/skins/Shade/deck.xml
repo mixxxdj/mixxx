@@ -345,6 +345,27 @@
 							<Size>35f,35f</Size>
 							<Group>[Channel<Variable name="channum"/>]</Group>
 						</CoverArt>
+
+						<!--
+						**********************************************
+                    	Text- Track Title
+						**********************************************
+						-->
+						<TrackProperty>
+							<TooltipId>track_title</TooltipId>
+							<Style>QLabel { 
+								font: bold 14px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								background-color: transparent; 
+								color: #191F24; 
+								text-align: left; 
+								padding-left: 1px; 
+							}
+							</Style>
+							<Property>title</Property>
+							<Channel><Variable name="channum"/></Channel>
+							<Pos>39,4</Pos>
+							<Size>310f,18</Size>
+						</TrackProperty>
 	
 						<!--
 						**********************************************
