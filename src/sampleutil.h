@@ -136,10 +136,14 @@ class SampleUtil {
     static void copyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
             CSAMPLE_GAIN old_gain, CSAMPLE_GAIN new_gain,
 <<<<<<< HEAD
+<<<<<<< HEAD
             int iNumSamples);
 =======
             unsigned int iNumSamples, bool left=true, bool right=true);
 >>>>>>> Experiments with the delay
+=======
+            int iNumSamples);
+>>>>>>> removing unused change
 
     // Add each sample of pSrc, multiplied by the gain, to pDest
     static void addWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,

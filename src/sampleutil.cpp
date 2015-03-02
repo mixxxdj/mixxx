@@ -249,12 +249,16 @@ void SampleUtil::copyWithGain(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _RESTRICT
 
 // static
 void SampleUtil::copyWithRampingGain(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _RESTRICT pSrc,
+<<<<<<< HEAD
         CSAMPLE_GAIN old_gain, CSAMPLE_GAIN new_gain,
 <<<<<<< HEAD
         int iNumSamples) {
 =======
         unsigned int iNumSamples, bool left/*=true*/, bool right/*=true*/) {
 >>>>>>> Experiments with the delay
+=======
+        CSAMPLE_GAIN old_gain, CSAMPLE_GAIN new_gain, int iNumSamples) {
+>>>>>>> removing unused change
     if (old_gain == CSAMPLE_GAIN_ONE && new_gain == CSAMPLE_GAIN_ONE) {
         copy(pDest, pSrc, iNumSamples);
         return;
