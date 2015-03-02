@@ -69,8 +69,10 @@ bool WOverviewRGB::drawNextPixmapPart() {
     qreal highColor_r, highColor_g, highColor_b;
     m_signalColors.getRgbHighColor().getRgbF(&highColor_r, &highColor_g, &highColor_b);
 
+    // "Raw" LMH values
     qreal low, mid, high;
 
+    // Non-normalized RGB values
     qreal red, green, blue;
 
     // Maximum is needed for normalization
@@ -86,10 +88,12 @@ bool WOverviewRGB::drawNextPixmapPart() {
         mid  = (qreal) pWaveform->getMid(currentCompletion);
         high = (qreal) pWaveform->getHigh(currentCompletion);
 
+        // Do matrix multiplication
         red   = low * lowColor_r + mid * midColor_r + high * highColor_r;
         green = low * lowColor_g + mid * midColor_g + high * highColor_g;
         blue  = low * lowColor_b + mid * midColor_b + high * highColor_b;
 
+        // Normalize and draw
         max = math_max3(red, green, blue);
         if (max > 0.0f) {
             color.setRgbF(red / max, green / max, blue / max);
@@ -101,10 +105,12 @@ bool WOverviewRGB::drawNextPixmapPart() {
         mid  = (qreal) pWaveform->getMid(currentCompletion + 1);
         high = (qreal) pWaveform->getHigh(currentCompletion + 1);
 
+        // Do matrix multiplication
         red   = low * lowColor_r + mid * midColor_r + high * highColor_r;
         green = low * lowColor_g + mid * midColor_g + high * highColor_g;
         blue  = low * lowColor_b + mid * midColor_b + high * highColor_b;
 
+        // Normalize and draw
         max = math_max3(red, green, blue);
         if (max > 0.0f) {
             color.setRgbF(red / max, green / max, blue / max);
