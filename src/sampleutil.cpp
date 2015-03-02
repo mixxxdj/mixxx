@@ -249,8 +249,7 @@ void SampleUtil::copyWithGain(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _RESTRICT
 
 // static
 void SampleUtil::copyWithRampingGain(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _RESTRICT pSrc,
-        CSAMPLE_GAIN old_gain, CSAMPLE_GAIN new_gain,
-        int iNumSamples, bool left/*=true*/, bool right/*=true*/) {
+        CSAMPLE_GAIN old_gain, CSAMPLE_GAIN new_gain, int iNumSamples) {
     if (old_gain == CSAMPLE_GAIN_ONE && new_gain == CSAMPLE_GAIN_ONE) {
         copy(pDest, pSrc, iNumSamples);
         return;
@@ -267,12 +266,8 @@ void SampleUtil::copyWithRampingGain(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _R
         // note: LOOP VECTORIZED.
         for (int i = 0; i < iNumSamples / 2; ++i) {
             const CSAMPLE_GAIN gain = start_gain + gain_delta * i;
-		    if( left ){
-	            pDest[i * 2] = pSrc[i * 2] * gain;
-			}
-		    if( right ){
-	            pDest[i * 2 + 1] = pSrc[i * 2 + 1] * gain;
-			}
+            pDest[i * 2] = pSrc[i * 2] * gain;
+            pDest[i * 2 + 1] = pSrc[i * 2 + 1] * gain;
         }
     } else {
         // note: LOOP VECTORIZED.
