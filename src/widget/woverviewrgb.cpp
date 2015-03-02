@@ -62,6 +62,17 @@ bool WOverviewRGB::drawNextPixmapPart() {
 
     unsigned char low, mid, high;
 
+    qreal lowColor_r, lowColor_g, lowColor_b;
+    m_signalColors.getRgbLowColor().getRgbF(&lowColor_r, &lowColor_g, &lowColor_b);
+
+    qreal midColor_r, midColor_g, midColor_b;
+    m_signalColors.getRgbMidColor().getRgbF(&midColor_r, &midColor_g, &midColor_b);
+
+    qreal highColor_r, highColor_g, highColor_b;
+    m_signalColors.getRgbHighColor().getRgbF(&highColor_r, &highColor_g, &highColor_b);
+
+    float red, green, blue;
+
     // Maximum is needed for normalization
     float max;
 
@@ -75,9 +86,13 @@ bool WOverviewRGB::drawNextPixmapPart() {
         mid = pWaveform->getMid(currentCompletion);
         high = pWaveform->getHigh(currentCompletion);
 
-        max = (float) math_max3(low, mid, high);
+        red   = low * lowColor_r + mid * midColor_r + high * highColor_r;
+        green = low * lowColor_g + mid * midColor_g + high * highColor_g;
+        blue  = low * lowColor_b + mid * midColor_b + high * highColor_b;
+
+        max = math_max3(red, green, blue);
         if (max > 0.0f) {
-            color.setRgbF(low / max, mid / max, high / max);
+            color.setRgbF(red / max, green / max, blue / max);
             painter.setPen(color);
             painter.drawLine(currentCompletion / 2, -left, currentCompletion / 2, 0);
         }
@@ -86,9 +101,13 @@ bool WOverviewRGB::drawNextPixmapPart() {
         mid = pWaveform->getMid(currentCompletion + 1);
         high = pWaveform->getHigh(currentCompletion + 1);
 
-        max = (float) math_max3(low, mid, high);
+        red   = low * lowColor_r + mid * midColor_r + high * highColor_r;
+        green = low * lowColor_g + mid * midColor_g + high * highColor_g;
+        blue  = low * lowColor_b + mid * midColor_b + high * highColor_b;
+
+        max = math_max3(red, green, blue);
         if (max > 0.0f) {
-            color.setRgbF(low / max, mid / max, high / max);
+            color.setRgbF(red / max, green / max, blue / max);
             painter.setPen(color);
             painter.drawLine(currentCompletion / 2, 0, currentCompletion / 2, right);
         }
