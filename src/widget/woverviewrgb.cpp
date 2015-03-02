@@ -84,9 +84,9 @@ bool WOverviewRGB::drawNextPixmapPart() {
         unsigned char left = pWaveform->getAll(currentCompletion);
         unsigned char right = pWaveform->getAll(currentCompletion + 1);
 
-        low  = (qreal) pWaveform->getLow(currentCompletion);
-        mid  = (qreal) pWaveform->getMid(currentCompletion);
-        high = (qreal) pWaveform->getHigh(currentCompletion);
+        low  = static_cast<qreal>(pWaveform->getLow(currentCompletion));
+        mid  = static_cast<qreal>(pWaveform->getMid(currentCompletion));
+        high = static_cast<qreal>(pWaveform->getHigh(currentCompletion));
 
         // Do matrix multiplication
         red   = low * lowColor_r + mid * midColor_r + high * highColor_r;
@@ -95,15 +95,15 @@ bool WOverviewRGB::drawNextPixmapPart() {
 
         // Normalize and draw
         max = math_max3(red, green, blue);
-        if (max > 0.0f) {
+        if (max > 0.0) {
             color.setRgbF(red / max, green / max, blue / max);
             painter.setPen(color);
             painter.drawLine(currentCompletion / 2, -left, currentCompletion / 2, 0);
         }
 
-        low  = (qreal) pWaveform->getLow(currentCompletion + 1);
-        mid  = (qreal) pWaveform->getMid(currentCompletion + 1);
-        high = (qreal) pWaveform->getHigh(currentCompletion + 1);
+        low  = static_cast<qreal>(pWaveform->getLow(currentCompletion + 1));
+        mid  = static_cast<qreal>(pWaveform->getMid(currentCompletion + 1));
+        high = static_cast<qreal>(pWaveform->getHigh(currentCompletion + 1));
 
         // Do matrix multiplication
         red   = low * lowColor_r + mid * midColor_r + high * highColor_r;
@@ -112,7 +112,7 @@ bool WOverviewRGB::drawNextPixmapPart() {
 
         // Normalize and draw
         max = math_max3(red, green, blue);
-        if (max > 0.0f) {
+        if (max > 0.0) {
             color.setRgbF(red / max, green / max, blue / max);
             painter.setPen(color);
             painter.drawLine(currentCompletion / 2, 0, currentCompletion / 2, right);
