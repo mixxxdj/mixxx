@@ -200,7 +200,7 @@
 	                           <ObjectName>SamplerSyncButton</ObjectName>
 	                           <Children>
 	                               <PushButton>
-			                           <TooltipId>sync_enabled</TooltipId>
+			                           <TooltipId>beatsync_beatsync_tempo</TooltipId>
 			                           <NumberStates>1</NumberStates>
 			                           <State>
 			                               <Number>0</Number>
