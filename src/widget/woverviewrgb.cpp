@@ -60,8 +60,6 @@ bool WOverviewRGB::drawNextPixmapPart() {
 
     QColor color;
 
-    unsigned char low, mid, high;
-
     qreal lowColor_r, lowColor_g, lowColor_b;
     m_signalColors.getRgbLowColor().getRgbF(&lowColor_r, &lowColor_g, &lowColor_b);
 
@@ -71,10 +69,12 @@ bool WOverviewRGB::drawNextPixmapPart() {
     qreal highColor_r, highColor_g, highColor_b;
     m_signalColors.getRgbHighColor().getRgbF(&highColor_r, &highColor_g, &highColor_b);
 
-    float red, green, blue;
+    qreal low, mid, high;
+
+    qreal red, green, blue;
 
     // Maximum is needed for normalization
-    float max;
+    qreal max;
 
     for (currentCompletion = m_actualCompletion;
             currentCompletion < nextCompletion; currentCompletion += 2) {
@@ -82,9 +82,9 @@ bool WOverviewRGB::drawNextPixmapPart() {
         unsigned char left = pWaveform->getAll(currentCompletion);
         unsigned char right = pWaveform->getAll(currentCompletion + 1);
 
-        low = pWaveform->getLow(currentCompletion);
-        mid = pWaveform->getMid(currentCompletion);
-        high = pWaveform->getHigh(currentCompletion);
+        low  = (qreal) pWaveform->getLow(currentCompletion);
+        mid  = (qreal) pWaveform->getMid(currentCompletion);
+        high = (qreal) pWaveform->getHigh(currentCompletion);
 
         red   = low * lowColor_r + mid * midColor_r + high * highColor_r;
         green = low * lowColor_g + mid * midColor_g + high * highColor_g;
@@ -97,9 +97,9 @@ bool WOverviewRGB::drawNextPixmapPart() {
             painter.drawLine(currentCompletion / 2, -left, currentCompletion / 2, 0);
         }
 
-        low = pWaveform->getLow(currentCompletion + 1);
-        mid = pWaveform->getMid(currentCompletion + 1);
-        high = pWaveform->getHigh(currentCompletion + 1);
+        low  = (qreal) pWaveform->getLow(currentCompletion + 1);
+        mid  = (qreal) pWaveform->getMid(currentCompletion + 1);
+        high = (qreal) pWaveform->getHigh(currentCompletion + 1);
 
         red   = low * lowColor_r + mid * midColor_r + high * highColor_r;
         green = low * lowColor_g + mid * midColor_g + high * highColor_g;
