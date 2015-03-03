@@ -42,9 +42,12 @@ VinylControlManager::~VinylControlManager() {
     for (int i = 0; i < m_iNumConfiguredDecks; ++i) {
         QString group = PlayerManager::groupForDeck(i);
         m_pConfig->set(ConfigKey(group, "vinylcontrol_enabled"), false);
-        m_pConfig->set(ConfigKey(VINYL_PREF_KEY, QString("cueing_ch%1").arg(i)),
-            ConfigValue((int)ControlObject::get(
-                ConfigKey(group, "vinylcontrol_cueing"))));
+        m_pConfig->set(ConfigKey(VINYL_PREF_KEY, QString("cueing_ch%1").arg(i + 1)),
+            ConfigValue(static_cast<int>(ControlObject::get(
+                ConfigKey(group, "vinylcontrol_cueing")))));
+        m_pConfig->set(ConfigKey(VINYL_PREF_KEY, QString("mode_ch%1").arg(i + 1)),
+            ConfigValue(static_cast<int>(ControlObject::get(
+                ConfigKey(group, "vinylcontrol_mode")))));
     }
 }
 
@@ -75,12 +78,17 @@ void VinylControlManager::slotNumDecksChanged(double dNumDecks) {
         m_pVcEnabled.push_back(new ControlObjectThread(group, "vinylcontrol_enabled", this));
         m_pVcEnabled.back()->set(0);
 
-        ControlObject::set(ConfigKey(group, "vinylcontrol_mode"),
-                           m_pConfig->getValueString(ConfigKey(VINYL_PREF_KEY, "mode")).toDouble());
-
+        // Default cueing should be off.
         ControlObject::set(ConfigKey(group, "vinylcontrol_cueing"),
-                           m_pConfig->getValueString(ConfigKey(VINYL_PREF_KEY,
-                                                               "cueing_ch1")).toDouble());
+                           m_pConfig->getValueString(ConfigKey(
+                                   VINYL_PREF_KEY,
+                                   QString("cueing_ch%1").arg(i + 1)), "0").toDouble());
+        // Default mode should be relative.
+        const QString kDefaultMode = QString::number(MIXXX_VCMODE_RELATIVE);
+        ControlObject::set(ConfigKey(group, "vinylcontrol_mode"),
+                           m_pConfig->getValueString(ConfigKey(
+                                   VINYL_PREF_KEY,
+                                   QString("mode_ch%1").arg(i + 1)), kDefaultMode).toDouble());
     }
     m_iNumConfiguredDecks = num_decks;
 }
