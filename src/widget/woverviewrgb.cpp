@@ -69,46 +69,39 @@ bool WOverviewRGB::drawNextPixmapPart() {
     qreal highColor_r, highColor_g, highColor_b;
     m_signalColors.getRgbHighColor().getRgbF(&highColor_r, &highColor_g, &highColor_b);
 
-    // "Raw" LMH values
-    qreal low, mid, high;
-
-    // Non-normalized RGB values
-    qreal red, green, blue;
-
-    // Maximum is needed for normalization
-    qreal max;
-
     for (currentCompletion = m_actualCompletion;
             currentCompletion < nextCompletion; currentCompletion += 2) {
 
         unsigned char left = pWaveform->getAll(currentCompletion);
         unsigned char right = pWaveform->getAll(currentCompletion + 1);
 
-        low  = static_cast<qreal>(pWaveform->getLow(currentCompletion));
-        mid  = static_cast<qreal>(pWaveform->getMid(currentCompletion));
-        high = static_cast<qreal>(pWaveform->getHigh(currentCompletion));
+        // Retrieve "raw" LMH values from waveform
+        qreal low = static_cast<qreal>(pWaveform->getLow(currentCompletion));
+        qreal mid = static_cast<qreal>(pWaveform->getMid(currentCompletion));
+        qreal high = static_cast<qreal>(pWaveform->getHigh(currentCompletion));
 
         // Do matrix multiplication
-        red   = low * lowColor_r + mid * midColor_r + high * highColor_r;
-        green = low * lowColor_g + mid * midColor_g + high * highColor_g;
-        blue  = low * lowColor_b + mid * midColor_b + high * highColor_b;
+        qreal red = low * lowColor_r + mid * midColor_r + high * highColor_r;
+        qreal green = low * lowColor_g + mid * midColor_g + high * highColor_g;
+        qreal blue = low * lowColor_b + mid * midColor_b + high * highColor_b;
 
         // Normalize and draw
-        max = math_max3(red, green, blue);
+        qreal max = math_max3(red, green, blue);
         if (max > 0.0) {
             color.setRgbF(red / max, green / max, blue / max);
             painter.setPen(color);
             painter.drawLine(currentCompletion / 2, -left, currentCompletion / 2, 0);
         }
 
-        low  = static_cast<qreal>(pWaveform->getLow(currentCompletion + 1));
-        mid  = static_cast<qreal>(pWaveform->getMid(currentCompletion + 1));
+        // Retrieve "raw" LMH values from waveform
+        low = static_cast<qreal>(pWaveform->getLow(currentCompletion + 1));
+        mid = static_cast<qreal>(pWaveform->getMid(currentCompletion + 1));
         high = static_cast<qreal>(pWaveform->getHigh(currentCompletion + 1));
 
         // Do matrix multiplication
-        red   = low * lowColor_r + mid * midColor_r + high * highColor_r;
+        red = low * lowColor_r + mid * midColor_r + high * highColor_r;
         green = low * lowColor_g + mid * midColor_g + high * highColor_g;
-        blue  = low * lowColor_b + mid * midColor_b + high * highColor_b;
+        blue = low * lowColor_b + mid * midColor_b + high * highColor_b;
 
         // Normalize and draw
         max = math_max3(red, green, blue);
