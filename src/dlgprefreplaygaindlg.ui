@@ -33,7 +33,7 @@
       <item>
        <widget class="QCheckBox" name="EnableGain">
         <property name="toolTip">
-         <string>Apply volume normalization to loaded tracks.</string>
+         <string>Apply loudness normalization to loaded tracks.</string>
         </property>
         <property name="text">
          <string>Apply ReplayGain</string>
@@ -52,7 +52,7 @@
       </size>
      </property>
      <property name="title">
-      <string>Initial Boost</string>
+      <string/>
      </property>
      <layout class="QGridLayout">
       <item row="3" column="0">
@@ -118,7 +118,7 @@
       <item row="2" column="0">
        <widget class="QSlider" name="SliderReplayGainBoost">
         <property name="toolTip">
-         <string>Initial Gain Boost</string>
+         <string/>
         </property>
         <property name="locale">
          <locale language="C" country="AnyCountry"/>
@@ -149,14 +149,14 @@
       <item row="4" column="0">
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>without ReplayGain</string>
+         <string>Inital boost without ReplayGain</string>
         </property>
        </widget>
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_boost">
         <property name="text">
-         <string>in addition to ReplayGain</string>
+         <string>Inital boost in addition to ReplayGain</string>
         </property>
         <property name="buddy">
          <cstring>SliderReplayGainBoost</cstring>
@@ -248,7 +248,7 @@
       <item row="4" column="0">
        <widget class="QLabel" name="label_26">
         <property name="text">
-         <string>While an unanalyzed track is playing, Mixxx won't apply the a newly calculated ReplayGain to avoid an abrupt volume change. </string>
+         <string>If an unanalyzed track is playing, Mixxx won't apply the a newly calculated ReplayGain to avoid an abrupt volume change. </string>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
