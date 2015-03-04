@@ -160,10 +160,10 @@
 						                <SetVariable name="micnum">2</SetVariable>
 						            </Template>	
                     				</Children>
-			                        <Connection>
-				                        <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
-				                        <BindProperty>visible</BindProperty>
-			                        </Connection>
+		                            <Connection>
+                                        <ConfigKey>[Microphone2],enabled</ConfigKey>
+                                        <BindProperty>visible</BindProperty>
+                                    </Connection>
                                 </WidgetGroup>
 						        <Template src="skin:ducking.xml">
 						        </Template>
