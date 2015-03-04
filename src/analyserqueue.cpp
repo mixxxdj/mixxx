@@ -195,7 +195,7 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, Mixxx::AudioSourcePointer pAudi
             while (it.hasNext()) {
                 Analyser* an =  it.next();
                 //qDebug() << typeid(*an).name() << ".process()";
-                an->process(&m_sampleBuffer[0], framesRead * kAnalysisChannels);
+                an->process(m_sampleBuffer.data(), m_sampleBuffer.size());
                 //qDebug() << "Done " << typeid(*an).name() << ".process()";
             }
         } else {
