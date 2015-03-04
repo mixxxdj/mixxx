@@ -144,8 +144,27 @@
   						<Template src="skin:deck.xml">
 							<SetVariable name="channum">1</SetVariable>
 						</Template>	
-						<Template src="skin:microphone.xml">
-						</Template>	
+                		<WidgetGroup>
+                			<Pos>6,206</Pos>
+			                <Size>372,50</Size>
+                            <SizePolicy>f,f</SizePolicy>
+					        <Children>
+						        <Template src="skin:microphone.xml">
+							        <SetVariable name="micnum"></SetVariable>
+                                    <SetVariable name="lpos">0</SetVariable>
+						        </Template>	
+						        <Template src="skin:microphone.xml">
+						            <SetVariable name="micnum">2</SetVariable>
+                                    <SetVariable name="lpos">100</SetVariable>
+						        </Template>	
+						        <Template src="skin:ducking.xml">
+						        </Template>
+            				</Children>
+			            <Connection>
+				            <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
+				            <BindProperty>visible</BindProperty>
+			            </Connection>
+		        		</WidgetGroup>	
 					</Children>
 				</WidgetGroup>	
 				<WidgetGroup>
