@@ -150,9 +150,19 @@
 	
 								<!-- Spinning Vinyl & Vinylcontrol -->
 								<WidgetGroup>
-									<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
+									<Style>
+                                        QGroupBox { 
+                                            border: 0px solid yellow;
+                                        } 
+                                        QWidget { margin: 0; padding: 0; }
+                                    </Style>
 									<Layout>vertical</Layout>
 									<Children>
+                                        <WidgetGroup>
+											<Style>QGroupBox { border: 0px solid green; } QWidget { margin: 0; padding: 0;}                                         
+                                            </Style>
+											<Size>f,e</Size>
+                                         </WidgetGroup>
 										<!-- Spinning Vinyl sub-widget -->
 										<WidgetGroup>
 											<!--<Pos>296,0</Pos>-->
@@ -180,112 +190,14 @@
 												<BindProperty>visible</BindProperty>
 											</Connection>
 										</WidgetGroup>
-										<!-- Vinylcontrol sub-widget -->
-										<WidgetGroup>
-											<Pos>0,0</Pos>
-											<Size>86,35</Size>
-											<Style>QGroupBox { border: 0px solid green;} QWidget { margin: 0; padding: 0; }</Style>
-											<!--<Layout>horizontal</Layout>-->
-											<Children>
-												<!--
-												**********************************************
-												Vinyl- Enabled
-												//This control is disabled to prevent turning vinylcontrol(VC) off
-												by accident. Only way to activate VC is Menu->Options (or shortcut)
-												Leaving example in here for reference
-												**********************************************
-												-->
-												<!--
-												<PushButton>
-													<TooltipId>vinylcontrol_status</TooltipId>
-													<Style></Style>
-													<NumberStates>2</NumberStates>
-													<State>
-														<Number>0</Number>
-														<Pressed>btn_vinylcontrol_enabled.png</Pressed>
-														<Unpressed>btn_vinylcontrol_enabled.png</Unpressed>
-													</State>
-													<State>
-														<Number>1</Number>
-														<Pressed>btn_vinylcontrol_enabled_over.png</Pressed>
-														<Unpressed>btn_vinylcontrol_enabled_over.png</Unpressed>
-													</State>
-													<Pos>0,600</Pos>
-													<Connection>
-														<ConfigKey>[ChannelX],vinylcontrol_enabled</ConfigKey>
-													</Connection>
-												</PushButton>
-												-->
-												<!--
-												**********************************************
-												Vinyl- Status
-												// Vinyl status indicators are inside the decks WidgetGroups
-												**********************************************
-												-->
-												<!--
-												**********************************************
-												Vinyl- Control Mode
-												**********************************************
-												-->
-												<PushButton>
-													<TooltipId>vinylcontrol_mode</TooltipId>
-													<Style></Style>
-													<NumberStates>3</NumberStates>
-													<State>
-														<Number>0</Number>
-														<Pressed>btn_vinylcontrol_mode_abs1.png</Pressed>
-														<Unpressed>btn_vinylcontrol_mode_abs1.png</Unpressed>
-													</State>
-													<State>
-														<Number>1</Number>
-														<Pressed>btn_vinylcontrol_mode_rel1.png</Pressed>
-														<Unpressed>btn_vinylcontrol_mode_rel1.png</Unpressed>
-													</State>
-													<State>
-														<Number>2</Number>
-														<Pressed>btn_vinylcontrol_mode_const1.png</Pressed>
-														<Unpressed>btn_vinylcontrol_mode_const1.png</Unpressed>
-													</State>
-													<Pos>0,2</Pos>
-													<Connection>
-														<ConfigKey>[Channel<Variable name="channum"/>],vinylcontrol_mode</ConfigKey>
-													</Connection>
-												</PushButton>
-												<!--
-												**********************************************
-												Vinyl- Cueing Mode
-												**********************************************
-												-->
-												<PushButton>
-													<TooltipId>vinylcontrol_cueing</TooltipId>
-													<Style></Style>
-													<NumberStates>3</NumberStates>
-													<State>
-														<Number>0</Number>
-														<Pressed>btn_vinylcontrol_cueing_off1.png</Pressed>
-														<Unpressed>btn_vinylcontrol_cueing_off1.png</Unpressed>
-													</State>
-													<State>
-														<Number>1</Number>
-														<Pressed>btn_vinylcontrol_cueing_one1.png</Pressed>
-														<Unpressed>btn_vinylcontrol_cueing_one1.png</Unpressed>
-													</State>
-													<State>
-														<Number>2</Number>
-														<Pressed>btn_vinylcontrol_cueing_hot1.png</Pressed>
-														<Unpressed>btn_vinylcontrol_cueing_hot1.png</Unpressed>
-													</State>
-													<Pos>44,2</Pos>
-													<Connection>
-														<ConfigKey>[Channel<Variable name="channum"/>],vinylcontrol_cueing</ConfigKey>
-													</Connection>
-												</PushButton>
-											</Children>
-											<Connection>
-												<ConfigKey persist="true">[Channel<Variable name="channum"/>],vinylcontrol_enabled</ConfigKey>
-												<BindProperty>visible</BindProperty>
-											</Connection>
-										</WidgetGroup>
+                                        <WidgetGroup>
+											<Style>QGroupBox { border: 0px solid green; } QWidget { margin: 0; padding: 0;}                                         
+                                            </Style>
+											<Size>f,e</Size>
+                                         </WidgetGroup>
+                 						<Template src="skin:vinylcontrol.xml">
+							                <SetVariable name="channum"><Variable name="channum"/></SetVariable>
+						                </Template>	
 									</Children>
 								</WidgetGroup>
 	
