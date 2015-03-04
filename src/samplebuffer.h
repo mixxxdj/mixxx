@@ -28,8 +28,7 @@
 //     SampleBuffer(newSize).swap(sampleBuffer);
 //
 class SampleBuffer {
-    Q_DISABLE_COPY(SampleBuffer)
-    ;
+    Q_DISABLE_COPY(SampleBuffer);
 
 public:
     SampleBuffer()
@@ -79,12 +78,13 @@ private:
 
 namespace std
 {
+
 // Template specialization of std::swap for SampleBuffer.
 template<>
-inline void swap(SampleBuffer& lhs, SampleBuffer& rhs)
-{
+inline void swap(SampleBuffer& lhs, SampleBuffer& rhs) {
     lhs.swap(rhs);
 }
+
 }
 
 #endif // SAMPLEBUFFER_H
