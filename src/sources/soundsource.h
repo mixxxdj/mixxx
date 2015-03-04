@@ -55,16 +55,28 @@ class SoundSourceOpener {
 public:
     explicit SoundSourceOpener(SoundSourcePointer pSoundSource)
         : m_pSoundSource(pSoundSource),
-          m_result(ERR) {
-        m_result = m_pSoundSource->open();
+          m_result(OK) {
+        // The SoundSource must be opened in a member function and
+        // not here! If SoundSource::open() would be invoked from
+        // within this constructor and fails with an exception then
+        // the destructor of this class would never be invoked by
+        // the C++ runtime.
     }
     ~SoundSourceOpener() {
+        // Closes the SoundSource if open() failed.
         if (OK != m_result) {
             m_pSoundSource->close();
         }
     }
 
-    Result getResult() const {
+    Result open() {
+        // Initialization of m_result with ERR before the
+        // invocation of SoundSource::open() is required to
+        // guarantee the invocation of SoundSource::close()
+        // in the destructor if an exception is thrown by
+        // SoundSource::open()!
+        m_result = ERR;
+        m_result = m_pSoundSource->open();
         return m_result;
     }
 
