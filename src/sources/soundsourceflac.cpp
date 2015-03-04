@@ -632,6 +632,7 @@ FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
         qWarning() << "Corrupt or unsupported FLAC file:"
                 << "Block size in FLAC frame header exceeds the maximum block size"
                 << frame->header.blocksize << ">" << maxBlocksize;
+        return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
     }
     switch (getChannelCount()) {
     case 1: {
