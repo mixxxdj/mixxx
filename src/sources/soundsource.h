@@ -46,6 +46,33 @@ private:
 
 typedef QSharedPointer<SoundSource> SoundSourcePointer;
 
+// Helper class to close a SoundSource immediately if opening fails.
+// The failure upon opening a SoundSource might occur after some
+// resources for decoding have already been allocated. Closing the
+// SoundSource will free all those resources early. It is safe to
+// repeatedly invoke close() on a SoundSource at any time.
+class SoundSourceOpener {
+public:
+    explicit SoundSourceOpener(SoundSourcePointer pSoundSource)
+        : m_pSoundSource(pSoundSource),
+          m_result(ERR) {
+        m_result = m_pSoundSource->open();
+    }
+    ~SoundSourceOpener() {
+        if (OK != m_result) {
+            m_pSoundSource->close();
+        }
+    }
+
+    Result getResult() const {
+        return m_result;
+    }
+
+private:
+    const SoundSourcePointer m_pSoundSource;
+    Result m_result;
+};
+
 } //namespace Mixxx
 
 #endif // MIXXX_SOUNDSOURCE_H

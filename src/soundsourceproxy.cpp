@@ -320,11 +320,11 @@ Mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource() {
 
     if (!m_pSoundSource) {
         qDebug() << "No SoundSource available";
-        DEBUG_ASSERT(!m_pAudioSource);
         return m_pAudioSource;
     }
 
-    if (OK != m_pSoundSource->open()) {
+    const Mixxx::SoundSourceOpener opener(m_pSoundSource);
+    if (OK != opener.getResult()) {
         qWarning() << "Failed to open SoundSource";
         return m_pAudioSource;
     }
