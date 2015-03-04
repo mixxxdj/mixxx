@@ -138,7 +138,7 @@
 			<Layout>horizontal</Layout>
   			<Children>
   				<WidgetGroup>
-  					<Size>378,265</Size>
+  					<Size>378,285</Size>
   					<SizePolicy>f,f</SizePolicy>
 					<Children>
   						<Template src="skin:deck.xml">
@@ -151,19 +151,27 @@
 					        <Children>
 						        <Template src="skin:microphone.xml">
 							        <SetVariable name="micnum"></SetVariable>
-                                    <SetVariable name="lpos">0</SetVariable>
 						        </Template>	
-						        <Template src="skin:microphone.xml">
-						            <SetVariable name="micnum">2</SetVariable>
-                                    <SetVariable name="lpos">100</SetVariable>
-						        </Template>	
+                        		<WidgetGroup>
+			                        <Pos>100,0</Pos>
+			                        <Size>93,50</Size>
+			                        <Children>
+						            <Template src="skin:microphone.xml">
+						                <SetVariable name="micnum">2</SetVariable>
+						            </Template>	
+                    				</Children>
+			                        <Connection>
+				                        <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
+				                        <BindProperty>visible</BindProperty>
+			                        </Connection>
+                                </WidgetGroup>
 						        <Template src="skin:ducking.xml">
 						        </Template>
             				</Children>
-			            <Connection>
-				            <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
-				            <BindProperty>visible</BindProperty>
-			            </Connection>
+			                <Connection>
+				                <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
+				                <BindProperty>visible</BindProperty>
+			                </Connection>
 		        		</WidgetGroup>	
 					</Children>
 				</WidgetGroup>	
