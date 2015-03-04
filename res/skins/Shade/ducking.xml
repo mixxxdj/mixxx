@@ -6,7 +6,7 @@
 			<Style>QGroupBox { border: 0px solid yellow; border-left: 1px solid #626f87; background: url(skin:/style/style_bg_ducking.png) no-repeat;} QWidget { margin: 0; padding: 0; }</Style>
 			<Children>
 			    <PushButton>
-				    <TooltipId>filterHighKill</TooltipId>
+				    <TooltipId></TooltipId>
 				    <Style></Style>
 				    <NumberStates>3</NumberStates>
 				    <State>
