@@ -69,12 +69,12 @@
 					<NumberStates>2</NumberStates>
 					<State>
 						<Number>0</Number>
-						<Pressed>btn_microphone_talkover_over.png</Pressed>
+						<Pressed>btn_microphone_talkover_overdown.png</Pressed>
 						<Unpressed>btn_microphone_talkover.png</Unpressed>
 					</State>
 					<State>
 						<Number>1</Number>
-						<Pressed>btn_microphone_talkover_over.png</Pressed>
+						<Pressed>btn_microphone_talkover_overdown.png</Pressed>
 						<Unpressed>btn_microphone_talkover_over.png</Unpressed>
 					</State>
 					<Pos>4,25</Pos>
