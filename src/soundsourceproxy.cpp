@@ -323,8 +323,8 @@ Mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource() {
         return m_pAudioSource;
     }
 
-    const Mixxx::SoundSourceOpener opener(m_pSoundSource);
-    if (OK != opener.getResult()) {
+    Mixxx::SoundSourceOpener opener(m_pSoundSource);
+    if (OK != opener.open()) {
         qWarning() << "Failed to open SoundSource";
         return m_pAudioSource;
     }
