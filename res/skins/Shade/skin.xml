@@ -69,6 +69,7 @@
 			<attribute config_key="[Microphone],show_microphone">0</attribute>
 			<attribute config_key="[PreviewDeck],show_previewdeck">0</attribute>
 			<attribute config_key="[Library],show_coverart">0</attribute>
+            <attribute config_key="[Vinylcontrol],show_vinylcontrol">0</attribute>
 		</attributes>
 	</manifest>
 
