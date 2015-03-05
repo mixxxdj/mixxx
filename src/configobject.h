@@ -43,14 +43,23 @@ class ConfigKey {
         return group.isNull() && item.isNull();
     }
 
+    // comparison function for ConfigKeys. Used by a QHash in ControlObject
+    inline bool operator==(const ConfigKey& other) const {
+        return group == other.group && item == other.item;
+    }
+
+    // comparison function for ConfigKeys. Used by a QMap in ControlObject
+    inline bool operator<(const ConfigKey& other) const {
+        int groupResult = group.compare(other.group);
+        if (groupResult == 0) {
+            return item < other.item;
+        }
+        return (groupResult < 0);
+    }
     QString group, item;
 };
 Q_DECLARE_METATYPE(ConfigKey);
 
-// comparison function for ConfigKeys. Used by a QHash in ControlObject
-inline bool operator==(const ConfigKey& c1, const ConfigKey& c2) {
-    return c1.group == c2.group && c1.item == c2.item;
-}
 
 // stream operator function for trivial qDebug()ing of ConfigKeys
 inline QDebug operator<<(QDebug stream, const ConfigKey& c1) {
@@ -126,7 +135,8 @@ template <class ValueType> class ConfigObject {
     QString getSettingsPath() const;
 
   protected:
-    QHash<ConfigKey, ValueType> m_valueHash;
+    // We use QMap because we want a sorted list in mixxx.cfg
+    QMap<ConfigKey, ValueType> m_values;
     QMutex m_valueHashMutex;
     QString m_filename;
 

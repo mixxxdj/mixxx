@@ -101,19 +101,19 @@ template <class ValueType> ConfigObject<ValueType>::~ConfigObject() {
 template <class ValueType>
 void ConfigObject<ValueType>::set(const ConfigKey& k, ValueType v) {
     QMutexLocker lock(&m_valueHashMutex);
-    m_valueHash.insert(k, v);
+    m_values.insert(k, v);
 }
 
 template <class ValueType>
 ValueType ConfigObject<ValueType>::get(const ConfigKey& k) {
     QMutexLocker lock(&m_valueHashMutex);
-    return m_valueHash.value(k, ValueType(""));
+    return m_values.value(k, ValueType(""));
 }
 
 template <class ValueType>
 bool ConfigObject<ValueType>::exists(const ConfigKey& k) {
     QMutexLocker lock(&m_valueHashMutex);
-    return m_valueHash.contains(k);
+    return m_values.contains(k);
 }
 
 template <class ValueType>
@@ -190,8 +190,8 @@ template <class ValueType> void ConfigObject<ValueType>::Save() {
 
         QString grp = "";
 
-        typename QHash<ConfigKey, ValueType>::iterator i;
-        for (i = m_valueHash.begin(); i != m_valueHash.end(); ++i) {
+        typename QMap<ConfigKey, ValueType>::iterator i;
+        for (i = m_values.begin(); i != m_values.end(); ++i) {
             //qDebug() << "group:" << it.key().group << "item" << it.key().item << "val" << it.value()->value;
             if (i.key().group != grp) {
                 grp = i.key().group;
@@ -295,8 +295,8 @@ QMultiHash<ValueType, ConfigKey> ConfigObject<ValueType>::transpose() {
     QMutexLocker lock(&m_valueHashMutex);
 
     QMultiHash<ValueType, ConfigKey> transposedHash;
-    for (typename QHash<ConfigKey, ValueType>::const_iterator it =
-            m_valueHash.begin(); it != m_valueHash.end(); ++it) {
+    for (typename QMap<ConfigKey, ValueType>::const_iterator it =
+            m_values.begin(); it != m_values.end(); ++it) {
         transposedHash.insert(it.value(), it.key());
     }
     return transposedHash;
