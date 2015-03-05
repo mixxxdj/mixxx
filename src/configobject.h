@@ -85,7 +85,7 @@ class ConfigValue {
 };
 
 inline uint qHash(const ConfigValue& key) {
-    return qHash(key.value);
+    return qHash(key.value.toUpper());
 }
 
 class ConfigValueKbd : public ConfigValue {

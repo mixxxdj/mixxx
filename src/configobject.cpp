@@ -73,11 +73,13 @@ ConfigValueKbd::ConfigValueKbd(QString value)
 
 ConfigValueKbd::ConfigValueKbd(QKeySequence key) {
     m_qKey = key;
-    //qDebug() << "value" << m_qKey.toString();
+    QTextStream(&value) << m_qKey.toString();
+    // qDebug() << "value" << value;
 }
 
 void ConfigValueKbd::valCopy(const ConfigValueKbd& v) {
     m_qKey = v.m_qKey;
+    QTextStream(&value) << m_qKey.toString();
 }
 
 bool operator==(const ConfigValue& s1, const ConfigValue& s2) {
@@ -85,7 +87,8 @@ bool operator==(const ConfigValue& s1, const ConfigValue& s2) {
 }
 
 bool operator==(const ConfigValueKbd& s1, const ConfigValueKbd& s2) {
-    return (s1.value.toUpper() == s2.value.toUpper());
+    qDebug() << s1.m_qKey << "==" << s2.m_qKey;
+    return (s1.m_qKey == s2.m_qKey);
 }
 
 template <class ValueType> ConfigObject<ValueType>::ConfigObject(QString file) {
