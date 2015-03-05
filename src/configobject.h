@@ -123,6 +123,7 @@ template <class ValueType> class ConfigObject {
 
   protected:
     QHash<ConfigKey, ValueType> m_valueHash;
+    QMutex m_valueHashMutex;
     QString m_filename;
 
     // Loads and parses the configuration file. Returns false if the file could

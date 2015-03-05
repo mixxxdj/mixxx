@@ -101,16 +101,19 @@ template <class ValueType> ConfigObject<ValueType>::~ConfigObject() {
 
 template <class ValueType>
 void ConfigObject<ValueType>::set(const ConfigKey& k, ValueType v) {
+    QMutexLocker lock(&m_valueHashMutex);
     m_valueHash.insert(k, v);
 }
 
 template <class ValueType>
 ValueType ConfigObject<ValueType>::get(const ConfigKey& k) {
+    QMutexLocker lock(&m_valueHashMutex);
     return m_valueHash.value(k, ValueType(""));
 }
 
 template <class ValueType>
 bool ConfigObject<ValueType>::exists(const ConfigKey& k) {
+    QMutexLocker lock(&m_valueHashMutex);
     return m_valueHash.contains(k);
 }
 
@@ -174,6 +177,7 @@ template <class ValueType> void ConfigObject<ValueType>::reopen(QString file) {
 }
 
 template <class ValueType> void ConfigObject<ValueType>::Save() {
+    QMutexLocker lock(&m_valueHashMutex);
     QFile file(m_filename);
     if (!QDir(QFileInfo(file).absolutePath()).exists()) {
         QDir().mkpath(QFileInfo(file).absolutePath());
