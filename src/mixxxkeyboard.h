@@ -62,7 +62,7 @@ class MixxxKeyboard : public QObject {
     // Pointer to keyboard config object
     ConfigObject<ConfigValueKbd> *m_pKbdConfigObject;
     // Multi-hash of key sequence to
-    QMultiHash<QKeySequence, ConfigKey> m_keySequenceToControlHash;
+    QMultiHash<ConfigValueKbd, ConfigKey> m_keySequenceToControlHash;
 };
 
 #endif

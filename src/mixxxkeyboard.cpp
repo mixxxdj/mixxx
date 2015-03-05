@@ -65,11 +65,13 @@ bool MixxxKeyboard::eventFilter(QObject*, QEvent* e) {
 
         QKeySequence ks = getKeySeq(ke);
         if (!ks.isEmpty()) {
+            ConfigValueKbd ksv(ks);
             // Check if a shortcut is defined
             bool result = false;
-            for (QMultiHash<QKeySequence, ConfigKey>::const_iterator it =
-                         m_keySequenceToControlHash.find(ks);
-                 it != m_keySequenceToControlHash.end() && it.key() == ks; ++it) {
+            // using const_iterator here is faster than QMultiHash::values()
+            for (QMultiHash<ConfigValueKbd, ConfigKey>::const_iterator it =
+                         m_keySequenceToControlHash.find(ksv);
+                 it != m_keySequenceToControlHash.end() && it.key() == ksv; ++it) {
                 const ConfigKey& configKey = it.value();
                 if (configKey.group != "[KeyboardShortcuts]") {
                     ControlObject* control = ControlObject::getControl(configKey);
@@ -178,14 +180,7 @@ void MixxxKeyboard::setKeyboardConfig(ConfigObject<ConfigValueKbd>* pKbdConfigOb
     // invert the mapping to create an injection from key sequence to
     // ConfigKey. This allows a key sequence to trigger multiple controls in
     // Mixxx.
-    QHash<ConfigKey, ConfigValueKbd> keyboardConfig =
-            pKbdConfigObject->toHash();
-
-    m_keySequenceToControlHash.clear();
-    for (QHash<ConfigKey, ConfigValueKbd>::const_iterator it =
-                 keyboardConfig.begin(); it != keyboardConfig.end(); ++it) {
-        m_keySequenceToControlHash.insert(it.value().m_qKey, it.key());
-    }
+    m_keySequenceToControlHash = pKbdConfigObject->transpose();
     m_pKbdConfigObject = pKbdConfigObject;
 }
 

@@ -84,6 +84,10 @@ class ConfigValue {
     friend bool operator==(const ConfigValue& s1, const ConfigValue& s2);
 };
 
+inline uint qHash(const ConfigValue& key) {
+    return qHash(key.value);
+}
+
 class ConfigValueKbd : public ConfigValue {
   public:
     ConfigValueKbd();
@@ -108,7 +112,7 @@ template <class ValueType> class ConfigObject {
     bool exists(const ConfigKey& key);
     QString getValueString(const ConfigKey& k);
     QString getValueString(const ConfigKey& k, const QString& default_string);
-    QHash<ConfigKey, ValueType> toHash() const;
+    QMultiHash<ValueType, ConfigKey> transpose();
 
     void reopen(QString file);
     void Save();

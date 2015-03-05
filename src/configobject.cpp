@@ -68,20 +68,16 @@ ConfigValueKbd::ConfigValueKbd() {
 
 ConfigValueKbd::ConfigValueKbd(QString value)
         : ConfigValue(value) {
-    QString key;
-    QTextStream(&value) >> key;
-    m_qKey = QKeySequence(key);
+    m_qKey = QKeySequence(value);
 }
 
 ConfigValueKbd::ConfigValueKbd(QKeySequence key) {
     m_qKey = key;
-    QTextStream(&value) << m_qKey.toString();
-//          qDebug() << "value" << value;
+    //qDebug() << "value" << m_qKey.toString();
 }
 
 void ConfigValueKbd::valCopy(const ConfigValueKbd& v) {
     m_qKey = v.m_qKey;
-    QTextStream(&value) << m_qKey.toString();
 }
 
 bool operator==(const ConfigValue& s1, const ConfigValue& s2) {
@@ -292,8 +288,15 @@ QString ConfigObject<ValueType>::getSettingsPath() const {
 }
 
 template <class ValueType>
-QHash<ConfigKey, ValueType> ConfigObject<ValueType>::toHash() const {
-    return m_valueHash;
+QMultiHash<ValueType, ConfigKey> ConfigObject<ValueType>::transpose() {
+    QMutexLocker lock(&m_valueHashMutex);
+
+    QMultiHash<ValueType, ConfigKey> transposedHash;
+    for (typename QHash<ConfigKey, ValueType>::const_iterator it =
+            m_valueHash.begin(); it != m_valueHash.end(); ++it) {
+        transposedHash.insert(it.value(), it.key());
+    }
+    return transposedHash;
 }
 
 template class ConfigObject<ConfigValue>;
