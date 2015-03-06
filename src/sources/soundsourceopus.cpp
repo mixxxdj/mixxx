@@ -51,11 +51,10 @@ SoundSourceOpus::~SoundSourceOpus() {
     close();
 }
 
-/*
- Parse the file to get metadata
- */
 Result SoundSourceOpus::parseTrackMetadata(Mixxx::TrackMetadata* pMetadata) const {
-    if (OK == readTrackMetadataFromFile(pMetadata, getLocalFileName())) {
+    if (OK == SoundSource::parseTrackMetadata(pMetadata)) {
+        // Done if the default implementation in the base class
+        // supports Opus files.
         return OK;
     }
 
