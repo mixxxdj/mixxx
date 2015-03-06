@@ -1,7 +1,5 @@
 #include "sources/soundsourceopus.h"
 
-#include "metadata/trackmetadatataglib.h"
-
 namespace Mixxx {
 
 namespace {
