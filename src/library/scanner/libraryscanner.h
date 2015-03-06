@@ -84,8 +84,8 @@ class LibraryScanner : public QThread {
 
     // ScannerTask signal handlers.
     void taskDone(bool success);
-    void directoryHashed(const QString& directoryPath, bool newDirectory,
-                         int hash);
+    void directoryHashedAndScanned(const QString& directoryPath,
+                                   bool newDirectory, int hash);
     void directoryUnchanged(const QString& directoryPath);
     void trackExists(const QString& trackPath);
     void addNewTrack(TrackPointer pTrack);

@@ -63,6 +63,6 @@ void ImportFilesTask::run() {
         }
     }
     // Insert or update the hash in the database.
-    emit(directoryHashed(m_dirPath, !m_prevHashExists, m_newHash));
+    emit(directoryHashedAndScanned(m_dirPath, !m_prevHashExists, m_newHash));
     setSuccess(true);
 }
