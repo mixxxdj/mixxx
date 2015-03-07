@@ -614,10 +614,12 @@ void EngineBuffer::doSeekFractional(double fractionalPos, enum SeekRequest seekT
     if (isnan(fractionalPos)) {
         return;
     }
-
     // Find new playpos, restrict to valid ranges.
     double new_playpos = round(fractionalPos * m_file_length_old);
+    doSeek(new_playpos, seekType);
+ }
 
+void EngineBuffer::doSeek(double new_playpos, enum SeekRequest seekType) {
     // Don't allow the playposition to go past the end.
     if (new_playpos > m_file_length_old) {
         new_playpos = m_file_length_old;
