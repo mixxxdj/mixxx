@@ -348,7 +348,7 @@ EngineBuffer::~EngineBuffer() {
 }
 
 double EngineBuffer::fractionalPlayposFromAbsolute(double absolutePlaypos) {
-    double fFractionalPlaypos = 0.0;
+    double fFractionalPlaypos;
     if (m_file_length_old != 0.) {
         fFractionalPlaypos = math_min<double>(absolutePlaypos, m_file_length_old);
         fFractionalPlaypos /= m_file_length_old;

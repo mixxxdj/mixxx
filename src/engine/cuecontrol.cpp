@@ -569,7 +569,7 @@ void CueControl::hintReader(HintVector* pHintList) {
     for (QList<HotcueControl*>::const_iterator it = m_hotcueControl.constBegin();
          it != m_hotcueControl.constEnd(); ++it) {
         HotcueControl* pControl = *it;
-        Cue *pCue = pControl->getCue();
+        Cue* pCue = pControl->getCue();
         if (pCue != NULL) {
             double position = pControl->getPosition()->get();
             if (position != -1) {
