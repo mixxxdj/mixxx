@@ -289,7 +289,7 @@ class EngineBuffer : public EngineObject {
     double m_rate_old;
 
     // Copy of length of file
-    long int m_file_length_old;
+    int m_file_length_old;
 
     // Copy of file sample rate
     int m_file_srate_old;
