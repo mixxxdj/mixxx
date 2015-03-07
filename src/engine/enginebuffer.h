@@ -219,7 +219,7 @@ class EngineBuffer : public EngineObject {
 
     double fractionalPlayposFromAbsolute(double absolutePlaypos);
 
-    void doSeek(double change, enum SeekRequest seekType);
+    void doSeekFractional(double change, enum SeekRequest seekType);
 
     void clearScale();
 

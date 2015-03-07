@@ -581,7 +581,7 @@ void EngineBuffer::ejectTrack() {
     m_playButton->set(0.0);
     m_visualBpm->set(0.0);
     m_visualKey->set(0.0);
-    doSeek(0., SEEK_EXACT);
+    doSeekFractional(0., SEEK_EXACT);
     m_pause.unlock();
 
     emit(trackUnloaded(pTrack));
@@ -595,28 +595,28 @@ void EngineBuffer::slotPassthroughChanged(double enabled) {
 }
 
 // WARNING: This method runs in both the GUI thread and the Engine Thread
-void EngineBuffer::slotControlSeek(double change) {
-    doSeek(change, SEEK_STANDARD);
+void EngineBuffer::slotControlSeek(double fractionapPos) {
+    doSeekFractional(fractionapPos, SEEK_STANDARD);
 }
 
 // WARNING: This method runs from SyncWorker and Engine Worker
 void EngineBuffer::slotControlSeekAbs(double abs) {
-    doSeek(abs / m_file_length_old, SEEK_STANDARD);
+    doSeekFractional(abs / m_file_length_old, SEEK_STANDARD);
 }
 
 // WARNING: This method runs from SyncWorker and Engine Worker
 void EngineBuffer::slotControlSeekExact(double abs) {
-    doSeek(abs / m_file_length_old, SEEK_EXACT);
+    doSeekFractional(abs / m_file_length_old, SEEK_EXACT);
 }
 
-void EngineBuffer::doSeek(double change, enum SeekRequest seekType) {
+void EngineBuffer::doSeekFractional(double fractionalPos, enum SeekRequest seekType) {
     // Prevent NaN's from sneaking into the engine.
-    if (isnan(change)) {
+    if (isnan(fractionalPos)) {
         return;
     }
 
     // Find new playpos, restrict to valid ranges.
-    double new_playpos = round(change * m_file_length_old);
+    double new_playpos = round(fractionalPos * m_file_length_old);
 
     // Don't allow the playposition to go past the end.
     if (new_playpos > m_file_length_old) {
@@ -672,21 +672,21 @@ void EngineBuffer::slotControlPlayRequest(double v) {
 void EngineBuffer::slotControlStart(double v)
 {
     if (v > 0.0) {
-        doSeek(0., SEEK_EXACT);
+        doSeekFractional(0., SEEK_EXACT);
     }
 }
 
 void EngineBuffer::slotControlEnd(double v)
 {
     if (v > 0.0) {
-        doSeek(1., SEEK_EXACT);
+        doSeekFractional(1., SEEK_EXACT);
     }
 }
 
 void EngineBuffer::slotControlPlayFromStart(double v)
 {
     if (v > 0.0) {
-        doSeek(0., SEEK_EXACT);
+        doSeekFractional(0., SEEK_EXACT);
         m_playButton->set(1);
     }
 }
@@ -694,7 +694,7 @@ void EngineBuffer::slotControlPlayFromStart(double v)
 void EngineBuffer::slotControlJumpToStartAndStop(double v)
 {
     if (v > 0.0) {
-        doSeek(0., SEEK_EXACT);
+        doSeekFractional(0., SEEK_EXACT);
         m_playButton->set(0);
     }
 }
@@ -1006,8 +1006,8 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         if ((m_playButton->get() || (m_fwdButton->get() || m_backButton->get()))
                 && end_of_track) {
             if (repeat_enabled) {
-                double seekPosition = at_start ? m_file_length_old : 0;
-                doSeek(seekPosition, SEEK_STANDARD);
+                double fractionapPos = at_start ? 1.0 : 0;
+                doSeekFractional(fractionapPos, SEEK_STANDARD);
             } else {
                 m_playButton->set(0.);
             }
