@@ -601,12 +601,12 @@ void EngineBuffer::slotControlSeek(double fractionalPos) {
 
 // WARNING: This method runs from SyncWorker and Engine Worker
 void EngineBuffer::slotControlSeekAbs(double playPosition) {
-    doSeek(playPosition, SEEK_STANDARD);
+    doSeekPlayPos(playPosition, SEEK_STANDARD);
 }
 
 // WARNING: This method runs from SyncWorker and Engine Worker
 void EngineBuffer::slotControlSeekExact(double playPosition) {
-    doSeek(playPosition, SEEK_EXACT);
+    doSeekPlayPos(playPosition, SEEK_EXACT);
 }
 
 void EngineBuffer::doSeekFractional(double fractionalPos, enum SeekRequest seekType) {
@@ -616,10 +616,10 @@ void EngineBuffer::doSeekFractional(double fractionalPos, enum SeekRequest seekT
     }
     // Find new playpos, restrict to valid ranges.
     double new_playpos = round(fractionalPos * m_file_length_old);
-    doSeek(new_playpos, seekType);
+    doSeekPlayPos(new_playpos, seekType);
  }
 
-void EngineBuffer::doSeek(double new_playpos, enum SeekRequest seekType) {
+void EngineBuffer::doSeekPlayPos(double new_playpos, enum SeekRequest seekType) {
     // Don't allow the playposition to go past the end.
     if (new_playpos > m_file_length_old) {
         new_playpos = m_file_length_old;
