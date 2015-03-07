@@ -1006,8 +1006,8 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         if ((m_playButton->get() || (m_fwdButton->get() || m_backButton->get()))
                 && end_of_track) {
             if (repeat_enabled) {
-                double fractionapPos = at_start ? 1.0 : 0;
-                doSeekFractional(fractionapPos, SEEK_STANDARD);
+                double fractionalPos = at_start ? 1.0 : 0;
+                doSeekFractional(fractionalPos, SEEK_STANDARD);
             } else {
                 m_playButton->set(0.);
             }
