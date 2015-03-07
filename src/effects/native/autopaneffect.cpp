@@ -131,6 +131,9 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
     float delay = round(m_pDelayParameter->value() * sampleRate);
     gs.delay->setDelay(delay);
     gs.delay->process(pInput, gs.m_pDelayBuf, numSamples);
+    SampleUtil::copy1WithRampingGain(pOutput,
+            gs.m_pDelayBuf, pInput, pInput,
+            numSamples);
     
     for (unsigned int i = 0; i + 1 < numSamples; i += 2) {
         
@@ -161,6 +164,7 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
         // delay on the reducing channel
         // todo (jclaveau) : this produces clics, especially when the period 
         // is short.
+        /*
         if (quarter == 0.0 || quarter == 3.0){
             // channel 1 increasing (left)
             pOutput[i] = pInput[i] * gs.frac * lawCoef;
@@ -171,6 +175,14 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
             pOutput[i] = gs.m_pDelayBuf[i] * gs.frac * lawCoef;
             pOutput[i+1] = pInput[i+1] * (1.0f - gs.frac) * lawCoef;
         }
+        */
+        // pOutput[i+1] = gs.m_pDelayBuf[i+1] * (1.0f - gs.frac) * lawCoef;
+        // pOutput[i] = gs.m_pDelayBuf[i] * gs.frac * lawCoef;
+        
+        // pOutput[i] = pInput[i] * gs.frac * lawCoef;
+        // pOutput[i+1] = pInput[i+1] * (1.0f - gs.frac) * lawCoef;
+        pOutput[i] = pOutput[i] * gs.frac * lawCoef;
+        pOutput[i+1] = pOutput[i+1] * (1.0f - gs.frac) * lawCoef;
         
         gs.time++;
     }
