@@ -595,8 +595,8 @@ void EngineBuffer::slotPassthroughChanged(double enabled) {
 }
 
 // WARNING: This method runs in both the GUI thread and the Engine Thread
-void EngineBuffer::slotControlSeek(double fractionapPos) {
-    doSeekFractional(fractionapPos, SEEK_STANDARD);
+void EngineBuffer::slotControlSeek(double fractionalPos) {
+    doSeekFractional(fractionalPos, SEEK_STANDARD);
 }
 
 // WARNING: This method runs from SyncWorker and Engine Worker
