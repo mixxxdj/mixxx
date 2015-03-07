@@ -676,7 +676,7 @@ void CueControl::cueCDJ(double v) {
     bool playing = (m_pPlayButton->get() == 1.0);
 
     if (v) {
-        if (playing || getCurrentSample() >= getTotalSamples()) {
+        if (playing || atEndPosition()) {
             // Jump to cue when playing or when at end position
 
             // Just in case.
@@ -848,7 +848,7 @@ double CueControl::updateIndicatorsAndModifyPlay(double play, bool playPossible)
     if (cueMode != CUE_MODE_DENON && cueMode != CUE_MODE_NUMARK) {
         if (m_pCuePoint->get() != -1) {
             if (play == 0.0 && !isTrackAtCue() &&
-                    getCurrentSample() < getTotalSamples()) {
+                    !atEndPosition()) {
                 if (cueMode == CUE_MODE_MIXXX) {
                     // in Mixxx mode Cue Button is flashing slow if CUE will move Cue point
                     m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
@@ -884,7 +884,7 @@ void CueControl::updateIndicators() {
         } else {
             m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
             if (!playing) {
-                if (getCurrentSample() < getTotalSamples() && cueMode != CUE_MODE_NUMARK) {
+                if (!atEndPosition() && cueMode != CUE_MODE_NUMARK) {
                     // Play will move cue point
                     m_pPlayIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
                 } else {
@@ -900,7 +900,7 @@ void CueControl::updateIndicators() {
             bool playing = m_pPlayButton->get() > 0;
             if (!playing) {
                 if (!isTrackAtCue()) {
-                    if (getCurrentSample() < getTotalSamples()) {
+                    if (!atEndPosition()) {
                         if (cueMode == CUE_MODE_MIXXX) {
                             // in Mixxx mode Cue Button is flashing slow if CUE will move Cue point
                             m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
