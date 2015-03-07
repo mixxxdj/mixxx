@@ -21,22 +21,22 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <widget class="QCheckBox" name="EnableAnalyser">
-        <property name="toolTip">
-         <string>Calculate ReplayGain normalization for tracks which are missing ReplayGain metadata.</string>
-        </property>
-        <property name="text">
-         <string>Enable ReplayGain Analysis</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QCheckBox" name="EnableGain">
         <property name="toolTip">
          <string>Apply loudness normalization to loaded tracks.</string>
         </property>
         <property name="text">
          <string>Apply ReplayGain</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="EnableAnalyser">
+        <property name="toolTip">
+         <string>Calculate ReplayGain normalization for tracks which are missing ReplayGain metadata.</string>
+        </property>
+        <property name="text">
+         <string>Enable ReplayGain Analysis</string>
         </property>
        </widget>
       </item>
@@ -148,15 +148,21 @@
       </item>
       <item row="4" column="0">
        <widget class="QLabel" name="label">
+        <property name="toolTip">
+         <string>When ReplayGain is enabled, adjust tracks lacking ReplayGain information by this amount.</string>
+        </property>
         <property name="text">
-         <string>Inital boost without ReplayGain</string>
+         <string>Unanalyzed Track Volume Compensation</string>
         </property>
        </widget>
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_boost">
+        <property name="toolTip">
+         <string>When ReplayGain is enabled, adjust tracks with ReplayGain information by this amount.  A value of +6db will typically restore tracks to full volume without clipping.</string>
+        </property>
         <property name="text">
-         <string>Inital boost in addition to ReplayGain</string>
+         <string>ReplayGain Volume Compensation</string>
         </property>
         <property name="buddy">
          <cstring>SliderReplayGainBoost</cstring>
@@ -248,7 +254,7 @@
       <item row="4" column="0">
        <widget class="QLabel" name="label_26">
         <property name="text">
-         <string>If an unanalyzed track is playing, Mixxx won't apply a newly calculated ReplayGain to avoid an abrupt volume change. </string>
+         <string>If an unanalyzed track is playing, to avoid an abrupt volume change Mixxx won't apply a newly calculated ReplayGain value.</string>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
@@ -258,7 +264,7 @@
       <item row="0" column="0">
        <widget class="QLabel" name="label_8">
         <property name="text">
-         <string>The normal average ReplayGain playback level is -14 dB. You may increase it using the inital boost, if your tracks does not require the full dynamic headroom, or reduce it if you experience that your tracks are clipping by default.</string>
+         <string>Usually, ReplayGain analysis will reduce track gain by about half, or approximately -6db. Setting an adjustment of +6db to analyzed tracks will restore ReplayGain tracks to full volume, but some tracks may clip.  Users using this setup will want to set the volume adjustment for unanalyzed tracks to 0db.  For users using a 0db adjustment to ReplayGain tracks, it's recommended to adjust unanalyzed tracks by -6db to prevent large volume changes when mixing between analyzed and unanalyzed tracks.</string>
         </property>
         <property name="scaledContents">
          <bool>true</bool>

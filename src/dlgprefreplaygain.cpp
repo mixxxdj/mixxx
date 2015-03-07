@@ -108,8 +108,7 @@ void DlgPrefReplayGain::slotUpdateReplayGainBoost() {
 
 void DlgPrefReplayGain::setLabelCurrentReplayGainBoost(int value) {
     LabelCurrentReplayGainBoost->setText(
-            QString(tr("%1 dB (average %2 dB)")).arg(
-                  QString().sprintf("%+d", value), QString::number(value - 14)));
+            QString(tr("Adjust by %1 dB")).arg(QString().sprintf("%+d", value)));
 }
 
 void DlgPrefReplayGain::slotUpdateDefaultBoost() {
@@ -117,7 +116,7 @@ void DlgPrefReplayGain::slotUpdateDefaultBoost() {
     config->set(ConfigKey(kConfigKey, "InitialDefaultBoost"),
                 ConfigValue(value));
     LabelCurrentDefaultBoost->setText(
-            QString("%1 dB").arg(value));
+            QString("Adjust by %1 dB").arg(value));
     slotApply();
 }
 
@@ -125,8 +124,10 @@ void DlgPrefReplayGain::slotUpdate() {
     if (config->getValueString(
             ConfigKey(kConfigKey,"ReplayGainEnabled")).toInt() == 1) {
         SliderReplayGainBoost->setEnabled(true);
+        SliderDefaultBoost->setEnabled(true);
     } else {
         SliderReplayGainBoost->setEnabled(false);
+        SliderDefaultBoost->setEnabled(false);
     }
 }
 
