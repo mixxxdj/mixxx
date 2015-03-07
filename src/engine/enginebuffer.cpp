@@ -600,13 +600,13 @@ void EngineBuffer::slotControlSeek(double fractionapPos) {
 }
 
 // WARNING: This method runs from SyncWorker and Engine Worker
-void EngineBuffer::slotControlSeekAbs(double abs) {
-    doSeekFractional(abs / m_file_length_old, SEEK_STANDARD);
+void EngineBuffer::slotControlSeekAbs(double playPosition) {
+    doSeek(playPosition, SEEK_STANDARD);
 }
 
 // WARNING: This method runs from SyncWorker and Engine Worker
-void EngineBuffer::slotControlSeekExact(double abs) {
-    doSeekFractional(abs / m_file_length_old, SEEK_EXACT);
+void EngineBuffer::slotControlSeekExact(double playPosition) {
+    doSeek(playPosition, SEEK_EXACT);
 }
 
 void EngineBuffer::doSeekFractional(double fractionalPos, enum SeekRequest seekType) {
