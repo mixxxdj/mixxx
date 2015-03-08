@@ -139,7 +139,11 @@
 }
 
 #ClockWidget {
-  qproperty-layoutAlignment: 'AlignVCenter | AlignRight';
+  qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
+}
+
+#LatencyMeter {
+  margin: 1px;
 }
 
 #PrimaryMixer {
