@@ -123,9 +123,6 @@ class EngineBuffer : public EngineObject {
 
     void bindWorkers(EngineWorkerScheduler* pWorkerScheduler);
 
-    // Add an engine control to the EngineBuffer
-    void addControl(EngineControl* pControl);
-
     // Return the current rate (not thread-safe)
     double getSpeed();
     // Returns current bpm value (not thread-safe)
@@ -209,6 +206,10 @@ class EngineBuffer : public EngineObject {
     void slotPassthroughChanged(double v);
 
   private:
+    // Add an engine control to the EngineBuffer
+    // must not be called outside the Constructor
+    void addControl(EngineControl* pControl);
+
     void enableIndependentPitchTempoScaling(bool bEnable);
 
     void updateIndicators(double rate, int iBufferSize);
@@ -231,10 +232,6 @@ class EngineBuffer : public EngineObject {
 
     double updateIndicatorsAndModifyPlay(double v);
     void verifyPlay();
-
-    // Lock for modifying local engine variables that are not thread safe, such
-    // as m_engineControls and m_hintList
-    QMutex m_engineLock;
 
     // Holds the name of the control group
     QString m_group;
