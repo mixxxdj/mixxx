@@ -10,11 +10,10 @@ EngineControl::EngineControl(QString group,
                              ConfigObject<ConfigValue>* _config)
         : m_group(group),
           m_pConfig(_config),
-          m_dTotalSamples(0),
           m_pEngineMaster(NULL),
           m_pEngineBuffer(NULL),
           m_numDecks(ConfigKey("[Master]", "num_decks")) {
-    m_dCurrentSample.setValue(0);
+    setCurrentSample(0.0, 0.0);
 }
 
 EngineControl::~EngineControl() {
@@ -59,16 +58,23 @@ void EngineControl::setEngineBuffer(EngineBuffer* pEngineBuffer) {
 }
 
 void EngineControl::setCurrentSample(const double dCurrentSample, const double dTotalSamples) {
-    m_dCurrentSample.setValue(dCurrentSample);
-    m_dTotalSamples = dTotalSamples;
+    SampleOfTrack sot;
+    sot.current = dCurrentSample;
+    sot.total = dTotalSamples;
+    m_sampleOfTrack.setValue(sot);
 }
 
 double EngineControl::getCurrentSample() const {
-    return m_dCurrentSample.getValue();
+    return m_sampleOfTrack.getValue().current;
 }
 
 double EngineControl::getTotalSamples() const {
-    return m_dTotalSamples;
+    return m_sampleOfTrack.getValue().total;
+}
+
+bool EngineControl::atEndPosition() const {
+    SampleOfTrack sot = m_sampleOfTrack.getValue();
+    return (sot.current >= sot.total);
 }
 
 QString EngineControl::getGroup() const {
