@@ -151,13 +151,16 @@ void CueControl::attachCue(Cue* pCue, int hotCue) {
     if (pControl->getCue() != NULL) {
         detachCue(pControl->getHotcueNumber());
     }
-    pControl->setCue(pCue);
     connect(pCue, SIGNAL(updated()),
             this, SLOT(cueUpdated()),
             Qt::DirectConnection);
 
     pControl->getPosition()->set(pCue->getPosition());
     pControl->getEnabled()->set(pCue->getPosition() == -1 ? 0.0 : 1.0);
+    // set pCue only if all other data is in place
+    // because we have a null check for valid data else where  in the code
+    pControl->setCue(pCue);
+
 }
 
 void CueControl::detachCue(int hotCue) {
@@ -169,8 +172,10 @@ void CueControl::detachCue(int hotCue) {
     if (!pCue)
         return;
     disconnect(pCue, 0, this, 0);
+    // clear pCue first because we have a null check for valid data else where
+    // in the code
     pControl->setCue(NULL);
-    pControl->getPosition()->set(-1);
+    pControl->getPosition()->set(-1); // invalidate position for hintReader()
     pControl->getEnabled()->set(0);
 }
 
@@ -555,8 +560,6 @@ void CueControl::hotcuePositionChanged(HotcueControl* pControl, double newPositi
 }
 
 void CueControl::hintReader(HintVector* pHintList) {
-    QMutexLocker lock(&m_mutex);
-
     Hint cue_hint;
     double cuePoint = m_pCuePoint->get();
     if (cuePoint >= 0) {
@@ -566,20 +569,20 @@ void CueControl::hintReader(HintVector* pHintList) {
         pHintList->append(cue_hint);
     }
 
+    // this is called from the engine thread
+    // it is no locking required, because m_hotcueControl is filled during the
+    // constructor and getPosition()->get() is a ControlObject
     for (QList<HotcueControl*>::const_iterator it = m_hotcueControl.constBegin();
          it != m_hotcueControl.constEnd(); ++it) {
         HotcueControl* pControl = *it;
-        Cue *pCue = pControl->getCue();
-        if (pCue != NULL) {
-            double position = pControl->getPosition()->get();
-            if (position != -1) {
-                cue_hint.sample = position;
-                if (cue_hint.sample % 2 != 0)
-                    cue_hint.sample--;
-                cue_hint.length = 0;
-                cue_hint.priority = 10;
-                pHintList->append(cue_hint);
-            }
+        double position = pControl->getPosition()->get();
+        if (position != -1) {
+            cue_hint.sample = position;
+            if (cue_hint.sample % 2 != 0)
+                cue_hint.sample--;
+            cue_hint.length = 0;
+            cue_hint.priority = 10;
+            pHintList->append(cue_hint);
         }
     }
 }
