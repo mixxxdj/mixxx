@@ -69,7 +69,7 @@
         <item>
          <widget class="QLabel" name="label_3">
           <property name="text">
-           <string>-12 dB</string>
+           <string>-26 LUFS</string>
           </property>
          </widget>
         </item>
@@ -109,7 +109,7 @@
         <item>
          <widget class="QLabel" name="label_4">
           <property name="text">
-           <string>+12 dB</string>
+           <string>-2 LUFS</string>
           </property>
          </widget>
         </item>
@@ -152,17 +152,17 @@
          <string>When ReplayGain is enabled, adjust tracks lacking ReplayGain information by this amount.</string>
         </property>
         <property name="text">
-         <string>Unanalyzed Track Volume Compensation</string>
+         <string>Inital boost without ReplayGain</string>
         </property>
        </widget>
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_boost">
         <property name="toolTip">
-         <string>When ReplayGain is enabled, adjust tracks with ReplayGain information by this amount.  A value of +6db will typically restore tracks to full volume without clipping.</string>
+         <string>After ReplayGain is applied, adjust the inital boost for a target loudness in LUFS (Loudness Units relative to Full Scale).</string>
         </property>
         <property name="text">
-         <string>ReplayGain Volume Compensation</string>
+         <string>Target loudness</string>
         </property>
         <property name="buddy">
          <cstring>SliderReplayGainBoost</cstring>
@@ -264,7 +264,7 @@
       <item row="0" column="0">
        <widget class="QLabel" name="label_8">
         <property name="text">
-         <string>Usually, ReplayGain analysis will reduce track gain by about half, or approximately -6db. Setting an adjustment of +6db to analyzed tracks will restore ReplayGain tracks to full volume, but some tracks may clip.  Users using this setup will want to set the volume adjustment for unanalyzed tracks to 0db.  For users using a 0db adjustment to ReplayGain tracks, it's recommended to adjust unanalyzed tracks by -6db to prevent large volume changes when mixing between analyzed and unanalyzed tracks.</string>
+         <string>The ReplayGain target loudness is around -14 LUFS (Loudness Units relative to Full Scale). You may increase it, if your tracks does not require the full dynamic headroom or reduce it if you experience that your tracks are clipping by default. A standard loudness for TV is -23 LUFS and for podcasting -16 LUFS.</string>
         </property>
         <property name="scaledContents">
          <bool>true</bool>
