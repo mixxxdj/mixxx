@@ -18,7 +18,6 @@ public:
     explicit SoundSourceFLAC(QUrl url);
     ~SoundSourceFLAC();
 
-    Result open() /*override*/;
     void close() /*override*/;
 
     SINT seekSampleFrame(SINT frameIndex) /*override*/;
@@ -40,6 +39,8 @@ public:
     void flacError(FLAC__StreamDecoderErrorStatus status);
 
 private:
+    Result tryOpen(SINT channelCountHint) /*override*/;
+
     SINT readSampleFrames(SINT numberOfFrames,
             CSAMPLE* sampleBuffer, SINT sampleBufferSize,
             bool readStereoSamples);

@@ -82,12 +82,8 @@ SoundSourceFLAC::~SoundSourceFLAC() {
     close();
 }
 
-Result SoundSourceFLAC::open() {
-    if (m_file.isOpen()) {
-        qWarning() << "Cannot reopen FLAC file:" << m_file.fileName();
-        return ERR;
-    }
-
+Result SoundSourceFLAC::tryOpen(SINT /*channelCountHint*/) {
+    DEBUG_ASSERT(!m_file.isOpen());
     if (!m_file.open(QIODevice::ReadOnly)) {
         qWarning() << "Failed to open FLAC file:" << m_file.fileName();
         return ERR;

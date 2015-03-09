@@ -18,16 +18,16 @@ SoundSourceWV::~SoundSourceWV() {
     close();
 }
 
-Result SoundSourceWV::open() {
-    if (m_wpc) {
-        qWarning() << "Cannot reopen WavPack file:" << getUrl();
-        return ERR;
-    }
-
+Result SoundSourceWV::tryOpen(SINT channelCountHint) {
+    DEBUG_ASSERT(!m_wpc);
     char msg[80]; // hold possible error message
+    int openFlags = OPEN_WVC | OPEN_NORMALIZE;
+    if ((kChannelCountZero < channelCountHint) && (2 >= channelCountHint)) {
+        // mono or stereo
+        openFlags |= OPEN_2CH_MAX;
+    }
     m_wpc = WavpackOpenFileInput(
-            getLocalFileNameBytes().constData(), msg,
-            OPEN_2CH_MAX | OPEN_WVC | OPEN_NORMALIZE, 0);
+            getLocalFileNameBytes().constData(), msg, openFlags, 0);
     if (!m_wpc) {
         qDebug() << "SSWV::open: failed to open file : " << msg;
         return ERR;

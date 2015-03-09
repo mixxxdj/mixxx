@@ -30,9 +30,7 @@ SoundSourceOggVorbis::~SoundSourceOggVorbis() {
     close();
 }
 
-Result SoundSourceOggVorbis::open() {
-    close(); // reopen if already open
-
+Result SoundSourceOggVorbis::tryOpen(SINT /*channelCountHint*/) {
     const QByteArray qbaFilename(getLocalFileNameBytes());
     if (0 != ov_fopen(qbaFilename.constData(), &m_vf)) {
         qWarning() << "Failed to open OggVorbis file:" << getUrl();

@@ -20,14 +20,11 @@
 
 class SoundSourceCoreAudio : public Mixxx::SoundSource {
 public:
-    static const kChannelCount;
-
     static QList<QString> supportedFileExtensions();
 
     explicit SoundSourceCoreAudio(QUrl url);
     ~SoundSourceCoreAudio();
 
-    Result open() /*override*/;
     void close() /*override*/;
 
     SINT seekSampleFrame(SINT frameIndex) /*override*/;
@@ -36,6 +33,8 @@ public:
             CSAMPLE* sampleBuffer) /*override*/;
 
 private:
+    Result tryOpen(SINT channelCountHint) /*override*/;
+
     ExtAudioFileRef m_audioFile;
     CAStreamBasicDescription m_inputFormat;
     CAStreamBasicDescription m_outputFormat;

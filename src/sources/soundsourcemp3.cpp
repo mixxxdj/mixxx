@@ -80,12 +80,8 @@ SoundSourceMp3::~SoundSourceMp3() {
     close();
 }
 
-Result SoundSourceMp3::open() {
-    if (m_file.isOpen()) {
-        qWarning() << "Cannot reopen MP3 file:" << m_file.fileName();
-        return ERR;
-    }
-
+Result SoundSourceMp3::tryOpen(SINT /*channelCountHint*/) {
+    DEBUG_ASSERT(!m_file.isOpen());
     if (!m_file.open(QIODevice::ReadOnly)) {
         qWarning() << "Failed to open file:" << m_file.fileName();
         return ERR;

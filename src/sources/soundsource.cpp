@@ -20,6 +20,21 @@ SoundSource::SoundSource(QUrl url, QString type)
     DEBUG_ASSERT(getUrl().isValid());
 }
 
+Result SoundSource::open(SINT channelCountHint) {
+    close(); // reopening is not supported
+    Result result;
+    try {
+        result = tryOpen(channelCountHint);
+    } catch (...) {
+        close();
+        throw;
+    }
+    if (OK != result) {
+        close();
+    }
+    return result;
+}
+
 Result SoundSource::parseTrackMetadata(Mixxx::TrackMetadata* pMetadata) const {
     return readTrackMetadataFromFile(pMetadata, getLocalFileName());
 }

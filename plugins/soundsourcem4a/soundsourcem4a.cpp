@@ -116,12 +116,8 @@ SoundSourceM4A::~SoundSourceM4A() {
     close();
 }
 
-Result SoundSourceM4A::open() {
-    if (MP4_INVALID_FILE_HANDLE != m_hFile) {
-        qWarning() << "Cannot reopen M4A file:" << getUrl();
-        return ERR;
-    }
-
+Result SoundSourceM4A::tryOpen(SINT channelCountHint) {
+    DEBUG_ASSERT(MP4_INVALID_FILE_HANDLE == m_hFile);
     /* open MP4 file, check for >= ver 1.9.1 */
 #if MP4V2_PROJECT_version_hex <= 0x00010901
     m_hFile = MP4Read(getLocalFileNameBytes().constData(), 0);
@@ -160,7 +156,12 @@ Result SoundSourceM4A::open() {
     NeAACDecConfigurationPtr pDecoderConfig = NeAACDecGetCurrentConfiguration(
             m_hDecoder);
     pDecoderConfig->outputFormat = FAAD_FMT_FLOAT; /* 32-bit float */
-    pDecoderConfig->downMatrix = 1; /* 5.1 -> stereo */
+    if ((kChannelCountZero < channelCountHint) && (2 >= channelCountHint)) {
+        pDecoderConfig->downMatrix = 1; /* multi -> stereo */
+    } else {
+        pDecoderConfig->downMatrix = 0;
+    }
+
     pDecoderConfig->defObjectType = LC;
     if (!NeAACDecSetConfiguration(m_hDecoder, pDecoderConfig)) {
         qWarning() << "Failed to configure AAC decoder!";

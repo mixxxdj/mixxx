@@ -119,14 +119,11 @@ Result SoundSourceOpus::parseTrackMetadata(Mixxx::TrackMetadata* pMetadata) cons
     return OK;
 }
 
-Result SoundSourceOpus::open() {
-    if (m_pOggOpusFile) {
-        qWarning() << "Cannot reopen OggOpus file:" << getUrl();
-        return ERR;
-    }
-
+Result SoundSourceOpus::tryOpen(SINT /*channelCountHint*/) {
     const QByteArray qbaFilename(getLocalFileNameBytes());
     int errorCode = 0;
+
+    DEBUG_ASSERT(!m_pOggOpusFile);
     m_pOggOpusFile = op_open_file(qbaFilename.constData(), &errorCode);
     if (!m_pOggOpusFile) {
         qWarning() << "Failed to open OggOpus file:" << getUrl() << "errorCode"

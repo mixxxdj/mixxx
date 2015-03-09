@@ -24,7 +24,6 @@ public:
     explicit SoundSourceMp3(QUrl url);
     ~SoundSourceMp3();
 
-    Result open() /*override*/;
     void close() /*override*/;
 
     SINT seekSampleFrame(SINT frameIndex) /*override*/;
@@ -39,6 +38,8 @@ public:
             bool readStereoSamples);
 
 private:
+    Result tryOpen(SINT channelCountHint) /*override*/;
+
     QFile m_file;
     quint64 m_fileSize;
     unsigned char* m_pFileData;

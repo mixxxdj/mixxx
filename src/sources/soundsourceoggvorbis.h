@@ -15,7 +15,6 @@ public:
     explicit SoundSourceOggVorbis(QUrl url);
     ~SoundSourceOggVorbis();
 
-    Result open() /*override*/;
     void close() /*override*/;
 
     SINT seekSampleFrame(SINT frameIndex) /*override*/;
@@ -26,6 +25,8 @@ public:
             CSAMPLE* sampleBuffer, SINT sampleBufferSize) /*override*/;
 
 private:
+    Result tryOpen(SINT channelCountHint) /*override*/;
+
     SINT readSampleFrames(SINT numberOfFrames,
             CSAMPLE* sampleBuffer, SINT sampleBufferSize,
             bool readStereoSamples);

@@ -19,7 +19,6 @@ public:
 
     Result parseTrackMetadata(Mixxx::TrackMetadata* pMetadata) const /*override*/;
 
-    Result open() /*override*/;
     void close() /*override*/;
 
     SINT seekSampleFrame(SINT frameIndex) /*override*/;
@@ -30,6 +29,8 @@ public:
             CSAMPLE* sampleBuffer, SINT sampleBufferSize) /*override*/;
 
 private:
+    Result tryOpen(SINT channelCountHint) /*override*/;
+
     OggOpusFile *m_pOggOpusFile;
 
     SINT m_curFrameIndex;
