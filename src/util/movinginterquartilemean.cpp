@@ -21,9 +21,9 @@ double MovingInterquartileMean::insert(double value) {
         m_list.append(value);
         m_queue.enqueue(--m_list.end());
     } else {
-        QLinkedList<double>::iterator i = m_list.begin()++;
-        while (value >= *i) ++i;
-        m_queue.enqueue(m_list.insert(i, value));
+        QLinkedList<double>::iterator it = m_list.begin()++;
+        while (value >= *it) ++it;
+        m_queue.enqueue(m_list.insert(it, value));
         // (If value already exists in the list, the new instance
         // is appended next to the old ones: 2·-> 1 2 3 = 1 2 2· 3)
     }
@@ -53,10 +53,10 @@ double MovingInterquartileMean::mean() {
         } else if (m_list.size() % 4 == 0) {
             int quartileSize = m_list.size() / 4;
             double interQuartileRange = 2 * quartileSize;
-            QLinkedList<double>::iterator i = m_list.begin() + quartileSize;
+            QLinkedList<double>::iterator it = m_list.begin() + quartileSize;
             double d_sum = 0;
             for (int k = 0; k < 2 * quartileSize; ++k) {
-                d_sum += *(i++);
+                d_sum += *(it++);
             }
             m_dMean = d_sum / interQuartileRange;
         } else {
@@ -66,13 +66,13 @@ double MovingInterquartileMean::mean() {
             double interQuartileRange = 2 * quartileSize;
             int nFullValues = m_list.size() - 2*(int)quartileSize - 2;
             double quartileWeight = (interQuartileRange - nFullValues) / 2;
-            QLinkedList<double>::iterator i = m_list.begin() + (int)quartileSize;
-            double d_sum = *i * quartileWeight;
-            ++i;
+            QLinkedList<double>::iterator it = m_list.begin() + (int)quartileSize;
+            double d_sum = *it * quartileWeight;
+            ++it;
             for (int k = 0; k < nFullValues; ++k) {
-                d_sum += *(i++);
+                d_sum += *(it++);
             }
-            d_sum += *i * quartileWeight;
+            d_sum += *it * quartileWeight;
             m_dMean = d_sum / interQuartileRange;
         }
     }
