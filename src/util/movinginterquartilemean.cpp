@@ -61,7 +61,6 @@ double MovingInterquartileMean::mean() {
             m_dMean = d_sum / interQuartileRange;
         } else {
             // http://en.wikipedia.org/wiki/Interquartile_mean#Dataset_not_divisible_by_four
-            // TODO(Ferran Pujol): Make this more clear.
             double quartileSize = m_list.size() / 4.0;
             double interQuartileRange = 2 * quartileSize;
             int nFullValues = m_list.size() - 2*(int)quartileSize - 2;
