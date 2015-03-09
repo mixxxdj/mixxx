@@ -53,10 +53,10 @@ double MovingInterquartileMean::mean() {
         } else if (m_list.size() % 4 == 0) {
             int quartileSize = m_list.size() / 4;
             double interQuartileRange = 2 * quartileSize;
-            QLinkedList<double>::iterator it = m_list.begin() + quartileSize;
             double d_sum = 0;
-            for (int k = 0; k < 2 * quartileSize; ++k) {
-                d_sum += *(it++);
+            QLinkedList<double>::iterator it = m_list.begin() + quartileSize;
+            for (int k = 0; k < 2 * quartileSize; ++k, ++it) {
+                d_sum += *it;
             }
             m_dMean = d_sum / interQuartileRange;
         } else {
@@ -69,8 +69,8 @@ double MovingInterquartileMean::mean() {
             QLinkedList<double>::iterator it = m_list.begin() + (int)quartileSize;
             double d_sum = *it * quartileWeight;
             ++it;
-            for (int k = 0; k < nFullValues; ++k) {
-                d_sum += *(it++);
+            for (int k = 0; k < nFullValues; ++k, ++it) {
+                d_sum += *it;
             }
             d_sum += *it * quartileWeight;
             m_dMean = d_sum / interQuartileRange;
