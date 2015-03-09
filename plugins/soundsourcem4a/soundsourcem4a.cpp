@@ -135,11 +135,13 @@ Result SoundSourceM4A::tryOpen(SINT channelCountHint) {
         return ERR;
     }
 
-    m_maxSampleBlockId = MP4GetTrackNumberOfSamples(m_hFile, m_trackId);
-    if (MP4_INVALID_SAMPLE_ID == m_maxSampleBlockId) {
-        qWarning() << "Failed to read file structure:" << getUrl();
+    const MP4SampleId numberOfSamples =
+            MP4GetTrackNumberOfSamples(m_hFile, m_trackId);
+    if (0 >= numberOfSamples) {
+        qWarning() << "Failed to read number of samples from file:" << getUrl();
         return ERR;
     }
+    m_maxSampleBlockId = kSampleBlockIdMin + (numberOfSamples - 1);
 
     // Determine the maximum input size (in bytes) of a
     // sample block for the selected track.
