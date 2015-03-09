@@ -63,9 +63,9 @@ double MovingInterquartileMean::mean() {
             // http://en.wikipedia.org/wiki/Interquartile_mean#Dataset_not_divisible_by_four
             double quartileSize = m_list.size() / 4.0;
             double interQuartileRange = 2 * quartileSize;
-            int nFullValues = m_list.size() - 2*(int)quartileSize - 2;
+            int nFullValues = m_list.size() - 2*static_cast<int>(quartileSize) - 2;
             double quartileWeight = (interQuartileRange - nFullValues) / 2;
-            QLinkedList<double>::iterator it = m_list.begin() + (int)quartileSize;
+            QLinkedList<double>::iterator it = m_list.begin() + static_cast<int>(quartileSize);
             double d_sum = *it * quartileWeight;
             ++it;
             for (int k = 0; k < nFullValues; ++k, ++it) {
