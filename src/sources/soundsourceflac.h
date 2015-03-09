@@ -62,8 +62,8 @@ private:
     CSAMPLE m_sampleScaleFactor;
 
     SampleBuffer m_decodeSampleBuffer;
-    int m_decodeSampleBufferReadOffset;
-    int m_decodeSampleBufferWriteOffset;
+    SINT m_decodeSampleBufferLength;
+    SINT m_decodeSampleBufferOffset;
 
     SINT m_curFrameIndex;
 };
