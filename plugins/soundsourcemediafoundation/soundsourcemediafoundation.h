@@ -41,7 +41,6 @@ public:
     explicit SoundSourceMediaFoundation(QUrl url);
     ~SoundSourceMediaFoundation();
 
-    Result open() /*override*/;
     void close() /*override*/;
 
     SINT seekSampleFrame(SINT frameIndex) /*override*/;
@@ -49,7 +48,9 @@ public:
     SINT readSampleFrames(SINT numberOfFrames, CSAMPLE* sampleBuffer) /*override*/;
 
 private:
-    bool configureAudioStream();
+    Result tryOpen(SINT channelCountHint) /*override*/;
+
+    bool configureAudioStream(SINT channelCountHint);
 
     void copyFrames(CSAMPLE *dest, size_t *destFrames, const CSAMPLE *src,
             size_t srcFrames);

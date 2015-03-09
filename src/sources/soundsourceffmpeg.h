@@ -47,7 +47,6 @@ public:
     explicit SoundSourceFFmpeg(QUrl url);
     ~SoundSourceFFmpeg();
 
-    Result open() /*override*/;
     void close() /*override*/;
 
     SINT seekSampleFrame(SINT frameIndex) /*override*/;
@@ -55,6 +54,8 @@ public:
     SINT readSampleFrames(SINT numberOfFrames, CSAMPLE* sampleBuffer) /*override*/;
 
 private:
+    Result tryOpen(SINT channelCountHint) /*override*/;
+
     bool readFramesToCache(unsigned int count, qint64 offset);
     bool getBytesFromCache(char *buffer, quint64 offset, quint64 size);
     quint64 getSizeofCache();

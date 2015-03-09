@@ -120,18 +120,14 @@ SoundSourceFFmpeg::~SoundSourceFFmpeg() {
     close();
 }
 
-Result SoundSourceFFmpeg::open() {
-    if (m_pFormatCtx) {
-        qWarning() << "Cannot reopen FFmpeg file:" << getUrl();
-        return ERR;
-    }
-
+Result SoundSourceFFmpeg::tryOpen(SINT channelCountHint) {
     unsigned int i;
     AVDictionary *l_iFormatOpts = NULL;
 
     const QByteArray qBAFilename(getLocalFileNameBytes());
     qDebug() << "New SoundSourceFFmpeg :" << qBAFilename;
 
+    DEBUG_ASSERT(!m_pFormatCtx);
     m_pFormatCtx = avformat_alloc_context();
 
 #if LIBAVCODEC_VERSION_INT < 3622144

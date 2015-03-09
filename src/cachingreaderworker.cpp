@@ -134,9 +134,9 @@ void CachingReaderWorker::run() {
 
 namespace
 {
-    Mixxx::AudioSourcePointer openAudioSourceForReading(const TrackPointer& pTrack) {
+    Mixxx::AudioSourcePointer openAudioSourceForReading(const TrackPointer& pTrack, SINT channelCountHint) {
         SoundSourceProxy soundSourceProxy(pTrack);
-        Mixxx::AudioSourcePointer pAudioSource(soundSourceProxy.openAudioSource());
+        Mixxx::AudioSourcePointer pAudioSource(soundSourceProxy.openAudioSource(channelCountHint));
         if (pAudioSource.isNull()) {
             qWarning() << "Failed to open file:" << pTrack->getLocation();
             return Mixxx::AudioSourcePointer();
@@ -169,7 +169,7 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
         return;
     }
 
-    m_pAudioSource = openAudioSourceForReading(pTrack);
+    m_pAudioSource = openAudioSourceForReading(pTrack, kChunkChannels);
     if (m_pAudioSource.isNull()) {
         // Must unlock before emitting to avoid deadlock
         qDebug() << m_group << "CachingReaderWorker::loadTrack() load failed for\""

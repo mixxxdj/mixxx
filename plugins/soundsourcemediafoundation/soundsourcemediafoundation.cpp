@@ -33,7 +33,6 @@ namespace
 
 const bool sDebug = false;
 
-const int kNumChannels = 2;
 const int kSampleRate = 44100;
 const int kLeftoverSize = 4096; // in CSAMPLE's, this seems to be the size MF AAC
 const int kBitsPerSampleForBitrate = 16; // for bitrate calculation decoder likes to give
@@ -104,7 +103,6 @@ SoundSourceMediaFoundation::SoundSourceMediaFoundation(QUrl url)
     // these are always the same, might as well just stick them here
     // -bkgood
     // AudioSource properties
-    setChannelCount(kNumChannels);
     setFrameRate(kSampleRate);
 
     // presentation attribute MF_PD_AUDIO_ENCODING_BITRATE only exists for
@@ -117,7 +115,7 @@ SoundSourceMediaFoundation::~SoundSourceMediaFoundation() {
     close();
 }
 
-Result SoundSourceMediaFoundation::open() {
+Result SoundSourceMediaFoundation::tryOpen(SINT channelCountHint) {
     if (SUCCEEDED(m_hrCoInitialize)) {
         qWarning() << "Cannot reopen MediaFoundation file" << getUrl();
         return ERR;
@@ -158,7 +156,7 @@ Result SoundSourceMediaFoundation::open() {
         return ERR;
     }
 
-    if (!configureAudioStream()) {
+    if (!configureAudioStream(channelCountHint)) {
         qWarning() << "SSMF: Error configuring audio stream.";
         return ERR;
     }
@@ -436,7 +434,7 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
  If anything in here fails, just bail. I'm not going to decode HRESULTS.
  -- Bill
  */
-bool SoundSourceMediaFoundation::configureAudioStream() {
+bool SoundSourceMediaFoundation::configureAudioStream(SINT channelCountHint) {
     HRESULT hr(S_OK);
 
     // deselect all streams, we only want the first
@@ -505,10 +503,21 @@ bool SoundSourceMediaFoundation::configureAudioStream() {
         return false;
     }
 
-    hr = m_pAudioType->SetUINT32(MF_MT_AUDIO_NUM_CHANNELS, kNumChannels);
-    if (FAILED(hr)) {
-        qWarning() << "SSMF: failed to set number of channels";
-        return false;
+    if (kChannelCountZero < channelCountHint) {
+        hr = m_pAudioType->SetUINT32(MF_MT_AUDIO_NUM_CHANNELS, channelCountHint);
+        if (FAILED(hr)) {
+            qWarning() << "SSMF: failed to set number of channels";
+            return false;
+        }
+        setChannelCount(channelCountHint);
+    } else {
+        UINT32 numChannels = 0;
+        hr = m_pAudioType->GetUINT32(MF_MT_AUDIO_NUM_CHANNELS, &numChannels);
+        if (FAILED(hr) || (0 >= numChannels)) {
+            qWarning() << "SSMF: failed to get number of channels";
+            return false;
+        }
+        setChannelCount(numChannels);
     }
 
     hr = m_pAudioType->SetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND, kSampleRate);

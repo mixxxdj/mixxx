@@ -30,7 +30,6 @@ public:
     explicit SoundSourceM4A(QUrl url);
     ~SoundSourceM4A();
 
-    Result open() /*override*/;
     void close() /*override*/;
 
     SINT seekSampleFrame(SINT frameIndex) /*override*/;
@@ -39,6 +38,8 @@ public:
             CSAMPLE* sampleBuffer) /*override*/;
 
 private:
+    Result tryOpen(SINT channelCountHint) /*override*/;
+
     bool isValidSampleBlockId(MP4SampleId sampleBlockId) const;
 
     void restartDecoding(MP4SampleId sampleBlockId);

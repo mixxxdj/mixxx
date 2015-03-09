@@ -20,7 +20,6 @@ public:
     explicit SoundSourceWV(QUrl url);
     ~SoundSourceWV();
 
-    Result open() /*override*/;
     void close() /*override*/;
 
     SINT seekSampleFrame(SINT frameIndex) /*override*/;
@@ -29,6 +28,8 @@ public:
             CSAMPLE* sampleBuffer) /*override*/;
 
 private:
+    Result tryOpen(SINT channelCountHint) /*override*/;
+
     WavpackContext* m_wpc;
 
     CSAMPLE m_sampleScaleFactor;

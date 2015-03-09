@@ -59,7 +59,7 @@ public:
     // Opening the audio data through the proxy will
     // update the some metadata of the track object.
     // Returns a null pointer on failure.
-    Mixxx::AudioSourcePointer openAudioSource();
+    Mixxx::AudioSourcePointer openAudioSource(SINT channelCountHint = Mixxx::AudioSource::kChannelCountDefault);
 
     void closeAudioSource();
 

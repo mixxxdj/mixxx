@@ -2,8 +2,6 @@
 
 #include "util/math.h"
 
-const SINT SoundSourceCoreAudio::kChannelCount = 2; // always stereo
-
 QList<QString> SoundSourceCoreAudio::supportedFileExtensions() {
     QList<QString> list;
     list.push_back("m4a");
@@ -27,9 +25,7 @@ SoundSourceCoreAudio::~SoundSourceCoreAudio() {
 }
 
 // soundsource overrides
-Result AudioSourceCoreAudio::open() {
-    close(); // safety first
-
+Result AudioSourceCoreAudio::tryOpen(SINT channelCountHint) {
     const QString fileName(getLocalFileName());
 
     //Open the audio file.
@@ -69,8 +65,10 @@ Result AudioSourceCoreAudio::open() {
     }
 
     // create the output format
+    const UInt32 numChannels =
+            (channelCountZero < channelCountHint) ? channelCountHint : 2;
     m_outputFormat = CAStreamBasicDescription(m_inputFormat.mSampleRate,
-            kChannelCount, CAStreamBasicDescription::kPCMFormatFloat32, true);
+            numChannels, CAStreamBasicDescription::kPCMFormatFloat32, true);
 
     // set the client format
     err = ExtAudioFileSetProperty(m_audioFile,

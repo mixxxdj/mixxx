@@ -175,12 +175,8 @@ SoundSourceSndFile::~SoundSourceSndFile() {
 >>>>>>> Move code from specialized AudioSources back into corresponding SoundSources
 }
 
-Result SoundSourceSndFile::open() {
-    if (m_pSndFile) {
-        qWarning() << "Cannot reopen file:" << getUrl();
-        return ERR;
-    }
-
+Result SoundSourceSndFile::tryOpen(SINT /*channelCountHint*/) {
+    DEBUG_ASSERT(!m_pSndFile);
     memset(&m_sfInfo, 0, sizeof(m_sfInfo));
 #ifdef __WINDOWS__
     // Pointer valid until string changed

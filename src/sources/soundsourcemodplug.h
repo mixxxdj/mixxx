@@ -32,7 +32,6 @@ public:
 
     QImage parseCoverArt() const /*override*/;
 
-    Result open() /*override*/;
     void close() /*override*/;
 
     SINT seekSampleFrame(SINT frameIndex) /*override*/;
@@ -41,6 +40,8 @@ public:
             CSAMPLE* sampleBuffer) /*override*/;
 
 private:
+    Result tryOpen(SINT channelCountHint = kChannelCountDefault) /*override*/;
+
     static unsigned int s_bufferSizeLimit; // max track buffer length (bytes)
 
     ModPlug::ModPlugFile *m_pModFile; // modplug file descriptor

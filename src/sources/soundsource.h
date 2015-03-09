@@ -31,9 +31,15 @@ public:
     QImage parseCoverArt() const /*override*/;
 
     // Opens the AudioSource for reading audio data.
-    virtual Result open() = 0;
+    //
+    // Since reopening is not supported close() will be called
+    // implicitly before the AudioSource is actually opened.
+    Result open(SINT channelCountHint = kChannelCountDefault);
 
-    // Closes the AudioSource.
+    // Closes the AudioSource and frees all resources.
+    //
+    // Might be called even if the AudioSource has never been
+    // opened, has already been closed, or if opening has failed.
     virtual void close() = 0;
 
 protected:
@@ -41,49 +47,19 @@ protected:
     SoundSource(QUrl url, QString type);
 
 private:
+    // Tries to open the AudioSource for reading audio data
+    // according to the "Template Method" design pattern. If
+    // tryOpen() fails all (partially) allocated resources
+    // will be freed by close(). Implementing classes do not
+    // need to free resources in tryOpen() themselves, but
+    // should instead be prepared for the following invocation
+    // of close().
+    virtual Result tryOpen(SINT channelCountHint) = 0;
+
     const QString m_type;
 };
 
 typedef QSharedPointer<SoundSource> SoundSourcePointer;
-
-// Helper class to close a SoundSource immediately if opening fails.
-// The failure upon opening a SoundSource might occur after some
-// resources for decoding have already been allocated. Closing the
-// SoundSource will free all those resources early. It is safe to
-// repeatedly invoke close() on a SoundSource at any time.
-class SoundSourceOpener {
-public:
-    explicit SoundSourceOpener(SoundSourcePointer pSoundSource)
-        : m_pSoundSource(pSoundSource),
-          m_result(OK) {
-        // The SoundSource must be opened in a member function and
-        // not here! If SoundSource::open() would be invoked from
-        // within this constructor and fails with an exception then
-        // the destructor of this class would never be invoked by
-        // the C++ runtime.
-    }
-    ~SoundSourceOpener() {
-        // Closes the SoundSource if open() failed.
-        if (OK != m_result) {
-            m_pSoundSource->close();
-        }
-    }
-
-    Result open() {
-        // Initialization of m_result with ERR before the
-        // invocation of SoundSource::open() is required to
-        // guarantee the invocation of SoundSource::close()
-        // in the destructor if an exception is thrown by
-        // SoundSource::open()!
-        m_result = ERR;
-        m_result = m_pSoundSource->open();
-        return m_result;
-    }
-
-private:
-    const SoundSourcePointer m_pSoundSource;
-    Result m_result;
-};
 
 } //namespace Mixxx
 

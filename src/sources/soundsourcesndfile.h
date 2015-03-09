@@ -20,7 +20,6 @@ public:
     explicit SoundSourceSndFile(QUrl url);
     ~SoundSourceSndFile();
 
-    Result open() /*override*/;
     void close() /*override*/;
 
     SINT seekSampleFrame(SINT frameIndex) /*override*/;
@@ -29,6 +28,8 @@ public:
             CSAMPLE* sampleBuffer) /*override*/;
 
 private:
+    Result tryOpen(SINT channelCountHint) /*override*/;
+
     SNDFILE* m_pSndFile;
     SF_INFO m_sfInfo;
 };
