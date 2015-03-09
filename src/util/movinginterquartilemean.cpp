@@ -27,8 +27,8 @@ double MovingInterquartileMean::insert(double value) {
         // (If value already exists in the list, the new instance
         // is appended next to the old ones: 2·-> 1 2 3 = 1 2 2· 3)
     }
-    
-    // If list is already full, first delete the oldest value:
+
+    // If list was already full, delete the oldest value:
     if (m_list.size() == m_iListMaxSize + 1) {
         m_list.erase(m_queue.dequeue());
     }
