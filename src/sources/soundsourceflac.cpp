@@ -73,8 +73,8 @@ SoundSourceFLAC::SoundSourceFLAC(QUrl url)
           m_maxFramesize(0),
           m_bitsPerSample(kBitsPerSampleDefault),
           m_sampleScaleFactor(kSampleValueZero),
-          m_decodeSampleBufferReadOffset(0),
-          m_decodeSampleBufferWriteOffset(0),
+          m_decodeSampleBufferLength(0),
+          m_decodeSampleBufferOffset(0),
           m_curFrameIndex(kFrameIndexMin) {
 }
 
@@ -129,8 +129,7 @@ SINT SoundSourceFLAC::seekSampleFrame(SINT frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(frameIndex));
 
     // clear decode buffer before seeking
-    m_decodeSampleBufferReadOffset = 0;
-    m_decodeSampleBufferWriteOffset = 0;
+    m_decodeSampleBufferLength = 0;
     if (!FLAC__stream_decoder_seek_absolute(m_decoder, frameIndex)) {
         qWarning() << "SSFLAC: Seeking error at file" << m_file.fileName();
     }
@@ -163,63 +162,59 @@ SINT SoundSourceFLAC::readSampleFrames(
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(getSampleBufferSize(numberOfFrames, readStereoSamples) <= sampleBufferSize);
 
-    const SINT numberOfFramesTotal = numberOfFrames;
+    const SINT numberOfFramesTotal =
+            math_min(numberOfFrames, getFrameIndexMax() - m_curFrameIndex);
 
     CSAMPLE* outBuffer = sampleBuffer;
     SINT numberOfFramesRemaining = numberOfFramesTotal;
     while (0 < numberOfFramesRemaining) {
-        DEBUG_ASSERT(
-                m_decodeSampleBufferReadOffset <= m_decodeSampleBufferWriteOffset);
-        // if our buffer from libflac is empty (either because we explicitly cleared
+        DEBUG_ASSERT(0 <= m_decodeSampleBufferLength);
+        // If our buffer from libflac is empty (either because we explicitly cleared
         // it or because we've simply used all the samples), ask for a new buffer
-        if (m_decodeSampleBufferReadOffset >= m_decodeSampleBufferWriteOffset) {
+        if (0 == m_decodeSampleBufferLength) {
             // Documentation of FLAC__stream_decoder_process_single():
             // "Depending on what was decoded, the metadata or write callback
             // will be called with the decoded metadata block or audio frame."
             // See also: https://xiph.org/flac/api/group__flac__stream__decoder.html#ga9d6df4a39892c05955122cf7f987f856
-            if (FLAC__stream_decoder_process_single(m_decoder)) {
-                if (m_decodeSampleBufferReadOffset
-                        >= m_decodeSampleBufferWriteOffset) {
-                    // EOF
-                    break;
-                }
-            } else {
+            if (!FLAC__stream_decoder_process_single(m_decoder)) {
                 qWarning() << "SSFLAC: decoder_process_single returned false ("
                         << m_file.fileName() << ")";
-                break;
+                break; // abort
             }
         }
-        DEBUG_ASSERT(
-                m_decodeSampleBufferReadOffset <= m_decodeSampleBufferWriteOffset);
-        const SINT decodeBufferSamples = m_decodeSampleBufferWriteOffset
-                - m_decodeSampleBufferReadOffset;
-        const SINT decodeBufferFrames = samples2frames(
-                decodeBufferSamples);
+        DEBUG_ASSERT(0 <= m_decodeSampleBufferLength);
+        if (0 == m_decodeSampleBufferLength) {
+            break; // EOF
+        }
+
         const SINT framesToCopy =
-                math_min(decodeBufferFrames, numberOfFramesRemaining);
+                math_min(numberOfFramesRemaining,
+                        samples2frames(m_decodeSampleBufferLength));
         const SINT samplesToCopy = frames2samples(framesToCopy);
-        if (readStereoSamples && !isChannelCountStereo()) {
-            if (isChannelCountMono()) {
-                SampleUtil::copyMonoToDualMono(outBuffer,
-                        &m_decodeSampleBuffer[m_decodeSampleBufferReadOffset],
-                        framesToCopy);
+        DEBUG_ASSERT(samplesToCopy <= m_decodeSampleBufferLength);
+        if (outBuffer) {
+            if (readStereoSamples && !isChannelCountStereo()) {
+                if (isChannelCountMono()) {
+                    SampleUtil::copyMonoToDualMono(outBuffer,
+                            m_decodeSampleBuffer.data() + m_decodeSampleBufferOffset,
+                            framesToCopy);
+                } else {
+                    SampleUtil::copyMultiToStereo(outBuffer,
+                            m_decodeSampleBuffer.data() + m_decodeSampleBufferOffset,
+                            framesToCopy, getChannelCount());
+                }
+                outBuffer += framesToCopy * 2; // copied 2 samples per frame
             } else {
-                SampleUtil::copyMultiToStereo(outBuffer,
-                        &m_decodeSampleBuffer[m_decodeSampleBufferReadOffset],
-                        framesToCopy, getChannelCount());
+                SampleUtil::copy(outBuffer,
+                        m_decodeSampleBuffer.data() + m_decodeSampleBufferOffset,
+                        samplesToCopy);
+                outBuffer += samplesToCopy;
             }
-            outBuffer += framesToCopy * 2; // copied 2 samples per frame
-        } else {
-            SampleUtil::copy(outBuffer,
-                    &m_decodeSampleBuffer[m_decodeSampleBufferReadOffset],
-                    samplesToCopy);
-            outBuffer += samplesToCopy;
         }
-        m_decodeSampleBufferReadOffset += samplesToCopy;
+        m_decodeSampleBufferLength -= samplesToCopy;
+        m_decodeSampleBufferOffset += samplesToCopy;
         m_curFrameIndex += framesToCopy;
         numberOfFramesRemaining -= framesToCopy;
-        DEBUG_ASSERT(
-                m_decodeSampleBufferReadOffset <= m_decodeSampleBufferWriteOffset);
     }
 
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
@@ -277,10 +272,7 @@ FLAC__bool SoundSourceFLAC::flacEOF() {
 FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
         const FLAC__Frame* frame, const FLAC__int32* const buffer[]) {
     // decode buffer must be empty before decoding the next frame
-    DEBUG_ASSERT(m_decodeSampleBufferReadOffset >= m_decodeSampleBufferWriteOffset);
-    // reset decode buffer
-    m_decodeSampleBufferReadOffset = 0;
-    m_decodeSampleBufferWriteOffset = 0;
+    DEBUG_ASSERT(0 == m_decodeSampleBufferLength);
     if (getChannelCount() != frame->header.channels) {
         qWarning() << "Corrupt or unsupported FLAC file:"
                 << "Invalid number of channels in FLAC frame header"
@@ -301,12 +293,13 @@ FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
                 << frame->header.blocksize << ">" << maxBlocksize;
         return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
     }
+    m_decodeSampleBufferOffset = 0;
     switch (getChannelCount()) {
     case 1: {
         // optimized code for 1 channel (mono)
         DEBUG_ASSERT(1 <= frame->header.channels);
         for (unsigned i = 0; i < frame->header.blocksize; ++i) {
-            m_decodeSampleBuffer[m_decodeSampleBufferWriteOffset++] =
+            m_decodeSampleBuffer[m_decodeSampleBufferLength++] =
                     buffer[0][i] * m_sampleScaleFactor;
         }
         break;
@@ -315,9 +308,9 @@ FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
         // optimized code for 2 channels (stereo)
         DEBUG_ASSERT(2 <= frame->header.channels);
         for (unsigned i = 0; i < frame->header.blocksize; ++i) {
-            m_decodeSampleBuffer[m_decodeSampleBufferWriteOffset++] =
+            m_decodeSampleBuffer[m_decodeSampleBufferLength++] =
                     buffer[0][i] * m_sampleScaleFactor;
-            m_decodeSampleBuffer[m_decodeSampleBufferWriteOffset++] =
+            m_decodeSampleBuffer[m_decodeSampleBufferLength++] =
                     buffer[1][i] * m_sampleScaleFactor;
         }
         break;
@@ -327,13 +320,12 @@ FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
         DEBUG_ASSERT(getChannelCount() == frame->header.channels);
         for (unsigned i = 0; i < frame->header.blocksize; ++i) {
             for (unsigned j = 0; j < frame->header.channels; ++j) {
-                m_decodeSampleBuffer[m_decodeSampleBufferWriteOffset++] =
+                m_decodeSampleBuffer[m_decodeSampleBufferLength++] =
                         buffer[j][i] * m_sampleScaleFactor;
             }
         }
     }
     }
-    DEBUG_ASSERT(m_decodeSampleBufferReadOffset <= m_decodeSampleBufferWriteOffset);
     return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
 
@@ -399,8 +391,7 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
         m_maxBlocksize = metadata->data.stream_info.max_blocksize;
         m_minFramesize = metadata->data.stream_info.min_framesize;
         m_maxFramesize = metadata->data.stream_info.max_framesize;
-        m_decodeSampleBufferReadOffset = 0;
-        m_decodeSampleBufferWriteOffset = 0;
+        m_decodeSampleBufferLength = 0;
         const unsigned decodeSampleBufferSize =
                 m_maxBlocksize * getChannelCount();
         SampleBuffer(decodeSampleBufferSize).swap(m_decodeSampleBuffer);
