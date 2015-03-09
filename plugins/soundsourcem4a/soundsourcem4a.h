@@ -51,14 +51,14 @@ private:
 
     typedef std::vector<u_int8_t> InputBuffer;
     InputBuffer m_inputBuffer;
-    SINT m_inputBufferOffset;
     SINT m_inputBufferLength;
+    SINT m_inputBufferOffset;
 
     NeAACDecHandle m_hDecoder;
 
     SampleBuffer m_sampleBuffer;
-    int m_sampleBufferReadOffset;
-    int m_sampleBufferWriteOffset;
+    SINT m_sampleBufferLength;
+    SINT m_sampleBufferOffset;
 
     SINT m_curFrameIndex;
 };
