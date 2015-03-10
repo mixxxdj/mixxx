@@ -76,12 +76,13 @@ std::pair<CSAMPLE*, SINT> FifoSampleBuffer::growTail(SINT size) {
     return std::make_pair(resultData, resultSize);
 }
 
-SINT FifoSampleBuffer::shrinkTail(SINT size) {
+std::pair<const CSAMPLE*, SINT> FifoSampleBuffer::shrinkTail(SINT size) {
     DEBUG_ASSERT_CLASS_INVARIANT_FifoSampleBuffer();
     const SINT resultSize = math_min(size, getSize());
     m_writeOffset -= resultSize;
+    const CSAMPLE* const resultData = m_sampleBuffer.data() + m_writeOffset;
     DEBUG_ASSERT_CLASS_INVARIANT_FifoSampleBuffer();
-    return resultSize;
+    return std::make_pair(resultData, resultSize);
 }
 
 std::pair<const CSAMPLE*, SINT> FifoSampleBuffer::shrinkHead(SINT size) {
