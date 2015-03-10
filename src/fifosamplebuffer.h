@@ -3,7 +3,7 @@
 
 #include "samplebuffer.h"
 
-// A FIFO sample buffer with a fixed capacity, range checking,
+// A FIFO/LIFO sample buffer with a fixed capacity, range checking,
 // and double-buffering.
 //
 // Maximum performance is achieved when consuming all buffered
@@ -46,10 +46,12 @@ public:
     // long as no modifying member function is called!
     std::pair<CSAMPLE*, SINT> growTail(SINT size);
 
-    // Shrinks the buffer from the tail discarding the buffered samples.
+    // Shrinks the buffer from the tail for reading buffered samples.
     //
-    // Returns the actual number of buffered samples that have been discarded.
-    SINT shrinkTail(SINT size);
+    // Returns a pointer to the continuous memory region and the actual
+    // number of buffered samples that have been dropped. The pointer is
+    // valid for reading as long as no modifying member function is called!
+    std::pair<const CSAMPLE*, SINT> shrinkTail(SINT size);
 
     // Shrinks the buffer from the head for reading buffered samples.
     //
