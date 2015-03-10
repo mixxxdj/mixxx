@@ -9,7 +9,7 @@ class RubberBandStretcher;
 
 class ReadAheadManager;
 
-// Uses librubberband to scale audio.
+// Uses librubberband to scale audio.  This class is not thread safe.
 class EngineBufferScaleRubberBand : public EngineBufferScale {
     Q_OBJECT
   public:
@@ -27,8 +27,9 @@ class EngineBufferScaleRubberBand : public EngineBufferScale {
     // Flush buffer.
     void clear();
 
-  private:
+    // Reset RubberBand library with new samplerate.
     void initializeRubberBand(int iSampleRate);
+  private:
     void deinterleaveAndProcess(const CSAMPLE* pBuffer, size_t frames, bool flush);
     size_t retrieveAndDeinterleave(CSAMPLE* pBuffer, size_t frames);
 
