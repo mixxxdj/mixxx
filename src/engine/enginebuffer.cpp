@@ -105,6 +105,7 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
           m_bPlayAfterLoading(false),
           m_fRampValue(0.0),
           m_iRampState(ENGINE_RAMP_NONE),
+          m_dPrevSampleRate(44100.);
           m_pDitherBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
           m_iDitherBufferReadIndex(0),
           m_pCrossFadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
@@ -734,15 +735,27 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
 
     bool bCurBufferPaused = false;
     double rate = 0;
+    double sample_rate = m_pSampleRate->get();
 
     bool bTrackLoading = load_atomic(m_iTrackLoading) != 0;
     if (!bTrackLoading && m_pause.tryLock()) {
         ScopedTimer t("EngineBuffer::process_pauselock");
-        float sr = m_pSampleRate->get();
 
         double baserate = 0.0;
-        if (sr > 0) {
-            baserate = ((double)m_file_srate_old / sr);
+        if (sample_rate > 0) {
+            baserate = ((double)m_file_srate_old / sample_rate);
+        }
+
+        // If the sample rate has changed, force Rubberband to reset so that
+        // it doesn't reallocate when the user engages keylock during playback.
+        // We do this even if rubberband is not active.  If it is active, the
+        // regular call to setScaleParameters will trigger the reset.
+        if (sample_rate != m_dPrevSampleRate) {
+            if (m_pScaleRB != NULL && m_pScale != m_pScaleRB) {
+                double tempo = 1.0;
+                double pitch = 1.0;
+                m_pScaleRB->setScaleParameters(sample_rate, 1.0, &tempo, &pitch);
+            }
         }
 
         bool paused = m_playButton->get() == 0.0;
@@ -885,7 +898,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             // master samplerate), the deck speed, the pitch shift, and whether
             // the deck speed should affect the pitch.
 
-            m_pScale->setScaleParameters(m_pSampleRate->get(),
+            m_pScale->setScaleParameters(sample_rate,
                                          baserate,
                                          &speed,
                                          &pitchRatio);
@@ -1052,7 +1065,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
     if (m_iRampState == ENGINE_RAMP_UP ||
         m_iRampState == ENGINE_RAMP_DOWN) {
         // Ramp of 3.33 ms
-        ramp_inc = m_iRampState * 300 / m_pSampleRate->get();
+        ramp_inc = m_iRampState * 300 / sample_rate;
 
         for (int i=0; i < iBufferSize; i += 2) {
             if (bCurBufferPaused) {
@@ -1098,6 +1111,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
 
     m_bLastBufferPaused = bCurBufferPaused;
     m_iLastBufferSize = iBufferSize;
+    m_dPrevSampleRate = sample_rate;
 }
 
 void EngineBuffer::processSlip(int iBufferSize) {

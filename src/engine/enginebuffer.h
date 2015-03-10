@@ -370,6 +370,7 @@ class EngineBuffer : public EngineObject {
     float m_fRampValue;
     int m_iRampState;
     //int m_iRampIter;
+    double m_dPrevSampleRate;
 
     TrackPointer m_pCurrentTrack;
 #ifdef __SCALER_DEBUG__

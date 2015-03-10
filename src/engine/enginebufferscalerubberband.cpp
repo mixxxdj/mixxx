@@ -52,6 +52,11 @@ void EngineBufferScaleRubberBand::initializeRubberBand(int iSampleRate) {
         iSampleRate, 2,
         RubberBandStretcher::OptionProcessRealTime);
     m_pRubberBand->setMaxProcessSize(kRubberBandBlockSize);
+    // Setting the time ratio to a very high value will cause RubberBand
+    // to preallocate buffers large enough to (almost certainly)
+    // avoid memory reallocations during playback.
+    m_pRubberBand->setTimeRatio(2.0);
+    m_pRubberBand->setTimeRatio(1.0);
 }
 
 void EngineBufferScaleRubberBand::setScaleParameters(int iSampleRate,
