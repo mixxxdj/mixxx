@@ -21,8 +21,9 @@
 #include "steadypitch.h"
 #include "util/math.h"
 
-SteadyPitch::SteadyPitch(double threshold)
-    : m_dSteadyPitch(0.0),
+SteadyPitch::SteadyPitch(double threshold, bool assumeSteady)
+    : m_bAssumeSteady(assumeSteady),
+      m_dSteadyPitch(0.0),
       m_dOldSteadyPitch(1.0),       // last-known steady pitch value
       m_dSteadyPitchTime(0.0),      // last track location we had a steady pitch
       m_dLastSteadyDur(0.0),        // last known duration of steadiness
@@ -92,6 +93,12 @@ double SteadyPitch::check(double pitch, double time)
         return 0.0;
     }
     m_dLastTime = time;
+
+    // If it's been less than the window-size since we reset, return a value
+    // indicating that we're steady. This is for CDJs which are really accurate.
+    if (m_bAssumeSteady && fabs(time - m_dSteadyPitchTime) <= m_dSteadyPitch) {
+        return m_dSteadyPitch + 1;
+    }
 
     if (fabs(pitch - m_dSteadyPitch) < m_dPitchThreshold)
     {
