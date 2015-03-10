@@ -2,7 +2,8 @@
 #define MIXXX_SOUNDSOURCEM4A_H
 
 #include "sources/soundsourceplugin.h"
-#include "samplebuffer.h"
+
+#include "fifosamplebuffer.h"
 
 #ifdef __MP4V2__
 #include <mp4v2/mp4v2.h>
@@ -56,9 +57,7 @@ private:
 
     NeAACDecHandle m_hDecoder;
 
-    SampleBuffer m_sampleBuffer;
-    SINT m_sampleBufferLength;
-    SINT m_sampleBufferOffset;
+    FifoSampleBuffer m_sampleBuffer;
 
     SINT m_curFrameIndex;
 };
