@@ -3,7 +3,7 @@
 
 #include "sources/soundsource.h"
 
-#include "samplebuffer.h"
+#include "fifosamplebuffer.h"
 
 #include <FLAC/stream_decoder.h>
 
@@ -61,9 +61,7 @@ private:
 
     CSAMPLE m_sampleScaleFactor;
 
-    SampleBuffer m_decodeSampleBuffer;
-    SINT m_decodeSampleBufferLength;
-    SINT m_decodeSampleBufferOffset;
+    FifoSampleBuffer m_sampleBuffer;
 
     SINT m_curFrameIndex;
 };
