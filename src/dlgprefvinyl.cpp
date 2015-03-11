@@ -257,7 +257,7 @@ void DlgPrefVinyl::slotUpdate() {
     //set vinyl control gain
     double ratioGain = config->getValueString(ConfigKey(VINYL_PREF_KEY, "gain")).toDouble();
     double dbGain = ratio2db(ratioGain);
-    VinylGain->setValue((int)(dbGain + 0.5));
+    VinylGain->setValue(static_cast<int>(dbGain + 0.5));
     slotUpdateVinylGain();
 
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
@@ -376,7 +376,7 @@ void DlgPrefVinyl::slotVinylGainApply() {
     int dBGain = VinylGain->value();
     qDebug() << "in VinylGainSlotApply()" << "with gain:" << dBGain << "dB";
     // Update the config key...
-    double ratioGain = db2ratio((double)dBGain);
+    double ratioGain = db2ratio(static_cast<double>(dBGain));
     config->set(ConfigKey(VINYL_PREF_KEY, "gain"), ConfigValue(QString::number(ratioGain)));
 
     // Update the ControlObject...
