@@ -595,7 +595,7 @@
       <item>
        <widget class="QLabel" name="textLabel1_3">
         <property name="text">
-         <string>Turntable Preamp</string>
+         <string>Turntable input signal boost</string>
         </property>
         <property name="wordWrap">
          <bool>false</bool>
@@ -644,7 +644,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="QLabel" name="textLablePreampCurrent">
+         <widget class="QLabel" name="textLabelPreampCurrent">
           <property name="text">
            <string>TextLabel</string>
           </property>

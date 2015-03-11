@@ -188,7 +188,6 @@ void DlgPrefVinyl::slotResetToDefaults() {
     SignalQualityEnable->setChecked(true);
     VinylGain->setValue(0);
     slotUpdateVinylGain();
-    qDebug() << "reset";
 }
 
 void DlgPrefVinyl::slotUpdate() {
@@ -260,8 +259,6 @@ void DlgPrefVinyl::slotUpdate() {
     double dbGain = ratio2db(ratioGain);
     VinylGain->setValue((int)(dbGain + 0.5));
     slotUpdateVinylGain();
-
-    qDebug() << "reset2" << ratioGain << dbGain;
 
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
         m_signalWidgets[i]->setVinylActive(m_pVCManager->vinylInputConnected(i));
@@ -388,7 +385,7 @@ void DlgPrefVinyl::slotVinylGainApply() {
 
 void DlgPrefVinyl::slotUpdateVinylGain() {
     int value = VinylGain->value();
-    textLablePreampCurrent->setText(
+    textLabelPreampCurrent->setText(
             QString("%1 dB").arg(value));
 }
 
