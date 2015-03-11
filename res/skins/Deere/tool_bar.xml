@@ -73,7 +73,7 @@
           <Text>-LIBRARY</Text>
         </State>
         <Connection>
-          <ConfigKey persist="true">[Master],show_library</ConfigKey>
+          <ConfigKey persist="true">[Master],maximize_library</ConfigKey>
           <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
         </Connection>
       </PushButton>
