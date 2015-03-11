@@ -69,7 +69,7 @@
         <item>
          <widget class="QLabel" name="label_3">
           <property name="text">
-           <string>-26 LUFS</string>
+           <string>-30 LUFS</string>
           </property>
          </widget>
         </item>
@@ -109,7 +109,7 @@
         <item>
          <widget class="QLabel" name="label_4">
           <property name="text">
-           <string>-2 LUFS</string>
+           <string>-6 LUFS</string>
           </property>
          </widget>
         </item>
@@ -264,7 +264,7 @@
       <item row="0" column="0">
        <widget class="QLabel" name="label_8">
         <property name="text">
-         <string>The ReplayGain target loudness is around -14 LUFS (Loudness Units relative to Full Scale). You may increase it, if your tracks does not require the full dynamic headroom or reduce it if you experience that your tracks are clipping by default. A standard loudness for TV is -23 LUFS and for podcasting -16 LUFS.</string>
+         <string>The loudness of the ReplayGain reference signal is -18 LUFS (Loudness Units relative to Full Scale). You may increase it, if your tracks does not require the full dynamic headroom or reduce it if you experience that your tracks are clipping by default. The standard loudness for European TV is -23 LUFS and for podcasting it is -16 LUFS.</string>
         </property>
         <property name="scaledContents">
          <bool>true</bool>
