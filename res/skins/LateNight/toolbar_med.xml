@@ -116,11 +116,11 @@
                           <Text>BIG LIBRARY</Text>
                         </State>
                         <Connection>
-                          <ConfigKey persist="true">[Library],unshow_big</ConfigKey>
+                          <ConfigKey persist="true">[Master],maximize_library</ConfigKey>
                           <ButtonState>LeftButton</ButtonState>
                         </Connection>
                         <Connection>
-                          <ConfigKey persist="true">[Library],unshow_big</ConfigKey>
+                          <ConfigKey persist="true">[Master],maximize_library</ConfigKey>
                         </Connection>
                     </PushButton>
                 </Children>
