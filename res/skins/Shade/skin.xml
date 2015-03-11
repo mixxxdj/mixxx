@@ -242,8 +242,15 @@
 					</Children>
 				</WidgetGroup>
 			</Children>
-		</WidgetGroup>  	
-	
+      <Connection>
+        <ConfigKey persist="true">[Master],maximize_library</ConfigKey>
+        <BindProperty>visible</BindProperty>
+        <Transform>
+          <Not/>
+        </Transform>
+      </Connection>
+		</WidgetGroup>
+
 		<!--
 		############################################################################################
 		############################################################################################
@@ -282,9 +289,15 @@
 						<ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
 						<BindProperty>visible</BindProperty>
 					</Connection>
+          <Connection>
+            <ConfigKey persist="true">[Master],maximize_library</ConfigKey>
+            <BindProperty>visible</BindProperty>
+            <Transform>
+              <Not/>
+            </Transform>
+          </Connection>
 				</WidgetGroup>
-				
-				
+
 				<!-- EffectRack1 sub-widget -->
 				<WidgetGroup>
 					<Size>i,m</Size>
@@ -293,7 +306,7 @@
 					<Children>
   						<Template src="skin:effectunit.xml">
 							<SetVariable name="effectunitnum">1</SetVariable>
-						</Template>	
+						</Template>
 						<Template src="skin:effectunit.xml">
 							<SetVariable name="effectunitnum">2</SetVariable>
 						</Template>
@@ -302,6 +315,13 @@
 						<ConfigKey persist="true">[EffectRack1],show</ConfigKey>
 						<BindProperty>visible</BindProperty>
 					</Connection>
+          <Connection>
+            <ConfigKey persist="true">[Master],maximize_library</ConfigKey>
+            <BindProperty>visible</BindProperty>
+            <Transform>
+              <Not/>
+            </Transform>
+          </Connection>
 				</WidgetGroup>
 
 				<!--
