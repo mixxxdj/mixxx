@@ -36,7 +36,7 @@
          <string>Calculate ReplayGain normalization for tracks which are missing ReplayGain metadata.</string>
         </property>
         <property name="text">
-         <string>Enable ReplayGain Analysis</string>
+         <string>Enable ReplayGain 1.0 Analysis</string>
         </property>
        </widget>
       </item>
