@@ -93,7 +93,6 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
             this, SLOT(slotVinylGainApply()));
     connect(VinylGain, SIGNAL(valueChanged(int)),
             this, SLOT(slotUpdateVinylGain()));
-    //connect(ComboBoxDeviceDeck1, SIGNAL(currentIndexChanged()), this, SLOT(()));
 
     // No real point making this a mapper since the combos aren't indexed.
     connect(ComboBoxVinylType1, SIGNAL(currentIndexChanged(QString)),
@@ -155,7 +154,7 @@ void DlgPrefVinyl::slotShow() {
         }
     }
 
-    //(Re)Initialize the signal quality indicators
+    // (Re)Initialize the signal quality indicators
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
         m_signalWidgets[i]->resetWidget();
     }
@@ -254,9 +253,9 @@ void DlgPrefVinyl::slotUpdate() {
     SignalQualityEnable->setChecked(
             (bool)config->getValueString(ConfigKey(VINYL_PREF_KEY, "show_signal_quality")).toInt());
 
-    //set vinyl control gain
-    double ratioGain = config->getValueString(ConfigKey(VINYL_PREF_KEY, "gain")).toDouble();
-    double dbGain = ratio2db(ratioGain);
+    // set vinyl control gain
+    const double ratioGain = config->getValueString(ConfigKey(VINYL_PREF_KEY, "gain")).toDouble();
+    const double dbGain = ratio2db(ratioGain);
     VinylGain->setValue(static_cast<int>(dbGain + 0.5));
     slotUpdateVinylGain();
 
@@ -305,7 +304,7 @@ void DlgPrefVinyl::slotApply()
     verifyAndSaveLeadInTime(LeadinTime3, "[Channel3]", ComboBoxVinylType3->currentText());
     verifyAndSaveLeadInTime(LeadinTime4, "[Channel4]", ComboBoxVinylType4->currentText());
 
-    //Apply updates for everything else...
+    // Apply updates for everything else...
     VinylTypeSlotApply();
     slotVinylGainApply();
 
@@ -335,8 +334,8 @@ void DlgPrefVinyl::VinylTypeSlotApply()
     config->set(ConfigKey("[Channel4]","vinylcontrol_speed_type"),
                 ConfigValue(ComboBoxVinylSpeed4->currentText()));
 
-    //Save the vinylcontrol_speed_type in ControlObjects as well so it can be retrieved quickly
-    //on the fly. (eg. WSpinny needs to know how fast to spin)
+    // Save the vinylcontrol_speed_type in ControlObjects as well so it can be retrieved quickly
+    // on the fly. (eg. WSpinny needs to know how fast to spin)
 
     switch (m_COSpeeds.length()) {
     case 4:
@@ -373,10 +372,10 @@ void DlgPrefVinyl::VinylTypeSlotApply()
 }
 
 void DlgPrefVinyl::slotVinylGainApply() {
-    int dBGain = VinylGain->value();
+    const int dBGain = VinylGain->value();
     qDebug() << "in VinylGainSlotApply()" << "with gain:" << dBGain << "dB";
     // Update the config key...
-    double ratioGain = db2ratio(static_cast<double>(dBGain));
+    const double ratioGain = db2ratio(static_cast<double>(dBGain));
     config->set(ConfigKey(VINYL_PREF_KEY, "gain"), ConfigValue(QString::number(ratioGain)));
 
     // Update the ControlObject...
