@@ -197,7 +197,7 @@ Result SoundSourceM4A::tryOpen(SINT channelCountHint) {
     // Resize temporary buffer for decoded sample data
     const SINT sampleBufferCapacity =
             frames2samples(kFramesPerSampleBlock);
-    FifoSampleBuffer(sampleBufferCapacity).swap(m_sampleBuffer);
+    CircularSampleBuffer(sampleBufferCapacity).swap(m_sampleBuffer);
 
     // Invalidate current position to enforce the following
     // seek operation

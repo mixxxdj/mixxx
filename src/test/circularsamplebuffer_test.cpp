@@ -1,14 +1,13 @@
+#include <circularsamplebuffer.h>
 #include "test/mixxxtest.h"
-
-#include "fifosamplebuffer.h"
 
 #include <gmock/gmock.h>
 
 #include <QtDebug>
 
-class FifoSampleBufferTest: public MixxxTest {
+class CircularSampleBufferTest: public MixxxTest {
 public:
-    FifoSampleBufferTest()
+    CircularSampleBufferTest()
         : m_writeValue(CSAMPLE_ZERO),
           m_readValue(CSAMPLE_ZERO) {
     }
@@ -16,7 +15,7 @@ public:
 protected:
     static const SINT kCapacity;
 
-    SINT writeTail(FifoSampleBuffer* pSampleBuffer, SINT size) {
+    SINT writeTail(CircularSampleBuffer* pSampleBuffer, SINT size) {
         const std::pair<CSAMPLE*, SINT> writeBuffer(
                 pSampleBuffer->growTail(size));
         for (SINT i = 0; i < writeBuffer.second; ++i) {
@@ -26,7 +25,7 @@ protected:
         return writeBuffer.second;
     }
 
-    SINT readHeadAndVerify(FifoSampleBuffer* pSampleBuffer, SINT size) {
+    SINT readHeadAndVerify(CircularSampleBuffer* pSampleBuffer, SINT size) {
         const std::pair<const CSAMPLE*, SINT>readBuffer(
                 pSampleBuffer->shrinkHead(size));
         for (SINT i = 0; i < readBuffer.second; ++i) {
@@ -36,7 +35,7 @@ protected:
         return readBuffer.second;
     }
 
-    SINT readTailAndVerify(FifoSampleBuffer* pSampleBuffer, SINT size) {
+    SINT readTailAndVerify(CircularSampleBuffer* pSampleBuffer, SINT size) {
         const std::pair<const CSAMPLE*, SINT>readBuffer(
                 pSampleBuffer->shrinkTail(size));
         for (SINT i = readBuffer.second; i-- > 0; ) {
@@ -46,7 +45,7 @@ protected:
         return readBuffer.second;
     }
 
-    void reset(FifoSampleBuffer* pSampleBuffer) {
+    void reset(CircularSampleBuffer* pSampleBuffer) {
         pSampleBuffer->reset();
         m_writeValue = CSAMPLE_ZERO;
         m_readValue = CSAMPLE_ZERO;
@@ -57,10 +56,10 @@ private:
     CSAMPLE m_readValue;
 };
 
-const SINT FifoSampleBufferTest::kCapacity = 100;
+const SINT CircularSampleBufferTest::kCapacity = 100;
 
-TEST_F(FifoSampleBufferTest, emptyWithoutCapacity) {
-    FifoSampleBuffer sampleBuffer;
+TEST_F(CircularSampleBufferTest, emptyWithoutCapacity) {
+    CircularSampleBuffer sampleBuffer;
     EXPECT_TRUE(sampleBuffer.isEmpty());
 
     sampleBuffer.trim();
@@ -82,8 +81,8 @@ TEST_F(FifoSampleBufferTest, emptyWithoutCapacity) {
     EXPECT_TRUE(sampleBuffer.isEmpty());
 }
 
-TEST_F(FifoSampleBufferTest, emptyWithCapacity) {
-    FifoSampleBuffer sampleBuffer(kCapacity);
+TEST_F(CircularSampleBufferTest, emptyWithCapacity) {
+    CircularSampleBuffer sampleBuffer(kCapacity);
     EXPECT_TRUE(sampleBuffer.isEmpty());
 
     sampleBuffer.trim();
@@ -93,29 +92,40 @@ TEST_F(FifoSampleBufferTest, emptyWithCapacity) {
     EXPECT_TRUE(sampleBuffer.isEmpty());
 }
 
-TEST_F(FifoSampleBufferTest, readWriteTrim) {
-    FifoSampleBuffer sampleBuffer(kCapacity);
+TEST_F(CircularSampleBufferTest, readWriteTrim) {
+    CircularSampleBuffer sampleBuffer(kCapacity);
 
     SINT writeCount1 = writeTail(&sampleBuffer, kCapacity + 10);
     EXPECT_EQ(writeCount1, kCapacity); // buffer is full
     EXPECT_FALSE(sampleBuffer.isEmpty());
+    EXPECT_EQ(sampleBuffer.getTailCapacity(), 0);
 
     SINT readCount1 = readHeadAndVerify(&sampleBuffer, kCapacity - 10);
     EXPECT_EQ(readCount1, kCapacity - 10);
     EXPECT_FALSE(sampleBuffer.isEmpty());
+    EXPECT_EQ(sampleBuffer.getTailCapacity(), 0);
 
     SINT writeCount2 = writeTail(&sampleBuffer, kCapacity);
-    EXPECT_EQ(writeCount2, readCount1); // buffer has been refilled
+    EXPECT_EQ(writeCount2, 0); // no tail capacity left
+    EXPECT_FALSE(sampleBuffer.isEmpty());
+
+    sampleBuffer.trim();
+    EXPECT_EQ(sampleBuffer.getTailCapacity(), readCount1);
+
+    SINT writeCount3 = writeTail(&sampleBuffer, kCapacity);
+    EXPECT_EQ(writeCount3, readCount1); // buffer has been refilled
     EXPECT_FALSE(sampleBuffer.isEmpty());
 
     SINT readCount2 = readHeadAndVerify(&sampleBuffer, kCapacity - 10);
     EXPECT_EQ(readCount2, kCapacity - 10);
     EXPECT_FALSE(sampleBuffer.isEmpty());
+    EXPECT_EQ(sampleBuffer.getTailCapacity(), 0);
 
     sampleBuffer.trim();
+    EXPECT_EQ(sampleBuffer.getTailCapacity(), readCount2);
 
-    SINT writeCount3 = writeTail(&sampleBuffer, kCapacity);
-    EXPECT_EQ(writeCount3, readCount2); // buffer has been refilled
+    SINT writeCount4 = writeTail(&sampleBuffer, kCapacity);
+    EXPECT_EQ(writeCount4, readCount2); // buffer has been refilled
     EXPECT_FALSE(sampleBuffer.isEmpty());
 
     SINT readCount3 = readHeadAndVerify(&sampleBuffer, kCapacity + 10);
@@ -123,8 +133,8 @@ TEST_F(FifoSampleBufferTest, readWriteTrim) {
     EXPECT_TRUE(sampleBuffer.isEmpty());
 }
 
-TEST_F(FifoSampleBufferTest, shrink) {
-    FifoSampleBuffer sampleBuffer(kCapacity);
+TEST_F(CircularSampleBufferTest, shrink) {
+    CircularSampleBuffer sampleBuffer(kCapacity);
 
     SINT writeCount1 = writeTail(&sampleBuffer, kCapacity - 10);
     EXPECT_EQ(writeCount1, kCapacity - 10);
@@ -149,8 +159,8 @@ TEST_F(FifoSampleBufferTest, shrink) {
     EXPECT_TRUE(sampleBuffer.isEmpty());
 }
 
-TEST_F(FifoSampleBufferTest, reset) {
-    FifoSampleBuffer sampleBuffer(kCapacity);
+TEST_F(CircularSampleBufferTest, reset) {
+    CircularSampleBuffer sampleBuffer(kCapacity);
 
     SINT writeCount = writeTail(&sampleBuffer, 10);
     EXPECT_EQ(writeCount, 10);
