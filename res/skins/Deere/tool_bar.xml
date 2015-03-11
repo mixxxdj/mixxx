@@ -61,7 +61,7 @@
       </PushButton>
 
       <PushButton>
-        <TooltipId>toggle_expanded_library</TooltipId>
+        <TooltipId>maximize_library</TooltipId>
         <Size>40f,20f</Size>
         <NumberStates>2</NumberStates>
         <State>

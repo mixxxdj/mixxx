@@ -82,7 +82,7 @@
         <Children>
             <WidgetStack currentpage="[Library],show_big_current" persist="true">
                 <Children>
-                    <WidgetGroup trigger="[Library],unshow_big">
+                    <WidgetGroup trigger="[Master],maximize_library">
                         <Layout>horizontal</Layout>
                         <SizePolicy>i,max</SizePolicy>
                         <!-- <MinimumSize>1280,525</MinimumSize>-->
