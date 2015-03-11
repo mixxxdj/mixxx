@@ -595,7 +595,7 @@
       <item>
        <widget class="QLabel" name="textLabel1_3">
         <property name="text">
-         <string>Turntable input signal boost</string>
+         <string>Turntable Input Signal Boost</string>
         </property>
         <property name="wordWrap">
          <bool>false</bool>
