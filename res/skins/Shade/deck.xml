@@ -1,12 +1,12 @@
 <Template>
 		<WidgetGroup>
-			<Size>369,255</Size>
+			<Size>369,198</Size>
 			<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 			<Children>
 				<!-- if we dont put all this in an extra child widget, the <NumberRate> will somehow
 				break the parent widgetgroup dimensions-->
 				<WidgetGroup>
-					<Size>369,250</Size>
+					<Size>369,198</Size>
 					<Pos>3,2</Pos>
 					<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; } </Style>
 					<Children>
