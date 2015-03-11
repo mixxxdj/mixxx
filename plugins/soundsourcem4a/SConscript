@@ -16,7 +16,7 @@ m4a_sources = [
     "sources/soundsourceplugin.cpp",
     "sources/audiosource.cpp",
     "samplebuffer.cpp",
-    "fifosamplebuffer.cpp",
+    "circularsamplebuffer.cpp",
     "sampleutil.cpp",
     "metadata/trackmetadata.cpp",
     "metadata/trackmetadatataglib.cpp"

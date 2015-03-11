@@ -50,7 +50,7 @@ namespace
         // Convert floating-point to integer
         SampleUtil::convertFloat32ToS16(
                 &fingerprintSamples[0],
-                &sampleBuffer[0],
+                sampleBuffer.data(),
                 fingerprintSamples.size());
 
         qDebug("reading file took: %d ms" , timerReadingFile.elapsed());

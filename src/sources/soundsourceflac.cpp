@@ -713,7 +713,7 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
         m_maxFramesize = metadata->data.stream_info.max_framesize;
         const SINT sampleBufferCapacity =
                 m_maxBlocksize * getChannelCount();
-        FifoSampleBuffer(sampleBufferCapacity).swap(m_sampleBuffer);
+        CircularSampleBuffer(sampleBufferCapacity).swap(m_sampleBuffer);
         break;
     }
     default:
