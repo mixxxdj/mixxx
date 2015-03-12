@@ -200,7 +200,7 @@
 					<Children>
             		    <WidgetGroup>
 			                <Pos>1,6</Pos>
-			                <Size>375,250</Size>
+			                <Size>375,255</Size>
 			                <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 			                <BackPath>style/style_bg_deck.png</BackPath>
 			                <Children>
