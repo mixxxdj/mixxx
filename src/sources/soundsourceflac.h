@@ -3,10 +3,11 @@
 
 #include "sources/soundsource.h"
 
+#include "circularsamplebuffer.h"
+
 #include <FLAC/stream_decoder.h>
 
 #include <QFile>
-#include "../circularsamplebuffer.h"
 
 namespace Mixxx {
 
@@ -60,7 +61,7 @@ private:
 
     CSAMPLE m_sampleScaleFactor;
 
-    CircularSampleBuffer m_sampleBuffer;
+    SingularSampleBuffer m_sampleBuffer;
 
     SINT m_curFrameIndex;
 };

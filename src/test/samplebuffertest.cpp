@@ -1,4 +1,4 @@
-#include <circularsamplebuffer.h>
+#include "circularsamplebuffer.h"
 #include "test/mixxxtest.h"
 
 #include <gmock/gmock.h>

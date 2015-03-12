@@ -1,9 +1,9 @@
 #ifndef MIXXX_SOUNDSOURCEM4A_H
 #define MIXXX_SOUNDSOURCEM4A_H
 
-#include "../../src/circularsamplebuffer.h"
 #include "sources/soundsourceplugin.h"
 
+#include "singularsamplebuffer.h"
 
 #ifdef __MP4V2__
 #include <mp4v2/mp4v2.h>
@@ -57,7 +57,7 @@ private:
 
     NeAACDecHandle m_hDecoder;
 
-    CircularSampleBuffer m_sampleBuffer;
+    SingularSampleBuffer m_sampleBuffer;
 
     SINT m_curFrameIndex;
 };
