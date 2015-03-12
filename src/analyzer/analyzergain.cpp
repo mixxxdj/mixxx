@@ -30,11 +30,8 @@ bool AnalyzerGain::initialize(TrackPointer tio, int sampleRate, int totalSamples
 }
 
 bool AnalyzerGain::loadStored(TrackPointer tio) const {
-    // WARNING: Do not fix the "analyser" spelling here since user config files
-    // contain these strings.
-    bool bAnalyzerEnabled = (bool)m_pConfigReplayGain->getValueString(
-        ConfigKey("[ReplayGain]","ReplayGainAnalyserEnabled")).toInt();
-    if (tio->getReplayGain().hasRatio() || !bAnalyzerEnabled) {
+    bool bAnalyzerEnabled = (bool)m_pConfigReplayGain->getValueString(ConfigKey("[ReplayGain]","ReplayGainAnalyserEnabled")).toInt();
+    if (/*tio->getReplayGain().hasRatio() ||*/ !bAnalyzerEnabled) {
         return true;
     }
     return false;
@@ -71,16 +68,16 @@ void AnalyzerGain::finalize(TrackPointer tio) {
     if(!m_bStepControl)
         return;
 
-    float ReplayGainOutput = m_pReplayGain->end();
-    if (ReplayGainOutput == GAIN_NOT_ENOUGH_SAMPLES) {
-        qDebug() << "ReplayGain analysis failed:" << ReplayGainOutput;
+    float fReplayGainOutput = m_pReplayGain->end();
+    if (fReplayGainOutput == GAIN_NOT_ENOUGH_SAMPLES) {
+        qDebug() << "ReplayGain analysis failed:" << fReplayGainOutput;
         m_bStepControl = false;
         return;
     }
 
     Mixxx::ReplayGain replayGain(tio->getReplayGain());
-    replayGain.setRatio(db2ratio(ReplayGainOutput));
+    replayGain.setRatio(db2ratio(fReplayGainOutput));
     tio->setReplayGain(replayGain);
-
+    qDebug() << "ReplayGain1 result is" << fReplayGainOutput << "dB for" << tio->getLocation();
     m_bStepControl=false;
 }
