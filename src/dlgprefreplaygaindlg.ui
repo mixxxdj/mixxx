@@ -159,7 +159,7 @@
       <item row="1" column="0">
        <widget class="QLabel" name="label_boost">
         <property name="toolTip">
-         <string>After ReplayGain is applied, adjust the inital boost for a target loudness in LUFS (Loudness Units relative to Full Scale).</string>
+         <string>"For tracks with ReplayGain, adjust the target loudness to this LUFS value (Loudness Units relative to Full Scale)."</string>
         </property>
         <property name="text">
          <string>Target loudness</string>
@@ -254,7 +254,7 @@
       <item row="4" column="0">
        <widget class="QLabel" name="label_26">
         <property name="text">
-         <string>If an unanalyzed track is playing, to avoid an abrupt volume change Mixxx won't apply a newly calculated ReplayGain value.</string>
+         <string>When an unanalyzed track is playing, Mixxx will avoid an abrupt volume change by not applying a newly calculated ReplayGain value.</string>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
@@ -264,7 +264,7 @@
       <item row="0" column="0">
        <widget class="QLabel" name="label_8">
         <property name="text">
-         <string>The loudness of the ReplayGain reference signal is -18 LUFS (Loudness Units relative to Full Scale). You may increase it, if your tracks does not require the full dynamic headroom or reduce it if you experience that your tracks are clipping by default. The standard loudness for European TV is -23 LUFS and for podcasting it is -16 LUFS.</string>
+         <string>ReplayGain targets a reference loudness of -18 LUFS (Loudness Units relative to Full Scale). You may increase it if you find Mixxx is too quiet or reduce it if you find that your tracks are clipping. For podcasting a loudness of -16 LUFS is recomended.</string>
         </property>
         <property name="scaledContents">
          <bool>true</bool>
