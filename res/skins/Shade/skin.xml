@@ -243,7 +243,7 @@
 				</WidgetGroup>
 			</Children>
       <Connection>
-        <ConfigKey persist="true">[Master],maximize_library</ConfigKey>
+        <ConfigKey>[Master],maximize_library</ConfigKey>
         <BindProperty>visible</BindProperty>
         <Transform>
           <Not/>
@@ -290,7 +290,7 @@
 						<BindProperty>visible</BindProperty>
 					</Connection>
           <Connection>
-            <ConfigKey persist="true">[Master],maximize_library</ConfigKey>
+            <ConfigKey>[Master],maximize_library</ConfigKey>
             <BindProperty>visible</BindProperty>
             <Transform>
               <Not/>
@@ -316,7 +316,7 @@
 						<BindProperty>visible</BindProperty>
 					</Connection>
           <Connection>
-            <ConfigKey persist="true">[Master],maximize_library</ConfigKey>
+            <ConfigKey>[Master],maximize_library</ConfigKey>
             <BindProperty>visible</BindProperty>
             <Transform>
               <Not/>
