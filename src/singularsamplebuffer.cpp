@@ -1,5 +1,14 @@
 #include "singularsamplebuffer.h"
 
+#include "sampleutil.h"
+
+#define DEBUG_ASSERT_CLASS_INVARIANT_SingularSampleBuffer \
+    DEBUG_ASSERT(0 <= m_headOffset); \
+    DEBUG_ASSERT(m_headOffset <= m_tailOffset); \
+    DEBUG_ASSERT(m_tailOffset <= m_primaryBuffer.size()); \
+    DEBUG_ASSERT(!isEmpty() || (0 == m_headOffset)); \
+    DEBUG_ASSERT(!isEmpty() || (0 == m_tailOffset))
+
 SingularSampleBuffer::SingularSampleBuffer()
         : m_headOffset(0),
           m_tailOffset(0) {
@@ -31,6 +40,35 @@ void SingularSampleBuffer::resetCapacity(SINT capacity) {
     reset();
 
     DEBUG_ASSERT_CLASS_INVARIANT_SingularSampleBuffer;
+}
+
+void SingularSampleBuffer::swapBuffers(SampleBuffer& secondaryBuffer) {
+    DEBUG_ASSERT_CLASS_INVARIANT_SingularSampleBuffer;
+    DEBUG_ASSERT(m_primaryBuffer.size() == secondaryBuffer.size());
+
+    // SampleUtil::copy() requires that the source and destination
+    // memory regions are disjunct. Double-buffering is necessary
+    // to satisfy this precondition.
+    SampleUtil::copy(
+            secondaryBuffer.data(),
+            m_primaryBuffer.data() + m_headOffset,
+            getSize());
+    m_primaryBuffer.swap(secondaryBuffer);
+    // shift offsets
+    m_tailOffset -= m_headOffset;
+    m_headOffset = 0;
+
+    DEBUG_ASSERT_CLASS_INVARIANT_SingularSampleBuffer;
+}
+
+void SingularSampleBuffer::trim(SampleBuffer& secondaryBuffer) {
+    if (0 < m_headOffset) {
+        if (isEmpty()) {
+            reset();
+        } else {
+            swapBuffers(secondaryBuffer);
+        }
+    }
 }
 
 std::pair<CSAMPLE*, SINT> SingularSampleBuffer::growTail(SINT size) {
