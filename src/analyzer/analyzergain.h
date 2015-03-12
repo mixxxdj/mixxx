@@ -15,7 +15,7 @@ class ReplayGain;
 
 class AnalyzerGain : public Analyzer {
   public:
-    AnalyzerGain(UserSettingsPointer _config);
+    AnalyzerGain(UserSettingsPointer config);
     virtual ~AnalyzerGain();
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
