@@ -5,6 +5,7 @@
 #include "trackinfoobject.h"
 #include "util/math.h"
 #include "util/sample.h"
+#include "util/timer.h"
 
 AnalyzerGain::AnalyzerGain(UserSettingsPointer config) {
     m_pConfigReplayGain = config;
@@ -43,8 +44,10 @@ void AnalyzerGain::cleanup(TrackPointer tio) {
 }
 
 void AnalyzerGain::process(const CSAMPLE *pIn, const int iLen) {
-    if(!m_bStepControl)
+    if (!m_bStepControl) {
         return;
+    }
+    ScopedTimer t("AnalyzerGain::process()");
 
     int halfLength = static_cast<int>(iLen / 2);
     if (halfLength > m_iBufferSize) {
