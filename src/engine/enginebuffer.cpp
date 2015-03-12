@@ -744,6 +744,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         if (m_pScaleRB != NULL) {
             m_pScaleRB->initializeRubberBand(sample_rate);
         }
+        m_iSampleRate = sample_rate;
     }
 
     bool bTrackLoading = load_atomic(m_iTrackLoading) != 0;
