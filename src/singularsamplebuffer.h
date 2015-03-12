@@ -72,16 +72,14 @@ public:
     std::pair<const CSAMPLE*, SINT> shrinkHead(SINT size);
 
 protected:
+    void trim(SampleBuffer& secondaryBuffer);
+
+private:
+    void swapBuffers(SampleBuffer& secondaryBuffer);
+
     SampleBuffer m_primaryBuffer;
     SINT m_headOffset;
     SINT m_tailOffset;
 };
-
-#define DEBUG_ASSERT_CLASS_INVARIANT_SingularSampleBuffer \
-    DEBUG_ASSERT(0 <= m_headOffset); \
-    DEBUG_ASSERT(m_headOffset <= m_tailOffset); \
-    DEBUG_ASSERT(m_tailOffset <= m_primaryBuffer.size()); \
-    DEBUG_ASSERT(!isEmpty() || (0 == m_headOffset)); \
-    DEBUG_ASSERT(!isEmpty() || (0 == m_tailOffset))
 
 #endif // SINGULARSAMPLEBUFFER_H

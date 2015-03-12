@@ -14,10 +14,8 @@
 // This class is not thread-safe and not intended to be used from multiple
 // threads!
 class CircularSampleBuffer: public SingularSampleBuffer {
-    Q_DISABLE_COPY(CircularSampleBuffer);
-
 public:
-    CircularSampleBuffer();
+    CircularSampleBuffer() {}
     explicit CircularSampleBuffer(SINT capacity);
 
     void resetCapacity(SINT capacity) /*override*/;
@@ -26,16 +24,12 @@ public:
     //
     // This will increase the free capacity at the tail returned by
     // getTailCapacity() to the maximum amount getCapacity() - getSize().
-    void trim();
+    void trim() {
+        SingularSampleBuffer::trim(m_secondaryBuffer);
+    }
 
 private:
-    void swapBuffers();
-
     SampleBuffer m_secondaryBuffer;
 };
-
-#define DEBUG_ASSERT_CLASS_INVARIANT_CircularSampleBuffer \
-    DEBUG_ASSERT_CLASS_INVARIANT_SingularSampleBuffer; \
-    DEBUG_ASSERT(m_primaryBuffer.size() == m_secondaryBuffer.size()); \
 
 #endif // CIRCULARSAMPLEBUFFER_H
