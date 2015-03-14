@@ -539,6 +539,27 @@
   color: #09B2AE;
 }
 
+#RateTextColor1, #RateTextColor2 {
+  qproperty-alignment: 'AlignCenter';
+  font: bold 12px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  background-color: transparent;
+  text-align: center;
+  padding: 0px;
+  margin: 0px;
+  color: #eece33;
+}
+
+#RateTextColor3, #RateTextColor4 {
+  qproperty-alignment: 'AlignCenter';
+  font: bold 12px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  background-color: transparent;
+  text-align: center;
+  padding: 0px;
+  margin: 0px;
+  color: #09B2AE;
+}
+
+
 #CrossFadeContainer {
  qproperty-layoutAlignment: 'AlignCenter';
  background-color: #1e1e1e;

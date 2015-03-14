@@ -57,6 +57,8 @@ class EngineBufferScale : public QObject {
     //
     // If parameter settings are outside of acceptable limits, each setting will
     // be set to the value it was clamped to.
+    // TODO: move samplerate changes to a separate function since that's often
+    // an unrelated change and doesn't happen often.
     virtual void setScaleParameters(int iSampleRate,
                                     double base_rate,
                                     double* pTempoRatio,

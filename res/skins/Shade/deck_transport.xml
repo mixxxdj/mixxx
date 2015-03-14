@@ -1,8 +1,9 @@
 <Template>
 	<!-- Playback control sub-widget -->
 	<WidgetGroup>
-		<Pos>86,204</Pos>
+		<Pos>88,205</Pos>
 		<Size>277,43</Size>
+		<SizePolicy>f,f</SizePolicy>
 		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 		<Children>
 			<!--

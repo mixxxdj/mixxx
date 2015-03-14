@@ -139,41 +139,52 @@
 			<Layout>horizontal</Layout>
   			<Children>
   				<WidgetGroup>
-  					<Size>378,285</Size>
+  					<Size>378,265</Size>
   					<SizePolicy>f,f</SizePolicy>
 					<Children>
-  						<Template src="skin:deck.xml">
-							<SetVariable name="channum">1</SetVariable>
-						</Template>	
-                		<WidgetGroup>
-                			<Pos>6,206</Pos>
-			                <Size>372,50</Size>
-                            <SizePolicy>f,f</SizePolicy>
-					        <Children>
-						        <Template src="skin:microphone.xml">
-							        <SetVariable name="micnum"></SetVariable>
+		                <WidgetGroup>
+			                <Pos>1,6</Pos>
+                            <Size>375,255</Size>
+			                <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+			                <BackPath>style/style_bg_deck.png</BackPath>
+			                <Children>
+          						<Template src="skin:deck.xml">
+							        <SetVariable name="channum">1</SetVariable>
+						        </Template>	
+         						<Template src="skin:deck_transport.xml">
+							        <SetVariable name="channum">1</SetVariable>
 						        </Template>	
                         		<WidgetGroup>
-			                        <Pos>100,0</Pos>
-			                        <Size>93,50</Size>
-			                        <Children>
-						            <Template src="skin:microphone.xml">
-						                <SetVariable name="micnum">2</SetVariable>
-						            </Template>	
+                        			<Pos>5,200</Pos>
+			                        <Size>372,50</Size>
+                                    <SizePolicy>f,f</SizePolicy>
+					                <Children>
+						                <Template src="skin:microphone.xml">
+							                <SetVariable name="micnum"></SetVariable>
+						                </Template>	
+                                		<WidgetGroup>
+			                                <Pos>100,0</Pos>
+			                                <Size>93,50</Size>
+			                                <Children>
+						                    <Template src="skin:microphone.xml">
+						                        <SetVariable name="micnum">2</SetVariable>
+						                    </Template>	
+                            				</Children>
+		                                    <Connection>
+                                                <ConfigKey>[Microphone2],enabled</ConfigKey>
+                                                <BindProperty>visible</BindProperty>
+                                            </Connection>
+                                        </WidgetGroup>
+						                <Template src="skin:ducking.xml">
+						                </Template>
                     				</Children>
-		                            <Connection>
-                                        <ConfigKey>[Microphone2],enabled</ConfigKey>
-                                        <BindProperty>visible</BindProperty>
-                                    </Connection>
-                                </WidgetGroup>
-						        <Template src="skin:ducking.xml">
-						        </Template>
-            				</Children>
-			                <Connection>
-				                <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
-				                <BindProperty>visible</BindProperty>
-			                </Connection>
-		        		</WidgetGroup>	
+			                        <Connection>
+				                        <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
+				                        <BindProperty>visible</BindProperty>
+			                        </Connection>
+		                		</WidgetGroup>
+					        </Children>
+				        </WidgetGroup>		
 					</Children>
 				</WidgetGroup>	
 				<WidgetGroup>
@@ -185,37 +196,49 @@
 				</WidgetGroup>
 				<WidgetGroup>
   					<Size>378,265</Size>
+  					<SizePolicy>f,f</SizePolicy>
 					<Children>
-						<Template src="skin:deck.xml">
-							<SetVariable name="channum">2</SetVariable>
-						</Template>	
-                		<WidgetGroup>
-                			<Pos>6,206</Pos>
-			                <Size>372,50</Size>
-                            <SizePolicy>f,f</SizePolicy>
-					        <Children>
-					            <Template src="skin:auxiliary.xml">
-					                <SetVariable name="auxnum">1</SetVariable>
+            		    <WidgetGroup>
+			                <Pos>1,6</Pos>
+			                <Size>375,255</Size>
+			                <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+			                <BackPath>style/style_bg_deck.png</BackPath>
+			                <Children>
+					            <Template src="skin:deck.xml">
+						            <SetVariable name="channum">2</SetVariable>
+					            </Template>	
+					            <Template src="skin:deck_transport.xml">
+						            <SetVariable name="channum">2</SetVariable>
 					            </Template>	
                         		<WidgetGroup>
-			                        <Pos>109,0</Pos>
-			                        <Size>108,50</Size>
-			                        <Children>
-						            <Template src="skin:auxiliary.xml">
-						                <SetVariable name="auxnum">2</SetVariable>
-						            </Template>	
+                        			<Pos>5,200</Pos>
+		                            <Size>372,50</Size>
+                                    <SizePolicy>f,f</SizePolicy>
+				                    <Children>
+				                        <Template src="skin:auxiliary.xml">
+				                            <SetVariable name="auxnum">1</SetVariable>
+				                        </Template>	
+                                		<WidgetGroup>
+		                                    <Pos>109,0</Pos>
+		                                    <Size>108,50</Size>
+		                                    <Children>
+					                        <Template src="skin:auxiliary.xml">
+					                            <SetVariable name="auxnum">2</SetVariable>
+					                        </Template>	
+                            				</Children>
+	                                        <Connection>
+                                                <ConfigKey>[Auxiliary2],enabled</ConfigKey>
+                                                <BindProperty>visible</BindProperty>
+                                            </Connection>
+                                        </WidgetGroup>
                     				</Children>
 		                            <Connection>
-                                        <ConfigKey>[Auxiliary2],enabled</ConfigKey>
-                                        <BindProperty>visible</BindProperty>
-                                    </Connection>
-                                </WidgetGroup>
-            				</Children>
-			                <Connection>
-				                <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
-				                <BindProperty>visible</BindProperty>
-			                </Connection>
-		        		</WidgetGroup>
+			                            <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
+			                            <BindProperty>visible</BindProperty>
+		                            </Connection>
+	                    		</WidgetGroup>
+				            </Children>
+			            </WidgetGroup>
 					</Children>
 				</WidgetGroup>
 			</Children>

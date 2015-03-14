@@ -369,7 +369,9 @@ class EngineBuffer : public EngineObject {
     bool m_bPlayAfterLoading;
     float m_fRampValue;
     int m_iRampState;
-    //int m_iRampIter;
+    // Records the sample rate so we can detect when it changes. Initialized to
+    // 0 to guarantee we see a change on the first callback.
+    int m_iSampleRate;
 
     TrackPointer m_pCurrentTrack;
 #ifdef __SCALER_DEBUG__
