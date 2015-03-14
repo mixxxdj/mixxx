@@ -132,23 +132,22 @@
                         <WidgetGroup>
                           <ObjectName>ClockWidget</ObjectName>
                           <Layout>horizontal</Layout>
-                          <SizePolicy>min,min</SizePolicy>
+                          <SizePolicy>min,max</SizePolicy>
                           <Children>
-                            <WidgetGroup>
-                              <Layout>horizontal</Layout>
-                              <SizePolicy>max,max</SizePolicy>
-                              <Children>
-                                <Time>
-                                  <TooltipId>time</TooltipId>
-                                  <Style>QLabel { font: bold 16px/19px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-                                            background-color: transparent; color: #EECE33;}
-                                  </Style>
-                                  <ShowSeconds>false</ShowSeconds>
-                                </Time>
-                              </Children>
-                            </WidgetGroup>
+                            <Time>
+                              <TooltipId>time</TooltipId>
+                              <Style>QLabel { font: bold 13px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+                                        background-color: transparent; color: #EECE33;}
+                              </Style>
+                              <ShowSeconds>false</ShowSeconds>
+                            </Time>
                           </Children>
                         </WidgetGroup>
+                        <Template src="skin:vumeter_latency.xml">
+                          <SetVariable name="TooltipId">audio_latency_usage</SetVariable>
+                          <SetVariable name="group">[Master]</SetVariable>
+                          <SetVariable name="control">audio_latency_usage</SetVariable>
+                        </Template>
                       </Children>
                     </WidgetGroup>
                 </Children>

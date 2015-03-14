@@ -42,7 +42,8 @@ class DlgPrefVinyl : public DlgPreferencePage, Ui::DlgPrefVinylDlg  {
     void slotHide();
     void slotShow();
     void VinylTypeSlotApply();
-    void VinylGainSlotApply();
+    void slotVinylGainApply();
+    void slotUpdateVinylGain();
 
   private slots:
     void slotNumDecksChanged(double);

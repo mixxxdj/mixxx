@@ -89,9 +89,10 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
     ComboBoxVinylSpeed4->addItem(MIXXX_VINYL_SPEED_33);
     ComboBoxVinylSpeed4->addItem(MIXXX_VINYL_SPEED_45);
 
-    // TODO: Convert gain to logarithmic and db visual scale.
-    connect(VinylGain, SIGNAL(sliderReleased()), this, SLOT(VinylGainSlotApply()));
-    //connect(ComboBoxDeviceDeck1, SIGNAL(currentIndexChanged()), this, SLOT(()));
+    connect(VinylGain, SIGNAL(sliderReleased()),
+            this, SLOT(slotVinylGainApply()));
+    connect(VinylGain, SIGNAL(valueChanged(int)),
+            this, SLOT(slotUpdateVinylGain()));
 
     // No real point making this a mapper since the combos aren't indexed.
     connect(ComboBoxVinylType1, SIGNAL(currentIndexChanged(QString)),
@@ -153,7 +154,7 @@ void DlgPrefVinyl::slotShow() {
         }
     }
 
-    //(Re)Initialize the signal quality indicators
+    // (Re)Initialize the signal quality indicators
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
         m_signalWidgets[i]->resetWidget();
     }
@@ -185,6 +186,7 @@ void DlgPrefVinyl::slotResetToDefaults() {
     LeadinTime4->setText(QString("%1").arg(MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN));
     SignalQualityEnable->setChecked(true);
     VinylGain->setValue(0);
+    slotUpdateVinylGain();
 }
 
 void DlgPrefVinyl::slotUpdate() {
@@ -251,8 +253,11 @@ void DlgPrefVinyl::slotUpdate() {
     SignalQualityEnable->setChecked(
             (bool)config->getValueString(ConfigKey(VINYL_PREF_KEY, "show_signal_quality")).toInt());
 
-    //set vinyl control gain
-    VinylGain->setValue(config->getValueString(ConfigKey(VINYL_PREF_KEY, "gain")).toInt());
+    // set vinyl control gain
+    const double ratioGain = config->getValueString(ConfigKey(VINYL_PREF_KEY, "gain")).toDouble();
+    const double dbGain = ratio2db(ratioGain);
+    VinylGain->setValue(static_cast<int>(dbGain + 0.5));
+    slotUpdateVinylGain();
 
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
         m_signalWidgets[i]->setVinylActive(m_pVCManager->vinylInputConnected(i));
@@ -299,9 +304,9 @@ void DlgPrefVinyl::slotApply()
     verifyAndSaveLeadInTime(LeadinTime3, "[Channel3]", ComboBoxVinylType3->currentText());
     verifyAndSaveLeadInTime(LeadinTime4, "[Channel4]", ComboBoxVinylType4->currentText());
 
-    //Apply updates for everything else...
+    // Apply updates for everything else...
     VinylTypeSlotApply();
-    VinylGainSlotApply();
+    slotVinylGainApply();
 
     config->set(ConfigKey(VINYL_PREF_KEY,"show_signal_quality"),
                 ConfigValue((int)(SignalQualityEnable->isChecked())));
@@ -329,8 +334,8 @@ void DlgPrefVinyl::VinylTypeSlotApply()
     config->set(ConfigKey("[Channel4]","vinylcontrol_speed_type"),
                 ConfigValue(ComboBoxVinylSpeed4->currentText()));
 
-    //Save the vinylcontrol_speed_type in ControlObjects as well so it can be retrieved quickly
-    //on the fly. (eg. WSpinny needs to know how fast to spin)
+    // Save the vinylcontrol_speed_type in ControlObjects as well so it can be retrieved quickly
+    // on the fly. (eg. WSpinny needs to know how fast to spin)
 
     switch (m_COSpeeds.length()) {
     case 4:
@@ -366,13 +371,21 @@ void DlgPrefVinyl::VinylTypeSlotApply()
     }
 }
 
-void DlgPrefVinyl::VinylGainSlotApply() {
-    qDebug() << "in VinylGainSlotApply()" << "with gain:" << VinylGain->value();
+void DlgPrefVinyl::slotVinylGainApply() {
+    const int dBGain = VinylGain->value();
+    qDebug() << "in VinylGainSlotApply()" << "with gain:" << dBGain << "dB";
     // Update the config key...
-    config->set(ConfigKey(VINYL_PREF_KEY, "gain"), ConfigValue(VinylGain->value()));
+    const double ratioGain = db2ratio(static_cast<double>(dBGain));
+    config->set(ConfigKey(VINYL_PREF_KEY, "gain"), ConfigValue(QString::number(ratioGain)));
 
     // Update the ControlObject...
-    ControlObject::set(ConfigKey(VINYL_PREF_KEY, "gain"), VinylGain->value());
+    ControlObject::set(ConfigKey(VINYL_PREF_KEY, "gain"), ratioGain);
+}
+
+void DlgPrefVinyl::slotUpdateVinylGain() {
+    int value = VinylGain->value();
+    textLabelPreampCurrent->setText(
+            QString("%1 dB").arg(value));
 }
 
 void DlgPrefVinyl::setDeckWidgetsVisible(int deck, bool visible) {

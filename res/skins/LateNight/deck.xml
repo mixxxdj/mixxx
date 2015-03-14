@@ -139,17 +139,14 @@
                                   </PushButton>
                               </Children>
                           </WidgetGroup>
-				           <!-- <NumberRate>
-				                <TooltipId>rate_display</TooltipId>
-				                <Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans
-				                    Unicode, Arial, Verdana, sans-serif;
-				                    background-color: transparent; color: <Variable name="deck_color" />; text-align:center;}
-				                </Style>
-				                <Channel>
-				                    <Variable name="channum" />
-				                </Channel>
-				                <NumberOfDigits>2</NumberOfDigits>
-				            </NumberRate>-->
+                          <NumberRate>
+                              <TooltipId>rate_display</TooltipId>
+                              <ObjectName>RateTextColor<Variable name="channum" /></ObjectName>
+                              <Channel>
+                                  <Variable name="channum" />
+                              </Channel>
+                              <NumberOfDigits>2</NumberOfDigits>
+                          </NumberRate>
 			            </Children>
 		            </WidgetGroup>
                     <WidgetGroup>

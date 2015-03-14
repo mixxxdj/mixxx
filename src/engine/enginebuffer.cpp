@@ -64,8 +64,7 @@ const double kLinearScalerElipsis = 1.00058; // 2^(0.01/12): changes < 1 cent al
 
 EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
                            EngineChannel* pChannel, EngineMaster* pMixingEngine)
-        : m_engineLock(QMutex::Recursive),
-          m_group(group),
+        : m_group(group),
           m_pConfig(_config),
           m_pLoopingControl(NULL),
           m_pSyncControl(NULL),
@@ -106,6 +105,7 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
           m_bPlayAfterLoading(false),
           m_fRampValue(0.0),
           m_iRampState(ENGINE_RAMP_NONE),
+          m_iSampleRate(0),
           m_pDitherBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
           m_iDitherBufferReadIndex(0),
           m_pCrossFadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
@@ -390,11 +390,9 @@ double EngineBuffer::getLocalBpm() {
 }
 
 void EngineBuffer::setEngineMaster(EngineMaster* pEngineMaster) {
-    m_engineLock.lock();
     foreach (EngineControl* pControl, m_engineControls) {
         pControl->setEngineMaster(pEngineMaster);
     }
-    m_engineLock.unlock();
 }
 
 void EngineBuffer::queueNewPlaypos(double newpos, enum SeekRequest seekType) {
@@ -472,7 +470,6 @@ void EngineBuffer::setNewPlaypos(double newpos) {
     m_iSamplesCalculated = 1000000;
 
     // Must hold the engineLock while using m_engineControls
-    m_engineLock.lock();
     for (QList<EngineControl*>::iterator it = m_engineControls.begin();
          it != m_engineControls.end(); ++it) {
         EngineControl *pControl = *it;
@@ -480,8 +477,6 @@ void EngineBuffer::setNewPlaypos(double newpos) {
     }
 
     verifyPlay(); // verify or update play button and indicator
-
-    m_engineLock.unlock();
 }
 
 QString EngineBuffer::getGroup()
@@ -740,16 +735,27 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
 
     bool bCurBufferPaused = false;
     double rate = 0;
+    int sample_rate = static_cast<int>(m_pSampleRate->get());
+
+    // If the sample rate has changed, force Rubberband to reset so that
+    // it doesn't reallocate when the user engages keylock during playback.
+    // We do this even if rubberband is not active.
+    if (sample_rate != m_iSampleRate) {
+        if (m_pScaleRB != NULL) {
+            m_pScaleRB->initializeRubberBand(sample_rate);
+        }
+        m_iSampleRate = sample_rate;
+    }
 
     bool bTrackLoading = load_atomic(m_iTrackLoading) != 0;
     if (!bTrackLoading && m_pause.tryLock()) {
         ScopedTimer t("EngineBuffer::process_pauselock");
-        float sr = m_pSampleRate->get();
 
         double baserate = 0.0;
-        if (sr > 0) {
-            baserate = ((double)m_file_srate_old / sr);
+        if (sample_rate > 0) {
+            baserate = ((double)m_file_srate_old / sample_rate);
         }
+
 
         bool paused = m_playButton->get() == 0.0;
         KeyControl::PitchTempoRatio pitchTempoRatio = m_pKeyControl->getPitchTempoRatio();
@@ -891,7 +897,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             // master samplerate), the deck speed, the pitch shift, and whether
             // the deck speed should affect the pitch.
 
-            m_pScale->setScaleParameters(m_pSampleRate->get(),
+            m_pScale->setScaleParameters(sample_rate,
                                          baserate,
                                          &speed,
                                          &pitchRatio);
@@ -982,14 +988,12 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             m_iCrossFadeSamples = 0;
         }
 
-        m_engineLock.lock();
         QListIterator<EngineControl*> it(m_engineControls);
         while (it.hasNext()) {
             EngineControl* pControl = it.next();
             pControl->setCurrentSample(m_filepos_play, m_file_length_old);
             pControl->process(rate, m_filepos_play, m_file_length_old, iBufferSize);
         }
-        m_engineLock.unlock();
 
         m_scratching_old = is_scratching;
 
@@ -1060,7 +1064,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
     if (m_iRampState == ENGINE_RAMP_UP ||
         m_iRampState == ENGINE_RAMP_DOWN) {
         // Ramp of 3.33 ms
-        ramp_inc = m_iRampState * 300 / m_pSampleRate->get();
+        ramp_inc = static_cast<double>(m_iRampState * 300) / sample_rate;
 
         for (int i=0; i < iBufferSize; i += 2) {
             if (bCurBufferPaused) {
@@ -1267,8 +1271,6 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
 }
 
 void EngineBuffer::hintReader(const double dRate) {
-    m_engineLock.lock();
-
     m_hintList.clear();
     m_pReadAheadManager->hintReader(dRate, &m_hintList);
 
@@ -1287,8 +1289,6 @@ void EngineBuffer::hintReader(const double dRate) {
         pControl->hintReader(&m_hintList);
     }
     m_pReader->hintAndMaybeWake(m_hintList);
-
-    m_engineLock.unlock();
 }
 
 // WARNING: This method runs in the GUI thread
@@ -1301,9 +1301,7 @@ void EngineBuffer::slotLoadTrack(TrackPointer pTrack, bool play) {
 
 void EngineBuffer::addControl(EngineControl* pControl) {
     // Connect to signals from EngineControl here...
-    m_engineLock.lock();
     m_engineControls.push_back(pControl);
-    m_engineLock.unlock();
     pControl->setEngineBuffer(this);
     connect(this, SIGNAL(trackLoaded(TrackPointer)),
             pControl, SLOT(trackLoaded(TrackPointer)),

@@ -67,8 +67,8 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue>* pConfig, QString g
           m_iPitchRingPos(0),
           m_iPitchRingFilled(0),
           m_dDisplayPitch(0.0),
-          m_pSteadySubtle(new SteadyPitch(0.12)),
-          m_pSteadyGross(new SteadyPitch(0.5)),
+          m_pSteadySubtle(NULL),
+          m_pSteadyGross(NULL),
           m_bCDControl(false),
           m_bTrackSelectMode(false),
           m_pControlTrackSelector(NULL),
@@ -101,6 +101,9 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue>* pConfig, QString g
     } else if (strVinylType == MIXXX_VINYL_SERATOCD) {
         timecode = (char*)"serato_cd";
         m_bCDControl = true;
+        // Set up very sensitive steady monitors for CDJs.
+        m_pSteadySubtle = new SteadyPitch(0.06, true);
+        m_pSteadyGross = new SteadyPitch(0.25, true);
     } else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHSIDEA) {
         timecode = (char*)"traktor_a";
     } else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHSIDEB) {
@@ -111,6 +114,15 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue>* pConfig, QString g
         qDebug() << "Unknown vinyl type, defaulting to serato_2a";
         timecode = (char*)"serato_2a";
     }
+
+    // If we didn't set up the steady monitors already (not CDJ), do it now.
+    if (m_pSteadySubtle == NULL) {
+        m_pSteadySubtle = new SteadyPitch(0.12, false);
+    }
+    if (m_pSteadyGross == NULL) {
+        m_pSteadyGross = new SteadyPitch(0.5, false);
+    }
+
 
     timecode_def* tc_def = timecoder_find_definition(timecode);
     if (tc_def == NULL) {
