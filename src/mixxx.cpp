@@ -842,6 +842,16 @@ void setVisibilityOptionState(QAction* pAction, ConfigKey key) {
     pAction->setChecked(pVisibilityControl != NULL ? pVisibilityControl->get() > 0.0 : false);
 }
 
+void MixxxMainWindow::toggleCheckedSamplers()
+{
+    disconnect(m_pViewShowSamplers, SIGNAL(toggled(bool)), 
+               this, SLOT(slotViewShowSamplers(bool)));
+    ConfigKey key("[Samplers]", "show_samplers");
+    m_pViewShowSamplers->setChecked(ControlObject::get(key));
+    connect(m_pViewShowSamplers, SIGNAL(toggled(bool)), 
+            this, SLOT(slotViewShowSamplers(bool)));
+}
+
 void MixxxMainWindow::onNewSkinLoaded() {
 #ifdef __VINYLCONTROL__
     setVisibilityOptionState(m_pViewVinylControl,
@@ -857,7 +867,14 @@ void MixxxMainWindow::onNewSkinLoaded() {
                              ConfigKey("[EffectRack1]", "show"));
     setVisibilityOptionState(m_pViewShowCoverArt,
                              ConfigKey("[Library]", "show_coverart"));
+
+    ControlObjectSlave* pCOShowSamplers = new ControlObjectSlave(
+            "[Samplers]", "show_samplers", this);
+    pCOShowSamplers->connectValueChanged(
+            this, SLOT(toggleCheckedSamplers()), Qt::DirectConnection); 
+
 }
+
 
 int MixxxMainWindow::noSoundDlg(void)
 {
