@@ -930,16 +930,11 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         if (!bCurBufferPaused) {
             // The fileposition should be: (why is this thing a double anyway!?
             // Integer valued.
-            double filepos_play_rounded = round(m_filepos_play);
+            double playFrame = m_filepos_play / kSamplesPerFrame;
+            double filepos_play_rounded = round(playFrame) * kSamplesPerFrame;
             if (filepos_play_rounded != m_filepos_play) {
-                qWarning() << __FILE__ << __LINE__ << "ERROR: filepos_play is not round:" << m_filepos_play;
+                qWarning() << __FILE__ << __LINE__ << "ERROR: filepos_play is not at an even integer sample:" << m_filepos_play;
                 m_filepos_play = filepos_play_rounded;
-            }
-
-            // Even.
-            if (!even(static_cast<int>(m_filepos_play))) {
-                qWarning() << "ERROR: filepos_play is not even:" << m_filepos_play;
-                m_filepos_play--;
             }
 
             // Perform scaling of Reader buffer into buffer.
