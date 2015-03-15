@@ -215,7 +215,7 @@
 
     </Children>
     <Connection>
-      <ConfigKey persist="true">[Preferences],show_settings</ConfigKey>
+      <ConfigKey persist="true">[Deere],show_skin_settings</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>
