@@ -15,6 +15,7 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <iostream>
 #include <QtDebug>
 #include <QTranslator>
 #include <QMenu>
