@@ -849,12 +849,12 @@ void MixxxMainWindow::toggleCheckedSamplers() {
     m_pViewShowSamplers->blockSignals(false);
 }
 
-void MixxxMainWindow::linkSkinWidget(ControlObjectSlave*& pCOS, 
+void MixxxMainWindow::linkSkinWidget(ControlObjectSlave** pCOS, 
                                      ConfigKey key, const char* slot) {
     //Careful when using because it may not be supported by a skin
-    if (!pCOS && ControlObject::getControl(key, true)) {
-        pCOS = new ControlObjectSlave(key, this);
-        pCOS->connectValueChanged(
+    if (!*pCOS && ControlObject::getControl(key, true)) {
+        *pCOS = new ControlObjectSlave(key, this);
+        (*pCOS)->connectValueChanged(
             this, slot, Qt::DirectConnection);
     }
 }
@@ -875,7 +875,7 @@ void MixxxMainWindow::onNewSkinLoaded() {
     setVisibilityOptionState(m_pViewShowCoverArt,
                              ConfigKey("[Library]", "show_coverart"));
 
-    linkSkinWidget(m_pCOShowSamplers,
+    linkSkinWidget(&m_pCOShowSamplers,
                    ConfigKey("[Samplers]", "show_samplers"), 
                    SLOT(toggleCheckedSamplers()));
 }
