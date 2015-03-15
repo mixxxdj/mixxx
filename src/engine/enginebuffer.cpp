@@ -61,6 +61,7 @@
 #include "trackinfoobject.h"
 
 const double kLinearScalerElipsis = 1.00058; // 2^(0.01/12): changes < 1 cent allows a linear scaler
+const int kSamplesPerFrame = 2; // Engine buffer uses Stereo frames only
 
 EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
                            EngineChannel* pChannel, EngineMaster* pMixingEngine)
@@ -607,9 +608,9 @@ void EngineBuffer::doSeekFractional(double fractionalPos, enum SeekRequest seekT
     if (isnan(fractionalPos)) {
         return;
     }
-    // Find new playpos, restrict to valid ranges.
-    double new_playpos = round(fractionalPos * m_trackSamplesOld);
-    doSeekPlayPos(new_playpos, seekType);
+    // Find new play frame, restrict to valid ranges.
+    double newPlayFrame = round(fractionalPos * m_trackSamplesOld / kSamplesPerFrame);
+    doSeekPlayPos(newPlayFrame * kSamplesPerFrame, seekType);
  }
 
 void EngineBuffer::doSeekPlayPos(double new_playpos, enum SeekRequest seekType) {
@@ -966,7 +967,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             }
         }
 
-        //Crossfade if we just did a seek
+        // Crossfade if we just did a seek
         if (m_iCrossFadeSamples > 0) {
             int i = 0;
             double cross_len = 0;
