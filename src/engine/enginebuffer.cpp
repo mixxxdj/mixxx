@@ -443,10 +443,15 @@ void EngineBuffer::requestSyncMode(SyncMode mode) {
     }
 }
 
-void EngineBuffer::clearScale() {
+void EngineBuffer::clearScale(EngineBufferScale* oldScale) {
     // This is called when seeking, after scaler change and direction change
     // Read extra buffer with the original scale for crossfading with new one
-    CSAMPLE* fadeout = m_pScale->getScaled(m_iLastBufferSize);
+    DEBUG_ASSERT_AND_HANDLE(oldScale != NULL) {
+        qWarning()
+                << "PROGRAMMING ERROR: clearScale called with NULL old scaler";
+        oldScale = m_pScale;
+    }
+    CSAMPLE* fadeout = oldScale->getScaled(m_iLastBufferSize);
     m_iCrossFadeSamples = m_iLastBufferSize;
     SampleUtil::copyWithGain(m_pCrossFadeBuffer, fadeout, 1.0, m_iLastBufferSize);
 
@@ -466,7 +471,7 @@ void EngineBuffer::setNewPlaypos(double newpos) {
     m_filepos_play = newpos;
 
     // Before seeking, read extra buffer for crossfading
-    clearScale();
+    clearScale(m_pScale);
 
     // Ensures that the playpos slider gets updated in next process call
     m_iSamplesCalculated = 1000000;
@@ -807,9 +812,9 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
 
         bool useIndependentPitchAndTempoScaling = false;
         if (keylock_enabled) {
-            // use always IndependentPitchAndTempoScaling
+            // always use IndependentPitchAndTempoScaling
             // to avoid clicks when crossing the linear pitch
-            // in this case is it most likely that the user
+            // in this case it is most likely that the user
             // will have an non linear pitch
             useIndependentPitchAndTempoScaling = true;
         } else if (speed) {
@@ -821,6 +826,8 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
                 useIndependentPitchAndTempoScaling = true;
             }
         }
+        // Save the old scaler in case it changes and we need to crossfade.
+        EngineBufferScale* old_scale = m_pScale;
         enableIndependentPitchTempoScaling(useIndependentPitchAndTempoScaling);
 
         // How speed/tempo/pitch are related:
@@ -878,13 +885,13 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             // crossfades between the old scaler and new scaler to prevent
             // clicks.
             if (m_bScalerChanged) {
-                clearScale();
+                clearScale(old_scale);
             } else if (m_pScale != m_pScaleLinear) { // linear scaler does this part for us now
                 //XXX: Trying to force RAMAN to read from correct
                 //     playpos when rate changes direction - Albert
                 if ((m_speed_old <= 0 && speed > 0) ||
                     (m_speed_old >= 0 && speed < 0)) {
-                    clearScale();
+                    clearScale(m_pScale);
                 }
             }
 
@@ -1098,7 +1105,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
 
 #ifdef __SCALER_DEBUG__
     for (int i=0; i<iBufferSize; i+=2) {
-        writer << pOutput[i] <<  "\n";
+        writer << pOutput[i] << "\n";
     }
 #endif
 
