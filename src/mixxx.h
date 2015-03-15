@@ -169,7 +169,7 @@ class MixxxMainWindow : public QMainWindow {
     void checkDirectRendering();
     bool confirmExit();
     
-    void linkSkinWidget(ControlObjectSlave*& pCOS, 
+    void linkSkinWidget(ControlObjectSlave** pCOS, 
                         ConfigKey key, const char* slot);
 
     // Pointer to the root GUI widget
@@ -260,7 +260,7 @@ class MixxxMainWindow : public QMainWindow {
     DlgDeveloperTools* m_pDeveloperToolsDlg;
     QAction* m_pDeveloperDebugger;
 
-    ControlObjectSlave *m_pCOShowSamplers;
+    ControlObjectSlave* m_pCOShowSamplers;
 
     int m_iNoPlaylists;
 
