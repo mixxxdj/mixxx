@@ -15,6 +15,7 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <iostream>
 #include <QtDebug>
 #include <QTranslator>
 #include <QMenu>
@@ -842,14 +843,21 @@ void setVisibilityOptionState(QAction* pAction, ConfigKey key) {
     pAction->setChecked(pVisibilityControl != NULL ? pVisibilityControl->get() > 0.0 : false);
 }
 
-void MixxxMainWindow::toggleCheckedSamplers()
-{
-    disconnect(m_pViewShowSamplers, SIGNAL(toggled(bool)), 
-               this, SLOT(slotViewShowSamplers(bool)));
+void MixxxMainWindow::toggleCheckedSamplers() {
+    m_pViewShowSamplers->blockSignals(true);
     ConfigKey key("[Samplers]", "show_samplers");
     m_pViewShowSamplers->setChecked(ControlObject::get(key));
-    connect(m_pViewShowSamplers, SIGNAL(toggled(bool)), 
-            this, SLOT(slotViewShowSamplers(bool)));
+    m_pViewShowSamplers->blockSignals(false);
+}
+
+void MixxxMainWindow::linkSkinWidget(ControlObjectSlave*& pCOS, 
+                                     ConfigKey key, const char* slot) {
+    //Careful when using because it may not be supported by a skin
+    if (!pCOS && ControlObject::getControl(key, true)) {
+        pCOS = new ControlObjectSlave(key, this);
+        pCOS->connectValueChanged(
+            this, slot, Qt::DirectConnection);
+    }
 }
 
 void MixxxMainWindow::onNewSkinLoaded() {
@@ -868,11 +876,9 @@ void MixxxMainWindow::onNewSkinLoaded() {
     setVisibilityOptionState(m_pViewShowCoverArt,
                              ConfigKey("[Library]", "show_coverart"));
 
-    ControlObjectSlave* pCOShowSamplers = new ControlObjectSlave(
-            "[Samplers]", "show_samplers", this);
-    pCOShowSamplers->connectValueChanged(
-            this, SLOT(toggleCheckedSamplers()), Qt::DirectConnection); 
-
+    linkSkinWidget(m_pCOShowSamplers,
+                   ConfigKey("[Samplers]", "show_samplers"), 
+                   SLOT(toggleCheckedSamplers()));
 }
 
 
@@ -1266,6 +1272,8 @@ void MixxxMainWindow::initActions()
     m_pViewShowSamplers->setWhatsThis(buildWhatsThis(showSamplersTitle, showSamplersText));
     connect(m_pViewShowSamplers, SIGNAL(toggled(bool)),
             this, SLOT(slotViewShowSamplers(bool)));
+
+    m_pCOShowSamplers = NULL;
 
     QString showVinylControlTitle = tr("Show Vinyl Control Section");
     QString showVinylControlText = tr("Show the vinyl control section of the Mixxx interface.") +
