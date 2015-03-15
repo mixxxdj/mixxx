@@ -222,7 +222,7 @@ class EngineBuffer : public EngineObject {
 
     void doSeek(double change, enum SeekRequest seekType);
 
-    void clearScale();
+    void clearScale(EngineBufferScale* oldScale);
 
     // Reset buffer playpos and set file playpos.
     void setNewPlaypos(double playpos);
