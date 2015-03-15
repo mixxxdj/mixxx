@@ -79,8 +79,8 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
           m_pitch_old(0),
           m_baserate_old(0),
           m_rate_old(0.),
-          m_file_length_old(-1),
-          m_file_srate_old(0),
+          m_trackSamplesOld(-1),
+          m_trackSampleRateOld(0),
           m_iSamplesCalculated(0),
           m_iUiSlowTick(0),
           m_dSlipPosition(0.),
@@ -349,9 +349,9 @@ EngineBuffer::~EngineBuffer() {
 
 double EngineBuffer::fractionalPlayposFromAbsolute(double absolutePlaypos) {
     double fFractionalPlaypos = 0.0;
-    if (m_file_length_old != 0.) {
-        fFractionalPlaypos = math_min<double>(absolutePlaypos, m_file_length_old);
-        fFractionalPlaypos /= m_file_length_old;
+    if (m_trackSamplesOld != 0.) {
+        fFractionalPlaypos = math_min<double>(absolutePlaypos, m_trackSamplesOld);
+        fFractionalPlaypos /= m_trackSamplesOld;
     }
     return fFractionalPlaypos;
 }
@@ -527,8 +527,8 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_pause.lock();
     m_visualPlayPos->setInvalid();
     m_pCurrentTrack = pTrack;
-    m_file_srate_old = iTrackSampleRate;
-    m_file_length_old = iTrackNumSamples;
+    m_trackSampleRateOld = iTrackSampleRate;
+    m_trackSamplesOld = iTrackNumSamples;
     m_pTrackSamples->set(iTrackNumSamples);
     m_pTrackSampleRate->set(iTrackSampleRate);
     // Reset the pitch value for the new track.
@@ -569,8 +569,8 @@ void EngineBuffer::ejectTrack() {
     m_pTrackSampleRate->set(0);
     TrackPointer pTrack = m_pCurrentTrack;
     m_pCurrentTrack.clear();
-    m_file_srate_old = 0;
-    m_file_length_old = 0;
+    m_trackSampleRateOld = 0;
+    m_trackSamplesOld = 0;
     m_playButton->set(0.0);
     m_visualBpm->set(0.0);
     m_visualKey->set(0.0);
@@ -608,14 +608,14 @@ void EngineBuffer::doSeekFractional(double fractionalPos, enum SeekRequest seekT
         return;
     }
     // Find new playpos, restrict to valid ranges.
-    double new_playpos = round(fractionalPos * m_file_length_old);
+    double new_playpos = round(fractionalPos * m_trackSamplesOld);
     doSeekPlayPos(new_playpos, seekType);
  }
 
 void EngineBuffer::doSeekPlayPos(double new_playpos, enum SeekRequest seekType) {
     // Don't allow the playposition to go past the end.
-    if (new_playpos > m_file_length_old) {
-        new_playpos = m_file_length_old;
+    if (new_playpos > m_trackSamplesOld) {
+        new_playpos = m_trackSamplesOld;
     }
 
     // Ensure that the file position is even (remember, stereo channel files...)
@@ -641,7 +641,7 @@ double EngineBuffer::updateIndicatorsAndModifyPlay(double v) {
     bool playPossible = true;
     if ((!m_pCurrentTrack && load_atomic(m_iTrackLoading) == 0) ||
             (m_pCurrentTrack && load_atomic(m_iTrackLoading) == 0 &&
-             m_filepos_play >= m_file_length_old &&
+             m_filepos_play >= m_trackSamplesOld &&
              !load_atomic(m_iSeekQueued))) {
         // play not possible
         playPossible = false;
@@ -753,7 +753,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
 
         double baserate = 0.0;
         if (sample_rate > 0) {
-            baserate = ((double)m_file_srate_old / sample_rate);
+            baserate = ((double)m_trackSampleRateOld / sample_rate);
         }
 
 
@@ -918,7 +918,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         }
 
         bool at_start = m_filepos_play <= 0;
-        bool at_end = m_filepos_play >= m_file_length_old;
+        bool at_end = m_filepos_play >= m_trackSamplesOld;
         bool backwards = rate < 0;
 
         // If we're playing past the end, playing before the start, or standing
@@ -991,15 +991,15 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         QListIterator<EngineControl*> it(m_engineControls);
         while (it.hasNext()) {
             EngineControl* pControl = it.next();
-            pControl->setCurrentSample(m_filepos_play, m_file_length_old);
-            pControl->process(rate, m_filepos_play, m_file_length_old, iBufferSize);
+            pControl->setCurrentSample(m_filepos_play, m_trackSamplesOld);
+            pControl->process(rate, m_filepos_play, m_trackSamplesOld, iBufferSize);
         }
 
         m_scratching_old = is_scratching;
 
         // Handle repeat mode
         at_start = m_filepos_play <= 0;
-        at_end = m_filepos_play >= m_file_length_old;
+        at_end = m_filepos_play >= m_trackSamplesOld;
 
         bool repeat_enabled = m_pRepeat->get() != 0.0;
 
@@ -1266,7 +1266,7 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
     // Update visual control object, this needs to be done more often than the
     // playpos slider
     m_visualPlayPos->set(fFractionalPlaypos, speed,
-            (double)iBufferSize/m_file_length_old,
+            (double)iBufferSize/m_trackSamplesOld,
             fractionalPlayposFromAbsolute(m_dSlipPosition));
 }
 

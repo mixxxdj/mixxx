@@ -287,10 +287,10 @@ class EngineBuffer : public EngineObject {
     double m_rate_old;
 
     // Copy of length of file
-    int m_file_length_old;
+    int m_trackSamplesOld;
 
     // Copy of file sample rate
-    int m_file_srate_old;
+    int m_trackSampleRateOld;
 
     // Mutex controlling weather the process function is in pause mode. This happens
     // during seek and loading of a new track
