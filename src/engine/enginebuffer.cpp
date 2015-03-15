@@ -932,7 +932,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             // Integer valued.
             double playFrame = m_filepos_play / kSamplesPerFrame;
             double filepos_play_rounded = round(playFrame) * kSamplesPerFrame;
-            if (filepos_play_rounded != m_filepos_play) {
+            DEBUG_ASSERT_AND_HANDLE(filepos_play_rounded == m_filepos_play) {
                 qWarning() << __FILE__ << __LINE__ << "ERROR: filepos_play is not at an even integer sample:" << m_filepos_play;
                 m_filepos_play = filepos_play_rounded;
             }
@@ -1172,11 +1172,9 @@ void EngineBuffer::processSeek() {
             bool paused = m_playButton->get() == 0.0;
             // If we are playing and quantize is on, match phase when seeking.
             if (!paused && m_pQuantize->get() > 0.0) {
-                int offset = static_cast<int>(round(m_pBpmControl->getPhaseOffset(position)));
-                if (!even(offset)) {
-                    offset--;
-                }
-                position += offset;
+                position += m_pBpmControl->getPhaseOffset(position);
+                double newPlayFrame = position / kSamplesPerFrame;
+                position = round(newPlayFrame) * kSamplesPerFrame;
             }
             setNewPlaypos(position);
             break;
@@ -1186,10 +1184,8 @@ void EngineBuffer::processSeek() {
             double dThisPosition = m_pBpmControl->getCurrentSample();
             double offset = m_pBpmControl->getPhaseOffset(dThisPosition);
             if (offset != 0.0) {
-                double dNewPlaypos = round(dThisPosition + offset);
-                if (!even(static_cast<int>(dNewPlaypos))) {
-                    dNewPlaypos--;
-                }
+                double newPlayFrame = (dThisPosition + offset) / kSamplesPerFrame;
+                double dNewPlaypos = round(newPlayFrame) * kSamplesPerFrame;
                 setNewPlaypos(dNewPlaypos);
             }
             break;
