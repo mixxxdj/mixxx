@@ -11,13 +11,23 @@
     <Layout>horizontal</Layout>
     <SizePolicy>me,max</SizePolicy>
     <Children>
-      <CoverArt>
-        <TooltipId>coverart</TooltipId>
-        <ObjectName>DeckCoverArt</ObjectName>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
-        <MinimumSize>58,58</MinimumSize>
-        <Group><Variable name="group"/></Group>
-      </CoverArt>
+        <Children>
+          <CoverArt>
+            <TooltipId>coverart</TooltipId>
+            <ObjectName>DeckCoverArt</ObjectName>
+            <SizePolicy>min,min</SizePolicy>
+            <MinimumSize>58,58</MinimumSize>
+            <Group><Variable name="group"/></Group>
+          </CoverArt>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Deere],show_coverart</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
       <WidgetGroup>
         <ObjectName>DeckTextColumn</ObjectName>
         <Layout>vertical</Layout>
@@ -86,6 +96,22 @@
                     <SizePolicy>me,min</SizePolicy>
                     <Group><Variable name="group"/></Group>
                   </TrackProperty>
+
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <StarRating>
+                        <TooltipId>starrating</TooltipId>
+                        <Group><Variable name="group"/></Group>
+                      </StarRating>
+                    </Children>
+                    <Connection>
+                      <ConfigKey persist="true">[Deere],show_starrating</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
                   <WidgetGroup>
                     <ObjectName>PositionGutter</ObjectName>
                     <Layout>horizontal</Layout>

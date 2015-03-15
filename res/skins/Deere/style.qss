@@ -182,6 +182,7 @@ QSplitter::handle:vertical {
 /*******************************************************************************
  ** END SKIN SETTINGS **********************************************************
  *******************************************************************************/
+
 #Mixxx {
   background-color: black;
   font-family: "Open Sans";
@@ -434,6 +435,15 @@ WWidget, WLabel {
 
 #DeckMixer4 {
   background-color: #24260A;
+}
+
+/* Starrating for tracks loaded in decks */
+WStarRating {
+  margin            : 5px 5px 0px 0px;
+  border            : 0px solid #ffffff;
+  padding           : 2px;
+  color             : #888888;
+  background-color  : none;
 }
 
 #SampleDecksContainer, #PreviewDeckContainer {
