@@ -31,7 +31,6 @@
             </State>
             <State>
               <!-- RECORD ON-->
-              <!--TODO: Add CSS for button state [2] or button is not lit when active-->
               <Number>2</Number>
               <Text>Record</Text>
             </State>

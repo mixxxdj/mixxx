@@ -564,6 +564,25 @@ WPushButton[value="1"]:hover {
     border: 0px solid #A4A4A4;
 }
 
+/*"Enabled" state, e.g. for recording status
+  0 -- disconnected / off
+  1 -- connecting / enabling
+  2 -- connected / enabled
+*/
+WPushButton[value="2"] {
+    color: #E5E5E5;
+    background-color: QLinearGradient( x1: 0, y1: 1, x2: 0, y2: 0,
+    stop: 0 #006BA2, stop: 1 #006BA2);
+    border: 0px solid #A4A4A4;
+}
+
+WPushButton[value="2"]:hover {
+    color: #E5E5E5;
+    background-color: QLinearGradient( x1: 0, y1: 1, x2: 0, y2: 0,
+    stop: 0 #0085CA, stop: 1 #0085CA);
+    border: 0px solid #A4A4A4;
+}
+
 /*
 
 #Deck1 {
