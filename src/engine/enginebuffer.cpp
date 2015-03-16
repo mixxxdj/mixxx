@@ -107,8 +107,8 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
           m_iSampleRate(0),
           m_pDitherBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
           m_iDitherBufferReadIndex(0),
-          m_pCrossFadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
-          m_iCrossFadeSamples(0),
+          m_pCrossfadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
+          m_bCrossfadeReady(false),
           m_iLastBufferSize(0) {
 
     // Generate dither values. When engine samples used to be within [SAMPLE_MIN,
@@ -120,7 +120,7 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
     }
 
     // zero out crossfade buffer
-    SampleUtil::clear(m_pCrossFadeBuffer, MAX_BUFFER_LEN);
+    SampleUtil::clear(m_pCrossfadeBuffer, MAX_BUFFER_LEN);
 
     m_fLastSampleValue[0] = 0;
     m_fLastSampleValue[1] = 0;
@@ -341,7 +341,7 @@ EngineBuffer::~EngineBuffer() {
     delete m_pEject;
 
     SampleUtil::free(m_pDitherBuffer);
-    SampleUtil::free(m_pCrossFadeBuffer);
+    SampleUtil::free(m_pCrossfadeBuffer);
 
     qDeleteAll(m_engineControls);
 }
@@ -374,11 +374,11 @@ void EngineBuffer::enableIndependentPitchTempoScaling(bool bEnable,
     EngineBufferScale* keylock_scale = m_pScaleKeylock;
 
     if (bEnable && m_pScale != keylock_scale) {
-        readCrossfade(iBufferSize);
+        readToCrossfadeBuffer(iBufferSize);
         m_pScale = keylock_scale;
         m_pScale->clear();
     } else if (!bEnable && m_pScale != m_pScaleLinear) {
-        readCrossfade(iBufferSize);
+        readToCrossfadeBuffer(iBufferSize);
         m_pScale = m_pScaleLinear;
         m_pScale->clear();
     }
@@ -445,19 +445,20 @@ void EngineBuffer::requestSyncMode(SyncMode mode) {
     }
 }
 
-void EngineBuffer::readCrossfade(const int iBufferSize) {
+void EngineBuffer::readToCrossfadeBuffer(const int iBufferSize) {
     // During startup, scaler is null.
     if (m_pScale == NULL) {
         return;
     }
     CSAMPLE* fadeout = m_pScale->getScaled(iBufferSize);
-    m_iCrossFadeSamples = iBufferSize;
-    SampleUtil::copyWithGain(m_pCrossFadeBuffer, fadeout, 1.0, iBufferSize);
+    SampleUtil::copy(m_pCrossfadeBuffer, fadeout, iBufferSize);
 
     // Restore the original position that was lost due to getScaled() above
     m_pReadAheadManager->notifySeek(m_filepos_play);
     // Clear the current scale information
     m_pScale->clear();
+
+    m_bCrossfadeReady = true;
 }
 
 // WARNING: This method is not thread safe and must not be called from outside
@@ -468,7 +469,7 @@ void EngineBuffer::setNewPlaypos(double newpos) {
     m_filepos_play = newpos;
 
     // Before seeking, read extra buffer for crossfading
-    readCrossfade(m_iLastBufferSize);
+    readToCrossfadeBuffer(m_iLastBufferSize);
 
     // Ensures that the playpos slider gets updated in next process call
     m_iSamplesCalculated = 1000000;
@@ -885,7 +886,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
                 //     playpos when rate changes direction - Albert
                 if ((m_speed_old <= 0 && speed > 0) ||
                     (m_speed_old >= 0 && speed < 0)) {
-                    readCrossfade(iBufferSize);
+                    readToCrossfadeBuffer(iBufferSize);
                 }
             }
 
@@ -964,26 +965,10 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             }
         }
 
-        //Crossfade if we just did a seek
-        if (m_iCrossFadeSamples > 0) {
-            int i = 0;
-            double cross_len = 0;
-            if (m_iCrossFadeSamples >= iBufferSize) {
-                i = m_iCrossFadeSamples - iBufferSize;
-                cross_len = static_cast<double>(iBufferSize) / 2.0;
-            } else {
-                cross_len = static_cast<double>(m_iCrossFadeSamples) / 2.0;
-            }
-
-            double cross_mix = 0.0;
-            double cross_inc = 1.0 / cross_len;
-            // Do crossfade from old fadeout buffer to this new data
-            for (int j = 0; j + 1 < iBufferSize && i + 1 < m_iCrossFadeSamples; i += 2, j += 2) {
-                pOutput[j] = pOutput[j] * cross_mix + m_pCrossFadeBuffer[i] * (1.0 - cross_mix);
-                pOutput[j+1] = pOutput[j+1] * cross_mix + m_pCrossFadeBuffer[i+1] * (1.0 - cross_mix);
-                cross_mix += cross_inc;
-            }
-            m_iCrossFadeSamples = 0;
+        if (m_bCrossfadeReady) {
+            SampleUtil::linearCrossfadeBuffers(
+                pOutput, m_pCrossfadeBuffer, pOutput, iBufferSize);
+            m_bCrossfadeReady = false;
         }
 
         QListIterator<EngineControl*> it(m_engineControls);

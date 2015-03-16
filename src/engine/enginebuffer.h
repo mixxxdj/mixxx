@@ -226,7 +226,7 @@ class EngineBuffer : public EngineObject {
     // Read one buffer from the current scaler into the crossfade buffer.  Used
     // for transitioning from one scaler to another, or reseeking a scaler
     // to prevent pops.
-    void readCrossfade(const int iBufferSize);
+    void readToCrossfadeBuffer(const int iBufferSize);
 
     // Reset buffer playpos and set file playpos.
     void setNewPlaypos(double playpos);
@@ -382,8 +382,11 @@ class EngineBuffer : public EngineObject {
 #endif
     CSAMPLE* m_pDitherBuffer;
     unsigned int m_iDitherBufferReadIndex;
-    CSAMPLE* m_pCrossFadeBuffer;
-    int m_iCrossFadeSamples;
+
+    // Certain operations like seeks and engine changes need to be crossfaded
+    // to eliminate clicks and pops.
+    CSAMPLE* m_pCrossfadeBuffer;
+    bool m_bCrossfadeReady;
     int m_iLastBufferSize;
 
     QSharedPointer<VisualPlayPosition> m_visualPlayPos;
