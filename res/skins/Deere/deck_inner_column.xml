@@ -77,8 +77,8 @@
               <SetVariable name="MaximumSize">20,20</SetVariable>
               <SetVariable name="SizePolicy">f,f</SetVariable>
               <SetVariable name="state_0_text"> - </SetVariable>
-              <SetVariable name="state_0_pressed"> - </SetVariable>
-              <SetVariable name="state_0_unpressed"> - </SetVariable>
+              <SetVariable name="state_0_pressed"> </SetVariable>
+              <SetVariable name="state_0_unpressed"></SetVariable>
               <SetVariable name="left_connection_control"><Variable name="group"/>,rate_temp_down</SetVariable>
               <SetVariable name="right_connection_control"><Variable name="group"/>,rate_temp_down_small</SetVariable>
             </Template>
@@ -90,8 +90,8 @@
               <SetVariable name="MaximumSize">20,20</SetVariable>
               <SetVariable name="SizePolicy">f,f</SetVariable>
               <SetVariable name="state_0_text"> + </SetVariable>
-              <SetVariable name="state_0_pressed"> + </SetVariable>
-              <SetVariable name="state_0_unpressed"> + </SetVariable>
+              <SetVariable name="state_0_pressed"></SetVariable>
+              <SetVariable name="state_0_unpressed"></SetVariable>
               <SetVariable name="left_connection_control"><Variable name="group"/>,rate_temp_up</SetVariable>
               <SetVariable name="right_connection_control"><Variable name="group"/>,rate_temp_up_small</SetVariable>
             </Template>
