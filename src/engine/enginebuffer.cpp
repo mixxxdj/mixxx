@@ -95,7 +95,6 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
           m_pScaleST(NULL),
           m_pScaleRB(NULL),
           m_pScaleKeylock(NULL),
-          m_bScalerChanged(false),
           m_bScalerOverride(false),
           m_iSeekQueued(NO_SEEK),
           m_iEnableSyncQueued(SYNC_REQUEST_NONE),
@@ -286,7 +285,7 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
     } else {
         m_pScaleKeylock = m_pScaleRB;
     }
-    enableIndependentPitchTempoScaling(false);
+    enableIndependentPitchTempoScaling(false, 0);
 
     m_pPassthroughEnabled.reset(new ControlObjectSlave(group, "passthrough", this));
     m_pPassthroughEnabled->connectValueChanged(this, SLOT(slotPassthroughChanged(double)),
@@ -358,7 +357,8 @@ double EngineBuffer::fractionalPlayposFromAbsolute(double absolutePlaypos) {
     return fFractionalPlaypos;
 }
 
-void EngineBuffer::enableIndependentPitchTempoScaling(bool bEnable) {
+void EngineBuffer::enableIndependentPitchTempoScaling(bool bEnable,
+                                                      const int iBufferSize) {
     // MUST ACQUIRE THE PAUSE MUTEX BEFORE CALLING THIS METHOD
 
     // When no time-stretching or pitch-shifting is needed we use our own linear
@@ -374,11 +374,13 @@ void EngineBuffer::enableIndependentPitchTempoScaling(bool bEnable) {
     EngineBufferScale* keylock_scale = m_pScaleKeylock;
 
     if (bEnable && m_pScale != keylock_scale) {
+        readCrossfade(iBufferSize);
         m_pScale = keylock_scale;
-        m_bScalerChanged = true;
+        m_pScale->clear();
     } else if (!bEnable && m_pScale != m_pScaleLinear) {
+        readCrossfade(iBufferSize);
         m_pScale = m_pScaleLinear;
-        m_bScalerChanged = true;
+        m_pScale->clear();
     }
 }
 
@@ -443,25 +445,20 @@ void EngineBuffer::requestSyncMode(SyncMode mode) {
     }
 }
 
-void EngineBuffer::clearScale(EngineBufferScale* oldScale) {
-    // This is called when seeking, after scaler change and direction change
-    // Read extra buffer with the original scale for crossfading with new one
-    DEBUG_ASSERT_AND_HANDLE(oldScale != NULL) {
-        qWarning()
-                << "PROGRAMMING ERROR: clearScale called with NULL old scaler";
-        oldScale = m_pScale;
+void EngineBuffer::readCrossfade(const int iBufferSize) {
+    // During startup, scaler is null.
+    if (m_pScale == NULL) {
+        return;
     }
-    CSAMPLE* fadeout = oldScale->getScaled(m_iLastBufferSize);
-    m_iCrossFadeSamples = m_iLastBufferSize;
-    SampleUtil::copyWithGain(m_pCrossFadeBuffer, fadeout, 1.0, m_iLastBufferSize);
+    CSAMPLE* fadeout = m_pScale->getScaled(iBufferSize);
+    m_iCrossFadeSamples = iBufferSize;
+    SampleUtil::copyWithGain(m_pCrossFadeBuffer, fadeout, 1.0, iBufferSize);
 
-    if (m_pScale) {
-        m_pScale->clear();
-    }
-    // restore the original position that was lost due to getScaled() above
+    // Restore the original position that was lost due to getScaled() above
     m_pReadAheadManager->notifySeek(m_filepos_play);
+    // Clear the current scale information
+    m_pScale->clear();
 }
-
 
 // WARNING: This method is not thread safe and must not be called from outside
 // the engine callback!
@@ -471,7 +468,7 @@ void EngineBuffer::setNewPlaypos(double newpos) {
     m_filepos_play = newpos;
 
     // Before seeking, read extra buffer for crossfading
-    clearScale(m_pScale);
+    readCrossfade(m_iLastBufferSize);
 
     // Ensures that the playpos slider gets updated in next process call
     m_iSamplesCalculated = 1000000;
@@ -826,9 +823,8 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
                 useIndependentPitchAndTempoScaling = true;
             }
         }
-        // Save the old scaler in case it changes and we need to crossfade.
-        EngineBufferScale* old_scale = m_pScale;
-        enableIndependentPitchTempoScaling(useIndependentPitchAndTempoScaling);
+        enableIndependentPitchTempoScaling(useIndependentPitchAndTempoScaling,
+                                           iBufferSize);
 
         // How speed/tempo/pitch are related:
         // Processing is done in two parts, the first part is calculated inside
@@ -879,19 +875,17 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         // scaler. Also, if we have changed scalers then we need to update the
         // scaler.
         if (baserate != m_baserate_old || speed != m_speed_old ||
-                pitchRatio != m_pitch_old || m_bScalerChanged) {
+                pitchRatio != m_pitch_old) {
             // The rate returned by the scale object can be different from the
             // wanted rate!  Make sure new scaler has proper position. This also
             // crossfades between the old scaler and new scaler to prevent
             // clicks.
-            if (m_bScalerChanged) {
-                clearScale(old_scale);
-            } else if (m_pScale != m_pScaleLinear) { // linear scaler does this part for us now
+            if (m_pScale != m_pScaleLinear) { // linear scaler does this part for us now
                 //XXX: Trying to force RAMAN to read from correct
                 //     playpos when rate changes direction - Albert
                 if ((m_speed_old <= 0 && speed > 0) ||
                     (m_speed_old >= 0 && speed < 0)) {
-                    clearScale(m_pScale);
+                    readCrossfade(iBufferSize);
                 }
             }
 
@@ -915,9 +909,6 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             // rate and normal speed. pitch_adjust does not change the playback
             // rate.
             m_rate_old = rate = baserate * speed;
-
-            // Scaler is up to date now.
-            m_bScalerChanged = false;
         } else {
             // Scaler did not need updating. By definition this means we are at
             // our old rate.
@@ -1363,6 +1354,7 @@ void EngineBuffer::setReader(CachingReader* pReader) {
 
 void EngineBuffer::setScalerForTest(EngineBufferScale* pScale) {
     m_pScale = pScale;
+    m_pScale->clear();
     // This bool is permanently set and can't be undone.
     m_bScalerOverride = true;
 }

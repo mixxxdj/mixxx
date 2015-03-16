@@ -210,7 +210,8 @@ class EngineBuffer : public EngineObject {
     // must not be called outside the Constructor
     void addControl(EngineControl* pControl);
 
-    void enableIndependentPitchTempoScaling(bool bEnable);
+    void enableIndependentPitchTempoScaling(bool bEnable,
+                                            const int iBufferSize);
 
     void updateIndicators(double rate, int iBufferSize);
 
@@ -222,7 +223,10 @@ class EngineBuffer : public EngineObject {
 
     void doSeek(double change, enum SeekRequest seekType);
 
-    void clearScale(EngineBufferScale* oldScale);
+    // Read one buffer from the current scaler into the crossfade buffer.  Used
+    // for transitioning from one scaler to another, or reseeking a scaler
+    // to prevent pops.
+    void readCrossfade(const int iBufferSize);
 
     // Reset buffer playpos and set file playpos.
     void setNewPlaypos(double playpos);
@@ -350,8 +354,6 @@ class EngineBuffer : public EngineObject {
     // ScaleST and ScaleRB during a single callback.
     EngineBufferScale* volatile m_pScaleKeylock;
     EngineBufferScaleDummy* m_pScaleDummy;
-    // Indicates whether the scaler has changed since the last process()
-    bool m_bScalerChanged;
     // Indicates that dependency injection has taken place.
     bool m_bScalerOverride;
 
