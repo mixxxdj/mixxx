@@ -131,15 +131,14 @@ CSAMPLE* EngineBufferScaleST::getScaled(unsigned long buf_size) {
     bool last_read_failed = false;
     while (remaining_frames > 0) {
         unsigned long received_frames = m_pSoundTouch->receiveSamples(
-            (SAMPLETYPE*)read, remaining_frames);
+                (SAMPLETYPE*)read, remaining_frames);
         remaining_frames -= received_frames;
         total_received_frames += received_frames;
         read += received_frames * iNumChannels;
 
         if (remaining_frames > 0) {
             unsigned long iLenFrames = kiSoundTouchReadAheadLength;
-            unsigned long iAvailSamples = m_pReadAheadManager
-                    ->getNextSamples(
+            unsigned long iAvailSamples = m_pReadAheadManager->getNextSamples(
                         // The value doesn't matter here. All that matters is we
                         // are going forward or backward.
                         (m_bBackwards ? -1.0 : 1.0) * m_dBaseRate * m_dTempo,
