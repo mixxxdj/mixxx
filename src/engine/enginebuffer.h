@@ -58,7 +58,6 @@ class ControlTTRotary;
 class ControlPotmeter;
 class CachingReader;
 class EngineBufferScale;
-class EngineBufferScaleDummy;
 class EngineBufferScaleLinear;
 class EngineBufferScaleST;
 class EngineBufferScaleRubberBand;
@@ -354,7 +353,6 @@ class EngineBuffer : public EngineObject {
     // The keylock engine is configurable, so it could flip flop between
     // ScaleST and ScaleRB during a single callback.
     EngineBufferScale* volatile m_pScaleKeylock;
-    EngineBufferScaleDummy* m_pScaleDummy;
     // Indicates that dependency injection has taken place.
     bool m_bScalerOverride;
 
