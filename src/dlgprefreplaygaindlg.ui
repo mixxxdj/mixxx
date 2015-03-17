@@ -152,7 +152,7 @@
          <string>When ReplayGain is enabled, adjust tracks lacking ReplayGain information by this amount.</string>
         </property>
         <property name="text">
-         <string>Inital boost without ReplayGain</string>
+         <string>Initial boost without ReplayGain</string>
         </property>
        </widget>
       </item>
