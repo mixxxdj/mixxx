@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>433</width>
+    <width>509</width>
     <height>609</height>
    </rect>
   </property>
@@ -21,22 +21,22 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <widget class="QCheckBox" name="EnableAnalyser">
-        <property name="toolTip">
-         <string>Calculate ReplayGain normalization for tracks which are missing ReplayGain metadata.</string>
-        </property>
-        <property name="text">
-         <string>Enable ReplayGain Analysis</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QCheckBox" name="EnableGain">
         <property name="toolTip">
          <string>Apply loudness normalization to loaded tracks.</string>
         </property>
         <property name="text">
          <string>Apply ReplayGain</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="EnableAnalyser">
+        <property name="toolTip">
+         <string>Calculate ReplayGain normalization for tracks which are missing ReplayGain metadata.</string>
+        </property>
+        <property name="text">
+         <string>Enable ReplayGain 1.0 Analysis</string>
         </property>
        </widget>
       </item>
@@ -69,7 +69,7 @@
         <item>
          <widget class="QLabel" name="label_3">
           <property name="text">
-           <string>-12 dB</string>
+           <string>-30 LUFS</string>
           </property>
          </widget>
         </item>
@@ -109,7 +109,7 @@
         <item>
          <widget class="QLabel" name="label_4">
           <property name="text">
-           <string>+12 dB</string>
+           <string>-6 LUFS</string>
           </property>
          </widget>
         </item>
@@ -148,15 +148,21 @@
       </item>
       <item row="4" column="0">
        <widget class="QLabel" name="label">
+        <property name="toolTip">
+         <string>When ReplayGain is enabled, adjust tracks lacking ReplayGain information by this amount.</string>
+        </property>
         <property name="text">
-         <string>Inital boost without ReplayGain</string>
+         <string>Initial boost without ReplayGain data</string>
         </property>
        </widget>
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_boost">
+        <property name="toolTip">
+         <string>&quot;For tracks with ReplayGain, adjust the target loudness to this LUFS value (Loudness Units relative to Full Scale).&quot;</string>
+        </property>
         <property name="text">
-         <string>Inital boost in addition to ReplayGain</string>
+         <string>Target loudness</string>
         </property>
         <property name="buddy">
          <cstring>SliderReplayGainBoost</cstring>
@@ -245,23 +251,25 @@
       <string>Hints</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_6">
-      <item row="4" column="0">
-       <widget class="QLabel" name="label_26">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_8">
         <property name="text">
-         <string>If an unanalyzed track is playing, Mixxx won't apply a newly calculated ReplayGain to avoid an abrupt volume change. </string>
+         <string>ReplayGain targets a reference loudness of -18 LUFS (Loudness Units relative to Full Scale). You may increase it if you find Mixxx is too quiet or reduce it if you find that your tracks are clipping. You may also want to decrease the volume of unanalyzed tracks if you find they are often louder than ReplayGained tracks. For podcasting a loudness of -16 LUFS is recommended.
+
+The loudness target is approximate and assumes track pregain and master output level are unchanged.</string>
+        </property>
+        <property name="scaledContents">
+         <bool>true</bool>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
         </property>
        </widget>
       </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_8">
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_26">
         <property name="text">
-         <string>The normal average ReplayGain playback level is -14 dB. You may increase it using the inital boost, if your tracks does not require the full dynamic headroom, or reduce it if you experience that your tracks are clipping by default.</string>
-        </property>
-        <property name="scaledContents">
-         <bool>true</bool>
+         <string>When an unanalyzed track is playing, Mixxx will avoid an abrupt volume change by not applying a newly calculated ReplayGain value.</string>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
