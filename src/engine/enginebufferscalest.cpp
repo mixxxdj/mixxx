@@ -53,14 +53,9 @@ EngineBufferScaleST::~EngineBufferScaleST() {
     delete [] buffer_back;
 }
 
-void EngineBufferScaleST::setScaleParameters(int iSampleRate,
-                                             double base_rate,
+void EngineBufferScaleST::setScaleParameters(double base_rate,
                                              double* pTempoRatio,
                                              double* pPitchRatio) {
-    if (m_iSampleRate != iSampleRate) {
-        m_pSoundTouch->setSampleRate(iSampleRate > 0 ? iSampleRate : 44100);
-        m_iSampleRate = iSampleRate;
-    }
 
     // Negative speed means we are going backwards. pitch does not affect
     // the playback direction.
@@ -107,6 +102,11 @@ void EngineBufferScaleST::setScaleParameters(int iSampleRate,
     m_dBaseRate = base_rate;
     m_dTempo = speed_abs;
     m_dPitch = *pPitchRatio;
+}
+
+void EngineBufferScaleST::setSampleRate(int iSampleRate) {
+    m_pSoundTouch->setSampleRate(iSampleRate);
+    m_iSampleRate = iSampleRate;
 }
 
 void EngineBufferScaleST::clear() {

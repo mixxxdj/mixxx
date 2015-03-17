@@ -52,12 +52,10 @@ EngineBufferScaleLinear::~EngineBufferScaleLinear()
     delete [] buffer_int;
 }
 
-void EngineBufferScaleLinear::setScaleParameters(int iSampleRate,
-                                                 double base_rate,
+void EngineBufferScaleLinear::setScaleParameters(double base_rate,
                                                  double* pTempoRatio,
                                                  double* pPitchRatio) {
     Q_UNUSED(pPitchRatio);
-    m_iSampleRate = iSampleRate;
 
     m_dOldRate = m_dRate;
     m_dRate = base_rate * *pTempoRatio;
