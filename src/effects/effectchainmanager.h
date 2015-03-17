@@ -9,6 +9,7 @@
 #include "util.h"
 #include "effects/effectchain.h"
 #include "effects/effectrack.h"
+#include "engine/channelhandle.h"
 
 class EffectsManager;
 
@@ -22,9 +23,9 @@ class EffectChainManager : public QObject {
                        EffectsManager* pEffectsManager);
     virtual ~EffectChainManager();
 
-    void registerGroup(const QString& group);
-    const QSet<QString>& registeredGroups() const {
-        return m_registeredGroups;
+    void registerChannel(const ChannelHandleAndGroup& handle_group);
+    const QSet<ChannelHandleAndGroup>& registeredChannels() const {
+        return m_registeredChannels;
     }
 
     StandardEffectRackPointer addStandardEffectRack();
@@ -63,7 +64,7 @@ class EffectChainManager : public QObject {
     QList<QuickEffectRackPointer> m_quickEffectRacks;
     QHash<QString, EffectRackPointer> m_effectRacksByGroup;
     QList<EffectChainPointer> m_effectChains;
-    QSet<QString> m_registeredGroups;
+    QSet<ChannelHandleAndGroup> m_registeredChannels;
     DISALLOW_COPY_AND_ASSIGN(EffectChainManager);
 };
 

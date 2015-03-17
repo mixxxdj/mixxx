@@ -15,7 +15,7 @@
 #include <QFile>
 #include <QtDebug>
 #include "trackinfoobject.h" //needed for importing 1.7.x library
-#include "xmlparse.h" //needed for importing 1.7.x library
+#include "util/xml.h" //needed for importing 1.7.x library
 #include "legacylibraryimporter.h"
 
 struct LegacyPlaylist {

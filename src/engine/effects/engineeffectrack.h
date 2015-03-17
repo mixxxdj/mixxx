@@ -3,6 +3,7 @@
 
 #include <QList>
 
+#include "engine/channelhandle.h"
 #include "engine/effects/message.h"
 #include "engine/effects/groupfeaturestate.h"
 
@@ -17,7 +18,7 @@ class EngineEffectRack : public EffectsRequestHandler {
         const EffectsRequest& message,
         EffectsResponsePipe* pResponsePipe);
 
-    void process(const QString& group,
+    void process(const ChannelHandle& handle,
                  CSAMPLE* pInOut,
                  const unsigned int numSamples,
                  const unsigned int sampleRate,

@@ -1,3 +1,7 @@
+#Mixxx {
+  font-family: Lucida Grande, Helvetica Neue, Arial, Open Sans;
+}
+
 #debugbg {
     background-color: #fff;
 }
@@ -139,7 +143,11 @@
 }
 
 #ClockWidget {
-  qproperty-layoutAlignment: 'AlignVCenter | AlignRight';
+  qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
+}
+
+#LatencyMeter {
+  margin: 1px;
 }
 
 #PrimaryMixer {
@@ -338,7 +346,7 @@
 }
 
 #KnobLabel {
-  font: bold 10px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  font: bold 10px/12px;
   color: #585858;
   text-align: center;
   qproperty-alignment: 'AlignCenter | AlignBottom';
@@ -355,9 +363,7 @@
 #GuiToggleButton[displayValue="0"] {
     border: 1px solid #585858;
     border-radius: 2px;
-    font: bold 10px/12px Lucida Grande,
-          Lucida Sans Unicode, Arial,
-          Verdana, sans-serif;
+    font: bold 10px/12px;
     color: #ddd;
     background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
 }
@@ -365,9 +371,7 @@
 #GuiToggleButton[displayValue="1"] {
     border: 1px solid #585858;
     border-radius: 2px;
-    font: bold 10px/12px Lucida Grande,
-          Lucida Sans Unicode, Arial,
-          Verdana, sans-serif;
+    font: bold 10px/12px;
     color: #0e0e0e;
     background-color: #eece33;
 }
@@ -375,9 +379,7 @@
 #GuiToggleButtonInverted[displayValue="0"] {
     border: 1px solid #585858;
     border-radius: 2px;
-    font: bold 10px/12px Lucida Grande,
-          Lucida Sans Unicode, Arial,
-          Verdana, sans-serif;
+    font: bold 10px/12px;
     color: #0e0e0e;
     background-color: #eece33;
 }
@@ -385,9 +387,7 @@
 #GuiToggleButtonInverted[displayValue="1"] {
     border: 1px solid #585858;
     border-radius: 2px;
-    font: bold 10px/12px Lucida Grande,
-          Lucida Sans Unicode, Arial,
-          Verdana, sans-serif;
+    font: bold 10px/12px;
     color: #ddd;
     background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
 }
@@ -396,9 +396,7 @@
     border: 1px solid #585858;
     border-radius: 2px;
     margin: 1px;
-    font: bold 10px/12px Lucida Grande,
-          Lucida Sans Unicode, Arial,
-          Verdana, sans-serif;
+    font: bold 10px/12px;
     color: #ddd;
     background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
 }
@@ -407,9 +405,7 @@
     border: 1px solid #585858;
     border-radius: 2px;
     margin: 1px;
-    font: bold 10px/12px Lucida Grande,
-          Lucida Sans Unicode, Arial,
-          Verdana, sans-serif;
+    font: bold 10px/12px;
     color: #0e0e0e;
     background-color: #eece33;
 }
@@ -418,9 +414,7 @@
     border: 1px solid #585858;
     border-radius: 2px;
     margin: 1px;
-    font: bold 10px/12px Lucida Grande,
-          Lucida Sans Unicode, Arial,
-          Verdana, sans-serif;
+    font: bold 10px/12px;
     color: #ddd;
     background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
 }
@@ -429,9 +423,7 @@
     border: 1px solid #585858;
     border-radius: 2px;
     margin: 1px;
-    font: bold 10px/12px Lucida Grande,
-          Lucida Sans Unicode, Arial,
-          Verdana, sans-serif;
+    font: bold 10px/12px;
     color: #0e0e0e;
     background-color: #eece33;
 }
@@ -440,9 +432,7 @@
     border: 1px solid #585858;
     border-radius: 2px;
     margin: 1px;
-    font: bold 10px/12px Lucida Grande,
-          Lucida Sans Unicode, Arial,
-          Verdana, sans-serif;
+    font: bold 10px/12px;
     color: #eece33;
     background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
 }
@@ -451,9 +441,7 @@
     border: 1px solid #585858;
     border-radius: 2px;
     margin: 1px;
-    font: bold 10px/12px Lucida Grande,
-          Lucida Sans Unicode, Arial,
-          Verdana, sans-serif;
+    font: bold 10px/12px;
     color: #ddd;
     background-color: #0e0e0e;
 }
@@ -462,9 +450,7 @@
     border: 1px solid #585858;
     border-radius: 2px;
     margin: 1px;
-    font: bold 10px/12px Lucida Grande,
-          Lucida Sans Unicode, Arial,
-          Verdana, sans-serif;
+    font: bold 10px/12px;
     color: #0e0e0e;
     background-color: #eece33;
 }
@@ -473,9 +459,7 @@
     border: 1px solid #585858;
     border-radius: 2px;
     margin: 1px;
-    font: bold 10px/12px Lucida Grande,
-          Lucida Sans Unicode, Arial,
-          Verdana, sans-serif;
+    font: bold 10px/12px;
     color: #0e0e0e;
     background-color: #eece33;
 }
@@ -483,9 +467,7 @@
 #PitchTweakButton[displayValue="0"] {
     border: 1px solid #585858;
     border-radius: 2px;
-    font: bold 10px Lucida Grande,
-          Lucida Sans Unicode, Arial,
-          Verdana, sans-serif;
+    font: bold 10px;
     color: #ddd;
     background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
     margin: 1px;
@@ -494,16 +476,14 @@
 #PitchTweakButton[displayValue="1"] {
     border: 1px solid #585858;
     border-radius: 2px;
-    font: bold 10px Lucida Grande,
-          Lucida Sans Unicode, Arial,
-          Verdana, sans-serif;
+    font: bold 10px;
     color: #ddd;
     background-color: #c00a09;
     margin: 1px;
 }
 
 #PitchLabel {
-  font: bold 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  font: bold 12px/14px;
   color: #585858;
   text-align: center;
   qproperty-alignment: 'AlignHCenter | AlignBottom';
@@ -517,7 +497,7 @@
 
 #BpmTextColor1, #BpmTextColor2 {
   qproperty-alignment: 'AlignCenter';
-  font: bold 16px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  font: bold 16px/18px;
   background-color: transparent;
   text-align: center;
   padding: 0px;
@@ -527,13 +507,34 @@
 
 #BpmTextColor3, #BpmTextColor4 {
   qproperty-alignment: 'AlignCenter';
-  font: bold 16px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  font: bold 16px/18px;
   background-color: transparent;
   text-align: center;
   padding: 0px;
   margin: 0px;
   color: #09B2AE;
 }
+
+#RateTextColor1, #RateTextColor2 {
+  qproperty-alignment: 'AlignCenter';
+  font: bold 12px/13px;
+  background-color: transparent;
+  text-align: center;
+  padding: 0px;
+  margin: 0px;
+  color: #eece33;
+}
+
+#RateTextColor3, #RateTextColor4 {
+  qproperty-alignment: 'AlignCenter';
+  font: bold 12px/13px;
+  background-color: transparent;
+  text-align: center;
+  padding: 0px;
+  margin: 0px;
+  color: #09B2AE;
+}
+
 
 #CrossFadeContainer {
  qproperty-layoutAlignment: 'AlignCenter';
@@ -590,7 +591,7 @@
 }
 
 #HideShowButton {
-  font: 14px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  font: 14px/18px;
   padding:0px;
   margin:0px;
   text-align:left;
@@ -820,7 +821,7 @@
 }
 
 #TitleGutter WLabel, #EffectUnitNameContainer WLabel {
-  font: bold 16px/19px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  font: bold 16px/19px;
   text-transform: none;
   text-align: left;
 }
@@ -907,7 +908,7 @@
 
 /* this is now inline in the pushbutton so we can change styles */
 /*#EffectUnitGroupControlButton {
-  font: bold 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  font: bold 11px/13px;
   color: #eece33;
   text-transform: none;
   text-align: center;
@@ -916,8 +917,7 @@
 }*/
 
 #EffectUnitGroupControlButton[displayValue="0"] {
-    font: bold 11px/13px Lucida Grande, Lucida Sans Unicode,
-          Arial, Verdana, sans-serif;
+    font: bold 11px/13px;
     color: #585858;
     background-color: #0e0e0e;
     text-transform: none;
@@ -927,8 +927,7 @@
 }
 
 #EffectUnitGroupControlButton[displayValue="1"] {
-    font: bold 11px/13px Lucida Grande, Lucida Sans Unicode,
-          Arial, Verdana, sans-serif;
+    font: bold 11px/13px;
     color: #0e0e0e;
     background-color: #eece33;
     text-transform: none;
@@ -939,9 +938,7 @@
 
 #EffectToggleButton[displayValue="0"] {
     border: 1px solid #585858;
-    font: bold 10px/12px Lucida Grande,
-          Lucida Sans Unicode, Arial,
-          Verdana, sans-serif;
+    font: bold 10px/12px;
     color: #585858;
     background-color: #0e0e0e;
     margin-right: 1px;
@@ -949,9 +946,7 @@
 
 #EffectToggleButton[displayValue="1"] {
     border: 1px solid #585858;
-    font: bold 10px/12px Lucida Grande,
-          Lucida Sans Unicode, Arial,
-          Verdana, sans-serif;
+    font: bold 10px/12px;
     color: #0e0e0e;
     background-color: #eece33;
     margin-right: 1px;
@@ -961,7 +956,7 @@
 
 QTableView, QTextBrowser, QTreeView {
   border: 1px solid #585858;
-  /*font: 15px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;*/
+  /*font: 15px/18px;*/
   color: #cfb32c;
   background-color: #0f0f0f;
   alternate-background-color: #1a1a1a;
@@ -1002,7 +997,7 @@ QPushButton#LibraryPreviewButton:!checked{ image: url(skin:/style/style_library_
 QPushButton#LibraryPreviewButton:checked{ image: url(skin:/style/style_library_preview_pause.png); }
 
 QHeaderView {
-  font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+  font: 13px/15px;
   color: #cfb32c;
   background-color: #0f0f0f;
 }

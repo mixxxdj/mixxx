@@ -18,11 +18,17 @@ using ::testing::_;
 
 class EffectSlotTest : public BaseEffectTest {
   protected:
-    virtual void SetUp() {
-        m_pEffectsManager->registerGroup("[Master]");
-        m_pEffectsManager->registerGroup("[Headphone]");
+    EffectSlotTest()
+            : m_master(m_factory.getOrCreateHandle("[Master]"), "[Master]"),
+              m_headphone(m_factory.getOrCreateHandle("[Headphone]"), "[Headphone]") {
+        m_pEffectsManager->registerChannel(m_master);
+        m_pEffectsManager->registerChannel(m_headphone);
         registerTestBackend();
     }
+
+    ChannelHandleFactory m_factory;
+    ChannelHandleAndGroup m_master;
+    ChannelHandleAndGroup m_headphone;
 };
 
 TEST_F(EffectSlotTest, ControlsReflectSlotState) {

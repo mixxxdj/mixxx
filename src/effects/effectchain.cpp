@@ -5,7 +5,7 @@
 #include "engine/effects/engineeffectrack.h"
 #include "engine/effects/engineeffectchain.h"
 #include "sampleutil.h"
-#include "xmlparse.h"
+#include "util/xml.h"
 
 EffectChain::EffectChain(EffectsManager* pEffectsManager, const QString& id,
                          EffectChainPointer pPrototype)
@@ -94,8 +94,8 @@ EffectChainPointer EffectChain::clone(EffectChainPointer pChain) {
     pClone->setEnabled(pChain->enabled());
     pClone->setName(pChain->name());
     pClone->setMix(pChain->mix());
-    foreach (const QString& group, pChain->enabledGroups()) {
-        pClone->enableForGroup(group);
+    foreach (const ChannelHandleAndGroup& handle_group, pChain->enabledChannels()) {
+        pClone->enableForChannel(handle_group);
     }
     foreach (EffectPointer pEffect, pChain->effects()) {
         EffectPointer pClonedEffect = pChain->m_pEffectsManager
@@ -141,37 +141,37 @@ void EffectChain::setEnabled(bool enabled) {
     emit(enabledChanged(enabled));
 }
 
-void EffectChain::enableForGroup(const QString& group) {
-    if (!m_enabledGroups.contains(group)) {
-        m_enabledGroups.insert(group);
+void EffectChain::enableForChannel(const ChannelHandleAndGroup& handle_group) {
+    if (!m_enabledChannels.contains(handle_group)) {
+        m_enabledChannels.insert(handle_group);
 
         EffectsRequest* request = new EffectsRequest();
-        request->type = EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_GROUP;
+        request->type = EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_CHANNEL;
         request->pTargetChain = m_pEngineEffectChain;
-        request->group = group;
+        request->channel = handle_group.handle();
         m_pEffectsManager->writeRequest(request);
 
-        emit(groupStatusChanged(group, true));
+        emit(channelStatusChanged(handle_group.name(), true));
     }
 }
 
-bool EffectChain::enabledForGroup(const QString& group) const {
-    return m_enabledGroups.contains(group);
+bool EffectChain::enabledForChannel(const ChannelHandleAndGroup& handle_group) const {
+    return m_enabledChannels.contains(handle_group);
 }
 
-const QSet<QString>& EffectChain::enabledGroups() const {
-    return m_enabledGroups;
+const QSet<ChannelHandleAndGroup>& EffectChain::enabledChannels() const {
+    return m_enabledChannels;
 }
 
-void EffectChain::disableForGroup(const QString& group) {
-    if (m_enabledGroups.remove(group)) {
+void EffectChain::disableForChannel(const ChannelHandleAndGroup& handle_group) {
+    if (m_enabledChannels.remove(handle_group)) {
         EffectsRequest* request = new EffectsRequest();
-        request->type = EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_GROUP;
+        request->type = EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_CHANNEL;
         request->pTargetChain = m_pEngineEffectChain;
-        request->group = group;
+        request->channel = handle_group.handle();
         m_pEffectsManager->writeRequest(request);
 
-        emit(groupStatusChanged(group, false));
+        emit(channelStatusChanged(handle_group.name(), false));
     }
 }
 

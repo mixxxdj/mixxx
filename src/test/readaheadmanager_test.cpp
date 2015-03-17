@@ -10,6 +10,7 @@
 #include "engine/readaheadmanager.h"
 #include "sampleutil.h"
 #include "util/defs.h"
+#include "util/assert.h"
 
 class StubReader : public CachingReader {
   public:
@@ -44,7 +45,7 @@ class StubLoopControl : public EngineControl {
         Q_UNUSED(currentSample);
         Q_UNUSED(totalSamples);
         Q_UNUSED(iBufferSize);
-        Q_ASSERT(!m_triggerReturnValues.isEmpty());
+        RELEASE_ASSERT(!m_triggerReturnValues.isEmpty());
         return m_triggerReturnValues.takeFirst();
     }
 
@@ -56,7 +57,7 @@ class StubLoopControl : public EngineControl {
         Q_UNUSED(dCurrentSample);
         Q_UNUSED(dTotalSamples);
         Q_UNUSED(iBufferSize);
-        Q_ASSERT(!m_processReturnValues.isEmpty());
+        RELEASE_ASSERT(!m_processReturnValues.isEmpty());
         return m_processReturnValues.takeFirst();
     }
 

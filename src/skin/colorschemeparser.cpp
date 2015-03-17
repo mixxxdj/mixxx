@@ -5,7 +5,7 @@
 #include "widget/wimagestore.h"
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
-#include "xmlparse.h"
+#include "util/xml.h"
 #include "skin/imgsource.h"
 #include "skin/imgloader.h"
 #include "skin/imgcolor.h"

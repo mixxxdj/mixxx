@@ -123,9 +123,6 @@ class EngineBuffer : public EngineObject {
 
     void bindWorkers(EngineWorkerScheduler* pWorkerScheduler);
 
-    // Add an engine control to the EngineBuffer
-    void addControl(EngineControl* pControl);
-
     // Return the current rate (not thread-safe)
     double getSpeed();
     // Returns current bpm value (not thread-safe)
@@ -209,7 +206,12 @@ class EngineBuffer : public EngineObject {
     void slotPassthroughChanged(double v);
 
   private:
-    void enableIndependentPitchTempoScaling(bool bEnable);
+    // Add an engine control to the EngineBuffer
+    // must not be called outside the Constructor
+    void addControl(EngineControl* pControl);
+
+    void enableIndependentPitchTempoScaling(bool bEnable,
+                                            const int iBufferSize);
 
     void updateIndicators(double rate, int iBufferSize);
 
@@ -219,9 +221,13 @@ class EngineBuffer : public EngineObject {
 
     double fractionalPlayposFromAbsolute(double absolutePlaypos);
 
-    void doSeek(double change, enum SeekRequest seekType);
+    void doSeekFractional(double fractionalPos, enum SeekRequest seekType);
+    void doSeekPlayPos(double playpos, enum SeekRequest seekType);
 
-    void clearScale();
+    // Read one buffer from the current scaler into the crossfade buffer.  Used
+    // for transitioning from one scaler to another, or reseeking a scaler
+    // to prevent pops.
+    void readToCrossfadeBuffer(const int iBufferSize);
 
     // Reset buffer playpos and set file playpos.
     void setNewPlaypos(double playpos);
@@ -231,10 +237,6 @@ class EngineBuffer : public EngineObject {
 
     double updateIndicatorsAndModifyPlay(double v);
     void verifyPlay();
-
-    // Lock for modifying local engine variables that are not thread safe, such
-    // as m_engineControls and m_hintList
-    QMutex m_engineLock;
 
     // Holds the name of the control group
     QString m_group;
@@ -289,10 +291,10 @@ class EngineBuffer : public EngineObject {
     double m_rate_old;
 
     // Copy of length of file
-    long int m_file_length_old;
+    int m_trackSamplesOld;
 
     // Copy of file sample rate
-    int m_file_srate_old;
+    int m_trackSampleRateOld;
 
     // Mutex controlling weather the process function is in pause mode. This happens
     // during seek and loading of a new track
@@ -353,8 +355,6 @@ class EngineBuffer : public EngineObject {
     // ScaleST and ScaleRB during a single callback.
     EngineBufferScale* volatile m_pScaleKeylock;
     EngineBufferScaleDummy* m_pScaleDummy;
-    // Indicates whether the scaler has changed since the last process()
-    bool m_bScalerChanged;
     // Indicates that dependency injection has taken place.
     bool m_bScalerOverride;
 
@@ -372,7 +372,9 @@ class EngineBuffer : public EngineObject {
     bool m_bPlayAfterLoading;
     float m_fRampValue;
     int m_iRampState;
-    //int m_iRampIter;
+    // Records the sample rate so we can detect when it changes. Initialized to
+    // 0 to guarantee we see a change on the first callback.
+    int m_iSampleRate;
 
     TrackPointer m_pCurrentTrack;
 #ifdef __SCALER_DEBUG__
@@ -381,8 +383,11 @@ class EngineBuffer : public EngineObject {
 #endif
     CSAMPLE* m_pDitherBuffer;
     unsigned int m_iDitherBufferReadIndex;
-    CSAMPLE* m_pCrossFadeBuffer;
-    int m_iCrossFadeSamples;
+
+    // Certain operations like seeks and engine changes need to be crossfaded
+    // to eliminate clicks and pops.
+    CSAMPLE* m_pCrossfadeBuffer;
+    bool m_bCrossfadeReady;
     int m_iLastBufferSize;
 
     QSharedPointer<VisualPlayPosition> m_visualPlayPos;

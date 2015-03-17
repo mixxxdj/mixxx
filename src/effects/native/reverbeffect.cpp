@@ -61,14 +61,14 @@ ReverbEffect::~ReverbEffect() {
     //qDebug() << debugString() << "destroyed";
 }
 
-void ReverbEffect::processGroup(const QString& group,
+void ReverbEffect::processChannel(const ChannelHandle& handle,
                                 ReverbGroupState* pState,
                                 const CSAMPLE* pInput, CSAMPLE* pOutput,
                                 const unsigned int numSamples,
                                 const unsigned int sampleRate,
                                 const EffectProcessor::EnableState enableState,
                                 const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(group);
+    Q_UNUSED(handle);
     Q_UNUSED(enableState);
     Q_UNUSED(groupFeatures);
     Q_UNUSED(sampleRate);

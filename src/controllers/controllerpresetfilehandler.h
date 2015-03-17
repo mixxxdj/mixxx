@@ -8,7 +8,7 @@
 #ifndef CONTROLLERPRESETFILEHANDLER_H
 #define CONTROLLERPRESETFILEHANDLER_H
 
-#include "xmlparse.h"
+#include "util/xml.h"
 #include "controllers/controllerpreset.h"
 
 class ControllerPresetFileHandler {

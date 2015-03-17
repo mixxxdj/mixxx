@@ -31,7 +31,7 @@ class GraphicEQEffectGroupState {
     float m_centerFrequencies[8];
 };
 
-class GraphicEQEffect : public GroupEffectProcessor<GraphicEQEffectGroupState> {
+class GraphicEQEffect : public PerChannelEffectProcessor<GraphicEQEffectGroupState> {
   public:
     GraphicEQEffect(EngineEffect* pEffect, const EffectManifest& manifest);
     virtual ~GraphicEQEffect();
@@ -40,13 +40,13 @@ class GraphicEQEffect : public GroupEffectProcessor<GraphicEQEffectGroupState> {
     static EffectManifest getManifest();
 
     // See effectprocessor.h
-    void processGroup(const QString& group,
-                      GraphicEQEffectGroupState* pState,
-                      const CSAMPLE* pInput, CSAMPLE *pOutput,
-                      const unsigned int numSamples,
-                      const unsigned int sampleRate,
-                      const EffectProcessor::EnableState enableState,
-                      const GroupFeatureState& groupFeatureState);
+    void processChannel(const ChannelHandle& handle,
+                        GraphicEQEffectGroupState* pState,
+                        const CSAMPLE* pInput, CSAMPLE *pOutput,
+                        const unsigned int numSamples,
+                        const unsigned int sampleRate,
+                        const EffectProcessor::EnableState enableState,
+                        const GroupFeatureState& groupFeatureState);
 
   private:
     QString debugString() const {

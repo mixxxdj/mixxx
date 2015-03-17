@@ -68,9 +68,9 @@ void EffectRack::removeFromEngine() {
     m_pEngineEffectRack = NULL;
 }
 
-void EffectRack::registerGroup(const QString& group) {
+void EffectRack::registerChannel(const ChannelHandleAndGroup& handle_group) {
     foreach (EffectChainSlotPointer pChainSlot, m_effectChainSlots) {
-        pChainSlot->registerGroup(group);
+        pChainSlot->registerChannel(handle_group);
     }
 }
 
@@ -217,11 +217,11 @@ EffectChainSlotPointer StandardEffectRack::addEffectChainSlot() {
     connect(pChainSlot, SIGNAL(prevEffect(unsigned int, unsigned int, EffectPointer)),
             this, SLOT(loadPrevEffect(unsigned int, unsigned int, EffectPointer)));
 
-    // Register all the existing channels with the new EffectChain
-    const QSet<QString>& registeredGroups =
-            m_pEffectChainManager->registeredGroups();
-    foreach (const QString& group, registeredGroups) {
-        pChainSlot->registerGroup(group);
+    // Register all the existing channels with the new EffectChain.
+    const QSet<ChannelHandleAndGroup>& registeredChannels =
+            m_pEffectChainManager->registeredChannels();
+    foreach (const ChannelHandleAndGroup& handle_group, registeredChannels) {
+        pChainSlot->registerChannel(handle_group);
     }
 
     EffectChainSlotPointer pChainSlotPointer = EffectChainSlotPointer(pChainSlot);
@@ -242,23 +242,34 @@ PerGroupRack::PerGroupRack(EffectsManager* pEffectsManager,
         : EffectRack(pEffectsManager, pChainManager, iRackNumber, group) {
 }
 
-EffectChainSlotPointer PerGroupRack::addEffectChainSlotForGroup(const QString& group) {
-    if (m_groupToChainSlot.contains(group)) {
+EffectChainSlotPointer PerGroupRack::addEffectChainSlotForGroup(const QString& groupName) {
+    if (m_groupToChainSlot.contains(groupName)) {
         qWarning() << "PerGroupRack" << getGroup()
-                   << "group is already registered" << group;
-        return getGroupEffectChainSlot(group);
+                   << "group is already registered" << groupName;
+        return getGroupEffectChainSlot(groupName);
     }
 
     int iChainSlotNumber = m_groupToChainSlot.size();
     QString chainSlotGroup = formatEffectChainSlotGroupForGroup(
-        getRackNumber(), iChainSlotNumber, group);
+        getRackNumber(), iChainSlotNumber, groupName);
     EffectChainSlot* pChainSlot = new EffectChainSlot(this, chainSlotGroup,
                                                       iChainSlotNumber);
     EffectChainSlotPointer pChainSlotPointer(pChainSlot);
     addEffectChainSlotInternal(pChainSlotPointer);
-    m_groupToChainSlot[group] = pChainSlotPointer;
+    m_groupToChainSlot[groupName] = pChainSlotPointer;
 
-    configureEffectChainSlotForGroup(pChainSlotPointer, group);
+    // TODO(rryan): remove.
+    foreach (const ChannelHandleAndGroup& handle_group,
+             m_pEffectChainManager->registeredChannels()) {
+        if (handle_group.name() == groupName) {
+            configureEffectChainSlotForGroup(pChainSlotPointer, handle_group);
+            return pChainSlotPointer;
+        }
+    }
+
+    qWarning() << "PerGroupRack::addEffectChainSlotForGroup" << groupName
+               << "was not registered before calling."
+               << "Can't configure the effect chain slot.";
     return pChainSlotPointer;
 }
 
@@ -273,14 +284,14 @@ QuickEffectRack::QuickEffectRack(EffectsManager* pEffectsManager,
                        QuickEffectRack::formatGroupString(iRackNumber)) {
 }
 
-void QuickEffectRack::configureEffectChainSlotForGroup(EffectChainSlotPointer pSlot,
-                                                       const QString& group) {
-    // Register this group alone with the chain slot.
-    pSlot->registerGroup(group);
+void QuickEffectRack::configureEffectChainSlotForGroup(
+        EffectChainSlotPointer pSlot, const ChannelHandleAndGroup& handle_group) {
+    // Register this channel alone with the chain slot.
+    pSlot->registerChannel(handle_group);
 
     // Add a single EffectSlot for the quick effect.
     pSlot->addEffectSlot(QuickEffectRack::formatEffectSlotGroupString(
-        getRackNumber(), group));
+            getRackNumber(), handle_group.name()));
 
     // TODO(rryan): Set up next/prev signals.
 
@@ -289,8 +300,8 @@ void QuickEffectRack::configureEffectChainSlotForGroup(EffectChainSlotPointer pS
     EffectChainPointer pChain = makeEmptyChain();
     pSlot->loadEffectChain(pChain);
 
-    // Enable the chain for the group by default.
-    pChain->enableForGroup(group);
+    // Enable the chain for the channel by default.
+    pChain->enableForChannel(handle_group);
 
     // Set the chain to be fully wet.
     pChain->setMix(1.0);
@@ -300,11 +311,11 @@ void QuickEffectRack::configureEffectChainSlotForGroup(EffectChainSlotPointer pS
     pSlot->setSuperParameterDefaultValue(0.5);
 }
 
-bool QuickEffectRack::loadEffectToGroup(const QString& group,
+bool QuickEffectRack::loadEffectToGroup(const QString& groupName,
                                         EffectPointer pEffect) {
-    EffectChainSlotPointer pChainSlot = getGroupEffectChainSlot(group);
+    EffectChainSlotPointer pChainSlot = getGroupEffectChainSlot(groupName);
     if (pChainSlot.isNull()) {
-        qWarning() << "No chain for group" << group;
+        qWarning() << "No chain for group" << groupName;
         return false;
     }
 
@@ -312,7 +323,13 @@ bool QuickEffectRack::loadEffectToGroup(const QString& group,
     if (pChain.isNull()) {
         pChain = makeEmptyChain();
         pChainSlot->loadEffectChain(pChain);
-        pChain->enableForGroup(group);
+        // TODO(rryan): remove.
+        foreach (const ChannelHandleAndGroup& handle_group,
+                 m_pEffectChainManager->registeredChannels()) {
+            if (handle_group.name() == groupName) {
+                pChain->enableForChannel(handle_group);
+            }
+        }
         pChain->setMix(1.0);
     }
 
@@ -334,11 +351,11 @@ EqualizerRack::EqualizerRack(EffectsManager* pEffectsManager,
                        EqualizerRack::formatGroupString(iRackNumber)) {
 }
 
-bool EqualizerRack::loadEffectToGroup(const QString& group,
+bool EqualizerRack::loadEffectToGroup(const QString& groupName,
                                       EffectPointer pEffect) {
-    EffectChainSlotPointer pChainSlot = getGroupEffectChainSlot(group);
+    EffectChainSlotPointer pChainSlot = getGroupEffectChainSlot(groupName);
     if (pChainSlot.isNull()) {
-        qWarning() << "No chain for group" << group;
+        qWarning() << "No chain for group" << groupName;
         return false;
     }
 
@@ -346,7 +363,13 @@ bool EqualizerRack::loadEffectToGroup(const QString& group,
     if (pChain.isNull()) {
         pChain = makeEmptyChain();
         pChainSlot->loadEffectChain(pChain);
-        pChain->enableForGroup(group);
+        // TODO(rryan): remove.
+        foreach (const ChannelHandleAndGroup& handle_group,
+                 m_pEffectChainManager->registeredChannels()) {
+            if (handle_group.name() == groupName) {
+                pChain->enableForChannel(handle_group);
+            }
+        }
         pChain->setMix(1.0);
     }
 
@@ -356,13 +379,15 @@ bool EqualizerRack::loadEffectToGroup(const QString& group,
 
 
 void EqualizerRack::configureEffectChainSlotForGroup(EffectChainSlotPointer pSlot,
-                                                     const QString& group) {
-    // Register this group alone with the chain slot.
-    pSlot->registerGroup(group);
+                                                     const ChannelHandleAndGroup& handle_group) {
+    const QString& groupName = handle_group.name();
+
+    // Register this channel alone with the chain slot.
+    pSlot->registerChannel(handle_group);
 
     // Add a single EffectSlot for the equalizer effect.
     pSlot->addEffectSlot(EqualizerRack::formatEffectSlotGroupString(
-        getRackNumber(), group));
+            getRackNumber(), groupName));
 
     // TODO(rryan): Set up next/prev signals.
 
@@ -371,8 +396,8 @@ void EqualizerRack::configureEffectChainSlotForGroup(EffectChainSlotPointer pSlo
     EffectChainPointer pChain = makeEmptyChain();
     pSlot->loadEffectChain(pChain);
 
-    // Enable the chain for the group by default.
-    pChain->enableForGroup(group);
+    // Enable the chain for the channel by default.
+    pChain->enableForChannel(handle_group);
 
     // Set the chain to be fully wet.
     pChain->setMix(1.0);
@@ -383,40 +408,40 @@ void EqualizerRack::configureEffectChainSlotForGroup(EffectChainSlotPointer pSlo
     EffectSlotPointer pEffectSlot = pSlot->getEffectSlot(0);
     if (pEffectSlot) {
         const QString& effectSlotGroup = pEffectSlot->getGroup();
-        ControlDoublePrivate::insertAlias(ConfigKey(group, "filterLow"),
+        ControlDoublePrivate::insertAlias(ConfigKey(groupName, "filterLow"),
                                           ConfigKey(effectSlotGroup, "parameter1"));
 
-        ControlDoublePrivate::insertAlias(ConfigKey(group, "filterMid"),
+        ControlDoublePrivate::insertAlias(ConfigKey(groupName, "filterMid"),
                                           ConfigKey(effectSlotGroup, "parameter2"));
 
-        ControlDoublePrivate::insertAlias(ConfigKey(group, "filterHigh"),
+        ControlDoublePrivate::insertAlias(ConfigKey(groupName, "filterHigh"),
                                           ConfigKey(effectSlotGroup, "parameter3"));
 
-        ControlDoublePrivate::insertAlias(ConfigKey(group, "filterLowKill"),
+        ControlDoublePrivate::insertAlias(ConfigKey(groupName, "filterLowKill"),
                                           ConfigKey(effectSlotGroup, "button_parameter1"));
 
-        ControlDoublePrivate::insertAlias(ConfigKey(group, "filterMidKill"),
+        ControlDoublePrivate::insertAlias(ConfigKey(groupName, "filterMidKill"),
                                           ConfigKey(effectSlotGroup, "button_parameter2"));
 
-        ControlDoublePrivate::insertAlias(ConfigKey(group, "filterHighKill"),
+        ControlDoublePrivate::insertAlias(ConfigKey(groupName, "filterHighKill"),
                                           ConfigKey(effectSlotGroup, "button_parameter3"));
 
-        ControlDoublePrivate::insertAlias(ConfigKey(group, "filterLow_loaded"),
+        ControlDoublePrivate::insertAlias(ConfigKey(groupName, "filterLow_loaded"),
                                           ConfigKey(effectSlotGroup, "parameter1_loaded"));
 
-        ControlDoublePrivate::insertAlias(ConfigKey(group, "filterMid_loaded"),
+        ControlDoublePrivate::insertAlias(ConfigKey(groupName, "filterMid_loaded"),
                                           ConfigKey(effectSlotGroup, "parameter2_loaded"));
 
-        ControlDoublePrivate::insertAlias(ConfigKey(group, "filterHigh_loaded"),
+        ControlDoublePrivate::insertAlias(ConfigKey(groupName, "filterHigh_loaded"),
                                           ConfigKey(effectSlotGroup, "parameter3_loaded"));
 
-        ControlDoublePrivate::insertAlias(ConfigKey(group, "filterLowKill_loaded"),
+        ControlDoublePrivate::insertAlias(ConfigKey(groupName, "filterLowKill_loaded"),
                                           ConfigKey(effectSlotGroup, "button_parameter1_loaded"));
 
-        ControlDoublePrivate::insertAlias(ConfigKey(group, "filterMidKill_loaded"),
+        ControlDoublePrivate::insertAlias(ConfigKey(groupName, "filterMidKill_loaded"),
                                           ConfigKey(effectSlotGroup, "button_parameter2_loaded"));
 
-        ControlDoublePrivate::insertAlias(ConfigKey(group, "filterHighKill_loaded"),
+        ControlDoublePrivate::insertAlias(ConfigKey(groupName, "filterHighKill_loaded"),
                                           ConfigKey(effectSlotGroup, "button_parameter3_loaded"));
     }
 }

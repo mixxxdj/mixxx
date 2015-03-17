@@ -132,23 +132,22 @@
                         <WidgetGroup>
                           <ObjectName>ClockWidget</ObjectName>
                           <Layout>horizontal</Layout>
-                          <SizePolicy>min,min</SizePolicy>
+                          <SizePolicy>min,max</SizePolicy>
                           <Children>
-                            <WidgetGroup>
-                              <Layout>horizontal</Layout>
-                              <SizePolicy>max,max</SizePolicy>
-                              <Children>
-                                <Time>
-                                  <TooltipId>time</TooltipId>
-                                  <Style>QLabel { font: bold 16px/19px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-                                            background-color: transparent; color: #EECE33;}
-                                  </Style>
-                                  <ShowSeconds>false</ShowSeconds>
-                                </Time>
-                              </Children>
-                            </WidgetGroup>
+                            <Time>
+                              <TooltipId>time</TooltipId>
+                              <Style>QLabel { font: bold 13px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+                                        background-color: transparent; color: #EECE33;}
+                              </Style>
+                              <ShowSeconds>false</ShowSeconds>
+                            </Time>
                           </Children>
                         </WidgetGroup>
+                        <Template src="skin:vumeter_latency.xml">
+                          <SetVariable name="TooltipId">audio_latency_usage</SetVariable>
+                          <SetVariable name="group">[Master]</SetVariable>
+                          <SetVariable name="control">audio_latency_usage</SetVariable>
+                        </Template>
                       </Children>
                     </WidgetGroup>
                 </Children>
@@ -163,7 +162,7 @@
 					</Template>
 					<Template src="skin:waveform.xml">
 						<SetVariable name="channum">3</SetVariable>
-                        <SetVariable name="deck_color">#09B2AE</SetVariable>
+                        <SetVariable name="signal_color">#09B2AE</SetVariable>
                         <SetVariable name="SignalBgColor">#012322</SetVariable>
                         <SetVariable name="SignalRGBLowColor">#cb3433</SetVariable>
                         <SetVariable name="SignalRGBMidColor">#00ff33</SetVariable>
@@ -185,7 +184,7 @@
 					</Template>
 					<Template src="skin:waveform.xml">
 						<SetVariable name="channum">1</SetVariable>
-                        <SetVariable name="deck_color">#EECE33</SetVariable>
+                        <SetVariable name="signal_color">#E7C413</SetVariable>
                         <SetVariable name="SignalBgColor">#2f290a</SetVariable>
                         <SetVariable name="SignalRGBLowColor">#ff2a00</SetVariable>
                         <SetVariable name="SignalRGBMidColor">#33f600</SetVariable>
@@ -203,7 +202,7 @@
 					</Template>
 					<Template src="skin:waveform.xml">
 						<SetVariable name="channum">2</SetVariable>
-                        <SetVariable name="deck_color">#EECE33</SetVariable>
+                        <SetVariable name="signal_color">#E7C413</SetVariable>
                         <SetVariable name="SignalBgColor">#2f290a</SetVariable>
                         <SetVariable name="SignalRGBLowColor">#ff2a00</SetVariable>
                         <SetVariable name="SignalRGBMidColor">#33f600</SetVariable>
@@ -221,7 +220,7 @@
 					</Template>
 					<Template src="skin:waveform.xml">
 						<SetVariable name="channum">4</SetVariable>
-                        <SetVariable name="deck_color">#09B2AE</SetVariable>
+                        <SetVariable name="signal_color">#09B2AE</SetVariable>
                         <SetVariable name="SignalBgColor">#012322</SetVariable>
                         <SetVariable name="SignalRGBLowColor">#cb3433</SetVariable>
                         <SetVariable name="SignalRGBMidColor">#00ff33</SetVariable>
