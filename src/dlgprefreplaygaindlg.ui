@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>433</width>
+    <width>509</width>
     <height>609</height>
    </rect>
   </property>
@@ -159,7 +159,7 @@
       <item row="1" column="0">
        <widget class="QLabel" name="label_boost">
         <property name="toolTip">
-         <string>"For tracks with ReplayGain, adjust the target loudness to this LUFS value (Loudness Units relative to Full Scale)."</string>
+         <string>&quot;For tracks with ReplayGain, adjust the target loudness to this LUFS value (Loudness Units relative to Full Scale).&quot;</string>
         </property>
         <property name="text">
          <string>Target loudness</string>
@@ -251,23 +251,25 @@
       <string>Hints</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_6">
-      <item row="4" column="0">
-       <widget class="QLabel" name="label_26">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_8">
         <property name="text">
-         <string>When an unanalyzed track is playing, Mixxx will avoid an abrupt volume change by not applying a newly calculated ReplayGain value.</string>
+         <string>ReplayGain targets a reference loudness of -18 LUFS (Loudness Units relative to Full Scale). You may increase it if you find Mixxx is too quiet or reduce it if you find that your tracks are clipping. You may also want to decrease the volume of unanalyzed tracks if you find they are often louder than ReplayGained tracks. For podcasting a loudness of -16 LUFS is recommended.
+
+The loudness target is approximate and assumes track pregain and master output level are unchanged.</string>
+        </property>
+        <property name="scaledContents">
+         <bool>true</bool>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
         </property>
        </widget>
       </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_8">
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_26">
         <property name="text">
-         <string>ReplayGain targets a reference loudness of -18 LUFS (Loudness Units relative to Full Scale). You may increase it if you find Mixxx is too quiet or reduce it if you find that your tracks are clipping. For podcasting a loudness of -16 LUFS is recomended.</string>
-        </property>
-        <property name="scaledContents">
-         <bool>true</bool>
+         <string>When an unanalyzed track is playing, Mixxx will avoid an abrupt volume change by not applying a newly calculated ReplayGain value.</string>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
