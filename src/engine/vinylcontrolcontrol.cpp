@@ -82,19 +82,20 @@ void VinylControlControl::notifySeekQueued() {
     }
 }
 
-void VinylControlControl::slotControlVinylSeek(double change) {
+void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
     // Prevent NaN's from sneaking into the engine.
-    if (isnan(change)) {
+    if (isnan(fractionalPos)) {
         return;
     }
-
-    double total_samples = getTotalSamples();
-    double new_playpos = round(change*total_samples);
 
     // Do nothing if no track is loaded.
     if (!m_pCurrentTrack) {
         return;
     }
+
+
+    double total_samples = getTotalSamples();
+    double new_playpos = round(fractionalPos * total_samples);
 
     if (m_pControlVinylEnabled->get() > 0.0 && m_pControlVinylMode->get() == MIXXX_VCMODE_RELATIVE) {
         int cuemode = (int)m_pControlVinylCueing->get();
