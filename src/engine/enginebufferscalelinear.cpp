@@ -236,27 +236,27 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         return buf;
     }
 
-    // Simulate the loop to estimate how many samples we need
-    double samples = 0;
+    // Simulate the loop to estimate how many frames we need
+    double frames = 0;
 
+    // We're calculating frames = 2 samples, so divide remaining buffer by 2;
     for (int j = 0; j < iRateLerpLength; j += 2) {
-        samples += fabs((rate_add_diff * static_cast<float>(j)) /
+        frames += fabs((rate_add_diff * static_cast<float>(j)) /
                         static_cast<float>(iRateLerpLength) + rate_add_old);
     }
 
-    // We're calculating mono samples, so divide remaining buffer by 2;
-    long unscaled_samples_needed = floor(samples);
+    int unscaled_frames_needed = floor(frames);
 
     // If the current position fraction plus the future position fraction
     // loops over 1.0, we need to round up
     if (m_dNextFrame - floor(m_dNextFrame) +
-        samples - floor(samples) > 1.0) {
-        unscaled_samples_needed++;
+            frames - floor(frames) > 1.0) {
+        unscaled_frames_needed++;
     }
 
     // Multiply by 2 because it is predicting mono rates, while we want a stereo
     // number of samples.
-    unscaled_samples_needed *= 2;
+    int unscaled_samples_needed = unscaled_frames_needed * 2;
 
     // 0 is never the right answer
     unscaled_samples_needed = math_max<long>(2, unscaled_samples_needed);
@@ -284,7 +284,7 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         // The first bounds check (< m_bufferIntSize) is probably not needed.
 
         if (static_cast<int>(floor(m_dCurrentFrame)) * 2 + 1 < m_bufferIntSize
-            && m_dCurrentFrame >= 0.0) {
+                && m_dCurrentFrame >= 0.0) {
             prev_sample[0] = m_bufferInt[static_cast<int>(
                     floor(m_dCurrentFrame)) * 2];
             prev_sample[1] = m_bufferInt[static_cast<int>(
@@ -323,7 +323,7 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
             last_read_failed = m_bufferIntSize == 0;
 
             unscaled_samples_needed -= m_bufferIntSize;
-            //shift the index by the size of the old buffer
+            // shift the index by the size of the old buffer
             m_dCurrentFrame -= old_bufsize / 2.;
         }
 
@@ -336,7 +336,7 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
                     floor(m_dCurrentFrame)) * 2 + 1];
         }
 
-        //I guess?
+        // I guess?
         if (last_read_failed) {
             break;
         }
@@ -350,7 +350,7 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         // between the previous and the next?
         CSAMPLE frac = m_dCurrentFrame - floor(m_dCurrentFrame);
 
-        //Perform linear interpolation
+        // Perform linear interpolation
         buf[i] = static_cast<float>(prev_sample[0]) +
                  frac * (static_cast<float>(cur_sample[0]) -
                  static_cast<float>(prev_sample[0]));
