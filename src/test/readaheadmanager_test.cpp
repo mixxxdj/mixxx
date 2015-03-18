@@ -87,7 +87,7 @@ class ReadAheadManagerTest : public MixxxTest {
 TEST_F(ReadAheadManagerTest, LoopEnableSeekBackward) {
     // If a loop is enabled and the current playposition is ahead of the loop,
     // we should seek to the beginning of the loop.
-    m_pReadAheadManager->setNewPlaypos(110);
+    m_pReadAheadManager->notifySeek(110);
     // Trigger value means, the sample that triggers the loop (loop out)
     m_pLoopControl->pushTriggerReturnValue(100);
     // Process value is the sample we should seek to
@@ -99,7 +99,7 @@ TEST_F(ReadAheadManagerTest, LoopEnableSeekBackward) {
 TEST_F(ReadAheadManagerTest, InReverseLoopEnableSeekForward) {
     // If we are in reverse, a loop is enabled, and the current playposition
     // is before of the loop, we should seek to the out point of the loop.
-    m_pReadAheadManager->setNewPlaypos(1);
+    m_pReadAheadManager->notifySeek(1);
     // Trigger value means, the sample that triggers the loop (loop in)
     m_pLoopControl->pushTriggerReturnValue(10);
     // Process value is the sample we should seek to.

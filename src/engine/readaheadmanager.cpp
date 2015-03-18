@@ -138,12 +138,6 @@ void ReadAheadManager::addEngineControl(EngineControl* pControl) {
     m_sEngineControls.append(pControl);
 }
 
-void ReadAheadManager::setNewPlaypos(int iNewPlaypos) {
-    QMutexLocker locker(&m_mutex);
-    m_iCurrentPosition = iNewPlaypos;
-    m_readAheadLog.clear();
-}
-
 void ReadAheadManager::notifySeek(int iSeekPosition) {
     QMutexLocker locker(&m_mutex);
     m_iCurrentPosition = iSeekPosition;

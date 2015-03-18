@@ -41,11 +41,7 @@ class ReadAheadManager {
     // which samples to return.
     virtual void addEngineControl(EngineControl* control);
 
-    // Notify the ReadAheadManager that the current playposition has
-    // changed. Units are stereo samples.
-    virtual void setNewPlaypos(int iNewPlaypos);
-
-    // Get the current read-ahead position in stereo samples.
+    // Get the current read-ahead position in samples.
     virtual inline int getPlaypos() const {
         return m_iCurrentPosition;
     }
