@@ -89,7 +89,7 @@
         <item>
          <widget class="QLabel" name="LabelCurrentReplayGainBoost">
           <property name="text">
-           <string>TextLabel</string>
+           <string notr="true">TextLabel</string>
           </property>
          </widget>
         </item>
@@ -159,7 +159,7 @@
       <item row="1" column="0">
        <widget class="QLabel" name="label_boost">
         <property name="toolTip">
-         <string>&quot;For tracks with ReplayGain, adjust the target loudness to this LUFS value (Loudness Units relative to Full Scale).&quot;</string>
+         <string>For tracks with ReplayGain, adjust the target loudness to this LUFS value (Loudness Units relative to Full Scale).</string>
         </property>
         <property name="text">
          <string>Target loudness</string>
@@ -216,7 +216,7 @@
         <item>
          <widget class="QLabel" name="LabelCurrentDefaultBoost">
           <property name="text">
-           <string>TextLabel</string>
+           <string notr="true">TextLabel</string>
           </property>
          </widget>
         </item>
