@@ -35,7 +35,7 @@ class EngineBufferScaleLinear : public EngineBufferScale  {
     EngineBufferScaleLinear(ReadAheadManager *pReadAheadManager);
     virtual ~EngineBufferScaleLinear();
 
-    CSAMPLE* getScaled(unsigned long buf_size);
+    void getScaled(CSAMPLE* pOutput, const int iBufferSize);
     void clear();
 
     virtual void setScaleParameters(double base_rate,
@@ -43,8 +43,7 @@ class EngineBufferScaleLinear : public EngineBufferScale  {
                                     double* pPitchRatio);
 
   private:
-    CSAMPLE* do_scale(CSAMPLE* buf, int buf_size,
-                      int *samples_read);
+    int do_scale(CSAMPLE* buf, const int buf_size);
 
     /** Holds playback direction */
     bool m_bBackwards;

@@ -50,7 +50,7 @@ class EngineBufferScaleST : public EngineBufferScale {
     virtual void setSampleRate(int iSampleRate);
 
     // Scale buffer.
-    CSAMPLE* getScaled(unsigned long buf_size);
+    void getScaled(CSAMPLE* pOutput, const int iBufferSize);
 
     // Flush buffer.
     void clear();

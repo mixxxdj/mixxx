@@ -113,32 +113,32 @@ void EngineBufferScaleST::clear() {
     m_pSoundTouch->clear();
 }
 
-CSAMPLE* EngineBufferScaleST::getScaled(unsigned long buf_size) {
+void EngineBufferScaleST::getScaled(CSAMPLE* pOutput, const int buf_size) {
     m_samplesRead = 0.0;
 
     if (m_dRateOld == 0 || m_dTempoOld == 0) {
-        SampleUtil::clear(m_buffer, buf_size);
+        SampleUtil::clear(pOutput, buf_size);
         m_samplesRead = buf_size;
-        return m_buffer;
+        return;
     }
 
     const int iNumChannels = 2;
-    unsigned long total_received_frames = 0;
-    unsigned long total_read_frames = 0;
+    unsigned int total_received_frames = 0;
+    unsigned int total_read_frames = 0;
 
-    unsigned long remaining_frames = buf_size/2;
-    CSAMPLE* read = m_buffer;
+    unsigned long remaining_frames = buf_size / iNumChannels;
+    CSAMPLE* read = pOutput;
     bool last_read_failed = false;
     while (remaining_frames > 0) {
-        unsigned long received_frames = m_pSoundTouch->receiveSamples(
+        unsigned int received_frames = m_pSoundTouch->receiveSamples(
                 (SAMPLETYPE*)read, remaining_frames);
         remaining_frames -= received_frames;
         total_received_frames += received_frames;
         read += received_frames * iNumChannels;
 
         if (remaining_frames > 0) {
-            unsigned long iLenFrames = kiSoundTouchReadAheadLength;
-            unsigned long iAvailSamples = m_pReadAheadManager->getNextSamples(
+            unsigned int iLenFrames = kiSoundTouchReadAheadLength;
+            unsigned int iAvailSamples = m_pReadAheadManager->getNextSamples(
                         // The value doesn't matter here. All that matters is we
                         // are going forward or backward.
                         (m_bBackwards ? -1.0 : 1.0) * m_dBaseRate * m_dTempo,
@@ -162,7 +162,7 @@ CSAMPLE* EngineBufferScaleST::getScaled(unsigned long buf_size) {
 
     // qDebug() << "Fed ST" << total_read_frames*2
     //          << "samples to get" << total_received_frames*2 << "samples";
-    if (total_received_frames != buf_size/2) {
+    if (total_received_frames != static_cast<unsigned int>(buf_size / iNumChannels)) {
         qDebug() << __FILE__ << "- only wrote" << total_received_frames
                  << "frames instead of requested" << buf_size;
     }
@@ -176,5 +176,5 @@ CSAMPLE* EngineBufferScaleST::getScaled(unsigned long buf_size) {
     m_samplesRead = m_dBaseRate * m_dTempo *
             total_received_frames * iNumChannels;
 
-    return m_buffer;
+    return;
 }

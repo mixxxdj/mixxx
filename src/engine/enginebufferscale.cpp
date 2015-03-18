@@ -25,12 +25,10 @@ EngineBufferScale::EngineBufferScale()
           m_bSpeedAffectsPitch(false),
           m_dTempo(1.0),
           m_dPitch(1.0),
-          m_buffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
           m_samplesRead(0) {
 }
 
 EngineBufferScale::~EngineBufferScale() {
-    SampleUtil::free(m_buffer);
 }
 
 double EngineBufferScale::getSamplesRead() {

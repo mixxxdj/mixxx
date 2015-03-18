@@ -22,15 +22,15 @@ void EngineBufferScaleDummy::clear()
 }
 
 
-CSAMPLE* EngineBufferScaleDummy::getScaled(unsigned long buf_size) {
+void EngineBufferScaleDummy::getScaled(CSAMPLE* pOutput, const int buf_size) {
     m_samplesRead = 0.0;
     double rate = m_dBaseRate * m_dTempo;
     if (rate == 0.0) {
-        SampleUtil::clear(m_buffer, buf_size);
-        return m_buffer;
+        SampleUtil::clear(pOutput, buf_size);
+        return;
     }
     int samples_remaining = buf_size;
-    CSAMPLE* buffer_back = m_buffer;
+    CSAMPLE* buffer_back = pOutput;
     while (samples_remaining > 0) {
         int read_samples = m_pReadAheadManager->getNextSamples(rate,
                                                                buffer_back,
@@ -70,5 +70,5 @@ CSAMPLE* EngineBufferScaleDummy::getScaled(unsigned long buf_size) {
 
     //qDebug() << iBaseLength << playpos << new_playpos << buf_size << numSamplesToCopy;
 
-    return m_buffer;
+    return;
 }

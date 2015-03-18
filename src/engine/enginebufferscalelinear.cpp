@@ -86,28 +86,29 @@ inline float hermite4(float frac_pos, float xm1, float x0, float x1, float x2)
 
 /** Determine if we're changing directions (scratching) and then perform
     a stretch */
-CSAMPLE* EngineBufferScaleLinear::getScaled(unsigned long buf_size) {
+void EngineBufferScaleLinear::getScaled(CSAMPLE* pOutput, const int buf_size) {
+    if (buf_size == 0) {
+        m_samplesRead = 0;
+        return;
+    }
+
     if (m_bClear) {
         m_dOldRate = m_dRate;  // If cleared, don't interpolate rate.
         m_bClear = false;
     }
-    float rate_add_old = m_dOldRate;  //Smoothly interpolate to new playback rate
+    float rate_add_old = m_dOldRate;  // Smoothly interpolate to new playback rate
     float rate_add_new = m_dRate;
     int samples_read = 0;
 
-    // Guard against buf_size == 0
-    if (static_cast<int>(buf_size) == 0) {
-        return m_buffer;
-    }
-
     if (rate_add_new * rate_add_old < 0) {
-        //calculate half buffer going one way, and half buffer going
-        //the other way.
+        // Direction has changed!
+        // calculate half buffer going one way, and half buffer going
+        // the other way.
 
-        //first half: rate goes from old rate to zero
+        // first half: rate goes from old rate to zero
         m_dOldRate = rate_add_old;
         m_dRate = 0.0;
-        m_buffer = do_scale(m_buffer, buf_size / 2, &samples_read);
+        samples_read += do_scale(pOutput, buf_size / 2);
 
         // reset prev sample so we can now read in the other direction (may not
         // be necessary?)
@@ -139,23 +140,24 @@ CSAMPLE* EngineBufferScaleLinear::getScaled(unsigned long buf_size) {
         m_dOldRate = 0.0;
         m_dRate = rate_add_new;
         // pass the address of the sample at the halfway point
-        do_scale(&m_buffer[buf_size / 2], buf_size / 2, &samples_read);
+        samples_read += do_scale(&pOutput[buf_size / 2], buf_size / 2);
 
         m_samplesRead = samples_read;
-        return m_buffer;
+        return;
     }
 
-    CSAMPLE* result = do_scale(m_buffer, buf_size, &samples_read);
+    samples_read += do_scale(pOutput, buf_size);
     m_samplesRead = samples_read;
-    return result;
+    return;
 }
 
-/** Stretch a specified buffer worth of audio using linear interpolation */
-CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
-                                           int buf_size, int* samples_read) {
+// Stretch a specified buffer worth of audio using linear interpolation
+int EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
+                                      const int buf_size) {
     const float rate_old = m_dOldRate;
     const float rate_new = m_dRate;
     const float rate_diff = rate_new - rate_old;
+    int samples_read = 0;
 
     // Update the old base rate because we only need to
     // interpolate/ramp up the pitch changes once.
@@ -163,11 +165,6 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
 
     // Determine position in read_buffer to start from. (This is always 0 with
     // the new EngineBuffer implementation)
-
-    // Guard against buf_size == 0
-    if (buf_size == 0) {
-        return buf;
-    }
 
     // We check for scratch condition in the public function, so this shouldn't
     // happen
@@ -220,7 +217,7 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         // getScaled for when the rate changes directions, the convention in the
         // rest of this method is that we increment samples_read rather than
         // assign it.
-        *samples_read += read_samples;
+        samples_read += read_samples;
 
         // Zero the remaining samples if we didn't fill them.
         SampleUtil::clear(write_buf, samples_needed);
@@ -231,7 +228,7 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         m_dNextFrame = 0;
         m_floorSampleOld[0] = buf[read_samples-2];
         m_floorSampleOld[1] = buf[read_samples-1];
-        return buf;
+        return samples_read;
     }
 
     // Simulate the loop to estimate how many frames we need
@@ -251,7 +248,7 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         unscaled_frames_needed++;
     }
 
-    // Multiply by 2 because it is predicting mono rates, while we want a stereo
+    // Multiply by 2 because it is predicting mono rates, while we want a
     // number of samples.
     // 0 is never the right answer
     int unscaled_samples_needed = math_max<int>(2, unscaled_frames_needed * 2);
@@ -308,7 +305,7 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
             m_bufferIntSize = m_pReadAheadManager->getNextSamples(
                     rate_new == 0 ? rate_old : rate_new,
                     m_bufferInt, samples_to_read);
-            *samples_read += m_bufferIntSize;
+            samples_read += m_bufferIntSize;
 
             if (m_bufferIntSize == 0 && last_read_failed) {
                 break;
@@ -368,5 +365,5 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
 
     SampleUtil::clear(&buf[i], buf_size - i);
 
-    return buf;
+    return samples_read;
 }

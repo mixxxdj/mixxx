@@ -30,10 +30,10 @@ class EngineBufferScaleDummy : public EngineBufferScale {
     EngineBufferScaleDummy(ReadAheadManager* pReadAheadManager);
     virtual ~EngineBufferScaleDummy();
 
-    /** Called from EngineBuffer when seeking, to ensure the buffers are flushed */
+    // Called from EngineBuffer when seeking, to ensure the buffers are flushed
     void clear();
-    /** Scale buffer */
-    CSAMPLE* getScaled(unsigned long buf_size);
+    // Scale buffer
+    void getScaled(CSAMPLE* pOutput, const int iBufferSize);
 
   private:
     ReadAheadManager* m_pReadAheadManager;

@@ -69,12 +69,12 @@ class EngineBufferScale : public QObject {
         m_iSampleRate = iSampleRate;
     }
 
-    /** Get new playpos after call to scale() */
+    // Get new playpos after call to scale()
     double getSamplesRead();
-    /** Called from EngineBuffer when seeking, to ensure the buffers are flushed */
+    // Called from EngineBuffer when seeking, to ensure the buffers are flushed */
     virtual void clear() = 0;
-    /** Scale buffer */
-    virtual CSAMPLE* getScaled(unsigned long buf_size) = 0;
+    // Scale buffer
+    virtual void getScaled(CSAMPLE* pOutput, const int iBufferSize) = 0;
 
   protected:
     int m_iSampleRate;
@@ -82,9 +82,7 @@ class EngineBufferScale : public QObject {
     bool m_bSpeedAffectsPitch;
     double m_dTempo;
     double m_dPitch;
-    /** Pointer to internal buffer */
-    CSAMPLE* m_buffer;
-    /** New playpos after call to scale */
+    // New playpos after call to scale */
     double m_samplesRead;
 };
 

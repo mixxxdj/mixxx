@@ -141,7 +141,8 @@ TEST_F(EngineBufferScaleLinearTest, ScaleConstant) {
     EXPECT_CALL(*m_pReadAheadMock, getNextSamples(_, _, _))
             .WillRepeatedly(Invoke(m_pReadAheadMock, &ReadAheadManagerMock::getNextSamplesFake));
 
-    CSAMPLE* pOutput = m_pScaler->getScaled(kiLinearScaleReadAheadLength);
+    CSAMPLE* pOutput = SampleUtil::alloc(MAX_BUFFER_LEN);
+    m_pScaler->getScaled(pOutput, kiLinearScaleReadAheadLength);
     // TODO(rryan) the LERP w/ the previous buffer causes samples 0 and 1 to be
     // 0, for now skip the first two.
     AssertWholeBufferEquals(pOutput+2, 1.0f, kiLinearScaleReadAheadLength-2);
@@ -149,6 +150,8 @@ TEST_F(EngineBufferScaleLinearTest, ScaleConstant) {
     // Check that the total samples read from the RAMAN is equal to the samples
     // we requested.
     ASSERT_EQ(kiLinearScaleReadAheadLength, m_pReadAheadMock->getSamplesRead());
+
+    SampleUtil::free(pOutput);
 }
 
 TEST_F(EngineBufferScaleLinearTest, UnityRateIsSamplePerfect) {
@@ -165,7 +168,8 @@ TEST_F(EngineBufferScaleLinearTest, UnityRateIsSamplePerfect) {
     m_pReadAheadMock->setReadBuffer(readBuffer.data(), readBuffer.size());
 
     const int totalSamples = kiLinearScaleReadAheadLength;
-    CSAMPLE* pOutput = m_pScaler->getScaled(totalSamples);
+    CSAMPLE* pOutput = SampleUtil::alloc(MAX_BUFFER_LEN);
+    m_pScaler->getScaled(pOutput, totalSamples);
 
     AssertBufferCycles(pOutput, totalSamples,
                        readBuffer.data(), readBuffer.size());
@@ -173,6 +177,8 @@ TEST_F(EngineBufferScaleLinearTest, UnityRateIsSamplePerfect) {
     // Check that the total samples read from the RAMAN is equal to the samples
     // we requested.
     ASSERT_EQ(totalSamples, m_pReadAheadMock->getSamplesRead());
+
+    SampleUtil::free(pOutput);
 }
 
 TEST_F(EngineBufferScaleLinearTest, TestRateLERPMonotonicallyProgresses) {
@@ -190,9 +196,12 @@ TEST_F(EngineBufferScaleLinearTest, TestRateLERPMonotonicallyProgresses) {
     EXPECT_CALL(*m_pReadAheadMock, getNextSamples(_, _, _))
             .WillRepeatedly(Invoke(m_pReadAheadMock, &ReadAheadManagerMock::getNextSamplesFake));
 
-    CSAMPLE* pOutput = m_pScaler->getScaled(bufferSize);
+    CSAMPLE* pOutput = SampleUtil::alloc(MAX_BUFFER_LEN);
+    m_pScaler->getScaled(pOutput, bufferSize);
 
     AssertBufferMonotonicallyProgresses(pOutput, 0.0f, 1.0f, bufferSize);
+
+    SampleUtil::free(pOutput);
 }
 
 TEST_F(EngineBufferScaleLinearTest, TestDoubleSpeedSmoothlyHalvesSamples) {
@@ -213,7 +222,8 @@ TEST_F(EngineBufferScaleLinearTest, TestDoubleSpeedSmoothlyHalvesSamples) {
     EXPECT_CALL(*m_pReadAheadMock, getNextSamples(_, _, _))
             .WillRepeatedly(Invoke(m_pReadAheadMock, &ReadAheadManagerMock::getNextSamplesFake));
 
-    CSAMPLE* pOutput = m_pScaler->getScaled(bufferSize);
+    CSAMPLE* pOutput = SampleUtil::alloc(MAX_BUFFER_LEN);
+    m_pScaler->getScaled(pOutput, bufferSize);
 
     CSAMPLE expectedResult[] = { 1.0, 1.0,
                                  -1.0, -1.0 };
@@ -222,6 +232,8 @@ TEST_F(EngineBufferScaleLinearTest, TestDoubleSpeedSmoothlyHalvesSamples) {
     // Check that the total samples read from the RAMAN is double the samples
     // we requested.
     ASSERT_EQ(bufferSize*2, m_pReadAheadMock->getSamplesRead());
+
+    SampleUtil::free(pOutput);
 }
 
 TEST_F(EngineBufferScaleLinearTest, TestHalfSpeedSmoothlyDoublesSamples) {
@@ -240,7 +252,8 @@ TEST_F(EngineBufferScaleLinearTest, TestHalfSpeedSmoothlyDoublesSamples) {
     EXPECT_CALL(*m_pReadAheadMock, getNextSamples(_, _, _))
             .WillRepeatedly(Invoke(m_pReadAheadMock, &ReadAheadManagerMock::getNextSamplesFake));
 
-    CSAMPLE* pOutput = m_pScaler->getScaled(bufferSize);
+    CSAMPLE* pOutput = SampleUtil::alloc(MAX_BUFFER_LEN);
+    m_pScaler->getScaled(pOutput, bufferSize);
 
     CSAMPLE expectedResult[] = { -101.0, 101.0,
                                  -100.0, 100.0,
@@ -252,6 +265,8 @@ TEST_F(EngineBufferScaleLinearTest, TestHalfSpeedSmoothlyDoublesSamples) {
     // requested. TODO(XXX) the extra +2 in this seems very suspicious. We need
     // to find out why this happens.
     ASSERT_EQ(bufferSize/2+2, m_pReadAheadMock->getSamplesRead());
+
+    SampleUtil::free(pOutput);
 }
 
 TEST_F(EngineBufferScaleLinearTest, TestRepeatedScaleCalls) {
@@ -275,13 +290,17 @@ TEST_F(EngineBufferScaleLinearTest, TestRepeatedScaleCalls) {
                                  -99.0, 99.0,
                                  -100.0, 100.0 };
 
+    CSAMPLE* pOutput = SampleUtil::alloc(MAX_BUFFER_LEN);
+
     int samplesRemaining = bufferSize;
     while (samplesRemaining > 0) {
         int toRead = math_min(8, samplesRemaining);
-        CSAMPLE* pOutput = m_pScaler->getScaled(8);
+        m_pScaler->getScaled(pOutput, 8);
         samplesRemaining -= toRead;
         AssertBufferCycles(pOutput, toRead, expectedResult, toRead);
     }
+
+    SampleUtil::free(pOutput);
 }
 
 }  // namespace
