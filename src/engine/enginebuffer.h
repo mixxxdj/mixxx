@@ -355,6 +355,8 @@ class EngineBuffer : public EngineObject {
     // ScaleST and ScaleRB during a single callback.
     EngineBufferScale* volatile m_pScaleKeylock;
     EngineBufferScaleDummy* m_pScaleDummy;
+    // Indicates whether the scaler has changed since the last process()
+    bool m_bScalerChanged;
     // Indicates that dependency injection has taken place.
     bool m_bScalerOverride;
 

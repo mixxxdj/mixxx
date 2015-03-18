@@ -96,6 +96,7 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
           m_pScaleST(NULL),
           m_pScaleRB(NULL),
           m_pScaleKeylock(NULL),
+          m_bScalerChanged(false),
           m_bScalerOverride(false),
           m_iSeekQueued(NO_SEEK),
           m_iEnableSyncQueued(SYNC_REQUEST_NONE),
@@ -376,10 +377,12 @@ void EngineBuffer::enableIndependentPitchTempoScaling(bool bEnable,
         readToCrossfadeBuffer(iBufferSize);
         m_pScale = keylock_scale;
         m_pScale->clear();
+        m_bScalerChanged = true;
     } else if (!bEnable && m_pScale != m_pScaleLinear) {
         readToCrossfadeBuffer(iBufferSize);
         m_pScale = m_pScaleLinear;
         m_pScale->clear();
+        m_bScalerChanged = true;
     }
 }
 
@@ -877,7 +880,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         // scaler. Also, if we have changed scalers then we need to update the
         // scaler.
         if (baserate != m_baserate_old || speed != m_speed_old ||
-                pitchRatio != m_pitch_old) {
+                pitchRatio != m_pitch_old || m_bScalerChanged) {
             // The rate returned by the scale object can be different from the
             // wanted rate!  Make sure new scaler has proper position. This also
             // crossfades between the old scaler and new scaler to prevent
@@ -911,6 +914,9 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             // rate and normal speed. pitch_adjust does not change the playback
             // rate.
             m_rate_old = rate = baserate * speed;
+
+            // Scaler is up to date now.
+            m_bScalerChanged = false;
         } else {
             // Scaler did not need updating. By definition this means we are at
             // our old rate.
