@@ -45,10 +45,10 @@ void WLabel::setup(QDomNode node, const SkinContext& context) {
     setPalette(pal);
 
     // Text
-    if (context.hasNode(node, "Text")) {
-        m_skinText = context.selectString(node, "Text");
+    if (context.hasNodeSelectString(node, "Text", &m_skinText)) {
         setText(m_skinText);
     }
+
     // Font size
     QString strFontSize;
     if (context.hasNodeSelectString(node, "FontSize", &strFontSize)) {
@@ -93,7 +93,9 @@ void WLabel::setText(const QString& text) {
     m_longText = text;
     if (m_elideMode != Qt::ElideNone) {
         QFontMetrics metrics(font());
-        // Measure the text for label width - 2 for 1 pixel border
+        // Measure the text for label width
+        // it turns out, that "-2" is required to make the text actually fit
+        // (Tested on Ubuntu Trusty)
         QString elidedText = metrics.elidedText(m_longText, m_elideMode, width() - 2);
         QLabel::setText(elidedText);
     } else {
