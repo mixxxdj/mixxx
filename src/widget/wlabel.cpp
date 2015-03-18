@@ -50,25 +50,29 @@ void WLabel::setup(QDomNode node, const SkinContext& context) {
         setText(m_skinText);
     }
     // Font size
-    if (context.hasNode(node, "FontSize")) {
-        int fontsize = context.selectString(node, "FontSize").toInt();
+    QString strFontSize;
+    if (context.hasNodeSelectString(node, "FontSize", &strFontSize)) {
+        int fontsize = strFontSize.toInt();
         setFont(QFont("Helvetica", fontsize, QFont::Normal));
     }
 
     // Alignment
-    if (context.hasNode(node, "Alignment")) {
-        if (context.selectString(node, "Alignment").toLower() == "right") {
+    QString alignement;
+    if (context.hasNodeSelectString(node, "Alignment", &alignement)) {
+    	alignement = alignement.toLower();
+        if (alignement == "right") {
             setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-        } else if (context.selectString(node, "Alignment").toLower() == "center") {
+        } else if (alignement == "center") {
             setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-        } else if (context.selectString(node, "Alignment").toLower() == "left") {
+        } else if (alignement == "left") {
             setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
         }
     }
 
     // Adds an ellipsis to turncated text
-    if (context.hasNode(node, "Elide")) {
-		QString elide = context.selectString(node, "Elide").toLower();
+    QString elide;
+    if (context.hasNodeSelectString(node, "Elide", &elide)) {
+    	elide = elide.toLower();
         if (elide == "right") {
             m_elideMode = Qt::ElideRight;
         } else if (elide == "middle") {
