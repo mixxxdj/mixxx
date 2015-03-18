@@ -888,11 +888,15 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             // wanted rate!  Make sure new scaler has proper position. This also
             // crossfades between the old scaler and new scaler to prevent
             // clicks.
-            if (m_pScale != m_pScaleVinyl) { // linear scaler does this part for us now
+
+            // Handle direction change.
+            // The linear scaler supports ramping though zero.
+            // For the other, crossfade forward and backward samples
+            if (m_pScale != m_pScaleVinyl) {
                 //XXX: Trying to force RAMAN to read from correct
                 //     playpos when rate changes direction - Albert
-                if ((m_speed_old <= 0 && speed > 0) ||
-                    (m_speed_old >= 0 && speed < 0)) {
+                if (m_speed_old * speed < 0) {
+                    // Direction has changed!
                     readToCrossfadeBuffer(iBufferSize);
                 }
             }
@@ -971,7 +975,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
 
         if (m_bCrossfadeReady) {
             SampleUtil::linearCrossfadeBuffers(
-                pOutput, m_pCrossfadeBuffer, pOutput, iBufferSize);
+                    pOutput, m_pCrossfadeBuffer, pOutput, iBufferSize);
             m_bCrossfadeReady = false;
         }
 
