@@ -57,7 +57,7 @@
 		        <EffectRack>1</EffectRack>
 		        <EffectUnit><Variable name="effectunitnum"/></EffectUnit>
 		        <Effect><Variable name="effectnum"/></Effect>
-		        <Ellipsis>middle</Ellipsis>
+		        <Elide>middle</Elide>
 		    </EffectName>	
 			<PushButton>
 				<Size>20f,20f</Size>

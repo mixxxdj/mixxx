@@ -65,16 +65,18 @@ void WLabel::setup(QDomNode node, const SkinContext& context) {
             setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
         }
     }
-    // Ellipsis
-    if (context.hasNode(node, "Ellipsis")) {
-        if (context.selectString(node, "Ellipsis").toLower() == "right") {
+
+    // Adds an ellipsis to turncated text
+    if (context.hasNode(node, "Elide")) {
+		QString elide = context.selectString(node, "Elide").toLower();
+        if (elide == "right") {
             m_elideMode = Qt::ElideRight;
-        } else if (context.selectString(node, "Ellipsis").toLower() == "center") {
+        } else if (elide == "middle") {
             m_elideMode = Qt::ElideMiddle;
-        } else if (context.selectString(node, "Ellipsis").toLower() == "middle") {
-            m_elideMode = Qt::ElideMiddle;
-        } else if (context.selectString(node, "Ellipsis").toLower() == "left") {
+        } else if (elide == "left") {
             m_elideMode = Qt::ElideLeft;
+        } else if (elide == "none") {
+            m_elideMode = Qt::ElideNone;
         }
     }
 }

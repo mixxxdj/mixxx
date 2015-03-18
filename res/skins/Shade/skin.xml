@@ -374,7 +374,7 @@
 															<Group>[PreviewDeck1]</Group>
 															<Pos></Pos>
 															<Size>50me,15f</Size>
-															<Ellipsis>right</Ellipsis>
+															<Elide>right</Elide>
 														</Text>
 														<!--
 														**********************************************
