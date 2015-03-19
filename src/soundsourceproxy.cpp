@@ -329,13 +329,13 @@ Mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(SINT channelCountHin
     }
 
     if (!m_pSoundSource->isValid()) {
-        qWarning() << "Invalid file:" << m_pSoundSource->getUrl()
+        qWarning() << "Invalid file:" << m_pSoundSource->getUrlString()
                 << "channels" << m_pSoundSource->getChannelCount()
                 << "frame rate" << m_pSoundSource->getChannelCount();
         return m_pAudioSource;
     }
     if (m_pSoundSource->isEmpty()) {
-        qWarning() << "Empty file:" << m_pSoundSource->getUrl();
+        qWarning() << "Empty file:" << m_pSoundSource->getUrlString();
         return m_pAudioSource;
     }
 

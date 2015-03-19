@@ -123,20 +123,20 @@ Result SoundSourceM4A::tryOpen(SINT channelCountHint) {
     m_hFile = MP4Read(getLocalFileNameBytes().constData());
 #endif
     if (MP4_INVALID_FILE_HANDLE == m_hFile) {
-        qWarning() << "Failed to open file for reading:" << getUrl();
+        qWarning() << "Failed to open file for reading:" << getUrlString();
         return ERR;
     }
 
     m_trackId = findFirstAudioTrackId(m_hFile);
     if (MP4_INVALID_TRACK_ID == m_trackId) {
-        qWarning() << "No AAC track found:" << getUrl();
+        qWarning() << "No AAC track found:" << getUrlString();
         return ERR;
     }
 
     const MP4SampleId numberOfSamples =
             MP4GetTrackNumberOfSamples(m_hFile, m_trackId);
     if (0 >= numberOfSamples) {
-        qWarning() << "Failed to read number of samples from file:" << getUrl();
+        qWarning() << "Failed to read number of samples from file:" << getUrlString();
         return ERR;
     }
     m_maxSampleBlockId = kSampleBlockIdMin + (numberOfSamples - 1);
@@ -373,7 +373,7 @@ SINT SoundSourceM4A::readSampleFrames(
             qWarning() << "AAC decoding error:"
                     << decFrameInfo.error
                     << NeAACDecGetErrorMessage(decFrameInfo.error)
-                    << getUrl();
+                    << getUrlString();
             break; // abort
         }
         DEBUG_ASSERT(pDecodeResult == pDecodeBuffer); // verify the in/out parameter

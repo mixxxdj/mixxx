@@ -117,7 +117,7 @@ SoundSourceMediaFoundation::~SoundSourceMediaFoundation() {
 
 Result SoundSourceMediaFoundation::tryOpen(SINT channelCountHint) {
     if (SUCCEEDED(m_hrCoInitialize)) {
-        qWarning() << "Cannot reopen MediaFoundation file" << getUrl();
+        qWarning() << "Cannot reopen MediaFoundation file" << getUrlString();
         return ERR;
     }
 

@@ -85,12 +85,17 @@ SoundSourceOggVorbis::~SoundSourceOggVorbis() {
 Result SoundSourceOggVorbis::tryOpen(SINT /*channelCountHint*/) {
     const QByteArray qbaFilename(getLocalFileNameBytes());
     if (0 != ov_fopen(qbaFilename.constData(), &m_vf)) {
+<<<<<<< HEAD
         qWarning() << "Failed to open OggVorbis file:" << getUrl();
 >>>>>>> Move code from specialized AudioSources back into corresponding SoundSources
+=======
+        qWarning() << "Failed to open OggVorbis file:" << getUrlString();
+>>>>>>> Fix release build
         return ERR;
     }
 
     if (!ov_seekable(&m_vf)) {
+<<<<<<< HEAD
 <<<<<<< HEAD
         qWarning() << "OggVorbis file is not seekable:" << getFilename();
         close();
@@ -104,14 +109,21 @@ Result SoundSourceOggVorbis::tryOpen(SINT /*channelCountHint*/) {
         close();
 =======
         qWarning() << "OggVorbis file is not seekable:" << getUrl();
+=======
+        qWarning() << "OggVorbis file is not seekable:" << getUrlString();
+>>>>>>> Fix release build
         return ERR;
     }
 
     // lookup the ogg's channels and sample rate
     const vorbis_info* vi = ov_info(&m_vf, kCurrentBitstreamLink);
     if (!vi) {
+<<<<<<< HEAD
         qWarning() << "Failed to read OggVorbis file:" << getUrl();
 >>>>>>> Move code from specialized AudioSources back into corresponding SoundSources
+=======
+        qWarning() << "Failed to read OggVorbis file:" << getUrlString();
+>>>>>>> Fix release build
         return ERR;
     }
     setChannelCount(vi->channels);
@@ -137,8 +149,12 @@ Result SoundSourceOggVorbis::tryOpen(SINT /*channelCountHint*/) {
     if (0 <= pcmTotal) {
         setFrameCount(pcmTotal);
     } else {
+<<<<<<< HEAD
         qWarning() << "Failed to read total length of OggVorbis file:" << getUrl();
 >>>>>>> Move code from specialized AudioSources back into corresponding SoundSources
+=======
+        qWarning() << "Failed to read total length of OggVorbis file:" << getUrlString();
+>>>>>>> Fix release build
         return ERR;
     }
 

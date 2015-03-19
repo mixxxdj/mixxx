@@ -126,13 +126,13 @@ Result SoundSourceOpus::tryOpen(SINT /*channelCountHint*/) {
     DEBUG_ASSERT(!m_pOggOpusFile);
     m_pOggOpusFile = op_open_file(qbaFilename.constData(), &errorCode);
     if (!m_pOggOpusFile) {
-        qWarning() << "Failed to open OggOpus file:" << getUrl() << "errorCode"
+        qWarning() << "Failed to open OggOpus file:" << getUrlString() << "errorCode"
                 << errorCode;
         return ERR;
     }
 
     if (!op_seekable(m_pOggOpusFile)) {
-        qWarning() << "OggOpus file is not seekable:" << getUrl();
+        qWarning() << "OggOpus file is not seekable:" << getUrlString();
         return ERR;
     }
 
@@ -140,7 +140,7 @@ Result SoundSourceOpus::tryOpen(SINT /*channelCountHint*/) {
     if (0 < channelCount) {
         setChannelCount(channelCount);
     } else {
-        qWarning() << "Failed to read channel configuration of OggOpus file:" << getUrl();
+        qWarning() << "Failed to read channel configuration of OggOpus file:" << getUrlString();
         return ERR;
     }
 
@@ -148,7 +148,7 @@ Result SoundSourceOpus::tryOpen(SINT /*channelCountHint*/) {
     if (0 <= pcmTotal) {
         setFrameCount(pcmTotal);
     } else {
-        qWarning() << "Failed to read total length of OggOpus file:" << getUrl();
+        qWarning() << "Failed to read total length of OggOpus file:" << getUrlString();
         return ERR;
     }
 
@@ -156,7 +156,7 @@ Result SoundSourceOpus::tryOpen(SINT /*channelCountHint*/) {
     if (0 < bitrate) {
         setBitrate(bitrate / 1000);
     } else {
-        qWarning() << "Failed to determine bitrate of OggOpus file:" << getUrl();
+        qWarning() << "Failed to determine bitrate of OggOpus file:" << getUrlString();
         return ERR;
     }
 
