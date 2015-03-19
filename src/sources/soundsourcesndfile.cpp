@@ -34,13 +34,13 @@ Result SoundSourceSndFile::tryOpen(SINT /*channelCountHint*/) {
 #endif
 
     if (!m_pSndFile) {   // sf_format_check is only for writes
-        qWarning() << "Error opening libsndfile file:" << getUrl()
+        qWarning() << "Error opening libsndfile file:" << getUrlString()
                 << sf_strerror(m_pSndFile);
         return ERR;
     }
 
     if (sf_error(m_pSndFile) > 0) {
-        qWarning() << "Error opening libsndfile file:" << getUrl()
+        qWarning() << "Error opening libsndfile file:" << getUrlString()
                 << sf_strerror(m_pSndFile);
         return ERR;
     }
@@ -60,7 +60,7 @@ void SoundSourceSndFile::close() {
         } else {
             qWarning() << "Failed to close file:" << closeResult
                     << sf_strerror(m_pSndFile)
-                    << getUrl();
+                    << getUrlString();
         }
     }
 }

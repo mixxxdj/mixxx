@@ -14,6 +14,9 @@ public:
     const QUrl& getUrl() const {
         return m_url;
     }
+    QString getUrlString() const {
+        return m_url.toString();
+    }
 
 protected:
     explicit UrlResource(QUrl url)

@@ -33,19 +33,19 @@ SoundSourceOggVorbis::~SoundSourceOggVorbis() {
 Result SoundSourceOggVorbis::tryOpen(SINT /*channelCountHint*/) {
     const QByteArray qbaFilename(getLocalFileNameBytes());
     if (0 != ov_fopen(qbaFilename.constData(), &m_vf)) {
-        qWarning() << "Failed to open OggVorbis file:" << getUrl();
+        qWarning() << "Failed to open OggVorbis file:" << getUrlString();
         return ERR;
     }
 
     if (!ov_seekable(&m_vf)) {
-        qWarning() << "OggVorbis file is not seekable:" << getUrl();
+        qWarning() << "OggVorbis file is not seekable:" << getUrlString();
         return ERR;
     }
 
     // lookup the ogg's channels and sample rate
     const vorbis_info* vi = ov_info(&m_vf, kCurrentBitstreamLink);
     if (!vi) {
-        qWarning() << "Failed to read OggVorbis file:" << getUrl();
+        qWarning() << "Failed to read OggVorbis file:" << getUrlString();
         return ERR;
     }
     setChannelCount(vi->channels);
@@ -62,7 +62,7 @@ Result SoundSourceOggVorbis::tryOpen(SINT /*channelCountHint*/) {
     if (0 <= pcmTotal) {
         setFrameCount(pcmTotal);
     } else {
-        qWarning() << "Failed to read total length of OggVorbis file:" << getUrl();
+        qWarning() << "Failed to read total length of OggVorbis file:" << getUrlString();
         return ERR;
     }
 

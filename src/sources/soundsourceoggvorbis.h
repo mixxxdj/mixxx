@@ -1,10 +1,10 @@
 #ifndef MIXXX_SOUNDSOURCEOGGVORBIS_H
 #define MIXXX_SOUNDSOURCEOGGVORBIS_H
 
+#include "sources/soundsource.h"
+
 #define OV_EXCLUDE_STATIC_CALLBACKS
 #include <vorbis/vorbisfile.h>
-
-#include "sources/soundsource.h"
 
 namespace Mixxx {
 
