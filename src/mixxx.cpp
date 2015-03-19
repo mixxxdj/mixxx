@@ -853,8 +853,7 @@ void MixxxMainWindow::toggleCheckedSamplers() {
 void MixxxMainWindow::linkSkinWidget(ControlObjectSlave** pCOS, 
                                      ConfigKey key, const char* slot) {
     //Careful when using because it may not be supported by a skin
-    if (!*pCOS)
-    {
+    if (!*pCOS) {
         *pCOS = new ControlObjectSlave(key, this);
         (*pCOS)->connectValueChanged(
             this, slot, Qt::DirectConnection);
