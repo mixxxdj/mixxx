@@ -434,3 +434,13 @@ void SampleUtil::reverse(CSAMPLE* pBuffer, int iNumSamples) {
     }
 }
 
+// static
+void SampleUtil::copyReverse(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _RESTRICT pSrc,
+        int iNumSamples) {
+    for (int j = 0; j < iNumSamples / 2; ++j) {
+        const int endpos = (iNumSamples - 1) - j * 2;
+        pDest[j * 2] = pSrc[endpos - 1];
+        pDest[j * 2 + 1] = pSrc[endpos];
+    }
+}
+

@@ -301,7 +301,7 @@ void CachingReader::process() {
     }
 }
 
-int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
+int CachingReader::read(int sample, bool reverse, int num_samples, CSAMPLE* buffer) {
     // Check for bad inputs
     DEBUG_ASSERT_AND_HANDLE(sample % 2 == 0) {
         // This problem is easy to fix, but this type of call should be
@@ -332,7 +332,7 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
     // and into enginebuffer?  It doesn't quite make sense here, although
     // it makes preroll completely transparent to the rest of the code
 
-    //if we're in preroll...
+    // if we're in preroll...
     int zerosWritten = 0;
     if (sample < 0) {
         if (sample + num_samples <= 0) {
@@ -341,8 +341,12 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
             return num_samples;
         } else {
             //some of the buffer is zeros, some is from the file
-            SampleUtil::clear(buffer, 0 - sample);
-            buffer += (0 - sample);
+            if (reverse) {
+                SampleUtil::clear(&buffer[sample + num_samples], 0 - sample);
+            } else {
+                SampleUtil::clear(buffer, 0 - sample);
+                buffer += (0 - sample);
+            }
             num_samples = sample + num_samples;
             zerosWritten = (0 - sample);
             sample = 0;
@@ -434,9 +438,12 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
         }
 
         CSAMPLE *data = current->data + chunk_offset;
-        SampleUtil::copy(buffer, data, samples_to_read);
-
-        buffer += samples_to_read;
+        if (reverse) {
+                SampleUtil::copyReverse(&buffer[samples_remaining - samples_to_read], data, samples_to_read);
+        } else {
+                SampleUtil::copy(buffer, data, samples_to_read);
+                buffer += samples_to_read;
+        }
         current_sample += samples_to_read;
         samples_remaining -= samples_to_read;
     }
