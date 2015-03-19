@@ -1107,7 +1107,9 @@ void EngineBuffer::processSlip(int iBufferSize) {
             m_dSlipRate = m_rate_old;
         } else {
             // TODO(owen) assuming that looping will get canceled properly
-            slotControlSeekExact(m_dSlipPosition);
+            double newPlayFrame = m_dSlipPosition / kSamplesPerFrame;
+            double roundedSlip = round(newPlayFrame) * kSamplesPerFrame;
+            slotControlSeekExact(roundedSlip);
             m_dSlipPosition = 0;
         }
     }
@@ -1154,9 +1156,12 @@ void EngineBuffer::processSeek() {
     switch (seekType) {
         case NO_SEEK:
             return;
-        case SEEK_EXACT:
+        case SEEK_EXACT: {
+            double newPlayFrame = position / kSamplesPerFrame;
+            position = round(newPlayFrame) * kSamplesPerFrame;
             setNewPlaypos(position);
             break;
+        }
         case SEEK_STANDARD: {
             bool paused = m_playButton->get() == 0.0;
             // If we are playing and quantize is on, match phase when seeking.
