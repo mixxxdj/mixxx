@@ -893,6 +893,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
 
             // Handle direction change.
             // The linear scaler supports ramping though zero.
+            // This is used for scratching, but not for reverse
             // For the other, crossfade forward and backward samples
             if (m_speed_old * speed < 0) {
                 // Direction has changed!
