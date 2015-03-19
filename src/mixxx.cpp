@@ -853,7 +853,8 @@ void MixxxMainWindow::toggleCheckedSamplers() {
 void MixxxMainWindow::linkSkinWidget(ControlObjectSlave** pCOS, 
                                      ConfigKey key, const char* slot) {
     //Careful when using because it may not be supported by a skin
-    if (!*pCOS && ControlObject::getControl(key, true)) {
+    if (!*pCOS)
+    {
         *pCOS = new ControlObjectSlave(key, this);
         (*pCOS)->connectValueChanged(
             this, slot, Qt::DirectConnection);
@@ -1942,6 +1943,9 @@ void MixxxMainWindow::rebootMixxxView() {
 
     QPoint initPosition = pos();
     QSize initSize = size();
+
+    delete m_pCOShowSamplers;
+    m_pCOShowSamplers = NULL;
 
     if (m_pWidgetParent) {
         m_pWidgetParent->hide();
