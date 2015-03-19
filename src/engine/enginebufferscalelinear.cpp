@@ -129,9 +129,9 @@ CSAMPLE* EngineBufferScaleLinear::getScaled(unsigned long buf_size) {
             samples_read += m_pReadAheadManager->getNextSamples(
                     rate_add_new, m_bufferInt, extra_samples);
         }
-        //force a buffer read:
+        // force a buffer read:
         m_bufferIntSize=0;
-        //make sure the indexes stay correct for interpolation
+        // make sure the indexes stay correct for interpolation
         m_dCurrentFrame = 0 - m_dCurrentFrame + floor(m_dCurrentFrame);
         m_dNextFrame = 1.0 - (m_dNextFrame - floor(m_dNextFrame));
 
@@ -368,6 +368,16 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         m_dNextFrame = m_dCurrentFrame +
                 (i < iRateLerpLength ? fabs(rate_add) : fabs(rate_add_new));
         i += 2 ;
+    }
+
+    // Vinylsoundemu:
+    // if we cross zero, ramp gain to zero
+    // this is the natural vinyl sound: no output without turning platter.
+    // This also deletes possible peaks with small buffers.
+    if (rate_add_old == 0) {
+        SampleUtil::applyRampingGain(buf, 0, 1.0, buf_size);
+    } else if (rate_add_new == 0) {
+        SampleUtil::applyRampingGain(buf, 1.0, 0, buf_size);
     }
 
     SampleUtil::clear(&buf[i], buf_size - i);
