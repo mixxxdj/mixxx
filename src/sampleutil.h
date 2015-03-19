@@ -242,6 +242,9 @@ class SampleUtil {
     static void copyMultiToStereo(CSAMPLE* pDest, const CSAMPLE* pSrc,
             int numFrames, int numChannels);
 
+    // reverses stereo sample in place
+    static void reverse(CSAMPLE* pBuffer, int iNumSamples);
+
     // Include auto-generated methods (e.g. copyXWithGain, copyXWithRampingGain,
     // etc.)
 #include "sampleutil_autogen.h"

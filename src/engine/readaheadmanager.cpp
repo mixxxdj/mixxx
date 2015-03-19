@@ -37,7 +37,7 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
     // A loop will only limit the amount we can read in one shot.
 
     const double loop_trigger = m_sEngineControls.at(0)->nextTrigger(
-        dRate, m_iCurrentPosition, 0, 0);
+            dRate, m_iCurrentPosition, 0, 0);
     bool loop_active = loop_trigger != kNoTrigger;
     int preloop_samples = 0;
 
@@ -93,7 +93,7 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
                     (in_reverse ? preloop_samples : -preloop_samples);
 
             int looping_samples_read = m_pReader->read(
-                loop_read_position, samples_read, m_pCrossFadeBuffer);
+                    loop_read_position, samples_read, m_pCrossFadeBuffer);
 
             if (looping_samples_read != samples_read) {
                 qDebug() << "ERROR: Couldn't get all needed samples for crossfade.";
@@ -101,30 +101,14 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
 
             // do crossfade from the current buffer into the new loop beginning
             if (samples_read != 0) { // avoid division by zero
-                double mix_amount = 0.0;
-                double mix_inc = 2.0 / static_cast<double>(samples_read);
-                for (int i = 0; i < samples_read; i += 2) {
-                    base_buffer[i] = base_buffer[i] * (1.0 - mix_amount) + m_pCrossFadeBuffer[i] * mix_amount;
-                    base_buffer[i+1] = base_buffer[i+1] * (1.0 - mix_amount) + m_pCrossFadeBuffer[i+1] * mix_amount;
-                    mix_amount += mix_inc;
-                }
+                SampleUtil::linearCrossfadeBuffers(base_buffer, m_pCrossFadeBuffer, base_buffer, samples_read);
             }
         }
     }
 
     // Reverse the samples in-place
     if (in_reverse) {
-        // TODO(rryan) pull this into MixxxUtil or something
-        CSAMPLE temp1, temp2;
-        for (int j = 0; j < samples_read/2; j += 2) {
-            const int endpos = samples_read-1-j-1;
-            temp1 = base_buffer[j];
-            temp2 = base_buffer[j+1];
-            base_buffer[j] = base_buffer[endpos];
-            base_buffer[j+1] = base_buffer[endpos+1];
-            base_buffer[endpos] = temp1;
-            base_buffer[endpos+1] = temp2;
-        }
+        SampleUtil::reverse(base_buffer, samples_read);
     }
 
     //qDebug() << "read" << m_iCurrentPosition << samples_read;
