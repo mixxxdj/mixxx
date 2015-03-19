@@ -57,14 +57,14 @@ void WLabel::setup(QDomNode node, const SkinContext& context) {
     }
 
     // Alignment
-    QString alignement;
-    if (context.hasNodeSelectString(node, "Alignment", &alignement)) {
-    	alignement = alignement.toLower();
-        if (alignement == "right") {
+    QString alignment;
+    if (context.hasNodeSelectString(node, "Alignment", &alignment)) {
+    	alignment = alignment.toLower();
+        if (alignment == "right") {
             setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-        } else if (alignement == "center") {
+        } else if (alignment == "center") {
             setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-        } else if (alignement == "left") {
+        } else if (alignment == "left") {
             setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
         }
     }
