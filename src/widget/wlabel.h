@@ -32,13 +32,20 @@ class WLabel : public QLabel, public WBaseWidget {
 
     virtual void setup(QDomNode node, const SkinContext& context);
 
+    QString text() const;
+    void setText(const QString& text);
+
   protected:
-    bool event(QEvent* pEvent);
+    virtual bool event(QEvent* pEvent);
+    virtual void resizeEvent(QResizeEvent* event);
     void fillDebugTooltip(QStringList* debug);
-    QString m_qsText;
+    QString m_skinText;
     // Foreground and background colors.
     QColor m_qFgColor;
     QColor m_qBgColor;
+  private: 
+    QString m_longText;
+    Qt::TextElideMode m_elideMode;
 };
 
 #endif
