@@ -16,33 +16,33 @@ protected:
     static const SINT kCapacity;
 
     SINT writeTail(CircularSampleBuffer* pSampleBuffer, SINT size) {
-        const std::pair<CSAMPLE*, SINT> writeBuffer(
-                pSampleBuffer->growTail(size));
-        for (SINT i = 0; i < writeBuffer.second; ++i) {
-            writeBuffer.first[i] = m_writeValue;
+        const SampleBuffer::WritableChunk writableChunk(
+                pSampleBuffer->writeToTail(size));
+        for (SINT i = 0; i < writableChunk.size(); ++i) {
+            writableChunk[i] = m_writeValue;
             m_writeValue += CSAMPLE_ONE;
         }
-        return writeBuffer.second;
+        return writableChunk.size();
     }
 
     SINT readHeadAndVerify(CircularSampleBuffer* pSampleBuffer, SINT size) {
-        const std::pair<const CSAMPLE*, SINT>readBuffer(
-                pSampleBuffer->shrinkHead(size));
-        for (SINT i = 0; i < readBuffer.second; ++i) {
-            EXPECT_EQ(readBuffer.first[i], m_readValue);
+        const SampleBuffer::ReadableChunk readableChunk(
+                pSampleBuffer->readFromHead(size));
+        for (SINT i = 0; i < readableChunk.size(); ++i) {
+            EXPECT_EQ(readableChunk[i], m_readValue);
             m_readValue += CSAMPLE_ONE;
         }
-        return readBuffer.second;
+        return readableChunk.size();
     }
 
     SINT readTailAndVerify(CircularSampleBuffer* pSampleBuffer, SINT size) {
-        const std::pair<const CSAMPLE*, SINT>readBuffer(
-                pSampleBuffer->shrinkTail(size));
-        for (SINT i = readBuffer.second; i-- > 0; ) {
+        const SampleBuffer::ReadableChunk readableChunk(
+                pSampleBuffer->readFromTail(size));
+        for (SINT i = readableChunk.size(); i-- > 0; ) {
             m_writeValue -= CSAMPLE_ONE;
-            EXPECT_EQ(readBuffer.first[i], m_writeValue);
+            EXPECT_EQ(readableChunk[i], m_writeValue);
         }
-        return readBuffer.second;
+        return readableChunk.size();
     }
 
     void reset(CircularSampleBuffer* pSampleBuffer) {
@@ -68,16 +68,16 @@ TEST_F(CircularSampleBufferTest, emptyWithoutCapacity) {
     sampleBuffer.reset();
     EXPECT_TRUE(sampleBuffer.isEmpty());
 
-    const std::pair<CSAMPLE*, SINT> writeResult(
-            sampleBuffer.growTail(10));
-    EXPECT_EQ(writeResult.first, static_cast<CSAMPLE*>(NULL));
-    EXPECT_EQ(writeResult.second, 0);
+    const SampleBuffer::WritableChunk writableChunk(
+            sampleBuffer.writeToTail(10));
+    EXPECT_EQ(writableChunk.data(), static_cast<CSAMPLE*>(NULL));
+    EXPECT_EQ(writableChunk.size(), 0);
     EXPECT_TRUE(sampleBuffer.isEmpty());
 
-    const std::pair<const CSAMPLE*, SINT> readResult(
-            sampleBuffer.shrinkHead(10));
-    EXPECT_EQ(readResult.first, static_cast<const CSAMPLE*>(NULL));
-    EXPECT_EQ(readResult.second, 0);
+    const SampleBuffer::ReadableChunk readableChunk(
+            sampleBuffer.readFromHead(10));
+    EXPECT_EQ(readableChunk.data(), static_cast<const CSAMPLE*>(NULL));
+    EXPECT_EQ(readableChunk.size(), 0);
     EXPECT_TRUE(sampleBuffer.isEmpty());
 }
 

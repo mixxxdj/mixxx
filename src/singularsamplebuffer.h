@@ -55,27 +55,32 @@ public:
     // Returns a pointer to the continuous memory region and the actual number
     // of samples that have been reserved. The maximum growth is limited by
     // getTailCapacity() and might be increased by calling trim().
-    std::pair<CSAMPLE*, SINT> growTail(SINT size);
+    SampleBuffer::WritableChunk writeToTail(SINT size);
 
     // Shrinks the buffer from the tail for reading buffered samples.
     //
     // Returns a pointer to the continuous memory region and the actual
     // number of buffered samples that have been dropped. The pointer is
     // valid for reading as long as no modifying member function is called!
-    std::pair<const CSAMPLE*, SINT> shrinkTail(SINT size);
+    SampleBuffer::ReadableChunk readFromTail(SINT size);
 
     // Shrinks the buffer from the head for reading buffered samples.
     //
     // Returns a pointer to the continuous memory region and the actual
     // number of buffered samples that have been dropped. The pointer is
     // valid for reading as long as no modifying member function is called!
-    std::pair<const CSAMPLE*, SINT> shrinkHead(SINT size);
+    SampleBuffer::ReadableChunk readFromHead(SINT size);
 
 protected:
     void trim(SampleBuffer& secondaryBuffer);
 
 private:
     void swapBuffers(SampleBuffer& secondaryBuffer);
+
+    void resetOffsets() {
+        m_headOffset = 0;
+        m_tailOffset = 0;
+    }
 
     SampleBuffer m_primaryBuffer;
     SINT m_headOffset;

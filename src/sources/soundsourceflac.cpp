@@ -185,28 +185,28 @@ SINT SoundSourceFLAC::readSampleFrames(
             break; // EOF
         }
 
-        const std::pair<const CSAMPLE*, SINT> readBuffer(
-                m_sampleBuffer.shrinkHead(numberOfSamplesRemaining));
-        const SINT framesToCopy = samples2frames(readBuffer.second);
+        const SampleBuffer::ReadableChunk readableChunk(
+                m_sampleBuffer.readFromHead(numberOfSamplesRemaining));
+        const SINT framesToCopy = samples2frames(readableChunk.size());
         if (outBuffer) {
             if (readStereoSamples && !isChannelCountStereo()) {
                 if (isChannelCountMono()) {
                     SampleUtil::copyMonoToDualMono(outBuffer,
-                            readBuffer.first,
+                            readableChunk.data(),
                             framesToCopy);
                 } else {
                     SampleUtil::copyMultiToStereo(outBuffer,
-                            readBuffer.first,
+                            readableChunk.data(),
                             framesToCopy, getChannelCount());
                 }
                 outBuffer += framesToCopy * 2; // copied 2 samples per frame
             } else {
-                SampleUtil::copy(outBuffer, readBuffer.first, readBuffer.second);
-                outBuffer += readBuffer.second;
+                SampleUtil::copy(outBuffer, readableChunk.data(), readableChunk.size());
+                outBuffer += readableChunk.size();
             }
         }
         m_curFrameIndex += framesToCopy;
-        numberOfSamplesRemaining -= readBuffer.second;
+        numberOfSamplesRemaining -= readableChunk.size();
     }
 
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
@@ -284,15 +284,15 @@ FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
     }
 
     DEBUG_ASSERT(m_sampleBuffer.isEmpty());
-    const std::pair<CSAMPLE*, SINT> writeBuffer(
-            m_sampleBuffer.growTail(
+    const SampleBuffer::WritableChunk writableChunk(
+            m_sampleBuffer.writeToTail(
                     frames2samples(frame->header.blocksize)));
-    CSAMPLE* pSampleBuffer = writeBuffer.first;
+    CSAMPLE* pSampleBuffer = writableChunk.data();
     switch (getChannelCount()) {
     case 1: {
         // optimized code for 1 channel (mono)
         DEBUG_ASSERT(1 <= frame->header.channels);
-        for (SINT i = 0; i < writeBuffer.second; ++i) {
+        for (SINT i = 0; i < writableChunk.size(); ++i) {
             *pSampleBuffer++ = buffer[0][i] * m_sampleScaleFactor;
         }
         break;
@@ -300,8 +300,8 @@ FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
     case 2: {
         // optimized code for 2 channels (stereo)
         DEBUG_ASSERT(2 <= frame->header.channels);
-        DEBUG_ASSERT(0 == (writeBuffer.second % 2));
-        for (SINT i = 0; i < (writeBuffer.second / 2); ++i) {
+        DEBUG_ASSERT(0 == (writableChunk.size() % 2));
+        for (SINT i = 0; i < (writableChunk.size() / 2); ++i) {
             *pSampleBuffer++ = buffer[0][i] * m_sampleScaleFactor;
             *pSampleBuffer++ = buffer[1][i] * m_sampleScaleFactor;
         }
@@ -310,7 +310,7 @@ FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
     default: {
         // generic code for multiple channels
         DEBUG_ASSERT(getChannelCount() == frame->header.channels);
-        for (SINT i = 0; i < samples2frames(writeBuffer.second); ++i) {
+        for (SINT i = 0; i < samples2frames(writableChunk.size()); ++i) {
             for (unsigned j = 0; j < frame->header.channels; ++j) {
                 *pSampleBuffer++ = buffer[j][i] * m_sampleScaleFactor;
             }
