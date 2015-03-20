@@ -128,7 +128,7 @@ Result SoundSourceModPlug::parseTrackMetadata(
         // reserve enough space in sample buffer
         m_sampleBuf.resize(currentSize + CHUNKSIZE);
         samplesRead = ModPlug::ModPlug_Read(m_pModFile,
-                m_sampleBuf.data() + currentSize,
+                &m_sampleBuf[currentSize],
                 CHUNKSIZE * 2) / 2;
         // adapt to actual size
         currentSize += samplesRead;

@@ -296,16 +296,16 @@ SINT SoundSourceM4A::readSampleFrames(
 
         if (!m_sampleBuffer.isEmpty()) {
             // Consume previously decoded sample data
-            const std::pair<const CSAMPLE*, SINT> readBuffer(
-                    m_sampleBuffer.shrinkHead(numberOfSamplesRemaining));
+            const SampleBuffer::ReadableChunk readableChunk(
+                    m_sampleBuffer.readFromHead(numberOfSamplesRemaining));
             if (pSampleBuffer) {
-                SampleUtil::copy(pSampleBuffer, readBuffer.first, readBuffer.second);
-                pSampleBuffer += readBuffer.second;
+                SampleUtil::copy(pSampleBuffer, readableChunk.data(), readableChunk.size());
+                pSampleBuffer += readableChunk.size();
             }
-            m_curFrameIndex += samples2frames(readBuffer.second);
+            m_curFrameIndex += samples2frames(readableChunk.size());
             DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
-            DEBUG_ASSERT(numberOfSamplesRemaining >= readBuffer.second);
-            numberOfSamplesRemaining -= readBuffer.second;
+            DEBUG_ASSERT(numberOfSamplesRemaining >= readableChunk.size());
+            numberOfSamplesRemaining -= readableChunk.size();
             if (0 == numberOfSamplesRemaining) {
                 break; // exit loop
             }
@@ -352,12 +352,12 @@ SINT SoundSourceM4A::readSampleFrames(
             decodeBufferCapacity = numberOfSamplesRemaining;
         } else {
             // Decode next sample block into temporary buffer
-            const SINT growTailCount = math_max(
+            const SINT writeToTailCount = math_max(
                     numberOfSamplesRemaining, decodeBufferCapacityMin);
-            const std::pair<CSAMPLE*, SINT> writeBuffer(
-                    m_sampleBuffer.growTail(growTailCount));
-            pDecodeBuffer = writeBuffer.first;
-            decodeBufferCapacity = writeBuffer.second;
+            const SampleBuffer::WritableChunk writableChunk(
+                    m_sampleBuffer.writeToTail(writeToTailCount));
+            pDecodeBuffer = writableChunk.data();
+            decodeBufferCapacity = writableChunk.size();
         }
         DEBUG_ASSERT(decodeBufferCapacityMin <= decodeBufferCapacity);
 
@@ -404,12 +404,12 @@ SINT SoundSourceM4A::readSampleFrames(
             numberOfSamplesRead = math_min(numberOfSamplesDecoded, numberOfSamplesRemaining);
             pSampleBuffer += numberOfSamplesRead;
         } else {
-            m_sampleBuffer.shrinkTail(decodeBufferCapacity - numberOfSamplesDecoded);
-            const std::pair<const CSAMPLE*, SINT> readBuffer(
-                    m_sampleBuffer.shrinkHead(numberOfSamplesRemaining));
-            numberOfSamplesRead = readBuffer.second;
+            m_sampleBuffer.readFromTail(decodeBufferCapacity - numberOfSamplesDecoded);
+            const SampleBuffer::ReadableChunk readableChunk(
+                    m_sampleBuffer.readFromHead(numberOfSamplesRemaining));
+            numberOfSamplesRead = readableChunk.size();
             if (pSampleBuffer) {
-                SampleUtil::copy(pSampleBuffer, readBuffer.first, numberOfSamplesRead);
+                SampleUtil::copy(pSampleBuffer, readableChunk.data(), numberOfSamplesRead);
                 pSampleBuffer += numberOfSamplesRead;
             }
         }
