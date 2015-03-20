@@ -53,6 +53,7 @@ void WLabel::setup(QDomNode node, const SkinContext& context) {
     QString strFontSize;
     if (context.hasNodeSelectString(node, "FontSize", &strFontSize)) {
         int fontsize = strFontSize.toInt();
+        // TODO(XXX) "Helvetica" should retrain the Qt default font matching, verify that. 
         setFont(QFont("Helvetica", fontsize, QFont::Normal));
     }
 
@@ -66,6 +67,9 @@ void WLabel::setup(QDomNode node, const SkinContext& context) {
             setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
         } else if (alignment == "left") {
             setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+        } else {
+            qDebug() << "WLabel::setup(): Alignment =" << alignment << 
+                    " unknown, use right, center or left";
         }
     }
 
@@ -81,6 +85,9 @@ void WLabel::setup(QDomNode node, const SkinContext& context) {
             m_elideMode = Qt::ElideLeft;
         } else if (elide == "none") {
             m_elideMode = Qt::ElideNone;
+        } else {
+            qDebug() << "WLabel::setup(): Alide =" << elide << 
+                    "unknown, use right, middle, left or none.";
         }
     }
 }
