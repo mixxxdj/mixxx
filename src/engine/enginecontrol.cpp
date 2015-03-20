@@ -93,15 +93,15 @@ EngineBuffer* EngineControl::getEngineBuffer() {
     return m_pEngineBuffer;
 }
 
-void EngineControl::seekAbs(double fractionalPosition) {
+void EngineControl::seekAbs(double playPosition) {
     if (m_pEngineBuffer) {
-        m_pEngineBuffer->slotControlSeekAbs(fractionalPosition);
+        m_pEngineBuffer->slotControlSeekAbs(playPosition);
     }
 }
 
-void EngineControl::seekExact(double fractionalPosition) {
+void EngineControl::seekExact(double playPosition) {
     if (m_pEngineBuffer) {
-        m_pEngineBuffer->slotControlSeekExact(fractionalPosition);
+        m_pEngineBuffer->slotControlSeekExact(playPosition);
     }
 }
 

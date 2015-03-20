@@ -221,7 +221,8 @@ class EngineBuffer : public EngineObject {
 
     double fractionalPlayposFromAbsolute(double absolutePlaypos);
 
-    void doSeek(double change, enum SeekRequest seekType);
+    void doSeekFractional(double fractionalPos, enum SeekRequest seekType);
+    void doSeekPlayPos(double playpos, enum SeekRequest seekType);
 
     // Read one buffer from the current scaler into the crossfade buffer.  Used
     // for transitioning from one scaler to another, or reseeking a scaler
@@ -290,10 +291,10 @@ class EngineBuffer : public EngineObject {
     double m_rate_old;
 
     // Copy of length of file
-    long int m_file_length_old;
+    int m_trackSamplesOld;
 
     // Copy of file sample rate
-    int m_file_srate_old;
+    int m_trackSampleRateOld;
 
     // Mutex controlling weather the process function is in pause mode. This happens
     // during seek and loading of a new track
@@ -354,6 +355,8 @@ class EngineBuffer : public EngineObject {
     // ScaleST and ScaleRB during a single callback.
     EngineBufferScale* volatile m_pScaleKeylock;
     EngineBufferScaleDummy* m_pScaleDummy;
+    // Indicates whether the scaler has changed since the last process()
+    bool m_bScalerChanged;
     // Indicates that dependency injection has taken place.
     bool m_bScalerOverride;
 
