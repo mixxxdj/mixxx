@@ -94,7 +94,7 @@
                                   background-color: transparent; padding: 0px; margin: 0px;}
                               </Style>
                               <Group>[Channel<Variable name="channum"/>]</Group>
-                              <SizePolicy>min,fx</SizePolicy>
+                              <SizePolicy>min,f</SizePolicy>
                               <Size>-1,17</Size>
                               <Connection>
                                 <ConfigKey>[Channel<Variable name="channum"/>],visual_key</ConfigKey>
