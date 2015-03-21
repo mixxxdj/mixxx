@@ -4,6 +4,7 @@
 #include "engine/enginecontrol.h"
 #include "engine/enginemaster.h"
 #include "engine/enginebuffer.h"
+#include "engine/sync/enginesync.h"
 #include "playermanager.h"
 
 EngineControl::EngineControl(QString group,
@@ -120,33 +121,15 @@ EngineBuffer* EngineControl::pickSyncTarget() {
     if (!pMaster) {
         return NULL;
     }
-    QString group = getGroup();
-    EngineBuffer* pFirstNonplayingDeck = NULL;
 
-    for (int i = 0; i < m_numDecks.get(); ++i) {
-        QString deckGroup = PlayerManager::groupForDeck(i);
-        if (deckGroup == group) {
-            continue;
-        }
-        EngineChannel* pChannel = pMaster->getChannel(deckGroup);
-        // Only consider channels that have a track loaded and are in the master
-        // mix.
-        if (pChannel && pChannel->isActive() && pChannel->isMasterEnabled()) {
-            EngineBuffer* pBuffer = pChannel->getEngineBuffer();
-            if (pBuffer && pBuffer->getBpm() > 0) {
-                // If the deck is playing then go with it immediately.
-                if (fabs(pBuffer->getSpeed()) > 0) {
-                    return pBuffer;
-                }
-                // Otherwise hold out for a deck that might be playing but
-                // remember the first deck that matched our criteria.
-                if (pFirstNonplayingDeck == NULL) {
-                    pFirstNonplayingDeck = pBuffer;
-                }
-            }
-        }
+    EngineSync* pEngineSync = pMaster->getEngineSync();
+    if (pEngineSync == NULL) {
+        return NULL;
     }
-    // No playing decks have a BPM. Go with the first deck that was stopped but
-    // had a BPM.
-    return pFirstNonplayingDeck;
+
+    // TODO(rryan): Remove. This is a linear search over groups in
+    // EngineMaster. We should pass the EngineChannel into EngineControl.
+    EngineChannel* pThisChannel = pMaster->getChannel(getGroup());
+    EngineChannel* pChannel = pEngineSync->pickNonSyncSyncTarget(pThisChannel);
+    return pChannel ? pChannel->getEngineBuffer() : NULL;
 }
