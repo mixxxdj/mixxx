@@ -3,7 +3,8 @@
         <ObjectName>Deck</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>me, min</SizePolicy>
-        <MaximumSize>680, 300</MaximumSize>
+        <MinimumSize>-1, 220</MinimumSize>
+        <MaximumSize>680, 260</MaximumSize>
         <Children>
             <WidgetGroup>
                 <ObjectName>RateContainer<Variable name="channum" /></ObjectName>

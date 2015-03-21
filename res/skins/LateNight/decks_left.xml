@@ -18,6 +18,7 @@
                         <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>
         	        </Template>
                     <WidgetGroup>
+                        <ObjectName>Deck</ObjectName>
                         <Layout>horizontal</Layout>
                         <Children>
                             <Template src="skin:deck.xml">
@@ -33,6 +34,12 @@
                             <ConfigKey>[Master],show_4decks</ConfigKey>
                             <BindProperty>visible</BindProperty>
                         </Connection>
+                    </WidgetGroup>
+                    <WidgetGroup>
+                      <Layout>vertical</Layout>
+                      <SizePolicy>me,min</SizePolicy>
+                      <MinimumSize>0,0</MinimumSize>
+                      <Children/>
                     </WidgetGroup>
                 </Children>
             </WidgetGroup>
