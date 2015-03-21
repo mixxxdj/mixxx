@@ -140,6 +140,8 @@ class MixxxMainWindow : public QMainWindow {
     // Activated when the talkover button is pushed on a microphone so we
     // can alert the user if a mic is not configured.
     void slotTalkoverChanged(int);
+    
+    void toggleCheckedSamplers();
 
   signals:
     void newSkinLoaded();
@@ -166,6 +168,9 @@ class MixxxMainWindow : public QMainWindow {
                           const QString& translationPath, QTranslator* pTranslator);
     void checkDirectRendering();
     bool confirmExit();
+    
+    void linkSkinWidget(ControlObjectSlave** pCOS, 
+                        ConfigKey key, const char* slot);
 
     // Pointer to the root GUI widget
     QWidget* m_pWidgetParent;
@@ -254,6 +259,8 @@ class MixxxMainWindow : public QMainWindow {
     QAction* m_pDeveloperStatsBase;
     DlgDeveloperTools* m_pDeveloperToolsDlg;
     QAction* m_pDeveloperDebugger;
+
+    ControlObjectSlave* m_pCOShowSamplers;
 
     int m_iNoPlaylists;
 

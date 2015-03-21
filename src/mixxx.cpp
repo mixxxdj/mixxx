@@ -15,6 +15,7 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <iostream>
 #include <QtDebug>
 #include <QTranslator>
 #include <QMenu>
@@ -842,6 +843,23 @@ void setVisibilityOptionState(QAction* pAction, ConfigKey key) {
     pAction->setChecked(pVisibilityControl != NULL ? pVisibilityControl->get() > 0.0 : false);
 }
 
+void MixxxMainWindow::toggleCheckedSamplers() {
+    m_pViewShowSamplers->blockSignals(true);
+    ConfigKey key("[Samplers]", "show_samplers");
+    m_pViewShowSamplers->setChecked(ControlObject::get(key));
+    m_pViewShowSamplers->blockSignals(false);
+}
+
+void MixxxMainWindow::linkSkinWidget(ControlObjectSlave** pCOS, 
+                                     ConfigKey key, const char* slot) {
+    //Careful when using because it may not be supported by a skin
+    if (!*pCOS) {
+        *pCOS = new ControlObjectSlave(key, this);
+        (*pCOS)->connectValueChanged(
+            this, slot, Qt::DirectConnection);
+    }
+}
+
 void MixxxMainWindow::onNewSkinLoaded() {
 #ifdef __VINYLCONTROL__
     setVisibilityOptionState(m_pViewVinylControl,
@@ -857,7 +875,12 @@ void MixxxMainWindow::onNewSkinLoaded() {
                              ConfigKey("[EffectRack1]", "show"));
     setVisibilityOptionState(m_pViewShowCoverArt,
                              ConfigKey("[Library]", "show_coverart"));
+
+    linkSkinWidget(&m_pCOShowSamplers,
+                   ConfigKey("[Samplers]", "show_samplers"), 
+                   SLOT(toggleCheckedSamplers()));
 }
+
 
 int MixxxMainWindow::noSoundDlg(void)
 {
@@ -1249,6 +1272,8 @@ void MixxxMainWindow::initActions()
     m_pViewShowSamplers->setWhatsThis(buildWhatsThis(showSamplersTitle, showSamplersText));
     connect(m_pViewShowSamplers, SIGNAL(toggled(bool)),
             this, SLOT(slotViewShowSamplers(bool)));
+
+    m_pCOShowSamplers = NULL;
 
     QString showVinylControlTitle = tr("Show Vinyl Control Section");
     QString showVinylControlText = tr("Show the vinyl control section of the Mixxx interface.") +
@@ -1917,6 +1942,9 @@ void MixxxMainWindow::rebootMixxxView() {
 
     QPoint initPosition = pos();
     QSize initSize = size();
+
+    delete m_pCOShowSamplers;
+    m_pCOShowSamplers = NULL;
 
     if (m_pWidgetParent) {
         m_pWidgetParent->hide();
