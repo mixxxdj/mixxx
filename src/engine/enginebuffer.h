@@ -279,6 +279,9 @@ class EngineBuffer : public EngineObject {
     // True if the previous callback was scratching.
     bool m_scratching_old;
 
+    // True if the previous callback was reverse.
+    bool m_reverse_old;
+
     // The previous callback's pitch. Used to check if the scaler parameters
     // need updating.
     double m_pitch_old;
