@@ -15,7 +15,7 @@ static const int kNumChannels = 2;
 ReadAheadManager::ReadAheadManager()
         : m_pLoopingControl(NULL),
           m_pRateControl(NULL),
-          m_iCurrentPosition(0),
+          m_currentPosition(0),
           m_pReader(NULL),
           m_pCrossFadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) {
     // For testing only: ReadAheadManagerMock
@@ -25,7 +25,7 @@ ReadAheadManager::ReadAheadManager(CachingReader* pReader,
                                    LoopingControl* pLoopingControl)
         : m_pLoopingControl(pLoopingControl),
           m_pRateControl(NULL),
-          m_iCurrentPosition(0),
+          m_currentPosition(0),
           m_pReader(pReader),
           m_pCrossFadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) {
     DEBUG_ASSERT(m_pLoopingControl != NULL);
@@ -44,7 +44,7 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
         requested_samples--;
     }
     bool in_reverse = dRate < 0;
-    SINT start_sample = m_iCurrentPosition;
+
     //qDebug() << "start" << start_sample << requested_samples;
     SINT samples_needed = requested_samples;
     CSAMPLE* base_buffer = buffer;
@@ -52,24 +52,33 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
     // A loop will only limit the amount we can read in one shot.
 
     const double loop_trigger = m_pLoopingControl->nextTrigger(
-            dRate, m_iCurrentPosition, 0, 0);
+            dRate, m_currentPosition, 0, 0);
     bool loop_active = loop_trigger != kNoTrigger;
     SINT preloop_samples = 0;
 
     if (loop_active) {
-        SINT samples_available = in_reverse ?
-                m_iCurrentPosition - loop_trigger :
-                loop_trigger - m_iCurrentPosition;
-        if (samples_available < 0) {
+        double samplesToLoopTrigger = in_reverse ?
+                m_currentPosition - loop_trigger :
+                loop_trigger - m_currentPosition;
+        if (samplesToLoopTrigger < 0) {
             samples_needed = 0;
         } else {
-            preloop_samples = samples_available;
-            samples_needed = math_clamp<SINT>(samples_needed, 0, samples_available);
+            // TODO() check for foor or ceil
+            preloop_samples = SampleUtil::roundPlayPosToFrameStart(samplesToLoopTrigger,
+                    kNumChannels);
+            samples_needed = math_clamp(samples_needed,
+                    static_cast<SINT>(0), preloop_samples);
         }
     }
 
+    // TODO(DSC) we probably need to floor and ceil here?
+    int start_sample;
     if (in_reverse) {
-        start_sample = m_iCurrentPosition - samples_needed;
+        start_sample = SampleUtil::roundPlayPosToFrameStart(
+                m_currentPosition, kNumChannels) - samples_needed;
+    } else {
+        start_sample = SampleUtil::roundPlayPosToFrameStart(
+                m_currentPosition, kNumChannels);
     }
 
     // Sanity checks.
@@ -86,12 +95,14 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
     }
 
     // Increment or decrement current read-ahead position
+    // Mixing int and double here is desired, because the fractional frame should
+    // be resist
     if (in_reverse) {
-        addReadLogEntry(m_iCurrentPosition, m_iCurrentPosition - samples_read);
-        m_iCurrentPosition -= samples_read;
+        addReadLogEntry(m_currentPosition, m_currentPosition - samples_read);
+        m_currentPosition -= samples_read;
     } else {
-        addReadLogEntry(m_iCurrentPosition, m_iCurrentPosition + samples_read);
-        m_iCurrentPosition += samples_read;
+        addReadLogEntry(m_currentPosition, m_currentPosition + samples_read);
+        m_currentPosition += samples_read;
     }
 
     // Activate on this trigger if necessary
@@ -99,12 +110,14 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
         // LoopingControl makes the decision about whether we should loop or
         // not.
         const double loop_target = m_pLoopingControl->
-                process(dRate, m_iCurrentPosition, 0, 0);
+                process(dRate, m_currentPosition, 0, 0);
 
         if (loop_target != kNoTrigger) {
-            m_iCurrentPosition = loop_target;
+            m_currentPosition = loop_target;
 
-            int loop_read_position = m_iCurrentPosition +
+            // start reading before the loop start point, to crossfade these samples
+            // with the samples we need to the loop end
+            int loop_read_position = m_currentPosition +
                     (in_reverse ? preloop_samples : -preloop_samples);
 
             int looping_samples_read = m_pReader->read(
@@ -121,7 +134,7 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
         }
     }
 
-    //qDebug() << "read" << m_iCurrentPosition << samples_read;
+    //qDebug() << "read" << m_currentPosition << samples_read;
     return samples_read;
 }
 
@@ -130,8 +143,8 @@ void ReadAheadManager::addRateControl(RateControl* pRateControl) {
 }
 
 // Not thread-save, call from engine thread only
-void ReadAheadManager::notifySeek(SINT iSeekPosition) {
-    m_iCurrentPosition = iSeekPosition;
+void ReadAheadManager::notifySeek(double seekPosition) {
+    m_currentPosition = seekPosition;
     m_readAheadLog.clear();
 
     // TODO(XXX) notifySeek on the engine controls. EngineBuffer currently does
@@ -151,10 +164,14 @@ void ReadAheadManager::hintReader(double dRate, HintVector* pHintList) {
     // cache.
     SINT length_to_cache = 2 * CachingReaderChunk::kSamples;
 
+    // this called after the precious chunk was consumed
+    // TODO(DSC) do wee need the floor frame?
+    int sample = SampleUtil::roundPlayPosToFrameStart(
+            m_currentPosition, kNumChannels);
     current_position.length = length_to_cache;
     current_position.sample = in_reverse ?
-            m_iCurrentPosition - length_to_cache :
-            m_iCurrentPosition;
+            sample - length_to_cache :
+            sample;
 
     // If we are trying to cache before the start of the track,
     // Then we don't need to cache because it's all zeros!
