@@ -88,6 +88,30 @@ class SampleUtil {
         return CSAMPLE_GAIN_clamp(in);
     }
 
+    // static
+    inline static int roundPlayPosToFrameStart(double playPos, int numChannels) {
+        int playPosFrames = static_cast<int>(round(playPos / numChannels));
+        return playPosFrames * numChannels;
+    }
+
+    // static
+    inline static int truncPlayPosToFrameStart(double playPos, int numChannels) {
+        int playPosFrames = static_cast<int>(playPos / numChannels);
+        return playPosFrames * numChannels;
+    }
+
+    // static
+    inline static int floorPlayPosToFrameStart(double playPos, int numChannels) {
+        int playPosFrames = static_cast<int>(floor(playPos / numChannels));
+        return playPosFrames * numChannels;
+    }
+
+    // static
+    inline static int ceilPlayPosToFrameStart(double playPos, int numChannels) {
+        int playPosFrames = static_cast<int>(ceil(playPos / numChannels));
+        return playPosFrames * numChannels;
+    }
+
     // Multiply every sample in pBuffer by gain
     static void applyGain(CSAMPLE* pBuffer, CSAMPLE gain,
             int iNumSamples);
