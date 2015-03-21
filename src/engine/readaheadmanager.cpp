@@ -10,6 +10,8 @@
 #include "util/math.h"
 #include "util/sample.h"
 
+static const int kNumChannels = 2;
+
 ReadAheadManager::ReadAheadManager()
         : m_pLoopingControl(NULL),
           m_pRateControl(NULL),
@@ -28,7 +30,6 @@ ReadAheadManager::ReadAheadManager(CachingReader* pReader,
           m_pCrossFadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) {
     DEBUG_ASSERT(m_pLoopingControl != NULL);
     DEBUG_ASSERT(m_pReader != NULL);
-    SampleUtil::clear(m_pCrossFadeBuffer, MAX_BUFFER_LEN);
 }
 
 ReadAheadManager::~ReadAheadManager() {
