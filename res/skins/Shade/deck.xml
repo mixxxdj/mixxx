@@ -274,7 +274,8 @@
 							<Property>title</Property>
 							<Channel><Variable name="channum"/></Channel>
 							<Pos>39,4</Pos>
-							<Size>310f,18</Size>
+							<Size>275f,18</Size>
+							<Elide>right</Elide>
 						</TrackProperty>
 	
 						<!--
@@ -290,7 +291,8 @@
 							<Property>artist</Property>
 							<Channel><Variable name="channum"/></Channel>
 							<Pos>39,24</Pos>
-							<Size>230f,18</Size>
+							<Size>210f,18</Size>
+							<Elide>right</Elide>
 						</TrackProperty>
 		
 						<!--
@@ -304,8 +306,8 @@
 							background-color: transparent; color: #191F24; text-align: left;padding-left: 1px; }
 							</Style>
 							<Channel><Variable name="channum"/></Channel>
-							<Pos>215,24</Pos>
-							<Size>100,18</Size>
+							<Pos>249,24</Pos>
+							<Size>66,18</Size>
 							<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 							<Alignment>right</Alignment>
 							<Connection>

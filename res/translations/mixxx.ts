@@ -4735,108 +4735,13 @@ and allows you to pitch adjust them for harmonic mixing.</source>
 <context>
     <name>DlgPrefNoVinylDlg</name>
     <message>
-        <location filename="../../src/dlgprefnovinyldlg.ui" line="23"/>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefnovinyldlg.ui" line="467"/>
-        <source>&lt;a href=&quot;http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting&quot;&gt;Troubleshooting&lt;/a&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefnovinyldlg.ui" line="31"/>
-        <source>Turntable Preamp</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../src/dlgprefnovinyldlg.ui" line="14"/>
         <source>Vinyl Control (Disabled) Preferences</source>
         <extracomment>Using a version with the Vinyl Control feature disabled, an alternative preferences window is displayed.</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefnovinyldlg.ui" line="77"/>
-        <source>1 (Off)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefnovinyldlg.ui" line="106"/>
-        <source>150</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefnovinyldlg.ui" line="124"/>
-        <source>Vinyl Configuration</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefnovinyldlg.ui" line="142"/>
-        <source>Deck 1 Vinyl Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefnovinyldlg.ui" line="199"/>
-        <source>Deck 2 Vinyl Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefnovinyldlg.ui" line="256"/>
-        <source>Lead-in time</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefnovinyldlg.ui" line="288"/>
-        <source>seconds</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefnovinyldlg.ui" line="311"/>
-        <source>Show Signal Quality in Skin</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefnovinyldlg.ui" line="336"/>
-        <source>Control Mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefnovinyldlg.ui" line="345"/>
-        <source>Absolute Mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefnovinyldlg.ui" line="352"/>
-        <source>Relative Mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefnovinyldlg.ui" line="378"/>
-        <source>Signal Quality</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefnovinyldlg.ui" line="422"/>
-        <source>http://www.xwax.co.uk</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefnovinyldlg.ui" line="425"/>
-        <source>Powered by xwax</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefnovinyldlg.ui" line="451"/>
-        <source>Hints</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefnovinyldlg.ui" line="457"/>
-        <source>Select sound devices for Vinyl Control in the Sound Hardware pane.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefnovinyldlg.ui" line="409"/>
+        <location filename="../../src/dlgprefnovinyldlg.ui" line="26"/>
         <source>&lt;b&gt;This version of Mixxx does not support vinyl control.&lt;/b&gt; &lt;br&gt; Please visit &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; for more information.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4941,8 +4846,8 @@ and allows you to pitch adjust them for harmonic mixing.</source>
 <context>
     <name>DlgPrefReplayGain</name>
     <message>
-        <location filename="../../src/dlgprefreplaygain.cpp" line="111"/>
-        <source>%1 dB (average %2 dB)</source>
+        <location filename="../../src/dlgprefreplaygain.cpp" line="113"/>
+        <source>%1 LUFS (adjust by %2 dB)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -4959,65 +4864,79 @@ and allows you to pitch adjust them for harmonic mixing.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefreplaygaindlg.ui" line="26"/>
+        <location filename="../../src/dlgprefreplaygaindlg.ui" line="36"/>
         <source>Calculate ReplayGain normalization for tracks which are missing ReplayGain metadata.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefreplaygaindlg.ui" line="29"/>
-        <source>Enable ReplayGain Analysis</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefreplaygaindlg.ui" line="36"/>
+        <location filename="../../src/dlgprefreplaygaindlg.ui" line="26"/>
         <source>Apply loudness normalization to loaded tracks.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefreplaygaindlg.ui" line="39"/>
+        <location filename="../../src/dlgprefreplaygaindlg.ui" line="29"/>
         <source>Apply ReplayGain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefreplaygaindlg.ui" line="72"/>
-        <location filename="../../src/dlgprefreplaygaindlg.ui" line="193"/>
-        <source>-12 dB</source>
+        <location filename="../../src/dlgprefreplaygaindlg.ui" line="39"/>
+        <source>Enable ReplayGain 1.0 Analysis</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefreplaygaindlg.ui" line="92"/>
-        <location filename="../../src/dlgprefreplaygaindlg.ui" line="213"/>
-        <source>TextLabel</source>
+        <location filename="../../src/dlgprefreplaygaindlg.ui" line="72"/>
+        <source>-30 LUFS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/dlgprefreplaygaindlg.ui" line="112"/>
-        <location filename="../../src/dlgprefreplaygaindlg.ui" line="233"/>
-        <source>+12 dB</source>
+        <source>-6 LUFS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/dlgprefreplaygaindlg.ui" line="152"/>
-        <source>Inital boost without ReplayGain</source>
+        <source>When ReplayGain is enabled, adjust tracks lacking ReplayGain information by this amount.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefreplaygaindlg.ui" line="159"/>
-        <source>Inital boost in addition to ReplayGain</source>
+        <location filename="../../src/dlgprefreplaygaindlg.ui" line="155"/>
+        <source>Initial boost without ReplayGain data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefreplaygaindlg.ui" line="162"/>
+        <source>For tracks with ReplayGain, adjust the target loudness to this LUFS value (Loudness Units relative to Full Scale).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefreplaygaindlg.ui" line="165"/>
+        <source>Target loudness</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefreplaygaindlg.ui" line="199"/>
+        <source>-12 dB</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefreplaygaindlg.ui" line="257"/>
+        <source>ReplayGain targets a reference loudness of -18 LUFS (Loudness Units relative to Full Scale). You may increase it if you find Mixxx is too quiet or reduce it if you find that your tracks are clipping. You may also want to decrease the volume of unanalyzed tracks if you find they are often louder than ReplayGained tracks. For podcasting a loudness of -16 LUFS is recommended.
+
+The loudness target is approximate and assumes track pregain and master output level are unchanged.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefreplaygaindlg.ui" line="272"/>
+        <source>When an unanalyzed track is playing, Mixxx will avoid an abrupt volume change by not applying a newly calculated ReplayGain value.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefreplaygaindlg.ui" line="239"/>
+        <source>+12 dB</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/dlgprefreplaygaindlg.ui" line="251"/>
-        <source>If an unanalyzed track is playing, Mixxx won&apos;t apply a newly calculated ReplayGain to avoid an abrupt volume change. </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefreplaygaindlg.ui" line="261"/>
-        <source>The normal average ReplayGain playback level is -14 dB. You may increase it using the inital boost, if your tracks does not require the full dynamic headroom, or reduce it if you experience that your tracks are clipping by default.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefreplaygaindlg.ui" line="245"/>
         <source>Hints</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5488,21 +5407,6 @@ milliseconds</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefvinyldlg.ui" line="600"/>
-        <source>Turntable Preamp</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefvinyldlg.ui" line="646"/>
-        <source>1 (Off)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefvinyldlg.ui" line="675"/>
-        <source>150</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../src/dlgprefvinyldlg.ui" line="20"/>
         <source>Vinyl Configuration</source>
         <translation type="unfinished"></translation>
@@ -5551,6 +5455,21 @@ milliseconds</extracomment>
         <location filename="../../src/dlgprefvinyldlg.ui" line="389"/>
         <location filename="../../src/dlgprefvinyldlg.ui" line="528"/>
         <source>Lead-in</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefvinyldlg.ui" line="598"/>
+        <source>Turntable Input Signal Boost</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefvinyldlg.ui" line="626"/>
+        <source>0 dB</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefvinyldlg.ui" line="675"/>
+        <source>44 dB</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6318,17 +6237,17 @@ milliseconds</extracomment>
 <context>
     <name>EngineBuffer</name>
     <message>
-        <location filename="../../src/engine/enginebuffer.h" line="169"/>
+        <location filename="../../src/engine/enginebuffer.h" line="166"/>
         <source>Soundtouch (faster)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/enginebuffer.h" line="171"/>
+        <location filename="../../src/engine/enginebuffer.h" line="168"/>
         <source>Rubberband (better)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/enginebuffer.h" line="173"/>
+        <location filename="../../src/engine/enginebuffer.h" line="170"/>
         <source>Unknown (bad value)</source>
         <translation type="unfinished"></translation>
     </message>

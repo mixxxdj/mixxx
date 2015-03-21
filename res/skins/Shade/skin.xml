@@ -452,6 +452,7 @@
 															<Group>[PreviewDeck1]</Group>
 															<Pos></Pos>
 															<Size>50me,15f</Size>
+															<Elide>right</Elide>
 														</Text>
 														<!--
 														**********************************************
