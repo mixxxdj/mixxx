@@ -113,13 +113,12 @@ void EngineBufferScaleST::clear() {
     m_pSoundTouch->clear();
 }
 
-void EngineBufferScaleST::getScaled(CSAMPLE* pOutput, const int buf_size) {
-    m_samplesRead = 0.0;
+double EngineBufferScaleST::getScaled(CSAMPLE* pOutput, const int buf_size) {
+    double samplesRead = 0.0;
 
     if (m_dRateOld == 0 || m_dTempoOld == 0) {
         SampleUtil::clear(pOutput, buf_size);
-        m_samplesRead = buf_size;
-        return;
+        return samplesRead;
     }
 
     const int iNumChannels = 2;
@@ -173,8 +172,8 @@ void EngineBufferScaleST::getScaled(CSAMPLE* pOutput, const int buf_size) {
     // NOTE(rryan): Why no m_dPitchAdjust here? SoundTouch implements pitch
     // shifting as a tempo shift of (1/m_dPitchAdjust) and a rate shift of
     // (*m_dPitchAdjust) so these two cancel out.
-    m_samplesRead = m_dBaseRate * m_dTempo *
+    samplesRead = m_dBaseRate * m_dTempo *
             total_received_frames * iNumChannels;
 
-    return;
+    return samplesRead;
 }

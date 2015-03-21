@@ -974,8 +974,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             }
 
             // Perform scaling of Reader buffer into buffer.
-            m_pScale->getScaled(pOutput, iBufferSize);
-            double samplesRead = m_pScale->getSamplesRead();
+            double samplesRead = m_pScale->getScaled(pOutput, iBufferSize);
 
             //qDebug() << "sourceSamples used " << iSourceSamples
             //         <<" samplesRead " << samplesRead

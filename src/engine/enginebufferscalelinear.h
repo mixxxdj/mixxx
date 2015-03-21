@@ -35,7 +35,7 @@ class EngineBufferScaleLinear : public EngineBufferScale  {
     EngineBufferScaleLinear(ReadAheadManager *pReadAheadManager);
     virtual ~EngineBufferScaleLinear();
 
-    void getScaled(CSAMPLE* pOutput, const int iBufferSize);
+    double getScaled(CSAMPLE* pOutput, const int iBufferSize);
     void clear();
 
     virtual void setScaleParameters(double base_rate,

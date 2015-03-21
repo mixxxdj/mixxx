@@ -24,13 +24,8 @@ EngineBufferScale::EngineBufferScale()
           m_dBaseRate(1.0),
           m_bSpeedAffectsPitch(false),
           m_dTempo(1.0),
-          m_dPitch(1.0),
-          m_samplesRead(0) {
+          m_dPitch(1.0) {
 }
 
 EngineBufferScale::~EngineBufferScale() {
-}
-
-double EngineBufferScale::getSamplesRead() {
-    return m_samplesRead;
 }

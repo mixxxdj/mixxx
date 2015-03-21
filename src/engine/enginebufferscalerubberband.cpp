@@ -156,15 +156,14 @@ void EngineBufferScaleRubberBand::deinterleaveAndProcess(
                            frames, flush);
 }
 
-void EngineBufferScaleRubberBand::getScaled(CSAMPLE* pOutput, const int buf_size) {
+double EngineBufferScaleRubberBand::getScaled(CSAMPLE* pOutput, const int buf_size) {
     // qDebug() << "EngineBufferScaleRubberBand::getScaled" << buf_size
     //          << "m_dSpeedAdjust" << m_dSpeedAdjust;
-    m_samplesRead = 0.0;
+    double samplesRead = 0.0;
 
     if (m_dBaseRate == 0 || m_dTempo == 0) {
         SampleUtil::clear(pOutput, buf_size);
-        m_samplesRead = buf_size;
-        return;
+        return samplesRead;
     }
 
     const int iNumChannels = 2;
@@ -248,8 +247,8 @@ void EngineBufferScaleRubberBand::getScaled(CSAMPLE* pOutput, const int buf_size
     // time. So, if we used total_received_frames * iNumChannels in stretched
     // time, then multiplying that by the ratio of unstretched time to stretched
     // time will get us the unstretched samples read.
-    m_samplesRead = m_dBaseRate * m_dTempo *
+    samplesRead = m_dBaseRate * m_dTempo *
             total_received_frames * iNumChannels;
 
-    return;
+    return samplesRead;
 }

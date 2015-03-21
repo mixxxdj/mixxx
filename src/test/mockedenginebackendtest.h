@@ -34,15 +34,14 @@ class MockScaler : public EngineBufferScale {
             : EngineBufferScale(),
               m_processedTempo(-1),
               m_processedPitch(-1) {
-        SampleUtil::clear(m_buffer, MAX_BUFFER_LEN);
     }
     void clear() { }
-    CSAMPLE *getScaled(CSAMPLE* pOutput, const int buf_size) {
+    double getScaled(CSAMPLE* pOutput, const int buf_size) {
         Q_UNUSED(pOutput);
         m_processedTempo = m_dTempo;
         m_processedPitch = m_dPitch;
-        m_samplesRead = round(buf_size * m_dTempo);
-        return;
+        double samplesRead = round(buf_size * m_dTempo);
+        return samplesRead;
     }
 
     double getProcessedTempo() {

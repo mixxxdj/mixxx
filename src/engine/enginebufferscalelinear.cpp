@@ -84,12 +84,12 @@ inline float hermite4(float frac_pos, float xm1, float x0, float x1, float x2)
     return ((((a * frac_pos) - b_neg) * frac_pos + c) * frac_pos + x0);
 }
 
-/** Determine if we're changing directions (scratching) and then perform
-    a stretch */
-void EngineBufferScaleLinear::getScaled(CSAMPLE* pOutput, const int buf_size) {
+// Determine if we're changing directions (scratching) and then perform
+// a stretch
+double EngineBufferScaleLinear::getScaled(CSAMPLE* pOutput,
+                                          const int buf_size) {
     if (buf_size == 0) {
-        m_samplesRead = 0;
-        return;
+        return 0.0;
     }
 
     if (m_bClear) {
@@ -131,7 +131,7 @@ void EngineBufferScaleLinear::getScaled(CSAMPLE* pOutput, const int buf_size) {
                     rate_add_new, m_bufferInt, extra_samples);
         }
         // force a buffer read:
-        m_bufferIntSize=0;
+        m_bufferIntSize = 0;
         // make sure the indexes stay correct for interpolation
         m_dCurrentFrame = 0 - m_dCurrentFrame + floor(m_dCurrentFrame);
         m_dNextFrame = 1.0 - (m_dNextFrame - floor(m_dNextFrame));
@@ -141,14 +141,11 @@ void EngineBufferScaleLinear::getScaled(CSAMPLE* pOutput, const int buf_size) {
         m_dRate = rate_add_new;
         // pass the address of the sample at the halfway point
         samples_read += do_scale(&pOutput[buf_size / 2], buf_size / 2);
-
-        m_samplesRead = samples_read;
-        return;
+        return samples_read;
     }
 
     samples_read += do_scale(pOutput, buf_size);
-    m_samplesRead = samples_read;
-    return;
+    return samples_read;
 }
 
 // Stretch a specified buffer worth of audio using linear interpolation
