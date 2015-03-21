@@ -53,7 +53,7 @@ void WLabel::setup(QDomNode node, const SkinContext& context) {
     QString strFontSize;
     if (context.hasNodeSelectString(node, "FontSize", &strFontSize)) {
         int fontsize = strFontSize.toInt();
-        // TODO(XXX) "Helvetica" should retrain the Qt default font matching, verify that. 
+        // TODO(XXX) "Helvetica" should retrain the Qt default font matching, verify that.
         setFont(QFont("Helvetica", fontsize, QFont::Normal));
     }
 
@@ -68,7 +68,7 @@ void WLabel::setup(QDomNode node, const SkinContext& context) {
         } else if (alignment == "left") {
             setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
         } else {
-            qDebug() << "WLabel::setup(): Alignment =" << alignment << 
+            qDebug() << "WLabel::setup(): Alignment =" << alignment <<
                     " unknown, use right, center or left";
         }
     }
@@ -86,7 +86,7 @@ void WLabel::setup(QDomNode node, const SkinContext& context) {
         } else if (elide == "none") {
             m_elideMode = Qt::ElideNone;
         } else {
-            qDebug() << "WLabel::setup(): Alide =" << elide << 
+            qDebug() << "WLabel::setup(): Alide =" << elide <<
                     "unknown, use right, middle, left or none.";
         }
     }
@@ -103,6 +103,8 @@ void WLabel::setText(const QString& text) {
         // Measure the text for label width
         // it turns out, that "-2" is required to make the text actually fit
         // (Tested on Ubuntu Trusty)
+        // TODO(lp#:1434865): Fix elide width calculation for cases where
+        // this text is next to an expanding widget.
         QString elidedText = metrics.elidedText(m_longText, m_elideMode, width() - 2);
         QLabel::setText(elidedText);
     } else {
