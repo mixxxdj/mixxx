@@ -37,8 +37,11 @@ class ReadAheadManager {
     // samples read is less than the requested number of samples.
     virtual int getNextSamples(double dRate, CSAMPLE* buffer, int requested_samples);
 
+
     // Used to add a new EngineControl that ReadAheadManager will use to decide
     // which samples to return.
+    void addLoopingControl(EngineControl* pLoopingControl);
+    void addRateControl(EngineControl* pRateControl);
     virtual void addEngineControl(EngineControl* control);
 
     // Get the current read-ahead position in samples.
@@ -115,7 +118,8 @@ class ReadAheadManager {
                          double virtualPlaypositionEndNonInclusive);
 
     QMutex m_mutex;
-    QList<EngineControl*> m_sEngineControls;
+    QList<EngineControl*> m_engineControls;
+    EngineControl* m_pLoopingControl;
     QLinkedList<ReadLogEntry> m_readAheadLog;
     int m_iCurrentPosition;
     CachingReader* m_pReader;

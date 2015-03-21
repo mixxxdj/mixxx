@@ -75,7 +75,7 @@ class ReadAheadManagerTest : public MixxxTest {
         m_pReader.reset(new StubReader());
         m_pLoopControl.reset(new StubLoopControl());
         m_pReadAheadManager.reset(new ReadAheadManager(m_pReader.data()));
-        m_pReadAheadManager->addEngineControl(m_pLoopControl.data());
+        m_pReadAheadManager->addLoopingControl(m_pLoopControl.data());
     }
 
     QScopedPointer<StubReader> m_pReader;

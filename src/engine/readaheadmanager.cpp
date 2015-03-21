@@ -36,7 +36,7 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
 
     // A loop will only limit the amount we can read in one shot.
 
-    const double loop_trigger = m_sEngineControls.at(0)->nextTrigger(
+    const double loop_trigger = m_pLoopingControl->nextTrigger(
             dRate, m_iCurrentPosition, 0, 0);
     bool loop_active = loop_trigger != kNoTrigger;
     int preloop_samples = 0;
@@ -83,7 +83,7 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
     if (loop_active) {
         // LoopingControl makes the decision about whether we should loop or
         // not.
-        const double loop_target = m_sEngineControls.at(0)->
+        const double loop_target = m_pLoopingControl->
                 process(dRate, m_iCurrentPosition, 0, 0);
 
         if (loop_target != kNoTrigger) {
@@ -115,11 +115,20 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
     return samples_read;
 }
 
+void ReadAheadManager::addLoopingControl(EngineControl* pLoopingControl) {
+    m_pLoopingControl = pLoopingControl;
+    addEngineControl((EngineControl*)pLoopingControl);
+}
+
+void ReadAheadManager::addRateControl(EngineControl* pRateControl) {
+    addEngineControl((EngineControl*)pRateControl);
+}
+
 void ReadAheadManager::addEngineControl(EngineControl* pControl) {
     if (pControl == NULL) {
         return;
     }
-    m_sEngineControls.append(pControl);
+    m_engineControls.append(pControl);
 }
 
 void ReadAheadManager::notifySeek(int iSeekPosition) {
@@ -197,7 +206,7 @@ int ReadAheadManager::getEffectiveVirtualPlaypositionFromLog(double currentVirtu
 
         // Notify EngineControls that we have taken a seek.
         if (shouldNotifySeek) {
-            foreach (EngineControl* pControl, m_sEngineControls) {
+            foreach (EngineControl* pControl, m_engineControls) {
                 pControl->notifySeek(entry.virtualPlaypositionStart);
             }
         }
