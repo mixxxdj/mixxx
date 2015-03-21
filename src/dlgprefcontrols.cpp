@@ -58,25 +58,25 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     m_pNumSamplers->connectValueChanged(SLOT(slotNumSamplersChanged(double)));
     slotNumSamplersChanged(m_pNumSamplers->get());
 
-    // Position display configuration
-    m_pControlPositionDisplay = new ControlObject(
+    // Track time display configuration
+    m_pControlTrackTimeDisplay = new ControlObject(
             ConfigKey("[Controls]", "ShowDurationRemaining"));
-    connect(m_pControlPositionDisplay, SIGNAL(valueChanged(double)),
+    connect(m_pControlTrackTimeDisplay, SIGNAL(valueChanged(double)),
             this, SLOT(slotSetPositionDisplay(double)));
 
-    ComboBoxPosition->addItem(tr("Position"));
-    ComboBoxPosition->addItem(tr("Remaining"));
-    if (m_pConfig->getValueString(ConfigKey("[Controls]", "PositionDisplay")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]", "PositionDisplay"),ConfigValue(0));
+    // If not present in the config, set the default value
+    if (!m_pConfig->exists(ConfigKey("[Controls]","PositionDisplay")))
+        m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"),ConfigValue(1));
+
     if (m_pConfig->getValueString(ConfigKey("[Controls]", "PositionDisplay")).toInt() == 1) {
-        ComboBoxPosition->setCurrentIndex(1);
-        m_pControlPositionDisplay->set(1.0);
+        radioButtonRemaining->setChecked(true);
+        m_pControlTrackTimeDisplay->set(1.0);
     } else {
-        ComboBoxPosition->setCurrentIndex(0);
-        m_pControlPositionDisplay->set(0.0);
+        radioButtonElapsed->setChecked(true);
+        m_pControlTrackTimeDisplay->set(0.0);
     }
-    connect(ComboBoxPosition, SIGNAL(activated(int)),
-            this, SLOT(slotSetPositionDisplay(int)));
+    connect(buttonGroupTrackTime, SIGNAL(buttonClicked(QAbstractButton*)),
+            this, SLOT(slotSetTrackTimeDisplay(QAbstractButton *)));
 
     // Set default direction as stored in config file
     if (m_pConfig->getValueString(ConfigKey("[Controls]", "RateDir")).length() == 0)
@@ -338,7 +338,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
 }
 
 DlgPrefControls::~DlgPrefControls() {
-    delete m_pControlPositionDisplay;
+    delete m_pControlTrackTimeDisplay;
     qDeleteAll(m_rateControls);
     qDeleteAll(m_rateDirControls);
     qDeleteAll(m_cueControls);
@@ -393,8 +393,8 @@ void DlgPrefControls::slotUpdate() {
 }
 
 void DlgPrefControls::slotResetToDefaults() {
-    // Position mode
-    ComboBoxPosition->setCurrentIndex(0);
+    // Track time display mode
+    radioButtonRemaining->setChecked(true);
 
     // Up increases speed.
     ComboBoxRateDir->setCurrentIndex(0);
@@ -541,20 +541,26 @@ void DlgPrefControls::slotSetSkin(int) {
     slotUpdateSchemes();
 }
 
-void DlgPrefControls::slotSetPositionDisplay(int) {
-    int positionDisplay = ComboBoxPosition->currentIndex();
-    m_pConfig->set(ConfigKey("[Controls]", "PositionDisplay"), ConfigValue(positionDisplay));
-    m_pControlPositionDisplay->set(positionDisplay);
+void DlgPrefControls::slotSetTrackTimeDisplay(QAbstractButton* b) {
+    int timeDisplay = 0;
+    if (b == radioButtonRemaining) {
+        timeDisplay = 1;
+        m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(1));
+    }
+    else {
+        m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(0));
+    }
+    m_pControlTrackTimeDisplay->set(timeDisplay);
 }
 
-void DlgPrefControls::slotSetPositionDisplay(double v) {
+void DlgPrefControls::slotSetTrackTimeDisplay(double v) {
     if (v > 0) {
-        // remaining
-        ComboBoxPosition->setCurrentIndex(1);
+        // Remaining
+        radioButtonRemaining->setChecked(true);
         m_pConfig->set(ConfigKey("[Controls]", "PositionDisplay"), ConfigValue(1));
     } else {
-        // position
-        ComboBoxPosition->setCurrentIndex(0);
+        // Elapsed
+        radioButtonElapsed->setChecked(true);
         m_pConfig->set(ConfigKey("[Controls]", "PositionDisplay"), ConfigValue(0));
     }
 }

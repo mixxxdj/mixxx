@@ -60,8 +60,8 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     void slotSetSkin(int);
     void slotSetScheme(int);
     void slotUpdateSchemes();
-    void slotSetPositionDisplay(int);
-    void slotSetPositionDisplay(double);
+    void slotSetTrackTimeDisplay(QAbstractButton*);
+    void slotSetTrackTimeDisplay(double);
     void slotSetAllowTrackLoadToPlayingDeck(int);
     void slotSetCueDefault(int);
     void slotSetCueRecall(int);
@@ -80,7 +80,7 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     bool checkSkinResolution(QString skin);
 
     ConfigObject<ConfigValue>* m_pConfig;
-    ControlObject* m_pControlPositionDisplay;
+    ControlObject* m_pControlTrackTimeDisplay;
     ControlObjectSlave* m_pNumDecks;
     ControlObjectSlave* m_pNumSamplers;
     QList<ControlObjectThread*> m_cueControls;
