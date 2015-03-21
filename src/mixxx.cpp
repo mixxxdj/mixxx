@@ -1939,6 +1939,8 @@ void MixxxMainWindow::rebootMixxxView() {
     QPoint initPosition = pos();
     QSize initSize = size();
 
+    //Everytime a skin is loaded, the Cos objects need to be recreated
+    //See onNewSkinLoaded()
     delete m_pShowSamplers;
     m_pShowSamplers = NULL;
 
