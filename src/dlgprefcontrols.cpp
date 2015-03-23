@@ -104,13 +104,13 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     connect(ComboBoxRateRange, SIGNAL(activated(int)),
             this, SLOT(slotSetRateRange(int)));
 
-    ComboBoxKeylockMode->clear();
-    ComboBoxKeylockMode->addItem(tr("Lock original key"));
-    ComboBoxKeylockMode->addItem(tr("Lock current key"));
-    connect(ComboBoxKeylockMode, SIGNAL(activated(int)),
-            this, SLOT(slotKeylockMode(int)));
+    //
+    // Key lock mode
+    //
+    connect(buttonGroupKeyLockMode, SIGNAL(buttonClicked(QAbstractButton*)),
+            this, SLOT(slotKeyLockMode(QAbstractButton *)));
     m_keylockMode = m_pConfig->getValueString(
-            ConfigKey("[Controls]", "keylockMode"), "0").toInt();
+        ConfigKey("[Controls]", "PitchAndKeylockMode"), "0").toInt();
     foreach (ControlObjectThread* pControl, m_keylockModeControls) {
         pControl->slotSet(m_keylockMode);
     }
@@ -403,7 +403,10 @@ void DlgPrefControls::slotUpdate() {
     else
         checkBoxInvertSpeedSlider->setChecked(true);
 
-    ComboBoxKeylockMode->setCurrentIndex(m_keylockMode);
+    if (m_keylockMode == 1)
+        radioButtonCurrentKey->setChecked(true);
+    else
+        radioButtonOriginalKey->setChecked(true);
 
     ComboBoxResetSpeedAndPitch->setCurrentIndex(1 - m_speedAutoReset);
 }
@@ -454,7 +457,7 @@ void DlgPrefControls::slotResetToDefaults() {
     ComboBoxResetSpeedAndPitch->setCurrentIndex(1);
 
     m_keylockMode = 0;
-    ComboBoxKeylockMode->setCurrentIndex(m_keylockMode);
+    radioButtonOriginalKey->setChecked(true);
 }
 
 void DlgPrefControls::slotSetLocale(int pos) {
@@ -510,8 +513,12 @@ void DlgPrefControls::slotSetRateDir(int index) {
 
 }
 
-void DlgPrefControls::slotKeylockMode(int index) {
-    m_keylockMode = index;
+void DlgPrefControls::slotKeyLockMode(QAbstractButton* b) {
+    int mode = 0;
+    if (b == radioButtonCurrentKey) {
+        m_keylockMode = 1;
+    }
+    else { m_keylockMode = 0; }
 }
 
 void DlgPrefControls::slotSetAllowTrackLoadToPlayingDeck(int) {
@@ -664,7 +671,7 @@ void DlgPrefControls::slotApply() {
 
     m_pConfig->set(ConfigKey("[Controls]", "PitchAndKeylockMode"),
             ConfigValue(m_keylockMode));
-    // Set cue behavior for every group
+    // Set key lock behavior for every group
     foreach (ControlObjectThread* pControl, m_keylockModeControls) {
         pControl->slotSet(m_keylockMode);
     }

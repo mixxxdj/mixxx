@@ -52,7 +52,7 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     void slotSetRateRange(int pos);
     void slotSetRateDir(bool invert);
     void slotSetRateDir(int pos);
-    void slotKeylockMode(int pos);
+    void slotKeyLockMode(QAbstractButton*);
     void slotSetRateTempLeft(double);
     void slotSetRateTempRight(double);
     void slotSetRatePermLeft(double);
