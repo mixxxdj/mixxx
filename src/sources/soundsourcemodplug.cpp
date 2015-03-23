@@ -39,8 +39,9 @@ QString getModPlugTypeFromUrl(QUrl url) {
 
 } // anonymous namespace
 
-const SINT SoundSourceModPlug::kChannelCount = 2; // always stereo
-const SINT SoundSourceModPlug::kFrameRate = 44100; // always 44.1 kHz
+const SINT SoundSourceModPlug::kChannelCount = 2; // stereo
+const SINT SoundSourceModPlug::kBitsPerSample = 16;
+const SINT SoundSourceModPlug::kFrameRate = 44100; // 44.1 kHz
 
 QList<QString> SoundSourceModPlug::supportedFileExtensions() {
     QList<QString> list;

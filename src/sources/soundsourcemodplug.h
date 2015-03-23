@@ -19,6 +19,7 @@ public:
     static QList<QString> supportedFileExtensions();
 
     static const SINT kChannelCount;
+    static const SINT kBitsPerSample;
     static const SINT kFrameRate;
 
     // apply settings for decoding
