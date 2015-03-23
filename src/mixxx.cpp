@@ -391,7 +391,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     // user chose always starts in fullscreen mode, then turn on fullscreen
     // mode.
     bool fullscreenPref = m_pConfig->getValueString(
-        ConfigKey("[Config]", "StartInFullscreen"), "0").toInt();
+        ConfigKey("[Config]", "StartInFullscreen")).toInt()==1;
     if (args.getStartInFullscreen() || fullscreenPref) {
         slotViewFullScreen(true);
     }

@@ -68,7 +68,7 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     void slotSetRateRamp(bool);
     void slotSetRateRampSensitivity(int);
     void slotSetLocale(int);
-    void slotSetStartInFullscreen(int index);
+    void slotSetStartInFullScreen(bool b);
 
     void slotNumDecksChanged(double);
     void slotNumSamplersChanged(double);

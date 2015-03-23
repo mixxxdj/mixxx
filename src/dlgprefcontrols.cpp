@@ -285,15 +285,12 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     slotUpdateSchemes();
 
     //
-    // Starts in fullscreen mode
+    // Start in fullscreen mode
     //
-    ComboBoxStartInFullscreen->addItem(tr("Off")); // 0
-    ComboBoxStartInFullscreen->addItem(tr("On")); // 1
-    ComboBoxStartInFullscreen->setCurrentIndex(m_pConfig->getValueString(
-                       ConfigKey("[Config]", "StartInFullscreen"), "0").toInt());
-    connect(ComboBoxStartInFullscreen, SIGNAL(activated(int)),
-            this, SLOT(slotSetStartInFullscreen(int)));
-
+    checkBoxStartFullScreen->setChecked(m_pConfig->getValueString(
+                       ConfigKey("[Config]", "StartInFullscreen")).toInt()==1);
+    connect(checkBoxStartFullScreen, SIGNAL(toggled(bool)),
+            this, SLOT(slotSetStartInFullScreen(bool)));
     //
     // Tooltip configuration
     //
@@ -415,7 +412,7 @@ void DlgPrefControls::slotResetToDefaults() {
     ComboBoxSeekToCue->setCurrentIndex(0);
 
     // Don't start in full screen.
-    ComboBoxStartInFullscreen->setCurrentIndex(0);
+    checkBoxStartFullScreen->setChecked(false);
 
     // Tooltips on.
     ComboBoxTooltips->setCurrentIndex(0);
@@ -512,8 +509,8 @@ void DlgPrefControls::slotSetCueRecall(int)
     m_pConfig->set(ConfigKey("[Controls]", "CueRecall"), ConfigValue(ComboBoxSeekToCue->currentIndex()));
 }
 
-void DlgPrefControls::slotSetStartInFullscreen(int index) {
-    m_pConfig->set(ConfigKey("[Config]", "StartInFullscreen"), index);
+void DlgPrefControls::slotSetStartInFullScreen(bool b) {
+    m_pConfig->set(ConfigKey("[Config]", "StartInFullscreen"), ConfigValue(b?1:0));
 }
 
 void DlgPrefControls::slotSetTooltips(int) {
