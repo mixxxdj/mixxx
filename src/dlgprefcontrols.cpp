@@ -147,9 +147,9 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     spinBoxPermRateRight->setValue(m_pConfig->getValueString(
             ConfigKey("[Controls]", "RatePermRight")).toDouble());
 
-    SliderRateRampSensitivity->setEnabled(true);
-    SpinBoxRateRampSensitivity->setEnabled(true);
-
+//     labelSpeedRampSensitivity->setEnabled(true);
+//     SliderRateRampSensitivity->setEnabled(true);
+//     SpinBoxRateRampSensitivity->setEnabled(true);
 
     //
     // Override Playing Track on Track Load
@@ -315,10 +315,14 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     //
 
     // Set Ramp Rate On or Off
-    connect(groupBoxRateRamp, SIGNAL(toggled(bool)),
+    connect(radioButtonSpeedBendRamping, SIGNAL(toggled(bool)),
             this, SLOT(slotSetRateRamp(bool)));
-    groupBoxRateRamp->setChecked((bool)
-                                 m_pConfig->getValueString(ConfigKey("[Controls]", "RateRamp")).toInt());
+    if ((bool)
+        m_pConfig->getValueString(ConfigKey("[Controls]", "RateRamp")).toInt()) {
+        radioButtonSpeedBendRamping->setChecked(true);
+    } else {
+        radioButtonSpeedBendStatic->setChecked(true);
+    }
 
     // Update Ramp Rate Sensitivity
     connect(SliderRateRampSensitivity, SIGNAL(valueChanged(int)),
@@ -326,6 +330,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     SliderRateRampSensitivity->setValue(m_pConfig->getValueString(
             ConfigKey("[Controls]", "RateRampSensitivity")).toInt());
 
+    
     // Update "reset speed and pitch" check box
     m_speedAutoReset = static_cast<bool>(m_pConfig->getValueString(
                     ConfigKey("[Controls]", "SpeedAutoReset")).toInt());
@@ -424,7 +429,7 @@ void DlgPrefControls::slotResetToDefaults() {
     checkBoxTooltipsOnlyLibrary->setChecked(false);
 
     // Rate-ramping default off.
-    groupBoxRateRamp->setChecked(false);
+    radioButtonSpeedBendStatic->setChecked(true);
 
     // 0 rate-ramp sensitivity
     SliderRateRampSensitivity->setValue(0);
@@ -626,7 +631,7 @@ void DlgPrefControls::slotSetRateRampSensitivity(int sense) {
 
 void DlgPrefControls::slotSetRateRamp(bool mode) {
     m_pConfig->set(ConfigKey("[Controls]", "RateRamp"),
-                   ConfigValue(groupBoxRateRamp->isChecked()));
+                   ConfigValue(radioButtonSpeedBendRamping->isChecked()));
     RateControl::setRateRamp(mode);
 }
 
