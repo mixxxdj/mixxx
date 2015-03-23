@@ -63,9 +63,9 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     void slotUpdateSchemes();
     void slotSetTrackTimeDisplay(QAbstractButton*);
     void slotSetTrackTimeDisplay(double);
-    void slotSetAllowTrackLoadToPlayingDeck(int);
+    void slotSetAllowTrackLoadToPlayingDeck(bool);
     void slotSetCueDefault(int);
-    void slotSetCueRecall(int);
+    void slotSetCueRecall(bool);
     void slotSetRateRamp(bool);
     void slotSetRateRampSensitivity(int);
     void slotSetLocale(int);
@@ -74,7 +74,7 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     void slotNumDecksChanged(double);
     void slotNumSamplersChanged(double);
     
-    void slotUpdateSpeedAutoReset(int);
+    void slotUpdateSpeedAutoReset(bool);
 
   private:
     void notifyRebootNecessary();

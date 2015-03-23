@@ -154,12 +154,11 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     //
     // Override Playing Track on Track Load
     //
-    ComboBoxAllowTrackLoadToPlayingDeck->addItem(tr("Don't load tracks into a playing deck"));
-    ComboBoxAllowTrackLoadToPlayingDeck->addItem(tr("Load tracks into a playing deck"));
-    ComboBoxAllowTrackLoadToPlayingDeck->setCurrentIndex(
-        m_pConfig->getValueString(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck")).toInt());
-    connect(ComboBoxAllowTrackLoadToPlayingDeck, SIGNAL(activated(int)),
-            this, SLOT(slotSetAllowTrackLoadToPlayingDeck(int)));
+    // The check box reflects the opposite of the config value
+    checkBoxDisallowLoadToPlayingDeck->setChecked(
+        m_pConfig->getValueString(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck")).toInt()==0);
+    connect(checkBoxDisallowLoadToPlayingDeck, SIGNAL(toggled(bool)),
+            this, SLOT(slotSetAllowTrackLoadToPlayingDeck(bool)));
 
     //
     // Locale setting
@@ -230,13 +229,11 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     connect(ComboBoxCueDefault,   SIGNAL(activated(int)), this, SLOT(slotSetCueDefault(int)));
 
     // Cue recall
-    ComboBoxSeekToCue->addItem(tr("On track load"));
-    ComboBoxSeekToCue->addItem(tr("Off"));
-    ComboBoxSeekToCue->setCurrentIndex(m_pConfig->getValueString(
-            ConfigKey("[Controls]", "CueRecall")).toInt());
-    //NOTE: for CueRecall, 0 means ON....
-    connect(ComboBoxSeekToCue, SIGNAL(activated(int)),
-            this, SLOT(slotSetCueRecall(int)));
+    checkBoxSeekToCue->setChecked(m_pConfig->getValueString(
+        ConfigKey("[Controls]", "CueRecall")).toInt()==0);
+    //NOTE: for CueRecall, 0 means ON...
+    connect(checkBoxSeekToCue, SIGNAL(toggled(bool)),
+            this, SLOT(slotSetCueRecall(bool)));
 
     //
     // Skin configurations
@@ -291,19 +288,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     //
     // Tooltip configuration
     //
-/*    
-    ComboBoxTooltips->addItem(tr("On")); // 1
-    ComboBoxTooltips->addItem(tr("On (only in Library)")); // 2
-    ComboBoxTooltips->addItem(tr("Off")); // 0
 
-    // Update combo box
-    int configTooltips = m_mixxx->getToolTipsCfg();
-    // Add two mod-3 makes the on-disk order match up with the combo-box
-    // order.
-    ComboBoxTooltips->setCurrentIndex((configTooltips + 2) % 3);
-    connect(ComboBoxTooltips, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(slotSetTooltips(int)));
-*/
     // Initialize checkboxes to match config
     int configTooltips = m_mixxx->getToolTipsCfg();
     //0=OFF, 1=ON, 2=ON (only in Library)
@@ -341,14 +326,12 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     SliderRateRampSensitivity->setValue(m_pConfig->getValueString(
             ConfigKey("[Controls]", "RateRampSensitivity")).toInt());
 
-    // Update Speed Auto Reset Slider Box
-    // Cue recall
-    ComboBoxResetSpeedAndPitch->addItem(tr("On track load"));
-    ComboBoxResetSpeedAndPitch->addItem(tr("Off"));
-    connect(ComboBoxResetSpeedAndPitch, SIGNAL(activated(int)),
-            this, SLOT(slotUpdateSpeedAutoReset(int)));
+    // Update "reset speed and pitch" check box
     m_speedAutoReset = static_cast<bool>(m_pConfig->getValueString(
                     ConfigKey("[Controls]", "SpeedAutoReset")).toInt());
+    checkBoxResetSpeedAndPitch->setChecked(m_speedAutoReset==1);
+    connect(checkBoxResetSpeedAndPitch, SIGNAL(toggled(bool)),
+            this, SLOT(slotUpdateSpeedAutoReset(bool)));
 
     slotUpdate();
 }
@@ -407,8 +390,8 @@ void DlgPrefControls::slotUpdate() {
         radioButtonCurrentKey->setChecked(true);
     else
         radioButtonOriginalKey->setChecked(true);
-
-    ComboBoxResetSpeedAndPitch->setCurrentIndex(1 - m_speedAutoReset);
+    
+    checkBoxResetSpeedAndPitch->setChecked(m_speedAutoReset==1);
 }
 
 void DlgPrefControls::slotResetToDefaults() {
@@ -422,7 +405,7 @@ void DlgPrefControls::slotResetToDefaults() {
     ComboBoxRateRange->setCurrentIndex(2);
 
     // Don't load tracks into playing decks.
-    ComboBoxAllowTrackLoadToPlayingDeck->setCurrentIndex(0);
+    checkBoxDisallowLoadToPlayingDeck->setChecked(true);
 
     // Use System locale
     ComboBoxLocale->setCurrentIndex(0);
@@ -431,7 +414,7 @@ void DlgPrefControls::slotResetToDefaults() {
     ComboBoxCueDefault->setCurrentIndex(0);
 
     // Cue recall on.
-    ComboBoxSeekToCue->setCurrentIndex(0);
+    checkBoxSeekToCue->setChecked(true);
 
     // Don't start in full screen.
     checkBoxStartFullScreen->setChecked(false);
@@ -452,10 +435,11 @@ void DlgPrefControls::slotResetToDefaults() {
     spinBoxPermRateLeft->setValue(0.50);
     spinBoxPermRateRight->setValue(0.05);
 
-    // Speed auto reset combobox 1 = off
+    // Don't automatically reset the pitch & speed on track load
     m_speedAutoReset = 0;
-    ComboBoxResetSpeedAndPitch->setCurrentIndex(1);
+    checkBoxResetSpeedAndPitch->setChecked(false);
 
+    // Lock to original key
     m_keylockMode = 0;
     radioButtonOriginalKey->setChecked(true);
 }
@@ -514,16 +498,16 @@ void DlgPrefControls::slotSetRateDir(int index) {
 }
 
 void DlgPrefControls::slotKeyLockMode(QAbstractButton* b) {
-    int mode = 0;
     if (b == radioButtonCurrentKey) {
         m_keylockMode = 1;
     }
     else { m_keylockMode = 0; }
 }
 
-void DlgPrefControls::slotSetAllowTrackLoadToPlayingDeck(int) {
+void DlgPrefControls::slotSetAllowTrackLoadToPlayingDeck(bool b) {
+    // If b is true, it means NOT to allow track loading
     m_pConfig->set(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"),
-                   ConfigValue(ComboBoxAllowTrackLoadToPlayingDeck->currentIndex()));
+                   ConfigValue(b?0:1));
 }
 
 void DlgPrefControls::slotSetCueDefault(int)
@@ -537,9 +521,9 @@ void DlgPrefControls::slotSetCueDefault(int)
     }
 }
 
-void DlgPrefControls::slotSetCueRecall(int)
+void DlgPrefControls::slotSetCueRecall(bool b)
 {
-    m_pConfig->set(ConfigKey("[Controls]", "CueRecall"), ConfigValue(ComboBoxSeekToCue->currentIndex()));
+    m_pConfig->set(ConfigKey("[Controls]", "CueRecall"), ConfigValue(b?0:1));
 }
 
 void DlgPrefControls::slotSetStartInFullScreen(bool b) {
@@ -762,7 +746,7 @@ void DlgPrefControls::slotNumSamplersChanged(double new_count) {
     slotSetRateRange(m_pConfig->getValueString(ConfigKey("[Controls]", "RateRange")).toInt());
 }
 
-void DlgPrefControls::slotUpdateSpeedAutoReset(int i) {
-    // 1 = off
-    m_speedAutoReset = 1 - i;
+void DlgPrefControls::slotUpdateSpeedAutoReset(bool b) {
+    if (b) m_speedAutoReset = 1;
+    else m_speedAutoReset = 0;
 }
