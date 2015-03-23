@@ -294,17 +294,39 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     //
     // Tooltip configuration
     //
+/*    
     ComboBoxTooltips->addItem(tr("On")); // 1
     ComboBoxTooltips->addItem(tr("On (only in Library)")); // 2
     ComboBoxTooltips->addItem(tr("Off")); // 0
 
     // Update combo box
-    int configTooltips = m_mixxx->getToolTipsCgf();
+    int configTooltips = m_mixxx->getToolTipsCfg();
     // Add two mod-3 makes the on-disk order match up with the combo-box
     // order.
     ComboBoxTooltips->setCurrentIndex((configTooltips + 2) % 3);
     connect(ComboBoxTooltips, SIGNAL(currentIndexChanged(int)),
             this, SLOT(slotSetTooltips(int)));
+*/
+    // Initialize checkboxes to match config
+    int configTooltips = m_mixxx->getToolTipsCfg();
+    //0=OFF, 1=ON, 2=ON (only in Library)
+    switch (configTooltips) {
+        case 0: // Off
+            checkBoxTooltipsEnabled->setChecked(false);
+            break;
+        case 1: // On
+            checkBoxTooltipsEnabled->setChecked(true);
+            checkBoxTooltipsOnlyLibrary->setChecked(false);
+            break;
+        case 2: // Only in library
+            checkBoxTooltipsEnabled->setChecked(true);
+            checkBoxTooltipsOnlyLibrary->setChecked(true);
+            break;
+    }
+
+    slotSetTooltips();  // Update disabled status of "only library" checkbox
+    connect(buttonGroupTooltips, SIGNAL(buttonClicked(QAbstractButton*)),
+            this, SLOT(slotSetTooltips()));
 
     //
     // Ramping Temporary Rate Change configuration
@@ -415,7 +437,8 @@ void DlgPrefControls::slotResetToDefaults() {
     checkBoxStartFullScreen->setChecked(false);
 
     // Tooltips on.
-    ComboBoxTooltips->setCurrentIndex(0);
+    checkBoxTooltipsEnabled->setChecked(true);
+    checkBoxTooltipsOnlyLibrary->setChecked(false);
 
     // Rate-ramping default off.
     groupBoxRateRamp->setChecked(false);
@@ -513,9 +536,20 @@ void DlgPrefControls::slotSetStartInFullScreen(bool b) {
     m_pConfig->set(ConfigKey("[Config]", "StartInFullscreen"), ConfigValue(b?1:0));
 }
 
-void DlgPrefControls::slotSetTooltips(int) {
-    int configValue = (ComboBoxTooltips->currentIndex() + 1) % 3;
-    m_mixxx->setToolTipsCfg(configValue);
+void DlgPrefControls::slotSetTooltips() {
+    //0=OFF, 1=ON, 2=ON (only in Library)
+    int valueToSet = 1;
+    if (checkBoxTooltipsEnabled->isChecked()) {
+        checkBoxTooltipsOnlyLibrary->setDisabled(false);
+        if (checkBoxTooltipsOnlyLibrary->isChecked()) {
+            valueToSet = 2;
+        }
+    }
+    else {
+        checkBoxTooltipsOnlyLibrary->setDisabled(true);
+        valueToSet = 0;
+    }
+    m_mixxx->setToolTipsCfg(valueToSet);
 }
 
 void DlgPrefControls::notifyRebootNecessary() {

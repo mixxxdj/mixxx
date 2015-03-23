@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>565</width>
-    <height>690</height>
+    <height>573</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -436,22 +436,6 @@ Numark mode:
        </property>
       </widget>
      </item>
-     <item row="6" column="1" colspan="2">
-      <widget class="QComboBox" name="ComboBoxTooltips">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="font">
-        <font/>
-       </property>
-       <property name="toolTip">
-        <string>A small pop-up box displays a brief description of a control's purpose when the cursor rests on the control.</string>
-       </property>
-      </widget>
-     </item>
      <item row="2" column="0" rowspan="2">
       <widget class="QLabel" name="lableColorScheme">
        <property name="enabled">
@@ -530,9 +514,6 @@ Numark mode:
        </property>
        <property name="wordWrap">
         <bool>false</bool>
-       </property>
-       <property name="buddy">
-        <cstring>ComboBoxTooltips</cstring>
        </property>
       </widget>
      </item>
@@ -650,6 +631,26 @@ Numark mode:
        </property>
       </widget>
      </item>
+     <item row="6" column="1">
+      <widget class="QCheckBox" name="checkBoxTooltipsEnabled">
+       <property name="text">
+        <string>Enabled</string>
+       </property>
+       <attribute name="buttonGroup">
+        <string notr="true">buttonGroupTooltips</string>
+       </attribute>
+      </widget>
+     </item>
+     <item row="6" column="2">
+      <widget class="QCheckBox" name="checkBoxTooltipsOnlyLibrary">
+       <property name="text">
+        <string>Only in Library</string>
+       </property>
+       <attribute name="buttonGroup">
+        <string notr="true">buttonGroupTooltips</string>
+       </attribute>
+      </widget>
+     </item>
     </layout>
    </item>
   </layout>
@@ -658,7 +659,6 @@ Numark mode:
  <tabstops>
   <tabstop>ComboBoxSkinconf</tabstop>
   <tabstop>ComboBoxSchemeconf</tabstop>
-  <tabstop>ComboBoxTooltips</tabstop>
   <tabstop>ComboBoxRateRange</tabstop>
   <tabstop>ComboBoxRateDir</tabstop>
   <tabstop>spinBoxPermRateLeft</tabstop>
@@ -706,5 +706,10 @@ Numark mode:
  </connections>
  <buttongroups>
   <buttongroup name="buttonGroupTrackTime"/>
+  <buttongroup name="buttonGroupTooltips">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
  </buttongroups>
 </ui>

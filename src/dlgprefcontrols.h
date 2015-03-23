@@ -56,7 +56,7 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     void slotSetRateTempRight(double);
     void slotSetRatePermLeft(double);
     void slotSetRatePermRight(double);
-    void slotSetTooltips(int pos);
+    void slotSetTooltips();
     void slotSetSkin(int);
     void slotSetScheme(int);
     void slotUpdateSchemes();

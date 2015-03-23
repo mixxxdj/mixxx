@@ -70,7 +70,7 @@ class MixxxMainWindow : public QMainWindow {
     void initMenuBar();
 
     void setToolTipsCfg(int tt);
-    inline int getToolTipsCgf() { return m_toolTipsCfg; }
+    inline int getToolTipsCfg() { return m_toolTipsCfg; }
     void rebootMixxxView();
 
     inline GuiTick* getGuiTick() { return m_pGuiTick; };
