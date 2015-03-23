@@ -94,6 +94,7 @@ const int MixxxMainWindow::kAuxiliaryCount = 4;
 MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         : m_pWidgetParent(NULL),
           m_pDeveloperToolsDlg(NULL),
+          m_pShowSamplers(NULL),
           m_runtime_timer("MixxxMainWindow::runtime"),
           m_cmdLineArgs(args),
           m_iNumConfiguredDecks(0) {
@@ -842,6 +843,22 @@ void setVisibilityOptionState(QAction* pAction, ConfigKey key) {
     pAction->setChecked(pVisibilityControl != NULL ? pVisibilityControl->get() > 0.0 : false);
 }
 
+void MixxxMainWindow::toggleCheckedSamplers() {
+    m_pViewShowSamplers->blockSignals(true);
+    ConfigKey key("[Samplers]", "show_samplers");
+    m_pViewShowSamplers->setChecked(ControlObject::get(key));
+    m_pViewShowSamplers->blockSignals(false);
+}
+
+void MixxxMainWindow::linkSkinWidget(ControlObjectSlave** pCOS,
+                                     ConfigKey key, const char* slot) {
+    if (!*pCOS) {
+        *pCOS = new ControlObjectSlave(key, this);
+        (*pCOS)->connectValueChanged(
+            this, slot, Qt::DirectConnection);
+    }
+}
+
 void MixxxMainWindow::onNewSkinLoaded() {
 #ifdef __VINYLCONTROL__
     setVisibilityOptionState(m_pViewVinylControl,
@@ -857,6 +874,10 @@ void MixxxMainWindow::onNewSkinLoaded() {
                              ConfigKey("[EffectRack1]", "show"));
     setVisibilityOptionState(m_pViewShowCoverArt,
                              ConfigKey("[Library]", "show_coverart"));
+
+    linkSkinWidget(&m_pShowSamplers,
+                   ConfigKey("[Samplers]", "show_samplers"),
+                   SLOT(toggleCheckedSamplers()));
 }
 
 int MixxxMainWindow::noSoundDlg(void)
@@ -1917,6 +1938,11 @@ void MixxxMainWindow::rebootMixxxView() {
 
     QPoint initPosition = pos();
     QSize initSize = size();
+
+    //Everytime a skin is loaded, the Cos objects need to be recreated
+    //See onNewSkinLoaded()
+    delete m_pShowSamplers;
+    m_pShowSamplers = NULL;
 
     if (m_pWidgetParent) {
         m_pWidgetParent->hide();
