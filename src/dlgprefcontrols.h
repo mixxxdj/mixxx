@@ -50,6 +50,7 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     void slotResetToDefaults();
 
     void slotSetRateRange(int pos);
+    void slotSetRateDir(bool invert);
     void slotSetRateDir(int pos);
     void slotKeylockMode(int pos);
     void slotSetRateTempLeft(double);

@@ -82,11 +82,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     if (m_pConfig->getValueString(ConfigKey("[Controls]", "RateDir")).length() == 0)
         m_pConfig->set(ConfigKey("[Controls]", "RateDir"),ConfigValue(0));
 
-    ComboBoxRateDir->clear();
-    ComboBoxRateDir->addItem(tr("Up increases speed"));
-    ComboBoxRateDir->addItem(tr("Down increases speed (Technics SL-1210)"));
-    connect(ComboBoxRateDir, SIGNAL(activated(int)),
-            this, SLOT(slotSetRateDir(int)));
+    connect(checkBoxInvertSpeedSlider, SIGNAL(toggled(bool)), 
+            this, SLOT(slotSetRateDir(bool)));
 
     // Set default range as stored in config file
     if (m_pConfig->getValueString(ConfigKey("[Controls]", "RateRange")).length() == 0)
@@ -402,9 +399,9 @@ void DlgPrefControls::slotUpdate() {
     ComboBoxRateRange->setCurrentIndex((int)idx);
 
     if (deck1RateDir == 1)
-        ComboBoxRateDir->setCurrentIndex(0);
+        checkBoxInvertSpeedSlider->setChecked(false);
     else
-        ComboBoxRateDir->setCurrentIndex(1);
+        checkBoxInvertSpeedSlider->setChecked(true);
 
     ComboBoxKeylockMode->setCurrentIndex(m_keylockMode);
 
@@ -416,7 +413,7 @@ void DlgPrefControls::slotResetToDefaults() {
     radioButtonRemaining->setChecked(true);
 
     // Up increases speed.
-    ComboBoxRateDir->setCurrentIndex(0);
+    checkBoxInvertSpeedSlider->setChecked(false);
 
     // 10% Rate Range
     ComboBoxRateRange->setCurrentIndex(2);
@@ -484,6 +481,12 @@ void DlgPrefControls::slotSetRateRange(int pos) {
     foreach (ControlObjectThread* pControl, m_rateControls) {
         pControl->slotSet(0);
     }
+}
+
+void DlgPrefControls::slotSetRateDir(bool invert) {
+    int index = 0;
+    if (invert) index = 1;
+    slotSetRateDir(index);
 }
 
 void DlgPrefControls::slotSetRateDir(int index) {
