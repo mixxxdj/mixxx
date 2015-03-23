@@ -2,6 +2,7 @@
 
 #include "metadata/trackmetadata.h"
 #include "util/timer.h"
+#include "sampleutil.h"
 
 #include <QFile>
 
@@ -262,22 +263,22 @@ void SoundSourceModPlug::close() {
 
 SINT SoundSourceModPlug::seekSampleFrame(
         SINT frameIndex) {
+    DEBUG_ASSERT(isValidFrameIndex(frameIndex));
+
     return m_seekPos = frameIndex;
 }
 
 SINT SoundSourceModPlug::readSampleFrames(
         SINT numberOfFrames, CSAMPLE* sampleBuffer) {
-    const SINT maxFrames = samples2frames(m_sampleBuf.size());
-    const SINT readFrames = math_min(maxFrames - m_seekPos, numberOfFrames);
+    DEBUG_ASSERT(0 <= numberOfFrames);
+    DEBUG_ASSERT(isValidFrameIndex(m_seekPos));
+    const SINT readFrames = math_min(getFrameCount() - m_seekPos, numberOfFrames);
 
     const SINT readSamples = frames2samples(readFrames);
     const SINT readOffset = frames2samples(m_seekPos);
-    for (SINT i = 0; i < readSamples; ++i) {
-        sampleBuffer[i] = SAMPLE_clampSymmetric(m_sampleBuf[readOffset + i])
-                / CSAMPLE(SAMPLE_MAX);
-    }
-
+    SampleUtil::convertS16ToFloat32(sampleBuffer, &m_sampleBuf[readOffset], readSamples);
     m_seekPos += readFrames;
+
     return readFrames;
 }
 
