@@ -5251,28 +5251,28 @@ The loudness target is approximate and assumes track pregain and master output l
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefsounddlg.ui" line="114"/>
+        <location filename="../../src/dlgprefsounddlg.ui" line="87"/>
         <source>Sound API</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefsounddlg.ui" line="62"/>
+        <location filename="../../src/dlgprefsounddlg.ui" line="55"/>
         <source>Sample Rate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefsounddlg.ui" line="29"/>
+        <location filename="../../src/dlgprefsounddlg.ui" line="32"/>
         <source>Audio Buffer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefsounddlg.ui" line="22"/>
+        <location filename="../../src/dlgprefsounddlg.ui" line="25"/>
         <source>Headphone Delay</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefsounddlg.ui" line="39"/>
-        <location filename="../../src/dlgprefsounddlg.ui" line="131"/>
+        <location filename="../../src/dlgprefsounddlg.ui" line="42"/>
+        <location filename="../../src/dlgprefsounddlg.ui" line="97"/>
         <source> ms</source>
         <extracomment>milliseconds
 ----------
@@ -5280,87 +5280,87 @@ milliseconds</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefsounddlg.ui" line="91"/>
-        <source>Known Latency</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefsounddlg.ui" line="55"/>
+        <location filename="../../src/dlgprefsounddlg.ui" line="318"/>
         <source>20 ms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefsounddlg.ui" line="101"/>
+        <location filename="../../src/dlgprefsounddlg.ui" line="325"/>
         <source>Buffer Underflow Count</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefsounddlg.ui" line="124"/>
+        <location filename="../../src/dlgprefsounddlg.ui" line="335"/>
         <source>0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefsounddlg.ui" line="144"/>
+        <location filename="../../src/dlgprefsounddlg.ui" line="110"/>
         <source>Master Delay</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefsounddlg.ui" line="171"/>
+        <location filename="../../src/dlgprefsounddlg.ui" line="137"/>
         <source>Keylock/Pitch-Bending Engine</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefsounddlg.ui" line="151"/>
+        <location filename="../../src/dlgprefsounddlg.ui" line="117"/>
         <source>Multi-Soundcard Synchronization</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefsounddlg.ui" line="161"/>
+        <location filename="../../src/dlgprefsounddlg.ui" line="127"/>
         <source>Master Mix</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefsounddlg.ui" line="184"/>
+        <location filename="../../src/dlgprefsounddlg.ui" line="150"/>
         <source>Master Output Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefsounddlg.ui" line="194"/>
+        <location filename="../../src/dlgprefsounddlg.ui" line="160"/>
         <source>Microphone/Talkover Mix</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefsounddlg.ui" line="210"/>
+        <location filename="../../src/dlgprefsounddlg.ui" line="213"/>
         <source>Output</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefsounddlg.ui" line="230"/>
+        <location filename="../../src/dlgprefsounddlg.ui" line="236"/>
         <source>Input</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefsounddlg.ui" line="253"/>
-        <source>Hints</source>
+        <location filename="../../src/dlgprefsounddlg.ui" line="308"/>
+        <source>System Reported Latency</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefsounddlg.ui" line="259"/>
+        <location filename="../../src/dlgprefsounddlg.ui" line="288"/>
         <source>Enable Real-Time scheduling (currently disabled), see the &lt;a href=&quot;http://www.mixxx.org/wiki/doku.php/troubleshooting?s[]=limits&quot;&gt;Mixxx Wiki&lt;/a&gt;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefsounddlg.ui" line="272"/>
+        <location filename="../../src/dlgprefsounddlg.ui" line="268"/>
         <source>Enlarge your audio buffer if the underflow counter is increasing or you hear pops during playback.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefsounddlg.ui" line="282"/>
+        <location filename="../../src/dlgprefsounddlg.ui" line="262"/>
+        <source>Hints and Diagnostics</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefsounddlg.ui" line="278"/>
         <source>Downsize your audio buffer to improve Mixxx&apos;s responsiveness.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefsounddlg.ui" line="297"/>
+        <location filename="../../src/dlgprefsounddlg.ui" line="181"/>
         <source>Query Devices</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5566,11 +5566,6 @@ milliseconds</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefwaveformdlg.ui" line="150"/>
-        <source>OpenGl status</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../src/dlgprefwaveformdlg.ui" line="102"/>
         <source>Average frame rate</source>
         <translation type="unfinished"></translation>
@@ -5599,6 +5594,11 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/dlgprefwaveformdlg.ui" line="112"/>
         <source>End of track warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefwaveformdlg.ui" line="150"/>
+        <source>OpenGL status</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -9880,12 +9880,12 @@ Click OK to exit.</source>
 <context>
     <name>WEffect</name>
     <message>
-        <location filename="../../src/widget/weffect.cpp" line="53"/>
+        <location filename="../../src/widget/weffect.cpp" line="54"/>
         <source>None</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/weffect.cpp" line="54"/>
+        <location filename="../../src/widget/weffect.cpp" line="55"/>
         <source>No effect loaded.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -9893,12 +9893,12 @@ Click OK to exit.</source>
 <context>
     <name>WEffectChain</name>
     <message>
-        <location filename="../../src/widget/weffectchain.cpp" line="40"/>
+        <location filename="../../src/widget/weffectchain.cpp" line="41"/>
         <source>None</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/weffectchain.cpp" line="41"/>
+        <location filename="../../src/widget/weffectchain.cpp" line="42"/>
         <source>No effect chain loaded.</source>
         <translation type="unfinished"></translation>
     </message>
