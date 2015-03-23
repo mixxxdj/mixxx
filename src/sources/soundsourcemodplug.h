@@ -41,15 +41,17 @@ public:
             CSAMPLE* sampleBuffer) /*override*/;
 
 private:
-    Result tryOpen(SINT channelCountHint = kChannelCountDefault) /*override*/;
+    Result tryOpen(SINT channelCountHint) /*override*/;
 
     static unsigned int s_bufferSizeLimit; // max track buffer length (bytes)
 
     ModPlug::ModPlugFile *m_pModFile; // modplug file descriptor
-    SINT m_fileLength; // length of file in samples
-    SINT m_seekPos; // current read position
     QByteArray m_fileBuf; // original module file data
-    std::vector<SAMPLE> m_sampleBuf; // 16bit stereo samples, 44.1kHz
+
+    typedef std::vector<SAMPLE> SampleBuffer;
+    SampleBuffer m_sampleBuf;
+
+    SINT m_seekPos; // current read position
 };
 
 } // namespace Mixxx

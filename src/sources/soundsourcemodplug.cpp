@@ -9,12 +9,12 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-/* read files in 512k chunks */
-#define CHUNKSIZE (1 << 18)
-
 namespace Mixxx {
 
 namespace {
+
+/* read files in 512k chunks */
+const SINT kChunkSizeInBytes = SINT(1) << 19;
 
 QString getModPlugTypeFromUrl(QUrl url) {
     const QString type(SoundSource::getTypeFromUrl(url));
@@ -69,7 +69,6 @@ void SoundSourceModPlug::configure(unsigned int bufferSizeLimit,
 SoundSourceModPlug::SoundSourceModPlug(QUrl url)
         : SoundSource(url, getModPlugTypeFromUrl(url)),
           m_pModFile(NULL),
-          m_fileLength(0),
           m_seekPos(0) {
 }
 
@@ -198,10 +197,10 @@ Result SoundSourceModPlug::tryOpen(SINT /*channelCountHint*/) {
     modFile.open(QIODevice::ReadOnly);
     m_fileBuf = modFile.readAll();
     modFile.close();
+
     // get ModPlugFile descriptor for later access
     m_pModFile = ModPlug::ModPlug_Load(m_fileBuf.constData(),
             m_fileBuf.length());
-
     if (m_pModFile == NULL) {
         // an error occured
         t.cancel();
@@ -209,27 +208,29 @@ Result SoundSourceModPlug::tryOpen(SINT /*channelCountHint*/) {
         return ERR;
     }
 
-    // estimate size of sample buffer (for better performance)
-    // beware: module length estimation is unreliable due to loops
-    // song milliseconds * 2 (bytes per sample)
-    //                   * 2 (channels)
-    //                   * 44.1 (samples per millisecond)
-    //                   + some more to accomodate short loops etc.
-    // approximate and align with CHUNKSIZE yields:
-    // (((milliseconds << 1) >> 10 /* to seconds */)
-    //      div 11 /* samples to chunksize ratio */)
-    //      << 19 /* align to chunksize */
-    unsigned int estimate = ((ModPlug::ModPlug_GetLength(m_pModFile) >> 8) / 11)
-            << 18;
-    estimate = math_min(estimate, s_bufferSizeLimit);
-    m_sampleBuf.reserve(estimate);
+    DEBUG_ASSERT(0 == (kChunkSizeInBytes % sizeof(m_sampleBuf[0])));
+    const SINT chunkSizeInSamples = kChunkSizeInBytes / sizeof(m_sampleBuf[0]);
+
+    const SampleBuffer::size_type bufferSizeLimitInSamples = s_bufferSizeLimit / sizeof(m_sampleBuf[0]);
+
+    // Estimate size of sample buffer (for better performance) aligned
+    // with the chunk size. Beware: Module length estimation is unreliable
+    // due to loops!
+    const SampleBuffer::size_type estimateMilliseconds =
+            ModPlug::ModPlug_GetLength(m_pModFile);
+    const SampleBuffer::size_type estimateSamples =
+            estimateMilliseconds * kChannelCount * kFrameRate;
+    const SampleBuffer::size_type estimateChunks =
+            (estimateSamples + (chunkSizeInSamples - 1)) / chunkSizeInSamples;
+    const SampleBuffer::size_type sampleBufferCapacity = math_min(
+            estimateChunks * chunkSizeInSamples, bufferSizeLimitInSamples);
+    m_sampleBuf.reserve(sampleBufferCapacity);
     qDebug() << "[ModPlug] Reserved " << m_sampleBuf.capacity() << " #samples";
 
-    // decode samples to sample buffer
-    int samplesRead = -1;
-    int currentSize = 0;
-    while ((samplesRead != 0) && (m_sampleBuf.size() < s_bufferSizeLimit)) {
+    // decode samples into sample buffer
+    while (m_sampleBuf.size() < bufferSizeLimitInSamples) {
         // reserve enough space in sample buffer
+<<<<<<< HEAD
         m_sampleBuf.resize(currentSize + CHUNKSIZE);
         samplesRead = ModPlug::ModPlug_Read(m_pModFile,
                 m_sampleBuf.data() + currentSize,
@@ -237,8 +238,22 @@ Result SoundSourceModPlug::tryOpen(SINT /*channelCountHint*/) {
         // adapt to actual size
         currentSize += samplesRead;
         if (samplesRead != CHUNKSIZE) {
+=======
+        const SampleBuffer::size_type currentSize = m_sampleBuf.size();
+        m_sampleBuf.resize(currentSize + chunkSizeInSamples);
+        const int bytesRead = ModPlug::ModPlug_Read(m_pModFile,
+                &m_sampleBuf[currentSize],
+                kChunkSizeInBytes);
+        // adjust size of sample buffer after reading
+        if (0 < bytesRead) {
+            DEBUG_ASSERT(0 == (bytesRead % sizeof(m_sampleBuf[0])));
+            const SampleBuffer::size_type samplesRead = bytesRead / sizeof(m_sampleBuf[0]);
+            m_sampleBuf.resize(currentSize + samplesRead);
+        } else {
+            // nothing read -> EOF
+>>>>>>> SoundSourceModPlug: Fix length estimation and simplify read loop
             m_sampleBuf.resize(currentSize);
-            samplesRead = 0; // we reached the end of the file
+            break; // exit loop
         }
     }
     qDebug() << "[ModPlug] Filled Sample buffer with " << m_sampleBuf.size()
