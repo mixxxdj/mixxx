@@ -36,18 +36,6 @@ QString getModPlugTypeFromUrl(QUrl url) {
     }
 }
 
-// identification of modplug module type
-enum ModuleTypes {
-    NONE = 0x00,
-    MOD = 0x01,
-    S3M = 0x02,
-    XM = 0x04,
-    MED = 0x08,
-    IT = 0x20,
-    STM = 0x100,
-    OKT = 0x8000
-};
-
 } // anonymous namespace
 
 const SINT SoundSourceModPlug::kChannelCount = 2; // always stereo
