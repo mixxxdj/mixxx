@@ -92,10 +92,12 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
           m_startButton(NULL),
           m_endButton(NULL),
           m_pScale(NULL),
+          m_pScaleVinyl(NULL),
+          m_pScaleKeylock(NULL),
           m_pScaleLinear(NULL),
           m_pScaleST(NULL),
           m_pScaleRB(NULL),
-          m_pScaleKeylock(NULL),
+          m_pScaleDummy(NULL),
           m_bScalerChanged(false),
           m_bScalerOverride(false),
           m_iSeekQueued(NO_SEEK),
@@ -287,6 +289,7 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
     } else {
         m_pScaleKeylock = m_pScaleRB;
     }
+    m_pScaleVinyl = m_pScaleLinear;
     enableIndependentPitchTempoScaling(false, 0);
 
     m_pPassthroughEnabled.reset(new ControlObjectSlave(group, "passthrough", this));
@@ -373,9 +376,9 @@ void EngineBuffer::enableIndependentPitchTempoScaling(bool bEnable,
         m_pScale = keylock_scale;
         m_pScale->clear();
         m_bScalerChanged = true;
-    } else if (!bEnable && m_pScale != m_pScaleLinear) {
+    } else if (!bEnable && m_pScale != m_pScaleVinyl) {
         readToCrossfadeBuffer(iBufferSize);
-        m_pScale = m_pScaleLinear;
+        m_pScale = m_pScaleVinyl;
         m_pScale->clear();
         m_bScalerChanged = true;
     }
@@ -893,7 +896,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             // wanted rate!  Make sure new scaler has proper position. This also
             // crossfades between the old scaler and new scaler to prevent
             // clicks.
-            if (m_pScale != m_pScaleLinear) { // linear scaler does this part for us now
+            if (m_pScale != m_pScaleVinyl) { // linear scaler does this part for us now
                 //XXX: Trying to force RAMAN to read from correct
                 //     playpos when rate changes direction - Albert
                 if ((m_speed_old <= 0 && speed > 0) ||
@@ -1348,11 +1351,11 @@ void EngineBuffer::setReader(CachingReader* pReader) {
 }
 */
 
-void EngineBuffer::setScalerForTest(EngineBufferScale* pScaleLinear,
+void EngineBuffer::setScalerForTest(EngineBufferScale* pScaleVinyl,
                                     EngineBufferScale* pScaleKeylock) {
-    m_pScaleLinear = pScaleLinear;
+    m_pScaleVinyl = pScaleVinyl;
     m_pScaleKeylock = pScaleKeylock;
-    m_pScale = m_pScaleLinear;
+    m_pScale = m_pScaleVinyl;
     m_pScale->clear();
     // This bool is permanently set and can't be undone.
     m_bScalerOverride = true;

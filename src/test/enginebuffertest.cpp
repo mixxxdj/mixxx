@@ -100,7 +100,7 @@ TEST_F(EngineBufferTest, SlowRubberBand) {
     ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
                        static_cast<double>(EngineBuffer::RUBBERBAND));
     ProcessBuffer();
-    EXPECT_EQ(m_pMockScaleLinear1, m_pChannel1->getEngineBuffer()->m_pScale);
+    EXPECT_EQ(m_pMockScaleVinyl1, m_pChannel1->getEngineBuffer()->m_pScale);
 }
 
 TEST_F(EngineBufferTest, ResetPitchUsesLinear) {
