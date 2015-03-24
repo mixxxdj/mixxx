@@ -42,9 +42,9 @@ void WNumber::onConnectedControlChanged(double dParameter, double dValue) {
 }
 
 void WNumber::setValue(double dValue) {
-    if (m_qsText.contains("%1")) {
-        setText(m_qsText.arg(QString::number(dValue, 'f', m_iNoDigits)));
+    if (m_skinText.contains("%1")) {
+        setText(m_skinText.arg(QString::number(dValue, 'f', m_iNoDigits)));
     } else {
-        setText(m_qsText + QString::number(dValue, 'f', m_iNoDigits));
+        setText(m_skinText + QString::number(dValue, 'f', m_iNoDigits));
     }
 }

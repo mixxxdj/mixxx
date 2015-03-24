@@ -20,6 +20,10 @@
   background-color: #1e1e1e;
 }
 
+#Deck {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+}
+
 #DecksSizer {
   background-color: #0f0f0f;
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';

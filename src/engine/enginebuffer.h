@@ -154,7 +154,8 @@ class EngineBuffer : public EngineObject {
     //void setReader(CachingReader* pReader);
 
     // For dependency injection of scalers.
-    void setScalerForTest(EngineBufferScale* pScale);
+    void setScalerForTest(EngineBufferScale* pScale,
+                          EngineBufferScale* pScaleKeylock);
 
     // For dependency injection of fake tracks, with an optional filebpm value.
     TrackPointer loadFakeTrack(double filebpm = 0);
@@ -343,16 +344,23 @@ class EngineBuffer : public EngineObject {
     ControlPushButton* m_startButton;
     ControlPushButton* m_endButton;
 
-    // Object used to perform waveform scaling (sample rate conversion)
+    // Object used to perform waveform scaling (sample rate conversion).  These
+    // three pointers may be reassigned depending on configuration and tests.
     EngineBufferScale* m_pScale;
-    // Object used for linear interpolation scaling of the audio
-    EngineBufferScaleLinear* m_pScaleLinear;
-    // Object used for pitch-indep time stretch (key lock) scaling of the audio
-    EngineBufferScaleST* m_pScaleST;
-    EngineBufferScaleRubberBand* m_pScaleRB;
+    FRIEND_TEST(EngineBufferTest, SlowRubberBand);
+    EngineBufferScale* m_pScaleVinyl;
     // The keylock engine is configurable, so it could flip flop between
     // ScaleST and ScaleRB during a single callback.
     EngineBufferScale* volatile m_pScaleKeylock;
+
+    // Object used for vinyl-style interpolation scaling of the audio
+    EngineBufferScaleLinear* m_pScaleLinear;
+    // Objects used for pitch-indep time stretch (key lock) scaling of the audio
+    EngineBufferScaleST* m_pScaleST;
+    EngineBufferScaleRubberBand* m_pScaleRB;
+
+    // Indicates whether the scaler has changed since the last process()
+    bool m_bScalerChanged;
     // Indicates that dependency injection has taken place.
     bool m_bScalerOverride;
 

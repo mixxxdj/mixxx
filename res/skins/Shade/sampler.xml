@@ -30,6 +30,7 @@
 									<Group>[Sampler<Variable name="samplernum"/>]</Group>
 									<Pos>2,3</Pos>
 									<Size>165f,21</Size>
+									<Elide>right</Elide>
 								</Text>
 								<!-- Alternative "TITLE ONLY" display
 								<TrackProperty>
@@ -41,6 +42,7 @@
 									<Group>[Sampler<Variable name="samplernum"/>]</Group>
 									<Pos>4,4</Pos>
 									<Size>258f,20</Size>
+									<Elide>right</Elide>
 								</TrackProperty>
 								-->
 	
