@@ -138,15 +138,15 @@ void BaseExternalPlaylistModel::trackLoaded(QString group, TrackPointer pTrack) 
         if (m_iPreviewDeckTrackId > -1) {
             const int numColumns = columnCount();
             QLinkedList<int> rows = getTrackRows(m_iPreviewDeckTrackId);
+            m_iPreviewDeckTrackId = -1;
             foreach (int row, rows) {
                 QModelIndex left = index(row, 0);
                 QModelIndex right = index(row, numColumns);
                 emit(dataChanged(left, right));
             }
         }
-        m_iPreviewDeckTrackId = -1;
         if (pTrack) {
-            // The external table has foreign Track IDs, so we need to campare
+            // The external table has foreign Track IDs, so we need to compare
             // by location
             for (int row = 0; row < rowCount(); ++row) {
                 QString location = index(row, fieldIndex("location")).data().toString();
