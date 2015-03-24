@@ -77,7 +77,6 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
                 EngineBuffer::getKeylockEngineName(
                         static_cast<EngineBuffer::KeylockEngine>(i)));
     }
-    keylockComboBox->setCurrentIndex(EngineBuffer::RUBBERBAND);
 
     initializePaths();
     loadSettings();
@@ -193,6 +192,8 @@ void DlgPrefSound::slotApply() {
     }
 
     m_pKeylockEngine->set(keylockComboBox->currentIndex());
+    m_pConfig->set(ConfigKey("[Master]", "keylock_engine"),
+                   ConfigValue(keylockComboBox->currentIndex()));
 
     m_config.clearInputs();
     m_config.clearOutputs();
@@ -373,6 +374,11 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
         // "Default (long delay)" = 2 buffer
         deviceSyncComboBox->setCurrentIndex(0);
     }
+
+    // Default keylock is Rubberband.
+    int keylock_engine = m_pConfig->getValueString(
+            ConfigKey("[Master]", "keylock_engine"), "1").toInt();
+    keylockComboBox->setCurrentIndex(keylock_engine);
 
     emit(loadPaths(m_config));
     m_loading = false;

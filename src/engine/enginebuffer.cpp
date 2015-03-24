@@ -709,6 +709,9 @@ void EngineBuffer::slotControlSlip(double v)
 }
 
 void EngineBuffer::slotKeylockEngineChanged(double dIndex) {
+    if (m_bScalerOverride) {
+        return;
+    }
     // static_cast<KeylockEngine>(dIndex); direct cast produces a "not used" warning with gcc
     int iEngine = static_cast<int>(dIndex);
     KeylockEngine engine = static_cast<KeylockEngine>(iEngine);
@@ -744,11 +747,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
     // We do this even if rubberband is not active.
     if (sample_rate != m_iSampleRate) {
         if (m_pScaleRB != NULL) {
-            // TODO: this dynamic cast will be removed once we refactor scalers
-            // to all have a set-sample-rate member.  For now it's ok because
-            // this is called very rarely.
-            dynamic_cast<EngineBufferScaleRubberBand*>(m_pScaleRB)->initializeRubberBand(
-                    sample_rate);
+            m_pScaleRB->initializeRubberBand(sample_rate);
         }
         m_iSampleRate = sample_rate;
     }
@@ -788,8 +787,8 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
 
         // TODO(owen): Maybe change this so that rubberband doesn't disable
         // keylock on scratch. (just check m_pScaleKeylock == m_pScaleST)
-        if (is_scratching || fabs(speed) > 1.9 || fabs(speed) < 0.1) {
-            // Scratching and high or low speeds with Soundtouch always disables keylock
+        if (is_scratching || fabs(speed) > 1.9) {
+            // Scratching and high speeds with always disables keylock
             // because Soundtouch sounds terrible in these conditions.  Rubberband
             // sounds better, but still has some problems (it may reallocate in
             // a party-crashing manner at extremely slow speeds).
@@ -802,6 +801,11 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             pitchRatio = speed;
             keylock_enabled = false;
             // This is for the natural speed pitch found on turn tables
+        } else if (fabs(speed) < 0.1 && m_pKeylockEngine->get() == RUBBERBAND) {
+            // At very slow speeds, Rubberband performs memory allocations which
+            // can cause underruns.  Disable keylock under these conditions.
+            pitchRatio = speed;
+            keylock_enabled = false;
         } else if (!keylock_enabled) {
             // We might have have temporary speed change, so adjust pitch if not locked
             // Note: This will not update key and tempo widgets
