@@ -155,7 +155,8 @@ class EngineBuffer : public EngineObject {
     //void setReader(CachingReader* pReader);
 
     // For dependency injection of scalers.
-    void setScalerForTest(EngineBufferScale* pScale);
+    void setScalerForTest(EngineBufferScale* pScale,
+                          EngineBufferScale* pScaleKeylock);
 
     // For dependency injection of fake tracks, with an optional filebpm value.
     TrackPointer loadFakeTrack(double filebpm = 0);
@@ -346,11 +347,12 @@ class EngineBuffer : public EngineObject {
 
     // Object used to perform waveform scaling (sample rate conversion)
     EngineBufferScale* m_pScale;
+    FRIEND_TEST(EngineBufferTest, SlowRubberBand);
     // Object used for linear interpolation scaling of the audio
-    EngineBufferScaleLinear* m_pScaleLinear;
+    EngineBufferScale* m_pScaleLinear;
     // Object used for pitch-indep time stretch (key lock) scaling of the audio
-    EngineBufferScaleST* m_pScaleST;
-    EngineBufferScaleRubberBand* m_pScaleRB;
+    EngineBufferScale* m_pScaleST;
+    EngineBufferScale* m_pScaleRB;
     // The keylock engine is configurable, so it could flip flop between
     // ScaleST and ScaleRB during a single callback.
     EngineBufferScale* volatile m_pScaleKeylock;

@@ -365,11 +365,6 @@ void EngineBuffer::enableIndependentPitchTempoScaling(bool bEnable,
     // interpolation code (EngineBufferScaleLinear). It is faster and sounds
     // much better for scratching.
 
-    // If scaler is over-ridden then don't switch anything.
-    if (m_bScalerOverride) {
-        return;
-    }
-
     // m_pScaleKeylock could change out from under us, so cache it.
     EngineBufferScale* keylock_scale = m_pScaleKeylock;
 
@@ -617,7 +612,7 @@ void EngineBuffer::doSeekFractional(double fractionalPos, enum SeekRequest seekT
     // Find new play frame, restrict to valid ranges.
     double newPlayFrame = round(fractionalPos * m_trackSamplesOld / kSamplesPerFrame);
     doSeekPlayPos(newPlayFrame * kSamplesPerFrame, seekType);
- }
+}
 
 void EngineBuffer::doSeekPlayPos(double new_playpos, enum SeekRequest seekType) {
     // Don't allow the playposition to go past the end.
@@ -749,7 +744,11 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
     // We do this even if rubberband is not active.
     if (sample_rate != m_iSampleRate) {
         if (m_pScaleRB != NULL) {
-            m_pScaleRB->initializeRubberBand(sample_rate);
+            // TODO: this dynamic cast will be removed once we refactor scalers
+            // to all have a set-sample-rate member.  For now it's ok because
+            // this is called very rarely.
+            dynamic_cast<EngineBufferScaleRubberBand*>(m_pScaleRB)->initializeRubberBand(
+                    sample_rate);
         }
         m_iSampleRate = sample_rate;
     }
@@ -789,12 +788,17 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
 
         // TODO(owen): Maybe change this so that rubberband doesn't disable
         // keylock on scratch. (just check m_pScaleKeylock == m_pScaleST)
-        if (is_scratching || fabs(speed) > 1.9) {
-            // Scratching and high speeds with Soundtouch always disables keylock
+        if (is_scratching || fabs(speed) > 1.9 || fabs(speed) < 0.1) {
+            // Scratching and high or low speeds with Soundtouch always disables keylock
             // because Soundtouch sounds terrible in these conditions.  Rubberband
-            // sounds better, but still has some problems.
+            // sounds better, but still has some problems (it may reallocate in
+            // a party-crashing manner at extremely slow speeds).
             // High seek speeds also disables keylock.  Our pitch slider could go
             // to 90%, so that's the cutoff point.
+
+            // TODO: setting pitchRatio = speed ensures that the "offlinear"
+            // test below will not succeed.  We should find a better way
+            // to ensure that the keylock scaler is not used.
             pitchRatio = speed;
             keylock_enabled = false;
             // This is for the natural speed pitch found on turn tables
@@ -1340,8 +1344,11 @@ void EngineBuffer::setReader(CachingReader* pReader) {
 }
 */
 
-void EngineBuffer::setScalerForTest(EngineBufferScale* pScale) {
-    m_pScale = pScale;
+void EngineBuffer::setScalerForTest(EngineBufferScale* pScaleLinear,
+                                    EngineBufferScale* pScaleKeylock) {
+    m_pScaleLinear = pScaleLinear;
+    m_pScaleKeylock = pScaleKeylock;
+    m_pScale = m_pScaleLinear;
     m_pScale->clear();
     // This bool is permanently set and can't be undone.
     m_bScalerOverride = true;
