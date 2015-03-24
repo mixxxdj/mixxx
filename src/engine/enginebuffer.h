@@ -348,6 +348,7 @@ class EngineBuffer : public EngineObject {
     // Object used to perform waveform scaling (sample rate conversion)
     EngineBufferScale* m_pScale;
     FRIEND_TEST(EngineBufferTest, SlowRubberBand);
+    FRIEND_TEST(EngineBufferTest, ResetPitchUsesLinear);
     // Object used for linear interpolation scaling of the audio
     EngineBufferScale* m_pScaleLinear;
     // Object used for pitch-indep time stretch (key lock) scaling of the audio

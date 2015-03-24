@@ -287,18 +287,26 @@ void KeyControl::slotPitchChanged(double pitch) {
 
 void KeyControl::updatePitch() {
     double pitch = m_pPitch->get();
+    double pitchKnobRatio = KeyUtils::semitoneChangeToPowerOf2(pitch);
 
     //qDebug() << "KeyControl::slotPitchChanged 1" << pitch <<
     //        m_pitchRateInfo.pitchRatio <<
     //        m_pitchRateInfo.pitchTweakRatio <<
     //        m_pitchRateInfo.tempoRatio;
 
-    double speedSliderPitchRatio =
-            m_pitchRateInfo.pitchRatio / m_pitchRateInfo.pitchTweakRatio;
-    // speedSliderPitchRatio must be unchanged
-    double pitchKnobRatio = KeyUtils::semitoneChangeToPowerOf2(pitch);
-    m_pitchRateInfo.pitchRatio = pitchKnobRatio;
-    m_pitchRateInfo.pitchTweakRatio = pitchKnobRatio / speedSliderPitchRatio;
+
+    // If keylock is not on, and the new pitch is 0.0, then reset the tweak
+    // ratio so we stop using the keylock scaler.
+    if (!m_pitchRateInfo.keylock && pitch == 0.0) {
+        m_pitchRateInfo.pitchRatio = m_pitchRateInfo.tempoRatio;
+        m_pitchRateInfo.pitchTweakRatio = 1.0;
+    } else {
+        double speedSliderPitchRatio =
+                m_pitchRateInfo.pitchRatio / m_pitchRateInfo.pitchTweakRatio;
+        // speedSliderPitchRatio must be unchanged
+        m_pitchRateInfo.pitchRatio = pitchKnobRatio;
+        m_pitchRateInfo.pitchTweakRatio = pitchKnobRatio / speedSliderPitchRatio;
+    }
 
     double dFileKey = m_pFileKey->get();
     m_pPitchAdjust->set(

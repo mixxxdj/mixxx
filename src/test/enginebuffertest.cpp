@@ -95,3 +95,22 @@ TEST_F(EngineBufferTest, SlowRubberBand) {
     // Scaler should still be linear
     ASSERT_EQ(m_pMockScaleLinear1, m_pChannel1->getEngineBuffer()->m_pScale);
 }
+
+TEST_F(EngineBufferTest, ResetPitchUsesLinear) {
+    // If the key was adjusted, but keylock is off, and then the key is
+    // reset, then the engine should be using the linear scaler.
+
+    // First, we should be using the keylock scaler here.
+    ControlObject::set(ConfigKey(m_sGroup1, "pitch"), 1.2);
+    // Remember that a rate of "0" is "regular playback speed".
+    ControlObject::set(ConfigKey(m_sGroup1, "rate"), 0.05);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ProcessBuffer();
+    EXPECT_EQ(m_pMockScaleKeylock1, m_pChannel1->getEngineBuffer()->m_pScale);
+
+    // Reset pitch, and we should be back to the linear scaler.
+    ControlObject::set(ConfigKey(m_sGroup1, "pitch_set_default"), 1.0);
+    ProcessBuffer();
+    // Now we should be back to the linear scaler.
+    EXPECT_EQ(m_pMockScaleLinear1, m_pChannel1->getEngineBuffer()->m_pScale);
+}
