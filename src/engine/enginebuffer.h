@@ -351,8 +351,8 @@ class EngineBuffer : public EngineObject {
     // Object used for linear interpolation scaling of the audio
     EngineBufferScale* m_pScaleLinear;
     // Object used for pitch-indep time stretch (key lock) scaling of the audio
-    EngineBufferScale* m_pScaleST;
-    EngineBufferScale* m_pScaleRB;
+    EngineBufferScaleST* m_pScaleST;
+    EngineBufferScaleRubberBand* m_pScaleRB;
     // The keylock engine is configurable, so it could flip flop between
     // ScaleST and ScaleRB during a single callback.
     EngineBufferScale* volatile m_pScaleKeylock;

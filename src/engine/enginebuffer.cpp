@@ -747,11 +747,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
     // We do this even if rubberband is not active.
     if (sample_rate != m_iSampleRate) {
         if (m_pScaleRB != NULL) {
-            // TODO: this cast will be removed once we refactor scalers
-            // to all have a set-sample-rate member.  For now it's ok because
-            // we know that this conversion will succeed.
-            static_cast<EngineBufferScaleRubberBand*>(m_pScaleRB)->initializeRubberBand(
-                    sample_rate);
+            m_pScaleRB->initializeRubberBand(sample_rate);
         }
         m_iSampleRate = sample_rate;
     }
