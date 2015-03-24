@@ -80,3 +80,25 @@ TEST_F(EngineBufferTest, PitchRoundtrip) {
     // pitch must reflect the pitch shift only
     ASSERT_DOUBLE_EQ(0.5, ControlObject::get(ConfigKey(m_sGroup1, "rate")));
 }
+
+TEST_F(EngineBufferTest, SlowRubberBand) {
+    // At very slow speeds, RubberBand needs to reallocate buffers and since this
+    // is done in the engine thread it can be a major party-stopper.
+    // Make sure slow speeds still use the linear scaler.
+    ControlObject::set(ConfigKey(m_sGroup1, "pitch"), 2.8);
+
+    // Hack to get a slow, non-scratching direct speed
+    ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), 0.0072);
+
+    // With Soundtouch, the scaler should still be the keylock scaler
+    ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
+                       static_cast<double>(EngineBuffer::SOUNDTOUCH));
+    ProcessBuffer();
+    EXPECT_EQ(m_pMockScaleKeylock1, m_pChannel1->getEngineBuffer()->m_pScale);
+
+    // With Rubberband, the scaler should be linear
+    ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
+                       static_cast<double>(EngineBuffer::RUBBERBAND));
+    ProcessBuffer();
+    EXPECT_EQ(m_pMockScaleVinyl1, m_pChannel1->getEngineBuffer()->m_pScale);
+}
