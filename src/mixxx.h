@@ -46,6 +46,7 @@ class ControlPushButton;
 class DlgDeveloperTools;
 
 #include "configobject.h"
+#include "trackinfoobject.h"
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
 
@@ -76,6 +77,9 @@ class MixxxMainWindow : public QMainWindow {
     inline GuiTick* getGuiTick() { return m_pGuiTick; };
 
   public slots:
+
+    void slotGetTrackFromDeck1();
+    void slotGetTrackFromDeck2();
 
     //void slotQuitFullScreen();
     void slotFileLoadSongPlayer(int deck);
@@ -171,6 +175,7 @@ class MixxxMainWindow : public QMainWindow {
 
     void linkSkinWidget(ControlObjectSlave** pCOS,
                         ConfigKey key, const char* slot);
+    QString getTitleFromTrack(TrackPointer pTrack);
 
     // Pointer to the root GUI widget
     QWidget* m_pWidgetParent;
@@ -261,6 +266,8 @@ class MixxxMainWindow : public QMainWindow {
     QAction* m_pDeveloperDebugger;
 
     ControlObjectSlave* m_pShowSamplers;
+    ControlObjectSlave* m_pShowTitleDeck1;
+    ControlObjectSlave* m_pShowTitleDeck2;
 
     int m_iNoPlaylists;
 

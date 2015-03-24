@@ -35,11 +35,11 @@
 #include "dlgpreferences.h"
 #include "dlgprefeq.h"
 #include "dlgdevelopertools.h"
-#include "engine/enginemaster.h"
 #include "engine/enginemicrophone.h"
 #include "effects/effectsmanager.h"
 #include "effects/native/nativebackend.h"
 #include "engine/engineaux.h"
+#include "engine/enginemaster.h"
 #include "library/coverartcache.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
@@ -95,6 +95,8 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         : m_pWidgetParent(NULL),
           m_pDeveloperToolsDlg(NULL),
           m_pShowSamplers(NULL),
+          m_pShowTitleDeck1(NULL),
+          m_pShowTitleDeck2(NULL),
           m_runtime_timer("MixxxMainWindow::runtime"),
           m_cmdLineArgs(args),
           m_iNumConfiguredDecks(0) {
@@ -464,6 +466,38 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
             m_pPlayerManager->slotLoadToDeck(musicFiles.at(i), i+1);
         }
     }
+
+    m_pShowTitleDeck1 = new ControlObjectSlave("[Channel1]", "play", this);
+    m_pShowTitleDeck1->connectValueChanged(this, SLOT(slotGetTrackFromDeck1()), 
+                                           Qt::DirectConnection);
+
+    m_pShowTitleDeck2 = new ControlObjectSlave("[Channel2]", "play", this);
+    m_pShowTitleDeck2->connectValueChanged(this, SLOT(slotGetTrackFromDeck2()), 
+                                           Qt::DirectConnection);
+}
+
+QString MixxxMainWindow::getTitleFromTrack(TrackPointer pTrack)
+{
+    QString trackName = pTrack->getTitle();
+    QString artist = pTrack->getArtist();
+    QString title = artist + " - " + trackName;
+    return title;
+}
+
+void MixxxMainWindow::slotGetTrackFromDeck1()
+{
+    TrackPointer pTrack = m_pPlayerManager->getDeck(1)->getLoadedTrack();
+    if (pTrack) {
+        this->setWindowTitle(getTitleFromTrack(pTrack));
+    }
+}
+
+void MixxxMainWindow::slotGetTrackFromDeck2()
+{
+    TrackPointer pTrack = m_pPlayerManager->getDeck(2)->getLoadedTrack();
+    if (pTrack) {
+        this->setWindowTitle(getTitleFromTrack(pTrack));
+    }
 }
 
 MixxxMainWindow::~MixxxMainWindow() {
@@ -557,6 +591,11 @@ MixxxMainWindow::~MixxxMainWindow() {
     WaveformWidgetFactory::destroy();
 
     delete m_pGuiTick;
+
+    delete m_pShowSamplers;
+
+    delete m_pShowTitleDeck1;
+    delete m_pShowTitleDeck2;
 
     // Check for leaked ControlObjects and give warnings.
     QList<QSharedPointer<ControlDoublePrivate> > leakedControls;
