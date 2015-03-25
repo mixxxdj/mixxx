@@ -43,6 +43,9 @@
             </State>
             <Connection>
               <ConfigKey persist="true">[Master],hide_mixer</ConfigKey>
+              <Transform>
+                <Not/>
+              </Transform>
             </Connection>
           </PushButton>
 
