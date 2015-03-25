@@ -129,13 +129,12 @@ QScriptValue ByteArrayClass::property(const QScriptValue &object,
         return QScriptValue();
     if (name == length) {
         return ba->length();
-    } else {
-        qint32 pos = id;
-        if ((pos < 0) || (pos >= ba->size()))
-            return QScriptValue();
-        return uint(ba->at(pos)) & 255;
     }
-    return QScriptValue();
+    qint32 pos = id;
+    if ((pos < 0) || (pos >= ba->size())) {
+        return QScriptValue();
+    }
+    return uint(ba->at(pos)) & 255;
 }
 //! [4]
 
