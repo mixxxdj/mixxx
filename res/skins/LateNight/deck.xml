@@ -54,11 +54,11 @@
                                         <Text>KEY</Text>
                                       </State>
                                       <Connection>
-                                        <ConfigKey persist="true">[Channel<Variable name="channum"/>],pitch_set_default</ConfigKey>
+                                        <ConfigKey persist="true">[Channel<Variable name="channum"/>],pitch_adjust_set_default</ConfigKey>
                                         <ButtonState>LeftButton</ButtonState>
                                       </Connection>
                                       <Connection>
-                                        <ConfigKey persist="true">[Channel<Variable name="channum"/>],pitch_set_default</ConfigKey>
+                                        <ConfigKey persist="true">[Channel<Variable name="channum"/>],pitch_adjust_set_default</ConfigKey>
                                       </Connection>
                                    </PushButton>
                                    <PushButton>
