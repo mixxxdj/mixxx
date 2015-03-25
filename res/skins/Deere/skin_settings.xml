@@ -9,7 +9,7 @@
     <Layout>vertical</Layout>
     <SizePolicy>min,min</SizePolicy>
     <MinimumSize>200,-1</MinimumSize>
-    <MaximumSize>me,me</MaximumSize>
+    <MaximumSize>300,-1</MaximumSize>
     <Children>
       <Label>
         <ObjectName>h1</ObjectName>
