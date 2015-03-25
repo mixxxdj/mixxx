@@ -150,82 +150,89 @@
 
       <!-- Deck Settings -->
       <Label>
-        <ObjectName>h2</ObjectName>
-        <Text>Main Decks</Text>
+      <ObjectName>h2</ObjectName>
+      <Text>Main Decks</Text>
       </Label>
 
-      <PushButton>
-        <Size>80me,20f</Size>
-        <NumberStates>2</NumberStates>
-        <State>
-          <Number>0</Number>
-          <Text>   Show Cover Art</Text>
-          <Alignment>left</Alignment>
-        </State>
-        <State>
-          <Number>1</Number>
-          <Text>&#10003; Show Cover Art</Text>
-          <Alignment>left</Alignment>
-        </State>
-        <Connection>
-          <ConfigKey persist="true">[Deere],show_coverart</ConfigKey>
-        </Connection>
-      </PushButton>
+      <WidgetGroup>
+        <ObjectName>h3</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+          <PushButton>
+          <Size>80me,20f</Size>
+          <NumberStates>2</NumberStates>
+          <State>
+            <Number>0</Number>
+            <Text>   Show Cover Art</Text>
+            <Alignment>left</Alignment>
+          </State>
+          <State>
+            <Number>1</Number>
+            <Text>&#10003; Show Cover Art</Text>
+            <Alignment>left</Alignment>
+          </State>
+          <Connection>
+            <ConfigKey persist="true">[Deere],show_coverart</ConfigKey>
+          </Connection>
+          </PushButton>
 
-      <PushButton>
-        <Size>80me,20f</Size>
-        <NumberStates>2</NumberStates>
-        <State>
-          <Number>0</Number>
-          <Text>   Show Star Rating</Text>
-          <Alignment>left</Alignment>
-        </State>
-        <State>
-          <Number>1</Number>
-          <Text>&#10003; Show Star Rating</Text>
-          <Alignment>left</Alignment>
-        </State>
-        <Connection>
-          <ConfigKey persist="true">[Deere],show_starrating</ConfigKey>
-        </Connection>
-      </PushButton>
+          <PushButton>
+          <Size>80me,20f</Size>
+          <NumberStates>2</NumberStates>
+          <State>
+            <Number>0</Number>
+            <Text>   Show Star Rating</Text>
+            <Alignment>left</Alignment>
+          </State>
+          <State>
+            <Number>1</Number>
+            <Text>&#10003; Show Star Rating</Text>
+            <Alignment>left</Alignment>
+          </State>
+          <Connection>
+            <ConfigKey persist="true">[Deere],show_starrating</ConfigKey>
+          </Connection>
+          </PushButton>
 
-      <PushButton>
-        <Size>80me,20f</Size>
-        <NumberStates>2</NumberStates>
-        <State>
-          <Number>0</Number>
-          <Text>   Show More Hotcues</Text>
-          <Alignment>left</Alignment>
-        </State>
-        <State>
-          <Number>1</Number>
-          <Text>&#10003; Show More Hotcues</Text>
-          <Alignment>left</Alignment>
-        </State>
-        <Connection>
-          <ConfigKey persist="true">[Deere],show_more_hotcues</ConfigKey>
-        </Connection>
-      </PushButton>
+          <PushButton>
+          <Size>80me,20f</Size>
+          <NumberStates>2</NumberStates>
+          <State>
+            <Number>0</Number>
+            <Text>   Show More Hotcues</Text>
+            <Alignment>left</Alignment>
+          </State>
+          <State>
+            <Number>1</Number>
+            <Text>&#10003; Show More Hotcues</Text>
+            <Alignment>left</Alignment>
+          </State>
+          <Connection>
+            <ConfigKey persist="true">[Deere],show_more_hotcues</ConfigKey>
+          </Connection>
+          </PushButton>
 
-      <PushButton>
-        <TooltipId>toggle_waveforms_stacked</TooltipId>
-        <Size>80me,20f</Size>
-        <NumberStates>2</NumberStates>
-        <State>
-          <Number>0</Number>
-          <Text>   Show Stacked Waveforms</Text>
-          <Alignment>left</Alignment>
-        </State>
-        <State>
-          <Number>1</Number>
-          <Text>&#10003; Show Stacked Waveforms</Text>
-          <Alignment>left</Alignment>
-        </State>
-        <Connection>
-          <ConfigKey persist="true">[Deere],show_stacked_waveforms</ConfigKey>
-        </Connection>
-      </PushButton>
+          <PushButton>
+          <TooltipId>toggle_waveforms_stacked</TooltipId>
+          <Size>80me,20f</Size>
+          <NumberStates>2</NumberStates>
+          <State>
+            <Number>0</Number>
+            <Text>   Show Stacked Waveforms</Text>
+            <Alignment>left</Alignment>
+          </State>
+          <State>
+            <Number>1</Number>
+            <Text>&#10003; Show Stacked Waveforms</Text>
+            <Alignment>left</Alignment>
+          </State>
+          <Connection>
+            <ConfigKey persist="true">[Deere],show_stacked_waveforms</ConfigKey>
+          </Connection>
+          </PushButton>
+        </Children>
+      </WidgetGroup>
 
       <!-- Sampler Settings -->
       <Label>
