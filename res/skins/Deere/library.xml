@@ -64,6 +64,7 @@
                           <TooltipId>text</TooltipId>
                             <SizePolicy>me,min</SizePolicy>
                             <Group>[PreviewDeck1]</Group>
+                            <Elide>right</Elide>
                           </Text>
                           <PushButton>
                             <TooltipId>eject</TooltipId>

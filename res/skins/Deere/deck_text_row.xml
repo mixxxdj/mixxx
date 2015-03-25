@@ -50,6 +50,7 @@
                     <SizePolicy>me,min</SizePolicy>
                     <Property>title</Property>
                     <Group><Variable name="group"/></Group>
+                    <Elide>right</Elide>
                   </TrackProperty>
                   <WidgetGroup>
                     <ObjectName>BPMGutter</ObjectName>
@@ -94,6 +95,7 @@
                     <TooltipId>track_artist</TooltipId>
                     <Property>artist</Property>
                     <SizePolicy>me,min</SizePolicy>
+                    <Elide>right</Elide>
                     <Group><Variable name="group"/></Group>
                   </TrackProperty>
 
