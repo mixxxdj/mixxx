@@ -205,6 +205,25 @@
         </Connection>
       </PushButton>
 
+      <PushButton>
+        <TooltipId>toggle_waveforms_stacked</TooltipId>
+        <Size>80me,20f</Size>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>   Show Stacked Waveforms</Text>
+          <Alignment>left</Alignment>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>&#10003; Show Stacked Waveforms</Text>
+          <Alignment>left</Alignment>
+        </State>
+        <Connection>
+          <ConfigKey persist="true">[Deere],show_stacked_waveforms</ConfigKey>
+        </Connection>
+      </PushButton>
+
       <!-- Sampler Settings -->
       <Label>
         <ObjectName>h2</ObjectName>
