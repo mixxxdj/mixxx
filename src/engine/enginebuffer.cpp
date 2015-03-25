@@ -1348,6 +1348,7 @@ void EngineBuffer::setScalerForTest(EngineBufferScale* pScaleVinyl,
     m_pScaleKeylock = pScaleKeylock;
     m_pScale = m_pScaleVinyl;
     m_pScale->clear();
+    m_bScalerChanged = true;
     // This bool is permanently set and can't be undone.
     m_bScalerOverride = true;
 }
