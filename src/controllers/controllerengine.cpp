@@ -1201,7 +1201,7 @@ bool ControllerEngine::isDeckPlaying(const QString& group) {
     if (pPlay) {
       return pPlay->get() > 0.0;
     } else {
-      error = QString("Could not getControlObjectThread()");
+      QString error = QString("Could not getControlObjectThread()");
       scriptErrorDialog(error);
       return false;
     }
