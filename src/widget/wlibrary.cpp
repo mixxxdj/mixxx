@@ -40,10 +40,10 @@ void WLibrary::switchToView(const QString& name) {
     if (widget != NULL) {
         LibraryView * lview = dynamic_cast<LibraryView*>(widget);
         if (lview == NULL) {
-          qDebug() << "WARNING: Attempted to register a view with WLibrary "
-                   << "that does not implement the LibraryView interface. "
-                   << "Ignoring.";
-          return;
+            qDebug() << "WARNING: Attempted to register a view with WLibrary "
+                     << "that does not implement the LibraryView interface. "
+                     << "Ignoring.";
+            return;
         }
         if (currentWidget() != widget) {
             //qDebug() << "WLibrary::setCurrentWidget" << name;
