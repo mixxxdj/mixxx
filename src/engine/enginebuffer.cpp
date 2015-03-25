@@ -446,8 +446,6 @@ void EngineBuffer::readToCrossfadeBuffer(const int iBufferSize) {
 
     // Restore the original position that was lost due to getScaled() above
     m_pReadAheadManager->notifySeek(m_filepos_play);
-    // Clear the current scale information
-    m_pScale->clear();
 
     m_bCrossfadeReady = true;
 }
@@ -461,6 +459,8 @@ void EngineBuffer::setNewPlaypos(double newpos) {
 
     // Before seeking, read extra buffer for crossfading
     readToCrossfadeBuffer(m_iLastBufferSize);
+    // Clear the scale information
+    m_pScale->clear();
 
     // Ensures that the playpos slider gets updated in next process call
     m_iSamplesCalculated = 1000000;
@@ -812,8 +812,6 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         // need to use pitch and time scaling.
         // Note: we have still click issue when changing the scaler
 
-        // const double kLinearScalerElipsis = 1.00058;
-
         bool useIndependentPitchAndTempoScaling = false;
         if (keylock_enabled) {
             // always use IndependentPitchAndTempoScaling
@@ -893,6 +891,8 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
                 if ((m_speed_old <= 0 && speed > 0) ||
                     (m_speed_old >= 0 && speed < 0)) {
                     readToCrossfadeBuffer(iBufferSize);
+                    // Clear the scaler information
+                    m_pScale->clear();
                 }
             }
 
@@ -969,6 +969,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         }
 
         if (m_bCrossfadeReady) {
+            qDebug() << "m_bCrossfadeReady";
             SampleUtil::linearCrossfadeBuffers(
                 pOutput, m_pCrossfadeBuffer, pOutput, iBufferSize);
             m_bCrossfadeReady = false;
