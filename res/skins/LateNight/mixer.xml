@@ -94,7 +94,7 @@
               									</Template>
         						            </Children>
         						            <Connection>
-        						                <ConfigKey>[Master],show_4decks</ConfigKey>
+        						                <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
         						                <BindProperty>visible</BindProperty>
         						            </Connection>
         						       </WidgetGroup>
@@ -113,7 +113,7 @@
                                               </Template>
                                           </Children>
                                           <Connection>
-                                              <ConfigKey>[Master],show_4decks</ConfigKey>
+                                              <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
                                               <BindProperty>visible</BindProperty>
                                           </Connection>
                                        </WidgetGroup>

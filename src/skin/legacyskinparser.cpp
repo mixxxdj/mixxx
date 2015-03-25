@@ -143,6 +143,9 @@ LegacySkinParser::LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
 }
 
 LegacySkinParser::~LegacySkinParser() {
+    foreach (ControlObject* co, m_skinObjects) {
+        delete co;
+    }
     delete m_pContext;
 }
 
@@ -316,7 +319,19 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
         bool ok = false;
         double value = QString::fromStdString(attribute.value()).toDouble(&ok);
         if (ok) {
-            ControlObject::set(configKey, value);
+            // Set the specified attribute, possibly creating the control
+            // object in the process.
+            bool created = false;
+            // Update the value specified in the skin with whatever is in the
+            // saved config, if any.
+            value = m_pConfig->getValueString(configKey,
+                                              QString::number(value)).toDouble();
+            ControlObject* pControl = controlFromConfigKey(configKey, true,
+                                                           &created);
+            pControl->set(value);
+            if (created) {
+                m_skinObjects.push_back(pControl);
+            }
         }
     }
 
