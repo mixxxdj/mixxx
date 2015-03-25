@@ -90,8 +90,6 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
           m_pRepeat(NULL),
           m_startButton(NULL),
           m_endButton(NULL),
-          m_pScale(NULL),
-          m_bScalerChanged(false),
           m_bScalerOverride(false),
           m_iSeekQueued(NO_SEEK),
           m_iEnableSyncQueued(SYNC_REQUEST_NONE),
@@ -282,7 +280,9 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
         m_pScaleKeylock = m_pScaleRB;
     }
     m_pScaleVinyl = m_pScaleLinear;
-    enableIndependentPitchTempoScaling(false, 0);
+    m_pScale = m_pScaleVinyl;
+    m_pScale->clear();
+    m_bScalerChanged = true;
 
     m_pPassthroughEnabled.reset(new ControlObjectSlave(group, "passthrough", this));
     m_pPassthroughEnabled->connectValueChanged(this, SLOT(slotPassthroughChanged(double)),
@@ -440,10 +440,6 @@ void EngineBuffer::requestSyncMode(SyncMode mode) {
 }
 
 void EngineBuffer::readToCrossfadeBuffer(const int iBufferSize) {
-    // During startup, scaler is null.
-    if (m_pScale == NULL) {
-        return;
-    }
     CSAMPLE* fadeout = m_pScale->getScaled(iBufferSize);
     SampleUtil::copy(m_pCrossfadeBuffer, fadeout, iBufferSize);
 
