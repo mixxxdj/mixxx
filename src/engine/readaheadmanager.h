@@ -13,7 +13,8 @@
 #include "util/math.h"
 #include "cachingreader.h"
 
-class EngineControl;
+class LoopingControl;
+class RateControl;
 class CachingReader;
 
 // ReadAheadManager is a tool for keeping track of the engine's current position
@@ -38,11 +39,10 @@ class ReadAheadManager {
     virtual int getNextSamples(double dRate, CSAMPLE* buffer, int requested_samples);
 
 
-    // Used to add a new EngineControl that ReadAheadManager will use to decide
+    // Used to add a new EngineControls that ReadAheadManager will use to decide
     // which samples to return.
-    void addLoopingControl(EngineControl* pLoopingControl);
-    void addRateControl(EngineControl* pRateControl);
-    virtual void addEngineControl(EngineControl* control);
+    void addLoopingControl(LoopingControl* pLoopingControl);
+    void addRateControl(RateControl* pRateControl);
 
     // Get the current read-ahead position in samples.
     virtual inline int getPlaypos() const {
@@ -118,8 +118,8 @@ class ReadAheadManager {
                          double virtualPlaypositionEndNonInclusive);
 
     QMutex m_mutex;
-    QList<EngineControl*> m_engineControls;
-    EngineControl* m_pLoopingControl;
+    LoopingControl* m_pLoopingControl;
+    RateControl* m_pRateControl;
     QLinkedList<ReadLogEntry> m_readAheadLog;
     int m_iCurrentPosition;
     CachingReader* m_pReader;

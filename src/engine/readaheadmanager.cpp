@@ -7,10 +7,13 @@
 #include "sampleutil.h"
 #include "util/math.h"
 #include "util/defs.h"
-#include "engine/enginecontrol.h"
+#include "engine/loopingcontrol.h"
+#include "engine/ratecontrol.h"
 #include "cachingreader.h"
 
 ReadAheadManager::ReadAheadManager(CachingReader* pReader) :
+    m_pLoopingControl(NULL),
+    m_pRateControl(NULL),
     m_iCurrentPosition(0),
     m_pReader(pReader),
     m_pCrossFadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) {
@@ -115,20 +118,12 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
     return samples_read;
 }
 
-void ReadAheadManager::addLoopingControl(EngineControl* pLoopingControl) {
+void ReadAheadManager::addLoopingControl(LoopingControl* pLoopingControl) {
     m_pLoopingControl = pLoopingControl;
-    addEngineControl((EngineControl*)pLoopingControl);
 }
 
-void ReadAheadManager::addRateControl(EngineControl* pRateControl) {
-    addEngineControl((EngineControl*)pRateControl);
-}
-
-void ReadAheadManager::addEngineControl(EngineControl* pControl) {
-    if (pControl == NULL) {
-        return;
-    }
-    m_engineControls.append(pControl);
+void ReadAheadManager::addRateControl(RateControl* pRateControl) {
+    m_pRateControl = pRateControl;
 }
 
 void ReadAheadManager::notifySeek(int iSeekPosition) {
@@ -206,8 +201,11 @@ int ReadAheadManager::getEffectiveVirtualPlaypositionFromLog(double currentVirtu
 
         // Notify EngineControls that we have taken a seek.
         if (shouldNotifySeek) {
-            foreach (EngineControl* pControl, m_engineControls) {
-                pControl->notifySeek(entry.virtualPlaypositionStart);
+            if (m_pLoopingControl) {
+                m_pLoopingControl->notifySeek(entry.virtualPlaypositionStart);
+            }
+            if (m_pRateControl) {
+                m_pRateControl->notifySeek(entry.virtualPlaypositionStart);
             }
         }
 

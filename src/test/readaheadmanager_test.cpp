@@ -6,7 +6,7 @@
 #include "mixxxtest.h"
 #include "cachingreader.h"
 #include "controlobject.h"
-#include "engine/enginecontrol.h"
+#include "engine/loopingcontrol.h"
 #include "engine/readaheadmanager.h"
 #include "sampleutil.h"
 #include "util/defs.h"
@@ -24,10 +24,10 @@ class StubReader : public CachingReader {
     }
 };
 
-class StubLoopControl : public EngineControl {
+class StubLoopControl : public LoopingControl {
   public:
     StubLoopControl()
-        : EngineControl("[test]", NULL) { }
+        : LoopingControl("[test]", NULL) { }
 
     void pushTriggerReturnValue(double value) {
         m_triggerReturnValues.push_back(value);
@@ -37,7 +37,7 @@ class StubLoopControl : public EngineControl {
         m_processReturnValues.push_back(value);
     }
 
-    double nextTrigger(const double dRate,
+    virtual double nextTrigger(const double dRate,
                        const double currentSample,
                        const double totalSamples,
                        const int iBufferSize) {
