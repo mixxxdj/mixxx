@@ -30,7 +30,6 @@
 #include "engine/enginebufferscalest.h"
 #include "engine/enginebufferscalerubberband.h"
 #include "engine/enginebufferscalelinear.h"
-#include "engine/enginebufferscaledummy.h"
 #include "engine/sync/enginesync.h"
 #include "engine/engineworkerscheduler.h"
 #include "engine/readaheadmanager.h"
@@ -92,12 +91,6 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
           m_startButton(NULL),
           m_endButton(NULL),
           m_pScale(NULL),
-          m_pScaleVinyl(NULL),
-          m_pScaleKeylock(NULL),
-          m_pScaleLinear(NULL),
-          m_pScaleST(NULL),
-          m_pScaleRB(NULL),
-          m_pScaleDummy(NULL),
           m_bScalerChanged(false),
           m_bScalerOverride(false),
           m_iSeekQueued(NO_SEEK),
@@ -282,7 +275,6 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
     // Construct scaling objects
     m_pScaleLinear = new EngineBufferScaleLinear(m_pReadAheadManager);
     m_pScaleST = new EngineBufferScaleST(m_pReadAheadManager);
-    m_pScaleDummy = new EngineBufferScaleDummy(m_pReadAheadManager);
     m_pScaleRB = new EngineBufferScaleRubberBand(m_pReadAheadManager);
     if (m_pKeylockEngine->get() == SOUNDTOUCH) {
         m_pScaleKeylock = m_pScaleST;
@@ -338,7 +330,6 @@ EngineBuffer::~EngineBuffer() {
     delete m_pTrackSampleRate;
 
     delete m_pScaleLinear;
-    delete m_pScaleDummy;
     delete m_pScaleST;
     delete m_pScaleRB;
 
@@ -749,9 +740,9 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
     // it doesn't reallocate when the user engages keylock during playback.
     // We do this even if rubberband is not active.
     if (sample_rate != m_iSampleRate) {
-        if (m_pScaleRB != NULL) {
-            m_pScaleRB->initializeRubberBand(sample_rate);
-        }
+        m_pScaleLinear->setSampleRate(sample_rate);
+        m_pScaleST->setSampleRate(sample_rate);
+        m_pScaleRB->setSampleRate(sample_rate);
         m_iSampleRate = sample_rate;
     }
 
@@ -914,8 +905,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             // master samplerate), the deck speed, the pitch shift, and whether
             // the deck speed should affect the pitch.
 
-            m_pScale->setScaleParameters(sample_rate,
-                                         baserate,
+            m_pScale->setScaleParameters(baserate,
                                          &speed,
                                          &pitchRatio);
 

@@ -59,15 +59,9 @@ void EngineBufferScaleRubberBand::initializeRubberBand(int iSampleRate) {
     m_pRubberBand->setTimeRatio(1.0);
 }
 
-void EngineBufferScaleRubberBand::setScaleParameters(int iSampleRate,
-                                                     double base_rate,
+void EngineBufferScaleRubberBand::setScaleParameters(double base_rate,
                                                      double* pTempoRatio,
                                                      double* pPitchRatio) {
-    if (m_iSampleRate != iSampleRate) {
-        initializeRubberBand(iSampleRate);
-        m_iSampleRate = iSampleRate;
-    }
-
     // Negative speed means we are going backwards. pitch does not affect
     // the playback direction.
     m_bBackwards = *pTempoRatio < 0;
@@ -124,6 +118,11 @@ void EngineBufferScaleRubberBand::setScaleParameters(int iSampleRate,
     m_dBaseRate = base_rate;
     m_dTempo = speed_abs;
     m_dPitch = *pPitchRatio;
+}
+
+void EngineBufferScaleRubberBand::setSampleRate(int iSampleRate) {
+    initializeRubberBand(iSampleRate);
+    m_iSampleRate = iSampleRate;
 }
 
 void EngineBufferScaleRubberBand::clear() {
