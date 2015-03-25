@@ -569,15 +569,16 @@ void CrateFeature::slotImportPlaylist() {
         return;
     }
 
-    QList<QString> entries = playlist_parser->parse(playlist_file);
-    //qDebug() << "Size of Imported Playlist: " << entries.size();
+    if (playlist_parser) {
+      QList<QString> entries = playlist_parser->parse(playlist_file);
+      //qDebug() << "Size of Imported Playlist: " << entries.size();
 
-    //Iterate over the List that holds URLs of playlist entires
-    m_crateTableModel.addTracks(QModelIndex(), entries);
+      //Iterate over the List that holds URLs of playlist entires
+      m_crateTableModel.addTracks(QModelIndex(), entries);
 
-    //delete the parser object
-    if (playlist_parser)
-        delete playlist_parser;
+      //delete the parser object
+      delete playlist_parser;
+    }
 }
 
 void CrateFeature::slotAnalyzeCrate() {
