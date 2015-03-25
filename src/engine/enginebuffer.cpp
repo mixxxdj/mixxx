@@ -361,17 +361,20 @@ void EngineBuffer::enableIndependentPitchTempoScaling(bool bEnable,
 
     // m_pScaleKeylock could change out from under us, so cache it.
     EngineBufferScale* keylock_scale = m_pScaleKeylock;
+    EngineBufferScale* vinyl_scale = m_pScaleVinyl;
 
     if (bEnable && m_pScale != keylock_scale) {
         readToCrossfadeBuffer(iBufferSize);
         m_pScale = keylock_scale;
         m_pScale->clear();
         m_bScalerChanged = true;
-    } else if (!bEnable && m_pScale != m_pScaleVinyl) {
+        qDebug() << "keylock_scale";
+    } else if (!bEnable && m_pScale != vinyl_scale) {
         readToCrossfadeBuffer(iBufferSize);
-        m_pScale = m_pScaleVinyl;
+        m_pScale = vinyl_scale;
         m_pScale->clear();
         m_bScalerChanged = true;
+        qDebug() << "vinyl_scale";
     }
 }
 
@@ -453,7 +456,7 @@ void EngineBuffer::readToCrossfadeBuffer(const int iBufferSize) {
 // WARNING: This method is not thread safe and must not be called from outside
 // the engine callback!
 void EngineBuffer::setNewPlaypos(double newpos) {
-    //qDebug() << m_group << "engine new pos " << newpos;
+    qDebug() << m_group << "engine new pos " << newpos;
 
     m_filepos_play = newpos;
 
@@ -888,8 +891,8 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             if (m_pScale != m_pScaleVinyl) { // linear scaler does this part for us now
                 //XXX: Trying to force RAMAN to read from correct
                 //     playpos when rate changes direction - Albert
-                if ((m_speed_old <= 0 && speed > 0) ||
-                    (m_speed_old >= 0 && speed < 0)) {
+                if (m_speed_old * speed < 0) {
+                    qDebug() << "direction changed";
                     readToCrossfadeBuffer(iBufferSize);
                     // Clear the scaler information
                     m_pScale->clear();
