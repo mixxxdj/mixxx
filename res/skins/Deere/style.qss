@@ -204,17 +204,17 @@ WSliderComposed {
 }
 
 /* Make the hotcue button grid have black borders between all buttons */
-#HotcueGrid {
+#HotcueGrid, #HotcueGridExtended {
   background-color: black;
   qproperty-layoutSpacing: 1;
   padding: 1px;
 }
 
-#HotcueGrid WWidgetGroup {
+#HotcueGrid WWidgetGroup, #HotcueGridExtended WWidgetGroup {
   qproperty-layoutSpacing: 1;
 }
 
-#HotcueGrid WPushButton {
+#HotcueGrid WPushButton, #HotcueGridExtended WPushButton {
 }
 
 /* Make the beatloop button grid have black borders between all buttons */

@@ -187,6 +187,24 @@
         </Connection>
       </PushButton>
 
+      <PushButton>
+        <Size>80me,20f</Size>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>   Show More Hotcues</Text>
+          <Alignment>left</Alignment>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>&#10003; Show More Hotcues</Text>
+          <Alignment>left</Alignment>
+        </State>
+        <Connection>
+          <ConfigKey persist="true">[Deere],show_more_hotcues</ConfigKey>
+        </Connection>
+      </PushButton>
+
       <!-- Sampler Settings -->
       <Label>
         <ObjectName>h2</ObjectName>
