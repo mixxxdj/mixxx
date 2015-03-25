@@ -64,7 +64,7 @@ SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename)
     vf.links = 0;
     vf.offsets = NULL;
     vf.dataoffsets = NULL;
-    vf.serialnos = NULL:
+    vf.serialnos = NULL;
     vf.pcmlengths = NULL;
     vf.vi = NULL;
     vf.vc = NULL;
