@@ -24,7 +24,8 @@ bool WLibrary::registerView(QString name, QWidget* view) {
     }
     if (dynamic_cast<LibraryView*>(view) == NULL) {
         qDebug() << "WARNING: Attempted to register a view with WLibrary "
-          << "that does not implement the LibraryView interface. Ignoring.";
+                 << "that does not implement the LibraryView interface. "
+                 << "Ignoring.";
         return false;
     }
     addWidget(view);
@@ -40,7 +41,8 @@ void WLibrary::switchToView(const QString& name) {
         LibraryView * lview = dynamic_cast<LibraryView*>(widget);
         if (lview == NULL) {
           qDebug() << "WARNING: Attempted to register a view with WLibrary "
-            << "that does not implement the LibraryView interface. Ignoring.";
+                   << "that does not implement the LibraryView interface. "
+                   << "Ignoring.";
           return;
         }
         if (currentWidget() != widget) {
