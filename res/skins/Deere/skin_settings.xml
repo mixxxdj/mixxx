@@ -161,7 +161,7 @@
         <Children>
           <PushButton>
           <Size>80me,20f</Size>
-          <NumberStates>2</NumberStates>
+          <NumberStates>3</NumberStates>
           <State>
             <Number>0</Number>
             <Text>   Show Cover Art</Text>
@@ -169,7 +169,12 @@
           </State>
           <State>
             <Number>1</Number>
-            <Text>&#10003; Show Cover Art</Text>
+            <Text>&#10003; Show Cover Art &#9679; &#9675;</Text>
+            <Alignment>left</Alignment>
+          </State>
+          <State>
+            <Number>2</Number>
+            <Text>&#10003; Show Cover Art &#9675; &#9679;</Text>
             <Alignment>left</Alignment>
           </State>
           <Connection>

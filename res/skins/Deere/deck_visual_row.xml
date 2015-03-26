@@ -167,30 +167,74 @@
         </Children>
       </WidgetGroup>
 
-      <WidgetGroup>
-        <ObjectName>SpinnyHolder</ObjectName>
+      <!-- We allow for the following options in the skin settings:
+           : Show no cover
+           : Show cover on spinning vinyl images
+           : Show cover in text row of decks
+      -->
+      <WidgetStack>
+        <ObjectName>SpinnyContainer</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>max,max</SizePolicy>
+        <MinimumSize>-1,118</MinimumSize>
+        <NextControl>[Deere],show_coverart</NextControl>
+        <PrevControl></PrevControl>
         <Children>
-          <Spinny>
-            <TooltipId>spinny</TooltipId>
-            <Size>118f,118f</Size>
-            <Group><Variable name="group"/></Group>
-            <PathBackground>image/vinyl_spinny_background.png</PathBackground>
-            <PathForeground>image/vinyl_spinny_foreground.png</PathForeground>
-            <PathGhost>image/vinyl_spinny_foreground_ghost.png</PathGhost>
-            <!--
-             If you want to have cover art beneath the spnning vinyl images,
-             set <ShowCover> to "true" AND make the <PathBackground> image semi-transparent.
-            -->
-            <ShowCover>false</ShowCover>
-          </Spinny>
-        </Children>
-        <Connection>
-          <ConfigKey persist="true"><Variable name="control_show_spinny"/></ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
+
+        <WidgetGroup>
+          <ObjectName>SpinnyHolder</ObjectName>
+          <Layout>horizontal</Layout>
+          <SizePolicy>max,max</SizePolicy>
+          <Children>
+            <Spinny>
+              <TooltipId>spinny</TooltipId>
+              <Size>118f,118f</Size>
+              <Group><Variable name="group"/></Group>
+              <PathBackground>image/vinyl_spinny_background.png</PathBackground>
+              <PathForeground>image/vinyl_spinny_foreground.png</PathForeground>
+              <PathGhost>image/vinyl_spinny_foreground_ghost.png</PathGhost>
+              <PathMask>image/vinyl_spinny_cover_mask.png</PathMask>
+              <!--
+               If you want to have cover art beneath the spinning vinyl images,
+               set <ShowCover> to "true" AND make the <PathMask> image semi-transparent.
+              -->
+              <ShowCover>false</ShowCover>
+            </Spinny>
+          </Children>
+          <Connection>
+            <ConfigKey persist="true"><Variable name="control_show_spinny"/></ConfigKey>
+            <BindProperty>visible</BindProperty>
+          </Connection>
+        </WidgetGroup>
+
+        <WidgetGroup>
+          <ObjectName>SpinnyHolder</ObjectName>
+          <Layout>horizontal</Layout>
+          <SizePolicy>max,max</SizePolicy>
+          <Children>
+            <Spinny>
+              <TooltipId>spinny</TooltipId>
+              <Size>118f,118f</Size>
+              <Group><Variable name="group"/></Group>
+              <PathBackground>image/vinyl_spinny_background.png</PathBackground>
+              <PathForeground>image/vinyl_spinny_foreground.png</PathForeground>
+              <PathGhost>image/vinyl_spinny_foreground_ghost.png</PathGhost>
+              <PathMask>image/vinyl_spinny_cover_mask.png</PathMask>
+              <!--
+               If you want to have cover art beneath the spinning vinyl images,
+               set <ShowCover> to "true" AND make the <PathMask> image semi-transparent.
+              -->
+              <ShowCover>true</ShowCover>
+            </Spinny>
+          </Children>
+          <Connection>
+            <ConfigKey persist="true"><Variable name="control_show_spinny"/></ConfigKey>
+            <BindProperty>visible</BindProperty>
+          </Connection>
+        </WidgetGroup>
+      </Children>
+    </WidgetStack>
+
     </Children>
   </WidgetGroup>
 </Template>

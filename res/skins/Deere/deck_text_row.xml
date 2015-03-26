@@ -26,6 +26,11 @@
         <Connection>
           <ConfigKey persist="true">[Deere],show_coverart</ConfigKey>
           <BindProperty>visible</BindProperty>
+          <!-- Needed for the show/hide logic to work when circling through
+               the cover art display options: none/vinyl cover/text row -->
+          <Transform>
+            <Add>-1</Add>
+          </Transform>
         </Connection>
       </WidgetGroup>
       <WidgetGroup>
