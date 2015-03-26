@@ -154,7 +154,7 @@ class EngineBuffer : public EngineObject {
     //void setReader(CachingReader* pReader);
 
     // For dependency injection of scalers.
-    void setScalerForTest(EngineBufferScale* pScale,
+    void setScalerForTest(EngineBufferScale* pScaleVinyl,
                           EngineBufferScale* pScaleKeylock);
 
     // For dependency injection of fake tracks, with an optional filebpm value.

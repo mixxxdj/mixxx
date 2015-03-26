@@ -780,6 +780,8 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
 
         bool useIndependentPitchAndTempoScaling = false;
 
+        qDebug() << "slow rubberband 1" << is_scratching  << speed << m_group;
+
         // TODO(owen): Maybe change this so that rubberband doesn't disable
         // keylock on scratch. (just check m_pScaleKeylock == m_pScaleST)
         if (is_scratching || fabs(speed) > 1.9) {
@@ -793,10 +795,11 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             // Force pitchRatio to the linear pitch set by speed
             pitchRatio = speed;
             // This is for the natural speed pitch found on turn tables
-        } else if (m_pScaleKeylock == m_pScaleRB && fabs(speed) < 0.1) {
+        } else if (fabs(speed) < 0.1 && m_pKeylockEngine->get() == RUBBERBAND) {
             // At very slow speeds, Rubberband performs memory allocations which
             // can cause underruns.  Disable keylock under these conditions.
 
+            qDebug() << "slow rubberband";
             // Force pitchRatio to the linear pitch set by speed
             pitchRatio = speed;
         } else if (keylock_enabled) {
