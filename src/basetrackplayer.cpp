@@ -38,7 +38,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
           m_pMidFilterKill(NULL),
           m_pHighFilterKill(NULL),
           m_pSpeed(NULL),
-          m_pPitch(NULL),
+          m_pPitchAdjust(NULL),
           m_replaygainPending(false) {
     ChannelHandleAndGroup channelGroup =
             pMixingEngine->registerChannelGroup(group);
@@ -122,7 +122,7 @@ BaseTrackPlayerImpl::~BaseTrackPlayerImpl() {
     delete m_pHighFilterKill;
     delete m_pPreGain;
     delete m_pSpeed;
-    delete m_pPitch;
+    delete m_pPitchAdjust;
 }
 
 void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer track, bool bPlay) {
@@ -290,13 +290,17 @@ void BaseTrackPlayerImpl::slotFinishLoading(TrackPointer pTrackInfoObject)
         }
         m_pPreGain->set(1.0);
     }
-    if(m_pConfig->getValueString(ConfigKey("[Controls]", "SpeedAutoReset"), 0).toInt()) {
+    int reset = m_pConfig->getValueString(ConfigKey("[Controls]", "SpeedAutoReset"), 0).toInt();
+    switch (reset) {
+      case 2:
+        // Note: speed may effect pitch
         if (m_pSpeed != NULL) {
             m_pSpeed->set(0.0);
         }
-        // Note: speed may effect pitch
-        if (m_pPitch != NULL) {
-            m_pPitch->set(0.0);
+        // Fallthrough intended
+      case 1:
+        if (m_pPitchAdjust != NULL) {
+            m_pPitchAdjust->set(0.0);
         }
     }
     emit(newTrackLoaded(m_pLoadedTrack));
@@ -336,5 +340,5 @@ void BaseTrackPlayerImpl::setupEqControls() {
     m_pMidFilterKill = new ControlObjectSlave(group, "filterMidKill");
     m_pHighFilterKill = new ControlObjectSlave(group, "filterHighKill");
     m_pSpeed = new ControlObjectSlave(group, "rate");
-    m_pPitch = new ControlObjectSlave(group, "pitch");
+    m_pPitchAdjust = new ControlObjectSlave(group, "pitch_adjust");
 }
