@@ -456,9 +456,14 @@ void EngineBuffer::setNewPlaypos(double newpos) {
 
     m_filepos_play = newpos;
 
-    // Before seeking, read extra buffer for crossfading
-    readToCrossfadeBuffer(m_iLastBufferSize);
-    // Clear the scale information
+    if (m_rate_old) {
+        // Before seeking, read extra buffer for crossfading
+        // (calls notifySeek())
+        readToCrossfadeBuffer(m_iLastBufferSize);
+        // Clear the scale information
+    } else {
+        m_pReadAheadManager->notifySeek(m_filepos_play);
+    }
     m_pScale->clear();
 
     // Ensures that the playpos slider gets updated in next process call
@@ -989,6 +994,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         }
 
         if (m_bCrossfadeReady) {
+            qDebug() << "m_bCrossfadeReady";
             SampleUtil::linearCrossfadeBuffers(
                     pOutput, m_pCrossfadeBuffer, pOutput, iBufferSize);
         }
