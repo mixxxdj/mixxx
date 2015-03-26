@@ -17,11 +17,6 @@ EngineBufferScaleDummy::~EngineBufferScaleDummy()
 
 }
 
-double EngineBufferScaleDummy::getNewPlaypos()
-{
-    return m_samplesRead;
-}
-
 void EngineBufferScaleDummy::clear()
 {
 }

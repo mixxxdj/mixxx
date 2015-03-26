@@ -352,14 +352,15 @@ void BasePlaylistFeature::slotImportPlaylist() {
     } else {
         return;
     }
-    QStringList entries = playlist_parser->parse(playlist_file);
 
-    // Iterate over the List that holds URLs of playlist entires
-    m_pPlaylistTableModel->addTracks(QModelIndex(), entries);
-
-    // delete the parser object
     if (playlist_parser) {
-        delete playlist_parser;
+      QStringList entries = playlist_parser->parse(playlist_file);
+
+      // Iterate over the List that holds URLs of playlist entires
+      m_pPlaylistTableModel->addTracks(QModelIndex(), entries);
+
+      // delete the parser object
+      delete playlist_parser;
     }
 }
 
