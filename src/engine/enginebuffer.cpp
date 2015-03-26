@@ -762,7 +762,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         // pitch. 2.0 is a full octave shift up).
         double pitchRatio = pitchTempoRatio.pitchRatio;
         double tempoRatio = pitchTempoRatio.tempoRatio;
-        bool keylock_enabled = pitchTempoRatio.keylock;
+        const bool keylock_enabled = pitchTempoRatio.keylock;
 
         bool is_scratching = false;
 
@@ -778,6 +778,8 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         double speed = m_pRateControl->calculateSpeed(
                 baserate, tempoRatio, paused, iBufferSize, &is_scratching);
 
+        bool useIndependentPitchAndTempoScaling = false;
+
         // TODO(owen): Maybe change this so that rubberband doesn't disable
         // keylock on scratch. (just check m_pScaleKeylock == m_pScaleST)
         if (is_scratching || fabs(speed) > 1.9) {
@@ -788,45 +790,42 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             // High seek speeds also disables keylock.  Our pitch slider could go
             // to 90%, so that's the cutoff point.
 
-            // TODO: setting pitchRatio = speed ensures that the "offlinear"
-            // test below will not succeed.  We should find a better way
-            // to ensure that the keylock scaler is not used.
+            // Force pitchRatio to the linear pitch set by speed
             pitchRatio = speed;
-            keylock_enabled = false;
             // This is for the natural speed pitch found on turn tables
         } else if (fabs(speed) < 0.1 && m_pKeylockEngine->get() == RUBBERBAND) {
             // At very slow speeds, Rubberband performs memory allocations which
             // can cause underruns.  Disable keylock under these conditions.
+
+            // Force pitchRatio to the linear pitch set by speed
             pitchRatio = speed;
-            keylock_enabled = false;
-        } else if (!keylock_enabled) {
-            // We might have have temporary speed change, so adjust pitch if not locked
-            // Note: This will not update key and tempo widgets
-            if (tempoRatio) {
-                pitchRatio *= (speed/tempoRatio);
-            }
-        }
-
-        // If either keylock is enabled or the pitch is tweaked we
-        // need to use pitch and time scaling.
-        // Note: we have still click issue when changing the scaler
-
-        bool useIndependentPitchAndTempoScaling = false;
-        if (keylock_enabled) {
+        } else if (keylock_enabled) {
             // always use IndependentPitchAndTempoScaling
             // to avoid clicks when crossing the linear pitch
             // in this case it is most likely that the user
             // will have an non linear pitch
+            // Note: We have undesired noise when cossfading between scalers
             useIndependentPitchAndTempoScaling = true;
-        } else if (speed) {
-            double offlinear = pitchRatio / speed;
-            if (offlinear > kLinearScalerElipsis ||
-                    offlinear < 1 / kLinearScalerElipsis) {
-                // offlinear > 1 cent
-                // everything below is not hear-able
-                useIndependentPitchAndTempoScaling = true;
+        } else {
+            // We might have have temporary speed change, so adjust pitch if not locked
+            // Note: This will not update key and tempo widgets
+            if (tempoRatio) {
+                pitchRatio *= (speed / tempoRatio);
+            }
+
+            // Check if we are off-linear (the pitch is tweaked) to enable
+            // the keylock scaler even though keylock is disabled
+            if (speed) {
+                double offlinear = pitchRatio / speed;
+                if (offlinear > kLinearScalerElipsis ||
+                        offlinear < 1 / kLinearScalerElipsis) {
+                    // off-linear > 1 cent
+                    // everything below is not hear-able
+                    useIndependentPitchAndTempoScaling = true;
+                }
             }
         }
+
         enableIndependentPitchTempoScaling(useIndependentPitchAndTempoScaling,
                                            iBufferSize);
 
