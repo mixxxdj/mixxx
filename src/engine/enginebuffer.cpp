@@ -368,13 +368,13 @@ void EngineBuffer::enableIndependentPitchTempoScaling(bool bEnable,
         m_pScale = keylock_scale;
         m_pScale->clear();
         m_bScalerChanged = true;
-        qDebug() << "keylock_scale";
+        //qDebug() << "keylock_scale";
     } else if (!bEnable && m_pScale != vinyl_scale) {
         readToCrossfadeBuffer(iBufferSize);
         m_pScale = vinyl_scale;
         m_pScale->clear();
         m_bScalerChanged = true;
-        qDebug() << "vinyl_scale";
+        //qDebug() << "vinyl_scale";
     }
 }
 
@@ -452,7 +452,7 @@ void EngineBuffer::readToCrossfadeBuffer(const int iBufferSize) {
 // WARNING: This method is not thread safe and must not be called from outside
 // the engine callback!
 void EngineBuffer::setNewPlaypos(double newpos) {
-    qDebug() << m_group << "engine new pos " << newpos;
+    //qDebug() << m_group << "engine new pos " << newpos;
 
     m_filepos_play = newpos;
 
@@ -780,8 +780,6 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
 
         bool useIndependentPitchAndTempoScaling = false;
 
-        qDebug() << "slow rubberband 1" << is_scratching  << speed << m_group;
-
         // TODO(owen): Maybe change this so that rubberband doesn't disable
         // keylock on scratch. (just check m_pScaleKeylock == m_pScaleST)
         if (is_scratching || fabs(speed) > 1.9) {
@@ -799,7 +797,6 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             // At very slow speeds, Rubberband performs memory allocations which
             // can cause underruns.  Disable keylock under these conditions.
 
-            qDebug() << "slow rubberband";
             // Force pitchRatio to the linear pitch set by speed
             pitchRatio = speed;
         } else if (keylock_enabled) {
@@ -898,7 +895,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
                 //XXX: Trying to force RAMAN to read from correct
                 //     playpos when rate changes direction - Albert
                 if (m_speed_old * speed < 0) {
-                    qDebug() << "direction changed";
+                    //qDebug() << "direction changed";
                     readToCrossfadeBuffer(iBufferSize);
                     // Clear the scaler information
                     m_pScale->clear();
@@ -968,11 +965,11 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             CSAMPLE* output = m_pScale->getScaled(iBufferSize);
             double samplesRead = m_pScale->getSamplesRead();
 
-            // qDebug() << "sourceSamples used " << iSourceSamples
-            //          <<" samplesRead " << samplesRead
-            //          << ", buffer pos " << iBufferStartSample
-            //          << ", play " << filepos_play
-            //          << " bufferlen " << iBufferSize;
+            //qDebug() << "sourceSamples used " << iSourceSamples
+            //         <<" samplesRead " << samplesRead
+            //         << ", buffer pos " << iBufferStartSample
+            //         << ", play " << filepos_play
+            //         << " bufferlen " << iBufferSize;
 
             // Copy scaled audio into pOutput
             SampleUtil::copy(pOutput, output, iBufferSize);
@@ -992,7 +989,6 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         }
 
         if (m_bCrossfadeReady) {
-            qDebug() << "m_bCrossfadeReady";
             SampleUtil::linearCrossfadeBuffers(
                     pOutput, m_pCrossfadeBuffer, pOutput, iBufferSize);
         }
@@ -1077,7 +1073,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
 
         for (int i=0; i < iBufferSize; i += 2) {
             if (bCurBufferPaused && !m_bCrossfadeReady) {
-                // qDebug() << "ramp dither";
+                //qDebug() << "ramp dither";
                 CSAMPLE dither = m_pDitherBuffer[m_iDitherBufferReadIndex];
                 m_iDitherBufferReadIndex = (m_iDitherBufferReadIndex + 1) % MAX_BUFFER_LEN;
                 pOutput[i] = m_fLastSampleValue[0] * m_fRampValue + dither;
