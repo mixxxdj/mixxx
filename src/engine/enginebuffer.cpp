@@ -915,7 +915,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             // consumed relative to playing back the track at its native sample
             // rate and normal speed. pitch_adjust does not change the playback
             // rate.
-            m_rate_old = rate = baserate * speed;
+            rate = baserate * speed;
 
             // Scaler is up to date now.
             m_bScalerChanged = false;
@@ -929,12 +929,24 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         bool at_end = m_filepos_play >= m_trackSamplesOld;
         bool backwards = rate < 0;
 
-        // If we're playing past the end, playing before the start, or standing
-        // still then by definition the buffer is paused.
-        bCurBufferPaused = (rate == 0 || (at_end && !backwards));
+        if (at_end && !backwards) {
+            // do not play past end
+            bCurBufferPaused = true;
+        } else if (rate == 0 &&
+                (m_rate_old == 0 || !is_scratching)) {
+            // do not process samples if have no transport
+            // the linear scaler supports ramping down to 0
+            bCurBufferPaused = true;
+        }
+
+        m_rate_old = rate;
 
         // If the buffer is not paused, then scale the audio.
         if (!bCurBufferPaused) {
+            //if (rate == 0) {
+            //    qDebug() << "ramp to rate 0";
+            //}
+
             // The fileposition should be: (why is this thing a double anyway!?
             // Integer valued.
             double playFrame = m_filepos_play / kSamplesPerFrame;
