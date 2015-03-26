@@ -830,6 +830,11 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             // Do not switch scaler when we have no transport
             enableIndependentPitchTempoScaling(useIndependentPitchAndTempoScaling,
                                                iBufferSize);
+        } else if (m_speed_old && !is_scratching) {
+            // we are stopped, collect samples for fade out
+            readToCrossfadeBuffer(iBufferSize);
+            // Clear the scaler information
+            m_pScale->clear();
         }
 
         // How speed/tempo/pitch are related:
@@ -979,13 +984,14 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
                         m_pReadAheadManager->getEffectiveVirtualPlaypositionFromLog(
                                 static_cast<int>(m_filepos_play), samplesRead);
             }
+        } else {
+            SampleUtil::clear(pOutput, iBufferSize);
         }
 
         if (m_bCrossfadeReady) {
             qDebug() << "m_bCrossfadeReady";
             SampleUtil::linearCrossfadeBuffers(
-                pOutput, m_pCrossfadeBuffer, pOutput, iBufferSize);
-            m_bCrossfadeReady = false;
+                    pOutput, m_pCrossfadeBuffer, pOutput, iBufferSize);
         }
 
         QListIterator<EngineControl*> it(m_engineControls);
@@ -1058,8 +1064,8 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         }
     }
 
-    //let's try holding the last sample value constant, and pull it
-    //towards zero
+    // let's try holding the last sample value constant, and pull it
+    // towards zero
     float ramp_inc = 0;
     if (m_iRampState == ENGINE_RAMP_UP ||
         m_iRampState == ENGINE_RAMP_DOWN) {
@@ -1067,12 +1073,14 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         ramp_inc = static_cast<double>(m_iRampState * 300) / sample_rate;
 
         for (int i=0; i < iBufferSize; i += 2) {
-            if (bCurBufferPaused) {
+            if (bCurBufferPaused && !m_bCrossfadeReady) {
+                // qDebug() << "ramp dither";
                 CSAMPLE dither = m_pDitherBuffer[m_iDitherBufferReadIndex];
                 m_iDitherBufferReadIndex = (m_iDitherBufferReadIndex + 1) % MAX_BUFFER_LEN;
                 pOutput[i] = m_fLastSampleValue[0] * m_fRampValue + dither;
                 pOutput[i+1] = m_fLastSampleValue[1] * m_fRampValue + dither;
             } else {
+                //qDebug() << "ramp buffer";
                 pOutput[i] = pOutput[i] * m_fRampValue;
                 pOutput[i+1] = pOutput[i+1] * m_fRampValue;
             }
@@ -1086,8 +1094,6 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
                 m_fRampValue = 0.0;
             }
         }
-    } else if (m_fRampValue == 0.0) {
-        SampleUtil::clear(pOutput, iBufferSize);
     }
 
     if ((!bCurBufferPaused && m_iRampState == ENGINE_RAMP_NONE) ||
@@ -1110,6 +1116,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
 
     m_bLastBufferPaused = bCurBufferPaused;
     m_iLastBufferSize = iBufferSize;
+    m_bCrossfadeReady = false;
 }
 
 void EngineBuffer::processSlip(int iBufferSize) {
