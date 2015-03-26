@@ -754,7 +754,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             baserate = ((double)m_trackSampleRateOld / sample_rate);
         }
 
-
+        // Note: play is also active during cue preview
         bool paused = m_playButton->get() == 0.0;
         KeyControl::PitchTempoRatio pitchTempoRatio = m_pKeyControl->getPitchTempoRatio();
 
@@ -793,7 +793,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             // Force pitchRatio to the linear pitch set by speed
             pitchRatio = speed;
             // This is for the natural speed pitch found on turn tables
-        } else if (fabs(speed) < 0.1 && m_pKeylockEngine->get() == RUBBERBAND) {
+        } else if (m_pScaleKeylock == m_pScaleRB && fabs(speed) < 0.1) {
             // At very slow speeds, Rubberband performs memory allocations which
             // can cause underruns.  Disable keylock under these conditions.
 
@@ -826,8 +826,11 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             }
         }
 
-        enableIndependentPitchTempoScaling(useIndependentPitchAndTempoScaling,
-                                           iBufferSize);
+        if (speed) {
+            // Do not switch scaler when we have no transport
+            enableIndependentPitchTempoScaling(useIndependentPitchAndTempoScaling,
+                                               iBufferSize);
+        }
 
         // How speed/tempo/pitch are related:
         // Processing is done in two parts, the first part is calculated inside
