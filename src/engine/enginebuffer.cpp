@@ -460,7 +460,6 @@ void EngineBuffer::setNewPlaypos(double newpos) {
         // Before seeking, read extra buffer for crossfading
         // (calls notifySeek())
         readToCrossfadeBuffer(m_iLastBufferSize);
-        // Clear the scale information
     } else {
         m_pReadAheadManager->notifySeek(m_filepos_play);
     }
