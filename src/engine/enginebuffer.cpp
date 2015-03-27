@@ -782,6 +782,8 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         double speed = m_pRateControl->calculateSpeed(
                 baserate, tempoRatio, paused, iBufferSize, &is_scratching);
 
+        qDebug() << "EngineBuffer::process" << speed << is_scratching << tempoRatio;
+
         bool useIndependentPitchAndTempoScaling = false;
 
         // TODO(owen): Maybe change this so that rubberband doesn't disable
