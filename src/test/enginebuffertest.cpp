@@ -173,3 +173,21 @@ TEST_F(EngineBufferTest, ReadFadeOut) {
     EXPECT_EQ(m_pMockScaleVinyl1, m_pChannel1->getEngineBuffer()->m_pScale);
     EXPECT_EQ(m_pMockScaleVinyl1->getProcessesTempo(), 1.0);
 }
+
+TEST_F(EngineBufferTest, ResetPitchAdjustUsesLinear) {
+    // If the key was adjusted, but keylock is off, and then the key is
+    // reset, then the engine should be using the linear scaler.
+
+    // First, we should be using the keylock scaler here.
+    ControlObject::set(ConfigKey(m_sGroup1, "pitch"), 1.2);
+    // Remember that a rate of "0" is "regular playback speed".
+    ControlObject::set(ConfigKey(m_sGroup1, "rate"), 0.05);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ProcessBuffer();
+    EXPECT_EQ(m_pMockScaleKeylock1, m_pChannel1->getEngineBuffer()->m_pScale);
+
+    // Reset pitch adjust, and we should be back to the linear scaler.
+    ControlObject::set(ConfigKey(m_sGroup1, "pitch_adjust_set_default"), 1.0);
+    ProcessBuffer();
+    EXPECT_EQ(m_pMockScaleVinyl1, m_pChannel1->getEngineBuffer()->m_pScale);
+}
