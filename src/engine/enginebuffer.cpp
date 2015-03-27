@@ -456,7 +456,7 @@ void EngineBuffer::setNewPlaypos(double newpos) {
 
     m_filepos_play = newpos;
 
-    if (m_rate_old) {
+    if (m_rate_old != 0.0) {
         // Before seeking, read extra buffer for crossfading
         // (calls notifySeek())
         readToCrossfadeBuffer(m_iLastBufferSize);
@@ -820,7 +820,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
 
             // Check if we are off-linear (the pitch is tweaked) to enable
             // the keylock scaler even though keylock is disabled
-            if (speed) {
+            if (speed != 0.0) {
                 double offlinear = pitchRatio / speed;
                 if (offlinear > kLinearScalerElipsis ||
                         offlinear < 1 / kLinearScalerElipsis) {
