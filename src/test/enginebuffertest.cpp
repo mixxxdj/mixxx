@@ -137,3 +137,39 @@ TEST_F(EngineBufferTest, ScalerNoTransport) {
     ProcessBuffer();
     EXPECT_EQ(m_pMockScaleVinyl1, m_pChannel1->getEngineBuffer()->m_pScale);
 }
+
+TEST_F(EngineBufferTest, VinylScalerRampZero) {
+
+    // scratch in play mode
+    ControlObject::set(ConfigKey(m_sGroup1, "scratch2_enable"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "scratch2"), 1.0);
+
+    ProcessBuffer();
+    EXPECT_EQ(m_pMockScaleVinyl1, m_pChannel1->getEngineBuffer()->m_pScale);
+    EXPECT_EQ(m_pMockScaleVinyl1->getProcessesTempo(), 1.0);
+
+    ControlObject::set(ConfigKey(m_sGroup1, "scratch2"), 0.0);
+
+    // we are in scratching mode so a zero rate has to be processed
+    ProcessBuffer();
+    EXPECT_EQ(m_pMockScaleVinyl1, m_pChannel1->getEngineBuffer()->m_pScale);
+    EXPECT_EQ(m_pMockScaleVinyl1->getProcessesTempo(), 0.0);
+}
+
+TEST_F(EngineBufferTest, ReadFadeOut) {
+    // Start playing
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+
+    ProcessBuffer();
+    EXPECT_EQ(m_pMockScaleVinyl1, m_pChannel1->getEngineBuffer()->m_pScale);
+    EXPECT_EQ(m_pMockScaleVinyl1->getProcessesTempo(), 1.0);
+
+    // pause
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
+
+    // The scaler need to be processed with the old rate to
+    // prepare the crossfade buffer
+    ProcessBuffer();
+    EXPECT_EQ(m_pMockScaleVinyl1, m_pChannel1->getEngineBuffer()->m_pScale);
+    EXPECT_EQ(m_pMockScaleVinyl1->getProcessesTempo(), 1.0);
+}
