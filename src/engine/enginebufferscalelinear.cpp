@@ -256,10 +256,8 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
 
     // Multiply by 2 because it is predicting mono rates, while we want a stereo
     // number of samples.
-    int unscaled_samples_needed = unscaled_frames_needed * 2;
-
     // 0 is never the right answer
-    unscaled_samples_needed = math_max<long>(2, unscaled_samples_needed);
+    double unscaled_samples_needed = math_max<long>(2, unscaled_frames_needed * 2);
 
     bool last_read_failed = false;
     CSAMPLE prev_sample[2];
