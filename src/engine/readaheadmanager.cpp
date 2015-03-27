@@ -36,7 +36,7 @@ ReadAheadManager::~ReadAheadManager() {
     SampleUtil::free(m_pCrossFadeBuffer);
 }
 
-SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
+SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
         SINT requested_samples) {
     // TODO(XXX): Remove implicit assumption of 2 channels
     if (!even(requested_samples)) {
@@ -46,27 +46,30 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
     bool in_reverse = dRate < 0;
 
     //qDebug() << "start" << start_sample << requested_samples;
-    SINT samples_needed = requested_samples;
-    CSAMPLE* base_buffer = buffer;
+
 
     // A loop will only limit the amount we can read in one shot.
-
     const double loop_trigger = m_pLoopingControl->nextTrigger(
             dRate, m_currentPosition, 0, 0);
     bool loop_active = loop_trigger != kNoTrigger;
     SINT preloop_samples = 0;
+    double samplesToLoopTrigger = 0.0;
 
+    SINT samples_from_reader = requested_samples;
     if (loop_active) {
-        double samplesToLoopTrigger = in_reverse ?
+        samplesToLoopTrigger = in_reverse ?
                 m_currentPosition - loop_trigger :
                 loop_trigger - m_currentPosition;
         if (samplesToLoopTrigger < 0) {
-            samples_needed = 0;
+            // We have already passed the loop trigger
+            samples_from_reader = 0;
         } else {
-            // TODO() check for foor or ceil
-            preloop_samples = SampleUtil::roundPlayPosToFrameStart(samplesToLoopTrigger,
+            // We can only read whole frames from the reader.
+            // Use ceil here, to be sure to reach the loop trigger.
+            preloop_samples = SampleUtil::ceilPlayPosToFrameStart(samplesToLoopTrigger,
                     kNumChannels);
-            samples_needed = math_clamp(samples_needed,
+            // clamp requested samples from the caller to the loop trigger point
+            samples_from_reader = math_clamp(requested_samples,
                     static_cast<SINT>(0), preloop_samples);
         }
     }
@@ -75,23 +78,23 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
     int start_sample;
     if (in_reverse) {
         start_sample = SampleUtil::roundPlayPosToFrameStart(
-                m_currentPosition, kNumChannels) - samples_needed;
+                m_currentPosition, kNumChannels) - samples_from_reader;
     } else {
         start_sample = SampleUtil::roundPlayPosToFrameStart(
                 m_currentPosition, kNumChannels);
     }
 
     // Sanity checks.
-    if (samples_needed < 0) {
+    if (samples_from_reader < 0) {
         qDebug() << "Need negative samples in ReadAheadManager::getNextSamples. Ignoring read";
         return 0;
     }
 
-    SINT samples_read = m_pReader->read(start_sample, in_reverse, samples_needed,
-                                       base_buffer);
+    SINT samples_read = m_pReader->read(start_sample, in_reverse, samples_from_reader,
+                                       pOutput);
 
-    if (samples_read != samples_needed) {
-        qDebug() << "didn't get what we wanted" << samples_read << samples_needed;
+    if (samples_read != samples_from_reader) {
+        qDebug() << "didn't get what we wanted" << samples_read << samples_from_reader;
     }
 
     // Increment or decrement current read-ahead position
@@ -109,16 +112,33 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
     if (loop_active) {
         // LoopingControl makes the decision about whether we should loop or
         // not.
-        const double loop_target = m_pLoopingControl->
-                process(dRate, m_currentPosition, 0, 0);
+        const double loop_target = m_pLoopingControl->process(
+                dRate, m_currentPosition, 0, 0);
 
         if (loop_target != kNoTrigger) {
             m_currentPosition = loop_target;
+            if (preloop_samples > 0) {
+                // we are up to one frame ahead of the loop trigger
+                double overshoot = preloop_samples - samplesToLoopTrigger;
+                // start the loop later accordingly to be sure the loop length is as desired
+                // e.g. exactly one bar.
+                m_currentPosition += overshoot;
+
+                // Example in frames;
+                // loop start 1.1 loop end 3.3 loop length 2.2
+                // m_currentPosition samplesToLoopTrigger preloop_samples
+                // 2.0               1.3                  2
+                // 1.8               1.5                  2
+                // 1.6               1.7                  2
+                // 1.4               1.9                  2
+                // 1.2               2.1                  3
+                // Average preloop_samples = 2.2
+            }
 
             // start reading before the loop start point, to crossfade these samples
             // with the samples we need to the loop end
-            int loop_read_position = m_currentPosition +
-                    (in_reverse ? preloop_samples : -preloop_samples);
+            int loop_read_position = SampleUtil::roundPlayPosToFrameStart(
+                    m_currentPosition + (in_reverse ? preloop_samples : -preloop_samples), kNumChannels);
 
             int looping_samples_read = m_pReader->read(
                     loop_read_position, in_reverse, samples_read, m_pCrossFadeBuffer);
@@ -129,7 +149,7 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
 
             // do crossfade from the current buffer into the new loop beginning
             if (samples_read != 0) { // avoid division by zero
-                SampleUtil::linearCrossfadeBuffers(base_buffer, base_buffer, m_pCrossFadeBuffer, samples_read);
+                SampleUtil::linearCrossfadeBuffers(pOutput, pOutput, m_pCrossFadeBuffer, samples_read);
             }
         }
     }
