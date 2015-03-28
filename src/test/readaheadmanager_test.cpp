@@ -74,8 +74,7 @@ class StubLoopControl : public LoopingControl {
         return kNoTrigger;
     }
 
-    // hintReader will add to hintList hints both the loop in and loop out
-    // sample, if set.
+    // hintReader has no effect in this stubbed class
     virtual void hintReader(HintVector* pHintList) {
         Q_UNUSED(pHintList);
     }
