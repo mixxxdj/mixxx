@@ -134,7 +134,6 @@ void ReadAheadManager::addRateControl(RateControl* pRateControl) {
 }
 
 void ReadAheadManager::notifySeek(int iSeekPosition) {
-    QMutexLocker locker(&m_mutex);
     m_iCurrentPosition = iSeekPosition;
     m_readAheadLog.clear();
 
@@ -173,7 +172,6 @@ void ReadAheadManager::hintReader(double dRate, HintVector* pHintList) {
 
 void ReadAheadManager::addReadLogEntry(double virtualPlaypositionStart,
                                        double virtualPlaypositionEndNonInclusive) {
-    QMutexLocker locker(&m_mutex);
     ReadLogEntry newEntry(virtualPlaypositionStart,
                           virtualPlaypositionEndNonInclusive);
     if (m_readAheadLog.size() > 0) {
@@ -191,7 +189,6 @@ int ReadAheadManager::getEffectiveVirtualPlaypositionFromLog(double currentVirtu
         return currentVirtualPlayposition;
     }
 
-    QMutexLocker locker(&m_mutex);
     if (m_readAheadLog.size() == 0) {
         // No log entries to read from.
         qDebug() << this << "No read ahead log entries to read from. Case not currently handled.";
