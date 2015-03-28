@@ -144,7 +144,7 @@ void WaveformRenderMark::generateMarkImage(WaveformMark& mark) {
         lineColor.setAlpha(200);
         painter.setPen(lineColor);
 
-        float middle = mark.m_image.width()/2;
+        float middle = mark.m_image.width()/2.0;
         //Default line align top
         float lineTop = labelRectHeight + 1;
         float lineBottom = mark.m_image.height();
@@ -202,7 +202,7 @@ void WaveformRenderMark::generateMarkImage(WaveformMark& mark) {
         QColor lineColor = mark.m_color;
         lineColor.setAlpha(140);
         painter.setPen(lineColor);
-        float middle = mark.m_image.width()/2;
+        float middle = mark.m_image.width()/2.0;
 
         float lineTop = triangleSize*0.5 + 1;
         float lineBottom = mark.m_image.height() - triangleSize*0.5 - 1;
