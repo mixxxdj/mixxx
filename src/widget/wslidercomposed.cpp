@@ -190,8 +190,14 @@ double WSliderComposed::calculateHandleLength() {
                     mode == Paintable::TILE || m_pHandle->height() == 0.0) {
                 return m_pHandle->width();
             } else if (mode == Paintable::STRETCH_ASPECT) {
+                const qreal handleHeight =
+                    static_cast<double>(m_pHandle->height());
+                if (fabs(handleHeight) < 1.0e-10) {
+                  qDebug() << "WSliderComposed: Invalid height.";
+                  return 0.0;
+                }
                 const qreal aspect = static_cast<double>(m_pHandle->width()) /
-                        static_cast<double>(m_pHandle->height());
+                    handleHeight;
                 return aspect * height();
             }
         } else {
@@ -200,8 +206,14 @@ double WSliderComposed::calculateHandleLength() {
                     mode == Paintable::TILE || m_pHandle->width() == 0.0) {
                 return m_pHandle->height();
             } else if (mode == Paintable::STRETCH_ASPECT) {
+                const qreal handleWidth =
+                    static_cast<double>(m_pHandle->width());
+                if (fabs(handleWidth) < 1.0e-10) {
+                  qDebug() << "WSliderComposed: Invalid width.";
+                  return 0.0;
+                }
                 const qreal aspect = static_cast<double>(m_pHandle->height()) /
-                        static_cast<double>(m_pHandle->width());
+                    handleWidth;
                 return aspect * width();
             }
         }
