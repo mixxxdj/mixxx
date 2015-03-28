@@ -45,7 +45,7 @@ class MockScaler : public EngineBufferScale {
         return m_buffer;
     }
 
-    double getProcessesTempo() {
+    double getProcessedTempo() {
         return m_processedTempo;
     }
 

@@ -99,7 +99,7 @@ TEST_F(EngineBufferTest, SlowRubberBand) {
     // With Rubberband, and transport stopped it should be still keylock 
     ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
                        static_cast<double>(EngineBuffer::RUBBERBAND));
-        // Hack to get a slow, non-scratching direct speed
+    // Hack to get a slow, non-scratching direct speed
     ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), 0.0);
     ProcessBuffer();
     EXPECT_EQ(m_pMockScaleKeylock1, m_pChannel1->getEngineBuffer()->m_pScale);
@@ -115,7 +115,6 @@ TEST_F(EngineBufferTest, SlowRubberBand) {
 
 
 TEST_F(EngineBufferTest, ScalerNoTransport) {
-
     // normaly use the Vinyl scaler
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     ProcessBuffer();
@@ -139,21 +138,20 @@ TEST_F(EngineBufferTest, ScalerNoTransport) {
 }
 
 TEST_F(EngineBufferTest, VinylScalerRampZero) {
-
     // scratch in play mode
     ControlObject::set(ConfigKey(m_sGroup1, "scratch2_enable"), 1.0);
     ControlObject::set(ConfigKey(m_sGroup1, "scratch2"), 1.0);
 
     ProcessBuffer();
     EXPECT_EQ(m_pMockScaleVinyl1, m_pChannel1->getEngineBuffer()->m_pScale);
-    EXPECT_EQ(m_pMockScaleVinyl1->getProcessesTempo(), 1.0);
+    EXPECT_EQ(m_pMockScaleVinyl1->getProcessedTempo(), 1.0);
 
     ControlObject::set(ConfigKey(m_sGroup1, "scratch2"), 0.0);
 
     // we are in scratching mode so a zero rate has to be processed
     ProcessBuffer();
     EXPECT_EQ(m_pMockScaleVinyl1, m_pChannel1->getEngineBuffer()->m_pScale);
-    EXPECT_EQ(m_pMockScaleVinyl1->getProcessesTempo(), 0.0);
+    EXPECT_EQ(m_pMockScaleVinyl1->getProcessedTempo(), 0.0);
 }
 
 TEST_F(EngineBufferTest, ReadFadeOut) {
@@ -162,7 +160,7 @@ TEST_F(EngineBufferTest, ReadFadeOut) {
 
     ProcessBuffer();
     EXPECT_EQ(m_pMockScaleVinyl1, m_pChannel1->getEngineBuffer()->m_pScale);
-    EXPECT_EQ(m_pMockScaleVinyl1->getProcessesTempo(), 1.0);
+    EXPECT_EQ(m_pMockScaleVinyl1->getProcessedTempo(), 1.0);
 
     // pause
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
@@ -171,7 +169,7 @@ TEST_F(EngineBufferTest, ReadFadeOut) {
     // prepare the crossfade buffer
     ProcessBuffer();
     EXPECT_EQ(m_pMockScaleVinyl1, m_pChannel1->getEngineBuffer()->m_pScale);
-    EXPECT_EQ(m_pMockScaleVinyl1->getProcessesTempo(), 1.0);
+    EXPECT_EQ(m_pMockScaleVinyl1->getProcessedTempo(), 1.0);
 }
 
 TEST_F(EngineBufferTest, ResetPitchAdjustUsesLinear) {
