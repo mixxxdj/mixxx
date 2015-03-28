@@ -782,8 +782,6 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         double speed = m_pRateControl->calculateSpeed(
                 baserate, tempoRatio, paused, iBufferSize, &is_scratching);
 
-        qDebug() << "EngineBuffer::process" << speed << is_scratching << tempoRatio;
-
         bool useIndependentPitchAndTempoScaling = false;
 
         // TODO(owen): Maybe change this so that rubberband doesn't disable
@@ -985,7 +983,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
                 m_filepos_play += samplesRead;
             } else {
                 // Adjust filepos_play by the amount we processed. TODO(XXX) what
-                // happens if samplesRead is a fraction?
+                // happens if samplesRead is a fraction ?
                 m_filepos_play =
                         m_pReadAheadManager->getEffectiveVirtualPlaypositionFromLog(
                                 static_cast<int>(m_filepos_play), samplesRead);
