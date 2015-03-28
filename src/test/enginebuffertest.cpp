@@ -104,7 +104,6 @@ TEST_F(EngineBufferTest, SlowRubberBand) {
     ProcessBuffer();
     EXPECT_EQ(m_pMockScaleKeylock1, m_pChannel1->getEngineBuffer()->m_pScale);
 
-
     // Hack to get a slow, non-scratching direct speed
     ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), 0.0072);
 
