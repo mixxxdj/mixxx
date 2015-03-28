@@ -39,7 +39,9 @@ TEST_F(KeyUtilsTest, LancelotNotation) {
 }
 
 TEST_F(KeyUtilsTest, KeyNameNotation) {
-    // Invalid letter.
+    // Invalid letter
+    // (actually valid in traditional german notation where B is H and Bb is B -
+    //  everyone confused?)
     EXPECT_EQ(mixxx::track::io::key::INVALID,
               KeyUtils::guessKeyFromText("H"));
 
