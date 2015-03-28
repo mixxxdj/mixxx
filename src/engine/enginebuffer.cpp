@@ -76,6 +76,7 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
           m_pReader(NULL),
           m_filepos_play(0.),
           m_speed_old(0),
+          m_scratching_old(false),
           m_pitch_old(0),
           m_baserate_old(0),
           m_rate_old(0.),
@@ -268,9 +269,9 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
     m_pCueControl = new CueControl(group, _config);
     addControl(m_pCueControl);
 
-    m_pReadAheadManager = new ReadAheadManager(m_pReader);
-    m_pReadAheadManager->addEngineControl(m_pLoopingControl);
-    m_pReadAheadManager->addEngineControl(m_pRateControl);
+    m_pReadAheadManager = new ReadAheadManager(m_pReader,
+                                               m_pLoopingControl);
+    m_pReadAheadManager->addRateControl(m_pRateControl);
 
     // Construct scaling objects
     m_pScaleLinear = new EngineBufferScaleLinear(m_pReadAheadManager);

@@ -30,26 +30,26 @@ EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager *pReadAheadMan
       m_dRate(1.0),
       m_dOldRate(1.0),
       m_pReadAheadManager(pReadAheadManager),
-      m_dCurSampleIndex(0.0),
-      m_dNextSampleIndex(0.0)
+      m_dCurrentFrame(0.0),
+      m_dNextFrame(0.0)
 {
     for (int i=0; i<2; i++)
         m_fPrevSample[i] = 0.0f;
 
-    buffer_int = new CSAMPLE[kiLinearScaleReadAheadLength];
-    buffer_int_size = 0;
+    m_bufferInt = new CSAMPLE[kiLinearScaleReadAheadLength];
+    m_bufferIntSize = 0;
 
     /*df.setFileName("mixxx-debug-scaler.csv");
     df.open(QIODevice::WriteOnly | QIODevice::Text);
     writer.setDevice(&df);
     buffer_count=0;*/
-    SampleUtil::clear(buffer_int, kiLinearScaleReadAheadLength);
+    SampleUtil::clear(m_bufferInt, kiLinearScaleReadAheadLength);
 }
 
 EngineBufferScaleLinear::~EngineBufferScaleLinear()
 {
     //df.close();
-    delete [] buffer_int;
+    delete [] m_bufferInt;
 }
 
 void EngineBufferScaleLinear::setScaleParameters(double base_rate,
@@ -67,8 +67,8 @@ void EngineBufferScaleLinear::setScaleParameters(double base_rate,
 void EngineBufferScaleLinear::clear() {
     m_bClear = true;
     // Clear out buffer and saved sample data
-    buffer_int_size = 0;
-    m_dNextSampleIndex = 0;
+    m_bufferIntSize = 0;
+    m_dNextFrame = 0;
     m_fPrevSample[0] = 0;
     m_fPrevSample[1] = 0;
 }
@@ -94,7 +94,6 @@ CSAMPLE* EngineBufferScaleLinear::getScaled(unsigned long buf_size) {
     float rate_add_old = m_dOldRate;  //Smoothly interpolate to new playback rate
     float rate_add_new = m_dRate;
     int samples_read = 0;
-    m_samplesRead = 0;
 
     // Guard against buf_size == 0
     if (static_cast<int>(buf_size) == 0) {
@@ -112,35 +111,35 @@ CSAMPLE* EngineBufferScaleLinear::getScaled(unsigned long buf_size) {
 
         // reset prev sample so we can now read in the other direction (may not
         // be necessary?)
-        int iCurSample = static_cast<int>(ceil(m_dCurSampleIndex)) * 2;
-        if (iCurSample + 1 < buffer_int_size) {
-            int iNextSample = static_cast<int>(ceil(m_dNextSampleIndex)) * 2;
-            m_fPrevSample[0] = buffer_int[iNextSample];
-            m_fPrevSample[1] = buffer_int[iNextSample + 1];
+        int iCurSample = static_cast<int>(ceil(m_dCurrentFrame)) * 2;
+        if (iCurSample + 1 < m_bufferIntSize) {
+            int iNextSample = static_cast<int>(ceil(m_dNextFrame)) * 2;
+            m_fPrevSample[0] = m_bufferInt[iNextSample];
+            m_fPrevSample[1] = m_bufferInt[iNextSample + 1];
         }
 
         // if the buffer has extra samples, do a read so RAMAN ends up back where
         // it should be
-        int extra_samples = buffer_int_size - iCurSample - 2;
+        int extra_samples = m_bufferIntSize - iCurSample - 2;
         if (extra_samples > 0) {
             if (extra_samples % 2 != 0)
                 extra_samples++;
             //qDebug() << "extra samples" << extra_samples;
 
             samples_read += m_pReadAheadManager->getNextSamples(
-                rate_add_new, buffer_int, extra_samples);
+                rate_add_new, m_bufferInt, extra_samples);
         }
         //force a buffer read:
-        buffer_int_size=0;
+        m_bufferIntSize=0;
         //make sure the indexes stay correct for interpolation
-        m_dCurSampleIndex = 0 - m_dCurSampleIndex + floor(m_dCurSampleIndex);
-        m_dNextSampleIndex = 1.0 - (m_dNextSampleIndex - floor(m_dNextSampleIndex));
+        m_dCurrentFrame = 0 - m_dCurrentFrame + floor(m_dCurrentFrame);
+        m_dNextFrame = 1.0 - (m_dNextFrame - floor(m_dNextFrame));
 
-        //second half: rate goes from zero to new rate
+        // second half: rate goes from zero to new rate
         m_dOldRate = 0.0;
         m_dRate = rate_add_new;
-        //pass the address of the sample at the halfway point
-        do_scale(&m_buffer[buf_size/2], buf_size/2, &samples_read);
+        // pass the address of the sample at the halfway point
+        do_scale(&m_buffer[buf_size / 2], buf_size / 2, &samples_read);
 
         m_samplesRead = samples_read;
         return m_buffer;
@@ -158,8 +157,8 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
     float rate_add_new = m_dRate;
     float rate_add_diff = rate_add_new - rate_add_old;
 
-    //Update the old base rate because we only need to
-    //interpolate/ramp up the pitch changes once.
+    // Update the old base rate because we only need to
+    // interpolate/ramp up the pitch changes once.
     m_dOldRate = m_dRate;
 
     // Determine position in read_buffer to start from. (This is always 0 with
@@ -184,14 +183,12 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         CSAMPLE* write_buf = buf;
 
         // Use up what's left of the internal buffer.
-        int iNextSample = static_cast<int>(ceil(m_dNextSampleIndex)) * 2;
-        if (iNextSample + 1 < buffer_int_size) {
-            for (int i = iNextSample;
-                 samples_needed > 2 && i < buffer_int_size; i += 2) {
-                *write_buf = buffer_int[i]; write_buf++;
-                *write_buf = buffer_int[i+1]; write_buf++;
-                samples_needed -= 2;
-            }
+        int iNextSample = static_cast<int>(ceil(m_dNextFrame)) * 2;
+        int readSize = math_min<int>(m_bufferIntSize - iNextSample, samples_needed);
+        if (readSize > 0) {
+            SampleUtil::copy(write_buf, &m_bufferInt[iNextSample], readSize);
+            samples_needed -= readSize;
+            write_buf += readSize;
         }
 
         // Protection against infinite read loops when (for example) we are
@@ -232,37 +229,35 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
 
         // update our class members so next time we need to scale it's ok. we do
         // blow away the fractional sample position here
-        buffer_int_size = 0; // force buffer read
-        m_dNextSampleIndex = 0;
+        m_bufferIntSize = 0; // force buffer read
+        m_dNextFrame = 0;
         m_fPrevSample[0] = buf[read_samples-2];
         m_fPrevSample[1] = buf[read_samples-1];
         return buf;
     }
 
-    // Simulate the loop to estimate how many samples we need
-    double samples = 0;
+    // Simulate the loop to estimate how many frames we need
+    double frames = 0;
 
+    // We're calculating frames = 2 samples, so divide remaining buffer by 2;
     for (int j = 0; j < iRateLerpLength; j += 2) {
-        samples += fabs((rate_add_diff * static_cast<float>(j)) /
+        frames += fabs((rate_add_diff * static_cast<float>(j)) /
                         static_cast<float>(iRateLerpLength) + rate_add_old);
     }
 
-    // We're calculating mono samples, so divide remaining buffer by 2;
-    long unscaled_samples_needed = floor(samples);
+    int unscaled_frames_needed = floor(frames);
 
     // If the current position fraction plus the future position fraction
     // loops over 1.0, we need to round up
-    if (m_dNextSampleIndex - floor(m_dNextSampleIndex) +
-        samples - floor(samples) > 1.0) {
-        unscaled_samples_needed++;
+    if (m_dNextFrame - floor(m_dNextFrame) +
+            frames - floor(frames) > 1.0) {
+        unscaled_frames_needed++;
     }
 
     // Multiply by 2 because it is predicting mono rates, while we want a stereo
     // number of samples.
-    unscaled_samples_needed *= 2;
-
     // 0 is never the right answer
-    unscaled_samples_needed = math_max<long>(2, unscaled_samples_needed);
+    double unscaled_samples_needed = math_max<long>(2, unscaled_frames_needed * 2);
 
     bool last_read_failed = false;
     CSAMPLE prev_sample[2];
@@ -277,21 +272,21 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
     int screwups = 0;
     while (i < iRateLerpLength) {
         //shift indicies
-        m_dCurSampleIndex = m_dNextSampleIndex;
+        m_dCurrentFrame = m_dNextFrame;
 
         // Because our index is a float value, we're going to be interpolating
         // between two samples, a lower (prev) and upper (cur) sample.
         // If the lower sample is off the end of the buffer (values between
         // -.999 and 0), load it from the saved globals.
 
-        // The first bounds check (< buffer_int_size) is probably not needed.
+        // The first bounds check (< m_bufferIntSize) is probably not needed.
 
-        if (static_cast<int>(floor(m_dCurSampleIndex)) * 2 + 1 < buffer_int_size
-            && m_dCurSampleIndex >= 0.0) {
-            prev_sample[0] = buffer_int[static_cast<int>(
-                    floor(m_dCurSampleIndex)) * 2];
-            prev_sample[1] = buffer_int[static_cast<int>(
-                    floor(m_dCurSampleIndex)) * 2 + 1];
+        if (static_cast<int>(floor(m_dCurrentFrame)) * 2 + 1 < m_bufferIntSize
+                && m_dCurrentFrame >= 0.0) {
+            prev_sample[0] = m_bufferInt[static_cast<int>(
+                    floor(m_dCurrentFrame)) * 2];
+            prev_sample[1] = m_bufferInt[static_cast<int>(
+                    floor(m_dCurrentFrame)) * 2 + 1];
         } else {
             prev_sample[0] = m_fPrevSample[0];
             prev_sample[1] = m_fPrevSample[1];
@@ -304,9 +299,9 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
                          static_cast<float>(iRateLerpLength) + rate_add_old;
 
         // if we don't have enough samples, load some more
-        while (static_cast<int>(ceil(m_dCurSampleIndex)) * 2 + 1 >=
-               buffer_int_size) {
-            int old_bufsize = buffer_int_size;
+        while (static_cast<int>(ceil(m_dCurrentFrame)) * 2 + 1 >=
+               m_bufferIntSize) {
+            int old_bufsize = m_bufferIntSize;
             if (unscaled_samples_needed == 0) {
                 unscaled_samples_needed = 2;
                 screwups++;
@@ -315,45 +310,45 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
             int samples_to_read = math_min<int>(kiLinearScaleReadAheadLength,
                                                 unscaled_samples_needed);
 
-            buffer_int_size = m_pReadAheadManager->getNextSamples(
-                rate_add_new == 0 ? rate_add_old : rate_add_new,
-                buffer_int, samples_to_read);
-            *samples_read += buffer_int_size;
+            m_bufferIntSize = m_pReadAheadManager->getNextSamples(
+                    rate_add_new == 0 ? rate_add_old : rate_add_new,
+                    m_bufferInt, samples_to_read);
+            *samples_read += m_bufferIntSize;
 
-            if (buffer_int_size == 0 && last_read_failed) {
+            if (m_bufferIntSize == 0 && last_read_failed) {
                 break;
             }
-            last_read_failed = buffer_int_size == 0;
+            last_read_failed = m_bufferIntSize == 0;
 
-            unscaled_samples_needed -= buffer_int_size;
-            //shift the index by the size of the old buffer
-            m_dCurSampleIndex -= old_bufsize / 2.;
+            unscaled_samples_needed -= m_bufferIntSize;
+            // shift the index by the size of the old buffer
+            m_dCurrentFrame -= old_bufsize / 2.;
         }
 
         // Now that the buffer is up to date, we can get the value of the sample
         // at the floor of our position.
-        if (static_cast<int>(floor(m_dCurSampleIndex)) * 2 >= 0.0) {
-            prev_sample[0] = buffer_int[static_cast<int>(
-                    floor(m_dCurSampleIndex)) * 2];
-            prev_sample[1] = buffer_int[static_cast<int>(
-                    floor(m_dCurSampleIndex)) * 2 + 1];
+        if (static_cast<int>(floor(m_dCurrentFrame)) * 2 >= 0.0) {
+            prev_sample[0] = m_bufferInt[static_cast<int>(
+                    floor(m_dCurrentFrame)) * 2];
+            prev_sample[1] = m_bufferInt[static_cast<int>(
+                    floor(m_dCurrentFrame)) * 2 + 1];
         }
 
-        //I guess?
+        // I guess?
         if (last_read_failed) {
             break;
         }
 
-        cur_sample[0] = buffer_int[static_cast<int>(
-                ceil(m_dCurSampleIndex)) * 2];
-        cur_sample[1] = buffer_int[static_cast<int>(
-                ceil(m_dCurSampleIndex)) * 2 + 1];
+        cur_sample[0] = m_bufferInt[static_cast<int>(
+                ceil(m_dCurrentFrame)) * 2];
+        cur_sample[1] = m_bufferInt[static_cast<int>(
+                ceil(m_dCurrentFrame)) * 2 + 1];
 
         // For the current index, what percentage is it
         // between the previous and the next?
-        CSAMPLE frac = m_dCurSampleIndex - floor(m_dCurSampleIndex);
+        CSAMPLE frac = m_dCurrentFrame - floor(m_dCurrentFrame);
 
-        //Perform linear interpolation
+        // Perform linear interpolation
         buf[i] = static_cast<float>(prev_sample[0]) +
                  frac * (static_cast<float>(cur_sample[0]) -
                  static_cast<float>(prev_sample[0]));
@@ -363,10 +358,10 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         m_fPrevSample[0] = prev_sample[0];
         m_fPrevSample[1] = prev_sample[1];
 
-        //increment the index for the next loop
-        m_dNextSampleIndex = m_dCurSampleIndex +
+        // increment the index for the next loop
+        m_dNextFrame = m_dCurrentFrame +
                 (i < iRateLerpLength ? fabs(rate_add) : fabs(rate_add_new));
-        i +=2 ;
+        i += 2 ;
     }
 
     SampleUtil::clear(&buf[i], buf_size - i);
