@@ -19,6 +19,7 @@
       <Template src="skin:knob.xml">
         <SetVariable name="group"><Variable name="EqualizerEffectGroup"/></SetVariable>
         <SetVariable name="control">parameter<Variable name="parameter"/></SetVariable>
+        <SetVariable name="color">white</SetVariable>
       </Template>
       <WidgetGroup>
         <Layout>horizontal</Layout>

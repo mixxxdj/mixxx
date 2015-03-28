@@ -16,6 +16,7 @@
       <Template src="skin:knob.xml">
         <SetVariable name="group"><Variable name="QuickEffectUnitGroup"/></SetVariable>
         <SetVariable name="control">super1</SetVariable>
+        <SetVariable name="color">blue</SetVariable>
       </Template>
       <WidgetGroup>
         <Layout>horizontal</Layout>
