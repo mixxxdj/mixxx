@@ -51,6 +51,16 @@ TEST_F(KeyUtilsTest, KeyNameNotation) {
     EXPECT_EQ(mixxx::track::io::key::C_MINOR,
               KeyUtils::guessKeyFromText("c"));
 
+    // ... or explicitly written out
+    EXPECT_EQ(mixxx::track::io::key::C_MAJOR,
+              KeyUtils::guessKeyFromText("cmaj"));
+    EXPECT_EQ(mixxx::track::io::key::C_MINOR,
+              KeyUtils::guessKeyFromText("Cmin"));
+    EXPECT_EQ(mixxx::track::io::key::C_MAJOR,
+              KeyUtils::guessKeyFromText("cmajor"));
+    EXPECT_EQ(mixxx::track::io::key::C_MINOR,
+              KeyUtils::guessKeyFromText("Cminor"));
+
     // Sharps
     EXPECT_EQ(mixxx::track::io::key::D_FLAT_MAJOR,
               KeyUtils::guessKeyFromText("C#"));
@@ -74,6 +84,30 @@ TEST_F(KeyUtilsTest, KeyNameNotation) {
               KeyUtils::guessKeyFromText("Dbm"));
     EXPECT_EQ(mixxx::track::io::key::C_MINOR,
               KeyUtils::guessKeyFromText("C#bb#m"));
+
+    // ... as is min
+    EXPECT_EQ(mixxx::track::io::key::C_MINOR,
+              KeyUtils::guessKeyFromText("CMiN"));
+    EXPECT_EQ(mixxx::track::io::key::C_MINOR,
+              KeyUtils::guessKeyFromText("cmIn"));
+    EXPECT_EQ(mixxx::track::io::key::C_SHARP_MINOR,
+              KeyUtils::guessKeyFromText("C#mIN"));
+    EXPECT_EQ(mixxx::track::io::key::C_SHARP_MINOR,
+              KeyUtils::guessKeyFromText("Dbmin"));
+    EXPECT_EQ(mixxx::track::io::key::C_MINOR,
+              KeyUtils::guessKeyFromText("C#bb#miN"));
+
+    // but maj is major
+    EXPECT_EQ(mixxx::track::io::key::C_MAJOR,
+              KeyUtils::guessKeyFromText("CMaJ"));
+    EXPECT_EQ(mixxx::track::io::key::C_MAJOR,
+              KeyUtils::guessKeyFromText("cmAj"));
+    EXPECT_EQ(mixxx::track::io::key::D_FLAT_MAJOR,
+              KeyUtils::guessKeyFromText("C#mAJ"));
+    EXPECT_EQ(mixxx::track::io::key::D_FLAT_MAJOR,
+              KeyUtils::guessKeyFromText("Dbmaj"));
+    EXPECT_EQ(mixxx::track::io::key::C_MAJOR,
+              KeyUtils::guessKeyFromText("C#bb#maJ"));
 
     // Test going across the edges.
     EXPECT_EQ(mixxx::track::io::key::B_MAJOR,
