@@ -968,7 +968,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             } else {
                 // Adjust filepos_play by the amount we processed.
                 m_filepos_play =
-                        m_pReadAheadManager->getEffectiveVirtualPlaypositionFromLog(
+                        m_pReadAheadManager->getFilePlaypositionFromLog(
                                 m_filepos_play, samplesRead);
             }
             if (m_bCrossfadeReady) {
