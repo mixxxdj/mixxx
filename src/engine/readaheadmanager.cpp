@@ -104,7 +104,7 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
 
             // do crossfade from the current buffer into the new loop beginning
             if (samples_read != 0) { // avoid division by zero
-                SampleUtil::linearCrossfadeBuffers(base_buffer, m_pCrossFadeBuffer, base_buffer, samples_read);
+                SampleUtil::linearCrossfadeBuffers(base_buffer, base_buffer, m_pCrossFadeBuffer, samples_read);
             }
         }
     }
