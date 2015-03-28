@@ -308,10 +308,6 @@ void EngineSync::activateMaster(Syncable* pSyncable) {
         qWarning() << "WARNING: Logic Error: Called activateMaster on a NULL Syncable.";
         return;
     }
-    if (m_pMasterSyncable == NULL){
-      qWarning() << "WARNING: Logic Error: m_pMasterSyncable is NULL.";
-      return;
-    }
 
     // Already master, no need to do anything.
     if (m_pMasterSyncable == pSyncable) {
