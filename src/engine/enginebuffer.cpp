@@ -269,8 +269,8 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
     m_pCueControl = new CueControl(group, _config);
     addControl(m_pCueControl);
 
-    m_pReadAheadManager = new ReadAheadManager(m_pReader);
-    m_pReadAheadManager->addLoopingControl(m_pLoopingControl);
+    m_pReadAheadManager = new ReadAheadManager(m_pReader,
+                                               m_pLoopingControl);
     m_pReadAheadManager->addRateControl(m_pRateControl);
 
     // Construct scaling objects

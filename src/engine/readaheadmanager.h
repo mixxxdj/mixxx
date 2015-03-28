@@ -28,7 +28,9 @@ class CachingReader;
 // point.
 class ReadAheadManager {
   public:
-    explicit ReadAheadManager(CachingReader* reader);
+    explicit ReadAheadManager(); // Only for testing: ReadAheadManagerMock
+    explicit ReadAheadManager(CachingReader* reader,
+                              LoopingControl* pLoopingControl);
     virtual ~ReadAheadManager();
 
     // Call this method to fill buffer with requested_samples out of the
@@ -41,7 +43,7 @@ class ReadAheadManager {
 
     // Used to add a new EngineControls that ReadAheadManager will use to decide
     // which samples to return.
-    void addLoopingControl(LoopingControl* pLoopingControl);
+    void addLoopingControl();
     void addRateControl(RateControl* pRateControl);
 
     // Get the current read-ahead position in samples.

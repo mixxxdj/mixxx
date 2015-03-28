@@ -11,13 +11,24 @@
 #include "engine/ratecontrol.h"
 #include "cachingreader.h"
 
-ReadAheadManager::ReadAheadManager(CachingReader* pReader) :
-    m_pLoopingControl(NULL),
-    m_pRateControl(NULL),
-    m_iCurrentPosition(0),
-    m_pReader(pReader),
-    m_pCrossFadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) {
-    // zero out crossfade buffer
+ReadAheadManager::ReadAheadManager()
+        : m_pLoopingControl(NULL),
+          m_pRateControl(NULL),
+          m_iCurrentPosition(0),
+          m_pReader(NULL),
+          m_pCrossFadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) {
+    // For testing only: ReadAheadManagerMock
+}
+
+ReadAheadManager::ReadAheadManager(CachingReader* pReader, 
+                                   LoopingControl* pLoopingControl) 
+        : m_pLoopingControl(pLoopingControl),
+          m_pRateControl(NULL),
+          m_iCurrentPosition(0),
+          m_pReader(pReader),
+          m_pCrossFadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) {
+    DEBUG_ASSERT(m_pLoopingControl != NULL);
+    DEBUG_ASSERT(m_pReader != NULL);
     SampleUtil::clear(m_pCrossFadeBuffer, MAX_BUFFER_LEN);
 }
 
@@ -118,10 +129,6 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
     return samples_read;
 }
 
-void ReadAheadManager::addLoopingControl(LoopingControl* pLoopingControl) {
-    m_pLoopingControl = pLoopingControl;
-}
-
 void ReadAheadManager::addRateControl(RateControl* pRateControl) {
     m_pRateControl = pRateControl;
 }
@@ -201,9 +208,7 @@ int ReadAheadManager::getEffectiveVirtualPlaypositionFromLog(double currentVirtu
 
         // Notify EngineControls that we have taken a seek.
         if (shouldNotifySeek) {
-            if (m_pLoopingControl) {
-                m_pLoopingControl->notifySeek(entry.virtualPlaypositionStart);
-            }
+            m_pLoopingControl->notifySeek(entry.virtualPlaypositionStart);
             if (m_pRateControl) {
                 m_pRateControl->notifySeek(entry.virtualPlaypositionStart);
             }
