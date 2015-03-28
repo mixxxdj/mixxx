@@ -61,6 +61,37 @@ class StubLoopControl : public LoopingControl {
         return m_processReturnValues.takeFirst();
     }
 
+    // getTrigger returns the sample that the engine will next be triggered to
+    // loop to, given the value of currentSample and dRate.
+    virtual double getTrigger(const double dRate,
+                      const double currentSample,
+                      const double totalSamples,
+                      const int iBufferSize) {
+        Q_UNUSED(dRate);
+        Q_UNUSED(currentSample);
+        Q_UNUSED(totalSamples);
+        Q_UNUSED(iBufferSize);
+        return kNoTrigger;
+    }
+
+    // hintReader will add to hintList hints both the loop in and loop out
+    // sample, if set.
+    virtual void hintReader(HintVector* pHintList) {
+        Q_UNUSED(pHintList);
+    }
+
+    virtual void notifySeek(double dNewPlaypos) {
+        Q_UNUSED(dNewPlaypos);
+    }
+
+  public slots:
+    virtual void trackLoaded(TrackPointer pTrack) {
+        Q_UNUSED(pTrack);
+    }
+    virtual void trackUnloaded(TrackPointer pTrack) {
+        Q_UNUSED(pTrack);
+    }
+
   protected:
     QList<double> m_triggerReturnValues;
     QList<double> m_processReturnValues;

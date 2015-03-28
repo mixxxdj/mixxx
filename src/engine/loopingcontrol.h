@@ -46,7 +46,7 @@ class LoopingControl : public EngineControl {
 
     // getTrigger returns the sample that the engine will next be triggered to
     // loop to, given the value of currentSample and dRate.
-    double getTrigger(const double dRate,
+    virtual double getTrigger(const double dRate,
                       const double currentSample,
                       const double totalSamples,
                       const int iBufferSize);
