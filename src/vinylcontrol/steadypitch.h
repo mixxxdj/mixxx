@@ -10,7 +10,7 @@ class SteadyPitch {
         SteadyPitch(double threshold, bool assumeSteady);
         void reset(double pitch, double time);
         double check(double pitch, double time);
-        double steadyValue(void);
+        double steadyValue(void) const;
         bool directionChanged(double pitch);
         bool resyncDetected(double new_time);
     private:
