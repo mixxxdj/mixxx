@@ -337,11 +337,11 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
     if (sample < 0) {
         if (sample + num_samples <= 0) {
             //everything is zeros, easy
-            memset(buffer, 0, sizeof(*buffer) * num_samples);
+            SampleUtil::clear(buffer, num_samples);
             return num_samples;
         } else {
             //some of the buffer is zeros, some is from the file
-            memset(buffer, 0, sizeof(*buffer) * (0 - sample));
+            SampleUtil::clear(buffer, 0 - sample);
             buffer += (0 - sample);
             num_samples = sample + num_samples;
             zerosWritten = (0 - sample);
@@ -433,13 +433,8 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
             break;
         }
 
-        // TODO(rryan) do a test and see if using memcpy is faster than gcc
-        // optimizing the for loop
         CSAMPLE *data = current->data + chunk_offset;
-        memcpy(buffer, data, sizeof(*buffer) * samples_to_read);
-        // for (int i=0; i < samples_to_read; i++) {
-        //     buffer[i] = data[i];
-        // }
+        SampleUtil::copy(buffer, data, samples_to_read);
 
         buffer += samples_to_read;
         current_sample += samples_to_read;
@@ -449,10 +444,7 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
     // If we didn't supply all the samples requested, that probably means we're
     // at the end of the file, or something is wrong. Provide zeroes and pretend
     // all is well. The caller can't be bothered to check how long the file is.
-    // TODO(XXX) memset
-    for (int i=0; i<samples_remaining; i++) {
-        buffer[i] = 0.0f;
-    }
+    SampleUtil::clear(buffer, samples_remaining);
     samples_remaining = 0;
 
     // if (samples_remaining != 0) {

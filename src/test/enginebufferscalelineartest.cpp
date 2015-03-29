@@ -22,7 +22,7 @@ namespace {
 class ReadAheadManagerMock : public ReadAheadManager {
   public:
     ReadAheadManagerMock()
-            : ReadAheadManager(NULL),
+            : ReadAheadManager(),
               m_pBuffer(NULL),
               m_iBufferSize(0),
               m_iReadPosition(0),
