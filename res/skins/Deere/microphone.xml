@@ -26,6 +26,7 @@
       <Template src="skin:knob_with_button.xml">
         <SetVariable name="group">[Microphone<Variable name="i"/>]</SetVariable>
         <SetVariable name="control">pregain</SetVariable>
+        <SetVariable name="color">red</SetVariable>
         <SetVariable name="button_control">mute</SetVariable>
         <SetVariable name="label">Gain</SetVariable>
       </Template>
