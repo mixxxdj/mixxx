@@ -329,7 +329,7 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
     // TODO: is it possible to move this code out of caching reader
     // and into enginebuffer?  It doesn't quite make sense here, although
     // it makes preroll completely transparent to the rest of the code
-    //if we're in preroll...
+    // if we're in preroll...
     if (sample < 0) {
         int zero_samples = math_min(-sample, samples_remaining);
         DEBUG_ASSERT(0 <= zero_samples);
@@ -337,6 +337,7 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
         SampleUtil::clear(buffer, zero_samples);
         samples_remaining -= zero_samples;
         if (samples_remaining == 0) {
+            //everything is zeros, easy
             return 0;
         }
         buffer += zero_samples;
