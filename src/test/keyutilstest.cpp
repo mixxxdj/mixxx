@@ -23,6 +23,13 @@ TEST_F(KeyUtilsTest, OpenKeyNotation) {
               KeyUtils::guessKeyFromText("6d"));
     EXPECT_EQ(mixxx::track::io::key::B_MINOR,
               KeyUtils::guessKeyFromText("3m"));
+
+    // whitespace is ok
+    EXPECT_EQ(mixxx::track::io::key::B_MINOR,
+              KeyUtils::guessKeyFromText(" 3m\t\t"));
+    // but other stuff is not
+    EXPECT_EQ(mixxx::track::io::key::INVALID,
+              KeyUtils::guessKeyFromText(" 33m\t\t"));
 }
 
 TEST_F(KeyUtilsTest, LancelotNotation) {
@@ -36,6 +43,13 @@ TEST_F(KeyUtilsTest, LancelotNotation) {
               KeyUtils::guessKeyFromText("1b"));
     EXPECT_EQ(mixxx::track::io::key::B_MINOR,
               KeyUtils::guessKeyFromText("10a"));
+
+    // whitespace is ok
+    EXPECT_EQ(mixxx::track::io::key::B_MINOR,
+              KeyUtils::guessKeyFromText("\t10a  "));
+    // but other stuff is not
+    EXPECT_EQ(mixxx::track::io::key::INVALID,
+              KeyUtils::guessKeyFromText("\t10aa  "));
 }
 
 TEST_F(KeyUtilsTest, KeyNameNotation) {
@@ -44,6 +58,13 @@ TEST_F(KeyUtilsTest, KeyNameNotation) {
     //  everyone confused?)
     EXPECT_EQ(mixxx::track::io::key::INVALID,
               KeyUtils::guessKeyFromText("H"));
+
+    // whitespace is ok
+    EXPECT_EQ(mixxx::track::io::key::C_MAJOR,
+              KeyUtils::guessKeyFromText(" \tC   \t  "));
+    // but other crap is not
+    EXPECT_EQ(mixxx::track::io::key::INVALID,
+              KeyUtils::guessKeyFromText(" c\tC   c\t  "));
 
     // Major is upper-case, minor is lower-case.
     EXPECT_EQ(mixxx::track::io::key::C_MAJOR,

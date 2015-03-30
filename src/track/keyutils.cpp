@@ -11,10 +11,10 @@ using mixxx::track::io::key::ChromaticKey;
 using mixxx::track::io::key::ChromaticKey_IsValid;
 
 // OpenKey notation, the numbers 1-12 followed by d (dur, major) or m (moll, minor).
-static const char* s_openKeyPattern = "(1[0-2]|[1-9])([dm])";
+static const char* s_openKeyPattern = "^\\s*(1[0-2]|[1-9])([dm])\\s*$";
 
 // Lancelot notation, the numbers 1-12 followed by a (minor) or b (major).
-static const char* s_lancelotKeyPattern = "(1[0-2]|[1-9])([ab])";
+static const char* s_lancelotKeyPattern = "^\\s*(1[0-2]|[1-9])([ab])\\s*$";
 
 // a-g followed by any number of sharps or flats, optionally followed by
 // a scale spec (m = minor, min, maj)
