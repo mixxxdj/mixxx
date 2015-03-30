@@ -948,10 +948,6 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
 
         // If the buffer is not paused, then scale the audio.
         if (!bCurBufferPaused) {
-            //if (rate == 0) {
-            //    qDebug() << "ramp to rate 0";
-            //}
-
             // Perform scaling of Reader buffer into buffer.
             double framesRead =
                     m_pScale->scaleBuffer(pOutput, iBufferSize);
