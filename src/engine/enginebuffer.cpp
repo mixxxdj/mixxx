@@ -359,7 +359,8 @@ void EngineBuffer::enableIndependentPitchTempoScaling(bool bEnable,
     // interpolation code (EngineBufferScaleLinear). It is faster and sounds
     // much better for scratching.
 
-    // m_pScaleKeylock could change out from under us, so cache it.
+    // m_pScaleKeylock and m_pScaleVinyl could change out from under us,
+    // so cache it.
     EngineBufferScale* keylock_scale = m_pScaleKeylock;
     EngineBufferScale* vinyl_scale = m_pScaleVinyl;
 
@@ -368,13 +369,11 @@ void EngineBuffer::enableIndependentPitchTempoScaling(bool bEnable,
         m_pScale = keylock_scale;
         m_pScale->clear();
         m_bScalerChanged = true;
-        //qDebug() << "keylock_scale";
     } else if (!bEnable && m_pScale != vinyl_scale) {
         readToCrossfadeBuffer(iBufferSize);
         m_pScale = vinyl_scale;
         m_pScale->clear();
         m_bScalerChanged = true;
-        //qDebug() << "vinyl_scale";
     }
 }
 
@@ -817,20 +816,21 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
                 pitchRatio *= (speed / tempoRatio);
             }
 
-            // Check if we are off-linear (the pitch is tweaked) to enable
-            // the keylock scaler even though keylock is disabled
+            // Check if we are off-linear (musical key has been adjusted
+            // independent from speed) to determine if the keylock scaler
+            // should be used even though keylock is disabled.
             if (speed != 0.0) {
                 double offlinear = pitchRatio / speed;
                 if (offlinear > kLinearScalerElipsis ||
                         offlinear < 1 / kLinearScalerElipsis) {
-                    // off-linear > 1 cent
-                    // everything below is not hear-able
+                    // only enable keylock scaler if pitch adjustment is at
+                    // least 1 cent. Everything below is not hear-able.
                     useIndependentPitchAndTempoScaling = true;
                 }
             }
         }
 
-        if (speed) {
+        if (speed != 0.0) {
             // Do not switch scaler when we have no transport
             enableIndependentPitchTempoScaling(useIndependentPitchAndTempoScaling,
                                                iBufferSize);
@@ -899,7 +899,6 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
                 //XXX: Trying to force RAMAN to read from correct
                 //     playpos when rate changes direction - Albert
                 if (m_speed_old * speed < 0) {
-                    //qDebug() << "direction changed";
                     readToCrossfadeBuffer(iBufferSize);
                     // Clear the scaler information
                     m_pScale->clear();
@@ -993,7 +992,6 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         }
 
         if (m_bCrossfadeReady) {
-            qDebug() << "m_bCrossfadeReady";
             SampleUtil::linearCrossfadeBuffers(
                     pOutput, m_pCrossfadeBuffer, pOutput, iBufferSize);
         }
