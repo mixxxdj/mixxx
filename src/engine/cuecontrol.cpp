@@ -11,6 +11,7 @@
 #include "trackinfoobject.h"
 #include "library/dao/cue.h"
 #include "cachingreader.h"
+#include "vinylcontrol/defs_vinylcontrol.h"
 
 static const double CUE_MODE_MIXXX = 0.0;
 static const double CUE_MODE_PIONEER = 1.0;
@@ -92,6 +93,9 @@ CueControl::CueControl(QString group,
 
     m_pCueIndicator = new ControlIndicator(ConfigKey(group, "cue_indicator"));
     m_pPlayIndicator = new ControlIndicator(ConfigKey(group, "play_indicator"));
+
+    m_pVinylControlEnabled.reset(new ControlObjectSlave(group, "vinylcontrol_enabled"));
+    m_pVinylControlMode.reset(new ControlObjectSlave(group, "vinylcontrol_mode"));
 }
 
 CueControl::~CueControl() {
@@ -225,7 +229,10 @@ void CueControl::trackLoaded(TrackPointer pTrack) {
 
     // Need to unlock before emitting any signals to prevent deadlock.
     lock.unlock();
-    seekExact(loadCuePoint);
+    // Do not seek if vinylcontrol mode enabled and in absolute mode.
+    if (!m_pVinylControlEnabled->get() || m_pVinylControlMode->get() != MIXXX_VCMODE_ABSOLUTE) {
+        seekExact(loadCuePoint);
+    }
 }
 
 void CueControl::trackUnloaded(TrackPointer pTrack) {
