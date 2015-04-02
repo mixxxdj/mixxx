@@ -17,6 +17,7 @@ addons:
       - libportmidi-dev
       - libshout3-dev
       - libtag1-dev
+      - libopus-dev
       - libprotobuf-dev
       - protobuf-compiler
       - libvamp-hostsdk3
