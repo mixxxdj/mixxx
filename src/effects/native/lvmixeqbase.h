@@ -8,9 +8,11 @@
 #include "engine/enginefilterdelay.h"
 
 static const int kMaxDelay = 3300; // allows a 30 Hz filter at 97346;
+static const int kRampDone = -1; 
 static const unsigned int kStartupSamplerate = 44100;
 static const double kStartupLoFreq = 246;
 static const double kStartupHiFreq = 2484;
+
 
 template<class LPF>
 class LVMixEQEffectGroupState {
@@ -19,6 +21,7 @@ class LVMixEQEffectGroupState {
         : old_low(1.0),
           old_mid(1.0),
           old_high(1.0),
+          m_rampHoldOff(kRampDone),
           m_oldSampleRate(kStartupSamplerate),
           m_loFreq(kStartupLoFreq),
           m_hiFreq(kStartupHiFreq) {
@@ -51,6 +54,7 @@ class LVMixEQEffectGroupState {
 
         m_delay2->setDelay((delayLow1 - delayLow2) * 2);
         m_delay3->setDelay(delayLow1 * 2);
+        m_groupDelay = delayLow1 * 2;
     }
 
     LPF* m_low1;
@@ -61,6 +65,9 @@ class LVMixEQEffectGroupState {
     double old_low;
     double old_mid;
     double old_high;
+
+    int m_rampHoldOff;
+    int m_groupDelay;
 
     unsigned int m_oldSampleRate;
     double m_loFreq;

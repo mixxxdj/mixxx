@@ -161,24 +161,21 @@ void Bessel8LVMixEQEffect::processChannel(const ChannelHandle& handle,
     fLow = fLow - fMid;
     fMid = fMid - fHigh;
 
+    // Note: We do not call pauseFilter() here because this will introduce a
+    // buffer size dependig start delay. During such start delay some unwanted 
+    // fequences are slipping though or wanted frequencys are damped.
+    // We now the exact group delay here so we can just hold of the ramping.
     if (fHigh || pState->old_high) {
         pState->m_delay3->process(pInput, pState->m_pHighBuf, numSamples);
-    } else {
-        pState->m_delay3->pauseFilter();
     }
 
     if (fMid || pState->old_mid) {
         pState->m_delay2->process(pInput, pState->m_pBandBuf, numSamples);
         pState->m_low2->process(pState->m_pBandBuf, pState->m_pBandBuf, numSamples);
-    } else {
-        pState->m_delay2->pauseFilter();
-        pState->m_low2->pauseFilter();
     }
 
     if (fLow || pState->old_low) {
         pState->m_low1->process(pInput, pState->m_pLowBuf, numSamples);
-    } else {
-        pState->m_low1->pauseFilter();
     }
 
     // Test code for comparing streams as two stereo channels
@@ -187,25 +184,71 @@ void Bessel8LVMixEQEffect::processChannel(const ChannelHandle& handle,
     //    pOutput[i + 1] = pState->m_pBandBuf[i];
     //}
 
-    if (fLow != pState->old_low ||
-            fMid != pState->old_mid ||
-            fHigh != pState->old_high) {
-        SampleUtil::copy3WithRampingGain(pOutput,
-                pState->m_pLowBuf, pState->old_low, fLow,
-                pState->m_pBandBuf, pState->old_mid, fMid,
-                pState->m_pHighBuf, pState->old_high, fHigh,
-                numSamples);
-    } else {
+    if (fLow == pState->old_low &&
+            fMid == pState->old_mid &&
+            fHigh == pState->old_high) {
         SampleUtil::copy3WithGain(pOutput,
                 pState->m_pLowBuf, fLow,
                 pState->m_pBandBuf, fMid,
                 pState->m_pHighBuf, fHigh,
                 numSamples);
-    }
+    } else {
+        int copySamples = 0; 
+        int rampingSamples = numSamples; 
+        if ((fLow && !pState->old_low) ||
+                (fMid && !pState->old_mid) ||
+                (fHigh && !pState->old_high)) {
+            // we have just switched at least one filter on
+            // Hold of ramping for the group delay
+            if (pState->m_rampHoldOff == kRampDone) {
+                // multiply the group delay * 2 to ensure that the filter is settled
+                // it is actually at a factor of 1,8 at default setting
+                pState->m_rampHoldOff = pState->m_groupDelay * 2;
+                // ensure that we have at least 128 samples (our smallest buffer)
+                // for ramping 
+                int rampingSamples = numSamples - (pState->m_rampHoldOff % numSamples);
+                if (rampingSamples < 128) {
+                    pState->m_rampHoldOff += rampingSamples; 
+                } 
+            }
 
-    pState->old_low = fLow;
-    pState->old_mid = fMid;
-    pState->old_high = fHigh;
+            if (pState->m_rampHoldOff >= static_cast<int>(numSamples)) {
+                // ramping is don in one of the folowing calls
+                copySamples = numSamples;
+                rampingSamples = 0;
+            } else {
+                // ramping in this call 
+                copySamples = pState->m_rampHoldOff;
+                rampingSamples = numSamples - pState->m_rampHoldOff; 
+            }
+            pState->m_rampHoldOff -= copySamples; 
+
+            SampleUtil::copy3WithGain(pOutput,
+                    pState->m_pLowBuf, pState->old_low,
+                    pState->m_pBandBuf, pState->old_mid,
+                    pState->m_pHighBuf, pState->old_high,
+                    copySamples);
+        }
+
+        if (rampingSamples) {
+            qDebug() << "rampingSamples" << rampingSamples;
+            qDebug() << fLow << pState->old_low;
+            qDebug() << fMid << pState->old_mid;
+            qDebug() << fHigh << pState->old_high;
+
+            SampleUtil::copy3WithRampingGain(&pOutput[copySamples],
+                    &pState->m_pLowBuf[copySamples], pState->old_low, fLow,
+                    &pState->m_pBandBuf[copySamples], pState->old_mid, fMid,
+                    &pState->m_pHighBuf[copySamples], pState->old_high, fHigh,
+                    rampingSamples);
+
+            pState->old_low = fLow;
+            pState->old_mid = fMid;
+            pState->old_high = fHigh;
+            pState->m_rampHoldOff = kRampDone;
+
+        }
+    } 
 
     if (enableState == EffectProcessor::DISABLING) {
         pState->m_delay3->pauseFilter();
