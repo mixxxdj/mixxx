@@ -54,6 +54,12 @@
 class PerformanceTimer
 {
 public:
+    PerformanceTimer() {
+      t1 = 0;
+#if defined(Q_OS_UNIX) && !defined(Q_OS_MAC)
+      t2 = 0;
+#endif
+    };
     void start();
     qint64 elapsed() const;
     qint64 restart();

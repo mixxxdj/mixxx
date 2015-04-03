@@ -119,7 +119,6 @@ double SteadyPitch::check(double pitch, double time)
     return 0.0;
 }
 
-double SteadyPitch::steadyValue(void)
-{
+double SteadyPitch::steadyValue(void) const {
     return m_dOldSteadyPitch;
 }

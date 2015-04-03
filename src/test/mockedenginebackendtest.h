@@ -30,15 +30,32 @@ using ::testing::_;
 
 class MockScaler : public EngineBufferScale {
   public:
-    MockScaler() : EngineBufferScale() {
+    MockScaler()
+            : EngineBufferScale(),
+              m_processedTempo(-1),
+              m_processedPitch(-1) {
         SampleUtil::clear(m_buffer, MAX_BUFFER_LEN);
     }
     void clear() { }
     CSAMPLE *getScaled(unsigned long buf_size) {
+        m_processedTempo = m_dTempo;
+        m_processedPitch = m_dPitch;
         m_samplesRead = round(buf_size * m_dTempo);
         if (static_cast<int>(m_samplesRead) % 2) { m_samplesRead--; }
         return m_buffer;
     }
+
+    double getProcessedTempo() {
+        return m_processedTempo;
+    }
+
+    double getProcessedPitch() {
+        return m_processedPitch;
+    }
+
+  private:
+    double m_processedTempo;
+    double m_processedPitch;
 };
 
 
