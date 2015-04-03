@@ -152,7 +152,7 @@ CSAMPLE* EngineBufferScaleLinear::getScaled(unsigned long buf_size) {
 
 /** Stretch a specified buffer worth of audio using linear interpolation */
 CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
-                                           unsigned long buf_size, int* samples_read) {
+                                           int buf_size, int* samples_read) {
     const float rate_old = m_dOldRate;
     const float rate_new = m_dRate;
     const float rate_diff = rate_new - rate_old;
@@ -164,10 +164,8 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
     // Determine position in read_buffer to start from. (This is always 0 with
     // the new EngineBuffer implementation)
 
-    int iRateLerpLength = static_cast<int>(buf_size);
-
     // Guard against buf_size == 0
-    if (iRateLerpLength == 0) {
+    if (buf_size == 0) {
         return buf;
     }
 
@@ -179,7 +177,7 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
 
     // Special case -- no scaling needed!
     if (rate_old == 1.0 && rate_new == 1.0) {
-        int samples_needed = iRateLerpLength;
+        int samples_needed = buf_size;
         CSAMPLE* write_buf = buf;
 
         // Use up what's left of the internal buffer.
@@ -216,7 +214,7 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         // Instead of counting how many samples we got from the internal buffer
         // and the RAMAN calls, just measure the difference between what we
         // requested and what we still need.
-        int read_samples = iRateLerpLength - samples_needed;
+        int read_samples = buf_size - samples_needed;
 
         // Even though this code should not trigger for the special case in
         // getScaled for when the rate changes directions, the convention in the
@@ -239,8 +237,8 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
     // Simulate the loop to estimate how many frames we need
     double frames = 0;
     // We're calculating frames = 2 samples, so divide remaining buffer by 2;
-    for (int j = 0; j < iRateLerpLength / 2; ++j) {
-        frames += (j * 2 * rate_diff / iRateLerpLength) + rate_old;
+    for (int j = 0; j < buf_size / 2; ++j) {
+        frames += (j * 2 * rate_diff / buf_size) + rate_old;
     }
     frames = abs(frames);
 
@@ -256,7 +254,7 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
     // Multiply by 2 because it is predicting mono rates, while we want a stereo
     // number of samples.
     // 0 is never the right answer
-    double unscaled_samples_needed = math_max<long>(2, unscaled_frames_needed * 2);
+    int unscaled_samples_needed = math_max<int>(2, unscaled_frames_needed * 2);
 
     bool last_read_failed = false;
     CSAMPLE floor_sample[2];
@@ -269,7 +267,7 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
 
     int i = 0;
     int screwups = 0;
-    while (i < iRateLerpLength) {
+    while (i < buf_size) {
         // shift indicies
         m_dCurrentFrame = m_dNextFrame;
 
@@ -361,7 +359,7 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         // Smooth any changes in the playback rate over iRateLerpLength
         // samples. This prevents the change from being discontinuous and helps
         // improve sound quality.
-        float rate_add = fabs((i * rate_diff / iRateLerpLength) + rate_old);
+        float rate_add = fabs((i * rate_diff / buf_size) + rate_old);
 
         // increment the index for the next loop
         m_dNextFrame = m_dCurrentFrame + rate_add;
