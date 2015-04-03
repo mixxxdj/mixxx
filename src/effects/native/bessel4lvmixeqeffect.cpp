@@ -231,11 +231,6 @@ void Bessel4LVMixEQEffect::processChannel(const ChannelHandle& handle,
         }
 
         if (rampingSamples) {
-            qDebug() << "rampingSamples" << rampingSamples;
-            qDebug() << fLow << pState->old_low;
-            qDebug() << fMid << pState->old_mid;
-            qDebug() << fHigh << pState->old_high;
-
             SampleUtil::copy3WithRampingGain(&pOutput[copySamples],
                     &pState->m_pLowBuf[copySamples], pState->old_low, fLow,
                     &pState->m_pBandBuf[copySamples], pState->old_mid, fMid,
