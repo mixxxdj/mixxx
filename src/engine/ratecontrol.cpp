@@ -483,7 +483,7 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
         } else {
             // If master sync is on, respond to it -- but vinyl and scratch mode always override.
             if (getSyncMode() == SYNC_FOLLOWER && !paused &&
-                !bVinylControlEnabled && !useScratch2Value) {
+                    !bVinylControlEnabled && !useScratch2Value) {
                 if (m_pBpmControl == NULL) {
                     qDebug() << "ERROR: calculateRate m_pBpmControl is null during master sync";
                     return 1.0;
@@ -509,7 +509,6 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
             }
         }
     }
-
     return rate;
 }
 
