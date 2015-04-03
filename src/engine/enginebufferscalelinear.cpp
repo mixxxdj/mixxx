@@ -238,11 +238,11 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
 
     // Simulate the loop to estimate how many frames we need
     double frames = 0;
-
     // We're calculating frames = 2 samples, so divide remaining buffer by 2;
-    for (int j = 0; j < iRateLerpLength; j += 2) {
-        frames += fabs((j * rate_diff / iRateLerpLength) + rate_old);
+    for (int j = 0; j < iRateLerpLength / 2; ++j) {
+        frames += (j * 2 * rate_diff / iRateLerpLength) + rate_old;
     }
+    frames = abs(frames);
 
     int unscaled_frames_needed = floor(frames);
 
@@ -361,11 +361,10 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         // Smooth any changes in the playback rate over iRateLerpLength
         // samples. This prevents the change from being discontinuous and helps
         // improve sound quality.
-        float rate_add = (i * rate_diff / iRateLerpLength) + rate_old;
+        float rate_add = fabs((i * rate_diff / iRateLerpLength) + rate_old);
 
         // increment the index for the next loop
-        m_dNextFrame = m_dCurrentFrame +
-                (i < iRateLerpLength ? fabs(rate_add) : fabs(rate_new));
+        m_dNextFrame = m_dCurrentFrame + rate_add;
         i += 2 ;
     }
 
