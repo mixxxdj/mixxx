@@ -370,16 +370,6 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         i += 2 ;
     }
 
-    // Vinylsoundemu:
-    // if we cross zero, ramp gain to zero
-    // this is the natural vinyl sound: no output without turning platter.
-    // This also deletes possible peaks with small buffers.
-    if (rate_add_old == 0) {
-        SampleUtil::applyRampingGain(buf, 0, 1.0, buf_size);
-    } else if (rate_add_new == 0) {
-        SampleUtil::applyRampingGain(buf, 1.0, 0, buf_size);
-    }
-
     SampleUtil::clear(&buf[i], buf_size - i);
 
     return buf;
