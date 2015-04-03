@@ -137,6 +137,51 @@
                 <SetVariable name="Effect">1</SetVariable>
                 <SetVariable name="EffectButtonParameter">3</SetVariable>
               </Template>
+              <Template src="skin:effect_parameter_knob.xml">
+                <SetVariable name="Effect">1</SetVariable>
+                <SetVariable name="EffectParameter">4</SetVariable>
+                <SetVariable name="color">white</SetVariable>
+              </Template>
+              <Template src="skin:effect_button_parameter.xml">
+                <SetVariable name="Effect">1</SetVariable>
+                <SetVariable name="EffectButtonParameter">4</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_knob.xml">
+                <SetVariable name="Effect">1</SetVariable>
+                <SetVariable name="EffectParameter">5</SetVariable>
+                <SetVariable name="color">white</SetVariable>
+              </Template>
+              <Template src="skin:effect_button_parameter.xml">
+                <SetVariable name="Effect">1</SetVariable>
+                <SetVariable name="EffectButtonParameter">5</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_knob.xml">
+                <SetVariable name="Effect">1</SetVariable>
+                <SetVariable name="EffectParameter">6</SetVariable>
+                <SetVariable name="color">white</SetVariable>
+              </Template>
+              <Template src="skin:effect_button_parameter.xml">
+                <SetVariable name="Effect">1</SetVariable>
+                <SetVariable name="EffectButtonParameter">6</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_knob.xml">
+                <SetVariable name="Effect">1</SetVariable>
+                <SetVariable name="EffectParameter">7</SetVariable>
+                <SetVariable name="color">white</SetVariable>
+              </Template>
+              <Template src="skin:effect_button_parameter.xml">
+                <SetVariable name="Effect">1</SetVariable>
+                <SetVariable name="EffectButtonParameter">7</SetVariable>
+              </Template>
+              <Template src="skin:effect_parameter_knob.xml">
+                <SetVariable name="Effect">1</SetVariable>
+                <SetVariable name="EffectParameter">8</SetVariable>
+                <SetVariable name="color">white</SetVariable>
+              </Template>
+              <Template src="skin:effect_button_parameter.xml">
+                <SetVariable name="Effect">1</SetVariable>
+                <SetVariable name="EffectButtonParameter">8</SetVariable>
+              </Template>
             </Children>
           </WidgetGroup>
 
