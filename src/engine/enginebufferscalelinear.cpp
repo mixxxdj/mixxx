@@ -107,7 +107,7 @@ CSAMPLE* EngineBufferScaleLinear::getScaled(unsigned long buf_size) {
         //first half: rate goes from old rate to zero
         m_dOldRate = rate_add_old;
         m_dRate = 0.0;
-        m_buffer = do_scale(m_buffer, buf_size/2, &samples_read);
+        m_buffer = do_scale(m_buffer, buf_size / 2, &samples_read);
 
         // reset prev sample so we can now read in the other direction (may not
         // be necessary?)
@@ -153,9 +153,9 @@ CSAMPLE* EngineBufferScaleLinear::getScaled(unsigned long buf_size) {
 /** Stretch a specified buffer worth of audio using linear interpolation */
 CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
                                            unsigned long buf_size, int* samples_read) {
-    float rate_add_old = m_dOldRate;
-    float rate_add_new = m_dRate;
-    float rate_add_diff = rate_add_new - rate_add_old;
+    const float rate_old = m_dOldRate;
+    const float rate_new = m_dRate;
+    const float rate_diff = rate_new - rate_old;
 
     // Update the old base rate because we only need to
     // interpolate/ramp up the pitch changes once.
@@ -173,12 +173,12 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
 
     // We check for scratch condition in the public function, so this shouldn't
     // happen
-    if (rate_add_new * rate_add_old < 0) {
+    if (rate_new * rate_old < 0) {
         qDebug() << "ERROR: EBSL did not detect scratching correctly.";
     }
 
     // Special case -- no scaling needed!
-    if (rate_add_old == 1.0 && rate_add_new == 1.0) {
+    if (rate_old == 1.0 && rate_new == 1.0) {
         int samples_needed = iRateLerpLength;
         CSAMPLE* write_buf = buf;
 
@@ -241,8 +241,7 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
 
     // We're calculating frames = 2 samples, so divide remaining buffer by 2;
     for (int j = 0; j < iRateLerpLength; j += 2) {
-        frames += fabs((rate_add_diff * static_cast<float>(j)) /
-                        static_cast<float>(iRateLerpLength) + rate_add_old);
+        frames += fabs((j * rate_diff / iRateLerpLength) + rate_old);
     }
 
     int unscaled_frames_needed = floor(frames);
@@ -271,7 +270,7 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
     int i = 0;
     int screwups = 0;
     while (i < iRateLerpLength) {
-        //shift indicies
+        // shift indicies
         m_dCurrentFrame = m_dNextFrame;
 
         // Because our index is a float value, we're going to be interpolating
@@ -296,12 +295,6 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
             floor_sample[1] = m_floorSampleOld[1];
         }
 
-        // Smooth any changes in the playback rate over iRateLerpLength
-        // samples. This prevents the change from being discontinuous and helps
-        // improve sound quality.
-        float rate_add = static_cast<float>(i) * (rate_add_diff) /
-                         static_cast<float>(iRateLerpLength) + rate_add_old;
-
         // if we don't have the ceil_sample in buffer, load some more
         while (static_cast<int>(ceil(m_dCurrentFrame)) * 2 + 1 >=
                m_bufferIntSize) {
@@ -315,7 +308,7 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
                                                 unscaled_samples_needed);
 
             m_bufferIntSize = m_pReadAheadManager->getNextSamples(
-                    rate_add_new == 0 ? rate_add_old : rate_add_new,
+                    rate_new == 0 ? rate_old : rate_new,
                     m_bufferInt, samples_to_read);
             *samples_read += m_bufferIntSize;
 
@@ -361,12 +354,18 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         buf[i + 1] = static_cast<float>(floor_sample[1]) +
                      frac * (static_cast<float>(ceil_sample[1]) -
                      static_cast<float>(floor_sample[1]));
+
         m_floorSampleOld[0] = floor_sample[0];
         m_floorSampleOld[1] = floor_sample[1];
 
+        // Smooth any changes in the playback rate over iRateLerpLength
+        // samples. This prevents the change from being discontinuous and helps
+        // improve sound quality.
+        float rate_add = (i * rate_diff / iRateLerpLength) + rate_old;
+
         // increment the index for the next loop
         m_dNextFrame = m_dCurrentFrame +
-                (i < iRateLerpLength ? fabs(rate_add) : fabs(rate_add_new));
+                (i < iRateLerpLength ? fabs(rate_add) : fabs(rate_new));
         i += 2 ;
     }
 
