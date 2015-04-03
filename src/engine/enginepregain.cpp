@@ -33,7 +33,9 @@ ControlObject* EnginePregain::s_pEnableReplayGain = NULL;
    A pregaincontrol is ... a pregain.
    ----------------------------------------------------------------*/
 EnginePregain::EnginePregain(QString group)
-        : m_dSpeed(0),
+        : m_dSpeed(1.0),
+          m_dOldSpeed(1.0),
+          m_scratching(false),
           m_fPrevGain(1.0),
           m_bSmoothFade(false) {
     m_pPotmeterPregain = new ControlAudioTaperPot(ConfigKey(group, "pregain"), -12, 12, 0.5);
@@ -62,8 +64,10 @@ EnginePregain::~EnginePregain() {
     s_pDefaultBoost = NULL;
 }
 
-void EnginePregain::setSpeed(double speed) {
+void EnginePregain::setSpeed(double speed, bool scratching) {
+    m_dOldSpeed = m_dSpeed;
     m_dSpeed = speed;
+    m_scratching = scratching;
 }
 
 void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
@@ -131,7 +135,11 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
         totalGain *= fabs(m_dSpeed) / kThresholdSpeed;
     }
 
-    if (totalGain != m_fPrevGain) {
+    if ((m_dSpeed * m_dOldSpeed < 0) && m_scratching) {
+        // direction changed, go though zero if scratching
+        SampleUtil::applyRampingGain(&pInOut[0], m_fPrevGain, 0, iBufferSize / 2);
+        SampleUtil::applyRampingGain(&pInOut[iBufferSize / 2], 0, totalGain, iBufferSize / 2);
+    } else if (totalGain != m_fPrevGain) {
         // Prevent sound wave discontinuities by interpolating from old to new gain.
         SampleUtil::applyRampingGain(pInOut, m_fPrevGain, totalGain, iBufferSize);
         m_fPrevGain = totalGain;
