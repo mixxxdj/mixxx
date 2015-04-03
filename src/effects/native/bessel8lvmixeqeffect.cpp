@@ -162,8 +162,8 @@ void Bessel8LVMixEQEffect::processChannel(const ChannelHandle& handle,
     fMid = fMid - fHigh;
 
     // Note: We do not call pauseFilter() here because this will introduce a
-    // buffer size dependig start delay. During such start delay some unwanted 
-    // fequences are slipping though or wanted frequencys are damped.
+    // buffer size-dependent start delay. During such start delay some unwanted
+    // frequencies are slipping though or wanted frequencies are damped.
     // We now the exact group delay here so we can just hold of the ramping.
     if (fHigh || pState->old_high) {
         pState->m_delay3->process(pInput, pState->m_pHighBuf, numSamples);
@@ -231,11 +231,6 @@ void Bessel8LVMixEQEffect::processChannel(const ChannelHandle& handle,
         }
 
         if (rampingSamples) {
-            qDebug() << "rampingSamples" << rampingSamples;
-            qDebug() << fLow << pState->old_low;
-            qDebug() << fMid << pState->old_mid;
-            qDebug() << fHigh << pState->old_high;
-
             SampleUtil::copy3WithRampingGain(&pOutput[copySamples],
                     &pState->m_pLowBuf[copySamples], pState->old_low, fLow,
                     &pState->m_pBandBuf[copySamples], pState->old_mid, fMid,
