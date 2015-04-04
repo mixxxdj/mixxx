@@ -903,16 +903,14 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             // The linear scaler supports ramping though zero.
             // This is used for scratching, but not for reverse
             // For the other, crossfade forward and backward samples
-            if (m_speed_old * speed < 0) {
-                // Direction has changed!
-                if (m_pScale != m_pScaleVinyl || // only m_pScaleLinear supports going though 0
-                        m_reverse_old != is_reverse) { // no pitch change when reversing
-                    //XXX: Trying to force RAMAN to read from correct
-                    //     playpos when rate changes direction - Albert
-                    readToCrossfadeBuffer(iBufferSize);
-                    // Clear the scaler information
-                    m_pScale->clear();
-                }
+            if ((m_speed_old * speed < 0) &&  // Direction has changed!
+                    (m_pScale != m_pScaleVinyl || // only m_pScaleLinear supports going though 0
+                           m_reverse_old != is_reverse)) { // no pitch change when reversing
+                //XXX: Trying to force RAMAN to read from correct
+                //     playpos when rate changes direction - Albert
+                readToCrossfadeBuffer(iBufferSize);
+                // Clear the scaler information
+                m_pScale->clear();
             }
 
             m_baserate_old = baserate;
