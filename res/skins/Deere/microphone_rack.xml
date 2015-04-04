@@ -40,7 +40,7 @@
               </Template>
 
               <PushButton>
-                <Size>70f,20f</Size>
+                <Size>80f,20f</Size>
                 <NumberStates>3</NumberStates>
                 <State>
                   <Number>0</Number>

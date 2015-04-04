@@ -148,8 +148,9 @@ QSplitter::handle:vertical {
 }
 
 WWidget, QLabel {
-  font-size: 6px;
+  font-size: 10px;
   text-transform: uppercase;
+  font-family: "Open Sans";
 }
 
 WSliderComposed {
@@ -318,8 +319,7 @@ WSliderComposed {
 }
 
 #KnobLabel, #EffectKnobLabel, #EffectButtonLabel {
-  background-color: white;
-  border: 1px solid black;
+  background-color: black;
   qproperty-alignment: 'AlignCenter | AlignVCenter';
 }
 

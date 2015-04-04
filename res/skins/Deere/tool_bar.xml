@@ -62,7 +62,7 @@
 
       <PushButton>
         <TooltipId>toggle_expanded_library</TooltipId>
-        <Size>40f,20f</Size>
+        <Size>50f,20f</Size>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
@@ -80,7 +80,7 @@
 
       <PushButton>
         <TooltipId>show_mixer</TooltipId>
-        <Size>60f,20f</Size>
+        <Size>75f,20f</Size>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
