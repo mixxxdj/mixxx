@@ -332,8 +332,9 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     ComboBoxResetSpeedAndPitch->addItem(tr("Reset key and speed on track load"));
     connect(ComboBoxResetSpeedAndPitch, SIGNAL(activated(int)),
             this, SLOT(slotUpdateSpeedAutoReset(int)));
+    // TODO: All defaults should only be set in slotResetToDefaults.
     m_speedAutoReset = m_pConfig->getValueString(
-                    ConfigKey("[Controls]", "SpeedAutoReset")).toInt();
+                    ConfigKey("[Controls]", "SpeedAutoReset"), "1").toInt();
 
     slotUpdate();
 }

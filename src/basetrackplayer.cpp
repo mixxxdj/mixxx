@@ -293,7 +293,7 @@ void BaseTrackPlayerImpl::slotFinishLoading(TrackPointer pTrackInfoObject)
     int reset = m_pConfig->getValueString(ConfigKey("[Controls]", "SpeedAutoReset"), 0).toInt();
     switch (reset) {
       case 2:
-        // Note: speed may effect pitch
+        // Note: speed may affect pitch
         if (m_pSpeed != NULL) {
             m_pSpeed->set(0.0);
         }
