@@ -18,9 +18,9 @@ template<class LPF>
 class LVMixEQEffectGroupState {
   public:
     LVMixEQEffectGroupState()
-        : old_low(1.0),
-          old_mid(1.0),
-          old_high(1.0),
+        : m_oldLow(1.0),
+          m_oldMid(1.0),
+          m_oldHigh(1.0),
           m_rampHoldOff(kRampDone),
           m_oldSampleRate(kStartupSamplerate),
           m_loFreq(kStartupLoFreq),
@@ -82,16 +82,16 @@ class LVMixEQEffectGroupState {
         // buffer size-dependent start delay. During such start delay some unwanted
         // frequencies are slipping though or wanted frequencies are damped.
         // We know the exact group delay here so we can just hold off the ramping.
-        if (fHigh || old_high) {
+        if (fHigh || m_oldHigh) {
             m_delay3->process(pInput, m_pHighBuf, numSamples);
         }
 
-        if (fMid || old_mid) {
+        if (fMid || m_oldMid) {
             m_delay2->process(pInput, m_pBandBuf, numSamples);
             m_low2->process(m_pBandBuf, m_pBandBuf, numSamples);
         }
 
-        if (fLow || old_low) {
+        if (fLow || m_oldLow) {
             m_low1->process(pInput, m_pLowBuf, numSamples);
         }
 
@@ -101,9 +101,9 @@ class LVMixEQEffectGroupState {
         //    pOutput[i + 1] = pState->m_pBandBuf[i];
         //}
 
-        if (fLow == old_low &&
-                fMid == old_mid &&
-                fHigh == old_high) {
+        if (fLow == m_oldLow &&
+                fMid == m_oldMid &&
+                fHigh == m_oldHigh) {
             SampleUtil::copy3WithGain(pOutput,
                     m_pLowBuf, fLow,
                     m_pBandBuf, fMid,
@@ -112,9 +112,9 @@ class LVMixEQEffectGroupState {
         } else {
             int copySamples = 0;
             int rampingSamples = numSamples;
-            if ((fLow && !old_low) ||
-                    (fMid && !old_mid) ||
-                    (fHigh && !old_high)) {
+            if ((fLow && !m_oldLow) ||
+                    (fMid && !m_oldMid) ||
+                    (fHigh && !m_oldHigh)) {
                 // we have just switched at least one filter on
                 // Hold off ramping for the group delay
                 if (m_rampHoldOff == kRampDone) {
@@ -136,22 +136,22 @@ class LVMixEQEffectGroupState {
                 rampingSamples = numSamples - copySamples;
 
                 SampleUtil::copy3WithGain(pOutput,
-                        m_pLowBuf, old_low,
-                        m_pBandBuf, old_mid,
-                        m_pHighBuf, old_high,
+                        m_pLowBuf, m_oldLow,
+                        m_pBandBuf, m_oldMid,
+                        m_pHighBuf, m_oldHigh,
                         copySamples);
             }
 
             if (rampingSamples) {
                 SampleUtil::copy3WithRampingGain(&pOutput[copySamples],
-                        &m_pLowBuf[copySamples], old_low, fLow,
-                        &m_pBandBuf[copySamples], old_mid, fMid,
-                        &m_pHighBuf[copySamples], old_high, fHigh,
+                        &m_pLowBuf[copySamples], m_oldLow, fLow,
+                        &m_pBandBuf[copySamples], m_oldMid, fMid,
+                        &m_pHighBuf[copySamples], m_oldHigh, fHigh,
                         rampingSamples);
 
-                old_low = fLow;
-                old_mid = fMid;
-                old_high = fHigh;
+                m_oldLow = fLow;
+                m_oldMid = fMid;
+                m_oldHigh = fHigh;
                 m_rampHoldOff = kRampDone;
 
             }
@@ -164,9 +164,9 @@ class LVMixEQEffectGroupState {
     EngineFilterDelay<kMaxDelay>* m_delay2;
     EngineFilterDelay<kMaxDelay>* m_delay3;
 
-    double old_low;
-    double old_mid;
-    double old_high;
+    double m_oldLow;
+    double m_oldMid;
+    double m_oldHigh;
 
     int m_rampHoldOff;
     int m_groupDelay;
