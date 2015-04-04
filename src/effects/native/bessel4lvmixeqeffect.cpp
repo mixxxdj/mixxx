@@ -212,16 +212,11 @@ void Bessel4LVMixEQEffect::processChannel(const ChannelHandle& handle,
                 } 
             }
 
-            if (pState->m_rampHoldOff >= static_cast<int>(numSamples)) {
-                // ramping is done in one of the following calls
-                copySamples = numSamples;
-                rampingSamples = 0;
-            } else {
-                // ramping in this call 
-                copySamples = pState->m_rampHoldOff;
-                rampingSamples = numSamples - pState->m_rampHoldOff; 
-            }
-            pState->m_rampHoldOff -= copySamples; 
+            // ramping is done in one of the following calls if
+            // pState->m_rampHoldOff >= numSamples;
+            copySamples = math_min<int>(pState->m_rampHoldOff, numSamples);
+            pState->m_rampHoldOff -= copySamples;
+            rampingSamples = numSamples - copySamples;
 
             SampleUtil::copy3WithGain(pOutput,
                     pState->m_pLowBuf, pState->old_low,
