@@ -133,6 +133,7 @@ void ReadAheadManager::addRateControl(RateControl* pRateControl) {
     m_pRateControl = pRateControl;
 }
 
+// Not threadsave, call from engine therad only 
 void ReadAheadManager::notifySeek(int iSeekPosition) {
     m_iCurrentPosition = iSeekPosition;
     m_readAheadLog.clear();
@@ -170,6 +171,7 @@ void ReadAheadManager::hintReader(double dRate, HintVector* pHintList) {
     pHintList->append(current_position);
 }
 
+// Not threadsave, call from engine therad only 
 void ReadAheadManager::addReadLogEntry(double virtualPlaypositionStart,
                                        double virtualPlaypositionEndNonInclusive) {
     ReadLogEntry newEntry(virtualPlaypositionStart,
@@ -183,6 +185,7 @@ void ReadAheadManager::addReadLogEntry(double virtualPlaypositionStart,
     m_readAheadLog.append(newEntry);
 }
 
+// Not threadsave, call from engine therad only 
 int ReadAheadManager::getEffectiveVirtualPlaypositionFromLog(double currentVirtualPlayposition,
                                                              double numConsumedSamples) {
     if (numConsumedSamples == 0) {
