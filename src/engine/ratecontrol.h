@@ -45,7 +45,8 @@ public:
     // the caller that the user is currently scratching, and this is used to
     // disable keylock.
     double calculateSpeed(double baserate, double speed, bool paused,
-                         int iSamplesPerBuffer, bool* reportScratching);
+                         int iSamplesPerBuffer, bool* pReportScratching,
+                         bool* pReportReverse);
     double getRawRate() const;
 
     // Set rate change when temp rate button is pressed
@@ -56,9 +57,9 @@ public:
     static void setPerm(double v);
     // Set rate change when perm rate small button is pressed
     static void setPermSmall(double v);
-    /** Set Rate Ramp Mode */
+    // Set Rate Ramp Mode
     static void setRateRamp(bool);
-    /** Set Rate Ramp Sensitivity */
+    // Set Rate Ramp Sensitivity
     static void setRateRampSensitivity(int);
     virtual void notifySeek(double dNewPlaypos);
 
@@ -180,6 +181,7 @@ public:
     enum RATERAMP_RAMPBACK_MODE m_eRampBackMode;
     // Return speed for temporary rate change
     double m_dRateTempRampbackChange;
+    bool m_reverseChanged;
 };
 
 #endif /* RATECONTROL_H */

@@ -77,6 +77,7 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
           m_filepos_play(0.),
           m_speed_old(0),
           m_scratching_old(false),
+          m_reverse_old(false),
           m_pitch_old(0),
           m_baserate_old(0),
           m_rate_old(0.),
@@ -769,6 +770,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         const bool keylock_enabled = pitchTempoRatio.keylock;
 
         bool is_scratching = false;
+        bool is_reverse = false;
 
         // Update the slipped position and seek if it was disabled.
         processSlip(iBufferSize);
@@ -780,7 +782,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         // pass for every 1 real second). Depending on whether
         // keylock is enabled, this is applied to either the rate or the tempo.
         double speed = m_pRateControl->calculateSpeed(
-                baserate, tempoRatio, paused, iBufferSize, &is_scratching);
+                baserate, tempoRatio, paused, iBufferSize, &is_scratching, &is_reverse);
 
         bool useIndependentPitchAndTempoScaling = false;
 
@@ -896,19 +898,25 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             // wanted rate!  Make sure new scaler has proper position. This also
             // crossfades between the old scaler and new scaler to prevent
             // clicks.
-            if (m_pScale != m_pScaleVinyl) { // linear scaler does this part for us now
+
+            // Handle direction change.
+            // The linear scaler supports ramping though zero.
+            // This is used for scratching, but not for reverse
+            // For the other, crossfade forward and backward samples
+            if ((m_speed_old * speed < 0) &&  // Direction has changed!
+                    (m_pScale != m_pScaleVinyl || // only m_pScaleLinear supports going though 0
+                           m_reverse_old != is_reverse)) { // no pitch change when reversing
                 //XXX: Trying to force RAMAN to read from correct
                 //     playpos when rate changes direction - Albert
-                if (m_speed_old * speed < 0) {
-                    readToCrossfadeBuffer(iBufferSize);
-                    // Clear the scaler information
-                    m_pScale->clear();
-                }
+                readToCrossfadeBuffer(iBufferSize);
+                // Clear the scaler information
+                m_pScale->clear();
             }
 
             m_baserate_old = baserate;
             m_speed_old = speed;
             m_pitch_old = pitchRatio;
+            m_reverse_old = is_reverse;
 
             // Now we need to update the scaler with the master sample rate, the
             // base rate (ratio between sample rate of the source audio and the
