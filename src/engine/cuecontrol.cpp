@@ -235,10 +235,10 @@ void CueControl::trackLoaded(TrackPointer pTrack) {
         seekExact(loadCuePoint);
     } else if (!m_pVinylControlEnabled->get() ||
             m_pVinylControlMode->get() != MIXXX_VCMODE_ABSOLUTE) {
-        // If cuerecall is off, seek to the seek-point (which is zero) unless
+        // If cuerecall is off, seek to zero unless
         // vinylcontrol is on and set to absolute.  This allows users to
         // load tracks and have the needle-drop be maintained.
-        seekExact(loadCuePoint);
+        seekExact(0.0);
     }
 }
 
