@@ -213,13 +213,13 @@ void CueControl::trackLoaded(TrackPointer pTrack) {
     }
 
     double loadCuePoint = 0.0;
+    // If cue recall is ON in the prefs, then we're supposed to seek to the cue
+    // point on song load. Note that [Controls],cueRecall == 0 corresponds to "ON", not OFF.
+    bool cueRecall = (getConfig()->getValueString(
+                ConfigKey("[Controls]","CueRecall"), "0").toInt() == 0);
     if (loadCue != NULL) {
         m_pCuePoint->set(loadCue->getPosition());
-
-        // If cue recall is ON in the prefs, then we're supposed to seek to the cue
-        // point on song load. Note that [Controls],cueRecall == 0 corresponds to "ON", not OFF.
-        if (!getConfig()->getValueString(
-                ConfigKey("[Controls]","CueRecall")).toInt()) {
+        if (cueRecall) {
             loadCuePoint = loadCue->getPosition();
         }
     } else {
@@ -229,8 +229,15 @@ void CueControl::trackLoaded(TrackPointer pTrack) {
 
     // Need to unlock before emitting any signals to prevent deadlock.
     lock.unlock();
-    // Do not seek if vinylcontrol mode enabled and in absolute mode.
-    if (!m_pVinylControlEnabled->get() || m_pVinylControlMode->get() != MIXXX_VCMODE_ABSOLUTE) {
+    // If cueRecall is on, seek to it even if we didn't find a cue value (we'll
+    // seek to 0.
+    if (cueRecall) {
+        seekExact(loadCuePoint);
+    } else if (!m_pVinylControlEnabled->get() ||
+            m_pVinylControlMode->get() != MIXXX_VCMODE_ABSOLUTE) {
+        // If cuerecall is off, seek to the seek-point (which is zero) unless
+        // vinylcontrol is on and set to absolute.  This allows users to
+        // load tracks and have the needle-drop be maintained.
         seekExact(loadCuePoint);
     }
 }
