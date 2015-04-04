@@ -267,9 +267,11 @@ SkinManifest LegacySkinParser::getSkinManifest(QDomElement skinDocument) {
             if (attribute_node.isElement()) {
                 QDomElement attribute_element = attribute_node.toElement();
                 QString configKey = attribute_element.attribute("config_key");
+                QString persist = attribute_element.attribute("persist");
                 QString value = attribute_element.text();
                 SkinManifest::Attribute* attr = manifest.add_attribute();
                 attr->set_config_key(configKey.toStdString());
+                attr->set_persist(persist.toLower() == "true");
                 attr->set_value(value.toStdString());
             }
         }
@@ -307,18 +309,18 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
 
     SkinManifest manifest = getSkinManifest(skinDocument);
 
-    // Apply SkinManifest attributes.
+    // Apply SkinManifest attributes by looping through the proto.
     for (int i = 0; i < manifest.attribute_size(); ++i) {
         const SkinManifest::Attribute& attribute = manifest.attribute(i);
         if (!attribute.has_config_key()) {
             continue;
         }
-        ConfigKey configKey = ConfigKey::parseCommaSeparated(
-            QString::fromStdString(attribute.config_key()));
 
         bool ok = false;
         double value = QString::fromStdString(attribute.value()).toDouble(&ok);
         if (ok) {
+            ConfigKey configKey = ConfigKey::parseCommaSeparated(
+                QString::fromStdString(attribute.config_key()));
             // Set the specified attribute, possibly creating the control
             // object in the process.
             bool created = false;
@@ -326,12 +328,18 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
             // saved config, if any.
             value = m_pConfig->getValueString(configKey,
                                               QString::number(value)).toDouble();
-            ControlObject* pControl = controlFromConfigKey(configKey, true,
+            ControlObject* pControl = controlFromConfigKey(configKey,
+                                                           attribute.persist(),
                                                            &created);
+            //QString persist = attribute_element.attribute("config_key");
             pControl->set(value);
             if (created) {
                 m_skinObjects.push_back(pControl);
             }
+        } else {
+            SKIN_WARNING(skinDocument, *m_pContext)
+                    << "Error reading double value from skin attribute: "
+                    << QString::fromStdString(attribute.value());
         }
     }
 

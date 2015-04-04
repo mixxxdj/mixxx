@@ -34,7 +34,7 @@
     <language>en</language>
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
     <attributes>
-      <attribute config_key="[Master],num_decks">4</attribute>
+      <attribute persist="true" config_key="[Master],num_decks">4</attribute>
       <attribute config_key="[Library],show_library">1</attribute>
     </attributes>
   </manifest>
