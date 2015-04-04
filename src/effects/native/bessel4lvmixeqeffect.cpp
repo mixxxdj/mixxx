@@ -164,7 +164,7 @@ void Bessel4LVMixEQEffect::processChannel(const ChannelHandle& handle,
     // Note: We do not call pauseFilter() here because this will introduce a
     // buffer size-dependent start delay. During such start delay some unwanted
     // frequencies are slipping though or wanted frequencies are damped.
-    // We now the exact group delay here so we can just hold of the ramping.
+    // We know the exact group delay here so we can just hold off the ramping.
     if (fHigh || pState->old_high) {
         pState->m_delay3->process(pInput, pState->m_pHighBuf, numSamples);
     }
@@ -199,13 +199,13 @@ void Bessel4LVMixEQEffect::processChannel(const ChannelHandle& handle,
                 (fMid && !pState->old_mid) ||
                 (fHigh && !pState->old_high)) {
             // we have just switched at least one filter on
-            // Hold of ramping for the group delay
+            // Hold off ramping for the group delay
             if (pState->m_rampHoldOff == kRampDone) {
-                // multiply the group delay * 2 to ensure that the filter is settled
-                // it is actually at a factor of 1,8 at default setting
+                // multiply the group delay * 2 to ensure that the filter is
+                // settled it is actually at a factor of 1,8 at default setting
                 pState->m_rampHoldOff = pState->m_groupDelay * 2;
-                // ensure that we have at least 128 samples (our smallest buffer)
-                // for ramping 
+                // ensure that we have at least 128 samples for ramping
+                // (the smallest buffer, that suits for de-clicking)
                 int rampingSamples = numSamples - (pState->m_rampHoldOff % numSamples);
                 if (rampingSamples < 128) {
                     pState->m_rampHoldOff += rampingSamples; 
@@ -213,7 +213,7 @@ void Bessel4LVMixEQEffect::processChannel(const ChannelHandle& handle,
             }
 
             if (pState->m_rampHoldOff >= static_cast<int>(numSamples)) {
-                // ramping is don in one of the folowing calls
+                // ramping is done in one of the following calls
                 copySamples = numSamples;
                 rampingSamples = 0;
             } else {
