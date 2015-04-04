@@ -143,9 +143,6 @@ LegacySkinParser::LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
 }
 
 LegacySkinParser::~LegacySkinParser() {
-    foreach (ControlObject* co, m_skinObjects) {
-        delete co;
-    }
     delete m_pContext;
 }
 
@@ -331,11 +328,8 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
             ControlObject* pControl = controlFromConfigKey(configKey,
                                                            attribute.persist(),
                                                            &created);
-            //QString persist = attribute_element.attribute("config_key");
             pControl->set(value);
-            if (created) {
-                m_skinObjects.push_back(pControl);
-            }
+            pControl->setParent(pParent);
         } else {
             SKIN_WARNING(skinDocument, *m_pContext)
                     << "Error reading double value from skin attribute: "
