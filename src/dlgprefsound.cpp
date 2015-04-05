@@ -95,6 +95,9 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     connect(queryButton, SIGNAL(clicked()),
             this, SLOT(queryClicked()));
 
+    connect(openHardwareMixerButton, SIGNAL(clicked()),
+            this, SLOT(openHardwareMixerClicked()));
+
     connect(m_pSoundManager, SIGNAL(outputRegistered(AudioOutput, AudioSource*)),
             this, SLOT(addPath(AudioOutput)));
     connect(m_pSoundManager, SIGNAL(outputRegistered(AudioOutput, AudioSource*)),
@@ -521,6 +524,10 @@ void DlgPrefSound::settingChanged() {
 void DlgPrefSound::queryClicked() {
     m_pSoundManager->queryDevices();
     updateAPIs();
+}
+
+void DlgPrefSound::openHardwareMixerClicked() {
+    qDebug() << "DlgPrefSound::openHardwareMixerClicked()";
 }
 
 /**

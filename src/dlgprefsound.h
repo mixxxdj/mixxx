@@ -81,6 +81,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void refreshDevices();
     void settingChanged();
     void queryClicked();
+    void openHardwareMixerClicked();
 
   private:
     void initializePaths();
