@@ -317,7 +317,7 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
         double value = QString::fromStdString(attribute.value()).toDouble(&ok);
         if (ok) {
             ConfigKey configKey = ConfigKey::parseCommaSeparated(
-                QString::fromStdString(attribute.config_key()));
+                    QString::fromStdString(attribute.config_key()));
             // Set the specified attribute, possibly creating the control
             // object in the process.
             bool created = false;
