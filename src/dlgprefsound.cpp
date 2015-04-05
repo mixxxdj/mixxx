@@ -15,6 +15,7 @@
 
 #include <QtDebug>
 #include <QMessageBox>
+#include <QProcess>
 #include "dlgprefsound.h"
 #include "dlgprefsounditem.h"
 #include "engine/enginebuffer.h"
@@ -528,6 +529,44 @@ void DlgPrefSound::queryClicked() {
 
 void DlgPrefSound::openHardwareMixerClicked() {
     qDebug() << "DlgPrefSound::openHardwareMixerClicked()";
+
+    // According to http://unix.stackexchange.com/questions/137782/launching-a-terminal-emulator-without-knowing-which-ones-are-installed
+    // This terminal lookup should be successful
+    // 1. xdg-terminal (future proof)
+    // 2. x-terminal-emulator (Debian only)
+    // 3. $TERM
+    // 4. xterm
+
+    static QProcess alsamixer;
+    static QProcess which;
+    which.start("which xdg-terminal");
+    if (which.waitForFinished(100)) {
+        if (which.exitCode() == 0) {
+            qDebug() << "xdg-terminal found";
+            alsamixer.start("xdg-terminal -e alsamixer");
+            return;
+        }
+    }
+
+    which.start("which x-terminal-emulator");
+    if (which.waitForFinished(100)) {
+        if (which.exitCode() == 0) {
+            qDebug() << "x-terminal-emulator found";
+            alsamixer.start("x-terminal-emulator -e alsamixer");
+            return;
+        }
+    }
+
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    QString xterm = env.value("$TERM", "xterm");
+    which.start("which " + xterm);
+    if (which.waitForFinished(100)) {
+        if (which.exitCode() == 0) {
+            qDebug() << "$TERM found";
+            alsamixer.start(xterm + " -e alsamixer");
+            return;
+        }
+    }
 }
 
 /**
