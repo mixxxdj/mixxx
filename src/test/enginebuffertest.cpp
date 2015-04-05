@@ -5,6 +5,7 @@
 
 #include <QtDebug>
 
+#include "basetrackplayer.h"
 #include "configobject.h"
 #include "controlobject.h"
 #include "test/mockedenginebackendtest.h"
@@ -33,7 +34,8 @@ TEST_F(EngineBufferTest, DisableKeylockResetsPitch) {
 /* Does not work yet because we have no BaseTrackPlayerImpl in this test
 TEST_F(EngineBufferTest, TrackLoadResetsPitch) {
     // When a new track is loaded, the pitch value should be reset.
-    config()->set(ConfigKey("[Controls]","SpeedAutoReset"), ConfigValue(1));
+    config()->set(ConfigKey("[Controls]","SpeedAutoReset"),
+            ConfigValue(BaseTrackPlayer::RESET_PITCH));
     ControlObject::set(ConfigKey(m_sGroup1, "file_bpm"), 128.0);
     ControlObject::set(ConfigKey(m_sGroup1, "pitch"), 0.5);
     ProcessBuffer();
@@ -43,7 +45,6 @@ TEST_F(EngineBufferTest, TrackLoadResetsPitch) {
     ASSERT_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup1, "pitch")));
 }
 */
-
 
 TEST_F(EngineBufferTest, PitchRoundtrip) {
     ControlObject::set(ConfigKey(m_sGroup1, "keylock"), 0.0);

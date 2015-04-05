@@ -290,15 +290,17 @@ void BaseTrackPlayerImpl::slotFinishLoading(TrackPointer pTrackInfoObject)
         }
         m_pPreGain->set(1.0);
     }
-    int reset = m_pConfig->getValueString(ConfigKey("[Controls]", "SpeedAutoReset"), 0).toInt();
+    int reset = m_pConfig->getValueString(ConfigKey(
+            "[Controls]", "SpeedAutoReset"),
+            QString("%1").arg(RESET_PITCH)).toInt();
     switch (reset) {
-      case 2:
+      case RESET_PITCH_AND_SPEED:
         // Note: speed may affect pitch
         if (m_pSpeed != NULL) {
             m_pSpeed->set(0.0);
         }
         // Fallthrough intended
-      case 1:
+      case RESET_PITCH:
         if (m_pPitchAdjust != NULL) {
             m_pPitchAdjust->set(0.0);
         }
