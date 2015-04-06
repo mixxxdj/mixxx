@@ -10,8 +10,10 @@
 #define kConfigKey "[Auto DJ]"
 const char* kTransitionPreferenceName = "Transition";
 const char* kTransitionBeatsPreferenceName = "TransitionBeats";
+const char* kTransitionUnitPreferenceName = "TransitionUnit";
 const int kTransitionPreferenceDefault = 10;
 const int kTransitionBeatsPreferenceDefault = 128;
+const int kTransitionUnitPreferenceDefault = AutoDJProcessor::SECONDS;
 
 static const bool sDebug = false;
 
@@ -358,7 +360,13 @@ void AutoDJProcessor::controlFadeNow(double value) {
 }
 
 void AutoDJProcessor::controlFadeUnit(double value) {
-    qDebug() << "controlFadeUnit " << value;
+    if (value > 0.0) {
+        if (m_eTransitionUnit == SECONDS) {
+            m_eTransitionUnit = BEATS;
+        } else {
+            m_eTransitionUnit = SECONDS;
+        }
+    }
 }
 
 void AutoDJProcessor::controlShuffle(double value) {
@@ -680,7 +688,6 @@ void AutoDJProcessor::calculateFadeThresholds(DeckAttributes* pAttributes) {
                 qDebug() << "calculateFadeThresholds m_iTransitionBeats = " << m_iTransitionBeats;
                 transitionDuration = beatsDuration * m_iTransitionBeats;
             }
-            qDebug() << "calculateFadeThresholds transitionDuration = " << transitionDuration;
             
             // The track might be shorter than the transition period. Use a
             // sensible cap.

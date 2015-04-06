@@ -673,6 +673,9 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addControl("[AutoDJ]", "fade_now",
                tr("Auto DJ Fade To Next"),
                tr("Trigger the transition to the next track"), autodjMenu);
+    addControl("[AutoDJ]", "fade_unit",
+               tr("Auto DJ Toggle transition unit"),
+               tr("Select the transition unit, seconds or beats"), autodjMenu);
     addControl("[AutoDJ]", "enabled",
                tr("Auto DJ Toggle"),
                tr("Toggle Auto DJ On/Off"), autodjMenu);
