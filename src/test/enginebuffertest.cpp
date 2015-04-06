@@ -5,6 +5,7 @@
 
 #include <QtDebug>
 
+#include "basetrackplayer.h"
 #include "configobject.h"
 #include "controlobject.h"
 #include "test/mockedenginebackendtest.h"
@@ -33,7 +34,8 @@ TEST_F(EngineBufferTest, DisableKeylockResetsPitch) {
 /* Does not work yet because we have no BaseTrackPlayerImpl in this test
 TEST_F(EngineBufferTest, TrackLoadResetsPitch) {
     // When a new track is loaded, the pitch value should be reset.
-    config()->set(ConfigKey("[Controls]","SpeedAutoReset"), ConfigValue(1));
+    config()->set(ConfigKey("[Controls]","SpeedAutoReset"),
+            ConfigValue(BaseTrackPlayer::RESET_PITCH));
     ControlObject::set(ConfigKey(m_sGroup1, "file_bpm"), 128.0);
     ControlObject::set(ConfigKey(m_sGroup1, "pitch"), 0.5);
     ProcessBuffer();
@@ -43,7 +45,6 @@ TEST_F(EngineBufferTest, TrackLoadResetsPitch) {
     ASSERT_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup1, "pitch")));
 }
 */
-
 
 TEST_F(EngineBufferTest, PitchRoundtrip) {
     ControlObject::set(ConfigKey(m_sGroup1, "keylock"), 0.0);
@@ -96,11 +97,77 @@ TEST_F(EngineBufferTest, SlowRubberBand) {
     ProcessBuffer();
     EXPECT_EQ(m_pMockScaleKeylock1, m_pChannel1->getEngineBuffer()->m_pScale);
 
-    // With Rubberband, the scaler should be linear
+    // With Rubberband, and transport stopped it should be still keylock 
     ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
                        static_cast<double>(EngineBuffer::RUBBERBAND));
+    ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), 0.0);
+    ProcessBuffer();
+    EXPECT_EQ(m_pMockScaleKeylock1, m_pChannel1->getEngineBuffer()->m_pScale);
+
+    ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), 0.0072);
+
+    // Paying at low rate, the vinyl scaler should be used
     ProcessBuffer();
     EXPECT_EQ(m_pMockScaleVinyl1, m_pChannel1->getEngineBuffer()->m_pScale);
+}
+
+
+TEST_F(EngineBufferTest, ScalerNoTransport) {
+    // normaly use the Vinyl scaler
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ProcessBuffer();
+    EXPECT_EQ(m_pMockScaleVinyl1, m_pChannel1->getEngineBuffer()->m_pScale);
+
+    // switch to keylock scaler
+    ControlObject::set(ConfigKey(m_sGroup1, "keylock"), 1.0);
+    ProcessBuffer();
+    EXPECT_EQ(m_pMockScaleKeylock1, m_pChannel1->getEngineBuffer()->m_pScale);
+
+    // Stop and disable keylock: do not change scaler
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "keylock"), 0.0);
+    ProcessBuffer();
+    EXPECT_EQ(m_pMockScaleKeylock1, m_pChannel1->getEngineBuffer()->m_pScale);
+
+    // play: we need to use vinyl scaler
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ProcessBuffer();
+    EXPECT_EQ(m_pMockScaleVinyl1, m_pChannel1->getEngineBuffer()->m_pScale);
+}
+
+TEST_F(EngineBufferTest, VinylScalerRampZero) {
+    // scratch in play mode
+    ControlObject::set(ConfigKey(m_sGroup1, "scratch2_enable"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "scratch2"), 1.0);
+
+    ProcessBuffer();
+    EXPECT_EQ(m_pMockScaleVinyl1, m_pChannel1->getEngineBuffer()->m_pScale);
+    EXPECT_EQ(m_pMockScaleVinyl1->getProcessedTempo(), 1.0);
+
+    ControlObject::set(ConfigKey(m_sGroup1, "scratch2"), 0.0);
+
+    // we are in scratching mode so a zero rate has to be processed
+    ProcessBuffer();
+    EXPECT_EQ(m_pMockScaleVinyl1, m_pChannel1->getEngineBuffer()->m_pScale);
+    EXPECT_EQ(m_pMockScaleVinyl1->getProcessedTempo(), 0.0);
+}
+
+TEST_F(EngineBufferTest, ReadFadeOut) {
+    // Start playing
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+
+    ProcessBuffer();
+    EXPECT_EQ(m_pMockScaleVinyl1, m_pChannel1->getEngineBuffer()->m_pScale);
+    EXPECT_EQ(m_pMockScaleVinyl1->getProcessedTempo(), 1.0);
+
+    // pause
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
+
+    // The scaler need to be processed with the old rate to
+    // prepare the crossfade buffer
+    ProcessBuffer();
+    EXPECT_EQ(m_pMockScaleVinyl1, m_pChannel1->getEngineBuffer()->m_pScale);
+    EXPECT_EQ(m_pMockScaleVinyl1->getProcessedTempo(), 1.0);
 }
 
 TEST_F(EngineBufferTest, ResetPitchAdjustUsesLinear) {

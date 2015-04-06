@@ -11,13 +11,17 @@ using mixxx::track::io::key::ChromaticKey;
 using mixxx::track::io::key::ChromaticKey_IsValid;
 
 // OpenKey notation, the numbers 1-12 followed by d (dur, major) or m (moll, minor).
-static const char* s_openKeyPattern = "(1[0-2]|[1-9])([dm])";
+static const char* s_openKeyPattern = "^\\s*(1[0-2]|[1-9])([dm])\\s*$";
 
 // Lancelot notation, the numbers 1-12 followed by a (minor) or b (major).
-static const char* s_lancelotKeyPattern = "(1[0-2]|[1-9])([ab])";
+static const char* s_lancelotKeyPattern = "^\\s*(1[0-2]|[1-9])([ab])\\s*$";
 
-// a-g followed by any number of sharps or flats.
-static const char* s_keyPattern = "([a-g])([#♯b♭]*m?)";
+// a-g followed by any number of sharps or flats, optionally followed by
+// a scale spec (m = minor, min, maj)
+// anchor the pattern so we don't get accidental sub-string matches
+// (?:or)? allows unabbreviated major|minor without capturing
+static const char* s_keyPattern = "^\\s*([a-g])([#♯b♭]*)"
+    "(min(?:or)?|maj(?:or)?|m)?\\s*$";
 
 static const QString s_sharpSymbol = QString::fromUtf8("♯");
 static const QString s_flatSymbol = QString::fromUtf8("♭");
@@ -200,12 +204,22 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
         int steps = 0;
         for (QString::const_iterator it = adjustments.begin();
              it != adjustments.end(); ++it) {
-            // An m only comes at the end and
-            if (it->toLower() == 'm') {
-                major = false;
-                break;
-            }
             steps += (*it == '#' || *it == s_sharpSymbol[0]) ? 1 : -1;
+        }
+
+        QString scale = keyMatcher.cap(3);
+        // we override major if a scale definition exists
+        if (! scale.isEmpty()) {
+            if (scale.compare("m", Qt::CaseInsensitive) == 0) {
+                major = false;
+            } else if (scale.startsWith("min", Qt::CaseInsensitive)) {
+                major = false;
+            } else if (scale.startsWith("maj", Qt::CaseInsensitive)) {
+                major = true;
+            } else {
+                qDebug() << "WARNING: scale from regexp has unexpected value."
+                  " should never happen";
+            }
         }
 
         ChromaticKey letterKey = static_cast<ChromaticKey>(

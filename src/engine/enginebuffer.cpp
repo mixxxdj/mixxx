@@ -77,6 +77,7 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
           m_filepos_play(0.),
           m_speed_old(0),
           m_scratching_old(false),
+          m_reverse_old(false),
           m_pitch_old(0),
           m_baserate_old(0),
           m_rate_old(0.),
@@ -91,8 +92,6 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
           m_pRepeat(NULL),
           m_startButton(NULL),
           m_endButton(NULL),
-          m_pScale(NULL),
-          m_bScalerChanged(false),
           m_bScalerOverride(false),
           m_iSeekQueued(NO_SEEK),
           m_iEnableSyncQueued(SYNC_REQUEST_NONE),
@@ -283,7 +282,9 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
         m_pScaleKeylock = m_pScaleRB;
     }
     m_pScaleVinyl = m_pScaleLinear;
-    enableIndependentPitchTempoScaling(false, 0);
+    m_pScale = m_pScaleVinyl;
+    m_pScale->clear();
+    m_bScalerChanged = true;
 
     m_pPassthroughEnabled.reset(new ControlObjectSlave(group, "passthrough", this));
     m_pPassthroughEnabled->connectValueChanged(this, SLOT(slotPassthroughChanged(double)),
@@ -360,17 +361,19 @@ void EngineBuffer::enableIndependentPitchTempoScaling(bool bEnable,
     // interpolation code (EngineBufferScaleLinear). It is faster and sounds
     // much better for scratching.
 
-    // m_pScaleKeylock could change out from under us, so cache it.
+    // m_pScaleKeylock and m_pScaleVinyl could change out from under us,
+    // so cache it.
     EngineBufferScale* keylock_scale = m_pScaleKeylock;
+    EngineBufferScale* vinyl_scale = m_pScaleVinyl;
 
     if (bEnable && m_pScale != keylock_scale) {
         readToCrossfadeBuffer(iBufferSize);
         m_pScale = keylock_scale;
         m_pScale->clear();
         m_bScalerChanged = true;
-    } else if (!bEnable && m_pScale != m_pScaleVinyl) {
+    } else if (!bEnable && m_pScale != vinyl_scale) {
         readToCrossfadeBuffer(iBufferSize);
-        m_pScale = m_pScaleVinyl;
+        m_pScale = vinyl_scale;
         m_pScale->clear();
         m_bScalerChanged = true;
     }
@@ -438,17 +441,11 @@ void EngineBuffer::requestSyncMode(SyncMode mode) {
 }
 
 void EngineBuffer::readToCrossfadeBuffer(const int iBufferSize) {
-    // During startup, scaler is null.
-    if (m_pScale == NULL) {
-        return;
-    }
     CSAMPLE* fadeout = m_pScale->getScaled(iBufferSize);
     SampleUtil::copy(m_pCrossfadeBuffer, fadeout, iBufferSize);
 
     // Restore the original position that was lost due to getScaled() above
     m_pReadAheadManager->notifySeek(m_filepos_play);
-    // Clear the current scale information
-    m_pScale->clear();
 
     m_bCrossfadeReady = true;
 }
@@ -460,8 +457,14 @@ void EngineBuffer::setNewPlaypos(double newpos) {
 
     m_filepos_play = newpos;
 
-    // Before seeking, read extra buffer for crossfading
-    readToCrossfadeBuffer(m_iLastBufferSize);
+    if (m_rate_old != 0.0) {
+        // Before seeking, read extra buffer for crossfading
+        // (calls notifySeek())
+        readToCrossfadeBuffer(m_iLastBufferSize);
+    } else {
+        m_pReadAheadManager->notifySeek(m_filepos_play);
+    }
+    m_pScale->clear();
 
     // Ensures that the playpos slider gets updated in next process call
     m_iSamplesCalculated = 1000000;
@@ -756,7 +759,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             baserate = ((double)m_trackSampleRateOld / sample_rate);
         }
 
-
+        // Note: play is also active during cue preview
         bool paused = m_playButton->get() == 0.0;
         KeyControl::PitchTempoRatio pitchTempoRatio = m_pKeyControl->getPitchTempoRatio();
 
@@ -764,9 +767,10 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         // pitch. 2.0 is a full octave shift up).
         double pitchRatio = pitchTempoRatio.pitchRatio;
         double tempoRatio = pitchTempoRatio.tempoRatio;
-        bool keylock_enabled = pitchTempoRatio.keylock;
+        const bool keylock_enabled = pitchTempoRatio.keylock;
 
         bool is_scratching = false;
+        bool is_reverse = false;
 
         // Update the slipped position and seek if it was disabled.
         processSlip(iBufferSize);
@@ -778,7 +782,9 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         // pass for every 1 real second). Depending on whether
         // keylock is enabled, this is applied to either the rate or the tempo.
         double speed = m_pRateControl->calculateSpeed(
-                baserate, tempoRatio, paused, iBufferSize, &is_scratching);
+                baserate, tempoRatio, paused, iBufferSize, &is_scratching, &is_reverse);
+
+        bool useIndependentPitchAndTempoScaling = false;
 
         // TODO(owen): Maybe change this so that rubberband doesn't disable
         // keylock on scratch. (just check m_pScaleKeylock == m_pScaleST)
@@ -790,49 +796,53 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             // High seek speeds also disables keylock.  Our pitch slider could go
             // to 90%, so that's the cutoff point.
 
-            // TODO: setting pitchRatio = speed ensures that the "offlinear"
-            // test below will not succeed.  We should find a better way
-            // to ensure that the keylock scaler is not used.
+            // Force pitchRatio to the linear pitch set by speed
             pitchRatio = speed;
-            keylock_enabled = false;
             // This is for the natural speed pitch found on turn tables
         } else if (fabs(speed) < 0.1 && m_pKeylockEngine->get() == RUBBERBAND) {
             // At very slow speeds, Rubberband performs memory allocations which
             // can cause underruns.  Disable keylock under these conditions.
+
+            // Force pitchRatio to the linear pitch set by speed
             pitchRatio = speed;
-            keylock_enabled = false;
-        } else if (!keylock_enabled) {
-            // We might have have temporary speed change, so adjust pitch if not locked
-            // Note: This will not update key and tempo widgets
-            if (tempoRatio) {
-                pitchRatio *= (speed/tempoRatio);
-            }
-        }
-
-        // If either keylock is enabled or the pitch is tweaked we
-        // need to use pitch and time scaling.
-        // Note: we have still click issue when changing the scaler
-
-        // const double kLinearScalerElipsis = 1.00058;
-
-        bool useIndependentPitchAndTempoScaling = false;
-        if (keylock_enabled) {
+        } else if (keylock_enabled) {
             // always use IndependentPitchAndTempoScaling
             // to avoid clicks when crossing the linear pitch
             // in this case it is most likely that the user
             // will have an non linear pitch
+            // Note: We have undesired noise when cossfading between scalers
             useIndependentPitchAndTempoScaling = true;
-        } else if (speed) {
-            double offlinear = pitchRatio / speed;
-            if (offlinear > kLinearScalerElipsis ||
-                    offlinear < 1 / kLinearScalerElipsis) {
-                // offlinear > 1 cent
-                // everything below is not hear-able
-                useIndependentPitchAndTempoScaling = true;
+        } else {
+            // We might have have temporary speed change, so adjust pitch if not locked
+            // Note: This will not update key and tempo widgets
+            if (tempoRatio) {
+                pitchRatio *= (speed / tempoRatio);
+            }
+
+            // Check if we are off-linear (musical key has been adjusted
+            // independent from speed) to determine if the keylock scaler
+            // should be used even though keylock is disabled.
+            if (speed != 0.0) {
+                double offlinear = pitchRatio / speed;
+                if (offlinear > kLinearScalerElipsis ||
+                        offlinear < 1 / kLinearScalerElipsis) {
+                    // only enable keylock scaler if pitch adjustment is at
+                    // least 1 cent. Everything below is not hear-able.
+                    useIndependentPitchAndTempoScaling = true;
+                }
             }
         }
-        enableIndependentPitchTempoScaling(useIndependentPitchAndTempoScaling,
-                                           iBufferSize);
+
+        if (speed != 0.0) {
+            // Do not switch scaler when we have no transport
+            enableIndependentPitchTempoScaling(useIndependentPitchAndTempoScaling,
+                                               iBufferSize);
+        } else if (m_speed_old && !is_scratching) {
+            // we are stopped, collect samples for fade out
+            readToCrossfadeBuffer(iBufferSize);
+            // Clear the scaler information
+            m_pScale->clear();
+        }
 
         // How speed/tempo/pitch are related:
         // Processing is done in two parts, the first part is calculated inside
@@ -888,18 +898,25 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             // wanted rate!  Make sure new scaler has proper position. This also
             // crossfades between the old scaler and new scaler to prevent
             // clicks.
-            if (m_pScale != m_pScaleVinyl) { // linear scaler does this part for us now
+
+            // Handle direction change.
+            // The linear scaler supports ramping though zero.
+            // This is used for scratching, but not for reverse
+            // For the other, crossfade forward and backward samples
+            if ((m_speed_old * speed < 0) &&  // Direction has changed!
+                    (m_pScale != m_pScaleVinyl || // only m_pScaleLinear supports going though 0
+                           m_reverse_old != is_reverse)) { // no pitch change when reversing
                 //XXX: Trying to force RAMAN to read from correct
                 //     playpos when rate changes direction - Albert
-                if ((m_speed_old <= 0 && speed > 0) ||
-                    (m_speed_old >= 0 && speed < 0)) {
-                    readToCrossfadeBuffer(iBufferSize);
-                }
+                readToCrossfadeBuffer(iBufferSize);
+                // Clear the scaler information
+                m_pScale->clear();
             }
 
             m_baserate_old = baserate;
             m_speed_old = speed;
             m_pitch_old = pitchRatio;
+            m_reverse_old = is_reverse;
 
             // Now we need to update the scaler with the master sample rate, the
             // base rate (ratio between sample rate of the source audio and the
@@ -915,7 +932,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             // consumed relative to playing back the track at its native sample
             // rate and normal speed. pitch_adjust does not change the playback
             // rate.
-            m_rate_old = rate = baserate * speed;
+            rate = baserate * speed;
 
             // Scaler is up to date now.
             m_bScalerChanged = false;
@@ -929,12 +946,24 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         bool at_end = m_filepos_play >= m_trackSamplesOld;
         bool backwards = rate < 0;
 
-        // If we're playing past the end, playing before the start, or standing
-        // still then by definition the buffer is paused.
-        bCurBufferPaused = (rate == 0 || (at_end && !backwards));
+        if (at_end && !backwards) {
+            // do not play past end
+            bCurBufferPaused = true;
+        } else if (rate == 0 &&
+                (m_rate_old == 0 || !is_scratching)) {
+            // do not process samples if have no transport
+            // the linear scaler supports ramping down to 0
+            bCurBufferPaused = true;
+        }
+
+        m_rate_old = rate;
 
         // If the buffer is not paused, then scale the audio.
         if (!bCurBufferPaused) {
+            //if (rate == 0) {
+            //    qDebug() << "ramp to rate 0";
+            //}
+
             // The fileposition should be: (why is this thing a double anyway!?
             // Integer valued.
             double playFrame = m_filepos_play / kSamplesPerFrame;
@@ -948,11 +977,11 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             CSAMPLE* output = m_pScale->getScaled(iBufferSize);
             double samplesRead = m_pScale->getSamplesRead();
 
-            // qDebug() << "sourceSamples used " << iSourceSamples
-            //          <<" samplesRead " << samplesRead
-            //          << ", buffer pos " << iBufferStartSample
-            //          << ", play " << filepos_play
-            //          << " bufferlen " << iBufferSize;
+            //qDebug() << "sourceSamples used " << iSourceSamples
+            //         <<" samplesRead " << samplesRead
+            //         << ", buffer pos " << iBufferStartSample
+            //         << ", play " << filepos_play
+            //         << " bufferlen " << iBufferSize;
 
             // Copy scaled audio into pOutput
             SampleUtil::copy(pOutput, output, iBufferSize);
@@ -962,17 +991,18 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
                 m_filepos_play += samplesRead;
             } else {
                 // Adjust filepos_play by the amount we processed. TODO(XXX) what
-                // happens if samplesRead is a fraction?
+                // happens if samplesRead is a fraction ?
                 m_filepos_play =
                         m_pReadAheadManager->getEffectiveVirtualPlaypositionFromLog(
                                 static_cast<int>(m_filepos_play), samplesRead);
             }
+        } else {
+            SampleUtil::clear(pOutput, iBufferSize);
         }
 
         if (m_bCrossfadeReady) {
             SampleUtil::linearCrossfadeBuffers(
-                pOutput, m_pCrossfadeBuffer, pOutput, iBufferSize);
-            m_bCrossfadeReady = false;
+                    pOutput, m_pCrossfadeBuffer, pOutput, iBufferSize);
         }
 
         QListIterator<EngineControl*> it(m_engineControls);
@@ -1045,8 +1075,8 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         }
     }
 
-    //let's try holding the last sample value constant, and pull it
-    //towards zero
+    // let's try holding the last sample value constant, and pull it
+    // towards zero
     float ramp_inc = 0;
     if (m_iRampState == ENGINE_RAMP_UP ||
         m_iRampState == ENGINE_RAMP_DOWN) {
@@ -1054,12 +1084,14 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         ramp_inc = static_cast<double>(m_iRampState * 300) / sample_rate;
 
         for (int i=0; i < iBufferSize; i += 2) {
-            if (bCurBufferPaused) {
+            if (bCurBufferPaused && !m_bCrossfadeReady) {
+                //qDebug() << "ramp dither";
                 CSAMPLE dither = m_pDitherBuffer[m_iDitherBufferReadIndex];
                 m_iDitherBufferReadIndex = (m_iDitherBufferReadIndex + 1) % MAX_BUFFER_LEN;
                 pOutput[i] = m_fLastSampleValue[0] * m_fRampValue + dither;
                 pOutput[i+1] = m_fLastSampleValue[1] * m_fRampValue + dither;
             } else {
+                //qDebug() << "ramp buffer";
                 pOutput[i] = pOutput[i] * m_fRampValue;
                 pOutput[i+1] = pOutput[i+1] * m_fRampValue;
             }
@@ -1073,8 +1105,6 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
                 m_fRampValue = 0.0;
             }
         }
-    } else if (m_fRampValue == 0.0) {
-        SampleUtil::clear(pOutput, iBufferSize);
     }
 
     if ((!bCurBufferPaused && m_iRampState == ENGINE_RAMP_NONE) ||
@@ -1097,6 +1127,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
 
     m_bLastBufferPaused = bCurBufferPaused;
     m_iLastBufferSize = iBufferSize;
+    m_bCrossfadeReady = false;
 }
 
 void EngineBuffer::processSlip(int iBufferSize) {
@@ -1348,6 +1379,7 @@ void EngineBuffer::setScalerForTest(EngineBufferScale* pScaleVinyl,
     m_pScaleKeylock = pScaleKeylock;
     m_pScale = m_pScaleVinyl;
     m_pScale->clear();
+    m_bScalerChanged = true;
     // This bool is permanently set and can't be undone.
     m_bScalerOverride = true;
 }
