@@ -103,6 +103,7 @@ class AutoPanEffect : public PerChannelEffectProcessor<PanGroupState> {
     EngineEffectParameter* m_pSmoothingParameter;
     EngineEffectParameter* m_pPeriodParameter;
     EngineEffectParameter* m_pDelayParameter;
+    EngineEffectParameter* m_pWidthParameter;
     
     DISALLOW_COPY_AND_ASSIGN(AutoPanEffect);
 };
