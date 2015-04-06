@@ -6,6 +6,8 @@
 #include "util/math.h"
 #include "playermanager.h"
 #include "basetrackplayer.h"
+#include "engine/enginebuffer.h"
+
 
 #define kConfigKey "[Auto DJ]"
 const char* kTransitionPreferenceName = "Transition";
@@ -64,6 +66,10 @@ void DeckAttributes::slotTrackUnloaded(TrackPointer pTrack) {
 
 TrackPointer DeckAttributes::getLoadedTrack() const {
     return m_pPlayer != NULL ? m_pPlayer->getLoadedTrack() : TrackPointer();
+}
+
+EngineDeck* DeckAttributes::getLoadedEngineDeck() const {
+    return m_pPlayer != NULL ? m_pPlayer->getEngineDeck() : NULL;
 }
 
 AutoDJProcessor::AutoDJProcessor(QObject* pParent,
@@ -194,9 +200,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::fadeNow() {
         double crossfader = getCrossfader();
         DeckAttributes& leftDeck = *m_decks[0];
         DeckAttributes& rightDeck = *m_decks[1];
-        qDebug() << "AutoDJProcessor::fadeNow : xfader " << crossfader;
         if (crossfader <= 0.3 && leftDeck.isPlaying()) {
-            qDebug() << "AutoDJProcessor::fadeNow : deck left ";
             // Make sure leftDeck.fadeDuration is up to date.
             calculateFadeThresholds(&leftDeck);
 
@@ -205,7 +209,6 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::fadeNow() {
             // Repeat is disabled by FadeNow but disables auto Fade
             leftDeck.setRepeat(false);
         } else if (crossfader >= -0.3 && rightDeck.isPlaying()) {
-            qDebug() << "AutoDJProcessor::fadeNow : deck right ";
             // Make sure rightDeck.fadeDuration is up to date.
             calculateFadeThresholds(&rightDeck);
 
@@ -685,12 +688,21 @@ void AutoDJProcessor::calculateFadeThresholds(DeckAttributes* pAttributes) {
                 transitionDuration = m_iTransitionTime;
                 qDebug() << "calculateFadeThresholds m_iTransitionTime = " << m_iTransitionTime;
             } else if (m_eTransitionUnit == BEATS) {
-                qDebug() << "calculateFadeThresholds bpm = " << loadedTrack->getBpm();
-                // todo (jclaveau) : is getBpm always > 0?
-                double beatsDuration = 60 / loadedTrack->getBpm();
-                qDebug() << "calculateFadeThresholds beats duration = " << beatsDuration;
+                // todo (jclaveau) : should the bpm e retrieved like that?
+                // ControlObjectSlave* m_pPitch;
+                // m_pSpeed = new ControlObjectSlave(group, "rate");
+                EngineDeck* deck = pAttributes->getLoadedEngineDeck();
+                double bpm;
+                if (deck) {
+                    bpm = pAttributes->getLoadedEngineDeck()->getEngineBuffer()
+                            ->getBpm();
+                } else {
+                    bpm = loadedTrack->getBpm();
+                }
+                qDebug() << "calculateFadeThresholds bpm = " << bpm;
+                
                 qDebug() << "calculateFadeThresholds m_iTransitionBeats = " << m_iTransitionBeats;
-                transitionDuration = beatsDuration * m_iTransitionBeats;
+                transitionDuration = 60 / bpm * m_iTransitionBeats;
             }
             
             // The track might be shorter than the transition period. Use a
