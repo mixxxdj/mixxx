@@ -684,7 +684,17 @@ void AutoDJProcessor::calculateFadeThresholds(DeckAttributes* pAttributes) {
                 qDebug() << "calculateFadeThresholds m_iTransitionTime = " << m_iTransitionTime;
             } else if (m_eTransitionUnit == BEATS) {
                 qDebug() << "calculateFadeThresholds m_iTransitionBeats = " << m_iTransitionBeats;
-                transitionDuration = 60 / loadedTrack->getBpm() * m_iTransitionBeats;
+                double beatDuration = 60 / loadedTrack->getBpm();
+                double periodsBeats = floor(loadedTrack->getDuration() / beatDuration / 8) * 8;
+                double beatsBeforeTransition = periodsBeats - m_iTransitionBeats;
+                
+                transitionDuration = loadedTrack->getDuration() - beatsBeforeTransition * beatDuration;
+                
+//                transitionDuration = 60 / loadedTrack->getBpm() * m_iTransitionBeats;
+//                qDebug() << "calculateFadeThresholds beatsCount = " << periodsCount;
+                qDebug() << "calculateFadeThresholds duration = " << loadedTrack->getDuration();
+                qDebug() << "calculateFadeThresholds title = " << loadedTrack->getTitle();
+                qDebug() << "calculateFadeThresholds beatsBeforeTransition = " << beatsBeforeTransition;
             }
             
             // The track might be shorter than the transition period. Use a
