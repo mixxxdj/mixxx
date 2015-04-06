@@ -132,11 +132,6 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
     //       1  / ( 1 - 2 * stepfrac)
     float a = stepFrac != 0.5f ? 1.0f / (1.0f - stepFrac * 2.0f) : 1.0f;
     
-    // define the increasing of gain (the music sounds lower if only one 
-    // channel is enabled).
-    // TODO(jclaveau) : Challenge this value
-    float lawCoef = 1.0f / sqrtf(2.0f) * 2.0f;
-    
     // size of a segment of slope (controled by the "strength" parameter)
     float u = (0.5f - stepFrac) / 2.0f;
     
@@ -146,9 +141,6 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
     // prepare the delay buffer
     float delay = round(m_pDelayParameter->value() * sampleRate);
     gs.delay->setDelay(delay);
-//    gs.delay->process(pInput, pOutput, numSamples);
-//    gs.delay->process(pInput, gs.m_pDelayBuf, numSamples);
-//    SampleUtil::copyWithGain(pOutput,
     
     for (unsigned int i = 0; i + 1 < numSamples; i += 2) {
         
@@ -172,36 +164,16 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
             angleFraction = (periodFraction - stepsFractionPart) * a;
         }
         
-        // transforms the angleFraction into a sinusoid (but between 0 and 1)
+        // transforms the angleFraction into a sinusoid (but between 0 and 1).
+        // The width parameter modulates the two limits. if width values 0.5,
+        // the limits will be 0.25 and 0.75. If it's 0, it will be 0.5 and 0.5
+        // so the sound will be stuck at the center. If it values 1, the limits 
+        // will be 0 and 1 (full left and full right).
         gs.frac.setWithRampingApplied(
             (sin(M_PI * 2.0f * angleFraction) * width + 1.0f) / 2.0f);
         
-        // delay on the reducing channel
-        // todo (jclaveau) : this produces clics, especially when the period 
-        // is short.
-        /*
-        if (quarter == 0.0 || quarter == 3.0){
-            // channel 1 increasing (left)
-            pOutput[i] = pInput[i] * gs.frac * lawCoef;
-            pOutput[i+1] = gs.m_pDelayBuf[i+1] * (1.0f - gs.frac) * lawCoef;
-            
-        } else {
-            // channel 2 increasing (right)
-            pOutput[i] = gs.m_pDelayBuf[i] * gs.frac * lawCoef;
-            pOutput[i+1] = pInput[i+1] * (1.0f - gs.frac) * lawCoef;
-        }
-        */
-        // pOutput[i+1] = gs.m_pDelayBuf[i+1] * (1.0f - gs.frac) * lawCoef;
-        // pOutput[i] = gs.m_pDelayBuf[i] * gs.frac * lawCoef;
-        
-        pOutput[i] = pInput[i] * gs.frac * lawCoef;
-        pOutput[i+1] = pInput[i+1] * (1.0f - gs.frac) * lawCoef;
-        
-//        pOutput[i] = pOutput[i] * gs.frac * lawCoef;
-//        pOutput[i+1] = pOutput[i+1] * (1.0f - gs.frac) * lawCoef;
-        
-//        pOutput[i] = gs.m_pDelayBuf[i] * gs.frac * lawCoef;
-//        pOutput[i+1] = gs.m_pDelayBuf[i+1] * (1.0f - gs.frac) * lawCoef;
+        pOutput[i] = pInput[i] * gs.frac;
+        pOutput[i+1] = pInput[i+1] * (1.0f - gs.frac);
         
         gs.time++;
     }
