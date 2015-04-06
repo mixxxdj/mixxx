@@ -6,7 +6,6 @@
 #include "util/math.h"
 #include "playermanager.h"
 #include "basetrackplayer.h"
-#include "engine/enginebuffer.h"
 
 
 #define kConfigKey "[Auto DJ]"
@@ -66,10 +65,6 @@ void DeckAttributes::slotTrackUnloaded(TrackPointer pTrack) {
 
 TrackPointer DeckAttributes::getLoadedTrack() const {
     return m_pPlayer != NULL ? m_pPlayer->getLoadedTrack() : TrackPointer();
-}
-
-EngineDeck* DeckAttributes::getLoadedEngineDeck() const {
-    return m_pPlayer != NULL ? m_pPlayer->getEngineDeck() : NULL;
 }
 
 AutoDJProcessor::AutoDJProcessor(QObject* pParent,
@@ -688,21 +683,8 @@ void AutoDJProcessor::calculateFadeThresholds(DeckAttributes* pAttributes) {
                 transitionDuration = m_iTransitionTime;
                 qDebug() << "calculateFadeThresholds m_iTransitionTime = " << m_iTransitionTime;
             } else if (m_eTransitionUnit == BEATS) {
-                // todo (jclaveau) : should the bpm e retrieved like that?
-                // ControlObjectSlave* m_pPitch;
-                // m_pSpeed = new ControlObjectSlave(group, "rate");
-                EngineDeck* deck = pAttributes->getLoadedEngineDeck();
-                double bpm;
-                if (deck) {
-                    bpm = pAttributes->getLoadedEngineDeck()->getEngineBuffer()
-                            ->getBpm();
-                } else {
-                    bpm = loadedTrack->getBpm();
-                }
-                qDebug() << "calculateFadeThresholds bpm = " << bpm;
-                
                 qDebug() << "calculateFadeThresholds m_iTransitionBeats = " << m_iTransitionBeats;
-                transitionDuration = 60 / bpm * m_iTransitionBeats;
+                transitionDuration = 60 / loadedTrack->getBpm() * m_iTransitionBeats;
             }
             
             // The track might be shorter than the transition period. Use a

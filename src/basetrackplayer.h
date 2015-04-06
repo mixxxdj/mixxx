@@ -24,7 +24,6 @@ class BaseTrackPlayer : public BasePlayer {
     virtual ~BaseTrackPlayer() {}
 
     virtual TrackPointer getLoadedTrack() const = 0;
-    virtual EngineDeck* getEngineDeck() const = 0;
 
   public slots:
     virtual void slotLoadTrack(TrackPointer pTrack, bool bPlay=false) = 0;

@@ -11,7 +11,6 @@
 #include "library/playlisttablemodel.h"
 #include "engine/enginechannel.h"
 #include "controlobjectslave.h"
-#include "engine/enginedeck.h"
 
 
 class ControlPushButton;
@@ -64,7 +63,6 @@ class DeckAttributes : public QObject {
     }
 
     TrackPointer getLoadedTrack() const;
-    EngineDeck* getLoadedEngineDeck() const;
 
   signals:
     void playChanged(DeckAttributes* deck, bool playing);
