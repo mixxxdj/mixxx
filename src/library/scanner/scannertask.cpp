@@ -7,6 +7,8 @@ ScannerTask::ScannerTask(LibraryScanner* pScanner,
           m_scannerGlobal(scannerGlobal),
           m_success(false) {
     setAutoDelete(true);
+    connect(this, SIGNAL(directoryHashed(QString, bool, int)),
+            this, SIGNAL(directoryHashedAndScanned(QString, bool, int)));
 }
 
 ScannerTask::~ScannerTask() {

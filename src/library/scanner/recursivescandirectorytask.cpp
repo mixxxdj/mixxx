@@ -79,11 +79,14 @@ void RecursiveScanDirectoryTask::run() {
     if (prevHash != newHash) {
         // Rescan that mofo! If importing fails then the scan was cancelled so
         // we return immediately.
-        m_pScanner->queueTask(new ImportFilesTask(m_pScanner, m_scannerGlobal,
-                                                  dirPath, newHash, prevHashExists,
-                                                  filesToImport, possibleCovers,
-                                                  m_pToken));
-
+        if (!filesToImport.isEmpty()) {
+            m_pScanner->queueTask(new ImportFilesTask(m_pScanner, m_scannerGlobal,
+                                                    dirPath, newHash, prevHashExists,
+                                                    filesToImport, possibleCovers,
+                                                    m_pToken));
+        } else {
+            emit(directoryHashed(dirPath, !prevHashExists, newHash));
+        }
     } else {
         emit(directoryUnchanged(dirPath));
     }
