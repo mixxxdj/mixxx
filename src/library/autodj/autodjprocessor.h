@@ -111,6 +111,12 @@ class AutoDJProcessor : public QObject {
         ADJ_DECKS_3_4_PLAYING,
     };
 
+    enum TransitionUnit {
+        SECONDS,
+        BEATS
+    };
+    enum TransitionUnit m_eTransitionUnit;
+    
     AutoDJProcessor(QObject* pParent,
                     ConfigObject<ConfigValue>* pConfig,
                     PlayerManagerInterface* pPlayerManager,
@@ -154,6 +160,7 @@ class AutoDJProcessor : public QObject {
 
     void controlEnable(double value);
     void controlFadeNow(double value);
+    void controlFadeUnit(double value);
     void controlShuffle(double value);
     void controlSkipNext(double value);
 
@@ -183,6 +190,7 @@ class AutoDJProcessor : public QObject {
 
     AutoDJState m_eState;
     int m_iTransitionTime;
+    int m_iTransitionBeats;
 
     QList<DeckAttributes*> m_decks;
 
@@ -191,6 +199,7 @@ class AutoDJProcessor : public QObject {
 
     ControlPushButton* m_pSkipNext;
     ControlPushButton* m_pFadeNow;
+    ControlPushButton* m_pFadeUnit;
     ControlPushButton* m_pShufflePlaylist;
     ControlPushButton* m_pEnabledAutoDJ;
 

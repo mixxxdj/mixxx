@@ -35,6 +35,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void shufflePlaylistButton(bool buttonChecked);
     void skipNextButton(bool buttonChecked);
     void fadeNowButton(bool buttonChecked);
+    void toggleFadeUnit(bool buttonChecked);
     void toggleAutoDJButton(bool enable);
     void transitionTimeChanged(int time);
     void transitionSliderChanged(int value);
@@ -49,9 +50,14 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void trackSelected(TrackPointer pTrack);
 
   private:
+    enum TransitionUnit {
+        SECONDS,
+        BEATS
+    };
     AutoDJProcessor* m_pAutoDJProcessor;
     WTrackTableView* m_pTrackTableView;
     PlaylistTableModel* m_pAutoDJTableModel;
+    enum TransitionUnit m_eTransitionUnit;
 };
 
 #endif //DLGAUTODJ_H
