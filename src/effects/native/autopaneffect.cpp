@@ -58,8 +58,22 @@ EffectManifest AutoPanEffect::getManifest() {
     delay->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     delay->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     delay->setMinimum(0.0);
-    delay->setMaximum(0.02);    // 0.02 * sampleRate => 20ms
+//    delay->setMaximum(0.02);    // 0.02 * sampleRate => 20ms
+    delay->setMaximum(0.1);    // 0.02 * sampleRate => 20ms
     delay->setDefault(0.01);
+    
+    // Width : applied on the channel with gain reducing.
+    EffectManifestParameter* width = manifest.addParameter();
+    width->setId("width");
+    width->setName(QObject::tr("width"));
+    width->setDescription("Controls length of the width");
+    width->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
+    width->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    width->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    width->setMinimum(0.0);
+//    delay->setMaximum(0.02);    // 0.02 * sampleRate => 20ms
+    width->setMaximum(1.0);    // 0.02 * sampleRate => 20ms
+    width->setDefault(0.00);
     
     return manifest;
 }
@@ -68,7 +82,8 @@ AutoPanEffect::AutoPanEffect(EngineEffect* pEffect, const EffectManifest& manife
         : 
           m_pSmoothingParameter(pEffect->getParameterById("smoothing")),
           m_pPeriodParameter(pEffect->getParameterById("period")),
-          m_pDelayParameter(pEffect->getParameterById("delay"))
+          m_pDelayParameter(pEffect->getParameterById("delay")),
+          m_pWidthParameter(pEffect->getParameterById("width"))
            {
     Q_UNUSED(manifest);
 }
@@ -90,6 +105,7 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
         return;
     }
     
+    CSAMPLE width = m_pWidthParameter->value();
     CSAMPLE period = m_pPeriodParameter->value();
     if (groupFeatures.has_beat_length) {
         // 1/8, 1/4, 1/2, 1, 2, 4, 8, 16, 32, 64
@@ -130,10 +146,9 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
     // prepare the delay buffer
     float delay = round(m_pDelayParameter->value() * sampleRate);
     gs.delay->setDelay(delay);
-    gs.delay->process(pInput, gs.m_pDelayBuf, numSamples);
-    SampleUtil::copy1WithRampingGain(pOutput,
-            gs.m_pDelayBuf, pInput, pInput,
-            numSamples);
+//    gs.delay->process(pInput, pOutput, numSamples);
+//    gs.delay->process(pInput, gs.m_pDelayBuf, numSamples);
+//    SampleUtil::copyWithGain(pOutput,
     
     for (unsigned int i = 0; i + 1 < numSamples; i += 2) {
         
@@ -159,7 +174,7 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
         
         // transforms the angleFraction into a sinusoid (but between 0 and 1)
         gs.frac.setWithRampingApplied(
-            (sin(M_PI * 2.0f * angleFraction) + 1.0f) / 2.0f);
+            (sin(M_PI * 2.0f * angleFraction) * width + 1.0f) / 2.0f);
         
         // delay on the reducing channel
         // todo (jclaveau) : this produces clics, especially when the period 
@@ -179,13 +194,23 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
         // pOutput[i+1] = gs.m_pDelayBuf[i+1] * (1.0f - gs.frac) * lawCoef;
         // pOutput[i] = gs.m_pDelayBuf[i] * gs.frac * lawCoef;
         
-        // pOutput[i] = pInput[i] * gs.frac * lawCoef;
-        // pOutput[i+1] = pInput[i+1] * (1.0f - gs.frac) * lawCoef;
-        pOutput[i] = pOutput[i] * gs.frac * lawCoef;
-        pOutput[i+1] = pOutput[i+1] * (1.0f - gs.frac) * lawCoef;
+        pOutput[i] = pInput[i] * gs.frac * lawCoef;
+        pOutput[i+1] = pInput[i+1] * (1.0f - gs.frac) * lawCoef;
+        
+//        pOutput[i] = pOutput[i] * gs.frac * lawCoef;
+//        pOutput[i+1] = pOutput[i+1] * (1.0f - gs.frac) * lawCoef;
+        
+//        pOutput[i] = gs.m_pDelayBuf[i] * gs.frac * lawCoef;
+//        pOutput[i+1] = gs.m_pDelayBuf[i+1] * (1.0f - gs.frac) * lawCoef;
         
         gs.time++;
     }
+    
+    gs.delay->process(pOutput, pOutput, numSamples);
+    
+//    SampleUtil::addWithGain(pOutput,
+//            pOutput, 0.9,
+//            numSamples);
     
     /**/
     qDebug()
