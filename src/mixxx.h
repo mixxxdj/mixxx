@@ -141,6 +141,9 @@ class MixxxMainWindow : public QMainWindow {
     // can alert the user if a mic is not configured.
     void slotTalkoverChanged(int);
 
+    void toggleCheckedSamplers();
+    void changeWindowTitle(QString title);
+
   signals:
     void newSkinLoaded();
     void libraryScanStarted();
@@ -148,6 +151,7 @@ class MixxxMainWindow : public QMainWindow {
     // used to uncheck the menu when the dialog of develeoper tools is closed
     void developerToolsDlgClosed(int r);
     void closeDeveloperToolsDlgChecked(int r);
+    void currentPlayingTrackChanged(QString r);
 
   protected:
     // Event filter to block certain events (eg. tooltips if tooltips are disabled)
@@ -166,6 +170,9 @@ class MixxxMainWindow : public QMainWindow {
                           const QString& translationPath, QTranslator* pTranslator);
     void checkDirectRendering();
     bool confirmExit();
+
+    void linkSkinWidget(ControlObjectSlave** pCOS,
+                        ConfigKey key, const char* slot);
 
     // Pointer to the root GUI widget
     QWidget* m_pWidgetParent;
@@ -254,6 +261,8 @@ class MixxxMainWindow : public QMainWindow {
     QAction* m_pDeveloperStatsBase;
     DlgDeveloperTools* m_pDeveloperToolsDlg;
     QAction* m_pDeveloperDebugger;
+
+    ControlObjectSlave* m_pShowSamplers;
 
     int m_iNoPlaylists;
 
