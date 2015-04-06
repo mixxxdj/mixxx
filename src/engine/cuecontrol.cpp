@@ -94,8 +94,8 @@ CueControl::CueControl(QString group,
     m_pCueIndicator = new ControlIndicator(ConfigKey(group, "cue_indicator"));
     m_pPlayIndicator = new ControlIndicator(ConfigKey(group, "play_indicator"));
 
-    m_pVinylControlEnabled.reset(new ControlObjectSlave(group, "vinylcontrol_enabled"));
-    m_pVinylControlMode.reset(new ControlObjectSlave(group, "vinylcontrol_mode"));
+    m_pVinylControlEnabled = new ControlObjectSlave(group, "vinylcontrol_enabled");
+    m_pVinylControlMode = new ControlObjectSlave(group, "vinylcontrol_mode");
 }
 
 CueControl::~CueControl() {
@@ -111,6 +111,8 @@ CueControl::~CueControl() {
     delete m_pPlayStutter;
     delete m_pCueIndicator;
     delete m_pPlayIndicator;
+    delete m_pVinylControlEnabled;
+    delete m_pVinylControlMode;
     qDeleteAll(m_hotcueControl);
 }
 

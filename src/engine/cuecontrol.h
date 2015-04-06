@@ -154,8 +154,8 @@ class CueControl : public EngineControl {
     ControlPushButton* m_pCueGotoAndPlay;
     ControlPushButton* m_pCueGotoAndStop;
     ControlPushButton* m_pCuePreview;
-    QScopedPointer<ControlObjectSlave> m_pVinylControlEnabled;
-    QScopedPointer<ControlObjectSlave> m_pVinylControlMode;
+    ControlObjectSlave* m_pVinylControlEnabled;
+    ControlObjectSlave* m_pVinylControlMode;
 
     TrackPointer m_pLoadedTrack;
 
