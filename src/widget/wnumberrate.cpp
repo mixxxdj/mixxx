@@ -47,6 +47,6 @@ void WNumberRate::setValue(double) {
         sign = '-';
     }
 
-    setText(QString(m_qsText).append(sign)
-            .append("%1").arg(fabs(vsign)*100., 0, 'f', m_iNoDigits));
+    setText(QString(m_skinText).append(sign)
+            .append("%1").arg(fabs(vsign) * 100.0, 0, 'f', m_iNoDigits));
 }

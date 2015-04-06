@@ -571,7 +571,6 @@ class MixxxCore(Feature):
                    "engine/engineworkerscheduler.cpp",
                    "engine/enginebuffer.cpp",
                    "engine/enginebufferscale.cpp",
-                   "engine/enginebufferscaledummy.cpp",
                    "engine/enginebufferscalelinear.cpp",
                    "engine/enginefilterbiquad1.cpp",
                    "engine/enginefiltermoogladder4.cpp",

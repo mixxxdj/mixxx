@@ -23,7 +23,7 @@ class VinylControlControl : public EngineControl {
     bool isScratching();
 
   private slots:
-    void slotControlVinylSeek(double value);
+    void slotControlVinylSeek(double fractionalPos);
 
   private:
     ControlObject* m_pControlVinylRate;

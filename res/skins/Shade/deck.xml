@@ -1,14 +1,12 @@
 <Template>
 		<WidgetGroup>
-			<Pos>1,6</Pos>
-			<Size>369,255</Size>
+			<Size>369,198</Size>
 			<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-			<BackPath>style/style_bg_deck.png</BackPath>
 			<Children>
 				<!-- if we dont put all this in an extra child widget, the <NumberRate> will somehow
 				break the parent widgetgroup dimensions-->
 				<WidgetGroup>
-					<Size>369,250</Size>
+					<Size>369,198</Size>
 					<Pos>3,2</Pos>
 					<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; } </Style>
 					<Children>
@@ -276,7 +274,8 @@
 							<Property>title</Property>
 							<Channel><Variable name="channum"/></Channel>
 							<Pos>39,4</Pos>
-							<Size>310f,18</Size>
+							<Size>275f,18</Size>
+							<Elide>right</Elide>
 						</TrackProperty>
 	
 						<!--
@@ -292,7 +291,8 @@
 							<Property>artist</Property>
 							<Channel><Variable name="channum"/></Channel>
 							<Pos>39,24</Pos>
-							<Size>230f,18</Size>
+							<Size>210f,18</Size>
+							<Elide>right</Elide>
 						</TrackProperty>
 		
 						<!--
@@ -306,8 +306,8 @@
 							background-color: transparent; color: #191F24; text-align: left;padding-left: 1px; }
 							</Style>
 							<Channel><Variable name="channum"/></Channel>
-							<Pos>215,24</Pos>
-							<Size>100,18</Size>
+							<Pos>249,24</Pos>
+							<Size>66,18</Size>
 							<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 							<Alignment>right</Alignment>
 							<Connection>
@@ -708,11 +708,6 @@
 								<ConnectValueToWidget>false</ConnectValueToWidget>
 							</Connection>
 						</PushButton>
-	
- 						<Template src="skin:deck_transport.xml">
-							<SetVariable name="channum"><Variable name="channum"/></SetVariable>
-						</Template>	
-	
 					</Children>
 				</WidgetGroup>
 	

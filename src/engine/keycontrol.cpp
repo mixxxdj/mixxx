@@ -161,7 +161,7 @@ void KeyControl::slotRateChanged() {
 }
 
 void KeyControl::updateRate() {
-    //qDebug() << "KeyControl::slotRateChanged 1" << m_pitchRatio << m_speedSliderPitchRatio;
+    //qDebug() << "KeyControl::slotRateChanged 1" << m_pitchRateInfo.pitchRatio;
 
     // If rate is not 1.0 then we have to try and calculate the octave change
     // caused by it.
@@ -289,9 +289,9 @@ void KeyControl::updatePitch() {
     double pitch = m_pPitch->get();
 
     //qDebug() << "KeyControl::slotPitchChanged 1" << pitch <<
-    //        pitchRateInfo.pitchRatio <<
-    //        pitchRateInfo.pitchTweakRatio <<
-    //        pitchRateInfo.tempoRatio;
+    //        m_pitchRateInfo.pitchRatio <<
+    //        m_pitchRateInfo.pitchTweakRatio <<
+    //        m_pitchRateInfo.tempoRatio;
 
     double speedSliderPitchRatio =
             m_pitchRateInfo.pitchRatio / m_pitchRateInfo.pitchTweakRatio;
@@ -306,9 +306,9 @@ void KeyControl::updatePitch() {
     updateKeyCOs(dFileKey, KeyUtils::powerOf2ToOctaveChange(pitchKnobRatio));
 
     //qDebug() << "KeyControl::slotPitchChanged 2" << pitch <<
-    //        pitchRateInfo.pitchRatio <<
-    //        pitchRateInfo.pitchTweakRatio <<
-    //        pitchRateInfo.tempoRatio;
+    //        m_pitchRateInfo.pitchRatio <<
+    //        m_pitchRateInfo.pitchTweakRatio <<
+    //        m_pitchRateInfo.tempoRatio;
 }
 
 void KeyControl::slotPitchAdjustChanged(double pitchAdjust) {
@@ -321,26 +321,26 @@ void KeyControl::updatePitchAdjust() {
     double pitchAdjust = m_pPitchAdjust->get();
 
     //qDebug() << "KeyControl::slotPitchAdjustChanged 1" << pitchAdjust <<
-    //        pitchRateInfo.pitchRatio <<
-    //        pitchRateInfo.pitchTweakRatio <<
-    //        pitchRateInfo.tempoRatio;
+    //        m_pitchRateInfo.pitchRatio <<
+    //        m_pitchRateInfo.pitchTweakRatio <<
+    //        m_pitchRateInfo.tempoRatio;
 
     double speedSliderPitchRatio = m_pitchRateInfo.pitchRatio / m_pitchRateInfo.pitchTweakRatio;
     // speedSliderPitchRatio must be unchanged
-    double pitchKnobRatio = KeyUtils::semitoneChangeToPowerOf2(pitchAdjust);
+    double pitchAdjustKnobRatio = KeyUtils::semitoneChangeToPowerOf2(pitchAdjust);
 
-    // pitch_adjust is a ofset to the pitch set by the speed controls
+    // pitch_adjust is a offset to the pitch set by the speed controls
     // calc absolute pitch
-    m_pitchRateInfo.pitchTweakRatio = pitchKnobRatio;
-    m_pitchRateInfo.pitchRatio = pitchKnobRatio * speedSliderPitchRatio;
+    m_pitchRateInfo.pitchTweakRatio = pitchAdjustKnobRatio;
+    m_pitchRateInfo.pitchRatio = pitchAdjustKnobRatio * speedSliderPitchRatio;
 
     double dFileKey = m_pFileKey->get();
-    updateKeyCOs(dFileKey, KeyUtils::powerOf2ToOctaveChange(pitchKnobRatio));
+    updateKeyCOs(dFileKey, KeyUtils::powerOf2ToOctaveChange(m_pitchRateInfo.pitchRatio));
 
     //qDebug() << "KeyControl::slotPitchAdjustChanged 2" << pitchAdjust <<
-    //        pitchRateInfo.pitchRatio <<
-    //        pitchRateInfo.pitchTweakRatio <<
-    //        pitchRateInfo.tempoRatio;
+    //        m_pitchRateInfo.pitchRatio <<
+    //        m_pitchRateInfo.pitchTweakRatio <<
+    //        m_pitchRateInfo.tempoRatio;
 }
 
 void KeyControl::slotSyncKey(double v) {

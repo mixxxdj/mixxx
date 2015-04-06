@@ -43,10 +43,11 @@ class EngineBufferScaleST : public EngineBufferScale {
     EngineBufferScaleST(ReadAheadManager* pReadAheadManager);
     virtual ~EngineBufferScaleST();
 
-    virtual void setScaleParameters(int iSampleRate,
-                            double base_rate,
-                            double* pTempoRatio,
-                            double* pPitchRatio);
+    virtual void setScaleParameters(double base_rate,
+                                    double* pTempoRatio,
+                                    double* pPitchRatio);
+
+    virtual void setSampleRate(int iSampleRate);
 
     // Scale buffer.
     CSAMPLE* getScaled(unsigned long buf_size);

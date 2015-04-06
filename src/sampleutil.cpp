@@ -419,3 +419,18 @@ void SampleUtil::copyMultiToStereo(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _RES
         pDest[i * 2 + 1] = pSrc[i * numChannels + 1];
     }
 }
+
+
+// static
+void SampleUtil::reverse(CSAMPLE* pBuffer, int iNumSamples) {
+    for (int j = 0; j < iNumSamples / 4; ++j) {
+        const int endpos = (iNumSamples - 1) - j * 2 ;
+        CSAMPLE temp1 = pBuffer[j * 2];
+        CSAMPLE temp2 = pBuffer[j * 2 + 1];
+        pBuffer[j * 2] = pBuffer[endpos - 1];
+        pBuffer[j * 2 + 1] = pBuffer[endpos];
+        pBuffer[endpos - 1] = temp1;
+        pBuffer[endpos] = temp2;
+    }
+}
+

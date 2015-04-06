@@ -52,17 +52,16 @@ void EngineBufferScaleRubberBand::initializeRubberBand(int iSampleRate) {
         iSampleRate, 2,
         RubberBandStretcher::OptionProcessRealTime);
     m_pRubberBand->setMaxProcessSize(kRubberBandBlockSize);
+    // Setting the time ratio to a very high value will cause RubberBand
+    // to preallocate buffers large enough to (almost certainly)
+    // avoid memory reallocations during playback.
+    m_pRubberBand->setTimeRatio(2.0);
+    m_pRubberBand->setTimeRatio(1.0);
 }
 
-void EngineBufferScaleRubberBand::setScaleParameters(int iSampleRate,
-                                                     double base_rate,
+void EngineBufferScaleRubberBand::setScaleParameters(double base_rate,
                                                      double* pTempoRatio,
                                                      double* pPitchRatio) {
-    if (m_iSampleRate != iSampleRate) {
-        initializeRubberBand(iSampleRate);
-        m_iSampleRate = iSampleRate;
-    }
-
     // Negative speed means we are going backwards. pitch does not affect
     // the playback direction.
     m_bBackwards = *pTempoRatio < 0;
@@ -119,6 +118,11 @@ void EngineBufferScaleRubberBand::setScaleParameters(int iSampleRate,
     m_dBaseRate = base_rate;
     m_dTempo = speed_abs;
     m_dPitch = *pPitchRatio;
+}
+
+void EngineBufferScaleRubberBand::setSampleRate(int iSampleRate) {
+    initializeRubberBand(iSampleRate);
+    m_iSampleRate = iSampleRate;
 }
 
 void EngineBufferScaleRubberBand::clear() {
@@ -178,7 +182,7 @@ CSAMPLE* EngineBufferScaleRubberBand::getScaled(unsigned long buf_size) {
         // zeros for reads that are not in cache. So it's safe to loop here
         // without any checks for failure in retrieveAndDeinterleave.
         unsigned long received_frames = retrieveAndDeinterleave(
-            read, remaining_frames);
+                read, remaining_frames);
         remaining_frames -= received_frames;
         total_received_frames += received_frames;
         read += received_frames * iNumChannels;
