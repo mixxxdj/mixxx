@@ -132,6 +132,10 @@ class AutoDJProcessor : public QObject {
         return m_iTransitionTime;
     }
 
+    int getTransitionBeats() const {
+        return m_iTransitionBeats;
+    }
+
     PlaylistTableModel* getTableModel() const {
         return m_pAutoDJTableModel;
     }

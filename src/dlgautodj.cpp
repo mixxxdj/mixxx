@@ -138,14 +138,12 @@ void DlgAutoDJ::toggleFadeUnit(bool buttonChecked) {
     if (buttonChecked) {
         pushButtonFadeUnit->setText("Secs.");
         m_pAutoDJProcessor->m_eTransitionUnit = AutoDJProcessor::SECONDS;
-//        m_eTransitionUnit = SECONDS;
+        spinBoxTransition->setValue(m_pAutoDJProcessor->getTransitionTime());
     } else {
         pushButtonFadeUnit->setText("Beats");
         m_pAutoDJProcessor->m_eTransitionUnit = AutoDJProcessor::BEATS;
-//        m_eTransitionUnit = BEATS;
+        spinBoxTransition->setValue(m_pAutoDJProcessor->getTransitionBeats());
     }
-    // Activate regardless of button being checked
-//    m_pAutoDJProcessor->fadeNow();
 }
 
 void DlgAutoDJ::toggleAutoDJButton(bool enable) {
@@ -173,15 +171,12 @@ void DlgAutoDJ::toggleAutoDJButton(bool enable) {
 }
 
 void DlgAutoDJ::transitionTimeChanged(int time) {
+    qDebug() << "DlgAutoDJ::transitionTimeChanged : transition time " << time;
     spinBoxTransition->setValue(time);
 }
 
 void DlgAutoDJ::transitionSliderChanged(int value) {
-    qDebug() << "Adj : transition time " << value;
-    if (m_eTransitionUnit == BEATS) {
-        // recupérer le tempo du morceau précédent
-        // convertir le nombre de beats en secondes
-    }
+    qDebug() << "DlgAutoDJ::transitionSliderChanged : transition time " << value;
     m_pAutoDJProcessor->setTransitionTime(value);
 }
 

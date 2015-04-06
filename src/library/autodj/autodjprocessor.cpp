@@ -131,6 +131,12 @@ AutoDJProcessor::AutoDJProcessor(QObject* pParent,
     if (!str_autoDjTransition.isEmpty()) {
         m_iTransitionTime = str_autoDjTransition.toInt();
     }
+    
+    QString str_autoDjTransitionBeats = m_pConfig->getValueString(
+            ConfigKey(kConfigKey, kTransitionBeatsPreferenceName));
+    if (!str_autoDjTransitionBeats.isEmpty()) {
+        m_iTransitionBeats = str_autoDjTransitionBeats.toInt();
+    }
 }
 
 AutoDJProcessor::~AutoDJProcessor() {
@@ -676,11 +682,9 @@ void AutoDJProcessor::calculateFadeThresholds(DeckAttributes* pAttributes) {
             
             double transitionDuration = 0;
             if (m_eTransitionUnit == SECONDS) {
-                qDebug() << "calculateFadeThresholds m_eTransitionUnit = SECONDS";
                 transitionDuration = m_iTransitionTime;
                 qDebug() << "calculateFadeThresholds m_iTransitionTime = " << m_iTransitionTime;
             } else if (m_eTransitionUnit == BEATS) {
-                qDebug() << "calculateFadeThresholds m_eTransitionUnit = BEATS";
                 qDebug() << "calculateFadeThresholds bpm = " << loadedTrack->getBpm();
                 // todo (jclaveau) : is getBpm always > 0?
                 double beatsDuration = 60 / loadedTrack->getBpm();
