@@ -539,11 +539,10 @@ void DlgPrefSound::queryClicked() {
 }
 
 void DlgPrefSound::openHardwareMixerClicked() {
-    qDebug() << "DlgPrefSound::openHardwareMixerClicked()";
-#ifdef __LINUX__
-    qDebug() << m_hardwaremixer.state();
+    //qDebug() << "DlgPrefSound::openHardwareMixerClicked()";
 
-    // Note: this code does not work reliable with gnome-terminal
+    #ifdef __LINUX__
+    // Note: This disabled code does not work reliable with gnome-terminal
     // since gnome-terminal is a singleton process which opens the new
     // window always in the first started process the new process started by
     // Mixxx has died just after start.
@@ -563,7 +562,7 @@ void DlgPrefSound::openHardwareMixerClicked() {
     which.start("which xdg-terminal");
     if (which.waitForFinished(100)) {
         if (which.exitCode() == 0) {
-            qDebug() << "xdg-terminal found";
+            //qDebug() << "xdg-terminal found";
             m_hardwaremixer.startDetached("xdg-terminal -e alsamixer");
             return;
         }
@@ -574,7 +573,7 @@ void DlgPrefSound::openHardwareMixerClicked() {
     which.start("which x-terminal-emulator");
     if (which.waitForFinished(100)) {
         if (which.exitCode() == 0) {
-            qDebug() << "x-terminal-emulator found";
+            //qDebug() << "x-terminal-emulator found";
             m_hardwaremixer.startDetached("x-terminal-emulator -e alsamixer");
             return;
         }
@@ -587,7 +586,7 @@ void DlgPrefSound::openHardwareMixerClicked() {
     which.start("which " + xterm);
     if (which.waitForFinished(100)) {
         if (which.exitCode() == 0) {
-            qDebug() << "$TERM found";
+            //qDebug() << "$TERM found";
             m_hardwaremixer.startDetached(xterm + " -e alsamixer");
             return;
         }
