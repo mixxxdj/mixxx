@@ -384,8 +384,8 @@ void LibraryScanner::queueTask(ScannerTask* pTask) {
             this, SLOT(taskDone(bool)));
     connect(pTask, SIGNAL(queueTask(ScannerTask*)),
             this, SLOT(queueTask(ScannerTask*)));
-    connect(pTask, SIGNAL(directoryHashed(QString, bool, int)),
-            this, SLOT(directoryHashed(QString, bool, int)));
+    connect(pTask, SIGNAL(directoryHashedAndScanned(QString, bool, int)),
+            this, SLOT(directoryHashedAndScanned(QString, bool, int)));
     connect(pTask, SIGNAL(directoryUnchanged(QString)),
             this, SLOT(directoryUnchanged(QString)));
     connect(pTask, SIGNAL(trackExists(QString)),
@@ -402,10 +402,10 @@ void LibraryScanner::queueTask(ScannerTask* pTask) {
     m_pool.start(pTask);
 }
 
-void LibraryScanner::directoryHashed(const QString& directoryPath,
-                                     bool newDirectory, int hash) {
-    ScopedTimer timer("LibraryScanner::directoryHashed");
-    // qDebug() << "LibraryScanner::directoryHashed" << directoryPath
+void LibraryScanner::directoryHashedAndScanned(const QString& directoryPath,
+                                               bool newDirectory, int hash) {
+    ScopedTimer timer("LibraryScanner::directoryHashedAndScanned");
+    // qDebug() << "LibraryScanner::directoryHashedAndScanned" << directoryPath
     //          << newDirectory << hash;
 
     // For statistics tracking -- if we hashed a directory then we scanned it

@@ -34,7 +34,7 @@ EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager *pReadAheadMan
       m_dNextFrame(0.0)
 {
     for (int i=0; i<2; i++)
-        m_fPrevSample[i] = 0.0f;
+        m_floorSampleOld[i] = 0.0f;
 
     m_bufferInt = new CSAMPLE[kiLinearScaleReadAheadLength];
     m_bufferIntSize = 0;
@@ -69,8 +69,8 @@ void EngineBufferScaleLinear::clear() {
     // Clear out buffer and saved sample data
     m_bufferIntSize = 0;
     m_dNextFrame = 0;
-    m_fPrevSample[0] = 0;
-    m_fPrevSample[1] = 0;
+    m_floorSampleOld[0] = 0;
+    m_floorSampleOld[1] = 0;
 }
 
 // laurent de soras - punked from musicdsp.org (mad props)
@@ -114,8 +114,8 @@ CSAMPLE* EngineBufferScaleLinear::getScaled(unsigned long buf_size) {
         int iCurSample = static_cast<int>(ceil(m_dCurrentFrame)) * 2;
         if (iCurSample + 1 < m_bufferIntSize) {
             int iNextSample = static_cast<int>(ceil(m_dNextFrame)) * 2;
-            m_fPrevSample[0] = m_bufferInt[iNextSample];
-            m_fPrevSample[1] = m_bufferInt[iNextSample + 1];
+            m_floorSampleOld[0] = m_bufferInt[iNextSample];
+            m_floorSampleOld[1] = m_bufferInt[iNextSample + 1];
         }
 
         // if the buffer has extra samples, do a read so RAMAN ends up back where
@@ -127,11 +127,11 @@ CSAMPLE* EngineBufferScaleLinear::getScaled(unsigned long buf_size) {
             //qDebug() << "extra samples" << extra_samples;
 
             samples_read += m_pReadAheadManager->getNextSamples(
-                rate_add_new, m_bufferInt, extra_samples);
+                    rate_add_new, m_bufferInt, extra_samples);
         }
-        //force a buffer read:
+        // force a buffer read:
         m_bufferIntSize=0;
-        //make sure the indexes stay correct for interpolation
+        // make sure the indexes stay correct for interpolation
         m_dCurrentFrame = 0 - m_dCurrentFrame + floor(m_dCurrentFrame);
         m_dNextFrame = 1.0 - (m_dNextFrame - floor(m_dNextFrame));
 
@@ -231,8 +231,8 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         // blow away the fractional sample position here
         m_bufferIntSize = 0; // force buffer read
         m_dNextFrame = 0;
-        m_fPrevSample[0] = buf[read_samples-2];
-        m_fPrevSample[1] = buf[read_samples-1];
+        m_floorSampleOld[0] = buf[read_samples-2];
+        m_floorSampleOld[1] = buf[read_samples-1];
         return buf;
     }
 
@@ -260,13 +260,13 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
     double unscaled_samples_needed = math_max<long>(2, unscaled_frames_needed * 2);
 
     bool last_read_failed = false;
-    CSAMPLE prev_sample[2];
-    CSAMPLE cur_sample[2];
+    CSAMPLE floor_sample[2];
+    CSAMPLE ceil_sample[2];
 
-    prev_sample[0] = 0;
-    prev_sample[1] = 0;
-    cur_sample[0] = 0;
-    cur_sample[1] = 0;
+    floor_sample[0] = 0;
+    floor_sample[1] = 0;
+    ceil_sample[0] = 0;
+    ceil_sample[1] = 0;
 
     int i = 0;
     int screwups = 0;
@@ -283,13 +283,17 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
 
         if (static_cast<int>(floor(m_dCurrentFrame)) * 2 + 1 < m_bufferIntSize
                 && m_dCurrentFrame >= 0.0) {
-            prev_sample[0] = m_bufferInt[static_cast<int>(
+            // take floor_sample form the buffer of the previous run
+            floor_sample[0] = m_bufferInt[static_cast<int>(
                     floor(m_dCurrentFrame)) * 2];
-            prev_sample[1] = m_bufferInt[static_cast<int>(
+            floor_sample[1] = m_bufferInt[static_cast<int>(
                     floor(m_dCurrentFrame)) * 2 + 1];
         } else {
-            prev_sample[0] = m_fPrevSample[0];
-            prev_sample[1] = m_fPrevSample[1];
+            // we have advanced to a new buffer in the previous run,
+            // bud the floor still points to the old buffer
+            // so take the cached sample, happens on slow rates
+            floor_sample[0] = m_floorSampleOld[0];
+            floor_sample[1] = m_floorSampleOld[1];
         }
 
         // Smooth any changes in the playback rate over iRateLerpLength
@@ -298,7 +302,7 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         float rate_add = static_cast<float>(i) * (rate_add_diff) /
                          static_cast<float>(iRateLerpLength) + rate_add_old;
 
-        // if we don't have enough samples, load some more
+        // if we don't have the ceil_sample in buffer, load some more
         while (static_cast<int>(ceil(m_dCurrentFrame)) * 2 + 1 >=
                m_bufferIntSize) {
             int old_bufsize = m_bufferIntSize;
@@ -321,17 +325,9 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
             last_read_failed = m_bufferIntSize == 0;
 
             unscaled_samples_needed -= m_bufferIntSize;
-            // shift the index by the size of the old buffer
-            m_dCurrentFrame -= old_bufsize / 2.;
-        }
 
-        // Now that the buffer is up to date, we can get the value of the sample
-        // at the floor of our position.
-        if (static_cast<int>(floor(m_dCurrentFrame)) * 2 >= 0.0) {
-            prev_sample[0] = m_bufferInt[static_cast<int>(
-                    floor(m_dCurrentFrame)) * 2];
-            prev_sample[1] = m_bufferInt[static_cast<int>(
-                    floor(m_dCurrentFrame)) * 2 + 1];
+            // adapt the m_dCurrentFrame the index of the new buffer
+            m_dCurrentFrame -= old_bufsize / 2.;
         }
 
         // I guess?
@@ -339,9 +335,19 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
             break;
         }
 
-        cur_sample[0] = m_bufferInt[static_cast<int>(
+        // Now that the buffer is up to date, we can get the value of the sample
+        // at the floor of our position.
+        if (static_cast<int>(floor(m_dCurrentFrame)) * 2 >= 0.0) {
+            // the previous position is in the new buffer
+            floor_sample[0] = m_bufferInt[static_cast<int>(
+                    floor(m_dCurrentFrame)) * 2];
+            floor_sample[1] = m_bufferInt[static_cast<int>(
+                    floor(m_dCurrentFrame)) * 2 + 1];
+        }
+
+        ceil_sample[0] = m_bufferInt[static_cast<int>(
                 ceil(m_dCurrentFrame)) * 2];
-        cur_sample[1] = m_bufferInt[static_cast<int>(
+        ceil_sample[1] = m_bufferInt[static_cast<int>(
                 ceil(m_dCurrentFrame)) * 2 + 1];
 
         // For the current index, what percentage is it
@@ -349,14 +355,14 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         CSAMPLE frac = m_dCurrentFrame - floor(m_dCurrentFrame);
 
         // Perform linear interpolation
-        buf[i] = static_cast<float>(prev_sample[0]) +
-                 frac * (static_cast<float>(cur_sample[0]) -
-                 static_cast<float>(prev_sample[0]));
-        buf[i+1] = static_cast<float>(prev_sample[1]) +
-                   frac * (static_cast<float>(cur_sample[1]) -
-                   static_cast<float>(prev_sample[1]));
-        m_fPrevSample[0] = prev_sample[0];
-        m_fPrevSample[1] = prev_sample[1];
+        buf[i] = static_cast<float>(floor_sample[0]) +
+                 frac * (static_cast<float>(ceil_sample[0]) -
+                 static_cast<float>(floor_sample[0]));
+        buf[i + 1] = static_cast<float>(floor_sample[1]) +
+                     frac * (static_cast<float>(ceil_sample[1]) -
+                     static_cast<float>(floor_sample[1]));
+        m_floorSampleOld[0] = floor_sample[0];
+        m_floorSampleOld[1] = floor_sample[1];
 
         // increment the index for the next loop
         m_dNextFrame = m_dCurrentFrame +

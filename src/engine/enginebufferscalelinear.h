@@ -55,7 +55,7 @@ class EngineBufferScaleLinear : public EngineBufferScale  {
     // Buffer for handling calls to ReadAheadManager
     CSAMPLE* m_bufferInt;
     int m_bufferIntSize;
-    CSAMPLE m_fPrevSample[2];
+    CSAMPLE m_floorSampleOld[2];
     // The read-ahead manager that we use to fetch samples
     ReadAheadManager* m_pReadAheadManager;
     double m_dCurrentFrame;
