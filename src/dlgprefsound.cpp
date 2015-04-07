@@ -95,7 +95,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     connect(queryButton, SIGNAL(clicked()),
             this, SLOT(queryClicked()));
 
-#ifdef __LINUX__
+#if defined  __LINUX__ OR __WINDOWS__
     connect(openHardwareMixerButton, SIGNAL(clicked()),
             this, SLOT(openHardwareMixerClicked()));
 #else // __LINUX__
@@ -533,7 +533,7 @@ void DlgPrefSound::queryClicked() {
 void DlgPrefSound::openHardwareMixerClicked() {
     qDebug() << "DlgPrefSound::openHardwareMixerClicked()";
 #ifdef __LINUX__
-    qDebug() << m_alsamixer.state();
+    qDebug() << m_hardwaremixer.state();
 
     // Note: this code does not work reliable with gnome-terminal
     // since gnome-terminal is a singleton process which opens the new
@@ -556,7 +556,7 @@ void DlgPrefSound::openHardwareMixerClicked() {
     if (which.waitForFinished(100)) {
         if (which.exitCode() == 0) {
             qDebug() << "xdg-terminal found";
-            m_alsamixer.startDetached("xdg-terminal -e alsamixer");
+            m_hardwaremixer.startDetached("xdg-terminal -e alsamixer");
             return;
         }
     } else {
@@ -567,7 +567,7 @@ void DlgPrefSound::openHardwareMixerClicked() {
     if (which.waitForFinished(100)) {
         if (which.exitCode() == 0) {
             qDebug() << "x-terminal-emulator found";
-            m_alsamixer.startDetached("x-terminal-emulator -e alsamixer");
+            m_hardwaremixer.startDetached("x-terminal-emulator -e alsamixer");
             return;
         }
     } else {
@@ -580,12 +580,16 @@ void DlgPrefSound::openHardwareMixerClicked() {
     if (which.waitForFinished(100)) {
         if (which.exitCode() == 0) {
             qDebug() << "$TERM found";
-            m_alsamixer.startDetached(xterm + " -e alsamixer");
+            m_hardwaremixer.startDetached(xterm + " -e alsamixer");
             return;
         }
     } else {
         which.kill();
     }
+#else
+#if defined __WINDOWS__
+    m_hardwaremixer.startDetached("control mmsys.cpl sounds");
+#endif // __WINDOWS__
 #endif // __LINUX__
 }
 

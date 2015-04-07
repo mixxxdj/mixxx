@@ -107,7 +107,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     SoundManagerConfig m_config;
     bool m_loading;
 
-    QProcess m_alsamixer;
+    QProcess m_hardwaremixer;
 };
 
 #endif
