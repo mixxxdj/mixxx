@@ -15,7 +15,6 @@
 
 #include <QtDebug>
 #include <QMessageBox>
-#include <QProcess>
 #include "dlgprefsound.h"
 #include "dlgprefsounditem.h"
 #include "engine/enginebuffer.h"
@@ -530,6 +529,17 @@ void DlgPrefSound::queryClicked() {
 void DlgPrefSound::openHardwareMixerClicked() {
     qDebug() << "DlgPrefSound::openHardwareMixerClicked()";
 
+    qDebug() << m_alsamixer.state();
+
+    // Note: this code does not work reliable with gnome-terminal
+    // since gnome-terminal is a singleton process which opens the new
+    // window always in the first started process the new process started by
+    // Mixxx has died just after start.
+    //if (m_alsamixer.state() == QProcess::Running) {
+    //    // terminal with alsamixer still open
+    //    return;
+    //}
+
     // According to http://unix.stackexchange.com/questions/137782/launching-a-terminal-emulator-without-knowing-which-ones-are-installed
     // This terminal lookup should be successful
     // 1. xdg-terminal (future proof)
@@ -537,24 +547,27 @@ void DlgPrefSound::openHardwareMixerClicked() {
     // 3. $TERM
     // 4. xterm
 
-    static QProcess alsamixer;
-    static QProcess which;
+    QProcess which;
     which.start("which xdg-terminal");
     if (which.waitForFinished(100)) {
         if (which.exitCode() == 0) {
             qDebug() << "xdg-terminal found";
-            alsamixer.start("xdg-terminal -e alsamixer");
+            m_alsamixer.startDetached("xdg-terminal -e alsamixer");
             return;
         }
+    } else {
+        which.kill();
     }
 
     which.start("which x-terminal-emulator");
     if (which.waitForFinished(100)) {
         if (which.exitCode() == 0) {
             qDebug() << "x-terminal-emulator found";
-            alsamixer.start("x-terminal-emulator -e alsamixer");
+            m_alsamixer.startDetached("x-terminal-emulator -e alsamixer");
             return;
         }
+    } else {
+        which.kill();
     }
 
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
@@ -563,9 +576,11 @@ void DlgPrefSound::openHardwareMixerClicked() {
     if (which.waitForFinished(100)) {
         if (which.exitCode() == 0) {
             qDebug() << "$TERM found";
-            alsamixer.start(xterm + " -e alsamixer");
+            m_alsamixer.startDetached(xterm + " -e alsamixer");
             return;
         }
+    } else {
+        which.kill();
     }
 }
 

@@ -16,6 +16,7 @@
 #ifndef DLGPREFSOUND_H
 #define DLGPREFSOUND_H
 
+#include <QProcess>
 #include "ui_dlgprefsounddlg.h"
 #include "configobject.h"
 #include "soundmanagerconfig.h"
@@ -105,6 +106,8 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     bool m_settingsModified;
     SoundManagerConfig m_config;
     bool m_loading;
+
+    QProcess m_alsamixer;
 };
 
 #endif
