@@ -1,8 +1,6 @@
 // readaheadmanager.cpp
 // Created 8/2/2009 by RJ Ryan (rryan@mit.edu)
 
-#include <QMutexLocker>
-
 #include "engine/readaheadmanager.h"
 #include "sampleutil.h"
 #include "util/math.h"

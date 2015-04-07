@@ -6,7 +6,6 @@
 
 #include <QLinkedList>
 #include <QList>
-#include <QMutex>
 #include <QPair>
 
 #include "util/types.h"
