@@ -95,8 +95,12 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     connect(queryButton, SIGNAL(clicked()),
             this, SLOT(queryClicked()));
 
+#ifdef __LINUX__
     connect(openHardwareMixerButton, SIGNAL(clicked()),
             this, SLOT(openHardwareMixerClicked()));
+#else // __LINUX__
+    openHardwareMixerButton->hide();
+#endif // __LINUX__
 
     connect(m_pSoundManager, SIGNAL(outputRegistered(AudioOutput, AudioSource*)),
             this, SLOT(addPath(AudioOutput)));
@@ -528,7 +532,7 @@ void DlgPrefSound::queryClicked() {
 
 void DlgPrefSound::openHardwareMixerClicked() {
     qDebug() << "DlgPrefSound::openHardwareMixerClicked()";
-
+#ifdef __LINUX__
     qDebug() << m_alsamixer.state();
 
     // Note: this code does not work reliable with gnome-terminal
@@ -582,6 +586,7 @@ void DlgPrefSound::openHardwareMixerClicked() {
     } else {
         which.kill();
     }
+#endif // __LINUX__
 }
 
 /**
