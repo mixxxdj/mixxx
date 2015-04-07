@@ -21,6 +21,8 @@ class ScannerTask : public QObject, public QRunnable {
   signals:
     void taskDone(bool success);
     void queueTask(ScannerTask* pTask);
+    void directoryHashedAndScanned(const QString& directoryPath,
+                                   bool newDirectory, int hash);
     void directoryHashed(const QString& directoryPath, bool newDirectory,
                          int hash);
     void directoryUnchanged(const QString& directoryPath);
