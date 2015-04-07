@@ -95,7 +95,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     connect(queryButton, SIGNAL(clicked()),
             this, SLOT(queryClicked()));
 
-#if defined  __LINUX__ OR __WINDOWS__
+#if defined  __LINUX__ || __WINDOWS__
     connect(openHardwareMixerButton, SIGNAL(clicked()),
             this, SLOT(openHardwareMixerClicked()));
 #else // __LINUX__
@@ -407,6 +407,14 @@ void DlgPrefSound::apiChanged(int index) {
     } else {
         latencyLabel->setEnabled(true);
         audioBufferComboBox->setEnabled(true);
+    }
+
+    if (m_config.getAPI() == MIXXX_PORTAUDIO_ASIO_STRING ||
+            m_config.getAPI() == MIXXX_PORTAUDIO_OSS_STRING ||
+            m_config.getAPI() == MIXXX_PORTAUDIO_NONE_STRING) {
+        openHardwareMixerButton->setEnabled(false);
+    } else {
+        openHardwareMixerButton->setEnabled(true);
     }
 }
 

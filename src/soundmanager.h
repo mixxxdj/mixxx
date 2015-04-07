@@ -35,6 +35,7 @@ class AudioSource;
 class AudioDestination;
 class ControlObject;
 
+#define MIXXX_PORTAUDIO_NONE_STRING "None"
 #define MIXXX_PORTAUDIO_JACK_STRING "JACK Audio Connection Kit"
 #define MIXXX_PORTAUDIO_ALSA_STRING "ALSA"
 #define MIXXX_PORTAUDIO_OSS_STRING "OSS"
