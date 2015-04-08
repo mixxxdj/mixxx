@@ -90,9 +90,9 @@ void EngineBufferScaleST::setScaleParameters(double base_rate,
         m_pSoundTouch->setRate(rate_abs);
         m_dRateOld = rate_abs;
     }
-    if (*pPitchRatio != m_dPitch) {
+    if (*pPitchRatio != m_dPitchRatio) {
         m_pSoundTouch->setPitch(*pPitchRatio);
-        m_dPitch = *pPitchRatio;
+        m_dPitchRatio = *pPitchRatio;
     }
 
     // NOTE(rryan) : There used to be logic here that clear()'d when the player
@@ -100,8 +100,8 @@ void EngineBufferScaleST::setScaleParameters(double base_rate,
 
     // Used by other methods so we need to keep them up to date.
     m_dBaseRate = base_rate;
-    m_dTempo = speed_abs;
-    m_dPitch = *pPitchRatio;
+    m_dTempoRatio = speed_abs;
+    m_dPitchRatio = *pPitchRatio;
 }
 
 void EngineBufferScaleST::setSampleRate(int iSampleRate) {
@@ -116,7 +116,7 @@ void EngineBufferScaleST::clear() {
 CSAMPLE* EngineBufferScaleST::getScaled(unsigned long buf_size) {
     m_samplesRead = 0.0;
 
-    if (m_dRateOld == 0 || m_dTempoOld == 0 || m_dPitch == 0) {
+    if (m_dRateOld == 0 || m_dTempoOld == 0 || m_dPitchRatio == 0) {
         SampleUtil::clear(m_buffer, buf_size);
         m_samplesRead = buf_size;
         return m_buffer;
@@ -141,7 +141,7 @@ CSAMPLE* EngineBufferScaleST::getScaled(unsigned long buf_size) {
             unsigned long iAvailSamples = m_pReadAheadManager->getNextSamples(
                         // The value doesn't matter here. All that matters is we
                         // are going forward or backward.
-                        (m_bBackwards ? -1.0 : 1.0) * m_dBaseRate * m_dTempo,
+                        (m_bBackwards ? -1.0 : 1.0) * m_dBaseRate * m_dTempoRatio,
                         buffer_back,
                         iLenFrames * iNumChannels);
             unsigned long iAvailFrames = iAvailSamples / iNumChannels;
@@ -173,7 +173,7 @@ CSAMPLE* EngineBufferScaleST::getScaled(unsigned long buf_size) {
     // NOTE(rryan): Why no m_dPitchAdjust here? SoundTouch implements pitch
     // shifting as a tempo shift of (1/m_dPitchAdjust) and a rate shift of
     // (*m_dPitchAdjust) so these two cancel out.
-    m_samplesRead = m_dBaseRate * m_dTempo *
+    m_samplesRead = m_dBaseRate * m_dTempoRatio *
             total_received_frames * iNumChannels;
 
     return m_buffer;
