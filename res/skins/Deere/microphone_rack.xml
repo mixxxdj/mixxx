@@ -23,10 +23,11 @@
             <Layout>horizontal</Layout>
             <Children>
 
+              <!-- Microphone input controls -->
               <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <!-- We hide all mic controls but for Mic 1, if not enabled in
+                  <!-- Hide all mic controls but for Mic 1, if not enabled in
                        the sound hardware preferences. Clicking the Mic 1 TALK
                        button opens a modal window which allows to go straight
                        to the preferences pane for easy set up. Once Mic 1 is
@@ -103,6 +104,22 @@
                 <SetVariable name="TooltipId">TODO</SetVariable>
                 <SetVariable name="color">white</SetVariable>
                 <SetVariable name="label">Strength</SetVariable>
+              </Template>
+
+              <!-- Auxiliary input controls -->
+              <Template src="skin:spacer_h.xml"></Template>
+
+              <Template src="skin:auxiliary.xml">
+                <SetVariable name="i">1</SetVariable>
+              </Template>
+              <Template src="skin:auxiliary.xml">
+                <SetVariable name="i">2</SetVariable>
+              </Template>
+              <Template src="skin:auxiliary.xml">
+                <SetVariable name="i">3</SetVariable>
+              </Template>
+              <Template src="skin:auxiliary.xml">
+                <SetVariable name="i">4</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
