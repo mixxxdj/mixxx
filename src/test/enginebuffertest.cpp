@@ -91,11 +91,15 @@ TEST_F(EngineBufferTest, SlowRubberBand) {
     // Hack to get a slow, non-scratching direct speed
     ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), 0.0072);
 
-    // With Soundtouch, the scaler should still be the keylock scaler
+    // With Soundtouch, it should switch the scaler as well
     ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
                        static_cast<double>(EngineBuffer::SOUNDTOUCH));
     ProcessBuffer();
-    EXPECT_EQ(m_pMockScaleKeylock1, m_pChannel1->getEngineBuffer()->m_pScale);
+    EXPECT_EQ(m_pMockScaleVinyl1, m_pChannel1->getEngineBuffer()->m_pScale);
+
+    // Back to full speed
+    ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), 1);
+    ProcessBuffer();
 
     // With Rubberband, and transport stopped it should be still keylock
     ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
