@@ -129,22 +129,6 @@
             <MaximumSize>90,30</MaximumSize>
             <Children>
               <PushButton>
-                <TooltipId>beats_translate_curpos</TooltipId>
-                <MinimumSize>20,20</MinimumSize>
-                <MaximumSize>30,30</MaximumSize>
-                <NumberStates>1</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Text>T</Text>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,beats_translate_curpos</ConfigKey>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-              </PushButton>
-
-              <PushButton>
                 <TooltipId>quantize</TooltipId>
                 <NumberStates>2</NumberStates>
                 <MinimumSize>20,20</MinimumSize>
@@ -179,6 +163,24 @@
                 </State>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,keylock</ConfigKey>
+                </Connection>
+              </PushButton>
+
+              <PushButton>
+                <TooltipId>slip_mode</TooltipId>
+                <NumberStates>2</NumberStates>
+                <MinimumSize>20,20</MinimumSize>
+                <MaximumSize>30,30</MaximumSize>
+                <State>
+                  <Number>0</Number>
+                  <Text>SL</Text>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Text>SL</Text>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,slip_enabled</ConfigKey>
                 </Connection>
               </PushButton>
             </Children>
