@@ -33,6 +33,7 @@
           </Transform>
         </Connection>
       </WidgetGroup>
+
       <WidgetGroup>
         <ObjectName>DeckTextColumn</ObjectName>
         <Layout>vertical</Layout>
@@ -70,19 +71,214 @@
                           <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
                         </Connection>
                       </Key>
-                      <NumberBpm>
-                        <Group><Variable name="group"/></Group>
-                        <SizePolicy>min,</SizePolicy>
-                        <Connection>
-                          <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
-                        </Connection>
-                      </NumberBpm>
+                      <!-- Fake a click-able multi-state widget by stacking a
+                           transparent PushButton dummy (the trigger) on top of the
+                           individual WidgetGroups (the content). PushButton tracks
+                           the size of the active WidgetGroup and resizes. Notice
+                           that the trigger has the same TooltipId as the content.
+                           Description: BPM/Beatgrid edit widget -->
+                      <WidgetStack>
+                        <ObjectName>BpmEditRow</ObjectName>
+                        <SizePolicy>max,</SizePolicy>
+                        <Style>
+                        </Style>
+                        <NextControl>[Global],bpm_layout_next</NextControl>
+                        <PrevControl>[Global],bpm_layout_prev</PrevControl>
+                        <Children>
+                          <WidgetGroup>
+                            <Layout>stacked</Layout>
+                            <Children>
+                              <PushButton>
+                                <ObjectName>BpmEditTrigger</ObjectName>
+                                <TooltipId>visual_bpm</TooltipId>
+                                <NumberStates>1</NumberStates>
+                                <State>
+                                  <Number>0</Number>
+                                  <!-- <Text>&#9998;</Text>
+                                  <Alignment>right</Alignment> -->
+                                  <Pressed scalemode="STRETCH"></Pressed>
+                                  <Unpressed scalemode="STRETCH"></Unpressed>
+                                </State>
+                                <Connection>
+                                  <ConfigKey>[Global],bpm_layout_next</ConfigKey>
+                                </Connection>
+                              </PushButton>
+                              <NumberBpm>
+                                <ObjectName>BpmEditTriggerLabel</ObjectName>
+                                <Group><Variable name="group"/></Group>
+                                <Alignment>right</Alignment>
+                                <Connection>
+                                  <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
+                                </Connection>
+                              </NumberBpm>
+                            </Children>
+                          </WidgetGroup>
+
+                          <WidgetGroup>
+                            <ObjectName>BpmEditRowExpanded</ObjectName>
+                            <Layout>horizontal</Layout>
+                            <Children>
+                              <WidgetGroup>
+                                <ObjectName>BpmEditRowControls</ObjectName>
+                                <Layout>horizontal</Layout>
+                                <SizePolicy>p,me</SizePolicy>
+                                <MinimumSize>100,20</MinimumSize>
+                                <MaximumSize>180,30</MaximumSize>
+                                <Children>
+                                  <PushButton>
+                                    <TooltipId>beats_translate_curpos</TooltipId>
+                                    <MinimumSize>20,20</MinimumSize>
+                                    <MaximumSize>30,30</MaximumSize>
+                                    <NumberStates>1</NumberStates>
+                                    <State>
+                                      <Number>0</Number>
+                                      <Text> |||| </Text>
+                                    </State>
+                                    <Connection>
+                                      <ConfigKey><Variable name="group"/>,beats_translate_curpos</ConfigKey>
+                                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                                      <ButtonState>LeftButton</ButtonState>
+                                    </Connection>
+                                  </PushButton>
+
+                                  <PushButton>
+                                    <TooltipId>beats_translate_alignment</TooltipId>
+                                    <MinimumSize>20,20</MinimumSize>
+                                    <MaximumSize>30,30</MaximumSize>
+                                    <NumberStates>1</NumberStates>
+                                    <State>
+                                      <Number>0</Number>
+                                      <Text> | = |</Text>
+                                    </State>
+                                    <Connection>
+                                      <ConfigKey><Variable name="group"/>,beats_translate_match_alignment</ConfigKey>
+                                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                                      <ButtonState>LeftButton</ButtonState>
+                                    </Connection>
+                                  </PushButton>
+
+                                  <PushButton>
+                                    <TooltipId>beats_adjust_faster</TooltipId>
+                                    <MinimumSize>20,20</MinimumSize>
+                                    <MaximumSize>30,30</MaximumSize>
+                                    <NumberStates>1</NumberStates>
+                                    <State>
+                                      <Number>0</Number>
+                                      <Text> &#9664;|||| </Text>
+                                    </State>
+                                    <Connection>
+                                      <ConfigKey><Variable name="group"/>,beats_adjust_faster</ConfigKey>
+                                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                                      <ButtonState>LeftButton</ButtonState>
+                                    </Connection>
+                                  </PushButton>
+
+                                  <PushButton>
+                                    <TooltipId>beats_adjust_slower</TooltipId>
+                                    <MinimumSize>20,20</MinimumSize>
+                                    <MaximumSize>30,30</MaximumSize>
+                                    <NumberStates>1</NumberStates>
+                                    <State>
+                                      <Number>0</Number>
+                                      <Text> ||||&#9654;</Text>
+                                    </State>
+                                    <Connection>
+                                      <ConfigKey><Variable name="group"/>,beats_adjust_slower</ConfigKey>
+                                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                                      <ButtonState>LeftButton</ButtonState>
+                                    </Connection>
+                                  </PushButton>
+
+                                  <PushButton>
+                                    <TooltipId>beats_translate_earlier</TooltipId>
+                                    <MinimumSize>20,20</MinimumSize>
+                                    <MaximumSize>30,30</MaximumSize>
+                                    <NumberStates>1</NumberStates>
+                                    <State>
+                                      <Number>0</Number>
+                                      <Text> &#9664; | </Text>
+                                    </State>
+                                    <Connection>
+                                      <ConfigKey><Variable name="group"/>,beats_translate_earlier</ConfigKey>
+                                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                                      <ButtonState>LeftButton</ButtonState>
+                                    </Connection>
+                                  </PushButton>
+
+                                  <PushButton>
+                                    <TooltipId>beats_translate_later</TooltipId>
+                                    <MinimumSize>20,20</MinimumSize>
+                                    <MaximumSize>30,30</MaximumSize>
+                                    <NumberStates>1</NumberStates>
+                                    <State>
+                                      <Number>0</Number>
+                                      <Text> | &#9654;</Text>
+                                    </State>
+                                    <Connection>
+                                      <ConfigKey><Variable name="group"/>,beats_translate_later</ConfigKey>
+                                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                                      <ButtonState>LeftButton</ButtonState>
+                                    </Connection>
+                                  </PushButton>
+
+                                  <PushButton>
+                                    <TooltipId>bpm_tap</TooltipId>
+                                    <MinimumSize>40,20</MinimumSize>
+                                    <MaximumSize>60,30</MaximumSize>
+                                    <NumberStates>1</NumberStates>
+                                    <State>
+                                      <Number>0</Number>
+                                      <Text> TAP </Text>
+                                    </State>
+                                    <Connection>
+                                      <ConfigKey><Variable name="group"/>,bpm_tap</ConfigKey>
+                                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                                      <ButtonState>LeftButton</ButtonState>
+                                    </Connection>
+                                  </PushButton>
+                                </Children>
+                              </WidgetGroup>
+
+                              <WidgetGroup>
+                                <Layout>stacked</Layout>
+                                <Children>
+                                  <PushButton>
+                                    <ObjectName>BpmEditTrigger</ObjectName>
+                                    <TooltipId>visual_bpm</TooltipId>
+                                    <NumberStates>1</NumberStates>
+                                    <State>
+                                      <Number>0</Number>
+                                      <!-- <Text>&#9998;</Text>
+                                      <Alignment>right</Alignment> -->
+                                      <Pressed scalemode="STRETCH"></Pressed>
+                                      <Unpressed scalemode="STRETCH"></Unpressed>
+                                    </State>
+                                    <Connection>
+                                      <ConfigKey>[Global],bpm_layout_next</ConfigKey>
+                                    </Connection>
+                                  </PushButton>
+
+                                  <NumberBpm>
+                                    <ObjectName>BpmEditTriggerLabel</ObjectName>
+                                    <Group><Variable name="group"/></Group>
+                                    <Alignment>right</Alignment>
+                                    <Connection>
+                                      <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
+                                    </Connection>
+                                  </NumberBpm>
+                                </Children>
+                              </WidgetGroup>
+                            </Children>
+                          </WidgetGroup>
+                        </Children>
+                      </WidgetStack>
                     </Children>
                   </WidgetGroup>
                 </Children>
               </WidgetGroup>
             </Children>
           </WidgetGroup>
+
           <WidgetGroup>
             <ObjectName>LowerTextRow</ObjectName>
             <Layout>horizontal</Layout>
