@@ -82,8 +82,8 @@
                         <SizePolicy>max,</SizePolicy>
                         <Style>
                         </Style>
-                        <NextControl>[Global],bpm_layout_next</NextControl>
-                        <PrevControl>[Global],bpm_layout_prev</PrevControl>
+                        <NextControl>[Deere],bpm_layout_next</NextControl>
+                        <PrevControl>[Deere],bpm_layout_prev</PrevControl>
                         <Children>
                           <WidgetGroup>
                             <Layout>stacked</Layout>
@@ -100,7 +100,7 @@
                                   <Unpressed scalemode="STRETCH"></Unpressed>
                                 </State>
                                 <Connection>
-                                  <ConfigKey>[Global],bpm_layout_next</ConfigKey>
+                                  <ConfigKey>[Deere],bpm_layout_next</ConfigKey>
                                 </Connection>
                               </PushButton>
                               <NumberBpm>
@@ -132,7 +132,7 @@
                                     <NumberStates>1</NumberStates>
                                     <State>
                                       <Number>0</Number>
-                                      <Text> |||| </Text>
+                                      <Text>||||</Text>
                                     </State>
                                     <Connection>
                                       <ConfigKey><Variable name="group"/>,beats_translate_curpos</ConfigKey>
@@ -148,7 +148,7 @@
                                     <NumberStates>1</NumberStates>
                                     <State>
                                       <Number>0</Number>
-                                      <Text> | = |</Text>
+                                      <Text>| = |</Text>
                                     </State>
                                     <Connection>
                                       <ConfigKey><Variable name="group"/>,beats_translate_match_alignment</ConfigKey>
@@ -164,7 +164,7 @@
                                     <NumberStates>1</NumberStates>
                                     <State>
                                       <Number>0</Number>
-                                      <Text> &#9664;|||| </Text>
+                                      <Text>|&#9664;|</Text>
                                     </State>
                                     <Connection>
                                       <ConfigKey><Variable name="group"/>,beats_adjust_faster</ConfigKey>
@@ -180,7 +180,7 @@
                                     <NumberStates>1</NumberStates>
                                     <State>
                                       <Number>0</Number>
-                                      <Text> ||||&#9654;</Text>
+                                      <Text>|&#9654;|</Text>
                                     </State>
                                     <Connection>
                                       <ConfigKey><Variable name="group"/>,beats_adjust_slower</ConfigKey>
@@ -196,7 +196,7 @@
                                     <NumberStates>1</NumberStates>
                                     <State>
                                       <Number>0</Number>
-                                      <Text> &#9664; | </Text>
+                                      <Text>&#9664; |</Text>
                                     </State>
                                     <Connection>
                                       <ConfigKey><Variable name="group"/>,beats_translate_earlier</ConfigKey>
@@ -212,7 +212,7 @@
                                     <NumberStates>1</NumberStates>
                                     <State>
                                       <Number>0</Number>
-                                      <Text> | &#9654;</Text>
+                                      <Text>| &#9654;</Text>
                                     </State>
                                     <Connection>
                                       <ConfigKey><Variable name="group"/>,beats_translate_later</ConfigKey>
@@ -228,7 +228,7 @@
                                     <NumberStates>1</NumberStates>
                                     <State>
                                       <Number>0</Number>
-                                      <Text> TAP </Text>
+                                      <Text>TAP</Text>
                                     </State>
                                     <Connection>
                                       <ConfigKey><Variable name="group"/>,bpm_tap</ConfigKey>
@@ -254,7 +254,7 @@
                                       <Unpressed scalemode="STRETCH"></Unpressed>
                                     </State>
                                     <Connection>
-                                      <ConfigKey>[Global],bpm_layout_next</ConfigKey>
+                                      <ConfigKey>[Deere],bpm_layout_next</ConfigKey>
                                     </Connection>
                                   </PushButton>
 
