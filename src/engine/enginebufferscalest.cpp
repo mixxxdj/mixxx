@@ -40,12 +40,19 @@ EngineBufferScaleST::EngineBufferScaleST(ReadAheadManager *pReadAheadManager)
     m_pSoundTouch = new soundtouch::SoundTouch();
     m_pSoundTouch->setChannels(2);
     m_pSoundTouch->setRate(m_dRateOld);
-    m_pSoundTouch->setTempo(m_dTempoOld);
     m_pSoundTouch->setPitch(1.0);
     m_pSoundTouch->setSetting(SETTING_USE_QUICKSEEK, 1);
     m_pSoundTouch->setSampleRate(m_iSampleRate > 0 ? m_iSampleRate : 44100);
 
     buffer_back = new CSAMPLE[kiSoundTouchReadAheadLength*2];
+
+    // Setting the tempo to a very low value will force SoundTouch
+    // to preallocate buffers large enough to (almost certainly)
+    // avoid memory reallocations during playback.
+    m_pSoundTouch->setTempo(0.1);
+    m_pSoundTouch->putSamples(buffer_back, kiSoundTouchReadAheadLength);
+    m_pSoundTouch->clear();
+    m_pSoundTouch->setTempo(m_dTempoOld);
 }
 
 EngineBufferScaleST::~EngineBufferScaleST() {
