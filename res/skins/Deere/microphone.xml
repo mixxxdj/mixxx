@@ -12,7 +12,6 @@
     <Layout>horizontal</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Children>
-
       <Template src="skin:microphone_talkover_button.xml">
         <SetVariable name="group">[Microphone<Variable name="i"/>]</SetVariable>
         <SetVariable name="TooltipId">microphone_talkover</SetVariable>
@@ -35,5 +34,9 @@
         <SetVariable name="label">Gain</SetVariable>
       </Template>
     </Children>
+    <Connection>
+      <ConfigKey>[Microphone<Variable name="i"/>],enabled</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
   </WidgetGroup>
 </Template>

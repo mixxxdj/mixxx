@@ -23,9 +23,5 @@
       <ConfigKey><Variable name="group"/>,talkover</ConfigKey>
       <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
     </Connection>
-    <Connection>
-      <ConfigKey><Variable name="group"/>,enabled</ConfigKey>
-      <BindProperty>visible</BindProperty>
-    </Connection>
   </PushButton>
 </Template>
