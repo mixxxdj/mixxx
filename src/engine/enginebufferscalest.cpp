@@ -85,11 +85,7 @@ void EngineBufferScaleST::setScaleParameters(double base_rate,
     double rate_abs = base_rate;
     double tempo_abs = speed_abs;
 
-    // Note that we do not set the tempo if it is zero. This is because of the
-    // above clamping which prevents us from going below MIN_SEEK_SPEED. I think
-    // we should handle this better but I have left the logic in place. rryan
-    // 4/2013.
-    if (tempo_abs != m_dTempoOld && tempo_abs != 0.0) {
+    if (tempo_abs != m_dTempoOld) {
         m_pSoundTouch->setTempo(tempo_abs);
         m_dTempoOld = tempo_abs;
     }
@@ -104,11 +100,6 @@ void EngineBufferScaleST::setScaleParameters(double base_rate,
 
     // NOTE(rryan) : There used to be logic here that clear()'d when the player
     // changed direction. I removed it because this is handled by EngineBuffer.
-
-    // Used by other methods so we need to keep them up to date.
-    m_dBaseRate = base_rate;
-    m_dTempoRatio = speed_abs;
-    m_dPitchRatio = *pPitchRatio;
 }
 
 void EngineBufferScaleST::setSampleRate(int iSampleRate) {

@@ -367,12 +367,16 @@ void EngineBuffer::enableIndependentPitchTempoScaling(bool bEnable,
     EngineBufferScale* vinyl_scale = m_pScaleVinyl;
 
     if (bEnable && m_pScale != keylock_scale) {
-        readToCrossfadeBuffer(iBufferSize);
+        if (m_speed_old) {
+            readToCrossfadeBuffer(iBufferSize);
+        }
         m_pScale = keylock_scale;
         m_pScale->clear();
         m_bScalerChanged = true;
     } else if (!bEnable && m_pScale != vinyl_scale) {
-        readToCrossfadeBuffer(iBufferSize);
+        if (m_speed_old) {
+            readToCrossfadeBuffer(iBufferSize);
+        }
         m_pScale = vinyl_scale;
         m_pScale->clear();
         m_bScalerChanged = true;
