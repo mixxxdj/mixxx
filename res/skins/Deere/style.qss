@@ -461,6 +461,12 @@ WStarRating {
                                   stop: 1.0 #333333);
 }
 
+#MicrophoneContainer {
+}
+
+#AuxiliaryContainer {
+}
+
 #LibraryContainer {
   background-color: #222;
 }
