@@ -119,6 +119,36 @@
                             <Layout>horizontal</Layout>
                             <Children>
                               <WidgetGroup>
+                                <Layout>stacked</Layout>
+                                <Children>
+                                  <PushButton>
+                                    <ObjectName>BpmEditTrigger</ObjectName>
+                                    <TooltipId>visual_bpm</TooltipId>
+                                    <NumberStates>1</NumberStates>
+                                    <State>
+                                      <Number>0</Number>
+                                      <!-- <Text>&#9998;</Text>
+                                      <Alignment>right</Alignment> -->
+                                      <Pressed scalemode="STRETCH"></Pressed>
+                                      <Unpressed scalemode="STRETCH"></Unpressed>
+                                    </State>
+                                    <Connection>
+                                      <ConfigKey>[Deere],bpm_layout_next</ConfigKey>
+                                    </Connection>
+                                  </PushButton>
+
+                                  <NumberBpm>
+                                    <ObjectName>BpmEditTriggerLabel</ObjectName>
+                                    <Group><Variable name="group"/></Group>
+                                    <Alignment>right</Alignment>
+                                    <Connection>
+                                      <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
+                                    </Connection>
+                                  </NumberBpm>
+                                </Children>
+                              </WidgetGroup>
+
+                              <WidgetGroup>
                                 <ObjectName>BpmEditRowControls</ObjectName>
                                 <Layout>horizontal</Layout>
                                 <SizePolicy>p,me</SizePolicy>
@@ -196,7 +226,7 @@
                                     <NumberStates>1</NumberStates>
                                     <State>
                                       <Number>0</Number>
-                                      <Text>&#9664; |</Text>
+                                      <Text>&#9664;|</Text>
                                     </State>
                                     <Connection>
                                       <ConfigKey><Variable name="group"/>,beats_translate_earlier</ConfigKey>
@@ -212,7 +242,7 @@
                                     <NumberStates>1</NumberStates>
                                     <State>
                                       <Number>0</Number>
-                                      <Text>| &#9654;</Text>
+                                      <Text>|&#9654;</Text>
                                     </State>
                                     <Connection>
                                       <ConfigKey><Variable name="group"/>,beats_translate_later</ConfigKey>
@@ -239,35 +269,6 @@
                                 </Children>
                               </WidgetGroup>
 
-                              <WidgetGroup>
-                                <Layout>stacked</Layout>
-                                <Children>
-                                  <PushButton>
-                                    <ObjectName>BpmEditTrigger</ObjectName>
-                                    <TooltipId>visual_bpm</TooltipId>
-                                    <NumberStates>1</NumberStates>
-                                    <State>
-                                      <Number>0</Number>
-                                      <!-- <Text>&#9998;</Text>
-                                      <Alignment>right</Alignment> -->
-                                      <Pressed scalemode="STRETCH"></Pressed>
-                                      <Unpressed scalemode="STRETCH"></Unpressed>
-                                    </State>
-                                    <Connection>
-                                      <ConfigKey>[Deere],bpm_layout_next</ConfigKey>
-                                    </Connection>
-                                  </PushButton>
-
-                                  <NumberBpm>
-                                    <ObjectName>BpmEditTriggerLabel</ObjectName>
-                                    <Group><Variable name="group"/></Group>
-                                    <Alignment>right</Alignment>
-                                    <Connection>
-                                      <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
-                                    </Connection>
-                                  </NumberBpm>
-                                </Children>
-                              </WidgetGroup>
                             </Children>
                           </WidgetGroup>
                         </Children>
