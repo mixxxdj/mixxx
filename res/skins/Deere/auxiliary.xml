@@ -14,7 +14,7 @@
     <Children>
       <Template src="skin:vumeter.xml">
         <SetVariable name="group">[Auxiliary<Variable name="i"/>]</SetVariable>
-        <SetVariable name="TooltipId">VuMeter</SetVariable>
+        <SetVariable name="TooltipId">channel_VuMeter</SetVariable>
         <SetVariable name="control">VuMeter</SetVariable>
       </Template>
 
