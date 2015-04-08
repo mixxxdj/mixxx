@@ -286,12 +286,13 @@ WSliderComposed {
   padding: 2px;
 }
 
-/* Start BPM edit widget in decks*/
-#BpmEditRow:hover {
+/* Start BPM/Key edit widgets in decks*/
+#BpmEditRow:hover, #KeyEditRow:hover {
+  border: 1px solid #FF6600;
   background-color: rgba(255, 102, 0, 128);
 }
 
-#BpmEditRowExpanded {
+#BpmEditRowExpanded, #KeyEditRowExpanded {
   /* emphasize active widget */
   padding: 1px;
   border: 1px solid #FF6600;
@@ -299,19 +300,19 @@ WSliderComposed {
   color: #D6D6D6;
 }
 
-#BpmEditTrigger {
+#BpmEditTrigger, #KeyEditTrigger {
   /* make trigger button transparent */
   background-color: none;
   border: none;
 }
 
-#BpmEditRowControls {
+#BpmEditRowControls, #KeyEditRowControls {
   /* Make black borders between all buttons */
   background-color: black;
   padding: 1px;
   qproperty-layoutSpacing: 1;
 }
-/* End BPM edit widget in decks*/
+/* End BPM/Key edit widgets in decks*/
 
 #DeckTextRow #ArtistGutter WLabel, #DeckTextRow #BPMGutter WLabel, #DeckTextRow #PositionGutter WLabel {
   font-weight: bold;

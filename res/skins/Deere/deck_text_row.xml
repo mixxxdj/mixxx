@@ -58,19 +58,178 @@
                     <Group><Variable name="group"/></Group>
                     <Elide>right</Elide>
                   </TrackProperty>
+
                   <WidgetGroup>
                     <ObjectName>BPMGutter</ObjectName>
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,max</SizePolicy>
                     <Children>
-                      <Key>
-                        <Group><Variable name="group"/></Group>
-                        <SizePolicy>min,</SizePolicy>
-                        <DisplayCents>false</DisplayCents>
-                        <Connection>
-                          <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
-                        </Connection>
-                      </Key>
+                      <!-- Fake a click-able multi-state widget by stacking a
+                           transparent PushButton dummy (the trigger) on top of the
+                           individual WidgetGroups (the content). PushButton tracks
+                           the size of the active WidgetGroup and resizes. Notice
+                           that the trigger has the same TooltipId as the content.
+                           Description: Key edit widget -->
+                      <WidgetStack>
+                        <ObjectName>KeyEditRow</ObjectName>
+                        <SizePolicy>max,</SizePolicy>
+                        <Style>
+                        </Style>
+                        <NextControl>[Deere],key_layout_next</NextControl>
+                        <PrevControl>[Deere],key_layout_prev</PrevControl>
+                        <Children>
+                          <WidgetGroup>
+                            <Layout>stacked</Layout>
+                            <Children>
+                              <PushButton>
+                                <ObjectName>KeyEditTrigger</ObjectName>
+                                <TooltipId>visual_key</TooltipId>
+                                <NumberStates>1</NumberStates>
+                                <State>
+                                  <Number>0</Number>
+                                  <!-- <Text>&#9998;</Text>
+                                  <Alignment>right</Alignment> -->
+                                  <Pressed scalemode="STRETCH"></Pressed>
+                                  <Unpressed scalemode="STRETCH"></Unpressed>
+                                </State>
+                                <Connection>
+                                  <ConfigKey>[Deere],key_layout_next</ConfigKey>
+                                </Connection>
+                              </PushButton>
+                              <Key>
+                                <ObjectName>KeyEditTriggerLabel</ObjectName>
+                                <Group><Variable name="group"/></Group>
+                                <SizePolicy>min,</SizePolicy>
+                                <DisplayCents>false</DisplayCents>
+                                <Connection>
+                                  <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
+                                </Connection>
+                              </Key>
+                            </Children>
+                          </WidgetGroup>
+
+                          <WidgetGroup>
+                            <ObjectName>KeyEditRowExpanded</ObjectName>
+                            <Layout>horizontal</Layout>
+                            <Children>
+                              <WidgetGroup>
+                                <!-- The key edit controls are aligned to the right because the key
+                                     widget widths can rapidly change, especially with traditional
+                                     notation selected in the preferences. The controls stay calm
+                                     this way. -->
+                                <Layout>stacked</Layout>
+                                <Children>
+                                  <PushButton>
+                                    <ObjectName>KeyEditTrigger</ObjectName>
+                                    <TooltipId>visual_key</TooltipId>
+                                    <NumberStates>1</NumberStates>
+                                    <State>
+                                      <Number>0</Number>
+                                      <!-- <Text>&#9998;</Text>
+                                      <Alignment>right</Alignment> -->
+                                      <Pressed scalemode="STRETCH"></Pressed>
+                                      <Unpressed scalemode="STRETCH"></Unpressed>
+                                    </State>
+                                    <Connection>
+                                      <ConfigKey>[Deere],key_layout_next</ConfigKey>
+                                    </Connection>
+                                  </PushButton>
+
+                                  <Key>
+                                    <ObjectName>KeyEditTriggerLabel</ObjectName>
+                                    <Group><Variable name="group"/></Group>
+                                    <SizePolicy>min,</SizePolicy>
+                                    <DisplayCents>true</DisplayCents>
+                                    <Connection>
+                                      <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
+                                    </Connection>
+                                  </Key>
+                                </Children>
+                              </WidgetGroup>
+
+                              <WidgetGroup>
+                                <ObjectName>KeyEditRowControls</ObjectName>
+                                <Layout>horizontal</Layout>
+                                <SizePolicy>p,me</SizePolicy>
+                                <MinimumSize>60,20</MinimumSize>
+                                <MaximumSize>120,30</MaximumSize>
+                                <Children>
+                                  <PushButton>
+                                    <TooltipId>pitch_up</TooltipId>
+                                    <MinimumSize>20,20</MinimumSize>
+                                    <MaximumSize>30,30</MaximumSize>
+                                    <NumberStates>1</NumberStates>
+                                    <State>
+                                      <Number>0</Number>
+                                      <Text>+</Text>
+                                    </State>
+                                    <State>
+                                      <Number>0</Number>
+                                      <Text>+</Text>
+                                    </State>
+                                    <Connection>
+                                      <ConfigKey><Variable name="group"/>,pitch_up</ConfigKey>
+                                      <ButtonState>LeftButton</ButtonState>
+                                    </Connection>
+                                    <Connection>
+                                      <ConfigKey><Variable name="group"/>,pitch_up_small</ConfigKey>
+                                      <ButtonState>RightButton</ButtonState>
+                                    </Connection>
+                                  </PushButton>
+
+                                  <PushButton>
+                                    <TooltipId>pitch_down</TooltipId>
+                                    <MinimumSize>20,20</MinimumSize>
+                                    <MaximumSize>30,30</MaximumSize>
+                                    <NumberStates>1</NumberStates>
+                                    <State>
+                                      <Number>0</Number>
+                                      <Text>-</Text>
+                                    </State>
+                                    <State>
+                                      <Number>1</Number>
+                                      <Text>-</Text>
+                                    </State>
+                                    <Connection>
+                                      <ConfigKey><Variable name="group"/>,pitch_down</ConfigKey>
+                                      <ButtonState>LeftButton</ButtonState>
+                                    </Connection>
+                                    <Connection>
+                                      <ConfigKey><Variable name="group"/>,pitch_down_small</ConfigKey>
+                                      <ButtonState>RightButton</ButtonState>
+                                    </Connection>
+                                  </PushButton>
+
+                                  <PushButton>
+                                    <TooltipId>sync_reset_key</TooltipId>
+                                    <MinimumSize>40,20</MinimumSize>
+                                    <MaximumSize>60,30</MaximumSize>
+                                    <NumberStates>2</NumberStates>
+                                    <State>
+                                      <Number>0</Number>
+                                      <Text>MATCH</Text>
+                                    </State>
+                                    <State>
+                                      <Number>1</Number>
+                                      <Text>MATCH</Text>
+                                    </State>
+                                    <Connection>
+                                      <ConfigKey><Variable name="group"/>,sync_key</ConfigKey>
+                                      <ButtonState>LeftButton</ButtonState>
+                                    </Connection>
+                                    <Connection>
+                                        <ConfigKey><Variable name="group"/>,reset_key</ConfigKey>
+                                        <ButtonState>RightButton</ButtonState>
+                                    </Connection>
+                                  </PushButton>
+
+                                </Children>
+                              </WidgetGroup>
+                            </Children>
+                          </WidgetGroup>
+                        </Children>
+                      </WidgetStack>
+
                       <!-- Fake a click-able multi-state widget by stacking a
                            transparent PushButton dummy (the trigger) on top of the
                            individual WidgetGroups (the content). PushButton tracks
