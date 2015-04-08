@@ -799,9 +799,11 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             // Force pitchRatio to the linear pitch set by speed
             pitchRatio = speed;
             // This is for the natural speed pitch found on turn tables
-        } else if (fabs(speed) < 0.1 && m_pKeylockEngine->get() == RUBBERBAND) {
-            // At very slow speeds, Rubberband performs memory allocations which
-            // can cause underruns.  Disable keylock under these conditions.
+        } else if (fabs(speed) < 0.1) {
+            // We have pre-allocated big buffers in Rubberband and Soundtouch for
+            // a minimum speed of 0.1. Slower speeds will re-allocate much bigger
+            // buffers which may cause underruns.
+            // Disable keylock under these conditions.
 
             // Force pitchRatio to the linear pitch set by speed
             pitchRatio = speed;
