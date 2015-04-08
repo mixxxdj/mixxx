@@ -40,19 +40,20 @@
               </Template>
 
               <PushButton>
+                <TooltipId>TODO</TooltipId>
                 <Size>70f,20f</Size>
                 <NumberStates>3</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Text>Ducking Off</Text>
+                  <Text>Ducking</Text>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Text>Auto Ducking</Text>
+                  <Text>Ducking</Text>
                 </State>
                 <State>
                   <Number>2</Number>
-                  <Text>Manual Ducking</Text>
+                  <Text>Manual</Text>
                 </State>
                 <Connection>
                   <ConfigKey>[Master],talkoverDucking</ConfigKey>
@@ -60,14 +61,13 @@
                 </Connection>
               </PushButton>
 
-              <Template src="skin:knob.xml">
+              <Template src="skin:knob_with_label.xml">
                 <SetVariable name="group">[Master]</SetVariable>
                 <SetVariable name="control">duckStrength</SetVariable>
                 <SetVariable name="TooltipId">TODO</SetVariable>
                 <SetVariable name="color">white</SetVariable>
                 <SetVariable name="label">Strength</SetVariable>
               </Template>
-
             </Children>
           </WidgetGroup>
 
