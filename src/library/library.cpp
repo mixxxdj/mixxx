@@ -72,7 +72,8 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig,
             browseFeature, SLOT(slotLibraryScanFinished()));
     addFeature(browseFeature);
     addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
-    addFeature(new SetlogFeature(this, pConfig, m_pTrackCollection));
+    m_pSetlogFeature = new SetlogFeature(this, pConfig, m_pTrackCollection);
+    addFeature(m_pSetlogFeature);
     m_pAnalysisFeature = new AnalysisFeature(this, pConfig, m_pTrackCollection);
     connect(m_pPlaylistFeature, SIGNAL(analyzeTracks(QList<int>)),
             m_pAnalysisFeature, SLOT(analyzeTracks(QList<int>)));

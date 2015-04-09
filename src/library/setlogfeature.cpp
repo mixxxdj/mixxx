@@ -236,6 +236,8 @@ void SetlogFeature::slotPlayingDeckChanged(int deck) {
         if (!currentPlayingTrack) {
             return;
         }
+        
+        emit(currentPlayingTrackChanged(currentPlayingTrack->getTitle()));
 
         int currentPlayingTrackId = currentPlayingTrack->getId();
         bool track_played_recently = false;

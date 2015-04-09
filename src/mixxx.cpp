@@ -464,6 +464,10 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
             m_pPlayerManager->slotLoadToDeck(musicFiles.at(i), i+1);
         }
     }
+
+    connect(m_pLibrary->getSetlogFeature(), 
+            SIGNAL(currentPlayingTrackChanged(QString)),
+            this, SLOT(changeWindowTitle(QString)));
 }
 
 MixxxMainWindow::~MixxxMainWindow() {
@@ -1457,6 +1461,11 @@ void MixxxMainWindow::initActions()
         talkover_button->connectValueChanged(m_TalkoverMapper, SLOT(map()));
         m_micTalkoverControls.push_back(talkover_button);
     }
+}
+
+void MixxxMainWindow::changeWindowTitle(QString title)
+{
+    this->setWindowTitle(title);
 }
 
 void MixxxMainWindow::initMenuBar()
