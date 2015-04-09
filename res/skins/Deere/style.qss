@@ -1,26 +1,33 @@
 /*******************************************************************************
  ** BORDER *********************************************************************
  *******************************************************************************/
-/* These definitions put a faint grey border around all the widgets. We have to
-   be tricky with top/bottom-ness to get things right. */
+/* These definitions put a faint border around all the widgets. We have to be
+   tricky with top/bottom-ness to get things right. */
 
 #Mixer {
-  border: 1px solid #555;
+  border: 1px solid #222;
 }
 
 #DeckTextRow {
-  border-top: 1px solid #555;
+  border-top: 0px solid #222;
+  border-bottom: 0px solid #222;
 }
 
 #UpperTextRow {
   /* top 0px seems required for bottom 1px to work O_o */
-  border-top: 0px solid #555;
-  border-bottom: 1px solid #555;
+  border-top: 0px solid #222;
+  border-bottom: 0px solid #222;
 }
 
 #DeckRows {
-  border: 1px solid #555;
+  border: 0px solid #222;
   border-top: none;
+}
+
+#DeckInnerColumn {
+  border: 0px solid #222;
+  border-top: 0px;
+  border-bottom: 0px;
 }
 
 /* Prevent a 2px border where the decks meet. */
@@ -28,16 +35,22 @@
   border-top: none;
 }
 
-#OverviewRow {
-  border-bottom: 1px solid #555;
+#VisualRow {
+  border-top: 1px solid #222;
   background-color: transparent;
   margin: 0px;
 }
 
-#VisualRow {
-  border-bottom: 1px solid #555;
+#OverviewRow {
+  border-top: 1px solid #222;
   background-color: transparent;
   margin: 0px;
+  padding: 4px;
+}
+
+#ControlsRow {
+  border-top: 1px solid #222;
+  padding: 4px;
 }
 
 /* Rounded corners to split things up */
@@ -47,7 +60,7 @@
   border-top-right-radius:5px;
   border-width: 1px;
   border-style: solid;
-  border-color: #555;
+  border-color: #222;
 }
 
 #Deck2, #Deck4 {
@@ -55,18 +68,18 @@
   border-top-left-radius:5px;
   border-width: 1px;
   border-style: solid;
-  border-color: #555;
+  border-color: #222;
 }
 
 #Sampler {
-  border: 1px solid #555;
+  border: 1px solid #222;
   border-left:none;
 }
 
 #PreviewDeckContainer {
 margin: 0px;
 padding: 0px 0px 4px 5px;
-border: 1px solid #555;
+border: 1px solid #222;
 background: transparent;
 }
 
@@ -199,8 +212,6 @@ WSliderComposed {
 
 #ControlsRow {
   qproperty-layoutSpacing: 5;
-  margin-top: 1px;
-  margin-bottom: 1px;
 }
 
 /* Make the hotcue button grid have black borders between all buttons */
@@ -352,19 +363,19 @@ WSliderComposed {
 }
 
 #EffectUnitNameRow {
-  border-bottom: 1px solid #555;
+  border-bottom: 1px solid #222;
   background-color: transparent;
   margin: 0px;
 }
 
 #EffectUnit1, #EffectUnit2, #EffectUnit3, #EffectUnit4 {
   qproperty-layoutAlignment: 'AlignTop';
-  border: 1px solid #555;
+  border: 1px solid #222;
   border-left:none;
 }
 
 #EffectUnit1 {
-  border-left: 1px solid #555;
+  border-left: 1px solid #222;
 }
 
 #EffectUnitNameContainer {
@@ -410,19 +421,19 @@ WSliderComposed {
 
 #LeftGutter, #RightGutter {
   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                    stop: 0 #333333,
+                                    stop: 0 #222222,
                                     stop: 1.0 #222222);
 }
 
 #Deck1, #Deck2 {
   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                     stop: 0 #333333,
-                                    stop: 1.0 #222222);
+                                    stop: 1.0 #333333);
 }
 
 #Deck3, #Deck4 {
   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                    stop: 0 #222222,
+                                    stop: 0 #333333,
                                     stop: 1.0 #333333);
 }
 
@@ -476,7 +487,7 @@ WStarRating {
 
 #SampleDecksContainer, #PreviewDeckContainer {
   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                  stop: 0 #222222,
+                                  stop: 0 #333333,
                                   stop: 1.0 #333333);
 }
 
@@ -485,7 +496,7 @@ WStarRating {
 
 #MicrophoneRackExpanded {
   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                  stop: 0 #222222,
+                                  stop: 0 #333333,
                                   stop: 1.0 #333333);
 }
 
@@ -505,7 +516,7 @@ WStarRating {
 
 #EffectRackContainer {
   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                  stop: 0 #222222,
+                                  stop: 0 #333333,
                                   stop: 1.0 #333333);
 }
 
