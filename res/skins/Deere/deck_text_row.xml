@@ -98,6 +98,7 @@
                               </PushButton>
                               <Key>
                                 <ObjectName>KeyEditTriggerLabel</ObjectName>
+                                <MinimumSize>30,20</MinimumSize>
                                 <Group><Variable name="group"/></Group>
                                 <SizePolicy>min,</SizePolicy>
                                 <DisplayCents>false</DisplayCents>
@@ -151,7 +152,7 @@
                                 <ObjectName>KeyEditRowControls</ObjectName>
                                 <Layout>horizontal</Layout>
                                 <SizePolicy>p,me</SizePolicy>
-                                <MinimumSize>60,20</MinimumSize>
+                                <MinimumSize>80,20</MinimumSize>
                                 <MaximumSize>120,30</MaximumSize>
                                 <Children>
                                   <PushButton>
@@ -264,6 +265,7 @@
                               </PushButton>
                               <NumberBpm>
                                 <ObjectName>BpmEditTriggerLabel</ObjectName>
+                                <MinimumSize>70,20</MinimumSize>
                                 <Group><Variable name="group"/></Group>
                                 <Alignment>right</Alignment>
                                 <Connection>
@@ -479,6 +481,8 @@
                     <ObjectName>PositionGutter</ObjectName>
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,max</SizePolicy>
+                    <MinimumSize>70,20</MinimumSize>
+                    <MaximumSize>100,30</MaximumSize>
                     <Children>
                       <NumberPos>
                         <TooltipId>track_time</TooltipId>
