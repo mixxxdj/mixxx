@@ -86,6 +86,8 @@ void EngineBufferScaleST::setScaleParameters(double base_rate,
     double tempo_abs = speed_abs;
 
     if (tempo_abs != m_dTempoOld) {
+        // Note: A rate of zero would make Soundtouch crash,
+        // this is caught in getScaled()
         m_pSoundTouch->setTempo(tempo_abs);
         m_dTempoOld = tempo_abs;
     }

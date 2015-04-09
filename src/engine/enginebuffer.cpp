@@ -367,14 +367,19 @@ void EngineBuffer::enableIndependentPitchTempoScaling(bool bEnable,
     EngineBufferScale* vinyl_scale = m_pScaleVinyl;
 
     if (bEnable && m_pScale != keylock_scale) {
-        if (m_speed_old) {
+        if (m_speed_old != 0.0) {
+            // Crossfade if we are not paused.
+            // If we start from zero a ramping gain is
+            // applied later
             readToCrossfadeBuffer(iBufferSize);
         }
         m_pScale = keylock_scale;
         m_pScale->clear();
         m_bScalerChanged = true;
     } else if (!bEnable && m_pScale != vinyl_scale) {
-        if (m_speed_old) {
+        if (m_speed_old != 0.0) {
+            // Crossfade if we are not paused
+            // (for slow speeds below 0.1 the vinyl_scale is used)
             readToCrossfadeBuffer(iBufferSize);
         }
         m_pScale = vinyl_scale;
