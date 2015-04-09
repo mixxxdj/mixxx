@@ -6,7 +6,6 @@
 
 #include <QLinkedList>
 #include <QList>
-#include <QMutex>
 #include <QPair>
 
 #include "util/types.h"
@@ -119,7 +118,6 @@ class ReadAheadManager {
     void addReadLogEntry(double virtualPlaypositionStart,
                          double virtualPlaypositionEndNonInclusive);
 
-    QMutex m_mutex;
     LoopingControl* m_pLoopingControl;
     RateControl* m_pRateControl;
     QLinkedList<ReadLogEntry> m_readAheadLog;

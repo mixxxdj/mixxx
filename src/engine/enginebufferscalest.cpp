@@ -116,7 +116,7 @@ void EngineBufferScaleST::clear() {
 CSAMPLE* EngineBufferScaleST::getScaled(unsigned long buf_size) {
     m_samplesRead = 0.0;
 
-    if (m_dRateOld == 0 || m_dTempoOld == 0) {
+    if (m_dRateOld == 0 || m_dTempoOld == 0 || m_dPitch == 0) {
         SampleUtil::clear(m_buffer, buf_size);
         m_samplesRead = buf_size;
         return m_buffer;
