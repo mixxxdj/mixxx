@@ -214,6 +214,12 @@ WSliderComposed {
   qproperty-layoutSpacing: 5;
 }
 
+#WaveformZoomContainer {
+  background-color: #333333;
+  padding: 1px;
+  qproperty-layoutSpacing: 2;
+}
+
 /* Make the hotcue button grid have black borders between all buttons */
 #HotcueGrid, #HotcueGridExtended {
   background-color: black;

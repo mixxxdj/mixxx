@@ -111,59 +111,41 @@
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <PushButton>
-            <TooltipId>waveform_zoom_down</TooltipId>
-            <MinimumSize>20,20</MinimumSize>
-            <MaximumSize>30,30</MaximumSize>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text> + </Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text> + </Text>
-            </State>
-            <Connection>
-              <ConfigKey persist="true"><Variable name="group"/>,waveform_zoom_down</ConfigKey>
-            </Connection>
-          </PushButton>
+          <Template src="skin:left_1state_button.xml">
+            <SetVariable name="TooltipId">loop_in</SetVariable>
+            <SetVariable name="ObjectName">LoopIn</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text"> + </SetVariable>
+            <SetVariable name="state_0_pressed"> + </SetVariable>
+            <SetVariable name="state_0_unpressed"> + </SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,waveform_zoom_down</SetVariable>
+          </Template>
 
-          <PushButton>
-            <TooltipId>waveform_zoom_set_default</TooltipId>
-            <MinimumSize>20,20</MinimumSize>
-            <MaximumSize>30,30</MaximumSize>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text> O </Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text> O </Text>
-            </State>
-            <Connection>
-              <ConfigKey persist="true"><Variable name="group"/>,waveform_zoom_set_default</ConfigKey>
-            </Connection>
-          </PushButton>
+          <Template src="skin:left_1state_button.xml">
+            <SetVariable name="TooltipId">loop_in</SetVariable>
+            <SetVariable name="ObjectName">LoopIn</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text"> O </SetVariable>
+            <SetVariable name="state_0_pressed"> O </SetVariable>
+            <SetVariable name="state_0_unpressed"> O </SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,waveform_zoom_set_default</SetVariable>
+          </Template>
 
-          <PushButton>
-            <TooltipId>waveform_zoom_up</TooltipId>
-            <MinimumSize>20,20</MinimumSize>
-            <MaximumSize>30,30</MaximumSize>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text> - </Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text> - </Text>
-            </State>
-            <Connection>
-              <ConfigKey persist="true"><Variable name="group"/>,waveform_zoom_up</ConfigKey>
-            </Connection>
-          </PushButton>
+          <Template src="skin:left_1state_button.xml">
+            <SetVariable name="TooltipId">loop_in</SetVariable>
+            <SetVariable name="ObjectName">LoopIn</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text"> - </SetVariable>
+            <SetVariable name="state_0_pressed"> - </SetVariable>
+            <SetVariable name="state_0_unpressed"> - </SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,waveform_zoom_up</SetVariable>
+          </Template>
         </Children>
       </WidgetGroup>
 
