@@ -24,10 +24,14 @@
   border-top: none;
 }
 
-#DeckInnerColumn {
+#Deck1InnerColumn, #Deck3InnerColumn {
   border: 0px solid #222;
-  border-top: 0px;
-  border-bottom: 0px;
+  border-left: 1px solid #222;
+}
+
+#Deck2InnerColumn, #Deck4InnerColumn {
+  border: 0px solid #222;
+  border-right: 1px solid #222;
 }
 
 /* Prevent a 2px border where the decks meet. */
@@ -210,13 +214,39 @@ WSliderComposed {
   background-color: rgba(200, 200, 200, 128);
 }
 
-#ControlsRow {
+#OptionGrid {
+  background-color: #333333;
+  padding: 1px;
+  qproperty-layoutSpacing: 2;
+}
+
+#ObjectGridRow1, #ObjectGridRow2 {
+  qproperty-layoutSpacing: 2;
+}
+
+#OverviewRow, #ControlsRow {
   qproperty-layoutSpacing: 5;
 }
 
 #WaveformZoomContainer {
   background-color: #333333;
   padding: 1px;
+  qproperty-layoutSpacing: 2;
+}
+
+#Deck1InnerColumn, #Deck3InnerColumn {
+  background-color: #333333;
+  padding: 4px;
+  qproperty-layoutSpacing: 2;
+}
+
+#Deck2InnerColumn, #Deck4InnerColumn {
+  background-color: #333333;
+  padding: 4px;
+  qproperty-layoutSpacing: 2;
+}
+
+#RateTempButtons {
   qproperty-layoutSpacing: 2;
 }
 
