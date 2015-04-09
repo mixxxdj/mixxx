@@ -83,7 +83,7 @@
         <Layout>horizontal</Layout>
         <Children>
           <SliderComposed>
-            <Style>QWidget {background-color: #006BA2;}</Style>
+            <Style>QWidget {background-color: #006596;}</Style>
             <TooltipId>crossfader</TooltipId>
             <SizePolicy>me,min</SizePolicy>
             <MinimumSize>-1,40</MinimumSize>
