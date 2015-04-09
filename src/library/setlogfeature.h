@@ -47,6 +47,10 @@ public:
     QAction* m_pJoinWithPreviousAction;
     QAction* m_pGetNewPlaylist;
     int m_playlistId;
+
+  signals:
+    void currentPlayingTrackChanged(QString r);
+
 };
 
 #endif // SETLOGFEATURE_H

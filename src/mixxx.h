@@ -46,6 +46,7 @@ class ControlPushButton;
 class DlgDeveloperTools;
 
 #include "configobject.h"
+#include "trackinfoobject.h"
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
 
@@ -76,7 +77,6 @@ class MixxxMainWindow : public QMainWindow {
     inline GuiTick* getGuiTick() { return m_pGuiTick; };
 
   public slots:
-
     //void slotQuitFullScreen();
     void slotFileLoadSongPlayer(int deck);
     // Opens a file in player 1
@@ -143,6 +143,8 @@ class MixxxMainWindow : public QMainWindow {
 
     void toggleCheckedSamplers();
 
+    void changeWindowTitle(QString title);
+
   signals:
     void newSkinLoaded();
     void libraryScanStarted();
@@ -150,6 +152,7 @@ class MixxxMainWindow : public QMainWindow {
     // used to uncheck the menu when the dialog of develeoper tools is closed
     void developerToolsDlgClosed(int r);
     void closeDeveloperToolsDlgChecked(int r);
+    void currentPlayingTrackChanged(QString r);
 
   protected:
     // Event filter to block certain events (eg. tooltips if tooltips are disabled)
@@ -171,6 +174,7 @@ class MixxxMainWindow : public QMainWindow {
 
     void linkSkinWidget(ControlObjectSlave** pCOS,
                         ConfigKey key, const char* slot);
+    QString getTitleFromTrack(TrackPointer pTrack);
 
     // Pointer to the root GUI widget
     QWidget* m_pWidgetParent;

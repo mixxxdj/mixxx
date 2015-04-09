@@ -45,6 +45,7 @@
 #include "library/library_preferences.h"
 #include "library/scanner/libraryscanner.h"
 #include "library/librarytablemodel.h"
+#include "library/setlogfeature.h"
 #include "controllers/controllermanager.h"
 #include "mixxxkeyboard.h"
 #include "playermanager.h"
@@ -464,6 +465,9 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
             m_pPlayerManager->slotLoadToDeck(musicFiles.at(i), i+1);
         }
     }
+
+    connect(m_pLibrary->getSetlogFeature(), SIGNAL(currentPlayingTrackChanged(QString)),
+            this, SLOT(changeWindowTitle(QString)));
 }
 
 MixxxMainWindow::~MixxxMainWindow() {
@@ -557,6 +561,8 @@ MixxxMainWindow::~MixxxMainWindow() {
     WaveformWidgetFactory::destroy();
 
     delete m_pGuiTick;
+
+    delete m_pShowSamplers;
 
     // Check for leaked ControlObjects and give warnings.
     QList<QSharedPointer<ControlDoublePrivate> > leakedControls;
@@ -2077,6 +2083,11 @@ void MixxxMainWindow::slotToCenterOfPrimaryScreen() {
 
     move(primaryScreenRect.left() + (primaryScreenRect.width() - m_pWidgetParent->width()) / 2,
          primaryScreenRect.top() + (primaryScreenRect.height() - m_pWidgetParent->height()) / 2);
+}
+
+void MixxxMainWindow::changeWindowTitle(QString title) 
+{
+    this->setWindowTitle(title);
 }
 
 void MixxxMainWindow::checkDirectRendering() {

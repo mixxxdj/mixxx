@@ -17,6 +17,7 @@
 #include "recording/recordingmanager.h"
 #include "analysisfeature.h"
 #include "library/coverartcache.h"
+#include "library/setlogfeature.h"
 
 class TrackModel;
 class TrackCollection;
@@ -65,6 +66,9 @@ public:
         return m_trackTableFont;
     }
 
+    SetlogFeature* getSetlogFeature() {
+        return m_pSetlogFeature;
+    }
     //static Library* buildDefaultLibrary();
 
     enum RemovalType {
@@ -123,6 +127,7 @@ public:
     RecordingManager* m_pRecordingManager;
     QFont m_trackTableFont;
     int m_iTrackTableRowHeight;
+    SetlogFeature* m_pSetlogFeature;
 };
 
 #endif /* LIBRARY_H */
