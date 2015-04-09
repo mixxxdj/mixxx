@@ -400,8 +400,8 @@ WSliderComposed {
 }
 
 #KnobLabel, #EffectKnobLabel, #EffectButtonLabel {
-  background-color: white;
-  border: 1px solid black;
+  background-color: none;
+  border: none;
   qproperty-alignment: 'AlignCenter | AlignVCenter';
 }
 
