@@ -152,14 +152,12 @@ class MixxxMainWindow : public QMainWindow {
     // used to uncheck the menu when the dialog of develeoper tools is closed
     void developerToolsDlgClosed(int r);
     void closeDeveloperToolsDlgChecked(int r);
-    void currentPlayingTrackChanged(QString);
 
   protected:
     // Event filter to block certain events (eg. tooltips if tooltips are disabled)
     virtual bool eventFilter(QObject *obj, QEvent *event);
     virtual void closeEvent(QCloseEvent *event);
     virtual bool event(QEvent* e);
-
 
   private:
     void logBuildDetails();
