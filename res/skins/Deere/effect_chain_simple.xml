@@ -96,7 +96,7 @@
 
               <Template src="skin:small_knob.xml">
                 <SetVariable name="control">super1</SetVariable>
-                <SetVariable name="label">SuperKnob</SetVariable>
+                <SetVariable name="label">Super</SetVariable>
               </Template>
 
               <Template src="skin:small_knob.xml">

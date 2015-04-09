@@ -193,7 +193,7 @@
             <Children>
               <Template src="skin:knob_with_label.xml">
                 <SetVariable name="control">super1</SetVariable>
-                <SetVariable name="label">SuperKnob</SetVariable>
+                <SetVariable name="label">Super</SetVariable>
                 <SetVariable name="color">blue</SetVariable>
               </Template>
 
