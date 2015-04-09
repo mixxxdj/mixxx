@@ -356,10 +356,10 @@ CSAMPLE* EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         m_floorSampleOld[0] = floor_sample[0];
         m_floorSampleOld[1] = floor_sample[1];
 
-        // Smooth any changes in the playback rate over iRateLerpLength
+        // Smooth any changes in the playback rate over one buf_size
         // samples. This prevents the change from being discontinuous and helps
         // improve sound quality.
-        float rate_add = fabs((i * rate_diff / buf_size) + rate_old);
+        double rate_add = fabs((i * rate_diff / buf_size) + rate_old);
 
         // increment the index for the next loop
         m_dNextFrame = m_dCurrentFrame + rate_add;
