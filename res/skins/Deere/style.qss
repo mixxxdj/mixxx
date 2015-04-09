@@ -306,7 +306,6 @@ WSliderComposed {
 
 #BpmEditRowExpanded, #KeyEditRowExpanded {
   /* emphasize active widget */
-  padding: 1px;
   border: 1px solid #FF6600;
   background: rgba(255, 102, 0, 64);
   color: #D6D6D6;
@@ -319,10 +318,12 @@ WSliderComposed {
 }
 
 #BpmEditRowControls, #KeyEditRowControls {
-  /* Make black borders between all buttons */
-  background-color: black;
-  padding: 1px;
-  qproperty-layoutSpacing: 1;
+  /* Make room between buttons */
+  background-color: #333333;
+  padding-left: 2px;
+  padding-right: 2px;
+  margin-left: 2px;
+  qproperty-layoutSpacing: 2;
 }
 /* End editable widgets in decks*/
 
