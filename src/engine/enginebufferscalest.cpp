@@ -34,12 +34,10 @@ using namespace soundtouch;
 EngineBufferScaleST::EngineBufferScaleST(ReadAheadManager *pReadAheadManager)
     : EngineBufferScale(),
       m_bBackwards(false),
-      m_dRateOld(1.0),
-      m_dTempoOld(1.0),
       m_pReadAheadManager(pReadAheadManager) {
     m_pSoundTouch = new soundtouch::SoundTouch();
     m_pSoundTouch->setChannels(2);
-    m_pSoundTouch->setRate(m_dRateOld);
+    m_pSoundTouch->setRate(m_dBaseRate);
     m_pSoundTouch->setPitch(1.0);
     m_pSoundTouch->setSetting(SETTING_USE_QUICKSEEK, 1);
     m_pSoundTouch->setSampleRate(m_iSampleRate > 0 ? m_iSampleRate : 44100);
@@ -52,7 +50,7 @@ EngineBufferScaleST::EngineBufferScaleST(ReadAheadManager *pReadAheadManager)
     m_pSoundTouch->setTempo(0.1);
     m_pSoundTouch->putSamples(buffer_back, kiSoundTouchReadAheadLength);
     m_pSoundTouch->clear();
-    m_pSoundTouch->setTempo(m_dTempoOld);
+    m_pSoundTouch->setTempo(m_dTempoRatio);
 }
 
 EngineBufferScaleST::~EngineBufferScaleST() {
@@ -82,18 +80,15 @@ void EngineBufferScaleST::setScaleParameters(double base_rate,
 
     // Include baserate in rate_abs so that we do samplerate conversion as part
     // of rate adjustment.
-    double rate_abs = base_rate;
-    double tempo_abs = speed_abs;
-
-    if (tempo_abs != m_dTempoOld) {
+    if (speed_abs != m_dTempoRatio) {
         // Note: A rate of zero would make Soundtouch crash,
         // this is caught in getScaled()
-        m_pSoundTouch->setTempo(tempo_abs);
-        m_dTempoOld = tempo_abs;
+        m_pSoundTouch->setTempo(speed_abs);
+        m_dTempoRatio = speed_abs;
     }
-    if (rate_abs != m_dRateOld) {
-        m_pSoundTouch->setRate(rate_abs);
-        m_dRateOld = rate_abs;
+    if (base_rate != m_dBaseRate) {
+        m_pSoundTouch->setRate(base_rate);
+        m_dBaseRate = base_rate;
     }
     if (*pPitchRatio != m_dPitchRatio) {
         m_pSoundTouch->setPitch(*pPitchRatio);
@@ -116,7 +111,7 @@ void EngineBufferScaleST::clear() {
 CSAMPLE* EngineBufferScaleST::getScaled(unsigned long buf_size) {
     m_samplesRead = 0.0;
 
-    if (m_dRateOld == 0 || m_dTempoOld == 0 || m_dPitchRatio == 0) {
+    if (m_dBaseRate == 0 || m_dTempoRatio == 0 || m_dPitchRatio == 0) {
         SampleUtil::clear(m_buffer, buf_size);
         m_samplesRead = buf_size;
         return m_buffer;
