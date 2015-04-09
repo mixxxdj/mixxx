@@ -433,7 +433,7 @@ WWidget, WLabel {
 
 /* Track text, etc. should be in the deck color. */
 #Deck1 WLabel {
-  color: #0099FF;
+  color: #D2D2D2;
 }
 
 #DeckMixer1 {
@@ -442,7 +442,7 @@ WWidget, WLabel {
 
 /* Track text, etc. should be in the deck color. */
 #Deck2 WLabel {
-  color: #E17800;
+  color: #D2D2D2;
 }
 
 #DeckMixer2 {
@@ -450,7 +450,7 @@ WWidget, WLabel {
 }
 
 #Deck3 WLabel {
-  color: violet;
+  color: #D2D2D2;
 }
 
 #DeckMixer3 {
@@ -458,7 +458,7 @@ WWidget, WLabel {
 }
 
 #Deck4 WLabel {
-  color: #CDDC39;
+  color: #D2D2D2;
 }
 
 #DeckMixer4 {
