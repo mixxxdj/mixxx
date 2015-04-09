@@ -463,6 +463,7 @@
                   </TrackProperty>
 
                   <WidgetGroup>
+                    <ObjectName>StarratingGutter</ObjectName>
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,min</SizePolicy>
                     <Children>

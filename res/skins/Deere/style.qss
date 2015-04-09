@@ -297,8 +297,9 @@ WSliderComposed {
   padding: 2px;
 }
 
-/* Start BPM/Key edit widgets in decks*/
-#BpmEditRow:hover, #KeyEditRow:hover {
+/* Start editable widgets in decks*/
+#BpmEditRow:hover, #KeyEditRow:hover, #PositionGutter:hover, #StarratingGutter:hover {
+  /* emphasize editable widgets on hover */
   border: 1px solid #FF6600;
   background-color: rgba(255, 102, 0, 128);
 }
@@ -323,7 +324,7 @@ WSliderComposed {
   padding: 1px;
   qproperty-layoutSpacing: 1;
 }
-/* End BPM/Key edit widgets in decks*/
+/* End editable widgets in decks*/
 
 #DeckTextRow #ArtistGutter WLabel, #DeckTextRow #BPMGutter WLabel, #DeckTextRow #PositionGutter WLabel {
   font-weight: bold;
