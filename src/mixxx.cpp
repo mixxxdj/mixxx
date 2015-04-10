@@ -856,32 +856,32 @@ void MixxxMainWindow::updateCheckedMenuAction(QAction* menuAction, ConfigKey key
 
 void MixxxMainWindow::slotToggleCheckedVinylControl() {
     ConfigKey key(VINYL_PREF_KEY, "show_vinylcontrol");
-    toggleCheckedMenuAction(m_pViewVinylControl, key);
+    updateCheckedMenuAction(m_pViewVinylControl, key);
 }
 
 void MixxxMainWindow::slotToggleCheckedSamplers() {
     ConfigKey key("[Samplers]", "show_samplers");
-    toggleCheckedMenuAction(m_pViewShowSamplers, key);
+    updateCheckedMenuAction(m_pViewShowSamplers, key);
 }
 
 void MixxxMainWindow::slotToggleCheckedMicrophone() {
     ConfigKey key("[Microphone]", "show_microphone");
-    toggleCheckedMenuAction(m_pViewShowMicrophone, key);
+    updateCheckedMenuAction(m_pViewShowMicrophone, key);
 }
 
 void MixxxMainWindow::slotToggleCheckedPreviewDeck() {
     ConfigKey key("[PreviewDeck]", "show_previewdeck");
-    toggleCheckedMenuAction(m_pViewShowPreviewDeck, key);
+    updateCheckedMenuAction(m_pViewShowPreviewDeck, key);
 }
 
 void MixxxMainWindow::slotToggleCheckedEffects() {
     ConfigKey key("[EffectRack1]", "show");
-    toggleCheckedMenuAction(m_pViewShowEffects, key);
+    updateCheckedMenuAction(m_pViewShowEffects, key);
 }
 
 void MixxxMainWindow::slotToggleCheckedCoverArt() {
     ConfigKey key("[Library]", "show_coverart");
-    toggleCheckedMenuAction(m_pViewShowCoverArt, key);
+    updateCheckedMenuAction(m_pViewShowCoverArt, key);
 }
 
 void MixxxMainWindow::linkSkinWidget(ControlObjectSlave** pCOS,
