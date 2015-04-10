@@ -64,9 +64,12 @@ EnginePregain::~EnginePregain() {
     s_pDefaultBoost = NULL;
 }
 
-void EnginePregain::setSpeed(double speed, bool scratching) {
+void EnginePregain::setSpeed(double speed) {
     m_dOldSpeed = m_dSpeed;
     m_dSpeed = speed;
+}
+
+void EnginePregain::setScratching(bool scratching) {
     m_scratching = scratching;
 }
 

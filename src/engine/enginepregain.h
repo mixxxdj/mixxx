@@ -30,7 +30,9 @@ class EnginePregain : public EngineObject {
     EnginePregain(QString group);
     virtual ~EnginePregain();
 
-    void setSpeed(double speed,bool scratching);
+    void setSpeed(double speed);
+    void setScratching(bool scratching);
+
     void process(CSAMPLE* pInOut, const int iBufferSize);
 
   private:
