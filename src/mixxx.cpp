@@ -116,6 +116,14 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_pShoutcastManager = NULL;
 #endif
 
+    //Reset pointers to cos
+    m_pShowVinylControl = NULL;
+    m_pShowSamplers = NULL;
+    m_pShowMicrophone = NULL;
+    m_pShowPreviewDeck = NULL;
+    m_pShowEffects = NULL;
+    m_pShowCoverArt = NULL;
+
     // Check to see if this is the first time this version of Mixxx is run
     // after an upgrade and make any needed changes.
     Upgrade upgrader;
@@ -843,11 +851,40 @@ void setVisibilityOptionState(QAction* pAction, ConfigKey key) {
     pAction->setChecked(pVisibilityControl != NULL ? pVisibilityControl->get() > 0.0 : false);
 }
 
-void MixxxMainWindow::toggleCheckedSamplers() {
-    m_pViewShowSamplers->blockSignals(true);
+void MixxxMainWindow::toggleCheckedMenuAction(QAction* menuAction, ConfigKey key) {
+    menuAction->blockSignals(true);
+    menuAction->setChecked(ControlObject::get(key));
+    menuAction->blockSignals(false);
+}
+
+void MixxxMainWindow::slotToggleCheckedVinylControl() {
+    ConfigKey key(VINYL_PREF_KEY, "show_vinylcontrol");
+    toggleCheckedMenuAction(m_pViewVinylControl, key);
+}
+
+void MixxxMainWindow::slotToggleCheckedSamplers() {
     ConfigKey key("[Samplers]", "show_samplers");
-    m_pViewShowSamplers->setChecked(ControlObject::get(key));
-    m_pViewShowSamplers->blockSignals(false);
+    toggleCheckedMenuAction(m_pViewShowSamplers, key);
+}
+
+void MixxxMainWindow::slotToggleCheckedMicrophone() {
+    ConfigKey key("[Microphone]", "show_microphone");
+    toggleCheckedMenuAction(m_pViewShowMicrophone, key);
+}
+
+void MixxxMainWindow::slotToggleCheckedPreviewDeck() {
+    ConfigKey key("[PreviewDeck]", "show_previewdeck");
+    toggleCheckedMenuAction(m_pViewShowPreviewDeck, key);
+}
+
+void MixxxMainWindow::slotToggleCheckedEffects() {
+    ConfigKey key("[EffectRack1]", "show");
+    toggleCheckedMenuAction(m_pViewShowEffects, key);
+}
+
+void MixxxMainWindow::slotToggleCheckedCoverArt() {
+    ConfigKey key("[Library]", "show_coverart");
+    toggleCheckedMenuAction(m_pViewShowCoverArt, key);
 }
 
 void MixxxMainWindow::linkSkinWidget(ControlObjectSlave** pCOS,
@@ -875,9 +912,26 @@ void MixxxMainWindow::onNewSkinLoaded() {
     setVisibilityOptionState(m_pViewShowCoverArt,
                              ConfigKey("[Library]", "show_coverart"));
 
+#ifdef __VINYLCONTROL__
+    linkSkinWidget(&m_pShowVinylControl,
+                   ConfigKey(VINYL_PREF_KEY, "show_vinylcontrol"),
+                   SLOT(slotToggleCheckedVinylControl()));
+#endif
     linkSkinWidget(&m_pShowSamplers,
                    ConfigKey("[Samplers]", "show_samplers"),
-                   SLOT(toggleCheckedSamplers()));
+                   SLOT(slotToggleCheckedSamplers()));
+    linkSkinWidget(&m_pShowMicrophone,
+                   ConfigKey("[Microphone]", "show_microphone"),
+                   SLOT(slotToggleCheckedMicrophone()));
+    linkSkinWidget(&m_pShowPreviewDeck,
+                   ConfigKey("[PreviewDeck]", "show_previewdeck"),
+                   SLOT(slotToggleCheckedPreviewDeck()));
+    linkSkinWidget(&m_pShowEffects,
+                   ConfigKey("[EffectRack1]", "show"),
+                   SLOT(slotToggleCheckedEffects()));
+    linkSkinWidget(&m_pShowCoverArt,
+                   ConfigKey("[Library]", "show_coverart"),
+                   SLOT(slotToggleCheckedCoverArt()));
 }
 
 int MixxxMainWindow::noSoundDlg(void)
@@ -1941,8 +1995,20 @@ void MixxxMainWindow::rebootMixxxView() {
 
     //Everytime a skin is loaded, the Cos objects need to be recreated
     //See onNewSkinLoaded()
+#ifdef __VINYLCONTROL__
+    delete m_pShowVinylControl;
+    m_pShowVinylControl = NULL;
+#endif
     delete m_pShowSamplers;
+    delete m_pShowMicrophone;
+    delete m_pShowPreviewDeck;
+    delete m_pShowEffects;
+    delete m_pShowCoverArt;
     m_pShowSamplers = NULL;
+    m_pShowMicrophone = NULL;
+    m_pShowPreviewDeck = NULL;
+    m_pShowEffects = NULL;
+    m_pShowCoverArt = NULL;
 
     if (m_pWidgetParent) {
         m_pWidgetParent->hide();
