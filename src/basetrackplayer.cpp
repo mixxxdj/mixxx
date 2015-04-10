@@ -166,7 +166,11 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer track, bool bPlay) {
         disconnect(m_pLoadedTrack.data(), 0, this, 0);
         disconnect(m_pLoadedTrack.data(), 0, m_pKey, 0);
 
-        m_pReplayGain->slotSet(0);
+        // Do not reset ReplayGain here, because the track might be still
+        // playing and the last buffer will be processed.
+        //m_pReplayGain->slotSet(0);
+
+        m_pPlay->set(0.0);
 
         // Causes the track's data to be saved back to the library database.
         emit(unloadingTrack(m_pLoadedTrack));
