@@ -124,7 +124,6 @@ public:
     RecordingManager* m_pRecordingManager;
     QFont m_trackTableFont;
     int m_iTrackTableRowHeight;
-    SetlogFeature* m_pSetlogFeature;
 };
 
 #endif /* LIBRARY_H */
