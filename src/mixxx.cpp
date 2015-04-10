@@ -1471,8 +1471,10 @@ void MixxxMainWindow::slotChangeWindowTitle(TrackPointer pTrack)
         QString trackTitle = pTrack->getTitle();
         QString trackArtist = pTrack->getArtist();
 
+        //Displaying title as "Track Title" by "Artist" - "Current Version"
+        //Or "Track Title - "Current Version" in case the artist field is empty
         if (trackArtist.size() != 0) {
-            title = trackTitle + " by " + trackArtist; 
+            title = trackTitle + tr(" by ") + trackArtist; 
         } else {
             title = trackTitle;
         }
