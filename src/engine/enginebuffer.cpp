@@ -992,9 +992,11 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             // If it turns out that ramping is required be aware that the end
             // or start may pass in the middle of the buffer.
         } else {
+            // Pause
             if (m_bCrossfadeReady) {
-                SampleUtil::copyWithRampingGain(pOutput, m_pCrossfadeBuffer,
-                                                1.0, 0.0, iBufferSize);
+                // We don't ramp here, since EnginePregain handles fades
+                // from and to speed == 0
+                SampleUtil::copy(pOutput, m_pCrossfadeBuffer, iBufferSize);
             } else {
                 SampleUtil::clear(pOutput, iBufferSize);
             }
