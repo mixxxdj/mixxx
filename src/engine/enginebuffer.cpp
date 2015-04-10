@@ -841,7 +841,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             enableIndependentPitchTempoScaling(useIndependentPitchAndTempoScaling,
                                                iBufferSize);
         } else if (m_speed_old && !is_scratching) {
-            // we are stopped, collect samples for fade out
+            // we are stopping, collect samples for fade out
             readToCrossfadeBuffer(iBufferSize);
             // Clear the scaler information
             m_pScale->clear();
@@ -952,10 +952,10 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         if (at_end && !backwards) {
             // do not play past end
             bCurBufferPaused = true;
-        } else if (rate == 0 &&
-                (m_rate_old == 0 || !is_scratching)) {
+        } else if (rate == 0 && !is_scratching) {
             // do not process samples if have no transport
             // the linear scaler supports ramping down to 0
+            // this is used for pause by scratching only
             bCurBufferPaused = true;
         }
 
@@ -999,13 +999,23 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
                         m_pReadAheadManager->getEffectiveVirtualPlaypositionFromLog(
                                 static_cast<int>(m_filepos_play), samplesRead);
             }
+            if (m_bCrossfadeReady) {
+                SampleUtil::linearCrossfadeBuffers(
+                        pOutput, m_pCrossfadeBuffer, pOutput, iBufferSize);
+            }
+            // Note: we do not fade here if we pass the end or the start of
+            // the track in reverse direction
+            // because we assume that the track samples itself start and stop
+            // towards zero.
+            // If it turns out that ramping is required be aware that the end
+            // or start may pass in the middle of the buffer.
         } else {
-            SampleUtil::clear(pOutput, iBufferSize);
-        }
-
-        if (m_bCrossfadeReady) {
-            SampleUtil::linearCrossfadeBuffers(
-                    pOutput, m_pCrossfadeBuffer, pOutput, iBufferSize);
+            if (m_bCrossfadeReady) {
+                SampleUtil::copyWithRampingGain(pOutput, m_pCrossfadeBuffer,
+                                                1.0, 0.0, iBufferSize);
+            } else {
+                SampleUtil::clear(pOutput, iBufferSize);
+            }
         }
 
         QListIterator<EngineControl*> it(m_engineControls);
