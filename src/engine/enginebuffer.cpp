@@ -96,31 +96,14 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
           m_iSeekQueued(NO_SEEK),
           m_iEnableSyncQueued(SYNC_REQUEST_NONE),
           m_iSyncModeQueued(SYNC_INVALID),
-          m_bLastBufferPaused(true),
           m_iTrackLoading(0),
           m_bPlayAfterLoading(false),
-          m_fRampValue(0.0),
-          m_iRampState(ENGINE_RAMP_NONE),
           m_iSampleRate(0),
-          m_pDitherBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
-          m_iDitherBufferReadIndex(0),
           m_pCrossfadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
           m_bCrossfadeReady(false),
           m_iLastBufferSize(0) {
-
-    // Generate dither values. When engine samples used to be within [SAMPLE_MIN,
-    // SAMPLE_MAX] dithering values were in the range [-0.5, 0.5]. Now that we
-    // normalize engine samples to the range [-1.0, 1.0] we divide by SAMPLE_MAX
-    // to preserve the previous behavior.
-    for (unsigned int i = 0; i < MAX_BUFFER_LEN; ++i) {
-        m_pDitherBuffer[i] = (static_cast<CSAMPLE>(rand() % RAND_MAX) / RAND_MAX - 0.5) / SAMPLE_MAX;
-    }
-
     // zero out crossfade buffer
     SampleUtil::clear(m_pCrossfadeBuffer, MAX_BUFFER_LEN);
-
-    m_fLastSampleValue[0] = 0;
-    m_fLastSampleValue[1] = 0;
 
     m_pReader = new CachingReader(group, _config);
     connect(m_pReader, SIGNAL(trackLoading()),
@@ -338,7 +321,6 @@ EngineBuffer::~EngineBuffer() {
     delete m_pKeylock;
     delete m_pEject;
 
-    SampleUtil::free(m_pDitherBuffer);
     SampleUtil::free(m_pCrossfadeBuffer);
 
     qDeleteAll(m_engineControls);
@@ -1073,69 +1055,6 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         m_scratching_old = false;
     }
 
-    const double kSmallRate = 0.005;
-    if (m_bLastBufferPaused && !bCurBufferPaused) {
-        if (fabs(rate) > kSmallRate) { //at very slow forward rates, don't ramp up
-            m_iRampState = ENGINE_RAMP_UP;
-        }
-    } else if (!m_bLastBufferPaused && bCurBufferPaused) {
-        m_iRampState = ENGINE_RAMP_DOWN;
-    } else { //we are not changing state
-        // Make sure we aren't accidentally ramping down. This is how we make
-        // sure that ramp value will become 1.0 eventually.
-        //
-        // 9/2012 rryan -- As I understand it this code intends to prevent us
-        // from getting stuck ramped down. If there is a meaningfully large rate
-        // and we aren't ramped up completely then it makes us ramp up. This
-        // causes crazy feedback if you scratch at the non-silent end of a
-        // track. See Bug #1006111. I added a !bCurBufferPaused term here because
-        // if rate > 0 and bCurBufferPaused then basically you are at the end of
-        // the track and trying to jog forward so this uniquely blocks that
-        // situation.
-        if (fabs(rate) > kSmallRate && !bCurBufferPaused &&
-            m_iRampState != ENGINE_RAMP_UP && m_fRampValue < 1.0) {
-            m_iRampState = ENGINE_RAMP_UP;
-        }
-    }
-
-    // let's try holding the last sample value constant, and pull it
-    // towards zero
-    float ramp_inc = 0;
-    if (m_iRampState == ENGINE_RAMP_UP ||
-        m_iRampState == ENGINE_RAMP_DOWN) {
-        // Ramp of 3.33 ms
-        ramp_inc = static_cast<double>(m_iRampState * 300) / sample_rate;
-
-        for (int i=0; i < iBufferSize; i += 2) {
-            if (bCurBufferPaused && !m_bCrossfadeReady) {
-                //qDebug() << "ramp dither";
-                CSAMPLE dither = m_pDitherBuffer[m_iDitherBufferReadIndex];
-                m_iDitherBufferReadIndex = (m_iDitherBufferReadIndex + 1) % MAX_BUFFER_LEN;
-                pOutput[i] = m_fLastSampleValue[0] * m_fRampValue + dither;
-                pOutput[i+1] = m_fLastSampleValue[1] * m_fRampValue + dither;
-            } else {
-                //qDebug() << "ramp buffer";
-                pOutput[i] = pOutput[i] * m_fRampValue;
-                pOutput[i+1] = pOutput[i+1] * m_fRampValue;
-            }
-
-            m_fRampValue += ramp_inc;
-            if (m_fRampValue >= 1.0) {
-                m_iRampState = ENGINE_RAMP_NONE;
-                m_fRampValue = 1.0;
-            } else if (m_fRampValue <= 0.0) {
-                m_iRampState = ENGINE_RAMP_NONE;
-                m_fRampValue = 0.0;
-            }
-        }
-    }
-
-    if ((!bCurBufferPaused && m_iRampState == ENGINE_RAMP_NONE) ||
-        (bCurBufferPaused && m_fRampValue == 0.0)) {
-        m_fLastSampleValue[0] = pOutput[iBufferSize-2];
-        m_fLastSampleValue[1] = pOutput[iBufferSize-1];
-    }
-
 #ifdef __SCALER_DEBUG__
     for (int i=0; i<iBufferSize; i+=2) {
         writer << pOutput[i] << "\n";
@@ -1148,7 +1067,6 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         m_pSyncControl->reportPlayerSpeed(m_speed_old, m_scratching_old);
     }
 
-    m_bLastBufferPaused = bCurBufferPaused;
     m_iLastBufferSize = iBufferSize;
     m_bCrossfadeReady = false;
 }
