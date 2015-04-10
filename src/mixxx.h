@@ -176,7 +176,7 @@ class MixxxMainWindow : public QMainWindow {
 
     void linkSkinWidget(ControlObjectSlave** pCOS,
                         ConfigKey key, const char* slot);
-    void toggleCheckedMenuAction(QAction* menuAction, ConfigKey key);
+    void updateCheckedMenuAction(QAction* menuAction, ConfigKey key);
 
     // Pointer to the root GUI widget
     QWidget* m_pWidgetParent;

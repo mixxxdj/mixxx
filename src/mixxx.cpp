@@ -94,7 +94,21 @@ const int MixxxMainWindow::kAuxiliaryCount = 4;
 MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         : m_pWidgetParent(NULL),
           m_pDeveloperToolsDlg(NULL),
+#ifdef __VINYLCONTROL__
+          m_pShowVinylControl(NULL),
+#endif 
           m_pShowSamplers(NULL),
+          m_pShowMicrophone(NULL),
+          m_pShowPreviewDeck(NULL),
+          m_pShowEffects(NULL),
+          m_pShowCoverArt(NULL),
+          m_pSoundManager(NULL),
+          m_pPrefDlg(NULL),
+          m_pControllerManager(NULL),
+          m_pRecordingManager(NULL),
+#ifdef __SHOUTCAST__
+          m_pShoutcastManager(NULL),
+#endif
           m_runtime_timer("MixxxMainWindow::runtime"),
           m_cmdLineArgs(args),
           m_iNumConfiguredDecks(0) {
@@ -106,23 +120,6 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_runtime_timer.start();
     Time::start();
     initializeWindow();
-
-    //Reset pointer to players
-    m_pSoundManager = NULL;
-    m_pPrefDlg = NULL;
-    m_pControllerManager = NULL;
-    m_pRecordingManager = NULL;
-#ifdef __SHOUTCAST__
-    m_pShoutcastManager = NULL;
-#endif
-
-    //Reset pointers to cos
-    m_pShowVinylControl = NULL;
-    m_pShowSamplers = NULL;
-    m_pShowMicrophone = NULL;
-    m_pShowPreviewDeck = NULL;
-    m_pShowEffects = NULL;
-    m_pShowCoverArt = NULL;
 
     // Check to see if this is the first time this version of Mixxx is run
     // after an upgrade and make any needed changes.
@@ -851,7 +848,7 @@ void setVisibilityOptionState(QAction* pAction, ConfigKey key) {
     pAction->setChecked(pVisibilityControl != NULL ? pVisibilityControl->get() > 0.0 : false);
 }
 
-void MixxxMainWindow::toggleCheckedMenuAction(QAction* menuAction, ConfigKey key) {
+void MixxxMainWindow::updateCheckedMenuAction(QAction* menuAction, ConfigKey key) {
     menuAction->blockSignals(true);
     menuAction->setChecked(ControlObject::get(key));
     menuAction->blockSignals(false);
