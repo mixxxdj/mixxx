@@ -49,6 +49,22 @@
     <SetVariable name="SmallVerticalStretchButtonMaximumSize">15,-1</SetVariable>
     <SetVariable name="SmallVerticalStretchButtonSizePolicy">f,me</SetVariable>
 
+    <SetVariable name="SquareButtonMinimumSize">20,20</SetVariable>
+    <SetVariable name="SquareButtonMaximumSize">20,20</SetVariable>
+    <SetVariable name="SquareButtonSizePolicy">f,f</SetVariable>
+
+    <SetVariable name="WideButtonMinimumSize">40,20</SetVariable>
+    <SetVariable name="WideButtonMaximumSize">40,20</SetVariable>
+    <SetVariable name="WideButtonSizePolicy">f,f</SetVariable>
+
+    <SetVariable name="HorizontalStretchButtonMinimumSize">-1,20</SetVariable>
+    <SetVariable name="HorizontalStretchButtonMaximumSize">-1,20</SetVariable>
+    <SetVariable name="HorizontalStretchButtonSizePolicy">me,f</SetVariable>
+
+    <SetVariable name="VerticalStretchButtonMinimumSize">20,-1</SetVariable>
+    <SetVariable name="VerticalStretchButtonMaximumSize">20,-1</SetVariable>
+    <SetVariable name="VerticalStretchButtonSizePolicy">f,me</SetVariable>
+
     <WidgetGroup>
       <SizePolicy>me,me</SizePolicy>
       <Layout>vertical</Layout>
