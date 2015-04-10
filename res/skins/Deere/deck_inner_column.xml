@@ -14,9 +14,9 @@
       <Template src="skin:left_2state_button.xml">
         <SetVariable name="TooltipId">sync_enabled</SetVariable>
         <SetVariable name="ObjectName">DeckSync</SetVariable>
-        <SetVariable name="MinimumSize"><Variable name="WideButtonMinimumSize"/></SetVariable>
-        <SetVariable name="MaximumSize"><Variable name="WideButtonMaximumSize"/></SetVariable>
-        <SetVariable name="SizePolicy"><Variable name="WideButtonSizePolicy"/></SetVariable>
+        <SetVariable name="MinimumSize"><Variable name="HorizontalStretchButtonMinimumSize"/></SetVariable>
+        <SetVariable name="MaximumSize"><Variable name="HorizontalStretchButtonMaximumSize"/></SetVariable>
+        <SetVariable name="SizePolicy"><Variable name="HorizontalStretchButtonSizePolicy"/></SetVariable>
         <SetVariable name="state_0_text">Sync</SetVariable>
         <SetVariable name="state_0_pressed"></SetVariable>
         <SetVariable name="state_0_unpressed"></SetVariable>
@@ -30,9 +30,9 @@
       <Template src="skin:left_2state_button.xml">
         <SetVariable name="TooltipId">sync_master</SetVariable>
         <SetVariable name="ObjectName">DeckSyncMaster</SetVariable>
-        <SetVariable name="MinimumSize"><Variable name="WideButtonMinimumSize"/></SetVariable>
-        <SetVariable name="MaximumSize"><Variable name="WideButtonMaximumSize"/></SetVariable>
-        <SetVariable name="SizePolicy"><Variable name="WideButtonSizePolicy"/></SetVariable>
+        <SetVariable name="MinimumSize"><Variable name="HorizontalStretchButtonMinimumSize"/></SetVariable>
+        <SetVariable name="MaximumSize"><Variable name="HorizontalStretchButtonMaximumSize"/></SetVariable>
+        <SetVariable name="SizePolicy"><Variable name="HorizontalStretchButtonSizePolicy"/></SetVariable>
         <SetVariable name="state_0_text">Master</SetVariable>
         <SetVariable name="state_0_pressed"></SetVariable>
         <SetVariable name="state_0_unpressed"></SetVariable>
