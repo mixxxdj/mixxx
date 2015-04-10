@@ -142,7 +142,7 @@ class MixxxMainWindow : public QMainWindow {
     // can alert the user if a mic is not configured.
     void slotTalkoverChanged(int);
 
-    void slotChangeWindowTitle(TrackPointer pTrack);
+    void slotUpdateWindowTitle(TrackPointer pTrack);
 
     void slotToggleCheckedVinylControl();
     void slotToggleCheckedSamplers();

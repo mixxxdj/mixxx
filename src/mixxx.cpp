@@ -472,7 +472,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 
     connect(&PlayerInfo::instance(),
             SIGNAL(currentPlayingTrackChanged(TrackPointer)),
-            this, SLOT(slotChangeWindowTitle(TrackPointer)));
+            this, SLOT(slotUpdateWindowTitle(TrackPointer)));
 }
 
 MixxxMainWindow::~MixxxMainWindow() {
@@ -1515,7 +1515,7 @@ void MixxxMainWindow::initActions()
     }
 }
 
-void MixxxMainWindow::slotChangeWindowTitle(TrackPointer pTrack)
+void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack)
 {
     QString title;
     if (pTrack) {
