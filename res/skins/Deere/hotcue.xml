@@ -52,6 +52,7 @@
     <SizePolicy>max,max</SizePolicy>
     <Children>
       <WidgetGroup>
+        <ObjectName>HotcueGridExtendedRow1</ObjectName>
         <Layout>horizontal</Layout>
         <Children>
           <Template src="skin:hotcue_button.xml">
@@ -70,6 +71,7 @@
       </WidgetGroup>
 
       <WidgetGroup>
+        <ObjectName>HotcueGridExtendedRow2</ObjectName>
         <Layout>horizontal</Layout>
         <Children>
           <Template src="skin:hotcue_button.xml">

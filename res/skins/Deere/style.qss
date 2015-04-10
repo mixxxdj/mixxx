@@ -214,6 +214,8 @@ WSliderComposed {
   background-color: rgba(200, 200, 200, 128);
 }
 
+
+/* Start spacing for Deck overview row (small waveform, option grid) */
 #OptionGrid {
   background-color: #333333;
   padding: 1px;
@@ -224,9 +226,11 @@ WSliderComposed {
   qproperty-layoutSpacing: 2;
 }
 
-#OverviewRow, #ControlsRow {
+#OverviewRow {
   qproperty-layoutSpacing: 5;
 }
+/* End spacing for Deck overview row */
+
 
 #WaveformZoomContainer {
   background-color: #333333;
@@ -234,6 +238,8 @@ WSliderComposed {
   qproperty-layoutSpacing: 2;
 }
 
+
+/* Start spacing for Deck inner column (tempo slider, rate change) */
 #Deck1InnerColumn, #Deck3InnerColumn {
   background-color: #333333;
   padding: 4px;
@@ -249,69 +255,46 @@ WSliderComposed {
 #RateTempButtons {
   qproperty-layoutSpacing: 2;
 }
+/* End spacing for Deck inner column (tempo slider, rate change) */
 
-/* Make the hotcue button grid have black borders between all buttons */
+
+/* Start spacing for Deck controls row (transport, beatgrid, looping, hotcue) */
+#ControlsRow {
+  qproperty-layoutSpacing: 5;
+}
+
 #HotcueGrid, #HotcueGridExtended {
-  background-color: black;
-  qproperty-layoutSpacing: 1;
+  background-color: #333333;
   padding: 1px;
+  qproperty-layoutSpacing: 2;
+}
+#HotcueGridExtendedRow1, #HotcueGridExtendedRow1 {
+  qproperty-layoutSpacing: 2;
 }
 
 #HotcueGrid WWidgetGroup, #HotcueGridExtended WWidgetGroup {
-  qproperty-layoutSpacing: 1;
+  qproperty-layoutSpacing: 2;
 }
 
 #HotcueGrid WPushButton, #HotcueGridExtended WPushButton {
+  qproperty-layoutSpacing: 2;
 }
 
-/* Make the beatloop button grid have black borders between all buttons */
-#BeatLoopContainer {
-  background-color: black;
+#LoopingContainer, #BeatLoopContainer, #BeatJumpLoopMoveContainer, #TransportContainer  {
+  background-color: #333333;
   padding: 1px;
-  qproperty-layoutSpacing: 1;
-}
-#BeatLoopContainer WWidgetGroup {
-  qproperty-layoutSpacing: 1;
+  qproperty-layoutSpacing: 2;
 }
 
-#BeatLoopContainer WPushButton {
+#LoopingContainer WWidgetGroup, #BeatLoopContainer WWidgetGroup, #BeatJumpLoopMoveContainer WWidgetGroup, #TransportContainer WWidgetGroup {
+  qproperty-layoutSpacing: 2;
 }
 
-#BeatJumpLoopMoveContainer {
-  background-color: black;
-  qproperty-layoutSpacing: 1;
-  padding: 1px;
+#LoopingContainer WPushButton, #BeatLoopContainer WPushButton, #BeatJumpLoopMoveContainer WPushButton, #TransportContainer WPushButton {
+  qproperty-layoutSpacing: 2;
 }
+/* End spacing for Deck controls row */
 
-#BeatJumpLoopMoveContainer WWidgetGroup {
-  qproperty-layoutSpacing: 1;
-}
-
-#BeatJumpLoopMoveContainer WPushButton {
-}
-
-/* Make the transport button grid have black borders between all buttons */
-#TransportContainer {
-  background-color: black;
-  padding: 1px;
-  qproperty-layoutSpacing: 1;
-}
-#TransportContainer WWidgetGroup {
-  qproperty-layoutSpacing: 1;
-}
-#TransportContainer WPushButton {
-}
-
-#LoopingContainer {
-  background-color: black;
-  padding: 1px;
-  qproperty-layoutSpacing: 1;
-}
-#LoopingContainer WWidgetGroup {
-  qproperty-layoutSpacing: 1;
-}
-#LoopingContainer WPushButton {
-}
 
 #ToolBar {
   background-color: #111111;
@@ -333,7 +316,7 @@ WSliderComposed {
   padding: 2px;
 }
 
-/* Start editable widgets in decks*/
+/* Start editable widgets in decks */
 #BpmEditRow:hover, #KeyEditRow:hover, #PositionGutter:hover, #StarratingGutter:hover {
   /* emphasize editable widgets on hover */
   border: 1px solid #FF6600;
@@ -361,7 +344,7 @@ WSliderComposed {
   margin-left: 2px;
   qproperty-layoutSpacing: 2;
 }
-/* End editable widgets in decks*/
+/* End editable widgets in decks */
 
 #DeckTextRow #ArtistGutter WLabel, #DeckTextRow #BPMGutter WLabel, #DeckTextRow #PositionGutter WLabel {
   font-weight: bold;
