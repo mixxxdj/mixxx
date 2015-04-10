@@ -142,9 +142,14 @@ class MixxxMainWindow : public QMainWindow {
     // can alert the user if a mic is not configured.
     void slotTalkoverChanged(int);
 
-    void toggleCheckedSamplers();
-    
     void slotChangeWindowTitle(TrackPointer pTrack);
+
+    void slotToggleCheckedVinylControl();
+    void slotToggleCheckedSamplers();
+    void slotToggleCheckedMicrophone();
+    void slotToggleCheckedPreviewDeck();
+    void slotToggleCheckedEffects();
+    void slotToggleCheckedCoverArt();
 
   signals:
     void newSkinLoaded();
@@ -173,6 +178,7 @@ class MixxxMainWindow : public QMainWindow {
     bool confirmExit();
     void linkSkinWidget(ControlObjectSlave** pCOS,
                         ConfigKey key, const char* slot);
+    void updateCheckedMenuAction(QAction* menuAction, ConfigKey key);
 
     //Current Mixxx version
     QString m_MixxxVersion;
@@ -265,7 +271,12 @@ class MixxxMainWindow : public QMainWindow {
     DlgDeveloperTools* m_pDeveloperToolsDlg;
     QAction* m_pDeveloperDebugger;
 
+    ControlObjectSlave* m_pShowVinylControl;
     ControlObjectSlave* m_pShowSamplers;
+    ControlObjectSlave* m_pShowMicrophone;
+    ControlObjectSlave* m_pShowPreviewDeck;
+    ControlObjectSlave* m_pShowEffects;
+    ControlObjectSlave* m_pShowCoverArt;
 
     int m_iNoPlaylists;
 

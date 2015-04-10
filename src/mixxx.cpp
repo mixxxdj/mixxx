@@ -94,7 +94,21 @@ const int MixxxMainWindow::kAuxiliaryCount = 4;
 MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         : m_pWidgetParent(NULL),
           m_pDeveloperToolsDlg(NULL),
+#ifdef __VINYLCONTROL__
+          m_pShowVinylControl(NULL),
+#endif 
           m_pShowSamplers(NULL),
+          m_pShowMicrophone(NULL),
+          m_pShowPreviewDeck(NULL),
+          m_pShowEffects(NULL),
+          m_pShowCoverArt(NULL),
+          m_pSoundManager(NULL),
+          m_pPrefDlg(NULL),
+          m_pControllerManager(NULL),
+          m_pRecordingManager(NULL),
+#ifdef __SHOUTCAST__
+          m_pShoutcastManager(NULL),
+#endif
           m_runtime_timer("MixxxMainWindow::runtime"),
           m_cmdLineArgs(args),
           m_iNumConfiguredDecks(0) {
@@ -106,15 +120,6 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_runtime_timer.start();
     Time::start();
     initializeWindow();
-
-    //Reset pointer to players
-    m_pSoundManager = NULL;
-    m_pPrefDlg = NULL;
-    m_pControllerManager = NULL;
-    m_pRecordingManager = NULL;
-#ifdef __SHOUTCAST__
-    m_pShoutcastManager = NULL;
-#endif
 
     // Check to see if this is the first time this version of Mixxx is run
     // after an upgrade and make any needed changes.
@@ -848,11 +853,40 @@ void setVisibilityOptionState(QAction* pAction, ConfigKey key) {
     pAction->setChecked(pVisibilityControl != NULL ? pVisibilityControl->get() > 0.0 : false);
 }
 
-void MixxxMainWindow::toggleCheckedSamplers() {
-    m_pViewShowSamplers->blockSignals(true);
+void MixxxMainWindow::updateCheckedMenuAction(QAction* menuAction, ConfigKey key) {
+    menuAction->blockSignals(true);
+    menuAction->setChecked(ControlObject::get(key));
+    menuAction->blockSignals(false);
+}
+
+void MixxxMainWindow::slotToggleCheckedVinylControl() {
+    ConfigKey key(VINYL_PREF_KEY, "show_vinylcontrol");
+    updateCheckedMenuAction(m_pViewVinylControl, key);
+}
+
+void MixxxMainWindow::slotToggleCheckedSamplers() {
     ConfigKey key("[Samplers]", "show_samplers");
-    m_pViewShowSamplers->setChecked(ControlObject::get(key));
-    m_pViewShowSamplers->blockSignals(false);
+    updateCheckedMenuAction(m_pViewShowSamplers, key);
+}
+
+void MixxxMainWindow::slotToggleCheckedMicrophone() {
+    ConfigKey key("[Microphone]", "show_microphone");
+    updateCheckedMenuAction(m_pViewShowMicrophone, key);
+}
+
+void MixxxMainWindow::slotToggleCheckedPreviewDeck() {
+    ConfigKey key("[PreviewDeck]", "show_previewdeck");
+    updateCheckedMenuAction(m_pViewShowPreviewDeck, key);
+}
+
+void MixxxMainWindow::slotToggleCheckedEffects() {
+    ConfigKey key("[EffectRack1]", "show");
+    updateCheckedMenuAction(m_pViewShowEffects, key);
+}
+
+void MixxxMainWindow::slotToggleCheckedCoverArt() {
+    ConfigKey key("[Library]", "show_coverart");
+    updateCheckedMenuAction(m_pViewShowCoverArt, key);
 }
 
 void MixxxMainWindow::linkSkinWidget(ControlObjectSlave** pCOS,
@@ -880,9 +914,26 @@ void MixxxMainWindow::onNewSkinLoaded() {
     setVisibilityOptionState(m_pViewShowCoverArt,
                              ConfigKey("[Library]", "show_coverart"));
 
+#ifdef __VINYLCONTROL__
+    linkSkinWidget(&m_pShowVinylControl,
+                   ConfigKey(VINYL_PREF_KEY, "show_vinylcontrol"),
+                   SLOT(slotToggleCheckedVinylControl()));
+#endif
     linkSkinWidget(&m_pShowSamplers,
                    ConfigKey("[Samplers]", "show_samplers"),
-                   SLOT(toggleCheckedSamplers()));
+                   SLOT(slotToggleCheckedSamplers()));
+    linkSkinWidget(&m_pShowMicrophone,
+                   ConfigKey("[Microphone]", "show_microphone"),
+                   SLOT(slotToggleCheckedMicrophone()));
+    linkSkinWidget(&m_pShowPreviewDeck,
+                   ConfigKey("[PreviewDeck]", "show_previewdeck"),
+                   SLOT(slotToggleCheckedPreviewDeck()));
+    linkSkinWidget(&m_pShowEffects,
+                   ConfigKey("[EffectRack1]", "show"),
+                   SLOT(slotToggleCheckedEffects()));
+    linkSkinWidget(&m_pShowCoverArt,
+                   ConfigKey("[Library]", "show_coverart"),
+                   SLOT(slotToggleCheckedCoverArt()));
 }
 
 int MixxxMainWindow::noSoundDlg(void)
@@ -1967,8 +2018,20 @@ void MixxxMainWindow::rebootMixxxView() {
 
     //Everytime a skin is loaded, the Cos objects need to be recreated
     //See onNewSkinLoaded()
+#ifdef __VINYLCONTROL__
+    delete m_pShowVinylControl;
+    m_pShowVinylControl = NULL;
+#endif
     delete m_pShowSamplers;
+    delete m_pShowMicrophone;
+    delete m_pShowPreviewDeck;
+    delete m_pShowEffects;
+    delete m_pShowCoverArt;
     m_pShowSamplers = NULL;
+    m_pShowMicrophone = NULL;
+    m_pShowPreviewDeck = NULL;
+    m_pShowEffects = NULL;
+    m_pShowCoverArt = NULL;
 
     if (m_pWidgetParent) {
         m_pWidgetParent->hide();
