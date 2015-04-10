@@ -1525,7 +1525,7 @@ void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack)
         //Displaying title as "Track Title" by "Artist" - "Current Version"
         //Or "Track Title - "Current Version" in case the artist field is empty
         if (trackArtist.size() != 0) {
-            title = trackTitle + tr(" by ") + trackArtist; 
+            title = tr("%1 by %2").arg(trackTitle).arg(trackArtist);
         } else {
             title = trackTitle;
         }
