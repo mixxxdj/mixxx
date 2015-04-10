@@ -18,9 +18,9 @@
         <TooltipId>loop_halve</TooltipId>
         <ObjectName>LoopHalve</ObjectName>
         <!-- Grow to be as tall as the outer WidgetGroup -->
-        <MinimumSize><Variable name="SmallVerticalStretchButtonMinimumSize"/></MinimumSize>
-        <MaximumSize><Variable name="SmallVerticalStretchButtonMaximumSize"/></MaximumSize>
-        <SizePolicy><Variable name="SmallVerticalStretchButtonSizePolicy"/></SizePolicy>
+        <MinimumSize><Variable name="VerticalStretchButtonMinimumSize"/></MinimumSize>
+        <MaximumSize><Variable name="VerticalStretchButtonMaximumSize"/></MaximumSize>
+        <SizePolicy><Variable name="VerticalStretchButtonSizePolicy"/></SizePolicy>
         <NumberStates>1</NumberStates>
         <State>
           <Number>0</Number>
@@ -97,9 +97,9 @@
         <TooltipId>loop_double</TooltipId>
         <ObjectName>LoopDouble</ObjectName>
         <!-- Grow to be as tall as the outer WidgetGroup -->
-        <MinimumSize><Variable name="SmallVerticalStretchButtonMinimumSize"/></MinimumSize>
-        <MaximumSize><Variable name="SmallVerticalStretchButtonMaximumSize"/></MaximumSize>
-        <SizePolicy><Variable name="SmallVerticalStretchButtonSizePolicy"/></SizePolicy>
+        <MinimumSize><Variable name="VerticalStretchButtonMinimumSize"/></MinimumSize>
+        <MaximumSize><Variable name="VerticalStretchButtonMaximumSize"/></MaximumSize>
+        <SizePolicy><Variable name="VerticalStretchButtonSizePolicy"/></SizePolicy>
         <NumberStates>1</NumberStates>
         <State>
           <Number>0</Number>

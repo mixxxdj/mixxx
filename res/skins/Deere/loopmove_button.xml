@@ -13,9 +13,9 @@
   <Template src="skin:left_1state_button.xml">
     <SetVariable name="TooltipId">loop_move</SetVariable>
     <SetVariable name="ObjectName">LoopMoveButton</SetVariable>
-    <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
-    <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
-    <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
     <SetVariable name="state_0_pressed"></SetVariable>
     <SetVariable name="state_0_unpressed"></SetVariable>
     <SetVariable name="state_0_text"><Variable name="text_length"/></SetVariable>
