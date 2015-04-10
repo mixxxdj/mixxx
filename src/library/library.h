@@ -66,10 +66,6 @@ public:
         return m_trackTableFont;
     }
 
-    SetlogFeature* getSetlogFeature() {
-        return m_pSetlogFeature;
-    }
-
     //static Library* buildDefaultLibrary();
 
     enum RemovalType {

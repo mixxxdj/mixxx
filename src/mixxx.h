@@ -46,6 +46,7 @@ class ControlPushButton;
 class DlgDeveloperTools;
 
 #include "configobject.h"
+#include "trackinfoobject.h"
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
 
@@ -143,7 +144,7 @@ class MixxxMainWindow : public QMainWindow {
 
     void toggleCheckedSamplers();
     
-    void changeWindowTitle(QString title);
+    void slotChangeWindowTitle(TrackPointer pTrack);
 
   signals:
     void newSkinLoaded();
@@ -170,9 +171,11 @@ class MixxxMainWindow : public QMainWindow {
                           const QString& translationPath, QTranslator* pTranslator);
     void checkDirectRendering();
     bool confirmExit();
-
     void linkSkinWidget(ControlObjectSlave** pCOS,
                         ConfigKey key, const char* slot);
+
+    //Current Mixxx version
+    QString m_MixxxVersion;
 
     // Pointer to the root GUI widget
     QWidget* m_pWidgetParent;

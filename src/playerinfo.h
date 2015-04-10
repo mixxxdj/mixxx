@@ -39,6 +39,7 @@ class PlayerInfo : public QObject {
 
   signals:
     void currentPlayingDeckChanged(int deck);
+    void currentPlayingTrackChanged(TrackPointer pTrack);
     void trackLoaded(QString group, TrackPointer pTrack);
     void trackUnloaded(QString group, TrackPointer pTrack);
 

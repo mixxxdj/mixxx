@@ -465,9 +465,9 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         }
     }
 
-    connect(m_pLibrary->getSetlogFeature(), 
-            SIGNAL(currentPlayingTrackChanged(QString)),
-            this, SLOT(changeWindowTitle(QString)));
+    connect(&PlayerInfo::instance(),
+            SIGNAL(currentPlayingTrackChanged(TrackPointer)),
+            this, SLOT(slotChangeWindowTitle(TrackPointer)));
 }
 
 MixxxMainWindow::~MixxxMainWindow() {
@@ -672,15 +672,16 @@ void MixxxMainWindow::logBuildDetails() {
 void MixxxMainWindow::initializeWindow() {
     QString version = Version::version();
 #ifdef __APPLE__
-    setWindowTitle(tr("Mixxx")); //App Store
+    m_MixxxVersion = tr("Mixxx");
 #elif defined(AMD64) || defined(EM64T) || defined(x86_64)
-    setWindowTitle(tr("Mixxx %1 x64").arg(version));
+    m_MixxxVersion = tr("Mixxx %1 x64").arg(version);
 #elif defined(IA64)
-    setWindowTitle(tr("Mixxx %1 Itanium").arg(version));
+    m_MixxxVersion = tr("Mixxx %1 Itanium").arg(version);
 #else
-    setWindowTitle(tr("Mixxx %1").arg(version));
+    m_MixxxVersion = tr("Mixxx %1").arg(version);
 #endif
     setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
+    setWindowTitle(m_MixxxVersion);
 }
 
 void MixxxMainWindow::initializeFonts() {
@@ -1463,8 +1464,22 @@ void MixxxMainWindow::initActions()
     }
 }
 
-void MixxxMainWindow::changeWindowTitle(QString title)
+void MixxxMainWindow::slotChangeWindowTitle(TrackPointer pTrack)
 {
+    QString title;
+    if (pTrack) {
+        QString trackTitle = pTrack->getTitle();
+        QString trackArtist = pTrack->getArtist();
+
+        if (trackArtist.size() != 0) {
+            title = trackTitle + " by " + trackArtist; 
+        } else {
+            title = trackTitle;
+        }
+        title = title + " - " + m_MixxxVersion;
+    } else {
+        title = m_MixxxVersion;
+    }
     this->setWindowTitle(title);
 }
 
