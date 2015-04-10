@@ -1047,20 +1047,30 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             }
         }
 
-        // release the pauselock
-        m_pause.unlock();
-    } else { // if (!bTrackLoading && m_pause.tryLock()) {
-        // If we can't get the pause lock then this buffer will be silence.
-        bCurBufferPaused = true;
-
-        // We are stopped. Report a speed of 0 to SyncControl.
-        m_pSyncControl->reportPlayerSpeed(0.0, false);
-    }
-
-    if (!bTrackLoading) {
         // Give the Reader hints as to which chunks of the current song we
         // really care about. It will try very hard to keep these in memory
         hintReader(rate);
+
+        // release the pauselock
+        m_pause.unlock();
+    } else { // if (!bTrackLoading && m_pause.tryLock()) {
+        // We are loading a new Track
+        bCurBufferPaused = true;
+
+        // Here the old track was playing and loading the new track is in
+        // progress so we have not the chance to collect real samples for
+        // fade out.
+        // We apply a rectangular Gain change here which may click.
+        // It is in the responds of the user to not play this to
+        // the audience.
+        //if (m_speed_old) {
+        //}
+
+        SampleUtil::clear(pOutput, iBufferSize);
+
+        m_rate_old = 0;
+        m_speed_old = 0;
+        m_scratching_old = false;
     }
 
     const double kSmallRate = 0.005;
