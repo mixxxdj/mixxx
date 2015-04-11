@@ -91,13 +91,17 @@ TEST_F(EngineBufferTest, SlowRubberBand) {
     // Hack to get a slow, non-scratching direct speed
     ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), 0.0072);
 
-    // With Soundtouch, the scaler should still be the keylock scaler
+    // With Soundtouch, it should switch the scaler as well
     ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
                        static_cast<double>(EngineBuffer::SOUNDTOUCH));
     ProcessBuffer();
-    EXPECT_EQ(m_pMockScaleKeylock1, m_pChannel1->getEngineBuffer()->m_pScale);
+    EXPECT_EQ(m_pMockScaleVinyl1, m_pChannel1->getEngineBuffer()->m_pScale);
 
-    // With Rubberband, and transport stopped it should be still keylock 
+    // Back to full speed
+    ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), 1);
+    ProcessBuffer();
+
+    // With Rubberband, and transport stopped it should be still keylock
     ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
                        static_cast<double>(EngineBuffer::RUBBERBAND));
     ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), 0.0);
@@ -186,4 +190,44 @@ TEST_F(EngineBufferTest, ResetPitchAdjustUsesLinear) {
     ControlObject::set(ConfigKey(m_sGroup1, "pitch_adjust_set_default"), 1.0);
     ProcessBuffer();
     EXPECT_EQ(m_pMockScaleVinyl1, m_pChannel1->getEngineBuffer()->m_pScale);
+}
+
+TEST_F(EngineBufferTest, SoundTouchCrashTest) {
+    // Soundtouch has a bug where a pitch value of zero causes an infinite loop
+    // and crash.
+
+    // We actually have to load a track to test this.
+    const QString kGroup4 = "[Channel4]";
+    EngineDeck* channel4 = new EngineDeck(
+                m_pEngineMaster->registerChannelGroup(kGroup4),
+                m_pConfig.data(), m_pEngineMaster, m_pEffectsManager,
+                EngineChannel::CENTER);
+    addDeck(channel4);
+    // This file comes from the autodjprocessor test.
+    const QString kTrackLocationTest(QDir::currentPath() +
+                                 "/src/test/id3-test-data/cover-test.mp3");
+    TrackPointer pTrack(new TrackInfoObject(kTrackLocationTest));
+    channel4->getEngineBuffer()->slotLoadTrack(pTrack, true);
+
+    // Wait for the track to load.
+    ProcessBuffer();
+    for (int i = 0; i < 10 && !channel4->getEngineBuffer()->isTrackLoaded();
+            ++i) {
+        sleep(1);
+    }
+    ASSERT_TRUE(channel4->getEngineBuffer()->isTrackLoaded());
+
+    ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
+                       static_cast<double>(EngineBuffer::SOUNDTOUCH));
+    ControlObject::set(ConfigKey(kGroup4, "pitch"), 1.2);
+    ControlObject::set(ConfigKey(kGroup4, "rate"), 0.05);
+    ControlObject::set(ConfigKey(kGroup4, "play"), 1.0);
+    // Start by playing with soundtouch enabled.
+    ProcessBuffer();
+    // Pause the buffer.  This causes the pitch to be set to 0.
+    ControlObject::set(ConfigKey(kGroup4, "play"), 0.0);
+    ProcessBuffer();
+    ControlObject::set(ConfigKey(kGroup4, "rateSearch"), -0.05);
+    // Should not crash
+    ProcessBuffer();
 }
