@@ -57,10 +57,13 @@ EffectManifest AutoPanEffect::getManifest() {
     delay->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     delay->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     delay->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    delay->setMinimum(0.0);
-//    delay->setMaximum(0.02);    // 0.02 * sampleRate => 20ms
-    delay->setMaximum(0.1);    // 0.02 * sampleRate => 20ms
-    delay->setDefault(0.01);
+    // 10 ms seams to be more then enough here for test purpose
+    // it works for me up to ~5 ms using my laptop speakers.
+    // for 40 ms you have an echo
+    // http://en.wikipedia.org/wiki/Precedence_effect
+    delay->setMinimum(-0.01);
+    delay->setMaximum(0.01);
+    delay->setDefault(0.0);
     
     // Width : applied on the channel with gain reducing.
     EffectManifestParameter* width = manifest.addParameter();
@@ -140,8 +143,9 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
     
     // prepare the delay buffer
     float delay = round(m_pDelayParameter->value() * sampleRate);
-    gs.delay->setDelay(delay);
+    gs.delay->setLeftDelay(delay);
     
+    /*
     for (unsigned int i = 0; i + 1 < numSamples; i += 2) {
         
         CSAMPLE periodFraction = CSAMPLE(gs.time) / period;
@@ -177,8 +181,9 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
         
         gs.time++;
     }
+    */
     
-    gs.delay->process(pOutput, pOutput, numSamples);
+    gs.delay->process(pInput, pOutput, numSamples);
     
 //    SampleUtil::addWithGain(pOutput,
 //            pOutput, 0.9,
