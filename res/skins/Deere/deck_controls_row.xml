@@ -17,7 +17,6 @@
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:beatjump.xml"/>
           <Template src="skin:loopmove.xml"/>
         </Children>
       </WidgetGroup>

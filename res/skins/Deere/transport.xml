@@ -54,6 +54,13 @@
           </Template>
         </Children>
       </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:beatjump.xml"/>
+        </Children>
+      </WidgetGroup>
     </Children>
   </WidgetGroup>
 </Template>
