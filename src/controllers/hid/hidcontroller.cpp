@@ -169,15 +169,19 @@ bool HidController::matchProductInfo(QHash <QString,QString > info) {
     if (!ok || hid_product_id!=value) return false;
 
     // Optionally check against interface_number / usage_page && usage
-    if (hid_interface_number!=-1) {
+    if (hid_interface_number!=-1 && info.contains("interface_number")) {
         value = info["interface_number"].toInt(&ok,16);
         if (!ok || hid_interface_number!=value) return false;
     } else {
-        value = info["usage_page"].toInt(&ok,16);
-        if (!ok || hid_usage_page!=value) return false;
+        if (info.contains("usage_page")) {
+            value = info["usage_page"].toInt(&ok,16);
+            if (!ok || hid_usage_page!=value) return false;
+        }
 
-        value = info["usage"].toInt(&ok,16);
-        if (!ok || hid_usage!=value) return false;
+        if (info.contains("usage")) {
+            value = info["usage"].toInt(&ok,16);
+            if (!ok || hid_usage!=value) return false;
+        }
     }
     // Match found
     return true;

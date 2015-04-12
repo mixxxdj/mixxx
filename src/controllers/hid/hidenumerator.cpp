@@ -98,10 +98,41 @@ QList<Controller*> HidEnumerator::queryDevices() {
             continue;
         }
 
+        if (cur_dev->interface_number == -1) {
+            // filter out vendor defined protocols
+            if (cur_dev->usage_page >= 0xff00) {
+                continue;
+            }
+        }
+
+        if (isDuplicate(cur_dev)) {
+            qDebug() << "Duplicate";
+            continue;
+        }
+
         HidController* currentDevice = new HidController(*cur_dev);
         m_devices.push_back(currentDevice);
     }
     hid_free_enumeration(devs);
 
     return m_devices;
+}
+
+bool HidEnumerator::isDuplicate(hid_device_info *dev)
+{
+    QHash <QString,QString > info;
+    HidController *hid;
+    int i;
+
+    info["vendor_id"] = QString::number(dev->vendor_id, 16);
+    info["product_id"] = QString::number(dev->product_id, 16);
+
+    for (i = 0; i < m_devices.count(); i++) {
+        hid = (HidController *)m_devices[i];
+        if (hid->matchProductInfo(info)) {
+            return true; 
+        }
+    }
+
+    return false;
 }
