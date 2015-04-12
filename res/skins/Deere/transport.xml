@@ -16,11 +16,11 @@
         <Children>
           <Template src="skin:left_right_1state_button.xml">
             <SetVariable name="TooltipId">back_start</SetVariable>
-            <SetVariable name="ObjectName">FastBack</SetVariable>
-            <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
-            <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
-            <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
-            <SetVariable name="state_0_text">&lt;&lt;</SetVariable>
+            <SetVariable name="ObjectName">FastBackButton</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text">◀◀</SetVariable>
             <SetVariable name="state_0_pressed"></SetVariable>
             <SetVariable name="state_0_unpressed"></SetVariable>
             <SetVariable name="left_connection_control"><Variable name="group"/>,back</SetVariable>
@@ -28,29 +28,11 @@
           </Template>
 
           <Template src="skin:left_right_1state_button.xml">
-            <SetVariable name="TooltipId">fwd_end</SetVariable>
-            <SetVariable name="ObjectName">FastFwd</SetVariable>
-            <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
-            <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
-            <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
-            <SetVariable name="state_0_text">&gt;&gt;</SetVariable>
-            <SetVariable name="state_0_pressed"></SetVariable>
-            <SetVariable name="state_0_unpressed"></SetVariable>
-            <SetVariable name="left_connection_control"><Variable name="group"/>,fwd</SetVariable>
-            <SetVariable name="right_connection_control"><Variable name="group"/>,end</SetVariable>
-          </Template>
-        </Children>
-      </WidgetGroup>
-
-      <WidgetGroup>
-        <Layout>horizontal</Layout>
-        <Children>
-          <Template src="skin:left_right_1state_button.xml">
             <SetVariable name="TooltipId">reverse</SetVariable>
             <SetVariable name="ObjectName">ReverseButton</SetVariable>
-            <SetVariable name="MinimumSize"><Variable name="SmallHorizontalStretchButtonMinimumSize"/></SetVariable>
-            <SetVariable name="MaximumSize"><Variable name="SmallHorizontalStretchButtonMaximumSize"/></SetVariable>
-            <SetVariable name="SizePolicy"><Variable name="SmallHorizontalStretchButtonSizePolicy"/></SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
             <SetVariable name="state_0_text">◀</SetVariable>
             <SetVariable name="state_0_pressed"></SetVariable>
             <SetVariable name="state_0_unpressed"></SetVariable>
@@ -58,7 +40,18 @@
             <SetVariable name="right_connection_control"><Variable name="group"/>,reverseroll</SetVariable>
           </Template>
 
-
+          <Template src="skin:left_right_1state_button.xml">
+            <SetVariable name="TooltipId">fwd_end</SetVariable>
+            <SetVariable name="ObjectName">FastFwdButton</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text">▶▶</SetVariable>
+            <SetVariable name="state_0_pressed"></SetVariable>
+            <SetVariable name="state_0_unpressed"></SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,fwd</SetVariable>
+            <SetVariable name="right_connection_control"><Variable name="group"/>,end</SetVariable>
+          </Template>
         </Children>
       </WidgetGroup>
     </Children>
