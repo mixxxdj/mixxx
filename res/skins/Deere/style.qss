@@ -277,7 +277,6 @@ WSliderComposed {
 }
 
 #HotcueGrid WPushButton, #HotcueGridExtended WPushButton {
-  qproperty-layoutSpacing: 2;
 }
 
 #LoopingContainer, #BeatLoopContainer, #BeatJumpLoopMoveContainer, #TransportContainer  {
@@ -291,7 +290,6 @@ WSliderComposed {
 }
 
 #LoopingContainer WPushButton, #BeatLoopContainer WPushButton, #BeatJumpLoopMoveContainer WPushButton, #TransportContainer WPushButton {
-  qproperty-layoutSpacing: 2;
 }
 /* End spacing for Deck controls row */
 
