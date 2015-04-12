@@ -1,0 +1,41 @@
+language: c++
+# to run compilation/tests with gcc and clang
+compiler:
+    - gcc
+# Clang yields compile errors due to http://llvm.org/bugs/show_bug.cgi?id=13745.
+# Wait for an upgrade of GCC on travis
+#    - clang
+# Enable container-based infrastructure
+sudo: false
+  # install dependencies
+addons:
+  apt:
+    packages:
+      - scons
+      - libqt4-dev
+      - libqt4-sql-sqlite
+      - libportmidi-dev
+      - libshout3-dev
+      - libtag1-dev
+      - libprotobuf-dev
+      - protobuf-compiler
+      - libvamp-hostsdk3
+      - vamp-plugin-sdk
+      - libusb-1.0-0-dev
+      - libfftw3-dev
+      - libmad0-dev
+      - portaudio19-dev
+      - libchromaprint-dev
+      - librubberband-dev
+      - libsqlite3-dev
+      - libsndfile1-dev
+      - libflac-dev
+      - libid3tag0-dev
+before_install:
+  # Virtual X, needed for analyser waveform tests
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+install:
+  - scons test=1 mad=1 localecompare=1
+script:
+  - ./mixxx-test

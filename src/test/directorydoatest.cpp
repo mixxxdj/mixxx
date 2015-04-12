@@ -22,9 +22,6 @@ namespace {
 class DirectoryDAOTest : public MixxxTest {
   protected:
     virtual void SetUp() {
-        // make sure to use the current schema.xml file in the repo
-        config()->set(ConfigKey("[Config]","Path"),
-                      QDir::currentPath().append("/res"));
         m_pTrackCollection = new TrackCollection(config());
     }
 

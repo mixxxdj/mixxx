@@ -62,7 +62,14 @@ bool SoftTakeoverCtrl::ignore(ControlObject* control, double newParameter) {
 
 SoftTakeover::SoftTakeover()
     : m_time(0),
-      m_prevParameter(0) {
+      m_prevParameter(0),
+      m_dThreshold(kDefaultTakeoverThreshold) {
+}
+
+const double SoftTakeover::kDefaultTakeoverThreshold = 3.0 / 128;
+
+void SoftTakeover::setThreshold(double threshold) {
+    m_dThreshold = threshold;
 }
 
 bool SoftTakeover::ignore(ControlObject* control, double newParameter) {
@@ -72,10 +79,6 @@ bool SoftTakeover::ignore(ControlObject* control, double newParameter) {
     //      of the current value of the control
     //  - it's been awhile since the controller last affected this control
 
-    // 3/128 units away from the current is enough to catch fast non-sequential moves
-    //  but not cause an audibly noticeable jump.
-    const double threshold = 3.0f / 128;
-
     uint currentTime = Time::elapsedMsecs();
     // We will get a sudden jump if we don't ignore the first value.
     if (m_time == 0) {
@@ -83,6 +86,7 @@ bool SoftTakeover::ignore(ControlObject* control, double newParameter) {
         // Change the stored time (but keep it far away from the current time)
         //  so this block doesn't run again.
         m_time = 1;
+        //qDebug() << "ignoring the first value" << newParameter;
     } else if ((currentTime - m_time) > SUBSEQUENT_VALUE_OVERRIDE_TIME_MILLIS) {
         // don't ignore value if a previous one was not ignored in time
         const double currentParameter = control->getParameter();
@@ -91,10 +95,10 @@ bool SoftTakeover::ignore(ControlObject* control, double newParameter) {
         if ((prevDiff < 0 && difference < 0) ||
                 (prevDiff > 0 && difference > 0)) {
             // On same site (still on ignore site)
-            if (fabs(difference) > threshold &&
-                    fabs(prevDiff) > threshold) {
+            if (fabs(difference) > m_dThreshold && fabs(prevDiff) > m_dThreshold) {
                 // difference is above threshold
                 ignore = true;
+                //qDebug() << "ignoring, not near" << newParameter << m_prevParameter << currentParameter;
             }
         }
     }

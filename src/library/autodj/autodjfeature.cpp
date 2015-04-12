@@ -10,6 +10,7 @@
 
 #include "library/autodj/autodjfeature.h"
 
+#include "library/library.h"
 #include "library/parser.h"
 #include "playermanager.h"
 #include "library/autodj/autodjprocessor.h"
@@ -22,13 +23,15 @@
 #include "util/dnd.h"
 
 const QString AutoDJFeature::m_sAutoDJViewName = QString("Auto DJ");
+static const int kMaxRetrieveAttempts = 3;
 
-AutoDJFeature::AutoDJFeature(QObject* parent,
+AutoDJFeature::AutoDJFeature(Library* pLibrary,
                              ConfigObject<ConfigValue>* pConfig,
                              PlayerManagerInterface* pPlayerManager,
                              TrackCollection* pTrackCollection)
-        : LibraryFeature(parent),
+        : LibraryFeature(pLibrary),
           m_pConfig(pConfig),
+          m_pLibrary(pLibrary),
           m_pTrackCollection(pTrackCollection),
           m_crateDao(pTrackCollection->getCrateDAO()),
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
@@ -106,6 +109,7 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
                                MixxxKeyboard* keyboard) {
     m_pAutoDJView = new DlgAutoDJ(libraryWidget,
                                   m_pConfig,
+                                  m_pLibrary,
                                   m_pAutoDJProcessor,
                                   m_pTrackCollection,
                                   keyboard);
@@ -120,13 +124,11 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
 
 #ifdef __AUTODJCRATES__
     // Be informed when the user wants to add another random track.
+    connect(m_pAutoDJProcessor,SIGNAL(randomTrackRequested(int)),
+            this,SLOT(slotRandomQueue(int)));
     connect(m_pAutoDJView, SIGNAL(addRandomButton(bool)),
             this, SLOT(slotAddRandomTrack(bool)));
-    connect(this, SIGNAL(enableAddRandom(bool)),
-            m_pAutoDJView, SLOT(enableRandomButton(bool)));
-
-    // Let subscribers know whether it's possible to add a random track.
-    emit(enableAddRandom(m_crateList.length() > 0));
+    
 #endif // __AUTODJCRATES__
 }
 
@@ -269,27 +271,58 @@ void AutoDJFeature::slotCrateAutoDjChanged(int crateId, bool added) {
             }
         }
     }
-
-    // Let subscribers know whether it's possible to add a random track.
-    emit(enableAddRandom(m_crateList.length() > 0));
 #endif // __AUTODJCRATES__
 }
+// Adds a random track : this will be faster when there are sufficiently large 
+// tracks in the crates
 
 void AutoDJFeature::slotAddRandomTrack(bool) {
 #ifdef __AUTODJCRATES__
-    // Get access to the auto-DJ playlist.
+    int failedRetrieveAttempts = 0;
+    // Get access to the auto-DJ playlist
     PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
+    int iTrackId = -1;
     if (m_iAutoDJPlaylistId >= 0) {
-        // Get the ID of a randomly-selected track.
-        int iTrackId = m_autoDjCratesDao.getRandomTrackId();
-        if (iTrackId != -1) {
-            // Add this randomly-selected track to the auto-DJ playlist.
-            playlistDao.appendTrackToPlaylist(iTrackId, m_iAutoDJPlaylistId);
-
-            // Display the newly-added track.
-            m_pAutoDJView->onShow();
+        while (failedRetrieveAttempts < kMaxRetrieveAttempts) {
+            // Get the ID of a randomly-selected track.
+            iTrackId = m_autoDjCratesDao.getRandomTrackId();
+            if (iTrackId != -1) {
+                // Get Track Information
+                TrackPointer addedTrack = (m_pTrackCollection->getTrackDAO()).getTrack(iTrackId);
+                if(addedTrack->exists()) {
+                    playlistDao.appendTrackToPlaylist(iTrackId, m_iAutoDJPlaylistId);
+                    m_pAutoDJView->onShow();
+                    return;
+                } else {
+                    qDebug() << "Track does not exist: "<< addedTrack->getInfo()
+                             << " " << addedTrack->getDirectory();
+                }
+            }
+            failedRetrieveAttempts += 1;
+        }
+        // If we couldn't get a track from the crates , get one from the library
+        qDebug () << "Could not load tracks from crates, attempting to load from library.";
+        failedRetrieveAttempts = 0;
+        while ( failedRetrieveAttempts < kMaxRetrieveAttempts ) {
+            iTrackId = m_autoDjCratesDao.getRandomTrackIdFromLibrary(m_iAutoDJPlaylistId);
+            if (iTrackId != -1) {
+                TrackPointer addedTrack = m_pTrackCollection->getTrackDAO().getTrack(iTrackId);
+                if(addedTrack->exists()) {
+                    if(!addedTrack->getPlayed()) {
+                        playlistDao.appendTrackToPlaylist(iTrackId, m_iAutoDJPlaylistId);
+                        m_pAutoDJView->onShow();
+                        return;
+                    }
+                } else {
+                    qDebug() << "Track does not exist:"<< addedTrack->getInfo()
+                             << addedTrack->getDirectory();
+                }
+            }
+            failedRetrieveAttempts += 1;
         }
     }
+    // If control reaches here it implies that we couldn't load track
+    qDebug() << "Could not load random track.";
 #endif // __AUTODJCRATES__
 }
 
@@ -360,6 +393,14 @@ void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
 
         menu.addMenu(&crateMenu);
         menu.exec(globalPos);
+    }
+}
+
+void AutoDJFeature::slotRandomQueue(int tracksToAdd) {
+    while (tracksToAdd > 0) {
+        //Will attempt to add tracks
+        slotAddRandomTrack(true);
+        tracksToAdd -= 1;
     }
 }
 

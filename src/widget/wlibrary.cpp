@@ -23,7 +23,9 @@ bool WLibrary::registerView(QString name, QWidget* view) {
         return false;
     }
     if (dynamic_cast<LibraryView*>(view) == NULL) {
-        qDebug() << "WARNING: Attempted to register a view with WLibrary that does not implement the LibraryView interface. Ignoring.";
+        qDebug() << "WARNING: Attempted to register a view with WLibrary "
+                 << "that does not implement the LibraryView interface. "
+                 << "Ignoring.";
         return false;
     }
     addWidget(view);
@@ -34,12 +36,19 @@ bool WLibrary::registerView(QString name, QWidget* view) {
 void WLibrary::switchToView(const QString& name) {
     QMutexLocker lock(&m_mutex);
     //qDebug() << "WLibrary::switchToView" << name;
-    if (m_viewMap.contains(name)) {
-        QWidget* widget = m_viewMap[name];
-        if (widget != NULL && currentWidget() != widget) {
+    QWidget* widget = m_viewMap.value(name, NULL);
+    if (widget != NULL) {
+        LibraryView * lview = dynamic_cast<LibraryView*>(widget);
+        if (lview == NULL) {
+            qDebug() << "WARNING: Attempted to register a view with WLibrary "
+                     << "that does not implement the LibraryView interface. "
+                     << "Ignoring.";
+            return;
+        }
+        if (currentWidget() != widget) {
             //qDebug() << "WLibrary::setCurrentWidget" << name;
             setCurrentWidget(widget);
-            dynamic_cast<LibraryView*>(widget)->onShow();
+            lview->onShow();
         }
     }
 }
@@ -48,6 +57,11 @@ void WLibrary::search(const QString& name) {
     QMutexLocker lock(&m_mutex);
     QWidget* current = currentWidget();
     LibraryView* view = dynamic_cast<LibraryView*>(current);
+    if (view == NULL) {
+        qDebug() << "WARNING: Attempted to register a view with WLibrary "
+          << "that does not implement the LibraryView interface. Ignoring.";
+        return;
+    }
     lock.unlock();
     view->onSearch(name);
 }

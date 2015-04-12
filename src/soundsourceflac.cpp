@@ -36,6 +36,7 @@ SoundSourceFLAC::SoundSourceFLAC(QString filename)
     , m_flacBufferLength(0)
     , m_leftoverBuffer(NULL)
     , m_leftoverBufferLength(0) {
+    setType("flac");
 }
 
 SoundSourceFLAC::~SoundSourceFLAC() {
@@ -289,6 +290,18 @@ FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
     const FLAC__Frame *frame, const FLAC__int32 *const buffer[]) {
     unsigned int i(0);
     m_flacBufferLength = 0;
+    if (getSampleRate() != frame->header.sample_rate) {
+        qWarning() << "Corrupt FLAC file:"
+                << "Invalid sample rate in FLAC frame header"
+                << frame->header.sample_rate << "<>" << getSampleRate();
+        return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
+    }
+    if (frame->header.blocksize > m_maxBlocksize) {
+        qWarning() << "Corrupt FLAC file:"
+                   << "Block size in FLAC frame header exceeds the maximum block size"
+                   << frame->header.blocksize << ">" << m_maxBlocksize;
+        return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
+    }
     if (frame->header.channels > 1) {
         // stereo (or greater)
         for (i = 0; i < frame->header.blocksize; ++i) {

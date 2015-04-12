@@ -11,20 +11,35 @@
                 <Children>
                     <Template src="skin:deck.xml">
         	            <SetVariable name="channum">1</SetVariable>
-                        <SetVariable name="deck_color">#EECE33</SetVariable>
+                        <SetVariable name="signal_color">#E7C413</SetVariable>
+                        <SetVariable name="SignalBgColor">#2f290a</SetVariable>
+                        <SetVariable name="SignalRGBLowColor">#ff2a00</SetVariable>
+                        <SetVariable name="SignalRGBMidColor">#33f600</SetVariable>
+                        <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>
         	        </Template>
                     <WidgetGroup>
+                        <ObjectName>Deck</ObjectName>
                         <Layout>horizontal</Layout>
                         <Children>
                             <Template src="skin:deck.xml">
                                 <SetVariable name="channum">3</SetVariable>
-                                <SetVariable name="deck_color">#09B2AE</SetVariable>
+                                <SetVariable name="signal_color">#09B2AE</SetVariable>
+                                <SetVariable name="SignalBgColor">#2f290a</SetVariable>
+                                <SetVariable name="SignalRGBLowColor">#ff2a00</SetVariable>
+                                <SetVariable name="SignalRGBMidColor">#33f600</SetVariable>
+                                <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>
                             </Template>
                         </Children>
                         <Connection>
                             <ConfigKey>[Master],show_4decks</ConfigKey>
                             <BindProperty>visible</BindProperty>
                         </Connection>
+                    </WidgetGroup>
+                    <WidgetGroup>
+                      <Layout>vertical</Layout>
+                      <SizePolicy>me,min</SizePolicy>
+                      <MinimumSize>0,0</MinimumSize>
+                      <Children/>
                     </WidgetGroup>
                 </Children>
             </WidgetGroup>

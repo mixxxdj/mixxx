@@ -68,10 +68,12 @@ bool AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
     m_bPreferencesOffsetCorrection = static_cast<bool>(
         m_pConfig->getValueString(
             ConfigKey(BPM_CONFIG_KEY, BPM_FIXED_TEMPO_OFFSET_CORRECTION)).toInt());
+    m_bPreferencesReanalyzeOldBpm = static_cast<bool>(
+        m_pConfig->getValueString(
+            ConfigKey(BPM_CONFIG_KEY, BPM_REANALYZE_WHEN_SETTINGS_CHANGE)).toInt());
     m_bPreferencesFastAnalysis = static_cast<bool>(
         m_pConfig->getValueString(
             ConfigKey(BPM_CONFIG_KEY, BPM_FAST_ANALYSIS_ENABLED)).toInt());
-
 
     QString library = m_pConfig->getValueString(
         ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_BEAT_LIBRARY));
@@ -118,19 +120,6 @@ bool AnalyserBeats::loadStored(TrackPointer tio) const {
         iMaxBpm = m_pConfig->getValueString(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_END)).toInt();
     }
 
-    bool bPreferencesFixedTempo = static_cast<bool>(
-        m_pConfig->getValueString(
-            ConfigKey(BPM_CONFIG_KEY, BPM_FIXED_TEMPO_ASSUMPTION)).toInt());
-    bool bPreferencesOffsetCorrection = static_cast<bool>(
-        m_pConfig->getValueString(
-            ConfigKey(BPM_CONFIG_KEY, BPM_FIXED_TEMPO_OFFSET_CORRECTION)).toInt());
-    bool bPreferencesReanalyzeOldBpm = static_cast<bool>(
-        m_pConfig->getValueString(
-            ConfigKey(BPM_CONFIG_KEY, BPM_REANALYZE_WHEN_SETTINGS_CHANGE)).toInt());
-    bool bPreferencesFastAnalysis = static_cast<bool>(
-        m_pConfig->getValueString(
-            ConfigKey(BPM_CONFIG_KEY, BPM_FAST_ANALYSIS_ENABLED)).toInt());
-
     bool bpmLock = tio->hasBpmLock();
     if (bpmLock) {
         qDebug() << "Track is BpmLocked: Beat calculation will not start";
@@ -147,7 +136,7 @@ bool AnalyserBeats::loadStored(TrackPointer tio) const {
     if (library.isEmpty() || library.isNull())
         library = "libmixxxminimal";
     if (pluginID.isEmpty() || pluginID.isNull())
-        pluginID="qm-tempotracker:0";
+        pluginID = "qm-tempotracker:0";
 
     // If the track already has a Beats object then we need to decide whether to
     // analyze this track or not.
@@ -157,19 +146,18 @@ bool AnalyserBeats::loadStored(TrackPointer tio) const {
         QString subVersion = pBeats->getSubVersion();
 
         QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
-            pluginID, bPreferencesFastAnalysis);
+            pluginID, m_bPreferencesFastAnalysis);
         QString newVersion = BeatFactory::getPreferredVersion(
-            bPreferencesOffsetCorrection);
+            m_bPreferencesOffsetCorrection);
         QString newSubVersion = BeatFactory::getPreferredSubVersion(
-            bPreferencesFixedTempo, bPreferencesOffsetCorrection,
+            m_bPreferencesFixedTempo, m_bPreferencesOffsetCorrection,
             iMinBpm, iMaxBpm, extraVersionInfo);
 
         if (version == newVersion && subVersion == newSubVersion) {
             // If the version and settings have not changed then if the world is
             // sane, re-analyzing will do nothing.
-            qDebug() << "Beat sub-version has not changed since previous analysis so not analyzing.";
             return true;
-        } else if (bPreferencesReanalyzeOldBpm) {
+        } else if (m_bPreferencesReanalyzeOldBpm) {
             return false;
         } else if (pBeats->getBpm() == 0.0) {
             qDebug() << "BPM is 0 for track so re-analyzing despite preference settings.";
@@ -199,8 +187,7 @@ void AnalyserBeats::process(const CSAMPLE *pIn, const int iLen) {
     }
 }
 
-void AnalyserBeats::cleanup(TrackPointer tio)
-{
+void AnalyserBeats::cleanup(TrackPointer tio) {
     Q_UNUSED(tio);
     delete m_pVamp;
     m_pVamp = NULL;

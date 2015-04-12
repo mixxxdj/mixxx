@@ -9,7 +9,8 @@
 
 class GLSLWaveformRendererSignal : public WaveformRendererSignalBase {
   public:
-    explicit GLSLWaveformRendererSignal(WaveformWidgetRenderer* waveformWidgetRenderer);
+    explicit GLSLWaveformRendererSignal(
+            WaveformWidgetRenderer* waveformWidgetRenderer, bool rgbShader);
     virtual ~GLSLWaveformRendererSignal();
 
     virtual bool onInit();
@@ -38,9 +39,26 @@ class GLSLWaveformRendererSignal : public WaveformRendererSignalBase {
 
     bool m_bDumpPng;
 
-    //shaders
+    // shaders
     bool m_shadersValid;
+    bool m_rgbShader;
     QGLShaderProgram* m_frameShaderProgram;
+};
+
+class GLSLWaveformRendererFilteredSignal : public GLSLWaveformRendererSignal {
+  public:
+    GLSLWaveformRendererFilteredSignal(
+        WaveformWidgetRenderer* waveformWidgetRenderer)
+        : GLSLWaveformRendererSignal(waveformWidgetRenderer, false) {}
+    virtual ~GLSLWaveformRendererFilteredSignal() {}
+};
+
+class GLSLWaveformRendererRGBSignal : public GLSLWaveformRendererSignal {
+  public:
+    GLSLWaveformRendererRGBSignal(
+        WaveformWidgetRenderer* waveformWidgetRenderer)
+        : GLSLWaveformRendererSignal(waveformWidgetRenderer, true) {}
+    virtual ~GLSLWaveformRendererRGBSignal() {}
 };
 
 #endif // GLWAVEFORMRENDERERSIGNALSHADER_H

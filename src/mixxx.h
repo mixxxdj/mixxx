@@ -116,6 +116,7 @@ class MixxxMainWindow : public QMainWindow {
     void slotViewShowVinylControl(bool);
     void slotViewShowMicrophone(bool);
     void slotViewShowPreviewDeck(bool);
+    void slotViewShowEffects(bool);
     void slotViewShowCoverArt(bool);
     // toogle full screen mode
     void slotViewFullScreen(bool toggle);
@@ -140,10 +141,20 @@ class MixxxMainWindow : public QMainWindow {
     // can alert the user if a mic is not configured.
     void slotTalkoverChanged(int);
 
+    void slotToggleCheckedVinylControl();
+    void slotToggleCheckedSamplers();
+    void slotToggleCheckedMicrophone();
+    void slotToggleCheckedPreviewDeck();
+    void slotToggleCheckedEffects();
+    void slotToggleCheckedCoverArt();
+
   signals:
     void newSkinLoaded();
     void libraryScanStarted();
     void libraryScanFinished();
+    // used to uncheck the menu when the dialog of develeoper tools is closed
+    void developerToolsDlgClosed(int r);
+    void closeDeveloperToolsDlgChecked(int r);
 
   protected:
     // Event filter to block certain events (eg. tooltips if tooltips are disabled)
@@ -156,11 +167,16 @@ class MixxxMainWindow : public QMainWindow {
     void initializeWindow();
     void initializeKeyboard();
     void initializeTranslations(QApplication* pApp);
+    void initializeFonts();
     bool loadTranslations(const QLocale& systemLocale, QString userLocale,
                           const QString& translation, const QString& prefix,
                           const QString& translationPath, QTranslator* pTranslator);
     void checkDirectRendering();
     bool confirmExit();
+
+    void linkSkinWidget(ControlObjectSlave** pCOS,
+                        ConfigKey key, const char* slot);
+    void updateCheckedMenuAction(QAction* menuAction, ConfigKey key);
 
     // Pointer to the root GUI widget
     QWidget* m_pWidgetParent;
@@ -234,6 +250,7 @@ class MixxxMainWindow : public QMainWindow {
     QAction* m_pViewVinylControl;
     QAction* m_pViewShowMicrophone;
     QAction* m_pViewShowPreviewDeck;
+    QAction* m_pViewShowEffects;
     QAction* m_pViewShowCoverArt;
     QAction* m_pViewFullScreen;
     QAction* m_pHelpAboutApp;
@@ -248,6 +265,13 @@ class MixxxMainWindow : public QMainWindow {
     QAction* m_pDeveloperStatsBase;
     DlgDeveloperTools* m_pDeveloperToolsDlg;
     QAction* m_pDeveloperDebugger;
+
+    ControlObjectSlave* m_pShowVinylControl;
+    ControlObjectSlave* m_pShowSamplers;
+    ControlObjectSlave* m_pShowMicrophone;
+    ControlObjectSlave* m_pShowPreviewDeck;
+    ControlObjectSlave* m_pShowEffects;
+    ControlObjectSlave* m_pShowCoverArt;
 
     int m_iNoPlaylists;
 

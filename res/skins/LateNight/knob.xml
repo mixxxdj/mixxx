@@ -8,23 +8,26 @@
 <Template>
   <WidgetGroup>
     <Layout>vertical</Layout>
-    <ObjectName>EffectUnitKnob</ObjectName>
+    <SizePolicy>min,min</SizePolicy>
     <Children>
-    <WidgetGroup>
+      <WidgetGroup>
         <Layout>horizontal</Layout>
-        <SizePolicy>min,min</SizePolicy>
+        <ObjectName>KnobCentered</ObjectName>
         <Children>
-	      <Knob>
-	        <NumberStates>64</NumberStates>
-	        <Path>knobs/knob_rotary_s%1.png</Path>
-	        <Connection>
-	          <ConfigKey><Variable name="group"/>,<Variable name="control"/></ConfigKey>
-	        </Connection>
-	      </Knob>
+          <KnobComposed>
+            <TooltipId><Variable name="tooltip"/></TooltipId>
+            <Size>40f,34f</Size>
+            <Knob>knob_indicator.svg</Knob>
+            <BackPath>knob_bg.svg</BackPath>
+            <MinAngle>-135</MinAngle>
+            <MaxAngle>135</MaxAngle>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,<Variable name="control"/></ConfigKey>
+            </Connection>
+          </KnobComposed>
         </Children>
       </WidgetGroup>
       <Label>
-        <Size>4me,15f</Size>
         <ObjectName>KnobLabel</ObjectName>
         <Text><Variable name="label"/></Text>
       </Label>

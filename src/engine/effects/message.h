@@ -28,8 +28,8 @@ struct EffectsRequest {
         SET_EFFECT_CHAIN_PARAMETERS,
         ADD_EFFECT_TO_CHAIN,
         REMOVE_EFFECT_FROM_CHAIN,
-        ENABLE_EFFECT_CHAIN_FOR_GROUP,
-        DISABLE_EFFECT_CHAIN_FOR_GROUP,
+        ENABLE_EFFECT_CHAIN_FOR_CHANNEL,
+        DISABLE_EFFECT_CHAIN_FOR_CHANNEL,
 
         // Messages for EngineEffect
         SET_EFFECT_PARAMETERS,
@@ -41,7 +41,11 @@ struct EffectsRequest {
 
     EffectsRequest()
             : type(NUM_REQUEST_TYPES),
-              request_id(-1) {
+              request_id(-1),
+              minimum(0.0),
+              maximum(0.0),
+              default_value(0.0),
+              value(0.0) {
         pTargetRack = NULL;
         pTargetChain = NULL;
         pTargetEffect = NULL;
@@ -71,8 +75,8 @@ struct EffectsRequest {
         // - ADD_EFFECT_TO_CHAIN
         // - REMOVE_EFFECT_FROM_CHAIN
         // - SET_EFFECT_CHAIN_PARAMETERS
-        // - ENABLE_EFFECT_CHAIN_FOR_GROUP
-        // - DISABLE_EFFECT_CHAIN_FOR_GROUP
+        // - ENABLE_EFFECT_CHAIN_FOR_CHANNEL
+        // - DISABLE_EFFECT_CHAIN_FOR_CHANNEL
         EngineEffectChain* pTargetChain;
         // Used by:
         // - SET_EFFECT_PARAMETER
@@ -120,8 +124,8 @@ struct EffectsRequest {
     // Message-specific, non-POD values that can't be part of the above union.
     ////////////////////////////////////////////////////////////////////////////
 
-    // Used by ENABLE_EFFECT_CHAIN_FOR_GROUP and DISABLE_EFFECT_CHAIN_FOR_GROUP.
-    QString group;
+    // Used by ENABLE_EFFECT_CHAIN_FOR_CHANNEL and DISABLE_EFFECT_CHAIN_FOR_CHANNEL.
+    ChannelHandle channel;
 
     // Used by SET_EFFECT_PARAMETER.
     double minimum;

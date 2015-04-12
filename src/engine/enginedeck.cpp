@@ -19,7 +19,6 @@
 #include "effects/effectsmanager.h"
 #include "engine/effects/engineeffectsmanager.h"
 #include "engine/enginebuffer.h"
-#include "engine/enginevinylsoundemu.h"
 #include "engine/enginedeck.h"
 #include "engine/enginepregain.h"
 #include "engine/enginevumeter.h"
@@ -27,20 +26,20 @@
 
 #include "sampleutil.h"
 
-EngineDeck::EngineDeck(QString group,
+EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
                        ConfigObject<ConfigValue>* pConfig,
                        EngineMaster* pMixingEngine,
                        EffectsManager* pEffectsManager,
                        EngineChannel::ChannelOrientation defaultOrientation)
-        : EngineChannel(group, defaultOrientation),
+        : EngineChannel(handle_group, defaultOrientation),
           m_pConfig(pConfig),
           m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
-          m_pPassing(new ControlPushButton(ConfigKey(group, "passthrough"))),
+          m_pPassing(new ControlPushButton(ConfigKey(getGroup(), "passthrough"))),
           // Need a +1 here because the CircularBuffer only allows its size-1
           // items to be held at once (it keeps a blank spot open persistently)
           m_sampleBuffer(NULL) {
     if (pEffectsManager != NULL) {
-        pEffectsManager->registerGroup(getGroup());
+        pEffectsManager->registerChannel(handle_group);
     }
 
     // Set up passthrough utilities and fields
@@ -56,10 +55,9 @@ EngineDeck::EngineDeck(QString group,
     m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
 
     // Set up additional engines
-    m_pPregain = new EnginePregain(group);
-    m_pVUMeter = new EngineVuMeter(group);
-    m_pBuffer = new EngineBuffer(group, pConfig, this, pMixingEngine);
-    m_pVinylSoundEmu = new EngineVinylSoundEmu(group);
+    m_pPregain = new EnginePregain(getGroup());
+    m_pVUMeter = new EngineVuMeter(getGroup());
+    m_pBuffer = new EngineBuffer(getGroup(), pConfig, this, pMixingEngine);
 }
 
 EngineDeck::~EngineDeck() {
@@ -67,8 +65,8 @@ EngineDeck::~EngineDeck() {
 
     delete m_pBuffer;
     delete m_pPregain;
-    delete m_pVinylSoundEmu;
     delete m_pVUMeter;
+    delete m_pSampleRate;
 }
 
 void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
@@ -79,6 +77,7 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
         SampleUtil::copy(pOut, sampleBuffer, iBufferSize);
         m_bPassthroughWasActive = true;
         m_sampleBuffer = NULL;
+        m_pPregain->setSpeed(1);
     } else {
         // If passthrough is no longer enabled, zero out the buffer
         if (m_bPassthroughWasActive) {
@@ -90,9 +89,7 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
         // Process the raw audio
         m_pBuffer->process(pOut, iBufferSize);
         m_pBuffer->collectFeatures(&features);
-        // Emulate vinyl sounds
-        m_pVinylSoundEmu->setSpeed(m_pBuffer->getSpeed());
-        m_pVinylSoundEmu->process(pOut, iBufferSize);
+        m_pPregain->setSpeed(m_pBuffer->getSpeed());
         m_bPassthroughWasActive = false;
     }
 
@@ -104,7 +101,7 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
         // volume.
         m_pVUMeter->collectFeatures(&features);
         m_pEngineEffectsManager->process(
-                getGroup(), pOut, iBufferSize,
+                getHandle(), pOut, iBufferSize,
                 static_cast<unsigned int>(m_pSampleRate->get()), features);
     }
     // Update VU meter

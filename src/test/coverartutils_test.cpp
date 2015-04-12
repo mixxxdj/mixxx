@@ -13,9 +13,6 @@
 class CoverArtUtilTest : public MixxxTest, public CoverArtCache {
   protected:
     virtual void SetUp() {
-        // make sure to use the current schema.xml file in the repo
-        config()->set(ConfigKey("[Config]","Path"),
-                      QDir::currentPath().append("/res"));
         m_pTrackCollection = new TrackCollection(config());
     }
 
@@ -35,7 +32,7 @@ class CoverArtUtilTest : public MixxxTest, public CoverArtCache {
     TrackCollection* m_pTrackCollection;
 };
 
-const QString kCoverLocationTest("res/images/library/default_cover.png");
+const QString kCoverLocationTest("res/images/library/cover_default.png");
 const QString kTrackLocationTest(QDir::currentPath() %
                                  "/src/test/id3-test-data/cover-test.mp3");
 

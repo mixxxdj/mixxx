@@ -29,8 +29,6 @@ class WTrackTableView : public WLibraryTableView {
                     TrackCollection* pTrackCollection, bool sorting = true);
     virtual ~WTrackTableView();
     void contextMenuEvent(QContextMenuEvent * event);
-    void onSearchStarting();
-    void onSearchCleared();
     void onSearch(const QString& text);
     void onShow();
     virtual void keyPressEvent(QKeyEvent* event);
@@ -49,6 +47,8 @@ class WTrackTableView : public WLibraryTableView {
     void slotMouseDoubleClicked(const QModelIndex &);
     void slotUnhide();
     void slotPurge();
+    void onSearchStarting();
+    void onSearchCleared();
 
   private slots:
     void slotRemove();
@@ -167,6 +167,7 @@ class WTrackTableView : public WLibraryTableView {
 
     // Control the delay to load a cover art.
     qint64 m_lastUserActionNanos;
+    bool m_selectionChangedSinceLastGuiTick;
     bool m_loadCachedOnly;
     ControlObjectSlave* m_pCOTGuiTick;
 };

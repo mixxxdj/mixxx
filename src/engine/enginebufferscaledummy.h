@@ -30,8 +30,6 @@ class EngineBufferScaleDummy : public EngineBufferScale {
     EngineBufferScaleDummy(ReadAheadManager* pReadAheadManager);
     virtual ~EngineBufferScaleDummy();
 
-    /** Get new playpos after call to scale() */
-    double getNewPlaypos();
     /** Called from EngineBuffer when seeking, to ensure the buffers are flushed */
     void clear();
     /** Scale buffer */

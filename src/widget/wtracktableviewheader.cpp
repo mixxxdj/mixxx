@@ -42,7 +42,11 @@ HeaderViewState::HeaderViewState(const QString& base64serialized) {
     array.append(base64serialized);
     // First decode the array from Base64, then initialize the protobuf from it.
     array = QByteArray::fromBase64(array);
-    m_view_state.ParseFromArray(array.constData(), array.size());
+    if (!m_view_state.ParseFromArray(array.constData(), array.size())) {
+        qDebug() << "ERROR: Could not parse m_view_state from QByteArray of size "
+                 << array.size();
+        return;
+    }
 }
 
 QString HeaderViewState::saveState() const {
@@ -64,8 +68,7 @@ void HeaderViewState::restoreState(QHeaderView* headers) {
                 m_view_state.mutable_header_state(i);
     }
 
-    // First set all sections to be hidden and update logical
-    // indexes
+    // First set all sections to be hidden and update logical indexes.
     for (int li = 0; li < headers->count(); ++li) {
         headers->setSectionHidden(li, true);
         // TODO(owilliams): replace with auto once we're building on c++11.
@@ -221,7 +224,11 @@ void WTrackTableViewHeader::restoreHeaderState() {
         // Decode it and restore it.
         //qDebug() << "Restoring header state from proto" << headerStateString;
         HeaderViewState view_state(headerStateString);
-        view_state.restoreState(this);
+        if (!view_state.healthy()) {
+            loadDefaultHeaderState();
+        } else {
+            view_state.restoreState(this);
+        }
     }
 }
 

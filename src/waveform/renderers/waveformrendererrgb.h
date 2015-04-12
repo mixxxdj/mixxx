@@ -11,14 +11,9 @@ class WaveformRendererRGB : public WaveformRendererSignalBase {
     virtual ~WaveformRendererRGB();
 
     virtual void onSetup(const QDomNode& node);
-    virtual void setup(const QDomNode& node, const SkinContext& context);
     virtual void draw(QPainter* painter, QPaintEvent* event);
 
   private:
-    QColor m_lowColor;
-    QColor m_midColor;
-    QColor m_highColor;
-
     DISALLOW_COPY_AND_ASSIGN(WaveformRendererRGB);
 };
 

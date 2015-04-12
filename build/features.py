@@ -778,24 +778,41 @@ class Opus(Feature):
         return "Opus (RFC 6716) support"
 
     def enabled(self, build):
-        build.flags['opus'] = util.get_flags(build.env, 'opus', 0)
+        # Default Opus to on but only throw an error if it was explicitly
+        # requested.
+        if 'opus' in build.flags:
+            return int(build.flags['opus']) > 0
+        build.flags['opus'] = util.get_flags(build.env, 'opus', 1)
         if int(build.flags['opus']):
             return True
         return False
 
     def add_options(self, build, vars):
         vars.Add('opus', 'Set to 1 to enable Opus (RFC 6716) support \
-                           (supported are Opus 1.0 and above and Opusfile 0.2 and above)', 0)
+                           (supported are Opus 1.0 and above and Opusfile 0.2 and above)', 1)
 
     def configure(self, build, conf):
         if not self.enabled(build):
             return
+
+        # Only block the configure if opus was explicitly requested.
+        explicit = 'opus' in SCons.ARGUMENTS
+
         # Support for Opus (RFC 6716)
         # More info http://http://www.opus-codec.org/
         if not conf.CheckLib(['opus', 'libopus']):
-            raise Exception('Could not find libopus.')
+            if explicit:
+                raise Exception('Could not find libopus.')
+            else:
+                build.flags['opus'] = 0
+            return
         if not conf.CheckLib(['opusfile', 'libopusfile']):
-            raise Exception('Could not find libopusfile.')
+            if explicit:
+                raise Exception('Could not find libopusfile.')
+            else:
+                build.flags['opus'] = 0
+            return
+
         build.env.Append(CPPDEFINES='__OPUS__')
 
         if build.platform_is_linux or build.platform_is_bsd:
@@ -938,39 +955,67 @@ class FFMPEG(Feature):
 
 
 class Optimize(Feature):
+    LEVEL_OFF = 'off'
+    LEVEL_PORTABLE = 'portable'
+    LEVEL_NATIVE = 'native'
+    LEVEL_LEGACY = 'legacy'
+
+    LEVEL_DEFAULT = LEVEL_PORTABLE
+
     def description(self):
         return "Optimization and Tuning"
 
+    @staticmethod
+    def get_optimization_level():
+        optimize_level = SCons.ARGUMENTS.get('optimize', Optimize.LEVEL_DEFAULT)
+        try:
+            optimize_integer = int(optimize_level)
+            if optimize_integer == 0:
+                optimize_level = Optimize.LEVEL_OFF
+            elif optimize_integer == 1:
+                # Level 1 was a legacy (compiler optimizations only) build.
+                optimize_level = Optimize.LEVEL_LEGACY
+            elif optimize_integer in xrange(2, 10):
+                # Levels 2 through 9 map to portable.
+                optimize_level = Optimize.LEVEL_PORTABLE
+        except:
+            pass
+
+        # Support common aliases for off.
+        if optimize_level in ('none', 'disable', 'disabled'):
+            optimize_level = Optimize.LEVEL_OFF
+
+        if optimize_level not in (Optimize.LEVEL_OFF, Optimize.LEVEL_PORTABLE,
+                                  Optimize.LEVEL_NATIVE, Optimize.LEVEL_LEGACY):
+            raise Exception("optimize={} is not supported. "
+                            "Use portable, native, legacy or off"
+                            .format(optimize_level))
+        return optimize_level
+
     def enabled(self, build):
-        build.flags['optimize'] = util.get_flags(build.env, 'optimize', 1)
-        if int(build.flags['optimize']):
-            return True
-        else:
-            return False
+        build.flags['optimize'] = Optimize.get_optimization_level()
+        return build.flags['optimize'] != Optimize.LEVEL_OFF
 
     def add_options(self, build, vars):
-        if not build.platform_is_windows:
-            vars.Add(
-                'optimize', 'Set to:\n  1 for -O3 compiler optimizations\n  2 for Pentium 4 optimizations\n  3 for Intel Core optimizations\n  4 for Intel Core 2 optimizations\n  5 for Athlon-4/XP/MP optimizations\n  6 for K8/Opteron/AMD64 optimizations\n  7 for K8/Opteron/AMD64 w/ SSE3\n  8 for Celeron D (generic SSE/SSE2/SSE3) optimizations.', 1)
-        else:
-            if build.machine_is_64bit:
-                vars.Add(
-                    'optimize', 'Set to:\n  1 to maximize speed (/O2)\n  2 for maximum optimizations (/Ox)', 1)
-            else:
-                vars.Add(
-                    'optimize', 'Set to:\n  1 to maximize speed (/O2)\n  2 for maximum optimizations (/Ox)\n  3 to use SSE instructions\n  4 to use SSE2 instructions', 1)
+        vars.Add(
+            'optimize', 'Set to:\n' \
+                        '  portable: sse2 CPU (>= Pentium 4)\n' \
+                        '  native: optimized for the CPU of this system\n' \
+                        '  legacy: pure i386 code' \
+                        '  off: no optimization' \
+                        , Optimize.LEVEL_DEFAULT)
 
     def configure(self, build, conf):
         if not self.enabled(build):
             return
 
-        optimize_level = int(build.flags['optimize'])
+        optimize_level = build.flags['optimize']
+
+        if optimize_level == Optimize.LEVEL_OFF:
+            self.status = "off: no optimization"
+            return
 
         if build.toolchain_is_msvs:
-            if build.build_is_debug:
-                self.status = "Disabled (debug build)"
-                return
-
             # /GL : http://msdn.microsoft.com/en-us/library/0zza0de8.aspx
             # !!! /GL is incompatible with /ZI, which is set by mscvdebug
             build.env.Append(CCFLAGS='/GL')
@@ -1000,166 +1045,101 @@ class Optimize(Feature):
 
             # http://msdn.microsoft.com/en-us/library/59a3b321.aspx
             # In general, you should pick /O2 over /Ox
-            if optimize_level >= 1:
-                self.status = "Enabled -- Maximize Speed (/O2)"
-                build.env.Append(CCFLAGS='/O2')
-            # elif optimize_level >= 2:
-            #    self.status = "Enabled -- Maximum Optimizations (/Ox)"
-            #    build.env.Append(CCFLAGS = '/Ox')
+            build.env.Append(CCFLAGS='/O2')
+
+            if optimize_level == Optimize.LEVEL_PORTABLE:
+                # portable-binary: sse2 CPU (>= Pentium 4)
+                self.status = "portable: sse2 CPU (>= Pentium 4)"
+                build.env.Append(CCFLAGS='/arch:SSE2')
+                build.env.Append(CPPDEFINES=['__SSE__', '__SSE2__'])
+            elif optimize_level == Optimize.LEVEL_NATIVE:
+                self.status = "native: tuned for this CPU (%s)" % build.machine
+                build.env.Append(CCFLAGS='/favor:' + build.machine)
+            elif optimize_level == Optimize.LEVEL_LEGACY:
+                self.status = "legacy: pure i386 code"
+            else:
+                # Not possible to reach this code if enabled is written
+                # correctly.
+                raise Exception("optimize={} is not supported. "
+                                "Use portable, native, legacy or off"
+                                .format(optimize_level))
 
             # SSE and SSE2 are core instructions on x64
             if build.machine_is_64bit:
                 build.env.Append(CPPDEFINES=['__SSE__', '__SSE2__'])
-            else:
-                if optimize_level == 3:
-                    self.status += ", SSE Instructions Enabled"
-                    build.env.Append(CCFLAGS='/arch:SSE')
-                    build.env.Append(CPPDEFINES='__SSE__')
-                elif optimize_level == 4:
-                    self.status += ", SSE2 Instructions Enabled"
-                    build.env.Append(CCFLAGS='/arch:SSE2')
-                    build.env.Append(CPPDEFINES=['__SSE__', '__SSE2__'])
-        elif build.toolchain_is_gnu:
-            if int(build.flags.get('tuned', 0)):
-                self.status = "Disabled (Overriden by tuned=1)"
-                return
 
-            # Common flags to all optimizations. Consider dropping -O3 to -O2
-            # and getting rid of -fomit-frame-pointer, -ffast-math, and
-            # -funroll-loops. We need to justify our use of these aggressive
-            # optimizations with data.
-            build.env.Append(
-                CCFLAGS='-O3 -ffast-math -funroll-loops')
+        elif build.toolchain_is_gnu:
+            # Common flags to all optimizations.
+            # -ffast-math will pevent a performance penalty by denormals
+            # (floating point values almost Zero are treated as Zero)
+            # unfortunately that work only on 64 bit CPUs or with sse2 enabled
+
+            # the following optimisation flags makes the engine code ~3 times
+            # faster, measured on a Atom CPU.
+            build.env.Append(CCFLAGS='-O3 -ffast-math -funroll-loops')
+
+            # set -fomit-frame-pointer when we don't profile.
+            # Note: It is only included in -O on machines where it does not
+            # interfere with debugging
             if not int(build.flags['profiling']):
                 build.env.Append(CCFLAGS='-fomit-frame-pointer')
 
-            if optimize_level == 1:
-                # only includes what we already applied
-                self.status = "Enabled -- Basic Optimizations (-03)"
-            elif optimize_level == 2:
-                self.status = "Enabled (P4 MMX/SSE)"
-                build.env.Append(
-                    CCFLAGS='-march=pentium4 -mmmx -msse2 -mfpmath=sse')
-                build.env.Append(CPPDEFINES=['__SSE__', '__SSE2__'])
-            elif optimize_level == 3:
-                self.status = "Enabled (Intel Core Solo/Duo)"
-                build.env.Append(
-                    CCFLAGS='-march=prescott -mmmx -msse3 -mfpmath=sse')
-                build.env.Append(
-                    CPPDEFINES=['__SSE__', '__SSE2__', '__SSE3__'])
-            elif optimize_level == 4:
-                self.status = "Enabled (Intel Core 2)"
-                build.env.Append(
-                    CCFLAGS='-march=nocona -mmmx -msse -msse2 -msse3 -mfpmath=sse -ffast-math -funroll-loops')
-                build.env.Append(
-                    CPPDEFINES=['__SSE__', '__SSE2__', '__SSE3__'])
-            elif optimize_level == 5:
-                self.status = "Enabled (Athlon Athlon-4/XP/MP)"
-                build.env.Append(
-                    CCFLAGS='-march=athlon-4 -mmmx -msse -m3dnow -mfpmath=sse')
-                build.env.Append(CPPDEFINES='__SSE__')
-            elif optimize_level == 6:
-                self.status = "Enabled (Athlon K8/Opteron/AMD64)"
-                build.env.Append(
-                    CCFLAGS='-march=k8 -mmmx -msse2 -m3dnow -mfpmath=sse')
-                build.env.Append(CPPDEFINES=['__SSE__', '__SSE2__'])
-            elif optimize_level == 7:
-                self.status = "Enabled (Athlon K8/Opteron/AMD64 + SSE3)"
-                build.env.Append(
-                    CCFLAGS='-march=k8-sse3 -mmmx -msse2 -msse3 -m3dnow -mfpmath=sse')
-                build.env.Append(
-                    CPPDEFINES=['__SSE__', '__SSE2__', '__SSE3__'])
-            elif optimize_level == 8:
-                self.status = "Enabled (Generic SSE/SSE2/SSE3)"
-                build.env.Append(CCFLAGS='-mmmx -msse2 -msse3 -mfpmath=sse')
-                build.env.Append(
-                    CPPDEFINES=['__SSE__', '__SSE2__', '__SSE3__'])
-            elif optimize_level == 9:
-                self.status = "Enabled (Tuned Generic)"
-                # This option is for release builds packaged for 64-bit. We
-                # don't know what kind of 64-bit CPU they'll have, so let
-                # -mtune=generic pick the best options. Used by the debian rules
-                # script.
-
-                # It's a little sketchy, but I'm turning on SSE and MMX by
-                # default. opt=9 is a distribution mode, we don't really support
-                # CPU's earlier than Pentium 3, which is the class of CPUs this
-                # decision affects. The downside of this is that we aren't truly
+            if optimize_level == Optimize.LEVEL_PORTABLE:
+                # portable: sse2 CPU (>= Pentium 4)
+                if build.architecture_is_x86: 
+                    self.status = "portable: sse2 CPU (>= Pentium 4)"
+                    build.env.Append(CCFLAGS='-mtune=generic')
+                    # -mtune=generic pick the most common, but compatible options.
+                    # on arm platforms equivalent to -march=arch 
+                    if not build.machine_is_64bit:
+                        # the sse flags are not set by default on 32 bit bilds 
+                        # but are not supported on arm builds                     
+                        build.env.Append(CCFLAGS='-msse2 -mfpmath=sse') 
+                else:
+                    self.status = "portable"
+                # this sets macros __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
+                # This should be our default build for distribution
+                # It's a little sketchy, but turning on SSE2 will gain
+                # 100% performance in our filter code and allows us to
+                # turns on denormal zeroing.
+                # We don't really support CPU's earlier than Pentium 4,
+                # which is the class of CPUs this decision affects.
+                # The downside of this is that we aren't truly
                 # i386 compatible, so builds that claim 'i386' will crash.
                 # -- rryan 2/2011
-
-                # TODO(XXX) check the soundtouch package in Ubuntu to see what
-                # they do about this.
-                build.env.Append(
-                    CCFLAGS='-mtune=generic -mmmx -msse -mfpmath=sse')
-                build.env.Append(CPPDEFINES='__SSE__')
-
-                # Enable SSE2 on 64-bit machines. SSE3 is not a sure thing on
-                # 64-bit
-                if build.machine_is_64bit:
-                    build.env.Append(CCFLAGS='-msse2')
-                    build.env.Append(CPPDEFINES='__SSE2__')
-
-
-class Tuned(Feature):
-    def description(self):
-        return "Optimizing for this CPU"
-
-    def enabled(self, build):
-        build.flags['tuned'] = util.get_flags(build.env, 'tuned', 0)
-        if int(build.flags['tuned']):
-            return True
-        return False
-
-    def add_options(self, build, vars):
-        if not build.platform_is_windows:
-            vars.Add('tuned',
-                     'Set to 1 to optimize mixxx for this CPU (overrides "optimize")', 0)
-        elif build.machine_is_64bit:  # 64-bit windows
-            vars.Add(
-                'tuned', 'Set to 1 to optimize mixxx for this CPU class', 0)
-
-    def configure(self, build, conf):
-        if not self.enabled(build):
-            # Even if not enabled, enable 'blending' for 64-bit because the
-            # instructions are emitted anyway.
-            if build.toolchain_is_msvs and build.machine_is_64bit:
-                build.env.Append(CCFLAGS='/favor:blend')
-            return
-
-        # SSE and SSE2 are core instructions on x64
-        if build.machine_is_64bit:
-            build.env.Append(CPPDEFINES=['__SSE__', '__SSE2__'])
-
-        if build.toolchain_is_gnu:
-            ccv = build.env['CCVERSION'].split('.')
-            if int(ccv[0]) >= 4 and int(ccv[1]) >= 2:
-                # -march=native takes care of mtune
-                #   http://en.chys.info/2010/04/what-exactly-marchnative-means/
+                # Note: SSE2 is a core part of x64 CPUs
+            elif optimize_level == Optimize.LEVEL_NATIVE:
+                self.status = "native: tuned for this CPU (%s)" % build.machine
                 build.env.Append(CCFLAGS='-march=native')
-                # Doesn't make sense as a linkflag
-                build.env.Append(LINKFLAGS='-march=native')
-                # TODO(pegasus): Ask GCC if the CPU supports SSE, SSE2, SSE3, etc.
-                # so we can add the appropriate CPPDEFINES for Mixxx code paths
+                # http://en.chys.info/2010/04/what-exactly-marchnative-means/
+                # Note: requires gcc >= 4.2.0
+                # macros like __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
+                # are set automaticaly
+                if build.architecture_is_x86 and not build.machine_is_64bit:
+                    # the sse flags are not set by default on 32 bit bilds 
+                    # but are not supported on arm builds  
+                    build.env.Append(CCFLAGS='-msse2 -mfpmath=sse')
+            elif optimize_level == Optimize.LEVEL_LEGACY:
+                if build.architecture_is_x86:
+                    self.status = "legacy: pure i386 code"
+                    build.env.Append(CCFLAGS='-mtune=generic')
+                    # -mtune=generic pick the most common, but compatible options.
+                    # on arm platforms equivalent to -march=arch 
+                else: 
+                    self.status = "legacy"    
             else:
-                self.status = "Disabled (requires gcc >= 4.2.0)"
-        elif build.toolchain_is_msvs:
-            if build.machine_is_64bit:
-                if 'makerelease' in SCons.COMMAND_LINE_TARGETS:
-                    self.status = "Disabled (due to makerelease target)"
-                    # AMD64 is for AMD CPUs, EM64T is for Intel x64 ones (as opposed to
-                    # IA64 which uses a different compiler.)  For a release, we choose
-                    # to have code run about the same on both
-                    build.env.Append(CCFLAGS='/favor:blend')
-                else:
-                    # self.status = "Disabled (currently broken with Visual Studio)"
-                    # build.env.Append(CCFLAGS = '/favor:blend')
-                    # Only valid choices are AMD64, EM64T (INTEL64 on later compilers,)
-                    # and blend.
-                    self.status = "Enabled (%s-optimized)" % build.machine
-                    build.env.Append(CCFLAGS='/favor:' + build.machine)
-            else:
-                self.status = "Disabled (not supported on 32-bit MSVC)"
+                # Not possible to reach this code if enabled is written
+                # correctly.
+                raise Exception("optimize={} is not supported. "
+                                "Use portable, native, legacy or off"
+                                .format(optimize_level))
+
+            # what others do:
+            # soundtouch uses just -O3 in Ubuntu Trusty
+            # rubberband uses just -O2 in Ubuntu Trusty
+            # fftw3 (used by rubberband) in Ubuntu Trusty
+            # -O3 -fomit-frame-pointer -mtune=native -malign-double
+            # -fstrict-aliasing -fno-schedule-insns -ffast-math
 
 
 class AutoDjCrates(Feature):

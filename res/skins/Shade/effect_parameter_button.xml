@@ -17,7 +17,6 @@
 		<MaximumSize>-1,45</MaximumSize> 
 		<Children>
 			<EffectButtonParameterName>
-			<MinimumSize>38f,8f</MinimumSize>
 			<Style>
 				WEffectButtonParameter { 
 					font: 10px/8px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;

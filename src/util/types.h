@@ -3,7 +3,15 @@
 
 #include "util/math.h"
 
+#include <cstddef>
 #include <climits>
+
+// Signed integer type for POT array indices, sizes and pointer
+// arithmetic. Its size (32-/64-bit) depends on the CPU architecture.
+// This should be used for all CSAMLE operations since it is fast and
+// allows compiler auto vectorizing. For Qt container operations use
+// just int as before.
+typedef std::ptrdiff_t SINT;
 
 // 16-bit integer sample data within the asymmetric
 // range [SHRT_MIN, SHRT_MAX].
@@ -15,13 +23,13 @@ const SAMPLE SAMPLE_MAX = SHRT_MAX;
 // Limits the range of a SAMPLE value to [SAMPLE_MIN, SAMPLE_MAX].
 inline
 SAMPLE SAMPLE_clamp(SAMPLE in) {
-    return math_clamp_unsafe(in, SAMPLE_MIN, SAMPLE_MAX);
+    return math_clamp(in, SAMPLE_MIN, SAMPLE_MAX);
 }
 
 // Limits the range of a SAMPLE value to [-SAMPLE_MAX, SAMPLE_MAX].
 inline
 SAMPLE SAMPLE_clampSymmetric(SAMPLE in) {
-    return math_clamp_unsafe(in, static_cast<SAMPLE>(-SAMPLE_MAX), SAMPLE_MAX);
+    return math_clamp(in, static_cast<SAMPLE>(-SAMPLE_MAX), SAMPLE_MAX);
 }
 
 // 32-bit single precision floating-point sample data
@@ -37,7 +45,7 @@ const CSAMPLE CSAMPLE_PEAK = CSAMPLE_ONE;
 // Limits the range of a CSAMPLE value to [-CSAMPLE_PEAK, CSAMPLE_PEAK].
 inline
 CSAMPLE CSAMPLE_clamp(CSAMPLE in) {
-    return math_clamp_unsafe(in, -CSAMPLE_PEAK, CSAMPLE_PEAK);
+    return math_clamp(in, -CSAMPLE_PEAK, CSAMPLE_PEAK);
 }
 
 // Gain values for weighted calculations of CSAMPLE
@@ -52,7 +60,7 @@ const float CSAMPLE_GAIN_MAX = CSAMPLE_GAIN_ONE;
 // Limits the range of a CSAMPLE_GAIN value to [CSAMPLE_GAIN_MIN, CSAMPLE_GAIN_MAX].
 inline
 CSAMPLE_GAIN CSAMPLE_GAIN_clamp(CSAMPLE_GAIN in) {
-    return math_clamp_unsafe(in, CSAMPLE_GAIN_MIN, CSAMPLE_GAIN_MAX);
+    return math_clamp(in, CSAMPLE_GAIN_MIN, CSAMPLE_GAIN_MAX);
 }
 
 #endif /* TYPES_H */

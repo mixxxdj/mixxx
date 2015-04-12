@@ -30,15 +30,32 @@ using ::testing::_;
 
 class MockScaler : public EngineBufferScale {
   public:
-    MockScaler() : EngineBufferScale() {
+    MockScaler()
+            : EngineBufferScale(),
+              m_processedTempo(-1),
+              m_processedPitch(-1) {
         SampleUtil::clear(m_buffer, MAX_BUFFER_LEN);
     }
     void clear() { }
     CSAMPLE *getScaled(unsigned long buf_size) {
-        m_samplesRead = round(buf_size * m_dSpeedAdjust);
+        m_processedTempo = m_dTempoRatio;
+        m_processedPitch = m_dPitchRatio;
+        m_samplesRead = round(buf_size * m_dTempoRatio);
         if (static_cast<int>(m_samplesRead) % 2) { m_samplesRead--; }
         return m_buffer;
     }
+
+    double getProcessedTempo() {
+        return m_processedTempo;
+    }
+
+    double getProcessedPitch() {
+        return m_processedPitch;
+    }
+
+  private:
+    double m_processedTempo;
+    double m_processedPitch;
 };
 
 
@@ -50,15 +67,18 @@ class MockedEngineBackendTest : public MixxxTest {
         m_pEngineMaster = new EngineMaster(m_pConfig.data(), "[Master]",
                                            m_pEffectsManager, false, false);
 
-        m_pChannel1 = new EngineDeck(m_sGroup1, m_pConfig.data(),
-                                     m_pEngineMaster, m_pEffectsManager,
-                                     EngineChannel::CENTER);
-        m_pChannel2 = new EngineDeck(m_sGroup2, m_pConfig.data(),
-                                     m_pEngineMaster, m_pEffectsManager,
-                                     EngineChannel::CENTER);
-        m_pChannel3 = new EngineDeck(m_sGroup3, m_pConfig.data(),
-                                     m_pEngineMaster, m_pEffectsManager,
-                                     EngineChannel::CENTER);
+        m_pChannel1 = new EngineDeck(
+                m_pEngineMaster->registerChannelGroup(m_sGroup1),
+                m_pConfig.data(), m_pEngineMaster, m_pEffectsManager,
+                EngineChannel::CENTER);
+        m_pChannel2 = new EngineDeck(
+                m_pEngineMaster->registerChannelGroup(m_sGroup2),
+                m_pConfig.data(), m_pEngineMaster, m_pEffectsManager,
+                EngineChannel::CENTER);
+        m_pChannel3 = new EngineDeck(
+                m_pEngineMaster->registerChannelGroup(m_sGroup3),
+                m_pConfig.data(), m_pEngineMaster, m_pEffectsManager,
+                EngineChannel::CENTER);
         m_pPreview1 = new PreviewDeck(NULL, m_pConfig.data(),
                                      m_pEngineMaster, m_pEffectsManager,
                                      EngineChannel::CENTER, m_sPreviewGroup);
@@ -76,12 +96,18 @@ class MockedEngineBackendTest : public MixxxTest {
 
         m_pEngineSync = m_pEngineMaster->getEngineSync();
 
-        m_pMockScaler1 = new MockScaler();
-        m_pMockScaler2 = new MockScaler();
-        m_pMockScaler3 = new MockScaler();
-        m_pChannel1->getEngineBuffer()->setScalerForTest(m_pMockScaler1);
-        m_pChannel2->getEngineBuffer()->setScalerForTest(m_pMockScaler2);
-        m_pChannel3->getEngineBuffer()->setScalerForTest(m_pMockScaler3);
+        m_pMockScaleVinyl1 = new MockScaler();
+        m_pMockScaleKeylock1 = new MockScaler();
+        m_pMockScaleVinyl2 = new MockScaler();
+        m_pMockScaleKeylock2 = new MockScaler();
+        m_pMockScaleVinyl3 = new MockScaler();
+        m_pMockScaleKeylock3 = new MockScaler();
+        m_pChannel1->getEngineBuffer()->setScalerForTest(m_pMockScaleVinyl1,
+                                                         m_pMockScaleKeylock1);
+        m_pChannel2->getEngineBuffer()->setScalerForTest(m_pMockScaleVinyl2,
+                                                         m_pMockScaleKeylock2);
+        m_pChannel3->getEngineBuffer()->setScalerForTest(m_pMockScaleVinyl3,
+                                                         m_pMockScaleKeylock3);
         m_pTrack1 = m_pChannel1->getEngineBuffer()->loadFakeTrack();
         m_pTrack2 = m_pChannel2->getEngineBuffer()->loadFakeTrack();
         m_pTrack3 = m_pChannel3->getEngineBuffer()->loadFakeTrack();
@@ -107,9 +133,12 @@ class MockedEngineBackendTest : public MixxxTest {
         // Deletes all EngineChannels added to it.
         delete m_pEngineMaster;
         delete m_pEffectsManager;
-        delete m_pMockScaler1;
-        delete m_pMockScaler2;
-        delete m_pMockScaler3;
+        delete m_pMockScaleVinyl1;
+        delete m_pMockScaleVinyl2;
+        delete m_pMockScaleVinyl3;
+        delete m_pMockScaleKeylock1;
+        delete m_pMockScaleKeylock2;
+        delete m_pMockScaleKeylock3;
         delete m_pNumDecks;
     }
 
@@ -127,7 +156,8 @@ class MockedEngineBackendTest : public MixxxTest {
     EngineSync* m_pEngineSync;
     EngineMaster* m_pEngineMaster;
     EngineDeck *m_pChannel1, *m_pChannel2, *m_pChannel3;
-    MockScaler *m_pMockScaler1, *m_pMockScaler2, *m_pMockScaler3;
+    MockScaler *m_pMockScaleVinyl1, *m_pMockScaleVinyl2, *m_pMockScaleVinyl3;
+    MockScaler *m_pMockScaleKeylock1, *m_pMockScaleKeylock2, *m_pMockScaleKeylock3;
     TrackPointer m_pTrack1, m_pTrack2, m_pTrack3;
     PreviewDeck *m_pPreview1;
     Sampler *m_pSampler1;

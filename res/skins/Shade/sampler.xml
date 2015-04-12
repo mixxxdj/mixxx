@@ -30,6 +30,7 @@
 									<Group>[Sampler<Variable name="samplernum"/>]</Group>
 									<Pos>2,3</Pos>
 									<Size>165f,21</Size>
+									<Elide>right</Elide>
 								</Text>
 								<!-- Alternative "TITLE ONLY" display
 								<TrackProperty>
@@ -41,6 +42,7 @@
 									<Group>[Sampler<Variable name="samplernum"/>]</Group>
 									<Pos>4,4</Pos>
 									<Size>258f,20</Size>
+									<Elide>right</Elide>
 								</TrackProperty>
 								-->
 	
@@ -214,16 +216,16 @@
 									</State>
 									<Pos>11,32</Pos>
 									<Connection>
-										<ConfigKey>[Sampler<Variable name="samplernum"/>],play</ConfigKey>
-										<EmitOnDownPress>true</EmitOnDownPress>
-										<ButtonState>LeftButton</ButtonState>
-									</Connection>
-									<Connection>
-										<ConfigKey>[Sampler<Variable name="samplernum"/>],start</ConfigKey>
-										<EmitOnDownPress>true</EmitOnDownPress>
-										<ButtonState>RightButton</ButtonState>
-										<ConnectValueToWidget>false</ConnectValueToWidget>
-									</Connection>
+                                        <ConfigKey>[Sampler<Variable name="samplernum"/>],cue_gotoandplay</ConfigKey>
+                                        <ButtonState>LeftButton</ButtonState>
+                                    </Connection>
+                                    <Connection>
+                                        <ConfigKey>[Sampler<Variable name="samplernum"/>],start_stop</ConfigKey>
+                                        <ButtonState>RightButton</ButtonState>
+                                    </Connection>
+                                    <Connection>
+                                        <ConfigKey>[Sampler<Variable name="samplernum"/>],play_indicator</ConfigKey>
+                                    </Connection>
 								</PushButton>
 	
 								<!--

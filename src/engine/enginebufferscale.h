@@ -44,30 +44,29 @@ class EngineBufferScale : public QObject {
     virtual ~EngineBufferScale();
 
     // Sets the scaling parameters.
-    // * The desired output sample rate.
     // * The base rate (ratio of track sample rate to output sample rate).
-    // * Whether changes in speed should affect the pitch.
-    // * The speed adjustment describes the speed change in percentage of
-    //   original speed. Put another way, it is the ratio of track seconds to
-    //   real second. For example, a rate adjustment of 1.0 is no change. A
-    //   speed adjustment of 2 is a 2x speedup (2 track seconds pass for every 1
+    // * The tempoRatio describes the tempo change in fraction of
+    //   original tempo. Put another way, it is the ratio of track seconds to
+    //   real second. For example, a tempo of 1.0 is no change. A
+    //   tempo of 2 is a 2x speedup (2 track seconds pass for every 1
     //   real second).
-    // * The pitch adjustment describes the pitch adjustment in percentage of
-    //   octaves. For example, a pitch adjustment of 0.0 is no change and a
-    //   pitch adjustment of 1.0 is a full octave shift up.
+    // * The pitchRatio describes the pitch adjustment in fraction of
+    //   the original pitch. For example, a pitch adjustment of 1.0 is no change and a
+    //   pitch adjustment of 2.0 is a full octave shift up.
     //
     // If parameter settings are outside of acceptable limits, each setting will
     // be set to the value it was clamped to.
-    virtual void setScaleParameters(int iSampleRate,
-                                    double base_rate,
-                                    bool speed_affects_pitch,
-                                    double* speed_adjust,
-                                    double* pitch_adjust) {
-        m_iSampleRate = iSampleRate;
+    virtual void setScaleParameters(double base_rate,
+                                    double* pTempoRatio,
+                                    double* pPitchRatio) {
         m_dBaseRate = base_rate;
-        m_bSpeedAffectsPitch = speed_affects_pitch;
-        m_dSpeedAdjust = *speed_adjust;
-        m_dPitchAdjust = *pitch_adjust;
+        m_dTempoRatio = *pTempoRatio;
+        m_dPitchRatio = *pPitchRatio;
+    }
+
+    // Set the desired output sample rate.
+    virtual void setSampleRate(int iSampleRate) {
+        m_iSampleRate = iSampleRate;
     }
 
     /** Get new playpos after call to scale() */
@@ -81,8 +80,8 @@ class EngineBufferScale : public QObject {
     int m_iSampleRate;
     double m_dBaseRate;
     bool m_bSpeedAffectsPitch;
-    double m_dSpeedAdjust;
-    double m_dPitchAdjust;
+    double m_dTempoRatio;
+    double m_dPitchRatio;
     /** Pointer to internal buffer */
     CSAMPLE* m_buffer;
     /** New playpos after call to scale */

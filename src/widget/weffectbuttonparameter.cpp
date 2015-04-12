@@ -25,6 +25,7 @@ void WEffectButtonParameter::setup(QDomNode node, const SkinContext& context) {
     if (pParameterSlot) {
         setEffectParameterSlot(pParameterSlot);
     } else {
-        qDebug() << "EffectButtonParameter node could not attach to effect parameter";
+        SKIN_WARNING(node, context)
+                << "EffectButtonParameter node could not attach to effect parameter";
     }
 }

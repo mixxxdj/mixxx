@@ -17,7 +17,7 @@ import util
 
 class MixxxBuild(object):
 
-    def __init__(self, target, machine, build, toolchain, available_features=[]):
+    def __init__(self, target, machine, build, toolchain, available_features):
         self.available_features = available_features
         self.host_platform = self.detect_platform()
         self.host_machine = self.detect_machine()
@@ -423,6 +423,8 @@ class MixxxBuild(object):
         vars.Add('force32', 'Force a 32-bit compile', 0)
         vars.Add('force64', 'Force a 64-bit compile', 0)
         vars.Add('sysroot', 'Specify a custom sysroot', '')
+        vars.Add('debug_assertions_fatal',
+                 'Whether debug assertions are fatal.', False)
 
         for feature_class in self.available_features:
             # Instantiate the feature

@@ -211,6 +211,17 @@ TEST_F(AutoDJProcessorTest, DecksPlayingWarning) {
     EXPECT_EQ(AutoDJProcessor::ADJ_BOTH_DECKS_PLAYING, err);
 }
 
+TEST_F(AutoDJProcessorTest, Decks34PlayingWarning) {
+    deck3.play.set(1);
+    AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
+    EXPECT_EQ(AutoDJProcessor::ADJ_DECKS_3_4_PLAYING, err);
+
+    deck3.play.set(0);
+    deck4.play.set(1);
+    err = pProcessor->toggleAutoDJ(true);
+    EXPECT_EQ(AutoDJProcessor::ADJ_DECKS_3_4_PLAYING, err);
+}
+
 TEST_F(AutoDJProcessorTest, QueueEmpty) {
     AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
     EXPECT_EQ(AutoDJProcessor::ADJ_QUEUE_EMPTY, err);

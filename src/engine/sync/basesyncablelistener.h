@@ -39,7 +39,7 @@ class BaseSyncableListener : public SyncableListener {
     virtual void notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) = 0;
     virtual void notifyBeatDistanceChanged(Syncable* pSyncable, double beatDistance) = 0;
     virtual void notifyPlaying(Syncable* pSyncable, bool playing) = 0;
-    virtual void notifyTrackLoaded(Syncable* pSyncable) = 0;
+    virtual void notifyTrackLoaded(Syncable* pSyncable, double suggested_bpm) = 0;
 
   protected:
     // Choices about master selection can hinge on if any decks have sync

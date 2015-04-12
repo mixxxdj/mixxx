@@ -107,7 +107,8 @@ class AutoDJProcessor : public QObject {
         ADJ_OK = 0,
         ADJ_IS_INACTIVE,
         ADJ_QUEUE_EMPTY,
-        ADJ_BOTH_DECKS_PLAYING
+        ADJ_BOTH_DECKS_PLAYING,
+        ADJ_DECKS_3_4_PLAYING,
     };
 
     AutoDJProcessor(QObject* pParent,
@@ -142,6 +143,7 @@ class AutoDJProcessor : public QObject {
                                    bool play);
     virtual void transitionTimeChanged(int time);
     virtual void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
+    virtual void randomTrackRequested(int);
 
   private slots:
     void playerPositionChanged(DeckAttributes* pDeck, double position);

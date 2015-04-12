@@ -20,6 +20,13 @@ class EffectsManager;
 class BaseTrackPlayer : public BasePlayer {
     Q_OBJECT
   public:
+    // The ordering here corresponds to the ordering of the preferences combo box.
+    enum TrackLoadReset {
+        RESET_NONE,
+        RESET_PITCH,
+        RESET_PITCH_AND_SPEED,
+    };
+
     BaseTrackPlayer(QObject* pParent, const QString& group);
     virtual ~BaseTrackPlayer() {}
 
@@ -86,6 +93,8 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     ControlObjectSlave* m_pMidFilterKill;
     ControlObjectSlave* m_pHighFilterKill;
     ControlObjectSlave* m_pPreGain;
+    ControlObjectSlave* m_pSpeed;
+    ControlObjectSlave* m_pPitchAdjust;
     EngineDeck* m_pChannel;
 
     bool m_replaygainPending;

@@ -19,6 +19,7 @@
 #include "effects/effectchain.h"
 #include "effects/effectchainmanager.h"
 #include "effects/effectrack.h"
+#include "engine/channelhandle.h"
 #include "engine/effects/message.h"
 
 class EngineEffectsManager;
@@ -43,8 +44,8 @@ class EffectsManager : public QObject {
     // takes ownership of the backend, and will delete it when EffectsManager is
     // being deleted. Not thread safe -- use only from the GUI thread.
     void addEffectsBackend(EffectsBackend* pEffectsBackend);
-    void registerGroup(const QString& group);
-    const QSet<QString>& registeredGroups() const;
+    void registerChannel(const ChannelHandleAndGroup& handle_group);
+    const QSet<ChannelHandleAndGroup>& registeredChannels() const;
 
     StandardEffectRackPointer addStandardEffectRack();
     StandardEffectRackPointer getStandardEffectRack(int rack);
@@ -98,6 +99,8 @@ class EffectsManager : public QObject {
     // We need to create Control Objects for Equalizers' frequencies
     ControlPotmeter* m_pLoEqFreq;
     ControlPotmeter* m_pHiEqFreq;
+
+    bool m_underDestruction;
 
     DISALLOW_COPY_AND_ASSIGN(EffectsManager);
 };

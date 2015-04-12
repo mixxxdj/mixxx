@@ -37,18 +37,20 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
           m_pLowFilterKill(NULL),
           m_pMidFilterKill(NULL),
           m_pHighFilterKill(NULL),
+          m_pSpeed(NULL),
+          m_pPitchAdjust(NULL),
           m_replaygainPending(false) {
-    m_pChannel = new EngineDeck(getGroup(), pConfig, pMixingEngine,
+    ChannelHandleAndGroup channelGroup =
+            pMixingEngine->registerChannelGroup(group);
+    m_pChannel = new EngineDeck(channelGroup, pConfig, pMixingEngine,
                                 pEffectsManager, defaultOrientation);
 
     EngineBuffer* pEngineBuffer = m_pChannel->getEngineBuffer();
     pMixingEngine->addChannel(m_pChannel);
 
     // Set the routing option defaults for the master and headphone mixes.
-    {
-        ControlObject::set(ConfigKey(getGroup(), "master"), (double)defaultMaster);
-        ControlObject::set(ConfigKey(getGroup(), "pfl"), (double)defaultHeadphones);
-    }
+    m_pChannel->setMaster(defaultMaster);
+    m_pChannel->setPfl(defaultHeadphones);
 
     // Connect our signals and slots with the EngineBuffer's signals and
     // slots. This will let us know when the reader is done loading a track, and
@@ -119,6 +121,8 @@ BaseTrackPlayerImpl::~BaseTrackPlayerImpl() {
     delete m_pMidFilterKill;
     delete m_pHighFilterKill;
     delete m_pPreGain;
+    delete m_pSpeed;
+    delete m_pPitchAdjust;
 }
 
 void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer track, bool bPlay) {
@@ -286,7 +290,21 @@ void BaseTrackPlayerImpl::slotFinishLoading(TrackPointer pTrackInfoObject)
         }
         m_pPreGain->set(1.0);
     }
-
+    int reset = m_pConfig->getValueString(ConfigKey(
+            "[Controls]", "SpeedAutoReset"),
+            QString("%1").arg(RESET_PITCH)).toInt();
+    switch (reset) {
+      case RESET_PITCH_AND_SPEED:
+        // Note: speed may affect pitch
+        if (m_pSpeed != NULL) {
+            m_pSpeed->set(0.0);
+        }
+        // Fallthrough intended
+      case RESET_PITCH:
+        if (m_pPitchAdjust != NULL) {
+            m_pPitchAdjust->set(0.0);
+        }
+    }
     emit(newTrackLoaded(m_pLoadedTrack));
 }
 
@@ -317,10 +335,12 @@ EngineDeck* BaseTrackPlayerImpl::getEngineDeck() const {
 
 void BaseTrackPlayerImpl::setupEqControls() {
     const QString group = getGroup();
-    m_pLowFilter = new ControlObjectSlave(group,"filterLow");
-    m_pMidFilter = new ControlObjectSlave(group,"filterMid");
-    m_pHighFilter = new ControlObjectSlave(group,"filterHigh");
-    m_pLowFilterKill = new ControlObjectSlave(group,"filterLowKill");
-    m_pMidFilterKill = new ControlObjectSlave(group,"filterMidKill");
-    m_pHighFilterKill = new ControlObjectSlave(group,"filterHighKill");
+    m_pLowFilter = new ControlObjectSlave(group, "filterLow");
+    m_pMidFilter = new ControlObjectSlave(group, "filterMid");
+    m_pHighFilter = new ControlObjectSlave(group, "filterHigh");
+    m_pLowFilterKill = new ControlObjectSlave(group, "filterLowKill");
+    m_pMidFilterKill = new ControlObjectSlave(group, "filterMidKill");
+    m_pHighFilterKill = new ControlObjectSlave(group, "filterHighKill");
+    m_pSpeed = new ControlObjectSlave(group, "rate");
+    m_pPitchAdjust = new ControlObjectSlave(group, "pitch_adjust");
 }

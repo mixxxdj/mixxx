@@ -9,6 +9,7 @@
 #include "library/dao/cue.h"
 #include "trackinfoobject.h"
 #include "library/queryutil.h"
+#include "util/assert.h"
 
 CueDAO::CueDAO(QSqlDatabase& database)
         : m_database(database) {
@@ -140,7 +141,9 @@ bool CueDAO::deleteCuesForTracks(const QList<int>& ids) {
 
 bool CueDAO::saveCue(Cue* cue) {
     //qDebug() << "CueDAO::saveCue" << QThread::currentThread() << m_database.connectionName();
-    Q_ASSERT(cue);
+    DEBUG_ASSERT_AND_HANDLE(cue) {
+        return false;
+    }
     if (cue->getId() == -1) {
         // New cue
         QSqlQuery query(m_database);

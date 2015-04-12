@@ -9,15 +9,7 @@
   <WidgetGroup>
     <Layout>horizontal</Layout>
     <Children>
-      <KnobComposed>
-        <Size>25f,25f</Size>
-        <Knob>knob.svg</Knob>
-        <MinAngle>-230</MinAngle>
-        <MaxAngle>50</MaxAngle>
-        <Connection>
-          <ConfigKey><Variable name="group"/>,<Variable name="control"/></ConfigKey>
-        </Connection>
-      </KnobComposed>
+      <Template src="skin:knob.xml"/>
       <Label>
         <Size>40f,10f</Size>
         <ObjectName>KnobLabel</ObjectName>

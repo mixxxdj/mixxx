@@ -86,6 +86,9 @@ class VinylControlXwax : public VinylControl {
     // The approximate duration used to tell if a new track is loaded.
     double m_dOldDurationInaccurate;
 
+    // Was the reverse button pressed last go-round?
+    bool m_bWasReversed;
+
     // The pitch ring buffer.
     // TODO(XXX): Replace with CircularBuffer instead of handling the ring logic
     // in VinylControlXwax.
@@ -100,7 +103,9 @@ class VinylControlXwax : public VinylControl {
     // A smoothed pitch value to show to the user.
     double m_dDisplayPitch;
 
-    // Steady pitch trackers.
+    // Steady pitch trackers.  "Subtle" will be more likely to return true,
+    // so it is used to set the play button.  "Gross" is more likely to return
+    // false, so it is used to trigger the "scratching" CO.
     SteadyPitch* m_pSteadySubtle;
     SteadyPitch* m_pSteadyGross;
 

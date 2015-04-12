@@ -10,7 +10,11 @@
 #include "library/librarytablemodel.h"
 #include "library/schemamanager.h"
 #include "trackinfoobject.h"
-#include "xmlparse.h"
+#include "util/xml.h"
+#include "util/assert.h"
+
+// static
+const int TrackCollection::kRequiredSchemaVersion = 24;
 
 TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
         : m_pConfig(pConfig),
@@ -75,36 +79,48 @@ bool TrackCollection::checkForTables() {
     installSorting(m_db);
 #endif
 
-    int requiredSchemaVersion = 24;
-    QString schemaFilename = m_pConfig->getResourcePath();
-    schemaFilename.append("schema.xml");
+    // The schema XML is baked into the binary via Qt resources.
+    QString schemaFilename(":/schema.xml");
     QString okToExit = tr("Click OK to exit.");
     QString upgradeFailed = tr("Cannot upgrade database schema");
-    QString upgradeToVersionFailed = tr("Unable to upgrade your database schema to version %1")
-            .arg(QString::number(requiredSchemaVersion));
-    int result = SchemaManager::upgradeToSchemaVersion(schemaFilename, m_db, requiredSchemaVersion);
-    if (result < 0) {
-        if (result == -1) {
-            QMessageBox::warning(0, upgradeFailed,
-                                upgradeToVersionFailed + "\n" +
-                                tr("Your %1 file may be outdated.").arg(schemaFilename) +
-                                "\n\n" + okToExit,
-                                QMessageBox::Ok);
-        } else if (result == -2) {
-            QMessageBox::warning(0, upgradeFailed,
-                                upgradeToVersionFailed + "\n" +
-                                tr("Your mixxxdb.sqlite file may be corrupt.") + "\n" +
-                                tr("Try renaming it and restarting Mixxx.") +
-                                "\n\n" + okToExit,
-                                QMessageBox::Ok);
-        } else { // -3
-            QMessageBox::warning(0, upgradeFailed,
-                                upgradeToVersionFailed + "\n" +
-                                tr("Your %1 file may be missing or invalid.").arg(schemaFilename) +
-                                "\n\n" + okToExit,
-                                QMessageBox::Ok);
-        }
-        return false;
+    QString upgradeToVersionFailed =
+            tr("Unable to upgrade your database schema to version %1")
+            .arg(QString::number(kRequiredSchemaVersion));
+    QString helpEmail = tr("For help with database issues contact:") + "\n" +
+                           "mixxx-devel@lists.sourceforge.net";
+
+    SchemaManager::Result result = SchemaManager::upgradeToSchemaVersion(
+            schemaFilename, m_db, kRequiredSchemaVersion);
+    switch (result) {
+        case SchemaManager::RESULT_BACKWARDS_INCOMPATIBLE:
+            QMessageBox::warning(
+                    0, upgradeFailed,
+                    upgradeToVersionFailed + "\n" +
+                    tr("Your mixxxdb.sqlite file was created by a newer "
+                       "version of Mixxx and is incompatible.") +
+                    "\n\n" + okToExit,
+                    QMessageBox::Ok);
+            return false;
+        case SchemaManager::RESULT_UPGRADE_FAILED:
+            QMessageBox::warning(
+                    0, upgradeFailed,
+                    upgradeToVersionFailed + "\n" +
+                    tr("Your mixxxdb.sqlite file may be corrupt.") + "\n" +
+                    tr("Try renaming it and restarting Mixxx.") + "\n" +
+                    helpEmail + "\n\n" + okToExit,
+                    QMessageBox::Ok);
+            return false;
+        case SchemaManager::RESULT_SCHEMA_ERROR:
+            QMessageBox::warning(
+                    0, upgradeFailed,
+                    upgradeToVersionFailed + "\n" +
+                    tr("The database schema file is invalid.") + "\n" +
+                    helpEmail + "\n\n" + okToExit,
+                    QMessageBox::Ok);
+            return false;
+        case SchemaManager::RESULT_OK:
+        default:
+            break;
     }
 
     m_trackDao.initialize();
@@ -113,7 +129,6 @@ bool TrackCollection::checkForTables() {
     m_cueDao.initialize();
     m_directoryDao.initialize();
     m_libraryHashDao.initialize();
-
     return true;
 }
 
@@ -142,7 +157,9 @@ QSharedPointer<BaseTrackCache> TrackCollection::getTrackSource() {
 }
 
 void TrackCollection::setTrackSource(QSharedPointer<BaseTrackCache> trackSource) {
-    Q_ASSERT(m_defaultTrackSource.isNull());
+    DEBUG_ASSERT_AND_HANDLE(m_defaultTrackSource.isNull()) {
+        return;
+    }
     m_defaultTrackSource = trackSource;
 }
 
@@ -219,7 +236,9 @@ int TrackCollection::sqliteLocaleAwareCompare(void* pArg,
 void TrackCollection::sqliteLike(sqlite3_context *context,
                                 int aArgc,
                                 sqlite3_value **aArgv) {
-    Q_ASSERT(aArgc == 2 || aArgc == 3);
+    DEBUG_ASSERT_AND_HANDLE(aArgc == 2 || aArgc == 3) {
+        return;
+    }
 
     const char* b = reinterpret_cast<const char*>(
             sqlite3_value_text(aArgv[0]));

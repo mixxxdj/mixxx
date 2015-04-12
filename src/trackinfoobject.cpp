@@ -30,7 +30,7 @@
 
 #include "controlobject.h"
 #include "soundsourceproxy.h"
-#include "xmlparse.h"
+#include "util/xml.h"
 #include "track/beatfactory.h"
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
@@ -40,6 +40,7 @@
 #include "util/math.h"
 #include "waveform/waveform.h"
 #include "library/coverartutils.h"
+#include "util/assert.h"
 
 TrackInfoObject::TrackInfoObject(const QString& file,
                                  SecurityTokenPointer pToken,
@@ -97,11 +98,13 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
 
     m_fCuePoint = XmlParse::selectNodeQString(nodeHeader, "CuePoint").toFloat();
     m_bPlayed = false;
+    m_bDeleteOnReferenceExpiration = false;
     m_bDirty = false;
     m_bLocationChanged = false;
 }
 
 void TrackInfoObject::initialize(bool parseHeader, bool parseCoverArt) {
+    m_bDeleteOnReferenceExpiration = false;
     m_bDirty = false;
     m_bLocationChanged = false;
 
@@ -134,11 +137,26 @@ void TrackInfoObject::initialize(bool parseHeader, bool parseCoverArt) {
 }
 
 TrackInfoObject::~TrackInfoObject() {
-    //qDebug() << "~TrackInfoObject()" << m_iId << getInfo();
+    // qDebug() << "~TrackInfoObject"
+    //          << this << m_iId << getInfo();
+}
 
-    // Notifies TrackDAO and other listeners that this track is about to be
-    // deleted and should be saved to the database, removed from caches, etc.
-    emit(deleted(this));
+// static
+void TrackInfoObject::onTrackReferenceExpired(TrackInfoObject* pTrack) {
+    DEBUG_ASSERT_AND_HANDLE(pTrack != NULL) {
+        return;
+    }
+    // qDebug() << "TrackInfoObject::onTrackReferenceExpired"
+    //          << pTrack << pTrack->getId() << pTrack->getInfo();
+    if (pTrack->m_bDeleteOnReferenceExpiration) {
+        delete pTrack;
+    } else {
+        emit(pTrack->referenceExpired(pTrack));
+    }
+}
+
+void TrackInfoObject::setDeleteOnReferenceExpiration(bool deleteOnReferenceExpiration) {
+    m_bDeleteOnReferenceExpiration = deleteOnReferenceExpiration;
 }
 
 void TrackInfoObject::parse(bool parseCoverArt) {
@@ -275,7 +293,7 @@ QString TrackInfoObject::getDurationStr() const {
     int iDuration = m_iDuration;
     lock.unlock();
 
-    return Time::formatSeconds(iDuration, true);
+    return Time::formatSeconds(iDuration, false);
 }
 
 void TrackInfoObject::setLocation(const QString& location) {

@@ -6,14 +6,14 @@
 
 #include <QLinkedList>
 #include <QList>
-#include <QMutex>
 #include <QPair>
 
 #include "util/types.h"
 #include "util/math.h"
+#include "cachingreader.h"
 
-struct Hint;
-class EngineControl;
+class LoopingControl;
+class RateControl;
 class CachingReader;
 
 // ReadAheadManager is a tool for keeping track of the engine's current position
@@ -27,7 +27,9 @@ class CachingReader;
 // point.
 class ReadAheadManager {
   public:
-    explicit ReadAheadManager(CachingReader* reader);
+    explicit ReadAheadManager(); // Only for testing: ReadAheadManagerMock
+    explicit ReadAheadManager(CachingReader* reader,
+                              LoopingControl* pLoopingControl);
     virtual ~ReadAheadManager();
 
     // Call this method to fill buffer with requested_samples out of the
@@ -37,15 +39,13 @@ class ReadAheadManager {
     // samples read is less than the requested number of samples.
     virtual int getNextSamples(double dRate, CSAMPLE* buffer, int requested_samples);
 
-    // Used to add a new EngineControl that ReadAheadManager will use to decide
+
+    // Used to add a new EngineControls that ReadAheadManager will use to decide
     // which samples to return.
-    virtual void addEngineControl(EngineControl* control);
+    void addLoopingControl();
+    void addRateControl(RateControl* pRateControl);
 
-    // Notify the ReadAheadManager that the current playposition has
-    // changed. Units are stereo samples.
-    virtual void setNewPlaypos(int iNewPlaypos);
-
-    // Get the current read-ahead position in stereo samples.
+    // Get the current read-ahead position in samples.
     virtual inline int getPlaypos() const {
         return m_iCurrentPosition;
     }
@@ -54,7 +54,7 @@ class ReadAheadManager {
 
     // hintReader allows the ReadAheadManager to provide hints to the reader to
     // indicate that the given portion of a song is about to be read.
-    virtual void hintReader(double dRate, QVector<Hint>* hintList);
+    virtual void hintReader(double dRate, HintVector* hintList);
 
     virtual int getEffectiveVirtualPlaypositionFromLog(double currentVirtualPlayposition,
                                                        double numConsumedSamples);
@@ -118,8 +118,8 @@ class ReadAheadManager {
     void addReadLogEntry(double virtualPlaypositionStart,
                          double virtualPlaypositionEndNonInclusive);
 
-    QMutex m_mutex;
-    QList<EngineControl*> m_sEngineControls;
+    LoopingControl* m_pLoopingControl;
+    RateControl* m_pRateControl;
     QLinkedList<ReadLogEntry> m_readAheadLog;
     int m_iCurrentPosition;
     CachingReader* m_pReader;

@@ -27,6 +27,8 @@ bug list][easybugs] and get started!
 
 ## Compiling
 
+[![Build Status](https://travis-ci.org/mixxxdj/mixxx.svg)](https://travis-ci.org/mixxxdj/mixxx)
+
 First, you must install all of Mixxx's dependencies. To compile Mixxx using
 [SCons], run:
 

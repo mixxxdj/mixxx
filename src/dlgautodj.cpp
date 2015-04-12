@@ -4,9 +4,11 @@
 
 #include "library/playlisttablemodel.h"
 #include "widget/wtracktableview.h"
+#include "util/assert.h"
 
 DlgAutoDJ::DlgAutoDJ(QWidget* parent,
                      ConfigObject<ConfigValue>* pConfig,
+                     Library* pLibrary,
                      AutoDJProcessor* pProcessor,
                      TrackCollection* pTrackCollection,
                      MixxxKeyboard* pKeyboard)
@@ -26,12 +28,18 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
     connect(m_pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
+    connect(pLibrary, SIGNAL(setTrackTableFont(QFont)),
+            m_pTrackTableView, SLOT(setTrackTableFont(QFont)));
+    connect(pLibrary, SIGNAL(setTrackTableRowHeight(int)),
+            m_pTrackTableView, SLOT(setTrackTableRowHeight(int)));
 
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
-    Q_ASSERT(box); //Assumes the form layout is a QVBox/QHBoxLayout!
-    box->removeWidget(m_pTrackTablePlaceholder);
-    m_pTrackTablePlaceholder->hide();
-    box->insertWidget(1, m_pTrackTableView);
+    DEBUG_ASSERT_AND_HANDLE(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
+    } else {
+        box->removeWidget(m_pTrackTablePlaceholder);
+        m_pTrackTablePlaceholder->hide();
+        box->insertWidget(1, m_pTrackTableView);
+    }
 
     // We do _NOT_ take ownership of this from AutoDJProcessor.
     m_pAutoDJTableModel = m_pAutoDJProcessor->getTableModel();
@@ -131,6 +139,15 @@ void DlgAutoDJ::toggleAutoDJButton(bool enable) {
                     NULL, tr("Auto-DJ"),
                     tr("One deck must be stopped to enable Auto-DJ mode."),
                     QMessageBox::Ok);
+            // Make sure the button becomes unpushed.
+            pushButtonAutoDJ->setChecked(false);
+            break;
+        case AutoDJProcessor::ADJ_DECKS_3_4_PLAYING:
+            QMessageBox::warning(
+                    NULL, tr("Auto-DJ"),
+                    tr("Decks 3 and 4 must be stopped to enable Auto-DJ mode."),
+                    QMessageBox::Ok);
+            pushButtonAutoDJ->setChecked(false);
             break;
         case AutoDJProcessor::ADJ_OK:
         default:
@@ -144,12 +161,6 @@ void DlgAutoDJ::transitionTimeChanged(int time) {
 
 void DlgAutoDJ::transitionSliderChanged(int value) {
     m_pAutoDJProcessor->setTransitionTime(value);
-}
-
-void DlgAutoDJ::enableRandomButton(bool enabled) {
-#ifdef __AUTODJCRATES__
-    pushButtonAddRandom->setEnabled(enabled);
-#endif // __AUTODJCRATES__
 }
 
 void DlgAutoDJ::autoDJStateChanged(AutoDJProcessor::AutoDJState state) {
@@ -177,4 +188,12 @@ void DlgAutoDJ::autoDJStateChanged(AutoDJProcessor::AutoDJState state) {
         // You can always skip the next track if we are enabled.
         pushButtonSkipNext->setEnabled(true);
     }
+}
+
+void DlgAutoDJ::setTrackTableFont(const QFont& font) {
+    m_pTrackTableView->setTrackTableFont(font);
+}
+
+void DlgAutoDJ::setTrackTableRowHeight(int rowHeight) {
+    m_pTrackTableView->setTrackTableRowHeight(rowHeight);
 }

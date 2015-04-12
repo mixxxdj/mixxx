@@ -1,5 +1,5 @@
 /***************************************************************************
-                  engineshoutcast.cpp  -  class to shoutcast the mix
+                  engineshoutcast.cpp  -  class to live stream the mix
                              -------------------
     copyright            : (C) 2007 by Wesley Stessens
                            (C) 2007 by Albert Santoni
@@ -52,7 +52,7 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
           m_encoder(NULL),
           m_pShoutcastNeedUpdateFromPrefs(NULL),
           m_pUpdateShoutcastFromPrefs(NULL),
-          m_pMasterSamplerate(new ControlObjectThread("[Master]", "samplerate")),
+          m_pMasterSamplerate(new ControlObjectSlave("[Master]", "samplerate")),
           m_pShoutcastStatus(new ControlObject(ConfigKey(SHOUTCAST_PREF_KEY, "status"))),
           m_bQuit(false),
           m_custom_metadata(false),
@@ -73,7 +73,7 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue>* _config)
     m_pShoutcastStatus->set(SHOUTCAST_DISCONNECTED);
     m_pShoutcastNeedUpdateFromPrefs = new ControlObject(
             ConfigKey(SHOUTCAST_PREF_KEY,"update_from_prefs"));
-    m_pUpdateShoutcastFromPrefs = new ControlObjectThread(
+    m_pUpdateShoutcastFromPrefs = new ControlObjectSlave(
             m_pShoutcastNeedUpdateFromPrefs->getKey());
 
     // Initialize libshout
@@ -150,7 +150,7 @@ QByteArray EngineShoutcast::encodeString(const QString& string) {
 void EngineShoutcast::updateFromPreferences() {
     qDebug() << "EngineShoutcast: updating from preferences";
 
-    m_pUpdateShoutcastFromPrefs->slotSet(0.0);
+    m_pUpdateShoutcastFromPrefs->set(0.0);
 
     m_format_is_mp3 = false;
     m_format_is_ov = false;
@@ -201,8 +201,10 @@ void EngineShoutcast::updateFromPreferences() {
             ConfigKey(SHOUTCAST_PREF_KEY, "stream_desc")));
     QByteArray baStreamGenre = encodeString(m_pConfig->getValueString(
             ConfigKey(SHOUTCAST_PREF_KEY, "stream_genre")));
-    QByteArray baStreamPublic = encodeString(m_pConfig->getValueString(
-            ConfigKey(SHOUTCAST_PREF_KEY, "stream_public")));
+
+    // Whether the stream is public.
+    bool streamPublic = m_pConfig->getValueString(
+            ConfigKey(SHOUTCAST_PREF_KEY, "stream_public")).toInt() > 0;
 
     // Dynamic Ogg metadata update
     m_ogg_dynamic_update = (bool)m_pConfig->getValueString(
@@ -273,6 +275,11 @@ void EngineShoutcast::updateFromPreferences() {
         return;
     }
 
+    if (shout_set_public(m_pShout, streamPublic ? 1 : 0) != SHOUTERR_SUCCESS) {
+        errorDialog(tr("Error setting stream public!"), shout_get_error(m_pShout));
+        return;
+    }
+
     m_format_is_mp3 = !qstrcmp(baFormat.constData(), SHOUTCAST_FORMAT_MP3);
     m_format_is_ov = !qstrcmp(baFormat.constData(), SHOUTCAST_FORMAT_OV);
     if (m_format_is_mp3) {
@@ -285,7 +292,7 @@ void EngineShoutcast::updateFromPreferences() {
     }
 
     if (shout_set_format(m_pShout, format) != SHOUTERR_SUCCESS) {
-        errorDialog("Error setting soutcast format!", shout_get_error(m_pShout));
+        errorDialog("Error setting streaming format!", shout_get_error(m_pShout));
         return;
     }
 
@@ -406,7 +413,7 @@ bool EngineShoutcast::serverConnect() {
             break;
 
         m_iShoutFailures++;
-        qDebug() << "Shoutcast failed connect. Failures:" << m_iShoutFailures;
+        qDebug() << "Streaming server failed connect. Failures:" << m_iShoutFailures;
         sleep(1);
     }
     if (m_iShoutFailures == iMaxTries) {
@@ -432,7 +439,7 @@ bool EngineShoutcast::serverConnect() {
         ++ timeout;
     }
     if (m_iShoutStatus == SHOUTERR_CONNECTED) {
-        qDebug() << "***********Connected to Shoutcast server...";
+        qDebug() << "***********Connected to streaming server...";
         m_pShoutcastStatus->set(SHOUTCAST_CONNECTED);
         return true;
     }
@@ -492,7 +499,7 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
             qDebug() << "DEBUG: queue length:" << (int)shout_queuelen(m_pShout);
         }
     } else {
-        qDebug() << "Error connecting to Shoutcast server:" << shout_get_error(m_pShout);
+        qDebug() << "Error connecting to streaming server:" << shout_get_error(m_pShout);
         // errorDialog(tr("Shoutcast aborted connect after 3 tries"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
     }
 }
@@ -505,7 +512,7 @@ void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         if (isConnected()) {
             // We are conneced but shoutcast is disabled. Disconnect.
             serverDisconnect();
-            infoDialog(tr("Mixxx has successfully disconnected from the shoutcast server"), "");
+            infoDialog(tr("Mixxx has successfully disconnected from the streaming server"), "");
         }
         return;
     }
@@ -526,7 +533,7 @@ void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         updateFromPreferences();
 
         if (serverConnect()) {
-            infoDialog(tr("Mixxx has successfully connected to the shoutcast server"), "");
+            infoDialog(tr("Mixxx has successfully connected to the streaming server"), "");
         } else {
             errorDialog(tr("Mixxx could not connect to streaming server"),
                         tr("Please check your connection to the Internet and verify that your username and password are correct."));
@@ -676,7 +683,7 @@ void EngineShoutcast::updateMetaData() {
 }
 
 void EngineShoutcast::errorDialog(QString text, QString detailedError) {
-    qWarning() << "Shoutcast error: " << detailedError;
+    qWarning() << "Streaming error: " << detailedError;
     ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
     props->setType(DLG_WARNING);
     props->setTitle(tr("Live broadcasting"));

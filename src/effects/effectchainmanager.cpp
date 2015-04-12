@@ -6,7 +6,7 @@
 #include <QDir>
 
 #include "effects/effectsmanager.h"
-#include "xmlparse.h"
+#include "util/xml.h"
 
 EffectChainManager::EffectChainManager(ConfigObject<ConfigValue>* pConfig,
                                        EffectsManager* pEffectsManager)
@@ -19,16 +19,16 @@ EffectChainManager::~EffectChainManager() {
     //qDebug() << debugString() << "destroyed";
 }
 
-void EffectChainManager::registerGroup(const QString& group) {
-    if (m_registeredGroups.contains(group)) {
-        qWarning() << debugString() << "WARNING: Group already registered:"
-                   << group;
+void EffectChainManager::registerChannel(const ChannelHandleAndGroup& handle_group) {
+    if (m_registeredChannels.contains(handle_group)) {
+        qWarning() << debugString() << "WARNING: Channel already registered:"
+                   << handle_group.name();
         return;
     }
-    m_registeredGroups.insert(group);
+    m_registeredChannels.insert(handle_group);
 
     foreach (StandardEffectRackPointer pRack, m_standardEffectRacks) {
-        pRack->registerGroup(group);
+        pRack->registerChannel(handle_group);
     }
 }
 

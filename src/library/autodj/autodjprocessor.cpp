@@ -230,6 +230,14 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
             return ADJ_BOTH_DECKS_PLAYING;
         }
 
+        // TODO: This is a total bandaid for making Auto DJ work with decks 3
+        // and 4.  We should design a nicer way to handle this.
+        for (int i = 2; i < m_decks.length(); ++i) {
+            if (m_decks[i] != NULL && m_decks[i]->isPlaying()) {
+                return ADJ_DECKS_3_4_PLAYING;
+            }
+        }
+
         // Never load the same track if it is already playing
         if (deck1Playing) {
             removeLoadedTrackFromTopOfQueue(leftDeck);
@@ -504,6 +512,16 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
 
 TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
     // Get the track at the top of the playlist.
+    bool randomQueueEnabled = (((m_pConfig->getValueString(
+                ConfigKey("[Auto DJ]", "EnableRandomQueue")).toInt())) == 1);
+    int minAutoDJCrateTracks = m_pConfig->getValueString(
+                ConfigKey(kConfigKey, "RandomQueueMinimumAllowed")).toInt();
+    int tracksToAdd = minAutoDJCrateTracks - m_pAutoDJTableModel->rowCount();
+    // Incase we start off with < minimum tracks
+    if (randomQueueEnabled && (tracksToAdd > 0)) {
+        emit(randomTrackRequested(tracksToAdd));
+    }
+
     while (true) {
         TrackPointer nextTrack = m_pAutoDJTableModel->getTrack(
             m_pAutoDJTableModel->index(0, 0));
@@ -586,6 +604,19 @@ bool AutoDJProcessor::removeTrackFromTopOfQueue(TrackPointer pTrack) {
     if (m_pConfig->getValueString(ConfigKey(kConfigKey, "Requeue")).toInt()) {
         m_pAutoDJTableModel->appendTrack(nextId);
     }
+
+    // Fill random tracks if configured
+    int minAutoDJCrateTracks = m_pConfig->getValueString(
+            ConfigKey(kConfigKey, "RandomQueueMinimumAllowed")).toInt();
+    bool randomQueueEnabled = (((m_pConfig->getValueString(
+            ConfigKey("[Auto DJ]", "EnableRandomQueue")).toInt())) == 1);
+
+    int tracksToAdd = minAutoDJCrateTracks - m_pAutoDJTableModel->rowCount();
+    if (randomQueueEnabled && (tracksToAdd > 0)) {
+        qDebug() << "Randomly adding tracks";
+        emit(randomTrackRequested(tracksToAdd));
+    }
+
     return true;
 }
 

@@ -127,8 +127,11 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckAndSamplerControl("rate", tr("Playback Speed"),
                              tr("Playback speed control (Vinyl \"Pitch\" slider)"), speedMenu, true);
     addDeckAndSamplerControl("pitch", tr("Pitch (Musical key)"),
-                             tr("Pitch control (does not affect tempo)"), speedMenu, true);
-    addDeckAndSamplerControl("sync_key", tr("Sync Key"), tr("Match musical key"), speedMenu, true);
+                             tr("Pitch control (does not affect tempo), center is original pitch"), speedMenu, true);
+    addDeckAndSamplerControl("pitch_adjust", tr("Pitch Adjust"),
+                             tr("Adjust pitch from speed slider pitch"), speedMenu, true);
+    addDeckAndSamplerControl("sync_key", tr("Match Key"), tr("Match musical key"), speedMenu, true);
+    addDeckAndSamplerControl("reset_key", tr("Reset Key"), tr("Resets key to original"), speedMenu, true);
     addDeckAndSamplerControl("rate_perm_up", tr("Increase Speed"),
                              tr("Adjust speed faster (coarse)"), speedMenu);
     addDeckAndSamplerControl("rate_perm_up_small", tr("Increase Speed (Fine)"),
@@ -369,6 +372,19 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     // Effect Controls
     QMenu* effectsMenu = addSubmenu(tr("Effects"));
 
+    // Quick Effect Rack COs
+    const int iNumDecks = ControlObject::get(
+            ConfigKey("[Master]", "num_decks"));
+    QMenu* quickEffectMenu = addSubmenu(tr("Quick Effects"), effectsMenu);
+    for (int i = 1; i <= iNumDecks; ++i) {
+        addPrefixedControl(QString("[QuickEffectRack1_[Channel%1]]").arg(i),
+                           "super1",
+                           tr("Deck %1 Quick Effect Super Knob").arg(i),
+                           tr("Quick Effect Super Knob (control linked effect parameters)"),
+                           tr("Quick Effect"),
+                           quickEffectMenu);
+    }
+
     const int kNumEffectRacks = 1;
     for (int iRackNumber = 1; iRackNumber <= kNumEffectRacks; ++iRackNumber) {
         const QString rackGroup = StandardEffectRack::formatGroupString(
@@ -458,7 +474,6 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                    tr("Assign ") + m_deckStr.arg(iDeckNumber),
                                    groupDescriptionPrefix,
                                    effectUnitGroups);
-
             }
 
             const int iNumSamplers = ControlObject::get(
@@ -676,11 +691,13 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addControl("[PreviewDeck]", "show_previewdeck",
                tr("Preview Deck Show/Hide"),
                tr("Show/hide the preview deck"), guiMenu);
+    addControl("[EffectRack1]", "show",
+               tr("Effect Rack Show/Hide"),
+               tr("Show/hide the effect rack"), guiMenu);
     addControl("[Library]", "show_coverart",
                tr("Cover Art Show/Hide"),
                tr("Show/hide cover art"), guiMenu);
 
-    const int iNumDecks = ControlObject::get(ConfigKey("[Master]", "num_decks"));
     QString spinnyTitle = tr("Vinyl Spinner Show/Hide");
     QString spinnyDescription = tr("Show/hide spinning vinyl widget");
     for (int i = 1; i <= iNumDecks; ++i) {

@@ -1198,6 +1198,13 @@ double ControllerEngine::getDeckRate(const QString& group) {
 
 bool ControllerEngine::isDeckPlaying(const QString& group) {
     ControlObjectThread* pPlay = getControlObjectThread(group, "play");
+
+    if (pPlay == NULL) {
+      QString error = QString("Could not getControlObjectThread()");
+      scriptErrorDialog(error);
+      return false;
+    }
+
     return pPlay->get() > 0.0;
 }
 

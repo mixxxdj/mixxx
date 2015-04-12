@@ -77,7 +77,6 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
                 EngineBuffer::getKeylockEngineName(
                         static_cast<EngineBuffer::KeylockEngine>(i)));
     }
-    keylockComboBox->setCurrentIndex(EngineBuffer::RUBBERBAND);
 
     initializePaths();
     loadSettings();
@@ -136,6 +135,14 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
             this, SLOT(masterOutputModeComboBoxChanged(int)));
     m_pMasterMonoMixdown->connectValueChanged(this, SLOT(masterMonoMixdownChanged(double)));
 
+    m_pMasterTalkoverMix = new ControlObjectSlave("[Master]", "talkover_mix", this);
+    micMixComboBox->addItem(tr("Master output"));
+    micMixComboBox->addItem(tr("Broadcast and Recording only"));
+    micMixComboBox->setCurrentIndex((int)m_pMasterTalkoverMix->get());
+    connect(micMixComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(talkoverMixComboBoxChanged(int)));
+    m_pMasterTalkoverMix->connectValueChanged(this, SLOT(talkoverMixChanged(double)));
+
 
     m_pKeylockEngine =
             new ControlObjectSlave("[Master]", "keylock_engine", this);
@@ -185,6 +192,8 @@ void DlgPrefSound::slotApply() {
     }
 
     m_pKeylockEngine->set(keylockComboBox->currentIndex());
+    m_pConfig->set(ConfigKey("[Master]", "keylock_engine"),
+                   ConfigValue(keylockComboBox->currentIndex()));
 
     m_config.clearInputs();
     m_config.clearOutputs();
@@ -366,6 +375,11 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
         deviceSyncComboBox->setCurrentIndex(0);
     }
 
+    // Default keylock is Rubberband.
+    int keylock_engine = m_pConfig->getValueString(
+            ConfigKey("[Master]", "keylock_engine"), "1").toInt();
+    keylockComboBox->setCurrentIndex(keylock_engine);
+
     emit(loadPaths(m_config));
     m_loading = false;
 }
@@ -528,6 +542,10 @@ void DlgPrefSound::slotResetToDefaults() {
     headDelaySpinBox->setValue(0.0);
     m_pHeadDelay->set(0.0);
 
+    // Enable talkover master output
+    m_pMasterTalkoverMix->set(0.0);
+    micMixComboBox->setCurrentIndex(0);
+
     settingChanged(); // force the apply button to enable
 }
 
@@ -565,3 +583,10 @@ void DlgPrefSound::masterMonoMixdownChanged(double value) {
     masterOutputModeComboBox->setCurrentIndex(value ? 1 : 0);
 }
 
+void DlgPrefSound::talkoverMixComboBoxChanged(int value) {
+    m_pMasterTalkoverMix->set((double)value);
+}
+
+void DlgPrefSound::talkoverMixChanged(double value) {
+    micMixComboBox->setCurrentIndex(value ? 1 : 0);
+}

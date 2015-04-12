@@ -17,7 +17,7 @@
       <Visual>
         <TooltipId>waveform_display</TooltipId>
         <Group><Variable name="group"/></Group>
-        <BgColor>#1C1C1C</BgColor>
+        <BgColor><Variable name="DeckColorMuted"/></BgColor>
         <SignalHighColor></SignalHighColor>
         <SignalMidColor></SignalMidColor>
         <SignalLowColor></SignalLowColor>
@@ -109,6 +109,7 @@
         <SizePolicy>min,min</SizePolicy>
         <Children>
           <PushButton>
+            <TooltipId>waveform_zoom_down</TooltipId>
             <MinimumSize>20,20</MinimumSize>
             <MaximumSize>30,30</MaximumSize>
             <NumberStates>2</NumberStates>
@@ -126,6 +127,7 @@
           </PushButton>
 
           <PushButton>
+            <TooltipId>waveform_zoom_set_default</TooltipId>
             <MinimumSize>20,20</MinimumSize>
             <MaximumSize>30,30</MaximumSize>
             <NumberStates>2</NumberStates>
@@ -143,6 +145,7 @@
           </PushButton>
 
           <PushButton>
+            <TooltipId>waveform_zoom_up</TooltipId>
             <MinimumSize>20,20</MinimumSize>
             <MaximumSize>30,30</MaximumSize>
             <NumberStates>2</NumberStates>
@@ -167,6 +170,8 @@
         <SizePolicy>max,max</SizePolicy>
         <Children>
           <Spinny>
+            <TooltipId>spinny</TooltipId>
+            <Size>118f,118f</Size>
             <Group><Variable name="group"/></Group>
             <PathBackground>image/vinyl_spinny_background.png</PathBackground>
             <PathForeground>image/vinyl_spinny_foreground.png</PathForeground>
@@ -179,7 +184,7 @@
           </Spinny>
         </Children>
         <Connection>
-          <ConfigKey><Variable name="control_show_spinny"/></ConfigKey>
+          <ConfigKey persist="true"><Variable name="control_show_spinny"/></ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>

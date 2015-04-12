@@ -2,10 +2,11 @@
 
 #include <QTime>
 
-#include "wnumberpos.h"
+#include "widget/wnumberpos.h"
 #include "controlobject.h"
 #include "controlobjectthread.h"
 #include "util/math.h"
+#include "util/time.h"
 
 WNumberPos::WNumberPos(const char* group, QWidget* parent)
         : WNumber(parent),
@@ -13,8 +14,6 @@ WNumberPos::WNumberPos(const char* group, QWidget* parent)
           m_dTrackSamples(0.0),
           m_dTrackSampleRate(0.0),
           m_bRemain(false) {
-    m_qsText = "";
-
     m_pShowTrackTimeRemaining = new ControlObjectThread(
             "[Controls]", "ShowDurationRemaining");
     m_pShowTrackTimeRemaining->connectValueChanged(
@@ -87,45 +86,38 @@ void WNumberPos::slotSetValue(double dValue) {
     m_dOldValue = dValue;
 
     double valueMillis = 0.0;
-    double durationMillis = 0.0;
     if (m_dTrackSamples > 0 && m_dTrackSampleRate > 0) {
         double dDuration = m_dTrackSamples / m_dTrackSampleRate / 2.0;
         valueMillis = dValue * 500.0 * m_dTrackSamples / m_dTrackSampleRate;
-        durationMillis = dDuration * 1000.0;
+        double durationMillis = dDuration * Time::kMillisPerSecond;
         if (m_bRemain)
             valueMillis = math_max(durationMillis - valueMillis, 0.0);
     }
 
     QString valueString;
     if (valueMillis >= 0) {
-        QTime valueTime = QTime().addMSecs(valueMillis);
-        valueString = valueTime.toString((valueTime.hour() >= 1) ? "hh:mm:ss.zzz" : "mm:ss.zzz");
+        valueString = m_skinText % Time::formatSeconds(
+                valueMillis / Time::kMillisPerSecond, true);
     } else {
-        QTime valueTime = QTime().addMSecs(0 - valueMillis);
-        valueString = valueTime.toString((valueTime.hour() >= 1) ? "-hh:mm:ss.zzz" : "-mm:ss.zzz");
+        valueString = m_skinText % QLatin1String("-") % Time::formatSeconds(
+                -valueMillis / Time::kMillisPerSecond, true);
     }
-
-    // The format string gives us one extra digit of millisecond precision than
-    // we care about. Slice it off.
-    valueString = valueString.left(valueString.length() - 1);
-
-    setText(QString("%1%2").arg(m_qsText, valueString));
+    setText(valueString);
 }
 
 void WNumberPos::slotSetRemain(double remain) {
     setRemain(remain > 0.0);
 }
 
-void WNumberPos::setRemain(bool bRemain)
-{
+void WNumberPos::setRemain(bool bRemain) {
     m_bRemain = bRemain;
 
     // Shift display state between showing position and remaining
-    if (m_bRemain)
-        m_qsText = "-";
-    else
-        m_qsText = "";
-
+    if (m_bRemain) {
+        m_skinText = "-";
+    } else {
+        m_skinText = "";
+    }
     // Have the widget redraw itself with its current value.
     slotSetValue(m_dOldValue);
 }

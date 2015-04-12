@@ -19,7 +19,8 @@ void WComboBox::setup(QDomNode node, const SkinContext& context) {
     while (!state.isNull()) {
         if (state.isElement() && state.nodeName() == "State") {
             if (!context.hasNode(state, "Number")) {
-                qDebug() << "WComboBox ignoring <State> without <Number> node.";
+                SKIN_WARNING(state, context)
+                        << "WComboBox ignoring <State> without <Number> node.";
                 continue;
             }
 

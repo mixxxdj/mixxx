@@ -7,6 +7,7 @@
 #include "util/fifo.h"
 #include "engine/effects/message.h"
 #include "engine/effects/groupfeaturestate.h"
+#include "engine/channelhandle.h"
 
 class EngineEffectRack;
 class EngineEffectChain;
@@ -19,14 +20,14 @@ class EngineEffectsManager : public EffectsRequestHandler {
 
     void onCallbackStart();
 
-    // Take a buffer of numSamples samples of audio from group, provided as
-    // pInput, and apply each EffectChain enabled for this group to it,
+    // Take a buffer of numSamples samples of audio from a channel, provided as
+    // pInput, and apply each EffectChain enabled for this channel to it,
     // putting the resulting output in pOutput. If pInput is equal to pOutput,
     // then the operation must occur in-place. Both pInput and pOutput are
     // represented as stereo interleaved samples. There are numSamples total
     // samples, so numSamples/2 left channel samples and numSamples/2 right
     // channel samples.
-    virtual void process(const QString& group,
+    virtual void process(const ChannelHandle& handle,
                          CSAMPLE* pInOut,
                          const unsigned int numSamples,
                          const unsigned int sampleRate,

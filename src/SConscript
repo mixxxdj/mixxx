@@ -181,9 +181,6 @@ binary_files = [mixxx_bin];
 if test_bin is not None:
         binary_files.append(test_bin)
 
-# Mixxx essential resource files
-resource_files = Glob('#res/schema.xml')
-
 #Soundsource plugins
 soundsource_plugin_files = soundsource_plugins
 
@@ -198,6 +195,9 @@ controllermappings_files = Glob('#res/controllers/*')
 
 # Translation files
 translation_files = Glob('#res/translations/*.qm')
+
+# Font files
+font_files = Glob('#res/fonts/*')
 
 #Keyboard mapping(s)
 keyboardmappings_files = Glob('#res/keyboard/*')
@@ -284,8 +284,8 @@ if build.platform_is_linux or build.platform_is_bsd:
                     env.get('LIBDIR', default='lib'))
 
                 binary = env.Install(unix_bin_path, binary_files)
-                resource = env.Install(os.path.join(unix_share_path, 'mixxx'), resource_files)
                 skins = env.Install(os.path.join(unix_share_path, 'mixxx', 'skins'), skin_files)
+                fonts = env.Install(os.path.join(unix_share_path, 'mixxx', 'fonts'), font_files)
                 vamp_plugin =  env.Install(
                         os.path.join(unix_lib_path, 'mixxx', 'plugins', 'vamp'),
                         libmixxxminimal_vamp_plugin)
@@ -304,8 +304,8 @@ if build.platform_is_linux or build.platform_is_bsd:
 
                 #Makes each of those Install builders get fired off when you run "scons install" :)
                 env.Alias('install', binary)
-                env.Alias('install', resource)
                 env.Alias('install', skins)
+                env.Alias('install', fonts)
                 env.Alias('install', soundsource_plugins)
                 env.Alias('install', controllermappings)
                 env.Alias('install', translations)
@@ -360,7 +360,7 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
         for x in soundsource_plugins:
                 plugins.append(x.get_abspath())
 
-	for x in mixxxminimal_plugins:
+        for x in mixxxminimal_plugins:
                 plugins.append(x.get_abspath())
 
         resource_map = {}
@@ -396,8 +396,8 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
         sources = [mixxx_bin,
                    '#res/osx/application.icns',
                    Dir('#res/skins/'),
-                   File('#res/schema.xml'),
                    Dir('#res/controllers/'),
+                   Dir('#res/fonts/'),
                    translation_files,
                    Dir('#res/keyboard/'),
                    Dir('#res/doc/'),
@@ -457,8 +457,8 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
 if build.platform_is_windows:
         base_dist_dir = '#' + dist_dir
         skins = env.Install(os.path.join(base_dist_dir, "skins"), skin_files)
-        resource = env.Install(base_dist_dir+"/", resource_files)
         controllermappings = env.Install(os.path.join(base_dist_dir, "controllers"), controllermappings_files)
+        fonts = env.Install(os.path.join(base_dist_dir, "fonts"), font_files)
         translations = env.Install(os.path.join(base_dist_dir, "translations"), translation_files)
         keyboardmappings = env.Install(os.path.join(base_dist_dir, "keyboard"), keyboardmappings_files)
         docs = env.Install(os.path.join(base_dist_dir, "doc/"), docs_files)
@@ -473,8 +473,8 @@ if build.platform_is_windows:
 
         #Always trigger these install builders when compiling on Windows
         env.Alias('mixxx', skins)
-        env.Alias('mixxx', resource)
         env.Alias('mixxx', controllermappings)
+        env.Alias('mixxx', fonts)
         env.Alias('mixxx', translations)
         env.Alias('mixxx', keyboardmappings)
         env.Alias('mixxx', promotracks)
@@ -736,7 +736,7 @@ def BuildUbuntuPackage(target, source, env):
 
                 # Add a changelog record for this package
                 if build.build_is_debug:
-                        description = "  * Experimental build of branch '%s' at Bazaar revision %s" % (branch_name, vcs_revision)
+                        description = "  * Experimental build of branch '%s' at revision %s" % (branch_name, vcs_revision)
                         ubuntu_append_changelog('debian', package_name, package_version,
                                                 description, distro=ubuntu_distro)
                 else:

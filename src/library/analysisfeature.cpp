@@ -27,7 +27,7 @@ AnalysisFeature::AnalysisFeature(QObject* parent,
         m_iOldBpmEnabled(0),
         m_analysisTitleName(tr("Analyze")),
         m_pAnalysisView(NULL) {
-	setTitleDefault();
+    setTitleDefault();
 }
 
 AnalysisFeature::~AnalysisFeature() {
@@ -59,10 +59,10 @@ QIcon AnalysisFeature::getIcon() {
 }
 
 void AnalysisFeature::bindWidget(WLibrary* libraryWidget,
-                                MixxxKeyboard* keyboard) {
+                                 MixxxKeyboard* keyboard) {
     m_pAnalysisView = new DlgAnalysis(libraryWidget,
-                                    m_pConfig,
-                                    m_pTrackCollection);
+                                      m_pConfig,
+                                      m_pTrackCollection);
     connect(m_pAnalysisView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
     connect(m_pAnalysisView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
@@ -137,13 +137,14 @@ void AnalysisFeature::analyzeTracks(QList<int> trackIds) {
             m_pAnalyserQueue->queueAnalyseTrack(pTrack);
         }
     }
-    if(trackIds.size() > 0)
-    	setTitleProgress(0, trackIds.size());
+    if (trackIds.size() > 0) {
+        setTitleProgress(0, trackIds.size());
+    }
     emit(trackAnalysisStarted(trackIds.size()));
 }
 
 void AnalysisFeature::slotProgressUpdate(int num_left) {
-	int num_tracks = m_pAnalysisView->getNumTracks();
+    int num_tracks = m_pAnalysisView->getNumTracks();
     if (num_left > 0) {
         int currentTrack = num_tracks - num_left + 1;
         setTitleProgress(currentTrack, num_tracks);
@@ -158,7 +159,7 @@ void AnalysisFeature::stopAnalysis() {
 }
 
 void AnalysisFeature::cleanupAnalyser() {
-	setTitleDefault();
+    setTitleDefault();
     emit(analysisActive(false));
     if (m_pAnalyserQueue != NULL) {
         m_pAnalyserQueue->stop();

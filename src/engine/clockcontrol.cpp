@@ -15,6 +15,7 @@ ClockControl::ClockControl(QString group, ConfigObject<ConfigValue>* pConfig)
 
 ClockControl::~ClockControl() {
     delete m_pCOBeatActive;
+    delete m_pCOSampleRate;
 }
 
 void ClockControl::trackLoaded(TrackPointer pTrack) {

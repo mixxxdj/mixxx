@@ -6,11 +6,12 @@
 #include "trackinfoobject.h"
 #include "controlpushbutton.h"
 #include "playermanager.h"
+#include "util/assert.h"
 
 SamplerBank::SamplerBank(PlayerManager* pPlayerManager)
         : QObject(pPlayerManager),
           m_pPlayerManager(pPlayerManager) {
-    Q_ASSERT(pPlayerManager);
+    DEBUG_ASSERT(m_pPlayerManager);
     m_pLoadControl = new ControlPushButton(ConfigKey("[Sampler]", "LoadSamplerBank"));
     connect(m_pLoadControl, SIGNAL(valueChanged(double)),
             this, SLOT(slotLoadSamplerBank(double)));
@@ -25,15 +26,26 @@ SamplerBank::~SamplerBank() {
 }
 
 void SamplerBank::slotSaveSamplerBank(double v) {
-    if (v == 0.0)
+    if (v == 0.0 || m_pPlayerManager == NULL) {
         return;
-
+    }
+    QString filefilter = tr("Mixxx Sampler Banks (*.xml)");
     QString samplerBankPath = QFileDialog::getSaveFileName(
             NULL, tr("Save Sampler Bank"),
             QString(),
-            tr("Mixxx Sampler Banks (*.xml)"));
-    if (samplerBankPath.isEmpty()) {
+            tr("Mixxx Sampler Banks (*.xml)"),
+            &filefilter);
+    if (samplerBankPath.isNull() || samplerBankPath.isEmpty()) {
         return;
+    }
+    // Manually add extension due to bug in QFileDialog
+    // via https://bugreports.qt-project.org/browse/QTBUG-27186
+    // Can be removed after switch to Qt5
+    QFileInfo fileName(samplerBankPath);
+    if (fileName.suffix().isEmpty()) {
+        QString ext = filefilter.section(".",1,1);
+        ext.chop(1);
+        samplerBankPath.append(".").append(ext);
     }
 
     // The user has picked a new directory via a file dialog. This means the
@@ -79,8 +91,9 @@ void SamplerBank::slotSaveSamplerBank(double v) {
 }
 
 void SamplerBank::slotLoadSamplerBank(double v) {
-    if (v == 0.0)
+    if (v == 0.0 || m_pPlayerManager == NULL) {
         return;
+    }
 
     QString samplerBankPath = QFileDialog::getOpenFileName(
             NULL,

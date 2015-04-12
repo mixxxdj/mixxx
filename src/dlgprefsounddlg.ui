@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>686</width>
-    <height>563</height>
+    <height>584</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <item row="0" column="1">
       <widget class="QComboBox" name="apiComboBox"/>
      </item>
-     <item row="7" column="0">
+     <item row="8" column="0">
       <widget class="QLabel" name="headDelayLabel">
        <property name="text">
         <string>Headphone Delay</string>
@@ -36,7 +36,7 @@
        </property>
       </widget>
      </item>
-     <item row="8" column="1">
+     <item row="9" column="1">
       <widget class="QDoubleSpinBox" name="masterDelaySpinBox">
        <property name="suffix">
         <string extracomment="milliseconds"> ms</string>
@@ -46,13 +46,6 @@
        </property>
        <property name="maximum">
         <double>200.000000000000000</double>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="1">
-      <widget class="QLabel" name="currentLatency">
-       <property name="text">
-        <string>20 ms</string>
        </property>
       </widget>
      </item>
@@ -66,44 +59,24 @@
        </property>
       </widget>
      </item>
-     <item row="11" column="0">
+     <item row="10" column="0">
       <spacer name="outputVSpacer_3">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
        <property name="sizeType">
-        <enum>QSizePolicy::Preferred</enum>
+        <enum>QSizePolicy::MinimumExpanding</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
          <width>20</width>
-         <height>40</height>
+         <height>1</height>
         </size>
        </property>
       </spacer>
      </item>
      <item row="1" column="1">
       <widget class="QComboBox" name="sampleRateComboBox"/>
-     </item>
-     <item row="9" column="0">
-      <widget class="QLabel" name="latencyLabel">
-       <property name="text">
-        <string>Known Latency</string>
-       </property>
-       <property name="buddy">
-        <cstring>audioBufferComboBox</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="10" column="0">
-      <widget class="QLabel" name="underflowLabel">
-       <property name="text">
-        <string>Buffer Underflow Count</string>
-       </property>
-       <property name="buddy">
-        <cstring>audioBufferComboBox</cstring>
-       </property>
-      </widget>
      </item>
      <item row="2" column="1">
       <widget class="QComboBox" name="audioBufferComboBox"/>
@@ -118,14 +91,7 @@
        </property>
       </widget>
      </item>
-     <item row="10" column="1">
-      <widget class="QLabel" name="bufferUnderflowCount">
-       <property name="text">
-        <string>0</string>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="1">
+     <item row="8" column="1">
       <widget class="QDoubleSpinBox" name="headDelaySpinBox">
        <property name="suffix">
         <string extracomment="milliseconds"> ms</string>
@@ -138,7 +104,7 @@
        </property>
       </widget>
      </item>
-     <item row="8" column="0">
+     <item row="9" column="0">
       <widget class="QLabel" name="masterDelayLabel">
        <property name="text">
         <string>Master Delay</string>
@@ -188,95 +154,23 @@
      <item row="6" column="1">
       <widget class="QComboBox" name="masterOutputModeComboBox"/>
      </item>
+     <item row="7" column="0">
+      <widget class="QLabel" name="micMixLabel">
+       <property name="text">
+        <string>Microphone/Talkover Mix</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="1">
+      <widget class="QComboBox" name="micMixComboBox"/>
+     </item>
     </layout>
    </item>
    <item>
-    <widget class="QTabWidget" name="ioTabs">
-     <property name="currentIndex">
-      <number>0</number>
+    <widget class="Line" name="line_2">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
      </property>
-     <widget class="QWidget" name="outputTab">
-      <attribute name="title">
-       <string>Output</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="outputVLayout">
-       <item>
-        <spacer name="outputVSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="inputTab">
-      <attribute name="title">
-       <string>Input</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="inputVLayout">
-       <item>
-        <spacer name="inputVSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </widget>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="Hints">
-     <property name="title">
-      <string>Hints</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_6">
-      <item row="5" column="0">
-       <widget class="QLabel" name="limitsHint">
-        <property name="text">
-         <string>Enable Real-Time scheduling (currently disabled), see the &lt;a href=&quot;http://www.mixxx.org/wiki/doku.php/troubleshooting?s[]=limits&quot;&gt;Mixxx Wiki&lt;/a&gt;.</string>
-        </property>
-        <property name="wordWrap">
-         <bool>true</bool>
-        </property>
-        <property name="openExternalLinks">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="underflowCounterHint">
-        <property name="text">
-         <string>Enlarge your audio buffer if the underflow counter is increasing or you hear pops during playback.</string>
-        </property>
-        <property name="wordWrap">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="audioBufferHint">
-        <property name="text">
-         <string>Downsize your audio buffer to improve Mixxx's responsiveness.</string>
-        </property>
-        <property name="wordWrap">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-     </layout>
     </widget>
    </item>
    <item>
@@ -302,6 +196,148 @@
       </spacer>
      </item>
     </layout>
+   </item>
+   <item>
+    <widget class="QTabWidget" name="ioTabs">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="outputTab">
+      <attribute name="title">
+       <string>Output</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="outputVLayout">
+       <item>
+        <spacer name="outputVSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::MinimumExpanding</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>1</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="inputTab">
+      <attribute name="title">
+       <string>Input</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="inputVLayout">
+       <item>
+        <spacer name="inputVSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::MinimumExpanding</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>1</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="Hints">
+     <property name="title">
+      <string>Hints and Diagnostics</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_6">
+      <item row="0" column="0" colspan="2">
+       <widget class="QLabel" name="underflowCounterHint">
+        <property name="text">
+         <string>Enlarge your audio buffer if the underflow counter is increasing or you hear pops during playback.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="2">
+       <widget class="QLabel" name="audioBufferHint">
+        <property name="text">
+         <string>Downsize your audio buffer to improve Mixxx's responsiveness.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0" colspan="2">
+       <widget class="QLabel" name="limitsHint">
+        <property name="text">
+         <string>Enable Real-Time scheduling (currently disabled), see the &lt;a href=&quot;http://www.mixxx.org/wiki/doku.php/troubleshooting?s[]=limits&quot;&gt;Mixxx Wiki&lt;/a&gt;.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+        <property name="openExternalLinks">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0" colspan="2">
+       <widget class="Line" name="line">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+        <widget class="QLabel" name="latencyLabel">
+         <property name="text">
+          <string>System Reported Latency</string>
+         </property>
+         <property name="buddy">
+          <cstring>audioBufferComboBox</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLabel" name="currentLatency">
+         <property name="text">
+          <string>20 ms</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="underflowLabel">
+         <property name="text">
+          <string>Buffer Underflow Count</string>
+         </property>
+         <property name="buddy">
+          <cstring>audioBufferComboBox</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QLabel" name="bufferUnderflowCount">
+         <property name="text">
+          <string>0</string>
+         </property>
+        </widget>
+       </item>
+     </layout>
+    </widget>
    </item>
    <item>
     <spacer name="verticalSpacer">

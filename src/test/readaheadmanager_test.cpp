@@ -6,10 +6,11 @@
 #include "mixxxtest.h"
 #include "cachingreader.h"
 #include "controlobject.h"
-#include "engine/enginecontrol.h"
+#include "engine/loopingcontrol.h"
 #include "engine/readaheadmanager.h"
 #include "sampleutil.h"
 #include "util/defs.h"
+#include "util/assert.h"
 
 class StubReader : public CachingReader {
   public:
@@ -23,10 +24,10 @@ class StubReader : public CachingReader {
     }
 };
 
-class StubLoopControl : public EngineControl {
+class StubLoopControl : public LoopingControl {
   public:
     StubLoopControl()
-        : EngineControl("[test]", NULL) { }
+        : LoopingControl("[test]", NULL) { }
 
     void pushTriggerReturnValue(double value) {
         m_triggerReturnValues.push_back(value);
@@ -36,7 +37,7 @@ class StubLoopControl : public EngineControl {
         m_processReturnValues.push_back(value);
     }
 
-    double nextTrigger(const double dRate,
+    virtual double nextTrigger(const double dRate,
                        const double currentSample,
                        const double totalSamples,
                        const int iBufferSize) {
@@ -44,7 +45,7 @@ class StubLoopControl : public EngineControl {
         Q_UNUSED(currentSample);
         Q_UNUSED(totalSamples);
         Q_UNUSED(iBufferSize);
-        Q_ASSERT(!m_triggerReturnValues.isEmpty());
+        RELEASE_ASSERT(!m_triggerReturnValues.isEmpty());
         return m_triggerReturnValues.takeFirst();
     }
 
@@ -56,8 +57,38 @@ class StubLoopControl : public EngineControl {
         Q_UNUSED(dCurrentSample);
         Q_UNUSED(dTotalSamples);
         Q_UNUSED(iBufferSize);
-        Q_ASSERT(!m_processReturnValues.isEmpty());
+        RELEASE_ASSERT(!m_processReturnValues.isEmpty());
         return m_processReturnValues.takeFirst();
+    }
+
+    // getTrigger returns the sample that the engine will next be triggered to
+    // loop to, given the value of currentSample and dRate.
+    virtual double getTrigger(const double dRate,
+                      const double currentSample,
+                      const double totalSamples,
+                      const int iBufferSize) {
+        Q_UNUSED(dRate);
+        Q_UNUSED(currentSample);
+        Q_UNUSED(totalSamples);
+        Q_UNUSED(iBufferSize);
+        return kNoTrigger;
+    }
+
+    // hintReader has no effect in this stubbed class
+    virtual void hintReader(HintVector* pHintList) {
+        Q_UNUSED(pHintList);
+    }
+
+    virtual void notifySeek(double dNewPlaypos) {
+        Q_UNUSED(dNewPlaypos);
+    }
+
+  public slots:
+    virtual void trackLoaded(TrackPointer pTrack) {
+        Q_UNUSED(pTrack);
+    }
+    virtual void trackUnloaded(TrackPointer pTrack) {
+        Q_UNUSED(pTrack);
     }
 
   protected:
@@ -73,8 +104,8 @@ class ReadAheadManagerTest : public MixxxTest {
         SampleUtil::clear(m_pBuffer, MAX_BUFFER_LEN);
         m_pReader.reset(new StubReader());
         m_pLoopControl.reset(new StubLoopControl());
-        m_pReadAheadManager.reset(new ReadAheadManager(m_pReader.data()));
-        m_pReadAheadManager->addEngineControl(m_pLoopControl.data());
+        m_pReadAheadManager.reset(new ReadAheadManager(m_pReader.data(),
+                                                       m_pLoopControl.data()));
     }
 
     QScopedPointer<StubReader> m_pReader;
@@ -86,7 +117,7 @@ class ReadAheadManagerTest : public MixxxTest {
 TEST_F(ReadAheadManagerTest, LoopEnableSeekBackward) {
     // If a loop is enabled and the current playposition is ahead of the loop,
     // we should seek to the beginning of the loop.
-    m_pReadAheadManager->setNewPlaypos(110);
+    m_pReadAheadManager->notifySeek(110);
     // Trigger value means, the sample that triggers the loop (loop out)
     m_pLoopControl->pushTriggerReturnValue(100);
     // Process value is the sample we should seek to
@@ -98,7 +129,7 @@ TEST_F(ReadAheadManagerTest, LoopEnableSeekBackward) {
 TEST_F(ReadAheadManagerTest, InReverseLoopEnableSeekForward) {
     // If we are in reverse, a loop is enabled, and the current playposition
     // is before of the loop, we should seek to the out point of the loop.
-    m_pReadAheadManager->setNewPlaypos(1);
+    m_pReadAheadManager->notifySeek(1);
     // Trigger value means, the sample that triggers the loop (loop in)
     m_pLoopControl->pushTriggerReturnValue(10);
     // Process value is the sample we should seek to.

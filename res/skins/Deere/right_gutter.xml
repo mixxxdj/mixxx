@@ -13,7 +13,8 @@
       <Template src="skin:deck_right.xml">
         <SetVariable name="i">2</SetVariable>
         <!-- Traditional Orange -->
-        <SetVariable name="DeckColor">#E17800</SetVariable>
+        <SetVariable name="DeckColor">#E67A00</SetVariable>
+        <SetVariable name="DeckColorMuted">#261400</SetVariable>
       </Template>
 
       <WidgetGroup>
@@ -22,7 +23,8 @@
           <Template src="skin:deck_right.xml">
             <SetVariable name="i">4</SetVariable>
             <!-- Lime -->
-            <SetVariable name="DeckColor">#CDDC39</SetVariable>
+            <SetVariable name="DeckColor">#AABD00</SetVariable>
+            <SetVariable name="DeckColorMuted">#24260A</SetVariable>
           </Template>
         </Children>
         <Connection>

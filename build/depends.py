@@ -380,47 +380,39 @@ class ReplayGain(Dependence):
 class SoundTouch(Dependence):
     SOUNDTOUCH_PATH = 'soundtouch-1.8.0'
 
-    def sse_enabled(self, build):
-        optimize = int(util.get_flags(build.env, 'optimize', 1))
-        return (build.machine_is_64bit or
-                (build.toolchain_is_msvs and optimize > 2) or
-                (build.toolchain_is_gnu and optimize > 1))
-
     def sources(self, build):
-        sources = ['engine/enginebufferscalest.cpp',
-                   '#lib/%s/AAFilter.cpp' % self.SOUNDTOUCH_PATH,
-                   '#lib/%s/BPMDetect.cpp' % self.SOUNDTOUCH_PATH,
-                   '#lib/%s/FIFOSampleBuffer.cpp' % self.SOUNDTOUCH_PATH,
-                   '#lib/%s/FIRFilter.cpp' % self.SOUNDTOUCH_PATH,
-                   '#lib/%s/InterpolateCubic.cpp' % self.SOUNDTOUCH_PATH,
-                   '#lib/%s/InterpolateLinear.cpp' % self.SOUNDTOUCH_PATH,
-                   '#lib/%s/InterpolateShannon.cpp' % self.SOUNDTOUCH_PATH,
-                   '#lib/%s/PeakFinder.cpp' % self.SOUNDTOUCH_PATH,
-                   '#lib/%s/RateTransposer.cpp' % self.SOUNDTOUCH_PATH,
-                   '#lib/%s/SoundTouch.cpp' % self.SOUNDTOUCH_PATH,
-                   '#lib/%s/TDStretch.cpp' % self.SOUNDTOUCH_PATH]
-
-        # SoundTouch CPU optimizations are only for x86
-        # architectures. SoundTouch automatically ignores these files when it is
-        # not being built for an architecture that supports them.
-        sources.append('#lib/%s/cpu_detect_x86.cpp' % self.SOUNDTOUCH_PATH)
-
-        # Check if the compiler has SSE extention enabled
-        # Allways the case on x64 (core instructions)
-        if self.sse_enabled(build):
-            sources.extend(
-                ['#lib/%s/mmx_optimized.cpp' % self.SOUNDTOUCH_PATH,
-                 '#lib/%s/sse_optimized.cpp' % self.SOUNDTOUCH_PATH, ])
-        return sources
+        return ['engine/enginebufferscalest.cpp',
+                '#lib/%s/AAFilter.cpp' % self.SOUNDTOUCH_PATH,
+                '#lib/%s/BPMDetect.cpp' % self.SOUNDTOUCH_PATH,
+                '#lib/%s/FIFOSampleBuffer.cpp' % self.SOUNDTOUCH_PATH,
+                '#lib/%s/FIRFilter.cpp' % self.SOUNDTOUCH_PATH,
+                '#lib/%s/InterpolateCubic.cpp' % self.SOUNDTOUCH_PATH,
+                '#lib/%s/InterpolateLinear.cpp' % self.SOUNDTOUCH_PATH,
+                '#lib/%s/InterpolateShannon.cpp' % self.SOUNDTOUCH_PATH,
+                '#lib/%s/PeakFinder.cpp' % self.SOUNDTOUCH_PATH,
+                '#lib/%s/RateTransposer.cpp' % self.SOUNDTOUCH_PATH,
+                '#lib/%s/SoundTouch.cpp' % self.SOUNDTOUCH_PATH,
+                '#lib/%s/TDStretch.cpp' % self.SOUNDTOUCH_PATH,
+                # SoundTouch CPU optimizations are only for x86
+                # architectures. SoundTouch automatically ignores these files
+                # when it is not being built for an architecture that supports
+                # them.
+                '#lib/%s/cpu_detect_x86.cpp' % self.SOUNDTOUCH_PATH,
+                '#lib/%s/mmx_optimized.cpp' % self.SOUNDTOUCH_PATH,
+                '#lib/%s/sse_optimized.cpp' % self.SOUNDTOUCH_PATH]
 
     def configure(self, build, conf, env=None):
         if env is None:
             env = build.env
         env.Append(CPPPATH=['#lib/%s' % self.SOUNDTOUCH_PATH])
 
-        # If we do not want SSE optimizations (either the architecture does not
-        # support it or we are running a non-optimized build) then disable them.
-        if not self.sse_enabled(build):
+        # Prevents circular import.
+        from features import Optimize
+
+        # If we do not want optimizations then disable them.
+        optimize = (build.flags['optimize'] if 'optimize' in build.flags
+                    else Optimize.get_optimization_level())
+        if optimize == Optimize.LEVEL_OFF:
             env.Append(CPPDEFINES='SOUNDTOUCH_DISABLE_X86_OPTIMIZATIONS')
 
 
@@ -578,7 +570,6 @@ class MixxxCore(Feature):
                    "engine/engineworkerscheduler.cpp",
                    "engine/enginebuffer.cpp",
                    "engine/enginebufferscale.cpp",
-                   "engine/enginebufferscaledummy.cpp",
                    "engine/enginebufferscalelinear.cpp",
                    "engine/enginefilterbiquad1.cpp",
                    "engine/enginefiltermoogladder4.cpp",
@@ -595,7 +586,6 @@ class MixxxCore(Feature):
                    "engine/enginemaster.cpp",
                    "engine/enginedelay.cpp",
                    "engine/enginevumeter.cpp",
-                   "engine/enginevinylsoundemu.cpp",
                    "engine/enginesidechaincompressor.cpp",
                    "engine/sidechain/enginesidechain.cpp",
                    "engine/enginexfader.cpp",
@@ -704,6 +694,7 @@ class MixxxCore(Feature):
                    "widget/wcoverart.cpp",
                    "widget/wcoverartlabel.cpp",
                    "widget/wcoverartmenu.cpp",
+                   "widget/wsingletoncontainer.cpp",
 
                    "network.cpp",
                    "musicbrainz/tagfetcher.cpp",
@@ -771,11 +762,11 @@ class MixxxCore(Feature):
 
                    "library/cratefeature.cpp",
                    "library/sidebarmodel.cpp",
-                   "library/libraryscanner.cpp",
-                   "library/libraryscannerdlg.cpp",
                    "library/legacylibraryimporter.cpp",
                    "library/library.cpp",
 
+                   "library/scanner/libraryscanner.cpp",
+                   "library/scanner/libraryscannerdlg.cpp",
                    "library/scanner/scannertask.cpp",
                    "library/scanner/importfilestask.cpp",
                    "library/scanner/recursivescandirectorytask.cpp",
@@ -804,7 +795,6 @@ class MixxxCore(Feature):
                    "library/treeitemmodel.cpp",
                    "library/treeitem.cpp",
 
-                   "xmlparse.cpp",
                    "library/parser.cpp",
                    "library/parserpls.cpp",
                    "library/parserm3u.cpp",
@@ -920,6 +910,7 @@ class MixxxCore(Feature):
                    "util/mac.cpp",
                    "util/task.cpp",
                    "util/experiment.cpp",
+                   "util/xml.cpp",
 
                    '#res/mixxx.qrc'
                    ]
@@ -992,12 +983,27 @@ class MixxxCore(Feature):
         if not build.machine == 'alpha':
             build.env.Append(CPPDEFINES=build.machine)
 
+        if build.build_is_debug:
+            build.env.Append(CPPDEFINES='MIXXX_BUILD_DEBUG')
+        elif build.build_is_release:
+            build.env.Append(CPPDEFINES='MIXXX_BUILD_RELEASE')
+
+            # In a release build we want to disable all Q_ASSERTs in Qt headers
+            # that we include. We can't define QT_NO_DEBUG because that would
+            # mean turning off QDebug output. qt_noop() is what Qt defines
+            # Q_ASSERT to be when QT_NO_DEBUG is defined.
+            build.env.Append(CPPDEFINES="'Q_ASSERT(x)=qt_noop()'")
+
+        if int(SCons.ARGUMENTS.get('debug_assertions_fatal', 0)):
+            build.env.Append(CPPDEFINES='MIXXX_DEBUG_ASSERTIONS_FATAL')
+
         if build.toolchain_is_gnu:
             # Default GNU Options
             build.env.Append(CCFLAGS='-pipe')
             build.env.Append(CCFLAGS='-Wall')
             build.env.Append(CCFLAGS='-Wextra')
-            # TODO(XXX) always generate debugging info?
+
+            # Always generate debugging info.
             build.env.Append(CCFLAGS='-g')
         elif build.toolchain_is_msvs:
             # Validate the specified winlib directory exists

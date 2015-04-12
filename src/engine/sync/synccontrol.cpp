@@ -8,6 +8,7 @@
 #include "engine/enginechannel.h"
 #include "engine/ratecontrol.h"
 #include "util/math.h"
+#include "util/assert.h"
 
 const double kTrackPositionMasterHandoff = 0.99;
 
@@ -15,7 +16,7 @@ const double SyncControl::kBpmUnity = 1.0;
 const double SyncControl::kBpmHalve = 0.5;
 const double SyncControl::kBpmDouble = 2.0;
 
-SyncControl::SyncControl(QString group, ConfigObject<ConfigValue>* pConfig,
+SyncControl::SyncControl(const QString& group, ConfigObject<ConfigValue>* pConfig,
                          EngineChannel* pChannel, SyncableListener* pEngineSync)
         : EngineControl(group, pConfig),
           m_sGroup(group),
@@ -105,7 +106,7 @@ void SyncControl::setEngineControls(RateControl* pRateControl,
 
     // Throw a hissy fit if somebody moved us such that the vinylcontrol_enabled
     // control doesn't exist yet. This will blow up immediately, won't go unnoticed.
-    Q_ASSERT(m_pVCEnabled->valid());
+    DEBUG_ASSERT(m_pVCEnabled->valid());
 
     m_pVCEnabled->connectValueChanged(this, SLOT(slotVinylControlChanged(double)),
                                       Qt::DirectConnection);
@@ -279,6 +280,7 @@ void SyncControl::updateTargetBeatDistance() {
 }
 
 double SyncControl::getBpm() const {
+    //qDebug() << getGroup() << "SyncControl::getBpm()" << m_pBpm->get();
     return m_pBpm->get();
 }
 
@@ -297,6 +299,7 @@ void SyncControl::reportTrackPosition(double fractionalPlaypos) {
 }
 
 void SyncControl::trackLoaded(TrackPointer pTrack) {
+    //qDebug() << getGroup() << "SyncControl::trackLoaded";
     Q_UNUSED(pTrack);
     m_masterBpmAdjustFactor = kBpmUnity;
     if (getSyncMode() == SYNC_MASTER) {
@@ -310,8 +313,11 @@ void SyncControl::trackLoaded(TrackPointer pTrack) {
         m_pFileBpm->set(pTrack->getBpm());
         m_pLocalBpm->set(pTrack->getBpm());
         double dRate = 1.0 + m_pRateDirection->get() * m_pRateRange->get() * m_pRateSlider->get();
-        m_pBpm->set(m_pLocalBpm->get() * dRate);
-        m_pEngineSync->notifyTrackLoaded(this);
+        // We used to set the m_pBpm here, but that causes a signal loop whereby
+        // that was interpretted as a rate slider tweak, and the master bpm
+        // was changed.  Instead, now we pass the suggested bpm to enginesync
+        // explicitly, and it can decide what to do with it.
+        m_pEngineSync->notifyTrackLoaded(this, m_pLocalBpm->get() * dRate);
     }
 }
 
@@ -426,6 +432,7 @@ void SyncControl::slotRateChanged() {
     // This slot is fired by rate, rate_dir, and rateRange changes.
     const double rate = 1.0 + m_pRateSlider->get() * m_pRateRange->get() * m_pRateDirection->get();
     double bpm = m_pLocalBpm ? m_pLocalBpm->get() * rate : 0.0;
+    //qDebug() << getGroup() << "SyncControl::slotRateChanged" << rate << bpm;
     if (bpm > 0) {
         // When reporting our bpm, remove the multiplier so the masters all
         // think the followers have the same bpm.

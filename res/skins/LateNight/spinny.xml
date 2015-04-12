@@ -1,43 +1,49 @@
 <Template>
   <WidgetGroup>
     <Layout>horizontal</Layout>
+    <SizePolicy>min,min</SizePolicy>
     <Children>
+      <SingletonDefinition>
+        <ObjectName>SpinnySingleton<Variable name="channum"/></ObjectName>
+        <Children>
+          <Spinny>
+            <Group>[Channel<Variable name="channum"/>]</Group>
+            <PathBackground scalemode="STRETCH">spinny_bg.svg</PathBackground>
+            <PathMask>spinny<Variable name="color"/>_mask.svg</PathMask>
+            <PathForeground>spinny_indicator.svg</PathForeground>
+            <PathGhost>spinny_indicator_ghost.svg</PathGhost>
+            <ShowCover>true</ShowCover>
+          </Spinny>
+        </Children>
+      </SingletonDefinition>
       <WidgetStack currentpage="[Master],spinny_size" persist="true">
         <SizePolicy>max,min</SizePolicy>
         <Children>
           <WidgetGroup>
             <ObjectName>SpinnyContainer</ObjectName>
             <Layout>horizontal</Layout>
-            <MinimumSize>96,96</MinimumSize>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <Spinny>
-                <Group>[Channel<Variable name="channum"/>]</Group>
-                <PathBackground>vinyl_spinny<Variable name="color"/>_background.png</PathBackground>
-                <PathForeground>vinyl_spinny<Variable name="color"/>_foreground.png</PathForeground>
-                <PathGhost>vinyl_spinny<Variable name="color"/>_foreground_ghost.png</PathGhost>
-                <ShowCover>true</ShowCover>
-              </Spinny>
+                <SingletonContainer>
+                    <Size>96f,96f</Size>
+                    <ObjectName>SpinnySingleton<Variable name="channum"/></ObjectName>
+                </SingletonContainer>
             </Children>
           </WidgetGroup>
           <WidgetGroup trigger="[Master],show_mixer">
             <ObjectName>SpinnyContainer</ObjectName>
             <Layout>horizontal</Layout>
-            <MinimumSize>50,50</MinimumSize>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <Spinny>
-                <Group>[Channel<Variable name="channum"/>]</Group>
-                <PathBackground>vinyl_spinny<Variable name="color"/>_background-s.png</PathBackground>
-                <PathForeground>vinyl_spinny<Variable name="color"/>_foreground-s.png</PathForeground>
-                <PathGhost>vinyl_spinny<Variable name="color"/>_foreground_ghost-s.png</PathGhost>
-                <ShowCover>true</ShowCover>
-              </Spinny>
+              <SingletonContainer>
+                  <Size>50f,50f</Size>
+                  <ObjectName>SpinnySingleton<Variable name="channum"/></ObjectName>
+              </SingletonContainer>
             </Children>
           </WidgetGroup>
         </Children>
         <Connection>
-            <ConfigKey>[Spinny],show_spinnies</ConfigKey>
+            <ConfigKey persist="true">[Spinny],show_spinnies</ConfigKey>
             <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetStack>
@@ -53,7 +59,7 @@
             <Transform>
               <Not/>
             </Transform>
-        </Connection>    
+        </Connection>
       </WidgetGroup>
     </Children>
   </WidgetGroup>

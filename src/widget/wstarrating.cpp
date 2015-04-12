@@ -8,7 +8,8 @@
 WStarRating::WStarRating(QString group, QWidget* pParent)
         : WBaseWidget(pParent),
           m_starRating(0,5),
-          m_pGroup(group) {
+          m_pGroup(group),
+          m_focused(false) {
 }
 
 WStarRating::~WStarRating() {
@@ -25,7 +26,6 @@ QSize WStarRating::sizeHint() const {
     option.initFrom(this);
     QSize widgetSize = style()->sizeFromContents(QStyle::CT_PushButton, &option,
                                                  m_starRating.sizeHint(), this);
-    widgetSize.expandedTo(QApplication::globalStrut());
 
     m_contentRect.setRect(
         (widgetSize.width() - m_starRating.sizeHint().width()) / 2,
@@ -76,9 +76,7 @@ void WStarRating::paintEvent(QPaintEvent *) {
     painter.setBrush(option.palette.text());
     painter.drawPrimitive(QStyle::PE_Widget, option);
 
-    m_starRating.paint(&painter, m_contentRect, option.palette,
-                       StarRating::ReadOnly,
-                       option.state & QStyle::State_Selected);
+    m_starRating.paint(&painter, m_contentRect);
 }
 
 void WStarRating::mouseMoveEvent(QMouseEvent *event) {

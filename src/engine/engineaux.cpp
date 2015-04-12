@@ -12,24 +12,21 @@
 #include "engine/effects/engineeffectsmanager.h"
 #include "controlaudiotaperpot.h"
 
-EngineAux::EngineAux(const char* pGroup, EffectsManager* pEffectsManager)
-        : EngineChannel(pGroup, EngineChannel::CENTER),
+EngineAux::EngineAux(const ChannelHandleAndGroup& handle_group, EffectsManager* pEffectsManager)
+        : EngineChannel(handle_group, EngineChannel::CENTER),
           m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
-          m_vuMeter(pGroup),
-          m_pEnabled(new ControlObject(ConfigKey(pGroup, "enabled"))),
-          m_pPassing(new ControlPushButton(ConfigKey(pGroup, "passthrough"))),
-          m_pPregain(new ControlAudioTaperPot(ConfigKey(pGroup, "pregain"), -12, 12, 0.5)),
+          m_vuMeter(getGroup()),
+          m_pEnabled(new ControlObject(ConfigKey(getGroup(), "enabled"))),
+          m_pPregain(new ControlAudioTaperPot(ConfigKey(getGroup(), "pregain"), -12, 12, 0.5)),
           m_sampleBuffer(NULL),
           m_wasActive(false) {
     if (pEffectsManager != NULL) {
-        pEffectsManager->registerGroup(getGroup());
+        pEffectsManager->registerChannel(handle_group);
     }
-    m_pPassing->setButtonMode(ControlPushButton::POWERWINDOW);
 
-    // Default passthrough to enabled on the master and disabled on PFL. User
+    // by default Aux is enabled on the master and disabled on PFL. User
     // can over-ride by setting the "pfl" or "master" controls.
     setMaster(true);
-    setPFL(false);
 
     m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
 }
@@ -37,8 +34,8 @@ EngineAux::EngineAux(const char* pGroup, EffectsManager* pEffectsManager)
 EngineAux::~EngineAux() {
     qDebug() << "~EngineAux()";
     delete m_pEnabled;
-    delete m_pPassing;
     delete m_pPregain;
+    delete m_pSampleRate;
 }
 
 bool EngineAux::isActive() {
@@ -73,14 +70,10 @@ void EngineAux::onInputUnconfigured(AudioInput input) {
 }
 
 void EngineAux::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
-                                      unsigned int nFrames) {
+                              unsigned int nFrames) {
     Q_UNUSED(input);
     Q_UNUSED(nFrames);
-    if (m_pPassing->get() <= 0.0) {
-        m_sampleBuffer = NULL;
-    } else {
-        m_sampleBuffer = pBuffer;
-    }
+    m_sampleBuffer = pBuffer;
 }
 
 void EngineAux::process(CSAMPLE* pOut, const int iBufferSize) {
@@ -99,7 +92,7 @@ void EngineAux::process(CSAMPLE* pOut, const int iBufferSize) {
         // volume.
         m_vuMeter.collectFeatures(&features);
         // Process effects enabled for this channel
-        m_pEngineEffectsManager->process(getGroup(), pOut, iBufferSize,
+        m_pEngineEffectsManager->process(getHandle(), pOut, iBufferSize,
                                          m_pSampleRate->get(), features);
     }
     // Update VU meter

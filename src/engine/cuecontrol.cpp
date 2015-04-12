@@ -11,6 +11,7 @@
 #include "trackinfoobject.h"
 #include "library/dao/cue.h"
 #include "cachingreader.h"
+#include "vinylcontrol/defs_vinylcontrol.h"
 
 static const double CUE_MODE_MIXXX = 0.0;
 static const double CUE_MODE_PIONEER = 1.0;
@@ -92,6 +93,9 @@ CueControl::CueControl(QString group,
 
     m_pCueIndicator = new ControlIndicator(ConfigKey(group, "cue_indicator"));
     m_pPlayIndicator = new ControlIndicator(ConfigKey(group, "play_indicator"));
+
+    m_pVinylControlEnabled = new ControlObjectSlave(group, "vinylcontrol_enabled");
+    m_pVinylControlMode = new ControlObjectSlave(group, "vinylcontrol_mode");
 }
 
 CueControl::~CueControl() {
@@ -107,10 +111,9 @@ CueControl::~CueControl() {
     delete m_pPlayStutter;
     delete m_pCueIndicator;
     delete m_pPlayIndicator;
-    while (m_hotcueControl.size() > 0) {
-        HotcueControl* pControl = m_hotcueControl.takeLast();
-        delete pControl;
-    }
+    delete m_pVinylControlEnabled;
+    delete m_pVinylControlMode;
+    qDeleteAll(m_hotcueControl);
 }
 
 void CueControl::createControls() {
@@ -147,33 +150,38 @@ void CueControl::createControls() {
 }
 
 void CueControl::attachCue(Cue* pCue, int hotCue) {
-    if (hotCue < 0 || hotCue >= m_iNumHotCues) {
+    HotcueControl* pControl = m_hotcueControl.value(hotCue, NULL);
+    if (pControl == NULL) {
         return;
     }
-    HotcueControl* pControl = m_hotcueControl[hotCue];
     if (pControl->getCue() != NULL) {
         detachCue(pControl->getHotcueNumber());
     }
-    pControl->setCue(pCue);
     connect(pCue, SIGNAL(updated()),
             this, SLOT(cueUpdated()),
             Qt::DirectConnection);
 
     pControl->getPosition()->set(pCue->getPosition());
     pControl->getEnabled()->set(pCue->getPosition() == -1 ? 0.0 : 1.0);
+    // set pCue only if all other data is in place
+    // because we have a null check for valid data else where  in the code
+    pControl->setCue(pCue);
+
 }
 
 void CueControl::detachCue(int hotCue) {
-    if (hotCue < 0 || hotCue >= m_iNumHotCues) {
+    HotcueControl* pControl = m_hotcueControl.value(hotCue, NULL);
+    if (pControl == NULL) {
         return;
     }
-    HotcueControl* pControl = m_hotcueControl[hotCue];
     Cue* pCue = pControl->getCue();
     if (!pCue)
         return;
     disconnect(pCue, 0, this, 0);
+    // clear pCue first because we have a null check for valid data else where
+    // in the code
     pControl->setCue(NULL);
-    pControl->getPosition()->set(-1);
+    pControl->getPosition()->set(-1); // invalidate position for hintReader()
     pControl->getEnabled()->set(0);
 }
 
@@ -207,13 +215,13 @@ void CueControl::trackLoaded(TrackPointer pTrack) {
     }
 
     double loadCuePoint = 0.0;
+    // If cue recall is ON in the prefs, then we're supposed to seek to the cue
+    // point on song load. Note that [Controls],cueRecall == 0 corresponds to "ON", not OFF.
+    bool cueRecall = (getConfig()->getValueString(
+                ConfigKey("[Controls]","CueRecall"), "0").toInt() == 0);
     if (loadCue != NULL) {
         m_pCuePoint->set(loadCue->getPosition());
-
-        // If cue recall is ON in the prefs, then we're supposed to seek to the cue
-        // point on song load. Note that [Controls],cueRecall == 0 corresponds to "ON", not OFF.
-        if (!getConfig()->getValueString(
-                ConfigKey("[Controls]","CueRecall")).toInt()) {
+        if (cueRecall) {
             loadCuePoint = loadCue->getPosition();
         }
     } else {
@@ -223,7 +231,17 @@ void CueControl::trackLoaded(TrackPointer pTrack) {
 
     // Need to unlock before emitting any signals to prevent deadlock.
     lock.unlock();
-    seekExact(loadCuePoint);
+    // If cueRecall is on, seek to it even if we didn't find a cue value (we'll
+    // seek to 0.
+    if (cueRecall) {
+        seekExact(loadCuePoint);
+    } else if (!(m_pVinylControlEnabled->get() &&
+            m_pVinylControlMode->get() == MIXXX_VCMODE_ABSOLUTE)) {
+        // If cuerecall is off, seek to zero unless
+        // vinylcontrol is on and set to absolute.  This allows users to
+        // load tracks and have the needle-drop be maintained.
+        seekExact(0.0);
+    }
 }
 
 void CueControl::trackUnloaded(TrackPointer pTrack) {
@@ -282,7 +300,13 @@ void CueControl::trackCuesUpdated() {
 
         int hotcue = pCue->getHotCue();
         if (hotcue != -1) {
-            HotcueControl* pControl = m_hotcueControl[hotcue];
+            HotcueControl* pControl = m_hotcueControl.value(hotcue, NULL);
+
+            // Cue's hotcue doesn't have a hotcue control.
+            if (pControl == NULL) {
+                continue;
+            }
+
             Cue* pOldCue = pControl->getCue();
 
             // If the old hotcue is different than this one.
@@ -551,9 +575,7 @@ void CueControl::hotcuePositionChanged(HotcueControl* pControl, double newPositi
     }
 }
 
-void CueControl::hintReader(QVector<Hint>* pHintList) {
-    QMutexLocker lock(&m_mutex);
-
+void CueControl::hintReader(HintVector* pHintList) {
     Hint cue_hint;
     double cuePoint = m_pCuePoint->get();
     if (cuePoint >= 0) {
@@ -563,19 +585,20 @@ void CueControl::hintReader(QVector<Hint>* pHintList) {
         pHintList->append(cue_hint);
     }
 
-    for (int i = 0; i < m_iNumHotCues; ++i) {
-        HotcueControl* pControl = m_hotcueControl[i];
-        Cue *pCue = pControl->getCue();
-        if (pCue != NULL) {
-            double position = pControl->getPosition()->get();
-            if (position != -1) {
-                cue_hint.sample = position;
-                if (cue_hint.sample % 2 != 0)
-                    cue_hint.sample--;
-                cue_hint.length = 0;
-                cue_hint.priority = 10;
-                pHintList->push_back(cue_hint);
-            }
+    // this is called from the engine thread
+    // it is no locking required, because m_hotcueControl is filled during the
+    // constructor and getPosition()->get() is a ControlObject
+    for (QList<HotcueControl*>::const_iterator it = m_hotcueControl.constBegin();
+         it != m_hotcueControl.constEnd(); ++it) {
+        HotcueControl* pControl = *it;
+        double position = pControl->getPosition()->get();
+        if (position != -1) {
+            cue_hint.sample = position;
+            if (cue_hint.sample % 2 != 0)
+                cue_hint.sample--;
+            cue_hint.length = 0;
+            cue_hint.priority = 10;
+            pHintList->append(cue_hint);
         }
     }
 }
@@ -672,7 +695,7 @@ void CueControl::cueCDJ(double v) {
     bool playing = (m_pPlayButton->get() == 1.0);
 
     if (v) {
-        if (playing || getCurrentSample() >= getTotalSamples()) {
+        if (playing || atEndPosition()) {
             // Jump to cue when playing or when at end position
 
             // Just in case.
@@ -844,7 +867,7 @@ double CueControl::updateIndicatorsAndModifyPlay(double play, bool playPossible)
     if (cueMode != CUE_MODE_DENON && cueMode != CUE_MODE_NUMARK) {
         if (m_pCuePoint->get() != -1) {
             if (play == 0.0 && !isTrackAtCue() &&
-                    getCurrentSample() < getTotalSamples()) {
+                    !atEndPosition()) {
                 if (cueMode == CUE_MODE_MIXXX) {
                     // in Mixxx mode Cue Button is flashing slow if CUE will move Cue point
                     m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
@@ -880,7 +903,7 @@ void CueControl::updateIndicators() {
         } else {
             m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
             if (!playing) {
-                if (getCurrentSample() < getTotalSamples() && cueMode != CUE_MODE_NUMARK) {
+                if (!atEndPosition() && cueMode != CUE_MODE_NUMARK) {
                     // Play will move cue point
                     m_pPlayIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
                 } else {
@@ -896,7 +919,7 @@ void CueControl::updateIndicators() {
             bool playing = m_pPlayButton->get() > 0;
             if (!playing) {
                 if (!isTrackAtCue()) {
-                    if (getCurrentSample() < getTotalSamples()) {
+                    if (!atEndPosition()) {
                         if (cueMode == CUE_MODE_MIXXX) {
                             // in Mixxx mode Cue Button is flashing slow if CUE will move Cue point
                             m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);

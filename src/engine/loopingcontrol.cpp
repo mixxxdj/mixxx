@@ -226,14 +226,15 @@ void LoopingControl::slotLoopScale(double scale) {
             m_iLoopEndSample += 2;
     }
     // Do not allow loops to go past the end of the song
-    else if (m_iLoopEndSample > samples)
+    else if (m_iLoopEndSample > samples) {
         m_iLoopEndSample = samples;
+    }
 
     // Update CO for loop end marker
     m_pCOLoopEndPosition->set(m_iLoopEndSample);
 
     // Reseek if the loop shrank out from under the playposition.
-    if (scale < 1.0) {
+    if (m_bLoopingEnabled && scale < 1.0) {
         seekInsideAdjustedLoop(
                 m_iLoopStartSample, old_loop_end,
                 m_iLoopStartSample, m_iLoopEndSample);
@@ -357,7 +358,7 @@ double LoopingControl::getTrigger(const double dRate,
     return kNoTrigger;
 }
 
-void LoopingControl::hintReader(QVector<Hint>* pHintList) {
+void LoopingControl::hintReader(HintVector* pHintList) {
     Hint loop_hint;
     // If the loop is enabled, then this is high priority because we will loop
     // sometime potentially very soon! The current audio itself is priority 1,
@@ -728,7 +729,9 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint) {
             // closest beat might be ahead of play position which would cause a seek.
             // TODO: If in reverse, should probably choose nextBeat.
             double cur_pos = getCurrentSample();
-            double prevBeat = floor(m_pBeats->findPrevBeat(cur_pos));
+            double prevBeat;
+            double nextBeat;
+            m_pBeats->findPrevNextBeats(cur_pos, &prevBeat, &nextBeat);
 
             if (m_pQuantizeEnabled->get() > 0.0 && prevBeat != -1) {
                 if (beats >= 1.0) {
@@ -741,7 +744,6 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint) {
                     //
                     // If we press 1/2 beatloop we want loop from 50% to 100%,
                     // If I press 1/4 beatloop, we want loop from 50% to 75% etc
-                    double nextBeat = floor(m_pBeats->findNextBeat(cur_pos));
                     double beat_len = nextBeat - prevBeat;
                     double loops_per_beat = 1.0 / beats;
                     double beat_pos = cur_pos - prevBeat;
@@ -772,6 +774,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint) {
         if (fullbeats > 0) {
             // Add the length between this beat and the fullbeats'th beat to the
             // loop_out position;
+            // TODO: figure out how to convert this to a findPrevNext call.
             double this_beat = m_pBeats->findNthBeat(loop_in, 1);
             double nth_beat = m_pBeats->findNthBeat(loop_in, 1 + fullbeats);
             loop_out += (nth_beat - this_beat);
@@ -780,6 +783,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint) {
         if (fracbeats > 0) {
             // Add the fraction of the beat following the current loop_out
             // position to loop out.
+            // TODO: figure out how to convert this to a findPrevNext call.
             double loop_out_beat = m_pBeats->findNthBeat(loop_out, 1);
             double loop_out_next_beat = m_pBeats->findNthBeat(loop_out, 2);
             loop_out += (loop_out_next_beat - loop_out_beat) * fracbeats;
@@ -839,23 +843,26 @@ void LoopingControl::slotLoopMove(double beats) {
                                    NULL, NULL, &dBeatLength, NULL)) {
         int old_loop_in = m_iLoopStartSample;
         int old_loop_out = m_iLoopEndSample;
-        int new_loop_in = m_iLoopStartSample + (beats * dBeatLength);
-        int new_loop_out = m_iLoopEndSample + (beats * dBeatLength);
-        // Should we reject any shift that goes out of bounds?
+        int new_loop_in = old_loop_in + (beats * dBeatLength);
+        int new_loop_out = old_loop_out + (beats * dBeatLength);
+        if (!even(new_loop_in)) {
+            --new_loop_in;
+        }
+        if (!even(new_loop_out)) {
+            --new_loop_out;
+        }
 
         m_iLoopStartSample = new_loop_in;
-        if (m_pActiveBeatLoop) {
-            // Ugly hack -- slotBeatLoop takes "true" to mean "keep starting
-            // point".  It gets that in-point from m_iLoopStartSample,
-            // which we just changed so that the loop actually shifts.
-            slotBeatLoop(m_pActiveBeatLoop->getSize(), true);
-        } else {
-            m_pCOLoopStartPosition->set(new_loop_in);
-            m_iLoopEndSample = new_loop_out;
-            m_pCOLoopEndPosition->set(new_loop_out);
+        m_pCOLoopStartPosition->set(new_loop_in);
+        m_iLoopEndSample = new_loop_out;
+        m_pCOLoopEndPosition->set(new_loop_out);
+
+        // If we are looping make sure that the play head does not leave the
+        // loop as a result of our adjustment.
+        if (m_bLoopingEnabled) {
+            seekInsideAdjustedLoop(old_loop_in, old_loop_out,
+                                   new_loop_in, new_loop_out);
         }
-        seekInsideAdjustedLoop(old_loop_in, old_loop_out,
-                               new_loop_in, new_loop_out);
     }
 }
 

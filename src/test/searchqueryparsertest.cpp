@@ -4,6 +4,7 @@
 #include <QTemporaryFile>
 
 #include "library/searchqueryparser.h"
+#include "util/assert.h"
 
 class SearchQueryParserTest : public testing::Test {
   protected:
@@ -11,13 +12,13 @@ class SearchQueryParserTest : public testing::Test {
             : m_database(QSqlDatabase::addDatabase("QSQLITE")),
               m_parser(m_database) {
         QTemporaryFile databaseFile("mixxxdb.sqlite");
-        Q_ASSERT(databaseFile.open());
+        RELEASE_ASSERT(databaseFile.open());
         m_database.setHostName("localhost");
         m_database.setUserName("mixxx");
         m_database.setPassword("mixxx");
         qDebug() << "Temp file is" << databaseFile.fileName();
         m_database.setDatabaseName(databaseFile.fileName());
-        Q_ASSERT(m_database.open());
+        RELEASE_ASSERT(m_database.open());
     }
 
     virtual ~SearchQueryParserTest() {

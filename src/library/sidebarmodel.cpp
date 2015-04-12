@@ -6,6 +6,7 @@
 #include "library/sidebarmodel.h"
 #include "library/treeitem.h"
 #include "library/browse/browsefeature.h"
+#include "util/assert.h"
 
 SidebarModel::SidebarModel(QObject* parent)
         : QAbstractItemModel(parent),
@@ -310,8 +311,10 @@ QModelIndex SidebarModel::translateSourceIndex(const QModelIndex& index) {
      */
 
     const QAbstractItemModel* model = dynamic_cast<QAbstractItemModel*>(sender());
+    DEBUG_ASSERT_AND_HANDLE(model != NULL) {
+        return QModelIndex();
+    }
 
-    Q_ASSERT(model);
     if (index.isValid()) {
        TreeItem* item = (TreeItem*)index.internalPointer();
        translatedIndex = createIndex(index.row(), index.column(), item);
@@ -380,8 +383,9 @@ void SidebarModel::slotModelReset() {
  */
 void SidebarModel::slotFeatureIsLoading(LibraryFeature * feature, bool selectFeature) {
     featureRenamed(feature);
-    if(selectFeature)
-    	slotFeatureSelect(feature);
+    if (selectFeature) {
+        slotFeatureSelect(feature);
+    }
 }
 
 /* Tobias: This slot is somewhat redundant but I decided

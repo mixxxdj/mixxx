@@ -20,7 +20,7 @@
 #include "playermanager.h"
 #include "basetrackplayer.h"
 #include "library/library.h"
-#include "xmlparse.h"
+#include "util/xml.h"
 #include "controllers/controllerlearningeventfilter.h"
 #include "controllers/controllermanager.h"
 
@@ -72,6 +72,7 @@
 #include "widget/wkey.h"
 #include "widget/wcombobox.h"
 #include "widget/wsplitter.h"
+#include "widget/wsingletoncontainer.h"
 #include "util/valuetransformer.h"
 #include "util/cmdlineargs.h"
 
@@ -142,6 +143,7 @@ LegacySkinParser::LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
 }
 
 LegacySkinParser::~LegacySkinParser() {
+    delete m_pContext;
 }
 
 bool LegacySkinParser::canParse(QString skinPath) {
@@ -329,15 +331,16 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
     // created parent so MixxxMainWindow can use it for nefarious purposes (
     // fullscreen mostly) --bkgood
     m_pParent = pParent;
+    delete m_pContext;
     m_pContext = new SkinContext(m_pConfig, skinPath + "/skin.xml");
     m_pContext->setSkinBasePath(skinPath.append("/"));
     QList<QWidget*> widgets = parseNode(skinDocument);
 
     if (widgets.empty()) {
-        qWarning() << "Skin produced no widgets!";
+        SKIN_WARNING(skinDocument, *m_pContext) << "Skin produced no widgets!";
         return NULL;
     } else if (widgets.size() > 1) {
-        qWarning() << "Skin produced more than 1 widget!";
+        SKIN_WARNING(skinDocument, *m_pContext) << "Skin produced more than 1 widget!";
     }
     return widgets[0];
 }
@@ -486,8 +489,13 @@ QList<QWidget*> LegacySkinParser::parseNode(QDomElement node) {
         m_pContext->updateVariable(node);
     } else if (nodeName == "Template") {
         result = parseTemplate(node);
+    } else if (nodeName == "SingletonDefinition") {
+        parseSingletonDefinition(node);
+    } else if (nodeName == "SingletonContainer") {
+        result = wrapWidget(parseStandardWidget<WSingletonContainer>(node));
     } else {
-        qDebug() << "Invalid node name in skin:" << nodeName;
+        SKIN_WARNING(node, *m_pContext) << "Invalid node name in skin:"
+                                       << nodeName;
     }
 
     if (sDebug) {
@@ -614,18 +622,20 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
             }
             QDomElement element = node.toElement();
 
-            QList<QWidget*> children = parseNode(element);
+            QList<QWidget*> child_widgets = parseNode(element);
 
-            if (children.empty()) {
-                qWarning() << "WidgetStack child produced no widget.";
+            if (child_widgets.empty()) {
+                SKIN_WARNING(node, *m_pContext)
+                        << "WidgetStack child produced no widget.";
                 continue;
             }
 
-            if (children.size() > 1) {
-                qWarning() << "WidgetStack child produced multiple widgets."
-                           << "All but the first are ignored.";
+            if (child_widgets.size() > 1) {
+                SKIN_WARNING(node, *m_pContext)
+                        << "WidgetStack child produced multiple widgets."
+                        << "All but the first are ignored.";
             }
-            QWidget* pChild = children[0];
+            QWidget* pChild = child_widgets[0];
 
             if (pChild == NULL) {
                 continue;
@@ -679,13 +689,15 @@ QWidget* LegacySkinParser::parseSizeAwareStack(QDomElement node) {
             QList<QWidget*> children = parseNode(element);
 
             if (children.empty()) {
-                qWarning() << "SizeAwareStack child produced no widget.";
+                SKIN_WARNING(node, *m_pContext)
+                        << "SizeAwareStack child produced no widget.";
                 continue;
             }
 
             if (children.size() > 1) {
-                qWarning() << "SizeAwareStack child produced multiple widgets."
-                           << "All but the first are ignored.";
+                SKIN_WARNING(node, *m_pContext)
+                        << "SizeAwareStack child produced multiple widgets."
+                        << "All but the first are ignored.";
             }
             QWidget* pChild = children[0];
 
@@ -1077,6 +1089,59 @@ QWidget* LegacySkinParser::parseCoverArt(QDomElement node) {
     return pCoverArt;
 }
 
+void LegacySkinParser::parseSingletonDefinition(QDomElement node) {
+    QString objectName = m_pContext->selectString(node, "ObjectName");
+    if (objectName.isEmpty()) {
+        SKIN_WARNING(node, *m_pContext)
+                << "SingletonDefinition requires an ObjectName";
+    }
+
+    QDomNode childrenNode = m_pContext->selectNode(node, "Children");
+    if (childrenNode.isNull()) {
+        SKIN_WARNING(node, *m_pContext)
+                << "SingletonDefinition requires a Children tag with one child";
+    }
+
+    // Descend chilren, taking the first valid element.
+    QDomNode child_node;
+    QDomNodeList children = childrenNode.childNodes();
+    for (int i = 0; i < children.count(); ++i) {
+        child_node = children.at(i);
+        if (child_node.isElement()) {
+            break;
+        }
+    }
+
+    if (child_node.isNull()) {
+        SKIN_WARNING(node, *m_pContext)
+                << "SingletonDefinition Children node is empty";
+        return;
+    }
+
+    QDomElement element = child_node.toElement();
+    QList<QWidget*> child_widgets = parseNode(element);
+    if (child_widgets.empty()) {
+        SKIN_WARNING(node, *m_pContext)
+                << "SingletonDefinition child produced no widget.";
+        return;
+    } else if (child_widgets.size() > 1) {
+        SKIN_WARNING(node, *m_pContext)
+                << "SingletonDefinition child produced multiple widgets."
+                << "All but the first are ignored.";
+    }
+
+    QWidget* pChild = child_widgets[0];
+    if (pChild == NULL) {
+        SKIN_WARNING(node, *m_pContext)
+                << "SingletonDefinition child widget is NULL";
+        return;
+    }
+
+    pChild->setObjectName(objectName);
+    m_pContext->defineSingleton(objectName, pChild);
+    pChild->hide();
+}
+
 QWidget* LegacySkinParser::parseLibrary(QDomElement node) {
     WLibrary* pLibraryWidget = new WLibrary(m_pParent);
     pLibraryWidget->installEventFilter(m_pKeyboard);
@@ -1303,9 +1368,9 @@ QDomElement LegacySkinParser::loadTemplate(const QString& path) {
 
     if (!tmpl.setContent(&templateFile, &errorMessage,
                          &errorLine, &errorColumn)) {
-        qDebug() << "LegacySkinParser::loadTemplate - setContent failed see"
-                 << "line:" << errorLine << "column:" << errorColumn;
-        qDebug() << "LegacySkinParser::loadTemplate - message:" << errorMessage;
+        qWarning() << "LegacySkinParser::loadTemplate - setContent failed see"
+                   << absolutePath << "line:" << errorLine << "column:" << errorColumn;
+        qWarning() << "LegacySkinParser::loadTemplate - message:" << errorMessage;
         return QDomElement();
     }
 
@@ -1315,7 +1380,9 @@ QDomElement LegacySkinParser::loadTemplate(const QString& path) {
 
 QList<QWidget*> LegacySkinParser::parseTemplate(QDomElement node) {
     if (!node.hasAttribute("src")) {
-        qDebug() << "Template instantiation without src attribute:" << node.text();
+        SKIN_WARNING(node, *m_pContext)
+                << "Template instantiation without src attribute:"
+                << node.text();
         return QList<QWidget*>();
     }
 
@@ -1324,8 +1391,7 @@ QList<QWidget*> LegacySkinParser::parseTemplate(QDomElement node) {
     QDomElement templateNode = loadTemplate(path);
 
     if (templateNode.isNull()) {
-        qDebug() << "Template instantiation for template failed:"
-                 << path;
+        SKIN_WARNING(node, *m_pContext) << "Template instantiation for template failed:" << path;
         return QList<QWidget*>();
     }
 
@@ -1486,7 +1552,8 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
         } else if (heightOk && y >= 0) {
             pWidget->setMinimumHeight(y);
         } else if (!widthOk && !heightOk) {
-            qDebug() << "Could not parse widget MinimumSize:" << size;
+            SKIN_WARNING(node, *m_pContext)
+                    << "Could not parse widget MinimumSize:" << size;
         }
     }
 
@@ -1510,7 +1577,8 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
         } else if (heightOk && y >= 0) {
             pWidget->setMaximumHeight(y);
         } else if (!widthOk && !heightOk) {
-            qDebug() << "Could not parse widget MaximumSize:" << size;
+            SKIN_WARNING(node, *m_pContext)
+                    << "Could not parse widget MaximumSize:" << size;
         }
     }
 
@@ -1527,14 +1595,16 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
         if (parseSizePolicy(&xs, &horizontalPolicy)) {
             sizePolicy.setHorizontalPolicy(horizontalPolicy);
         } else if (!xs.isEmpty()) {
-            qDebug() << "Could not parse horizontal size policy:" << xs;
+            SKIN_WARNING(node, *m_pContext)
+                    << "Could not parse horizontal size policy:" << xs;
         }
 
         QSizePolicy::Policy verticalPolicy;
         if (parseSizePolicy(&ys, &verticalPolicy)) {
             sizePolicy.setVerticalPolicy(verticalPolicy);
         } else if (!ys.isEmpty()) {
-            qDebug() << "Could not parse vertical size policy:" << ys;
+            SKIN_WARNING(node, *m_pContext)
+                    << "Could not parse vertical size policy:" << ys;
         }
 
         hasSizePolicyNode = true;
@@ -1653,10 +1723,13 @@ void LegacySkinParser::setupBaseWidget(QDomNode node,
         QString toolTipId = m_pContext->selectString(node, "TooltipId");
         QString toolTip = m_tooltips.tooltipForId(toolTipId);
 
-        if (toolTipId.length() > 0) {
+        if (!toolTip.isEmpty()) {
             pBaseWidget->prependBaseTooltip(toolTip);
-        } else {
-            qDebug() << "Invalid <TooltipId> in skin.xml:" << toolTipId;
+        } else if (!toolTipId.isEmpty()) {
+            // Only warn if there was a tooltip ID specified and no tooltip for
+            // that ID.
+            SKIN_WARNING(node, *m_pContext)
+                    << "Invalid <TooltipId> in skin.xml:" << toolTipId;
         }
     }
 }
@@ -1775,7 +1848,8 @@ void LegacySkinParser::setupConnections(QDomNode node, WBaseWidget* pWidget) {
                 if (nodeValue) {
                     emitOption = ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE;
                 } else {
-                    qWarning() << "LegacySkinParser::setupConnections(): EmitOnPressAndRelease must not set false";
+                    SKIN_WARNING(con, *m_pContext)
+                            << "LegacySkinParser::setupConnections(): EmitOnPressAndRelease must not set false";
                 }
             } else {
                 // default:
