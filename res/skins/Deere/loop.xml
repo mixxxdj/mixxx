@@ -37,19 +37,14 @@
             <SetVariable name="state_0_unpressed"></SetVariable>
             <SetVariable name="left_connection_control"><Variable name="group"/>,loop_out</SetVariable>
           </Template>
-        </Children>
-      </WidgetGroup>
 
-      <WidgetGroup>
-        <Layout>horizontal</Layout>
-        <Children>
           <Template src="skin:left_display_2state_button.xml">
             <SetVariable name="TooltipId">reloop_exit</SetVariable>
             <SetVariable name="ObjectName">ReloopExit</SetVariable>
-            <SetVariable name="MinimumSize"><Variable name="HorizontalStretchButtonMinimumSize"/></SetVariable>
-            <SetVariable name="MaximumSize"><Variable name="HorizontalStretchButtonMaximumSize"/></SetVariable>
-            <SetVariable name="SizePolicy"><Variable name="HorizontalStretchButtonSizePolicy"/></SetVariable>
-            <SetVariable name="state_0_text">RELOOP</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text">LOOP</SetVariable>
             <SetVariable name="state_0_pressed"></SetVariable>
             <SetVariable name="state_0_unpressed"></SetVariable>
             <SetVariable name="state_1_text">EXIT</SetVariable>
@@ -60,6 +55,7 @@
           </Template>
         </Children>
       </WidgetGroup>
+
     </Children>
   </WidgetGroup>
 </Template>
