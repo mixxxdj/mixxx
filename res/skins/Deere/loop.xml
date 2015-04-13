@@ -1,7 +1,7 @@
 <!DOCTYPE template>
 <!--
   Description:
-    Looping controls (in, out, reloop).
+    Looping controls (in, out, reloop, loop move).
   Variables:
     group: The group for the controls.
 -->
@@ -56,6 +56,12 @@
         </Children>
       </WidgetGroup>
 
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:loopmove.xml"/>
+        </Children>
+      </WidgetGroup>
     </Children>
   </WidgetGroup>
 </Template>

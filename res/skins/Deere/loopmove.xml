@@ -20,7 +20,7 @@
          <Children>
            <Template src="skin:loopmove_button.xml">
              <SetVariable name="control_length">4</SetVariable>
-             <SetVariable name="text_length">|&lt;|</SetVariable>
+             <SetVariable name="text_length">|◀|</SetVariable>
              <SetVariable name="direction">backward</SetVariable>
            </Template>
 
@@ -37,7 +37,7 @@
 
            <Template src="skin:loopmove_button.xml">
              <SetVariable name="control_length">4</SetVariable>
-             <SetVariable name="text_length">|&gt;|</SetVariable>
+             <SetVariable name="text_length">|▶|</SetVariable>
              <SetVariable name="direction">forward</SetVariable>
            </Template>
          </Children>
@@ -48,7 +48,7 @@
          <Children>
            <Template src="skin:loopmove_button.xml">
              <SetVariable name="control_length">8</SetVariable>
-             <SetVariable name="text_length">|&lt;|</SetVariable>
+             <SetVariable name="text_length">|◀|</SetVariable>
              <SetVariable name="direction">backward</SetVariable>
            </Template>
 
@@ -65,7 +65,7 @@
 
           <Template src="skin:loopmove_button.xml">
              <SetVariable name="control_length">8</SetVariable>
-             <SetVariable name="text_length">|&gt;|</SetVariable>
+             <SetVariable name="text_length">|▶|</SetVariable>
              <SetVariable name="direction">forward</SetVariable>
            </Template>
          </Children>
@@ -76,7 +76,7 @@
          <Children>
            <Template src="skin:loopmove_button.xml">
              <SetVariable name="control_length">16</SetVariable>
-             <SetVariable name="text_length">|&lt;|</SetVariable>
+             <SetVariable name="text_length">|◀|</SetVariable>
              <SetVariable name="direction">backward</SetVariable>
            </Template>
 
@@ -93,7 +93,7 @@
 
            <Template src="skin:loopmove_button.xml">
              <SetVariable name="control_length">16</SetVariable>
-             <SetVariable name="text_length">|&gt;|</SetVariable>
+             <SetVariable name="text_length">|▶|</SetVariable>
              <SetVariable name="direction">forward</SetVariable>
            </Template>
          </Children>
@@ -104,7 +104,7 @@
          <Children>
            <Template src="skin:loopmove_button.xml">
              <SetVariable name="control_length">32</SetVariable>
-             <SetVariable name="text_length">|&lt;|</SetVariable>
+             <SetVariable name="text_length">|◀|</SetVariable>
              <SetVariable name="direction">backward</SetVariable>
            </Template>
 
@@ -121,7 +121,7 @@
 
           <Template src="skin:loopmove_button.xml">
              <SetVariable name="control_length">32</SetVariable>
-             <SetVariable name="text_length">|&gt;|</SetVariable>
+             <SetVariable name="text_length">|▶|</SetVariable>
              <SetVariable name="direction">forward</SetVariable>
            </Template>
          </Children>
@@ -132,7 +132,7 @@
         <Children>
           <Template src="skin:loopmove_button.xml">
             <SetVariable name="control_length">64</SetVariable>
-            <SetVariable name="text_length">|&lt;|</SetVariable>
+            <SetVariable name="text_length">|◀|</SetVariable>
             <SetVariable name="direction">backward</SetVariable>
           </Template>
 
@@ -149,7 +149,7 @@
 
           <Template src="skin:loopmove_button.xml">
             <SetVariable name="control_length">64</SetVariable>
-            <SetVariable name="text_length">|&gt;|</SetVariable>
+            <SetVariable name="text_length">|▶|</SetVariable>
             <SetVariable name="direction">forward</SetVariable>
           </Template>
         </Children>
@@ -160,7 +160,7 @@
          <Children>
            <Template src="skin:loopmove_button.xml">
              <SetVariable name="control_length">0.03125</SetVariable>
-             <SetVariable name="text_length">|&lt;|</SetVariable>
+             <SetVariable name="text_length">|◀|</SetVariable>
              <SetVariable name="direction">backward</SetVariable>
            </Template>
 
@@ -177,7 +177,7 @@
 
          <Template src="skin:loopmove_button.xml">
              <SetVariable name="control_length">0.03125</SetVariable>
-             <SetVariable name="text_length">|&gt;|</SetVariable>
+             <SetVariable name="text_length">|▶|</SetVariable>
              <SetVariable name="direction">forward</SetVariable>
            </Template>
          </Children>
@@ -188,7 +188,7 @@
          <Children>
            <Template src="skin:loopmove_button.xml">
              <SetVariable name="control_length">0.0625</SetVariable>
-             <SetVariable name="text_length">|&lt;|</SetVariable>
+             <SetVariable name="text_length">|◀|</SetVariable>
              <SetVariable name="direction">backward</SetVariable>
            </Template>
 
@@ -205,7 +205,7 @@
 
          <Template src="skin:loopmove_button.xml">
              <SetVariable name="control_length">0.0625</SetVariable>
-             <SetVariable name="text_length">|&gt;|</SetVariable>
+             <SetVariable name="text_length">|▶|</SetVariable>
              <SetVariable name="direction">forward</SetVariable>
            </Template>
          </Children>
@@ -216,7 +216,7 @@
          <Children>
            <Template src="skin:loopmove_button.xml">
              <SetVariable name="control_length">0.125</SetVariable>
-             <SetVariable name="text_length">|&lt;|</SetVariable>
+             <SetVariable name="text_length">|◀|</SetVariable>
              <SetVariable name="direction">backward</SetVariable>
            </Template>
 
@@ -233,7 +233,7 @@
 
            <Template src="skin:loopmove_button.xml">
              <SetVariable name="control_length">0.125</SetVariable>
-             <SetVariable name="text_length">|&gt;|</SetVariable>
+             <SetVariable name="text_length">|▶|</SetVariable>
              <SetVariable name="direction">forward</SetVariable>
            </Template>
          </Children>
@@ -244,7 +244,7 @@
          <Children>
            <Template src="skin:loopmove_button.xml">
              <SetVariable name="control_length">0.25</SetVariable>
-             <SetVariable name="text_length">|&lt;|</SetVariable>
+             <SetVariable name="text_length">|◀|</SetVariable>
              <SetVariable name="direction">backward</SetVariable>
            </Template>
 
@@ -261,7 +261,7 @@
 
            <Template src="skin:loopmove_button.xml">
              <SetVariable name="control_length">0.25</SetVariable>
-             <SetVariable name="text_length">|&gt;|</SetVariable>
+             <SetVariable name="text_length">|▶|</SetVariable>
              <SetVariable name="direction">forward</SetVariable>
            </Template>
          </Children>
@@ -272,7 +272,7 @@
          <Children>
            <Template src="skin:loopmove_button.xml">
              <SetVariable name="control_length">0.5</SetVariable>
-             <SetVariable name="text_length">|&lt;|</SetVariable>
+             <SetVariable name="text_length">|◀|</SetVariable>
              <SetVariable name="direction">backward</SetVariable>
            </Template>
 
@@ -289,7 +289,7 @@
 
            <Template src="skin:loopmove_button.xml">
              <SetVariable name="control_length">0.5</SetVariable>
-             <SetVariable name="text_length">|&gt;|</SetVariable>
+             <SetVariable name="text_length">|▶|</SetVariable>
              <SetVariable name="direction">forward</SetVariable>
            </Template>
          </Children>
@@ -300,7 +300,7 @@
          <Children>
            <Template src="skin:loopmove_button.xml">
              <SetVariable name="control_length">1</SetVariable>
-             <SetVariable name="text_length">|&lt;|</SetVariable>
+             <SetVariable name="text_length">|◀|</SetVariable>
              <SetVariable name="direction">backward</SetVariable>
            </Template>
 
@@ -317,7 +317,7 @@
 
            <Template src="skin:loopmove_button.xml">
              <SetVariable name="control_length">1</SetVariable>
-             <SetVariable name="text_length">|&gt;|</SetVariable>
+             <SetVariable name="text_length">|▶|</SetVariable>
              <SetVariable name="direction">forward</SetVariable>
            </Template>
          </Children>
@@ -328,7 +328,7 @@
          <Children>
            <Template src="skin:loopmove_button.xml">
              <SetVariable name="control_length">2</SetVariable>
-             <SetVariable name="text_length">|&lt;|</SetVariable>
+             <SetVariable name="text_length">|◀|</SetVariable>
              <SetVariable name="direction">backward</SetVariable>
            </Template>
 
@@ -345,7 +345,7 @@
 
            <Template src="skin:loopmove_button.xml">
              <SetVariable name="control_length">2</SetVariable>
-             <SetVariable name="text_length">|&gt;|</SetVariable>
+             <SetVariable name="text_length">|▶|</SetVariable>
              <SetVariable name="direction">forward</SetVariable>
            </Template>
          </Children>

@@ -1,7 +1,7 @@
 <!DOCTYPE template>
 <!--
   Description:
-    A grid of transport controls (play/rev/fwd/back).
+    A grid of transport controls (rev/fwd/back/beatjump).
   Variables:
     group: The group for the controls.
 -->
