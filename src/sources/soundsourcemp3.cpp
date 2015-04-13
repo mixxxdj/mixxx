@@ -139,6 +139,7 @@ Result SoundSourceMp3::tryOpen(SINT /*channelCountHint*/) {
                 qWarning() << "Differing number of channels in some headers:"
                         << m_file.fileName() << getChannelCount() << "<>"
                         << madChannelCount;
+                qWarning() << "MP3 files with varying channel configurations are not supported!";
                 // Abort
                 mad_header_finish(&madHeader);
                 return ERR;
@@ -189,6 +190,7 @@ Result SoundSourceMp3::tryOpen(SINT /*channelCountHint*/) {
                 qWarning() << "Differing sample rate in some headers:"
                         << m_file.fileName()
                         << getFrameRate() << "<>" << madSampleRate;
+                qWarning() << "MP3 files with varying sample rate are not supported!";
                 // Abort
                 mad_header_finish(&madHeader);
                 return ERR;
