@@ -66,11 +66,11 @@
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
-          <Text>E</Text>
+          <Text>ON</Text>
         </State>
         <State>
           <Number>1</Number>
-          <Text>E</Text>
+          <Text>ON</Text>
         </State>
         <Connection>
           <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],enabled</ConfigKey>
