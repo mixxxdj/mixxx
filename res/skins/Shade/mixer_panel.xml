@@ -568,8 +568,11 @@
 							<TooltipId>time</TooltipId>
 							<Style>
 								QLabel {
-									font: bold 10px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-									background-color: transparent; color: #191F24; text-align:center;
+									font: bold 10px/12px sans-serif;
+									font-family: "Open Sans";
+									background-color: transparent; 
+									color: #191F24; 
+									text-align:center;
 								}
 							</Style>
 							<Pos>113,15</Pos>
