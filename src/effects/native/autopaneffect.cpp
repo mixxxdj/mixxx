@@ -145,7 +145,8 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
     float delay = round(m_pDelayParameter->value() * sampleRate);
     gs.delay->setLeftDelay(delay);
     
-    /*
+    gs.delay->process(pInput, pOutput, numSamples);
+    
     for (unsigned int i = 0; i + 1 < numSamples; i += 2) {
         
         CSAMPLE periodFraction = CSAMPLE(gs.time) / period;
@@ -176,14 +177,11 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
         gs.frac.setWithRampingApplied(
             (sin(M_PI * 2.0f * angleFraction) * width + 1.0f) / 2.0f);
         
-        pOutput[i] = pInput[i] * gs.frac;
-        pOutput[i+1] = pInput[i+1] * (1.0f - gs.frac);
+        pOutput[i] = pOutput[i] * gs.frac;
+        pOutput[i+1] = pOutput[i+1] * (1.0f - gs.frac);
         
         gs.time++;
     }
-    */
-    
-    gs.delay->process(pInput, pOutput, numSamples);
     
 //    SampleUtil::addWithGain(pOutput,
 //            pOutput, 0.9,
