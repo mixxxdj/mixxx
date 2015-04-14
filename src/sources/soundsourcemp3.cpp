@@ -68,7 +68,9 @@ bool decodeFrameHeader(
         return false;
     }
 #ifndef QT_NO_DEBUG_OUTPUT
-    logFrameHeader(qDebug(), *pMadHeader);
+    // Logging of MP3 frame headers should only be enabled
+    // for debugging purposes.
+    //logFrameHeader(qDebug(), *pMadHeader);
 #endif
     if (isRecoverableError(decodeResult)) {
         if ((MAD_ERROR_LOSTSYNC == decodeResult) && skipId3Tag) {
