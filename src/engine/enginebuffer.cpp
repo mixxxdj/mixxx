@@ -367,12 +367,21 @@ void EngineBuffer::enableIndependentPitchTempoScaling(bool bEnable,
     EngineBufferScale* vinyl_scale = m_pScaleVinyl;
 
     if (bEnable && m_pScale != keylock_scale) {
-        readToCrossfadeBuffer(iBufferSize);
+        if (m_speed_old != 0.0) {
+            // Crossfade if we are not paused.
+            // If we start from zero a ramping gain is
+            // applied later
+            readToCrossfadeBuffer(iBufferSize);
+        }
         m_pScale = keylock_scale;
         m_pScale->clear();
         m_bScalerChanged = true;
     } else if (!bEnable && m_pScale != vinyl_scale) {
-        readToCrossfadeBuffer(iBufferSize);
+        if (m_speed_old != 0.0) {
+            // Crossfade if we are not paused
+            // (for slow speeds below 0.1 the vinyl_scale is used)
+            readToCrossfadeBuffer(iBufferSize);
+        }
         m_pScale = vinyl_scale;
         m_pScale->clear();
         m_bScalerChanged = true;
@@ -799,9 +808,11 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             // Force pitchRatio to the linear pitch set by speed
             pitchRatio = speed;
             // This is for the natural speed pitch found on turn tables
-        } else if (fabs(speed) < 0.1 && m_pKeylockEngine->get() == RUBBERBAND) {
-            // At very slow speeds, Rubberband performs memory allocations which
-            // can cause underruns.  Disable keylock under these conditions.
+        } else if (fabs(speed) < 0.1) {
+            // We have pre-allocated big buffers in Rubberband and Soundtouch for
+            // a minimum speed of 0.1. Slower speeds will re-allocate much bigger
+            // buffers which may cause underruns.
+            // Disable keylock under these conditions.
 
             // Force pitchRatio to the linear pitch set by speed
             pitchRatio = speed;
