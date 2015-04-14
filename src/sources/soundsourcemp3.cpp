@@ -531,8 +531,7 @@ SINT SoundSourceMp3::readSampleFrames(
 
             // Once decoded the frame is synthesized to PCM samples
             mad_synth_frame(&m_madSynth, &m_madFrame);
-            // The following assumption seems to be violated by some files!
-            //DEBUG_ASSERT(getFrameRate() == m_madSynth.pcm.samplerate);
+            DEBUG_ASSERT(getFrameRate() == m_madSynth.pcm.samplerate);
             m_madSynthCount = m_madSynth.pcm.length;
             DEBUG_ASSERT(0 < m_madSynthCount);
         }
