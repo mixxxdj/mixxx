@@ -451,10 +451,15 @@ bool SoundSourceFFmpeg::getBytesFromCache(char *buffer, quint64 offset,
         l_SObj = m_SCache[l_lPos];
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         // Calculate in other words get bytes how much we must copy to
         // buffer (CSAMPLE = 4 and we have 2 channels which is 8 times)
 =======
 >>>>>>> Fixed native FFmpeg playing with New Sound API whic uses Float point reading.
+=======
+        // Calculate in other words get bytes how much we must copy to
+        // buffer (CSAMPLE = 4 and we have 2 channels which is 8 times)
+>>>>>>> Added some comments how caching and FFmpeg/AVConv really works
         l_lLeft = (size * sizeof(CSAMPLE)) * 2;
         memset(buffer, 0x00, l_lLeft);
         while (l_lLeft > 0) {
@@ -478,6 +483,7 @@ bool SoundSourceFFmpeg::getBytesFromCache(char *buffer, quint64 offset,
             // If Cache object ain't correct then calculate offset
             if (l_SObj->startByte <= offset) {
 <<<<<<< HEAD
+<<<<<<< HEAD
                 // We have to convert again it to bytes
                 l_lOffset = (offset - l_SObj->startByte) * (sizeof(CSAMPLE) * 2);
             }
@@ -488,6 +494,13 @@ bool SoundSourceFFmpeg::getBytesFromCache(char *buffer, quint64 offset,
             }
 
 >>>>>>> Fixed native FFmpeg playing with New Sound API whic uses Float point reading.
+=======
+                // We have to convert again it to bytes
+                l_lOffset = (offset - l_SObj->startByte) * (sizeof(CSAMPLE) * 2);
+            }
+
+            // Okay somehow offset is bigger than our Cache object have bytes
+>>>>>>> Added some comments how caching and FFmpeg/AVConv really works
             if (l_lOffset >= l_SObj->length) {
                 l_SObj = m_SCache[++ l_lPos];
                 continue;
@@ -495,9 +508,13 @@ bool SoundSourceFFmpeg::getBytesFromCache(char *buffer, quint64 offset,
 
             if (l_lLeft > l_SObj->length) {
 <<<<<<< HEAD
+<<<<<<< HEAD
                 // calculate start point of copy
 =======
 >>>>>>> Fixed native FFmpeg playing with New Sound API whic uses Float point reading.
+=======
+                // calculate start point of copy
+>>>>>>> Added some comments how caching and FFmpeg/AVConv really works
                 l_lBytesToCopy = l_SObj->length - l_lOffset;
                 memcpy(buffer, (l_SObj->bytes + l_lOffset), l_lBytesToCopy);
                 l_lOffset = 0;
