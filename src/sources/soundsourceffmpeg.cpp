@@ -220,7 +220,12 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, qint64 offset) {
         l_pFrame = av_frame_alloc();
 #endif
 
+        // Read one frame (which has nothing to do with Mixxx Frame)
+        // it's some packed audio data from container like MP3, Ogg or MP4
         if (av_read_frame(m_pFormatCtx, &l_SPacket) >= 0) {
+            // Are we on correct audio stream. Currently we are always
+            // Using first audio stream but in future there should be
+            // possibility to choose which to use
             if (l_SPacket.stream_index == m_iAudioStream) {
                 if (m_lStoredSeekPoint > 0) {
                     // Seek for correct jump point
@@ -234,6 +239,7 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, qint64 offset) {
                     m_lStoredSeekPoint = -1;
                 }
 
+                // Decode audio bytes (These can be S16P or FloatP [P is Planar])
                 l_iRet = avcodec_decode_audio4(m_pCodecCtx,l_pFrame,&l_iFrameFinished,
                                                &l_SPacket);
 
@@ -252,6 +258,9 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, qint64 offset) {
                         continue;
                     }
                     memset(l_SObj, 0x00, sizeof(struct ffmpegCacheObject));
+
+                    // Try to convert it to Mixxx understand output format
+                    // which is pure Stereo Float
                     l_iRet = m_pResample->reSample(l_pFrame, &l_SObj->bytes);
 
                     if (l_iRet > 0) {
@@ -363,10 +372,14 @@ bool SoundSourceFFmpeg::getBytesFromCache(char *buffer, quint64 offset,
     quint32 l_lOffset = 0;
     quint32 l_lBytesToCopy = 0;
 
+    // Is offset bigger than start of cache
     if (offset >= m_lCacheStartByte) {
+        // If last pos is (which is shouldn't) use caches end
         if (m_lCacheLastPos == 0) {
             m_lCacheLastPos = m_SCache.size() - 1;
         }
+
+        // Seek to correct FrameIndex
         for (l_lPos = m_lCacheLastPos; l_lPos > 0; l_lPos --) {
             l_SObj = m_SCache[l_lPos];
             if ((l_SObj->startByte + l_SObj->length) < offset) {
@@ -374,17 +387,21 @@ bool SoundSourceFFmpeg::getBytesFromCache(char *buffer, quint64 offset,
             }
         }
 
+        // Use this Cache object as starting point
         l_SObj = m_SCache[l_lPos];
 
+        // Calculate in other words get bytes how much we must copy to
+        // buffer (CSAMPLE = 4 and we have 2 channels which is 8 times)
         l_lLeft = (size * sizeof(CSAMPLE)) * 2;
         memset(buffer, 0x00, l_lLeft);
         while (l_lLeft > 0) {
-
+            // If Cache is running low read more
             if (l_SObj == NULL || (l_lPos + 5) > (unsigned int)m_SCache.size()) {
                 offset = l_SObj->startByte;
                 if (readFramesToCache(50, -1) == false) {
                     return false;
                 }
+                // Seek back to correct place
                 for (l_lPos = (m_SCache.size() - 50); l_lPos > 0; l_lPos --) {
                     l_SObj = m_SCache[l_lPos];
                     if ((l_SObj->startByte + l_SObj->length) < offset) {
@@ -395,16 +412,20 @@ bool SoundSourceFFmpeg::getBytesFromCache(char *buffer, quint64 offset,
                 continue;
             }
 
+            // If Cache object ain't correct then calculate offset
             if (l_SObj->startByte <= offset) {
+                // We have to convert again it to bytes
                 l_lOffset = (offset - l_SObj->startByte) * (sizeof(CSAMPLE) * 2);
             }
 
+            // Okay somehow offset is bigger than our Cache object have bytes
             if (l_lOffset >= l_SObj->length) {
                 l_SObj = m_SCache[++ l_lPos];
                 continue;
             }
 
             if (l_lLeft > l_SObj->length) {
+                // calculate start point of copy
                 l_lBytesToCopy = l_SObj->length - l_lOffset;
                 memcpy(buffer, (l_SObj->bytes + l_lOffset), l_lBytesToCopy);
                 l_lOffset = 0;
