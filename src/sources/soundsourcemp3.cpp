@@ -28,6 +28,10 @@ const SINT kMaxMp3FramesPerSecond = 39; // fixed: 1 MP3 frame = 26 ms -> ~ 1000 
 const SINT kSeekFrameListCapacity = kMinutesPerFile
         * kSecondsPerMinute * kMaxMp3FramesPerSecond;
 
+inline QString formatHeaderFlags(int headerFlags) {
+    return QString("0x%1").arg(headerFlags, 4, 16, QLatin1Char('0'));
+}
+
 void logFrameHeader(QDebug logger, const mad_header& madHeader) {
     logger << "MP3 frame header |"
             << "layer:" << madHeader.layer
@@ -36,7 +40,7 @@ void logFrameHeader(QDebug logger, const mad_header& madHeader) {
             << "#samples:" << MAD_NSBSAMPLES(&madHeader)
             << "bitrate:" << madHeader.bitrate
             << "samplerate:" << madHeader.samplerate
-            << "flags:" << madHeader.flags;
+            << "flags:" << formatHeaderFlags(madHeader.flags);
 }
 
 inline bool isRecoverableError(int madError) {
