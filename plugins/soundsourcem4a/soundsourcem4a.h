@@ -1,36 +1,19 @@
-/***************************************************************************
-                          soundsourcem4a.h  -  mp4/m4a decoder
-                             -------------------
-    copyright            : (C) 2008 by Garth Dahlstrom
-    email                : ironstorm@users.sf.net
- ***************************************************************************/
+#ifndef MIXXX_SOUNDSOURCEM4A_H
+#define MIXXX_SOUNDSOURCEM4A_H
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+#include "sources/soundsourceplugin.h"
 
-#ifndef SOUNDSOURCEM4A_H
-#define SOUNDSOURCEM4A_H
+#include "singularsamplebuffer.h"
 
 #ifdef __MP4V2__
-    #include <mp4v2/mp4v2.h>
+#include <mp4v2/mp4v2.h>
 #else
-    #include <mp4.h>
+#include <mp4.h>
 #endif
 
 #include <neaacdec.h>
-#include <QString>
-#include "soundsource.h"
-#include "defs_version.h"
-#include "m4a/ip.h"
-#include "util/defs.h"
 
-#include <QtDebug>
+#include <vector>
 
 //As per QLibrary docs: http://doc.trolltech.com/4.6/qlibrary.html#resolve
 #ifdef Q_OS_WIN
@@ -41,62 +24,50 @@
 
 namespace Mixxx {
 
-class SoundSourceM4A : public SoundSource {
-    public:
-        explicit SoundSourceM4A(QString qFileName);
-        ~SoundSourceM4A();
-        Result open();
-        long seek(long);
-        int initializeDecoder();
-        unsigned read(unsigned long size, const SAMPLE*);
-        unsigned long length();
-        Result parseHeader();
-        QImage parseCoverArt();
-        static QList<QString> supportedFileExtensions();
-    private:
-        int trackId;
-        unsigned long filelength;
-        MP4FileHandle mp4file;
-        input_plugin_data ipd;
+class SoundSourceM4A: public SoundSourcePlugin {
+public:
+    static QList<QString> supportedFileExtensions();
+
+    explicit SoundSourceM4A(QUrl url);
+    ~SoundSourceM4A();
+
+    void close() /*override*/;
+
+    SINT seekSampleFrame(SINT frameIndex) /*override*/;
+
+    SINT readSampleFrames(SINT numberOfFrames,
+            CSAMPLE* sampleBuffer) /*override*/;
+
+private:
+    Result tryOpen(SINT channelCountHint) /*override*/;
+
+    bool isValidSampleBlockId(MP4SampleId sampleBlockId) const;
+
+    void restartDecoding(MP4SampleId sampleBlockId);
+
+    MP4FileHandle m_hFile;
+    MP4TrackId m_trackId;
+    MP4SampleId m_maxSampleBlockId;
+    MP4SampleId m_curSampleBlockId;
+
+    typedef std::vector<u_int8_t> InputBuffer;
+    InputBuffer m_inputBuffer;
+    SINT m_inputBufferLength;
+    SINT m_inputBufferOffset;
+
+    NeAACDecHandle m_hDecoder;
+
+    SingularSampleBuffer m_sampleBuffer;
+
+    SINT m_curFrameIndex;
 };
-
-extern "C" MY_EXPORT const char* getMixxxVersion()
-{
-    return VERSION;
-}
-
-extern "C" MY_EXPORT int getSoundSourceAPIVersion()
-{
-    return MIXXX_SOUNDSOURCE_API_VERSION;
-}
-
-extern "C" MY_EXPORT SoundSource* getSoundSource(QString filename)
-{
-    return new SoundSourceM4A(filename);
-}
-
-extern "C" MY_EXPORT char** supportedFileExtensions()
-{
-    QList<QString> exts = SoundSourceM4A::supportedFileExtensions();
-    //Convert to C string array.
-    char** c_exts = (char**)malloc((exts.count() + 1) * sizeof(char*));
-    for (int i = 0; i < exts.count(); i++)
-    {
-        QByteArray qba = exts[i].toUtf8();
-        c_exts[i] = strdup(qba.constData());
-        qDebug() << c_exts[i];
-    }
-    c_exts[exts.count()] = NULL; //NULL terminate the list
-
-    return c_exts;
-}
-
-extern "C" MY_EXPORT void freeFileExtensions(char **exts)
-{
-    for (int i(0); exts[i]; ++i) free(exts[i]);
-    free(exts);
-}
 
 } // namespace Mixxx
 
-#endif
+extern "C" MY_EXPORT const char* getMixxxVersion();
+extern "C" MY_EXPORT int getSoundSourceAPIVersion();
+extern "C" MY_EXPORT Mixxx::SoundSource* getSoundSource(QString fileName);
+extern "C" MY_EXPORT char** supportedFileExtensions();
+extern "C" MY_EXPORT void freeFileExtensions(char** fileExtensions);
+
+#endif // MIXXX_SOUNDSOURCEM4A_H

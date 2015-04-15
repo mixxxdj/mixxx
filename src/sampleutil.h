@@ -160,10 +160,13 @@ class SampleUtil {
 
     // Convert and normalize a buffer of SAMPLEs in the range [-SAMPLE_MAX, SAMPLE_MAX]
     // to a buffer of CSAMPLEs in the range [-1.0, 1.0].
-    // NOTE(uklotzde): This conversion is deprecated and will be removed
-    // with the introduction of the new SoundSourceAPI.
     static void convertS16ToFloat32(CSAMPLE* pDest, const SAMPLE* pSrc,
             int iNumSamples);
+
+    // Convert and normalize a buffer of CSAMPLEs in the range [-1.0, 1.0]
+    // to a buffer of SAMPLEs in the range [-SAMPLE_MAX, SAMPLE_MAX].
+    static void convertFloat32ToS16(SAMPLE* pDest, const CSAMPLE* pSrc,
+            unsigned int iNumSamples);
 
     // For each pair of samples in pBuffer (l,r) -- stores the sum of the
     // absolute values of l in pfAbsL, and the sum of the absolute values of r
@@ -206,11 +209,6 @@ class SampleUtil {
     // "mono-compatible", ie there are no major out-of-phase parts of the signal.
     static void mixStereoToMono(CSAMPLE* pDest, const CSAMPLE* pSrc,
             int iNumSamples);
-
-    // In-place doubles the mono samples in pBuffer to dual mono samples.
-    // (numFrames) samples will be read from pBuffer
-    // (numFrames * 2) samples will be written into pBuffer
-    static void doubleMonoToDualMono(SAMPLE* pBuffer, int numFrames);
 
     // In-place doubles the mono samples in pBuffer to dual mono samples.
     // (numFrames) samples will be read from pBuffer
