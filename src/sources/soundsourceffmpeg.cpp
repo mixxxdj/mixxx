@@ -125,7 +125,7 @@ Result SoundSourceFFmpeg::tryOpen(SINT channelCountHint) {
     AVDictionary *l_iFormatOpts = NULL;
 
     const QByteArray qBAFilename(getLocalFileNameBytes());
-    qDebug() << "New SoundSourceFFmpeg :" << qBAFilename;
+    qDebug() << "New SoundSourceFFmpeg :" << qBAFilename << "(channelCountHint:" << channelCountHint << ")";
 
     DEBUG_ASSERT(!m_pFormatCtx);
     m_pFormatCtx = avformat_alloc_context();
@@ -183,8 +183,7 @@ Result SoundSourceFFmpeg::tryOpen(SINT channelCountHint) {
     }
 
     m_pResample = new EncoderFfmpegResample(m_pCodecCtx);
-    // TODO(XXX): Use AV_SAMPLE_FMT_FLT instead of AV_SAMPLE_FMT_S16
-    m_pResample->open(m_pCodecCtx->sample_fmt, AV_SAMPLE_FMT_S16);
+    m_pResample->open(m_pCodecCtx->sample_fmt, AV_SAMPLE_FMT_FLT);
 
     setChannelCount(m_pCodecCtx->channels);
     setFrameRate(m_pCodecCtx->sample_rate);
@@ -326,9 +325,9 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, qint64 offset) {
 
                         // Add to cache and store byte place to memory
                         m_SCache.append(l_SObj);
-                        l_SObj->startByte = m_lCacheBytePos / 2;
-                        l_SObj->length = l_iRet / 2;
-                        m_lCacheBytePos += l_iRet;
+                        l_SObj->startByte = m_lCacheBytePos;
+                        l_SObj->length = l_iRet;
+                        m_lCacheBytePos += l_iRet / (sizeof(CSAMPLE) * 2);
 
                         // Ogg/Opus have packages pos that have many
                         // audio frames so seek next unique pos..
@@ -344,14 +343,14 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, qint64 offset) {
                             struct ffmpegLocationObject  *l_SJmp = (struct ffmpegLocationObject  *)malloc(
                                     sizeof(struct ffmpegLocationObject));
                             m_lLastStoredPos = m_lCacheBytePos;
-                            l_SJmp->startByte = m_lCacheBytePos / 2;
+                            l_SJmp->startByte = m_lCacheBytePos;
                             l_SJmp->pos = l_SPacket.pos;
                             l_SJmp->pts = l_SPacket.pts;
                             m_SJumpPoints.append(l_SJmp);
                             m_bUnique = false;
                         }
 
-                        if (offset < 0 || (quint64) offset <= (m_lCacheBytePos / 2)) {
+                        if (offset < 0 || (quint64) offset <= m_lCacheBytePos) {
                             l_iCount --;
                         }
                     } else {
@@ -437,7 +436,7 @@ bool SoundSourceFFmpeg::getBytesFromCache(char *buffer, quint64 offset,
 
         l_SObj = m_SCache[l_lPos];
 
-        l_lLeft = (size * 2);
+        l_lLeft = (size * sizeof(CSAMPLE)) * 2;
         memset(buffer, 0x00, l_lLeft);
         while (l_lLeft > 0) {
 
@@ -457,16 +456,16 @@ bool SoundSourceFFmpeg::getBytesFromCache(char *buffer, quint64 offset,
             }
 
             if (l_SObj->startByte <= offset) {
-                l_lOffset = (offset - l_SObj->startByte) * 2;
+                l_lOffset = (offset - l_SObj->startByte) * (sizeof(CSAMPLE) * 2);
             }
 
-            if (l_lOffset >= (l_SObj->length * 2)) {
+            if (l_lOffset >= l_SObj->length) {
                 l_SObj = m_SCache[++ l_lPos];
                 continue;
             }
 
-            if (l_lLeft > (l_SObj->length * 2)) {
-                l_lBytesToCopy = ((l_SObj->length * 2)  - l_lOffset);
+            if (l_lLeft > l_SObj->length) {
+                l_lBytesToCopy = l_SObj->length - l_lOffset;
                 memcpy(buffer, (l_SObj->bytes + l_lOffset), l_lBytesToCopy);
                 l_lOffset = 0;
                 buffer += l_lBytesToCopy;
@@ -876,12 +875,10 @@ Mixxx::AudioSourcePointer SoundSourceFFmpeg::open() const {
 SINT SoundSourceFFmpeg::seekSampleFrame(SINT frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(frameIndex));
 
-    const SINT filepos = frames2samples(frameIndex);
-
     int ret = 0;
     qint64 i = 0;
 
-    if (filepos < 0 || (unsigned long) filepos < m_lCacheStartByte) {
+    if (frameIndex < 0 || (unsigned long) frameIndex < m_lCacheStartByte) {
         ret = avformat_seek_file(m_pFormatCtx,
                                  m_iAudioStream,
                                  0,
@@ -906,9 +903,9 @@ SINT SoundSourceFFmpeg::seekSampleFrame(SINT frameIndex) {
         // Try to find some jump point near to
         // where we are located so we don't needed
         // to try guess it
-        if (filepos >= AUDIOSOURCEFFMPEG_POSDISTANCE) {
+        if (frameIndex >= AUDIOSOURCEFFMPEG_POSDISTANCE) {
             for (i = 0; i < m_SJumpPoints.size(); i ++) {
-                if (m_SJumpPoints[i]->startByte >= (unsigned long) filepos && i > 2) {
+                if (m_SJumpPoints[i]->startByte >= (unsigned long) frameIndex && i > 2) {
                     m_lCacheBytePos = m_SJumpPoints[i - 2]->startByte * 2;
                     m_lStoredSeekPoint = m_SJumpPoints[i - 2]->pos;
                     break;
@@ -916,19 +913,19 @@ SINT SoundSourceFFmpeg::seekSampleFrame(SINT frameIndex) {
             }
         }
 
-        if (filepos == 0) {
+        if (frameIndex == 0) {
             readFramesToCache((AUDIOSOURCEFFMPEG_CACHESIZE - 50), -1);
         } else {
-            readFramesToCache((AUDIOSOURCEFFMPEG_CACHESIZE / 2), filepos);
+            readFramesToCache((AUDIOSOURCEFFMPEG_CACHESIZE / 2), frameIndex);
         }
     }
 
 
-    if (m_lCacheEndByte <= (unsigned long) filepos) {
-        readFramesToCache(100, filepos);
+    if (m_lCacheEndByte <= (unsigned long) frameIndex) {
+        readFramesToCache(100, frameIndex);
     }
 
-    m_iCurrentMixxTs = filepos;
+    m_iCurrentMixxTs = frameIndex;
 
     m_bIsSeeked = TRUE;
 
@@ -936,7 +933,8 @@ SINT SoundSourceFFmpeg::seekSampleFrame(SINT frameIndex) {
 >>>>>>> Move code from specialized AudioSources back into corresponding SoundSources
 }
 
-unsigned int SoundSourceFFmpeg::read(unsigned long size, SAMPLE* destination) {
+SINT SoundSourceFFmpeg::readSampleFrames(SINT numberOfFrames,
+        CSAMPLE* sampleBuffer) {
 
     if (m_SCache.size() == 0) {
         // Make sure we allways start at begining and cache have some
@@ -945,32 +943,18 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size, SAMPLE* destination) {
         m_bIsSeeked = FALSE;
     }
 
-    getBytesFromCache((char *)destination, m_iCurrentMixxTs, size);
+    getBytesFromCache((char *)sampleBuffer, m_iCurrentMixxTs, numberOfFrames);
 
     //  As this is also Hack
     // If we don't seek like we don't on analyzer.. keep
     // place in mind..
     if (m_bIsSeeked == FALSE) {
-        m_iCurrentMixxTs += size;
+        m_iCurrentMixxTs += numberOfFrames;
     }
 
     m_bIsSeeked = FALSE;
-    return size;
-}
 
-SINT SoundSourceFFmpeg::readSampleFrames(SINT numberOfFrames,
-        CSAMPLE* sampleBuffer) {
-    // This is just a hack that simply reuses existing
-    // functionality. Sample data should be resampled
-    // directly into AV_SAMPLE_FMT_FLT instead of
-    // AV_SAMPLE_FMT_S16!
-    typedef std::vector<SAMPLE> TempBuffer;
-    TempBuffer tempBuffer(frames2samples(numberOfFrames));
-    const SINT readSamples = read(tempBuffer.size(), &tempBuffer[0]);
-    for (SINT i = 0; i < readSamples; ++i) {
-        sampleBuffer[i] = SAMPLE_clampSymmetric(tempBuffer[i]) / CSAMPLE(SAMPLE_MAX);
-    }
-    return samples2frames(readSamples);
+    return numberOfFrames;
 }
 
 } // namespace Mixxx
