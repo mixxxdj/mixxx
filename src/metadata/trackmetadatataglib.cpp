@@ -162,9 +162,9 @@ inline QString toQString(const TagLib::APE::Item& apeItem) {
     return toQString(apeItem.toString());
 }
 
-inline TagLib::String toTagLibString(const QString& str, TagLib::String::Type stringType = TagLib::String::UTF8) {
+inline TagLib::String toTagLibString(const QString& str) {
     const QByteArray qba(str.toUtf8());
-    return TagLib::String(qba.constData(), stringType);
+    return TagLib::String(qba.constData(), TagLib::String::UTF8);
 }
 
 inline bool parseBpm(TrackMetadata* pTrackMetadata, QString sBpm) {
@@ -375,7 +375,7 @@ void writeID3v2TextIdentificationFrame(TagLib::ID3v2::Tag* pTag,
             getID3v2StringType(*pTag, isNumericOrURL);
     QScopedPointer<TagLib::ID3v2::TextIdentificationFrame> pTextFrame(
             new TagLib::ID3v2::TextIdentificationFrame(id, stringType));
-    pTextFrame->setText(toTagLibString(text, stringType));
+    pTextFrame->setText(toTagLibString(text));
     replaceID3v2Frame(pTag, pTextFrame.data());
     // Now the plain pointer in pTextFrame is owned and
     // managed by pTag. We need to release the ownership
@@ -389,18 +389,16 @@ void writeID3v2UserTextIdentificationFrame(TagLib::ID3v2::Tag* pTag,
             findUserTextIdentificationFrame(*pTag, description);
     if (pTextFrame) {
         // Modify existing frame
-        const TagLib::String::Type stringType =
-                pTextFrame->textEncoding();
-        pTextFrame->setDescription(toTagLibString(description, stringType));
-        pTextFrame->setText(toTagLibString(text, stringType));
+        pTextFrame->setDescription(toTagLibString(description));
+        pTextFrame->setText(toTagLibString(text));
     } else {
         // Add a new frame
         const TagLib::String::Type stringType =
                 getID3v2StringType(*pTag, isNumericOrURL);
         QScopedPointer<TagLib::ID3v2::UserTextIdentificationFrame> pTextFrame(
                 new TagLib::ID3v2::UserTextIdentificationFrame(stringType));
-        pTextFrame->setDescription(toTagLibString(description, stringType));
-        pTextFrame->setText(toTagLibString(text, stringType));
+        pTextFrame->setDescription(toTagLibString(description));
+        pTextFrame->setText(toTagLibString(text));
         pTag->addFrame(pTextFrame.data());
         // Now the plain pointer in pTextFrame is owned and
         // managed by pTag. We need to release the ownership
