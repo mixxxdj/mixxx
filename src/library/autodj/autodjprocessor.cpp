@@ -490,7 +490,8 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                 // For negative fade durations, jump back to insert a pause
                 // between the tracks.
                 if (thisFadeDuration < 0.0) {
-                    // TODO(rryan) why otherDeck.fadeDuration?
+                    // Note: since the fade duration is relative to the track
+                    // length, we need to user here the other deck fade duration
                     otherDeck.setPlayPosition(otherDeck.fadeDuration);
                 }
             }
@@ -674,9 +675,9 @@ void AutoDJProcessor::calculateFadeThresholds(DeckAttributes* pAttributes) {
 
             // The track might be shorter than the transition period. Use a
             // sensible cap.
-            int autoDjTransition = math_min(m_iTransitionTime, TrackDuration/2);
+            int autoDjTransition = math_min(m_iTransitionTime, TrackDuration / 2);
 
-            if (TrackDuration > autoDjTransition && TrackDuration > 0) {
+            if (TrackDuration > 0) {
                 pAttributes->fadeDuration = static_cast<double>(autoDjTransition) /
                         static_cast<double>(TrackDuration);
             } else {
