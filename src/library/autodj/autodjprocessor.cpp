@@ -187,22 +187,29 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::fadeNow() {
         DeckAttributes& leftDeck = *m_decks[0];
         DeckAttributes& rightDeck = *m_decks[1];
         if (crossfader <= 0.3 && leftDeck.isPlaying()) {
-            // Make sure leftDeck.fadeDuration is up to date.
-            calculateTransition(&leftDeck);
+            // left deck is playing and the crossfader is on the left
 
+            // Make sure leftDeck.fadeDuration is up to date.
+            calculateTransition(&leftDeck, &rightDeck);
+
+            // override posThreshold to start fade now
             leftDeck.posThreshold = leftDeck.playPosition() -
                     ((crossfader + 1.0) / 2 * (leftDeck.fadeDuration));
             // Repeat is disabled by FadeNow but disables auto Fade
             leftDeck.setRepeat(false);
         } else if (crossfader >= -0.3 && rightDeck.isPlaying()) {
-            // Make sure rightDeck.fadeDuration is up to date.
-            calculateTransition(&rightDeck);
+            // right deck is playing and the crossfader is on the right
 
+            // Make sure rightDeck.fadeDuration is up to date.
+            calculateTransition(&rightDeck, &leftDeck);
+
+            // override posThreshold to start fade now
             rightDeck.posThreshold = rightDeck.playPosition() -
                     ((1.0 - crossfader) / 2 * (rightDeck.fadeDuration));
             // Repeat is disabled by FadeNow but disables auto Fade
             rightDeck.setRepeat(false);
         }
+        // else { // do not know what to do  }
     }
     return ADJ_OK;
 }
@@ -391,11 +398,12 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
 
     // qDebug() << "player" << pAttributes->group << "PositionChanged(" << value << ")";
     if (m_eState == ADJ_DISABLED) {
-        //nothing to do
+        // nothing to do
         return;
     }
 
     DeckAttributes& thisDeck = *pAttributes;
+    // prefer to fade to deck 0
     int otherDeckIndex = 0;
     if (thisDeck.index == 0) {
         otherDeckIndex = 1;
