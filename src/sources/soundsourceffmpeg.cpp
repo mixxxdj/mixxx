@@ -162,7 +162,7 @@ Result SoundSourceFFmpeg::tryOpen(SINT channelCountHint) {
             m_iAudioStream=i;
             break;
         }
-    if (m_iAudioStream==-1) {
+    if (m_iAudioStream == -1) {
         qDebug() << "ffmpeg: cannot find an audio stream: cannot open"
                  << qBAFilename;
         return ERR;
