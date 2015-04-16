@@ -662,44 +662,55 @@ void AutoDJProcessor::playerPlayChanged(DeckAttributes* pAttributes, bool playin
     }
     // We may want to do more than just calculate fade thresholds when playing
     // state changes so keep these two as separate methods for now.
-    calculateTransition(pAttributes, getToDeck(pAttributes));
+
+    // This will calculate the Transition to the already loaded, in most cases
+    // already played other track.
+    // This is required because the user may have loaded a track or changed play
+    // manually
+    if (playing) {
+        calculateTransition(pAttributes, getOtherDeck(pAttributes));
+    }
 }
 
 void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
                                           DeckAttributes* pToDeck) {
-    bool playing = pFromDeck->isPlaying();
+    if (pFromDeck == NULL) {
+        return;
+    }
+
     if (sDebug) {
-        qDebug() << this << "calculateFadeThresholds" << pFromDeck->group << playing;
+        qDebug() << this << "calculateFadeThresholds" << pFromDeck->group;
     }
 
     //qDebug() << "player" << pAttributes->group << "PlayChanged(" << playing << ")";
 
     // We require ADJ_IDLE to prevent changing the thresholds in the middle of a
     // fade.
-    // TODO(rryan): Investigate removing the playing and idle check. If a track
-    // is loaded we should be able to calculate the fadeDuration and
-    // posThreshold regardless of the rest of the ADJ.
-    if (playing && m_eState == ADJ_IDLE) {
+    if (m_eState == ADJ_IDLE) {
         TrackPointer fromTrack = pFromDeck->getLoadedTrack();
         if (fromTrack) {
             // TODO(rryan): Duration is super inaccurate! We should be using
             // track_samples / track_samplerate instead.
             int fromTrackDuration = fromTrack->getDuration();
-            qDebug() << "fromTrackDuration = " << fromTrackDuration;
+            qDebug() << fromTrack->getLocation()
+                    << "fromTrackDuration = " << fromTrackDuration;
 
             // The track might be shorter than the transition period. Use a
             // sensible cap.
             m_nextTransitionTime = math_min(m_iTransitionTime,
                                             fromTrackDuration / 2);
 
-            TrackPointer toTrack = pToDeck->getLoadedTrack();
-            if (toTrack) {
-                // TODO(rryan): Duration is super inaccurate! We should be using
-                // track_samples / track_samplerate instead.
-                int toTrackDuration = toTrack->getDuration();
-                qDebug() << "toTrackDuration = " << toTrackDuration;
-                m_nextTransitionTime = math_min(m_nextTransitionTime,
-                                                toTrackDuration / 2);
+            if (pToDeck) {
+                TrackPointer toTrack = pToDeck->getLoadedTrack();
+                if (toTrack) {
+                    // TODO(rryan): Duration is super inaccurate! We should be using
+                    // track_samples / track_samplerate instead.
+                    int toTrackDuration = toTrack->getDuration();
+                    qDebug() << toTrack->getLocation()
+                            << "toTrackDuration = " << toTrackDuration;
+                    m_nextTransitionTime = math_min(m_nextTransitionTime,
+                                                    toTrackDuration / 2);
+                }
             }
 
             if (fromTrackDuration > 0) {
@@ -727,6 +738,7 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
         qDebug() << this << "playerTrackLoaded" << pDeck->group
                  << (pTrack.isNull() ? "(null)" : pTrack->getLocation());
     }
+    calculateTransition(getOtherDeck(pDeck, true), pDeck);
 }
 
 void AutoDJProcessor::playerTrackLoadFailed(DeckAttributes* pDeck, TrackPointer pTrack) {
@@ -790,24 +802,30 @@ void AutoDJProcessor::setTransitionTime(int time) {
     }
 }
 
-DeckAttributes* AutoDJProcessor::getToDeck(DeckAttributes* pFromDeck) {
-    DeckAttributes* pToDeck = NULL;
-    if (pFromDeck->isLeft()) {
+DeckAttributes* AutoDJProcessor::getOtherDeck(DeckAttributes* pThisDeck,
+                                              bool playing) {
+    DeckAttributes* pOtherDeck = NULL;
+    if (pThisDeck->isLeft()) {
         // find first right deck
         foreach(DeckAttributes* pDeck, m_decks) {
             if (pDeck->isRight()) {
-                pToDeck = pDeck;
-                break;
+                if (!playing || pDeck->isPlaying()) {
+                    pOtherDeck = pDeck;
+                    break;
+                }
             }
         }
-    } else if (pFromDeck->isRight()) {
+    } else if (pThisDeck->isRight()) {
         // find first left deck
         foreach(DeckAttributes* pDeck, m_decks) {
             if (pDeck->isLeft()) {
-                pToDeck = pDeck;
-                break;
+                if (!playing || pDeck->isPlaying()) {
+                    pOtherDeck = pDeck;
+                    break;
+                }
             }
         }
     }
-    return pToDeck;
+    return pOtherDeck;
 }
+
