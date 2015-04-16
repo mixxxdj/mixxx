@@ -665,9 +665,8 @@ void AutoDJProcessor::playerPlayChanged(DeckAttributes* pAttributes, bool playin
     calculateTransition(pAttributes, getToDeck(pAttributes));
 }
 
-void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck, DeckAttributes* pToDeck) {
-    Q_UNUSED(pToDeck);
-
+void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
+                                          DeckAttributes* pToDeck) {
     bool playing = pFromDeck->isPlaying();
     if (sDebug) {
         qDebug() << this << "calculateFadeThresholds" << pFromDeck->group << playing;
@@ -681,20 +680,32 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck, DeckAttribu
     // is loaded we should be able to calculate the fadeDuration and
     // posThreshold regardless of the rest of the ADJ.
     if (playing && m_eState == ADJ_IDLE) {
-        TrackPointer loadedTrack = pFromDeck->getLoadedTrack();
-        if (loadedTrack) {
+        TrackPointer fromTrack = pFromDeck->getLoadedTrack();
+        if (fromTrack) {
             // TODO(rryan): Duration is super inaccurate! We should be using
             // track_samples / track_samplerate instead.
-            int TrackDuration = loadedTrack->getDuration();
-            qDebug() << "TrackDuration = " << TrackDuration;
+            int fromTrackDuration = fromTrack->getDuration();
+            qDebug() << "fromTrackDuration = " << fromTrackDuration;
 
             // The track might be shorter than the transition period. Use a
             // sensible cap.
-            m_nextTransitionTime = math_min(m_iTransitionTime, TrackDuration / 2);
+            m_nextTransitionTime = math_min(m_iTransitionTime,
+                                            fromTrackDuration / 2);
 
-            if (TrackDuration > 0) {
-                pFromDeck->fadeDuration = static_cast<double>(m_nextTransitionTime) /
-                        static_cast<double>(TrackDuration);
+            TrackPointer toTrack = pToDeck->getLoadedTrack();
+            if (toTrack) {
+                // TODO(rryan): Duration is super inaccurate! We should be using
+                // track_samples / track_samplerate instead.
+                int toTrackDuration = toTrack->getDuration();
+                qDebug() << "toTrackDuration = " << toTrackDuration;
+                m_nextTransitionTime = math_min(m_nextTransitionTime,
+                                                toTrackDuration / 2);
+            }
+
+            if (fromTrackDuration > 0) {
+                pFromDeck->fadeDuration =
+                        static_cast<double>(m_nextTransitionTime) /
+                        static_cast<double>(fromTrackDuration);
             } else {
                 pFromDeck->fadeDuration = 0;
             }
