@@ -168,7 +168,8 @@ class AutoDJProcessor : public QObject {
 
     TrackPointer getNextTrackFromQueue();
     bool loadNextTrackFromQueue(const DeckAttributes& pDeck, bool play = false);
-    void calculateTransition(DeckAttributes* pFromDeck, DeckAttributes* pToDeck = NULL);
+    void calculateTransition(DeckAttributes* pFromDeck, DeckAttributes* pToDeck);
+    DeckAttributes* getToDeck(DeckAttributes* pFromDeck);
 
     // Removes the track loaded to the player group from the top of the AutoDJ
     // queue if it is present.

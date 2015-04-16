@@ -331,12 +331,12 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
             m_eState = ADJ_IDLE;
             if (deck1Playing) {
                 // Update fade thresholds for the left deck.
-                calculateTransition(&leftDeck);
+                calculateTransition(&leftDeck, &rightDeck);
                 // Load track into the right deck.
                 emit(loadTrackToPlayer(nextTrack, rightDeck.group, false));
             } else {
                 // Update fade thresholds for the right deck.
-                calculateTransition(&rightDeck);
+                calculateTransition(&rightDeck, &leftDeck);
                 // Load track into the left deck.
                 emit(loadTrackToPlayer(nextTrack, leftDeck.group, false));
             }
@@ -443,10 +443,10 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                 loadNextTrackFromQueue(rightDeck);
 
                 // Set crossfade thresholds for left deck.
-                calculateTransition(&leftDeck);
+                calculateTransition(&leftDeck, &rightDeck);
             } else {
                 // Set crossfade thresholds for right deck.
-                calculateTransition(&rightDeck);
+                calculateTransition(&rightDeck, &leftDeck);
             }
             emit(autoDJStateChanged(m_eState));
         }
@@ -495,7 +495,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
 
                 // Setup the other deck's fade thresholds (since we use the
                 // fadeDuration next).
-                calculateTransition(&otherDeck);
+                calculateTransition(&otherDeck, &thisDeck);
 
                 // For negative fade durations, jump back to insert a pause
                 // between the tracks.
@@ -662,7 +662,7 @@ void AutoDJProcessor::playerPlayChanged(DeckAttributes* pAttributes, bool playin
     }
     // We may want to do more than just calculate fade thresholds when playing
     // state changes so keep these two as separate methods for now.
-    calculateTransition(pAttributes);
+    calculateTransition(pAttributes, getToDeck(pAttributes));
 }
 
 void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck, DeckAttributes* pToDeck) {
@@ -769,12 +769,34 @@ void AutoDJProcessor::setTransitionTime(int time) {
     // Then re-calculate fade thresholds for the decks.
     if (m_eState == ADJ_IDLE) {
         DeckAttributes& leftDeck = *m_decks[0];
-        if (leftDeck.isPlaying()) {
-            calculateTransition(&leftDeck);
-        }
         DeckAttributes& rightDeck = *m_decks[1];
+        if (leftDeck.isPlaying()) {
+            calculateTransition(&leftDeck, &rightDeck);
+        }
         if (rightDeck.isPlaying()) {
-            calculateTransition(&rightDeck);
+            calculateTransition(&rightDeck, &leftDeck);
         }
     }
+}
+
+DeckAttributes* AutoDJProcessor::getToDeck(DeckAttributes* pFromDeck) {
+    DeckAttributes* pToDeck = NULL;
+    if (pFromDeck->isLeft()) {
+        // find first right deck
+        foreach(DeckAttributes* pDeck, m_decks) {
+            if (pDeck->isRight()) {
+                pToDeck = pDeck;
+                break;
+            }
+        }
+    } else if (pFromDeck->isRight()) {
+        // find first left deck
+        foreach(DeckAttributes* pDeck, m_decks) {
+            if (pDeck->isLeft()) {
+                pToDeck = pDeck;
+                break;
+            }
+        }
+    }
+    return pToDeck;
 }
