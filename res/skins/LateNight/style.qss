@@ -379,6 +379,15 @@
     background-color: #eece33;
 }
 
+#GuiToggleButton[displayValue="2"] {
+    border: 1px solid #585858;
+    border-radius: 2px;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 10px/12px;
+    color: #0e0e0e;
+    background-color: #eece33;
+}
+
 #GuiToggleButtonInverted[displayValue="0"] {
     border: 1px solid #585858;
     border-radius: 2px;
@@ -726,15 +735,41 @@
 }
 
 #MicContainer {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  border: 1px solid #585858;
+  padding: 5px;
+  margin: 2px;
+  background-color: #1e1e1e;
 }
 
 #MicBorder {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   border: 1px solid #585858;
-  padding: 5px;
-  margin: 5px;
+  padding: 2px;
+  padding-left:10px;
+  padding-right:10px;
+  margin-left: 3px;
+  margin-right: 3px;
 }
+
+#MicButtonContainer {
+  padding: 2px;
+}
+
+#MicTitle {
+  qproperty-alignment: 'AlignLeft | AlignTop';
+  font-size: 15px/17px;
+  font-weight: bold;
+  color: #eece33;
+}
+
+#MicSubTitle {
+  qproperty-alignment: 'AlignLeft | AlignTop';
+  font-size: 12px/13px;
+  font-weight: bold;
+  color: #eece33;
+}
+
 
 #SamplerDecksContainer {
   background-color: #0e0e0e;
