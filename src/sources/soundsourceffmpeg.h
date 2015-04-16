@@ -29,14 +29,14 @@
 namespace Mixxx {
 
 struct ffmpegLocationObject {
-    quint64 pos;
-    qint64 pts;
-    quint64 startByte;
+    SINT pos;
+    SINT pts;
+    SINT startFrame;
 };
 
 struct ffmpegCacheObject {
-    quint64 startByte;
-    quint32 length;
+    SINT startFrame;
+    SINT length;
     quint8 *bytes;
 };
 
@@ -56,9 +56,9 @@ public:
 private:
     Result tryOpen(SINT channelCountHint) /*override*/;
 
-    bool readFramesToCache(unsigned int count, qint64 offset);
-    bool getBytesFromCache(char *buffer, quint64 offset, quint64 size);
-    quint64 getSizeofCache();
+    bool readFramesToCache(unsigned int count, SINT offset);
+    bool getBytesFromCache(char *buffer, SINT offset, SINT size);
+    SINT getSizeofCache();
     void clearCache();
 
     unsigned int read(unsigned long size, SAMPLE*);
@@ -76,19 +76,24 @@ private:
 
     EncoderFfmpegResample *m_pResample;
 
-    qint64 m_iCurrentMixxTs;
+    SINT m_currentMixxxFrameIndex;
 
     bool m_bIsSeeked;
 
-    quint64 m_lCacheBytePos;
-    quint64 m_lCacheStartByte;
-    quint64 m_lCacheEndByte;
-    quint32 m_lCacheLastPos;
+    SINT m_lCacheFramePos;
+    SINT m_lCacheStartFrame;
+    SINT m_lCacheEndFrame;
+    SINT m_lCacheLastPos;
     QVector<struct ffmpegCacheObject  *> m_SCache;
     QVector<struct ffmpegLocationObject  *> m_SJumpPoints;
+<<<<<<< HEAD
     quint64 m_lLastStoredPos;
     qint64 m_lStoredSeekPoint;
 >>>>>>> Move code from specialized AudioSources back into corresponding SoundSources
+=======
+    SINT m_lLastStoredPos;
+    SINT m_lStoredSeekPoint;
+>>>>>>> Get rid of Byte word in variables (use Frame) in SoundSourceFFMPEG and change everything to SINT which seems to be preferred type
 };
 
 } // namespace Mixxx
