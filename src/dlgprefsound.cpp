@@ -96,10 +96,10 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
             this, SLOT(queryClicked()));
 
 #if defined  __LINUX__ || __WINDOWS__
-    connect(openHardwareMixerButton, SIGNAL(clicked()),
-            this, SLOT(openHardwareMixerClicked()));
+    connect(openSoundCardMixerButton, SIGNAL(clicked()),
+            this, SLOT(openSoundCardMixerClicked()));
 #else // __LINUX__
-    openHardwareMixerButton->hide();
+    openSoundCardMixerButton->hide();
 #endif // __LINUX__
 
     connect(m_pSoundManager, SIGNAL(outputRegistered(AudioOutput, AudioSource*)),
@@ -412,9 +412,9 @@ void DlgPrefSound::apiChanged(int index) {
     if (m_config.getAPI() == MIXXX_PORTAUDIO_ASIO_STRING ||
             m_config.getAPI() == MIXXX_PORTAUDIO_OSS_STRING ||
             m_config.getAPI() == MIXXX_PORTAUDIO_NONE_STRING) {
-        openHardwareMixerButton->setEnabled(false);
+        openSoundCardMixerButton->setEnabled(false);
     } else {
-        openHardwareMixerButton->setEnabled(true);
+        openSoundCardMixerButton->setEnabled(true);
     }
 }
 
@@ -538,8 +538,8 @@ void DlgPrefSound::queryClicked() {
     updateAPIs();
 }
 
-void DlgPrefSound::openHardwareMixerClicked() {
-    //qDebug() << "DlgPrefSound::openHardwareMixerClicked()";
+void DlgPrefSound::openSoundCardMixerClicked() {
+    //qDebug() << "DlgPrefSound::openSoundCardMixerClicked()";
 
     #ifdef __LINUX__
     // Note: This disabled code does not work reliable with gnome-terminal

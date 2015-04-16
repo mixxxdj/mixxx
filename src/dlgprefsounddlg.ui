@@ -183,9 +183,9 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="openHardwareMixerButton">
+      <widget class="QPushButton" name="openSoundCardMixerButton">
        <property name="text">
-        <string>Open Hardware Mixer</string>
+        <string>Open Sound Card Mixer</string>
        </property>
       </widget>
      </item>
