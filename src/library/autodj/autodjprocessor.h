@@ -140,11 +140,11 @@ class AutoDJProcessor : public QObject {
     AutoDJError toggleAutoDJ(bool enable);
 
   signals:
-    void loadTrackToPlayer(TrackPointer pTrack, QString group,
+    virtual void loadTrackToPlayer(TrackPointer pTrack, QString group,
                                    bool play);
-    void transitionTimeChanged(int time);
-    void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
-    void randomTrackRequested(int);
+    virtual void transitionTimeChanged(int time);
+    virtual void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
+    virtual void randomTrackRequested(int);
 
   private slots:
     void playerPositionChanged(DeckAttributes* pDeck, double position);
