@@ -46,11 +46,11 @@ SoundSourceFFmpeg::SoundSourceFFmpeg(QUrl url)
       m_pCodecCtx(NULL),
       m_pCodec(NULL),
       m_pResample(NULL),
-      m_iCurrentMixxTs(0),
+      m_currentMixxxFrameIndex(0),
       m_bIsSeeked(false),
-      m_lCacheBytePos(0),
-      m_lCacheStartByte(0),
-      m_lCacheEndByte(0),
+      m_lCacheFramePos(0),
+      m_lCacheStartFrame(0),
+      m_lCacheEndFrame(0),
       m_lCacheLastPos(0),
       m_lLastStoredPos(0),
       m_lStoredSeekPoint(-1) {
@@ -172,7 +172,7 @@ void SoundSourceFFmpeg::clearCache() {
     }
 }
 
-bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, qint64 offset) {
+bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
     unsigned int l_iCount = 0;
     qint32 l_iRet = 0;
     AVPacket l_SPacket;
@@ -274,9 +274,9 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, qint64 offset) {
 
                         // Add to cache and store byte place to memory
                         m_SCache.append(l_SObj);
-                        l_SObj->startByte = m_lCacheBytePos;
+                        l_SObj->startFrame = m_lCacheFramePos;
                         l_SObj->length = l_iRet;
-                        m_lCacheBytePos += l_iRet / (sizeof(CSAMPLE) * 2);
+                        m_lCacheFramePos += l_iRet / (sizeof(CSAMPLE) * 2);
 
                         // Ogg/Opus have packages pos that have many
                         // audio frames so seek next unique pos..
@@ -286,20 +286,20 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, qint64 offset) {
                         }
 
                         // If we are over last storepos and we have read more than jump point need is and pos is unique we store it to memory
-                        if (m_lCacheBytePos > m_lLastStoredPos &&
-                                m_lCacheBytePos > (AUDIOSOURCEFFMPEG_POSDISTANCE + m_lLastStoredPos) &&
+                        if (m_lCacheFramePos > m_lLastStoredPos &&
+                                m_lCacheFramePos > (AUDIOSOURCEFFMPEG_POSDISTANCE + m_lLastStoredPos) &&
                                 m_bUnique == true) {
                             struct ffmpegLocationObject  *l_SJmp = (struct ffmpegLocationObject  *)malloc(
                                     sizeof(struct ffmpegLocationObject));
-                            m_lLastStoredPos = m_lCacheBytePos;
-                            l_SJmp->startByte = m_lCacheBytePos;
+                            m_lLastStoredPos = m_lCacheFramePos;
+                            l_SJmp->startFrame = m_lCacheFramePos;
                             l_SJmp->pos = l_SPacket.pos;
                             l_SJmp->pts = l_SPacket.pts;
                             m_SJumpPoints.append(l_SJmp);
                             m_bUnique = false;
                         }
 
-                        if (offset < 0 || (quint64) offset <= m_lCacheBytePos) {
+                        if (offset < 0 || offset <= m_lCacheFramePos) {
                             l_iCount --;
                         }
                     } else {
@@ -353,9 +353,9 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, qint64 offset) {
     }
 
     l_SObj = m_SCache.first();
-    m_lCacheStartByte = l_SObj->startByte;
+    m_lCacheStartFrame = l_SObj->startFrame;
     l_SObj = m_SCache.last();
-    m_lCacheEndByte = (l_SObj->startByte + l_SObj->length);
+    m_lCacheEndFrame = (l_SObj->startFrame + l_SObj->length);
 
     if (!l_iCount) {
         return true;
@@ -364,8 +364,8 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, qint64 offset) {
     }
 }
 
-bool SoundSourceFFmpeg::getBytesFromCache(char *buffer, quint64 offset,
-        quint64 size) {
+bool SoundSourceFFmpeg::getBytesFromCache(char *buffer, SINT offset,
+        SINT size) {
     struct ffmpegCacheObject *l_SObj = NULL;
     quint32 l_lPos = 0;
     quint32 l_lLeft = 0;
@@ -373,7 +373,7 @@ bool SoundSourceFFmpeg::getBytesFromCache(char *buffer, quint64 offset,
     quint32 l_lBytesToCopy = 0;
 
     // Is offset bigger than start of cache
-    if (offset >= m_lCacheStartByte) {
+    if (offset >= m_lCacheStartFrame) {
         // If last pos is (which is shouldn't) use caches end
         if (m_lCacheLastPos == 0) {
             m_lCacheLastPos = m_SCache.size() - 1;
@@ -382,7 +382,7 @@ bool SoundSourceFFmpeg::getBytesFromCache(char *buffer, quint64 offset,
         // Seek to correct FrameIndex
         for (l_lPos = m_lCacheLastPos; l_lPos > 0; l_lPos --) {
             l_SObj = m_SCache[l_lPos];
-            if ((l_SObj->startByte + l_SObj->length) < offset) {
+            if ((l_SObj->startFrame + l_SObj->length) < offset) {
                 break;
             }
         }
@@ -397,14 +397,14 @@ bool SoundSourceFFmpeg::getBytesFromCache(char *buffer, quint64 offset,
         while (l_lLeft > 0) {
             // If Cache is running low read more
             if (l_SObj == NULL || (l_lPos + 5) > (unsigned int)m_SCache.size()) {
-                offset = l_SObj->startByte;
+                offset = l_SObj->startFrame;
                 if (readFramesToCache(50, -1) == false) {
                     return false;
                 }
                 // Seek back to correct place
                 for (l_lPos = (m_SCache.size() - 50); l_lPos > 0; l_lPos --) {
                     l_SObj = m_SCache[l_lPos];
-                    if ((l_SObj->startByte + l_SObj->length) < offset) {
+                    if ((l_SObj->startFrame + l_SObj->length) < offset) {
                         break;
                     }
                 }
@@ -413,9 +413,9 @@ bool SoundSourceFFmpeg::getBytesFromCache(char *buffer, quint64 offset,
             }
 
             // If Cache object ain't correct then calculate offset
-            if (l_SObj->startByte <= offset) {
+            if (l_SObj->startFrame <= offset) {
                 // We have to convert again it to bytes
-                l_lOffset = (offset - l_SObj->startByte) * (sizeof(CSAMPLE) * 2);
+                l_lOffset = (offset - l_SObj->startFrame) * (sizeof(CSAMPLE) * 2);
             }
 
             // Okay somehow offset is bigger than our Cache object have bytes
@@ -452,7 +452,7 @@ SINT SoundSourceFFmpeg::seekSampleFrame(SINT frameIndex) {
     int ret = 0;
     qint64 i = 0;
 
-    if (frameIndex < 0 || (unsigned long) frameIndex < m_lCacheStartByte) {
+    if (frameIndex < 0 || frameIndex < m_lCacheStartFrame) {
         ret = avformat_seek_file(m_pFormatCtx,
                                  m_iAudioStream,
                                  0,
@@ -467,10 +467,10 @@ SINT SoundSourceFFmpeg::seekSampleFrame(SINT frameIndex) {
         }
 
         clearCache();
-        m_lCacheStartByte = 0;
-        m_lCacheEndByte = 0;
+        m_lCacheStartFrame = 0;
+        m_lCacheEndFrame = 0;
         m_lCacheLastPos = 0;
-        m_lCacheBytePos = 0;
+        m_lCacheFramePos = 0;
         m_lStoredSeekPoint = -1;
 
 
@@ -479,8 +479,8 @@ SINT SoundSourceFFmpeg::seekSampleFrame(SINT frameIndex) {
         // to try guess it
         if (frameIndex >= AUDIOSOURCEFFMPEG_POSDISTANCE) {
             for (i = 0; i < m_SJumpPoints.size(); i ++) {
-                if (m_SJumpPoints[i]->startByte >= (unsigned long) frameIndex && i > 2) {
-                    m_lCacheBytePos = m_SJumpPoints[i - 2]->startByte * 2;
+                if (m_SJumpPoints[i]->startFrame >= frameIndex && i > 2) {
+                    m_lCacheFramePos = m_SJumpPoints[i - 2]->startFrame * 2;
                     m_lStoredSeekPoint = m_SJumpPoints[i - 2]->pos;
                     break;
                 }
@@ -495,11 +495,11 @@ SINT SoundSourceFFmpeg::seekSampleFrame(SINT frameIndex) {
     }
 
 
-    if (m_lCacheEndByte <= (unsigned long) frameIndex) {
+    if (m_lCacheEndFrame <= frameIndex) {
         readFramesToCache(100, frameIndex);
     }
 
-    m_iCurrentMixxTs = frameIndex;
+    m_currentMixxxFrameIndex = frameIndex;
 
     m_bIsSeeked = TRUE;
 
@@ -516,13 +516,13 @@ SINT SoundSourceFFmpeg::readSampleFrames(SINT numberOfFrames,
         m_bIsSeeked = FALSE;
     }
 
-    getBytesFromCache((char *)sampleBuffer, m_iCurrentMixxTs, numberOfFrames);
+    getBytesFromCache((char *)sampleBuffer, m_currentMixxxFrameIndex, numberOfFrames);
 
     //  As this is also Hack
     // If we don't seek like we don't on analyzer.. keep
     // place in mind..
     if (m_bIsSeeked == FALSE) {
-        m_iCurrentMixxTs += numberOfFrames;
+        m_currentMixxxFrameIndex += numberOfFrames;
     }
 
     m_bIsSeeked = FALSE;
