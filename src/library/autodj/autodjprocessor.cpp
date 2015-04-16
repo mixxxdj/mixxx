@@ -112,6 +112,9 @@ AutoDJProcessor::AutoDJProcessor(QObject* pParent,
                 (i % 2 == 0) ? EngineChannel::LEFT : EngineChannel::RIGHT;
         m_decks.append(new DeckAttributes(i, pPlayer, orientation));
     }
+    // Auto-DJ needs at least two decks
+    DEBUG_ASSERT(m_decks.length() > 1);
+
     m_pCOCrossfader = new ControlObjectSlave("[Master]", "crossfader");
     m_pCOCrossfaderReverse = new ControlObjectSlave("[Mixer Profile]", "xFaderReverse");
 
@@ -173,6 +176,10 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::shufflePlaylist(
 }
 
 AutoDJProcessor::AutoDJError AutoDJProcessor::fadeNow() {
+    // Auto-DJ needs at least two decks
+    DEBUG_ASSERT_AND_HANDLE(m_decks.length() > 1) {
+        return ADJ_NOT_TWO_DECKS;
+    }
     if (m_eState == ADJ_IDLE) {
         double crossfader = getCrossfader();
         DeckAttributes& leftDeck = *m_decks[0];
@@ -201,6 +208,11 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::fadeNow() {
 AutoDJProcessor::AutoDJError AutoDJProcessor::skipNext() {
     if (m_eState == ADJ_DISABLED) {
         return ADJ_IS_INACTIVE;
+    }
+
+    // Auto-DJ needs at least two decks
+    DEBUG_ASSERT_AND_HANDLE(m_decks.length() > 1) {
+        return ADJ_NOT_TWO_DECKS;
     }
 
     // Load the next song from the queue.
@@ -363,6 +375,12 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
         qDebug() << this << "playerPositionChanged" << pAttributes->group
                  << thisPlayPosition;
     }
+
+    // Auto-DJ needs at least two decks
+    DEBUG_ASSERT_AND_HANDLE(m_decks.length() > 1) {
+        return;
+    }
+
     // 95% playback is when we crossfade and do stuff
     // const double posThreshold = 0.95;
 
@@ -376,7 +394,11 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
     }
 
     DeckAttributes& thisDeck = *pAttributes;
-    DeckAttributes& otherDeck = *m_decks[1 - thisDeck.index];
+    int otherDeckIndex = 0;
+    if (thisDeck.index == 0) {
+        otherDeckIndex = 1;
+    }
+    DeckAttributes& otherDeck = *m_decks[otherDeckIndex];
 
     DeckAttributes& leftDeck = *m_decks[0];
     DeckAttributes& rightDeck = *m_decks[1];
@@ -717,6 +739,12 @@ void AutoDJProcessor::setTransitionTime(int time) {
     if (sDebug) {
         qDebug() << this << "setTransitionTime" << time;
     }
+
+    // Auto-DJ needs at least two decks
+    DEBUG_ASSERT_AND_HANDLE(m_decks.length() > 1) {
+        return;
+    }
+
     // Update the transition time first.
     m_pConfig->set(ConfigKey(kConfigKey, kTransitionPreferenceName),
                    ConfigValue(time));
