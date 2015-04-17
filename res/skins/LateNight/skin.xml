@@ -48,6 +48,7 @@
       <attribute config_key="[PreviewDeck],show_previewdeck">0</attribute>
       <attribute config_key="[Master],mixer_4decks_status">1</attribute>
       <attribute config_key="[Master],show_mixer">1</attribute>
+      <attribute config_key="[Master],show_mics">0</attribute>
       <attribute config_key="[Library],show_coverart">1</attribute>
       <attribute config_key="[Library],show_library">1</attribute>
       <attribute config_key="[Library],show_current">1</attribute>
