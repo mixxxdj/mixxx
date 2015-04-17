@@ -53,25 +53,7 @@
         <SetVariable name="label">Key</SetVariable>
       </Template>
 
-      <PushButton>
-        <TooltipId>pfl</TooltipId>
-        <ObjectName>DeckPFL</ObjectName>
-        <Size>40f,20f</Size>
-        <NumberStates>2</NumberStates>
-        <State>
-          <Number>0</Number>
-          <Text>HEAD</Text>
-        </State>
-        <State>
-          <Number>1</Number>
-          <Text>HEAD</Text>
-        </State>
-        <Connection>
-          <ConfigKey><Variable name="group"/>,pfl</ConfigKey>
-          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-          <ButtonState>LeftButton</ButtonState>
-        </Connection>
-      </PushButton>
+      <Template src="skin:spacer_v.xml"></Template>
 
     </Children>
   </WidgetGroup>
