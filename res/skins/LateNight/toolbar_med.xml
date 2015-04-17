@@ -94,16 +94,16 @@
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
                     <PushButton>
-                        <Size>62f,20f</Size>
+                        <Size>85f,20f</Size>
                         <ObjectName>GuiToggleButton</ObjectName>
                         <NumberStates>2</NumberStates>
                         <State>
                           <Number>0</Number>
-                          <Text>MICS</Text>
+                          <Text>MICROPHONES</Text>
                         </State>
                         <State>
                           <Number>1</Number>
-                          <Text>MICS</Text>
+                          <Text>MICROPHONES</Text>
                         </State>
                         <Connection>
                           <ConfigKey persist="true">[MicrophoneRack],show_microphones_tab</ConfigKey>
