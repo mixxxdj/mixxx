@@ -574,18 +574,18 @@ bool SoundSourceMediaFoundation::configureAudioStream(SINT channelCountHint) {
  * is moved to the beginning of m_leftoverBuffer, so empty it first (possibly
  * with this method). If src and dest overlap, I'll hurt you.
  */
-void SoundSourceMediaFoundation::copyFrames(CSAMPLE *dest, size_t *destFrames,
-        const CSAMPLE *src, size_t srcFrames) {
+void SoundSourceMediaFoundation::copyFrames(CSAMPLE *dest, SINT *destFrames,
+        const CSAMPLE *src, SINT srcFrames) {
     if (srcFrames > *destFrames) {
-        int samplesToCopy(*destFrames * kNumChannels);
+        SINT samplesToCopy(frames2samples(*destFrames));
         memcpy(dest, src, samplesToCopy * sizeof(*src));
         srcFrames -= *destFrames;
         memmove(m_leftoverBuffer, src + samplesToCopy,
-                srcFrames * kNumChannels * sizeof(*src));
+                frames2samples(srcFrames) * sizeof(*src));
         *destFrames = 0;
         m_leftoverBufferLength = srcFrames;
     } else {
-        int samplesToCopy(srcFrames * kNumChannels);
+        SINT samplesToCopy(frames2samples(srcFrames));
         memcpy(dest, src, samplesToCopy * sizeof(*src));
         *destFrames -= srcFrames;
         if (src == m_leftoverBuffer) {
