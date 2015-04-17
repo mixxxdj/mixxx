@@ -46,7 +46,9 @@ class TestEngineMaster : public EngineMaster {
     }
 };
 
-class EngineBackendTest : public MixxxTest {
+// TODO: This class has a lot in common with mockedenginebuffer test and they
+// both could be refactored to share code.
+class SignalPathTest : public MixxxTest {
   protected:
     virtual void SetUp() {
         m_pNumDecks = new ControlObject(ConfigKey("[Master]", "num_decks"));

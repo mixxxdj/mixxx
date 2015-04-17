@@ -2,22 +2,21 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-
 #include <QtDebug>
 #include <QTest>
 
 #include "basetrackplayer.h"
 #include "configobject.h"
 #include "controlobject.h"
-#include "test/enginebackendtest.h"
 #include "test/mockedenginebackendtest.h"
 #include "test/mixxxtest.h"
+#include "test/signalpathtest.h"
 
 
 class EngineBufferTest : public MockedEngineBackendTest {
 };
 
-class EngineBufferE2ETest : public EngineBackendTest {
+class EngineBufferE2ETest : public SignalPathTest {
 };
 
 TEST_F(EngineBufferTest, DisableKeylockResetsPitch) {
