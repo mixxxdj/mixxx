@@ -342,9 +342,9 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
                     qWarning() << __FILE__ << __LINE__
                             << "Working around inaccurate seeking. Writing silence for"
                             << offshootFrames << "frames";
-                    // Set offshootFrames * kNumChannels samples to zero.
+                    // Set offshootFrames samples to zero.
                     memset(pBufferCurpos, 0,
-                            frames2samples(sizeof(*pBufferCurpos) * offshootFrames));
+                            sizeof(*pBufferCurpos) * frames2samples(offshootFrames));
                     // Now m_nextFrame == bufferPosition
                     m_nextFrame += offshootFrames;
                     framesNeeded -= offshootFrames;
