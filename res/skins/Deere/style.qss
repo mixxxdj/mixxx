@@ -403,6 +403,9 @@ WSliderComposed {
 }
 
 #EffectUnitNextPrevContainer {
+  background-color: #333333;
+  padding: 1px;
+  qproperty-layoutSpacing: 2;
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
 }
 
