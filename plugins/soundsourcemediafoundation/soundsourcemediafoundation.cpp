@@ -33,9 +33,9 @@ namespace
 
 const bool sDebug = false;
 
-const int kSampleRate = 44100;
-const int kLeftoverSize = 4096; // in CSAMPLE's, this seems to be the size MF AAC
-const int kBitsPerSampleForBitrate = 16; // for bitrate calculation decoder likes to give
+const SINT kSampleRate = 44100;
+const SINT kLeftoverSize = 4096; // in CSAMPLE's, this seems to be the size MF AAC
+const SINT kBitsPerSampleForBitrate = 16; // for bitrate calculation decoder likes to give
 
 /**
  * Convert a 100ns Media Foundation value to a number of seconds.
@@ -200,7 +200,7 @@ SINT SoundSourceMediaFoundation::seekSampleFrame(
     // enough for our calculatedFrameFromMF <= nextFrame assertion in ::read).
     // Has something to do with 100ns MF units being much smaller than most
     // frame offsets (in seconds) -bkgood
-    long result = m_iCurrentPosition;
+    SINT result = m_iCurrentPosition;
     if (m_dead) {
         return result;
     }
@@ -375,7 +375,7 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
         // If the bufferLength is larger than the leftover buffer, re-allocate
         // it with 2x the space.
         if (frames2samples(bufferLength) > m_leftoverBufferSize) {
-            int newSize = m_leftoverBufferSize;
+            SINT newSize = m_leftoverBufferSize;
 
             while (newSize < frames2samples(bufferLength)) {
                 newSize *= 2;
