@@ -60,13 +60,13 @@ private:
     IMFSourceReader *m_pReader;
     IMFMediaType *m_pAudioType;
     wchar_t *m_wcFilename;
-    int m_nextFrame;
+    SINT m_nextFrame;
     CSAMPLE *m_leftoverBuffer;
     SINT m_leftoverBufferSize;
     SINT m_leftoverBufferLength;
-    int m_leftoverBufferPosition;
+    SINT m_leftoverBufferPosition;
     qint64 m_mfDuration;
-    long m_iCurrentPosition;
+    SINT m_iCurrentPosition;
     bool m_dead;
     bool m_seeking;
 };
