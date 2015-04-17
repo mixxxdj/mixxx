@@ -108,7 +108,7 @@ SoundSourceMediaFoundation::SoundSourceMediaFoundation(QUrl url)
     // presentation attribute MF_PD_AUDIO_ENCODING_BITRATE only exists for
     // presentation descriptors, one of which MFSourceReader is not.
     // Therefore, we calculate it ourselves, assuming 16 bits per sample
-    setBitrate(frames2samples(kBitsPerSampleForBitrate * kSampleRate) / 1000);
+    setBitrate((frames2samples(getFrameRate()) * kBitsPerSampleForBitrate) / 1000);
 }
 
 SoundSourceMediaFoundation::~SoundSourceMediaFoundation() {
