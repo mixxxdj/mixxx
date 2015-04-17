@@ -52,8 +52,8 @@ private:
 
     bool configureAudioStream(SINT channelCountHint);
 
-    void copyFrames(CSAMPLE *dest, size_t *destFrames, const CSAMPLE *src,
-            size_t srcFrames);
+    void copyFrames(CSAMPLE *dest, SINT *destFrames, const CSAMPLE *src,
+            SINT srcFrames);
 
     HRESULT m_hrCoInitialize;
     HRESULT m_hrMFStartup;
@@ -62,8 +62,8 @@ private:
     wchar_t *m_wcFilename;
     int m_nextFrame;
     CSAMPLE *m_leftoverBuffer;
-    size_t m_leftoverBufferSize;
-    size_t m_leftoverBufferLength;
+    SINT m_leftoverBufferSize;
+    SINT m_leftoverBufferLength;
     int m_leftoverBufferPosition;
     qint64 m_mfDuration;
     long m_iCurrentPosition;
