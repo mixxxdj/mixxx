@@ -9,7 +9,6 @@
     <Layout>horizontal</Layout>
     <SizePolicy>me,f</SizePolicy>
     <Children>
-
       <WidgetGroup>
         <ObjectName>NotificationsContainer</ObjectName>
         <Layout>horizontal</Layout>
@@ -107,7 +106,6 @@
         <SizePolicy>min,min</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
-
           <PushButton>
             <TooltipId>headSplit</TooltipId>
             <ObjectName>HeadSplit</ObjectName>
@@ -142,29 +140,28 @@
             <SetVariable name="color">red</SetVariable>
             <SetVariable name="label">Gain</SetVariable>
           </Template>
-
         </Children>
       </WidgetGroup>
 
       <WidgetGroup>
-          <ObjectName>MasterVumeter</ObjectName>
-          <SizePolicy>min,min</SizePolicy>
-          <Layout>vertical</Layout>
-          <Children>
-              <Template src="skin:vumeter.xml">
-                  <SetVariable name="TooltipId">master_VuMeterL</SetVariable>
-                  <SetVariable name="group">[Master]</SetVariable>
-                  <SetVariable name="control">VuMeterL</SetVariable>
-              </Template>
-              <Template src="skin:vumeter.xml">
-                  <SetVariable name="TooltipId">master_VuMeterR</SetVariable>
-                  <SetVariable name="group">[Master]</SetVariable>
-                  <SetVariable name="control">VuMeterR</SetVariable>
-              </Template>
-          </Children>
+        <ObjectName>MasterVumeter</ObjectName>
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>vertical</Layout>
+        <Children>
+          <Template src="skin:vumeter.xml">
+            <SetVariable name="TooltipId">master_VuMeterL</SetVariable>
+            <SetVariable name="group">[Master]</SetVariable>
+            <SetVariable name="control">VuMeterL</SetVariable>
+          </Template>
+          <Template src="skin:vumeter.xml">
+            <SetVariable name="TooltipId">master_VuMeterR</SetVariable>
+            <SetVariable name="group">[Master]</SetVariable>
+            <SetVariable name="control">VuMeterR</SetVariable>
+          </Template>
+        </Children>
       </WidgetGroup>
 
-     <WidgetGroup>
+      <WidgetGroup>
         <ObjectName></ObjectName>
         <SizePolicy>min,min</SizePolicy>
         <Layout>vertical</Layout>
@@ -200,8 +197,6 @@
           <ConfigKey>[Deere],show_skin_settings</ConfigKey>
         </Connection>
       </PushButton>
-
     </Children>
   </WidgetGroup>
-
 </Template>
