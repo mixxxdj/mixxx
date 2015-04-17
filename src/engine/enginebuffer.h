@@ -157,15 +157,6 @@ class EngineBuffer : public EngineObject {
     void setScalerForTest(EngineBufferScale* pScaleVinyl,
                           EngineBufferScale* pScaleKeylock);
 
-    // If true, the latest output buffer will be copied to the provided buffer.
-    // Extra samples at the end of the buffer will be zeroed out.  If the buffer
-    // is not big enough for the output buffer, the output will be truncated to
-    // size.
-    void setPersistBufferForTest(CSAMPLE* save, const int save_buffer_size) {
-        m_pTestSaveBuffer = save;
-        m_iTestSaveBufferSize = save_buffer_size;
-    }
-
     // For dependency injection of fake tracks, with an optional filebpm value.
     TrackPointer loadFakeTrack(double filebpm = 0);
 

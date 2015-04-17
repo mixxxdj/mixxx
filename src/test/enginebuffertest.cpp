@@ -219,7 +219,8 @@ TEST_F(EngineBufferE2ETest, BasicProcessingTest) {
     ControlObject::set(ConfigKey(m_sGroup1, "rate"), 0.05);
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     ProcessBuffer();
-    assertBufferMatchesGolden(m_pSaveBuffer1, "BasicProcessingTest");
+    assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
+                              kProcessBufferSize, "BasicProcessingTest");
 }
 
 TEST_F(EngineBufferE2ETest, ScratchTest) {
@@ -228,5 +229,6 @@ TEST_F(EngineBufferE2ETest, ScratchTest) {
     ProcessBuffer();
     ControlObject::set(ConfigKey(m_sGroup1, "scratch2"), -1.1);
     ProcessBuffer();
-    assertBufferMatchesGolden(m_pSaveBuffer1, "ScratchTest");
+    assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
+                              kProcessBufferSize, "ScratchTestMaster");
 }

@@ -1,5 +1,16 @@
 #!/usr/bin/python
 
+# audioplot is a simple script for drawing graphs of values.  It reads a simple
+# csv text file where each line needs to contain the same number of comma-separated values,
+# like so:
+# 0, 0, 0
+# 1, 2, 1
+# 2, 4, 2
+#
+# Each column will be plotted as a separate curve on the same time series.
+# Matplotlib is used to display the result.
+
+
 from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
 import time, string, glob, sys
@@ -34,7 +45,6 @@ def AudioPlot(f, columns):
     i=0
 
     for c in columns:
-        print "another column"
         normalized = []
         for d in data[c]:
             try:

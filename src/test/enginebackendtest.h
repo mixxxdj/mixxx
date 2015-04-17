@@ -29,13 +29,30 @@
 using ::testing::Return;
 using ::testing::_;
 
+// Subclass of EngineMaster that provides access to the master buffer object
+// for comparison.
+class TestEngineMaster : public EngineMaster {
+  public:
+    TestEngineMaster(ConfigObject<ConfigValue>* _config,
+                     const char* group,
+                     EffectsManager* pEffectsManager,
+                     bool bEnableSidechain,
+                     bool bRampingGain)
+        : EngineMaster(_config, group, pEffectsManager,
+                       bEnableSidechain, bRampingGain) { }
+
+    CSAMPLE* masterBuffer() {
+        return m_pMaster;
+    }
+};
+
 class EngineBackendTest : public MixxxTest {
   protected:
     virtual void SetUp() {
         m_pNumDecks = new ControlObject(ConfigKey("[Master]", "num_decks"));
         m_pEffectsManager = new EffectsManager(NULL, config());
-        m_pEngineMaster = new EngineMaster(m_pConfig.data(), "[Master]",
-                                           m_pEffectsManager, false, false);
+        m_pEngineMaster = new TestEngineMaster(m_pConfig.data(), "[Master]",
+                                               m_pEffectsManager, false, false);
 
         m_pChannel1 = new EngineDeck(
                 m_pEngineMaster->registerChannelGroup(m_sGroup1),
@@ -54,17 +71,6 @@ class EngineBackendTest : public MixxxTest {
                                      EngineChannel::CENTER, m_sPreviewGroup);
         ControlObject::getControl(ConfigKey(m_sPreviewGroup, "file_bpm"))->set(2.0);
 
-        m_pSaveBuffer1 = SampleUtil::alloc(MAX_BUFFER_LEN);
-        m_pSaveBuffer2 = SampleUtil::alloc(MAX_BUFFER_LEN);
-        m_pSaveBuffer3 = SampleUtil::alloc(MAX_BUFFER_LEN);
-
-        m_pChannel1->getEngineBuffer()->setPersistBufferForTest(m_pSaveBuffer1,
-                                                                MAX_BUFFER_LEN);
-        m_pChannel2->getEngineBuffer()->setPersistBufferForTest(m_pSaveBuffer2,
-                                                                MAX_BUFFER_LEN);
-        m_pChannel3->getEngineBuffer()->setPersistBufferForTest(m_pSaveBuffer3,
-                                                                MAX_BUFFER_LEN);
-
         addDeck(m_pChannel1);
         addDeck(m_pChannel2);
         addDeck(m_pChannel3);
@@ -74,6 +80,8 @@ class EngineBackendTest : public MixxxTest {
         loadTrack(m_pChannel1, QDir::currentPath() + "/src/test/sine-30.wav");
         loadTrack(m_pChannel2, QDir::currentPath() + "/src/test/sine-30.wav");
         loadTrack(m_pChannel3, QDir::currentPath() + "/src/test/sine-30.wav");
+
+        ControlObject::set(ConfigKey("[Master]", "enabled"), 1.0);
     }
 
     void addDeck(EngineDeck* pDeck) {
@@ -99,6 +107,8 @@ class EngineBackendTest : public MixxxTest {
             QTest::qSleep(1000); // millis
         }
         ASSERT_TRUE(pDeck->getEngineBuffer()->isTrackLoaded());
+        // For some reason the tracks play by default.  Turn them off.
+        ControlObject::set(ConfigKey(pDeck->getGroup(), "play"), 0.0);
     }
 
     // Asserts that the contents of the output buffer matches a golden example
@@ -109,9 +119,8 @@ class EngineBackendTest : public MixxxTest {
     // will compare against.  On the next run, the test should pass.
     // Use scripts/AudioPlot.py to look at the golden file and make sure it
     // looks correct.
-    void assertBufferMatchesGolden(CSAMPLE* pBuffer, QString golden_title,
-                                   const double delta=.0001) {
-
+    void assertBufferMatchesGolden(CSAMPLE* pBuffer, const int iBufferSize,
+                                   QString golden_title, const double delta=.0001) {
         QFile f(QDir::currentPath() + "/src/test/golden_buffers/" + golden_title);
         bool pass = true;
         int i = 0;
@@ -120,7 +129,7 @@ class EngineBackendTest : public MixxxTest {
         if (f.open(QFile::ReadOnly | QFile::Text)) {
             QTextStream in(&f);
             // Note: We will only compare as many values as there are in the golden file.
-            for (; i < kProcessBufferSize && !in.atEnd(); ++i) {
+            for (; i < iBufferSize && !in.atEnd(); ++i) {
                 QString line = in.readLine();
                 bool ok = false;
                 double gold_value = line.toDouble(&ok);
@@ -141,7 +150,7 @@ class EngineBackendTest : public MixxxTest {
             QFile actual(QDir::currentPath() + "/src/test/golden_buffers/" + fname_actual);
             ASSERT_TRUE(actual.open(QFile::WriteOnly | QFile::Text));
             QTextStream out(&actual);
-            for (int i = 0; i < kProcessBufferSize; ++i) {
+            for (int i = 0; i < iBufferSize; ++i) {
                 out << QString("%1\n").arg(pBuffer[i]);
             }
             actual.close();
@@ -160,9 +169,6 @@ class EngineBackendTest : public MixxxTest {
         delete m_pEngineMaster;
         delete m_pEffectsManager;
         delete m_pNumDecks;
-        delete m_pSaveBuffer1;
-        delete m_pSaveBuffer2;
-        delete m_pSaveBuffer3;
     }
 
     double getRateSliderValue(double rate) const {
@@ -177,9 +183,8 @@ class EngineBackendTest : public MixxxTest {
 
     EffectsManager* m_pEffectsManager;
     EngineSync* m_pEngineSync;
-    EngineMaster* m_pEngineMaster;
+    TestEngineMaster* m_pEngineMaster;
     EngineDeck *m_pChannel1, *m_pChannel2, *m_pChannel3;
-    CSAMPLE *m_pSaveBuffer1, *m_pSaveBuffer2, *m_pSaveBuffer3;
     TrackPointer m_pTrack1, m_pTrack2, m_pTrack3;
     PreviewDeck *m_pPreview1;
     Sampler *m_pSampler1;
