@@ -404,9 +404,6 @@ class EngineBuffer : public EngineObject {
     int m_iLastBufferSize;
 
     QSharedPointer<VisualPlayPosition> m_visualPlayPos;
-
-    CSAMPLE* m_pTestSaveBuffer;
-    int m_iTestSaveBufferSize;
 };
 
 #endif

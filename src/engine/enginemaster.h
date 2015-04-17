@@ -286,7 +286,7 @@ class EngineMaster : public QObject, public AudioSource {
     QVarLengthArray<ChannelInfo*, kPreallocatedChannels> m_activeHeadphoneChannels;
     QVarLengthArray<ChannelInfo*, kPreallocatedChannels> m_activeTalkoverChannels;
 
-    // Other mixing buffers for each output.
+    // Mixing buffers for each output.
     CSAMPLE* m_pOutputBusBuffers[3];
     CSAMPLE* m_pHead;
     CSAMPLE* m_pTalkover;
