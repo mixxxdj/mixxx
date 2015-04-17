@@ -157,6 +157,15 @@ class EngineBuffer : public EngineObject {
     void setScalerForTest(EngineBufferScale* pScaleVinyl,
                           EngineBufferScale* pScaleKeylock);
 
+    // If true, the latest output buffer will be saved in the provided buffer.
+    // Extra samples at the end of the buffer will be zeroed out.  If the buffer
+    // is not big enough for the output buffer, the output will be truncated to
+    // size.
+    void setPersistBufferForTest(CSAMPLE* save, const int save_buffer_size) {
+        m_pTestSaveBuffer = save;
+        m_iTestSaveBufferSize = save_buffer_size;
+    }
+
     // For dependency injection of fake tracks, with an optional filebpm value.
     TrackPointer loadFakeTrack(double filebpm = 0);
 
@@ -404,6 +413,9 @@ class EngineBuffer : public EngineObject {
     int m_iLastBufferSize;
 
     QSharedPointer<VisualPlayPosition> m_visualPlayPos;
+
+    CSAMPLE* m_pTestSaveBuffer;
+    int m_iTestSaveBufferSize;
 };
 
 #endif

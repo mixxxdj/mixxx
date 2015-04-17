@@ -106,7 +106,8 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
           m_iDitherBufferReadIndex(0),
           m_pCrossfadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
           m_bCrossfadeReady(false),
-          m_iLastBufferSize(0) {
+          m_iLastBufferSize(0),
+          m_pTestSaveBuffer(NULL) {
 
     // Generate dither values. When engine samples used to be within [SAMPLE_MIN,
     // SAMPLE_MAX] dithering values were in the range [-0.5, 0.5]. Now that we
@@ -1129,6 +1130,15 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         writer << pOutput[i] << "\n";
     }
 #endif
+
+    if (m_pTestSaveBuffer != NULL) {
+        const int copy_size = math_min(m_iTestSaveBufferSize, iBufferSize);
+        SampleUtil::copy(m_pTestSaveBuffer, pOutput, copy_size);
+        if (copy_size < m_iTestSaveBufferSize) {
+            const int extra_samples = m_iTestSaveBufferSize - copy_size;
+            SampleUtil::clear(m_pTestSaveBuffer + copy_size, extra_samples);
+        }
+    }
 
     if (m_pSyncControl->getSyncMode() == SYNC_MASTER) {
         // Report our speed to SyncControl immediately instead of waiting
