@@ -81,7 +81,6 @@ if __name__ == "__main__":
             elif o == "-f":
                 fname = a
             else:
-                print "usage??"
                 usage()
                 sys.exit(1)
     except Exception, e:
