@@ -157,7 +157,7 @@ class EngineBuffer : public EngineObject {
     void setScalerForTest(EngineBufferScale* pScaleVinyl,
                           EngineBufferScale* pScaleKeylock);
 
-    // If true, the latest output buffer will be saved in the provided buffer.
+    // If true, the latest output buffer will be copied to the provided buffer.
     // Extra samples at the end of the buffer will be zeroed out.  If the buffer
     // is not big enough for the output buffer, the output will be truncated to
     // size.

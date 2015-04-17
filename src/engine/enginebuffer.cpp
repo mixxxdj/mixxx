@@ -107,7 +107,8 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
           m_pCrossfadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
           m_bCrossfadeReady(false),
           m_iLastBufferSize(0),
-          m_pTestSaveBuffer(NULL) {
+          m_pTestSaveBuffer(NULL),
+          m_iTestSaveBufferSize(0) {
 
     // Generate dither values. When engine samples used to be within [SAMPLE_MIN,
     // SAMPLE_MAX] dithering values were in the range [-0.5, 0.5]. Now that we
