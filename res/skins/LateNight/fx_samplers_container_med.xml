@@ -30,6 +30,13 @@
                             <Template src="skin:sampler_decks.xml"/>
                         </Children>
                     </WidgetGroup>
+                    <WidgetGroup trigger="[MicrophoneRack],show_microphones_tab" persist="true">
+                        <Layout>vertical</Layout>
+                        <SizePolicy>me,min</SizePolicy>
+                        <Children>
+                            <Template src="skin:microphone_rack.xml"/>
+                        </Children>
+                    </WidgetGroup>
                 </Children>
             </WidgetStack>
         </Children>

@@ -109,6 +109,7 @@ class AutoDJProcessor : public QObject {
         ADJ_QUEUE_EMPTY,
         ADJ_BOTH_DECKS_PLAYING,
         ADJ_DECKS_3_4_PLAYING,
+        ADJ_NOT_TWO_DECKS
     };
 
     AutoDJProcessor(QObject* pParent,
@@ -138,12 +139,21 @@ class AutoDJProcessor : public QObject {
     AutoDJError fadeNow();
     AutoDJError toggleAutoDJ(bool enable);
 
+    // The following virtual signal wrappers are used for testing
+    virtual void emitLoadTrackToPlayer(TrackPointer pTrack, QString group,
+                                   bool play) {
+        emit(loadTrackToPlayer(pTrack, group, play));
+    }
+    virtual void emitAutoDJStateChanged(AutoDJProcessor::AutoDJState state) {
+        emit(autoDJStateChanged(state));
+    }
+
   signals:
-    virtual void loadTrackToPlayer(TrackPointer pTrack, QString group,
+    void loadTrackToPlayer(TrackPointer pTrack, QString group,
                                    bool play);
-    virtual void transitionTimeChanged(int time);
-    virtual void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
-    virtual void randomTrackRequested(int);
+    void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
+    void transitionTimeChanged(int time);
+    void randomTrackRequested(int tracksToAdd);
 
   private slots:
     void playerPositionChanged(DeckAttributes* pDeck, double position);

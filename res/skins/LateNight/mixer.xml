@@ -7,14 +7,6 @@
         <Layout>horizontal</Layout>
         <Children>
             <WidgetGroup>
-                <ObjectName>MicContainer</ObjectName>
-                <Layout>vertical</Layout>
-                <SizePolicy>max,min</SizePolicy>
-                <Children>
-                    <Template src="skin:microphone.xml"/>
-                </Children>
-            </WidgetGroup>
-            <WidgetGroup>
                 <ObjectName>PrimaryMixer</ObjectName>
                 <Layout>vertical</Layout>
                 <SizePolicy>me,max</SizePolicy>
