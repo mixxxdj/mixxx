@@ -13,7 +13,6 @@
     <MinimumSize>50,5</MinimumSize>
     <MaximumSize>200,5</MaximumSize>
     <PathVu>vumeter.svg</PathVu>
-    <PathBack></PathBack>
     <Horizontal>true</Horizontal>
     <PeakHoldSize>5</PeakHoldSize>
     <PeakHoldTime>600</PeakHoldTime>
