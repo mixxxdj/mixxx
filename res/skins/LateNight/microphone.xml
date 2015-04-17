@@ -53,7 +53,7 @@
             <MinimumSize>64,4</MinimumSize>
             <MaximumSize>64,4</MaximumSize>
             <PathVu>vumeter_latency_over.png</PathVu>
-            <PathBack>vumeter_latency_bg.png</PathBack>
+            <PathBack>vumeter_latency_bg_solid.png</PathBack>
             <!-- <PathVu>vumeter_latency.svg</PathVu> -->
             <Horizontal>true</Horizontal>
             <PeakHoldSize>5</PeakHoldSize>

@@ -95,7 +95,6 @@
                 <Children>
                     <PushButton>
                         <Size>62f,20f</Size>
-                        <TooltipId>show_samplers</TooltipId>
                         <ObjectName>GuiToggleButton</ObjectName>
                         <NumberStates>2</NumberStates>
                         <State>

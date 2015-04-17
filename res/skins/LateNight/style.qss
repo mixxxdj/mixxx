@@ -754,6 +754,7 @@
 
 #MicButtonContainer {
   padding: 2px;
+  padding-bottom: 5px;
 }
 
 #MicTitle {

@@ -24,7 +24,7 @@
             <SizePolicy>f,f</SizePolicy>
             <Children>
               <PushButton>
-                <Size>65f,20f</Size>
+                <Size>65f,15f</Size>
                 <ObjectName>GuiToggleButton</ObjectName>
                 <NumberStates>3</NumberStates>
                 <State>

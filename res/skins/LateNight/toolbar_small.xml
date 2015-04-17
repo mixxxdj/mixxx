@@ -98,8 +98,7 @@
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
                     <PushButton>
-                        <Size>40f,20f</Size>
-                        <TooltipId>show_samplers</TooltipId>
+                        <Size>62f,20f</Size>
                         <ObjectName>GuiToggleButton</ObjectName>
                         <NumberStates>2</NumberStates>
                         <State>
