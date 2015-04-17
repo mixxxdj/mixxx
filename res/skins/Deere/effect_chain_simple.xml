@@ -36,63 +36,56 @@
             <Layout>horizontal</Layout>
             <SizePolicy>me,max</SizePolicy>
             <Children>
-              <PushButton>
-                <Size>20f,20f</Size>
-                <NumberStates>1</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Text>⏏</Text>
-                </State>
-                <Connection>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ConfigKey><Variable name="group"/>,clear</ConfigKey>
-                </Connection>
-              </PushButton>
+              <Template src="skin:left_2state_button.xml">
+                <SetVariable name="TooltipId">TODO</SetVariable>
+                <SetVariable name="ObjectName"></SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text">On</SetVariable>
+                <SetVariable name="state_0_pressed"></SetVariable>
+                <SetVariable name="state_0_unpressed"></SetVariable>
+                <SetVariable name="state_1_text">On</SetVariable>
+                <SetVariable name="state_1_pressed"></SetVariable>
+                <SetVariable name="state_1_unpressed"></SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,enabled</SetVariable>
+              </Template>
 
-              <PushButton>
-                <Size>20f,20f</Size>
-                <NumberStates>2</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Text>ON</Text>
-                </State>
-                <State>
-                  <Number>1</Number>
-                  <Text>ON</Text>
-                </State>
-                <Connection>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ConfigKey><Variable name="group"/>,enabled</ConfigKey>
-                </Connection>
-              </PushButton>
+              <Template src="skin:left_1state_button.xml">
+                <SetVariable name="TooltipId">TODO</SetVariable>
+                <SetVariable name="ObjectName"></SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text">⏏</SetVariable>
+                <SetVariable name="state_0_pressed"></SetVariable>
+                <SetVariable name="state_0_unpressed"></SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,clear</SetVariable>
+              </Template>
 
-              <PushButton>
-                <Size>20f,20f</Size>
-                <NumberStates>1</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Text>◀</Text>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,prev_chain</ConfigKey>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-              </PushButton>
+              <Template src="skin:left_1state_button.xml">
+                <SetVariable name="TooltipId">TODO</SetVariable>
+                <SetVariable name="ObjectName"></SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text">◀</SetVariable>
+                <SetVariable name="state_0_pressed"></SetVariable>
+                <SetVariable name="state_0_unpressed"></SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,prev_chain</SetVariable>
+              </Template>
 
-              <PushButton>
-                <Size>20f,20f</Size>
-                <NumberStates>1</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Text>▶</Text>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,next_chain</ConfigKey>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-              </PushButton>
+              <Template src="skin:left_1state_button.xml">
+                <SetVariable name="TooltipId">TODO</SetVariable>
+                <SetVariable name="ObjectName"></SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text">▶</SetVariable>
+                <SetVariable name="state_0_pressed"></SetVariable>
+                <SetVariable name="state_0_unpressed"></SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,next_chain</SetVariable>
+              </Template>
 
               <Template src="skin:small_knob.xml">
                 <SetVariable name="control">super1</SetVariable>
