@@ -70,6 +70,12 @@
         <SetVariable name="button_control">mute</SetVariable>
         <SetVariable name="label">Gain</SetVariable>
       </Template>
+
+      <Template src="skin:vumeter_v.xml">
+        <SetVariable name="TooltipId">channel_VuMeter</SetVariable>
+        <SetVariable name="group"><Variable name="group"/></SetVariable>
+        <SetVariable name="control">VuMeter</SetVariable>
+      </Template>
     </Children>
   </WidgetGroup>
 </Template>

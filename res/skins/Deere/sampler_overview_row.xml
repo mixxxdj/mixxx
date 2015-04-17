@@ -23,19 +23,13 @@
             <ObjectName>TitleGutter</ObjectName>
             <Layout>vertical</Layout>
             <Children>
-            <TrackProperty>
-              <TooltipId>track_title</TooltipId>
-              <SizePolicy>me,min</SizePolicy>
-              <Property>title</Property>
-              <Group><Variable name="group"/></Group>
-              <Elide>right</Elide>
-            </TrackProperty>
-
-            <Template src="skin:vumeter.xml">
-              <TooltipId>channel_VuMeter</TooltipId>
-              <SetVariable name="group"><Variable name="group"/></SetVariable>
-              <SetVariable name="control">VuMeter</SetVariable>
-            </Template>
+              <TrackProperty>
+                <TooltipId>track_title</TooltipId>
+                <SizePolicy>me,min</SizePolicy>
+                <Property>title</Property>
+                <Group><Variable name="group"/></Group>
+                <Elide>right</Elide>
+              </TrackProperty>
             </Children>
           </WidgetGroup>
 

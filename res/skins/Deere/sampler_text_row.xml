@@ -68,11 +68,6 @@
         </Children>
       </WidgetGroup>
       -->
-      <Template src="skin:vumeter.xml">
-        <TooltipId>channel_VuMeter</TooltipId>
-        <SetVariable name="group"><Variable name="group"/></SetVariable>
-        <SetVariable name="control">VuMeter</SetVariable>
-      </Template>
     </Children>
   </WidgetGroup>
 </Template>
