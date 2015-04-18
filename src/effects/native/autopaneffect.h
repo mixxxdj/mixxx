@@ -10,7 +10,7 @@
 #include "engine/effects/engineeffectparameter.h"
 #include "effects/effectprocessor.h"
 #include "sampleutil.h"
-#include "engine/enginefilterdelay.h"
+#include "engine/enginefilterpan.h"
 
 
 // This class provides a float value that cannot be increased or decreased
@@ -65,7 +65,7 @@ static const int panMaxDelay = 3300; // allows a 30 Hz filter at 97346;
 struct PanGroupState {
     PanGroupState() {
         time = 0;
-        delay = new EngineFilterDelay<panMaxDelay>();
+        delay = new EngineFilterPan<panMaxDelay>();
         m_pDelayBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
     }
     ~PanGroupState() {
@@ -73,7 +73,7 @@ struct PanGroupState {
     }
     unsigned int time;
     RampedSample frac;
-    EngineFilterDelay<panMaxDelay>* delay;
+    EngineFilterPan<panMaxDelay>* delay;
     CSAMPLE* m_pDelayBuf;
 };
 
