@@ -15,7 +15,6 @@ const int kTransitionPreferenceDefault = 10;
 const int kTransitionBeatsPreferenceDefault = 128;
 const int kTransitionUnitPreferenceDefault = AutoDJProcessor::SECONDS;
 
-
 static const bool sDebug = false;
 
 DeckAttributes::DeckAttributes(int index,

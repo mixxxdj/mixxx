@@ -67,9 +67,6 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
     connect(pushButtonFadeNow, SIGNAL(clicked(bool)),
             this, SLOT(fadeNowButton(bool)));
 
-    connect(pushButtonFadeUnit, SIGNAL(toggled(bool)),
-            this, SLOT(toggleFadeUnit(bool)));
-
     connect(spinBoxTransition, SIGNAL(valueChanged(int)),
             this, SLOT(transitionSliderChanged(int)));
 
