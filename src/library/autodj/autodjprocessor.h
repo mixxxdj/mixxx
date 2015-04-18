@@ -110,13 +110,13 @@ class AutoDJProcessor : public QObject {
         ADJ_QUEUE_EMPTY,
         ADJ_BOTH_DECKS_PLAYING,
         ADJ_DECKS_3_4_PLAYING,
+        ADJ_NOT_TWO_DECKS
     };
 
     enum TransitionUnit {
         SECONDS,
         BEATS
     };
-    enum TransitionUnit m_eTransitionUnit;
     
     AutoDJProcessor(QObject* pParent,
                     ConfigObject<ConfigValue>* pConfig,
@@ -140,6 +140,9 @@ class AutoDJProcessor : public QObject {
     PlaylistTableModel* getTableModel() const {
         return m_pAutoDJTableModel;
     }
+    
+    void setTransitionUnit(TransitionUnit unit);
+    TransitionUnit getTransitionUnit();
 
   public slots:
     void setTransitionTime(int seconds);
@@ -149,12 +152,21 @@ class AutoDJProcessor : public QObject {
     AutoDJError fadeNow();
     AutoDJError toggleAutoDJ(bool enable);
 
+    // The following virtual signal wrappers are used for testing
+    virtual void emitLoadTrackToPlayer(TrackPointer pTrack, QString group,
+                                   bool play) {
+        emit(loadTrackToPlayer(pTrack, group, play));
+    }
+    virtual void emitAutoDJStateChanged(AutoDJProcessor::AutoDJState state) {
+        emit(autoDJStateChanged(state));
+    }
+
   signals:
-    virtual void loadTrackToPlayer(TrackPointer pTrack, QString group,
+    void loadTrackToPlayer(TrackPointer pTrack, QString group,
                                    bool play);
-    virtual void transitionTimeChanged(int time);
-    virtual void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
-    virtual void randomTrackRequested(int);
+    void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
+    void transitionTimeChanged(int time);
+    void randomTrackRequested(int tracksToAdd);
 
   private slots:
     void playerPositionChanged(DeckAttributes* pDeck, double position);
@@ -194,6 +206,7 @@ class AutoDJProcessor : public QObject {
     PlaylistTableModel* m_pAutoDJTableModel;
 
     AutoDJState m_eState;
+    enum TransitionUnit m_eTransitionUnit;
     int m_iTransitionTime;
     int m_iTransitionBeats;
 

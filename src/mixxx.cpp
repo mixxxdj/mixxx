@@ -93,22 +93,23 @@ const int MixxxMainWindow::kAuxiliaryCount = 4;
 
 MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         : m_pWidgetParent(NULL),
+          m_pSoundManager(NULL),
+          m_pRecordingManager(NULL),
+#ifdef __SHOUTCAST__
+          m_pShoutcastManager(NULL),
+#endif
+          m_pControllerManager(NULL),
           m_pDeveloperToolsDlg(NULL),
 #ifdef __VINYLCONTROL__
           m_pShowVinylControl(NULL),
-#endif 
+#endif
           m_pShowSamplers(NULL),
           m_pShowMicrophone(NULL),
           m_pShowPreviewDeck(NULL),
           m_pShowEffects(NULL),
           m_pShowCoverArt(NULL),
-          m_pSoundManager(NULL),
+
           m_pPrefDlg(NULL),
-          m_pControllerManager(NULL),
-          m_pRecordingManager(NULL),
-#ifdef __SHOUTCAST__
-          m_pShoutcastManager(NULL),
-#endif
           m_runtime_timer("MixxxMainWindow::runtime"),
           m_cmdLineArgs(args),
           m_iNumConfiguredDecks(0) {

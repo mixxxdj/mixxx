@@ -3,75 +3,67 @@
 		<ObjectName>MicBorder</ObjectName>
 		<Layout>vertical</Layout>
 		<SizePolicy>min,min</SizePolicy>
+    <MinimumSize>100, 64</MinimumSize>
 		<Children>
+      <Label>
+        <ObjectName>MicSubTitle</ObjectName>
+        <Text>Mic <Variable name="mic1hack"/><Variable name="micnum"/></Text>
+      </Label>
 			<!-- To make each widget centered, we have to put them each in their own
 				widgetgroup. -->
 			<WidgetGroup>
 				<Layout>horizontal</Layout>
 				<SizePolicy>min,min</SizePolicy>
 				<Children>
-					<PushButton>
-						<TooltipId>microphone_talkover</TooltipId>
-						<NumberStates>2</NumberStates>
-						<State>
-							<Number>0</Number>
-							<Pressed>btn_microphone_talkover_down.png</Pressed>
-							<Unpressed>btn_microphone_talkover.png</Unpressed>
-						</State>
-						<State>
-							<Number>1</Number>
-							<Pressed>btn_microphone_talkover_overdown.png</Pressed>
-							<Unpressed>btn_microphone_talkover_over.png</Unpressed>
-						</State>
-						<Connection>
-							<ConfigKey>[Microphone],talkover</ConfigKey>
-							<ButtonState>LeftButton</ButtonState>
-						</Connection>
-					</PushButton>
+          <Template src="skin:knob_textless.xml">
+             <SetVariable name="group">[Microphone<Variable name="micnum"/>]</SetVariable>
+             <SetVariable name="control">pregain</SetVariable>
+          </Template>
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Size>10,0</Size>
+            <Children/>
+          </WidgetGroup>
+          <PushButton>
+            <Size>40f,34f</Size>
+            <TooltipId>microphone_talkover</TooltipId>
+            <ObjectName>GuiToggleButton</ObjectName>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>TALK</Text>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>TALK</Text>
+            </State>
+            <Connection>
+              <ConfigKey>[Microphone<Variable name="micnum"/>],talkover</ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+          </PushButton>
 				</Children>
 			</WidgetGroup>
 			<WidgetGroup>
-				<Layout>vertical</Layout>
+				<Layout>horizontal</Layout>
 				<SizePolicy>min,min</SizePolicy>
 				<Children>
-                    <Template src="skin:knob_textless.xml">
-                       <SetVariable name="group">[Microphone]</SetVariable>
-                       <SetVariable name="control">pregain</SetVariable>
-                    </Template>
-				</Children>
-			</WidgetGroup>
-			<WidgetGroup>
-				<Layout>vertical</Layout>
-				<SizePolicy>min,min</SizePolicy>
-				<Children>
-					<StatusLight>
-						<TooltipId>PeakIndicator</TooltipId>
-						<PathStatusLight>btn_clipping1_over.png</PathStatusLight>
-						<PathBack>btn_clipping1.png</PathBack>
-						<Horizontal>false</Horizontal>
+          <VuMeter>
+            <TooltipId><Variable name="TooltipId"/></TooltipId>
+            <MinimumSize>64,4</MinimumSize>
+            <MaximumSize>64,4</MaximumSize>
+            <PathVu>vumeter_latency_over.png</PathVu>
+            <PathBack>vumeter_latency_bg_solid.png</PathBack>
+            <!-- <PathVu>vumeter_latency.svg</PathVu> -->
+            <Horizontal>true</Horizontal>
+            <PeakHoldSize>5</PeakHoldSize>
+            <PeakHoldTime>500</PeakHoldTime>
+            <PeakFallTime>50</PeakFallTime>
+            <PeakFallStep>2</PeakFallStep>
 						<Connection>
-							<ConfigKey>[Microphone],PeakIndicator</ConfigKey>
+							<ConfigKey>[Microphone<Variable name="micnum"/>],VuMeter</ConfigKey>
 						</Connection>
-					</StatusLight>
-					<VuMeter>
-						<TooltipId>microphone_VuMeter</TooltipId>
-						<PathVu>btn_volume_display1_over.png</PathVu>
-						<PathBack>btn_volume_display1.png</PathBack>
-						<Horizontal>false</Horizontal>
-						<PeakHoldSize>5</PeakHoldSize>
-						<PeakHoldTime>500</PeakHoldTime>
-						<PeakFallTime>50</PeakFallTime>
-						<PeakFallStep>2</PeakFallStep>
-						<Connection>
-							<ConfigKey>[Microphone],VuMeter</ConfigKey>
-						</Connection>
-					</VuMeter>
-				</Children>
-			</WidgetGroup>
-			<WidgetGroup>
-				<Layout>vertical</Layout>
-				<SizePolicy>min,min</SizePolicy>
-				<Children>
+          </VuMeter>
 					<PushButton>
 						<TooltipId>orientation</TooltipId>
 						<Style></Style>
@@ -92,16 +84,12 @@
 							<Unpressed>btn_orientation_microphone_right_over.png</Unpressed>
 						</State>
 						<Connection>
-							<ConfigKey>[Microphone],orientation</ConfigKey>
+							<ConfigKey>[Microphone<Variable name="micnum"/>],orientation</ConfigKey>
 							<ButtonState>LeftButton</ButtonState>
 						</Connection>
 					</PushButton>
 				</Children>
 			</WidgetGroup>
 		</Children>
-		<Connection>
-            <ConfigKey>[Microphone],enabled</ConfigKey>
-            <BindProperty>visible</BindProperty>
-        </Connection>
 	</WidgetGroup>
 </Template>

@@ -4,6 +4,7 @@
 #include <gmock/gmock.h>
 
 #include <QtDebug>
+#include <QTest>
 
 #include "basetrackplayer.h"
 #include "configobject.h"
@@ -213,7 +214,7 @@ TEST_F(EngineBufferTest, SoundTouchCrashTest) {
     ProcessBuffer();
     for (int i = 0; i < 10 && !channel4->getEngineBuffer()->isTrackLoaded();
             ++i) {
-        sleep(1);
+        QTest::qSleep(1000); // millis
     }
     ASSERT_TRUE(channel4->getEngineBuffer()->isTrackLoaded());
 

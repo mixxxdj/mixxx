@@ -79,7 +79,8 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
     // Setup DlgAutoDJ UI based on the current AutoDJProcessor state. Keep in
     // mind that AutoDJ may already be active when DlgAutoDJ is created (due to
     // skin changes, etc.).
-    spinBoxTransition->setValue(m_pAutoDJProcessor->getTransitionTime());
+    setFadeUnit(m_pAutoDJProcessor->getTransitionUnit());
+    
     connect(m_pAutoDJProcessor, SIGNAL(transitionTimeChanged(int)),
             this, SLOT(transitionTimeChanged(int)));
     connect(m_pAutoDJProcessor, SIGNAL(autoDJStateChanged(AutoDJProcessor::AutoDJState)),
@@ -136,14 +137,30 @@ void DlgAutoDJ::fadeNowButton(bool) {
 
 void DlgAutoDJ::toggleFadeUnit(bool buttonChecked) {
     if (buttonChecked) {
-        pushButtonFadeUnit->setText("Secs.");
-        m_pAutoDJProcessor->m_eTransitionUnit = AutoDJProcessor::SECONDS;
-        spinBoxTransition->setValue(m_pAutoDJProcessor->getTransitionTime());
+        setFadeUnit(AutoDJProcessor::SECONDS);
     } else {
-        pushButtonFadeUnit->setText("Beats");
-        m_pAutoDJProcessor->m_eTransitionUnit = AutoDJProcessor::BEATS;
+        setFadeUnit(AutoDJProcessor::BEATS);
+    }
+}
+
+void DlgAutoDJ::setFadeUnit(AutoDJProcessor::TransitionUnit unit) {
+    disconnect(pushButtonFadeUnit, SIGNAL(toggled(bool)),
+            this, SLOT(toggleFadeUnit(bool)));
+
+    if (unit == AutoDJProcessor::SECONDS) {
+        pushButtonFadeUnit->setChecked(true);
+        pushButtonFadeUnit->setText(tr("Secs."));
+        m_pAutoDJProcessor->setTransitionUnit(unit);
+        spinBoxTransition->setValue(m_pAutoDJProcessor->getTransitionTime());
+    } else if(unit == AutoDJProcessor::BEATS) {
+        pushButtonFadeUnit->setChecked(false);
+        pushButtonFadeUnit->setText(tr("Beats"));
+        m_pAutoDJProcessor->setTransitionUnit(unit);
         spinBoxTransition->setValue(m_pAutoDJProcessor->getTransitionBeats());
     }
+    
+    connect(pushButtonFadeUnit, SIGNAL(toggled(bool)),
+            this, SLOT(toggleFadeUnit(bool)));
 }
 
 void DlgAutoDJ::toggleAutoDJButton(bool enable) {

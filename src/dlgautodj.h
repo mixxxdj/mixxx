@@ -30,6 +30,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void loadSelectedTrack();
     void loadSelectedTrackToGroup(QString group, bool play);
     void moveSelection(int delta);
+    void setFadeUnit(AutoDJProcessor::TransitionUnit unit);
 
   public slots:
     void shufflePlaylistButton(bool buttonChecked);
@@ -50,14 +51,9 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void trackSelected(TrackPointer pTrack);
 
   private:
-    enum TransitionUnit {
-        SECONDS,
-        BEATS
-    };
     AutoDJProcessor* m_pAutoDJProcessor;
     WTrackTableView* m_pTrackTableView;
     PlaylistTableModel* m_pAutoDJTableModel;
-    enum TransitionUnit m_eTransitionUnit;
 };
 
 #endif //DLGAUTODJ_H
