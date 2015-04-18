@@ -73,11 +73,11 @@ AutoDJProcessor::AutoDJProcessor(QObject* pParent,
                                  int iAutoDJPlaylistId,
                                  TrackCollection* pTrackCollection)
         : QObject(pParent),
-          m_eTransitionUnit(SECONDS),
           m_pConfig(pConfig),
           m_pPlayerManager(pPlayerManager),
           m_pAutoDJTableModel(NULL),
           m_eState(ADJ_DISABLED),
+          m_eTransitionUnit(SECONDS),
           m_iTransitionTime(kTransitionPreferenceDefault),
           m_iTransitionBeats(kTransitionBeatsPreferenceDefault) {
     m_pAutoDJTableModel = new PlaylistTableModel(this, pTrackCollection,
@@ -710,20 +710,15 @@ void AutoDJProcessor::calculateFadeThresholds(DeckAttributes* pAttributes) {
             double transitionDuration = 0;
             if (m_eTransitionUnit == SECONDS) {
                 transitionDuration = m_iTransitionTime;
-                qDebug() << "calculateFadeThresholds m_iTransitionTime = " << m_iTransitionTime;
             } else if (m_eTransitionUnit == BEATS) {
-                qDebug() << "calculateFadeThresholds m_iTransitionBeats = " << m_iTransitionBeats;
+                // find the beginning of last measure before the duration
+                // of the transition set in beats
                 double beatDuration = 60 / loadedTrack->getBpm();
-                double periodsBeats = floor(loadedTrack->getDuration() / beatDuration / 8) * 8;
-                double beatsBeforeTransition = periodsBeats - m_iTransitionBeats - 1;
+                double lastMeasureBeginning = floor(loadedTrack->getDuration()
+                        / beatDuration / 8) * 8;
+                double beatsBeforeTransition = lastMeasureBeginning - m_iTransitionBeats - 1;
                 
                 transitionDuration = loadedTrack->getDuration() - beatsBeforeTransition * beatDuration;
-                
-//                transitionDuration = 60 / loadedTrack->getBpm() * m_iTransitionBeats;
-//                qDebug() << "calculateFadeThresholds beatsCount = " << periodsCount;
-                qDebug() << "calculateFadeThresholds duration = " << loadedTrack->getDuration();
-                qDebug() << "calculateFadeThresholds title = " << loadedTrack->getTitle();
-                qDebug() << "calculateFadeThresholds beatsBeforeTransition = " << beatsBeforeTransition;
             }
             
             // The track might be shorter than the transition period. Use a

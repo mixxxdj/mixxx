@@ -188,12 +188,10 @@ void DlgAutoDJ::toggleAutoDJButton(bool enable) {
 }
 
 void DlgAutoDJ::transitionTimeChanged(int time) {
-    qDebug() << "DlgAutoDJ::transitionTimeChanged : transition time " << time;
     spinBoxTransition->setValue(time);
 }
 
 void DlgAutoDJ::transitionSliderChanged(int value) {
-    qDebug() << "DlgAutoDJ::transitionSliderChanged : transition time " << value;
     m_pAutoDJProcessor->setTransitionTime(value);
 }
 
