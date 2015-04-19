@@ -10,7 +10,6 @@
 # Each column will be plotted as a separate curve on the same time series.
 # Matplotlib is used to display the result.
 
-
 from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
 import time, string, glob, sys
