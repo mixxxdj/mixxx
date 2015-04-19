@@ -147,7 +147,7 @@
                     <SizePolicy>me,me</SizePolicy>
                     <MinimumSize>100,100</MinimumSize>
                     <Connection>
-                      <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
+                      <ConfigKey persist="true" default="true">[Library],show_coverart</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </CoverArt>
