@@ -1517,7 +1517,7 @@ void MixxxMainWindow::initActions()
 
 void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack)
 {
-    QString title;
+    QString title = m_MixxxVersion;
     if (pTrack) {
         QString trackTitle = pTrack->getTitle();
         QString trackArtist = pTrack->getArtist();
@@ -1530,9 +1530,7 @@ void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack)
             title = trackTitle;
         }
         title = title + " - " + m_MixxxVersion;
-    } else {
-        title = m_MixxxVersion;
-    }
+    } 
     this->setWindowTitle(title);
 }
 
