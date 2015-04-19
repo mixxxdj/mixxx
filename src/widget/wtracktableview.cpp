@@ -3,6 +3,7 @@
 #include <QDesktopServices>
 #include <QUrl>
 #include <QDrag>
+#include <QShortcut>
 
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
@@ -110,6 +111,11 @@ WTrackTableView::WTrackTableView(QWidget * parent,
 
     connect(this, SIGNAL(scrollValueChanged(int)),
             this, SLOT(slotScrollValueChanged(int)));
+
+    QShortcut *setFocusShortcut = new QShortcut(
+        QKeySequence(tr("ESC", "Focus")), this);
+    connect(setFocusShortcut, SIGNAL(activated()),
+            this, SLOT(setFocus()));
 }
 
 WTrackTableView::~WTrackTableView() {
