@@ -581,6 +581,11 @@ WStarRating {
 #SampleDecksContainer {
 }
 
+#SamplerBankContainer {
+  padding: 4px;
+  qproperty-layoutSpacing: 2;
+}
+
 #SampleDecksExpanded, #SampleDecksCollapsed {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
 }
