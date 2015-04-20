@@ -215,14 +215,25 @@ TEST_F(EngineBufferE2ETest, SoundTouchCrashTest) {
 }
 
 TEST_F(EngineBufferE2ETest, BasicProcessingTest) {
+    // Confirm that playing ramps from silence, pausing ramps to silence,
+    // and also just confirm that playing works as predicted.
     ControlObject::set(ConfigKey(m_sGroup1, "rate"), 0.05);
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     ProcessBuffer();
     assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
-                              kProcessBufferSize, "BasicProcessingTest");
+                              kProcessBufferSize, "BasicProcessingTestPlay");
+    ProcessBuffer();
+    assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
+                              kProcessBufferSize, "BasicProcessingTestPlaying");
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
+    ProcessBuffer();
+    assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
+                              kProcessBufferSize, "BasicProcessingTestPause");
 }
 
 TEST_F(EngineBufferE2ETest, ScratchTest) {
+    // Confirm that vinyl scratching smoothly transitions from one direction
+    // to the other.
     ControlObject::set(ConfigKey(m_sGroup1, "scratch2_enable"), 1.0);
     ControlObject::set(ConfigKey(m_sGroup1, "scratch2"), 1.1);
     ProcessBuffer();
@@ -230,4 +241,89 @@ TEST_F(EngineBufferE2ETest, ScratchTest) {
     ProcessBuffer();
     assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
                               kProcessBufferSize, "ScratchTestMaster");
+}
+
+TEST_F(EngineBufferE2ETest, ReverseTest) {
+    // Confirm that pushing the reverse button smoothly transitions.
+    ControlObject::set(ConfigKey(m_sGroup1, "rate"), 0.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ProcessBuffer();
+    ControlObject::set(ConfigKey(m_sGroup1, "reverse"), 1.0);
+    ProcessBuffer();
+    assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
+                              kProcessBufferSize, "ReverseTest");
+}
+
+TEST_F(EngineBufferE2ETest, SoundTouchToggleTest) {
+    // Test various cases where SoundTouch toggles on and off.
+    ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
+                       static_cast<double>(EngineBuffer::SOUNDTOUCH));
+    ControlObject::set(ConfigKey(m_sGroup1, "rate"), 0.5);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ProcessBuffer();
+    // Test transition from vinyl to keylock
+    ControlObject::set(ConfigKey(m_sGroup1, "keylock"), 1.0);
+    ProcessBuffer();
+    assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
+                              kProcessBufferSize, "SoundTouchTest");
+    // Test transition from keylock to vinyl due to slow speed.
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), 0.0072);
+    ProcessBuffer();
+    assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
+                              kProcessBufferSize, "SoundTouchTestSlow");
+    // Test transition back to keylock due to regular speed.
+    ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), 1.0);
+    ProcessBuffer();
+    assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
+                              kProcessBufferSize, "SoundTouchTestRegular");
+}
+
+TEST_F(EngineBufferE2ETest, RubberbandToggleTest) {
+    // Test various cases where Rubberband toggles on and off.
+    ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
+                       static_cast<double>(EngineBuffer::RUBBERBAND));
+    ControlObject::set(ConfigKey(m_sGroup1, "rate"), 0.5);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ProcessBuffer();
+    // Test transition from vinyl to keylock
+    ControlObject::set(ConfigKey(m_sGroup1, "keylock"), 1.0);
+    ProcessBuffer();
+    assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
+                              kProcessBufferSize, "RubberbandTest");
+    // Test transition from keylock to vinyl due to slow speed.
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), 0.0072);
+    ProcessBuffer();
+    assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
+                              kProcessBufferSize, "RubberbandTestSlow");
+    // Test transition back to keylock due to regular speed.
+    ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), 1.0);
+    ProcessBuffer();
+    assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
+                              kProcessBufferSize, "RubberbandTestRegular");
+}
+
+TEST_F(EngineBufferE2ETest, KeylockReverseTest) {
+    // Confirm that when toggling reverse while keylock is on, interpolation
+    // is smooth.
+    ControlObject::set(ConfigKey(m_sGroup1, "rate"), 0.5);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "keylock"), 1.0);
+    ProcessBuffer();
+    ControlObject::set(ConfigKey(m_sGroup1, "reverse"), 1.0);
+    ProcessBuffer();
+    assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
+                              kProcessBufferSize, "KeylockReverseTest");
+}
+
+TEST_F(EngineBufferE2ETest, SeekTest) {
+    // Confirm that seeking to a new position smoothly transitions.
+    ControlObject::set(ConfigKey(m_sGroup1, "rate"), 0.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ProcessBuffer();
+    m_pChannel1->getEngineBuffer()->queueNewPlaypos(1000, EngineBuffer::SEEK_EXACT);
+    ProcessBuffer();
+    assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
+                              kProcessBufferSize, "SeekTest");
 }
