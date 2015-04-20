@@ -187,8 +187,8 @@ void WTrackTableView::slotGuiTick50ms(double) {
         // Show the currently selected track in the large cover art view. Doing
         // this in selectionChanged slows down scrolling performance so we wait
         // until the user has stopped interacting first.
-        const QModelIndexList indices = selectionModel()->selectedRows();
         if (m_selectionChangedSinceLastGuiTick) {
+            const QModelIndexList indices = selectionModel()->selectedRows();
             if (indices.size() > 0 && indices.last().isValid()) {
                 TrackModel* trackModel = getTrackModel();
                 if (trackModel) {
