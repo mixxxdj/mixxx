@@ -40,7 +40,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void cancel();
     void trackUpdated();
     void fetchTag();
-    
+
     void cueActivate();
     void cueDelete();
 
