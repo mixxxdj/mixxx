@@ -120,7 +120,8 @@ class SignalPathTest : public MixxxTest {
     // directory. Remove the ".actual" extension to create the file the test
     // will compare against.  On the next run, the test should pass.
     // Use scripts/AudioPlot.py to look at the golden file and make sure it
-    // looks correct.
+    // looks correct.  Each line of the generated file contains the left sample
+    // followed by the right sample.
     void assertBufferMatchesGolden(CSAMPLE* pBuffer, const int iBufferSize,
                                    QString golden_title, const double delta=.0001) {
         QFile f(QDir::currentPath() + "/src/test/golden_buffers/" + golden_title);
@@ -131,13 +132,24 @@ class SignalPathTest : public MixxxTest {
         if (f.open(QFile::ReadOnly | QFile::Text)) {
             QTextStream in(&f);
             // Note: We will only compare as many values as there are in the golden file.
-            for (; i < iBufferSize && !in.atEnd(); ++i) {
-                QString line = in.readLine();
+            for (; i < iBufferSize && !in.atEnd(); i += 2) {
+                QStringList line = in.readLine().split(',');
+                if (line.length() != 2) {
+                    qWarning() << "Unexpected line length in golden file";
+                    pass = false;
+                    break;
+                }
                 bool ok = false;
-                double gold_value = line.toDouble(&ok);
+                double gold_value0 = line[0].toDouble(&ok);
+                double gold_value1 = line[1].toDouble(&ok);
                 EXPECT_TRUE(ok);
-                if (fabs(gold_value - pBuffer[i]) > delta) {
+                if (fabs(gold_value0 - pBuffer[i]) > delta) {
                     qWarning() << "Golden check failed at index" << i;
+                    pass = false;
+                    break;
+                }
+                if (fabs(gold_value1 - pBuffer[i + 1]) > delta) {
+                    qWarning() << "Golden check failed at index" << i + 1;
                     pass = false;
                     break;
                 }
@@ -152,8 +164,8 @@ class SignalPathTest : public MixxxTest {
             QFile actual(QDir::currentPath() + "/src/test/golden_buffers/" + fname_actual);
             ASSERT_TRUE(actual.open(QFile::WriteOnly | QFile::Text));
             QTextStream out(&actual);
-            for (int i = 0; i < iBufferSize; ++i) {
-                out << QString("%1\n").arg(pBuffer[i]);
+            for (int i = 0; i < iBufferSize; i += 2) {
+                out << QString("%1,%2\n").arg(pBuffer[i]).arg(pBuffer[i + 1]);
             }
             actual.close();
             EXPECT_TRUE(false);
