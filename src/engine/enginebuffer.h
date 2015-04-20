@@ -58,7 +58,6 @@ class ControlTTRotary;
 class ControlPotmeter;
 class CachingReader;
 class EngineBufferScale;
-class EngineBufferScaleDummy;
 class EngineBufferScaleLinear;
 class EngineBufferScaleST;
 class EngineBufferScaleRubberBand;
@@ -349,6 +348,7 @@ class EngineBuffer : public EngineObject {
     // three pointers may be reassigned depending on configuration and tests.
     EngineBufferScale* m_pScale;
     FRIEND_TEST(EngineBufferTest, SlowRubberBand);
+    FRIEND_TEST(EngineBufferTest, ResetPitchAdjustUsesLinear);
     EngineBufferScale* m_pScaleVinyl;
     // The keylock engine is configurable, so it could flip flop between
     // ScaleST and ScaleRB during a single callback.
@@ -359,7 +359,6 @@ class EngineBuffer : public EngineObject {
     // Objects used for pitch-indep time stretch (key lock) scaling of the audio
     EngineBufferScaleST* m_pScaleST;
     EngineBufferScaleRubberBand* m_pScaleRB;
-    EngineBufferScaleDummy* m_pScaleDummy;
 
     // Indicates whether the scaler has changed since the last process()
     bool m_bScalerChanged;

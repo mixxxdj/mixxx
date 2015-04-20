@@ -16,10 +16,11 @@ class EngineBufferScaleRubberBand : public EngineBufferScale {
     EngineBufferScaleRubberBand(ReadAheadManager* pReadAheadManager);
     virtual ~EngineBufferScaleRubberBand();
 
-    virtual void setScaleParameters(int iSampleRate,
-                            double base_rate,
-                            double* pTempoRatio,
-                            double* pPitchRatio);
+    virtual void setScaleParameters(double base_rate,
+                                    double* pTempoRatio,
+                                    double* pPitchRatio);
+
+    virtual void setSampleRate(int iSampleRate);
 
     // Read and scale buf_size samples from the provided RAMAN.
     CSAMPLE* getScaled(unsigned long buf_size);
