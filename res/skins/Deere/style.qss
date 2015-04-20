@@ -222,7 +222,7 @@ WSliderComposed {
   qproperty-layoutSpacing: 2;
 }
 
-#ObjectGridRow1, #ObjectGridRow2 {
+#OptionGridRow1, #OptionGridRow2 {
   qproperty-layoutSpacing: 2;
 }
 

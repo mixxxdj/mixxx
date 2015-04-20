@@ -59,7 +59,7 @@
         <MaximumSize>90,60</MaximumSize>
         <Children>
           <WidgetGroup>
-            <ObjectName>ObjectGridRow1</ObjectName>
+            <ObjectName>OptionGridRow1</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>p,me</SizePolicy>
             <MinimumSize>60,20</MinimumSize>
@@ -122,7 +122,7 @@
           </WidgetGroup>
 
           <WidgetGroup>
-            <ObjectName>ObjectGridRow2</ObjectName>
+            <ObjectName>OptionGridRow2</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>p,me</SizePolicy>
             <MinimumSize>60,20</MinimumSize>
