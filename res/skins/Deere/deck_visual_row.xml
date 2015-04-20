@@ -172,10 +172,10 @@
               <TooltipId>spinny</TooltipId>
               <Size>118f,118f</Size>
               <Group><Variable name="group"/></Group>
-              <PathBackground>image/vinyl_spinny_background.png</PathBackground>
-              <PathForeground>image/vinyl_spinny_foreground.png</PathForeground>
-              <PathGhost>image/vinyl_spinny_foreground_ghost.png</PathGhost>
-              <PathMask>image/vinyl_spinny_cover_mask.png</PathMask>
+              <PathBackground>image/vinyl_spinny_background.svg</PathBackground>
+              <PathForeground>image/vinyl_spinny_foreground.svg</PathForeground>
+              <PathGhost>image/vinyl_spinny_foreground_ghost.svg</PathGhost>
+              <PathMask>image/vinyl_spinny_cover_mask.svg</PathMask>
               <!--
                If you want to have cover art beneath the spinning vinyl images,
                set <ShowCover> to "true" AND make the <PathMask> image semi-transparent.
@@ -198,10 +198,10 @@
               <TooltipId>spinny</TooltipId>
               <Size>118f,118f</Size>
               <Group><Variable name="group"/></Group>
-              <PathBackground>image/vinyl_spinny_background.png</PathBackground>
-              <PathForeground>image/vinyl_spinny_foreground.png</PathForeground>
-              <PathGhost>image/vinyl_spinny_foreground_ghost.png</PathGhost>
-              <PathMask>image/vinyl_spinny_cover_mask.png</PathMask>
+              <PathBackground>image/vinyl_spinny_background.svg</PathBackground>
+              <PathForeground>image/vinyl_spinny_foreground.svg</PathForeground>
+              <PathGhost>image/vinyl_spinny_foreground_ghost.svg</PathGhost>
+              <PathMask>image/vinyl_spinny_cover_mask.svg</PathMask>
               <!--
                If you want to have cover art beneath the spinning vinyl images,
                set <ShowCover> to "true" AND make the <PathMask> image semi-transparent.
