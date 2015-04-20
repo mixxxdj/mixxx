@@ -5,7 +5,6 @@
 
 namespace {
 
-// The fixture for testing class Foo.
 class MovingInterquartileMeanTest : public ::testing::Test {
  protected:
   MovingInterquartileMeanTest(): maxAcceptedError(0.5E-6) {
