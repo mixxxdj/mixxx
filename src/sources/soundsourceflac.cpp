@@ -126,6 +126,13 @@ SINT SoundSourceFLAC::seekSampleFrame(SINT frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(isValidFrameIndex(frameIndex));
 
+    // Avoid unnecessary seeking
+    // NOTE(uklotzde): Disabling this optimization might reveal rare
+    // seek errors on certain FLAC files were the decoder loses sync!
+    if (m_curFrameIndex == frameIndex) {
+        return m_curFrameIndex;
+    }
+
     // Discard decoded sample data before seeking
     m_sampleBuffer.reset();
 
