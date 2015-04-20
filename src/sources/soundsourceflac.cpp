@@ -129,13 +129,24 @@ SINT SoundSourceFLAC::seekSampleFrame(SINT frameIndex) {
     // Discard decoded sample data before seeking
     m_sampleBuffer.reset();
 
+    // Seek to the new position...
     if (!FLAC__stream_decoder_seek_absolute(m_decoder, frameIndex)) {
-        qWarning() << "SSFLAC: Seeking error at file" << m_file.fileName();
+        qWarning() << "SSFLAC: Seek error at" << frameIndex << "in" << m_file.fileName();
     }
-    if ((FLAC__STREAM_DECODER_SEEK_ERROR == FLAC__stream_decoder_get_state(m_decoder)) &&
-        !FLAC__stream_decoder_flush(m_decoder)) {
-        qWarning() << "SSFLAC: Failed to flush the decoder's input buffer after seeking" << m_file.fileName();
+    // ...and handle seek errors
+    if (FLAC__STREAM_DECODER_SEEK_ERROR == FLAC__stream_decoder_get_state(m_decoder)) {
+        // Flush the input stream of the decoder according to the
+        // documentation of FLAC__stream_decoder_seek_absolute()
+        if (!FLAC__stream_decoder_flush(m_decoder)) {
+            qWarning() << "SSFLAC: Failed to flush the decoder's input buffer" << m_file.fileName();
+            // Invalidate current position
+            m_curFrameIndex = getFrameIndexMax();
+            return m_curFrameIndex;
+        }
     }
+
+    // Pretend to continue decoding at the new position
+    // (might be adjusted during the next write callback)
     m_curFrameIndex = frameIndex;
 
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
@@ -171,6 +182,9 @@ SINT SoundSourceFLAC::readSampleFrames(
         // If our buffer from libflac is empty (either because we explicitly cleared
         // it or because we've simply used all the samples), ask for a new buffer
         if (m_sampleBuffer.isEmpty()) {
+            // Save the current frame index (might be modified during decoding,
+            // see below)
+            const SINT curFrameIndex = m_curFrameIndex;
             // Documentation of FLAC__stream_decoder_process_single():
             // "Depending on what was decoded, the metadata or write callback
             // will be called with the decoded metadata block or audio frame."
@@ -180,6 +194,17 @@ SINT SoundSourceFLAC::readSampleFrames(
                         << m_file.fileName() << ")";
                 break; // abort
             }
+            // After seeking we might need to skip some samples if the decoder
+            // complained that it has lost sync!?!
+            if (curFrameIndex != m_curFrameIndex) {
+                if (curFrameIndex > m_curFrameIndex) {
+                    skipSampleFrames(curFrameIndex - m_curFrameIndex);
+                } else {
+                    qWarning() << "SSFLAC: Continue decoding at" << m_curFrameIndex << ">" << curFrameIndex;
+                    return readSampleFrames(numberOfFrames, sampleBuffer, sampleBufferSize, readStereoSamples);
+                }
+            }
+            DEBUG_ASSERT(curFrameIndex == m_curFrameIndex);
         }
         if (m_sampleBuffer.isEmpty()) {
             break; // EOF
@@ -263,7 +288,6 @@ FLAC__bool SoundSourceFLAC::flacEOF() {
 
 FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
         const FLAC__Frame* frame, const FLAC__int32* const buffer[]) {
-    // decode buffer must be empty before decoding the next frame
     if (frame->header.channels != getChannelCount()) {
         qWarning() << "Corrupt or unsupported FLAC file:"
                 << "Invalid number of channels in FLAC frame header"
@@ -283,10 +307,17 @@ FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
         return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
     }
 
+    // According to the API docs the decoder will always report
+    // "FLAC samples" (= "Mixxx frames") for convenience
+    DEBUG_ASSERT(frame->header.number_type == FLAC__FRAME_NUMBER_TYPE_SAMPLE_NUMBER);
+    m_curFrameIndex = frame->header.number.sample_number;
+
+    // Decode buffer must be empty before decoding the next frame
     DEBUG_ASSERT(m_sampleBuffer.isEmpty());
     const SampleBuffer::WritableChunk writableChunk(
             m_sampleBuffer.writeToTail(
                     frames2samples(frame->header.blocksize)));
+
     CSAMPLE* pSampleBuffer = writableChunk.data();
     switch (getChannelCount()) {
     case 1: {
