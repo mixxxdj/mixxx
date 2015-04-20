@@ -39,7 +39,10 @@ def AudioPlot(f, columns):
                 data[c] = []
 
         for c in columns:
-            data[c].append(splitted[c].strip())
+            try:
+                data[c].append(splitted[c].strip())
+            except IndexError:
+                pass
 
     i=0
 
@@ -48,7 +51,7 @@ def AudioPlot(f, columns):
         for d in data[c]:
             try:
                 normalized.append(float(d))
-            except:
+            except ValueError:
                 print "skipping ", d
         #rotate through my five favorite colors
         plt.plot(normalized, colors[i % len(colors)])
