@@ -2,6 +2,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import argparse
+import sys
 
 
 def createSlice(columns):
@@ -12,8 +13,25 @@ def createSlice(columns):
         return [int(c) for c in columns.split(',')]
 
 
-def AudioPlot(fname, slice):
-    data = np.genfromtxt(fname, delimiter=',')
+def combine_files(files):
+    """reads a bunch of files and stacks their content together into one numpy
+       array. The number of data points in the columns will be set to the
+       shortest file.
+
+    """
+    raw = []
+    min_len = sys.maxsize  # max integer
+    for fname in files:
+        raw.append(np.genfromtxt(fname, delimiter=','))
+        min_len = len(raw[-1]) if len(raw[-1]) < min_len else min_len
+    data = raw[0][:min_len]
+    for d in raw[1:]:
+        data = np.hstack((data, d[:min_len]))
+    return data
+
+
+def AudioPlot(files, slice):
+    data = combine_files(files)
     plt.plot(data[:, slice])
     plt.show()
 
@@ -31,9 +49,14 @@ comma-separated values, like so:
 2, 4, 2
 
 Each column will be plotted as a separate curve on the same time series.
-Matplotlib is used to display the result."""
+Matplotlib is used to display the result.
+
+This script is useful to compare the sample files produced by the engine test of
+mixxx-test with the golden sample files.
+
+"""
                                 )
-    p.add_argument('file', type=str,
+    p.add_argument('files', type=str, nargs='+',
                    help='file to plot from')
     p.add_argument('-c', '--columns', type=str, default='all',
                    help='lines to plot seperated by a comma, default "all"')
@@ -42,4 +65,4 @@ Matplotlib is used to display the result."""
 
 if __name__ == "__main__":
     args = parseArguments()
-    AudioPlot(args.file, createSlice(args.columns))
+    AudioPlot(args.files, createSlice(args.columns))
