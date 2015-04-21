@@ -602,7 +602,6 @@ MixxxMainWindow::~MixxxMainWindow() {
        }
        leakedControls.clear();
     }
-    qDebug() << "~MixxxMainWindow: All leaking controls deleted.";
 
     // HACK: Save config again. We saved it once before doing some dangerous
     // stuff. We only really want to save it here, but the first one was just
