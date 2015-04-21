@@ -594,11 +594,13 @@ MixxxMainWindow::~MixxxMainWindow() {
            // check if the pointer is still valid, the control object may have bin already
            // deleted by its parent in this loop
            ControlObject* pCo = ControlObject::getControl(key, false);
-           if (pCo) {
-               // it might happens that a control is deleted as child from an other control
+           // This delete call could cause crashes if there are bugs.  Only
+           // do so if developer is on.
+           if (pCo && CmdlineArgs::Instance().getDeveloper()) {
                delete pCo;
            }
        }
+       leakedControls.clear();
     }
     qDebug() << "~MixxxMainWindow: All leaking controls deleted.";
 
