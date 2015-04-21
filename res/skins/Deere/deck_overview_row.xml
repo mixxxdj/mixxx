@@ -24,7 +24,7 @@
         <SignalRGBHighColor></SignalRGBHighColor>
         <SignalRGBMidColor></SignalRGBMidColor>
         <SignalRGBLowColor></SignalRGBLowColor>
-        <SignalColor><Variable name="DeckColor"/></SignalColor>
+        <SignalColor><Variable name="DeckSignalColor"/></SignalColor>
         <PlayPosColor>#00FF00</PlayPosColor>
         <DefaultMark>
           <Align>bottom</Align>

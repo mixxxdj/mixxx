@@ -17,14 +17,14 @@
       <Visual>
         <TooltipId>waveform_display</TooltipId>
         <Group><Variable name="group"/></Group>
-        <BgColor><Variable name="DeckColorMuted"/></BgColor>
+        <BgColor><Variable name="DeckBackgroundColor"/></BgColor>
         <SignalHighColor></SignalHighColor>
         <SignalMidColor></SignalMidColor>
         <SignalLowColor></SignalLowColor>
         <SignalRGBHighColor></SignalRGBHighColor>
         <SignalRGBMidColor></SignalRGBMidColor>
         <SignalRGBLowColor></SignalRGBLowColor>
-        <SignalColor><Variable name="DeckColor"/></SignalColor>
+        <SignalColor><Variable name="DeckSignalColor"/></SignalColor>
         <BeatColor>#ffffff</BeatColor>
         <PlayPosColor>#00FF00</PlayPosColor>
         <EndOfTrackColor>#EA0000</EndOfTrackColor>

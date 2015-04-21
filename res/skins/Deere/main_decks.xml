@@ -23,16 +23,16 @@
                 <SetVariable name="i">1</SetVariable>
                 <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
                 <!-- Traditional Blue -->
-                <SetVariable name="DeckColor">#007BCD</SetVariable>
-                <SetVariable name="DeckColorMuted">#333333</SetVariable>
+                <SetVariable name="DeckSignalColor">#007BCD</SetVariable>
+                <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
                 <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
               </Template>
               <Template src="skin:deck_visual_row.xml">
                 <SetVariable name="i">2</SetVariable>
                 <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
                 <!-- Violet -->
-                <SetVariable name="DeckColor">#B500B5</SetVariable>
-                <SetVariable name="DeckColorMuted">#333333</SetVariable>
+                <SetVariable name="DeckSignalColor">#B500B5</SetVariable>
+                <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
                 <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
               </Template>
             </Children>
@@ -52,32 +52,32 @@
                 <SetVariable name="i">3</SetVariable>
                 <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
                 <!-- Traditional Orange -->
-                <SetVariable name="DeckColor">#E67A00</SetVariable>
-                <SetVariable name="DeckColorMuted">#333333</SetVariable>
+                <SetVariable name="DeckSignalColor">#E67A00</SetVariable>
+                <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
                 <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
               </Template>
               <Template src="skin:deck_visual_row.xml">
                 <SetVariable name="i">1</SetVariable>
                 <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
                 <!-- Traditional Blue -->
-                <SetVariable name="DeckColor">#007BCD</SetVariable>
-                <SetVariable name="DeckColorMuted">#333333</SetVariable>
+                <SetVariable name="DeckSignalColor">#007BCD</SetVariable>
+                <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
                 <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
               </Template>
               <Template src="skin:deck_visual_row.xml">
                 <SetVariable name="i">2</SetVariable>
                 <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
                 <!-- Violet -->
-                <SetVariable name="DeckColor">#B500B5</SetVariable>
-                <SetVariable name="DeckColorMuted">#333333</SetVariable>
+                <SetVariable name="DeckSignalColor">#B500B5</SetVariable>
+                <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
                 <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
               </Template>
               <Template src="skin:deck_visual_row.xml">
                 <SetVariable name="i">4</SetVariable>
                 <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
                 <!-- Lime -->
-                <SetVariable name="DeckColor">#AABD00</SetVariable>
-                <SetVariable name="DeckColorMuted">#333333</SetVariable>
+                <SetVariable name="DeckSignalColor">#AABD00</SetVariable>
+                <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
                 <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
               </Template>
             </Children>
