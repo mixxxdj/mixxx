@@ -144,12 +144,14 @@ class SignalPathTest : public MixxxTest {
                 double gold_value1 = line[1].toDouble(&ok);
                 EXPECT_TRUE(ok);
                 if (fabs(gold_value0 - pBuffer[i]) > delta) {
-                    qWarning() << "Golden check failed at index" << i;
+                    qWarning() << "Golden check failed at index" << i << ", "
+                               << gold_value0 << "vs" << pBuffer[i];
                     pass = false;
                     break;
                 }
                 if (fabs(gold_value1 - pBuffer[i + 1]) > delta) {
-                    qWarning() << "Golden check failed at index" << i + 1;
+                    qWarning() << "Golden check failed at index" << i + 1 << ", "
+                               << gold_value1 << "vs" << pBuffer[i + 1];
                     pass = false;
                     break;
                 }
