@@ -589,18 +589,22 @@ MixxxMainWindow::~MixxxMainWindow() {
             leakedConfigKeys.append(key);
         }
 
-       foreach (ConfigKey key, leakedConfigKeys) {
-           // delete just to satisfy valgrind:
-           // check if the pointer is still valid, the control object may have bin already
-           // deleted by its parent in this loop
-           ControlObject* pCo = ControlObject::getControl(key, false);
-           // This delete call could cause crashes if there are bugs.  Only
-           // do so if developer is on.
-           if (pCo && CmdlineArgs::Instance().getDeveloper()) {
-               delete pCo;
-           }
-       }
-       leakedControls.clear();
+        // Deleting leaked objects helps to satisfy valgrind.
+        // These delete calls could cause crashes if a destructor for a control
+        // we thought was leaked is triggered after this one exits.
+        // So, only delete so if developer mode is on.
+        if (CmdlineArgs::Instance().getDeveloper()) {
+            foreach (ConfigKey key, leakedConfigKeys) {
+                // A deletion early in the list may trigger a destructor
+                // for a control later in the list, so we check for a null
+                // pointer each time.
+                ControlObject* pCo = ControlObject::getControl(key, false);
+                if (pCo) {
+                    delete pCo;
+                }
+            }
+        }
+        leakedControls.clear();
     }
 
     // HACK: Save config again. We saved it once before doing some dangerous
