@@ -96,6 +96,7 @@ class ColumnCache {
     }
 
     inline QString columnSortForFieldIndex(int index) const {
+        // Check if there is a special sort clause
         QString format = m_columnSortByIndex.value(index, "%1");
         return format.arg(columnNameForFieldIndex(index));
     }
