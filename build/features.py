@@ -714,8 +714,9 @@ class TestSuite(Feature):
         test_env = build.env.Clone()
 
         # -pthread tells GCC to do the right thing regardless of system
-        test_env.Append(CCFLAGS='-pthread')
-        test_env.Append(LINKFLAGS='-pthread')
+        if build.toolchain_is_gnu:
+            test_env.Append(CCFLAGS='-pthread')
+            test_env.Append(LINKFLAGS='-pthread')
 
         test_env.Append(CPPPATH="#lib/gtest-1.7.0/include")
         gtest_dir = test_env.Dir("#lib/gtest-1.7.0")
@@ -1086,15 +1087,15 @@ class Optimize(Feature):
 
             if optimize_level == Optimize.LEVEL_PORTABLE:
                 # portable: sse2 CPU (>= Pentium 4)
-                if build.architecture_is_x86: 
+                if build.architecture_is_x86:
                     self.status = "portable: sse2 CPU (>= Pentium 4)"
                     build.env.Append(CCFLAGS='-mtune=generic')
                     # -mtune=generic pick the most common, but compatible options.
-                    # on arm platforms equivalent to -march=arch 
+                    # on arm platforms equivalent to -march=arch
                     if not build.machine_is_64bit:
-                        # the sse flags are not set by default on 32 bit bilds 
-                        # but are not supported on arm builds                     
-                        build.env.Append(CCFLAGS='-msse2 -mfpmath=sse') 
+                        # the sse flags are not set by default on 32 bit builds
+                        # but are not supported on arm builds
+                        build.env.Append(CCFLAGS='-msse2 -mfpmath=sse')
                 else:
                     self.status = "portable"
                 # this sets macros __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
@@ -1116,17 +1117,17 @@ class Optimize(Feature):
                 # macros like __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
                 # are set automaticaly
                 if build.architecture_is_x86 and not build.machine_is_64bit:
-                    # the sse flags are not set by default on 32 bit bilds 
-                    # but are not supported on arm builds  
+                    # the sse flags are not set by default on 32 bit builds
+                    # but are not supported on arm builds
                     build.env.Append(CCFLAGS='-msse2 -mfpmath=sse')
             elif optimize_level == Optimize.LEVEL_LEGACY:
                 if build.architecture_is_x86:
                     self.status = "legacy: pure i386 code"
                     build.env.Append(CCFLAGS='-mtune=generic')
                     # -mtune=generic pick the most common, but compatible options.
-                    # on arm platforms equivalent to -march=arch 
-                else: 
-                    self.status = "legacy"    
+                    # on arm platforms equivalent to -march=arch
+                else:
+                    self.status = "legacy"
             else:
                 # Not possible to reach this code if enabled is written
                 # correctly.
