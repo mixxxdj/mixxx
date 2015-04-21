@@ -1,8 +1,8 @@
 <Template>
 	<WidgetGroup>
-	    <ObjectName>WaveformMixerContainer</ObjectName>
+	  <ObjectName>WaveformMixerContainer</ObjectName>
 		<Layout>vertical</Layout>
-		<SizePolicy>e,e</SizePolicy>
+		<SizePolicy>me,e</SizePolicy>
 		<Children>
             <WidgetGroup>
                 <Layout>horizontal</Layout>
