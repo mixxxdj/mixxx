@@ -113,11 +113,11 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>STEREO</Text>
+              <Text>Split Cue</Text>
             </State>
             <State>
               <Number>1</Number>
-              <Text>MONO SPLIT</Text>
+              <Text>Split Cue</Text>
             </State>
             <Connection>
               <ConfigKey>[Master],headSplit</ConfigKey>
