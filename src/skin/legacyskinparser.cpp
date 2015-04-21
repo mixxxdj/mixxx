@@ -331,7 +331,8 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
                                                            attribute.persist(),
                                                            &created);
             if (created) {
-                // Only set the value if the control was just created.
+                // Only set the value if the control was just created, even if
+                // persist is not on.
                 pControl->set(value);
             }
             pControl->setParent(pParent);
