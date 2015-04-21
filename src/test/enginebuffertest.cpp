@@ -290,18 +290,18 @@ TEST_F(EngineBufferE2ETest, RubberbandToggleTest) {
     ControlObject::set(ConfigKey(m_sGroup1, "keylock"), 1.0);
     ProcessBuffer();
     assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
-                              kProcessBufferSize, "RubberbandTest");
+                              kProcessBufferSize, "RubberbandTest", .001);
     // Test transition from keylock to vinyl due to slow speed.
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
     ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), 0.0072);
     ProcessBuffer();
     assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
-                              kProcessBufferSize, "RubberbandTestSlow");
+                              kProcessBufferSize, "RubberbandTestSlow", .001);
     // Test transition back to keylock due to regular speed.
     ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), 1.0);
     ProcessBuffer();
     assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
-                              kProcessBufferSize, "RubberbandTestRegular");
+                              kProcessBufferSize, "RubberbandTestRegular", .001);
 }
 
 TEST_F(EngineBufferE2ETest, KeylockReverseTest) {
