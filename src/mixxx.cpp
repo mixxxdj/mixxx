@@ -564,6 +564,13 @@ MixxxMainWindow::~MixxxMainWindow() {
 
     delete m_pGuiTick;
 
+    delete m_pShowVinylControl;
+    delete m_pShowSamplers;
+    delete m_pShowMicrophone;
+    delete m_pShowPreviewDeck;
+    delete m_pShowEffects;
+    delete m_pShowCoverArt;
+
     // Check for leaked ControlObjects and give warnings.
     QList<QSharedPointer<ControlDoublePrivate> > leakedControls;
     QList<ConfigKey> leakedConfigKeys;

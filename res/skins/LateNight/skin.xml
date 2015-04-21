@@ -22,6 +22,9 @@
 	the resulting work only under the same or similar license to this one.
 
 	See CHANGELOG.txt for the list of changes.
+
+	TODO: Remove "persist" attributes throughout the skin and confirm that declaring
+	them in the attributes section instead works.
 	-->
 
 <!DOCTYPE skin>
@@ -34,23 +37,23 @@
     <language>en</language>
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
     <attributes>
-      <!-- Set skin defaults.  Persisted values will always be set on skin load. -->
-      <attribute persist="true" config_key="[Master],num_decks">4</attribute>
-      <attribute config_key="[Spinny1],show_spinny">1</attribute>
-      <attribute config_key="[Spinny2],show_spinny">1</attribute>
-      <attribute config_key="[Spinny3],show_spinny">1</attribute>
-      <attribute config_key="[Spinny4],show_spinny">1</attribute>
-      <attribute config_key="[Samplers],show_samplers">0</attribute>
-      <attribute config_key="[Microphone],show_microphone">0</attribute>
-      <attribute config_key="[Vinylcontrol],show_vinylcontrol">0</attribute>
-      <attribute config_key="[PreviewDeck],show_previewdeck">0</attribute>
-      <attribute config_key="[Master],show_mixer">1</attribute>
-      <attribute config_key="[Master],show_mics">0</attribute>
-      <attribute config_key="[Library],show_coverart">1</attribute>
-      <attribute config_key="[Library],show_library">1</attribute>
-      <attribute config_key="[Library],show_current">1</attribute>
-      <attribute config_key="[Master],show_4decks">0</attribute>
-      <attribute config_key="[Spinny],show_spinnies">1</attribute>
+      <!-- Set skin defaults. -->
+      <attribute persist="true" config_key="[Spinny1],show_spinny">1</attribute>
+      <attribute persist="true" config_key="[Spinny2],show_spinny">1</attribute>
+      <attribute persist="true" config_key="[Spinny3],show_spinny">1</attribute>
+      <attribute persist="true" config_key="[Spinny4],show_spinny">1</attribute>
+      <attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
+      <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
+      <attribute persist="true" config_key="[Vinylcontrol],show_vinylcontrol">0</attribute>
+      <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
+      <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
+      <attribute persist="true" config_key="[Master],show_mics">0</attribute>
+      <attribute persist="true" config_key="[Library],show_coverart">1</attribute>
+      <attribute persist="true" config_key="[Library],show_library">1</attribute>
+      <attribute persist="true" config_key="[Library],show_current">1</attribute>
+      <attribute persist="true" config_key="[Master],show_4decks">0</attribute>
+      <attribute persist="true" config_key="[Spinny],show_spinnies">1</attribute>
+      <attribute persist="true" config_key="[Master],mixer_4decks_status">0</attribute>
     </attributes>
   </manifest>
 
