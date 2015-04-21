@@ -5,9 +5,13 @@
 #include "library/dao/cratedao.h"
 
 void ColumnCache::setColumns(const QStringList& columns) {
+    m_columnsByIndex.clear();
+    m_columnsByIndex.append(columns);
+
     m_columnIndexByName.clear();
     for (int i = 0; i < columns.size(); ++i) {
-        m_columnIndexByName[columns[i]] = i;
+        QString column = columns[i];
+        m_columnIndexByName[column] = i;
     }
 
     for (int i = 0; i < NUM_COLUMNS; ++i) {
@@ -65,12 +69,24 @@ void ColumnCache::setColumns(const QStringList& columns) {
     m_columnIndexByEnum[COLUMN_CRATETRACKSTABLE_TRACKID] = fieldIndex(CRATETRACKSTABLE_TRACKID);
     m_columnIndexByEnum[COLUMN_CRATETRACKSTABLE_CRATEID] = fieldIndex(CRATETRACKSTABLE_CRATEID);
 
-    // Set up the reverse mapping, ignoring columns that don't get displayed.
-    for (int i = 0; i < NUM_COLUMNS; ++i) {
-        int index = m_columnIndexByEnum[i];
-        if (index < 0) {
-            continue;
-        }
-        m_columnByIndex[index] = static_cast<Column>(i);
-    }
+    const QString sortInt("cast(%1 as integer)");
+    const QString sortNoCase("lower(%1)");
+    m_columnSortByIndex.clear();
+    // Add the columns that requires a special sort
+    m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_ARTIST], sortNoCase);
+    m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_TITLE], sortNoCase);
+    m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_ALBUM], sortNoCase);
+    m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_ALBUMARTIST], sortNoCase);
+    m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_YEAR], sortNoCase);
+    m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_GENRE], sortNoCase);
+    m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_COMPOSER], sortNoCase);
+    m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_GROUPING], sortNoCase);
+    m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_TRACKNUMBER], sortInt);
+    m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_FILETYPE], sortNoCase);
+    m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_LOCATION], sortNoCase);
+    m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_COMMENT], sortNoCase);
+
+    m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_PLAYLISTTRACKSTABLE_LOCATION], sortNoCase);
+    m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_PLAYLISTTRACKSTABLE_ARTIST], sortNoCase);
+    m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_PLAYLISTTRACKSTABLE_TITLE], sortNoCase);
 }
