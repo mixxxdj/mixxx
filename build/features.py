@@ -714,8 +714,9 @@ class TestSuite(Feature):
         test_env = build.env.Clone()
 
         # -pthread tells GCC to do the right thing regardless of system
-        test_env.Append(CCFLAGS='-pthread')
-        test_env.Append(LINKFLAGS='-pthread')
+        if build.toolchain_is_gnu:
+            test_env.Append(CCFLAGS='-pthread')
+            test_env.Append(LINKFLAGS='-pthread')
 
         test_env.Append(CPPPATH="#lib/gtest-1.7.0/include")
         gtest_dir = test_env.Dir("#lib/gtest-1.7.0")
