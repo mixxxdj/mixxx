@@ -321,14 +321,19 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
             // Set the specified attribute, possibly creating the control
             // object in the process.
             bool created = false;
-            // Update the value specified in the skin with whatever is in the
-            // saved config, if any.
-            value = m_pConfig->getValueString(configKey,
-                                              QString::number(value)).toDouble();
+            // If there is no existing value for this CO in the skin,
+            // update the config with the specified value. If the attribute
+            // is set to persist, the value will be read when the control is created.
+            if (m_pConfig->getValueString(configKey).isEmpty()) {
+                m_pConfig->set(configKey, ConfigValue(QString::number(value)));
+            }
             ControlObject* pControl = controlFromConfigKey(configKey,
                                                            attribute.persist(),
                                                            &created);
-            pControl->set(value);
+            if (created) {
+                // Only set the value if the control was just created.
+                pControl->set(value);
+            }
             pControl->setParent(pParent);
         } else {
             SKIN_WARNING(skinDocument, *m_pContext)
