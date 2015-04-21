@@ -56,6 +56,28 @@ SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename)
           filelength(0),
           current_section(0) {
     setType("ogg");
+    vf.datasource = NULL;
+    vf.seekable = 0;
+    vf.offset = 0;
+    vf.end = 0;
+    //vf.oy
+    vf.links = 0;
+    vf.offsets = NULL;
+    vf.dataoffsets = NULL;
+    vf.serialnos = NULL;
+    vf.pcmlengths = NULL;
+    vf.vi = NULL;
+    vf.vc = NULL;
+    vf.pcm_offset = 0;
+    vf.ready_state = 0;
+    vf.current_serialno = 0;
+    vf.current_link = 0;
+    vf.bittrack = 0;
+    vf.samptrack = 0;
+    //vf.os
+    //vf.vd
+    //vf.vb
+    //vf.callbacks
 }
 
 SoundSourceOggVorbis::~SoundSourceOggVorbis()

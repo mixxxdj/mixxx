@@ -318,10 +318,13 @@
 					<Style>
 					QGroupBox { border: 0px solid #565E6B; margin: 0px 0px 0px 0px;}
 	
-					QTableView, QTextBrowser, QTreeView { border: 1px solid #656565; font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-					background: transparent; color: #ACACAC;
-					<!--we use  "background: transparent" as workaround, else "alternate-background-color" wont work, QT 4.7.x bug?-->
-					alternate-background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(43, 43, 43, 255), stop:0.049 rgba(43, 43, 43, 255), stop:0.050 rgba(43, 43, 43, 100), stop:0.949 rgba(43, 43, 43, 100), stop:0.95 rgba(43, 43, 43, 255), stop:1 rgba(43, 43, 43, 255));}
+					QTableView, QTextBrowser, QTreeView { 
+						border: 1px solid #656565; 
+						font: 12px/14px sans-serif;
+						font-family: "Open Sans";
+						background: transparent; color: #ACACAC;
+						<!--we use  "background: transparent" as workaround, else "alternate-background-color" wont work, QT 4.7.x bug?-->
+						alternate-background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(43, 43, 43, 255), stop:0.049 rgba(43, 43, 43, 255), stop:0.050 rgba(43, 43, 43, 100), stop:0.949 rgba(43, 43, 43, 100), stop:0.95 rgba(43, 43, 43, 255), stop:1 rgba(43, 43, 43, 255));}
 					<!--checkbox in library "Played" column -->
 					QTableView::indicator { width: 12px; height: 12px;}
 					QTableView::indicator:checked { background: url(skin:/style/style_checkbox_checked.png);}
@@ -340,7 +343,8 @@
 					QPushButton#LibraryBPMButton::checked {image: url(:/images/library/ic_library_checked.png);}
 					QPushButton#LibraryBPMButton::!checked {image: url(:/images/library/ic_library_unchecked.png);}
 	
-					QHeaderView { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
+					QHeaderView { font: 11px/13px sans-serif; 
+						      font-family: "Open Sans";}
 	
 					<!--Styling a QSpinbox is complex and it took ages to figure out how to remove the surrounding frame and make the background transparent without affecting the subcontrols (up/down-buttons).
 					You could easily style a subcontrol like in the QT-Docs, but if you want to have the OS-native subcontrols, this is the only way i found ( there are probably others ).
@@ -348,7 +352,11 @@
 					The general rule when it comes to stylesheets is always to remember that if you style part of a widget, then you usually have to style all of it.
 					-->
 					<!--transition time in Auto DJ tab-->
-					QSpinBox:editable { font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: transparent; color: #ACACAC; }
+					QSpinBox:editable { 
+							font: 12px/14px sans-serif; 
+							font-family: "Open Sans";
+							background: transparent; 
+							color: #ACACAC; }
 					QSpinBox { min-height: 20px; max-height: 20px;min-width: 40px; max-width: 40px;}
 	
 					<!--library search bar-->
@@ -356,15 +364,23 @@
 						margin: 0px 0px 5px 5px; 
 						padding: 2px; 
 						border: 1px solid #656565; 
-						font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+						font: 12px/14px sans-serif;
+						font-family: "Open Sans"; 
 						background: transparent; 
 						color: #ACACAC; 
 					}
-					WSearchLineEdit:focus {padding: 2px; border: 2px solid #FF6600; font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: rgba(255, 102, 0,50); color: #D6D6D6;}
+					WSearchLineEdit:focus {
+						padding: 2px; 
+						border: 2px solid #FF6600; 
+						font: 12px/14px sans-serif; 
+						font-family: "Open Sans"; 
+						background: rgba(255, 102, 0,50); 
+						color: #D6D6D6;}
 
 					<!--Cover Art-->
 					WCoverArt { 
-						font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; 
+						font: 13px/15px sans-serif;
+						font-family: "Open Sans"; 
 						background: transparent; 	
 						color: #ACACAC; 
 					}
@@ -375,9 +391,14 @@
 					QSplitter::handle:horizontal { width: 6px; }
 					QSplitter::handle:vertical { height: 6px;}
 	
-					QPushButton { font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
+					QPushButton { font: 12px/14px sans-serif; 
+						      font-family: "Open Sans";}
 					<!--Extra declaration for QRadionButton otherwise it shows up with wrong colors in Linux with Gnome -->
-					QLabel, QRadioButton { font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: transparent; color: #C1C1C1;}
+					QLabel, QRadioButton { 
+						font: 12px/14px sans-serif; 
+						font-family: "Open Sans";
+						background: transparent; 
+						color: #C1C1C1;}
 	
 					<!--Spacing between treeview and searchbar-->
 					QTreeView { margin: 0px 0px 0px 5px; }
@@ -442,7 +463,8 @@
 														<Text>
 															<TooltipId>text</TooltipId>
 															<Style> QLabel {
-																font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+																font: 11px/13px sans-serif;
+																font-family: "Open Sans";
 																background-color: transparent;
 																color: #ACACAC;
 																text-align: left;

@@ -596,7 +596,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
         }
 
         m_pVCRate->set(averagePitch + dDriftControl);
-        if (m_iPosition != -1 && reportedPlayButton && uiUpdateTime(filePosition)) {
+        if (uiUpdateTime(filePosition)) {
             double true_pitch = averagePitch + dDriftControl;
             double pitch_difference = true_pitch - m_dDisplayPitch;
 
@@ -617,8 +617,10 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                 m_dDisplayPitch += pitch_difference * .01;
             }
             // Don't show extremely high or low speeds in the UI.
-            if (m_dDisplayPitch < 1.9 && m_dDisplayPitch > 0.2) {
-                m_pRateSlider->set(rateDir->get() * (m_dDisplayPitch - 1.0) / rateRange->get());
+            if (reportedPlayButton && !scratching->get() &&
+                    m_dDisplayPitch < 1.9 && m_dDisplayPitch > 0.2) {
+                m_pRateSlider->set(rateDir->get() *
+                                   (m_dDisplayPitch - 1.0) / rateRange->get());
             } else {
                 m_pRateSlider->set(0.0);
             }
@@ -835,13 +837,13 @@ void VinylControlXwax::establishQuality(bool quality_sample) {
 }
 
 float VinylControlXwax::getAngle() {
-    double when;
-    float pos = timecoder_get_position(&timecoder, &when);
+    float pos = timecoder_get_position(&timecoder, NULL);
 
-    if (pos == -1)
+    if (pos == -1) {
         return -1.0;
+    }
 
     float rps = timecoder_revs_per_sec(&timecoder);
-    //invert angle to make vinyl spin direction correct
-    return 360 - ((int)(when * 360.0 * rps) % 360);
+    // Invert angle to make vinyl spin direction correct.
+    return 360 - (static_cast<int>(pos / 1000.0 * 360.0 * rps) % 360);
 }

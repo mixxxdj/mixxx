@@ -22,7 +22,6 @@
             <SizePolicy>me,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-
               <Template src="skin:microphone.xml">
                 <SetVariable name="i"></SetVariable>
               </Template>

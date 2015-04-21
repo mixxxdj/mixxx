@@ -59,15 +59,9 @@ void EngineBufferScaleRubberBand::initializeRubberBand(int iSampleRate) {
     m_pRubberBand->setTimeRatio(1.0);
 }
 
-void EngineBufferScaleRubberBand::setScaleParameters(int iSampleRate,
-                                                     double base_rate,
+void EngineBufferScaleRubberBand::setScaleParameters(double base_rate,
                                                      double* pTempoRatio,
                                                      double* pPitchRatio) {
-    if (m_iSampleRate != iSampleRate) {
-        initializeRubberBand(iSampleRate);
-        m_iSampleRate = iSampleRate;
-    }
-
     // Negative speed means we are going backwards. pitch does not affect
     // the playback direction.
     m_bBackwards = *pTempoRatio < 0;
@@ -122,8 +116,13 @@ void EngineBufferScaleRubberBand::setScaleParameters(int iSampleRate,
 
     // Used by other methods so we need to keep them up to date.
     m_dBaseRate = base_rate;
-    m_dTempo = speed_abs;
-    m_dPitch = *pPitchRatio;
+    m_dTempoRatio = speed_abs;
+    m_dPitchRatio = *pPitchRatio;
+}
+
+void EngineBufferScaleRubberBand::setSampleRate(int iSampleRate) {
+    initializeRubberBand(iSampleRate);
+    m_iSampleRate = iSampleRate;
 }
 
 void EngineBufferScaleRubberBand::clear() {
@@ -163,7 +162,7 @@ CSAMPLE* EngineBufferScaleRubberBand::getScaled(unsigned long buf_size) {
     //          << "m_dSpeedAdjust" << m_dSpeedAdjust;
     m_samplesRead = 0.0;
 
-    if (m_dBaseRate == 0 || m_dTempo == 0) {
+    if (m_dBaseRate == 0 || m_dTempoRatio == 0) {
         SampleUtil::clear(m_buffer, buf_size);
         m_samplesRead = buf_size;
         return m_buffer;
@@ -183,7 +182,7 @@ CSAMPLE* EngineBufferScaleRubberBand::getScaled(unsigned long buf_size) {
         // zeros for reads that are not in cache. So it's safe to loop here
         // without any checks for failure in retrieveAndDeinterleave.
         unsigned long received_frames = retrieveAndDeinterleave(
-            read, remaining_frames);
+                read, remaining_frames);
         remaining_frames -= received_frames;
         total_received_frames += received_frames;
         read += received_frames * iNumChannels;
@@ -215,7 +214,7 @@ CSAMPLE* EngineBufferScaleRubberBand::getScaled(unsigned long buf_size) {
                     ->getNextSamples(
                         // The value doesn't matter here. All that matters is we
                         // are going forward or backward.
-                        (m_bBackwards ? -1.0 : 1.0) * m_dBaseRate * m_dTempo,
+                        (m_bBackwards ? -1.0 : 1.0) * m_dBaseRate * m_dTempoRatio,
                         m_buffer_back,
                         iLenFramesRequired * iNumChannels);
             unsigned long iAvailFrames = iAvailSamples / iNumChannels;
@@ -251,7 +250,7 @@ CSAMPLE* EngineBufferScaleRubberBand::getScaled(unsigned long buf_size) {
     // time. So, if we used total_received_frames*iNumChannels in stretched
     // time, then multiplying that by the ratio of unstretched time to stretched
     // time will get us the unstretched samples read.
-    m_samplesRead = m_dBaseRate * m_dTempo *
+    m_samplesRead = m_dBaseRate * m_dTempoRatio *
             total_received_frames * iNumChannels;
 
     return m_buffer;

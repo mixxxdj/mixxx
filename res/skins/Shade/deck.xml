@@ -264,7 +264,8 @@
 						<TrackProperty>
 							<TooltipId>track_title</TooltipId>
 							<Style>QLabel { 
-								font: bold 14px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								font: bold 13px sans-serif;
+								font-family: "Open Sans";
 								background-color: transparent; 
 								color: #191F24; 
 								text-align: left; 
@@ -285,8 +286,12 @@
 						-->
 						<TrackProperty>
 							<TooltipId>track_artist</TooltipId>
-							<Style>QLabel { font: bold 14px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-							background-color: transparent; color: #191F24; text-align: left; padding-left: 1px; }
+							<Style>QLabel { font: bold 13px sans-serif;
+									font-family: "Open Sans";
+									background-color: transparent; 
+									color: #191F24; 
+									text-align: left; 
+									padding-left: 1px; }
 							</Style>
 							<Property>artist</Property>
 							<Channel><Variable name="channum"/></Channel>
@@ -302,8 +307,12 @@
 						-->
 						<NumberPos>
 							<TooltipId>track_time</TooltipId>
-							<Style>QLabel { font: bold 14px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-							background-color: transparent; color: #191F24; text-align: left;padding-left: 1px; }
+							<Style>QLabel { font: bold 13px sans-serif;
+                                                                        font-family: Open Sans;
+							                background-color: transparent; 
+                                                                        color: #191F24;  
+                                                                        text-align: left; 
+                                                                        padding-left: 1px; }
 							</Style>
 							<Channel><Variable name="channum"/></Channel>
 							<Pos>249,24</Pos>
@@ -324,14 +333,15 @@
 							<TooltipId>visual_bpm</TooltipId>
 							<Style>
 								QLabel { 
-									font: bold 10px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+									font: bold 9px sans-serif;
+									font-family: "Open Sans";
 									background-color: transparent; 
 									color: #191F24; 
 									padding-right: 1px; 
 								}
 							</Style>
 							<Channel><Variable name="channum"/></Channel>
-							<Pos>318,33</Pos>
+							<Pos>318,34</Pos>
 							<Size>47,14</Size>
 							<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 							<Alignment>center</Alignment>
@@ -350,7 +360,8 @@
 							<TooltipId>visual_key</TooltipId>
 							<Style>
 								QLabel { 
-									font: bold 10px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+									font: bold 9px ans-serif;
+									font-family: "Open Sans";
 									background-color: transparent; 
 									color: #191F24; 
 									padding-right: 1px; 

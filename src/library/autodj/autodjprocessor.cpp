@@ -112,6 +112,9 @@ AutoDJProcessor::AutoDJProcessor(QObject* pParent,
                 (i % 2 == 0) ? EngineChannel::LEFT : EngineChannel::RIGHT;
         m_decks.append(new DeckAttributes(i, pPlayer, orientation));
     }
+    // Auto-DJ needs at least two decks
+    DEBUG_ASSERT(m_decks.length() > 1);
+
     m_pCOCrossfader = new ControlObjectSlave("[Master]", "crossfader");
     m_pCOCrossfaderReverse = new ControlObjectSlave("[Mixer Profile]", "xFaderReverse");
 
@@ -173,6 +176,10 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::shufflePlaylist(
 }
 
 AutoDJProcessor::AutoDJError AutoDJProcessor::fadeNow() {
+    // Auto-DJ needs at least two decks
+    DEBUG_ASSERT_AND_HANDLE(m_decks.length() > 1) {
+        return ADJ_NOT_TWO_DECKS;
+    }
     if (m_eState == ADJ_IDLE) {
         double crossfader = getCrossfader();
         DeckAttributes& leftDeck = *m_decks[0];
@@ -203,6 +210,11 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::skipNext() {
         return ADJ_IS_INACTIVE;
     }
 
+    // Auto-DJ needs at least two decks
+    DEBUG_ASSERT_AND_HANDLE(m_decks.length() > 1) {
+        return ADJ_NOT_TWO_DECKS;
+    }
+
     // Load the next song from the queue.
     DeckAttributes& leftDeck = *m_decks[0];
     DeckAttributes& rightDeck = *m_decks[1];
@@ -226,7 +238,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         if (deck1Playing && deck2Playing) {
             qDebug() << "One deck must be stopped before enabling Auto DJ mode";
             // Keep the current state.
-            emit(autoDJStateChanged(m_eState));
+            emitAutoDJStateChanged(m_eState);
             return ADJ_BOTH_DECKS_PLAYING;
         }
 
@@ -252,7 +264,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
             if (m_pEnabledAutoDJ->get() != 0.0) {
                 m_pEnabledAutoDJ->set(0.0);
             }
-            emit(autoDJStateChanged(m_eState));
+            emitAutoDJStateChanged(m_eState);
             return ADJ_QUEUE_EMPTY;
         }
 
@@ -303,7 +315,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
             // Load track into the left deck and play. Once it starts playing,
             // we will receive a playerPositionChanged update for deck 1 which
             // will load a track into the right deck and switch to IDLE mode.
-            emit(loadTrackToPlayer(nextTrack, leftDeck.group, true));
+            emitLoadTrackToPlayer(nextTrack, leftDeck.group, true);
         } else {
             // One of the two decks is playing. Switch into IDLE mode and wait
             // until the playing deck crosses posThreshold to start fading.
@@ -312,15 +324,15 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
                 // Update fade thresholds for the left deck.
                 calculateFadeThresholds(&leftDeck);
                 // Load track into the right deck.
-                emit(loadTrackToPlayer(nextTrack, rightDeck.group, false));
+                emitLoadTrackToPlayer(nextTrack, rightDeck.group, false);
             } else {
                 // Update fade thresholds for the right deck.
                 calculateFadeThresholds(&rightDeck);
                 // Load track into the left deck.
-                emit(loadTrackToPlayer(nextTrack, leftDeck.group, false));
+                emitLoadTrackToPlayer(nextTrack, leftDeck.group, false);
             }
         }
-        emit(autoDJStateChanged(m_eState));
+        emitAutoDJStateChanged(m_eState);
     } else {  // Disable Auto DJ
         if (m_pEnabledAutoDJ->get() != 0.0) {
             m_pEnabledAutoDJ->set(0.0);
@@ -330,7 +342,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         leftDeck.disconnect(this);
         rightDeck.disconnect(this);
         m_pCOCrossfader->set(0);
-        emit(autoDJStateChanged(m_eState));
+        emitAutoDJStateChanged(m_eState);
     }
     return ADJ_OK;
 }
@@ -363,6 +375,12 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
         qDebug() << this << "playerPositionChanged" << pAttributes->group
                  << thisPlayPosition;
     }
+
+    // Auto-DJ needs at least two decks
+    DEBUG_ASSERT_AND_HANDLE(m_decks.length() > 1) {
+        return;
+    }
+
     // 95% playback is when we crossfade and do stuff
     // const double posThreshold = 0.95;
 
@@ -376,7 +394,11 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
     }
 
     DeckAttributes& thisDeck = *pAttributes;
-    DeckAttributes& otherDeck = *m_decks[1 - thisDeck.index];
+    int otherDeckIndex = 0;
+    if (thisDeck.index == 0) {
+        otherDeckIndex = 1;
+    }
+    DeckAttributes& otherDeck = *m_decks[otherDeckIndex];
 
     DeckAttributes& leftDeck = *m_decks[0];
     DeckAttributes& rightDeck = *m_decks[1];
@@ -416,7 +438,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                 // Set crossfade thresholds for right deck.
                 calculateFadeThresholds(&rightDeck);
             }
-            emit(autoDJStateChanged(m_eState));
+            emitAutoDJStateChanged(m_eState);
         }
         return;
     }
@@ -438,7 +460,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             m_eState = ADJ_IDLE;
             // Load the next track to otherDeck.
             loadNextTrackFromQueue(otherDeck);
-            emit(autoDJStateChanged(m_eState));
+            emitAutoDJStateChanged(m_eState);
         }
         return;
     }
@@ -479,7 +501,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
 
             // Set the state as FADING.
             m_eState = thisDeck.isLeft() ? ADJ_P1FADING : ADJ_P2FADING;
-            emit(autoDJStateChanged(m_eState));
+            emitAutoDJStateChanged(m_eState);
         }
 
         double posFadeEnd = math_min(1.0, thisDeck.posThreshold + thisFadeDuration);
@@ -550,11 +572,11 @@ bool AutoDJProcessor::loadNextTrackFromQueue(const DeckAttributes& deck, bool pl
         toggleAutoDJ(false);
 
         // And eject track (nextTrack is null) as "End of auto DJ warning"
-        emit(loadTrackToPlayer(nextTrack, deck.group, false));
+        emitLoadTrackToPlayer(nextTrack, deck.group, false);
         return false;
     }
 
-    emit(loadTrackToPlayer(nextTrack, deck.group, play));
+    emitLoadTrackToPlayer(nextTrack, deck.group, play);
     return true;
 }
 
@@ -717,6 +739,12 @@ void AutoDJProcessor::setTransitionTime(int time) {
     if (sDebug) {
         qDebug() << this << "setTransitionTime" << time;
     }
+
+    // Auto-DJ needs at least two decks
+    DEBUG_ASSERT_AND_HANDLE(m_decks.length() > 1) {
+        return;
+    }
+
     // Update the transition time first.
     m_pConfig->set(ConfigKey(kConfigKey, kTransitionPreferenceName),
                    ConfigValue(time));

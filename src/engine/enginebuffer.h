@@ -58,7 +58,6 @@ class ControlTTRotary;
 class ControlPotmeter;
 class CachingReader;
 class EngineBufferScale;
-class EngineBufferScaleDummy;
 class EngineBufferScaleLinear;
 class EngineBufferScaleST;
 class EngineBufferScaleRubberBand;
@@ -155,7 +154,7 @@ class EngineBuffer : public EngineObject {
     //void setReader(CachingReader* pReader);
 
     // For dependency injection of scalers.
-    void setScalerForTest(EngineBufferScale* pScale,
+    void setScalerForTest(EngineBufferScale* pScaleVinyl,
                           EngineBufferScale* pScaleKeylock);
 
     // For dependency injection of fake tracks, with an optional filebpm value.
@@ -250,6 +249,7 @@ class EngineBuffer : public EngineObject {
     FRIEND_TEST(EngineSyncTest, HalfDoubleBpmTest);
     FRIEND_TEST(EngineSyncTest, HalfDoubleThenPlay);
     FRIEND_TEST(EngineSyncTest, UserTweakBeatDistance);
+    FRIEND_TEST(EngineBufferTest, ScalerNoTransport);
     EngineSync* m_pEngineSync;
     SyncControl* m_pSyncControl;
     VinylControlControl* m_pVinylControlControl;
@@ -279,6 +279,9 @@ class EngineBuffer : public EngineObject {
 
     // True if the previous callback was scratching.
     bool m_scratching_old;
+
+    // True if the previous callback was reverse.
+    bool m_reverse_old;
 
     // The previous callback's pitch. Used to check if the scaler parameters
     // need updating.
@@ -349,6 +352,9 @@ class EngineBuffer : public EngineObject {
     // three pointers may be reassigned depending on configuration and tests.
     EngineBufferScale* m_pScale;
     FRIEND_TEST(EngineBufferTest, SlowRubberBand);
+    FRIEND_TEST(EngineBufferTest, ResetPitchAdjustUsesLinear);
+    FRIEND_TEST(EngineBufferTest, VinylScalerRampZero);
+    FRIEND_TEST(EngineBufferTest, ReadFadeOut);
     EngineBufferScale* m_pScaleVinyl;
     // The keylock engine is configurable, so it could flip flop between
     // ScaleST and ScaleRB during a single callback.
@@ -359,7 +365,6 @@ class EngineBuffer : public EngineObject {
     // Objects used for pitch-indep time stretch (key lock) scaling of the audio
     EngineBufferScaleST* m_pScaleST;
     EngineBufferScaleRubberBand* m_pScaleRB;
-    EngineBufferScaleDummy* m_pScaleDummy;
 
     // Indicates whether the scaler has changed since the last process()
     bool m_bScalerChanged;

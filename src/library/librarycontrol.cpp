@@ -102,6 +102,14 @@ LibraryControl::LibraryControl(Library* pLibrary)
     connect(m_pLoadSelectedIntoFirstStopped, SIGNAL(valueChanged(double)),
             this, SLOT(slotLoadSelectedIntoFirstStopped(double)));
 
+    m_pAutoDjAddTop = new ControlPushButton(ConfigKey("[Playlist]","AutoDjAddTop"));
+    connect(m_pAutoDjAddTop, SIGNAL(valueChanged(double)),
+            this, SLOT(slotAutoDjAddTop(double)));
+
+    m_pAutoDjAddBottom = new ControlPushButton(ConfigKey("[Playlist]","AutoDjAddBottom"));
+    connect(m_pAutoDjAddBottom, SIGNAL(valueChanged(double)),
+            this, SLOT(slotAutoDjAddBottom(double)));
+
     // Ignoring no-ops is important since this is for +/- tickers.
     m_pFontSizeKnob = new ControlObject(
             ConfigKey("[Library]", "font_size_knob"), false);
@@ -128,6 +136,8 @@ LibraryControl::~LibraryControl() {
    delete m_pSelectSidebarItem;
    delete m_pToggleSidebarItem;
    delete m_pLoadSelectedIntoFirstStopped;
+   delete m_pAutoDjAddTop;
+   delete m_pAutoDjAddBottom;
    deleteMapValues(&m_loadToGroupControllers);
 }
 
@@ -225,6 +235,34 @@ void LibraryControl::slotLoadSelectedIntoFirstStopped(double v) {
             return;
         }
         activeView->loadSelectedTrack();
+    }
+}
+
+void LibraryControl::slotAutoDjAddTop(double v) {
+    if (m_pLibraryWidget == NULL) {
+        return;
+    }
+
+    if (v > 0) {
+        LibraryView* activeView = m_pLibraryWidget->getActiveView();
+        if (!activeView) {
+            return;
+        }
+        activeView->slotSendToAutoDJTop();
+    }
+}
+
+void LibraryControl::slotAutoDjAddBottom(double v) {
+    if (m_pLibraryWidget == NULL) {
+        return;
+    }
+
+    if (v > 0) {
+        LibraryView* activeView = m_pLibraryWidget->getActiveView();
+        if (!activeView) {
+            return;
+        }
+        activeView->slotSendToAutoDJ();
     }
 }
 

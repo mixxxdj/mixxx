@@ -127,15 +127,17 @@ if 'test' in BUILD_TARGETS:
         print "Running tests."
         run_tests()
 
-def osx_construct_version(build, mixxx_version, branch_name, vcs_revision):
-        # In release mode, we only use the version and revision number.
-        if build.build_is_release:
-                return "%s-%s%s" % (mixxx_version, vcs_name, vcs_revision)
-        elif branch_name.startswith('release-'):
-                return '%s-%s%s' % (mixxx_version, vcs_name, vcs_revision)
-        # In a debug build, include the branch name and revision number and
-        # don't include the Mixxx version.
-        return "%s-%s%s" % (branch_name, vcs_name, vcs_revision)
+def construct_version(build, mixxx_version, branch_name, vcs_revision):
+        if branch_name.startswith('release-'):
+                branch_name = branch_name.replace('release-', '')
+
+        # Include build type in the filename.
+        build_type = 'release' if build.build_is_release else 'debug'
+
+        # New, simpler logic: mixxx version, branch name, git revision,
+        # release/build. Example: mixxx-1.12.0-master-gitXXXX-release
+        return "%s-%s-%s%s-%s" % (mixxx_version, branch_name, vcs_name,
+                                  vcs_revision, build_type)
 
 def ubuntu_construct_version(build, mixxx_version, branch_name, vcs_revision,
                              ubuntu_version):
@@ -154,16 +156,6 @@ def ubuntu_construct_version(build, mixxx_version, branch_name, vcs_revision,
         # e.g. 1.12.0-alpha~master-gitXXXX~ppa1~trusty1
         return "%s~%s-%s%s-%s" % (mixxx_version, branch_name, vcs_name,
                                   vcs_revision, ubuntu_version)
-
-def windows_construct_version(build, mixxx_version, branch_name, vcs_revision):
-        # In release mode, we only use the version and revision number
-        if build.build_is_release:
-                return "%s-%s%s" % (mixxx_version, vcs_name, vcs_revision)
-        elif branch_name.startswith('release-'):
-                return '%s-%s%s' % (mixxx_version, vcs_name, vcs_revision)
-        # In a debug build, include the branch name and revision number and
-        # don't include the Mixxx version.
-        return "%s-%s%s" % (branch_name, vcs_name, vcs_revision)
 
 #Set up the install target
 #=========================
@@ -449,7 +441,8 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
         env.Alias('sign', codesign)
 
         package_name = 'mixxx'
-        package_version = osx_construct_version(build, mixxx_version, branch_name, vcs_revision)
+        package_version = construct_version(build, mixxx_version, branch_name,
+                                            vcs_revision)
         dmg_name = '%s-%s-%s' % (package_name, package_version, ARCH)
         dmg = env.Dmg(dmg_name, [bundle, ] + docs_files, VOLNAME=VOLNAME, ICON = DMG_ICON)
         env.Alias('package', dmg)
@@ -535,8 +528,8 @@ def BuildRelease(target, source, env):
     print "Installer file ",
     package_name = 'mixxx'
 
-    package_version = windows_construct_version(
-        build, mixxx_version, branch_name, vcs_revision)
+    package_version = construct_version(build, mixxx_version, branch_name,
+                                        vcs_revision)
     arch = "x64" if build.machine_is_64bit else "x86"
     exe_name = '%s-%s-%s.exe' % (package_name, package_version, arch)
     print exe_name
@@ -773,9 +766,20 @@ def BuildUbuntuPackage(target, source, env):
                         result_path = "/var/cache/pbuilder/%s-%s/result/" % (ubuntu_distro, arch)
                         result_filename = "%s_%s_%s.deb" % (package_name, package_version, arch)
                         result_file = os.path.join(result_path, result_filename)
+
                         # Since we might build for multiple distros we need to
                         # insert the distro name into the filename.
-                        dest_filename = "%s_%s_%s_%s.deb" % (package_name, package_version, ubuntu_distro, arch)
+                        # HACK(rryan): filenames for Ubuntu packaging in general
+                        # are a big mess but we only distribute files in this
+                        # code path (package_target != 'source') via
+                        # downloads.mixxx.org so we may as well make the
+                        # filenames match the Windows/OSX builds.
+                        version = construct_version(build, mixxx_version,
+                                                    branch_name, vcs_revision)
+                        dest_filename = "%s.deb" % (
+                                '-'.join((package_name, version, ubuntu_distro,
+                                          arch)))
+
                         # ubuntu/ is one folder up
                         dest_file = os.path.join('..', dest_filename)
 

@@ -44,7 +44,6 @@ class EngineBufferScale : public QObject {
     virtual ~EngineBufferScale();
 
     // Sets the scaling parameters.
-    // * The desired output sample rate.
     // * The base rate (ratio of track sample rate to output sample rate).
     // * The tempoRatio describes the tempo change in fraction of
     //   original tempo. Put another way, it is the ratio of track seconds to
@@ -57,16 +56,17 @@ class EngineBufferScale : public QObject {
     //
     // If parameter settings are outside of acceptable limits, each setting will
     // be set to the value it was clamped to.
-    // TODO: move samplerate changes to a separate function since that's often
-    // an unrelated change and doesn't happen often.
-    virtual void setScaleParameters(int iSampleRate,
-                                    double base_rate,
+    virtual void setScaleParameters(double base_rate,
                                     double* pTempoRatio,
                                     double* pPitchRatio) {
-        m_iSampleRate = iSampleRate;
         m_dBaseRate = base_rate;
-        m_dTempo = *pTempoRatio;
-        m_dPitch = *pPitchRatio;
+        m_dTempoRatio = *pTempoRatio;
+        m_dPitchRatio = *pPitchRatio;
+    }
+
+    // Set the desired output sample rate.
+    virtual void setSampleRate(int iSampleRate) {
+        m_iSampleRate = iSampleRate;
     }
 
     /** Get new playpos after call to scale() */
@@ -80,8 +80,8 @@ class EngineBufferScale : public QObject {
     int m_iSampleRate;
     double m_dBaseRate;
     bool m_bSpeedAffectsPitch;
-    double m_dTempo;
-    double m_dPitch;
+    double m_dTempoRatio;
+    double m_dPitchRatio;
     /** Pointer to internal buffer */
     CSAMPLE* m_buffer;
     /** New playpos after call to scale */
