@@ -1307,8 +1307,10 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
     m_sTracksMutex.lock();
     // Automatic conversion to a weak pointer
     m_sTracks[id] = pTrack;
-    qDebug() << "m_sTracks.count() =" << m_sTracks.count();
+    //int trackCount = m_sTracks.count();
     m_sTracksMutex.unlock();
+    //qDebug() << "TrackDAO::m_sTracks.count() =" << trackCount;
+
     TrackCacheItem* pCacheItem = new TrackCacheItem(pTrack);
 
     // Queued connection. We are not in a rush to process cache

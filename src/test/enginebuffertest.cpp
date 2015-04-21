@@ -2,7 +2,6 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-
 #include <QtDebug>
 #include <QTest>
 
@@ -11,9 +10,13 @@
 #include "controlobject.h"
 #include "test/mockedenginebackendtest.h"
 #include "test/mixxxtest.h"
+#include "test/signalpathtest.h"
 
 
 class EngineBufferTest : public MockedEngineBackendTest {
+};
+
+class EngineBufferE2ETest : public SignalPathTest {
 };
 
 TEST_F(EngineBufferTest, DisableKeylockResetsPitch) {
@@ -193,42 +196,135 @@ TEST_F(EngineBufferTest, ResetPitchAdjustUsesLinear) {
     EXPECT_EQ(m_pMockScaleVinyl1, m_pChannel1->getEngineBuffer()->m_pScale);
 }
 
-TEST_F(EngineBufferTest, SoundTouchCrashTest) {
+TEST_F(EngineBufferE2ETest, SoundTouchCrashTest) {
     // Soundtouch has a bug where a pitch value of zero causes an infinite loop
     // and crash.
-
-    // We actually have to load a track to test this.
-    const QString kGroup4 = "[Channel4]";
-    EngineDeck* channel4 = new EngineDeck(
-                m_pEngineMaster->registerChannelGroup(kGroup4),
-                m_pConfig.data(), m_pEngineMaster, m_pEffectsManager,
-                EngineChannel::CENTER);
-    addDeck(channel4);
-    // This file comes from the autodjprocessor test.
-    const QString kTrackLocationTest(QDir::currentPath() +
-                                 "/src/test/id3-test-data/cover-test.mp3");
-    TrackPointer pTrack(new TrackInfoObject(kTrackLocationTest));
-    channel4->getEngineBuffer()->slotLoadTrack(pTrack, true);
-
-    // Wait for the track to load.
-    ProcessBuffer();
-    for (int i = 0; i < 10 && !channel4->getEngineBuffer()->isTrackLoaded();
-            ++i) {
-        QTest::qSleep(1000); // millis
-    }
-    ASSERT_TRUE(channel4->getEngineBuffer()->isTrackLoaded());
-
     ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
                        static_cast<double>(EngineBuffer::SOUNDTOUCH));
-    ControlObject::set(ConfigKey(kGroup4, "pitch"), 1.2);
-    ControlObject::set(ConfigKey(kGroup4, "rate"), 0.05);
-    ControlObject::set(ConfigKey(kGroup4, "play"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "pitch"), 1.2);
+    ControlObject::set(ConfigKey(m_sGroup1, "rate"), 0.05);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     // Start by playing with soundtouch enabled.
     ProcessBuffer();
     // Pause the buffer.  This causes the pitch to be set to 0.
-    ControlObject::set(ConfigKey(kGroup4, "play"), 0.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
     ProcessBuffer();
-    ControlObject::set(ConfigKey(kGroup4, "rateSearch"), -0.05);
+    ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), -0.05);
     // Should not crash
     ProcessBuffer();
+}
+
+TEST_F(EngineBufferE2ETest, BasicProcessingTest) {
+    // Confirm that playing ramps from silence, pausing ramps to silence,
+    // and also just confirm that playing works as predicted.
+    ControlObject::set(ConfigKey(m_sGroup1, "rate"), 0.05);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ProcessBuffer();
+    assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
+                              kProcessBufferSize, "BasicProcessingTestPlay");
+    ProcessBuffer();
+    assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
+                              kProcessBufferSize, "BasicProcessingTestPlaying");
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
+    ProcessBuffer();
+    assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
+                              kProcessBufferSize, "BasicProcessingTestPause");
+}
+
+TEST_F(EngineBufferE2ETest, ScratchTest) {
+    // Confirm that vinyl scratching smoothly transitions from one direction
+    // to the other.
+    ControlObject::set(ConfigKey(m_sGroup1, "scratch2_enable"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "scratch2"), 1.1);
+    ProcessBuffer();
+    ControlObject::set(ConfigKey(m_sGroup1, "scratch2"), -1.1);
+    ProcessBuffer();
+    assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
+                              kProcessBufferSize, "ScratchTestMaster");
+}
+
+TEST_F(EngineBufferE2ETest, ReverseTest) {
+    // Confirm that pushing the reverse button smoothly transitions.
+    ControlObject::set(ConfigKey(m_sGroup1, "rate"), 0.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ProcessBuffer();
+    ControlObject::set(ConfigKey(m_sGroup1, "reverse"), 1.0);
+    ProcessBuffer();
+    assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
+                              kProcessBufferSize, "ReverseTest");
+}
+
+TEST_F(EngineBufferE2ETest, SoundTouchToggleTest) {
+    // Test various cases where SoundTouch toggles on and off.
+    ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
+                       static_cast<double>(EngineBuffer::SOUNDTOUCH));
+    ControlObject::set(ConfigKey(m_sGroup1, "rate"), 0.5);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ProcessBuffer();
+    // Test transition from vinyl to keylock
+    ControlObject::set(ConfigKey(m_sGroup1, "keylock"), 1.0);
+    ProcessBuffer();
+    assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
+                              kProcessBufferSize, "SoundTouchTest");
+    // Test transition from keylock to vinyl due to slow speed.
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), 0.0072);
+    ProcessBuffer();
+    assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
+                              kProcessBufferSize, "SoundTouchTestSlow");
+    // Test transition back to keylock due to regular speed.
+    ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), 1.0);
+    ProcessBuffer();
+    assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
+                              kProcessBufferSize, "SoundTouchTestRegular");
+}
+
+// DISABLED: This test is too dependent on the rubber band library version.
+//TEST_F(EngineBufferE2ETest, RubberbandToggleTest) {
+//    // Test various cases where Rubberband toggles on and off.
+//    ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
+//                       static_cast<double>(EngineBuffer::RUBBERBAND));
+//    ControlObject::set(ConfigKey(m_sGroup1, "rate"), 0.5);
+//    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+//    ProcessBuffer();
+//    // Test transition from vinyl to keylock
+//    ControlObject::set(ConfigKey(m_sGroup1, "keylock"), 1.0);
+//    ProcessBuffer();
+//    assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
+//                              kProcessBufferSize, "RubberbandTest");
+//    // Test transition from keylock to vinyl due to slow speed.
+//    ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
+//    ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), 0.0072);
+//    ProcessBuffer();
+//    assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
+//                              kProcessBufferSize, "RubberbandTestSlow");
+//    // Test transition back to keylock due to regular speed.
+//    ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), 1.0);
+//    ProcessBuffer();
+//    assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
+//                              kProcessBufferSize, "RubberbandTestRegular");
+//}
+
+TEST_F(EngineBufferE2ETest, KeylockReverseTest) {
+    // Confirm that when toggling reverse while keylock is on, interpolation
+    // is smooth.
+    ControlObject::set(ConfigKey(m_sGroup1, "rate"), 0.5);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "keylock"), 1.0);
+    ProcessBuffer();
+    ControlObject::set(ConfigKey(m_sGroup1, "reverse"), 1.0);
+    ProcessBuffer();
+    assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
+                              kProcessBufferSize, "KeylockReverseTest");
+}
+
+TEST_F(EngineBufferE2ETest, SeekTest) {
+    // Confirm that seeking to a new position smoothly transitions.
+    ControlObject::set(ConfigKey(m_sGroup1, "rate"), 0.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ProcessBuffer();
+    m_pChannel1->getEngineBuffer()->queueNewPlaypos(1000, EngineBuffer::SEEK_EXACT);
+    ProcessBuffer();
+    assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
+                              kProcessBufferSize, "SeekTest");
 }
