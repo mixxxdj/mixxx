@@ -242,25 +242,45 @@ SINT SoundSourceFLAC::seekSampleFrame(SINT frameIndex) {
     // Discard decoded sample data before seeking
     m_sampleBuffer.reset();
 
-    // Seek to the new position...
-    if (!FLAC__stream_decoder_seek_absolute(m_decoder, frameIndex)) {
-        qWarning() << "SSFLAC: Seek error at" << frameIndex << "in" << m_file.fileName();
-    }
-    // ...and handle seek errors
-    if (FLAC__STREAM_DECODER_SEEK_ERROR == FLAC__stream_decoder_get_state(m_decoder)) {
-        // Flush the input stream of the decoder according to the
-        // documentation of FLAC__stream_decoder_seek_absolute()
-        if (!FLAC__stream_decoder_flush(m_decoder)) {
-            qWarning() << "SSFLAC: Failed to flush the decoder's input buffer" << m_file.fileName();
-            // Invalidate current position
-            m_curFrameIndex = getFrameIndexMax();
-            return m_curFrameIndex;
+    // Seek to the new position
+    if (FLAC__stream_decoder_seek_absolute(m_decoder, frameIndex)) {
+        // Set the new position
+        m_curFrameIndex = frameIndex;
+        DEBUG_ASSERT(FLAC__STREAM_DECODER_SEEK_ERROR != FLAC__stream_decoder_get_state(m_decoder));
+    } else {
+        qWarning() << "Seek error at" << frameIndex << "in" << m_file.fileName();
+        // Invalidate the current position
+        m_curFrameIndex = getFrameIndexMax();
+        if (FLAC__STREAM_DECODER_SEEK_ERROR == FLAC__stream_decoder_get_state(m_decoder)) {
+            // Flush the input stream of the decoder according to the
+            // documentation of FLAC__stream_decoder_seek_absolute()
+            if (!FLAC__stream_decoder_flush(m_decoder)) {
+                qWarning() << "Failed to flush input buffer of the FLAC decoder after seeking in"
+                        << m_file.fileName();
+                // Invalidate the current position...
+                m_curFrameIndex = getFrameIndexMax();
+                // ...and abort
+                return m_curFrameIndex;
+            }
+            // Discard previously decoded sample data before decoding
+            // the next block of samples
+            m_sampleBuffer.reset();
+            // Trigger decoding of the next block to update the current position
+            if (!FLAC__stream_decoder_process_single(m_decoder)) {
+                qWarning() << "Failed to resync FLAC decoder after seeking in"
+                        << m_file.fileName();
+                // Invalidate the current position...
+                m_curFrameIndex = getFrameIndexMax();
+                // ...and abort
+                return m_curFrameIndex;
+            }
+            DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
+            if (m_curFrameIndex < frameIndex) {
+                // Adjust the current position
+                skipSampleFrames(frameIndex - m_curFrameIndex);
+            }
         }
     }
-
-    // Pretend to continue decoding at the new position
-    // (might be adjusted during the next write callback)
-    m_curFrameIndex = frameIndex;
 
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     return m_curFrameIndex;
@@ -295,29 +315,35 @@ SINT SoundSourceFLAC::readSampleFrames(
         // If our buffer from libflac is empty (either because we explicitly cleared
         // it or because we've simply used all the samples), ask for a new buffer
         if (m_sampleBuffer.isEmpty()) {
-            // Save the current frame index (might be modified during decoding,
-            // see below)
-            const SINT curFrameIndex = m_curFrameIndex;
+            // Save the current frame index
+            const SINT curFrameIndexBeforeProcessing = m_curFrameIndex;
             // Documentation of FLAC__stream_decoder_process_single():
             // "Depending on what was decoded, the metadata or write callback
             // will be called with the decoded metadata block or audio frame."
             // See also: https://xiph.org/flac/api/group__flac__stream__decoder.html#ga9d6df4a39892c05955122cf7f987f856
             if (!FLAC__stream_decoder_process_single(m_decoder)) {
-                qWarning() << "SSFLAC: decoder_process_single returned false ("
-                        << m_file.fileName() << ")";
+                qWarning() << "Failed to decode FLAC file"
+                        << m_file.fileName();
                 break; // abort
             }
             // After seeking we might need to skip some samples if the decoder
-            // complained that it has lost sync!?!
-            if (curFrameIndex != m_curFrameIndex) {
-                if (curFrameIndex > m_curFrameIndex) {
-                    skipSampleFrames(curFrameIndex - m_curFrameIndex);
+            // complained that it has lost sync for some malformed(?) files
+            if (curFrameIndexBeforeProcessing != m_curFrameIndex) {
+                if (curFrameIndexBeforeProcessing > m_curFrameIndex) {
+                    qWarning() << "Trying to adjust frame index"
+                            << m_curFrameIndex << "<>" << curFrameIndexBeforeProcessing
+                            << "while decoding FLAC file"
+                            << m_file.fileName();
+                    skipSampleFrames(curFrameIndexBeforeProcessing - m_curFrameIndex);
                 } else {
-                    qWarning() << "SSFLAC: Continue decoding at" << m_curFrameIndex << ">" << curFrameIndex;
-                    return readSampleFrames(numberOfFrames, sampleBuffer, sampleBufferSize, readStereoSamples);
+                    qWarning() << "Unexpected frame index"
+                            << m_curFrameIndex << "<>" << curFrameIndexBeforeProcessing
+                            << "while decoding FLAC file"
+                            << m_file.fileName();
+                    break; // abort
                 }
             }
-            DEBUG_ASSERT(curFrameIndex == m_curFrameIndex);
+            DEBUG_ASSERT(curFrameIndexBeforeProcessing == m_curFrameIndex);
         }
         if (m_sampleBuffer.isEmpty()) {
             break; // EOF
@@ -355,14 +381,30 @@ SINT SoundSourceFLAC::readSampleFrames(
 // flac callback methods
 FLAC__StreamDecoderReadStatus SoundSourceFLAC::flacRead(FLAC__byte buffer[],
         size_t* bytes) {
+<<<<<<< HEAD
 >>>>>>> Move code from specialized AudioSources back into corresponding SoundSources
     *bytes = m_file.read((char*) buffer, *bytes);
     if (*bytes > 0) {
+=======
+    const qint64 maxlen = *bytes;
+    if (0 >= maxlen) {
+        *bytes = 0;
         return FLAC__STREAM_DECODER_READ_STATUS_CONTINUE;
-    } else if (*bytes == 0) {
-        return FLAC__STREAM_DECODER_READ_STATUS_END_OF_STREAM;
+    }
+
+    const qint64 readlen = m_file.read((char*) buffer, maxlen);
+
+    if (0 < readlen) {
+        *bytes = readlen;
+>>>>>>> Improve decoding of corrupt/malformed FLAC files
+        return FLAC__STREAM_DECODER_READ_STATUS_CONTINUE;
     } else {
-        return FLAC__STREAM_DECODER_READ_STATUS_ABORT;
+        *bytes = 0;
+        if (0 == readlen) {
+            return FLAC__STREAM_DECODER_READ_STATUS_END_OF_STREAM;
+        } else {
+            return FLAC__STREAM_DECODER_READ_STATUS_ABORT;
+        }
     }
 <<<<<<< HEAD
 }
@@ -624,51 +666,57 @@ FLAC__bool SoundSourceFLAC::flacEOF() {
 
 FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
         const FLAC__Frame* frame, const FLAC__int32* const buffer[]) {
-    if (frame->header.channels != getChannelCount()) {
+    const SINT numChannels = frame->header.channels;
+    if (getChannelCount() > numChannels) {
         qWarning() << "Corrupt or unsupported FLAC file:"
                 << "Invalid number of channels in FLAC frame header"
                 << frame->header.channels << "<>" << getChannelCount();
         return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
     }
-    if (frame->header.sample_rate != getFrameRate()) {
+    if (getFrameRate() != SINT(frame->header.sample_rate)) {
         qWarning() << "Corrupt or unsupported FLAC file:"
                 << "Invalid sample rate in FLAC frame header"
                 << frame->header.sample_rate << "<>" << getFrameRate();
         return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
     }
-    if (frame->header.blocksize > m_maxBlocksize) {
+    const SINT numReadableFrames = frame->header.blocksize;
+    if (numReadableFrames > m_maxBlocksize) {
         qWarning() << "Corrupt or unsupported FLAC file:"
                 << "Block size in FLAC frame header exceeds the maximum block size"
                 << frame->header.blocksize << ">" << m_maxBlocksize;
         return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
     }
 
-    // According to the API docs the decoder will always report
-    // "FLAC samples" (= "Mixxx frames") for convenience
+    // According to the API docs the decoder will always report the current
+    // position in "FLAC samples" (= "Mixxx frames") for convenience
     DEBUG_ASSERT(frame->header.number_type == FLAC__FRAME_NUMBER_TYPE_SAMPLE_NUMBER);
     m_curFrameIndex = frame->header.number.sample_number;
 
-    // Decode buffer must be empty before decoding the next frame
+    // Decode buffer should be empty before decoding the next frame
     DEBUG_ASSERT(m_sampleBuffer.isEmpty());
     const SampleBuffer::WritableChunk writableChunk(
-            m_sampleBuffer.writeToTail(
-                    frames2samples(frame->header.blocksize)));
+            m_sampleBuffer.writeToTail(frames2samples(numReadableFrames)));
+
+    const SINT numWritableFrames = samples2frames(writableChunk.size());
+    DEBUG_ASSERT(numWritableFrames <= numReadableFrames);
+    if (numWritableFrames < numReadableFrames) {
+        qWarning() << "Sample buffer has not enough free space for all decoded FLAC samples:"
+                << numWritableFrames << "<" << numReadableFrames;
+    }
 
     CSAMPLE* pSampleBuffer = writableChunk.data();
+    DEBUG_ASSERT(getChannelCount() <= numChannels);
     switch (getChannelCount()) {
     case 1: {
         // optimized code for 1 channel (mono)
-        DEBUG_ASSERT(1 <= frame->header.channels);
-        for (SINT i = 0; i < writableChunk.size(); ++i) {
+        for (SINT i = 0; i < numWritableFrames; ++i) {
             *pSampleBuffer++ = buffer[0][i] * m_sampleScaleFactor;
         }
         break;
     }
     case 2: {
         // optimized code for 2 channels (stereo)
-        DEBUG_ASSERT(2 <= frame->header.channels);
-        DEBUG_ASSERT(0 == (writableChunk.size() % 2));
-        for (SINT i = 0; i < (writableChunk.size() / 2); ++i) {
+        for (SINT i = 0; i < numWritableFrames; ++i) {
             *pSampleBuffer++ = buffer[0][i] * m_sampleScaleFactor;
             *pSampleBuffer++ = buffer[1][i] * m_sampleScaleFactor;
         }
@@ -676,14 +724,14 @@ FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
     }
     default: {
         // generic code for multiple channels
-        DEBUG_ASSERT(getChannelCount() == frame->header.channels);
-        for (SINT i = 0; i < samples2frames(writableChunk.size()); ++i) {
-            for (unsigned j = 0; j < frame->header.channels; ++j) {
+        for (SINT i = 0; i < numWritableFrames; ++i) {
+            for (SINT j = 0; j < getChannelCount(); ++j) {
                 *pSampleBuffer++ = buffer[j][i] * m_sampleScaleFactor;
             }
         }
     }
     }
+
     return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
 }
 
