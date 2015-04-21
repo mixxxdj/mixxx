@@ -36,7 +36,7 @@ class ControlObject : public QObject {
     // bPersist: Store value on exit, load on startup.
     ControlObject(ConfigKey key,
                   bool bIgnoreNops=true, bool bTrack=false,
-                  bool bPersist=false);
+                  double value = 0.0, bool bPersist=false);
     virtual ~ControlObject();
 
     // Returns a pointer to the ControlObject matching the given ConfigKey
@@ -164,7 +164,7 @@ class ControlObject : public QObject {
 
   private:
     void initialize(ConfigKey key, bool bIgnoreNops, bool bTrack,
-                    bool bPersist);
+                    double value, bool bPersist);
     inline bool ignoreNops() const {
         return m_pControl ? m_pControl->ignoreNops() : true;
     }
