@@ -147,13 +147,11 @@ class SignalPathTest : public MixxxTest {
                     qWarning() << "Golden check failed at index" << i << ", "
                                << gold_value0 << "vs" << pBuffer[i];
                     pass = false;
-                    break;
                 }
                 if (fabs(gold_value1 - pBuffer[i + 1]) > delta) {
                     qWarning() << "Golden check failed at index" << i + 1 << ", "
                                << gold_value1 << "vs" << pBuffer[i + 1];
                     pass = false;
-                    break;
                 }
             }
         }
