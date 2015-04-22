@@ -1421,7 +1421,7 @@ void MixxxMainWindow::initActions()
     m_pViewMaximizeLibrary->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
                                                   "ViewMenu_MaximizeLibrary"),
-                                                  tr("Space", "Menubar|View|MAximize Library"))));
+                                                  tr("Space", "Menubar|View|Maximize Library"))));
     m_pViewMaximizeLibrary->setStatusTip(maximizeLibraryText);
     m_pViewMaximizeLibrary->setWhatsThis(buildWhatsThis(maximizeLibraryTitle, maximizeLibraryText));
     connect(m_pViewMaximizeLibrary, SIGNAL(toggled(bool)),
