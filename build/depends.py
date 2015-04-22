@@ -564,7 +564,11 @@ class MixxxCore(Feature):
                    "effects/native/moogladder4filtereffect.cpp",
                    "effects/native/reverbeffect.cpp",
                    "effects/native/echoeffect.cpp",
+<<<<<<< HEAD
                    "effects/native/autopaneffect.cpp",
+=======
+                   "effects/native/phasereffect.cpp",
+>>>>>>> [Bug #1299029] phaser effect
                    "effects/native/reverb/Reverb.cc",
 
                    "engine/effects/engineeffectsmanager.cpp",
