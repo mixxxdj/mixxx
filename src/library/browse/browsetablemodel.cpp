@@ -7,6 +7,7 @@
 
 #include "library/browse/browsetablemodel.h"
 #include "library/browse/browsethread.h"
+#include "library/previewbuttondelegate.h"
 #include "playerinfo.h"
 #include "controlobject.h"
 #include "library/dao/trackdao.h"
@@ -20,8 +21,10 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
                      "mixxx.db.model.browse"),
           QStandardItemModel(parent),
           m_pTrackCollection(pTrackCollection),
-          m_pRecordingManager(pRecordingManager) {
+          m_pRecordingManager(pRecordingManager),
+          m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)) {
     QStringList header_data;
+    header_data.insert(COLUMN_PREVIEW, tr("Preview"));
     header_data.insert(COLUMN_FILENAME, tr("Filename"));
     header_data.insert(COLUMN_ARTIST, tr("Artist"));
     header_data.insert(COLUMN_TITLE, tr("Title"));
@@ -55,6 +58,8 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
     addSearchColumn(COLUMN_FILE_MODIFIED_TIME);
     addSearchColumn(COLUMN_FILE_CREATION_TIME);
 
+    setDefaultSort(COLUMN_FILENAME, Qt::AscendingOrder);
+
     setHorizontalHeaderLabels(header_data);
     // register the QList<T> as a metatype since we use QueuedConnection below
     qRegisterMetaType< QList< QList<QStandardItem*> > >(
@@ -71,6 +76,10 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
             this,
             SLOT(slotInsert(const QList< QList<QStandardItem*> >&, BrowseTableModel*)),
             Qt::QueuedConnection);
+
+    connect(&PlayerInfo::instance(), SIGNAL(trackLoaded(QString, TrackPointer)),
+            this, SLOT(trackLoaded(QString, TrackPointer)));
+    trackLoaded(m_previewDeckGroup, PlayerInfo::instance().getTrackInfo(m_previewDeckGroup));
 }
 
 BrowseTableModel::~BrowseTableModel() {
@@ -367,6 +376,9 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
         trackMetadata.setAlbumArtist(value.toString());
     } else if (col == COLUMN_GROUPING) {
         trackMetadata.setGrouping(value.toString());
+    } else {
+        qWarning() << "BrowseTableModel::setData(): no tagger column";
+        return false;
     }
 
     QStandardItem* item = itemFromIndex(index);
@@ -389,8 +401,39 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
     }
 }
 
+void BrowseTableModel::trackLoaded(QString group, TrackPointer pTrack) {
+    if (group == m_previewDeckGroup) {
+        for (int row = 0; row < rowCount(); ++row) {
+            QModelIndex i = index(row, COLUMN_PREVIEW);
+            if (i.data().toBool()) {
+                QStandardItem* item = itemFromIndex(i);
+                item->setText("0");
+            }
+        }
+        if (pTrack) {
+            for (int row = 0; row < rowCount(); ++row) {
+                QModelIndex i = index(row, COLUMN_PREVIEW);
+                QString location = index(row, COLUMN_LOCATION).data().toString();
+                if (location == pTrack->getLocation()) {
+                    QStandardItem* item = itemFromIndex(i);
+                    item->setText("1");
+                    break;
+                }
+            }
+        }
+    }
+}
+
+bool BrowseTableModel::isColumnSortable(int column) {
+    if (COLUMN_PREVIEW == column) {
+        return false;
+    }
+    return true;
+}
+
 QAbstractItemDelegate* BrowseTableModel::delegateForColumn(const int i, QObject* pParent) {
-    Q_UNUSED(i);
-    Q_UNUSED(pParent);
+    if (PlayerManager::numPreviewDecks() > 0 && i == COLUMN_PREVIEW) {
+        return new PreviewButtonDelegate(pParent, i);
+    }
     return NULL;
 }

@@ -4,7 +4,6 @@
         <Layout>horizontal</Layout>
         <SizePolicy>me, min</SizePolicy>
         <MinimumSize>-1, 220</MinimumSize>
-        <MaximumSize>680, 260</MaximumSize>
         <Children>
             <WidgetGroup>
                 <ObjectName>RateContainer<Variable name="channum" /></ObjectName>
@@ -332,7 +331,7 @@
 		            </WidgetGroup>
 					<Template src="skin:deck_row_1.xml" />
 					<Template src="skin:deck_row_2_3_4.xml" />
-		            <Template src="skin:deck_row_5.xml" />
+					<Template src="skin:deck_row_5.xml" />
 					<Template src="skin:deck_buttons.xml" />
 				</Children>
 			</WidgetGroup> <!-- /Deck Channel1 -->

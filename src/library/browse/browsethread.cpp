@@ -150,7 +150,11 @@ void BrowseThread::populateModel() {
         TrackInfoObject tio(filepath, thisPath.token());
         QList<QStandardItem*> row_data;
 
-        QStandardItem* item = new QStandardItem(tio.getFilename());
+        QStandardItem* item = new QStandardItem("0");
+        item->setData("0", Qt::UserRole);
+        row_data.insert(COLUMN_PREVIEW, item);
+
+        item = new QStandardItem(tio.getFilename());
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_FILENAME, item);
@@ -258,12 +262,12 @@ void BrowseThread::populateModel() {
         if (row % 10 == 0) {
             // this is a blocking operation
             emit(rowsAppended(rows, thisModelObserver));
-            //qDebug() << "Append " << rows.count() << " from " << filepath;
+            qDebug() << "Append " << rows.count() << " from " << filepath;
             rows.clear();
         }
         // Sleep additionally for 10ms which prevents us from GUI freezes
         msleep(20);
     }
     emit(rowsAppended(rows, thisModelObserver));
-    //qDebug() << "Append last " << rows.count() << " from " << thisPath;
+    qDebug() << "Append last " << rows.count();
 }
