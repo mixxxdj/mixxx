@@ -20,7 +20,7 @@ SoundSourceSndFile::~SoundSourceSndFile() {
     close();
 }
 
-Result SoundSourceSndFile::tryOpen(SINT /*channelCountHint*/) {
+Result SoundSourceSndFile::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     DEBUG_ASSERT(!m_pSndFile);
     memset(&m_sfInfo, 0, sizeof(m_sfInfo));
 #ifdef __WINDOWS__

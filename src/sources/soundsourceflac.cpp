@@ -80,7 +80,7 @@ SoundSourceFLAC::~SoundSourceFLAC() {
     close();
 }
 
-Result SoundSourceFLAC::tryOpen(SINT /*channelCountHint*/) {
+Result SoundSourceFLAC::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     DEBUG_ASSERT(!m_file.isOpen());
     if (!m_file.open(QIODevice::ReadOnly)) {
         qWarning() << "Failed to open FLAC file:" << m_file.fileName();

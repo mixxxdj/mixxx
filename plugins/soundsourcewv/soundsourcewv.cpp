@@ -18,12 +18,12 @@ SoundSourceWV::~SoundSourceWV() {
     close();
 }
 
-Result SoundSourceWV::tryOpen(SINT channelCountHint) {
+Result SoundSourceWV::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     DEBUG_ASSERT(!m_wpc);
     char msg[80]; // hold possible error message
     int openFlags = OPEN_WVC | OPEN_NORMALIZE;
-    if ((kChannelCountZero < channelCountHint) && (2 >= channelCountHint)) {
-        // mono or stereo
+    if ((1 == audioSrcCfg.channelCountHint) || (2 == audioSrcCfg.channelCountHint)) {
+        // mono or stereo requested
         openFlags |= OPEN_2CH_MAX;
     }
     m_wpc = WavpackOpenFileInput(

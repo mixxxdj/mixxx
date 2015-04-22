@@ -48,9 +48,9 @@ public:
     SINT readSampleFrames(SINT numberOfFrames, CSAMPLE* sampleBuffer) /*override*/;
 
 private:
-    Result tryOpen(SINT channelCountHint) /*override*/;
+    Result tryOpen(const Mixxx::AudioSourceConfig& audioSrcCfg) /*override*/;
 
-    bool configureAudioStream(SINT channelCountHint);
+    bool configureAudioStream(const Mixxx::AudioSourceConfig& audioSrcCfg);
 
     void copyFrames(CSAMPLE *dest, SINT *destFrames, const CSAMPLE *src,
             SINT srcFrames);

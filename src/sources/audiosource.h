@@ -256,6 +256,17 @@ private:
     SINT m_bitrate;
 };
 
+// Parameters for configuring audio sources
+struct AudioSourceConfig {
+    AudioSourceConfig()
+        : channelCountHint(AudioSource::kChannelCountDefault),
+          frameRateHint(AudioSource::kFrameRateDefault){
+    }
+
+    SINT channelCountHint;
+    SINT frameRateHint;
+};
+
 typedef QSharedPointer<AudioSource> AudioSourcePointer;
 
 } // namespace Mixxx

@@ -39,7 +39,7 @@ public:
     void flacError(FLAC__StreamDecoderErrorStatus status);
 
 private:
-    Result tryOpen(SINT channelCountHint) /*override*/;
+    Result tryOpen(const AudioSourceConfig& audioSrcCfg) /*override*/;
 
     SINT readSampleFrames(SINT numberOfFrames,
             CSAMPLE* sampleBuffer, SINT sampleBufferSize,

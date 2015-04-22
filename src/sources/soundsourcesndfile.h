@@ -28,7 +28,7 @@ public:
             CSAMPLE* sampleBuffer) /*override*/;
 
 private:
-    Result tryOpen(SINT channelCountHint) /*override*/;
+    Result tryOpen(const AudioSourceConfig& audioSrcCfg) /*override*/;
 
     SNDFILE* m_pSndFile;
     SF_INFO m_sfInfo;

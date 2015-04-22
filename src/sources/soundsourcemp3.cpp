@@ -120,7 +120,7 @@ SoundSourceMp3::~SoundSourceMp3() {
     close();
 }
 
-Result SoundSourceMp3::tryOpen(SINT /*channelCountHint*/) {
+Result SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     DEBUG_ASSERT(!isChannelCountValid());
     DEBUG_ASSERT(!isFrameRateValid());
 

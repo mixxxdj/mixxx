@@ -312,7 +312,7 @@ QLibrary* SoundSourceProxy::getPlugin(QString lib_filename)
     return pPlugin;
 }
 
-Mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(SINT channelCountHint) {
+Mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const Mixxx::AudioSourceConfig& audioSrcCfg) {
     if (m_pAudioSource) {
         qDebug() << "AudioSource is already open";
         return m_pAudioSource;
@@ -323,7 +323,7 @@ Mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(SINT channelCountHin
         return m_pAudioSource;
     }
 
-    if (OK != m_pSoundSource->open(channelCountHint)) {
+    if (OK != m_pSoundSource->open(audioSrcCfg)) {
         qWarning() << "Failed to open SoundSource";
         return m_pAudioSource;
     }

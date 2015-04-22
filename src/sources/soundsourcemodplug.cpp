@@ -102,7 +102,7 @@ QImage SoundSourceModPlug::parseCoverArt() const {
     return QImage();
 }
 
-Result SoundSourceModPlug::tryOpen(SINT /*channelCountHint*/) {
+Result SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     ScopedTimer t("SoundSourceModPlug::open()");
 
     // read module file to byte array

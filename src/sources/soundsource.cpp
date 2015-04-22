@@ -20,11 +20,11 @@ SoundSource::SoundSource(QUrl url, QString type)
     DEBUG_ASSERT(getUrl().isValid());
 }
 
-Result SoundSource::open(SINT channelCountHint) {
+Result SoundSource::open(const AudioSourceConfig& audioSrcCfg) {
     close(); // reopening is not supported
     Result result;
     try {
-        result = tryOpen(channelCountHint);
+        result = tryOpen(audioSrcCfg);
     } catch (...) {
         close();
         throw;

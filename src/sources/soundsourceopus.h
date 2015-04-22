@@ -29,7 +29,7 @@ public:
             CSAMPLE* sampleBuffer, SINT sampleBufferSize) /*override*/;
 
 private:
-    Result tryOpen(SINT channelCountHint) /*override*/;
+    Result tryOpen(const AudioSourceConfig& audioSrcCfg) /*override*/;
 
     OggOpusFile *m_pOggOpusFile;
 
