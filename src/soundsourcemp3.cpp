@@ -22,6 +22,7 @@
 
 #include <QtDebug>
 
+const int kPreSeekFrames = 29; // Start four frames before wanted frame to get in sync...
 
 SoundSourceMp3::SoundSourceMp3(QString qFilename) :
         Mixxx::SoundSource(qFilename),
@@ -143,13 +144,19 @@ Result SoundSourceMp3::open() {
 
         setChannels(2); // always pretend to read 2 channels
         m_iChannels = MAD_NCHANNELS(&Header);
-        mad_timer_add (&filelength, Header.duration);
         bitrate += Header.bitrate;
 
         // Add frame to list of frames
         MadSeekFrameType * p = new MadSeekFrameType;
         p->m_pStreamPos = (unsigned char *)Stream->this_frame;
         p->pos = length();
+        mad_timer_add (&filelength, Header.duration);
+        //if (m_qSeekList.size() < 40) {
+            //qDebug() << p->m_pStreamPos << p->pos << m_qSeekList.size();
+            //if (m_qSeekList.size()) {
+            //    qDebug() << p->m_pStreamPos - m_qSeekList.last()->m_pStreamPos; //) / m_qSeekList.size();(inputbuf - p->m_pStreamPos) / m_qSeekList.size();
+            //}
+        //}
         m_qSeekList.append(p);
         currentframe++;
     }
@@ -185,11 +192,12 @@ Result SoundSourceMp3::open() {
     //TODO: Emit metadata updated signal?
 
 /*
-    qDebug() << "length  = " << filelength.seconds << "d sec.";
-    qDebug() << "frames  = " << framecount;
-    qDebug() << "bitrate = " << bitrate/1000;
-    qDebug() << "Size    = " << length();
- */
+    qDebug() << "length    = " << filelength.seconds << "d sec.";
+    qDebug() << "frames    = " << framecount;
+    qDebug() << "bitrate   = " << bitrate/1000;
+    qDebug() << "Size      = " << length();
+    qDebug() << "framesize = " << m_iAvgFrameSize;
+*/
 
     // Re-init buffer:
     seek(0);
@@ -224,132 +232,82 @@ long SoundSourceMp3::seek(long filepos) {
 
     MadSeekFrameType* cur = NULL;
 
-    if (filepos == 0) {
-        // Seek to beginning of file
+    int framePos = findFrame(filepos);
+    if (framePos == 0 || framePos > filepos || m_currentSeekFrameIndex <= kPreSeekFrames) {
+        //qDebug() << "Problem finding good seek frame (wanted " << filepos << ", got " << framePos << "), starting from 0";
+
+        rest = -1;
+        m_currentSeekFrameIndex = 0;
+        cur = getSeekFrame(m_currentSeekFrameIndex);
+
+        //qDebug() << "seek" << cur->m_pStreamPos;
 
         // Re-init buffer:
+        mad_frame_finish(Frame);
+        mad_synth_finish(Synth);
         mad_stream_finish(Stream);
         mad_stream_init(Stream);
         mad_stream_options(Stream, MAD_OPTION_IGNORECRC);
-        mad_stream_buffer(Stream, (unsigned char *) inputbuf, inputbuf_len);
-        mad_frame_init(Frame);
+        mad_stream_buffer(Stream, (const unsigned char *)(cur->m_pStreamPos),
+                          inputbuf_len-(long int)(cur->m_pStreamPos-(unsigned char *)inputbuf));
         mad_synth_init(Synth);
-        rest=-1;
-
-        m_currentSeekFrameIndex = 0;
-        //cur = getSeekFrame(0);
-        //frameIterator.toFront(); //Might not need to do this -- Albert June 19/2010 (during Qt3 purge)
+        mad_frame_init(Frame);
+        // Decode first header here, to start without extra mad_frame_decode
+        if (mad_header_decode(&Frame->header, Stream)) {
+            qDebug() << "error mad_header_decode";
+        }
     } else {
-        //qDebug() << "seek precise";
-        // Perform precise seek accomplished by using a frame in the seek list
-
-        // Find the frame to seek to in the list
-        /*
-           MadSeekFrameType *cur = m_qSeekList.last();
-           int k=0;
-           while (cur!=0 && cur->pos>filepos)
-           {
-            cur = m_qSeekList.prev();
-         ++k;
-           }
-         */
-
-        int framePos = findFrame(filepos);
-        if (framePos == 0 || framePos > filepos || m_currentSeekFrameIndex < 5) {
-            //qDebug() << "Problem finding good seek frame (wanted " << filepos << ", got " << framePos << "), starting from 0";
-
-            // Re-init buffer:
+        // Start four frames before wanted frame to get in sync...
+        m_currentSeekFrameIndex -= kPreSeekFrames;
+        cur = getSeekFrame(m_currentSeekFrameIndex);
+        if (cur != NULL) {
+            //qDebug() << "frame pos " << cur->pos;
+            // Start from the new frame
             mad_stream_finish(Stream);
             mad_stream_init(Stream);
             mad_stream_options(Stream, MAD_OPTION_IGNORECRC);
-            mad_stream_buffer(Stream, (unsigned char *) inputbuf, inputbuf_len);
-            mad_frame_init(Frame);
-            mad_synth_init(Synth);
-            rest = -1;
-            m_currentSeekFrameIndex = 0;
-            cur = getSeekFrame(m_currentSeekFrameIndex);
-        } else {
-            //qDebug() << "frame pos " << cur->pos;
-
-            // Start four frames before wanted frame to get in sync...
-            m_currentSeekFrameIndex -= 4;
-            cur = getSeekFrame(m_currentSeekFrameIndex);
-            if (cur != NULL) {
-                // Start from the new frame
-                mad_stream_finish(Stream);
-                mad_stream_init(Stream);
-                mad_stream_options(Stream, MAD_OPTION_IGNORECRC);
-                //        qDebug() << "mp3 restore " << cur->m_pStreamPos;
-                mad_stream_buffer(Stream, (const unsigned char *)cur->m_pStreamPos,
-                                  inputbuf_len-(long int)(cur->m_pStreamPos-(unsigned char *)inputbuf));
-
-                // Mute'ing is done here to eliminate potential pops/clicks from skipping
-                // Rob Leslie explains why here:
-                // http://www.mars.org/mailman/public/mad-dev/2001-August/000321.html
-                mad_synth_mute(Synth);
-                mad_frame_mute(Frame);
-
-                // Decode the three frames before
-                mad_frame_decode(Frame, Stream);
-                mad_frame_decode(Frame, Stream);
-                mad_frame_decode(Frame, Stream);
-                mad_frame_decode(Frame, Stream);
-
-                // this is also explained in the above mad-dev post
-                mad_synth_frame(Synth, Frame);
-
-                // Set current position
-                rest = -1;
-                m_currentSeekFrameIndex += 4;
-                cur = getSeekFrame(m_currentSeekFrameIndex);
+            //        qDebug() << "mp3 restore " << cur->m_pStreamPos;
+            mad_stream_buffer(Stream, (const unsigned char *)(cur->m_pStreamPos),
+                              inputbuf_len-(long int)(cur->m_pStreamPos-(unsigned char *)inputbuf));
+            // Decode first header here, to start without extra mad_frame_decode
+            if (mad_header_decode(&Frame->header, Stream)) {
+                // TODO(error)
+                qDebug() << "error mad_header_decode";
             }
+
+            // Mute'ing is done here to eliminate potential pops/clicks from skipping
+            // Rob Leslie explains why here:
+            // http://www.mars.org/mailman/public/mad-dev/2001-August/000321.html
+            mad_synth_mute(Synth);
+            mad_frame_mute(Frame);
+
+            /*
+            // Decode the three frames before
+            mad_frame_decode(Frame, Stream);
+            mad_frame_decode(Frame, Stream);
+            mad_frame_decode(Frame, Stream);
+            mad_frame_decode(Frame, Stream);
+
+            // this is also explained in the above mad-dev post
+            mad_synth_frame(Synth, Frame);
+
+
+            // Set current position
+            rest = -1;
+            m_currentSeekFrameIndex += kPreSeekFrames;
+            */
+            // Set current position
+            rest = -1;
+            cur = getSeekFrame(m_currentSeekFrameIndex);
         }
-
-        // Synthesize the samples from the frame which should be discard to reach the requested position
-        if (cur != NULL) //the "if" prevents crashes on bad files.
-            discard(filepos-cur->pos);
     }
-/*
-    else
-    {
-        qDebug() << "seek unprecise";
-        // Perform seek which is can not be done precise because no frames is in the seek list
 
-        int newpos = (int)(inputbuf_len * ((float)filepos/(float)length()));
-   //        qDebug() << "Seek to " << filepos << " " << inputbuf_len << " " << newpos;
-
-        // Go to an approximate position:
-        mad_stream_buffer(Stream, (unsigned char *) (inputbuf+newpos), inputbuf_len-newpos);
-        mad_synth_mute(Synth);
-        mad_frame_mute(Frame);
-
-        // Decode a few (possible wrong) buffers:
-        int no = 0;
-        int succesfull = 0;
-        while ((no<10) && (succesfull<2))
-        {
-            if (!mad_frame_decode(Frame, Stream))
-            succesfull ++;
-            no ++;
-        }
-
-        // Discard the first synth:
-        mad_synth_frame(Synth, Frame);
-
-        // Remaining samples in buffer are useless
-        rest = -1;
-
-        // Reset seek frame list
-        m_qSeekList.clear();
-        MadSeekFrameType *p = new MadSeekFrameType;
-        p->m_pStreamPos = (unsigned char*)Stream->this_frame;
-        p->pos = filepos;
-        m_qSeekList.append(p);
-        m_iSeekListMinPos = filepos;
-        m_iSeekListMaxPos = filepos;
-        m_iCurFramePos = filepos;
+    // Synthesize the samples from the frame which should be discard to reach the requested position
+    if (cur != NULL) { //the "if" prevents crashes on bad files.
+        SoundSourceMp3::read(filepos - cur->pos, NULL);
+        // discard(filepos - cur->pos);
     }
- */
+
 
     // Unfortunately we don't know the exact fileposition. The returned position is thus an
     // approximation only:
@@ -404,32 +362,45 @@ inline long unsigned SoundSourceMp3::length() {
 
 unsigned long SoundSourceMp3::discard(unsigned long samples_wanted) {
     unsigned long Total_samples_decoded = 0;
-    int no = 0;
 
-    if (rest > 0)
-        Total_samples_decoded += 2*(Synth->pcm.length-rest);
+    if (rest > 0) {
+        Total_samples_decoded += 2 * (Synth->pcm.length - rest);
+    }
 
     while (Total_samples_decoded < samples_wanted) {
+        //qDebug() << "mad_frame_decode" << "discard" << Stream->this_frame;
         if (mad_frame_decode(Frame, Stream)) {
-            if (MAD_RECOVERABLE(Stream->error)) {
+            if(MAD_RECOVERABLE(Stream->error))
+            {
+                if(Stream->error == MAD_ERROR_LOSTSYNC) {
+                    // Ignore LOSTSYNC due to ID3 tags
+                    int tagsize = id3_tag_query(Stream->this_frame, Stream->bufend - Stream->this_frame);
+                    if(tagsize > 0) {
+                        //qDebug() << "SSMP3::Read Skipping ID3 tag size: " << tagsize;
+                        mad_stream_skip(Stream, tagsize);
+                    }
+                    continue;
+                }
+                //qDebug() << "MAD: Recoverable frame level ERR (" << mad_stream_errorstr(Stream) << ")";
                 continue;
-            } else if(Stream->error == MAD_ERROR_BUFLEN) {
+            } else if(Stream->error==MAD_ERROR_BUFLEN) {
+                // qDebug() << "MAD: buflen ERR";
                 break;
             } else {
+                // qDebug() << "MAD: Unrecoverable frame level ERR (" << mad_stream_errorstr(Stream) << ").";
                 break;
             }
         }
         mad_synth_frame(Synth, Frame);
-        no = math_min<int>(Synth->pcm.length,(samples_wanted-Total_samples_decoded)/2);
-        Total_samples_decoded += 2*no;
+        //qDebug() << Synth->pcm.length << "discard";
+        Total_samples_decoded += 2 * Synth->pcm.length;
     }
 
-    if (Synth->pcm.length > no)
-        rest = no;
-    else
-        rest = -1;
+    rest = (Total_samples_decoded - samples_wanted) / 2;
 
-    return Total_samples_decoded;
+    //qDebug() << "discard" << Total_samples_decoded << samples_wanted;
+
+    return samples_wanted;
 }
 
 /*
@@ -455,73 +426,83 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
     unsigned Total_samples_decoded = 0;
     int i;
 
+    //qDebug() << "rest" << rest;
+
     // If samples are left from previous read, then copy them to start of destination
     // Make sure to take into account the case where there are more samples left over
     // from the previous read than the client requested.
     if (rest > 0)
     {
-        for (i=rest; i<Synth->pcm.length && Total_samples_decoded < samples_wanted; i++)
+        for (i = Synth->pcm.length - rest; i < Synth->pcm.length && Total_samples_decoded < samples_wanted; i++)
         {
-            // Left channel
-            *(destination++) = madScale(Synth->pcm.samples[0][i]);
+            if ( destination) {
 
-            /* Right channel. If the decoded stream is monophonic then
-            * the right output channel is the same as the left one. */
-            if (m_iChannels>1)
-                *(destination++) = madScale(Synth->pcm.samples[1][i]);
-            else
+                // Left channel
                 *(destination++) = madScale(Synth->pcm.samples[0][i]);
+
+                /* Right channel. If the decoded stream is monophonic then
+                * the right output channel is the same as the left one. */
+                if (m_iChannels>1)
+                    *(destination++) = madScale(Synth->pcm.samples[1][i]);
+                else
+                    *(destination++) = madScale(Synth->pcm.samples[0][i]);
+            }
 
             // This is safe because we have checked that samples_wanted is even.
             Total_samples_decoded += 2;
+            rest--;
 
         }
 
         if(Total_samples_decoded >= samples_wanted) {
-            if(i < Synth->pcm.length)
-                rest = i;
-            else
-                rest = -1;
             return Total_samples_decoded;
         }
     }
 
 //     qDebug() << "Decoding";
     int no = 0;
-    unsigned int frames = 0;
+    int skip_counter = 0;
     while (Total_samples_decoded < samples_wanted)
     {
         // qDebug() << "no " << Total_samples_decoded;
+        //qDebug() << "mad_frame_decode" << "read" << Stream->this_frame;
+        unsigned char const* frameBefore = Stream->this_frame;
         if(mad_frame_decode(Frame,Stream))
         {
             if(MAD_RECOVERABLE(Stream->error))
             {
-                if(Stream->error == MAD_ERROR_LOSTSYNC) {
-                    // Ignore LOSTSYNC due to ID3 tags
-                    int tagsize = id3_tag_query(Stream->this_frame, Stream->bufend - Stream->this_frame);
-                    if(tagsize > 0) {
-                        //qDebug() << "SSMP3::Read Skipping ID3 tag size: " << tagsize;
-                        mad_stream_skip(Stream, tagsize);
-                    }
-                    continue;
+                qDebug() << "MAD: Recoverable frame level ERR (" << mad_stream_errorstr(Stream) << ")";
+                if (frameBefore == Stream->this_frame) {
+                    // No seek, try again
+                    qDebug() << "MAD: No seek, try again";
+                } else {
+                    qDebug() << "MAD: skip frame";
+                    ++skip_counter;
                 }
-                //qDebug() << "MAD: Recoverable frame level ERR (" << mad_stream_errorstr(Stream) << ")";
-                continue;
-            } else if(Stream->error==MAD_ERROR_BUFLEN) {
-                // qDebug() << "MAD: buflen ERR";
-                break;
+                Stream->error = MAD_ERROR_NONE; // Acknowledge Error
             } else {
-                // qDebug() << "MAD: Unrecoverable frame level ERR (" << mad_stream_errorstr(Stream) << ").";
+                qDebug() << "MAD: Unrecoverable frame level ERR (" << mad_stream_errorstr(Stream) << ").";
                 break;
             }
         }
+        if (frameBefore == Stream->this_frame) {
+            // No seek, try again
+            qDebug() << "MAD: No seek, try again";
+            continue;
+        }
 
-        ++frames;
+        while (skip_counter) {
+            // mad_synth_frame works even though we had a error;
+            qDebug() << "skip!!";
+            --skip_counter;
+        }
+
 
         /* Once decoded the frame is synthesized to PCM samples. No ERRs
          * are reported by mad_synth_frame();
          */
         mad_synth_frame(Synth,Frame);
+        // qDebug() << "mad_synth_frame" << Stream->this_frame - frameBefore << Synth->pcm.length;
 
         // Number of channels in frame
         //ch = MAD_NCHANNELS(&Frame->header);
@@ -532,31 +513,30 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
          * full.
          */
 
-
 //         qDebug() << "synthlen " << Synth->pcm.length << ", remain " << (samples_wanted-Total_samples_decoded);
-        no = math_min<int>(Synth->pcm.length,(samples_wanted-Total_samples_decoded)/2);
-        for (i=0; i<no; i++)
+        no = math_min<int>(Synth->pcm.length, (samples_wanted - Total_samples_decoded) / 2);
+        rest = Synth->pcm.length;
+        for (i = 0; i < no; i++)
         {
-            // Left channel
-            *(destination++) = madScale(Synth->pcm.samples[0][i]);
-
-            /* Right channel. If the decoded stream is monophonic then
-            * the right output channel is the same as the left one. */
-            if (m_iChannels==2)
-                *(destination++) = madScale(Synth->pcm.samples[1][i]);
-            else
+            if ( destination) {
+                // Left channel
                 *(destination++) = madScale(Synth->pcm.samples[0][i]);
+
+                /* Right channel. If the decoded stream is monophonic then
+                * the right output channel is the same as the left one. */
+                if (m_iChannels==2)
+                    *(destination++) = madScale(Synth->pcm.samples[1][i]);
+                else
+                    *(destination++) = madScale(Synth->pcm.samples[0][i]);
+            }
+
+            Total_samples_decoded += 2;
+            rest--;
         }
-        Total_samples_decoded += 2*no;
+
 
         // qDebug() << "decoded: " << Total_samples_decoded << ", wanted: " << samples_wanted;
     }
-
-    // If samples are still left in buffer, set rest to the index of the unused samples
-    if (Synth->pcm.length > no)
-        rest = no;
-    else
-        rest = -1;
 
     // qDebug() << "decoded " << Total_samples_decoded << " samples in " << frames << " frames, rest: " << rest << ", chan " << m_iChannels;
     return Total_samples_decoded;
