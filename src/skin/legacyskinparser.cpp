@@ -333,6 +333,12 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
             if (created) {
                 created_attributes.append(pControl);
             }
+            if (!attribute.persist()) {
+                // Only set the value if the control wasn't set up through
+                // the persist logic.  Skin attributes are always
+                // set on skin load.
+                pControl->set(value);
+            }
         } else {
             SKIN_WARNING(skinDocument, *m_pContext)
                     << "Error reading double value from skin attribute: "

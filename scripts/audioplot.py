@@ -1,103 +1,68 @@
-#!/usr/bin/python
+#!/usr/bin/env python
+import matplotlib.pyplot as plt
+import numpy as np
+import argparse
+import sys
 
-# audioplot is a simple script for drawing graphs of values.  It reads a simple
-# csv text file where each line needs to contain the same number of comma-separated values,
-# like so:
-# 0, 0, 0
-# 1, 2, 1
-# 2, 4, 2
-#
-# Each column will be plotted as a separate curve on the same time series.
-# Matplotlib is used to display the result.
 
-from matplotlib import pyplot as plt
-from matplotlib.lines import Line2D
-import time, string, glob, sys
-
-import getopt
-
-def AudioPlot(f, columns):
-    colors = ['g','c','b','m','r']
-    plt.figure()
-
-    #set up dictionary of lists
-    if columns != "all":
-        data = {}
-        for c in columns:
-            data[c] = []
+def createSlice(columns):
+    """convert an input string into a numpy slice object"""
+    if columns == 'all':
+        return slice(None)
     else:
-        data = None
+        return [int(c) for c in columns.split(',')]
 
-    #build the individual columns
-    for line in f.readlines():
-        splitted = line.split(",")
-        if columns == "all" and data is None:
-            #make list of columns based on number of entries in first line
-            columns = [i for i in range(0,len(splitted))]
-            data = {}
-            for c in columns:
-                data[c] = []
 
-        for c in columns:
-            try:
-                data[c].append(splitted[c].strip())
-            except IndexError:
-                pass
+def combine_files(files):
+    """reads a bunch of files and stacks their content together into one numpy
+       array. The number of data points in the columns will be set to the
+       shortest file.
 
-    i=0
+    """
+    raw = []
+    min_len = sys.maxsize  # max integer
+    for fname in files:
+        raw.append(np.genfromtxt(fname, delimiter=','))
+        min_len = len(raw[-1]) if len(raw[-1]) < min_len else min_len
+    data = raw[0][:min_len]
+    for d in raw[1:]:
+        data = np.hstack((data, d[:min_len]))
+    return data
 
-    for c in columns:
-        normalized = []
-        for d in data[c]:
-            try:
-                normalized.append(float(d))
-            except ValueError:
-                print "skipping ", d
-        #rotate through my five favorite colors
-        plt.plot(normalized, colors[i % len(colors)])
-        i+=1
 
+def AudioPlot(files, slice):
+    data = combine_files(files)
+    plt.plot(data[:, slice])
     plt.show()
 
-    return
 
-def usage():
-    print """
-AudioPlot.py:
--c              pick column to plot (more than one is OK, 1-based indexes, or "all")
--f              file to plot from
+def parseArguments():
+    p = argparse.ArgumentParser(prog='AudioPlot',
+                                formatter_class=argparse.RawDescriptionHelpFormatter,
+                                description="""
+Audioplot is a simple script for drawing graphs of values. It reads a simple
+csv text file where each line needs to contain the same number of
+comma-separated values, like so:
+
+0, 0, 0
+1, 2, 1
+2, 4, 2
+
+Each column will be plotted as a separate curve on the same time series.
+Matplotlib is used to display the result.
+
+This script is useful to compare the sample files produced by the engine test of
+mixxx-test with the golden sample files.
+
 """
+                                )
+    p.add_argument('files', type=str, nargs='+',
+                   help='file to plot from')
+    p.add_argument('-c', '--columns', type=str, default='all',
+                   help='lines to plot seperated by a comma, default "all"')
+    return p.parse_args()
+
 
 if __name__ == "__main__":
-    columns = []
-    fname = None
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], "c:f:",[])
-        for o, a in opts:
-            if o == "-c":
-                if columns != "all":
-                    if a.upper() == "ALL":
-                        columns = "all"
-                    else:
-                        columns.append(int(a)-1)
-            elif o == "-f":
-                fname = a
-            else:
-                usage()
-                sys.exit(1)
-    except Exception, e:
-        print str(e)
-        usage()
-        sys.exit(1)
-
-    if fname is None:
-        usage()
-        sys.exit(1)
-
-    try:
-        f = open(fname, "r")
-    except Exception, e:
-        print "Error opening file %s: %s" % (fname, str(e))
-        sys.exit(1)
-
-    AudioPlot(f, columns)
+    args = parseArguments()
+    AudioPlot(args.files, createSlice(args.columns))

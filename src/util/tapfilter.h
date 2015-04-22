@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QTime>
 
+#include "util/movinginterquartilemean.h"
 #include "util/types.h"
 
 class TapFilter : public QObject {
@@ -11,6 +12,8 @@ class TapFilter : public QObject {
   public:
     TapFilter(QObject *pParent, int filterLength, int maxInterval);
     virtual ~TapFilter();
+
+  public slots:
     void tap();
 
   signals:
@@ -18,9 +21,7 @@ class TapFilter : public QObject {
 
   private:
     QTime m_timer;
-    CSAMPLE* m_pFilterBuffer;
-    int m_iFilterLength;
-    int m_iValidPresses;
+    MovingInterquartileMean m_mean;
     int m_iMaxInterval;
 };
 

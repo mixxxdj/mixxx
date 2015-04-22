@@ -38,6 +38,7 @@
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
     <attributes>
       <!-- Set skin defaults. -->
+      <attribute config_key="[Master],num_decks">4</attribute>
       <attribute persist="true" config_key="[Spinny1],show_spinny">1</attribute>
       <attribute persist="true" config_key="[Spinny2],show_spinny">1</attribute>
       <attribute persist="true" config_key="[Spinny3],show_spinny">1</attribute>
@@ -49,7 +50,7 @@
       <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
       <attribute persist="true" config_key="[Master],show_mics">0</attribute>
       <attribute persist="true" config_key="[Library],show_coverart">1</attribute>
-      <attribute persist="true" config_key="[Library],show_library">1</attribute>
+      <attribute config_key="[Library],show_library">1</attribute>
       <attribute persist="true" config_key="[Library],show_current">1</attribute>
       <attribute persist="true" config_key="[Master],show_4decks">0</attribute>
       <attribute persist="true" config_key="[Spinny],show_spinnies">1</attribute>
@@ -85,7 +86,7 @@
         <Children>
             <WidgetStack currentpage="[Library],show_big_current" persist="true">
                 <Children>
-                    <WidgetGroup trigger="[Library],unshow_big">
+                    <WidgetGroup trigger="[Master],maximize_library">
                         <Layout>horizontal</Layout>
                         <SizePolicy>i,max</SizePolicy>
                         <!-- <MinimumSize>1280,525</MinimumSize>-->

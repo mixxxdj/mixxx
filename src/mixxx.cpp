@@ -470,6 +470,10 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
             m_pPlayerManager->slotLoadToDeck(musicFiles.at(i), i+1);
         }
     }
+
+    connect(&PlayerInfo::instance(),
+            SIGNAL(currentPlayingTrackChanged(TrackPointer)),
+            this, SLOT(slotUpdateWindowTitle(TrackPointer)));
 }
 
 MixxxMainWindow::~MixxxMainWindow() {
@@ -684,17 +688,8 @@ void MixxxMainWindow::logBuildDetails() {
 }
 
 void MixxxMainWindow::initializeWindow() {
-    QString version = Version::version();
-#ifdef __APPLE__
-    setWindowTitle(tr("Mixxx")); //App Store
-#elif defined(AMD64) || defined(EM64T) || defined(x86_64)
-    setWindowTitle(tr("Mixxx %1 x64").arg(version));
-#elif defined(IA64)
-    setWindowTitle(tr("Mixxx %1 Itanium").arg(version));
-#else
-    setWindowTitle(tr("Mixxx %1").arg(version));
-#endif
     setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
+    slotUpdateWindowTitle(TrackPointer());
 }
 
 void MixxxMainWindow::initializeFonts() {
@@ -855,6 +850,10 @@ void MixxxMainWindow::slotViewShowCoverArt(bool enable) {
     toggleVisibility(ConfigKey("[Library]", "show_coverart"), enable);
 }
 
+void MixxxMainWindow::slotViewMaximizeLibrary(bool enable) {
+    toggleVisibility(ConfigKey("[Master]", "maximize_library"), enable);
+}
+
 void setVisibilityOptionState(QAction* pAction, ConfigKey key) {
     ControlObject* pVisibilityControl = ControlObject::getControl(key);
     pAction->setEnabled(pVisibilityControl != NULL);
@@ -921,6 +920,8 @@ void MixxxMainWindow::onNewSkinLoaded() {
                              ConfigKey("[EffectRack1]", "show"));
     setVisibilityOptionState(m_pViewShowCoverArt,
                              ConfigKey("[Library]", "show_coverart"));
+    setVisibilityOptionState(m_pViewMaximizeLibrary,
+                             ConfigKey("[Master]", "maximize_library"));
 
 #ifdef __VINYLCONTROL__
     linkSkinWidget(&m_pShowVinylControl,
@@ -1407,6 +1408,20 @@ void MixxxMainWindow::initActions()
     connect(m_pViewShowCoverArt, SIGNAL(toggled(bool)),
             this, SLOT(slotViewShowCoverArt(bool)));
 
+    QString maximizeLibraryTitle = tr("Maximize Library");
+    QString maximizeLibraryText = tr("Maximize the track library to take up all the available screen space.") +
+            " " + mayNotBeSupported;
+    m_pViewMaximizeLibrary = new QAction(maximizeLibraryTitle, this);
+    m_pViewMaximizeLibrary->setCheckable(true);
+    m_pViewMaximizeLibrary->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_MaximizeLibrary"),
+                                                  tr("Space", "Menubar|View|Maximize Library"))));
+    m_pViewMaximizeLibrary->setStatusTip(maximizeLibraryText);
+    m_pViewMaximizeLibrary->setWhatsThis(buildWhatsThis(maximizeLibraryTitle, maximizeLibraryText));
+    connect(m_pViewMaximizeLibrary, SIGNAL(toggled(bool)),
+            this, SLOT(slotViewMaximizeLibrary(bool)));
+
     QString recordTitle = tr("&Record Mix");
     QString recordText = tr("Record your mix to a file");
     m_pOptionsRecord = new QAction(recordTitle, this);
@@ -1523,8 +1538,24 @@ void MixxxMainWindow::initActions()
     }
 }
 
-void MixxxMainWindow::initMenuBar()
-{
+void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
+    QString appTitle = Version::applicationTitle();
+
+    // If we have a track, use getInfo() to format a summary string and prepend
+    // it to the title.
+    // TODO(rryan): Does this violate Mac App Store policies?
+    if (pTrack) {
+        QString trackInfo = pTrack->getInfo();
+        if (!trackInfo.isEmpty()) {
+            appTitle = QString("%1 | %2")
+                    .arg(trackInfo)
+                    .arg(appTitle);
+        }
+    }
+    this->setWindowTitle(appTitle);
+}
+
+void MixxxMainWindow::initMenuBar() {
     // MENUBAR
     m_pFileMenu = new QMenu(tr("&File"), menuBar());
     m_pOptionsMenu = new QMenu(tr("&Options"), menuBar());
@@ -1576,6 +1607,7 @@ void MixxxMainWindow::initMenuBar()
     m_pViewMenu->addAction(m_pViewShowPreviewDeck);
     m_pViewMenu->addAction(m_pViewShowEffects);
     m_pViewMenu->addAction(m_pViewShowCoverArt);
+    m_pViewMenu->addAction(m_pViewMaximizeLibrary);
     m_pViewMenu->addSeparator();
     m_pViewMenu->addAction(m_pViewFullScreen);
 
