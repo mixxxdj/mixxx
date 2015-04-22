@@ -17,7 +17,7 @@ QString Version::applicationTitle() {
 #elif defined(IA64)
     return QString("Mixxx %1 Itanium").arg(VERSION);
 #else
-    return QString("Mixxx %1").arg(version);
+    return QString("Mixxx %1").arg(VERSION);
 #endif
 }
 
