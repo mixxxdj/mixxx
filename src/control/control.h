@@ -125,6 +125,8 @@ class ControlDoublePrivate : public QObject {
     void valueChangeRequest(double value);
 
   private:
+    // The defaultValue is adopted as initial value as well
+    // except it is a persistent CO with a saved value in place
     ControlDoublePrivate(ConfigKey key, ControlObject* pCreatorCO,
                          bool bIgnoreNops, bool bTrack, double defaultValue,
                          bool bPersist);

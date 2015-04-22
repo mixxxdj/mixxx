@@ -33,6 +33,8 @@ class ControlObject : public QObject {
 
     // bIgnoreNops: Don't emit a signal if the CO is set to its current value.
     // bTrack: Record statistics about this control.
+    // defaultValue: is adopted as initial value as well
+    //               except it is a persistent CO with a saved value in place
     // bPersist: Store value on exit, load on startup.
     ControlObject(ConfigKey key,
                   bool bIgnoreNops=true, bool bTrack=false,
