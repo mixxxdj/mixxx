@@ -177,7 +177,10 @@ class AutoDJProcessor : public QObject {
 
     TrackPointer getNextTrackFromQueue();
     bool loadNextTrackFromQueue(const DeckAttributes& pDeck, bool play = false);
-    void calculateFadeThresholds(DeckAttributes* pAttributes);
+    void calculateTransition(DeckAttributes* pFromDeck,
+                             DeckAttributes* pToDeck);
+    DeckAttributes* getOtherDeck(DeckAttributes* pFromDeck,
+                                 bool playing = false);
 
     // Removes the track loaded to the player group from the top of the AutoDJ
     // queue if it is present.
@@ -192,7 +195,8 @@ class AutoDJProcessor : public QObject {
     PlaylistTableModel* m_pAutoDJTableModel;
 
     AutoDJState m_eState;
-    int m_iTransitionTime;
+    int m_iTransitionTime; // the desired value set by the user
+    int m_nextTransitionTime; // the tweaked value actually used
 
     QList<DeckAttributes*> m_decks;
 
