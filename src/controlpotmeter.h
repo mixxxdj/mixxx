@@ -77,6 +77,7 @@ class ControlPotmeter : public ControlObject {
                     bool allowOutOfBounds = false,
                     bool bIgnoreNops = true,
                     bool bTrack = false,
+                    double defaultValue = 0.0,
                     bool bPersist = false);
     virtual ~ControlPotmeter();
 
