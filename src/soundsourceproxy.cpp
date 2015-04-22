@@ -193,8 +193,8 @@ Mixxx::SoundSourcePointer SoundSourceProxy::initialize(
     } else if (Mixxx::SoundSourceFLAC::supportedFileExtensions().contains(type)) {
         return Mixxx::SoundSourcePointer(new Mixxx::SoundSourceFLAC(url));
 #ifdef __COREAUDIO__
-    } else if (SoundSourceCoreAudio::supportedFileExtensions().contains(type)) {
-        return Mixxx::SoundSourcePointer(new SoundSourceCoreAudio(url));
+    } else if (Mixxx::SoundSourceCoreAudio::supportedFileExtensions().contains(type)) {
+        return Mixxx::SoundSourcePointer(new Mixxx::SoundSourceCoreAudio(url));
 #endif
 #ifdef __MODPLUG__
     } else if (Mixxx::SoundSourceModPlug::supportedFileExtensions().contains(type)) {
@@ -386,7 +386,7 @@ QStringList SoundSourceProxy::supportedFileExtensions()
             Mixxx::SoundSourceSndFile::supportedFileExtensions());
 #endif
 #ifdef __COREAUDIO__
-    supportedFileExtensions.append(SoundSourceCoreAudio::supportedFileExtensions());
+    supportedFileExtensions.append(Mixxx::SoundSourceCoreAudio::supportedFileExtensions());
 #endif
 #ifdef __MODPLUG__
     supportedFileExtensions.append(

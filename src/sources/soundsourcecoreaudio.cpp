@@ -2,6 +2,8 @@
 
 #include "util/math.h"
 
+namespace Mixxx {
+
 QList<QString> SoundSourceCoreAudio::supportedFileExtensions() {
     QList<QString> list;
     list.push_back("m4a");
@@ -25,7 +27,7 @@ SoundSourceCoreAudio::~SoundSourceCoreAudio() {
 }
 
 // soundsource overrides
-Result AudioSourceCoreAudio::tryOpen(const AudioSourceConfig& audioSrcCfg) {
+Result SoundSourceCoreAudio::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     const QString fileName(getLocalFileName());
 
     //Open the audio file.
@@ -66,7 +68,7 @@ Result AudioSourceCoreAudio::tryOpen(const AudioSourceConfig& audioSrcCfg) {
 
     // create the output format
     const UInt32 numChannels =
-            (channelCountZero < audioSrcCfg.channelCountHint) ? audioSrcCfg.channelCountHint : 2;
+            (kChannelCountZero < audioSrcCfg.channelCountHint) ? audioSrcCfg.channelCountHint : 2;
     m_outputFormat = CAStreamBasicDescription(m_inputFormat.mSampleRate,
             numChannels, CAStreamBasicDescription::kPCMFormatFloat32, true);
 
@@ -128,11 +130,11 @@ Result AudioSourceCoreAudio::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     return OK;
 }
 
-void AudioSourceCoreAudio::close() {
+void SoundSourceCoreAudio::close() {
     ExtAudioFileDispose(m_audioFile);
 }
 
-SINT AudioSourceCoreAudio::seekSampleFrame(
+SINT SoundSourceCoreAudio::seekSampleFrame(
         SINT frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(frameIndex));
     OSStatus err = ExtAudioFileSeek(m_audioFile, frameIndex + m_headerFrames);
@@ -144,7 +146,7 @@ SINT AudioSourceCoreAudio::seekSampleFrame(
     return frameIndex;
 }
 
-SINT AudioSourceCoreAudio::readSampleFrames(
+SINT SoundSourceCoreAudio::readSampleFrames(
         SINT numberOfFrames, CSAMPLE* sampleBuffer) {
     //if (!m_decoder) return 0;
     SINT numFramesRead = 0;
@@ -171,3 +173,5 @@ SINT AudioSourceCoreAudio::readSampleFrames(
     }
     return numFramesRead;
 }
+
+}  // namespace Mixxx
