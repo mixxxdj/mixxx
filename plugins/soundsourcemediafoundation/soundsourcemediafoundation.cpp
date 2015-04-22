@@ -115,7 +115,7 @@ SoundSourceMediaFoundation::~SoundSourceMediaFoundation() {
     close();
 }
 
-Result SoundSourceMediaFoundation::tryOpen(SINT channelCountHint) {
+Result SoundSourceMediaFoundation::tryOpen(const Mixxx::AudioSourceConfig& audioSrcCfg) {
     if (SUCCEEDED(m_hrCoInitialize)) {
         qWarning() << "Cannot reopen MediaFoundation file" << getUrlString();
         return ERR;
@@ -156,7 +156,7 @@ Result SoundSourceMediaFoundation::tryOpen(SINT channelCountHint) {
         return ERR;
     }
 
-    if (!configureAudioStream(channelCountHint)) {
+    if (!configureAudioStream(audioSrcCfg)) {
         qWarning() << "SSMF: Error configuring audio stream.";
         return ERR;
     }
@@ -434,7 +434,7 @@ SINT SoundSourceMediaFoundation::readSampleFrames(
  If anything in here fails, just bail. I'm not going to decode HRESULTS.
  -- Bill
  */
-bool SoundSourceMediaFoundation::configureAudioStream(SINT channelCountHint) {
+bool SoundSourceMediaFoundation::configureAudioStream(const Mixxx::AudioSourceConfig& audioSrcCfg) {
     HRESULT hr(S_OK);
 
     // deselect all streams, we only want the first
@@ -500,8 +500,8 @@ bool SoundSourceMediaFoundation::configureAudioStream(SINT channelCountHint) {
         return false;
     }
 
-    if (kChannelCountZero < channelCountHint) {
-        hr = m_pAudioType->SetUINT32(MF_MT_AUDIO_NUM_CHANNELS, channelCountHint);
+    if (kChannelCountZero < audioSrcCfg.channelCountHint) {
+        hr = m_pAudioType->SetUINT32(MF_MT_AUDIO_NUM_CHANNELS, audioSrcCfg.channelCountHint);
         if (FAILED(hr)) {
             qWarning() << "SSMF: failed to set number of channels";
             return false;

@@ -114,7 +114,7 @@ SoundSourceM4A::~SoundSourceM4A() {
     close();
 }
 
-Result SoundSourceM4A::tryOpen(SINT channelCountHint) {
+Result SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     DEBUG_ASSERT(MP4_INVALID_FILE_HANDLE == m_hFile);
     /* open MP4 file, check for >= ver 1.9.1 */
 #if MP4V2_PROJECT_version_hex <= 0x00010901
@@ -155,9 +155,10 @@ Result SoundSourceM4A::tryOpen(SINT channelCountHint) {
     }
     NeAACDecConfigurationPtr pDecoderConfig = NeAACDecGetCurrentConfiguration(
             m_hDecoder);
-    pDecoderConfig->outputFormat = FAAD_FMT_FLOAT; /* 32-bit float */
-    if ((kChannelCountZero < channelCountHint) && (2 >= channelCountHint)) {
-        pDecoderConfig->downMatrix = 1; /* multi -> stereo */
+    pDecoderConfig->outputFormat = FAAD_FMT_FLOAT;
+    if ((1 == audioSrcCfg.channelCountHint) || (2 == audioSrcCfg.channelCountHint)) {
+        // mono or stereo requested
+        pDecoderConfig->downMatrix = 1;
     } else {
         pDecoderConfig->downMatrix = 0;
     }

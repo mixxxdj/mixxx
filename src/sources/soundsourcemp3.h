@@ -38,7 +38,7 @@ public:
             bool readStereoSamples);
 
 private:
-    Result tryOpen(SINT channelCountHint) /*override*/;
+    Result tryOpen(const AudioSourceConfig& audioSrcCfg) /*override*/;
 
     QFile m_file;
     quint64 m_fileSize;

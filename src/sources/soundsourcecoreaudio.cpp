@@ -25,7 +25,7 @@ SoundSourceCoreAudio::~SoundSourceCoreAudio() {
 }
 
 // soundsource overrides
-Result AudioSourceCoreAudio::tryOpen(SINT channelCountHint) {
+Result AudioSourceCoreAudio::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     const QString fileName(getLocalFileName());
 
     //Open the audio file.
@@ -66,7 +66,7 @@ Result AudioSourceCoreAudio::tryOpen(SINT channelCountHint) {
 
     // create the output format
     const UInt32 numChannels =
-            (channelCountZero < channelCountHint) ? channelCountHint : 2;
+            (channelCountZero < audioSrcCfg.channelCountHint) ? audioSrcCfg.channelCountHint : 2;
     m_outputFormat = CAStreamBasicDescription(m_inputFormat.mSampleRate,
             numChannels, CAStreamBasicDescription::kPCMFormatFloat32, true);
 

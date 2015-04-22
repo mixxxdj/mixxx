@@ -119,7 +119,7 @@ Result SoundSourceOpus::parseTrackMetadata(Mixxx::TrackMetadata* pMetadata) cons
     return OK;
 }
 
-Result SoundSourceOpus::tryOpen(SINT /*channelCountHint*/) {
+Result SoundSourceOpus::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     const QByteArray qbaFilename(getLocalFileNameBytes());
     int errorCode = 0;
 

@@ -120,12 +120,12 @@ SoundSourceFFmpeg::~SoundSourceFFmpeg() {
     close();
 }
 
-Result SoundSourceFFmpeg::tryOpen(SINT channelCountHint) {
+Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     unsigned int i;
     AVDictionary *l_iFormatOpts = NULL;
 
     const QByteArray qBAFilename(getLocalFileNameBytes());
-    qDebug() << "New SoundSourceFFmpeg :" << qBAFilename << "(channelCountHint:" << channelCountHint << ")";
+    qDebug() << "New SoundSourceFFmpeg :" << qBAFilename;
 
     DEBUG_ASSERT(!m_pFormatCtx);
     m_pFormatCtx = avformat_alloc_context();

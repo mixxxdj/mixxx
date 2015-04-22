@@ -34,7 +34,7 @@ public:
     //
     // Since reopening is not supported close() will be called
     // implicitly before the AudioSource is actually opened.
-    Result open(SINT channelCountHint = kChannelCountDefault);
+    Result open(const AudioSourceConfig& audioSrcCfg = AudioSourceConfig());
 
     // Closes the AudioSource and frees all resources.
     //
@@ -54,7 +54,7 @@ private:
     // need to free resources in tryOpen() themselves, but
     // should instead be prepared for the following invocation
     // of close().
-    virtual Result tryOpen(SINT channelCountHint) = 0;
+    virtual Result tryOpen(const AudioSourceConfig& audioSrcCfg) = 0;
 
     const QString m_type;
 };

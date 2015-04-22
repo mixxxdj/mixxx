@@ -54,7 +54,7 @@ public:
     SINT readSampleFrames(SINT numberOfFrames, CSAMPLE* sampleBuffer) /*override*/;
 
 private:
-    Result tryOpen(SINT channelCountHint) /*override*/;
+    Result tryOpen(const AudioSourceConfig& audioSrcCfg) /*override*/;
 
     bool readFramesToCache(unsigned int count, SINT offset);
     bool getBytesFromCache(char *buffer, SINT offset, SINT size);

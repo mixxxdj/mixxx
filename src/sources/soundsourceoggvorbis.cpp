@@ -82,7 +82,7 @@ SoundSourceOggVorbis::~SoundSourceOggVorbis() {
     close();
 }
 
-Result SoundSourceOggVorbis::tryOpen(SINT /*channelCountHint*/) {
+Result SoundSourceOggVorbis::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     const QByteArray qbaFilename(getLocalFileNameBytes());
     if (0 != ov_fopen(qbaFilename.constData(), &m_vf)) {
 <<<<<<< HEAD

@@ -39,7 +39,7 @@ public:
             CSAMPLE* sampleBuffer) /*override*/;
 
 private:
-    Result tryOpen(SINT channelCountHint) /*override*/;
+    Result tryOpen(const AudioSourceConfig& audioSrcCfg) /*override*/;
 
     bool isValidSampleBlockId(MP4SampleId sampleBlockId) const;
 
