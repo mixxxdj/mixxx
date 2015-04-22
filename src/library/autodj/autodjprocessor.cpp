@@ -501,7 +501,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                 // between the tracks.
                 if (thisFadeDuration < 0.0) {
                     // Note: since the fade duration is relative to the track
-                    // length, we need to user here the other deck fade duration
+                    // length, we need to use the other deck fade duration
                     otherDeck.setPlayPosition(otherDeck.fadeDuration);
                 } else {
                     // TODO(DSC) Guard against very short other tracks
@@ -828,4 +828,3 @@ DeckAttributes* AutoDJProcessor::getOtherDeck(DeckAttributes* pThisDeck,
     }
     return pOtherDeck;
 }
-
