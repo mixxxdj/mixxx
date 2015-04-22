@@ -5,6 +5,7 @@
 #include <QMutex>
 #include <QHash>
 #include <QList>
+#include <QScopedPointer>
 
 #include "ui_dlgtrackinfo.h"
 #include "trackinfoobject.h"
@@ -69,7 +70,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     QHash<int, Cue*> m_cueMap;
     TrackPointer m_pLoadedTrack;
 
-    TapFilter* m_pTapFilter;
+    QScopedPointer<TapFilter> m_pTapFilter;
     double m_dLastBpm;
 
     DlgTagFetcher& m_DlgTagFetcher;

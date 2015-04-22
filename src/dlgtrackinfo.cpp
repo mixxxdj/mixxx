@@ -68,8 +68,8 @@ void DlgTrackInfo::init() {
     connect(btnCueDelete, SIGNAL(clicked()),
             this, SLOT(cueDelete()));
     connect(bpmTap, SIGNAL(pressed()),
-            m_pTapFilter, SLOT(tap()));
-    connect(m_pTapFilter, SIGNAL(tapped(double, int)),
+            m_pTapFilter.data(), SLOT(tap()));
+    connect(m_pTapFilter.data(), SIGNAL(tapped(double, int)),
             this, SLOT(slotBpmTap(double, int)));
     connect(btnReloadFromFile, SIGNAL(clicked()),
             this, SLOT(reloadTrackMetadata()));
@@ -460,7 +460,10 @@ void DlgTrackInfo::slotBpmThreeFourth() {
 }
 
 void DlgTrackInfo::slotBpmTap(double averageLength, int numSamples) {
-    if (averageLength == 0) return;
+    Q_UNUSED(numSamples);
+    if (averageLength == 0) {
+        return;
+    }
     double averageBpm = 60.0 * 1000.0 / averageLength;
     // average bpm needs to be truncated for this comparison:
     if (averageBpm != m_dLastBpm) {

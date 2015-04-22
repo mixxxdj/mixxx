@@ -22,7 +22,6 @@ class TapFilter : public QObject {
   private:
     QTime m_timer;
     MovingInterquartileMean m_mean;
-    const int m_iMeanWindowSize;
     int m_iMaxInterval;
 };
 

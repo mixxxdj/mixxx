@@ -16,7 +16,7 @@ class MovingInterquartileMean {
     // Constructs an empty MovingTruncatedIQM.
     MovingInterquartileMean(const unsigned int listLength);
     virtual ~MovingInterquartileMean();
-    
+
     // Inserts value to the list and returns the new truncated mean.
     double insert(double value);
     // Empty the list.
