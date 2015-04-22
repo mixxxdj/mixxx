@@ -9,6 +9,19 @@ QString Version::version() {
 }
 
 // static
+QString Version::applicationTitle() {
+#ifdef __APPLE__
+    return "Mixxx";
+#elif defined(AMD64) || defined(EM64T) || defined(x86_64)
+    return QString("Mixxx %1 x64").arg(VERSION);
+#elif defined(IA64)
+    return QString("Mixxx %1 Itanium").arg(VERSION);
+#else
+    return QString("Mixxx %1").arg(VERSION);
+#endif
+}
+
+// static
 QString Version::developmentBranch() {
 #ifdef BUILD_BRANCH
     return BUILD_BRANCH;
@@ -34,4 +47,3 @@ QString Version::buildFlags() {
     return QString();
 #endif
 }
-

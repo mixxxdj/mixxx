@@ -12,16 +12,16 @@
       <attribute config_key="[Master],num_samplers">8</attribute>
       <attribute config_key="[Master],num_preview_decks">1</attribute>
       <!--Optionally, make elements visible on skin load-->
-      <attribute config_key="[Spinny1],show_spinny">1</attribute>
-      <attribute config_key="[Spinny2],show_spinny">1</attribute>
-      <attribute config_key="[Spinny3],show_spinny">1</attribute>
-      <attribute config_key="[Spinny4],show_spinny">1</attribute>
-      <attribute config_key="[Samplers],show_samplers">0</attribute>
-      <attribute config_key="[Microphone],show_microphone">0</attribute>
-      <attribute config_key="[Vinylcontrol],show_vinylcontrol">0</attribute>
-      <attribute config_key="[PreviewDeck],show_previewdeck">0</attribute>
+      <attribute persist="true" config_key="[Spinny1],show_spinny">1</attribute>
+      <attribute persist="true" config_key="[Spinny2],show_spinny">1</attribute>
+      <attribute persist="true" config_key="[Spinny3],show_spinny">1</attribute>
+      <attribute persist="true" config_key="[Spinny4],show_spinny">1</attribute>
+      <attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
+      <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
+      <attribute persist="true" config_key="[Vinylcontrol],show_vinylcontrol">0</attribute>
+      <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
       <attribute config_key="[Library],show_library">1</attribute>
-      <attribute config_key="[Library],show_coverart">0</attribute>
+      <attribute persist="true" config_key="[Library],show_coverart">0</attribute>
     </attributes>
   </manifest>
 
