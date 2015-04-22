@@ -43,15 +43,15 @@ ControlDoublePrivate::ControlDoublePrivate(ConfigKey key,
 
 void ControlDoublePrivate::initialize(double defaultValue) {
     m_defaultValue.setValue(defaultValue);
-    double initalValue = defaultValue;
+    double initialValue = defaultValue;
     if (m_bPersistInConfiguration) {
         ConfigObject<ConfigValue>* pConfig = ControlDoublePrivate::s_pUserConfig;
         if (pConfig != NULL) {
             // Assume toDouble() returns 0 if conversion fails.
-            initalValue = pConfig->getValueString(m_key).toDouble();
+            initialValue = pConfig->getValueString(m_key).toDouble();
         }
     }
-    m_value.setValue(initalValue);
+    m_value.setValue(initialValue);
 
     //qDebug() << "Creating:" << m_trackKey << "at" << &m_value << sizeof(m_value);
 
@@ -101,7 +101,7 @@ void ControlDoublePrivate::insertAlias(const ConfigKey& alias, const ConfigKey& 
 // static
 QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
         const ConfigKey& key, bool warn, ControlObject* pCreatorCO,
-        bool bIgnoreNops, bool bTrack, double defaulValue, bool bPersist) {
+        bool bIgnoreNops, bool bTrack, double defaultValue, bool bPersist) {
     if (key.isNull()) {
         if (warn) {
             qWarning() << "ControlDoublePrivate::getControl returning NULL"
@@ -130,7 +130,7 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
         if (pCreatorCO) {
             pControl = QSharedPointer<ControlDoublePrivate>(
                     new ControlDoublePrivate(key, pCreatorCO, bIgnoreNops,
-                                             bTrack, defaulValue, bPersist));
+                                             bTrack, defaultValue, bPersist));
             locker.relock();
             //qDebug() << "ControlDoublePrivate::s_qCOHash.insert(" << key.group << "," << key.item << ")";
             s_qCOHash.insert(key, pControl);

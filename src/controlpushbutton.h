@@ -53,7 +53,7 @@ class ControlPushButton : public ControlObject {
         }
     }
 
-    ControlPushButton(ConfigKey key, double defaulValue = 0.0,
+    ControlPushButton(ConfigKey key, double defaultValue = 0.0,
                       bool bPersist = false);
     virtual ~ControlPushButton();
 

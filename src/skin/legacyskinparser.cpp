@@ -83,10 +83,9 @@ QMutex LegacySkinParser::s_safeStringMutex;
 
 static bool sDebug = false;
 
-ControlObject* controlFromConfigKey(ConfigKey key, double defaulValue, bool bPersist,
-                                    bool* created) {
+ControlObject* controlFromConfigKey(ConfigKey key, double defaultValue,
+                                    bool bPersist, bool* created) {
     ControlObject* pControl = ControlObject::getControl(key);
-
     if (pControl) {
         if (created) {
             *created = false;
@@ -100,7 +99,7 @@ ControlObject* controlFromConfigKey(ConfigKey key, double defaulValue, bool bPer
                << "Creating it.";
     // Since the usual behavior here is to create a skin-defined push
     // button, actually make it a push button and set it to toggle.
-    ControlPushButton* controlButton = new ControlPushButton(key, defaulValue, bPersist);
+    ControlPushButton* controlButton = new ControlPushButton(key, defaultValue, bPersist);
     controlButton->setButtonMode(ControlPushButton::TOGGLE);
     if (created) {
         *created = true;
