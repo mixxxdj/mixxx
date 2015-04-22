@@ -9,7 +9,6 @@
 #include "engine/enginebuffer.h"
 #include "engine/enginedeck.h"
 #include "engine/enginemaster.h"
-#include "soundsourceproxy.h"
 #include "track/beatgrid.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "analyserqueue.h"

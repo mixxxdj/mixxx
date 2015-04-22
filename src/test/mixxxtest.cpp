@@ -1,6 +1,13 @@
 #include "test/mixxxtest.h"
 #include "util/singleton.h"
 
+#ifdef __FFMPEGFILE__
+extern "C" {
+#include <libavcodec/avcodec.h>
+#include <libavformat/avformat.h>
+}
+#endif
+
 
 // Specialize the Singleton template for QApplication because it doesn't have a
 // 0-args constructor.
@@ -9,6 +16,10 @@ QApplication* Singleton<QApplication>::create() {
     if (!m_instance) {
         static int argc = 1;
         static char* argv[1] = { strdup("test") };
+#ifdef __FFMPEGFILE__
+         av_register_all();
+         avcodec_register_all();
+#endif
         m_instance = new QApplication(argc, argv);
     }
     return m_instance;

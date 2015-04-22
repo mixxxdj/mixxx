@@ -5,7 +5,7 @@
 #include "ui_dlgprefmodplugdlg.h"
 
 #include "configobject.h"
-#include "soundsourcemodplug.h"
+#include "sources/soundsourcemodplug.h"
 
 #define kConfigKey "[Modplug]"
 
@@ -125,11 +125,11 @@ void DlgPrefModplug::applySettings() {
     // Currently this is fixed to 16bit 44.1kHz stereo
 
     // Number of channels - 1 for mono or 2 for stereo
-    settings.mChannels = 2;
+    settings.mChannels = Mixxx::SoundSourceModPlug::kChannelCount;
     // Bits per sample - 8, 16, or 32
-    settings.mBits = 16;
+    settings.mBits = Mixxx::SoundSourceModPlug::kBitsPerSample;
     // Sampling rate - 11025, 22050, or 44100
-    settings.mFrequency = 44100;
+    settings.mFrequency = Mixxx::SoundSourceModPlug::kFrameRate;
 
     // enabled features flags
     settings.mFlags = 0;
@@ -180,5 +180,5 @@ void DlgPrefModplug::applySettings() {
     settings.mLoopCount = 0;
 
     // apply modplug settings
-    SoundSourceModPlug::configure(bufferSizeLimit, settings);
+    Mixxx::SoundSourceModPlug::configure(bufferSizeLimit, settings);
 }
