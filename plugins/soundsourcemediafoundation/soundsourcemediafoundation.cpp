@@ -35,7 +35,7 @@ const bool sDebug = false;
 
 const SINT kSampleRate = 44100;
 const SINT kLeftoverSize = 4096; // in CSAMPLE's, this seems to be the size MF AAC
-const SINT kBitsPerSampleForBitrate = 16; // for bitrate calculation decoder likes to give
+const SINT kBitsPerSample = 16; // for bitrate calculation decoder likes to give
 
 /**
  * Convert a 100ns Media Foundation value to a number of seconds.
@@ -108,7 +108,7 @@ SoundSourceMediaFoundation::SoundSourceMediaFoundation(QUrl url)
     // presentation attribute MF_PD_AUDIO_ENCODING_BITRATE only exists for
     // presentation descriptors, one of which MFSourceReader is not.
     // Therefore, we calculate it ourselves, assuming 16 bits per sample
-    setBitrate((frames2samples(getFrameRate()) * kBitsPerSampleForBitrate) / 1000);
+    setBitrate((frames2samples(getFrameRate()) * kBitsPerSample) / 1000);
 }
 
 SoundSourceMediaFoundation::~SoundSourceMediaFoundation() {
@@ -487,19 +487,16 @@ bool SoundSourceMediaFoundation::configureAudioStream(SINT channelCountHint) {
         return false;
     }
 
-    // MSDN for this attribute says that if bps is 8, samples are unsigned.
-    // Otherwise, they're signed (so they're signed for us as 16 bps). Why
-    // chose to hide this rather useful tidbit here is beyond me -bkgood
-    hr = m_pAudioType->SetUINT32(MF_MT_AUDIO_BITS_PER_SAMPLE, sizeof(m_leftoverBuffer[0]) * 8);
+    hr = m_pAudioType->SetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND, kSampleRate);
     if (FAILED(hr)) {
-        qWarning() << "SSMF: failed to set bits per sample";
+        qWarning() << "SSMF: failed to set sample rate";
         return false;
     }
 
-    hr = m_pAudioType->SetUINT32(MF_MT_AUDIO_BLOCK_ALIGNMENT,
-            frames2samples(sizeof(m_leftoverBuffer[0])));
+    // "Number of bits per audio sample in an audio media type."
+    hr = m_pAudioType->SetUINT32(MF_MT_AUDIO_BITS_PER_SAMPLE, kBitsPerSample);
     if (FAILED(hr)) {
-        qWarning() << "SSMF: failed to set block alignment";
+        qWarning() << "SSMF: failed to set bits per sample";
         return false;
     }
 
@@ -520,9 +517,12 @@ bool SoundSourceMediaFoundation::configureAudioStream(SINT channelCountHint) {
         setChannelCount(numChannels);
     }
 
-    hr = m_pAudioType->SetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND, kSampleRate);
+    // "...the block alignment is equal to the number of audio channels
+    // multiplied by the number of bytes per audio sample."
+    hr = m_pAudioType->SetUINT32(MF_MT_AUDIO_BLOCK_ALIGNMENT,
+            frames2samples(sizeof(m_leftoverBuffer[0])));
     if (FAILED(hr)) {
-        qWarning() << "SSMF: failed to set sample rate";
+        qWarning() << "SSMF: failed to set block alignment";
         return false;
     }
 
