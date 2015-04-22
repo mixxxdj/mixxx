@@ -25,7 +25,7 @@
 						</Children>
 					</WidgetGroup>
 
-					<WidgetGroup trigger="[PreviewDeck],show_previewdeck" persist="true" default="false">
+					<WidgetGroup trigger="[PreviewDeck],show_previewdeck" persist="true">
 						<ObjectName>PreviewDeckExpanded</ObjectName>
 						<Layout>vertical</Layout>
 						<SizePolicy>min,min</SizePolicy>

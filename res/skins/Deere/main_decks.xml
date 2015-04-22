@@ -103,7 +103,7 @@
       </WidgetGroup>
     </Children>
     <Connection>
-      <ConfigKey persist="true">[Master],show_library</ConfigKey>
+      <ConfigKey>[Master],maximize_library</ConfigKey>
       <BindProperty>visible</BindProperty>
       <Transform>
         <Not/>
