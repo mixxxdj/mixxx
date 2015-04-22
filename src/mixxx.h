@@ -118,6 +118,7 @@ class MixxxMainWindow : public QMainWindow {
     void slotViewShowPreviewDeck(bool);
     void slotViewShowEffects(bool);
     void slotViewShowCoverArt(bool);
+    void slotViewMaximizeLibrary(bool);
     // toogle full screen mode
     void slotViewFullScreen(bool toggle);
     // Reload the skin.
@@ -252,6 +253,7 @@ class MixxxMainWindow : public QMainWindow {
     QAction* m_pViewShowPreviewDeck;
     QAction* m_pViewShowEffects;
     QAction* m_pViewShowCoverArt;
+    QAction* m_pViewMaximizeLibrary;
     QAction* m_pViewFullScreen;
     QAction* m_pHelpAboutApp;
     QAction* m_pHelpSupport;

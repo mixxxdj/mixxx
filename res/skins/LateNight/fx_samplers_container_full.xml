@@ -6,7 +6,7 @@
         <Children>
             <WidgetStack currentpage="[Library],show_big_current" persist="true">
                 <Children>
-                    <WidgetGroup trigger="[Library],unshow_big">
+                    <WidgetGroup trigger="[Master],maximize_library">
                         <Layout>vertical</Layout>
                         <Children>
                             <WidgetStack currentpage="[MicrophoneRack],current" persist="true">
