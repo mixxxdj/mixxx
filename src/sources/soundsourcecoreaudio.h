@@ -18,6 +18,8 @@
 #include "AudioFormat.h"
 #endif
 
+namespace Mixxx {
+
 class SoundSourceCoreAudio : public Mixxx::SoundSource {
 public:
     static QList<QString> supportedFileExtensions();
@@ -40,5 +42,7 @@ private:
     CAStreamBasicDescription m_outputFormat;
     SInt64 m_headerFrames;
 };
+
+}  // namespace Mixxx
 
 #endif // SOUNDSOURCECOREAUDIO_H
