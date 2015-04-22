@@ -564,6 +564,13 @@ MixxxMainWindow::~MixxxMainWindow() {
 
     delete m_pGuiTick;
 
+    delete m_pShowVinylControl;
+    delete m_pShowSamplers;
+    delete m_pShowMicrophone;
+    delete m_pShowPreviewDeck;
+    delete m_pShowEffects;
+    delete m_pShowCoverArt;
+
     // Check for leaked ControlObjects and give warnings.
     QList<QSharedPointer<ControlDoublePrivate> > leakedControls;
     QList<ConfigKey> leakedConfigKeys;
@@ -582,18 +589,23 @@ MixxxMainWindow::~MixxxMainWindow() {
             leakedConfigKeys.append(key);
         }
 
-       foreach (ConfigKey key, leakedConfigKeys) {
-           // delete just to satisfy valgrind:
-           // check if the pointer is still valid, the control object may have bin already
-           // deleted by its parent in this loop
-           ControlObject* pCo = ControlObject::getControl(key, false);
-           if (pCo) {
-               // it might happens that a control is deleted as child from an other control
-               delete pCo;
-           }
-       }
+        // Deleting leaked objects helps to satisfy valgrind.
+        // These delete calls could cause crashes if a destructor for a control
+        // we thought was leaked is triggered after this one exits.
+        // So, only delete so if developer mode is on.
+        if (CmdlineArgs::Instance().getDeveloper()) {
+            foreach (ConfigKey key, leakedConfigKeys) {
+                // A deletion early in the list may trigger a destructor
+                // for a control later in the list, so we check for a null
+                // pointer each time.
+                ControlObject* pCo = ControlObject::getControl(key, false);
+                if (pCo) {
+                    delete pCo;
+                }
+            }
+        }
+        leakedControls.clear();
     }
-    qDebug() << "~MixxxMainWindow: All leaking controls deleted.";
 
     // HACK: Save config again. We saved it once before doing some dangerous
     // stuff. We only really want to save it here, but the first one was just
