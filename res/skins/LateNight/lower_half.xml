@@ -23,7 +23,7 @@
                     <SingletonContainer>
                         <ObjectName>LibrarySingleton</ObjectName>
                         <Connection>
-                            <ConfigKey persist="true" default="true">[Library],show_library</ConfigKey>
+                            <ConfigKey persist="true">[Library],show_library</ConfigKey>
                             <BindProperty>visible</BindProperty>
                         </Connection>
                     </SingletonContainer>
@@ -32,7 +32,7 @@
                         <SizePolicy>me,me</SizePolicy>
                         <Children/>
                         <Connection>
-                            <ConfigKey persist="true" default="true">[Library],show_library</ConfigKey>
+                            <ConfigKey persist="true">[Library],show_library</ConfigKey>
                             <BindProperty>visible</BindProperty>
                             <Transform>
                               <Not/>
@@ -52,7 +52,7 @@
                     <SingletonContainer>
                         <ObjectName>LibrarySingleton</ObjectName>
                         <Connection>
-                            <ConfigKey persist="true" default="true">[Library],show_library</ConfigKey>
+                            <ConfigKey persist="true">[Library],show_library</ConfigKey>
                             <BindProperty>visible</BindProperty>
                         </Connection>
                     </SingletonContainer>
@@ -61,7 +61,7 @@
                         <SizePolicy>me,me</SizePolicy>
                         <Children/>
                         <Connection>
-                            <ConfigKey persist="true" default="true">[Library],show_library</ConfigKey>
+                            <ConfigKey persist="true">[Library],show_library</ConfigKey>
                             <BindProperty>visible</BindProperty>
                             <Transform>
                               <Not/>

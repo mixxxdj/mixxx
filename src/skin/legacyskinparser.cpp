@@ -264,9 +264,11 @@ SkinManifest LegacySkinParser::getSkinManifest(QDomElement skinDocument) {
             if (attribute_node.isElement()) {
                 QDomElement attribute_element = attribute_node.toElement();
                 QString configKey = attribute_element.attribute("config_key");
+                QString persist = attribute_element.attribute("persist");
                 QString value = attribute_element.text();
                 SkinManifest::Attribute* attr = manifest.add_attribute();
                 attr->set_config_key(configKey.toStdString());
+                attr->set_persist(persist.toLower() == "true");
                 attr->set_value(value.toStdString());
             }
         }
@@ -304,19 +306,48 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
 
     SkinManifest manifest = getSkinManifest(skinDocument);
 
-    // Apply SkinManifest attributes.
+    // Keep track of created attribute controls so we can parent them.
+    QList<ControlObject*> created_attributes;
+    // Apply SkinManifest attributes by looping through the proto.
     for (int i = 0; i < manifest.attribute_size(); ++i) {
         const SkinManifest::Attribute& attribute = manifest.attribute(i);
         if (!attribute.has_config_key()) {
             continue;
         }
-        ConfigKey configKey = ConfigKey::parseCommaSeparated(
-            QString::fromStdString(attribute.config_key()));
 
         bool ok = false;
         double value = QString::fromStdString(attribute.value()).toDouble(&ok);
         if (ok) {
-            ControlObject::set(configKey, value);
+            ConfigKey configKey = ConfigKey::parseCommaSeparated(
+                    QString::fromStdString(attribute.config_key()));
+            // Set the specified attribute, possibly creating the control
+            // object in the process.
+            bool created = false;
+            // If there is no existing value for this CO in the skin,
+            // update the config with the specified value. If the attribute
+            // is set to persist, the value will be read when the control is created.
+            // TODO: This is a hack, but right now it's the cleanest way to
+            // get a CO with a specified initial value.  We should have a better
+            // mechanism to provide initial default values for COs.
+            if (attribute.persist() &&
+                    m_pConfig->getValueString(configKey).isEmpty()) {
+                m_pConfig->set(configKey, ConfigValue(QString::number(value)));
+            }
+            ControlObject* pControl = controlFromConfigKey(configKey,
+                                                           attribute.persist(),
+                                                           &created);
+            if (created) {
+                created_attributes.append(pControl);
+                if (!attribute.persist()) {
+                    // Only set the value if the control was just created and the
+                    // value wasn't set up through the persist logic.
+                    pControl->set(value);
+                }
+            }
+        } else {
+            SKIN_WARNING(skinDocument, *m_pContext)
+                    << "Error reading double value from skin attribute: "
+                    << QString::fromStdString(attribute.value());
         }
     }
 
@@ -341,6 +372,12 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
         return NULL;
     } else if (widgets.size() > 1) {
         SKIN_WARNING(skinDocument, *m_pContext) << "Skin produced more than 1 widget!";
+    }
+    // Because the config is destroyed before MixxxMainWindow, we need to
+    // parent the attributes to some other widget.  Otherwise they won't
+    // be able to persist because the config will have already been deleted.
+    foreach(ControlObject* pControl, created_attributes) {
+        pControl->setParent(widgets[0]);
     }
     return widgets[0];
 }
