@@ -470,6 +470,10 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
             m_pPlayerManager->slotLoadToDeck(musicFiles.at(i), i+1);
         }
     }
+
+    connect(&PlayerInfo::instance(),
+            SIGNAL(currentPlayingTrackChanged(TrackPointer)),
+            this, SLOT(slotUpdateWindowTitle(TrackPointer)));
 }
 
 MixxxMainWindow::~MixxxMainWindow() {
@@ -686,15 +690,16 @@ void MixxxMainWindow::logBuildDetails() {
 void MixxxMainWindow::initializeWindow() {
     QString version = Version::version();
 #ifdef __APPLE__
-    setWindowTitle(tr("Mixxx")); //App Store
+    m_MixxxVersion = tr("Mixxx");
 #elif defined(AMD64) || defined(EM64T) || defined(x86_64)
-    setWindowTitle(tr("Mixxx %1 x64").arg(version));
+    m_MixxxVersion = tr("Mixxx %1 x64").arg(version);
 #elif defined(IA64)
-    setWindowTitle(tr("Mixxx %1 Itanium").arg(version));
+    m_MixxxVersion = tr("Mixxx %1 Itanium").arg(version);
 #else
-    setWindowTitle(tr("Mixxx %1").arg(version));
+    m_MixxxVersion = tr("Mixxx %1").arg(version);
 #endif
     setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
+    setWindowTitle(m_MixxxVersion);
 }
 
 void MixxxMainWindow::initializeFonts() {
@@ -1541,6 +1546,25 @@ void MixxxMainWindow::initActions()
         talkover_button->connectValueChanged(m_TalkoverMapper, SLOT(map()));
         m_micTalkoverControls.push_back(talkover_button);
     }
+}
+
+void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack)
+{
+    QString title = m_MixxxVersion;
+    if (pTrack) {
+        QString trackTitle = pTrack->getTitle();
+        QString trackArtist = pTrack->getArtist();
+
+        //Displaying title as "Track Title" by "Artist" - "Current Version"
+        //Or "Track Title - "Current Version" in case the artist field is empty
+        if (trackArtist.size() != 0) {
+            title = tr("%1 by %2").arg(trackTitle).arg(trackArtist);
+        } else {
+            title = trackTitle;
+        }
+        title = title + " - " + m_MixxxVersion;
+    } 
+    this->setWindowTitle(title);
 }
 
 void MixxxMainWindow::initMenuBar()

@@ -154,6 +154,7 @@ void PlayerInfo::updateCurrentPlayingDeck() {
         m_currentlyPlayingDeck = maxDeck;
         locker.unlock();
         emit(currentPlayingDeckChanged(maxDeck));
+        emit(currentPlayingTrackChanged(getCurrentPlayingTrack()));
     }
 }
 
