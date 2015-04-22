@@ -181,9 +181,6 @@ class MixxxMainWindow : public QMainWindow {
                         ConfigKey key, const char* slot);
     void updateCheckedMenuAction(QAction* menuAction, ConfigKey key);
 
-    //Current Mixxx version
-    QString m_MixxxVersion;
-
     // Pointer to the root GUI widget
     QWidget* m_pWidgetParent;
 

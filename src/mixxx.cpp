@@ -688,18 +688,8 @@ void MixxxMainWindow::logBuildDetails() {
 }
 
 void MixxxMainWindow::initializeWindow() {
-    QString version = Version::version();
-#ifdef __APPLE__
-    m_MixxxVersion = tr("Mixxx");
-#elif defined(AMD64) || defined(EM64T) || defined(x86_64)
-    m_MixxxVersion = tr("Mixxx %1 x64").arg(version);
-#elif defined(IA64)
-    m_MixxxVersion = tr("Mixxx %1 Itanium").arg(version);
-#else
-    m_MixxxVersion = tr("Mixxx %1").arg(version);
-#endif
     setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
-    setWindowTitle(m_MixxxVersion);
+    slotUpdateWindowTitle(TrackPointer());
 }
 
 void MixxxMainWindow::initializeFonts() {
@@ -1548,27 +1538,24 @@ void MixxxMainWindow::initActions()
     }
 }
 
-void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack)
-{
-    QString title = m_MixxxVersion;
-    if (pTrack) {
-        QString trackTitle = pTrack->getTitle();
-        QString trackArtist = pTrack->getArtist();
+void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
+    QString appTitle = Version::applicationTitle();
 
-        //Displaying title as "Track Title" by "Artist" - "Current Version"
-        //Or "Track Title - "Current Version" in case the artist field is empty
-        if (trackArtist.size() != 0) {
-            title = tr("%1 by %2").arg(trackTitle).arg(trackArtist);
-        } else {
-            title = trackTitle;
+    // If we have a track, use getInfo() to format a summary string and prepend
+    // it to the title.
+    // TODO(rryan): Does this violate Mac App Store policies?
+    if (pTrack) {
+        QString trackInfo = pTrack->getInfo();
+        if (!trackInfo.isEmpty()) {
+            appTitle = QString("%1 | %2")
+                    .arg(trackInfo)
+                    .arg(appTitle);
         }
-        title = title + " - " + m_MixxxVersion;
-    } 
-    this->setWindowTitle(title);
+    }
+    this->setWindowTitle(appTitle);
 }
 
-void MixxxMainWindow::initMenuBar()
-{
+void MixxxMainWindow::initMenuBar() {
     // MENUBAR
     m_pFileMenu = new QMenu(tr("&File"), menuBar());
     m_pOptionsMenu = new QMenu(tr("&Options"), menuBar());
