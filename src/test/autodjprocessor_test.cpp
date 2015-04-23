@@ -972,3 +972,87 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadFailed) {
     EXPECT_DOUBLE_EQ(0.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 }
+
+
+TEST_F(AutoDJProcessorTest, FadeToDeck2_Long_Transition) {
+    int testId = collection()->getTrackDAO().addTrack(kTrackLocationTest, false);
+    ASSERT_LT(0, testId);
+
+    // Crossfader starts on the left.
+    master.crossfader.set(-1.0);
+    // Pretend a track is playing on deck 1.
+    TrackPointer pTrack(new TrackInfoObject(kTrackLocationTest));
+    setTrackId(pTrack, testId + 1);
+    // Load track and mark it playing.
+    deck1.slotLoadTrack(pTrack, true);
+    // Indicate the track loaded successfully.
+    deck1.fakeTrackLoadedEvent(pTrack);
+    deck1.fakeTrackLoadedEvent(pTrack);
+
+    PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
+    pAutoDJTableModel->appendTrack(testId);
+
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_IDLE));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"), false));
+
+    // Enable AutoDJ, we immediately transition into IDLE and request a track
+    // load on deck2.
+    AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
+    EXPECT_EQ(AutoDJProcessor::ADJ_OK, err);
+    EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
+
+    // Set a long transition time
+    // The test tracks are only 30s
+    pProcessor->setTransitionTime(60);
+
+    // We expect that fading starts at the middle of the track
+    // And Auto-DJ should keep running
+
+    // Pretend the track load succeeds.
+    deck2.slotLoadTrack(pTrack, false);
+    deck2.fakeTrackLoadedEvent(pTrack);
+
+    // No change to the mode, crossfader or play states.
+    EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
+    EXPECT_DOUBLE_EQ(-1.0, master.crossfader.get());
+    EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
+    EXPECT_DOUBLE_EQ(0.0, deck2.play.get());
+
+    // Seek track to 45 % is shoud not fade
+    deck1.playposition.set(0.45);
+    EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
+    EXPECT_DOUBLE_EQ(-1.0, master.crossfader.get());
+
+    // Expect that we will transition into P1FADING mode.
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_P1FADING));
+
+    // Seek track to 55 % it should fade
+    deck1.playposition.set(0.55);
+    EXPECT_EQ(AutoDJProcessor::ADJ_P1FADING, pProcessor->getState());
+
+    EXPECT_LT(-1.0, master.crossfader.get());
+
+    EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
+    EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
+
+    // Now start deck2 playing.
+    deck2.playposition.set(0.1);
+
+    // Seek track to End
+    deck1.playposition.set(1.0);
+    EXPECT_EQ(AutoDJProcessor::ADJ_P1FADING, pProcessor->getState());
+
+    qDebug() << "master.crossfader.get()" << master.crossfader.get();
+
+    // EXPECT_DOUBLE_EQ(-1.0, master.crossfader.get());
+    EXPECT_DOUBLE_EQ(0.0, deck1.play.get());
+    EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
+
+    // Expect that we will transition into IDLE mode and receive a track-load
+    // request for deck 1 after deck 2 starts playing.
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_IDLE));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel1]"), false));
+
+    deck2.playposition.set(0.5);
+}
+
