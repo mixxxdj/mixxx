@@ -17,6 +17,8 @@
 
 namespace Mixxx {
 
+static const int kFrameRateCount = 9;
+
 class SoundSourceMp3: public SoundSource {
 public:
     static QList<QString> supportedFileExtensions();
@@ -74,6 +76,8 @@ private:
     mad_synth m_madSynth;
 
     SINT m_madSynthCount; // left overs from the previous read
+
+    int m_headerPerFrameRate[kFrameRateCount];
 };
 
 } // namespace Mixxx
