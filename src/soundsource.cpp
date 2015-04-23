@@ -36,6 +36,11 @@ namespace
         }
         return bpm;
     }
+    
+    int parseTrackNumber(const QString& sNum){
+		int tNum = sNum.toInt();
+		return tNum;
+	}
 
     float parseReplayGainString(QString sReplayGain) {
         QString ReplayGainstring = sReplayGain.remove(" dB");
@@ -70,6 +75,13 @@ void SoundSource::setBpmString(QString sBpm) {
             setBpm(fBpm);
         }
     }
+}
+
+void SoundSource::setTrackNumberStr(QString sTrack){
+	if(!sTrack.isEmpty()){
+		int nTrack = parseTrackNumStr(sTrack);
+		setTrackNumber(nTrack);
+	}
 }
 
 void SoundSource::setReplayGainString(QString sReplayGain) {

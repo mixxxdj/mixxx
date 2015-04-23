@@ -155,6 +155,12 @@ void TrackInfoObject::onTrackReferenceExpired(TrackInfoObject* pTrack) {
     }
 }
 
+//parsing the trackNumber string to integer
+int parseTrackNumber(const QString& sNum){
+	int tNum = sNum.toInt();
+	return tNum;
+}
+
 void TrackInfoObject::setDeleteOnReferenceExpiration(bool deleteOnReferenceExpiration) {
     m_bDeleteOnReferenceExpiration = deleteOnReferenceExpiration;
 }
@@ -622,16 +628,16 @@ void TrackInfoObject::setGrouping(const QString& s) {
     }
 }
 
-QString TrackInfoObject::getTrackNumber()  const {
+int TrackInfoObject::getTrackNumber()  const {
     QMutexLocker lock(&m_qMutex);
-    return m_sTrackNumber;
+    return m_iTrackNumber;
 }
 
-void TrackInfoObject::setTrackNumber(const QString& s) {
+void TrackInfoObject::setTrackNumber(const Qstring& tr) {
     QMutexLocker lock(&m_qMutex);
-    QString tn = s.trimmed();
-    if (m_sTrackNumber != tn) {
-        m_sTrackNumber = tn;
+    tn = parseTrackNumber(tr);
+    if (m_iTrackNumber != tn) {
+        m_iTrackNumber = tn;
         setDirty(true);
     }
 }

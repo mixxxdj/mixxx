@@ -356,7 +356,7 @@ class TrackInfoObject : public QObject {
     // Year
     QString m_sYear;
     // Track Number
-    QString m_sTrackNumber;
+    int m_iTrackNumber;
 
 
     // File type

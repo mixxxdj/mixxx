@@ -98,7 +98,7 @@ public:
     inline const QString& getGrouping() const {
         return m_sGrouping;
     }
-    inline const QString& getTrackNumber() const {
+    inline int getTrackNumber() const {
         return m_sTrackNumber;
     }
     inline float getReplayGain() const {
@@ -144,8 +144,9 @@ public:
     inline void setGrouping(QString grouping) {
         m_sGrouping = grouping;
     }
-    inline void setTrackNumber(QString trackNumber) {
-        m_sTrackNumber = trackNumber;
+    inline void setTrackNumberStr(QString trackNumber);
+    inline void setTrackNumber(int trk){
+    	m_iTrackNumber = trk;
     }
     inline void setKey(QString key) {
         m_sKey = key;
