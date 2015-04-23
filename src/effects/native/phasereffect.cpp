@@ -57,9 +57,9 @@ EffectManifest PhaserEffect::getManifest() {
     depth->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     depth->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    depth->setDefault(100.0);
+    depth->setDefault(0.0);
     depth->setMinimum(0.0);
-    depth->setMaximum(255);
+    depth->setMaximum(1.0);
 
     return manifest;
 }
@@ -108,8 +108,8 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
     
     const int kChannels = 2;
     for (unsigned int i = 0; i < numSamples; i += kChannels) {
-        leftOut = pInput[i] + leftOut * feedback; 
-        rightOut = pInput[i + 1] + rightOut * feedback;
+        leftOut = pInput[i]; //+ leftOut * feedback; 
+        rightOut = pInput[i + 1]; //+ rightOut * feedback;
 
         CSAMPLE delayLeft = (sin(leftPhase) + 1) / 2;
         CSAMPLE delayRight = (sin(rightPhase) + 1) / 2;
@@ -141,7 +141,7 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
             rightOut = tmpRight - filterRight[j] * oldRight[j];
         }
 
-        pOutput[i] = pInput[i] + leftOut;// * depth;
-        pOutput[i + 1] = pInput[i + 1] + rightOut;// * depth;
+        pOutput[i] = pInput[i] + leftOut * depth;
+        pOutput[i + 1] = pInput[i + 1] + rightOut * depth;
     }
 }
