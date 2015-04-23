@@ -196,8 +196,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         pNumMicrophones->set(pNumMicrophones->get() + 1);
     }
 
-    ControlObject* pNumAuxiliaries = new ControlObject(ConfigKey("[Master]", "num_auxiliaries"));
-    pNumAuxiliaries->setParent(this);
+    m_pNumAuxiliaries = new ControlObject(ConfigKey("[Master]", "num_auxiliaries"));
 
     m_PassthroughMapper = new QSignalMapper(this);
     connect(m_PassthroughMapper, SIGNAL(mapped(int)),
@@ -216,7 +215,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         AudioInput auxInput = AudioInput(AudioPath::AUXILIARY, 0, 0, i);
         m_pEngine->addChannel(pAux);
         m_pSoundManager->registerInput(auxInput, pAux);
-        pNumAuxiliaries->set(pNumAuxiliaries->get() + 1);
+        m_pNumAuxiliaries->set(m_pNumAuxiliaries->get() + 1);
 
         m_pAuxiliaryPassthrough.push_back(
                 new ControlObjectSlave(group, "passthrough"));
@@ -574,6 +573,7 @@ MixxxMainWindow::~MixxxMainWindow() {
     delete m_pShowPreviewDeck;
     delete m_pShowEffects;
     delete m_pShowCoverArt;
+    delete m_pNumAuxiliaries;
 
     // Check for leaked ControlObjects and give warnings.
     QList<QSharedPointer<ControlDoublePrivate> > leakedControls;

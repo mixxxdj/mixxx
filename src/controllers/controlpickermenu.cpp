@@ -518,7 +518,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             }
 
             const int iNumAuxiliaries = ControlObject::get(
-                ConfigKey("[Master]", "num_auxiliaries"));
+                    ConfigKey("[Master]", "num_auxiliaries"));
             for (int iAuxiliaryNumber = 1; iAuxiliaryNumber <= iNumAuxiliaries;
                  ++iAuxiliaryNumber) {
                 QString auxGroup = QString("[Auxiliary%1]").arg(iAuxiliaryNumber);

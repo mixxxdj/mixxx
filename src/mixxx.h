@@ -52,6 +52,7 @@ class DlgDeveloperTools;
 
 class ControlObjectSlave;
 class ControlObjectThread;
+class ControlObject;
 class QTranslator;
 
 // This Class is the base class for Mixxx. It sets up the main
@@ -276,6 +277,7 @@ class MixxxMainWindow : public QMainWindow {
     ControlObjectSlave* m_pShowPreviewDeck;
     ControlObjectSlave* m_pShowEffects;
     ControlObjectSlave* m_pShowCoverArt;
+    ControlObject* m_pNumAuxiliaries;
 
     int m_iNoPlaylists;
 
