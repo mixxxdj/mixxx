@@ -30,18 +30,18 @@ EffectManifest PhaserEffect::getManifest() {
 
     EffectManifestParameter* lfo_frequency = manifest.addParameter();
     lfo_frequency->setId("lfo_frequency");
-    lfo_frequency->setName(QObject::tr("LFO Frequency"));
+    lfo_frequency->setName(QObject::tr("Frequency"));
     lfo_frequency->setDescription("Controls LFO Frequency.");
     lfo_frequency->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     lfo_frequency->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     lfo_frequency->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    lfo_frequency->setDefault(0.4);
+    lfo_frequency->setDefault(0.0);
     lfo_frequency->setMinimum(0.0);
-    lfo_frequency->setMaximum(4.0);
+    lfo_frequency->setMaximum(5.0);
 
     EffectManifestParameter* lfo_startphase = manifest.addParameter();
     lfo_startphase->setId("lfo_startphase");
-    lfo_startphase->setName(QObject::tr("LFO Start Phase"));
+    lfo_startphase->setName(QObject::tr("Phase"));
     lfo_startphase->setDescription("Sets starting phase.");
     lfo_startphase->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     lfo_startphase->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
@@ -57,7 +57,7 @@ EffectManifest PhaserEffect::getManifest() {
     depth->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     depth->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    depth->setDefault(0.0);
+    depth->setDefault(1.0);
     depth->setMinimum(0.0);
     depth->setMaximum(1.0);
 
@@ -92,7 +92,7 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
 
     CSAMPLE lfoFrequency = m_pLFOFrequencyParameter->value();
     CSAMPLE lfoStartPhase = m_pLFOStartPhaseParameter->value();
-    int depth = m_pDepthParameter->value();
+    CSAMPLE depth = m_pDepthParameter->value();
     int stages = m_pStagesParameter->value();
     
     CSAMPLE* oldLeft = pState->oldLeft;
@@ -104,15 +104,17 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
     CSAMPLE leftOut = 0, rightOut = 0;
     CSAMPLE feedback = 0.5; 
     CSAMPLE leftPhase = lfoStartPhase, rightPhase = leftPhase + M_PI; 
-    CSAMPLE lfoSkip = lfoFrequency * 2 * M_PI / sampleRate;
-    
+    CSAMPLE lfoSkip = lfoFrequency * 2.0 * M_PI / sampleRate;
+    CSAMPLE delayMin = 0;
+    CSAMPLE delayMax = 1;
+
     const int kChannels = 2;
     for (unsigned int i = 0; i < numSamples; i += kChannels) {
-        leftOut = pInput[i]; //+ leftOut * feedback; 
-        rightOut = pInput[i + 1]; //+ rightOut * feedback;
+        leftOut = pInput[i] + leftOut * feedback; 
+        rightOut = pInput[i + 1] + rightOut * feedback;
 
-        CSAMPLE delayLeft = (sin(leftPhase) + 1) / 2;
-        CSAMPLE delayRight = (sin(rightPhase) + 1) / 2;
+        CSAMPLE delayLeft = delayMin + (delayMax - delayMin) * ((sin(leftPhase) + 1) / 2);
+        CSAMPLE delayRight = delayMin + (delayMax - delayMin) * ((sin(rightPhase) + 1) / 2);
 
         leftPhase += lfoSkip;
         rightPhase += lfoSkip;
@@ -129,6 +131,7 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
             filterLeft[j] = (1 - delayLeft) / (1 + delayLeft);            
             filterRight[j] = (1 - delayRight) / (1 + delayRight);
         }
+
 
         for (int j = 0; j < stages; j++) {
             CSAMPLE tmpLeft = oldLeft[j]; 
