@@ -2,7 +2,7 @@
 	<WidgetGroup>
 	  <ObjectName>WaveformMixerContainer</ObjectName>
 		<Layout>vertical</Layout>
-		<SizePolicy>me,e</SizePolicy>
+		<SizePolicy>me,me</SizePolicy>
 		<Children>
             <WidgetGroup>
                 <Layout>horizontal</Layout>
@@ -61,6 +61,33 @@
                                 </Connection>
                                 <Connection>
                                   <ConfigKey>[Master],show_mixer</ConfigKey>
+                                </Connection>
+                            </PushButton>
+                        </Children>
+                    </WidgetGroup>
+                    <WidgetGroup>
+                        <ObjectName>GuiToggleContainer</ObjectName>
+                        <Layout>vertical</Layout>
+                        <SizePolicy>min,min</SizePolicy>
+                        <Children>
+                            <PushButton>
+                                <Size>55f,20f</Size>
+                                <ObjectName>GuiToggleButton</ObjectName>
+                                <NumberStates>2</NumberStates>
+                                <State>
+                                  <Number>0</Number>
+                                  <Text>PREVIEW</Text>
+                                </State>
+                                <State>
+                                  <Number>1</Number>
+                                  <Text>PREVIEW</Text>
+                                </State>
+                                <Connection>
+                                  <ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
+                                  <ButtonState>LeftButton</ButtonState>
+                                </Connection>
+                                <Connection>
+                                  <ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
                                 </Connection>
                             </PushButton>
                         </Children>

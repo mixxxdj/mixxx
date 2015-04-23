@@ -37,10 +37,10 @@
 								</Children>
 							</WidgetGroup>
 							<WidgetGroup>
-                                <ObjectName>AlignRightTop</ObjectName>
-                                <Layout>horizontal</Layout>
-                                <SizePolicy>me,min</SizePolicy>
-                                <Children>
+                <ObjectName>AlignRightTop</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,min</SizePolicy>
+                <Children>
 									<PushButton>
 										<TooltipId>eject</TooltipId>
 										<NumberStates>1</NumberStates>

@@ -41,6 +41,10 @@
 }
 
 #SpinnyContainer {
+  border: 1px solid #585858;
+  border-right: 0px;
+  border-top: 0px;
+  border-bottom: 0px;
   background-color: #0f0f0f;
 }
 
@@ -137,8 +141,6 @@
   background-color: #1e1e1e;
   qproperty-layoutAlignment: 'AlignCenter';
   border: 1px solid #585858;
-  border-left: 0px;
-  border-right: 0px;
   border-top: 0px;
 }
 
@@ -588,12 +590,18 @@
 
 #PreviewDeck {
   border: 1px solid #585858;
+  border-top: 0px;
+  border-right: 0px;
   padding: 0px;
-  margin-bottom: 10px;
+  margin: 0px;
 }
 
 #PreviewPlayOverview {
   padding: 3px;
+}
+
+#NoBorder {
+ border: 0px;
 }
 
 #PreviewColumnOne {
@@ -681,16 +689,19 @@
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   border: 1px solid #585858;
   border-top: 0px;
-  border-left: 0px;
-  border-right: 0px;
   padding: 0px;
   background-color: #1e1e1e;
 }
 
 #WaveformMixerContainer {
-  border: 1px solid #585858;
-  border-bottom: 0px;
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+}
+
+#Waveform {
+  border: 1px solid #585858;
+  border-top: 0px;
+  border-left: 0px;
+  border-bottom: 0px;
 }
 
 #RateSlider {
