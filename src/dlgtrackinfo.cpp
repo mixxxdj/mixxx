@@ -1,6 +1,3 @@
-// dlgtrackinfo.cpp
-// Created 11/10/2009 by RJ Ryan (rryan@mit.edu)
-
 #include <QDesktopServices>
 #include <QtDebug>
 
@@ -10,6 +7,7 @@
 #include "library/coverartutils.h"
 #include "library/dao/cue.h"
 
+const int kFilterLength = 80;
 const int kMinBPM = 30;
 const int kMaxBPM = 240;
 // Maximum allowed interval between beats in milli seconds (calculated from
@@ -20,6 +18,8 @@ DlgTrackInfo::DlgTrackInfo(QWidget* parent,
                            DlgTagFetcher& DlgTagFetcher)
             : QDialog(parent),
               m_pLoadedTrack(NULL),
+              m_pTapFilter(new TapFilter(this, kFilterLength, kMaxInterval)),
+              m_dLastBpm(-1.),
               m_DlgTagFetcher(DlgTagFetcher),
               m_pWCoverArtLabel(new WCoverArtLabel(this)) {
     init();
@@ -68,15 +68,13 @@ void DlgTrackInfo::init() {
     connect(btnCueDelete, SIGNAL(clicked()),
             this, SLOT(cueDelete()));
     connect(bpmTap, SIGNAL(pressed()),
-            this, SLOT(slotBpmTap()));
+            m_pTapFilter.data(), SLOT(tap()));
+    connect(m_pTapFilter.data(), SIGNAL(tapped(double, int)),
+            this, SLOT(slotBpmTap(double, int)));
     connect(btnReloadFromFile, SIGNAL(clicked()),
             this, SLOT(reloadTrackMetadata()));
     connect(btnOpenFileBrowser, SIGNAL(clicked()),
             this, SLOT(slotOpenInFileBrowser()));
-    m_bpmTapTimer.start();
-    for (int i = 0; i < kFilterLength; ++i) {
-        m_bpmTapFilter[i] = 0.0f;
-    }
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
@@ -461,26 +459,16 @@ void DlgTrackInfo::slotBpmThreeFourth() {
     spinBpm->setValue(spinBpm->value() * (3./4.));
 }
 
-void DlgTrackInfo::slotBpmTap() {
-    int elapsed = m_bpmTapTimer.elapsed();
-    m_bpmTapTimer.restart();
-
-    if (elapsed <= kMaxInterval) {
-        // Move back in filter one sample
-        for (int i = 1; i < kFilterLength; ++i) {
-            m_bpmTapFilter[i-1] = m_bpmTapFilter[i];
-        }
-
-        m_bpmTapFilter[kFilterLength-1] = 60000.0f/elapsed;
-        if (m_bpmTapFilter[kFilterLength-1] > kMaxBPM)
-            m_bpmTapFilter[kFilterLength-1] = kMaxBPM;
-
-        double temp = 0.;
-        for (int i = 0; i < kFilterLength; ++i) {
-            temp += m_bpmTapFilter[i];
-        }
-        temp /= kFilterLength;
-        spinBpm->setValue(temp);
+void DlgTrackInfo::slotBpmTap(double averageLength, int numSamples) {
+    Q_UNUSED(numSamples);
+    if (averageLength == 0) {
+        return;
+    }
+    double averageBpm = 60.0 * 1000.0 / averageLength;
+    // average bpm needs to be truncated for this comparison:
+    if (averageBpm != m_dLastBpm) {
+        m_dLastBpm = averageBpm;
+        spinBpm->setValue(averageBpm);
     }
 }
 

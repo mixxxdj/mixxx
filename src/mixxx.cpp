@@ -470,6 +470,10 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
             m_pPlayerManager->slotLoadToDeck(musicFiles.at(i), i+1);
         }
     }
+
+    connect(&PlayerInfo::instance(),
+            SIGNAL(currentPlayingTrackChanged(TrackPointer)),
+            this, SLOT(slotUpdateWindowTitle(TrackPointer)));
 }
 
 MixxxMainWindow::~MixxxMainWindow() {
@@ -684,17 +688,8 @@ void MixxxMainWindow::logBuildDetails() {
 }
 
 void MixxxMainWindow::initializeWindow() {
-    QString version = Version::version();
-#ifdef __APPLE__
-    setWindowTitle(tr("Mixxx")); //App Store
-#elif defined(AMD64) || defined(EM64T) || defined(x86_64)
-    setWindowTitle(tr("Mixxx %1 x64").arg(version));
-#elif defined(IA64)
-    setWindowTitle(tr("Mixxx %1 Itanium").arg(version));
-#else
-    setWindowTitle(tr("Mixxx %1").arg(version));
-#endif
     setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
+    slotUpdateWindowTitle(TrackPointer());
 }
 
 void MixxxMainWindow::initializeFonts() {
@@ -1543,8 +1538,24 @@ void MixxxMainWindow::initActions()
     }
 }
 
-void MixxxMainWindow::initMenuBar()
-{
+void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
+    QString appTitle = Version::applicationTitle();
+
+    // If we have a track, use getInfo() to format a summary string and prepend
+    // it to the title.
+    // TODO(rryan): Does this violate Mac App Store policies?
+    if (pTrack) {
+        QString trackInfo = pTrack->getInfo();
+        if (!trackInfo.isEmpty()) {
+            appTitle = QString("%1 | %2")
+                    .arg(trackInfo)
+                    .arg(appTitle);
+        }
+    }
+    this->setWindowTitle(appTitle);
+}
+
+void MixxxMainWindow::initMenuBar() {
     // MENUBAR
     m_pFileMenu = new QMenu(tr("&File"), menuBar());
     m_pOptionsMenu = new QMenu(tr("&Options"), menuBar());

@@ -72,7 +72,8 @@ AutoDJProcessor::AutoDJProcessor(QObject* pParent,
           m_pPlayerManager(pPlayerManager),
           m_pAutoDJTableModel(NULL),
           m_eState(ADJ_DISABLED),
-          m_iTransitionTime(kTransitionPreferenceDefault) {
+          m_iTransitionTime(kTransitionPreferenceDefault),
+          m_nextTransitionTime(kTransitionPreferenceDefault) {
     m_pAutoDJTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                  "mixxx.db.model.autodj");
     m_pAutoDJTableModel->setTableModel(iAutoDJPlaylistId);
@@ -122,6 +123,7 @@ AutoDJProcessor::AutoDJProcessor(QObject* pParent,
             ConfigKey(kConfigKey, kTransitionPreferenceName));
     if (!str_autoDjTransition.isEmpty()) {
         m_iTransitionTime = str_autoDjTransition.toInt();
+        m_nextTransitionTime =  m_iTransitionTime;
     }
 }
 
@@ -185,22 +187,29 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::fadeNow() {
         DeckAttributes& leftDeck = *m_decks[0];
         DeckAttributes& rightDeck = *m_decks[1];
         if (crossfader <= 0.3 && leftDeck.isPlaying()) {
-            // Make sure leftDeck.fadeDuration is up to date.
-            calculateFadeThresholds(&leftDeck);
+            // left deck is playing and the crossfader is on the left
 
+            // Make sure leftDeck.fadeDuration is up to date.
+            calculateTransition(&leftDeck, &rightDeck);
+
+            // override posThreshold to start fade now
             leftDeck.posThreshold = leftDeck.playPosition() -
                     ((crossfader + 1.0) / 2 * (leftDeck.fadeDuration));
             // Repeat is disabled by FadeNow but disables auto Fade
             leftDeck.setRepeat(false);
         } else if (crossfader >= -0.3 && rightDeck.isPlaying()) {
-            // Make sure rightDeck.fadeDuration is up to date.
-            calculateFadeThresholds(&rightDeck);
+            // right deck is playing and the crossfader is on the right
 
+            // Make sure rightDeck.fadeDuration is up to date.
+            calculateTransition(&rightDeck, &leftDeck);
+
+            // override posThreshold to start fade now
             rightDeck.posThreshold = rightDeck.playPosition() -
                     ((1.0 - crossfader) / 2 * (rightDeck.fadeDuration));
             // Repeat is disabled by FadeNow but disables auto Fade
             rightDeck.setRepeat(false);
         }
+        // else { // do not know what to do  }
     }
     return ADJ_OK;
 }
@@ -322,12 +331,12 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
             m_eState = ADJ_IDLE;
             if (deck1Playing) {
                 // Update fade thresholds for the left deck.
-                calculateFadeThresholds(&leftDeck);
+                calculateTransition(&leftDeck, &rightDeck);
                 // Load track into the right deck.
                 emitLoadTrackToPlayer(nextTrack, rightDeck.group, false);
             } else {
                 // Update fade thresholds for the right deck.
-                calculateFadeThresholds(&rightDeck);
+                calculateTransition(&rightDeck, &leftDeck);
                 // Load track into the left deck.
                 emitLoadTrackToPlayer(nextTrack, leftDeck.group, false);
             }
@@ -389,11 +398,12 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
 
     // qDebug() << "player" << pAttributes->group << "PositionChanged(" << value << ")";
     if (m_eState == ADJ_DISABLED) {
-        //nothing to do
+        // nothing to do
         return;
     }
 
     DeckAttributes& thisDeck = *pAttributes;
+    // prefer to fade to deck 0
     int otherDeckIndex = 0;
     if (thisDeck.index == 0) {
         otherDeckIndex = 1;
@@ -433,10 +443,10 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                 loadNextTrackFromQueue(rightDeck);
 
                 // Set crossfade thresholds for left deck.
-                calculateFadeThresholds(&leftDeck);
+                calculateTransition(&leftDeck, &rightDeck);
             } else {
                 // Set crossfade thresholds for right deck.
-                calculateFadeThresholds(&rightDeck);
+                calculateTransition(&rightDeck, &leftDeck);
             }
             emitAutoDJStateChanged(m_eState);
         }
@@ -485,13 +495,17 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
 
                 // Setup the other deck's fade thresholds (since we use the
                 // fadeDuration next).
-                calculateFadeThresholds(&otherDeck);
+                calculateTransition(&otherDeck, &thisDeck);
 
                 // For negative fade durations, jump back to insert a pause
                 // between the tracks.
                 if (thisFadeDuration < 0.0) {
-                    // TODO(rryan) why otherDeck.fadeDuration?
+                    // Note: since the fade duration is relative to the track
+                    // length, we need to use the other deck fade duration
                     otherDeck.setPlayPosition(otherDeck.fadeDuration);
+                } else {
+                    // TODO(DSC) Guard against very short other tracks
+                    // They must not be finished before this track, otherwise Auto-DJ stops
                 }
             }
 
@@ -648,49 +662,73 @@ void AutoDJProcessor::playerPlayChanged(DeckAttributes* pAttributes, bool playin
     }
     // We may want to do more than just calculate fade thresholds when playing
     // state changes so keep these two as separate methods for now.
-    calculateFadeThresholds(pAttributes);
+
+    // This will calculate the Transition to the already loaded, in most cases
+    // already played other track.
+    // This is required because the user may have loaded a track or changed play
+    // manually
+    if (playing) {
+        calculateTransition(pAttributes, getOtherDeck(pAttributes));
+    }
 }
 
-void AutoDJProcessor::calculateFadeThresholds(DeckAttributes* pAttributes) {
-    bool playing = pAttributes->isPlaying();
+void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
+                                          DeckAttributes* pToDeck) {
+    if (pFromDeck == NULL) {
+        return;
+    }
+
     if (sDebug) {
-        qDebug() << this << "calculateFadeThresholds" << pAttributes->group << playing;
+        qDebug() << this << "calculateFadeThresholds" << pFromDeck->group;
     }
 
     //qDebug() << "player" << pAttributes->group << "PlayChanged(" << playing << ")";
 
     // We require ADJ_IDLE to prevent changing the thresholds in the middle of a
     // fade.
-    // TODO(rryan): Investigate removing the playing and idle check. If a track
-    // is loaded we should be able to calculate the fadeDuration and
-    // posThreshold regardless of the rest of the ADJ.
-    if (playing && m_eState == ADJ_IDLE) {
-        TrackPointer loadedTrack = pAttributes->getLoadedTrack();
-        if (loadedTrack) {
+    if (m_eState == ADJ_IDLE) {
+        TrackPointer fromTrack = pFromDeck->getLoadedTrack();
+        if (fromTrack) {
             // TODO(rryan): Duration is super inaccurate! We should be using
             // track_samples / track_samplerate instead.
-            int TrackDuration = loadedTrack->getDuration();
-            qDebug() << "TrackDuration = " << TrackDuration;
+            int fromTrackDuration = fromTrack->getDuration();
+            qDebug() << fromTrack->getLocation()
+                    << "fromTrackDuration = " << fromTrackDuration;
 
             // The track might be shorter than the transition period. Use a
             // sensible cap.
-            int autoDjTransition = math_min(m_iTransitionTime, TrackDuration/2);
+            m_nextTransitionTime = math_min(m_iTransitionTime,
+                                            fromTrackDuration / 2);
 
-            if (TrackDuration > autoDjTransition && TrackDuration > 0) {
-                pAttributes->fadeDuration = static_cast<double>(autoDjTransition) /
-                        static_cast<double>(TrackDuration);
-            } else {
-                pAttributes->fadeDuration = 0;
+            if (pToDeck) {
+                TrackPointer toTrack = pToDeck->getLoadedTrack();
+                if (toTrack) {
+                    // TODO(rryan): Duration is super inaccurate! We should be using
+                    // track_samples / track_samplerate instead.
+                    int toTrackDuration = toTrack->getDuration();
+                    qDebug() << toTrack->getLocation()
+                            << "toTrackDuration = " << toTrackDuration;
+                    m_nextTransitionTime = math_min(m_nextTransitionTime,
+                                                    toTrackDuration / 2);
+                }
             }
 
-            if (autoDjTransition > 0) {
-                pAttributes->posThreshold = 1.0 - pAttributes->fadeDuration;
+            if (fromTrackDuration > 0) {
+                pFromDeck->fadeDuration =
+                        static_cast<double>(m_nextTransitionTime) /
+                        static_cast<double>(fromTrackDuration);
+            } else {
+                pFromDeck->fadeDuration = 0;
+            }
+
+            if (m_nextTransitionTime > 0) {
+                pFromDeck->posThreshold = 1.0 - pFromDeck->fadeDuration;
             } else {
                 // in case of pause
-                pAttributes->posThreshold = 1.0;
+                pFromDeck->posThreshold = 1.0;
             }
-            qDebug() << "m_fadeDuration[" << pAttributes->group << "] = "
-                     << pAttributes->fadeDuration;
+            qDebug() << "m_fadeDuration[" << pFromDeck->group << "] = "
+                     << pFromDeck->fadeDuration;
         }
     }
 }
@@ -700,6 +738,7 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
         qDebug() << this << "playerTrackLoaded" << pDeck->group
                  << (pTrack.isNull() ? "(null)" : pTrack->getLocation());
     }
+    calculateTransition(getOtherDeck(pDeck, true), pDeck);
 }
 
 void AutoDJProcessor::playerTrackLoadFailed(DeckAttributes* pDeck, TrackPointer pTrack) {
@@ -753,12 +792,39 @@ void AutoDJProcessor::setTransitionTime(int time) {
     // Then re-calculate fade thresholds for the decks.
     if (m_eState == ADJ_IDLE) {
         DeckAttributes& leftDeck = *m_decks[0];
-        if (leftDeck.isPlaying()) {
-            calculateFadeThresholds(&leftDeck);
-        }
         DeckAttributes& rightDeck = *m_decks[1];
+        if (leftDeck.isPlaying()) {
+            calculateTransition(&leftDeck, &rightDeck);
+        }
         if (rightDeck.isPlaying()) {
-            calculateFadeThresholds(&rightDeck);
+            calculateTransition(&rightDeck, &leftDeck);
         }
     }
+}
+
+DeckAttributes* AutoDJProcessor::getOtherDeck(DeckAttributes* pThisDeck,
+                                              bool playing) {
+    DeckAttributes* pOtherDeck = NULL;
+    if (pThisDeck->isLeft()) {
+        // find first right deck
+        foreach(DeckAttributes* pDeck, m_decks) {
+            if (pDeck->isRight()) {
+                if (!playing || pDeck->isPlaying()) {
+                    pOtherDeck = pDeck;
+                    break;
+                }
+            }
+        }
+    } else if (pThisDeck->isRight()) {
+        // find first left deck
+        foreach(DeckAttributes* pDeck, m_decks) {
+            if (pDeck->isLeft()) {
+                if (!playing || pDeck->isPlaying()) {
+                    pOtherDeck = pDeck;
+                    break;
+                }
+            }
+        }
+    }
+    return pOtherDeck;
 }
