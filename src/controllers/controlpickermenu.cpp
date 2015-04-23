@@ -485,7 +485,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             }
 
             const int iNumSamplers = ControlObject::get(
-                ConfigKey("[Master]", "num_samplers"));
+                    ConfigKey("[Master]", "num_samplers"));
             for (int iSamplerNumber = 1; iSamplerNumber <= iNumSamplers;
                  ++iSamplerNumber) {
                 // PlayerManager::groupForSampler is 0-indexed.
