@@ -53,8 +53,6 @@ class PhaserEffect : public PerChannelEffectProcessor<PhaserGroupState> {
     EngineEffectParameter* m_pLFOStartPhaseParameter; 
     EngineEffectParameter* m_pDepthParameter; 
 
-
-
     DISALLOW_COPY_AND_ASSIGN(PhaserEffect);
 };
 
