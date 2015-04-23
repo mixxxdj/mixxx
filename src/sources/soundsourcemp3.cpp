@@ -145,6 +145,9 @@ Result SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     DEBUG_ASSERT(m_seekFrameList.empty());
     m_avgSeekFrameCount = 0;
     m_curFrameIndex = kFrameIndexMin;
+    for (int i = 0; i < kFrameRateCount; ++i) {
+        m_headerPerFrameRate[i] = 0;
+    }
 
     // Decode all the headers and calculate audio properties
 
@@ -187,30 +190,39 @@ Result SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
         switch (madSampleRate) {
         case 8000:
             madUnits = MAD_UNITS_8000_HZ;
+            m_headerPerFrameRate[0]++;
             break;
         case 11025:
             madUnits = MAD_UNITS_11025_HZ;
+            m_headerPerFrameRate[1]++;
             break;
         case 12000:
             madUnits = MAD_UNITS_12000_HZ;
+            m_headerPerFrameRate[2]++;
             break;
         case 16000:
             madUnits = MAD_UNITS_16000_HZ;
+            m_headerPerFrameRate[3]++;
             break;
         case 22050:
             madUnits = MAD_UNITS_22050_HZ;
+            m_headerPerFrameRate[4]++;
             break;
         case 24000:
             madUnits = MAD_UNITS_24000_HZ;
+            m_headerPerFrameRate[5]++;
             break;
         case 32000:
             madUnits = MAD_UNITS_32000_HZ;
+            m_headerPerFrameRate[6]++;
             break;
         case 44100:
             madUnits = MAD_UNITS_44100_HZ;
+            m_headerPerFrameRate[7]++;
             break;
         case 48000:
             madUnits = MAD_UNITS_48000_HZ;
+            m_headerPerFrameRate[8]++;
             break;
         default:
             qWarning() << "Invalid sample rate:" << m_file.fileName()
@@ -219,22 +231,6 @@ Result SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
             mad_header_finish(&madHeader);
             return ERR;
         }
-        if (isFrameRateValid()) {
-            // check for consistent frame/sample rate
-            if (getFrameRate() != madSampleRate) {
-                qWarning() << "Differing sample rate in some headers:"
-                        << m_file.fileName()
-                        << madSampleRate << "<>" << getFrameRate();
-                qWarning() << "MP3 files with varying sample rate are not supported!";
-                // Abort
-                mad_header_finish(&madHeader);
-                return ERR;
-            }
-        } else {
-            // initially set the frame/sample rate
-            setFrameRate(madSampleRate);
-        }
-
         addSeekFrame(m_curFrameIndex, m_madStream.this_frame);
 
         // Accumulate data from the header
@@ -250,6 +246,70 @@ Result SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     } while (quint64(m_madStream.this_frame - m_pFileData) < m_fileSize);
 
     mad_header_finish(&madHeader);
+
+    int mostCommonFrameRateIndex = -1;
+    int mostCommonFrameRatecount = 0;
+    int differentRates = 0;
+    for (int i = 0; i < kFrameRateCount; ++i) {
+        // Find most common frame rate
+        if (mostCommonFrameRatecount < m_headerPerFrameRate[i]) {
+            mostCommonFrameRatecount = m_headerPerFrameRate[i];
+            mostCommonFrameRateIndex = i;
+            differentRates++;
+        }
+    }
+
+    if (differentRates > 1) {
+        qWarning() << "Differing sample rate in some headers:"
+                   << m_file.fileName();
+        if (m_headerPerFrameRate[0]) qWarning() << "8 kHz:" << m_headerPerFrameRate[0];
+        if (m_headerPerFrameRate[1]) qWarning() << "11.025 kHz:" << m_headerPerFrameRate[1];
+        if (m_headerPerFrameRate[2]) qWarning() << "12 kHz:" << m_headerPerFrameRate[2];
+        if (m_headerPerFrameRate[3]) qWarning() << "16 kHz:" << m_headerPerFrameRate[3];
+        if (m_headerPerFrameRate[4]) qWarning() << "22.05 kHz:" << m_headerPerFrameRate[4];
+        if (m_headerPerFrameRate[5]) qWarning() << "24 kHz:" << m_headerPerFrameRate[5];
+        if (m_headerPerFrameRate[6]) qWarning() << "32 kHz:" << m_headerPerFrameRate[6];
+        if (m_headerPerFrameRate[7]) qWarning() << "44.1 kHz:" << m_headerPerFrameRate[7];
+        if (m_headerPerFrameRate[8]) qWarning() << "48 kHz:" << m_headerPerFrameRate[8];
+
+        qWarning() << "MP3 files with varying sample rate are not supported!";
+        qWarning() << "Since this happens most likely due to a corrupt file";
+        qWarning() << "Mixxx tries to plays it with the most common sample rate for this file";
+    }
+
+    switch (mostCommonFrameRateIndex) {
+    case 0:
+        setFrameRate(8000);
+        break;
+    case 1:
+        setFrameRate(11025);
+        break;
+    case 2:
+        setFrameRate(12000);
+        break;
+    case 3:
+        setFrameRate(16000);
+        break;
+    case 4:
+        setFrameRate(22050);
+        break;
+    case 5:
+        setFrameRate(24000);
+        break;
+    case 6:
+        setFrameRate(32000);
+        break;
+    case 7:
+        setFrameRate(44100);
+        break;
+    case 8:
+        setFrameRate(48000);
+        break;
+    default:
+        qWarning() << "No single valid frame rate in header";
+        // Abort
+        return ERR;
+    }
 
     if (MAD_ERROR_NONE != m_madStream.error) {
         // Unreachable code for recoverable errors
@@ -537,7 +597,6 @@ SINT SoundSourceMp3::readSampleFrames(
 
             // Once decoded the frame is synthesized to PCM samples
             mad_synth_frame(&m_madSynth, &m_madFrame);
-            DEBUG_ASSERT(getFrameRate() == m_madSynth.pcm.samplerate);
             m_madSynthCount = m_madSynth.pcm.length;
             DEBUG_ASSERT(0 < m_madSynthCount);
         }
