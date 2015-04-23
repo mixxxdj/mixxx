@@ -98,43 +98,50 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
     CSAMPLE* oldLeft = pState->oldLeft;
     CSAMPLE* oldRight = pState->oldRight;
 
-    CSAMPLE lfoShape = pState->lfoShape; 
-    int lfoSkipSamples = pState->lfoSkipSamples;
+    CSAMPLE* filterLeft = pState->filterCoefLeft;
+    CSAMPLE* filterRight = pState->filterCoefRight;
+
     CSAMPLE leftOut = 0, rightOut = 0;
     CSAMPLE feedback = 0.5; 
-    CSAMPLE gainLeft = 0, gainRight = 0;
     CSAMPLE leftPhase = lfoStartPhase, rightPhase = leftPhase + M_PI; 
-    CSAMPLE lfoSkip = lfoFrequency * 2 * M_PI/sampleRate;
-
-    int skipCount = 0;
+    CSAMPLE lfoSkip = lfoFrequency * 2 * M_PI / sampleRate;
+    
     const int kChannels = 2;
     for (unsigned int i = 0; i < numSamples; i += kChannels) {
-        leftOut = pInput[i] + leftOut * feedback / 100; 
-        rightOut = pInput[i + 1] + rightOut * feedback / 100;
+        leftOut = pInput[i] + leftOut * feedback; 
+        rightOut = pInput[i + 1] + rightOut * feedback;
 
-        if (((skipCount++) % lfoSkipSamples) == 0) {
-            gainLeft = (1.0 + cos(skipCount * lfoSkip + rightPhase)) / 2;
-            gainRight = (1.0 + cos(skipCount * lfoSkip + leftPhase)) / 2;
+        CSAMPLE delayLeft = (sin(leftPhase) + 1) / 2;
+        CSAMPLE delayRight = (sin(rightPhase) + 1) / 2;
 
-            gainLeft = (exp(gainLeft * lfoShape) - 1) / (exp(lfoShape) - 1);
-            gainRight = (exp(gainRight * lfoShape) - 1) / (exp(lfoShape) - 1);
+        leftPhase += lfoSkip;
+        rightPhase += lfoSkip;
 
-            gainLeft = 1.0 - gainLeft / 255 * depth;
-            gainRight = 1.0 - gainRight / 255 * depth;
+        if (leftPhase >= 2.0 * M_PI) {
+            leftPhase -= 2.0 * M_PI;
+        }
+
+        if (rightPhase >= 2.0 * M_PI) {
+            rightPhase -= 2.0 * M_PI;
+        }
+
+        for (int j = 0; j < stages; j++) {
+            filterLeft[j] = (1 - delayLeft) / (1 + delayLeft);            
+            filterRight[j] = (1 - delayRight) / (1 + delayRight);
         }
 
         for (int j = 0; j < stages; j++) {
             CSAMPLE tmpLeft = oldLeft[j]; 
             CSAMPLE tmpRight = oldRight[j];
 
-            oldLeft[j] = gainLeft * tmpLeft + leftOut;
-            oldRight[j] = gainRight * tmpRight + rightOut;
+            oldLeft[j] = filterLeft[j] * tmpLeft + leftOut;
+            oldRight[j] = filterRight[j] * tmpRight + rightOut;
 
-            leftOut = tmpLeft - gainLeft * oldLeft[j];
-            rightOut = tmpRight - gainRight * oldRight[j];
+            leftOut = tmpLeft - filterLeft[j] * oldLeft[j];
+            rightOut = tmpRight - filterRight[j] * oldRight[j];
         }
 
-        pOutput[i] = leftOut;
-        pOutput[i + 1] = rightOut;
+        pOutput[i] = pInput[i] + leftOut;// * depth;
+        pOutput[i + 1] = pInput[i + 1] + rightOut;// * depth;
     }
 }

@@ -12,16 +12,17 @@
 #define MAXSTAGES 24
 
 struct PhaserGroupState {
-    PhaserGroupState() :
-        lfoShape(4.0),
-        lfoSkipSamples(20) {
+    PhaserGroupState() 
+    {
         SampleUtil::applyGain(oldLeft, 0, MAXSTAGES);
         SampleUtil::applyGain(oldRight, 0, MAXSTAGES);
+        SampleUtil::applyGain(filterCoefLeft, 0, MAXSTAGES);
+        SampleUtil::applyGain(filterCoefRight, 0, MAXSTAGES);
     }
     CSAMPLE oldLeft[MAXSTAGES]; 
     CSAMPLE oldRight[MAXSTAGES];
-    CSAMPLE lfoShape;
-    int lfoSkipSamples;
+    CSAMPLE filterCoefLeft[MAXSTAGES];
+    CSAMPLE filterCoefRight[MAXSTAGES];
 };
 
 class PhaserEffect : public PerChannelEffectProcessor<PhaserGroupState> {
