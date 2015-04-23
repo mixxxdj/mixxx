@@ -954,7 +954,7 @@
 }
 
 #EffectKnob {
-  qproperty-layoutAlignment: 'AlignCenter';
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   padding-left: 5px;
   padding-right: 5px;
 }
