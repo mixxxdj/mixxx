@@ -77,7 +77,8 @@
               </Template>
 
               <PushButton>
-                <TooltipId>TODO</TooltipId>
+                <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
+                <TooltipId></TooltipId>
                 <Size>70f,20f</Size>
                 <NumberStates>3</NumberStates>
                 <State>
@@ -101,7 +102,8 @@
               <Template src="skin:knob_with_label.xml">
                 <SetVariable name="group">[Master]</SetVariable>
                 <SetVariable name="control">duckStrength</SetVariable>
-                <SetVariable name="TooltipId">TODO</SetVariable>
+                <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
+                <SetVariable name="TooltipId"></SetVariable>
                 <SetVariable name="color">white</SetVariable>
                 <SetVariable name="label">Strength</SetVariable>
               </Template>

@@ -15,7 +15,8 @@
         <Children>
 
           <PushButton>
-            <Tooltip>TODO</Tooltip>
+            <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
+            <Tooltip></Tooltip>
             <Size>60f,20f</Size>
             <NumberStates>3</NumberStates>
             <State>
@@ -43,7 +44,8 @@
           </PushButton>
 
           <PushButton>
-            <TooltipId>TODO</TooltipId>
+            <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
+            <TooltipId></TooltipId>
             <Size>60f,20f</Size>
             <NumberStates>2</NumberStates>
             <State>

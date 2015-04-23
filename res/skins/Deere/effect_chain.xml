@@ -36,7 +36,8 @@
             <SizePolicy>me,max</SizePolicy>
             <Children>
               <Template src="skin:left_2state_button.xml">
-                <SetVariable name="TooltipId">TODO</SetVariable>
+                <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
+                <SetVariable name="TooltipId"></SetVariable>
                 <SetVariable name="ObjectName"></SetVariable>
                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
                 <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -51,7 +52,8 @@
               </Template>
 
               <Template src="skin:left_1state_button.xml">
-                <SetVariable name="TooltipId">TODO</SetVariable>
+                <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
+                <SetVariable name="TooltipId"></SetVariable>
                 <SetVariable name="ObjectName"></SetVariable>
                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
                 <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -63,7 +65,8 @@
               </Template>
 
               <Template src="skin:left_1state_button.xml">
-                <SetVariable name="TooltipId">TODO</SetVariable>
+                <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
+                <SetVariable name="TooltipId"></SetVariable>
                 <SetVariable name="ObjectName"></SetVariable>
                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
                 <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -75,7 +78,8 @@
               </Template>
 
               <Template src="skin:left_1state_button.xml">
-                <SetVariable name="TooltipId">TODO</SetVariable>
+                <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
+                <SetVariable name="TooltipId"></SetVariable>
                 <SetVariable name="ObjectName"></SetVariable>
                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
                 <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>

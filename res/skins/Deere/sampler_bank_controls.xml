@@ -19,7 +19,8 @@
       </Label>
 
       <Template src="skin:left_2state_button.xml">
-        <SetVariable name="TooltipId">TODO</SetVariable>
+        <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
+        <SetVariable name="TooltipId"></SetVariable>
         <SetVariable name="ObjectName">SamplerBankToggle</SetVariable>
         <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
         <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -34,7 +35,8 @@
       </Template>
 
       <Template src="skin:left_2state_button.xml">
-        <SetVariable name="TooltipId">TODO</SetVariable>
+        <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
+        <SetVariable name="TooltipId"></SetVariable>
         <SetVariable name="ObjectName">SamplerBankToggle</SetVariable>
         <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
         <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -49,7 +51,8 @@
       </Template>
 
       <Template src="skin:left_2state_button.xml">
-        <SetVariable name="TooltipId">TODO</SetVariable>
+        <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
+        <SetVariable name="TooltipId"></SetVariable>
         <SetVariable name="ObjectName">SamplerBankToggle</SetVariable>
         <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
         <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -64,7 +67,8 @@
       </Template>
 
       <Template src="skin:left_2state_button.xml">
-        <SetVariable name="TooltipId">TODO</SetVariable>
+        <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
+        <SetVariable name="TooltipId"></SetVariable>
         <SetVariable name="ObjectName">SamplerBankToggle</SetVariable>
         <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
         <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -101,7 +105,8 @@
         <Layout>horizontal</Layout>
         <Children>
           <Template src="skin:left_2state_button.xml">
-            <SetVariable name="TooltipId">TODO</SetVariable>
+            <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
+            <SetVariable name="TooltipId"></SetVariable>
             <SetVariable name="ObjectName">SamplerBankToggle</SetVariable>
             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
             <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -115,7 +120,8 @@
             <SetVariable name="left_connection_control">[Deere],sampler_bank_1</SetVariable>
           </Template>
           <Template src="skin:left_2state_button.xml">
-            <SetVariable name="TooltipId">TODO</SetVariable>
+            <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
+            <SetVariable name="TooltipId"></SetVariable>
             <SetVariable name="ObjectName">SamplerBankToggle</SetVariable>
             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
             <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -135,7 +141,8 @@
         <Layout>horizontal</Layout>
         <Children>
           <Template src="skin:left_2state_button.xml">
-            <SetVariable name="TooltipId">TODO</SetVariable>
+            <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
+            <SetVariable name="TooltipId"></SetVariable>
             <SetVariable name="ObjectName">SamplerBankToggle</SetVariable>
             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
             <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -149,7 +156,8 @@
             <SetVariable name="left_connection_control">[Deere],sampler_bank_3</SetVariable>
           </Template>
           <Template src="skin:left_2state_button.xml">
-            <SetVariable name="TooltipId">TODO</SetVariable>
+            <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
+            <SetVariable name="TooltipId"></SetVariable>
             <SetVariable name="ObjectName">SamplerBankToggle</SetVariable>
             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
             <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -171,7 +179,8 @@
         <Layout>vertical</Layout>
         <Children>
           <Template src="skin:left_1state_button.xml">
-            <SetVariable name="TooltipId">TODO</SetVariable>
+            <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
+            <SetVariable name="TooltipId"></SetVariable>
             <SetVariable name="ObjectName">SamplerBankLoadButton</SetVariable>
             <SetVariable name="MinimumSize"><Variable name="WideButtonMinimumSize"/></SetVariable>
             <SetVariable name="MaximumSize"><Variable name="WideButtonMaximumSize"/></SetVariable>
@@ -183,7 +192,8 @@
           </Template>
 
           <Template src="skin:left_1state_button.xml">
-            <SetVariable name="TooltipId">TODO</SetVariable>
+            <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
+            <SetVariable name="TooltipId"></SetVariable>
             <SetVariable name="ObjectName">SamplerBankSaveButton</SetVariable>
             <SetVariable name="MinimumSize"><Variable name="WideButtonMinimumSize"/></SetVariable>
             <SetVariable name="MaximumSize"><Variable name="WideButtonMaximumSize"/></SetVariable>
