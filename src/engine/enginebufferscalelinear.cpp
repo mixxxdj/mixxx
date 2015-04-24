@@ -108,6 +108,7 @@ CSAMPLE* EngineBufferScaleLinear::getScaled(unsigned long buf_size) {
         m_dOldRate = rate_add_old;
         m_dRate = 0.0;
         m_buffer = do_scale(m_buffer, buf_size/2, &samples_read);
+        SampleUtil::applyRampingGain(m_buffer, 1.0, 0, buf_size / 2);
 
         // reset prev sample so we can now read in the other direction (may not
         // be necessary?)
@@ -140,6 +141,8 @@ CSAMPLE* EngineBufferScaleLinear::getScaled(unsigned long buf_size) {
         m_dRate = rate_add_new;
         // pass the address of the sample at the halfway point
         do_scale(&m_buffer[buf_size / 2], buf_size / 2, &samples_read);
+        SampleUtil::applyRampingGain(
+                &m_buffer[buf_size / 2], 0, 1.0, buf_size / 2);
 
         m_samplesRead = samples_read;
         return m_buffer;
