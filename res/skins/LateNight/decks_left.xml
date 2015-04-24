@@ -36,17 +36,7 @@
                             <BindProperty>visible</BindProperty>
                         </Connection>
                     </WidgetGroup>
-                    <WidgetGroup>
-                      <Layout>horizontal</Layout>
-                      <SizePolicy>me,me</SizePolicy>
-                      <Children>
-                        <Template src="skin:preview_deck.xml" />
-                      </Children>
-                      <Connection>
-                          <ConfigKey>[PreviewDeck],show_previewdeck</ConfigKey>
-                          <BindProperty>visible</BindProperty>
-                      </Connection>
-                    </WidgetGroup>
+                    <Template src="skin:preview_deck.xml" />
                     <WidgetGroup>
                       <Layout>horizontal</Layout>
                       <SizePolicy>me,me</SizePolicy>

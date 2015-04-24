@@ -277,21 +277,31 @@
                 </Connection>
             </WidgetGroup>
             <WidgetGroup>
-                <ObjectName>AlignRightBottom</ObjectName>
+                <ObjectName>NoMixerLogo</ObjectName>
                 <Layout>horizontal</Layout>
-                <SizePolicy>min,f</SizePolicy>
+                <SizePolicy>min,me</SizePolicy>
                 <MinimumSize>450,</MinimumSize>
                 <Children>
-                    <WidgetGroup> <!-- spacer to push logo to the right -->
+                    <WidgetGroup> spacer to push logo to the right
                         <Layout>horizontal</Layout>
                         <SizePolicy>e,min</SizePolicy>
                         <Children/>
                     </WidgetGroup>
                     <WidgetGroup>
-                        <Layout>horizontal</Layout>
-                        <SizePolicy>f,f</SizePolicy>
-                        <Size>103,40</Size>
-                        <BackPath>style/mixxx_logo.png</BackPath>
+                        <Layout>vertical</Layout>
+                        <SizePolicy>max,me</SizePolicy>
+                        <Children>
+                            <WidgetGroup>
+                              <Layout>horizontal</Layout>
+                              <SizePolicy>me,me</SizePolicy>
+                              <Children/>
+                            </WidgetGroup>
+                            <WidgetGroup>
+                              <SizePolicy>f,f</SizePolicy>
+                              <Size>103,40</Size>
+                              <BackPath>style/mixxx_logo.png</BackPath>
+                            </WidgetGroup>
+                        </Children>
                     </WidgetGroup>
                 </Children>
                 <Connection>
@@ -301,7 +311,7 @@
                         <Not/>
                     </Transform>
                 </Connection>
-            </WidgetGroup>
+            </WidgetGroup> 
 		</Children>
 	</WidgetGroup>
 </Template>

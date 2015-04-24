@@ -207,6 +207,13 @@
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
 }
 
+#NoMixerLogo {
+  qproperty-layoutAlignment: 'AlignRight | AlignBottom';
+  border: 1px solid #585858;
+  border-top: 0px;
+  background-color: #1e1e1e;
+}
+
 #MasterKnobs {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
@@ -589,11 +596,27 @@
 }
 
 #PreviewDeck {
+  qproperty-layoutAlignment: 'AlignTop';
   border: 1px solid #585858;
   border-top: 0px;
   border-right: 0px;
   padding: 0px;
   margin: 0px;
+}
+
+#PreviewDeckText {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+  font-size: 10px/11px;
+  color: #cfb32c;
+  text-align: left;
+}
+
+#PreviewDeckMargin {
+  border: 1px solid #585858;
+  border-top: 0px;
+  border-right: 0px;
+  border-left: 0px;
 }
 
 #PreviewPlayOverview {

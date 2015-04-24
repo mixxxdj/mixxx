@@ -36,29 +36,30 @@
                             <BindProperty>visible</BindProperty>
                         </Connection>
                     </WidgetGroup>
-                    <!-- <WidgetGroup>
+                    <WidgetGroup>
                       <ObjectName>NoBorder</ObjectName>
                       <Layout>horizontal</Layout>
                       <SizePolicy>me,me</SizePolicy>
                       <MinimumSize>0,0</MinimumSize>
+                      <MaximumSize>,70</MaximumSize>
                       <Children/>
                       <Connection>
                           <ConfigKey>[PreviewDeck],show_previewdeck</ConfigKey>
                           <BindProperty>visible</BindProperty>
                       </Connection>
-                    </WidgetGroup> -->
+                    </WidgetGroup>
                     <WidgetGroup>
                       <Layout>horizontal</Layout>
                       <SizePolicy>me,me</SizePolicy>
                       <MinimumSize>0,0</MinimumSize>
                       <Children/>
-                     <!--  <Connection>
+                      <Connection>
                         <ConfigKey>[Master],show_4decks</ConfigKey>
                         <BindProperty>visible</BindProperty>
                         <Transform>
                           <Not/>
                         </Transform>
-                      </Connection> -->
+                      </Connection>
                     </WidgetGroup>
                 </Children>
             </WidgetGroup>
