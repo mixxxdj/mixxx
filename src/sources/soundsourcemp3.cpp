@@ -8,12 +8,6 @@ namespace Mixxx {
 
 namespace {
 
-// In the worst case up to 29 MP3 frames need to be prefetched
-// for accurate seeking:
-// http://www.mars.org/mailman/public/mad-dev/2002-May/000634.html
-const SINT kSeekFramePrefetchCount = 29;
-
-
 // mp3 supports 9 different frame rates
 static const int kFrameRateCount = 9;
 
@@ -482,15 +476,15 @@ SINT SoundSourceMp3::seekSampleFrame(SINT frameIndex) {
     DEBUG_ASSERT((curSeekFrameIndex <= seekFrameIndex) || (m_curFrameIndex > frameIndex));
     if ((getFrameIndexMax() <= m_curFrameIndex) || // out of range
             (frameIndex < m_curFrameIndex) || // seek backward
-            (seekFrameIndex > (curSeekFrameIndex + kSeekFramePrefetchCount))) { // jump forward
+            (seekFrameIndex > (curSeekFrameIndex + kMp3SeekFramePrefetchCount))) { // jump forward
 
         // Adjust the seek frame index for prefetching
         // Implementation note: The type SINT is unsigned so
         // need to be careful when subtracting!
-        if (kSeekFramePrefetchCount < seekFrameIndex) {
-            // Restart decoding kSeekFramePrefetchCount seek frames
+        if (kMp3SeekFramePrefetchCount < seekFrameIndex) {
+            // Restart decoding kMp3SeekFramePrefetchCount seek frames
             // before the expected sync position
-            seekFrameIndex -= kSeekFramePrefetchCount;
+            seekFrameIndex -= kMp3SeekFramePrefetchCount;
         } else {
             // Restart decoding at the beginning of the audio stream
             seekFrameIndex = 0;
