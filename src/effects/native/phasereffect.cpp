@@ -3,6 +3,8 @@
 #include "effects/native/phasereffect.h"
 #include <stdlib.h>
 
+using namespace std;
+
 // static
 QString PhaserEffect::getId() {
     return "org.mixxx.effects.phaser";
@@ -15,7 +17,9 @@ EffectManifest PhaserEffect::getManifest() {
     manifest.setName(QObject::tr("Phaser"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
-    manifest.setDescription(QObject::tr("Phaser filter"));
+    manifest.setDescription(QObject::tr(
+                "A more complex sound effect obtained by mixing the input signal" 
+                "with a copy passed through a series of all-pass filters."));
     
     EffectManifestParameter* stages = manifest.addParameter();
     stages->setId("stages");
@@ -28,27 +32,16 @@ EffectManifest PhaserEffect::getManifest() {
     stages->setMinimum(2.0);
     stages->setMaximum(24.0);
 
-    EffectManifestParameter* lfo_frequency = manifest.addParameter();
-    lfo_frequency->setId("lfo_frequency");
-    lfo_frequency->setName(QObject::tr("Frequency"));
-    lfo_frequency->setDescription("Controls LFO Frequency.");
-    lfo_frequency->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    lfo_frequency->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    lfo_frequency->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    lfo_frequency->setDefault(0.0);
-    lfo_frequency->setMinimum(0.0);
-    lfo_frequency->setMaximum(5.0);
-
-    EffectManifestParameter* lfo_startphase = manifest.addParameter();
-    lfo_startphase->setId("lfo_startphase");
-    lfo_startphase->setName(QObject::tr("Phase"));
-    lfo_startphase->setDescription("Sets starting phase.");
-    lfo_startphase->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    lfo_startphase->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    lfo_startphase->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    lfo_startphase->setDefault(0.0);
-    lfo_startphase->setMinimum(0.0);
-    lfo_startphase->setMaximum(5.0);
+    EffectManifestParameter* frequency = manifest.addParameter();
+    frequency->setId("frequency");
+    frequency->setName(QObject::tr("Frequency"));
+    frequency->setDescription("Controls frequency.");
+    frequency->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
+    frequency->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    frequency->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    frequency->setDefault(0.5);
+    frequency->setMinimum(0.0);
+    frequency->setMaximum(5.0);
 
     EffectManifestParameter* depth = manifest.addParameter();
     depth->setId("depth");
@@ -61,15 +54,38 @@ EffectManifest PhaserEffect::getManifest() {
     depth->setMinimum(0.0);
     depth->setMaximum(1.0);
 
+    EffectManifestParameter* fb = manifest.addParameter();
+    fb->setId("feedback");
+    fb->setName(QObject::tr("Feedback"));
+    fb->setDescription("Feedback");
+    fb->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
+    fb->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    fb->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    fb->setDefault(0.5);
+    fb->setMinimum(0.0);
+    fb->setMaximum(1.0);
+
+    EffectManifestParameter* sweep = manifest.addParameter();
+    sweep->setId("sweep_width");
+    sweep->setName(QObject::tr("Sweep"));
+    sweep->setDescription("Sets sweep width.");
+    sweep->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
+    sweep->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    sweep->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    sweep->setDefault(0.5);
+    sweep->setMinimum(0.0);
+    sweep->setMaximum(1.0);
+
     return manifest;
 }
 
 PhaserEffect::PhaserEffect(EngineEffect* pEffect,
                            const EffectManifest& manifest) 
         : m_pStagesParameter(pEffect->getParameterById("stages")),
-          m_pLFOFrequencyParameter(pEffect->getParameterById("lfo_frequency")),
-          m_pLFOStartPhaseParameter(pEffect->getParameterById("lfo_startphase")),
-          m_pDepthParameter(pEffect->getParameterById("depth")) {
+          m_pFrequencyParameter(pEffect->getParameterById("frequency")),
+          m_pDepthParameter(pEffect->getParameterById("depth")),
+          m_pFeedback(pEffect->getParameterById("feedback")),
+          m_pSweepWidth(pEffect->getParameterById("sweep_width")) {
     Q_UNUSED(manifest);
 }
 
@@ -90,61 +106,65 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
     Q_UNUSED(groupFeatures);
     Q_UNUSED(sampleRate);
 
-    CSAMPLE lfoFrequency = m_pLFOFrequencyParameter->value();
-    CSAMPLE lfoStartPhase = m_pLFOStartPhaseParameter->value();
+    CSAMPLE frequency = m_pFrequencyParameter->value();
     CSAMPLE depth = m_pDepthParameter->value();
+    CSAMPLE feedback = m_pFeedback->value();
+    CSAMPLE sweepWidth = m_pSweepWidth->value();
     int stages = m_pStagesParameter->value();
-    
-    CSAMPLE* oldLeft = pState->oldLeft;
-    CSAMPLE* oldRight = pState->oldRight;
 
     CSAMPLE* filterLeft = pState->filterCoefLeft;
     CSAMPLE* filterRight = pState->filterCoefRight;
+    CSAMPLE* oldInLeft = pState->oldInLeft;
+    CSAMPLE* oldOutLeft = pState->oldOutLeft;
+    CSAMPLE* oldInRight = pState->oldInRight;
+    CSAMPLE* oldOutRight = pState->oldOutRight;
 
-    CSAMPLE leftOut = 0, rightOut = 0;
-    CSAMPLE feedback = 0.5; 
-    CSAMPLE leftPhase = lfoStartPhase, rightPhase = leftPhase + M_PI; 
-    CSAMPLE lfoSkip = lfoFrequency * 2.0 * M_PI / sampleRate;
-    CSAMPLE delayMin = 0;
-    CSAMPLE delayMax = 1;
+    CSAMPLE left = 0, right = 0;
+    CSAMPLE leftPhase; 
+    CSAMPLE rightPhase;
+    CSAMPLE freqSkip = frequency * 2.0 * M_PI / sampleRate;
+
+    int counter = 0;
+    int updateCoef = 32;
 
     const int kChannels = 2;
     for (unsigned int i = 0; i < numSamples; i += kChannels) {
-        leftOut = pInput[i] + leftOut * feedback; 
-        rightOut = pInput[i + 1] + rightOut * feedback;
 
-        CSAMPLE delayLeft = delayMin + (delayMax - delayMin) * ((sin(leftPhase) + 1) / 2);
-        CSAMPLE delayRight = delayMin + (delayMax - delayMin) * ((sin(rightPhase) + 1) / 2);
+        pState->time++;
+        left = pInput[i] + left * feedback; 
+        right = pInput[i + 1] + right * feedback;
 
-        leftPhase += lfoSkip;
-        rightPhase += lfoSkip;
+        leftPhase = fmodf(freqSkip * pState->time, 2.0 * M_PI);
+        rightPhase = fmodf(freqSkip * pState->time + M_PI, 2.0 * M_PI);
 
-        if (leftPhase >= 2.0 * M_PI) {
-            leftPhase -= 2.0 * M_PI;
-        }
+        if ((counter++) % updateCoef == 0) {
+            for (int j = 0; j < stages; j++) {
+                CSAMPLE delayLeft = 0.5 + 0.5 * sin(leftPhase);
+                CSAMPLE delayRight = 0.5 + 0.5 * cos(rightPhase);
+                
+                delayLeft = min((double)(sweepWidth * delayLeft), 0.99 * M_PI);
+                delayRight =  min((double)(sweepWidth * delayRight), 0.99 * M_PI);
 
-        if (rightPhase >= 2.0 * M_PI) {
-            rightPhase -= 2.0 * M_PI;
+                delayLeft = tan(delayLeft / 2);
+                delayRight = tan(delayRight / 2);
+
+                filterLeft[j] = (1.0 - delayLeft) / (1.0 + delayLeft);
+                filterRight[j] = (1.0 - delayRight) / (1.0 + delayRight);
+            }
         }
 
         for (int j = 0; j < stages; j++) {
-            filterLeft[j] = (1 - delayLeft) / (1 + delayLeft);            
-            filterRight[j] = (1 - delayRight) / (1 + delayRight);
+            oldOutLeft[j] = (filterLeft[j] * left) + 
+                (filterLeft[j] * oldOutLeft[j]) - oldInLeft[j];
+            oldInLeft[j] = left;
+            left = oldOutLeft[j];
+
+            oldOutRight[j] = (filterRight[j] * right) + 
+                (filterRight[j] * oldOutRight[j]) - oldInRight[j];
+            oldInRight[j] = right;
+            right = oldOutRight[j];
         }
-
-
-        for (int j = 0; j < stages; j++) {
-            CSAMPLE tmpLeft = oldLeft[j]; 
-            CSAMPLE tmpRight = oldRight[j];
-
-            oldLeft[j] = filterLeft[j] * tmpLeft + leftOut;
-            oldRight[j] = filterRight[j] * tmpRight + rightOut;
-
-            leftOut = tmpLeft - filterLeft[j] * oldLeft[j];
-            rightOut = tmpRight - filterRight[j] * oldRight[j];
-        }
-
-        pOutput[i] = pInput[i] + leftOut * depth;
-        pOutput[i + 1] = pInput[i + 1] + rightOut * depth;
+        pOutput[i] = pInput[i] * (1.0 - 0.5 * depth) + left * depth * 0.5;
+        pOutput[i + 1] = pInput[i + 1] * (1.0 - 0.5 * depth) + right * depth * 0.5;
     }
 }
