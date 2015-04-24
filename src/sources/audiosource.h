@@ -50,6 +50,12 @@ public:
     static const SINT kBitrateZero = 0;
     static const SINT kBitrateDefault = kBitrateZero;
 
+    // In the worst case up to 29 MP3 frames need to be prefetched
+    // for accurate seeking:
+    // http://www.mars.org/mailman/public/mad-dev/2002-May/000634.html
+    // Used by both SoundSourceMp3 and SoundSourceCoreAudio.
+    static const SINT kMp3SeekFramePrefetchCount = 29;
+
     // Returns the number of channels. The number of channels
     // must be constant over time.
     inline SINT getChannelCount() const {
