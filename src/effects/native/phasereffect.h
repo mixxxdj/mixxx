@@ -12,17 +12,22 @@
 #define MAXSTAGES 24
 
 struct PhaserGroupState {
-    PhaserGroupState() 
-    {
-        SampleUtil::applyGain(oldLeft, 0, MAXSTAGES);
-        SampleUtil::applyGain(oldRight, 0, MAXSTAGES);
+    PhaserGroupState() : 
+        time(0) {
+        SampleUtil::applyGain(oldInLeft, 0, MAXSTAGES);
+        SampleUtil::applyGain(oldOutLeft, 0, MAXSTAGES);
+        SampleUtil::applyGain(oldInRight, 0, MAXSTAGES);
+        SampleUtil::applyGain(oldOutRight, 0, MAXSTAGES);
         SampleUtil::applyGain(filterCoefLeft, 0, MAXSTAGES);
         SampleUtil::applyGain(filterCoefRight, 0, MAXSTAGES);
     }
-    CSAMPLE oldLeft[MAXSTAGES]; 
-    CSAMPLE oldRight[MAXSTAGES];
+    CSAMPLE oldInLeft[MAXSTAGES];
+    CSAMPLE oldInRight[MAXSTAGES];
+    CSAMPLE oldOutLeft[MAXSTAGES]; 
+    CSAMPLE oldOutRight[MAXSTAGES];
     CSAMPLE filterCoefLeft[MAXSTAGES];
     CSAMPLE filterCoefRight[MAXSTAGES];
+    int time;
 };
 
 class PhaserEffect : public PerChannelEffectProcessor<PhaserGroupState> {
@@ -49,9 +54,10 @@ class PhaserEffect : public PerChannelEffectProcessor<PhaserGroupState> {
     }
 
     EngineEffectParameter* m_pStagesParameter;
-    EngineEffectParameter* m_pLFOFrequencyParameter;
-    EngineEffectParameter* m_pLFOStartPhaseParameter; 
+    EngineEffectParameter* m_pFrequencyParameter;
     EngineEffectParameter* m_pDepthParameter; 
+    EngineEffectParameter* m_pFeedback; 
+    EngineEffectParameter* m_pSweepWidth; 
 
     DISALLOW_COPY_AND_ASSIGN(PhaserEffect);
 };
