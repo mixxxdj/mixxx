@@ -37,6 +37,7 @@ public:
 private:
     Result tryOpen(const AudioSourceConfig& audioSrcCfg) /*override*/;
 
+    bool m_bFileIsMp3;
     ExtAudioFileRef m_audioFile;
     CAStreamBasicDescription m_inputFormat;
     CAStreamBasicDescription m_outputFormat;

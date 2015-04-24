@@ -4,6 +4,22 @@
 
 namespace Mixxx {
 
+namespace {
+
+// NOTE(rryan): For every MP3 seek we jump back kStabilizationFrames frames from
+// the seek position and read forward to allow the decoder to stabilize. The
+// cover-test.mp3 file needs this otherwise SoundSourceProxyTest.seekForward
+// fails. I can't find any good documentation on how to figure out the
+// appropriate amount to pre-fetch from the ExtAudioFile API. Oddly, the "prime"
+// information -- which AIUI is supposed to tell us this information -- is zero
+// for this file. We use the same frame pre-fetch count from SoundSourceMp3.
+static const int kMp3StabilizationFrames =
+        AudioSource::kMp3SeekFramePrefetchCount * 1152;
+static CSAMPLE kMp3StabilizationScratchBuffer[kMp3StabilizationFrames *
+                                              AudioSource::kChannelCountStereo];
+
+}  // namespace
+
 QList<QString> SoundSourceCoreAudio::supportedFileExtensions() {
     QList<QString> list;
     list.push_back("m4a");
@@ -19,6 +35,7 @@ QList<QString> SoundSourceCoreAudio::supportedFileExtensions() {
 
 SoundSourceCoreAudio::SoundSourceCoreAudio(QUrl url)
         : SoundSource(url),
+          m_bFileIsMp3(false),
           m_headerFrames(0) {
 }
 
@@ -65,6 +82,7 @@ Result SoundSourceCoreAudio::tryOpen(const AudioSourceConfig& audioSrcCfg) {
         qDebug() << "SSCA: Error getting file format (" << fileName << ")";
         return ERR;
     }
+    m_bFileIsMp3 = m_inputFormat.mFormatID == kAudioFormatMPEGLayer3;
 
     // create the output format
     const UInt32 numChannels =
@@ -134,10 +152,19 @@ void SoundSourceCoreAudio::close() {
     ExtAudioFileDispose(m_audioFile);
 }
 
-SINT SoundSourceCoreAudio::seekSampleFrame(
-        SINT frameIndex) {
+SINT SoundSourceCoreAudio::seekSampleFrame(SINT frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(frameIndex));
-    OSStatus err = ExtAudioFileSeek(m_audioFile, frameIndex + m_headerFrames);
+
+    // See comments above on kMp3StabilizationFrames.
+    const SINT stabilization_frames = m_bFileIsMp3 ? math_min<SINT>(
+            kMp3StabilizationFrames, frameIndex + m_headerFrames) : 0;
+    OSStatus err = ExtAudioFileSeek(
+            m_audioFile, frameIndex + m_headerFrames - stabilization_frames);
+    if (stabilization_frames > 0) {
+        readSampleFrames(stabilization_frames,
+                         &kMp3StabilizationScratchBuffer[0]);
+    }
+
     //_ThrowExceptionIfErr(@"ExtAudioFileSeek", err);
     //qDebug() << "SSCA: Seeking to" << frameIndex;
     if (err != noErr) {
