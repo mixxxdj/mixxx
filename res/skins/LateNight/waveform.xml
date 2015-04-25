@@ -1,5 +1,6 @@
 <Template>
 	<WidgetGroup>
+    <ObjectName>Waveform</ObjectName>
 		<Layout>vertical</Layout>
 		<SizePolicy>me,min</SizePolicy>
         <!-- The waveform is at least 50px tall, but the spinnies or the spinny
