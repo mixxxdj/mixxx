@@ -496,22 +496,31 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
         if (m_eState == ADJ_IDLE && (thisDeckPlaying ||
                                      thisDeck.posThreshold >= 1.0)) {
             if (!otherDeckPlaying) {
-                otherDeck.play();
-
                 // Setup the other deck's fade thresholds (since we use the
                 // fadeDuration next).
                 calculateTransition(&otherDeck, &thisDeck);
 
                 // For negative fade durations, jump back to insert a pause
                 // between the tracks.
+                // Note: This overrides the cue position
                 if (thisFadeDuration < 0.0) {
                     // Note: since the fade duration is relative to the track
                     // length, we need to use the other deck fade duration
+                    // which is negative as well
                     otherDeck.setPlayPosition(otherDeck.fadeDuration);
                 } else {
-                    // TODO(DSC) Guard against very short other tracks
-                    // They must not be finished before this track, otherwise Auto-DJ stops
+                    // Guard against very short other tracks, or CUE points and
+                    // seeks near end of track.
+                    // The other track must not be finished before this track,
+                    // otherwise Auto-DJ stops
+                    double otherDeckPlaypos = otherDeck.playPosition();
+                    // We need 2 x fadeDuration, to fade in and out
+                    double maxPlaypos = 1.0 - (otherDeck.fadeDuration * 2);
+                    if (maxPlaypos < otherDeckPlaypos) {
+                        otherDeck.setPlayPosition(maxPlaypos);
+                    }
                 }
+                otherDeck.play();
             }
 
             // Now that we have started the other deck playing, remove the track
@@ -743,7 +752,17 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
         qDebug() << this << "playerTrackLoaded" << pDeck->group
                  << (pTrack.isNull() ? "(null)" : pTrack->getLocation());
     }
-    calculateTransition(getOtherDeck(pDeck, true), pDeck);
+
+    if (pTrack->getDuration() == 0) {
+        // Remove Tack with duration < 1 s
+        removeTrackFromTopOfQueue(pTrack);
+
+        // Load the next track. If we are the first AutoDJ track
+        // (ADJ_ENABLE_P1LOADED state) then play the track.
+        loadNextTrackFromQueue(*pDeck, m_eState == ADJ_ENABLE_P1LOADED);
+    } else {
+        calculateTransition(getOtherDeck(pDeck, true), pDeck);
+    }
 }
 
 void AutoDJProcessor::playerTrackLoadFailed(DeckAttributes* pDeck, TrackPointer pTrack) {
