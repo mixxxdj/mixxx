@@ -3,14 +3,6 @@
     <Layout>vertical</Layout>
     <SizePolicy>me,me</SizePolicy>
     <Children>
-      <WidgetGroup>
-        <ObjectName>PreviewDeckMargin</ObjectName>
-        <Layout>horizontal</Layout>
-        <SizePolicy>min,f</SizePolicy>
-        <MinimumSize>100,40</MinimumSize>
-        <Size>,10</Size>
-        <Children/>
-      </WidgetGroup>
 	    <WidgetGroup>
 	      <ObjectName>PreviewDeck</ObjectName>
 		    <Layout>horizontal</Layout>

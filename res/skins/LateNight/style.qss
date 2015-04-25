@@ -357,6 +357,7 @@
 #KnobLabel {
   font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
   font: bold 10px/12px;
+  text-transform: uppercase;
   color: #585858;
   text-align: center;
   qproperty-alignment: 'AlignCenter | AlignBottom';
@@ -525,6 +526,68 @@
   margin: 2px;
 }
 
+#SyncToggleButton[displayValue="0"] {
+    border: 1px solid #585858;
+    border-radius: 2px;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 10px/12px;
+    color: #ddd;
+    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
+    margin-right: 3px;
+}
+
+#SyncToggleButton[displayValue="1"] {
+    border: 1px solid #585858;
+    border-radius: 2px;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 10px/12px;
+    color: #0e0e0e;
+    background-color: #eece33;
+    margin-right: 3px;
+}
+
+#LoopToggleButton[displayValue="0"] {
+    border: 1px solid #585858;
+    border-radius: 2px;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 10px/12px;
+    color: #ddd;
+    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
+    margin-right: 2px;
+}
+
+#LoopToggleButton[displayValue="1"] {
+    border: 1px solid #585858;
+    border-radius: 2px;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 10px/12px;
+    color: #0e0e0e;
+    background-color: #eece33;
+    margin-right: 2px;
+}
+
+#CueToggleButton[displayValue="0"] {
+    border: 1px solid #585858;
+    border-radius: 2px;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 10px/12px;
+    color: #ddd;
+    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
+    margin-right: 2px;
+    margin-bottom: 2px;
+}
+
+#CueToggleButton[displayValue="1"] {
+    border: 1px solid #585858;
+    border-radius: 2px;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 10px/12px;
+    color: #0e0e0e;
+    background-color: #eece33;
+    margin-right: 2px;
+    margin-bottom: 2px;
+}
+
 #BpmContainer {
   qproperty-layoutAlignment: 'AlignCenter';
 }
@@ -598,10 +661,10 @@
 #PreviewDeck {
   qproperty-layoutAlignment: 'AlignTop';
   border: 1px solid #585858;
-  border-top: 0px;
-  border-right: 0px;
   padding: 0px;
   margin: 0px;
+  margin-top: 5px;
+  margin-right: 5px;
 }
 
 #PreviewDeckText {
@@ -613,10 +676,6 @@
 }
 
 #PreviewDeckMargin {
-  border: 1px solid #585858;
-  border-top: 0px;
-  border-right: 0px;
-  border-left: 0px;
 }
 
 #PreviewPlayOverview {
@@ -1002,6 +1061,7 @@
 /*#EffectUnitGroupControlButton {
   font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
   font: bold 11px/13px;
+  text-transform: uppercase;
   color: #eece33;
   text-transform: none;
   text-align: center;
@@ -1011,7 +1071,8 @@
 
 #EffectUnitGroupControlButton[displayValue="0"] {
     font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
-    font: bold 11px/13px;
+    font: bold 9px/11px;
+    text-transform: uppercase;
     color: #585858;
     background-color: #0e0e0e;
     text-transform: none;
@@ -1022,7 +1083,8 @@
 
 #EffectUnitGroupControlButton[displayValue="1"] {
     font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
-    font: bold 11px/13px;
+    font: bold 9px/11px;
+    text-transform: uppercase;
     color: #0e0e0e;
     background-color: #eece33;
     text-transform: none;

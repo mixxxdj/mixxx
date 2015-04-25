@@ -168,11 +168,11 @@
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
                       <Template src="skin:effect_unit_group_control_button.xml">
-                        <SetVariable name="group_name">Master</SetVariable>
+                        <SetVariable name="group_name">MASTER</SetVariable>
                         <SetVariable name="group_group">[Master]</SetVariable>
                       </Template>
                       <Template src="skin:effect_unit_group_control_button.xml">
-                        <SetVariable name="group_name">Head</SetVariable>
+                        <SetVariable name="group_name">HEAD</SetVariable>
                         <SetVariable name="group_group">[Headphone]</SetVariable>
                       </Template>
                     </Children>
