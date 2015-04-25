@@ -91,16 +91,16 @@ void logFrameHeader(QDebug logger, const mad_header& madHeader) {
             << "flags:" << formatHeaderFlags(madHeader.flags);
 }
 
-inline bool isRecoverableError(int madError) {
-    return MAD_RECOVERABLE(madError);
+inline bool isRecoverableError(const mad_stream& madStream) {
+    return MAD_RECOVERABLE(madStream.error);
 }
 
-inline bool isUnrecoverableError(int madError) {
-    return (MAD_ERROR_NONE != madError) && !isRecoverableError(madError);
+inline bool isUnrecoverableError(const mad_stream& madStream) {
+    return (MAD_ERROR_NONE != madStream.error) && !isRecoverableError(madStream);
 }
 
 inline bool isStreamValid(const mad_stream& madStream) {
-    return !isUnrecoverableError(madStream.error);
+    return !isUnrecoverableError(madStream);
 }
 
 bool decodeFrameHeader(
@@ -108,38 +108,40 @@ bool decodeFrameHeader(
         mad_stream* pMadStream,
         bool skipId3Tag) {
     DEBUG_ASSERT(isStreamValid(*pMadStream));
-    const int decodeResult = mad_header_decode(pMadHeader, pMadStream);
-    if (MAD_ERROR_BUFLEN == decodeResult) {
-        // EOF
-        return false;
-    }
-    if (isUnrecoverableError(decodeResult)) {
-        DEBUG_ASSERT(!isStreamValid(*pMadStream));
-        qWarning() << "Unrecoverable MP3 header decoding error:"
-                << mad_stream_errorstr(pMadStream);
-        return false;
-    }
-#ifndef QT_NO_DEBUG_OUTPUT
-    // Logging of MP3 frame headers should only be enabled
-    // for debugging purposes.
-    //logFrameHeader(qDebug(), *pMadHeader);
-#endif
-    if (isRecoverableError(decodeResult)) {
-        if ((MAD_ERROR_LOSTSYNC == decodeResult) && skipId3Tag) {
-            long tagsize = id3_tag_query(pMadStream->this_frame,
-                    pMadStream->bufend - pMadStream->this_frame);
-            if (0 < tagsize) {
-                // Skip ID3 tag data
-                mad_stream_skip(pMadStream, tagsize);
-                // Return immediately to suppress lost
-                // synchronization warnings
-                return false;
-            }
+    if (mad_header_decode(pMadHeader, pMadStream)) {
+        // Something went wrong when decoding the frame header...
+        if (MAD_ERROR_BUFLEN == pMadStream->error) {
+            // EOF
+            return false;
         }
-        qWarning() << "Recoverable MP3 header decoding error:"
-                << mad_stream_errorstr(pMadStream);
-        logFrameHeader(qWarning(), *pMadHeader);
-        return false;
+        if (isUnrecoverableError(*pMadStream)) {
+            DEBUG_ASSERT(!isStreamValid(*pMadStream));
+            qWarning() << "Unrecoverable MP3 header decoding error:"
+                    << mad_stream_errorstr(pMadStream);
+            return false;
+        }
+    #ifndef QT_NO_DEBUG_OUTPUT
+        // Logging of MP3 frame headers should only be enabled
+        // for debugging purposes.
+        //logFrameHeader(qDebug(), *pMadHeader);
+    #endif
+        if (isRecoverableError(*pMadStream)) {
+            if ((MAD_ERROR_LOSTSYNC == pMadStream->error) && skipId3Tag) {
+                long tagsize = id3_tag_query(pMadStream->this_frame,
+                        pMadStream->bufend - pMadStream->this_frame);
+                if (0 < tagsize) {
+                    // Skip ID3 tag data
+                    mad_stream_skip(pMadStream, tagsize);
+                    // Return immediately to suppress lost
+                    // synchronization warnings
+                    return false;
+                }
+            }
+            qWarning() << "Recoverable MP3 header decoding error:"
+                    << mad_stream_errorstr(pMadStream);
+            logFrameHeader(qWarning(), *pMadHeader);
+            return false;
+        }
     }
     DEBUG_ASSERT(isStreamValid(*pMadStream));
     return true;
@@ -569,34 +571,36 @@ SINT SoundSourceMp3::readSampleFrames(
             // Don't change anything at the following lines of code
             // unless you know what you are doing!!!
             unsigned char const* pMadThisFrame = m_madStream.this_frame;
-            const int decodeResult = mad_frame_decode(&m_madFrame, &m_madStream);
-            if (MAD_ERROR_BUFLEN == decodeResult) {
-                // Abort
-                break;
-            }
-            if (isUnrecoverableError(decodeResult)) {
-                qWarning() << "Unrecoverable MP3 frame decoding error:"
-                        << mad_stream_errorstr(&m_madStream);
-                // Abort
-                break;
-            }
-            if (isRecoverableError(decodeResult)) {
-                if (pMadThisFrame != m_madStream.this_frame) {
-                    // Ignore all recoverable errors (and especially
-                    // "lost synchronization" warnings) while skipping
-                    // over prefetched frames after seeking.
-                    if (pSampleBuffer) {
-                        qWarning() << "Recoverable MP3 frame decoding error:"
-                                << mad_stream_errorstr(&m_madStream);
-                    } else {
-                        // Decoded samples will simply be discarded
-                        qDebug() << "Recoverable MP3 frame decoding error while skipping:"
-                            << mad_stream_errorstr(&m_madStream);
-                    }
+            if (mad_frame_decode(&m_madFrame, &m_madStream)) {
+                // Something went wrong when decoding the frame...
+                if (MAD_ERROR_BUFLEN == m_madStream.error) {
+                    // Abort
+                    break;
                 }
-                // Acknowledge error...
-                m_madStream.error = MAD_ERROR_NONE;
-                // ...and continue
+                if (isUnrecoverableError(m_madStream)) {
+                    qWarning() << "Unrecoverable MP3 frame decoding error:"
+                            << mad_stream_errorstr(&m_madStream);
+                    // Abort
+                    break;
+                }
+                if (isRecoverableError(m_madStream)) {
+                    if (pMadThisFrame != m_madStream.this_frame) {
+                        // Ignore all recoverable errors (and especially
+                        // "lost synchronization" warnings) while skipping
+                        // over prefetched frames after seeking.
+                        if (pSampleBuffer) {
+                            qWarning() << "Recoverable MP3 frame decoding error:"
+                                    << mad_stream_errorstr(&m_madStream);
+                        } else {
+                            // Decoded samples will simply be discarded
+                            qDebug() << "Recoverable MP3 frame decoding error while skipping:"
+                                << mad_stream_errorstr(&m_madStream);
+                        }
+                    }
+                    // Acknowledge error...
+                    m_madStream.error = MAD_ERROR_NONE;
+                    // ...and continue
+                }
             }
             if (pMadThisFrame == m_madStream.this_frame) {
                 qDebug() << "Retry decoding MP3 frame @" << m_curFrameIndex;
