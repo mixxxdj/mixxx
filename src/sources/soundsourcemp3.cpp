@@ -63,11 +63,10 @@ int getFrameRateByIndex(int frameRateIndex) {
 }
 
 
-const CSAMPLE kMadScale = AudioSource::kSampleValuePeak
-        / CSAMPLE(MAD_F_ONE);
+const CSAMPLE kMadScale = AudioSource::kSampleValuePeak / CSAMPLE(MAD_F_ONE);
 
-inline CSAMPLE madScale(mad_fixed_t sample) {
-    return sample * kMadScale;
+inline CSAMPLE madScaleSampleValue(mad_fixed_t sampleValue) {
+    return sampleValue * kMadScale;
 }
 
 // Optimization: Reserve initial capacity for seek frame list
@@ -201,7 +200,6 @@ Result SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
 
     // Decode all the headers and calculate audio properties
 
-    mad_timer_t madDuration = mad_timer_zero;
     unsigned long sumBitrate = 0;
 
     mad_header madHeader;
@@ -220,6 +218,21 @@ Result SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
         }
 
         // Grab data from madHeader
+        const unsigned int madSampleRate = madHeader.samplerate;
+
+        // TODO(XXX): Replace DEBUG_ASSERT with static_assert
+        // MAD must not change its enum values!
+        DEBUG_ASSERT(MAD_UNITS_8000_HZ == 8000);
+        const mad_units madUnits = static_cast<mad_units>(madSampleRate);
+
+        const long madFrameLength = mad_timer_count(madHeader.duration, madUnits);
+        if (0 >= madFrameLength) {
+            qWarning() << "Skipping MP3 frame with invalid length"
+                    << madFrameLength
+                    << "in:" << m_file.fileName();
+            // Skip frame
+            continue;
+        }
 
         const SINT madChannelCount = MAD_NCHANNELS(&madHeader);
         if (0 < madChannelCount) {
@@ -246,7 +259,6 @@ Result SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
         }
         maxChannelCount = math_max(madChannelCount, maxChannelCount);
 
-        const unsigned int madSampleRate = madHeader.samplerate;
         const int frameRateIndex = getIndexByFrameRate(madSampleRate);
         if (frameRateIndex >= kFrameRateCount) {
             qWarning() << "Invalid sample rate:" << m_file.fileName()
@@ -262,16 +274,9 @@ Result SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
 
         // Accumulate data from the header
         sumBitrate += madHeader.bitrate;
-        mad_timer_add(&madDuration, madHeader.duration);
-
-        // TODO() uses static_assert
-        // MAD must not change its enum values
-        DEBUG_ASSERT(MAD_UNITS_8000_HZ == 8000);
-        mad_units madUnits = static_cast<mad_units>(madSampleRate);
 
         // Update current stream position
-        m_curFrameIndex = kFrameIndexMin +
-                mad_timer_count(madDuration, madUnits);
+        m_curFrameIndex += madFrameLength;
 
         DEBUG_ASSERT(m_madStream.this_frame);
         DEBUG_ASSERT(0 <= (m_madStream.this_frame - m_pFileData));
@@ -640,7 +645,7 @@ SINT SoundSourceMp3::readSampleFrames(
 #endif
             if (1 == math_min(madSynthChannelCount, getChannelCount())) {
                 for (SINT i = 0; i < synthReadCount; ++i) {
-                    const CSAMPLE sampleValue = madScale(
+                    const CSAMPLE sampleValue = madScaleSampleValue(
                             m_madSynth.pcm.samples[0][madSynthOffset + i]);
                     *pSampleBuffer = sampleValue;
                     ++pSampleBuffer;
@@ -654,10 +659,10 @@ SINT SoundSourceMp3::readSampleFrames(
                 DEBUG_ASSERT(readStereoSamples || isChannelCountStereo());
                 DEBUG_ASSERT(2 == madSynthChannelCount);
                 for (SINT i = 0; i < synthReadCount; ++i) {
-                    *pSampleBuffer = madScale(
+                    *pSampleBuffer = madScaleSampleValue(
                             m_madSynth.pcm.samples[0][madSynthOffset + i]);
                     ++pSampleBuffer;
-                    *pSampleBuffer = madScale(
+                    *pSampleBuffer = madScaleSampleValue(
                             m_madSynth.pcm.samples[1][madSynthOffset + i]);
                     ++pSampleBuffer;
                 }
