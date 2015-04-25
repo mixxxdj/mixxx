@@ -8,8 +8,11 @@ namespace Mixxx {
 
 namespace {
 
+// MP3 does only support 1 or 2 channels
+const SINT kChannelCountMax = 2;
+
 // mp3 supports 9 different frame rates
-static const int kFrameRateCount = 9;
+const int kFrameRateCount = 9;
 
 int getIndexByFrameRate(unsigned int frameRate) {
     switch (frameRate) {
@@ -220,16 +223,19 @@ Result SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
 
         const SINT madChannelCount = MAD_NCHANNELS(&madHeader);
         if (0 < madChannelCount) {
+            if (madChannelCount > kChannelCountMax) {
+                qWarning() << "Invalid number of channels"
+                        << madChannelCount << ">" << kChannelCountMax
+                        << "in MP3 frame header:" << m_file.fileName();
+                // Abort
+                mad_header_finish(&madHeader);
+                return ERR;
+            }
             if ((0 < maxChannelCount) && (madChannelCount != maxChannelCount)) {
                 qWarning() << "Differing number of channels"
                         << madChannelCount << "<>" << maxChannelCount
                         << "in some MP3 frame headers:"
                         << m_file.fileName();
-                if ((madChannelCount > 2) || (maxChannelCount > 2)) {
-                    // Abort, because we only support mono -> stereo conversion
-                    mad_header_finish(&madHeader);
-                    return ERR;
-                }
             }
         } else {
             qWarning() << "Invalid number of channels" << madChannelCount
@@ -644,8 +650,9 @@ SINT SoundSourceMp3::readSampleFrames(
                         ++pSampleBuffer;
                     }
                 }
-            } else if (readStereoSamples || isChannelCountStereo()) {
-                DEBUG_ASSERT(2 <= madSynthChannelCount);
+            } else {
+                DEBUG_ASSERT(readStereoSamples || isChannelCountStereo());
+                DEBUG_ASSERT(2 == madSynthChannelCount);
                 for (SINT i = 0; i < synthReadCount; ++i) {
                     *pSampleBuffer = madScale(
                             m_madSynth.pcm.samples[0][madSynthOffset + i]);
@@ -653,15 +660,6 @@ SINT SoundSourceMp3::readSampleFrames(
                     *pSampleBuffer = madScale(
                             m_madSynth.pcm.samples[1][madSynthOffset + i]);
                     ++pSampleBuffer;
-                }
-            } else {
-                DEBUG_ASSERT(madSynthChannelCount == getChannelCount());
-                for (SINT i = 0; i < synthReadCount; ++i) {
-                    for (SINT j = 0; j < getChannelCount(); ++j) {
-                        *pSampleBuffer = madScale(
-                                m_madSynth.pcm.samples[j][madSynthOffset + i]);
-                        ++pSampleBuffer;
-                    }
                 }
             }
         }
