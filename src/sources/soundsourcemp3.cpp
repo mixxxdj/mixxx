@@ -273,6 +273,25 @@ Result SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
 
     mad_header_finish(&madHeader);
 
+    if (MAD_ERROR_NONE != m_madStream.error) {
+        // Unreachable code for recoverable errors
+        DEBUG_ASSERT(!MAD_RECOVERABLE(m_madStream.error));
+        if (MAD_ERROR_BUFLEN != m_madStream.error) {
+            qWarning() << "Unrecoverable MP3 header error:"
+                    << mad_stream_errorstr(&m_madStream);
+            // Abort
+            return ERR;
+        }
+    }
+
+    if (m_seekFrameList.empty()) {
+        // This is not a working MP3 file.
+        qWarning() << "SSMP3: This is not a working MP3 file:"
+                << m_file.fileName();
+        // Abort
+        return ERR;
+    }
+
     int mostCommonFrameRateIndex = kFrameRateCount; // invalid
     int mostCommonFrameRatecount = 0;
     int differentRates = 0;
@@ -307,25 +326,6 @@ Result SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
         setFrameRate(getFrameRateByIndex(mostCommonFrameRateIndex));
     } else {
         qWarning() << "No single valid frame rate in header";
-        // Abort
-        return ERR;
-    }
-
-    if (MAD_ERROR_NONE != m_madStream.error) {
-        // Unreachable code for recoverable errors
-        DEBUG_ASSERT(!MAD_RECOVERABLE(m_madStream.error));
-        if (MAD_ERROR_BUFLEN != m_madStream.error) {
-            qWarning() << "Unrecoverable MP3 header error:"
-                    << mad_stream_errorstr(&m_madStream);
-            // Abort
-            return ERR;
-        }
-    }
-
-    if (m_seekFrameList.empty()) {
-        // This is not a working MP3 file.
-        qWarning() << "SSMP3: This is not a working MP3 file:"
-                << m_file.fileName();
         // Abort
         return ERR;
     }
