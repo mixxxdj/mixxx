@@ -468,6 +468,11 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                 setCrossfader(1.0, true);
             }
             m_eState = ADJ_IDLE;
+            // Invalidate threshold calculated for the old otherDeck
+            // This avoids starting a fade back before the new track is
+            // loaded into the otherDeck
+            thisDeck.posThreshold = 1.0;
+            thisDeck.fadeDuration = 0.0;
             // Load the next track to otherDeck.
             loadNextTrackFromQueue(otherDeck);
             emitAutoDJStateChanged(m_eState);
@@ -693,7 +698,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
             // track_samples / track_samplerate instead.
             int fromTrackDuration = fromTrack->getDuration();
             qDebug() << fromTrack->getLocation()
-                    << "fromTrackDuration = " << fromTrackDuration;
+                    << "fromTrackDuration =" << fromTrackDuration;
 
             // The track might be shorter than the transition period. Use a
             // sensible cap.
@@ -724,10 +729,10 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
             if (m_nextTransitionTime > 0) {
                 pFromDeck->posThreshold = 1.0 - pFromDeck->fadeDuration;
             } else {
-                // in case of pause
+                // in case of pause transition
                 pFromDeck->posThreshold = 1.0;
             }
-            qDebug() << "m_fadeDuration[" << pFromDeck->group << "] = "
+            qDebug() << "m_fadeDuration" << pFromDeck->group << "="
                      << pFromDeck->fadeDuration;
         }
     }
