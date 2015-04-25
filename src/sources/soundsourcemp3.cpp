@@ -647,21 +647,37 @@ SINT SoundSourceMp3::readSampleFrames(
                         << madSynthChannelCount << "<>" << getChannelCount();
             }
 #endif
-            if (1 == math_min(madSynthChannelCount, getChannelCount())) {
-                for (SINT i = 0; i < synthReadCount; ++i) {
-                    const CSAMPLE sampleValue = madScaleSampleValue(
-                            m_madSynth.pcm.samples[0][madSynthOffset + i]);
-                    *pSampleBuffer = sampleValue;
-                    ++pSampleBuffer;
-                    if (readStereoSamples || isChannelCountStereo()) {
-                        // Duplicate the 1st channel
+            if (1 == madSynthChannelCount) {
+                // MP3 frame contains a mono signal
+                if (readStereoSamples || isChannelCountStereo()) {
+                    // The reader explicitly requested a stereo signal
+                    // or the AudioSource itself provides a stereo signal.
+                    // Mono -> Stereo: Copy 1st channel twice
+                    for (SINT i = 0; i < synthReadCount; ++i) {
+                        const CSAMPLE sampleValue = madScaleSampleValue(
+                                m_madSynth.pcm.samples[0][madSynthOffset + i]);
+                        *pSampleBuffer = sampleValue;
+                        ++pSampleBuffer;
+                        *pSampleBuffer = sampleValue;
+                        ++pSampleBuffer;
+                    }
+                } else {
+                    // Mono -> Mono: Copy 1st channel
+                    for (SINT i = 0; i < synthReadCount; ++i) {
+                        const CSAMPLE sampleValue = madScaleSampleValue(
+                                m_madSynth.pcm.samples[0][madSynthOffset + i]);
                         *pSampleBuffer = sampleValue;
                         ++pSampleBuffer;
                     }
                 }
             } else {
-                DEBUG_ASSERT(readStereoSamples || isChannelCountStereo());
+                // MP3 frame contains a stereo signal
                 DEBUG_ASSERT(2 == madSynthChannelCount);
+                // If the MP3 frame contains a stereo signal then the whole
+                // AudioSource must also provide 2 channels, because the
+                // maximum channel count of all MP3 frames is used.
+                DEBUG_ASSERT(2 == getChannelCount());
+                // Stereo -> Stereo: Copy 1st+2nd channel
                 for (SINT i = 0; i < synthReadCount; ++i) {
                     *pSampleBuffer = madScaleSampleValue(
                             m_madSynth.pcm.samples[0][madSynthOffset + i]);
