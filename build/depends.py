@@ -126,7 +126,7 @@ class OggVorbis(Dependence):
                     'Did not find libvorbisenc.a, libvorbisenc.lib, or the libvorbisenc development headers.')
 
     def sources(self, build):
-        return ['soundsourceoggvorbis.cpp']
+        return ['sources/soundsourceoggvorbis.cpp']
 
 class SndFile(Dependence):
 
@@ -139,7 +139,7 @@ class SndFile(Dependence):
         build.env.Append(CPPDEFINES='__SNDFILE__')
 
     def sources(self, build):
-        return ['soundsourcesndfile.cpp']
+        return ['sources/soundsourcesndfile.cpp']
 
 
 class FLAC(Dependence):
@@ -154,7 +154,7 @@ class FLAC(Dependence):
             build.env.Append(CPPDEFINES='FLAC__NO_DLL')
 
     def sources(self, build):
-        return ['soundsourceflac.cpp', ]
+        return ['sources/soundsourceflac.cpp',]
 
 
 class Qt(Dependence):
@@ -646,8 +646,13 @@ class MixxxCore(Feature):
                    "errordialoghandler.cpp",
                    "upgrade.cpp",
 
-                   "soundsource.cpp",
-                   "soundsourcetaglib.cpp",
+                   "sources/soundsourceplugin.cpp",
+                   "sources/soundsource.cpp",
+                   "sources/audiosource.cpp",
+
+                   "metadata/trackmetadata.cpp",
+                   "metadata/trackmetadatataglib.cpp",
+                   "metadata/audiotagger.cpp",
 
                    "sharedglcontext.cpp",
                    "widget/controlwidgetconnection.cpp",
@@ -790,7 +795,6 @@ class MixxxCore(Feature):
                    "library/bpmdelegate.cpp",
                    "library/previewbuttondelegate.cpp",
                    "library/coverartdelegate.cpp",
-                   "audiotagger.cpp",
 
                    "library/treeitemmodel.cpp",
                    "library/treeitem.cpp",
@@ -863,6 +867,10 @@ class MixxxCore(Feature):
                    "skin/pixmapsource.cpp",
 
                    "sampleutil.cpp",
+                   "samplebuffer.cpp",
+                   "singularsamplebuffer.cpp",
+                   "circularsamplebuffer.cpp",
+
                    "trackinfoobject.cpp",
                    "track/beatgrid.cpp",
                    "track/beatmap.cpp",
@@ -891,8 +899,6 @@ class MixxxCore(Feature):
                    "encoder/encodermp3.cpp",
                    "encoder/encodervorbis.cpp",
 
-                   "tapfilter.cpp",
-
                    "util/pa_ringbuffer.c",
                    "util/sleepableqthread.cpp",
                    "util/statsmanager.cpp",
@@ -911,6 +917,8 @@ class MixxxCore(Feature):
                    "util/task.cpp",
                    "util/experiment.cpp",
                    "util/xml.cpp",
+                   "util/tapfilter.cpp",
+                   "util/movinginterquartilemean.cpp",
 
                    '#res/mixxx.qrc'
                    ]

@@ -16,6 +16,7 @@
 #include "playermanager.h"
 #include "playerinfo.h"
 #include "track/keyutils.h"
+#include "metadata/trackmetadata.h"
 #include "util/time.h"
 #include "util/dnd.h"
 #include "util/assert.h"
@@ -582,10 +583,8 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK)) {
                 value = value.toBool();
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR)) {
-                int year = value.toInt();
-                if (year <= 0) {
-                    // clear invalid values
-                    value = QString();
+                if (Qt::DisplayRole == role) {
+                    value = Mixxx::TrackMetadata::formatCalendarYear(value.toString());
                 }
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER)) {
                 int track_number = value.toInt();
