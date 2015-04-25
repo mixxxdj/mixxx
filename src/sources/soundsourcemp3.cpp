@@ -274,7 +274,7 @@ Result SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
                 mad_timer_count(madDuration, madUnits);
 
         DEBUG_ASSERT(m_madStream.this_frame);
-        DEBUG_ASSERT(0 < (m_madStream.this_frame - m_pFileData));
+        DEBUG_ASSERT(0 <= (m_madStream.this_frame - m_pFileData));
     } while (quint64(m_madStream.this_frame - m_pFileData) < m_fileSize);
 
     mad_header_finish(&madHeader);
