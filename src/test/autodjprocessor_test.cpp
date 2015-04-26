@@ -1114,3 +1114,41 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_SeekEnd) {
     EXPECT_GT(0.99, deck2.playposition.get());
 }
 
+TEST_F(AutoDJProcessorTest, TrackZeroLength) {
+    int testId = collection()->getTrackDAO().addTrack(kTrackLocationTest, false);
+    ASSERT_LT(0, testId);
+
+    PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
+    // Need two tracks -- one to be loaded in the left deck and one to load in
+    // the right deck.
+    pAutoDJTableModel->appendTrack(testId);
+    pAutoDJTableModel->appendTrack(testId);
+
+    // Expect that we switch into ADJ_ENABLE_P1LOADED first.
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_ENABLE_P1LOADED));
+    // Expect that we get a load-and-play signal for [Channel1].
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel1]"), true)).Times(2);
+
+    AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
+    EXPECT_EQ(AutoDJProcessor::ADJ_OK, err);
+    EXPECT_EQ(AutoDJProcessor::ADJ_ENABLE_P1LOADED, pProcessor->getState());
+    // Sets crossfader left and deck 1 playing.
+    EXPECT_DOUBLE_EQ(-1.0, master.crossfader.get());
+    // ADJ_ENABLE_P1LOADED logic does not set play directly. It waits for the
+    // engine to load the track and set the deck playing.
+    EXPECT_DOUBLE_EQ(0.0, deck1.play.get());
+    EXPECT_DOUBLE_EQ(0.0, deck2.play.get());
+
+    // Pretend to load a faulty track with Duration = 0
+
+    // Load the track and mark it playing (as the loadTrackToPlayer signal would
+    // have connected to this eventually).
+    TrackPointer pTrack(new TrackInfoObject());
+    setTrackId(pTrack, testId);
+    deck1.slotLoadTrack(pTrack, true);
+
+    // Expect that the track is rejected an a new one is loaded
+    // Signal that the request to load pTrack succeeded.
+    deck1.fakeTrackLoadedEvent(pTrack);
+ }
+
