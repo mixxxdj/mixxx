@@ -14,6 +14,7 @@ QList<QString> SoundSourceSndFile::supportedFileExtensions() {
 SoundSourceSndFile::SoundSourceSndFile(QUrl url)
         : SoundSource(url),
           m_pSndFile(NULL) {
+    memset(&m_sfInfo, 0, sizeof(m_sfInfo));
 }
 
 SoundSourceSndFile::~SoundSourceSndFile() {
@@ -22,7 +23,6 @@ SoundSourceSndFile::~SoundSourceSndFile() {
 
 Result SoundSourceSndFile::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     DEBUG_ASSERT(!m_pSndFile);
-    memset(&m_sfInfo, 0, sizeof(m_sfInfo));
 #ifdef __WINDOWS__
     // Pointer valid until string changed
     const QString fileName(getLocalFileName());
