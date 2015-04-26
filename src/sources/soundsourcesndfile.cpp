@@ -14,7 +14,6 @@ QList<QString> SoundSourceSndFile::supportedFileExtensions() {
 SoundSourceSndFile::SoundSourceSndFile(QUrl url)
         : SoundSource(url),
           m_pSndFile(NULL) {
-    memset(&m_sfInfo, 0, sizeof(m_sfInfo));
 }
 
 SoundSourceSndFile::~SoundSourceSndFile() {
@@ -29,8 +28,9 @@ Result SoundSourceSndFile::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     LPCWSTR lpcwFilename = (LPCWSTR) fileName.utf16();
     m_pSndFile = sf_wchar_open(lpcwFilename, SFM_READ, &m_sfInfo);
 #else
-    m_pSndFile = sf_open(getLocalFileNameBytes().constData(), SFM_READ,
-            &m_sfInfo);
+    SF_INFO sfInfo;
+    memset(&sfInfo, 0, sizeof(sfInfo));
+    m_pSndFile = sf_open(getLocalFileNameBytes().constData(), SFM_READ, &sfInfo);
 #endif
 
     if (!m_pSndFile) {   // sf_format_check is only for writes
@@ -45,9 +45,9 @@ Result SoundSourceSndFile::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
         return ERR;
     }
 
-    setChannelCount(m_sfInfo.channels);
-    setFrameRate(m_sfInfo.samplerate);
-    setFrameCount(m_sfInfo.frames);
+    setChannelCount(sfInfo.channels);
+    setFrameRate(sfInfo.samplerate);
+    setFrameCount(sfInfo.frames);
 
     return OK;
 }
