@@ -164,13 +164,25 @@ SoundSourceMp3::SoundSourceMp3(QUrl url)
           m_curFrameIndex(kFrameIndexMin),
           m_madSynthCount(0) {
     m_seekFrameList.reserve(kSeekFrameListCapacity);
+    initDecoding();
+}
+
+SoundSourceMp3::~SoundSourceMp3() {
+    close();
+    finishDecoding();
+}
+
+void SoundSourceMp3::initDecoding() {
     mad_stream_init(&m_madStream);
     mad_frame_init(&m_madFrame);
     mad_synth_init(&m_madSynth);
 }
 
-SoundSourceMp3::~SoundSourceMp3() {
-    close();
+void SoundSourceMp3::finishDecoding() {
+    m_madSynthCount = 0;
+    mad_synth_finish(&m_madSynth);
+    mad_frame_finish(&m_madFrame);
+    mad_stream_finish(&m_madStream);
 }
 
 Result SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
@@ -370,9 +382,7 @@ Result SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
 }
 
 void SoundSourceMp3::close() {
-    mad_synth_finish(&m_madSynth);
-    mad_frame_finish(&m_madFrame);
-    mad_stream_finish(&m_madStream);
+    finishDecoding();
 
     if (m_pFileData) {
         m_file.unmap(m_pFileData);
@@ -382,6 +392,10 @@ void SoundSourceMp3::close() {
     m_file.close();
 
     m_seekFrameList.clear();
+
+    // Re-init the decoder, because the SoundSource might be reopened and
+    // the destructor calls finishDecoding() after close().
+    initDecoding();
 }
 
 SINT SoundSourceMp3::restartDecoding(
