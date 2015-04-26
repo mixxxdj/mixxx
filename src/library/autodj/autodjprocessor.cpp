@@ -754,6 +754,7 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
     }
 
     if (pTrack->getDuration() == 0) {
+        qWarning() << "Skip track with 0:00 Duration" << pTrack->getLocation();
         // Remove Tack with duration < 1 s
         removeTrackFromTopOfQueue(pTrack);
 

@@ -140,6 +140,8 @@ class AutoDJProcessorTest : public LibraryTest {
                deck2("[Channel2]"),
                deck3("[Channel3]"),
                deck4("[Channel4]") {
+        qRegisterMetaType<TrackPointer>("TrackPointer");
+
         PlaylistDAO& playlistDao = collection()->getPlaylistDAO();
         m_iAutoDJPlaylistId = playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
         // If the AutoDJ playlist does not exist yet then create it.
@@ -264,8 +266,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped) {
 
     // Load the track and mark it playing (as the loadTrackToPlayer signal would
     // have connected to this eventually).
-    TrackPointer pTrack(new TrackInfoObject());
-    setTrackId(pTrack, testId);
+    TrackPointer pTrack = collection()->getTrackDAO().getTrack(testId, false);
     deck1.slotLoadTrack(pTrack, true);
 
     // Signal that the request to load pTrack succeeded.
