@@ -17,6 +17,7 @@
 // 2015-04-27 Improve jog wheel experience
 //    - Unify jog wheel control for vinyl and non-vinyl mode
 //    - Implement proper spin-back capability
+//    - Fix key control
 // 2015-04-26 New firmware v1003
 //    - Change MIDI numbers of filter LEDs
 //    - Update state of filter LEDs when applying the filter
@@ -1275,12 +1276,6 @@ DenonMC6000MK2.Side.prototype.onEfxBeatsKnobDelta = function (delta) {
 		engine.setValue(this.efxGroup, "chain_selector", delta);
 	} else {
 		var newKey = this.activeDeck.getValue("key") + delta;
-		if (newKey < 1) {
-			newKey = 12;
-		}
-		if (newKey > 12) {
-			newKey = 1;
-		}
 		this.activeDeck.setValue("key", newKey);
 	}
 };
