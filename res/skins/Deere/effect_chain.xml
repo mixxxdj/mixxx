@@ -42,12 +42,12 @@
                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
                 <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
                 <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-                <SetVariable name="state_0_text">On</SetVariable>
-                <SetVariable name="state_0_pressed"></SetVariable>
-                <SetVariable name="state_0_unpressed"></SetVariable>
-                <SetVariable name="state_1_text">On</SetVariable>
-                <SetVariable name="state_1_pressed"></SetVariable>
-                <SetVariable name="state_1_unpressed"></SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_power_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_power_48px.svg</SetVariable>
+                <SetVariable name="state_1_text"></SetVariable>
+                <SetVariable name="state_1_pressed">icon/ic_power_48px.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">icon/ic_power_48px.svg</SetVariable>
                 <SetVariable name="left_connection_control"><Variable name="group"/>,enabled</SetVariable>
               </Template>
 
@@ -58,9 +58,9 @@
                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
                 <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
                 <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-                <SetVariable name="state_0_text">⏏</SetVariable>
-                <SetVariable name="state_0_pressed"></SetVariable>
-                <SetVariable name="state_0_unpressed"></SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_eject_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_eject_48px.svg</SetVariable>
                 <SetVariable name="left_connection_control"><Variable name="group"/>,clear</SetVariable>
               </Template>
 
@@ -71,9 +71,9 @@
                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
                 <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
                 <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-                <SetVariable name="state_0_text">◀</SetVariable>
-                <SetVariable name="state_0_pressed"></SetVariable>
-                <SetVariable name="state_0_unpressed"></SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_chevron_left_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_chevron_left_48px.svg</SetVariable>
                 <SetVariable name="left_connection_control"><Variable name="group"/>,prev_chain</SetVariable>
               </Template>
 
@@ -84,9 +84,9 @@
                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
                 <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
                 <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-                <SetVariable name="state_0_text">▶</SetVariable>
-                <SetVariable name="state_0_pressed"></SetVariable>
-                <SetVariable name="state_0_unpressed"></SetVariable>
+                <SetVariable name="state_0_text"></SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_chevron_right_48px.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_chevron_right_48px.svg</SetVariable>
                 <SetVariable name="left_connection_control"><Variable name="group"/>,next_chain</SetVariable>
               </Template>
             </Children>
