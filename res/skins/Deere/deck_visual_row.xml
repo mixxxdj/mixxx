@@ -112,38 +112,38 @@
         <SizePolicy>min,min</SizePolicy>
         <Children>
           <Template src="skin:left_1state_button.xml">
-            <SetVariable name="TooltipId">loop_in</SetVariable>
-            <SetVariable name="ObjectName">LoopIn</SetVariable>
+            <SetVariable name="TooltipId">waveform_zoom_down</SetVariable>
+            <SetVariable name="ObjectName">WaveformZoomDownButton</SetVariable>
             <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
             <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
             <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
-            <SetVariable name="state_0_text">+</SetVariable>
-            <SetVariable name="state_0_pressed"></SetVariable>
-            <SetVariable name="state_0_unpressed"></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_add_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_add_48px.svg</SetVariable>
             <SetVariable name="left_connection_control"><Variable name="group"/>,waveform_zoom_down</SetVariable>
           </Template>
 
           <Template src="skin:left_1state_button.xml">
-            <SetVariable name="TooltipId">loop_in</SetVariable>
-            <SetVariable name="ObjectName">LoopIn</SetVariable>
+            <SetVariable name="TooltipId">waveform_zoom_set_default</SetVariable>
+            <SetVariable name="ObjectName">WaveformZoomSetDefaultButton</SetVariable>
             <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
             <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
             <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
-            <SetVariable name="state_0_text">0</SetVariable>
-            <SetVariable name="state_0_pressed"></SetVariable>
-            <SetVariable name="state_0_unpressed"></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_clear_48px</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_clear_48px</SetVariable>
             <SetVariable name="left_connection_control"><Variable name="group"/>,waveform_zoom_set_default</SetVariable>
           </Template>
 
           <Template src="skin:left_1state_button.xml">
-            <SetVariable name="TooltipId">loop_in</SetVariable>
-            <SetVariable name="ObjectName">LoopIn</SetVariable>
+            <SetVariable name="TooltipId">waveform_zoom_up</SetVariable>
+            <SetVariable name="ObjectName">WaveformZoomUpButton</SetVariable>
             <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
             <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
             <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
-            <SetVariable name="state_0_text">-</SetVariable>
-            <SetVariable name="state_0_pressed"></SetVariable>
-            <SetVariable name="state_0_unpressed"></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_remove_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_remove_48px.svg</SetVariable>
             <SetVariable name="left_connection_control"><Variable name="group"/>,waveform_zoom_up</SetVariable>
           </Template>
         </Children>

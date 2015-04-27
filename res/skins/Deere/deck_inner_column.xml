@@ -65,9 +65,9 @@
             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
             <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
             <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-            <SetVariable name="state_0_text">-</SetVariable>
-            <SetVariable name="state_0_pressed"> </SetVariable>
-            <SetVariable name="state_0_unpressed"></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_remove_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_remove_48px.svg</SetVariable>
             <SetVariable name="left_connection_control"><Variable name="group"/>,rate_temp_down</SetVariable>
             <SetVariable name="right_connection_control"><Variable name="group"/>,rate_temp_down_small</SetVariable>
           </Template>
@@ -78,9 +78,9 @@
             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
             <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
             <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-            <SetVariable name="state_0_text">+</SetVariable>
-            <SetVariable name="state_0_pressed"></SetVariable>
-            <SetVariable name="state_0_unpressed"></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_add_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_add_48px.svg</SetVariable>
             <SetVariable name="left_connection_control"><Variable name="group"/>,rate_temp_up</SetVariable>
             <SetVariable name="right_connection_control"><Variable name="group"/>,rate_temp_up_small</SetVariable>
           </Template>
