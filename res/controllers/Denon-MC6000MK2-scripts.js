@@ -11,9 +11,13 @@
 ////////////////////////////////////////////////////////////////////////
 // Controller: Denon MC6000MK2
 // Author: Uwe Klotz a/k/a tapir
-// Revision: 2015-01-25
+// Revision: 2015-04-26
 //
 // Changelog:
+// 2015-04-26 New firmware v1003
+//    - Change MIDI numbers of filter LEDs
+//    - Update state of filter LEDs when applying the filter
+//      (in addition to engine callback)
 // 2015-01-25 Reconnect controls for version 1.12
 //    - Connect filter effect to QuickEffectRack
 //    - Connect channel EQs to EqualizerRack
@@ -1267,6 +1271,7 @@ DenonMC6000MK2.Side.prototype.onEfxTapButton = function (isButtonPressed) {
 DenonMC6000MK2.Side.prototype.initFilter = function () {
 	this.filterEnabled = true;
 	this.filterParamValue = 0.5; // centered
+	this.filterLed = undefined;
 	this.applyFilter();
 };
 
@@ -1274,6 +1279,10 @@ DenonMC6000MK2.Side.prototype.applyFilter = function () {
 	for (var group in this.decksByGroup) {
 		var deck = this.decksByGroup[group];
 		deck.applyFilter();
+	}
+	// Workaround for non-functional callback
+	if (undefined !== this.filterLed) {
+		this.filterLed.setStateBoolean(this.filterEnabled);
 	}
 };
 
@@ -1344,13 +1353,13 @@ DenonMC6000MK2.connectLeds = function () {
 	DenonMC6000MK2.leftSide.efx2Led = DenonMC6000MK2.connectTriLed(0x00, 0x5D);
 	DenonMC6000MK2.leftSide.efx3Led = DenonMC6000MK2.connectTriLed(0x00, 0x5E);
 	DenonMC6000MK2.leftSide.efxTapLed = DenonMC6000MK2.connectTriLed(0x00, 0x5F);
-	DenonMC6000MK2.leftSide.filterLed = DenonMC6000MK2.connectLed(0x00, 0x63);
+	DenonMC6000MK2.leftSide.filterLed = DenonMC6000MK2.connectLed(0x00, 0x65);
 	DenonMC6000MK2.leftSide.connectLeds();
 	DenonMC6000MK2.rightSide.efx1Led = DenonMC6000MK2.connectTriLed(0x00, 0x60);
 	DenonMC6000MK2.rightSide.efx2Led = DenonMC6000MK2.connectTriLed(0x00, 0x61);
 	DenonMC6000MK2.rightSide.efx3Led = DenonMC6000MK2.connectTriLed(0x00, 0x62);
 	DenonMC6000MK2.rightSide.efxTapLed = DenonMC6000MK2.connectTriLed(0x00, 0x63);
-	DenonMC6000MK2.rightSide.filterLed = DenonMC6000MK2.connectLed(0x00, 0x64);
+	DenonMC6000MK2.rightSide.filterLed = DenonMC6000MK2.connectLed(0x00, 0x66);
 	DenonMC6000MK2.rightSide.connectLeds();
 };
 
