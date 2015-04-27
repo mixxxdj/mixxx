@@ -114,12 +114,12 @@
         <SetVariable name="SizePolicy"><Variable name="HorizontalStretchButtonSizePolicy"/></SetVariable>
         <SetVariable name="LeftClickIsPushButton">false</SetVariable>
         <SetVariable name="RightClickIsPushButton">false</SetVariable>
-        <SetVariable name="state_0_text">▶</SetVariable>
-        <SetVariable name="state_0_pressed"></SetVariable>
-        <SetVariable name="state_0_unpressed"></SetVariable>
-        <SetVariable name="state_1_text">▶</SetVariable>
-        <SetVariable name="state_1_pressed"></SetVariable>
-        <SetVariable name="state_1_unpressed"></SetVariable>
+        <SetVariable name="state_0_text"></SetVariable>
+        <SetVariable name="state_0_pressed">icon/ic_play_48px.svg</SetVariable>
+        <SetVariable name="state_0_unpressed">icon/ic_play_48px.svg</SetVariable>
+        <SetVariable name="state_1_text"></SetVariable>
+        <SetVariable name="state_1_pressed">icon/ic_play_48px.svg</SetVariable>
+        <SetVariable name="state_1_unpressed">icon/ic_play_48px.svg</SetVariable>
         <SetVariable name="left_connection_control"><Variable name="group"/>,play</SetVariable>
         <SetVariable name="right_connection_control"><Variable name="group"/>,cue_set</SetVariable>
         <SetVariable name="display_connection_control"><Variable name="group"/>,play_indicator</SetVariable>
