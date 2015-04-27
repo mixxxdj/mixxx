@@ -734,14 +734,16 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
             if (m_eTransitionUnit == SECONDS) {
                 transitionDuration = m_iTransitionTime;
             } else if (m_eTransitionUnit == BEATS) {
-                // find the beginning of last measure before the duration
-                // of the transition set in beats
+                // find the beginning of last couple of measure before
+                // the duration of the transition (in beats)
                 double beatDuration = 60 / fromTrack->getBpm();
                 double lastMeasureBeginning = floor(fromTrack->getDuration()
                         / beatDuration / 8) * 8;
-                double beatsBeforeTransition = lastMeasureBeginning - m_iTransitionBeats - 1;
+                double beatsBeforeTransition = lastMeasureBeginning
+                    - m_iTransitionBeats - 1;
                 
-                transitionDuration = fromTrack->getDuration() - beatsBeforeTransition * beatDuration;
+                transitionDuration = fromTrack->getDuration()
+                        - beatsBeforeTransition * beatDuration;
             }
             
             // The track might be shorter than the transition period. Use a
