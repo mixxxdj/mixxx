@@ -18,15 +18,11 @@ struct PhaserGroupState {
         SampleUtil::applyGain(oldOutLeft, 0, MAXSTAGES);
         SampleUtil::applyGain(oldInRight, 0, MAXSTAGES);
         SampleUtil::applyGain(oldOutRight, 0, MAXSTAGES);
-        SampleUtil::applyGain(filterCoefLeft, 0, MAXSTAGES);
-        SampleUtil::applyGain(filterCoefRight, 0, MAXSTAGES);
     }
     CSAMPLE oldInLeft[MAXSTAGES];
     CSAMPLE oldInRight[MAXSTAGES];
     CSAMPLE oldOutLeft[MAXSTAGES]; 
     CSAMPLE oldOutRight[MAXSTAGES];
-    CSAMPLE filterCoefLeft[MAXSTAGES];
-    CSAMPLE filterCoefRight[MAXSTAGES];
     int time;
 };
 
@@ -56,8 +52,9 @@ class PhaserEffect : public PerChannelEffectProcessor<PhaserGroupState> {
     EngineEffectParameter* m_pStagesParameter;
     EngineEffectParameter* m_pFrequencyParameter;
     EngineEffectParameter* m_pDepthParameter; 
-    EngineEffectParameter* m_pFeedback; 
-    EngineEffectParameter* m_pSweepWidth; 
+    EngineEffectParameter* m_pFeedbackParameter; 
+    EngineEffectParameter* m_pSweepWidthParameter; 
+    EngineEffectParameter* m_pStereoParameter;
 
     DISALLOW_COPY_AND_ASSIGN(PhaserEffect);
 };
