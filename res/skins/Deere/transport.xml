@@ -20,9 +20,9 @@
             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
             <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
             <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-            <SetVariable name="state_0_text">◀◀</SetVariable>
-            <SetVariable name="state_0_pressed"></SetVariable>
-            <SetVariable name="state_0_unpressed"></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_fast_rewind_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_fast_rewind_48px.svg</SetVariable>
             <SetVariable name="left_connection_control"><Variable name="group"/>,back</SetVariable>
             <SetVariable name="right_connection_control"><Variable name="group"/>,start</SetVariable>
           </Template>
@@ -33,9 +33,9 @@
             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
             <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
             <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-            <SetVariable name="state_0_text">◀</SetVariable>
-            <SetVariable name="state_0_pressed"></SetVariable>
-            <SetVariable name="state_0_unpressed"></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_reverse_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_reverse_48px.svg</SetVariable>
             <SetVariable name="left_connection_control"><Variable name="group"/>,reverse</SetVariable>
             <SetVariable name="right_connection_control"><Variable name="group"/>,reverseroll</SetVariable>
           </Template>
@@ -46,9 +46,9 @@
             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
             <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
             <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-            <SetVariable name="state_0_text">▶▶</SetVariable>
-            <SetVariable name="state_0_pressed"></SetVariable>
-            <SetVariable name="state_0_unpressed"></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_fast_forward_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_fast_forward_48px.svg</SetVariable>
             <SetVariable name="left_connection_control"><Variable name="group"/>,fwd</SetVariable>
             <SetVariable name="right_connection_control"><Variable name="group"/>,end</SetVariable>
           </Template>
