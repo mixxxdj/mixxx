@@ -119,6 +119,7 @@
                                      notation selected in the preferences. The controls stay calm
                                      this way. -->
                                 <Layout>stacked</Layout>
+                                <MinimumSize>60,</MinimumSize>
                                 <Children>
                                   <PushButton>
                                     <ObjectName>KeyEditTrigger</ObjectName>
@@ -155,75 +156,44 @@
                                 <MinimumSize>80,20</MinimumSize>
                                 <MaximumSize>120,30</MaximumSize>
                                 <Children>
-                                  <PushButton>
-                                    <TooltipId>pitch_up</TooltipId>
-                                    <MinimumSize>20,20</MinimumSize>
-                                    <MaximumSize>30,30</MaximumSize>
-                                    <NumberStates>1</NumberStates>
-                                    <State>
-                                      <Number>0</Number>
-                                      <Text>+</Text>
-                                    </State>
-                                    <State>
-                                      <Number>0</Number>
-                                      <Text>+</Text>
-                                    </State>
-                                    <Connection>
-                                      <ConfigKey><Variable name="group"/>,pitch_up</ConfigKey>
-                                      <ButtonState>LeftButton</ButtonState>
-                                    </Connection>
-                                    <Connection>
-                                      <ConfigKey><Variable name="group"/>,pitch_up_small</ConfigKey>
-                                      <ButtonState>RightButton</ButtonState>
-                                    </Connection>
-                                  </PushButton>
+                                  <Template src="skin:left_right_1state_button.xml">
+                                    <SetVariable name="TooltipId">pitch_up</SetVariable>
+                                    <SetVariable name="ObjectName">PitchUpButton</SetVariable>
+                                    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                                    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                                    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                                    <SetVariable name="state_0_text"></SetVariable>
+                                    <SetVariable name="state_0_pressed">icon/ic_add_48px.svg</SetVariable>
+                                    <SetVariable name="state_0_unpressed">icon/ic_add_48px.svg</SetVariable>
+                                    <SetVariable name="left_connection_control"><Variable name="group"/>,pitch_up</SetVariable>
+                                    <SetVariable name="right_connection_control"><Variable name="group"/>,pitch_up_small</SetVariable>
+                                  </Template>
 
-                                  <PushButton>
-                                    <TooltipId>pitch_down</TooltipId>
-                                    <MinimumSize>20,20</MinimumSize>
-                                    <MaximumSize>30,30</MaximumSize>
-                                    <NumberStates>1</NumberStates>
-                                    <State>
-                                      <Number>0</Number>
-                                      <Text>-</Text>
-                                    </State>
-                                    <State>
-                                      <Number>1</Number>
-                                      <Text>-</Text>
-                                    </State>
-                                    <Connection>
-                                      <ConfigKey><Variable name="group"/>,pitch_down</ConfigKey>
-                                      <ButtonState>LeftButton</ButtonState>
-                                    </Connection>
-                                    <Connection>
-                                      <ConfigKey><Variable name="group"/>,pitch_down_small</ConfigKey>
-                                      <ButtonState>RightButton</ButtonState>
-                                    </Connection>
-                                  </PushButton>
+                                  <Template src="skin:left_right_1state_button.xml">
+                                    <SetVariable name="TooltipId">pitch_down</SetVariable>
+                                    <SetVariable name="ObjectName">PitchDownButton</SetVariable>
+                                    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                                    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                                    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                                    <SetVariable name="state_0_text"></SetVariable>
+                                    <SetVariable name="state_0_pressed">icon/ic_remove_48px.svg</SetVariable>
+                                    <SetVariable name="state_0_unpressed">icon/ic_remove_48px.svg</SetVariable>
+                                    <SetVariable name="left_connection_control"><Variable name="group"/>,pitch_down</SetVariable>
+                                    <SetVariable name="right_connection_control"><Variable name="group"/>,pitch_down_small</SetVariable>
+                                  </Template>
 
-                                  <PushButton>
-                                    <TooltipId>sync_reset_key</TooltipId>
-                                    <MinimumSize>40,20</MinimumSize>
-                                    <MaximumSize>60,30</MaximumSize>
-                                    <NumberStates>2</NumberStates>
-                                    <State>
-                                      <Number>0</Number>
-                                      <Text>MATCH</Text>
-                                    </State>
-                                    <State>
-                                      <Number>1</Number>
-                                      <Text>MATCH</Text>
-                                    </State>
-                                    <Connection>
-                                      <ConfigKey><Variable name="group"/>,sync_key</ConfigKey>
-                                      <ButtonState>LeftButton</ButtonState>
-                                    </Connection>
-                                    <Connection>
-                                        <ConfigKey><Variable name="group"/>,reset_key</ConfigKey>
-                                        <ButtonState>RightButton</ButtonState>
-                                    </Connection>
-                                  </PushButton>
-
+                                  <Template src="skin:left_right_1state_button.xml">
+                                    <SetVariable name="TooltipId">sync_reset_key</SetVariable>
+                                    <SetVariable name="ObjectName">SyncKeyButton</SetVariable>
+                                    <SetVariable name="MinimumSize"><Variable name="WideButtonMinimumSize"/></SetVariable>
+                                    <SetVariable name="MaximumSize"><Variable name="WideButtonMaximumSize"/></SetVariable>
+                                    <SetVariable name="SizePolicy"><Variable name="WideButtonSizePolicy"/></SetVariable>
+                                    <SetVariable name="state_0_text">Match</SetVariable>
+                                    <SetVariable name="state_0_pressed"></SetVariable>
+                                    <SetVariable name="state_0_unpressed"></SetVariable>
+                                    <SetVariable name="left_connection_control"><Variable name="group"/>,sync_key</SetVariable>
+                                    <SetVariable name="right_connection_control"><Variable name="group"/>,reset_key</SetVariable>
+                                  </Template>
                                 </Children>
                               </WidgetGroup>
                             </Children>
