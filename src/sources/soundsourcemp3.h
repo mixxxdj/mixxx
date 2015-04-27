@@ -66,7 +66,14 @@ private:
 
     SINT m_curFrameIndex;
 
+    // NOTE(uklotzde): Each invocation of initDecoding() must be
+    // followed by an invocation of finishDecoding(). In between
+    // 2 matching invocations restartDecoding() might invoked any
+    // number of times, but only if the files has been opened
+    // successfully.
+    void initDecoding();
     SINT restartDecoding(const SeekFrameType& seekFrame);
+    void finishDecoding();
 
     // MAD decoder
     mad_stream m_madStream;
