@@ -184,7 +184,7 @@
 												</Spinny>
 											</Children>
 											<Connection>
-												<ConfigKey persist="true">[Spinny<Variable name="channum"/>],show_spinny</ConfigKey>
+												<ConfigKey>[Spinny<Variable name="channum"/>],show_spinny</ConfigKey>
 												<BindProperty>visible</BindProperty>
 											</Connection>
 										</WidgetGroup>

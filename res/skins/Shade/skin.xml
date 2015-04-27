@@ -179,7 +179,7 @@
 						                </Template>
                     				</Children>
 			                        <Connection>
-				                        <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
+				                        <ConfigKey>[Microphone],show_microphone</ConfigKey>
 				                        <BindProperty>visible</BindProperty>
 			                        </Connection>
 		                		</WidgetGroup>
@@ -233,7 +233,7 @@
                                         </WidgetGroup>
                     				</Children>
 		                            <Connection>
-			                            <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
+			                            <ConfigKey>[Microphone],show_microphone</ConfigKey>
 			                            <BindProperty>visible</BindProperty>
 		                            </Connection>
 	                    		</WidgetGroup>
@@ -293,7 +293,7 @@
                 </Template>
               </Children>
               <Connection>
-                <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
+                <ConfigKey>[Samplers],show_samplers</ConfigKey>
                 <BindProperty>visible</BindProperty>
               </Connection>
             </WidgetGroup>
@@ -328,7 +328,7 @@
                 </Template>
               </Children>
               <Connection>
-                <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
+                <ConfigKey>[EffectRack1],show</ConfigKey>
                 <BindProperty>visible</BindProperty>
               </Connection>
             </WidgetGroup>
@@ -674,7 +674,7 @@
 												</WidgetGroup>
 											</Children>
 											<Connection>
-												<ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
+												<ConfigKey>[PreviewDeck],show_previewdeck</ConfigKey>
 												<BindProperty>visible</BindProperty>
 											</Connection>
 										</WidgetGroup>
@@ -692,7 +692,7 @@
 													<MinimumSize>16,16</MinimumSize>
 													<SizePolicy>me,me</SizePolicy>
 													<Connection>
-														<ConfigKey persist="true">[Library],show_coverart</ConfigKey>
+														<ConfigKey>[Library],show_coverart</ConfigKey>
 														<BindProperty>visible</BindProperty>
 													</Connection>
 												</CoverArt>
