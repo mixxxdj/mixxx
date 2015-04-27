@@ -1002,6 +1002,13 @@
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
 }
 
+#EffectUnitButton {
+  font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+  font: bold 16px/19px;
+  text-transform: none;
+  color: #eece33;
+}
+
 #EffectUnitNextPrevContainer WPushButton {
   font-size: 16px;
 }

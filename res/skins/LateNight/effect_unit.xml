@@ -37,6 +37,7 @@
             <SizePolicy>me,max</SizePolicy>
             <Children>
               <PushButton>
+                <ObjectName>EffectUnitButton</ObjectName>
                 <Size>20f,20f</Size>
                 <NumberStates>1</NumberStates>
                 <State>
@@ -49,6 +50,7 @@
               </PushButton>
 
               <PushButton>
+                <ObjectName>EffectUnitButton</ObjectName>
                 <Size>20f,20f</Size>
                 <NumberStates>1</NumberStates>
                 <State>
@@ -62,6 +64,7 @@
               </PushButton>
 
               <PushButton>
+                <ObjectName>EffectUnitButton</ObjectName>
                 <Size>20f,20f</Size>
                 <NumberStates>1</NumberStates>
                 <State>
