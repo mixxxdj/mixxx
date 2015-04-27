@@ -76,6 +76,16 @@ EffectManifest PhaserEffect::getManifest() {
     sweep->setMinimum(0.0);
     sweep->setMaximum(1.0);
 
+    EffectManifestParameter* stereo = manifest.addParameter();
+    stereo->setId("stereo");
+    stereo->setName(QObject::tr("Stereo"));
+    stereo->setDescription(QObject::tr("Enables stereo"));
+    stereo->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
+    stereo->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    stereo->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    stereo->setDefault(0);
+    stereo->setMinimum(0);
+    stereo->setMaximum(1);
     return manifest;
 }
 
@@ -84,8 +94,9 @@ PhaserEffect::PhaserEffect(EngineEffect* pEffect,
         : m_pStagesParameter(pEffect->getParameterById("stages")),
           m_pFrequencyParameter(pEffect->getParameterById("frequency")),
           m_pDepthParameter(pEffect->getParameterById("depth")),
-          m_pFeedback(pEffect->getParameterById("feedback")),
-          m_pSweepWidth(pEffect->getParameterById("sweep_width")) {
+          m_pFeedbackParameter(pEffect->getParameterById("feedback")),
+          m_pSweepWidthParameter(pEffect->getParameterById("sweep_width")),
+          m_pStereoParameter(pEffect->getParameterById("stereo")) {
     Q_UNUSED(manifest);
 }
 
@@ -108,24 +119,25 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
 
     CSAMPLE frequency = m_pFrequencyParameter->value();
     CSAMPLE depth = m_pDepthParameter->value();
-    CSAMPLE feedback = m_pFeedback->value();
-    CSAMPLE sweepWidth = m_pSweepWidth->value();
+    CSAMPLE feedback = m_pFeedbackParameter->value();
+    CSAMPLE sweepWidth = m_pSweepWidthParameter->value();
     int stages = m_pStagesParameter->value();
 
-    CSAMPLE* filterLeft = pState->filterCoefLeft;
-    CSAMPLE* filterRight = pState->filterCoefRight;
     CSAMPLE* oldInLeft = pState->oldInLeft;
     CSAMPLE* oldOutLeft = pState->oldOutLeft;
     CSAMPLE* oldInRight = pState->oldInRight;
     CSAMPLE* oldOutRight = pState->oldOutRight;
 
+    CSAMPLE filterCoefLeft = 0;
+    CSAMPLE filterCoefRight = 0;
+
     CSAMPLE left = 0, right = 0;
-    CSAMPLE leftPhase; 
-    CSAMPLE rightPhase;
+    CSAMPLE leftPhase, rightPhase;
     CSAMPLE freqSkip = frequency * 2.0 * M_PI / sampleRate;
 
+    int stereoCheck = m_pStereoParameter->value();
     int counter = 0;
-    int updateCoef = 32;
+    int updateCoef = 16;
 
     const int kChannels = 2;
     for (unsigned int i = 0; i < numSamples; i += kChannels) {
@@ -135,12 +147,11 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
         right = pInput[i + 1] + right * feedback;
 
         leftPhase = fmodf(freqSkip * pState->time, 2.0 * M_PI);
-        rightPhase = fmodf(freqSkip * pState->time + M_PI, 2.0 * M_PI);
+        rightPhase = fmodf(freqSkip * pState->time + M_PI * stereoCheck, 2.0 * M_PI);
 
         if ((counter++) % updateCoef == 0) {
-            for (int j = 0; j < stages; j++) {
                 CSAMPLE delayLeft = 0.5 + 0.5 * sin(leftPhase);
-                CSAMPLE delayRight = 0.5 + 0.5 * cos(rightPhase);
+                CSAMPLE delayRight = 0.5 + 0.5 * sin(rightPhase);
                 
                 delayLeft = min((double)(sweepWidth * delayLeft), 0.99 * M_PI);
                 delayRight =  min((double)(sweepWidth * delayRight), 0.99 * M_PI);
@@ -148,19 +159,18 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
                 delayLeft = tan(delayLeft / 2);
                 delayRight = tan(delayRight / 2);
 
-                filterLeft[j] = (1.0 - delayLeft) / (1.0 + delayLeft);
-                filterRight[j] = (1.0 - delayRight) / (1.0 + delayRight);
-            }
+                filterCoefLeft = (1.0 - delayLeft) / (1.0 + delayLeft);
+                filterCoefRight = (1.0 - delayRight) / (1.0 + delayRight);
         }
 
         for (int j = 0; j < stages; j++) {
-            oldOutLeft[j] = (filterLeft[j] * left) + 
-                (filterLeft[j] * oldOutLeft[j]) - oldInLeft[j];
+            oldOutLeft[j] = (filterCoefLeft * left) +
+                (filterCoefLeft * oldOutLeft[j]) - oldInLeft[j];
             oldInLeft[j] = left;
             left = oldOutLeft[j];
 
-            oldOutRight[j] = (filterRight[j] * right) + 
-                (filterRight[j] * oldOutRight[j]) - oldInRight[j];
+            oldOutRight[j] = (filterCoefRight * right) +
+                (filterCoefRight * oldOutRight[j]) - oldInRight[j];
             oldInRight[j] = right;
             right = oldOutRight[j];
         }
