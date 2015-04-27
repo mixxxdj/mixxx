@@ -31,7 +31,6 @@ private:
     Result tryOpen(const AudioSourceConfig& audioSrcCfg) /*override*/;
 
     SNDFILE* m_pSndFile;
-    SF_INFO m_sfInfo;
 };
 
 } // namespace Mixxx
