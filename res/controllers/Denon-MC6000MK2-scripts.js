@@ -11,9 +11,12 @@
 ////////////////////////////////////////////////////////////////////////
 // Controller: Denon MC6000MK2
 // Author: Uwe Klotz a/k/a tapir
-// Revision: 2015-04-26
+// Revision: 2015-04-27
 //
 // Changelog:
+// 2015-04-27 Improve jog wheel experience
+//    - Unify jog wheel control for vinyl and non-vinyl mode
+//    - Implement proper spin-back capability
 // 2015-04-26 New firmware v1003
 //    - Change MIDI numbers of filter LEDs
 //    - Update state of filter LEDs when applying the filter
@@ -135,7 +138,10 @@ DenonMC6000MK2.JOG_SPIN_PLAY_EXPONENT = 0.7; // 1.0 = linear response
 DenonMC6000MK2.JOG_SCRATCH_RPM = 33.333333; // 33 1/3
 DenonMC6000MK2.JOG_SCRATCH_ALPHA = 0.125; // 1/8
 DenonMC6000MK2.JOG_SCRATCH_BETA = DenonMC6000MK2.JOG_SCRATCH_ALPHA / 32.0;
-DenonMC6000MK2.JOG_SCRATCH_RAMP = true;
+DenonMC6000MK2.JOG_SCRATCH2_ABS_MIN = 0.01;
+DenonMC6000MK2.JOG_SCRATCH2_PLAY_MIN = -0.7;
+DenonMC6000MK2.JOG_SCRATCH2_PLAY_MAX = 1.0;
+DenonMC6000MK2.JOG_SCRATCH_TIMEOUT = 20; // in milliseconds
 
 // Seeking: Number of revolutions needed to seek from the beginning
 // to the end of the track.
@@ -584,7 +590,7 @@ DenonMC6000MK2.Deck = function (number, midiChannel) {
 	this.filterGroup = "[QuickEffectRack1_" + this.group + "]";
 	this.midiChannel = midiChannel;
 	this.jogTouchState = false;
-	this.jogTouchVinylState = false;
+	this.scratchTimer = 0;
 	DenonMC6000MK2.decksByGroup[this.group] = this;
 	this.rateDirBackup = this.getValue("rate_dir");
 	this.setValue("rate_dir", -1);
@@ -843,58 +849,10 @@ DenonMC6000MK2.Deck.prototype.onSlipModeValue = function (value) {
 	this.slipModeLed.setStateBoolean(value);
 };
 
-/* Jog Wheel */
-
-DenonMC6000MK2.Deck.prototype.touchJog = function (isJogTouched) {
-	this.jogTouchState = isJogTouched;
-};
-
-DenonMC6000MK2.Deck.prototype.seekJog = function (jogDelta) {
-	if (this.getShiftState() && !this.isPlaying()) {
-		var playPos = engine.getValue(this.group, "playposition");
-		if (undefined !== playPos) {
-			var seekPos = playPos + (jogDelta / (DenonMC6000MK2.JOG_RESOLUTION * DenonMC6000MK2.JOG_SEEK_REVOLUTIONS));
-			this.setValue("playposition", Math.max(0.0, Math.min(1.0, seekPos)));
-		}
-		return true;
-	} else {
-		return false;
-	}
-};
-
-DenonMC6000MK2.Deck.prototype.spinJog = function (jogDelta) {
-	if (!this.seekJog(jogDelta)) {
-		var normalizedDelta = jogDelta / DenonMC6000MK2.MIDI_JOG_DELTA_RANGE;
-		var scaledDelta;
-		var jogExponent;
-		if (this.isPlaying()) {
-			// bending
-			scaledDelta = normalizedDelta / DenonMC6000MK2.JOG_SPIN_PLAY_PEAK;
-			jogExponent = DenonMC6000MK2.JOG_SPIN_PLAY_EXPONENT;
-		} else {
-			// cueing
-			scaledDelta = normalizedDelta / DenonMC6000MK2.JOG_SPIN_CUE_PEAK;
-			jogExponent = DenonMC6000MK2.JOG_SPIN_CUE_EXPONENT;
-		}
-		var direction;
-		var scaledDeltaAbs;
-		if (scaledDelta < 0.0) {
-			direction = -1.0;
-			scaledDeltaAbs = -scaledDelta;
-		} else {
-			direction = 1.0;
-			scaledDeltaAbs = scaledDelta;
-		}
-		var scaledDeltaPow = direction * Math.pow(scaledDeltaAbs, jogExponent);
-		var jogValue = DenonMC6000MK2.MIXXX_JOG_RANGE * scaledDeltaPow;
-		this.setValue("jog", jogValue);
-	}
-};
-
 /* Vinyl Mode (Scratching) */
 
-DenonMC6000MK2.Deck.prototype.isScratching = function () {
-	return engine.isScratching(this.number);
+DenonMC6000MK2.Deck.prototype.onVinylModeValue = function () {
+	this.vinylModeLed.setStateBoolean(this.vinylMode);
 };
 
 DenonMC6000MK2.Deck.prototype.enableScratching = function () {
@@ -907,19 +865,51 @@ DenonMC6000MK2.Deck.prototype.enableScratching = function () {
 };
 
 DenonMC6000MK2.Deck.prototype.disableScratching = function () {
-	engine.scratchDisable(this.number, DenonMC6000MK2.JOG_SCRATCH_RAMP);
+	if (0 !== this.scratchTimer) {
+		engine.stopTimer(this.scratchTimer);
+		this.scratchTimer = 0;
+	}
+	var scratch2 = engine.getValue(this.group, "scratch2");
+	if ((!this.isPlaying() && (DenonMC6000MK2.JOG_SCRATCH2_ABS_MIN < Math.abs(scratch2))) ||
+		(scratch2 < DenonMC6000MK2.JOG_SCRATCH2_PLAY_MIN) ||
+		(scratch2 > DenonMC6000MK2.JOG_SCRATCH2_PLAY_MAX)) {
+		var timeoutCallback =
+			"DenonMC6000MK2.onScratchingTimeoutDeck" + this.number + "()";
+		this.scratchTimer = engine.beginTimer(
+			DenonMC6000MK2.JOG_SCRATCH_TIMEOUT,
+			timeoutCallback,
+			true);
+	}
+	if (0 === this.scratchTimer) {
+		// Ramping only when doing a back-spin while playing
+		var ramp = this.isPlaying() && (scratch2 < 0.0);
+		engine.scratchDisable(this.number, ramp);
+	}
 };
 
-DenonMC6000MK2.Deck.prototype.scratchJog = function (jogDelta) {
-	engine.scratchTick(this.number, jogDelta);
+DenonMC6000MK2.Deck.prototype.onScratchingTimeout = function () {
+	this.scratchTimer = 0;
+	this.disableScratching();
+}
+
+DenonMC6000MK2.onScratchingTimeoutDeck1 = function () {
+	DenonMC6000MK2.getDeckByGroup("[Channel1]").onScratchingTimeout();
 };
 
-DenonMC6000MK2.Deck.prototype.onVinylModeValue = function () {
-	this.vinylModeLed.setStateBoolean(this.vinylMode);
+DenonMC6000MK2.onScratchingTimeoutDeck2 = function () {
+	DenonMC6000MK2.getDeckByGroup("[Channel2]").onScratchingTimeout();
+};
+
+DenonMC6000MK2.onScratchingTimeoutDeck3 = function () {
+	DenonMC6000MK2.getDeckByGroup("[Channel3]").onScratchingTimeout();
+};
+
+DenonMC6000MK2.onScratchingTimeoutDeck4 = function () {
+	DenonMC6000MK2.getDeckByGroup("[Channel4]").onScratchingTimeout();
 };
 
 DenonMC6000MK2.Deck.prototype.updateVinylMode = function () {
-	if (this.vinylMode && this.jogTouchVinylState) {
+	if (this.vinylMode && this.jogTouchState) {
 		this.enableScratching();
 	} else {
 		this.disableScratching();
@@ -944,17 +934,52 @@ DenonMC6000MK2.Deck.prototype.disableVinylMode = function () {
 	this.setVinylMode(false);
 };
 
-DenonMC6000MK2.Deck.prototype.touchJogVinyl = function (isJogTouched) {
-	this.jogTouchVinylState = isJogTouched;
+/* Jog Wheel */
+
+DenonMC6000MK2.Deck.prototype.touchJog = function (isJogTouched) {
+	this.jogTouchState = isJogTouched;
 	this.updateVinylMode();
 };
 
-DenonMC6000MK2.Deck.prototype.spinJogVinyl = function (jogDelta) {
-	if (this.isScratching()) {
-		this.scratchJog(jogDelta);
+DenonMC6000MK2.Deck.prototype.spinJog = function (jogDelta) {
+	if (this.getShiftState() && !this.isPlaying()) {
+		// fast track seek
+		var playPos = engine.getValue(this.group, "playposition");
+		if (undefined !== playPos) {
+			var seekPos = playPos + (jogDelta / (DenonMC6000MK2.JOG_RESOLUTION * DenonMC6000MK2.JOG_SEEK_REVOLUTIONS));
+			this.setValue("playposition", Math.max(0.0, Math.min(1.0, seekPos)));
+		}
 	} else {
-		if (this.isPlaying()) {
-			this.spinJog(jogDelta);
+		if (engine.isScratching(this.number)) {
+			engine.scratchTick(this.number, jogDelta);
+			if (!this.jogTouchState) {
+				this.disableScratching();
+			}
+		} else {
+			var normalizedDelta = jogDelta / DenonMC6000MK2.MIDI_JOG_DELTA_RANGE;
+			var scaledDelta;
+			var jogExponent;
+			if (this.isPlaying()) {
+				// bending
+				scaledDelta = normalizedDelta / DenonMC6000MK2.JOG_SPIN_PLAY_PEAK;
+				jogExponent = DenonMC6000MK2.JOG_SPIN_PLAY_EXPONENT;
+			} else {
+				// cueing
+				scaledDelta = normalizedDelta / DenonMC6000MK2.JOG_SPIN_CUE_PEAK;
+				jogExponent = DenonMC6000MK2.JOG_SPIN_CUE_EXPONENT;
+			}
+			var direction;
+			var scaledDeltaAbs;
+			if (scaledDelta < 0.0) {
+				direction = -1.0;
+				scaledDeltaAbs = -scaledDelta;
+			} else {
+				direction = 1.0;
+				scaledDeltaAbs = scaledDelta;
+			}
+			var scaledDeltaPow = direction * Math.pow(scaledDeltaAbs, jogExponent);
+			var jogValue = DenonMC6000MK2.MIXXX_JOG_RANGE * scaledDeltaPow;
+			this.setValue("jog", jogValue);
 		}
 	}
 };
@@ -1538,25 +1563,19 @@ DenonMC6000MK2.onJogTouch = function (channel, control, value, status, group) {
 DenonMC6000MK2.onJogTouchVinyl = function (channel, control, value, status, group) {
 	var isJogTouched = DenonMC6000MK2.isButtonPressed(value);
 	var deck = DenonMC6000MK2.getDeckByGroup(group);
-	deck.touchJogVinyl(isJogTouched);
+	deck.touchJog(isJogTouched);
 };
 
 DenonMC6000MK2.onJogSpin = function (channel, control, value, status, group) {
 	var deck = DenonMC6000MK2.getDeckByGroup(group);
-	// Serato DJ/Intro: Jog wheel movements are recognized wether or
-	// not touching the sensor plate when not scratching. This behavior
-	// can easily be adjusted by uncommenting the following lines of
-	// code.
-	//if (deck.jogTouchState) {
-		var jogDelta = DenonMC6000MK2.getJogDeltaValue(value);
-		deck.spinJog(jogDelta);
-	//}
+	var jogDelta = DenonMC6000MK2.getJogDeltaValue(value);
+	deck.spinJog(jogDelta);
 };
 
 DenonMC6000MK2.onJogSpinVinyl = function (channel, control, value, status, group) {
 	var deck = DenonMC6000MK2.getDeckByGroup(group);
 	var jogDelta = DenonMC6000MK2.getJogDeltaValue(value);
-	deck.spinJogVinyl(jogDelta);
+	deck.spinJog(jogDelta);
 };
 
 DenonMC6000MK2.onHotcue1Button = function (channel, control, value, status, group) {
