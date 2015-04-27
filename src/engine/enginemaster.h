@@ -252,6 +252,10 @@ class EngineMaster : public QObject, public AudioSource {
                              sizeof(long double)];
     };
 
+  protected:
+    // The master buffer is protected so it can be accessed by test subclasses.
+    CSAMPLE* m_pMaster;
+
   private:
     void mixChannels(unsigned int channelBitvector, unsigned int maxChannels,
                      CSAMPLE* pOutput, unsigned int iBufferSize, GainCalculator* pGainCalculator);
@@ -284,7 +288,6 @@ class EngineMaster : public QObject, public AudioSource {
 
     // Mixing buffers for each output.
     CSAMPLE* m_pOutputBusBuffers[3];
-    CSAMPLE* m_pMaster;
     CSAMPLE* m_pHead;
     CSAMPLE* m_pTalkover;
 

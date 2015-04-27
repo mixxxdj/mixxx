@@ -10,7 +10,7 @@
 
 #include "library/dao/trackdao.h"
 
-#include "audiotagger.h"
+#include "metadata/audiotagger.h"
 #include "library/queryutil.h"
 #include "soundsourceproxy.h"
 #include "track/beatfactory.h"
@@ -273,8 +273,8 @@ void TrackDAO::saveTrack(TrackInfoObject* pTrack) {
             updateTrack(pTrack);
 
             // Write audio meta data, if enabled in the preferences
-            // TODO(DSC) Only wite tag if file Metatdate is dirty
-            writeAudioMetaData(pTrack);
+            // TODO(DSC) Only wite tag if file Metatdata is dirty
+            writeMetadataToFile(pTrack);
 
             //qDebug() << this << "Dirty tracks remaining after clean save:" << m_dirtyTracks.size();
         } else {
@@ -1307,8 +1307,10 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
     m_sTracksMutex.lock();
     // Automatic conversion to a weak pointer
     m_sTracks[id] = pTrack;
-    qDebug() << "m_sTracks.count() =" << m_sTracks.count();
+    //int trackCount = m_sTracks.count();
     m_sTracksMutex.unlock();
+    //qDebug() << "TrackDAO::m_sTracks.count() =" << trackCount;
+
     TrackCacheItem* pCacheItem = new TrackCacheItem(pTrack);
 
     // Queued connection. We are not in a rush to process cache
@@ -1787,25 +1789,16 @@ void TrackDAO::markTracksAsMixxxDeleted(const QString& dir) {
     }
 }
 
-void TrackDAO::writeAudioMetaData(TrackInfoObject* pTrack) {
+void TrackDAO::writeMetadataToFile(TrackInfoObject* pTrack) {
     if (m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1) {
+
+        Mixxx::TrackMetadata trackMetadata;
+        pTrack->getMetadata(&trackMetadata);
+
         AudioTagger tagger(pTrack->getLocation(), pTrack->getSecurityToken());
-
-        tagger.setArtist(pTrack->getArtist());
-        tagger.setTitle(pTrack->getTitle());
-        tagger.setGenre(pTrack->getGenre());
-        tagger.setComposer(pTrack->getComposer());
-        tagger.setGrouping(pTrack->getGrouping());
-        tagger.setAlbum(pTrack->getAlbum());
-        tagger.setAlbumArtist(pTrack->getAlbumArtist());
-        tagger.setComment(pTrack->getComment());
-        tagger.setTracknumber(pTrack->getTrackNumber());
-        tagger.setBpm(pTrack->getBpmStr());
-        tagger.setKey(pTrack->getKeyText());
-        tagger.setComposer(pTrack->getComposer());
-        tagger.setGrouping(pTrack->getGrouping());
-
-        tagger.save();
+        if (OK != tagger.save(trackMetadata)) {
+            qWarning() << "Failed to write track metadata:" << pTrack->getLocation();
+        }
     }
 }
 
@@ -1857,12 +1850,7 @@ namespace
     QImage parseCoverArt(const QFileInfo& fileInfo) {
         SecurityTokenPointer pToken = Sandbox::openSecurityToken(fileInfo, true);
         SoundSourceProxy proxy(fileInfo.filePath(), pToken);
-        Mixxx::SoundSourcePointer pSoundSource(proxy.getSoundSource());
-        if (pSoundSource) {
-            return pSoundSource->parseCoverArt();
-        } else {
-            return QImage();
-        }
+        return proxy.parseCoverArt();
     }
 }
 

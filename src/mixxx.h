@@ -46,6 +46,7 @@ class ControlPushButton;
 class DlgDeveloperTools;
 
 #include "configobject.h"
+#include "trackinfoobject.h"
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
 
@@ -118,6 +119,7 @@ class MixxxMainWindow : public QMainWindow {
     void slotViewShowPreviewDeck(bool);
     void slotViewShowEffects(bool);
     void slotViewShowCoverArt(bool);
+    void slotViewMaximizeLibrary(bool);
     // toogle full screen mode
     void slotViewFullScreen(bool toggle);
     // Reload the skin.
@@ -140,6 +142,8 @@ class MixxxMainWindow : public QMainWindow {
     // Activated when the talkover button is pushed on a microphone so we
     // can alert the user if a mic is not configured.
     void slotTalkoverChanged(int);
+
+    void slotUpdateWindowTitle(TrackPointer pTrack);
 
     void slotToggleCheckedVinylControl();
     void slotToggleCheckedSamplers();
@@ -173,7 +177,6 @@ class MixxxMainWindow : public QMainWindow {
                           const QString& translationPath, QTranslator* pTranslator);
     void checkDirectRendering();
     bool confirmExit();
-
     void linkSkinWidget(ControlObjectSlave** pCOS,
                         ConfigKey key, const char* slot);
     void updateCheckedMenuAction(QAction* menuAction, ConfigKey key);
@@ -252,6 +255,7 @@ class MixxxMainWindow : public QMainWindow {
     QAction* m_pViewShowPreviewDeck;
     QAction* m_pViewShowEffects;
     QAction* m_pViewShowCoverArt;
+    QAction* m_pViewMaximizeLibrary;
     QAction* m_pViewFullScreen;
     QAction* m_pHelpAboutApp;
     QAction* m_pHelpSupport;

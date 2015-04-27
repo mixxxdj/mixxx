@@ -37,7 +37,7 @@ public:
     void decorateChild(TreeItem *pChild, int playlist_id);
 
   private slots:
-    void slotPlayingDeckChanged(int deck);
+    void slotPlayingTrackChanged(TrackPointer currentPlayingTrack);
     void slotPlaylistTableChanged(int playlistId);
 
   private:
