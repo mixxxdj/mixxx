@@ -605,6 +605,10 @@ WWidgetGroup {
   /*qproperty-layoutAlignment: 'AlignCenter';*/
 }
 
+/*******************************************************************************
+ ** Buttons  *******************************************************************
+ *******************************************************************************/
+
 WPushButton {
     color: #A3A3A3;
     background-color: QLinearGradient( x1: 0, y1: 1, x2: 0, y2: 0,
@@ -654,6 +658,58 @@ WPushButton[value="2"]:hover {
     stop: 0 #0080BE, stop: 1 #0080BE);
     border: 0px solid #0080BE;
 }
+
+/* Special case "orientation" controls
+  1 -- center / default (off)
+  2 -- right
+  0 -- left
+*/
+#OrientationButton[value="1"] {
+    color: #A3A3A3;
+    background-color: QLinearGradient( x1: 0, y1: 1, x2: 0, y2: 0,
+    stop: 0 #4B4B4B, stop: 1 #4B4B4B);
+    border: 1px solid #4B4B4B;
+    border-radius: 2px;
+    outline: none;
+}
+
+#OrientationButton:hover {
+    color: #B7B7B7;
+    background-color: QLinearGradient( x1: 0, y1: 1, x2: 0, y2: 0,
+    stop: 0 #5F5F5F, stop: 1 #5F5F5F);
+    border: 0px solid #5F5F5F;
+}
+
+#OrientationButton[value="2"] {
+    color: #FDFDFD;
+    background-color: QLinearGradient( x1: 0, y1: 1, x2: 0, y2: 0,
+    stop: 0 #006596, stop: 1 #006596);
+    border: 0px solid #006596;
+}
+
+#OrientationButton[value="2"]:hover {
+    color: #FDFDFD;
+    background-color: QLinearGradient( x1: 0, y1: 1, x2: 0, y2: 0,
+    stop: 0 #0080BE, stop: 1 #0080BE);
+    border: 0px solid #0080BE;
+}
+
+#OrientationButton[value="0"] {
+    color: #FDFDFD;
+    background-color: QLinearGradient( x1: 0, y1: 1, x2: 0, y2: 0,
+    stop: 0 #006596, stop: 1 #006596);
+    border: 0px solid #006596;
+}
+
+#OrientationButton[value="0"]:hover {
+    color: #FDFDFD;
+    background-color: QLinearGradient( x1: 0, y1: 1, x2: 0, y2: 0,
+    stop: 0 #0080BE, stop: 1 #0080BE);
+    border: 0px solid #0080BE;
+}
+/*******************************************************************************
+ ** End Buttons  ***************************************************************
+ *******************************************************************************/
 
 /*
 
