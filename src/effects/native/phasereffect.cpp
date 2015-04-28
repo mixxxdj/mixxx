@@ -28,9 +28,9 @@ EffectManifest PhaserEffect::getManifest() {
     stages->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     stages->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     stages->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    stages->setDefault(2.0);
-    stages->setMinimum(2.0);
-    stages->setMaximum(24.0);
+    stages->setDefault(1.0);
+    stages->setMinimum(1.0);
+    stages->setMaximum(12.0);
 
     EffectManifestParameter* frequency = manifest.addParameter();
     frequency->setId("frequency");
@@ -121,7 +121,7 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
     CSAMPLE depth = m_pDepthParameter->value();
     CSAMPLE feedback = m_pFeedbackParameter->value();
     CSAMPLE sweepWidth = m_pSweepWidthParameter->value();
-    int stages = m_pStagesParameter->value();
+    int stages = 2 * m_pStagesParameter->value();
 
     CSAMPLE* oldInLeft = pState->oldInLeft;
     CSAMPLE* oldOutLeft = pState->oldOutLeft;
