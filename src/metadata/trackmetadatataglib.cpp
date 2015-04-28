@@ -408,7 +408,7 @@ void writeID3v2UserTextIdentificationFrame(TagLib::ID3v2::Tag* pTag,
 }
 
 void writeTrackMetadataIntoTag(TagLib::Tag* pTag, const TrackMetadata& trackMetadata) {
-    DEBUG_ASSERT(pTag);
+    DEBUG_ASSERT(pTag); // already validated before
 
     pTag->setArtist(toTagLibString(trackMetadata.getArtist()));
     pTag->setTitle(toTagLibString(trackMetadata.getTitle()));
@@ -725,7 +725,9 @@ void readTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::MP
 
 bool writeTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
         const TrackMetadata& trackMetadata) {
-    DEBUG_ASSERT(pTag);
+    if (!pTag) {
+        return false;
+    }
 
     const TagLib::ID3v2::Header* pHeader = pTag->header();
     if (!pHeader || (3 > pHeader->majorVersion())) {
@@ -783,7 +785,9 @@ bool writeTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
 }
 
 bool writeTrackMetadataIntoAPETag(TagLib::APE::Tag* pTag, const TrackMetadata& trackMetadata) {
-    DEBUG_ASSERT(pTag);
+    if (!pTag) {
+        return false;
+    }
 
     writeTrackMetadataIntoTag(pTag, trackMetadata);
 
@@ -805,7 +809,9 @@ bool writeTrackMetadataIntoAPETag(TagLib::APE::Tag* pTag, const TrackMetadata& t
 
 bool writeTrackMetadataIntoXiphComment(TagLib::Ogg::XiphComment* pTag,
         const TrackMetadata& trackMetadata) {
-    DEBUG_ASSERT(pTag);
+    if (!pTag) {
+        return false;
+    }
 
     writeTrackMetadataIntoTag(pTag, trackMetadata);
 
@@ -846,7 +852,9 @@ bool writeTrackMetadataIntoXiphComment(TagLib::Ogg::XiphComment* pTag,
 }
 
 bool writeTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& trackMetadata) {
-    DEBUG_ASSERT(pTag);
+    if (!pTag) {
+        return false;
+    }
 
     writeTrackMetadataIntoTag(pTag, trackMetadata);
 
@@ -1076,79 +1084,84 @@ Result writeTrackMetadataIntoFile(const TrackMetadata& trackMetadata, QString fi
     qDebug() << "Writing track metadata into file" << fileName << "of type" << fileType;
 
     QScopedPointer<TagLib::File> pFile;
+    bool tagWritten = false;
 
     if (kFileTypeMP3 == fileType) {
         QScopedPointer<TagLib::MPEG::File> pMPEGFile(
                 new TagLib::MPEG::File(fileName.toLocal8Bit().constData()));
         bool defaultID3V2 = true;
         if (hasAPETag(*pMPEGFile)) {
-            writeTrackMetadataIntoAPETag(pMPEGFile->APETag(), trackMetadata);
+            tagWritten |= writeTrackMetadataIntoAPETag(pMPEGFile->APETag(), trackMetadata);
             // Only write ID3v2 tag if it already exists
             defaultID3V2 = false;
         }
         if (defaultID3V2 || hasID3v2Tag(*pMPEGFile)) {
-            writeTrackMetadataIntoID3v2Tag(pMPEGFile->ID3v2Tag(defaultID3V2), trackMetadata);
+            tagWritten |= writeTrackMetadataIntoID3v2Tag(pMPEGFile->ID3v2Tag(defaultID3V2), trackMetadata);
         }
         pFile.reset(pMPEGFile.take()); // transfer ownership
     } else if (kFileTypeMP4 == fileType) {
         QScopedPointer<TagLib::MP4::File> pMP4File(
                 new TagLib::MP4::File(fileName.toLocal8Bit().constData()));
-        writeTrackMetadataIntoMP4Tag(pMP4File->tag(), trackMetadata);
+        tagWritten |= writeTrackMetadataIntoMP4Tag(pMP4File->tag(), trackMetadata);
         pFile.reset(pMP4File.take()); // transfer ownership
     } else if (kFileTypeFLAC == fileType) {
         QScopedPointer<TagLib::FLAC::File> pFLACFile(
                 new TagLib::FLAC::File(fileName.toLocal8Bit().constData()));
         bool defaultXiphComment = true;
         if (hasID3v2Tag(*pFLACFile)) {
-            writeTrackMetadataIntoID3v2Tag(pFLACFile->ID3v2Tag(), trackMetadata);
+            tagWritten |= writeTrackMetadataIntoID3v2Tag(pFLACFile->ID3v2Tag(), trackMetadata);
             // Only write Xiph Comment if it already exists
             defaultXiphComment = false;
         }
         if (defaultXiphComment || hasXiphComment(*pFLACFile)) {
-            writeTrackMetadataIntoXiphComment(pFLACFile->xiphComment(defaultXiphComment), trackMetadata);
+            tagWritten |= writeTrackMetadataIntoXiphComment(pFLACFile->xiphComment(defaultXiphComment), trackMetadata);
         }
         pFile.reset(pFLACFile.take()); // transfer ownership
     } else if (kFileTypeOggVorbis == fileType) {
         QScopedPointer<TagLib::Ogg::Vorbis::File> pOggVorbisFile(
                 new TagLib::Ogg::Vorbis::File(fileName.toLocal8Bit().constData()));
-        writeTrackMetadataIntoXiphComment(pOggVorbisFile->tag(), trackMetadata);
+        tagWritten |= writeTrackMetadataIntoXiphComment(pOggVorbisFile->tag(), trackMetadata);
         pFile.reset(pOggVorbisFile.take()); // transfer ownership
 #if TAGLIB_HAS_OPUSFILE
     } else if (kFileTypeOggOpus == fileType) {
         QScopedPointer<TagLib::Ogg::Opus::File> pOggOpusFile(
                 new TagLib::Ogg::Opus::File(fileName.toLocal8Bit().constData()));
-        writeTrackMetadataIntoXiphComment(pOggOpusFile->tag(), trackMetadata);
+        tagWritten |= writeTrackMetadataIntoXiphComment(pOggOpusFile->tag(), trackMetadata);
         pFile.reset(pOggOpusFile.take()); // transfer ownership
 #endif // TAGLIB_HAS_OPUSFILE
     } else if (kFileTypeWavPack == fileType) {
         QScopedPointer<TagLib::WavPack::File> pWavPackFile(
                 new TagLib::WavPack::File(fileName.toLocal8Bit().constData()));
-        writeTrackMetadataIntoAPETag(pWavPackFile->APETag(true), trackMetadata);
+        tagWritten |= writeTrackMetadataIntoAPETag(pWavPackFile->APETag(true), trackMetadata);
         pFile.reset(pWavPackFile.take()); // transfer ownership
     } else if (kFileTypeWAV == fileType) {
         QScopedPointer<TagLib::RIFF::WAV::File> pWAVFile(
                 new TagLib::RIFF::WAV::File(fileName.toLocal8Bit().constData()));
 #if TAGLIB_HAS_WAV_ID3V2TAG
-        writeTrackMetadataIntoID3v2Tag(pWAVFile->ID3v2Tag(), trackMetadata);
+        tagWritten |= writeTrackMetadataIntoID3v2Tag(pWAVFile->ID3v2Tag(), trackMetadata);
 #else
-        writeTrackMetadataIntoID3v2Tag(pWAVFile->tag(), trackMetadata);
+        tagWritten |= writeTrackMetadataIntoID3v2Tag(pWAVFile->tag(), trackMetadata);
 #endif
         pFile.reset(pWAVFile.take()); // transfer ownership
     } else if (kFileTypeAIFF == fileType) {
         QScopedPointer<TagLib::RIFF::AIFF::File> pAIFFFile(
                 new TagLib::RIFF::AIFF::File(fileName.toLocal8Bit().constData()));
-        writeTrackMetadataIntoID3v2Tag(pAIFFFile->tag(), trackMetadata);
+        tagWritten |= writeTrackMetadataIntoID3v2Tag(pAIFFFile->tag(), trackMetadata);
         pFile.reset(pAIFFFile.take()); // transfer ownership
     }
-    if (!pFile) {
+
+    if (pFile && tagWritten) {
+        if (pFile->save()) {
+            return OK;
+        } else {
+            qWarning() << "Failed to save file" << fileName;
+            return ERR;
+        }
+    } else {
         qWarning() << "Failed to write track metadata into file" << fileName << "of type" << fileType;
         return ERR;
     }
-    if (!pFile->save()) {
-        qWarning() << "Failed to save file" << fileName;
-        return ERR;
-    }
-    return OK;
+
 }
 
 } //namespace Mixxx
