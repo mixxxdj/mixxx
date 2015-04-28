@@ -58,13 +58,13 @@
                 <Group><Variable name="group"/></Group>
                 <SizePolicy>me,me</SizePolicy>
                 <BgColor></BgColor>
-                <SignalHighColor></SignalHighColor>
-                <SignalMidColor></SignalMidColor>
-                <SignalLowColor></SignalLowColor>
+                <SignalHighColor>#FFE300</SignalHighColor>
+                <SignalMidColor>#0099FF</SignalMidColor>
+                <SignalLowColor>#FF0035</SignalLowColor>
                 <SignalRGBHighColor></SignalRGBHighColor>
                 <SignalRGBMidColor></SignalRGBMidColor>
                 <SignalRGBLowColor></SignalRGBLowColor>
-                <SignalColor><Variable name="DeckSignalColor"/></SignalColor>
+                <SignalColor>#FF8000</SignalColor>
                 <PlayPosColor>#00FF00</PlayPosColor>
                 <DefaultMark>
                   <Align>bottom</Align>
