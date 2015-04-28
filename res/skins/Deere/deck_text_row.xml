@@ -286,101 +286,78 @@
                                 <MinimumSize>100,20</MinimumSize>
                                 <MaximumSize>180,30</MaximumSize>
                                 <Children>
-                                  <PushButton>
-                                    <TooltipId>beats_translate_curpos</TooltipId>
-                                    <MinimumSize>20,20</MinimumSize>
-                                    <MaximumSize>30,30</MaximumSize>
-                                    <NumberStates>1</NumberStates>
-                                    <State>
-                                      <Number>0</Number>
-                                      <Text>||||</Text>
-                                    </State>
-                                    <Connection>
-                                      <ConfigKey><Variable name="group"/>,beats_translate_curpos</ConfigKey>
-                                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                                      <ButtonState>LeftButton</ButtonState>
-                                    </Connection>
-                                  </PushButton>
+                                  <Template src="skin:left_right_1state_button.xml">
+                                    <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
+                                    <SetVariable name="ObjectName">BeatsTranslateCurposButton</SetVariable>
+                                    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                                    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                                    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                                    <SetVariable name="state_0_text"></SetVariable>
+                                    <SetVariable name="state_0_pressed">icon/ic_beats_translate_curpos_48px.svg</SetVariable>
+                                    <SetVariable name="state_0_unpressed">icon/ic_beats_translate_curpos_48px.svg</SetVariable>
+                                    <SetVariable name="left_connection_control"><Variable name="group"/>,beats_translate_curpos</SetVariable>
+                                  </Template>
 
-                                  <PushButton>
-                                    <TooltipId>beats_translate_alignment</TooltipId>
-                                    <MinimumSize>20,20</MinimumSize>
-                                    <MaximumSize>30,30</MaximumSize>
-                                    <NumberStates>1</NumberStates>
-                                    <State>
-                                      <Number>0</Number>
-                                      <Text>| = |</Text>
-                                    </State>
-                                    <Connection>
-                                      <ConfigKey><Variable name="group"/>,beats_translate_match_alignment</ConfigKey>
-                                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                                      <ButtonState>LeftButton</ButtonState>
-                                    </Connection>
-                                  </PushButton>
+                                  <Template src="skin:left_right_1state_button.xml">
+                                    <SetVariable name="TooltipId">beats_translate_alignment</SetVariable>
+                                    <SetVariable name="ObjectName">BeatsTranslateAlignmentButton</SetVariable>
+                                    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                                    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                                    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                                    <SetVariable name="state_0_text"></SetVariable>
+                                    <SetVariable name="state_0_pressed">icon/ic_beats_translate_alignment_48px.svg</SetVariable>
+                                    <SetVariable name="state_0_unpressed">icon/ic_beats_translate_alignment_48px.svg</SetVariable>
+                                    <SetVariable name="left_connection_control"><Variable name="group"/>,beats_translate_alignment</SetVariable>
+                                  </Template>
 
-                                  <PushButton>
-                                    <TooltipId>beats_adjust_faster</TooltipId>
-                                    <MinimumSize>20,20</MinimumSize>
-                                    <MaximumSize>30,30</MaximumSize>
-                                    <NumberStates>1</NumberStates>
-                                    <State>
-                                      <Number>0</Number>
-                                      <Text>|&#9664;|</Text>
-                                    </State>
-                                    <Connection>
-                                      <ConfigKey><Variable name="group"/>,beats_adjust_faster</ConfigKey>
-                                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                                      <ButtonState>LeftButton</ButtonState>
-                                    </Connection>
-                                  </PushButton>
 
-                                  <PushButton>
-                                    <TooltipId>beats_adjust_slower</TooltipId>
-                                    <MinimumSize>20,20</MinimumSize>
-                                    <MaximumSize>30,30</MaximumSize>
-                                    <NumberStates>1</NumberStates>
-                                    <State>
-                                      <Number>0</Number>
-                                      <Text>|&#9654;|</Text>
-                                    </State>
-                                    <Connection>
-                                      <ConfigKey><Variable name="group"/>,beats_adjust_slower</ConfigKey>
-                                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                                      <ButtonState>LeftButton</ButtonState>
-                                    </Connection>
-                                  </PushButton>
+                                  <Template src="skin:left_right_1state_button.xml">
+                                    <SetVariable name="TooltipId">beats_adjust_faster</SetVariable>
+                                    <SetVariable name="ObjectName">BeatsAdjustFasterButton</SetVariable>
+                                    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                                    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                                    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                                    <SetVariable name="state_0_text"></SetVariable>
+                                    <SetVariable name="state_0_pressed">icon/ic_beats_adjust_faster_48px.svg</SetVariable>
+                                    <SetVariable name="state_0_unpressed">icon/ic_beats_adjust_faster_48px.svg</SetVariable>
+                                    <SetVariable name="left_connection_control"><Variable name="group"/>,beats_adjust_faster</SetVariable>
+                                  </Template>
 
-                                  <PushButton>
-                                    <TooltipId>beats_translate_earlier</TooltipId>
-                                    <MinimumSize>20,20</MinimumSize>
-                                    <MaximumSize>30,30</MaximumSize>
-                                    <NumberStates>1</NumberStates>
-                                    <State>
-                                      <Number>0</Number>
-                                      <Text>&#9664;|</Text>
-                                    </State>
-                                    <Connection>
-                                      <ConfigKey><Variable name="group"/>,beats_translate_earlier</ConfigKey>
-                                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                                      <ButtonState>LeftButton</ButtonState>
-                                    </Connection>
-                                  </PushButton>
+                                  <Template src="skin:left_right_1state_button.xml">
+                                    <SetVariable name="TooltipId">beats_adjust_slower</SetVariable>
+                                    <SetVariable name="ObjectName">BeatsAdjustSlowerButton</SetVariable>
+                                    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                                    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                                    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                                    <SetVariable name="state_0_text"></SetVariable>
+                                    <SetVariable name="state_0_pressed">icon/ic_beats_adjust_slower_48px.svg</SetVariable>
+                                    <SetVariable name="state_0_unpressed">icon/ic_beats_adjust_slower_48px.svg</SetVariable>
+                                    <SetVariable name="left_connection_control"><Variable name="group"/>,beats_adjust_slower</SetVariable>
+                                  </Template>
 
-                                  <PushButton>
-                                    <TooltipId>beats_translate_later</TooltipId>
-                                    <MinimumSize>20,20</MinimumSize>
-                                    <MaximumSize>30,30</MaximumSize>
-                                    <NumberStates>1</NumberStates>
-                                    <State>
-                                      <Number>0</Number>
-                                      <Text>|&#9654;</Text>
-                                    </State>
-                                    <Connection>
-                                      <ConfigKey><Variable name="group"/>,beats_translate_later</ConfigKey>
-                                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                                      <ButtonState>LeftButton</ButtonState>
-                                    </Connection>
-                                  </PushButton>
+                                  <Template src="skin:left_right_1state_button.xml">
+                                    <SetVariable name="TooltipId">beats_translate_earlier</SetVariable>
+                                    <SetVariable name="ObjectName">BeatsTranslateEarlierButton</SetVariable>
+                                    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                                    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                                    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                                    <SetVariable name="state_0_text"></SetVariable>
+                                    <SetVariable name="state_0_pressed">icon/ic_beats_translate_earlier_48px.svg</SetVariable>
+                                    <SetVariable name="state_0_unpressed">icon/ic_beats_translate_earlier_48px.svg</SetVariable>
+                                    <SetVariable name="left_connection_control"><Variable name="group"/>,beats_translate_earlier</SetVariable>
+                                  </Template>
+
+                                  <Template src="skin:left_right_1state_button.xml">
+                                    <SetVariable name="TooltipId">beats_translate_later</SetVariable>
+                                    <SetVariable name="ObjectName">BeatsTranslateLaterButton</SetVariable>
+                                    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                                    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                                    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                                    <SetVariable name="state_0_text"></SetVariable>
+                                    <SetVariable name="state_0_pressed">icon/ic_beats_translate_later_48px.svg</SetVariable>
+                                    <SetVariable name="state_0_unpressed">icon/ic_beats_translate_later_48px.svg</SetVariable>
+                                    <SetVariable name="left_connection_control"><Variable name="group"/>,beats_translate_later</SetVariable>
+                                  </Template>
 
                                   <PushButton>
                                     <TooltipId>bpm_tap</TooltipId>
