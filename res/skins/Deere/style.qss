@@ -707,6 +707,26 @@ WPushButton[value="2"]:hover {
     stop: 0 #0080BE, stop: 1 #0080BE);
     border: 0px solid #0080BE;
 }
+
+/* Special case "hide/show" button
+   The button unfolds/folds widgets. We display different icons per state, but
+   do not want an active or active:hover color like with the other buttons.
+*/
+#SampleDeckToggle[value="1"], #LibraryToggle[value="1"], #EffectRackToggle[value="1"] {
+    color: #A3A3A3;
+    background-color: QLinearGradient( x1: 0, y1: 1, x2: 0, y2: 0,
+    stop: 0 #4B4B4B, stop: 1 #4B4B4B);
+    border: 1px solid #4B4B4B;
+    border-radius: 2px;
+    outline: none;
+}
+
+#SampleDeckToggle[value="1"]:hover, #LibraryToggle[value="1"]:hover, #EffectRackToggle[value="1"]:hover {
+    color: #B7B7B7;
+    background-color: QLinearGradient( x1: 0, y1: 1, x2: 0, y2: 0,
+    stop: 0 #5F5F5F, stop: 1 #5F5F5F);
+    border: 0px solid #5F5F5F;
+}
 /*******************************************************************************
  ** End Buttons  ***************************************************************
  *******************************************************************************/
