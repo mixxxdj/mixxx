@@ -177,8 +177,8 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
         gs.frac.setWithRampingApplied(
             (sin(M_PI * 2.0f * angleFraction) * width + 1.0f) / 2.0f);
         
-        pOutput[i] = pOutput[i] * gs.frac;
-        pOutput[i+1] = pOutput[i+1] * (1.0f - gs.frac);
+        pOutput[i] = pOutput[i] * gs.frac * 2;
+        pOutput[i+1] = pOutput[i+1] * (1.0f - gs.frac) * 2;
         
         gs.time++;
     }
