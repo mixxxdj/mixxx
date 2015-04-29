@@ -145,6 +145,7 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
         left = pInput[i] + left * feedback; 
         right = pInput[i + 1] + right * feedback;
 
+        //For stereo enabled, the channels are out of phase
         leftPhase = fmodf(freqSkip * pState->time, 2.0 * M_PI);
         rightPhase = fmodf(freqSkip * pState->time + M_PI * stereoCheck, 2.0 * M_PI);
 
@@ -162,20 +163,10 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
                 filterCoefRight = (1.0 - tanwRight) / (1.0 + tanwRight);
 
         }
+        
+        left = processSample(left, oldInLeft, oldOutLeft, filterCoefLeft, stages);
+        right = processSample(right, oldInRight, oldOutRight, filterCoefRight, stages);
 
-        for (int j = 0; j < stages; j++) {
-            oldOutLeft[j] = (filterCoefLeft * left) +
-                (filterCoefLeft * oldOutLeft[j]) - 
-                oldInLeft[j];
-            oldInLeft[j] = left;
-            left = oldOutLeft[j];
-
-            oldOutRight[j] = (filterCoefRight * right) +
-                (filterCoefRight * oldOutRight[j]) - 
-                oldInRight[j];
-            oldInRight[j] = right;
-            right = oldOutRight[j];
-        }
         pOutput[i] = pInput[i] * (1.0 - 0.5 * depth) + left * depth * 0.5;
         pOutput[i + 1] = pInput[i + 1] * (1.0 - 0.5 * depth) + right * depth * 0.5;
     }
