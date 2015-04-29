@@ -511,8 +511,8 @@ WStarRating {
 
 #SampleDecksContainer, #PreviewDeckContainer {
   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                  stop: 0 #333333,
-                                  stop: 1.0 #333333);
+                                    stop: 0 #333333,
+                                    stop: 1.0 #333333);
 }
 
 #MicrophonesContainer {
@@ -520,8 +520,8 @@ WStarRating {
 
 #MicrophoneRackExpanded {
   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                  stop: 0 #333333,
-                                  stop: 1.0 #333333);
+                                    stop: 0 #333333,
+                                    stop: 1.0 #333333);
 }
 
 #MicrophoneContainer {
@@ -540,8 +540,8 @@ WStarRating {
 
 #EffectRackContainer {
   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                  stop: 0 #333333,
-                                  stop: 1.0 #333333);
+                                    stop: 0 #333333,
+                                    stop: 1.0 #333333);
 }
 
 #EffectRackExpanded, #EffectRackCollapsed {
@@ -611,8 +611,9 @@ WWidgetGroup {
 
 WPushButton {
     color: #A3A3A3;
-    background-color: QLinearGradient( x1: 0, y1: 1, x2: 0, y2: 0,
-    stop: 0 #4B4B4B, stop: 1 #4B4B4B);
+    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
+                                      stop: 0 #4B4B4B,
+                                      stop: 1 #4B4B4B);
     border: 1px solid #4B4B4B;
     border-radius: 2px;
     outline: none;
@@ -620,23 +621,26 @@ WPushButton {
 
 WPushButton:hover {
     color: #B7B7B7;
-    background-color: QLinearGradient( x1: 0, y1: 1, x2: 0, y2: 0,
-    stop: 0 #5F5F5F, stop: 1 #5F5F5F);
+    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
+                                      stop: 0 #5F5F5F,
+                                      stop: 1 #5F5F5F);
     border: 0px solid #5F5F5F;
 }
 
 /*"Pressed" state*/
 WPushButton[value="1"] {
     color: #FDFDFD;
-    background-color: QLinearGradient( x1: 0, y1: 1, x2: 0, y2: 0,
-    stop: 0 #006596, stop: 1 #006596);
+    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
+                                      stop: 0 #006596,
+                                      stop: 1 #006596);
     border: 0px solid #006596;
 }
 
 WPushButton[value="1"]:hover {
     color: #FDFDFD;
-    background-color: QLinearGradient( x1: 0, y1: 1, x2: 0, y2: 0,
-    stop: 0 #0080bE, stop: 1 #0080BE);
+    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
+                                      stop: 0 #0080bE,
+                                      stop: 1 #0080BE);
     border: 0px solid #0080BE;
 }
 
@@ -647,15 +651,17 @@ WPushButton[value="1"]:hover {
 */
 WPushButton[value="2"] {
     color: #FDFDFD;
-    background-color: QLinearGradient( x1: 0, y1: 1, x2: 0, y2: 0,
-    stop: 0 #006596, stop: 1 #006596);
+    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
+                                      stop: 0 #006596,
+                                      stop: 1 #006596);
     border: 0px solid #006596;
 }
 
 WPushButton[value="2"]:hover {
     color: #FDFDFD;
-    background-color: QLinearGradient( x1: 0, y1: 1, x2: 0, y2: 0,
-    stop: 0 #0080BE, stop: 1 #0080BE);
+    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
+                                      stop: 0 #0080BE,
+                                      stop: 1 #0080BE);
     border: 0px solid #0080BE;
 }
 
@@ -666,8 +672,9 @@ WPushButton[value="2"]:hover {
 */
 #OrientationButton[value="1"] {
     color: #A3A3A3;
-    background-color: QLinearGradient( x1: 0, y1: 1, x2: 0, y2: 0,
-    stop: 0 #4B4B4B, stop: 1 #4B4B4B);
+    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
+                                      stop: 0 #4B4B4B,
+                                      stop: 1 #4B4B4B);
     border: 1px solid #4B4B4B;
     border-radius: 2px;
     outline: none;
@@ -675,36 +682,41 @@ WPushButton[value="2"]:hover {
 
 #OrientationButton:hover {
     color: #B7B7B7;
-    background-color: QLinearGradient( x1: 0, y1: 1, x2: 0, y2: 0,
-    stop: 0 #5F5F5F, stop: 1 #5F5F5F);
+    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
+                                      stop: 0 #5F5F5F,
+                                      stop: 1 #5F5F5F);
     border: 0px solid #5F5F5F;
 }
 
 #OrientationButton[value="2"] {
     color: #FDFDFD;
-    background-color: QLinearGradient( x1: 0, y1: 1, x2: 0, y2: 0,
-    stop: 0 #006596, stop: 1 #006596);
+    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
+                                      stop: 0 #006596,
+                                      stop: 1 #006596);
     border: 0px solid #006596;
 }
 
 #OrientationButton[value="2"]:hover {
     color: #FDFDFD;
-    background-color: QLinearGradient( x1: 0, y1: 1, x2: 0, y2: 0,
-    stop: 0 #0080BE, stop: 1 #0080BE);
+    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
+                                      stop: 0 #0080BE,
+                                      stop: 1 #0080BE);
     border: 0px solid #0080BE;
 }
 
 #OrientationButton[value="0"] {
     color: #FDFDFD;
-    background-color: QLinearGradient( x1: 0, y1: 1, x2: 0, y2: 0,
-    stop: 0 #006596, stop: 1 #006596);
+    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
+                                      stop: 0 #006596,
+                                      stop: 1 #006596);
     border: 0px solid #006596;
 }
 
 #OrientationButton[value="0"]:hover {
     color: #FDFDFD;
-    background-color: QLinearGradient( x1: 0, y1: 1, x2: 0, y2: 0,
-    stop: 0 #0080BE, stop: 1 #0080BE);
+    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
+                                      stop: 0 #0080BE,
+                                      stop: 1 #0080BE);
     border: 0px solid #0080BE;
 }
 
@@ -714,8 +726,9 @@ WPushButton[value="2"]:hover {
 */
 #SampleDeckToggle[value="1"], #LibraryToggle[value="1"], #EffectRackToggle[value="1"] {
     color: #A3A3A3;
-    background-color: QLinearGradient( x1: 0, y1: 1, x2: 0, y2: 0,
-    stop: 0 #4B4B4B, stop: 1 #4B4B4B);
+    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
+                                      stop: 0 #4B4B4B,
+                                      stop: 1 #4B4B4B);
     border: 1px solid #4B4B4B;
     border-radius: 2px;
     outline: none;
@@ -723,10 +736,12 @@ WPushButton[value="2"]:hover {
 
 #SampleDeckToggle[value="1"]:hover, #LibraryToggle[value="1"]:hover, #EffectRackToggle[value="1"]:hover {
     color: #B7B7B7;
-    background-color: QLinearGradient( x1: 0, y1: 1, x2: 0, y2: 0,
-    stop: 0 #5F5F5F, stop: 1 #5F5F5F);
+    background-color: qlineargradient(x1: 0, y1: 1, x2: 0, y2: 0,
+                                      stop: 0 #5F5F5F,
+                                      stop: 1 #5F5F5F);
     border: 0px solid #5F5F5F;
 }
+
 /*******************************************************************************
  ** End Buttons  ***************************************************************
  *******************************************************************************/
