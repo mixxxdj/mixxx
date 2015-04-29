@@ -37,17 +37,33 @@ EffectManifest AutoPanEffect::getManifest() {
     smoothing->setMaximum(0.5);  // there are two steps per period so max is half
     smoothing->setDefault(0.0);
     
+    // Period unit
+    EffectManifestParameter* periodUnit = manifest.addParameter();
+    periodUnit->setId("periodUnit");
+    periodUnit->setName(QObject::tr("Period Unit"));
+    periodUnit->setDescription("Period Unit");
+//    periodUnit->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
+    periodUnit->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
+    periodUnit->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    periodUnit->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+//    periodUnit->appendStep(qMakePair(QString("Seconds"), 0.0));
+//    periodUnit->appendStep(qMakePair(QString("Beats"), 1.0));
+    periodUnit->setDefault(0);
+    periodUnit->setMinimum(0);
+    periodUnit->setMaximum(1);
+    
     // Period
     EffectManifestParameter* period = manifest.addParameter();
     period->setId("period");
     period->setName(QObject::tr("Period"));
     period->setDescription("Controls the speed of the effect.");
     period->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
+//    period->setControlHint(EffectManifestParameter::CONTROL_KNOB_STEPPING);
     period->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     period->setMinimum(0.01);
     period->setMaximum(1.0);
-    period->setDefault(2.0);
+    period->setDefault(1.0);
     
     // Delay : applied on the channel with gain reducing.
     EffectManifestParameter* delay = manifest.addParameter();
@@ -84,6 +100,7 @@ EffectManifest AutoPanEffect::getManifest() {
 AutoPanEffect::AutoPanEffect(EngineEffect* pEffect, const EffectManifest& manifest)
         : 
           m_pSmoothingParameter(pEffect->getParameterById("smoothing")),
+          m_pPeriodUnitParameter(pEffect->getParameterById("periodUnit")),
           m_pPeriodParameter(pEffect->getParameterById("period")),
           m_pDelayParameter(pEffect->getParameterById("delay")),
           m_pWidthParameter(pEffect->getParameterById("width"))
@@ -108,9 +125,11 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
         return;
     }
     
+    double periodUnit = m_pPeriodUnitParameter->value();
+    
     CSAMPLE width = m_pWidthParameter->value();
     CSAMPLE period = m_pPeriodParameter->value();
-    if (groupFeatures.has_beat_length) {
+    if (periodUnit == 1 && groupFeatures.has_beat_length) {
         // 1/8, 1/4, 1/2, 1, 2, 4, 8, 16, 32, 64
         double beats = pow(2, floor(period * 9 / m_pPeriodParameter->maximum()) - 3);
         period = groupFeatures.beat_length * beats;
@@ -183,11 +202,7 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
         gs.time++;
     }
     
-//    SampleUtil::addWithGain(pOutput,
-//            pOutput, 0.9,
-//            numSamples);
     
-    /**/
     qDebug()
         // << "| ramped :" << gs.frac.ramped
         << "| quarter :" << floorf(CSAMPLE(gs.time) / period * 4.0f)
