@@ -138,21 +138,21 @@ QPushButton#LibraryPreviewButton:checked {
 
 /* splitter between treeview and library */
 QSplitter::handle {
-  image: url(skin:/image/style_handle_unchecked.png);
+  image: url(skin:/image/style_handle_unchecked.svg);
   background: none;
 }
 
 QSplitter::handle:pressed {
-  image: url(skin:/image/style_handle_checked.png);
+  image: url(skin:/image/style_handle_checked.svg);
   background: none;
 }
 
 QSplitter::handle:horizontal {
-  width: 6px;
+  width: 8px;
 }
 
 QSplitter::handle:vertical {
-  height: 6px;
+  height: 8px;
 }
 
 /*******************************************************************************
