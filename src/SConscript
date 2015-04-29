@@ -794,7 +794,7 @@ def BuildUbuntuPackage(target, source, env):
                                 print "Done! Package and tarballs are in %s" % result_path
                                 print "* Found package at '%s'. Copying to ubuntu/" % result_file
                                 print
-                                shutil.copyfile(result_file, dest_file)
+                                shutil.copyfile(result_file, dest_deb_file)
                         else:
                                 print "* Build failed."
                                 print
