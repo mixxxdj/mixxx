@@ -56,6 +56,16 @@ class PhaserEffect : public PerChannelEffectProcessor<PhaserGroupState> {
     EngineEffectParameter* m_pRangeParameter; 
     EngineEffectParameter* m_pStereoParameter;
 
+    inline CSAMPLE processSample(CSAMPLE input, CSAMPLE* oldIn, CSAMPLE* oldOut, 
+                                 CSAMPLE mainCoef, int stages) { 
+        for (int j = 0; j < stages; j++) {
+            oldOut[j] = (mainCoef * input) + (mainCoef * oldOut[j]) - oldIn[j];
+            oldIn[j] = input;
+            input = oldOut[j];
+        }
+        return input;
+    }
+
     DISALLOW_COPY_AND_ASSIGN(PhaserEffect);
 };
 
