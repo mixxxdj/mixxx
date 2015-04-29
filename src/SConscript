@@ -776,18 +776,25 @@ def BuildUbuntuPackage(target, source, env):
                         # filenames match the Windows/OSX builds.
                         version = construct_version(build, mixxx_version,
                                                     branch_name, vcs_revision)
-                        dest_filename = "%s.deb" % (
-                                '-'.join((package_name, version, ubuntu_distro,
-                                          arch)))
+                        dest_filename = '-'.join((package_name, version,
+                                                  ubuntu_distro, arch))
+                        dest_deb_filename = "%s.deb" % dest_filename
+                        # Also rename the source tarball.
+                        dest_tar_filename = "%s.tar.gz" % dest_filename
 
                         # ubuntu/ is one folder up
-                        dest_file = os.path.join('..', dest_filename)
+                        dest_deb_file = os.path.join('..', dest_deb_filename)
+                        dest_tar_file = os.path.join('..', dest_tar_filename)
+
+                        source_tar_file = os.path.join('..', mixxx_tarball)
+                        if os.path.exists(source_tar_file):
+                                shutil.move(source_tar_file, dest_tar_file)
 
                         if result == 0 and os.path.exists(result_file):
                                 print "Done! Package and tarballs are in %s" % result_path
-                                print "* Found package at '%s'. Copying to ubuntu/" % result_filename
+                                print "* Found package at '%s'. Copying to ubuntu/" % result_file
                                 print
-                                shutil.copyfile(result_file, dest_file)
+                                shutil.copyfile(result_file, dest_deb_file)
                         else:
                                 print "* Build failed."
                                 print
