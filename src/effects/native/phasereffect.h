@@ -50,10 +50,10 @@ class PhaserEffect : public PerChannelEffectProcessor<PhaserGroupState> {
     }
 
     EngineEffectParameter* m_pStagesParameter;
-    EngineEffectParameter* m_pFrequencyParameter;
+    EngineEffectParameter* m_pLFOFrequencyParameter;
     EngineEffectParameter* m_pDepthParameter; 
     EngineEffectParameter* m_pFeedbackParameter; 
-    EngineEffectParameter* m_pSweepWidthParameter; 
+    EngineEffectParameter* m_pRangeParameter; 
     EngineEffectParameter* m_pStereoParameter;
 
     DISALLOW_COPY_AND_ASSIGN(PhaserEffect);
