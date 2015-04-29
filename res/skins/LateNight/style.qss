@@ -541,8 +541,8 @@
     border-radius: 2px;
     font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
     font: bold 10px/12px;
-    color: #0e0e0e;
-    background-color: #eece33;
+    color: #c0c0c0;
+    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #d80000, stop:1 #910000);
     margin-right: 3px;
 }
 
@@ -561,8 +561,8 @@
     border-radius: 2px;
     font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
     font: bold 10px/12px;
-    color: #0e0e0e;
-    background-color: #eece33;
+    color: #c0c0c0;
+    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #d80000, stop:1 #910000);
     margin-right: 2px;
 }
 
@@ -582,8 +582,8 @@
     border-radius: 2px;
     font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
     font: bold 10px/12px;
-    color: #0e0e0e;
-    background-color: #eece33;
+    color: #c0c0c0;
+    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #d80000, stop:1 #910000);
     margin-right: 2px;
     margin-bottom: 2px;
 }
