@@ -988,7 +988,6 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_Long_Transition) {
     deck1.slotLoadTrack(pTrack, true);
     // Indicate the track loaded successfully.
     deck1.fakeTrackLoadedEvent(pTrack);
-    deck1.fakeTrackLoadedEvent(pTrack);
 
     PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
     pAutoDJTableModel->appendTrack(testId);
@@ -1070,7 +1069,6 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_SeekEnd) {
     deck1.slotLoadTrack(pTrack, true);
     // Indicate the track loaded successfully.
     deck1.fakeTrackLoadedEvent(pTrack);
-    deck1.fakeTrackLoadedEvent(pTrack);
 
     PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
     pAutoDJTableModel->appendTrack(testId);
@@ -1096,13 +1094,13 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_SeekEnd) {
 
     // Seek deck 2 to the very end 99 %
     deck2.playposition.set(0.99);
-    EXPECT_EQ(AutoDJProcessor::ADJ_P1FADING, pProcessor->getState());
 
     // Expect that we will transition into P1FADING mode.
     EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_P1FADING));
 
-    // Seek track to 100 % it should fade
-    deck1.playposition.set(1.0);
+    // Seek track to 99 % it should fade
+    // not 100 % because the final step is done by deck2
+    deck1.playposition.set(0.99);
     EXPECT_EQ(AutoDJProcessor::ADJ_P1FADING, pProcessor->getState());
 
     EXPECT_LT(-1.0, master.crossfader.get());
