@@ -777,7 +777,7 @@ def BuildUbuntuPackage(target, source, env):
                         version = construct_version(build, mixxx_version,
                                                     branch_name, vcs_revision)
                         dest_filename = '-'.join((package_name, version,
-                                                  ubuntu_distro, arch)))
+                                                  ubuntu_distro, arch))
                         dest_deb_filename = "%s.deb" % dest_filename
                         # Also rename the source tarball.
                         dest_tar_filename = "%s.tar.gz" % dest_filename
