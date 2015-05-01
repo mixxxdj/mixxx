@@ -83,10 +83,9 @@ QMutex LegacySkinParser::s_safeStringMutex;
 
 static bool sDebug = false;
 
-ControlObject* controlFromConfigKey(ConfigKey key, bool bPersist,
-                                    bool* created) {
+ControlObject* controlFromConfigKey(ConfigKey key, double defaultValue,
+                                    bool bPersist, bool* created) {
     ControlObject* pControl = ControlObject::getControl(key);
-
     if (pControl) {
         if (created) {
             *created = false;
@@ -100,7 +99,7 @@ ControlObject* controlFromConfigKey(ConfigKey key, bool bPersist,
                << "Creating it.";
     // Since the usual behavior here is to create a skin-defined push
     // button, actually make it a push button and set it to toggle.
-    ControlPushButton* controlButton = new ControlPushButton(key, bPersist);
+    ControlPushButton* controlButton = new ControlPushButton(key, defaultValue, bPersist);
     controlButton->setButtonMode(ControlPushButton::TOGGLE);
     if (created) {
         *created = true;
@@ -121,7 +120,7 @@ ControlObject* LegacySkinParser::controlFromConfigNode(QDomElement element,
 
     bool bPersist = m_pContext->selectAttributeBool(keyElement, "persist", false);
 
-    return controlFromConfigKey(key, bPersist, created);
+    return controlFromConfigKey(key, 0.0, bPersist, created);
 }
 
 LegacySkinParser::LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
@@ -264,9 +263,11 @@ SkinManifest LegacySkinParser::getSkinManifest(QDomElement skinDocument) {
             if (attribute_node.isElement()) {
                 QDomElement attribute_element = attribute_node.toElement();
                 QString configKey = attribute_element.attribute("config_key");
+                QString persist = attribute_element.attribute("persist");
                 QString value = attribute_element.text();
                 SkinManifest::Attribute* attr = manifest.add_attribute();
                 attr->set_config_key(configKey.toStdString());
+                attr->set_persist(persist.toLower() == "true");
                 attr->set_value(value.toStdString());
             }
         }
@@ -304,19 +305,43 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
 
     SkinManifest manifest = getSkinManifest(skinDocument);
 
-    // Apply SkinManifest attributes.
+    // Keep track of created attribute controls so we can parent them.
+    QList<ControlObject*> created_attributes;
+    // Apply SkinManifest attributes by looping through the proto.
     for (int i = 0; i < manifest.attribute_size(); ++i) {
         const SkinManifest::Attribute& attribute = manifest.attribute(i);
         if (!attribute.has_config_key()) {
             continue;
         }
-        ConfigKey configKey = ConfigKey::parseCommaSeparated(
-            QString::fromStdString(attribute.config_key()));
 
         bool ok = false;
         double value = QString::fromStdString(attribute.value()).toDouble(&ok);
         if (ok) {
-            ControlObject::set(configKey, value);
+            ConfigKey configKey = ConfigKey::parseCommaSeparated(
+                    QString::fromStdString(attribute.config_key()));
+            // Set the specified attribute, possibly creating the control
+            // object in the process.
+            bool created = false;
+            // If there is no existing value for this CO in the skin,
+            // update the config with the specified value. If the attribute
+            // is set to persist, the value will be read when the control is created.
+            ControlObject* pControl = controlFromConfigKey(configKey,
+                                                           value,
+                                                           attribute.persist(),
+                                                           &created);
+            if (created) {
+                created_attributes.append(pControl);
+            }
+            if (!attribute.persist()) {
+                // Only set the value if the control wasn't set up through
+                // the persist logic.  Skin attributes are always
+                // set on skin load.
+                pControl->set(value);
+            }
+        } else {
+            SKIN_WARNING(skinDocument, *m_pContext)
+                    << "Error reading double value from skin attribute: "
+                    << QString::fromStdString(attribute.value());
         }
     }
 
@@ -341,6 +366,12 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
         return NULL;
     } else if (widgets.size() > 1) {
         SKIN_WARNING(skinDocument, *m_pContext) << "Skin produced more than 1 widget!";
+    }
+    // Because the config is destroyed before MixxxMainWindow, we need to
+    // parent the attributes to some other widget.  Otherwise they won't
+    // be able to persist because the config will have already been deleted.
+    foreach(ControlObject* pControl, created_attributes) {
+        pControl->setParent(widgets[0]);
     }
     return widgets[0];
 }
@@ -584,7 +615,7 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
         ConfigKey configKey = ConfigKey::parseCommaSeparated(currentpage_co);
         QString persist_co = node.attribute("persist");
         bool persist = m_pContext->selectAttributeBool(node, "persist", false);
-        pCurrentPageControl = controlFromConfigKey(configKey, persist,
+        pCurrentPageControl = controlFromConfigKey(configKey, 0.0, persist,
                                                    &createdCurrentPage);
     }
 
@@ -646,7 +677,7 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
             if (trigger_configkey.length() > 0) {
                 ConfigKey configKey = ConfigKey::parseCommaSeparated(trigger_configkey);
                 bool created;
-                pControl = controlFromConfigKey(configKey, false, &created);
+                pControl = controlFromConfigKey(configKey, 0.0, false, &created);
                 if (created) {
                     // If we created the control, parent it to the child widget so
                     // it doesn't leak.

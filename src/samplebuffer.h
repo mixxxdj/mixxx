@@ -42,18 +42,24 @@ public:
         return m_size;
     }
 
-    CSAMPLE* data() {
-        return m_data;
+    CSAMPLE* data(SINT offset = 0) {
+        DEBUG_ASSERT(0 <= offset);
+        // >=: allow access to one element behind allocated memory
+        DEBUG_ASSERT(m_size >= offset);
+        return m_data + offset;
     }
-    const CSAMPLE* data() const {
-        return m_data;
+    const CSAMPLE* data(SINT offset = 0) const {
+        DEBUG_ASSERT(0 <= offset);
+        // >=: allow access to one element behind allocated memory
+        DEBUG_ASSERT(m_size >= offset);
+        return m_data + offset;
     }
 
     CSAMPLE& operator[](SINT index) {
-        return m_data[index];
+        return *data(index);
     }
     const CSAMPLE& operator[](SINT index) const {
-        return m_data[index];
+        return *data(index);
     }
 
     // Exchanges the members of two buffers in conformance with the
@@ -70,6 +76,54 @@ public:
 
     // Fills the whole buffer with the same value
     void fill(CSAMPLE value);
+
+    class ReadableChunk {
+    public:
+        ReadableChunk(const SampleBuffer& buffer, SINT offset, SINT length)
+            : m_data(buffer.data(offset)),
+              m_size(length) {
+            DEBUG_ASSERT((buffer.size() - offset) >= length);
+        }
+        const CSAMPLE* data(SINT offset = 0) const {
+            DEBUG_ASSERT(0 <= offset);
+            // >=: allow access to one element behind allocated memory
+            DEBUG_ASSERT(m_size >= offset);
+            return m_data + offset;
+        }
+        SINT size() const {
+            return m_size;
+        }
+        const CSAMPLE& operator[](SINT index) const {
+            return *data(index);
+        }
+    private:
+        const CSAMPLE* m_data;
+        SINT m_size;
+    };
+
+    class WritableChunk {
+    public:
+        WritableChunk(SampleBuffer& buffer, SINT offset, SINT length)
+            : m_data(buffer.data(offset)),
+              m_size(length) {
+            DEBUG_ASSERT((buffer.size() - offset) >= length);
+        }
+        CSAMPLE* data(SINT offset = 0) const {
+            DEBUG_ASSERT(0 <= offset);
+            // >=: allow access to one element behind allocated memory
+            DEBUG_ASSERT(m_size >= offset);
+            return m_data + offset;
+        }
+        SINT size() const {
+            return m_size;
+        }
+        CSAMPLE& operator[](SINT index) const {
+            return *data(index);
+        }
+    private:
+        CSAMPLE* m_data;
+        SINT m_size;
+    };
 
 private:
     CSAMPLE* m_data;

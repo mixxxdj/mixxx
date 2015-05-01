@@ -184,9 +184,9 @@ void Tooltips::addStandardTooltips() {
             << tr("Show Effect Rack")
             << tr("Show or hide the effect rack.");
 
-    add("toggle_expanded_library")
-            << tr("Toggle Big Library")
-            << tr("Makes the library fill the screen.");
+    add("maximize_library")
+            << tr("Maximize Library")
+            << tr("Maximize the track library to take up all the available screen space.");
 
     add("show_mixer")
             << tr("Toggle Mixer")

@@ -6,9 +6,23 @@
         <Children>
             <WidgetStack currentpage="[Library],show_big_current" persist="true">
                 <Children>
-                    <WidgetGroup trigger="[Library],unshow_big">
+                    <WidgetGroup trigger="[Master],maximize_library">
                         <Layout>vertical</Layout>
                         <Children>
+                            <WidgetStack currentpage="[MicrophoneRack],current" persist="true">
+                                <Children>
+                                    <WidgetGroup trigger="[MicrophoneRack],show" persist="true">
+                                        <Layout>vertical</Layout>
+                                        <Children>
+                                            <Template src="skin:microphone_rack.xml"/>
+                                        </Children>
+                                    </WidgetGroup>
+                                    <WidgetGroup>
+                                        <SizePolicy>me,min</SizePolicy>
+                                        <Children/>
+                                    </WidgetGroup>
+                                </Children>
+                            </WidgetStack>
                             <WidgetStack currentpage="[Samplers],current" persist="true">
                                 <Children>
                                     <WidgetGroup trigger="[Samplers],show_samplers" persist="true">

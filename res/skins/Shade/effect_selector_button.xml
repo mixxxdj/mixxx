@@ -11,7 +11,8 @@
 	<WidgetGroup>
 	    <Layout>horizontal</Layout>
 	    <Style> WEffect, WPushButton { 
-			font: bold 12px/10px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+			font: bold 12px/10px sans-serif;
+			font-family: "Open Sans";
 			background-color: transparent; 
 			color: #191F24; 
 			padding-left: 1px; 

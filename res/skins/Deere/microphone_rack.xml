@@ -22,7 +22,6 @@
             <SizePolicy>me,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-
               <Template src="skin:microphone.xml">
                 <SetVariable name="i"></SetVariable>
               </Template>
@@ -77,7 +76,7 @@
       </WidgetStack>
     </Children>
     <Connection>
-      <ConfigKey persist="true">[Master],show_library</ConfigKey>
+      <ConfigKey>[Master],maximize_library</ConfigKey>
       <BindProperty>visible</BindProperty>
       <Transform>
         <Not/>

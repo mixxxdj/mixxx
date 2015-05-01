@@ -26,11 +26,6 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
         QKeySequence(tr("Ctrl+F", "Search|Focus")), this);
     connect(setFocusShortcut, SIGNAL(activated()),
             this, SLOT(setFocus()));
-    QShortcut *clearTextShortcut = new QShortcut(
-        QKeySequence(tr("Esc", "Search|Clear")), this, 0, 0,
-        Qt::WidgetShortcut);
-    connect(clearTextShortcut, SIGNAL(activated()),
-            this, SLOT(onSearchTextCleared()));
 
     connect(this, SIGNAL(textChanged(const QString&)),
             this, SLOT(slotTextChanged(const QString&)));

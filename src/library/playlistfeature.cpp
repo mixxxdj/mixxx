@@ -197,6 +197,7 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
             m_pPlaylistTableModel->setTableModel(playlistId);
             // Update selection
             emit(featureSelect(this, m_lastRightClickedIndex));
+            activateChild(m_lastRightClickedIndex);
         }
     }
 }
