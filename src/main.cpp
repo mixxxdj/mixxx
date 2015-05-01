@@ -50,31 +50,6 @@ extern "C" {
 
 #ifdef __WINDOWS__
 #include <windows.h>
-#ifdef DEBUGCONSOLE
-#include <io.h> // Debug Console
-
-void InitDebugConsole() { // Open a Debug Console so we can printf
-    int fd;
-    FILE *fp;
-
-    FreeConsole();
-    if (AllocConsole()) {
-        SetConsoleTitleA("Mixxx Debug Messages");
-
-        fd = _open_osfhandle((long) GetStdHandle(STD_OUTPUT_HANDLE), 0);
-        fp = _fdopen(fd, "w");
-
-        *stdout = *fp;
-        setvbuf(stdout, NULL, _IONBF, 0);
-
-        fd = _open_osfhandle((long) GetStdHandle(STD_ERROR_HANDLE), 0);
-        fp = _fdopen(fd, "w");
-
-        *stderr = *fp;
-        setvbuf(stderr, NULL, _IONBF, 0);
-    }
-}
-#endif // DEBUGCONSOLE
 #endif // __WINDOWS__
 
 QStringList plugin_paths; //yes this is global. sometimes global is good.
@@ -292,31 +267,43 @@ int main(int argc, char * argv[])
     // LOCALE_IDEFAULTANSICODEPAGE "1252" // ANSI Codepage used by Qt toLocal8Bit
     // LOCALE_IDEFAULTCODEPAGE "850" // OEM Codepage Console
 
-    // Save current code page
-    UINT oldCodePage = GetConsoleOutputCP();
+    // TODO() Verify it the folowing:
+    // it turns out that SetConsoleOutputCP() shows the invisible console that is
+    // created on startup by Qt using the CREATE_NO_WINDOW flag
+    // http://stackoverflow.com/questions/447352/how-to-know-whether-we-are-in-a-console-or-a-windowed-app
+    // This means, we must not call any console related commands, if we are not
+    // called from a console or will initialize one anyway.
 
-    // Use a unicode font
-    CONSOLE_FONT_INFOEX newFont;
-    newFont.cbSize = sizeof newFont;
-    newFont.nFont = 0;
-    newFont.dwFontSize.X = 0;
-    newFont.dwFontSize.Y = 14;
-    newFont.FontFamily = FF_DONTCARE;
-    newFont.FontWeight = FW_NORMAL;
-    wcscpy_s(newFont.FaceName, L"Consolas");
-    SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &newFont);
+#ifdef DEBUGCONSOLE
+    if (GetConsoleWindow() != NULL) {
+        // This should create the window for the hidden console
+        // initalized by Qt
+        SetConsoleTitleA("Mixxx Debug Messages");
+    }
+#endif
+    if (GetConsoleWindow() != NULL) {
+        // Save current code page
+        UINT oldCodePage = GetConsoleOutputCP();
 
-    // set console to the default ANSI Code Page
-    UINT defaultCodePage;
-    GetLocaleInfo(LOCALE_USER_DEFAULT,
-    		      LOCALE_RETURN_NUMBER | LOCALE_IDEFAULTANSICODEPAGE,
-				  reinterpret_cast<LPWSTR>(&defaultCodePage),
-				  sizeof(defaultCodePage));
-    SetConsoleOutputCP(defaultCodePage);
+        // Use a unicode font
+        CONSOLE_FONT_INFOEX newFont;
+        newFont.cbSize = sizeof newFont;
+        newFont.nFont = 0;
+        newFont.dwFontSize.X = 0;
+        newFont.dwFontSize.Y = 14;
+        newFont.FontFamily = FF_DONTCARE;
+        newFont.FontWeight = FW_NORMAL;
+        wcscpy_s(newFont.FaceName, L"Consolas");
+        SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &newFont);
 
-  #ifdef DEBUGCONSOLE
-    InitDebugConsole();
-  #endif
+        // set console to the default ANSI Code Page
+        UINT defaultCodePage;
+        GetLocaleInfo(LOCALE_USER_DEFAULT,
+                      LOCALE_RETURN_NUMBER | LOCALE_IDEFAULTANSICODEPAGE,
+                      reinterpret_cast<LPWSTR>(&defaultCodePage),
+                      sizeof(defaultCodePage));
+        SetConsoleOutputCP(defaultCodePage);
+    }
 #endif
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
@@ -412,7 +399,9 @@ int main(int argc, char * argv[])
     // Reset Windows console to old code page
     // We need to stick with the unicode font since
     // changing back will destroy the console history
-    SetConsoleOutputCP(oldCodePage);
+    if (GetConsoleWindow() != NULL) {
+        SetConsoleOutputCP(oldCodePage);
+    }
 #endif
 
     //delete plugin_paths;
