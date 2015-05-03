@@ -88,6 +88,17 @@
  ** LIBRARY *********************************************************************
  *******************************************************************************/
 
+/* library table */
+QTableView {
+  color: #A9A9A9;
+  background-color: #1F1F1F;
+  alternate-background-color: #1A1A1A;
+  selection-background-color: #006596;
+  selection-color: #D6D6D6;
+  qproperty-alternatingRowColors: 1;
+  border: 1px solid #1A1A1A;
+  gridline-color: red;
+}
 
 /* checkbox in library "Played" column */
 QTableView::indicator {
@@ -112,7 +123,7 @@ QTableView::indicator:unchecked {
   image: url(:/images/library/ic_library_unchecked.png);
 }
 
-/* Button in library "Preview" column */
+/* button in library "Preview" column */
 QPushButton#LibraryPreviewButton {
   width: 23px;
   height: 12px;
@@ -126,6 +137,62 @@ QPushButton#LibraryPreviewButton:!checked {
 
 QPushButton#LibraryPreviewButton:checked {
   image: url(skin:/image/style_library_preview_pause.png);
+}
+
+/* library header row */
+QHeaderView {
+  color: #7C7C7C;
+  background: #1A1A1A;
+  border-bottom: 1px solid #141414;
+}
+
+QHeaderView::section {
+  height: 18px;
+  font-size: 13px/15px;
+  font-weight: normal;
+  padding: 2px;
+  background: #1A1A1A;
+  border-top: none;
+  border-bottom: 1px solid #141414;
+  border-left: 1px solid #141414;
+  border-right: none;
+}
+
+QHeaderView::section:selected {
+  font-size: 13px/15px;
+  font-weight: bold;
+  padding: 2px;
+  background: #1A1A1A;
+  border-top: none;
+  border-bottom: 1px solid #141414;
+  border-left: 1px solid #141414;
+  border-right: none;
+}
+
+QHeaderView::up-arrow {
+  image: url(skin:/image/style_sort_up.svg)
+}
+
+QHeaderView::down-arrow {
+  image: url(skin:/image/style_sort_down.svg)
+}
+
+/* library search bar */
+WSearchLineEdit {
+  margin: 0px 0px 0px 1px;
+  padding: 2px;
+  border: 1px solid #1A1A1A;
+  background-color: #4B4B4B;
+  color: #D6D6D6;
+}
+
+WSearchLineEdit:focus {
+  margin: 2px 0px 0px 1px;
+  padding: 2px;
+  border: 1px solid #FF6600;
+  background-color: #4B4B4B;
+  color: #D6D6D6;
+  selection-color: #222222;
 }
 
 /* library preview deck */
@@ -153,6 +220,29 @@ QTreeView {
   margin: 4px 0px 0px 0px;
 }
 
+/* sidebar, as well as root items for playlists, crates, and history */
+QTextBrowser, QTreeView {
+  color: #A9A9A9;
+  background-color: #1F1F1F;
+  selection-background-color: #006596;
+  selection-color: #D6D6D6;
+  border: 1px solid #1A1A1A;
+  gridline-color: red;
+  /* Suppresses that selected sidebar item's branch indicator shows wrong color
+     when out of focus, see lp:880588 */
+  show-decoration-selected: 1;
+}
+/* triangle for closed/opened branches in treeview */
+QTreeView::branch:has-children:!has-siblings:closed,
+QTreeView::branch:closed:has-children:has-siblings {
+  border-image: none; image: url(skin:/image/style_branch_closed.png);
+}
+
+QTreeView::branch:open:has-children:!has-siblings,
+QTreeView::branch:open:has-children:has-siblings {
+  border-image: none; image: url(skin:/image/style_branch_open.png);
+}
+
 /* splitter between treeview and library */
 QSplitter::handle {
   image: url(skin:/image/style_handle_unchecked.svg);
@@ -165,13 +255,46 @@ QSplitter::handle:pressed {
 }
 
 QSplitter::handle:horizontal {
-  width: 8px;
+  width: 6px;
 }
 
 QSplitter::handle:vertical {
-  height: 8px;
+  height: 6px;
 }
 
+/* transition time in Auto DJ tab */
+WLibrary QSpinBox {
+  min-height: 20px;
+  max-height: 20px;
+  min-width: 40px;
+  max-width: 40px;
+}
+
+WLibrary QSpinBox:editable {
+  background: transparent;
+  color:#A9A9A9;
+}
+
+/* Extra declaration for QRadionButton otherwise it shows up with wrong colors in Linux with Gnome */
+WLibrary QLabel, WLibrary QRadioButton {
+  /* same as QTreeview */
+  color: #A9A9A9;
+  margin: 0px 10px 0px 0px;
+}
+
+WLibrary QRadioButton::indicator {
+  margin: 0px 5px 0px 2px;
+  width: 18px;
+  height: 18px;
+}
+
+WLibrary QRadioButton::indicator:checked {
+  background: url(skin:/icon/ic_radio_button_on_18px.svg);
+}
+
+WLibrary QRadioButton::indicator:unchecked {
+  background: url(skin:/icon/ic_radio_button_off_18px.svg);
+}
 /* buttons in library (in hierarchical order of appearance)
    Style them just as the other regular buttons */
 #DlgMissing > QPushButton,
@@ -642,6 +765,7 @@ WStarRating {
 
 #LibraryContainer {
   background-color: #222;
+  padding-top: 4px;
 }
 
 #LibraryExpanded, #LibraryCollapsed {
