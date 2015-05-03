@@ -980,6 +980,13 @@ WPushButton[value="2"]:hover {
     border: 0px solid #5F5F5F;
 }
 
+#WaveformZoomDownButton[value="0"]:!hover,
+#WaveformZoomSetDefaultButton[value="0"]:!hover,
+#WaveformZoomUpButton[value="0"]:!hover {
+  background: none;
+  border: none;
+}
+
 /*******************************************************************************
  ** End Buttons  ***************************************************************
  *******************************************************************************/
