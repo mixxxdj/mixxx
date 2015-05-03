@@ -209,15 +209,15 @@ VestaxVCI300.group = "[Master]";
 VestaxVCI300.JOG_RESOLUTION = 1600; // Steps per revolution: (0x0C << 7) + 0x40 = 1536 + 64 = 1600
 
 // At jogCueSensitivityScale = 63.0 and jogCueSensitivityPow the
-// virtual platter in scratch mode is almost synchronized wit the
+// virtual platter in scratch mode is almost synchronized with the
 // jog wheel of the VCI-300 when spinning the rim without actually
 // touching the platter surface (-> same behaviour as in cue mode)
-VestaxVCI300.jogCueSensitivityScale = 63.0 / VestaxVCI300.jogResolution; // best match(?)
+VestaxVCI300.jogCueSensitivityScale = 63.0 / VestaxVCI300.JOG_RESOLUTION; // best match(?)
 VestaxVCI300.jogCueSensitivityPow = 1.0; // 1.0 = linear (like scratching)
 
 // You might adjust the jog sensitivity for pitch bending according to
 // your personal preferences.
-VestaxVCI300.jogTempoSensitivityScale = 8.0 / VestaxVCI300.jogResolution; /*TUNABLE PARAM*/
+VestaxVCI300.jogTempoSensitivityScale = 8.0 / VestaxVCI300.JOG_RESOLUTION; /*TUNABLE PARAM*/
 VestaxVCI300.jogTempoSensitivityPow = 0.6; // 1.0 = linear /*TUNABLE PARAM*/
 
 VestaxVCI300.JOG_SCRATCH_RPM = 33.0 + (1.0 / 3.0); // 33 1/3 /*TUNABLE PARAM*/
@@ -229,7 +229,7 @@ VestaxVCI300.JOG_SCRATCH2_PLAY_MIN = -0.7;
 VestaxVCI300.JOG_SCRATCH2_PLAY_MAX = 1.0;
 VestaxVCI300.JOG_SCRATCH_TIMEOUT = 20; // in milliseconds
 
-VestaxVCI300.jogFastTrackSearchScale = 3.0 / VestaxVCI300.jogResolution; /*TUNABLE PARAM*/
+VestaxVCI300.jogFastTrackSearchScale = 3.0 / VestaxVCI300.JOG_RESOLUTION; /*TUNABLE PARAM*/
 
 VestaxVCI300.jogScrollBias = 0.0; // Initialize jog scroll
 VestaxVCI300.jogScrollDeltaStepsPerTrack = 8; // 1600 / 8 = 200 tracks per revolution /*TUNABLE PARAM*/
