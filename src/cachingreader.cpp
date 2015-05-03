@@ -338,7 +338,7 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
         samples_remaining -= zero_samples;
         if (samples_remaining == 0) {
             //everything is zeros, easy
-            return 0;
+            return zero_samples;
         }
         buffer += zero_samples;
         sample += zero_samples;
