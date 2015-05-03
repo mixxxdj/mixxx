@@ -198,16 +198,20 @@ WSearchLineEdit:focus {
 /* library preview deck */
 #PreviewDeckContainer {
   margin: 4px 0px 0px 0px;
-  padding: 2px;
   background-color: #1F1F1F;
   border: 1px solid #1A1A1A;
 }
 
-#PreviewDeckTextRow WLabel, #PreviewDeckVisualRow {
+#PreviewDeckTextRow WLabel  {
   padding: 2px;
   color: #A9A9A9;
   font-size: 12px/14px;
   text-transform: none;
+}
+
+#PreviewDeckVisualRow {
+  padding: 2px;
+  border-top: 1px solid #1A1A1A;
 }
 
 #PreviewDeckEjectButton[value="0"]:!hover {
