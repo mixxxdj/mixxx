@@ -860,7 +860,7 @@ QWidget* LegacySkinParser::parseOverview(QDomElement node) {
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
             overviewWidget, SLOT(slotTrackLoaded(TrackPointer)));
     connect(pPlayer, SIGNAL(loadTrackFailed(TrackPointer)),
-               overviewWidget, SLOT(slotUnloadTrack(TrackPointer)));
+            overviewWidget, SLOT(slotUnloadTrack(TrackPointer)));
     connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
             overviewWidget, SLOT(slotUnloadTrack(TrackPointer)));
 
