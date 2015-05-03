@@ -364,8 +364,13 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
         SampleUtil::clear(buffer, zero_samples);
         samples_remaining -= zero_samples;
         if (samples_remaining == 0) {
+<<<<<<< HEAD
             return 0;
 >>>>>>> New SoundSource/AudioSource API
+=======
+            //everything is zeros, easy
+            return zero_samples;
+>>>>>>> Fix error in CachingReader::read that prevent seeking into preroll, fixes Bug #1450260
         }
         buffer += zero_samples;
         sample += zero_samples;
