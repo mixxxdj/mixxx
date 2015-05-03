@@ -90,9 +90,9 @@ EffectManifest AutoPanEffect::getManifest() {
     width->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     width->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     width->setMinimum(0.0);
-//    delay->setMaximum(0.02);    // 0.02 * sampleRate => 20ms
     width->setMaximum(1.0);    // 0.02 * sampleRate => 20ms
-    width->setDefault(0.00);
+//    width->setDefault(0.00);
+    width->setDefault(1.00);
     
     return manifest;
 }
@@ -160,11 +160,7 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
     gs.frac.setRampingThreshold(positionRampingThreshold);
     gs.frac.ramped = false;     // just for debug
     
-    // prepare the delay buffer
-    float delay = round(m_pDelayParameter->value() * sampleRate);
-    gs.delay->setLeftDelay(delay);
-    
-    gs.delay->process(pInput, pOutput, numSamples);
+    double sinusoid = 0;
     
     for (unsigned int i = 0; i + 1 < numSamples; i += 2) {
         
@@ -188,25 +184,29 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
             angleFraction = (periodFraction - stepsFractionPart) * a;
         }
         
-        // transforms the angleFraction into a sinusoid (but between 0 and 1).
+        // transforms the angleFraction into a sinusoid.
         // The width parameter modulates the two limits. if width values 0.5,
         // the limits will be 0.25 and 0.75. If it's 0, it will be 0.5 and 0.5
         // so the sound will be stuck at the center. If it values 1, the limits 
         // will be 0 and 1 (full left and full right).
-        gs.frac.setWithRampingApplied(
-            (sin(M_PI * 2.0f * angleFraction) * width + 1.0f) / 2.0f);
+        sinusoid = sin(M_PI * 2.0f * angleFraction) * width;
+        gs.frac.setWithRampingApplied((sinusoid + 1.0f) / 2.0f);
         
-        pOutput[i] = pOutput[i] * gs.frac * 2;
-        pOutput[i+1] = pOutput[i+1] * (1.0f - gs.frac) * 2;
+        pOutput[i] = pInput[i] * gs.frac * 2;
+        pOutput[i+1] = pInput[i+1] * (1.0f - gs.frac) * 2;
         
         gs.time++;
     }
     
+    // apply the delay
+    float delay = round(m_pDelayParameter->value() * sampleRate);
+    gs.delay->setLeftDelay( delay * sinusoid );
+    gs.delay->process(pOutput, pOutput, numSamples);
     
     qDebug()
         // << "| ramped :" << gs.frac.ramped
         << "| quarter :" << floorf(CSAMPLE(gs.time) / period * 4.0f)
-        << "| delay :" << delay
+        << "| delay :" << sinusoid / 10
         // << "| beat_length :" << groupFeatures.beat_length
         << "| beats :" << pow(2, floor(m_pPeriodParameter->value() * 9 / m_pPeriodParameter->maximum()) - 3)
         // << "| period :" << period
