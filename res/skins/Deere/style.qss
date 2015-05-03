@@ -77,14 +77,6 @@
 
 #Sampler {
   border: 1px solid #222;
-  border-left:none;
-}
-
-#PreviewDeckContainer {
-margin: 0px;
-padding: 0px 0px 4px 5px;
-border: 1px solid #222;
-background: transparent;
 }
 
 /*******************************************************************************
@@ -134,6 +126,31 @@ QPushButton#LibraryPreviewButton:!checked {
 
 QPushButton#LibraryPreviewButton:checked {
   image: url(skin:/image/style_library_preview_pause.png);
+}
+
+/* library preview deck */
+#PreviewDeckContainer {
+  margin: 4px 0px 0px 0px;
+  padding: 2px;
+  background-color: #1F1F1F;
+  border: 1px solid #1A1A1A;
+}
+
+#PreviewDeckTextRow WLabel, #PreviewDeckVisualRow {
+  padding: 2px;
+  color: #A9A9A9;
+  font-size: 12px/14px;
+  text-transform: none;
+}
+
+#PreviewDeckEjectButton[value="0"]:!hover {
+  background: none;
+  border: none;
+}
+
+/* Spacing between treeview and preview deck/search bar */
+QTreeView {
+  margin: 4px 0px 0px 0px;
 }
 
 /* splitter between treeview and library */
@@ -602,7 +619,7 @@ WStarRating {
   background-color  : none;
 }
 
-#SampleDecksContainer, #PreviewDeckContainer {
+#SampleDecksContainer {
   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                     stop: 0 #333333,
                                     stop: 1.0 #333333);
