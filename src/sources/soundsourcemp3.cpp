@@ -249,27 +249,11 @@ Result SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
         }
 
         const SINT madChannelCount = MAD_NCHANNELS(&madHeader);
-        if (0 < madChannelCount) {
-            if (madChannelCount > kChannelCountMax) {
-                qWarning() << "Invalid number of channels"
-                        << madChannelCount << ">" << kChannelCountMax
-                        << "in MP3 frame header:" << m_file.fileName();
-                // Abort
-                mad_header_finish(&madHeader);
-                return ERR;
-            }
-            if ((0 < maxChannelCount) && (madChannelCount != maxChannelCount)) {
-                qWarning() << "Differing number of channels"
-                        << madChannelCount << "<>" << maxChannelCount
-                        << "in some MP3 frame headers:"
-                        << m_file.fileName();
-            }
-        } else {
-            qWarning() << "Invalid number of channels" << madChannelCount
-                    << "in MP3 frame header:" << m_file.fileName();
-            // Abort
-            mad_header_finish(&madHeader);
-            return ERR;
+        if ((0 < maxChannelCount) && (madChannelCount != maxChannelCount)) {
+            qWarning() << "Differing number of channels"
+                    << madChannelCount << "<>" << maxChannelCount
+                    << "in some MP3 frame headers:"
+                    << m_file.fileName();
         }
         maxChannelCount = math_max(madChannelCount, maxChannelCount);
 
