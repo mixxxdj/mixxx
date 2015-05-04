@@ -21,14 +21,16 @@ EffectManifest AutoPanEffect::getManifest() {
     manifest.setName(QObject::tr("AutoPan"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
-    manifest.setDescription(QObject::tr(
-        "Bounce the sound from a channel to another, fastly or softly"));
+    manifest.setDescription(QObject::tr("Bounce the sound from a channel "
+            "to another, roughly or softly, fully or partially, fastly or slowly. "
+            "A delay, inversed on each side, is added to increase the "
+            "spatial move and the period can be synced with the BPM."));
     
     // Period unit
     EffectManifestParameter* periodUnit = manifest.addParameter();
     periodUnit->setId("periodUnit");
-    periodUnit->setName(QObject::tr("Period Unit"));
-    periodUnit->setDescription("Period Unit");
+    periodUnit->setName(QObject::tr("Sync"));
+    periodUnit->setDescription("Synchronizes the period with the BPM if it can be retrieved");
     periodUnit->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
     periodUnit->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     periodUnit->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
@@ -40,7 +42,8 @@ EffectManifest AutoPanEffect::getManifest() {
     EffectManifestParameter* period = manifest.addParameter();
     period->setId("period");
     period->setName(QObject::tr("Period"));
-    period->setDescription("Controls the speed of the effect.");
+    period->setDescription("How fast the sound goes from a side to another,"
+            " following a logarithmic scale");
     period->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
 //    period->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     period->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
@@ -48,24 +51,6 @@ EffectManifest AutoPanEffect::getManifest() {
     period->setMinimum(0.01);
     period->setMaximum(1.0);
     period->setDefault(1.0);
-    
-    /** /
-    // Delay : applied on the channel with gain reducing.
-    EffectManifestParameter* delay = manifest.addParameter();
-    delay->setId("delay");
-    delay->setName(QObject::tr("delay"));
-    delay->setDescription("Controls length of the delay");
-    delay->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    delay->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    delay->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    // 10 ms seams to be more then enough here for test purpose
-    // it works for me up to ~5 ms using my laptop speakers.
-    // for 40 ms you have an echo
-    // http://en.wikipedia.org/wiki/Precedence_effect
-    delay->setMinimum(-0.01);
-    delay->setMaximum(0.01);
-    delay->setDefault(0.0);
-    /**/
     
     // This parameter controls the easing of the sound from a side to another.
     EffectManifestParameter* smoothing = manifest.addParameter();
@@ -83,8 +68,8 @@ EffectManifest AutoPanEffect::getManifest() {
     // Width : applied on the channel with gain reducing.
     EffectManifestParameter* width = manifest.addParameter();
     width->setId("width");
-    width->setName(QObject::tr("width"));
-    width->setDescription("Controls length of the width");
+    width->setName(QObject::tr("Width"));
+    width->setDescription("How far the signal goes on the left or on the right");
     width->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     width->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     width->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
@@ -100,7 +85,6 @@ AutoPanEffect::AutoPanEffect(EngineEffect* pEffect, const EffectManifest& manife
           m_pSmoothingParameter(pEffect->getParameterById("smoothing")),
           m_pPeriodUnitParameter(pEffect->getParameterById("periodUnit")),
           m_pPeriodParameter(pEffect->getParameterById("period")),
-//          m_pDelayParameter(pEffect->getParameterById("delay")),
           m_pWidthParameter(pEffect->getParameterById("width"))
            {
     Q_UNUSED(manifest);
@@ -197,22 +181,7 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
     }
     
     // apply the delay
-//    float delay = round(m_pDelayParameter->value() * sampleRate);
-//    gs.delay->setLeftDelay( delay * sinusoid );
-    gs.delay->setLeftDelay( 0.01 * sinusoid );
+    gs.delay->setLeftDelay(-0.005 * math_clamp(sinusoid, -1.0, 1.0) * sampleRate);
     gs.delay->process(pOutput, pOutput, numSamples);
-    
-    qDebug()
-        // << "| ramped :" << gs.frac.ramped
-        << "| quarter :" << floorf(CSAMPLE(gs.time) / period * 4.0f)
-        << "| delay :" << sinusoid / 10
-        // << "| beat_length :" << groupFeatures.beat_length
-        << "| beats :" << pow(2, floor(m_pPeriodParameter->value() * 9 / m_pPeriodParameter->maximum()) - 3)
-        // << "| period :" << period
-        << "| frac :" << gs.frac
-        << "| time :" << gs.time
-        << "| numSamples :" << numSamples
-        ;
-    /**/
 }
 
