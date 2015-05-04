@@ -41,7 +41,8 @@ WWidgetStack::WWidgetStack(QWidget* pParent,
           m_prevControl(pPrevControl ? pPrevControl->getKey() : ConfigKey()),
           m_currentPageControl(
                   pCurrentPageControl ?
-                  pCurrentPageControl->getKey() : ConfigKey()) {
+                  pCurrentPageControl->getKey() : ConfigKey()),
+          m_onHideSelectsFirst(false) {
     connect(&m_nextControl, SIGNAL(valueChanged(double)),
             this, SLOT(onNextControlChanged(double)));
     connect(&m_prevControl, SIGNAL(valueChanged(double)),
@@ -52,6 +53,13 @@ WWidgetStack::WWidgetStack(QWidget* pParent,
             this, SLOT(setCurrentIndex(int)));
     connect(&m_hideMapper, SIGNAL(mapped(int)),
             this, SLOT(hideIndex(int)));
+}
+
+void WWidgetStack::setup(QDomNode node, const SkinContext& context) {
+    // By default, a hideIndex event selects the next page in the stack.
+    // Skin creators can optionally have the first page be selected instead,
+    // and if this page is empty it can make it look like the stack is "off".
+    m_onHideSelectsFirst = context.selectBool(node, "OnHideSelectsFirst", false);
 }
 
 // override
@@ -76,7 +84,11 @@ QSize WWidgetStack::minimumSizeHint() const {
 
 void WWidgetStack::hideIndex(int index) {
     if (currentIndex() == index) {
-        setCurrentIndex((index + 1) % count());
+        if (m_onHideSelectsFirst) {
+            setCurrentIndex(0);
+        } else {
+            setCurrentIndex((index + 1) % count());
+        }
     }
 }
 

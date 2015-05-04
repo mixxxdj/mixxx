@@ -9,6 +9,7 @@
 
 #include "controlobject.h"
 #include "controlobjectthread.h"
+#include "skin/skincontext.h"
 #include "widget/wbasewidget.h"
 
 class WidgetStackControlListener : public QObject {
@@ -46,6 +47,8 @@ class WWidgetStack : public QStackedWidget, public WBaseWidget {
     // so we override Init and hook up the connection there.
     virtual void Init();
 
+    virtual void setup(QDomNode node, const SkinContext& context);
+
     // QStackedWidget sizeHint and minimumSizeHint are the largest of all the
     // widgets in the stack. This is presumably to prevent UI resizes when the
     // stack changes. We explicitly want the UI to change when the stack changes
@@ -73,6 +76,8 @@ class WWidgetStack : public QStackedWidget, public WBaseWidget {
     ControlObjectThread m_nextControl;
     ControlObjectThread m_prevControl;
     ControlObjectThread m_currentPageControl;
+
+    bool m_onHideSelectsFirst;
 };
 
 #endif /* WWIDGETSTACK_H */

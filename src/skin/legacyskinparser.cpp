@@ -624,6 +624,7 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
     pStack->setObjectName("WidgetStack");
     pStack->setContentsMargins(0, 0, 0, 0);
     commonWidgetSetup(node, pStack);
+    pStack->setup(node, *m_pContext);
 
     if (createdNext && pNextControl) {
         pNextControl->setParent(pStack);

@@ -6,6 +6,7 @@
         <Children>
             <WidgetStack currentpage="[Master],med_view_curpage" persist="true">
                 <SizePolicy>me,min</SizePolicy>
+                <OnHideSelectsFirst>true</OnHideSelectsFirst>
                 <Children>
                     <!-- Need a blank page for when the user just wants the
                     library.
