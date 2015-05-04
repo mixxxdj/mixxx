@@ -281,9 +281,10 @@ int main(int argc, char * argv[])
         SetConsoleTitleA("Mixxx Debug Messages");
     }
 #endif
+    UINT oldCodePage;
     if (GetConsoleWindow() != NULL) {
         // Save current code page
-        UINT oldCodePage = GetConsoleOutputCP();
+        oldCodePage = GetConsoleOutputCP();
 
         // Use a unicode font
         CONSOLE_FONT_INFOEX newFont;
