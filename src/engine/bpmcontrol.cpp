@@ -147,7 +147,6 @@ BpmControl::~BpmControl() {
     delete m_pThisBeatDistance;
     delete m_pAdjustBeatsFaster;
     delete m_pAdjustBeatsSlower;
-    delete m_pBeatsTranslateMatchAlignment;
 }
 
 double BpmControl::getBpm() const {
