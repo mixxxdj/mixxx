@@ -9,7 +9,6 @@
 
 #include "controlobject.h"
 #include "controlobjectthread.h"
-#include "skin/skincontext.h"
 #include "widget/wbasewidget.h"
 
 class WidgetStackControlListener : public QObject {
