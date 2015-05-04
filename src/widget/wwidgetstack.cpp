@@ -41,8 +41,7 @@ WWidgetStack::WWidgetStack(QWidget* pParent,
           m_prevControl(pPrevControl ? pPrevControl->getKey() : ConfigKey()),
           m_currentPageControl(
                   pCurrentPageControl ?
-                  pCurrentPageControl->getKey() : ConfigKey()),
-          m_onHideSelectsFirst(false) {
+                  pCurrentPageControl->getKey() : ConfigKey()) {
     connect(&m_nextControl, SIGNAL(valueChanged(double)),
             this, SLOT(onNextControlChanged(double)));
     connect(&m_prevControl, SIGNAL(valueChanged(double)),
@@ -53,13 +52,6 @@ WWidgetStack::WWidgetStack(QWidget* pParent,
             this, SLOT(setCurrentIndex(int)));
     connect(&m_hideMapper, SIGNAL(mapped(int)),
             this, SLOT(hideIndex(int)));
-}
-
-void WWidgetStack::setup(QDomNode node, const SkinContext& context) {
-    // By default, a hideIndex event selects the next page in the stack.
-    // Skin creators can optionally have the first page be selected instead,
-    // and if this page is empty it can make it look like the stack is "off".
-    m_onHideSelectsFirst = context.selectBool(node, "OnHideSelectsFirst", false);
 }
 
 // override
@@ -84,8 +76,9 @@ QSize WWidgetStack::minimumSizeHint() const {
 
 void WWidgetStack::hideIndex(int index) {
     if (currentIndex() == index) {
-        if (m_onHideSelectsFirst) {
-            setCurrentIndex(0);
+        QMap<int, int>::const_iterator it = m_hideMap.find(index);
+        if (it != m_hideMap.end()) {
+            setCurrentIndex(*it);
         } else {
             setCurrentIndex((index + 1) % count());
         }
@@ -117,7 +110,8 @@ void WWidgetStack::onCurrentPageControlChanged(double v) {
     setCurrentIndex(newIndex);
 }
 
-void WWidgetStack::addWidgetWithControl(QWidget* pWidget, ControlObject* pControl) {
+void WWidgetStack::addWidgetWithControl(QWidget* pWidget, ControlObject* pControl,
+                                        int on_hide_select) {
     int index = addWidget(pWidget);
     if (pControl) {
         WidgetStackControlListener* pListener = new WidgetStackControlListener(
@@ -138,6 +132,9 @@ void WWidgetStack::addWidgetWithControl(QWidget* pWidget, ControlObject* pContro
 
     if (m_currentPageControl.get() == index) {
         setCurrentIndex(index);
+    }
+    if (on_hide_select != -1) {
+        m_hideMap[index] = on_hide_select;
     }
 }
 

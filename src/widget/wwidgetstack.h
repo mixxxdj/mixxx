@@ -47,8 +47,6 @@ class WWidgetStack : public QStackedWidget, public WBaseWidget {
     // so we override Init and hook up the connection there.
     virtual void Init();
 
-    virtual void setup(QDomNode node, const SkinContext& context);
-
     // QStackedWidget sizeHint and minimumSizeHint are the largest of all the
     // widgets in the stack. This is presumably to prevent UI resizes when the
     // stack changes. We explicitly want the UI to change when the stack changes
@@ -56,7 +54,11 @@ class WWidgetStack : public QStackedWidget, public WBaseWidget {
     QSize sizeHint() const;
     QSize minimumSizeHint() const;
 
-    void addWidgetWithControl(QWidget* pWidget, ControlObject* pControl);
+    // Adds a page to the stack.  If this page is hidden, the the page with the
+    // 0-based index given by on_hide_select will be shown.  If this value is
+    // -1, the next page on the stack will be shown.
+    void addWidgetWithControl(QWidget* pWidget, ControlObject* pControl,
+                              int on_hide_select);
 
   protected:
     bool event(QEvent* pEvent);
@@ -77,7 +79,9 @@ class WWidgetStack : public QStackedWidget, public WBaseWidget {
     ControlObjectThread m_prevControl;
     ControlObjectThread m_currentPageControl;
 
-    bool m_onHideSelectsFirst;
+    // Optional map that defines which page to select if a page gets a hide
+    // signal.
+    QMap<int, int> m_hideMap;
 };
 
 #endif /* WWIDGETSTACK_H */
