@@ -282,9 +282,11 @@ int main(int argc, char * argv[])
     }
 #endif
     UINT oldCodePage;
+    bool shouldResetCodePage = false;
     if (GetConsoleWindow() != NULL) {
         // Save current code page
         oldCodePage = GetConsoleOutputCP();
+        shouldResetCodePage = true;
 
         // Use a unicode font
         CONSOLE_FONT_INFOEX newFont;
@@ -400,7 +402,7 @@ int main(int argc, char * argv[])
     // Reset Windows console to old code page
     // We need to stick with the unicode font since
     // changing back will destroy the console history
-    if (GetConsoleWindow() != NULL) {
+    if (shouldResetCodePage && GetConsoleWindow() != NULL) {
         SetConsoleOutputCP(oldCodePage);
     }
 #endif
