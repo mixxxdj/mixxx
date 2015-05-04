@@ -46,7 +46,7 @@
                 <ObjectName>UILowerHalf</ObjectName>
                 <Layout>vertical</Layout>
                 <SizePolicy>min,i</SizePolicy>
-                <MinimumSize>0,431</MinimumSize>
+                <MinimumSize>0,430</MinimumSize>
                 <Children>
                     <Template src="skin:fx_samplers_container_full.xml"/>
                     <SingletonContainer>

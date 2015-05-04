@@ -76,7 +76,12 @@ QSize WWidgetStack::minimumSizeHint() const {
 
 void WWidgetStack::hideIndex(int index) {
     if (currentIndex() == index) {
-        setCurrentIndex((index + 1) % count());
+        QMap<int, int>::const_iterator it = m_hideMap.find(index);
+        if (it != m_hideMap.end()) {
+            setCurrentIndex(*it);
+        } else {
+            setCurrentIndex((index + 1) % count());
+        }
     }
 }
 
@@ -105,7 +110,8 @@ void WWidgetStack::onCurrentPageControlChanged(double v) {
     setCurrentIndex(newIndex);
 }
 
-void WWidgetStack::addWidgetWithControl(QWidget* pWidget, ControlObject* pControl) {
+void WWidgetStack::addWidgetWithControl(QWidget* pWidget, ControlObject* pControl,
+                                        int on_hide_select) {
     int index = addWidget(pWidget);
     if (pControl) {
         WidgetStackControlListener* pListener = new WidgetStackControlListener(
@@ -126,6 +132,9 @@ void WWidgetStack::addWidgetWithControl(QWidget* pWidget, ControlObject* pContro
 
     if (m_currentPageControl.get() == index) {
         setCurrentIndex(index);
+    }
+    if (on_hide_select != -1) {
+        m_hideMap[index] = on_hide_select;
     }
 }
 

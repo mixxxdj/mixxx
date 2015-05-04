@@ -684,7 +684,17 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
                     pControl->setParent(pChild);
                 }
             }
-            pStack->addWidgetWithControl(pChild, pControl);
+            int on_hide_select = -1;
+            QString on_hide_attr = element.attribute("on_hide_select");
+            if (on_hide_attr.length() > 0) {
+                bool ok = false;
+                on_hide_select = on_hide_attr.toInt(&ok);
+                if (!ok) {
+                    on_hide_select = -1;
+                }
+            }
+
+            pStack->addWidgetWithControl(pChild, pControl, on_hide_select);
         }
     }
 
