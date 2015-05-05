@@ -353,8 +353,8 @@ SINT SoundSourceFLAC::readSampleFrames(
                 m_sampleBuffer.readFromHead(numberOfSamplesRemaining));
         const SINT framesToCopy = samples2frames(readableChunk.size());
         if (outBuffer) {
-            if (readStereoSamples && !isChannelCountStereo()) {
-                if (isChannelCountMono()) {
+            if (readStereoSamples && (kChannelCountStereo != getChannelCount())) {
+                if (kChannelCountMono == getChannelCount()) {
                     SampleUtil::copyMonoToDualMono(outBuffer,
                             readableChunk.data(),
                             framesToCopy);
