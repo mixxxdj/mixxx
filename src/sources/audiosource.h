@@ -56,21 +56,24 @@ public:
     // Used by both SoundSourceMp3 and SoundSourceCoreAudio.
     static const SINT kMp3SeekFramePrefetchCount = 29;
 
+    inline static bool isValidChannelCount(SINT channelCount) {
+        return kChannelCountZero < channelCount;
+    }
+    inline bool hasChannelCount() const {
+        return isValidChannelCount(m_channelCount);
+    }
     // Returns the number of channels. The number of channels
     // must be constant over time.
     inline SINT getChannelCount() const {
         return m_channelCount;
     }
-    inline bool isChannelCountValid() const {
-        return kChannelCountZero < getChannelCount();
-    }
-    inline bool isChannelCountMono() const {
-        return kChannelCountMono == getChannelCount();
-    }
-    inline bool isChannelCountStereo() const {
-        return kChannelCountStereo == getChannelCount();
-    }
 
+    inline static bool isValidFrameRate(SINT frameRate) {
+        return kFrameRateZero < frameRate;
+    }
+    inline bool hasFrameRate() const {
+        return isValidFrameRate(m_frameRate);
+    }
     // Returns the number of frames per second. This equals
     // the number samples for each channel per second, which
     // must be uniform among all channels. The frame rate
@@ -78,39 +81,25 @@ public:
     inline SINT getFrameRate() const {
         return m_frameRate;
     }
-    inline bool isFrameRateValid() const {
-        return kFrameRateZero < getFrameRate();
+
+    inline bool isValid() const {
+        return hasChannelCount() && hasFrameRate();
     }
 
+    inline static bool isValidFrameCount(SINT frameCount) {
+        return kFrameCountZero <= frameCount;
+    }
     // Returns the total number of frames.
     inline SINT getFrameCount() const {
         return m_frameCount;
     }
-    inline bool isFrameCountEmpty() const {
+
+    inline bool isEmpty() const {
         return kFrameCountZero >= getFrameCount();
     }
 
-    inline bool isValid() const {
-        return isChannelCountValid() && isFrameRateValid();
-    }
-
-    inline bool isEmpty() const {
-        return isFrameCountEmpty();
-    }
-
-    // The optional bitrate in kbit/s (kbps).
-    // Derived classes may set the actual (average) bitrate when
-    // opening the file. The bitrate is not needed for decoding,
-    // it is only used for informational purposes.
-    inline bool hasBitrate() const {
-        return kBitrateZero < m_bitrate;
-    }
-    inline SINT getBitrate() const {
-        return m_bitrate;
-    }
-
     // The actual duration in seconds.
-    // Only available for valid files!
+    // Well defined only for valid files!
     inline bool hasDuration() const {
         return isValid();
     }
@@ -119,17 +108,31 @@ public:
         return getFrameCount() / getFrameRate();
     }
 
+    // The bitrate is measured in kbit/s (kbps).
+    inline static bool isValidBitrate(SINT bitrate) {
+        return kBitrateZero < bitrate;
+    }
+    inline bool hasBitrate() const {
+        return isValidBitrate(m_bitrate);
+    }
+    // Setting the bitrate is optional when opening a file.
+    // The bitrate is not needed for decoding, it is only used
+    // for informational purposes.
+    inline SINT getBitrate() const {
+        DEBUG_ASSERT(hasBitrate()); // prevents reading an invalid bitrate
+        return m_bitrate;
+    }
+
     // Conversion: #frames -> #samples
     template<typename T>
     inline T frames2samples(T frameCount) const {
-        DEBUG_ASSERT(isChannelCountValid());
         return frameCount * getChannelCount();
     }
 
     // Conversion: #samples -> #frames
     template<typename T>
     inline T samples2frames(T sampleCount) const {
-        DEBUG_ASSERT(isChannelCountValid()); DEBUG_ASSERT(0 == (sampleCount % getChannelCount()));
+        DEBUG_ASSERT(0 == (sampleCount % getChannelCount()));
         return sampleCount / getChannelCount();
     }
 
@@ -246,9 +249,7 @@ protected:
     void setFrameRate(SINT frameRate);
     void setFrameCount(SINT frameCount);
 
-    inline void setBitrate(SINT bitrate) {
-        m_bitrate = bitrate;
-    }
+    void setBitrate(SINT bitrate);
 
     SINT getSampleBufferSize(
             SINT numberOfFrames,

@@ -186,8 +186,8 @@ void SoundSourceMp3::finishDecoding() {
 }
 
 Result SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
-    DEBUG_ASSERT(!isChannelCountValid());
-    DEBUG_ASSERT(!isFrameRateValid());
+    DEBUG_ASSERT(!hasChannelCount());
+    DEBUG_ASSERT(!hasFrameRate());
 
     DEBUG_ASSERT(!m_file.isOpen());
     if (!m_file.open(QIODevice::ReadOnly)) {
@@ -249,7 +249,7 @@ Result SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
         }
 
         const SINT madChannelCount = MAD_NCHANNELS(&madHeader);
-        if ((0 < maxChannelCount) && (madChannelCount != maxChannelCount)) {
+        if (isValidChannelCount(maxChannelCount) && (madChannelCount != maxChannelCount)) {
             qWarning() << "Differing number of channels"
                     << madChannelCount << "<>" << maxChannelCount
                     << "in some MP3 frame headers:"
@@ -646,9 +646,9 @@ SINT SoundSourceMp3::readSampleFrames(
                         << madSynthChannelCount << "<>" << getChannelCount();
             }
 #endif
-            if (1 == madSynthChannelCount) {
+            if (kChannelCountMono == madSynthChannelCount) {
                 // MP3 frame contains a mono signal
-                if (readStereoSamples || isChannelCountStereo()) {
+                if (readStereoSamples || (kChannelCountStereo == getChannelCount())) {
                     // The reader explicitly requested a stereo signal
                     // or the AudioSource itself provides a stereo signal.
                     // Mono -> Stereo: Copy 1st channel twice
@@ -671,11 +671,11 @@ SINT SoundSourceMp3::readSampleFrames(
                 }
             } else {
                 // MP3 frame contains a stereo signal
-                DEBUG_ASSERT(2 == madSynthChannelCount);
+                DEBUG_ASSERT(kChannelCountStereo == madSynthChannelCount);
                 // If the MP3 frame contains a stereo signal then the whole
                 // AudioSource must also provide 2 channels, because the
                 // maximum channel count of all MP3 frames is used.
-                DEBUG_ASSERT(2 == getChannelCount());
+                DEBUG_ASSERT(kChannelCountStereo == getChannelCount());
                 // Stereo -> Stereo: Copy 1st+2nd channel
                 for (SINT i = 0; i < synthReadCount; ++i) {
                     *pSampleBuffer = madScaleSampleValue(
