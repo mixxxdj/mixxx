@@ -166,15 +166,15 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, Mixxx::AudioSourcePointer pAudi
     QTime progressUpdateInhibitTimer;
     progressUpdateInhibitTimer.start(); // Inhibit Updates for 60 milliseconds
 
-    SINT frameIndex = pAudioSource->getFrameIndexMin();
+    SINT frameIndex = pAudioSource->getMinFrameIndex();
     bool dieflag = false;
     bool cancelled = false;
     do {
         ScopedTimer t("AnalyserQueue::doAnalysis block");
 
-        DEBUG_ASSERT(frameIndex < pAudioSource->getFrameIndexMax());
+        DEBUG_ASSERT(frameIndex < pAudioSource->getMaxFrameIndex());
         const SINT framesRemaining =
-                pAudioSource->getFrameIndexMax() - frameIndex;
+                pAudioSource->getMaxFrameIndex() - frameIndex;
         const SINT framesToRead =
                 math_min(kAnalysisFramesPerBlock, framesRemaining);
         DEBUG_ASSERT(0 < framesToRead);
@@ -202,7 +202,7 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, Mixxx::AudioSourcePointer pAudi
             // Partial analysis block of audio samples has been read.
             // This should only happen at the end of an audio stream,
             // otherwise a decoding error must have occurred.
-            if (frameIndex < pAudioSource->getFrameIndexMax()) {
+            if (frameIndex < pAudioSource->getMaxFrameIndex()) {
                 // EOF not reached -> Maybe a corrupt file?
                 qWarning() << "Failed to read sample data from file:"
                         << tio->getFilename()
@@ -222,7 +222,7 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, Mixxx::AudioSourcePointer pAudi
         //fp div here prevents insane signed overflow
         DEBUG_ASSERT(pAudioSource->isValidFrameIndex(frameIndex));
         const double frameProgress =
-                double(frameIndex) / double(pAudioSource->getFrameIndexMax());
+                double(frameIndex) / double(pAudioSource->getMaxFrameIndex());
         int progressPromille = frameProgress * (1000 - FINALIZE_PROMILLE);
 
         if (m_progressInfo.track_progress != progressPromille) {
@@ -259,7 +259,7 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, Mixxx::AudioSourcePointer pAudi
         if (dieflag || cancelled) {
             t.cancel();
         }
-    } while (!dieflag && (frameIndex < pAudioSource->getFrameIndexMax()));
+    } while (!dieflag && (frameIndex < pAudioSource->getMaxFrameIndex()));
 
     return !cancelled; //don't return !dieflag or we might reanalyze over and over
 }

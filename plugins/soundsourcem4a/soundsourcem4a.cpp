@@ -202,7 +202,7 @@ Result SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSrcCfg) {
 
     // Invalidate current position to enforce the following
     // seek operation
-    m_curFrameIndex = getFrameIndexMax();
+    m_curFrameIndex = getMaxFrameIndex();
 
     // (Re-)Start decoding at the beginning of the file
     seekSampleFrame(kFrameIndexMin);
@@ -288,7 +288,7 @@ SINT SoundSourceM4A::readSampleFrames(
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
 
     const SINT numberOfFramesTotal = math_min(numberOfFrames,
-            SINT(getFrameIndexMax() - m_curFrameIndex));
+            SINT(getMaxFrameIndex() - m_curFrameIndex));
     const SINT numberOfSamplesTotal = frames2samples(numberOfFramesTotal);
 
     CSAMPLE* pSampleBuffer = sampleBuffer;

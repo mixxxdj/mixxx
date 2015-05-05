@@ -188,7 +188,7 @@ SINT SoundSourceOpus::seekSampleFrame(SINT frameIndex) {
             m_curFrameIndex = pcmOffset;
         } else {
             // Reset to EOF
-            m_curFrameIndex = getFrameIndexMax();
+            m_curFrameIndex = getMaxFrameIndex();
         }
     }
 
@@ -201,7 +201,7 @@ SINT SoundSourceOpus::readSampleFrames(
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
 
     const SINT numberOfFramesTotal = math_min(numberOfFrames,
-            SINT(getFrameIndexMax() - m_curFrameIndex));
+            SINT(getMaxFrameIndex() - m_curFrameIndex));
 
     CSAMPLE* pSampleBuffer = sampleBuffer;
     SINT numberOfFramesRemaining = numberOfFramesTotal;
@@ -232,7 +232,7 @@ SINT SoundSourceOpus::readSampleFramesStereo(
     DEBUG_ASSERT(getSampleBufferSize(numberOfFrames, true) <= sampleBufferSize);
 
     const SINT numberOfFramesTotal = math_min(numberOfFrames,
-            SINT(getFrameIndexMax() - m_curFrameIndex));
+            SINT(getMaxFrameIndex() - m_curFrameIndex));
 
     CSAMPLE* pSampleBuffer = sampleBuffer;
     SINT numberOfFramesRemaining = numberOfFramesTotal;

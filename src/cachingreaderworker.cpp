@@ -72,7 +72,7 @@ void CachingReaderWorker::processChunkReadRequest(
     }
 
     const SINT framesRemaining =
-            m_pAudioSource->getFrameIndexMax() - seekFrameIndex;
+            m_pAudioSource->getMaxFrameIndex() - seekFrameIndex;
     const SINT framesToRead =
             math_min(kFramesPerChunk, framesRemaining);
     if (0 >= framesToRead) {

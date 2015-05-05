@@ -444,7 +444,7 @@ SINT SoundSourceMp3::findSeekFrameIndex(
     DEBUG_ASSERT(0 < m_avgSeekFrameCount);
     DEBUG_ASSERT(!m_seekFrameList.empty());
     DEBUG_ASSERT(kFrameIndexMin == m_seekFrameList.front().frameIndex);
-    DEBUG_ASSERT(SINT(kFrameIndexMin + getFrameIndexMax()) == m_seekFrameList.back().frameIndex);
+    DEBUG_ASSERT(SINT(kFrameIndexMin + getMaxFrameIndex()) == m_seekFrameList.back().frameIndex);
 
     SINT lowerBound =
             0;
@@ -495,7 +495,7 @@ SINT SoundSourceMp3::seekSampleFrame(SINT frameIndex) {
     // some consistency checks
     DEBUG_ASSERT((curSeekFrameIndex >= seekFrameIndex) || (m_curFrameIndex < frameIndex));
     DEBUG_ASSERT((curSeekFrameIndex <= seekFrameIndex) || (m_curFrameIndex > frameIndex));
-    if ((getFrameIndexMax() <= m_curFrameIndex) || // out of range
+    if ((getMaxFrameIndex() <= m_curFrameIndex) || // out of range
             (frameIndex < m_curFrameIndex) || // seek backward
             (seekFrameIndex > (curSeekFrameIndex + kMp3SeekFramePrefetchCount))) { // jump forward
 
@@ -512,7 +512,7 @@ SINT SoundSourceMp3::seekSampleFrame(SINT frameIndex) {
         }
 
         m_curFrameIndex = restartDecoding(m_seekFrameList[seekFrameIndex]);
-        if (getFrameIndexMax() <= m_curFrameIndex) {
+        if (getMaxFrameIndex() <= m_curFrameIndex) {
             // out of range -> abort
             return m_curFrameIndex;
         }
@@ -553,7 +553,7 @@ SINT SoundSourceMp3::readSampleFrames(
     DEBUG_ASSERT(getSampleBufferSize(numberOfFrames, readStereoSamples) <= sampleBufferSize);
 
     const SINT numberOfFramesTotal = math_min(numberOfFrames,
-            SINT(getFrameIndexMax() - m_curFrameIndex));
+            SINT(getMaxFrameIndex() - m_curFrameIndex));
 
     CSAMPLE* pSampleBuffer = sampleBuffer;
     SINT numberOfFramesRemaining = numberOfFramesTotal;
