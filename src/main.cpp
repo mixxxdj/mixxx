@@ -50,7 +50,6 @@ extern "C" {
 
 #ifdef __WINDOWS__
 #include <windows.h>
-#include <VersionHelpers.h>
 #endif // __WINDOWS__
 
 QStringList plugin_paths; //yes this is global. sometimes global is good.
@@ -289,18 +288,16 @@ int main(int argc, char * argv[])
         oldCodePage = GetConsoleOutputCP();
         shouldResetCodePage = true;
 
-        if (IsWindowsVistaOrGreater()) {
-            // Use a unicode font
-            CONSOLE_FONT_INFOEX newFont;
-            newFont.cbSize = sizeof newFont;
-            newFont.nFont = 0;
-            newFont.dwFontSize.X = 0;
-            newFont.dwFontSize.Y = 14;
-            newFont.FontFamily = FF_DONTCARE;
-            newFont.FontWeight = FW_NORMAL;
-            wcscpy_s(newFont.FaceName, L"Consolas");
-            SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &newFont);
-        }
+        // Use a unicode font
+        CONSOLE_FONT_INFOEX newFont;
+        newFont.cbSize = sizeof newFont;
+        newFont.nFont = 0;
+        newFont.dwFontSize.X = 0;
+        newFont.dwFontSize.Y = 14;
+        newFont.FontFamily = FF_DONTCARE;
+        newFont.FontWeight = FW_NORMAL;
+        wcscpy_s(newFont.FaceName, L"Consolas");
+        SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &newFont);
 
         // set console to the default ANSI Code Page
         UINT defaultCodePage;
