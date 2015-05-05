@@ -259,7 +259,7 @@
                         <MinimumSize>52,</MinimumSize>
                         <Children>
                             <PushButton>
-                                <Size>52,24</Size>
+                                <Size>52,17</Size>
                                 <ObjectName>SyncToggleButton</ObjectName>
                                 <TooltipId>sync_enabled</TooltipId>
                                 <NumberStates>2</NumberStates>
