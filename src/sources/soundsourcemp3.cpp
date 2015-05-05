@@ -198,6 +198,12 @@ Result SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     // Get a pointer to the file using memory mapped IO
     m_fileSize = m_file.size();
     m_pFileData = m_file.map(0, m_fileSize);
+    // NOTE(uklotzde): If the file disappears unexpectedly while mapped
+    // a SIGBUS error might occur that is not handled and will terminate
+    // Mixxx immediately. This behavior is documented in the manpage of
+    // mmap(). It has already appeared due to hardware errors and is
+    // described in the following bug report:
+    // https://bugs.launchpad.net/mixxx/+bug/1452005
 
     // Transfer it to the mad stream-buffer:
     mad_stream_options(&m_madStream, MAD_OPTION_IGNORECRC);
