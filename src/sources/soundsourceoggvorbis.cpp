@@ -275,7 +275,7 @@ SINT SoundSourceOggVorbis::seekSampleFrame(
             m_curFrameIndex = pcmOffset;
         } else {
             // Reset to EOF
-            m_curFrameIndex = getFrameIndexMax();
+            m_curFrameIndex = getMaxFrameIndex();
         }
     }
 
@@ -303,7 +303,7 @@ SINT SoundSourceOggVorbis::readSampleFrames(
     DEBUG_ASSERT(getSampleBufferSize(numberOfFrames, readStereoSamples) <= sampleBufferSize);
 
     const SINT numberOfFramesTotal = math_min(numberOfFrames,
-            SINT(getFrameIndexMax() - m_curFrameIndex));
+            SINT(getMaxFrameIndex() - m_curFrameIndex));
 
     CSAMPLE* pSampleBuffer = sampleBuffer;
     SINT numberOfFramesRemaining = numberOfFramesTotal;

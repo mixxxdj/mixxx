@@ -250,7 +250,7 @@ SINT SoundSourceFLAC::seekSampleFrame(SINT frameIndex) {
     } else {
         qWarning() << "Seek error at" << frameIndex << "in" << m_file.fileName();
         // Invalidate the current position
-        m_curFrameIndex = getFrameIndexMax();
+        m_curFrameIndex = getMaxFrameIndex();
         if (FLAC__STREAM_DECODER_SEEK_ERROR == FLAC__stream_decoder_get_state(m_decoder)) {
             // Flush the input stream of the decoder according to the
             // documentation of FLAC__stream_decoder_seek_absolute()
@@ -258,7 +258,7 @@ SINT SoundSourceFLAC::seekSampleFrame(SINT frameIndex) {
                 qWarning() << "Failed to flush input buffer of the FLAC decoder after seeking in"
                         << m_file.fileName();
                 // Invalidate the current position...
-                m_curFrameIndex = getFrameIndexMax();
+                m_curFrameIndex = getMaxFrameIndex();
                 // ...and abort
                 return m_curFrameIndex;
             }
@@ -270,7 +270,7 @@ SINT SoundSourceFLAC::seekSampleFrame(SINT frameIndex) {
                 qWarning() << "Failed to resync FLAC decoder after seeking in"
                         << m_file.fileName();
                 // Invalidate the current position...
-                m_curFrameIndex = getFrameIndexMax();
+                m_curFrameIndex = getMaxFrameIndex();
                 // ...and abort
                 return m_curFrameIndex;
             }
@@ -306,7 +306,7 @@ SINT SoundSourceFLAC::readSampleFrames(
     DEBUG_ASSERT(getSampleBufferSize(numberOfFrames, readStereoSamples) <= sampleBufferSize);
 
     const SINT numberOfFramesTotal =
-            math_min(numberOfFrames, getFrameIndexMax() - m_curFrameIndex);
+            math_min(numberOfFrames, getMaxFrameIndex() - m_curFrameIndex);
     const SINT numberOfSamplesTotal = frames2samples(numberOfFramesTotal);
 
     CSAMPLE* outBuffer = sampleBuffer;

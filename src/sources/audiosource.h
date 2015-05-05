@@ -134,21 +134,21 @@ public:
     }
 
     // Index of the first sample frame.
-    SINT getFrameIndexMin() const {
+    inline SINT getMinFrameIndex() const {
         return kFrameIndexMin;
     }
 
     // Index of the sample frame following the last
     // sample frame.
-    SINT getFrameIndexMax() const {
-        return kFrameIndexMin + getFrameCount();
+    inline SINT getMaxFrameIndex() const {
+        return getMinFrameIndex() + getFrameCount();
     }
 
     // The sample frame index is valid in the range
-    // [getFrameIndexMin(), getFrameIndexMax()].
+    // [getMinFrameIndex(), getMaxFrameIndex()].
     inline bool isValidFrameIndex(SINT frameIndex) const {
-        return (getFrameIndexMin() <= frameIndex) &&
-                (getFrameIndexMax() >= frameIndex);
+        return (getMinFrameIndex() <= frameIndex) &&
+                (getMaxFrameIndex() >= frameIndex);
     }
 
     // Adjusts the current frame seek index:
