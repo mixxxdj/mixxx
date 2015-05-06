@@ -178,8 +178,8 @@ FLAC__StreamDecoderReadStatus SoundSourceFLAC::flacRead(FLAC__byte buffer[],
           m_minFramesize(0),
           m_maxFramesize(0),
           m_bitsPerSample(kBitsPerSampleDefault),
-          m_sampleScaleFactor(kSampleValueZero),
-          m_curFrameIndex(kFrameIndexMin) {
+          m_sampleScaleFactor(CSAMPLE_ZERO),
+          m_curFrameIndex(getMinFrameIndex()) {
 }
 
 SoundSourceFLAC::~SoundSourceFLAC() {
@@ -213,7 +213,7 @@ Result SoundSourceFLAC::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
         return ERR;
     }
 
-    m_curFrameIndex = kFrameIndexMin;
+    m_curFrameIndex = getMinFrameIndex();
 
     return OK;
 }
@@ -744,32 +744,40 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
     case FLAC__METADATA_TYPE_STREAMINFO:
     {
         const SINT channelCount = metadata->data.stream_info.channels;
-        DEBUG_ASSERT(kChannelCountDefault != channelCount);
-        if (getChannelCount() == kChannelCountDefault) {
-            // not set before
-            setChannelCount(channelCount);
-        } else {
-            // already set before -> check for consistency
-            if (getChannelCount() != channelCount) {
-                qWarning() << "Unexpected channel count:"
-                        << channelCount << " <> " << getChannelCount();
+        if (isValidChannelCount(channelCount)) {
+            if (hasChannelCount()) {
+                // already set before -> check for consistency
+                if (getChannelCount() != channelCount) {
+                    qWarning() << "Unexpected channel count:"
+                            << channelCount << " <> " << getChannelCount();
+                }
+            } else {
+                // not set before
+                setChannelCount(channelCount);
             }
+        } else {
+            qWarning() << "Invalid channel count:"
+                    << channelCount;
         }
         const SINT frameRate = metadata->data.stream_info.sample_rate;
-        DEBUG_ASSERT(kFrameRateDefault != frameRate);
-        if (getFrameRate() == kFrameRateDefault) {
-            // not set before
-            setFrameRate(frameRate);
-        } else {
-            // already set before -> check for consistency
-            if (getFrameRate() != frameRate) {
-                qWarning() << "Unexpected frame/sample rate:"
-                        << frameRate << " <> " << getFrameRate();
+        if (isValidFrameRate(frameRate)) {
+            if (hasFrameRate()) {
+                // already set before -> check for consistency
+                if (getFrameRate() != frameRate) {
+                    qWarning() << "Unexpected frame/sample rate:"
+                            << frameRate << " <> " << getFrameRate();
+                }
+            } else {
+                // not set before
+                setFrameRate(frameRate);
             }
+        } else {
+            qWarning() << "Invalid frame/sample rate:"
+                    << frameRate;
         }
         const SINT frameCount = metadata->data.stream_info.total_samples;
-        DEBUG_ASSERT(kFrameCountDefault != frameCount);
-        if (getFrameCount() == kFrameCountDefault) {
+        DEBUG_ASSERT(isValidFrameCount(frameCount));
+        if (isEmpty()) {
             // not set before
             setFrameCount(frameCount);
         } else {
@@ -784,7 +792,7 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
         if (kBitsPerSampleDefault == m_bitsPerSample) {
             // not set before
             m_bitsPerSample = bitsPerSample;
-            m_sampleScaleFactor = kSampleValuePeak
+            m_sampleScaleFactor = CSAMPLE_PEAK
                     / CSAMPLE(FLAC__int32(1) << bitsPerSample);
         } else {
             // already set before -> check for consistency

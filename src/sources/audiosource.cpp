@@ -4,11 +4,6 @@
 
 namespace Mixxx {
 
-/*static*/ const CSAMPLE AudioSource::kSampleValueZero =
-        CSAMPLE_ZERO;
-/*static*/ const CSAMPLE AudioSource::kSampleValuePeak =
-        CSAMPLE_PEAK;
-
 AudioSource::AudioSource(QUrl url)
         : UrlResource(url),
           m_channelCount(kChannelCountDefault),

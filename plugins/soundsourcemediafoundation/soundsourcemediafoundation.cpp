@@ -500,7 +500,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const Mixxx::AudioSourceCo
         return false;
     }
 
-    if (kChannelCountZero < audioSrcCfg.channelCountHint) {
+    if (isValidChannelCount(audioSrcCfg.channelCountHint)) {
         hr = m_pAudioType->SetUINT32(MF_MT_AUDIO_NUM_CHANNELS, audioSrcCfg.channelCountHint);
         if (FAILED(hr)) {
             qWarning() << "SSMF: failed to set number of channels";

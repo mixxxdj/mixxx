@@ -63,7 +63,7 @@ int getFrameRateByIndex(int frameRateIndex) {
 }
 
 
-const CSAMPLE kMadScale = AudioSource::kSampleValuePeak / CSAMPLE(MAD_F_ONE);
+const CSAMPLE kMadScale = CSAMPLE_PEAK / CSAMPLE(MAD_F_ONE);
 
 inline CSAMPLE madScaleSampleValue(mad_fixed_t sampleValue) {
     return sampleValue * kMadScale;
@@ -161,7 +161,7 @@ SoundSourceMp3::SoundSourceMp3(QUrl url)
           m_fileSize(0),
           m_pFileData(NULL),
           m_avgSeekFrameCount(0),
-          m_curFrameIndex(kFrameIndexMin),
+          m_curFrameIndex(getMinFrameIndex()),
           m_madSynthCount(0) {
     m_seekFrameList.reserve(kSeekFrameListCapacity);
     initDecoding();
@@ -212,7 +212,7 @@ Result SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
 
     DEBUG_ASSERT(m_seekFrameList.empty());
     m_avgSeekFrameCount = 0;
-    m_curFrameIndex = kFrameIndexMin;
+    m_curFrameIndex = getMinFrameIndex();
     int headerPerFrameRate[kFrameRateCount];
     for (int i = 0; i < kFrameRateCount; ++i) {
         headerPerFrameRate[i] = 0;
@@ -358,7 +358,7 @@ Result SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     addSeekFrame(m_curFrameIndex, 0);
 
     // Reset positions
-    m_curFrameIndex = kFrameIndexMin;
+    m_curFrameIndex = getMinFrameIndex();
 
     // Restart decoding at the beginning of the audio stream
     m_curFrameIndex = restartDecoding(m_seekFrameList.front());
@@ -395,7 +395,7 @@ SINT SoundSourceMp3::restartDecoding(
     // Discard decoded output
     m_madSynthCount = 0;
 
-    if (kFrameIndexMin == seekFrame.frameIndex) {
+    if (getMinFrameIndex() == seekFrame.frameIndex) {
         mad_frame_finish(&m_madFrame);
         mad_synth_finish(&m_madSynth);
     }
@@ -403,7 +403,7 @@ SINT SoundSourceMp3::restartDecoding(
 
     mad_stream_init(&m_madStream);
     mad_stream_options(&m_madStream, MAD_OPTION_IGNORECRC);
-    if (kFrameIndexMin == seekFrame.frameIndex) {
+    if (getMinFrameIndex() == seekFrame.frameIndex) {
         mad_synth_init(&m_madSynth);
         mad_frame_init(&m_madFrame);
     }
@@ -412,7 +412,7 @@ SINT SoundSourceMp3::restartDecoding(
     mad_stream_buffer(&m_madStream, seekFrame.pInputData,
             m_fileSize - (seekFrame.pInputData - m_pFileData));
 
-    if (kFrameIndexMin < seekFrame.frameIndex) {
+    if (getMinFrameIndex() < seekFrame.frameIndex) {
         // Muting is done here to eliminate potential pops/clicks
         // from skipping Rob Leslie explains why here:
         // http://www.mars.org/mailman/public/mad-dev/2001-August/000321.html
@@ -449,8 +449,8 @@ SINT SoundSourceMp3::findSeekFrameIndex(
     // Check preconditions
     DEBUG_ASSERT(0 < m_avgSeekFrameCount);
     DEBUG_ASSERT(!m_seekFrameList.empty());
-    DEBUG_ASSERT(kFrameIndexMin == m_seekFrameList.front().frameIndex);
-    DEBUG_ASSERT(SINT(kFrameIndexMin + getMaxFrameIndex()) == m_seekFrameList.back().frameIndex);
+    DEBUG_ASSERT(getMinFrameIndex() == m_seekFrameList.front().frameIndex);
+    DEBUG_ASSERT(getMaxFrameIndex() == m_seekFrameList.back().frameIndex);
 
     SINT lowerBound =
             0;

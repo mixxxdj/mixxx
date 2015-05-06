@@ -11,7 +11,7 @@ QList<QString> SoundSourceWV::supportedFileExtensions() {
 SoundSourceWV::SoundSourceWV(QUrl url)
         : SoundSourcePlugin(url, "wv"),
           m_wpc(NULL),
-          m_sampleScaleFactor(kSampleValueZero) {
+          m_sampleScaleFactor(CSAMPLE_ZERO) {
 }
 
 SoundSourceWV::~SoundSourceWV() {
@@ -38,12 +38,12 @@ Result SoundSourceWV::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     setFrameCount(WavpackGetNumSamples(m_wpc));
 
     if (WavpackGetMode(m_wpc) & MODE_FLOAT) {
-        m_sampleScaleFactor = kSampleValuePeak;
+        m_sampleScaleFactor = CSAMPLE_PEAK;
     } else {
         const int bitsPerSample = WavpackGetBitsPerSample(m_wpc);
         const uint32_t wavpackPeakSampleValue = uint32_t(1)
                 << (bitsPerSample - 1);
-        m_sampleScaleFactor = kSampleValuePeak / CSAMPLE(wavpackPeakSampleValue);
+        m_sampleScaleFactor = CSAMPLE_PEAK / CSAMPLE(wavpackPeakSampleValue);
     }
 
     return OK;
