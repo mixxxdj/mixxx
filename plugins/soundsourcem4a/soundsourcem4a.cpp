@@ -287,8 +287,8 @@ SINT SoundSourceM4A::readSampleFrames(
         SINT numberOfFrames, CSAMPLE* sampleBuffer) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
 
-    const SINT numberOfFramesTotal = math_min(numberOfFrames,
-            SINT(getMaxFrameIndex() - m_curFrameIndex));
+    const SINT numberOfFramesTotal = math_min(
+            numberOfFrames, getMaxFrameIndex() - m_curFrameIndex);
     const SINT numberOfSamplesTotal = frames2samples(numberOfFramesTotal);
 
     CSAMPLE* pSampleBuffer = sampleBuffer;

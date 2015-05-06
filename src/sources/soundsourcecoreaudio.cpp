@@ -156,8 +156,8 @@ SINT SoundSourceCoreAudio::seekSampleFrame(SINT frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(frameIndex));
 
     // See comments above on kMp3StabilizationFrames.
-    const SINT stabilization_frames = m_bFileIsMp3 ? math_min<SINT>(
-            kMp3StabilizationFrames, frameIndex + m_headerFrames) : 0;
+    const SINT stabilization_frames = m_bFileIsMp3 ? math_min(
+            kMp3StabilizationFrames, SINT(frameIndex + m_headerFrames)) : 0;
     OSStatus err = ExtAudioFileSeek(
             m_audioFile, frameIndex + m_headerFrames - stabilization_frames);
     if (stabilization_frames > 0) {
