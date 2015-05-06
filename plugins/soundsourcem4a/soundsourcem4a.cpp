@@ -33,7 +33,7 @@ const MP4SampleId kSampleBlockIdMin = 1;
 
 inline SINT getFrameIndexForSampleBlockId(
         MP4SampleId sampleBlockId) {
-    return AudioSource::kFrameIndexMin +
+    return AudioSource::getMinFrameIndex() +
         (sampleBlockId - kSampleBlockIdMin) * kFramesPerSampleBlock;
 }
 
@@ -107,7 +107,7 @@ SoundSourceM4A::SoundSourceM4A(QUrl url)
           m_inputBufferLength(0),
           m_inputBufferOffset(0),
           m_hDecoder(NULL),
-          m_curFrameIndex(kFrameIndexMin) {
+          m_curFrameIndex(getMinFrameIndex()) {
 }
 
 SoundSourceM4A::~SoundSourceM4A() {
@@ -156,8 +156,8 @@ Result SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     NeAACDecConfigurationPtr pDecoderConfig = NeAACDecGetCurrentConfiguration(
             m_hDecoder);
     pDecoderConfig->outputFormat = FAAD_FMT_FLOAT;
-    if ((1 == audioSrcCfg.channelCountHint) || (2 == audioSrcCfg.channelCountHint)) {
-        // mono or stereo requested
+    if ((kChannelCountMono == audioSrcCfg.channelCountHint) ||
+            (kChannelCountStereo == audioSrcCfg.channelCountHint)) {
         pDecoderConfig->downMatrix = 1;
     } else {
         pDecoderConfig->downMatrix = 0;
@@ -202,10 +202,10 @@ Result SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSrcCfg) {
 
     // Invalidate current position to enforce the following
     // seek operation
-    m_curFrameIndex = getFrameIndexMax();
+    m_curFrameIndex = getMaxFrameIndex();
 
     // (Re-)Start decoding at the beginning of the file
-    seekSampleFrame(kFrameIndexMin);
+    seekSampleFrame(getMinFrameIndex());
 
     return OK;
 }
@@ -287,8 +287,8 @@ SINT SoundSourceM4A::readSampleFrames(
         SINT numberOfFrames, CSAMPLE* sampleBuffer) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
 
-    const SINT numberOfFramesTotal = math_min(numberOfFrames,
-            SINT(getFrameIndexMax() - m_curFrameIndex));
+    const SINT numberOfFramesTotal = math_min(
+            numberOfFrames, getMaxFrameIndex() - m_curFrameIndex);
     const SINT numberOfSamplesTotal = frames2samples(numberOfFramesTotal);
 
     CSAMPLE* pSampleBuffer = sampleBuffer;
