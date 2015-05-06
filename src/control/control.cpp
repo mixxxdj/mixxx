@@ -47,8 +47,11 @@ void ControlDoublePrivate::initialize(double defaultValue) {
     if (m_bPersistInConfiguration) {
         ConfigObject<ConfigValue>* pConfig = ControlDoublePrivate::s_pUserConfig;
         if (pConfig != NULL) {
-            // Assume toDouble() returns 0 if conversion fails.
-            initialValue = pConfig->getValueString(m_key).toDouble();
+            bool ok;
+            double configValue = pConfig->getValueString(m_key).toDouble(&ok);
+            if (ok) {
+                initialValue = configValue;
+            }
         }
     }
     m_value.setValue(initialValue);
