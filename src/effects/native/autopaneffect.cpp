@@ -57,7 +57,7 @@ EffectManifest AutoPanEffect::getManifest() {
     smoothing->setName(QObject::tr("Smoothing"));
     smoothing->setDescription(
             QObject::tr("How fast the signal goes from a channel to an other"));
-    smoothing->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
+    smoothing->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     smoothing->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     smoothing->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     smoothing->setMinimum(0.0);
@@ -110,8 +110,6 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
     
     CSAMPLE width = m_pWidthParameter->value();
     CSAMPLE period = m_pPeriodParameter->value();
-    
-    qDebug() << "AutoPanEffect::processChannel : period " << period;
     
     if (periodUnit == 1 && groupFeatures.has_beat_length) {
         // floor the param on on eof these values :
