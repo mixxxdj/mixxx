@@ -558,8 +558,8 @@ SINT SoundSourceMp3::readSampleFrames(
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(getSampleBufferSize(numberOfFrames, readStereoSamples) <= sampleBufferSize);
 
-    const SINT numberOfFramesTotal = math_min(numberOfFrames,
-            SINT(getMaxFrameIndex() - m_curFrameIndex));
+    const SINT numberOfFramesTotal = math_min(
+            numberOfFrames, getMaxFrameIndex() - m_curFrameIndex);
 
     CSAMPLE* pSampleBuffer = sampleBuffer;
     SINT numberOfFramesRemaining = numberOfFramesTotal;

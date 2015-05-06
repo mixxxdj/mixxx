@@ -200,8 +200,8 @@ SINT SoundSourceOpus::readSampleFrames(
         SINT numberOfFrames, CSAMPLE* sampleBuffer) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
 
-    const SINT numberOfFramesTotal = math_min(numberOfFrames,
-            SINT(getMaxFrameIndex() - m_curFrameIndex));
+    const SINT numberOfFramesTotal = math_min(
+            numberOfFrames, getMaxFrameIndex() - m_curFrameIndex);
 
     CSAMPLE* pSampleBuffer = sampleBuffer;
     SINT numberOfFramesRemaining = numberOfFramesTotal;
@@ -231,8 +231,8 @@ SINT SoundSourceOpus::readSampleFramesStereo(
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(getSampleBufferSize(numberOfFrames, true) <= sampleBufferSize);
 
-    const SINT numberOfFramesTotal = math_min(numberOfFrames,
-            SINT(getMaxFrameIndex() - m_curFrameIndex));
+    const SINT numberOfFramesTotal = math_min(
+            numberOfFrames, getMaxFrameIndex() - m_curFrameIndex);
 
     CSAMPLE* pSampleBuffer = sampleBuffer;
     SINT numberOfFramesRemaining = numberOfFramesTotal;
