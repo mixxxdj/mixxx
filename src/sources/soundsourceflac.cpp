@@ -363,7 +363,7 @@ SINT SoundSourceFLAC::readSampleFrames(
                             readableChunk.data(),
                             framesToCopy, getChannelCount());
                 }
-                outBuffer += framesToCopy * 2; // copied 2 samples per frame
+                outBuffer += framesToCopy * kChannelCountStereo;
             } else {
                 SampleUtil::copy(outBuffer, readableChunk.data(), readableChunk.size());
                 outBuffer += readableChunk.size();

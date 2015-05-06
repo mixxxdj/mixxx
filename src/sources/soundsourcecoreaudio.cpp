@@ -6,6 +6,9 @@ namespace Mixxx {
 
 namespace {
 
+// The maximum number of samples per MP3 frame
+const SINT kMp3MaxFrameSize = 1152;
+
 // NOTE(rryan): For every MP3 seek we jump back kStabilizationFrames frames from
 // the seek position and read forward to allow the decoder to stabilize. The
 // cover-test.mp3 file needs this otherwise SoundSourceProxyTest.seekForward
@@ -14,7 +17,8 @@ namespace {
 // information -- which AIUI is supposed to tell us this information -- is zero
 // for this file. We use the same frame pre-fetch count from SoundSourceMp3.
 const SINT kMp3StabilizationFrames =
-        AudioSource::kMp3SeekFramePrefetchCount * 1152;
+        AudioSource::kMp3SeekFramePrefetchCount * kMp3MaxFrameSize;
+
 static CSAMPLE kMp3StabilizationScratchBuffer[kMp3StabilizationFrames *
                                               AudioSource::kChannelCountStereo];
 

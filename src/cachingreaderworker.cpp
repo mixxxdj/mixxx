@@ -21,7 +21,7 @@
 // TODO(XXX): The optimum value of the "constant" kFramesPerChunk
 // depends on the properties of the AudioSource as the remarks
 // above suggest!
-const SINT CachingReaderWorker::kChunkChannels = 2; // stereo
+const SINT CachingReaderWorker::kChunkChannels = Mixxx::AudioSource::kChannelCountStereo;
 const SINT CachingReaderWorker::kFramesPerChunk = 8192; // ~ 170 ms at 48 kHz
 const SINT CachingReaderWorker::kSamplesPerChunk = kFramesPerChunk * kChunkChannels;
 

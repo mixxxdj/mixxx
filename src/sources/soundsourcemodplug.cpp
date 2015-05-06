@@ -39,7 +39,7 @@ QString getModPlugTypeFromUrl(QUrl url) {
 
 } // anonymous namespace
 
-const SINT SoundSourceModPlug::kChannelCount = 2; // stereo
+const SINT SoundSourceModPlug::kChannelCount = AudioSource::kChannelCountStereo;
 const SINT SoundSourceModPlug::kBitsPerSample = 16;
 const SINT SoundSourceModPlug::kFrameRate = 44100; // 44.1 kHz
 

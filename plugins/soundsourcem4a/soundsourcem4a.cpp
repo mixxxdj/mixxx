@@ -156,8 +156,8 @@ Result SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     NeAACDecConfigurationPtr pDecoderConfig = NeAACDecGetCurrentConfiguration(
             m_hDecoder);
     pDecoderConfig->outputFormat = FAAD_FMT_FLOAT;
-    if ((1 == audioSrcCfg.channelCountHint) || (2 == audioSrcCfg.channelCountHint)) {
-        // mono or stereo requested
+    if ((kChannelCountMono == audioSrcCfg.channelCountHint) ||
+            (kChannelCountStereo == audioSrcCfg.channelCountHint)) {
         pDecoderConfig->downMatrix = 1;
     } else {
         pDecoderConfig->downMatrix = 0;

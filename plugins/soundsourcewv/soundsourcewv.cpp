@@ -22,8 +22,8 @@ Result SoundSourceWV::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     DEBUG_ASSERT(!m_wpc);
     char msg[80]; // hold possible error message
     int openFlags = OPEN_WVC | OPEN_NORMALIZE;
-    if ((1 == audioSrcCfg.channelCountHint) || (2 == audioSrcCfg.channelCountHint)) {
-        // mono or stereo requested
+    if ((kChannelCountMono == audioSrcCfg.channelCountHint) ||
+            (kChannelCountStereo == audioSrcCfg.channelCountHint)) {
         openFlags |= OPEN_2CH_MAX;
     }
     m_wpc = WavpackOpenFileInput(
