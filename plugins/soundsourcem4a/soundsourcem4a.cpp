@@ -33,7 +33,7 @@ const MP4SampleId kSampleBlockIdMin = 1;
 
 inline SINT getFrameIndexForSampleBlockId(
         MP4SampleId sampleBlockId) {
-    return AudioSource::kFrameIndexMin +
+    return AudioSource::getMinFrameIndex() +
         (sampleBlockId - kSampleBlockIdMin) * kFramesPerSampleBlock;
 }
 
@@ -107,7 +107,7 @@ SoundSourceM4A::SoundSourceM4A(QUrl url)
           m_inputBufferLength(0),
           m_inputBufferOffset(0),
           m_hDecoder(NULL),
-          m_curFrameIndex(kFrameIndexMin) {
+          m_curFrameIndex(getMinFrameIndex()) {
 }
 
 SoundSourceM4A::~SoundSourceM4A() {
@@ -205,7 +205,7 @@ Result SoundSourceM4A::tryOpen(const AudioSourceConfig& audioSrcCfg) {
     m_curFrameIndex = getMaxFrameIndex();
 
     // (Re-)Start decoding at the beginning of the file
-    seekSampleFrame(kFrameIndexMin);
+    seekSampleFrame(getMinFrameIndex());
 
     return OK;
 }

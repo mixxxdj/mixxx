@@ -42,7 +42,7 @@ QList<QString> SoundSourceOpus::supportedFileExtensions() {
 SoundSourceOpus::SoundSourceOpus(QUrl url)
         : SoundSource(url, "opus"),
           m_pOggOpusFile(NULL),
-          m_curFrameIndex(kFrameIndexMin) {
+          m_curFrameIndex(getMinFrameIndex()) {
 }
 
 SoundSourceOpus::~SoundSourceOpus() {
@@ -162,7 +162,7 @@ Result SoundSourceOpus::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
 
     setFrameRate(kFrameRate);
 
-    m_curFrameIndex = kFrameIndexMin;
+    m_curFrameIndex = getMinFrameIndex();
 
     return OK;
 }
