@@ -1,4 +1,5 @@
 #include "sources/soundsourcecoreaudio.h"
+#include "sources/mp3decoding.h"
 
 #include "util/math.h"
 
@@ -17,7 +18,7 @@ const SINT kMp3MaxFrameSize = 1152;
 // information -- which AIUI is supposed to tell us this information -- is zero
 // for this file. We use the same frame pre-fetch count from SoundSourceMp3.
 const SINT kMp3StabilizationFrames =
-        AudioSource::kMp3SeekFramePrefetchCount * kMp3MaxFrameSize;
+        kMp3SeekFramePrefetchCount * kMp3MaxFrameSize;
 
 static CSAMPLE kMp3StabilizationScratchBuffer[kMp3StabilizationFrames *
                                               AudioSource::kChannelCountStereo];
