@@ -13,7 +13,7 @@ namespace {
 // appropriate amount to pre-fetch from the ExtAudioFile API. Oddly, the "prime"
 // information -- which AIUI is supposed to tell us this information -- is zero
 // for this file. We use the same frame pre-fetch count from SoundSourceMp3.
-static const int kMp3StabilizationFrames =
+const SINT kMp3StabilizationFrames =
         AudioSource::kMp3SeekFramePrefetchCount * 1152;
 static CSAMPLE kMp3StabilizationScratchBuffer[kMp3StabilizationFrames *
                                               AudioSource::kChannelCountStereo];
