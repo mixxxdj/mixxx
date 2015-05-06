@@ -9,7 +9,7 @@ namespace Mixxx {
 namespace {
 
 // MP3 does only support 1 or 2 channels
-const SINT kChannelCountMax = 2;
+const SINT kChannelCountMax = AudioSource::kChannelCountStereo;
 
 // mp3 supports 9 different frame rates
 const int kFrameRateCount = 9;
@@ -661,18 +661,15 @@ SINT SoundSourceMp3::readSampleFrames(
                     for (SINT i = 0; i < synthReadCount; ++i) {
                         const CSAMPLE sampleValue = madScaleSampleValue(
                                 m_madSynth.pcm.samples[0][madSynthOffset + i]);
-                        *pSampleBuffer = sampleValue;
-                        ++pSampleBuffer;
-                        *pSampleBuffer = sampleValue;
-                        ++pSampleBuffer;
+                        *pSampleBuffer++ = sampleValue;
+                        *pSampleBuffer++ = sampleValue;
                     }
                 } else {
                     // Mono -> Mono: Copy 1st channel
                     for (SINT i = 0; i < synthReadCount; ++i) {
                         const CSAMPLE sampleValue = madScaleSampleValue(
                                 m_madSynth.pcm.samples[0][madSynthOffset + i]);
-                        *pSampleBuffer = sampleValue;
-                        ++pSampleBuffer;
+                        *pSampleBuffer++ = sampleValue;
                     }
                 }
             } else {
@@ -682,14 +679,12 @@ SINT SoundSourceMp3::readSampleFrames(
                 // AudioSource must also provide 2 channels, because the
                 // maximum channel count of all MP3 frames is used.
                 DEBUG_ASSERT(kChannelCountStereo == getChannelCount());
-                // Stereo -> Stereo: Copy 1st+2nd channel
+                // Stereo -> Stereo: Copy 1st + 2nd channel
                 for (SINT i = 0; i < synthReadCount; ++i) {
-                    *pSampleBuffer = madScaleSampleValue(
+                    *pSampleBuffer++ = madScaleSampleValue(
                             m_madSynth.pcm.samples[0][madSynthOffset + i]);
-                    ++pSampleBuffer;
-                    *pSampleBuffer = madScaleSampleValue(
+                    *pSampleBuffer++ = madScaleSampleValue(
                             m_madSynth.pcm.samples[1][madSynthOffset + i]);
-                    ++pSampleBuffer;
                 }
             }
         }

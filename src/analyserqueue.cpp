@@ -15,7 +15,6 @@
 #include "analyserbeats.h"
 #include "analyserkey.h"
 #include "vamp/vampanalyser.h"
-#include "util/assert.h"
 #include "util/compatibility.h"
 #include "util/event.h"
 #include "util/trace.h"
@@ -31,7 +30,7 @@ namespace {
     // We need to use a smaller block size, because on Linux the AnalyserQueue
     // can starve the CPU of its resources, resulting in xruns. A block size
     // of 4096 frames per block seems to do fine.
-    const SINT kAnalysisChannels = 2; // stereo
+    const SINT kAnalysisChannels = Mixxx::AudioSource::kChannelCountStereo;
     const SINT kAnalysisFramesPerBlock = 4096;
     const SINT kAnalysisSamplesPerBlock =
             kAnalysisFramesPerBlock * kAnalysisChannels;

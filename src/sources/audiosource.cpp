@@ -36,7 +36,7 @@ SINT AudioSource::getSampleBufferSize(
         SINT numberOfFrames,
         bool readStereoSamples) const {
     if (readStereoSamples) {
-        return numberOfFrames * 2;
+        return numberOfFrames * kChannelCountStereo;
     } else {
         return frames2samples(numberOfFrames);
     }
