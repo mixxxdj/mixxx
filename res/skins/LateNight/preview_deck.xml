@@ -1,5 +1,4 @@
 <Template>
-  <!-- This outer widget group makes the PreviewDeck borders work correctly -->
   <WidgetGroup>
     <Layout>vertical</Layout>
     <SizePolicy>me,me</SizePolicy>
