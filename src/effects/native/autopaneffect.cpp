@@ -118,14 +118,13 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
         // 1/16, 1/8, 1/4, 1/2, 1, 2, 4, 8, 16, 32, 64, 128
         
         int i = 0;
-        while (period > m_pPeriodParameter->minimum()){
+        while (period > m_pPeriodParameter->minimum()) {
             period /= 2;
             i++;
         }
         
         double beats = m_pPeriodParameter->minimum();
-        
-        while (i != 0.0){
+        while (i != 0.0) {
             beats *= 2;
             i--;
         }
