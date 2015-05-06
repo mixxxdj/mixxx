@@ -44,13 +44,12 @@ EffectManifest AutoPanEffect::getManifest() {
     period->setName(QObject::tr("Period"));
     period->setDescription("How fast the sound goes from a side to another,"
             " following a logarithmic scale");
-    period->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-//    period->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
+    period->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     period->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    period->setMinimum(0.01);
-    period->setMaximum(1.0);
-    period->setDefault(1.0);
+    period->setMinimum(0.0625);     // 1 / 16
+    period->setMaximum(128.0);
+    period->setDefault(8.0);
     
     // This parameter controls the easing of the sound from a side to another.
     EffectManifestParameter* smoothing = manifest.addParameter();
@@ -111,13 +110,30 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
     
     CSAMPLE width = m_pWidthParameter->value();
     CSAMPLE period = m_pPeriodParameter->value();
+    
+    qDebug() << "AutoPanEffect::processChannel : period " << period;
+    
     if (periodUnit == 1 && groupFeatures.has_beat_length) {
-        // 1/8, 1/4, 1/2, 1, 2, 4, 8, 16, 32, 64
-        double beats = pow(2, floor(period * 9 / m_pPeriodParameter->maximum()) - 3);
+        // floor the param on on eof these values :
+        // 1/16, 1/8, 1/4, 1/2, 1, 2, 4, 8, 16, 32, 64, 128
+        
+        int i = 0;
+        while (period > m_pPeriodParameter->minimum()){
+            period /= 2;
+            i++;
+        }
+        
+        double beats = m_pPeriodParameter->minimum();
+        
+        while (i != 0.0){
+            beats *= 2;
+            i--;
+        }
+        
         period = groupFeatures.beat_length * beats;
     } else {
-        // max period is 50 seconds
-        period *= sampleRate * 25.0;
+        // max period is 128 seconds
+        period *= sampleRate;
     }
     
     CSAMPLE stepFrac = m_pSmoothingParameter->value();
