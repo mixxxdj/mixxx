@@ -18,7 +18,7 @@ namespace
     // on their server so we need only a fingerprint of the first two minutes
     // --kain88 July 2012
     const SINT kFingerprintDuration = 120; // in seconds
-    const SINT kFingerprintChannels = 2; // stereo
+    const SINT kFingerprintChannels = Mixxx::AudioSource::kChannelCountStereo;
 
     QString calcFingerprint(const Mixxx::AudioSourcePointer& pAudioSource) {
 
