@@ -5,7 +5,7 @@
 #include "defs_version.h"
 
 // Getter functions to be declared by all SoundSource plugins
-typedef Mixxx::SoundSource* (*getSoundSourceFunc)(QString fileName);
+typedef Mixxx::SoundSource* (*getSoundSourceFunc)(QUrl url);
 typedef char** (*getSupportedFileExtensionsFunc)();
 typedef int (*getSoundSourceAPIVersionFunc)();
 /// New in version 3

@@ -39,7 +39,7 @@ private:
 
 extern "C" MY_EXPORT const char* getMixxxVersion();
 extern "C" MY_EXPORT int getSoundSourceAPIVersion();
-extern "C" MY_EXPORT Mixxx::SoundSource* getSoundSource(QString fileName);
+extern "C" MY_EXPORT Mixxx::SoundSource* getSoundSource(QUrl url);
 extern "C" MY_EXPORT char** supportedFileExtensions();
 extern "C" MY_EXPORT void freeFileExtensions(char** fileExtensions);
 

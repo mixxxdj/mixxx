@@ -205,7 +205,7 @@ Mixxx::SoundSourcePointer SoundSourceProxy::initialize(
         if (getter)
         {
             qDebug() << "Getting SoundSource plugin object for" << type;
-            return Mixxx::SoundSourcePointer(getter(url.toLocalFile()));
+            return Mixxx::SoundSourcePointer(getter(url));
         }
         else {
             qDebug() << "Failed to resolve getSoundSource in plugin for" <<

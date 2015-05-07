@@ -602,8 +602,8 @@ extern "C" MY_EXPORT int getSoundSourceAPIVersion() {
     return MIXXX_SOUNDSOURCE_API_VERSION;
 }
 
-extern "C" MY_EXPORT Mixxx::SoundSource* getSoundSource(QString fileName) {
-    return new SoundSourceMediaFoundation(fileName);
+extern "C" MY_EXPORT Mixxx::SoundSource* getSoundSource(QUrl url) {
+    return new SoundSourceMediaFoundation(url);
 }
 
 extern "C" MY_EXPORT char** supportedFileExtensions() {
