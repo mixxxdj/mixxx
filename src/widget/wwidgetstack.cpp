@@ -91,6 +91,9 @@ void WWidgetStack::hideIndex(int index) {
         if (it != m_hideMap.end()) {
             setCurrentIndex(*it);
         } else {
+            // TODO: This default behavior is a little odd, is it really what
+            // we want?  Or should we save the previously-selected page and then
+            // switch to that.
             setCurrentIndex((index + 1) % count());
         }
     }
