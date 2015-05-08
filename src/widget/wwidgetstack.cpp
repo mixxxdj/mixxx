@@ -49,7 +49,7 @@ WWidgetStack::WWidgetStack(QWidget* pParent,
     connect(&m_currentPageControl, SIGNAL(valueChanged(double)),
             this, SLOT(onCurrentPageControlChanged(double)));
     connect(&m_showMapper, SIGNAL(mapped(int)),
-            this, SLOT(setCurrentIndex(int)));
+            this, SLOT(showIndex(int)));
     connect(&m_hideMapper, SIGNAL(mapped(int)),
             this, SLOT(hideIndex(int)));
 }
@@ -74,7 +74,18 @@ QSize WWidgetStack::minimumSizeHint() const {
     return pWidget ? pWidget->minimumSizeHint() : QSize();
 }
 
+void WWidgetStack::showIndex(int index) {
+    // Don't do anything if we are not visible.
+    if (isVisible()) {
+        setCurrentIndex(index);
+    }
+}
+
 void WWidgetStack::hideIndex(int index) {
+    // Don't do anything if we are not visible.
+    if (!isVisible()) {
+        return;
+    }
     if (currentIndex() == index) {
         QMap<int, int>::const_iterator it = m_hideMap.find(index);
         if (it != m_hideMap.end()) {
@@ -85,13 +96,32 @@ void WWidgetStack::hideIndex(int index) {
     }
 }
 
+void WWidgetStack::showEvent(QShowEvent*) {
+    int index = static_cast<int>(m_currentPageControl.get());
+    setCurrentIndex(index);
+
+    // Set the page triggers to match the current index.
+    for (QMap<int, ControlObject*>::iterator it = m_triggers.begin();
+            it != m_triggers.end(); ++it) {
+        it.value()->set(it.key() == index ? 1.0 : 0.0);
+    }
+}
+
 void WWidgetStack::onNextControlChanged(double v) {
+    // Don't do anything if we are not visible.
+    if (!isVisible()) {
+        return;
+    }
     if (v > 0.0) {
         setCurrentIndex((currentIndex() + 1) % count());
     }
 }
 
 void WWidgetStack::onPrevControlChanged(double v) {
+    // Don't do anything if we are not visible.
+    if (!isVisible()) {
+        return;
+    }
     if (v > 0.0) {
         int newIndex = currentIndex() - 1;
         while (newIndex < 0) {
@@ -102,10 +132,18 @@ void WWidgetStack::onPrevControlChanged(double v) {
 }
 
 void WWidgetStack::onCurrentPageChanged(int index) {
+    // Don't do anything if we are not visible.
+    if (!isVisible()) {
+        return;
+    }
     m_currentPageControl.set(static_cast<double>(index));
 }
 
 void WWidgetStack::onCurrentPageControlChanged(double v) {
+    // Don't do anything if we are not visible.
+    if (!isVisible()) {
+        return;
+    }
     int newIndex = static_cast<int>(v);
     setCurrentIndex(newIndex);
 }
@@ -114,6 +152,7 @@ void WWidgetStack::addWidgetWithControl(QWidget* pWidget, ControlObject* pContro
                                         int on_hide_select) {
     int index = addWidget(pWidget);
     if (pControl) {
+        m_triggers[index] = pControl;
         WidgetStackControlListener* pListener = new WidgetStackControlListener(
             this, pControl, index);
         m_showMapper.setMapping(pListener, index);

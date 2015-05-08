@@ -50,6 +50,7 @@ class WWidgetStackTest : public MixxxTest {
                                        m_pPage2Control.data(),
                                        -1);
         m_pStack->Init();
+        m_pStack->show();
     }
 
     void ExpectPageSelected(int index) {
@@ -179,6 +180,28 @@ TEST_F(WWidgetStackTest, NextPrevControls) {
 
     m_pPrevControl->set(1);
     m_pPrevControl->set(0);
+    ExpectPageSelected(2);
+}
+
+TEST_F(WWidgetStackTest, HiddenStackNoChanges) {
+    // When the widgetstack is hidden, it does not respond to outside changes.
+    // This helps LateNight use the same triggers in multiple views.
+    ExpectPageSelected(1);
+    m_pStack->hide();
+    m_pPage2Control->set(1);
+
+    EXPECT_EQ(1, m_pCurPageControl->get());
+    EXPECT_EQ(0, m_pPage0Control->get());
+    EXPECT_EQ(1, m_pPage1Control->get());
+    EXPECT_EQ(1, m_pPage2Control->get());
+    EXPECT_TRUE(m_pPage0Widget->isHidden());
+    EXPECT_FALSE(m_pPage1Widget->isHidden());
+    EXPECT_TRUE(m_pPage2Widget->isHidden());
+
+    // As soon as we show, the states return to being consistent, based on
+    // whatever the current page control is set to.
+    m_pCurPageControl->set(2);
+    m_pStack->show();
     ExpectPageSelected(2);
 }
 
