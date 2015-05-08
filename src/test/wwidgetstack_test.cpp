@@ -103,6 +103,8 @@ TEST_F(WWidgetStackTest, MaintainPageControlValue) {
     // LateNight skin -- The page trigger was set to off, but the current page
     // control was defaulted to 0, so that overrode the page trigger and
     // showed the first page.
+
+    // This test is set up to reproduce the original LateNight skin case.
     m_pCurPageControl.reset(
             new ControlObject(ConfigKey(m_pGroup,
                                         "MaintainPageControlValue-page")));
@@ -122,6 +124,8 @@ TEST_F(WWidgetStackTest, MaintainPageControlValue) {
     stack->addWidgetWithControl(&page1, NULL, -1);
     stack->Init();
 
+    // The off state above is overridden by the default value of curpagecontrol,
+    // which is set to 0 on creation.
     ExpectPageSelected(0);
 }
 
