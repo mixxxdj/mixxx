@@ -97,6 +97,34 @@ TEST_F(WWidgetStackTest, MaintainPageSelected) {
     ExpectPageSelected(1);
 }
 
+TEST_F(WWidgetStackTest, MaintainPageControlValue) {
+    // The current page control overrides whatever values the individual
+    // page triggers may already have.  This is what caused the bug with the
+    // LateNight skin -- The page trigger was set to off, but the current page
+    // control was defaulted to 0, so that overrode the page trigger and
+    // showed the first page.
+    m_pCurPageControl.reset(
+            new ControlObject(ConfigKey(m_pGroup,
+                                        "MaintainPageControlValue-page")));
+    QScopedPointer<WWidgetStack> stack(
+            new WWidgetStack(NULL, m_pNextControl.data(),
+                             m_pPrevControl.data(),
+                             m_pCurPageControl.data()));
+
+    QWidget page0;
+    QWidget page1;
+
+    // We don't set the current page control.  All we know is that page0
+    // is supposed to be off.
+    m_pPage0Control->set(0);
+
+    stack->addWidgetWithControl(&page0, m_pPage0Control.data(), -1);
+    stack->addWidgetWithControl(&page1, NULL, -1);
+    stack->Init();
+
+    ExpectPageSelected(0);
+}
+
 TEST_F(WWidgetStackTest, ChangePageSelection) {
     // Changing the page via the current page control should work.
     m_pCurPageControl->set(2);

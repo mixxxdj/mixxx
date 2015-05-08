@@ -131,6 +131,8 @@ void WWidgetStack::addWidgetWithControl(QWidget* pWidget, ControlObject* pContro
     }
 
     if (m_currentPageControl.get() == index) {
+        // The value in the curren page control overrides whatever initial
+        // values the individual page triggers may have.
         setCurrentIndex(index);
     }
     if (on_hide_select != -1) {
