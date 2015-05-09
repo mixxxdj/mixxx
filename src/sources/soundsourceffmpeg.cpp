@@ -285,7 +285,8 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
                             l_lLastPacketPos = l_SPacket.pos;
                         }
 
-                        // If we are over last storepos and we have read more than jump point need is and pos is unique we store it to memory
+                        // If we are over last storepos and we have read more than jump point need is
+                        // and pos is unique we store it to memory
                         if (m_lCacheFramePos > m_lLastStoredPos &&
                                 m_lCacheFramePos > (AUDIOSOURCEFFMPEG_POSDISTANCE + m_lLastStoredPos) &&
                                 m_bUnique == true) {
@@ -367,26 +368,34 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
 bool SoundSourceFFmpeg::getBytesFromCache(char *buffer, SINT offset,
         SINT size) {
     struct ffmpegCacheObject *l_SObj = NULL;
-    quint32 l_lPos = 0;
+    qint32 l_lPos = 0;
     quint32 l_lLeft = 0;
     quint32 l_lOffset = 0;
     quint32 l_lBytesToCopy = 0;
 
     // Is offset bigger than start of cache
     if (offset >= m_lCacheStartFrame) {
+        
         // If last pos is (which is shouldn't) use caches end
         if (m_lCacheLastPos == 0) {
             m_lCacheLastPos = m_SCache.size() - 1;
         }
 
-        // Seek to correct FrameIndex
-        for (l_lPos = m_lCacheLastPos; l_lPos > 0; l_lPos --) {
+        // Seek to correct FrameIndex (Minus 5 for faster seek)
+        for (l_lPos = m_lCacheLastPos; l_lPos >= 0; l_lPos -= 5) {
             l_SObj = m_SCache[l_lPos];
             if ((l_SObj->startFrame + l_SObj->length) < offset) {
                 break;
             }
         }
 
+        // Because we step 5 backward we can end up to below zero
+        // We can't go futher so hope for the best
+        if(l_lPos < 0)
+        {
+           l_lPos = 0;   
+        }
+        
         // Use this Cache object as starting point
         l_SObj = m_SCache[l_lPos];
 
@@ -396,7 +405,7 @@ bool SoundSourceFFmpeg::getBytesFromCache(char *buffer, SINT offset,
         memset(buffer, 0x00, l_lLeft);
         while (l_lLeft > 0) {
             // If Cache is running low read more
-            if (l_SObj == NULL || (l_lPos + 5) > (unsigned int)m_SCache.size()) {
+            if (l_SObj == NULL || (l_lPos + 5) > m_SCache.size()) {
                 offset = l_SObj->startFrame;
                 if (readFramesToCache(50, -1) == false) {
                     return false;
@@ -479,9 +488,13 @@ SINT SoundSourceFFmpeg::seekSampleFrame(SINT frameIndex) {
         // to try guess it
         if (frameIndex >= AUDIOSOURCEFFMPEG_POSDISTANCE) {
             for (i = 0; i < m_SJumpPoints.size(); i ++) {
-                if (m_SJumpPoints[i]->startFrame >= frameIndex && i > 2) {
-                    m_lCacheFramePos = m_SJumpPoints[i - 2]->startFrame * 2;
-                    m_lStoredSeekPoint = m_SJumpPoints[i - 2]->pos;
+                if (m_SJumpPoints[i]->startFrame >= frameIndex) {
+                    if (i > 0) {
+                       i --;   
+                    }
+
+                    m_lCacheFramePos = m_SJumpPoints[i]->startFrame;
+                    m_lStoredSeekPoint = m_SJumpPoints[i]->pos;
                     break;
                 }
             }
