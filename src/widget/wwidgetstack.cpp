@@ -42,7 +42,7 @@ WWidgetStack::WWidgetStack(QWidget* pParent,
           m_currentPageControl(
                   pCurrentPageControl ?
                   pCurrentPageControl->getKey() : ConfigKey()),
-          m_bRespondToChanges(true) {
+          m_bRespondToChanges(false) {
     connect(&m_nextControl, SIGNAL(valueChanged(double)),
             this, SLOT(onNextControlChanged(double)));
     connect(&m_prevControl, SIGNAL(valueChanged(double)),
