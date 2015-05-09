@@ -150,12 +150,17 @@ TEST_F(WWidgetStackTest, OnHideBehavior) {
     // When hiding a page, if the on_hide_select value is -1, the next
     // page is selected.  Otherwise, the page given by on_hide_select is
     // selected.  The on-hide values are set in SetUp.
+
+    // When the second page is hidden, show the third.
     m_pPage1Control->set(0);
     ExpectPageSelected(2);
 
+    // When the last page is hidden, show the first.
     m_pPage2Control->set(0);
     ExpectPageSelected(0);
 
+    // The first page has an override, so when it is hidden the third
+    // is shown instead of the second.
     m_pPage0Control->set(0);
     ExpectPageSelected(2);
 }

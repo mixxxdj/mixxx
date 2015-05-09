@@ -41,7 +41,8 @@ WWidgetStack::WWidgetStack(QWidget* pParent,
           m_prevControl(pPrevControl ? pPrevControl->getKey() : ConfigKey()),
           m_currentPageControl(
                   pCurrentPageControl ?
-                  pCurrentPageControl->getKey() : ConfigKey()) {
+                  pCurrentPageControl->getKey() : ConfigKey()),
+          m_bRespondToChanges(true) {
     connect(&m_nextControl, SIGNAL(valueChanged(double)),
             this, SLOT(onNextControlChanged(double)));
     connect(&m_prevControl, SIGNAL(valueChanged(double)),
@@ -75,15 +76,13 @@ QSize WWidgetStack::minimumSizeHint() const {
 }
 
 void WWidgetStack::showIndex(int index) {
-    // Don't do anything if we are not visible.
-    if (isVisible()) {
+    if (m_bRespondToChanges) {
         setCurrentIndex(index);
     }
 }
 
 void WWidgetStack::hideIndex(int index) {
-    // Don't do anything if we are not visible.
-    if (!isVisible()) {
+    if (!m_bRespondToChanges) {
         return;
     }
     if (currentIndex() == index) {
@@ -101,18 +100,23 @@ void WWidgetStack::hideIndex(int index) {
 
 void WWidgetStack::showEvent(QShowEvent*) {
     int index = static_cast<int>(m_currentPageControl.get());
-    setCurrentIndex(index);
 
     // Set the page triggers to match the current index.
     for (QMap<int, ControlObject*>::iterator it = m_triggers.begin();
             it != m_triggers.end(); ++it) {
         it.value()->set(it.key() == index ? 1.0 : 0.0);
     }
+
+    m_bRespondToChanges = true;
+    setCurrentIndex(index);
+}
+
+void WWidgetStack::hideEvent(QHideEvent*) {
+    m_bRespondToChanges = false;
 }
 
 void WWidgetStack::onNextControlChanged(double v) {
-    // Don't do anything if we are not visible.
-    if (!isVisible()) {
+    if (!m_bRespondToChanges) {
         return;
     }
     if (v > 0.0) {
@@ -121,8 +125,7 @@ void WWidgetStack::onNextControlChanged(double v) {
 }
 
 void WWidgetStack::onPrevControlChanged(double v) {
-    // Don't do anything if we are not visible.
-    if (!isVisible()) {
+    if (!m_bRespondToChanges) {
         return;
     }
     if (v > 0.0) {
@@ -135,16 +138,14 @@ void WWidgetStack::onPrevControlChanged(double v) {
 }
 
 void WWidgetStack::onCurrentPageChanged(int index) {
-    // Don't do anything if we are not visible.
-    if (!isVisible()) {
+    if (!m_bRespondToChanges) {
         return;
     }
     m_currentPageControl.set(static_cast<double>(index));
 }
 
 void WWidgetStack::onCurrentPageControlChanged(double v) {
-    // Don't do anything if we are not visible.
-    if (!isVisible()) {
+    if (!m_bRespondToChanges) {
         return;
     }
     int newIndex = static_cast<int>(v);

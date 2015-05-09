@@ -72,6 +72,7 @@ class WWidgetStack : public QStackedWidget, public WBaseWidget {
     void showIndex(int index);
     void hideIndex(int index);
     void showEvent(QShowEvent* event);
+    void hideEvent(QHideEvent* event);
 
   private:
     QSignalMapper m_showMapper;
@@ -85,6 +86,7 @@ class WWidgetStack : public QStackedWidget, public WBaseWidget {
     QMap<int, int> m_hideMap;
     // A map of the individual page triggers so we can rectify state if needed.
     QMap<int, ControlObject*> m_triggers;
+    bool m_bRespondToChanges;
 };
 
 #endif /* WWIDGETSTACK_H */
