@@ -41,18 +41,18 @@ class EngineFilterPan : public EngineObjectConstIn {
 
     virtual void process(const CSAMPLE* pIn, CSAMPLE* pOutput,
                          const int iBufferSize) {
-        int delayLeftSourceFrame = m_delayFrame;
-        int delayRightSourceFrame = m_delayFrame;
+        int delayLeftSourceFrame;
+        int delayRightSourceFrame;
         if (m_leftDelayFrames > 0) {
-            delayLeftSourceFrame = (m_delayFrame + SIZE - m_leftDelayFrames) % SIZE;
+            delayLeftSourceFrame = m_delayFrame + SIZE - m_leftDelayFrames;
+            delayRightSourceFrame = m_delayFrame + SIZE;
         } else {
-            delayRightSourceFrame = (m_delayFrame + SIZE + m_leftDelayFrames) % SIZE;
+            delayLeftSourceFrame = m_delayFrame + SIZE;
+            delayRightSourceFrame = m_delayFrame + SIZE + m_leftDelayFrames;
         }
 
         DEBUG_ASSERT_AND_HANDLE(delayLeftSourceFrame >= 0 &&
-                                delayRightSourceFrame >= 0 &&
-                                delayLeftSourceFrame <= static_cast<int>(SIZE) &&
-                                delayRightSourceFrame <= static_cast<int>(SIZE) ) {
+                                delayRightSourceFrame >= 0) {
             SampleUtil::copy(pOutput, pIn, iBufferSize);
             return;
         }
@@ -65,24 +65,24 @@ class EngineFilterPan : public EngineObjectConstIn {
                 m_delayFrame = (m_delayFrame + 1) % SIZE;
 
                 // Take delayed sample from delay buffer and copy it to dest buffer:
-                pOutput[i * 2] = m_buf[delayLeftSourceFrame * 2];
-                pOutput[i * 2 + 1] = m_buf[delayRightSourceFrame * 2 + 1];
-                delayLeftSourceFrame = (delayLeftSourceFrame + 1) % SIZE;
-                delayRightSourceFrame = (delayRightSourceFrame + 1) % SIZE;
+                pOutput[i * 2] = m_buf[(delayLeftSourceFrame % SIZE)* 2];
+                pOutput[i * 2 + 1] = m_buf[(delayRightSourceFrame % SIZE) * 2 + 1];
+                delayLeftSourceFrame++;
+                delayRightSourceFrame++;
             }
         } else {
-            int delayOldLeftSourceFrame = m_delayFrame;
-            int delayOldRightSourceFrame = m_delayFrame;
+            int delayOldLeftSourceFrame;
+            int delayOldRightSourceFrame;
             if (m_oldLeftDelayFrames > 0) {
-                delayOldLeftSourceFrame = (m_delayFrame + SIZE - m_oldLeftDelayFrames) % SIZE;
+                delayOldLeftSourceFrame = m_delayFrame + SIZE - m_oldLeftDelayFrames;
+                delayOldRightSourceFrame = m_delayFrame + SIZE;
             } else {
-                delayOldRightSourceFrame = (m_delayFrame + SIZE + m_oldLeftDelayFrames) % SIZE;
+                delayOldLeftSourceFrame = m_delayFrame + SIZE;
+                delayOldRightSourceFrame = m_delayFrame + SIZE + m_oldLeftDelayFrames;
             }
 
             DEBUG_ASSERT_AND_HANDLE(delayOldLeftSourceFrame >= 0 &&
-                                    delayOldRightSourceFrame >= 0 &&
-                                    delayOldLeftSourceFrame <= static_cast<int>(SIZE) &&
-                                    delayOldRightSourceFrame <= static_cast<int>(SIZE) ) {
+                                    delayOldRightSourceFrame >= 0) {
                 SampleUtil::copy(pOutput, pIn, iBufferSize);
                 return;
             }
@@ -98,14 +98,22 @@ class EngineFilterPan : public EngineObjectConstIn {
 
                 // Take delayed sample from delay buffer and copy it to dest buffer:
                 cross_mix += cross_inc;
-                pOutput[i * 2] = m_buf[delayLeftSourceFrame * 2] * cross_mix;
-                pOutput[i * 2 + 1] = m_buf[delayRightSourceFrame * 2 + 1] * cross_mix;
-                pOutput[i * 2] += m_buf[delayOldLeftSourceFrame * 2] * (1 - cross_mix);
-                pOutput[i * 2 + 1] += m_buf[delayOldRightSourceFrame * 2 + 1] * (1 - cross_mix);
-                delayLeftSourceFrame = (delayLeftSourceFrame + 1) % SIZE;
-                delayRightSourceFrame = (delayRightSourceFrame + 1) % SIZE;
-                delayOldLeftSourceFrame = (delayOldLeftSourceFrame + 1) % SIZE;
-                delayOldRightSourceFrame = (delayOldRightSourceFrame + 1) % SIZE;
+
+                double rampedLeftSourceFrame = delayLeftSourceFrame * cross_mix +
+                                               delayOldLeftSourceFrame * (1 - cross_mix);
+                double rampedRightSourceFrame = delayRightSourceFrame * cross_mix +
+                                                delayOldRightSourceFrame * (1 - cross_mix);
+                double modLeft = fmod(rampedLeftSourceFrame, 1);
+                double modRight = fmod(rampedRightSourceFrame, 1);
+
+                pOutput[i * 2] = m_buf[(static_cast<int>(floor(rampedLeftSourceFrame)) % SIZE) * 2] * (1 - modLeft);
+                pOutput[i * 2 + 1] = m_buf[(static_cast<int>(floor(rampedRightSourceFrame)) % SIZE) * 2 + 1] * (1 - modRight);
+                pOutput[i * 2] += m_buf[(static_cast<int>(ceil(rampedLeftSourceFrame)) % SIZE) * 2] * modLeft;
+                pOutput[i * 2 + 1] += m_buf[(static_cast<int>(ceil(rampedRightSourceFrame)) % SIZE) * 2 + 1] * modRight;
+                delayLeftSourceFrame++;
+                delayRightSourceFrame++;
+                delayOldLeftSourceFrame++;
+                delayOldRightSourceFrame++;
             }
             m_doRamping = false;
         }

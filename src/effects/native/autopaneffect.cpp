@@ -192,7 +192,7 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
         
         gs.time++;
     }
-    
+
     // apply the delay
     gs.delay->setLeftDelay(-0.005 * math_clamp(sinusoid, -1.0, 1.0) * sampleRate);
     gs.delay->process(pOutput, pOutput, numSamples);
