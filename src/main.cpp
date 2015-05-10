@@ -288,16 +288,23 @@ int main(int argc, char * argv[])
         oldCodePage = GetConsoleOutputCP();
         shouldResetCodePage = true;
 
-        // Use a unicode font
-        CONSOLE_FONT_INFOEX newFont;
-        newFont.cbSize = sizeof newFont;
-        newFont.nFont = 0;
-        newFont.dwFontSize.X = 0;
-        newFont.dwFontSize.Y = 14;
-        newFont.FontFamily = FF_DONTCARE;
-        newFont.FontWeight = FW_NORMAL;
-        wcscpy_s(newFont.FaceName, L"Consolas");
-        SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &newFont);
+        HMODULE kernel32_dll = LoadLibraryW(L"kernel32.dll");
+        if (kernel32_dll && GetProcAddress(kernel32_dll, "SetCurrentConsoleFontEx")) {
+            // Use a unicode font
+            CONSOLE_FONT_INFOEX newFont;
+            newFont.cbSize = sizeof newFont;
+            newFont.nFont = 0;
+            newFont.dwFontSize.X = 0;
+            newFont.dwFontSize.Y = 14;
+            newFont.FontFamily = FF_DONTCARE;
+            newFont.FontWeight = FW_NORMAL;
+            wcscpy_s(newFont.FaceName, L"Consolas");
+            SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &newFont);
+        } else {
+            // This happens on Windows XP
+            qWarning() << "The console font may not support non ANSI characters." <<
+                          "In case of character issues switch to font \"Consolas\"";
+        }
 
         // set console to the default ANSI Code Page
         UINT defaultCodePage;
