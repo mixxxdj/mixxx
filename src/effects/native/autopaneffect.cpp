@@ -186,15 +186,15 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
         // will be 0 and 1 (full left and full right).
         sinusoid = sin(M_PI * 2.0f * angleFraction) * width;
         gs.frac.setWithRampingApplied((sinusoid + 1.0f) / 2.0f);
+
+        // apply the delay
+        gs.delay->process(&pInput[i], &pOutput[i],
+                -0.005 * math_clamp(sinusoid, -1.0, 1.0) * sampleRate);
         
-        pOutput[i] = pInput[i] * gs.frac * 2;
-        pOutput[i+1] = pInput[i+1] * (1.0f - gs.frac) * 2;
+        pOutput[i] *= gs.frac * 2;
+        pOutput[i+1] *= (1.0f - gs.frac) * 2;
         
         gs.time++;
     }
-
-    // apply the delay
-    gs.delay->setLeftDelay(-0.005 * math_clamp(sinusoid, -1.0, 1.0) * sampleRate);
-    gs.delay->process(pOutput, pOutput, numSamples);
 }
 
