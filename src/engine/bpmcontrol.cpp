@@ -141,12 +141,12 @@ BpmControl::~BpmControl() {
     delete m_pButtonSyncPhase;
     delete m_pButtonSyncTempo;
     delete m_pTranslateBeats;
+    delete m_pBeatsTranslateMatchAlignment;
     delete m_pTranslateBeatsEarlier;
     delete m_pTranslateBeatsLater;
     delete m_pThisBeatDistance;
     delete m_pAdjustBeatsFaster;
     delete m_pAdjustBeatsSlower;
-    delete m_pBeatsTranslateMatchAlignment;
 }
 
 double BpmControl::getBpm() const {

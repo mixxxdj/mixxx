@@ -233,7 +233,7 @@ void WOverview::slotUnloadTrack(TrackPointer pTrack) {
     // it may happen that this call is a delayed call
     // of a track that was already replaced
     //qDebug() << "WOverview::slotUnloadTrack(TrackPointer pTrack)";
-    if (pTrack == m_pCurrentTrack) {
+    if (pTrack != NULL && pTrack == m_pCurrentTrack) {
         disconnect(m_pCurrentTrack.data(), SIGNAL(waveformSummaryUpdated()),
                    this, SLOT(slotWaveformSummaryUpdated()));
         disconnect(m_pCurrentTrack.data(), SIGNAL(analyserProgress(int)),

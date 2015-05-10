@@ -11,9 +11,12 @@
 ////////////////////////////////////////////////////////////////////////
 // Controller: Denon MC6000MK2
 // Author: Uwe Klotz a/k/a tapir
-// Revision: 2015-04-27
+// Revision: 2015-05-03
 //
 // Changelog:
+// 2015-05-03 Minor bug fixes
+//    - Fix scratch ramping
+//    - Fix controller shutdown
 // 2015-04-27 Improve jog wheel experience
 //    - Unify jog wheel control for vinyl and non-vinyl mode
 //    - Implement proper spin-back capability
@@ -139,6 +142,7 @@ DenonMC6000MK2.JOG_SPIN_PLAY_EXPONENT = 0.7; // 1.0 = linear response
 DenonMC6000MK2.JOG_SCRATCH_RPM = 33.333333; // 33 1/3
 DenonMC6000MK2.JOG_SCRATCH_ALPHA = 0.125; // 1/8
 DenonMC6000MK2.JOG_SCRATCH_BETA = DenonMC6000MK2.JOG_SCRATCH_ALPHA / 32.0;
+DenonMC6000MK2.JOG_SCRATCH_RAMP = true;
 DenonMC6000MK2.JOG_SCRATCH2_ABS_MIN = 0.01;
 DenonMC6000MK2.JOG_SCRATCH2_PLAY_MIN = -0.7;
 DenonMC6000MK2.JOG_SCRATCH2_PLAY_MAX = 1.0;
@@ -364,8 +368,8 @@ DenonMC6000MK2.connectTriLed = function (midiChannel, midiValue) {
 };
 
 DenonMC6000MK2.disconnectLeds = function () {
-	for (var connectedLed in DenonMC6000MK2.connectedLeds) {
-		connectedLed.reset();
+	for (var index in DenonMC6000MK2.connectedLeds) {
+		DenonMC6000MK2.connectedLeds[index].reset();
 	}
 	DenonMC6000MK2.connectedLeds = [];
 };
@@ -425,8 +429,8 @@ DenonMC6000MK2.connectControl = function (group, ctrl, func) {
 };
 
 DenonMC6000MK2.disconnectControls = function () {
-	for (var connectedControl in DenonMC6000MK2.connectedControls) {
-		connectedControl.disconnect();
+	for (var index in DenonMC6000MK2.connectedControls) {
+		DenonMC6000MK2.connectedControls[index].disconnect();
 	}
 	DenonMC6000MK2.connectedControls = [];
 };
@@ -883,15 +887,15 @@ DenonMC6000MK2.Deck.prototype.disableScratching = function () {
 	}
 	if (0 === this.scratchTimer) {
 		// Ramping only when doing a back-spin while playing
-		var ramp = this.isPlaying() && (scratch2 < 0.0);
-		engine.scratchDisable(this.number, ramp);
+		var ramping = this.isPlaying() && (scratch2 < 0.0);
+		engine.scratchDisable(this.number, ramping && DenonMC6000MK2.JOG_SCRATCH_RAMP);
 	}
 };
 
 DenonMC6000MK2.Deck.prototype.onScratchingTimeout = function () {
 	this.scratchTimer = 0;
 	this.disableScratching();
-}
+};
 
 DenonMC6000MK2.onScratchingTimeoutDeck1 = function () {
 	DenonMC6000MK2.getDeckByGroup("[Channel1]").onScratchingTimeout();

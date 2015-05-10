@@ -1178,6 +1178,9 @@ class MixxxCore(Feature):
                                                 '/nodefaultlib:LIBCMTd.lib'])
 
                 build.env.Append(LINKFLAGS='/entry:mainCRTStartup')
+                # Declare that we are using the v120_xp toolset.
+                # http://blogs.msdn.com/b/vcblog/archive/2012/10/08/windows-xp-targeting-with-c-in-visual-studio-2012.aspx
+                build.env.Append(CPPDEFINES='_USING_V110_SDK71_')
                 # Makes the program not launch a shell first.
                 # Minimum platform version 5.01 for XP x86 and 5.02 for XP x64.
                 if build.machine_is_64bit:
