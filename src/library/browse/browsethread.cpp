@@ -98,7 +98,7 @@ void BrowseThread::populateModel() {
     // Refresh the name filters in case we loaded new SoundSource plugins.
     QStringList nameFilters(SoundSourceProxy::supportedFileExtensionsString().split(" "));
 
-    QDirIterator fileIt(thisPath.dir().canonicalPath(), nameFilters,
+    QDirIterator fileIt(thisPath.dir().absolutePath(), nameFilters,
                         QDir::Files | QDir::NoDotAndDotDot);
 
     // remove all rows
