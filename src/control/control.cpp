@@ -27,7 +27,7 @@ ControlDoublePrivate::ControlDoublePrivate()
 ControlDoublePrivate::ControlDoublePrivate(ConfigKey key,
                                            ControlObject* pCreatorCO,
                                            bool bIgnoreNops, bool bTrack,
-                                           double defaultValue, bool bPersist)
+                                           bool bPersist)
         : m_key(key),
           m_bPersistInConfiguration(bPersist),
           m_bIgnoreNops(bIgnoreNops),
@@ -38,20 +38,20 @@ ControlDoublePrivate::ControlDoublePrivate(ConfigKey key,
                        Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX),
           m_confirmRequired(false),
           m_pCreatorCO(pCreatorCO) {
-    initialize(defaultValue);
+    initialize();
 }
 
-void ControlDoublePrivate::initialize(double defaultValue) {
-    m_defaultValue.setValue(defaultValue);
-    double initialValue = defaultValue;
+void ControlDoublePrivate::initialize() {
+    double value = 0;
     if (m_bPersistInConfiguration) {
         ConfigObject<ConfigValue>* pConfig = ControlDoublePrivate::s_pUserConfig;
         if (pConfig != NULL) {
             // Assume toDouble() returns 0 if conversion fails.
-            initialValue = pConfig->getValueString(m_key).toDouble();
+            value = pConfig->getValueString(m_key).toDouble();
         }
     }
-    m_value.setValue(initialValue);
+    m_defaultValue.setValue(0);
+    m_value.setValue(value);
 
     //qDebug() << "Creating:" << m_trackKey << "at" << &m_value << sizeof(m_value);
 
@@ -101,7 +101,7 @@ void ControlDoublePrivate::insertAlias(const ConfigKey& alias, const ConfigKey& 
 // static
 QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
         const ConfigKey& key, bool warn, ControlObject* pCreatorCO,
-        bool bIgnoreNops, bool bTrack, double defaultValue, bool bPersist) {
+        bool bIgnoreNops, bool bTrack, bool bPersist) {
     if (key.isNull()) {
         if (warn) {
             qWarning() << "ControlDoublePrivate::getControl returning NULL"
@@ -130,7 +130,7 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
         if (pCreatorCO) {
             pControl = QSharedPointer<ControlDoublePrivate>(
                     new ControlDoublePrivate(key, pCreatorCO, bIgnoreNops,
-                                             bTrack, defaultValue, bPersist));
+                                             bTrack, bPersist));
             locker.relock();
             //qDebug() << "ControlDoublePrivate::s_qCOHash.insert(" << key.group << "," << key.item << ")";
             s_qCOHash.insert(key, pControl);

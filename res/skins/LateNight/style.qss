@@ -41,6 +41,10 @@
 }
 
 #SpinnyContainer {
+  border: 1px solid #585858;
+  border-right: 0px;
+  border-top: 0px;
+  border-bottom: 0px;
   background-color: #0f0f0f;
 }
 
@@ -137,8 +141,6 @@
   background-color: #1e1e1e;
   qproperty-layoutAlignment: 'AlignCenter';
   border: 1px solid #585858;
-  border-left: 0px;
-  border-right: 0px;
   border-top: 0px;
 }
 
@@ -203,6 +205,13 @@
 
 #MixerRightMargin {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+}
+
+#NoMixerLogo {
+  qproperty-layoutAlignment: 'AlignRight | AlignBottom';
+  border: 1px solid #585858;
+  border-top: 0px;
+  background-color: #1e1e1e;
 }
 
 #MasterKnobs {
@@ -348,6 +357,7 @@
 #KnobLabel {
   font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
   font: bold 10px/12px;
+  text-transform: uppercase;
   color: #585858;
   text-align: center;
   qproperty-alignment: 'AlignCenter | AlignBottom';
@@ -516,6 +526,68 @@
   margin: 2px;
 }
 
+#SyncToggleButton[displayValue="0"] {
+    border: 1px solid #585858;
+    border-radius: 2px;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 10px/12px;
+    color: #ddd;
+    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
+    margin-right: 3px;
+}
+
+#SyncToggleButton[displayValue="1"] {
+    border: 1px solid #585858;
+    border-radius: 2px;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 10px/12px;
+    color: #c0c0c0;
+    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #d80000, stop:1 #910000);
+    margin-right: 3px;
+}
+
+#LoopToggleButton[displayValue="0"] {
+    border: 1px solid #585858;
+    border-radius: 2px;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 10px/12px;
+    color: #ddd;
+    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
+    margin-right: 2px;
+}
+
+#LoopToggleButton[displayValue="1"] {
+    border: 1px solid #585858;
+    border-radius: 2px;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 10px/12px;
+    color: #c0c0c0;
+    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #d80000, stop:1 #910000);
+    margin-right: 2px;
+}
+
+#CueToggleButton[displayValue="0"] {
+    border: 1px solid #585858;
+    border-radius: 2px;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 10px/12px;
+    color: #ddd;
+    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #282828, stop:1 #0e0e0e);
+    margin-right: 2px;
+    margin-bottom: 2px;
+}
+
+#CueToggleButton[displayValue="1"] {
+    border: 1px solid #585858;
+    border-radius: 2px;
+    font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+    font: bold 10px/12px;
+    color: #c0c0c0;
+    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #d80000, stop:1 #910000);
+    margin-right: 2px;
+    margin-bottom: 2px;
+}
+
 #BpmContainer {
   qproperty-layoutAlignment: 'AlignCenter';
 }
@@ -587,13 +659,31 @@
 }
 
 #PreviewDeck {
+  qproperty-layoutAlignment: 'AlignTop';
   border: 1px solid #585858;
   padding: 0px;
-  margin-bottom: 10px;
+  margin: 0px;
+  margin-top: 3px;
+  margin-right: 3px;
+}
+
+#PreviewDeckText {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+  font-size: 10px/11px;
+  color: #cfb32c;
+  text-align: left;
+}
+
+#PreviewDeckMargin {
 }
 
 #PreviewPlayOverview {
   padding: 3px;
+}
+
+#NoBorder {
+ border: 0px;
 }
 
 #PreviewColumnOne {
@@ -681,16 +771,19 @@
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   border: 1px solid #585858;
   border-top: 0px;
-  border-left: 0px;
-  border-right: 0px;
   padding: 0px;
   background-color: #1e1e1e;
 }
 
 #WaveformMixerContainer {
-  border: 1px solid #585858;
-  border-bottom: 0px;
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+}
+
+#Waveform {
+  border: 1px solid #585858;
+  border-top: 0px;
+  border-left: 0px;
+  border-bottom: 0px;
 }
 
 #RateSlider {
@@ -909,6 +1002,13 @@
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
 }
 
+#EffectUnitButton {
+  font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+  font: bold 16px/19px;
+  text-transform: none;
+  color: #eece33;
+}
+
 #EffectUnitNextPrevContainer WPushButton {
   font-size: 16px;
 }
@@ -968,6 +1068,7 @@
 /*#EffectUnitGroupControlButton {
   font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
   font: bold 11px/13px;
+  text-transform: uppercase;
   color: #eece33;
   text-transform: none;
   text-align: center;
@@ -977,7 +1078,8 @@
 
 #EffectUnitGroupControlButton[displayValue="0"] {
     font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
-    font: bold 11px/13px;
+    font: bold 9px/11px;
+    text-transform: uppercase;
     color: #585858;
     background-color: #0e0e0e;
     text-transform: none;
@@ -988,7 +1090,8 @@
 
 #EffectUnitGroupControlButton[displayValue="1"] {
     font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
-    font: bold 11px/13px;
+    font: bold 9px/11px;
+    text-transform: uppercase;
     color: #0e0e0e;
     background-color: #eece33;
     text-transform: none;

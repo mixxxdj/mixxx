@@ -53,7 +53,11 @@ class WWidgetStack : public QStackedWidget, public WBaseWidget {
     QSize sizeHint() const;
     QSize minimumSizeHint() const;
 
-    void addWidgetWithControl(QWidget* pWidget, ControlObject* pControl);
+    // Adds a page to the stack.  If this page is hidden, the the page with the
+    // 0-based index given by on_hide_select will be shown.  If this value is
+    // -1, the next page on the stack will be shown.
+    void addWidgetWithControl(QWidget* pWidget, ControlObject* pControl,
+                              int on_hide_select);
 
   protected:
     bool event(QEvent* pEvent);
@@ -73,6 +77,10 @@ class WWidgetStack : public QStackedWidget, public WBaseWidget {
     ControlObjectThread m_nextControl;
     ControlObjectThread m_prevControl;
     ControlObjectThread m_currentPageControl;
+
+    // Optional map that defines which page to select if a page gets a hide
+    // signal.
+    QMap<int, int> m_hideMap;
 };
 
 #endif /* WWIDGETSTACK_H */
