@@ -81,7 +81,9 @@ private:
     QVector<struct ffmpegCacheObject  *> m_SCache;
     QVector<struct ffmpegLocationObject  *> m_SJumpPoints;
     SINT m_lLastStoredPos;
+    SINT m_lStoreCount;
     SINT m_lStoredSeekPoint;
+    struct ffmpegLocationObject *m_SStoredJumpPoint;
 };
 
 } // namespace Mixxx
