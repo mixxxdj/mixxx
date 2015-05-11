@@ -94,13 +94,18 @@ def build_tests():
         env.Append(LIBS = 'gmock')
 
         if build.platform_is_windows:
-                # We want a terminal for tests.
-                if build.machine_is_64bit:
-                    env['LINKFLAGS'].remove('/subsystem:windows,5.02')
-                    env['LINKFLAGS'].append('/subsystem:console,5.02')
-                else:
-                    env['LINKFLAGS'].remove('/subsystem:windows,5.01')
-                    env['LINKFLAGS'].append('/subsystem:console,5.01')
+                # Subsystem change temporarily disabled due to LP #1453782.
+                # TODO(rryan): Build Mixxx core as a shared object and link it
+                # into mixxx and mixxx-test. We could build both in different
+                # environments right now but then automoc and protoc get run in
+                # both environments which makes SCons unhappy.
+                # # We want a terminal for tests.
+                # if build.machine_is_64bit:
+                #     test_env['LINKFLAGS'].remove('/subsystem:windows,5.02')
+                #     test_env['LINKFLAGS'].append('/subsystem:console,5.02')
+                # else:
+                #     test_env['LINKFLAGS'].remove('/subsystem:windows,5.01')
+                #     test_env['LINKFLAGS'].append('/subsystem:console,5.01')
 
                 test_bin = env.Program(
                         'mixxx-test', [test_sources, env.RES('#src/mixxx.rc')],
