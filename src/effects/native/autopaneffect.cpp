@@ -6,7 +6,7 @@
 #include "sampleutil.h"
 #include "util/experiment.h"
 
-const float positionRampingThreshold = 0.005f;
+const float kPositionRampingThreshold = 0.002f;
 
 
 // static
@@ -80,12 +80,10 @@ EffectManifest AutoPanEffect::getManifest() {
 }
 
 AutoPanEffect::AutoPanEffect(EngineEffect* pEffect, const EffectManifest& manifest)
-        : 
-          m_pSmoothingParameter(pEffect->getParameterById("smoothing")),
+        : m_pSmoothingParameter(pEffect->getParameterById("smoothing")),
           m_pPeriodUnitParameter(pEffect->getParameterById("periodUnit")),
           m_pPeriodParameter(pEffect->getParameterById("period")),
-          m_pWidthParameter(pEffect->getParameterById("width"))
-           {
+          m_pWidthParameter(pEffect->getParameterById("width")) {
     Q_UNUSED(manifest);
 }
 
@@ -152,7 +150,7 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
     // size of a segment of slope (controled by the "strength" parameter)
     float u = (0.5f - stepFrac) / 2.0f;
     
-    gs.frac.setRampingThreshold(positionRampingThreshold);
+    gs.frac.setRampingThreshold(kPositionRampingThreshold);
     gs.frac.ramped = false;     // just for debug
     
     double sinusoid = 0;
@@ -189,8 +187,8 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
 
         // apply the delay
         gs.delay->process(&pInput[i], &pOutput[i],
-                -0.005 * math_clamp(sinusoid, -1.0, 1.0) * sampleRate);
-        
+                -0.005 * math_clamp(((gs.frac * 2.0) - 1.0f), -1.0, 1.0) * sampleRate);
+
         pOutput[i] *= gs.frac * 2;
         pOutput[i+1] *= (1.0f - gs.frac) * 2;
         
