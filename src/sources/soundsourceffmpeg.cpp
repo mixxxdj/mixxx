@@ -194,7 +194,7 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
 
     while (l_iCount > 0) {
         if (l_pFrame != NULL) {
-          l_iFrameCount --;
+            l_iFrameCount --;
 // FFMPEG 2.2 3561060 anb beyond
 #if LIBAVCODEC_VERSION_INT >= 3561060
             av_frame_free(&l_pFrame);
@@ -230,12 +230,10 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
                 if (m_lStoredSeekPoint > 0) {
                     struct ffmpegLocationObject *l_STestObj = NULL;
 
-                    if(m_SJumpPoints.size() > 0)
-                    {
+                    if (m_SJumpPoints.size() > 0) {
                         l_STestObj = m_SJumpPoints.first();
 
-                        if(l_STestObj->pos > l_SPacket.pos)
-                        {
+                        if (l_STestObj->pos > l_SPacket.pos) {
                             continue;
                         }
                     }
@@ -302,14 +300,12 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
                         if (m_lStoreCount == 64) {
                             struct ffmpegLocationObject *l_STestObj = NULL;
 
-                            if(m_SJumpPoints.size() > 0)
-                            {
-                                 l_STestObj = m_SJumpPoints.last();
+                            if (m_SJumpPoints.size() > 0) {
+                                l_STestObj = m_SJumpPoints.last();
                             }
                             // Check wether we have this jumppoint stored allready or not
                             // We should have jumppoints below that pos
-                            if(l_STestObj == NULL || l_STestObj->pos < l_SPacket.pos)
-                            {
+                            if (l_STestObj == NULL || l_STestObj->pos < l_SPacket.pos) {
                                 struct ffmpegLocationObject  *l_SJmp = (struct ffmpegLocationObject  *)malloc(
                                         sizeof(struct ffmpegLocationObject));
                                 m_lLastStoredPos = m_lCacheFramePos;
@@ -354,24 +350,24 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
     }
 
     if (l_pFrame != NULL) {
-      l_iFrameCount --;
+        l_iFrameCount --;
 // FFMPEG 2.2 3561060 anb beyond
 #if LIBAVCODEC_VERSION_INT >= 3561060
-          av_frame_unref(l_pFrame);
-          av_frame_free(&l_pFrame);
+        av_frame_unref(l_pFrame);
+        av_frame_free(&l_pFrame);
 // FFMPEG 0.11 and below
 #elif LIBAVCODEC_VERSION_INT <= 3544932
-          av_free(l_pFrame);
+        av_free(l_pFrame);
 // FFMPEG 1.0 - 2.1
 #else
-          avcodec_free_frame(&l_pFrame);
+        avcodec_free_frame(&l_pFrame);
 #endif
-          l_pFrame = NULL;
+        l_pFrame = NULL;
 
     }
 
     if (l_iFrameCount > 0) {
-       qDebug() << "SoundSourceFFmpeg::readFramesToCache(): Frame balance is not 0 it is: " << l_iFrameCount;
+        qDebug() << "SoundSourceFFmpeg::readFramesToCache(): Frame balance is not 0 it is: " << l_iFrameCount;
     }
 
     l_SObj = m_SCache.first();
@@ -411,9 +407,8 @@ bool SoundSourceFFmpeg::getBytesFromCache(char *buffer, SINT offset,
 
         // Because we step 5 backward we can end up to below zero
         // We can't go futher so hope for the best
-        if(l_lPos < 0)
-        {
-           l_lPos = 0;
+        if (l_lPos < 0) {
+            l_lPos = 0;
         }
 
         // Use this Cache object as starting point
@@ -507,16 +502,14 @@ SINT SoundSourceFFmpeg::seekSampleFrame(SINT frameIndex) {
         // Try to find some jump point near to
         // where we are located so we don't needed
         // to try guess it
-        if(m_SJumpPoints.size() > 0)
-        {
+        if (m_SJumpPoints.size() > 0) {
             l_STestObj = m_SJumpPoints.first();
 
-            if(frameIndex > l_STestObj->startFrame)
-            {
+            if (frameIndex > l_STestObj->startFrame) {
                 for (i = 0; i < m_SJumpPoints.size(); i ++) {
                     if (m_SJumpPoints[i]->startFrame >= frameIndex) {
                         if (i > 0) {
-                           i --;
+                            i --;
                         }
 
                         m_lCacheFramePos = m_SJumpPoints[i]->startFrame;

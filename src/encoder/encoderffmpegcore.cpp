@@ -408,7 +408,7 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx,
         m_pEncoderAudioStream->pts.den = 1;
     }
 #endif
-    
+
     // Write the compressed frame to the media file. */
     l_iRet = av_interleaved_write_frame(formatctx, &l_SPacket);
 
