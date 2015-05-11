@@ -50,6 +50,7 @@ extern "C" {
 
 #ifdef __WINDOWS__
 #include <windows.h>
+#include <io.h> // Debug Console
 typedef BOOL(WINAPI* pfSetCurrentConsoleFontEx)(HANDLE, BOOL, PCONSOLE_FONT_INFOEX);
 #endif // __WINDOWS__
 
@@ -254,7 +255,7 @@ int main(int argc, char * argv[])
 
     //it seems like this code should be inline in MessageHandler() but for some reason having it there corrupts the messages sometimes -kousu 2/2009
 
-#ifdef __WINDOWS__
+#ifndef __WINDOWS__
     // Setup Windows console encoding
     // toLocal8Bit() returns the ANSI file encoding format
     // this does not necessarily match the OEM console encoding
@@ -268,16 +269,23 @@ int main(int argc, char * argv[])
     // LOCALE_IDEFAULTANSICODEPAGE "1252" // ANSI Codepage used by Qt toLocal8Bit
     // LOCALE_IDEFAULTCODEPAGE "850" // OEM Codepage Console
 
-#ifdef DEBUGCONSOLE
-    if (GetConsoleWindow() != NULL) {
-        // This should create the window for the hidden console
-        // initalized by Qt
-        SetConsoleTitleA("Mixxx Debug Messages");
-    }
-#endif
     UINT oldCodePage;
     bool shouldResetCodePage = false;
-    if (GetConsoleWindow() != NULL) {
+    if(AttachConsole(ATTACH_PARENT_PROCESS)) {
+        // we are started from a console porcess
+        int fd;
+        FILE *fp;
+
+        fd = _open_osfhandle((long) GetStdHandle(STD_OUTPUT_HANDLE), 0);
+        fp = _fdopen(fd, "w");
+        *stdout = *fp;
+        setvbuf(stdout, NULL, _IONBF, 0);
+
+        fd = _open_osfhandle((long) GetStdHandle(STD_ERROR_HANDLE), 0);
+        fp = _fdopen(fd, "w");
+        *stderr = *fp;
+        setvbuf(stderr, NULL, _IONBF, 0);
+
         // Save current code page
         oldCodePage = GetConsoleOutputCP();
         shouldResetCodePage = true;
@@ -310,6 +318,9 @@ int main(int argc, char * argv[])
                       reinterpret_cast<LPWSTR>(&defaultCodePage),
                       sizeof(defaultCodePage));
         SetConsoleOutputCP(defaultCodePage);
+    } else {
+        // started by double click 
+        // no need to deal with a console
     }
 #endif
 
@@ -406,7 +417,7 @@ int main(int argc, char * argv[])
     // Reset Windows console to old code page
     // We need to stick with the unicode font since
     // changing back will destroy the console history
-    if (shouldResetCodePage && GetConsoleWindow() != NULL) {
+    if (shouldResetCodePage) {
         SetConsoleOutputCP(oldCodePage);
     }
 #endif
