@@ -29,8 +29,8 @@ class EngineFilterPanSingle {
     }
 
     virtual void process(const CSAMPLE* pIn, CSAMPLE* pOutput, double leftDelayFrames) {
-        int delayLeftSourceFrame;
-        int delayRightSourceFrame;
+        double delayLeftSourceFrame;
+        double delayRightSourceFrame;
         if (leftDelayFrames > 0) {
             delayLeftSourceFrame = m_delayFrame + SIZE - leftDelayFrames;
             delayRightSourceFrame = m_delayFrame + SIZE;
