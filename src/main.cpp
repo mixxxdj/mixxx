@@ -268,13 +268,6 @@ int main(int argc, char * argv[])
     // LOCALE_IDEFAULTANSICODEPAGE "1252" // ANSI Codepage used by Qt toLocal8Bit
     // LOCALE_IDEFAULTCODEPAGE "850" // OEM Codepage Console
 
-    // TODO() Verify it the folowing:
-    // it turns out that SetConsoleOutputCP() shows the invisible console that is
-    // created on startup by Qt using the CREATE_NO_WINDOW flag
-    // http://stackoverflow.com/questions/447352/how-to-know-whether-we-are-in-a-console-or-a-windowed-app
-    // This means, we must not call any console related commands, if we are not
-    // called from a console or will initialize one anyway.
-
 #ifdef DEBUGCONSOLE
     if (GetConsoleWindow() != NULL) {
         // This should create the window for the hidden console
