@@ -255,7 +255,7 @@ int main(int argc, char * argv[])
 
     //it seems like this code should be inline in MessageHandler() but for some reason having it there corrupts the messages sometimes -kousu 2/2009
 
-#ifndef __WINDOWS__
+#ifdef __WINDOWS__
     // Setup Windows console encoding
     // toLocal8Bit() returns the ANSI file encoding format
     // this does not necessarily match the OEM console encoding
