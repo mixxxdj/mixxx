@@ -17,6 +17,9 @@ class WidgetStackControlListener : public QObject {
     WidgetStackControlListener(QObject* pParent, ControlObject* pControl,
                                int index);
     virtual ~WidgetStackControlListener();
+    void setControl(double val) {
+        m_control.set(val);
+    }
 
   signals:
     void switchToWidget();
@@ -69,7 +72,9 @@ class WWidgetStack : public QStackedWidget, public WBaseWidget {
     void onCurrentPageControlChanged(double v);
     // Fired when we change pages.
     void onCurrentPageChanged(int);
+    void showIndex(int index);
     void hideIndex(int index);
+    void showEvent(QShowEvent* event);
 
   private:
     QSignalMapper m_showMapper;
@@ -81,6 +86,8 @@ class WWidgetStack : public QStackedWidget, public WBaseWidget {
     // Optional map that defines which page to select if a page gets a hide
     // signal.
     QMap<int, int> m_hideMap;
+    // A map of the individual page triggers so we can rectify state if needed.
+    QMap<int, WidgetStackControlListener*> m_listeners;
 };
 
 #endif /* WWIDGETSTACK_H */

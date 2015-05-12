@@ -38,6 +38,33 @@
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
                     <PushButton>
+                        <Size>85f,20f</Size>
+                        <ObjectName>GuiToggleButton</ObjectName>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Text>MICROPHONES</Text>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Text>MICROPHONES</Text>
+                        </State>
+                        <Connection>
+                          <ConfigKey persist="true">[MicrophoneRack],show</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey persist="true">[MicrophoneRack],show</ConfigKey>
+                        </Connection>
+                    </PushButton>
+                </Children>
+            </WidgetGroup>
+            <WidgetGroup>
+                <ObjectName>GuiToggleContainer</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                    <PushButton>
                         <Size>55f,20f</Size>
                         <TooltipId>show_effects</TooltipId>
                         <ObjectName>GuiToggleButton</ObjectName>
@@ -84,34 +111,6 @@
                         </Connection>
                         <Connection>
                           <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
-                        </Connection>
-                    </PushButton>
-                </Children>
-            </WidgetGroup>
-            <WidgetGroup>
-                <ObjectName>GuiToggleContainer</ObjectName>
-                <Layout>vertical</Layout>
-                <SizePolicy>min,min</SizePolicy>
-                <Children>
-                    <PushButton>
-                        <Size>85f,20f</Size>
-                        <TooltipId>show_samplers</TooltipId>
-                        <ObjectName>GuiToggleButton</ObjectName>
-                        <NumberStates>2</NumberStates>
-                        <State>
-                          <Number>0</Number>
-                          <Text>MICROPHONES</Text>
-                        </State>
-                        <State>
-                          <Number>1</Number>
-                          <Text>MICROPHONES</Text>
-                        </State>
-                        <Connection>
-                          <ConfigKey persist="true">[MicrophoneRack],show</ConfigKey>
-                          <ButtonState>LeftButton</ButtonState>
-                        </Connection>
-                        <Connection>
-                          <ConfigKey persist="true">[MicrophoneRack],show</ConfigKey>
                         </Connection>
                     </PushButton>
                 </Children>
