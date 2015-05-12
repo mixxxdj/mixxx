@@ -1,6 +1,9 @@
 
 #include "console.h"
 
+#include <stdio.h>
+#include <QtDebug>
+
 #ifdef __WINDOWS__
 #include <windows.h>
 #include <io.h> // Debug Console
