@@ -4,7 +4,7 @@
         <SizePolicy>me,max</SizePolicy>
         <MinimumSize>0,0</MinimumSize>
         <Children>
-          <WidgetGroup trigger="">
+          <WidgetGroup>
               <Layout>vertical</Layout>
               <Children>
                   <WidgetGroup>
