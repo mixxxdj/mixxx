@@ -98,8 +98,8 @@ def build_tests():
                 # into mixxx and mixxx-test. We could build both in different
                 # environments right now but then automoc and protoc get run in
                 # both environments which makes SCons unhappy.
-                # Currently booth Exes ar build with /subsystem:windows,5.02
-                # The console is attached manually
+                # Currently both executables are built with /subsystem:windows 
+                # and the console is attached manually
                 test_bin = env.Program(
                         'mixxx-test', [test_sources, env.RES('#src/mixxx.rc')],
                         LINKCOM = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
