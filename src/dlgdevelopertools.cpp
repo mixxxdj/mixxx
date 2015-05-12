@@ -59,6 +59,8 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
             this, SLOT(slotControlSearch(const QString&)));
     connect(controlSearch, SIGNAL(searchCleared()),
             this, SLOT(slotControlSearchClear()));
+    connect(controlDump, SIGNAL(clicked()),
+            this, SLOT(slotControlDump()));
 
     // Set up the log search box
     connect(logSearch, SIGNAL(returnPressed()),
@@ -116,8 +118,30 @@ void DlgDeveloperTools::slotControlSearchClear() {
     m_controlProxyModel.setFilterFixedString(QString());
 }
 
+void DlgDeveloperTools::slotControlDump() {
+    QString dumpFileName = CmdlineArgs::Instance().getSettingsPath() + "/co_dump.txt";
+    QFile dumpFile;
+    dumpFile.setFileName(dumpFileName);
+    dumpFile.open(QIODevice::WriteOnly | QIODevice::Text);
+
+    QList<QSharedPointer<ControlDoublePrivate> > controlsList;
+    ControlDoublePrivate::getControls(&controlsList);
+    for (QList<QSharedPointer<ControlDoublePrivate> >::const_iterator it = controlsList.begin();
+            it != controlsList.end(); ++it) {
+        const QSharedPointer<ControlDoublePrivate>& pControl = *it;
+        if (pControl) {
+            QString line = pControl->getKey().group + " " +
+                           pControl->getKey().item + " " +
+                           QString::number(pControl->get()) + "\n";
+            dumpFile.write(line.toLocal8Bit());
+        }
+    }
+}
+
 void DlgDeveloperTools::slotLogSearch() {
     QString textToFind = logSearch->text();
     m_logCursor = logTextView->document()->find(textToFind, m_logCursor);
     logTextView->setTextCursor(m_logCursor);
 }
+
+
