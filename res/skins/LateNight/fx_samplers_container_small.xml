@@ -14,7 +14,7 @@
                             </SingletonContainer>
                         </Children>
                     </WidgetGroup>
-                    <WidgetGroup trigger="[MicrophoneRack],show" persist="true">
+                    <WidgetGroup trigger="[Microphone],show_microphone" persist="true">
                         <Layout>vertical</Layout>
                         <Children>
                             <Template src="skin:microphone_rack.xml"/>
@@ -33,6 +33,13 @@
                         </Children>
                     </WidgetGroup>
                 </Children>
+                <Connection>
+                  <ConfigKey>[Master],maximize_library</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                  <Transform>
+                    <Not/>
+                  </Transform>
+                </Connection>
             </WidgetStack>
         </Children>
     </WidgetGroup>

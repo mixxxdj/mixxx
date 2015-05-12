@@ -14,7 +14,7 @@
                         <Children/>
                     </WidgetGroup>
                     <!-- When any tab is hidden, go back to the first (empty) page. -->
-                    <WidgetGroup trigger="[MicrophoneRack],show" on_hide_select="0">
+                    <WidgetGroup trigger="[Microphone],show_microphone" on_hide_select="0">
                         <Layout>vertical</Layout>
                         <SizePolicy>me,min</SizePolicy>
                         <Children>
@@ -36,6 +36,13 @@
                         </Children>
                     </WidgetGroup>
                 </Children>
+                <Connection>
+                  <ConfigKey>[Master],maximize_library</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                  <Transform>
+                    <Not/>
+                  </Transform>
+                </Connection>
             </WidgetStack>
         </Children>
     </WidgetGroup>

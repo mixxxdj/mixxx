@@ -13,7 +13,7 @@
                           <Template src="skin:microphone_rack.xml"/>
                       </Children>
                       <Connection>
-                          <ConfigKey persist="true">[MicrophoneRack],show</ConfigKey>
+                          <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
                           <BindProperty>visible</BindProperty>
                       </Connection>
                   </WidgetGroup>
@@ -39,8 +39,11 @@
                   </WidgetGroup>
               </Children>
               <Connection>
-                  <ConfigKey persist="true">[Master],maximize_library</ConfigKey>
+                  <ConfigKey>[Master],maximize_library</ConfigKey>
                   <BindProperty>visible</BindProperty>
+                  <Transform>
+                    <Not/>
+                  </Transform>
               </Connection>
           </WidgetGroup>
         </Children>
