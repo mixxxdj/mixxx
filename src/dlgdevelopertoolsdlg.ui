@@ -42,6 +42,9 @@
        </item>
        <item row="0" column="1">
         <widget class="QPushButton" name="controlDump">
+         <property name="toolTip">
+          <string>Dumps all ControlObject values to a csv-file saved in the settings path (e.g. ~/.mixxx)</string>
+         </property>
          <property name="text">
           <string>Dump to csv</string>
          </property>
