@@ -1,8 +1,11 @@
+#include <QDateTime>
+
 #include "dlgdevelopertools.h"
 
 #include "control/control.h"
 #include "util/cmdlineargs.h"
 #include "util/statsmanager.h"
+
 
 DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
                                      ConfigObject<ConfigValue>* pConfig)
@@ -119,7 +122,11 @@ void DlgDeveloperTools::slotControlSearchClear() {
 }
 
 void DlgDeveloperTools::slotControlDump() {
-    QString dumpFileName = CmdlineArgs::Instance().getSettingsPath() + "/co_dump.csv";
+
+    QString timestamp = QDateTime::currentDateTime()
+            .toString("yyyy-MM-dd_hh'h'mm'm'ss's'");
+    QString dumpFileName = CmdlineArgs::Instance().getSettingsPath() +
+            "/co_dump_" + timestamp + ".csv";
     QFile dumpFile;
     dumpFile.setFileName(dumpFileName);
     dumpFile.open(QIODevice::WriteOnly | QIODevice::Text);
