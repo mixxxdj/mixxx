@@ -22,8 +22,7 @@ Console::Console() {
     // LOCALE_IDEFAULTANSICODEPAGE "1252" // ANSI Codepage used by Qt toLocal8Bit
     // LOCALE_IDEFAULTCODEPAGE "850" // OEM Codepage Console
 
-    UINT m_oldCodePage;
-    bool m_shouldResetCodePage = false;
+    m_shouldResetCodePage = false;
     if(AttachConsole(ATTACH_PARENT_PROCESS)) {
         // we are started from a console porcess
         int fd;
