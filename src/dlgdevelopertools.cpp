@@ -119,7 +119,7 @@ void DlgDeveloperTools::slotControlSearchClear() {
 }
 
 void DlgDeveloperTools::slotControlDump() {
-    QString dumpFileName = CmdlineArgs::Instance().getSettingsPath() + "/co_dump.txt";
+    QString dumpFileName = CmdlineArgs::Instance().getSettingsPath() + "/co_dump.csv";
     QFile dumpFile;
     dumpFile.setFileName(dumpFileName);
     dumpFile.open(QIODevice::WriteOnly | QIODevice::Text);
@@ -130,8 +130,8 @@ void DlgDeveloperTools::slotControlDump() {
             it != controlsList.end(); ++it) {
         const QSharedPointer<ControlDoublePrivate>& pControl = *it;
         if (pControl) {
-            QString line = pControl->getKey().group + " " +
-                           pControl->getKey().item + " " +
+            QString line = pControl->getKey().group + "," +
+                           pControl->getKey().item + "," +
                            QString::number(pControl->get()) + "\n";
             dumpFile.write(line.toLocal8Bit());
         }
