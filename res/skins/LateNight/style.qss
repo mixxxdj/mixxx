@@ -671,8 +671,22 @@
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   font-family: "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
   font-size: 10px/11px;
+  padding: 0px;
   color: #cfb32c;
   text-align: left;
+}
+
+#PreviewLabel {
+  qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
+  font: 13px/14px "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+  background-color: #1e1e1e;
+  font-weight:bold;
+  text-transform: uppercase;
+  border-right: 1px solid #585858;
+  color: #eece33;
+  text-align: center;
+  padding-top: 3px;
+  padding-bottom: 3px;
 }
 
 #PreviewDeckMargin {
@@ -691,6 +705,8 @@
   border-top: 0px;
   border-left: 0px;
   border-bottom: 0px;
+  padding: 0px;
+  margin: 0px;
 }
 
 #PreviewTitleEject {
@@ -698,7 +714,6 @@
   border-top: 0px;
   border-left: 0px;
   border-right: 0px;
-  padding: 3px;
 }
 
 #PreviewPlayOverview {
@@ -852,6 +867,7 @@
 
 #MicTitle {
   qproperty-alignment: 'AlignLeft | AlignTop';
+  text-transform: uppercase;
   font-size: 15px/17px;
   font-weight: bold;
   color: #eece33;
