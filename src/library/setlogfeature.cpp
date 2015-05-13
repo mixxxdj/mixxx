@@ -301,12 +301,7 @@ void SetlogFeature::slotPlaylistTableRenamed(int playlistId,
         clearChildModel();
         m_lastRightClickedIndex = constructChildModel(playlistId);
         if (type != PlaylistDAO::PLHT_UNKNOWN) {
-            // Switch the view to the playlist.
-            m_pPlaylistTableModel->setTableModel(playlistId);
-            // Update selection
-            emit(featureSelect(this, m_lastRightClickedIndex));
-            emit(showTrackModel(m_pPlaylistTableModel));
-            emit(enableCoverArtDisplay(true));
+            activatePlaylist(playlistId);
         }
     }
 }
