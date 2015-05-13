@@ -124,8 +124,23 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     int playlistId = playlistIdFromIndex(index);
     if (playlistId != -1 && m_pPlaylistTableModel) {
         m_pPlaylistTableModel->setTableModel(playlistId);
+        // Update selection
+        emit(featureSelect(this, index));
         emit(showTrackModel(m_pPlaylistTableModel));
         emit(enableCoverArtDisplay(true));
+    }
+}
+
+void BasePlaylistFeature::activatePlaylist(int playlistId) {
+    //qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId;
+    QModelIndex index = indexFromPlaylistId(playlistId);
+    if (playlistId != -1 && index != QModelIndex() && m_pPlaylistTableModel) {
+        m_pPlaylistTableModel->setTableModel(playlistId);
+        emit(showTrackModel(m_pPlaylistTableModel));
+        emit(enableCoverArtDisplay(true));
+        // Update selection
+        emit(featureSelect(this, m_lastRightClickedIndex));
+        activateChild(m_lastRightClickedIndex);
     }
 }
 
@@ -223,7 +238,7 @@ void BasePlaylistFeature::slotDuplicatePlaylist() {
 
     if (newPlaylistId != -1 &&
         m_playlistDao.copyPlaylistTracks(oldPlaylistId, newPlaylistId)) {
-        emit(showTrackModel(m_pPlaylistTableModel));
+        activatePlaylist(newPlaylistId);
     }
 }
 
@@ -276,7 +291,7 @@ void BasePlaylistFeature::slotCreatePlaylist() {
     int playlistId = m_playlistDao.createPlaylist(name);
 
     if (playlistId != -1) {
-        emit(showTrackModel(m_pPlaylistTableModel));
+        activatePlaylist(playlistId);
     } else {
         QMessageBox::warning(NULL,
                              tr("Playlist Creation Failed"),
@@ -310,7 +325,7 @@ void BasePlaylistFeature::slotDeletePlaylist() {
 
 
 void BasePlaylistFeature::slotImportPlaylist() {
-    qDebug() << "slotImportPlaylist() row:" ; //<< m_lastRightClickedIndex.data();
+    //qDebug() << "slotImportPlaylist() row:" << m_lastRightClickedIndex.data();
 
     if (!m_pPlaylistTableModel) {
         return;
@@ -358,6 +373,7 @@ void BasePlaylistFeature::slotImportPlaylist() {
 
       // Iterate over the List that holds URLs of playlist entires
       m_pPlaylistTableModel->addTracks(QModelIndex(), entries);
+      activateChild(m_lastRightClickedIndex);
 
       // delete the parser object
       delete playlist_parser;
@@ -559,4 +575,18 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
   */
 void BasePlaylistFeature::clearChildModel() {
     m_childModel.removeRows(0, m_playlistList.size());
+}
+
+QModelIndex BasePlaylistFeature::indexFromPlaylistId(int playlistId) {
+    int row = 0;
+    for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
+         it != m_playlistList.end(); ++it, ++row) {
+        int current_id = it->first;
+        QString playlist_name = it->second;
+
+        if (playlistId == current_id) {
+            return m_childModel.index(row, 0);
+        }
+    }
+    return QModelIndex();
 }

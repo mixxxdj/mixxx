@@ -189,15 +189,31 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
     if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
         type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
+        // TODO: Is this even necessary?
         clearChildModel();
         m_lastRightClickedIndex = constructChildModel(playlistId);
+    }
+}
 
+void PlaylistFeature::slotPlaylistTableRenamed(int playlistId,
+                                               QString /* a_strName */) {
+    if (!m_pPlaylistTableModel) {
+        return;
+    }
+
+    //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
+    enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
+    if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
+        type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
+        clearChildModel();
+        m_lastRightClickedIndex = constructChildModel(playlistId);
         if (type != PlaylistDAO::PLHT_UNKNOWN) {
             // Switch the view to the playlist.
             m_pPlaylistTableModel->setTableModel(playlistId);
             // Update selection
             emit(featureSelect(this, m_lastRightClickedIndex));
-            activateChild(m_lastRightClickedIndex);
+            emit(showTrackModel(m_pPlaylistTableModel));
+            emit(enableCoverArtDisplay(true));
         }
     }
 }
