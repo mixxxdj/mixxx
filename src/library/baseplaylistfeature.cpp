@@ -134,7 +134,7 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
 void BasePlaylistFeature::activatePlaylist(int playlistId) {
     //qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId;
     QModelIndex index = indexFromPlaylistId(playlistId);
-    if (playlistId != -1 && index != QModelIndex() && m_pPlaylistTableModel) {
+    if (playlistId != -1 && index.isValid() && m_pPlaylistTableModel) {
         m_pPlaylistTableModel->setTableModel(playlistId);
         emit(showTrackModel(m_pPlaylistTableModel));
         emit(enableCoverArtDisplay(true));
@@ -188,11 +188,6 @@ void BasePlaylistFeature::slotRenamePlaylist() {
     }
 
     m_playlistDao.renamePlaylist(playlistId, newName);
-}
-
-void BasePlaylistFeature::slotPlaylistTableRenamed(int playlistId,
-                                                   QString /* a_strName */) {
-    slotPlaylistTableChanged(playlistId);
 }
 
 void BasePlaylistFeature::slotDuplicatePlaylist() {

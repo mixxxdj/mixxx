@@ -45,7 +45,7 @@ class BasePlaylistFeature : public LibraryFeature {
     virtual void htmlLinkClicked(const QUrl& link);
 
     virtual void slotPlaylistTableChanged(int playlistId) = 0;
-    virtual void slotPlaylistTableRenamed(int playlistId, QString a_strName);
+    virtual void slotPlaylistTableRenamed(int playlistId, QString a_strName) = 0;
     void slotCreatePlaylist();
 
   protected slots:
