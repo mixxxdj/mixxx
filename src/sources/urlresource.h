@@ -23,7 +23,12 @@ protected:
         : m_url(url) {
     }
 
+    inline bool isLocalFile() const {
+        return getUrl().isLocalFile();
+    }
+
     inline QString getLocalFileName() const {
+        DEBUG_ASSERT(isLocalFile());
         return getUrl().toLocalFile();
     }
     inline QByteArray getLocalFileNameBytes() const {
