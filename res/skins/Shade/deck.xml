@@ -184,7 +184,7 @@
 												</Spinny>
 											</Children>
 											<Connection>
-												<ConfigKey persist="true">[Spinny<Variable name="channum"/>],show_spinny</ConfigKey>
+												<ConfigKey>[Spinny<Variable name="channum"/>],show_spinny</ConfigKey>
 												<BindProperty>visible</BindProperty>
 											</Connection>
 										</WidgetGroup>
@@ -617,6 +617,11 @@
 								<ConfigKey>[Channel<Variable name="channum"/>],beats_translate_curpos</ConfigKey>
 								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 								<ButtonState>LeftButton</ButtonState>
+							</Connection>
+							<Connection>
+								<ConfigKey>[Channel<Variable name="channum"/>],beats_translate_match_alignment</ConfigKey>
+								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+								<ButtonState>RightButton</ButtonState>
 							</Connection>
 						</PushButton>
 	

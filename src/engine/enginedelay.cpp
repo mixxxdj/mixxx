@@ -28,7 +28,7 @@ EngineDelay::EngineDelay(const char* group, ConfigKey delayControl)
           m_iDelay(0) {
     m_pDelayBuffer = SampleUtil::alloc(kiMaxDelay);
     SampleUtil::clear(m_pDelayBuffer, kiMaxDelay);
-    m_pDelayPot = new ControlPotmeter(delayControl, 0, kdMaxDelayPot, false, true, false, 0.0, true);
+    m_pDelayPot = new ControlPotmeter(delayControl, 0, kdMaxDelayPot, false, true, false, true);
     m_pDelayPot->setDefaultValue(0);
     connect(m_pDelayPot, SIGNAL(valueChanged(double)), this,
             SLOT(slotDelayChanged()), Qt::DirectConnection);
