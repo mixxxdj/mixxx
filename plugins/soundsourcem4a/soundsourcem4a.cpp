@@ -91,14 +91,7 @@ MP4TrackId findFirstAudioTrackId(MP4FileHandle hFile) {
 
 } // anonymous namespace
 
-QList<QString> SoundSourceM4A::supportedFileExtensions() {
-    QList<QString> list;
-    list.push_back("m4a");
-    list.push_back("mp4");
-    return list;
-}
-
-SoundSourceM4A::SoundSourceM4A(QUrl url)
+SoundSourceM4A::SoundSourceM4A(const QUrl& url)
         : SoundSourcePlugin(url, "m4a"),
           m_hFile(MP4_INVALID_FILE_HANDLE),
           m_trackId(MP4_INVALID_TRACK_ID),
@@ -432,25 +425,13 @@ SINT SoundSourceM4A::readSampleFrames(
 
 } // namespace Mixxx
 
-extern "C" MY_EXPORT const char* getMixxxVersion() {
-    return VERSION;
+extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT QVector<QString> Mixxx_SoundSourcePluginAPI_getSupportedFileTypes() {
+    QVector<QString> supportedFileTypes;
+    supportedFileTypes.push_back("m4a");
+    supportedFileTypes.push_back("mp4");
+    return supportedFileTypes;
 }
 
-extern "C" MY_EXPORT int getSoundSourceAPIVersion() {
-    return MIXXX_SOUNDSOURCE_API_VERSION;
-}
-
-extern "C" MY_EXPORT Mixxx::SoundSource* getSoundSource(QUrl url) {
-    return new Mixxx::SoundSourceM4A(url);
-}
-
-extern "C" MY_EXPORT char** supportedFileExtensions() {
-    const QList<QString> supportedFileExtensions(
-            Mixxx::SoundSourceM4A::supportedFileExtensions());
-    return Mixxx::SoundSourcePlugin::allocFileExtensions(
-            supportedFileExtensions);
-}
-
-extern "C" MY_EXPORT void freeFileExtensions(char** fileExtensions) {
-    Mixxx::SoundSourcePlugin::freeFileExtensions(fileExtensions);
+extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT Mixxx::SoundSourcePointer Mixxx_SoundSourcePluginAPI_newSoundSource(const QUrl& url) {
+    return Mixxx::SoundSourcePointer(new Mixxx::SoundSourceM4A(url));
 }

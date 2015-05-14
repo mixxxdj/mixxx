@@ -15,20 +15,11 @@
 
 #include <vector>
 
-//As per QLibrary docs: http://doc.trolltech.com/4.6/qlibrary.html#resolve
-#ifdef Q_OS_WIN
-#define MY_EXPORT __declspec(dllexport)
-#else
-#define MY_EXPORT
-#endif
-
 namespace Mixxx {
 
 class SoundSourceM4A: public SoundSourcePlugin {
 public:
-    static QList<QString> supportedFileExtensions();
-
-    explicit SoundSourceM4A(QUrl url);
+    explicit SoundSourceM4A(const QUrl& url);
     ~SoundSourceM4A();
 
     void close() /*override*/;
@@ -64,10 +55,7 @@ private:
 
 } // namespace Mixxx
 
-extern "C" MY_EXPORT const char* getMixxxVersion();
-extern "C" MY_EXPORT int getSoundSourceAPIVersion();
-extern "C" MY_EXPORT Mixxx::SoundSource* getSoundSource(QUrl url);
-extern "C" MY_EXPORT char** supportedFileExtensions();
-extern "C" MY_EXPORT void freeFileExtensions(char** fileExtensions);
+extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT QVector<QString> Mixxx_SoundSourcePluginAPI_getSupportedFileTypes();
+extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT Mixxx::SoundSourcePointer Mixxx_SoundSourcePluginAPI_newSoundSource(const QUrl& url);
 
 #endif // MIXXX_SOUNDSOURCEM4A_H

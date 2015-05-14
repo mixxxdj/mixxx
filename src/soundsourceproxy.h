@@ -66,7 +66,7 @@ public:
 private:
     static QRegExp m_supportedFileRegex;
     static QMap<QString, QLibrary*> m_plugins;
-    static QMap<QString, getSoundSourceFunc> m_extensionsSupportedByPlugins;
+    static QMap<QString, Mixxx::SoundSourcePluginAPI_newSoundSourceFunc> m_extensionsSupportedByPlugins;
     static QMutex m_extensionsMutex;
 
     static QLibrary* getPlugin(QString lib_filename);

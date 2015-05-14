@@ -5,19 +5,11 @@
 
 #include "wavpack/wavpack.h"
 
-#ifdef Q_OS_WIN
-#define MY_EXPORT __declspec(dllexport)
-#else
-#define MY_EXPORT
-#endif
-
 namespace Mixxx {
 
 class SoundSourceWV: public SoundSourcePlugin {
 public:
-    static QList<QString> supportedFileExtensions();
-
-    explicit SoundSourceWV(QUrl url);
+    explicit SoundSourceWV(const QUrl& url);
     ~SoundSourceWV();
 
     void close() /*override*/;
@@ -37,10 +29,7 @@ private:
 
 }  // namespace Mixxx
 
-extern "C" MY_EXPORT const char* getMixxxVersion();
-extern "C" MY_EXPORT int getSoundSourceAPIVersion();
-extern "C" MY_EXPORT Mixxx::SoundSource* getSoundSource(QUrl url);
-extern "C" MY_EXPORT char** supportedFileExtensions();
-extern "C" MY_EXPORT void freeFileExtensions(char** fileExtensions);
+extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT QVector<QString> Mixxx_SoundSourcePluginAPI_getSupportedFileTypes();
+extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT Mixxx::SoundSourcePointer Mixxx_SoundSourcePluginAPI_newSoundSource(const QUrl& url);
 
 #endif // MIXXX_SOUNDSOURCEWV_H

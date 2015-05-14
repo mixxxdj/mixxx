@@ -75,14 +75,6 @@ template<class T> static void safeRelease(T **ppT) {
 
 } // anonymous namespace
 
-// static
-QList<QString> SoundSourceMediaFoundation::supportedFileExtensions() {
-    QList<QString> list;
-    list.push_back("m4a");
-    list.push_back("mp4");
-    return list;
-}
-
 SoundSourceMediaFoundation::SoundSourceMediaFoundation(QUrl url)
         : SoundSourcePlugin(url, "m4a"),
           m_hrCoInitialize(E_FAIL),
@@ -594,25 +586,13 @@ void SoundSourceMediaFoundation::copyFrames(CSAMPLE *dest, SINT *destFrames,
     }
 }
 
-extern "C" MY_EXPORT const char* getMixxxVersion() {
-    return VERSION;
+extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT QVector<QString> Mixxx_SoundSourcePluginAPI_getSupportedFileTypes() {
+    QVector<QString> supportedFileTypes;
+    supportedFileTypes.push_back("m4a");
+    supportedFileTypes.push_back("mp4");
+    return supportedFileTypes;
 }
 
-extern "C" MY_EXPORT int getSoundSourceAPIVersion() {
-    return MIXXX_SOUNDSOURCE_API_VERSION;
-}
-
-extern "C" MY_EXPORT Mixxx::SoundSource* getSoundSource(QUrl url) {
-    return new SoundSourceMediaFoundation(url);
-}
-
-extern "C" MY_EXPORT char** supportedFileExtensions() {
-    const QList<QString> supportedFileExtensions(
-            SoundSourceMediaFoundation::supportedFileExtensions());
-    return Mixxx::SoundSourcePlugin::allocFileExtensions(
-            supportedFileExtensions);
-}
-
-extern "C" MY_EXPORT void freeFileExtensions(char** fileExtensions) {
-    Mixxx::SoundSourcePlugin::freeFileExtensions(fileExtensions);
+extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT Mixxx::SoundSourcePointer Mixxx_SoundSourcePluginAPI_newSoundSource(const QUrl& url) {
+    return Mixxx::SoundSourcePointer(new SoundSourceMediaFoundation(url));
 }

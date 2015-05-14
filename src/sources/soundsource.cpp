@@ -4,17 +4,17 @@
 
 namespace Mixxx {
 
-/*static*/ QString SoundSource::getTypeFromUrl(QUrl url) {
+/*static*/ QString SoundSource::getTypeFromUrl(const QUrl& url) {
     return url.toString().section(".", -1).toLower().trimmed();
 }
 
-SoundSource::SoundSource(QUrl url)
+SoundSource::SoundSource(const QUrl& url)
         : AudioSource(url),
           m_type(getTypeFromUrl(url)) {
     DEBUG_ASSERT(getUrl().isValid());
 }
 
-SoundSource::SoundSource(QUrl url, QString type)
+SoundSource::SoundSource(const QUrl& url, const QString& type)
         : AudioSource(url),
           m_type(type) {
     DEBUG_ASSERT(getUrl().isValid());
