@@ -243,6 +243,8 @@ TEST_F(EngineBufferE2ETest, ScratchTest) {
     // to the other.
     ControlObject::set(ConfigKey(m_sGroup1, "scratch2_enable"), 1.0);
     ControlObject::set(ConfigKey(m_sGroup1, "scratch2"), 1.1);
+    m_pChannel1->getEngineBuffer()->queueNewPlaypos(450,
+                                                    EngineBuffer::SEEK_EXACT);
     ProcessBuffer();
     ControlObject::set(ConfigKey(m_sGroup1, "scratch2"), -1.1);
     ProcessBuffer();

@@ -36,6 +36,7 @@ class PlaylistFeature : public BasePlaylistFeature {
 
   private slots:
     void slotPlaylistTableChanged(int playlistId);
+    void slotPlaylistTableRenamed(int playlistId, QString a_strName);
 
  protected:
     void buildPlaylistList();

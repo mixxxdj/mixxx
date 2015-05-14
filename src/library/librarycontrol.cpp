@@ -138,6 +138,9 @@ LibraryControl::~LibraryControl() {
    delete m_pLoadSelectedIntoFirstStopped;
    delete m_pAutoDjAddTop;
    delete m_pAutoDjAddBottom;
+   delete m_pFontSizeKnob;
+   delete m_pFontSizeDecrement;
+   delete m_pFontSizeIncrement;
    deleteMapValues(&m_loadToGroupControllers);
 }
 

@@ -36,7 +36,7 @@ class ControlDoublePrivate : public QObject {
     static QSharedPointer<ControlDoublePrivate> getControl(
             const ConfigKey& key, bool warn = true,
             ControlObject* pCreatorCO = NULL, bool bIgnoreNops = true, bool bTrack = false,
-            double defaultValue = 0.0, bool bPersist = false);
+            bool bPersist = false);
 
     // Adds all ControlDoublePrivate that currently exist to pControlList
     static void getControls(QList<QSharedPointer<ControlDoublePrivate> >* pControlsList);
@@ -125,13 +125,9 @@ class ControlDoublePrivate : public QObject {
     void valueChangeRequest(double value);
 
   private:
-    // If bPersist is true and the configuration object is not null, the initial
-    // value for this control is the value stored in the configuration.
-    // Otherwise, defaultValue is used.
     ControlDoublePrivate(ConfigKey key, ControlObject* pCreatorCO,
-                         bool bIgnoreNops, bool bTrack, double defaultValue,
-                         bool bPersist);
-    void initialize(double defaultValue);
+                         bool bIgnoreNops, bool bTrack, bool bPersist);
+    void initialize();
     void setInner(double value, QObject* pSender);
 
     ConfigKey m_key;

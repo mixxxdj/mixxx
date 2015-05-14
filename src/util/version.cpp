@@ -11,14 +11,24 @@ QString Version::version() {
 // static
 QString Version::applicationTitle() {
 #ifdef __APPLE__
-    return "Mixxx";
+    QString base("Mixxx");
 #elif defined(AMD64) || defined(EM64T) || defined(x86_64)
-    return QString("Mixxx %1 x64").arg(VERSION);
+    QString base("Mixxx " VERSION " x64");
 #elif defined(IA64)
-    return QString("Mixxx %1 Itanium").arg(VERSION);
+    QString base("Mixxx " VERSION " Itanium");
 #else
-    return QString("Mixxx %1").arg(VERSION);
+    QString base("Mixxx " VERSION);
 #endif
+
+#ifdef MIXXX_BUILD_NUMBER_IN_TITLE_BAR
+    QString branch = developmentBranch();
+    QString branch_revision = developmentRevision();
+    if (!branch.isEmpty() && !branch_revision.isEmpty()) {
+        base.append(QString(" (build %1-r%2)")
+                    .arg(branch).arg(branch_revision));
+    }
+#endif
+    return base;
 }
 
 // static

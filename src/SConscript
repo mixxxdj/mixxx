@@ -94,14 +94,12 @@ def build_tests():
         env.Append(LIBS = 'gmock')
 
         if build.platform_is_windows:
-                # We want a terminal for tests.
-                if build.machine_is_64bit:
-                    env['LINKFLAGS'].remove('/subsystem:windows,5.02')
-                    env['LINKFLAGS'].append('/subsystem:console,5.02')
-                else:
-                    env['LINKFLAGS'].remove('/subsystem:windows,5.01')
-                    env['LINKFLAGS'].append('/subsystem:console,5.01')
-
+                # TODO(rryan): Build Mixxx core as a shared object and link it
+                # into mixxx and mixxx-test. We could build both in different
+                # environments right now but then automoc and protoc get run in
+                # both environments which makes SCons unhappy.
+                # Currently both executables are built with /subsystem:windows 
+                # and the console is attached manually
                 test_bin = env.Program(
                         'mixxx-test', [test_sources, env.RES('#src/mixxx.rc')],
                         LINKCOM = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
@@ -776,18 +774,25 @@ def BuildUbuntuPackage(target, source, env):
                         # filenames match the Windows/OSX builds.
                         version = construct_version(build, mixxx_version,
                                                     branch_name, vcs_revision)
-                        dest_filename = "%s.deb" % (
-                                '-'.join((package_name, version, ubuntu_distro,
-                                          arch)))
+                        dest_filename = '-'.join((package_name, version,
+                                                  ubuntu_distro, arch))
+                        dest_deb_filename = "%s.deb" % dest_filename
+                        # Also rename the source tarball.
+                        dest_tar_filename = "%s.tar.gz" % dest_filename
 
                         # ubuntu/ is one folder up
-                        dest_file = os.path.join('..', dest_filename)
+                        dest_deb_file = os.path.join('..', dest_deb_filename)
+                        dest_tar_file = os.path.join('..', dest_tar_filename)
+
+                        source_tar_file = os.path.join('..', mixxx_tarball)
+                        if os.path.exists(source_tar_file):
+                                shutil.move(source_tar_file, dest_tar_file)
 
                         if result == 0 and os.path.exists(result_file):
                                 print "Done! Package and tarballs are in %s" % result_path
-                                print "* Found package at '%s'. Copying to ubuntu/" % result_filename
+                                print "* Found package at '%s'. Copying to ubuntu/" % result_file
                                 print
-                                shutil.copyfile(result_file, dest_file)
+                                shutil.copyfile(result_file, dest_deb_file)
                         else:
                                 print "* Build failed."
                                 print
