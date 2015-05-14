@@ -53,7 +53,7 @@
 //Static memory allocation
 QRegExp SoundSourceProxy::m_supportedFileRegex;
 QMap<QString, QLibrary*> SoundSourceProxy::m_plugins;
-QMap<QString, getSoundSourceFunc> SoundSourceProxy::m_extensionsSupportedByPlugins;
+QMap<QString, Mixxx::SoundSourcePluginAPI_newSoundSourceFunc> SoundSourceProxy::m_extensionsSupportedByPlugins;
 QMutex SoundSourceProxy::m_extensionsMutex;
 
 namespace
@@ -201,7 +201,7 @@ Mixxx::SoundSourcePointer SoundSourceProxy::initialize(
         return Mixxx::SoundSourcePointer(new Mixxx::SoundSourceModPlug(url));
 #endif
     } else if (m_extensionsSupportedByPlugins.contains(type)) {
-        getSoundSourceFunc getter = m_extensionsSupportedByPlugins.value(type);
+        Mixxx::SoundSourcePluginAPI_newSoundSourceFunc getter = m_extensionsSupportedByPlugins.value(type);
         if (getter)
         {
             qDebug() << "Getting SoundSource plugin object for" << type;
@@ -222,8 +222,7 @@ Mixxx::SoundSourcePointer SoundSourceProxy::initialize(
 }
 
 // static
-QLibrary* SoundSourceProxy::getPlugin(QString lib_filename)
-        {
+QLibrary* SoundSourceProxy::getPlugin(QString lib_filename) {
     static QMutex mutex;
     QMutexLocker locker(&mutex);
 
@@ -238,77 +237,59 @@ QLibrary* SoundSourceProxy::getPlugin(QString lib_filename)
     }
     qDebug() << "Dynamically loaded" << lib_filename;
 
-    bool incompatible = false;
-    //Plugin API version check
-    getSoundSourceAPIVersionFunc getver = (getSoundSourceAPIVersionFunc)
-            plugin->resolve("getSoundSourceAPIVersion");
-    if (getver) {
-        int pluginAPIVersion = getver();
-        if (pluginAPIVersion != MIXXX_SOUNDSOURCE_API_VERSION) {
-            //SoundSource API version mismatch
-            incompatible = true;
+    // Plugin API version check
+    Mixxx::SoundSourcePluginAPI_getVersionFunc getVersionFunc = (Mixxx::SoundSourcePluginAPI_getVersionFunc)
+            plugin->resolve(Mixxx::SoundSourcePluginAPI_getVersionFuncName);
+    if (NULL == getVersionFunc) {
+        // Try to resolve the legacy plugin API function name
+        getVersionFunc = (Mixxx::SoundSourcePluginAPI_getVersionFunc)
+                    plugin->resolve("getSoundSourceAPIVersion");
+    }
+    Mixxx::SoundSourcePluginAPI_getSupportedFileTypesFunc getSupportedFileTypesFunc = NULL;
+    Mixxx::SoundSourcePluginAPI_newSoundSourceFunc newSoundSourceFunc = NULL;
+    if (getVersionFunc) {
+        int pluginAPIVersion = getVersionFunc();
+        if (pluginAPIVersion == MIXXX_SOUNDSOURCEPLUGINAPI_VERSION) {
+            getSupportedFileTypesFunc = (Mixxx::SoundSourcePluginAPI_getSupportedFileTypesFunc)
+                    plugin->resolve(Mixxx::SoundSourcePluginAPI_getSupportedFileTypesFuncName);
+            if (!getSupportedFileTypesFunc) {
+                qWarning() << "Failed to resolve SoundSource plugin API function"
+                        << Mixxx::SoundSourcePluginAPI_getSupportedFileTypesFuncName;
+            }
+            newSoundSourceFunc = (Mixxx::SoundSourcePluginAPI_newSoundSourceFunc)
+                    plugin->resolve(Mixxx::SoundSourcePluginAPI_newSoundSourceFuncName);
+            if (!newSoundSourceFunc) {
+                qWarning() << "Failed to resolve SoundSource plugin API function"
+                        << Mixxx::SoundSourcePluginAPI_newSoundSourceFuncName;
+            }
+        } else {
+            qWarning() << "Incompatible SoundSource plugin API version"
+                    << pluginAPIVersion << "<>" << MIXXX_SOUNDSOURCEPLUGINAPI_VERSION;
         }
     } else {
-        //Missing getSoundSourceAPIVersion symbol
-        incompatible = true;
+        qWarning() << "Failed to resolve SoundSource plugin API function"
+                << Mixxx::SoundSourcePluginAPI_getVersionFuncName;
     }
-    if (incompatible)
-    {
-        //Plugin is using an older/incompatible version of the
-        //plugin API!
-        qDebug() << "Plugin" << lib_filename
-                << "is incompatible with your version of Mixxx!";
+    if (!(getVersionFunc && getSupportedFileTypesFunc && newSoundSourceFunc)) {
+        qWarning() << "Incompatible SoundSource plugin"
+                << lib_filename;
         return NULL;
     }
 
-    //Map the file extensions this plugin supports onto a function
-    //pointer to the "getter" function that gets a SoundSourceBlah.
-    getSoundSourceFunc getter = (getSoundSourceFunc)
-            plugin->resolve("getSoundSource");
-    // Getter function not found.
-    if (getter == NULL) {
-        qDebug() << "ERROR: Couldn't resolve getter function. Plugin"
-                << lib_filename << "corrupt.";
-        return NULL;
-    }
-
-    // Did you export it properly in your plugin?
-    getSupportedFileExtensionsFunc getFileExts =
-            (getSupportedFileExtensionsFunc)
-            plugin->resolve("supportedFileExtensions");
-    if (getFileExts == NULL) {
-        qDebug() << "ERROR: Couldn't resolve getFileExts function. Plugin"
-                << lib_filename << "corrupt.";
-        return NULL;
-    }
-
-    freeFileExtensionsFunc freeFileExts =
-            reinterpret_cast<freeFileExtensionsFunc>(
-            plugin->resolve("freeFileExtensions"));
-    if (freeFileExts == NULL) {
-        qDebug() << "ERROR: Couldn't resolve freeFileExts function. Plugin"
-                << lib_filename << "corrupt.";
-        return NULL;
-    }
-
-    char** supportedFileExtensions = getFileExts();
-    int i = 0;
-    while (supportedFileExtensions[i] != NULL) {
-        qDebug() << "Plugin supports:" << supportedFileExtensions[i];
+    QVector<QString> supportedFileTypes = getSupportedFileTypesFunc();
+    for (int i = 0; i < supportedFileTypes.size(); ++i) {
+        qDebug() << "SoundSource plugin supports file type"
+                << supportedFileTypes[i];
         m_extensionsSupportedByPlugins.insert(
-                QString(supportedFileExtensions[i]), getter);
-        i++;
+                supportedFileTypes[i], newSoundSourceFunc);
     }
-    freeFileExts(supportedFileExtensions);
 
+    // Add the plugin to the list of loaded QLibrary plugins...
+    m_plugins.insert(lib_filename, plugin.data());
+    // ... and release ownership of the QLibrary so it is not deleted
+    // when leaving this scope.
     QLibrary* pPlugin = plugin.take();
-    // Add the plugin to our list of loaded QLibraries/plugins and take
-    // ownership of the QLibrary from its QScopedPointer so it is not deleted.
-    m_plugins.insert(lib_filename, pPlugin);
 
-    // So now we have a list of file extensions (eg. "m4a", "mp4", etc) that map
-    // onto the getter function for this plugin (eg. the function that returns a
-    // SoundSourceM4A object)
     return pPlugin;
 }
 

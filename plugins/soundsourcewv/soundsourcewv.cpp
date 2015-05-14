@@ -2,13 +2,7 @@
 
 namespace Mixxx {
 
-QList<QString> SoundSourceWV::supportedFileExtensions() {
-    QList<QString> list;
-    list.push_back("wv");
-    return list;
-}
-
-SoundSourceWV::SoundSourceWV(QUrl url)
+SoundSourceWV::SoundSourceWV(const QUrl& url)
         : SoundSourcePlugin(url, "wv"),
           m_wpc(NULL),
           m_sampleScaleFactor(CSAMPLE_ZERO) {
@@ -85,25 +79,12 @@ SINT SoundSourceWV::readSampleFrames(
 
 }  // namespace Mixxx
 
-extern "C" MY_EXPORT const char* getMixxxVersion() {
-    return VERSION;
+extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT QVector<QString> Mixxx_SoundSourcePluginAPI_getSupportedFileTypes() {
+    QVector<QString> supportedFileTypes;
+    supportedFileTypes.push_back("wv");
+    return supportedFileTypes;
 }
 
-extern "C" MY_EXPORT int getSoundSourceAPIVersion() {
-    return MIXXX_SOUNDSOURCE_API_VERSION;
-}
-
-extern "C" MY_EXPORT Mixxx::SoundSource* getSoundSource(QUrl url) {
-    return new Mixxx::SoundSourceWV(url);
-}
-
-extern "C" MY_EXPORT char** supportedFileExtensions() {
-    const QList<QString> supportedFileExtensions(
-            Mixxx::SoundSourceWV::supportedFileExtensions());
-    return Mixxx::SoundSourcePlugin::allocFileExtensions(
-            supportedFileExtensions);
-}
-
-extern "C" MY_EXPORT void freeFileExtensions(char** fileExtensions) {
-    Mixxx::SoundSourcePlugin::freeFileExtensions(fileExtensions);
+extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT Mixxx::SoundSourcePointer Mixxx_SoundSourcePluginAPI_newSoundSource(const QUrl& url) {
+    return Mixxx::SoundSourcePointer(new Mixxx::SoundSourceWV(url));
 }
