@@ -1,32 +1,6 @@
-/* -*- mode:C++; indent-tabs-mode:t; tab-width:8; c-basic-offset:4; -*- */
-/***************************************************************************
- soundsourceproxy.cpp  -  description
- -------------------
- begin                : Wed Oct 13 2004
- copyright            : (C) 2004 Tue Haste Andersen
- email                :
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#include <QLibrary>
-#include <QMutexLocker>
-#include <QMutex>
-#include <QtDebug>
-#include <QDir>
-#include <QDesktopServices>
-#include <QCoreApplication>
-#include <QApplication>
+#include "soundsourceproxy.h"
 
 #include "trackinfoobject.h"
-#include "soundsourceproxy.h"
 #ifdef __MAD__
 #include "sources/soundsourcemp3.h"
 #endif
@@ -50,10 +24,15 @@
 #include "util/cmdlineargs.h"
 #include "util/regex.h"
 
+#include <QMutexLocker>
+#include <QDir>
+#include <QDesktopServices>
+#include <QCoreApplication>
+#include <QApplication>
+
 //Static memory allocation
 QRegExp SoundSourceProxy::m_supportedFileRegex;
-QMap<QString, QLibrary*> SoundSourceProxy::m_plugins;
-QMap<QString, Mixxx::SoundSourcePluginAPI_newSoundSourceFunc> SoundSourceProxy::m_extensionsSupportedByPlugins;
+QMap<QString, Mixxx::SoundSourcePluginLibraryPointer> SoundSourceProxy::m_extensionsSupportedByPlugins;
 QMutex SoundSourceProxy::m_extensionsMutex;
 
 namespace
@@ -161,7 +140,17 @@ void SoundSourceProxy::loadPlugins() {
     foreach(QDir dir, pluginDirs){
     QStringList files = dir.entryList(nameFilters, QDir::Files | QDir::NoDotAndDotDot);
     foreach (const QString& file, files) {
-        getPlugin(dir.filePath(file));
+        Mixxx::SoundSourcePluginLibraryPointer pPluginLibrary(
+                Mixxx::SoundSourcePluginLibrary::load(dir.filePath(file)));
+        if (pPluginLibrary) {
+            const QVector<QString> supportedFileTypes(pPluginLibrary->getSupportedFileTypes());
+            for (int i = 0; i < supportedFileTypes.size(); ++i) {
+                qDebug() << "SoundSource plugin supports file type"
+                        << supportedFileTypes[i];
+                m_extensionsSupportedByPlugins.insert(
+                        supportedFileTypes[i], pPluginLibrary);
+            }
+        }
     }
 }
 }
@@ -201,11 +190,12 @@ Mixxx::SoundSourcePointer SoundSourceProxy::initialize(
         return Mixxx::SoundSourcePointer(new Mixxx::SoundSourceModPlug(url));
 #endif
     } else if (m_extensionsSupportedByPlugins.contains(type)) {
-        Mixxx::SoundSourcePluginAPI_newSoundSourceFunc getter = m_extensionsSupportedByPlugins.value(type);
-        if (getter)
+        Mixxx::SoundSourcePluginLibraryPointer pPluginLibrary(
+                m_extensionsSupportedByPlugins.value(type));
+        if (pPluginLibrary)
         {
             qDebug() << "Getting SoundSource plugin object for" << type;
-            return Mixxx::SoundSourcePointer(getter(url));
+            return pPluginLibrary->newSoundSource(url);
         }
         else {
             qDebug() << "Failed to resolve getSoundSource in plugin for" <<
@@ -219,78 +209,6 @@ Mixxx::SoundSourcePointer SoundSourceProxy::initialize(
     } else { //Unsupported filetype
         return Mixxx::SoundSourcePointer();
     }
-}
-
-// static
-QLibrary* SoundSourceProxy::getPlugin(QString lib_filename) {
-    static QMutex mutex;
-    QMutexLocker locker(&mutex);
-
-    if (m_plugins.contains(lib_filename)) {
-        return m_plugins.value(lib_filename);
-    }
-    QScopedPointer<QLibrary> plugin(new QLibrary(lib_filename));
-    if (!plugin->load()) {
-        qDebug() << "Failed to dynamically load" << lib_filename
-                << plugin->errorString();
-        return NULL;
-    }
-    qDebug() << "Dynamically loaded" << lib_filename;
-
-    // Plugin API version check
-    Mixxx::SoundSourcePluginAPI_getVersionFunc getVersionFunc = (Mixxx::SoundSourcePluginAPI_getVersionFunc)
-            plugin->resolve(Mixxx::SoundSourcePluginAPI_getVersionFuncName);
-    if (NULL == getVersionFunc) {
-        // Try to resolve the legacy plugin API function name
-        getVersionFunc = (Mixxx::SoundSourcePluginAPI_getVersionFunc)
-                    plugin->resolve("getSoundSourceAPIVersion");
-    }
-    Mixxx::SoundSourcePluginAPI_getSupportedFileTypesFunc getSupportedFileTypesFunc = NULL;
-    Mixxx::SoundSourcePluginAPI_newSoundSourceFunc newSoundSourceFunc = NULL;
-    if (getVersionFunc) {
-        int pluginAPIVersion = getVersionFunc();
-        if (pluginAPIVersion == MIXXX_SOUNDSOURCEPLUGINAPI_VERSION) {
-            getSupportedFileTypesFunc = (Mixxx::SoundSourcePluginAPI_getSupportedFileTypesFunc)
-                    plugin->resolve(Mixxx::SoundSourcePluginAPI_getSupportedFileTypesFuncName);
-            if (!getSupportedFileTypesFunc) {
-                qWarning() << "Failed to resolve SoundSource plugin API function"
-                        << Mixxx::SoundSourcePluginAPI_getSupportedFileTypesFuncName;
-            }
-            newSoundSourceFunc = (Mixxx::SoundSourcePluginAPI_newSoundSourceFunc)
-                    plugin->resolve(Mixxx::SoundSourcePluginAPI_newSoundSourceFuncName);
-            if (!newSoundSourceFunc) {
-                qWarning() << "Failed to resolve SoundSource plugin API function"
-                        << Mixxx::SoundSourcePluginAPI_newSoundSourceFuncName;
-            }
-        } else {
-            qWarning() << "Incompatible SoundSource plugin API version"
-                    << pluginAPIVersion << "<>" << MIXXX_SOUNDSOURCEPLUGINAPI_VERSION;
-        }
-    } else {
-        qWarning() << "Failed to resolve SoundSource plugin API function"
-                << Mixxx::SoundSourcePluginAPI_getVersionFuncName;
-    }
-    if (!(getVersionFunc && getSupportedFileTypesFunc && newSoundSourceFunc)) {
-        qWarning() << "Incompatible SoundSource plugin"
-                << lib_filename;
-        return NULL;
-    }
-
-    QVector<QString> supportedFileTypes = getSupportedFileTypesFunc();
-    for (int i = 0; i < supportedFileTypes.size(); ++i) {
-        qDebug() << "SoundSource plugin supports file type"
-                << supportedFileTypes[i];
-        m_extensionsSupportedByPlugins.insert(
-                supportedFileTypes[i], newSoundSourceFunc);
-    }
-
-    // Add the plugin to the list of loaded QLibrary plugins...
-    m_plugins.insert(lib_filename, plugin.data());
-    // ... and release ownership of the QLibrary so it is not deleted
-    // when leaving this scope.
-    QLibrary* pPlugin = plugin.take();
-
-    return pPlugin;
 }
 
 Mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const Mixxx::AudioSourceConfig& audioSrcCfg) {

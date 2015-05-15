@@ -1,24 +1,15 @@
 #ifndef SOUNDSOURCEPROXY_H
 #define SOUNDSOURCEPROXY_H
 
-#include <QMap>
-#include <QMutex>
-#include <QString>
-#include <QLibrary>
-#include <QRegExp>
-
 #include "trackinfoobject.h"
-#include "sources/soundsourceplugin.h"
+
+#include "sources/soundsourcepluginlibrary.h"
+
 #include "util/sandbox.h"
 
-/**
-  *@author Tue Haste Andersen
-  */
+#include <QRegExp>
 
-
-/**
- * Creates sound sources for filenames or tracks.
- */
+// Creates sound sources for filenames or tracks
 class SoundSourceProxy: public Mixxx::MetadataSource {
 public:
     static void loadPlugins();
@@ -65,11 +56,8 @@ public:
 
 private:
     static QRegExp m_supportedFileRegex;
-    static QMap<QString, QLibrary*> m_plugins;
-    static QMap<QString, Mixxx::SoundSourcePluginAPI_newSoundSourceFunc> m_extensionsSupportedByPlugins;
+    static QMap<QString, Mixxx::SoundSourcePluginLibraryPointer> m_extensionsSupportedByPlugins;
     static QMutex m_extensionsMutex;
-
-    static QLibrary* getPlugin(QString lib_filename);
 
     static Mixxx::SoundSourcePointer initialize(const QString& qFilename);
 
