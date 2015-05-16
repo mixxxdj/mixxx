@@ -586,6 +586,10 @@ void SoundSourceMediaFoundation::copyFrames(CSAMPLE *dest, SINT *destFrames,
     }
 }
 
+QString SoundSourceProviderMediaFoundation::getName() const {
+    return "Microsoft Media Foundation";
+}
+
 QStringList SoundSourceProviderMediaFoundation::getSupportedFileTypes() const {
     QStringList supportedFileTypes;
     supportedFileTypes.append("m4a");

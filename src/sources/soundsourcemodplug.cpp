@@ -189,6 +189,10 @@ SINT SoundSourceModPlug::readSampleFrames(
     return readFrames;
 }
 
+QString SoundSourceProviderModPlug::getName() const {
+    return "MODPlug";
+}
+
 QStringList SoundSourceProviderModPlug::getSupportedFileTypes() const {
     QStringList supportedFileTypes;
     // ModPlug supports more formats but file name

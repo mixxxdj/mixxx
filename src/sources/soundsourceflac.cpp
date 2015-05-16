@@ -501,6 +501,10 @@ void SoundSourceFLAC::flacError(FLAC__StreamDecoderErrorStatus status) {
     // will bail. libFLAC docs say to not close the decoder here -- bkgood
 }
 
+QString SoundSourceProviderFLAC::getName() const {
+    return "Xiph.org libFLAC";
+}
+
 QStringList SoundSourceProviderFLAC::getSupportedFileTypes() const {
     QStringList supportedFileTypes;
     supportedFileTypes.append("flac");

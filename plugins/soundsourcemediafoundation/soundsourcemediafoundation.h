@@ -65,6 +65,8 @@ private:
 
 class SoundSourceProviderMediaFoundation: public Mixxx::SoundSourceProvider {
 public:
+    QString getName() const /*override*/;
+
     QStringList getSupportedFileTypes() const /*override*/;
 
     Mixxx::SoundSourcePointer newSoundSource(const QUrl& url) /*override*/ {

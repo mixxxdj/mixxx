@@ -423,6 +423,10 @@ SINT SoundSourceM4A::readSampleFrames(
     return samples2frames(numberOfSamplesTotal - numberOfSamplesRemaining);
 }
 
+QString SoundSourceProviderM4A::getName() const {
+    return "Nero FAAD2";
+}
+
 QStringList SoundSourceProviderM4A::getSupportedFileTypes() const {
     QStringList supportedFileTypes;
     supportedFileTypes.append("m4a");

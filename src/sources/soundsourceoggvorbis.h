@@ -23,6 +23,8 @@ public:
             CSAMPLE* sampleBuffer, SINT sampleBufferSize) /*override*/;
 
 private:
+    QString getName() const /*override*/;
+
     Result tryOpen(const AudioSourceConfig& audioSrcCfg) /*override*/;
 
     SINT readSampleFrames(SINT numberOfFrames,
@@ -36,6 +38,8 @@ private:
 
 class SoundSourceProviderOggVorbis: public SoundSourceProvider {
 public:
+    QString getName() const /*override*/;
+
     QStringList getSupportedFileTypes() const /*override*/;
 
     SoundSourcePointer newSoundSource(const QUrl& url)  /*override*/ {

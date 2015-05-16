@@ -198,6 +198,14 @@ void SoundSourceProxy::loadPlugins() {
             }
         }
     }
+
+    for (QMap<QString, Mixxx::SoundSourceProviderPointer>::ConstIterator
+            i(s_soundSourceProviders.begin());
+            s_soundSourceProviders.end() != i;
+            ++i) {
+        qDebug() << "SoundSourceProvider for"
+                << i.key() << "is" << i.value()->getName();
+    }
 }
 }
 
