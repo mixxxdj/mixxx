@@ -14,12 +14,6 @@ const int kEntireBitstreamLink  = -1; // retrieve ... for the entire physical bi
 
 } // anonymous namespace
 
-QList<QString> SoundSourceOggVorbis::supportedFileExtensions() {
-    QList<QString> list;
-    list.push_back("ogg");
-    return list;
-}
-
 SoundSourceOggVorbis::SoundSourceOggVorbis(QUrl url)
         : SoundSource(url, "ogg"),
           m_curFrameIndex(0) {
@@ -167,6 +161,12 @@ SINT SoundSourceOggVorbis::readSampleFrames(
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(numberOfFramesTotal >= numberOfFramesRemaining);
     return numberOfFramesTotal - numberOfFramesRemaining;
+}
+
+QStringList SoundSourceProviderOggVorbis::getSupportedFileTypes() const {
+    QStringList supportedFileTypes;
+    supportedFileTypes.append("ogg");
+    return supportedFileTypes;
 }
 
 } // namespace Mixxx

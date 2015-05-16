@@ -8,6 +8,7 @@
 #include "util/sandbox.h"
 
 #include <QRegExp>
+#include <QSet>
 
 // Creates sound sources for filenames or tracks
 class SoundSourceProxy: public Mixxx::MetadataSource {
@@ -59,6 +60,13 @@ private:
     static QRegExp s_supportedFileRegex;
     static QMap<QString, Mixxx::SoundSourcePluginLibraryPointer> s_soundSourcePluginLibraries;
     static QMap<QString, Mixxx::SoundSourceProviderPointer> s_soundSourceProviders;
+    static QSet<QString> s_supportedFileExtensionsByPlugins;
+
+    static void addSoundSourceProvider(
+            Mixxx::SoundSourceProviderPointer pProvider);
+    static void addSoundSourceProvider(
+            Mixxx::SoundSourceProviderPointer pProvider,
+            const QStringList& supportedFileTypes);
 
     static Mixxx::SoundSourcePointer initialize(const QString& qFilename);
 

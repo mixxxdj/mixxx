@@ -7,8 +7,8 @@
 
 namespace Mixxx {
 
-QList<QString> SoundSourceFFmpeg::supportedFileExtensions() {
-    QList<QString> list;
+QStringList SoundSourceFFmpeg::supportedFileExtensions() {
+    QStringList list;
     AVInputFormat *l_SInputFmt  = NULL;
 
     while ((l_SInputFmt = av_iformat_next(l_SInputFmt))) {

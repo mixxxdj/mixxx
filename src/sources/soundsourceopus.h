@@ -1,7 +1,7 @@
 #ifndef MIXXX_SOUNDSOURCEOPUS_H
 #define MIXXX_SOUNDSOURCEOPUS_H
 
-#include "sources/soundsource.h"
+#include "sources/soundsourceprovider.h"
 
 #define OV_EXCLUDE_STATIC_CALLBACKS
 #include <opus/opusfile.h>
@@ -10,8 +10,6 @@ namespace Mixxx {
 
 class SoundSourceOpus: public Mixxx::SoundSource {
 public:
-    static QList<QString> supportedFileExtensions();
-
     static const SINT kFrameRate;
 
     explicit SoundSourceOpus(QUrl url);
@@ -34,6 +32,15 @@ private:
     OggOpusFile *m_pOggOpusFile;
 
     SINT m_curFrameIndex;
+};
+
+class SoundSourceProviderOpus: public SoundSourceProvider {
+public:
+    QStringList getSupportedFileTypes() const /*override*/;
+
+    SoundSourcePointer newSoundSource(const QUrl& url)  /*override*/ {
+        return SoundSourcePointer(new SoundSourceOpus(url));
+    }
 };
 
 } // namespace Mixxx

@@ -43,20 +43,6 @@ const SINT SoundSourceModPlug::kChannelCount = AudioSource::kChannelCountStereo;
 const SINT SoundSourceModPlug::kBitsPerSample = 16;
 const SINT SoundSourceModPlug::kFrameRate = 44100; // 44.1 kHz
 
-QList<QString> SoundSourceModPlug::supportedFileExtensions() {
-    QList<QString> list;
-    // ModPlug supports more formats but file name
-    // extensions are not always present with modules.
-    list.push_back("mod");
-    list.push_back("med");
-    list.push_back("okt");
-    list.push_back("s3m");
-    list.push_back("stm");
-    list.push_back("xm");
-    list.push_back("it");
-    return list;
-}
-
 unsigned int SoundSourceModPlug::s_bufferSizeLimit = 0;
 
 // reserve some static space for settings...
@@ -201,6 +187,20 @@ SINT SoundSourceModPlug::readSampleFrames(
     m_seekPos += readFrames;
 
     return readFrames;
+}
+
+QStringList SoundSourceProviderModPlug::getSupportedFileTypes() const {
+    QStringList supportedFileTypes;
+    // ModPlug supports more formats but file name
+    // extensions are not always present with modules.
+    supportedFileTypes.append("mod");
+    supportedFileTypes.append("med");
+    supportedFileTypes.append("okt");
+    supportedFileTypes.append("s3m");
+    supportedFileTypes.append("stm");
+    supportedFileTypes.append("xm");
+    supportedFileTypes.append("it");
+    return supportedFileTypes;
 }
 
 } // namespace Mixxx

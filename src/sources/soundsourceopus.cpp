@@ -33,12 +33,6 @@ private:
 // Decoded output of opusfile has a fixed sample rate of 48 kHz
 const SINT SoundSourceOpus::kFrameRate = 48000;
 
-QList<QString> SoundSourceOpus::supportedFileExtensions() {
-    QList<QString> list;
-    list.push_back("opus");
-    return list;
-}
-
 SoundSourceOpus::SoundSourceOpus(QUrl url)
         : SoundSource(url, "opus"),
           m_pOggOpusFile(NULL),
@@ -254,6 +248,12 @@ SINT SoundSourceOpus::readSampleFramesStereo(
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(numberOfFramesTotal >= numberOfFramesRemaining);
     return numberOfFramesTotal - numberOfFramesRemaining;
+}
+
+QStringList SoundSourceProviderOpus::getSupportedFileTypes() const {
+    QStringList supportedFileTypes;
+    supportedFileTypes.append("opus");
+    return supportedFileTypes;
 }
 
 } // namespace Mixxx

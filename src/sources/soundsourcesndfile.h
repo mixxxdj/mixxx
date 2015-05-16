@@ -1,7 +1,7 @@
 #ifndef MIXXX_SOUNDSOURCESNDFILE_H
 #define MIXXX_SOUNDSOURCESNDFILE_H
 
-#include "sources/soundsource.h"
+#include "sources/soundsourceprovider.h"
 
 #ifdef Q_OS_WIN
 //Enable unicode in libsndfile on Windows
@@ -15,8 +15,6 @@ namespace Mixxx {
 
 class SoundSourceSndFile: public Mixxx::SoundSource {
 public:
-    static QList<QString> supportedFileExtensions();
-
     explicit SoundSourceSndFile(QUrl url);
     ~SoundSourceSndFile();
 
@@ -31,6 +29,15 @@ private:
     Result tryOpen(const AudioSourceConfig& audioSrcCfg) /*override*/;
 
     SNDFILE* m_pSndFile;
+};
+
+class SoundSourceProviderSndFile: public SoundSourceProvider {
+public:
+    QStringList getSupportedFileTypes() const /*override*/;
+
+    SoundSourcePointer newSoundSource(const QUrl& url)  /*override*/ {
+        return SoundSourcePointer(new SoundSourceSndFile(url));
+    }
 };
 
 } // namespace Mixxx
