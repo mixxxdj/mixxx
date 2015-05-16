@@ -1,6 +1,5 @@
 #include "util/math.h"
 #include <QDebug>
-
 #include "effects/native/phasereffect.h"
 
 const unsigned int updateCoef = 32;
@@ -21,16 +20,31 @@ EffectManifest PhaserEffect::getManifest() {
                 "A more complex sound effect obtained by mixing the input signal" 
                 "with a copy passed through a series of all-pass filters."));
     
+    EffectManifestParameter* stereo = manifest.addParameter();
+    stereo->setId("stereo");
+    stereo->setName(QObject::tr("Stereo"));
+    stereo->setDescription(QObject::tr("Enables/disables stereo"));
+    stereo->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
+    stereo->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    stereo->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    stereo->setDefault(0);
+    stereo->setMinimum(0);
+    stereo->setMaximum(1);
+
     EffectManifestParameter* stages = manifest.addParameter();
     stages->setId("stages");
     stages->setName(QObject::tr("Stages"));
     stages->setDescription("Sets number of stages.");
-    stages->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
+    stages->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
     stages->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     stages->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    stages->setDefault(1.0);
-    stages->setMinimum(1.0);
+    stages->setDefault(2.0);
+    stages->setMinimum(2.0);
     stages->setMaximum(12.0);
+    stages->appendStep(qMakePair(QString("2"), 2.0));
+    stages->appendStep(qMakePair(QString("4"), 4.0));
+    stages->appendStep(qMakePair(QString("8"), 8.0));
+    stages->appendStep(qMakePair(QString("12"), 12.0));
 
     EffectManifestParameter* frequency = manifest.addParameter();
     frequency->setId("lfo_frequency");
@@ -62,8 +76,8 @@ EffectManifest PhaserEffect::getManifest() {
     fb->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     fb->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     fb->setDefault(0.0);
-    fb->setMinimum(-1.0);
-    fb->setMaximum(1.0);
+    fb->setMinimum(-0.95);
+    fb->setMaximum(0.95);
 
     EffectManifestParameter* range = manifest.addParameter();
     range->setId("range");
@@ -73,19 +87,9 @@ EffectManifest PhaserEffect::getManifest() {
     range->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     range->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     range->setDefault(0.5);
-    range->setMinimum(0.0);
-    range->setMaximum(1.0);
+    range->setMinimum(0.05);
+    range->setMaximum(0.95);
 
-    EffectManifestParameter* stereo = manifest.addParameter();
-    stereo->setId("stereo");
-    stereo->setName(QObject::tr("Stereo"));
-    stereo->setDescription(QObject::tr("Enables/disables stereo"));
-    stereo->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
-    stereo->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    stereo->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    stereo->setDefault(0);
-    stereo->setMinimum(0);
-    stereo->setMaximum(1);
     return manifest;
 }
 
@@ -121,15 +125,34 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
     CSAMPLE depth = m_pDepthParameter->value();
     CSAMPLE feedback = m_pFeedbackParameter->value();
     CSAMPLE range = m_pRangeParameter->value();
-    int stages = 2 * m_pStagesParameter->value();
+    int stages = m_pStagesParameter->value();
 
     CSAMPLE* oldInLeft = pState->oldInLeft;
     CSAMPLE* oldOutLeft = pState->oldOutLeft;
     CSAMPLE* oldInRight = pState->oldInRight;
     CSAMPLE* oldOutRight = pState->oldOutRight;
 
+    //Using two sets of coefficients for left and right channel 
     CSAMPLE filterCoefLeft = 0;
     CSAMPLE filterCoefRight = 0;
+
+    //If changing the 'Rate' knob, the phaser will use the initial parameters    
+    //until a desired frequency is chosen (to avoid bubbling noises)
+    if (frequency != pState->frequency) {
+        pState->wait = 0;
+        pState->frequency = frequency; 
+        pState->change = true;
+    }
+
+    if (pState->change) {
+        pState->wait++;
+        if (pState->wait == pState->limit) {
+            pState->change = false;
+            pState->oldFrequency = frequency;
+        } else {
+            frequency = pState->oldFrequency;
+        }
+    }
 
     CSAMPLE left = 0, right = 0;
     CSAMPLE leftPhase, rightPhase;
@@ -140,7 +163,6 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
 
     const int kChannels = 2;
     for (unsigned int i = 0; i < numSamples; i += kChannels) {
-
         pState->time++;
         left = pInput[i] + left * feedback; 
         right = pInput[i + 1] + right * feedback;
@@ -149,10 +171,14 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
         leftPhase = fmodf(freqSkip * pState->time, 2.0 * M_PI);
         rightPhase = fmodf(freqSkip * pState->time + M_PI * stereoCheck, 2.0 * M_PI);
 
+        //Updating filter coefficients once every 'updateCoef' samples to avoid
+        //extra computing
         if ((counter++) % updateCoef == 0) {
                 CSAMPLE delayLeft = 0.5 + 0.5 * sin(leftPhase);
                 CSAMPLE delayRight = 0.5 + 0.5 * sin(rightPhase);
                 
+                //Coefficient computing based on the following:
+                //https://ccrma.stanford.edu/~jos/pasp/Classic_Virtual_Analog_Phase.html
                 CSAMPLE wLeft = range * delayLeft;
                 CSAMPLE wRight = range * delayRight;
 
@@ -161,13 +187,13 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
 
                 filterCoefLeft = (1.0 - tanwLeft) / (1.0 + tanwLeft);
                 filterCoefRight = (1.0 - tanwRight) / (1.0 + tanwRight);
-
         }
-        
+       
         left = processSample(left, oldInLeft, oldOutLeft, filterCoefLeft, stages);
         right = processSample(right, oldInRight, oldOutRight, filterCoefRight, stages);
 
-        pOutput[i] = pInput[i] * (1.0 - 0.5 * depth) + left * depth * 0.5;
-        pOutput[i + 1] = pInput[i + 1] * (1.0 - 0.5 * depth) + right * depth * 0.5;
+        //Computing output combining the original and processed sample
+        pOutput[i] = tanh(pInput[i] * (1.0 - 0.5 * depth) + left * depth * 0.5);
+        pOutput[i + 1] = tanh(pInput[i + 1] * (1.0 - 0.5 * depth) + right * depth * 0.5);
     }
 }

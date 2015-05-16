@@ -8,12 +8,18 @@
 #include "engine/effects/engineeffectparameter.h"
 #include "effects/effectprocessor.h"
 #include "sampleutil.h"
+#include <QDebug>
 
-#define MAXSTAGES 24
+#define MAXSTAGES 12
 
 struct PhaserGroupState {
     PhaserGroupState() : 
-        time(0) {
+        time(0),
+        frequency(0),
+        oldFrequency(0),
+        limit(20),
+        wait(0),
+        change(false) {
         SampleUtil::applyGain(oldInLeft, 0, MAXSTAGES);
         SampleUtil::applyGain(oldOutLeft, 0, MAXSTAGES);
         SampleUtil::applyGain(oldInRight, 0, MAXSTAGES);
@@ -24,6 +30,11 @@ struct PhaserGroupState {
     CSAMPLE oldOutLeft[MAXSTAGES]; 
     CSAMPLE oldOutRight[MAXSTAGES];
     int time;
+    CSAMPLE frequency;
+    CSAMPLE oldFrequency;
+    int limit;
+    int wait;
+    bool change;
 };
 
 class PhaserEffect : public PerChannelEffectProcessor<PhaserGroupState> {
@@ -56,6 +67,7 @@ class PhaserEffect : public PerChannelEffectProcessor<PhaserGroupState> {
     EngineEffectParameter* m_pRangeParameter; 
     EngineEffectParameter* m_pStereoParameter;
 
+    //Passing the sample through a series of allpass filters
     inline CSAMPLE processSample(CSAMPLE input, CSAMPLE* oldIn, CSAMPLE* oldOut, 
                                  CSAMPLE mainCoef, int stages) { 
         for (int j = 0; j < stages; j++) {
