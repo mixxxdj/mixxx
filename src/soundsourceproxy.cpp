@@ -98,7 +98,8 @@ void SoundSourceProxy::loadPlugins() {
 #ifdef __FFMPEGFILE__
     // FFmpeg currently overrides all other built-in providers
     // if enabled
-    return Mixxx::SoundSourcePointer(new Mixxx::SoundSourceFFmpeg(url));
+    addSoundSourceProvider(Mixxx::SoundSourceProviderPointer(
+            new Mixxx::SoundSourceProviderFFmpeg));
 #endif
 
     // Scan for and initialize all plugins.
