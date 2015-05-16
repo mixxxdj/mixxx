@@ -1,7 +1,7 @@
 #ifndef MIXXX_SOUNDSOURCEOPUS_H
 #define MIXXX_SOUNDSOURCEOPUS_H
 
-#include "sources/soundsource.h"
+#include "sources/soundsourceprovider.h"
 
 #define OV_EXCLUDE_STATIC_CALLBACKS
 #include <opus/opusfile.h>
@@ -33,8 +33,6 @@ class SoundSourceOpus : public Mixxx::SoundSource {
 =======
 >>>>>>> Delete typedef Super (review comments)
 public:
-    static QList<QString> supportedFileExtensions();
-
     static const SINT kFrameRate;
 
     explicit SoundSourceOpus(QUrl url);
@@ -66,6 +64,15 @@ private:
 
     SINT m_curFrameIndex;
 >>>>>>> Move code from specialized AudioSources back into corresponding SoundSources
+};
+
+class SoundSourceProviderOpus: public SoundSourceProvider {
+public:
+    QStringList getSupportedFileTypes() const /*override*/;
+
+    SoundSourcePointer newSoundSource(const QUrl& url)  /*override*/ {
+        return SoundSourcePointer(new SoundSourceOpus(url));
+    }
 };
 
 } // namespace Mixxx

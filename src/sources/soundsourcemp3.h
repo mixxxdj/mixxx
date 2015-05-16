@@ -1,7 +1,7 @@
 #ifndef MIXXX_SOUNDSOURCEMP3_H
 #define MIXXX_SOUNDSOURCEMP3_H
 
-#include "sources/soundsource.h"
+#include "sources/soundsourceprovider.h"
 
 #ifdef _MSC_VER
 // So mad.h doesn't try to use inline assembly which MSVC doesn't support.
@@ -19,8 +19,6 @@ namespace Mixxx {
 
 class SoundSourceMp3: public SoundSource {
 public:
-    static QList<QString> supportedFileExtensions();
-
     explicit SoundSourceMp3(QUrl url);
     ~SoundSourceMp3();
 
@@ -81,6 +79,15 @@ private:
     mad_synth m_madSynth;
 
     SINT m_madSynthCount; // left overs from the previous read
+};
+
+class SoundSourceProviderMp3: public SoundSourceProvider {
+public:
+    QStringList getSupportedFileTypes() const /*override*/;
+
+    SoundSourcePointer newSoundSource(const QUrl& url)  /*override*/ {
+        return SoundSourcePointer(new SoundSourceMp3(url));
+    }
 };
 
 } // namespace Mixxx

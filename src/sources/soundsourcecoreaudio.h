@@ -1,7 +1,7 @@
 #ifndef SOUNDSOURCECOREAUDIO_H
 #define SOUNDSOURCECOREAUDIO_H
 
-#include "sources/soundsource.h"
+#include "sources/soundsourceprovider.h"
 
 #include <AudioToolbox/AudioToolbox.h>
 //In our tree at lib/apple/
@@ -22,8 +22,6 @@ namespace Mixxx {
 
 class SoundSourceCoreAudio : public Mixxx::SoundSource {
 public:
-    static QList<QString> supportedFileExtensions();
-
     explicit SoundSourceCoreAudio(QUrl url);
     ~SoundSourceCoreAudio();
 
@@ -42,6 +40,15 @@ private:
     CAStreamBasicDescription m_inputFormat;
     CAStreamBasicDescription m_outputFormat;
     SInt64 m_headerFrames;
+};
+
+class SoundSourceProviderCoreAudio: public SoundSourceProvider {
+public:
+    QStringList getSupportedFileTypes() const /*override*/;
+
+    SoundSourcePointer newSoundSource(const QUrl& url)  /*override*/ {
+        return SoundSourcePointer(new SoundSourceCoreAudio(url));
+    }
 };
 
 }  // namespace Mixxx

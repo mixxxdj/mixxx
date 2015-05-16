@@ -1,7 +1,7 @@
 #ifndef MIXXX_SOUNDSOURCEMODPLUG_H
 #define MIXXX_SOUNDSOURCEMODPLUG_H
 
-#include "sources/soundsource.h"
+#include "sources/soundsourceprovider.h"
 
 namespace ModPlug {
 #include <libmodplug/modplug.h>
@@ -16,8 +16,6 @@ namespace Mixxx {
 // in RAM to allow seeking and smooth operation in Mixxx.
 class SoundSourceModPlug: public Mixxx::SoundSource {
 public:
-    static QList<QString> supportedFileExtensions();
-
     static const SINT kChannelCount;
     static const SINT kBitsPerSample;
     static const SINT kFrameRate;
@@ -52,6 +50,15 @@ private:
     SampleBuffer m_sampleBuf;
 
     SINT m_seekPos; // current read position
+};
+
+class SoundSourceProviderModPlug: public SoundSourceProvider {
+public:
+    QStringList getSupportedFileTypes() const /*override*/;
+
+    SoundSourcePointer newSoundSource(const QUrl& url)  /*override*/ {
+        return SoundSourcePointer(new SoundSourceModPlug(url));
+    }
 };
 
 } // namespace Mixxx

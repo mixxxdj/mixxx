@@ -14,6 +14,7 @@ const int kEntireBitstreamLink  = -1; // retrieve ... for the entire physical bi
 
 } // anonymous namespace
 
+<<<<<<< HEAD
 QList<QString> SoundSourceOggVorbis::supportedFileExtensions() {
     QList<QString> list;
     list.push_back("ogg");
@@ -72,6 +73,8 @@ Result SoundSourceOggVorbis::open() {
     if (0 != ov_fopen(getFilename().toLocal8Bit().constData(), &m_vf)) {
         qWarning() << "Failed to open OggVorbis file:" << getFilename();
 =======
+=======
+>>>>>>> Add and register a SoundSourceProvider for each SoundSource
 SoundSourceOggVorbis::SoundSourceOggVorbis(QUrl url)
         : SoundSource(url, "ogg"),
           m_curFrameIndex(0) {
@@ -351,6 +354,12 @@ SINT SoundSourceOggVorbis::readSampleFrames(
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(numberOfFramesTotal >= numberOfFramesRemaining);
     return numberOfFramesTotal - numberOfFramesRemaining;
+}
+
+QStringList SoundSourceProviderOggVorbis::getSupportedFileTypes() const {
+    QStringList supportedFileTypes;
+    supportedFileTypes.append("ogg");
+    return supportedFileTypes;
 }
 
 } // namespace Mixxx
