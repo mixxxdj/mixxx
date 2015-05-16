@@ -77,14 +77,15 @@ SINT SoundSourceWV::readSampleFrames(
     return unpackCount;
 }
 
-}  // namespace Mixxx
-
-extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT QVector<QString> Mixxx_SoundSourcePluginAPI_getSupportedFileTypes() {
-    QVector<QString> supportedFileTypes;
-    supportedFileTypes.push_back("wv");
+QStringList SoundSourceProviderWV::getSupportedFileTypes() const {
+    QStringList supportedFileTypes;
+    supportedFileTypes.append("wv");
     return supportedFileTypes;
 }
 
-extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT Mixxx::SoundSourcePointer Mixxx_SoundSourcePluginAPI_newSoundSource(const QUrl& url) {
-    return Mixxx::SoundSourcePointer(new Mixxx::SoundSourceWV(url));
+}  // namespace Mixxx
+
+extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
+Mixxx::SoundSourceProviderPointer Mixxx_SoundSourcePluginAPI_getSoundSourceProvider() {
+    return Mixxx::SoundSourceProviderPointer(new Mixxx::SoundSourceProviderWV);
 }

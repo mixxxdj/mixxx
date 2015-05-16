@@ -63,7 +63,16 @@ private:
     bool m_seeking;
 };
 
-extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT QVector<QString> Mixxx_SoundSourcePluginAPI_getSupportedFileTypes();
-extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT Mixxx::SoundSourcePointer Mixxx_SoundSourcePluginAPI_newSoundSource(const QUrl& url);
+class SoundSourceProviderMediaFoundation: public Mixxx::SoundSourceProvider {
+public:
+    QStringList getSupportedFileTypes() const /*override*/;
+
+    Mixxx::SoundSourcePointer newSoundSource(const QUrl& url) /*override*/ {
+        return Mixxx::SoundSourcePointer(new SoundSourceMediaFoundation(url));
+    }
+};
+
+extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
+Mixxx::SoundSourceProviderPointer Mixxx_SoundSourcePluginAPI_getSoundSourceProvider();
 
 #endif // SOUNDSOURCEMEDIAFOUNDATION_H

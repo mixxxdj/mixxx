@@ -2,6 +2,7 @@
 #define MIXXX_SOUNDSOURCEPLUGINLIBRARY_H
 
 #include "sources/soundsourcepluginapi.h"
+#include "sources/soundsourceprovider.h"
 
 #include <QMap>
 #include <QMutex>
@@ -20,17 +21,17 @@ public:
 
     virtual ~SoundSourcePluginLibrary();
 
+    QString getFileName() const {
+        return m_library.fileName();
+    }
+
     int getApiVersion() const {
         return m_apiVersion;
     }
 
-    const QVector<QString>& getSupportedFileTypes() const {
-        return m_supportedFileTypes;
-    }
-
-    SoundSourcePointer newSoundSource(const QUrl& url) const {
-        DEBUG_ASSERT(m_newSoundSourceFunc);
-        return (*m_newSoundSourceFunc)(url);
+    SoundSourceProviderPointer getSoundSourceProvider() {
+        DEBUG_ASSERT(m_getSoundSourceProviderFunc);
+        return (*m_getSoundSourceProviderFunc)();
     }
 
 protected:
@@ -39,15 +40,15 @@ protected:
     virtual bool init();
 
 private:
-    static QMutex m_loadedPluginLibrariesMutex;
-    static QMap<QString, Mixxx::SoundSourcePluginLibraryPointer> m_loadedPluginLibraries;
+    static QMutex s_loadedPluginLibrariesMutex;
+    static QMap<QString, Mixxx::SoundSourcePluginLibraryPointer> s_loadedPluginLibraries;
 
     QLibrary m_library;
 
     int m_apiVersion;
-    QVector<QString> m_supportedFileTypes;
+    QStringList m_supportedFileTypes;
 
-    SoundSourcePluginAPI_newSoundSourceFunc m_newSoundSourceFunc;
+    SoundSourcePluginAPI_getSoundSourceProviderFunc m_getSoundSourceProviderFunc;
 };
 
 } // namespace Mixxx

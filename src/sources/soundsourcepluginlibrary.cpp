@@ -4,20 +4,20 @@
 
 namespace Mixxx {
 
-/*static*/ QMutex SoundSourcePluginLibrary::m_loadedPluginLibrariesMutex;
-/*static*/ QMap<QString, SoundSourcePluginLibraryPointer> SoundSourcePluginLibrary::m_loadedPluginLibraries;
+/*static*/ QMutex SoundSourcePluginLibrary::s_loadedPluginLibrariesMutex;
+/*static*/ QMap<QString, SoundSourcePluginLibraryPointer> SoundSourcePluginLibrary::s_loadedPluginLibraries;
 
 /*static*/ SoundSourcePluginLibraryPointer SoundSourcePluginLibrary::load(
         const QString& fileName) {
-    const QMutexLocker mutexLocker(&m_loadedPluginLibrariesMutex);
+    const QMutexLocker mutexLocker(&s_loadedPluginLibrariesMutex);
 
-    if (m_loadedPluginLibraries.contains(fileName)) {
-        return m_loadedPluginLibraries.value(fileName);
+    if (s_loadedPluginLibraries.contains(fileName)) {
+        return s_loadedPluginLibraries.value(fileName);
     } else {
         SoundSourcePluginLibraryPointer pPluginLibrary(
                 new SoundSourcePluginLibrary(fileName));
         if (pPluginLibrary->init()) {
-            m_loadedPluginLibraries.insert(fileName, pPluginLibrary);
+            s_loadedPluginLibraries.insert(fileName, pPluginLibrary);
             return pPluginLibrary;
         } else {
             return SoundSourcePluginLibraryPointer();
@@ -28,7 +28,7 @@ namespace Mixxx {
 SoundSourcePluginLibrary::SoundSourcePluginLibrary(const QString& fileName)
     : m_library(fileName),
       m_apiVersion(0),
-      m_newSoundSourceFunc(NULL) {
+      m_getSoundSourceProviderFunc(NULL) {
 }
 
 SoundSourcePluginLibrary::~SoundSourcePluginLibrary() {
@@ -52,21 +52,14 @@ bool SoundSourcePluginLibrary::init() {
         getVersionFunc = (SoundSourcePluginAPI_getVersionFunc)
                     m_library.resolve("getSoundSourceAPIVersion");
     }
-    SoundSourcePluginAPI_getSupportedFileTypesFunc getSupportedFileTypesFunc = NULL;
     if (getVersionFunc) {
         m_apiVersion = getVersionFunc();
         if (m_apiVersion == MIXXX_SOUNDSOURCEPLUGINAPI_VERSION) {
-            getSupportedFileTypesFunc = (SoundSourcePluginAPI_getSupportedFileTypesFunc)
-                    m_library.resolve(SoundSourcePluginAPI_getSupportedFileTypesFuncName);
-            if (!getSupportedFileTypesFunc) {
+            m_getSoundSourceProviderFunc = (SoundSourcePluginAPI_getSoundSourceProviderFunc)
+                    m_library.resolve(SoundSourcePluginAPI_getSoundSourceProviderFuncName);
+            if (!m_getSoundSourceProviderFunc) {
                 qWarning() << "Failed to resolve SoundSource plugin API function"
-                        << SoundSourcePluginAPI_getSupportedFileTypesFuncName;
-            }
-            m_newSoundSourceFunc = (SoundSourcePluginAPI_newSoundSourceFunc)
-                    m_library.resolve(SoundSourcePluginAPI_newSoundSourceFuncName);
-            if (!m_newSoundSourceFunc) {
-                qWarning() << "Failed to resolve SoundSource plugin API function"
-                        << SoundSourcePluginAPI_newSoundSourceFuncName;
+                        << SoundSourcePluginAPI_getSoundSourceProviderFuncName;
             }
         } else {
             qWarning() << "Incompatible SoundSource plugin API version"
@@ -77,15 +70,8 @@ bool SoundSourcePluginLibrary::init() {
                 << SoundSourcePluginAPI_getVersionFuncName;
     }
 
-    if (getVersionFunc && getSupportedFileTypesFunc && m_newSoundSourceFunc) {
-        m_supportedFileTypes = (*getSupportedFileTypesFunc)();
-        if (m_supportedFileTypes.isEmpty()) {
-            qWarning() << "SoundSource plugin does not support any file types"
-                    << m_library.fileName();
-            return false;
-        } else {
-            return true;
-        }
+    if (getVersionFunc && m_getSoundSourceProviderFunc) {
+        return true;
     } else {
         qWarning() << "Incompatible SoundSource plugin"
                 << m_library.fileName();

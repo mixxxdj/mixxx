@@ -27,9 +27,18 @@ private:
     CSAMPLE m_sampleScaleFactor;
 };
 
+class SoundSourceProviderWV: public SoundSourceProvider {
+public:
+    QStringList getSupportedFileTypes() const /*override*/;
+
+    SoundSourcePointer newSoundSource(const QUrl& url) /*override*/ {
+        return SoundSourcePointer(new SoundSourceWV(url));
+    }
+};
+
 }  // namespace Mixxx
 
-extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT QVector<QString> Mixxx_SoundSourcePluginAPI_getSupportedFileTypes();
-extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT Mixxx::SoundSourcePointer Mixxx_SoundSourcePluginAPI_newSoundSource(const QUrl& url);
+extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
+Mixxx::SoundSourceProviderPointer Mixxx_SoundSourcePluginAPI_getSoundSourceProvider();
 
 #endif // MIXXX_SOUNDSOURCEWV_H

@@ -586,13 +586,14 @@ void SoundSourceMediaFoundation::copyFrames(CSAMPLE *dest, SINT *destFrames,
     }
 }
 
-extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT QVector<QString> Mixxx_SoundSourcePluginAPI_getSupportedFileTypes() {
-    QVector<QString> supportedFileTypes;
-    supportedFileTypes.push_back("m4a");
-    supportedFileTypes.push_back("mp4");
+QStringList SoundSourceProviderMediaFoundation::getSupportedFileTypes() const {
+    QStringList supportedFileTypes;
+    supportedFileTypes.append("m4a");
+    supportedFileTypes.append("mp4");
     return supportedFileTypes;
 }
 
-extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT Mixxx::SoundSourcePointer Mixxx_SoundSourcePluginAPI_newSoundSource(const QUrl& url) {
-    return Mixxx::SoundSourcePointer(new SoundSourceMediaFoundation(url));
+extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
+Mixxx::SoundSourceProviderPointer Mixxx_SoundSourcePluginAPI_getSoundSourceProvider() {
+    return Mixxx::SoundSourceProviderPointer(new Mixxx::SoundSourceProviderMediaFoundation);
 }
