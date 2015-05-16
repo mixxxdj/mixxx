@@ -53,9 +53,18 @@ private:
     SINT m_curFrameIndex;
 };
 
+class SoundSourceProviderM4A: public SoundSourceProvider {
+public:
+    QStringList getSupportedFileTypes() const /*override*/;
+
+    SoundSourcePointer newSoundSource(const QUrl& url) /*override*/ {
+        return SoundSourcePointer(new SoundSourceM4A(url));
+    }
+};
+
 } // namespace Mixxx
 
-extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT QVector<QString> Mixxx_SoundSourcePluginAPI_getSupportedFileTypes();
-extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT Mixxx::SoundSourcePointer Mixxx_SoundSourcePluginAPI_newSoundSource(const QUrl& url);
+extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
+Mixxx::SoundSourceProviderPointer Mixxx_SoundSourcePluginAPI_getSoundSourceProvider();
 
 #endif // MIXXX_SOUNDSOURCEM4A_H

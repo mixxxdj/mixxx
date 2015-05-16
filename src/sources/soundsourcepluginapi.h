@@ -20,7 +20,7 @@
 #define MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
 #endif
 
-#include "sources/soundsource.h"
+#include "sources/soundsourceprovider.h"
 
 // Function types and names of the public SoundSource plugin API
 
@@ -32,13 +32,9 @@ namespace Mixxx {
 typedef int (*SoundSourcePluginAPI_getVersionFunc)();
 const char * const SoundSourcePluginAPI_getVersionFuncName = "Mixxx_SoundSourcePluginAPI_getVersion";
 
-// extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT QVector<QString> Mixxx_SoundSourcePluginAPI_getSupportedFileTypes()
-typedef QVector<QString> (*SoundSourcePluginAPI_getSupportedFileTypesFunc)();
-const char* const SoundSourcePluginAPI_getSupportedFileTypesFuncName = "Mixxx_SoundSourcePluginAPI_getSupportedFileTypes";
-
-// extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT Mixxx::SoundSourcePointer Mixxx_SoundSourcePluginAPI_newSoundSource(const QUrl& url)
-typedef SoundSourcePointer (*SoundSourcePluginAPI_newSoundSourceFunc)(const QUrl& url);
-const char* const SoundSourcePluginAPI_newSoundSourceFuncName = "Mixxx_SoundSourcePluginAPI_newSoundSource";
+// extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT QStringList Mixxx_SoundSourcePluginAPI_getSoundSourceProvider()
+typedef SoundSourceProviderPointer (*SoundSourcePluginAPI_getSoundSourceProviderFunc)();
+const char* const SoundSourcePluginAPI_getSoundSourceProviderFuncName = "Mixxx_SoundSourcePluginAPI_getSoundSourceProvider";
 
 } // Mixxx
 

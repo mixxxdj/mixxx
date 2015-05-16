@@ -55,9 +55,10 @@ public:
     void closeAudioSource();
 
 private:
-    static QRegExp m_supportedFileRegex;
-    static QMap<QString, Mixxx::SoundSourcePluginLibraryPointer> m_extensionsSupportedByPlugins;
-    static QMutex m_extensionsMutex;
+    static QMutex s_mutex;
+    static QRegExp s_supportedFileRegex;
+    static QMap<QString, Mixxx::SoundSourcePluginLibraryPointer> s_soundSourcePluginLibraries;
+    static QMap<QString, Mixxx::SoundSourceProviderPointer> s_soundSourceProviders;
 
     static Mixxx::SoundSourcePointer initialize(const QString& qFilename);
 
