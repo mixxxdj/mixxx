@@ -164,8 +164,8 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
     const int kChannels = 2;
     for (unsigned int i = 0; i < numSamples; i += kChannels) {
         pState->time++;
-        left = pInput[i] + left * feedback; 
-        right = pInput[i + 1] + right * feedback;
+        left = tanh(pInput[i] + left * feedback); 
+        right = tanh(pInput[i + 1] + right * feedback);
 
         //For stereo enabled, the channels are out of phase
         leftPhase = fmodf(freqSkip * pState->time, 2.0 * M_PI);
