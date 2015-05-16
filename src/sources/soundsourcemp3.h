@@ -83,6 +83,8 @@ private:
 
 class SoundSourceProviderMp3: public SoundSourceProvider {
 public:
+    QString getName() const /*override*/;
+
     QStringList getSupportedFileTypes() const /*override*/;
 
     SoundSourcePointer newSoundSource(const QUrl& url)  /*override*/ {

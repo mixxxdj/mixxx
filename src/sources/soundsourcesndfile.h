@@ -33,6 +33,8 @@ private:
 
 class SoundSourceProviderSndFile: public SoundSourceProvider {
 public:
+    QString getName() const /*override*/;
+
     QStringList getSupportedFileTypes() const /*override*/;
 
     SoundSourcePointer newSoundSource(const QUrl& url)  /*override*/ {

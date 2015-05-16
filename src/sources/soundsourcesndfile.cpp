@@ -238,6 +238,10 @@ SINT SoundSourceSndFile::readSampleFrames(
     }
 }
 
+QString SoundSourceProviderSndFile::getName() const {
+    return "libsndfile";
+}
+
 QStringList SoundSourceProviderSndFile::getSupportedFileTypes() const {
     QStringList supportedFileTypes;
     supportedFileTypes.append("aiff");

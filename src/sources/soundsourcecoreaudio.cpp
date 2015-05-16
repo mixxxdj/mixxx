@@ -193,6 +193,10 @@ SINT SoundSourceCoreAudio::readSampleFrames(
     return numFramesRead;
 }
 
+QString SoundSourceProviderCoreAudio::getName() const {
+    return "Apple Core Audio";
+}
+
 QStringList SoundSourceProviderCoreAudio::getSupportedFileTypes() const {
     QStringList supportedFileTypes;
     supportedFileTypes.append("m4a");

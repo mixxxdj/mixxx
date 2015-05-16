@@ -77,6 +77,10 @@ SINT SoundSourceWV::readSampleFrames(
     return unpackCount;
 }
 
+QString SoundSourceProviderWV::getName() const {
+    return "WavPack";
+}
+
 QStringList SoundSourceProviderWV::getSupportedFileTypes() const {
     QStringList supportedFileTypes;
     supportedFileTypes.append("wv");

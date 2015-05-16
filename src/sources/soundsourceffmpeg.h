@@ -98,6 +98,10 @@ private:
 
 class SoundSourceProviderFFmpeg: public SoundSourceProvider {
 public:
+    QString getName() const /*override*/ {
+        return "FFmpeg";
+    }
+
     QStringList getSupportedFileTypes() const /*override*/ {
         return SoundSourceFFmpeg::supportedFileExtensions();
     }

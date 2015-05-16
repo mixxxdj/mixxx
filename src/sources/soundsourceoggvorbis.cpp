@@ -356,6 +356,10 @@ SINT SoundSourceOggVorbis::readSampleFrames(
     return numberOfFramesTotal - numberOfFramesRemaining;
 }
 
+QString SoundSourceProviderOggVorbis::getName() const {
+    return "Xiph.org OggVorbis";
+}
+
 QStringList SoundSourceProviderOggVorbis::getSupportedFileTypes() const {
     QStringList supportedFileTypes;
     supportedFileTypes.append("ogg");

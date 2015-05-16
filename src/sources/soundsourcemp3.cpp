@@ -694,6 +694,10 @@ SINT SoundSourceMp3::readSampleFrames(
     return numberOfFramesTotal - numberOfFramesRemaining;
 }
 
+QString SoundSourceProviderMp3::getName() const {
+    return "libmad";
+}
+
 QStringList SoundSourceProviderMp3::getSupportedFileTypes() const {
     QStringList supportedFileTypes;
     supportedFileTypes.append("mp3");

@@ -250,6 +250,10 @@ SINT SoundSourceOpus::readSampleFramesStereo(
     return numberOfFramesTotal - numberOfFramesRemaining;
 }
 
+QString SoundSourceProviderOpus::getName() const {
+    return "Xiph.org libopusfile";
+}
+
 QStringList SoundSourceProviderOpus::getSupportedFileTypes() const {
     QStringList supportedFileTypes;
     supportedFileTypes.append("opus");
