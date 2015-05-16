@@ -911,6 +911,7 @@ class MixxxCore(Feature):
                    "util/xml.cpp",
                    "util/tapfilter.cpp",
                    "util/movinginterquartilemean.cpp",
+                   "util/console.cpp",
 
                    '#res/mixxx.qrc'
                    ]
@@ -1061,8 +1062,6 @@ class MixxxCore(Feature):
                 # runtime because Mixxx loads DLLs at runtime. Since this is a
                 # debug build, use the debug version of the MD runtime.
                 build.env.Append(CCFLAGS='/MDd')
-                # Enable the Mixxx debug console (see main.cpp).
-                build.env.Append(CPPDEFINES='DEBUGCONSOLE')
             else:
                 # Important: We always build Mixxx with the Multi-Threaded DLL
                 # runtime because Mixxx loads DLLs at runtime.
