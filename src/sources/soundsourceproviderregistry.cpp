@@ -14,7 +14,7 @@ void SoundSourceProviderRegistry::registerProviderPlugin(
     const QStringList supportedFileTypes(
             pProvider->getSupportedFileTypes());
     DEBUG_ASSERT(pPluginLibrary || !supportedFileTypes.isEmpty());
-    if (pPluginLibrary && !supportedFileTypes.isEmpty()) {
+    if (pPluginLibrary && supportedFileTypes.isEmpty()) {
         qWarning() << "SoundSource plugin does not support any file types"
                 << pPluginLibrary->getFileName();
     }
