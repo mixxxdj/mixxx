@@ -24,6 +24,11 @@ public:
         return m_entries.value(fileType).pProvider;
     }
 
+    SoundSourcePluginLibraryPointer getPluginLibraryForFileType(
+            const QString& fileType) const {
+        return m_entries.value(fileType).pPluginLibrary;
+    }
+
     QStringList getSupportedFileTypes() const {
         return m_entries.keys();
     }

@@ -243,10 +243,18 @@ void SoundSourceProxy::loadPlugins() {
         const QStringList supportedFileTypes(
                 s_soundSourceProviders.getSupportedFileTypes());
         foreach(const QString &supportedFileType, supportedFileTypes) {
-            const Mixxx::SoundSourceProviderPointer pSoundSourceProvider(
+            const Mixxx::SoundSourceProviderPointer pProvider(
                     s_soundSourceProviders.getProviderForFileType(supportedFileType));
-            qDebug() << "SoundSourceProvider for"
-                    << supportedFileType << "is" << pSoundSourceProvider->getName();
+            const Mixxx::SoundSourcePluginLibraryPointer pPluginLibrary(
+                    s_soundSourceProviders.getPluginLibraryForFileType(supportedFileType));
+            if (pPluginLibrary) {
+                qDebug() << "SoundSourceProvider for" << supportedFileType
+                        << "is" << pProvider->getName()
+                        << "from" << pPluginLibrary->getFileName();
+            } else {
+                qDebug() << "SoundSourceProvider for" << supportedFileType
+                        << "is" << pProvider->getName();
+            }
         }
     }
 }
