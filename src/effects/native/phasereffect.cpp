@@ -49,7 +49,7 @@ EffectManifest PhaserEffect::getManifest() {
     EffectManifestParameter* frequency = manifest.addParameter();
     frequency->setId("lfo_frequency");
     frequency->setName(QObject::tr("Rate"));
-    frequency->setDescription("Controls the speed of the effect.");   
+    frequency->setDescription("Controls the speed of the low frequency oscilator.");   
     frequency->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     frequency->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     frequency->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
