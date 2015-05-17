@@ -22,10 +22,6 @@ class SoundSourceProxyTest: public MixxxTest {
         return extensions;
     }
 
-    static void SetUpTestCase() {
-        SoundSourceProxy::loadPlugins();
-    }
-
     static Mixxx::AudioSourcePointer openAudioSource(const QString& fileName) {
         return SoundSourceProxy(fileName).openAudioSource();
     }

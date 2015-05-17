@@ -1,6 +1,7 @@
 #include "test/mixxxtest.h"
 #include "util/singleton.h"
 #include "mixxxapplication.h"
+#include "soundsourceproxy.h"
 
 #ifdef __FFMPEGFILE__
 extern "C" {
@@ -35,6 +36,8 @@ MixxxTest::MixxxTest() {
 
     m_pApplication = Singleton<MixxxApplication>::create();
     m_pConfig.reset(new ConfigObject<ConfigValue>(testDataDir + "test.cfg"));
+
+    SoundSourceProxy::loadPlugins();
 }
 
 MixxxTest::~MixxxTest() {
