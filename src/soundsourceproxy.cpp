@@ -22,7 +22,6 @@
 #endif
 #include "sources/soundsourceflac.h"
 #include "util/cmdlineargs.h"
-#include "util/regex.h"
 
 #include <QMutexLocker>
 #include <QDir>
@@ -33,11 +32,10 @@
 //Static memory allocation
 QMutex SoundSourceProxy::s_mutex;
 QRegExp SoundSourceProxy::s_supportedFileRegex;
-QMap<QString, Mixxx::SoundSourcePluginLibraryPointer> SoundSourceProxy::s_soundSourcePluginLibraries;
-QMap<QString, Mixxx::SoundSourceProviderPointer> SoundSourceProxy::s_soundSourceProviders;
-QSet<QString> SoundSourceProxy::s_supportedFileExtensionsByPlugins;
+Mixxx::SoundSourceProviderRegistry SoundSourceProxy::s_soundSourceProviders;
 
 namespace {
+
 SecurityTokenPointer openSecurityToken(QString qFilename,
         SecurityTokenPointer pToken) {
     if (pToken.isNull()) {
@@ -48,6 +46,7 @@ SecurityTokenPointer openSecurityToken(QString qFilename,
         return pToken;
     }
 }
+
 }
 
 //Constructor
@@ -66,39 +65,93 @@ SoundSourceProxy::SoundSourceProxy(TrackPointer pTrack)
                         , m_pSoundSource(initialize(pTrack->getLocation())) {
 }
 
+Mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const Mixxx::AudioSourceConfig& audioSrcCfg) {
+    if (m_pAudioSource) {
+        qDebug() << "AudioSource is already open";
+        return m_pAudioSource;
+    }
+
+    if (!m_pSoundSource) {
+        qDebug() << "No SoundSource available";
+        return m_pAudioSource;
+    }
+
+    if (OK != m_pSoundSource->open(audioSrcCfg)) {
+        qWarning() << "Failed to open SoundSource";
+        return m_pAudioSource;
+    }
+
+    if (!m_pSoundSource->isValid()) {
+        qWarning() << "Invalid file:" << m_pSoundSource->getUrlString()
+                << "channels" << m_pSoundSource->getChannelCount()
+                << "frame rate" << m_pSoundSource->getChannelCount();
+        return m_pAudioSource;
+    }
+    if (m_pSoundSource->isEmpty()) {
+        qWarning() << "Empty file:" << m_pSoundSource->getUrlString();
+        return m_pAudioSource;
+    }
+
+    // Overwrite metadata with actual audio properties
+    if (m_pTrack) {
+        m_pTrack->setChannels(m_pSoundSource->getChannelCount());
+        m_pTrack->setSampleRate(m_pSoundSource->getFrameRate());
+        if (m_pSoundSource->hasDuration()) {
+            m_pTrack->setDuration(m_pSoundSource->getDuration());
+        }
+        if (m_pSoundSource->hasBitrate()) {
+            m_pTrack->setBitrate(m_pSoundSource->getBitrate());
+        }
+    }
+
+    m_pAudioSource = m_pSoundSource;
+
+    return m_pAudioSource;
+}
+
+void SoundSourceProxy::closeAudioSource() {
+    if (m_pAudioSource) {
+        DEBUG_ASSERT(m_pSoundSource);
+        m_pSoundSource->close();
+        m_pAudioSource.clear();
+    }
+}
+
 // static
 void SoundSourceProxy::loadPlugins() {
+    QMutexLocker locker(&s_mutex);
+
     // Initialize built-in file types (last provider wins)
 #ifdef __SNDFILE__
     // libsndfile is just a fallback and will be overwritten by
     // specialized providers!
-    addSoundSourceProvider(Mixxx::SoundSourceProviderPointer(
+    s_soundSourceProviders.registerProvider(Mixxx::SoundSourceProviderPointer(
             new Mixxx::SoundSourceProviderSndFile));
 #endif
-    addSoundSourceProvider(Mixxx::SoundSourceProviderPointer(
+    s_soundSourceProviders.registerProvider(Mixxx::SoundSourceProviderPointer(
             new Mixxx::SoundSourceProviderFLAC));
-    addSoundSourceProvider(Mixxx::SoundSourceProviderPointer(
+    s_soundSourceProviders.registerProvider(Mixxx::SoundSourceProviderPointer(
             new Mixxx::SoundSourceProviderOggVorbis));
 #ifdef __OPUS__
-    addSoundSourceProvider(Mixxx::SoundSourceProviderPointer(
+    s_soundSourceProviders.registerProvider(Mixxx::SoundSourceProviderPointer(
             new Mixxx::SoundSourceProviderOpus));
 #endif
 #ifdef __MAD__
-    addSoundSourceProvider(Mixxx::SoundSourceProviderPointer(
+    s_soundSourceProviders.registerProvider(Mixxx::SoundSourceProviderPointer(
             new Mixxx::SoundSourceProviderMp3));
 #endif
 #ifdef __MODPLUG__
-    addSoundSourceProvider(Mixxx::SoundSourceProviderPointer(
+    s_soundSourceProviders.registerProvider(Mixxx::SoundSourceProviderPointer(
             new Mixxx::SoundSourceProviderModPlug));
 #endif
 #ifdef __COREAUDIO__
-    addSoundSourceProvider(Mixxx::SoundSourceProviderPointer(
+    s_soundSourceProviders.registerProvider(Mixxx::SoundSourceProviderPointer(
             new Mixxx::SoundSourceProviderCoreAudio));
 #endif
 #ifdef __FFMPEGFILE__
     // FFmpeg currently overrides all other built-in providers
     // if enabled
-    addSoundSourceProvider(Mixxx::SoundSourceProviderPointer(
+    s_soundSourceProviders.registerProvider(Mixxx::SoundSourceProviderPointer(
             new Mixxx::SoundSourceProviderFFmpeg));
 #endif
 
@@ -174,58 +227,58 @@ void SoundSourceProxy::loadPlugins() {
     nameFilters << "libsoundsource*";
 #endif
 
-    foreach(QDir dir, pluginDirs){
-    QStringList files = dir.entryList(nameFilters, QDir::Files | QDir::NoDotAndDotDot);
-    foreach (const QString& file, files) {
-        Mixxx::SoundSourcePluginLibraryPointer pPluginLibrary(
-                Mixxx::SoundSourcePluginLibrary::load(dir.filePath(file)));
-        if (pPluginLibrary) {
-            Mixxx::SoundSourceProviderPointer pSoundSourceProvider(
-                    pPluginLibrary->getSoundSourceProvider());
-            const QStringList supportedFileTypes(pSoundSourceProvider->getSupportedFileTypes());
-            if (supportedFileTypes.isEmpty()) {
-                qWarning() << "SoundSource plugin does not support any file types"
-                        << pPluginLibrary->getFileName();
-            } else {
-                s_soundSourcePluginLibraries.insert(
-                        pPluginLibrary->getFileName(),
-                        pPluginLibrary);
-                s_supportedFileExtensionsByPlugins +=
-                        QSet<QString>::fromList(supportedFileTypes);
-                addSoundSourceProvider(
-                        pSoundSourceProvider,
-                        supportedFileTypes);
+    foreach(QDir dir, pluginDirs) {
+        QStringList files = dir.entryList(nameFilters, QDir::Files | QDir::NoDotAndDotDot);
+        foreach (const QString& file, files) {
+            Mixxx::SoundSourcePluginLibraryPointer pPluginLibrary(
+                    Mixxx::SoundSourcePluginLibrary::load(dir.filePath(file)));
+            if (pPluginLibrary) {
+                const Mixxx::SoundSourceProviderPointer pSoundSourceProvider(
+                        pPluginLibrary->getSoundSourceProvider());
+                s_soundSourceProviders.registerProviderPlugin(
+                        pSoundSourceProvider, pPluginLibrary);
             }
         }
-    }
 
-    for (QMap<QString, Mixxx::SoundSourceProviderPointer>::ConstIterator
-            i(s_soundSourceProviders.begin());
-            s_soundSourceProviders.end() != i;
-            ++i) {
-        qDebug() << "SoundSourceProvider for"
-                << i.key() << "is" << i.value()->getName();
+        const QStringList supportedFileTypes(
+                s_soundSourceProviders.getSupportedFileTypes());
+        foreach(const QString &supportedFileType, supportedFileTypes) {
+            const Mixxx::SoundSourceProviderPointer pSoundSourceProvider(
+                    s_soundSourceProviders.getProviderForFileType(supportedFileType));
+            qDebug() << "SoundSourceProvider for"
+                    << supportedFileType << "is" << pSoundSourceProvider->getName();
+        }
     }
 }
+
+// static
+QStringList SoundSourceProxy::supportedFileExtensions() {
+    QMutexLocker locker(&s_mutex);
+    return s_soundSourceProviders.getSupportedFileTypes();
+}
+
+// static
+QStringList SoundSourceProxy::supportedFileExtensionsByPlugins() {
+    QMutexLocker locker(&s_mutex);
+    return s_soundSourceProviders.getSupportedPluginFileTypes();
+}
+
+// static
+QStringList SoundSourceProxy::supportedFileNamePatterns() {
+    QMutexLocker locker(&s_mutex);
+    return s_soundSourceProviders.getSupportedFileNamePatterns();
 }
 
 //static
-void SoundSourceProxy::addSoundSourceProvider(
-        Mixxx::SoundSourceProviderPointer pSoundSourceProvider) {
-    addSoundSourceProvider(pSoundSourceProvider,
-            pSoundSourceProvider->getSupportedFileTypes());
+QRegExp SoundSourceProxy::supportedFileNameRegex() {
+    QMutexLocker locker(&s_mutex);
+    return s_soundSourceProviders.getSupportedFileNameRegex();
 }
 
-//static
-void SoundSourceProxy::addSoundSourceProvider(
-        Mixxx::SoundSourceProviderPointer pSoundSourceProvider,
-        const QStringList& supportedFileTypes) {
-    DEBUG_ASSERT(!supportedFileTypes.isEmpty()); // wouldn't make any sense
-    for (int i = 0; i < supportedFileTypes.size(); ++i) {
-        s_soundSourceProviders.insert(
-                supportedFileTypes[i],
-                pSoundSourceProvider);
-    }
+// static
+bool SoundSourceProxy::isFilenameSupported(const QString& fileName) {
+    QMutexLocker locker(&s_mutex);
+    return s_soundSourceProviders.isSuppportedFileName(fileName);
 }
 
 // static
@@ -233,109 +286,20 @@ Mixxx::SoundSourcePointer SoundSourceProxy::initialize(
         const QString& qFilename) {
     const QUrl url(QUrl::fromLocalFile(qFilename));
 
-    const QString type(Mixxx::SoundSource::getTypeFromUrl(url));
-    if (type.isEmpty()) {
+    const QString fileType(Mixxx::SoundSource::getTypeFromUrl(url));
+    if (fileType.isEmpty()) {
         qWarning() << "Unknown file type:" << qFilename;
         return Mixxx::SoundSourcePointer();
     }
 
-    if (s_soundSourceProviders.contains(type)) {
-        Mixxx::SoundSourceProviderPointer pSoundSourceProvider(
-                s_soundSourceProviders.value(type));
-        DEBUG_ASSERT(pSoundSourceProvider);
+    QMutexLocker locker(&s_mutex);
+
+    Mixxx::SoundSourceProviderPointer pSoundSourceProvider(
+            s_soundSourceProviders.getProviderForFileType(fileType));
+    if (pSoundSourceProvider) {
         return pSoundSourceProvider->newSoundSource(url);
-    } else { //Unsupported filetype
+    } else {
+        qWarning() << "Unsupported file type" << qFilename;
         return Mixxx::SoundSourcePointer();
     }
-}
-
-Mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const Mixxx::AudioSourceConfig& audioSrcCfg) {
-    if (m_pAudioSource) {
-        qDebug() << "AudioSource is already open";
-        return m_pAudioSource;
-    }
-
-    if (!m_pSoundSource) {
-        qDebug() << "No SoundSource available";
-        return m_pAudioSource;
-    }
-
-    if (OK != m_pSoundSource->open(audioSrcCfg)) {
-        qWarning() << "Failed to open SoundSource";
-        return m_pAudioSource;
-    }
-
-    if (!m_pSoundSource->isValid()) {
-        qWarning() << "Invalid file:" << m_pSoundSource->getUrlString()
-                << "channels" << m_pSoundSource->getChannelCount()
-                << "frame rate" << m_pSoundSource->getChannelCount();
-        return m_pAudioSource;
-    }
-    if (m_pSoundSource->isEmpty()) {
-        qWarning() << "Empty file:" << m_pSoundSource->getUrlString();
-        return m_pAudioSource;
-    }
-
-    // Overwrite metadata with actual audio properties
-    if (m_pTrack) {
-        m_pTrack->setChannels(m_pSoundSource->getChannelCount());
-        m_pTrack->setSampleRate(m_pSoundSource->getFrameRate());
-        if (m_pSoundSource->hasDuration()) {
-            m_pTrack->setDuration(m_pSoundSource->getDuration());
-        }
-        if (m_pSoundSource->hasBitrate()) {
-            m_pTrack->setBitrate(m_pSoundSource->getBitrate());
-        }
-    }
-
-    m_pAudioSource = m_pSoundSource;
-
-    return m_pAudioSource;
-}
-
-void SoundSourceProxy::closeAudioSource() {
-    if (m_pAudioSource) {
-        DEBUG_ASSERT(m_pSoundSource);
-        m_pSoundSource->close();
-        m_pAudioSource.clear();
-    }
-}
-
-// static
-QStringList SoundSourceProxy::supportedFileExtensions() {
-    QMutexLocker locker(&s_mutex);
-    return s_soundSourceProviders.keys();
-}
-
-// static
-QStringList SoundSourceProxy::supportedFileExtensionsByPlugins() {
-    QMutexLocker locker(&s_mutex);
-    return s_supportedFileExtensionsByPlugins.toList();
-}
-
-// static
-QString SoundSourceProxy::supportedFileExtensionsString() {
-    QStringList supportedFileExtList =
-            SoundSourceProxy::supportedFileExtensions();
-    // Turn the list into a "*.mp3 *.wav *.etc" style string
-    for (int i = 0; i < supportedFileExtList.size(); ++i) {
-        supportedFileExtList[i] = QString("*.%1").arg(supportedFileExtList[i]);
-    }
-    return supportedFileExtList.join(" ");
-}
-
-// static
-QString SoundSourceProxy::supportedFileExtensionsRegex() {
-    QStringList supportedFileExtList =
-            SoundSourceProxy::supportedFileExtensions();
-    return RegexUtils::fileExtensionsRegex(supportedFileExtList);
-}
-
-// static
-bool SoundSourceProxy::isFilenameSupported(QString fileName) {
-    if (s_supportedFileRegex.isEmpty()) {
-        QString regex = SoundSourceProxy::supportedFileExtensionsRegex();
-        s_supportedFileRegex = QRegExp(regex, Qt::CaseInsensitive);
-    }
-    return fileName.contains(s_supportedFileRegex);
 }
