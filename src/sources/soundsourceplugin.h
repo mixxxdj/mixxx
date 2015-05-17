@@ -1,7 +1,6 @@
 #ifndef MIXXX_SOUNDSOURCEPLUGIN_H
 #define MIXXX_SOUNDSOURCEPLUGIN_H
 
-#include "sources/soundsourceprovider.h"
 #include "sources/soundsourcepluginapi.h"
 
 namespace Mixxx {
