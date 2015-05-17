@@ -2,7 +2,11 @@
 #include "util/singleton.h"
 <<<<<<< HEAD
 #include "mixxxapplication.h"
+<<<<<<< HEAD
 =======
+=======
+#include "soundsourceproxy.h"
+>>>>>>> Fix static initialization of SoundSource providers in tests
 
 #ifdef __FFMPEGFILE__
 extern "C" {
@@ -43,6 +47,8 @@ MixxxTest::MixxxTest() {
 
     m_pApplication = Singleton<MixxxApplication>::create();
     m_pConfig.reset(new ConfigObject<ConfigValue>(testDataDir + "test.cfg"));
+
+    SoundSourceProxy::loadPlugins();
 }
 
 MixxxTest::~MixxxTest() {
