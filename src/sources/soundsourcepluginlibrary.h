@@ -2,7 +2,6 @@
 #define MIXXX_SOUNDSOURCEPLUGINLIBRARY_H
 
 #include "sources/soundsourcepluginapi.h"
-#include "sources/soundsourceprovider.h"
 
 #include <QMap>
 #include <QMutex>
