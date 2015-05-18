@@ -132,30 +132,11 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
     CSAMPLE* oldInRight = pState->oldInRight;
     CSAMPLE* oldOutRight = pState->oldOutRight;
 
-    //Using two sets of coefficients for left and right channel 
+    // Using two sets of coefficients for left and right channel 
     CSAMPLE filterCoefLeft = 0;
     CSAMPLE filterCoefRight = 0;
 
-    //If changing the 'Rate' knob, the phaser will use the initial parameters    
-    //until a desired frequency is chosen (to avoid bubbling noises)
-    if (frequency != pState->frequency) {
-        pState->wait = 0;
-        pState->frequency = frequency; 
-        pState->change = true;
-    }
-
-    if (pState->change) {
-        pState->wait++;
-        if (pState->wait == pState->limit) {
-            pState->change = false;
-            pState->oldFrequency = frequency;
-        } else {
-            frequency = pState->oldFrequency;
-        }
-    }
-
     CSAMPLE left = 0, right = 0;
-    CSAMPLE leftPhase, rightPhase;
     CSAMPLE freqSkip = frequency * 2.0 * M_PI / sampleRate;
 
     int stereoCheck = m_pStereoParameter->value();
@@ -163,22 +144,21 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
 
     const int kChannels = 2;
     for (unsigned int i = 0; i < numSamples; i += kChannels) {
-        pState->time++;
         left = pInput[i] + tanh(left * feedback); 
         right = pInput[i + 1] + tanh(right * feedback);
 
-        //For stereo enabled, the channels are out of phase
-        leftPhase = fmodf(freqSkip * pState->time, 2.0 * M_PI);
-        rightPhase = fmodf(freqSkip * pState->time + M_PI * stereoCheck, 2.0 * M_PI);
+        // For stereo enabled, the channels are out of phase
+        pState->leftPhase = fmodf(pState->leftPhase + freqSkip, 2.0 * M_PI);
+        pState->rightPhase = fmodf(pState->rightPhase + freqSkip + M_PI * stereoCheck, 2.0 * M_PI);
 
-        //Updating filter coefficients once every 'updateCoef' samples to avoid
-        //extra computing
+        // Updating filter coefficients once every 'updateCoef' samples to avoid
+        // extra computing
         if ((counter++) % updateCoef == 0) {
-                CSAMPLE delayLeft = 0.5 + 0.5 * sin(leftPhase);
-                CSAMPLE delayRight = 0.5 + 0.5 * sin(rightPhase);
+                CSAMPLE delayLeft = 0.5 + 0.5 * sin(pState->leftPhase);
+                CSAMPLE delayRight = 0.5 + 0.5 * sin(pState->rightPhase);
                 
-                //Coefficient computing based on the following:
-                //https://ccrma.stanford.edu/~jos/pasp/Classic_Virtual_Analog_Phase.html
+                // Coefficient computing based on the following:
+                // https://ccrma.stanford.edu/~jos/pasp/Classic_Virtual_Analog_Phase.html
                 CSAMPLE wLeft = range * delayLeft;
                 CSAMPLE wRight = range * delayRight;
 
@@ -192,7 +172,7 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
         left = processSample(left, oldInLeft, oldOutLeft, filterCoefLeft, stages);
         right = processSample(right, oldInRight, oldOutRight, filterCoefRight, stages);
 
-        //Computing output combining the original and processed sample
+        // Computing output combining the original and processed sample
         pOutput[i] = pInput[i] * (1.0 - 0.5 * depth) + left * depth * 0.5;
         pOutput[i + 1] = pInput[i + 1] * (1.0 - 0.5 * depth) + right * depth * 0.5;
     }
