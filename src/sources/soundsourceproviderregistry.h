@@ -19,6 +19,10 @@ public:
             const SoundSourceProviderPointer& pProvider,
             const SoundSourcePluginLibraryPointer& pPluginLibrary);
 
+    // Completes the registration by building the corresponding
+    // regular expressions for file names.
+    void finishRegistration();
+
     SoundSourceProviderPointer getProviderForFileType(
             const QString& fileType) const {
         return m_entries.value(fileType).pProvider;
@@ -36,7 +40,9 @@ public:
 
     QStringList getSupportedFileNamePatterns() const;
 
-    QRegExp getSupportedFileNameRegex() const;
+    QRegExp getSupportedFileNameRegex() const {
+        return m_supportedFileNameRegex;
+    }
 
     bool isSuppportedFileName(const QString& fileName) const {
         return fileName.contains(getSupportedFileNameRegex());
@@ -51,7 +57,7 @@ private:
 
     FileType2Entry m_entries;
 
-    mutable QRegExp m_supportedFileNameRegex;
+    QRegExp m_supportedFileNameRegex;
 };
 
 } // namespace Mixxx

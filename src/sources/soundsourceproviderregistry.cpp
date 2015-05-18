@@ -7,6 +7,7 @@ namespace Mixxx {
 void SoundSourceProviderRegistry::registerProviderPlugin(
         const SoundSourceProviderPointer& pProvider,
         const SoundSourcePluginLibraryPointer& pPluginLibrary) {
+    DEBUG_ASSERT(m_supportedFileNameRegex.isEmpty());
     DEBUG_ASSERT(pProvider);
     Entry entry;
     entry.pProvider = pProvider;
@@ -21,8 +22,14 @@ void SoundSourceProviderRegistry::registerProviderPlugin(
     foreach (const QString& supportedFileType, supportedFileTypes) {
         m_entries.insert(supportedFileType, entry);
     }
+}
 
-    QRegExp().swap(m_supportedFileNameRegex); // invalidate
+void SoundSourceProviderRegistry::finishRegistration() {
+    const QStringList supportedFileTypes(getSupportedFileTypes());
+    const QString fileExtensionsRegex(
+            RegexUtils::fileExtensionsRegex(supportedFileTypes));
+    QRegExp(fileExtensionsRegex, Qt::CaseInsensitive).swap(
+            m_supportedFileNameRegex);
 }
 
 QStringList SoundSourceProviderRegistry::getSupportedPluginFileTypes() const {
@@ -47,17 +54,6 @@ QStringList SoundSourceProviderRegistry::getSupportedFileNamePatterns() const {
         supportedFileNamePatterns += QString("*.%1").arg(supportedFileType);
     }
     return supportedFileNamePatterns;
-}
-
-QRegExp SoundSourceProviderRegistry::getSupportedFileNameRegex() const {
-    if (m_supportedFileNameRegex.isEmpty()) {
-        // lazy initialization
-        const QStringList supportedFileTypes(getSupportedFileTypes());
-        QRegExp(
-                RegexUtils::fileExtensionsRegex(supportedFileTypes),
-                Qt::CaseInsensitive).swap(m_supportedFileNameRegex);
-    }
-    return m_supportedFileNameRegex;
 }
 
 } // Mixxx
