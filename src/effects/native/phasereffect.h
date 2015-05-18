@@ -13,13 +13,9 @@
 #define MAXSTAGES 12
 
 struct PhaserGroupState {
-    PhaserGroupState() : 
-        time(0),
-        frequency(0),
-        oldFrequency(0),
-        limit(20),
-        wait(0),
-        change(false) {
+    PhaserGroupState() :
+        leftPhase(0),
+        rightPhase(0) { 
         SampleUtil::applyGain(oldInLeft, 0, MAXSTAGES);
         SampleUtil::applyGain(oldOutLeft, 0, MAXSTAGES);
         SampleUtil::applyGain(oldInRight, 0, MAXSTAGES);
@@ -29,12 +25,8 @@ struct PhaserGroupState {
     CSAMPLE oldInRight[MAXSTAGES];
     CSAMPLE oldOutLeft[MAXSTAGES]; 
     CSAMPLE oldOutRight[MAXSTAGES];
-    int time;
-    CSAMPLE frequency;
-    CSAMPLE oldFrequency;
-    int limit;
-    int wait;
-    bool change;
+    CSAMPLE leftPhase;
+    CSAMPLE rightPhase;
 };
 
 class PhaserEffect : public PerChannelEffectProcessor<PhaserGroupState> {
