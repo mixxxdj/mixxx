@@ -35,16 +35,12 @@ EffectManifest PhaserEffect::getManifest() {
     stages->setId("stages");
     stages->setName(QObject::tr("Stages"));
     stages->setDescription("Sets number of stages.");
-    stages->setControlHint(EffectManifestParameter::CONTROL_TOGGLE_STEPPING);
+    stages->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     stages->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     stages->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    stages->setDefault(2.0);
-    stages->setMinimum(2.0);
-    stages->setMaximum(12.0);
-    stages->appendStep(qMakePair(QString("2"), 2.0));
-    stages->appendStep(qMakePair(QString("4"), 4.0));
-    stages->appendStep(qMakePair(QString("8"), 8.0));
-    stages->appendStep(qMakePair(QString("12"), 12.0));
+    stages->setDefault(1.0);
+    stages->setMinimum(1.0);
+    stages->setMaximum(6.0);
 
     EffectManifestParameter* frequency = manifest.addParameter();
     frequency->setId("lfo_frequency");
@@ -125,7 +121,7 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
     CSAMPLE depth = m_pDepthParameter->value();
     CSAMPLE feedback = m_pFeedbackParameter->value();
     CSAMPLE range = m_pRangeParameter->value();
-    int stages = m_pStagesParameter->value();
+    int stages = 2 * m_pStagesParameter->value();
 
     CSAMPLE* oldInLeft = pState->oldInLeft;
     CSAMPLE* oldOutLeft = pState->oldOutLeft;
