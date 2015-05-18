@@ -10,7 +10,7 @@
 // Creates sound sources for filenames or tracks
 class SoundSourceProxy: public Mixxx::MetadataSource {
 public:
-    static void loadPlugins();
+    static void loadPlugins(); // not thread-safe
 
     static QStringList supportedFileExtensions();
     static QStringList supportedFileExtensionsByPlugins();
@@ -53,7 +53,6 @@ public:
     void closeAudioSource();
 
 private:
-    static QMutex s_mutex;
     static Mixxx::SoundSourceProviderRegistry s_soundSourceProviders;
 
     static Mixxx::SoundSourcePointer initialize(const QString& qFilename);

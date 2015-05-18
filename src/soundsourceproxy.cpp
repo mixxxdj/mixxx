@@ -23,14 +23,12 @@
 #include "sources/soundsourceflac.h"
 #include "util/cmdlineargs.h"
 
-#include <QMutexLocker>
 #include <QDir>
 #include <QDesktopServices>
 #include <QCoreApplication>
 #include <QApplication>
 
 //Static memory allocation
-QMutex SoundSourceProxy::s_mutex;
 Mixxx::SoundSourceProviderRegistry SoundSourceProxy::s_soundSourceProviders;
 
 namespace {
@@ -118,8 +116,6 @@ void SoundSourceProxy::closeAudioSource() {
 
 // static
 void SoundSourceProxy::loadPlugins() {
-    QMutexLocker locker(&s_mutex);
-
     // Initialize built-in file types (last provider wins)
 #ifdef __SNDFILE__
     // libsndfile is just a fallback and will be overwritten by
@@ -240,6 +236,8 @@ void SoundSourceProxy::loadPlugins() {
         }
     }
 
+    s_soundSourceProviders.finishRegistration();
+
     const QStringList supportedFileTypes(
             s_soundSourceProviders.getSupportedFileTypes());
     foreach(const QString &supportedFileType, supportedFileTypes) {
@@ -260,31 +258,26 @@ void SoundSourceProxy::loadPlugins() {
 
 // static
 QStringList SoundSourceProxy::supportedFileExtensions() {
-    QMutexLocker locker(&s_mutex);
     return s_soundSourceProviders.getSupportedFileTypes();
 }
 
 // static
 QStringList SoundSourceProxy::supportedFileExtensionsByPlugins() {
-    QMutexLocker locker(&s_mutex);
     return s_soundSourceProviders.getSupportedPluginFileTypes();
 }
 
 // static
 QStringList SoundSourceProxy::supportedFileNamePatterns() {
-    QMutexLocker locker(&s_mutex);
     return s_soundSourceProviders.getSupportedFileNamePatterns();
 }
 
 //static
 QRegExp SoundSourceProxy::supportedFileNameRegex() {
-    QMutexLocker locker(&s_mutex);
     return s_soundSourceProviders.getSupportedFileNameRegex();
 }
 
 // static
 bool SoundSourceProxy::isFilenameSupported(const QString& fileName) {
-    QMutexLocker locker(&s_mutex);
     return s_soundSourceProviders.isSuppportedFileName(fileName);
 }
 
@@ -298,8 +291,6 @@ Mixxx::SoundSourcePointer SoundSourceProxy::initialize(
         qWarning() << "Unknown file type:" << qFilename;
         return Mixxx::SoundSourcePointer();
     }
-
-    QMutexLocker locker(&s_mutex);
 
     Mixxx::SoundSourceProviderPointer pSoundSourceProvider(
             s_soundSourceProviders.getProviderForFileType(fileType));
