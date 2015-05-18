@@ -31,7 +31,6 @@
 
 //Static memory allocation
 QMutex SoundSourceProxy::s_mutex;
-QRegExp SoundSourceProxy::s_supportedFileRegex;
 Mixxx::SoundSourceProviderRegistry SoundSourceProxy::s_soundSourceProviders;
 
 namespace {
