@@ -54,7 +54,6 @@ public:
 
 private:
     static QMutex s_mutex;
-    static QRegExp s_supportedFileRegex;
     static Mixxx::SoundSourceProviderRegistry s_soundSourceProviders;
 
     static Mixxx::SoundSourcePointer initialize(const QString& qFilename);
