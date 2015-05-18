@@ -239,22 +239,22 @@ void SoundSourceProxy::loadPlugins() {
                         pSoundSourceProvider, pPluginLibrary);
             }
         }
+    }
 
-        const QStringList supportedFileTypes(
-                s_soundSourceProviders.getSupportedFileTypes());
-        foreach(const QString &supportedFileType, supportedFileTypes) {
-            const Mixxx::SoundSourceProviderPointer pProvider(
-                    s_soundSourceProviders.getProviderForFileType(supportedFileType));
-            const Mixxx::SoundSourcePluginLibraryPointer pPluginLibrary(
-                    s_soundSourceProviders.getPluginLibraryForFileType(supportedFileType));
-            if (pPluginLibrary) {
-                qDebug() << "SoundSourceProvider for" << supportedFileType
-                        << "is" << pProvider->getName()
-                        << "from" << pPluginLibrary->getFileName();
-            } else {
-                qDebug() << "SoundSourceProvider for" << supportedFileType
-                        << "is" << pProvider->getName();
-            }
+    const QStringList supportedFileTypes(
+            s_soundSourceProviders.getSupportedFileTypes());
+    foreach(const QString &supportedFileType, supportedFileTypes) {
+        const Mixxx::SoundSourceProviderPointer pProvider(
+                s_soundSourceProviders.getProviderForFileType(supportedFileType));
+        const Mixxx::SoundSourcePluginLibraryPointer pPluginLibrary(
+                s_soundSourceProviders.getPluginLibraryForFileType(supportedFileType));
+        if (pPluginLibrary) {
+            qDebug() << "SoundSourceProvider for" << supportedFileType
+                    << "is" << pProvider->getName()
+                    << "from" << pPluginLibrary->getFileName();
+        } else {
+            qDebug() << "SoundSourceProvider for" << supportedFileType
+                    << "is" << pProvider->getName();
         }
     }
 }
