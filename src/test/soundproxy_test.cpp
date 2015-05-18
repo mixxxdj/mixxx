@@ -83,6 +83,8 @@ TEST_F(SoundSourceProxyTest, seekForward) {
         const QString filePath(kFilePathPrefix + fileExtension);
         ASSERT_TRUE(SoundSourceProxy::isFilenameSupported(filePath));
 
+        qDebug() << "Seek forward test:" << filePath;
+
         Mixxx::AudioSourcePointer pContReadSource(openAudioSource(filePath));
         ASSERT_FALSE(pContReadSource.isNull());
         const SINT readSampleCount = pContReadSource->frames2samples(kReadFrameCount);
