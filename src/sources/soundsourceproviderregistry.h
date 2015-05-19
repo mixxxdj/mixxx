@@ -33,16 +33,11 @@ public:
     QStringList getSupportedFileTypes() const {
         return m_entries.keys();
     }
-    QStringList getSupportedPluginFileTypes() const;
 
     QStringList getSupportedFileNamePatterns() const;
 
     QRegExp getSupportedFileNameRegex() const {
         return m_supportedFileNameRegex;
-    }
-
-    bool isSuppportedFileName(const QString& fileName) const {
-        return fileName.contains(getSupportedFileNameRegex());
     }
 
 private:
