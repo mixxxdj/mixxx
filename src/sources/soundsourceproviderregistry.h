@@ -11,12 +11,9 @@ namespace Mixxx {
 // Registry for SoundSourceProviders
 class SoundSourceProviderRegistry {
 public:
-    void registerProvider(
-            const SoundSourceProviderPointer& pProvider) {
-        registerProviderPlugin(pProvider, SoundSourcePluginLibraryPointer());
-    }
-    void registerProviderPlugin(
-            const SoundSourceProviderPointer& pProvider,
+    SoundSourceProviderPointer registerProvider(
+            const SoundSourceProviderPointer& pProvider);
+    SoundSourceProviderPointer registerPluginLibrary(
             const SoundSourcePluginLibraryPointer& pPluginLibrary);
 
     // Completes the registration by building the corresponding
@@ -54,6 +51,8 @@ private:
         SoundSourcePluginLibraryPointer pPluginLibrary;
     };
     typedef QMap<QString, Entry> FileType2Entry;
+
+    SoundSourceProviderPointer registerEntry(const Entry& entry);
 
     FileType2Entry m_entries;
 

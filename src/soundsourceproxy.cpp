@@ -225,13 +225,14 @@ void SoundSourceProxy::loadPlugins() {
     foreach(QDir dir, pluginDirs) {
         QStringList files = dir.entryList(nameFilters, QDir::Files | QDir::NoDotAndDotDot);
         foreach (const QString& file, files) {
+            const QString libFilePath(dir.filePath(file));
             Mixxx::SoundSourcePluginLibraryPointer pPluginLibrary(
-                    Mixxx::SoundSourcePluginLibrary::load(dir.filePath(file)));
+                    Mixxx::SoundSourcePluginLibrary::load(libFilePath));
             if (pPluginLibrary) {
-                const Mixxx::SoundSourceProviderPointer pSoundSourceProvider(
-                        pPluginLibrary->getSoundSourceProvider());
-                s_soundSourceProviders.registerProviderPlugin(
-                        pSoundSourceProvider, pPluginLibrary);
+                s_soundSourceProviders.registerPluginLibrary(pPluginLibrary);
+            } else {
+                qWarning() << "Failed to load SoundSource plugin library"
+                        << libFilePath;
             }
         }
     }
