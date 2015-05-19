@@ -43,25 +43,11 @@ void SoundSourceProviderRegistry::finishRegistration() {
             m_supportedFileNameRegex);
 }
 
-QStringList SoundSourceProviderRegistry::getSupportedPluginFileTypes() const {
-    QSet<QString> supportedFileTypes;
-    for (FileType2Entry::ConstIterator
-            i(m_entries.begin()); m_entries.end() != i; ++i) {
-        const SoundSourcePluginLibraryPointer pPluginLibrary(
-                i.value().pPluginLibrary);
-        if (i.value().pPluginLibrary) {
-            supportedFileTypes += QSet<QString>::fromList(
-                    i.value().pProvider->getSupportedFileTypes());
-        }
-    }
-    return supportedFileTypes.toList();
-}
-
 QStringList SoundSourceProviderRegistry::getSupportedFileNamePatterns() const {
     const QStringList supportedFileTypes(getSupportedFileTypes());
     // Turn the list into a "*.mp3 *.wav *.etc" style string
     QStringList supportedFileNamePatterns;
-    foreach(const QString& supportedFileType, supportedFileTypes) {
+    foreach (const QString& supportedFileType, supportedFileTypes) {
         supportedFileNamePatterns += QString("*.%1").arg(supportedFileType);
     }
     return supportedFileNamePatterns;
