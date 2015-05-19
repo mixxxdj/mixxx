@@ -53,16 +53,16 @@ class EngineFilterPanSingle {
         // move the delay cursor forward
         m_delayFrame = (m_delayFrame + 1) % SIZE;
         
-        // prepare coefficients for ramping using a linear stretching
-        double modLeft = fmod(delayLeftSourceFrame, 1);
-        double modRight = fmod(delayRightSourceFrame, 1);
+        // prepare coefficients for linear interpolation using a linear stretching
+        double timeBetweenFullSamplesLeft = fmod(delayLeftSourceFrame, 1);
+        double timeBetweenFullSamplesRight = fmod(delayRightSourceFrame, 1);
         
-        // applying the delay on left channel with ramping between each sample
-        pOutput[0] = m_buf[(static_cast<int>(floor(delayLeftSourceFrame)) % SIZE) * 2] * (1 - modLeft);
-        pOutput[0] += m_buf[(static_cast<int>(ceil(delayLeftSourceFrame)) % SIZE) * 2] * modLeft;
+        // applying the delay on left channel with linear interpolation between each sample
+        pOutput[0] = m_buf[(static_cast<int>(floor(delayLeftSourceFrame)) % SIZE) * 2] * (1 - timeBetweenFullSamplesLeft);
+        pOutput[0] += m_buf[(static_cast<int>(ceil(delayLeftSourceFrame)) % SIZE) * 2] * timeBetweenFullSamplesLeft;
         // then on right channel
-        pOutput[1] = m_buf[(static_cast<int>(floor(delayRightSourceFrame)) % SIZE) * 2 + 1] * (1 - modRight);
-        pOutput[1] += m_buf[(static_cast<int>(ceil(delayRightSourceFrame)) % SIZE) * 2 + 1] * modRight;
+        pOutput[1] = m_buf[(static_cast<int>(floor(delayRightSourceFrame)) % SIZE) * 2 + 1] * (1 - timeBetweenFullSamplesRight);
+        pOutput[1] += m_buf[(static_cast<int>(ceil(delayRightSourceFrame)) % SIZE) * 2 + 1] * timeBetweenFullSamplesRight;
         
         m_doStart = false;
     }
