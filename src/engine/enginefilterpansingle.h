@@ -1,3 +1,10 @@
+/**
+ * FilterPan Single :
+ * + This delay will be applied on left channel following the
+ * leftDelayFrames parameter and on the right one by minus leftDelayFrames.
+ * + This delay is applied sample by sample and not on the full buffer.
+ */
+
 #ifndef ENGINEFILTERPANSINGLE_H
 #define ENGINEFILTERPANSINGLE_H
 
@@ -31,6 +38,7 @@ class EngineFilterPanSingle {
     virtual void process(const CSAMPLE* pIn, CSAMPLE* pOutput, double leftDelayFrames) {
         double delayLeftSourceFrame;
         double delayRightSourceFrame;
+        
         if (leftDelayFrames > 0) {
             delayLeftSourceFrame = m_delayFrame + SIZE - leftDelayFrames;
             delayRightSourceFrame = m_delayFrame + SIZE;
@@ -39,18 +47,23 @@ class EngineFilterPanSingle {
             delayRightSourceFrame = m_delayFrame + SIZE + leftDelayFrames;
         }
 
-        // put in samples into delay buffer:
+        // put in samples into delay buffer
         m_buf[m_delayFrame * 2] = pIn[0];
         m_buf[m_delayFrame * 2 + 1] = pIn[1];
+        // move the delay cursor forward
         m_delayFrame = (m_delayFrame + 1) % SIZE;
-
+        
+        // prepare coefficients for ramping using a linear stretching
         double modLeft = fmod(delayLeftSourceFrame, 1);
         double modRight = fmod(delayRightSourceFrame, 1);
-
+        
+        // applying the delay on left channel with ramping between each sample
         pOutput[0] = m_buf[(static_cast<int>(floor(delayLeftSourceFrame)) % SIZE) * 2] * (1 - modLeft);
-        pOutput[1] = m_buf[(static_cast<int>(floor(delayRightSourceFrame)) % SIZE) * 2 + 1] * (1 - modRight);
         pOutput[0] += m_buf[(static_cast<int>(ceil(delayLeftSourceFrame)) % SIZE) * 2] * modLeft;
+        // then on right channel
+        pOutput[1] = m_buf[(static_cast<int>(floor(delayRightSourceFrame)) % SIZE) * 2 + 1] * (1 - modRight);
         pOutput[1] += m_buf[(static_cast<int>(ceil(delayRightSourceFrame)) % SIZE) * 2 + 1] * modRight;
+        
         m_doStart = false;
     }
 
