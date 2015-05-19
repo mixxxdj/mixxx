@@ -53,7 +53,9 @@ bool ControlObjectSlave::connectValueChanged(const QObject* receiver,
     return ret;
 }
 
+// connect to parent object
 bool ControlObjectSlave::connectValueChanged(
         const char* method, Qt::ConnectionType type) {
+    DEBUG_ASSERT(parent() != NULL);
     return connectValueChanged(parent(), method, type);
 }

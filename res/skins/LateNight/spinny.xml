@@ -50,8 +50,9 @@
       <!-- If the spinnies are hidden, create an invisible margin of the correct
       height because the waveforms follow that height.  -->
       <WidgetGroup>
+        <ObjectName>SpinnyContainer</ObjectName>
         <Layout>horizontal</Layout>
-        <Size>0f,96f</Size>
+        <Size>1f,96f</Size>
         <Children/>
         <Connection>
             <ConfigKey>[Master],show_mixer</ConfigKey>
@@ -59,6 +60,17 @@
             <Transform>
               <Not/>
             </Transform>
+        </Connection>
+      </WidgetGroup>
+      <!-- Same, but for the smaller spinny size. -->
+      <WidgetGroup>
+        <ObjectName>SpinnyContainer</ObjectName>
+        <Layout>horizontal</Layout>
+        <Size>1f,50f</Size>
+        <Children/>
+        <Connection>
+            <ConfigKey>[Master],show_mixer</ConfigKey>
+            <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
     </Children>

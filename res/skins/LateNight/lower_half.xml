@@ -17,7 +17,7 @@
                 <Layout>vertical</Layout>
                 <SizePolicy>min,i</SizePolicy>
                 <MinimumSize>0,250</MinimumSize>
-                <MaximumSize>1920,429</MaximumSize>
+                <MaximumSize>1920,419</MaximumSize>
                 <Children>
                     <Template src="skin:fx_samplers_container_med.xml"/>
                     <SingletonContainer>
@@ -46,7 +46,7 @@
                 <ObjectName>UILowerHalf</ObjectName>
                 <Layout>vertical</Layout>
                 <SizePolicy>min,i</SizePolicy>
-                <MinimumSize>0,431</MinimumSize>
+                <MinimumSize>0,420</MinimumSize>
                 <Children>
                     <Template src="skin:fx_samplers_container_full.xml"/>
                     <SingletonContainer>

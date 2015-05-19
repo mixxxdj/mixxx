@@ -324,18 +324,18 @@
 						<ObjectName>LoopInOut</ObjectName>
 						<Children>
 							<PushButton>
+								<Size>52,24</Size>
+								<ObjectName>LoopToggleButton</ObjectName>
 								<TooltipId>reloop_exit</TooltipId>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
 								<State>
 									<Number>0</Number>
-									<Pressed>btn_reloop2_down.png</Pressed>
-									<Unpressed>btn_reloop2.png</Unpressed>
+									<Text>LOOP</Text>
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_reloop2_overdown.png</Pressed>
-									<Unpressed>btn_reloop2_over.png</Unpressed>
+									<Text>LOOP</Text>
 								</State>
 								<Connection>
 									<ConfigKey>[Channel<Variable name="channum" />],reloop_exit</ConfigKey>
@@ -429,12 +429,17 @@
 				<Layout>vertical</Layout>
 				<Children>
 					<PushButton>
+								<ObjectName>CueToggleButton</ObjectName>
+								<Size>52,26</Size>
 						<TooltipId>cue_default_cue_gotoandstop</TooltipId>
-						<NumberStates>1</NumberStates>
+						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_cue1_overdown.png</Pressed>
-							<Unpressed>btn_cue1.png</Unpressed>
+							<Text>CUE</Text>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Text>CUE</Text>
 						</State>
 						<Connection>
 							<ConfigKey>[Channel<Variable name="channum" />],cue_default</ConfigKey>

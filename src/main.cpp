@@ -34,6 +34,7 @@
 #include "errordialoghandler.h"
 #include "util/cmdlineargs.h"
 #include "util/version.h"
+#include "util/console.h"
 
 #include <QFile>
 #include <QFileInfo>
@@ -47,35 +48,6 @@ extern "C" {
 #ifdef Q_OS_LINUX
 #include <X11/Xlib.h>
 #endif
-
-#ifdef __WINDOWS__
-#ifdef DEBUGCONSOLE
-#include <io.h> // Debug Console
-#include <windows.h>
-
-void InitDebugConsole() { // Open a Debug Console so we can printf
-    int fd;
-    FILE *fp;
-
-    FreeConsole();
-    if (AllocConsole()) {
-        SetConsoleTitleA("Mixxx Debug Messages");
-
-        fd = _open_osfhandle((long) GetStdHandle(STD_OUTPUT_HANDLE), 0);
-        fp = _fdopen(fd, "w");
-
-        *stdout = *fp;
-        setvbuf(stdout, NULL, _IONBF, 0);
-
-        fd = _open_osfhandle((long) GetStdHandle(STD_ERROR_HANDLE), 0);
-        fp = _fdopen(fd, "w");
-
-        *stderr = *fp;
-        setvbuf(stderr, NULL, _IONBF, 0);
-    }
-}
-#endif // DEBUGCONSOLE
-#endif // __WINDOWS__
 
 QStringList plugin_paths; //yes this is global. sometimes global is good.
 
@@ -276,13 +248,7 @@ int main(int argc, char * argv[])
         return(0);
     }
 
-    //it seems like this code should be inline in MessageHandler() but for some reason having it there corrupts the messages sometimes -kousu 2/2009
-
-#ifdef __WINDOWS__
-  #ifdef DEBUGCONSOLE
-    InitDebugConsole();
-  #endif
-#endif
+    Console console();
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     qInstallMsgHandler(MessageHandler);

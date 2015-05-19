@@ -17,6 +17,9 @@ class WidgetStackControlListener : public QObject {
     WidgetStackControlListener(QObject* pParent, ControlObject* pControl,
                                int index);
     virtual ~WidgetStackControlListener();
+    void setControl(double val) {
+        m_control.set(val);
+    }
 
   signals:
     void switchToWidget();
@@ -53,7 +56,11 @@ class WWidgetStack : public QStackedWidget, public WBaseWidget {
     QSize sizeHint() const;
     QSize minimumSizeHint() const;
 
-    void addWidgetWithControl(QWidget* pWidget, ControlObject* pControl);
+    // Adds a page to the stack.  If this page is hidden, the the page with the
+    // 0-based index given by on_hide_select will be shown.  If this value is
+    // -1, the next page on the stack will be shown.
+    void addWidgetWithControl(QWidget* pWidget, ControlObject* pControl,
+                              int on_hide_select);
 
   protected:
     bool event(QEvent* pEvent);
@@ -65,7 +72,9 @@ class WWidgetStack : public QStackedWidget, public WBaseWidget {
     void onCurrentPageControlChanged(double v);
     // Fired when we change pages.
     void onCurrentPageChanged(int);
+    void showIndex(int index);
     void hideIndex(int index);
+    void showEvent(QShowEvent* event);
 
   private:
     QSignalMapper m_showMapper;
@@ -73,6 +82,12 @@ class WWidgetStack : public QStackedWidget, public WBaseWidget {
     ControlObjectThread m_nextControl;
     ControlObjectThread m_prevControl;
     ControlObjectThread m_currentPageControl;
+
+    // Optional map that defines which page to select if a page gets a hide
+    // signal.
+    QMap<int, int> m_hideMap;
+    // A map of the individual page triggers so we can rectify state if needed.
+    QMap<int, WidgetStackControlListener*> m_listeners;
 };
 
 #endif /* WWIDGETSTACK_H */
