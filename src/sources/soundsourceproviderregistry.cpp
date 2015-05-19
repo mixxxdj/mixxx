@@ -4,24 +4,35 @@
 
 namespace Mixxx {
 
-void SoundSourceProviderRegistry::registerProviderPlugin(
-        const SoundSourceProviderPointer& pProvider,
-        const SoundSourcePluginLibraryPointer& pPluginLibrary) {
-    DEBUG_ASSERT(m_supportedFileNameRegex.isEmpty());
-    DEBUG_ASSERT(pProvider);
+SoundSourceProviderPointer SoundSourceProviderRegistry::registerProvider(
+        const SoundSourceProviderPointer& pProvider) {
     Entry entry;
     entry.pProvider = pProvider;
+    return registerEntry(entry);
+}
+
+SoundSourceProviderPointer SoundSourceProviderRegistry::registerPluginLibrary(
+        const SoundSourcePluginLibraryPointer& pPluginLibrary) {
+    Entry entry;
+    entry.pProvider = pPluginLibrary->getSoundSourceProvider();
     entry.pPluginLibrary = pPluginLibrary;
+    return registerEntry(entry);
+}
+
+SoundSourceProviderPointer SoundSourceProviderRegistry::registerEntry(const Entry& entry) {
+    DEBUG_ASSERT(m_supportedFileNameRegex.isEmpty());
+    DEBUG_ASSERT(entry.pProvider);
     const QStringList supportedFileTypes(
-            pProvider->getSupportedFileTypes());
-    DEBUG_ASSERT(pPluginLibrary || !supportedFileTypes.isEmpty());
-    if (pPluginLibrary && supportedFileTypes.isEmpty()) {
+            entry.pProvider->getSupportedFileTypes());
+    DEBUG_ASSERT(entry.pPluginLibrary || !supportedFileTypes.isEmpty());
+    if (entry.pPluginLibrary && supportedFileTypes.isEmpty()) {
         qWarning() << "SoundSource plugin does not support any file types"
-                << pPluginLibrary->getFileName();
+                << entry.pPluginLibrary->getFileName();
     }
     foreach (const QString& supportedFileType, supportedFileTypes) {
         m_entries.insert(supportedFileType, entry);
     }
+    return entry.pProvider;
 }
 
 void SoundSourceProviderRegistry::finishRegistration() {
