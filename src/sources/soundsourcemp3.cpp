@@ -695,7 +695,7 @@ SINT SoundSourceMp3::readSampleFrames(
 }
 
 QString SoundSourceProviderMp3::getName() const {
-    return "libmad";
+    return "MAD: MPEG Audio Decoder";
 }
 
 QStringList SoundSourceProviderMp3::getSupportedFileTypes() const {
