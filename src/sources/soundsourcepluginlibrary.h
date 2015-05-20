@@ -16,7 +16,7 @@ typedef QSharedPointer<SoundSourcePluginLibrary> SoundSourcePluginLibraryPointer
 // Wrapper class for a dynamic library that implements the SoundSource plugin API
 class SoundSourcePluginLibrary {
 public:
-    static SoundSourcePluginLibraryPointer load(const QString& fileName);
+    static SoundSourcePluginLibraryPointer load(const QString& libFilePath);
 
     virtual ~SoundSourcePluginLibrary();
 
@@ -34,7 +34,7 @@ public:
     }
 
 protected:
-    explicit SoundSourcePluginLibrary(const QString& fileName);
+    explicit SoundSourcePluginLibrary(const QString& libFilePath);
 
     virtual bool init();
 
