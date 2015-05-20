@@ -90,14 +90,14 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
             this, SLOT(slotSetRateDir(int)));
 
     ComboBoxRateRange->clear();
-    ComboBoxRateRange->addItem(tr("4% (Denon DN-D4500)"), 4);
-    ComboBoxRateRange->addItem(tr("6% (Pioneer CDJ/DDJ-S1)"), 6);
-    ComboBoxRateRange->addItem(tr("8% (Technics SL-1210, Pioneer DDJ-SX)"), 8);
-    ComboBoxRateRange->addItem(tr("10% (Pioneer CDJ/DDJ-S1, Denon DN-D4500)"), 10);
-    ComboBoxRateRange->addItem(tr("16% (Pioneer CDJ/DDJ-SX/DDJ-S1, Denon DN-D4500)"), 16);
-    ComboBoxRateRange->addItem(tr("24% (Denon DN-D4500)"), 24);
-    ComboBoxRateRange->addItem(tr("50% (Pioneer DDJ-SX, Denon DN-D4500)"), 50);
-    ComboBoxRateRange->addItem(tr("100% (Denon DN-D4500)"), 100);
+    ComboBoxRateRange->addItem(tr("4%"), 4);
+    ComboBoxRateRange->addItem(tr("6% (Halftone)"), 6);
+    ComboBoxRateRange->addItem(tr("8% (Technics SL-1210)"), 8);
+    ComboBoxRateRange->addItem(tr("10%"), 10);
+    ComboBoxRateRange->addItem(tr("16%"), 16);
+    ComboBoxRateRange->addItem(tr("24%"), 24);
+    ComboBoxRateRange->addItem(tr("50%"), 50);
+    ComboBoxRateRange->addItem(tr("90%"), 90);
     connect(ComboBoxRateRange, SIGNAL(activated(int)),
             this, SLOT(slotSetRateRange(int)));
 
