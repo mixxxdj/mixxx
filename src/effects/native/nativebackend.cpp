@@ -13,6 +13,7 @@
 #include "effects/native/reverbeffect.h"
 #endif
 #include "effects/native/echoeffect.h"
+#include "effects/native/phasereffect.h"
 
 NativeBackend::NativeBackend(QObject* pParent)
         : EffectsBackend(pParent, tr("Native")) {
@@ -33,6 +34,7 @@ NativeBackend::NativeBackend(QObject* pParent)
 #ifndef __MACAPPSTORE__
     registerEffect<ReverbEffect>();
 #endif
+    registerEffect<PhaserEffect>();
 }
 
 NativeBackend::~NativeBackend() {
