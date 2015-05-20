@@ -102,10 +102,10 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
             this, SLOT(slotSetRateRange(int)));
 
     // Set default range as stored in config file
-    if (m_pConfig->getValueString(ConfigKey("[Controls]", "RateRangeDecimal")).length() == 0){
+    if (m_pConfig->getValueString(ConfigKey("[Controls]", "RateRangePercent")).length() == 0){
         //fallback to old [Controls]RateRange
         if (m_pConfig->getValueString(ConfigKey("[Controls]", "RateRange")).length() == 0){
-            m_pConfig->set(ConfigKey("[Controls]", "RateRangeDecimal"),ConfigValue(8));
+            m_pConfig->set(ConfigKey("[Controls]", "RateRangePercent"),ConfigValue(8));
         } else {
             int oldIdx = m_pConfig->getValueString(ConfigKey("[Controls]", "RateRange")).toInt();
             double oldRange = static_cast<double>(oldIdx-1) / 10.0;
@@ -113,8 +113,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
                 oldRange = 0.06;
             if (oldIdx == 1)
                 oldRange = 0.08;
-            m_pConfig->set(ConfigKey("[Controls]", "RateRangeDecimal"),ConfigValue((int)(oldRange * 100.)));
-            slotSetRateRangeDecimal(oldRange * 100.);
+            m_pConfig->set(ConfigKey("[Controls]", "RateRangePercent"),ConfigValue((int)(oldRange * 100.)));
+            slotSetRateRangePercent(oldRange * 100.);
         }
     }
 
@@ -460,18 +460,18 @@ void DlgPrefControls::slotSetLocale(int pos) {
 }
 
 void DlgPrefControls::slotSetRateRange(int pos) {
-    slotSetRateRangeDecimal(ComboBoxRateRange->itemData(pos).toInt());
+    slotSetRateRangePercent(ComboBoxRateRange->itemData(pos).toInt());
 }
 
 
-void DlgPrefControls::slotSetRateRangeDecimal (int rate) {
-    double range = rate / 100.;
+void DlgPrefControls::slotSetRateRangePercent (int rateRangePercent) {
+    double rateRange = rateRangePercent / 100.;
 
-    qDebug() << "slotSetRateRange" << range;
+    qDebug() << "slotSetRateRangePercent" << rateRange;
 
     // Set rate range for every group
     foreach (ControlObjectThread* pControl, m_rateRangeControls) {
-        pControl->slotSet(range);
+        pControl->slotSet(rateRange);
     }
 
     // Reset rate for every group
@@ -617,7 +617,7 @@ void DlgPrefControls::slotApply() {
     double deck1RateRange = m_rateRangeControls[0]->get();
     double deck1RateDir = m_rateDirControls[0]->get();
 
-    m_pConfig->set(ConfigKey("[Controls]", "RateRangeDecimal"), ConfigValue((int)(deck1RateRange * 100)));
+    m_pConfig->set(ConfigKey("[Controls]", "RateRangePercent"), ConfigValue((int)(deck1RateRange * 100)));
 
     // Write rate direction to config file
     if (deck1RateDir == 1) {
@@ -693,7 +693,7 @@ void DlgPrefControls::slotNumDecksChanged(double new_count) {
 
     m_iNumConfiguredDecks = numdecks;
     slotSetRateDir(m_pConfig->getValueString(ConfigKey("[Controls]", "RateDir")).toInt());
-    slotSetRateRangeDecimal(m_pConfig->getValueString(ConfigKey("[Controls]", "RateRangeDecimal")).toInt());
+    slotSetRateRangePercent(m_pConfig->getValueString(ConfigKey("[Controls]", "RateRangePercent")).toInt());
 }
 
 void DlgPrefControls::slotNumSamplersChanged(double new_count) {
@@ -719,7 +719,7 @@ void DlgPrefControls::slotNumSamplersChanged(double new_count) {
 
     m_iNumConfiguredSamplers = numsamplers;
     slotSetRateDir(m_pConfig->getValueString(ConfigKey("[Controls]", "RateDir")).toInt());
-    slotSetRateRangeDecimal(m_pConfig->getValueString(ConfigKey("[Controls]", "RateRangeDecimal")).toInt());
+    slotSetRateRangePercent(m_pConfig->getValueString(ConfigKey("[Controls]", "RateRangePercent")).toInt());
 }
 
 void DlgPrefControls::slotUpdateSpeedAutoReset(int i) {
