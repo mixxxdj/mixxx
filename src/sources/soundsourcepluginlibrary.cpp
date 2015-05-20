@@ -8,16 +8,16 @@ namespace Mixxx {
 /*static*/ QMap<QString, SoundSourcePluginLibraryPointer> SoundSourcePluginLibrary::s_loadedPluginLibraries;
 
 /*static*/ SoundSourcePluginLibraryPointer SoundSourcePluginLibrary::load(
-        const QString& fileName) {
+        const QString& libFilePath) {
     const QMutexLocker mutexLocker(&s_loadedPluginLibrariesMutex);
 
-    if (s_loadedPluginLibraries.contains(fileName)) {
-        return s_loadedPluginLibraries.value(fileName);
+    if (s_loadedPluginLibraries.contains(libFilePath)) {
+        return s_loadedPluginLibraries.value(libFilePath);
     } else {
         SoundSourcePluginLibraryPointer pPluginLibrary(
-                new SoundSourcePluginLibrary(fileName));
+                new SoundSourcePluginLibrary(libFilePath));
         if (pPluginLibrary->init()) {
-            s_loadedPluginLibraries.insert(fileName, pPluginLibrary);
+            s_loadedPluginLibraries.insert(libFilePath, pPluginLibrary);
             return pPluginLibrary;
         } else {
             return SoundSourcePluginLibraryPointer();
@@ -25,8 +25,8 @@ namespace Mixxx {
     }
 }
 
-SoundSourcePluginLibrary::SoundSourcePluginLibrary(const QString& fileName)
-    : m_library(fileName),
+SoundSourcePluginLibrary::SoundSourcePluginLibrary(const QString& libFilePath)
+    : m_library(libFilePath),
       m_apiVersion(0),
       m_getSoundSourceProviderFunc(NULL) {
 }
