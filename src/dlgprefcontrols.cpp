@@ -89,10 +89,23 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
     connect(ComboBoxRateDir, SIGNAL(activated(int)),
             this, SLOT(slotSetRateDir(int)));
 
+    ComboBoxRateRange->clear();
+    ComboBoxRateRange->addItem(tr("4% (Denon DN-D4500)"), 4);
+    ComboBoxRateRange->addItem(tr("6% (Pioneer CDJ/DDJ-S1)"), 6);
+    ComboBoxRateRange->addItem(tr("8% (Technics SL-1210, Pioneer DDJ-SX)"), 8);
+    ComboBoxRateRange->addItem(tr("10% (Pioneer CDJ/DDJ-S1, Denon DN-D4500)"), 10);
+    ComboBoxRateRange->addItem(tr("16% (Pioneer CDJ/DDJ-SX/DDJ-S1, Denon DN-D4500)"), 16);
+    ComboBoxRateRange->addItem(tr("24% (Denon DN-D4500)"), 24);
+    ComboBoxRateRange->addItem(tr("50% (Pioneer DDJ-SX, Denon DN-D4500)"), 50);
+    ComboBoxRateRange->addItem(tr("100% (Denon DN-D4500)"), 100);
+    connect(ComboBoxRateRange, SIGNAL(activated(int)),
+            this, SLOT(slotSetRateRange(int)));
+
+    // Set default range as stored in config file
     if (m_pConfig->getValueString(ConfigKey("[Controls]", "RateRangeDecimal")).length() == 0){
         //fallback to old [Controls]RateRange
         if (m_pConfig->getValueString(ConfigKey("[Controls]", "RateRange")).length() == 0){
-            m_pConfig->set(ConfigKey("[Controls]", "RateRangeDecimal"),ConfigValue(10));
+            m_pConfig->set(ConfigKey("[Controls]", "RateRangeDecimal"),ConfigValue(8));
         } else {
             int oldIdx = m_pConfig->getValueString(ConfigKey("[Controls]", "RateRange")).toInt();
             double oldRange = static_cast<double>(oldIdx-1) / 10.0;
@@ -100,14 +113,10 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
                 oldRange = 0.06;
             if (oldIdx == 1)
                 oldRange = 0.08;
-            m_pConfig->set(ConfigKey("[Controls]", "RateRangeDecimal"),ConfigValue((int)(oldRange*100)));
+            m_pConfig->set(ConfigKey("[Controls]", "RateRangeDecimal"),ConfigValue((int)(oldRange*100.)));
+            slotSetRateRangeDecimal(oldRange*100.);
         }
     }
-
-    connect(spinBoxRateRangeDecimal, SIGNAL(valueChanged(int)),
-            this, SLOT(slotSetRateRangeDecimal(int)));
-    spinBoxRateRangeDecimal->setValue(m_pConfig->getValueString(
-            ConfigKey("[Controls]", "RateRangeDecimal")).toInt());
 
     ComboBoxKeylockMode->clear();
     ComboBoxKeylockMode->addItem(tr("Lock original key"));
@@ -379,7 +388,12 @@ void DlgPrefControls::slotUpdate() {
     double deck1RateRange = m_rateRangeControls[0]->get();
     double deck1RateDir = m_rateDirControls[0]->get();
 
-    spinBoxRateRangeDecimal->setValue((int)(deck1RateRange*100.));
+    int idx = ComboBoxRateRange->findData((int)(deck1RateRange*100));
+    if (idx == -1){
+        ComboBoxRateRange->addItem(QString::number(deck1RateRange*100.).append("%"), deck1RateRange*100.);
+    }
+
+    ComboBoxRateRange->setCurrentIndex(idx);
 
     if (deck1RateDir == 1)
         ComboBoxRateDir->setCurrentIndex(0);
@@ -398,8 +412,8 @@ void DlgPrefControls::slotResetToDefaults() {
     // Up increases speed.
     ComboBoxRateDir->setCurrentIndex(0);
 
-    // 10% Rate Range
-    spinBoxRateRangeDecimal->setValue(10);
+    // 8% Rate Range
+    ComboBoxRateRange->setCurrentIndex(ComboBoxRateRange->findData(8));
 
     // Don't load tracks into playing decks.
     ComboBoxAllowTrackLoadToPlayingDeck->setCurrentIndex(0);
@@ -445,12 +459,19 @@ void DlgPrefControls::slotSetLocale(int pos) {
     notifyRebootNecessary();
 }
 
-void DlgPrefControls::slotSetRateRangeDecimal(int range) {
-    qDebug() << "slotSetRateRangeDecimal" << range << range;
+void DlgPrefControls::slotSetRateRange(int pos) {
+    slotSetRateRangeDecimal(ComboBoxRateRange->itemData(pos).toInt());
+}
+
+
+void DlgPrefControls::slotSetRateRangeDecimal (int rate) {
+    double range = rate/100.;
+
+    qDebug() << "slotSetRateRange" << range;
 
     // Set rate range for every group
     foreach (ControlObjectThread* pControl, m_rateRangeControls) {
-        pControl->slotSet(range/100.);
+        pControl->slotSet(range);
     }
 
     // Reset rate for every group
@@ -596,7 +617,6 @@ void DlgPrefControls::slotApply() {
     double deck1RateRange = m_rateRangeControls[0]->get();
     double deck1RateDir = m_rateDirControls[0]->get();
 
-    // Write rate range to config file
     m_pConfig->set(ConfigKey("[Controls]", "RateRangeDecimal"), ConfigValue((int)(deck1RateRange*100)));
 
     // Write rate direction to config file
