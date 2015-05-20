@@ -20,7 +20,7 @@ public:
 
     virtual ~SoundSourcePluginLibrary();
 
-    QString getFileName() const {
+    QString getFilePath() const {
         return m_library.fileName();
     }
 
