@@ -24,6 +24,10 @@ protected:
     }
 
     inline bool isLocalFile() const {
+        // TODO(XXX): We need more testing how network shares are
+        // handled! From the documentation of QUrl::isLocalFile():
+        // "Note that this function considers URLs with hostnames
+        // to be local file paths, ..."
         return getUrl().isLocalFile();
     }
 
@@ -31,6 +35,7 @@ protected:
         DEBUG_ASSERT(isLocalFile());
         return getUrl().toLocalFile();
     }
+
     inline QByteArray getLocalFileNameBytes() const {
         return getLocalFileName().toLocal8Bit();
     }
