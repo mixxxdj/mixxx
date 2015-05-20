@@ -113,8 +113,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxMainWindow * mixxx,
                 oldRange = 0.06;
             if (oldIdx == 1)
                 oldRange = 0.08;
-            m_pConfig->set(ConfigKey("[Controls]", "RateRangeDecimal"),ConfigValue((int)(oldRange*100.)));
-            slotSetRateRangeDecimal(oldRange*100.);
+            m_pConfig->set(ConfigKey("[Controls]", "RateRangeDecimal"),ConfigValue((int)(oldRange * 100.)));
+            slotSetRateRangeDecimal(oldRange * 100.);
         }
     }
 
@@ -388,9 +388,9 @@ void DlgPrefControls::slotUpdate() {
     double deck1RateRange = m_rateRangeControls[0]->get();
     double deck1RateDir = m_rateDirControls[0]->get();
 
-    int idx = ComboBoxRateRange->findData((int)(deck1RateRange*100));
+    int idx = ComboBoxRateRange->findData((int)(deck1RateRange * 100));
     if (idx == -1){
-        ComboBoxRateRange->addItem(QString::number(deck1RateRange*100.).append("%"), deck1RateRange*100.);
+        ComboBoxRateRange->addItem(QString::number(deck1RateRange * 100.).append("%"), deck1RateRange * 100.);
     }
 
     ComboBoxRateRange->setCurrentIndex(idx);
@@ -465,7 +465,7 @@ void DlgPrefControls::slotSetRateRange(int pos) {
 
 
 void DlgPrefControls::slotSetRateRangeDecimal (int rate) {
-    double range = rate/100.;
+    double range = rate / 100.;
 
     qDebug() << "slotSetRateRange" << range;
 
@@ -617,7 +617,7 @@ void DlgPrefControls::slotApply() {
     double deck1RateRange = m_rateRangeControls[0]->get();
     double deck1RateDir = m_rateDirControls[0]->get();
 
-    m_pConfig->set(ConfigKey("[Controls]", "RateRangeDecimal"), ConfigValue((int)(deck1RateRange*100)));
+    m_pConfig->set(ConfigKey("[Controls]", "RateRangeDecimal"), ConfigValue((int)(deck1RateRange * 100)));
 
     // Write rate direction to config file
     if (deck1RateDir == 1) {
