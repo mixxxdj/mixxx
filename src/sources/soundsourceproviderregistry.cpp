@@ -27,7 +27,7 @@ SoundSourceProviderPointer SoundSourceProviderRegistry::registerEntry(const Entr
     DEBUG_ASSERT(entry.pPluginLibrary || !supportedFileTypes.isEmpty());
     if (entry.pPluginLibrary && supportedFileTypes.isEmpty()) {
         qWarning() << "SoundSource plugin does not support any file types"
-                << entry.pPluginLibrary->getFileName();
+                << entry.pPluginLibrary->getFilePath();
     }
     foreach (const QString& supportedFileType, supportedFileTypes) {
         m_entries.insert(supportedFileType, entry);

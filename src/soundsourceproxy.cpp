@@ -259,7 +259,7 @@ void SoundSourceProxy::loadPlugins() {
         if (pPluginLibrary) {
             qDebug() << "SoundSourceProvider for" << supportedFileType
                     << "is" << pProvider->getName()
-                    << "@" << pPluginLibrary->getFileName();
+                    << "@" << pPluginLibrary->getFilePath();
         } else {
             qDebug() << "SoundSourceProvider for" << supportedFileType
                     << "is" << pProvider->getName();
