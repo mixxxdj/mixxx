@@ -31,10 +31,11 @@ Mixxx::SoundSourceProviderRegistry SoundSourceProxy::s_soundSourceProviders;
 
 namespace {
 
-#ifdef __APPLE__
+#if (__UNIX__ || __LINUX__ || __APPLE__)
+// Filtering of plugin file names on UNIX systems
 const QStringList SOUND_SOURCE_PLUGIN_FILENAME_PATTERN("libsoundsource*");
 #else
-// NOTE(uklotzde): Why no filtering for Linux/Windows?
+// No filtering of plugin file names on other systems, e.g. Windows
 const QStringList SOUND_SOURCE_PLUGIN_FILENAME_PATTERN; // empty
 #endif
 
