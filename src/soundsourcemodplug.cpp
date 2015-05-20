@@ -125,7 +125,9 @@ Result SoundSourceModPlug::open() {
     setSampleRate(44100); // ModPlug always uses 44.1kHz
     m_opened = true;
     m_seekPos = 0;
-    return OK;
+
+    // read all other track information
+    return parseHeader();
 }
 
 long SoundSourceModPlug::seek(long filePos)
