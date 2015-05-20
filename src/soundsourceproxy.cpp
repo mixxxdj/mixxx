@@ -31,7 +31,12 @@ Mixxx::SoundSourceProviderRegistry SoundSourceProxy::s_soundSourceProviders;
 
 namespace {
 
+#ifdef __APPLE__
 const QStringList SOUND_SOURCE_PLUGIN_FILENAME_PATTERN("libsoundsource*");
+#else
+// NOTE(uklotzde): Why no filtering for Linux/Windows?
+const QStringList SOUND_SOURCE_PLUGIN_FILENAME_PATTERN; // empty
+#endif
 
 SecurityTokenPointer openSecurityToken(QString qFilename,
         SecurityTokenPointer pToken) {
