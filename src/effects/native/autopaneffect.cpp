@@ -48,7 +48,7 @@ EffectManifest AutoPanEffect::getManifest() {
     period->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     period->setMinimum(0.0625);     // 1 / 16
-    period->setMaximum(128.0);
+    period->setMaximum(129.0);
     period->setDefault(8.0);
     
     // This parameter controls the easing of the sound from a side to another.
@@ -108,6 +108,9 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
     
     CSAMPLE width = m_pWidthParameter->value();
     CSAMPLE period = m_pPeriodParameter->value();
+    
+    // when the period knob is at its max, the time is paused
+    bool pausePeriod = period == 129.0;
     
     if (periodUnit == 1 && groupFeatures.has_beat_length) {
         // floor the param on on eof these values :
@@ -192,7 +195,9 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
         pOutput[i] *= gs.frac * 2;
         pOutput[i+1] *= (1.0f - gs.frac) * 2;
         
-        gs.time++;
+        if (!pausePeriod){
+            gs.time++;
+        }
     }
 }
 
