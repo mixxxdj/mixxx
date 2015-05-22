@@ -39,6 +39,8 @@ EffectManifest AutoPanEffect::getManifest() {
     periodUnit->setMaximum(1);
     
     // Period
+    // The maximum is at 128 + 1 ollowing 128 as max value and 
+    // enabling us to pause time when the parameter is above
     EffectManifestParameter* period = manifest.addParameter();
     period->setId("period");
     period->setName(QObject::tr("Period"));
@@ -48,7 +50,7 @@ EffectManifest AutoPanEffect::getManifest() {
     period->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
     period->setMinimum(0.0625);     // 1 / 16
-    period->setMaximum(129.0);
+    period->setMaximum(129.0);      // 128 + 1
     period->setDefault(8.0);
     
     // This parameter controls the easing of the sound from a side to another.
@@ -106,14 +108,14 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
     
     double periodUnit = m_pPeriodUnitParameter->value();
     
-    CSAMPLE width = m_pWidthParameter->value();
-    CSAMPLE period = m_pPeriodParameter->value();
+    double width = m_pWidthParameter->value();
+    double period = m_pPeriodParameter->value();
     
-    // when the period knob is at its max, the time is paused
-    bool pausePeriod = period == 129.0;
+    // when the period knob is between max and max-1, the time is paused
+    bool timePaused = period > m_pPeriodParameter->maximum() - 1;
     
     if (periodUnit == 1 && groupFeatures.has_beat_length) {
-        // floor the param on on eof these values :
+        // floor the param on one of these values :
         // 1/16, 1/8, 1/4, 1/2, 1, 2, 4, 8, 16, 32, 64, 128
         
         int i = 0;
@@ -134,11 +136,19 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
         period *= sampleRate;
     }
     
-    CSAMPLE stepFrac = m_pSmoothingParameter->value();
+    // When the period is changed, the position of the sound shouldn't
+    // so time need to be recalculated
+    if (gs.m_dPreviousPeriod != -1.0) {
+        gs.time *= period / gs.m_dPreviousPeriod;
+    }
+    gs.m_dPreviousPeriod = period;
+    
     
     if (gs.time > period || enableState == EffectProcessor::ENABLING) {
         gs.time = 0;
     }
+    
+    double stepFrac = m_pSmoothingParameter->value();
     
     // Normally, the position goes from 0 to 1 linearly. Here we make steps at
     // 0.25 and 0.75 to have the sound fully on the right or fully on the left.
@@ -195,7 +205,7 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
         pOutput[i] *= gs.frac * 2;
         pOutput[i+1] *= (1.0f - gs.frac) * 2;
         
-        if (!pausePeriod){
+        if (!timePaused) {
             gs.time++;
         }
     }
