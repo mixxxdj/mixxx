@@ -100,16 +100,15 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
                               const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
     
-    PanGroupState& gs = *pGroupState;
-    
     if (enableState == EffectProcessor::DISABLED) {
         return;
     }
     
-    double periodUnit = m_pPeriodUnitParameter->value();
-    
+    PanGroupState& gs = *pGroupState;
     double width = m_pWidthParameter->value();
     double period = m_pPeriodParameter->value();
+    double periodUnit = m_pPeriodUnitParameter->value();
+    double smoothing = m_pSmoothingParameter->value();
     
     // When the period knob is between max and max-1, the time is paused.
     // Time shouldn't be paused while enabling state as the sound
@@ -151,7 +150,6 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
         gs.time = 0;
     }
     
-    double stepFrac = m_pSmoothingParameter->value();
     
     // Normally, the position goes from 0 to 1 linearly. Here we make steps at
     // 0.25 and 0.75 to have the sound fully on the right or fully on the left.
@@ -161,10 +159,10 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
     // coef of the slope
     // a = (y2 - y1) / (x2 - x1)
     //       1  / ( 1 - 2 * stepfrac)
-    float a = stepFrac != 0.5f ? 1.0f / (1.0f - stepFrac * 2.0f) : 1.0f;
+    float a = smoothing != 0.5f ? 1.0f / (1.0f - smoothing * 2.0f) : 1.0f;
     
-    // size of a segment of slope (controled by the "strength" parameter)
-    float u = (0.5f - stepFrac) / 2.0f;
+    // size of a segment of slope (controled by the "smoothing" parameter)
+    float u = (0.5f - smoothing) / 2.0f;
     
     gs.frac.setRampingThreshold(kPositionRampingThreshold);
     
@@ -178,13 +176,13 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
         float quarter = floorf(periodFraction * 4.0f);
         
         // part of the period fraction being a step (not in the slope)
-        CSAMPLE stepsFractionPart = floorf((quarter + 1.0f) / 2.0f) * stepFrac;
+        CSAMPLE stepsFractionPart = floorf((quarter + 1.0f) / 2.0f) * smoothing;
         
         // float inInterval = fmod( periodFraction, (period / 2.0) );
         float inStepInterval = fmod(periodFraction, 0.5f);
         
         CSAMPLE angleFraction;
-        if (inStepInterval > u && inStepInterval < (u + stepFrac)) {
+        if (inStepInterval > u && inStepInterval < (u + smoothing)) {
             // at full left or full right
             angleFraction = quarter < 2.0f ? 0.25f : 0.75f;
         } else {
@@ -204,8 +202,9 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
         gs.delay->process(&pInput[i], &pOutput[i],
                 -0.005 * math_clamp(((gs.frac * 2.0) - 1.0f), -1.0, 1.0) * sampleRate);
 
-        pOutput[i] *= gs.frac * 2;
-        pOutput[i+1] *= (1.0f - gs.frac) * 2;
+        double lawCoef = computeLawCoefficient(sinusoid);
+        pOutput[i] *= gs.frac * lawCoef;
+        pOutput[i+1] *= (1.0f - gs.frac) * lawCoef;
         
         // The time shouldn't be paused if the position has not its
         // expected value due to ramping
@@ -215,3 +214,9 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
     }
 }
 
+double AutoPanEffect::computeLawCoefficient(double position) {
+    // position is a result of sin() so betwwen -1 and 1
+    // full left/right => 1 + 1 / sqrt(abs(1 or -1) + 1) = 1,707106781
+    // center => 1 + 1 / sqrt(abs(0) + 1) = 2
+    return 1 + 1 / sqrt(abs(position) + 1);
+}
