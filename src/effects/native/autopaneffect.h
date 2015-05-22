@@ -50,7 +50,6 @@ class RampedSample {
         return currentValue;
     }
     
-    // TODO(jclaveau) : remove when maxDiff value is fixed
     bool ramped;
     
   private:
