@@ -42,6 +42,7 @@ class RampedSample {
                 ramped = true;
             } else {
                 currentValue = newValue;
+                ramped = false;
             }
         }
     }
