@@ -116,9 +116,17 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
     double period = m_pPeriodParameter->value();
     
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     // when the period knob is between max and max-1, the time is paused
     bool timePaused = period > m_pPeriodParameter->maximum() - 1;
+=======
+    // When the period knob is between max and max-1, the time is paused.
+    // Time shouldn't be paused while enabling state as the sound
+    // will be stuck in the middle even if the smoothing is at max.
+    bool timePaused = period > m_pPeriodParameter->maximum() - 1
+            && enableState != EffectProcessor::ENABLING;
+>>>>>>> period will not be fixed anymore if the effect is in enabling state or the position change is ramped
     
 >>>>>>> position of the sound fixed when period knob is used
     if (periodUnit == 1 && groupFeatures.has_beat_length) {
@@ -183,7 +191,7 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
         float quarter = floorf(periodFraction * 4.0f);
         
         // part of the period fraction being a step (not in the slope)
-        CSAMPLE stepsFractionPart = floorf((quarter+1.0f)/2.0f) * stepFrac;
+        CSAMPLE stepsFractionPart = floorf((quarter + 1.0f) / 2.0f) * stepFrac;
         
         // float inInterval = fmod( periodFraction, (period / 2.0) );
         float inStepInterval = fmod(periodFraction, 0.5f);
@@ -213,9 +221,13 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
         pOutput[i+1] *= (1.0f - gs.frac) * 2;
         
 <<<<<<< HEAD
+<<<<<<< HEAD
         gs.time++;
 =======
         if (!timePaused) {
+=======
+        if (!timePaused || gs.frac.ramped) {
+>>>>>>> period will not be fixed anymore if the effect is in enabling state or the position change is ramped
             gs.time++;
         }
 >>>>>>> position of the sound fixed when period knob is used
