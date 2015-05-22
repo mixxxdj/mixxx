@@ -96,6 +96,8 @@ class AutoPanEffect : public PerChannelEffectProcessor<PanGroupState> {
                       const EffectProcessor::EnableState enableState,
                       const GroupFeatureState& groupFeatures);
 
+    double computeLawCoefficient(double position);
+    
   private:
     
     QString debugString() const {
