@@ -167,7 +167,6 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
     float u = (0.5f - stepFrac) / 2.0f;
     
     gs.frac.setRampingThreshold(kPositionRampingThreshold);
-    gs.frac.ramped = false;     // just for debug
     
     double sinusoid = 0;
     
@@ -208,6 +207,8 @@ void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* p
         pOutput[i] *= gs.frac * 2;
         pOutput[i+1] *= (1.0f - gs.frac) * 2;
         
+        // The time shouldn't be paused if the position has not its
+        // expected value due to ramping
         if (!timePaused || gs.frac.ramped) {
             gs.time++;
         }
