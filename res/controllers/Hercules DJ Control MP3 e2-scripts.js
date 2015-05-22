@@ -39,7 +39,7 @@ var deckB = 2;
 // Lower jog sensitivity when selecting playlists
 // Count each step until jogPlaylistSensitivityDivider is reached, then change Playlist
 //
-// TODO : add a jogPlaylistCounter reset timer if no jogWheel move is done for some time
+// TODO(XXX): add a jogPlaylistCounter reset timer if no jogWheel move is done for some time
 //
 var jogPlaylistSensitivityDivider = 3;
 var jogPlaylistSense = 0;
@@ -111,8 +111,6 @@ HerculesMP3e2.connectControl = function (deck, remove)
 {
 	remove = (typeof remove !== 'undefined') ? remove : false; // default value for remove is false
 	
-	// TODO: Move every connectControl to 4-deck
-
 	engine.connectControl("[Channel"+deck+"]", "cue_indicator", "HerculesMP3e2.cueLed", remove);
 	engine.connectControl("[Channel"+deck+"]", "play_indicator", "HerculesMP3e2.playLed", remove);
 	engine.connectControl("[Channel"+deck+"]", "loop_start_position", "HerculesMP3e2.loopStartSetLeds", remove);
