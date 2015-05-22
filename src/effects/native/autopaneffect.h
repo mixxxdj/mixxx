@@ -67,6 +67,7 @@ struct PanGroupState {
         time = 0;
         delay = new EngineFilterPanSingle<panMaxDelay>();
         m_pDelayBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
+        m_dPreviousPeriod = -1.0;
     }
     ~PanGroupState() {
         // todo delete buffer
@@ -75,6 +76,7 @@ struct PanGroupState {
     RampedSample frac;
     EngineFilterPanSingle<panMaxDelay>* delay;
     CSAMPLE* m_pDelayBuf;
+    double m_dPreviousPeriod;
 };
 
 class AutoPanEffect : public PerChannelEffectProcessor<PanGroupState> {
