@@ -85,37 +85,41 @@
     <WidgetGroup>
         <ObjectName>SkinContainer</ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>me,max</SizePolicy>
-        <MinimumSize>0,0</MinimumSize>
+        <SizePolicy>me,me</SizePolicy>
         <Children>
+            <!-- Select between either the full UI or the big library -->
             <WidgetStack currentpage="[Master],maximize_library">
                 <Children>
                     <WidgetGroup>
-                        <Layout>horizontal</Layout>
-                        <SizePolicy>i,max</SizePolicy>
+                        <Layout>vertical</Layout>
+                        <SizePolicy>me,me</SizePolicy>
                         <Children>
-                            <Template src="skin:decks_left.xml"/>
-                            <Template src="skin:waveform_and_mixer.xml"/>
-                            <Template src="skin:decks_right.xml"/>
+                            <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <SizePolicy>i,max</SizePolicy>
+                                <Children>
+                                    <Template src="skin:decks_left.xml"/>
+                                    <Template src="skin:waveform_and_mixer.xml"/>
+                                    <Template src="skin:decks_right.xml"/>
+                                </Children>
+                            </WidgetGroup>
+                            <Template src="skin:lower_half.xml"/>
                         </Children>
                     </WidgetGroup>
 
-                    <!-- Collapsed UI == big library.
-                    To get this to work, I had to wrap the stack in a group
-                    with sizepolicy max, max (which means the group can shrink
-                    as much as necessary) and then set the min size to 0, which
-                    means it can shrink to nothing.
-                     -->
                     <WidgetGroup>
-                        <Layout>horizontal</Layout>
-                        <SizePolicy>f,f</SizePolicy>
-                        <Size>0,0</Size>
-                        <Children/>
+                        <Layout>vertical</Layout>
+                        <SizePolicy>me,me</SizePolicy>
+                        <Children>
+                            <SingletonContainer>
+                                <ObjectName>LibrarySingleton</ObjectName>
+                            </SingletonContainer>
+                            <Template src="skin:toolbar_big_library.xml"/>
+                        </Children>
                     </WidgetGroup>
                 </Children>
             </WidgetStack>
         </Children>
     </WidgetGroup>
-    <Template src="skin:lower_half.xml"/>
   </Children>
 </skin>

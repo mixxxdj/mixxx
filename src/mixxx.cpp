@@ -694,6 +694,7 @@ void MixxxMainWindow::initializeWindow() {
 void MixxxMainWindow::initializeFonts() {
     QDir fontsDir(m_pConfig->getResourcePath());
     if (!fontsDir.cd("fonts")) {
+        qWarning("MixxxMainWindow::initializeFonts: cd fonts failed");
         return;
     }
 
