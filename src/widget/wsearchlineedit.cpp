@@ -173,7 +173,7 @@ void WSearchLineEdit::showPlaceholder() {
     //textChanged().
     blockSignals(true);
     setText(tr("Search..." , "noun"));
-    setToolTip(tr("Search" , "noun") + "\n" + tr("Enter a string to seach for") + "\n\n"
+    setToolTip(tr("Search" , "noun") + "\n" + tr("Enter a string to search for") + "\n\n"
                   + tr("Shortcut")+ ": \n"
                   + tr("Ctrl+F") + "  " + tr("Focus" , "Give search bar input focus") + "\n"
                   + tr("Ctrl+Backspace") + "  "+ tr("Clear input" , "Clear the search bar input field") + "\n"
