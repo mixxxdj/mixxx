@@ -173,6 +173,26 @@ void WSearchLineEdit::showPlaceholder() {
     //textChanged().
     blockSignals(true);
     setText(tr("Search..."));
+    setToolTip(tr("Search" ,"noun")
+                  + "\n"
+                  + tr("Searches for a match in the current selected list (e.g. a playlist, a crate or even the whole library.\n"
+                       "Search terms can include an artist’s name, a track title, BPM, etc.\n"
+                       "Supports search operators that allow you to form more complex search queries.")
+                  + "\n\n"
+                  + tr("Shortcut")
+                  + ": \n"
+                  + tr("Ctrl+F")
+                  + " "
+                  + tr("Focus" , "Give search bar input focus")
+                  + "\n"
+                  + tr("Ctrl+Backspace")
+                  + " "
+                  + tr("Clear input" , "Clear the search bar input field")
+                  + "\n"
+                  + tr("Esc")
+                  + " "
+                  + tr("Exit search" , "Exit search bar and leave focus")
+                  );
     blockSignals(false);
     QPalette pal = palette();
     pal.setColor(foregroundRole(), Qt::lightGray);
