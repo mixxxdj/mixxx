@@ -1229,6 +1229,13 @@ void MixxxMainWindow::initActions()
     m_pHelpManual->setWhatsThis(buildWhatsThis(manualTitle, manualText));
     connect(m_pHelpManual, SIGNAL(triggered()), this, SLOT(slotHelpManual()));
 
+    QString shortcutsTitle = tr("&Keyboard Shortcuts");
+    QString shortcutsText = tr("Speed up your workflow with keyboard shortcuts.");
+    m_pHelpShortcuts = new QAction(shortcutsTitle, this);
+    m_pHelpShortcuts->setStatusTip(shortcutsText);
+    m_pHelpShortcuts->setWhatsThis(buildWhatsThis(shortcutsTitle, shortcutsText));
+    connect(m_pHelpShortcuts, SIGNAL(triggered()), this, SLOT(slotHelpShortcuts()));
+    
     QString feedbackTitle = tr("Send Us &Feedback");
     QString feedbackText = tr("Send feedback to the Mixxx team.");
     m_pHelpFeedback = new QAction(feedbackTitle, this);
@@ -1621,6 +1628,7 @@ void MixxxMainWindow::initMenuBar() {
     // menuBar entry helpMenu
     m_pHelpMenu->addAction(m_pHelpSupport);
     m_pHelpMenu->addAction(m_pHelpManual);
+    m_pHelpMenu->addAction(m_pHelpShortcuts);
     m_pHelpMenu->addAction(m_pHelpFeedback);
     m_pHelpMenu->addAction(m_pHelpTranslation);
     m_pHelpMenu->addSeparator();
@@ -1996,6 +2004,12 @@ void MixxxMainWindow::slotHelpTranslation() {
     QUrl qTranslationUrl;
     qTranslationUrl.setUrl(MIXXX_TRANSLATION_URL);
     QDesktopServices::openUrl(qTranslationUrl);
+}
+
+void MixxxMainWindow::slotHelpShortcuts() {
+    QUrl qShortcutsUrl;
+    qShortcutsUrl.setUrl(MIXXX_SHORTCUTS_URL);
+    QDesktopServices::openUrl(qShortcutsUrl);
 }
 
 void MixxxMainWindow::slotHelpManual() {
