@@ -190,7 +190,6 @@ class TrackDAO : public QObject, public virtual DAO {
     void slotTrackReferenceExpired(TrackInfoObject* pTrack);
 
   private:
-    bool isTrackFormatSupported(TrackInfoObject* pTrack) const;
     void saveTrack(TrackInfoObject* pTrack);
     void updateTrack(TrackInfoObject* pTrack);
     void addTrack(TrackInfoObject* pTrack, bool unremove);
