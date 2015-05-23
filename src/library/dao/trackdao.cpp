@@ -666,7 +666,7 @@ void TrackDAO::addTrack(TrackInfoObject* pTrack, bool unremove) {
     }
 
     // Check that track is a supported extension.
-    if (!isTrackFormatSupported(pTrack)) {
+    if (!SoundSourceProxy::isFilenameSupported(pTrack->getFilename())) {
         // TODO(XXX) provide some kind of error code on a per-track basis.
         return;
     }
@@ -1800,13 +1800,6 @@ void TrackDAO::writeMetadataToFile(TrackInfoObject* pTrack) {
             qWarning() << "Failed to write track metadata:" << pTrack->getLocation();
         }
     }
-}
-
-bool TrackDAO::isTrackFormatSupported(TrackInfoObject* pTrack) const {
-    if (pTrack) {
-        return SoundSourceProxy::isFilenameSupported(pTrack->getFilename());
-    }
-    return false;
 }
 
 void TrackDAO::verifyRemainingTracks() {
