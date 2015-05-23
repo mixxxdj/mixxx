@@ -27,9 +27,9 @@ public:
     explicit SoundSourceModPlug(QUrl url);
     ~SoundSourceModPlug();
 
-    Result parseTrackMetadata(Mixxx::TrackMetadata* pMetadata) const /*override*/;
-
-    QImage parseCoverArt() const /*override*/;
+    Result parseTrackMetadataAndCoverArt(
+            TrackMetadata* pTrackMetadata,
+            QImage* pCoverArt) const /*override*/;
 
     void close() /*override*/;
 

@@ -35,14 +35,10 @@ Result SoundSource::open(const AudioSourceConfig& audioSrcCfg) {
     return result;
 }
 
-Result SoundSource::parseTrackMetadata(Mixxx::TrackMetadata* pMetadata) const {
-    return readTrackMetadataFromFile(pMetadata, getLocalFileName());
-}
-
-QImage SoundSource::parseCoverArt() const {
-    QImage coverArt;
-    readCoverArtFromFile(&coverArt, getLocalFileName());
-    return coverArt;
+Result SoundSource::parseTrackMetadataAndCoverArt(
+        TrackMetadata* pTrackMetadata,
+        QImage* pCoverArt) const {
+    return readTrackMetadataAndCoverArtFromFile(pTrackMetadata, pCoverArt, getLocalFileName());
 }
 
 } //namespace Mixxx

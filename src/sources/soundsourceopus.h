@@ -15,7 +15,9 @@ public:
     explicit SoundSourceOpus(QUrl url);
     ~SoundSourceOpus();
 
-    Result parseTrackMetadata(Mixxx::TrackMetadata* pMetadata) const /*override*/;
+    Result parseTrackMetadataAndCoverArt(
+        TrackMetadata* pTrackMetadata,
+        QImage* pCoverArt) const /*override*/;
 
     void close() /*override*/;
 
