@@ -16,7 +16,11 @@ public:
     static QStringList supportedFileExtensionsByPlugins();
     static QStringList supportedFileNamePatterns();
     static QRegExp supportedFileNameRegex();
-    static bool isFilenameSupported(const QString& fileName);
+
+    static bool isUrlSupported(const QUrl& url);
+    static bool isFileSupported(const QFileInfo& fileInfo);
+    static bool isFileNameSupported(const QString& fileName);
+    static bool isFileTypeSupported(const QString& fileType);
 
     explicit SoundSourceProxy(QString qFilename, SecurityTokenPointer pToken = SecurityTokenPointer());
     explicit SoundSourceProxy(TrackPointer pTrack);
