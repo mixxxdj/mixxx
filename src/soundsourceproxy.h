@@ -29,20 +29,21 @@ public:
         }
     }
 
-    Result parseTrackMetadata(Mixxx::TrackMetadata* pMetadata) const /*override*/ {
+    Result parseTrackMetadataAndCoverArt(
+            Mixxx::TrackMetadata* pTrackMetadata,
+            QImage* pCoverArt) const /*override*/ {
         if (m_pSoundSource) {
-            return m_pSoundSource->parseTrackMetadata(pMetadata);
+            return m_pSoundSource->parseTrackMetadataAndCoverArt(
+                    pTrackMetadata, pCoverArt);
         } else {
             return ERR;
         }
     }
 
-    QImage parseCoverArt() const /*override*/ {
-        if (m_pSoundSource) {
-            return m_pSoundSource->parseCoverArt();
-        } else {
-            return QImage();
-        }
+    QImage parseCoverArt() const {
+        QImage coverArt;
+        parseTrackMetadataAndCoverArt(NULL, &coverArt);
+        return coverArt;
     }
 
     // Opening the audio data through the proxy will

@@ -115,8 +115,7 @@ TEST_F(CoverArtCacheTest, loadCover) {
 
     SecurityTokenPointer securityToken = Sandbox::openSecurityToken(
         QDir(kTrackLocationTest), true);
-    SoundSourceProxy proxy(kTrackLocationTest, securityToken);
-    img = proxy.parseCoverArt();
+    img = CoverArtUtils::extractEmbeddedCover(kTrackLocationTest, securityToken);
 
     EXPECT_EQ(img, res.cover.image);
 >>>>>>> Move code from specialized AudioSources back into corresponding SoundSources

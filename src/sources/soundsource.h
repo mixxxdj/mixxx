@@ -15,9 +15,9 @@ public:
         return m_type;
     }
 
-    Result parseTrackMetadata(Mixxx::TrackMetadata* pMetadata) const /*override*/;
-
-    QImage parseCoverArt() const /*override*/;
+    Result parseTrackMetadataAndCoverArt(
+            TrackMetadata* pTrackMetadata,
+            QImage* pCoverArt) const /*override*/;
 
     // Opens the AudioSource for reading audio data.
     //

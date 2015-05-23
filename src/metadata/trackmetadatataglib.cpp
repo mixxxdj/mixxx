@@ -881,14 +881,6 @@ bool writeTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& t
     return true;
 }
 
-Result readTrackMetadataFromFile(TrackMetadata* pTrackMetadata, QString fileName) {
-    return readTrackMetadataAndCoverArtFromFile(pTrackMetadata, NULL, fileName);
-}
-
-Result readCoverArtFromFile(QImage* pCoverArt, QString fileName) {
-    return readTrackMetadataAndCoverArtFromFile(NULL, pCoverArt, fileName);
-}
-
 Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImage* pCoverArt, QString fileName) {
     const QString fileType(getFileTypeFromFileName(fileName));
 

@@ -1845,12 +1845,10 @@ void TrackDAO::verifyRemainingTracks() {
     }
 }
 
-namespace
-{
+namespace {
     QImage parseCoverArt(const QFileInfo& fileInfo) {
         SecurityTokenPointer pToken = Sandbox::openSecurityToken(fileInfo, true);
-        SoundSourceProxy proxy(fileInfo.filePath(), pToken);
-        return proxy.parseCoverArt();
+        return CoverArtUtils::extractEmbeddedCover(fileInfo.filePath(), pToken);
     }
 }
 

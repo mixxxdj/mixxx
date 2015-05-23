@@ -263,7 +263,8 @@ void TrackInfoObject::parse(bool parseCoverArt) {
 
         // Parse the information stored in the sound file.
         Mixxx::TrackMetadata trackMetadata;
-        if (proxy.parseTrackMetadata(&trackMetadata) == OK) {
+        QImage* pCoverArt = parseCoverArt ? &m_coverArt.image : NULL;
+        if (proxy.parseTrackMetadataAndCoverArt(&trackMetadata, pCoverArt) == OK) {
             // If Artist, Title and Type fields are not blank, modify them.
             // Otherwise, keep their current values.
             // TODO(rryan): Should we re-visit this decision?
@@ -278,15 +279,12 @@ void TrackInfoObject::parse(bool parseCoverArt) {
                 }
             }
 
-            if (parseCoverArt) {
-                m_coverArt.image = proxy.parseCoverArt();
-                if (!m_coverArt.image.isNull()) {
-                    m_coverArt.info.hash = CoverArtUtils::calculateHash(
-                        m_coverArt.image);
-                    m_coverArt.info.coverLocation = QString();
-                    m_coverArt.info.type = CoverInfo::METADATA;
-                    m_coverArt.info.source = CoverInfo::GUESSED;
-                }
+            if (pCoverArt && !pCoverArt->isNull()) {
+                m_coverArt.info.hash = CoverArtUtils::calculateHash(
+                    m_coverArt.image);
+                m_coverArt.info.coverLocation = QString();
+                m_coverArt.info.type = CoverInfo::METADATA;
+                m_coverArt.info.source = CoverInfo::GUESSED;
             }
 
             setHeaderParsed(true);
