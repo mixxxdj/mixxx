@@ -666,7 +666,7 @@ void TrackDAO::addTrack(TrackInfoObject* pTrack, bool unremove) {
     }
 
     // Check that track is a supported extension.
-    if (!SoundSourceProxy::isFilenameSupported(pTrack->getFilename())) {
+    if (!SoundSourceProxy::isFileSupported(pTrack->getFileInfo())) {
         // TODO(XXX) provide some kind of error code on a per-track basis.
         return;
     }

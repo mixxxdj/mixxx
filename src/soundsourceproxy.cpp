@@ -296,8 +296,24 @@ QRegExp SoundSourceProxy::supportedFileNameRegex() {
 }
 
 // static
-bool SoundSourceProxy::isFilenameSupported(const QString& fileName) {
+bool SoundSourceProxy::isUrlSupported(const QUrl& url) {
+    const QFileInfo fileInfo(url.toLocalFile());
+    return isFileSupported(fileInfo);
+}
+
+// static
+bool SoundSourceProxy::isFileSupported(const QFileInfo& fileInfo) {
+    return isFileNameSupported(fileInfo.fileName());
+}
+
+// static
+bool SoundSourceProxy::isFileNameSupported(const QString& fileName) {
     return fileName.contains(supportedFileNameRegex());
+}
+
+// static
+bool SoundSourceProxy::isFileTypeSupported(const QString& fileType) {
+    return !s_soundSourceProviders.getProviderForFileType(fileType).isNull();
 }
 
 // static

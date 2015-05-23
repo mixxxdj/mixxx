@@ -11,15 +11,15 @@
 class SoundSourceProxyTest: public MixxxTest {
   protected:
     static QStringList getFileExtensions() {
-        QStringList extensions;
-        extensions << "aiff" << "flac" << "mp3" << "ogg" << "wav";
-#ifdef __OPUS__
-        extensions << "opus";
-#endif
-        if (SoundSourceProxy::isFilenameSupported("filename.m4a")) {
-            extensions << "m4a";
+        QStringList availableExtensions;
+        availableExtensions << "aiff" << "flac" << "m4a" << "mp3" << "ogg" << "opus" << "wav";
+        QStringList supportedExtensions;
+        foreach (QString const& fileType, availableExtensions) {
+            if (SoundSourceProxy::isFileTypeSupported(fileType)) {
+                supportedExtensions << fileType;
+            }
         }
-        return extensions;
+        return supportedExtensions;
     }
 
     static Mixxx::AudioSourcePointer openAudioSource(const QString& fileName) {
@@ -34,7 +34,7 @@ TEST_F(SoundSourceProxyTest, open) {
 
     foreach (const QString& fileExtension, getFileExtensions()) {
         const QString filePath(kFilePathPrefix + fileExtension);
-        ASSERT_TRUE(SoundSourceProxy::isFilenameSupported(filePath));
+        ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
 
         Mixxx::AudioSourcePointer pAudioSource(openAudioSource(filePath));
         ASSERT_TRUE(!pAudioSource.isNull());
@@ -81,7 +81,7 @@ TEST_F(SoundSourceProxyTest, seekForward) {
 
     foreach (const QString& fileExtension, getFileExtensions()) {
         const QString filePath(kFilePathPrefix + fileExtension);
-        ASSERT_TRUE(SoundSourceProxy::isFilenameSupported(filePath));
+        ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
 
         qDebug() << "Seek forward test:" << filePath;
 
