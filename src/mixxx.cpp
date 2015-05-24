@@ -414,10 +414,10 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
             ConfigKey("[Library]", "SupportedFileExtensions")).split(
                 ",", QString::SkipEmptyParts));
     QSet<QString> curr_plugins = QSet<QString>::fromList(
-        SoundSourceProxy::supportedFileExtensions());
+        SoundSourceProxy::getSupportedFileTypes());
     rescan = rescan || (prev_plugins != curr_plugins);
     m_pConfig->set(ConfigKey("[Library]", "SupportedFileExtensions"),
-        QStringList(SoundSourceProxy::supportedFileExtensions()).join(","));
+        QStringList(SoundSourceProxy::getSupportedFileTypes()).join(","));
 
     // Scan the library directory. Initialize this after the skinloader has
     // loaded a skin, see Bug #1047435
@@ -1662,7 +1662,7 @@ void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
             loadTrackText,
             m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR),
             QString("Audio (%1)")
-                .arg(SoundSourceProxy::supportedFileNamePatterns().join(" ")));
+                .arg(SoundSourceProxy::getSupportedFileNamePatterns().join(" ")));
 
 
     if (!trackPath.isNull()) {

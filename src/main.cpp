@@ -205,7 +205,7 @@ int main(int argc, char * argv[])
                             Each must be one of the following file types:\n\
                             ", stdout);
 
-        QString fileExtensions(SoundSourceProxy::supportedFileNamePatterns().join(" "));
+        QString fileExtensions(SoundSourceProxy::getSupportedFileNamePatterns().join(" "));
         QByteArray fileExtensionsBA = QString(fileExtensions).toUtf8();
         fputs(fileExtensionsBA.constData(), stdout);
         fputs("\n\n", stdout);
