@@ -12,10 +12,10 @@ class SoundSourceProxy: public Mixxx::MetadataSource {
 public:
     static void loadPlugins(); // not thread-safe
 
-    static QStringList supportedFileExtensions();
-    static QStringList supportedFileExtensionsByPlugins();
-    static QStringList supportedFileNamePatterns();
-    static QRegExp supportedFileNameRegex();
+    static QStringList getSupportedFileTypes();
+    static QStringList getSupportedFileTypesByPlugins();
+    static QStringList getSupportedFileNamePatterns();
+    static QRegExp getSupportedFileNameRegex();
 
     static bool isUrlSupported(const QUrl& url);
     static bool isFileSupported(const QFileInfo& fileInfo);

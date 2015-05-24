@@ -269,13 +269,13 @@ void SoundSourceProxy::loadPlugins() {
 }
 
 // static
-QStringList SoundSourceProxy::supportedFileExtensions() {
+QStringList SoundSourceProxy::getSupportedFileTypes() {
     return s_soundSourceProviders.getSupportedFileTypes();
 }
 
 // static
-QStringList SoundSourceProxy::supportedFileExtensionsByPlugins() {
-    const QStringList supportedFileTypes(supportedFileExtensions());
+QStringList SoundSourceProxy::getSupportedFileTypesByPlugins() {
+    const QStringList supportedFileTypes(getSupportedFileTypes());
     QStringList pluginFileTypes;
     foreach (const QString& fileType, supportedFileTypes) {
         if (s_soundSourceProviders.getPluginLibraryForFileType(fileType)) {
@@ -286,12 +286,12 @@ QStringList SoundSourceProxy::supportedFileExtensionsByPlugins() {
 }
 
 // static
-QStringList SoundSourceProxy::supportedFileNamePatterns() {
+QStringList SoundSourceProxy::getSupportedFileNamePatterns() {
     return s_soundSourceProviders.getSupportedFileNamePatterns();
 }
 
 //static
-QRegExp SoundSourceProxy::supportedFileNameRegex() {
+QRegExp SoundSourceProxy::getSupportedFileNameRegex() {
     return s_soundSourceProviders.getSupportedFileNameRegex();
 }
 
@@ -308,7 +308,7 @@ bool SoundSourceProxy::isFileSupported(const QFileInfo& fileInfo) {
 
 // static
 bool SoundSourceProxy::isFileNameSupported(const QString& fileName) {
-    return fileName.contains(supportedFileNameRegex());
+    return fileName.contains(getSupportedFileNameRegex());
 }
 
 // static
