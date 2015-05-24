@@ -42,8 +42,6 @@ struct ffmpegCacheObject {
 
 class SoundSourceFFmpeg : public SoundSource {
 public:
-    static QStringList supportedFileExtensions();
-
     explicit SoundSourceFFmpeg(QUrl url);
     ~SoundSourceFFmpeg();
 
@@ -102,9 +100,7 @@ public:
         return "FFmpeg";
     }
 
-    QStringList getSupportedFileTypes() const /*override*/ {
-        return SoundSourceFFmpeg::supportedFileExtensions();
-    }
+    QStringList getSupportedFileTypes() const /*override*/;
 
     SoundSourcePointer newSoundSource(const QUrl& url)  /*override*/ {
         return SoundSourcePointer(new SoundSourceFFmpeg(url));
