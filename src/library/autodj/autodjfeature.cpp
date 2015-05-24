@@ -170,9 +170,8 @@ bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
 }
 
 bool AutoDJFeature::dragMoveAccept(QUrl url) {
-    QFileInfo file(url.toLocalFile());
     return SoundSourceProxy::isUrlSupported(url) ||
-            Parser::isPlaylistFilenameSupported(file.fileName());
+            Parser::isPlaylistFilenameSupported(url.toLocalFile());
 }
 
 // Add a crate to the auto-DJ queue.
