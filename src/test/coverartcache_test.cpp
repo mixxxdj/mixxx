@@ -25,10 +25,11 @@ const QString kTrackLocationTest(QDir::currentPath() %
                                  "/src/test/id3-test-data/cover-test.mp3");
 
 TEST_F(CoverArtCacheTest, loadCover) {
-    QImage img = QImage(kCoverLocationTest);
+    QImage img = QImage(QDir::currentPath() % kCoverLocationTest);
     CoverInfo info;
     info.type = CoverInfo::FILE;
     info.source = CoverInfo::GUESSED;
+	// TODO(XXX) This fails to load. relative path is probably incorrect.
     info.coverLocation = "../../../" % kCoverLocationTest;
     info.trackLocation = kTrackLocationTest;
     info.hash = 4321; // fake cover hash
@@ -38,6 +39,7 @@ TEST_F(CoverArtCacheTest, loadCover) {
     EXPECT_EQ(1234, res.requestReference);
     EXPECT_QSTRING_EQ(info.coverLocation, res.cover.info.coverLocation);
     EXPECT_QSTRING_EQ(info.hash, res.cover.info.hash);
+	EXPECT_TRUE(!img.isNull());
     EXPECT_EQ(img, res.cover.image);
 
     info.type = CoverInfo::METADATA;
