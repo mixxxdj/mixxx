@@ -91,7 +91,8 @@ void EngineBufferScaleST::setScaleParameters(double base_rate,
         m_dBaseRate = base_rate;
     }
     if (*pPitchRatio != m_dPitchRatio) {
-        m_pSoundTouch->setPitch(*pPitchRatio);
+        // Note: pitch ratio must be positive
+        m_pSoundTouch->setPitch(fabs(*pPitchRatio));
         m_dPitchRatio = *pPitchRatio;
     }
 
