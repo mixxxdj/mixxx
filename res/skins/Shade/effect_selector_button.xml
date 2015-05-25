@@ -43,7 +43,8 @@
 				<NumberStates>1</NumberStates>
 				<State>
 					<Number>0</Number>
-					<Text>◀</Text>
+					<Pressed>btn_previous_over.png</Pressed>
+					<Unpressed>btn_previous.png</Unpressed>
 				</State>
 				<Connection>
 		      		<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],prev_effect</ConfigKey>
@@ -65,7 +66,8 @@
 				<NumberStates>1</NumberStates>
 				<State>
 					<Number>0</Number>
-					<Text>▶</Text>
+					<Pressed>btn_next_over.png</Pressed>
+					<Unpressed>btn_next.png</Unpressed>
 			    </State>
 				<Connection>
 			        <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],next_effect</ConfigKey>
