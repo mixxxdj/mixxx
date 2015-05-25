@@ -29,8 +29,8 @@ TEST_F(CoverArtCacheTest, loadCover) {
     CoverInfo info;
     info.type = CoverInfo::FILE;
     info.source = CoverInfo::GUESSED;
-	// TODO(XXX) This fails to load. relative path is probably incorrect.
-    info.coverLocation = "../../../" % kCoverLocationTest;
+    // TODO(XXX) Is it correct to use an absolute path in next line or should it be a relative path ?
+    info.coverLocation = QDir::currentPath() % kCoverLocationTest;
     info.trackLocation = kTrackLocationTest;
     info.hash = 4321; // fake cover hash
 
@@ -39,7 +39,7 @@ TEST_F(CoverArtCacheTest, loadCover) {
     EXPECT_EQ(1234, res.requestReference);
     EXPECT_QSTRING_EQ(info.coverLocation, res.cover.info.coverLocation);
     EXPECT_QSTRING_EQ(info.hash, res.cover.info.hash);
-	EXPECT_TRUE(!img.isNull());
+    EXPECT_FALSE(img.isNull());
     EXPECT_EQ(img, res.cover.image);
 
     info.type = CoverInfo::METADATA;
