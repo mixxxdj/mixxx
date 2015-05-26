@@ -1281,7 +1281,7 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
 
     // Update visual control object, this needs to be done more often than the
     // playpos slider
-    m_visualPlayPos->set(fFractionalPlaypos, speed,
+    m_visualPlayPos->set(fFractionalPlaypos, speed * m_baserate_old,
             (double)iBufferSize / m_trackSamplesOld,
             fractionalPlayposFromAbsolute(m_dSlipPosition));
 }
