@@ -339,3 +339,31 @@ TEST_F(EngineBufferE2ETest, SeekTest) {
     assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
                               kProcessBufferSize, "SeekTest");
 }
+
+TEST_F(EngineBufferE2ETest, SoundTouchRevereTest) {
+    // This test must not crash when changing to reverse while pitch is tweaked
+    // Testing bug #1458263
+    ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
+                       static_cast<double>(EngineBuffer::SOUNDTOUCH));
+    ControlObject::set(ConfigKey(m_sGroup1, "pitch"), -1);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ProcessBuffer();
+    ControlObject::set(ConfigKey(m_sGroup1, "reverse"), 1.0);
+    ProcessBuffer();
+    // Note: we cannot compare a golden buffer here, because the result depends
+    // on the uses library version
+}
+
+TEST_F(EngineBufferE2ETest, RubberbandRevereTest) {
+    // This test must not crash when changing to reverse while pitch is tweaked
+    // Testing bug #1458263
+    ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
+                       static_cast<double>(EngineBuffer::RUBBERBAND));
+    ControlObject::set(ConfigKey(m_sGroup1, "pitch"), -1);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ProcessBuffer();
+    ControlObject::set(ConfigKey(m_sGroup1, "reverse"), 1.0);
+    ProcessBuffer();
+    // Note: we cannot compare a golden buffer here, because the result depends
+    // on the uses library version
+}
