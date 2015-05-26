@@ -34,13 +34,15 @@ class CoverArtUtilTest : public MixxxTest, public CoverArtCache {
 
 const QString kCoverLocationTest("res/images/library/cover_default.png");
 const QString kTrackLocationTest(QDir::currentPath() %
-                                 "/src/test/id3-test-data/cover-test.mp3");
+                                 "/src/test/id3-test-data/cover-test-png.mp3");
 
 TEST_F(CoverArtUtilTest, extractEmbeddedCover) {
     const QString kTestPath(QDir::currentPath() % "/src/test/id3-test-data/");
     QImage cover;
     // We never need to acquire security tokens for tests since we don't run
     // them in a sandboxed environment.
+	
+    // TODO(XXX) we need to compare with a reference file to ensure that we are reading correct data
     SecurityTokenPointer pToken;
     // aiff
     cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.aiff",
@@ -50,8 +52,12 @@ TEST_F(CoverArtUtilTest, extractEmbeddedCover) {
     cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.flac",
                                                 pToken);
     EXPECT_TRUE(!cover.isNull());
-    // mp3
-    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.mp3",
+    // mp3 - PNG
+    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test-png.mp3",
+                                                pToken);
+    EXPECT_TRUE(!cover.isNull());
+    // mp3 - JPEG
+    cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test-jpg.mp3",
                                                 pToken);
     EXPECT_TRUE(!cover.isNull());
     // ogg

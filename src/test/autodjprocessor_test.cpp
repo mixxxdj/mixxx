@@ -17,7 +17,7 @@ using ::testing::Return;
 
 static int kDefaultTransitionTime = 10;
 const QString kTrackLocationTest(QDir::currentPath() %
-                                 "/src/test/id3-test-data/cover-test.mp3");
+                                 "/src/test/id3-test-data/cover-test-png.mp3");
 
 class FakeMaster {
   public:
