@@ -554,6 +554,7 @@ class MixxxCore(Feature):
                    "effects/native/moogladder4filtereffect.cpp",
                    "effects/native/reverbeffect.cpp",
                    "effects/native/echoeffect.cpp",
+                   "effects/native/autopaneffect.cpp",
                    "effects/native/phasereffect.cpp",
                    "effects/native/reverb/Reverb.cc",
 
