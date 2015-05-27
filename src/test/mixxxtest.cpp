@@ -1,5 +1,6 @@
 #include "test/mixxxtest.h"
 #include "util/singleton.h"
+#include "mixxxapplication.h"
 
 #ifdef __FFMPEGFILE__
 extern "C" {
@@ -8,11 +9,10 @@ extern "C" {
 }
 #endif
 
-
 // Specialize the Singleton template for QApplication because it doesn't have a
 // 0-args constructor.
 template <>
-QApplication* Singleton<QApplication>::create() {
+MixxxApplication* Singleton<MixxxApplication>::create() {
     if (!m_instance) {
         static int argc = 1;
         static char* argv[1] = { strdup("test") };
@@ -20,7 +20,7 @@ QApplication* Singleton<QApplication>::create() {
          av_register_all();
          avcodec_register_all();
 #endif
-        m_instance = new QApplication(argc, argv);
+        m_instance = new MixxxApplication(argc, argv);
     }
     return m_instance;
 }
@@ -33,9 +33,8 @@ MixxxTest::MixxxTest() {
     // This directory has to be deleted later to clean up the test env.
     testDataDir = QDir::currentPath().append("/src/test/test_data/");
 
-    m_pApplication = Singleton<QApplication>::create();
+    m_pApplication = Singleton<MixxxApplication>::create();
     m_pConfig.reset(new ConfigObject<ConfigValue>(testDataDir + "test.cfg"));
-
 }
 
 MixxxTest::~MixxxTest() {

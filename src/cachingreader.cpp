@@ -259,7 +259,8 @@ void CachingReader::process() {
             freeAllChunks();
             m_readerStatus = status.status;
             m_iTrackNumFramesCallbackSafe = status.trackFrameCount;
-        } else if (status.status == CHUNK_READ_SUCCESS) {
+        } else if ((status.status == CHUNK_READ_SUCCESS) ||
+                (status.status == CHUNK_READ_PARTIAL)) {
             Chunk* pChunk = status.chunk;
 
             // This should not be possible unless there is a bug in
@@ -338,7 +339,7 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
         samples_remaining -= zero_samples;
         if (samples_remaining == 0) {
             //everything is zeros, easy
-            return 0;
+            return zero_samples;
         }
         buffer += zero_samples;
         sample += zero_samples;

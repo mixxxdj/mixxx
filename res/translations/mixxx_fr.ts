@@ -3815,35 +3815,6 @@ Appliquer les paramètres et continuer ?</translation>
         <translation>Mode verrouillage de clé</translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefcontrolsdlg.ui" line="610"/>
-        <source>Mixxx mode: 
-- Cue button while pause at cue point = preview
-- Cue button while pause not at cue point = set cue point
-- Cue button while playing = pause at cue point
-Pioneer mode:
-- Same as Mixxx mode with a flashing play button
-Denon mode:
-- Cue button at cue point = preview
-- Cue button not at cue point = pause at cue point
-- Play = set cue point
-Numark mode:
-- Same as Denon mode, but without a flashing play button
-        </source>
-        <translation>Mode Mixxx:
-- Bouton de repère lors de pause au point de repérage = Aperçu
-- Bouton de repère lors de pause n&apos;étant pas au point de repérage = Définir le point de répérage
-- Bouton de repère lors de la lecture = Pause au point de repérage
-Mode pionnier:
-- Identique au mode Mixxx avec un bouton de lecture clignotant
-Mode Denon:
-- Bouton de repère au point de repérage = Aperçu
-- Bouton de repère n&apos;étant pas au point de repérage = Pause au point de repérage
-- Lecture = Définir le point de répérage
-Mode Numark:
-- Identique au mode Denon, mais sans bouton de lecture clignotant
-</translation>
-    </message>
-    <message>
         <location filename="../../src/dlgprefcontrolsdlg.ui" line="395"/>
         <source>Start in full screen mode</source>
         <translation>Démarrer en mode plein écran</translation>
@@ -3874,22 +3845,44 @@ Mode Numark:
         <translation>Modèle de couleurs</translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefcontrolsdlg.ui" line="629"/>
+        <location filename="../../src/dlgprefcontrolsdlg.ui" line="597"/>
+        <source>Automatically seeks to the first saved cue point on track load. If none exists, seeks to the beginning of the track.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefcontrolsdlg.ui" line="614"/>
+        <source>Mixxx mode:
+- Cue button while pause at cue point = preview
+- Cue button while pause not at cue point = set cue point
+- Cue button while playing = pause at cue point
+Pioneer mode:
+- Same as Mixxx mode with a flashing play button
+Denon mode:
+- Cue button at cue point = preview
+- Cue button not at cue point = pause at cue point
+- Play = set cue point
+Numark mode:
+- Same as Denon mode, but without a flashing play button
+        </source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/dlgprefcontrolsdlg.ui" line="633"/>
         <source>Seek to cue</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/dlgprefcontrolsdlg.ui" line="639"/>
+        <location filename="../../src/dlgprefcontrolsdlg.ui" line="643"/>
         <source>Locales determine country and language specific settings.</source>
         <translation>Les localisations déterminent les paramètres spécifiques du pays et de la langue.</translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefcontrolsdlg.ui" line="646"/>
+        <location filename="../../src/dlgprefcontrolsdlg.ui" line="650"/>
         <source>Playing track protection</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/dlgprefcontrolsdlg.ui" line="600"/>
+        <location filename="../../src/dlgprefcontrolsdlg.ui" line="604"/>
         <source>Locale</source>
         <translation>Localisation</translation>
     </message>
@@ -5267,7 +5260,7 @@ The loudness target is approximate and assumes track pregain and master output l
     <message>
         <location filename="../../src/dlgprefsound.cpp" line="139"/>
         <source>Master output</source>
-        <translation type="unfinished"/>
+        <translation>Sortie principale</translation>
     </message>
     <message>
         <location filename="../../src/dlgprefsound.cpp" line="140"/>
@@ -5302,7 +5295,7 @@ The loudness target is approximate and assumes track pregain and master output l
 %2</translation>
     </message>
     <message>
-        <location filename="../../src/dlgprefsound.cpp" line="477"/>
+        <location filename="../../src/dlgprefsound.cpp" line="478"/>
         <source>%1 ms</source>
         <translation>%1 ms</translation>
     </message>
@@ -6254,7 +6247,7 @@ milliseconds</extracomment>
         <translation>&amp;Annuler</translation>
     </message>
     <message>
-        <location filename="../../src/dlgtrackinfo.cpp" line="161"/>
+        <location filename="../../src/dlgtrackinfo.cpp" line="159"/>
         <source>kbps</source>
         <translation>kb/s</translation>
     </message>
@@ -6663,13 +6656,13 @@ milliseconds</extracomment>
 <context>
     <name>LegacySkinParser</name>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1044"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1038"/>
         <source>Safe Mode Enabled</source>
         <extracomment>Shown when Mixxx is running in safe mode.</extracomment>
         <translation>Mode sécurisé activé</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1053"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1047"/>
         <source>No OpenGL
 support.</source>
         <extracomment>Shown when Spinny can not be displayed. Please keep 
@@ -6678,57 +6671,57 @@ support.</source>
 d&apos;OpenGL.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1959"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1953"/>
         <source>activate</source>
         <translation>activer</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1964"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1958"/>
         <source>toggle</source>
         <translation>activer/désactiver</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1974"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1968"/>
         <source>right</source>
         <translation>droite</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1979"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1973"/>
         <source>left</source>
         <translation>gauche</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1984"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1978"/>
         <source>right small</source>
         <translation>droit, petit</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1989"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1983"/>
         <source>left small</source>
         <translation>gauche, petit</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1994"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1988"/>
         <source>up</source>
         <translation>haut</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="1999"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1993"/>
         <source>down</source>
         <translation>bas</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2004"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="1998"/>
         <source>up small</source>
         <translation>haut, petit</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2009"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2003"/>
         <source>down small</source>
         <translation>bas, petit</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2041"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2035"/>
         <source>Shortcut</source>
         <translation>Raccourci</translation>
     </message>
@@ -6830,668 +6823,652 @@ d&apos;OpenGL.</translation>
 <context>
     <name>MixxxMainWindow</name>
     <message>
-        <location filename="../../src/mixxx.cpp" line="307"/>
+        <location filename="../../src/mixxx.cpp" line="304"/>
         <source>Choose music library directory</source>
         <translation>Choisissez le répertoire de la bibliothèque musicale</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="689"/>
-        <location filename="../../src/mixxx.cpp" line="1640"/>
-        <location filename="../../src/mixxx.cpp" line="1827"/>
-        <location filename="../../src/mixxx.cpp" line="1861"/>
-        <location filename="../../src/mixxx.cpp" line="1890"/>
-        <location filename="../../src/mixxx.cpp" line="1959"/>
+        <location filename="../../src/mixxx.cpp" line="1650"/>
+        <location filename="../../src/mixxx.cpp" line="1837"/>
+        <location filename="../../src/mixxx.cpp" line="1871"/>
+        <location filename="../../src/mixxx.cpp" line="1900"/>
+        <location filename="../../src/mixxx.cpp" line="1969"/>
         <source>Mixxx</source>
         <translation>Mixxx</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="691"/>
-        <source>Mixxx %1 x64</source>
-        <translation>Mixxx %1 x64</translation>
-    </message>
-    <message>
-        <location filename="../../src/mixxx.cpp" line="693"/>
-        <source>Mixxx %1 Itanium</source>
-        <translation>Mixxx %1 Itanium</translation>
-    </message>
-    <message>
-        <location filename="../../src/mixxx.cpp" line="695"/>
-        <source>Mixxx %1</source>
-        <translation>Mixxx %1</translation>
-    </message>
-    <message>
-        <location filename="../../src/mixxx.cpp" line="957"/>
+        <location filename="../../src/mixxx.cpp" line="951"/>
         <source>Sound Device Busy</source>
         <translation>Carte son Occupée</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="960"/>
+        <location filename="../../src/mixxx.cpp" line="954"/>
         <source>Mixxx was unable to access all the configured sound devices. Another application is using a sound device Mixxx is configured to use or a device is not plugged in.</source>
         <translation>Mixxx n&apos;a pas pu accéder à tous les périphériques audio configurés. Un des périphériques est peut-être utilisé par une autre application ou débranché.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="965"/>
+        <location filename="../../src/mixxx.cpp" line="959"/>
         <source>&lt;b&gt;Retry&lt;/b&gt; after closing the other application or reconnecting a sound device</source>
         <translation>&lt;b&gt;Réessayer&lt;/b&gt; après avoir fermé l&apos;autre application ou avoir reconnecté le périphérique de son</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="969"/>
-        <location filename="../../src/mixxx.cpp" line="1033"/>
+        <location filename="../../src/mixxx.cpp" line="963"/>
+        <location filename="../../src/mixxx.cpp" line="1027"/>
         <source>&lt;b&gt;Reconfigure&lt;/b&gt; Mixxx&apos;s sound device settings.</source>
         <translation>&lt;b&gt;Reconfigurer&lt;/b&gt; les options audio de Mixxx.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="972"/>
+        <location filename="../../src/mixxx.cpp" line="966"/>
         <source>Get &lt;b&gt;Help&lt;/b&gt; from the Mixxx Wiki.</source>
         <translation>Trouver &lt;b&gt;de l&apos;aide&lt;/b&gt; sur le Wiki Mixxx.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="975"/>
-        <location filename="../../src/mixxx.cpp" line="1036"/>
+        <location filename="../../src/mixxx.cpp" line="969"/>
+        <location filename="../../src/mixxx.cpp" line="1030"/>
         <source>&lt;b&gt;Exit&lt;/b&gt; Mixxx.</source>
         <translation>&lt;b&gt;Quitter&lt;/b&gt; Mixxx.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="980"/>
+        <location filename="../../src/mixxx.cpp" line="974"/>
         <source>Retry</source>
         <translation>Réessayer</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="982"/>
-        <location filename="../../src/mixxx.cpp" line="1042"/>
+        <location filename="../../src/mixxx.cpp" line="976"/>
+        <location filename="../../src/mixxx.cpp" line="1036"/>
         <source>Reconfigure</source>
         <translation>Reconfigurer</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="984"/>
+        <location filename="../../src/mixxx.cpp" line="978"/>
         <source>Help</source>
         <translation>Aide</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="986"/>
-        <location filename="../../src/mixxx.cpp" line="1043"/>
+        <location filename="../../src/mixxx.cpp" line="980"/>
+        <location filename="../../src/mixxx.cpp" line="1037"/>
         <source>Exit</source>
         <translation>Quitter</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1025"/>
+        <location filename="../../src/mixxx.cpp" line="1019"/>
         <source>No Output Devices</source>
         <translation>Aucun périphérique de sortie</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1026"/>
+        <location filename="../../src/mixxx.cpp" line="1020"/>
         <source>Mixxx was configured without any output sound devices. Audio processing will be disabled without a configured output device.</source>
         <translation>Mixxx a été configuré sans aucun périphérique de sortie audio. Sans périphérique de sortie configuré, le traitement du son sera désactivé .</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1030"/>
+        <location filename="../../src/mixxx.cpp" line="1024"/>
         <source>&lt;b&gt;Continue&lt;/b&gt; without any outputs.</source>
         <translation>&lt;b&gt;Continuer&lt;/b&gt; sans aucune sortie.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1041"/>
+        <location filename="../../src/mixxx.cpp" line="1035"/>
         <source>Continue</source>
         <translation>Continuer</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1080"/>
+        <location filename="../../src/mixxx.cpp" line="1074"/>
         <source>Load Track to Deck &amp;%1</source>
         <translation>Charger le Morceau sur la Platine &amp;%1</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1081"/>
+        <location filename="../../src/mixxx.cpp" line="1075"/>
         <source>Loads a track in deck %1</source>
         <translation>Charge un morceau dans la platine %1</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1082"/>
+        <location filename="../../src/mixxx.cpp" line="1076"/>
         <source>Open</source>
         <translation>Ouvrir</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1089"/>
+        <location filename="../../src/mixxx.cpp" line="1083"/>
         <source>Ctrl+o</source>
         <translation>Ctrl+o</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1102"/>
+        <location filename="../../src/mixxx.cpp" line="1096"/>
         <source>Ctrl+Shift+O</source>
         <translation>Ctrl+Shift+O</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1110"/>
+        <location filename="../../src/mixxx.cpp" line="1104"/>
         <source>&amp;Exit</source>
         <translation>&amp;Quitter</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1111"/>
+        <location filename="../../src/mixxx.cpp" line="1105"/>
         <source>Quits Mixxx</source>
         <translation>Quitte Mixxx</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1115"/>
+        <location filename="../../src/mixxx.cpp" line="1109"/>
         <source>Ctrl+q</source>
         <translation>Ctrl+q</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1121"/>
+        <location filename="../../src/mixxx.cpp" line="1115"/>
         <source>&amp;Rescan Library</source>
         <translation>&amp;Réanalyser la bibliothèque</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1122"/>
+        <location filename="../../src/mixxx.cpp" line="1116"/>
         <source>Rescans library folders for changes to tracks.</source>
         <translation>Balaye les répertoires de la bibliothèque à la recherche de modifications dans les pistes.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1130"/>
+        <location filename="../../src/mixxx.cpp" line="1124"/>
         <source>Create &amp;New Playlist</source>
         <translation>Créer une &amp;nouvelle liste de lecture</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1131"/>
+        <location filename="../../src/mixxx.cpp" line="1125"/>
         <source>Create a new playlist</source>
         <translation>Créer une nouvelle liste de lecture</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1136"/>
+        <location filename="../../src/mixxx.cpp" line="1130"/>
         <source>Ctrl+n</source>
         <translation>Ctrl+n</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1143"/>
+        <location filename="../../src/mixxx.cpp" line="1137"/>
         <source>Create New &amp;Crate</source>
         <translation>&amp;Créer un nouveau Bac</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1144"/>
+        <location filename="../../src/mixxx.cpp" line="1138"/>
         <source>Create a new crate</source>
         <translation>Créer un nouveau container</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1149"/>
+        <location filename="../../src/mixxx.cpp" line="1143"/>
         <source>Ctrl+Shift+N</source>
         <translation>Ctrl+Shift+N</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1156"/>
+        <location filename="../../src/mixxx.cpp" line="1150"/>
         <source>&amp;Full Screen</source>
         <translation>&amp;Plein écran</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1157"/>
+        <location filename="../../src/mixxx.cpp" line="1151"/>
         <source>Display Mixxx using the full screen</source>
         <translation>Afficher Mixxx en plein écran</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1160"/>
+        <location filename="../../src/mixxx.cpp" line="1154"/>
         <source>Ctrl+Shift+F</source>
         <translation>Ctrl+Maj+F</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1162"/>
+        <location filename="../../src/mixxx.cpp" line="1156"/>
         <source>F11</source>
         <translation>F11</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1178"/>
+        <location filename="../../src/mixxx.cpp" line="1172"/>
         <source>Enable &amp;Keyboard Shortcuts</source>
         <translation>Activer les Raccourcis Clavier (&amp;K)</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1179"/>
+        <location filename="../../src/mixxx.cpp" line="1173"/>
         <source>Toggles keyboard shortcuts on or off</source>
         <translation>Activer/Désactiver les raccourcis claviers</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1186"/>
+        <location filename="../../src/mixxx.cpp" line="1180"/>
         <source>Ctrl+`</source>
         <translation>Ctrl+`</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1195"/>
+        <location filename="../../src/mixxx.cpp" line="1189"/>
         <source>&amp;Preferences</source>
         <translation>&amp;Préférences</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1196"/>
+        <location filename="../../src/mixxx.cpp" line="1190"/>
         <source>Change Mixxx settings (e.g. playback, MIDI, controls)</source>
         <translation>Modifier les paramètres de Mixxx (par ex. diffusion, MIDI, contrôleurs)</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1202"/>
+        <location filename="../../src/mixxx.cpp" line="1196"/>
         <source>Ctrl+,</source>
         <translation>Ctrl+,</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1207"/>
+        <location filename="../../src/mixxx.cpp" line="1201"/>
         <source>Ctrl+P</source>
         <translation>Ctrl+P</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1215"/>
+        <location filename="../../src/mixxx.cpp" line="1209"/>
         <source>&amp;About</source>
         <translation>À &amp;propos</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1216"/>
+        <location filename="../../src/mixxx.cpp" line="1210"/>
         <source>About the application</source>
         <translation>A propos de l&apos;application</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1223"/>
+        <location filename="../../src/mixxx.cpp" line="1217"/>
         <source>&amp;Community Support</source>
         <translation>Support &amp;communautaire</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1224"/>
+        <location filename="../../src/mixxx.cpp" line="1218"/>
         <source>Get help with Mixxx</source>
         <translation>Obtenir de l&apos;aide sur Mixxx</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1230"/>
+        <location filename="../../src/mixxx.cpp" line="1224"/>
         <source>&amp;User Manual</source>
         <translation>&amp;Manuel utilisateur</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1231"/>
+        <location filename="../../src/mixxx.cpp" line="1225"/>
         <source>Read the Mixxx user manual.</source>
         <translation>Lire le manuel utilisateur de Mixxx</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1237"/>
+        <location filename="../../src/mixxx.cpp" line="1231"/>
         <source>Send Us &amp;Feedback</source>
         <translation>Envoyez-nous vos &amp;remarques</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1238"/>
+        <location filename="../../src/mixxx.cpp" line="1232"/>
         <source>Send feedback to the Mixxx team.</source>
         <translation>Envoyer des retours à l&apos;équipe de Mixxx.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1244"/>
+        <location filename="../../src/mixxx.cpp" line="1238"/>
         <source>&amp;Translate This Application</source>
         <translation>&amp;Traduire Cette Application</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1245"/>
+        <location filename="../../src/mixxx.cpp" line="1239"/>
         <source>Help translate this application into your language.</source>
         <translation>Aidez à traduire cette application dans votre langage.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1252"/>
+        <location filename="../../src/mixxx.cpp" line="1246"/>
         <source>Use timecoded vinyls on external turntables to control Mixxx</source>
         <translation>Utiliser des disques vinyles encodés sur une platine externe pour contrôler Mixxx</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1264"/>
+        <location filename="../../src/mixxx.cpp" line="1258"/>
         <source>Enable Vinyl Control &amp;%1</source>
         <translation>Activer le Contrôle Vinyle &amp;%1</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1273"/>
+        <location filename="../../src/mixxx.cpp" line="1267"/>
         <source>Ctrl+t</source>
         <translation>Ctrl+t</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1276"/>
+        <location filename="../../src/mixxx.cpp" line="1270"/>
         <source>Ctrl+y</source>
         <translation>Ctrl+y</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1279"/>
+        <location filename="../../src/mixxx.cpp" line="1273"/>
         <source>Ctrl+u</source>
         <translation>Ctrl+u</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1282"/>
+        <location filename="../../src/mixxx.cpp" line="1276"/>
         <source>Ctrl+i</source>
         <translation>Ctrl+i</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1312"/>
+        <location filename="../../src/mixxx.cpp" line="1306"/>
         <source>Enable Live &amp;Broadcasting</source>
         <translation>Activer la Diffusion en Direct (&amp;Broadcast)</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1313"/>
+        <location filename="../../src/mixxx.cpp" line="1307"/>
         <source>Stream your mixes to a shoutcast or icecast server</source>
         <translation>Diffusez vos mixages via un serveur shoutcast ou icecast</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1318"/>
+        <location filename="../../src/mixxx.cpp" line="1312"/>
         <source>Ctrl+L</source>
         <translation>Ctrl+L</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1329"/>
+        <location filename="../../src/mixxx.cpp" line="1323"/>
         <source>May not be supported on all skins.</source>
         <translation>Peut-être pas supporté sur tous les thèmes</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1330"/>
+        <location filename="../../src/mixxx.cpp" line="1324"/>
         <source>Show Samplers</source>
         <translation>Montrer les échantillonneurs</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1331"/>
+        <location filename="../../src/mixxx.cpp" line="1325"/>
         <source>Show the sample deck section of the Mixxx interface.</source>
         <translation>Afficher la section du  deck des échantillons de l&apos;interface de Mixxx</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1338"/>
+        <location filename="../../src/mixxx.cpp" line="1332"/>
         <source>Ctrl+1</source>
         <comment>Menubar|View|Show Samplers</comment>
         <translation>Ctrl+1</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1344"/>
+        <location filename="../../src/mixxx.cpp" line="1338"/>
         <source>Show Vinyl Control Section</source>
         <translation>Montrer la section de contrôle des vinyles</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1345"/>
+        <location filename="../../src/mixxx.cpp" line="1339"/>
         <source>Show the vinyl control section of the Mixxx interface.</source>
         <translation>Montrer la section de contrôle des vinyles de l&apos;interface Mixxx.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1353"/>
+        <location filename="../../src/mixxx.cpp" line="1347"/>
         <source>Ctrl+3</source>
         <comment>Menubar|View|Show Vinyl Control Section</comment>
         <translation>Ctrl+3</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1360"/>
+        <location filename="../../src/mixxx.cpp" line="1354"/>
         <source>Show Microphone Section</source>
         <translation>Montrer la section microphone</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1361"/>
+        <location filename="../../src/mixxx.cpp" line="1355"/>
         <source>Show the microphone section of the Mixxx interface.</source>
         <translation>Montrer la section microphone de l&apos;interface Mixxx.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1368"/>
+        <location filename="../../src/mixxx.cpp" line="1362"/>
         <source>Ctrl+2</source>
         <comment>Menubar|View|Show Microphone Section</comment>
         <translation>Ctrl+2</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1374"/>
+        <location filename="../../src/mixxx.cpp" line="1368"/>
         <source>Show Preview Deck</source>
         <translation>Montrer la platine de prévisualisation</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1375"/>
+        <location filename="../../src/mixxx.cpp" line="1369"/>
         <source>Show the preview deck in the Mixxx interface.</source>
         <translation>Montrer la platine de prévisualisation dans l&apos;interface de Mixxx.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1382"/>
+        <location filename="../../src/mixxx.cpp" line="1376"/>
         <source>Ctrl+4</source>
         <comment>Menubar|View|Show Preview Deck</comment>
         <translation>Ctrl+4</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1388"/>
+        <location filename="../../src/mixxx.cpp" line="1382"/>
         <source>Show Effect Rack</source>
         <translation>Afficher le rack d&apos;effets</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1389"/>
+        <location filename="../../src/mixxx.cpp" line="1383"/>
         <source>Show the effect rack in the Mixxx interface.</source>
         <translation>Afficher le rack d&apos;effets dans l&apos;interface de Mixxx</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1396"/>
+        <location filename="../../src/mixxx.cpp" line="1390"/>
         <source>Ctrl+5</source>
         <comment>Menubar|View|Show Effect Rack</comment>
         <translation>Ctrl+5</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1402"/>
+        <location filename="../../src/mixxx.cpp" line="1396"/>
         <source>Show Cover Art</source>
         <translation>Afficher la pochette d&apos;album</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1403"/>
+        <location filename="../../src/mixxx.cpp" line="1397"/>
         <source>Show cover art in the Mixxx interface.</source>
         <translation>Affiche la pochette d&apos;album dans l&apos;interface Mixxx.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1416"/>
+        <location filename="../../src/mixxx.cpp" line="1410"/>
         <source>Maximize Library</source>
-        <translation type="unfinished"/>
+        <translation>Maximiser la bibliothèque</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1417"/>
+        <location filename="../../src/mixxx.cpp" line="1411"/>
         <source>Maximize the track library to take up all the available screen space.</source>
         <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/mixxx.cpp" line="1424"/>
-        <source>Space</source>
-        <comment>Menubar|View|MAximize Library</comment>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/mixxx.cpp" line="1430"/>
         <source>&amp;Record Mix</source>
         <translation>&amp;Enregistrer le Mix</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1431"/>
+        <location filename="../../src/mixxx.cpp" line="1425"/>
         <source>Record your mix to a file</source>
         <translation>Enregistrer votre mix dans un fichier</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1436"/>
+        <location filename="../../src/mixxx.cpp" line="1430"/>
         <source>Ctrl+R</source>
         <translation>Ctrl+R</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1444"/>
+        <location filename="../../src/mixxx.cpp" line="1438"/>
         <source>&amp;Reload Skin</source>
         <translation>&amp;Recharger le thème</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1445"/>
+        <location filename="../../src/mixxx.cpp" line="1439"/>
         <source>Reload the skin</source>
         <translation>Recharger le thème</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1450"/>
+        <location filename="../../src/mixxx.cpp" line="1444"/>
         <source>Ctrl+Shift+R</source>
         <translation>Ctrl+Maj+R</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1489"/>
+        <location filename="../../src/mixxx.cpp" line="1483"/>
         <source>Stats: &amp;Base Bucket</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1554"/>
+        <location filename="../../src/mixxx.cpp" line="1564"/>
         <source>&amp;Developer</source>
         <translation>&amp;Développeur</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1458"/>
+        <location filename="../../src/mixxx.cpp" line="1452"/>
         <source>Opens the developer tools dialog</source>
         <translation>Ouvre le panneau d&apos;outils de dévelopement</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1463"/>
+        <location filename="../../src/mixxx.cpp" line="1457"/>
         <source>Ctrl+Shift+T</source>
         <translation>Ctrl+Maj+T</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1510"/>
+        <location filename="../../src/mixxx.cpp" line="1504"/>
         <source>Enables the debugger during skin parsing</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1518"/>
+        <location filename="../../src/mixxx.cpp" line="1512"/>
         <source>Ctrl+Shift+D</source>
         <translation>Ctrl+Maj+D</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1410"/>
+        <location filename="../../src/mixxx.cpp" line="1404"/>
         <source>Ctrl+6</source>
         <comment>Menubar|View|Show Cover Art</comment>
         <translation>Ctrl+6</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1457"/>
+        <location filename="../../src/mixxx.cpp" line="1418"/>
+        <source>Space</source>
+        <comment>Menubar|View|Maximize Library</comment>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/mixxx.cpp" line="1451"/>
         <source>Developer &amp;Tools</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1472"/>
+        <location filename="../../src/mixxx.cpp" line="1466"/>
         <source>Stats: &amp;Experiment Bucket</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1473"/>
+        <location filename="../../src/mixxx.cpp" line="1467"/>
         <source>Enables experiment mode. Collects stats in the EXPERIMENT tracking bucket.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1479"/>
+        <location filename="../../src/mixxx.cpp" line="1473"/>
         <source>Ctrl+Shift+E</source>
         <translation>Ctrl+Maj+E</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1490"/>
+        <location filename="../../src/mixxx.cpp" line="1484"/>
         <source>Enables base mode. Collects stats in the BASE tracking bucket.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1496"/>
+        <location filename="../../src/mixxx.cpp" line="1490"/>
         <source>Ctrl+Shift+B</source>
         <translation>Ctrl+Maj+B</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1509"/>
+        <location filename="../../src/mixxx.cpp" line="1503"/>
         <source>Deb&amp;ugger Enabled</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1549"/>
+        <location filename="../../src/mixxx.cpp" line="1559"/>
         <source>&amp;File</source>
         <translation>&amp;Fichier</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1550"/>
+        <location filename="../../src/mixxx.cpp" line="1560"/>
         <source>&amp;Options</source>
         <translation>&amp;Options</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1551"/>
+        <location filename="../../src/mixxx.cpp" line="1561"/>
         <source>&amp;Library</source>
         <translation>&amp;Bibliothèque</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1552"/>
+        <location filename="../../src/mixxx.cpp" line="1562"/>
         <source>&amp;View</source>
         <translation>&amp;Affichage</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1553"/>
+        <location filename="../../src/mixxx.cpp" line="1563"/>
         <source>&amp;Help</source>
         <translation>&amp;Aide</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1566"/>
+        <location filename="../../src/mixxx.cpp" line="1576"/>
         <source>&amp;Vinyl Control</source>
         <translation>Contrôle &amp;Vinyle</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1634"/>
+        <location filename="../../src/mixxx.cpp" line="1644"/>
         <source>Load track to Deck %1</source>
         <translation>Charger un morceau sur la platine %1</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1635"/>
+        <location filename="../../src/mixxx.cpp" line="1645"/>
         <source>Deck %1 is currently playing a track.</source>
         <translation>La platine %1 est en cours d&apos;utilisation.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1637"/>
+        <location filename="../../src/mixxx.cpp" line="1647"/>
         <source>Are you sure you want to load a new track?</source>
         <translation>Êtes-vous certain(e) de vouloir charger un nouveau morceau ?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1828"/>
+        <location filename="../../src/mixxx.cpp" line="1838"/>
         <source>There is no input device selected for this vinyl control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>Aucun périphérique d&apos;entrée n&apos;est sélectionné pour ce contrôle vinyle.
 Veuillez d&apos;abord en sélectionner un dans les Préférences du matériel sonore.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1862"/>
+        <location filename="../../src/mixxx.cpp" line="1872"/>
         <source>There is no input device selected for this passthrough control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>Il n&apos;y a aucun périphérique d&apos;entrée sélectionné pour ce contrôle intermédiaire.
 Veuillez d&apos;abord en sélectionner un dans les Préférences du matériel sonore.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1891"/>
+        <location filename="../../src/mixxx.cpp" line="1901"/>
         <source>There is no input device selected for this auxiliary input.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>Il n&apos;y a aucun périphérique d&apos;entrée sélectionné pour cette entrée auxiliaire.
 Veuillez d&apos;abord en sélectionner une dans les Préférences du matériel sonore.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1960"/>
+        <location filename="../../src/mixxx.cpp" line="1970"/>
         <source>There is no input device selected for this microphone.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>Aucun périphérique d&apos;entrée n&apos;est sélectionné pour ce microphone.
 Veuillez d&apos;abord en sélectionner un dans les Préférences du matériel sonore.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="2069"/>
+        <location filename="../../src/mixxx.cpp" line="2079"/>
         <source>Error in skin file</source>
         <translation>Erreur dans le fichier d&apos;habillage</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="2070"/>
+        <location filename="../../src/mixxx.cpp" line="2080"/>
         <source>The selected skin cannot be loaded.</source>
         <translation>L&apos;habillage sélectionné ne peut pas être chargé.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="2196"/>
+        <location filename="../../src/mixxx.cpp" line="2206"/>
         <source>OpenGL Direct Rendering</source>
         <translation>Rendu Direct OpenGL</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="2197"/>
+        <location filename="../../src/mixxx.cpp" line="2207"/>
         <source>Direct rendering is not enabled on your machine.&lt;br&gt;&lt;br&gt;This means that the waveform displays will be very&lt;br&gt;&lt;b&gt;slow and may tax your CPU heavily&lt;/b&gt;. Either update your&lt;br&gt;configuration to enable direct rendering, or disable&lt;br&gt;the waveform displays in the Mixxx preferences by selecting&lt;br&gt;&quot;Empty&quot; as the waveform display in the &apos;Interface&apos; section.&lt;br&gt;&lt;br&gt;NOTE: If you use NVIDIA hardware,&lt;br&gt;direct rendering may not be present, but you should&lt;br&gt;not experience degraded performance.</source>
         <translation>Le rendu direct n&apos;est pas disponible sur votre machine.&lt;br&gt;&lt;br&gt;Ceci signifie que l&apos;affichage des formes d&apos;ondes sera très&lt;br&gt;&lt;br&gt;lent et pourra charger fortement votre processeur&lt;/b&gt;. Mettez à jour votre&lt;br&gt;configuration pour permettre le rendu direct ou désactivez&lt;br&gt;l&apos;affichage des formes d&apos;ondes dans les préférences de Mixxx en sélectionnant&lt;br&gt;&quot;Vide&quot; pour l&apos;affichage de la forme d&apos;onde dans la section &quot;Interface&quot;.&lt;br&gt;&lt;br&gt;NOTE : si vous utilisez du matériel NVIDIA,&lt;br&gt;le rendu direct peut ne pas être présent mais vous ne devriez pas rencontrer de performances dégradées.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="2231"/>
-        <location filename="../../src/mixxx.cpp" line="2239"/>
-        <location filename="../../src/mixxx.cpp" line="2248"/>
+        <location filename="../../src/mixxx.cpp" line="2241"/>
+        <location filename="../../src/mixxx.cpp" line="2249"/>
+        <location filename="../../src/mixxx.cpp" line="2258"/>
         <source>Confirm Exit</source>
         <translation>Confirmer la fermeture</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="2232"/>
+        <location filename="../../src/mixxx.cpp" line="2242"/>
         <source>A deck is currently playing. Exit Mixxx?</source>
         <translation>Un lecteur est actuellement actif. Quitter Mixxx ?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="2240"/>
+        <location filename="../../src/mixxx.cpp" line="2250"/>
         <source>A sampler is currently playing. Exit Mixxx?</source>
         <translation>Un échantillonneur est actuellement actif. Quitter Mixxx ?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="2249"/>
+        <location filename="../../src/mixxx.cpp" line="2259"/>
         <source>The preferences window is still open.</source>
         <translation>La fenêtre de Préférences est déjà ouverte.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="2250"/>
+        <location filename="../../src/mixxx.cpp" line="2260"/>
         <source>Discard any changes and exit Mixxx?</source>
         <translation>Abandonner toutes les modifications et quitter Mixxx ?</translation>
     </message>
@@ -8326,7 +8303,7 @@ Pour annuler cette opération, appuyez sur Annuler dans le dialogue du fichier.<
     </message>
     <message>
         <location filename="../../src/library/setlogfeature.cpp" line="49"/>
-        <location filename="../../src/library/setlogfeature.cpp" line="298"/>
+        <location filename="../../src/library/setlogfeature.cpp" line="293"/>
         <source>History</source>
         <translation>Historique</translation>
     </message>
@@ -8341,22 +8318,22 @@ Pour annuler cette opération, appuyez sur Annuler dans le dialogue du fichier.<
         <translation>Verrouiller</translation>
     </message>
     <message>
-        <location filename="../../src/library/setlogfeature.cpp" line="299"/>
+        <location filename="../../src/library/setlogfeature.cpp" line="294"/>
         <source>The history section automatically keeps a list of tracks you play in your DJ sets.</source>
         <translation>La section historique conserve automatiquement les listes des morceaux que vous jouez durant vos sessions de mixage.</translation>
     </message>
     <message>
-        <location filename="../../src/library/setlogfeature.cpp" line="300"/>
+        <location filename="../../src/library/setlogfeature.cpp" line="295"/>
         <source>This is handy for remembering what worked in your DJ sets, posting set-lists, or reporting your plays to licensing organizations.</source>
         <translation>Ceci est pratique pour se remémorer ce qui a marché lors de vos sessions de mixage, publier les morceaux des sessions, ou communiquer vos diffusions aux organismes de gestion de droits.</translation>
     </message>
     <message>
-        <location filename="../../src/library/setlogfeature.cpp" line="301"/>
+        <location filename="../../src/library/setlogfeature.cpp" line="296"/>
         <source>Every time you start Mixxx, a new history section is created. You can export it as a playlist in various formats or play it again with Auto DJ.</source>
         <translation>A chaque fois que vous démarrez Mixxx, un nouvel historique de session est créé. Vous pouvez l&apos;exporter en tant que liste de lecture sous différents formats ou les rejouer avec Auto DJ.</translation>
     </message>
     <message>
-        <location filename="../../src/library/setlogfeature.cpp" line="302"/>
+        <location filename="../../src/library/setlogfeature.cpp" line="297"/>
         <source>You can join the current history session with a previous one by right-clicking and selecting &quot;Join with previous&quot;.</source>
         <translation>Vous pouvez ajouter l&apos;historique de session courant avec le précédent en faisant un clic-droit et en sélectionnant &quot;Joindre à la précédente&quot;.</translation>
     </message>
@@ -8763,7 +8740,7 @@ Pour annuler cette opération, appuyez sur Annuler dans le dialogue du fichier.<
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="176"/>
         <source>Toggle 4 Decks</source>
-        <translation type="unfinished"/>
+        <translation>Basculer en 4 platines</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="177"/>
@@ -8788,7 +8765,7 @@ Pour annuler cette opération, appuyez sur Annuler dans le dialogue du fichier.<
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="193"/>
         <source>Show or hide the mixer.</source>
-        <translation type="unfinished"/>
+        <translation>Affiche ou cache le mixer.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="196"/>
@@ -9121,32 +9098,32 @@ Pour annuler cette opération, appuyez sur Annuler dans le dialogue du fichier.<
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="394"/>
         <source>Sync and Reset Key</source>
-        <translation type="unfinished"/>
+        <translation>Synchroniser et réinitialiser la touche</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="416"/>
         <source>Increases the pitch by one semitone.</source>
-        <translation type="unfinished"/>
+        <translation>Augmenter la hauteur d&apos;un demi ton.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="422"/>
         <source>Decreases the pitch by one semitone.</source>
-        <translation type="unfinished"/>
+        <translation>Diminuer la hauteur d&apos;un demi ton.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="451"/>
         <source>Enable Vinyl Control</source>
-        <translation type="unfinished"/>
+        <translation>Activer le contrôle des vinyles</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="452"/>
         <source>When disabled, the track is controlled by Mixxx playback controls.</source>
-        <translation type="unfinished"/>
+        <translation>Si désactivé, la piste est contrôlée par les contrôles de reproduction de Mixxx.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="453"/>
         <source>When enabled, the track responds to external vinyl control.</source>
-        <translation type="unfinished"/>
+        <translation>Si activé, le morceau répond au contrôle de vinyle externe</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="456"/>
@@ -9156,7 +9133,7 @@ Pour annuler cette opération, appuyez sur Annuler dans le dialogue du fichier.<
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="457"/>
         <source>When enabled, the deck directly plays the audio arriving on the input.</source>
-        <translation type="unfinished"/>
+        <translation>Si activé, la platine joue directement l&apos;audio arrivant sur l&apos;entrée.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="579"/>
@@ -9166,12 +9143,12 @@ Pour annuler cette opération, appuyez sur Annuler dans le dialogue du fichier.<
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="583"/>
         <source>Displays cover artwork of the loaded track.</source>
-        <translation type="unfinished"/>
+        <translation>Afficher la jaquette de la piste chargée</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="584"/>
         <source>Displays options for editing cover artwork.</source>
-        <translation type="unfinished"/>
+        <translation>Afficher les options d&apos;édition de la jaquette</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="587"/>
@@ -9201,7 +9178,7 @@ Pour annuler cette opération, appuyez sur Annuler dans le dialogue du fichier.<
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="188"/>
         <source>Maximize Library</source>
-        <translation type="unfinished"/>
+        <translation>Maximiser la bibliothèque</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="189"/>
@@ -10084,7 +10061,7 @@ Cliquez sur OK pour sortir.</translation>
         <location filename="../../src/widget/wtracktableview.cpp" line="116"/>
         <source>ESC</source>
         <comment>Focus</comment>
-        <translation type="unfinished"/>
+        <translation>Echap</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="381"/>

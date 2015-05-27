@@ -41,10 +41,11 @@ class BasePlaylistFeature : public LibraryFeature {
   public slots:
     virtual void activate();
     virtual void activateChild(const QModelIndex& index);
+    virtual void activatePlaylist(int playlistId);
     virtual void htmlLinkClicked(const QUrl& link);
 
     virtual void slotPlaylistTableChanged(int playlistId) = 0;
-    void slotPlaylistTableRenamed(int playlistId, QString a_strName);
+    virtual void slotPlaylistTableRenamed(int playlistId, QString a_strName) = 0;
     void slotCreatePlaylist();
 
   protected slots:
@@ -66,6 +67,9 @@ class BasePlaylistFeature : public LibraryFeature {
     virtual void addToAutoDJ(bool bTop);
 
     int playlistIdFromIndex(QModelIndex index);
+    // Get the QModelIndex of a playlist based on its id.  Returns QModelIndex()
+    // on failure.
+    QModelIndex indexFromPlaylistId(int playlistId);
 
     ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;

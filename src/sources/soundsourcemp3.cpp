@@ -1,4 +1,5 @@
 #include "sources/soundsourcemp3.h"
+#include "sources/mp3decoding.h"
 
 #include "util/math.h"
 
@@ -9,7 +10,7 @@ namespace Mixxx {
 namespace {
 
 // MP3 does only support 1 or 2 channels
-const SINT kChannelCountMax = 2;
+const SINT kChannelCountMax = AudioSource::kChannelCountStereo;
 
 // mp3 supports 9 different frame rates
 const int kFrameRateCount = 9;
@@ -63,7 +64,7 @@ int getFrameRateByIndex(int frameRateIndex) {
 }
 
 
-const CSAMPLE kMadScale = AudioSource::kSampleValuePeak / CSAMPLE(MAD_F_ONE);
+const CSAMPLE kMadScale = CSAMPLE_PEAK / CSAMPLE(MAD_F_ONE);
 
 inline CSAMPLE madScaleSampleValue(mad_fixed_t sampleValue) {
     return sampleValue * kMadScale;
@@ -161,7 +162,7 @@ SoundSourceMp3::SoundSourceMp3(QUrl url)
           m_fileSize(0),
           m_pFileData(NULL),
           m_avgSeekFrameCount(0),
-          m_curFrameIndex(kFrameIndexMin),
+          m_curFrameIndex(getMinFrameIndex()),
           m_madSynthCount(0) {
     m_seekFrameList.reserve(kSeekFrameListCapacity);
     initDecoding();
@@ -186,8 +187,8 @@ void SoundSourceMp3::finishDecoding() {
 }
 
 Result SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
-    DEBUG_ASSERT(!isChannelCountValid());
-    DEBUG_ASSERT(!isFrameRateValid());
+    DEBUG_ASSERT(!hasChannelCount());
+    DEBUG_ASSERT(!hasFrameRate());
 
     DEBUG_ASSERT(!m_file.isOpen());
     if (!m_file.open(QIODevice::ReadOnly)) {
@@ -198,6 +199,12 @@ Result SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     // Get a pointer to the file using memory mapped IO
     m_fileSize = m_file.size();
     m_pFileData = m_file.map(0, m_fileSize);
+    // NOTE(uklotzde): If the file disappears unexpectedly while mapped
+    // a SIGBUS error might occur that is not handled and will terminate
+    // Mixxx immediately. This behavior is documented in the manpage of
+    // mmap(). It has already appeared due to hardware errors and is
+    // described in the following bug report:
+    // https://bugs.launchpad.net/mixxx/+bug/1452005
 
     // Transfer it to the mad stream-buffer:
     mad_stream_options(&m_madStream, MAD_OPTION_IGNORECRC);
@@ -206,7 +213,7 @@ Result SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
 
     DEBUG_ASSERT(m_seekFrameList.empty());
     m_avgSeekFrameCount = 0;
-    m_curFrameIndex = kFrameIndexMin;
+    m_curFrameIndex = getMinFrameIndex();
     int headerPerFrameRate[kFrameRateCount];
     for (int i = 0; i < kFrameRateCount; ++i) {
         headerPerFrameRate[i] = 0;
@@ -249,27 +256,11 @@ Result SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
         }
 
         const SINT madChannelCount = MAD_NCHANNELS(&madHeader);
-        if (0 < madChannelCount) {
-            if (madChannelCount > kChannelCountMax) {
-                qWarning() << "Invalid number of channels"
-                        << madChannelCount << ">" << kChannelCountMax
-                        << "in MP3 frame header:" << m_file.fileName();
-                // Abort
-                mad_header_finish(&madHeader);
-                return ERR;
-            }
-            if ((0 < maxChannelCount) && (madChannelCount != maxChannelCount)) {
-                qWarning() << "Differing number of channels"
-                        << madChannelCount << "<>" << maxChannelCount
-                        << "in some MP3 frame headers:"
-                        << m_file.fileName();
-            }
-        } else {
-            qWarning() << "Invalid number of channels" << madChannelCount
-                    << "in MP3 frame header:" << m_file.fileName();
-            // Abort
-            mad_header_finish(&madHeader);
-            return ERR;
+        if (isValidChannelCount(maxChannelCount) && (madChannelCount != maxChannelCount)) {
+            qWarning() << "Differing number of channels"
+                    << madChannelCount << "<>" << maxChannelCount
+                    << "in some MP3 frame headers:"
+                    << m_file.fileName();
         }
         maxChannelCount = math_max(madChannelCount, maxChannelCount);
 
@@ -368,7 +359,7 @@ Result SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     addSeekFrame(m_curFrameIndex, 0);
 
     // Reset positions
-    m_curFrameIndex = kFrameIndexMin;
+    m_curFrameIndex = getMinFrameIndex();
 
     // Restart decoding at the beginning of the audio stream
     m_curFrameIndex = restartDecoding(m_seekFrameList.front());
@@ -405,7 +396,7 @@ SINT SoundSourceMp3::restartDecoding(
     // Discard decoded output
     m_madSynthCount = 0;
 
-    if (kFrameIndexMin == seekFrame.frameIndex) {
+    if (getMinFrameIndex() == seekFrame.frameIndex) {
         mad_frame_finish(&m_madFrame);
         mad_synth_finish(&m_madSynth);
     }
@@ -413,7 +404,7 @@ SINT SoundSourceMp3::restartDecoding(
 
     mad_stream_init(&m_madStream);
     mad_stream_options(&m_madStream, MAD_OPTION_IGNORECRC);
-    if (kFrameIndexMin == seekFrame.frameIndex) {
+    if (getMinFrameIndex() == seekFrame.frameIndex) {
         mad_synth_init(&m_madSynth);
         mad_frame_init(&m_madFrame);
     }
@@ -422,7 +413,7 @@ SINT SoundSourceMp3::restartDecoding(
     mad_stream_buffer(&m_madStream, seekFrame.pInputData,
             m_fileSize - (seekFrame.pInputData - m_pFileData));
 
-    if (kFrameIndexMin < seekFrame.frameIndex) {
+    if (getMinFrameIndex() < seekFrame.frameIndex) {
         // Muting is done here to eliminate potential pops/clicks
         // from skipping Rob Leslie explains why here:
         // http://www.mars.org/mailman/public/mad-dev/2001-August/000321.html
@@ -459,8 +450,8 @@ SINT SoundSourceMp3::findSeekFrameIndex(
     // Check preconditions
     DEBUG_ASSERT(0 < m_avgSeekFrameCount);
     DEBUG_ASSERT(!m_seekFrameList.empty());
-    DEBUG_ASSERT(kFrameIndexMin == m_seekFrameList.front().frameIndex);
-    DEBUG_ASSERT(SINT(kFrameIndexMin + getFrameIndexMax()) == m_seekFrameList.back().frameIndex);
+    DEBUG_ASSERT(getMinFrameIndex() == m_seekFrameList.front().frameIndex);
+    DEBUG_ASSERT(getMaxFrameIndex() == m_seekFrameList.back().frameIndex);
 
     SINT lowerBound =
             0;
@@ -511,7 +502,7 @@ SINT SoundSourceMp3::seekSampleFrame(SINT frameIndex) {
     // some consistency checks
     DEBUG_ASSERT((curSeekFrameIndex >= seekFrameIndex) || (m_curFrameIndex < frameIndex));
     DEBUG_ASSERT((curSeekFrameIndex <= seekFrameIndex) || (m_curFrameIndex > frameIndex));
-    if ((getFrameIndexMax() <= m_curFrameIndex) || // out of range
+    if ((getMaxFrameIndex() <= m_curFrameIndex) || // out of range
             (frameIndex < m_curFrameIndex) || // seek backward
             (seekFrameIndex > (curSeekFrameIndex + kMp3SeekFramePrefetchCount))) { // jump forward
 
@@ -528,7 +519,7 @@ SINT SoundSourceMp3::seekSampleFrame(SINT frameIndex) {
         }
 
         m_curFrameIndex = restartDecoding(m_seekFrameList[seekFrameIndex]);
-        if (getFrameIndexMax() <= m_curFrameIndex) {
+        if (getMaxFrameIndex() <= m_curFrameIndex) {
             // out of range -> abort
             return m_curFrameIndex;
         }
@@ -568,8 +559,8 @@ SINT SoundSourceMp3::readSampleFrames(
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(getSampleBufferSize(numberOfFrames, readStereoSamples) <= sampleBufferSize);
 
-    const SINT numberOfFramesTotal = math_min(numberOfFrames,
-            SINT(getFrameIndexMax() - m_curFrameIndex));
+    const SINT numberOfFramesTotal = math_min(
+            numberOfFrames, getMaxFrameIndex() - m_curFrameIndex);
 
     CSAMPLE* pSampleBuffer = sampleBuffer;
     SINT numberOfFramesRemaining = numberOfFramesTotal;
@@ -662,44 +653,39 @@ SINT SoundSourceMp3::readSampleFrames(
                         << madSynthChannelCount << "<>" << getChannelCount();
             }
 #endif
-            if (1 == madSynthChannelCount) {
+            if (kChannelCountMono == madSynthChannelCount) {
                 // MP3 frame contains a mono signal
-                if (readStereoSamples || isChannelCountStereo()) {
+                if (readStereoSamples || (kChannelCountStereo == getChannelCount())) {
                     // The reader explicitly requested a stereo signal
                     // or the AudioSource itself provides a stereo signal.
                     // Mono -> Stereo: Copy 1st channel twice
                     for (SINT i = 0; i < synthReadCount; ++i) {
                         const CSAMPLE sampleValue = madScaleSampleValue(
                                 m_madSynth.pcm.samples[0][madSynthOffset + i]);
-                        *pSampleBuffer = sampleValue;
-                        ++pSampleBuffer;
-                        *pSampleBuffer = sampleValue;
-                        ++pSampleBuffer;
+                        *pSampleBuffer++ = sampleValue;
+                        *pSampleBuffer++ = sampleValue;
                     }
                 } else {
                     // Mono -> Mono: Copy 1st channel
                     for (SINT i = 0; i < synthReadCount; ++i) {
                         const CSAMPLE sampleValue = madScaleSampleValue(
                                 m_madSynth.pcm.samples[0][madSynthOffset + i]);
-                        *pSampleBuffer = sampleValue;
-                        ++pSampleBuffer;
+                        *pSampleBuffer++ = sampleValue;
                     }
                 }
             } else {
                 // MP3 frame contains a stereo signal
-                DEBUG_ASSERT(2 == madSynthChannelCount);
+                DEBUG_ASSERT(kChannelCountStereo == madSynthChannelCount);
                 // If the MP3 frame contains a stereo signal then the whole
                 // AudioSource must also provide 2 channels, because the
                 // maximum channel count of all MP3 frames is used.
-                DEBUG_ASSERT(2 == getChannelCount());
-                // Stereo -> Stereo: Copy 1st+2nd channel
+                DEBUG_ASSERT(kChannelCountStereo == getChannelCount());
+                // Stereo -> Stereo: Copy 1st + 2nd channel
                 for (SINT i = 0; i < synthReadCount; ++i) {
-                    *pSampleBuffer = madScaleSampleValue(
+                    *pSampleBuffer++ = madScaleSampleValue(
                             m_madSynth.pcm.samples[0][madSynthOffset + i]);
-                    ++pSampleBuffer;
-                    *pSampleBuffer = madScaleSampleValue(
+                    *pSampleBuffer++ = madScaleSampleValue(
                             m_madSynth.pcm.samples[1][madSynthOffset + i]);
-                    ++pSampleBuffer;
                 }
             }
         }

@@ -21,7 +21,7 @@
 // TODO(XXX): The optimum value of the "constant" kFramesPerChunk
 // depends on the properties of the AudioSource as the remarks
 // above suggest!
-const SINT CachingReaderWorker::kChunkChannels = 2; // stereo
+const SINT CachingReaderWorker::kChunkChannels = Mixxx::AudioSource::kChannelCountStereo;
 const SINT CachingReaderWorker::kFramesPerChunk = 8192; // ~ 170 ms at 48 kHz
 const SINT CachingReaderWorker::kSamplesPerChunk = kFramesPerChunk * kChunkChannels;
 
@@ -57,6 +57,8 @@ void CachingReaderWorker::processChunkReadRequest(
             frameForChunk(chunk_number);
     if (!m_pAudioSource->isValidFrameIndex(chunkFrameIndex)) {
         // Frame index out of range
+        qWarning() << "Invalid chunk seek position"
+                << chunkFrameIndex;
         update->status = CHUNK_READ_INVALID;
         return;
     }
@@ -66,13 +68,14 @@ void CachingReaderWorker::processChunkReadRequest(
     if (seekFrameIndex != chunkFrameIndex) {
         // Failed to seek to the requested index.
         // Corrupt file? -> Stop reading!
-        qWarning() << "Failed to seek chunk position";
+        qWarning() << "Failed to seek chunk position"
+                << seekFrameIndex << "<>" << chunkFrameIndex;
         update->status = CHUNK_READ_INVALID;
         return;
     }
 
     const SINT framesRemaining =
-            m_pAudioSource->getFrameIndexMax() - seekFrameIndex;
+            m_pAudioSource->getMaxFrameIndex() - seekFrameIndex;
     const SINT framesToRead =
             math_min(kFramesPerChunk, framesRemaining);
     if (0 >= framesToRead) {
@@ -85,16 +88,17 @@ void CachingReaderWorker::processChunkReadRequest(
             m_pAudioSource->readSampleFramesStereo(
                     framesToRead, request->chunk->stereoSamples, kSamplesPerChunk);
     DEBUG_ASSERT(framesRead <= framesToRead);
-    if (framesRead < framesToRead) {
-        // Failed to read data! Corrupt file?
-        qWarning() << "Failed to read chunk samples";
-        update->status = CHUNK_READ_INVALID;
-        return;
-    }
-    DEBUG_ASSERT(framesRead == framesToRead);
-
-    update->status = CHUNK_READ_SUCCESS;
     update->chunk->frameCount = framesRead;
+    if (framesRead < framesToRead) {
+        // Incomplete read! Corrupt file?
+        qWarning() << "Incomplete chunk read @" << seekFrameIndex
+                << "[" << m_pAudioSource->getMinFrameIndex()
+                << "," << m_pAudioSource->getFrameCount()
+                << "]:" << framesRead << "<" << framesToRead;
+        update->status = CHUNK_READ_PARTIAL;
+    } else {
+        update->status = CHUNK_READ_SUCCESS;
+    }
 }
 
 // WARNING: Always called from a different thread (GUI)

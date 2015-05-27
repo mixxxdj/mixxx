@@ -21,8 +21,6 @@
 								<Style>QGroupBox {}</Style>
 								<Layout>vertical</Layout>
 								<Children>
-									<!-- Preview Deck-->
-									<Template src="skin:preview_deck_container.xml"/>
 									<!--Search Input Field-->
 									<SearchBox></SearchBox>
 									<!--Library Tree View-->

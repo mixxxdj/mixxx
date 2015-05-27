@@ -29,8 +29,8 @@ ControlObject::ControlObject() {
 }
 
 ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool bTrack,
-                             double defaultValue, bool bPersist) {
-    initialize(key, bIgnoreNops, bTrack, defaultValue, bPersist);
+                             bool bPersist) {
+    initialize(key, bIgnoreNops, bTrack, bPersist);
 }
 
 ControlObject::~ControlObject() {
@@ -40,14 +40,14 @@ ControlObject::~ControlObject() {
 }
 
 void ControlObject::initialize(ConfigKey key, bool bIgnoreNops, bool bTrack,
-                               double defaultValue, bool bPersist) {
+                               bool bPersist) {
     m_key = key;
 
     // Don't bother looking up the control if key is NULL. Prevents log spew.
     if (!m_key.isNull()) {
         m_pControl = ControlDoublePrivate::getControl(m_key, true, this,
                                                       bIgnoreNops, bTrack,
-                                                      defaultValue, bPersist);
+                                                      bPersist);
     }
 
     // getControl can fail and return a NULL control even with the create flag.
