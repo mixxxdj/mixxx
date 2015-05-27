@@ -21,10 +21,10 @@ class SoundSourceProxyTest : public MixxxTest {
 TEST_F(SoundSourceProxyTest, ProxyCanOpen) {
     // This test piggy-backs off of the cover-test files.
     const QString kCoverFilePath(
-            QDir::currentPath() + "/src/test/id3-test-data/cover-test.");
+            QDir::currentPath() + "/src/test/id3-test-data/cover-test");
 
     QStringList extensions;
-    extensions << "aiff" << "flac" << "mp3" << "ogg" << "wav";
+    extensions << ".aiff" << ".flac" << "-png.mp3" << ".ogg" << ".wav";
 
     foreach (const QString& extension, extensions) {
         QString filePath = kCoverFilePath + extension;
