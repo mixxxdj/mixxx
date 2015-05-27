@@ -450,6 +450,19 @@ HerculesRMX.Deck.prototype.cueSelectHandler = function(value) {
    }
 };
 
+HerculesRMX.Deck.prototype.sourceSelectHandler = function(value) {
+   if(value == ButtonState.pressed) {
+      var passthroughStatus = engine.getValue(this.group, "passthrough");
+      if(passthroughStatus) {
+         engine.setValue(this.group, "passthrough", 0);
+		 this.Buttons.SourceSelect.setLed(LedState.off);
+      } else {
+         engine.setValue(this.group, "passthrough", 1);
+		 this.Buttons.SourceSelect.setLed(LedState.on);
+      }
+	}
+};
+
 HerculesRMX.Deck.prototype.gainHandler = function(value) {
    this.Controls.Gain.setValue(this.group, value);
 };
@@ -549,7 +562,7 @@ HerculesRMX.Decks.Left.addButton("KillMid", new HerculesRMX.Button(0x0F), "killM
 HerculesRMX.Decks.Left.addButton("KillLow", new HerculesRMX.Button(0x10), "killLowHandler");
 HerculesRMX.Decks.Left.addButton("PitchReset", new HerculesRMX.Button(0x11, 0x41), "pitchResetHandler");
 HerculesRMX.Decks.Left.addButton("Load", new HerculesRMX.Button(0x12), "loadHandler");
-HerculesRMX.Decks.Left.addButton("Source", new HerculesRMX.Button(0x13, 0x43), null);
+HerculesRMX.Decks.Left.addButton("SourceSelect", new HerculesRMX.Button(0x13, 0x43), "sourceSelectHandler");
 HerculesRMX.Decks.Left.addButton("CueSelect", new HerculesRMX.Button(0x14, 0x44), "cueSelectHandler");
 HerculesRMX.Decks.Left.addButton("Stop",  new HerculesRMX.Button(0x0D), "stopHandler");
 
@@ -596,7 +609,7 @@ HerculesRMX.Decks.Right.addButton("KillMid", new HerculesRMX.Button(0x27), "kill
 HerculesRMX.Decks.Right.addButton("KillLow", new HerculesRMX.Button(0x28), "killLowHandler");
 HerculesRMX.Decks.Right.addButton("PitchReset", new HerculesRMX.Button(0x20, 0x55), "pitchResetHandler");
 HerculesRMX.Decks.Right.addButton("Load", new HerculesRMX.Button(0x16), "loadHandler");
-HerculesRMX.Decks.Right.addButton("Source", new HerculesRMX.Button(0x17, 0x57), null);
+HerculesRMX.Decks.Right.addButton("SourceSelect", new HerculesRMX.Button(0x17, 0x57), "sourceSelectHandler");
 HerculesRMX.Decks.Right.addButton("CueSelect", new HerculesRMX.Button(0x18, 0x58), "cueSelectHandler");
 HerculesRMX.Decks.Right.addButton("Stop", new HerculesRMX.Button(0x25), "stopHandler");
 
@@ -777,6 +790,11 @@ HerculesRMX.load = function (channel, control, value, status, group) {
 HerculesRMX.cueSelect = function (channel, control, value, status, group) {
    var deck = HerculesRMX.GetDeck(group);
    deck.Buttons.CueSelect.handleEvent(value);
+};
+
+HerculesRMX.sourceSelect = function (channel, control, value, status, group) {
+   var deck = HerculesRMX.GetDeck(group);
+   deck.Buttons.SourceSelect.handleEvent(value);
 };
 
 HerculesRMX.killLow = function (channel, control, value, status, group) {
