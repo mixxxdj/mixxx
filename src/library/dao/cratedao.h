@@ -61,6 +61,7 @@ class CrateDAO : public QObject, public virtual DAO {
     bool removeTracksFromCrate(const QList<int>& ids, const int crateId);
     // remove tracks from all crates
     void removeTracksFromCrates(const QList<int>& ids);
+    bool isTrackInCrate(const int trackId, const int crateId);
 
   signals:
     void added(int crateId);

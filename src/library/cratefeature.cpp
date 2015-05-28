@@ -24,14 +24,13 @@
 #include "util/dnd.h"
 #include "util/time.h"
 
-CrateFeature::CrateFeature(QObject* parent,
+CrateFeature::CrateFeature(Library* pLibrary,
                            TrackCollection* pTrackCollection,
                            ConfigObject<ConfigValue>* pConfig)
         : m_pTrackCollection(pTrackCollection),
           m_crateDao(pTrackCollection->getCrateDAO()),
           m_crateTableModel(this, pTrackCollection),
           m_pConfig(pConfig) {
-    Q_UNUSED(parent);
     m_pCreateCrateAction = new QAction(tr("Create New Crate"),this);
     connect(m_pCreateCrateAction, SIGNAL(triggered()),
             this, SLOT(slotCreateCrate()));
@@ -92,6 +91,9 @@ CrateFeature::CrateFeature(QObject* parent,
     TreeItem *rootItem = new TreeItem();
     m_childModel.setRootItem(rootItem);
     constructChildModel(-1);
+
+    connect(pLibrary, SIGNAL(trackSelected(TrackPointer)),
+                this, SLOT(slotTrackSelected(TrackPointer)));
 }
 
 CrateFeature::~CrateFeature() {
@@ -703,4 +705,16 @@ QString CrateFeature::getRootViewHtml() const {
                 .arg(createCrateLink));
     html.append("</td></tr></table>");
     return html;
+}
+
+TrackPointer CrateFeature::getSelectedTrack() {
+    return this->m_pSelectedTrack;
+}
+
+CrateDAO& CrateFeature::getCrateDao() {
+    return m_crateDao;
+}
+
+void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
+    m_pSelectedTrack = pTrack;
 }

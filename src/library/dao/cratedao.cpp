@@ -422,3 +422,17 @@ void CrateDAO::removeTracksFromCrates(const QList<int>& ids) {
     // emit(trackRemoved(crateId, trackId));
     // emit(changed(crateId));
 }
+
+bool CrateDAO::isTrackInCrate(const int trackId, const int crateId) {
+    QSqlQuery query(m_database);
+    query.prepare("SELECT track_id FROM " CRATE_TRACKS_TABLE " WHERE "
+                  "crate_id = :crate_id AND track_id = :track_id");
+    query.bindValue(":crate_id", crateId);
+    query.bindValue(":track_id", trackId);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return false;
+    }
+    return query.next();
+}
