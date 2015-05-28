@@ -202,9 +202,12 @@ class Qt(Dependence):
 
     @staticmethod
     def enabled_imageformats(build):
+        qt5 = Qt.qt5_enabled(build)
         qt_imageformats = [
-            'qjpeg', 'qigf', 'qtiff'
+            'qgif', 'qico', 'qjpeg',  'qmng', 'qtga', 'qtiff', 'qsvg'
         ]
+        if qt5:
+            qt_imageformats.extend(['qdds', 'qicns', 'qjp2', 'qwbmp', 'qwebp'])
         return qt_imageformats
 
     def satisfy(self):
