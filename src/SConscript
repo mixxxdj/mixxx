@@ -244,6 +244,19 @@ else:
         qt_modules = ['$QTDIR/lib/' + module + suffix for module in qt_modules]
         dll_files.extend(qt_modules)
 
+# Qt imageformats plugin
+imgfmtdll_files = []
+qt_imagesformats = depends.Qt.enabled_imageformats(build)
+
+if qt5:
+        suffix = 'd.dll' if build.build_is_debug else '.dll'
+        qt_imagesformats = ['$QTDIR/plugins/imageformats/' + module + suffix for module in qt_imagesformats]
+        imgfmtdll_files.extend(qt_imagesformats)
+else:
+        suffix = 'd4.dll' if build.build_is_debug else '4.dll'
+        qt_imagesformats = ['$QTDIR/plugins/imageformats/' + module + suffix for module in qt_imagesformats]
+        imgfmtdll_files.extend(qt_imagesformats)
+
 sqldll_files = []
 if int(flags.get('qt_sqlite_plugin', 0)):
         if qt5:
@@ -475,6 +488,11 @@ if build.platform_is_windows:
         env.Alias('mixxx', vamp_plugins)
         #env.Alias('mixxx', icon)
         env.Alias('mixxx', binary)
+
+        # imageformats DLL
+        if imgfmtdll_files:
+                imageformats_dll = env.Install(os.path.join(base_dist_dir, "imageformats"), imgfmtdll_files)
+                env.Alias('mixxx', imageformats_dll)
 
         # QSQLite DLL
         if sqldll_files:
