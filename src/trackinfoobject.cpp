@@ -263,7 +263,10 @@ void TrackInfoObject::parse(bool parseCoverArt) {
 
         // Parse the information stored in the sound file.
         Mixxx::TrackMetadata trackMetadata;
-        QImage* pCoverArt = parseCoverArt ? &m_coverArt.image : NULL;
+        QImage coverArt;
+        // If parsing of the cover art image should be omitted the
+        // 2nd output parameter must be set to NULL.
+        QImage* pCoverArt = parseCoverArt ? &coverArt : NULL;
         if (proxy.parseTrackMetadataAndCoverArt(&trackMetadata, pCoverArt) == OK) {
             // If Artist, Title and Type fields are not blank, modify them.
             // Otherwise, keep their current values.
@@ -280,6 +283,8 @@ void TrackInfoObject::parse(bool parseCoverArt) {
             }
 
             if (pCoverArt && !pCoverArt->isNull()) {
+                QMutexLocker lock(&m_qMutex);
+                m_coverArt.image = *pCoverArt;
                 m_coverArt.info.hash = CoverArtUtils::calculateHash(
                     m_coverArt.image);
                 m_coverArt.info.coverLocation = QString();
