@@ -200,6 +200,12 @@ class Qt(Dependence):
             qt_modules.extend(['QtWidgets', 'QtConcurrent'])
         return qt_modules
 
+    def enabled_imageformats(build):
+        qt_imageformats = [
+            'qjpeg', 'qigf', 'qtiff'
+        ]
+        return qt_imageformats
+
     def satisfy(self):
         pass
 
