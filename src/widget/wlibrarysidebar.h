@@ -13,6 +13,7 @@
 #include <QEvent>
 
 #include "widget/wbasewidget.h"
+#include "library/backgroundcolordelegate.h"
 
 class WLibrarySidebar : public QTreeView, public WBaseWidget {
     Q_OBJECT
@@ -41,6 +42,7 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
   private:
     QBasicTimer m_expandTimer;
     QModelIndex m_hoverIndex;
+    BackgroundColorDelegate *m_delegate;
 };
 
 #endif /* WLIBRARYSIDEBAR_H */
