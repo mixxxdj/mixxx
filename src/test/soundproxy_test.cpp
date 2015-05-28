@@ -26,6 +26,10 @@ TEST_F(SoundSourceProxyTest, ProxyCanOpen) {
     QStringList extensions;
     extensions << ".aiff" << ".flac" << "-png.mp3" << ".ogg" << ".wav";
 
+#ifdef __OPUS__
+    extensions << ".opus";
+#endif
+
     foreach (const QString& extension, extensions) {
         QString filePath = kCoverFilePath + extension;
         EXPECT_TRUE(SoundSourceProxy::isFilenameSupported(filePath));
