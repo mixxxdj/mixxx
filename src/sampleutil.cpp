@@ -261,6 +261,7 @@ void SampleUtil::copyWithRampingGain(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _R
 
     const CSAMPLE_GAIN gain_delta = (new_gain - old_gain)
             / CSAMPLE_GAIN(iNumSamples / 2);
+<<<<<<< HEAD
     if (gain_delta) {
         const CSAMPLE_GAIN start_gain = old_gain + gain_delta;
         // note: LOOP VECTORIZED.
@@ -273,6 +274,15 @@ void SampleUtil::copyWithRampingGain(CSAMPLE* _RESTRICT pDest, const CSAMPLE* _R
         // note: LOOP VECTORIZED.
         for (int i = 0; i < iNumSamples; ++i) {
             pDest[i] = pSrc[i] * old_gain;
+=======
+    CSAMPLE_GAIN gain = old_gain;
+    for (unsigned int i = 0; i < iNumSamples; i += 2, gain += gain_delta) {
+        if( left ){
+            pDest[i] = pSrc[i] * gain;
+        }
+        if( right ){
+            pDest[i + 1] = pSrc[i + 1] * gain;
+>>>>>>> Experiments with the delay
         }
     }
 

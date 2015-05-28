@@ -58,6 +58,9 @@ class LibraryFeature : public QObject {
     virtual void bindWidget(WLibrary* /* libraryWidget */,
                             MixxxKeyboard* /* keyboard */) {}
     virtual TreeItemModel* getChildModel() = 0;
+    virtual TrackPointer getSelectedTrack(){
+        return TrackPointer();
+    };
 
   public slots:
     // called when you single click on the root item

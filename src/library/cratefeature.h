@@ -12,16 +12,18 @@
 
 #include "library/libraryfeature.h"
 #include "library/cratetablemodel.h"
+#include "library/library.h"
 
 #include "treeitemmodel.h"
 #include "configobject.h"
+#include "trackinfoobject.h"
 
 class TrackCollection;
 
 class CrateFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    CrateFeature(QObject* parent,
+    CrateFeature(Library* pLibrary,
                  TrackCollection* pTrackCollection,
                  ConfigObject<ConfigValue>* pConfig);
     virtual ~CrateFeature();
@@ -37,6 +39,9 @@ class CrateFeature : public LibraryFeature {
                     MixxxKeyboard* keyboard);
 
     TreeItemModel* getChildModel();
+
+    TrackPointer getSelectedTrack();
+    CrateDAO& getCrateDao();
 
   signals:
     void analyzeTracks(QList<int>);
@@ -85,6 +90,10 @@ class CrateFeature : public LibraryFeature {
     QModelIndex m_lastRightClickedIndex;
     TreeItemModel m_childModel;
     ConfigObject<ConfigValue>* m_pConfig;
+    TrackPointer m_pSelectedTrack;
+
+   private slots:
+       void slotTrackSelected(TrackPointer pTrack);
 };
 
 #endif /* CRATEFEATURE_H */

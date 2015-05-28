@@ -556,6 +556,7 @@ class MixxxCore(Feature):
                    "effects/native/echoeffect.cpp",
                    "effects/native/autopaneffect.cpp",
                    "effects/native/phasereffect.cpp",
+                   "effects/native/autopaneffect.cpp",
                    "effects/native/reverb/Reverb.cc",
 
                    "engine/effects/engineeffectsmanager.cpp",
@@ -743,6 +744,7 @@ class MixxxCore(Feature):
                    "library/baseplaylistfeature.cpp",
                    "library/playlistfeature.cpp",
                    "library/setlogfeature.cpp",
+                   "library/cratehighlightdelegate.cpp",
 
                    "library/browse/browsetablemodel.cpp",
                    "library/browse/browsethread.cpp",

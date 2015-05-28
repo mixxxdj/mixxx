@@ -15,6 +15,7 @@
 #include "effects/native/echoeffect.h"
 #include "effects/native/autopaneffect.h"
 #include "effects/native/phasereffect.h"
+#include "effects/native/autopaneffect.h"
 
 NativeBackend::NativeBackend(QObject* pParent)
         : EffectsBackend(pParent, tr("Native")) {
