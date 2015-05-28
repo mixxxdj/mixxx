@@ -39,8 +39,8 @@ public:
     ~SoundSourceOpus();
 
     Result parseTrackMetadataAndCoverArt(
-        TrackMetadata* pTrackMetadata,
-        QImage* pCoverArt) const /*override*/;
+            TrackMetadata* pTrackMetadata,
+            QImage* pCoverArt) const /*override*/;
 
     void close() /*override*/;
 
