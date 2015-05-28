@@ -742,7 +742,7 @@ class MixxxCore(Feature):
                    "library/baseplaylistfeature.cpp",
                    "library/playlistfeature.cpp",
                    "library/setlogfeature.cpp",
-                   "library/backgroundcolordelegate.cpp",
+                   "library/cratehighlightdelegate.cpp",
 
                    "library/browse/browsetablemodel.cpp",
                    "library/browse/browsethread.cpp",

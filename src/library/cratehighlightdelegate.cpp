@@ -1,11 +1,11 @@
-#include "library/backgroundcolordelegate.h"
+#include "library/cratehighlightdelegate.h"
 #include "library/treeitem.h"
 #include "trackinfoobject.h"
 #include "libraryfeature.h"
 #include "cratefeature.h"
 
 
-void BackgroundColorDelegate::initStyleOption(QStyleOptionViewItem *option,
+void CrateHighlightDelegate::initStyleOption(QStyleOptionViewItem *option,
                      const QModelIndex &index) const{
     QStyledItemDelegate::initStyleOption(option, index);
     QStyleOptionViewItemV4 *optionV4 = qstyleoption_cast<QStyleOptionViewItemV4*>(option);
