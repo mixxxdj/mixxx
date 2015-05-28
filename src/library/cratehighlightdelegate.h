@@ -1,9 +1,9 @@
 #include <QStyledItemDelegate>
 
-class BackgroundColorDelegate : public QStyledItemDelegate {
+class CrateHighlightDelegate : public QStyledItemDelegate {
 
 public:
-    BackgroundColorDelegate(QObject *parent = 0)
+    CrateHighlightDelegate(QObject *parent = 0)
         : QStyledItemDelegate(parent)
     {
     }

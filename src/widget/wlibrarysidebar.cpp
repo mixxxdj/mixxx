@@ -28,7 +28,7 @@ WLibrarySidebar::WLibrarySidebar(QWidget* parent)
     header()->setResizeMode(QHeaderView::ResizeToContents);
     header()->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
 
-    m_delegate = new BackgroundColorDelegate();
+    m_delegate = new CrateHighlightDelegate();
     this->setItemDelegate(m_delegate);
 }
 
