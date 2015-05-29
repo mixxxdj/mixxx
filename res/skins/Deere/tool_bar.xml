@@ -13,7 +13,6 @@
         <ObjectName>NotificationsContainer</ObjectName>
         <Layout>horizontal</Layout>
         <Children>
-
           <PushButton>
             <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
             <Tooltip></Tooltip>
@@ -183,22 +182,22 @@
         </Children>
       </WidgetGroup>
 
-      <PushButton>
-        <Size>40f,20f</Size>
-        <NumberStates>2</NumberStates>
-        <Tooltip>Show/hide skin settings</Tooltip>
-        <State>
-          <Number>0</Number>
-          <Text>&#9776;</Text>
-        </State>
-        <State>
-          <Number>1</Number>
-          <Text>&#8213;</Text>
-        </State>
-        <Connection>
-          <ConfigKey>[Deere],show_skin_settings</ConfigKey>
-        </Connection>
-      </PushButton>
+      <Template src="skin:left_2state_button.xml">
+        <SetVariable name="TooltipId"></SetVariable>
+        <SetVariable name="Tooltip">Show/hide skin settings</SetVariable>
+        <SetVariable name="ObjectName">ShowHideSkinSettingsButton</SetVariable>
+        <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+        <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+        <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+        <SetVariable name="state_0_text"></SetVariable>
+        <SetVariable name="state_0_pressed">icon/ic_menu_48px.svg</SetVariable>
+        <SetVariable name="state_0_unpressed">icon/ic_menu_48px.svg</SetVariable>
+        <SetVariable name="state_1_text"></SetVariable>
+        <SetVariable name="state_1_pressed">icon/ic_menu_48px.svg</SetVariable>
+        <SetVariable name="state_1_unpressed">icon/ic_menu_48px.svg</SetVariable>
+        <SetVariable name="left_connection_control">[Deere],show_skin_settings</SetVariable>
+      </Template>
+
     </Children>
   </WidgetGroup>
 </Template>
