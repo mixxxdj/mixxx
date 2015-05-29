@@ -41,7 +41,7 @@ class CrateFeature : public LibraryFeature {
     TreeItemModel* getChildModel();
 
     TrackPointer getSelectedTrack();
-    CrateDAO& getCrateDao();
+    virtual bool isTrackInChildModel(const int trackId, const QVariant dataPath);
 
   signals:
     void analyzeTracks(QList<int>);
