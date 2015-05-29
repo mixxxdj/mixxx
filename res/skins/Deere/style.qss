@@ -1,3 +1,22 @@
+/*
+  Deere , Skin for Mixxx 1.12.x
+  www.mixxx.org
+  Copyright (C) 2010-2015 RJ Ryan <rryan@mixxx.org>, S.Brandt <s.brandt@mixxx.org>
+  This file is part of the "Deere" Skin for Mixxx
+  "Deere" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
+  http://creativecommons.org/licenses/by-sa/3.0/
+
+  Mixxx skin documentation:
+  http://mixxx.org/wiki/doku.php/creating_skins
+
+  List of controls:
+  http://mixxx.org/wiki/doku.php/mixxxcontrols
+
+  Qt Style Sheets documentation:
+  http://doc.qt.io/qt-4.8/stylesheet-examples.html
+
+*/
+
 /*******************************************************************************
  ** BORDER *********************************************************************
  *******************************************************************************/

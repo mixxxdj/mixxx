@@ -2,9 +2,9 @@
 <skin>
   <manifest>
     <title>Deere</title>
-    <author>rryan</author>
+    <author>RJ Ryan, S.Brandt</author>
     <version>1.12.0.01</version>
-    <description>A test skin.</description>
+    <description>A flexible skin.</description>
     <language>en</language>
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
     <attributes>
