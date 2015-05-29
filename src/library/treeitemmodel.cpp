@@ -196,6 +196,6 @@ TreeItem* TreeItemModel::getItem(const QModelIndex &index) const {
 
 void TreeItemModel::triggerRepaint() {
     //todo: find a nicer way to do this. Works as it should but kind of hackish
-    beginInsertRows(QModelIndex().parent(), QModelIndex().row(), QModelIndex().row());
+    beginInsertRows(QModelIndex(), rowCount(), rowCount());
     endInsertRows();
 }
