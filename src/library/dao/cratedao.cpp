@@ -18,6 +18,32 @@ CrateDAO::~CrateDAO() {
 
 void CrateDAO::initialize() {
     qDebug() << "CrateDAO::initialize()";
+
+    //get the count to allocate HashMap
+    int tracksInCratesCount = 0;
+    QSqlQuery query(m_database);
+    query.prepare("SELECT COUNT(*) from " CRATE_TRACKS_TABLE);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    tracksInCratesCount = query.value(0).toInt();
+
+    m_cratesTrackIsIn.reserve(tracksInCratesCount);
+
+    //now fetch all Tracks from all crates and insert them into the hashmap
+    query.prepare("SELECT track_id, crate_id from " CRATE_TRACKS_TABLE);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    const int trackIdColumn = query.record().indexOf("track_id");
+    const int crateIdColumn = query.record().indexOf("crate_id");
+    while (query.next()) {
+        m_cratesTrackIsIn.insert(query.value(crateIdColumn).toInt(),
+                                 query.value(trackIdColumn).toInt());
+    }
 }
 
 unsigned int CrateDAO::crateCount() {
@@ -236,6 +262,9 @@ bool CrateDAO::deleteCrate(const int crateId) {
     transaction.commit();
 
     emit(deleted(crateId));
+
+    //Update in-memory map
+    m_cratesTrackIsIn.remove(crateId);
     return true;
 }
 
@@ -334,6 +363,7 @@ bool CrateDAO::addTrackToCrate(const int trackId, const int crateId) {
 
     emit(trackAdded(crateId, trackId));
     emit(changed(crateId));
+    m_cratesTrackIsIn.insert(crateId, trackId);
     return true;
 }
 
@@ -359,6 +389,7 @@ int CrateDAO::addTracksToCrate(const int crateId, QList<int>* trackIdList) {
     // Emitting the trackAdded signals for each trackID outside the transaction
     foreach(int trackId, *trackIdList) {
         emit(trackAdded(crateId, trackId));
+        m_cratesTrackIsIn.insert(crateId, trackId);
     }
 
     emit(changed(crateId));
@@ -381,6 +412,7 @@ bool CrateDAO::removeTrackFromCrate(const int trackId, const int crateId) {
 
     emit(trackRemoved(crateId, trackId));
     emit(changed(crateId));
+    m_cratesTrackIsIn.remove(crateId, trackId);
     return true;
 }
 
@@ -401,6 +433,7 @@ bool CrateDAO::removeTracksFromCrate(const QList<int>& ids, const int crateId) {
     }
     foreach (int trackId, ids) {
         emit(trackRemoved(crateId, trackId));
+        m_cratesTrackIsIn.remove(crateId, trackId);
     }
     emit(changed(crateId));
     return true;
@@ -421,19 +454,9 @@ void CrateDAO::removeTracksFromCrates(const QList<int>& ids) {
     // TODO(XXX) should we emit this for all crates?
     // emit(trackRemoved(crateId, trackId));
     // emit(changed(crateId));
+    // remove those tracks from memory-map
 }
 
 bool CrateDAO::isTrackInCrate(const int trackId, const int crateId) {
-    QSqlQuery query(m_database);
-    query.prepare("SELECT track_id FROM " CRATE_TRACKS_TABLE " WHERE "
-                  "crate_id = :crate_id AND track_id = :track_id");
-    query.bindValue(":crate_id", crateId);
-    query.bindValue(":track_id", trackId);
-
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-        return false;
-    }
-    // query.next() is null if the result was empty which will lead to false as needed.
-    return query.next();
+    return m_cratesTrackIsIn.contains(crateId, trackId);
 }
