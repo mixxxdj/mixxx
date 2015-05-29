@@ -33,6 +33,7 @@ WLibrarySidebar::WLibrarySidebar(QWidget* parent)
 }
 
 WLibrarySidebar::~WLibrarySidebar() {
+    delete m_delegate;
 }
 
 
