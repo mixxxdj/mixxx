@@ -6,6 +6,7 @@
 
 #include <QObject>
 #include <QMap>
+#include <QMultiHash>
 #include <QSqlDatabase>
 
 #include "library/dao/dao.h"
@@ -75,6 +76,7 @@ class CrateDAO : public QObject, public virtual DAO {
 
   private:
     QSqlDatabase& m_database;
+    QMultiHash<int,int> m_cratesTrackIsIn;
     DISALLOW_COPY_AND_ASSIGN(CrateDAO);
 };
 
