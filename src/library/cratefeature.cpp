@@ -94,6 +94,8 @@ CrateFeature::CrateFeature(Library* pLibrary,
 
     connect(pLibrary, SIGNAL(trackSelected(TrackPointer)),
                 this, SLOT(slotTrackSelected(TrackPointer)));
+    connect(pLibrary, SIGNAL(switchToView(const QString&)),
+                this, SLOT(slotResetSelectedTrack()));
 }
 
 CrateFeature::~CrateFeature() {
@@ -720,3 +722,8 @@ void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
     m_pSelectedTrack = pTrack;
     m_childModel.triggerRepaint();
 }
+
+void CrateFeature::slotResetSelectedTrack() {
+    slotTrackSelected(TrackPointer());
+}
+
