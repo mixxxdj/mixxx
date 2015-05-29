@@ -4,10 +4,14 @@
 #include "libraryfeature.h"
 #include "cratefeature.h"
 
+CrateHighlightDelegate::CrateHighlightDelegate(QObject* parent)
+    : QStyledItemDelegate(parent) {
+
+}
 
 void CrateHighlightDelegate::initStyleOption(QStyleOptionViewItem* option,
-                     const QModelIndex& index) const{
-    if (!index.isValid()){
+                     const QModelIndex& index) const {
+    if (!index.isValid()) {
         return;
     }
 

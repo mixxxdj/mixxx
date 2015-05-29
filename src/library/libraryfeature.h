@@ -58,10 +58,10 @@ class LibraryFeature : public QObject {
     virtual void bindWidget(WLibrary* /* libraryWidget */,
                             MixxxKeyboard* /* keyboard */) {}
     virtual TreeItemModel* getChildModel() = 0;
-    virtual TrackPointer getSelectedTrack(){
+    virtual TrackPointer getSelectedTrack() {
         return TrackPointer();
     }
-    virtual bool isTrackInChildModel(const int trackId, const QVariant dataPath){
+    virtual bool isTrackInChildModel(const int trackId, const QVariant dataPath) {
         Q_UNUSED(trackId);
         Q_UNUSED(dataPath);
         return false;
