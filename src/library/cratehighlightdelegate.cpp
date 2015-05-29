@@ -9,6 +9,7 @@ CrateHighlightDelegate::CrateHighlightDelegate(QObject* parent)
 
 }
 
+// This will be called to by Qt before painting the TreeView-Item. Set up styles here
 void CrateHighlightDelegate::initStyleOption(QStyleOptionViewItem* option,
                      const QModelIndex& index) const {
     if (!index.isValid()) {
