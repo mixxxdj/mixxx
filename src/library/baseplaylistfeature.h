@@ -13,6 +13,7 @@
 #include "library/libraryfeature.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackdao.h"
+#include "trackinfoobject.h"
 
 class WLibrary;
 class MixxxKeyboard;
@@ -33,6 +34,9 @@ class BasePlaylistFeature : public LibraryFeature {
 
     void bindWidget(WLibrary* libraryWidget,
                     MixxxKeyboard* keyboard);
+
+    TrackPointer getSelectedTrack();
+    virtual bool isTrackInChildModel(const int trackId, const QVariant dataPath);
 
   signals:
     void showPage(const QUrl& page);
@@ -89,11 +93,15 @@ class BasePlaylistFeature : public LibraryFeature {
     QList<QPair<int, QString> > m_playlistList;
     QModelIndex m_lastRightClickedIndex;
     TreeItemModel m_childModel;
+    TrackPointer m_pSelectedTrack;
 
   private:
     virtual QString getRootViewHtml() const = 0;
 
     QString m_rootViewName;
+
+  private slots:
+    void slotTrackSelected(TrackPointer pTrack);
 };
 
 #endif /* BASEPLAYLISTFEATURE_H */

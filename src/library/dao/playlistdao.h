@@ -99,6 +99,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
             const int oldPosition, const int newPosition);
     // shuffles all tracks in the position List
     void shuffleTracks(const int playlistId, const QList<int>& positions, const QHash<int,int>& allIds);
+    bool isTrackInPlaylist(const int trackId, const int playlistId);
 
   signals:
     void added(int playlistId);
