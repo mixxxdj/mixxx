@@ -942,3 +942,18 @@ void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& position
     transaction.commit();
     emit(changed(playlistId));
 }
+
+bool PlaylistDAO::isTrackInPlaylist(const int trackId, const int playlistId) {
+    QSqlQuery query(m_database);
+    query.prepare("SELECT track_id FROM PlaylistTracks "
+                  "WHERE playlist_id = :playlist_id AND track_id = :track_id");
+    query.bindValue(":playlist_id", playlistId);
+    query.bindValue(":track_id", trackId);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return false;
+    }
+    // query.next() is null if the result was empty which will lead to false as needed.
+    return query.next();
+}
