@@ -434,5 +434,6 @@ bool CrateDAO::isTrackInCrate(const int trackId, const int crateId) {
         LOG_FAILED_QUERY(query);
         return false;
     }
+    // query.next() is null if the result was empty which will lead to false as needed.
     return query.next();
 }

@@ -5,24 +5,23 @@
 #include "cratefeature.h"
 
 
-void CrateHighlightDelegate::initStyleOption(QStyleOptionViewItem *option,
-                     const QModelIndex &index) const{
+void CrateHighlightDelegate::initStyleOption(QStyleOptionViewItem* option,
+                     const QModelIndex& index) const{
+    if (!index.isValid()){
+        return;
+    }
+
     QStyledItemDelegate::initStyleOption(option, index);
     QStyleOptionViewItemV4 *optionV4 = qstyleoption_cast<QStyleOptionViewItemV4*>(option);
 
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
-    LibraryFeature* pFeature = static_cast<LibraryFeature*>(item->getFeature());
-    if (pFeature){
+    LibraryFeature* pFeature = item->getFeature();
+    if (pFeature) {
         TrackPointer pTrack = pFeature->getSelectedTrack();
-        if (pTrack){
-            CrateFeature* pCrateFeature = static_cast<CrateFeature*>(pFeature);
-            if (pCrateFeature){
-                if (pCrateFeature->getCrateDao().isTrackInCrate(pTrack->getId(), item->dataPath().toInt())){
-                    optionV4->font.setBold(true);
-                    //Todo: now trigger repaint of the widget so that it will be applyed
-                }
+        if (pTrack) {
+            if (pFeature->isTrackInChildModel(pTrack->getId(), item->dataPath())){
+                optionV4->font.setBold(true);
             }
-
         }
     }
 }

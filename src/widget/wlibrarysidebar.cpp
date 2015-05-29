@@ -29,7 +29,7 @@ WLibrarySidebar::WLibrarySidebar(QWidget* parent)
     header()->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
 
     m_delegate = new CrateHighlightDelegate();
-    this->setItemDelegate(m_delegate);
+    setItemDelegate(m_delegate);
 }
 
 WLibrarySidebar::~WLibrarySidebar() {

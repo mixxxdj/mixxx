@@ -118,6 +118,11 @@ QIcon CrateFeature::getIcon() {
     return QIcon(":/images/library/ic_library_crates.png");
 }
 
+bool CrateFeature::isTrackInChildModel(const int trackId,
+        const QVariant dataPath) {
+    return m_crateDao.isTrackInCrate(trackId, dataPath.toInt());
+}
+
 int CrateFeature::crateIdFromIndex(QModelIndex index) {
     TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
     if (item == NULL) {
@@ -708,13 +713,10 @@ QString CrateFeature::getRootViewHtml() const {
 }
 
 TrackPointer CrateFeature::getSelectedTrack() {
-    return this->m_pSelectedTrack;
-}
-
-CrateDAO& CrateFeature::getCrateDao() {
-    return m_crateDao;
+    return m_pSelectedTrack;
 }
 
 void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
     m_pSelectedTrack = pTrack;
+    m_childModel.triggerRepaint();
 }
