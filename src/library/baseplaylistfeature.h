@@ -102,6 +102,7 @@ class BasePlaylistFeature : public LibraryFeature {
 
   private slots:
     void slotTrackSelected(TrackPointer pTrack);
+    void slotResetSelectedTrack();
 };
 
 #endif /* BASEPLAYLISTFEATURE_H */

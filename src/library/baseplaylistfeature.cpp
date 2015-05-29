@@ -87,6 +87,8 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
     Library* pLibrary = static_cast<Library*>(parent);
     connect(pLibrary, SIGNAL(trackSelected(TrackPointer)),
                 this, SLOT(slotTrackSelected(TrackPointer)));
+    connect(pLibrary, SIGNAL(switchToView(const QString&)),
+                this, SLOT(slotResetSelectedTrack()));
 }
 
 BasePlaylistFeature::~BasePlaylistFeature() {
@@ -603,4 +605,9 @@ TrackPointer BasePlaylistFeature::getSelectedTrack() {
 void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {
     m_pSelectedTrack = pTrack;
     m_childModel.triggerRepaint();
+}
+
+
+void BasePlaylistFeature::slotResetSelectedTrack() {
+    slotTrackSelected(TrackPointer());
 }
