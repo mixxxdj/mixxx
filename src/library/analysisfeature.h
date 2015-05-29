@@ -16,6 +16,7 @@
 #include "configobject.h"
 #include "treeitemmodel.h"
 #include "dlganalysis.h"
+#include "trackinfoobject.h"
 
 class AnalyserQueue;
 class TrackCollection;
@@ -42,6 +43,7 @@ class AnalysisFeature : public LibraryFeature {
   signals:
     void analysisActive(bool bActive);
     void trackAnalysisStarted(int size);
+    void trackSelected(TrackPointer);
 
   public slots:
     void activate();

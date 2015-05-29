@@ -18,6 +18,7 @@
 #include "library/dao/trackdao.h"
 #include "treeitemmodel.h"
 #include "configobject.h"
+#include "trackinfoobject.h"
 
 class DlgHidden;
 class DlgMissing;
@@ -41,6 +42,8 @@ class MixxxLibraryFeature : public LibraryFeature {
     TreeItemModel* getChildModel();
     void bindWidget(WLibrary* pLibrary,
                     MixxxKeyboard* pKeyboard);
+  signals:
+    void trackSelected(TrackPointer);
 
   public slots:
     void activate();
