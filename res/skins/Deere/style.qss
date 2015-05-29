@@ -468,13 +468,11 @@ WSliderComposed {
 }
 /* End spacing for Deck overview row */
 
-
 #WaveformZoomContainer {
   background-color: #333333;
   padding: 1px;
   qproperty-layoutSpacing: 2;
 }
-
 
 /* Start spacing for Deck inner column (tempo slider, rate change) */
 #Deck1InnerColumn, #Deck3InnerColumn {
@@ -991,6 +989,11 @@ WPushButton[value="2"]:hover {
  ** End Buttons  ***************************************************************
  *******************************************************************************/
 
+QToolTip {
+    background-color: #222222;
+    color: #CCCCCC;
+    border: 1px solid #CCCCCC;
+}
 /*
 
 #Deck1 {

@@ -76,7 +76,6 @@
         </Children>
       </WidgetGroup>
 
-
       <Template src="skin:spacer_h.xml"></Template>
 
       <WidgetGroup>
@@ -197,7 +196,6 @@
         <SetVariable name="state_1_unpressed">icon/ic_menu_48px.svg</SetVariable>
         <SetVariable name="left_connection_control">[Deere],show_skin_settings</SetVariable>
       </Template>
-
     </Children>
   </WidgetGroup>
 </Template>
