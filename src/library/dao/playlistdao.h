@@ -121,6 +121,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
                                  int* pTrackDistance);
 
     QSqlDatabase& m_database;
+    QMultiHash<int,int> m_playlistsTrackIsIn;
     DISALLOW_COPY_AND_ASSIGN(PlaylistDAO);
 };
 
