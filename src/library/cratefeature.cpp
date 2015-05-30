@@ -93,9 +93,9 @@ CrateFeature::CrateFeature(Library* pLibrary,
     constructChildModel(-1);
 
     connect(pLibrary, SIGNAL(trackSelected(TrackPointer)),
-                this, SLOT(slotTrackSelected(TrackPointer)));
+            this, SLOT(slotTrackSelected(TrackPointer)));
     connect(pLibrary, SIGNAL(switchToView(const QString&)),
-                this, SLOT(slotResetSelectedTrack()));
+            this, SLOT(slotResetSelectedTrack()));
 }
 
 CrateFeature::~CrateFeature() {
@@ -118,11 +118,6 @@ QVariant CrateFeature::title() {
 
 QIcon CrateFeature::getIcon() {
     return QIcon(":/images/library/ic_library_crates.png");
-}
-
-bool CrateFeature::isTrackInChildModel(const int trackId,
-        const QVariant dataPath) {
-    return m_crateDao.isTrackInCrate(trackId, dataPath.toInt());
 }
 
 int CrateFeature::crateIdFromIndex(QModelIndex index) {
@@ -714,16 +709,23 @@ QString CrateFeature::getRootViewHtml() const {
     return html;
 }
 
-TrackPointer CrateFeature::getSelectedTrack() {
-    return m_pSelectedTrack;
-}
-
 void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
     m_pSelectedTrack = pTrack;
-    m_childModel.triggerRepaint();
+    int trackId = pTrack.isNull() ? -1 : pTrack->getId();
+
+    // Set all crates the track is in bold (or if there is no track selected,
+    // clear all the bolding).
+    int row = 0;
+    for (QList<QPair<int, QString> >::const_iterator it = m_crateList.begin();
+         it != m_crateList.end(); ++it, ++row) {
+        int crateId = it->first;
+        QModelIndex index = m_childModel.index(row, 0);
+
+        bool shouldBold = m_crateDao.isTrackInCrate(trackId, crateId);
+        m_childModel.setData(index, shouldBold, TreeItemModel::kBoldRole);
+    }
 }
 
 void CrateFeature::slotResetSelectedTrack() {
     slotTrackSelected(TrackPointer());
 }
-

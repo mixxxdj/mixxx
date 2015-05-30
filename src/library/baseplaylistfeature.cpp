@@ -86,9 +86,9 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
 
     Library* pLibrary = static_cast<Library*>(parent);
     connect(pLibrary, SIGNAL(trackSelected(TrackPointer)),
-                this, SLOT(slotTrackSelected(TrackPointer)));
+            this, SLOT(slotTrackSelected(TrackPointer)));
     connect(pLibrary, SIGNAL(switchToView(const QString&)),
-                this, SLOT(slotResetSelectedTrack()));
+            this, SLOT(slotResetSelectedTrack()));
 }
 
 BasePlaylistFeature::~BasePlaylistFeature() {
@@ -591,18 +591,21 @@ QModelIndex BasePlaylistFeature::indexFromPlaylistId(int playlistId) {
     return QModelIndex();
 }
 
-bool BasePlaylistFeature::isTrackInChildModel(const int trackId,
-        const QVariant dataPath) {
-    return m_playlistDao.isTrackInPlaylist(trackId, dataPath.toInt());
-}
-
-TrackPointer BasePlaylistFeature::getSelectedTrack() {
-    return m_pSelectedTrack;
-}
-
 void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {
     m_pSelectedTrack = pTrack;
-    m_childModel.triggerRepaint();
+    int trackId = pTrack.isNull() ? -1 : pTrack->getId();
+
+    // Set all playlists the track is in bold (or if there is no track selected,
+    // clear all the bolding).
+    int row = 0;
+    for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
+         it != m_playlistList.end(); ++it, ++row) {
+        int playlistId = it->first;
+        QModelIndex index = m_childModel.index(row, 0);
+
+        bool shouldBold = m_playlistDao.isTrackInPlaylist(trackId, playlistId);
+        m_childModel.setData(index, shouldBold, TreeItemModel::kBoldRole);
+    }
 }
 
 

@@ -40,9 +40,6 @@ class CrateFeature : public LibraryFeature {
 
     TreeItemModel* getChildModel();
 
-    TrackPointer getSelectedTrack();
-    virtual bool isTrackInChildModel(const int trackId, const QVariant dataPath);
-
   signals:
     void analyzeTracks(QList<int>);
 
@@ -64,6 +61,10 @@ class CrateFeature : public LibraryFeature {
     void slotCrateTableChanged(int playlistId);
     void slotCrateTableRenamed(int playlistId, QString a_strName);
     void htmlLinkClicked(const QUrl& link);
+
+  private slots:
+    void slotTrackSelected(TrackPointer pTrack);
+    void slotResetSelectedTrack();
 
   private:
     QString getRootViewHtml() const;
@@ -91,10 +92,6 @@ class CrateFeature : public LibraryFeature {
     TreeItemModel m_childModel;
     ConfigObject<ConfigValue>* m_pConfig;
     TrackPointer m_pSelectedTrack;
-
-   private slots:
-       void slotTrackSelected(TrackPointer pTrack);
-       void slotResetSelectedTrack();
 };
 
 #endif /* CRATEFEATURE_H */
