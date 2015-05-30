@@ -13,7 +13,6 @@
 #include <QEvent>
 
 #include "widget/wbasewidget.h"
-#include "library/cratehighlightdelegate.h"
 
 class WLibrarySidebar : public QTreeView, public WBaseWidget {
     Q_OBJECT
@@ -42,7 +41,6 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
   private:
     QBasicTimer m_expandTimer;
     QModelIndex m_hoverIndex;
-    CrateHighlightDelegate *m_delegate;
 };
 
 #endif /* WLIBRARYSIDEBAR_H */
