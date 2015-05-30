@@ -121,6 +121,17 @@ class Stat {
                       Stat::StatType type,
                       Stat::ComputeFlags compute,
                       double value);
+
+  private:
+    static bool track(const char *,
+                      Stat::StatType,
+                      Stat::ComputeFlags,
+                      double) {
+        // this should not be uses to avoid unicode encoding and
+        // mamory alloc at every call. Use:
+        // static const QString tag(const char*);
+        return false;
+    }
 };
 
 QDebug operator<<(QDebug dbg, const Stat &stat);
