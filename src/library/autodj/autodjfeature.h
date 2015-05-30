@@ -19,7 +19,6 @@
 #include "library/libraryfeature.h"
 #include "configobject.h"
 #include "library/treeitemmodel.h"
-#include "trackinfoobject.h"
 
 #ifdef __AUTODJCRATES__
 #include "library/dao/autodjcratesdao.h"
@@ -50,9 +49,6 @@ class AutoDJFeature : public LibraryFeature {
                     MixxxKeyboard* keyboard);
 
     TreeItemModel* getChildModel();
-
-  signals:
-    void trackSelected(TrackPointer);
 
   public slots:
     void activate();

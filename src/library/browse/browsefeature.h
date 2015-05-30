@@ -14,7 +14,6 @@
 #include <QString>
 
 #include "configobject.h"
-#include "trackinfoobject.h"
 #include "library/browse/browsetablemodel.h"
 #include "library/browse/foldertreemodel.h"
 #include "library/libraryfeature.h"
@@ -57,7 +56,6 @@ class BrowseFeature : public LibraryFeature {
     void setRootIndex(const QModelIndex&);
     void requestAddDir(QString);
     void scanLibrary();
-    void trackSelected(TrackPointer);
 
   private:
     QString getRootViewHtml() const;
