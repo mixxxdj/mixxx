@@ -58,14 +58,6 @@ class LibraryFeature : public QObject {
     virtual void bindWidget(WLibrary* /* libraryWidget */,
                             MixxxKeyboard* /* keyboard */) {}
     virtual TreeItemModel* getChildModel() = 0;
-    virtual TrackPointer getSelectedTrack() {
-        return TrackPointer();
-    }
-    virtual bool isTrackInChildModel(const int trackId, const QVariant dataPath) {
-        Q_UNUSED(trackId);
-        Q_UNUSED(dataPath);
-        return false;
-    }
 
   public slots:
     // called when you single click on the root item
@@ -103,6 +95,7 @@ class LibraryFeature : public QObject {
     void featureSelect(LibraryFeature* pFeature, const QModelIndex& index);
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
+    void trackSelected(TrackPointer pTrack);
 };
 
 #endif /* LIBRARYFEATURE_H */
