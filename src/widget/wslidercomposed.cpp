@@ -141,7 +141,7 @@ void WSliderComposed::paintEvent(QPaintEvent *) {
     }
 
     if (!m_pHandle.isNull() && !m_pHandle->isNull()) {
-        double drawPos = m_handler.parameterToPosition(getControlParameterDisplay());
+        double drawPos = round(m_handler.parameterToPosition(getControlParameterDisplay()));
         if (m_bHorizontal) {
             // The handle's draw mode determines whether it is stretched.
             QRectF targetRect(drawPos, 0, m_dHandleLength, height());
