@@ -17,6 +17,7 @@ ControlObject* EnginePregain::s_pEnableReplayGain = NULL;
 EnginePregain::EnginePregain(QString group)
         : m_dSpeed(1.0),
           m_dOldSpeed(1.0),
+          m_dNonScratchSpeed(1.0),
           m_scratching(false),
           m_fPrevGain(1.0),
           m_bSmoothFade(false) {
@@ -46,12 +47,13 @@ EnginePregain::~EnginePregain() {
     s_pDefaultBoost = NULL;
 }
 
-void EnginePregain::setSpeed(double speed) {
+void EnginePregain::setSpeedAndScratching(double speed, bool scratching) {
     m_dOldSpeed = m_dSpeed;
     m_dSpeed = speed;
-}
 
-void EnginePregain::setScratching(bool scratching) {
+    if (scratching && !m_scratching) {
+        m_dNonScratchSpeed = m_dOldSpeed;
+    }
     m_scratching = scratching;
 }
 
