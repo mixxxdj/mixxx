@@ -50,9 +50,8 @@ EnginePregain::~EnginePregain() {
 void EnginePregain::setSpeedAndScratching(double speed, bool scratching) {
     m_dOldSpeed = m_dSpeed;
     m_dSpeed = speed;
-
-    if (scratching && !m_scratching) {
-        m_dNonScratchSpeed = m_dOldSpeed;
+    if (!scratching) {
+        m_dNonScratchSpeed = speed;
     }
     m_scratching = scratching;
 }
@@ -119,9 +118,9 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
     // Instead, reduce gain to provide a soft rolloff.
     // This is also applied for for fading from and to pause
     const float kThresholdSpeed = 0.070; // Scale volume if playback speed is below 7%.
-    if (fabs(m_dSpeed) < kThresholdSpeed) {
-        totalGain *= fabs(m_dSpeed) / kThresholdSpeed;
-    }
+    //if (m_scratching || fabs(m_dSpeed) < kThresholdSpeed) {
+        totalGain *= log10((fabs(m_dSpeed) * 4) + 1) / 0.7;
+    //}
 
     if ((m_dSpeed * m_dOldSpeed < 0) && m_scratching) {
         // direction changed, go though zero if scratching
