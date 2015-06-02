@@ -4,6 +4,7 @@
 #include <QHash>
 #include <QObject>
 #include <QSqlDatabase>
+#include <QSet>
 
 #include "library/dao/dao.h"
 #include "util.h"
@@ -99,7 +100,9 @@ class PlaylistDAO : public QObject, public virtual DAO {
             const int oldPosition, const int newPosition);
     // shuffles all tracks in the position List
     void shuffleTracks(const int playlistId, const QList<int>& positions, const QHash<int,int>& allIds);
-    bool isTrackInPlaylist(const int trackId, const int playlistId);
+    bool isTrackInPlaylist(const int trackId, const int playlistId) const;
+
+    void getPlaylistsTrackIsIn(const int trackId, QSet<int>* playlistSet) const;
 
   signals:
     void added(int playlistId);
@@ -119,6 +122,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
                                  const int otherTrackPosition,
                                  const QHash<int,int>* pTrackPositionIds,
                                  int* pTrackDistance);
+    void populatePlaylistMembershipCache();
 
     QSqlDatabase& m_database;
     QMultiHash<int,int> m_playlistsTrackIsIn;
