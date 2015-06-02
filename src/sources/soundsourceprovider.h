@@ -14,7 +14,7 @@ public:
 
     virtual QString getName() const = 0;
 
-    virtual QStringList getSupportedFileTypes() const = 0;
+    virtual QStringList getSupportedFileExtensions() const = 0;
 
     virtual SoundSourcePointer newSoundSource(const QUrl& url) = 0;
 };

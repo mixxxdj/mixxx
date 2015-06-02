@@ -81,13 +81,13 @@ QString SoundSourceProviderWV::getName() const {
     return "WavPack";
 }
 
-QStringList SoundSourceProviderWV::getSupportedFileTypes() const {
-    QStringList supportedFileTypes;
-    supportedFileTypes.append("wv");
-    return supportedFileTypes;
+QStringList SoundSourceProviderWV::getSupportedFileExtensions() const {
+    QStringList supportedFileExtensions;
+    supportedFileExtensions.append("wv");
+    return supportedFileExtensions;
 }
 
-}  // namespace Mixxx
+} // namespace Mixxx
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
 Mixxx::SoundSourceProviderPointer Mixxx_SoundSourcePluginAPI_getSoundSourceProvider() {

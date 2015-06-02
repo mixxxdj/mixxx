@@ -20,17 +20,17 @@ public:
     // regular expressions for file names.
     void finishRegistration();
 
-    SoundSourceProviderPointer getProviderForFileType(
-            const QString& fileType) const {
-        return m_entries.value(fileType).pProvider;
+    SoundSourceProviderPointer getProviderForFileExtension(
+            const QString& fileExtension) const {
+        return m_entries.value(fileExtension).pProvider;
     }
 
-    SoundSourcePluginLibraryPointer getPluginLibraryForFileType(
-            const QString& fileType) const {
-        return m_entries.value(fileType).pPluginLibrary;
+    SoundSourcePluginLibraryPointer getPluginLibraryForFileExtension(
+            const QString& fileExtension) const {
+        return m_entries.value(fileExtension).pPluginLibrary;
     }
 
-    QStringList getSupportedFileTypes() const {
+    QStringList getSupportedFileExtensions() const {
         return m_entries.keys();
     }
 
@@ -45,11 +45,11 @@ private:
         SoundSourceProviderPointer pProvider;
         SoundSourcePluginLibraryPointer pPluginLibrary;
     };
-    typedef QMap<QString, Entry> FileType2Entry;
+    typedef QMap<QString, Entry> FileExtension2Entry;
 
     SoundSourceProviderPointer registerEntry(const Entry& entry);
 
-    FileType2Entry m_entries;
+    FileExtension2Entry m_entries;
 
     QRegExp m_supportedFileNameRegex;
 };

@@ -100,7 +100,7 @@ public:
         return "FFmpeg";
     }
 
-    QStringList getSupportedFileTypes() const /*override*/;
+    QStringList getSupportedFileExtensions() const /*override*/;
 
     SoundSourcePointer newSoundSource(const QUrl& url)  /*override*/ {
         return SoundSourcePointer(new SoundSourceFFmpeg(url));

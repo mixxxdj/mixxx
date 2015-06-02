@@ -4,13 +4,14 @@
 
 namespace Mixxx {
 
-/*static*/ QString SoundSource::getTypeFromUrl(const QUrl& url) {
+/*static*/ QString SoundSource::getFileExtensionFromUrl(const QUrl& url) {
     return url.toString().section(".", -1).toLower().trimmed();
 }
 
 SoundSource::SoundSource(const QUrl& url)
         : AudioSource(url),
-          m_type(getTypeFromUrl(url)) {
+          // simply use the file extension as the type
+          m_type(getFileExtensionFromUrl(url)) {
     DEBUG_ASSERT(getUrl().isValid());
 }
 

@@ -14,9 +14,9 @@ class SoundSourceProxyTest: public MixxxTest {
         QStringList availableExtensions;
         availableExtensions << "aiff" << "flac" << "m4a" << "mp3" << "ogg" << "opus" << "wav";
         QStringList supportedExtensions;
-        foreach (QString const& fileType, availableExtensions) {
-            if (SoundSourceProxy::isFileTypeSupported(fileType)) {
-                supportedExtensions << fileType;
+        foreach (QString const& fileExtension, availableExtensions) {
+            if (SoundSourceProxy::isFileExtensionSupported(fileExtension)) {
+                supportedExtensions << fileExtension;
             }
         }
         return supportedExtensions;

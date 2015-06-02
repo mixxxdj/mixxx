@@ -257,10 +257,10 @@ QString SoundSourceProviderOpus::getName() const {
     return "Xiph.org libopusfile";
 }
 
-QStringList SoundSourceProviderOpus::getSupportedFileTypes() const {
-    QStringList supportedFileTypes;
-    supportedFileTypes.append("opus");
-    return supportedFileTypes;
+QStringList SoundSourceProviderOpus::getSupportedFileExtensions() const {
+    QStringList supportedFileExtensions;
+    supportedFileExtensions.append("opus");
+    return supportedFileExtensions;
 }
 
 } // namespace Mixxx

@@ -242,13 +242,13 @@ QString SoundSourceProviderSndFile::getName() const {
     return "libsndfile";
 }
 
-QStringList SoundSourceProviderSndFile::getSupportedFileTypes() const {
-    QStringList supportedFileTypes;
-    supportedFileTypes.append("aiff");
-    supportedFileTypes.append("aif");
-    supportedFileTypes.append("wav");
-    supportedFileTypes.append("flac");
-    return supportedFileTypes;
+QStringList SoundSourceProviderSndFile::getSupportedFileExtensions() const {
+    QStringList supportedFileExtensions;
+    supportedFileExtensions.append("aiff");
+    supportedFileExtensions.append("aif");
+    supportedFileExtensions.append("wav");
+    supportedFileExtensions.append("flac");
+    return supportedFileExtensions;
 }
 
 } // namespace Mixxx

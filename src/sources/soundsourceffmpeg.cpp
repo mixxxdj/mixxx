@@ -67,7 +67,7 @@
 namespace Mixxx {
 >>>>>>> Move code from specialized AudioSources back into corresponding SoundSources
 
-QStringList SoundSourceProviderFFmpeg::getSupportedFileTypes() const {
+QStringList SoundSourceProviderFFmpeg::getSupportedFileExtensions() const {
     QStringList list;
     AVInputFormat *l_SInputFmt  = NULL;
 

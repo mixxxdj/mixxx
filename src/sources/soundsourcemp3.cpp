@@ -698,10 +698,10 @@ QString SoundSourceProviderMp3::getName() const {
     return "MAD: MPEG Audio Decoder";
 }
 
-QStringList SoundSourceProviderMp3::getSupportedFileTypes() const {
-    QStringList supportedFileTypes;
-    supportedFileTypes.append("mp3");
-    return supportedFileTypes;
+QStringList SoundSourceProviderMp3::getSupportedFileExtensions() const {
+    QStringList supportedFileExtensions;
+    supportedFileExtensions.append("mp3");
+    return supportedFileExtensions;
 }
 
 } // namespace Mixxx
