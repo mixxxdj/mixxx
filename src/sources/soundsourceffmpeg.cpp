@@ -7,7 +7,7 @@
 
 namespace Mixxx {
 
-QStringList SoundSourceProviderFFmpeg::getSupportedFileTypes() const {
+QStringList SoundSourceProviderFFmpeg::getSupportedFileExtensions() const {
     QStringList list;
     AVInputFormat *l_SInputFmt  = NULL;
 

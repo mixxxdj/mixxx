@@ -590,11 +590,11 @@ QString SoundSourceProviderMediaFoundation::getName() const {
     return "Microsoft Media Foundation";
 }
 
-QStringList SoundSourceProviderMediaFoundation::getSupportedFileTypes() const {
-    QStringList supportedFileTypes;
-    supportedFileTypes.append("m4a");
-    supportedFileTypes.append("mp4");
-    return supportedFileTypes;
+QStringList SoundSourceProviderMediaFoundation::getSupportedFileExtensions() const {
+    QStringList supportedFileExtensions;
+    supportedFileExtensions.append("m4a");
+    supportedFileExtensions.append("mp4");
+    return supportedFileExtensions;
 }
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT

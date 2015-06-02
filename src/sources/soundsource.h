@@ -9,7 +9,7 @@ namespace Mixxx {
 // Base class for sound sources.
 class SoundSource: public MetadataSource, public AudioSource {
 public:
-    static QString getTypeFromUrl(const QUrl& url);
+    static QString getFileExtensionFromUrl(const QUrl& url);
 
     const QString& getType() const {
         return m_type;
@@ -32,6 +32,8 @@ public:
     virtual void close() = 0;
 
 protected:
+    // If no type is provided the file extension of the file referred
+    // by the URL will be used as the type of the SoundSource.
     explicit SoundSource(const QUrl& url);
     SoundSource(const QUrl& url, const QString& type);
 

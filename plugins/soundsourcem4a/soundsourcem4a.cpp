@@ -427,11 +427,11 @@ QString SoundSourceProviderM4A::getName() const {
     return "Nero FAAD2";
 }
 
-QStringList SoundSourceProviderM4A::getSupportedFileTypes() const {
-    QStringList supportedFileTypes;
-    supportedFileTypes.append("m4a");
-    supportedFileTypes.append("mp4");
-    return supportedFileTypes;
+QStringList SoundSourceProviderM4A::getSupportedFileExtensions() const {
+    QStringList supportedFileExtensions;
+    supportedFileExtensions.append("m4a");
+    supportedFileExtensions.append("mp4");
+    return supportedFileExtensions;
 }
 
 } // namespace Mixxx

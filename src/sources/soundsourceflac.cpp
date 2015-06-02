@@ -505,10 +505,10 @@ QString SoundSourceProviderFLAC::getName() const {
     return "Xiph.org libFLAC";
 }
 
-QStringList SoundSourceProviderFLAC::getSupportedFileTypes() const {
-    QStringList supportedFileTypes;
-    supportedFileTypes.append("flac");
-    return supportedFileTypes;
+QStringList SoundSourceProviderFLAC::getSupportedFileExtensions() const {
+    QStringList supportedFileExtensions;
+    supportedFileExtensions.append("flac");
+    return supportedFileExtensions;
 }
 
 } // namespace Mixxx

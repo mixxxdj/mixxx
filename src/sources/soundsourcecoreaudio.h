@@ -46,7 +46,7 @@ class SoundSourceProviderCoreAudio: public SoundSourceProvider {
 public:
     QString getName() const /*override*/;
 
-    QStringList getSupportedFileTypes() const /*override*/;
+    QStringList getSupportedFileExtensions() const /*override*/;
 
     SoundSourcePointer newSoundSource(const QUrl& url)  /*override*/ {
         return SoundSourcePointer(new SoundSourceCoreAudio(url));

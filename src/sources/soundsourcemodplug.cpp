@@ -17,20 +17,20 @@ namespace {
 const SINT kChunkSizeInBytes = SINT(1) << 19;
 
 QString getModPlugTypeFromUrl(QUrl url) {
-    const QString type(SoundSource::getTypeFromUrl(url));
-    if (type == "mod") {
+    const QString fileExtension(SoundSource::getFileExtensionFromUrl(url));
+    if (fileExtension == "mod") {
         return "Protracker";
-    } else if (type == "med") {
+    } else if (fileExtension == "med") {
         return "OctaMed";
-    } else if (type == "okt") {
+    } else if (fileExtension == "okt") {
         return "Oktalyzer";
-    } else if (type == "s3m") {
+    } else if (fileExtension == "s3m") {
         return "Scream Tracker 3";
-    } else if (type == "stm") {
+    } else if (fileExtension == "stm") {
         return "Scream Tracker";
-    } else if (type == "xm") {
+    } else if (fileExtension == "xm") {
         return "FastTracker2";
-    } else if (type == "it") {
+    } else if (fileExtension == "it") {
         return "Impulse Tracker";
     } else {
         return "Module";
@@ -190,18 +190,18 @@ QString SoundSourceProviderModPlug::getName() const {
     return "MODPlug";
 }
 
-QStringList SoundSourceProviderModPlug::getSupportedFileTypes() const {
-    QStringList supportedFileTypes;
+QStringList SoundSourceProviderModPlug::getSupportedFileExtensions() const {
+    QStringList supportedFileExtensions;
     // ModPlug supports more formats but file name
     // extensions are not always present with modules.
-    supportedFileTypes.append("mod");
-    supportedFileTypes.append("med");
-    supportedFileTypes.append("okt");
-    supportedFileTypes.append("s3m");
-    supportedFileTypes.append("stm");
-    supportedFileTypes.append("xm");
-    supportedFileTypes.append("it");
-    return supportedFileTypes;
+    supportedFileExtensions.append("mod");
+    supportedFileExtensions.append("med");
+    supportedFileExtensions.append("okt");
+    supportedFileExtensions.append("s3m");
+    supportedFileExtensions.append("stm");
+    supportedFileExtensions.append("xm");
+    supportedFileExtensions.append("it");
+    return supportedFileExtensions;
 }
 
 } // namespace Mixxx

@@ -167,10 +167,10 @@ QString SoundSourceProviderOggVorbis::getName() const {
     return "Xiph.org OggVorbis";
 }
 
-QStringList SoundSourceProviderOggVorbis::getSupportedFileTypes() const {
-    QStringList supportedFileTypes;
-    supportedFileTypes.append("ogg");
-    return supportedFileTypes;
+QStringList SoundSourceProviderOggVorbis::getSupportedFileExtensions() const {
+    QStringList supportedFileExtensions;
+    supportedFileExtensions.append("ogg");
+    return supportedFileExtensions;
 }
 
 } // namespace Mixxx

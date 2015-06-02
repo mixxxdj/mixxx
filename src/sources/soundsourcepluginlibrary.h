@@ -45,7 +45,7 @@ private:
     QLibrary m_library;
 
     int m_apiVersion;
-    QStringList m_supportedFileTypes;
+    QStringList m_supportedFileExtensions;
 
     SoundSourcePluginAPI_getSoundSourceProviderFunc m_getSoundSourceProviderFunc;
 };
