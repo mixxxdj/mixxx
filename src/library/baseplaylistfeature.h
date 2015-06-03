@@ -8,6 +8,7 @@
 #include <QAction>
 #include <QList>
 #include <QPair>
+#include <QSet>
 #include <QString>
 
 #include "library/libraryfeature.h"
@@ -99,6 +100,7 @@ class BasePlaylistFeature : public LibraryFeature {
   private:
     virtual QString getRootViewHtml() const = 0;
 
+    QSet<int> m_playlistsSelectedTrackIsIn;
     QString m_rootViewName;
 };
 

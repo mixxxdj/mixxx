@@ -9,6 +9,7 @@
 #include <QUrl>
 #include <QIcon>
 #include <QPoint>
+#include <QSet>
 
 #include "library/libraryfeature.h"
 #include "library/cratetablemodel.h"
@@ -92,6 +93,7 @@ class CrateFeature : public LibraryFeature {
     TreeItemModel m_childModel;
     ConfigObject<ConfigValue>* m_pConfig;
     TrackPointer m_pSelectedTrack;
+    QSet<int> m_cratesSelectedTrackIsIn;
 };
 
 #endif /* CRATEFEATURE_H */
