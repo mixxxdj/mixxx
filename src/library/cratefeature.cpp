@@ -515,8 +515,7 @@ QModelIndex CrateFeature::constructChildModel(int selected_id) {
         TreeItem* item = new TreeItem(crate_name, QString::number(crate_id), this, root);
         bool locked = m_crateDao.isCrateLocked(crate_id);
         item->setIcon(locked ? QIcon(":/images/library/ic_library_locked.png") : QIcon());
-        item->setBold(m_pSelectedTrack && m_crateDao.isTrackInCrate(
-            m_pSelectedTrack->getId(), crate_id));
+        item->setBold(m_cratesSelectedTrackIsIn.contains(crate_id));
         data_list.append(item);
     }
 
@@ -715,6 +714,7 @@ QString CrateFeature::getRootViewHtml() const {
 void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
     m_pSelectedTrack = pTrack;
     int trackId = pTrack.isNull() ? -1 : pTrack->getId();
+    m_crateDao.getCratesTrackIsIn(trackId, &m_cratesSelectedTrackIsIn);
 
     // Set all crates the track is in bold (or if there is no track selected,
     // clear all the bolding).
@@ -723,8 +723,7 @@ void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
          it != m_crateList.end(); ++it, ++row) {
         int crateId = it->first;
         QModelIndex index = m_childModel.index(row, 0);
-
-        bool shouldBold = m_crateDao.isTrackInCrate(trackId, crateId);
+        bool shouldBold = m_cratesSelectedTrackIsIn.contains(crateId);
         m_childModel.setData(index, shouldBold, TreeItemModel::kBoldRole);
     }
 }

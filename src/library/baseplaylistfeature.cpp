@@ -560,8 +560,7 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
 
         // Create the TreeItem whose parent is the invisible root item
         TreeItem* item = new TreeItem(playlist_name, QString::number(playlist_id), this, root);
-        item->setBold(m_pSelectedTrack && m_playlistDao.isTrackInPlaylist(
-            m_pSelectedTrack->getId(), playlist_id));
+        item->setBold(m_playlistsSelectedTrackIsIn.contains(playlist_id));
 
         decorateChild(item, playlist_id);
         data_list.append(item);
@@ -599,6 +598,7 @@ QModelIndex BasePlaylistFeature::indexFromPlaylistId(int playlistId) {
 void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {
     m_pSelectedTrack = pTrack;
     int trackId = pTrack.isNull() ? -1 : pTrack->getId();
+    m_playlistDao.getPlaylistsTrackIsIn(trackId, &m_playlistsSelectedTrackIsIn);
 
     // Set all playlists the track is in bold (or if there is no track selected,
     // clear all the bolding).
@@ -608,7 +608,7 @@ void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {
         int playlistId = it->first;
         QModelIndex index = m_childModel.index(row, 0);
 
-        bool shouldBold = m_playlistDao.isTrackInPlaylist(trackId, playlistId);
+        bool shouldBold = m_playlistsSelectedTrackIsIn.contains(playlistId);
         m_childModel.setData(index, shouldBold, TreeItemModel::kBoldRole);
     }
 }
