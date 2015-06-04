@@ -1,9 +1,12 @@
 #ifndef MIXXX_SOUNDSOURCEPROVIDER_H
 #define MIXXX_SOUNDSOURCEPROVIDER_H
 
-#include "sources/soundsource.h"
-
+#include <QSharedPointer>
+#include <QString>
 #include <QStringList>
+#include <QUrl>
+
+#include "sources/soundsource.h"
 
 namespace Mixxx {
 
