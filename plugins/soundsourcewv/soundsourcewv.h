@@ -33,9 +33,7 @@ public:
 
     QStringList getSupportedFileExtensions() const /*override*/;
 
-    SoundSourcePointer newSoundSource(const QUrl& url) /*override*/ {
-        return SoundSourcePointer(new SoundSourceWV(url));
-    }
+    SoundSourcePointer newSoundSource(const QUrl& url) /*override*/;
 };
 
 }  // namespace Mixxx
