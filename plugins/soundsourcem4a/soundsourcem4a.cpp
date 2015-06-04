@@ -434,8 +434,18 @@ QStringList SoundSourceProviderM4A::getSupportedFileExtensions() const {
     return supportedFileExtensions;
 }
 
+namespace {
+
+void deleteSoundSource(SoundSource* pSoundSource) {
+    // The SoundSource must be deleted from within the external library
+    // that has allocated it.
+    delete pSoundSource;
+}
+
+} // anonymous namespace
+
 SoundSourcePointer SoundSourceProviderM4A::newSoundSource(const QUrl& url) {
-    return SoundSourcePointer(new SoundSourceM4A(url));
+    return SoundSourcePointer(new SoundSourceM4A(url), deleteSoundSource);
 }
 
 } // namespace Mixxx
