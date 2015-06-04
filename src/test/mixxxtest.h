@@ -24,13 +24,16 @@ class MixxxTest : public testing::Test {
     MixxxTest();
     virtual ~MixxxTest();
 
-    class ApplicationScope;
-    friend class ApplicationScope;
+    // ApplicationScope creates QApplication as a singleton and keeps
+    // it alive during all tests. This prevents issues with creating
+    // and destroying the QApplication multiple times in the same process.
+    // http://stackoverflow.com/questions/14243858/qapplication-segfaults-in-googletest
     class ApplicationScope {
     public:
         ApplicationScope(int argc, char** argv);
         ~ApplicationScope();
     };
+    friend class ApplicationScope;
 
   protected:
     static QApplication* application() {
