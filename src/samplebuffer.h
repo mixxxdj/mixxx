@@ -29,14 +29,21 @@
 //
 class SampleBuffer {
     Q_DISABLE_COPY(SampleBuffer);
-
-public:
+  public:
     SampleBuffer()
             : m_data(NULL),
               m_size(0) {
     }
     explicit SampleBuffer(SINT size);
+    SampleBuffer(SampleBuffer&& other) {
+        swap(other);
+    }
     virtual ~SampleBuffer();
+
+    SampleBuffer& operator=(SampleBuffer&& other) {
+        swap(other);
+        return *this;
+    }
 
     SINT size() const {
         return m_size;
@@ -78,7 +85,7 @@ public:
     void fill(CSAMPLE value);
 
     class ReadableChunk {
-    public:
+      public:
         ReadableChunk(const SampleBuffer& buffer, SINT offset, SINT length)
             : m_data(buffer.data(offset)),
               m_size(length) {
@@ -96,13 +103,13 @@ public:
         const CSAMPLE& operator[](SINT index) const {
             return *data(index);
         }
-    private:
+      private:
         const CSAMPLE* m_data;
         SINT m_size;
     };
 
     class WritableChunk {
-    public:
+      public:
         WritableChunk(SampleBuffer& buffer, SINT offset, SINT length)
             : m_data(buffer.data(offset)),
               m_size(length) {
@@ -120,18 +127,17 @@ public:
         CSAMPLE& operator[](SINT index) const {
             return *data(index);
         }
-    private:
+      private:
         CSAMPLE* m_data;
         SINT m_size;
     };
 
-private:
+  private:
     CSAMPLE* m_data;
     SINT m_size;
 };
 
-namespace std
-{
+namespace std {
 
 // Template specialization of std::swap for SampleBuffer.
 template<>
@@ -139,6 +145,6 @@ inline void swap(SampleBuffer& lhs, SampleBuffer& rhs) {
     lhs.swap(rhs);
 }
 
-}
+}  // namespace std
 
 #endif // SAMPLEBUFFER_H
