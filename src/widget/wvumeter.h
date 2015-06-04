@@ -79,6 +79,8 @@ class WVuMeter : public WWidget  {
     double m_dPeakHoldCountdownMs;
 
     PerformanceTimer m_timer;
+    
+    mutable QRect m_contentRect;
 };
 
 #endif
