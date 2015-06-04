@@ -31,7 +31,7 @@ class SampleBuffer {
     Q_DISABLE_COPY(SampleBuffer);
   public:
     SampleBuffer()
-            : m_data(NULL),
+            : m_data(nullptr),
               m_size(0) {
     }
     explicit SampleBuffer(SINT size);
