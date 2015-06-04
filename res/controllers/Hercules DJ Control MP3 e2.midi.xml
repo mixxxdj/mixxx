@@ -2,7 +2,7 @@
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.12.0+">
   <info>
     <name>Hercules DJ Control MP3 e2</name>
-    <author>Gianfe</author>
+    <author>Gianfe, Taucher and SBlaisot</author>
     <description>This is a complete mapping for Hercules DJ Control MP3 e2 controller. Requires scripting.</description>
   </info>
   <controller id="Hercules DJ Control MP3 e2" port="">
