@@ -28,8 +28,7 @@
 #include <mferror.h>
 #include <propvarutil.h>
 
-namespace
-{
+namespace {
 
 const bool sDebug = false;
 
@@ -597,8 +596,18 @@ QStringList SoundSourceProviderMediaFoundation::getSupportedFileExtensions() con
     return supportedFileExtensions;
 }
 
+namespace {
+
+void deleteSoundSource(Mixxx::SoundSource* pSoundSource) {
+    // The SoundSource must be deleted from within the external library
+    // that has allocated it.
+    delete pSoundSource;
+}
+
+} // anonymous namespace
+
 Mixxx::SoundSourcePointer SoundSourceProviderMediaFoundation::newSoundSource(const QUrl& url) {
-    return Mixxx::SoundSourcePointer(new SoundSourceMediaFoundation(url));
+    return Mixxx::SoundSourcePointer(new SoundSourceMediaFoundation(url), deleteSoundSource);
 }
 
 namespace {
