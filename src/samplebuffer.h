@@ -35,8 +35,11 @@ class SampleBuffer {
               m_size(0) {
     }
     explicit SampleBuffer(SINT size);
-    SampleBuffer(SampleBuffer&& other) {
-        swap(other);
+    SampleBuffer(SampleBuffer&& other)
+        : m_data(other.m_data),
+          m_size(other.m_size) {
+        other.m_data = nullptr;
+        other.m_size = 0;
     }
     virtual ~SampleBuffer();
 
