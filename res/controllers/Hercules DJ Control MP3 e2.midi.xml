@@ -4,6 +4,8 @@
     <name>Hercules DJ Control MP3 e2</name>
     <author>Gianfe, Taucher and SBlaisot</author>
     <description>This is a complete mapping for Hercules DJ Control MP3 e2 controller. Requires scripting.</description>
+     <wiki>http://www.mixxx.org/wiki/doku.php/hercules_dj_control_mp3_e2</wiki>
+    <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=7173</forums>
   </info>
   <controller id="Hercules DJ Control MP3 e2" port="">
     <scriptfiles>
