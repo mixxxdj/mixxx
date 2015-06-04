@@ -434,9 +434,27 @@ QStringList SoundSourceProviderM4A::getSupportedFileExtensions() const {
     return supportedFileExtensions;
 }
 
+SoundSourcePointer SoundSourceProviderM4A::newSoundSource(const QUrl& url) {
+    return SoundSourcePointer(new SoundSourceM4A(url));
+}
+
 } // namespace Mixxx
+
+namespace {
+
+Mixxx::SoundSourceProviderM4A SOUNDSOURCE_PROVIDER;
+
+void deleteSoundSourceProvider(Mixxx::SoundSourceProvider*) {
+    // The statically allocated SOUNDSOURCE_PROVIDER must not
+    // be deleted!
+}
+
+const Mixxx::SoundSourceProviderPointer SOUNDSOURCE_PROVIDER_POINTER(
+        &SOUNDSOURCE_PROVIDER, deleteSoundSourceProvider);
+
+} // anonymous namespace
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
 Mixxx::SoundSourceProviderPointer Mixxx_SoundSourcePluginAPI_getSoundSourceProvider() {
-    return Mixxx::SoundSourceProviderPointer(new Mixxx::SoundSourceProviderM4A);
+    return SOUNDSOURCE_PROVIDER_POINTER;
 }
