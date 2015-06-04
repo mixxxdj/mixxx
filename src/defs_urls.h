@@ -22,6 +22,7 @@
 #define MIXXX_FEEDBACK_URL      "https://docs.google.com/a/mixxx.org/forms/d/1raQ0WnrdVJYSE5r2tsV4jIRd90oZVrF-TRKWeW2kfEU/viewform"
 #define MIXXX_TRANSLATION_URL   "https://www.transifex.com/projects/p/mixxxdj/"
 #define MIXXX_MANUAL_URL        "http://mixxx.org/manual/1.12"
+#define MIXXX_SHORTCUTS_URL     "http://mixxx.org/manual/1.12/chapters/appendix.html#keyboard-mapping-table"
 #define MIXXX_MANUAL_FILENAME   "Mixxx-Manual.pdf"
 
 #endif
