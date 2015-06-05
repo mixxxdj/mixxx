@@ -190,13 +190,7 @@ void LibraryScanner::slotStartScan() {
     // upgrade_filename already exists, then do not try to upgrade since we have
     // already done it.
     //  Here we need the SETTINGS_PATH from Mixxx V <= 1.7
-#ifdef __LINUX__
-    QString upgrade_filename = QDir::homePath().append("/").append(".mixxx/").append("DBUPGRADED");
-#elif __WINDOWS__
-    QString upgrade_filename = QDir::homePath().append("/").append("Local Settings/Application Data/Mixxx/").append("DBUPGRADED");
-#elif __APPLE__
-    QString upgrade_filename = QDir::homePath().append("/").append(".mixxx/").append("DBUPGRADED");
-#endif
+    QString upgrade_filename = Upgrade::mixxx17HomePath().append("DBUPGRADED");
     qDebug() << "upgrade filename is " << upgrade_filename;
     QFile upgradefile(upgrade_filename);
     if (!upgradefile.exists()) {
