@@ -4,6 +4,7 @@
 #include <QList>
 #include <QString>
 #include <QDir>
+#include <QDesktopServices>
 
 // A structure to store the parsed command-line arguments
 class CmdlineArgs {
