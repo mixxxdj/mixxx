@@ -602,21 +602,18 @@ Mixxx::SoundSourcePointer SoundSourceProviderMediaFoundation::newSoundSource(con
 
 namespace {
 
-// Singleton: SoundSourceProviderMediaFoundation is stateless
-// and a single instance can safely be shared
-SoundSourceProviderMediaFoundation SOUNDSOURCE_PROVIDER;
-
-void deleteSoundSourceProvider(Mixxx::SoundSourceProvider*) {
-    // The statically allocated SOUNDSOURCE_PROVIDER must not
-    // be deleted!
+void deleteSoundSourceProviderSingleton(Mixxx::SoundSourceProvider*) {
+    // The statically allocated instance must not be deleted!
 }
-
-const Mixxx::SoundSourceProviderPointer SOUNDSOURCE_PROVIDER_POINTER(
-        &SOUNDSOURCE_PROVIDER, deleteSoundSourceProvider);
 
 } // anonymous namespace
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
 Mixxx::SoundSourceProviderPointer Mixxx_SoundSourcePluginAPI_getSoundSourceProvider() {
-    return SOUNDSOURCE_PROVIDER_POINTER;
+    // SoundSourceProviderMediaFoundation is stateless and a single instance
+    // can safely be shared
+    static SoundSourceProviderMediaFoundation singleton;
+    return Mixxx::SoundSourceProviderPointer(
+            &singleton,
+            deleteSoundSourceProviderSingleton);
 }
