@@ -514,7 +514,7 @@ ElectrixTweaker.fader = function (channel, control, value, status, group) {
 			engine.setValue(group, 'rate', script.absoluteLin(value, -1, 1))
 		}
 	} else {
-		if (Math.abs(value - script.absoluteNonLinInverse(engine.getValue(group, 'volume'), 0, .25, 1)) < 15) {
+		if (Math.abs(value - script.absoluteNonLinInverse(engine.getValue(group, 'volume'), 0, .25, 1)) < 30) {
 			engine.setValue(group, 'volume', script.absoluteNonLin(value, 0, .25, 1))
 		}
 	}
