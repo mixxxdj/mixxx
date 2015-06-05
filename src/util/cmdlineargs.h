@@ -71,7 +71,7 @@ class CmdlineArgs {
         m_midiDebug(false),
         m_developer(false),
         m_safeMode(false),
-        m_settingsPath(QDir::homePath().append("/").append(SETTINGS_PATH)) {
+        m_settingsPath(QDesktopServices::storageLocation(QDesktopServices::DataLocation)) {
     }
     ~CmdlineArgs() { };
 
