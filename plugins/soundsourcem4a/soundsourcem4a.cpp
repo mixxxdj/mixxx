@@ -452,6 +452,8 @@ SoundSourcePointer SoundSourceProviderM4A::newSoundSource(const QUrl& url) {
 
 namespace {
 
+// Singleton: SoundSourceProviderM4A is stateless
+// and a single instance can safely be shared
 Mixxx::SoundSourceProviderM4A SOUNDSOURCE_PROVIDER;
 
 void deleteSoundSourceProvider(Mixxx::SoundSourceProvider*) {
