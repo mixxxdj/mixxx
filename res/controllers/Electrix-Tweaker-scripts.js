@@ -55,6 +55,7 @@ The small multicolor button below the encoders toggles the mode for the encoders
 The small multicolor button above the vertical fader toggles headphone cueing.
 The vertical fader controls volume. Holding shift while moving the fader adjusts pitch.
 The bottom multicolor buttons are play/pause buttons. They are off when a deck is empty, red when loaded and paused, and green when playing.
+Shift + play/pause is the cue button. When previewing from a cue point while a track is paused, let go of shift to let the track continue playing. Let go of the cue button to stop the track and jump back to the cue point.
 
 Small button grid:
 Row 1: loopers (sample decks 1-8)
@@ -807,12 +808,10 @@ ElectrixTweaker.pflButtonLED = function (value, group, control) {
 
 ElectrixTweaker.playButton = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
-	if (value) {
-		if (ElectrixTweaker.shift) {
-			engine.setValue(group, 'cue_simple', 1)
-		} else {
-			engine.setValue(group, 'play', ! engine.getValue(group, 'play'))
-		}
+	if (ElectrixTweaker.shift) {
+		engine.setValue(group, 'cue_default', value)
+	} else if (value) {
+		engine.setValue(group, 'play', ! engine.getValue(group, 'play'))
 	}
 }
 ElectrixTweaker.playButtonLED = function (value, group, control) {
