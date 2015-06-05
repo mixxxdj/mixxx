@@ -174,13 +174,13 @@ void SoundSourceProxy::loadPlugins() {
     // Loaded plugins will replace any built-in providers
     // that have been registered before (see above)!
     const QList<QDir> pluginDirs(getSoundSourcePluginDirectories());
-    foreach (QDir dir, pluginDirs) {
-        qDebug() << "Loading SoundSource plugins" << dir.path();
-        const QStringList files(dir.entryList(
+    for (const auto& pluginDir: pluginDirs) {
+        qDebug() << "Loading SoundSource plugins" << pluginDir.path();
+        const QStringList files(pluginDir.entryList(
                 SOUND_SOURCE_PLUGIN_FILENAME_PATTERN,
                 QDir::Files | QDir::NoDotAndDotDot));
-        foreach (const QString& file, files) {
-            const QString libFilePath(dir.filePath(file));
+        for (const auto& file: files) {
+            const QString libFilePath(pluginDir.filePath(file));
             Mixxx::SoundSourcePluginLibraryPointer pPluginLibrary(
                     Mixxx::SoundSourcePluginLibrary::load(libFilePath));
             if (pPluginLibrary) {
@@ -194,12 +194,12 @@ void SoundSourceProxy::loadPlugins() {
 
     const QStringList supportedFileExtensions(
             s_soundSourceProviders.getRegisteredFileExtensions());
-    foreach (const QString &supportedFileExtension, supportedFileExtensions) {
+    for (const auto &supportedFileExtension: supportedFileExtensions) {
         qDebug() << "SoundSourceProviders for" << supportedFileExtension;
         const Mixxx::SoundSourceProviderRegistrationList registrationsForFileExtension(
                 s_soundSourceProviders.getRegistrationsForFileExtension(
                         supportedFileExtension));
-        foreach (const Mixxx::SoundSourceProviderRegistration& registration, registrationsForFileExtension) {
+        for (const auto& registration: registrationsForFileExtension) {
             if (registration.getPluginLibrary()) {
                 qDebug() << " " << registration.getProviderPriority()
                         << ":" << registration.getProvider()->getName()
@@ -213,7 +213,7 @@ void SoundSourceProxy::loadPlugins() {
 
     // Turn the list into a "*.mp3 *.wav *.etc" style string
     s_supportedFileNamePatterns.clear();
-    foreach (const QString& supportedFileExtension, supportedFileExtensions) {
+    for (const auto& supportedFileExtension: supportedFileExtensions) {
         s_supportedFileNamePatterns += QString("*.%1").arg(supportedFileExtension);
     }
 
@@ -228,11 +228,11 @@ void SoundSourceProxy::loadPlugins() {
 QStringList SoundSourceProxy::getSupportedFileExtensionsByPlugins() {
     const QStringList supportedFileExtensions(getSupportedFileExtensions());
     QStringList supportedFileExtensionsByPlugins;
-    foreach (const QString &supportedFileExtension, supportedFileExtensions) {
+    for (const auto &supportedFileExtension: supportedFileExtensions) {
         const Mixxx::SoundSourceProviderRegistrationList registrationsForFileExtension(
                 s_soundSourceProviders.getRegistrationsForFileExtension(
                         supportedFileExtension));
-        foreach (const Mixxx::SoundSourceProviderRegistration& registration, registrationsForFileExtension) {
+        for (const auto& registration: registrationsForFileExtension) {
             if (registration.getPluginLibrary()) {
                 supportedFileExtensionsByPlugins += supportedFileExtension;
             }

@@ -46,7 +46,7 @@ void SoundSourceProviderRegistry::addRegistration(const SoundSourceProviderRegis
                 << "does not support any file types - aborting registration!";
         return; // abort registration
     }
-    foreach (const QString& supportedFileExtension, supportedFileExtensions) {
+    for (const auto& supportedFileExtension: supportedFileExtensions) {
         SoundSourceProviderRegistrationList& registrationsForFileExtension =
                 m_registrations[supportedFileExtension];
         SoundSourceProviderRegistrationList::iterator i(registrationsForFileExtension.begin());
