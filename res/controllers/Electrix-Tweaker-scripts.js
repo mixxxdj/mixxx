@@ -18,7 +18,7 @@
 
 Description:
 Shift button is the small circular button in the middle of the directional buttons at the top
-The encoders, knobs, vertical faders, and small multicolor buttons (with the exception of the first row loopers) control a deck. The left button of row 3 toggles between decks 1 (white) & 3 (purple) on the left and decks 2 (white) & 4 (purple) on the right.
+The encoders, knobs, vertical faders, and small multicolor buttons (with the exception of the first row loopers) control a deck. The left button of row 3 toggles between decks 1 (white) & 3 (purple) on the left half of the controller and decks 2 (white) & 4 (purple) on the right half of the controller.
 
 Big encoder: scroll through library
 Big encoder + shift: scroll through library quickly
