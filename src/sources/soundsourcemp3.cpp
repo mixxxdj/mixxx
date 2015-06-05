@@ -150,12 +150,6 @@ bool decodeFrameHeader(
 
 } // anonymous namespace
 
-QList<QString> SoundSourceMp3::supportedFileExtensions() {
-    QList<QString> list;
-    list.push_back("mp3");
-    return list;
-}
-
 SoundSourceMp3::SoundSourceMp3(QUrl url)
         : SoundSource(url, "mp3"),
           m_file(getLocalFileName()),
@@ -698,6 +692,16 @@ SINT SoundSourceMp3::readSampleFrames(
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(numberOfFramesTotal >= numberOfFramesRemaining);
     return numberOfFramesTotal - numberOfFramesRemaining;
+}
+
+QString SoundSourceProviderMp3::getName() const {
+    return "MAD: MPEG Audio Decoder";
+}
+
+QStringList SoundSourceProviderMp3::getSupportedFileExtensions() const {
+    QStringList supportedFileExtensions;
+    supportedFileExtensions.append("mp3");
+    return supportedFileExtensions;
 }
 
 } // namespace Mixxx

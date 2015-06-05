@@ -186,7 +186,6 @@ bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
 }
 
 bool MixxxLibraryFeature::dragMoveAccept(QUrl url) {
-    QFileInfo file(url.toLocalFile());
-    return SoundSourceProxy::isFilenameSupported(file.fileName()) ||
-            Parser::isPlaylistFilenameSupported(file.fileName());
+    return SoundSourceProxy::isUrlSupported(url) ||
+            Parser::isPlaylistFilenameSupported(url.toLocalFile());
 }

@@ -57,12 +57,6 @@ const unsigned kBitsPerSampleDefault = 0;
 
 }
 
-QList<QString> SoundSourceFLAC::supportedFileExtensions() {
-    QList<QString> list;
-    list.push_back("flac");
-    return list;
-}
-
 SoundSourceFLAC::SoundSourceFLAC(QUrl url)
         : SoundSource(url, "flac"),
           m_file(getLocalFileName()),
@@ -505,6 +499,16 @@ void SoundSourceFLAC::flacError(FLAC__StreamDecoderErrorStatus status) {
     // not much else to do here... whatever function that initiated whatever
     // decoder method resulted in this error will return an error, and the caller
     // will bail. libFLAC docs say to not close the decoder here -- bkgood
+}
+
+QString SoundSourceProviderFLAC::getName() const {
+    return "Xiph.org libFLAC";
+}
+
+QStringList SoundSourceProviderFLAC::getSupportedFileExtensions() const {
+    QStringList supportedFileExtensions;
+    supportedFileExtensions.append("flac");
+    return supportedFileExtensions;
 }
 
 } // namespace Mixxx

@@ -91,14 +91,7 @@ MP4TrackId findFirstAudioTrackId(MP4FileHandle hFile) {
 
 } // anonymous namespace
 
-QList<QString> SoundSourceM4A::supportedFileExtensions() {
-    QList<QString> list;
-    list.push_back("m4a");
-    list.push_back("mp4");
-    return list;
-}
-
-SoundSourceM4A::SoundSourceM4A(QUrl url)
+SoundSourceM4A::SoundSourceM4A(const QUrl& url)
         : SoundSourcePlugin(url, "m4a"),
           m_hFile(MP4_INVALID_FILE_HANDLE),
           m_trackId(MP4_INVALID_TRACK_ID),
@@ -430,27 +423,37 @@ SINT SoundSourceM4A::readSampleFrames(
     return samples2frames(numberOfSamplesTotal - numberOfSamplesRemaining);
 }
 
+QString SoundSourceProviderM4A::getName() const {
+    return "Nero FAAD2";
+}
+
+QStringList SoundSourceProviderM4A::getSupportedFileExtensions() const {
+    QStringList supportedFileExtensions;
+    supportedFileExtensions.append("m4a");
+    supportedFileExtensions.append("mp4");
+    return supportedFileExtensions;
+}
+
+SoundSourcePointer SoundSourceProviderM4A::newSoundSource(const QUrl& url) {
+    return exportSoundSourcePlugin(new SoundSourceM4A(url));
+}
+
 } // namespace Mixxx
 
-extern "C" MY_EXPORT const char* getMixxxVersion() {
-    return VERSION;
+namespace {
+
+void deleteSoundSourceProviderSingleton(Mixxx::SoundSourceProvider*) {
+    // The statically allocated instance must not be deleted!
 }
 
-extern "C" MY_EXPORT int getSoundSourceAPIVersion() {
-    return MIXXX_SOUNDSOURCE_API_VERSION;
-}
+} // anonymous namespace
 
-extern "C" MY_EXPORT Mixxx::SoundSource* getSoundSource(QString fileName) {
-    return new Mixxx::SoundSourceM4A(fileName);
-}
-
-extern "C" MY_EXPORT char** supportedFileExtensions() {
-    const QList<QString> supportedFileExtensions(
-            Mixxx::SoundSourceM4A::supportedFileExtensions());
-    return Mixxx::SoundSourcePlugin::allocFileExtensions(
-            supportedFileExtensions);
-}
-
-extern "C" MY_EXPORT void freeFileExtensions(char** fileExtensions) {
-    Mixxx::SoundSourcePlugin::freeFileExtensions(fileExtensions);
+extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
+Mixxx::SoundSourceProviderPointer Mixxx_SoundSourcePluginAPI_getSoundSourceProvider() {
+    // SoundSourceProviderM4A is stateless and a single instance
+    // can safely be shared
+    static Mixxx::SoundSourceProviderM4A singleton;
+    return Mixxx::SoundSourceProviderPointer(
+            &singleton,
+            deleteSoundSourceProviderSingleton);
 }

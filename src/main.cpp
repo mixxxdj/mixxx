@@ -205,7 +205,7 @@ int main(int argc, char * argv[])
                             Each must be one of the following file types:\n\
                             ", stdout);
 
-        QString fileExtensions = SoundSourceProxy::supportedFileExtensionsString();
+        QString fileExtensions(SoundSourceProxy::getSupportedFileNamePatterns().join(" "));
         QByteArray fileExtensionsBA = QString(fileExtensions).toUtf8();
         fputs(fileExtensionsBA.constData(), stdout);
         fputs("\n\n", stdout);
@@ -269,13 +269,13 @@ int main(int argc, char * argv[])
     QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
 #endif
 
-    //Enumerate and load SoundSource plugins
-    SoundSourceProxy::loadPlugins();
-
 #ifdef __FFMPEGFILE__
      av_register_all();
      avcodec_register_all();
 #endif
+
+     //Enumerate and load SoundSource plugins
+     SoundSourceProxy::loadPlugins();
 
     // Check if one of the command line arguments is "--no-visuals"
 //    bool bVisuals = true;

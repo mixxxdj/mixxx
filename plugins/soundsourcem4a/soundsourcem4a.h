@@ -15,31 +15,22 @@
 
 #include <vector>
 
-//As per QLibrary docs: http://doc.trolltech.com/4.6/qlibrary.html#resolve
-#ifdef Q_OS_WIN
-#define MY_EXPORT __declspec(dllexport)
-#else
-#define MY_EXPORT
-#endif
-
 namespace Mixxx {
 
 class SoundSourceM4A: public SoundSourcePlugin {
 public:
-    static QList<QString> supportedFileExtensions();
-
-    explicit SoundSourceM4A(QUrl url);
+    explicit SoundSourceM4A(const QUrl& url);
     ~SoundSourceM4A();
 
-    void close() /*override*/;
+    void close() override;
 
-    SINT seekSampleFrame(SINT frameIndex) /*override*/;
+    SINT seekSampleFrame(SINT frameIndex) override;
 
     SINT readSampleFrames(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer) /*override*/;
+            CSAMPLE* sampleBuffer) override;
 
 private:
-    Result tryOpen(const AudioSourceConfig& audioSrcCfg) /*override*/;
+    Result tryOpen(const AudioSourceConfig& audioSrcCfg) override;
 
     bool isValidSampleBlockId(MP4SampleId sampleBlockId) const;
 
@@ -62,12 +53,18 @@ private:
     SINT m_curFrameIndex;
 };
 
+class SoundSourceProviderM4A: public SoundSourceProvider {
+public:
+    QString getName() const override;
+
+    QStringList getSupportedFileExtensions() const override;
+
+    SoundSourcePointer newSoundSource(const QUrl& url) override;
+};
+
 } // namespace Mixxx
 
-extern "C" MY_EXPORT const char* getMixxxVersion();
-extern "C" MY_EXPORT int getSoundSourceAPIVersion();
-extern "C" MY_EXPORT Mixxx::SoundSource* getSoundSource(QString fileName);
-extern "C" MY_EXPORT char** supportedFileExtensions();
-extern "C" MY_EXPORT void freeFileExtensions(char** fileExtensions);
+extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
+Mixxx::SoundSourceProviderPointer Mixxx_SoundSourcePluginAPI_getSoundSourceProvider();
 
 #endif // MIXXX_SOUNDSOURCEM4A_H

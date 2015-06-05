@@ -36,9 +36,6 @@ class CoverArtUtils {
     // trackLocation.
     static QImage extractEmbeddedCover(const QString& trackLocation,
                                        SecurityTokenPointer pToken) {
-        if (trackLocation.isEmpty()) {
-            return QImage();
-        }
         SoundSourceProxy proxy(trackLocation, pToken);
         return proxy.parseCoverArt();
     }

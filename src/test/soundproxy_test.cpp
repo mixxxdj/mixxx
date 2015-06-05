@@ -11,19 +11,15 @@
 class SoundSourceProxyTest: public MixxxTest {
   protected:
     static QStringList getFileExtensions() {
-        QStringList extensions;
-        extensions << "aiff" << "flac" << "mp3" << "ogg" << "wav";
-#ifdef __OPUS__
-        extensions << "opus";
-#endif
-        if (SoundSourceProxy::isFilenameSupported("filename.m4a")) {
-            extensions << "m4a";
+        QStringList availableExtensions;
+        availableExtensions << "aiff" << "flac" << "m4a" << "mp3" << "ogg" << "opus" << "wav";
+        QStringList supportedExtensions;
+        foreach (QString const& fileExtension, availableExtensions) {
+            if (SoundSourceProxy::isFileExtensionSupported(fileExtension)) {
+                supportedExtensions << fileExtension;
+            }
         }
-        return extensions;
-    }
-
-    static void SetUpTestCase() {
-        SoundSourceProxy::loadPlugins();
+        return supportedExtensions;
     }
 
     static Mixxx::AudioSourcePointer openAudioSource(const QString& fileName) {
@@ -38,7 +34,7 @@ TEST_F(SoundSourceProxyTest, open) {
 
     foreach (const QString& fileExtension, getFileExtensions()) {
         const QString filePath(kFilePathPrefix + fileExtension);
-        ASSERT_TRUE(SoundSourceProxy::isFilenameSupported(filePath));
+        ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
 
         Mixxx::AudioSourcePointer pAudioSource(openAudioSource(filePath));
         ASSERT_TRUE(!pAudioSource.isNull());
@@ -52,7 +48,7 @@ TEST_F(SoundSourceProxyTest, readArtist) {
     SoundSourceProxy proxy(
             QDir::currentPath().append("/src/test/id3-test-data/artist.mp3"));
     Mixxx::TrackMetadata trackMetadata;
-    EXPECT_EQ(OK, proxy.parseTrackMetadata(&trackMetadata));
+    EXPECT_EQ(OK, proxy.parseTrackMetadataAndCoverArt(&trackMetadata, NULL));
     EXPECT_EQ("Test Artist", trackMetadata.getArtist());
 }
 
@@ -60,7 +56,7 @@ TEST_F(SoundSourceProxyTest, TOAL_TPE2) {
     SoundSourceProxy proxy(
         QDir::currentPath().append("/src/test/id3-test-data/TOAL_TPE2.mp3"));
     Mixxx::TrackMetadata trackMetadata;
-    EXPECT_EQ(OK, proxy.parseTrackMetadata(&trackMetadata));
+    EXPECT_EQ(OK, proxy.parseTrackMetadataAndCoverArt(&trackMetadata, NULL));
     EXPECT_EQ("TITLE2", trackMetadata.getArtist());
     EXPECT_EQ("ARTIST", trackMetadata.getAlbum());
     EXPECT_EQ("TITLE", trackMetadata.getAlbumArtist());
@@ -85,7 +81,9 @@ TEST_F(SoundSourceProxyTest, seekForward) {
 
     foreach (const QString& fileExtension, getFileExtensions()) {
         const QString filePath(kFilePathPrefix + fileExtension);
-        ASSERT_TRUE(SoundSourceProxy::isFilenameSupported(filePath));
+        ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
+
+        qDebug() << "Seek forward test:" << filePath;
 
         Mixxx::AudioSourcePointer pContReadSource(openAudioSource(filePath));
         ASSERT_FALSE(pContReadSource.isNull());

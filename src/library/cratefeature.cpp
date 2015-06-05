@@ -164,9 +164,8 @@ bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
         return false;
     }
     bool locked = m_crateDao.isCrateLocked(crateId);
-    QFileInfo file(url.toLocalFile());
-    bool formatSupported = SoundSourceProxy::isFilenameSupported(file.fileName()) ||
-            Parser::isPlaylistFilenameSupported(file.fileName());
+    bool formatSupported = SoundSourceProxy::isUrlSupported(url) ||
+            Parser::isPlaylistFilenameSupported(url.toLocalFile());
     return !locked && formatSupported;
 }
 
