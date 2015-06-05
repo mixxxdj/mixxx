@@ -229,10 +229,6 @@ ElectrixTweaker.samplerRegEx = /\[Sampler(\d+)\]/
 ElectrixTweaker.channelRegEx = /\[Channel(\d+)\]/
 
 ElectrixTweaker.init = function () {
-	engine.connectControl('[Channel2]', 'filterLowKill', ElectrixTweaker.eqEncoderKillButton)
-	if (engine.connectControl('[Channel2]', 'filterLowKill', ElectrixTweaker.eqEncoderKillButton, true)) {
-		print('))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))')
-	}
 	if (engine.getValue('[Master]', 'num_samplers') < 16) {
 		engine.setValue('[Master]', 'num_samplers', 16)
 	}
@@ -625,10 +621,6 @@ ElectrixTweaker.eqEncoder = function (value, group, control) {
 ElectrixTweaker.eqEncoderKillButton = function (value, group, control) {
 	var encoder = control.replace('filter', '')
 	encoder = encoder.replace('Kill', '')
-	print('-----------------------------------------------------------')
-	print(value)
-	print(group)
-	print(control)
 	midi.sendShortMsg(0x90, ElectrixTweaker.encoders[group][encoder]['button'], value * 127)
 }
 
