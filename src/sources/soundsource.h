@@ -17,7 +17,7 @@ public:
 
     Result parseTrackMetadataAndCoverArt(
             TrackMetadata* pTrackMetadata,
-            QImage* pCoverArt) const /*override*/;
+            QImage* pCoverArt) const override;
 
     // Opens the AudioSource for reading audio data.
     //

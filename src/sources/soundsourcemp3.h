@@ -22,21 +22,21 @@ public:
     explicit SoundSourceMp3(QUrl url);
     ~SoundSourceMp3();
 
-    void close() /*override*/;
+    void close() override;
 
-    SINT seekSampleFrame(SINT frameIndex) /*override*/;
+    SINT seekSampleFrame(SINT frameIndex) override;
 
     SINT readSampleFrames(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer) /*override*/;
+            CSAMPLE* sampleBuffer) override;
     SINT readSampleFramesStereo(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer, SINT sampleBufferSize) /*override*/;
+            CSAMPLE* sampleBuffer, SINT sampleBufferSize) override;
 
     SINT readSampleFrames(SINT numberOfFrames,
             CSAMPLE* sampleBuffer, SINT sampleBufferSize,
             bool readStereoSamples);
 
 private:
-    Result tryOpen(const AudioSourceConfig& audioSrcCfg) /*override*/;
+    Result tryOpen(const AudioSourceConfig& audioSrcCfg) override;
 
     QFile m_file;
     quint64 m_fileSize;
@@ -83,11 +83,11 @@ private:
 
 class SoundSourceProviderMp3: public SoundSourceProvider {
 public:
-    QString getName() const /*override*/;
+    QString getName() const override;
 
-    QStringList getSupportedFileExtensions() const /*override*/;
+    QStringList getSupportedFileExtensions() const override;
 
-    SoundSourcePointer newSoundSource(const QUrl& url)  /*override*/ {
+    SoundSourcePointer newSoundSource(const QUrl& url) override {
         return SoundSourcePointer(new SoundSourceMp3(url));
     }
 };
