@@ -195,7 +195,7 @@ void SoundSourceProxy::loadPlugins() {
     const QStringList supportedFileExtensions(
             s_soundSourceProviders.getRegisteredFileExtensions());
     for (const auto &supportedFileExtension: supportedFileExtensions) {
-        qDebug() << "SoundSourceProviders for" << supportedFileExtension;
+        qDebug() << "SoundSource providers for file extension" << supportedFileExtension;
         const auto registrationsForFileExtension(
                 s_soundSourceProviders.getRegistrationsForFileExtension(
                         supportedFileExtension));
