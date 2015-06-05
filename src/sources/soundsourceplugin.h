@@ -16,6 +16,13 @@ protected:
     }
 };
 
+// Wraps the SoundSourcePlugin allocated with operator new
+// into a SoundSourcePointer that ensures that the managed
+// object will deleted from within the external library (DLL)
+// eventually.
+SoundSourcePointer exportSoundSourcePlugin(
+        SoundSourcePlugin* pSoundSourcePlugin);
+
 } // namespace Mixxx
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT const char* Mixxx_getVersion();

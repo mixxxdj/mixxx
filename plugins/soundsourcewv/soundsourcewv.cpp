@@ -87,18 +87,8 @@ QStringList SoundSourceProviderWV::getSupportedFileExtensions() const {
     return supportedFileExtensions;
 }
 
-namespace {
-
-void deleteSoundSource(SoundSource* pSoundSource) {
-    // The SoundSource must be deleted from within the external library
-    // that has allocated it.
-    delete pSoundSource;
-}
-
-} // anonymous namespace
-
 SoundSourcePointer SoundSourceProviderWV::newSoundSource(const QUrl& url) {
-    return SoundSourcePointer(new SoundSourceWV(url), deleteSoundSource);
+    return exportSoundSourcePlugin(new SoundSourceWV(url));
 }
 
 } // namespace Mixxx

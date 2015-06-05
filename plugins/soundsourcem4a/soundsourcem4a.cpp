@@ -434,39 +434,27 @@ QStringList SoundSourceProviderM4A::getSupportedFileExtensions() const {
     return supportedFileExtensions;
 }
 
-namespace {
-
-void deleteSoundSource(SoundSource* pSoundSource) {
-    // The SoundSource must be deleted from within the external library
-    // that has allocated it.
-    delete pSoundSource;
-}
-
-} // anonymous namespace
-
 SoundSourcePointer SoundSourceProviderM4A::newSoundSource(const QUrl& url) {
-    return SoundSourcePointer(new SoundSourceM4A(url), deleteSoundSource);
+    return exportSoundSourcePlugin(new SoundSourceM4A(url));
 }
 
 } // namespace Mixxx
 
 namespace {
 
-// Singleton: SoundSourceProviderM4A is stateless
-// and a single instance can safely be shared
-Mixxx::SoundSourceProviderM4A SOUNDSOURCE_PROVIDER;
-
 void deleteSoundSourceProvider(Mixxx::SoundSourceProvider*) {
     // The statically allocated SOUNDSOURCE_PROVIDER must not
     // be deleted!
 }
 
-const Mixxx::SoundSourceProviderPointer SOUNDSOURCE_PROVIDER_POINTER(
-        &SOUNDSOURCE_PROVIDER, deleteSoundSourceProvider);
-
 } // anonymous namespace
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
 Mixxx::SoundSourceProviderPointer Mixxx_SoundSourcePluginAPI_getSoundSourceProvider() {
+    // Singleton: SoundSourceProviderM4A is stateless
+    // and a single instance can safely be shared
+    static Mixxx::SoundSourceProviderM4A SOUNDSOURCE_PROVIDER;
+    static const Mixxx::SoundSourceProviderPointer SOUNDSOURCE_PROVIDER_POINTER(
+            &SOUNDSOURCE_PROVIDER, deleteSoundSourceProvider);
     return SOUNDSOURCE_PROVIDER_POINTER;
 }
