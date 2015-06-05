@@ -34,9 +34,16 @@ LegacyLibraryImporter::LegacyLibraryImporter(TrackDAO& trackDao,
 
 /** Upgrade from <= 1.7 library to 1.8 DB format */
 void LegacyLibraryImporter::import() {
-    // TODO(XXX) SETTINGS_PATH may change in new Mixxx Versions. Here we need
-    // the SETTINGS_PATH from Mixxx V <= 1.7
-    QString settingPath17 = QDir::homePath().append("/").append(SETTINGS_PATH);
+    //Here we need the SETTINGS_PATH from Mixxx V <= 1.7
+#ifdef __LINUX__
+    QString settingPath17 = QDir::homePath().append("/").append(".mixxx/");
+#elif __WINDOWS__
+    QString settingPath17 = QDir::homePath().append("/").append("Local Settings/Application Data/Mixxx/");
+#elif __APPLE__
+    QString settingPath17 = QDir::homePath().append("/").append(".mixxx/");
+#endif
+
+
     QString trackXML = settingPath17.append("mixxxtrack.xml");
     QFile file(trackXML);
 

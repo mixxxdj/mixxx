@@ -189,9 +189,14 @@ void LibraryScanner::slotStartScan() {
     // Try to upgrade the library from 1.7 (XML) to 1.8+ (DB) if needed. If the
     // upgrade_filename already exists, then do not try to upgrade since we have
     // already done it.
-    // TODO(XXX) SETTINGS_PATH may change in new Mixxx Versions. Here we need
-    // the SETTINGS_PATH from Mixxx V <= 1.7
-    QString upgrade_filename = QDir::homePath().append("/").append(SETTINGS_PATH).append("DBUPGRADED");
+    //  Here we need the SETTINGS_PATH from Mixxx V <= 1.7
+#ifdef __LINUX__
+    QString upgrade_filename = QDir::homePath().append("/").append(".mixxx/").append("DBUPGRADED");
+#elif __WINDOWS__
+    QString upgrade_filename = QDir::homePath().append("/").append("Local Settings/Application Data/Mixxx/").append("DBUPGRADED");
+#elif __APPLE__
+    QString upgrade_filename = QDir::homePath().append("/").append(".mixxx/").append("DBUPGRADED");
+#endif
     qDebug() << "upgrade filename is " << upgrade_filename;
     QFile upgradefile(upgrade_filename);
     if (!upgradefile.exists()) {
