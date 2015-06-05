@@ -20,9 +20,9 @@
             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
             <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
             <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-            <SetVariable name="state_0_text">IN</SetVariable>
-            <SetVariable name="state_0_pressed"></SetVariable>
-            <SetVariable name="state_0_unpressed"></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_loop_in_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_loop_in_48px.svg</SetVariable>
             <SetVariable name="left_connection_control"><Variable name="group"/>,loop_in</SetVariable>
           </Template>
 
@@ -32,9 +32,9 @@
             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
             <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
             <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-            <SetVariable name="state_0_text">OUT</SetVariable>
-            <SetVariable name="state_0_pressed"></SetVariable>
-            <SetVariable name="state_0_unpressed"></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_loop_out_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_loop_out_48px.svg</SetVariable>
             <SetVariable name="left_connection_control"><Variable name="group"/>,loop_out</SetVariable>
           </Template>
 
@@ -44,12 +44,12 @@
             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
             <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
             <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-            <SetVariable name="state_0_text">LOOP</SetVariable>
-            <SetVariable name="state_0_pressed"></SetVariable>
-            <SetVariable name="state_0_unpressed"></SetVariable>
-            <SetVariable name="state_1_text">EXIT</SetVariable>
-            <SetVariable name="state_1_pressed"></SetVariable>
-            <SetVariable name="state_1_unpressed"></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_loop_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_loop_48px.svg</SetVariable>
+            <SetVariable name="state_1_text"></SetVariable>
+            <SetVariable name="state_1_pressed">icon/ic_loop_48px.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">icon/ic_loop_48px.svg</SetVariable>
             <SetVariable name="left_connection_control"><Variable name="group"/>,reloop_exit</SetVariable>
             <SetVariable name="display_connection_control"><Variable name="group"/>,loop_enabled</SetVariable>
           </Template>
