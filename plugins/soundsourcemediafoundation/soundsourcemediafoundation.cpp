@@ -612,6 +612,8 @@ Mixxx::SoundSourcePointer SoundSourceProviderMediaFoundation::newSoundSource(con
 
 namespace {
 
+// Singleton: SoundSourceProviderMediaFoundation is stateless
+// and a single instance can safely be shared
 SoundSourceProviderMediaFoundation SOUNDSOURCE_PROVIDER;
 
 void deleteSoundSourceProvider(Mixxx::SoundSourceProvider*) {

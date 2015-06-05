@@ -105,6 +105,8 @@ SoundSourcePointer SoundSourceProviderWV::newSoundSource(const QUrl& url) {
 
 namespace {
 
+// Singleton: SoundSourceProviderWV is stateless
+// and a single instance can safely be shared
 Mixxx::SoundSourceProviderWV SOUNDSOURCE_PROVIDER;
 
 void deleteSoundSourceProvider(Mixxx::SoundSourceProvider*) {
