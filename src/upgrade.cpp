@@ -175,6 +175,16 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
             delete oldFile;
         }
         else {
+#elif __WINDOWS__
+        qDebug() << "Config version is empty, trying to read pre-1.12.0 config";
+        //Try to read the config from the pre-1.12.0 final directory on Windows (we moved it in 1.12.0 final)
+        QFile* oldFile = new QFile(QDir::homePath().append("/").append("Local Settings/Application Data/Mixxx/").append(SETTINGS_FILE));
+        if (oldFile->exists()) {
+            qDebug() << "Found pre-1.12.0 config for Windows";
+            config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append("Local Settings/Application Data/Mixxx/").append(SETTINGS_FILE));
+            //Note: We changed SETTINGS_PATH in 1.12.0 final on Windows so it must be hardcoded to "Local Settings/Application Data/Mixxx/" here for legacy.
+            configVersion = config->getValueString(ConfigKey("[Config]","Version"));
+            delete oldFile;
 #endif
             //This must have been the first run... right? :)
             qDebug() << "No version number in configuration file. Setting to" << VERSION;
@@ -182,6 +192,8 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
             m_bFirstRun = true;
             return config;
 #ifdef __APPLE__
+        }
+#elif __WINDOWS__
         }
 #endif
     }
