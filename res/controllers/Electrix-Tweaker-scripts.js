@@ -34,9 +34,9 @@ Big velocity sensitive buttons: one shot samplers
 	Press a button to load the selected sample into a sampler and play it
 	Press a button to play a sample.
 	Samples will play with their volume proportional to how much force was used to strike the button.
-The left analog knob controls cue/master mix in the headphones. Turning it all the way to the right toggles split cue mode.
-The right analog knob controls headphone volume.
-Pressing shift and turning the analog knobs controls the filter knob for the corresponding deck.
+
+The analog knobs control filters for each deck.
+Pressing shift and turning the right analog knob controls cue/master mix in the headphones. Turning it all the way to the right with shift pressed toggles split cue mode.
 
 The small multicolor button below the encoders toggles the mode for the encoders on that side. White is EQ mode, purple is loop mode.
 	In EQ mode, the encoders control high, mid, and low EQs from top to bottom. Pressing the encoder kills the EQ. Pressing the encoder while holding shift resets the EQ to center.
@@ -474,11 +474,13 @@ ElectrixTweaker.arrowDown = function (channel, control, value, status, group) {
 // ================================================= DECK CONTROLS ===========================================================
 ElectrixTweaker.leftKnob = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
+// 	if (Math.abs(script.absoluteLin(value, 0, 1) - engine.getValue('[QuickEffectRack1_'+group+']', 'super1')) < .1) {
+		engine.setValue('[QuickEffectRack1_'+group+']', 'super1', script.absoluteLin(value, 0, 1))
+// 	}
+}
+ElectrixTweaker.rightKnob = function (channel, control, value, status, group) {
+	group = ElectrixTweaker.deck[group]
 	if (ElectrixTweaker.shift) {
-		if (Math.abs(script.absoluteLin(value, 0, 1) - engine.getValue('[QuickEffectRack1_'+group+']', 'super1')) < .1) {
-			engine.setValue('[QuickEffectRack1_'+group+']', 'super1', script.absoluteLin(value, 0, 1))
-		}
-	} else {
 		if (value == 127) {
 			engine.setValue('[Master]', 'headSplit', ! engine.getValue('[Master]', 'headSplit'))
 		} else {
@@ -486,18 +488,9 @@ ElectrixTweaker.leftKnob = function (channel, control, value, status, group) {
 				engine.setValue('[Master]', 'headMix', script.absoluteLin(value, -1, 1))
 			}
 		}
-	}
-}
-ElectrixTweaker.rightKnob = function (channel, control, value, status, group) {
-	group = ElectrixTweaker.deck[group]
-	if (ElectrixTweaker.shift) {
+	} else {
 		if (Math.abs(script.absoluteLin(value, 0, 1) - engine.getValue('[QuickEffectRack1_'+group+']', 'super1')) < .1) {
 			engine.setValue('[QuickEffectRack1_'+group+']', 'super1', script.absoluteLin(value, 0, 1))
-		}
-	} else {
-		print(script.absoluteNonLinInverse(engine.getValue('[Master]', 'headVolume'), 0, 1, 5) - value)
-		if (Math.abs(script.absoluteNonLinInverse(engine.getValue('[Master]', 'headVolume'), 0, 1, 5) - value) < 10) {
-			engine.setValue('[Master]', 'headVolume', script.absoluteNonLin(value, 0, 1, 5))
 		}
 	}
 }
