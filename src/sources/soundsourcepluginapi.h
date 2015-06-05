@@ -1,8 +1,9 @@
 #ifndef MIXXX_SOUNDSOURCEPLUGINAPI_H
 #define MIXXX_SOUNDSOURCEPLUGINAPI_H
 
-#define MIXXX_SOUNDSOURCEPLUGINAPI_VERSION 9
+#define MIXXX_SOUNDSOURCEPLUGINAPI_VERSION 10
 // SoundSource Plugin API version history:
+//  10 - Mixxx 2.1.0 - Add priority to SoundSourceProvider interface
 //   9 - Mixxx 2.1.0 - New classes AudioSignal and ReplayGain
 //   8 - Mixxx 2.1.0 - New SoundSource Plugin API
 //   7 - Mixxx 2.1.0 - New SoundSource/AudioSource API
