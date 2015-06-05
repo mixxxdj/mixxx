@@ -4,54 +4,67 @@
 #include "sources/soundsourcepluginlibrary.h"
 
 #include <QMap>
-#include <QRegExp>
 
 namespace Mixxx {
+
+class SoundSourceProviderRegistration {
+public:
+    const SoundSourcePluginLibraryPointer& getPluginLibrary() const {
+        return m_pPluginLibrary;
+    }
+    const SoundSourceProviderPointer& getProvider() const {
+        return m_pProvider;
+    }
+    SoundSourceProvider::Priority getProviderPriority() const {
+        return m_providerPriority;
+    }
+
+private:
+    friend class SoundSourceProviderRegistry;
+    SoundSourceProviderRegistration(
+            SoundSourcePluginLibraryPointer pPluginLibrary,
+            SoundSourceProviderPointer pProvider,
+            SoundSourceProvider::Priority providerPriority)
+        : m_pPluginLibrary(pPluginLibrary),
+          m_pProvider(pProvider),
+          m_providerPriority(providerPriority) {
+    }
+
+    SoundSourcePluginLibraryPointer m_pPluginLibrary;
+    SoundSourceProviderPointer m_pProvider;
+    SoundSourceProvider::Priority m_providerPriority;
+};
+
+typedef QList<SoundSourceProviderRegistration> SoundSourceProviderRegistrationList;
 
 // Registry for SoundSourceProviders
 class SoundSourceProviderRegistry {
 public:
-    SoundSourceProviderPointer registerProvider(
+    void registerProvider(
             const SoundSourceProviderPointer& pProvider);
-    SoundSourceProviderPointer registerPluginLibrary(
+    void registerProvider(
+            const SoundSourceProviderPointer& pProvider,
+            SoundSourceProvider::Priority priority);
+    void registerPluginLibrary(
             const SoundSourcePluginLibraryPointer& pPluginLibrary);
+    void registerPluginLibrary(
+            const SoundSourcePluginLibraryPointer& pPluginLibrary,
+            SoundSourceProvider::Priority priority);
 
-    // Completes the registration by building the corresponding
-    // regular expressions for file names.
-    void finishRegistration();
-
-    SoundSourceProviderPointer getProviderForFileExtension(
-            const QString& fileExtension) const {
-        return m_entries.value(fileExtension).pProvider;
+    QStringList getRegisteredFileExtensions() const {
+        return m_registrations.keys();
     }
 
-    SoundSourcePluginLibraryPointer getPluginLibraryForFileExtension(
-            const QString& fileExtension) const {
-        return m_entries.value(fileExtension).pPluginLibrary;
-    }
-
-    QStringList getSupportedFileExtensions() const {
-        return m_entries.keys();
-    }
-
-    QStringList getSupportedFileNamePatterns() const;
-
-    QRegExp getSupportedFileNameRegex() const {
-        return m_supportedFileNameRegex;
-    }
+    const SoundSourceProviderRegistrationList& getRegistrationsForFileExtension(const QString& fileExtension) const;
 
 private:
-    struct Entry {
-        SoundSourceProviderPointer pProvider;
-        SoundSourcePluginLibraryPointer pPluginLibrary;
-    };
-    typedef QMap<QString, Entry> FileExtension2Entry;
+    static const SoundSourceProviderRegistrationList EMPTY_REGISTRATION_LIST;
 
-    SoundSourceProviderPointer registerEntry(const Entry& entry);
+    typedef QMap<QString, SoundSourceProviderRegistrationList> FileExtension2RegistrationList;
 
-    FileExtension2Entry m_entries;
+    void addRegistration(const SoundSourceProviderRegistration& registration);
 
-    QRegExp m_supportedFileNameRegex;
+    FileExtension2RegistrationList m_registrations;
 };
 
 } // namespace Mixxx

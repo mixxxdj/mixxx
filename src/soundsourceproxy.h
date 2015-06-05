@@ -12,18 +12,27 @@ class SoundSourceProxy: public Mixxx::MetadataSource {
 public:
     static void loadPlugins(); // not thread-safe
 
-    static QStringList getSupportedFileExtensions();
+    static QStringList getSupportedFileExtensions() {
+        return s_soundSourceProviders.getRegisteredFileExtensions();
+    }
     static QStringList getSupportedFileExtensionsByPlugins();
-    static QStringList getSupportedFileNamePatterns();
-    static QRegExp getSupportedFileNameRegex();
+    static const QStringList& getSupportedFileNamePatterns() {
+        return s_supportedFileNamePatterns;
+    }
+    static const QRegExp& getSupportedFileNamesRegex() {
+        return s_supportedFileNamesRegex;
+    }
 
     static bool isUrlSupported(const QUrl& url);
     static bool isFileSupported(const QFileInfo& fileInfo);
     static bool isFileNameSupported(const QString& fileName);
     static bool isFileExtensionSupported(const QString& fileExtension);
 
-    explicit SoundSourceProxy(QString qFilename, SecurityTokenPointer pToken = SecurityTokenPointer());
-    explicit SoundSourceProxy(TrackPointer pTrack);
+    explicit SoundSourceProxy(
+            const QString& fileName,
+            SecurityTokenPointer pSecurityToken = SecurityTokenPointer());
+    explicit SoundSourceProxy(
+            const TrackPointer& pTrack);
 
     QString getType() const {
         if (m_pSoundSource) {
@@ -67,13 +76,25 @@ public:
 
 private:
     static Mixxx::SoundSourceProviderRegistry s_soundSourceProviders;
-
-    static Mixxx::SoundSourcePointer initialize(const QString& qFilename);
+    static QStringList s_supportedFileNamePatterns;
+    static QRegExp s_supportedFileNamesRegex;
 
     const TrackPointer m_pTrack;
     const SecurityTokenPointer m_pSecurityToken;
 
-    const Mixxx::SoundSourcePointer m_pSoundSource;
+    const QUrl m_url;
+
+    static Mixxx::SoundSourceProviderRegistrationList findSoundSourceProviderRegistrations(const QUrl& url);
+
+    const Mixxx::SoundSourceProviderRegistrationList m_soundSourceProviderRegistrations;
+    int m_soundSourceProviderRegistrationIndex;
+
+    Mixxx::SoundSourceProviderPointer getSoundSourceProvider() const;
+    void nextSoundSourceProvider();
+
+    void initSoundSource();
+
+    Mixxx::SoundSourcePointer m_pSoundSource;
 
     // Just an alias that keeps track of opening and closing
     // the corresponding SoundSource.

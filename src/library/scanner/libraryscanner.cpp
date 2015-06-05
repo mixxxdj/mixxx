@@ -175,7 +175,7 @@ void LibraryScanner::slotStartScan() {
 
     QSet<QString> trackLocations = m_trackDao.getTrackLocations();
     QHash<QString, int> directoryHashes = m_libraryHashDao.getDirectoryHashes();
-    QRegExp extensionFilter(SoundSourceProxy::getSupportedFileNameRegex());
+    QRegExp extensionFilter(SoundSourceProxy::getSupportedFileNamesRegex());
     QRegExp coverExtensionFilter =
             QRegExp(CoverArtUtils::supportedCoverArtExtensionsRegex(),
                     Qt::CaseInsensitive);
