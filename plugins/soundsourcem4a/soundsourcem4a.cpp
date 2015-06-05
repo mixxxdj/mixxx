@@ -442,19 +442,18 @@ SoundSourcePointer SoundSourceProviderM4A::newSoundSource(const QUrl& url) {
 
 namespace {
 
-void deleteSoundSourceProvider(Mixxx::SoundSourceProvider*) {
-    // The statically allocated SOUNDSOURCE_PROVIDER must not
-    // be deleted!
+void deleteSoundSourceProviderSingleton(Mixxx::SoundSourceProvider*) {
+    // The statically allocated instance must not be deleted!
 }
 
 } // anonymous namespace
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
 Mixxx::SoundSourceProviderPointer Mixxx_SoundSourcePluginAPI_getSoundSourceProvider() {
-    // Singleton: SoundSourceProviderM4A is stateless
-    // and a single instance can safely be shared
-    static Mixxx::SoundSourceProviderM4A SOUNDSOURCE_PROVIDER;
-    static const Mixxx::SoundSourceProviderPointer SOUNDSOURCE_PROVIDER_POINTER(
-            &SOUNDSOURCE_PROVIDER, deleteSoundSourceProvider);
-    return SOUNDSOURCE_PROVIDER_POINTER;
+    // SoundSourceProviderM4A is stateless and a single instance
+    // can safely be shared
+    static Mixxx::SoundSourceProviderM4A singleton;
+    return Mixxx::SoundSourceProviderPointer(
+            &singleton,
+            deleteSoundSourceProviderSingleton);
 }
