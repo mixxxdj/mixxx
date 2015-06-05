@@ -854,10 +854,15 @@
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   border: 1px solid #585858;
   padding: 2px;
-  padding-left:10px;
-  padding-right:10px;
+  padding-left:0px;
+  padding-right:0px;
   margin-left: 3px;
   margin-right: 3px;
+}
+
+#MicInterior {
+  padding-left:10px;
+  padding-right:10px;
 }
 
 #MicButtonContainer {
