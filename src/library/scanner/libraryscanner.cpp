@@ -30,6 +30,7 @@
 #include "util/file.h"
 #include "util/timer.h"
 #include "library/scanner/scannerutil.h"
+#include "upgrade.h"
 
 // TODO(rryan) make configurable
 const int kScannerThreadPoolSize = 1;

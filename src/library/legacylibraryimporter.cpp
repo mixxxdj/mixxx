@@ -17,6 +17,7 @@
 #include "trackinfoobject.h" //needed for importing 1.7.x library
 #include "util/xml.h" //needed for importing 1.7.x library
 #include "legacylibraryimporter.h"
+#include "upgrade.h"
 
 struct LegacyPlaylist {
     QString name;
