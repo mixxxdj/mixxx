@@ -49,6 +49,8 @@ The small multicolor button below the encoders toggles the mode for the encoders
 		Top encoder press: toggle between normal and rolling loop mode
 		Middle encoder press: toggle between loop moving and beatjumping
 		Low encoder press: toggle loop on/off
+	
+	In any mode, holding shift and moving the low encoder scrolls through the track 32 beats at a time.
 
 The small multicolor button above the vertical fader toggles headphone cueing.
 The vertical fader controls volume. Holding shift while moving the fader adjusts pitch.
@@ -420,6 +422,16 @@ ElectrixTweaker.shutdown = function() {
 
 ElectrixTweaker.shiftButton = function (channel, control, value, status, group) {
 	ElectrixTweaker.shift = ! ElectrixTweaker.shift
+	if (value) {
+		// set encoder to relative mode
+		midi.sendShortMsg(0xBF, ElectrixTweaker.encoders['[Channel1]']['Low']['cc'], 64)
+		midi.sendShortMsg(0xBF, ElectrixTweaker.encoders['[Channel2]']['Low']['cc'], 64)
+	} else {
+		ElectrixTweaker.initMode(ElectrixTweaker.deck['[Channel1]'], ElectrixTweaker.mode['[Channel1]'])
+		ElectrixTweaker.initMode(ElectrixTweaker.deck['[Channel2]'], ElectrixTweaker.mode['[Channel2]'])
+		// set LED ring to EQ mode with local control disabled
+// 		midi.sendShortMsg(0xBF, ElectrixTweaker.encoders[group]['Low']['ring'], 98)
+	}
 }
 
 ElectrixTweaker.bigEncoder = function (channel, control, value, status, group) {
@@ -720,26 +732,34 @@ ElectrixTweaker.midEncoderPress = function (channel, control, value, status, gro
 }
 ElectrixTweaker.lowEncoder = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
-	switch (ElectrixTweaker.mode[group]) {
-		case 'eq':
-			engine.setValue(group, 'filterLow', script.absoluteNonLin(value, 0, 1, 4))
-			break
-		case 'loop':
-			if ((value == 127) && (ElectrixTweaker.loopSize[group] >= Math.pow(2, -5))) {
-				ElectrixTweaker.loopSize[group] = ElectrixTweaker.loopSize[group] / 2
-				engine.setValue(group, 'loop_halve', 1)
-			} else if ((value == 1) && (ElectrixTweaker.loopSize[group] <= Math.pow(2, 5))) {
-				ElectrixTweaker.loopSize[group] = ElectrixTweaker.loopSize[group] * 2
-				engine.setValue(group, 'loop_double', 1)
-			}
-			midi.sendShortMsg(
-				0xB0,
-				ElectrixTweaker.encoders[group]['Low']['ring'],
-				ElectrixTweaker.encoderRingSteps[
-					6 + Math.log(ElectrixTweaker.loopSize[group]) / Math.log(2)
-				]
-			)
-			break
+	if (ElectrixTweaker.shift) {
+		if (value == 127) {
+			engine.setValue(group, 'beatjump_32_backward', 1)
+		} else {
+			engine.setValue(group, 'beatjump_32_forward', 1)
+		}
+	} else {
+		switch (ElectrixTweaker.mode[group]) {
+			case 'eq':
+				engine.setValue(group, 'filterLow', script.absoluteNonLin(value, 0, 1, 4))
+				break
+			case 'loop':
+				if ((value == 127) && (ElectrixTweaker.loopSize[group] >= Math.pow(2, -5))) {
+					ElectrixTweaker.loopSize[group] = ElectrixTweaker.loopSize[group] / 2
+					engine.setValue(group, 'loop_halve', 1)
+				} else if ((value == 1) && (ElectrixTweaker.loopSize[group] <= Math.pow(2, 5))) {
+					ElectrixTweaker.loopSize[group] = ElectrixTweaker.loopSize[group] * 2
+					engine.setValue(group, 'loop_double', 1)
+				}
+				midi.sendShortMsg(
+					0xB0,
+					ElectrixTweaker.encoders[group]['Low']['ring'],
+					ElectrixTweaker.encoderRingSteps[
+						6 + Math.log(ElectrixTweaker.loopSize[group]) / Math.log(2)
+					]
+				)
+				break
+		}
 	}
 }
 ElectrixTweaker.lowEncoderPress = function (channel, control, value, status, group) {
