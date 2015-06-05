@@ -157,19 +157,6 @@
                                 <MaximumSize>120,30</MaximumSize>
                                 <Children>
                                   <Template src="skin:left_right_1state_button.xml">
-                                    <SetVariable name="TooltipId">pitch_up</SetVariable>
-                                    <SetVariable name="ObjectName">PitchUpButton</SetVariable>
-                                    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
-                                    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
-                                    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-                                    <SetVariable name="state_0_text"></SetVariable>
-                                    <SetVariable name="state_0_pressed">icon/ic_add_48px.svg</SetVariable>
-                                    <SetVariable name="state_0_unpressed">icon/ic_add_48px.svg</SetVariable>
-                                    <SetVariable name="left_connection_control"><Variable name="group"/>,pitch_up</SetVariable>
-                                    <SetVariable name="right_connection_control"><Variable name="group"/>,pitch_up_small</SetVariable>
-                                  </Template>
-
-                                  <Template src="skin:left_right_1state_button.xml">
                                     <SetVariable name="TooltipId">pitch_down</SetVariable>
                                     <SetVariable name="ObjectName">PitchDownButton</SetVariable>
                                     <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
@@ -180,6 +167,19 @@
                                     <SetVariable name="state_0_unpressed">icon/ic_remove_48px.svg</SetVariable>
                                     <SetVariable name="left_connection_control"><Variable name="group"/>,pitch_down</SetVariable>
                                     <SetVariable name="right_connection_control"><Variable name="group"/>,pitch_down_small</SetVariable>
+                                  </Template>
+
+                                  <Template src="skin:left_right_1state_button.xml">
+                                    <SetVariable name="TooltipId">pitch_up</SetVariable>
+                                    <SetVariable name="ObjectName">PitchUpButton</SetVariable>
+                                    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                                    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                                    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                                    <SetVariable name="state_0_text"></SetVariable>
+                                    <SetVariable name="state_0_pressed">icon/ic_add_48px.svg</SetVariable>
+                                    <SetVariable name="state_0_unpressed">icon/ic_add_48px.svg</SetVariable>
+                                    <SetVariable name="left_connection_control"><Variable name="group"/>,pitch_up</SetVariable>
+                                    <SetVariable name="right_connection_control"><Variable name="group"/>,pitch_up_small</SetVariable>
                                   </Template>
 
                                   <Template src="skin:left_right_1state_button.xml">
