@@ -19,6 +19,7 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QTranslator>
+#include <QScopedPointer>
 
 #include "defs_version.h"
 #include "controllers/defs_controllers.h"
