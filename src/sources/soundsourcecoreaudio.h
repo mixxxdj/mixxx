@@ -25,15 +25,15 @@ public:
     explicit SoundSourceCoreAudio(QUrl url);
     ~SoundSourceCoreAudio();
 
-    void close() /*override*/;
+    void close() override;
 
-    SINT seekSampleFrame(SINT frameIndex) /*override*/;
+    SINT seekSampleFrame(SINT frameIndex) override;
 
     SINT readSampleFrames(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer) /*override*/;
+            CSAMPLE* sampleBuffer) override;
 
 private:
-    Result tryOpen(const AudioSourceConfig& audioSrcCfg) /*override*/;
+    Result tryOpen(const AudioSourceConfig& audioSrcCfg) override;
 
     bool m_bFileIsMp3;
     ExtAudioFileRef m_audioFile;
@@ -44,11 +44,11 @@ private:
 
 class SoundSourceProviderCoreAudio: public SoundSourceProvider {
 public:
-    QString getName() const /*override*/;
+    QString getName() const override;
 
-    QStringList getSupportedFileExtensions() const /*override*/;
+    QStringList getSupportedFileExtensions() const override;
 
-    SoundSourcePointer newSoundSource(const QUrl& url)  /*override*/ {
+    SoundSourcePointer newSoundSource(const QUrl& url) override {
         return SoundSourcePointer(new SoundSourceCoreAudio(url));
     }
 };

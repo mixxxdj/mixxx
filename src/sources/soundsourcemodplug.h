@@ -29,17 +29,17 @@ public:
 
     Result parseTrackMetadataAndCoverArt(
             TrackMetadata* pTrackMetadata,
-            QImage* pCoverArt) const /*override*/;
+            QImage* pCoverArt) const override;
 
-    void close() /*override*/;
+    void close() override;
 
-    SINT seekSampleFrame(SINT frameIndex) /*override*/;
+    SINT seekSampleFrame(SINT frameIndex) override;
 
     SINT readSampleFrames(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer) /*override*/;
+            CSAMPLE* sampleBuffer) override;
 
 private:
-    Result tryOpen(const AudioSourceConfig& audioSrcCfg) /*override*/;
+    Result tryOpen(const AudioSourceConfig& audioSrcCfg) override;
 
     static unsigned int s_bufferSizeLimit; // max track buffer length (bytes)
 
@@ -54,11 +54,11 @@ private:
 
 class SoundSourceProviderModPlug: public SoundSourceProvider {
 public:
-    QString getName() const /*override*/;
+    QString getName() const override;
 
-    QStringList getSupportedFileExtensions() const /*override*/;
+    QStringList getSupportedFileExtensions() const override;
 
-    SoundSourcePointer newSoundSource(const QUrl& url)  /*override*/ {
+    SoundSourcePointer newSoundSource(const QUrl& url) override {
         return SoundSourcePointer(new SoundSourceModPlug(url));
     }
 };

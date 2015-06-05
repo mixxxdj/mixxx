@@ -17,19 +17,19 @@ public:
 
     Result parseTrackMetadataAndCoverArt(
             TrackMetadata* pTrackMetadata,
-            QImage* pCoverArt) const /*override*/;
+            QImage* pCoverArt) const override;
 
-    void close() /*override*/;
+    void close() override;
 
-    SINT seekSampleFrame(SINT frameIndex) /*override*/;
+    SINT seekSampleFrame(SINT frameIndex) override;
 
     SINT readSampleFrames(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer) /*override*/;
+            CSAMPLE* sampleBuffer) override;
     SINT readSampleFramesStereo(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer, SINT sampleBufferSize) /*override*/;
+            CSAMPLE* sampleBuffer, SINT sampleBufferSize) override;
 
 private:
-    Result tryOpen(const AudioSourceConfig& audioSrcCfg) /*override*/;
+    Result tryOpen(const AudioSourceConfig& audioSrcCfg) override;
 
     OggOpusFile *m_pOggOpusFile;
 
@@ -38,11 +38,11 @@ private:
 
 class SoundSourceProviderOpus: public SoundSourceProvider {
 public:
-    QString getName() const /*override*/;
+    QString getName() const override;
 
-    QStringList getSupportedFileExtensions() const /*override*/;
+    QStringList getSupportedFileExtensions() const override;
 
-    SoundSourcePointer newSoundSource(const QUrl& url)  /*override*/ {
+    SoundSourcePointer newSoundSource(const QUrl& url) override {
         return SoundSourcePointer(new SoundSourceOpus(url));
     }
 };

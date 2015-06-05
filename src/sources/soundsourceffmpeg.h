@@ -45,14 +45,14 @@ public:
     explicit SoundSourceFFmpeg(QUrl url);
     ~SoundSourceFFmpeg();
 
-    void close() /*override*/;
+    void close() override;
 
-    SINT seekSampleFrame(SINT frameIndex) /*override*/;
+    SINT seekSampleFrame(SINT frameIndex) override;
 
-    SINT readSampleFrames(SINT numberOfFrames, CSAMPLE* sampleBuffer) /*override*/;
+    SINT readSampleFrames(SINT numberOfFrames, CSAMPLE* sampleBuffer) override;
 
 private:
-    Result tryOpen(const AudioSourceConfig& audioSrcCfg) /*override*/;
+    Result tryOpen(const AudioSourceConfig& audioSrcCfg) override;
 
     bool readFramesToCache(unsigned int count, SINT offset);
     bool getBytesFromCache(char *buffer, SINT offset, SINT size);
@@ -84,13 +84,13 @@ private:
 
 class SoundSourceProviderFFmpeg: public SoundSourceProvider {
 public:
-    QString getName() const /*override*/ {
+    QString getName() const override {
         return "FFmpeg";
     }
 
-    QStringList getSupportedFileExtensions() const /*override*/;
+    QStringList getSupportedFileExtensions() const override;
 
-    SoundSourcePointer newSoundSource(const QUrl& url)  /*override*/ {
+    SoundSourcePointer newSoundSource(const QUrl& url) override {
         return SoundSourcePointer(new SoundSourceFFmpeg(url));
     }
 };

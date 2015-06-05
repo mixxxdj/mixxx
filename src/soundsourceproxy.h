@@ -35,7 +35,7 @@ public:
 
     Result parseTrackMetadataAndCoverArt(
             Mixxx::TrackMetadata* pTrackMetadata,
-            QImage* pCoverArt) const /*override*/ {
+            QImage* pCoverArt) const override {
         if (m_pSoundSource) {
             return m_pSoundSource->parseTrackMetadataAndCoverArt(
                     pTrackMetadata, pCoverArt);

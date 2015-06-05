@@ -97,7 +97,7 @@ void deleteSoundSource(SoundSource* pSoundSource) {
 
 } // anonymous namespace
 
-SoundSourcePointer SoundSourceProviderWV::newSoundSource(const QUrl& url) /*override*/ {
+SoundSourcePointer SoundSourceProviderWV::newSoundSource(const QUrl& url) {
     return SoundSourcePointer(new SoundSourceWV(url), deleteSoundSource);
 }
 

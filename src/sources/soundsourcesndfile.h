@@ -18,26 +18,26 @@ public:
     explicit SoundSourceSndFile(QUrl url);
     ~SoundSourceSndFile();
 
-    void close() /*override*/;
+    void close() override;
 
-    SINT seekSampleFrame(SINT frameIndex) /*override*/;
+    SINT seekSampleFrame(SINT frameIndex) override;
 
     SINT readSampleFrames(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer) /*override*/;
+            CSAMPLE* sampleBuffer) override;
 
 private:
-    Result tryOpen(const AudioSourceConfig& audioSrcCfg) /*override*/;
+    Result tryOpen(const AudioSourceConfig& audioSrcCfg) override;
 
     SNDFILE* m_pSndFile;
 };
 
 class SoundSourceProviderSndFile: public SoundSourceProvider {
 public:
-    QString getName() const /*override*/;
+    QString getName() const override;
 
-    QStringList getSupportedFileExtensions() const /*override*/;
+    QStringList getSupportedFileExtensions() const override;
 
-    SoundSourcePointer newSoundSource(const QUrl& url)  /*override*/ {
+    SoundSourcePointer newSoundSource(const QUrl& url) override {
         return SoundSourcePointer(new SoundSourceSndFile(url));
     }
 };

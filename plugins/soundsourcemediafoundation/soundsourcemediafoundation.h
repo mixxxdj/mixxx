@@ -33,14 +33,14 @@ public:
     explicit SoundSourceMediaFoundation(QUrl url);
     ~SoundSourceMediaFoundation();
 
-    void close() /*override*/;
+    void close() override;
 
-    SINT seekSampleFrame(SINT frameIndex) /*override*/;
+    SINT seekSampleFrame(SINT frameIndex) override;
 
-    SINT readSampleFrames(SINT numberOfFrames, CSAMPLE* sampleBuffer) /*override*/;
+    SINT readSampleFrames(SINT numberOfFrames, CSAMPLE* sampleBuffer) override;
 
 private:
-    Result tryOpen(const Mixxx::AudioSourceConfig& audioSrcCfg) /*override*/;
+    Result tryOpen(const Mixxx::AudioSourceConfig& audioSrcCfg) override;
 
     bool configureAudioStream(const Mixxx::AudioSourceConfig& audioSrcCfg);
 
@@ -65,11 +65,11 @@ private:
 
 class SoundSourceProviderMediaFoundation: public Mixxx::SoundSourceProvider {
 public:
-    QString getName() const /*override*/;
+    QString getName() const override;
 
-    QStringList getSupportedFileExtensions() const /*override*/;
+    QStringList getSupportedFileExtensions() const override;
 
-    Mixxx::SoundSourcePointer newSoundSource(const QUrl& url) /*override*/;
+    Mixxx::SoundSourcePointer newSoundSource(const QUrl& url) override;
 };
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
