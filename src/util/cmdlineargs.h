@@ -68,7 +68,7 @@ class CmdlineArgs {
 
   private:
     CmdlineArgs() :
-        m_startInFullscreen(false), //Initialize vars
+        m_startInFullscreen(false), // Initialize vars
         m_midiDebug(false),
         m_developer(false),
         m_safeMode(false),
@@ -76,8 +76,8 @@ class CmdlineArgs {
     }
     ~CmdlineArgs() { };
 
-    QList<QString> m_musicFiles;    /* List of files to load into players at startup */
-    bool m_startInFullscreen;       /* Start in fullscreen mode */
+    QList<QString> m_musicFiles;    // List of files to load into players at startup
+    bool m_startInFullscreen;       // Start in fullscreen mode
     bool m_midiDebug;
     bool m_developer; // Developer Mode
     bool m_safeMode;

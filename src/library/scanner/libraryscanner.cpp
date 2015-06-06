@@ -405,7 +405,7 @@ void LibraryScanner::queueTask(ScannerTask* pTask) {
 void LibraryScanner::directoryHashedAndScanned(const QString& directoryPath,
                                                bool newDirectory, int hash) {
     ScopedTimer timer("LibraryScanner::directoryHashedAndScanned");
-    // qDebug() << "LibraryScanner::directoryHashedAndScanned" << directoryPath
+    //qDebug() << "LibraryScanner::directoryHashedAndScanned" << directoryPath
     //          << newDirectory << hash;
 
     // For statistics tracking -- if we hashed a directory then we scanned it
