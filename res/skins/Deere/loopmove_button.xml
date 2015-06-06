@@ -6,8 +6,11 @@
   Variables:
     group: The group for the controls.
     control_length: The length as used in control names.
+    state_X_pressed: The (optional) image file used for this state.
+    state_X_unpressed: The (optional) image file used for this state.
     text_length: The length in text form.
-    SmallSquareButtonSize: the button size
+    direction: ``forward`` or ``backward`` move
+    SmallSquareButtonSize: The button size
 -->
 <Template>
   <Template src="skin:left_1state_button.xml">
