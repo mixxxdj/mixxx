@@ -24,12 +24,12 @@ public:
     // to the priority for which they have been registered. Only
     // a single provider will be registered for each file extension
     // and priority.
-    enum Priority {
-        LOWEST_PRIORITY,
-        LOWER_PRIORITY,
-        DEFAULT_PRIORITY,
-        HIGHER_PRIORITY,
-        HIGHEST_PRIORITY
+    enum class Priority {
+        LOWEST,
+        LOWER,
+        DEFAULT,
+        HIGHER,
+        HIGHEST
     };
 
     // The suggested priority of this provider compared to others
@@ -37,7 +37,7 @@ public:
     // application may register a provider with any priority, no
     // matter what this function actually returns!
     virtual Priority getPriorityHint() const {
-        return DEFAULT_PRIORITY;
+        return Priority::DEFAULT;
     }
 
     // Creates a new SoundSource for the file referenced by the URL.

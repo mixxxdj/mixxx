@@ -37,7 +37,7 @@ public:
 
     Priority getPriorityHint() const override {
         // libsnd will be used as a fallback
-        return LOWER_PRIORITY;
+        return Priority::LOWER;
     }
 
     QStringList getSupportedFileExtensions() const override;

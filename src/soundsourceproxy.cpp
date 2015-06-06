@@ -202,11 +202,11 @@ void SoundSourceProxy::loadPlugins() {
                         supportedFileExtension));
         for (const auto& registration: registrationsForFileExtension) {
             if (registration.getPluginLibrary()) {
-                qDebug() << " " << registration.getProviderPriority()
+                qDebug() << " " << static_cast<int>(registration.getProviderPriority())
                         << ":" << registration.getProvider()->getName()
                         << "@" << registration.getPluginLibrary()->getFilePath();
             } else {
-                qDebug() << " " << registration.getProviderPriority()
+                qDebug() << " " << static_cast<int>(registration.getProviderPriority())
                         << ":" << registration.getProvider()->getName();
             }
         }
