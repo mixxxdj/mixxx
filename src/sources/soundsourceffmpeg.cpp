@@ -136,7 +136,6 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
         qDebug() << "ffmpeg: No support for more than 2 channels!";
         return ERR;
     }
-
     return OK;
 }
 
@@ -226,10 +225,10 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
             // Are we on correct audio stream. Currently we are always
             // Using first audio stream but in future there should be
             // possibility to choose which to use
-            if (l_SPacket.stream_index == m_iAudioStream) {
+            if (l_SPacket.stream_index == m_iAudioStream &&
+                    l_SPacket.pos >= 0) {
                 if (m_lStoredSeekPoint > 0) {
                     struct ffmpegLocationObject *l_STestObj = NULL;
-
                     if (m_SJumpPoints.size() > 0) {
                         l_STestObj = m_SJumpPoints.first();
 
@@ -392,6 +391,7 @@ bool SoundSourceFFmpeg::getBytesFromCache(char *buffer, SINT offset,
 
     // Is offset bigger than start of cache
     if (offset >= m_lCacheStartFrame) {
+        int l_lTmpLen = 0;
         // If last pos is (which is shouldn't) use caches end
         if (m_lCacheLastPos == 0) {
             m_lCacheLastPos = m_SCache.size() - 1;
@@ -400,7 +400,11 @@ bool SoundSourceFFmpeg::getBytesFromCache(char *buffer, SINT offset,
         // Seek to correct FrameIndex (Minus 5 for faster seek)
         for (l_lPos = m_lCacheLastPos; l_lPos >= 0; l_lPos -= 5) {
             l_SObj = m_SCache[l_lPos];
-            if ((l_SObj->startFrame + l_SObj->length) < offset) {
+
+            // Because length is in byte we have to convert it to Frames
+            l_lTmpLen = l_SObj->length / (sizeof(CSAMPLE) * 2);
+
+            if ((l_SObj->startFrame + l_lTmpLen) < offset) {
                 break;
             }
         }
@@ -481,10 +485,9 @@ SINT SoundSourceFFmpeg::seekSampleFrame(SINT frameIndex) {
         ret = avformat_seek_file(m_pFormatCtx,
                                  m_iAudioStream,
                                  0,
-                                 32767 * 2,
+                                 0,
                                  32767 * 2,
                                  AVSEEK_FLAG_BACKWARD);
-
 
         if (ret < 0) {
             qDebug() << "SoundSourceFFmpeg::seek: Can't seek to 0 byte!";
@@ -524,7 +527,7 @@ SINT SoundSourceFFmpeg::seekSampleFrame(SINT frameIndex) {
         if (frameIndex == 0) {
             readFramesToCache((AUDIOSOURCEFFMPEG_CACHESIZE - 50), -1);
         } else {
-            readFramesToCache((AUDIOSOURCEFFMPEG_CACHESIZE / 2), frameIndex);
+            readFramesToCache(100, frameIndex);
         }
     }
 

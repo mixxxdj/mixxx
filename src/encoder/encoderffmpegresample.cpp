@@ -176,6 +176,13 @@ unsigned int EncoderFfmpegResample::reSample(AVFrame *inframe, quint8 **outbuffe
         quint8 **l_pIn = (quint8 **)inframe->extended_data;
 #endif // __LIBAVRESAMPLE__
 
+       // This is Cap frame or very much broken!
+       // So return before something goes bad
+       if(inframe->nb_samples <= 0)
+       {
+            return -1;
+       }
+
 // Left here for reason!
 // Sometime in time we will need this!
 #else
