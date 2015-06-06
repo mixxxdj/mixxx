@@ -87,7 +87,11 @@
         </Children>
       </WidgetGroup>
 
-      <Template src="skin:left_right_display_2state_button.xml">
+      <Template src="skin:spacer_vx.xml">
+        <SetVariable name="height">8</SetVariable>
+      </Template>
+
+     <Template src="skin:left_right_display_2state_button.xml">
         <SetVariable name="TooltipId">cue_default_cue_gotoandstop</SetVariable>
         <SetVariable name="ObjectName">DeckCue</SetVariable>
         <SetVariable name="MinimumSize"><Variable name="HorizontalStretchButtonMinimumSize"/></SetVariable>
