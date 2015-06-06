@@ -7,10 +7,15 @@
 
 #include "util/sandbox.h"
 
-// Creates sound sources for filenames or tracks
+// Creates sound sources for plain files or tracks. Only intended to be used
+// in a narrow scope and not shareable between multiple threads!
 class SoundSourceProxy: public Mixxx::MetadataSource {
 public:
-    static void loadPlugins(); // not thread-safe
+    // Initially registers all built-in SoundSource providers and
+    // loads all SoundSource plugins with additional providers. This
+    // function is not thread-safe and must be called only once
+    // upon startup of the application.
+    static void loadPlugins();
 
     static QStringList getSupportedFileExtensions() {
         return s_soundSourceProviders.getRegisteredFileExtensions();
@@ -29,10 +34,18 @@ public:
     static bool isFileExtensionSupported(const QString& fileExtension);
 
     explicit SoundSourceProxy(
-            const QString& fileName,
+            const QString& filePath,
             SecurityTokenPointer pSecurityToken = SecurityTokenPointer());
     explicit SoundSourceProxy(
             const TrackPointer& pTrack);
+
+    const QString& getFilePath() const {
+        return m_filePath;
+    }
+
+    const QUrl& getUrl() const {
+        return m_url;
+    }
 
     QString getType() const {
         if (m_pSoundSource) {
@@ -65,10 +78,11 @@ private:
     static QStringList s_supportedFileNamePatterns;
     static QRegExp s_supportedFileNamesRegex;
 
+    const QString m_filePath;
+    const QUrl m_url;
+
     const TrackPointer m_pTrack;
     const SecurityTokenPointer m_pSecurityToken;
-
-    const QUrl m_url;
 
     static Mixxx::SoundSourceProviderRegistrationList findSoundSourceProviderRegistrations(const QUrl& url);
 
@@ -87,4 +101,4 @@ private:
     Mixxx::AudioSourcePointer m_pAudioSource;
 };
 
-#endif
+#endif // SOUNDSOURCEPROXY_H
