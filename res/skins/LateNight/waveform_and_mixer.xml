@@ -71,6 +71,34 @@
                         <SizePolicy>min,min</SizePolicy>
                         <Children>
                             <PushButton>
+                                <Size>40f,20f</Size>
+                                <TooltipId>show_eqs</TooltipId>
+                                <ObjectName>GuiToggleButton</ObjectName>
+                                <NumberStates>2</NumberStates>
+                                <State>
+                                  <Number>0</Number>
+                                  <Text>EQ</Text>
+                                </State>
+                                <State>
+                                  <Number>1</Number>
+                                  <Text>EQ</Text>
+                                </State>
+                                <Connection>
+                                  <ConfigKey>[Master],show_eqs</ConfigKey>
+                                  <ButtonState>LeftButton</ButtonState>
+                                </Connection>
+                                <Connection>
+                                  <ConfigKey>[Master],show_eqs</ConfigKey>
+                                </Connection>
+                            </PushButton>
+                        </Children>
+                    </WidgetGroup>
+                    <WidgetGroup>
+                        <ObjectName>GuiToggleContainer</ObjectName>
+                        <Layout>vertical</Layout>
+                        <SizePolicy>min,min</SizePolicy>
+                        <Children>
+                            <PushButton>
                                 <Size>55f,20f</Size>
                                 <ObjectName>GuiToggleButton</ObjectName>
                                 <NumberStates>2</NumberStates>
@@ -115,6 +143,34 @@
                                 </Connection>
                                 <Connection>
                                   <ConfigKey persist="true">[Spinny],show_spinnies</ConfigKey>
+                                </Connection>
+                            </PushButton>
+                        </Children>
+                    </WidgetGroup>
+                    <WidgetGroup>
+                        <ObjectName>GuiToggleContainer</ObjectName>
+                        <Layout>vertical</Layout>
+                        <SizePolicy>min,min</SizePolicy>
+                        <Children>
+                            <PushButton>
+                                <Size>64f,20f</Size>
+                                <TooltipId>show_bigwaves</TooltipId>
+                                <ObjectName>GuiToggleButton</ObjectName>
+                                <NumberStates>2</NumberStates>
+                                <State>
+                                  <Number>0</Number>
+                                  <Text>BIG WAVES</Text>
+                                </State>
+                                <State>
+                                  <Number>1</Number>
+                                  <Text>BIG WAVES</Text>
+                                </State>
+                                <Connection>
+                                  <ConfigKey>[Master],show_bigwaves</ConfigKey>
+                                  <ButtonState>LeftButton</ButtonState>
+                                </Connection>
+                                <Connection>
+                                  <ConfigKey>[Master],show_bigwaves</ConfigKey>
                                 </Connection>
                             </PushButton>
                         </Children>

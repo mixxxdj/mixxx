@@ -40,11 +40,12 @@
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
-#SpinnyContainer {
+#SpinnyBorder {
   border: 1px solid #585858;
-  border-right: 0px;
-  border-top: 0px;
-  border-bottom: 0px;
+}
+
+#SpinnyContainer {
+  border: 0px;
   background-color: #0f0f0f;
 }
 
