@@ -18,7 +18,7 @@
     <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
     <SetVariable name="state_0_pressed"><Variable name="state_0_pressed"/></SetVariable>
     <SetVariable name="state_0_unpressed"><Variable name="state_0_unpressed"/></SetVariable>
-    <SetVariable name="state_0_text"><Variable name="state_0_text"/></SetVariable>
+    <SetVariable name="state_0_text"><Variable name="text_length"/></SetVariable>
     <SetVariable name="left_connection_control"><Variable name="group"/>,loop_move_<Variable name="control_length"/>_<Variable name="direction"/></SetVariable>
   </Template>
 </Template>
