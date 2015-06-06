@@ -296,7 +296,12 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
 
                         // If we are over last storepos and we have read more than jump point need is
                         // and pos is unique we store it to memory
-                        if (m_lStoreCount == 64) {
+                        //
+                        // So why number 32? Sorry I just made that up from the hat there is no
+                        // math behind it. Number 32 it's not too big nor jumps points are not
+                        // too close each other. Mainly it's ugly compromise with MP3,MP4,OGG and WMA
+                        // diffrent codec frame sizes
+                        if (m_lStoreCount == 32) {
                             struct ffmpegLocationObject *l_STestObj = NULL;
 
                             if (m_SJumpPoints.size() > 0) {
@@ -398,6 +403,10 @@ bool SoundSourceFFmpeg::getBytesFromCache(char *buffer, SINT offset,
         }
 
         // Seek to correct FrameIndex (Minus 5 for faster seek)
+        //
+        // This could be done per steps but because there
+        // Jump points can be far away and codec frames are small
+        // just jump to point where is safe to start.
         for (l_lPos = m_lCacheLastPos; l_lPos >= 0; l_lPos -= 5) {
             l_SObj = m_SCache[l_lPos];
 
