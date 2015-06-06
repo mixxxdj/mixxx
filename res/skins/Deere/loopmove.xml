@@ -31,7 +31,7 @@
              <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
              <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
              <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-             <SetVariable name="text_length">4</SetVariable>
+             <SetVariable name="state_0_text">4</SetVariable>
              <SetVariable name="state_0_pressed"></SetVariable>
              <SetVariable name="state_0_unpressed"></SetVariable>
              <SetVariable name="left_connection_control">[LoopMove],next</SetVariable>
@@ -65,7 +65,7 @@
              <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
              <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
              <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-             <SetVariable name="text_length">8</SetVariable>
+             <SetVariable name="state_0_text">8</SetVariable>
              <SetVariable name="state_0_pressed"></SetVariable>
              <SetVariable name="state_0_unpressed"></SetVariable>
              <SetVariable name="left_connection_control">[LoopMove],next</SetVariable>
@@ -97,7 +97,7 @@
              <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
              <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
              <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-             <SetVariable name="text_length">16</SetVariable>
+             <SetVariable name="state_0_text">16</SetVariable>
              <SetVariable name="state_0_pressed"></SetVariable>
              <SetVariable name="state_0_unpressed"></SetVariable>
              <SetVariable name="left_connection_control">[LoopMove],next</SetVariable>
@@ -129,7 +129,7 @@
              <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
              <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
              <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-             <SetVariable name="text_length">32</SetVariable>
+             <SetVariable name="state_0_text">32</SetVariable>
              <SetVariable name="state_0_pressed"></SetVariable>
              <SetVariable name="state_0_unpressed"></SetVariable>
              <SetVariable name="left_connection_control">[LoopMove],next</SetVariable>
@@ -161,7 +161,7 @@
             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
             <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
             <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-            <SetVariable name="text_length">64</SetVariable>
+            <SetVariable name="state_0_text">64</SetVariable>
             <SetVariable name="state_0_pressed"></SetVariable>
             <SetVariable name="state_0_unpressed"></SetVariable>
             <SetVariable name="left_connection_control">[LoopMove],next</SetVariable>
@@ -193,7 +193,7 @@
              <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
              <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
              <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-             <SetVariable name="text_length">1/32</SetVariable>
+             <SetVariable name="state_0_text">1/32</SetVariable>
              <SetVariable name="state_0_pressed"></SetVariable>
              <SetVariable name="state_0_unpressed"></SetVariable>
              <SetVariable name="left_connection_control">[LoopMove],next</SetVariable>
@@ -225,7 +225,7 @@
              <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
              <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
              <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-             <SetVariable name="text_length">1/16</SetVariable>
+             <SetVariable name="state_0_text">1/16</SetVariable>
              <SetVariable name="state_0_pressed"></SetVariable>
              <SetVariable name="state_0_unpressed"></SetVariable>
              <SetVariable name="left_connection_control">[LoopMove],next</SetVariable>
@@ -257,7 +257,7 @@
              <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
              <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
              <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-             <SetVariable name="text_length">1/8</SetVariable>
+             <SetVariable name="state_0_text">1/8</SetVariable>
              <SetVariable name="state_0_pressed"></SetVariable>
              <SetVariable name="state_0_unpressed"></SetVariable>
              <SetVariable name="left_connection_control">[LoopMove],next</SetVariable>
@@ -289,7 +289,7 @@
              <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
              <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
              <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-             <SetVariable name="text_length">1/4</SetVariable>
+             <SetVariable name="state_0_text">1/4</SetVariable>
              <SetVariable name="state_0_pressed"></SetVariable>
              <SetVariable name="state_0_unpressed"></SetVariable>
              <SetVariable name="left_connection_control">[LoopMove],next</SetVariable>
@@ -321,7 +321,7 @@
              <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
              <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
              <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-             <SetVariable name="text_length">1/2</SetVariable>
+             <SetVariable name="state_0_text">1/2</SetVariable>
              <SetVariable name="state_0_pressed"></SetVariable>
              <SetVariable name="state_0_unpressed"></SetVariable>
              <SetVariable name="left_connection_control">[LoopMove],next</SetVariable>
@@ -353,7 +353,7 @@
              <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
              <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
              <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-             <SetVariable name="text_length">1</SetVariable>
+             <SetVariable name="state_0_text">1</SetVariable>
              <SetVariable name="state_0_pressed"></SetVariable>
              <SetVariable name="state_0_unpressed"></SetVariable>
              <SetVariable name="left_connection_control">[LoopMove],next</SetVariable>
@@ -385,7 +385,7 @@
              <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
              <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
              <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-             <SetVariable name="text_length">2</SetVariable>
+             <SetVariable name="state_0_text">2</SetVariable>
              <SetVariable name="state_0_pressed"></SetVariable>
              <SetVariable name="state_0_unpressed"></SetVariable>
              <SetVariable name="left_connection_control">[LoopMove],next</SetVariable>
