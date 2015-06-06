@@ -177,28 +177,28 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
 
 #ifdef __APPLE__
         qDebug() << "Config version is empty, trying to read pre-1.9.0 config";
-        //Try to read the config from the pre-1.9.0 final directory on OS X (we moved it in 1.9.0 final)
+        // Try to read the config from the pre-1.9.0 final directory on OS X (we moved it in 1.9.0 final)
         QScopedPointer<QFile> oldConfigFile(new QFile(QDir::homePath().append("/").append(".mixxx/mixxx.cfg")));
         if (oldConfigFile->exists()) {
             qDebug() << "Found pre-1.9.0 config for OS X";
             config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(".mixxx/mixxx.cfg"));
-            //Note: We changed SETTINGS_PATH in 1.9.0 final on OS X so it must be hardcoded to ".mixxx" here for legacy.
+            // Note: We changed SETTINGS_PATH in 1.9.0 final on OS X so it must be hardcoded to ".mixxx" here for legacy.
             configVersion = config->getValueString(ConfigKey("[Config]","Version"));
         }
         else {
 #elif __WINDOWS__
         qDebug() << "Config version is empty, trying to read pre-1.12.0 config";
-        //Try to read the config from the pre-1.12.0 final directory on Windows (we moved it in 1.12.0 final)
+        // Try to read the config from the pre-1.12.0 final directory on Windows (we moved it in 1.12.0 final)
         QScopedPointer<QFile> oldConfigFile(new QFile(QDir::homePath().append("/").append("Local Settings/Application Data/Mixxx/").append(SETTINGS_FILE)));
         if (oldConfigFile->exists()) {
             qDebug() << "Found pre-1.12.0 config for Windows";
             config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append("Local Settings/Application Data/Mixxx/").append(SETTINGS_FILE));
-            //Note: We changed SETTINGS_PATH in 1.12.0 final on Windows so it must be hardcoded to "Local Settings/Application Data/Mixxx/" here for legacy.
+            // Note: We changed SETTINGS_PATH in 1.12.0 final on Windows so it must be hardcoded to "Local Settings/Application Data/Mixxx/" here for legacy.
             configVersion = config->getValueString(ConfigKey("[Config]","Version"));
         }
         else {
 #endif
-            //This must have been the first run... right? :)
+            // This must have been the first run... right? :)
             qDebug() << "No version number in configuration file. Setting to" << VERSION;
             config->set(ConfigKey("[Config]","Version"), ConfigValue(VERSION));
             m_bFirstRun = true;
@@ -234,10 +234,10 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
     }
     */
 
-    //We use the following blocks to detect if this is the first time
-    //you've run the latest version of Mixxx. This lets us show
-    //the promo tracks stats agreement stuff for all users that are
-    //upgrading Mixxx.
+    // We use the following blocks to detect if this is the first time
+    // you've run the latest version of Mixxx. This lets us show
+    // the promo tracks stats agreement stuff for all users that are
+    // upgrading Mixxx.
 
     if (configVersion.startsWith("1.7")) {
         qDebug() << "Upgrading from v1.7.x...";
@@ -276,12 +276,12 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
             qDebug() << "Moving" << curPair.first << "to" << curPair.second;
             QDir oldSubDir(curPair.first);
             QDir newSubDir(curPair.second);
-            newSubDir.mkpath(curPair.second); //Create the new destination directory
+            newSubDir.mkpath(curPair.second); // Create the new destination directory
 
             QStringList contents = oldSubDir.entryList(QDir::Files | QDir::NoDotAndDotDot);
             QStringListIterator it(contents);
             QString cur;
-            //Iterate over all the files in the source directory and copy them to the dest dir.
+            // Iterate over all the files in the source directory and copy them to the dest dir.
             while (it.hasNext())
             {
                 cur = it.next();
@@ -294,11 +294,11 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
                 }
             }
 
-            //Rename the old directory.
+            // Rename the old directory.
             newOSXDir.rename(OSXLocation180, OSXLocation180 + "-1.8");
         }
-        //Reload the configuration file from the new location.
-        //(We want to make sure we save to the new location...)
+        // Reload the configuration file from the new location.
+        // (We want to make sure we save to the new location...)
         config = new ConfigObject<ConfigValue>(settingsPath + SETTINGS_FILE);
 #endif
         configVersion = "1.9.0";
@@ -319,7 +319,7 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
         QStringList contents = oldDir.entryList(QDir::Files | QDir::NoDotAndDotDot);
         QStringListIterator it(contents);
         QString cur;
-        //Iterate over all the files in the source directory and copy them to the dest dir.
+        // Iterate over all the files in the source directory and copy them to the dest dir.
         while (it.hasNext()) {
             cur = it.next();
             if (newDir.exists(cur)) {
