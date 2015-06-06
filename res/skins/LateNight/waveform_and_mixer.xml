@@ -72,7 +72,6 @@
                         <Children>
                             <PushButton>
                                 <Size>40f,20f</Size>
-                                <TooltipId>show_eqs</TooltipId>
                                 <ObjectName>GuiToggleButton</ObjectName>
                                 <NumberStates>2</NumberStates>
                                 <State>
@@ -154,7 +153,6 @@
                         <Children>
                             <PushButton>
                                 <Size>64f,20f</Size>
-                                <TooltipId>show_bigwaves</TooltipId>
                                 <ObjectName>GuiToggleButton</ObjectName>
                                 <NumberStates>2</NumberStates>
                                 <State>

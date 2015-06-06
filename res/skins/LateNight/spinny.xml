@@ -19,7 +19,7 @@
       <WidgetGroup>
         <ObjectName>SpinnyBorder</ObjectName>
         <Layout>horizontal</Layout>
-        <Size>1f,64f</Size>
+        <Size>1f,50f</Size>
         <Children/>
         <Connection>
             <ConfigKey>[Master],show_bigwaves</ConfigKey>
@@ -53,7 +53,7 @@
             <SizePolicy>min,min</SizePolicy>
             <Children>
               <SingletonContainer>
-                  <Size>65f,64f</Size>
+                  <Size>50f,50f</Size>
                   <ObjectName>SpinnySingleton<Variable name="channum"/></ObjectName>
               </SingletonContainer>
             </Children>
@@ -100,7 +100,7 @@
       <WidgetGroup>
         <ObjectName>SpinnyContainer</ObjectName>
         <Layout>horizontal</Layout>
-        <Size>1f,64f</Size>
+        <Size>1f,50f</Size>
         <Children/>
         <Connection>
             <ConfigKey>[Master],show_bigwaves</ConfigKey>
