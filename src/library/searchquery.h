@@ -57,7 +57,11 @@ class AndNode : public GroupNode {
 class NotNode : public QueryNode {
   public:
     explicit NotNode(QueryNode* pNode);
+<<<<<<< HEAD
     virtual ~NotNode();
+=======
+    ~NotNode();
+>>>>>>> Fix memory leak in NotNode
 
     bool match(const TrackPointer& pTrack) const;
     QString toSql() const;
