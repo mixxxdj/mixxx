@@ -13,25 +13,33 @@
         <ObjectName>NotificationsContainer</ObjectName>
         <Layout>horizontal</Layout>
         <Children>
+          <!--
+            Disable the recording button for now. You can start and stop recording from the library.
+            Additionally we now have a statuslight in the toolbars notification section, see below.
+            Re-enable this working button if you like (jus 2015-06)
+
           <PushButton>
-            <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
-            <Tooltip></Tooltip>
-            <Size>60f,20f</Size>
+            <TooltipId></TooltipId>
+            <Tooltip>Start / Stop recording</Tooltip>
+            <Size>20f,20f</Size>
             <NumberStates>3</NumberStates>
             <State>
-              <!-- RECORD OFF -->
               <Number>0</Number>
-              <Text>Record</Text>
+              <Text></Text>
+              <Pressed scalemode="STRETCH_ASPECT">icon/ic_record_48px.svg</Pressed>
+              <Unpressed scalemode="STRETCH_ASPECT">icon/ic_record_48px.svg</Unpressed>
             </State>
             <State>
-              <!-- RECORD READY -->
               <Number>1</Number>
-              <Text>Record</Text>
+              <Text></Text>
+              <Pressed scalemode="STRETCH_ASPECT">icon/ic_record_48px.svg</Pressed>
+              <Unpressed scalemode="STRETCH_ASPECT">icon/ic_record_48px.svg</Unpressed>
             </State>
             <State>
-              <!-- RECORD ON-->
               <Number>2</Number>
-              <Text>Record</Text>
+              <Text></Text>
+              <Pressed scalemode="STRETCH_ASPECT">icon/ic_record_48px.svg</Pressed>
+              <Unpressed scalemode="STRETCH_ASPECT">icon/ic_record_48px.svg</Unpressed>
             </State>
             <Connection>
               <ConfigKey>[Recording],toggle_recording</ConfigKey>
@@ -41,38 +49,108 @@
               <ConfigKey>[Recording],status</ConfigKey>
             </Connection>
           </PushButton>
+          -->
 
-          <PushButton>
-            <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
-            <TooltipId></TooltipId>
-            <Size>60f,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>AutoDJ</Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>AutoDJ</Text>
-            </State>
-            <Connection>
-              <ConfigKey>[AutoDJ],enabled</ConfigKey>
-            </Connection>
-          </PushButton>
+          <Template src="skin:statuslight_3state.xml">
+           <SetVariable name="TooltipId"></SetVariable>
+           <SetVariable name="Tooltip">Recording active</SetVariable>
+            <SetVariable name="ObjectName">RecordingNotification</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0">icon/ic_recording_32px.svg</SetVariable>
+            <SetVariable name="state_1">icon/ic_recording_32px.svg</SetVariable>
+            <SetVariable name="state_2">icon/ic_recording_32px.svg</SetVariable>
+            <SetVariable name="left_connection_control">[Recording],status</SetVariable>
+          </Template>
 
           <!--
-            No control for enabling Shoutcast available, see
-            https://bugs.launchpad.net/mixxx/+bug/1432647
-            Display only status for now
+            You could map the ``[AutoDJ],enabled`` control to a button, and start/stop AutoDJ from anywhere in the GUI,
+            but using the ``Enable AutoDJ`` button in the library is preferable. Reason is only that button guards
+            against enabling AutoDj with an empty queue. You would throw off button states easily. So we stick with
+            just displaying the AutoDJ status here.
           -->
-          <Label>
-            <Size>60f,20f</Size>
-            <Text>Broadcasting</Text>
-            <Connection>
-              <ConfigKey>[Shoutcast],status</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </Label>
+          <Template src="skin:statuslight_3state.xml">
+           <SetVariable name="TooltipId"></SetVariable>
+           <SetVariable name="Tooltip">AutoDJ active</SetVariable>
+            <SetVariable name="ObjectName">AutoDjNotification</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0">icon/ic_autodj_32px.svg</SetVariable>
+            <SetVariable name="state_1">icon/ic_autodj_32px.svg</SetVariable>
+            <SetVariable name="state_2">icon/ic_autodj_32px.svg</SetVariable>
+            <SetVariable name="left_connection_control">[AutoDJ],enabled</SetVariable>
+          </Template>
+
+          <!--
+            No control for enabling Shoutcast available, see https://bugs.launchpad.net/mixxx/+bug/1432647
+            Display only status for now.
+          -->
+          <Template src="skin:statuslight_3state.xml">
+           <SetVariable name="TooltipId"></SetVariable>
+           <SetVariable name="Tooltip">Live Broadcasting active</SetVariable>
+            <SetVariable name="ObjectName">LiveBroadcastingNotification</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0">icon/ic_broadcast_32px.svg</SetVariable>
+            <SetVariable name="state_1">icon/ic_broadcast_32px.svg</SetVariable>
+            <SetVariable name="state_2">icon/ic_broadcast_32px.svg</SetVariable>
+            <SetVariable name="left_connection_control">[Shoutcast],status</SetVariable>
+          </Template>
+
+          <Template src="skin:statuslight_3state.xml">
+           <SetVariable name="TooltipId"></SetVariable>
+           <SetVariable name="Tooltip">Vinyl Control 1 active</SetVariable>
+            <SetVariable name="ObjectName">VinylControlNotification</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0">icon/ic_vinylcontrol_32px.svg</SetVariable>
+            <SetVariable name="state_1">icon/ic_vinylcontrol_32px.svg</SetVariable>
+            <SetVariable name="state_2">icon/ic_vinylcontrol_32px.svg</SetVariable>
+            <SetVariable name="left_connection_control">[Channel1],vinylcontrol_enabled</SetVariable>
+          </Template>
+
+          <Template src="skin:statuslight_3state.xml">
+           <SetVariable name="TooltipId"></SetVariable>
+           <SetVariable name="Tooltip">Vinyl Control 2 active</SetVariable>
+            <SetVariable name="ObjectName">VinylControlNotification</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0">icon/ic_vinylcontrol_32px.svg</SetVariable>
+            <SetVariable name="state_1">icon/ic_vinylcontrol_32px.svg</SetVariable>
+            <SetVariable name="state_2">icon/ic_vinylcontrol_32px.svg</SetVariable>
+            <SetVariable name="left_connection_control">[Channel2],vinylcontrol_enabled</SetVariable>
+          </Template>
+
+          <Template src="skin:statuslight_3state.xml">
+           <SetVariable name="TooltipId"></SetVariable>
+           <SetVariable name="Tooltip">Vinyl Control 3 active</SetVariable>
+            <SetVariable name="ObjectName">VinylControlNotification</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0">icon/ic_vinylcontrol_32px.svg</SetVariable>
+            <SetVariable name="state_1">icon/ic_vinylcontrol_32px.svg</SetVariable>
+            <SetVariable name="state_2">icon/ic_vinylcontrol_32px.svg</SetVariable>
+            <SetVariable name="left_connection_control">[Channel3],vinylcontrol_enabled</SetVariable>
+          </Template>
+
+          <Template src="skin:statuslight_3state.xml">
+           <SetVariable name="TooltipId"></SetVariable>
+           <SetVariable name="Tooltip">Vinyl Control 4 active</SetVariable>
+            <SetVariable name="ObjectName">VinylControlNotification</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0">icon/ic_vinylcontrol_32px.svg</SetVariable>
+            <SetVariable name="state_1">icon/ic_vinylcontrol_32px.svg</SetVariable>
+            <SetVariable name="state_2">icon/ic_vinylcontrol_32px.svg</SetVariable>
+            <SetVariable name="left_connection_control">[Channel4],vinylcontrol_enabled</SetVariable>
+          </Template>
         </Children>
       </WidgetGroup>
 

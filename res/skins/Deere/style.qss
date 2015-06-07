@@ -547,10 +547,14 @@ WSliderComposed {
 }
 /* End spacing for Deck controls row */
 
-
+/* Start spacing for toolbar */
 #ToolBar {
   background-color: #111111;
 }
+#NotificationsContainer {
+  qproperty-layoutSpacing: 4;
+}
+/* End spacing for toolbar */
 
 /* All widget groups that are children of #DeckRows should AlignTop. */
 #DeckRows > WWidgetGroup {
