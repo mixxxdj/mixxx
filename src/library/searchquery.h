@@ -58,10 +58,14 @@ class NotNode : public QueryNode {
   public:
     explicit NotNode(QueryNode* pNode);
 <<<<<<< HEAD
+<<<<<<< HEAD
     virtual ~NotNode();
 =======
     ~NotNode();
 >>>>>>> Fix memory leak in NotNode
+=======
+    virtual ~NotNode();
+>>>>>>> Add (redundant) keyword 'virtual' to declaration of destructor
 
     bool match(const TrackPointer& pTrack) const;
     QString toSql() const;
