@@ -107,6 +107,10 @@ NotNode::NotNode(QueryNode* pNode)
         : m_pNode(pNode) {
 }
 
+NotNode::~NotNode() {
+    delete m_pNode;
+}
+
 bool NotNode::match(const TrackPointer& pTrack) const {
     if (m_pNode != NULL) {
         return !m_pNode->match(pTrack);
