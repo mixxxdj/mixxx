@@ -57,7 +57,7 @@ class AndNode : public GroupNode {
 class NotNode : public QueryNode {
   public:
     explicit NotNode(QueryNode* pNode);
-    ~NotNode();
+    virtual ~NotNode();
 
     bool match(const TrackPointer& pTrack) const;
     QString toSql() const;
