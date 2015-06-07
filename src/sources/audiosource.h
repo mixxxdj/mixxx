@@ -13,7 +13,7 @@
 namespace Mixxx {
 
 // forward declaration(s)
-class AudioSourceConfig;
+struct AudioSourceConfig;
 
 // Common interface and base class for audio sources.
 //
@@ -175,7 +175,7 @@ public:
     // with an optimized version that does not require a second pass through
     // the sample data or that avoids the allocation of a temporary buffer
     // when reducing multi-channel data to stereo.
-    // 
+    //
     // The minimum required capacity of the sampleBuffer is
     //     sampleBufferSize = numberOfFrames * 2
     // In order to avoid the implicit allocation of a temporary buffer
@@ -210,7 +210,7 @@ public:
     }
 
 protected:
-    explicit AudioSource(QUrl url);
+    explicit AudioSource(const QUrl& url);
 
     inline static bool isValidChannelCount(SINT channelCount) {
         return kChannelCountZero < channelCount;
@@ -240,7 +240,7 @@ protected:
             bool readStereoSamples = false) const;
 
 private:
-    friend class AudioSourceConfig;
+    friend struct AudioSourceConfig;
 
     static const SINT kChannelCountZero = 0;
     static const SINT kChannelCountDefault = kChannelCountZero;

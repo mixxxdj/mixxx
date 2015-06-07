@@ -180,6 +180,5 @@ bool AnalysisFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
 }
 
 bool AnalysisFeature::dragMoveAccept(QUrl url) {
-    QFileInfo file(url.toLocalFile());
-    return SoundSourceProxy::isFilenameSupported(file.fileName());
+    return SoundSourceProxy::isUrlSupported(url);
 }

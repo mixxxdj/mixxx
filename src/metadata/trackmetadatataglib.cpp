@@ -205,12 +205,14 @@ bool readAudioProperties(TrackMetadata* pTrackMetadata,
         return false;
     }
     if (!pTrackMetadata) {
-        // implicitly succesful
+        // implicitly successful
         return true;
     }
     const TagLib::AudioProperties* pAudioProperties =
             file.audioProperties();
     if (!pAudioProperties) {
+        qWarning() << "Failed to read audio properties from file"
+                << file.name();
         return false;
     }
     readAudioProperties(pTrackMetadata, *pAudioProperties);
@@ -879,14 +881,6 @@ bool writeTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& t
     return true;
 }
 
-Result readTrackMetadataFromFile(TrackMetadata* pTrackMetadata, QString fileName) {
-    return readTrackMetadataAndCoverArtFromFile(pTrackMetadata, NULL, fileName);
-}
-
-Result readCoverArtFromFile(QImage* pCoverArt, QString fileName) {
-    return readTrackMetadataAndCoverArtFromFile(NULL, pCoverArt, fileName);
-}
-
 Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImage* pCoverArt, QString fileName) {
     const QString fileType(getFileTypeFromFileName(fileName));
 
@@ -1072,9 +1066,11 @@ Result readTrackMetadataAndCoverArtFromFile(TrackMetadata* pTrackMetadata, QImag
                 }
             }
         }
+    } else {
+        qWarning() << "Unsupported file type" << fileType;
     }
 
-    qWarning() << "File" << fileName << "does not contain any supported tags that could be read!";
+    qWarning() << "Failed to read track metadata from file" << fileName;
     return ERR;
 }
 

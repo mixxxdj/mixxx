@@ -24,31 +24,23 @@
 
 #include <windows.h>
 
-#ifdef Q_OS_WIN
-#define MY_EXPORT __declspec(dllexport)
-#else
-#define MY_EXPORT
-#endif
-
 class IMFSourceReader;
 class IMFMediaType;
 class IMFMediaSource;
 
 class SoundSourceMediaFoundation : public Mixxx::SoundSourcePlugin {
 public:
-    static QList<QString> supportedFileExtensions();
-
     explicit SoundSourceMediaFoundation(QUrl url);
     ~SoundSourceMediaFoundation();
 
-    void close() /*override*/;
+    void close() override;
 
-    SINT seekSampleFrame(SINT frameIndex) /*override*/;
+    SINT seekSampleFrame(SINT frameIndex) override;
 
-    SINT readSampleFrames(SINT numberOfFrames, CSAMPLE* sampleBuffer) /*override*/;
+    SINT readSampleFrames(SINT numberOfFrames, CSAMPLE* sampleBuffer) override;
 
 private:
-    Result tryOpen(const Mixxx::AudioSourceConfig& audioSrcCfg) /*override*/;
+    Result tryOpen(const Mixxx::AudioSourceConfig& audioSrcCfg) override;
 
     bool configureAudioStream(const Mixxx::AudioSourceConfig& audioSrcCfg);
 
@@ -71,10 +63,16 @@ private:
     bool m_seeking;
 };
 
-extern "C" MY_EXPORT const char* getMixxxVersion();
-extern "C" MY_EXPORT int getSoundSourceAPIVersion();
-extern "C" MY_EXPORT Mixxx::SoundSource* getSoundSource(QString fileName);
-extern "C" MY_EXPORT char** supportedFileExtensions();
-extern "C" MY_EXPORT void freeFileExtensions(char** fileExtensions);
+class SoundSourceProviderMediaFoundation: public Mixxx::SoundSourceProvider {
+public:
+    QString getName() const override;
+
+    QStringList getSupportedFileExtensions() const override;
+
+    Mixxx::SoundSourcePointer newSoundSource(const QUrl& url) override;
+};
+
+extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
+Mixxx::SoundSourceProviderPointer Mixxx_SoundSourcePluginAPI_getSoundSourceProvider();
 
 #endif // SOUNDSOURCEMEDIAFOUNDATION_H

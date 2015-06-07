@@ -28,8 +28,7 @@
 #include <mferror.h>
 #include <propvarutil.h>
 
-namespace
-{
+namespace {
 
 const bool sDebug = false;
 
@@ -74,14 +73,6 @@ template<class T> static void safeRelease(T **ppT) {
 }
 
 } // anonymous namespace
-
-// static
-QList<QString> SoundSourceMediaFoundation::supportedFileExtensions() {
-    QList<QString> list;
-    list.push_back("m4a");
-    list.push_back("mp4");
-    return list;
-}
 
 SoundSourceMediaFoundation::SoundSourceMediaFoundation(QUrl url)
         : SoundSourcePlugin(url, "m4a"),
@@ -594,25 +585,35 @@ void SoundSourceMediaFoundation::copyFrames(CSAMPLE *dest, SINT *destFrames,
     }
 }
 
-extern "C" MY_EXPORT const char* getMixxxVersion() {
-    return VERSION;
+QString SoundSourceProviderMediaFoundation::getName() const {
+    return "Microsoft Media Foundation";
 }
 
-extern "C" MY_EXPORT int getSoundSourceAPIVersion() {
-    return MIXXX_SOUNDSOURCE_API_VERSION;
+QStringList SoundSourceProviderMediaFoundation::getSupportedFileExtensions() const {
+    QStringList supportedFileExtensions;
+    supportedFileExtensions.append("m4a");
+    supportedFileExtensions.append("mp4");
+    return supportedFileExtensions;
 }
 
-extern "C" MY_EXPORT Mixxx::SoundSource* getSoundSource(QString fileName) {
-    return new SoundSourceMediaFoundation(fileName);
+Mixxx::SoundSourcePointer SoundSourceProviderMediaFoundation::newSoundSource(const QUrl& url) {
+    return exportSoundSourcePlugin(new SoundSourceMediaFoundation(url));
 }
 
-extern "C" MY_EXPORT char** supportedFileExtensions() {
-    const QList<QString> supportedFileExtensions(
-            SoundSourceMediaFoundation::supportedFileExtensions());
-    return Mixxx::SoundSourcePlugin::allocFileExtensions(
-            supportedFileExtensions);
+namespace {
+
+void deleteSoundSourceProviderSingleton(Mixxx::SoundSourceProvider*) {
+    // The statically allocated instance must not be deleted!
 }
 
-extern "C" MY_EXPORT void freeFileExtensions(char** fileExtensions) {
-    Mixxx::SoundSourcePlugin::freeFileExtensions(fileExtensions);
+} // anonymous namespace
+
+extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
+Mixxx::SoundSourceProviderPointer Mixxx_SoundSourcePluginAPI_getSoundSourceProvider() {
+    // SoundSourceProviderMediaFoundation is stateless and a single instance
+    // can safely be shared
+    static SoundSourceProviderMediaFoundation singleton;
+    return Mixxx::SoundSourceProviderPointer(
+            &singleton,
+            deleteSoundSourceProviderSingleton);
 }

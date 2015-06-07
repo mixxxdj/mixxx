@@ -2,13 +2,7 @@
 
 namespace Mixxx {
 
-QList<QString> SoundSourceWV::supportedFileExtensions() {
-    QList<QString> list;
-    list.push_back("wv");
-    return list;
-}
-
-SoundSourceWV::SoundSourceWV(QUrl url)
+SoundSourceWV::SoundSourceWV(const QUrl& url)
         : SoundSourcePlugin(url, "wv"),
           m_wpc(NULL),
           m_sampleScaleFactor(CSAMPLE_ZERO) {
@@ -83,27 +77,36 @@ SINT SoundSourceWV::readSampleFrames(
     return unpackCount;
 }
 
-}  // namespace Mixxx
-
-extern "C" MY_EXPORT const char* getMixxxVersion() {
-    return VERSION;
+QString SoundSourceProviderWV::getName() const {
+    return "WavPack";
 }
 
-extern "C" MY_EXPORT int getSoundSourceAPIVersion() {
-    return MIXXX_SOUNDSOURCE_API_VERSION;
+QStringList SoundSourceProviderWV::getSupportedFileExtensions() const {
+    QStringList supportedFileExtensions;
+    supportedFileExtensions.append("wv");
+    return supportedFileExtensions;
 }
 
-extern "C" MY_EXPORT Mixxx::SoundSource* getSoundSource(QString fileName) {
-    return new Mixxx::SoundSourceWV(fileName);
+SoundSourcePointer SoundSourceProviderWV::newSoundSource(const QUrl& url) {
+    return exportSoundSourcePlugin(new SoundSourceWV(url));
 }
 
-extern "C" MY_EXPORT char** supportedFileExtensions() {
-    const QList<QString> supportedFileExtensions(
-            Mixxx::SoundSourceWV::supportedFileExtensions());
-    return Mixxx::SoundSourcePlugin::allocFileExtensions(
-            supportedFileExtensions);
+} // namespace Mixxx
+
+namespace {
+
+void deleteSoundSourceProviderSingleton(Mixxx::SoundSourceProvider*) {
+    // The statically allocated instance must not be deleted!
 }
 
-extern "C" MY_EXPORT void freeFileExtensions(char** fileExtensions) {
-    Mixxx::SoundSourcePlugin::freeFileExtensions(fileExtensions);
+} // anonymous namespace
+
+extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
+Mixxx::SoundSourceProviderPointer Mixxx_SoundSourcePluginAPI_getSoundSourceProvider() {
+    // SoundSourceProviderWV is stateless and a single instance
+    // can safely be shared
+    static Mixxx::SoundSourceProviderWV singleton;
+    return Mixxx::SoundSourceProviderPointer(
+            &singleton,
+            deleteSoundSourceProviderSingleton);
 }

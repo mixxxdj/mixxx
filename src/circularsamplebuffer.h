@@ -18,7 +18,7 @@ public:
     CircularSampleBuffer() {}
     explicit CircularSampleBuffer(SINT capacity);
 
-    void resetCapacity(SINT capacity) /*override*/;
+    void resetCapacity(SINT capacity) override;
 
     // Moves all buffered samples to the beginning of the internal buffer.
     //

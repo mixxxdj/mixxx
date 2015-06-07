@@ -1,33 +1,26 @@
 #ifndef SOUNDSOURCEPROXY_H
 #define SOUNDSOURCEPROXY_H
 
-#include <QMap>
-#include <QMutex>
-#include <QString>
-#include <QLibrary>
-#include <QRegExp>
-
 #include "trackinfoobject.h"
-#include "sources/soundsourceplugin.h"
+
+#include "sources/soundsourceproviderregistry.h"
+
 #include "util/sandbox.h"
 
-/**
-  *@author Tue Haste Andersen
-  */
-
-
-/**
- * Creates sound sources for filenames or tracks.
- */
+// Creates sound sources for filenames or tracks
 class SoundSourceProxy: public Mixxx::MetadataSource {
 public:
-    static void loadPlugins();
+    static void loadPlugins(); // not thread-safe
 
-    static QStringList supportedFileExtensions();
-    static QStringList supportedFileExtensionsByPlugins();
-    static QString supportedFileExtensionsString();
-    static QString supportedFileExtensionsRegex();
-    static bool isFilenameSupported(QString fileName);
+    static QStringList getSupportedFileExtensions();
+    static QStringList getSupportedFileExtensionsByPlugins();
+    static QStringList getSupportedFileNamePatterns();
+    static QRegExp getSupportedFileNameRegex();
+
+    static bool isUrlSupported(const QUrl& url);
+    static bool isFileSupported(const QFileInfo& fileInfo);
+    static bool isFileNameSupported(const QString& fileName);
+    static bool isFileExtensionSupported(const QString& fileExtension);
 
     explicit SoundSourceProxy(QString qFilename, SecurityTokenPointer pToken = SecurityTokenPointer());
     explicit SoundSourceProxy(TrackPointer pTrack);
@@ -40,20 +33,29 @@ public:
         }
     }
 
-    Result parseTrackMetadata(Mixxx::TrackMetadata* pMetadata) const /*override*/ {
+    Result parseTrackMetadataAndCoverArt(
+            Mixxx::TrackMetadata* pTrackMetadata,
+            QImage* pCoverArt) const override {
         if (m_pSoundSource) {
-            return m_pSoundSource->parseTrackMetadata(pMetadata);
+            return m_pSoundSource->parseTrackMetadataAndCoverArt(
+                    pTrackMetadata, pCoverArt);
         } else {
             return ERR;
         }
     }
 
-    QImage parseCoverArt() const /*override*/ {
-        if (m_pSoundSource) {
-            return m_pSoundSource->parseCoverArt();
-        } else {
-            return QImage();
-        }
+    // Only for  backward compatibility.
+    // Should be removed when no longer needed.
+    Result parseTrackMetadata(Mixxx::TrackMetadata* pTrackMetadata) {
+        return parseTrackMetadataAndCoverArt(pTrackMetadata, NULL);
+    }
+
+    // Only for  backward compatibility.
+    // Should be removed when no longer needed.
+    QImage parseCoverArt() const {
+        QImage coverArt;
+        const Result result = parseTrackMetadataAndCoverArt(NULL, &coverArt);
+        return (result == OK) ? coverArt : QImage();
     }
 
     // Opening the audio data through the proxy will
@@ -64,12 +66,7 @@ public:
     void closeAudioSource();
 
 private:
-    static QRegExp m_supportedFileRegex;
-    static QMap<QString, QLibrary*> m_plugins;
-    static QMap<QString, getSoundSourceFunc> m_extensionsSupportedByPlugins;
-    static QMutex m_extensionsMutex;
-
-    static QLibrary* getPlugin(QString lib_filename);
+    static Mixxx::SoundSourceProviderRegistry s_soundSourceProviders;
 
     static Mixxx::SoundSourcePointer initialize(const QString& qFilename);
 

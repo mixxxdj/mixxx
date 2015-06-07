@@ -4,7 +4,7 @@
 
 namespace Mixxx {
 
-AudioSource::AudioSource(QUrl url)
+AudioSource::AudioSource(const QUrl& url)
         : UrlResource(url),
           m_channelCount(kChannelCountDefault),
           m_frameRate(kFrameRateDefault),
