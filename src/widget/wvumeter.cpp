@@ -190,8 +190,8 @@ void WVuMeter::paintEvent(QPaintEvent *) {
         if (m_bHorizontal) {
             const double widgetPosition = math_clamp(contentWidth * m_dParameter,
                                                      0.0, contentWidth);
-            QRectF targetRect(contentRect.x(), contentRect.y(),
-                              widgetPosition, contentHeight);
+            QRectF targetRect(contentRect.x(), contentRect.y(), widgetPosition,
+                              contentHeight);
 
             const double pixmapPosition = math_clamp(pixmapWidth * m_dParameter,
                                                      0.0, pixmapWidth);
@@ -218,14 +218,13 @@ void WVuMeter::paintEvent(QPaintEvent *) {
         } else {
             const double widgetPosition = math_clamp(contentHeight * m_dParameter,
                                                      0.0, contentHeight);
-            QRectF targetRect(contentRect.x(), contentRect.y()
-                              +  contentHeight - widgetPosition,
-                              contentWidth, widgetPosition);
+            QRectF targetRect(contentRect.x(), contentRect.y() + contentHeight
+                              - widgetPosition, contentWidth, widgetPosition);
 
             const double pixmapPosition = math_clamp(pixmapHeight * m_dParameter,
                                                      0.0, pixmapHeight);
-            QRectF sourceRect(0, pixmapHeight - pixmapPosition,
-                              pixmapWidth, pixmapPosition);
+            QRectF sourceRect(0, pixmapHeight - pixmapPosition, pixmapWidth,
+                              pixmapPosition);
             m_pPixmapVu->draw(targetRect, &p, sourceRect);
 
             if (m_iPeakHoldSize > 0 && m_dPeakParameter > 0.0) {
@@ -259,7 +258,7 @@ QSize WVuMeter::sizeHint() const {
     
     if (!m_pPixmapBack.isNull() && !m_pPixmapBack->isNull()) {
         QSize backSize = style()->sizeFromContents(QStyle::CT_PushButton, &option,
-                                                     m_pPixmapBack->size(), this);
+                                                   m_pPixmapBack->size(), this);
         if (backSize.width() > widgetSize.width()) {
             widgetSize.setWidth(backSize.width());
         }
@@ -268,7 +267,7 @@ QSize WVuMeter::sizeHint() const {
         }
     } else if (!m_pPixmapVu.isNull() && !m_pPixmapVu->isNull()) {
         QSize vuSize = style()->sizeFromContents(QStyle::CT_PushButton, &option,
-                                                     m_pPixmapVu->size(), this);
+                                                 m_pPixmapVu->size(), this);
         if (vuSize.width() > widgetSize.width()) {
             widgetSize.setWidth(vuSize.width());
         }
