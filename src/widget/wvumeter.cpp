@@ -22,7 +22,6 @@
 #include <QPaintEvent>
 #include <QtDebug>
 #include <QPixmap>
-#include <QLayout>
 
 #include "widget/wpixmapstore.h"
 #include "util/timer.h"
