@@ -336,7 +336,7 @@
                 <SizePolicy>min,me</SizePolicy>
                 <MinimumSize>450,</MinimumSize>
                 <Children>
-                    <WidgetGroup> spacer to push logo to the right
+                    <WidgetGroup>
                         <Layout>horizontal</Layout>
                         <SizePolicy>e,min</SizePolicy>
                         <Children/>
