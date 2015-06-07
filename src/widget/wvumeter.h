@@ -41,6 +41,7 @@ class WVuMeter : public WWidget  {
                     bool bHorizontal,
                     Paintable::DrawMode mode);
     void onConnectedControlChanged(double dParameter, double dValue);
+    QSize sizeHint() const;
 
   protected slots:
     void updateState(double msecsElapsed);
@@ -79,8 +80,6 @@ class WVuMeter : public WWidget  {
     double m_dPeakHoldCountdownMs;
 
     PerformanceTimer m_timer;
-    
-    mutable QRect m_contentRect;
 };
 
 #endif
