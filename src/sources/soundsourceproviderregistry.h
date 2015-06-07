@@ -15,7 +15,7 @@ public:
     const SoundSourceProviderPointer& getProvider() const {
         return m_pProvider;
     }
-    SoundSourceProvider::Priority getProviderPriority() const {
+    SoundSourceProviderPriority getProviderPriority() const {
         return m_providerPriority;
     }
 
@@ -24,7 +24,7 @@ private:
     SoundSourceProviderRegistration(
             SoundSourcePluginLibraryPointer pPluginLibrary,
             SoundSourceProviderPointer pProvider,
-            SoundSourceProvider::Priority providerPriority)
+            SoundSourceProviderPriority providerPriority)
         : m_pPluginLibrary(pPluginLibrary),
           m_pProvider(pProvider),
           m_providerPriority(providerPriority) {
@@ -32,7 +32,7 @@ private:
 
     SoundSourcePluginLibraryPointer m_pPluginLibrary;
     SoundSourceProviderPointer m_pProvider;
-    SoundSourceProvider::Priority m_providerPriority;
+    SoundSourceProviderPriority m_providerPriority;
 };
 
 typedef QList<SoundSourceProviderRegistration> SoundSourceProviderRegistrationList;
@@ -44,12 +44,12 @@ public:
             const SoundSourceProviderPointer& pProvider);
     void registerProvider(
             const SoundSourceProviderPointer& pProvider,
-            SoundSourceProvider::Priority priority);
+            SoundSourceProviderPriority priority);
     void registerPluginLibrary(
             const SoundSourcePluginLibraryPointer& pPluginLibrary);
     void registerPluginLibrary(
             const SoundSourcePluginLibraryPointer& pPluginLibrary,
-            SoundSourceProvider::Priority priority);
+            SoundSourceProviderPriority priority);
 
     QStringList getRegisteredFileExtensions() const {
         return m_registrations.keys();

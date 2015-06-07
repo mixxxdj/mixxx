@@ -11,7 +11,7 @@ void SoundSourceProviderRegistry::registerProvider(
 
 void SoundSourceProviderRegistry::registerProvider(
         const SoundSourceProviderPointer& pProvider,
-        SoundSourceProvider::Priority providerPriority) {
+        SoundSourceProviderPriority providerPriority) {
     SoundSourceProviderRegistration registration(
             SoundSourcePluginLibraryPointer(), pProvider, providerPriority);
     addRegistration(registration);
@@ -28,7 +28,7 @@ void SoundSourceProviderRegistry::registerPluginLibrary(
 
 void SoundSourceProviderRegistry::registerPluginLibrary(
         const SoundSourcePluginLibraryPointer& pPluginLibrary,
-        SoundSourceProvider::Priority providerPriority) {
+        SoundSourceProviderPriority providerPriority) {
     SoundSourceProviderPointer pProvider(
             pPluginLibrary->getSoundSourceProvider());
     SoundSourceProviderRegistration registration(

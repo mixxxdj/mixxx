@@ -13,7 +13,7 @@ public:
     TestSoundSourceProvider(
             QString name,
             QStringList supportedFileExtensions,
-            Priority priorityHint)
+            SoundSourceProviderPriority priorityHint)
             : m_name(name),
               m_supportedFileExtensions(supportedFileExtensions),
               m_priorityHint(priorityHint) {
@@ -28,7 +28,7 @@ public:
         return m_supportedFileExtensions;
     }
 
-    Priority getPriorityHint() const override {
+    SoundSourceProviderPriority getPriorityHint() const override {
         return m_priorityHint;
     }
 
@@ -39,7 +39,7 @@ public:
 private:
     const QString m_name;
     const QStringList m_supportedFileExtensions;
-    const Priority m_priorityHint;
+    const SoundSourceProviderPriority m_priorityHint;
 };
 
 class SoundSourceProviderRegistryTest : public testing::Test {
@@ -61,7 +61,7 @@ class SoundSourceProviderRegistryTest : public testing::Test {
     SoundSourceProviderPointer createProvider(
             QString name,
             QStringList supportedFileExtensions,
-            SoundSourceProvider::Priority priorityHint = SoundSourceProvider::Priority::DEFAULT) {
+            SoundSourceProviderPriority priorityHint = SoundSourceProviderPriority::DEFAULT) {
         return SoundSourceProviderPointer(
                 new TestSoundSourceProvider(
                         name, supportedFileExtensions, priorityHint));
@@ -69,7 +69,7 @@ class SoundSourceProviderRegistryTest : public testing::Test {
 
     SoundSourceProviderPointer createProvider(
             QString name,
-            SoundSourceProvider::Priority priorityHint = SoundSourceProvider::Priority::DEFAULT) {
+            SoundSourceProviderPriority priorityHint = SoundSourceProviderPriority::DEFAULT) {
         return SoundSourceProviderPointer(
                 new TestSoundSourceProvider(
                         name, m_supportedFileExtensions, priorityHint));
@@ -107,17 +107,17 @@ TEST_F(SoundSourceProviderRegistryTest, registerProviders) {
     SoundSourceProviderRegistry cut;
 
     // 1st round - registration using priority hint
-    cut.registerProvider(createProvider("Test04", SoundSourceProvider::Priority::DEFAULT));
-    cut.registerProvider(createProvider("Test02", SoundSourceProvider::Priority::LOWER));
-    cut.registerProvider(createProvider("Test00", SoundSourceProvider::Priority::LOWEST));
-    cut.registerProvider(createProvider("Test01", SoundSourceProvider::Priority::LOWEST));
-    cut.registerProvider(createProvider("Test10", SoundSourceProvider::Priority::HIGHEST));
+    cut.registerProvider(createProvider("Test04", SoundSourceProviderPriority::DEFAULT));
+    cut.registerProvider(createProvider("Test02", SoundSourceProviderPriority::LOWER));
+    cut.registerProvider(createProvider("Test00", SoundSourceProviderPriority::LOWEST));
+    cut.registerProvider(createProvider("Test01", SoundSourceProviderPriority::LOWEST));
+    cut.registerProvider(createProvider("Test10", SoundSourceProviderPriority::HIGHEST));
     // 1st round - registration with explicit priority
-    cut.registerProvider(createProvider("Test05"), SoundSourceProvider::Priority::DEFAULT);
-    cut.registerProvider(createProvider("Test11"), SoundSourceProvider::Priority::HIGHEST);
-    cut.registerProvider(createProvider("Test03"), SoundSourceProvider::Priority::LOWER);
-    cut.registerProvider(createProvider("Test08"), SoundSourceProvider::Priority::HIGHER);
-    cut.registerProvider(createProvider("Test09"), SoundSourceProvider::Priority::HIGHER);
+    cut.registerProvider(createProvider("Test05"), SoundSourceProviderPriority::DEFAULT);
+    cut.registerProvider(createProvider("Test11"), SoundSourceProviderPriority::HIGHEST);
+    cut.registerProvider(createProvider("Test03"), SoundSourceProviderPriority::LOWER);
+    cut.registerProvider(createProvider("Test08"), SoundSourceProviderPriority::HIGHER);
+    cut.registerProvider(createProvider("Test09"), SoundSourceProviderPriority::HIGHER);
 
     // 1st round - validation
     {
@@ -136,15 +136,15 @@ TEST_F(SoundSourceProviderRegistryTest, registerProviders) {
             createProvider(
                     "Test06",
                     QStringList(FILE_EXT2),
-                    SoundSourceProvider::Priority::DEFAULT));
+                    SoundSourceProviderPriority::DEFAULT));
     // 1st round - registration with explicit priority
     cut.registerProvider(
             createProvider(
                     "Test07",
                     QStringList(FILE_EXT2),
                     // priority hint should be overridden by registration
-                    SoundSourceProvider::Priority::HIGHEST),
-            SoundSourceProvider::Priority::DEFAULT);
+                    SoundSourceProviderPriority::HIGHEST),
+            SoundSourceProviderPriority::DEFAULT);
 
     // 2nd round - validation
     {
