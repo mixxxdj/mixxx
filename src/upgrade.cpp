@@ -169,7 +169,7 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
 ****************************************************************************/
 
     // Read the config file from home directory
-    ConfigObject<ConfigValue> *config = new ConfigObject<ConfigValue>(settingsPath + SETTINGS_FILE);
+    ConfigObject<ConfigValue> *config = new ConfigObject<ConfigValue>(settingsPath + "/" + SETTINGS_FILE);
 
     QString configVersion = config->getValueString(ConfigKey("[Config]","Version"));
 
