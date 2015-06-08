@@ -9,9 +9,9 @@
 #include "trackinfoobject.h"
 
 #include "library/starrating.h"
-#include "widget/wbasewidget.h"
+#include "widget/wwidget.h"
 
-class WStarRating : public QWidget, public WBaseWidget {
+class WStarRating : public WWidget {
     Q_OBJECT
   public:
     WStarRating(QString group, QWidget* pParent);
@@ -37,7 +37,6 @@ class WStarRating : public QWidget, public WBaseWidget {
     QString m_pGroup;
     TrackPointer m_pCurrentTrack;
     bool m_focused;
-    mutable QRect m_contentRect;
     
     private:
         void updateRating();
