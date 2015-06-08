@@ -72,8 +72,8 @@ class CmdlineArgs {
         m_midiDebug(false),
         m_developer(false),
         m_safeMode(false),
-        m_settingsPath(QDesktopServices::storageLocation(QDesktopServices::DataLocation)) {
-    }
+        m_settingsPath(QDesktopServices::storageLocation(QDesktopServices::DataLocation).append("/").append(SETTINGS_DIR)) {
+        }
     ~CmdlineArgs() { };
 
     QList<QString> m_musicFiles;    // List of files to load into players at startup
