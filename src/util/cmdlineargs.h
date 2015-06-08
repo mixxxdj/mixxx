@@ -72,7 +72,7 @@ class CmdlineArgs {
         m_midiDebug(false),
         m_developer(false),
         m_safeMode(false),
-        m_settingsPath(QDesktopServices::storageLocation(QDesktopServices::DataLocation)) {
+        m_settingsPath(QDesktopServices::storageLocation(QDesktopServices::DataLocation).append("/")) {
     }
     ~CmdlineArgs() { };
 
