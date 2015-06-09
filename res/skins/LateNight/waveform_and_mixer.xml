@@ -152,33 +152,6 @@
                         <SizePolicy>min,min</SizePolicy>
                         <Children>
                             <PushButton>
-                                <Size>64f,20f</Size>
-                                <ObjectName>GuiToggleButton</ObjectName>
-                                <NumberStates>2</NumberStates>
-                                <State>
-                                  <Number>0</Number>
-                                  <Text>BIG WAVES</Text>
-                                </State>
-                                <State>
-                                  <Number>1</Number>
-                                  <Text>BIG WAVES</Text>
-                                </State>
-                                <Connection>
-                                  <ConfigKey>[Master],show_bigwaves</ConfigKey>
-                                  <ButtonState>LeftButton</ButtonState>
-                                </Connection>
-                                <Connection>
-                                  <ConfigKey>[Master],show_bigwaves</ConfigKey>
-                                </Connection>
-                            </PushButton>
-                        </Children>
-                    </WidgetGroup>
-                    <WidgetGroup>
-                        <ObjectName>GuiToggleContainer</ObjectName>
-                        <Layout>vertical</Layout>
-                        <SizePolicy>min,min</SizePolicy>
-                        <Children>
-                            <PushButton>
                                 <Size>40f,20f</Size>
                                 <TooltipId>show_vinylcontrol</TooltipId>
                                 <ObjectName>GuiToggleButton</ObjectName>

@@ -1,7 +1,7 @@
 <Template>
     <!-- Use different layout characteristics depending on if the library
     is hidden or shown. -->
-    <WidgetStack currentpage="[Library],show_library">
+    <WidgetStack>
         <Children>
             <SizeAwareStack currentpage="[Master],lower_half_size" persist="true">
                 <Children>
@@ -35,7 +35,7 @@
             </SizeAwareStack>
             
             <!-- Library is on -->
-            <SizeAwareStack currentpage="[Master],lower_half_size" persist="true">
+            <SizeAwareStack trigger="[Library],show_library" currentpage="[Master],lower_half_size" persist="true">
                 <Children>
                     <WidgetGroup>
                         <ObjectName>UILowerHalf</ObjectName>
@@ -56,9 +56,18 @@
                         <MaximumSize>1920,419</MaximumSize>
                         <Children>
                             <Template src="skin:fx_samplers_container_med.xml"/>
-                            <SingletonContainer>
-                                <ObjectName>LibrarySingleton</ObjectName>
-                            </SingletonContainer>
+                            <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <Children>
+                                    <SingletonContainer>
+                                        <ObjectName>LibrarySingleton</ObjectName>
+                                    </SingletonContainer>
+                                </Children>
+                                <Connection>
+                                  <ConfigKey>[Library],show_library</ConfigKey>
+                                  <BindProperty>visible</BindProperty>
+                                </Connection>
+                            </WidgetGroup>
                             <Template src="skin:toolbar_med.xml"/>
                         </Children>
                     </WidgetGroup>
@@ -69,9 +78,19 @@
                         <MinimumSize>0,420</MinimumSize>
                         <Children>
                             <Template src="skin:fx_samplers_container_full.xml"/>
-                            <SingletonContainer>
-                                <ObjectName>LibrarySingleton</ObjectName>
-                            </SingletonContainer>
+                            <Template src="skin:fx_samplers_container_med.xml"/>
+                            <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <Children>
+                                    <SingletonContainer>
+                                        <ObjectName>LibrarySingleton</ObjectName>
+                                    </SingletonContainer>
+                                </Children>
+                                <Connection>
+                                  <ConfigKey>[Library],show_library</ConfigKey>
+                                  <BindProperty>visible</BindProperty>
+                                </Connection>
+                            </WidgetGroup>
                             <Template src="skin:toolbar_full.xml"/>
                         </Children>
                     </WidgetGroup>

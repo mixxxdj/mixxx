@@ -11,8 +11,11 @@
         <Size>1f,88f</Size>
         <Children/>
         <Connection>
-            <ConfigKey>[Master],show_bigwaves</ConfigKey>
+            <ConfigKey>[Master],show_mixer</ConfigKey>
             <BindProperty>visible</BindProperty>
+            <Transform>
+              <Not/>
+            </Transform>
         </Connection>
       </WidgetGroup>
       <!-- Same, but for the smaller spinny size. -->
@@ -22,11 +25,8 @@
         <Size>1f,50f</Size>
         <Children/>
         <Connection>
-            <ConfigKey>[Master],show_bigwaves</ConfigKey>
+            <ConfigKey>[Master],show_mixer</ConfigKey>
             <BindProperty>visible</BindProperty>
-            <Transform>
-              <Not/>
-            </Transform>
         </Connection>
       </WidgetGroup>
       <SingletonDefinition>
@@ -58,12 +58,11 @@
               </SingletonContainer>
             </Children>
             <Connection>
-                <ConfigKey>[Master],show_bigwaves</ConfigKey>
+                <ConfigKey>[Master],show_mixer</ConfigKey>
                 <BindProperty>visible</BindProperty>
-                <Transform><Not/></Transform>
             </Connection>
           </WidgetGroup>
-          <WidgetGroup trigger="[Master],show_bigwaves">
+          <WidgetGroup trigger="[Master],show_mixer">
             <ObjectName>SpinnyContainer</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
@@ -74,8 +73,9 @@
                 </SingletonContainer>
             </Children>
             <Connection>
-                <ConfigKey>[Master],show_bigwaves</ConfigKey>
+                <ConfigKey>[Master],show_mixer</ConfigKey>
                 <BindProperty>visible</BindProperty>
+                <Transform><Not/></Transform>
             </Connection>
           </WidgetGroup>
         </Children>
@@ -92,8 +92,11 @@
         <Size>1f,88f</Size>
         <Children/>
         <Connection>
-            <ConfigKey>[Master],show_bigwaves</ConfigKey>
+            <ConfigKey>[Master],show_mixer</ConfigKey>
             <BindProperty>visible</BindProperty>
+            <Transform>
+              <Not/>
+            </Transform>
         </Connection>
       </WidgetGroup>
       <!-- Same, but for the smaller spinny size. -->
@@ -103,11 +106,8 @@
         <Size>1f,50f</Size>
         <Children/>
         <Connection>
-            <ConfigKey>[Master],show_bigwaves</ConfigKey>
+            <ConfigKey>[Master],show_mixer</ConfigKey>
             <BindProperty>visible</BindProperty>
-            <Transform>
-              <Not/>
-            </Transform>
         </Connection>
       </WidgetGroup>
     </Children>
