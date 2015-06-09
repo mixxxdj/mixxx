@@ -102,14 +102,24 @@ class TextFilterNode : public QueryNode {
 
 class NumericFilterNode : public QueryNode {
   public:
-    NumericFilterNode(const QStringList& sqlColumns, QString argument);
-    NumericFilterNode(const QStringList& sqlColumns);
+    NumericFilterNode(const QStringList& sqlColumns, const QString& argument);
+
     bool match(const TrackPointer& pTrack) const override;
     QString toSql() const override;
 
   protected:
-    virtual void init(QString argument);
+    // Single argument constructor for that does not call init()
+    explicit NumericFilterNode(const QStringList& sqlColumns);
+
+    // init() must always be called in the constructor of the
+    // most derived class directly, because internally it calls
+    // the virtual function parse() that will be overridden by
+    // derived classes.
+    void init(QString argument);
+
+  private:
     virtual double parse(const QString& arg, bool *ok);
+
     QStringList m_sqlColumns;
     bool m_bOperatorQuery;
     QString m_operator;
@@ -121,7 +131,7 @@ class NumericFilterNode : public QueryNode {
 
 class DurationFilterNode : public NumericFilterNode {
   public:
-    DurationFilterNode(const QStringList& sqlColumns, QString argument);
+    DurationFilterNode(const QStringList& sqlColumns, const QString& argument);
 
   private:
     double parse(const QString& arg, bool* ok) override;
