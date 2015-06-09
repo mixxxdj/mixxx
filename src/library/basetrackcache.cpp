@@ -393,7 +393,7 @@ void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
         }
     }
 
-    QScopedPointer<QueryNode> pQuery(parseQuery(
+    std::unique_ptr<QueryNode> pQuery(parseQuery(
         searchQuery, extraFilter, idStrings));
 
     QString filter = pQuery->toSql();
@@ -512,7 +512,7 @@ void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
     }
 }
 
-QueryNode* BaseTrackCache::parseQuery(QString query, QString extraFilter,
+std::unique_ptr<QueryNode> BaseTrackCache::parseQuery(QString query, QString extraFilter,
                                       QStringList idStrings) const {
     QStringList queryFragments;
     if (!extraFilter.isNull() && extraFilter != "") {

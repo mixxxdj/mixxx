@@ -1,6 +1,9 @@
 #ifndef SEARCHQUERY_H
 #define SEARCHQUERY_H
 
+#include <memory>
+#include <vector>
+
 #include <QList>
 #include <QSqlDatabase>
 #include <QRegExp>
@@ -9,33 +12,34 @@
 
 #include "trackinfoobject.h"
 #include "proto/keys.pb.h"
+#include "util/assert.h"
 
 QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& column);
 
 class QueryNode {
   public:
-    QueryNode() {}
+    QueryNode(const QueryNode&) = delete; // prevent copying
     virtual ~QueryNode() {}
 
     virtual bool match(const TrackPointer& pTrack) const = 0;
     virtual QString toSql() const = 0;
+
+  protected:
+    QueryNode() {}
 };
 
 class GroupNode : public QueryNode {
   public:
-    GroupNode() {}
-    virtual ~GroupNode() {
-        while (!m_nodes.empty()) {
-            delete m_nodes.takeLast();
-        }
-    }
-
-    void addNode(QueryNode* pNode) {
-        m_nodes.append(pNode);
+    void addNode(std::unique_ptr<QueryNode> pNode) {
+        DEBUG_ASSERT(pNode);
+        m_nodes.push_back(std::move(pNode));
     }
 
   protected:
-    QList<QueryNode*> m_nodes;
+    // NOTE(uklotzde): std::vector is more suitable (efficiency)
+    // than a QList for a private member. And QList from Qt 4
+    // does not support std::unique_ptr yet.
+    std::vector<std::unique_ptr<QueryNode>> m_nodes;
 };
 
 class OrNode : public GroupNode {
@@ -56,14 +60,16 @@ class AndNode : public GroupNode {
 
 class NotNode : public QueryNode {
   public:
-    explicit NotNode(QueryNode* pNode);
-    virtual ~NotNode();
+    explicit NotNode(std::unique_ptr<QueryNode> pNode)
+        : m_pNode(std::move(pNode)) {
+        DEBUG_ASSERT(m_pNode);
+    }
 
     bool match(const TrackPointer& pTrack) const;
     QString toSql() const;
 
   private:
-    QueryNode* m_pNode;
+    std::unique_ptr<QueryNode> m_pNode;
 };
 
 class TextFilterNode : public QueryNode {
