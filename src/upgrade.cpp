@@ -29,7 +29,6 @@
 #include "util/math.h"
 #include "util/cmdlineargs.h"
 #include "configobject.h"
-#include "upgrade.h"
 
 
 Upgrade::Upgrade()
@@ -195,7 +194,6 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
             qDebug() << "Found pre-1.12.0 config for Windows";
             config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append("Local Settings/Application Data/Mixxx/").append(SETTINGS_FILE));
             // Note: We changed SETTINGS_PATH in 1.12.0 final on Windows so it must be hardcoded to "Local Settings/Application Data/Mixxx/" here for legacy.
-            CmdlineArgs::setSettingsPath(QDir::homePath().append("/").append("Local Settings/Application Data/Mixxx/")); // Just to have mixxx.log and soundconfig.xml in the right directory
             configVersion = config->getValueString(ConfigKey("[Config]","Version"));
         }
         else {
