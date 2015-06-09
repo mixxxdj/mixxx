@@ -46,12 +46,11 @@
 
 #include <stdlib.h>
 
-Q_DECLARE_METATYPE(QByteArray*)
-Q_DECLARE_METATYPE(ByteArrayClass*)
+Q_DECLARE_METATYPE(QByteArray *)
+Q_DECLARE_METATYPE(ByteArrayClass *)
 
-class ByteArrayClassPropertyIterator : public QScriptClassPropertyIterator
-{
-public:
+class ByteArrayClassPropertyIterator : public QScriptClassPropertyIterator {
+  public:
     ByteArrayClassPropertyIterator(const QScriptValue &object);
     ~ByteArrayClassPropertyIterator();
 
@@ -67,24 +66,23 @@ public:
     QScriptString name() const;
     uint id() const;
 
-private:
+  private:
     int m_index;
     int m_last;
 };
 
 //! [0]
 ByteArrayClass::ByteArrayClass(QScriptEngine *engine)
-    : QObject(engine), QScriptClass(engine)
-{
+        : QObject(engine), QScriptClass(engine) {
     qScriptRegisterMetaType<QByteArray>(engine, toScriptValue, fromScriptValue);
 
     length = engine->toStringHandle(QLatin1String("length"));
 
-    proto = engine->newQObject(new ByteArrayPrototype(this),
-                               QScriptEngine::QtOwnership,
-                               QScriptEngine::SkipMethodsInEnumeration
-                               | QScriptEngine::ExcludeSuperClassMethods
-                               | QScriptEngine::ExcludeSuperClassProperties);
+    proto = engine->newQObject(
+            new ByteArrayPrototype(this), QScriptEngine::QtOwnership,
+            QScriptEngine::SkipMethodsInEnumeration |
+                    QScriptEngine::ExcludeSuperClassMethods |
+                    QScriptEngine::ExcludeSuperClassProperties);
     QScriptValue global = engine->globalObject();
     proto.setPrototype(global.property("Object").property("prototype"));
 
@@ -93,16 +91,14 @@ ByteArrayClass::ByteArrayClass(QScriptEngine *engine)
 }
 //! [0]
 
-ByteArrayClass::~ByteArrayClass()
-{
+ByteArrayClass::~ByteArrayClass() {
 }
 
 //! [3]
-QScriptClass::QueryFlags ByteArrayClass::queryProperty(const QScriptValue &object,
-                                                       const QScriptString &name,
-                                                       QueryFlags flags, uint *id)
-{
-    QByteArray *ba = qscriptvalue_cast<QByteArray*>(object.data());
+QScriptClass::QueryFlags ByteArrayClass::queryProperty(
+        const QScriptValue &object, const QScriptString &name, QueryFlags flags,
+        uint *id) {
+    QByteArray *ba = qscriptvalue_cast<QByteArray *>(object.data());
     if (!ba)
         return 0;
     if (name == length) {
@@ -122,9 +118,8 @@ QScriptClass::QueryFlags ByteArrayClass::queryProperty(const QScriptValue &objec
 
 //! [4]
 QScriptValue ByteArrayClass::property(const QScriptValue &object,
-                                      const QScriptString &name, uint id)
-{
-    QByteArray *ba = qscriptvalue_cast<QByteArray*>(object.data());
+                                      const QScriptString &name, uint id) {
+    QByteArray *ba = qscriptvalue_cast<QByteArray *>(object.data());
     if (!ba)
         return QScriptValue();
     if (name == length) {
@@ -140,10 +135,9 @@ QScriptValue ByteArrayClass::property(const QScriptValue &object,
 
 //! [5]
 void ByteArrayClass::setProperty(QScriptValue &object,
-                                 const QScriptString &name,
-                                 uint id, const QScriptValue &value)
-{
-    QByteArray *ba = qscriptvalue_cast<QByteArray*>(object.data());
+                                 const QScriptString &name, uint id,
+                                 const QScriptValue &value) {
+    QByteArray *ba = qscriptvalue_cast<QByteArray *>(object.data());
     if (!ba)
         return;
     if (name == length) {
@@ -161,42 +155,37 @@ void ByteArrayClass::setProperty(QScriptValue &object,
 
 //! [6]
 QScriptValue::PropertyFlags ByteArrayClass::propertyFlags(
-    const QScriptValue &/*object*/, const QScriptString &name, uint /*id*/)
-{
+        const QScriptValue & /*object*/, const QScriptString &name,
+        uint /*id*/) {
     if (name == length) {
-        return QScriptValue::Undeletable
-            | QScriptValue::SkipInEnumeration;
+        return QScriptValue::Undeletable | QScriptValue::SkipInEnumeration;
     }
     return QScriptValue::Undeletable;
 }
 //! [6]
 
 //! [7]
-QScriptClassPropertyIterator *ByteArrayClass::newIterator(const QScriptValue &object)
-{
+QScriptClassPropertyIterator *ByteArrayClass::newIterator(
+        const QScriptValue &object) {
     return new ByteArrayClassPropertyIterator(object);
 }
 //! [7]
 
-QString ByteArrayClass::name() const
-{
+QString ByteArrayClass::name() const {
     return QLatin1String("ByteArray");
 }
 
-QScriptValue ByteArrayClass::prototype() const
-{
+QScriptValue ByteArrayClass::prototype() const {
     return proto;
 }
 
-QScriptValue ByteArrayClass::constructor()
-{
+QScriptValue ByteArrayClass::constructor() {
     return ctor;
 }
 
 //! [10]
-QScriptValue ByteArrayClass::newInstance(int size)
-{
-    // reportAdditionalMemoryCost is only available on >= Qt 4.7.0.
+QScriptValue ByteArrayClass::newInstance(int size) {
+// reportAdditionalMemoryCost is only available on >= Qt 4.7.0.
 #if QT_VERSION >= QT_VERSION_CHECK(4, 7, 0)
     engine()->reportAdditionalMemoryCost(size);
 #endif
@@ -205,17 +194,16 @@ QScriptValue ByteArrayClass::newInstance(int size)
 //! [10]
 
 //! [1]
-QScriptValue ByteArrayClass::newInstance(const QByteArray &ba)
-{
+QScriptValue ByteArrayClass::newInstance(const QByteArray &ba) {
     QScriptValue data = engine()->newVariant(QVariant::fromValue(ba));
     return engine()->newObject(this, data);
 }
 //! [1]
 
 //! [2]
-QScriptValue ByteArrayClass::construct(QScriptContext *ctx, QScriptEngine *)
-{
-    ByteArrayClass *cls = qscriptvalue_cast<ByteArrayClass*>(ctx->callee().data());
+QScriptValue ByteArrayClass::construct(QScriptContext *ctx, QScriptEngine *) {
+    ByteArrayClass *cls =
+            qscriptvalue_cast<ByteArrayClass *>(ctx->callee().data());
     if (!cls)
         return QScriptValue();
     QScriptValue arg = ctx->argument(0);
@@ -226,26 +214,24 @@ QScriptValue ByteArrayClass::construct(QScriptContext *ctx, QScriptEngine *)
 }
 //! [2]
 
-QScriptValue ByteArrayClass::toScriptValue(QScriptEngine *eng, const QByteArray &ba)
-{
+QScriptValue ByteArrayClass::toScriptValue(QScriptEngine *eng,
+                                           const QByteArray &ba) {
     QScriptValue ctor = eng->globalObject().property("ByteArray");
-    ByteArrayClass *cls = qscriptvalue_cast<ByteArrayClass*>(ctor.data());
+    ByteArrayClass *cls = qscriptvalue_cast<ByteArrayClass *>(ctor.data());
     if (!cls)
         return eng->newVariant(QVariant::fromValue(ba));
     return cls->newInstance(ba);
 }
 
-void ByteArrayClass::fromScriptValue(const QScriptValue &obj, QByteArray &ba)
-{
+void ByteArrayClass::fromScriptValue(const QScriptValue &obj, QByteArray &ba) {
     ba = qvariant_cast<QByteArray>(obj.data().toVariant());
 }
 
 //! [9]
-void ByteArrayClass::resize(QByteArray &ba, int newSize)
-{
+void ByteArrayClass::resize(QByteArray &ba, int newSize) {
     int oldSize = ba.size();
     ba.resize(newSize);
-    // reportAdditionalMemoryCost is only available on >= Qt 4.7.0.
+// reportAdditionalMemoryCost is only available on >= Qt 4.7.0.
 #if QT_VERSION >= QT_VERSION_CHECK(4, 7, 0)
     if (newSize > oldSize)
         engine()->reportAdditionalMemoryCost(newSize - oldSize);
@@ -253,62 +239,51 @@ void ByteArrayClass::resize(QByteArray &ba, int newSize)
 }
 //! [9]
 
-
-
-ByteArrayClassPropertyIterator::ByteArrayClassPropertyIterator(const QScriptValue &object)
-    : QScriptClassPropertyIterator(object)
-{
+ByteArrayClassPropertyIterator::ByteArrayClassPropertyIterator(
+        const QScriptValue &object)
+        : QScriptClassPropertyIterator(object) {
     toFront();
 }
 
-ByteArrayClassPropertyIterator::~ByteArrayClassPropertyIterator()
-{
+ByteArrayClassPropertyIterator::~ByteArrayClassPropertyIterator() {
 }
 
 //! [8]
-bool ByteArrayClassPropertyIterator::hasNext() const
-{
-    QByteArray *ba = qscriptvalue_cast<QByteArray*>(object().data());
+bool ByteArrayClassPropertyIterator::hasNext() const {
+    QByteArray *ba = qscriptvalue_cast<QByteArray *>(object().data());
     return m_index < ba->size();
 }
 
-void ByteArrayClassPropertyIterator::next()
-{
+void ByteArrayClassPropertyIterator::next() {
     m_last = m_index;
     ++m_index;
 }
 
-bool ByteArrayClassPropertyIterator::hasPrevious() const
-{
+bool ByteArrayClassPropertyIterator::hasPrevious() const {
     return (m_index > 0);
 }
 
-void ByteArrayClassPropertyIterator::previous()
-{
+void ByteArrayClassPropertyIterator::previous() {
     --m_index;
     m_last = m_index;
 }
 
-void ByteArrayClassPropertyIterator::toFront()
-{
+void ByteArrayClassPropertyIterator::toFront() {
     m_index = 0;
     m_last = -1;
 }
 
-void ByteArrayClassPropertyIterator::toBack()
-{
-    QByteArray *ba = qscriptvalue_cast<QByteArray*>(object().data());
+void ByteArrayClassPropertyIterator::toBack() {
+    QByteArray *ba = qscriptvalue_cast<QByteArray *>(object().data());
     m_index = ba->size();
     m_last = -1;
 }
 
-QScriptString ByteArrayClassPropertyIterator::name() const
-{
+QScriptString ByteArrayClassPropertyIterator::name() const {
     return object().engine()->toStringHandle(QString::number(m_last));
 }
 
-uint ByteArrayClassPropertyIterator::id() const
-{
+uint ByteArrayClassPropertyIterator::id() const {
     return m_last;
 }
 //! [8]

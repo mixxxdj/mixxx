@@ -39,16 +39,20 @@ void EngineEffectsManager::onCallbackStart() {
                     response.status = EffectsResponse::NO_SUCH_RACK;
                 } else {
                     processed = request->pTargetRack->processEffectsRequest(
-                        *request, m_pResponsePipe.data());
+                            *request, m_pResponsePipe.data());
 
                     if (processed) {
-                        // When an effect-chain becomes active (part of a rack), keep
+                        // When an effect-chain becomes active (part of a rack),
+                        // keep
                         // it in our master list so that we can respond to
                         // requests about it.
-                        if (request->type == EffectsRequest::ADD_CHAIN_TO_RACK) {
+                        if (request->type ==
+                            EffectsRequest::ADD_CHAIN_TO_RACK) {
                             m_chains.append(request->AddChainToRack.pChain);
-                        } else if (request->type == EffectsRequest::REMOVE_CHAIN_FROM_RACK) {
-                            m_chains.removeAll(request->RemoveChainFromRack.pChain);
+                        } else if (request->type ==
+                                   EffectsRequest::REMOVE_CHAIN_FROM_RACK) {
+                            m_chains.removeAll(
+                                    request->RemoveChainFromRack.pChain);
                         }
                     } else {
                         if (!processed) {
@@ -75,16 +79,19 @@ void EngineEffectsManager::onCallbackStart() {
                     response.status = EffectsResponse::NO_SUCH_CHAIN;
                 } else {
                     processed = request->pTargetChain->processEffectsRequest(
-                        *request, m_pResponsePipe.data());
+                            *request, m_pResponsePipe.data());
 
                     if (processed) {
                         // When an effect becomes active (part of a chain), keep
                         // it in our master list so that we can respond to
                         // requests about it.
-                        if (request->type == EffectsRequest::ADD_EFFECT_TO_CHAIN) {
+                        if (request->type ==
+                            EffectsRequest::ADD_EFFECT_TO_CHAIN) {
                             m_effects.append(request->AddEffectToChain.pEffect);
-                        } else if (request->type == EffectsRequest::REMOVE_EFFECT_FROM_CHAIN) {
-                            m_effects.removeAll(request->RemoveEffectFromChain.pEffect);
+                        } else if (request->type ==
+                                   EffectsRequest::REMOVE_EFFECT_FROM_CHAIN) {
+                            m_effects.removeAll(
+                                    request->RemoveEffectFromChain.pEffect);
                         }
                     } else {
                         if (!processed) {
@@ -107,8 +114,8 @@ void EngineEffectsManager::onCallbackStart() {
                     response.success = false;
                     response.status = EffectsResponse::NO_SUCH_EFFECT;
                 } else {
-                    processed = request->pTargetEffect
-                            ->processEffectsRequest(*request, m_pResponsePipe.data());
+                    processed = request->pTargetEffect->processEffectsRequest(
+                            *request, m_pResponsePipe.data());
 
                     if (!processed) {
                         // If we got here, the message was not handled for an
@@ -130,8 +137,7 @@ void EngineEffectsManager::onCallbackStart() {
     }
 }
 
-void EngineEffectsManager::process(const ChannelHandle& handle,
-                                   CSAMPLE* pInOut,
+void EngineEffectsManager::process(const ChannelHandle& handle, CSAMPLE* pInOut,
                                    const unsigned int numSamples,
                                    const unsigned int sampleRate,
                                    const GroupFeatureState& groupFeatures) {
@@ -143,8 +149,9 @@ void EngineEffectsManager::process(const ChannelHandle& handle,
 bool EngineEffectsManager::addEffectRack(EngineEffectRack* pRack) {
     if (m_racks.contains(pRack)) {
         if (kEffectDebugOutput) {
-            qDebug() << debugString() << "WARNING: EffectRack already added to EngineEffectsManager:"
-                     << pRack->number();
+            qDebug() << debugString()
+                     << "WARNING: EffectRack already added to "
+                        "EngineEffectsManager:" << pRack->number();
         }
         return false;
     }
@@ -156,8 +163,8 @@ bool EngineEffectsManager::removeEffectRack(EngineEffectRack* pRack) {
     return m_racks.removeAll(pRack) > 0;
 }
 
-bool EngineEffectsManager::processEffectsRequest(const EffectsRequest& message,
-                                                 EffectsResponsePipe* pResponsePipe) {
+bool EngineEffectsManager::processEffectsRequest(
+        const EffectsRequest& message, EffectsResponsePipe* pResponsePipe) {
     EffectsResponse response(message);
     switch (message.type) {
         case EffectsRequest::ADD_EFFECT_RACK:

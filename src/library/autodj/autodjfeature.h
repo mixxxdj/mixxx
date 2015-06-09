@@ -22,7 +22,7 @@
 
 #ifdef __AUTODJCRATES__
 #include "library/dao/autodjcratesdao.h"
-#endif // __AUTODJCRATES__
+#endif  // __AUTODJCRATES__
 
 class DlgAutoDJ;
 class Library;
@@ -33,8 +33,7 @@ class AutoDJProcessor;
 class AutoDJFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    AutoDJFeature(Library* pLibrary,
-                  ConfigObject<ConfigValue>* pConfig,
+    AutoDJFeature(Library* pLibrary, ConfigObject<ConfigValue>* pConfig,
                   PlayerManagerInterface* pPlayerManager,
                   TrackCollection* pTrackCollection);
     virtual ~AutoDJFeature();
@@ -45,18 +44,17 @@ class AutoDJFeature : public LibraryFeature {
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);
 
-    void bindWidget(WLibrary* libraryWidget,
-                    MixxxKeyboard* keyboard);
+    void bindWidget(WLibrary* libraryWidget, MixxxKeyboard* keyboard);
 
     TreeItemModel* getChildModel();
 
   public slots:
     void activate();
 
-    // Temporary, until WCrateTableView can be written.
+// Temporary, until WCrateTableView can be written.
 #ifdef __AUTODJCRATES__
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
-#endif // __AUTODJCRATES__
+#endif  // __AUTODJCRATES__
 
   private:
     ConfigObject<ConfigValue>* m_pConfig;
@@ -82,7 +80,7 @@ class AutoDJFeature : public LibraryFeature {
     // The crate ID and name of all loaded crates.
     // Its indices correspond one-to-one with tree-items contained by the
     // "Crates" tree-item.
-    QList<QPair<int, QString> > m_crateList;
+    QList<QPair<int, QString>> m_crateList;
 
     // How we access the auto-DJ-crates database.
     AutoDJCratesDAO m_autoDjCratesDao;
@@ -93,12 +91,12 @@ class AutoDJFeature : public LibraryFeature {
 
     // A context-menu item that allows crates to be removed from the
     // auto-DJ list.
-    QAction *m_pRemoveCrateFromAutoDj;
+    QAction* m_pRemoveCrateFromAutoDj;
 
     // Used to map menu-item signals.
     QSignalMapper m_crateMapper;
 
-#endif // __AUTODJCRATES__
+#endif  // __AUTODJCRATES__
 
   private slots:
     // Add a crate to the auto-DJ queue.
@@ -125,8 +123,6 @@ class AutoDJFeature : public LibraryFeature {
     // Adds a random track from the queue upon hitting minimum number
     // of tracks in the playlist
     void slotRandomQueue(int);
-
 };
-
 
 #endif /* AUTODJFEATURE_H */

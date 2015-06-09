@@ -20,21 +20,22 @@
 #include "sampleutil.h"
 #include "util/assert.h"
 
-const int kiMaxDelay = 40000; // 208 ms @ 96 kb/s
-const double kdMaxDelayPot = 200; // 200 ms
+const int kiMaxDelay = 40000;  // 208 ms @ 96 kb/s
+const double kdMaxDelayPot = 200;  // 200 ms
 
 EngineDelay::EngineDelay(const char* group, ConfigKey delayControl)
-        : m_iDelayPos(0),
-          m_iDelay(0) {
+        : m_iDelayPos(0), m_iDelay(0) {
     m_pDelayBuffer = SampleUtil::alloc(kiMaxDelay);
     SampleUtil::clear(m_pDelayBuffer, kiMaxDelay);
-    m_pDelayPot = new ControlPotmeter(delayControl, 0, kdMaxDelayPot, false, true, false, true);
+    m_pDelayPot = new ControlPotmeter(delayControl, 0, kdMaxDelayPot, false,
+                                      true, false, true);
     m_pDelayPot->setDefaultValue(0);
     connect(m_pDelayPot, SIGNAL(valueChanged(double)), this,
             SLOT(slotDelayChanged()), Qt::DirectConnection);
 
     m_pSampleRate = new ControlObjectSlave(group, "samplerate", this);
-    m_pSampleRate->connectValueChanged(SLOT(slotDelayChanged()), Qt::DirectConnection);
+    m_pSampleRate->connectValueChanged(SLOT(slotDelayChanged()),
+                                       Qt::DirectConnection);
 }
 
 EngineDelay::~EngineDelay() {
@@ -52,15 +53,16 @@ void EngineDelay::slotDelayChanged() {
         m_iDelay = (kiMaxDelay - 2);
     }
     if (m_iDelay <= 0) {
-        // We start bypassing, so clear buffer, to avoid noise in case of re-enable delay
+        // We start bypassing, so clear buffer, to avoid noise in case of
+        // re-enable delay
         SampleUtil::clear(m_pDelayBuffer, kiMaxDelay);
     }
 }
 
-
 void EngineDelay::process(CSAMPLE* pInOut, const int iBufferSize) {
     if (m_iDelay > 0) {
-        int iDelaySourcePos = (m_iDelayPos + kiMaxDelay - m_iDelay) % kiMaxDelay;
+        int iDelaySourcePos =
+                (m_iDelayPos + kiMaxDelay - m_iDelay) % kiMaxDelay;
 
         DEBUG_ASSERT_AND_HANDLE(iDelaySourcePos >= 0) {
             return;

@@ -12,7 +12,7 @@
 #include "trackinfoobject.h"
 #include "track/beats.h"
 
-#define MINIMUM_AUDIBLE_LOOP_SIZE   300  // In samples
+#define MINIMUM_AUDIBLE_LOOP_SIZE 300  // In samples
 
 class ControlPushButton;
 class ControlObject;
@@ -32,24 +32,19 @@ class LoopingControl : public EngineControl {
     // process() updates the internal state of the LoopingControl to reflect the
     // correct current sample. If a loop should be taken LoopingControl returns
     // the sample that should be seeked to. Otherwise it returns currentSample.
-    virtual double process(const double dRate,
-                   const double currentSample,
-                   const double totalSamples,
-                   const int iBufferSize);
+    virtual double process(const double dRate, const double currentSample,
+                           const double totalSamples, const int iBufferSize);
 
     // nextTrigger returns the sample at which the engine will be triggered to
     // take a loop, given the value of currentSample and dRate.
-    virtual double nextTrigger(const double dRate,
-                       const double currentSample,
-                       const double totalSamples,
-                       const int iBufferSize);
+    virtual double nextTrigger(const double dRate, const double currentSample,
+                               const double totalSamples,
+                               const int iBufferSize);
 
     // getTrigger returns the sample that the engine will next be triggered to
     // loop to, given the value of currentSample and dRate.
-    virtual double getTrigger(const double dRate,
-                      const double currentSample,
-                      const double totalSamples,
-                      const int iBufferSize);
+    virtual double getTrigger(const double dRate, const double currentSample,
+                              const double totalSamples, const int iBufferSize);
 
     // hintReader will add to hintList hints both the loop in and loop out
     // sample, if set.
@@ -70,7 +65,7 @@ class LoopingControl : public EngineControl {
 
     // Generate a loop of 'beats' length. It can also do fractions for a
     // beatslicing effect.
-    void slotBeatLoop(double loopSize, bool keepStartPoint=false);
+    void slotBeatLoop(double loopSize, bool keepStartPoint = false);
     void slotBeatLoopActivate(BeatLoopingControl* pBeatLoopControl);
     void slotBeatLoopActivateRoll(BeatLoopingControl* pBeatLoopControl);
     void slotBeatLoopDeactivate(BeatLoopingControl* pBeatLoopControl);
@@ -89,7 +84,8 @@ class LoopingControl : public EngineControl {
   private:
     void setLoopingEnabled(bool enabled);
     void clearActiveBeatLoop();
-    // When a loop changes size such that the playposition is outside of the loop,
+    // When a loop changes size such that the playposition is outside of the
+    // loop,
     // we can figure out the best place in the new loop to seek to maintain
     // the beat.  It will even keep multi-bar phrasing correct with 4/4 tracks.
     void seekInsideAdjustedLoop(int old_loop_in, int old_loop_out,

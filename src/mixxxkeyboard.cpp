@@ -24,11 +24,9 @@
 #include "controlobject.h"
 #include "util/cmdlineargs.h"
 
-
 MixxxKeyboard::MixxxKeyboard(ConfigObject<ConfigValueKbd>* pKbdConfigObject,
                              QObject* parent, const char* name)
-        : QObject(parent),
-          m_pKbdConfigObject(NULL) {
+        : QObject(parent), m_pKbdConfigObject(NULL) {
     setObjectName(name);
     setKeyboardConfig(pKbdConfigObject);
 }
@@ -42,19 +40,21 @@ bool MixxxKeyboard::eventFilter(QObject*, QEvent* e) {
         // because we might not get Key Release events.
         m_qActiveKeyList.clear();
     } else if (e->type() == QEvent::KeyPress) {
-        QKeyEvent* ke = (QKeyEvent *)e;
+        QKeyEvent* ke = (QKeyEvent*)e;
 
 #ifdef __APPLE__
-        // On Mac OSX the nativeScanCode is empty (const 1) http://doc.qt.nokia.com/4.7/qkeyevent.html#nativeScanCode
+        // On Mac OSX the nativeScanCode is empty (const 1)
+        // http://doc.qt.nokia.com/4.7/qkeyevent.html#nativeScanCode
         // We may loose the release event if a the shift key is pressed later
         // and there is character shift like "1" -> "!"
         int keyId = ke->key();
 #else
         int keyId = ke->nativeScanCode();
 #endif
-        //qDebug() << "KeyPress event =" << ke->key() << "KeyId =" << keyId;
+        // qDebug() << "KeyPress event =" << ke->key() << "KeyId =" << keyId;
 
-        // Run through list of active keys to see if the pressed key is already active
+        // Run through list of active keys to see if the pressed key is already
+        // active
         // Just for returning true if we are consuming this key event
 
         foreach (const KeyDownInformation& keyDownInfo, m_qActiveKeyList) {
@@ -69,29 +69,32 @@ bool MixxxKeyboard::eventFilter(QObject*, QEvent* e) {
             bool result = false;
             for (QMultiHash<QKeySequence, ConfigKey>::const_iterator it =
                          m_keySequenceToControlHash.find(ks);
-                 it != m_keySequenceToControlHash.end() && it.key() == ks; ++it) {
+                 it != m_keySequenceToControlHash.end() && it.key() == ks;
+                 ++it) {
                 const ConfigKey& configKey = it.value();
                 if (configKey.group != "[KeyboardShortcuts]") {
-                    ControlObject* control = ControlObject::getControl(configKey);
+                    ControlObject* control =
+                            ControlObject::getControl(configKey);
                     if (control) {
-                        //qDebug() << configKey << "MIDI_NOTE_ON" << 1;
+                        // qDebug() << configKey << "MIDI_NOTE_ON" << 1;
                         // Add key to active key list
                         m_qActiveKeyList.append(KeyDownInformation(
-                            keyId, ke->modifiers(), control));
+                                keyId, ke->modifiers(), control));
                         // Since setting the value might cause us to go down
                         // a route that would eventually clear the active
                         // key list, do that last.
                         control->setValueFromMidi(MIDI_NOTE_ON, 1);
                         result = true;
                     } else {
-                        qDebug() << "Warning: Keyboard key is configured for nonexistent control:"
-                                 << configKey.group << configKey.item;
+                        qDebug() << "Warning: Keyboard key is configured for "
+                                    "nonexistent control:" << configKey.group
+                                 << configKey.item;
                     }
                 }
             }
             return result;
         }
-    } else if (e->type()==QEvent::KeyRelease) {
+    } else if (e->type() == QEvent::KeyRelease) {
         QKeyEvent* ke = (QKeyEvent*)e;
 
 #ifdef __APPLE__
@@ -102,7 +105,8 @@ bool MixxxKeyboard::eventFilter(QObject*, QEvent* e) {
 #endif
         bool autoRepeat = ke->isAutoRepeat();
 
-        //qDebug() << "KeyRelease event =" << ke->key() << "AutoRepeat =" << autoRepeat << "KeyId =" << keyId;
+        // qDebug() << "KeyRelease event =" << ke->key() << "AutoRepeat =" <<
+        // autoRepeat << "KeyId =" << keyId;
 
         int clearModifiers = 0;
 #ifdef __APPLE__
@@ -120,13 +124,15 @@ bool MixxxKeyboard::eventFilter(QObject*, QEvent* e) {
             const KeyDownInformation& keyDownInfo = m_qActiveKeyList[i];
             ControlObject* pControl = keyDownInfo.pControl;
             if (keyDownInfo.keyId == keyId ||
-                    (clearModifiers > 0 && keyDownInfo.modifiers == clearModifiers)) {
+                (clearModifiers > 0 &&
+                 keyDownInfo.modifiers == clearModifiers)) {
                 if (!autoRepeat) {
-                    //qDebug() << pControl->getKey() << "MIDI_NOTE_OFF" << 0;
+                    // qDebug() << pControl->getKey() << "MIDI_NOTE_OFF" << 0;
                     pControl->setValueFromMidi(MIDI_NOTE_OFF, 0);
                     m_qActiveKeyList.removeAt(i);
                 }
-                // Due to the modifier clearing workaround we might match multiple keys for
+                // Due to the modifier clearing workaround we might match
+                // multiple keys for
                 // release.
                 matched = true;
             }
@@ -135,7 +141,7 @@ bool MixxxKeyboard::eventFilter(QObject*, QEvent* e) {
     } else if (e->type() == QEvent::KeyboardLayoutChange) {
         // This event is not fired on ubunty natty, why?
         // TODO(XXX): find a way to support KeyboardLayoutChange Bug #997811
-        //qDebug() << "QEvent::KeyboardLayoutChange";
+        // qDebug() << "QEvent::KeyboardLayoutChange";
     }
     return false;
 }
@@ -144,7 +150,8 @@ QKeySequence MixxxKeyboard::getKeySeq(QKeyEvent* e) {
     QString modseq;
     QKeySequence k;
 
-    // TODO(XXX) check if we may simply return QKeySequence(e->modifiers()+e->key())
+    // TODO(XXX) check if we may simply return
+    // QKeySequence(e->modifiers()+e->key())
 
     if (e->modifiers() & Qt::ShiftModifier)
         modseq += "Shift+";
@@ -173,7 +180,8 @@ QKeySequence MixxxKeyboard::getKeySeq(QKeyEvent* e) {
     return k;
 }
 
-void MixxxKeyboard::setKeyboardConfig(ConfigObject<ConfigValueKbd>* pKbdConfigObject) {
+void MixxxKeyboard::setKeyboardConfig(
+        ConfigObject<ConfigValueKbd>* pKbdConfigObject) {
     // Keyboard configs are a surjection from ConfigKey to key sequence. We
     // invert the mapping to create an injection from key sequence to
     // ConfigKey. This allows a key sequence to trigger multiple controls in
@@ -183,7 +191,8 @@ void MixxxKeyboard::setKeyboardConfig(ConfigObject<ConfigValueKbd>* pKbdConfigOb
 
     m_keySequenceToControlHash.clear();
     for (QHash<ConfigKey, ConfigValueKbd>::const_iterator it =
-                 keyboardConfig.begin(); it != keyboardConfig.end(); ++it) {
+                 keyboardConfig.begin();
+         it != keyboardConfig.end(); ++it) {
         m_keySequenceToControlHash.insert(it.value().m_qKey, it.key());
     }
     m_pKbdConfigObject = pKbdConfigObject;

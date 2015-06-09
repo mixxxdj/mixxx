@@ -22,7 +22,7 @@ class EffectChain : public QObject {
     Q_OBJECT
   public:
     EffectChain(EffectsManager* pEffectsManager, const QString& id,
-                EffectChainPointer prototype=EffectChainPointer());
+                EffectChainPointer prototype = EffectChainPointer());
     virtual ~EffectChain();
 
     void addToEngine(EngineEffectRack* pRack, int iIndex);

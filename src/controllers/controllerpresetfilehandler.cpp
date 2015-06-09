@@ -13,22 +13,22 @@
 #include "controllers/hid/hidcontrollerpresetfilehandler.h"
 
 // static
-ControllerPresetPointer ControllerPresetFileHandler::loadPreset(const QString& pathOrFilename,
-                                                                const QStringList& presetPaths) {
+ControllerPresetPointer ControllerPresetFileHandler::loadPreset(
+        const QString& pathOrFilename, const QStringList& presetPaths) {
     qDebug() << "Searching for controller preset" << pathOrFilename
              << "in paths:" << presetPaths.join(",");
-    QString scriptPath = ControllerManager::getAbsolutePath(pathOrFilename,
-                                                            presetPaths);
+    QString scriptPath =
+            ControllerManager::getAbsolutePath(pathOrFilename, presetPaths);
 
     if (scriptPath.isEmpty()) {
-        qDebug() << "Could not find" << pathOrFilename
-                 << "in any preset path.";
+        qDebug() << "Could not find" << pathOrFilename << "in any preset path.";
         return ControllerPresetPointer();
     }
 
     QFileInfo scriptPathInfo(scriptPath);
     if (!scriptPathInfo.exists() || !scriptPathInfo.isReadable()) {
-        qDebug() << "Preset" << scriptPath << "does not exist or is unreadable.";
+        qDebug() << "Preset" << scriptPath
+                 << "does not exist or is unreadable.";
         return ControllerPresetPointer();
     }
 
@@ -42,7 +42,8 @@ ControllerPresetPointer ControllerPresetFileHandler::loadPreset(const QString& p
     if (scriptPath.endsWith(MIDI_PRESET_EXTENSION, Qt::CaseInsensitive)) {
         pHandler = new MidiControllerPresetFileHandler();
     } else if (scriptPath.endsWith(HID_PRESET_EXTENSION, Qt::CaseInsensitive) ||
-               scriptPath.endsWith(BULK_PRESET_EXTENSION, Qt::CaseInsensitive)) {
+               scriptPath.endsWith(BULK_PRESET_EXTENSION,
+                                   Qt::CaseInsensitive)) {
         pHandler = new HidControllerPresetFileHandler();
     }
 
@@ -55,19 +56,19 @@ ControllerPresetPointer ControllerPresetFileHandler::loadPreset(const QString& p
     return pHandler->load(scriptPath, QString());
 }
 
-ControllerPresetPointer ControllerPresetFileHandler::load(const QString path,
-                                                          const QString deviceName) {
+ControllerPresetPointer ControllerPresetFileHandler::load(
+        const QString path, const QString deviceName) {
     qDebug() << "Loading controller preset from" << path;
-    ControllerPresetPointer pPreset = load(XmlParse::openXMLFile(path, "controller"),
-                                           deviceName);
+    ControllerPresetPointer pPreset =
+            load(XmlParse::openXMLFile(path, "controller"), deviceName);
     if (pPreset) {
         pPreset->setFilePath(path);
     }
     return pPreset;
 }
 
-void ControllerPresetFileHandler::parsePresetInfo(const QDomElement& root,
-                                                  ControllerPreset* preset) const {
+void ControllerPresetFileHandler::parsePresetInfo(
+        const QDomElement& root, ControllerPreset* preset) const {
     if (root.isNull() || !preset) {
         return;
     }
@@ -93,8 +94,8 @@ void ControllerPresetFileHandler::parsePresetInfo(const QDomElement& root,
     preset->setWikiLink(wiki.isNull() ? "" : wiki.text());
 }
 
-QDomElement ControllerPresetFileHandler::getControllerNode(const QDomElement& root,
-                                                           const QString deviceName) {
+QDomElement ControllerPresetFileHandler::getControllerNode(
+        const QDomElement& root, const QString deviceName) {
     Q_UNUSED(deviceName);
     if (root.isNull()) {
         return QDomElement();
@@ -107,7 +108,7 @@ QDomElement ControllerPresetFileHandler::getControllerNode(const QDomElement& ro
 }
 
 void ControllerPresetFileHandler::addScriptFilesToPreset(
-    const QDomElement& controller, ControllerPreset* preset) const {
+        const QDomElement& controller, ControllerPreset* preset) const {
     if (controller.isNull())
         return;
 
@@ -116,15 +117,15 @@ void ControllerPresetFileHandler::addScriptFilesToPreset(
 
     // Build a list of script files to load
     QDomElement scriptFile = controller.firstChildElement("scriptfiles")
-            .firstChildElement("file");
+                                     .firstChildElement("file");
 
     // Default currently required file
     preset->addScriptFile(REQUIRED_SCRIPT_FILE, "", true);
 
     // Look for additional ones
     while (!scriptFile.isNull()) {
-        QString functionPrefix = scriptFile.attribute("functionprefix","");
-        QString filename = scriptFile.attribute("filename","");
+        QString functionPrefix = scriptFile.attribute("functionprefix", "");
+        QString filename = scriptFile.attribute("filename", "");
         preset->addScriptFile(filename, functionPrefix);
         scriptFile = scriptFile.nextSiblingElement("file");
     }
@@ -155,20 +156,21 @@ bool ControllerPresetFileHandler::writeDocument(QDomDocument root,
     return true;
 }
 
-void addTextTag(QDomDocument& doc, QDomElement& holder,
-                QString tagName, QString tagText) {
+void addTextTag(QDomDocument& doc, QDomElement& holder, QString tagName,
+                QString tagText) {
     QDomElement tag = doc.createElement(tagName);
     QDomText textNode = doc.createTextNode(tagText);
     tag.appendChild(textNode);
     holder.appendChild(tag);
 }
 
-QDomDocument ControllerPresetFileHandler::buildRootWithScripts(const ControllerPreset& preset,
-                                                               const QString deviceName) const {
+QDomDocument ControllerPresetFileHandler::buildRootWithScripts(
+        const ControllerPreset& preset, const QString deviceName) const {
     QDomDocument doc("Preset");
-    QString blank = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-        "<MixxxControllerPreset>\n"
-        "</MixxxControllerPreset>\n";
+    QString blank =
+            "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+            "<MixxxControllerPreset>\n"
+            "</MixxxControllerPreset>\n";
     doc.setContent(blank);
 
     QDomElement rootNode = doc.documentElement();

@@ -25,7 +25,8 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
     m_specialFilters << "key"
                      << "duration";
 
-    m_fieldToSqlColumns["artist"] << "artist" << "album_artist";
+    m_fieldToSqlColumns["artist"] << "artist"
+                                  << "album_artist";
     m_fieldToSqlColumns["album_artist"] << "album_artist";
     m_fieldToSqlColumns["album"] << "album";
     m_fieldToSqlColumns["title"] << "title";
@@ -49,9 +50,12 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
     m_allFilters.append(m_specialFilters);
 
     m_fuzzyMatcher = QRegExp(QString("^~(%1)$").arg(m_allFilters.join("|")));
-    m_textFilterMatcher = QRegExp(QString("^-?(%1):(.*)$").arg(m_textFilters.join("|")));
-    m_numericFilterMatcher = QRegExp(QString("^-?(%1):(.*)$").arg(m_numericFilters.join("|")));
-    m_specialFilterMatcher = QRegExp(QString("^[~-]?(%1):(.*)$").arg(m_specialFilters.join("|")));
+    m_textFilterMatcher =
+            QRegExp(QString("^-?(%1):(.*)$").arg(m_textFilters.join("|")));
+    m_numericFilterMatcher =
+            QRegExp(QString("^-?(%1):(.*)$").arg(m_numericFilters.join("|")));
+    m_specialFilterMatcher = QRegExp(
+            QString("^[~-]?(%1):(.*)$").arg(m_specialFilters.join("|")));
 }
 
 SearchQueryParser::~SearchQueryParser() {
@@ -88,7 +92,7 @@ QString SearchQueryParser::getTextArgument(QString argument,
         }
 
         // Stuff the rest of the argument after the quote back into tokens.
-        QString remaining = argument.mid(quote_index+1).trimmed();
+        QString remaining = argument.mid(quote_index + 1).trimmed();
         if (remaining.size() != 0) {
             tokens->push_front(remaining);
         }
@@ -114,12 +118,13 @@ void SearchQueryParser::parseTokens(QStringList tokens,
         } else if (m_textFilterMatcher.indexIn(token) != -1) {
             bool negate = token.startsWith(kNegatePrefix);
             QString field = m_textFilterMatcher.cap(1);
-            QString argument = getTextArgument(
-                m_textFilterMatcher.cap(2), &tokens).trimmed();
+            QString argument =
+                    getTextArgument(m_textFilterMatcher.cap(2), &tokens)
+                            .trimmed();
 
             if (!argument.isEmpty()) {
                 QueryNode* pNode = new TextFilterNode(
-                    m_database, m_fieldToSqlColumns[field], argument);
+                        m_database, m_fieldToSqlColumns[field], argument);
                 if (negate) {
                     pNode = new NotNode(pNode);
                 }
@@ -128,12 +133,13 @@ void SearchQueryParser::parseTokens(QStringList tokens,
         } else if (m_numericFilterMatcher.indexIn(token) != -1) {
             bool negate = token.startsWith(kNegatePrefix);
             QString field = m_numericFilterMatcher.cap(1);
-            QString argument = getTextArgument(
-                m_numericFilterMatcher.cap(2), &tokens).trimmed();
+            QString argument =
+                    getTextArgument(m_numericFilterMatcher.cap(2), &tokens)
+                            .trimmed();
 
             if (!argument.isEmpty()) {
                 QueryNode* pNode = new NumericFilterNode(
-                    m_fieldToSqlColumns[field], argument);
+                        m_fieldToSqlColumns[field], argument);
                 if (negate) {
                     pNode = new NotNode(pNode);
                 }
@@ -143,16 +149,18 @@ void SearchQueryParser::parseTokens(QStringList tokens,
             bool negate = token.startsWith(kNegatePrefix);
             bool fuzzy = token.startsWith(kFuzzyPrefix);
             QString field = m_specialFilterMatcher.cap(1);
-            QString argument = getTextArgument(
-                m_specialFilterMatcher.cap(2), &tokens).trimmed();
+            QString argument =
+                    getTextArgument(m_specialFilterMatcher.cap(2), &tokens)
+                            .trimmed();
             QueryNode* pNode = NULL;
             if (!argument.isEmpty()) {
                 if (field == "key") {
                     mixxx::track::io::key::ChromaticKey key =
                             KeyUtils::guessKeyFromText(argument);
                     if (key == mixxx::track::io::key::INVALID) {
-                        pNode = new TextFilterNode(
-                            m_database, m_fieldToSqlColumns[field], argument);
+                        pNode = new TextFilterNode(m_database,
+                                                   m_fieldToSqlColumns[field],
+                                                   argument);
                     } else {
                         pNode = new KeyFilterNode(key, fuzzy);
                     }
@@ -176,8 +184,8 @@ void SearchQueryParser::parseTokens(QStringList tokens,
 
             // Don't trigger on a lone minus sign.
             if (!token.isEmpty()) {
-                QueryNode* pNode = new TextFilterNode(
-                    m_database, searchColumns, token);
+                QueryNode* pNode =
+                        new TextFilterNode(m_database, searchColumns, token);
                 if (negate) {
                     pNode = new NotNode(pNode);
                 }

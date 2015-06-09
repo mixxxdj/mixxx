@@ -22,7 +22,7 @@ class SongDownloader : public QObject {
     void slotError(QNetworkReply::NetworkError error);
     void slotProgress(qint64 bytesReceived, qint64 bytesTotal);
     void slotDownloadFinished();
-    //void finishedSlot(QNetworkReply* reply);
+    // void finishedSlot(QNetworkReply* reply);
 
   signals:
     void downloadProgress(qint64, qint64);
@@ -39,4 +39,4 @@ class SongDownloader : public QObject {
     QNetworkRequest* m_pRequest;
 };
 
-#endif // SONGDOWNLOADER_H
+#endif  // SONGDOWNLOADER_H

@@ -11,21 +11,23 @@
 #include "engine/effects/engineeffectsmanager.h"
 #include "controlaudiotaperpot.h"
 
-
 EngineMicrophone::EngineMicrophone(const ChannelHandleAndGroup& handle_group,
                                    EffectsManager* pEffectsManager)
         : EngineChannel(handle_group, EngineChannel::CENTER),
-          m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
+          m_pEngineEffectsManager(
+                  pEffectsManager ? pEffectsManager->getEngineEffectsManager()
+                                  : NULL),
           m_vuMeter(getGroup()),
           m_pEnabled(new ControlObject(ConfigKey(getGroup(), "enabled"))),
-          m_pPregain(new ControlAudioTaperPot(ConfigKey(getGroup(), "pregain"), -12, 12, 0.5)),
+          m_pPregain(new ControlAudioTaperPot(ConfigKey(getGroup(), "pregain"),
+                                              -12, 12, 0.5)),
           m_sampleBuffer(NULL),
           m_wasActive(false) {
     if (pEffectsManager != NULL) {
         pEffectsManager->registerChannel(handle_group);
     }
 
-    setMaster(false); // Use "talkover" button to enable microphones
+    setMaster(false);  // Use "talkover" button to enable microphones
 
     m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
 }
@@ -51,7 +53,8 @@ bool EngineMicrophone::isActive() {
 void EngineMicrophone::onInputConfigured(AudioInput input) {
     if (input.getType() != AudioPath::MICROPHONE) {
         // This is an error!
-        qWarning() << "EngineMicrophone connected to AudioInput for a non-Microphone type!";
+        qWarning() << "EngineMicrophone connected to AudioInput for a "
+                      "non-Microphone type!";
         return;
     }
     m_sampleBuffer = NULL;
@@ -61,7 +64,8 @@ void EngineMicrophone::onInputConfigured(AudioInput input) {
 void EngineMicrophone::onInputUnconfigured(AudioInput input) {
     if (input.getType() != AudioPath::MICROPHONE) {
         // This is an error!
-        qWarning() << "EngineMicrophone connected to AudioInput for a non-Microphone type!";
+        qWarning() << "EngineMicrophone connected to AudioInput for a "
+                      "non-Microphone type!";
         return;
     }
     m_sampleBuffer = NULL;
@@ -78,8 +82,8 @@ void EngineMicrophone::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
 void EngineMicrophone::process(CSAMPLE* pOut, const int iBufferSize) {
     // If configured read into the output buffer.
     // Otherwise, skip the appropriate number of samples to throw them away.
-    const CSAMPLE* sampleBuffer = m_sampleBuffer; // save pointer on stack
-    double pregain =  m_pPregain->get();
+    const CSAMPLE* sampleBuffer = m_sampleBuffer;  // save pointer on stack
+    double pregain = m_pPregain->get();
     if (sampleBuffer) {
         SampleUtil::copyWithGain(pOut, sampleBuffer, pregain, iBufferSize);
     } else {

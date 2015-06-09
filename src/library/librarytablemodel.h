@@ -9,7 +9,7 @@ class LibraryTableModel : public BaseSqlTableModel {
     LibraryTableModel(QObject* parent, TrackCollection* pTrackCollection,
                       const char* settingsNamespace);
     virtual ~LibraryTableModel();
-    void setTableModel(int id =-1);
+    void setTableModel(int id = -1);
     bool isColumnInternal(int column);
     // Takes a list of locations and add the tracks to the library. Returns the
     // number of successful additions.

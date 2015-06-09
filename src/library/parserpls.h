@@ -25,15 +25,15 @@ class ParserPls : public Parser {
     virtual ~ParserPls();
     /**Can be called to parse a pls file**/
     QList<QString> parse(QString);
-    //Playlist Export
-    static bool writePLSFile(const QString &file, QList<QString> &items, bool useRelativePath);
+    // Playlist Export
+    static bool writePLSFile(const QString &file, QList<QString> &items,
+                             bool useRelativePath);
 
   private:
     /**Returns the Number of entries in the pls file**/
-    long getNumEntries(QTextStream*);
+    long getNumEntries(QTextStream *);
     /**Reads a line from the file and returns filepath**/
-    QString getFilepath(QTextStream*, QString);
-
+    QString getFilepath(QTextStream *, QString);
 };
 
 #endif

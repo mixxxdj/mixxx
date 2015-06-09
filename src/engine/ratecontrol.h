@@ -30,23 +30,21 @@ class PositionScratchController;
 // various controls, RateControl will calculate the current rate.
 class RateControl : public EngineControl {
     Q_OBJECT
-public:
+  public:
     RateControl(QString group, ConfigObject<ConfigValue>* _config);
     virtual ~RateControl();
 
     void setBpmControl(BpmControl* bpmcontrol);
     // Must be called during each callback of the audio thread so that
     // RateControl has a chance to update itself.
-    double process(const double dRate,
-                   const double currentSample,
-                   const double totalSamples,
-                   const int bufferSamples);
+    double process(const double dRate, const double currentSample,
+                   const double totalSamples, const int bufferSamples);
     // Returns the current engine rate.  "reportScratching" is used to tell
     // the caller that the user is currently scratching, and this is used to
     // disable keylock.
     double calculateSpeed(double baserate, double speed, bool paused,
-                         int iSamplesPerBuffer, bool* pReportScratching,
-                         bool* pReportReverse);
+                          int iSamplesPerBuffer, bool* pReportScratching,
+                          bool* pReportReverse);
     double getRawRate() const;
 
     // Set rate change when temp rate button is pressed
@@ -98,9 +96,9 @@ public:
     static double m_dTemp, m_dTempSmall, m_dPerm, m_dPermSmall;
 
     ControlPushButton *buttonRateTempDown, *buttonRateTempDownSmall,
-        *buttonRateTempUp, *buttonRateTempUpSmall;
+            *buttonRateTempUp, *buttonRateTempUpSmall;
     ControlPushButton *buttonRatePermDown, *buttonRatePermDownSmall,
-        *buttonRatePermUp, *buttonRatePermUpSmall;
+            *buttonRatePermUp, *buttonRatePermUpSmall;
     ControlObject *m_pRateDir, *m_pRateRange;
     ControlPotmeter* m_pRateSlider;
     ControlPotmeter* m_pRateSearch;
@@ -136,17 +134,14 @@ public:
     enum RATERAMP_DIRECTION {
         RATERAMP_NONE = 0,  // No buttons are held down
         RATERAMP_DOWN = 1,  // Down button is being held
-        RATERAMP_UP = 2,    // Up button is being held
-        RATERAMP_BOTH = 3   // Both buttons are being held down
+        RATERAMP_UP = 2,  // Up button is being held
+        RATERAMP_BOTH = 3  // Both buttons are being held down
     };
 
     // Rate ramping mode:
     //  RATERAMP_STEP: pitch takes a temporary step up/down a certain amount.
     //  RATERAMP_LINEAR: pitch moves up/down in a progresively linear fashion.
-    enum RATERAMP_MODE {
-        RATERAMP_STEP = 0,
-        RATERAMP_LINEAR = 1
-    };
+    enum RATERAMP_MODE { RATERAMP_STEP = 0, RATERAMP_LINEAR = 1 };
 
     // This defines how the rate returns to normal. Currently unused.
     // Rate ramp back mode:

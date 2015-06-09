@@ -16,12 +16,13 @@ const QString AnalysisDao::s_analysisTableName = "track_analysis";
 // CPU time so I think we should stick with the default. rryan 4/3/2012
 const int kCompressionLevel = -1;
 
-AnalysisDao::AnalysisDao(QSqlDatabase& database, ConfigObject<ConfigValue>* pConfig)
-        : m_pConfig(pConfig),
-          m_db(database) {
+AnalysisDao::AnalysisDao(QSqlDatabase& database,
+                         ConfigObject<ConfigValue>* pConfig)
+        : m_pConfig(pConfig), m_db(database) {
     QDir storagePath = getAnalysisStoragePath();
     if (!QDir().mkpath(storagePath.absolutePath())) {
-        qDebug() << "WARNING: Could not create analysis storage path. Mixxx will be unable to store analyses.";
+        qDebug() << "WARNING: Could not create analysis storage path. Mixxx "
+                    "will be unable to store analyses.";
     }
 }
 
@@ -35,43 +36,48 @@ void AnalysisDao::setDatabase(QSqlDatabase& database) {
     m_db = database;
 }
 
-QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrack(const int trackId) {
+QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrack(
+        const int trackId) {
     if (!m_db.isOpen() || trackId == -1) {
         return QList<AnalysisInfo>();
     }
 
     QSqlQuery query(m_db);
-    query.prepare(QString(
-        "SELECT id, type, description, version, data_checksum FROM %1 "
-        "WHERE track_id=:trackId").arg(s_analysisTableName));
+    query.prepare(QString("SELECT id, type, description, version, "
+                          "data_checksum FROM %1 "
+                          "WHERE track_id=:trackId")
+                          .arg(s_analysisTableName));
     query.bindValue(":trackId", trackId);
 
     return loadAnalysesFromQuery(trackId, &query);
 }
 
 QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrackByType(
-    const int trackId, AnalysisType type) {
+        const int trackId, AnalysisType type) {
     if (!m_db.isOpen() || trackId == -1) {
         return QList<AnalysisInfo>();
     }
 
     QSqlQuery query(m_db);
-    query.prepare(QString(
-        "SELECT id, type, description, version, data_checksum FROM %1 "
-        "WHERE track_id=:trackId AND type=:type").arg(s_analysisTableName));
+    query.prepare(QString("SELECT id, type, description, version, "
+                          "data_checksum FROM %1 "
+                          "WHERE track_id=:trackId AND type=:type")
+                          .arg(s_analysisTableName));
     query.bindValue(":trackId", trackId);
     query.bindValue(":type", type);
 
     return loadAnalysesFromQuery(trackId, &query);
 }
 
-QList<AnalysisDao::AnalysisInfo> AnalysisDao::loadAnalysesFromQuery(const int trackId, QSqlQuery* query) {
+QList<AnalysisDao::AnalysisInfo> AnalysisDao::loadAnalysesFromQuery(
+        const int trackId, QSqlQuery* query) {
     QList<AnalysisDao::AnalysisInfo> analyses;
     QTime time;
     time.start();
 
     if (!query->exec()) {
-        LOG_FAILED_QUERY(*query) << "couldn't get analyses for track" << trackId;
+        LOG_FAILED_QUERY(*query) << "couldn't get analyses for track"
+                                 << trackId;
         return analyses;
     }
 
@@ -92,10 +98,10 @@ QList<AnalysisDao::AnalysisInfo> AnalysisDao::loadAnalysesFromQuery(const int tr
         info.version = query->value(versionColumn).toString();
         int checksum = query->value(dataChecksumColumn).toInt();
         QString dataPath = getAnalysisStoragePath().absoluteFilePath(
-            QString::number(info.analysisId));
+                QString::number(info.analysisId));
         QByteArray compressedData = loadDataFromFile(dataPath);
-        int file_checksum = qChecksum(compressedData.constData(),
-                                      compressedData.length());
+        int file_checksum =
+                qChecksum(compressedData.constData(), compressedData.length());
         if (checksum != file_checksum) {
             qDebug() << "WARNING: Corrupt analysis loaded from" << dataPath
                      << "length" << compressedData.length();
@@ -105,9 +111,8 @@ QList<AnalysisDao::AnalysisInfo> AnalysisDao::loadAnalysesFromQuery(const int tr
         bytes += info.data.length();
         analyses.append(info);
     }
-    qDebug() << "AnalysisDAO fetched" << analyses.size() << "analyses,"
-             << bytes << "bytes for track"
-             << trackId << "in" << time.elapsed() << "ms";
+    qDebug() << "AnalysisDAO fetched" << analyses.size() << "analyses," << bytes
+             << "bytes for track" << trackId << "in" << time.elapsed() << "ms";
     return analyses;
 }
 
@@ -124,15 +129,17 @@ bool AnalysisDao::saveAnalysis(AnalysisDao::AnalysisInfo* info) {
     time.start();
 
     QByteArray compressedData = qCompress(info->data, kCompressionLevel);
-    int checksum = qChecksum(compressedData.constData(),
-                             compressedData.length());
+    int checksum =
+            qChecksum(compressedData.constData(), compressedData.length());
 
     QSqlQuery query(m_db);
     if (info->analysisId == -1) {
-        query.prepare(QString(
-            "INSERT INTO %1 (track_id, type, description, version, data_checksum) "
-            "VALUES (:trackId,:type,:description,:version,:data_checksum)")
-                      .arg(s_analysisTableName));
+        query.prepare(QString("INSERT INTO %1 (track_id, type, description, "
+                              "version, data_checksum) "
+                              "VALUES "
+                              "(:trackId,:type,:description,:version,:data_"
+                              "checksum)")
+                              .arg(s_analysisTableName));
 
         QByteArray waveformBytes;
         query.bindValue(":trackId", info->trackId);
@@ -147,14 +154,14 @@ bool AnalysisDao::saveAnalysis(AnalysisDao::AnalysisInfo* info) {
         }
         info->analysisId = query.lastInsertId().toInt();
     } else {
-        query.prepare(QString(
-            "UPDATE %1 SET "
-            "track_id = :trackId,"
-            "type = :type,"
-            "description = :description,"
-            "version = :version,"
-            "data_checksum = :data_checksum "
-            "WHERE id = :analysisId").arg(s_analysisTableName));
+        query.prepare(QString("UPDATE %1 SET "
+                              "track_id = :trackId,"
+                              "type = :type,"
+                              "description = :description,"
+                              "version = :version,"
+                              "data_checksum = :data_checksum "
+                              "WHERE id = :analysisId")
+                              .arg(s_analysisTableName));
 
         query.bindValue(":analysisId", info->analysisId);
         query.bindValue(":trackId", info->trackId);
@@ -170,17 +177,18 @@ bool AnalysisDao::saveAnalysis(AnalysisDao::AnalysisInfo* info) {
     }
 
     QString dataPath = getAnalysisStoragePath().absoluteFilePath(
-        QString::number(info->analysisId));
+            QString::number(info->analysisId));
     if (!saveDataToFile(dataPath, compressedData)) {
         qDebug() << "WARNING: Couldn't save analysis data to file" << dataPath;
         return false;
     }
 
     qDebug() << "AnalysisDAO saved analysis" << info->analysisId
-             << QString("%1 (%2 compressed)").arg(QString::number(info->data.length()),
-                                                  QString::number(compressedData.length()))
-             << "bytes for track"
-             << info->trackId << "in" << time.elapsed() << "ms";
+             << QString("%1 (%2 compressed)")
+                        .arg(QString::number(info->data.length()),
+                             QString::number(compressedData.length()))
+             << "bytes for track" << info->trackId << "in" << time.elapsed()
+             << "ms";
     return true;
 }
 
@@ -189,8 +197,8 @@ bool AnalysisDao::deleteAnalysis(const int analysisId) {
         return false;
     }
     QSqlQuery query(m_db);
-    query.prepare(QString(
-        "DELETE FROM %1 WHERE id = :id").arg(s_analysisTableName));
+    query.prepare(
+            QString("DELETE FROM %1 WHERE id = :id").arg(s_analysisTableName));
     query.bindValue(":id", analysisId);
 
     if (!query.exec()) {
@@ -199,32 +207,32 @@ bool AnalysisDao::deleteAnalysis(const int analysisId) {
     }
 
     QString dataPath = getAnalysisStoragePath().absoluteFilePath(
-        QString::number(analysisId));
+            QString::number(analysisId));
     deleteFile(dataPath);
     return true;
 }
 
 void AnalysisDao::deleteAnalysises(const QList<int>& ids) {
     QStringList idList;
-    foreach (int id, ids) {
-        idList << QString::number(id);
-    }
+    foreach (int id, ids) { idList << QString::number(id); }
     QSqlQuery query(m_db);
     query.prepare(QString("SELECT track_analysis.id FROM track_analysis WHERE "
-                          "track_id in (%1)").arg(idList.join(",")));
+                          "track_id in (%1)")
+                          .arg(idList.join(",")));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "couldn't delete analysis";
     }
     const int idColumn = query.record().indexOf("id");
     while (query.next()) {
         int id = query.value(idColumn).toInt();
-        QString dataPath = getAnalysisStoragePath().absoluteFilePath(
-                            QString::number(id));
+        QString dataPath =
+                getAnalysisStoragePath().absoluteFilePath(QString::number(id));
         qDebug() << dataPath;
         deleteFile(dataPath);
     }
     query.prepare(QString("DELETE FROM track_analysis "
-                          "WHERE track_id in (%1)").arg(idList.join(",")));
+                          "WHERE track_id in (%1)")
+                          .arg(idList.join(",")));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "couldn't delete analysis";
     }
@@ -235,24 +243,22 @@ bool AnalysisDao::deleteAnalysesForTrack(const int trackId) {
         return false;
     }
     QSqlQuery query(m_db);
-    query.prepare(QString(
-        "SELECT id FROM %1 where track_id = :track_id").arg(s_analysisTableName));
+    query.prepare(QString("SELECT id FROM %1 where track_id = :track_id")
+                          .arg(s_analysisTableName));
     query.bindValue(":track_id", trackId);
 
     if (!query.exec()) {
-        LOG_FAILED_QUERY(query) << "couldn't delete analyses for track" << trackId;
+        LOG_FAILED_QUERY(query) << "couldn't delete analyses for track"
+                                << trackId;
         return false;
     }
 
     QList<int> analysesToDelete;
     const int idColumn = query.record().indexOf("id");
     while (query.next()) {
-        analysesToDelete.append(
-            query.value(idColumn).toInt());
+        analysesToDelete.append(query.value(idColumn).toInt());
     }
-    foreach (int analysisId, analysesToDelete) {
-        deleteAnalysis(analysisId);
-    }
+    foreach (int analysisId, analysesToDelete) { deleteAnalysis(analysisId); }
     return true;
 }
 
@@ -278,7 +284,8 @@ bool AnalysisDao::deleteFile(const QString& fileName) const {
     return file.remove();
 }
 
-bool AnalysisDao::saveDataToFile(const QString& fileName, const QByteArray& data) const {
+bool AnalysisDao::saveDataToFile(const QString& fileName,
+                                 const QByteArray& data) const {
     QFile file(fileName);
 
     // If the file exists, do the right thing. Write to a temp file, unlink the
@@ -325,7 +332,8 @@ void AnalysisDao::saveTrackAnalyses(TrackInfoObject* pTrack) {
 
     // Don't try to save invalid or non-dirty waveforms.
     if (!pWaveform || pWaveform->getDataSize() == 0 || !pWaveform->isDirty() ||
-        !pWaveSummary || pWaveSummary->getDataSize() == 0 || !pWaveSummary->isDirty()) {
+        !pWaveSummary || pWaveSummary->getDataSize() == 0 ||
+        !pWaveSummary->isDirty()) {
         return;
     }
 
@@ -344,8 +352,8 @@ void AnalysisDao::saveTrackAnalyses(TrackInfoObject* pTrack) {
     }
 
     qDebug() << (success ? "Saved" : "Failed to save")
-                 << "waveform analysis for trackId" << trackId
-                 << "analysisId" << analysis.analysisId;
+             << "waveform analysis for trackId" << trackId << "analysisId"
+             << analysis.analysisId;
 
     // Clear analysisId since we are re-using the AnalysisInfo
     analysis.analysisId = -1;

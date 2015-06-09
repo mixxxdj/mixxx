@@ -27,7 +27,7 @@ class ControlModel : public QAbstractTableModel {
         NUM_CONTROL_COLUMNS
     };
 
-    ControlModel(QObject* pParent=NULL);
+    ControlModel(QObject* pParent = NULL);
     virtual ~ControlModel();
 
     void addControl(const ConfigKey& control, const QString& title,
@@ -55,7 +55,7 @@ class ControlModel : public QAbstractTableModel {
         ControlObjectSlave* pControl;
     };
 
-    QVector<QHash<int, QVariant> > m_headerInfo;
+    QVector<QHash<int, QVariant>> m_headerInfo;
     QList<ControlInfo> m_controls;
 };
 

@@ -4,8 +4,7 @@
 #include "effects/effectsmanager.h"
 
 EffectsBackend::EffectsBackend(QObject* pParent, QString name)
-        : QObject(pParent),
-          m_name(name) {
+        : QObject(pParent), m_name(name) {
 }
 
 EffectsBackend::~EffectsBackend() {
@@ -56,6 +55,6 @@ EffectPointer EffectsBackend::instantiateEffect(EffectsManager* pEffectsManager,
     QPair<EffectManifest, EffectInstantiatorPointer>& effectInfo =
             m_registeredEffects[effectId];
 
-    return EffectPointer(new Effect(pEffectsManager,
-                                    effectInfo.first, effectInfo.second));
+    return EffectPointer(
+            new Effect(pEffectsManager, effectInfo.first, effectInfo.second));
 }

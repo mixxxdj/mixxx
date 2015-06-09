@@ -22,7 +22,7 @@
 
 DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
                                      ControllerManager* controllerManager,
-                                     ConfigObject<ConfigValue> *pConfig)
+                                     ConfigObject<ConfigValue>* pConfig)
         : DlgPreferencePage(parent),
           m_pConfig(pConfig),
           m_pControllerManager(controllerManager),
@@ -39,8 +39,8 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
     initTableView(m_ui.m_pOutputMappingTableView);
     initTableView(m_ui.m_pScriptsTableWidget);
 
-    connect(m_pController, SIGNAL(presetLoaded(ControllerPresetPointer)),
-            this, SLOT(slotPresetLoaded(ControllerPresetPointer)));
+    connect(m_pController, SIGNAL(presetLoaded(ControllerPresetPointer)), this,
+            SLOT(slotPresetLoaded(ControllerPresetPointer)));
     // TODO(rryan): Eh, this really isn't thread safe but it's the way it's been
     // since 1.11.0. We shouldn't be calling Controller methods because it lives
     // in a different thread. Booleans (like isOpen()) are fine but a complex
@@ -58,48 +58,47 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
     }
 
     // When the user picks a preset, load it.
-    connect(m_ui.comboBoxPreset, SIGNAL(activated(int)),
-            this, SLOT(slotLoadPreset(int)));
+    connect(m_ui.comboBoxPreset, SIGNAL(activated(int)), this,
+            SLOT(slotLoadPreset(int)));
 
     // When the user toggles the Enabled checkbox, toggle.
-    connect(m_ui.chkEnabledDevice, SIGNAL(clicked(bool)),
-            this, SLOT(slotEnableDevice(bool)));
+    connect(m_ui.chkEnabledDevice, SIGNAL(clicked(bool)), this,
+            SLOT(slotEnableDevice(bool)));
 
     // Connect our signals to controller manager.
-    connect(this, SIGNAL(openController(Controller*)),
-            m_pControllerManager, SLOT(openController(Controller*)));
-    connect(this, SIGNAL(closeController(Controller*)),
-            m_pControllerManager, SLOT(closeController(Controller*)));
+    connect(this, SIGNAL(openController(Controller*)), m_pControllerManager,
+            SLOT(openController(Controller*)));
+    connect(this, SIGNAL(closeController(Controller*)), m_pControllerManager,
+            SLOT(closeController(Controller*)));
     connect(this, SIGNAL(loadPreset(Controller*, ControllerPresetPointer)),
-            m_pControllerManager, SLOT(loadPreset(Controller*, ControllerPresetPointer)));
+            m_pControllerManager,
+            SLOT(loadPreset(Controller*, ControllerPresetPointer)));
 
     // Input mappings
-    connect(m_ui.btnAddInputMapping, SIGNAL(clicked()),
-            this, SLOT(addInputMapping()));
-    connect(m_ui.btnRemoveInputMappings, SIGNAL(clicked()),
-            this, SLOT(removeInputMappings()));
-    connect(m_ui.btnLearningWizard, SIGNAL(clicked()),
-            this, SLOT(showLearningWizard()));
-    connect(m_ui.btnClearAllInputMappings, SIGNAL(clicked()),
-            this, SLOT(clearAllInputMappings()));
+    connect(m_ui.btnAddInputMapping, SIGNAL(clicked()), this,
+            SLOT(addInputMapping()));
+    connect(m_ui.btnRemoveInputMappings, SIGNAL(clicked()), this,
+            SLOT(removeInputMappings()));
+    connect(m_ui.btnLearningWizard, SIGNAL(clicked()), this,
+            SLOT(showLearningWizard()));
+    connect(m_ui.btnClearAllInputMappings, SIGNAL(clicked()), this,
+            SLOT(clearAllInputMappings()));
 
     // Output mappings
-    connect(m_ui.btnAddOutputMapping, SIGNAL(clicked()),
-            this, SLOT(addOutputMapping()));
-    connect(m_ui.btnRemoveOutputMappings, SIGNAL(clicked()),
-            this, SLOT(removeOutputMappings()));
-    connect(m_ui.btnClearAllOutputMappings, SIGNAL(clicked()),
-            this, SLOT(clearAllOutputMappings()));
+    connect(m_ui.btnAddOutputMapping, SIGNAL(clicked()), this,
+            SLOT(addOutputMapping()));
+    connect(m_ui.btnRemoveOutputMappings, SIGNAL(clicked()), this,
+            SLOT(removeOutputMappings()));
+    connect(m_ui.btnClearAllOutputMappings, SIGNAL(clicked()), this,
+            SLOT(clearAllOutputMappings()));
 
     // Scripts
-    connect(m_ui.m_pScriptsTableWidget, SIGNAL(cellChanged(int, int)),
-            this, SLOT(slotDirty()));
-    connect(m_ui.btnAddScript, SIGNAL(clicked()),
-            this, SLOT(addScript()));
-    connect(m_ui.btnRemoveScript, SIGNAL(clicked()),
-            this, SLOT(removeScript()));
-    connect(m_ui.btnOpenScript, SIGNAL(clicked()),
-            this, SLOT(openScript()));
+    connect(m_ui.m_pScriptsTableWidget, SIGNAL(cellChanged(int, int)), this,
+            SLOT(slotDirty()));
+    connect(m_ui.btnAddScript, SIGNAL(clicked()), this, SLOT(addScript()));
+    connect(m_ui.btnRemoveScript, SIGNAL(clicked()), this,
+            SLOT(removeScript()));
+    connect(m_ui.btnOpenScript, SIGNAL(clicked()), this, SLOT(openScript()));
 
     slotUpdate();
 }
@@ -114,12 +113,13 @@ void DlgPrefController::showLearningWizard() {
     // device, the dialog won't react to controller messages.
     if (m_ui.chkEnabledDevice->isChecked() && !m_pController->isOpen()) {
         QMessageBox::StandardButton result = QMessageBox::question(
-            this,
-            tr("Apply device settings?"),
-            tr("Your settings must be applied before starting the learning wizard.\n"
-               "Apply settings and continue?"),
-            QMessageBox::Ok | QMessageBox::Cancel,  // Buttons to be displayed
-            QMessageBox::Ok);  // Default button
+                this, tr("Apply device settings?"),
+                tr("Your settings must be applied before starting the learning "
+                   "wizard.\n"
+                   "Apply settings and continue?"),
+                QMessageBox::Ok |
+                        QMessageBox::Cancel,  // Buttons to be displayed
+                QMessageBox::Ok);  // Default button
         // Stop if the user has not pressed the Ok button,
         // which could be the Cancel or the Close Button.
         if (result != QMessageBox::Ok) {
@@ -144,17 +144,19 @@ void DlgPrefController::showLearningWizard() {
             pControllerLearning, SLOT(startListening()));
     connect(m_pDlgControllerLearning, SIGNAL(stopListeningForClicks()),
             pControllerLearning, SLOT(stopListening()));
-    connect(m_pDlgControllerLearning, SIGNAL(stopLearning()),
-            this, SLOT(show()));
-    connect(m_pDlgControllerLearning, SIGNAL(inputMappingsLearned(MidiInputMappings)),
-            this, SLOT(midiInputMappingsLearned(MidiInputMappings)));
+    connect(m_pDlgControllerLearning, SIGNAL(stopLearning()), this,
+            SLOT(show()));
+    connect(m_pDlgControllerLearning,
+            SIGNAL(inputMappingsLearned(MidiInputMappings)), this,
+            SLOT(midiInputMappingsLearned(MidiInputMappings)));
 
     emit(mappingStarted());
-    connect(m_pDlgControllerLearning, SIGNAL(stopLearning()),
-            this, SIGNAL(mappingEnded()));
+    connect(m_pDlgControllerLearning, SIGNAL(stopLearning()), this,
+            SIGNAL(mappingEnded()));
 }
 
-void DlgPrefController::midiInputMappingsLearned(const MidiInputMappings& mappings) {
+void DlgPrefController::midiInputMappingsLearned(
+        const MidiInputMappings& mappings) {
     // This is just a shortcut since doing a round-trip from Learning ->
     // Controller -> slotPresetLoaded -> setPreset is too heavyweight.
     if (m_pInputTableModel != NULL) {
@@ -162,7 +164,8 @@ void DlgPrefController::midiInputMappingsLearned(const MidiInputMappings& mappin
     }
 }
 
-QString DlgPrefController::presetShortName(const ControllerPresetPointer pPreset) const {
+QString DlgPrefController::presetShortName(
+        const ControllerPresetPointer pPreset) const {
     QString presetName = tr("None");
     if (pPreset) {
         QString name = pPreset->name();
@@ -179,7 +182,8 @@ QString DlgPrefController::presetShortName(const ControllerPresetPointer pPreset
     return presetName;
 }
 
-QString DlgPrefController::presetName(const ControllerPresetPointer pPreset) const {
+QString DlgPrefController::presetName(
+        const ControllerPresetPointer pPreset) const {
     if (pPreset) {
         QString name = pPreset->name();
         if (name.length() > 0)
@@ -188,7 +192,8 @@ QString DlgPrefController::presetName(const ControllerPresetPointer pPreset) con
     return tr("No Name");
 }
 
-QString DlgPrefController::presetDescription(const ControllerPresetPointer pPreset) const {
+QString DlgPrefController::presetDescription(
+        const ControllerPresetPointer pPreset) const {
     if (pPreset) {
         QString description = pPreset->description();
         if (description.length() > 0)
@@ -197,7 +202,8 @@ QString DlgPrefController::presetDescription(const ControllerPresetPointer pPres
     return tr("No Description");
 }
 
-QString DlgPrefController::presetAuthor(const ControllerPresetPointer pPreset) const {
+QString DlgPrefController::presetAuthor(
+        const ControllerPresetPointer pPreset) const {
     if (pPreset) {
         QString author = pPreset->author();
         if (author.length() > 0)
@@ -206,7 +212,8 @@ QString DlgPrefController::presetAuthor(const ControllerPresetPointer pPreset) c
     return tr("No Author");
 }
 
-QString DlgPrefController::presetForumLink(const ControllerPresetPointer pPreset) const {
+QString DlgPrefController::presetForumLink(
+        const ControllerPresetPointer pPreset) const {
     QString url;
     if (pPreset) {
         QString link = pPreset->forumlink();
@@ -216,7 +223,8 @@ QString DlgPrefController::presetForumLink(const ControllerPresetPointer pPreset
     return url;
 }
 
-QString DlgPrefController::presetWikiLink(const ControllerPresetPointer pPreset) const {
+QString DlgPrefController::presetWikiLink(
+        const ControllerPresetPointer pPreset) const {
     QString url;
     if (pPreset) {
         QString link = pPreset->wikilink();
@@ -242,7 +250,8 @@ QString nameForPreset(const PresetInfo& preset) {
 void DlgPrefController::enumeratePresets() {
     m_ui.comboBoxPreset->clear();
 
-    // qDebug() << "Enumerating presets for controller" << m_pController->getName();
+    // qDebug() << "Enumerating presets for controller" <<
+    // m_pController->getName();
 
     // Insert a dummy "..." item at the top to try to make it less confusing.
     // (We don't want the first found file showing up as the default item when a
@@ -251,8 +260,10 @@ void DlgPrefController::enumeratePresets() {
 
     m_ui.comboBoxPreset->setInsertPolicy(QComboBox::InsertAlphabetically);
     // Ask the controller manager for a list of applicable presets
-    PresetInfoEnumerator* pie =  m_pControllerManager->getMainThreadPresetEnumerator();
-    QList<PresetInfo> presets = pie->getPresets(m_pController->presetExtension());
+    PresetInfoEnumerator* pie =
+            m_pControllerManager->getMainThreadPresetEnumerator();
+    QList<PresetInfo> presets =
+            pie->getPresets(m_pController->presetExtension());
 
     PresetInfo match;
     foreach (const PresetInfo& preset, presets) {
@@ -318,10 +329,11 @@ void DlgPrefController::slotApply() {
                 continue;
             }
 
-            QString scriptPrefix = m_ui.m_pScriptsTableWidget->item(i, 1)->text();
+            QString scriptPrefix =
+                    m_ui.m_pScriptsTableWidget->item(i, 1)->text();
 
             bool builtin = m_ui.m_pScriptsTableWidget->item(i, 2)
-                    ->checkState() == Qt::Checked;
+                                   ->checkState() == Qt::Checked;
 
             ControllerPreset::ScriptFileInfo info;
             info.name = scriptFile;
@@ -335,7 +347,7 @@ void DlgPrefController::slotApply() {
         // the same preset.
         emit(loadPreset(m_pController, m_pPreset));
 
-        //Select the "..." item again in the combobox.
+        // Select the "..." item again in the combobox.
         m_ui.comboBoxPreset->setCurrentIndex(0);
 
         bool wantEnabled = m_ui.chkEnabledDevice->isChecked();
@@ -363,7 +375,8 @@ void DlgPrefController::slotLoadPreset(int chosenIndex) {
 
     // Import the preset scripts to the user scripts folder.
     for (QList<ControllerPreset::ScriptFileInfo>::iterator it =
-                 pPreset->scripts.begin(); it != pPreset->scripts.end(); ++it) {
+                 pPreset->scripts.begin();
+         it != pPreset->scripts.end(); ++it) {
         // No need to import builtin scripts.
         if (it->builtin) {
             continue;
@@ -372,12 +385,12 @@ void DlgPrefController::slotLoadPreset(int chosenIndex) {
         QString scriptPath = ControllerManager::getAbsolutePath(
                 it->name, ControllerManager::getPresetPaths(m_pConfig));
 
-
         QString importedScriptFileName;
         // If a conflict exists then importScript will provide a new filename to
         // use. If importing fails then load the preset anyway without the
         // import.
-        if (m_pControllerManager->importScript(scriptPath, &importedScriptFileName)) {
+        if (m_pControllerManager->importScript(scriptPath,
+                                               &importedScriptFileName)) {
             it->name = importedScriptFileName;
         }
     }
@@ -399,8 +412,8 @@ void DlgPrefController::initTableView(QTableView* pTable) {
     pTable->setCornerButtonEnabled(false);
     pTable->setSortingEnabled(true);
 
-    //Work around a Qt bug that lets you make your columns so wide you
-    //can't reach the divider to make them small again.
+    // Work around a Qt bug that lets you make your columns so wide you
+    // can't reach the divider to make them small again.
     pTable->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
 
     pTable->verticalHeader()->hide();
@@ -427,9 +440,10 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
 
     // There is always at least one support link.
     // TODO(rryan): This is a horrible general support link for MIDI!
-    QString troubleShooting = QString(
-        "<a href=\"http://mixxx.org/wiki/doku.php/midi_scripting\">%1</a>")
-            .arg(tr("Troubleshooting"));
+    QString troubleShooting = QString("<a "
+                                      "href=\"http://mixxx.org/wiki/doku.php/"
+                                      "midi_scripting\">%1</a>")
+                                      .arg(tr("Troubleshooting"));
     supportLinks << troubleShooting;
 
     QString support = supportLinks.join("&nbsp;");
@@ -443,12 +457,12 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
     ControllerInputMappingTableModel* pInputModel =
             new ControllerInputMappingTableModel(this);
     // If the model reports changes, mark ourselves as dirty.
-    connect(pInputModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)),
-            this, SLOT(slotDirty()));
-    connect(pInputModel, SIGNAL(rowsInserted(QModelIndex, int, int)),
-            this, SLOT(slotDirty()));
-    connect(pInputModel, SIGNAL(rowsRemoved(QModelIndex, int, int)),
-            this, SLOT(slotDirty()));
+    connect(pInputModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)), this,
+            SLOT(slotDirty()));
+    connect(pInputModel, SIGNAL(rowsInserted(QModelIndex, int, int)), this,
+            SLOT(slotDirty()));
+    connect(pInputModel, SIGNAL(rowsRemoved(QModelIndex, int, int)), this,
+            SLOT(slotDirty()));
     pInputModel->setPreset(preset);
 
     QSortFilterProxyModel* pInputProxyModel = new QSortFilterProxyModel(this);
@@ -458,10 +472,11 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
 
     for (int i = 0; i < pInputModel->columnCount(); ++i) {
         QAbstractItemDelegate* pDelegate = pInputModel->delegateForColumn(
-            i, m_ui.m_pInputMappingTableView);
+                i, m_ui.m_pInputMappingTableView);
         if (pDelegate != NULL) {
             qDebug() << "Setting input delegate for column" << i << pDelegate;
-            m_ui.m_pInputMappingTableView->setItemDelegateForColumn(i, pDelegate);
+            m_ui.m_pInputMappingTableView->setItemDelegateForColumn(i,
+                                                                    pDelegate);
         }
     }
 
@@ -482,10 +497,11 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
 
     for (int i = 0; i < pOutputModel->columnCount(); ++i) {
         QAbstractItemDelegate* pDelegate = pOutputModel->delegateForColumn(
-            i, m_ui.m_pOutputMappingTableView);
+                i, m_ui.m_pOutputMappingTableView);
         if (pDelegate != NULL) {
             qDebug() << "Setting output delegate for column" << i << pDelegate;
-            m_ui.m_pOutputMappingTableView->setItemDelegateForColumn(i, pDelegate);
+            m_ui.m_pOutputMappingTableView->setItemDelegateForColumn(i,
+                                                                     pDelegate);
         }
     }
 
@@ -499,11 +515,11 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
     m_ui.m_pScriptsTableWidget->setRowCount(preset->scripts.length());
     m_ui.m_pScriptsTableWidget->setColumnCount(3);
     m_ui.m_pScriptsTableWidget->setHorizontalHeaderItem(
-        0, new QTableWidgetItem(tr("Filename")));
+            0, new QTableWidgetItem(tr("Filename")));
     m_ui.m_pScriptsTableWidget->setHorizontalHeaderItem(
-        1, new QTableWidgetItem(tr("Function Prefix")));
+            1, new QTableWidgetItem(tr("Function Prefix")));
     m_ui.m_pScriptsTableWidget->setHorizontalHeaderItem(
-        2, new QTableWidgetItem(tr("Built-in")));
+            2, new QTableWidgetItem(tr("Built-in")));
 
     for (int i = 0; i < preset->scripts.length(); ++i) {
         const ControllerPreset::ScriptFileInfo& script = preset->scripts.at(i);
@@ -512,20 +528,22 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
         m_ui.m_pScriptsTableWidget->setItem(i, 0, pScriptName);
         pScriptName->setFlags(pScriptName->flags() & ~Qt::ItemIsEditable);
 
-        QTableWidgetItem* pScriptPrefix = new QTableWidgetItem(
-                script.functionPrefix);
+        QTableWidgetItem* pScriptPrefix =
+                new QTableWidgetItem(script.functionPrefix);
         m_ui.m_pScriptsTableWidget->setItem(i, 1, pScriptPrefix);
 
         // If the script is built-in don't allow editing of the prefix.
         if (script.builtin) {
-            pScriptPrefix->setFlags(pScriptPrefix->flags() & ~Qt::ItemIsEditable);
+            pScriptPrefix->setFlags(pScriptPrefix->flags() &
+                                    ~Qt::ItemIsEditable);
         }
 
         QTableWidgetItem* pScriptBuiltin = new QTableWidgetItem();
-        pScriptBuiltin->setCheckState(script.builtin ? Qt::Checked : Qt::Unchecked);
-        pScriptBuiltin->setFlags(pScriptBuiltin->flags() & ~(Qt::ItemIsEnabled |
-                                                             Qt::ItemIsEditable |
-                                                             Qt::ItemIsUserCheckable));
+        pScriptBuiltin->setCheckState(script.builtin ? Qt::Checked
+                                                     : Qt::Unchecked);
+        pScriptBuiltin->setFlags(pScriptBuiltin->flags() &
+                                 ~(Qt::ItemIsEnabled | Qt::ItemIsEditable |
+                                   Qt::ItemIsUserCheckable));
         m_ui.m_pScriptsTableWidget->setItem(i, 2, pScriptBuiltin);
     }
 }
@@ -539,25 +557,28 @@ void DlgPrefController::slotEnableDevice(bool enable) {
 
 void DlgPrefController::enableDevice() {
     emit(openController(m_pController));
-    //TODO: Should probably check if open() actually succeeded.
+    // TODO: Should probably check if open() actually succeeded.
 }
 
 void DlgPrefController::disableDevice() {
     emit(closeController(m_pController));
-    //TODO: Should probably check if close() actually succeeded.
+    // TODO: Should probably check if close() actually succeeded.
 }
 
 void DlgPrefController::addInputMapping() {
     if (m_pInputTableModel) {
         m_pInputTableModel->addEmptyMapping();
         // Ensure the added row is visible.
-        QModelIndex left = m_pInputProxyModel->mapFromSource(
-            m_pInputTableModel->index(m_pInputTableModel->rowCount() - 1, 0));
-        QModelIndex right = m_pInputProxyModel->mapFromSource(
-            m_pInputTableModel->index(m_pInputTableModel->rowCount() - 1,
-                                       m_pInputTableModel->columnCount() - 1));
+        QModelIndex left =
+                m_pInputProxyModel->mapFromSource(m_pInputTableModel->index(
+                        m_pInputTableModel->rowCount() - 1, 0));
+        QModelIndex right =
+                m_pInputProxyModel->mapFromSource(m_pInputTableModel->index(
+                        m_pInputTableModel->rowCount() - 1,
+                        m_pInputTableModel->columnCount() - 1));
         m_ui.m_pInputMappingTableView->selectionModel()->select(
-            QItemSelection(left, right), QItemSelectionModel::Clear | QItemSelectionModel::Select);
+                QItemSelection(left, right),
+                QItemSelectionModel::Clear | QItemSelectionModel::Select);
         m_ui.m_pInputMappingTableView->scrollTo(left);
         slotDirty();
     }
@@ -566,7 +587,7 @@ void DlgPrefController::addInputMapping() {
 void DlgPrefController::removeInputMappings() {
     if (m_pInputProxyModel) {
         QItemSelection selection = m_pInputProxyModel->mapSelectionToSource(
-            m_ui.m_pInputMappingTableView->selectionModel()->selection());
+                m_ui.m_pInputMappingTableView->selectionModel()->selection());
         QModelIndexList selectedIndices = selection.indexes();
         if (selectedIndices.size() > 0 && m_pInputTableModel) {
             m_pInputTableModel->removeMappings(selectedIndices);
@@ -577,9 +598,10 @@ void DlgPrefController::removeInputMappings() {
 
 void DlgPrefController::clearAllInputMappings() {
     if (QMessageBox::warning(
-            this, tr("Clear Input Mappings"),
-            tr("Are you sure you want to clear all input mappings?"),
-            QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Ok) {
+                this, tr("Clear Input Mappings"),
+                tr("Are you sure you want to clear all input mappings?"),
+                QMessageBox::Ok | QMessageBox::Cancel,
+                QMessageBox::Cancel) != QMessageBox::Ok) {
         return;
     }
     if (m_pInputTableModel) {
@@ -592,13 +614,16 @@ void DlgPrefController::addOutputMapping() {
     if (m_pOutputTableModel) {
         m_pOutputTableModel->addEmptyMapping();
         // Ensure the added row is visible.
-        QModelIndex left = m_pOutputProxyModel->mapFromSource(
-            m_pOutputTableModel->index(m_pOutputTableModel->rowCount() - 1, 0));
-        QModelIndex right = m_pOutputProxyModel->mapFromSource(
-            m_pOutputTableModel->index(m_pOutputTableModel->rowCount() - 1,
-                                       m_pOutputTableModel->columnCount() - 1));
+        QModelIndex left =
+                m_pOutputProxyModel->mapFromSource(m_pOutputTableModel->index(
+                        m_pOutputTableModel->rowCount() - 1, 0));
+        QModelIndex right =
+                m_pOutputProxyModel->mapFromSource(m_pOutputTableModel->index(
+                        m_pOutputTableModel->rowCount() - 1,
+                        m_pOutputTableModel->columnCount() - 1));
         m_ui.m_pOutputMappingTableView->selectionModel()->select(
-            QItemSelection(left, right), QItemSelectionModel::Clear | QItemSelectionModel::Select);
+                QItemSelection(left, right),
+                QItemSelectionModel::Clear | QItemSelectionModel::Select);
         m_ui.m_pOutputMappingTableView->scrollTo(left);
         slotDirty();
     }
@@ -607,7 +632,7 @@ void DlgPrefController::addOutputMapping() {
 void DlgPrefController::removeOutputMappings() {
     if (m_pOutputProxyModel) {
         QItemSelection selection = m_pOutputProxyModel->mapSelectionToSource(
-            m_ui.m_pOutputMappingTableView->selectionModel()->selection());
+                m_ui.m_pOutputMappingTableView->selectionModel()->selection());
         QModelIndexList selectedIndices = selection.indexes();
         if (selectedIndices.size() > 0 && m_pOutputTableModel) {
             m_pOutputTableModel->removeMappings(selectedIndices);
@@ -618,9 +643,10 @@ void DlgPrefController::removeOutputMappings() {
 
 void DlgPrefController::clearAllOutputMappings() {
     if (QMessageBox::warning(
-            this, tr("Clear Output Mappings"),
-            tr("Are you sure you want to clear all output mappings?"),
-            QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Ok) {
+                this, tr("Clear Output Mappings"),
+                tr("Are you sure you want to clear all output mappings?"),
+                QMessageBox::Ok | QMessageBox::Cancel,
+                QMessageBox::Cancel) != QMessageBox::Ok) {
         return;
     }
     if (m_pOutputTableModel) {
@@ -631,16 +657,18 @@ void DlgPrefController::clearAllOutputMappings() {
 
 void DlgPrefController::addScript() {
     QString scriptFile = QFileDialog::getOpenFileName(
-        this, tr("Add Script"),
-        QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation),
-        tr("Controller Script Files (*.js)"));
+            this, tr("Add Script"),
+            QDesktopServices::storageLocation(
+                    QDesktopServices::DocumentsLocation),
+            tr("Controller Script Files (*.js)"));
 
     if (scriptFile.isNull()) {
         return;
     }
 
     QString importedScriptFileName;
-    if (!m_pControllerManager->importScript(scriptFile, &importedScriptFileName)) {
+    if (!m_pControllerManager->importScript(scriptFile,
+                                            &importedScriptFileName)) {
         QMessageBox::warning(this, tr("Add Script"),
                              tr("Could not add script file: '%s'"));
         return;
@@ -650,14 +678,16 @@ void DlgPrefController::addScript() {
     // is missing (and the user added it to try and fix this) or if the file is
     // already in the presets directory with an identical checksum.
     for (int i = 0; i < m_ui.m_pScriptsTableWidget->rowCount(); ++i) {
-        if (m_ui.m_pScriptsTableWidget->item(i, 0)->text() == importedScriptFileName) {
+        if (m_ui.m_pScriptsTableWidget->item(i, 0)->text() ==
+            importedScriptFileName) {
             return;
         }
     }
 
     int newRow = m_ui.m_pScriptsTableWidget->rowCount();
     m_ui.m_pScriptsTableWidget->setRowCount(newRow + 1);
-    QTableWidgetItem* pScriptName = new QTableWidgetItem(importedScriptFileName);
+    QTableWidgetItem* pScriptName =
+            new QTableWidgetItem(importedScriptFileName);
     m_ui.m_pScriptsTableWidget->setItem(newRow, 0, pScriptName);
     pScriptName->setFlags(pScriptName->flags() & ~Qt::ItemIsEditable);
 
@@ -666,16 +696,16 @@ void DlgPrefController::addScript() {
 
     QTableWidgetItem* pScriptBuiltin = new QTableWidgetItem();
     pScriptBuiltin->setCheckState(Qt::Unchecked);
-    pScriptBuiltin->setFlags(pScriptBuiltin->flags() & ~(Qt::ItemIsEditable |
-                                                         Qt::ItemIsUserCheckable));
+    pScriptBuiltin->setFlags(pScriptBuiltin->flags() &
+                             ~(Qt::ItemIsEditable | Qt::ItemIsUserCheckable));
     m_ui.m_pScriptsTableWidget->setItem(newRow, 2, pScriptBuiltin);
 
     slotDirty();
 }
 
 void DlgPrefController::removeScript() {
-    QModelIndexList selectedIndices = m_ui.m_pScriptsTableWidget->selectionModel()
-            ->selection().indexes();
+    QModelIndexList selectedIndices =
+            m_ui.m_pScriptsTableWidget->selectionModel()->selection().indexes();
     if (selectedIndices.isEmpty()) {
         return;
     }
@@ -706,8 +736,8 @@ void DlgPrefController::removeScript() {
 }
 
 void DlgPrefController::openScript() {
-    QModelIndexList selectedIndices = m_ui.m_pScriptsTableWidget->selectionModel()
-            ->selection().indexes();
+    QModelIndexList selectedIndices =
+            m_ui.m_pScriptsTableWidget->selectionModel()->selection().indexes();
     if (selectedIndices.isEmpty()) {
         return;
     }
@@ -721,7 +751,8 @@ void DlgPrefController::openScript() {
     foreach (int row, selectedRows) {
         QString scriptName = m_ui.m_pScriptsTableWidget->item(row, 0)->text();
 
-        QString scriptPath = ControllerManager::getAbsolutePath(scriptName, scriptPaths);
+        QString scriptPath =
+                ControllerManager::getAbsolutePath(scriptName, scriptPaths);
         if (!scriptPath.isEmpty()) {
             QDesktopServices::openUrl(QUrl::fromLocalFile(scriptPath));
         }

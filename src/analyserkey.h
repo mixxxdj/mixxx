@@ -16,13 +16,13 @@ class AnalyserKey : public Analyser {
 
     bool initialise(TrackPointer tio, int sampleRate, int totalSamples);
     bool loadStored(TrackPointer tio) const;
-    void process(const CSAMPLE *pIn, const int iLen);
+    void process(const CSAMPLE* pIn, const int iLen);
     void finalise(TrackPointer tio);
     void cleanup(TrackPointer tio);
 
   private:
     static QHash<QString, QString> getExtraVersionInfo(
-        QString pluginId, bool bPreferencesFastAnalysis);
+            QString pluginId, bool bPreferencesFastAnalysis);
 
     ConfigObject<ConfigValue>* m_pConfig;
     VampAnalyser* m_pVamp;

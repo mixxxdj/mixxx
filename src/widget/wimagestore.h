@@ -12,8 +12,8 @@ class QImage;
 
 class WImageStore {
   public:
-    static QImage* getImage(const QString &fileName);
-    static QImage* getImageNoCache(const QString &fileName);
+    static QImage* getImage(const QString& fileName);
+    static QImage* getImageNoCache(const QString& fileName);
     static QImage* getImage(const PixmapSource& source);
     static QImage* getImageNoCache(const PixmapSource& source);
     static void deleteImage(QImage* p);
@@ -23,7 +23,7 @@ class WImageStore {
 
   private:
     struct ImageInfoType {
-        QImage *image;
+        QImage* image;
         int instCount;
     };
 

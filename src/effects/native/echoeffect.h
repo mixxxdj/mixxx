@@ -39,8 +39,7 @@ class EchoEffect : public PerChannelEffectProcessor<EchoGroupState> {
     static EffectManifest getManifest();
 
     // See effectprocessor.h
-    void processChannel(const ChannelHandle& handle,
-                        EchoGroupState* pState,
+    void processChannel(const ChannelHandle& handle, EchoGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE* pOutput,
                         const unsigned int numSamples,
                         const unsigned int sampleRate,

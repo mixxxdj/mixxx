@@ -53,10 +53,8 @@ static const int kPreallocatedChannels = 64;
 class EngineMaster : public QObject, public AudioSource {
     Q_OBJECT
   public:
-    EngineMaster(ConfigObject<ConfigValue>* pConfig,
-                 const char* pGroup,
-                 EffectsManager* pEffectsManager,
-                 bool bEnableSidechain,
+    EngineMaster(ConfigObject<ConfigValue>* pConfig, const char* pGroup,
+                 EffectsManager* pEffectsManager, bool bEnableSidechain,
                  bool bRampingGain);
     virtual ~EngineMaster();
 
@@ -103,10 +101,9 @@ class EngineMaster : public QObject, public AudioSource {
     // only call it before the engine has started mixing.
     void addChannel(EngineChannel* pChannel);
     EngineChannel* getChannel(const QString& group);
-    static inline double gainForOrientation(EngineChannel::ChannelOrientation orientation,
-                                            double leftGain,
-                                            double centerGain,
-                                            double rightGain) {
+    static inline double gainForOrientation(
+            EngineChannel::ChannelOrientation orientation, double leftGain,
+            double centerGain, double rightGain) {
         switch (orientation) {
             case EngineChannel::LEFT:
                 return leftGain;
@@ -118,8 +115,9 @@ class EngineMaster : public QObject, public AudioSource {
         }
     }
 
-    // Provide access to the master sync so enginebuffers can know what their rate controller is.
-    EngineSync* getEngineSync() const{
+    // Provide access to the master sync so enginebuffers can know what their
+    // rate controller is.
+    EngineSync* getEngineSync() const {
         return m_pMasterSync;
     }
 
@@ -168,6 +166,7 @@ class EngineMaster : public QObject, public AudioSource {
         inline void setGain(double dGain) {
             m_dGain = dGain;
         }
+
       private:
         double m_dGain;
     };
@@ -190,13 +189,13 @@ class EngineMaster : public QObject, public AudioSource {
         inline double getGain(ChannelInfo* pChannelInfo) const {
             const double channelVolume = pChannelInfo->m_pVolumeControl->get();
             const double orientationGain = EngineMaster::gainForOrientation(
-                    pChannelInfo->m_pChannel->getOrientation(),
-                    m_dLeftGain, m_dCenterGain, m_dRightGain);
+                    pChannelInfo->m_pChannel->getOrientation(), m_dLeftGain,
+                    m_dCenterGain, m_dRightGain);
             return m_dVolume * channelVolume * orientationGain;
         }
 
-        inline void setGains(double dVolume, double leftGain,
-                double centerGain, double rightGain) {
+        inline void setGains(double dVolume, double leftGain, double centerGain,
+                             double rightGain) {
             m_dVolume = dVolume;
             m_dLeftGain = leftGain;
             m_dCenterGain = centerGain;
@@ -209,10 +208,10 @@ class EngineMaster : public QObject, public AudioSource {
         double m_dCenterGain;
         double m_dRightGain;
     };
-    template<typename T, unsigned int CAPACITY>
+    template <typename T, unsigned int CAPACITY>
     class FastVector {
       public:
-        inline FastVector() : m_size(0), m_data((T*)((void *)m_buffer)) {};
+        inline FastVector() : m_size(0), m_data((T*)((void*)m_buffer)){};
         inline ~FastVector() {
             if (QTypeInfo<T>::isComplex) {
                 for (int i = 0; i < m_size; ++i) {
@@ -240,9 +239,10 @@ class EngineMaster : public QObject, public AudioSource {
             T copy(t);
             m_data[i] = copy;
         }
-        inline int size () const {
+        inline int size() const {
             return m_size;
         }
+
       private:
         int m_size;
         T* const m_data;
@@ -258,7 +258,8 @@ class EngineMaster : public QObject, public AudioSource {
 
   private:
     void mixChannels(unsigned int channelBitvector, unsigned int maxChannels,
-                     CSAMPLE* pOutput, unsigned int iBufferSize, GainCalculator* pGainCalculator);
+                     CSAMPLE* pOutput, unsigned int iBufferSize,
+                     GainCalculator* pGainCalculator);
 
     // Processes active channels. The master sync channel (if any) is processed
     // first and all others are processed after. Populates m_activeChannels,
@@ -277,14 +278,18 @@ class EngineMaster : public QObject, public AudioSource {
     // The previous gain of each channel for each mixing output (master,
     // headphone, talkover).
     QVarLengthArray<GainCache, kPreallocatedChannels> m_channelMasterGainCache;
-    QVarLengthArray<GainCache, kPreallocatedChannels> m_channelHeadphoneGainCache;
-    QVarLengthArray<GainCache, kPreallocatedChannels> m_channelTalkoverGainCache;
+    QVarLengthArray<GainCache, kPreallocatedChannels>
+            m_channelHeadphoneGainCache;
+    QVarLengthArray<GainCache, kPreallocatedChannels>
+            m_channelTalkoverGainCache;
 
     // Pre-allocated buffers for performing channel mixing in the callback.
     QVarLengthArray<ChannelInfo*, kPreallocatedChannels> m_activeChannels;
     QVarLengthArray<ChannelInfo*, kPreallocatedChannels> m_activeBusChannels[3];
-    QVarLengthArray<ChannelInfo*, kPreallocatedChannels> m_activeHeadphoneChannels;
-    QVarLengthArray<ChannelInfo*, kPreallocatedChannels> m_activeTalkoverChannels;
+    QVarLengthArray<ChannelInfo*, kPreallocatedChannels>
+            m_activeHeadphoneChannels;
+    QVarLengthArray<ChannelInfo*, kPreallocatedChannels>
+            m_activeTalkoverChannels;
 
     // Mixing buffers for each output.
     CSAMPLE* m_pOutputBusBuffers[3];

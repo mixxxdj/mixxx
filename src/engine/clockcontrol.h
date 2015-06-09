@@ -9,11 +9,10 @@
 
 class ControlObjectSlave;
 
-class ClockControl: public EngineControl {
+class ClockControl : public EngineControl {
     Q_OBJECT
   public:
-    ClockControl(QString group,
-                 ConfigObject<ConfigValue>* pConfig);
+    ClockControl(QString group, ConfigObject<ConfigValue>* pConfig);
 
     virtual ~ClockControl();
 

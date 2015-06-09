@@ -15,13 +15,13 @@ class ImportFilesTask : public ScannerTask {
   public:
     ImportFilesTask(LibraryScanner* pScanner,
                     const ScannerGlobalPointer scannerGlobal,
-                    const QString& dirPath,
-                    const bool prevHashExists,
+                    const QString& dirPath, const bool prevHashExists,
                     const int newHash,
                     const QLinkedList<QFileInfo>& filesToImport,
                     const QLinkedList<QFileInfo>& possibleCovers,
                     SecurityTokenPointer pToken);
-    virtual ~ImportFilesTask() {}
+    virtual ~ImportFilesTask() {
+    }
 
     virtual void run();
 

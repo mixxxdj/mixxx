@@ -13,4 +13,3 @@ QColor WSkinColor::getCorrectColor(QColor c) {
         return c;
     }
 }
-

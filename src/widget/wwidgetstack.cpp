@@ -8,8 +8,8 @@ WidgetStackControlListener::WidgetStackControlListener(QObject* pParent,
         : QObject(pParent),
           m_control(pControl ? pControl->getKey() : ConfigKey()),
           m_index(index) {
-    connect(&m_control, SIGNAL(valueChanged(double)),
-            this, SLOT(slotValueChanged(double)));
+    connect(&m_control, SIGNAL(valueChanged(double)), this,
+            SLOT(slotValueChanged(double)));
 }
 
 WidgetStackControlListener::~WidgetStackControlListener() {
@@ -31,34 +31,31 @@ void WidgetStackControlListener::onCurrentWidgetChanged(int index) {
     }
 }
 
-WWidgetStack::WWidgetStack(QWidget* pParent,
-                           ControlObject* pNextControl,
+WWidgetStack::WWidgetStack(QWidget* pParent, ControlObject* pNextControl,
                            ControlObject* pPrevControl,
                            ControlObject* pCurrentPageControl)
         : QStackedWidget(pParent),
           WBaseWidget(this),
           m_nextControl(pNextControl ? pNextControl->getKey() : ConfigKey()),
           m_prevControl(pPrevControl ? pPrevControl->getKey() : ConfigKey()),
-          m_currentPageControl(
-                  pCurrentPageControl ?
-                  pCurrentPageControl->getKey() : ConfigKey()) {
-    connect(&m_nextControl, SIGNAL(valueChanged(double)),
-            this, SLOT(onNextControlChanged(double)));
-    connect(&m_prevControl, SIGNAL(valueChanged(double)),
-            this, SLOT(onPrevControlChanged(double)));
-    connect(&m_currentPageControl, SIGNAL(valueChanged(double)),
-            this, SLOT(onCurrentPageControlChanged(double)));
-    connect(&m_showMapper, SIGNAL(mapped(int)),
-            this, SLOT(showIndex(int)));
-    connect(&m_hideMapper, SIGNAL(mapped(int)),
-            this, SLOT(hideIndex(int)));
+          m_currentPageControl(pCurrentPageControl
+                                       ? pCurrentPageControl->getKey()
+                                       : ConfigKey()) {
+    connect(&m_nextControl, SIGNAL(valueChanged(double)), this,
+            SLOT(onNextControlChanged(double)));
+    connect(&m_prevControl, SIGNAL(valueChanged(double)), this,
+            SLOT(onPrevControlChanged(double)));
+    connect(&m_currentPageControl, SIGNAL(valueChanged(double)), this,
+            SLOT(onCurrentPageControlChanged(double)));
+    connect(&m_showMapper, SIGNAL(mapped(int)), this, SLOT(showIndex(int)));
+    connect(&m_hideMapper, SIGNAL(mapped(int)), this, SLOT(hideIndex(int)));
 }
 
 // override
 void WWidgetStack::Init() {
     WBaseWidget::Init();
-    connect(this, SIGNAL(currentChanged(int)),
-            this, SLOT(onCurrentPageChanged(int)));
+    connect(this, SIGNAL(currentChanged(int)), this,
+            SLOT(onCurrentPageChanged(int)));
 }
 
 WWidgetStack::~WWidgetStack() {
@@ -103,8 +100,9 @@ void WWidgetStack::showEvent(QShowEvent*) {
     int index = static_cast<int>(m_currentPageControl.get());
 
     // Set the page triggers to match the current index.
-    for (QMap<int, WidgetStackControlListener*>::iterator it
-            = m_listeners.begin(); it != m_listeners.end(); ++it) {
+    for (QMap<int, WidgetStackControlListener*>::iterator it =
+                 m_listeners.begin();
+         it != m_listeners.end(); ++it) {
         it.value()->setControl(it.key() == index ? 1.0 : 0.0);
     }
 
@@ -148,25 +146,25 @@ void WWidgetStack::onCurrentPageControlChanged(double v) {
     setCurrentIndex(newIndex);
 }
 
-void WWidgetStack::addWidgetWithControl(QWidget* pWidget, ControlObject* pControl,
+void WWidgetStack::addWidgetWithControl(QWidget* pWidget,
+                                        ControlObject* pControl,
                                         int on_hide_select) {
     int index = addWidget(pWidget);
     if (pControl) {
-        WidgetStackControlListener* pListener = new WidgetStackControlListener(
-            this, pControl, index);
+        WidgetStackControlListener* pListener =
+                new WidgetStackControlListener(this, pControl, index);
         m_showMapper.setMapping(pListener, index);
         m_hideMapper.setMapping(pListener, index);
         m_listeners[index] = pListener;
         if (pControl->get() > 0) {
-            setCurrentIndex(count()-1);
+            setCurrentIndex(count() - 1);
         }
         pListener->onCurrentWidgetChanged(currentIndex());
-        connect(pListener, SIGNAL(switchToWidget()),
-                &m_showMapper, SLOT(map()));
-        connect(pListener, SIGNAL(hideWidget()),
-                &m_hideMapper, SLOT(map()));
-        connect(this, SIGNAL(currentChanged(int)),
-                pListener, SLOT(onCurrentWidgetChanged(int)));
+        connect(pListener, SIGNAL(switchToWidget()), &m_showMapper,
+                SLOT(map()));
+        connect(pListener, SIGNAL(hideWidget()), &m_hideMapper, SLOT(map()));
+        connect(this, SIGNAL(currentChanged(int)), pListener,
+                SLOT(onCurrentWidgetChanged(int)));
     }
 
     if (m_currentPageControl.get() == index) {

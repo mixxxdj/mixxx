@@ -8,9 +8,7 @@
 
 class Event {
   public:
-    Event()
-            : m_type(Stat::UNSPECIFIED),
-              m_time(-1) {
+    Event() : m_type(Stat::UNSPECIFIED), m_time(-1) {
     }
 
     typedef Stat::StatType EventType;

@@ -2,8 +2,7 @@
 
 #include "skin/pixmapsource.h"
 
-PixmapSource::PixmapSource():
-    m_eType(SVG) {
+PixmapSource::PixmapSource() : m_eType(SVG) {
 }
 
 PixmapSource::PixmapSource(const QString& filepath) {
@@ -32,7 +31,7 @@ void PixmapSource::setPath(const QString& newPath) {
 }
 
 bool PixmapSource::isEmpty() const {
-    return m_path.isEmpty() && m_baData.isEmpty() ;
+    return m_path.isEmpty() && m_baData.isEmpty();
 }
 
 bool PixmapSource::isSVG() const {

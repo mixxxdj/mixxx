@@ -4,8 +4,7 @@
 #include "engine/engineworker.h"
 #include "engine/engineworkerscheduler.h"
 
-EngineWorker::EngineWorker()
-    : m_pScheduler(NULL) {
+EngineWorker::EngineWorker() : m_pScheduler(NULL) {
 }
 
 EngineWorker::~EngineWorker() {

@@ -16,7 +16,8 @@ EffectManifest ReverbEffect::getManifest() {
     manifest.setName(QObject::tr("Reverb"));
     manifest.setAuthor("The Mixxx Team, CAPS Plugins");
     manifest.setVersion("1.0");
-    manifest.setDescription("This is a port of the GPL'ed CAPS Reverb plugin, "
+    manifest.setDescription(
+            "This is a port of the GPL'ed CAPS Reverb plugin, "
             "which has the following description:"
             "This is based on some of the famous Stanford CCRMA reverbs "
             "(NRev, KipRev) all based on the Chowning/Moorer/Schroeder "
@@ -26,7 +27,8 @@ EffectManifest ReverbEffect::getManifest() {
     EffectManifestParameter* time = manifest.addParameter();
     time->setId("bandwidth");
     time->setName(QObject::tr("Bandwidth"));
-    time->setDescription(QObject::tr("Higher bandwidth values cause more "
+    time->setDescription(QObject::tr(
+            "Higher bandwidth values cause more "
             "bright (high-frequency) tones to be included"));
     time->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     time->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
@@ -38,7 +40,8 @@ EffectManifest ReverbEffect::getManifest() {
     EffectManifestParameter* damping = manifest.addParameter();
     damping->setId("damping");
     damping->setName(QObject::tr("Damping"));
-    damping->setDescription(QObject::tr("Higher damping values cause "
+    damping->setDescription(QObject::tr(
+            "Higher damping values cause "
             "reverberations to die out more quickly."));
     damping->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     damping->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
@@ -51,23 +54,22 @@ EffectManifest ReverbEffect::getManifest() {
 }
 
 ReverbEffect::ReverbEffect(EngineEffect* pEffect,
-                             const EffectManifest& manifest)
+                           const EffectManifest& manifest)
         : m_pBandWidthParameter(pEffect->getParameterById("bandwidth")),
           m_pDampingParameter(pEffect->getParameterById("damping")) {
     Q_UNUSED(manifest);
 }
 
 ReverbEffect::~ReverbEffect() {
-    //qDebug() << debugString() << "destroyed";
+    // qDebug() << debugString() << "destroyed";
 }
 
-void ReverbEffect::processChannel(const ChannelHandle& handle,
-                                ReverbGroupState* pState,
-                                const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                const unsigned int numSamples,
-                                const unsigned int sampleRate,
-                                const EffectProcessor::EnableState enableState,
-                                const GroupFeatureState& groupFeatures) {
+void ReverbEffect::processChannel(
+        const ChannelHandle& handle, ReverbGroupState* pState,
+        const CSAMPLE* pInput, CSAMPLE* pOutput, const unsigned int numSamples,
+        const unsigned int sampleRate,
+        const EffectProcessor::EnableState enableState,
+        const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
     Q_UNUSED(enableState);
     Q_UNUSED(groupFeatures);

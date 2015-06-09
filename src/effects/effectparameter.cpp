@@ -5,38 +5,43 @@
 #include "effects/effect.h"
 #include "util/assert.h"
 
-EffectParameter::EffectParameter(Effect* pEffect, EffectsManager* pEffectsManager,
-                                 int iParameterNumber, const EffectManifestParameter& parameter)
-        : QObject(), // no parent
+EffectParameter::EffectParameter(Effect* pEffect,
+                                 EffectsManager* pEffectsManager,
+                                 int iParameterNumber,
+                                 const EffectManifestParameter& parameter)
+        : QObject(),  // no parent
           m_pEffect(pEffect),
           m_pEffectsManager(pEffectsManager),
           m_iParameterNumber(iParameterNumber),
           m_parameter(parameter),
           m_bAddedToEngine(false) {
-    // qDebug() << debugString() << "Constructing new EffectParameter from EffectManifestParameter:"
+    // qDebug() << debugString() << "Constructing new EffectParameter from
+    // EffectManifestParameter:"
     //          << m_parameter.id();
-     m_minimum = m_parameter.getMinimum();
-     m_maximum = m_parameter.getMaximum();
-     // Sanity check the maximum and minimum
-     if (m_minimum > m_maximum) {
-         qWarning() << debugString() << "WARNING: Parameter maximum is less than the minimum.";
-         m_maximum = m_minimum;
-     }
+    m_minimum = m_parameter.getMinimum();
+    m_maximum = m_parameter.getMaximum();
+    // Sanity check the maximum and minimum
+    if (m_minimum > m_maximum) {
+        qWarning() << debugString()
+                   << "WARNING: Parameter maximum is less than the minimum.";
+        m_maximum = m_minimum;
+    }
 
-     // If the parameter specifies a default, set that. Otherwise use the minimum
-     // value.
-     m_default = m_parameter.getDefault();
-     if (m_default < m_minimum || m_default > m_maximum) {
-         qWarning() << debugString() << "WARNING: Parameter default is outside of minimum/maximum range.";
-         m_default = m_minimum;
-     }
+    // If the parameter specifies a default, set that. Otherwise use the minimum
+    // value.
+    m_default = m_parameter.getDefault();
+    if (m_default < m_minimum || m_default > m_maximum) {
+        qWarning() << debugString() << "WARNING: Parameter default is outside "
+                                       "of minimum/maximum range.";
+        m_default = m_minimum;
+    }
 
-     // Finally, set the value to the default.
-     m_value = m_default;
+    // Finally, set the value to the default.
+    m_value = m_default;
 }
 
 EffectParameter::~EffectParameter() {
-    //qDebug() << debugString() << "destroyed";
+    // qDebug() << debugString() << "destroyed";
 }
 
 const EffectManifestParameter& EffectParameter::manifest() const {
@@ -56,8 +61,8 @@ const QString EffectParameter::description() const {
 }
 
 // static
-bool EffectParameter::clampValue(double* pValue,
-                                 const double& minimum, const double& maximum) {
+bool EffectParameter::clampValue(double* pValue, const double& minimum,
+                                 const double& maximum) {
     if (*pValue < minimum) {
         *pValue = minimum;
         return true;
@@ -101,7 +106,8 @@ void EffectParameter::setValue(double value) {
     m_value = value;
 
     if (clampValue()) {
-        qWarning() << debugString() << "WARNING: Value was outside of limits, clamped.";
+        qWarning() << debugString()
+                   << "WARNING: Value was outside of limits, clamped.";
     }
 
     m_value = value;
@@ -118,7 +124,8 @@ void EffectParameter::setDefault(double dflt) {
     m_default = dflt;
 
     if (clampDefault()) {
-        qWarning() << debugString() << "WARNING: Default parameter value was outside of range, clamped.";
+        qWarning() << debugString() << "WARNING: Default parameter value was "
+                                       "outside of range, clamped.";
     }
 
     m_default = dflt;
@@ -142,21 +149,25 @@ void EffectParameter::setMinimum(double minimum) {
 
     m_minimum = minimum;
     if (m_minimum < m_parameter.getMinimum()) {
-        qWarning() << debugString() << "WARNING: Minimum value is less than plugin's absolute minimum, clamping.";
+        qWarning() << debugString() << "WARNING: Minimum value is less than "
+                                       "plugin's absolute minimum, clamping.";
         m_minimum = m_parameter.getMinimum();
     }
 
     if (m_minimum > m_maximum) {
-        qWarning() << debugString() << "WARNING: New minimum was above maximum, clamped.";
+        qWarning() << debugString()
+                   << "WARNING: New minimum was above maximum, clamped.";
         m_minimum = m_maximum;
     }
 
     if (clampValue()) {
-        qWarning() << debugString() << "WARNING: Value was outside of new minimum, clamped.";
+        qWarning() << debugString()
+                   << "WARNING: Value was outside of new minimum, clamped.";
     }
 
     if (clampDefault()) {
-        qWarning() << debugString() << "WARNING: Default was outside of new minimum, clamped.";
+        qWarning() << debugString()
+                   << "WARNING: Default was outside of new minimum, clamped.";
     }
 
     updateEngineState();
@@ -178,21 +189,25 @@ void EffectParameter::setMaximum(double maximum) {
 
     m_maximum = maximum;
     if (m_maximum > m_parameter.getMaximum()) {
-        qWarning() << debugString() << "WARNING: Maximum value is less than plugin's absolute maximum, clamping.";
+        qWarning() << debugString() << "WARNING: Maximum value is less than "
+                                       "plugin's absolute maximum, clamping.";
         m_maximum = m_parameter.getMaximum();
     }
 
     if (m_maximum < m_minimum) {
-        qWarning() << debugString() << "WARNING: New maximum was below the minimum, clamped.";
+        qWarning() << debugString()
+                   << "WARNING: New maximum was below the minimum, clamped.";
         m_maximum = m_minimum;
     }
 
     if (clampValue()) {
-        qWarning() << debugString() << "WARNING: Value was outside of new maximum, clamped.";
+        qWarning() << debugString()
+                   << "WARNING: Value was outside of new maximum, clamped.";
     }
 
     if (clampDefault()) {
-        qWarning() << debugString() << "WARNING: Default was outside of new maximum, clamped.";
+        qWarning() << debugString()
+                   << "WARNING: Default was outside of new maximum, clamped.";
     }
 
     updateEngineState();

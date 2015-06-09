@@ -20,7 +20,8 @@ class FontUtils {
         // supported by the new font.
         if (CmdlineArgs::Instance().getDeveloper()) {
             QFontDatabase database;
-            QStringList families = QFontDatabase::applicationFontFamilies(result);
+            QStringList families =
+                    QFontDatabase::applicationFontFamilies(result);
             foreach (const QString& family, families) {
                 QStringList styles = database.styles(family);
                 foreach (const QString& style, styles) {
@@ -39,7 +40,8 @@ class FontUtils {
     }
 
   private:
-    FontUtils() {}
+    FontUtils() {
+    }
 };
 
 #endif /* FONT_H */

@@ -13,7 +13,6 @@ MidiOptionsDelegate::MidiOptionsDelegate(QObject* pParent)
 MidiOptionsDelegate::~MidiOptionsDelegate() {
 }
 
-
 QWidget* MidiOptionsDelegate::createEditor(QWidget* parent,
                                            const QStyleOptionViewItem& option,
                                            const QModelIndex& index) const {

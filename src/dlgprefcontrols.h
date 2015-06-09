@@ -36,12 +36,13 @@ class ControlObject;
   *@author Tue & Ken Haste Andersen
   */
 
-class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg  {
+class DlgPrefControls : public DlgPreferencePage,
+                        public Ui::DlgPrefControlsDlg {
     Q_OBJECT
   public:
-    DlgPrefControls(QWidget *parent, MixxxMainWindow *mixxx,
+    DlgPrefControls(QWidget* parent, MixxxMainWindow* mixxx,
                     SkinLoader* pSkinLoader, PlayerManager* pPlayerManager,
-                    ConfigObject<ConfigValue> *pConfig);
+                    ConfigObject<ConfigValue>* pConfig);
     virtual ~DlgPrefControls();
 
   public slots:
@@ -73,7 +74,7 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
 
     void slotNumDecksChanged(double);
     void slotNumSamplersChanged(double);
-    
+
     void slotUpdateSpeedAutoReset(int);
 
   private:
@@ -89,13 +90,13 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     QList<ControlObjectThread*> m_rateDirControls;
     QList<ControlObjectThread*> m_rateRangeControls;
     QList<ControlObjectThread*> m_keylockModeControls;
-    MixxxMainWindow *m_mixxx;
+    MixxxMainWindow* m_mixxx;
     SkinLoader* m_pSkinLoader;
     PlayerManager* m_pPlayerManager;
 
     int m_iNumConfiguredDecks;
     int m_iNumConfiguredSamplers;
-    
+
     int m_speedAutoReset;
     int m_keylockMode;
 };

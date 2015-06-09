@@ -19,12 +19,10 @@ class SkinLoader {
     SkinLoader(ConfigObject<ConfigValue>* pConfig);
     virtual ~SkinLoader();
 
-    QWidget* loadDefaultSkin(QWidget* pParent,
-                             MixxxKeyboard* pKeyboard,
+    QWidget* loadDefaultSkin(QWidget* pParent, MixxxKeyboard* pKeyboard,
                              PlayerManager* pPlayerManager,
                              ControllerManager* pControllerManager,
-                             Library* pLibrary,
-                             VinylControlManager* pVCMan,
+                             Library* pLibrary, VinylControlManager* pVCMan,
                              EffectsManager* pEffectsManager);
 
     QString getSkinPath();
@@ -38,6 +36,5 @@ class SkinLoader {
 
     ConfigObject<ConfigValue>* m_pConfig;
 };
-
 
 #endif /* SKINLOADER_H */

@@ -71,28 +71,28 @@ void GLSLWaveformWidget::paintEvent(QPaintEvent* event) {
 int GLSLWaveformWidget::render() {
     PerformanceTimer timer;
     int t1;
-    //int t2, t3;
+    // int t2, t3;
     timer.start();
     // QPainter makes QGLContext::currentContext() == context()
     // this may delayed until previous buffer swap finished
     QPainter painter(this);
     t1 = timer.restart();
     draw(&painter, NULL);
-    //t2 = timer.restart();
-    //glFinish();
-    //t3 = timer.restart();
-    //qDebug() << "GLVSyncTestWidget "<< t1 << t2 << t3;
-    return t1 / 1000; // return timer for painter setup
+    // t2 = timer.restart();
+    // glFinish();
+    // t3 = timer.restart();
+    // qDebug() << "GLVSyncTestWidget "<< t1 << t2 << t3;
+    return t1 / 1000;  // return timer for painter setup
 }
 
 void GLSLWaveformWidget::resize(int width, int height) {
-    //NOTE: (vrince) this is needed since we allocation buffer on resize
-    //ans the Gl Context should be properly setted
+    // NOTE: (vrince) this is needed since we allocation buffer on resize
+    // ans the Gl Context should be properly setted
     makeCurrent();
-    WaveformWidgetAbstract::resize(width,height);
+    WaveformWidgetAbstract::resize(width, height);
 }
 
-void GLSLWaveformWidget::mouseDoubleClickEvent(QMouseEvent *event) {
+void GLSLWaveformWidget::mouseDoubleClickEvent(QMouseEvent* event) {
     if (event->button() == Qt::RightButton) {
         makeCurrent();
         signalRenderer_->debugClick();

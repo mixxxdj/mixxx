@@ -21,23 +21,22 @@ InternalClock::InternalClock(const char* pGroup, SyncableListener* pEngineSync)
     // and bpm_down controls.
     // bpm_up / bpm_down steps by 1
     // bpm_up_small / bpm_down_small steps by 0.1
-    m_pClockBpm.reset(new ControlLinPotmeter(ConfigKey(m_group, "bpm"),
-                                          1, 200, 1, 0.1, true));
-    connect(m_pClockBpm.data(), SIGNAL(valueChanged(double)),
-            this, SLOT(slotBpmChanged(double)),
-            Qt::DirectConnection);
+    m_pClockBpm.reset(new ControlLinPotmeter(ConfigKey(m_group, "bpm"), 1, 200,
+                                             1, 0.1, true));
+    connect(m_pClockBpm.data(), SIGNAL(valueChanged(double)), this,
+            SLOT(slotBpmChanged(double)), Qt::DirectConnection);
 
-    m_pClockBeatDistance.reset(new ControlObject(ConfigKey(m_group, "beat_distance")));
-    connect(m_pClockBeatDistance.data(), SIGNAL(valueChanged(double)),
-            this, SLOT(slotBeatDistanceChanged(double)),
-            Qt::DirectConnection);
+    m_pClockBeatDistance.reset(
+            new ControlObject(ConfigKey(m_group, "beat_distance")));
+    connect(m_pClockBeatDistance.data(), SIGNAL(valueChanged(double)), this,
+            SLOT(slotBeatDistanceChanged(double)), Qt::DirectConnection);
 
     m_pSyncMasterEnabled.reset(
-        new ControlPushButton(ConfigKey(pGroup, "sync_master")));
+            new ControlPushButton(ConfigKey(pGroup, "sync_master")));
     m_pSyncMasterEnabled->setButtonMode(ControlPushButton::TOGGLE);
     m_pSyncMasterEnabled->connectValueChangeRequest(
-        this, SLOT(slotSyncMasterEnabledChangeRequest(double)),
-        Qt::DirectConnection);
+            this, SLOT(slotSyncMasterEnabledChangeRequest(double)),
+            Qt::DirectConnection);
 }
 
 InternalClock::~InternalClock() {
@@ -55,7 +54,8 @@ void InternalClock::notifyOnlyPlayingSyncable() {
 }
 
 void InternalClock::requestSyncPhase() {
-    // TODO(owilliams): This should probably be how we reset the internal beat distance.
+    // TODO(owilliams): This should probably be how we reset the internal beat
+    // distance.
 }
 
 void InternalClock::slotSyncMasterEnabledChangeRequest(double state) {
@@ -79,14 +79,15 @@ void InternalClock::slotSyncMasterEnabledChangeRequest(double state) {
 
 double InternalClock::getBeatDistance() const {
     if (m_dBeatLength <= 0) {
-        qDebug() << "ERROR: InternalClock beat length should never be less than zero";
+        qDebug() << "ERROR: InternalClock beat length should never be less "
+                    "than zero";
         return 0.0;
     }
     return m_dClockPosition / m_dBeatLength;
 }
 
 void InternalClock::setMasterBeatDistance(double beatDistance) {
-    //qDebug() << "InternalClock::setBeatDistance" << beatDistance;
+    // qDebug() << "InternalClock::setBeatDistance" << beatDistance;
     m_dClockPosition = beatDistance * m_dBeatLength;
     m_pClockBeatDistance->set(beatDistance);
     // Make sure followers have an up-to-date beat distance.
@@ -106,7 +107,7 @@ double InternalClock::getBpm() const {
 }
 
 void InternalClock::setMasterBpm(double bpm) {
-    //qDebug() << "InternalClock::setBpm" << bpm;
+    // qDebug() << "InternalClock::setBpm" << bpm;
     if (bpm == 0) {
         return;
     }
@@ -115,12 +116,13 @@ void InternalClock::setMasterBpm(double bpm) {
 }
 
 void InternalClock::setInstantaneousBpm(double bpm) {
-    //qDebug() << "InternalClock::setInstantaneousBpm" << bpm;
+    // qDebug() << "InternalClock::setInstantaneousBpm" << bpm;
     // Do nothing.
     Q_UNUSED(bpm);
 }
 
-void InternalClock::setMasterParams(double beatDistance, double baseBpm, double bpm) {
+void InternalClock::setMasterParams(double beatDistance, double baseBpm,
+                                    double bpm) {
     Q_UNUSED(baseBpm)
     if (bpm == 0) {
         return;
@@ -150,7 +152,7 @@ void InternalClock::updateBeatLength(int sampleRate, double bpm) {
     // beat distance so we can restore it when we are done.
     double oldBeatDistance = getBeatDistance();
 
-    //to get samples per beat, do:
+    // to get samples per beat, do:
     //
     // samples   samples     60 seconds     minutes
     // ------- = -------  *  ----------  *  -------
@@ -159,7 +161,8 @@ void InternalClock::updateBeatLength(int sampleRate, double bpm) {
     // that last term is 1 over bpm.
 
     if (qFuzzyCompare(bpm, 0)) {
-        qDebug() << "WARNING: Master bpm reported to be zero, internal clock guessing 124bpm";
+        qDebug() << "WARNING: Master bpm reported to be zero, internal clock "
+                    "guessing 124bpm";
         m_dBeatLength = (sampleRate * 60.0) / 124.0;
         m_dOldBpm = 124.0;
     } else {
@@ -191,7 +194,8 @@ void InternalClock::onCallbackEnd(int sampleRate, int bufferSize) {
 
     // Can't use mod because we're in double land.
     if (m_dBeatLength <= 0) {
-        qDebug() << "ERROR: Calculated <= 0 samples per beat which is impossible.  Forcibly "
+        qDebug() << "ERROR: Calculated <= 0 samples per beat which is "
+                    "impossible.  Forcibly "
                  << "setting to about 124 bpm at 44.1Khz.";
         m_dBeatLength = 21338;
     }

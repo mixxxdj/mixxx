@@ -6,7 +6,8 @@
 #include "controlpushbutton.h"
 #include "controllers/softtakeover.h"
 
-EffectParameterSlot::EffectParameterSlot(const QString& group, const unsigned int iParameterSlotNumber)
+EffectParameterSlot::EffectParameterSlot(
+        const QString& group, const unsigned int iParameterSlotNumber)
         : EffectParameterSlotBase(group, iParameterSlotNumber) {
     QString itemPrefix = formatItemPrefix(iParameterSlotNumber);
     m_pControlLoaded = new ControlObject(
@@ -18,24 +19,21 @@ EffectParameterSlot::EffectParameterSlot(const QString& group, const unsigned in
     m_pControlLinkInverse = new ControlPushButton(
             ConfigKey(m_group, itemPrefix + QString("_link_inverse")));
     m_pControlLinkInverse->setButtonMode(ControlPushButton::TOGGLE);
-    m_pControlValue = new ControlEffectKnob(
-            ConfigKey(m_group, itemPrefix));
+    m_pControlValue = new ControlEffectKnob(ConfigKey(m_group, itemPrefix));
     m_pControlType = new ControlObject(
             ConfigKey(m_group, itemPrefix + QString("_type")));
 
     m_pControlLinkType->connectValueChangeRequest(
             this, SLOT(slotLinkTypeChanging(double)));
-    connect(m_pControlLinkInverse, SIGNAL(valueChanged(double)),
-            this, SLOT(slotLinkInverseChanged(double)));
-    connect(m_pControlValue, SIGNAL(valueChanged(double)),
-            this, SLOT(slotValueChanged(double)));
+    connect(m_pControlLinkInverse, SIGNAL(valueChanged(double)), this,
+            SLOT(slotLinkInverseChanged(double)));
+    connect(m_pControlValue, SIGNAL(valueChanged(double)), this,
+            SLOT(slotValueChanged(double)));
 
     // Read-only controls.
-    m_pControlType->connectValueChangeRequest(
-            this, SLOT(slotValueType(double)));
-    m_pControlLoaded->connectValueChangeRequest(
-            this, SLOT(slotLoaded(double)));
-
+    m_pControlType->connectValueChangeRequest(this,
+                                              SLOT(slotValueType(double)));
+    m_pControlLoaded->connectValueChangeRequest(this, SLOT(slotLoaded(double)));
 
     m_pSoftTakeover = new SoftTakeover();
 
@@ -43,7 +41,7 @@ EffectParameterSlot::EffectParameterSlot(const QString& group, const unsigned in
 }
 
 EffectParameterSlot::~EffectParameterSlot() {
-    //qDebug() << debugString() << "destroyed";
+    // qDebug() << debugString() << "destroyed";
     delete m_pControlValue;
     delete m_pSoftTakeover;
     delete m_pControlLinkType;
@@ -51,32 +49,41 @@ EffectParameterSlot::~EffectParameterSlot() {
 }
 
 void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
-    //qDebug() << debugString() << "loadEffect" << (pEffect ? pEffect->getManifest().name() : "(null)");
+    // qDebug() << debugString() << "loadEffect" << (pEffect ?
+    // pEffect->getManifest().name() : "(null)");
     clear();
     if (pEffect) {
         // Returns null if it doesn't have a parameter for that number
-        m_pEffectParameter = pEffect->getKnobParameterForSlot(m_iParameterSlotNumber);
+        m_pEffectParameter =
+                pEffect->getKnobParameterForSlot(m_iParameterSlotNumber);
 
         if (m_pEffectParameter) {
-            //qDebug() << debugString() << "Loading effect parameter" << m_pEffectParameter->name();
+            // qDebug() << debugString() << "Loading effect parameter" <<
+            // m_pEffectParameter->name();
             double dValue = m_pEffectParameter->getValue();
             double dMinimum = m_pEffectParameter->getMinimum();
-            double dMinimumLimit = dMinimum; // TODO(rryan) expose limit from EffectParameter
+            double dMinimumLimit =
+                    dMinimum;  // TODO(rryan) expose limit from EffectParameter
             double dMaximum = m_pEffectParameter->getMaximum();
-            double dMaximumLimit = dMaximum; // TODO(rryan) expose limit from EffectParameter
+            double dMaximumLimit =
+                    dMaximum;  // TODO(rryan) expose limit from EffectParameter
             double dDefault = m_pEffectParameter->getDefault();
 
             if (dValue > dMaximum || dValue < dMinimum ||
                 dMinimum < dMinimumLimit || dMaximum > dMaximumLimit ||
                 dDefault > dMaximum || dDefault < dMinimum) {
-                qWarning() << debugString() << "WARNING: EffectParameter does not satisfy basic sanity checks.";
+                qWarning() << debugString() << "WARNING: EffectParameter does "
+                                               "not satisfy basic sanity "
+                                               "checks.";
             }
 
-            //qDebug() << debugString()
-            //         << QString("Val: %1 Min: %2 MinLimit: %3 Max: %4 MaxLimit: %5 Default: %6")
+            // qDebug() << debugString()
+            //         << QString("Val: %1 Min: %2 MinLimit: %3 Max: %4
+            //         MaxLimit: %5 Default: %6")
             //         .arg(dValue).arg(dMinimum).arg(dMinimumLimit).arg(dMaximum).arg(dMaximumLimit).arg(dDefault);
 
-            EffectManifestParameter::ControlHint type = m_pEffectParameter->getControlHint();
+            EffectManifestParameter::ControlHint type =
+                    m_pEffectParameter->getControlHint();
             m_pControlValue->setBehaviour(type, dMinimum, dMaximum);
             m_pControlValue->setDefaultValue(dDefault);
             m_pControlValue->set(dValue);
@@ -93,15 +100,15 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
                 m_pControlLinkInverse->set(0);
             }
 
-            connect(m_pEffectParameter, SIGNAL(valueChanged(double)),
-                    this, SLOT(slotParameterValueChanged(double)));
+            connect(m_pEffectParameter, SIGNAL(valueChanged(double)), this,
+                    SLOT(slotParameterValueChanged(double)));
         }
     }
     emit(updated());
 }
 
 void EffectParameterSlot::clear() {
-    //qDebug() << debugString() << "clear";
+    // qDebug() << debugString() << "clear";
     if (m_pEffectParameter) {
         m_pEffectParameter->disconnect(this);
         m_pEffectParameter = NULL;
@@ -118,7 +125,8 @@ void EffectParameterSlot::clear() {
 }
 
 void EffectParameterSlot::slotParameterValueChanged(double value) {
-    //qDebug() << debugString() << "slotParameterValueChanged" << value.toDouble();
+    // qDebug() << debugString() << "slotParameterValueChanged" <<
+    // value.toDouble();
     m_pControlValue->set(value);
 }
 
@@ -135,9 +143,9 @@ void EffectParameterSlot::slotLinkTypeChanging(double v) {
         }
     }
     if (static_cast<int>(v) == EffectManifestParameter::LINK_LINKED_LEFT ||
-            static_cast<int>(v) == EffectManifestParameter::LINK_LINKED_RIGHT) {
-        m_pSoftTakeover->setThreshold(
-                SoftTakeover::kDefaultTakeoverThreshold * 2.0);
+        static_cast<int>(v) == EffectManifestParameter::LINK_LINKED_RIGHT) {
+        m_pSoftTakeover->setThreshold(SoftTakeover::kDefaultTakeoverThreshold *
+                                      2.0);
     } else {
         m_pSoftTakeover->setThreshold(SoftTakeover::kDefaultTakeoverThreshold);
     }
@@ -149,7 +157,8 @@ void EffectParameterSlot::slotLinkInverseChanged(double v) {
     m_pSoftTakeover->ignoreNext();
 }
 
-void EffectParameterSlot::onChainSuperParameterChanged(double parameter, bool force) {
+void EffectParameterSlot::onChainSuperParameterChanged(double parameter,
+                                                       bool force) {
     m_dChainParameter = parameter;
     if (m_pEffectParameter != NULL) {
         // Intermediate cast to integer is needed for VC++.
@@ -165,7 +174,8 @@ void EffectParameterSlot::onChainSuperParameterChanged(double parameter, bool fo
                     return;
                 }
                 {
-                    double neutral = m_pEffectParameter->getNeutralPointOnScale();
+                    double neutral =
+                            m_pEffectParameter->getNeutralPointOnScale();
                     if (neutral > 0.0 && neutral < 1.0) {
                         if (inverse) {
                             // the neutral position must stick where it is
@@ -225,7 +235,7 @@ void EffectParameterSlot::onChainSuperParameterChanged(double parameter, bool fo
             parameter = 1.0 - parameter;
         }
 
-        //qDebug() << "onChainParameterChanged" << parameter;
+        // qDebug() << "onChainParameterChanged" << parameter;
         if (force) {
             m_pControlValue->setParameterFrom(parameter, NULL);
             // This ensures that softtakover is in sync for following updates

@@ -38,8 +38,8 @@ class DlgPrefKey : public DlgPreferencePage, Ui::DlgPrefKeyDlg {
     void populate();
     void loadSettings();
 
-    ConfigObject<ConfigValue>* m_pConfig;
-    QMap<mixxx::track::io::key::ChromaticKey, QLineEdit*> m_keyLineEdits;
+    ConfigObject<ConfigValue> *m_pConfig;
+    QMap<mixxx::track::io::key::ChromaticKey, QLineEdit *> m_keyLineEdits;
     QList<QString> m_listName;
     QList<QString> m_listLibrary, m_listIdentifier;
     QString m_selectedAnalyser;

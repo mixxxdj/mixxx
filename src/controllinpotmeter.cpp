@@ -1,13 +1,12 @@
 #include "controllinpotmeter.h"
 
-ControlLinPotmeter::ControlLinPotmeter(ConfigKey key,
-                                       double dMinValue, double dMaxValue,
-                                       double dStep, double dSmallStep,
-                                       bool allowOutOfBounds)
+ControlLinPotmeter::ControlLinPotmeter(ConfigKey key, double dMinValue,
+                                       double dMaxValue, double dStep,
+                                       double dSmallStep, bool allowOutOfBounds)
         : ControlPotmeter(key, dMinValue, dMaxValue, allowOutOfBounds) {
     if (m_pControl) {
-        m_pControl->setBehavior(
-            new ControlLinPotmeterBehavior(dMinValue, dMaxValue, allowOutOfBounds));
+        m_pControl->setBehavior(new ControlLinPotmeterBehavior(
+                dMinValue, dMaxValue, allowOutOfBounds));
     }
     if (dStep) {
         setStepCount((dMaxValue - dMinValue) / dStep);
@@ -16,6 +15,3 @@ ControlLinPotmeter::ControlLinPotmeter(ConfigKey key,
         setSmallStepCount((dMaxValue - dMinValue) / dSmallStep);
     }
 }
-
-
-

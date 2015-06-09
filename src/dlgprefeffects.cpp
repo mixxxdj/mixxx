@@ -12,17 +12,14 @@ DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
 
     connect(availableEffectsList,
             SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)),
-            this,
-            SLOT(slotEffectSelected(QListWidgetItem*, QListWidgetItem*)));
+            this, SLOT(slotEffectSelected(QListWidgetItem*, QListWidgetItem*)));
 }
 
 void DlgPrefEffects::slotUpdate() {
     clear();
     QStringList effectIds = m_pEffectsManager->getAvailableEffects();
 
-    foreach (QString id, effectIds) {
-        addEffectToList(id);
-    }
+    foreach (QString id, effectIds) { addEffectToList(id); }
 
     if (!effectIds.isEmpty()) {
         availableEffectsList->setCurrentRow(0);

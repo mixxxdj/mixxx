@@ -1,5 +1,6 @@
 // Tests for tableview-related things
-// Right now it's just testing the serialize-unserialize of the header state code.
+// Right now it's just testing the serialize-unserialize of the header state
+// code.
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
@@ -7,13 +8,12 @@
 #include "proto/headers.pb.h"
 #include "widget/wtracktableviewheader.h"
 
-class HeaderViewStateTest : public testing::Test {
-};
+class HeaderViewStateTest : public testing::Test {};
 
 TEST_F(HeaderViewStateTest, RoundTrip) {
     mixxx::library::HeaderViewState headerViewState_pb;
     mixxx::library::HeaderViewState::HeaderState* header_state_pb =
-                headerViewState_pb.add_header_state();
+            headerViewState_pb.add_header_state();
 
     header_state_pb->set_hidden(true);
     header_state_pb->set_size(50);
@@ -21,8 +21,7 @@ TEST_F(HeaderViewStateTest, RoundTrip) {
     header_state_pb->set_visual_index(2);
     header_state_pb->set_column_name("MyCol");
 
-    header_state_pb =
-                headerViewState_pb.add_header_state();
+    header_state_pb = headerViewState_pb.add_header_state();
 
     header_state_pb->set_hidden(false);
     header_state_pb->set_size(22);
@@ -51,7 +50,8 @@ TEST_F(HeaderViewStateTest, RoundTrip) {
 }
 
 TEST_F(HeaderViewStateTest, GoodHeaderState) {
-    const QString kGoodSerializedProto("ChEIARAAGAEgACoHcHJldmlldwoICAAQSxgEIAE"
+    const QString kGoodSerializedProto(
+            "ChEIARAAGAEgACoHcHJldmlldwoICAAQSxgEIAE"
             "KEggBEAAYAiACKghjb3ZlcmFydAoICAEQABgDIAMKCAgBEAAYBSAECggIABBaGBYgB"
             "QoICAEQABgGIAYKCQgAEPwBGBcgBwoJCAAQvAEYByAICgkIABDmARgIIAkKCAgBEAA"
             "YCSAKCggIARAAGAogCwoJCAAQkwQYGSAMCggIARAAGAwgDQoICAEQABgNIA4KCAgBE"

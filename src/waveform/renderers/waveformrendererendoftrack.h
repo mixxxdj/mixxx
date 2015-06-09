@@ -26,7 +26,7 @@ class WaveformRendererEndOfTrack : public WaveformRendererAbstract {
     virtual void draw(QPainter* painter, QPaintEvent* event);
 
   private:
-    ControlObjectThread*  m_pEndOfTrackControl;
+    ControlObjectThread* m_pEndOfTrackControl;
     bool m_endOfTrackEnabled;
     ControlObjectThread* m_pTrackSampleRate;
     ControlObjectThread* m_pPlayControl;
@@ -39,9 +39,9 @@ class WaveformRendererEndOfTrack : public WaveformRendererAbstract {
 
     QVector<QRect> m_backRects;
     QPen m_pen;
-    //QLinearGradient m_gradient;
+    // QLinearGradient m_gradient;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRendererEndOfTrack);
 };
 
-#endif // WAVEFORMRENDERERENDOFTRACK_H
+#endif  // WAVEFORMRENDERERENDOFTRACK_H

@@ -4,7 +4,7 @@
 #include "sources/soundsourceprovider.h"
 
 #ifdef Q_OS_WIN
-//Enable unicode in libsndfile on Windows
+// Enable unicode in libsndfile on Windows
 //(sf_open uses UTF-8 otherwise)
 #include <windows.h>
 #define ENABLE_SNDFILE_WINDOWS_PROTOTYPES 1
@@ -13,8 +13,8 @@
 
 namespace Mixxx {
 
-class SoundSourceSndFile: public Mixxx::SoundSource {
-public:
+class SoundSourceSndFile : public Mixxx::SoundSource {
+  public:
     explicit SoundSourceSndFile(QUrl url);
     ~SoundSourceSndFile();
 
@@ -22,17 +22,16 @@ public:
 
     SINT seekSampleFrame(SINT frameIndex) override;
 
-    SINT readSampleFrames(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer) override;
+    SINT readSampleFrames(SINT numberOfFrames, CSAMPLE* sampleBuffer) override;
 
-private:
+  private:
     Result tryOpen(const AudioSourceConfig& audioSrcCfg) override;
 
     SNDFILE* m_pSndFile;
 };
 
-class SoundSourceProviderSndFile: public SoundSourceProvider {
-public:
+class SoundSourceProviderSndFile : public SoundSourceProvider {
+  public:
     QString getName() const override;
 
     QStringList getSupportedFileExtensions() const override;
@@ -42,6 +41,6 @@ public:
     }
 };
 
-} // namespace Mixxx
+}  // namespace Mixxx
 
-#endif // MIXXX_SOUNDSOURCESNDFILE_H
+#endif  // MIXXX_SOUNDSOURCESNDFILE_H

@@ -4,7 +4,8 @@
     copyright            : (C) 2012-2013 by Tuukka Pasanen
                            (C) 2007 by Wesley Stessens
                            (C) 1994 by Xiph.org (encoder example)
-                           (C) 1994 Tobias Rafreider (shoutcast and recording fixes)
+                           (C) 1994 Tobias Rafreider (shoutcast and recording
+ fixes)
  ***************************************************************************/
 
 /***************************************************************************
@@ -51,27 +52,27 @@ extern "C" {
 class EncoderCallback;
 
 class EncoderFfmpegCore : public Encoder {
-public:
+  public:
 #if LIBAVCODEC_VERSION_INT > 3544932
-    EncoderFfmpegCore(EncoderCallback* pCallback=NULL,
+    EncoderFfmpegCore(EncoderCallback *pCallback = NULL,
                       AVCodecID codec = AV_CODEC_ID_MP2);
 #else
-    EncoderFfmpegCore(EncoderCallback* pCallback=NULL,
+    EncoderFfmpegCore(EncoderCallback *pCallback = NULL,
                       CodecID codec = CODEC_ID_MP2);
 #endif
     ~EncoderFfmpegCore();
     int initEncoder(int bitrate, int samplerate);
     void encodeBuffer(const CSAMPLE *samples, const int size);
-    void updateMetaData(char* artist, char* title, char* album);
+    void updateMetaData(char *artist, char *title, char *album);
     void flush();
-protected:
+
+  protected:
     unsigned int reSample(AVFrame *inframe);
 
-
-private:
+  private:
     int getSerial();
     bool metaDataHasChanged();
-    //Call this method in conjunction with shoutcast streaming
+    // Call this method in conjunction with shoutcast streaming
     int writeAudioFrame(AVFormatContext *oc, AVStream *st);
     void closeAudio(AVStream *st);
     void openAudio(AVCodec *codec, AVStream *st);
@@ -84,7 +85,7 @@ private:
 #endif
     bool m_bStreamInitialized;
 
-    EncoderCallback* m_pCallback;
+    EncoderCallback *m_pCallback;
     TrackPointer m_pMetaData;
 
     char *m_strMetaDataTitle;

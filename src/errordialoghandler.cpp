@@ -40,18 +40,27 @@ void ErrorDialogProperties::setTitle(QString title) {
 
 void ErrorDialogProperties::setText(QString text) {
     // If no key is set, use this window text since it is likely to be unique
-    if (m_key.isEmpty()) m_key = text;
+    if (m_key.isEmpty())
+        m_key = text;
     m_text = text;
 }
 
 void ErrorDialogProperties::setType(DialogType typeToSet) {
     m_type = typeToSet;
     switch (m_type) {
-        case DLG_FATAL:     // Fatal uses critical icon
-        case DLG_CRITICAL:  m_icon = QMessageBox::Critical; break;
-        case DLG_WARNING:   m_icon = QMessageBox::Warning; break;
-        case DLG_INFO:      m_icon = QMessageBox::Information; break;
-        case DLG_QUESTION:  m_icon = QMessageBox::Question; break;
+        case DLG_FATAL:  // Fatal uses critical icon
+        case DLG_CRITICAL:
+            m_icon = QMessageBox::Critical;
+            break;
+        case DLG_WARNING:
+            m_icon = QMessageBox::Warning;
+            break;
+        case DLG_INFO:
+            m_icon = QMessageBox::Information;
+            break;
+        case DLG_QUESTION:
+            m_icon = QMessageBox::Question;
+            break;
         case DLG_NONE:
         default:
             // default is NoIcon
@@ -68,14 +77,13 @@ void ErrorDialogProperties::addButton(QMessageBox::StandardButton button) {
 
 ErrorDialogHandler* ErrorDialogHandler::s_pInstance = NULL;
 
-ErrorDialogHandler::ErrorDialogHandler()
-        : m_signalMapper(this) {
-    connect(&m_signalMapper, SIGNAL(mapped(QString)),
-            this, SLOT(boxClosed(QString)));
+ErrorDialogHandler::ErrorDialogHandler() : m_signalMapper(this) {
+    connect(&m_signalMapper, SIGNAL(mapped(QString)), this,
+            SLOT(boxClosed(QString)));
 
     m_errorCondition = false;
-    connect(this, SIGNAL(showErrorDialog(ErrorDialogProperties*)),
-            this, SLOT(errorDialog(ErrorDialogProperties*)));
+    connect(this, SIGNAL(showErrorDialog(ErrorDialogProperties*)), this,
+            SLOT(errorDialog(ErrorDialogProperties*)));
 }
 
 ErrorDialogHandler::~ErrorDialogHandler() {
@@ -95,11 +103,21 @@ bool ErrorDialogHandler::requestErrorDialog(DialogType type, QString message,
         props->setShouldQuit(shouldQuit);
     }
     switch (type) {
-        case DLG_FATAL:     props->setTitle(tr("Fatal error")); break;
-        case DLG_CRITICAL:  props->setTitle(tr("Critical error")); break;
-        case DLG_WARNING:   props->setTitle(tr("Warning")); break;
-        case DLG_INFO:      props->setTitle(tr("Information")); break;
-        case DLG_QUESTION:  props->setTitle(tr("Question")); break;
+        case DLG_FATAL:
+            props->setTitle(tr("Fatal error"));
+            break;
+        case DLG_CRITICAL:
+            props->setTitle(tr("Critical error"));
+            break;
+        case DLG_WARNING:
+            props->setTitle(tr("Warning"));
+            break;
+        case DLG_INFO:
+            props->setTitle(tr("Information"));
+            break;
+        case DLG_QUESTION:
+            props->setTitle(tr("Question"));
+            break;
         case DLG_NONE:
         default:
             // Default title & (lack of) icon is fine
@@ -136,7 +154,8 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
 
     // Check we are in the main thread.
     if (QThread::currentThread()->objectName() != "Main") {
-        qWarning() << "WARNING: errorDialog not called in the main thread. Not showing error dialog.";
+        qWarning() << "WARNING: errorDialog not called in the main thread. Not "
+                      "showing error dialog.";
         return;
     }
 
@@ -167,8 +186,7 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
 
     // Signal mapper calls our slot with the key parameter so it knows which to
     // remove from the list
-    connect(msgBox, SIGNAL(finished(int)),
-            &m_signalMapper, SLOT(map()));
+    connect(msgBox, SIGNAL(finished(int)), &m_signalMapper, SLOT(map()));
     m_signalMapper.setMapping(msgBox, props->m_key);
 
     locker.unlock();
@@ -186,8 +204,9 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
         if (QCoreApplication::instance()) {
             QCoreApplication::instance()->exit(-1);
         } else {
-            qDebug() << "QCoreApplication::instance() is NULL! Abruptly quitting...";
-            if (props->m_type==DLG_FATAL) {
+            qDebug() << "QCoreApplication::instance() is NULL! Abruptly "
+                        "quitting...";
+            if (props->m_type == DLG_FATAL) {
                 abort();
             } else {
                 exit(-1);
@@ -201,7 +220,8 @@ void ErrorDialogHandler::boxClosed(QString key) {
     QMessageBox* msgBox = (QMessageBox*)m_signalMapper.mapping(key);
     locker.unlock();
 
-    QMessageBox::StandardButton whichStdButton = msgBox->standardButton(msgBox->clickedButton());
+    QMessageBox::StandardButton whichStdButton =
+            msgBox->standardButton(msgBox->clickedButton());
     emit(stdButtonClicked(key, whichStdButton));
 
     // If the user clicks "Ignore," we leave the key in the list so the same

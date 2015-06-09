@@ -29,8 +29,8 @@ void ControlDelegate::paint(QPainter* painter,
                             const QModelIndex& index) const {
     // Custom logic for MIDI. If we are enabled for script then say so.
     if (m_iMidiOptionsColumn != -1) {
-        QModelIndex optionsColumn = index.sibling(index.row(),
-                                                  m_iMidiOptionsColumn);
+        QModelIndex optionsColumn =
+                index.sibling(index.row(), m_iMidiOptionsColumn);
         MidiOptions options = qVariantValue<MidiOptions>(optionsColumn.data());
         m_bIsIndexScript = options.script;
     }
@@ -75,8 +75,7 @@ void ControlDelegate::setEditorData(QWidget* editor,
     pLineEdit->setText(key.group + "," + key.item);
 }
 
-void ControlDelegate::setModelData(QWidget* editor,
-                                   QAbstractItemModel* model,
+void ControlDelegate::setModelData(QWidget* editor, QAbstractItemModel* model,
                                    const QModelIndex& index) const {
     QLineEdit* pLineEdit = qobject_cast<QLineEdit*>(editor);
     if (pLineEdit == NULL) {
@@ -86,6 +85,7 @@ void ControlDelegate::setModelData(QWidget* editor,
     QStringList keyStrs = pLineEdit->text().split(",");
     if (keyStrs.size() == 2) {
         model->setData(index, qVariantFromValue(
-            ConfigKey(keyStrs.at(0), keyStrs.at(1))), Qt::EditRole);
+                                      ConfigKey(keyStrs.at(0), keyStrs.at(1))),
+                       Qt::EditRole);
     }
 }

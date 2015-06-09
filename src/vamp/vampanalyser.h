@@ -43,9 +43,9 @@ class VampAnalyser {
 
   private:
     Vamp::HostExt::PluginLoader::PluginKey m_key;
-    int m_iSampleCount, m_iOUT, m_iRemainingSamples,
-        m_iBlockSize, m_iStepSize, m_rate, m_iOutput;
-    CSAMPLE ** m_pluginbuf;
+    int m_iSampleCount, m_iOUT, m_iRemainingSamples, m_iBlockSize, m_iStepSize,
+            m_rate, m_iOutput;
+    CSAMPLE **m_pluginbuf;
     Vamp::Plugin *m_plugin;
     Vamp::Plugin::ParameterList mParameters;
     Vamp::Plugin::FeatureList m_Results;

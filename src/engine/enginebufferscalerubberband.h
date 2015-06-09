@@ -16,8 +16,7 @@ class EngineBufferScaleRubberBand : public EngineBufferScale {
     EngineBufferScaleRubberBand(ReadAheadManager* pReadAheadManager);
     virtual ~EngineBufferScaleRubberBand();
 
-    virtual void setScaleParameters(double base_rate,
-                                    double* pTempoRatio,
+    virtual void setScaleParameters(double base_rate, double* pTempoRatio,
                                     double* pPitchRatio);
 
     virtual void setSampleRate(int iSampleRate);
@@ -30,8 +29,10 @@ class EngineBufferScaleRubberBand : public EngineBufferScale {
 
     // Reset RubberBand library with new samplerate.
     void initializeRubberBand(int iSampleRate);
+
   private:
-    void deinterleaveAndProcess(const CSAMPLE* pBuffer, size_t frames, bool flush);
+    void deinterleaveAndProcess(const CSAMPLE* pBuffer, size_t frames,
+                                bool flush);
     size_t retrieveAndDeinterleave(CSAMPLE* pBuffer, size_t frames);
 
     // Holds the playback direction
@@ -45,6 +46,5 @@ class EngineBufferScaleRubberBand : public EngineBufferScale {
     // The read-ahead manager that we use to fetch samples
     ReadAheadManager* m_pReadAheadManager;
 };
-
 
 #endif /* ENGINEBUFFERSCALERUBBERBAND_H */

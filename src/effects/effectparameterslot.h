@@ -21,7 +21,8 @@ typedef QSharedPointer<EffectParameterSlot> EffectParameterSlotPointer;
 class EffectParameterSlot : public EffectParameterSlotBase {
     Q_OBJECT
   public:
-    EffectParameterSlot(const QString& group, const unsigned int iParameterSlotNumber);
+    EffectParameterSlot(const QString& group,
+                        const unsigned int iParameterSlotNumber);
     virtual ~EffectParameterSlot();
 
     static QString formatItemPrefix(const unsigned int iParameterSlotNumber) {
@@ -33,7 +34,7 @@ class EffectParameterSlot : public EffectParameterSlotBase {
 
     double getValueParameter() const;
 
-    void onChainSuperParameterChanged(double parameter, bool force=false);
+    void onChainSuperParameterChanged(double parameter, bool force = false);
 
     // Syncs the Super button with the parameter, that the following
     // super button change will be passed to the effect parameter
@@ -52,7 +53,9 @@ class EffectParameterSlot : public EffectParameterSlotBase {
 
   private:
     QString debugString() const {
-        return QString("EffectParameterSlot(%1,%2)").arg(m_group).arg(m_iParameterSlotNumber);
+        return QString("EffectParameterSlot(%1,%2)")
+                .arg(m_group)
+                .arg(m_iParameterSlotNumber);
     }
 
     SoftTakeover* m_pSoftTakeover;
@@ -65,4 +68,4 @@ class EffectParameterSlot : public EffectParameterSlotBase {
     DISALLOW_COPY_AND_ASSIGN(EffectParameterSlot);
 };
 
-#endif // EFFECTPARAMETERSLOT_H
+#endif  // EFFECTPARAMETERSLOT_H

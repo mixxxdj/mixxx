@@ -49,11 +49,11 @@ extern "C" {
 #include <X11/Xlib.h>
 #endif
 
-QStringList plugin_paths; //yes this is global. sometimes global is good.
+QStringList plugin_paths;  // yes this is global. sometimes global is good.
 
-//void qInitImages_mixxx();
+// void qInitImages_mixxx();
 
-QFile Logfile; // global logfile variable
+QFile Logfile;  // global logfile variable
 QMutex mutexLogfile;
 
 /* Debug message handler which outputs to both a logfile and a
@@ -86,18 +86,20 @@ void MessageHandler(QtMsgType type,
     ba += "\n";
 
     if (!Logfile.isOpen()) {
-        // This Must be done in the Message Handler itself, to guarantee that the
+        // This Must be done in the Message Handler itself, to guarantee that
+        // the
         // QApplication is initialized
         QString logLocation = CmdlineArgs::Instance().getSettingsPath();
         QString logFileName;
 
         // Rotate old logfiles
-        //FIXME: cerr << doesn't get printed until after mixxx quits (???)
+        // FIXME: cerr << doesn't get printed until after mixxx quits (???)
         for (int i = 9; i >= 0; --i) {
             if (i == 0) {
                 logFileName = QString("%1/mixxx.log").arg(logLocation);
             } else {
-                logFileName = QString("%1/mixxx.log.%2").arg(logLocation).arg(i);
+                logFileName =
+                        QString("%1/mixxx.log.%2").arg(logLocation).arg(i);
             }
             QFileInfo logbackup(logFileName);
             if (logbackup.exists()) {
@@ -108,7 +110,8 @@ void MessageHandler(QtMsgType type,
                     QFile::remove(olderlogname);
                 }
                 if (!QFile::rename(logFileName, olderlogname)) {
-                    std::cerr << "Error rolling over logfile " << logFileName.toStdString();
+                    std::cerr << "Error rolling over logfile "
+                              << logFileName.toStdString();
                 }
             }
         }
@@ -123,61 +126,60 @@ void MessageHandler(QtMsgType type,
     }
 
     switch (type) {
-    case QtDebugMsg:
-#ifdef __WINDOWS__  //wtf? -kousu 2/2009
-        if (strstr(input, "doneCurrent")) {
-            break;
-        }
+        case QtDebugMsg:
+#ifdef __WINDOWS__  // wtf? -kousu 2/2009
+            if (strstr(input, "doneCurrent")) {
+                break;
+            }
 #endif
-        fprintf(stderr, "Debug %s", ba.constData());
-        if (Logfile.isOpen()) {
-            Logfile.write("Debug ");
-            Logfile.write(ba);
-        }
-        break;
-    case QtWarningMsg:
-        fprintf(stderr, "Warning %s", ba.constData());
-        if (Logfile.isOpen()) {
-            Logfile.write("Warning ");
-            Logfile.write(ba);
-        }
-        break;
-    case QtCriticalMsg:
-        fprintf(stderr, "Critical %s", ba.constData());
-        if (Logfile.isOpen()) {
-            Logfile.write("Critical ");
-            Logfile.write(ba);
-        }
-        break; //NOTREACHED
-    case QtFatalMsg:
-        fprintf(stderr, "Fatal %s", ba.constData());
-        if (Logfile.isOpen()) {
-            Logfile.write("Fatal ");
-            Logfile.write(ba);
-        }
-        break; //NOTREACHED
-    default:
-        fprintf(stderr, "Unknown %s", ba.constData());
-        if (Logfile.isOpen()) {
-            Logfile.write("Unknown ");
-            Logfile.write(ba);
-        }
-        break;
+            fprintf(stderr, "Debug %s", ba.constData());
+            if (Logfile.isOpen()) {
+                Logfile.write("Debug ");
+                Logfile.write(ba);
+            }
+            break;
+        case QtWarningMsg:
+            fprintf(stderr, "Warning %s", ba.constData());
+            if (Logfile.isOpen()) {
+                Logfile.write("Warning ");
+                Logfile.write(ba);
+            }
+            break;
+        case QtCriticalMsg:
+            fprintf(stderr, "Critical %s", ba.constData());
+            if (Logfile.isOpen()) {
+                Logfile.write("Critical ");
+                Logfile.write(ba);
+            }
+            break;  // NOTREACHED
+        case QtFatalMsg:
+            fprintf(stderr, "Fatal %s", ba.constData());
+            if (Logfile.isOpen()) {
+                Logfile.write("Fatal ");
+                Logfile.write(ba);
+            }
+            break;  // NOTREACHED
+        default:
+            fprintf(stderr, "Unknown %s", ba.constData());
+            if (Logfile.isOpen()) {
+                Logfile.write("Unknown ");
+                Logfile.write(ba);
+            }
+            break;
     }
     if (Logfile.isOpen()) {
         Logfile.flush();
     }
 }
 
-int main(int argc, char * argv[])
-{
-
+int main(int argc, char* argv[]) {
 #ifdef Q_OS_LINUX
     XInitThreads();
 #endif
 
     // Check if an instance of Mixxx is already running
-    // See http://qt.nokia.com/products/appdev/add-on-products/catalog/4/Utilities/qtsingleapplication
+    // See
+    // http://qt.nokia.com/products/appdev/add-on-products/catalog/4/Utilities/qtsingleapplication
 
     // These need to be set early on (not sure how early) in order to trigger
     // logic in the OS X appstore support patch from QTBUG-16549.
@@ -186,7 +188,7 @@ int main(int argc, char * argv[])
     // Setting the organization name results in a QDesktopStorage::DataLocation
     // of "$HOME/Library/Application Support/Mixxx/Mixxx" on OS X. Leave the
     // organization name blank.
-    //QCoreApplication::setOrganizationName("Mixxx");
+    // QCoreApplication::setOrganizationName("Mixxx");
 
     QCoreApplication::setApplicationName("Mixxx");
     QString mixxxVersion = Version::version();
@@ -199,13 +201,14 @@ int main(int argc, char * argv[])
         fputs("Mixxx DJ Software v", stdout);
         fputs(mixxxVersionBA.constData(), stdout);
         fputs(" - Command line options", stdout);
-        fputs(
-                   "\n(These are case-sensitive.)\n\n\
+        fputs("\n(These are case-sensitive.)\n\n\
     [FILE]                  Load the specified music file(s) at start-up.\n\
                             Each must be one of the following file types:\n\
-                            ", stdout);
+                            ",
+              stdout);
 
-        QString fileExtensions(SoundSourceProxy::getSupportedFileNamePatterns().join(" "));
+        QString fileExtensions(
+                SoundSourceProxy::getSupportedFileNamePatterns().join(" "));
         QByteArray fileExtensionsBA = QString(fileExtensions).toUtf8();
         fputs(fileExtensionsBA.constData(), stdout);
         fputs("\n\n", stdout);
@@ -222,9 +225,12 @@ int main(int argc, char * argv[])
                             locations.\n\
 \n\
     --settingsPath PATH     Top-level directory where Mixxx should look\n\
-                            for settings. Default is:\n", stdout);
-        fprintf(stdout, "\
-                            %s\n", args.getSettingsPath().toLocal8Bit().constData());
+                            for settings. Default is:\n",
+              stdout);
+        fprintf(stdout,
+                "\
+                            %s\n",
+                args.getSettingsPath().toLocal8Bit().constData());
         fputs("\
 \n\
     --controllerDebug       Causes Mixxx to display/log all of the controller\n\
@@ -242,10 +248,13 @@ int main(int argc, char * argv[])
 \n\
     -f, --fullScreen        Starts Mixxx in full-screen mode\n\
 \n\
-    -h, --help              Display this help message and exit", stdout);
+    -h, --help              Display this help message and exit",
+              stdout);
 
-        fputs("\n\n(For more information, see http://mixxx.org/wiki/doku.php/command_line_options)\n",stdout);
-        return(0);
+        fputs("\n\n(For more information, see "
+              "http://mixxx.org/wiki/doku.php/command_line_options)\n",
+              stdout);
+        return (0);
     }
 
     Console console();
@@ -262,48 +271,47 @@ int main(int argc, char * argv[])
     QThread::currentThread()->setObjectName("Main");
     MixxxApplication a(argc, argv);
 
-    // Support utf-8 for all translation strings. Not supported in Qt 5.
-    // TODO(rryan): Is this needed when we switch to qt5? Some sources claim it
-    // isn't.
+// Support utf-8 for all translation strings. Not supported in Qt 5.
+// TODO(rryan): Is this needed when we switch to qt5? Some sources claim it
+// isn't.
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
 #endif
 
 #ifdef __FFMPEGFILE__
-     av_register_all();
-     avcodec_register_all();
+    av_register_all();
+    avcodec_register_all();
 #endif
 
-     //Enumerate and load SoundSource plugins
-     SoundSourceProxy::loadPlugins();
+    // Enumerate and load SoundSource plugins
+    SoundSourceProxy::loadPlugins();
 
-    // Check if one of the command line arguments is "--no-visuals"
+// Check if one of the command line arguments is "--no-visuals"
 //    bool bVisuals = true;
 //    for (int i=0; i<argc; ++i)
 //        if(QString("--no-visuals")==argv[i])
 //            bVisuals = false;
 
-
 #ifdef __APPLE__
-     QDir dir(QApplication::applicationDirPath());
-     // Set the search path for Qt plugins to be in the bundle's PlugIns
-     // directory, but only if we think the mixxx binary is in a bundle.
-     if (dir.path().contains(".app/")) {
-         // If in a bundle, applicationDirPath() returns something formatted
-         // like: .../Mixxx.app/Contents/MacOS
-         dir.cdUp();
-         dir.cd("PlugIns");
-         qDebug() << "Setting Qt plugin search path to:" << dir.absolutePath();
-         // asantoni: For some reason we need to do setLibraryPaths() and not
-         // addLibraryPath(). The latter causes weird problems once the binary
-         // is bundled (happened with 1.7.2 when Brian packaged it up).
-         QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
-     }
+    QDir dir(QApplication::applicationDirPath());
+    // Set the search path for Qt plugins to be in the bundle's PlugIns
+    // directory, but only if we think the mixxx binary is in a bundle.
+    if (dir.path().contains(".app/")) {
+        // If in a bundle, applicationDirPath() returns something formatted
+        // like: .../Mixxx.app/Contents/MacOS
+        dir.cdUp();
+        dir.cd("PlugIns");
+        qDebug() << "Setting Qt plugin search path to:" << dir.absolutePath();
+        // asantoni: For some reason we need to do setLibraryPaths() and not
+        // addLibraryPath(). The latter causes weird problems once the binary
+        // is bundled (happened with 1.7.2 when Brian packaged it up).
+        QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
+    }
 #endif
 
     MixxxMainWindow* mixxx = new MixxxMainWindow(&a, args);
 
-    //a.setMainWidget(mixxx);
+    // a.setMainWidget(mixxx);
     QObject::connect(&a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()));
 
     int result = -1;
@@ -328,13 +336,13 @@ int main(int argc, char * argv[])
 
     // Don't make any more output after this
     //    or mixxx.log will get clobbered!
-    { // scope
+    {  // scope
         QMutexLocker locker(&mutexLogfile);
-        if(Logfile.isOpen()) {
+        if (Logfile.isOpen()) {
             Logfile.close();
         }
     }
 
-    //delete plugin_paths;
+    // delete plugin_paths;
     return result;
 }

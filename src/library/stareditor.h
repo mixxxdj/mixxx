@@ -43,14 +43,15 @@ class StarEditor : public QWidget {
     Q_OBJECT
   public:
     StarEditor(QWidget* parent, QTableView* pTableView,
-               const QModelIndex& index,
-               const QStyleOptionViewItemV4& option);
+               const QModelIndex& index, const QStyleOptionViewItemV4& option);
 
     QSize sizeHint() const;
     void setStarRating(const StarRating& starRating) {
         m_starRating = starRating;
     }
-    StarRating starRating() { return m_starRating; }
+    StarRating starRating() {
+        return m_starRating;
+    }
 
     static void renderHelper(QPainter* painter, QTableView* pTableView,
                              const QStyleOptionViewItemV4& option,
@@ -63,7 +64,7 @@ class StarEditor : public QWidget {
     void paintEvent(QPaintEvent* event);
     void mouseMoveEvent(QMouseEvent* event);
     void mouseReleaseEvent(QMouseEvent* event);
-    //if the mouse leaves the editing index set starCount to 0
+    // if the mouse leaves the editing index set starCount to 0
     void leaveEvent(QEvent*);
 
   private:

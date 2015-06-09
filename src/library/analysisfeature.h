@@ -23,8 +23,7 @@ class TrackCollection;
 class AnalysisFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    AnalysisFeature(QObject* parent,
-                    ConfigObject<ConfigValue>* pConfig,
+    AnalysisFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig,
                     TrackCollection* pTrackCollection);
     virtual ~AnalysisFeature();
 
@@ -33,8 +32,7 @@ class AnalysisFeature : public LibraryFeature {
 
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);
-    void bindWidget(WLibrary* libraryWidget,
-                    MixxxKeyboard* keyboard);
+    void bindWidget(WLibrary* libraryWidget, MixxxKeyboard* keyboard);
 
     TreeItemModel* getChildModel();
     void refreshLibraryModels();
@@ -74,6 +72,5 @@ class AnalysisFeature : public LibraryFeature {
     QString m_analysisTitleName;
     DlgAnalysis* m_pAnalysisView;
 };
-
 
 #endif /* ANALYSISFEATURE_H */

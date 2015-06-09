@@ -44,7 +44,8 @@ class SampleUtilTest : public testing::Test {
         SampleUtil::fill(pBuffer, value, length);
     }
 
-    void AssertWholeBufferEquals(CSAMPLE* pBuffer, CSAMPLE value, int iBufferLen) {
+    void AssertWholeBufferEquals(CSAMPLE* pBuffer, CSAMPLE value,
+                                 int iBufferLen) {
         for (int i = 0; i < iBufferLen; ++i) {
             EXPECT_FLOAT_EQ(pBuffer[i], value);
         }
@@ -100,7 +101,7 @@ TEST_F(SampleUtilTest, applyAlternatingGain) {
         SampleUtil::applyAlternatingGain(buffer, 0.5, -0.5, size);
         for (int s = 0; s < size; s += 2) {
             EXPECT_FLOAT_EQ(buffer[s], 0.5);
-            EXPECT_FLOAT_EQ(buffer[s+1], -0.5);
+            EXPECT_FLOAT_EQ(buffer[s + 1], -0.5);
         }
     }
 }
@@ -120,7 +121,6 @@ TEST_F(SampleUtilTest, addWithGain) {
     }
 }
 
-
 TEST_F(SampleUtilTest, add2WithGain) {
     for (int i = 0; i < buffers.size(); ++i) {
         CSAMPLE* buffer = buffers[i];
@@ -130,15 +130,9 @@ TEST_F(SampleUtilTest, add2WithGain) {
         FillBuffer(buffer2, 1.0f, size);
         CSAMPLE* buffer3 = SampleUtil::alloc(size);
         FillBuffer(buffer3, 1.0f, size);
-        SampleUtil::add2WithGain(buffer,
-                                 buffer2, 1.0,
-                                 buffer3, 1.0,
-                                 size);
+        SampleUtil::add2WithGain(buffer, buffer2, 1.0, buffer3, 1.0, size);
         AssertWholeBufferEquals(buffer, 3.0f, size);
-        SampleUtil::add2WithGain(buffer,
-                                 buffer2, 2.0,
-                                 buffer3, 3.0,
-                                 size);
+        SampleUtil::add2WithGain(buffer, buffer2, 2.0, buffer3, 3.0, size);
         AssertWholeBufferEquals(buffer, 8.0f, size);
         SampleUtil::free(buffer2);
         SampleUtil::free(buffer3);
@@ -156,17 +150,11 @@ TEST_F(SampleUtilTest, add3WithGain) {
         FillBuffer(buffer3, 1.0f, size);
         CSAMPLE* buffer4 = SampleUtil::alloc(size);
         FillBuffer(buffer4, 1.0f, size);
-        SampleUtil::add3WithGain(buffer,
-                                 buffer2, 1.0,
-                                 buffer3, 1.0,
-                                 buffer4, 1.0,
-                                 size);
+        SampleUtil::add3WithGain(buffer, buffer2, 1.0, buffer3, 1.0, buffer4,
+                                 1.0, size);
         AssertWholeBufferEquals(buffer, 4.0f, size);
-        SampleUtil::add3WithGain(buffer,
-                                 buffer2, 2.0,
-                                 buffer3, 3.0,
-                                 buffer4, 4.0,
-                                 size);
+        SampleUtil::add3WithGain(buffer, buffer2, 2.0, buffer3, 3.0, buffer4,
+                                 4.0, size);
         AssertWholeBufferEquals(buffer, 13.0f, size);
         SampleUtil::free(buffer2);
         SampleUtil::free(buffer3);
@@ -208,15 +196,9 @@ TEST_F(SampleUtilTest, copy2WithGain) {
         FillBuffer(buffer2, 1.0f, size);
         CSAMPLE* buffer3 = SampleUtil::alloc(size);
         FillBuffer(buffer3, 1.0f, size);
-        SampleUtil::copy2WithGain(buffer,
-                                  buffer2, 1.0,
-                                  buffer3, 1.0,
-                                  size);
+        SampleUtil::copy2WithGain(buffer, buffer2, 1.0, buffer3, 1.0, size);
         AssertWholeBufferEquals(buffer, 2.0f, size);
-        SampleUtil::copy2WithGain(buffer,
-                                  buffer2, 2.0,
-                                  buffer3, 3.0,
-                                  size);
+        SampleUtil::copy2WithGain(buffer, buffer2, 2.0, buffer3, 3.0, size);
         AssertWholeBufferEquals(buffer, 5.0f, size);
         SampleUtil::free(buffer2);
         SampleUtil::free(buffer3);
@@ -228,15 +210,9 @@ TEST_F(SampleUtilTest, copy2WithGainAliased) {
         CSAMPLE* buffer = buffers[i];
         int size = sizes[i];
         FillBuffer(buffer, 1.0f, size);
-        SampleUtil::copy2WithGain(buffer,
-                                  buffer, 1.0,
-                                  buffer, 1.0,
-                                  size);
+        SampleUtil::copy2WithGain(buffer, buffer, 1.0, buffer, 1.0, size);
         AssertWholeBufferEquals(buffer, 2.0f, size);
-        SampleUtil::copy2WithGain(buffer,
-                                  buffer, 2.0,
-                                  buffer, 3.0,
-                                  size);
+        SampleUtil::copy2WithGain(buffer, buffer, 2.0, buffer, 3.0, size);
         AssertWholeBufferEquals(buffer, 10.0f, size);
     }
 }
@@ -252,17 +228,11 @@ TEST_F(SampleUtilTest, copy3WithGain) {
         FillBuffer(buffer3, 1.0f, size);
         CSAMPLE* buffer4 = SampleUtil::alloc(size);
         FillBuffer(buffer4, 1.0f, size);
-        SampleUtil::copy3WithGain(buffer,
-                                  buffer2, 1.0,
-                                  buffer3, 1.0,
-                                  buffer4, 1.0,
-                                  size);
+        SampleUtil::copy3WithGain(buffer, buffer2, 1.0, buffer3, 1.0, buffer4,
+                                  1.0, size);
         AssertWholeBufferEquals(buffer, 3.0f, size);
-        SampleUtil::copy3WithGain(buffer,
-                                  buffer2, 2.0,
-                                  buffer3, 3.0,
-                                  buffer4, 4.0,
-                                  size);
+        SampleUtil::copy3WithGain(buffer, buffer2, 2.0, buffer3, 3.0, buffer4,
+                                  4.0, size);
         AssertWholeBufferEquals(buffer, 9.0f, size);
         SampleUtil::free(buffer2);
         SampleUtil::free(buffer3);
@@ -275,16 +245,10 @@ TEST_F(SampleUtilTest, copy3WithGainAliased) {
         CSAMPLE* buffer = buffers[i];
         int size = sizes[i];
         FillBuffer(buffer, 1.0f, size);
-        SampleUtil::copy3WithGain(buffer,
-                                  buffer, 1.0,
-                                  buffer, 1.0,
-                                  buffer, 1.0,
+        SampleUtil::copy3WithGain(buffer, buffer, 1.0, buffer, 1.0, buffer, 1.0,
                                   size);
         AssertWholeBufferEquals(buffer, 3.0f, size);
-        SampleUtil::copy3WithGain(buffer,
-                                  buffer, 2.0,
-                                  buffer, 3.0,
-                                  buffer, 4.0,
+        SampleUtil::copy3WithGain(buffer, buffer, 2.0, buffer, 3.0, buffer, 4.0,
                                   size);
         AssertWholeBufferEquals(buffer, 27.0f, size);
     }
@@ -292,8 +256,8 @@ TEST_F(SampleUtilTest, copy3WithGainAliased) {
 
 TEST_F(SampleUtilTest, convertS16ToFloat32) {
     // Shorts are asymmetric, so SAMPLE_MAX is less than -SAMPLE_MIN.
-    const float expectedMax = static_cast<float>(SAMPLE_MAX) /
-                              static_cast<float>(-SAMPLE_MIN);
+    const float expectedMax =
+            static_cast<float>(SAMPLE_MAX) / static_cast<float>(-SAMPLE_MIN);
     for (int i = 0; i < buffers.size(); ++i) {
         CSAMPLE* buffer = buffers[i];
         int size = sizes[i];
@@ -322,7 +286,7 @@ TEST_F(SampleUtilTest, convertS16ToFloat32) {
         for (int j = 0; j < size; ++j) {
             EXPECT_FLOAT_EQ(-1.0f, buffer[j]);
         }
-        delete [] s16;
+        delete[] s16;
     }
 }
 
@@ -335,7 +299,7 @@ TEST_F(SampleUtilTest, sumAbsPerChannel) {
         CSAMPLE fSumL = 0, fSumR = 0;
         SampleUtil::applyAlternatingGain(buffer, 1.0, 2.0, size);
         SampleUtil::sumAbsPerChannel(&fSumL, &fSumR, buffer, size);
-        EXPECT_FLOAT_EQ(fSumL, size/2);
+        EXPECT_FLOAT_EQ(fSumL, size / 2);
         EXPECT_FLOAT_EQ(fSumR, size);
     }
 }
@@ -351,13 +315,13 @@ TEST_F(SampleUtilTest, interleaveBuffer) {
             buffer[j] = j;
             buffer2[j] = -j;
         }
-        CSAMPLE* buffer3 = SampleUtil::alloc(size*2);
-        FillBuffer(buffer3, 0.0f, size*2);
+        CSAMPLE* buffer3 = SampleUtil::alloc(size * 2);
+        FillBuffer(buffer3, 0.0f, size * 2);
         SampleUtil::interleaveBuffer(buffer3, buffer, buffer2, size);
 
         for (int j = 0; j < size; j++) {
-            EXPECT_FLOAT_EQ(buffer3[j*2], j);
-            EXPECT_FLOAT_EQ(buffer3[j*2+1], -j);
+            EXPECT_FLOAT_EQ(buffer3[j * 2], j);
+            EXPECT_FLOAT_EQ(buffer3[j * 2 + 1], -j);
         }
     }
 }
@@ -369,11 +333,11 @@ TEST_F(SampleUtilTest, deinterleaveBuffer) {
         FillBuffer(buffer, 0.0f, size);
         CSAMPLE* buffer2 = SampleUtil::alloc(size);
         FillBuffer(buffer2, 0.0f, size);
-        CSAMPLE* buffer3 = SampleUtil::alloc(size*2);
-        FillBuffer(buffer3, 1.0f, size*2);
+        CSAMPLE* buffer3 = SampleUtil::alloc(size * 2);
+        FillBuffer(buffer3, 1.0f, size * 2);
         for (int j = 0; j < size; j++) {
-            buffer3[j*2] = j;
-            buffer3[j*2+1] = -j;
+            buffer3[j * 2] = j;
+            buffer3[j * 2 + 1] = -j;
         }
         SampleUtil::deinterleaveBuffer(buffer, buffer2, buffer3, size);
 
@@ -574,15 +538,15 @@ TEST_F(SampleUtilTest, copy3WithGainSpeed) {
 TEST_F(SampleUtilTest, copy3WithRampingGainSpeed) {
     CSAMPLE* buffer = buffers[0];
 
-    int size = sizes[0] - (rand() % 2) * 8; // preven predicting loop size
+    int size = sizes[0] - (rand() % 2) * 8;  // preven predicting loop size
     FillBuffer(buffer, 0.0f, size);
     CSAMPLE* buffer2 = SampleUtil::alloc(size);
     FillBuffer(buffer2, 0.0f, size);
-    CSAMPLE* buffer3 = SampleUtil::alloc(size*2);
-    FillBuffer(buffer3, 1.0f, size*2);
+    CSAMPLE* buffer3 = SampleUtil::alloc(size * 2);
+    FillBuffer(buffer3, 1.0f, size * 2);
     for (int j = 0; j < size; j++) {
-        buffer3[j*2] = j;
-        buffer3[j*2+1] = -j;
+        buffer3[j * 2] = j;
+        buffer3[j * 2 + 1] = -j;
     }
 
     // For ensure data is cached and equal start conditions
@@ -598,37 +562,37 @@ TEST_F(SampleUtilTest, copy3WithRampingGainSpeed) {
     elapsed = t.elapsed("");
     qDebug() << "copy2WithGain" << elapsed << "ns" << size;
 
-//#########
+    //#########
 
     t.start();
 
-    SampleUtil::copy2WithRampingGain(buffer, buffer2, 1.1f, 1.2f, buffer3, 1.1f, 1.2f, size);
+    SampleUtil::copy2WithRampingGain(buffer, buffer2, 1.1f, 1.2f, buffer3, 1.1f,
+                                     1.2f, size);
 
     elapsed = t.elapsed("");
     qDebug() << "copy2WithRampingGain" << elapsed << "ns" << size;
 
-//#########
+    //#########
 
     t.start();
 
-    SampleUtil::copy2WithRampingGain(buffer, buffer2, 1.1f, 1.2f, buffer3, 1.1f, 1.2f, size);
+    SampleUtil::copy2WithRampingGain(buffer, buffer2, 1.1f, 1.2f, buffer3, 1.1f,
+                                     1.2f, size);
 
     elapsed = t.elapsed("");
     qDebug() << "copy2WithRampingGain" << elapsed << "ns" << size;
 
-//#########
+    //#########
 
     t.start();
 
-    SampleUtil::copy2WithRampingGain(buffer, buffer2, 1.1f, 1.2f, buffer3, 1.1f, 1.2f, size);
+    SampleUtil::copy2WithRampingGain(buffer, buffer2, 1.1f, 1.2f, buffer3, 1.1f,
+                                     1.2f, size);
 
     elapsed = t.elapsed("");
     qDebug() << "copy2WithRampingGain" << elapsed << "ns" << size;
-
-
 
     SampleUtil::free(buffer2);
     SampleUtil::free(buffer3);
 }
-
 }

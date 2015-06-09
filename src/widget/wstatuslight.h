@@ -31,13 +31,13 @@
 #include "widget/wpixmapstore.h"
 #include "skin/skincontext.h"
 
-class WStatusLight : public WWidget  {
-   Q_OBJECT
+class WStatusLight : public WWidget {
+    Q_OBJECT
   public:
-    WStatusLight(QWidget *parent=0);
+    WStatusLight(QWidget *parent = 0);
     virtual ~WStatusLight();
 
-    void setup(QDomNode node, const SkinContext& context);
+    void setup(QDomNode node, const SkinContext &context);
 
   public slots:
     void onConnectedControlChanged(double dParameter, double dValue);

@@ -21,15 +21,15 @@ EngineEffectChain::~EngineEffectChain() {
 bool EngineEffectChain::addEffect(EngineEffect* pEffect, int iIndex) {
     if (iIndex < 0) {
         if (kEffectDebugOutput) {
-            qDebug() << debugString()
-                     << "WARNING: ADD_EFFECT_TO_CHAIN message with invalid index:"
-                     << iIndex;
+            qDebug() << debugString() << "WARNING: ADD_EFFECT_TO_CHAIN message "
+                                         "with invalid index:" << iIndex;
         }
         return false;
     }
     if (m_effects.contains(pEffect)) {
         if (kEffectDebugOutput) {
-            qDebug() << debugString() << "WARNING: effect already added to EngineEffectChain:"
+            qDebug() << debugString()
+                     << "WARNING: effect already added to EngineEffectChain:"
                      << pEffect->name();
         }
         return false;
@@ -46,16 +46,16 @@ bool EngineEffectChain::removeEffect(EngineEffect* pEffect, int iIndex) {
     if (iIndex < 0) {
         if (kEffectDebugOutput) {
             qDebug() << debugString()
-                     << "WARNING: REMOVE_EFFECT_FROM_CHAIN message with invalid index:"
-                     << iIndex;
+                     << "WARNING: REMOVE_EFFECT_FROM_CHAIN message with "
+                        "invalid index:" << iIndex;
         }
         return false;
     }
     if (m_effects.at(iIndex) != pEffect) {
         qDebug() << debugString()
                  << "WARNING: REMOVE_EFFECT_FROM_CHAIN consistency error"
-                 << m_effects.at(iIndex) << "loaded but received request to remove"
-                 << pEffect;
+                 << m_effects.at(iIndex)
+                 << "loaded but received request to remove" << pEffect;
         return false;
     }
 
@@ -69,16 +69,18 @@ bool EngineEffectChain::updateParameters(const EffectsRequest& message) {
     m_insertionType = message.SetEffectChainParameters.insertion_type;
     m_dMix = message.SetEffectChainParameters.mix;
 
-    if (m_enableState != EffectProcessor::DISABLED && !message.SetEffectParameters.enabled) {
+    if (m_enableState != EffectProcessor::DISABLED &&
+        !message.SetEffectParameters.enabled) {
         m_enableState = EffectProcessor::DISABLING;
-    } else if (m_enableState == EffectProcessor::DISABLED && message.SetEffectParameters.enabled) {
+    } else if (m_enableState == EffectProcessor::DISABLED &&
+               message.SetEffectParameters.enabled) {
         m_enableState = EffectProcessor::ENABLING;
     }
     return true;
 }
 
-bool EngineEffectChain::processEffectsRequest(const EffectsRequest& message,
-                                              EffectsResponsePipe* pResponsePipe) {
+bool EngineEffectChain::processEffectsRequest(
+        const EffectsRequest& message, EffectsResponsePipe* pResponsePipe) {
     EffectsResponse response(message);
     switch (message.type) {
         case EffectsRequest::ADD_EFFECT_TO_CHAIN:
@@ -96,14 +98,16 @@ bool EngineEffectChain::processEffectsRequest(const EffectsRequest& message,
                          << message.RemoveEffectFromChain.pEffect
                          << message.RemoveEffectFromChain.iIndex;
             }
-            response.success = removeEffect(message.RemoveEffectFromChain.pEffect,
-                                            message.RemoveEffectFromChain.iIndex);
+            response.success =
+                    removeEffect(message.RemoveEffectFromChain.pEffect,
+                                 message.RemoveEffectFromChain.iIndex);
             break;
         case EffectsRequest::SET_EFFECT_CHAIN_PARAMETERS:
             if (kEffectDebugOutput) {
                 qDebug() << debugString() << "SET_EFFECT_CHAIN_PARAMETERS"
-                         << "enabled" << message.SetEffectChainParameters.enabled
-                         << "mix" << message.SetEffectChainParameters.mix;
+                         << "enabled"
+                         << message.SetEffectChainParameters.enabled << "mix"
+                         << message.SetEffectChainParameters.mix;
             }
             response.success = updateParameters(message);
             break;
@@ -149,21 +153,22 @@ EngineEffectChain::ChannelStatus& EngineEffectChain::getChannelStatus(
     return m_channelStatus[handle];
 }
 
-void EngineEffectChain::process(const ChannelHandle& handle,
-                                CSAMPLE* pInOut,
+void EngineEffectChain::process(const ChannelHandle& handle, CSAMPLE* pInOut,
                                 const unsigned int numSamples,
                                 const unsigned int sampleRate,
                                 const GroupFeatureState& groupFeatures) {
     ChannelStatus& channel_info = getChannelStatus(handle);
 
-    if (m_enableState == EffectProcessor::DISABLED
-            || channel_info.enable_state == EffectProcessor::DISABLED) {
-        // If the chain is not enabled and the channel is not enabled and we are not
+    if (m_enableState == EffectProcessor::DISABLED ||
+        channel_info.enable_state == EffectProcessor::DISABLED) {
+        // If the chain is not enabled and the channel is not enabled and we are
+        // not
         // ramping out then do nothing.
         return;
     }
 
-    EffectProcessor::EnableState effectiveEnableState = channel_info.enable_state;
+    EffectProcessor::EnableState effectiveEnableState =
+            channel_info.enable_state;
 
     if (m_enableState == EffectProcessor::DISABLING) {
         effectiveEnableState = EffectProcessor::DISABLING;
@@ -179,14 +184,14 @@ void EngineEffectChain::process(const ChannelHandle& handle,
     // INSERT mode: output = input * (1-wet) + effect(input) * wet
     if (m_insertionType == EffectChain::INSERT) {
         if (wet_gain_old == 1.0 && wet_gain == 1.0) {
-            // Fully wet, no ramp, insert optimization. No temporary buffer needed.
+            // Fully wet, no ramp, insert optimization. No temporary buffer
+            // needed.
             for (int i = 0; i < m_effects.size(); ++i) {
                 EngineEffect* pEffect = m_effects[i];
                 if (pEffect == NULL || !pEffect->enabled()) {
                     continue;
                 }
-                pEffect->process(handle, pInOut, pInOut,
-                                 numSamples, sampleRate,
+                pEffect->process(handle, pInOut, pInOut, numSamples, sampleRate,
                                  effectiveEnableState, groupFeatures);
             }
         } else if (wet_gain_old == 0.0 && wet_gain == 0.0) {
@@ -202,24 +207,26 @@ void EngineEffectChain::process(const ChannelHandle& handle,
                 if (pEffect == NULL || !pEffect->enabled()) {
                     continue;
                 }
-                const CSAMPLE* pIntermediateInput = (i == 0) ? pInOut : m_pBuffer;
+                const CSAMPLE* pIntermediateInput =
+                        (i == 0) ? pInOut : m_pBuffer;
                 CSAMPLE* pIntermediateOutput = m_pBuffer;
-                pEffect->process(handle, pIntermediateInput, pIntermediateOutput,
-                                 numSamples, sampleRate,
+                pEffect->process(handle, pIntermediateInput,
+                                 pIntermediateOutput, numSamples, sampleRate,
                                  effectiveEnableState, groupFeatures);
                 anyProcessed = true;
             }
 
             if (anyProcessed) {
                 // m_pBuffer now contains the fully wet output.
-                // TODO(rryan): benchmark applyGain followed by addWithGain versus
+                // TODO(rryan): benchmark applyGain followed by addWithGain
+                // versus
                 // copy2WithGain.
                 SampleUtil::copy2WithRampingGain(
-                    pInOut, pInOut, 1.0 - wet_gain_old, 1.0 - wet_gain,
-                    m_pBuffer, wet_gain_old, wet_gain, numSamples);
+                        pInOut, pInOut, 1.0 - wet_gain_old, 1.0 - wet_gain,
+                        m_pBuffer, wet_gain_old, wet_gain, numSamples);
             }
         }
-    } else { // SEND mode: output = input + effect(input) * wet
+    } else {  // SEND mode: output = input + effect(input) * wet
         // Clear scratch buffer.
         SampleUtil::applyGain(m_pBuffer, 0.0, numSamples);
 
@@ -232,16 +239,16 @@ void EngineEffectChain::process(const ChannelHandle& handle,
             }
             const CSAMPLE* pIntermediateInput = (i == 0) ? pInOut : m_pBuffer;
             CSAMPLE* pIntermediateOutput = m_pBuffer;
-            pEffect->process(handle, pIntermediateInput,
-                             pIntermediateOutput, numSamples, sampleRate,
-                             effectiveEnableState, groupFeatures);
+            pEffect->process(handle, pIntermediateInput, pIntermediateOutput,
+                             numSamples, sampleRate, effectiveEnableState,
+                             groupFeatures);
             anyProcessed = true;
         }
 
         if (anyProcessed) {
             // m_pBuffer now contains the fully wet output.
-            SampleUtil::addWithRampingGain(pInOut, m_pBuffer,
-                                           wet_gain_old, wet_gain, numSamples);
+            SampleUtil::addWithRampingGain(pInOut, m_pBuffer, wet_gain_old,
+                                           wet_gain, numSamples);
         }
     }
 

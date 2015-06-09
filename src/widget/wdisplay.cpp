@@ -25,7 +25,7 @@
 
 #include "widget/wpixmapstore.h"
 
-WDisplay::WDisplay(QWidget * parent)
+WDisplay::WDisplay(QWidget* parent)
         : WWidget(parent),
           m_iCurrentPixmap(0),
           m_pPixmapBack(NULL),
@@ -41,8 +41,9 @@ void WDisplay::setup(QDomNode node, const SkinContext& context) {
     // Set background pixmap if available
     if (context.hasNode(node, "BackPath")) {
         QDomElement backPathNode = context.selectElement(node, "BackPath");
-        setPixmapBackground(context.getPixmapSource(backPathNode),
-                            context.selectScaleMode(backPathNode, Paintable::TILE));
+        setPixmapBackground(
+                context.getPixmapSource(backPathNode),
+                context.selectScaleMode(backPathNode, Paintable::TILE));
     }
 
     // Number of states
@@ -66,7 +67,7 @@ void WDisplay::setup(QDomNode node, const SkinContext& context) {
         // The implicit default in <1.12.0 was FIXED so we keep it for
         // backwards compatibility.
         Paintable::DrawMode disabledMode =
-            context.selectScaleMode(disabledNode, Paintable::FIXED);
+                context.selectScaleMode(disabledNode, Paintable::FIXED);
         for (int i = 0; i < m_disabledPixmaps.size(); ++i) {
             setPixmap(&m_disabledPixmaps, i,
                       context.getSkinPath(disabledPath.arg(i)), disabledMode);
@@ -183,8 +184,8 @@ void WDisplay::paintEvent(QPaintEvent*) {
 
     // If we are disabled, use the disabled pixmaps. If not, use the regular
     // pixmaps.
-    const QVector<PaintablePointer>& pixmaps = (!isEnabled() && m_bDisabledLoaded) ?
-            m_disabledPixmaps : m_pixmaps;
+    const QVector<PaintablePointer>& pixmaps =
+            (!isEnabled() && m_bDisabledLoaded) ? m_disabledPixmaps : m_pixmaps;
 
     if (pixmaps.empty()) {
         return;

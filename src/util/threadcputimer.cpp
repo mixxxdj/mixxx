@@ -18,11 +18,10 @@
 #include <windows.h>
 #endif
 
-
 ////////////////////////////// Unix //////////////////////////////
 #if defined(Q_OS_UNIX)
 
-#if (_POSIX_THREAD_CPUTIME-0 != 0)
+#if (_POSIX_THREAD_CPUTIME - 0 != 0)
 static const bool threadCpuTimeChecked = true;
 static const bool threadCpuTimeAvailable = _POSIX_THREAD_CPUTIME > 0;
 #else
@@ -31,32 +30,30 @@ static int threadCpuTimeAvailable = false;
 #endif
 
 #ifdef Q_CC_GNU
-# define is_likely(x) __builtin_expect((x), 1)
+#define is_likely(x) __builtin_expect((x), 1)
 #else
-# define is_likely(x) (x)
+#define is_likely(x) (x)
 #endif
-#define load_acquire(x) ((volatile const int&)(x))
-#define store_release(x,v) ((volatile int&)(x) = (v))
+#define load_acquire(x) ((volatile const int &)(x))
+#define store_release(x, v) ((volatile int &)(x) = (v))
 
-static void unixCheckClockType()
-{
-#if (_POSIX_THREAD_CPUTIME-0 == 0)
+static void unixCheckClockType() {
+#if (_POSIX_THREAD_CPUTIME - 0 == 0)
     if (is_likely(load_acquire(threadCpuTimeChecked)))
         return;
 
-# if defined(_SC_THREAD_CPUTIME)
+#if defined(_SC_THREAD_CPUTIME)
     // detect if the system support monotonic timers
     long x = sysconf(_SC_THREAD_CPUTIME);
     store_release(threadCpuTimeAvailable, x >= 200112L);
-# endif
+#endif
 
     store_release(threadCpuTimeChecked, true);
 #endif
 }
 
-static inline void do_gettime(qint64 *sec, qint64 *frac)
-{
-#if (_POSIX_MONOTONIC_CLOCK-0 >= 0)
+static inline void do_gettime(qint64 *sec, qint64 *frac) {
+#if (_POSIX_MONOTONIC_CLOCK - 0 >= 0)
     unixCheckClockType();
     if (is_likely(threadCpuTimeAvailable)) {
         timespec ts;
@@ -74,13 +71,11 @@ static inline void do_gettime(qint64 *sec, qint64 *frac)
     *frac = 0;
 }
 
-void ThreadCpuTimer::start()
-{
+void ThreadCpuTimer::start() {
     do_gettime(&t1, &t2);
 }
 
-qint64 ThreadCpuTimer::elapsed() const
-{
+qint64 ThreadCpuTimer::elapsed() const {
     qint64 sec, frac;
     do_gettime(&sec, &frac);
     sec = sec - t1;
@@ -89,8 +84,7 @@ qint64 ThreadCpuTimer::elapsed() const
     return sec * Q_INT64_C(1000000000) + frac;
 }
 
-qint64 ThreadCpuTimer::restart()
-{
+qint64 ThreadCpuTimer::restart() {
     qint64 sec, frac;
     sec = t1;
     frac = t2;
@@ -104,17 +98,14 @@ qint64 ThreadCpuTimer::restart()
 #else
 
 // default implementation (no hi-perf timer) does nothing
-void ThreadCpuTimer::start()
-{
+void ThreadCpuTimer::start() {
 }
 
-qint64 ThreadCpuTimer::elapsed() const
-{
+qint64 ThreadCpuTimer::elapsed() const {
     return 0;
 }
 
-qint64 ThreadCpuTimer::restart()
-{
+qint64 ThreadCpuTimer::restart() {
     return 0;
 }
 

@@ -9,20 +9,41 @@
 class WaveformSignalColors {
   public:
     WaveformSignalColors();
-    virtual ~WaveformSignalColors() {}
+    virtual ~WaveformSignalColors() {
+    }
 
-    bool setup(const QDomNode &node, const SkinContext& context);
+    bool setup(const QDomNode& node, const SkinContext& context);
 
-    inline const QColor& getSignalColor() const { return m_signalColor; }
-    inline const QColor& getLowColor() const { return m_lowColor; }
-    inline const QColor& getMidColor() const { return m_midColor; }
-    inline const QColor& getHighColor() const { return m_highColor; }
-    inline const QColor& getRgbLowColor() const { return m_rgbLowColor; }
-    inline const QColor& getRgbMidColor() const { return m_rgbMidColor; }
-    inline const QColor& getRgbHighColor() const { return m_rgbHighColor; }
-    inline const QColor& getAxesColor() const { return m_axesColor; }
-    inline const QColor& getPlayPosColor() const { return m_playPosColor; }
-    inline const QColor& getBgColor() const { return m_bgColor; }
+    inline const QColor& getSignalColor() const {
+        return m_signalColor;
+    }
+    inline const QColor& getLowColor() const {
+        return m_lowColor;
+    }
+    inline const QColor& getMidColor() const {
+        return m_midColor;
+    }
+    inline const QColor& getHighColor() const {
+        return m_highColor;
+    }
+    inline const QColor& getRgbLowColor() const {
+        return m_rgbLowColor;
+    }
+    inline const QColor& getRgbMidColor() const {
+        return m_rgbMidColor;
+    }
+    inline const QColor& getRgbHighColor() const {
+        return m_rgbHighColor;
+    }
+    inline const QColor& getAxesColor() const {
+        return m_axesColor;
+    }
+    inline const QColor& getPlayPosColor() const {
+        return m_playPosColor;
+    }
+    inline const QColor& getBgColor() const {
+        return m_bgColor;
+    }
 
   protected:
     void fallBackFromSignalColor();
@@ -43,4 +64,4 @@ class WaveformSignalColors {
     QColor m_bgColor;
 };
 
-#endif // WAVEFORMSIGNALCOLORS_H
+#endif  // WAVEFORMSIGNALCOLORS_H

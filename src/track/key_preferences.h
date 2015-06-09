@@ -22,4 +22,4 @@
 #define KEY_NOTATION_CUSTOM "Custom"
 #define KEY_NOTATION_CUSTOM_PREFIX "CustomKeyNotation"
 
-#endif // KEY_PREFERENCES_H
+#endif  // KEY_PREFERENCES_H

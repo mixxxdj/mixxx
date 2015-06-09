@@ -7,7 +7,8 @@ using ::testing::Return;
 using ::testing::Invoke;
 using ::testing::_;
 
-void BaseEffectTest::registerTestEffect(const EffectManifest& manifest, bool willAddToEngine) {
+void BaseEffectTest::registerTestEffect(const EffectManifest& manifest,
+                                        bool willAddToEngine) {
     MockEffectProcessor* pProcessor = new MockEffectProcessor();
     MockEffectInstantiator* pInstantiator = new MockEffectInstantiator();
 

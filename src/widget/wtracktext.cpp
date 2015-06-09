@@ -6,10 +6,9 @@
 #include "widget/wtracktext.h"
 #include "util/dnd.h"
 
-WTrackText::WTrackText(const char *group, ConfigObject<ConfigValue> *pConfig, QWidget* pParent)
-        : WLabel(pParent),
-          m_pGroup(group),
-          m_pConfig(pConfig) {
+WTrackText::WTrackText(const char *group, ConfigObject<ConfigValue> *pConfig,
+                       QWidget *pParent)
+        : WLabel(pParent), m_pGroup(group), m_pConfig(pConfig) {
     setAcceptDrops(true);
 }
 
@@ -19,8 +18,8 @@ WTrackText::~WTrackText() {
 void WTrackText::slotTrackLoaded(TrackPointer track) {
     if (track) {
         m_pCurrentTrack = track;
-        connect(track.data(), SIGNAL(changed(TrackInfoObject*)),
-                this, SLOT(updateLabel(TrackInfoObject*)));
+        connect(track.data(), SIGNAL(changed(TrackInfoObject *)), this,
+                SLOT(updateLabel(TrackInfoObject *)));
         updateLabel(track.data());
     }
 }
@@ -34,7 +33,7 @@ void WTrackText::slotTrackUnloaded(TrackPointer track) {
     setText("");
 }
 
-void WTrackText::updateLabel(TrackInfoObject*) {
+void WTrackText::updateLabel(TrackInfoObject *) {
     if (m_pCurrentTrack) {
         setText(m_pCurrentTrack->getInfo());
     }
@@ -48,8 +47,8 @@ void WTrackText::mouseMoveEvent(QMouseEvent *event) {
 
 void WTrackText::dragEnterEvent(QDragEnterEvent *event) {
     if (DragAndDropHelper::allowLoadToPlayer(m_pGroup, m_pConfig) &&
-            DragAndDropHelper::dragEnterAccept(*event->mimeData(), m_pGroup,
-                                               true, false)) {
+        DragAndDropHelper::dragEnterAccept(*event->mimeData(), m_pGroup, true,
+                                           false)) {
         event->acceptProposedAction();
     } else {
         event->ignore();

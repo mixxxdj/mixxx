@@ -18,7 +18,9 @@ class CueDAO : public DAO {
   public:
     CueDAO(QSqlDatabase& database);
     virtual ~CueDAO();
-    void setDatabase(QSqlDatabase& database) { m_database = database; }
+    void setDatabase(QSqlDatabase& database) {
+        m_database = database;
+    }
 
     void initialize();
     int cueCount();
@@ -31,6 +33,7 @@ class CueDAO : public DAO {
     // TODO(XXX) once we refer to all tracks by their id and TIO has a getId()
     // method the first parameter here won't be necessary.
     void saveTrackCues(const int trackId, TrackInfoObject*);
+
   private:
     Cue* cueFromRow(const QSqlQuery& query) const;
 

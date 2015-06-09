@@ -9,15 +9,18 @@ class ControlObject;
 class ControlObjectSlave;
 
 class WaveformRendererSignalBase : public WaveformRendererAbstract {
-public:
-    explicit WaveformRendererSignalBase(WaveformWidgetRenderer* waveformWidgetRenderer);
+  public:
+    explicit WaveformRendererSignalBase(
+            WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~WaveformRendererSignalBase();
 
     virtual bool init();
     virtual void setup(const QDomNode& node, const SkinContext& context);
 
-    virtual bool onInit() {return true;}
-    virtual void onSetup(const QDomNode &node) = 0;
+    virtual bool onInit() {
+        return true;
+    }
+    virtual void onSetup(const QDomNode& node) = 0;
 
   protected:
     void deleteControls();
@@ -47,4 +50,4 @@ public:
     qreal m_rgbHighColor_r, m_rgbHighColor_g, m_rgbHighColor_b;
 };
 
-#endif // WAVEFORMRENDERERSIGNALBASE_H
+#endif  // WAVEFORMRENDERERSIGNALBASE_H

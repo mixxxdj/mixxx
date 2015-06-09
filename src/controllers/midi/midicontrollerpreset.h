@@ -20,8 +20,10 @@
 
 class MidiControllerPreset : public ControllerPreset {
   public:
-    MidiControllerPreset() {}
-    virtual ~MidiControllerPreset() {}
+    MidiControllerPreset() {
+    }
+    virtual ~MidiControllerPreset() {
+    }
 
     virtual void accept(ControllerPresetVisitor* visitor) {
         if (visitor) {

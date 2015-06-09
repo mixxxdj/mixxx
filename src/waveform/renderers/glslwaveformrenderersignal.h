@@ -33,7 +33,7 @@ class GLSLWaveformRendererSignal : public WaveformRendererSignalBase {
 
     int m_loadedWaveform;
 
-    //Frame buffer for two pass rendering
+    // Frame buffer for two pass rendering
     bool m_frameBuffersValid;
     QGLFramebufferObject* m_framebuffer;
 
@@ -48,17 +48,21 @@ class GLSLWaveformRendererSignal : public WaveformRendererSignalBase {
 class GLSLWaveformRendererFilteredSignal : public GLSLWaveformRendererSignal {
   public:
     GLSLWaveformRendererFilteredSignal(
-        WaveformWidgetRenderer* waveformWidgetRenderer)
-        : GLSLWaveformRendererSignal(waveformWidgetRenderer, false) {}
-    virtual ~GLSLWaveformRendererFilteredSignal() {}
+            WaveformWidgetRenderer* waveformWidgetRenderer)
+            : GLSLWaveformRendererSignal(waveformWidgetRenderer, false) {
+    }
+    virtual ~GLSLWaveformRendererFilteredSignal() {
+    }
 };
 
 class GLSLWaveformRendererRGBSignal : public GLSLWaveformRendererSignal {
   public:
     GLSLWaveformRendererRGBSignal(
-        WaveformWidgetRenderer* waveformWidgetRenderer)
-        : GLSLWaveformRendererSignal(waveformWidgetRenderer, true) {}
-    virtual ~GLSLWaveformRendererRGBSignal() {}
+            WaveformWidgetRenderer* waveformWidgetRenderer)
+            : GLSLWaveformRendererSignal(waveformWidgetRenderer, true) {
+    }
+    virtual ~GLSLWaveformRendererRGBSignal() {
+    }
 };
 
-#endif // GLWAVEFORMRENDERERSIGNALSHADER_H
+#endif  // GLWAVEFORMRENDERERSIGNALSHADER_H

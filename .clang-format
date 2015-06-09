@@ -1,0 +1,18 @@
+---
+Language: Cpp
+Standard: Cpp11
+BasedOnStyle: Google
+IndentWidth: 4
+ContinuationIndentWidth: 8
+TabWidth: 4
+AccessModifierOffset: -2
+ConstructorInitializerIndentWidth: 8
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+AlignTrailingComments: false
+AllowShortFunctionsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+AllowShortBlocksOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: false
+ForEachMacros: [ foreach, Q_FOREACH, BOOST_FOREACH ]
+...

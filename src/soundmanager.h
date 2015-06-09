@@ -55,7 +55,8 @@ class SoundManager : public QObject {
     // Returns a list of all devices we've enumerated that match the provided
     // filterApi, and have at least one output or input channel if the
     // bOutputDevices or bInputDevices are set, respectively.
-    QList<SoundDevice*> getDeviceList(QString filterAPI, bool bOutputDevices, bool bInputDevices);
+    QList<SoundDevice *> getDeviceList(QString filterAPI, bool bOutputDevices,
+                                       bool bInputDevices);
 
     // Closes all the open sound devices. Because multiple soundcards might be
     // open, this method simply runs through the list of all known soundcards
@@ -77,7 +78,7 @@ class SoundManager : public QObject {
     void setConfiguredDeckCount(int count);
     int getConfiguredDeckCount() const;
 
-    SoundDevice* getErrorDevice() const;
+    SoundDevice *getErrorDevice() const;
 
     // Returns a list of samplerates we will attempt to support for a given API.
     QList<unsigned int> getSampleRates(QString api) const;
@@ -95,9 +96,8 @@ class SoundManager : public QObject {
 
     // Used by SoundDevices to "push" any audio from their inputs that they have
     // into the mixing engine.
-    void pushInputBuffers(const QList<AudioInputBuffer>& inputs,
+    void pushInputBuffers(const QList<AudioInputBuffer> &inputs,
                           const unsigned int iFramesPerBuffer);
-
 
     void writeProcess();
     void readProcess();
@@ -108,8 +108,8 @@ class SoundManager : public QObject {
     QList<AudioInput> registeredInputs() const;
 
   signals:
-    void devicesUpdated(); // emitted when pointers to SoundDevices go stale
-    void devicesSetup(); // emitted when the sound devices have been set up
+    void devicesUpdated();  // emitted when pointers to SoundDevices go stale
+    void devicesSetup();  // emitted when the sound devices have been set up
     void outputRegistered(AudioOutput output, AudioSource *src);
     void inputRegistered(AudioInput input, AudioDestination *dest);
 
@@ -122,16 +122,16 @@ class SoundManager : public QObject {
     bool m_paInitialized;
     unsigned int m_jackSampleRate;
 #endif
-    QList<SoundDevice*> m_devices;
+    QList<SoundDevice *> m_devices;
     QList<unsigned int> m_samplerates;
-    QList<CSAMPLE*> m_inputBuffers;
+    QList<CSAMPLE *> m_inputBuffers;
 
     SoundManagerConfig m_config;
-    SoundDevice* m_pErrorDevice;
-    QHash<AudioOutput, AudioSource*> m_registeredSources;
-    QHash<AudioInput, AudioDestination*> m_registeredDestinations;
-    ControlObject* m_pControlObjectSoundStatusCO;
-    ControlObject* m_pControlObjectVinylControlGainCO;
+    SoundDevice *m_pErrorDevice;
+    QHash<AudioOutput, AudioSource *> m_registeredSources;
+    QHash<AudioInput, AudioDestination *> m_registeredDestinations;
+    ControlObject *m_pControlObjectSoundStatusCO;
+    ControlObject *m_pControlObjectVinylControlGainCO;
 };
 
 #endif

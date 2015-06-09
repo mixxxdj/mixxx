@@ -264,7 +264,7 @@ TEST_F(EngineBufferE2ETest, ReverseTest) {
 }
 
 // DISABLED: This test is too dependent on the sound touch library version.
-//TEST_F(EngineBufferE2ETest, SoundTouchToggleTest) {
+// TEST_F(EngineBufferE2ETest, SoundTouchToggleTest) {
 //    // Test various cases where SoundTouch toggles on and off.
 //    ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
 //                       static_cast<double>(EngineBuffer::SOUNDTOUCH));
@@ -290,7 +290,7 @@ TEST_F(EngineBufferE2ETest, ReverseTest) {
 //}
 
 // DISABLED: This test is too dependent on the rubber band library version.
-//TEST_F(EngineBufferE2ETest, RubberbandToggleTest) {
+// TEST_F(EngineBufferE2ETest, RubberbandToggleTest) {
 //    // Test various cases where Rubberband toggles on and off.
 //    ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
 //                       static_cast<double>(EngineBuffer::RUBBERBAND));

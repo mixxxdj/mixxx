@@ -13,19 +13,15 @@ class LCSTest : public testing::Test {
 };
 
 TEST_F(LCSTest, BasicLCS) {
-    ASSERT_STREQ(qPrintable(QString("FOO")),
-                 qPrintable(LCS("FOO", "FOO")));
+    ASSERT_STREQ(qPrintable(QString("FOO")), qPrintable(LCS("FOO", "FOO")));
 
-    ASSERT_STREQ(qPrintable(QString("")),
-                 qPrintable(LCS("FOO", "BAR")));
+    ASSERT_STREQ(qPrintable(QString("")), qPrintable(LCS("FOO", "BAR")));
 
     // Prefix
-    ASSERT_STREQ(qPrintable(QString("FOO")),
-                 qPrintable(LCS("FOO", "FOO BAR")));
+    ASSERT_STREQ(qPrintable(QString("FOO")), qPrintable(LCS("FOO", "FOO BAR")));
 
     // Suffix
-    ASSERT_STREQ(qPrintable(QString("FOO")),
-                 qPrintable(LCS("FOO", "BAR FOO")));
+    ASSERT_STREQ(qPrintable(QString("FOO")), qPrintable(LCS("FOO", "BAR FOO")));
 
     // Infix
     ASSERT_STREQ(qPrintable(QString("FOO")),

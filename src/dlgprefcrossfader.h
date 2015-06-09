@@ -31,7 +31,8 @@
   *@author John Sully
   */
 
-class DlgPrefCrossfader : public DlgPreferencePage, public Ui::DlgPrefCrossfaderDlg  {
+class DlgPrefCrossfader : public DlgPreferencePage,
+                          public Ui::DlgPrefCrossfaderDlg {
     Q_OBJECT
   public:
     DlgPrefCrossfader(QWidget *parent, ConfigObject<ConfigValue> *_config);

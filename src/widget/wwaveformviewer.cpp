@@ -16,7 +16,9 @@
 #include "util/dnd.h"
 #include "util/math.h"
 
-WWaveformViewer::WWaveformViewer(const char *group, ConfigObject<ConfigValue>* pConfig, QWidget * parent)
+WWaveformViewer::WWaveformViewer(const char* group,
+                                 ConfigObject<ConfigValue>* pConfig,
+                                 QWidget* parent)
         : WWidget(parent),
           m_pGroup(group),
           m_pConfig(pConfig),
@@ -29,18 +31,16 @@ WWaveformViewer::WWaveformViewer(const char *group, ConfigObject<ConfigValue>* p
     m_pZoom = new ControlObjectSlave(group, "waveform_zoom");
     m_pZoom->connectValueChanged(this, SLOT(onZoomChange(double)));
 
-    m_pScratchPositionEnable = new ControlObjectSlave(
-            group, "scratch_position_enable");
-    m_pScratchPosition = new ControlObjectSlave(
-            group, "scratch_position");
-    m_pWheel = new ControlObjectSlave(
-            group, "wheel");
+    m_pScratchPositionEnable =
+            new ControlObjectSlave(group, "scratch_position_enable");
+    m_pScratchPosition = new ControlObjectSlave(group, "scratch_position");
+    m_pWheel = new ControlObjectSlave(group, "wheel");
 
     setAttribute(Qt::WA_OpaquePaintEvent);
 }
 
 WWaveformViewer::~WWaveformViewer() {
-    //qDebug() << "~WWaveformViewer";
+    // qDebug() << "~WWaveformViewer";
 
     delete m_pZoom;
     delete m_pScratchPositionEnable;
@@ -73,7 +73,8 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
         }
         m_bScratching = true;
         double audioSamplePerPixel = m_waveformWidget->getAudioSamplePerPixel();
-        double targetPosition = -1.0 * event->pos().x() * audioSamplePerPixel * 2;
+        double targetPosition =
+                -1.0 * event->pos().x() * audioSamplePerPixel * 2;
         m_pScratchPosition->slotSet(targetPosition);
         m_pScratchPositionEnable->slotSet(1.0);
     } else if (event->button() == Qt::RightButton) {
@@ -96,8 +97,9 @@ void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
     if (m_bScratching && m_waveformWidget) {
         // Adjusts for one-to-one movement.
         double audioSamplePerPixel = m_waveformWidget->getAudioSamplePerPixel();
-        double targetPosition = -1.0 * event->pos().x() * audioSamplePerPixel * 2;
-        //qDebug() << "Target:" << targetPosition;
+        double targetPosition =
+                -1.0 * event->pos().x() * audioSamplePerPixel * 2;
+        // qDebug() << "Target:" << targetPosition;
         m_pScratchPosition->slotSet(targetPosition);
     } else if (m_bBending) {
         QPoint diff = event->pos() - m_mouseAnchor;
@@ -130,25 +132,26 @@ void WWaveformViewer::mouseReleaseEvent(QMouseEvent* /*event*/) {
     setCursor(Qt::ArrowCursor);
 }
 
-void WWaveformViewer::wheelEvent(QWheelEvent *event) {
+void WWaveformViewer::wheelEvent(QWheelEvent* event) {
     if (m_waveformWidget) {
-        //NOTE: (vrince) to limit the zoom action area uncomment the following line
-        //if (event->x() > width() - m_zoomZoneWidth) {
-            if (event->delta() > 0) {
-                //qDebug() << "WaveformWidgetRenderer::wheelEvent +1";
-                onZoomChange(m_waveformWidget->getZoomFactor() + 1);
-            } else {
-                //qDebug() << "WaveformWidgetRenderer::wheelEvent -1";
-                onZoomChange(m_waveformWidget->getZoomFactor() - 1);
-            }
+        // NOTE: (vrince) to limit the zoom action area uncomment the following
+        // line
+        // if (event->x() > width() - m_zoomZoneWidth) {
+        if (event->delta() > 0) {
+            // qDebug() << "WaveformWidgetRenderer::wheelEvent +1";
+            onZoomChange(m_waveformWidget->getZoomFactor() + 1);
+        } else {
+            // qDebug() << "WaveformWidgetRenderer::wheelEvent -1";
+            onZoomChange(m_waveformWidget->getZoomFactor() - 1);
+        }
         //}
     }
 }
 
 void WWaveformViewer::dragEnterEvent(QDragEnterEvent* event) {
     if (DragAndDropHelper::allowLoadToPlayer(m_pGroup, m_pConfig) &&
-            DragAndDropHelper::dragEnterAccept(*event->mimeData(), m_pGroup,
-                                               true, false)) {
+        DragAndDropHelper::dragEnterAccept(*event->mimeData(), m_pGroup, true,
+                                           false)) {
         event->acceptProposedAction();
     } else {
         event->ignore();
@@ -181,14 +184,14 @@ void WWaveformViewer::onTrackUnloaded(TrackPointer /*track*/) {
 }
 
 void WWaveformViewer::onZoomChange(double zoom) {
-    //qDebug() << "WaveformWidgetRenderer::onZoomChange" << this << zoom;
+    // qDebug() << "WaveformWidgetRenderer::onZoomChange" << this << zoom;
     setZoom(zoom);
     // notify back the factory to sync zoom if needed
     WaveformWidgetFactory::instance()->notifyZoomChange(this);
 }
 
 void WWaveformViewer::setZoom(int zoom) {
-    //qDebug() << "WaveformWidgetRenderer::setZoom" << zoom;
+    // qDebug() << "WaveformWidgetRenderer::setZoom" << zoom;
     if (m_waveformWidget) {
         m_waveformWidget->setZoom(zoom);
     }
@@ -205,16 +208,15 @@ void WWaveformViewer::setZoom(int zoom) {
     }
 }
 
-void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) {
+void WWaveformViewer::setWaveformWidget(
+        WaveformWidgetAbstract* waveformWidget) {
     if (m_waveformWidget) {
         QWidget* pWidget = m_waveformWidget->getWidget();
-        disconnect(pWidget, SIGNAL(destroyed()),
-                   this, SLOT(slotWidgetDead()));
+        disconnect(pWidget, SIGNAL(destroyed()), this, SLOT(slotWidgetDead()));
     }
     m_waveformWidget = waveformWidget;
     if (m_waveformWidget) {
         QWidget* pWidget = m_waveformWidget->getWidget();
-        connect(pWidget, SIGNAL(destroyed()),
-                this, SLOT(slotWidgetDead()));
+        connect(pWidget, SIGNAL(destroyed()), this, SLOT(slotWidgetDead()));
     }
 }

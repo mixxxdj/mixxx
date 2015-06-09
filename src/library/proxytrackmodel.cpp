@@ -29,20 +29,24 @@ int ProxyTrackModel::getTrackId(const QModelIndex& index) const {
 }
 
 const QLinkedList<int> ProxyTrackModel::getTrackRows(int trackId) const {
-    return m_pTrackModel ? m_pTrackModel->getTrackRows(trackId) : QLinkedList<int>();
+    return m_pTrackModel ? m_pTrackModel->getTrackRows(trackId)
+                         : QLinkedList<int>();
 }
 
 TrackPointer ProxyTrackModel::getTrack(const QModelIndex& index) const {
     QModelIndex indexSource = mapToSource(index);
-    return m_pTrackModel ? m_pTrackModel->getTrack(indexSource) : TrackPointer();
+    return m_pTrackModel ? m_pTrackModel->getTrack(indexSource)
+                         : TrackPointer();
 }
 
 QString ProxyTrackModel::getTrackLocation(const QModelIndex& index) const {
     QModelIndex indexSource = mapToSource(index);
-    return m_pTrackModel ? m_pTrackModel->getTrackLocation(indexSource) : QString();
+    return m_pTrackModel ? m_pTrackModel->getTrackLocation(indexSource)
+                         : QString();
 }
 
-void ProxyTrackModel::search(const QString& searchText, const QString& extraFilter) {
+void ProxyTrackModel::search(const QString& searchText,
+                             const QString& extraFilter) {
     Q_UNUSED(extraFilter);
     if (m_bHandleSearches) {
         m_currentSearch = searchText;
@@ -64,7 +68,8 @@ bool ProxyTrackModel::isColumnInternal(int column) {
 }
 
 bool ProxyTrackModel::isColumnHiddenByDefault(int column) {
-    return m_pTrackModel ? m_pTrackModel->isColumnHiddenByDefault(column) : false;
+    return m_pTrackModel ? m_pTrackModel->isColumnHiddenByDefault(column)
+                         : false;
 }
 
 void ProxyTrackModel::removeTracks(const QModelIndexList& indices) {
@@ -87,12 +92,14 @@ void ProxyTrackModel::moveTrack(const QModelIndex& sourceIndex,
     }
 }
 
-QAbstractItemDelegate* ProxyTrackModel::delegateForColumn(const int i, QObject* pParent) {
+QAbstractItemDelegate* ProxyTrackModel::delegateForColumn(const int i,
+                                                          QObject* pParent) {
     return m_pTrackModel ? m_pTrackModel->delegateForColumn(i, pParent) : NULL;
 }
 
 TrackModel::CapabilitiesFlags ProxyTrackModel::getCapabilities() const {
-    return m_pTrackModel ? m_pTrackModel->getCapabilities() : TrackModel::TRACKMODELCAPS_NONE;
+    return m_pTrackModel ? m_pTrackModel->getCapabilities()
+                         : TrackModel::TRACKMODELCAPS_NONE;
 }
 
 bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
@@ -144,4 +151,3 @@ void ProxyTrackModel::sort(int column, Qt::SortOrder order) {
         QSortFilterProxyModel::sort(column, order);
     }
 }
-

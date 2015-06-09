@@ -11,7 +11,7 @@
 
 WaveformRendererHSV::WaveformRendererHSV(
         WaveformWidgetRenderer* waveformWidgetRenderer)
-    : WaveformRendererSignalBase(waveformWidgetRenderer) {
+        : WaveformRendererSignalBase(waveformWidgetRenderer) {
 }
 
 WaveformRendererHSV::~WaveformRendererHSV() {
@@ -21,8 +21,7 @@ void WaveformRendererHSV::onSetup(const QDomNode& node) {
     Q_UNUSED(node);
 }
 
-void WaveformRendererHSV::draw(QPainter* painter,
-                                          QPaintEvent* /*event*/) {
+void WaveformRendererHSV::draw(QPainter* painter, QPaintEvent* /*event*/) {
     const TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
     if (!trackInfo) {
         return;
@@ -50,14 +49,16 @@ void WaveformRendererHSV::draw(QPainter* painter,
     painter->setWorldMatrixEnabled(false);
     painter->resetTransform();
 
-    const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
-    const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
+    const double firstVisualIndex =
+            m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
+    const double lastVisualIndex =
+            m_waveformRenderer->getLastDisplayedPosition() * dataSize;
 
     const double offset = firstVisualIndex;
 
     // Represents the # of waveform data points per horizontal pixel.
     const double gain = (lastVisualIndex - firstVisualIndex) /
-            (double)m_waveformRenderer->getWidth();
+                        (double)m_waveformRenderer->getWidth();
 
     float allGain(1.0);
     getGains(&allGain, NULL, NULL, NULL);
@@ -73,13 +74,14 @@ void WaveformRendererHSV::draw(QPainter* painter,
     QColor color;
     float lo, hi, total;
 
-    const float halfHeight = (float)m_waveformRenderer->getHeight()/2.0;
+    const float halfHeight = (float)m_waveformRenderer->getHeight() / 2.0;
 
-    const float heightFactor = allGain*halfHeight/255.0;
+    const float heightFactor = allGain * halfHeight / 255.0;
 
-    //draw reference line
+    // draw reference line
     painter->setPen(m_pColors->getAxesColor());
-    painter->drawLine(0,halfHeight,m_waveformRenderer->getWidth(),halfHeight);
+    painter->drawLine(0, halfHeight, m_waveformRenderer->getWidth(),
+                      halfHeight);
 
     for (int x = 0; x < m_waveformRenderer->getWidth(); ++x) {
         // Width of the x position in visual indices.
@@ -99,8 +101,10 @@ void WaveformRendererHSV::draw(QPainter* painter,
         // to check +/- maxSamplingRange frames, not samples. To do this, divide
         // xVisualSampleIndex by 2. Since frames indices are integers, we round
         // to the nearest integer by adding 0.5 before casting to int.
-        int visualFrameStart = int(xVisualSampleIndex / 2.0 - maxSamplingRange + 0.5);
-        int visualFrameStop = int(xVisualSampleIndex / 2.0 + maxSamplingRange + 0.5);
+        int visualFrameStart =
+                int(xVisualSampleIndex / 2.0 - maxSamplingRange + 0.5);
+        int visualFrameStop =
+                int(xVisualSampleIndex / 2.0 + maxSamplingRange + 0.5);
         const int lastVisualFrame = dataSize / 2 - 1;
 
         // We now know that some subset of [visualFrameStart, visualFrameStop]
@@ -126,7 +130,8 @@ void WaveformRendererHSV::draw(QPainter* painter,
             maxMid[0] = math_max(maxMid[0], (int)waveformData.filtered.mid);
             maxMid[1] = math_max(maxMid[1], (int)waveformDataNext.filtered.mid);
             maxHigh[0] = math_max(maxHigh[0], (int)waveformData.filtered.high);
-            maxHigh[1] = math_max(maxHigh[1], (int)waveformDataNext.filtered.high);
+            maxHigh[1] =
+                    math_max(maxHigh[1], (int)waveformDataNext.filtered.high);
             maxAll[0] = math_max(maxAll[0], (int)waveformData.filtered.all);
             maxAll[1] = math_max(maxAll[1], (int)waveformDataNext.filtered.all);
         }
@@ -134,37 +139,44 @@ void WaveformRendererHSV::draw(QPainter* painter,
         if (maxAll[0] && maxAll[1]) {
             // Calculate sum, to normalize
             // Also multiply on 1.2 to prevent very dark or light color
-            total = (maxLow[0] + maxLow[1] + maxMid[0] + maxMid[1] + maxHigh[0] + maxHigh[1]) * 1.2;
+            total = (maxLow[0] + maxLow[1] + maxMid[0] + maxMid[1] +
+                     maxHigh[0] + maxHigh[1]) *
+                    1.2;
 
             // prevent division by zero
-            if (total > 0)
-            {
-                // Normalize low and high (mid not need, because it not change the color)
+            if (total > 0) {
+                // Normalize low and high (mid not need, because it not change
+                // the color)
                 lo = (maxLow[0] + maxLow[1]) / total;
                 hi = (maxHigh[0] + maxHigh[1]) / total;
-            }
-            else
+            } else
                 lo = hi = 0.0;
 
             // Set color
-            color.setHsvF(h, 1.0-hi, 1.0-lo);
+            color.setHsvF(h, 1.0 - hi, 1.0 - lo);
 
             painter->setPen(color);
             switch (m_alignment) {
-                case Qt::AlignBottom :
+                case Qt::AlignBottom:
                     painter->drawLine(
-                        x, m_waveformRenderer->getHeight(),
-                        x, m_waveformRenderer->getHeight() - (int)(heightFactor*(float)math_max(maxAll[0],maxAll[1])));
+                            x, m_waveformRenderer->getHeight(), x,
+                            m_waveformRenderer->getHeight() -
+                                    (int)(heightFactor *
+                                          (float)math_max(maxAll[0],
+                                                          maxAll[1])));
                     break;
-                case Qt::AlignTop :
+                case Qt::AlignTop:
                     painter->drawLine(
-                        x, 0,
-                        x, (int)(heightFactor*(float)math_max(maxAll[0],maxAll[1])));
+                            x, 0, x,
+                            (int)(heightFactor *
+                                  (float)math_max(maxAll[0], maxAll[1])));
                     break;
-                default :
+                default:
                     painter->drawLine(
-                        x, (int)(halfHeight-heightFactor*(float)maxAll[0]),
-                        x, (int)(halfHeight+heightFactor*(float)maxAll[1]));
+                            x,
+                            (int)(halfHeight - heightFactor * (float)maxAll[0]),
+                            x, (int)(halfHeight +
+                                     heightFactor * (float)maxAll[1]));
             }
         }
     }

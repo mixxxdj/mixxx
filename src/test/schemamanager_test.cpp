@@ -12,8 +12,7 @@
 
 class SchemaManagerTest : public MixxxTest {
   protected:
-    SchemaManagerTest()
-            : m_dbFile("mixxxdb.sqlite") {
+    SchemaManagerTest() : m_dbFile("mixxxdb.sqlite") {
         RELEASE_ASSERT(m_dbFile.open());
         m_db = QSqlDatabase::addDatabase("QSQLITE");
         m_db.setHostName("localhost");
@@ -42,8 +41,8 @@ TEST_F(SchemaManagerTest, NonExistentSchema) {
 
 TEST_F(SchemaManagerTest, BackwardsCompatibleVersion) {
     // Upgrade to version 1 to get the settings table.
-    SchemaManager::Result result = SchemaManager::upgradeToSchemaVersion(
-            ":/schema.xml", m_db, 1);
+    SchemaManager::Result result =
+            SchemaManager::upgradeToSchemaVersion(":/schema.xml", m_db, 1);
     EXPECT_EQ(SchemaManager::RESULT_OK, result);
 
     SettingsDAO settings(m_db);
@@ -63,8 +62,8 @@ TEST_F(SchemaManagerTest, BackwardsCompatibleVersion) {
 
 TEST_F(SchemaManagerTest, BackwardsIncompatibleVersion) {
     // Upgrade to version 1 to get the settings table.
-    SchemaManager::Result result = SchemaManager::upgradeToSchemaVersion(
-            ":/schema.xml", m_db, 1);
+    SchemaManager::Result result =
+            SchemaManager::upgradeToSchemaVersion(":/schema.xml", m_db, 1);
     EXPECT_EQ(SchemaManager::RESULT_OK, result);
 
     SettingsDAO settings(m_db);
@@ -84,14 +83,14 @@ TEST_F(SchemaManagerTest, BackwardsIncompatibleVersion) {
 
 TEST_F(SchemaManagerTest, FailedUpgrade) {
     // Upgrade to version 3 to get the modern library table.
-    SchemaManager::Result result = SchemaManager::upgradeToSchemaVersion(
-            ":/schema.xml", m_db, 3);
+    SchemaManager::Result result =
+            SchemaManager::upgradeToSchemaVersion(":/schema.xml", m_db, 3);
     EXPECT_EQ(SchemaManager::RESULT_OK, result);
 
     // Add a column that is added in verison 24.
     QSqlQuery query(m_db);
-    EXPECT_TRUE(query.exec(
-            "ALTER TABLE library ADD COLUMN coverart_source TEXT"));
+    EXPECT_TRUE(
+            query.exec("ALTER TABLE library ADD COLUMN coverart_source TEXT"));
 
     result = SchemaManager::upgradeToSchemaVersion(
             ":/schema.xml", m_db, TrackCollection::kRequiredSchemaVersion);

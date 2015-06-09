@@ -42,7 +42,8 @@ class EngineMasterTest : public MixxxTest {
   protected:
     virtual void SetUp() {
         m_pMaster = new EngineMaster(config(), "[Master]", NULL, false, false);
-        m_pMasterEnabled = new ControlObjectSlave(ConfigKey("[Master]", "enabled"));
+        m_pMasterEnabled =
+                new ControlObjectSlave(ConfigKey("[Master]", "enabled"));
         m_pMasterEnabled->set(1);
     }
 
@@ -60,7 +61,7 @@ class EngineMasterTest : public MixxxTest {
     }
 
     void AssertWholeBufferEquals(const CSAMPLE* pBuffer, CSAMPLE value,
-                                 int iBufferLen, bool verbose=false) {
+                                 int iBufferLen, bool verbose = false) {
         int differences = 0;
         for (int i = 0; i < iBufferLen; ++i) {
             differences += (value != pBuffer[i]);
@@ -76,25 +77,20 @@ class EngineMasterTest : public MixxxTest {
 };
 
 TEST_F(EngineMasterTest, SingleChannelOutputWorks) {
-    EngineChannelMock* pChannel = new EngineChannelMock(
-            "[Test1]", EngineChannel::CENTER, m_pMaster);
+    EngineChannelMock* pChannel =
+            new EngineChannelMock("[Test1]", EngineChannel::CENTER, m_pMaster);
     m_pMaster->addChannel(pChannel);
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
-    CSAMPLE* pChannelBuffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test1]"));
+    CSAMPLE* pChannelBuffer =
+            const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test1]"));
     // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
     FillBuffer(pChannelBuffer, 0.1f, MAX_BUFFER_LEN);
 
     // Instruct the mock to claim it is active, master and not PFL.
-    EXPECT_CALL(*pChannel, isActive())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel, isMasterEnabled())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel, isPflEnabled())
-            .Times(1)
-            .WillOnce(Return(false));
+    EXPECT_CALL(*pChannel, isActive()).Times(1).WillOnce(Return(true));
+    EXPECT_CALL(*pChannel, isMasterEnabled()).Times(1).WillOnce(Return(true));
+    EXPECT_CALL(*pChannel, isPflEnabled()).Times(1).WillOnce(Return(false));
 
     // Instruct the mock to just return when process() gets called.
     EXPECT_CALL(*pChannel, process(_, MAX_BUFFER_LEN))
@@ -113,42 +109,32 @@ TEST_F(EngineMasterTest, SingleChannelOutputWorks) {
 }
 
 TEST_F(EngineMasterTest, TwoChannelOutputWorks) {
-    EngineChannelMock* pChannel1 = new EngineChannelMock(
-            "[Test1]", EngineChannel::CENTER, m_pMaster);
+    EngineChannelMock* pChannel1 =
+            new EngineChannelMock("[Test1]", EngineChannel::CENTER, m_pMaster);
     m_pMaster->addChannel(pChannel1);
-    EngineChannelMock* pChannel2 = new EngineChannelMock(
-            "[Test2]", EngineChannel::CENTER, m_pMaster);
+    EngineChannelMock* pChannel2 =
+            new EngineChannelMock("[Test2]", EngineChannel::CENTER, m_pMaster);
     m_pMaster->addChannel(pChannel2);
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
-    CSAMPLE* pChannel1Buffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test1]"));
-    CSAMPLE* pChannel2Buffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test2]"));
+    CSAMPLE* pChannel1Buffer =
+            const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test1]"));
+    CSAMPLE* pChannel2Buffer =
+            const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test2]"));
 
     // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
     FillBuffer(pChannel1Buffer, 0.1f, MAX_BUFFER_LEN);
     FillBuffer(pChannel2Buffer, 0.2f, MAX_BUFFER_LEN);
 
     // Instruct channel 1 to claim it is active, master and not PFL.
-    EXPECT_CALL(*pChannel1, isActive())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel1, isMasterEnabled())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel1, isPflEnabled())
-            .Times(1)
-            .WillOnce(Return(false));
+    EXPECT_CALL(*pChannel1, isActive()).Times(1).WillOnce(Return(true));
+    EXPECT_CALL(*pChannel1, isMasterEnabled()).Times(1).WillOnce(Return(true));
+    EXPECT_CALL(*pChannel1, isPflEnabled()).Times(1).WillOnce(Return(false));
 
     // Instruct channel 2 to claim it is active, master and not PFL.
-    EXPECT_CALL(*pChannel2, isActive())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel2, isMasterEnabled())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel2, isPflEnabled())
-            .Times(1)
-            .WillOnce(Return(false));
+    EXPECT_CALL(*pChannel2, isActive()).Times(1).WillOnce(Return(true));
+    EXPECT_CALL(*pChannel2, isMasterEnabled()).Times(1).WillOnce(Return(true));
+    EXPECT_CALL(*pChannel2, isPflEnabled()).Times(1).WillOnce(Return(false));
 
     // Instruct the mock to just return when process() gets called.
     EXPECT_CALL(*pChannel1, process(_, MAX_BUFFER_LEN))
@@ -170,42 +156,32 @@ TEST_F(EngineMasterTest, TwoChannelOutputWorks) {
 }
 
 TEST_F(EngineMasterTest, TwoChannelPFLOutputWorks) {
-    EngineChannelMock* pChannel1 = new EngineChannelMock(
-            "[Test1]", EngineChannel::CENTER, m_pMaster);
+    EngineChannelMock* pChannel1 =
+            new EngineChannelMock("[Test1]", EngineChannel::CENTER, m_pMaster);
     m_pMaster->addChannel(pChannel1);
-    EngineChannelMock* pChannel2 = new EngineChannelMock(
-            "[Test2]", EngineChannel::CENTER, m_pMaster);
+    EngineChannelMock* pChannel2 =
+            new EngineChannelMock("[Test2]", EngineChannel::CENTER, m_pMaster);
     m_pMaster->addChannel(pChannel2);
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
-    CSAMPLE* pChannel1Buffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test1]"));
-    CSAMPLE* pChannel2Buffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test2]"));
+    CSAMPLE* pChannel1Buffer =
+            const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test1]"));
+    CSAMPLE* pChannel2Buffer =
+            const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test2]"));
 
     // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
     FillBuffer(pChannel1Buffer, 0.1f, MAX_BUFFER_LEN);
     FillBuffer(pChannel2Buffer, 0.2f, MAX_BUFFER_LEN);
 
     // Instruct channel 1 to claim it is active, master and not PFL.
-    EXPECT_CALL(*pChannel1, isActive())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel1, isMasterEnabled())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel1, isPflEnabled())
-            .Times(1)
-            .WillOnce(Return(true));
+    EXPECT_CALL(*pChannel1, isActive()).Times(1).WillOnce(Return(true));
+    EXPECT_CALL(*pChannel1, isMasterEnabled()).Times(1).WillOnce(Return(true));
+    EXPECT_CALL(*pChannel1, isPflEnabled()).Times(1).WillOnce(Return(true));
 
     // Instruct channel 2 to claim it is active, master and not PFL.
-    EXPECT_CALL(*pChannel2, isActive())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel2, isMasterEnabled())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel2, isPflEnabled())
-            .Times(1)
-            .WillOnce(Return(true));
+    EXPECT_CALL(*pChannel2, isActive()).Times(1).WillOnce(Return(true));
+    EXPECT_CALL(*pChannel2, isMasterEnabled()).Times(1).WillOnce(Return(true));
+    EXPECT_CALL(*pChannel2, isPflEnabled()).Times(1).WillOnce(Return(true));
 
     // Instruct the mock to just return when process() gets called.
     EXPECT_CALL(*pChannel1, process(_, MAX_BUFFER_LEN))
@@ -227,20 +203,23 @@ TEST_F(EngineMasterTest, TwoChannelPFLOutputWorks) {
 }
 
 TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
-    EngineChannelMock* pChannel1 = new EngineChannelMock(
-            "[Test1]", EngineChannel::CENTER, m_pMaster);
+    EngineChannelMock* pChannel1 =
+            new EngineChannelMock("[Test1]", EngineChannel::CENTER, m_pMaster);
     m_pMaster->addChannel(pChannel1);
-    EngineChannelMock* pChannel2 = new EngineChannelMock(
-            "[Test2]", EngineChannel::CENTER, m_pMaster);
+    EngineChannelMock* pChannel2 =
+            new EngineChannelMock("[Test2]", EngineChannel::CENTER, m_pMaster);
     m_pMaster->addChannel(pChannel2);
-    EngineChannelMock* pChannel3 = new EngineChannelMock(
-            "[Test3]", EngineChannel::CENTER, m_pMaster);
+    EngineChannelMock* pChannel3 =
+            new EngineChannelMock("[Test3]", EngineChannel::CENTER, m_pMaster);
     m_pMaster->addChannel(pChannel3);
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
-    CSAMPLE* pChannel1Buffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test1]"));
-    CSAMPLE* pChannel2Buffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test2]"));
-    CSAMPLE* pChannel3Buffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test3]"));
+    CSAMPLE* pChannel1Buffer =
+            const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test1]"));
+    CSAMPLE* pChannel2Buffer =
+            const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test2]"));
+    CSAMPLE* pChannel3Buffer =
+            const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test3]"));
 
     // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
     FillBuffer(pChannel1Buffer, 0.1f, MAX_BUFFER_LEN);
@@ -248,37 +227,19 @@ TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
     FillBuffer(pChannel3Buffer, 0.3f, MAX_BUFFER_LEN);
 
     // Instruct channel 1 to claim it is active, master and not PFL.
-    EXPECT_CALL(*pChannel1, isActive())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel1, isMasterEnabled())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel1, isPflEnabled())
-            .Times(1)
-            .WillOnce(Return(false));
+    EXPECT_CALL(*pChannel1, isActive()).Times(1).WillOnce(Return(true));
+    EXPECT_CALL(*pChannel1, isMasterEnabled()).Times(1).WillOnce(Return(true));
+    EXPECT_CALL(*pChannel1, isPflEnabled()).Times(1).WillOnce(Return(false));
 
     // Instruct channel 2 to claim it is active, master and not PFL.
-    EXPECT_CALL(*pChannel2, isActive())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel2, isMasterEnabled())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel2, isPflEnabled())
-            .Times(1)
-            .WillOnce(Return(false));
+    EXPECT_CALL(*pChannel2, isActive()).Times(1).WillOnce(Return(true));
+    EXPECT_CALL(*pChannel2, isMasterEnabled()).Times(1).WillOnce(Return(true));
+    EXPECT_CALL(*pChannel2, isPflEnabled()).Times(1).WillOnce(Return(false));
 
     // Instruct channel 3 to claim it is active, master and not PFL.
-    EXPECT_CALL(*pChannel3, isActive())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel3, isMasterEnabled())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel3, isPflEnabled())
-            .Times(1)
-            .WillOnce(Return(false));
+    EXPECT_CALL(*pChannel3, isActive()).Times(1).WillOnce(Return(true));
+    EXPECT_CALL(*pChannel3, isMasterEnabled()).Times(1).WillOnce(Return(true));
+    EXPECT_CALL(*pChannel3, isPflEnabled()).Times(1).WillOnce(Return(false));
 
     // Instruct the mock to just return when process() gets called.
     EXPECT_CALL(*pChannel1, process(_, MAX_BUFFER_LEN))
@@ -303,20 +264,23 @@ TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
 }
 
 TEST_F(EngineMasterTest, ThreeChannelPFLOutputWorks) {
-    EngineChannelMock* pChannel1 = new EngineChannelMock(
-            "[Test1]", EngineChannel::CENTER, m_pMaster);
+    EngineChannelMock* pChannel1 =
+            new EngineChannelMock("[Test1]", EngineChannel::CENTER, m_pMaster);
     m_pMaster->addChannel(pChannel1);
-    EngineChannelMock* pChannel2 = new EngineChannelMock(
-            "[Test2]", EngineChannel::CENTER, m_pMaster);
+    EngineChannelMock* pChannel2 =
+            new EngineChannelMock("[Test2]", EngineChannel::CENTER, m_pMaster);
     m_pMaster->addChannel(pChannel2);
-    EngineChannelMock* pChannel3 = new EngineChannelMock(
-            "[Test3]", EngineChannel::CENTER, m_pMaster);
+    EngineChannelMock* pChannel3 =
+            new EngineChannelMock("[Test3]", EngineChannel::CENTER, m_pMaster);
     m_pMaster->addChannel(pChannel3);
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
-    CSAMPLE* pChannel1Buffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test1]"));
-    CSAMPLE* pChannel2Buffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test2]"));
-    CSAMPLE* pChannel3Buffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test3]"));
+    CSAMPLE* pChannel1Buffer =
+            const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test1]"));
+    CSAMPLE* pChannel2Buffer =
+            const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test2]"));
+    CSAMPLE* pChannel3Buffer =
+            const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test3]"));
 
     // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
     FillBuffer(pChannel1Buffer, 0.1f, MAX_BUFFER_LEN);
@@ -324,37 +288,19 @@ TEST_F(EngineMasterTest, ThreeChannelPFLOutputWorks) {
     FillBuffer(pChannel3Buffer, 0.3f, MAX_BUFFER_LEN);
 
     // Instruct channel 1 to claim it is active, master and not PFL.
-    EXPECT_CALL(*pChannel1, isActive())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel1, isMasterEnabled())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel1, isPflEnabled())
-            .Times(1)
-            .WillOnce(Return(true));
+    EXPECT_CALL(*pChannel1, isActive()).Times(1).WillOnce(Return(true));
+    EXPECT_CALL(*pChannel1, isMasterEnabled()).Times(1).WillOnce(Return(true));
+    EXPECT_CALL(*pChannel1, isPflEnabled()).Times(1).WillOnce(Return(true));
 
     // Instruct channel 2 to claim it is active, master and not PFL.
-    EXPECT_CALL(*pChannel2, isActive())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel2, isMasterEnabled())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel2, isPflEnabled())
-            .Times(1)
-            .WillOnce(Return(true));
+    EXPECT_CALL(*pChannel2, isActive()).Times(1).WillOnce(Return(true));
+    EXPECT_CALL(*pChannel2, isMasterEnabled()).Times(1).WillOnce(Return(true));
+    EXPECT_CALL(*pChannel2, isPflEnabled()).Times(1).WillOnce(Return(true));
 
     // Instruct channel 3 to claim it is active, master and not PFL.
-    EXPECT_CALL(*pChannel3, isActive())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel3, isMasterEnabled())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel3, isPflEnabled())
-            .Times(1)
-            .WillOnce(Return(true));
+    EXPECT_CALL(*pChannel3, isActive()).Times(1).WillOnce(Return(true));
+    EXPECT_CALL(*pChannel3, isMasterEnabled()).Times(1).WillOnce(Return(true));
+    EXPECT_CALL(*pChannel3, isPflEnabled()).Times(1).WillOnce(Return(true));
 
     // Instruct the mock to just return when process() gets called.
     EXPECT_CALL(*pChannel1, process(_, MAX_BUFFER_LEN))
@@ -379,30 +325,23 @@ TEST_F(EngineMasterTest, ThreeChannelPFLOutputWorks) {
 }
 
 TEST_F(EngineMasterTest, SingleChannelPFLOutputWorks) {
-    EngineChannelMock* pChannel = new EngineChannelMock(
-            "[Test1]", EngineChannel::CENTER, m_pMaster);
+    EngineChannelMock* pChannel =
+            new EngineChannelMock("[Test1]", EngineChannel::CENTER, m_pMaster);
     m_pMaster->addChannel(pChannel);
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
-    CSAMPLE* pChannelBuffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test1]"));
+    CSAMPLE* pChannelBuffer =
+            const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test1]"));
     // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
     FillBuffer(pChannelBuffer, 0.1f, MAX_BUFFER_LEN);
 
     // Instruct the mock to claim it is active, not master and PFL
-    EXPECT_CALL(*pChannel, isActive())
-            .Times(1)
-            .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel, isMasterEnabled())
-            .Times(1)
-            .WillOnce(Return(false));
-    EXPECT_CALL(*pChannel, isPflEnabled())
-            .Times(1)
-            .WillOnce(Return(true));
+    EXPECT_CALL(*pChannel, isActive()).Times(1).WillOnce(Return(true));
+    EXPECT_CALL(*pChannel, isMasterEnabled()).Times(1).WillOnce(Return(false));
+    EXPECT_CALL(*pChannel, isPflEnabled()).Times(1).WillOnce(Return(true));
 
     // Instruct the mock to just return when process() gets called.
-    EXPECT_CALL(*pChannel, process(_, _))
-            .Times(1)
-            .WillOnce(Return());
+    EXPECT_CALL(*pChannel, process(_, _)).Times(1).WillOnce(Return());
 
     m_pMaster->process(MAX_BUFFER_LEN);
 

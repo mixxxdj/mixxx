@@ -11,41 +11,41 @@
 
 WaveformRendererSignalBase::WaveformRendererSignalBase(
         WaveformWidgetRenderer* waveformWidgetRenderer)
-    : WaveformRendererAbstract(waveformWidgetRenderer),
-      m_pEQEnabled(NULL),
-      m_pLowFilterControlObject(NULL),
-      m_pMidFilterControlObject(NULL),
-      m_pHighFilterControlObject(NULL),
-      m_pLowKillControlObject(NULL),
-      m_pMidKillControlObject(NULL),
-      m_pHighKillControlObject(NULL),
-      m_alignment(Qt::AlignCenter),
-      m_pColors(NULL),
-      m_axesColor_r(0),
-      m_axesColor_g(0),
-      m_axesColor_b(0),
-      m_axesColor_a(0),
-      m_signalColor_r(0),
-      m_signalColor_g(0),
-      m_signalColor_b(0),
-      m_lowColor_r(0),
-      m_lowColor_g(0),
-      m_lowColor_b(0),
-      m_midColor_r(0),
-      m_midColor_g(0),
-      m_midColor_b(0),
-      m_highColor_r(0),
-      m_highColor_g(0),
-      m_highColor_b(0),
-      m_rgbLowColor_r(0),
-      m_rgbLowColor_g(0),
-      m_rgbLowColor_b(0),
-      m_rgbMidColor_r(0),
-      m_rgbMidColor_g(0),
-      m_rgbMidColor_b(0),
-      m_rgbHighColor_r(0),
-      m_rgbHighColor_g(0),
-      m_rgbHighColor_b(0) {
+        : WaveformRendererAbstract(waveformWidgetRenderer),
+          m_pEQEnabled(NULL),
+          m_pLowFilterControlObject(NULL),
+          m_pMidFilterControlObject(NULL),
+          m_pHighFilterControlObject(NULL),
+          m_pLowKillControlObject(NULL),
+          m_pMidKillControlObject(NULL),
+          m_pHighKillControlObject(NULL),
+          m_alignment(Qt::AlignCenter),
+          m_pColors(NULL),
+          m_axesColor_r(0),
+          m_axesColor_g(0),
+          m_axesColor_b(0),
+          m_axesColor_a(0),
+          m_signalColor_r(0),
+          m_signalColor_g(0),
+          m_signalColor_b(0),
+          m_lowColor_r(0),
+          m_lowColor_g(0),
+          m_lowColor_b(0),
+          m_midColor_r(0),
+          m_midColor_g(0),
+          m_midColor_b(0),
+          m_highColor_r(0),
+          m_highColor_g(0),
+          m_highColor_b(0),
+          m_rgbLowColor_r(0),
+          m_rgbLowColor_g(0),
+          m_rgbLowColor_b(0),
+          m_rgbMidColor_r(0),
+          m_rgbMidColor_g(0),
+          m_rgbMidColor_b(0),
+          m_rgbHighColor_r(0),
+          m_rgbHighColor_g(0),
+          m_rgbHighColor_b(0) {
 }
 
 WaveformRendererSignalBase::~WaveformRendererSignalBase() {
@@ -72,13 +72,13 @@ void WaveformRendererSignalBase::deleteControls() {
 bool WaveformRendererSignalBase::init() {
     deleteControls();
 
-    //create controls
-    m_pEQEnabled = new ControlObjectSlave(
-            m_waveformRenderer->getGroup(), "filterWaveformEnable");
-    m_pLowFilterControlObject = new ControlObjectSlave(
-            m_waveformRenderer->getGroup(), "filterLow");
-    m_pMidFilterControlObject = new ControlObjectSlave(
-            m_waveformRenderer->getGroup(), "filterMid");
+    // create controls
+    m_pEQEnabled = new ControlObjectSlave(m_waveformRenderer->getGroup(),
+                                          "filterWaveformEnable");
+    m_pLowFilterControlObject =
+            new ControlObjectSlave(m_waveformRenderer->getGroup(), "filterLow");
+    m_pMidFilterControlObject =
+            new ControlObjectSlave(m_waveformRenderer->getGroup(), "filterMid");
     m_pHighFilterControlObject = new ControlObjectSlave(
             m_waveformRenderer->getGroup(), "filterHigh");
     m_pLowKillControlObject = new ControlObjectSlave(
@@ -147,8 +147,7 @@ void WaveformRendererSignalBase::getGains(float* pAllGain, float* pLowGain,
 
         // Only adjust low/mid/high gains if EQs are enabled.
         if (m_pEQEnabled->get() > 0.0) {
-            if (m_pLowFilterControlObject &&
-                m_pMidFilterControlObject &&
+            if (m_pLowFilterControlObject && m_pMidFilterControlObject &&
                 m_pHighFilterControlObject) {
                 lowGain = m_pLowFilterControlObject->get();
                 midGain = m_pMidFilterControlObject->get();
@@ -159,15 +158,18 @@ void WaveformRendererSignalBase::getGains(float* pAllGain, float* pLowGain,
             midGain *= factory->getVisualGain(WaveformWidgetFactory::Mid);
             highGain *= factory->getVisualGain(WaveformWidgetFactory::High);
 
-            if (m_pLowKillControlObject && m_pLowKillControlObject->get() > 0.0) {
+            if (m_pLowKillControlObject &&
+                m_pLowKillControlObject->get() > 0.0) {
                 lowGain = 0;
             }
 
-            if (m_pMidKillControlObject && m_pMidKillControlObject->get() > 0.0) {
+            if (m_pMidKillControlObject &&
+                m_pMidKillControlObject->get() > 0.0) {
                 midGain = 0;
             }
 
-            if (m_pHighKillControlObject && m_pHighKillControlObject->get() > 0.0) {
+            if (m_pHighKillControlObject &&
+                m_pHighKillControlObject->get() > 0.0) {
                 highGain = 0;
             }
         }

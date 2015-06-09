@@ -22,8 +22,7 @@
  * @param channels the number of channels.
  */
 ChannelGroup::ChannelGroup(unsigned char channelBase, unsigned char channels)
-  : m_channelBase(channelBase)
-  , m_channels(channels) {
+        : m_channelBase(channelBase), m_channels(channels) {
 }
 
 /**
@@ -46,8 +45,8 @@ unsigned char ChannelGroup::getChannelCount() const {
  *          and channel count, otherwise false.
  */
 bool ChannelGroup::operator==(const ChannelGroup &other) const {
-    return m_channelBase == other.m_channelBase
-        && m_channels == other.m_channels;
+    return m_channelBase == other.m_channelBase &&
+           m_channels == other.m_channels;
 }
 
 /**
@@ -58,14 +57,13 @@ bool ChannelGroup::operator==(const ChannelGroup &other) const {
  */
 bool ChannelGroup::clashesWith(const ChannelGroup &other) const {
     if (m_channels == 0 || other.m_channels == 0) {
-        return false; // can't clash if there are no channels in use
+        return false;  // can't clash if there are no channels in use
     }
-    return (m_channelBase > other.m_channelBase
-        && m_channelBase < other.m_channelBase + other.m_channels)
-        ||
-        (other.m_channelBase > m_channelBase
-        && other.m_channelBase < m_channelBase + m_channels)
-        || m_channelBase == other.m_channelBase;
+    return (m_channelBase > other.m_channelBase &&
+            m_channelBase < other.m_channelBase + other.m_channels) ||
+           (other.m_channelBase > m_channelBase &&
+            other.m_channelBase < m_channelBase + m_channels) ||
+           m_channelBase == other.m_channelBase;
 }
 
 /**
@@ -79,13 +77,12 @@ unsigned int ChannelGroup::getHash() const {
 /**
  * Constructs an AudioPath object (must be called by a child class's
  * constructor, AudioPath is abstract).
- * @param channelBase the first channel on a sound device used by this AudioPath.
+ * @param channelBase the first channel on a sound device used by this
+ * AudioPath.
  * @param channels the number of channels used.
  */
 AudioPath::AudioPath(unsigned char channelBase, unsigned char channels)
-    : m_type(INVALID),
-      m_channelGroup(channelBase, channels),
-      m_index(0) {
+        : m_type(INVALID), m_channelGroup(channelBase, channels), m_index(0) {
 }
 
 /**
@@ -114,8 +111,7 @@ unsigned char AudioPath::getIndex() const {
  * @return true of this and other share a common type and index.
  */
 bool AudioPath::operator==(const AudioPath &other) const {
-    return m_type == other.m_type
-        && m_index == other.m_index;
+    return m_type == other.m_type && m_index == other.m_index;
 }
 
 /**
@@ -148,24 +144,24 @@ QString AudioPath::getString() const {
  */
 QString AudioPath::getStringFromType(AudioPathType type) {
     switch (type) {
-    case INVALID:
-        // this shouldn't happen but g++ complains if I don't
-        // handle this -- bkgood
-        return QString::fromAscii("Invalid");
-    case MASTER:
-        return QString::fromAscii("Master");
-    case HEADPHONES:
-        return QString::fromAscii("Headphones");
-    case BUS:
-        return QString::fromAscii("Bus");
-    case DECK:
-        return QString::fromAscii("Deck");
-    case VINYLCONTROL:
-        return QString::fromAscii("Vinyl Control");
-    case MICROPHONE:
-        return QString::fromAscii("Microphone");
-    case AUXILIARY:
-        return QString::fromAscii("Auxiliary");
+        case INVALID:
+            // this shouldn't happen but g++ complains if I don't
+            // handle this -- bkgood
+            return QString::fromAscii("Invalid");
+        case MASTER:
+            return QString::fromAscii("Master");
+        case HEADPHONES:
+            return QString::fromAscii("Headphones");
+        case BUS:
+            return QString::fromAscii("Bus");
+        case DECK:
+            return QString::fromAscii("Deck");
+        case VINYLCONTROL:
+            return QString::fromAscii("Vinyl Control");
+        case MICROPHONE:
+            return QString::fromAscii("Microphone");
+        case AUXILIARY:
+            return QString::fromAscii("Auxiliary");
     }
     return QString::fromAscii("Unknown path type %1").arg(type);
 }
@@ -174,39 +170,40 @@ QString AudioPath::getStringFromType(AudioPathType type) {
  * Returns a translated string given an AudioPathType.
  * @note This method is static.
  */
-QString AudioPath::getTrStringFromType(AudioPathType type, unsigned char index) {
+QString AudioPath::getTrStringFromType(AudioPathType type,
+                                       unsigned char index) {
     switch (type) {
-    case INVALID:
-        // this shouldn't happen but g++ complains if I don't
-        // handle this -- bkgood
-        return QObject::tr("Invalid");
-    case MASTER:
-        return QObject::tr("Master");
-    case HEADPHONES:
-        return QObject::tr("Headphones");
-    case BUS:
-        switch (index) {
-        case EngineChannel::LEFT:
-            return QObject::tr("Left Bus");
-        case EngineChannel::CENTER:
-            return QObject::tr("Center Bus");
-        case EngineChannel::RIGHT:
-            return QObject::tr("Right Bus");
-        default:
-            return QObject::tr("Invalid Bus");
-        }
-    case DECK:
-        return QString("%1 %2").arg(QObject::tr("Deck"),
-                                    QString::number(index + 1));
-    case VINYLCONTROL:
-        return QString("%1 %2").arg(QObject::tr("Vinyl Control"),
-                                    QString::number(index + 1));
-    case MICROPHONE:
-        return QString("%1 %2").arg(QObject::tr("Microphone"),
-                                    QString::number(index + 1));
-    case AUXILIARY:
-        return QString("%1 %2").arg(QObject::tr("Auxiliary"),
-                                    QString::number(index + 1));
+        case INVALID:
+            // this shouldn't happen but g++ complains if I don't
+            // handle this -- bkgood
+            return QObject::tr("Invalid");
+        case MASTER:
+            return QObject::tr("Master");
+        case HEADPHONES:
+            return QObject::tr("Headphones");
+        case BUS:
+            switch (index) {
+                case EngineChannel::LEFT:
+                    return QObject::tr("Left Bus");
+                case EngineChannel::CENTER:
+                    return QObject::tr("Center Bus");
+                case EngineChannel::RIGHT:
+                    return QObject::tr("Right Bus");
+                default:
+                    return QObject::tr("Invalid Bus");
+            }
+        case DECK:
+            return QString("%1 %2")
+                    .arg(QObject::tr("Deck"), QString::number(index + 1));
+        case VINYLCONTROL:
+            return QString("%1 %2").arg(QObject::tr("Vinyl Control"),
+                                        QString::number(index + 1));
+        case MICROPHONE:
+            return QString("%1 %2")
+                    .arg(QObject::tr("Microphone"), QString::number(index + 1));
+        case AUXILIARY:
+            return QString("%1 %2")
+                    .arg(QObject::tr("Auxiliary"), QString::number(index + 1));
     }
     return QObject::tr("Unknown path type %1").arg(type);
 }
@@ -219,17 +216,24 @@ AudioPathType AudioPath::getTypeFromString(QString string) {
     string = string.toLower();
     if (string == AudioPath::getStringFromType(AudioPath::MASTER).toLower()) {
         return AudioPath::MASTER;
-    } else if (string == AudioPath::getStringFromType(AudioPath::HEADPHONES).toLower()) {
+    } else if (string ==
+               AudioPath::getStringFromType(AudioPath::HEADPHONES).toLower()) {
         return AudioPath::HEADPHONES;
-    } else if (string == AudioPath::getStringFromType(AudioPath::BUS).toLower()) {
+    } else if (string ==
+               AudioPath::getStringFromType(AudioPath::BUS).toLower()) {
         return AudioPath::BUS;
-    } else if (string == AudioPath::getStringFromType(AudioPath::DECK).toLower()) {
+    } else if (string ==
+               AudioPath::getStringFromType(AudioPath::DECK).toLower()) {
         return AudioPath::DECK;
-    } else if (string == AudioPath::getStringFromType(AudioPath::VINYLCONTROL).toLower()) {
+    } else if (string ==
+               AudioPath::getStringFromType(AudioPath::VINYLCONTROL)
+                       .toLower()) {
         return AudioPath::VINYLCONTROL;
-    } else if (string == AudioPath::getStringFromType(AudioPath::MICROPHONE).toLower()) {
+    } else if (string ==
+               AudioPath::getStringFromType(AudioPath::MICROPHONE).toLower()) {
         return AudioPath::MICROPHONE;
-    } else if (string == AudioPath::getStringFromType(AudioPath::AUXILIARY).toLower()) {
+    } else if (string ==
+               AudioPath::getStringFromType(AudioPath::AUXILIARY).toLower()) {
         return AudioPath::AUXILIARY;
     } else {
         return AudioPath::INVALID;
@@ -242,14 +246,14 @@ AudioPathType AudioPath::getTypeFromString(QString string) {
  */
 bool AudioPath::isIndexed(AudioPathType type) {
     switch (type) {
-    case BUS:
-    case DECK:
-    case VINYLCONTROL:
-    case AUXILIARY:
-    case MICROPHONE:
-        return true;
-    default:
-        break;
+        case BUS:
+        case DECK:
+        case VINYLCONTROL:
+        case AUXILIARY:
+        case MICROPHONE:
+            return true;
+        default:
+            break;
     }
     return false;
 }
@@ -268,29 +272,27 @@ AudioPathType AudioPath::getTypeFromInt(int typeInt) {
 // static
 unsigned char AudioPath::minChannelsForType(AudioPathType type) {
     switch (type) {
-    case AudioPath::VINYLCONTROL:
-        return 2;
-    default:
-        return 1;
+        case AudioPath::VINYLCONTROL:
+            return 2;
+        default:
+            return 1;
     }
 }
 
 // static
 unsigned char AudioPath::maxChannelsForType(AudioPathType type) {
     switch (type) {
-    default:
-        return 2;
+        default:
+            return 2;
     }
 }
 
 /**
  * Constructs an AudioOutput.
  */
-AudioOutput::AudioOutput(AudioPathType type,
-                         unsigned char channelBase,
-                         unsigned char channels,
-                         unsigned char index)
-    : AudioPath(channelBase, channels) {
+AudioOutput::AudioOutput(AudioPathType type, unsigned char channelBase,
+                         unsigned char channels, unsigned char index)
+        : AudioPath(channelBase, channels) {
     setType(type);
     if (isIndexed(type)) {
         m_index = index;
@@ -300,7 +302,6 @@ AudioOutput::AudioOutput(AudioPathType type,
 }
 
 AudioOutput::~AudioOutput() {
-
 }
 
 /**
@@ -335,7 +336,7 @@ AudioOutput AudioOutput::fromXML(const QDomElement &xml) {
     return AudioOutput(type, channel, channels, index);
 }
 
-//static
+// static
 /**
  * Enumerates the AudioPathTypes supported by AudioOutput.
  * @note This method is static.
@@ -364,10 +365,8 @@ void AudioOutput::setType(AudioPathType type) {
 /**
  * Constructs an AudioInput.
  */
-AudioInput::AudioInput(AudioPathType type,
-                       unsigned char channelBase,
-                       unsigned char channels,
-                       unsigned char index)
+AudioInput::AudioInput(AudioPathType type, unsigned char channelBase,
+                       unsigned char channels, unsigned char index)
         : AudioPath(channelBase, channels) {
     setType(type);
     if (isIndexed(type)) {
@@ -378,7 +377,6 @@ AudioInput::AudioInput(AudioPathType type,
 }
 
 AudioInput::~AudioInput() {
-
 }
 
 /**

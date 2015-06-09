@@ -30,7 +30,7 @@ class ControllerEngineConnection {
     ConfigKey key;
     QString id;
     QScriptValue function;
-    ControllerEngine *ce;
+    ControllerEngine* ce;
     QScriptValue context;
 };
 
@@ -39,23 +39,27 @@ class ControllerEngineConnectionScriptValue : public QObject {
     Q_PROPERTY(QString id READ readId)
     // We cannot expose ConfigKey directly since it's not a
     // QObject
-    //Q_PROPERTY(ConfigKey key READ key)
+    // Q_PROPERTY(ConfigKey key READ key)
     // There's little use in exposing the function...
-    //Q_PROPERTY(QScriptValue function READ function)
+    // Q_PROPERTY(QScriptValue function READ function)
   public:
     ControllerEngineConnectionScriptValue(ControllerEngineConnection conn) {
         this->conn = conn;
     }
-    QString readId() const { return this->conn.id; }
+    QString readId() const {
+        return this->conn.id;
+    }
     Q_INVOKABLE void disconnect();
 
   private:
-   ControllerEngineConnection conn;
+    ControllerEngineConnection conn;
 };
 
 /* comparison function for ControllerEngineConnection */
-inline bool operator==(const ControllerEngineConnection &c1, const ControllerEngineConnection &c2) {
-    return c1.id == c2.id && c1.key.group == c2.key.group && c1.key.item == c2.key.item;
+inline bool operator==(const ControllerEngineConnection& c1,
+                       const ControllerEngineConnection& c2) {
+    return c1.id == c2.id && c1.key.group == c2.key.group &&
+           c1.key.item == c2.key.item;
 }
 
 class ControllerEngine : public QObject {
@@ -81,7 +85,9 @@ class ControllerEngine : public QObject {
     /** Resolve a function name to a QScriptValue. */
     QScriptValue resolveFunction(QString function, bool useCache) const;
     /** Look up registered script function prefixes */
-    QList<QString>& getScriptFunctionPrefixes() { return m_scriptFunctionPrefixes; };
+    QList<QString>& getScriptFunctionPrefixes() {
+        return m_scriptFunctionPrefixes;
+    };
     /** Disconnect a ControllerEngineConnection */
     void disconnectControl(const ControllerEngineConnection conn);
 
@@ -90,16 +96,19 @@ class ControllerEngine : public QObject {
     Q_INVOKABLE void setValue(QString group, QString name, double newValue);
     Q_INVOKABLE double getParameter(QString group, QString name);
     Q_INVOKABLE void setParameter(QString group, QString name, double newValue);
-    Q_INVOKABLE double getParameterForValue(QString group, QString name, double value);
+    Q_INVOKABLE double getParameterForValue(QString group, QString name,
+                                            double value);
     Q_INVOKABLE void reset(QString group, QString name);
     Q_INVOKABLE double getDefaultValue(QString group, QString name);
     Q_INVOKABLE double getDefaultParameter(QString group, QString name);
     Q_INVOKABLE QScriptValue connectControl(QString group, QString name,
-                                    QScriptValue function, bool disconnect = false);
+                                            QScriptValue function,
+                                            bool disconnect = false);
     // Called indirectly by the objects returned by connectControl
     Q_INVOKABLE void trigger(QString group, QString name);
     Q_INVOKABLE void log(QString message);
-    Q_INVOKABLE int beginTimer(int interval, QScriptValue scriptCode, bool oneShot = false);
+    Q_INVOKABLE int beginTimer(int interval, QScriptValue scriptCode,
+                               bool oneShot = false);
     Q_INVOKABLE void stopTimer(int timerId);
     Q_INVOKABLE void scratchEnable(int deck, int intervalsPerRev, double rpm,
                                    double alpha, double beta, bool ramp = true);
@@ -107,11 +116,13 @@ class ControllerEngine : public QObject {
     Q_INVOKABLE void scratchDisable(int deck, bool ramp = true);
     Q_INVOKABLE bool isScratching(int deck);
     Q_INVOKABLE void softTakeover(QString group, QString name, bool set);
-    Q_INVOKABLE void brake(int deck, bool activate, double factor=0.9, double rate=1.0);
-    Q_INVOKABLE void spinback(int deck, bool activate, double factor=1.8, double rate=-10.0);
+    Q_INVOKABLE void brake(int deck, bool activate, double factor = 0.9,
+                           double rate = 1.0);
+    Q_INVOKABLE void spinback(int deck, bool activate, double factor = 1.8,
+                              double rate = -10.0);
 
     // Handler for timers that scripts set.
-    virtual void timerEvent(QTimerEvent *event);
+    virtual void timerEvent(QTimerEvent* event);
 
   public slots:
     void slotValueChanged(double value);
@@ -129,11 +140,13 @@ class ControllerEngine : public QObject {
     bool execute(QString function, const QByteArray data);
     bool execute(QScriptValue function, const QByteArray data);
     // Execute a particular function with a data buffer
-    //TODO: redo this one
-    //bool execute(QString function, const QByteArray data);
-    void loadScriptFiles(QList<QString> scriptPaths,
-                         const QList<ControllerPreset::ScriptFileInfo>& scripts);
-    void initializeScripts(const QList<ControllerPreset::ScriptFileInfo>& scripts);
+    // TODO: redo this one
+    // bool execute(QString function, const QByteArray data);
+    void loadScriptFiles(
+            QList<QString> scriptPaths,
+            const QList<ControllerPreset::ScriptFileInfo>& scripts);
+    void initializeScripts(
+            const QList<ControllerPreset::ScriptFileInfo>& scripts);
     void gracefulShutdown();
     void scriptHasChanged(QString);
 
@@ -156,9 +169,10 @@ class ControllerEngine : public QObject {
     // Stops and removes all timers (for shutdown).
     void stopAllTimers();
 
-    void callFunctionOnObjects(QList<QString>, QString, QScriptValueList args = QScriptValueList());
+    void callFunctionOnObjects(QList<QString>, QString,
+                               QScriptValueList args = QScriptValueList());
     bool checkException();
-    QScriptEngine *m_pEngine;
+    QScriptEngine* m_pEngine;
 
     ControlObjectThread* getControlObjectThread(QString group, QString name);
 
@@ -173,7 +187,7 @@ class ControllerEngine : public QObject {
     bool m_bPopups;
     QMultiHash<ConfigKey, ControllerEngineConnection> m_connectedControls;
     QList<QString> m_scriptFunctionPrefixes;
-    QMap<QString,QStringList> m_scriptErrors;
+    QMap<QString, QStringList> m_scriptErrors;
     QHash<ConfigKey, ControlObjectThread*> m_controlCache;
     struct TimerInfo {
         QScriptValue callback;
@@ -184,7 +198,8 @@ class ControllerEngine : public QObject {
     SoftTakeoverCtrl m_st;
     ByteArrayClass* m_pBaClass;
     // 256 (default) available virtual decks is enough I would think.
-    //  If more are needed at run-time, these will move to the heap automatically
+    //  If more are needed at run-time, these will move to the heap
+    //  automatically
     QVarLengthArray<int> m_intervalAccumulator;
     QVarLengthArray<uint> m_lastMovement;
     QVarLengthArray<double> m_dx, m_rampTo, m_rampFactor;

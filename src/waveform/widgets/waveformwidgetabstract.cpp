@@ -4,10 +4,8 @@
 #include <QtDebug>
 #include <QWidget>
 
-
 WaveformWidgetAbstract::WaveformWidgetAbstract(const char* group)
-    : WaveformWidgetRenderer(group),
-      m_initSuccess(false) {
+        : WaveformWidgetRenderer(group), m_initSuccess(false) {
     m_widget = NULL;
 }
 
@@ -32,9 +30,10 @@ void WaveformWidgetAbstract::preRender(VSyncThread* vsyncThread) {
 
 int WaveformWidgetAbstract::render() {
     if (m_widget) {
-        m_widget->repaint(); // Repaints the widget directly by calling paintEvent()
+        m_widget->repaint();  // Repaints the widget directly by calling
+                              // paintEvent()
     }
-    return 0; // Time for Painter setup, unknown in this case
+    return 0;  // Time for Painter setup, unknown in this case
 }
 
 void WaveformWidgetAbstract::resize(int width, int height) {

@@ -14,7 +14,6 @@
  *                                                                         *
  ***************************************************************************/
 
-
 /*class MixxxEvent : QEvent
 {
 
@@ -29,7 +28,6 @@
 }*/
 
 //^ meh, take the short route (for now):
-#define MIXXXEVENT_CONTROL ((QEvent::Type)(QEvent::User+1))
-#define MIXXXEVENT_MIDI ((QEvent::Type)(QEvent::User+2))
-#define MIXXXEVENT_READER ((QEvent::Type)(QEvent::User+3))
-
+#define MIXXXEVENT_CONTROL ((QEvent::Type)(QEvent::User + 1))
+#define MIXXXEVENT_MIDI ((QEvent::Type)(QEvent::User + 2))
+#define MIXXXEVENT_READER ((QEvent::Type)(QEvent::User + 3))

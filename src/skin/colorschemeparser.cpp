@@ -11,12 +11,13 @@
 #include "skin/imgcolor.h"
 #include "skin/imginvert.h"
 
-void ColorSchemeParser::setupLegacyColorSchemes(QDomElement docElem,
-                                                ConfigObject<ConfigValue>* pConfig) {
+void ColorSchemeParser::setupLegacyColorSchemes(
+        QDomElement docElem, ConfigObject<ConfigValue>* pConfig) {
     QDomNode colsch = docElem.namedItem("Schemes");
 
     if (!colsch.isNull() && colsch.isElement()) {
-        QString schname = pConfig->getValueString(ConfigKey("[Config]","Scheme"));
+        QString schname =
+                pConfig->getValueString(ConfigKey("[Config]", "Scheme"));
         QDomNode sch = colsch.firstChild();
 
         bool found = false;
@@ -36,8 +37,8 @@ void ColorSchemeParser::setupLegacyColorSchemes(QDomElement docElem,
         }
 
         if (found) {
-            QSharedPointer<ImgSource> imsrc =
-                    QSharedPointer<ImgSource>(parseFilters(sch.namedItem("Filters")));
+            QSharedPointer<ImgSource> imsrc = QSharedPointer<ImgSource>(
+                    parseFilters(sch.namedItem("Filters")));
             WPixmapStore::setLoader(imsrc);
             WImageStore::setLoader(imsrc);
             WSkinColor::setLoader(imsrc);
@@ -54,13 +55,12 @@ void ColorSchemeParser::setupLegacyColorSchemes(QDomElement docElem,
 }
 
 ImgSource* ColorSchemeParser::parseFilters(QDomNode filt) {
-
     // TODO: Move this code into ImgSource
     if (!filt.hasChildNodes()) {
         return 0;
     }
 
-    ImgSource * ret = new ImgLoader();
+    ImgSource* ret = new ImgLoader();
 
     QDomNode f = filt.firstChild();
 
@@ -73,7 +73,8 @@ ImgSource* ColorSchemeParser::parseFilters(QDomNode filt) {
         } else if (name == "add") {
             ret = new ImgAdd(ret, XmlParse::selectNodeInt(f, "Amount"));
         } else if (name == "scalewhite") {
-            ret = new ImgScaleWhite(ret, XmlParse::selectNodeFloat(f, "Amount"));
+            ret = new ImgScaleWhite(ret,
+                                    XmlParse::selectNodeFloat(f, "Amount"));
         } else if (name == "hsvtweak") {
             int hmin = 0;
             int hmax = 359;
@@ -88,23 +89,47 @@ ImgSource* ColorSchemeParser::parseFilters(QDomNode filt) {
             int sconst = 0;
             int vconst = 0;
 
-            if (!f.namedItem("HMin").isNull()) { hmin = XmlParse::selectNodeInt(f, "HMin"); }
-            if (!f.namedItem("HMax").isNull()) { hmax = XmlParse::selectNodeInt(f, "HMax"); }
-            if (!f.namedItem("SMin").isNull()) { smin = XmlParse::selectNodeInt(f, "SMin"); }
-            if (!f.namedItem("SMax").isNull()) { smax = XmlParse::selectNodeInt(f, "SMax"); }
-            if (!f.namedItem("VMin").isNull()) { vmin = XmlParse::selectNodeInt(f, "VMin"); }
-            if (!f.namedItem("VMax").isNull()) { vmax = XmlParse::selectNodeInt(f, "VMax"); }
+            if (!f.namedItem("HMin").isNull()) {
+                hmin = XmlParse::selectNodeInt(f, "HMin");
+            }
+            if (!f.namedItem("HMax").isNull()) {
+                hmax = XmlParse::selectNodeInt(f, "HMax");
+            }
+            if (!f.namedItem("SMin").isNull()) {
+                smin = XmlParse::selectNodeInt(f, "SMin");
+            }
+            if (!f.namedItem("SMax").isNull()) {
+                smax = XmlParse::selectNodeInt(f, "SMax");
+            }
+            if (!f.namedItem("VMin").isNull()) {
+                vmin = XmlParse::selectNodeInt(f, "VMin");
+            }
+            if (!f.namedItem("VMax").isNull()) {
+                vmax = XmlParse::selectNodeInt(f, "VMax");
+            }
 
-            if (!f.namedItem("HConst").isNull()) { hconst = XmlParse::selectNodeInt(f, "HConst"); }
-            if (!f.namedItem("SConst").isNull()) { sconst = XmlParse::selectNodeInt(f, "SConst"); }
-            if (!f.namedItem("VConst").isNull()) { vconst = XmlParse::selectNodeInt(f, "VConst"); }
+            if (!f.namedItem("HConst").isNull()) {
+                hconst = XmlParse::selectNodeInt(f, "HConst");
+            }
+            if (!f.namedItem("SConst").isNull()) {
+                sconst = XmlParse::selectNodeInt(f, "SConst");
+            }
+            if (!f.namedItem("VConst").isNull()) {
+                vconst = XmlParse::selectNodeInt(f, "VConst");
+            }
 
-            if (!f.namedItem("HFact").isNull()) { hfact = XmlParse::selectNodeFloat(f, "HFact"); }
-            if (!f.namedItem("SFact").isNull()) { sfact = XmlParse::selectNodeFloat(f, "SFact"); }
-            if (!f.namedItem("VFact").isNull()) { vfact = XmlParse::selectNodeFloat(f, "VFact"); }
+            if (!f.namedItem("HFact").isNull()) {
+                hfact = XmlParse::selectNodeFloat(f, "HFact");
+            }
+            if (!f.namedItem("SFact").isNull()) {
+                sfact = XmlParse::selectNodeFloat(f, "SFact");
+            }
+            if (!f.namedItem("VFact").isNull()) {
+                vfact = XmlParse::selectNodeFloat(f, "VFact");
+            }
 
-            ret = new ImgHSVTweak(ret, hmin, hmax, smin, smax, vmin, vmax, hfact, hconst,
-                                  sfact, sconst, vfact, vconst);
+            ret = new ImgHSVTweak(ret, hmin, hmax, smin, smax, vmin, vmax,
+                                  hfact, hconst, sfact, sconst, vfact, vconst);
         } else {
             qDebug() << "Unkown image filter:" << name;
         }

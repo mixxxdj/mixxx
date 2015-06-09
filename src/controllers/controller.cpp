@@ -21,8 +21,9 @@ Controller::Controller()
           m_bLearning(false) {
     // Get --controllerDebug command line option
     QStringList commandLineArgs = QApplication::arguments();
-    m_bDebug = commandLineArgs.contains("--controllerDebug", Qt::CaseInsensitive) ||
-            commandLineArgs.contains("--midiDebug", Qt::CaseInsensitive);
+    m_bDebug = commandLineArgs.contains("--controllerDebug",
+                                        Qt::CaseInsensitive) ||
+               commandLineArgs.contains("--midiDebug", Qt::CaseInsensitive);
 }
 
 Controller::~Controller() {
@@ -30,8 +31,7 @@ Controller::~Controller() {
     // destructors.
 }
 
-void Controller::startEngine()
-{
+void Controller::startEngine() {
     if (debugging()) {
         qDebug() << "  Starting engine";
     }
@@ -67,7 +67,8 @@ void Controller::applyPreset(QList<QString> scriptPaths) {
     }
 
     if (pPreset->scripts.isEmpty()) {
-        qWarning() << "No script functions available! Did the XML file(s) load successfully? See above for any errors.";
+        qWarning() << "No script functions available! Did the XML file(s) load "
+                      "successfully? See above for any errors.";
         return;
     }
 
@@ -81,9 +82,8 @@ void Controller::startLearning() {
 }
 
 void Controller::stopLearning() {
-    //qDebug() << m_sDeviceName << "stopped learning.";
+    // qDebug() << m_sDeviceName << "stopped learning.";
     m_bLearning = false;
-
 }
 
 void Controller::send(QList<int> data, unsigned int length) {
@@ -99,7 +99,7 @@ void Controller::send(QList<int> data, unsigned int length) {
 
 void Controller::receive(const QByteArray data) {
     if (m_pEngine == NULL) {
-        //qWarning() << "Controller::receive called with no active engine!";
+        // qWarning() << "Controller::receive called with no active engine!";
         // Don't complain, since this will always show after closing a device as
         //  queued signals flush out
         return;
@@ -108,14 +108,19 @@ void Controller::receive(const QByteArray data) {
     int length = data.size();
     if (debugging()) {
         // Formatted packet display
-        QString message = QString("%1: %2 bytes:\n").arg(m_sDeviceName).arg(length);
-        for(int i=0; i<length; i++) {
-            QString spacer=" ";
-            if ((i+1) % 4 == 0) spacer="  ";
-            if ((i+1) % 16 == 0) spacer="\n";
-            message += QString("%1%2")
-                        .arg((unsigned char)(data.at(i)), 2, 16, QChar('0')).toUpper()
-                        .arg(spacer);
+        QString message =
+                QString("%1: %2 bytes:\n").arg(m_sDeviceName).arg(length);
+        for (int i = 0; i < length; i++) {
+            QString spacer = " ";
+            if ((i + 1) % 4 == 0)
+                spacer = "  ";
+            if ((i + 1) % 16 == 0)
+                spacer = "\n";
+            message +=
+                    QString("%1%2")
+                            .arg((unsigned char)(data.at(i)), 2, 16, QChar('0'))
+                            .toUpper()
+                            .arg(spacer);
         }
         qDebug() << message;
     }

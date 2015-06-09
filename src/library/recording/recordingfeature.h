@@ -20,8 +20,7 @@ class TrackCollection;
 class RecordingFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    RecordingFeature(Library* parent,
-                     ConfigObject<ConfigValue>* pConfig,
+    RecordingFeature(Library* parent, ConfigObject<ConfigValue>* pConfig,
                      TrackCollection* pTrackCollection,
                      RecordingManager* pRecordingManager);
     virtual ~RecordingFeature();
@@ -29,8 +28,7 @@ class RecordingFeature : public LibraryFeature {
     QVariant title();
     QIcon getIcon();
 
-    void bindWidget(WLibrary* libraryWidget,
-                    MixxxKeyboard* keyboard);
+    void bindWidget(WLibrary* libraryWidget, MixxxKeyboard* keyboard);
 
     TreeItemModel* getChildModel();
 

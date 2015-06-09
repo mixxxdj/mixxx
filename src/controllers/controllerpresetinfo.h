@@ -26,28 +26,42 @@ class PresetInfo {
   public:
     PresetInfo();
     PresetInfo(const QString path);
-    virtual ~PresetInfo() {};
+    virtual ~PresetInfo(){};
 
     inline bool isValid() const {
         return m_valid;
     }
 
-    inline const QString getPath() const { return path; };
+    inline const QString getPath() const {
+        return path;
+    };
 
-    inline const QString getName() const { return name; } ;
-    inline const QString getDescription() const { return description; };
-    inline const QString getForumLink() const { return forumlink; };
-    inline const QString getWikiLink() const { return wikilink; };
-    inline const QString getAuthor() const { return author; };
+    inline const QString getName() const {
+        return name;
+    };
+    inline const QString getDescription() const {
+        return description;
+    };
+    inline const QString getForumLink() const {
+        return forumlink;
+    };
+    inline const QString getWikiLink() const {
+        return wikilink;
+    };
+    inline const QString getAuthor() const {
+        return author;
+    };
 
-    inline const QList<QHash<QString,QString> > getProducts() const { return products; };
+    inline const QList<QHash<QString, QString>> getProducts() const {
+        return products;
+    };
 
   private:
-    QHash<QString,QString> parseBulkProduct(const QDomElement& element) const;
-    QHash<QString,QString> parseHIDProduct(const QDomElement& element) const;
+    QHash<QString, QString> parseBulkProduct(const QDomElement& element) const;
+    QHash<QString, QString> parseHIDProduct(const QDomElement& element) const;
     // Note - following are just stubs, not yet implemented
-    QHash<QString,QString> parseMIDIProduct(const QDomElement& element) const;
-    QHash<QString,QString> parseOSCProduct(const QDomElement& element) const;
+    QHash<QString, QString> parseMIDIProduct(const QDomElement& element) const;
+    QHash<QString, QString> parseOSCProduct(const QDomElement& element) const;
 
     bool m_valid;
     QString path;
@@ -56,12 +70,12 @@ class PresetInfo {
     QString description;
     QString forumlink;
     QString wikilink;
-    QList<QHash<QString,QString> > products;
+    QList<QHash<QString, QString>> products;
 };
 
 class PresetInfoEnumerator {
   public:
-    PresetInfoEnumerator(ConfigObject<ConfigValue> *pConfig);
+    PresetInfoEnumerator(ConfigObject<ConfigValue>* pConfig);
     virtual ~PresetInfoEnumerator();
 
     bool isValidExtension(const QString extension);
@@ -89,7 +103,7 @@ class PresetInfoEnumerator {
 
     // Cached presets by extension. Map format is:
     // [extension,[preset_path,preset]]
-    QMap<QString, QMap<QString, PresetInfo> > presetsByExtension;
+    QMap<QString, QMap<QString, PresetInfo>> presetsByExtension;
     QMap<QString, ControllerPresetFileHandler*> m_presetFileHandlersByExtension;
 };
 

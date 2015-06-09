@@ -3,7 +3,7 @@
 
 #include "util/types.h"
 
-#include <algorithm> // std::swap
+#include <algorithm>  // std::swap
 
 // A sample buffer with properly aligned memory to enable SSE optimizations.
 // After construction the content of the buffer is uninitialized. No resize
@@ -29,15 +29,13 @@
 //
 class SampleBuffer {
     Q_DISABLE_COPY(SampleBuffer);
+
   public:
-    SampleBuffer()
-            : m_data(nullptr),
-              m_size(0) {
+    SampleBuffer() : m_data(nullptr), m_size(0) {
     }
     explicit SampleBuffer(SINT size);
     SampleBuffer(SampleBuffer&& other)
-        : m_data(other.m_data),
-          m_size(other.m_size) {
+            : m_data(other.m_data), m_size(other.m_size) {
         other.m_data = nullptr;
         other.m_size = 0;
     }
@@ -90,8 +88,7 @@ class SampleBuffer {
     class ReadableChunk {
       public:
         ReadableChunk(const SampleBuffer& buffer, SINT offset, SINT length)
-            : m_data(buffer.data(offset)),
-              m_size(length) {
+                : m_data(buffer.data(offset)), m_size(length) {
             DEBUG_ASSERT((buffer.size() - offset) >= length);
         }
         const CSAMPLE* data(SINT offset = 0) const {
@@ -106,6 +103,7 @@ class SampleBuffer {
         const CSAMPLE& operator[](SINT index) const {
             return *data(index);
         }
+
       private:
         const CSAMPLE* m_data;
         SINT m_size;
@@ -114,8 +112,7 @@ class SampleBuffer {
     class WritableChunk {
       public:
         WritableChunk(SampleBuffer& buffer, SINT offset, SINT length)
-            : m_data(buffer.data(offset)),
-              m_size(length) {
+                : m_data(buffer.data(offset)), m_size(length) {
             DEBUG_ASSERT((buffer.size() - offset) >= length);
         }
         CSAMPLE* data(SINT offset = 0) const {
@@ -130,6 +127,7 @@ class SampleBuffer {
         CSAMPLE& operator[](SINT index) const {
             return *data(index);
         }
+
       private:
         CSAMPLE* m_data;
         SINT m_size;
@@ -143,11 +141,11 @@ class SampleBuffer {
 namespace std {
 
 // Template specialization of std::swap for SampleBuffer.
-template<>
+template <>
 inline void swap(SampleBuffer& lhs, SampleBuffer& rhs) {
     lhs.swap(rhs);
 }
 
 }  // namespace std
 
-#endif // SAMPLEBUFFER_H
+#endif  // SAMPLEBUFFER_H

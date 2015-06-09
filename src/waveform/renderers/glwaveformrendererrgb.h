@@ -7,7 +7,8 @@ class ControlObject;
 
 class GLWaveformRendererRGB : public WaveformRendererSignalBase {
   public:
-    explicit GLWaveformRendererRGB(WaveformWidgetRenderer* waveformWidgetRenderer);
+    explicit GLWaveformRendererRGB(
+            WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~GLWaveformRendererRGB();
 
     virtual void onSetup(const QDomNode& node);
@@ -17,4 +18,4 @@ class GLWaveformRendererRGB : public WaveformRendererSignalBase {
     DISALLOW_COPY_AND_ASSIGN(GLWaveformRendererRGB);
 };
 
-#endif // GLWAVEFORMRENDERERRGB_H
+#endif  // GLWAVEFORMRENDERERRGB_H

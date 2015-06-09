@@ -26,7 +26,7 @@ class Encoder {
 
     virtual int initEncoder(int bitrate, int samplerate) = 0;
     // encodes the provided buffer of audio.
-    virtual void encodeBuffer(const CSAMPLE *samples, const int size) = 0;
+    virtual void encodeBuffer(const CSAMPLE* samples, const int size) = 0;
     // Adds metadata to the encoded auio, i.e., the ID3 tag. Currently only used
     // by EngineRecord, EngineShoutcast does something different.
     virtual void updateMetaData(char* artist, char* title, char* album) = 0;
@@ -36,4 +36,4 @@ class Encoder {
     static int convertToBitrate(int quality);
 };
 
-#endif // ENCODER_H
+#endif  // ENCODER_H

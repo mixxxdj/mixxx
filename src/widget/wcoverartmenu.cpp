@@ -5,8 +5,7 @@
 #include "library/coverartutils.h"
 #include "util/sandbox.h"
 
-WCoverArtMenu::WCoverArtMenu(QWidget *parent)
-        : QMenu(parent) {
+WCoverArtMenu::WCoverArtMenu(QWidget* parent) : QMenu(parent) {
     createActions();
 }
 
@@ -17,18 +16,22 @@ WCoverArtMenu::~WCoverArtMenu() {
 }
 
 void WCoverArtMenu::createActions() {
-    m_pChange = new QAction(tr("Choose new cover",
-            "change cover art location"), this);
+    m_pChange = new QAction(tr("Choose new cover", "change cover art location"),
+                            this);
     connect(m_pChange, SIGNAL(triggered()), this, SLOT(slotChange()));
     addAction(m_pChange);
 
-    m_pUnset = new QAction(tr("Unset cover",
-            "clears the set cover art -- does not touch files on disk"), this);
+    m_pUnset = new QAction(
+            tr("Unset cover",
+               "clears the set cover art -- does not touch files on disk"),
+            this);
     connect(m_pUnset, SIGNAL(triggered()), this, SLOT(slotUnset()));
     addAction(m_pUnset);
 
-    m_pReload = new QAction(tr("Reload from track/folder",
-            "reload cover art from track metadata or folder"), this);
+    m_pReload =
+            new QAction(tr("Reload from track/folder",
+                           "reload cover art from track metadata or folder"),
+                        this);
     connect(m_pReload, SIGNAL(triggered()), this, SIGNAL(reloadCoverArt()));
     addAction(m_pReload);
 }
@@ -62,15 +65,16 @@ void WCoverArtMenu::slotChange() {
     }
 
     QStringList extensions = CoverArtUtils::supportedCoverArtExtensions();
-    for (QStringList::iterator it = extensions.begin(); it != extensions.end(); ++it) {
+    for (QStringList::iterator it = extensions.begin(); it != extensions.end();
+         ++it) {
         it->prepend("*.");
     }
-    QString supportedText = QString("%1 (%2)").arg(tr("Image Files"))
-            .arg(extensions.join(" "));
+    QString supportedText =
+            QString("%1 (%2)").arg(tr("Image Files")).arg(extensions.join(" "));
 
     // open file dialog
     QString selectedCoverPath = QFileDialog::getOpenFileName(
-        this, tr("Change Cover Art"), initialDir, supportedText);
+            this, tr("Change Cover Art"), initialDir, supportedText);
     if (selectedCoverPath.isEmpty()) {
         return;
     }
@@ -80,8 +84,8 @@ void WCoverArtMenu::slotChange() {
     CoverArt art;
     // Create a security token for the file.
     QFileInfo selectedCover(selectedCoverPath);
-    SecurityTokenPointer pToken = Sandbox::openSecurityToken(
-        selectedCover, true);
+    SecurityTokenPointer pToken =
+            Sandbox::openSecurityToken(selectedCover, true);
     art.image = QImage(selectedCoverPath);
     if (art.image.isNull()) {
         // TODO(rryan): feedback

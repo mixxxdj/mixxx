@@ -21,12 +21,10 @@
 const QString CLIENT_APIKEY = "czKxnkyO";
 const QString CLIENT_NAME = "Mixxx1.12";
 const QString ACOUSTID_URL = "http://api.acoustid.org/v2/lookup";
-const int AcoustidClient::m_DefaultTimeout = 5000; // msec
+const int AcoustidClient::m_DefaultTimeout = 5000;  // msec
 
 AcoustidClient::AcoustidClient(QObject* parent)
-              : QObject(parent),
-                m_network(this),
-                m_timeouts(m_DefaultTimeout, this) {
+        : QObject(parent), m_network(this), m_timeouts(m_DefaultTimeout, this) {
 }
 
 void AcoustidClient::setTimeout(int msec) {
@@ -42,11 +40,13 @@ void AcoustidClient::start(int id, const QString& fingerprint, int duration) {
     url.addQueryItem("fingerprint", fingerprint);
 
     QNetworkRequest req(QUrl::fromEncoded(ACOUSTID_URL.toAscii()));
-    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    req.setHeader(QNetworkRequest::ContentTypeHeader,
+                  "application/x-www-form-urlencoded");
     req.setRawHeader("Content-Encoding", "gzip");
     req.setRawHeader("User-Agent", CLIENT_NAME.toAscii());
 
-    QNetworkReply* reply = m_network.post(req, gzipCompress(url.encodedQuery()));
+    QNetworkReply* reply =
+            m_network.post(req, gzipCompress(url.encodedQuery()));
     connect(reply, SIGNAL(finished()), SLOT(requestFinished()));
     m_requests[reply] = id;
 
@@ -75,20 +75,22 @@ void AcoustidClient::requestFinished() {
 
     int id = m_requests.take(reply);
 
-    if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() != 200) {
+    if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() !=
+        200) {
         emit(networkError(
-             reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(),
-             "AcoustID"));
+                reply->attribute(QNetworkRequest::HttpStatusCodeAttribute)
+                        .toInt(),
+                "AcoustID"));
         return;
     }
 
     QXmlStreamReader reader(reply);
     QString ID;
     while (!reader.atEnd()) {
-        if (reader.readNext() == QXmlStreamReader::StartElement
-            && reader.name()== "results") {
-                ID = parseResult(reader);
-            }
+        if (reader.readNext() == QXmlStreamReader::StartElement &&
+            reader.name() == "results") {
+            ID = parseResult(reader);
+        }
     }
 
     emit(finished(id, ID));
@@ -97,13 +99,13 @@ void AcoustidClient::requestFinished() {
 QString AcoustidClient::parseResult(QXmlStreamReader& reader) {
     while (!reader.atEnd()) {
         QXmlStreamReader::TokenType type = reader.readNext();
-        if (type== QXmlStreamReader::StartElement) {
+        if (type == QXmlStreamReader::StartElement) {
             QStringRef name = reader.name();
             if (name == "id") {
                 return reader.readElementText();
             }
         }
-        if (type == QXmlStreamReader::EndElement && reader.name()=="result") {
+        if (type == QXmlStreamReader::EndElement && reader.name() == "result") {
             break;
         }
     }

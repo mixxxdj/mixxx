@@ -7,9 +7,10 @@
 
 namespace Mixxx {
 
-// DTO for track metadata properties. Must not be subclassed (no virtual destructor)!
+// DTO for track metadata properties. Must not be subclassed (no virtual
+// destructor)!
 class TrackMetadata {
-public:
+  public:
     TrackMetadata();
 
     inline const QString& getArtist() const {
@@ -124,8 +125,8 @@ public:
 
     // beats / minute
     static const double kBpmUndefined;
-    static const double kBpmMin; // lower bound (exclusive)
-    static const double kBpmMax; // upper bound (inclusive)
+    static const double kBpmMin;  // lower bound (exclusive)
+    static const double kBpmMax;  // upper bound (inclusive)
     inline double getBpm() const {
         return m_bpm;
     }
@@ -146,7 +147,7 @@ public:
     }
 
     static const double kReplayGainUndefined;
-    static const double kReplayGainMin; // lower bound (exclusive)
+    static const double kReplayGainMin;  // lower bound (exclusive)
     static const double kReplayGain0dB;
     inline double getReplayGain() const {
         return m_replayGain;
@@ -180,7 +181,8 @@ public:
         return QDate::fromString(str.trimmed().replace(" ", ""), Qt::ISODate);
     }
     inline static QDateTime parseDateTime(QString str) {
-        return QDateTime::fromString(str.trimmed().replace(" ", ""), Qt::ISODate);
+        return QDateTime::fromString(str.trimmed().replace(" ", ""),
+                                     Qt::ISODate);
     }
     inline static QString formatDate(QDate date) {
         return date.toString(Qt::ISODate);
@@ -196,7 +198,7 @@ public:
 
     static QString reformatYear(QString year);
 
-private:
+  private:
     QString m_artist;
     QString m_title;
     QString m_album;
@@ -219,7 +221,6 @@ private:
     double m_bpm;
     double m_replayGain;
 };
-
 }
 
 #endif

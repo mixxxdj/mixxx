@@ -28,5 +28,4 @@ class ShoutcastManager : public QObject {
     ConfigObject<ConfigValue>* m_pConfig;
 };
 
-
 #endif /* SHOUTCASTMANAGER_H */

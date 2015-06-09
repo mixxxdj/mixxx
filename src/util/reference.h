@@ -5,21 +5,22 @@
 // reference count.
 class BaseReferenceHolder {
   public:
-    BaseReferenceHolder() { }
-    virtual ~BaseReferenceHolder() { }
+    BaseReferenceHolder() {
+    }
+    virtual ~BaseReferenceHolder() {
+    }
 };
 
 template <class T>
 class ReferenceHolder : public BaseReferenceHolder {
   public:
-    ReferenceHolder(QSharedPointer<T>& reference)
-            : m_reference(reference) {
+    ReferenceHolder(QSharedPointer<T>& reference) : m_reference(reference) {
     }
-    virtual ~ReferenceHolder() {}
+    virtual ~ReferenceHolder() {
+    }
 
   private:
     QSharedPointer<T> m_reference;
 };
-
 
 #endif /* REFERENCE_H */

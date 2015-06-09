@@ -9,8 +9,8 @@
 class LearningUtils {
   public:
     static MidiInputMappings guessMidiInputMappings(
-        const ConfigKey& control,
-        const QList<QPair<MidiKey, unsigned char> >& messages);
+            const ConfigKey& control,
+            const QList<QPair<MidiKey, unsigned char>>& messages);
 };
 
 #endif /* LEARNINGUTILS_H */

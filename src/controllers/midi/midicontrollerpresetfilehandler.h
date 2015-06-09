@@ -13,20 +13,20 @@
 
 class MidiControllerPresetFileHandler : public ControllerPresetFileHandler {
   public:
-    MidiControllerPresetFileHandler() {};
-    virtual ~MidiControllerPresetFileHandler() {};
+    MidiControllerPresetFileHandler(){};
+    virtual ~MidiControllerPresetFileHandler(){};
 
-    bool save(const MidiControllerPreset& preset,
-              const QString deviceName, const QString fileName) const;
+    bool save(const MidiControllerPreset& preset, const QString deviceName,
+              const QString fileName) const;
 
   private:
-    virtual ControllerPresetPointer load(const QDomElement root, const QString deviceName);
+    virtual ControllerPresetPointer load(const QDomElement root,
+                                         const QString deviceName);
 
     void addControlsToDocument(const MidiControllerPreset& preset,
                                QDomDocument* doc) const;
 
-    QDomElement makeTextElement(QDomDocument* doc,
-                                const QString& elementName,
+    QDomElement makeTextElement(QDomDocument* doc, const QString& elementName,
                                 const QString& text) const;
 
     QDomElement inputMappingToXML(QDomDocument* doc,

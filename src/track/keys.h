@@ -10,13 +10,14 @@
 
 #define KEY_MAP_VERSION "KeyMap-1.0"
 
-typedef QVector<QPair<mixxx::track::io::key::ChromaticKey, double> > KeyChangeList;
+typedef QVector<QPair<mixxx::track::io::key::ChromaticKey, double>>
+        KeyChangeList;
 
 class KeyFactory;
 
 class Keys {
   public:
-    explicit Keys(const QByteArray* pByteArray=NULL);
+    explicit Keys(const QByteArray* pByteArray = NULL);
     Keys(const Keys& other);
     virtual ~Keys();
 

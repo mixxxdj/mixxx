@@ -16,12 +16,10 @@
 #include "controllers/defs_controllers.h"
 #include "util/xml.h"
 
-PresetInfo::PresetInfo()
-        : m_valid(false) {
+PresetInfo::PresetInfo() : m_valid(false) {
 }
 
-PresetInfo::PresetInfo(const QString preset_path)
-        : m_valid(false) {
+PresetInfo::PresetInfo(const QString preset_path) : m_valid(false) {
     // Parse <info> header section from a controller description XML file
     // Contents parsed by xml path:
     // info.name        Preset name, used for drop down menus in dialogs
@@ -51,35 +49,40 @@ PresetInfo::PresetInfo(const QString preset_path)
     m_valid = true;
 
     QDomElement dom_name = info.firstChildElement("name");
-    if (!dom_name.isNull()) name = dom_name.text();
+    if (!dom_name.isNull())
+        name = dom_name.text();
 
     QDomElement dom_author = info.firstChildElement("author");
-    if (!dom_author.isNull()) author = dom_author.text();
+    if (!dom_author.isNull())
+        author = dom_author.text();
 
     QDomElement dom_description = info.firstChildElement("description");
-    if (!dom_description.isNull()) description = dom_description.text();
+    if (!dom_description.isNull())
+        description = dom_description.text();
 
     QDomElement dom_forums = info.firstChildElement("forums");
-    if (!dom_forums.isNull()) forumlink = dom_forums.text();
+    if (!dom_forums.isNull())
+        forumlink = dom_forums.text();
 
     QDomElement dom_wiki = info.firstChildElement("wiki");
-    if (!dom_wiki.isNull()) wikilink = dom_wiki.text();
+    if (!dom_wiki.isNull())
+        wikilink = dom_wiki.text();
 
     QDomElement devices = info.firstChildElement("devices");
     if (!devices.isNull()) {
         QDomElement product = devices.firstChildElement("product");
         while (!product.isNull()) {
-            QString protocol = product.attribute("protocol","");
-            if (protocol=="hid") {
+            QString protocol = product.attribute("protocol", "");
+            if (protocol == "hid") {
                 products.append(parseHIDProduct(product));
-            } else if (protocol=="bulk") {
+            } else if (protocol == "bulk") {
                 products.append(parseBulkProduct(product));
-            } else if (protocol=="midi") {
+            } else if (protocol == "midi") {
                 qDebug("MIDI product info parsing not yet implemented");
-                //products.append(parseMIDIProduct(product);
-            } else if (protocol=="osc") {
+                // products.append(parseMIDIProduct(product);
+            } else if (protocol == "osc") {
                 qDebug("OSC product info parsing not yet implemented");
-                //products.append(parseOSCProduct(product);
+                // products.append(parseOSCProduct(product);
             } else {
                 qDebug("Product specification missing protocol attribute");
             }
@@ -88,49 +91,56 @@ PresetInfo::PresetInfo(const QString preset_path)
     }
 }
 
-QHash<QString,QString> PresetInfo::parseBulkProduct(const QDomElement& element) const {
-    // <product protocol="bulk" vendor_id="0x06f8" product_id="0x0b105" in_epaddr="0x82" out_epaddr="0x03">
+QHash<QString, QString> PresetInfo::parseBulkProduct(
+        const QDomElement& element) const {
+    // <product protocol="bulk" vendor_id="0x06f8" product_id="0x0b105"
+    // in_epaddr="0x82" out_epaddr="0x03">
 
     QHash<QString, QString> product;
-    product.insert("protocol", element.attribute("protocol",""));
-    product.insert("vendor_id", element.attribute("vendor_id",""));
-    product.insert("product_id", element.attribute("product_id",""));
-    product.insert("in_epaddr", element.attribute("in_epaddr",""));
-    product.insert("out_epaddr", element.attribute("out_epaddr",""));
+    product.insert("protocol", element.attribute("protocol", ""));
+    product.insert("vendor_id", element.attribute("vendor_id", ""));
+    product.insert("product_id", element.attribute("product_id", ""));
+    product.insert("in_epaddr", element.attribute("in_epaddr", ""));
+    product.insert("out_epaddr", element.attribute("out_epaddr", ""));
     return product;
 }
 
-QHash<QString,QString> PresetInfo::parseHIDProduct(const QDomElement& element) const {
+QHash<QString, QString> PresetInfo::parseHIDProduct(
+        const QDomElement& element) const {
     // HID device <product> element parsing. Example of valid element:
-    //   <product protocol="hid" vendor_id="0x1" product_id="0x2" usage_page="0x3" usage="0x4" interface_number="0x3" />
+    //   <product protocol="hid" vendor_id="0x1" product_id="0x2"
+    //   usage_page="0x3" usage="0x4" interface_number="0x3" />
     // All numbers must be hex prefixed with 0x
     // Only vendor_id and product_id fields are required to map a device.
     // usage_page and usage are matched on OS/X and windows
     // interface_number is matched on linux, which does support usage_page/usage
 
-    QHash<QString,QString> product;
-    product.insert("procotol", element.attribute("protocol",""));
-    product.insert("vendor_id", element.attribute("vendor_id",""));
-    product.insert("product_id", element.attribute("product_id",""));
-    product.insert("usage_page", element.attribute("usage_page",""));
-    product.insert("usage", element.attribute("usage",""));
-    product.insert("interface_number", element.attribute("interface_number",""));
+    QHash<QString, QString> product;
+    product.insert("procotol", element.attribute("protocol", ""));
+    product.insert("vendor_id", element.attribute("vendor_id", ""));
+    product.insert("product_id", element.attribute("product_id", ""));
+    product.insert("usage_page", element.attribute("usage_page", ""));
+    product.insert("usage", element.attribute("usage", ""));
+    product.insert("interface_number",
+                   element.attribute("interface_number", ""));
     return product;
 }
 
-QHash<QString,QString> PresetInfo::parseMIDIProduct(const QDomElement& element) const {
+QHash<QString, QString> PresetInfo::parseMIDIProduct(
+        const QDomElement& element) const {
     // TODO - implement parsing of MIDI attributes
     // When done, remember to fix switch() above to call this
-    QHash<QString,QString> product;
-    product.insert("procotol",element.attribute("protocol",""));
+    QHash<QString, QString> product;
+    product.insert("procotol", element.attribute("protocol", ""));
     return product;
 }
 
-QHash<QString,QString> PresetInfo::parseOSCProduct(const QDomElement& element) const {
+QHash<QString, QString> PresetInfo::parseOSCProduct(
+        const QDomElement& element) const {
     // TODO - implement parsing of OSC product attributes
     // When done, remember to fix switch() above to call this
-    QHash<QString,QString> product;
-    product.insert("procotol",element.attribute("protocol",""));
+    QHash<QString, QString> product;
+    product.insert("procotol", element.attribute("protocol", ""));
     return product;
 }
 
@@ -161,12 +171,13 @@ bool PresetInfoEnumerator::isValidExtension(const QString extension) {
     return false;
 }
 
-bool PresetInfoEnumerator::hasPresetInfo(const QString extension, const QString name) {
+bool PresetInfoEnumerator::hasPresetInfo(const QString extension,
+                                         const QString name) {
     // Check if preset info matching extension and preset name can be found
     if (!isValidExtension(extension))
         return false;
 
-    for (QMap<QString, QMap<QString, PresetInfo> >::const_iterator it =
+    for (QMap<QString, QMap<QString, PresetInfo>>::const_iterator it =
                  presetsByExtension.begin();
          it != presetsByExtension.end(); ++it) {
         for (QMap<QString, PresetInfo>::const_iterator it2 = it.value().begin();
@@ -214,7 +225,7 @@ QList<PresetInfo> PresetInfoEnumerator::getPresets(const QString extension) {
 void PresetInfoEnumerator::addExtension(const QString extension) {
     if (presetsByExtension.contains(extension))
         return;
-    QMap<QString,PresetInfo> presets;
+    QMap<QString, PresetInfo> presets;
     presetsByExtension[extension] = presets;
 }
 
@@ -236,13 +247,14 @@ void PresetInfoEnumerator::loadSupportedPresets() {
     }
 
     foreach (QString extension, presetsByExtension.keys()) {
-        QMap<QString,PresetInfo> presets = presetsByExtension[extension];
-        qDebug() << "Extension" << extension << "total" << presets.keys().length() << "presets";
+        QMap<QString, PresetInfo> presets = presetsByExtension[extension];
+        qDebug() << "Extension" << extension << "total"
+                 << presets.keys().length() << "presets";
     }
 }
 
 void PresetInfoEnumerator::updatePresets(const QString extension) {
-    QMap<QString,PresetInfo> presets;
+    QMap<QString, PresetInfo> presets;
 
     if (presetsByExtension.contains(extension))
         presetsByExtension.remove(extension);

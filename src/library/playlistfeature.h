@@ -27,7 +27,8 @@ class PlaylistFeature : public BasePlaylistFeature {
     QVariant title();
     QIcon getIcon();
 
-    bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls, QObject* pSource);
+    bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
+                         QObject* pSource);
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
   public slots:
@@ -38,9 +39,9 @@ class PlaylistFeature : public BasePlaylistFeature {
     void slotPlaylistTableChanged(int playlistId);
     void slotPlaylistTableRenamed(int playlistId, QString a_strName);
 
- protected:
+  protected:
     void buildPlaylistList();
-    void decorateChild(TreeItem *pChild, int playlist_id);
+    void decorateChild(TreeItem* pChild, int playlist_id);
 
   private:
     QString getRootViewHtml() const;

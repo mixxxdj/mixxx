@@ -13,7 +13,7 @@ class HiddenTableModel : public BaseSqlTableModel {
     bool isColumnInternal(int column);
     void purgeTracks(const QModelIndexList& indices);
     void unhideTracks(const QModelIndexList& indices);
-    Qt::ItemFlags flags(const QModelIndex &index) const;
+    Qt::ItemFlags flags(const QModelIndex& index) const;
     TrackModel::CapabilitiesFlags getCapabilities() const;
 };
 

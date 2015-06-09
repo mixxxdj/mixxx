@@ -6,14 +6,14 @@
 #include "analyserwaveform.h"
 #include "test/mixxxtest.h"
 
-#define BIGBUF_SIZE (1024 * 1024)  //Megabyte
-#define CANARY_SIZE (1024*4)
+#define BIGBUF_SIZE (1024 * 1024)  // Megabyte
+#define CANARY_SIZE (1024 * 4)
 #define MAGIC_FLOAT 1234.567890f
 #define CANARY_FLOAT 0.0f
 
 namespace {
 
-class AnalyserWaveformTest: public MixxxTest {
+class AnalyserWaveformTest : public MixxxTest {
   protected:
     virtual void SetUp() {
         aw = new AnalyserWaveform(config());
@@ -24,22 +24,23 @@ class AnalyserWaveformTest: public MixxxTest {
         for (int i = 0; i < BIGBUF_SIZE; i++)
             bigbuf[i] = MAGIC_FLOAT;
 
-        //Memory layout for canaryBigBuf looks like
+        // Memory layout for canaryBigBuf looks like
         //  [ canary | big buf | canary ]
 
-        canaryBigBuf = new CSAMPLE[BIGBUF_SIZE + 2*CANARY_SIZE];
+        canaryBigBuf = new CSAMPLE[BIGBUF_SIZE + 2 * CANARY_SIZE];
         for (int i = 0; i < CANARY_SIZE; i++)
             canaryBigBuf[i] = CANARY_FLOAT;
-        for (int i = CANARY_SIZE; i < CANARY_SIZE+BIGBUF_SIZE; i++)
+        for (int i = CANARY_SIZE; i < CANARY_SIZE + BIGBUF_SIZE; i++)
             canaryBigBuf[i] = MAGIC_FLOAT;
-        for (int i = CANARY_SIZE+BIGBUF_SIZE; i < 2*CANARY_SIZE+BIGBUF_SIZE; i++)
+        for (int i = CANARY_SIZE + BIGBUF_SIZE;
+             i < 2 * CANARY_SIZE + BIGBUF_SIZE; i++)
             canaryBigBuf[i] = CANARY_FLOAT;
     }
 
     virtual void TearDown() {
         delete aw;
-        delete [] bigbuf;
-        delete [] canaryBigBuf;
+        delete[] bigbuf;
+        delete[] canaryBigBuf;
     }
 
     AnalyserWaveform* aw;
@@ -48,7 +49,7 @@ class AnalyserWaveformTest: public MixxxTest {
     CSAMPLE* canaryBigBuf;
 };
 
-//Test to make sure we don't modify the source buffer.
+// Test to make sure we don't modify the source buffer.
 TEST_F(AnalyserWaveformTest, simpleAnalyze) {
     aw->initialise(tio, tio->getSampleRate(), BIGBUF_SIZE);
     aw->process(bigbuf, BIGBUF_SIZE);
@@ -58,7 +59,7 @@ TEST_F(AnalyserWaveformTest, simpleAnalyze) {
     }
 }
 
-//Basic test to make sure we don't step out of bounds.
+// Basic test to make sure we don't step out of bounds.
 TEST_F(AnalyserWaveformTest, canary) {
     aw->initialise(tio, tio->getSampleRate(), BIGBUF_SIZE);
     aw->process(&canaryBigBuf[CANARY_SIZE], BIGBUF_SIZE);
@@ -66,32 +67,35 @@ TEST_F(AnalyserWaveformTest, canary) {
     for (int i = 0; i < CANARY_SIZE; i++) {
         EXPECT_FLOAT_EQ(canaryBigBuf[i], CANARY_FLOAT);
     }
-    for (int i = CANARY_SIZE+BIGBUF_SIZE; i < 2*CANARY_SIZE+BIGBUF_SIZE; i++) {
+    for (int i = CANARY_SIZE + BIGBUF_SIZE; i < 2 * CANARY_SIZE + BIGBUF_SIZE;
+         i++) {
         EXPECT_FLOAT_EQ(canaryBigBuf[i], CANARY_FLOAT);
     }
 }
 
-//Test to make sure that if an incorrect totalSamples is passed to
-//initialise(..) and process(..) is told to process more samples than that,
-//that we don't step out of bounds.
+// Test to make sure that if an incorrect totalSamples is passed to
+// initialise(..) and process(..) is told to process more samples than that,
+// that we don't step out of bounds.
 TEST_F(AnalyserWaveformTest, wrongTotalSamples) {
-    aw->initialise(tio, tio->getSampleRate(), BIGBUF_SIZE/2);
+    aw->initialise(tio, tio->getSampleRate(), BIGBUF_SIZE / 2);
     // Deliver double the expected samples
     int wrongTotalSamples = BIGBUF_SIZE;
-    int blockSize = 2*32768;
-    for (int i = CANARY_SIZE; i < CANARY_SIZE+wrongTotalSamples; i += blockSize) {
+    int blockSize = 2 * 32768;
+    for (int i = CANARY_SIZE; i < CANARY_SIZE + wrongTotalSamples;
+         i += blockSize) {
         aw->process(&canaryBigBuf[i], blockSize);
     }
     aw->finalise(tio);
-    //Ensure the source buffer is intact
+    // Ensure the source buffer is intact
     for (int i = CANARY_SIZE; i < BIGBUF_SIZE; i++) {
         EXPECT_FLOAT_EQ(canaryBigBuf[i], MAGIC_FLOAT);
     }
-    //Make sure our canaries are still OK
+    // Make sure our canaries are still OK
     for (int i = 0; i < CANARY_SIZE; i++) {
         EXPECT_FLOAT_EQ(canaryBigBuf[i], CANARY_FLOAT);
     }
-    for (int i = CANARY_SIZE+BIGBUF_SIZE; i < 2*CANARY_SIZE+BIGBUF_SIZE; i++) {
+    for (int i = CANARY_SIZE + BIGBUF_SIZE; i < 2 * CANARY_SIZE + BIGBUF_SIZE;
+         i++) {
         EXPECT_FLOAT_EQ(canaryBigBuf[i], CANARY_FLOAT);
     }
 }

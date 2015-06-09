@@ -20,9 +20,8 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     Q_OBJECT
   public:
     DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
-              Library* pLibrary,
-              AutoDJProcessor* pProcessor, TrackCollection* pTrackCollection,
-              MixxxKeyboard* pKeyboard);
+              Library* pLibrary, AutoDJProcessor* pProcessor,
+              TrackCollection* pTrackCollection, MixxxKeyboard* pKeyboard);
     virtual ~DlgAutoDJ();
 
     void onShow();
@@ -54,4 +53,4 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     PlaylistTableModel* m_pAutoDJTableModel;
 };
 
-#endif //DLGAUTODJ_H
+#endif  // DLGAUTODJ_H

@@ -3,7 +3,8 @@
                              -------------------
     copyright            : (C) 2007 by Wesley Stessens
                            (C) 1994 by Xiph.org (encoder example)
-                           (C) 1994 Tobias Rafreider (shoutcast and recording fixes)
+                           (C) 1994 Tobias Rafreider (shoutcast and recording
+ fixes)
  ***************************************************************************/
 
 /***************************************************************************
@@ -29,11 +30,11 @@ class EncoderCallback;
 
 class EncoderVorbis : public Encoder {
   public:
-    EncoderVorbis(EncoderCallback* pCallback=NULL);
+    EncoderVorbis(EncoderCallback* pCallback = NULL);
     virtual ~EncoderVorbis();
 
     int initEncoder(int bitrate, int samplerate);
-    void encodeBuffer(const CSAMPLE *samples, const int size);
+    void encodeBuffer(const CSAMPLE* samples, const int size);
     void updateMetaData(char* artist, char* title, char* album);
     void flush();
 
@@ -41,18 +42,18 @@ class EncoderVorbis : public Encoder {
     int getSerial();
     void initStream();
     bool metaDataHasChanged();
-    //Call this method in conjunction with shoutcast streaming
+    // Call this method in conjunction with shoutcast streaming
     void writePage();
 
     bool m_bStreamInitialized;
-    ogg_stream_state m_oggs;    /* take physical pages, weld into logical stream
-                                 of packets */
-    ogg_page m_oggpage;         /* Ogg bitstream page: contains Vorbis packets */
-    ogg_packet m_oggpacket;     /* raw packet of data */
-    vorbis_block m_vblock;      /* local working space for packet-to-PCM */
-    vorbis_dsp_state m_vdsp;    /* central working space for packet-to-PCM */
-    vorbis_info m_vinfo;        /* stores all static vorbis bitstream settings */
-    vorbis_comment m_vcomment;  /* stores all user comments */
+    ogg_stream_state m_oggs; /* take physical pages, weld into logical stream
+                              of packets */
+    ogg_page m_oggpage; /* Ogg bitstream page: contains Vorbis packets */
+    ogg_packet m_oggpacket; /* raw packet of data */
+    vorbis_block m_vblock; /* local working space for packet-to-PCM */
+    vorbis_dsp_state m_vdsp; /* central working space for packet-to-PCM */
+    vorbis_info m_vinfo; /* stores all static vorbis bitstream settings */
+    vorbis_comment m_vcomment; /* stores all user comments */
     bool m_header_write;
 
     EncoderCallback* m_pCallback;

@@ -5,7 +5,7 @@ class WaveformWidgetType {
   public:
     enum Type {
         EmptyWaveform = 0,
-        SoftwareSimpleWaveform, //TODO
+        SoftwareSimpleWaveform,  // TODO
         SoftwareWaveform,
         QtSimpleWaveform,
         QtWaveform,
@@ -17,8 +17,8 @@ class WaveformWidgetType {
         RGBWaveform,
         GLRGBWaveform,
         GLSLRGBWaveform,
-        Count_WaveformwidgetType // Also used as invalid value
+        Count_WaveformwidgetType  // Also used as invalid value
     };
 };
 
-#endif // WAVEFORMWIDGETTYPE_H
+#endif  // WAVEFORMWIDGETTYPE_H

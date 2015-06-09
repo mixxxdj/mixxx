@@ -18,18 +18,18 @@
 
 NativeBackend::NativeBackend(QObject* pParent)
         : EffectsBackend(pParent, tr("Native")) {
-    // Keep this list in a reasonable order 
+    // Keep this list in a reasonable order
     // Mixing EQs
     registerEffect<Bessel4LVMixEQEffect>();
     registerEffect<Bessel8LVMixEQEffect>();
     registerEffect<LinkwitzRiley8EQEffect>();
-    // Compensations EQs    
+    // Compensations EQs
     registerEffect<GraphicEQEffect>();
     // Fading Effcts
     registerEffect<FilterEffect>();
     registerEffect<MoogLadder4FilterEffect>();
     registerEffect<BitCrusherEffect>();
-    // Fancy effects    
+    // Fancy effects
     registerEffect<FlangerEffect>();
     registerEffect<EchoEffect>();
     registerEffect<AutoPanEffect>();
@@ -40,5 +40,5 @@ NativeBackend::NativeBackend(QObject* pParent)
 }
 
 NativeBackend::~NativeBackend() {
-    //qDebug() << debugString() << "destroyed";
+    // qDebug() << debugString() << "destroyed";
 }

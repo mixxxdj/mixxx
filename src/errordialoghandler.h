@@ -35,12 +35,12 @@
   */
 
 typedef enum {
-    DLG_FATAL       = 5,
-    DLG_CRITICAL    = 4,
-    DLG_WARNING     = 3,
-    DLG_INFO        = 2,
-    DLG_QUESTION    = 1,
-    DLG_NONE        = 0 // No icon (default)
+    DLG_FATAL = 5,
+    DLG_CRITICAL = 4,
+    DLG_WARNING = 3,
+    DLG_INFO = 2,
+    DLG_QUESTION = 1,
+    DLG_NONE = 0  // No icon (default)
 } DialogType;
 
 class ErrorDialogProperties {
@@ -131,10 +131,11 @@ class ErrorDialogProperties {
     friend class ErrorDialogHandler;
 };
 
-/** Singleton class because we only need one Handler to manage all error dialogs */
+/** Singleton class because we only need one Handler to manage all error dialogs
+ */
 class ErrorDialogHandler : public QObject {
-   Q_OBJECT
- public:
+    Q_OBJECT
+  public:
     static ErrorDialogHandler* instance() {
         if (!s_pInstance)
             s_pInstance = new ErrorDialogHandler();
@@ -151,7 +152,7 @@ class ErrorDialogHandler : public QObject {
     // (or title if no key) is already displayed. If shouldQuit is true, Mixxx
     // will shut down.
     bool requestErrorDialog(DialogType type, QString message,
-                            bool shouldQuit=false);
+                            bool shouldQuit = false);
     bool requestErrorDialog(ErrorDialogProperties* props);
 
     // Allows a means for main() to skip exec() if there was a critical or fatal
@@ -160,7 +161,8 @@ class ErrorDialogHandler : public QObject {
 
   signals:
     void showErrorDialog(ErrorDialogProperties* props);
-    void stdButtonClicked(QString key, QMessageBox::StandardButton whichStdButton);
+    void stdButtonClicked(QString key,
+                          QMessageBox::StandardButton whichStdButton);
 
   private slots:
     /** Actually displays the box */
@@ -171,7 +173,7 @@ class ErrorDialogHandler : public QObject {
     // Private constructor
     ErrorDialogHandler();
 
-    static ErrorDialogHandler *s_pInstance;
+    static ErrorDialogHandler* s_pInstance;
 
     bool m_errorCondition;
     QList<QString> m_dialogKeys;

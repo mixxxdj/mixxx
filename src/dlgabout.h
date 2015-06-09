@@ -26,21 +26,22 @@ class QWidget;
   *@author Albert Santoni
   */
 
-class DlgAbout : public QDialog, public Ui::DlgAboutDlg  {
+class DlgAbout : public QDialog, public Ui::DlgAboutDlg {
     Q_OBJECT
-public: 
+  public:
     DlgAbout(QWidget *parent);
     ~DlgAbout();
-public slots:
+  public slots:
 
     /** Apply changes to widget */
     void slotApply();
     void slotUpdate();
-signals:
+  signals:
     void apply(const QString &);
-private:
+
+  private:
     /** Pointer to config object */
-    //ConfigObject<ConfigValue> *config;
+    // ConfigObject<ConfigValue> *config;
 };
 
 #endif

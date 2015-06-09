@@ -6,7 +6,7 @@
  *  as published by Sam Hocevar.                                             *
  *  See http://www.wtfpl.net/ for more details.                              *
  *****************************************************************************/
-    
+
 #ifndef TAGFETCHER_H
 #define TAGFETCHER_H
 
@@ -17,12 +17,11 @@
 #include "musicbrainz/acoustidclient.h"
 #include "trackinfoobject.h"
 
-
 class TagFetcher : public QObject {
-  Q_OBJECT
+    Q_OBJECT
 
-  // High level interface to Fingerprinter, AcoustidClient and
-  // MusicBrainzClient.
+    // High level interface to Fingerprinter, AcoustidClient and
+    // MusicBrainzClient.
 
   public:
     TagFetcher(QObject* parent = 0);
@@ -36,7 +35,7 @@ class TagFetcher : public QObject {
     void resultAvailable(const TrackPointer originalTrack,
                          const QList<TrackPointer>& tracksGuessed);
     void fetchProgress(QString);
-    void networkError(int,QString);
+    void networkError(int, QString);
 
   private slots:
     void fingerprintFound(int index);
@@ -56,4 +55,4 @@ class TagFetcher : public QObject {
     QList<TrackPointer> m_tracks;
 };
 
-#endif // TAGFETCHER_H
+#endif  // TAGFETCHER_H

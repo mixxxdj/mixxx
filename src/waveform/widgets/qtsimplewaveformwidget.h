@@ -11,13 +11,22 @@ class QtSimpleWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
     QtSimpleWaveformWidget(const char* group, QWidget* parent);
     virtual ~QtSimpleWaveformWidget();
 
+    virtual WaveformWidgetType::Type getType() const {
+        return WaveformWidgetType::GLSimpleWaveform;
+    }
 
-    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::GLSimpleWaveform; }
-
-    static inline QString getWaveformWidgetName() { return tr("Simple") + " - Qt"; }
-    static inline bool useOpenGl() { return true; }
-    static inline bool useOpenGLShaders() { return false; }
-    static inline bool developerOnly() { return false; }
+    static inline QString getWaveformWidgetName() {
+        return tr("Simple") + " - Qt";
+    }
+    static inline bool useOpenGl() {
+        return true;
+    }
+    static inline bool useOpenGLShaders() {
+        return false;
+    }
+    static inline bool developerOnly() {
+        return false;
+    }
 
   protected:
     virtual void castToQWidget();
@@ -28,4 +37,4 @@ class QtSimpleWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
     friend class WaveformWidgetFactory;
 };
 
-#endif // QTSIMPLEWAVEFORMWIDGET_H
+#endif  // QTSIMPLEWAVEFORMWIDGET_H

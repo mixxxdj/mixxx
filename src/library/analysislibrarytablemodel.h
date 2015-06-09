@@ -4,12 +4,11 @@
 #include <QModelIndexList>
 #include "librarytablemodel.h"
 
-class AnalysisLibraryTableModel : public LibraryTableModel
-{
+class AnalysisLibraryTableModel : public LibraryTableModel {
     Q_OBJECT
   public:
     AnalysisLibraryTableModel(QObject* parent,
-                             TrackCollection* pTrackCollection);
+                              TrackCollection* pTrackCollection);
     virtual ~AnalysisLibraryTableModel();
 
   public slots:

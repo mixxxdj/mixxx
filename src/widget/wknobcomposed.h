@@ -15,10 +15,10 @@
 class WKnobComposed : public WWidget {
     Q_OBJECT
   public:
-    WKnobComposed(QWidget* pParent=NULL);
+    WKnobComposed(QWidget *pParent = NULL);
     virtual ~WKnobComposed();
 
-    void setup(QDomNode node, const SkinContext& context);
+    void setup(QDomNode node, const SkinContext &context);
 
     void onConnectedControlChanged(double dParameter, double dValue);
 
@@ -27,7 +27,7 @@ class WKnobComposed : public WWidget {
     void mouseMoveEvent(QMouseEvent *e);
     void mousePressEvent(QMouseEvent *e);
     void mouseReleaseEvent(QMouseEvent *e);
-    void paintEvent(QPaintEvent*);
+    void paintEvent(QPaintEvent *);
 
   private:
     void clear();

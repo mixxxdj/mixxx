@@ -65,7 +65,7 @@ class ControllerMappingTableModel : public QAbstractTableModel,
     // m_pHidPreset points to the HID preset.
     virtual void onPresetLoaded() = 0;
 
-    QVector<QHash<int, QVariant> > m_headerInfo;
+    QVector<QHash<int, QVariant>> m_headerInfo;
     ControllerPresetPointer m_pPreset;
     MidiControllerPreset* m_pMidiPreset;
     HidControllerPreset* m_pHidPreset;

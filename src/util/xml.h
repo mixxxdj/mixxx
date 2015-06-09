@@ -20,8 +20,7 @@ class XmlParse {
     // Searches for an element named sNode in the children of nodeHeader and
     // parses the text value of its children as an integer. Returns 0 if sNode
     // is not found in nodeHeader's children.
-    static int selectNodeInt(const QDomNode& nodeHeader,
-                             const QString& sNode);
+    static int selectNodeInt(const QDomNode& nodeHeader, const QString& sNode);
 
     // Searches for an element named sNode in the children of nodeHeader and
     // parses the text value of its children as a float. Returns 0.0f if sNode
@@ -41,11 +40,14 @@ class XmlParse {
     // Add an element named elementName to the provided header element with a
     // child text node with the value textValue. Returns the created element.
     static QDomElement addElement(QDomDocument& document, QDomElement& header,
-                                  const QString& elementName, const QString& textValue);
+                                  const QString& elementName,
+                                  const QString& textValue);
 
   private:
-    XmlParse() {}
-    ~XmlParse() {}
+    XmlParse() {
+    }
+    ~XmlParse() {
+    }
 };
 
 #endif

@@ -1,7 +1,6 @@
 //  Created on: 28/apr/2011
 //      Author: vittorio
 
-
 #ifndef DLGPREFBEATS_H_
 #define DLGPREFBEATS_H_
 
@@ -41,13 +40,14 @@ class DlgPrefBeats : public DlgPreferencePage, public Ui::DlgBeatsDlg {
     void loadSettings();
 
     // Pointer to config object
-    ConfigObject<ConfigValue>* m_pconfig;
+    ConfigObject<ConfigValue> *m_pconfig;
     QList<QString> m_listName;
     QList<QString> m_listLibrary, m_listIdentifier;
     QString m_selectedAnalyser;
     int m_minBpm;
     int m_maxBpm;
-    bool m_banalyserEnabled, m_bfixedtempoEnabled, m_boffsetEnabled, m_FastAnalysisEnabled, m_bReanalyze;
+    bool m_banalyserEnabled, m_bfixedtempoEnabled, m_boffsetEnabled,
+            m_FastAnalysisEnabled, m_bReanalyze;
 };
 
-#endif // DLGPREFBEATS_H_
+#endif  // DLGPREFBEATS_H_

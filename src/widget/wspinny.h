@@ -18,19 +18,20 @@ class ControlObjectThread;
 class VisualPlayPosition;
 class VinylControlManager;
 
-class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityListener {
+class WSpinny : public QGLWidget,
+                public WBaseWidget,
+                public VinylSignalQualityListener {
     Q_OBJECT
   public:
     WSpinny(QWidget* parent, const QString& group,
-            ConfigObject<ConfigValue>* pConfig,
-            VinylControlManager* pVCMan);
+            ConfigObject<ConfigValue>* pConfig, VinylControlManager* pVCMan);
     virtual ~WSpinny();
 
     void onVinylSignalQualityUpdate(const VinylSignalQualityReport& report);
 
     void setup(QDomNode node, const SkinContext& context);
-    void dragEnterEvent(QDragEnterEvent *event);
-    void dropEvent(QDropEvent *event);
+    void dragEnterEvent(QDragEnterEvent* event);
+    void dropEvent(QDropEvent* event);
 
   public slots:
     void slotLoadTrack(TrackPointer);
@@ -46,16 +47,15 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
                         const CoverInfo& info, QPixmap pixmap, bool fromCache);
     void slotTrackCoverArtUpdated();
 
-
   signals:
     void trackDropped(QString filename, QString group);
 
   protected:
-    //QWidget:
+    // QWidget:
     void paintEvent(QPaintEvent*);
-    void mouseMoveEvent(QMouseEvent * e);
-    void mousePressEvent(QMouseEvent * e);
-    void mouseReleaseEvent(QMouseEvent * e);
+    void mouseMoveEvent(QMouseEvent* e);
+    void mousePressEvent(QMouseEvent* e);
+    void mouseReleaseEvent(QMouseEvent* e);
     void resizeEvent(QResizeEvent*);
     void showEvent(QShowEvent* event);
     void hideEvent(QHideEvent* event);
@@ -93,7 +93,6 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     CoverInfo m_lastRequestedCover;
     bool m_bShowCover;
 
-
     VinylControlManager* m_pVCManager;
     double m_dInitialPos;
 
@@ -103,7 +102,7 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     QImage m_qImage;
     int m_iVinylScopeSize;
 
-    float m_fAngle; //Degrees
+    float m_fAngle;  // Degrees
     double m_dAngleCurrentPlaypos;
     double m_dAngleLastPlaypos;
     float m_fGhostAngle;
@@ -121,4 +120,4 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     bool m_bWidgetDirty;
 };
 
-#endif //_WSPINNY_H
+#endif  //_WSPINNY_H

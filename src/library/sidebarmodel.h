@@ -28,9 +28,9 @@ class SidebarModel : public QAbstractItemModel {
     QModelIndex parent(const QModelIndex& index) const;
     int rowCount(const QModelIndex& parent = QModelIndex()) const;
     int columnCount(const QModelIndex& parent = QModelIndex()) const;
-    QVariant data(const QModelIndex& index,
-                  int role = Qt::DisplayRole) const;
-    bool dropAccept(const QModelIndex& index, QList<QUrl> urls, QObject* pSource);
+    QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
+    bool dropAccept(const QModelIndex& index, QList<QUrl> urls,
+                    QObject* pSource);
     bool dragMoveAccept(const QModelIndex& index, QUrl url);
     virtual bool hasChildren(const QModelIndex& parent = QModelIndex()) const;
 
@@ -38,21 +38,28 @@ class SidebarModel : public QAbstractItemModel {
     void clicked(const QModelIndex& index);
     void doubleClicked(const QModelIndex& index);
     void rightClicked(const QPoint& globalPos, const QModelIndex& index);
-    void slotFeatureSelect(LibraryFeature* pFeature, const QModelIndex& index = QModelIndex());
+    void slotFeatureSelect(LibraryFeature* pFeature,
+                           const QModelIndex& index = QModelIndex());
 
     // Slots for every single QAbstractItemModel signal
-    // void slotColumnsAboutToBeInserted(const QModelIndex& parent, int start, int end);
-    // void slotColumnsAboutToBeRemoved(const QModelIndex& parent, int start, int end);
+    // void slotColumnsAboutToBeInserted(const QModelIndex& parent, int start,
+    // int end);
+    // void slotColumnsAboutToBeRemoved(const QModelIndex& parent, int start,
+    // int end);
     // void slotColumnsInserted(const QModelIndex& parent, int start, int end);
     // void slotColumnsRemoved(const QModelIndex& parent, int start, int end);
-    void slotDataChanged(const QModelIndex& topLeft, const QModelIndex & bottomRight);
-    //void slotHeaderDataChanged(Qt::Orientation orientation, int first, int last);
+    void slotDataChanged(const QModelIndex& topLeft,
+                         const QModelIndex& bottomRight);
+    // void slotHeaderDataChanged(Qt::Orientation orientation, int first, int
+    // last);
     // void slotLayoutAboutToBeChanged();
     // void slotLayoutChanged();
     // void slotModelAboutToBeReset();
     // void slotModelReset();
-    void slotRowsAboutToBeInserted(const QModelIndex& parent, int start, int end);
-    void slotRowsAboutToBeRemoved(const QModelIndex& parent, int start, int end);
+    void slotRowsAboutToBeInserted(const QModelIndex& parent, int start,
+                                   int end);
+    void slotRowsAboutToBeRemoved(const QModelIndex& parent, int start,
+                                  int end);
     void slotRowsInserted(const QModelIndex& parent, int start, int end);
     void slotRowsRemoved(const QModelIndex& parent, int start, int end);
     void slotModelReset();
@@ -66,7 +73,8 @@ class SidebarModel : public QAbstractItemModel {
     QModelIndex translateSourceIndex(const QModelIndex& parent);
     void featureRenamed(LibraryFeature*);
     QList<LibraryFeature*> m_sFeatures;
-    unsigned int m_iDefaultSelectedIndex; /** Index of the item in the sidebar model to select at startup. */
+    unsigned int m_iDefaultSelectedIndex; /** Index of the item in the sidebar
+                                             model to select at startup. */
 };
 
 #endif /* SIDEBARMODEL_H */

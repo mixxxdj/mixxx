@@ -46,11 +46,11 @@ class ControlParameterWidgetConnection : public ControlWidgetConnection {
     Q_OBJECT
   public:
     enum EmitOption {
-        EMIT_NEVER                = 0x00,
-        EMIT_ON_PRESS             = 0x01,
-        EMIT_ON_RELEASE           = 0x02,
+        EMIT_NEVER = 0x00,
+        EMIT_ON_PRESS = 0x01,
+        EMIT_ON_RELEASE = 0x02,
         EMIT_ON_PRESS_AND_RELEASE = 0x03,
-        EMIT_DEFAULT              = 0x04
+        EMIT_DEFAULT = 0x04
     };
 
     static QString emitOptionToString(EmitOption option) {
@@ -69,11 +69,11 @@ class ControlParameterWidgetConnection : public ControlWidgetConnection {
     }
 
     enum DirectionOption {
-        DIR_NON                  = 0x00,
-        DIR_FROM_WIDGET          = 0x01,
-        DIR_TO_WIDGET            = 0x02,
-        DIR_FROM_AND_TO_WIDGET   = 0x03,
-        DIR_DEFAULT              = 0x04
+        DIR_NON = 0x00,
+        DIR_FROM_WIDGET = 0x01,
+        DIR_TO_WIDGET = 0x02,
+        DIR_FROM_AND_TO_WIDGET = 0x03,
+        DIR_DEFAULT = 0x04
     };
 
     static QString directionOptionToString(DirectionOption option) {
@@ -102,11 +102,19 @@ class ControlParameterWidgetConnection : public ControlWidgetConnection {
 
     QString toDebugString() const;
 
-    int getDirectionOption() const { return m_directionOption; };
-    int getEmitOption() const { return m_emitOption; };
+    int getDirectionOption() const {
+        return m_directionOption;
+    };
+    int getEmitOption() const {
+        return m_emitOption;
+    };
 
-    void setDirectionOption(enum DirectionOption v) { m_directionOption = v; };
-    void setEmitOption(enum EmitOption v) { m_emitOption = v; };
+    void setDirectionOption(enum DirectionOption v) {
+        m_directionOption = v;
+    };
+    void setEmitOption(enum EmitOption v) {
+        m_emitOption = v;
+    };
 
     void resetControl();
     void setControlParameter(double v);

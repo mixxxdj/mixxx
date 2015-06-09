@@ -1,4 +1,4 @@
-#if defined (__WINDOWS__)
+#if defined(__WINDOWS__)
 #include <windows.h>
 #include <Shellapi.h>
 #include <Shlobj.h>
@@ -17,8 +17,7 @@
 #include "library/browse/browsefeature.h"
 #include "util/file.h"
 
-FolderTreeModel::FolderTreeModel(QObject *parent)
-        : TreeItemModel(parent) {
+FolderTreeModel::FolderTreeModel(QObject* parent) : TreeItemModel(parent) {
 }
 
 FolderTreeModel::~FolderTreeModel() {
@@ -33,15 +32,15 @@ FolderTreeModel::~FolderTreeModel() {
  * is only called if necessary.
  */
 bool FolderTreeModel::hasChildren(const QModelIndex& parent) const {
-    TreeItem *item = static_cast<TreeItem*>(parent.internalPointer());
+    TreeItem* item = static_cast<TreeItem*>(parent.internalPointer());
     /* Usually the child count is 0 becuase we do lazy initalization
      * However, for, buid-in items such as 'Quick Links' there exist
      * child items at init time
      */
-    if(item->dataPath().toString() == QUICK_LINK_NODE)
+    if (item->dataPath().toString() == QUICK_LINK_NODE)
         return true;
-    //Can only happen on Windows
-    if(item->dataPath().toString() == DEVICE_NODE)
+    // Can only happen on Windows
+    if (item->dataPath().toString() == DEVICE_NODE)
         return true;
 
     // In all other cases the dataPath() points to a folder
@@ -64,7 +63,8 @@ bool FolderTreeModel::directoryHasChildren(const QString& path) const {
      *
      *
      *  QDir dir(item->dataPath().toString());
-     *  QFileInfoList all = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
+     *  QFileInfoList all = dir.entryInfoList(QDir::Dirs |
+     *QDir::NoDotAndDotDot);
      *  return (all.count() > 0);
      *
      *  We can benefit from low-level filesystem APIs, i.e.,
@@ -73,13 +73,14 @@ bool FolderTreeModel::directoryHasChildren(const QString& path) const {
 
     bool has_children = false;
 
-#if defined (__WINDOWS__)
+#if defined(__WINDOWS__)
     QString folder = path;
-    folder.replace("/","\\");
+    folder.replace("/", "\\");
 
-    //quick subfolder test
+    // quick subfolder test
     SHFILEINFOW sfi;
-    SHGetFileInfo((LPCWSTR) folder.constData(), NULL, &sfi, sizeof(sfi), SHGFI_ATTRIBUTES);
+    SHGetFileInfo((LPCWSTR)folder.constData(), NULL, &sfi, sizeof(sfi),
+                  SHGFI_ATTRIBUTES);
     has_children = (sfi.dwAttributes & SFGAO_HASSUBFOLDER);
 #else
     // For OS X and Linux
@@ -98,7 +99,8 @@ bool FolderTreeModel::directoryHasChildren(const QString& path) const {
                 if (entry->d_type == DT_UNKNOWN) {
                     unknown_count++;
                 }
-                has_children = (entry->d_type == DT_DIR || entry->d_type == DT_LNK);
+                has_children =
+                        (entry->d_type == DT_DIR || entry->d_type == DT_LNK);
             }
         }
         closedir(directory);
@@ -107,9 +109,11 @@ bool FolderTreeModel::directoryHasChildren(const QString& path) const {
     // If all files are of type DH_UNKNOWN then do a costlier analysis to
     // determine if the directory has subdirectories. This affects folders on
     // filesystems that do not fully implement readdir such as JFS.
-    if (directory == NULL || (unknown_count == total_count && total_count > 0)) {
+    if (directory == NULL ||
+        (unknown_count == total_count && total_count > 0)) {
         QDir dir(path);
-        QFileInfoList all = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
+        QFileInfoList all =
+                dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
         has_children = all.count() > 0;
     }
 #endif

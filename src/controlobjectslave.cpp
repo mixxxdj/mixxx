@@ -5,16 +5,17 @@
 #include "control/control.h"
 
 ControlObjectSlave::ControlObjectSlave(QObject* pParent)
-        : QObject(pParent),
-          m_pControl(NULL) {
+        : QObject(pParent), m_pControl(NULL) {
 }
 
-ControlObjectSlave::ControlObjectSlave(const QString& g, const QString& i, QObject* pParent)
+ControlObjectSlave::ControlObjectSlave(const QString& g, const QString& i,
+                                       QObject* pParent)
         : QObject(pParent) {
     initialize(ConfigKey(g, i));
 }
 
-ControlObjectSlave::ControlObjectSlave(const char* g, const char* i, QObject* pParent)
+ControlObjectSlave::ControlObjectSlave(const char* g, const char* i,
+                                       QObject* pParent)
         : QObject(pParent) {
     initialize(ConfigKey(g, i));
 }
@@ -36,11 +37,12 @@ ControlObjectSlave::~ControlObjectSlave() {
 }
 
 bool ControlObjectSlave::connectValueChanged(const QObject* receiver,
-        const char* method, Qt::ConnectionType type) {
+                                             const char* method,
+                                             Qt::ConnectionType type) {
     bool ret = false;
     if (m_pControl) {
-        ret = connect((QObject*)this, SIGNAL(valueChanged(double)),
-                      receiver, method, type);
+        ret = connect((QObject*)this, SIGNAL(valueChanged(double)), receiver,
+                      method, type);
         if (ret) {
             // Connect to ControlObjectPrivate only if required. Do not allow
             // duplicate connections.
@@ -54,8 +56,8 @@ bool ControlObjectSlave::connectValueChanged(const QObject* receiver,
 }
 
 // connect to parent object
-bool ControlObjectSlave::connectValueChanged(
-        const char* method, Qt::ConnectionType type) {
+bool ControlObjectSlave::connectValueChanged(const char* method,
+                                             Qt::ConnectionType type) {
     DEBUG_ASSERT(parent() != NULL);
     return connectValueChanged(parent(), method, type);
 }

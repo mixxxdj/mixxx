@@ -45,15 +45,14 @@ void ControlObject::initialize(ConfigKey key, bool bIgnoreNops, bool bTrack,
 
     // Don't bother looking up the control if key is NULL. Prevents log spew.
     if (!m_key.isNull()) {
-        m_pControl = ControlDoublePrivate::getControl(m_key, true, this,
-                                                      bIgnoreNops, bTrack,
-                                                      bPersist);
+        m_pControl = ControlDoublePrivate::getControl(
+                m_key, true, this, bIgnoreNops, bTrack, bPersist);
     }
 
     // getControl can fail and return a NULL control even with the create flag.
     if (m_pControl) {
-        connect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
-                this, SLOT(privateValueChanged(double, QObject*)),
+        connect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)), this,
+                SLOT(privateValueChanged(double, QObject*)),
                 Qt::DirectConnection);
     }
 }
@@ -70,8 +69,10 @@ void ControlObject::privateValueChanged(double dValue, QObject* pSender) {
 
 // static
 ControlObject* ControlObject::getControl(const ConfigKey& key, bool warn) {
-    //qDebug() << "ControlObject::getControl for (" << key.group << "," << key.item << ")";
-    QSharedPointer<ControlDoublePrivate> pCDP = ControlDoublePrivate::getControl(key, warn);
+    // qDebug() << "ControlObject::getControl for (" << key.group << "," <<
+    // key.item << ")";
+    QSharedPointer<ControlDoublePrivate> pCDP =
+            ControlDoublePrivate::getControl(key, warn);
     if (pCDP) {
         return pCDP->getCreatorCO();
     }
@@ -90,7 +91,8 @@ double ControlObject::getMidiParameter() const {
 
 // static
 double ControlObject::get(const ConfigKey& key) {
-    QSharedPointer<ControlDoublePrivate> pCop = ControlDoublePrivate::getControl(key);
+    QSharedPointer<ControlDoublePrivate> pCop =
+            ControlDoublePrivate::getControl(key);
     return pCop ? pCop->get() : 0.0;
 }
 
@@ -120,7 +122,8 @@ void ControlObject::setParameterFrom(double v, QObject* pSender) {
 
 // static
 void ControlObject::set(const ConfigKey& key, const double& value) {
-    QSharedPointer<ControlDoublePrivate> pCop = ControlDoublePrivate::getControl(key);
+    QSharedPointer<ControlDoublePrivate> pCop =
+            ControlDoublePrivate::getControl(key);
     if (pCop) {
         pCop->set(value, NULL);
     }

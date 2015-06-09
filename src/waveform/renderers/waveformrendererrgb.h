@@ -6,8 +6,7 @@
 
 class WaveformRendererRGB : public WaveformRendererSignalBase {
   public:
-    explicit WaveformRendererRGB(
-        WaveformWidgetRenderer* waveformWidget);
+    explicit WaveformRendererRGB(WaveformWidgetRenderer* waveformWidget);
     virtual ~WaveformRendererRGB();
 
     virtual void onSetup(const QDomNode& node);
@@ -17,4 +16,4 @@ class WaveformRendererRGB : public WaveformRendererSignalBase {
     DISALLOW_COPY_AND_ASSIGN(WaveformRendererRGB);
 };
 
-#endif // WAVEFORMRENDERERRGB_H
+#endif  // WAVEFORMRENDERERRGB_H

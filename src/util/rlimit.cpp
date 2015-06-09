@@ -3,18 +3,18 @@
 #ifdef __LINUX__
 
 extern "C" {
-    #include <sys/time.h>
-    #include <sys/resource.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 }
 
 // TODO(xxx) this is the result from a calculation inside PortAudio
 // We should query the value from PA or do the same calculations
-const rlim_t PA_RTPRIO = 82; // PA sets RtPrio = 82
+const rlim_t PA_RTPRIO = 82;  // PA sets RtPrio = 82
 
 // static
 unsigned int RLimit::getCurRtPrio() {
     struct rlimit limits;
-    if(getrlimit(RLIMIT_RTPRIO, &limits)) {
+    if (getrlimit(RLIMIT_RTPRIO, &limits)) {
         // Error
         return 100;
     }
@@ -24,7 +24,7 @@ unsigned int RLimit::getCurRtPrio() {
 // static
 unsigned int RLimit::getMaxRtPrio() {
     struct rlimit limits;
-    if(getrlimit(RLIMIT_RTPRIO, &limits)) {
+    if (getrlimit(RLIMIT_RTPRIO, &limits)) {
         // Error
         return 0;
     }
@@ -33,7 +33,7 @@ unsigned int RLimit::getMaxRtPrio() {
 
 // static
 bool RLimit::isRtPrioAllowed() {
-    return (getCurRtPrio() >= PA_RTPRIO); // PA sets RtPrio = 82
+    return (getCurRtPrio() >= PA_RTPRIO);  // PA sets RtPrio = 82
 }
 
-#endif // __LINUX__
+#endif  // __LINUX__

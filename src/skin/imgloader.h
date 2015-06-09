@@ -21,11 +21,9 @@
 #include "imgsource.h"
 
 class ImgLoader : public ImgSource {
-
-public:
+  public:
     ImgLoader();
     virtual QImage* getImage(QString img);
 };
 
 #endif
-

@@ -2,12 +2,10 @@
 
 #include "widget/wsplitter.h"
 
-WSplitter::WSplitter(QWidget* pParent, ConfigObject<ConfigValue> *pConfig)
-        : QSplitter(pParent),
-          WBaseWidget(this),
-          m_pConfig(pConfig) {
-    connect(this, SIGNAL(splitterMoved(int,int)),
-            this, SLOT(slotSplitterMoved()));
+WSplitter::WSplitter(QWidget* pParent, ConfigObject<ConfigValue>* pConfig)
+        : QSplitter(pParent), WBaseWidget(this), m_pConfig(pConfig) {
+    connect(this, SIGNAL(splitterMoved(int, int)), this,
+            SLOT(slotSplitterMoved()));
 }
 
 WSplitter::~WSplitter() {
@@ -21,26 +19,23 @@ void WSplitter::setup(QDomNode node, const SkinContext& context) {
     // Try to load last values stored in mixxx.cfg
     if (context.hasNode(node, "SplitSizesConfigKey")) {
         m_configKey = ConfigKey::parseCommaSeparated(
-                    context.selectString(node, "SplitSizesConfigKey"));
+                context.selectString(node, "SplitSizesConfigKey"));
 
         if (m_pConfig->exists(m_configKey)) {
             sizesJoined = m_pConfig->getValueString(m_configKey);
-            msg = "Reading .cfg file: '"
-                    + m_configKey.group + " "
-                    + m_configKey.item + " "
-                    + sizesJoined
-                    + "' does not match the number of children nodes:"
-                    + QString::number(this->count());
+            msg = "Reading .cfg file: '" + m_configKey.group + " " +
+                  m_configKey.item + " " + sizesJoined +
+                  "' does not match the number of children nodes:" +
+                  QString::number(this->count());
             ok = true;
         }
     }
     // nothing in mixxx.cfg? Load default values
     if (!ok && context.hasNode(node, "SplitSizes")) {
         sizesJoined = context.selectString(node, "SplitSizes");
-        msg = "<SplitSizes> for <Splitter> ("
-                + sizesJoined
-                + ") does not match the number of children nodes:"
-                + QString::number(this->count());
+        msg = "<SplitSizes> for <Splitter> (" + sizesJoined +
+              ") does not match the number of children nodes:" +
+              QString::number(this->count());
     }
     // found some value for splitsizes?
     if (sizesJoined != NULL) {

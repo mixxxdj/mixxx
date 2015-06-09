@@ -8,13 +8,13 @@
 
 WOverviewRGB::WOverviewRGB(const char* pGroup,
                            ConfigObject<ConfigValue>* pConfig, QWidget* parent)
-        : WOverview(pGroup, pConfig, parent)  {
+        : WOverview(pGroup, pConfig, parent) {
 }
 
 bool WOverviewRGB::drawNextPixmapPart() {
     ScopedTimer t("WOverviewRGB::drawNextPixmapPart");
 
-    //qDebug() << "WOverview::drawNextPixmapPart() - m_waveform" << m_waveform;
+    // qDebug() << "WOverview::drawNextPixmapPart() - m_waveform" << m_waveform;
 
     int currentCompletion;
 
@@ -32,9 +32,9 @@ bool WOverviewRGB::drawNextPixmapPart() {
         // Waveform pixmap twice the height of the viewport to be scalable
         // by total_gain
         // We keep full range waveform data to scale it on paint
-        m_pWaveformSourceImage = new QImage(dataSize / 2, 2 * 255,
-                QImage::Format_ARGB32_Premultiplied);
-        m_pWaveformSourceImage->fill(QColor(0,0,0,0).value());
+        m_pWaveformSourceImage = new QImage(
+                dataSize / 2, 2 * 255, QImage::Format_ARGB32_Premultiplied);
+        m_pWaveformSourceImage->fill(QColor(0, 0, 0, 0).value());
     }
 
     // Always multiple of 2
@@ -49,29 +49,31 @@ bool WOverviewRGB::drawNextPixmapPart() {
 
     const int nextCompletion = m_actualCompletion + completionIncrement;
 
-    //qDebug() << "WOverview::drawNextPixmapPart() - nextCompletion:"
+    // qDebug() << "WOverview::drawNextPixmapPart() - nextCompletion:"
     //         << nextCompletion
     //         << "m_actualCompletion:" << m_actualCompletion
     //         << "waveformCompletion:" << waveformCompletion
     //         << "completionIncrement:" << completionIncrement;
 
     QPainter painter(m_pWaveformSourceImage);
-    painter.translate(0.0,(double)m_pWaveformSourceImage->height()/2.0);
+    painter.translate(0.0, (double)m_pWaveformSourceImage->height() / 2.0);
 
     QColor color;
 
     qreal lowColor_r, lowColor_g, lowColor_b;
-    m_signalColors.getRgbLowColor().getRgbF(&lowColor_r, &lowColor_g, &lowColor_b);
+    m_signalColors.getRgbLowColor().getRgbF(&lowColor_r, &lowColor_g,
+                                            &lowColor_b);
 
     qreal midColor_r, midColor_g, midColor_b;
-    m_signalColors.getRgbMidColor().getRgbF(&midColor_r, &midColor_g, &midColor_b);
+    m_signalColors.getRgbMidColor().getRgbF(&midColor_r, &midColor_g,
+                                            &midColor_b);
 
     qreal highColor_r, highColor_g, highColor_b;
-    m_signalColors.getRgbHighColor().getRgbF(&highColor_r, &highColor_g, &highColor_b);
+    m_signalColors.getRgbHighColor().getRgbF(&highColor_r, &highColor_g,
+                                             &highColor_b);
 
     for (currentCompletion = m_actualCompletion;
-            currentCompletion < nextCompletion; currentCompletion += 2) {
-
+         currentCompletion < nextCompletion; currentCompletion += 2) {
         unsigned char left = pWaveform->getAll(currentCompletion);
         unsigned char right = pWaveform->getAll(currentCompletion + 1);
 
@@ -90,7 +92,8 @@ bool WOverviewRGB::drawNextPixmapPart() {
         if (max > 0.0) {
             color.setRgbF(red / max, green / max, blue / max);
             painter.setPen(color);
-            painter.drawLine(currentCompletion / 2, -left, currentCompletion / 2, 0);
+            painter.drawLine(currentCompletion / 2, -left,
+                             currentCompletion / 2, 0);
         }
 
         // Retrieve "raw" LMH values from waveform
@@ -108,13 +111,14 @@ bool WOverviewRGB::drawNextPixmapPart() {
         if (max > 0.0) {
             color.setRgbF(red / max, green / max, blue / max);
             painter.setPen(color);
-            painter.drawLine(currentCompletion / 2, 0, currentCompletion / 2, right);
+            painter.drawLine(currentCompletion / 2, 0, currentCompletion / 2,
+                             right);
         }
     }
 
     // Evaluate waveform ratio peak
     for (currentCompletion = m_actualCompletion;
-            currentCompletion < nextCompletion; currentCompletion += 2) {
+         currentCompletion < nextCompletion; currentCompletion += 2) {
         m_waveformPeak = math_max3(
                 m_waveformPeak,
                 static_cast<float>(pWaveform->getAll(currentCompletion)),
@@ -128,7 +132,7 @@ bool WOverviewRGB::drawNextPixmapPart() {
     // Test if the complete waveform is done
     if (m_actualCompletion >= dataSize - 2) {
         m_pixmapDone = true;
-        //qDebug() << "m_waveformPeakRatio" << m_waveformPeak;
+        // qDebug() << "m_waveformPeakRatio" << m_waveformPeak;
     }
 
     return true;

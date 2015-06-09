@@ -15,7 +15,6 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #include <QtDebug>
 
 #include "library/stardelegate.h"
@@ -26,8 +25,8 @@ StarDelegate::StarDelegate(QObject* pParent)
         : QStyledItemDelegate(pParent),
           m_pTableView(qobject_cast<QTableView*>(pParent)),
           m_isOneCellInEditMode(false) {
-    connect(pParent, SIGNAL(entered(QModelIndex)),
-            this, SLOT(cellEntered(QModelIndex)));
+    connect(pParent, SIGNAL(entered(QModelIndex)), this,
+            SLOT(cellEntered(QModelIndex)));
 }
 
 void StarDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option,
@@ -60,8 +59,8 @@ QWidget* StarDelegate::createEditor(QWidget* parent,
     initStyleOption(&newOption, index);
 
     StarEditor* editor = new StarEditor(parent, m_pTableView, index, newOption);
-    connect(editor, SIGNAL(editingFinished()),
-            this, SLOT(commitAndCloseEditor()));
+    connect(editor, SIGNAL(editingFinished()), this,
+            SLOT(commitAndCloseEditor()));
     return editor;
 }
 

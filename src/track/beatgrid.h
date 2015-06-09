@@ -21,7 +21,7 @@ class BeatGrid : public QObject, public virtual Beats {
     // in the iSampleRate parameter -- otherwise pass 0. If pByteArray is
     // non-NULL, the BeatGrid will be deserialized from the byte array.
     BeatGrid(TrackInfoObject* pTrack, int iSampleRate,
-             const QByteArray* pByteArray=NULL);
+             const QByteArray* pByteArray = NULL);
     virtual ~BeatGrid();
 
     // Initializes the BeatGrid to have a BPM of dBpm and the first beat offset
@@ -47,12 +47,12 @@ class BeatGrid : public QObject, public virtual Beats {
 
     virtual double findNextBeat(double dSamples) const;
     virtual double findPrevBeat(double dSamples) const;
-    virtual bool findPrevNextBeats(double dSamples,
-                                   double* dpPrevBeatSamples,
+    virtual bool findPrevNextBeats(double dSamples, double* dpPrevBeatSamples,
                                    double* dpNextBeatSamples) const;
     virtual double findClosestBeat(double dSamples) const;
     virtual double findNthBeat(double dSamples, int n) const;
-    virtual BeatIterator* findBeats(double startSample, double stopSample) const;
+    virtual BeatIterator* findBeats(double startSample,
+                                    double stopSample) const;
     virtual bool hasBeatInRange(double startSample, double stopSample) const;
     virtual double getBpm() const;
     virtual double getBpmRange(double startSample, double stopSample) const;
@@ -90,6 +90,5 @@ class BeatGrid : public QObject, public virtual Beats {
     // The length of a beat in samples
     double m_dBeatLength;
 };
-
 
 #endif /* BEATGRID_H */

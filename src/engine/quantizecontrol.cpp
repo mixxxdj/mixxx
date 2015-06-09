@@ -41,8 +41,8 @@ void QuantizeControl::trackLoaded(TrackPointer pTrack) {
     if (pTrack) {
         m_pTrack = pTrack;
         m_pBeats = m_pTrack->getBeats();
-        connect(m_pTrack.data(), SIGNAL(beatsUpdated()),
-                this, SLOT(slotBeatsUpdated()));
+        connect(m_pTrack.data(), SIGNAL(beatsUpdated()), this,
+                SLOT(slotBeatsUpdated()));
         // Initialize prev and next beat as if current position was zero.
         // If there is a cue point, the value will be updated.
         lookupBeatPositions(0.0);
@@ -53,8 +53,8 @@ void QuantizeControl::trackLoaded(TrackPointer pTrack) {
 void QuantizeControl::trackUnloaded(TrackPointer pTrack) {
     Q_UNUSED(pTrack);
     if (m_pTrack) {
-        disconnect(m_pTrack.data(), SIGNAL(beatsUpdated()),
-                   this, SLOT(slotBeatsUpdated()));
+        disconnect(m_pTrack.data(), SIGNAL(beatsUpdated()), this,
+                   SLOT(slotBeatsUpdated()));
     }
     m_pTrack.clear();
     m_pBeats.clear();
@@ -84,7 +84,8 @@ void QuantizeControl::setCurrentSample(const double dCurrentSample,
     // do so.
     // NOTE: This bypasses the epsilon calculation, but is there a way
     //       that could actually cause a problem?
-    if (dCurrentSample < m_pCOPrevBeat->get() || dCurrentSample > m_pCONextBeat->get()) {
+    if (dCurrentSample < m_pCOPrevBeat->get() ||
+        dCurrentSample > m_pCONextBeat->get()) {
         lookupBeatPositions(dCurrentSample);
     }
     updateClosestBeat(dCurrentSample);
@@ -107,7 +108,8 @@ void QuantizeControl::updateClosestBeat(double dCurrentSample) {
     double nextBeat = m_pCONextBeat->get();
     double closestBeat = m_pCOClosestBeat->get();
 
-    // Calculate closest beat by hand since we want the beat locations themselves
+    // Calculate closest beat by hand since we want the beat locations
+    // themselves
     // and duplicating the work by calling the standard API would double
     // the number of mutex locks.
     if (prevBeat == -1) {
@@ -120,8 +122,9 @@ void QuantizeControl::updateClosestBeat(double dCurrentSample) {
         m_pCOClosestBeat->set(prevBeat);
     } else {
         double currentClosestBeat =
-                (nextBeat - dCurrentSample > dCurrentSample - prevBeat) ?
-                        prevBeat : nextBeat;
+                (nextBeat - dCurrentSample > dCurrentSample - prevBeat)
+                        ? prevBeat
+                        : nextBeat;
         DEBUG_ASSERT_AND_HANDLE(even(static_cast<int>(currentClosestBeat))) {
             currentClosestBeat--;
         }

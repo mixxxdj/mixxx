@@ -28,9 +28,8 @@ class TrackCollection;
 
 class MixxxLibraryFeature : public LibraryFeature {
     Q_OBJECT
-    public:
-    MixxxLibraryFeature(Library* pLibrary,
-                        TrackCollection* pTrackCollection,
+  public:
+    MixxxLibraryFeature(Library* pLibrary, TrackCollection* pTrackCollection,
                         ConfigObject<ConfigValue>* pConfig);
     virtual ~MixxxLibraryFeature();
 
@@ -39,8 +38,7 @@ class MixxxLibraryFeature : public LibraryFeature {
     bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);
     TreeItemModel* getChildModel();
-    void bindWidget(WLibrary* pLibrary,
-                    MixxxKeyboard* pKeyboard);
+    void bindWidget(WLibrary* pLibrary, MixxxKeyboard* pKeyboard);
 
   public slots:
     void activate();

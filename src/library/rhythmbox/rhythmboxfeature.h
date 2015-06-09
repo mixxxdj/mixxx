@@ -20,7 +20,7 @@ class BaseExternalPlaylistModel;
 
 class RhythmboxFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
- public:
+  public:
     RhythmboxFeature(QObject* parent, TrackCollection*);
     virtual ~RhythmboxFeature();
     static bool isSupported();
@@ -44,9 +44,10 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
     // Removes all rows from a given table
     void clearTable(QString table_name);
     // reads the properties of a track and executes a SQL statement
-    void importTrack(QXmlStreamReader &xml, QSqlQuery &query);
+    void importTrack(QXmlStreamReader& xml, QSqlQuery& query);
     // reads all playlist entries and executes a SQL statement
-    void importPlaylist(QXmlStreamReader &xml, QSqlQuery &query, int playlist_id);
+    void importPlaylist(QXmlStreamReader& xml, QSqlQuery& query,
+                        int playlist_id);
 
     BaseExternalTrackModel* m_pRhythmboxTrackModel;
     BaseExternalPlaylistModel* m_pRhythmboxPlaylistModel;
@@ -62,7 +63,7 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
     TreeItemModel m_childModel;
     bool m_cancelImport;
 
-    QSharedPointer<BaseTrackCache>  m_trackSource;
+    QSharedPointer<BaseTrackCache> m_trackSource;
 };
 
-#endif // RHYTHMBOXFEATURE_H
+#endif  // RHYTHMBOXFEATURE_H

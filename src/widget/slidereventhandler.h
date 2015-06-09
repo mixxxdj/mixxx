@@ -16,13 +16,14 @@ class SliderEventHandler {
             : m_dStartHandlePos(0),
               m_dStartMousePos(0),
               m_bRightButtonPressed(false),
-              m_dOldParameter(-1.0), // virgin
+              m_dOldParameter(-1.0),  // virgin
               m_dPos(0.0),
               m_dHandleLength(0),
               m_dSliderLength(0),
               m_bHorizontal(false),
               m_bDrag(false),
-              m_bEventWhileDrag(true) { }
+              m_bEventWhileDrag(true) {
+    }
 
     void setHorizontal(bool horiz) {
         m_bHorizontal = horiz;
@@ -52,7 +53,8 @@ class SliderEventHandler {
 
             // Clamp to the range [0, sliderLength - m_dHandleLength].
             if (m_dSliderLength - m_dHandleLength > 0.0) {
-                m_dPos = math_clamp(m_dPos, 0.0, m_dSliderLength - m_dHandleLength);
+                m_dPos = math_clamp(m_dPos, 0.0,
+                                    m_dSliderLength - m_dHandleLength);
             }
             double newParameter = positionToParameter(m_dPos);
 
@@ -105,7 +107,7 @@ class SliderEventHandler {
 
     void wheelEvent(T* pWidget, QWheelEvent* e) {
         // For legacy (MIDI) reasons this is tuned to 127.
-        double wheelAdjustment = ((QWheelEvent *)e)->delta() / (120.0 * 127.0);
+        double wheelAdjustment = ((QWheelEvent*)e)->delta() / (120.0 * 127.0);
         double newParameter = pWidget->getControlParameter() + wheelAdjustment;
 
         // Clamp to [0.0, 1.0]
@@ -118,11 +120,14 @@ class SliderEventHandler {
     }
 
     void onConnectedControlChanged(T* pWidget, double dParameter) {
-        // WARNING: The second parameter to this method is unused and called with
-        // invalid values in parts of WSliderComposed. Do not use it unless you fix
+        // WARNING: The second parameter to this method is unused and called
+        // with
+        // invalid values in parts of WSliderComposed. Do not use it unless you
+        // fix
         // this.
 
-        // We don't update slider values while you're dragging them. This way you
+        // We don't update slider values while you're dragging them. This way
+        // you
         // don't have to "fight" with a controller that is also changing the
         // control.
         if (m_bDrag) {
@@ -136,10 +141,12 @@ class SliderEventHandler {
 
             // Clamp to [0.0, sliderLength - m_dHandleLength].
             if (m_dSliderLength - m_dHandleLength > 0.0) {
-                newPos = math_clamp(newPos, 0.0, m_dSliderLength - m_dHandleLength);
+                newPos = math_clamp(newPos, 0.0,
+                                    m_dSliderLength - m_dHandleLength);
             }
 
-            // Check a second time for no-ops. It's possible the parameter changed
+            // Check a second time for no-ops. It's possible the parameter
+            // changed
             // but the visible pixmap didn't. Only update() the widget if we're
             // really sure we need to since this involves painting ALL of its
             // parents.
@@ -198,7 +205,8 @@ class SliderEventHandler {
     double m_dSliderLength;
     // True if it's a horizontal slider
     bool m_bHorizontal;
-    // True if slider is being dragged. Only used when m_bEventWhileDrag is false
+    // True if slider is being dragged. Only used when m_bEventWhileDrag is
+    // false
     bool m_bDrag;
     // Is true if events is emitted while the slider is dragged
     bool m_bEventWhileDrag;

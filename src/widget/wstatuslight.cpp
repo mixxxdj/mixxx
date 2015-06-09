@@ -24,9 +24,7 @@
 #include <QtDebug>
 #include <QPixmap>
 
-WStatusLight::WStatusLight(QWidget * parent)
-        : WWidget(parent),
-          m_iPos(0) {
+WStatusLight::WStatusLight(QWidget* parent) : WWidget(parent), m_iPos(0) {
     setNoPos(0);
 }
 
@@ -57,16 +55,21 @@ void WStatusLight::setup(QDomNode node, const SkinContext& context) {
         QString nodeName = QString("PathStatusLight%1").arg(i);
         if (context.hasNode(node, nodeName)) {
             QDomElement statusLightNode = context.selectElement(node, nodeName);
-            setPixmap(i, context.getPixmapSource(statusLightNode),
-                      context.selectScaleMode(statusLightNode, Paintable::FIXED));
+            setPixmap(
+                    i, context.getPixmapSource(statusLightNode),
+                    context.selectScaleMode(statusLightNode, Paintable::FIXED));
         } else if (i == 0 && context.hasNode(node, "PathBack")) {
-            QDomElement statusLightNode = context.selectElement(node, "PathBack");
-            setPixmap(i, context.getPixmapSource(statusLightNode),
-                      context.selectScaleMode(statusLightNode, Paintable::FIXED));
+            QDomElement statusLightNode =
+                    context.selectElement(node, "PathBack");
+            setPixmap(
+                    i, context.getPixmapSource(statusLightNode),
+                    context.selectScaleMode(statusLightNode, Paintable::FIXED));
         } else if (i == 1 && context.hasNode(node, "PathStatusLight")) {
-            QDomElement statusLightNode = context.selectElement(node, "PathStatusLight");
-            setPixmap(i, context.getPixmapSource(statusLightNode),
-                      context.selectScaleMode(statusLightNode, Paintable::FIXED));
+            QDomElement statusLightNode =
+                    context.selectElement(node, "PathStatusLight");
+            setPixmap(
+                    i, context.getPixmapSource(statusLightNode),
+                    context.selectScaleMode(statusLightNode, Paintable::FIXED));
         } else {
             m_pixmaps[i].clear();
         }
@@ -86,7 +89,8 @@ void WStatusLight::setPixmap(int iState, PixmapSource source,
             setFixedSize(pPixmap->size());
         }
     } else {
-        qDebug() << "WStatusLight: Error loading pixmap:" << source.getPath() << iState;
+        qDebug() << "WStatusLight: Error loading pixmap:" << source.getPath()
+                 << iState;
         m_pixmaps[iState].clear();
     }
 }
@@ -104,7 +108,7 @@ void WStatusLight::onConnectedControlChanged(double dParameter, double dValue) {
         // multi-state behavior: values lie within the correct ranges
     } else {
         qDebug() << "Warning: wstatuslight asked for invalid position:"
-                 << newPos << "max val:" << m_pixmaps.size()-1;
+                 << newPos << "max val:" << m_pixmaps.size() - 1;
         return;
     }
 
@@ -114,7 +118,7 @@ void WStatusLight::onConnectedControlChanged(double dParameter, double dValue) {
     }
 }
 
-void WStatusLight::paintEvent(QPaintEvent *) {
+void WStatusLight::paintEvent(QPaintEvent*) {
     QStyleOption option;
     option.initFrom(this);
     QStylePainter p(this);

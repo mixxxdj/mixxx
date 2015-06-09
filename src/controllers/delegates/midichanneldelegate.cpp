@@ -12,8 +12,8 @@ MidiChannelDelegate::~MidiChannelDelegate() {
 }
 
 QWidget* MidiChannelDelegate::createEditor(QWidget* parent,
-                                          const QStyleOptionViewItem& option,
-                                          const QModelIndex& index) const {
+                                           const QStyleOptionViewItem& option,
+                                           const QModelIndex& index) const {
     Q_UNUSED(option);
     Q_UNUSED(index);
     QSpinBox* pSpinBox = new QSpinBox(parent);
@@ -24,7 +24,7 @@ QWidget* MidiChannelDelegate::createEditor(QWidget* parent,
 }
 
 QString MidiChannelDelegate::displayText(const QVariant& value,
-                                        const QLocale& locale) const {
+                                         const QLocale& locale) const {
     Q_UNUSED(locale);
     unsigned char channel = static_cast<unsigned char>(value.toInt());
     // It's common to display channels as 1-indexed instead of 0-indexed.
@@ -43,8 +43,8 @@ void MidiChannelDelegate::setEditorData(QWidget* editor,
 }
 
 void MidiChannelDelegate::setModelData(QWidget* editor,
-                                      QAbstractItemModel* model,
-                                      const QModelIndex& index) const {
+                                       QAbstractItemModel* model,
+                                       const QModelIndex& index) const {
     QSpinBox* pSpinBox = dynamic_cast<QSpinBox*>(editor);
     if (pSpinBox == NULL) {
         return;

@@ -10,7 +10,8 @@ class EngineEffect;
 
 class EffectInstantiator {
   public:
-    virtual ~EffectInstantiator() {}
+    virtual ~EffectInstantiator() {
+    }
     virtual EffectProcessor* instantiate(EngineEffect* pEngineEffect,
                                          const EffectManifest& manifest) = 0;
 };

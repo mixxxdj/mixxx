@@ -3,9 +3,7 @@
 #include "util/statmodel.h"
 #include "util/math.h"
 
-StatModel::StatModel(QObject* pParent)
-        : QAbstractTableModel(pParent) {
-
+StatModel::StatModel(QObject* pParent) : QAbstractTableModel(pParent) {
     setHeaderData(STAT_COLUMN_NAME, Qt::Horizontal, tr("Name"));
     setHeaderData(STAT_COLUMN_COUNT, Qt::Horizontal, tr("Count"));
     setHeaderData(STAT_COLUMN_TYPE, Qt::Horizontal, tr("Type"));
@@ -30,8 +28,7 @@ void StatModel::statUpdated(const Stat& stat) {
         QModelIndex right = index(row, columnCount() - 1);
         emit(dataChanged(left, right));
     } else {
-        beginInsertRows(QModelIndex(), m_stats.size(),
-                        m_stats.size());
+        beginInsertRows(QModelIndex(), m_stats.size(), m_stats.size());
         m_statNameToRow[stat.m_tag] = m_stats.size();
         m_stats.append(stat);
         endInsertRows();
@@ -52,10 +49,8 @@ int StatModel::columnCount(const QModelIndex& parent) const {
     return NUM_STAT_COLUMNS;
 }
 
-QVariant StatModel::data(const QModelIndex& index,
-                            int role) const {
-    if (!index.isValid() || (role != Qt::DisplayRole &&
-                             role != Qt::EditRole)) {
+QVariant StatModel::data(const QModelIndex& index, int role) const {
+    if (!index.isValid() || (role != Qt::DisplayRole && role != Qt::EditRole)) {
         return QVariant();
     }
 
@@ -78,14 +73,17 @@ QVariant StatModel::data(const QModelIndex& index,
         case STAT_COLUMN_SUM:
             return stat.m_sum;
         case STAT_COLUMN_MIN:
-            return std::numeric_limits<double>::max() == stat.m_min ?
-                    QVariant("XXX") : QVariant(stat.m_min);
+            return std::numeric_limits<double>::max() == stat.m_min
+                           ? QVariant("XXX")
+                           : QVariant(stat.m_min);
         case STAT_COLUMN_MAX:
-            return std::numeric_limits<double>::min() == stat.m_max ?
-                    QVariant("XXX") : QVariant(stat.m_max);
+            return std::numeric_limits<double>::min() == stat.m_max
+                           ? QVariant("XXX")
+                           : QVariant(stat.m_max);
         case STAT_COLUMN_MEAN:
-            return stat.m_report_count > 0 ?
-                    QVariant(stat.m_sum / stat.m_report_count) : QVariant("XXX");
+            return stat.m_report_count > 0
+                           ? QVariant(stat.m_sum / stat.m_report_count)
+                           : QVariant("XXX");
         case STAT_COLUMN_VARIANCE:
             return stat.variance();
         case STAT_COLUMN_STDDEV:
@@ -96,10 +94,8 @@ QVariant StatModel::data(const QModelIndex& index,
     return QVariant();
 }
 
-bool StatModel::setHeaderData(int section,
-                              Qt::Orientation orientation,
-                              const QVariant& value,
-                              int role) {
+bool StatModel::setHeaderData(int section, Qt::Orientation orientation,
+                              const QVariant& value, int role) {
     int numColumns = columnCount();
     if (section < 0 || section >= numColumns) {
         return false;
@@ -119,8 +115,7 @@ bool StatModel::setHeaderData(int section,
     return true;
 }
 
-QVariant StatModel::headerData(int section,
-                               Qt::Orientation orientation,
+QVariant StatModel::headerData(int section, Qt::Orientation orientation,
                                int role) const {
     if (role == Qt::DisplayRole && orientation == Qt::Horizontal) {
         QVariant headerValue = m_headerInfo.value(section).value(role);

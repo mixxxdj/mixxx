@@ -16,8 +16,7 @@ const int kProcessLength = kStatsPipeSize * 4 / 5;
 bool StatsManager::s_bStatsManagerEnabled = false;
 
 StatsPipe::StatsPipe(StatsManager* pManager)
-        : FIFO<StatReport>(kStatsPipeSize),
-          m_pManager(pManager) {
+        : FIFO<StatReport>(kStatsPipeSize), m_pManager(pManager) {
     qRegisterMetaType<Stat>("Stat");
 }
 
@@ -27,9 +26,7 @@ StatsPipe::~StatsPipe() {
     }
 }
 
-StatsManager::StatsManager()
-        : QThread(),
-          m_quit(0) {
+StatsManager::StatsManager() : QThread(), m_quit(0) {
     s_bStatsManagerEnabled = true;
     setObjectName("StatsManager");
     moveToThread(this);
@@ -129,8 +126,10 @@ void StatsManager::writeTimeline(const QString& filename) {
         qint64 last_start = startTimes.value(event.m_tag, -1);
         qint64 last_end = endTimes.value(event.m_tag, -1);
 
-        qint64 duration_since_last_start = last_start == -1 ? 0 : event.m_time - last_start;
-        qint64 duration_since_last_end = last_end == -1 ? 0 : event.m_time - last_end;
+        qint64 duration_since_last_start =
+                last_start == -1 ? 0 : event.m_time - last_start;
+        qint64 duration_since_last_end =
+                last_end == -1 ? 0 : event.m_time - last_end;
 
         if (event.m_type == Stat::EVENT_START) {
             // We last saw a start and we just saw another start.
@@ -152,8 +151,8 @@ void StatsManager::writeTimeline(const QString& filename) {
             << "+" << humanizeNanos(elapsed) << ","
             << "+" << humanizeNanos(duration_since_last_start) << ","
             << "+" << humanizeNanos(duration_since_last_end) << ","
-            << Stat::statTypeToString(event.m_type) << ","
-            << event.m_tag << "\n";
+            << Stat::statTypeToString(event.m_type) << "," << event.m_tag
+            << "\n";
         last_time = event.m_time;
     }
 
@@ -217,9 +216,9 @@ void StatsManager::processIncomingStatReports() {
             }
 
             if (CmdlineArgs::Instance().getTimelineEnabled() &&
-                    (report.type == Stat::EVENT ||
-                     report.type == Stat::EVENT_START ||
-                     report.type == Stat::EVENT_END)) {
+                (report.type == Stat::EVENT ||
+                 report.type == Stat::EVENT_START ||
+                 report.type == Stat::EVENT_END)) {
                 Event event;
                 event.m_tag = tag;
                 event.m_type = report.type;

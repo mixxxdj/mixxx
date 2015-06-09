@@ -13,8 +13,8 @@
 
 class ControllerPresetFileHandler {
   public:
-    ControllerPresetFileHandler() {};
-    virtual ~ControllerPresetFileHandler() {};
+    ControllerPresetFileHandler(){};
+    virtual ~ControllerPresetFileHandler(){};
 
     static ControllerPresetPointer loadPreset(const QString& path,
                                               const QStringList& presetPaths);
@@ -44,7 +44,8 @@ class ControllerPresetFileHandler {
      *   ControllerPreset.
      * @param root The root node of the XML document for the preset.
      * @param deviceName The name/id of the controller
-     * @param preset The ControllerPreset into which the scripts should be placed.
+     * @param preset The ControllerPreset into which the scripts should be
+     * placed.
      */
     void addScriptFilesToPreset(const QDomElement& root,
                                 ControllerPreset* preset) const;
@@ -58,7 +59,8 @@ class ControllerPresetFileHandler {
 
   private:
     // Sub-classes implement this.
-    virtual ControllerPresetPointer load(const QDomElement root, const QString deviceName) = 0;
+    virtual ControllerPresetPointer load(const QDomElement root,
+                                         const QString deviceName) = 0;
 };
 
 #endif

@@ -41,11 +41,9 @@ qint64 Timer::elapsed(bool report) {
     return nsec;
 }
 
-
 SuspendableTimer::SuspendableTimer(const QString& key,
                                    Stat::ComputeFlags compute)
-        : Timer(key, compute),
-          m_leapTime(0) {
+        : Timer(key, compute), m_leapTime(0) {
 }
 
 void SuspendableTimer::start() {

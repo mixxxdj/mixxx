@@ -10,5 +10,6 @@ const char* SignalPathTest::m_sPreviewGroup = "[PreviewDeck1]";
 const char* SignalPathTest::m_sSamplerGroup = "[Sampler1]";
 const double SignalPathTest::kDefaultRateRange = 4.0;
 const double SignalPathTest::kDefaultRateDir = 1.0;
-const double SignalPathTest::kRateRangeDivisor = kDefaultRateDir * kDefaultRateRange;
+const double SignalPathTest::kRateRangeDivisor =
+        kDefaultRateDir * kDefaultRateRange;
 const int SignalPathTest::kProcessBufferSize = 1024;

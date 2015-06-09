@@ -9,15 +9,16 @@
 #include "controllers/controllerlearningeventfilter.h"
 
 ControllerLearningEventFilter::ControllerLearningEventFilter(QObject* pParent)
-        : QObject(pParent),
-          m_bListening(false) {
+        : QObject(pParent), m_bListening(false) {
 }
 
 ControllerLearningEventFilter::~ControllerLearningEventFilter() {
 }
 
-bool ControllerLearningEventFilter::eventFilter(QObject* pObject, QEvent* pEvent) {
-    //qDebug() << "ControllerLearningEventFilter::eventFilter" << pObject << pEvent;
+bool ControllerLearningEventFilter::eventFilter(QObject* pObject,
+                                                QEvent* pEvent) {
+    // qDebug() << "ControllerLearningEventFilter::eventFilter" << pObject <<
+    // pEvent;
 
     WWidget* pWidget = dynamic_cast<WWidget*>(pObject);
     if (!pWidget || !m_bListening) {
@@ -44,7 +45,8 @@ bool ControllerLearningEventFilter::eventFilter(QObject* pObject, QEvent* pEvent
             } else if (info.clickControl) {
                 ConfigKey key = info.clickControl->getKey();
                 emit(controlClicked(info.clickControl));
-                qDebug() << "Default-click maps MIDI to:" << key.group << key.item;
+                qDebug() << "Default-click maps MIDI to:" << key.group
+                         << key.item;
             } else {
                 qDebug() << "No control bound to left-click for" << pWidget;
             }
@@ -52,9 +54,11 @@ bool ControllerLearningEventFilter::eventFilter(QObject* pObject, QEvent* pEvent
         if (mouseEvent->button() & Qt::RightButton) {
             if (info.rightClickControl) {
                 ConfigKey key = info.rightClickControl->getKey();
-                qDebug() << "Right-click maps MIDI to:" << key.group << key.item;
+                qDebug() << "Right-click maps MIDI to:" << key.group
+                         << key.item;
                 emit(controlClicked(info.rightClickControl));
-            } else if (has_right_click_reset && (info.leftClickControl || info.clickControl)) {
+            } else if (has_right_click_reset &&
+                       (info.leftClickControl || info.clickControl)) {
                 // WKnob and WSliderComposed emits a reset signal on
                 // right-click. For controls that are derived from
                 // ControlPotmeter, we can hack this by appending "_set_default"
@@ -67,12 +71,14 @@ bool ControllerLearningEventFilter::eventFilter(QObject* pObject, QEvent* pEvent
                 key.item = key.item + "_set_default";
                 ControlObject* pResetControl = ControlObject::getControl(key);
                 if (pResetControl) {
-                    qDebug() << "Right-click reset maps MIDI to:" << key.group << key.item;
+                    qDebug() << "Right-click reset maps MIDI to:" << key.group
+                             << key.item;
                     emit(controlClicked(pResetControl));
                 }
             } else if (info.clickControl) {
                 ConfigKey key = info.clickControl->getKey();
-                qDebug() << "Default-click maps MIDI to:" << key.group << key.item;
+                qDebug() << "Default-click maps MIDI to:" << key.group
+                         << key.item;
                 emit(controlClicked(info.clickControl));
             } else {
                 qDebug() << "No control bound to right-click for" << pWidget;
@@ -87,8 +93,7 @@ bool ControllerLearningEventFilter::eventFilter(QObject* pObject, QEvent* pEvent
 }
 
 void ControllerLearningEventFilter::addWidgetClickInfo(
-        QWidget* pWidget, Qt::MouseButton buttonState,
-        ControlObject* pControl,
+        QWidget* pWidget, Qt::MouseButton buttonState, ControlObject* pControl,
         ControlParameterWidgetConnection::EmitOption emitOption) {
     ControlInfo& info = m_widgetControlInfo[pWidget];
 

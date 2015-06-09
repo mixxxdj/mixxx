@@ -11,20 +11,21 @@
 class ControlObject;
 
 class QtWaveformRendererSimpleSignal : public WaveformRendererSignalBase {
-public:
-    explicit QtWaveformRendererSimpleSignal(WaveformWidgetRenderer* waveformWidgetRenderer);
+  public:
+    explicit QtWaveformRendererSimpleSignal(
+            WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~QtWaveformRendererSimpleSignal();
 
-    virtual void onSetup(const QDomNode &node);
+    virtual void onSetup(const QDomNode& node);
     virtual void draw(QPainter* painter, QPaintEvent* event);
 
-protected:
+  protected:
     virtual void onResize();
 
-private:
+  private:
     QBrush m_brush;
     QPen m_borderPen;
     QVector<QPointF> m_polygon;
 };
 
-#endif // QTWAVEFORMRENDERERSIMPLESIGNAL_H
+#endif  // QTWAVEFORMRENDERERSIMPLESIGNAL_H

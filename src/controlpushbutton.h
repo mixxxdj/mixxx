@@ -29,15 +29,15 @@ class ControlPushButton : public ControlObject {
     Q_OBJECT
   public:
     enum ButtonMode {
-         PUSH = 0,
-         TOGGLE,
-         POWERWINDOW,
-         LONGPRESSLATCHING,
-         TRIGGER,
+        PUSH = 0,
+        TOGGLE,
+        POWERWINDOW,
+        LONGPRESSLATCHING,
+        TRIGGER,
     };
 
     static QString buttonModeToString(int mode) {
-        switch(mode) {
+        switch (mode) {
             case ControlPushButton::PUSH:
                 return "PUSH";
             case ControlPushButton::TOGGLE:
@@ -53,7 +53,7 @@ class ControlPushButton : public ControlObject {
         }
     }
 
-    ControlPushButton(ConfigKey key, bool bPersist=false);
+    ControlPushButton(ConfigKey key, bool bPersist = false);
     virtual ~ControlPushButton();
 
     inline ButtonMode getButtonMode() const {

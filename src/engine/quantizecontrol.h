@@ -45,4 +45,4 @@ class QuantizeControl : public EngineControl {
     BeatsPointer m_pBeats;
 };
 
-#endif // QUANTIZECONTROL_H
+#endif  // QUANTIZECONTROL_H

@@ -24,12 +24,12 @@ class KeyFactory {
     static QString getPreferredVersion();
 
     static QString getPreferredSubVersion(
-        const QHash<QString, QString>& extraVersionInfo);
+            const QHash<QString, QString>& extraVersionInfo);
 
     static Keys makePreferredKeys(
-        const KeyChangeList& key_changes,
-        const QHash<QString, QString>& extraVersionInfo,
-        const int iSampleRate, const int iTotalSamples);
+            const KeyChangeList& key_changes,
+            const QHash<QString, QString>& extraVersionInfo,
+            const int iSampleRate, const int iTotalSamples);
 };
 
 #endif /* KEYFACTORY_H */

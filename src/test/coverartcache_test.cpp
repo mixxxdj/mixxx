@@ -17,7 +17,6 @@ class CoverArtCacheTest : public MixxxTest, public CoverArtCache {
 
     virtual void TearDown() {
     }
-
 };
 
 const QString kCoverLocationTest("/src/test/id3-test-data/cover-test.jpg");
@@ -31,7 +30,7 @@ TEST_F(CoverArtCacheTest, loadCover) {
     info.source = CoverInfo::GUESSED;
     info.coverLocation = "../../../" % kCoverLocationTest;
     info.trackLocation = kTrackLocationTest;
-    info.hash = 4321; // fake cover hash
+    info.hash = 4321;  // fake cover hash
 
     CoverArtCache::FutureResult res;
     res = CoverArtCache::loadCover(info, NULL, 1234, 0, false);
@@ -49,9 +48,10 @@ TEST_F(CoverArtCacheTest, loadCover) {
     EXPECT_QSTRING_EQ(QString(), res.cover.info.coverLocation);
     EXPECT_QSTRING_EQ(info.hash, res.cover.info.hash);
 
-    SecurityTokenPointer securityToken = Sandbox::openSecurityToken(
-        QDir(kTrackLocationTest), true);
-    img = CoverArtUtils::extractEmbeddedCover(kTrackLocationTest, securityToken);
+    SecurityTokenPointer securityToken =
+            Sandbox::openSecurityToken(QDir(kTrackLocationTest), true);
+    img = CoverArtUtils::extractEmbeddedCover(kTrackLocationTest,
+                                              securityToken);
 
     EXPECT_EQ(img, res.cover.image);
 }

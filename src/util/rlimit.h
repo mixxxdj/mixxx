@@ -10,5 +10,5 @@ class RLimit {
     static bool isRtPrioAllowed();
 };
 
-#endif // __LINUX__
-#endif // RLIMIT_H_
+#endif  // __LINUX__
+#endif  // RLIMIT_H_

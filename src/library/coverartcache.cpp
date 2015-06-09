@@ -35,9 +35,9 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
                                     const bool onlyCached,
                                     const bool signalWhenDone) {
     if (sDebug) {
-        qDebug() << "CoverArtCache::requestCover"
-                 << requestInfo << pRequestor << requestReference <<
-                desiredWidth << onlyCached << signalWhenDone;
+        qDebug() << "CoverArtCache::requestCover" << requestInfo << pRequestor
+                 << requestReference << desiredWidth << onlyCached
+                 << signalWhenDone;
     }
 
     if (requestInfo.type == CoverInfo::NONE) {
@@ -50,7 +50,8 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
 
     // keep a list of trackIds for which a future is currently running
     // to avoid loading the same picture again while we are loading it
-    QPair<const QObject*, int> requestId = qMakePair(pRequestor, requestReference);
+    QPair<const QObject*, int> requestId =
+            qMakePair(pRequestor, requestReference);
     if (m_runningRequests.contains(requestId)) {
         return QPixmap();
     }
@@ -60,13 +61,14 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
     // column). It's very important to keep the cropped covers in cache because
     // it avoids having to rescale+crop it ALWAYS (which brings a lot of
     // performance issues).
-    QString cacheKey = CoverArtUtils::pixmapCacheKey(requestInfo.hash,
-                                                     desiredWidth);
+    QString cacheKey =
+            CoverArtUtils::pixmapCacheKey(requestInfo.hash, desiredWidth);
 
     QPixmap pixmap;
     if (QPixmapCache::find(cacheKey, &pixmap)) {
         if (signalWhenDone) {
-            emit(coverFound(pRequestor, requestReference, requestInfo, pixmap, true));
+            emit(coverFound(pRequestor, requestReference, requestInfo, pixmap,
+                            true));
         }
         return pixmap;
     }
@@ -79,7 +81,8 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
     }
 
     m_runningRequests.insert(requestId);
-    QFutureWatcher<FutureResult>* watcher = new QFutureWatcher<FutureResult>(this);
+    QFutureWatcher<FutureResult>* watcher =
+            new QFutureWatcher<FutureResult>(this);
     QFuture<FutureResult> future = QtConcurrent::run(
             this, &CoverArtCache::loadCover, requestInfo, pRequestor,
             requestReference, desiredWidth, signalWhenDone);
@@ -89,14 +92,11 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
 }
 
 CoverArtCache::FutureResult CoverArtCache::loadCover(
-        const CoverInfo& info,
-        const QObject* pRequestor,
-        int requestReference,
-        const int desiredWidth,
-        const bool signalWhenDone) {
+        const CoverInfo& info, const QObject* pRequestor, int requestReference,
+        const int desiredWidth, const bool signalWhenDone) {
     if (sDebug) {
-        qDebug() << "CoverArtCache::loadCover"
-                 << info << desiredWidth << signalWhenDone;
+        qDebug() << "CoverArtCache::loadCover" << info << desiredWidth
+                 << signalWhenDone;
     }
 
     FutureResult res;
@@ -119,8 +119,8 @@ CoverArtCache::FutureResult CoverArtCache::loadCover(
     // Adjust the cover size according to the request or downsize the image for
     // efficiency.
     if (res.desiredWidth > 0) {
-        res.cover.image = CoverArtUtils::resizeImage(res.cover.image,
-                                                     res.desiredWidth);
+        res.cover.image =
+                CoverArtUtils::resizeImage(res.cover.image, res.desiredWidth);
     } else {
         res.cover.image = CoverArtUtils::maybeResizeImage(res.cover.image,
                                                           kMaxCoverWidth);
@@ -149,8 +149,8 @@ void CoverArtCache::coverLoaded() {
     m_runningRequests.remove(qMakePair(res.pRequestor, res.requestReference));
 
     if (res.signalWhenDone) {
-        emit(coverFound(res.pRequestor, res.requestReference,
-                        res.cover.info, pixmap, false));
+        emit(coverFound(res.pRequestor, res.requestReference, res.cover.info,
+                        pixmap, false));
     }
 }
 
@@ -171,7 +171,5 @@ void CoverArtCache::guessCover(TrackPointer pTrack) {
 void CoverArtCache::guessCovers(QList<TrackPointer> tracks) {
     qDebug() << "CoverArtCache::guessCovers guessing covers for"
              << tracks.size() << "tracks";
-    foreach (TrackPointer pTrack, tracks) {
-        guessCover(pTrack);
-    }
+    foreach (TrackPointer pTrack, tracks) { guessCover(pTrack); }
 }

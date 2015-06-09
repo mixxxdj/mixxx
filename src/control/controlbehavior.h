@@ -9,7 +9,7 @@ class ControlDoublePrivate;
 
 class ControlNumericBehavior {
   public:
-    virtual ~ControlNumericBehavior() { };
+    virtual ~ControlNumericBehavior(){};
 
     // Returns true if the set should occur. Mutates dValue if the value should
     // be changed.
@@ -44,7 +44,8 @@ class ControlPotmeterBehavior : public ControlNumericBehavior {
 
 class ControlLogPotmeterBehavior : public ControlPotmeterBehavior {
   public:
-    ControlLogPotmeterBehavior(double dMinValue, double dMaxValue, double minDB);
+    ControlLogPotmeterBehavior(double dMinValue, double dMaxValue,
+                               double minDB);
     virtual ~ControlLogPotmeterBehavior();
 
     virtual double valueToParameter(double dValue);
@@ -105,10 +106,10 @@ class ControlPushButtonBehavior : public ControlNumericBehavior {
     // TODO(XXX) Duplicated from ControlPushButton. It's complicated and
     // annoying to share them so I just copied them.
     enum ButtonMode {
-         PUSH = 0,
-         TOGGLE,
-         POWERWINDOW,
-         LONGPRESSLATCHING,
+        PUSH = 0,
+        TOGGLE,
+        POWERWINDOW,
+        LONGPRESSLATCHING,
     };
 
     ControlPushButtonBehavior(ButtonMode buttonMode, int iNumStates);

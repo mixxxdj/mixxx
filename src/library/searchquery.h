@@ -10,12 +10,15 @@
 #include "trackinfoobject.h"
 #include "proto/keys.pb.h"
 
-QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& column);
+QVariant getTrackValueForColumn(const TrackPointer& pTrack,
+                                const QString& column);
 
 class QueryNode {
   public:
-    QueryNode() {}
-    virtual ~QueryNode() {}
+    QueryNode() {
+    }
+    virtual ~QueryNode() {
+    }
 
     virtual bool match(const TrackPointer& pTrack) const = 0;
     virtual QString toSql() const = 0;
@@ -23,7 +26,8 @@ class QueryNode {
 
 class GroupNode : public QueryNode {
   public:
-    GroupNode() {}
+    GroupNode() {
+    }
     virtual ~GroupNode() {
         while (!m_nodes.empty()) {
             delete m_nodes.takeLast();
@@ -40,7 +44,8 @@ class GroupNode : public QueryNode {
 
 class OrNode : public GroupNode {
   public:
-    OrNode() {}
+    OrNode() {
+    }
 
     bool match(const TrackPointer& pTrack) const;
     QString toSql() const;
@@ -48,7 +53,8 @@ class OrNode : public GroupNode {
 
 class AndNode : public GroupNode {
   public:
-    AndNode() {}
+    AndNode() {
+    }
 
     bool match(const TrackPointer& pTrack) const;
     QString toSql() const;
@@ -67,8 +73,7 @@ class NotNode : public QueryNode {
 
 class TextFilterNode : public QueryNode {
   public:
-    TextFilterNode(const QSqlDatabase& database,
-                   const QStringList& sqlColumns,
+    TextFilterNode(const QSqlDatabase& database, const QStringList& sqlColumns,
                    const QString& argument)
             : m_database(database),
               m_sqlColumns(sqlColumns),
@@ -93,7 +98,7 @@ class NumericFilterNode : public QueryNode {
 
   protected:
     virtual void init(QString argument);
-    virtual double parse(const QString& arg, bool *ok);
+    virtual double parse(const QString& arg, bool* ok);
     QStringList m_sqlColumns;
     bool m_bOperatorQuery;
     QString m_operator;
@@ -128,7 +133,8 @@ class SqlNode : public QueryNode {
             // Need to wrap it since we don't know if the caller wrapped it.
             : m_sql(QString("(%1)").arg(sqlExpression)) {
     }
-    virtual ~SqlNode() {}
+    virtual ~SqlNode() {
+    }
 
     bool match(const TrackPointer& pTrack) const {
         // We are usually embedded in an AND node so if we don't match
@@ -144,6 +150,5 @@ class SqlNode : public QueryNode {
   private:
     QString m_sql;
 };
-
 
 #endif /* SEARCHQUERY_H */

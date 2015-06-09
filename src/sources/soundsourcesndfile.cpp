@@ -3,8 +3,7 @@
 namespace Mixxx {
 
 SoundSourceSndFile::SoundSourceSndFile(QUrl url)
-        : SoundSource(url),
-          m_pSndFile(NULL) {
+        : SoundSource(url), m_pSndFile(NULL) {
 }
 
 SoundSourceSndFile::~SoundSourceSndFile() {
@@ -17,22 +16,23 @@ Result SoundSourceSndFile::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
 #ifdef __WINDOWS__
     // Pointer valid until string changed
     const QString fileName(getLocalFileName());
-    LPCWSTR lpcwFilename = (LPCWSTR) fileName.utf16();
+    LPCWSTR lpcwFilename = (LPCWSTR)fileName.utf16();
     m_pSndFile = sf_wchar_open(lpcwFilename, SFM_READ, &sfInfo);
 #else
     memset(&sfInfo, 0, sizeof(sfInfo));
-    m_pSndFile = sf_open(getLocalFileNameBytes().constData(), SFM_READ, &sfInfo);
+    m_pSndFile =
+            sf_open(getLocalFileNameBytes().constData(), SFM_READ, &sfInfo);
 #endif
 
-    if (!m_pSndFile) {   // sf_format_check is only for writes
+    if (!m_pSndFile) {  // sf_format_check is only for writes
         qWarning() << "Error opening libsndfile file:" << getUrlString()
-                << sf_strerror(m_pSndFile);
+                   << sf_strerror(m_pSndFile);
         return ERR;
     }
 
     if (sf_error(m_pSndFile) > 0) {
         qWarning() << "Error opening libsndfile file:" << getUrlString()
-                << sf_strerror(m_pSndFile);
+                   << sf_strerror(m_pSndFile);
         return ERR;
     }
 
@@ -50,14 +50,12 @@ void SoundSourceSndFile::close() {
             m_pSndFile = NULL;
         } else {
             qWarning() << "Failed to close file:" << closeResult
-                    << sf_strerror(m_pSndFile)
-                    << getUrlString();
+                       << sf_strerror(m_pSndFile) << getUrlString();
         }
     }
 }
 
-SINT SoundSourceSndFile::seekSampleFrame(
-        SINT frameIndex) {
+SINT SoundSourceSndFile::seekSampleFrame(SINT frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(frameIndex));
 
     const sf_count_t seekResult = sf_seek(m_pSndFile, frameIndex, SEEK_SET);
@@ -65,20 +63,20 @@ SINT SoundSourceSndFile::seekSampleFrame(
         return seekResult;
     } else {
         qWarning() << "Failed to seek libsnd file:" << seekResult
-                << sf_strerror(m_pSndFile);
+                   << sf_strerror(m_pSndFile);
         return sf_seek(m_pSndFile, 0, SEEK_CUR);
     }
 }
 
-SINT SoundSourceSndFile::readSampleFrames(
-        SINT numberOfFrames, CSAMPLE* sampleBuffer) {
+SINT SoundSourceSndFile::readSampleFrames(SINT numberOfFrames,
+                                          CSAMPLE* sampleBuffer) {
     const sf_count_t readCount =
             sf_readf_float(m_pSndFile, sampleBuffer, numberOfFrames);
     if (0 <= readCount) {
         return readCount;
     } else {
         qWarning() << "Failed to read from libsnd file:" << readCount
-                << sf_strerror(m_pSndFile);
+                   << sf_strerror(m_pSndFile);
         return 0;
     }
 }
@@ -96,4 +94,4 @@ QStringList SoundSourceProviderSndFile::getSupportedFileExtensions() const {
     return supportedFileExtensions;
 }
 
-} // namespace Mixxx
+}  // namespace Mixxx

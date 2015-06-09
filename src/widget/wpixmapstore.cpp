@@ -39,8 +39,8 @@ Paintable::DrawMode Paintable::DrawModeFromString(const QString& str) {
     }
 
     // Fall back on the implicit default from before Mixxx supported draw modes.
-    qWarning() << "Unknown DrawMode string in DrawModeFromString:"
-               << str << "using FIXED";
+    qWarning() << "Unknown DrawMode string in DrawModeFromString:" << str
+               << "using FIXED";
     return FIXED;
 }
 
@@ -62,8 +62,7 @@ QString Paintable::DrawModeToString(DrawMode mode) {
     return "FIXED";
 }
 
-Paintable::Paintable(QImage* pImage, DrawMode mode)
-        : m_draw_mode(mode) {
+Paintable::Paintable(QImage* pImage, DrawMode mode) : m_draw_mode(mode) {
 #if QT_VERSION >= 0x040700
     m_pPixmap.reset(new QPixmap());
     m_pPixmap->convertFromImage(*pImage);
@@ -107,7 +106,8 @@ Paintable::Paintable(const PixmapSource& source, DrawMode mode)
         if (mode == TILE) {
             // The SVG renderer doesn't directly support tiling, so we render
             // it to a pixmap which will then get tiled.
-            QImage copy_buffer(pSvgRenderer->defaultSize(), QImage::Format_ARGB32);
+            QImage copy_buffer(pSvgRenderer->defaultSize(),
+                               QImage::Format_ARGB32);
             copy_buffer.fill(0x00000000);  // Transparent black.
             m_pPixmap.reset(new QPixmap(pSvgRenderer->defaultSize()));
             QPainter painter(&copy_buffer);
@@ -117,7 +117,7 @@ Paintable::Paintable(const PixmapSource& source, DrawMode mode)
             m_pSvg.reset(pSvgRenderer.take());
         }
     } else {
-        QPixmap * pPixmap = new QPixmap();
+        QPixmap* pPixmap = new QPixmap();
         if (!source.getData().isEmpty()) {
             pPixmap->loadFromData(source.getData());
         } else {
@@ -126,7 +126,6 @@ Paintable::Paintable(const PixmapSource& source, DrawMode mode)
         m_pPixmap.reset(pPixmap);
     }
 }
-
 
 bool Paintable::isNull() const {
     if (!m_pPixmap.isNull()) {
@@ -186,7 +185,8 @@ void Paintable::draw(int x, int y, QPainter* pPainter) {
     draw(targetRect, pPainter, sourceRect);
 }
 
-void Paintable::draw(const QPointF& point, QPainter* pPainter, const QRectF& sourceRect) {
+void Paintable::draw(const QPointF& point, QPainter* pPainter,
+                     const QRectF& sourceRect) {
     return draw(QRectF(point, sourceRect.size()), pPainter, sourceRect);
 }
 
@@ -211,8 +211,7 @@ void Paintable::draw(const QRectF& targetRect, QPainter* pPainter,
         // Adjust the scale so that the scaling in both axes is equal.
         if (sx != sy) {
             qreal scale = math_min(sx, sy);
-            QRectF adjustedTarget(targetRect.x(),
-                                  targetRect.y(),
+            QRectF adjustedTarget(targetRect.x(), targetRect.y(),
                                   scale * sourceRect.width(),
                                   scale * sourceRect.height());
             return drawInternal(adjustedTarget, pPainter, sourceRect);
@@ -274,7 +273,8 @@ void Paintable::drawInternal(const QRectF& targetRect, QPainter* pPainter,
             // across the target rect. What's the right general behavior here?
             // NOTE(rryan): We round our target/source rectangles to the nearest
             // pixel for raster images.
-            pPainter->drawTiledPixmap(targetRect.toRect(), *m_pPixmap, QPoint(0,0));
+            pPainter->drawTiledPixmap(targetRect.toRect(), *m_pPixmap,
+                                      QPoint(0, 0));
         } else {
             // NOTE(rryan): We round our target/source rectangles to the nearest
             // pixel for raster images.
@@ -304,13 +304,14 @@ void Paintable::drawInternal(const QRectF& targetRect, QPainter* pPainter,
 PaintablePointer WPixmapStore::getPaintable(PixmapSource source,
                                             Paintable::DrawMode mode) {
     // See if we have a cached value for the pixmap.
-    PaintablePointer pPaintable = m_paintableCache.value(source.getId(), PaintablePointer());
+    PaintablePointer pPaintable =
+            m_paintableCache.value(source.getId(), PaintablePointer());
     if (pPaintable) {
         return pPaintable;
     }
 
     // Otherwise, construct it with the pixmap loader.
-    //qDebug() << "WPixmapStore Loading pixmap from file" << source.getPath();
+    // qDebug() << "WPixmapStore Loading pixmap from file" << source.getPath();
 
     if (m_loader) {
         QImage* pImage = m_loader->getImage(source.getPath());
@@ -333,9 +334,6 @@ PaintablePointer WPixmapStore::getPaintable(PixmapSource source,
     m_paintableCache[source.getId()] = pPaintable;
     return pPaintable;
 }
-
-
-
 
 // static
 QPixmap* WPixmapStore::getPixmapNoCache(const QString& fileName) {

@@ -27,7 +27,6 @@ TEST_F(QueryUtilTest, FieldEscaperEscapesQuotes) {
     ASSERT_TRUE(db.open());
     FieldEscaper f(db);
 
-
     EXPECT_STREQ(qPrintable(QString("'foobar'")),
                  qPrintable(f.escapeString("foobar")));
     EXPECT_STREQ(qPrintable(QString("'foobar''s'")),

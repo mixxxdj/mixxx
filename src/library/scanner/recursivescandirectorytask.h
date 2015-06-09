@@ -14,12 +14,11 @@
 class RecursiveScanDirectoryTask : public ScannerTask {
     Q_OBJECT
   public:
-
     RecursiveScanDirectoryTask(LibraryScanner* pScanner,
                                const ScannerGlobalPointer scannerGlobal,
-                               const QDir& dir,
-                               SecurityTokenPointer pToken);
-    virtual ~RecursiveScanDirectoryTask() {}
+                               const QDir& dir, SecurityTokenPointer pToken);
+    virtual ~RecursiveScanDirectoryTask() {
+    }
 
     virtual void run();
 

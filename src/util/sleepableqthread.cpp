@@ -5,4 +5,3 @@
 // runs on the class and linker errors are avoided.
 
 #include "util/sleepableqthread.h"
-

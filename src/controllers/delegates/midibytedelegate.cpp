@@ -37,8 +37,7 @@ void MidiByteDelegate::setEditorData(QWidget* editor,
     pSpinBox->setValue(control);
 }
 
-void MidiByteDelegate::setModelData(QWidget* editor,
-                                    QAbstractItemModel* model,
+void MidiByteDelegate::setModelData(QWidget* editor, QAbstractItemModel* model,
                                     const QModelIndex& index) const {
     HexSpinBox* pSpinBox = dynamic_cast<HexSpinBox*>(editor);
     if (pSpinBox == NULL) {

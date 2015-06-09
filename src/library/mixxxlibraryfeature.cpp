@@ -33,22 +33,19 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection) {
     QStringList columns;
-    columns << "library." + LIBRARYTABLE_ID
-            << "library." + LIBRARYTABLE_PLAYED
+    columns << "library." + LIBRARYTABLE_ID << "library." + LIBRARYTABLE_PLAYED
             << "library." + LIBRARYTABLE_TIMESPLAYED
-            //has to be up here otherwise Played and TimesPlayed are not show
+            // has to be up here otherwise Played and TimesPlayed are not show
             << "library." + LIBRARYTABLE_ALBUMARTIST
             << "library." + LIBRARYTABLE_ALBUM
             << "library." + LIBRARYTABLE_ARTIST
-            << "library." + LIBRARYTABLE_TITLE
-            << "library." + LIBRARYTABLE_YEAR
+            << "library." + LIBRARYTABLE_TITLE << "library." + LIBRARYTABLE_YEAR
             << "library." + LIBRARYTABLE_RATING
             << "library." + LIBRARYTABLE_GENRE
             << "library." + LIBRARYTABLE_COMPOSER
             << "library." + LIBRARYTABLE_GROUPING
             << "library." + LIBRARYTABLE_TRACKNUMBER
-            << "library." + LIBRARYTABLE_KEY
-            << "library." + LIBRARYTABLE_KEY_ID
+            << "library." + LIBRARYTABLE_KEY << "library." + LIBRARYTABLE_KEY_ID
             << "library." + LIBRARYTABLE_BPM
             << "library." + LIBRARYTABLE_BPM_LOCK
             << "library." + LIBRARYTABLE_DURATION
@@ -66,19 +63,19 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
 
     QSqlQuery query(pTrackCollection->getDatabase());
     QString tableName = "library_cache_view";
-    QString queryString = QString(
-        "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
-        "SELECT %2 FROM library "
-        "INNER JOIN track_locations ON library.location = track_locations.id")
-            .arg(tableName, columns.join(","));
+    QString queryString = QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+                                  "SELECT %2 FROM library "
+                                  "INNER JOIN track_locations ON "
+                                  "library.location = track_locations.id")
+                                  .arg(tableName, columns.join(","));
     query.prepare(queryString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
 
     // Strip out library. and track_locations.
-    for (QStringList::iterator it = columns.begin();
-         it != columns.end(); ++it) {
+    for (QStringList::iterator it = columns.begin(); it != columns.end();
+         ++it) {
         if (it->startsWith("library.")) {
             *it = it->replace("library.", "");
         } else if (it->startsWith("track_locations.")) {
@@ -88,30 +85,31 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
 
     BaseTrackCache* pBaseTrackCache = new BaseTrackCache(
             pTrackCollection, tableName, LIBRARYTABLE_ID, columns, true);
-    connect(&m_trackDao, SIGNAL(trackDirty(int)),
-            pBaseTrackCache, SLOT(slotTrackDirty(int)));
-    connect(&m_trackDao, SIGNAL(trackClean(int)),
-            pBaseTrackCache, SLOT(slotTrackClean(int)));
-    connect(&m_trackDao, SIGNAL(trackChanged(int)),
-            pBaseTrackCache, SLOT(slotTrackChanged(int)));
-    connect(&m_trackDao, SIGNAL(tracksAdded(QSet<int>)),
-            pBaseTrackCache, SLOT(slotTracksAdded(QSet<int>)));
-    connect(&m_trackDao, SIGNAL(tracksRemoved(QSet<int>)),
-            pBaseTrackCache, SLOT(slotTracksRemoved(QSet<int>)));
-    connect(&m_trackDao, SIGNAL(dbTrackAdded(TrackPointer)),
-            pBaseTrackCache, SLOT(slotDbTrackAdded(TrackPointer)));
+    connect(&m_trackDao, SIGNAL(trackDirty(int)), pBaseTrackCache,
+            SLOT(slotTrackDirty(int)));
+    connect(&m_trackDao, SIGNAL(trackClean(int)), pBaseTrackCache,
+            SLOT(slotTrackClean(int)));
+    connect(&m_trackDao, SIGNAL(trackChanged(int)), pBaseTrackCache,
+            SLOT(slotTrackChanged(int)));
+    connect(&m_trackDao, SIGNAL(tracksAdded(QSet<int>)), pBaseTrackCache,
+            SLOT(slotTracksAdded(QSet<int>)));
+    connect(&m_trackDao, SIGNAL(tracksRemoved(QSet<int>)), pBaseTrackCache,
+            SLOT(slotTracksRemoved(QSet<int>)));
+    connect(&m_trackDao, SIGNAL(dbTrackAdded(TrackPointer)), pBaseTrackCache,
+            SLOT(slotDbTrackAdded(TrackPointer)));
 
     m_pBaseTrackCache = QSharedPointer<BaseTrackCache>(pBaseTrackCache);
     pTrackCollection->setTrackSource(m_pBaseTrackCache);
 
     // These rely on the 'default' track source being present.
-    m_pLibraryTableModel = new LibraryTableModel(this, pTrackCollection, "mixxx.db.model.library");
+    m_pLibraryTableModel = new LibraryTableModel(this, pTrackCollection,
+                                                 "mixxx.db.model.library");
 
     TreeItem* pRootItem = new TreeItem();
-    TreeItem* pmissingChildItem = new TreeItem(kMissingTitle, kMissingTitle,
-                                               this, pRootItem);
-    TreeItem* phiddenChildItem = new TreeItem(kHiddenTitle, kHiddenTitle,
-                                              this, pRootItem);
+    TreeItem* pmissingChildItem =
+            new TreeItem(kMissingTitle, kMissingTitle, this, pRootItem);
+    TreeItem* phiddenChildItem =
+            new TreeItem(kHiddenTitle, kHiddenTitle, this, pRootItem);
     pRootItem->appendChild(pmissingChildItem);
     pRootItem->appendChild(phiddenChildItem);
 
@@ -127,14 +125,14 @@ void MixxxLibraryFeature::bindWidget(WLibrary* pLibraryWidget,
     m_pHiddenView = new DlgHidden(pLibraryWidget, m_pConfig, m_pLibrary,
                                   m_pTrackCollection, pKeyboard);
     pLibraryWidget->registerView(kHiddenTitle, m_pHiddenView);
-    connect(m_pHiddenView, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
+    connect(m_pHiddenView, SIGNAL(trackSelected(TrackPointer)), this,
+            SIGNAL(trackSelected(TrackPointer)));
 
     m_pMissingView = new DlgMissing(pLibraryWidget, m_pConfig, m_pLibrary,
                                     m_pTrackCollection, pKeyboard);
     pLibraryWidget->registerView(kMissingTitle, m_pMissingView);
-    connect(m_pMissingView, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
+    connect(m_pMissingView, SIGNAL(trackSelected(TrackPointer)), this,
+            SIGNAL(trackSelected(TrackPointer)));
 }
 
 QVariant MixxxLibraryFeature::title() {
@@ -177,7 +175,8 @@ bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     if (pSource) {
         return false;
     } else {
-        QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
+        QList<QFileInfo> files =
+                DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
 
         // Adds track, does not insert duplicates, handles unremoving logic.
         QList<int> trackIds = m_trackDao.addTracks(files, true);
@@ -187,5 +186,5 @@ bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
 
 bool MixxxLibraryFeature::dragMoveAccept(QUrl url) {
     return SoundSourceProxy::isUrlSupported(url) ||
-            Parser::isPlaylistFilenameSupported(url.toLocalFile());
+           Parser::isPlaylistFilenameSupported(url.toLocalFile());
 }

@@ -30,7 +30,8 @@ PortMidiController::PortMidiController(const PmDeviceInfo* inputDeviceInfo,
 
     // Note: We prepend the input stream's index to the device's name to prevent
     // duplicate devices from causing mayhem.
-    //setDeviceName(QString("%1. %2").arg(QString::number(m_iInputDeviceIndex), inputDeviceInfo->name));
+    // setDeviceName(QString("%1. %2").arg(QString::number(m_iInputDeviceIndex),
+    // inputDeviceInfo->name));
     setDeviceName(QString("%1").arg(inputDeviceInfo->name));
 
     if (m_pInputDeviceInfo) {
@@ -71,12 +72,9 @@ int PortMidiController::open() {
                          << m_iInputDeviceIndex << "for input";
             }
 
-            err = Pm_OpenInput(&m_pInputStream,
-                               m_iInputDeviceIndex,
-                               NULL, //No drive hacks
-                               MIXXX_PORTMIDI_BUFFER_LEN,
-                               NULL,
-                               NULL);
+            err = Pm_OpenInput(&m_pInputStream, m_iInputDeviceIndex,
+                               NULL,  // No drive hacks
+                               MIXXX_PORTMIDI_BUFFER_LEN, NULL, NULL);
 
             if (err != pmNoError) {
                 qDebug() << "PortMidi error:" << Pm_GetErrorText(err);
@@ -92,13 +90,12 @@ int PortMidiController::open() {
                          << m_iOutputDeviceIndex << "for output";
             }
 
-            err = Pm_OpenOutput(&m_pOutputStream,
-                                m_iOutputDeviceIndex,
-                                NULL, // No driver hacks
-                                0,      // No buffering
-                                NULL, // Use PortTime for timing
-                                NULL, // No time info
-                                0);   // No latency compensation.
+            err = Pm_OpenOutput(&m_pOutputStream, m_iOutputDeviceIndex,
+                                NULL,  // No driver hacks
+                                0,  // No buffering
+                                NULL,  // Use PortTime for timing
+                                NULL,  // No time info
+                                0);  // No latency compensation.
 
             if (err != pmNoError) {
                 qDebug() << "PortMidi error:" << Pm_GetErrorText(err);
@@ -159,7 +156,8 @@ bool PortMidiController::poll() {
         return false;
     }
 
-    int numEvents = Pm_Read(m_pInputStream, m_midiBuffer, MIXXX_PORTMIDI_BUFFER_LEN);
+    int numEvents =
+            Pm_Read(m_pInputStream, m_midiBuffer, MIXXX_PORTMIDI_BUFFER_LEN);
 
     if (numEvents < 0) {
         qWarning() << "PortMidi error:" << Pm_GetErrorText((PmError)numEvents);
@@ -174,16 +172,17 @@ bool PortMidiController::poll() {
             receive(status, 0, 0);
         }
 
-        reprocessMessage:
+    reprocessMessage:
 
         if (!m_bInSysex) {
             if (status == 0xF0) {
                 m_bInSysex = true;
                 status = 0;
             } else {
-                //unsigned char channel = status & 0x0F;
+                // unsigned char channel = status & 0x0F;
                 unsigned char note = Pm_MessageData1(m_midiBuffer[i].message);
-                unsigned char velocity = Pm_MessageData2(m_midiBuffer[i].message);
+                unsigned char velocity =
+                        Pm_MessageData2(m_midiBuffer[i].message);
                 receive(status, note, velocity);
             }
         }
@@ -195,7 +194,7 @@ bool PortMidiController::poll() {
                 m_bInSysex = false;
                 m_cReceiveMsg_index = 0;
                 qWarning() << "Buggy MIDI device: SysEx interrupted!";
-                goto reprocessMessage;    // Don't lose the new message
+                goto reprocessMessage;  // Don't lose the new message
             }
 
             // Collect bytes from PmMessage
@@ -206,14 +205,15 @@ bool PortMidiController::poll() {
                     receive(data, 0, 0);
                 } else {
                     m_cReceiveMsg[m_cReceiveMsg_index++] = data =
-                        (m_midiBuffer[i].message >> shift) & 0xFF;
+                            (m_midiBuffer[i].message >> shift) & 0xFF;
                 }
             }
 
             // End System Exclusive message if the EOX byte was received
             if (data == MIDI_EOX) {
                 m_bInSysex = false;
-                const char* buffer = reinterpret_cast<const char*>(m_cReceiveMsg);
+                const char* buffer =
+                        reinterpret_cast<const char*>(m_cReceiveMsg);
                 receive(QByteArray::fromRawData(buffer, m_cReceiveMsg_index));
                 m_cReceiveMsg_index = 0;
             }
@@ -229,15 +229,14 @@ void PortMidiController::sendWord(unsigned int word) {
             qDebug() << "PortMidi sendShortMsg error:" << Pm_GetErrorText(err);
         }
     }
-
 }
 
 void PortMidiController::send(QByteArray data) {
     if (m_pOutputStream) {
-        PmError err = Pm_WriteSysEx(m_pOutputStream, 0, (unsigned char*)data.constData());
+        PmError err = Pm_WriteSysEx(m_pOutputStream, 0,
+                                    (unsigned char*)data.constData());
         if (err != pmNoError) {
-            qDebug() << "PortMidi sendSysexMsg error:"
-                     << Pm_GetErrorText(err);
+            qDebug() << "PortMidi sendSysexMsg error:" << Pm_GetErrorText(err);
         }
     }
 }

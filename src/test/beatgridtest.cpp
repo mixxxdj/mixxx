@@ -7,7 +7,6 @@ namespace {
 
 class BeatGridTest : public testing::Test {
   protected:
-
     BeatGridTest() {
     }
 
@@ -61,8 +60,10 @@ TEST_F(BeatGridTest, TestNthBeatWhenOnBeat) {
     // findNthBeat should return exactly the current beat if we ask for 1 or
     // -1. For all other values, it should return n times the beat length.
     for (int i = 1; i < 20; ++i) {
-        EXPECT_EQ(position + beatLength*(i-1), pGrid->findNthBeat(position, i));
-        EXPECT_EQ(position + beatLength*(-i+1), pGrid->findNthBeat(position, -i));
+        EXPECT_EQ(position + beatLength * (i - 1),
+                  pGrid->findNthBeat(position, i));
+        EXPECT_EQ(position + beatLength * (-i + 1),
+                  pGrid->findNthBeat(position, -i));
     }
 
     // Also test prev/next beat calculation.
@@ -99,8 +100,10 @@ TEST_F(BeatGridTest, TestNthBeatWhenOnBeat_BeforeEpsilon) {
     // findNthBeat should return exactly the current beat if we ask for 1 or
     // -1. For all other values, it should return n times the beat length.
     for (int i = 1; i < 20; ++i) {
-        EXPECT_EQ(kClosestBeat + beatLength*(i-1), pGrid->findNthBeat(position, i));
-        EXPECT_EQ(kClosestBeat + beatLength*(-i+1), pGrid->findNthBeat(position, -i));
+        EXPECT_EQ(kClosestBeat + beatLength * (i - 1),
+                  pGrid->findNthBeat(position, i));
+        EXPECT_EQ(kClosestBeat + beatLength * (-i + 1),
+                  pGrid->findNthBeat(position, -i));
     }
 
     // Also test prev/next beat calculation.
@@ -137,8 +140,10 @@ TEST_F(BeatGridTest, TestNthBeatWhenOnBeat_AfterEpsilon) {
     // findNthBeat should return exactly the current beat if we ask for 1 or
     // -1. For all other values, it should return n times the beat length.
     for (int i = 1; i < 20; ++i) {
-        EXPECT_EQ(kClosestBeat + beatLength*(i-1), pGrid->findNthBeat(position, i));
-        EXPECT_EQ(kClosestBeat + beatLength*(-i+1), pGrid->findNthBeat(position, -i));
+        EXPECT_EQ(kClosestBeat + beatLength * (i - 1),
+                  pGrid->findNthBeat(position, i));
+        EXPECT_EQ(kClosestBeat + beatLength * (-i + 1),
+                  pGrid->findNthBeat(position, -i));
     }
 
     // Also test prev/next beat calculation.
@@ -175,8 +180,10 @@ TEST_F(BeatGridTest, TestNthBeatWhenNotOnBeat) {
     // findNthBeat should return multiples of beats starting from the next or
     // previous beat, depending on whether N is positive or negative.
     for (int i = 1; i < 20; ++i) {
-        EXPECT_EQ(nextBeat + beatLength*(i-1), pGrid->findNthBeat(position, i));
-        EXPECT_EQ(previousBeat + beatLength*(-i+1), pGrid->findNthBeat(position, -i));
+        EXPECT_EQ(nextBeat + beatLength * (i - 1),
+                  pGrid->findNthBeat(position, i));
+        EXPECT_EQ(previousBeat + beatLength * (-i + 1),
+                  pGrid->findNthBeat(position, -i));
     }
 
     // Also test prev/next beat calculation

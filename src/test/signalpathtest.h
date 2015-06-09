@@ -33,13 +33,12 @@ using ::testing::_;
 // for comparison.
 class TestEngineMaster : public EngineMaster {
   public:
-    TestEngineMaster(ConfigObject<ConfigValue>* _config,
-                     const char* group,
-                     EffectsManager* pEffectsManager,
-                     bool bEnableSidechain,
+    TestEngineMaster(ConfigObject<ConfigValue>* _config, const char* group,
+                     EffectsManager* pEffectsManager, bool bEnableSidechain,
                      bool bRampingGain)
-        : EngineMaster(_config, group, pEffectsManager,
-                       bEnableSidechain, bRampingGain) { }
+            : EngineMaster(_config, group, pEffectsManager, bEnableSidechain,
+                           bRampingGain) {
+    }
 
     CSAMPLE* masterBuffer() {
         return m_pMaster;
@@ -56,22 +55,23 @@ class SignalPathTest : public MixxxTest {
         m_pEngineMaster = new TestEngineMaster(m_pConfig.data(), "[Master]",
                                                m_pEffectsManager, false, false);
 
-        m_pChannel1 = new EngineDeck(
-                m_pEngineMaster->registerChannelGroup(m_sGroup1),
-                m_pConfig.data(), m_pEngineMaster, m_pEffectsManager,
-                EngineChannel::CENTER);
-        m_pChannel2 = new EngineDeck(
-                m_pEngineMaster->registerChannelGroup(m_sGroup2),
-                m_pConfig.data(), m_pEngineMaster, m_pEffectsManager,
-                EngineChannel::CENTER);
-        m_pChannel3 = new EngineDeck(
-                m_pEngineMaster->registerChannelGroup(m_sGroup3),
-                m_pConfig.data(), m_pEngineMaster, m_pEffectsManager,
-                EngineChannel::CENTER);
-        m_pPreview1 = new PreviewDeck(NULL, m_pConfig.data(),
-                                     m_pEngineMaster, m_pEffectsManager,
-                                     EngineChannel::CENTER, m_sPreviewGroup);
-        ControlObject::getControl(ConfigKey(m_sPreviewGroup, "file_bpm"))->set(2.0);
+        m_pChannel1 =
+                new EngineDeck(m_pEngineMaster->registerChannelGroup(m_sGroup1),
+                               m_pConfig.data(), m_pEngineMaster,
+                               m_pEffectsManager, EngineChannel::CENTER);
+        m_pChannel2 =
+                new EngineDeck(m_pEngineMaster->registerChannelGroup(m_sGroup2),
+                               m_pConfig.data(), m_pEngineMaster,
+                               m_pEffectsManager, EngineChannel::CENTER);
+        m_pChannel3 =
+                new EngineDeck(m_pEngineMaster->registerChannelGroup(m_sGroup3),
+                               m_pConfig.data(), m_pEngineMaster,
+                               m_pEffectsManager, EngineChannel::CENTER);
+        m_pPreview1 = new PreviewDeck(NULL, m_pConfig.data(), m_pEngineMaster,
+                                      m_pEffectsManager, EngineChannel::CENTER,
+                                      m_sPreviewGroup);
+        ControlObject::getControl(ConfigKey(m_sPreviewGroup, "file_bpm"))
+                ->set(2.0);
 
         addDeck(m_pChannel1);
         addDeck(m_pChannel2);
@@ -105,8 +105,8 @@ class SignalPathTest : public MixxxTest {
         // Wait for the track to load.
         ProcessBuffer();
         for (int i = 0; i < 10 && !pDeck->getEngineBuffer()->isTrackLoaded();
-                ++i) {
-            QTest::qSleep(1000); // millis
+             ++i) {
+            QTest::qSleep(1000);  // millis
         }
         ASSERT_TRUE(pDeck->getEngineBuffer()->isTrackLoaded());
         // For some reason the tracks play by default.  Turn them off.
@@ -123,15 +123,18 @@ class SignalPathTest : public MixxxTest {
     // looks correct.  Each line of the generated file contains the left sample
     // followed by the right sample.
     void assertBufferMatchesGolden(CSAMPLE* pBuffer, const int iBufferSize,
-                                   QString golden_title, const double delta=.0001) {
-        QFile f(QDir::currentPath() + "/src/test/golden_buffers/" + golden_title);
+                                   QString golden_title,
+                                   const double delta = .0001) {
+        QFile f(QDir::currentPath() + "/src/test/golden_buffers/" +
+                golden_title);
         bool pass = true;
         int i = 0;
         // If the file is not there, we will fail and write out the .actual
         // golden file.
         if (f.open(QFile::ReadOnly | QFile::Text)) {
             QTextStream in(&f);
-            // Note: We will only compare as many values as there are in the golden file.
+            // Note: We will only compare as many values as there are in the
+            // golden file.
             for (; i < iBufferSize && !in.atEnd(); i += 2) {
                 QStringList line = in.readLine().split(',');
                 if (line.length() != 2) {
@@ -149,8 +152,8 @@ class SignalPathTest : public MixxxTest {
                     pass = false;
                 }
                 if (fabs(gold_value1 - pBuffer[i + 1]) > delta) {
-                    qWarning() << "Golden check failed at index" << i + 1 << ", "
-                               << gold_value1 << "vs" << pBuffer[i + 1];
+                    qWarning() << "Golden check failed at index" << i + 1
+                               << ", " << gold_value1 << "vs" << pBuffer[i + 1];
                     pass = false;
                 }
             }
@@ -161,7 +164,8 @@ class SignalPathTest : public MixxxTest {
             qWarning() << "Buffer does not match" << golden_title
                        << ", actual buffer written to "
                        << "golden_buffers/" + fname_actual;
-            QFile actual(QDir::currentPath() + "/src/test/golden_buffers/" + fname_actual);
+            QFile actual(QDir::currentPath() + "/src/test/golden_buffers/" +
+                         fname_actual);
             ASSERT_TRUE(actual.open(QFile::WriteOnly | QFile::Text));
             QTextStream out(&actual);
             for (int i = 0; i < iBufferSize; i += 2) {
@@ -200,8 +204,8 @@ class SignalPathTest : public MixxxTest {
     TestEngineMaster* m_pEngineMaster;
     EngineDeck *m_pChannel1, *m_pChannel2, *m_pChannel3;
     TrackPointer m_pTrack1, m_pTrack2, m_pTrack3;
-    PreviewDeck *m_pPreview1;
-    Sampler *m_pSampler1;
+    PreviewDeck* m_pPreview1;
+    Sampler* m_pSampler1;
 
     static const char* m_sGroup1;
     static const char* m_sGroup2;

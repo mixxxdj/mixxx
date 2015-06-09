@@ -15,7 +15,7 @@ class TreeItem;
 
 class SetlogFeature : public BasePlaylistFeature {
     Q_OBJECT
-public:
+  public:
     SetlogFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig,
                   TrackCollection* pTrackCollection);
     virtual ~SetlogFeature();
@@ -23,8 +23,7 @@ public:
     QVariant title();
     QIcon getIcon();
 
-    virtual void bindWidget(WLibrary* libraryWidget,
-                            MixxxKeyboard* keyboard);
+    virtual void bindWidget(WLibrary* libraryWidget, MixxxKeyboard* keyboard);
 
   public slots:
     void onRightClick(const QPoint& globalPos);
@@ -34,7 +33,7 @@ public:
 
   protected:
     void buildPlaylistList();
-    void decorateChild(TreeItem *pChild, int playlist_id);
+    void decorateChild(TreeItem* pChild, int playlist_id);
 
   private slots:
     void slotPlayingTrackChanged(TrackPointer currentPlayingTrack);
@@ -50,4 +49,4 @@ public:
     int m_playlistId;
 };
 
-#endif // SETLOGFEATURE_H
+#endif  // SETLOGFEATURE_H

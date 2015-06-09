@@ -28,5 +28,4 @@ class WEffect : public WLabel {
     EffectSlotPointer m_pEffectSlot;
 };
 
-
 #endif /* WEFFECT_H */

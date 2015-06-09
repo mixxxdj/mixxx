@@ -5,10 +5,11 @@
 
 class WOverviewLMH : public WOverview {
   public:
-    WOverviewLMH(const char *pGroup, ConfigObject<ConfigValue>* pConfig, QWidget* parent);
+    WOverviewLMH(const char* pGroup, ConfigObject<ConfigValue>* pConfig,
+                 QWidget* parent);
 
   private:
     virtual bool drawNextPixmapPart();
 };
 
-#endif // WOVERVIEWLMH_H
+#endif  // WOVERVIEWLMH_H

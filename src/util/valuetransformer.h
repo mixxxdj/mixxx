@@ -8,7 +8,8 @@
 
 class TransformNode {
   public:
-    TransformNode() {}
+    TransformNode() {
+    }
 
     virtual double transform(double argument) const = 0;
     virtual double transformInverse(double argument) const = 0;
@@ -16,7 +17,8 @@ class TransformNode {
 
 class TransformAdd : public TransformNode {
   public:
-    TransformAdd(double addend) : m_addend(addend) {}
+    TransformAdd(double addend) : m_addend(addend) {
+    }
 
     double transform(double argument) const {
         return argument + m_addend;
@@ -32,7 +34,8 @@ class TransformAdd : public TransformNode {
 
 class TransformInvert : public TransformNode {
   public:
-    TransformInvert() {}
+    TransformInvert() {
+    }
 
     double transform(double argument) const {
         return -argument;
@@ -45,7 +48,8 @@ class TransformInvert : public TransformNode {
 
 class TransformNot : public TransformNode {
   public:
-    TransformNot() {}
+    TransformNot() {
+    }
 
     double transform(double argument) const {
         return !static_cast<bool>(argument);

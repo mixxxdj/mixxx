@@ -22,7 +22,8 @@ class ScannerGlobal {
             : m_trackLocations(trackLocations),
               m_directoryHashes(directoryHashes),
               m_supportedExtensionsMatcher(supportedExtensionsMatcher),
-              m_supportedCoverExtensionsMatcher(supportedCoverExtensionsMatcher),
+              m_supportedCoverExtensionsMatcher(
+                      supportedCoverExtensionsMatcher),
               m_directoriesBlacklist(directoriesBlacklist),
               // Unless marked un-clean, we assume it will finish cleanly.
               m_scanFinishedCleanly(true),
@@ -127,7 +128,6 @@ class ScannerGlobal {
     void directoryScanned() {
         m_numScannedDirectories++;
     }
-
 
   private:
     TaskWatcher m_watcher;

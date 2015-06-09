@@ -8,17 +8,19 @@
 DlgHidden::DlgHidden(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
                      Library* pLibrary, TrackCollection* pTrackCollection,
                      MixxxKeyboard* pKeyboard)
-         : QWidget(parent),
-           Ui::DlgHidden(),
-           m_pTrackTableView(
-               new WTrackTableView(this, pConfig, pTrackCollection, false)) {
+        : QWidget(parent),
+          Ui::DlgHidden(),
+          m_pTrackTableView(
+                  new WTrackTableView(this, pConfig, pTrackCollection, false)) {
     setupUi(this);
     m_pTrackTableView->installEventFilter(pKeyboard);
 
     // Install our own trackTable
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
-    DEBUG_ASSERT_AND_HANDLE(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
-    } else {
+    DEBUG_ASSERT_AND_HANDLE(
+            box) {  // Assumes the form layout is a QVBox/QHBoxLayout!
+    }
+    else {
         box->removeWidget(m_pTrackTablePlaceholder);
         m_pTrackTablePlaceholder->hide();
         box->insertWidget(1, m_pTrackTableView);
@@ -27,27 +29,24 @@ DlgHidden::DlgHidden(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     m_pHiddenTableModel = new HiddenTableModel(this, pTrackCollection);
     m_pTrackTableView->loadTrackModel(m_pHiddenTableModel);
 
-    connect(btnUnhide, SIGNAL(clicked()),
-            m_pTrackTableView, SLOT(slotUnhide()));
-    connect(btnUnhide, SIGNAL(clicked()),
-            this, SLOT(clicked()));
-    connect(btnPurge, SIGNAL(clicked()),
-            m_pTrackTableView, SLOT(slotPurge()));
-    connect(btnPurge, SIGNAL(clicked()),
-            this, SLOT(clicked()));
-    connect(btnSelect, SIGNAL(clicked()),
-            this, SLOT(selectAll()));
+    connect(btnUnhide, SIGNAL(clicked()), m_pTrackTableView,
+            SLOT(slotUnhide()));
+    connect(btnUnhide, SIGNAL(clicked()), this, SLOT(clicked()));
+    connect(btnPurge, SIGNAL(clicked()), m_pTrackTableView, SLOT(slotPurge()));
+    connect(btnPurge, SIGNAL(clicked()), this, SLOT(clicked()));
+    connect(btnSelect, SIGNAL(clicked()), this, SLOT(selectAll()));
     connect(m_pTrackTableView->selectionModel(),
-            SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
-            this,
-            SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));
+            SIGNAL(selectionChanged(const QItemSelection&,
+                                    const QItemSelection&)),
+            this, SLOT(selectionChanged(const QItemSelection&,
+                                        const QItemSelection&)));
 
-    connect(m_pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
-    connect(pLibrary, SIGNAL(setTrackTableFont(QFont)),
-            m_pTrackTableView, SLOT(setTrackTableFont(QFont)));
-    connect(pLibrary, SIGNAL(setTrackTableRowHeight(int)),
-            m_pTrackTableView, SLOT(setTrackTableRowHeight(int)));
+    connect(m_pTrackTableView, SIGNAL(trackSelected(TrackPointer)), this,
+            SIGNAL(trackSelected(TrackPointer)));
+    connect(pLibrary, SIGNAL(setTrackTableFont(QFont)), m_pTrackTableView,
+            SLOT(setTrackTableFont(QFont)));
+    connect(pLibrary, SIGNAL(setTrackTableRowHeight(int)), m_pTrackTableView,
+            SLOT(setTrackTableRowHeight(int)));
 }
 
 DlgHidden::~DlgHidden() {
@@ -81,8 +80,8 @@ void DlgHidden::activateButtons(bool enable) {
     btnUnhide->setEnabled(enable);
 }
 
-void DlgHidden::selectionChanged(const QItemSelection &selected,
-                                 const QItemSelection &deselected) {
+void DlgHidden::selectionChanged(const QItemSelection& selected,
+                                 const QItemSelection& deselected) {
     Q_UNUSED(deselected);
     activateButtons(!selected.indexes().isEmpty());
 }

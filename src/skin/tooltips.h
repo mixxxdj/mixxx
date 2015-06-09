@@ -20,5 +20,4 @@ class Tooltips : public QObject {
     QHash<QString, QStringList> m_tooltips;
 };
 
-
 #endif /* TOOLTIPS_H */

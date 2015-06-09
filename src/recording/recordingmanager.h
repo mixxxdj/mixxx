@@ -24,13 +24,11 @@
 class EngineMaster;
 class ControlPushButton;
 
-class RecordingManager : public QObject
-{
+class RecordingManager : public QObject {
     Q_OBJECT
   public:
     RecordingManager(ConfigObject<ConfigValue>* pConfig, EngineMaster* pEngine);
     virtual ~RecordingManager();
-
 
     // This will try to start recording. If successful, slotIsRecording will be
     // called and a signal isRecording will be emitted.
@@ -39,7 +37,7 @@ class RecordingManager : public QObject
     // slotBytesRecorded just noticed that recording must be interrupted
     // to split the file. The nth filename will follow the date/time
     // name of the first split but with a suffix.
-    void startRecording(bool generateFileName=true);
+    void startRecording(bool generateFileName = true);
     void stopRecording();
     bool isRecordingActive();
     void setRecordingDir();
@@ -88,4 +86,4 @@ class RecordingManager : public QObject
     QString m_durationRecorded;
 };
 
-#endif // RECORDINGMANAGER_H
+#endif  // RECORDINGMANAGER_H

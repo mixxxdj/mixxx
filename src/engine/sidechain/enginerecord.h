@@ -21,7 +21,7 @@
 #include <QFile>
 
 #ifdef Q_OS_WIN
-//Enable unicode in libsndfile on Windows
+// Enable unicode in libsndfile on Windows
 //(sf_open uses UTF-8 otherwise)
 #include <windows.h>
 #define ENABLE_SNDFILE_WINDOWS_PROTOTYPES 1
@@ -37,17 +37,21 @@ class ConfigKey;
 class ControlObjectSlave;
 class Encoder;
 
-class EngineRecord : public QObject, public EncoderCallback, public SideChainWorker {
+class EngineRecord : public QObject,
+                     public EncoderCallback,
+                     public SideChainWorker {
     Q_OBJECT
   public:
     EngineRecord(ConfigObject<ConfigValue>* _config);
     virtual ~EngineRecord();
 
     void process(const CSAMPLE* pBuffer, const int iBufferSize);
-    void shutdown() {}
+    void shutdown() {
+    }
 
-    // writes compressed audio to file 
-    void write(unsigned char *header, unsigned char *body, int headerLen, int bodyLen);
+    // writes compressed audio to file
+    void write(unsigned char* header, unsigned char* body, int headerLen,
+               int bodyLen);
     // creates or opens an audio file
     bool openFile();
     // closes the audio file

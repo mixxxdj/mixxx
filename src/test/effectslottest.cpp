@@ -20,7 +20,8 @@ class EffectSlotTest : public BaseEffectTest {
   protected:
     EffectSlotTest()
             : m_master(m_factory.getOrCreateHandle("[Master]"), "[Master]"),
-              m_headphone(m_factory.getOrCreateHandle("[Headphone]"), "[Headphone]") {
+              m_headphone(m_factory.getOrCreateHandle("[Headphone]"),
+                          "[Headphone]") {
         m_pEffectsManager->registerChannel(m_master);
         m_pEffectsManager->registerChannel(m_headphone);
         registerTestBackend();
@@ -32,13 +33,14 @@ class EffectSlotTest : public BaseEffectTest {
 };
 
 TEST_F(EffectSlotTest, ControlsReflectSlotState) {
-    EffectChainPointer pChain(new EffectChain(m_pEffectsManager.data(),
-                                              "org.mixxx.test.chain1"));
+    EffectChainPointer pChain(
+            new EffectChain(m_pEffectsManager.data(), "org.mixxx.test.chain1"));
     int iRackNumber = 0;
     int iChainNumber = 0;
     int iEffectNumber = 0;
 
-    StandardEffectRackPointer pRack = m_pEffectsManager->addStandardEffectRack();
+    StandardEffectRackPointer pRack =
+            m_pEffectsManager->addStandardEffectRack();
     EffectChainSlotPointer pChainSlot = pRack->addEffectChainSlot();
     // StandardEffectRack::addEffectChainSlot automatically adds 4 effect
     // slots. In the future we will probably remove this so this will just start
@@ -46,7 +48,7 @@ TEST_F(EffectSlotTest, ControlsReflectSlotState) {
     EffectSlotPointer pEffectSlot = pChainSlot->getEffectSlot(0);
 
     QString group = StandardEffectRack::formatEffectSlotGroupString(
-        iRackNumber, iChainNumber, iEffectNumber);
+            iRackNumber, iChainNumber, iEffectNumber);
 
     EffectManifest manifest;
     manifest.setId("org.mixxx.test.effect");

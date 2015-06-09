@@ -32,7 +32,6 @@ SkinContext::SkinContext(const SkinContext& parent)
           m_pScriptDebugger(parent.m_pScriptDebugger),
           m_parentGlobal(m_pScriptEngine->globalObject()),
           m_pSingletons(parent.m_pSingletons) {
-
     // we generate a new global object to preserve the scope between
     // a context and its children
     QScriptValue context = m_pScriptEngine->pushContext()->activationObject();
@@ -61,7 +60,8 @@ QString SkinContext::variable(const QString& name) const {
 
 void SkinContext::setVariable(const QString& name, const QString& value) {
     m_variables[name] = value;
-    QScriptValue context = m_pScriptEngine->currentContext()->activationObject();
+    QScriptValue context =
+            m_pScriptEngine->currentContext()->activationObject();
     context.setProperty(name, value);
 }
 
@@ -131,8 +131,7 @@ double SkinContext::selectDouble(const QDomNode& node,
     return ok ? conv : 0.0;
 }
 
-int SkinContext::selectInt(const QDomNode& node,
-                           const QString& nodeName,
+int SkinContext::selectInt(const QDomNode& node, const QString& nodeName,
                            bool* pOk) const {
     bool ok = false;
     int conv = nodeToString(selectElement(node, nodeName)).toInt(&ok);
@@ -142,19 +141,19 @@ int SkinContext::selectInt(const QDomNode& node,
     return ok ? conv : 0;
 }
 
-bool SkinContext::selectBool(const QDomNode& node,
-                             const QString& nodeName,
+bool SkinContext::selectBool(const QDomNode& node, const QString& nodeName,
                              bool defaultValue) const {
     QDomNode child = selectNode(node, nodeName);
     if (!child.isNull()) {
-         QString stringValue = nodeToString(child);
+        QString stringValue = nodeToString(child);
         return stringValue.contains("true", Qt::CaseInsensitive);
     }
     return defaultValue;
 }
 
 bool SkinContext::hasNodeSelectString(const QDomNode& node,
-                                      const QString& nodeName, QString *value) const {
+                                      const QString& nodeName,
+                                      QString* value) const {
     QDomNode child = selectNode(node, nodeName);
     if (!child.isNull()) {
         *value = nodeToString(child);
@@ -164,10 +163,11 @@ bool SkinContext::hasNodeSelectString(const QDomNode& node,
 }
 
 bool SkinContext::hasNodeSelectBool(const QDomNode& node,
-                                    const QString& nodeName, bool *value) const {
+                                    const QString& nodeName,
+                                    bool* value) const {
     QDomNode child = selectNode(node, nodeName);
     if (!child.isNull()) {
-         QString stringValue = nodeToString(child);
+        QString stringValue = nodeToString(child);
         *value = stringValue.contains("true", Qt::CaseInsensitive);
         return true;
     }
@@ -189,16 +189,16 @@ QString SkinContext::selectAttributeString(const QDomElement& element,
                                            QString defaultValue) const {
     if (element.hasAttribute(attributeName)) {
         QString stringValue = element.attribute(attributeName);
-        return stringValue == "" ? defaultValue :stringValue;
+        return stringValue == "" ? defaultValue : stringValue;
     }
     return defaultValue;
 }
 
 QString SkinContext::variableNodeToText(const QDomElement& variableNode) const {
     if (variableNode.hasAttribute("expression")) {
-        QScriptValue result = m_pScriptEngine->evaluate(
-            variableNode.attribute("expression"), m_xmlPath,
-            variableNode.lineNumber());
+        QScriptValue result =
+                m_pScriptEngine->evaluate(variableNode.attribute("expression"),
+                                          m_xmlPath, variableNode.lineNumber());
         return result.toString();
     } else if (variableNode.hasAttribute("name")) {
         QString variableName = variableNode.attribute("name");
@@ -246,7 +246,7 @@ PixmapSource SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
         if (!svgNode.isNull()) {
             // inline svg
             const QByteArray rslt = svgParser.saveToQByteArray(
-                svgParser.parseSvgTree(svgNode, m_xmlPath));
+                    svgParser.parseSvgTree(svgNode, m_xmlPath));
             source.setSVG(rslt);
         } else {
             // filename
@@ -266,8 +266,7 @@ PixmapSource SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
 }
 
 Paintable::DrawMode SkinContext::selectScaleMode(
-        const QDomElement& element,
-        Paintable::DrawMode defaultDrawMode) const {
+        const QDomElement& element, Paintable::DrawMode defaultDrawMode) const {
     QString drawModeStr = selectAttributeString(
             element, "scalemode", Paintable::DrawModeToString(defaultDrawMode));
     return Paintable::DrawModeFromString(drawModeStr);
@@ -297,7 +296,8 @@ const QSharedPointer<QScriptEngine> SkinContext::getScriptEngine() const {
 
 void SkinContext::enableDebugger(bool state) const {
     if (CmdlineArgs::Instance().getDeveloper() && m_pConfig != NULL &&
-            m_pConfig->getValueString(ConfigKey("[ScriptDebugger]", "Enabled")) == "1") {
+        m_pConfig->getValueString(ConfigKey("[ScriptDebugger]", "Enabled")) ==
+                "1") {
         if (state) {
             m_pScriptDebugger->attachTo(m_pScriptEngine.data());
         } else {
@@ -309,9 +309,9 @@ void SkinContext::enableDebugger(bool state) const {
 QDebug SkinContext::logWarning(const char* file, const int line,
                                const QDomNode& node) const {
     return qWarning() << QString("%1:%2 SKIN ERROR at %3:%4 <%5>:")
-                             .arg(file, QString::number(line), m_xmlPath,
-                                  QString::number(node.lineNumber()),
-                                  node.nodeName())
-                             .toUtf8()
-                             .constData();
+                                 .arg(file, QString::number(line), m_xmlPath,
+                                      QString::number(node.lineNumber()),
+                                      node.nodeName())
+                                 .toUtf8()
+                                 .constData();
 }

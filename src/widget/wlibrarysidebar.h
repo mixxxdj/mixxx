@@ -20,10 +20,10 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
     WLibrarySidebar(QWidget* parent = 0);
     virtual ~WLibrarySidebar();
 
-    void contextMenuEvent(QContextMenuEvent * event);
-    void dragMoveEvent(QDragMoveEvent * event);
-    void dragEnterEvent(QDragEnterEvent * event);
-    void dropEvent(QDropEvent * event);
+    void contextMenuEvent(QContextMenuEvent* event);
+    void dragMoveEvent(QDragMoveEvent* event);
+    void dragEnterEvent(QDragEnterEvent* event);
+    void dropEvent(QDropEvent* event);
     void keyPressEvent(QKeyEvent* event);
     void timerEvent(QTimerEvent* event);
     void toggleSelectedItem();

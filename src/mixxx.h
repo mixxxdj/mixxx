@@ -63,7 +63,7 @@ class MixxxMainWindow : public QMainWindow {
 
   public:
     // Construtor. files is a list of command line arguments
-    MixxxMainWindow(QApplication *app, const CmdlineArgs& args);
+    MixxxMainWindow(QApplication* app, const CmdlineArgs& args);
     virtual ~MixxxMainWindow();
     // initializes all QActions of the application
     void initActions();
@@ -71,14 +71,18 @@ class MixxxMainWindow : public QMainWindow {
     void initMenuBar();
 
     void setToolTipsCfg(int tt);
-    inline int getToolTipsCgf() { return m_toolTipsCfg; }
+    inline int getToolTipsCgf() {
+        return m_toolTipsCfg;
+    }
     void rebootMixxxView();
 
-    inline GuiTick* getGuiTick() { return m_pGuiTick; };
+    inline GuiTick* getGuiTick() {
+        return m_pGuiTick;
+    };
 
   public slots:
 
-    //void slotQuitFullScreen();
+    // void slotQuitFullScreen();
     void slotFileLoadSongPlayer(int deck);
     // Opens a file in player 1
     void slotFileLoadSongPlayer1();
@@ -108,9 +112,11 @@ class MixxxMainWindow : public QMainWindow {
     void slotHelpTranslation();
     // Scan or rescan the music library directory
     void slotScanLibrary();
-    // Enables the "Rescan Library" menu item. This gets disabled when a scan is running.
+    // Enables the "Rescan Library" menu item. This gets disabled when a scan is
+    // running.
     void slotEnableRescanLibraryAction();
-    //Updates the checkboxes for Recording and Livebroadcasting when connection drops, or lame is not available
+    // Updates the checkboxes for Recording and Livebroadcasting when connection
+    // drops, or lame is not available
     void slotOptionsMenuShow();
     // toogle on-screen widget visibility
     void slotViewShowSamplers(bool);
@@ -161,9 +167,10 @@ class MixxxMainWindow : public QMainWindow {
     void closeDeveloperToolsDlgChecked(int r);
 
   protected:
-    // Event filter to block certain events (eg. tooltips if tooltips are disabled)
-    virtual bool eventFilter(QObject *obj, QEvent *event);
-    virtual void closeEvent(QCloseEvent *event);
+    // Event filter to block certain events (eg. tooltips if tooltips are
+    // disabled)
+    virtual bool eventFilter(QObject* obj, QEvent* event);
+    virtual void closeEvent(QCloseEvent* event);
     virtual bool event(QEvent* e);
 
   private:
@@ -174,11 +181,12 @@ class MixxxMainWindow : public QMainWindow {
     void initializeFonts();
     bool loadTranslations(const QLocale& systemLocale, QString userLocale,
                           const QString& translation, const QString& prefix,
-                          const QString& translationPath, QTranslator* pTranslator);
+                          const QString& translationPath,
+                          QTranslator* pTranslator);
     void checkDirectRendering();
     bool confirmExit();
-    void linkSkinWidget(ControlObjectSlave** pCOS,
-                        ConfigKey key, const char* slot);
+    void linkSkinWidget(ControlObjectSlave** pCOS, ConfigKey key,
+                        const char* slot);
     void updateCheckedMenuAction(QAction* menuAction, ConfigKey key);
 
     // Pointer to the root GUI widget
@@ -194,7 +202,7 @@ class MixxxMainWindow : public QMainWindow {
     SkinLoader* m_pSkinLoader;
 
     // The sound manager
-    SoundManager *m_pSoundManager;
+    SoundManager* m_pSoundManager;
 
     // Keeps track of players
     PlayerManager* m_pPlayerManager;
@@ -292,7 +300,7 @@ class MixxxMainWindow : public QMainWindow {
     ConfigObject<ConfigValueKbd>* m_pKbdConfig;
     ConfigObject<ConfigValueKbd>* m_pKbdConfigEmpty;
 
-    int m_toolTipsCfg; //0=OFF, 1=ON, 2=ON (only in Library)
+    int m_toolTipsCfg;  // 0=OFF, 1=ON, 2=ON (only in Library)
     // Timer that tracks how long Mixxx has been running.
     Timer m_runtime_timer;
 

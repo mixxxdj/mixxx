@@ -27,7 +27,7 @@
 class WLabel : public QLabel, public WBaseWidget {
     Q_OBJECT
   public:
-    WLabel(QWidget* pParent=NULL);
+    WLabel(QWidget* pParent = NULL);
     virtual ~WLabel();
 
     virtual void setup(QDomNode node, const SkinContext& context);
@@ -43,7 +43,8 @@ class WLabel : public QLabel, public WBaseWidget {
     // Foreground and background colors.
     QColor m_qFgColor;
     QColor m_qBgColor;
-  private: 
+
+  private:
     QString m_longText;
     Qt::TextElideMode m_elideMode;
 };

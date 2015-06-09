@@ -16,13 +16,12 @@ SoundSource::SoundSource(const QUrl& url)
 }
 
 SoundSource::SoundSource(const QUrl& url, const QString& type)
-        : AudioSource(url),
-          m_type(type) {
+        : AudioSource(url), m_type(type) {
     DEBUG_ASSERT(getUrl().isValid());
 }
 
 Result SoundSource::open(const AudioSourceConfig& audioSrcCfg) {
-    close(); // reopening is not supported
+    close();  // reopening is not supported
     Result result;
     try {
         result = tryOpen(audioSrcCfg);
@@ -36,10 +35,10 @@ Result SoundSource::open(const AudioSourceConfig& audioSrcCfg) {
     return result;
 }
 
-Result SoundSource::parseTrackMetadataAndCoverArt(
-        TrackMetadata* pTrackMetadata,
-        QImage* pCoverArt) const {
-    return readTrackMetadataAndCoverArtFromFile(pTrackMetadata, pCoverArt, getLocalFileName());
+Result SoundSource::parseTrackMetadataAndCoverArt(TrackMetadata* pTrackMetadata,
+                                                  QImage* pCoverArt) const {
+    return readTrackMetadataAndCoverArtFromFile(pTrackMetadata, pCoverArt,
+                                                getLocalFileName());
 }
 
-} //namespace Mixxx
+}  // namespace Mixxx

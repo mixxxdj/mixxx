@@ -33,8 +33,11 @@ EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
                        EngineChannel::ChannelOrientation defaultOrientation)
         : EngineChannel(handle_group, defaultOrientation),
           m_pConfig(pConfig),
-          m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
-          m_pPassing(new ControlPushButton(ConfigKey(getGroup(), "passthrough"))),
+          m_pEngineEffectsManager(
+                  pEffectsManager ? pEffectsManager->getEngineEffectsManager()
+                                  : NULL),
+          m_pPassing(
+                  new ControlPushButton(ConfigKey(getGroup(), "passthrough"))),
           // Need a +1 here because the CircularBuffer only allows its size-1
           // items to be held at once (it keeps a blank spot open persistently)
           m_sampleBuffer(NULL) {
@@ -48,9 +51,8 @@ EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
     m_bPassthroughWasActive = false;
 
     // Set up passthrough toggle button
-    connect(m_pPassing, SIGNAL(valueChanged(double)),
-            this, SLOT(slotPassingToggle(double)),
-            Qt::DirectConnection);
+    connect(m_pPassing, SIGNAL(valueChanged(double)), this,
+            SLOT(slotPassingToggle(double)), Qt::DirectConnection);
 
     m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate");
 
@@ -72,7 +74,7 @@ EngineDeck::~EngineDeck() {
 void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
     GroupFeatureState features;
     // Feed the incoming audio through if passthrough is active
-    const CSAMPLE* sampleBuffer = m_sampleBuffer; // save pointer on stack
+    const CSAMPLE* sampleBuffer = m_sampleBuffer;  // save pointer on stack
     if (isPassthroughActive() && sampleBuffer) {
         SampleUtil::copy(pOut, sampleBuffer, iBufferSize);
         m_bPassthroughWasActive = true;
@@ -124,7 +126,8 @@ bool EngineDeck::isActive() {
     return (m_pBuffer->isTrackLoaded() || isPassthroughActive());
 }
 
-void EngineDeck::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer, unsigned int nFrames) {
+void EngineDeck::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
+                               unsigned int nFrames) {
     Q_UNUSED(input);
     Q_UNUSED(nFrames);
     // Skip receiving audio input if passthrough is not active
@@ -139,16 +142,18 @@ void EngineDeck::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer, unsigne
 void EngineDeck::onInputConfigured(AudioInput input) {
     if (input.getType() != AudioPath::VINYLCONTROL) {
         // This is an error!
-        qDebug() << "WARNING: EngineDeck connected to AudioInput for a non-vinylcontrol type!";
+        qDebug() << "WARNING: EngineDeck connected to AudioInput for a "
+                    "non-vinylcontrol type!";
         return;
     }
-    m_sampleBuffer =  NULL;
+    m_sampleBuffer = NULL;
 }
 
 void EngineDeck::onInputUnconfigured(AudioInput input) {
     if (input.getType() != AudioPath::VINYLCONTROL) {
         // This is an error!
-        qDebug() << "WARNING: EngineDeck connected to AudioInput for a non-vinylcontrol type!";
+        qDebug() << "WARNING: EngineDeck connected to AudioInput for a "
+                    "non-vinylcontrol type!";
         return;
     }
     m_sampleBuffer = NULL;

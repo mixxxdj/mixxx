@@ -7,8 +7,7 @@
 #include "controlobjectthread.h"
 #include "widget/wskincolor.h"
 
-WaveformMark::WaveformMark()
-    : m_pointControl(NULL) {
+WaveformMark::WaveformMark() : m_pointControl(NULL) {
 }
 
 WaveformMark::~WaveformMark() {
@@ -29,7 +28,8 @@ void WaveformMark::setup(const QString& group, const QDomNode& node,
     if (!m_color.isValid()) {
         // As a fallback, grab the color from the parent's AxesColor
         m_color = signalColors.getAxesColor();
-        qDebug() << "Didn't get mark <Color>, using parent's <AxesColor>:" << m_color;
+        qDebug() << "Didn't get mark <Color>, using parent's <AxesColor>:"
+                 << m_color;
     } else {
         m_color = WSkinColor::getCorrectColor(m_color);
     }
@@ -38,14 +38,15 @@ void WaveformMark::setup(const QString& group, const QDomNode& node,
     if (!m_textColor.isValid()) {
         // Read the text color, otherwise use the parent's BgColor.
         m_textColor = signalColors.getBgColor();
-        qDebug() << "Didn't get mark <TextColor>, using parent's <BgColor>:" << m_textColor;
+        qDebug() << "Didn't get mark <TextColor>, using parent's <BgColor>:"
+                 << m_textColor;
     }
 
     QString markAlign = context.selectString(node, "Align");
     if (markAlign.contains("bottom", Qt::CaseInsensitive)) {
         m_align = Qt::AlignBottom;
     } else {
-        m_align = Qt::AlignTop; // Default
+        m_align = Qt::AlignTop;  // Default
     }
 
     m_text = context.selectString(node, "Text");
@@ -54,7 +55,6 @@ void WaveformMark::setup(const QString& group, const QDomNode& node,
         m_pixmapPath = context.getSkinPath(m_pixmapPath);
     }
 }
-
 
 void WaveformMark::setKeyAndIndex(const ConfigKey& key, int i) {
     m_pointControl = new ControlObjectThread(key);

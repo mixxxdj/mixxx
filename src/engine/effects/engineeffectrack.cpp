@@ -9,11 +9,11 @@ EngineEffectRack::EngineEffectRack(int iRackNumber)
 }
 
 EngineEffectRack::~EngineEffectRack() {
-    //qDebug() << "EngineEffectRack::~EngineEffectRack()";
+    // qDebug() << "EngineEffectRack::~EngineEffectRack()";
 }
 
-bool EngineEffectRack::processEffectsRequest(const EffectsRequest& message,
-                                             EffectsResponsePipe* pResponsePipe) {
+bool EngineEffectRack::processEffectsRequest(
+        const EffectsRequest& message, EffectsResponsePipe* pResponsePipe) {
     EffectsResponse response(message);
     switch (message.type) {
         case EffectsRequest::ADD_CHAIN_TO_RACK:
@@ -31,8 +31,9 @@ bool EngineEffectRack::processEffectsRequest(const EffectsRequest& message,
                          << message.RemoveChainFromRack.pChain
                          << message.RemoveChainFromRack.iIndex;
             }
-            response.success = removeEffectChain(message.RemoveChainFromRack.pChain,
-                                                 message.RemoveChainFromRack.iIndex);
+            response.success =
+                    removeEffectChain(message.RemoveChainFromRack.pChain,
+                                      message.RemoveChainFromRack.iIndex);
             break;
         default:
             return false;
@@ -41,14 +42,14 @@ bool EngineEffectRack::processEffectsRequest(const EffectsRequest& message,
     return true;
 }
 
-void EngineEffectRack::process(const ChannelHandle& handle,
-                               CSAMPLE* pInOut,
+void EngineEffectRack::process(const ChannelHandle& handle, CSAMPLE* pInOut,
                                const unsigned int numSamples,
                                const unsigned int sampleRate,
                                const GroupFeatureState& groupFeatures) {
     foreach (EngineEffectChain* pChain, m_chains) {
         if (pChain != NULL) {
-            pChain->process(handle, pInOut, numSamples, sampleRate, groupFeatures);
+            pChain->process(handle, pInOut, numSamples, sampleRate,
+                            groupFeatures);
         }
     }
 }
@@ -64,7 +65,8 @@ bool EngineEffectRack::addEffectChain(EngineEffectChain* pChain, int iIndex) {
     }
     if (m_chains.contains(pChain)) {
         if (kEffectDebugOutput) {
-            qDebug() << debugString() << "WARNING: chain already added to EngineEffectRack:"
+            qDebug() << debugString()
+                     << "WARNING: chain already added to EngineEffectRack:"
                      << pChain->id();
         }
         return false;
@@ -76,12 +78,13 @@ bool EngineEffectRack::addEffectChain(EngineEffectChain* pChain, int iIndex) {
     return true;
 }
 
-bool EngineEffectRack::removeEffectChain(EngineEffectChain* pChain, int iIndex) {
+bool EngineEffectRack::removeEffectChain(EngineEffectChain* pChain,
+                                         int iIndex) {
     if (iIndex < 0) {
         if (kEffectDebugOutput) {
             qDebug() << debugString()
-                     << "WARNING: REMOVE_CHAIN_FROM_RACK message with invalid index:"
-                     << iIndex;
+                     << "WARNING: REMOVE_CHAIN_FROM_RACK message with invalid "
+                        "index:" << iIndex;
         }
         return false;
     }
@@ -89,8 +92,8 @@ bool EngineEffectRack::removeEffectChain(EngineEffectChain* pChain, int iIndex) 
     if (m_chains.at(iIndex) != pChain) {
         qDebug() << debugString()
                  << "WARNING: REMOVE_CHAIN_FROM_RACK consistency error"
-                 << m_chains.at(iIndex) << "loaded but received request to remove"
-                 << pChain;
+                 << m_chains.at(iIndex)
+                 << "loaded but received request to remove" << pChain;
         return false;
     }
 

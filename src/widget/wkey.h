@@ -6,10 +6,10 @@
 #include "widget/wlabel.h"
 #include "controlobjectthread.h"
 
-class WKey : public WLabel  {
+class WKey : public WLabel {
     Q_OBJECT
   public:
-    WKey(const char* group, QWidget* pParent=NULL);
+    WKey(const char* group, QWidget* pParent = NULL);
     virtual ~WKey();
 
     virtual void onConnectedControlChanged(double dParameter, double dValue);

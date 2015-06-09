@@ -37,7 +37,7 @@
   *@author Tue & Ken Haste Andersen
   */
 
-class WSliderComposed : public WWidget  {
+class WSliderComposed : public WWidget {
     Q_OBJECT
   public:
     WSliderComposed(QWidget* parent = 0);
@@ -47,7 +47,9 @@ class WSliderComposed : public WWidget  {
     void setSliderPixmap(PixmapSource sourceSlider, Paintable::DrawMode mode);
     void setHandlePixmap(bool bHorizontal, PixmapSource sourceHandle,
                          Paintable::DrawMode mode);
-    inline bool isHorizontal() const { return m_bHorizontal; };
+    inline bool isHorizontal() const {
+        return m_bHorizontal;
+    };
 
   public slots:
     void onConnectedControlChanged(double dParameter, double dValue);

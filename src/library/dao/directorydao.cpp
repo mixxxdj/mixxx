@@ -7,8 +7,7 @@
 #include "library/dao/directorydao.h"
 #include "library/queryutil.h"
 
-DirectoryDAO::DirectoryDAO(QSqlDatabase& database)
-            : m_database(database) {
+DirectoryDAO::DirectoryDAO(QSqlDatabase& database) : m_database(database) {
 }
 
 DirectoryDAO::~DirectoryDAO() {
@@ -47,8 +46,8 @@ int DirectoryDAO::addDirectory(const QString& newDir) {
     }
 
     QSqlQuery query(m_database);
-    query.prepare("INSERT INTO " % DIRECTORYDAO_TABLE %
-                  " (" % DIRECTORYDAO_DIR % ") VALUES (:dir)");
+    query.prepare("INSERT INTO " % DIRECTORYDAO_TABLE % " (" %
+                  DIRECTORYDAO_DIR % ") VALUES (:dir)");
     query.bindValue(":dir", newDir);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "Adding new dir (" % newDir % ") failed.";
@@ -77,8 +76,8 @@ bool DirectoryDAO::isChildDir(QString testDir, QString dirStr) {
 
 int DirectoryDAO::removeDirectory(const QString& dir) {
     QSqlQuery query(m_database);
-    query.prepare("DELETE FROM " % DIRECTORYDAO_TABLE  % " WHERE "
-                   % DIRECTORYDAO_DIR % "= :dir");
+    query.prepare("DELETE FROM " % DIRECTORYDAO_TABLE % " WHERE " %
+                  DIRECTORYDAO_DIR % "= :dir");
     query.bindValue(":dir", dir);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "purging dir (" % dir % ") failed";
@@ -86,7 +85,6 @@ int DirectoryDAO::removeDirectory(const QString& dir) {
     }
     return ALL_FINE;
 }
-
 
 QSet<int> DirectoryDAO::relocateDirectory(const QString& oldFolder,
                                           const QString& newFolder) {
@@ -101,25 +99,28 @@ QSet<int> DirectoryDAO::relocateDirectory(const QString& oldFolder,
     query.bindValue(":newFolder", newFolder);
     query.bindValue(":oldFolder", oldFolder);
     if (!query.exec()) {
-        LOG_FAILED_QUERY(query) << "could not relocate directory"
-                                << oldFolder << "to" << newFolder;
+        LOG_FAILED_QUERY(query) << "could not relocate directory" << oldFolder
+                                << "to" << newFolder;
         return QSet<int>();
     }
 
     FieldEscaper escaper(m_database);
     // on Windows the absolute path starts with the drive name
     // we also need to check for that
-    QString startsWithOldFolder = escaper.escapeStringForLike(
-        QDir(oldFolder).absolutePath() + "/", '%') + "%";
+    QString startsWithOldFolder =
+            escaper.escapeStringForLike(QDir(oldFolder).absolutePath() + "/",
+                                        '%') +
+            "%";
 
     // Also update information in the track_locations table. This is where mixxx
     // gets the location information for a track. Put marks around %1 so that
     // this also works on windows
-    query.prepare(QString("SELECT library.id, track_locations.id, track_locations.location "
+    query.prepare(QString("SELECT library.id, track_locations.id, "
+                          "track_locations.location "
                           "FROM library INNER JOIN track_locations ON "
                           "track_locations.id = library.location WHERE "
                           "track_locations.location LIKE '%1' ESCAPE '%'")
-                  .arg(startsWithOldFolder));
+                          .arg(startsWithOldFolder));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "could not relocate path of tracks";
         return QSet<int>();
@@ -134,7 +135,8 @@ QSet<int> DirectoryDAO::relocateDirectory(const QString& oldFolder,
         old_locs.append(query.value(2).toString());
     }
 
-    QString replacement = "UPDATE track_locations SET location = :newloc "
+    QString replacement =
+            "UPDATE track_locations SET location = :newloc "
             "WHERE id = :id";
     query.prepare(replacement);
     for (int i = 0; i < loc_ids.size(); ++i) {
@@ -157,7 +159,8 @@ QStringList DirectoryDAO::getDirs() {
     QSqlQuery query(m_database);
     query.prepare("SELECT " % DIRECTORYDAO_DIR % " FROM " % DIRECTORYDAO_TABLE);
     if (!query.exec()) {
-        LOG_FAILED_QUERY(query) << "could not retrieve directory list from database";
+        LOG_FAILED_QUERY(query)
+                << "could not retrieve directory list from database";
     }
     QStringList dirs;
     const int dirColumn = query.record().indexOf(DIRECTORYDAO_DIR);

@@ -21,8 +21,7 @@ typedef QSharedPointer<EffectChainSlot> EffectChainSlotPointer;
 class EffectChainSlot : public QObject {
     Q_OBJECT
   public:
-    EffectChainSlot(EffectRack* pRack,
-                    const QString& group,
+    EffectChainSlot(EffectRack* pRack, const QString& group,
                     const unsigned int iChainNumber);
     virtual ~EffectChainSlot();
 
@@ -79,21 +78,18 @@ class EffectChainSlot : public QObject {
     // Signal that whoever is in charge of this EffectChainSlot should load the
     // next Effect into the specified EffectSlot.
     void nextEffect(unsigned int iChainSlotNumber,
-                    unsigned int iEffectSlotNumber,
-                    EffectPointer pEffect);
+                    unsigned int iEffectSlotNumber, EffectPointer pEffect);
 
     // Signal that whoever is in charge of this EffectChainSlot should load the
     // previous Effect into the specified EffectSlot.
     void prevEffect(unsigned int iChainSlotNumber,
-                    unsigned int iEffectSlotNumber,
-                    EffectPointer pEffect);
+                    unsigned int iEffectSlotNumber, EffectPointer pEffect);
 
     // Signal that indicates that the EffectChainSlot has been updated.
     void updated();
 
-
   private slots:
-    void slotChainEffectsChanged(bool shouldEmit=true);
+    void slotChainEffectsChanged(bool shouldEmit = true);
     void slotChainNameChanged(const QString& name);
     void slotChainSuperParameterChanged(double parameter);
     void slotChainEnabledChanged(bool enabled);
@@ -143,10 +139,9 @@ class EffectChainSlot : public QObject {
 
     struct ChannelInfo {
         // Takes ownership of pEnabled.
-        ChannelInfo(const ChannelHandleAndGroup& handle_group, ControlObject* pEnabled)
-                : handle_group(handle_group),
-                  pEnabled(pEnabled) {
-
+        ChannelInfo(const ChannelHandleAndGroup& handle_group,
+                    ControlObject* pEnabled)
+                : handle_group(handle_group), pEnabled(pEnabled) {
         }
         ~ChannelInfo() {
             delete pEnabled;
@@ -161,6 +156,5 @@ class EffectChainSlot : public QObject {
 
     DISALLOW_COPY_AND_ASSIGN(EffectChainSlot);
 };
-
 
 #endif /* EFFECTCHAINSLOT_H */

@@ -39,8 +39,7 @@ class WidgetStackControlListener : public QObject {
 class WWidgetStack : public QStackedWidget, public WBaseWidget {
     Q_OBJECT
   public:
-    WWidgetStack(QWidget* pParent,
-                 ControlObject* pNextControl,
+    WWidgetStack(QWidget* pParent, ControlObject* pNextControl,
                  ControlObject* pPrevControl,
                  ControlObject* pCurrentPageControl);
     virtual ~WWidgetStack();

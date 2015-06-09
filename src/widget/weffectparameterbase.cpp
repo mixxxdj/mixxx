@@ -3,9 +3,9 @@
 #include "widget/weffectparameterbase.h"
 #include "effects/effectsmanager.h"
 
-WEffectParameterBase::WEffectParameterBase(QWidget* pParent, EffectsManager* pEffectsManager)
-        : WLabel(pParent),
-          m_pEffectsManager(pEffectsManager) {
+WEffectParameterBase::WEffectParameterBase(QWidget* pParent,
+                                           EffectsManager* pEffectsManager)
+        : WLabel(pParent), m_pEffectsManager(pEffectsManager) {
     parameterUpdated();
 }
 
@@ -16,8 +16,8 @@ void WEffectParameterBase::setEffectParameterSlot(
         EffectParameterSlotBasePointer pEffectParameterSlot) {
     m_pEffectParameterSlot = pEffectParameterSlot;
     if (m_pEffectParameterSlot) {
-        connect(m_pEffectParameterSlot.data(), SIGNAL(updated()),
-                this, SLOT(parameterUpdated()));
+        connect(m_pEffectParameterSlot.data(), SIGNAL(updated()), this,
+                SLOT(parameterUpdated()));
     }
     parameterUpdated();
 }

@@ -18,5 +18,4 @@ class WEffectButtonParameter : public WEffectParameterBase {
     void setup(QDomNode node, const SkinContext& context);
 };
 
-
 #endif /* WEFFECTBUTTONPARAMETER_H */

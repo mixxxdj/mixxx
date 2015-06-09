@@ -6,10 +6,9 @@
 namespace Mixxx {
 
 // Common base class for SoundSource plugins
-class SoundSourcePlugin: public SoundSource {
-protected:
-    inline explicit SoundSourcePlugin(const QUrl& url)
-            : SoundSource(url) {
+class SoundSourcePlugin : public SoundSource {
+  protected:
+    inline explicit SoundSourcePlugin(const QUrl& url) : SoundSource(url) {
     }
     inline SoundSourcePlugin(const QUrl& url, const QString& type)
             : SoundSource(url, type) {
@@ -23,9 +22,10 @@ protected:
 SoundSourcePointer exportSoundSourcePlugin(
         SoundSourcePlugin* pSoundSourcePlugin);
 
-} // namespace Mixxx
+}  // namespace Mixxx
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT const char* Mixxx_getVersion();
-extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT int Mixxx_SoundSourcePluginAPI_getVersion();
+extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT int
+Mixxx_SoundSourcePluginAPI_getVersion();
 
 #endif

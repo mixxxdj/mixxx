@@ -36,4 +36,4 @@ class WEffectPushButton : public WPushButton {
     QMenu* m_pButtonMenu;
 };
 
-#endif // WEFFECTPUSHBUTTON_H
+#endif  // WEFFECTPUSHBUTTON_H

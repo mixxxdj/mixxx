@@ -14,10 +14,10 @@ WNumberPos::WNumberPos(const char* group, QWidget* parent)
           m_dTrackSamples(0.0),
           m_dTrackSampleRate(0.0),
           m_bRemain(false) {
-    m_pShowTrackTimeRemaining = new ControlObjectThread(
-            "[Controls]", "ShowDurationRemaining");
-    m_pShowTrackTimeRemaining->connectValueChanged(
-            this, SLOT(slotSetRemain(double)));
+    m_pShowTrackTimeRemaining =
+            new ControlObjectThread("[Controls]", "ShowDurationRemaining");
+    m_pShowTrackTimeRemaining->connectValueChanged(this,
+                                                   SLOT(slotSetRemain(double)));
     slotSetRemain(m_pShowTrackTimeRemaining->get());
 
     // We use the engine's playposition value directly because the parameter
@@ -28,17 +28,15 @@ WNumberPos::WNumberPos(const char* group, QWidget* parent)
     m_pVisualPlaypos = new ControlObjectThread(group, "playposition");
     m_pVisualPlaypos->connectValueChanged(this, SLOT(slotSetValue(double)));
 
-    m_pTrackSamples = new ControlObjectThread(
-            group, "track_samples");
-    m_pTrackSamples->connectValueChanged(
-            this, SLOT(slotSetTrackSamples(double)));
+    m_pTrackSamples = new ControlObjectThread(group, "track_samples");
+    m_pTrackSamples->connectValueChanged(this,
+                                         SLOT(slotSetTrackSamples(double)));
 
     // Tell the CO to re-emit its value since we could be created after it was
     // set to a valid value.
     m_pTrackSamples->emitValueChanged();
 
-    m_pTrackSampleRate = new ControlObjectThread(
-            group, "track_samplerate");
+    m_pTrackSampleRate = new ControlObjectThread(group, "track_samplerate");
     m_pTrackSampleRate->connectValueChanged(
             this, SLOT(slotSetTrackSampleRate(double)));
 
@@ -96,11 +94,13 @@ void WNumberPos::slotSetValue(double dValue) {
 
     QString valueString;
     if (valueMillis >= 0) {
-        valueString = m_skinText % Time::formatSeconds(
-                valueMillis / Time::kMillisPerSecond, true);
+        valueString =
+                m_skinText %
+                Time::formatSeconds(valueMillis / Time::kMillisPerSecond, true);
     } else {
-        valueString = m_skinText % QLatin1String("-") % Time::formatSeconds(
-                -valueMillis / Time::kMillisPerSecond, true);
+        valueString = m_skinText % QLatin1String("-") %
+                      Time::formatSeconds(-valueMillis / Time::kMillisPerSecond,
+                                          true);
     }
     setText(valueString);
 }

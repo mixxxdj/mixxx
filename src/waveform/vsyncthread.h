@@ -12,23 +12,22 @@
 
 #else
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    #include <qx11info_x11.h>
-#endif // QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#include <qx11info_x11.h>
+#endif  // QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #endif
 
 #include "util/performancetimer.h"
-
 
 #if defined(__APPLE__)
 
 #elif defined(__WINDOWS__)
 
 #else
-    #include <GL/glx.h>
-    #include "GL/glxext.h"
-    // clean up after Xlib.h, which #defines values that conflict with QT.
-    #undef Bool
-    #undef Unsorted
+#include <GL/glx.h>
+#include "GL/glxext.h"
+// clean up after Xlib.h, which #defines values that conflict with QT.
+#undef Bool
+#undef Unsorted
 #endif
 
 class QGLWidget;
@@ -44,7 +43,7 @@ class VSyncThread : public QThread {
         ST_SGI_VIDEO_SYNC,
         ST_OML_SYNC_CONTROL,
         ST_FREE,
-        ST_COUNT // Dummy Type at last, counting possible types
+        ST_COUNT  // Dummy Type at last, counting possible types
     };
 
     static void swapGl(QGLWidget* glw, int index);
@@ -64,7 +63,7 @@ class VSyncThread : public QThread {
     void setSwapWait(int sw);
     int usFromTimerToNextSync(PerformanceTimer* timer);
     void vsyncSlotFinished();
-    void getAvailableVSyncTypes(QList<QPair<int, QString > >* list);
+    void getAvailableVSyncTypes(QList<QPair<int, QString>>* list);
     void setupSync(QGLWidget* glw, int index);
     void waitUntilSwap(QGLWidget* glw);
 
@@ -74,7 +73,7 @@ class VSyncThread : public QThread {
 
   private:
     bool m_bDoRendering;
-    QGLWidget *m_glw;
+    QGLWidget* m_glw;
 
 #if defined(__APPLE__)
 
@@ -82,7 +81,7 @@ class VSyncThread : public QThread {
 
 #else
     void initGlxext(QGLWidget* glw);
-    bool glXExtensionSupported(Display *dpy, int screen, const char *extension);
+    bool glXExtensionSupported(Display* dpy, int screen, const char* extension);
 
     PFNGLXGETVIDEOSYNCSGIPROC glXGetVideoSyncSGI;
     PFNGLXWAITVIDEOSYNCSGIPROC glXWaitVideoSyncSGI;
@@ -95,7 +94,7 @@ class VSyncThread : public QThread {
     PFNGLXGETMSCRATEOMLPROC glXGetMscRateOML;
     PFNGLXSWAPBUFFERSMSCOMLPROC glXSwapBuffersMscOML;
     PFNGLXWAITFORMSCOMLPROC glXWaitForMscOML;
-    PFNGLXWAITFORSBCOMLPROC  glXWaitForSbcOML;
+    PFNGLXWAITFORSBCOMLPROC glXWaitForSbcOML;
 
     PFNGLXSWAPINTERVALSGIPROC glXSwapIntervalMESA;
 
@@ -119,9 +118,7 @@ class VSyncThread : public QThread {
     double m_displayFrameRate;
     int m_vSyncPerRendering;
 
-
     GuiTick* m_pGuiTick;
 };
 
-
-#endif // VSYNCTHREAD_H
+#endif  // VSYNCTHREAD_H

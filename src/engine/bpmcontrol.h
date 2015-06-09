@@ -23,7 +23,9 @@ class BpmControl : public EngineControl {
     virtual ~BpmControl();
 
     double getBpm() const;
-    double getLocalBpm() const { return m_pLocalBpm ? m_pLocalBpm->get() : 0.0; }
+    double getLocalBpm() const {
+        return m_pLocalBpm ? m_pLocalBpm->get() : 0.0;
+    }
     // When in master sync mode, ratecontrol calls calcSyncedRate to figure out
     // how fast the track should play back.  The returned rate is usually just
     // the correct pitch to match bpms.  The usertweak argument represents
@@ -35,13 +37,14 @@ class BpmControl : public EngineControl {
     // Get the phase offset from the specified position.
     double getPhaseOffset(double reference_position);
     double getBeatDistance(double dThisPosition) const;
-    double getPreviousSample() const { return m_dPreviousSample; }
+    double getPreviousSample() const {
+        return m_dPreviousSample;
+    }
 
-    void setCurrentSample(const double dCurrentSample, const double dTotalSamples);
-    double process(const double dRate,
-                   const double dCurrentSample,
-                   const double dTotalSamples,
-                   const int iBufferSize);
+    void setCurrentSample(const double dCurrentSample,
+                          const double dTotalSamples);
+    double process(const double dRate, const double dCurrentSample,
+                   const double dTotalSamples, const int iBufferSize);
     void setTargetBeatDistance(double beatDistance);
     void setInstantaneousBpm(double instantaneousBpm);
     void resetSyncAdjustment();
@@ -55,20 +58,17 @@ class BpmControl : public EngineControl {
     // lies within the current beat). Returns false if a previous or next beat
     // does not exist. NULL arguments are safe and ignored.
     static bool getBeatContext(const BeatsPointer& pBeats,
-                               const double dPosition,
-                               double* dpPrevBeat,
-                               double* dpNextBeat,
-                               double* dpBeatLength,
+                               const double dPosition, double* dpPrevBeat,
+                               double* dpNextBeat, double* dpBeatLength,
                                double* dpBeatPercentage);
 
     // Alternative version that works if the next and previous beat positions
     // are already known.
-    static bool getBeatContextNoLookup(
-                               const double dPosition,
-                               const double dPrevBeat,
-                               const double dNextBeat,
-                               double* dpBeatLength,
-                               double* dpBeatPercentage);
+    static bool getBeatContextNoLookup(const double dPosition,
+                                       const double dPrevBeat,
+                                       const double dNextBeat,
+                                       double* dpBeatLength,
+                                       double* dpBeatPercentage);
 
     // Returns the shortest change in percentage needed to achieve
     // target_percentage.
@@ -91,7 +91,7 @@ class BpmControl : public EngineControl {
     void slotControlBeatSync(double);
     void slotControlBeatSyncPhase(double);
     void slotControlBeatSyncTempo(double);
-    void slotTapFilter(double,int);
+    void slotTapFilter(double, int);
     void slotBpmTap(double);
     void slotAdjustRateSlider();
     void slotUpdatedTrackBeats();
@@ -173,5 +173,4 @@ class BpmControl : public EngineControl {
     QString m_sGroup;
 };
 
-
-#endif // BPMCONTROL_H
+#endif  // BPMCONTROL_H

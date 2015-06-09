@@ -82,5 +82,4 @@ class VinylControlProcessor : public QThread, public AudioDestination {
     volatile bool m_bReloadConfig;
 };
 
-
 #endif /* VINYLCONTROLPROCESSOR_H */

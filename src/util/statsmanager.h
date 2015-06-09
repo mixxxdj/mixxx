@@ -23,6 +23,7 @@ class StatsPipe : public FIFO<StatReport> {
   public:
     StatsPipe(StatsManager* pManager);
     virtual ~StatsPipe();
+
   private:
     StatsManager* m_pManager;
 };
@@ -73,6 +74,5 @@ class StatsManager : public QThread, public Singleton<StatsManager> {
 
     friend class StatsPipe;
 };
-
 
 #endif /* STATSMANAGER_H */

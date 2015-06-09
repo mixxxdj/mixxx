@@ -27,15 +27,13 @@ class EngineEffectsManager : public EffectsRequestHandler {
     // represented as stereo interleaved samples. There are numSamples total
     // samples, so numSamples/2 left channel samples and numSamples/2 right
     // channel samples.
-    virtual void process(const ChannelHandle& handle,
-                         CSAMPLE* pInOut,
+    virtual void process(const ChannelHandle& handle, CSAMPLE* pInOut,
                          const unsigned int numSamples,
                          const unsigned int sampleRate,
                          const GroupFeatureState& groupFeatures);
 
-    bool processEffectsRequest(
-        const EffectsRequest& message,
-        EffectsResponsePipe* pResponsePipe);
+    bool processEffectsRequest(const EffectsRequest& message,
+                               EffectsResponsePipe* pResponsePipe);
 
   private:
     QString debugString() const {
@@ -50,6 +48,5 @@ class EngineEffectsManager : public EffectsRequestHandler {
     QList<EngineEffectChain*> m_chains;
     QList<EngineEffect*> m_effects;
 };
-
 
 #endif /* ENGINEEFFECTSMANAGER_H */

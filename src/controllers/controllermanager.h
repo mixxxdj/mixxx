@@ -13,28 +13,33 @@
 #include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetinfo.h"
 
-//Forward declaration(s)
+// Forward declaration(s)
 class Controller;
 class ControllerLearningEventFilter;
 
 // Function to sort controllers by name
-bool controllerCompare(Controller *a,Controller *b);
+bool controllerCompare(Controller* a, Controller* b);
 
 /** Manages enumeration/operation/deletion of hardware controllers. */
 class ControllerManager : public QObject {
     Q_OBJECT
   public:
-    ControllerManager(ConfigObject<ConfigValue> * pConfig);
+    ControllerManager(ConfigObject<ConfigValue>* pConfig);
     virtual ~ControllerManager();
 
     QList<Controller*> getControllers() const;
-    QList<Controller*> getControllerList(bool outputDevices=true, bool inputDevices=true);
+    QList<Controller*> getControllerList(bool outputDevices = true,
+                                         bool inputDevices = true);
     ControllerLearningEventFilter* getControllerLearningEventFilter() const;
     PresetInfoEnumerator* getMainThreadPresetEnumerator();
 
     // Prevent other parts of Mixxx from having to manually connect to our slots
-    void setUpDevices() { emit(requestSetUpDevices()); };
-    void savePresets(bool onlyActive=false) { emit(requestSave(onlyActive)); };
+    void setUpDevices() {
+        emit(requestSetUpDevices());
+    };
+    void savePresets(bool onlyActive = false) {
+        emit(requestSave(onlyActive));
+    };
 
     static QList<QString> getPresetPaths(ConfigObject<ConfigValue>* pConfig);
 
@@ -60,7 +65,7 @@ class ControllerManager : public QObject {
     void closeController(Controller* pController);
 
     // Writes out presets for currently connected input devices
-    void slotSavePresets(bool onlyActive=false);
+    void slotSavePresets(bool onlyActive = false);
 
   private slots:
     // Open whatever controllers are selected in the preferences. This currently
@@ -68,8 +73,7 @@ class ControllerManager : public QObject {
     // preferences dialog on apply, and only open/close changed devices
     int slotSetUpDevices();
     void slotShutdown();
-    bool loadPreset(Controller* pController,
-                    ControllerPresetPointer preset);
+    bool loadPreset(Controller* pController, ControllerPresetPointer preset);
     // Calls poll() on all devices that have isPolling() true.
     void pollDevices();
     void startPolling();
@@ -81,7 +85,7 @@ class ControllerManager : public QObject {
     }
 
   private:
-    ConfigObject<ConfigValue> *m_pConfig;
+    ConfigObject<ConfigValue>* m_pConfig;
     ControllerLearningEventFilter* m_pControllerLearningEventFilter;
     QTimer m_pollTimer;
     mutable QMutex m_mutex;

@@ -17,8 +17,8 @@
 #include "playermanager.h"
 #include "util/debug.h"
 
-SkinLoader::SkinLoader(ConfigObject<ConfigValue>* pConfig) :
-        m_pConfig(pConfig) {
+SkinLoader::SkinLoader(ConfigObject<ConfigValue>* pConfig)
+        : m_pConfig(pConfig) {
 }
 
 SkinLoader::~SkinLoader() {
@@ -45,12 +45,14 @@ QList<QDir> SkinLoader::getSkinSearchPaths() {
 }
 
 QString SkinLoader::getConfiguredSkinPath() {
-    QString configSkin = m_pConfig->getValueString(ConfigKey("[Config]", "ResizableSkin"));
+    QString configSkin =
+            m_pConfig->getValueString(ConfigKey("[Config]", "ResizableSkin"));
 
     // If we don't have a skin defined, we might be migrating from 1.11 and
     // should pick the closest-possible skin.
     if (configSkin.isEmpty()) {
-        QString oldSkin = m_pConfig->getValueString(ConfigKey("[Config]", "Skin"));
+        QString oldSkin =
+                m_pConfig->getValueString(ConfigKey("[Config]", "Skin"));
         if (!oldSkin.isEmpty()) {
             configSkin = pickResizableSkin(oldSkin);
         }
@@ -107,8 +109,7 @@ QString SkinLoader::getSkinPath() {
     return skinPath;
 }
 
-QWidget* SkinLoader::loadDefaultSkin(QWidget* pParent,
-                                     MixxxKeyboard* pKeyboard,
+QWidget* SkinLoader::loadDefaultSkin(QWidget* pParent, MixxxKeyboard* pKeyboard,
                                      PlayerManager* pPlayerManager,
                                      ControllerManager* pControllerManager,
                                      Library* pLibrary,

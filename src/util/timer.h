@@ -5,8 +5,9 @@
 #include "util/performancetimer.h"
 #include "util/cmdlineargs.h"
 
-const Stat::ComputeFlags kDefaultComputeFlags = Stat::COUNT | Stat::SUM | Stat::AVERAGE |
-        Stat::MAX | Stat::MIN | Stat::SAMPLE_VARIANCE;
+const Stat::ComputeFlags kDefaultComputeFlags =
+        Stat::COUNT | Stat::SUM | Stat::AVERAGE | Stat::MAX | Stat::MIN |
+        Stat::SAMPLE_VARIANCE;
 
 // A Timer that is instrumented for reporting elapsed times to StatsManager
 // under a certain key. Construct with custom compute flags to get custom values
@@ -36,7 +37,7 @@ class Timer {
 class SuspendableTimer : public Timer {
   public:
     SuspendableTimer(const QString& key,
-            Stat::ComputeFlags compute = kDefaultComputeFlags);
+                     Stat::ComputeFlags compute = kDefaultComputeFlags);
     void start();
     qint64 suspend();
     void go();
@@ -50,17 +51,15 @@ class ScopedTimer {
   public:
     ScopedTimer(const char* key, int i,
                 Stat::ComputeFlags compute = kDefaultComputeFlags)
-            : m_pTimer(NULL),
-              m_cancel(false) {
+            : m_pTimer(NULL), m_cancel(false) {
         if (CmdlineArgs::Instance().getDeveloper()) {
             initialize(QString(key), QString::number(i), compute);
         }
     }
 
-    ScopedTimer(const char* key, const char *arg = NULL,
+    ScopedTimer(const char* key, const char* arg = NULL,
                 Stat::ComputeFlags compute = kDefaultComputeFlags)
-            : m_pTimer(NULL),
-              m_cancel(false) {
+            : m_pTimer(NULL), m_cancel(false) {
         if (CmdlineArgs::Instance().getDeveloper()) {
             initialize(QString(key), arg ? QString(arg) : QString(), compute);
         }
@@ -68,8 +67,7 @@ class ScopedTimer {
 
     ScopedTimer(const char* key, const QString& arg,
                 Stat::ComputeFlags compute = kDefaultComputeFlags)
-            : m_pTimer(NULL),
-              m_cancel(false) {
+            : m_pTimer(NULL), m_cancel(false) {
         if (CmdlineArgs::Instance().getDeveloper()) {
             initialize(QString(key), arg, compute);
         }
@@ -85,20 +83,21 @@ class ScopedTimer {
     }
 
     inline void initialize(const QString& key, const QString& arg,
-                Stat::ComputeFlags compute = kDefaultComputeFlags) {
+                           Stat::ComputeFlags compute = kDefaultComputeFlags) {
         QString strKey;
         if (arg.isEmpty()) {
             strKey = key;
         } else {
             strKey = key.arg(arg);
         }
-        m_pTimer = new(m_timerMem) Timer(strKey, compute);
+        m_pTimer = new (m_timerMem) Timer(strKey, compute);
         m_pTimer->start();
     }
 
     void cancel() {
         m_cancel = true;
     }
+
   private:
     Timer* m_pTimer;
     char m_timerMem[sizeof(Timer)];

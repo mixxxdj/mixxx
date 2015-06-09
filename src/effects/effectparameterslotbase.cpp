@@ -5,15 +5,14 @@
 #include "controlobject.h"
 #include "controlpushbutton.h"
 
-EffectParameterSlotBase::EffectParameterSlotBase(const QString& group,
-                                                 const unsigned int iParameterSlotNumber)
+EffectParameterSlotBase::EffectParameterSlotBase(
+        const QString& group, const unsigned int iParameterSlotNumber)
         : m_iParameterSlotNumber(iParameterSlotNumber),
           m_group(group),
           m_pEffectParameter(NULL),
           m_pControlLoaded(NULL),
           m_pControlType(NULL),
           m_dChainParameter(0.0) {
-
 }
 
 EffectParameterSlotBase::~EffectParameterSlotBase() {
@@ -39,13 +38,13 @@ QString EffectParameterSlotBase::description() const {
 
 void EffectParameterSlotBase::slotLoaded(double v) {
     Q_UNUSED(v);
-    //qDebug() << debugString() << "slotLoaded" << v;
+    // qDebug() << debugString() << "slotLoaded" << v;
     qWarning() << "WARNING: loaded is a read-only control.";
 }
 
 void EffectParameterSlotBase::slotValueType(double v) {
     Q_UNUSED(v);
-    //qDebug() << debugString() << "slotValueType" << v;
+    // qDebug() << debugString() << "slotValueType" << v;
     qWarning() << "WARNING: value_type is a read-only control.";
 }
 

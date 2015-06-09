@@ -1,32 +1,32 @@
 /*
-	basics.h
+    basics.h
 
-	Copyright 2004-12 Tim Goetze <tim@quitte.de>
+    Copyright 2004-12 Tim Goetze <tim@quitte.de>
 
-	http://quitte.de/dsp/
+    http://quitte.de/dsp/
 
-	Common constants, typedefs, utility functions
-	and simplified LADSPA #defines.
+    Common constants, typedefs, utility functions
+    and simplified LADSPA #defines.
 
-	Some code removed by Owen Williams for port to Mixxx, mostly ladspa-specific
-	defines and i386 customizations.
+    Some code removed by Owen Williams for port to Mixxx, mostly ladspa-specific
+    defines and i386 customizations.
 
 */
 /*
-	This program is free software; you can redistribute it and/or
-	modify it under the terms of the GNU General Public License
-	as published by the Free Software Foundation; either version 3
-	of the License, or (at your option) any later version.
+    This program is free software; you can redistribute it and/or
+    modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation; either version 3
+    of the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software
-	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-	02111-1307, USA or point your web browser to http://www.gnu.org.
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+    02111-1307, USA or point your web browser to http://www.gnu.org.
 */
 
 #ifndef _BASICS_H_
@@ -69,91 +69,76 @@ typedef unsigned int uint;
 typedef unsigned long ulong;
 
 /* prototype that takes a sample and yields a sample */
-typedef CSAMPLE (*clip_func_t) (CSAMPLE);
+typedef CSAMPLE (*clip_func_t)(CSAMPLE);
 
 /* flavours for sample store functions run() and run_adding() */
-typedef void (*yield_func_t) (CSAMPLE *, uint, CSAMPLE, CSAMPLE);
+typedef void (*yield_func_t)(CSAMPLE *, uint, CSAMPLE, CSAMPLE);
 
-inline void
-adding_func (CSAMPLE * s, uint i, CSAMPLE x, CSAMPLE gain)
-{
-	s[i] += gain * x;
+inline void adding_func(CSAMPLE *s, uint i, CSAMPLE x, CSAMPLE gain) {
+    s[i] += gain * x;
 }
 
 #ifndef max
 
 template <class X, class Y>
-X min (X x, Y y)
-{
-	return x < y ? x : (X) y;
+X min(X x, Y y) {
+    return x < y ? x : (X)y;
 }
 
 template <class X, class Y>
-X max (X x, Y y)
-{
-	return x > y ? x : (X) y;
+X max(X x, Y y) {
+    return x > y ? x : (X)y;
 }
 
 #endif /* ! max */
 
 template <class T>
-T clamp (T value, T lower, T upper)
-{
-	if (value < lower) return lower;
-	if (value > upper) return upper;
-	return value;
+T clamp(T value, T lower, T upper) {
+    if (value < lower)
+        return lower;
+    if (value > upper)
+        return upper;
+    return value;
 }
 
-static inline float
-frandom()
-{
-	return (float) rand() / (float) RAND_MAX;
+static inline float frandom() {
+    return (float)rand() / (float)RAND_MAX;
 }
 
 /* NB: also true if 0  */
-inline bool
-is_denormal (float & f)
-{
-	int32 i = *((int32 *) &f);
-	return ((i & 0x7f800000) == 0);
+inline bool is_denormal(float &f) {
+    int32 i = *((int32 *)&f);
+    return ((i & 0x7f800000) == 0);
 }
 
 /* not used, check validity before using */
-inline bool
-is_denormal (double & f)
-{
-	int64 i = *((int64 *) &f);
-	return ((i & 0x7fe0000000000000ll) == 0);
+inline bool is_denormal(double &f) {
+    int64 i = *((int64 *)&f);
+    return ((i & 0x7fe0000000000000ll) == 0);
 }
 
 /* lovely algorithm from
   http://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2Float
 */
-inline uint
-next_power_of_2 (uint n)
-{
-	assert (n <= 0x40000000);
+inline uint next_power_of_2(uint n) {
+    assert(n <= 0x40000000);
 
-	--n;
-	n |= n >> 1;
-	n |= n >> 2;
-	n |= n >> 4;
-	n |= n >> 8;
-	n |= n >> 16;
+    --n;
+    n |= n >> 1;
+    n |= n >> 2;
+    n |= n >> 4;
+    n |= n >> 8;
+    n |= n >> 16;
 
-	return ++n;
+    return ++n;
 }
 
-inline double
-db2lin (double db)
-{
-	return pow(10, db*.05);
+inline double db2lin(double db) {
+    return pow(10, db * .05);
 }
 
-inline double
-lin2db (double lin)
-{
-	return 20*log10(lin);
+inline double lin2db(double lin) {
+    return 20 * log10(lin);
 }
 
 /* //////////////////////////////////////////////////////////////////////// */

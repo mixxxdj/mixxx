@@ -17,8 +17,8 @@ class RegexUtils {
     }
 
   private:
-    RegexUtils() {}
+    RegexUtils() {
+    }
 };
-
 
 #endif /* REGEX_H */

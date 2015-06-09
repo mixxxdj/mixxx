@@ -17,12 +17,11 @@
 #include "util/defs.h"
 #include "sampleutil.h"
 
+class Bessel8LVMixEQEffectGroupState
+        : public LVMixEQEffectGroupState<EngineFilterBessel8Low> {};
 
-class Bessel8LVMixEQEffectGroupState :
-        public LVMixEQEffectGroupState<EngineFilterBessel8Low> {
-};
-
-class Bessel8LVMixEQEffect : public PerChannelEffectProcessor<Bessel8LVMixEQEffectGroupState> {
+class Bessel8LVMixEQEffect
+        : public PerChannelEffectProcessor<Bessel8LVMixEQEffectGroupState> {
   public:
     Bessel8LVMixEQEffect(EngineEffect* pEffect, const EffectManifest& manifest);
     virtual ~Bessel8LVMixEQEffect();

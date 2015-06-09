@@ -59,26 +59,28 @@ class Sandbox {
         return createSecurityToken(dir.canonicalPath(), true);
     }
 
-    static SecurityTokenPointer openSecurityToken(const QFileInfo& info, bool create);
+    static SecurityTokenPointer openSecurityToken(const QFileInfo& info,
+                                                  bool create);
     static SecurityTokenPointer openSecurityToken(const QDir& dir, bool create);
 
   private:
-    Sandbox() {}
+    Sandbox() {
+    }
 
     static ConfigKey keyForCanonicalPath(const QString& canonicalPath);
 
     // Must hold s_mutex to call this.
-    static SecurityTokenPointer openTokenFromBookmark(const QString& canonicalPath,
-                                                      const QString& bookmarkBase64);
+    static SecurityTokenPointer openTokenFromBookmark(
+            const QString& canonicalPath, const QString& bookmarkBase64);
 
     // Creates a security token. s_mutex is not needed for this method.
-    static bool createSecurityToken(const QString& canonicalPath, bool isDirectory);
+    static bool createSecurityToken(const QString& canonicalPath,
+                                    bool isDirectory);
 
     static QMutex s_mutex;
     static bool s_bInSandbox;
     static ConfigObject<ConfigValue>* s_pSandboxPermissions;
     static QHash<QString, SecurityTokenWeakPointer> s_activeTokens;
 };
-
 
 #endif /* SANDBOX_H */

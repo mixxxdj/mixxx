@@ -11,6 +11,6 @@ namespace Mixxx {
 // Used by both SoundSourceMp3 and SoundSourceCoreAudio.
 static const SINT kMp3SeekFramePrefetchCount = 29;
 
-} // namespace Mixxx
+}  // namespace Mixxx
 
-#endif // MIXXX_MP3DECODING_H
+#endif  // MIXXX_MP3DECODING_H

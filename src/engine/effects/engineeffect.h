@@ -31,13 +31,11 @@ class EngineEffect : public EffectsRequestHandler {
         return m_parametersById.value(id, NULL);
     }
 
-    bool processEffectsRequest(
-        const EffectsRequest& message,
-        EffectsResponsePipe* pResponsePipe);
+    bool processEffectsRequest(const EffectsRequest& message,
+                               EffectsResponsePipe* pResponsePipe);
 
-    void process(const ChannelHandle& handle,
-                 const CSAMPLE* pInput, CSAMPLE* pOutput,
-                 const unsigned int numSamples,
+    void process(const ChannelHandle& handle, const CSAMPLE* pInput,
+                 CSAMPLE* pOutput, const unsigned int numSamples,
                  const unsigned int sampleRate,
                  const EffectProcessor::EnableState enableState,
                  const GroupFeatureState& groupFeatures);

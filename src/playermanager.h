@@ -37,7 +37,8 @@ class PlayerManagerInterface {
 
     // Get the preview deck by its deck number. Preview decks are numbered
     // starting with 1.
-    virtual PreviewDeck* getPreviewDeck(unsigned int libPreviewPlayer) const = 0;
+    virtual PreviewDeck* getPreviewDeck(
+            unsigned int libPreviewPlayer) const = 0;
 
     // Returns the number of preview decks.
     virtual unsigned int numberOfPreviewDecks() const = 0;
@@ -53,8 +54,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     Q_OBJECT
   public:
     PlayerManager(ConfigObject<ConfigValue>* pConfig,
-                  SoundManager* pSoundManager,
-                  EffectsManager* pEffectsManager,
+                  SoundManager* pSoundManager, EffectsManager* pEffectsManager,
                   EngineMaster* pEngine);
     virtual ~PlayerManager();
 
@@ -79,11 +79,11 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
     // Returns true if the group is a deck group. If index is non-NULL,
     // populates it with the deck number (1-indexed).
-    static bool isDeckGroup(const QString& group, int* number=NULL);
+    static bool isDeckGroup(const QString& group, int* number = NULL);
 
     // Returns true if the group is a preview deck group. If index is non-NULL,
     // populates it with the deck number (1-indexed).
-    static bool isPreviewDeckGroup(const QString& group, int* number=NULL);
+    static bool isPreviewDeckGroup(const QString& group, int* number = NULL);
 
     // Return the number of samplers. Thread-safe.
     static unsigned int numSamplers();
@@ -116,25 +116,28 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
     // Returns the group for the ith sampler where i is zero indexed
     static QString groupForSampler(int i) {
-        return QString("[Sampler%1]").arg(i+1);
+        return QString("[Sampler%1]").arg(i + 1);
     }
 
     // Returns the group for the ith deck where i is zero indexed
     static QString groupForDeck(int i) {
-        return QString("[Channel%1]").arg(i+1);
+        return QString("[Channel%1]").arg(i + 1);
     }
 
     // Returns the group for the ith PreviewDeck where i is zero indexed
     static QString groupForPreviewDeck(int i) {
-        return QString("[PreviewDeck%1]").arg(i+1);
+        return QString("[PreviewDeck%1]").arg(i + 1);
     }
 
-    // Used to determine if the user has configured an input for the given vinyl deck.
+    // Used to determine if the user has configured an input for the given vinyl
+    // deck.
     bool hasVinylInput(int inputnum) const;
 
   public slots:
-    // Slots for loading tracks into a Player, which is either a Sampler or a Deck
-    void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
+    // Slots for loading tracks into a Player, which is either a Sampler or a
+    // Deck
+    void slotLoadTrackToPlayer(TrackPointer pTrack, QString group,
+                               bool play = false);
     void slotLoadToPlayer(QString location, QString group);
 
     // Slots for loading tracks to decks
@@ -186,4 +189,4 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     QMap<QString, BaseTrackPlayer*> m_players;
 };
 
-#endif // PLAYERMANAGER_H
+#endif  // PLAYERMANAGER_H

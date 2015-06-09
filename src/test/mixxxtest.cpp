@@ -34,10 +34,10 @@ MixxxTest::ApplicationScope::~ApplicationScope() {
 }
 
 MixxxTest::MixxxTest()
-    // This directory has to be deleted later to clean up the test env.
-    : m_testDataDir(QDir::current().absoluteFilePath("src/test/test_data")),
-      m_testDataCfg(m_testDataDir.filePath("test.cfg")),
-      m_pConfig(new ConfigObject<ConfigValue>(m_testDataCfg)) {
+        // This directory has to be deleted later to clean up the test env.
+        : m_testDataDir(QDir::current().absoluteFilePath("src/test/test_data")),
+          m_testDataCfg(m_testDataDir.filePath("test.cfg")),
+          m_pConfig(new ConfigObject<ConfigValue>(m_testDataCfg)) {
 }
 
 namespace {
@@ -46,12 +46,11 @@ bool QDir_removeRecursively(const QDir& dir) {
     bool result = true;
     if (dir.exists()) {
         qDebug() << "dir exists" << dir;
-        foreach (QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot |
-                                                   QDir::System |
-                                                   QDir::Hidden  |
-                                                   QDir::AllDirs |
-                                                   QDir::Files,
-                                                   QDir::DirsFirst)) {
+        foreach (QFileInfo info,
+                 dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System |
+                                           QDir::Hidden | QDir::AllDirs |
+                                           QDir::Files,
+                                   QDir::DirsFirst)) {
             if (info.isDir()) {
                 // recursively
                 result = QDir_removeRecursively(QDir(info.absoluteFilePath()));
@@ -66,13 +65,12 @@ bool QDir_removeRecursively(const QDir& dir) {
     }
     return result;
 }
-
 }
 
 MixxxTest::~MixxxTest() {
     // Mixxx leaks a ton of COs normally. To make new tests not affected by
     // previous tests, we clear our all COs after every MixxxTest completion.
-    QList<QSharedPointer<ControlDoublePrivate> > leakedControls;
+    QList<QSharedPointer<ControlDoublePrivate>> leakedControls;
     ControlDoublePrivate::getControls(&leakedControls);
     foreach (QSharedPointer<ControlDoublePrivate> pCDP, leakedControls) {
         if (pCDP.isNull()) {
@@ -88,4 +86,3 @@ MixxxTest::~MixxxTest() {
     //     switch to use QDir::removeRecursively() once we switched to Qt5.
     QDir_removeRecursively(m_testDataDir);
 }
-

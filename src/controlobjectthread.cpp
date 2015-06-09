@@ -21,12 +21,14 @@
 #include "controlobjectthread.h"
 #include "control/control.h"
 
-ControlObjectThread::ControlObjectThread(const QString& g, const QString& i, QObject* pParent)
+ControlObjectThread::ControlObjectThread(const QString& g, const QString& i,
+                                         QObject* pParent)
         : QObject(pParent) {
     initialize(ConfigKey(g, i));
 }
 
-ControlObjectThread::ControlObjectThread(const char* g, const char* i, QObject* pParent)
+ControlObjectThread::ControlObjectThread(const char* g, const char* i,
+                                         QObject* pParent)
         : QObject(pParent) {
     initialize(ConfigKey(g, i));
 }
@@ -43,9 +45,8 @@ void ControlObjectThread::initialize(const ConfigKey& key) {
         m_pControl = ControlDoublePrivate::getControl(key);
     }
     if (m_pControl) {
-        connect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
-                this, SLOT(slotValueChanged(double, QObject*)),
-                Qt::DirectConnection);
+        connect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)), this,
+                SLOT(slotValueChanged(double, QObject*)), Qt::DirectConnection);
     }
 }
 
@@ -53,13 +54,16 @@ ControlObjectThread::~ControlObjectThread() {
 }
 
 bool ControlObjectThread::connectValueChanged(const QObject* receiver,
-        const char* method, Qt::ConnectionType type) {
-    return connect((QObject*)this, SIGNAL(valueChanged(double)), receiver, method, type);
+                                              const char* method,
+                                              Qt::ConnectionType type) {
+    return connect((QObject*)this, SIGNAL(valueChanged(double)), receiver,
+                   method, type);
 }
 
-bool ControlObjectThread::connectValueChanged(
-        const char* method, Qt::ConnectionType type) {
-    return connect((QObject*)this, SIGNAL(valueChanged(double)), parent(), method, type);
+bool ControlObjectThread::connectValueChanged(const char* method,
+                                              Qt::ConnectionType type) {
+    return connect((QObject*)this, SIGNAL(valueChanged(double)), parent(),
+                   method, type);
 }
 
 QString ControlObjectThread::name() const {

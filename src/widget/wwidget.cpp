@@ -44,52 +44,52 @@ bool WWidget::event(QEvent* e) {
     if (e->type() == QEvent::ToolTip) {
         updateTooltip();
     } else if (isEnabled()) {
-        switch(e->type()) {
-        case QEvent::TouchBegin:
-        case QEvent::TouchUpdate:
-        case QEvent::TouchEnd:
-        {
-            QTouchEvent* touchEvent = static_cast<QTouchEvent*>(e);
-            if (touchEvent->deviceType() !=  QTouchEvent::TouchScreen) {
-                break;
-            }
-
-            // fake a mouse event!
-            QEvent::Type eventType = QEvent::None;
-            switch (touchEvent->type()) {
+        switch (e->type()) {
             case QEvent::TouchBegin:
-                eventType = QEvent::MouseButtonPress;
-                if (touchIsRightButton()) {
-                    // touch is right click
-                    m_activeTouchButton = Qt::RightButton;
-                } else {
-                    m_activeTouchButton = Qt::LeftButton;
-                }
-                break;
             case QEvent::TouchUpdate:
-                eventType = QEvent::MouseMove;
-                break;
-            case QEvent::TouchEnd:
-                eventType = QEvent::MouseButtonRelease;
-                break;
-            default:
-                DEBUG_ASSERT(false);
-                break;
+            case QEvent::TouchEnd: {
+                QTouchEvent* touchEvent = static_cast<QTouchEvent*>(e);
+                if (touchEvent->deviceType() != QTouchEvent::TouchScreen) {
+                    break;
+                }
+
+                // fake a mouse event!
+                QEvent::Type eventType = QEvent::None;
+                switch (touchEvent->type()) {
+                    case QEvent::TouchBegin:
+                        eventType = QEvent::MouseButtonPress;
+                        if (touchIsRightButton()) {
+                            // touch is right click
+                            m_activeTouchButton = Qt::RightButton;
+                        } else {
+                            m_activeTouchButton = Qt::LeftButton;
+                        }
+                        break;
+                    case QEvent::TouchUpdate:
+                        eventType = QEvent::MouseMove;
+                        break;
+                    case QEvent::TouchEnd:
+                        eventType = QEvent::MouseButtonRelease;
+                        break;
+                    default:
+                        DEBUG_ASSERT(false);
+                        break;
+                }
+
+                const QTouchEvent::TouchPoint& touchPoint =
+                        touchEvent->touchPoints().first();
+                QMouseEvent mouseEvent(
+                        eventType, touchPoint.pos().toPoint(),
+                        touchPoint.screenPos().toPoint(),
+                        m_activeTouchButton,  // Button that causes the event
+                        Qt::NoButton,  // Not used, so no need to fake a proper
+                                       // value.
+                        touchEvent->modifiers());
+
+                return QWidget::event(&mouseEvent);
             }
-
-            const QTouchEvent::TouchPoint &touchPoint =
-                    touchEvent->touchPoints().first();
-            QMouseEvent mouseEvent(eventType,
-                    touchPoint.pos().toPoint(),
-                    touchPoint.screenPos().toPoint(),
-                    m_activeTouchButton, // Button that causes the event
-                    Qt::NoButton, // Not used, so no need to fake a proper value.
-                    touchEvent->modifiers());
-
-            return QWidget::event(&mouseEvent);
-        }
-        default:
-            break;
+            default:
+                break;
         }
     }
 

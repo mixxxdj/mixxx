@@ -1,7 +1,6 @@
 #include "engine/enginefilterbessel4.h"
 #include "util/math.h"
 
-
 EngineFilterBessel4Low::EngineFilterBessel4Low(int sampleRate,
                                                double freqCorner1) {
     setFrequencyCorners(sampleRate, freqCorner1);
@@ -39,16 +38,17 @@ int EngineFilterBessel4Low::setFrequencyCornersForIntDelay(
             0.027964718,  // delay 12
     };
 
-
-    double dDelay = kDelayFactor1 / desiredCorner1Ratio - kDelayFactor2 * desiredCorner1Ratio;
-    int iDelay =  math_clamp((int)(dDelay + 0.5), 0, maxDelay);
+    double dDelay = kDelayFactor1 / desiredCorner1Ratio -
+                    kDelayFactor2 * desiredCorner1Ratio;
+    int iDelay = math_clamp((int)(dDelay + 0.5), 0, maxDelay);
 
     double quantizedRatio;
     if (iDelay >= (int)(sizeof(delayRatioTable) / sizeof(double))) {
         // pq formula, only valid for low frequencies
         quantizedRatio = (-(iDelay / kDelayFactor2 / 2)) +
-                sqrt((iDelay / kDelayFactor2 / 2)*(iDelay / kDelayFactor2 / 2)
-                                       + kDelayFactor1 / kDelayFactor2);
+                         sqrt((iDelay / kDelayFactor2 / 2) *
+                                      (iDelay / kDelayFactor2 / 2) +
+                              kDelayFactor1 / kDelayFactor2);
     } else {
         quantizedRatio = delayRatioTable[iDelay];
     }
@@ -68,7 +68,6 @@ void EngineFilterBessel4Band::setFrequencyCorners(int sampleRate,
                                                   double freqCorner2) {
     setCoefs("BpBe4", sampleRate, freqCorner1, freqCorner2);
 }
-
 
 EngineFilterBessel4High::EngineFilterBessel4High(int sampleRate,
                                                  double freqCorner1) {

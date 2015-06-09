@@ -20,8 +20,7 @@ WaveformRendererRGB::~WaveformRendererRGB() {
 void WaveformRendererRGB::onSetup(const QDomNode& /* node */) {
 }
 
-void WaveformRendererRGB::draw(QPainter* painter,
-                                          QPaintEvent* /*event*/) {
+void WaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
     const TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
     if (!trackInfo) {
         return;
@@ -49,14 +48,16 @@ void WaveformRendererRGB::draw(QPainter* painter,
     painter->setWorldMatrixEnabled(false);
     painter->resetTransform();
 
-    const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
-    const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
+    const double firstVisualIndex =
+            m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
+    const double lastVisualIndex =
+            m_waveformRenderer->getLastDisplayedPosition() * dataSize;
 
     const double offset = firstVisualIndex;
 
     // Represents the # of waveform data points per horizontal pixel.
     const double gain = (lastVisualIndex - firstVisualIndex) /
-            (double)m_waveformRenderer->getWidth();
+                        (double)m_waveformRenderer->getWidth();
 
     // Per-band gain from the EQ knobs.
     float allGain(1.0), lowGain(1.0), midGain(1.0), highGain(1.0);
@@ -64,13 +65,14 @@ void WaveformRendererRGB::draw(QPainter* painter,
 
     QColor color;
 
-    const float halfHeight = (float)m_waveformRenderer->getHeight()/2.0;
+    const float halfHeight = (float)m_waveformRenderer->getHeight() / 2.0;
 
-    const float heightFactor = allGain*halfHeight/255.0;
+    const float heightFactor = allGain * halfHeight / 255.0;
 
     // Draw reference line
     painter->setPen(m_pColors->getAxesColor());
-    painter->drawLine(0,halfHeight,m_waveformRenderer->getWidth(),halfHeight);
+    painter->drawLine(0, halfHeight, m_waveformRenderer->getWidth(),
+                      halfHeight);
 
     for (int x = 0; x < m_waveformRenderer->getWidth(); ++x) {
         // Width of the x position in visual indices.
@@ -90,8 +92,10 @@ void WaveformRendererRGB::draw(QPainter* painter,
         // to check +/- maxSamplingRange frames, not samples. To do this, divide
         // xVisualSampleIndex by 2. Since frames indices are integers, we round
         // to the nearest integer by adding 0.5 before casting to int.
-        int visualFrameStart = int(xVisualSampleIndex / 2.0 - maxSamplingRange + 0.5);
-        int visualFrameStop = int(xVisualSampleIndex / 2.0 + maxSamplingRange + 0.5);
+        int visualFrameStart =
+                int(xVisualSampleIndex / 2.0 - maxSamplingRange + 0.5);
+        int visualFrameStop =
+                int(xVisualSampleIndex / 2.0 + maxSamplingRange + 0.5);
         const int lastVisualFrame = dataSize / 2 - 1;
 
         // We now know that some subset of [visualFrameStart, visualFrameStop]
@@ -101,10 +105,10 @@ void WaveformRendererRGB::draw(QPainter* painter,
         visualFrameStop = math_clamp(visualFrameStop, 0, lastVisualFrame);
 
         int visualIndexStart = visualFrameStart * 2;
-        int visualIndexStop  = visualFrameStop * 2;
+        int visualIndexStop = visualFrameStop * 2;
 
-        unsigned char maxLow  = 0;
-        unsigned char maxMid  = 0;
+        unsigned char maxLow = 0;
+        unsigned char maxMid = 0;
         unsigned char maxHigh = 0;
         unsigned char maxAllA = 0;
         unsigned char maxAllB = 0;
@@ -114,9 +118,12 @@ void WaveformRendererRGB::draw(QPainter* painter,
             const WaveformData& waveformData = *(data + i);
             const WaveformData& waveformDataNext = *(data + i + 1);
 
-            maxLow  = math_max3(maxLow,  waveformData.filtered.low,  waveformDataNext.filtered.low);
-            maxMid  = math_max3(maxMid,  waveformData.filtered.mid,  waveformDataNext.filtered.mid);
-            maxHigh = math_max3(maxHigh, waveformData.filtered.high, waveformDataNext.filtered.high);
+            maxLow = math_max3(maxLow, waveformData.filtered.low,
+                               waveformDataNext.filtered.low);
+            maxMid = math_max3(maxMid, waveformData.filtered.mid,
+                               waveformDataNext.filtered.mid);
+            maxHigh = math_max3(maxHigh, waveformData.filtered.high,
+                                waveformDataNext.filtered.high);
             maxAllA = math_max(maxAllA, waveformData.filtered.all);
             maxAllB = math_max(maxAllB, waveformDataNext.filtered.all);
         }
@@ -125,9 +132,12 @@ void WaveformRendererRGB::draw(QPainter* painter,
         qreal maxMidF = maxMid * midGain;
         qreal maxHighF = maxHigh * highGain;
 
-        qreal red   = maxLowF * m_rgbLowColor_r + maxMidF * m_rgbMidColor_r + maxHighF * m_rgbHighColor_r;
-        qreal green = maxLowF * m_rgbLowColor_g + maxMidF * m_rgbMidColor_g + maxHighF * m_rgbHighColor_g;
-        qreal blue  = maxLowF * m_rgbLowColor_b + maxMidF * m_rgbMidColor_b + maxHighF * m_rgbHighColor_b;
+        qreal red = maxLowF * m_rgbLowColor_r + maxMidF * m_rgbMidColor_r +
+                    maxHighF * m_rgbHighColor_r;
+        qreal green = maxLowF * m_rgbLowColor_g + maxMidF * m_rgbMidColor_g +
+                      maxHighF * m_rgbHighColor_g;
+        qreal blue = maxLowF * m_rgbLowColor_b + maxMidF * m_rgbMidColor_b +
+                     maxHighF * m_rgbHighColor_b;
 
         // Compute maximum (needed for value normalization)
         qreal max = math_max3(red, green, blue);
@@ -139,20 +149,24 @@ void WaveformRendererRGB::draw(QPainter* painter,
 
             painter->setPen(color);
             switch (m_alignment) {
-                case Qt::AlignBottom :
+                case Qt::AlignBottom:
                     painter->drawLine(
-                        x, m_waveformRenderer->getHeight(),
-                        x, m_waveformRenderer->getHeight() - (int)(heightFactor*(float)math_max(maxAllA,maxAllB)));
+                            x, m_waveformRenderer->getHeight(), x,
+                            m_waveformRenderer->getHeight() -
+                                    (int)(heightFactor *
+                                          (float)math_max(maxAllA, maxAllB)));
                     break;
-                case Qt::AlignTop :
-                    painter->drawLine(
-                        x, 0,
-                        x, (int)(heightFactor*(float)math_max(maxAllA,maxAllB)));
+                case Qt::AlignTop:
+                    painter->drawLine(x, 0, x,
+                                      (int)(heightFactor *
+                                            (float)math_max(maxAllA, maxAllB)));
                     break;
-                default :
+                default:
                     painter->drawLine(
-                        x, (int)(halfHeight-heightFactor*(float)maxAllA),
-                        x, (int)(halfHeight+heightFactor*(float)maxAllB));
+                            x,
+                            (int)(halfHeight - heightFactor * (float)maxAllA),
+                            x,
+                            (int)(halfHeight + heightFactor * (float)maxAllB));
             }
         }
     }

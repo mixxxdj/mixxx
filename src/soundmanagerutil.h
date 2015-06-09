@@ -30,16 +30,17 @@
  *        Mixxx.
  */
 class ChannelGroup {
-public:
+  public:
     ChannelGroup(unsigned char channelBase, unsigned char channels);
     unsigned char getChannelBase() const;
     unsigned char getChannelCount() const;
     bool operator==(const ChannelGroup &other) const;
     bool clashesWith(const ChannelGroup &other) const;
     unsigned int getHash() const;
-private:
-    unsigned char m_channelBase; // base (first) channel used on device
-    unsigned char m_channels; // number of channels used (s/b 2 in most cases)
+
+  private:
+    unsigned char m_channelBase;  // base (first) channel used on device
+    unsigned char m_channels;  // number of channels used (s/b 2 in most cases)
 };
 
 /**
@@ -49,7 +50,7 @@ private:
  *       feel free to rename as necessary.
  */
 class AudioPath {
-public:
+  public:
     // XXX if you add a new type here, be sure to add it to the various
     // methods including getStringFromType, isIndexed, getTypeFromInt,
     // channelsNeededForType (if necessary), the subclasses' getSupportedTypes
@@ -62,7 +63,7 @@ public:
         VINYLCONTROL,
         MICROPHONE,
         AUXILIARY,
-        INVALID, // if this isn't last bad things will happen -bkgood
+        INVALID,  // if this isn't last bad things will happen -bkgood
     };
     AudioPath(unsigned char channelBase, unsigned char channels);
     AudioPathType getType() const;
@@ -86,7 +87,7 @@ public:
     // AudioPathType.
     static unsigned char maxChannelsForType(AudioPathType type);
 
-protected:
+  protected:
     virtual void setType(AudioPathType type) = 0;
     AudioPathType m_type;
     ChannelGroup m_channelGroup;
@@ -102,27 +103,31 @@ protected:
 class AudioOutput : public AudioPath {
   public:
     AudioOutput(AudioPathType type = INVALID, unsigned char channelBase = 0,
-                unsigned char channels = 0,
-                unsigned char index = 0);
+                unsigned char channels = 0, unsigned char index = 0);
     virtual ~AudioOutput();
     QDomElement toXML(QDomElement *element) const;
     static AudioOutput fromXML(const QDomElement &xml);
     static QList<AudioPathType> getSupportedTypes();
+
   protected:
     void setType(AudioPathType type);
 };
 
-// This class is required to add the buffer, without changing the hash used as ID
+// This class is required to add the buffer, without changing the hash used as
+// ID
 class AudioOutputBuffer : public AudioOutput {
   public:
-    AudioOutputBuffer(const AudioOutput& out, const CSAMPLE* pBuffer)
-           : AudioOutput(out),
-             m_pBuffer(pBuffer) {
+    AudioOutputBuffer(const AudioOutput &out, const CSAMPLE *pBuffer)
+            : AudioOutput(out),
+              m_pBuffer(pBuffer){
 
-    };
-    inline const CSAMPLE* getBuffer() const { return m_pBuffer; }
+              };
+    inline const CSAMPLE *getBuffer() const {
+        return m_pBuffer;
+    }
+
   private:
-    const CSAMPLE* m_pBuffer;
+    const CSAMPLE *m_pBuffer;
 };
 
 /**
@@ -139,6 +144,7 @@ class AudioInput : public AudioPath {
     QDomElement toXML(QDomElement *element) const;
     static AudioInput fromXML(const QDomElement &xml);
     static QList<AudioPathType> getSupportedTypes();
+
   protected:
     void setType(AudioPathType type);
 };
@@ -147,49 +153,57 @@ class AudioInput : public AudioPath {
 // ID
 class AudioInputBuffer : public AudioInput {
   public:
-    AudioInputBuffer(const AudioInput& id, CSAMPLE* pBuffer)
-            : AudioInput(id),
-              m_pBuffer(pBuffer) {
-
+    AudioInputBuffer(const AudioInput &id, CSAMPLE *pBuffer)
+            : AudioInput(id), m_pBuffer(pBuffer) {
     }
-    inline CSAMPLE* getBuffer() const { return m_pBuffer; }
+    inline CSAMPLE *getBuffer() const {
+        return m_pBuffer;
+    }
+
   private:
-    CSAMPLE* m_pBuffer;
+    CSAMPLE *m_pBuffer;
 };
 
-
 class AudioSource {
-public:
-    virtual const CSAMPLE* buffer(AudioOutput output) const = 0;
+  public:
+    virtual const CSAMPLE *buffer(AudioOutput output) const = 0;
 
     // This is called by SoundManager whenever an output is connected for this
     // source. When this is called it is guaranteed that no callback is
     // active.
-    virtual void onOutputConnected(AudioOutput output) { Q_UNUSED(output); };
+    virtual void onOutputConnected(AudioOutput output) {
+        Q_UNUSED(output);
+    };
 
     // This is called by SoundManager whenever an output is disconnected for
     // this source. When this is called it is guaranteed that no callback is
     // active.
-    virtual void onOutputDisconnected(AudioOutput output) { Q_UNUSED(output); };
+    virtual void onOutputDisconnected(AudioOutput output) {
+        Q_UNUSED(output);
+    };
 };
 
 class AudioDestination {
-public:
+  public:
     // This is called by SoundManager whenever there are new samples from the
     // configured input to be processed. This is run in the clock reference
     // callback thread
-    virtual void receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
+    virtual void receiveBuffer(AudioInput input, const CSAMPLE *pBuffer,
                                unsigned int iNumFrames) = 0;
 
     // This is called by SoundManager whenever an input is configured for this
     // destination. When this is called it is guaranteed that no callback is
     // active.
-    virtual void onInputConfigured(AudioInput input) { Q_UNUSED(input); };
+    virtual void onInputConfigured(AudioInput input) {
+        Q_UNUSED(input);
+    };
 
     // This is called by SoundManager whenever an input is unconfigured for this
     // destination. When this is called it is guaranteed that no callback is
     // active.
-    virtual void onInputUnconfigured(AudioInput input) { Q_UNUSED(input); };
+    virtual void onInputUnconfigured(AudioInput input) {
+        Q_UNUSED(input);
+    };
 };
 
 typedef AudioPath::AudioPathType AudioPathType;

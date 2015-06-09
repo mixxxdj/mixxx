@@ -12,8 +12,9 @@ namespace Mixxx {
 
 // Factory interface for SoundSources
 class SoundSourceProvider {
-public:
-    virtual ~SoundSourceProvider() {}
+  public:
+    virtual ~SoundSourceProvider() {
+    }
 
     virtual QString getName() const = 0;
 
@@ -24,6 +25,6 @@ public:
 
 typedef QSharedPointer<SoundSourceProvider> SoundSourceProviderPointer;
 
-} // namespace Mixxx
+}  // namespace Mixxx
 
-#endif // MIXXX_SOUNDSOURCEPROVIDER_H
+#endif  // MIXXX_SOUNDSOURCEPROVIDER_H

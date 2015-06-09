@@ -92,4 +92,4 @@ class LibraryControl : public QObject {
     QMap<QString, LoadToGroupController*> m_loadToGroupControllers;
 };
 
-#endif //LIBRARYMIDICONTROL_H
+#endif  // LIBRARYMIDICONTROL_H

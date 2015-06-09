@@ -19,20 +19,18 @@
 #include "controlpotmeter.h"
 #include "controlobjectthread.h"
 
-ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue, double dMaxValue,
-                                 bool allowOutOfBounds,
-                                 bool bIgnoreNops,
-                                 bool bTrack,
-                                 bool bPersist)
-        : ControlObject(key, bIgnoreNops, bTrack, bPersist),
-          m_controls(key) {
+ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue,
+                                 double dMaxValue, bool allowOutOfBounds,
+                                 bool bIgnoreNops, bool bTrack, bool bPersist)
+        : ControlObject(key, bIgnoreNops, bTrack, bPersist), m_controls(key) {
     setRange(dMinValue, dMaxValue, allowOutOfBounds);
     double default_value = dMinValue + 0.5 * (dMaxValue - dMinValue);
     setDefaultValue(default_value);
     if (!bPersist) {
         set(default_value);
     }
-    //qDebug() << "" << this << ", min " << m_dMinValue << ", max " << m_dMaxValue << ", range " << m_dValueRange << ", val " << m_dValue;
+    // qDebug() << "" << this << ", min " << m_dMinValue << ", max " <<
+    // m_dMaxValue << ", range " << m_dValueRange << ", val " << m_dValue;
 }
 
 ControlPotmeter::~ControlPotmeter() {
@@ -51,8 +49,8 @@ void ControlPotmeter::setRange(double dMinValue, double dMaxValue,
     m_bAllowOutOfBounds = allowOutOfBounds;
 
     if (m_pControl) {
-        m_pControl->setBehavior(
-                new ControlPotmeterBehavior(dMinValue, dMaxValue, allowOutOfBounds));
+        m_pControl->setBehavior(new ControlPotmeterBehavior(
+                dMinValue, dMaxValue, allowOutOfBounds));
     }
 }
 
@@ -65,64 +63,64 @@ PotmeterControls::PotmeterControls(const ConfigKey& key)
     // and the push-button controls are parented to the PotmeterControls.
 
     ControlPushButton* controlUp = new ControlPushButton(
-        ConfigKey(key.group, QString(key.item) + "_up"));
+            ConfigKey(key.group, QString(key.item) + "_up"));
     controlUp->setParent(this);
-    connect(controlUp, SIGNAL(valueChanged(double)),
-            this, SLOT(incValue(double)));
+    connect(controlUp, SIGNAL(valueChanged(double)), this,
+            SLOT(incValue(double)));
 
     ControlPushButton* controlDown = new ControlPushButton(
-        ConfigKey(key.group, QString(key.item) + "_down"));
+            ConfigKey(key.group, QString(key.item) + "_down"));
     controlDown->setParent(this);
-    connect(controlDown, SIGNAL(valueChanged(double)),
-            this, SLOT(decValue(double)));
+    connect(controlDown, SIGNAL(valueChanged(double)), this,
+            SLOT(decValue(double)));
 
     ControlPushButton* controlUpSmall = new ControlPushButton(
-        ConfigKey(key.group, QString(key.item) + "_up_small"));
+            ConfigKey(key.group, QString(key.item) + "_up_small"));
     controlUpSmall->setParent(this);
-    connect(controlUpSmall, SIGNAL(valueChanged(double)),
-            this, SLOT(incSmallValue(double)));
+    connect(controlUpSmall, SIGNAL(valueChanged(double)), this,
+            SLOT(incSmallValue(double)));
 
     ControlPushButton* controlDownSmall = new ControlPushButton(
-        ConfigKey(key.group, QString(key.item) + "_down_small"));
+            ConfigKey(key.group, QString(key.item) + "_down_small"));
     controlDownSmall->setParent(this);
-    connect(controlDownSmall, SIGNAL(valueChanged(double)),
-            this, SLOT(decSmallValue(double)));
+    connect(controlDownSmall, SIGNAL(valueChanged(double)), this,
+            SLOT(decSmallValue(double)));
 
     ControlPushButton* controlDefault = new ControlPushButton(
-        ConfigKey(key.group, QString(key.item) + "_set_default"));
+            ConfigKey(key.group, QString(key.item) + "_set_default"));
     controlDefault->setParent(this);
-    connect(controlDefault, SIGNAL(valueChanged(double)),
-            this, SLOT(setToDefault(double)));
+    connect(controlDefault, SIGNAL(valueChanged(double)), this,
+            SLOT(setToDefault(double)));
 
     ControlPushButton* controlZero = new ControlPushButton(
-        ConfigKey(key.group, QString(key.item) + "_set_zero"));
+            ConfigKey(key.group, QString(key.item) + "_set_zero"));
     controlZero->setParent(this);
-    connect(controlZero, SIGNAL(valueChanged(double)),
-            this, SLOT(setToZero(double)));
+    connect(controlZero, SIGNAL(valueChanged(double)), this,
+            SLOT(setToZero(double)));
 
     ControlPushButton* controlOne = new ControlPushButton(
-        ConfigKey(key.group, QString(key.item) + "_set_one"));
+            ConfigKey(key.group, QString(key.item) + "_set_one"));
     controlOne->setParent(this);
-    connect(controlOne, SIGNAL(valueChanged(double)),
-            this, SLOT(setToOne(double)));
+    connect(controlOne, SIGNAL(valueChanged(double)), this,
+            SLOT(setToOne(double)));
 
     ControlPushButton* controlMinusOne = new ControlPushButton(
-        ConfigKey(key.group, QString(key.item) + "_set_minus_one"));
+            ConfigKey(key.group, QString(key.item) + "_set_minus_one"));
     controlMinusOne->setParent(this);
-    connect(controlMinusOne, SIGNAL(valueChanged(double)),
-            this, SLOT(setToMinusOne(double)));
+    connect(controlMinusOne, SIGNAL(valueChanged(double)), this,
+            SLOT(setToMinusOne(double)));
 
     ControlPushButton* controlToggle = new ControlPushButton(
-        ConfigKey(key.group, QString(key.item) + "_toggle"));
+            ConfigKey(key.group, QString(key.item) + "_toggle"));
     controlToggle->setParent(this);
-    connect(controlToggle, SIGNAL(valueChanged(double)),
-            this, SLOT(toggleValue(double)));
+    connect(controlToggle, SIGNAL(valueChanged(double)), this,
+            SLOT(toggleValue(double)));
 
     ControlPushButton* controlMinusToggle = new ControlPushButton(
-        ConfigKey(key.group, QString(key.item) + "_minus_toggle"));
+            ConfigKey(key.group, QString(key.item) + "_minus_toggle"));
     controlMinusToggle->setParent(this);
-    connect(controlMinusToggle, SIGNAL(valueChanged(double)),
-            this, SLOT(toggleMinusValue(double)));
+    connect(controlMinusToggle, SIGNAL(valueChanged(double)), this,
+            SLOT(toggleMinusValue(double)));
 }
 
 PotmeterControls::~PotmeterControls() {

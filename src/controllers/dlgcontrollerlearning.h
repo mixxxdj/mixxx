@@ -35,7 +35,7 @@ class DlgControllerLearning : public QDialog,
     Q_OBJECT
 
   public:
-    DlgControllerLearning(QWidget *parent, Controller *controller);
+    DlgControllerLearning(QWidget* parent, Controller* controller);
     virtual ~DlgControllerLearning();
 
     void visit(MidiController* pController);
@@ -63,8 +63,7 @@ class DlgControllerLearning : public QDialog,
     void controlClicked(ControlObject* pControl);
     void comboboxIndexChanged(int index);
 
-    void slotMessageReceived(unsigned char status,
-                             unsigned char control,
+    void slotMessageReceived(unsigned char status, unsigned char control,
                              unsigned char value);
 
     void slotCancelLearn();
@@ -96,7 +95,7 @@ class DlgControllerLearning : public QDialog,
     bool m_messagesLearned;
     QTimer m_firstMessageTimer;
     QTimer m_lastMessageTimer;
-    QList<QPair<MidiKey, unsigned char> > m_messages;
+    QList<QPair<MidiKey, unsigned char>> m_messages;
     MidiInputMappings m_mappings;
 };
 

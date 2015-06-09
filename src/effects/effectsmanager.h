@@ -63,14 +63,16 @@ class EffectsManager : public QObject {
 
     const QList<QString> getAvailableEffects() const;
     // Each entry of the set is a pair containing the effect id and its name
-    const QList<QPair<QString, QString> > getEffectNamesFiltered(EffectManifestFilterFnc filter) const;
+    const QList<QPair<QString, QString>> getEffectNamesFiltered(
+            EffectManifestFilterFnc filter) const;
     bool isEQ(const QString& effectId) const;
     QPair<EffectManifest, EffectsBackend*> getEffectManifestAndBackend(
             const QString& effectId) const;
     EffectManifest getEffectManifest(const QString& effectId) const;
     EffectPointer instantiateEffect(const QString& effectId);
 
-    // Temporary, but for setting up all the default EffectChains and EffectRacks
+    // Temporary, but for setting up all the default EffectChains and
+    // EffectRacks
     void setupDefaults();
 
     // Write an EffectsRequest to the EngineEffectsManager. EffectsManager takes
@@ -104,6 +106,5 @@ class EffectsManager : public QObject {
 
     DISALLOW_COPY_AND_ASSIGN(EffectsManager);
 };
-
 
 #endif /* EFFECTSMANAGER_H */

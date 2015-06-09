@@ -8,18 +8,18 @@
 #include "controllers/midi/hss1394controller.h"
 
 DeviceChannelListener::DeviceChannelListener(QObject* pParent, QString name)
-        : QObject(pParent),
-          hss1394::ChannelListener(),
-          m_sName(name) {
+        : QObject(pParent), hss1394::ChannelListener(), m_sName(name) {
 }
 
 DeviceChannelListener::~DeviceChannelListener() {
 }
 
-void DeviceChannelListener::Process(const hss1394::uint8 *pBuffer, hss1394::uint uBufferSize) {
+void DeviceChannelListener::Process(const hss1394::uint8* pBuffer,
+                                    hss1394::uint uBufferSize) {
     unsigned int i = 0;
 
-    // If multiple three-byte messages arrive right next to each other, handle them all
+    // If multiple three-byte messages arrive right next to each other, handle
+    // them all
     while (i < uBufferSize) {
         unsigned char status = pBuffer[i];
         unsigned char opcode = status & 0xF0;
@@ -33,17 +33,18 @@ void DeviceChannelListener::Process(const hss1394::uint8 *pBuffer, hss1394::uint
             case MIDI_CC:
             case MIDI_PITCH_BEND:
                 if (i + 2 < uBufferSize) {
-                    note = pBuffer[i+1];
-                    velocity = pBuffer[i+2];
+                    note = pBuffer[i + 1];
+                    velocity = pBuffer[i + 2];
                     emit(incomingData(status, note, velocity));
                 } else {
-                    qWarning() << "Buffer underflow in DeviceChannelListener::Process()";
+                    qWarning() << "Buffer underflow in "
+                                  "DeviceChannelListener::Process()";
                 }
                 i += 3;
                 break;
             default:
                 // Handle platter messages and any others that are not 3 bytes
-                QByteArray outArray((char*)pBuffer,uBufferSize);
+                QByteArray outArray((char*)pBuffer, uBufferSize);
                 emit(incomingData(outArray));
                 i = uBufferSize;
                 break;
@@ -66,7 +67,8 @@ Hss1394Controller::Hss1394Controller(const hss1394::TNodeInfo deviceInfo,
           m_iDeviceIndex(deviceIndex) {
     // Note: We prepend the input stream's index to the device's name to prevent
     // duplicate devices from causing mayhem.
-    //setDeviceName(QString("H%1. %2").arg(QString::number(m_iDeviceIndex), QString(deviceInfo.sName.c_str())));
+    // setDeviceName(QString("H%1. %2").arg(QString::number(m_iDeviceIndex),
+    // QString(deviceInfo.sName.c_str())));
     setDeviceName(QString("%1").arg(QString(deviceInfo.sName.c_str())));
 
     // All HSS1394 devices are full-duplex
@@ -89,7 +91,8 @@ int Hss1394Controller::open() {
     }
 
     if (debugging()) {
-        qDebug() << "Hss1394Controller: Opening" << getName() << "index" << m_iDeviceIndex;
+        qDebug() << "Hss1394Controller: Opening" << getName() << "index"
+                 << m_iDeviceIndex;
     }
 
     using namespace hss1394;
@@ -102,30 +105,38 @@ int Hss1394Controller::open() {
     }
 
     m_pChannelListener = new DeviceChannelListener(this, getName());
-    connect(m_pChannelListener, SIGNAL(incomingData(QByteArray)),
-            this, SLOT(receive(QByteArray)));
-    connect(m_pChannelListener, SIGNAL(incomingData(unsigned char, unsigned char, unsigned char)),
+    connect(m_pChannelListener, SIGNAL(incomingData(QByteArray)), this,
+            SLOT(receive(QByteArray)));
+    connect(m_pChannelListener,
+            SIGNAL(incomingData(unsigned char, unsigned char, unsigned char)),
             this, SLOT(receive(unsigned char, unsigned char, unsigned char)));
 
     if (!m_pChannel->InstallChannelListener(m_pChannelListener)) {
-        qDebug() << "HSS1394 channel listener could not be installed for device" << getName();
+        qDebug() << "HSS1394 channel listener could not be installed for device"
+                 << getName();
         delete m_pChannelListener;
         m_pChannelListener = NULL;
         m_pChannel = NULL;
     }
 
     // TODO(XXX): Should be done in script, not in Mixxx
-    if (getName().contains("SCS.1d",Qt::CaseInsensitive)) {
-        // If we are an SCS.1d, set the record encoder event timer to fire at 1ms intervals
+    if (getName().contains("SCS.1d", Qt::CaseInsensitive)) {
+        // If we are an SCS.1d, set the record encoder event timer to fire at
+        // 1ms intervals
         //  to match the 1ms scratch timer in the controller engine
         //
-        // By default on f/w version 1.25, a new record encoder event (one new position)
-        //  is sent at 500 Hz max, 2ms. When this event occurs, a second timer is reset.
-        //  By default this second timer expires periodically at 60 Hz max, around 16.6ms.
+        // By default on f/w version 1.25, a new record encoder event (one new
+        // position)
+        //  is sent at 500 Hz max, 2ms. When this event occurs, a second timer
+        //  is reset.
+        //  By default this second timer expires periodically at 60 Hz max,
+        //  around 16.6ms.
 
-        int iPeriod = 60000/1000;   // 1000Hz = 1ms. (Internal clock is 60kHz.)
-        int iTimer = 3; // 3 for new event timer, 4 for second �same position repeated� timer
-        if (m_pChannel->SendUserControl(iTimer, (const hss1394::uint8*)&iPeriod, 3) == 0)
+        int iPeriod = 60000 / 1000;  // 1000Hz = 1ms. (Internal clock is 60kHz.)
+        int iTimer = 3;  // 3 for new event timer, 4 for second �same position
+                         // repeated� timer
+        if (m_pChannel->SendUserControl(iTimer, (const hss1394::uint8*)&iPeriod,
+                                        3) == 0)
             qWarning() << "Unable to set SCS.1d platter timer period.";
     }
 
@@ -140,10 +151,12 @@ int Hss1394Controller::close() {
         return -1;
     }
 
-    disconnect(m_pChannelListener, SIGNAL(incomingData(QByteArray)),
-               this, SLOT(receive(QByteArray)));
-    disconnect(m_pChannelListener, SIGNAL(incomingData(unsigned char, unsigned char, unsigned char)),
-               this, SLOT(receive(unsigned char, unsigned char, unsigned char)));
+    disconnect(m_pChannelListener, SIGNAL(incomingData(QByteArray)), this,
+               SLOT(receive(QByteArray)));
+    disconnect(
+            m_pChannelListener,
+            SIGNAL(incomingData(unsigned char, unsigned char, unsigned char)),
+            this, SLOT(receive(unsigned char, unsigned char, unsigned char)));
 
     stopEngine();
     MidiController::close();
@@ -169,14 +182,15 @@ void Hss1394Controller::sendWord(unsigned int word) {
     data[1] = (word >> 8) & 0xFF;
     data[2] = (word >> 16) & 0xFF;
 
-    QString message = QString("%1 %2 %3").arg(
-        QString("%1").arg(data[0], 2, 16, QChar('0')),
-        QString("%1").arg(data[1], 2, 16, QChar('0')),
-        QString("%1").arg(data[2], 2, 16, QChar('0')));
+    QString message =
+            QString("%1 %2 %3")
+                    .arg(QString("%1").arg(data[0], 2, 16, QChar('0')),
+                         QString("%1").arg(data[1], 2, 16, QChar('0')),
+                         QString("%1").arg(data[2], 2, 16, QChar('0')));
 
     int bytesSent = m_pChannel->SendChannelBytes(data, 3);
 
-    //if (bytesSent != 3) {
+    // if (bytesSent != 3) {
     //    qDebug()<<"ERROR: Sent" << bytesSent << "of 3 bytes:" << message;
     //    //m_pChannel->Flush();
     //}
@@ -184,10 +198,11 @@ void Hss1394Controller::sendWord(unsigned int word) {
 
 void Hss1394Controller::send(QByteArray data) {
     int bytesSent = m_pChannel->SendChannelBytes(
-        (unsigned char*)data.constData(), data.size());
+            (unsigned char*)data.constData(), data.size());
 
-    //if (bytesSent != length) {
-    //    qDebug()<<"ERROR: Sent" << bytesSent << "of" << length << "bytes (SysEx)";
+    // if (bytesSent != length) {
+    //    qDebug()<<"ERROR: Sent" << bytesSent << "of" << length << "bytes
+    //    (SysEx)";
     //    //m_pChannel->Flush();
     //}
 }

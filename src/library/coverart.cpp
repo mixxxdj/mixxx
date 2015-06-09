@@ -31,15 +31,15 @@ QString typeToString(CoverInfo::Type type) {
 
 QDebug operator<<(QDebug dbg, const CoverInfo& info) {
     return dbg.maybeSpace() << QString("CoverInfo(%1,%2,%3,%4,%5)")
-            .arg(typeToString(info.type))
-            .arg(sourceToString(info.source))
-            .arg(info.coverLocation)
-            .arg(QString::number(info.hash))
-            .arg(info.trackLocation);
+                                       .arg(typeToString(info.type))
+                                       .arg(sourceToString(info.source))
+                                       .arg(info.coverLocation)
+                                       .arg(QString::number(info.hash))
+                                       .arg(info.trackLocation);
 }
 
 QDebug operator<<(QDebug dbg, const CoverArt& art) {
     return dbg.maybeSpace() << QString("CoverArt(%1,%2)")
-            .arg(toDebugString(art.image.size()))
-            .arg(toDebugString(art.info));
+                                       .arg(toDebugString(art.image.size()))
+                                       .arg(toDebugString(art.info));
 }

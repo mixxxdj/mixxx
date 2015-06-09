@@ -5,11 +5,7 @@
 
 class Experiment {
   public:
-    enum Mode {
-        OFF = 0,
-        BASE = 1,
-        EXPERIMENT = 2
-    };
+    enum Mode { OFF = 0, BASE = 1, EXPERIMENT = 2 };
 
     static inline bool isEnabled() {
         return s_mode != OFF;

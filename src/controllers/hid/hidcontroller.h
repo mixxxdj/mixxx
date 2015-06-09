@@ -67,11 +67,12 @@ class HidController : public Controller {
     }
 
     virtual bool matchPreset(const PresetInfo& preset);
-    virtual bool matchProductInfo(QHash <QString,QString >);
+    virtual bool matchProductInfo(QHash<QString, QString>);
     virtual void guessDeviceCategory();
 
   protected:
-    Q_INVOKABLE void send(QList<int> data, unsigned int length, unsigned int reportID = 0);
+    Q_INVOKABLE void send(QList<int> data, unsigned int length,
+                          unsigned int reportID = 0);
 
   private slots:
     int open();
@@ -92,7 +93,6 @@ class HidController : public Controller {
     virtual ControllerPreset* preset() {
         return &m_preset;
     }
-
 
     // Local copies of things we need from hid_device_info
     int hid_interface_number;

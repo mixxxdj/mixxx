@@ -15,7 +15,8 @@
 #include "widget/wsingletoncontainer.h"
 #include "widget/wpixmapstore.h"
 
-#define SKIN_WARNING(node, context) (context).logWarning(__FILE__, __LINE__, (node))
+#define SKIN_WARNING(node, context) \
+    (context).logWarning(__FILE__, __LINE__, (node))
 
 // A class for managing the current context/environment when processing a
 // skin. Used hierarchically by LegacySkinParser to create new contexts and
@@ -52,14 +53,19 @@ class SkinContext {
     // Methods for evaluating nodes given the context.
     bool hasNode(const QDomNode& node, const QString& nodeName) const;
     QDomNode selectNode(const QDomNode& node, const QString& nodeName) const;
-    QDomElement selectElement(const QDomNode& node, const QString& nodeName) const;
+    QDomElement selectElement(const QDomNode& node,
+                              const QString& nodeName) const;
     QString selectString(const QDomNode& node, const QString& nodeName) const;
     float selectFloat(const QDomNode& node, const QString& nodeName) const;
     double selectDouble(const QDomNode& node, const QString& nodeName) const;
-    int selectInt(const QDomNode& node, const QString& nodeName, bool* pOk=NULL) const;
-    bool selectBool(const QDomNode& node, const QString& nodeName, bool defaultValue) const;
-    bool hasNodeSelectString(const QDomNode& node, const QString& nodeName, QString *value) const;
-    bool hasNodeSelectBool(const QDomNode& node, const QString& nodeName, bool *value) const;
+    int selectInt(const QDomNode& node, const QString& nodeName,
+                  bool* pOk = NULL) const;
+    bool selectBool(const QDomNode& node, const QString& nodeName,
+                    bool defaultValue) const;
+    bool hasNodeSelectString(const QDomNode& node, const QString& nodeName,
+                             QString* value) const;
+    bool hasNodeSelectBool(const QDomNode& node, const QString& nodeName,
+                           bool* value) const;
     bool selectAttributeBool(const QDomElement& element,
                              const QString& attributeName,
                              bool defaultValue) const;
@@ -68,17 +74,19 @@ class SkinContext {
                                   QString defaultValue) const;
     QString nodeToString(const QDomNode& node) const;
     PixmapSource getPixmapSource(const QDomNode& pixmapNode) const;
-    Paintable::DrawMode selectScaleMode(const QDomElement& element,
-                                        Paintable::DrawMode defaultDrawMode) const;
+    Paintable::DrawMode selectScaleMode(
+            const QDomElement& element,
+            Paintable::DrawMode defaultDrawMode) const;
 
     QScriptValue evaluateScript(const QString& expression,
-                                const QString& filename=QString(),
-                                int lineNumber=1);
+                                const QString& filename = QString(),
+                                int lineNumber = 1);
     QScriptValue importScriptExtension(const QString& extensionName);
     const QSharedPointer<QScriptEngine> getScriptEngine() const;
     void enableDebugger(bool state) const;
 
-    QDebug logWarning(const char* file, const int line, const QDomNode& node) const;
+    QDebug logWarning(const char* file, const int line,
+                      const QDomNode& node) const;
 
     void defineSingleton(QString objectName, QWidget* widget) {
         return m_pSingletons->insertSingleton(objectName, widget);

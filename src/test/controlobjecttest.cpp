@@ -7,7 +7,6 @@ namespace {
 
 class ControlObjectTest : public testing::Test {
   protected:
-
     ControlObjectTest() {
         qDebug() << "ControlObjectTest()";
     }
@@ -22,12 +21,12 @@ class ControlObjectTest : public testing::Test {
 
     virtual void TearDown() {
         qDebug() << "TearDown";
-        if(co1) {
+        if (co1) {
             qDebug() << "Deleting " << co1;
             delete co1;
             co1 = NULL;
         }
-        if(co2) {
+        if (co2) {
             qDebug() << "Deleting " << co2;
             delete co2;
             co2 = NULL;
@@ -36,7 +35,6 @@ class ControlObjectTest : public testing::Test {
 
     ConfigKey ck1, ck2;
     ControlObject *co1, *co2;
-
 };
 
 TEST_F(ControlObjectTest, setGet) {
@@ -67,5 +65,4 @@ TEST_F(ControlObjectTest, aliasRetrieval) {
     // Check if getControl on alias returns us the original ControlObject
     EXPECT_EQ(ControlObject::getControl(ckAlias), co);
 }
-
 }

@@ -20,8 +20,7 @@ class BaseTrackPlayer;
 class DeckAttributes : public QObject {
     Q_OBJECT
   public:
-    DeckAttributes(int index,
-                   BaseTrackPlayer* pPlayer,
+    DeckAttributes(int index, BaseTrackPlayer* pPlayer,
                    EngineChannel::ChannelOrientation orientation);
     virtual ~DeckAttributes();
 
@@ -112,11 +111,9 @@ class AutoDJProcessor : public QObject {
         ADJ_NOT_TWO_DECKS
     };
 
-    AutoDJProcessor(QObject* pParent,
-                    ConfigObject<ConfigValue>* pConfig,
+    AutoDJProcessor(QObject* pParent, ConfigObject<ConfigValue>* pConfig,
                     PlayerManagerInterface* pPlayerManager,
-                    int iAutoDJPlaylistId,
-                    TrackCollection* pCollection);
+                    int iAutoDJPlaylistId, TrackCollection* pCollection);
     virtual ~AutoDJProcessor();
 
     AutoDJState getState() const {
@@ -141,7 +138,7 @@ class AutoDJProcessor : public QObject {
 
     // The following virtual signal wrappers are used for testing
     virtual void emitLoadTrackToPlayer(TrackPointer pTrack, QString group,
-                                   bool play) {
+                                       bool play) {
         emit(loadTrackToPlayer(pTrack, group, play));
     }
     virtual void emitAutoDJStateChanged(AutoDJProcessor::AutoDJState state) {
@@ -149,8 +146,7 @@ class AutoDJProcessor : public QObject {
     }
 
   signals:
-    void loadTrackToPlayer(TrackPointer pTrack, QString group,
-                                   bool play);
+    void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play);
     void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
     void transitionTimeChanged(int time);
     void randomTrackRequested(int tracksToAdd);
@@ -195,8 +191,8 @@ class AutoDJProcessor : public QObject {
     PlaylistTableModel* m_pAutoDJTableModel;
 
     AutoDJState m_eState;
-    int m_iTransitionTime; // the desired value set by the user
-    int m_nextTransitionTime; // the tweaked value actually used
+    int m_iTransitionTime;  // the desired value set by the user
+    int m_nextTransitionTime;  // the tweaked value actually used
 
     QList<DeckAttributes*> m_decks;
 

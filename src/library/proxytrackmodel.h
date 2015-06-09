@@ -22,14 +22,16 @@ class ProxyTrackModel : public QSortFilterProxyModel, public TrackModel {
     // composes. If bHandleSearches is true, then search signals will not be
     // delivered to pTrackModel -- instead the ProxyTrackModel will do its own
     // filtering.
-    ProxyTrackModel(QAbstractItemModel* pTrackModel, bool bHandleSearches=true);
+    ProxyTrackModel(QAbstractItemModel* pTrackModel,
+                    bool bHandleSearches = true);
     virtual ~ProxyTrackModel();
 
     virtual TrackPointer getTrack(const QModelIndex& index) const;
     virtual QString getTrackLocation(const QModelIndex& index) const;
     virtual int getTrackId(const QModelIndex& index) const;
     virtual const QLinkedList<int> getTrackRows(int trackId) const;
-    virtual void search(const QString& searchText,const QString& extraFilter=QString());
+    virtual void search(const QString& searchText,
+                        const QString& extraFilter = QString());
     virtual const QString currentSearch() const;
     virtual bool isColumnInternal(int column);
     virtual bool isColumnHiddenByDefault(int column);
@@ -37,7 +39,8 @@ class ProxyTrackModel : public QSortFilterProxyModel, public TrackModel {
     virtual void moveTrack(const QModelIndex& sourceIndex,
                            const QModelIndex& destIndex);
     void deleteTracks(const QModelIndexList& indices);
-    virtual QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent);
+    virtual QAbstractItemDelegate* delegateForColumn(const int i,
+                                                     QObject* pParent);
     virtual TrackModel::CapabilitiesFlags getCapabilities() const;
 
     bool filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) const;

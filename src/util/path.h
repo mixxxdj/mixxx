@@ -7,9 +7,7 @@
 const int MAX_PATH = 260;
 #endif
 // Use POSIX name for MAX_PATH
-enum {
-    PATH_MAX = MAX_PATH
-};
+enum { PATH_MAX = MAX_PATH };
 #endif
 
 #endif /* PATH_H */

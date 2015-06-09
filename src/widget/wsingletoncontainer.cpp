@@ -6,9 +6,9 @@
 #include "skin/skincontext.h"
 #include "widget/wlibrary.h"
 
-
 WSingletonContainer::WSingletonContainer(QWidget* pParent)
-        : WWidgetGroup(pParent), m_pWidget(NULL), m_pLayout(NULL) { }
+        : WWidgetGroup(pParent), m_pWidget(NULL), m_pLayout(NULL) {
+}
 
 void WSingletonContainer::setup(QDomNode node, const SkinContext& context) {
     setContentsMargins(0, 0, 0, 0);
@@ -25,8 +25,7 @@ void WSingletonContainer::setup(QDomNode node, const SkinContext& context) {
     }
     QString objectName = context.selectString(node, "ObjectName");
     if (objectName.isEmpty()) {
-        SKIN_WARNING(node, context)
-                << "Singleton tag's ObjectName is empty";
+        SKIN_WARNING(node, context) << "Singleton tag's ObjectName is empty";
         return;
     }
     m_pWidget = context.getSingletonWidget(objectName);
@@ -59,7 +58,7 @@ void WSingletonContainer::showEvent(QShowEvent* event) {
 }
 
 void SingletonMap::insertSingleton(QString objectName, QWidget* widget) {
-    if (m_singletons.contains(objectName)){
+    if (m_singletons.contains(objectName)) {
         qWarning() << "ERROR: Tried to insert a singleton with a name that has"
                    << "already been inserted:" << objectName;
         return;

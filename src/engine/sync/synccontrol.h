@@ -24,8 +24,12 @@ class SyncControl : public EngineControl, public Syncable {
                 EngineChannel* pChannel, SyncableListener* pEngineSync);
     virtual ~SyncControl();
 
-    const QString& getGroup() const { return m_sGroup; }
-    EngineChannel* getChannel() const { return m_pChannel; }
+    const QString& getGroup() const {
+        return m_sGroup;
+    }
+    EngineChannel* getChannel() const {
+        return m_pChannel;
+    }
     double getBpm() const;
 
     SyncMode getSyncMode() const;
@@ -134,6 +138,5 @@ class SyncControl : public EngineControl, public Syncable {
     QScopedPointer<ControlObjectSlave> m_pEjectButton;
     QScopedPointer<ControlObjectSlave> m_pSyncPhaseButton;
 };
-
 
 #endif /* SYNCCONTROL_H */

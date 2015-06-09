@@ -4,13 +4,11 @@
 
 #include "widget/wsizeawarestack.h"
 
-class SizeAwareLayout : public QStackedLayout
-{
+class SizeAwareLayout : public QStackedLayout {
   public:
-    QSize minimumSize() const
-    {
-        QSize s(0, 0) ;
-        QWidget *w = widget(0);
+    QSize minimumSize() const {
+        QSize s(0, 0);
+        QWidget* w = widget(0);
         if (w) {
             // Minimum Widget is at index 0;
             s = w->minimumSize();
@@ -26,24 +24,28 @@ class SizeAwareLayout : public QStackedLayout
 
         int i = currentIndex();
 
-        QWidget *wc = widget(i);
+        QWidget* wc = widget(i);
         bool notFit = false;
         if (i > 0) {
             // Check minimum, but not for the smallest, it is the fallback
-            notFit =  wc->minimumHeight() > s.height() || wc->minimumWidth() > s.width();
+            notFit = wc->minimumHeight() > s.height() ||
+                     wc->minimumWidth() > s.width();
         }
         if (i < n - 1 && !notFit) {
             // Check maximum, but not for the biggest, it is the fallback
-            notFit = wc->maximumHeight() < s.height() || wc->maximumWidth() < s.width();
+            notFit = wc->maximumHeight() < s.height() ||
+                     wc->maximumWidth() < s.width();
         }
 
         if (notFit) {
-            QWidget *w;
+            QWidget* w;
             for (i = 0; i < n; ++i) {
                 w = widget(i);
                 if (w) {
-                    if (w->maximumHeight() >= s.height() && w->maximumWidth() >= s.width() &&
-                            w->minimumHeight() <= s.height() && w->minimumWidth() <= s.width()) {
+                    if (w->maximumHeight() >= s.height() &&
+                        w->maximumWidth() >= s.width() &&
+                        w->minimumHeight() <= s.height() &&
+                        w->minimumWidth() <= s.width()) {
                         // perfectly fit
                         setCurrentIndex(i);
                         return i;
@@ -51,10 +53,11 @@ class SizeAwareLayout : public QStackedLayout
                 }
             }
             // no perfect fit, check minimum only to avoid chopping
-            for (i = n-1; i >= 0; --i) {
+            for (i = n - 1; i >= 0; --i) {
                 w = widget(i);
                 if (w) {
-                    if (w->minimumHeight() <= s.height() && w->minimumWidth() <= s.width()) {
+                    if (w->minimumHeight() <= s.height() &&
+                        w->minimumWidth() <= s.width()) {
                         // fit with gap
                         setCurrentIndex(i);
                         return i;
@@ -71,8 +74,7 @@ class SizeAwareLayout : public QStackedLayout
 };
 
 WSizeAwareStack::WSizeAwareStack(QWidget* parent)
-        : QWidget(parent),
-          WBaseWidget(this) {
+        : QWidget(parent), WBaseWidget(this) {
     m_layout = new SizeAwareLayout();
     setLayout(m_layout);
 }
@@ -80,7 +82,7 @@ WSizeAwareStack::WSizeAwareStack(QWidget* parent)
 WSizeAwareStack::~WSizeAwareStack() {
 }
 
-int WSizeAwareStack::addWidget(QWidget *widget) {
+int WSizeAwareStack::addWidget(QWidget* widget) {
     // smallest widgets should be added first
     return m_layout->addWidget(widget);
 }

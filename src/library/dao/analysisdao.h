@@ -12,17 +12,10 @@ class AnalysisDao : public DAO {
   public:
     static const QString s_analysisTableName;
 
-    enum AnalysisType {
-        TYPE_UNKNOWN = 0,
-        TYPE_WAVEFORM,
-        TYPE_WAVESUMMARY
-    };
+    enum AnalysisType { TYPE_UNKNOWN = 0, TYPE_WAVEFORM, TYPE_WAVESUMMARY };
 
     struct AnalysisInfo {
-        AnalysisInfo()
-                : analysisId(-1),
-                  trackId(-1),
-                  type(TYPE_UNKNOWN) {
+        AnalysisInfo() : analysisId(-1), trackId(-1), type(TYPE_UNKNOWN) {
         }
         int analysisId;
         int trackId;
@@ -42,7 +35,8 @@ class AnalysisDao : public DAO {
     bool saveWaveform(const TrackInfoObject& tio);
     bool removeWaveform(const TrackInfoObject& tio);
 
-    QList<AnalysisInfo> getAnalysesForTrackByType(const int trackId, AnalysisType type);
+    QList<AnalysisInfo> getAnalysesForTrackByType(const int trackId,
+                                                  AnalysisType type);
     QList<AnalysisInfo> getAnalysesForTrack(const int trackId);
     bool saveAnalysis(AnalysisInfo* analysis);
     bool deleteAnalysis(const int analysisId);
@@ -52,19 +46,19 @@ class AnalysisDao : public DAO {
     void saveTrackAnalyses(TrackInfoObject* pTrack);
 
   private:
-    bool saveWaveform(const TrackInfoObject& tio,
-                      const Waveform& waveform,
+    bool saveWaveform(const TrackInfoObject& tio, const Waveform& waveform,
                       AnalysisType type);
-    bool loadWaveform(const TrackInfoObject& tio,
-                      Waveform* waveform, AnalysisType type);
+    bool loadWaveform(const TrackInfoObject& tio, Waveform* waveform,
+                      AnalysisType type);
     QDir getAnalysisStoragePath() const;
     QByteArray loadDataFromFile(const QString& fileName) const;
     bool saveDataToFile(const QString& fileName, const QByteArray& data) const;
     bool deleteFile(const QString& filename) const;
-    QList<AnalysisInfo> loadAnalysesFromQuery(const int trackId, QSqlQuery* query);
+    QList<AnalysisInfo> loadAnalysesFromQuery(const int trackId,
+                                              QSqlQuery* query);
 
     ConfigObject<ConfigValue>* m_pConfig;
     QSqlDatabase m_db;
 };
 
-#endif // ANALYSISDAO_H
+#endif  // ANALYSISDAO_H

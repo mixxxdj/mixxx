@@ -16,17 +16,16 @@
 #include "controlobjectthread.h"
 #include "util/math.h"
 
-WNumberRate::WNumberRate(const char * group, QWidget * parent)
-        : WNumber(parent) {
+WNumberRate::WNumberRate(const char* group, QWidget* parent) : WNumber(parent) {
     m_pRateRangeControl = new ControlObjectThread(group, "rateRange");
-    connect(m_pRateRangeControl, SIGNAL(valueChanged(double)),
-            this, SLOT(setValue(double)));
+    connect(m_pRateRangeControl, SIGNAL(valueChanged(double)), this,
+            SLOT(setValue(double)));
     m_pRateDirControl = new ControlObjectThread(group, "rate_dir");
-    connect(m_pRateDirControl, SIGNAL(valueChanged(double)),
-            this, SLOT(setValue(double)));
+    connect(m_pRateDirControl, SIGNAL(valueChanged(double)), this,
+            SLOT(setValue(double)));
     m_pRateControl = new ControlObjectThread(group, "rate");
-    connect(m_pRateControl, SIGNAL(valueChanged(double)),
-            this, SLOT(setValue(double)));
+    connect(m_pRateControl, SIGNAL(valueChanged(double)), this,
+            SLOT(setValue(double)));
     // Initialize the widget.
     setValue(0);
 }
@@ -38,15 +37,16 @@ WNumberRate::~WNumberRate() {
 }
 
 void WNumberRate::setValue(double) {
-    double vsign = m_pRateControl->get() *
-            m_pRateRangeControl->get() *
-            m_pRateDirControl->get();
+    double vsign = m_pRateControl->get() * m_pRateRangeControl->get() *
+                   m_pRateDirControl->get();
 
     char sign = '+';
     if (vsign < -0.00000001) {
         sign = '-';
     }
 
-    setText(QString(m_skinText).append(sign)
-            .append("%1").arg(fabs(vsign) * 100.0, 0, 'f', m_iNoDigits));
+    setText(QString(m_skinText)
+                    .append(sign)
+                    .append("%1")
+                    .arg(fabs(vsign) * 100.0, 0, 'f', m_iNoDigits));
 }

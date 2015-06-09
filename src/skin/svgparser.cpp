@@ -4,8 +4,7 @@
 
 #include "skin/svgparser.h"
 
-SvgParser::SvgParser(const SkinContext& parent)
-        : m_context(parent) {
+SvgParser::SvgParser(const SkinContext& parent) : m_context(parent) {
 }
 
 SvgParser::~SvgParser() {
@@ -15,7 +14,7 @@ QDomNode SvgParser::parseSvgFile(const QString& svgFileName) const {
     m_currentFile = svgFileName;
     QFile file(svgFileName);
     QDomNode svgNode;
-    if (file.open(QIODevice::ReadOnly|QIODevice::Text)) {
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QDomDocument document;
         if (!document.setContent(&file)) {
             qDebug() << "ERROR: Failed to set content on QDomDocument";
@@ -55,8 +54,9 @@ void SvgParser::parseElement(QDomNode* node) const {
     if (element.tagName() == "text") {
         if (element.hasAttribute("value")) {
             QString expression = element.attribute("value");
-            QString result = evaluateTemplateExpression(
-                expression, node->lineNumber()).toString();
+            QString result =
+                    evaluateTemplateExpression(expression, node->lineNumber())
+                            .toString();
 
             if (!result.isNull()) {
                 QDomNodeList children = node->childNodes();
@@ -64,7 +64,8 @@ void SvgParser::parseElement(QDomNode* node) const {
                     node->removeChild(children.at(i));
                 }
 
-                QDomNode newChild = node->ownerDocument().createTextNode(result);
+                QDomNode newChild =
+                        node->ownerDocument().createTextNode(result);
                 node->appendChild(newChild);
             }
         }
@@ -73,8 +74,8 @@ void SvgParser::parseElement(QDomNode* node) const {
         QString value;
         if (element.hasAttribute("expression")) {
             QString expression = element.attribute("expression");
-            value = evaluateTemplateExpression(
-                expression, node->lineNumber()).toString();
+            value = evaluateTemplateExpression(expression, node->lineNumber())
+                            .toString();
         } else if (element.hasAttribute("name")) {
             /* TODO (jclaveau) : Getting the variable from the context or the
              * script engine have the same result here (in the skin context two)
@@ -102,20 +103,19 @@ void SvgParser::parseElement(QDomNode* node) const {
         QString scriptPath = element.attribute("src");
         if (!scriptPath.isNull()) {
             QFile scriptFile(m_context.getSkinPath(scriptPath));
-            if (!scriptFile.open(QIODevice::ReadOnly|QIODevice::Text)) {
+            if (!scriptFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
                 qDebug() << "ERROR: Failed to open script file";
             }
             QTextStream in(&scriptFile);
-            QScriptValue result = m_context.evaluateScript(in.readAll(),
-                                                           scriptPath);
+            QScriptValue result =
+                    m_context.evaluateScript(in.readAll(), scriptPath);
         }
         // Evaluates the content of the script element
         // QString expression = m_context.nodeToString(*node);
         QScriptValue result = m_context.evaluateScript(
-            element.text(), m_currentFile, node->lineNumber());
+                element.text(), m_currentFile, node->lineNumber());
     }
 }
-
 
 void SvgParser::parseAttributes(const QDomNode& node) const {
     QDomNamedNodeMap attributes = node.attributes();
@@ -124,7 +124,8 @@ void SvgParser::parseAttributes(const QDomNode& node) const {
     // Retrieving hooks pattern from script extension
     QScriptValue global = m_context.getScriptEngine()->globalObject();
     QScriptValue hooksPattern = global.property("svg")
-        .property("getHooksPattern").call(global.property("svg"));
+                                        .property("getHooksPattern")
+                                        .call(global.property("svg"));
     QRegExp hookRx;
     if (!hooksPattern.isNull())
         hookRx.setPattern(hooksPattern.toString());
@@ -132,8 +133,7 @@ void SvgParser::parseAttributes(const QDomNode& node) const {
     // expr-attribute_name="var_name";
     QRegExp nameRx("^expr-([^=\\s]+)$");
     // TODO (jclaveau) : move this pattern definition to the script extension?
-    for (uint i=0; i < attributes.length(); i++) {
-
+    for (uint i = 0; i < attributes.length(); i++) {
         QDomAttr attribute = attributes.item(i).toAttr();
         QString attributeValue = attribute.value();
         QString attributeName = attribute.name();
@@ -141,8 +141,9 @@ void SvgParser::parseAttributes(const QDomNode& node) const {
         // searching variable attributes :
         // expr-attribute_name="variable_name|expression"
         if (nameRx.indexIn(attributeName) != -1) {
-            QString varValue = evaluateTemplateExpression(
-                attributeValue, node.lineNumber()).toString();
+            QString varValue = evaluateTemplateExpression(attributeValue,
+                                                          node.lineNumber())
+                                       .toString();
             if (varValue.length()) {
                 element.setAttribute(nameRx.cap(1), varValue);
             }
@@ -156,8 +157,9 @@ void SvgParser::parseAttributes(const QDomNode& node) const {
                 QStringList captured = hookRx.capturedTexts();
                 QString match = hookRx.cap(0);
                 QString tmp = "svg.templateHooks." + match;
-                QString replacement = evaluateTemplateExpression(
-                    tmp, node.lineNumber()).toString();
+                QString replacement =
+                        evaluateTemplateExpression(tmp, node.lineNumber())
+                                .toString();
                 attributeValue.replace(pos, match.length(), replacement);
                 pos += replacement.length();
             }
@@ -178,8 +180,8 @@ QByteArray SvgParser::saveToQByteArray(const QDomNode& svgNode) const {
 
 QScriptValue SvgParser::evaluateTemplateExpression(const QString& expression,
                                                    int lineNumber) const {
-    QScriptValue out = m_context.evaluateScript(
-        expression, m_currentFile, lineNumber);
+    QScriptValue out =
+            m_context.evaluateScript(expression, m_currentFile, lineNumber);
     if (m_context.getScriptEngine()->hasUncaughtException()) {
         // return an empty string as replacement for the in-attribute expression
         return QScriptValue();
