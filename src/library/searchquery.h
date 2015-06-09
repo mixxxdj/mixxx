@@ -44,16 +44,12 @@ class GroupNode : public QueryNode {
 
 class OrNode : public GroupNode {
   public:
-    OrNode() {}
-
     bool match(const TrackPointer& pTrack) const;
     QString toSql() const;
 };
 
 class AndNode : public GroupNode {
   public:
-    AndNode() {}
-
     bool match(const TrackPointer& pTrack) const;
     QString toSql() const;
 };
@@ -135,7 +131,6 @@ class SqlNode : public QueryNode {
             // Need to wrap it since we don't know if the caller wrapped it.
             : m_sql(QString("(%1)").arg(sqlExpression)) {
     }
-    virtual ~SqlNode() {}
 
     bool match(const TrackPointer& pTrack) const {
         // We are usually embedded in an AND node so if we don't match
