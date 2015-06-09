@@ -299,7 +299,7 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
         }
         // Reload the configuration file from the new location.
         // (We want to make sure we save to the new location...)
-        config = new ConfigObject<ConfigValue>(settingsPath + SETTINGS_FILE);
+        config = new ConfigObject<ConfigValue>(settingsPath + "/" + SETTINGS_FILE);
 #endif
         configVersion = "1.9.0";
         config->set(ConfigKey("[Config]","Version"), ConfigValue("1.9.0"));
