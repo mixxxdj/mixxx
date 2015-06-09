@@ -4,6 +4,8 @@
 #ifndef BASETRACKCACHE_H
 #define BASETRACKCACHE_H
 
+#include <memory>
+
 #include <QList>
 #include <QObject>
 #include <QSet>
@@ -83,7 +85,7 @@ class BaseTrackCache : public QObject {
     void getTrackValueForColumn(TrackPointer pTrack, int column,
                                 QVariant& trackValue) const;
 
-    QueryNode* parseQuery(QString query, QString extraFilter,
+    std::unique_ptr<QueryNode> parseQuery(QString query, QString extraFilter,
                           QStringList idStrings) const;
     int findSortInsertionPoint(TrackPointer pTrack,
                                const int sortColumn,

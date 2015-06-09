@@ -57,11 +57,11 @@ QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& colum
 }
 
 bool AndNode::match(const TrackPointer& pTrack) const {
-    if (m_nodes.isEmpty()) {
+    if (m_nodes.empty()) {
         return true;
     }
 
-    foreach (const QueryNode* pNode, m_nodes) {
+    for (const auto& pNode: m_nodes) {
         if (!pNode->match(pTrack)) {
             return false;
         }
@@ -71,7 +71,7 @@ bool AndNode::match(const TrackPointer& pTrack) const {
 
 QString AndNode::toSql() const {
     QStringList queryFragments;
-    foreach (const QueryNode* pNode, m_nodes) {
+    for (const auto& pNode: m_nodes) {
         QString sql = pNode->toSql();
         if (!sql.isEmpty()) {
             queryFragments << sql;
@@ -81,10 +81,10 @@ QString AndNode::toSql() const {
 }
 
 bool OrNode::match(const TrackPointer& pTrack) const {
-    if (m_nodes.isEmpty()) {
+    if (m_nodes.empty()) {
         return true;
     }
-    foreach (const QueryNode* pNode, m_nodes) {
+    for (const auto& pNode: m_nodes) {
         if (pNode->match(pTrack)) {
             return true;
         }
@@ -94,7 +94,7 @@ bool OrNode::match(const TrackPointer& pTrack) const {
 
 QString OrNode::toSql() const {
     QStringList queryFragments;
-    foreach (const QueryNode* pNode, m_nodes) {
+    for (const auto& pNode: m_nodes) {
         QString sql = pNode->toSql();
         if (!sql.isEmpty()) {
             queryFragments << sql;
@@ -103,19 +103,8 @@ QString OrNode::toSql() const {
     return queryFragments.join(" OR ");
 }
 
-NotNode::NotNode(QueryNode* pNode)
-        : m_pNode(pNode) {
-}
-
-NotNode::~NotNode() {
-    delete m_pNode;
-}
-
 bool NotNode::match(const TrackPointer& pTrack) const {
-    if (m_pNode != NULL) {
-        return !m_pNode->match(pTrack);
-    }
-    return false;
+    return !m_pNode->match(pTrack);
 }
 
 QString NotNode::toSql() const {
