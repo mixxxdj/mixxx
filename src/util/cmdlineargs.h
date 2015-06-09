@@ -72,10 +72,11 @@ class CmdlineArgs {
         m_midiDebug(false),
         m_developer(false),
         m_safeMode(false),
-#ifdef __WINDOWS__
-        m_settingsPath(QDesktopServices::storageLocation(QDesktopServices::DataLocation).append("/")) {
-#else
+// We are not ready to switch to XDG folders under Linux, so keeping $HOME/.mixxx as preferences folder. see lp:1463273
+#ifdef __LINUX__
         m_settingsPath(QDir::homePath().append("/").append(SETTINGS_PATH)) {
+#else
+        m_settingsPath(QDesktopServices::storageLocation(QDesktopServices::DataLocation).append("/")) {
 #endif
     }
     ~CmdlineArgs() { };
