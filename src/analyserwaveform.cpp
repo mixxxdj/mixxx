@@ -166,13 +166,17 @@ bool AnalyserWaveform::loadStored(TrackPointer tio) const {
 }
 
 void AnalyserWaveform::createFilters(int sampleRate) {
-    //TODO: (vRince) bind this with *actual* filter values ...
     // m_filter[Low] = new EngineFilterButterworth8(FILTER_LOWPASS, sampleRate, 200);
     // m_filter[Mid] = new EngineFilterButterworth8(FILTER_BANDPASS, sampleRate, 200, 2000);
     // m_filter[High] = new EngineFilterButterworth8(FILTER_HIGHPASS, sampleRate, 2000);
     m_filter[Low] = new EngineFilterBessel4Low(sampleRate, 600);
     m_filter[Mid] = new EngineFilterBessel4Band(sampleRate, 600, 4000);
     m_filter[High] = new EngineFilterBessel4High(sampleRate, 4000);
+    // settle filters for silence in preroll to avoids ramping (Bug #1406389)
+    CSAMPLE buf = 0.0;
+    for (int i = 0; i < FilterCount; ++i) {
+        m_filter[i]->process(&buf, &buf, 1);
+    }
 }
 
 void AnalyserWaveform::destroyFilters() {
