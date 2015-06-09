@@ -9,8 +9,7 @@
 
 #define WTTVH_MINIMUM_SECTION_SIZE 20
 
-HeaderViewState::HeaderViewState(const QHeaderView& headers)
-{
+HeaderViewState::HeaderViewState(const QHeaderView& headers) {
     QAbstractItemModel* model = headers.model();
     for (int vi = 0; vi < headers.count(); ++vi) {
         int li = headers.logicalIndex(vi);
@@ -20,8 +19,9 @@ HeaderViewState::HeaderViewState(const QHeaderView& headers)
         header_state->set_size(headers.sectionSize(li));
         header_state->set_logical_index(li);
         header_state->set_visual_index(vi);
-        QString column_name = model->headerData(
-                li, Qt::Horizontal, TrackModel::kHeaderNameRole).toString();
+        QString column_name = model->headerData(li, Qt::Horizontal,
+                                                TrackModel::kHeaderNameRole)
+                                      .toString();
         // If there was some sort of error getting the column id,
         // we have to skip this one. (Happens with non-displayed columns)
         if (column_name.isEmpty()) {
@@ -43,8 +43,8 @@ HeaderViewState::HeaderViewState(const QString& base64serialized) {
     // First decode the array from Base64, then initialize the protobuf from it.
     array = QByteArray::fromBase64(array);
     if (!m_view_state.ParseFromArray(array.constData(), array.size())) {
-        qDebug() << "ERROR: Could not parse m_view_state from QByteArray of size "
-                 << array.size();
+        qDebug() << "ERROR: Could not parse m_view_state from QByteArray of "
+                    "size " << array.size();
         return;
     }
 }
@@ -61,18 +61,22 @@ void HeaderViewState::restoreState(QHeaderView* headers) {
     const int max_columns =
             math_min(headers->count(), m_view_state.header_state_size());
 
-    typedef QMap<QString, mixxx::library::HeaderViewState::HeaderState*> state_map;
+    typedef QMap<QString, mixxx::library::HeaderViewState::HeaderState*>
+            state_map;
     state_map map;
     for (int i = 0; i < m_view_state.header_state_size(); ++i) {
-        map[QString::fromStdString(m_view_state.header_state(i).column_name())] =
+        map[QString::fromStdString(
+                m_view_state.header_state(i).column_name())] =
                 m_view_state.mutable_header_state(i);
     }
 
     // First set all sections to be hidden and update logical indexes.
     for (int li = 0; li < headers->count(); ++li) {
         headers->setSectionHidden(li, true);
-        auto it = map.find(headers->model()->headerData(
-            li, Qt::Horizontal, TrackModel::kHeaderNameRole).toString());
+        auto it = map.find(headers->model()
+                                   ->headerData(li, Qt::Horizontal,
+                                                TrackModel::kHeaderNameRole)
+                                   .toString());
         if (it != map.end()) {
             it.value()->set_logical_index(li);
         }
@@ -99,8 +103,8 @@ WTrackTableViewHeader::WTrackTableViewHeader(Qt::Orientation orientation,
         : QHeaderView(orientation, parent),
           m_menu(tr("Show or hide columns."), this),
           m_signalMapper(this) {
-    connect(&m_signalMapper, SIGNAL(mapped(int)),
-            this, SLOT(showOrHideColumn(int)));
+    connect(&m_signalMapper, SIGNAL(mapped(int)), this,
+            SLOT(showOrHideColumn(int)));
 }
 
 WTrackTableViewHeader::~WTrackTableViewHeader() {
@@ -141,7 +145,8 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
     // Restore saved header state to get sizes, column positioning, etc. back.
     restoreHeaderState();
 
-    // Here we can override values to prevent restoring corrupt values from database
+    // Here we can override values to prevent restoring corrupt values from
+    // database
     setMovable(true);
 
     // Setting true in the next line causes Bug #925619 at least with Qt 4.6.1
@@ -175,15 +180,14 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
         // Map this action's signals via our QSignalMapper
         m_signalMapper.setMapping(action, i);
         m_columnActions.insert(i, action);
-        connect(action, SIGNAL(triggered()),
-                &m_signalMapper, SLOT(map()));
+        connect(action, SIGNAL(triggered()), &m_signalMapper, SLOT(map()));
         m_menu.addAction(action);
 
         // force the section size to be a least WTTVH_MINIMUM_SECTION_SIZE
-        if (sectionSize(i) <  WTTVH_MINIMUM_SECTION_SIZE) {
+        if (sectionSize(i) < WTTVH_MINIMUM_SECTION_SIZE) {
             // This might happen if  WTTVH_MINIMUM_SECTION_SIZ has changed or
             // the header state from database was corrupt
-            resizeSection(i,WTTVH_MINIMUM_SECTION_SIZE);
+            resizeSection(i, WTTVH_MINIMUM_SECTION_SIZE);
         }
     }
 
@@ -204,7 +208,7 @@ void WTrackTableViewHeader::saveHeaderState() {
     // Convert the QByteArray to a Base64 string and save it.
     HeaderViewState view_state(*this);
     track_model->setModelSetting("header_state_pb", view_state.saveState());
-    //qDebug() << "Saving old header state:" << result << headerState;
+    // qDebug() << "Saving old header state:" << result << headerState;
 }
 
 void WTrackTableViewHeader::restoreHeaderState() {
@@ -220,7 +224,7 @@ void WTrackTableViewHeader::restoreHeaderState() {
     } else {
         // Load the previous header state (stored as serialized protobuf).
         // Decode it and restore it.
-        //qDebug() << "Restoring header state from proto" << headerStateString;
+        // qDebug() << "Restoring header state from proto" << headerStateString;
         HeaderViewState view_state(headerStateString);
         if (!view_state.healthy()) {
             loadDefaultHeaderState();
@@ -234,8 +238,9 @@ void WTrackTableViewHeader::loadDefaultHeaderState() {
     // TODO: isColumnHiddenByDefault logic probably belongs here now.
     QAbstractItemModel* m = model();
     for (int i = 0; i < count(); ++i) {
-        int header_size = m->headerData(
-                i, orientation(), TrackModel::kHeaderWidthRole).toInt();
+        int header_size =
+                m->headerData(i, orientation(), TrackModel::kHeaderWidthRole)
+                        .toInt();
         if (header_size > 0) {
             resizeSection(i, header_size);
         }

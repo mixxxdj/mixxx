@@ -12,7 +12,6 @@
 #include "sources/audiosource.h"
 #include "util/fifo.h"
 
-
 // forward declaration(s)
 class AudioSourceProxy;
 
@@ -26,19 +25,16 @@ typedef struct Chunk {
     Chunk* prev_lru;
     Chunk* next_lru;
 
-    enum State {
-        FREE,
-        ALLOCATED,
-        READ_IN_PROGRESS,
-        READ
-    };
+    enum State { FREE, ALLOCATED, READ_IN_PROGRESS, READ };
     State state;
 } Chunk;
 
 typedef struct ChunkReadRequest {
     Chunk* chunk;
 
-    ChunkReadRequest() { chunk = NULL; }
+    ChunkReadRequest() {
+        chunk = NULL;
+    }
 } ChunkReadRequest;
 
 enum ReaderStatus {
@@ -55,10 +51,7 @@ typedef struct ReaderStatusUpdate {
     ReaderStatus status;
     Chunk* chunk;
     int trackFrameCount;
-    ReaderStatusUpdate()
-        : status(INVALID)
-        , chunk(NULL)
-        , trackFrameCount(0) {
+    ReaderStatusUpdate() : status(INVALID), chunk(NULL), trackFrameCount(0) {
     }
 } ReaderStatusUpdate;
 
@@ -68,8 +61,8 @@ class CachingReaderWorker : public EngineWorker {
   public:
     // Construct a CachingReader with the given group.
     CachingReaderWorker(QString group,
-            FIFO<ChunkReadRequest>* pChunkReadRequestFIFO,
-            FIFO<ReaderStatusUpdate>* pReaderStatusFIFO);
+                        FIFO<ChunkReadRequest>* pChunkReadRequestFIFO,
+                        FIFO<ReaderStatusUpdate>* pReaderStatusFIFO);
     virtual ~CachingReaderWorker();
 
     // Request to load a new track. wake() must be called afterwards.
@@ -85,7 +78,7 @@ class CachingReaderWorker : public EngineWorker {
     // chunk holds a fixed number of stereo frames given by kFramesPerChunk.
     static const SINT kChunkChannels;
     static const SINT kFramesPerChunk;
-    static const SINT kSamplesPerChunk; // = kFramesPerChunk * kChunkChannels
+    static const SINT kSamplesPerChunk;  // = kFramesPerChunk * kChunkChannels
 
     // Given a chunk number, return the start sample number for the chunk.
     static SINT frameForChunk(SINT chunk_number) {
@@ -99,7 +92,6 @@ class CachingReaderWorker : public EngineWorker {
     void trackLoadFailed(TrackPointer pTrack, QString reason);
 
   private:
-
     QString m_group;
     QString m_tag;
 
@@ -126,6 +118,5 @@ class CachingReaderWorker : public EngineWorker {
 
     QAtomicInt m_stop;
 };
-
 
 #endif /* CACHINGREADERWORKER_H */

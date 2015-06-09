@@ -27,7 +27,7 @@ class CachingReader;
 // point.
 class ReadAheadManager {
   public:
-    explicit ReadAheadManager(); // Only for testing: ReadAheadManagerMock
+    explicit ReadAheadManager();  // Only for testing: ReadAheadManagerMock
     explicit ReadAheadManager(CachingReader* reader,
                               LoopingControl* pLoopingControl);
     virtual ~ReadAheadManager();
@@ -37,8 +37,8 @@ class ReadAheadManager {
     // direction the audio is progressing in. Returns the total number of
     // samples read into buffer. Note that it is very common that the total
     // samples read is less than the requested number of samples.
-    virtual int getNextSamples(double dRate, CSAMPLE* buffer, int requested_samples);
-
+    virtual int getNextSamples(double dRate, CSAMPLE* buffer,
+                               int requested_samples);
 
     // Used to add a new EngineControls that ReadAheadManager will use to decide
     // which samples to return.
@@ -56,8 +56,8 @@ class ReadAheadManager {
     // indicate that the given portion of a song is about to be read.
     virtual void hintReader(double dRate, HintVector* hintList);
 
-    virtual int getEffectiveVirtualPlaypositionFromLog(double currentVirtualPlayposition,
-                                                       double numConsumedSamples);
+    virtual int getEffectiveVirtualPlaypositionFromLog(
+            double currentVirtualPlayposition, double numConsumedSamples);
 
     virtual void setReader(CachingReader* pReader) {
         m_pReader = pReader;
@@ -82,12 +82,13 @@ class ReadAheadManager {
             // possible but they have happened in the past. We treat 0-length
             // ReadLogEntry's as forward reads because this prevents them from
             // being interpreted as a seek in the common case.
-            return virtualPlaypositionStart <= virtualPlaypositionEndNonInclusive;
+            return virtualPlaypositionStart <=
+                   virtualPlaypositionEndNonInclusive;
         }
 
         double length() const {
             return fabs(virtualPlaypositionEndNonInclusive -
-                       virtualPlaypositionStart);
+                        virtualPlaypositionStart);
         }
 
         // Moves the start position forward or backward (depending on
@@ -104,7 +105,8 @@ class ReadAheadManager {
             // Allow 0-length ReadLogEntry's to merge regardless of their
             // direction if they have the right start point.
             if ((other.length() == 0 || direction() == other.direction()) &&
-                virtualPlaypositionEndNonInclusive == other.virtualPlaypositionStart) {
+                virtualPlaypositionEndNonInclusive ==
+                        other.virtualPlaypositionStart) {
                 virtualPlaypositionEndNonInclusive =
                         other.virtualPlaypositionEndNonInclusive;
                 return true;
@@ -126,4 +128,4 @@ class ReadAheadManager {
     CSAMPLE* m_pCrossFadeBuffer;
 };
 
-#endif // READAHEADMANGER_H
+#endif  // READAHEADMANGER_H

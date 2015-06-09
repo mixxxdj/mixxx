@@ -16,14 +16,13 @@
 
 #include "musicbrainzclient.h"
 
-const QString MusicBrainzClient::m_TrackUrl = "http://musicbrainz.org/ws/2/recording/";
+const QString MusicBrainzClient::m_TrackUrl =
+        "http://musicbrainz.org/ws/2/recording/";
 const QString MusicBrainzClient::m_DateRegex = "^[12]\\d{3}";
-const int MusicBrainzClient::m_DefaultTimeout = 5000; // msec
+const int MusicBrainzClient::m_DefaultTimeout = 5000;  // msec
 
 MusicBrainzClient::MusicBrainzClient(QObject* parent)
-                 : QObject(parent),
-                   m_network(this),
-                   m_timeouts(m_DefaultTimeout, this) {
+        : QObject(parent), m_network(this), m_timeouts(m_DefaultTimeout, this) {
 }
 
 void MusicBrainzClient::start(int id, const QString& mbid) {
@@ -66,18 +65,19 @@ void MusicBrainzClient::requestFinished() {
     int id = m_requests.take(reply);
     ResultList ret;
 
-    if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() != 200) {
+    if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() !=
+        200) {
         emit(networkError(
-             reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(),
-             "Musicbrainz"));
+                reply->attribute(QNetworkRequest::HttpStatusCodeAttribute)
+                        .toInt(),
+                "Musicbrainz"));
         return;
     }
 
     QXmlStreamReader reader(reply);
     while (!reader.atEnd()) {
-        if (reader.readNext() == QXmlStreamReader::StartElement
-            && reader.name() == "recording") {
-
+        if (reader.readNext() == QXmlStreamReader::StartElement &&
+            reader.name() == "recording") {
             ResultList tracks = parseTrack(reader);
             foreach (const Result& track, tracks) {
                 if (!track.m_title.isEmpty()) {
@@ -86,10 +86,11 @@ void MusicBrainzClient::requestFinished() {
             }
         }
     }
-    emit (finished(id, uniqueResults(ret)));
+    emit(finished(id, uniqueResults(ret)));
 }
 
-MusicBrainzClient::ResultList MusicBrainzClient::parseTrack(QXmlStreamReader& reader) {
+MusicBrainzClient::ResultList MusicBrainzClient::parseTrack(
+        QXmlStreamReader& reader) {
     Result result;
     QList<Release> releases;
 
@@ -102,7 +103,7 @@ MusicBrainzClient::ResultList MusicBrainzClient::parseTrack(QXmlStreamReader& re
                 result.m_title = reader.readElementText();
             } else if (name == "length") {
                 // convert msec to sec
-                result.m_duration = reader.readElementText().toInt()*10000000;
+                result.m_duration = reader.readElementText().toInt() * 10000000;
             } else if (name == "artist") {
                 parseArtist(reader, result.m_artist);
             } else if (name == "release") {
@@ -110,8 +111,9 @@ MusicBrainzClient::ResultList MusicBrainzClient::parseTrack(QXmlStreamReader& re
             }
         }
 
-        if (type == QXmlStreamReader::EndElement && reader.name() == "recording") {
-        break;
+        if (type == QXmlStreamReader::EndElement &&
+            reader.name() == "recording") {
+            break;
         }
     }
 
@@ -136,7 +138,8 @@ void MusicBrainzClient::parseArtist(QXmlStreamReader& reader, QString& artist) {
     }
 }
 
-MusicBrainzClient::Release MusicBrainzClient::parseRelease(QXmlStreamReader& reader) {
+MusicBrainzClient::Release MusicBrainzClient::parseRelease(
+        QXmlStreamReader& reader) {
     Release ret;
 
     while (!reader.atEnd()) {
@@ -149,15 +152,18 @@ MusicBrainzClient::Release MusicBrainzClient::parseRelease(QXmlStreamReader& rea
             } else if (name == "date") {
                 QRegExp regex(m_DateRegex);
                 if (regex.indexIn(reader.readElementText()) == 0) {
-                ret.m_year = regex.cap(0).toInt();
+                    ret.m_year = regex.cap(0).toInt();
                 }
             } else if (name == "track-list") {
-                ret.m_track = reader.attributes().value("offset").toString().toInt() + 1;
+                ret.m_track =
+                        reader.attributes().value("offset").toString().toInt() +
+                        1;
                 consumeCurrentElement(reader);
             }
         }
 
-        if (type == QXmlStreamReader::EndElement && reader.name() == "release") {
+        if (type == QXmlStreamReader::EndElement &&
+            reader.name() == "release") {
             break;
         }
     }
@@ -165,7 +171,8 @@ MusicBrainzClient::Release MusicBrainzClient::parseRelease(QXmlStreamReader& rea
     return ret;
 }
 
-MusicBrainzClient::ResultList MusicBrainzClient::uniqueResults(const ResultList& results) {
+MusicBrainzClient::ResultList MusicBrainzClient::uniqueResults(
+        const ResultList& results) {
     ResultList ret = QSet<Result>::fromList(results).toList();
     qSort(ret);
     return ret;
@@ -175,9 +182,14 @@ void MusicBrainzClient::consumeCurrentElement(QXmlStreamReader& reader) {
     int level = 1;
     while (level != 0 && !reader.atEnd()) {
         switch (reader.readNext()) {
-        case QXmlStreamReader::StartElement: ++level; break;
-        case QXmlStreamReader::EndElement:   --level; break;
-        default: break;
+            case QXmlStreamReader::StartElement:
+                ++level;
+                break;
+            case QXmlStreamReader::EndElement:
+                --level;
+                break;
+            default:
+                break;
         }
     }
 }

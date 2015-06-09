@@ -30,34 +30,34 @@ class ControlPickerMenu : public QMenu {
     void controlChosen(int controlIndex);
 
   private:
-    QMenu* addSubmenu(QString title, QMenu* pParent=NULL);
+    QMenu* addSubmenu(QString title, QMenu* pParent = NULL);
     void addControl(QString group, QString control, QString title,
-                    QString helpText, QMenu* pMenu, bool addReset=false);
+                    QString helpText, QMenu* pMenu, bool addReset = false);
     void addPlayerControl(QString control, QString title, QString helpText,
                           QMenu* pMenu, bool deckControls, bool samplerControls,
-                          bool previewdeckControls, bool addReset=false);
+                          bool previewdeckControls, bool addReset = false);
     void addDeckAndSamplerControl(QString control, QString title,
                                   QString helpText, QMenu* pMenu,
-                                  bool addReset=false);
+                                  bool addReset = false);
     void addDeckAndPreviewDeckControl(QString control, QString title,
                                       QString helpText, QMenu* pMenu,
-                                      bool addReset=false);
+                                      bool addReset = false);
     void addDeckAndSamplerAndPreviewDeckControl(QString control, QString title,
                                                 QString helpText, QMenu* pMenu,
-                                                bool addReset=false);
+                                                bool addReset = false);
     void addDeckControl(QString control, QString title, QString helpText,
-                        QMenu* pMenu, bool addReset=false);
+                        QMenu* pMenu, bool addReset = false);
     void addSamplerControl(QString control, QString title, QString helpText,
-                           QMenu* pMenu, bool addReset=false);
+                           QMenu* pMenu, bool addReset = false);
     void addPreviewDeckControl(QString control, QString title, QString helpText,
-                               QMenu* pMenu, bool addReset=false);
+                               QMenu* pMenu, bool addReset = false);
     void addMicrophoneAndAuxControl(QString control, QString title,
                                     QString helpText, QMenu* pMenu,
                                     bool microhoneControls, bool auxControls,
-                                    bool addReset=false);
+                                    bool addReset = false);
     void addPrefixedControl(QString group, QString control, QString title,
                             QString menuDescription, QString descriptionPrefix,
-                            QMenu* pMenu, bool addReset=false);
+                            QMenu* pMenu, bool addReset = false);
 
     void addAvailableControl(ConfigKey key, QString title, QString description);
 

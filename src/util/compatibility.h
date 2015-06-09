@@ -26,8 +26,7 @@ inline QLocale inputLocale() {
 #else
     // Use the default config for local keyboard
     QInputMethod* pInputMethod = QGuiApplication::inputMethod();
-    return pInputMethod ? pInputMethod->locale() :
-            QLocale(QLocale::English);
+    return pInputMethod ? pInputMethod->locale() : QLocale(QLocale::English);
 #endif
 }
 

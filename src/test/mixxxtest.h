@@ -13,8 +13,10 @@
 #include "controlobject.h"
 #include "controlobjectthread.h"
 
-#define EXPECT_QSTRING_EQ(expected, test) EXPECT_STREQ(qPrintable(expected), qPrintable(test))
-#define ASSERT_QSTRING_EQ(expected, test) ASSERT_STREQ(qPrintable(expected), qPrintable(test))
+#define EXPECT_QSTRING_EQ(expected, test) \
+    EXPECT_STREQ(qPrintable(expected), qPrintable(test))
+#define ASSERT_QSTRING_EQ(expected, test) \
+    ASSERT_STREQ(qPrintable(expected), qPrintable(test))
 
 typedef QScopedPointer<QTemporaryFile> ScopedTemporaryFile;
 typedef QScopedPointer<ControlObject> ScopedControl;
@@ -29,7 +31,7 @@ class MixxxTest : public testing::Test {
     // and destroying the QApplication multiple times in the same process.
     // http://stackoverflow.com/questions/14243858/qapplication-segfaults-in-googletest
     class ApplicationScope {
-    public:
+      public:
         ApplicationScope(int argc, char** argv);
         ~ApplicationScope();
     };
@@ -64,9 +66,7 @@ class MixxxTest : public testing::Test {
     const QString m_testDataCfg;
 
   protected:
-    const QScopedPointer<ConfigObject<ConfigValue> > m_pConfig;
-
+    const QScopedPointer<ConfigObject<ConfigValue>> m_pConfig;
 };
-
 
 #endif /* MIXXXTEST_H */

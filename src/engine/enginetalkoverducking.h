@@ -6,16 +6,16 @@ class ConfigValue;
 class ControlObjectSlave;
 
 class EngineTalkoverDucking : public QObject, public EngineSideChainCompressor {
-  Q_OBJECT
+    Q_OBJECT
   public:
-
     enum TalkoverDuckSetting {
         OFF = 0,
         AUTO,
         MANUAL,
     };
 
-    EngineTalkoverDucking(ConfigObject<ConfigValue>* pConfig, const char* group);
+    EngineTalkoverDucking(ConfigObject<ConfigValue>* pConfig,
+                          const char* group);
     virtual ~EngineTalkoverDucking();
 
     TalkoverDuckSetting getMode() const {

@@ -20,7 +20,8 @@ class EffectsManager;
 class BaseTrackPlayer : public BasePlayer {
     Q_OBJECT
   public:
-    // The ordering here corresponds to the ordering of the preferences combo box.
+    // The ordering here corresponds to the ordering of the preferences combo
+    // box.
     enum TrackLoadReset {
         RESET_NONE,
         RESET_PITCH,
@@ -28,15 +29,16 @@ class BaseTrackPlayer : public BasePlayer {
     };
 
     BaseTrackPlayer(QObject* pParent, const QString& group);
-    virtual ~BaseTrackPlayer() {}
+    virtual ~BaseTrackPlayer() {
+    }
 
     virtual TrackPointer getLoadedTrack() const = 0;
 
   public slots:
-    virtual void slotLoadTrack(TrackPointer pTrack, bool bPlay=false) = 0;
+    virtual void slotLoadTrack(TrackPointer pTrack, bool bPlay = false) = 0;
 
   signals:
-    void loadTrack(TrackPointer pTrack, bool bPlay=false);
+    void loadTrack(TrackPointer pTrack, bool bPlay = false);
     void loadTrackFailed(TrackPointer pTrack);
     void newTrackLoaded(TrackPointer pLoadedTrack);
     void unloadingTrack(TrackPointer pAboutToBeUnloaded);
@@ -45,13 +47,11 @@ class BaseTrackPlayer : public BasePlayer {
 class BaseTrackPlayerImpl : public BaseTrackPlayer {
     Q_OBJECT
   public:
-    BaseTrackPlayerImpl(QObject* pParent,
-                        ConfigObject<ConfigValue>* pConfig,
+    BaseTrackPlayerImpl(QObject* pParent, ConfigObject<ConfigValue>* pConfig,
                         EngineMaster* pMixingEngine,
                         EffectsManager* pEffectsManager,
                         EngineChannel::ChannelOrientation defaultOrientation,
-                        QString group,
-                        bool defaultMaster,
+                        QString group, bool defaultMaster,
                         bool defaultHeadphones);
     virtual ~BaseTrackPlayerImpl();
 
@@ -64,7 +64,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void setupEqControls();
 
   public slots:
-    void slotLoadTrack(TrackPointer track, bool bPlay=false);
+    void slotLoadTrack(TrackPointer track, bool bPlay = false);
     void slotFinishLoading(TrackPointer pTrackInfoObject);
     void slotLoadFailed(TrackPointer pTrackInfoObject, QString reason);
     void slotUnloadTrack(TrackPointer track);
@@ -100,4 +100,4 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     bool m_replaygainPending;
 };
 
-#endif // BASETRACKPLAYER_H
+#endif  // BASETRACKPLAYER_H

@@ -12,8 +12,7 @@
 
 class WWidgetStackTest : public MixxxTest {
   public:
-    WWidgetStackTest()
-          : m_pGroup("[Channel1]") {
+    WWidgetStackTest() : m_pGroup("[Channel1]") {
     }
 
   protected:
@@ -24,8 +23,7 @@ class WWidgetStackTest : public MixxxTest {
                 new ControlPushButton(ConfigKey(m_pGroup, "prev")));
         m_pNextControl.reset(
                 new ControlPushButton(ConfigKey(m_pGroup, "next")));
-        m_pCurPageControl.reset(
-                new ControlObject(ConfigKey(m_pGroup, "page")));
+        m_pCurPageControl.reset(new ControlObject(ConfigKey(m_pGroup, "page")));
         m_pStack.reset(new WWidgetStack(NULL, m_pNextControl.data(),
                                         m_pPrevControl.data(),
                                         m_pCurPageControl.data()));
@@ -41,14 +39,11 @@ class WWidgetStackTest : public MixxxTest {
         m_pPage2Control.reset(new ControlObject(ConfigKey(m_pGroup, "page2")));
 
         m_pStack->addWidgetWithControl(m_pPage0Widget.data(),
-                                       m_pPage0Control.data(),
-                                       2);
+                                       m_pPage0Control.data(), 2);
         m_pStack->addWidgetWithControl(m_pPage1Widget.data(),
-                                       m_pPage1Control.data(),
-                                       -1);
+                                       m_pPage1Control.data(), -1);
         m_pStack->addWidgetWithControl(m_pPage2Widget.data(),
-                                       m_pPage2Control.data(),
-                                       -1);
+                                       m_pPage2Control.data(), -1);
         m_pStack->Init();
         m_pStack->show();
     }
@@ -59,21 +54,21 @@ class WWidgetStackTest : public MixxxTest {
         EXPECT_EQ(index == 1 ? 1 : 0, m_pPage1Control->get());
         EXPECT_EQ(index == 2 ? 1 : 0, m_pPage2Control->get());
         switch (index) {
-        case 0:
-            EXPECT_FALSE(m_pPage0Widget->isHidden());
-            EXPECT_TRUE(m_pPage1Widget->isHidden());
-            EXPECT_TRUE(m_pPage2Widget->isHidden());
-            break;
-        case 1:
-            EXPECT_TRUE(m_pPage0Widget->isHidden());
-            EXPECT_FALSE(m_pPage1Widget->isHidden());
-            EXPECT_TRUE(m_pPage2Widget->isHidden());
-            break;
-        case 2:
-            EXPECT_TRUE(m_pPage0Widget->isHidden());
-            EXPECT_TRUE(m_pPage1Widget->isHidden());
-            EXPECT_FALSE(m_pPage2Widget->isHidden());
-            break;
+            case 0:
+                EXPECT_FALSE(m_pPage0Widget->isHidden());
+                EXPECT_TRUE(m_pPage1Widget->isHidden());
+                EXPECT_TRUE(m_pPage2Widget->isHidden());
+                break;
+            case 1:
+                EXPECT_TRUE(m_pPage0Widget->isHidden());
+                EXPECT_FALSE(m_pPage1Widget->isHidden());
+                EXPECT_TRUE(m_pPage2Widget->isHidden());
+                break;
+            case 2:
+                EXPECT_TRUE(m_pPage0Widget->isHidden());
+                EXPECT_TRUE(m_pPage1Widget->isHidden());
+                EXPECT_FALSE(m_pPage2Widget->isHidden());
+                break;
         }
     }
 
@@ -106,12 +101,10 @@ TEST_F(WWidgetStackTest, MaintainPageControlValue) {
     // showed the first page.
 
     // This test is set up to reproduce the original LateNight skin case.
-    m_pCurPageControl.reset(
-            new ControlObject(ConfigKey(m_pGroup,
-                                        "MaintainPageControlValue-page")));
+    m_pCurPageControl.reset(new ControlObject(
+            ConfigKey(m_pGroup, "MaintainPageControlValue-page")));
     QScopedPointer<WWidgetStack> stack(
-            new WWidgetStack(NULL, m_pNextControl.data(),
-                             m_pPrevControl.data(),
+            new WWidgetStack(NULL, m_pNextControl.data(), m_pPrevControl.data(),
                              m_pCurPageControl.data()));
 
     QWidget page0;
@@ -209,4 +202,3 @@ TEST_F(WWidgetStackTest, HiddenStackNoChanges) {
     m_pStack->show();
     ExpectPageSelected(2);
 }
-

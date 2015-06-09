@@ -8,7 +8,7 @@
 
 static const int numChannels = 2;
 
-template<unsigned int SIZE>
+template <unsigned int SIZE>
 class EngineFilterPan : public EngineObjectConstIn {
   public:
     EngineFilterPan()
@@ -21,7 +21,7 @@ class EngineFilterPan : public EngineObjectConstIn {
         memset(m_buf, 0, sizeof(m_buf));
     }
 
-    virtual ~EngineFilterPan() {};
+    virtual ~EngineFilterPan(){};
 
     void pauseFilter() {
         // Set the current buffers to 0
@@ -64,9 +64,11 @@ class EngineFilterPan : public EngineObjectConstIn {
                 m_buf[m_delayFrame * 2 + 1] = pIn[i * 2 + 1];
                 m_delayFrame = (m_delayFrame + 1) % SIZE;
 
-                // Take delayed sample from delay buffer and copy it to dest buffer:
-                pOutput[i * 2] = m_buf[(delayLeftSourceFrame % SIZE)* 2];
-                pOutput[i * 2 + 1] = m_buf[(delayRightSourceFrame % SIZE) * 2 + 1];
+                // Take delayed sample from delay buffer and copy it to dest
+                // buffer:
+                pOutput[i * 2] = m_buf[(delayLeftSourceFrame % SIZE) * 2];
+                pOutput[i * 2 + 1] =
+                        m_buf[(delayRightSourceFrame % SIZE) * 2 + 1];
                 delayLeftSourceFrame++;
                 delayRightSourceFrame++;
             }
@@ -74,11 +76,13 @@ class EngineFilterPan : public EngineObjectConstIn {
             int delayOldLeftSourceFrame;
             int delayOldRightSourceFrame;
             if (m_oldLeftDelayFrames > 0) {
-                delayOldLeftSourceFrame = m_delayFrame + SIZE - m_oldLeftDelayFrames;
+                delayOldLeftSourceFrame =
+                        m_delayFrame + SIZE - m_oldLeftDelayFrames;
                 delayOldRightSourceFrame = m_delayFrame + SIZE;
             } else {
                 delayOldLeftSourceFrame = m_delayFrame + SIZE;
-                delayOldRightSourceFrame = m_delayFrame + SIZE + m_oldLeftDelayFrames;
+                delayOldRightSourceFrame =
+                        m_delayFrame + SIZE + m_oldLeftDelayFrames;
             }
 
             DEBUG_ASSERT_AND_HANDLE(delayOldLeftSourceFrame >= 0 &&
@@ -96,20 +100,41 @@ class EngineFilterPan : public EngineObjectConstIn {
                 m_buf[m_delayFrame * 2 + 1] = pIn[i * 2 + 1];
                 m_delayFrame = (m_delayFrame + 1) % SIZE;
 
-                // Take delayed sample from delay buffer and copy it to dest buffer:
+                // Take delayed sample from delay buffer and copy it to dest
+                // buffer:
                 cross_mix += cross_inc;
 
-                double rampedLeftSourceFrame = delayLeftSourceFrame * cross_mix +
-                                               delayOldLeftSourceFrame * (1 - cross_mix);
-                double rampedRightSourceFrame = delayRightSourceFrame * cross_mix +
-                                                delayOldRightSourceFrame * (1 - cross_mix);
+                double rampedLeftSourceFrame =
+                        delayLeftSourceFrame * cross_mix +
+                        delayOldLeftSourceFrame * (1 - cross_mix);
+                double rampedRightSourceFrame =
+                        delayRightSourceFrame * cross_mix +
+                        delayOldRightSourceFrame * (1 - cross_mix);
                 double modLeft = fmod(rampedLeftSourceFrame, 1);
                 double modRight = fmod(rampedRightSourceFrame, 1);
 
-                pOutput[i * 2] = m_buf[(static_cast<int>(floor(rampedLeftSourceFrame)) % SIZE) * 2] * (1 - modLeft);
-                pOutput[i * 2 + 1] = m_buf[(static_cast<int>(floor(rampedRightSourceFrame)) % SIZE) * 2 + 1] * (1 - modRight);
-                pOutput[i * 2] += m_buf[(static_cast<int>(ceil(rampedLeftSourceFrame)) % SIZE) * 2] * modLeft;
-                pOutput[i * 2 + 1] += m_buf[(static_cast<int>(ceil(rampedRightSourceFrame)) % SIZE) * 2 + 1] * modRight;
+                pOutput[i * 2] =
+                        m_buf[(static_cast<int>(floor(rampedLeftSourceFrame)) %
+                               SIZE) *
+                              2] *
+                        (1 - modLeft);
+                pOutput[i * 2 + 1] =
+                        m_buf[(static_cast<int>(floor(rampedRightSourceFrame)) %
+                               SIZE) *
+                                      2 +
+                              1] *
+                        (1 - modRight);
+                pOutput[i * 2] +=
+                        m_buf[(static_cast<int>(ceil(rampedLeftSourceFrame)) %
+                               SIZE) *
+                              2] *
+                        modLeft;
+                pOutput[i * 2 + 1] +=
+                        m_buf[(static_cast<int>(ceil(rampedRightSourceFrame)) %
+                               SIZE) *
+                                      2 +
+                              1] *
+                        modRight;
                 delayLeftSourceFrame++;
                 delayRightSourceFrame++;
                 delayOldLeftSourceFrame++;
@@ -129,4 +154,4 @@ class EngineFilterPan : public EngineObjectConstIn {
     bool m_doStart;
 };
 
-#endif // ENGINEFILTERPAN_H
+#endif  // ENGINEFILTERPAN_H

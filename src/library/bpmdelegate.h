@@ -15,8 +15,8 @@ class BPMDelegate : public QStyledItemDelegate {
     explicit BPMDelegate(QObject* parent);
     virtual ~BPMDelegate();
 
-    void paint(QPainter *painter, const QStyleOptionViewItem &option,
-               const QModelIndex &index) const;
+    void paint(QPainter* painter, const QStyleOptionViewItem& option,
+               const QModelIndex& index) const;
 
   private:
     QTableView* m_pTableView;
@@ -24,4 +24,4 @@ class BPMDelegate : public QStyledItemDelegate {
     QItemEditorFactory* m_pFactory;
 };
 
-#endif // BUTTONCOLUMNDELEGATE_H
+#endif  // BUTTONCOLUMNDELEGATE_H

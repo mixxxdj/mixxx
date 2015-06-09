@@ -26,8 +26,8 @@ PlaylistFeature::PlaylistFeature(QObject* parent,
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                    "mixxx.db.model.playlist");
 
-    //construct child model
-    TreeItem *rootItem = new TreeItem();
+    // construct child model
+    TreeItem* rootItem = new TreeItem();
     m_childModel.setRootItem(rootItem);
     constructChildModel(-1);
 }
@@ -46,14 +46,15 @@ QIcon PlaylistFeature::getIcon() {
 void PlaylistFeature::onRightClick(const QPoint& globalPos) {
     m_lastRightClickedIndex = QModelIndex();
 
-    //Create the right-click menu
+    // Create the right-click menu
     QMenu menu(NULL);
     menu.addAction(m_pCreatePlaylistAction);
     menu.exec(globalPos);
 }
 
-void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
-    //Save the model index so we can get it in the action slots...
+void PlaylistFeature::onRightClickChild(const QPoint& globalPos,
+                                        QModelIndex index) {
+    // Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
     int playlistId = playlistIdFromIndex(index);
 
@@ -63,7 +64,7 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
 
     m_pLockPlaylistAction->setText(locked ? tr("Unlock") : tr("Lock"));
 
-    //Create the right-click menu
+    // Create the right-click menu
     QMenu menu(NULL);
     menu.addAction(m_pCreatePlaylistAction);
     menu.addSeparator();
@@ -82,19 +83,21 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
     menu.exec(globalPos);
 }
 
-bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
-                                      QObject* pSource) {
+bool PlaylistFeature::dropAcceptChild(const QModelIndex& index,
+                                      QList<QUrl> urls, QObject* pSource) {
     int playlistId = playlistIdFromIndex(index);
-    //m_playlistDao.appendTrackToPlaylist(url.toLocalFile(), playlistId);
+    // m_playlistDao.appendTrackToPlaylist(url.toLocalFile(), playlistId);
 
-    QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
+    QList<QFileInfo> files =
+            DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
 
     QList<int> trackIds;
     if (pSource) {
         trackIds = m_pTrackCollection->getTrackDAO().getTrackIds(files);
         m_pTrackCollection->getTrackDAO().unhideTracks(trackIds);
     } else {
-        // If a track is dropped onto a playlist's name, but the track isn't in the
+        // If a track is dropped onto a playlist's name, but the track isn't in
+        // the
         // library, then add the track to the library before adding it to the
         // playlist.
         // Adds track, does not insert duplicates, handles unremoving logic.
@@ -116,7 +119,8 @@ bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     int playlistId = playlistIdFromIndex(index);
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
 
-    bool formatSupported = SoundSourceProxy::isUrlSupported(url) ||
+    bool formatSupported =
+            SoundSourceProxy::isUrlSupported(url) ||
             Parser::isPlaylistFilenameSupported(url.toLocalFile());
     return !locked && formatSupported;
 }
@@ -125,17 +129,18 @@ void PlaylistFeature::buildPlaylistList() {
     m_playlistList.clear();
 
     QString queryString = QString(
-        "CREATE TEMPORARY VIEW IF NOT EXISTS PlaylistsCountsDurations "
-        "AS SELECT "
-        "  Playlists.id as id, "
-        "  Playlists.name as name, "
-        "  COUNT(library.id) as count, "
-        "  SUM(library.duration) as durationSeconds "
-        "FROM Playlists "
-        "LEFT JOIN PlaylistTracks ON PlaylistTracks.playlist_id = Playlists.id "
-        "LEFT JOIN library ON PlaylistTracks.track_id = library.id "
-        "WHERE Playlists.hidden = 0 "
-        "GROUP BY Playlists.id;");
+            "CREATE TEMPORARY VIEW IF NOT EXISTS PlaylistsCountsDurations "
+            "AS SELECT "
+            "  Playlists.id as id, "
+            "  Playlists.name as name, "
+            "  COUNT(library.id) as count, "
+            "  SUM(library.duration) as durationSeconds "
+            "FROM Playlists "
+            "LEFT JOIN PlaylistTracks ON PlaylistTracks.playlist_id = "
+            "Playlists.id "
+            "LEFT JOIN library ON PlaylistTracks.track_id = library.id "
+            "WHERE Playlists.hidden = 0 "
+            "GROUP BY Playlists.id;");
     QSqlQuery query(m_pTrackCollection->getDatabase());
     if (!query.exec(queryString)) {
         LOG_FAILED_QUERY(query);
@@ -157,17 +162,22 @@ void PlaylistFeature::buildPlaylistList() {
     int durationColumn = record.indexOf("durationSeconds");
 
     for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
-        int id = playlistTableModel.data(
-            playlistTableModel.index(row, idColumn)).toInt();
-        QString name = playlistTableModel.data(
-            playlistTableModel.index(row, nameColumn)).toString();
-        int count = playlistTableModel.data(
-            playlistTableModel.index(row, countColumn)).toInt();
-        int duration = playlistTableModel.data(
-            playlistTableModel.index(row, durationColumn)).toInt();
-        m_playlistList.append(qMakePair(id, QString("%1 (%2) %3")
-                                        .arg(name, QString::number(count),
-                                             Time::formatSeconds(duration, false))));
+        int id =
+                playlistTableModel.data(playlistTableModel.index(row, idColumn))
+                        .toInt();
+        QString name = playlistTableModel.data(playlistTableModel.index(
+                                                       row, nameColumn))
+                               .toString();
+        int count = playlistTableModel.data(playlistTableModel.index(
+                                                    row, countColumn))
+                            .toInt();
+        int duration = playlistTableModel.data(playlistTableModel.index(
+                                                       row, durationColumn))
+                               .toInt();
+        m_playlistList.append(qMakePair(
+                id, QString("%1 (%2) %3")
+                            .arg(name, QString::number(count),
+                                 Time::formatSeconds(duration, false))));
     }
 }
 
@@ -184,10 +194,10 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
         return;
     }
 
-    //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
+    // qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
     if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
-        type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
+        type == PlaylistDAO::PLHT_UNKNOWN) {  // In case of a deleted Playlist
         clearChildModel();
         m_lastRightClickedIndex = constructChildModel(playlistId);
     }
@@ -199,10 +209,10 @@ void PlaylistFeature::slotPlaylistTableRenamed(int playlistId,
         return;
     }
 
-    //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
+    // qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
     if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
-        type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
+        type == PlaylistDAO::PLHT_UNKNOWN) {  // In case of a deleted Playlist
         clearChildModel();
         m_lastRightClickedIndex = constructChildModel(playlistId);
         if (type != PlaylistDAO::PLHT_UNKNOWN) {
@@ -213,10 +223,20 @@ void PlaylistFeature::slotPlaylistTableRenamed(int playlistId,
 
 QString PlaylistFeature::getRootViewHtml() const {
     QString playlistsTitle = tr("Playlists");
-    QString playlistsSummary = tr("Playlists are ordered lists of songs that allow you to plan your DJ sets.");
-    QString playlistsSummary2 = tr("Some DJs construct playlists before they perform live, but others prefer to build them on-the-fly.");
-    QString playlistsSummary3 = tr("When using a playlist during a live DJ set, remember to always pay close attention to how your audience reacts to the music you've chosen to play.");
-    QString playlistsSummary4 = tr("It may be necessary to skip some songs in your prepared playlist or add some different songs in order to maintain the energy of your audience.");
+    QString playlistsSummary =
+            tr("Playlists are ordered lists of songs that allow you to plan "
+               "your DJ sets.");
+    QString playlistsSummary2 =
+            tr("Some DJs construct playlists before they perform live, but "
+               "others prefer to build them on-the-fly.");
+    QString playlistsSummary3 =
+            tr("When using a playlist during a live DJ set, remember to always "
+               "pay close attention to how your audience reacts to the music "
+               "you've chosen to play.");
+    QString playlistsSummary4 =
+            tr("It may be necessary to skip some songs in your prepared "
+               "playlist or add some different songs in order to maintain the "
+               "energy of your audience.");
     QString createPlaylistLink = tr("Create New Playlist");
 
     QString html;
@@ -224,11 +244,11 @@ QString PlaylistFeature::getRootViewHtml() const {
     html.append("<table border=\"0\" cellpadding=\"5\"><tr><td>");
     html.append(QString("<p>%1</p>").arg(playlistsSummary));
     html.append(QString("<p>%1</p>").arg(playlistsSummary2));
-    html.append(QString("<p>%1 %2</p>").arg(playlistsSummary3,
-                                            playlistsSummary4));
+    html.append(
+            QString("<p>%1 %2</p>").arg(playlistsSummary3, playlistsSummary4));
     html.append("</td></tr>");
     html.append(QString("<tr><td><a href=\"create\">%1</a>")
-                .arg(createPlaylistLink));
+                        .arg(createPlaylistLink));
     html.append("</td></tr></table>");
     return html;
 }

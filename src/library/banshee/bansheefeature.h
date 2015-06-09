@@ -14,13 +14,13 @@
 #include "library/treeitem.h"
 #include "library/banshee/bansheedbconnection.h"
 
-
 class BansheePlaylistModel;
 
 class BansheeFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
   public:
-    BansheeFeature(QObject* parent, TrackCollection* pTrackCollection, ConfigObject<ConfigValue>* pConfig);
+    BansheeFeature(QObject* parent, TrackCollection* pTrackCollection,
+                   ConfigObject<ConfigValue>* pConfig);
     virtual ~BansheeFeature();
     static bool isSupported();
     static void prepareDbPath(ConfigObject<ConfigValue>* pConfig);
@@ -35,13 +35,14 @@ class BansheeFeature : public BaseExternalLibraryFeature {
     virtual void activateChild(const QModelIndex& index);
 
   private:
-    virtual void appendTrackIdsFromRightClickIndex(QList<int>* trackIds, QString* pPlaylist);
+    virtual void appendTrackIdsFromRightClickIndex(QList<int>* trackIds,
+                                                   QString* pPlaylist);
 
     BansheePlaylistModel* m_pBansheePlaylistModel;
     TreeItemModel m_childModel;
     QStringList m_playlists;
     TrackCollection* m_pTrackCollection;
-    //a new DB connection for the worker thread
+    // a new DB connection for the worker thread
 
     BansheeDbConnection m_connection;
 
@@ -59,4 +60,4 @@ class BansheeFeature : public BaseExternalLibraryFeature {
     static const QString BANSHEE_MOUNT_KEY;
 };
 
-#endif // BANSHEEFEATURE_H
+#endif  // BANSHEEFEATURE_H

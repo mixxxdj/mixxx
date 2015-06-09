@@ -39,8 +39,8 @@ BeatGrid::BeatGrid(TrackInfoObject* pTrack, int iSampleRate,
                    const QByteArray* pByteArray)
         : QObject(),
           m_mutex(QMutex::Recursive),
-          m_iSampleRate(iSampleRate > 0 ? iSampleRate :
-                        pTrack->getSampleRate()),
+          m_iSampleRate(iSampleRate > 0 ? iSampleRate
+                                        : pTrack->getSampleRate()),
           m_dBeatLength(0.0) {
     if (pTrack != NULL) {
         // BeatGrid should live in the same thread as the track it is associated
@@ -62,7 +62,8 @@ void BeatGrid::setGrid(double dBpm, double dFirstBeatSample) {
 
     QMutexLocker lock(&m_mutex);
     m_grid.mutable_bpm()->set_bpm(dBpm);
-    m_grid.mutable_first_beat()->set_frame_position(dFirstBeatSample / kFrameSize);
+    m_grid.mutable_first_beat()->set_frame_position(dFirstBeatSample /
+                                                    kFrameSize);
     // Calculate beat length as sample offsets
     m_dBeatLength = (60.0 * m_iSampleRate / dBpm) * kFrameSize;
 }
@@ -132,7 +133,8 @@ double BeatGrid::findPrevBeat(double dSamples) const {
     return findNthBeat(dSamples, -1);
 }
 
-// This is an internal call. This could be implemented in the Beats Class itself.
+// This is an internal call. This could be implemented in the Beats Class
+// itself.
 double BeatGrid::findClosestBeat(double dSamples) const {
     QMutexLocker locker(&m_mutex);
     if (!isValid()) {
@@ -200,8 +202,7 @@ double BeatGrid::findNthBeat(double dSamples, int n) const {
     return dResult;
 }
 
-bool BeatGrid::findPrevNextBeats(double dSamples,
-                                 double* dpPrevBeatSamples,
+bool BeatGrid::findPrevNextBeats(double dSamples, double* dpPrevBeatSamples,
                                  double* dpNextBeatSamples) const {
     double dFirstBeatSample;
     double dBeatLength;
@@ -226,7 +227,8 @@ bool BeatGrid::findPrevNextBeats(double dSamples,
 
     if (fabs(nextBeat - beatFraction) < kEpsilon) {
         beatFraction = nextBeat;
-        // If we are going to pretend we were actually on nextBeat then prevBeatFraction
+        // If we are going to pretend we were actually on nextBeat then
+        // prevBeatFraction
         // needs to be re-calculated. Since it is floor(beatFraction), that's
         // the same as nextBeat.
         prevBeat = nextBeat;
@@ -244,14 +246,15 @@ bool BeatGrid::findPrevNextBeats(double dSamples,
     return true;
 }
 
-
 BeatIterator* BeatGrid::findBeats(double startSample, double stopSample) const {
     QMutexLocker locker(&m_mutex);
     if (!isValid() || startSample > stopSample) {
         return NULL;
     }
-    // qDebug() << "BeatGrid::findBeats startSample" << startSample << "stopSample"
-    //          << stopSample << "beatlength" << m_dBeatLength << "BPM" << bpm();
+    // qDebug() << "BeatGrid::findBeats startSample" << startSample <<
+    // "stopSample"
+    //          << stopSample << "beatlength" << m_dBeatLength << "BPM" <<
+    //          bpm();
     double curBeat = findNextBeat(startSample);
     if (curBeat == -1.0) {
         return NULL;
@@ -300,20 +303,20 @@ double BeatGrid::getBpmAroundPosition(double curSample, int n) const {
 
 void BeatGrid::addBeat(double dBeatSample) {
     Q_UNUSED(dBeatSample);
-    //QMutexLocker locker(&m_mutex);
+    // QMutexLocker locker(&m_mutex);
     return;
 }
 
 void BeatGrid::removeBeat(double dBeatSample) {
     Q_UNUSED(dBeatSample);
-    //QMutexLocker locker(&m_mutex);
+    // QMutexLocker locker(&m_mutex);
     return;
 }
 
 void BeatGrid::moveBeat(double dBeatSample, double dNewBeatSample) {
     Q_UNUSED(dBeatSample);
     Q_UNUSED(dNewBeatSample);
-    //QMutexLocker locker(&m_mutex);
+    // QMutexLocker locker(&m_mutex);
     return;
 }
 

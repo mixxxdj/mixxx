@@ -38,7 +38,7 @@ class DirectoryDAOTest : public MixxxTest {
         delete m_pTrackCollection;
     }
 
-    TrackCollection* m_pTrackCollection;
+    TrackCollection *m_pTrackCollection;
 };
 
 TEST_F(DirectoryDAOTest, addDirTest) {
@@ -48,7 +48,7 @@ TEST_F(DirectoryDAOTest, addDirTest) {
     QString testChild(QDir::tempPath() + "/TestDir/a/child");
     QString testParent(QDir::tempPath() + "/TestDir");
 
-    //create temp dirs
+    // create temp dirs
     QDir(QDir::temp()).mkpath(testParent);
     QDir(QDir::temp()).mkpath(testdir);
     QDir(QDir::temp()).mkpath(testChild);
@@ -141,14 +141,18 @@ TEST_F(DirectoryDAOTest, relocateDirTest) {
     TrackDAO &trackDAO = m_pTrackCollection->getTrackDAO();
     // ok now lets create some tracks here
     trackDAO.addTracksPrepare();
-    trackDAO.addTracksAdd(new TrackInfoObject(
-            testdir + "/a", SecurityTokenPointer(), false), false);
-    trackDAO.addTracksAdd(new TrackInfoObject(
-            testdir + "/b", SecurityTokenPointer(), false), false);
-    trackDAO.addTracksAdd(new TrackInfoObject(
-            test2 + "/c", SecurityTokenPointer(), false), false);
-    trackDAO.addTracksAdd(new TrackInfoObject(
-            test2 + "/d", SecurityTokenPointer(), false), false);
+    trackDAO.addTracksAdd(
+            new TrackInfoObject(testdir + "/a", SecurityTokenPointer(), false),
+            false);
+    trackDAO.addTracksAdd(
+            new TrackInfoObject(testdir + "/b", SecurityTokenPointer(), false),
+            false);
+    trackDAO.addTracksAdd(
+            new TrackInfoObject(test2 + "/c", SecurityTokenPointer(), false),
+            false);
+    trackDAO.addTracksAdd(
+            new TrackInfoObject(test2 + "/d", SecurityTokenPointer(), false),
+            false);
     trackDAO.addTracksFinish(false);
 
     QSet<int> ids = directoryDao.relocateDirectory(testdir, testnew);

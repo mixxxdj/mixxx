@@ -3,16 +3,13 @@
 #include "guitick.h"
 #include "controlobject.h"
 
-
 // static
 double GuiTick::m_cpuTimeLastTick = 0.0;
 
-GuiTick::GuiTick(QObject* pParent)
-        : QObject(pParent),
-          m_lastUpdateTime(0.0) {
-     m_pCOGuiTickTime = new ControlObject(ConfigKey("[Master]", "guiTickTime"));
-     m_pCOGuiTick50ms = new ControlObject(ConfigKey("[Master]", "guiTick50ms"));
-     m_cpuTimer.start();
+GuiTick::GuiTick(QObject* pParent) : QObject(pParent), m_lastUpdateTime(0.0) {
+    m_pCOGuiTickTime = new ControlObject(ConfigKey("[Master]", "guiTickTime"));
+    m_pCOGuiTick50ms = new ControlObject(ConfigKey("[Master]", "guiTick50ms"));
+    m_cpuTimer.start();
 }
 
 GuiTick::~GuiTick() {
@@ -36,5 +33,5 @@ void GuiTick::process() {
 
 // static
 double GuiTick::cpuTimeLastTick() {
-     return m_cpuTimeLastTick;
+    return m_cpuTimeLastTick;
 }

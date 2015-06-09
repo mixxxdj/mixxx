@@ -40,11 +40,16 @@ class PlaylistDAO : public QObject, public virtual DAO {
     virtual ~PlaylistDAO();
 
     void initialize();
-    void setDatabase(QSqlDatabase& database) { m_database = database; }
+    void setDatabase(QSqlDatabase& database) {
+        m_database = database;
+    }
     // Create a playlist, fails with -1 if already exists
-    int createPlaylist(const QString& name, const HiddenType type = PLHT_NOT_HIDDEN);
-    // Create a playlist, appends "(n)" if already exists, name becomes the new name
-    int createUniquePlaylist(QString* pName, const HiddenType type = PLHT_NOT_HIDDEN);
+    int createPlaylist(const QString& name,
+                       const HiddenType type = PLHT_NOT_HIDDEN);
+    // Create a playlist, appends "(n)" if already exists, name becomes the new
+    // name
+    int createUniquePlaylist(QString* pName,
+                             const HiddenType type = PLHT_NOT_HIDDEN);
     // Delete a playlist
     void deletePlaylist(const int playlistId);
     // Rename a playlist
@@ -54,7 +59,8 @@ class PlaylistDAO : public QObject, public virtual DAO {
     // Find out the state of a playlist lock
     bool isPlaylistLocked(const int playlistId) const;
     // Append a list of tracks to a playlist
-    bool appendTracksToPlaylist(const QList<int>& trackIds, const int playlistId);
+    bool appendTracksToPlaylist(const QList<int>& trackIds,
+                                const int playlistId);
     // Append a track to a playlist
     bool appendTrackToPlaylist(const int trackId, const int playlistId);
     // Find out how many playlists exist.
@@ -82,23 +88,27 @@ class PlaylistDAO : public QObject, public virtual DAO {
     // Insert a track into a specific position in a playlist
     bool insertTrackIntoPlaylist(int trackId, int playlistId, int position);
     // Inserts a list of tracks into playlist
-    int insertTracksIntoPlaylist(const QList<int>& trackIds, const int playlistId, int position);
+    int insertTracksIntoPlaylist(const QList<int>& trackIds,
+                                 const int playlistId, int position);
     // Add a playlist to the Auto-DJ Queue
     void addPlaylistToAutoDJQueue(const int playlistId, const bool bTop);
     // Add a list of tracks to the Auto-DJ Queue
     void addTracksToAutoDJQueue(const QList<int>& trackIds, const bool bTop);
     // Get the preceding playlist of currentPlaylistId with the HiddenType
     // hidden. Returns -1 if no such playlist exists.
-    int getPreviousPlaylist(const int currentPlaylistId, HiddenType hidden) const;
+    int getPreviousPlaylist(const int currentPlaylistId,
+                            HiddenType hidden) const;
     // Append all the tracks in the source playlist to the target playlist.
-    bool copyPlaylistTracks(const int sourcePlaylistID, const int targetPlaylistID);
+    bool copyPlaylistTracks(const int sourcePlaylistID,
+                            const int targetPlaylistID);
     // Returns the number of tracks in the given playlist.
     int tracksInPlaylist(const int playlistId) const;
     // moved Track to a new position
-    void moveTrack(const int playlistId,
-            const int oldPosition, const int newPosition);
+    void moveTrack(const int playlistId, const int oldPosition,
+                   const int newPosition);
     // shuffles all tracks in the position List
-    void shuffleTracks(const int playlistId, const QList<int>& positions, const QHash<int,int>& allIds);
+    void shuffleTracks(const int playlistId, const QList<int>& positions,
+                       const QHash<int, int>& allIds);
 
   signals:
     void added(int playlistId);
@@ -111,16 +121,14 @@ class PlaylistDAO : public QObject, public virtual DAO {
 
   private:
     void removeTracksFromPlaylistsInner(const QStringList& idList);
-    void searchForDuplicateTrack(const int fromPosition,
-                                 const int toPosition,
-                                 const int trackID,
-                                 const int excludePosition,
+    void searchForDuplicateTrack(const int fromPosition, const int toPosition,
+                                 const int trackID, const int excludePosition,
                                  const int otherTrackPosition,
-                                 const QHash<int,int>* pTrackPositionIds,
+                                 const QHash<int, int>* pTrackPositionIds,
                                  int* pTrackDistance);
 
     QSqlDatabase& m_database;
     DISALLOW_COPY_AND_ASSIGN(PlaylistDAO);
 };
 
-#endif //PLAYLISTDAO_H
+#endif  // PLAYLISTDAO_H

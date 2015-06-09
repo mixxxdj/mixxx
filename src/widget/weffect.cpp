@@ -6,8 +6,7 @@
 #include "widget/effectwidgetutils.h"
 
 WEffect::WEffect(QWidget* pParent, EffectsManager* pEffectsManager)
-        : WLabel(pParent),
-          m_pEffectsManager(pEffectsManager) {
+        : WLabel(pParent), m_pEffectsManager(pEffectsManager) {
     effectUpdated();
 }
 
@@ -19,10 +18,10 @@ void WEffect::setup(QDomNode node, const SkinContext& context) {
     // EffectWidgetUtils propagates NULLs so this is all safe.
     EffectRackPointer pRack = EffectWidgetUtils::getEffectRackFromNode(
             node, context, m_pEffectsManager);
-    EffectChainSlotPointer pChainSlot = EffectWidgetUtils::getEffectChainSlotFromNode(
-            node, context, pRack);
-    EffectSlotPointer pEffectSlot = EffectWidgetUtils::getEffectSlotFromNode(
-            node, context, pChainSlot);
+    EffectChainSlotPointer pChainSlot =
+            EffectWidgetUtils::getEffectChainSlotFromNode(node, context, pRack);
+    EffectSlotPointer pEffectSlot =
+            EffectWidgetUtils::getEffectSlotFromNode(node, context, pChainSlot);
     if (pEffectSlot) {
         setEffectSlot(pEffectSlot);
     } else {
@@ -34,8 +33,8 @@ void WEffect::setup(QDomNode node, const SkinContext& context) {
 void WEffect::setEffectSlot(EffectSlotPointer pEffectSlot) {
     if (pEffectSlot) {
         m_pEffectSlot = pEffectSlot;
-        connect(pEffectSlot.data(), SIGNAL(updated()),
-                this, SLOT(effectUpdated()));
+        connect(pEffectSlot.data(), SIGNAL(updated()), this,
+                SLOT(effectUpdated()));
         effectUpdated();
     }
 }

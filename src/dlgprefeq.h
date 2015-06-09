@@ -31,10 +31,10 @@
 /**
   *@author John Sully
   */
-class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
+class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg {
     Q_OBJECT
   public:
-    DlgPrefEQ(QWidget *parent, EffectsManager* pEffectsManager,
+    DlgPrefEQ(QWidget* parent, EffectsManager* pEffectsManager,
               ConfigObject<ConfigValue>* _config);
     virtual ~DlgPrefEQ();
 
@@ -65,7 +65,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     void slotMasterEqEffectChanged(int effectIndex);
 
   signals:
-    void apply(const QString &);
+    void apply(const QString&);
     void effectOnChainSlot(const unsigned int, const unsigned int, QString);
 
   private:

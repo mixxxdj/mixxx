@@ -10,7 +10,7 @@
 #include "util/file.h"
 #include "library/browse/browsethread.h"
 
-//constants
+// constants
 const int COLUMN_PREVIEW = 0;
 const int COLUMN_FILENAME = 1;
 const int COLUMN_ARTIST = 2;
@@ -32,7 +32,6 @@ const int COLUMN_GROUPING = 17;
 const int COLUMN_FILE_MODIFIED_TIME = 18;
 const int COLUMN_FILE_CREATION_TIME = 19;
 
-
 // The BrowseTable models displays tracks
 // of given directory on the HDD.
 // Usage: Recording and Browse feature.
@@ -40,35 +39,40 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel {
     Q_OBJECT
 
   public:
-    BrowseTableModel(QObject* parent, TrackCollection* pTrackCollection, RecordingManager* pRec);
+    BrowseTableModel(QObject* parent, TrackCollection* pTrackCollection,
+                     RecordingManager* pRec);
     virtual ~BrowseTableModel();
     void setPath(const MDir& path);
-    //reimplemented from TrackModel class
+    // reimplemented from TrackModel class
     virtual TrackPointer getTrack(const QModelIndex& index) const;
     virtual TrackModel::CapabilitiesFlags getCapabilities() const;
 
     QString getTrackLocation(const QModelIndex& index) const;
     int getTrackId(const QModelIndex& index) const;
     const QLinkedList<int> getTrackRows(int trackId) const;
-    void search(const QString& searchText,const QString& extraFilter=QString());
+    void search(const QString& searchText,
+                const QString& extraFilter = QString());
     void removeTrack(const QModelIndex& index);
     void removeTracks(const QModelIndexList& indices);
     bool addTrack(const QModelIndex& index, QString location);
-    QMimeData* mimeData(const QModelIndexList &indexes) const;
+    QMimeData* mimeData(const QModelIndexList& indexes) const;
     const QString currentSearch() const;
     bool isColumnInternal(int);
     void moveTrack(const QModelIndex&, const QModelIndex&);
-    bool isLocked() { return false;}
+    bool isLocked() {
+        return false;
+    }
     bool isColumnHiddenByDefault(int column);
     const QList<int>& searchColumns() const;
-    Qt::ItemFlags flags(const QModelIndex &index) const;
-    bool setData(const QModelIndex& index, const QVariant& value, int role=Qt::EditRole);
+    Qt::ItemFlags flags(const QModelIndex& index) const;
+    bool setData(const QModelIndex& index, const QVariant& value,
+                 int role = Qt::EditRole);
     QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent);
     virtual bool isColumnSortable(int column);
 
   public slots:
     void slotClear(BrowseTableModel*);
-    void slotInsert(const QList< QList<QStandardItem*> >&, BrowseTableModel*);
+    void slotInsert(const QList<QList<QStandardItem*>>&, BrowseTableModel*);
     void trackLoaded(QString group, TrackPointer pTrack);
 
   private:

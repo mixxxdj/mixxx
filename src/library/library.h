@@ -36,15 +36,13 @@ class PlayerManagerInterface;
 
 class Library : public QObject {
     Q_OBJECT
-public:
-    Library(QObject* parent,
-            ConfigObject<ConfigValue>* pConfig,
+  public:
+    Library(QObject* parent, ConfigObject<ConfigValue>* pConfig,
             PlayerManagerInterface* pPlayerManager,
             RecordingManager* pRecordingManager);
     virtual ~Library();
 
-    void bindWidget(WLibrary* libraryWidget,
-                    MixxxKeyboard* pKeyboard);
+    void bindWidget(WLibrary* libraryWidget, MixxxKeyboard* pKeyboard);
     void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
 
     void addFeature(LibraryFeature* feature);
@@ -66,13 +64,9 @@ public:
         return m_trackTableFont;
     }
 
-    //static Library* buildDefaultLibrary();
+    // static Library* buildDefaultLibrary();
 
-    enum RemovalType {
-        LeaveTracksUnchanged = 0,
-        HideTracks,
-        PurgeTracks
-    };
+    enum RemovalType { LeaveTracksUnchanged = 0, HideTracks, PurgeTracks };
 
     static const int kDefaultRowHeightPx;
 
@@ -87,8 +81,10 @@ public:
     void slotCreatePlaylist();
     void slotCreateCrate();
     void slotRequestAddDir(QString directory);
-    void slotRequestRemoveDir(QString directory, Library::RemovalType removalType);
-    void slotRequestRelocateDir(QString previousDirectory, QString newDirectory);
+    void slotRequestRemoveDir(QString directory,
+                              Library::RemovalType removalType);
+    void slotRequestRelocateDir(QString previousDirectory,
+                                QString newDirectory);
     void onSkinLoadFinished();
     void slotSetTrackTableFont(const QFont& font);
     void slotSetTrackTableRowHeight(int rowHeight);
@@ -97,7 +93,8 @@ public:
     void showTrackModel(QAbstractItemModel* model);
     void switchToView(const QString& view);
     void loadTrack(TrackPointer pTrack);
-    void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
+    void loadTrackToPlayer(TrackPointer pTrack, QString group,
+                           bool play = false);
     void restoreSearch(const QString&);
     void search(const QString& text);
     void searchCleared();

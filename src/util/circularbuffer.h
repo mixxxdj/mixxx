@@ -23,7 +23,7 @@ class CircularBuffer {
     }
 
     virtual ~CircularBuffer() {
-        delete [] m_pBuffer;
+        delete[] m_pBuffer;
         m_pBuffer = NULL;
     }
 

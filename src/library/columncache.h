@@ -8,7 +8,6 @@
 // column name to index.
 class ColumnCache {
   public:
-
     enum Column {
         COLUMN_LIBRARYTABLE_INVALID = -1,
         COLUMN_LIBRARYTABLE_ID = 0,
@@ -66,7 +65,8 @@ class ColumnCache {
         NUM_COLUMNS
     };
 
-    ColumnCache() { }
+    ColumnCache() {
+    }
     ColumnCache(const QStringList& columns) {
         setColumns(columns);
     }

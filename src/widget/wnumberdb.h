@@ -17,4 +17,4 @@ class WNumberDb : public WNumber {
     virtual void setValue(double dValue);
 };
 
-#endif // WNUMBERDB_H
+#endif  // WNUMBERDB_H

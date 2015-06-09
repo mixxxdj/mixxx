@@ -9,7 +9,8 @@
 #include "controllers/delegates/midibytedelegate.h"
 #include "controllers/delegates/midioptionsdelegate.h"
 
-ControllerInputMappingTableModel::ControllerInputMappingTableModel(QObject* pParent)
+ControllerInputMappingTableModel::ControllerInputMappingTableModel(
+        QObject* pParent)
         : ControllerMappingTableModel(pParent) {
 }
 
@@ -42,7 +43,8 @@ void ControllerInputMappingTableModel::onPresetLoaded() {
         setHeaderData(MIDI_COLUMN_COMMENT, Qt::Horizontal, tr("Comment"));
 
         if (!m_pMidiPreset->inputMappings.isEmpty()) {
-            beginInsertRows(QModelIndex(), 0, m_pMidiPreset->inputMappings.size() - 1);
+            beginInsertRows(QModelIndex(), 0,
+                            m_pMidiPreset->inputMappings.size() - 1);
             m_midiInputMappings = m_pMidiPreset->inputMappings.values();
             endInsertRows();
         }
@@ -59,7 +61,8 @@ void ControllerInputMappingTableModel::clear() {
     }
 }
 
-void ControllerInputMappingTableModel::addMappings(const MidiInputMappings& mappings) {
+void ControllerInputMappingTableModel::addMappings(
+        const MidiInputMappings& mappings) {
     if (mappings.isEmpty()) {
         return;
     }
@@ -103,9 +106,7 @@ void ControllerInputMappingTableModel::addEmptyMapping() {
 void ControllerInputMappingTableModel::removeMappings(QModelIndexList indices) {
     // Values don't matter, it's just to get a consistent ordering.
     QList<int> rows;
-    foreach (const QModelIndex& index, indices) {
-        rows.append(index.row());
-    }
+    foreach (const QModelIndex& index, indices) { rows.append(index.row()); }
     qSort(rows);
 
     int lastRow = -1;
@@ -144,7 +145,8 @@ QAbstractItemDelegate* ControllerInputMappingTableModel::delegateForColumn(
     return NULL;
 }
 
-int ControllerInputMappingTableModel::rowCount(const QModelIndex& parent) const {
+int ControllerInputMappingTableModel::rowCount(
+        const QModelIndex& parent) const {
     if (parent.isValid()) {
         return 0;
     }
@@ -154,7 +156,8 @@ int ControllerInputMappingTableModel::rowCount(const QModelIndex& parent) const 
     return 0;
 }
 
-int ControllerInputMappingTableModel::columnCount(const QModelIndex& parent) const {
+int ControllerInputMappingTableModel::columnCount(
+        const QModelIndex& parent) const {
     if (parent.isValid()) {
         return 0;
     }
@@ -170,8 +173,7 @@ int ControllerInputMappingTableModel::columnCount(const QModelIndex& parent) con
 QVariant ControllerInputMappingTableModel::data(const QModelIndex& index,
                                                 int role) const {
     // We use UserRole as the "sort" role with QSortFilterProxyModel.
-    if (!index.isValid() || (role != Qt::DisplayRole &&
-                             role != Qt::EditRole &&
+    if (!index.isValid() || (role != Qt::DisplayRole && role != Qt::EditRole &&
                              role != Qt::UserRole)) {
         return QVariant();
     }
@@ -233,14 +235,16 @@ bool ControllerInputMappingTableModel::setData(const QModelIndex& index,
 
         switch (column) {
             case MIDI_COLUMN_CHANNEL:
-                mapping.key.status = static_cast<unsigned char>(
-                    MidiUtils::opCodeFromStatus(mapping.key.status)) |
+                mapping.key.status =
+                        static_cast<unsigned char>(MidiUtils::opCodeFromStatus(
+                                mapping.key.status)) |
                         static_cast<unsigned char>(value.toInt());
                 emit(dataChanged(index, index));
                 return true;
             case MIDI_COLUMN_OPCODE:
-                mapping.key.status = static_cast<unsigned char>(
-                    MidiUtils::channelFromStatus(mapping.key.status)) |
+                mapping.key.status =
+                        static_cast<unsigned char>(MidiUtils::channelFromStatus(
+                                mapping.key.status)) |
                         static_cast<unsigned char>(value.toInt());
                 emit(dataChanged(index, index));
                 return true;

@@ -43,8 +43,7 @@ class EngineBufferScaleST : public EngineBufferScale {
     EngineBufferScaleST(ReadAheadManager* pReadAheadManager);
     virtual ~EngineBufferScaleST();
 
-    virtual void setScaleParameters(double base_rate,
-                                    double* pTempoRatio,
+    virtual void setScaleParameters(double base_rate, double* pTempoRatio,
                                     double* pPitchRatio);
 
     virtual void setSampleRate(int iSampleRate);

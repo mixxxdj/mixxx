@@ -11,12 +11,22 @@ class GLVSyncTestWidget : public QGLWidget, public WaveformWidgetAbstract {
     GLVSyncTestWidget(const char* group, QWidget* parent);
     virtual ~GLVSyncTestWidget();
 
-    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::GLVSyncTest; }
+    virtual WaveformWidgetType::Type getType() const {
+        return WaveformWidgetType::GLVSyncTest;
+    }
 
-    static inline QString getWaveformWidgetName() { return tr("VSyncTest"); }
-    static inline bool useOpenGl() { return true; }
-    static inline bool useOpenGLShaders() { return false; }
-    static inline bool developerOnly() { return true; }
+    static inline QString getWaveformWidgetName() {
+        return tr("VSyncTest");
+    }
+    static inline bool useOpenGl() {
+        return true;
+    }
+    static inline bool useOpenGLShaders() {
+        return false;
+    }
+    static inline bool developerOnly() {
+        return true;
+    }
 
   protected:
     virtual void castToQWidget();
@@ -26,4 +36,4 @@ class GLVSyncTestWidget : public QGLWidget, public WaveformWidgetAbstract {
   private:
     friend class WaveformWidgetFactory;
 };
-#endif // GLVSYNCTESTWIDGET_H
+#endif  // GLVSYNCTESTWIDGET_H

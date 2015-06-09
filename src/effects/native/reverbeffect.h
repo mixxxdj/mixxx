@@ -44,8 +44,7 @@ class ReverbEffect : public PerChannelEffectProcessor<ReverbGroupState> {
     static EffectManifest getManifest();
 
     // See effectprocessor.h
-    void processChannel(const ChannelHandle& handle,
-                        ReverbGroupState* pState,
+    void processChannel(const ChannelHandle& handle, ReverbGroupState* pState,
                         const CSAMPLE* pInput, CSAMPLE* pOutput,
                         const unsigned int numSamples,
                         const unsigned int sampleRate,

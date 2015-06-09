@@ -32,9 +32,8 @@ void AudioSource::setBitrate(SINT bitrate) {
     m_bitrate = bitrate;
 }
 
-SINT AudioSource::getSampleBufferSize(
-        SINT numberOfFrames,
-        bool readStereoSamples) const {
+SINT AudioSource::getSampleBufferSize(SINT numberOfFrames,
+                                      bool readStereoSamples) const {
     if (readStereoSamples) {
         return numberOfFrames * kChannelCountStereo;
     } else {
@@ -42,50 +41,51 @@ SINT AudioSource::getSampleBufferSize(
     }
 }
 
-SINT AudioSource::readSampleFramesStereo(
-        SINT numberOfFrames,
-        CSAMPLE* sampleBuffer,
-        SINT sampleBufferSize) {
+SINT AudioSource::readSampleFramesStereo(SINT numberOfFrames,
+                                         CSAMPLE* sampleBuffer,
+                                         SINT sampleBufferSize) {
     DEBUG_ASSERT(getSampleBufferSize(numberOfFrames, true) <= sampleBufferSize);
 
     switch (getChannelCount()) {
-        case 1: // mono channel
+        case 1:  // mono channel
         {
-            const SINT readFrameCount = readSampleFrames(
-                    numberOfFrames, sampleBuffer);
+            const SINT readFrameCount =
+                    readSampleFrames(numberOfFrames, sampleBuffer);
             SampleUtil::doubleMonoToDualMono(sampleBuffer, readFrameCount);
             return readFrameCount;
         }
-        case 2: // stereo channel(s)
+        case 2:  // stereo channel(s)
         {
             return readSampleFrames(numberOfFrames, sampleBuffer);
         }
-        default: // multiple (3 or more) channels
+        default:  // multiple (3 or more) channels
         {
             const SINT numberOfSamplesToRead = frames2samples(numberOfFrames);
             if (numberOfSamplesToRead <= sampleBufferSize) {
                 // efficient in-place transformation
-                const SINT readFrameCount = readSampleFrames(
-                        numberOfFrames, sampleBuffer);
+                const SINT readFrameCount =
+                        readSampleFrames(numberOfFrames, sampleBuffer);
                 SampleUtil::copyMultiToStereo(sampleBuffer, sampleBuffer,
-                        readFrameCount, getChannelCount());
+                                              readFrameCount,
+                                              getChannelCount());
                 return readFrameCount;
             } else {
                 // inefficient transformation through a temporary buffer
                 qDebug() << "Performance warning:"
-                        << "Allocating a temporary buffer of size"
-                        << numberOfSamplesToRead << "for reading stereo samples."
-                        << "The size of the provided sample buffer is"
-                        << sampleBufferSize;
+                         << "Allocating a temporary buffer of size"
+                         << numberOfSamplesToRead
+                         << "for reading stereo samples."
+                         << "The size of the provided sample buffer is"
+                         << sampleBufferSize;
                 SampleBuffer tempBuffer(numberOfSamplesToRead);
-                const SINT readFrameCount = readSampleFrames(
-                        numberOfFrames, tempBuffer.data());
+                const SINT readFrameCount =
+                        readSampleFrames(numberOfFrames, tempBuffer.data());
                 SampleUtil::copyMultiToStereo(sampleBuffer, tempBuffer.data(),
-                        readFrameCount, getChannelCount());
+                                              readFrameCount,
+                                              getChannelCount());
                 return readFrameCount;
             }
         }
     }
 }
-
 }

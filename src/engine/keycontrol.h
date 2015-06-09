@@ -11,7 +11,6 @@ class ControlPushButton;
 class KeyControl : public EngineControl {
     Q_OBJECT
   public:
-
     struct PitchTempoRatio {
         // this is the calculated value used by engine buffer for pitch
         // by default is is equal to the tempoRatio set by the speed slider
@@ -27,7 +26,8 @@ class KeyControl : public EngineControl {
     KeyControl(QString group, ConfigObject<ConfigValue>* pConfig);
     virtual ~KeyControl();
 
-    // Returns a struct, with the results of the last pitch and tempo calculations
+    // Returns a struct, with the results of the last pitch and tempo
+    // calculations
     KeyControl::PitchTempoRatio getPitchTempoRatio();
 
     double getKey();
@@ -81,4 +81,4 @@ class KeyControl : public EngineControl {
     QAtomicInt m_updateRateRequest;
 };
 
-#endif // KEYCONTROL_H
+#endif  // KEYCONTROL_H

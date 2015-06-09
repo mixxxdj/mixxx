@@ -7,8 +7,7 @@
 #include "engine/sync/enginesync.h"
 #include "playermanager.h"
 
-EngineControl::EngineControl(QString group,
-                             ConfigObject<ConfigValue>* _config)
+EngineControl::EngineControl(QString group, ConfigObject<ConfigValue>* _config)
         : m_group(group),
           m_pConfig(_config),
           m_pEngineMaster(NULL),
@@ -20,23 +19,17 @@ EngineControl::EngineControl(QString group,
 EngineControl::~EngineControl() {
 }
 
-double EngineControl::process(const double,
-                              const double,
-                              const double,
+double EngineControl::process(const double, const double, const double,
                               const int) {
     return kNoTrigger;
 }
 
-double EngineControl::nextTrigger(const double,
-                                  const double,
-                                  const double,
+double EngineControl::nextTrigger(const double, const double, const double,
                                   const int) {
     return kNoTrigger;
 }
 
-double EngineControl::getTrigger(const double,
-                                 const double,
-                                 const double,
+double EngineControl::getTrigger(const double, const double, const double,
                                  const int) {
     return kNoTrigger;
 }
@@ -58,7 +51,8 @@ void EngineControl::setEngineBuffer(EngineBuffer* pEngineBuffer) {
     m_pEngineBuffer = pEngineBuffer;
 }
 
-void EngineControl::setCurrentSample(const double dCurrentSample, const double dTotalSamples) {
+void EngineControl::setCurrentSample(const double dCurrentSample,
+                                     const double dTotalSamples) {
     SampleOfTrack sot;
     sot.current = dCurrentSample;
     sot.total = dTotalSamples;

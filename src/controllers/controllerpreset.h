@@ -21,13 +21,13 @@ class ConstControllerPresetVisitor;
 
 class ControllerPreset {
   public:
-    ControllerPreset() {}
-    virtual ~ControllerPreset() {}
+    ControllerPreset() {
+    }
+    virtual ~ControllerPreset() {
+    }
 
     struct ScriptFileInfo {
-        ScriptFileInfo()
-                : builtin(false) {
-
+        ScriptFileInfo() : builtin(false) {
         }
 
         QString name;
@@ -36,12 +36,13 @@ class ControllerPreset {
     };
 
     /** addScriptFile(QString,QString)
-     * Adds an entry to the list of script file names & associated list of function prefixes
+     * Adds an entry to the list of script file names & associated list of
+     * function prefixes
      * @param filename Name of the XML file to add
      * @param functionprefix Function prefix to add
      */
     void addScriptFile(QString filename, QString functionprefix,
-                       bool builtin=false) {
+                       bool builtin = false) {
         ScriptFileInfo info;
         info.name = filename;
         info.functionPrefix = functionprefix;
@@ -121,7 +122,7 @@ class ControllerPreset {
         return m_mixxxVersion;
     }
 
-    inline void addProductMatch(QHash<QString,QString> match) {
+    inline void addProductMatch(QHash<QString, QString> match) {
         m_productMatches.append(match);
     }
 
@@ -131,7 +132,7 @@ class ControllerPreset {
 
     QList<ScriptFileInfo> scripts;
     // Optional list of controller device match details
-    QList< QHash<QString,QString> > m_productMatches;
+    QList<QHash<QString, QString>> m_productMatches;
 
   private:
     QString m_deviceId;

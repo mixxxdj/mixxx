@@ -35,8 +35,8 @@ Keys KeyFactory::makeBasicKeysFromText(const QString& global_key_text,
                                        mixxx::track::io::key::Source source) {
     KeyMap key_map;
     key_map.set_source(source);
-    mixxx::track::io::key::ChromaticKey global_key = KeyUtils::guessKeyFromText(
-        global_key_text);
+    mixxx::track::io::key::ChromaticKey global_key =
+            KeyUtils::guessKeyFromText(global_key_text);
     if (global_key != mixxx::track::io::key::INVALID) {
         key_map.set_global_key(global_key);
     } else {
@@ -65,23 +65,25 @@ QString KeyFactory::getPreferredSubVersion(
             it.key().contains(kSubVersionFragmentSeparator) ||
             it.value().contains(kSubVersionKeyValueSeparator) ||
             it.value().contains(kSubVersionFragmentSeparator)) {
-            qDebug() << "ERROR: Your analyser key/value contains invalid characters:"
-                     << it.key() << ":" << it.value() << "Skipping.";
+            qDebug() << "ERROR: Your analyser key/value contains invalid "
+                        "characters:" << it.key() << ":" << it.value()
+                     << "Skipping.";
             continue;
         }
         fragments << QString("%1%2%3").arg(
-            it.key(), kSubVersionKeyValueSeparator, it.value());
+                it.key(), kSubVersionKeyValueSeparator, it.value());
     }
 
     qSort(fragments);
-    return (fragments.size() > 0) ? fragments.join(kSubVersionFragmentSeparator) : "";
+    return (fragments.size() > 0) ? fragments.join(kSubVersionFragmentSeparator)
+                                  : "";
 }
 
 // static
 Keys KeyFactory::makePreferredKeys(
         const KeyChangeList& key_changes,
-        const QHash<QString, QString>& extraVersionInfo,
-        const int iSampleRate, const int iTotalSamples) {
+        const QHash<QString, QString>& extraVersionInfo, const int iSampleRate,
+        const int iTotalSamples) {
     Q_UNUSED(iSampleRate);
 
     const QString version = getPreferredVersion();
@@ -98,7 +100,8 @@ Keys KeyFactory::makePreferredKeys(
             pChange->set_key(it->first);
             pChange->set_frame_position(frame);
         }
-        key_map.set_global_key(KeyUtils::calculateGlobalKey(key_changes, iTotalSamples));
+        key_map.set_global_key(
+                KeyUtils::calculateGlobalKey(key_changes, iTotalSamples));
         key_map.set_source(mixxx::track::io::key::ANALYSER);
         Keys keys(key_map);
         keys.setSubVersion(subVersion);

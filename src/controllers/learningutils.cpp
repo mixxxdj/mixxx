@@ -9,9 +9,7 @@
 typedef QPair<MidiKey, unsigned char> MidiKeyAndValue;
 
 struct MessageStats {
-    MessageStats()
-            : message_count(0),
-              last_value(0) {
+    MessageStats() : message_count(0), last_value(0) {
     }
 
     void addMessage(const MidiKeyAndValue& message) {
@@ -21,7 +19,8 @@ struct MessageStats {
         }
 
         MidiOpCode opcode = MidiUtils::opCodeFromStatus(message.first.status);
-        unsigned char channel = MidiUtils::channelFromStatus(message.first.status);
+        unsigned char channel =
+                MidiUtils::channelFromStatus(message.first.status);
         opcodes.insert(opcode);
         channels.insert(channel);
         controls.insert(message.first.control);
@@ -49,7 +48,7 @@ struct MessageStats {
 // static
 MidiInputMappings LearningUtils::guessMidiInputMappings(
         const ConfigKey& control,
-        const QList<QPair<MidiKey, unsigned char> >& messages) {
+        const QList<QPair<MidiKey, unsigned char>>& messages) {
     QMap<unsigned char, MessageStats> stats_by_control;
     MessageStats stats;
 
@@ -59,7 +58,8 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         stats_by_control[message.first.control].addMessage(message);
     }
 
-    qDebug() << "LearningUtils guessing MIDI mapping from" << messages.size() << "messages.";
+    qDebug() << "LearningUtils guessing MIDI mapping from" << messages.size()
+             << "messages.";
 
     foreach (MidiOpCode opcode, stats.opcodes) {
         qDebug() << "Opcode:" << opcode;
@@ -73,10 +73,10 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         qDebug() << "Control:" << control;
     }
 
-    for (QMap<unsigned char, int>::const_iterator it = stats.value_histogram.begin();
+    for (QMap<unsigned char, int>::const_iterator it =
+                 stats.value_histogram.begin();
          it != stats.value_histogram.end(); ++it) {
-        qDebug() << "Overall Value:" << it.key()
-                 << "count" << it.value();
+        qDebug() << "Overall Value:" << it.key() << "count" << it.value();
     }
 
     for (QMap<unsigned char, MessageStats>::const_iterator control_it =
@@ -86,8 +86,8 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         for (QMap<unsigned char, int>::const_iterator it =
                      control_it->value_histogram.begin();
              it != control_it->value_histogram.end(); ++it) {
-            qDebug() << controlName << "Value:" << it.key()
-                     << "count" << it.value();
+            qDebug() << controlName << "Value:" << it.key() << "count"
+                     << it.value();
         }
     }
 
@@ -95,15 +95,17 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
 
     bool one_control = stats.controls.size() == 1;
     bool one_channel = stats.channels.size() == 1;
-    bool only_note_on = stats.opcodes.size() == 1 && stats.opcodes.contains(MIDI_NOTE_ON);
+    bool only_note_on =
+            stats.opcodes.size() == 1 && stats.opcodes.contains(MIDI_NOTE_ON);
     bool only_note_on_and_note_off = stats.opcodes.size() == 2 &&
-            stats.opcodes.contains(MIDI_NOTE_ON) &&
-            stats.opcodes.contains(MIDI_NOTE_OFF);
+                                     stats.opcodes.contains(MIDI_NOTE_ON) &&
+                                     stats.opcodes.contains(MIDI_NOTE_OFF);
 
     bool has_cc = stats.opcodes.contains(MIDI_CC);
     bool only_cc = stats.opcodes.size() == 1 && has_cc;
     int num_cc_controls = 0;
-    for (QMap<unsigned char, MessageStats>::const_iterator it = stats_by_control.begin();
+    for (QMap<unsigned char, MessageStats>::const_iterator it =
+                 stats_by_control.begin();
          it != stats_by_control.end(); ++it) {
         if (it->opcodes.contains(MIDI_CC)) {
             num_cc_controls++;
@@ -111,32 +113,35 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
     }
 
     bool two_values_7bit_max_and_min = stats.value_histogram.size() == 2 &&
-            stats.value_histogram.contains(0x00) && stats.value_histogram.contains(0x7F);
+                                       stats.value_histogram.contains(0x00) &&
+                                       stats.value_histogram.contains(0x7F);
     bool one_value_7bit_max_or_min = stats.value_histogram.size() == 1 &&
-            (stats.value_histogram.contains(0x00) || stats.value_histogram.contains(0x7F));
+                                     (stats.value_histogram.contains(0x00) ||
+                                      stats.value_histogram.contains(0x7F));
     bool multiple_one_or_7f_values = stats.value_histogram.value(0x01, 0) > 1 ||
-            stats.value_histogram.value(0x7F, 0) > 1;
+                                     stats.value_histogram.value(0x7F, 0) > 1;
     bool under_8_distinct_values = stats.value_histogram.size() < 8;
     bool no_0x00_value = !stats.value_histogram.contains(0x00);
     bool no_0x40_value = !stats.value_histogram.contains(0x40);
-    bool multiple_values_around_0x40 = stats.value_histogram.value(0x41, 0) > 1 &&
+    bool multiple_values_around_0x40 =
+            stats.value_histogram.value(0x41, 0) > 1 &&
             stats.value_histogram.value(0x3F, 0) > 1 && no_0x40_value &&
             under_8_distinct_values;
 
     // QMap keys are sorted so we can check this easily by checking the last key
     // is <= 0x7F.
     bool only_7bit_values = !stats.value_histogram.isEmpty() &&
-            (stats.value_histogram.end() - 1).key() <= 0x7F;
+                            (stats.value_histogram.end() - 1).key() <= 0x7F;
 
     // A 7-bit two's complement ticker swinging from +1 to -1 can generate
     // unsigned differences of up to 126 (0x7E). If we see differences in
     // individual messages above 96 (0x60) that's a good hint that we're looking
     // at a two's complement ticker.
-    bool abs_differences_above_60 = !stats.abs_diff_histogram.isEmpty() &&
+    bool abs_differences_above_60 =
+            !stats.abs_diff_histogram.isEmpty() &&
             (stats.abs_diff_histogram.end() - 1).key() >= 0x60;
 
-    if (one_control && one_channel &&
-        two_values_7bit_max_and_min &&
+    if (one_control && one_channel && two_values_7bit_max_and_min &&
         only_note_on_and_note_off) {
         // A standard button that sends NOTE_ON commands with 0x7F for
         // down-press and NOTE_OFF commands with 0x00 for release.
@@ -151,8 +156,7 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         note_off.status = MIDI_NOTE_OFF | *stats.channels.begin();
         note_off.control = note_on.control;
         mappings.append(MidiInputMapping(note_off, options, control));
-    } else if (one_control && one_channel &&
-               two_values_7bit_max_and_min &&
+    } else if (one_control && one_channel && two_values_7bit_max_and_min &&
                only_note_on) {
         // A standard button that only sends NOTE_ON commands with 0x7F for
         // down-press and 0x00 for release.
@@ -162,8 +166,7 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         note_on.status = MIDI_NOTE_ON | *stats.channels.begin();
         note_on.control = *stats.controls.begin();
         mappings.append(MidiInputMapping(note_on, options, control));
-    } else if (one_control && one_channel &&
-               one_value_7bit_max_or_min &&
+    } else if (one_control && one_channel && one_value_7bit_max_or_min &&
                (only_note_on || only_cc)) {
         // This looks like a toggle switch. If we only got one value and it's
         // either min or max then this behaves like hard-coded toggle buttons on
@@ -181,11 +184,10 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         note_on.status = code | *stats.channels.begin();
         note_on.control = *stats.controls.begin();
         mappings.append(MidiInputMapping(note_on, options, control));
-    } else if (one_control && one_channel &&
-               only_cc && only_7bit_values &&
-               no_0x00_value && (abs_differences_above_60 ||
-                                 (under_8_distinct_values &&
-                                  multiple_one_or_7f_values))) {
+    } else if (one_control && one_channel && only_cc && only_7bit_values &&
+               no_0x00_value &&
+               (abs_differences_above_60 ||
+                (under_8_distinct_values && multiple_one_or_7f_values))) {
         // A two's complement +/- ticker (e.g. selector knobs and some jog
         // wheels). Values are typically +1 (0x01) and -1 (0x7F) but rapid
         // changes on some controllers can produce multiple ticks per
@@ -212,7 +214,8 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         knob.status = MIDI_CC | *stats.channels.begin();
         knob.control = *stats.controls.begin();
         mappings.append(MidiInputMapping(knob, options, control));
-    } else if (one_channel && has_cc && num_cc_controls == 1 && only_7bit_values) {
+    } else if (one_channel && has_cc && num_cc_controls == 1 &&
+               only_7bit_values) {
         // A simple 7-bit knob that may have other messages mixed in. Some
         // controllers (e.g. the VCI-100) emit a center-point NOTE_ON (with
         // value 0x7F or 0x00 depending on if you are arriving at or leaving the
@@ -225,7 +228,8 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
 
         // Find the CC control (based on the predicate one must exist) and add a
         // binding for it.
-        for (QMap<unsigned char, MessageStats>::const_iterator it = stats_by_control.begin();
+        for (QMap<unsigned char, MessageStats>::const_iterator it =
+                     stats_by_control.begin();
              it != stats_by_control.end(); ++it) {
             if (it->opcodes.contains(MIDI_CC)) {
                 MidiKey knob;
@@ -242,13 +246,14 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
                 MidiKey note_on;
                 note_on.status = MIDI_NOTE_ON | *stats.channels.begin();
                 note_on.control = it.key();
-                mappings.append(MidiInputMapping(note_on, MidiOptions(), resetControl));
+                mappings.append(
+                        MidiInputMapping(note_on, MidiOptions(), resetControl));
             }
         }
     } else if (one_channel && only_cc && stats.controls.size() == 2 &&
                stats_by_control.begin()->message_count > 10 &&
                stats_by_control.begin()->message_count ==
-               (stats_by_control.begin() + 1)->message_count) {
+                       (stats_by_control.begin() + 1)->message_count) {
         // If there are two CC controls with the same number of messages then we
         // assume this is a 14-bit CC knob. Now we need to determine which
         // control is the LSB and which is the MSB.
@@ -269,8 +274,12 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         // The control with the larger abs difference in messages is the LSB. If
         // they are equal we choose one arbitrarily (depends on QSet iteration
         // order which is undefined).
-        int lsb_control = control1_max_abs_diff > control2_max_abs_diff ? control1 : control2;
-        int msb_control = control1_max_abs_diff > control2_max_abs_diff ? control2 : control1;
+        int lsb_control = control1_max_abs_diff > control2_max_abs_diff
+                                  ? control1
+                                  : control2;
+        int msb_control = control1_max_abs_diff > control2_max_abs_diff
+                                  ? control2
+                                  : control1;
 
         // NOTE(rryan): There is an industry convention that a 14-bit CC control
         // is a pair of controls offset by 32 (the lower is the MSB, the higher
@@ -302,15 +311,16 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
 
         // TODO(rryan): Feedback to the user that we didn't do anything
         // intelligent here.
-        mappings.append(MidiInputMapping(messages.first().first, options, control));
+        mappings.append(
+                MidiInputMapping(messages.first().first, options, control));
     }
 
     // Add control and description info to each learned input mapping.
     for (MidiInputMappings::iterator it = mappings.begin();
          it != mappings.end(); ++it) {
         MidiInputMapping& mapping = *it;
-        mapping.description = QString("MIDI Learned from %1 messages.")
-                .arg(messages.size());
+        mapping.description =
+                QString("MIDI Learned from %1 messages.").arg(messages.size());
     }
 
     return mappings;

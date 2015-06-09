@@ -9,15 +9,16 @@
 #include "util/assert.h"
 
 SamplerBank::SamplerBank(PlayerManager* pPlayerManager)
-        : QObject(pPlayerManager),
-          m_pPlayerManager(pPlayerManager) {
+        : QObject(pPlayerManager), m_pPlayerManager(pPlayerManager) {
     DEBUG_ASSERT(m_pPlayerManager);
-    m_pLoadControl = new ControlPushButton(ConfigKey("[Sampler]", "LoadSamplerBank"));
-    connect(m_pLoadControl, SIGNAL(valueChanged(double)),
-            this, SLOT(slotLoadSamplerBank(double)));
-    m_pSaveControl = new ControlPushButton(ConfigKey("[Sampler]", "SaveSamplerBank"));
-    connect(m_pSaveControl, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSaveSamplerBank(double)));
+    m_pLoadControl =
+            new ControlPushButton(ConfigKey("[Sampler]", "LoadSamplerBank"));
+    connect(m_pLoadControl, SIGNAL(valueChanged(double)), this,
+            SLOT(slotLoadSamplerBank(double)));
+    m_pSaveControl =
+            new ControlPushButton(ConfigKey("[Sampler]", "SaveSamplerBank"));
+    connect(m_pSaveControl, SIGNAL(valueChanged(double)), this,
+            SLOT(slotSaveSamplerBank(double)));
 }
 
 SamplerBank::~SamplerBank() {
@@ -31,10 +32,8 @@ void SamplerBank::slotSaveSamplerBank(double v) {
     }
     QString filefilter = tr("Mixxx Sampler Banks (*.xml)");
     QString samplerBankPath = QFileDialog::getSaveFileName(
-            NULL, tr("Save Sampler Bank"),
-            QString(),
-            tr("Mixxx Sampler Banks (*.xml)"),
-            &filefilter);
+            NULL, tr("Save Sampler Bank"), QString(),
+            tr("Mixxx Sampler Banks (*.xml)"), &filefilter);
     if (samplerBankPath.isNull() || samplerBankPath.isEmpty()) {
         return;
     }
@@ -43,7 +42,7 @@ void SamplerBank::slotSaveSamplerBank(double v) {
     // Can be removed after switch to Qt5
     QFileInfo fileName(samplerBankPath);
     if (fileName.suffix().isEmpty()) {
-        QString ext = filefilter.section(".",1,1);
+        QString ext = filefilter.section(".", 1, 1);
         ext.chop(1);
         samplerBankPath.append(".").append(ext);
     }
@@ -55,10 +54,9 @@ void SamplerBank::slotSaveSamplerBank(double v) {
 
     QFile file(samplerBankPath);
     if (!file.open(QIODevice::WriteOnly)) {
-        QMessageBox::warning(NULL,
-                             tr("Error Saving Sampler Bank"),
+        QMessageBox::warning(NULL, tr("Error Saving Sampler Bank"),
                              tr("Could not write the sampler bank to '%1'.")
-                             .arg(samplerBankPath));
+                                     .arg(samplerBankPath));
         return;
     }
 
@@ -96,9 +94,7 @@ void SamplerBank::slotLoadSamplerBank(double v) {
     }
 
     QString samplerBankPath = QFileDialog::getOpenFileName(
-            NULL,
-            tr("Load Sampler Bank"),
-            QString(),
+            NULL, tr("Load Sampler Bank"), QString(),
             tr("Mixxx Sampler Banks (*.xml)"));
     if (samplerBankPath.isEmpty()) {
         return;
@@ -111,29 +107,26 @@ void SamplerBank::slotLoadSamplerBank(double v) {
 
     QFile file(samplerBankPath);
     if (!file.open(QIODevice::ReadOnly)) {
-        QMessageBox::warning(NULL,
-                             tr("Error Reading Sampler Bank"),
+        QMessageBox::warning(NULL, tr("Error Reading Sampler Bank"),
                              tr("Could not open the sampler bank file '%1'.")
-                             .arg(samplerBankPath));
+                                     .arg(samplerBankPath));
         return;
     }
 
     QDomDocument doc;
 
     if (!doc.setContent(file.readAll())) {
-        QMessageBox::warning(NULL,
-                             tr("Error Reading Sampler Bank"),
+        QMessageBox::warning(NULL, tr("Error Reading Sampler Bank"),
                              tr("Could not read the sampler bank file '%1'.")
-                             .arg(samplerBankPath));
+                                     .arg(samplerBankPath));
         return;
     }
 
     QDomElement root = doc.documentElement();
-    if(root.tagName() != "samplerbank") {
-        QMessageBox::warning(NULL,
-                             tr("Error Reading Sampler Bank"),
+    if (root.tagName() != "samplerbank") {
+        QMessageBox::warning(NULL, tr("Error Reading Sampler Bank"),
                              tr("Could not read the sampler bank file '%1'.")
-                             .arg(samplerBankPath));
+                                     .arg(samplerBankPath));
         return;
     }
 
@@ -149,12 +142,12 @@ void SamplerBank::slotLoadSamplerBank(double v) {
 
                 if (!group.isEmpty()) {
                     if (location.isEmpty()) {
-                        m_pPlayerManager->slotLoadTrackToPlayer(TrackPointer(), group);
+                        m_pPlayerManager->slotLoadTrackToPlayer(TrackPointer(),
+                                                                group);
                     } else {
                         m_pPlayerManager->slotLoadToPlayer(location, group);
                     }
                 }
-
             }
         }
         n = n.nextSibling();

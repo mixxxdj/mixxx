@@ -35,11 +35,15 @@ class BaseSyncableListener : public SyncableListener {
     // Syncables notify EngineSync directly about various events. EngineSync
     // does not have a say in whether these succeed or not, they are simply
     // notifications.
-    virtual void notifyBpmChanged(Syncable* pSyncable, double bpm, bool fileChanged=false) = 0;
-    virtual void notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) = 0;
-    virtual void notifyBeatDistanceChanged(Syncable* pSyncable, double beatDistance) = 0;
+    virtual void notifyBpmChanged(Syncable* pSyncable, double bpm,
+                                  bool fileChanged = false) = 0;
+    virtual void notifyInstantaneousBpmChanged(Syncable* pSyncable,
+                                               double bpm) = 0;
+    virtual void notifyBeatDistanceChanged(Syncable* pSyncable,
+                                           double beatDistance) = 0;
     virtual void notifyPlaying(Syncable* pSyncable, bool playing) = 0;
-    virtual void notifyTrackLoaded(Syncable* pSyncable, double suggested_bpm) = 0;
+    virtual void notifyTrackLoaded(Syncable* pSyncable,
+                                   double suggested_bpm) = 0;
 
   protected:
     // Choices about master selection can hinge on if any decks have sync

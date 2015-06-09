@@ -16,7 +16,7 @@ class EngineWorker;
 class EngineWorkerScheduler : public QThread {
     Q_OBJECT
   public:
-    EngineWorkerScheduler(QObject* pParent=NULL);
+    EngineWorkerScheduler(QObject* pParent = NULL);
     virtual ~EngineWorkerScheduler();
 
     void runWorkers();

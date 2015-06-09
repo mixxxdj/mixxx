@@ -10,8 +10,7 @@ class GLSLWaveformRendererSignal;
 class GLSLWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
     Q_OBJECT
   public:
-    GLSLWaveformWidget(const char* group, QWidget* parent,
-                       bool rgbRenderer);
+    GLSLWaveformWidget(const char* group, QWidget* parent, bool rgbRenderer);
     virtual ~GLSLWaveformWidget();
 
     virtual void resize(int width, int height);
@@ -19,7 +18,7 @@ class GLSLWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
   protected:
     virtual void castToQWidget();
     virtual void paintEvent(QPaintEvent* event);
-    virtual void mouseDoubleClickEvent(QMouseEvent *);
+    virtual void mouseDoubleClickEvent(QMouseEvent*);
     virtual int render();
 
   private:
@@ -31,28 +30,49 @@ class GLSLWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
 class GLSLFilteredWaveformWidget : public GLSLWaveformWidget {
   public:
     GLSLFilteredWaveformWidget(const char* group, QWidget* parent);
-    virtual ~GLSLFilteredWaveformWidget() {}
+    virtual ~GLSLFilteredWaveformWidget() {
+    }
 
-    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::GLSLFilteredWaveform; }
+    virtual WaveformWidgetType::Type getType() const {
+        return WaveformWidgetType::GLSLFilteredWaveform;
+    }
 
-    static inline QString getWaveformWidgetName() { return tr("Filtered"); }
-    static inline bool useOpenGl() { return true; }
-    static inline bool useOpenGLShaders() { return true; }
-    static inline bool developerOnly() { return false; }
+    static inline QString getWaveformWidgetName() {
+        return tr("Filtered");
+    }
+    static inline bool useOpenGl() {
+        return true;
+    }
+    static inline bool useOpenGLShaders() {
+        return true;
+    }
+    static inline bool developerOnly() {
+        return false;
+    }
 };
 
 class GLSLRGBWaveformWidget : public GLSLWaveformWidget {
   public:
     GLSLRGBWaveformWidget(const char* group, QWidget* parent);
-    virtual ~GLSLRGBWaveformWidget() {}
+    virtual ~GLSLRGBWaveformWidget() {
+    }
 
-    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::GLSLRGBWaveform; }
+    virtual WaveformWidgetType::Type getType() const {
+        return WaveformWidgetType::GLSLRGBWaveform;
+    }
 
-    static inline QString getWaveformWidgetName() { return tr("RGB"); }
-    static inline bool useOpenGl() { return true; }
-    static inline bool useOpenGLShaders() { return true; }
-    static inline bool developerOnly() { return false; }
+    static inline QString getWaveformWidgetName() {
+        return tr("RGB");
+    }
+    static inline bool useOpenGl() {
+        return true;
+    }
+    static inline bool useOpenGLShaders() {
+        return true;
+    }
+    static inline bool developerOnly() {
+        return false;
+    }
 };
 
-
-#endif // GLWAVEFORMWIDGETSHADER_H
+#endif  // GLWAVEFORMWIDGETSHADER_H

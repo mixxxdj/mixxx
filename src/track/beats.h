@@ -11,7 +11,8 @@ typedef QSharedPointer<Beats> BeatsPointer;
 
 class BeatIterator {
   public:
-    virtual ~BeatIterator() {}
+    virtual ~BeatIterator() {
+    }
     virtual bool hasNext() const = 0;
     virtual double next() = 0;
 };
@@ -21,18 +22,20 @@ class BeatIterator {
 // well as a capability model for representing optional features.
 class Beats {
   public:
-    Beats() { }
-    virtual ~Beats() { }
+    Beats() {
+    }
+    virtual ~Beats() {
+    }
 
     enum Capabilities {
-        BEATSCAP_NONE          = 0x0000,
-        BEATSCAP_ADDREMOVE     = 0x0001,
-        BEATSCAP_TRANSLATE     = 0x0002,
-        BEATSCAP_SCALE         = 0x0004,
-        BEATSCAP_MOVEBEAT      = 0x0008,
-        BEATSCAP_SET           = 0x0010
+        BEATSCAP_NONE = 0x0000,
+        BEATSCAP_ADDREMOVE = 0x0001,
+        BEATSCAP_TRANSLATE = 0x0002,
+        BEATSCAP_SCALE = 0x0004,
+        BEATSCAP_MOVEBEAT = 0x0008,
+        BEATSCAP_SET = 0x0010
     };
-    typedef int CapabilitiesFlags; // Allows us to do ORing
+    typedef int CapabilitiesFlags;  // Allows us to do ORing
 
     virtual Beats::CapabilitiesFlags getCapabilities() const = 0;
 
@@ -72,8 +75,7 @@ class Beats {
     // value is the next beat position.  Non- -1 values are guaranteed to be
     // even.  Returns false if *at least one* sample is -1.  (Can return false
     // with one beat successfully filled)
-    virtual bool findPrevNextBeats(double dSamples,
-                                   double* dpPrevBeatSamples,
+    virtual bool findPrevNextBeats(double dSamples, double* dpPrevBeatSamples,
                                    double* dpNextBeatSamples) const = 0;
 
     // Starting from sample dSamples, return the sample of the closest beat in
@@ -91,11 +93,14 @@ class Beats {
     // Adds to pBeatsList the position in samples of every beat occuring between
     // startPosition and endPosition. BeatIterator must be iterated while
     // holding a strong references to the Beats object to ensure that the Beats
-    // object is not deleted. Caller takes ownership of the returned BeatIterator;
-    virtual BeatIterator* findBeats(double startSample, double stopSample) const = 0;
+    // object is not deleted. Caller takes ownership of the returned
+    // BeatIterator;
+    virtual BeatIterator* findBeats(double startSample,
+                                    double stopSample) const = 0;
 
     // Return whether or not a sample lies between startPosition and endPosition
-    virtual bool hasBeatInRange(double startSample, double stopSample) const = 0;
+    virtual bool hasBeatInRange(double startSample,
+                                double stopSample) const = 0;
 
     // Return the average BPM over the entire track if the BPM is
     // valid, otherwise returns -1

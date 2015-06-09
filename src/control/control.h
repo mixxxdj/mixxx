@@ -35,11 +35,12 @@ class ControlDoublePrivate : public QObject {
     // one does not exist.
     static QSharedPointer<ControlDoublePrivate> getControl(
             const ConfigKey& key, bool warn = true,
-            ControlObject* pCreatorCO = NULL, bool bIgnoreNops = true, bool bTrack = false,
-            bool bPersist = false);
+            ControlObject* pCreatorCO = NULL, bool bIgnoreNops = true,
+            bool bTrack = false, bool bPersist = false);
 
     // Adds all ControlDoublePrivate that currently exist to pControlList
-    static void getControls(QList<QSharedPointer<ControlDoublePrivate> >* pControlsList);
+    static void getControls(
+            QList<QSharedPointer<ControlDoublePrivate>>* pControlsList);
 
     static QHash<ConfigKey, ConfigKey> getControlAliases();
 
@@ -73,7 +74,8 @@ class ControlDoublePrivate : public QObject {
 
     // Set the behavior to be used when setting values and translating between
     // parameter and value space. Returns the previously set behavior (if any).
-    // The caller must not delete the behavior at any time. The memory is managed
+    // The caller must not delete the behavior at any time. The memory is
+    // managed
     // by this function.
     void setBehavior(ControlNumericBehavior* pBehavior);
 
@@ -115,8 +117,8 @@ class ControlDoublePrivate : public QObject {
     // confirmed by setAndConfirm() or not. Note: Once connected, the CO value
     // itself is ONLY set by setAndConfirm() typically called in the connected
     // slot.
-    bool connectValueChangeRequest(const QObject* receiver,
-                                   const char* method, Qt::ConnectionType type);
+    bool connectValueChangeRequest(const QObject* receiver, const char* method,
+                                   Qt::ConnectionType type);
 
   signals:
     // Emitted when the ControlDoublePrivate value changes. pSender is a
@@ -171,7 +173,7 @@ class ControlDoublePrivate : public QObject {
     static ConfigObject<ConfigValue>* s_pUserConfig;
 
     // Hash of ControlDoublePrivate instantiations.
-    static QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> > s_qCOHash;
+    static QHash<ConfigKey, QWeakPointer<ControlDoublePrivate>> s_qCOHash;
     // Hash of aliases between ConfigKeys. Solely used for looking up the first
     // alias associated with a key.
     static QHash<ConfigKey, ConfigKey> s_qCOAliasHash;
@@ -179,6 +181,5 @@ class ControlDoublePrivate : public QObject {
     // Mutex guarding access to s_qCOHash and s_qCOAliasHash.
     static QMutex s_qCOHashMutex;
 };
-
 
 #endif /* CONTROL_H */

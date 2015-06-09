@@ -26,17 +26,18 @@
 class ControlObjectThread : public QObject {
     Q_OBJECT
   public:
-    ControlObjectThread(const QString& g, const QString& i, QObject* pParent=NULL);
-    ControlObjectThread(const char* g, const char* i, QObject* pParent=NULL);
-    ControlObjectThread(const ConfigKey& key, QObject* pParent=NULL);
+    ControlObjectThread(const QString& g, const QString& i,
+                        QObject* pParent = NULL);
+    ControlObjectThread(const char* g, const char* i, QObject* pParent = NULL);
+    ControlObjectThread(const ConfigKey& key, QObject* pParent = NULL);
     virtual ~ControlObjectThread();
 
     void initialize(const ConfigKey& key);
 
-    bool connectValueChanged(const QObject* receiver,
-            const char* method, Qt::ConnectionType type = Qt::AutoConnection);
-    bool connectValueChanged(
-            const char* method, Qt::ConnectionType type = Qt::AutoConnection);
+    bool connectValueChanged(const QObject* receiver, const char* method,
+                             Qt::ConnectionType type = Qt::AutoConnection);
+    bool connectValueChanged(const char* method,
+                             Qt::ConnectionType type = Qt::AutoConnection);
 
     QString name() const;
     QString description() const;
@@ -46,15 +47,20 @@ class ControlObjectThread : public QObject {
         emit(valueChanged(get()));
     }
 
-    inline ConfigKey getKey() const { return m_key; }
-    inline bool valid() const { return m_pControl != NULL; }
+    inline ConfigKey getKey() const {
+        return m_key;
+    }
+    inline bool valid() const {
+        return m_pControl != NULL;
+    }
 
     // Returns the value of the object. Thread safe, non-blocking.
     inline double get() {
         return m_pControl ? m_pControl->get() : 0.0;
     }
 
-    // Returns the normalized parameter of the object. Thread safe, non-blocking.
+    // Returns the normalized parameter of the object. Thread safe,
+    // non-blocking.
     inline double getParameter() const {
         return m_pControl ? m_pControl->getParameter() : 0.0;
     }
@@ -70,7 +76,8 @@ class ControlObjectThread : public QObject {
         return m_pControl ? m_pControl->getParameterForValue(value) : 0.0;
     }
 
-    // Returns the normalized parameter of the object. Thread safe, non-blocking.
+    // Returns the normalized parameter of the object. Thread safe,
+    // non-blocking.
     inline double getDefault() const {
         return m_pControl ? m_pControl->defaultValue() : 0.0;
     }
@@ -91,9 +98,12 @@ class ControlObjectThread : public QObject {
     // Resets the control to its default value. Thread safe, non-blocking.
     inline void reset() {
         if (m_pControl) {
-            // NOTE(rryan): This is important. The originator of this action does
-            // not know the resulting value so it makes sense that we should emit a
-            // general valueChanged() signal even though the change originated from
+            // NOTE(rryan): This is important. The originator of this action
+            // does
+            // not know the resulting value so it makes sense that we should
+            // emit a
+            // general valueChanged() signal even though the change originated
+            // from
             // us. For this reason, we provide NULL here so that the change is
             // broadcast as valueChanged() and not valueChangedByThis().
             m_pControl->reset();

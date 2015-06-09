@@ -22,19 +22,15 @@ class Waveform;
 #define WAVEFORM_4_DESCRIPTION "Waveform 4.0"
 #define WAVEFORMSUMMARY_4_DESCRIPTION "WaveformSummary 4.0"
 
-
 class WaveformFactory {
   public:
-    enum VersionClass {
-        VC_USE,
-        VC_KEEP,
-        VC_REMOVE
-    };
+    enum VersionClass { VC_USE, VC_KEEP, VC_REMOVE };
 
     static Waveform* loadWaveformFromAnalysis(
             const AnalysisDao::AnalysisInfo& analysis);
     static VersionClass waveformVersionToVersionClass(const QString& version);
-    static VersionClass waveformSummaryVersionToVersionClass(const QString& version);
+    static VersionClass waveformSummaryVersionToVersionClass(
+            const QString& version);
     static QString currentWaveformVersion();
     static QString currentWaveformDescription();
     static QString currentWaveformSummaryVersion();

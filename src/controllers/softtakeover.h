@@ -13,9 +13,9 @@
 
 class ControlObject;
 
-// 3/128 units away from the current is enough to catch fast non-sequential moves
+// 3/128 units away from the current is enough to catch fast non-sequential
+// moves
 //  but not cause an audibly noticeable jump.
-
 
 class SoftTakeover {
   public:

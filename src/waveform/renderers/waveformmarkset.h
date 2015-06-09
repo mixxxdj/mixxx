@@ -18,10 +18,16 @@ class WaveformMarkSet {
                const WaveformSignalColors& signalColors);
     void clear();
 
-    int size() const { return m_marks.size();}
-    WaveformMark& operator[] (int i) { return m_marks[i]; }
+    int size() const {
+        return m_marks.size();
+    }
+    WaveformMark& operator[](int i) {
+        return m_marks[i];
+    }
 
-    const WaveformMark& getDefaultMark() const { return m_defaultMark;}
+    const WaveformMark& getDefaultMark() const {
+        return m_defaultMark;
+    }
 
   private:
     WaveformMark m_defaultMark;
@@ -29,4 +35,4 @@ class WaveformMarkSet {
     DISALLOW_COPY_AND_ASSIGN(WaveformMarkSet);
 };
 
-#endif // WAVEFORMMARKSET_H
+#endif  // WAVEFORMMARKSET_H

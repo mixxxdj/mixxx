@@ -10,7 +10,6 @@ class EngineFilterLinkwtzRiley8Low : public EngineFilterIIR<8, IIR_LP> {
     void setFrequencyCorners(int sampleRate, double freqCorner1);
 };
 
-
 class EngineFilterLinkwtzRiley8High : public EngineFilterIIR<8, IIR_HP> {
     Q_OBJECT
   public:
@@ -18,4 +17,4 @@ class EngineFilterLinkwtzRiley8High : public EngineFilterIIR<8, IIR_HP> {
     void setFrequencyCorners(int sampleRate, double freqCorner1);
 };
 
-#endif // ENGINEFILTERLINKWITZRILEY8_H
+#endif  // ENGINEFILTERLINKWITZRILEY8_H

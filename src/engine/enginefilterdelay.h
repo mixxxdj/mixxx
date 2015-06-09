@@ -6,7 +6,7 @@
 #include "engine/engineobject.h"
 #include "util/assert.h"
 
-template<unsigned int SIZE>
+template <unsigned int SIZE>
 class EngineFilterDelay : public EngineObjectConstIn {
   public:
     EngineFilterDelay()
@@ -19,7 +19,7 @@ class EngineFilterDelay : public EngineObjectConstIn {
         memset(m_buf, 0, sizeof(m_buf));
     }
 
-    virtual ~EngineFilterDelay() {};
+    virtual ~EngineFilterDelay(){};
 
     void pauseFilter() {
         // Set the current buffers to 0
@@ -54,13 +54,17 @@ class EngineFilterDelay : public EngineObjectConstIn {
                 m_buf[m_delayPos] = pIn[i];
                 m_delayPos = (m_delayPos + 1) % SIZE;
 
-                // Take delayed sample from delay buffer and copy it to dest buffer:
+                // Take delayed sample from delay buffer and copy it to dest
+                // buffer:
                 pOutput[i] = m_buf[delaySourcePos];
                 delaySourcePos = (delaySourcePos + 1) % SIZE;
             }
         } else {
-            int delaySourcePos = (m_delayPos + SIZE - m_delaySamples + iBufferSize / 2) % SIZE;
-            int oldDelaySourcePos = (m_delayPos + SIZE - m_oldDelaySamples) % SIZE;
+            int delaySourcePos =
+                    (m_delayPos + SIZE - m_delaySamples + iBufferSize / 2) %
+                    SIZE;
+            int oldDelaySourcePos =
+                    (m_delayPos + SIZE - m_oldDelaySamples) % SIZE;
 
             DEBUG_ASSERT_AND_HANDLE(delaySourcePos >= 0) {
                 SampleUtil::copy(pOutput, pIn, iBufferSize);
@@ -74,7 +78,8 @@ class EngineFilterDelay : public EngineObjectConstIn {
                 SampleUtil::copy(pOutput, pIn, iBufferSize);
                 return;
             }
-            DEBUG_ASSERT_AND_HANDLE(oldDelaySourcePos <= static_cast<int>(SIZE)) {
+            DEBUG_ASSERT_AND_HANDLE(oldDelaySourcePos <=
+                                    static_cast<int>(SIZE)) {
                 SampleUtil::copy(pOutput, pIn, iBufferSize);
                 return;
             }
@@ -87,7 +92,8 @@ class EngineFilterDelay : public EngineObjectConstIn {
                 m_buf[m_delayPos] = pIn[i];
                 m_delayPos = (m_delayPos + 1) % SIZE;
 
-                // Take delayed sample from delay buffer and copy it to dest buffer:
+                // Take delayed sample from delay buffer and copy it to dest
+                // buffer:
                 if (i < iBufferSize / 2) {
                     // only ramp the second half of the buffer, because we do
                     // the same in the IIR filter to wait for settling
@@ -115,4 +121,4 @@ class EngineFilterDelay : public EngineObjectConstIn {
     bool m_doStart;
 };
 
-#endif // ENGINEFILTERDELAY_H
+#endif  // ENGINEFILTERDELAY_H

@@ -26,10 +26,10 @@ ControlPushButton::ControlPushButton(ConfigKey key, bool bPersist)
           m_buttonMode(PUSH),
           m_iNoStates(2) {
     if (m_pControl) {
-        m_pControl->setBehavior(
-                new ControlPushButtonBehavior(
-                        static_cast<ControlPushButtonBehavior::ButtonMode>(m_buttonMode),
-                        m_iNoStates));
+        m_pControl->setBehavior(new ControlPushButtonBehavior(
+                static_cast<ControlPushButtonBehavior::ButtonMode>(
+                        m_buttonMode),
+                m_iNoStates));
     }
 }
 
@@ -38,14 +38,14 @@ ControlPushButton::~ControlPushButton() {
 
 // Tell this PushButton how to act on rising and falling edges
 void ControlPushButton::setButtonMode(enum ButtonMode mode) {
-    //qDebug() << "Setting " << m_Key.group << m_Key.item << "as toggle";
+    // qDebug() << "Setting " << m_Key.group << m_Key.item << "as toggle";
     m_buttonMode = mode;
 
     if (m_pControl) {
-        m_pControl->setBehavior(
-                new ControlPushButtonBehavior(
-                        static_cast<ControlPushButtonBehavior::ButtonMode>(m_buttonMode),
-                        m_iNoStates));
+        m_pControl->setBehavior(new ControlPushButtonBehavior(
+                static_cast<ControlPushButtonBehavior::ButtonMode>(
+                        m_buttonMode),
+                m_iNoStates));
     }
 }
 
@@ -53,9 +53,9 @@ void ControlPushButton::setStates(int num_states) {
     m_iNoStates = num_states;
 
     if (m_pControl) {
-            m_pControl->setBehavior(
-                    new ControlPushButtonBehavior(
-                            static_cast<ControlPushButtonBehavior::ButtonMode>(m_buttonMode),
-                            m_iNoStates));
+        m_pControl->setBehavior(new ControlPushButtonBehavior(
+                static_cast<ControlPushButtonBehavior::ButtonMode>(
+                        m_buttonMode),
+                m_iNoStates));
     }
 }

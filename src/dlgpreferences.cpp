@@ -56,22 +56,24 @@
 #include "skin/skinloader.h"
 #include "library/library.h"
 
-DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
-                               SoundManager * soundman, PlayerManager* pPlayerManager,
-                               ControllerManager * controllers, VinylControlManager *pVCManager,
-                               EffectsManager* pEffectsManager,
-                               ConfigObject<ConfigValue>* pConfig, Library *pLibrary)
+DlgPreferences::DlgPreferences(
+        MixxxMainWindow* mixxx, SkinLoader* pSkinLoader, SoundManager* soundman,
+        PlayerManager* pPlayerManager, ControllerManager* controllers,
+        VinylControlManager* pVCManager, EffectsManager* pEffectsManager,
+        ConfigObject<ConfigValue>* pConfig, Library* pLibrary)
         : m_pConfig(pConfig),
           m_pageSizeHint(QSize(0, 0)),
           m_preferencesUpdated(ConfigKey("[Preferences]", "updated"), false) {
     setupUi(this);
-#if QT_VERSION >= 0x040400 //setHeaderHidden is a qt4.4 addition so having it in the .ui file breaks the build on OpenBSD4.4 (FIXME: revisit this when OpenBSD4.5 comes out?)
+#if QT_VERSION >= \
+        0x040400  // setHeaderHidden is a qt4.4 addition so having it in the .ui
+                  // file breaks the build on OpenBSD4.4 (FIXME: revisit this
+                  // when OpenBSD4.5 comes out?)
     contentsTreeWidget->setHeaderHidden(true);
 #endif
 
-    connect(buttonBox, SIGNAL(clicked(QAbstractButton*)),
-            this, SLOT(slotButtonPressed(QAbstractButton*)));
-
+    connect(buttonBox, SIGNAL(clicked(QAbstractButton*)), this,
+            SLOT(slotButtonPressed(QAbstractButton*)));
 
     createIcons();
 
@@ -79,7 +81,7 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
         pagesWidget->removeWidget(pagesWidget->currentWidget());
     }
 
-    // Construct widgets for use in tabs.
+// Construct widgets for use in tabs.
 
 #ifdef __VINYLCONTROL__
     // It's important for this to be before the connect for wsound.
@@ -94,9 +96,9 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_wsound);
     m_wlibrary = new DlgPrefLibrary(this, m_pConfig, pLibrary);
     addPageWidget(m_wlibrary);
-    connect(m_wlibrary, SIGNAL(scanLibrary()),
-            mixxx, SLOT(slotScanLibrary()));
-    m_wcontrols = new DlgPrefControls(this, mixxx, pSkinLoader, pPlayerManager, m_pConfig);
+    connect(m_wlibrary, SIGNAL(scanLibrary()), mixxx, SLOT(slotScanLibrary()));
+    m_wcontrols = new DlgPrefControls(this, mixxx, pSkinLoader, pPlayerManager,
+                                      m_pConfig);
     addPageWidget(m_wcontrols);
     m_wwaveform = new DlgPrefWaveform(this, mixxx, m_pConfig);
     addPageWidget(m_wwaveform);
@@ -110,7 +112,7 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_wcrossfader);
 
     m_wbeats = new DlgPrefBeats(this, m_pConfig);
-    addPageWidget (m_wbeats);
+    addPageWidget(m_wbeats);
     m_wkey = new DlgPrefKey(this, m_pConfig);
     addPageWidget(m_wkey);
     m_wreplaygain = new DlgPrefReplayGain(this, m_pConfig);
@@ -139,7 +141,7 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
 
 DlgPreferences::~DlgPreferences() {
     // store last geometry in mixxx.cfg
-    m_pConfig->set(ConfigKey("[Preferences]","geometry"),
+    m_pConfig->set(ConfigKey("[Preferences]", "geometry"),
                    m_geometry.join(","));
 
     // Need to explicitly delete rather than relying on child auto-deletion
@@ -150,114 +152,154 @@ DlgPreferences::~DlgPreferences() {
 }
 
 void DlgPreferences::createIcons() {
-    m_pSoundButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pSoundButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_soundhardware.png"));
+    m_pSoundButton =
+            new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pSoundButton->setIcon(
+            0, QIcon(":/images/preferences/ic_preferences_soundhardware.png"));
     m_pSoundButton->setText(0, tr("Sound Hardware"));
     m_pSoundButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pSoundButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-    m_pControllerTreeItem = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pControllerTreeItem->setIcon(0, QIcon(":/images/preferences/ic_preferences_controllers.png"));
+    m_pControllerTreeItem =
+            new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pControllerTreeItem->setIcon(
+            0, QIcon(":/images/preferences/ic_preferences_controllers.png"));
     m_pControllerTreeItem->setText(0, tr("Controllers"));
-    m_pControllerTreeItem->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pControllerTreeItem->setTextAlignment(0,
+                                            Qt::AlignLeft | Qt::AlignVCenter);
     m_pControllerTreeItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-    m_pLibraryButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pLibraryButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_library.png"));
+    m_pLibraryButton =
+            new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pLibraryButton->setIcon(
+            0, QIcon(":/images/preferences/ic_preferences_library.png"));
     m_pLibraryButton->setText(0, tr("Library"));
     m_pLibraryButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pLibraryButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-    m_pControlsButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pControlsButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_interface.png"));
+    m_pControlsButton =
+            new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pControlsButton->setIcon(
+            0, QIcon(":/images/preferences/ic_preferences_interface.png"));
     m_pControlsButton->setText(0, tr("Interface"));
     m_pControlsButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pControlsButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-    m_pWaveformButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pWaveformButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_waveforms.png"));
+    m_pWaveformButton =
+            new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pWaveformButton->setIcon(
+            0, QIcon(":/images/preferences/ic_preferences_waveforms.png"));
     m_pWaveformButton->setText(0, tr("Waveforms"));
     m_pWaveformButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pWaveformButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-    m_pAutoDJButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pAutoDJButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_autodj.png"));
+    m_pAutoDJButton =
+            new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pAutoDJButton->setIcon(
+            0, QIcon(":/images/preferences/ic_preferences_autodj.png"));
     m_pAutoDJButton->setText(0, tr("Auto DJ"));
     m_pAutoDJButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pAutoDJButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-    m_pEqButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pEqButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_equalizers.png"));
+    m_pEqButton =
+            new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pEqButton->setIcon(
+            0, QIcon(":/images/preferences/ic_preferences_equalizers.png"));
     m_pEqButton->setText(0, tr("Equalizers"));
     m_pEqButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pEqButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-    m_pEffectsButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pEffectsButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_effects.png"));
+    m_pEffectsButton =
+            new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pEffectsButton->setIcon(
+            0, QIcon(":/images/preferences/ic_preferences_effects.png"));
     m_pEffectsButton->setText(0, tr("Effects"));
     m_pEffectsButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pEffectsButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-    m_pCrossfaderButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pCrossfaderButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_crossfader.png"));
+    m_pCrossfaderButton =
+            new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pCrossfaderButton->setIcon(
+            0, QIcon(":/images/preferences/ic_preferences_crossfader.png"));
     m_pCrossfaderButton->setText(0, tr("Crossfader"));
     m_pCrossfaderButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pCrossfaderButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-    m_pRecordingButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pRecordingButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_recording.png"));
+    m_pRecordingButton =
+            new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pRecordingButton->setIcon(
+            0, QIcon(":/images/preferences/ic_preferences_recording.png"));
     m_pRecordingButton->setText(0, tr("Recording"));
     m_pRecordingButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pRecordingButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-
-    m_pBeatDetectionButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pBeatDetectionButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_bpmdetect.png"));
+    m_pBeatDetectionButton =
+            new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pBeatDetectionButton->setIcon(
+            0, QIcon(":/images/preferences/ic_preferences_bpmdetect.png"));
     m_pBeatDetectionButton->setText(0, tr("Beat Detection"));
-    m_pBeatDetectionButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pBeatDetectionButton->setTextAlignment(0,
+                                             Qt::AlignLeft | Qt::AlignVCenter);
     m_pBeatDetectionButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-    m_pKeyDetectionButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pKeyDetectionButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_keydetect.png"));
+    m_pKeyDetectionButton =
+            new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pKeyDetectionButton->setIcon(
+            0, QIcon(":/images/preferences/ic_preferences_keydetect.png"));
     m_pKeyDetectionButton->setText(0, tr("Key Detection"));
-    m_pKeyDetectionButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pKeyDetectionButton->setTextAlignment(0,
+                                            Qt::AlignLeft | Qt::AlignVCenter);
     m_pKeyDetectionButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-    m_pReplayGainButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pReplayGainButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_replaygain.png"));
+    m_pReplayGainButton =
+            new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pReplayGainButton->setIcon(
+            0, QIcon(":/images/preferences/ic_preferences_replaygain.png"));
     m_pReplayGainButton->setText(0, tr("Normalization"));
     m_pReplayGainButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pReplayGainButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
 #ifdef __VINYLCONTROL__
-    m_pVinylControlButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    //QT screws up my nice vinyl svg for some reason, so we'll use a PNG version
-    //instead...
-    m_pVinylControlButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_vinyl.png"));
+    m_pVinylControlButton =
+            new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    // QT screws up my nice vinyl svg for some reason, so we'll use a PNG
+    // version
+    // instead...
+    m_pVinylControlButton->setIcon(
+            0, QIcon(":/images/preferences/ic_preferences_vinyl.png"));
     m_pVinylControlButton->setText(0, tr("Vinyl Control"));
-    m_pVinylControlButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pVinylControlButton->setTextAlignment(0,
+                                            Qt::AlignLeft | Qt::AlignVCenter);
     m_pVinylControlButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 #else
-    m_pVinylControlButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    //QT screws up my nice vinyl svg for some reason, so we'll use a PNG version
-    //instead...
-    m_pVinylControlButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_vinyl.png"));
+    m_pVinylControlButton =
+            new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    // QT screws up my nice vinyl svg for some reason, so we'll use a PNG
+    // version
+    // instead...
+    m_pVinylControlButton->setIcon(
+            0, QIcon(":/images/preferences/ic_preferences_vinyl.png"));
     m_pVinylControlButton->setText(0, tr("Vinyl Control"));
-    m_pVinylControlButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pVinylControlButton->setTextAlignment(0,
+                                            Qt::AlignLeft | Qt::AlignVCenter);
     m_pVinylControlButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 #endif
 
 #ifdef __SHOUTCAST__
-    m_pShoutcastButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pShoutcastButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_broadcast.png"));
+    m_pShoutcastButton =
+            new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pShoutcastButton->setIcon(
+            0, QIcon(":/images/preferences/ic_preferences_broadcast.png"));
     m_pShoutcastButton->setText(0, tr("Live Broadcasting"));
     m_pShoutcastButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pShoutcastButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 #endif
 
 #ifdef __MODPLUG__
-    m_pModplugButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pModplugButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_modplug.png"));
+    m_pModplugButton =
+            new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pModplugButton->setIcon(
+            0, QIcon(":/images/preferences/ic_preferences_modplug.png"));
     m_pModplugButton->setText(0, tr("Modplug Decoder"));
     m_pModplugButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pModplugButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
@@ -268,13 +310,14 @@ void DlgPreferences::createIcons() {
             this, SLOT(changePage(QTreeWidgetItem*, QTreeWidgetItem*)));
 }
 
-void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previous) {
+void DlgPreferences::changePage(QTreeWidgetItem* current,
+                                QTreeWidgetItem* previous) {
     if (!current)
         current = previous;
 
     if (current == m_pSoundButton) {
         m_wsound->slotUpdate();
-      switchToPage(m_wsound);
+        switchToPage(m_wsound);
     } else if (current == m_pLibraryButton) {
         switchToPage(m_wlibrary);
     } else if (current == m_pControlsButton) {
@@ -333,7 +376,7 @@ bool DlgPreferences::eventFilter(QObject* o, QEvent* e) {
     }
 
     // Standard event processing
-    return QWidget::eventFilter(o,e);
+    return QWidget::eventFilter(o, e);
 }
 
 void DlgPreferences::onHide() {
@@ -355,22 +398,23 @@ void DlgPreferences::onShow() {
         // load default values (optimum size)
         QRect defaultGeometry = getDefaultGeometry();
         QString defaultGeometryStr = QString("%1,%2,%3,%4")
-                                          .arg(defaultGeometry.left())
-                                            .arg(defaultGeometry.top())
-                                            .arg(defaultGeometry.width())
-                                            .arg(defaultGeometry.height());
+                                             .arg(defaultGeometry.left())
+                                             .arg(defaultGeometry.top())
+                                             .arg(defaultGeometry.width())
+                                             .arg(defaultGeometry.height());
 
         // get last geometry OR use default values from
         m_geometry = m_pConfig->getValueString(
-                    ConfigKey("[Preferences]", "geometry"),
-                    defaultGeometryStr).split(",");
+                                      ConfigKey("[Preferences]", "geometry"),
+                                      defaultGeometryStr)
+                             .split(",");
     }
 
     // Update geometry with last values
     setGeometry(m_geometry[0].toInt(),  // x position
                 m_geometry[1].toInt(),  // y position
                 m_geometry[2].toInt(),  // width
-                m_geometry[3].toInt()); // heigth
+                m_geometry[3].toInt());  // heigth
 
     // Notify children that we are about to show.
     emit(showDlg());
@@ -406,19 +450,14 @@ void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
 }
 
 void DlgPreferences::addPageWidget(DlgPreferencePage* pWidget) {
-    connect(this, SIGNAL(showDlg()),
-            pWidget, SLOT(slotShow()));
-    connect(this, SIGNAL(closeDlg()),
-            pWidget, SLOT(slotHide()));
-    connect(this, SIGNAL(showDlg()),
-            pWidget, SLOT(slotUpdate()));
+    connect(this, SIGNAL(showDlg()), pWidget, SLOT(slotShow()));
+    connect(this, SIGNAL(closeDlg()), pWidget, SLOT(slotHide()));
+    connect(this, SIGNAL(showDlg()), pWidget, SLOT(slotUpdate()));
 
-    connect(this, SIGNAL(applyPreferences()),
-            pWidget, SLOT(slotApply()));
-    connect(this, SIGNAL(cancelPreferences()),
-            pWidget, SLOT(slotCancel()));
-    connect(this, SIGNAL(resetToDefaults()),
-            pWidget, SLOT(slotResetToDefaults()));
+    connect(this, SIGNAL(applyPreferences()), pWidget, SLOT(slotApply()));
+    connect(this, SIGNAL(cancelPreferences()), pWidget, SLOT(slotCancel()));
+    connect(this, SIGNAL(resetToDefaults()), pWidget,
+            SLOT(slotResetToDefaults()));
 
     QScrollArea* sa = new QScrollArea(pagesWidget);
     sa->setWidgetResizable(true);
@@ -427,9 +466,8 @@ void DlgPreferences::addPageWidget(DlgPreferencePage* pWidget) {
     pagesWidget->addWidget(sa);
 
     int iframe = 2 * sa->frameWidth();
-    m_pageSizeHint = m_pageSizeHint.expandedTo(
-            pWidget->sizeHint()+QSize(iframe, iframe));
-
+    m_pageSizeHint = m_pageSizeHint.expandedTo(pWidget->sizeHint() +
+                                               QSize(iframe, iframe));
 }
 
 DlgPreferencePage* DlgPreferences::currentPage() {
@@ -481,7 +519,7 @@ QRect DlgPreferences::getDefaultGeometry() {
     if (frameSize() == size()) {
         // This code is reached in Gnome 2.3
         qDebug() << "guess the size of the window decoration";
-        optimumSize -= QSize(2,30);
+        optimumSize -= QSize(2, 30);
     } else {
         optimumSize -= (frameSize() - size());
     }

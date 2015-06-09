@@ -27,8 +27,8 @@ class AnalyserGain : public Analyser {
   private:
     bool m_bStepControl;
     ConfigObject<ConfigValue> *m_pConfigReplayGain;
-    CSAMPLE* m_pLeftTempBuffer;
-    CSAMPLE* m_pRightTempBuffer;
+    CSAMPLE *m_pLeftTempBuffer;
+    CSAMPLE *m_pRightTempBuffer;
     ReplayGain *m_pReplayGain;
     int m_iBufferSize;
 };

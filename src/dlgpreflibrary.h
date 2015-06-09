@@ -31,17 +31,17 @@
   *@author Tue & Ken Haste Andersen
   */
 
-class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
+class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg {
     Q_OBJECT
   public:
     enum TrackLoadAction {
         LOAD_TRACK_DECK,  // Load track to next available deck.
-        ADD_TRACK_BOTTOM, // Add track to Auto-DJ Queue (bottom).
-        ADD_TRACK_TOP     // Add track to Auto-DJ Queue (top).
+        ADD_TRACK_BOTTOM,  // Add track to Auto-DJ Queue (bottom).
+        ADD_TRACK_TOP  // Add track to Auto-DJ Queue (top).
     };
 
-    DlgPrefLibrary(QWidget *parent, ConfigObject<ConfigValue> *config,
-                   Library *pLibrary);
+    DlgPrefLibrary(QWidget* parent, ConfigObject<ConfigValue>* config,
+                   Library* pLibrary);
     virtual ~DlgPrefLibrary();
 
   public slots:

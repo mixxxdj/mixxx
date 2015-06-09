@@ -22,8 +22,8 @@ class SoundManager;
 class VinylControl;
 class VinylControlProcessor;
 
-
-const int kMaxNumberOfDecks = 4; // set to 4 because it will ideally not be more
+const int kMaxNumberOfDecks =
+        4;  // set to 4 because it will ideally not be more
 // or less than the number of vinyl-controlled decks but will probably be
 // forgotten in any 2->4 deck switchover. Only real consequence is
 // sizeof(void*)*2 bytes of wasted memory if we're only using 2 decks -bkgood
@@ -37,6 +37,7 @@ const int kMaxNumberOfDecks = 4; // set to 4 because it will ideally not be more
 // main thread, the VC thread, and the engine callback.
 class VinylControlManager : public QObject {
     Q_OBJECT;
+
   public:
     VinylControlManager(QObject* pParent, ConfigObject<ConfigValue>* pConfig,
                         SoundManager* pSoundManager);
@@ -70,4 +71,4 @@ class VinylControlManager : public QObject {
     int m_iNumConfiguredDecks;
 };
 
-#endif // VINYLCONTROLMANAGER_H
+#endif  // VINYLCONTROLMANAGER_H

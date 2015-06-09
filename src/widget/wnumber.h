@@ -23,7 +23,7 @@
 #include "widget/wlabel.h"
 #include "skin/skincontext.h"
 
-class WNumber : public WLabel  {
+class WNumber : public WLabel {
     Q_OBJECT
   public:
     WNumber(QWidget* pParent = NULL);

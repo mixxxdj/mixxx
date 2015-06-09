@@ -11,10 +11,10 @@ class EffectManifestParameter {
         CONTROL_UNKNOWN = 0,
         CONTROL_KNOB_LINEAR,
         CONTROL_KNOB_LOGARITHMIC,
-        CONTROL_KNOB_STEPPING,   // A step rotary, steps given by m_steps
-                                 // are arranged with equal distance on scale
+        CONTROL_KNOB_STEPPING,  // A step rotary, steps given by m_steps
+        // are arranged with equal distance on scale
         CONTROL_TOGGLE_STEPPING  // For button and enum controls, not accessible
-                                 // form many controllers, no linking to super knob
+        // form many controllers, no linking to super knob
     };
 
     enum SemanticHint {
@@ -27,16 +27,16 @@ class EffectManifestParameter {
         UNITS_UNKNOWN = 0,
         UNITS_TIME,
         UNITS_HERTZ,
-        UNITS_SAMPLERATE, // fraction of the samplerate
-        UNITS_BEATS, // multiples of a beat
+        UNITS_SAMPLERATE,  // fraction of the samplerate
+        UNITS_BEATS,  // multiples of a beat
     };
 
     enum LinkType {
         LINK_NONE = 0,  // Not controlled by the super knob
         LINK_LINKED,  // Controlled by the super knob as it is
         LINK_LINKED_LEFT,  // Controlled by the left side of the super knob
-        LINK_LINKED_RIGHT, // Controlled by the right side of the super knob
-        LINK_LINKED_LEFT_RIGHT, // Controlled by both sides of the super knob
+        LINK_LINKED_RIGHT,  // Controlled by the right side of the super knob
+        LINK_LINKED_LEFT_RIGHT,  // Controlled by both sides of the super knob
         NUM_LINK_TYPES
     };
 
@@ -53,7 +53,7 @@ class EffectManifestParameter {
     }
 
     virtual ~EffectManifestParameter() {
-        //qDebug() << debugString() << "destroyed";
+        // qDebug() << debugString() << "destroyed";
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -113,7 +113,8 @@ class EffectManifestParameter {
         m_defaultLinkType = linkType;
     }
 
-    // Neutral Point On Scale is the parameter in the range 0 .. 1 on the knob that
+    // Neutral Point On Scale is the parameter in the range 0 .. 1 on the knob
+    // that
     // is adopted as neutral when controlled by the super knob.
     // This is allows to link the super knob in a way that two effects are
     // cranked in simultaneous, or in case of a split filter like super knob,
@@ -127,7 +128,6 @@ class EffectManifestParameter {
     virtual void setNeutralPointOnScale(double neutralPoint) {
         m_neutralPointOnScale = neutralPoint;
     }
-
 
     // These store the mapping between the parameter slot and
     // the effective parameter which is loaded onto the slot.
@@ -168,7 +168,7 @@ class EffectManifestParameter {
     virtual void appendStep(const QPair<QString, double>& step) {
         m_steps.append(step);
     }
-    virtual const QList<QPair<QString, double> >& getSteps() const {
+    virtual const QList<QPair<QString, double>>& getSteps() const {
         return m_steps;
     }
 
@@ -196,7 +196,7 @@ class EffectManifestParameter {
     // effect parameters
     // Each pair has the following form:
     // name - value
-    QList<QPair<QString, double> > m_steps;
+    QList<QPair<QString, double>> m_steps;
 
     bool m_showInParametertSlot;
 };

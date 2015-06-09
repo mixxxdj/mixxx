@@ -3,7 +3,7 @@
 
 #include <QtDebug>
 
-template<class T>
+template <class T>
 class Singleton {
   public:
     static T* create() {
@@ -15,7 +15,8 @@ class Singleton {
 
     static T* instance() {
         if (m_instance == NULL) {
-            qWarning() << "Singleton class has not been created yet, returning NULL";
+            qWarning() << "Singleton class has not been created yet, returning "
+                          "NULL";
         }
         return m_instance;
     }
@@ -27,17 +28,22 @@ class Singleton {
     }
 
   protected:
-    Singleton() {}
-    virtual ~Singleton() {}
+    Singleton() {
+    }
+    virtual ~Singleton() {
+    }
 
   private:
     // hide copy constructor and assign operator
-    Singleton(const Singleton&) {}
-    const Singleton& operator= (const Singleton&) {}
+    Singleton(const Singleton&) {
+    }
+    const Singleton& operator=(const Singleton&) {
+    }
 
     static T* m_instance;
 };
 
-template<class T> T* Singleton<T>::m_instance = NULL;
+template <class T>
+T* Singleton<T>::m_instance = NULL;
 
-#endif // SINGLETON_H
+#endif  // SINGLETON_H

@@ -31,8 +31,8 @@ EngineVuMeter::EngineVuMeter(QString group) {
 
     // Used controlpotmeter as the example used it :/ perhaps someone with more
     // knowledge could use something more suitable...
-    m_ctrlPeakIndicator = new ControlPotmeter(ConfigKey(group, "PeakIndicator"),
-                                              0., 1.);
+    m_ctrlPeakIndicator =
+            new ControlPotmeter(ConfigKey(group, "PeakIndicator"), 0., 1.);
 
     m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate", this);
 
@@ -40,8 +40,7 @@ EngineVuMeter::EngineVuMeter(QString group) {
     reset();
 }
 
-EngineVuMeter::~EngineVuMeter()
-{
+EngineVuMeter::~EngineVuMeter() {
     delete m_ctrlVuMeter;
     delete m_ctrlVuMeterL;
     delete m_ctrlVuMeterR;
@@ -53,16 +52,21 @@ void EngineVuMeter::process(CSAMPLE* pIn, const int iBufferSize) {
 
     int sampleRate = (int)m_pSampleRate->get();
 
-    bool clipped = SampleUtil::sumAbsPerChannel(&fVolSumL, &fVolSumR, pIn, iBufferSize);
+    bool clipped = SampleUtil::sumAbsPerChannel(&fVolSumL, &fVolSumR, pIn,
+                                                iBufferSize);
     m_fRMSvolumeSumL += fVolSumL;
     m_fRMSvolumeSumR += fVolSumR;
 
-    m_iSamplesCalculated += iBufferSize/2;
+    m_iSamplesCalculated += iBufferSize / 2;
 
     // Are we ready to update the VU meter?:
-    if (m_iSamplesCalculated > (sampleRate/VU_UPDATE_RATE)) {
-        doSmooth(m_fRMSvolumeL, log10(SHRT_MAX * m_fRMSvolumeSumL/(m_iSamplesCalculated*1000)+1));
-        doSmooth(m_fRMSvolumeR, log10(SHRT_MAX * m_fRMSvolumeSumR/(m_iSamplesCalculated*1000)+1));
+    if (m_iSamplesCalculated > (sampleRate / VU_UPDATE_RATE)) {
+        doSmooth(m_fRMSvolumeL, log10(SHRT_MAX * m_fRMSvolumeSumL /
+                                              (m_iSamplesCalculated * 1000) +
+                                      1));
+        doSmooth(m_fRMSvolumeR, log10(SHRT_MAX * m_fRMSvolumeSumR /
+                                              (m_iSamplesCalculated * 1000) +
+                                      1));
 
         const double epsilon = .0001;
 
@@ -100,16 +104,15 @@ void EngineVuMeter::collectFeatures(GroupFeatureState* pGroupFeatures) const {
     pGroupFeatures->has_rms_volume_sum = true;
 }
 
-void EngineVuMeter::doSmooth(CSAMPLE &currentVolume, CSAMPLE newVolume)
-{
+void EngineVuMeter::doSmooth(CSAMPLE& currentVolume, CSAMPLE newVolume) {
     if (currentVolume > newVolume)
         currentVolume -= DECAY_SMOOTHING * (currentVolume - newVolume);
     else
         currentVolume += ATTACK_SMOOTHING * (newVolume - currentVolume);
     if (currentVolume < 0)
-        currentVolume=0;
+        currentVolume = 0;
     if (currentVolume > 1.0)
-        currentVolume=1.0;
+        currentVolume = 1.0;
 }
 
 void EngineVuMeter::reset() {

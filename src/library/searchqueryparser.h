@@ -19,12 +19,10 @@ class SearchQueryParser {
                           const QString& extraFilter) const;
 
   private:
-    void parseTokens(QStringList tokens,
-                     QStringList searchColumns,
+    void parseTokens(QStringList tokens, QStringList searchColumns,
                      AndNode* pQuery) const;
 
-    QString getTextArgument(QString argument,
-                            QStringList* tokens) const;
+    QString getTextArgument(QString argument, QStringList* tokens) const;
 
     QSqlDatabase m_database;
     QStringList m_textFilters;

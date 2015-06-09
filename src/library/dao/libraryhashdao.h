@@ -13,7 +13,9 @@ class LibraryHashDAO : public DAO {
     LibraryHashDAO(QSqlDatabase& database);
     virtual ~LibraryHashDAO();
 
-    void setDatabase(QSqlDatabase& database) { m_database = database; };
+    void setDatabase(QSqlDatabase& database) {
+        m_database = database;
+    };
     void initialize();
 
     QHash<QString, int> getDirectoryHashes();
@@ -33,4 +35,4 @@ class LibraryHashDAO : public DAO {
     QSqlDatabase& m_database;
 };
 
-#endif //LIBRARYHASHDAO_H
+#endif  // LIBRARYHASHDAO_H

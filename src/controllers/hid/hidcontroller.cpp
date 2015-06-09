@@ -9,15 +9,13 @@
 #include <wchar.h>
 #include <string.h>
 
-#include "util/path.h" // for PATH_MAX on Windows
+#include "util/path.h"  // for PATH_MAX on Windows
 #include "controllers/hid/hidcontroller.h"
 #include "controllers/defs_controllers.h"
 #include "util/compatibility.h"
 #include "util/trace.h"
 
-HidReader::HidReader(hid_device* device)
-        : QThread(),
-          m_pHidDevice(device) {
+HidReader::HidReader(hid_device* device) : QThread(), m_pHidDevice(device) {
 }
 
 HidReader::~HidReader() {
@@ -25,12 +23,12 @@ HidReader::~HidReader() {
 
 void HidReader::run() {
     m_stop = 0;
-    unsigned char *data = new unsigned char[255];
+    unsigned char* data = new unsigned char[255];
     while (load_atomic(m_stop) == 0) {
         // Blocked polling: The only problem with this is that we can't close
         // the device until the block is released, which means the controller
         // has to send more data
-        //result = hid_read_timeout(m_pHidDevice, data, 255, -1);
+        // result = hid_read_timeout(m_pHidDevice, data, 255, -1);
 
         // This relieves that at the cost of higher CPU usage since we only
         // block for a short while (500ms)
@@ -38,12 +36,12 @@ void HidReader::run() {
         Trace timeout("HidReader timeout");
         if (result > 0) {
             Trace process("HidReader process packet");
-            //qDebug() << "Read" << result << "bytes, pointer:" << data;
+            // qDebug() << "Read" << result << "bytes, pointer:" << data;
             QByteArray outData(reinterpret_cast<char*>(data), result);
             emit(incomingData(outData));
         }
     }
-    delete [] data;
+    delete[] data;
 }
 
 QString safeDecodeWideString(wchar_t* pStr, size_t max_length) {
@@ -51,13 +49,13 @@ QString safeDecodeWideString(wchar_t* pStr, size_t max_length) {
         return QString();
     }
     // pStr is untrusted since it might be non-null terminated.
-    wchar_t* tmp = new wchar_t[max_length+1];
+    wchar_t* tmp = new wchar_t[max_length + 1];
     // wcsnlen is not available on all platforms, so just make a temporary
     // buffer
     wcsncpy(tmp, pStr, max_length);
     tmp[max_length] = 0;
     QString result = QString::fromWCharArray(tmp);
-    delete [] tmp;
+    delete[] tmp;
     return result;
 }
 
@@ -80,20 +78,21 @@ HidController::HidController(const hid_device_info deviceInfo)
     }
 
     // Don't trust path to be null terminated.
-    hid_path = new char[PATH_MAX+1];
+    hid_path = new char[PATH_MAX + 1];
     strncpy(hid_path, deviceInfo.path, PATH_MAX);
     hid_path[PATH_MAX] = 0;
 
     hid_serial_raw = NULL;
     if (deviceInfo.serial_number != NULL) {
         size_t serial_max_length = 512;
-        hid_serial_raw = new wchar_t[serial_max_length+1];
+        hid_serial_raw = new wchar_t[serial_max_length + 1];
         wcsncpy(hid_serial_raw, deviceInfo.serial_number, serial_max_length);
         hid_serial_raw[serial_max_length] = 0;
     }
 
     hid_serial = safeDecodeWideString(deviceInfo.serial_number, 512);
-    hid_manufacturer = safeDecodeWideString(deviceInfo.manufacturer_string, 512);
+    hid_manufacturer =
+            safeDecodeWideString(deviceInfo.manufacturer_string, 512);
     hid_product = safeDecodeWideString(deviceInfo.product_string, 512);
 
     guessDeviceCategory();
@@ -101,18 +100,17 @@ HidController::HidController(const hid_device_info deviceInfo)
     // Set the Unique Identifier to the serial_number
     m_sUID = hid_serial;
 
-    //Note: We include the last 4 digits of the serial number and the
+    // Note: We include the last 4 digits of the serial number and the
     // interface number to allow the user (and Mixxx!) to keep track of
     // which is which
     if (hid_interface_number < 0) {
         setDeviceName(
-            QString("%1 %2").arg(hid_product)
-            .arg(hid_serial.right(4)));
+                QString("%1 %2").arg(hid_product).arg(hid_serial.right(4)));
     } else {
-        setDeviceName(
-            QString("%1 %2_%3").arg(hid_product)
-            .arg(hid_serial.right(4))
-            .arg(QString::number(hid_interface_number)));
+        setDeviceName(QString("%1 %2_%3")
+                              .arg(hid_product)
+                              .arg(hid_serial.right(4))
+                              .arg(QString::number(hid_interface_number)));
         m_sUID.append(QString::number(hid_interface_number));
     }
 
@@ -124,8 +122,8 @@ HidController::HidController(const hid_device_info deviceInfo)
 
 HidController::~HidController() {
     close();
-    delete [] hid_path;
-    delete [] hid_serial_raw;
+    delete[] hid_path;
+    delete[] hid_serial_raw;
 }
 
 QString HidController::presetExtension() {
@@ -135,7 +133,8 @@ QString HidController::presetExtension() {
 void HidController::visit(const MidiControllerPreset* preset) {
     Q_UNUSED(preset);
     // TODO(XXX): throw a hissy fit.
-    qDebug() << "ERROR: Attempting to load a MidiControllerPreset to an HidController!";
+    qDebug() << "ERROR: Attempting to load a MidiControllerPreset to an "
+                "HidController!";
 }
 
 void HidController::visit(const HidControllerPreset* preset) {
@@ -150,8 +149,8 @@ bool HidController::savePreset(const QString fileName) const {
 }
 
 bool HidController::matchPreset(const PresetInfo& preset) {
-    const QList< QHash<QString,QString> > products = preset.getProducts();
-    QHash <QString, QString> product;
+    const QList<QHash<QString, QString>> products = preset.getProducts();
+    QHash<QString, QString> product;
     foreach (product, products) {
         if (matchProductInfo(product))
             return true;
@@ -159,64 +158,83 @@ bool HidController::matchPreset(const PresetInfo& preset) {
     return false;
 }
 
-bool HidController::matchProductInfo(QHash <QString,QString > info) {
+bool HidController::matchProductInfo(QHash<QString, QString> info) {
     int value;
     bool ok;
     // Product and vendor match is always required
-    value = info["vendor_id"].toInt(&ok,16);
-    if (!ok || hid_vendor_id!=value) return false;
-    value = info["product_id"].toInt(&ok,16);
-    if (!ok || hid_product_id!=value) return false;
+    value = info["vendor_id"].toInt(&ok, 16);
+    if (!ok || hid_vendor_id != value)
+        return false;
+    value = info["product_id"].toInt(&ok, 16);
+    if (!ok || hid_product_id != value)
+        return false;
 
     // Optionally check against interface_number / usage_page && usage
-    if (hid_interface_number!=-1) {
-        value = info["interface_number"].toInt(&ok,16);
-        if (!ok || hid_interface_number!=value) return false;
+    if (hid_interface_number != -1) {
+        value = info["interface_number"].toInt(&ok, 16);
+        if (!ok || hid_interface_number != value)
+            return false;
     } else {
-        value = info["usage_page"].toInt(&ok,16);
-        if (!ok || hid_usage_page!=value) return false;
+        value = info["usage_page"].toInt(&ok, 16);
+        if (!ok || hid_usage_page != value)
+            return false;
 
-        value = info["usage"].toInt(&ok,16);
-        if (!ok || hid_usage!=value) return false;
+        value = info["usage"].toInt(&ok, 16);
+        if (!ok || hid_usage != value)
+            return false;
     }
     // Match found
     return true;
 }
 
 void HidController::guessDeviceCategory() {
-    // This should be done somehow else, I know. But at least we get started with
+    // This should be done somehow else, I know. But at least we get started
+    // with
     // the idea of mapping this information
     QString info;
-    if (hid_interface_number==-1) {
-        if (hid_usage_page==0x1) {
+    if (hid_interface_number == -1) {
+        if (hid_usage_page == 0x1) {
             switch (hid_usage) {
-                case 0x2: info = tr("Generic HID Mouse"); break;
-                case 0x4: info = tr("Generic HID Joystick"); break;
-                case 0x5: info = tr("Generic HID Gamepad"); break;
-                case 0x6: info = tr("Generic HID Keyboard"); break;
-                case 0x8: info = tr("Generic HID Multiaxis Controller"); break;
-                default: info = tr("Unknown HID Desktop Device") +
-                        QString().sprintf(" 0x%0x/0x%0x", hid_usage_page, hid_usage);
+                case 0x2:
+                    info = tr("Generic HID Mouse");
+                    break;
+                case 0x4:
+                    info = tr("Generic HID Joystick");
+                    break;
+                case 0x5:
+                    info = tr("Generic HID Gamepad");
+                    break;
+                case 0x6:
+                    info = tr("Generic HID Keyboard");
+                    break;
+                case 0x8:
+                    info = tr("Generic HID Multiaxis Controller");
+                    break;
+                default:
+                    info = tr("Unknown HID Desktop Device") +
+                           QString().sprintf(" 0x%0x/0x%0x", hid_usage_page,
+                                             hid_usage);
                     break;
             }
-        } else if (hid_vendor_id==0x5ac) {
+        } else if (hid_vendor_id == 0x5ac) {
             // Apple laptop special HID devices
-            if (hid_product_id==0x8242) {
+            if (hid_product_id == 0x8242) {
                 info = tr("HID Infrared Control");
             } else {
-                info = tr("Unknown Apple HID Device") + QString().sprintf(
-                    " 0x%0x/0x%0x",hid_usage_page,hid_usage);
+                info = tr("Unknown Apple HID Device") +
+                       QString().sprintf(" 0x%0x/0x%0x", hid_usage_page,
+                                         hid_usage);
             }
         } else {
             // Fill in the usage page and usage fields for debugging info
-            info = tr("HID Unknown Device") + QString().sprintf(
-                " 0x%0x/0x%0x", hid_usage_page, hid_usage);
+            info = tr("HID Unknown Device") +
+                   QString().sprintf(" 0x%0x/0x%0x", hid_usage_page, hid_usage);
         }
     } else {
         // Guess linux device types somehow as well. Or maybe just fill in the
         // interface number?
-        info = tr("HID Interface Number") + QString().sprintf(
-            " 0x%0x", hid_interface_number);
+        info = tr("HID Interface Number") +
+               QString().sprintf(" 0x%0x", hid_interface_number);
     }
     setDeviceCategory(info);
 }
@@ -229,8 +247,8 @@ int HidController::open() {
 
     // Open device by path
     if (debugging()) {
-        qDebug() << "Opening HID device"
-                 << getName() << "by HID path" << hid_path;
+        qDebug() << "Opening HID device" << getName() << "by HID path"
+                 << hid_path;
     }
     m_pHidDevice = hid_open_path(hid_path);
 
@@ -238,7 +256,7 @@ int HidController::open() {
     if (m_pHidDevice == NULL) {
         if (debugging())
             qDebug() << "Failed. Trying to open with make, model & serial no:"
-                << hid_vendor_id << hid_product_id << hid_serial;
+                     << hid_vendor_id << hid_product_id << hid_serial;
         m_pHidDevice = hid_open(hid_vendor_id, hid_product_id, hid_serial_raw);
     }
 
@@ -247,13 +265,14 @@ int HidController::open() {
     if (m_pHidDevice == NULL) {
         qWarning() << "Unable to open specific HID device" << getName()
                    << "Trying now with just make and model."
-                   << "(This may only open the first of multiple identical devices.)";
+                   << "(This may only open the first of multiple identical "
+                      "devices.)";
         m_pHidDevice = hid_open(hid_vendor_id, hid_product_id, NULL);
     }
 
     // If that fails, we give up!
     if (m_pHidDevice == NULL) {
-        qWarning()  << "Unable to open HID device" << getName();
+        qWarning() << "Unable to open HID device" << getName();
         return -1;
     }
 
@@ -266,8 +285,8 @@ int HidController::open() {
         m_pReader = new HidReader(m_pHidDevice);
         m_pReader->setObjectName(QString("HidReader %1").arg(getName()));
 
-        connect(m_pReader, SIGNAL(incomingData(QByteArray)),
-                this, SLOT(receive(QByteArray)));
+        connect(m_pReader, SIGNAL(incomingData(QByteArray)), this,
+                SLOT(receive(QByteArray)));
 
         // Controller input needs to be prioritized since it can affect the
         // audio directly, like when scratching
@@ -290,17 +309,19 @@ int HidController::close() {
         qWarning() << "HidReader not present for" << getName()
                    << "yet the device is open!";
     } else {
-        disconnect(m_pReader, SIGNAL(incomingData(QByteArray)),
-                   this, SLOT(receive(QByteArray)));
+        disconnect(m_pReader, SIGNAL(incomingData(QByteArray)), this,
+                   SLOT(receive(QByteArray)));
         m_pReader->stop();
-        hid_set_nonblocking(m_pHidDevice, 1);   // Quit blocking
-        if (debugging()) qDebug() << "  Waiting on reader to finish";
+        hid_set_nonblocking(m_pHidDevice, 1);  // Quit blocking
+        if (debugging())
+            qDebug() << "  Waiting on reader to finish";
         m_pReader->wait();
         delete m_pReader;
         m_pReader = NULL;
     }
 
-    // Stop controller engine here to ensure it's done before the device is closed
+    // Stop controller engine here to ensure it's done before the device is
+    // closed
     //  incase it has any final parting messages
     stopEngine();
 
@@ -313,12 +334,11 @@ int HidController::close() {
     return 0;
 }
 
-void HidController::send(QList<int> data, unsigned int length, unsigned int reportID) {
+void HidController::send(QList<int> data, unsigned int length,
+                         unsigned int reportID) {
     Q_UNUSED(length);
     QByteArray temp;
-    foreach (int datum, data) {
-        temp.append(datum);
-    }
+    foreach (int datum, data) { temp.append(datum); }
     send(temp, reportID);
 }
 
@@ -330,19 +350,19 @@ void HidController::send(QByteArray data, unsigned int reportID) {
     // Append the Report ID to the beginning of data[] per the API..
     data.prepend(reportID);
 
-    int result = hid_write(m_pHidDevice, (unsigned char*)data.constData(), data.size());
+    int result = hid_write(m_pHidDevice, (unsigned char*)data.constData(),
+                           data.size());
     if (result == -1) {
         if (debugging()) {
-            qWarning() << "Unable to send data to" << getName()
-                       << "serial #" << hid_serial << ":"
+            qWarning() << "Unable to send data to" << getName() << "serial #"
+                       << hid_serial << ":"
                        << QString::fromWCharArray(hid_error(m_pHidDevice));
         } else {
             qWarning() << "Unable to send data to" << getName() << ":"
                        << QString::fromWCharArray(hid_error(m_pHidDevice));
         }
     } else if (debugging()) {
-        qDebug() << result << "bytes sent to" << getName()
-                 << "serial #" << hid_serial
-                 << "(including report ID of" << reportID << ")";
+        qDebug() << result << "bytes sent to" << getName() << "serial #"
+                 << hid_serial << "(including report ID of" << reportID << ")";
     }
 }

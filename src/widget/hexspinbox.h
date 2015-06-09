@@ -6,7 +6,7 @@
 
 class HexSpinBox : public QSpinBox {
   public:
-    HexSpinBox(QWidget *parent);
+    HexSpinBox(QWidget* parent);
     virtual ~HexSpinBox();
 
   protected:

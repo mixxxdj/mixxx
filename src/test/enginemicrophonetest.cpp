@@ -24,7 +24,8 @@ class EngineMicrophoneTest : public testing::Test {
         // No need for a real handle in this test.
         m_pMicrophone = new EngineMicrophone(
                 ChannelHandleAndGroup(ChannelHandle(), "[Microphone]"), NULL);
-        m_pTalkover = ControlObject::getControl(ConfigKey("[Microphone]", "talkover"));
+        m_pTalkover = ControlObject::getControl(
+                ConfigKey("[Microphone]", "talkover"));
     }
 
     virtual void TearDown() {
@@ -47,9 +48,9 @@ class EngineMicrophoneTest : public testing::Test {
                                   unsigned int stride, unsigned int length) {
         ASSERT_EQ(0U, length % stride);
         T value = initial;
-        for (unsigned int i = 0; i < length/stride; ++i) {
+        for (unsigned int i = 0; i < length / stride; ++i) {
             for (unsigned int j = 0; j < stride; ++j) {
-                pBuffer[i*stride + j] = value;
+                pBuffer[i * stride + j] = value;
             }
             value = value + increment;
             if (value > max)
@@ -57,14 +58,16 @@ class EngineMicrophoneTest : public testing::Test {
         }
     }
 
-    void AssertWholeBufferEquals(const CSAMPLE* pBuffer, CSAMPLE value, int iBufferLen) {
+    void AssertWholeBufferEquals(const CSAMPLE* pBuffer, CSAMPLE value,
+                                 int iBufferLen) {
         for (int i = 0; i < iBufferLen; ++i) {
             ASSERT_FLOAT_EQ(value, pBuffer[i]);
         }
     }
 
     template <typename T>
-    void AssertBuffersEqual(const T* pBuffer, const T* pExpected, int iBufferLen) {
+    void AssertBuffersEqual(const T* pBuffer, const T* pExpected,
+                            int iBufferLen) {
         for (int i = 0; i < iBufferLen; ++i) {
             ASSERT_FLOAT_EQ(pExpected[i], pBuffer[i]);
         }
@@ -99,8 +102,10 @@ TEST_F(EngineMicrophoneTest, TestRepeatedInputMatchesOutput) {
     m_pTalkover->set(1.0);
 
     for (int i = 0; i < 10; i++) {
-        FillSequentialWithStride<CSAMPLE>(input, 0, 0.001f, 1.0f, 2, inputLength);
-        FillSequentialWithStride<CSAMPLE>(test, 0, 0.001f, 1.0f, 2, outputLength);
+        FillSequentialWithStride<CSAMPLE>(input, 0, 0.001f, 1.0f, 2,
+                                          inputLength);
+        FillSequentialWithStride<CSAMPLE>(test, 0, 0.001f, 1.0f, 2,
+                                          outputLength);
 
         m_pMicrophone->receiveBuffer(micInput, input, inputLength);
         m_pMicrophone->process(output, outputLength);

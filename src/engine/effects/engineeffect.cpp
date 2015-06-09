@@ -1,10 +1,10 @@
 #include "engine/effects/engineeffect.h"
 #include "sampleutil.h"
 
-
-EngineEffect::EngineEffect(const EffectManifest& manifest,
-                           const QSet<ChannelHandleAndGroup>& registeredChannels,
-                           EffectInstantiatorPointer pInstantiator)
+EngineEffect::EngineEffect(
+        const EffectManifest& manifest,
+        const QSet<ChannelHandleAndGroup>& registeredChannels,
+        EffectInstantiatorPointer pInstantiator)
         : m_manifest(manifest),
           m_enableState(EffectProcessor::ENABLING),
           m_parameters(manifest.parameters().size()) {
@@ -48,9 +48,11 @@ bool EngineEffect::processEffectsRequest(const EffectsRequest& message,
                          << "enabled" << message.SetEffectParameters.enabled;
             }
 
-            if (m_enableState != EffectProcessor::DISABLED && !message.SetEffectParameters.enabled) {
+            if (m_enableState != EffectProcessor::DISABLED &&
+                !message.SetEffectParameters.enabled) {
                 m_enableState = EffectProcessor::DISABLING;
-            } else if (m_enableState == EffectProcessor::DISABLED && message.SetEffectParameters.enabled) {
+            } else if (m_enableState == EffectProcessor::DISABLED &&
+                       message.SetEffectParameters.enabled) {
                 m_enableState = EffectProcessor::ENABLING;
             }
 
@@ -61,14 +63,14 @@ bool EngineEffect::processEffectsRequest(const EffectsRequest& message,
         case EffectsRequest::SET_PARAMETER_PARAMETERS:
             if (kEffectDebugOutput) {
                 qDebug() << debugString() << "SET_PARAMETER_PARAMETERS"
-                         << "parameter" << message.SetParameterParameters.iParameter
-                         << "minimum" << message.minimum
-                         << "maximum" << message.maximum
-                         << "default_value" << message.default_value
-                         << "value" << message.value;
+                         << "parameter"
+                         << message.SetParameterParameters.iParameter
+                         << "minimum" << message.minimum << "maximum"
+                         << message.maximum << "default_value"
+                         << message.default_value << "value" << message.value;
             }
             pParameter = m_parameters.value(
-                message.SetParameterParameters.iParameter, NULL);
+                    message.SetParameterParameters.iParameter, NULL);
             if (pParameter) {
                 pParameter->setMinimum(message.minimum);
                 pParameter->setMaximum(message.maximum);
@@ -87,9 +89,8 @@ bool EngineEffect::processEffectsRequest(const EffectsRequest& message,
     return false;
 }
 
-void EngineEffect::process(const ChannelHandle& handle,
-                           const CSAMPLE* pInput, CSAMPLE* pOutput,
-                           const unsigned int numSamples,
+void EngineEffect::process(const ChannelHandle& handle, const CSAMPLE* pInput,
+                           CSAMPLE* pOutput, const unsigned int numSamples,
                            const unsigned int sampleRate,
                            const EffectProcessor::EnableState enableState,
                            const GroupFeatureState& groupFeatures) {
@@ -101,21 +102,17 @@ void EngineEffect::process(const ChannelHandle& handle,
     }
 
     m_pProcessor->process(handle, pInput, pOutput, numSamples, sampleRate,
-            effectiveEnableState, groupFeatures);
+                          effectiveEnableState, groupFeatures);
     if (!m_effectRampsFromDry) {
         // the effect does not fade, so we care for it
         if (effectiveEnableState == EffectProcessor::DISABLING) {
             // Fade out (fade to dry signal)
-            SampleUtil::copy2WithRampingGain(pOutput,
-                    pInput, 0.0, 1.0,
-                    pOutput, 1.0, 0.0,
-                    numSamples);
+            SampleUtil::copy2WithRampingGain(pOutput, pInput, 0.0, 1.0, pOutput,
+                                             1.0, 0.0, numSamples);
         } else if (effectiveEnableState == EffectProcessor::ENABLING) {
             // Fade in (fade to wet signal)
-            SampleUtil::copy2WithRampingGain(pOutput,
-                    pInput, 1.0, 0.0,
-                    pOutput, 0.0, 1.0,
-                    numSamples);
+            SampleUtil::copy2WithRampingGain(pOutput, pInput, 1.0, 0.0, pOutput,
+                                             0.0, 1.0, numSamples);
         }
     }
 

@@ -3,20 +3,20 @@
 
 #include "metadata/trackmetadata.h"
 #include "util/sandbox.h"
-#include "util/defs.h" // Result
+#include "util/defs.h"  // Result
 
 #include <QFileInfo>
 
 class AudioTagger {
-public:
+  public:
     AudioTagger(const QString& file, SecurityTokenPointer pToken);
     virtual ~AudioTagger();
 
     Result save(const Mixxx::TrackMetadata& trackMetadata);
 
-private:
+  private:
     QFileInfo m_file;
     SecurityTokenPointer m_pSecurityToken;
 };
 
-#endif // AUDIOTAGGER_H
+#endif  // AUDIOTAGGER_H

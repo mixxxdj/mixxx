@@ -20,11 +20,15 @@ class WaveformWidgetAbstract : public WaveformWidgetRenderer {
     WaveformWidgetAbstract(const char* group);
     virtual ~WaveformWidgetAbstract();
 
-    //Type is use by the factory to safely up-cast waveform widgets
+    // Type is use by the factory to safely up-cast waveform widgets
     virtual WaveformWidgetType::Type getType() const = 0;
 
-    bool isValid() const { return (m_widget && m_initSuccess); }
-    QWidget* getWidget() { return m_widget; }
+    bool isValid() const {
+        return (m_widget && m_initSuccess);
+    }
+    QWidget* getWidget() {
+        return m_widget;
+    }
 
     void hold();
     void release();
@@ -38,10 +42,11 @@ class WaveformWidgetAbstract : public WaveformWidgetRenderer {
     QWidget* m_widget;
     bool m_initSuccess;
 
-    //this is the factory resposability to trigger QWidget casting after constructor
+    // this is the factory resposability to trigger QWidget casting after
+    // constructor
     virtual void castToQWidget() = 0;
 
     friend class WaveformWidgetFactory;
 };
 
-#endif // WAVEFORMWIDGETABSTRACT_H
+#endif  // WAVEFORMWIDGETABSTRACT_H

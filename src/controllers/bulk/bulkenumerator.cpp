@@ -11,9 +11,7 @@
 #include "controllers/bulk/bulkenumerator.h"
 #include "controllers/bulk/bulksupported.h"
 
-BulkEnumerator::BulkEnumerator()
-        : ControllerEnumerator(),
-          m_context(NULL) {
+BulkEnumerator::BulkEnumerator() : ControllerEnumerator(), m_context(NULL) {
     libusb_init(&m_context);
 }
 
@@ -35,7 +33,7 @@ static bool is_interesting(struct libusb_device_descriptor *desc) {
     return false;
 }
 
-QList<Controller*> BulkEnumerator::queryDevices() {
+QList<Controller *> BulkEnumerator::queryDevices() {
     qDebug() << "Scanning USB Bulk devices:";
     libusb_device **list;
     ssize_t cnt = libusb_get_device_list(m_context, &list);
@@ -55,7 +53,8 @@ QList<Controller*> BulkEnumerator::queryDevices() {
                 continue;
             }
 
-            BulkController* currentDevice = new BulkController(m_context, handle, &desc);
+            BulkController *currentDevice =
+                    new BulkController(m_context, handle, &desc);
             m_devices.push_back(currentDevice);
         }
     }

@@ -14,15 +14,18 @@
 #include "track/beatmap.h"
 #include "trackinfoobject.h"
 
-class BpmControlTest : public MixxxTest {
-};
+class BpmControlTest : public MixxxTest {};
 
 TEST_F(BpmControlTest, ShortestPercentageChange) {
     const double kEpsilon = 0.0000000001;
-    EXPECT_NEAR(-0.02, BpmControl::shortestPercentageChange(0.01, 0.99), kEpsilon);
-    EXPECT_NEAR(0.02, BpmControl::shortestPercentageChange(0.99, 0.01), kEpsilon);
-    EXPECT_NEAR(0.40, BpmControl::shortestPercentageChange(0.80, 0.20), kEpsilon);
-    EXPECT_NEAR(-0.40, BpmControl::shortestPercentageChange(0.20, 0.80), kEpsilon);
+    EXPECT_NEAR(-0.02, BpmControl::shortestPercentageChange(0.01, 0.99),
+                kEpsilon);
+    EXPECT_NEAR(0.02, BpmControl::shortestPercentageChange(0.99, 0.01),
+                kEpsilon);
+    EXPECT_NEAR(0.40, BpmControl::shortestPercentageChange(0.80, 0.20),
+                kEpsilon);
+    EXPECT_NEAR(-0.40, BpmControl::shortestPercentageChange(0.20, 0.80),
+                kEpsilon);
 }
 
 TEST_F(BpmControlTest, BeatContext_BeatGrid) {

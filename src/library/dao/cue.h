@@ -11,7 +11,7 @@ class CueDAO;
 class TrackInfoObject;
 
 class Cue : public QObject {
-  Q_OBJECT
+    Q_OBJECT
   public:
     enum CueType {
         INVALID = 0,
@@ -48,8 +48,8 @@ class Cue : public QObject {
 
   private:
     Cue(int trackId);
-    Cue(int id, int trackId, CueType type, int position, int length,
-        int hotCue, QString label);
+    Cue(int id, int trackId, CueType type, int position, int length, int hotCue,
+        QString label);
     void setDirty(bool dirty);
     void setId(int id);
     void setTrackId(int trackId);

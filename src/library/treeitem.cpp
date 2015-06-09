@@ -6,7 +6,8 @@
 #include "library/treeitem.h"
 
 /*
- * Just a word about how the TreeItem objects and TreeItemModels are used in general:
+ * Just a word about how the TreeItem objects and TreeItemModels are used in
+ *general:
  * TreeItems are used by the TreeItemModel class to display tree
  * structures in the sidebar.
  *
@@ -16,12 +17,14 @@
  * 3. argument is a library feature object.
  *    This is necessary because in sidebar.cpp we hanlde 'activateChid' events
  * 4. the parent TreeItem object
- *    The constructor does not add this TreeItem object to the parent's child list
+ *    The constructor does not add this TreeItem object to the parent's child
+ *list
  *
  * In case of no arguments, the standard constructor creates a
  * root item that is not visible in the sidebar.
  *
- * Once the TreeItem objects are inserted to models, the models take care of their
+ * Once the TreeItem objects are inserted to models, the models take care of
+ *their
  * deletion.
  *
  * Examples on how to use TreeItem and TreeItemModels can be found in
@@ -30,7 +33,7 @@
  * - *feature.cpp
  */
 TreeItem::TreeItem(const QString &data, const QString &data_path,
-                   LibraryFeature* feature, TreeItem* parent) {
+                   LibraryFeature *feature, TreeItem *parent) {
     m_data = data;
     m_dataPath = data_path;
     m_parentItem = parent;
@@ -86,22 +89,23 @@ TreeItem *TreeItem::parent() {
 
 int TreeItem::row() const {
     if (m_parentItem) {
-        return m_parentItem->m_childItems.indexOf(const_cast<TreeItem*>(this));
+        return m_parentItem->m_childItems.indexOf(const_cast<TreeItem *>(this));
     }
 
     return 0;
 }
 
-LibraryFeature* TreeItem::getFeature() {
+LibraryFeature *TreeItem::getFeature() {
     return m_feature;
 }
 
-bool TreeItem::insertChildren(QList<TreeItem*> &data, int position, int count) {
+bool TreeItem::insertChildren(QList<TreeItem *> &data, int position,
+                              int count) {
     if (position < 0 || position > m_childItems.size())
         return false;
 
     for (int row = 0; row < count; ++row) {
-        TreeItem* item = data.at(row);
+        TreeItem *item = data.at(row);
         m_childItems.insert(position + row, item);
     }
 
@@ -113,9 +117,10 @@ bool TreeItem::removeChildren(int position, int count) {
         return false;
 
     for (int row = 0; row < count; ++row) {
-        //Remove from list to avoid invalid pointers
-        TreeItem* item = m_childItems.takeAt(position);
-        if(item) delete item;
+        // Remove from list to avoid invalid pointers
+        TreeItem *item = m_childItems.takeAt(position);
+        if (item)
+            delete item;
     }
     return true;
 }
@@ -130,6 +135,6 @@ QIcon TreeItem::getIcon() {
     return m_icon;
 }
 
-void TreeItem::setIcon(const QIcon& icon) {
+void TreeItem::setIcon(const QIcon &icon) {
     m_icon = icon;
 }

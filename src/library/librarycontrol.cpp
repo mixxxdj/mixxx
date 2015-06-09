@@ -15,19 +15,21 @@
 #include "library/libraryview.h"
 #include "util/container.h"
 
-LoadToGroupController::LoadToGroupController(QObject* pParent, const QString& group)
-        : QObject(pParent),
-          m_group(group) {
-    m_pLoadControl = new ControlPushButton(ConfigKey(group, "LoadSelectedTrack"));
-    connect(m_pLoadControl, SIGNAL(valueChanged(double)),
-            this, SLOT(slotLoadToGroup(double)));
+LoadToGroupController::LoadToGroupController(QObject* pParent,
+                                             const QString& group)
+        : QObject(pParent), m_group(group) {
+    m_pLoadControl =
+            new ControlPushButton(ConfigKey(group, "LoadSelectedTrack"));
+    connect(m_pLoadControl, SIGNAL(valueChanged(double)), this,
+            SLOT(slotLoadToGroup(double)));
 
-    m_pLoadAndPlayControl = new ControlPushButton(ConfigKey(group, "LoadSelectedTrackAndPlay"));
-    connect(m_pLoadAndPlayControl, SIGNAL(valueChanged(double)),
-            this, SLOT(slotLoadToGroupAndPlay(double)));
+    m_pLoadAndPlayControl =
+            new ControlPushButton(ConfigKey(group, "LoadSelectedTrackAndPlay"));
+    connect(m_pLoadAndPlayControl, SIGNAL(valueChanged(double)), this,
+            SLOT(slotLoadToGroupAndPlay(double)));
 
-    connect(this, SIGNAL(loadToGroup(QString, bool)),
-            pParent, SLOT(slotLoadSelectedTrackToGroup(QString, bool)));
+    connect(this, SIGNAL(loadToGroup(QString, bool)), pParent,
+            SLOT(slotLoadSelectedTrackToGroup(QString, bool)));
 }
 
 LoadToGroupController::~LoadToGroupController() {
@@ -55,93 +57,102 @@ LibraryControl::LibraryControl(Library* pLibrary)
           m_numDecks("[Master]", "num_decks"),
           m_numSamplers("[Master]", "num_samplers"),
           m_numPreviewDecks("[Master]", "num_preview_decks") {
-
     slotNumDecksChanged(m_numDecks.get());
     slotNumSamplersChanged(m_numSamplers.get());
     slotNumPreviewDecksChanged(m_numPreviewDecks.get());
-    connect(&m_numDecks, SIGNAL(valueChanged(double)),
-            this, SLOT(slotNumDecksChanged(double)));
-    connect(&m_numSamplers, SIGNAL(valueChanged(double)),
-            this, SLOT(slotNumSamplersChanged(double)));
-    connect(&m_numPreviewDecks, SIGNAL(valueChanged(double)),
-            this, SLOT(slotNumPreviewDecksChanged(double)));
+    connect(&m_numDecks, SIGNAL(valueChanged(double)), this,
+            SLOT(slotNumDecksChanged(double)));
+    connect(&m_numSamplers, SIGNAL(valueChanged(double)), this,
+            SLOT(slotNumSamplersChanged(double)));
+    connect(&m_numPreviewDecks, SIGNAL(valueChanged(double)), this,
+            SLOT(slotNumPreviewDecksChanged(double)));
 
     // Make controls for library navigation and track loading.
 
-    m_pSelectNextTrack = new ControlPushButton(ConfigKey("[Playlist]", "SelectNextTrack"));
-    connect(m_pSelectNextTrack, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSelectNextTrack(double)));
+    m_pSelectNextTrack =
+            new ControlPushButton(ConfigKey("[Playlist]", "SelectNextTrack"));
+    connect(m_pSelectNextTrack, SIGNAL(valueChanged(double)), this,
+            SLOT(slotSelectNextTrack(double)));
 
-    m_pSelectPrevTrack = new ControlPushButton(ConfigKey("[Playlist]", "SelectPrevTrack"));
-    connect(m_pSelectPrevTrack, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSelectPrevTrack(double)));
-
-    // Ignoring no-ops is important since this is for +/- tickers.
-    m_pSelectTrack = new ControlObject(ConfigKey("[Playlist]","SelectTrackKnob"), false);
-    connect(m_pSelectTrack, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSelectTrack(double)));
-
-    m_pSelectNextSidebarItem = new ControlPushButton(ConfigKey("[Playlist]", "SelectNextPlaylist"));
-    connect(m_pSelectNextSidebarItem, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSelectNextSidebarItem(double)));
-
-    m_pSelectPrevSidebarItem = new ControlPushButton(ConfigKey("[Playlist]", "SelectPrevPlaylist"));
-    connect(m_pSelectPrevSidebarItem, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSelectPrevSidebarItem(double)));
+    m_pSelectPrevTrack =
+            new ControlPushButton(ConfigKey("[Playlist]", "SelectPrevTrack"));
+    connect(m_pSelectPrevTrack, SIGNAL(valueChanged(double)), this,
+            SLOT(slotSelectPrevTrack(double)));
 
     // Ignoring no-ops is important since this is for +/- tickers.
-    m_pSelectSidebarItem = new ControlObject(ConfigKey("[Playlist]", "SelectPlaylist"), false);
-    connect(m_pSelectSidebarItem, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSelectSidebarItem(double)));
+    m_pSelectTrack = new ControlObject(
+            ConfigKey("[Playlist]", "SelectTrackKnob"), false);
+    connect(m_pSelectTrack, SIGNAL(valueChanged(double)), this,
+            SLOT(slotSelectTrack(double)));
 
-    m_pToggleSidebarItem = new ControlPushButton(ConfigKey("[Playlist]", "ToggleSelectedSidebarItem"));
-    connect(m_pToggleSidebarItem, SIGNAL(valueChanged(double)),
-            this, SLOT(slotToggleSelectedSidebarItem(double)));
+    m_pSelectNextSidebarItem = new ControlPushButton(
+            ConfigKey("[Playlist]", "SelectNextPlaylist"));
+    connect(m_pSelectNextSidebarItem, SIGNAL(valueChanged(double)), this,
+            SLOT(slotSelectNextSidebarItem(double)));
 
-    m_pLoadSelectedIntoFirstStopped = new ControlPushButton(ConfigKey("[Playlist]","LoadSelectedIntoFirstStopped"));
-    connect(m_pLoadSelectedIntoFirstStopped, SIGNAL(valueChanged(double)),
-            this, SLOT(slotLoadSelectedIntoFirstStopped(double)));
-
-    m_pAutoDjAddTop = new ControlPushButton(ConfigKey("[Playlist]","AutoDjAddTop"));
-    connect(m_pAutoDjAddTop, SIGNAL(valueChanged(double)),
-            this, SLOT(slotAutoDjAddTop(double)));
-
-    m_pAutoDjAddBottom = new ControlPushButton(ConfigKey("[Playlist]","AutoDjAddBottom"));
-    connect(m_pAutoDjAddBottom, SIGNAL(valueChanged(double)),
-            this, SLOT(slotAutoDjAddBottom(double)));
+    m_pSelectPrevSidebarItem = new ControlPushButton(
+            ConfigKey("[Playlist]", "SelectPrevPlaylist"));
+    connect(m_pSelectPrevSidebarItem, SIGNAL(valueChanged(double)), this,
+            SLOT(slotSelectPrevSidebarItem(double)));
 
     // Ignoring no-ops is important since this is for +/- tickers.
-    m_pFontSizeKnob = new ControlObject(
-            ConfigKey("[Library]", "font_size_knob"), false);
-    connect(m_pFontSizeKnob, SIGNAL(valueChanged(double)),
-            this, SLOT(slotFontSize(double)));
+    m_pSelectSidebarItem =
+            new ControlObject(ConfigKey("[Playlist]", "SelectPlaylist"), false);
+    connect(m_pSelectSidebarItem, SIGNAL(valueChanged(double)), this,
+            SLOT(slotSelectSidebarItem(double)));
+
+    m_pToggleSidebarItem = new ControlPushButton(
+            ConfigKey("[Playlist]", "ToggleSelectedSidebarItem"));
+    connect(m_pToggleSidebarItem, SIGNAL(valueChanged(double)), this,
+            SLOT(slotToggleSelectedSidebarItem(double)));
+
+    m_pLoadSelectedIntoFirstStopped = new ControlPushButton(
+            ConfigKey("[Playlist]", "LoadSelectedIntoFirstStopped"));
+    connect(m_pLoadSelectedIntoFirstStopped, SIGNAL(valueChanged(double)), this,
+            SLOT(slotLoadSelectedIntoFirstStopped(double)));
+
+    m_pAutoDjAddTop =
+            new ControlPushButton(ConfigKey("[Playlist]", "AutoDjAddTop"));
+    connect(m_pAutoDjAddTop, SIGNAL(valueChanged(double)), this,
+            SLOT(slotAutoDjAddTop(double)));
+
+    m_pAutoDjAddBottom =
+            new ControlPushButton(ConfigKey("[Playlist]", "AutoDjAddBottom"));
+    connect(m_pAutoDjAddBottom, SIGNAL(valueChanged(double)), this,
+            SLOT(slotAutoDjAddBottom(double)));
+
+    // Ignoring no-ops is important since this is for +/- tickers.
+    m_pFontSizeKnob =
+            new ControlObject(ConfigKey("[Library]", "font_size_knob"), false);
+    connect(m_pFontSizeKnob, SIGNAL(valueChanged(double)), this,
+            SLOT(slotFontSize(double)));
 
     m_pFontSizeDecrement = new ControlPushButton(
             ConfigKey("[Library]", "font_size_decrement"));
-    connect(m_pFontSizeDecrement, SIGNAL(valueChanged(double)),
-            this, SLOT(slotDecrementFontSize(double)));
+    connect(m_pFontSizeDecrement, SIGNAL(valueChanged(double)), this,
+            SLOT(slotDecrementFontSize(double)));
 
     m_pFontSizeIncrement = new ControlPushButton(
             ConfigKey("[Library]", "font_size_increment"));
-    connect(m_pFontSizeIncrement, SIGNAL(valueChanged(double)),
-            this, SLOT(slotIncrementFontSize(double)));
+    connect(m_pFontSizeIncrement, SIGNAL(valueChanged(double)), this,
+            SLOT(slotIncrementFontSize(double)));
 }
 
 LibraryControl::~LibraryControl() {
-   delete m_pSelectNextTrack;
-   delete m_pSelectPrevTrack;
-   delete m_pSelectTrack;
-   delete m_pSelectNextSidebarItem;
-   delete m_pSelectPrevSidebarItem;
-   delete m_pSelectSidebarItem;
-   delete m_pToggleSidebarItem;
-   delete m_pLoadSelectedIntoFirstStopped;
-   delete m_pAutoDjAddTop;
-   delete m_pAutoDjAddBottom;
-   delete m_pFontSizeKnob;
-   delete m_pFontSizeDecrement;
-   delete m_pFontSizeIncrement;
-   deleteMapValues(&m_loadToGroupControllers);
+    delete m_pSelectNextTrack;
+    delete m_pSelectPrevTrack;
+    delete m_pSelectTrack;
+    delete m_pSelectNextSidebarItem;
+    delete m_pSelectPrevSidebarItem;
+    delete m_pSelectSidebarItem;
+    delete m_pToggleSidebarItem;
+    delete m_pLoadSelectedIntoFirstStopped;
+    delete m_pAutoDjAddTop;
+    delete m_pAutoDjAddBottom;
+    delete m_pFontSizeKnob;
+    delete m_pFontSizeDecrement;
+    delete m_pFontSizeIncrement;
+    deleteMapValues(&m_loadToGroupControllers);
 }
 
 void LibraryControl::maybeCreateGroupController(const QString& group) {
@@ -193,18 +204,19 @@ void LibraryControl::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
         disconnect(m_pSidebarWidget, 0, this, 0);
     }
     m_pSidebarWidget = pSidebarWidget;
-    connect(m_pSidebarWidget, SIGNAL(destroyed()),
-            this, SLOT(sidebarWidgetDeleted()));
+    connect(m_pSidebarWidget, SIGNAL(destroyed()), this,
+            SLOT(sidebarWidgetDeleted()));
 }
 
-void LibraryControl::bindWidget(WLibrary* pLibraryWidget, MixxxKeyboard* pKeyboard) {
+void LibraryControl::bindWidget(WLibrary* pLibraryWidget,
+                                MixxxKeyboard* pKeyboard) {
     Q_UNUSED(pKeyboard);
     if (m_pLibraryWidget != NULL) {
         disconnect(m_pLibraryWidget, 0, this, 0);
     }
     m_pLibraryWidget = pLibraryWidget;
-    connect(m_pLibraryWidget, SIGNAL(destroyed()),
-            this, SLOT(libraryWidgetDeleted()));
+    connect(m_pLibraryWidget, SIGNAL(destroyed()), this,
+            SLOT(libraryWidgetDeleted()));
 }
 
 void LibraryControl::libraryWidgetDeleted() {
@@ -300,19 +312,22 @@ void LibraryControl::slotSelectSidebarItem(double v) {
         return;
     }
     if (v > 0) {
-        QApplication::postEvent(m_pSidebarWidget, new QKeyEvent(
-            QEvent::KeyPress,
-            (int)Qt::Key_Down, Qt::NoModifier, QString(), true));
-        QApplication::postEvent(m_pSidebarWidget, new QKeyEvent(
-            QEvent::KeyRelease,
-            (int)Qt::Key_Down, Qt::NoModifier, QString(), true));
+        QApplication::postEvent(
+                m_pSidebarWidget,
+                new QKeyEvent(QEvent::KeyPress, (int)Qt::Key_Down,
+                              Qt::NoModifier, QString(), true));
+        QApplication::postEvent(
+                m_pSidebarWidget,
+                new QKeyEvent(QEvent::KeyRelease, (int)Qt::Key_Down,
+                              Qt::NoModifier, QString(), true));
     } else if (v < 0) {
-        QApplication::postEvent(m_pSidebarWidget, new QKeyEvent(
-            QEvent::KeyPress,
-            (int)Qt::Key_Up, Qt::NoModifier, QString(), true));
-        QApplication::postEvent(m_pSidebarWidget, new QKeyEvent(
-            QEvent::KeyRelease,
-            (int)Qt::Key_Up, Qt::NoModifier, QString(), true));
+        QApplication::postEvent(m_pSidebarWidget,
+                                new QKeyEvent(QEvent::KeyPress, (int)Qt::Key_Up,
+                                              Qt::NoModifier, QString(), true));
+        QApplication::postEvent(
+                m_pSidebarWidget,
+                new QKeyEvent(QEvent::KeyRelease, (int)Qt::Key_Up,
+                              Qt::NoModifier, QString(), true));
     }
 }
 

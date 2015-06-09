@@ -1,21 +1,19 @@
 #include "control/controlmodel.h"
 
-ControlModel::ControlModel(QObject* pParent)
-        : QAbstractTableModel(pParent) {
-
+ControlModel::ControlModel(QObject* pParent) : QAbstractTableModel(pParent) {
     setHeaderData(CONTROL_COLUMN_GROUP, Qt::Horizontal, tr("Group"));
     setHeaderData(CONTROL_COLUMN_ITEM, Qt::Horizontal, tr("Item"));
     setHeaderData(CONTROL_COLUMN_VALUE, Qt::Horizontal, tr("Value"));
     setHeaderData(CONTROL_COLUMN_PARAMETER, Qt::Horizontal, tr("Parameter"));
     setHeaderData(CONTROL_COLUMN_TITLE, Qt::Horizontal, tr("Title"));
-    setHeaderData(CONTROL_COLUMN_DESCRIPTION, Qt::Horizontal, tr("Description"));
+    setHeaderData(CONTROL_COLUMN_DESCRIPTION, Qt::Horizontal,
+                  tr("Description"));
 }
 
 ControlModel::~ControlModel() {
 }
 
-void ControlModel::addControl(const ConfigKey& key,
-                              const QString& title,
+void ControlModel::addControl(const ConfigKey& key, const QString& title,
                               const QString& description) {
     ControlInfo info;
     info.key = key;
@@ -24,8 +22,7 @@ void ControlModel::addControl(const ConfigKey& key,
     info.pControl = new ControlObjectSlave(this);
     info.pControl->initialize(info.key);
 
-    beginInsertRows(QModelIndex(), m_controls.size(),
-                    m_controls.size());
+    beginInsertRows(QModelIndex(), m_controls.size(), m_controls.size());
     m_controls.append(info);
     endInsertRows();
 }
@@ -44,10 +41,8 @@ int ControlModel::columnCount(const QModelIndex& parent) const {
     return NUM_CONTROL_COLUMNS;
 }
 
-QVariant ControlModel::data(const QModelIndex& index,
-                            int role) const {
-    if (!index.isValid() || (role != Qt::DisplayRole &&
-                             role != Qt::EditRole)) {
+QVariant ControlModel::data(const QModelIndex& index, int role) const {
+    if (!index.isValid() || (role != Qt::DisplayRole && role != Qt::EditRole)) {
         return QVariant();
     }
 
@@ -79,10 +74,8 @@ QVariant ControlModel::data(const QModelIndex& index,
     return QVariant();
 }
 
-bool ControlModel::setHeaderData(int section,
-                                 Qt::Orientation orientation,
-                                 const QVariant& value,
-                                 int role) {
+bool ControlModel::setHeaderData(int section, Qt::Orientation orientation,
+                                 const QVariant& value, int role) {
     int numColumns = columnCount();
     if (section < 0 || section >= numColumns) {
         return false;
@@ -102,8 +95,7 @@ bool ControlModel::setHeaderData(int section,
     return true;
 }
 
-QVariant ControlModel::headerData(int section,
-                                  Qt::Orientation orientation,
+QVariant ControlModel::headerData(int section, Qt::Orientation orientation,
                                   int role) const {
     if (role == Qt::DisplayRole && orientation == Qt::Horizontal) {
         QVariant headerValue = m_headerInfo.value(section).value(role);
@@ -119,8 +111,7 @@ QVariant ControlModel::headerData(int section,
     return QAbstractTableModel::headerData(section, orientation, role);
 }
 
-bool ControlModel::setData(const QModelIndex& index,
-                           const QVariant& value,
+bool ControlModel::setData(const QModelIndex& index, const QVariant& value,
                            int role) {
     if (!index.isValid() || role != Qt::EditRole) {
         return false;
@@ -154,7 +145,7 @@ Qt::ItemFlags ControlModel::flags(const QModelIndex& index) const {
 
     Qt::ItemFlags defaultFlags = QAbstractTableModel::flags(index);
     if (index.column() == CONTROL_COLUMN_VALUE ||
-            index.column() == CONTROL_COLUMN_PARAMETER) {
+        index.column() == CONTROL_COLUMN_PARAMETER) {
         defaultFlags |= Qt::ItemIsEditable;
     }
     return defaultFlags;

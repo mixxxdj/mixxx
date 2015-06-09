@@ -28,9 +28,9 @@
 #include "widget/knobeventhandler.h"
 
 class WKnob : public WDisplay {
-   Q_OBJECT
+    Q_OBJECT
   public:
-    WKnob(QWidget* pParent=NULL);
+    WKnob(QWidget *pParent = NULL);
     virtual ~WKnob();
 
   protected:

@@ -2,7 +2,8 @@
 * @file midienumerator.h
 * @author Sean Pappalardo spappalardo@mixxx.org
 * @date Tue 7 Feb 2012
-* @brief Base class handling discovery and enumeration of DJ controllers that use the MIDI protocol.
+* @brief Base class handling discovery and enumeration of DJ controllers that
+*use the MIDI protocol.
 *
 * This class handles discovery and enumeration of MIDI DJ controllers and
 *   must be inherited by a class that implements it on some API.

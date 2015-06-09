@@ -4,7 +4,7 @@
 #include "sources/soundsourceprovider.h"
 
 #include <AudioToolbox/AudioToolbox.h>
-//In our tree at lib/apple/
+// In our tree at lib/apple/
 #include "CAStreamBasicDescription.h"
 
 #if !defined(__COREAUDIO_USE_FLAT_INCLUDES__)
@@ -21,7 +21,7 @@
 namespace Mixxx {
 
 class SoundSourceCoreAudio : public Mixxx::SoundSource {
-public:
+  public:
     explicit SoundSourceCoreAudio(QUrl url);
     ~SoundSourceCoreAudio();
 
@@ -29,10 +29,9 @@ public:
 
     SINT seekSampleFrame(SINT frameIndex) override;
 
-    SINT readSampleFrames(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer) override;
+    SINT readSampleFrames(SINT numberOfFrames, CSAMPLE* sampleBuffer) override;
 
-private:
+  private:
     Result tryOpen(const AudioSourceConfig& audioSrcCfg) override;
 
     bool m_bFileIsMp3;
@@ -42,8 +41,8 @@ private:
     SInt64 m_headerFrames;
 };
 
-class SoundSourceProviderCoreAudio: public SoundSourceProvider {
-public:
+class SoundSourceProviderCoreAudio : public SoundSourceProvider {
+  public:
     QString getName() const override;
 
     QStringList getSupportedFileExtensions() const override;
@@ -55,4 +54,4 @@ public:
 
 }  // namespace Mixxx
 
-#endif // SOUNDSOURCECOREAUDIO_H
+#endif  // SOUNDSOURCECOREAUDIO_H

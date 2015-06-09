@@ -4,7 +4,8 @@
 
 #include "sampleutil.h"
 
-#define INCREMENT_RING(index, increment, length) index = (index + increment) % length
+#define INCREMENT_RING(index, increment, length) \
+    index = (index + increment) % length
 #define RAMP_LENGTH 500
 
 // static
@@ -24,8 +25,8 @@ EffectManifest EchoEffect::getManifest() {
     EffectManifestParameter* time = manifest.addParameter();
     time->setId("send_amount");
     time->setName(QObject::tr("Send"));
-    time->setDescription(
-            QObject::tr("How much of the signal to send into the delay buffer"));
+    time->setDescription(QObject::tr(
+            "How much of the signal to send into the delay buffer"));
     time->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     time->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     time->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
@@ -60,10 +61,10 @@ EffectManifest EchoEffect::getManifest() {
     time = manifest.addParameter();
     time->setId("pingpong_amount");
     time->setName(QObject::tr("PingPong"));
-    time->setDescription(
-            QObject::tr("As the ping-pong amount increases, increasing amounts "
-                        "of the echoed signal is bounced between the left and "
-                        "right speakers."));
+    time->setDescription(QObject::tr(
+            "As the ping-pong amount increases, increasing amounts "
+            "of the echoed signal is bounced between the left and "
+            "right speakers."));
     time->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     time->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     time->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
@@ -83,10 +84,11 @@ EchoEffect::EchoEffect(EngineEffect* pEffect, const EffectManifest& manifest)
 }
 
 EchoEffect::~EchoEffect() {
-    //qDebug() << debugString() << "destroyed";
+    // qDebug() << debugString() << "destroyed";
 }
 
-int EchoEffect::getDelaySamples(double delay_time, const unsigned int sampleRate) const {
+int EchoEffect::getDelaySamples(double delay_time,
+                                const unsigned int sampleRate) const {
     int delay_samples = delay_time * sampleRate;
     if (delay_samples % 2 == 1) {
         --delay_samples;
@@ -98,9 +100,10 @@ int EchoEffect::getDelaySamples(double delay_time, const unsigned int sampleRate
     return delay_samples;
 }
 
-void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGroupState,
-                                const CSAMPLE* pInput,
-                                CSAMPLE* pOutput, const unsigned int numSamples,
+void EchoEffect::processChannel(const ChannelHandle& handle,
+                                EchoGroupState* pGroupState,
+                                const CSAMPLE* pInput, CSAMPLE* pOutput,
+                                const unsigned int numSamples,
                                 const unsigned int sampleRate,
                                 const EffectProcessor::EnableState enableState,
                                 const GroupFeatureState& groupFeatures) {
@@ -140,13 +143,16 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
         if (gs.write_position < RAMP_LENGTH) {
             write_ramper = static_cast<double>(gs.write_position) / RAMP_LENGTH;
         } else if (gs.write_position > delay_samples - RAMP_LENGTH) {
-            write_ramper = static_cast<double>(delay_samples - gs.write_position)
-                    / RAMP_LENGTH;
+            write_ramper =
+                    static_cast<double>(delay_samples - gs.write_position) /
+                    RAMP_LENGTH;
         }
         gs.delay_buf[gs.write_position] *= feedback_amount;
         gs.delay_buf[gs.write_position + 1] *= feedback_amount;
-        gs.delay_buf[gs.write_position] += pInput[i] * send_amount * write_ramper;
-        gs.delay_buf[gs.write_position + 1] += pInput[i + 1] * send_amount * write_ramper;
+        gs.delay_buf[gs.write_position] +=
+                pInput[i] * send_amount * write_ramper;
+        gs.delay_buf[gs.write_position + 1] +=
+                pInput[i + 1] * send_amount * write_ramper;
         // Actual delays distort and saturate, so clamp the buffer here.
         gs.delay_buf[gs.write_position] =
                 SampleUtil::clampSample(gs.delay_buf[gs.write_position]);
@@ -162,22 +168,27 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
             // Left sample plus a fraction of the right sample, normalized
             // by 1 + fraction.
             pOutput[i] = (pInput[i] +
-                    (gs.delay_buf[read_position] +
-                            gs.delay_buf[read_position + 1] * pingpong_frac) /
-                    (1 + pingpong_frac)) / 2.0;
+                          (gs.delay_buf[read_position] +
+                           gs.delay_buf[read_position + 1] * pingpong_frac) /
+                                  (1 + pingpong_frac)) /
+                         2.0;
             // Right sample reduced by (1 - fraction)
-            pOutput[i + 1] = (pInput[i + 1] +
-                    gs.delay_buf[read_position + 1] * (1 - pingpong_frac)) / 2.0;
+            pOutput[i + 1] =
+                    (pInput[i + 1] +
+                     gs.delay_buf[read_position + 1] * (1 - pingpong_frac)) /
+                    2.0;
         } else {
             // Left sample reduced by (1 - fraction)
             pOutput[i] = (pInput[i] +
-                    gs.delay_buf[read_position] * (1 - pingpong_frac)) / 2.0;
+                          gs.delay_buf[read_position] * (1 - pingpong_frac)) /
+                         2.0;
             // Right sample plus fraction of left sample, normalized by
             // 1 + fraction
             pOutput[i + 1] = (pInput[i + 1] +
-                    (gs.delay_buf[read_position + 1] +
-                            gs.delay_buf[read_position] * pingpong_frac) /
-                    (1 + pingpong_frac)) / 2.0;
+                              (gs.delay_buf[read_position + 1] +
+                               gs.delay_buf[read_position] * pingpong_frac) /
+                                      (1 + pingpong_frac)) /
+                             2.0;
         }
 
         INCREMENT_RING(read_position, 2, delay_samples);

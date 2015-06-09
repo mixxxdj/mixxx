@@ -7,8 +7,8 @@ bool HidControllerPresetFileHandler::save(const HidControllerPreset& preset,
     return writeDocument(doc, fileName);
 }
 
-ControllerPresetPointer HidControllerPresetFileHandler::load(const QDomElement root,
-                                                             const QString deviceName) {
+ControllerPresetPointer HidControllerPresetFileHandler::load(
+        const QDomElement root, const QString deviceName) {
     if (root.isNull()) {
         return ControllerPresetPointer();
     }

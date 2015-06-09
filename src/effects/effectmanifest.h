@@ -22,13 +22,13 @@
 class EffectManifest {
   public:
     EffectManifest()
-        : m_isMixingEQ(false),
-          m_isMasterEQ(false),
-          m_isForFilterKnob(false),
-          m_effectRampsFromDry(false) {
+            : m_isMixingEQ(false),
+              m_isMasterEQ(false),
+              m_isForFilterKnob(false),
+              m_effectRampsFromDry(false) {
     }
     virtual ~EffectManifest() {
-        //qDebug() << debugString() << "deleted";
+        // qDebug() << debugString() << "deleted";
     }
 
     virtual const QString& id() const {

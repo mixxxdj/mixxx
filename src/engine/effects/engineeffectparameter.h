@@ -22,7 +22,8 @@ class EngineEffectParameter {
         m_defaultValue = m_parameter.getDefault();
         m_value = m_defaultValue;
     }
-    virtual ~EngineEffectParameter() { }
+    virtual ~EngineEffectParameter() {
+    }
 
     ///////////////////////////////////////////////////////////////////////////
     // Parameter Information

@@ -38,4 +38,4 @@ class DlgMissing : public QWidget, public Ui::DlgMissing, public LibraryView {
     MissingTableModel* m_pMissingTableModel;
 };
 
-#endif //DLGMISSING_H
+#endif  // DLGMISSING_H

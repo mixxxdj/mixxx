@@ -1,7 +1,6 @@
 #include "engine/enginefilterbessel8.h"
 #include "util/math.h"
 
-
 EngineFilterBessel8Low::EngineFilterBessel8Low(int sampleRate,
                                                double freqCorner1) {
     setFrequencyCorners(sampleRate, freqCorner1);
@@ -12,7 +11,6 @@ void EngineFilterBessel8Low::setFrequencyCorners(int sampleRate,
     // Copy the old coefficients into m_oldCoef
     setCoefs("LpBe8", sampleRate, freqCorner1);
 }
-
 
 int EngineFilterBessel8Low::setFrequencyCornersForIntDelay(
         double desiredCorner1Ratio, int maxDelay) {
@@ -47,16 +45,17 @@ int EngineFilterBessel8Low::setFrequencyCornersForIntDelay(
             0.026572562,  // delay 19
     };
 
-
-    double dDelay = kDelayFactor1 / desiredCorner1Ratio - kDelayFactor2 * desiredCorner1Ratio;
-    int iDelay =  math_clamp((int)(dDelay + 0.5), 0, maxDelay);
+    double dDelay = kDelayFactor1 / desiredCorner1Ratio -
+                    kDelayFactor2 * desiredCorner1Ratio;
+    int iDelay = math_clamp((int)(dDelay + 0.5), 0, maxDelay);
 
     double quantizedRatio;
     if (iDelay >= (int)(sizeof(delayRatioTable) / sizeof(double))) {
         // pq formula, only valid for low frequencies
         quantizedRatio = (-(iDelay / kDelayFactor2 / 2)) +
-                sqrt((iDelay / kDelayFactor2 / 2)*(iDelay / kDelayFactor2 / 2)
-                                       + kDelayFactor1 / kDelayFactor2);
+                         sqrt((iDelay / kDelayFactor2 / 2) *
+                                      (iDelay / kDelayFactor2 / 2) +
+                              kDelayFactor1 / kDelayFactor2);
     } else {
         quantizedRatio = delayRatioTable[iDelay];
     }
@@ -76,7 +75,6 @@ void EngineFilterBessel8Band::setFrequencyCorners(int sampleRate,
                                                   double freqCorner2) {
     setCoefs("BpBe8", sampleRate, freqCorner1, freqCorner2);
 }
-
 
 EngineFilterBessel8High::EngineFilterBessel8High(int sampleRate,
                                                  double freqCorner1) {

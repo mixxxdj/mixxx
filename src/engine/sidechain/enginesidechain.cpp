@@ -82,7 +82,7 @@ void EngineSideChain::writeSamples(const CSAMPLE* newBuffer, int buffer_size) {
         Counter("EngineSideChain::writeSamples buffer overrun").increment();
     }
 
-    if (m_sampleFifo.writeAvailable() < SIDECHAIN_BUFFER_SIZE/5) {
+    if (m_sampleFifo.writeAvailable() < SIDECHAIN_BUFFER_SIZE / 5) {
         // Signal to the sidechain that samples are available.
         Trace wakeup("EngineSideChain::writeSamples wake up");
         m_waitForSamples.wakeAll();
@@ -93,7 +93,8 @@ void EngineSideChain::run() {
     // the id of this thread, for debugging purposes //XXX copypasta (should
     // factor this out somehow), -kousu 2/2009
     unsigned static id = 0;
-    QThread::currentThread()->setObjectName(QString("EngineSideChain %1").arg(++id));
+    QThread::currentThread()->setObjectName(
+            QString("EngineSideChain %1").arg(++id));
 
     Event::start("EngineSideChain");
     while (!m_bStopThread) {

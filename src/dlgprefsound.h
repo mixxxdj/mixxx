@@ -37,24 +37,25 @@ class ControlObjectSlave;
 /**
  * Class representing a preferences pane to configure sound devices for Mixxx.
  */
-class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
+class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg {
     Q_OBJECT;
+
   public:
     DlgPrefSound(QWidget *parent, SoundManager *soundManager,
-                 PlayerManager* pPlayerManager,
+                 PlayerManager *pPlayerManager,
                  ConfigObject<ConfigValue> *config);
     virtual ~DlgPrefSound();
 
   signals:
     void loadPaths(const SoundManagerConfig &config);
     void writePaths(SoundManagerConfig *config);
-    void refreshOutputDevices(const QList<SoundDevice*> &devices);
-    void refreshInputDevices(const QList<SoundDevice*> &devices);
+    void refreshOutputDevices(const QList<SoundDevice *> &devices);
+    void refreshInputDevices(const QList<SoundDevice *> &devices);
     void updatingAPI();
     void updatedAPI();
 
   public slots:
-    void slotUpdate(); // called on show
+    void slotUpdate();  // called on show
     void slotApply();  // called on ok button
     void slotResetToDefaults();
     void bufferUnderflow(double count);
@@ -91,16 +92,16 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     SoundManager *m_pSoundManager;
     PlayerManager *m_pPlayerManager;
     ConfigObject<ConfigValue> *m_pConfig;
-    ControlObjectSlave* m_pMasterAudioLatencyOverloadCount;
-    ControlObjectSlave* m_pMasterLatency;
-    ControlObjectSlave* m_pHeadDelay;
-    ControlObjectSlave* m_pMasterDelay;
-    ControlObjectSlave* m_pKeylockEngine;
-    ControlObjectSlave* m_pMasterEnabled;
-    ControlObjectSlave* m_pMasterMonoMixdown;
-    ControlObjectSlave* m_pMasterTalkoverMix;
-    QList<SoundDevice*> m_inputDevices;
-    QList<SoundDevice*> m_outputDevices;
+    ControlObjectSlave *m_pMasterAudioLatencyOverloadCount;
+    ControlObjectSlave *m_pMasterLatency;
+    ControlObjectSlave *m_pHeadDelay;
+    ControlObjectSlave *m_pMasterDelay;
+    ControlObjectSlave *m_pKeylockEngine;
+    ControlObjectSlave *m_pMasterEnabled;
+    ControlObjectSlave *m_pMasterMonoMixdown;
+    ControlObjectSlave *m_pMasterTalkoverMix;
+    QList<SoundDevice *> m_inputDevices;
+    QList<SoundDevice *> m_outputDevices;
     bool m_settingsModified;
     SoundManagerConfig m_config;
     bool m_loading;

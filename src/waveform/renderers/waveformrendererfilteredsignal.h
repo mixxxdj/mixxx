@@ -11,7 +11,7 @@
 class WaveformRendererFilteredSignal : public WaveformRendererSignalBase {
   public:
     explicit WaveformRendererFilteredSignal(
-        WaveformWidgetRenderer* waveformWidget);
+            WaveformWidgetRenderer* waveformWidget);
     virtual ~WaveformRendererFilteredSignal();
 
     virtual void onSetup(const QDomNode& node);
@@ -28,4 +28,4 @@ class WaveformRendererFilteredSignal : public WaveformRendererSignalBase {
     DISALLOW_COPY_AND_ASSIGN(WaveformRendererFilteredSignal);
 };
 
-#endif // WAVEFORMRENDERERFILTEREDSIGNAL_H
+#endif  // WAVEFORMRENDERERFILTEREDSIGNAL_H

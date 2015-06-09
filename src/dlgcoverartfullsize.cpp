@@ -3,8 +3,7 @@
 #include "dlgcoverartfullsize.h"
 #include "library/coverartutils.h"
 
-DlgCoverArtFullSize::DlgCoverArtFullSize(QWidget* parent)
-        : QDialog(parent) {
+DlgCoverArtFullSize::DlgCoverArtFullSize(QWidget* parent) : QDialog(parent) {
     setupUi(this);
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
 }
@@ -34,10 +33,10 @@ void DlgCoverArtFullSize::init(CoverInfo info) {
     // In this case, it need to do a small adjust to make
     // this dlg a bit smaller than the Mixxx window.
     QSize mixxxSize = largestWindowSize / qreal(1.2);
-    if (pixmap.height() > mixxxSize.height()
-            || pixmap.width() > mixxxSize.width()) {
-        pixmap = pixmap.scaled(
-            mixxxSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    if (pixmap.height() > mixxxSize.height() ||
+        pixmap.width() > mixxxSize.width()) {
+        pixmap = pixmap.scaled(mixxxSize, Qt::KeepAspectRatio,
+                               Qt::SmoothTransformation);
     }
     resize(pixmap.size());
     coverArt->setPixmap(pixmap);

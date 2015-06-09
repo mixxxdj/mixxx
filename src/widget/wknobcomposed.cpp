@@ -20,8 +20,9 @@ void WKnobComposed::setup(QDomNode node, const SkinContext& context) {
     // Set background pixmap if available
     if (context.hasNode(node, "BackPath")) {
         QDomElement backPathElement = context.selectElement(node, "BackPath");
-        setPixmapBackground(context.getPixmapSource(backPathElement),
-                            context.selectScaleMode(backPathElement, Paintable::STRETCH));
+        setPixmapBackground(
+                context.getPixmapSource(backPathElement),
+                context.selectScaleMode(backPathElement, Paintable::STRETCH));
     }
 
     // Set knob pixmap if available
@@ -63,7 +64,8 @@ void WKnobComposed::setPixmapKnob(PixmapSource source,
     }
 }
 
-void WKnobComposed::onConnectedControlChanged(double dParameter, double dValue) {
+void WKnobComposed::onConnectedControlChanged(double dParameter,
+                                              double dValue) {
     Q_UNUSED(dValue);
     // dParameter is in the range [0, 1].
     double angle = m_dMinAngle + (m_dMaxAngle - m_dMinAngle) * dParameter;
@@ -98,7 +100,9 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
 
         // We update m_dCurrentAngle since onConnectedControlChanged uses it for
         // no-op detection.
-        m_dCurrentAngle = m_dMinAngle + (m_dMaxAngle - m_dMinAngle) * getControlParameterDisplay();
+        m_dCurrentAngle =
+                m_dMinAngle +
+                (m_dMaxAngle - m_dMinAngle) * getControlParameterDisplay();
         p.rotate(m_dCurrentAngle);
 
         // Need to convert from QRect to a QRectF to avoid losing precison.

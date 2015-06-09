@@ -25,26 +25,22 @@
   *@author Tue & Ken Haste Andersen
   */
 
-
 /** Number of samples to read ahead */
 const int kiLinearScaleReadAheadLength = 10240;
 
-
-class EngineBufferScaleLinear : public EngineBufferScale  {
+class EngineBufferScaleLinear : public EngineBufferScale {
   public:
-    EngineBufferScaleLinear(ReadAheadManager *pReadAheadManager);
+    EngineBufferScaleLinear(ReadAheadManager* pReadAheadManager);
     virtual ~EngineBufferScaleLinear();
 
     CSAMPLE* getScaled(unsigned long buf_size);
     void clear();
 
-    virtual void setScaleParameters(double base_rate,
-                                    double* pTempoRatio,
+    virtual void setScaleParameters(double base_rate, double* pTempoRatio,
                                     double* pPitchRatio);
 
   private:
-    CSAMPLE* do_scale(CSAMPLE* buf, unsigned long buf_size,
-                      int *samples_read);
+    CSAMPLE* do_scale(CSAMPLE* buf, unsigned long buf_size, int* samples_read);
 
     /** Holds playback direction */
     bool m_bBackwards;

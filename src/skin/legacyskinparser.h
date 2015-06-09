@@ -28,8 +28,8 @@ class LegacySkinParser : public QObject, public SkinParser {
   public:
     LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
                      MixxxKeyboard* pKeyboard, PlayerManager* pPlayerManager,
-                     ControllerManager* pControllerManager,
-                     Library* pLibrary, VinylControlManager* pVCMan,
+                     ControllerManager* pControllerManager, Library* pLibrary,
+                     VinylControlManager* pVCMan,
                      EffectsManager* pEffectsManager);
     virtual ~LegacySkinParser();
 
@@ -61,7 +61,8 @@ class LegacySkinParser : public QObject, public SkinParser {
 
     // Most widgets can use parseStandardWidget.
     template <class T>
-    QWidget* parseStandardWidget(QDomElement element, bool timerListener=false);
+    QWidget* parseStandardWidget(QDomElement element,
+                                 bool timerListener = false);
 
     // Label widgets.
     template <class T>
@@ -80,7 +81,8 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseEffectPushButton(QDomElement node);
 
     // Legacy pre-1.12.0 skin support.
-    QWidget* parseBackground(QDomElement node, QWidget* pOuterWidget, QWidget* pInnerWidget);
+    QWidget* parseBackground(QDomElement node, QWidget* pOuterWidget,
+                             QWidget* pInnerWidget);
 
     // Grouping / layout.
     QWidget* parseWidgetGroup(QDomElement node);
@@ -106,14 +108,15 @@ class LegacySkinParser : public QObject, public SkinParser {
     QList<QWidget*> parseTemplate(QDomElement node);
 
     void commonWidgetSetup(QDomNode node, WBaseWidget* pBaseWidget,
-                           bool allowConnections=true);
+                           bool allowConnections = true);
     void setupPosition(QDomNode node, QWidget* pWidget);
     void setupSize(QDomNode node, QWidget* pWidget);
     void setupBaseWidget(QDomNode node, WBaseWidget* pBaseWidget);
     void setupWidget(QDomNode node, QWidget* pWidget,
-                     bool setupPosition=true);
+                     bool setupPosition = true);
     void setupConnections(QDomNode node, WBaseWidget* pWidget);
-    void addShortcutToToolTip(WBaseWidget* pWidget, const QString& shortcut, const QString& cmd);
+    void addShortcutToToolTip(WBaseWidget* pWidget, const QString& shortcut,
+                              const QString& cmd);
     QString getLibraryStyle(QDomNode node);
     QString getStyleFromNode(QDomNode node);
 
@@ -137,6 +140,5 @@ class LegacySkinParser : public QObject, public SkinParser {
     static QList<const char*> s_channelStrs;
     static QMutex s_safeStringMutex;
 };
-
 
 #endif /* LEGACYSKINPARSER_H */

@@ -10,13 +10,14 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
     Q_UNUSED(pConfig);
     setupUi(this);
 
-    QList<QSharedPointer<ControlDoublePrivate> > controlsList;
+    QList<QSharedPointer<ControlDoublePrivate>> controlsList;
     ControlDoublePrivate::getControls(&controlsList);
     QHash<ConfigKey, ConfigKey> controlAliases =
             ControlDoublePrivate::getControlAliases();
 
-    for (QList<QSharedPointer<ControlDoublePrivate> >::const_iterator it = controlsList.begin();
-            it != controlsList.end(); ++it) {
+    for (QList<QSharedPointer<ControlDoublePrivate>>::const_iterator it =
+                 controlsList.begin();
+         it != controlsList.end(); ++it) {
         const QSharedPointer<ControlDoublePrivate>& pControl = *it;
         if (pControl) {
             m_controlModel.addControl(pControl->getKey(), pControl->name(),
@@ -25,7 +26,9 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
             ConfigKey aliasKey = controlAliases[pControl->getKey()];
             if (!aliasKey.isNull()) {
                 m_controlModel.addControl(aliasKey, pControl->name(),
-                                          "Alias for " + pControl->getKey().group + pControl->getKey().item);
+                                          "Alias for " +
+                                                  pControl->getKey().group +
+                                                  pControl->getKey().item);
             }
         }
     }
@@ -40,31 +43,30 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
 
     StatsManager* pManager = StatsManager::instance();
     if (pManager) {
-        connect(pManager, SIGNAL(statUpdated(const Stat&)),
-                &m_statModel, SLOT(statUpdated(const Stat&)));
+        connect(pManager, SIGNAL(statUpdated(const Stat&)), &m_statModel,
+                SLOT(statUpdated(const Stat&)));
         pManager->emitAllStats();
     }
 
     m_statProxyModel.setSourceModel(&m_statModel);
     statsTable->setModel(&m_statProxyModel);
 
-    QString logFileName = CmdlineArgs::Instance().getSettingsPath() + "/mixxx.log";
+    QString logFileName =
+            CmdlineArgs::Instance().getSettingsPath() + "/mixxx.log";
     m_logFile.setFileName(logFileName);
     if (!m_logFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "ERROR: Could not open log file";
     }
 
     // Connect search box signals to the library
-    connect(controlSearch, SIGNAL(search(const QString&)),
-            this, SLOT(slotControlSearch(const QString&)));
-    connect(controlSearch, SIGNAL(searchCleared()),
-            this, SLOT(slotControlSearchClear()));
+    connect(controlSearch, SIGNAL(search(const QString&)), this,
+            SLOT(slotControlSearch(const QString&)));
+    connect(controlSearch, SIGNAL(searchCleared()), this,
+            SLOT(slotControlSearchClear()));
 
     // Set up the log search box
-    connect(logSearch, SIGNAL(returnPressed()),
-            this, SLOT(slotLogSearch()));
-    connect(logSearchButton, SIGNAL(clicked()),
-            this, SLOT(slotLogSearch()));
+    connect(logSearch, SIGNAL(returnPressed()), this, SLOT(slotLogSearch()));
+    connect(logSearchButton, SIGNAL(clicked()), this, SLOT(slotLogSearch()));
 
     m_logCursor = logTextView->textCursor();
 
@@ -98,7 +100,7 @@ void DlgDeveloperTools::timerEvent(QTimerEvent* pEvent) {
 
     // To save on CPU, only update the models when they are visible.
     if (toolTabWidget->currentWidget() == controlsTab) {
-        //m_controlModel.updateDirtyRows();
+        // m_controlModel.updateDirtyRows();
         controlsTable->update();
     } else if (toolTabWidget->currentWidget() == statsTab) {
         StatsManager* pManager = StatsManager::instance();

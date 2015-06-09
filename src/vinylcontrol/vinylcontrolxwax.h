@@ -17,18 +17,20 @@ extern "C" {
 #endif
 
 #define XWAX_DEVICE_FRAME 32
-#define XWAX_SMOOTHING (128 / XWAX_DEVICE_FRAME) /* result value is in frames */
+#define XWAX_SMOOTHING (128 / XWAX_DEVICE_FRAME) /* result value is in frames \
+                                                    */
 #define QUALITY_RING_SIZE 100
 
 class VinylControlXwax : public VinylControl {
   public:
-    VinylControlXwax(ConfigObject<ConfigValue> *pConfig, QString group);
+    VinylControlXwax(ConfigObject<ConfigValue>* pConfig, QString group);
     virtual ~VinylControlXwax();
 
     static void freeLUTs();
     void analyzeSamples(CSAMPLE* pSamples, size_t nFrames);
 
-    virtual bool writeQualityReport(VinylSignalQualityReport* qualityReportFifo);
+    virtual bool writeQualityReport(
+            VinylSignalQualityReport* qualityReportFifo);
 
   protected:
     float getAngle();

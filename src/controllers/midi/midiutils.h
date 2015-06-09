@@ -11,7 +11,8 @@ class MidiUtils {
 
     static inline MidiOpCode opCodeFromStatus(unsigned char status) {
         unsigned char opCode = status & 0xF0;
-        // MIDI_SYSEX and higher don't have a channel and occupy the entire byte.
+        // MIDI_SYSEX and higher don't have a channel and occupy the entire
+        // byte.
         if (opCode == 0xF0) {
             opCode = status;
         }
@@ -39,6 +40,5 @@ class MidiUtils {
     static QString formatByteAsHex(unsigned char value);
     static QString midiOptionToTranslatedString(MidiOption option);
 };
-
 
 #endif /* MIDIUTILS_H */

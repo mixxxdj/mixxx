@@ -23,29 +23,28 @@ class TreeItem;
 class BasePlaylistFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    BasePlaylistFeature(QObject* parent,
-                        ConfigObject<ConfigValue>* pConfig,
-                        TrackCollection* pTrackCollection,
+    BasePlaylistFeature(QObject *parent, ConfigObject<ConfigValue> *pConfig,
+                        TrackCollection *pTrackCollection,
                         QString rootViewName);
     virtual ~BasePlaylistFeature();
 
-    TreeItemModel* getChildModel();
+    TreeItemModel *getChildModel();
 
-    void bindWidget(WLibrary* libraryWidget,
-                    MixxxKeyboard* keyboard);
+    void bindWidget(WLibrary *libraryWidget, MixxxKeyboard *keyboard);
 
   signals:
-    void showPage(const QUrl& page);
+    void showPage(const QUrl &page);
     void analyzeTracks(QList<int>);
 
   public slots:
     virtual void activate();
-    virtual void activateChild(const QModelIndex& index);
+    virtual void activateChild(const QModelIndex &index);
     virtual void activatePlaylist(int playlistId);
-    virtual void htmlLinkClicked(const QUrl& link);
+    virtual void htmlLinkClicked(const QUrl &link);
 
     virtual void slotPlaylistTableChanged(int playlistId) = 0;
-    virtual void slotPlaylistTableRenamed(int playlistId, QString a_strName) = 0;
+    virtual void slotPlaylistTableRenamed(int playlistId,
+                                          QString a_strName) = 0;
     void slotCreatePlaylist();
 
   protected slots:
@@ -71,11 +70,11 @@ class BasePlaylistFeature : public LibraryFeature {
     // on failure.
     QModelIndex indexFromPlaylistId(int playlistId);
 
-    ConfigObject<ConfigValue>* m_pConfig;
-    TrackCollection* m_pTrackCollection;
+    ConfigObject<ConfigValue> *m_pConfig;
+    TrackCollection *m_pTrackCollection;
     PlaylistDAO &m_playlistDao;
     TrackDAO &m_trackDao;
-    PlaylistTableModel* m_pPlaylistTableModel;
+    PlaylistTableModel *m_pPlaylistTableModel;
     QAction *m_pCreatePlaylistAction;
     QAction *m_pDeletePlaylistAction;
     QAction *m_pAddToAutoDJAction;
@@ -86,7 +85,7 @@ class BasePlaylistFeature : public LibraryFeature {
     QAction *m_pExportPlaylistAction;
     QAction *m_pDuplicatePlaylistAction;
     QAction *m_pAnalyzePlaylistAction;
-    QList<QPair<int, QString> > m_playlistList;
+    QList<QPair<int, QString>> m_playlistList;
     QModelIndex m_lastRightClickedIndex;
     TreeItemModel m_childModel;
 

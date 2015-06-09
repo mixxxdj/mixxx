@@ -15,16 +15,15 @@ WCoverArtLabel::WCoverArtLabel(QWidget* parent)
     setFrameShape(QFrame::Box);
     setAlignment(Qt::AlignCenter);
     setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(this, SIGNAL(customContextMenuRequested(QPoint)),
-            this, SLOT(slotCoverMenu(QPoint)));
-    connect(m_pCoverMenu, SIGNAL(coverArtSelected(const CoverArt&)),
-            this, SIGNAL(coverArtSelected(const CoverArt&)));
-    connect(m_pCoverMenu, SIGNAL(reloadCoverArt()),
-            this, SIGNAL(reloadCoverArt()));
+    connect(this, SIGNAL(customContextMenuRequested(QPoint)), this,
+            SLOT(slotCoverMenu(QPoint)));
+    connect(m_pCoverMenu, SIGNAL(coverArtSelected(const CoverArt&)), this,
+            SIGNAL(coverArtSelected(const CoverArt&)));
+    connect(m_pCoverMenu, SIGNAL(reloadCoverArt()), this,
+            SIGNAL(reloadCoverArt()));
 
-    m_defaultCover = m_defaultCover.scaled(s_labelDisplaySize,
-                                           Qt::KeepAspectRatio,
-                                           Qt::SmoothTransformation);
+    m_defaultCover = m_defaultCover.scaled(
+            s_labelDisplaySize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     setPixmap(m_defaultCover);
 }
 
@@ -33,7 +32,8 @@ WCoverArtLabel::~WCoverArtLabel() {
     delete m_pDlgFullSize;
 }
 
-void WCoverArtLabel::setCoverArt(TrackPointer pTrack, const CoverInfo& info, QPixmap px) {
+void WCoverArtLabel::setCoverArt(TrackPointer pTrack, const CoverInfo& info,
+                                 QPixmap px) {
     qDebug() << "WCoverArtLabel::setCoverArt" << info << px.size();
     m_pCoverMenu->setCoverArt(pTrack, info);
 
@@ -48,7 +48,7 @@ void WCoverArtLabel::setCoverArt(TrackPointer pTrack, const CoverInfo& info, QPi
     }
 
     QSize frameSize = pixmap()->size();
-    frameSize += QSize(2,2); // margin
+    frameSize += QSize(2, 2);  // margin
     setMinimumSize(frameSize);
     setMaximumSize(frameSize);
 }

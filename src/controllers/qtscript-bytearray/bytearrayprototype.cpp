@@ -41,95 +41,77 @@
 #include "bytearrayprototype.h"
 #include <QtScript/QScriptEngine>
 
-Q_DECLARE_METATYPE(QByteArray*)
+Q_DECLARE_METATYPE(QByteArray *)
 
-ByteArrayPrototype::ByteArrayPrototype(QObject *parent)
-    : QObject(parent)
-{
+ByteArrayPrototype::ByteArrayPrototype(QObject *parent) : QObject(parent) {
 }
 
-ByteArrayPrototype::~ByteArrayPrototype()
-{
+ByteArrayPrototype::~ByteArrayPrototype() {
 }
 
 //! [0]
-QByteArray *ByteArrayPrototype::thisByteArray() const
-{
-    return qscriptvalue_cast<QByteArray*>(thisObject().data());
+QByteArray *ByteArrayPrototype::thisByteArray() const {
+    return qscriptvalue_cast<QByteArray *>(thisObject().data());
 }
 //! [0]
 
-void ByteArrayPrototype::chop(int n)
-{
+void ByteArrayPrototype::chop(int n) {
     thisByteArray()->chop(n);
 }
 
-bool ByteArrayPrototype::equals(const QByteArray &other)
-{
+bool ByteArrayPrototype::equals(const QByteArray &other) {
     return *thisByteArray() == other;
 }
 
-QByteArray ByteArrayPrototype::left(int len) const
-{
+QByteArray ByteArrayPrototype::left(int len) const {
     return thisByteArray()->left(len);
 }
 
 //! [1]
-QByteArray ByteArrayPrototype::mid(int pos, int len) const
-{
+QByteArray ByteArrayPrototype::mid(int pos, int len) const {
     return thisByteArray()->mid(pos, len);
 }
 
-QScriptValue ByteArrayPrototype::remove(int pos, int len)
-{
+QScriptValue ByteArrayPrototype::remove(int pos, int len) {
     thisByteArray()->remove(pos, len);
     return thisObject();
 }
 //! [1]
 
-QByteArray ByteArrayPrototype::right(int len) const
-{
+QByteArray ByteArrayPrototype::right(int len) const {
     return thisByteArray()->right(len);
 }
 
-QByteArray ByteArrayPrototype::simplified() const
-{
+QByteArray ByteArrayPrototype::simplified() const {
     return thisByteArray()->simplified();
 }
 
-QByteArray ByteArrayPrototype::toBase64() const
-{
+QByteArray ByteArrayPrototype::toBase64() const {
     return thisByteArray()->toBase64();
 }
 
-QByteArray ByteArrayPrototype::toLower() const
-{
+QByteArray ByteArrayPrototype::toLower() const {
     return thisByteArray()->toLower();
 }
 
-QByteArray ByteArrayPrototype::toUpper() const
-{
+QByteArray ByteArrayPrototype::toUpper() const {
     return thisByteArray()->toUpper();
 }
 
-QByteArray ByteArrayPrototype::trimmed() const
-{
+QByteArray ByteArrayPrototype::trimmed() const {
     return thisByteArray()->trimmed();
 }
 
-void ByteArrayPrototype::truncate(int pos)
-{
+void ByteArrayPrototype::truncate(int pos) {
     thisByteArray()->truncate(pos);
 }
 
-QString ByteArrayPrototype::toLatin1String() const
-{
+QString ByteArrayPrototype::toLatin1String() const {
     return QString::fromLatin1(*thisByteArray());
 }
 
 //! [2]
-QScriptValue ByteArrayPrototype::valueOf() const
-{
+QScriptValue ByteArrayPrototype::valueOf() const {
     return thisObject().data();
 }
 //! [2]

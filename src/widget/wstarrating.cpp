@@ -7,7 +7,7 @@
 
 WStarRating::WStarRating(QString group, QWidget* pParent)
         : WBaseWidget(pParent),
-          m_starRating(0,5),
+          m_starRating(0, 5),
           m_pGroup(group),
           m_focused(false) {
 }
@@ -28,11 +28,9 @@ QSize WStarRating::sizeHint() const {
                                                  m_starRating.sizeHint(), this);
 
     m_contentRect.setRect(
-        (widgetSize.width() - m_starRating.sizeHint().width()) / 2,
-        (widgetSize.height() - m_starRating.sizeHint().height()) / 2,
-        m_starRating.sizeHint().width(),
-        m_starRating.sizeHint().height()
-    );
+            (widgetSize.width() - m_starRating.sizeHint().width()) / 2,
+            (widgetSize.height() - m_starRating.sizeHint().height()) / 2,
+            m_starRating.sizeHint().width(), m_starRating.sizeHint().height());
 
     return widgetSize;
 }
@@ -40,8 +38,8 @@ QSize WStarRating::sizeHint() const {
 void WStarRating::slotTrackLoaded(TrackPointer track) {
     if (track) {
         m_pCurrentTrack = track;
-        connect(track.data(), SIGNAL(changed(TrackInfoObject*)),
-                this, SLOT(updateRating(TrackInfoObject*)));
+        connect(track.data(), SIGNAL(changed(TrackInfoObject*)), this,
+                SLOT(updateRating(TrackInfoObject*)));
         updateRating();
     }
 }
@@ -68,7 +66,7 @@ void WStarRating::updateRating(TrackInfoObject*) {
     updateRating();
 }
 
-void WStarRating::paintEvent(QPaintEvent *) {
+void WStarRating::paintEvent(QPaintEvent*) {
     QStyleOption option;
     option.initFrom(this);
     QStylePainter painter(this);
@@ -79,7 +77,7 @@ void WStarRating::paintEvent(QPaintEvent *) {
     m_starRating.paint(&painter, m_contentRect);
 }
 
-void WStarRating::mouseMoveEvent(QMouseEvent *event) {
+void WStarRating::mouseMoveEvent(QMouseEvent* event) {
     if (!m_pCurrentTrack)
         return;
 
@@ -97,13 +95,16 @@ void WStarRating::leaveEvent(QEvent*) {
     updateRating();
 }
 
-// The method uses basic linear algebra to find out which star is under the cursor.
+// The method uses basic linear algebra to find out which star is under the
+// cursor.
 int WStarRating::starAtPosition(int x) {
     // If the mouse is very close to the left edge, set 0 stars.
     if (x < m_starRating.sizeHint().width() * 0.05) {
         return 0;
     }
-    int star = (x / (m_starRating.sizeHint().width() / m_starRating.maxStarCount())) + 1;
+    int star = (x / (m_starRating.sizeHint().width() /
+                     m_starRating.maxStarCount())) +
+               1;
 
     if (star <= 0 || star > m_starRating.maxStarCount()) {
         return 0;

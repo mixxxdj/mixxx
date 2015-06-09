@@ -51,13 +51,13 @@ class EngineBufferScale : public QObject {
     //   tempo of 2 is a 2x speedup (2 track seconds pass for every 1
     //   real second).
     // * The pitchRatio describes the pitch adjustment in fraction of
-    //   the original pitch. For example, a pitch adjustment of 1.0 is no change and a
+    //   the original pitch. For example, a pitch adjustment of 1.0 is no change
+    //   and a
     //   pitch adjustment of 2.0 is a full octave shift up.
     //
     // If parameter settings are outside of acceptable limits, each setting will
     // be set to the value it was clamped to.
-    virtual void setScaleParameters(double base_rate,
-                                    double* pTempoRatio,
+    virtual void setScaleParameters(double base_rate, double* pTempoRatio,
                                     double* pPitchRatio) {
         m_dBaseRate = base_rate;
         m_dTempoRatio = *pTempoRatio;
@@ -71,7 +71,8 @@ class EngineBufferScale : public QObject {
 
     /** Get new playpos after call to scale() */
     double getSamplesRead();
-    /** Called from EngineBuffer when seeking, to ensure the buffers are flushed */
+    /** Called from EngineBuffer when seeking, to ensure the buffers are flushed
+     */
     virtual void clear() = 0;
     /** Scale buffer */
     virtual CSAMPLE* getScaled(unsigned long buf_size) = 0;

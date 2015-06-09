@@ -49,7 +49,7 @@ QString firstAvailableFilename(QSet<QString>& filenames,
     return filename;
 }
 
-bool controllerCompare(Controller *a,Controller *b) {
+bool controllerCompare(Controller* a, Controller* b) {
     return a->getName() < b->getName();
 }
 
@@ -57,7 +57,8 @@ ControllerManager::ControllerManager(ConfigObject<ConfigValue>* pConfig)
         : QObject(),
           m_pConfig(pConfig),
           // WARNING: Do not parent m_pControllerLearningEventFilter to
-          // ControllerManager because the CM is moved to its own thread and runs
+          // ControllerManager because the CM is moved to its own thread and
+          // runs
           // its own event loop.
           m_pControllerLearningEventFilter(new ControllerLearningEventFilter()),
           m_pollTimer(this) {
@@ -66,12 +67,14 @@ ControllerManager::ControllerManager(ConfigObject<ConfigValue>* pConfig)
     // Create controller mapping paths in the user's home directory.
     QString userPresets = userPresetsPath(m_pConfig);
     if (!QDir(userPresets).exists()) {
-        qDebug() << "Creating user controller presets directory:" << userPresets;
+        qDebug() << "Creating user controller presets directory:"
+                 << userPresets;
         QDir().mkpath(userPresets);
     }
     QString localPresets = localPresetsPath(m_pConfig);
     if (!QDir(localPresets).exists()) {
-        qDebug() << "Creating local controller presets directory:" << localPresets;
+        qDebug() << "Creating local controller presets directory:"
+                 << localPresets;
         QDir().mkpath(localPresets);
     }
 
@@ -92,8 +95,7 @@ ControllerManager::ControllerManager(ConfigObject<ConfigValue>* pConfig)
 #endif
 
     m_pollTimer.setInterval(kPollIntervalMillis);
-    connect(&m_pollTimer, SIGNAL(timeout()),
-            this, SLOT(pollDevices()));
+    connect(&m_pollTimer, SIGNAL(timeout()), this, SLOT(pollDevices()));
 
     m_pThread = new QThread;
     m_pThread->setObjectName("Controller");
@@ -105,12 +107,10 @@ ControllerManager::ControllerManager(ConfigObject<ConfigValue>* pConfig)
     // audio directly, like when scratching
     m_pThread->start(QThread::HighPriority);
 
-    connect(this, SIGNAL(requestSetUpDevices()),
-            this, SLOT(slotSetUpDevices()));
-    connect(this, SIGNAL(requestShutdown()),
-            this, SLOT(slotShutdown()));
-    connect(this, SIGNAL(requestSave(bool)),
-            this, SLOT(slotSavePresets(bool)));
+    connect(this, SIGNAL(requestSetUpDevices()), this,
+            SLOT(slotSetUpDevices()));
+    connect(this, SIGNAL(requestShutdown()), this, SLOT(slotShutdown()));
+    connect(this, SIGNAL(requestSave(bool)), this, SLOT(slotSavePresets(bool)));
 }
 
 ControllerManager::~ControllerManager() {
@@ -121,7 +121,8 @@ ControllerManager::~ControllerManager() {
     delete m_pMainThreadPresetEnumerator;
 }
 
-ControllerLearningEventFilter* ControllerManager::getControllerLearningEventFilter() const {
+ControllerLearningEventFilter*
+ControllerManager::getControllerLearningEventFilter() const {
     return m_pControllerLearningEventFilter;
 }
 
@@ -147,7 +148,8 @@ void ControllerManager::slotShutdown() {
 void ControllerManager::updateControllerList() {
     QMutexLocker locker(&m_mutex);
     if (m_enumerators.isEmpty()) {
-        qWarning() << "updateControllerList called but no enumerators have been added!";
+        qWarning() << "updateControllerList called but no enumerators have "
+                      "been added!";
         return;
     }
     QList<ControllerEnumerator*> enumerators = m_enumerators;
@@ -171,7 +173,8 @@ QList<Controller*> ControllerManager::getControllers() const {
     return m_controllers;
 }
 
-QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, bool bInputDevices) {
+QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices,
+                                                        bool bInputDevices) {
     qDebug() << "ControllerManager::getControllerList";
 
     QMutexLocker locker(&m_mutex);
@@ -217,15 +220,16 @@ int ControllerManager::slotSetUpDevices() {
 
         ControllerPresetPointer pPreset =
                 ControllerPresetFileHandler::loadPreset(
-                    presetBaseName + pController->presetExtension(),
-                    getPresetPaths(m_pConfig));
+                        presetBaseName + pController->presetExtension(),
+                        getPresetPaths(m_pConfig));
 
         if (!loadPreset(pController, pPreset)) {
             // TODO(XXX) : auto load midi preset here.
             continue;
         }
 
-        if (m_pConfig->getValueString(ConfigKey("[Controller]", presetBaseName)) != "1") {
+        if (m_pConfig->getValueString(
+                    ConfigKey("[Controller]", presetBaseName)) != "1") {
             continue;
         }
 
@@ -313,8 +317,10 @@ void ControllerManager::openController(Controller* pController) {
         pController->applyPreset(getPresetPaths(m_pConfig));
 
         // Update configuration to reflect controller is enabled.
-        m_pConfig->set(ConfigKey(
-            "[Controller]", presetFilenameFromName(pController->getName())), 1);
+        m_pConfig->set(
+                ConfigKey("[Controller]",
+                          presetFilenameFromName(pController->getName())),
+                1);
     }
 }
 
@@ -325,8 +331,9 @@ void ControllerManager::closeController(Controller* pController) {
     pController->close();
     maybeStartOrStopPolling();
     // Update configuration to reflect controller is disabled.
-    m_pConfig->set(ConfigKey(
-        "[Controller]", presetFilenameFromName(pController->getName())), 0);
+    m_pConfig->set(ConfigKey("[Controller]",
+                             presetFilenameFromName(pController->getName())),
+                   0);
 }
 
 bool ControllerManager::loadPreset(Controller* pController,
@@ -337,10 +344,9 @@ bool ControllerManager::loadPreset(Controller* pController,
     pController->setPreset(*preset.data());
     // Save the file path/name in the config so it can be auto-loaded at
     // startup next time
-    m_pConfig->set(
-        ConfigKey("[ControllerPreset]",
-                  presetFilenameFromName(pController->getName())),
-        preset->filePath());
+    m_pConfig->set(ConfigKey("[ControllerPreset]",
+                             presetFilenameFromName(pController->getName())),
+                   preset->filePath());
     return true;
 }
 
@@ -360,19 +366,20 @@ void ControllerManager::slotSavePresets(bool onlyActive) {
             continue;
         }
         QString name = pController->getName();
-        QString filename = firstAvailableFilename(
-            filenames, presetFilenameFromName(name));
-        QString presetPath = userPresetsPath(m_pConfig) + filename
-                + pController->presetExtension();
+        QString filename =
+                firstAvailableFilename(filenames, presetFilenameFromName(name));
+        QString presetPath = userPresetsPath(m_pConfig) + filename +
+                             pController->presetExtension();
         if (!pController->savePreset(presetPath)) {
-            qWarning() << "Failed to write preset for device"
-                       << name << "to" << presetPath;
+            qWarning() << "Failed to write preset for device" << name << "to"
+                       << presetPath;
         }
     }
 }
 
 // static
-QList<QString> ControllerManager::getPresetPaths(ConfigObject<ConfigValue>* pConfig) {
+QList<QString> ControllerManager::getPresetPaths(
+        ConfigObject<ConfigValue>* pConfig) {
     QList<QString> scriptPaths;
     scriptPaths.append(userPresetsPath(pConfig));
     scriptPaths.append(localPresetsPath(pConfig));
@@ -459,7 +466,8 @@ bool ControllerManager::importScript(const QString& scriptPath,
     while (userPresets.exists(scriptFileName)) {
         // If the two files are identical. We're done.
         quint16 localScriptChecksum = 0;
-        if (checksumFile(userPresets.filePath(scriptFileName), &localScriptChecksum) &&
+        if (checksumFile(userPresets.filePath(scriptFileName),
+                         &localScriptChecksum) &&
             scriptChecksumGood && scriptChecksum == localScriptChecksum) {
             *newScriptFileName = scriptFileName;
             qDebug() << "ControllerManager::importScript" << scriptFileName
@@ -471,10 +479,10 @@ bool ControllerManager::importScript(const QString& scriptPath,
         // Otherwise, we need to rename the file to a non-conflicting
         // name. Insert a .X where X is a counter that we count up until we find
         // a filename that does not exist.
-        scriptFileName = QString("%1.%2.%3").arg(
-            scriptBaseName,
-            QString::number(conflictNumber++),
-            scriptSuffix);
+        scriptFileName =
+                QString("%1.%2.%3")
+                        .arg(scriptBaseName, QString::number(conflictNumber++),
+                             scriptSuffix);
     }
 
     QString destinationPath = userPresets.filePath(scriptFileName);

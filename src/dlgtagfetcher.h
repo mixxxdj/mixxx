@@ -6,24 +6,18 @@
 #include "trackinfoobject.h"
 #include "musicbrainz/tagfetcher.h"
 
-
 class QTreeWidget;
 
-
-class DlgTagFetcher : public QDialog,  public Ui::DlgTagFetcher {
-  Q_OBJECT
+class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
+    Q_OBJECT
 
   public:
-    DlgTagFetcher(QWidget *parent);
+    DlgTagFetcher(QWidget* parent);
     virtual ~DlgTagFetcher();
 
     void init();
 
-    enum networkError {
-        NOERROR,
-        HTTPERROR,
-        FTWERROR
-    };
+    enum networkError { NOERROR, HTTPERROR, FTWERROR };
 
   public slots:
     void loadTrack(const TrackPointer track);
@@ -34,7 +28,8 @@ class DlgTagFetcher : public QDialog,  public Ui::DlgTagFetcher {
     void previous();
 
   private slots:
-    void fetchTagFinished(const TrackPointer,const QList<TrackPointer>& tracks);
+    void fetchTagFinished(const TrackPointer,
+                          const QList<TrackPointer>& tracks);
     void resultSelected();
     void fetchTagProgress(QString);
     void slotNetworkError(int, QString);
@@ -47,7 +42,8 @@ class DlgTagFetcher : public QDialog,  public Ui::DlgTagFetcher {
     void addTrack(const TrackPointer track, int resultIndex,
                   QTreeWidget* parent) const;
     struct Data {
-        Data() : m_pending(true), m_selectedResult(-1) {}
+        Data() : m_pending(true), m_selectedResult(-1) {
+        }
 
         bool m_pending;
         int m_selectedResult;
@@ -61,4 +57,4 @@ class DlgTagFetcher : public QDialog,  public Ui::DlgTagFetcher {
     networkError m_networkError;
 };
 
-#endif // DLGTAGFETCHER_H
+#endif  // DLGTAGFETCHER_H

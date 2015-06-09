@@ -25,9 +25,8 @@ class PlaylistDAO;
 class AutoDJCratesDAO : public QObject, public virtual DAO {
     Q_OBJECT
   public:
-
     AutoDJCratesDAO(QSqlDatabase& a_rDatabase, TrackDAO& a_rTrackDAO,
-                    CrateDAO& a_rCrateDAO, PlaylistDAO &a_rPlaylistDAO,
+                    CrateDAO& a_rCrateDAO, PlaylistDAO& a_rPlaylistDAO,
                     ConfigObject<ConfigValue>* a_pConfig);
     virtual ~AutoDJCratesDAO();
 
@@ -41,7 +40,6 @@ class AutoDJCratesDAO : public QObject, public virtual DAO {
     int getRandomTrackIdFromLibrary(const int iPlaylistId);
 
   private:
-
     // Disallow copy and assign.
     // (Isn't that normal for QObject subclasses?)
     DISALLOW_COPY_AND_ASSIGN(AutoDJCratesDAO);
@@ -96,12 +94,10 @@ class AutoDJCratesDAO : public QObject, public virtual DAO {
     void slotPlaylistDeleted(int playlistId);
 
     // Signaled by the playlist DAO when a track is added to a playlist.
-    void slotPlaylistTrackAdded(int playlistId, int trackId,
-                                int position);
+    void slotPlaylistTrackAdded(int playlistId, int trackId, int position);
 
     // Signaled by the playlist DAO when a track is removed from a playlist.
-    void slotPlaylistTrackRemoved(int playlistId, int trackId,
-                                  int position);
+    void slotPlaylistTrackRemoved(int playlistId, int trackId, int position);
 
     // Signaled by the PlayerInfo singleton when a track is loaded to, or
     // unloaded from, a deck.
@@ -109,7 +105,6 @@ class AutoDJCratesDAO : public QObject, public virtual DAO {
     void slotPlayerInfoTrackUnloaded(QString group, TrackPointer pTrack);
 
   private:
-
     // The SQL database we interact with.
     QSqlDatabase& m_rDatabase;
 
@@ -141,7 +136,6 @@ class AutoDJCratesDAO : public QObject, public virtual DAO {
 
     // True if the auto-DJ-crates database has been created.
     bool m_bAutoDjCratesDbCreated;
-
 };
 
-#endif // AUTODJCRATESDAO_H
+#endif  // AUTODJCRATESDAO_H

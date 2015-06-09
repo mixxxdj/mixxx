@@ -6,13 +6,11 @@
 
 #include "widget/wskincolor.h"
 
-WNumberDb::WNumberDb(QWidget* pParent)
-        : WNumber(pParent) {
+WNumberDb::WNumberDb(QWidget* pParent) : WNumber(pParent) {
 }
 
 WNumberDb::~WNumberDb() {
 }
-
 
 void WNumberDb::setValue(double dValue) {
     QString strDb;

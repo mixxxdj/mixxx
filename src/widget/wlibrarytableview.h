@@ -13,13 +13,11 @@
 #include "trackinfoobject.h"
 #include "library/coverartcache.h"
 
-
 class WLibraryTableView : public QTableView, public virtual LibraryView {
     Q_OBJECT
 
   public:
-    WLibraryTableView(QWidget* parent,
-                      ConfigObject<ConfigValue>* pConfig,
+    WLibraryTableView(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
                       ConfigKey vScrollBarPosKey);
     virtual ~WLibraryTableView();
     virtual void moveSelection(int delta);
@@ -27,7 +25,7 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
   signals:
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, QString group,
-            bool play = false);
+                           bool play = false);
     void trackSelected(TrackPointer pTrack);
     void onlyCachedCoverArt(bool);
     void scrollValueChanged(int);
@@ -48,6 +46,5 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     // executed
     int m_iSavedVScrollBarPos;
 };
-
 
 #endif /* WLIBRARYTABLEVIEW_H */

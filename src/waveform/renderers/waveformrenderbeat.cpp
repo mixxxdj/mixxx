@@ -12,7 +12,8 @@
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 
-WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidgetRenderer)
+WaveformRenderBeat::WaveformRenderBeat(
+        WaveformWidgetRenderer* waveformWidgetRenderer)
         : WaveformRendererAbstract(waveformWidgetRenderer),
           m_pBeatActive(NULL) {
     m_beats.resize(128);
@@ -24,12 +25,13 @@ WaveformRenderBeat::~WaveformRenderBeat() {
 }
 
 bool WaveformRenderBeat::init() {
-    m_pBeatActive = new ControlObjectThread(
-            m_waveformRenderer->getGroup(), "beat_active");
+    m_pBeatActive = new ControlObjectThread(m_waveformRenderer->getGroup(),
+                                            "beat_active");
     return m_pBeatActive->valid();
 }
 
-void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context) {
+void WaveformRenderBeat::setup(const QDomNode& node,
+                               const SkinContext& context) {
     m_beatColor.setNamedColor(context.selectString(node, "BeatColor"));
     m_beatColor = WSkinColor::getCorrectColor(m_beatColor).toRgb();
 
@@ -52,15 +54,18 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
         return;
     }
 
-    const double firstDisplayedPosition = m_waveformRenderer->getFirstDisplayedPosition();
-    const double lastDisplayedPosition = m_waveformRenderer->getLastDisplayedPosition();
+    const double firstDisplayedPosition =
+            m_waveformRenderer->getFirstDisplayedPosition();
+    const double lastDisplayedPosition =
+            m_waveformRenderer->getLastDisplayedPosition();
 
     // qDebug() << "trackSamples" << trackSamples
     //          << "firstDisplayedPosition" << firstDisplayedPosition
     //          << "lastDisplayedPosition" << lastDisplayedPosition;
 
-    QScopedPointer<BeatIterator> it(trackBeats->findBeats(
-        firstDisplayedPosition * trackSamples, lastDisplayedPosition * trackSamples));
+    QScopedPointer<BeatIterator> it(
+            trackBeats->findBeats(firstDisplayedPosition * trackSamples,
+                                  lastDisplayedPosition * trackSamples));
 
     // if no beat do not waste time saving/restoring painter
     if (!it || !it->hasNext()) {
@@ -80,16 +85,19 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
     while (it->hasNext()) {
         int beatPosition = it->next();
-        double xBeatPoint = m_waveformRenderer->transformSampleIndexInRendererWorld(beatPosition);
+        double xBeatPoint =
+                m_waveformRenderer->transformSampleIndexInRendererWorld(
+                        beatPosition);
 
         xBeatPoint = qRound(xBeatPoint);
-        
+
         // If we don't have enough space, double the size.
         if (beatCount >= m_beats.size()) {
             m_beats.resize(m_beats.size() * 2);
         }
 
-        m_beats[beatCount++].setLine(xBeatPoint, 0.0f, xBeatPoint, rendererHeight);
+        m_beats[beatCount++].setLine(xBeatPoint, 0.0f, xBeatPoint,
+                                     rendererHeight);
     }
 
     // Make sure to use constData to prevent detaches!

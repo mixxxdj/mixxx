@@ -16,42 +16,41 @@ PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent, int column)
           m_column(column) {
     m_pPreviewDeckPlay = new ControlObjectSlave(
             PlayerManager::groupForPreviewDeck(0), "play", this);
-    m_pPreviewDeckPlay->connectValueChanged(SLOT(previewDeckPlayChanged(double)));
+    m_pPreviewDeckPlay->connectValueChanged(
+            SLOT(previewDeckPlayChanged(double)));
 
     // This assumes that the parent is wtracktableview
     connect(this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
             parent, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
 
-    if (QTableView *tableView = qobject_cast<QTableView*>(parent)) {
+    if (QTableView *tableView = qobject_cast<QTableView *>(parent)) {
         m_pTableView = tableView;
         m_pButton = new QPushButton("", m_pTableView);
         m_pButton->setObjectName("LibraryPreviewButton");
         m_pButton->setCheckable(true);
         m_pButton->setChecked(false);
         m_pButton->hide();
-        connect(m_pTableView, SIGNAL(entered(QModelIndex)),
-                this, SLOT(cellEntered(QModelIndex)));
+        connect(m_pTableView, SIGNAL(entered(QModelIndex)), this,
+                SLOT(cellEntered(QModelIndex)));
     }
 }
 
 PreviewButtonDelegate::~PreviewButtonDelegate() {
 }
 
-QWidget* PreviewButtonDelegate::createEditor(QWidget *parent,
+QWidget *PreviewButtonDelegate::createEditor(QWidget *parent,
                                              const QStyleOptionViewItem &option,
                                              const QModelIndex &index) const {
     Q_UNUSED(option);
-    QPushButton* btn = new QPushButton(parent);
+    QPushButton *btn = new QPushButton(parent);
     btn->setObjectName("LibraryPreviewButton");
     btn->setCheckable(true);
     bool playing = m_pPreviewDeckPlay->toBool();
     // Check-state is whether the track is loaded (index.data()) and whether
     // it's playing.
     btn->setChecked(index.data().toBool() && playing);
-    connect(btn, SIGNAL(clicked()),
-            this, SLOT(buttonClicked()));
-    connect(this, SIGNAL(buttonSetChecked(bool)),
-            btn, SLOT(setChecked(bool)));
+    connect(btn, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    connect(this, SIGNAL(buttonSetChecked(bool)), btn, SLOT(setChecked(bool)));
     return btn;
 }
 
@@ -98,9 +97,9 @@ void PreviewButtonDelegate::paint(QPainter *painter,
     painter->restore();
 }
 
-void PreviewButtonDelegate::updateEditorGeometry(QWidget *editor,
-                                                 const QStyleOptionViewItem &option,
-                                                 const QModelIndex &index) const {
+void PreviewButtonDelegate::updateEditorGeometry(
+        QWidget *editor, const QStyleOptionViewItem &option,
+        const QModelIndex &index) const {
     Q_UNUSED(index);
     editor->setGeometry(option.rect);
 }
@@ -128,7 +127,8 @@ void PreviewButtonDelegate::cellEntered(const QModelIndex &index) {
         m_pTableView->openPersistentEditor(index);
         m_isOneCellInEditMode = true;
         m_currentEditedCellIndex = index;
-    } else if (m_isOneCellInEditMode) { // close editor if the mouse leaves the button
+    } else if (m_isOneCellInEditMode) {  // close editor if the mouse leaves the
+                                         // button
         m_isOneCellInEditMode = false;
         m_pTableView->closePersistentEditor(m_currentEditedCellIndex);
         m_currentEditedCellIndex = QModelIndex();
@@ -140,7 +140,7 @@ void PreviewButtonDelegate::buttonClicked() {
         return;
     }
 
-    TrackModel *pTrackModel = dynamic_cast<TrackModel*>(m_pTableView->model());
+    TrackModel *pTrackModel = dynamic_cast<TrackModel *>(m_pTableView->model());
     if (!pTrackModel) {
         return;
     }
@@ -162,7 +162,8 @@ void PreviewButtonDelegate::buttonClicked() {
 void PreviewButtonDelegate::previewDeckPlayChanged(double v) {
     m_pTableView->update();
     if (m_isOneCellInEditMode) {
-        TrackModel *pTrackModel = dynamic_cast<TrackModel*>(m_pTableView->model());
+        TrackModel *pTrackModel =
+                dynamic_cast<TrackModel *>(m_pTableView->model());
         if (!pTrackModel) {
             return;
         }

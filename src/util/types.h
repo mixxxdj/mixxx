@@ -21,14 +21,12 @@ const SAMPLE SAMPLE_MIN = SHRT_MIN;
 const SAMPLE SAMPLE_MAX = SHRT_MAX;
 
 // Limits the range of a SAMPLE value to [SAMPLE_MIN, SAMPLE_MAX].
-inline
-SAMPLE SAMPLE_clamp(SAMPLE in) {
+inline SAMPLE SAMPLE_clamp(SAMPLE in) {
     return math_clamp(in, SAMPLE_MIN, SAMPLE_MAX);
 }
 
 // Limits the range of a SAMPLE value to [-SAMPLE_MAX, SAMPLE_MAX].
-inline
-SAMPLE SAMPLE_clampSymmetric(SAMPLE in) {
+inline SAMPLE SAMPLE_clampSymmetric(SAMPLE in) {
     return math_clamp(in, static_cast<SAMPLE>(-SAMPLE_MAX), SAMPLE_MAX);
 }
 
@@ -43,8 +41,7 @@ const CSAMPLE CSAMPLE_ONE = 1.0f;
 const CSAMPLE CSAMPLE_PEAK = CSAMPLE_ONE;
 
 // Limits the range of a CSAMPLE value to [-CSAMPLE_PEAK, CSAMPLE_PEAK].
-inline
-CSAMPLE CSAMPLE_clamp(CSAMPLE in) {
+inline CSAMPLE CSAMPLE_clamp(CSAMPLE in) {
     return math_clamp(in, -CSAMPLE_PEAK, CSAMPLE_PEAK);
 }
 
@@ -57,9 +54,9 @@ const float CSAMPLE_GAIN_ONE = CSAMPLE_ONE;
 const float CSAMPLE_GAIN_MIN = CSAMPLE_GAIN_ZERO;
 const float CSAMPLE_GAIN_MAX = CSAMPLE_GAIN_ONE;
 
-// Limits the range of a CSAMPLE_GAIN value to [CSAMPLE_GAIN_MIN, CSAMPLE_GAIN_MAX].
-inline
-CSAMPLE_GAIN CSAMPLE_GAIN_clamp(CSAMPLE_GAIN in) {
+// Limits the range of a CSAMPLE_GAIN value to [CSAMPLE_GAIN_MIN,
+// CSAMPLE_GAIN_MAX].
+inline CSAMPLE_GAIN CSAMPLE_GAIN_clamp(CSAMPLE_GAIN in) {
     return math_clamp(in, CSAMPLE_GAIN_MIN, CSAMPLE_GAIN_MAX);
 }
 

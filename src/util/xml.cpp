@@ -59,19 +59,23 @@ QDomElement XmlParse::openXMLFile(const QString& path, const QString& name) {
     int line, col;
     if (!doc.setContent(&file, &error, &line, &col)) {
         QString errorString = QString("%1 at line %2, column %3")
-                                .arg(error).arg(line).arg(col);
+                                      .arg(error)
+                                      .arg(line)
+                                      .arg(col);
 
         QString errorLog = QString("Error parsing XML file %1: %2")
-                            .arg(file.fileName(), errorString);
+                                   .arg(file.fileName(), errorString);
         qWarning() << errorLog;
 
         // Set up error dialog
-        ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+        ErrorDialogProperties* props =
+                ErrorDialogHandler::instance()->newDialogProperties();
         props->setType(DLG_WARNING);
         props->setTitle("Error parsing XML file");
-        props->setText(QString("There was a problem parsing the XML file %1.").arg(file.fileName()));
+        props->setText(QString("There was a problem parsing the XML file %1.")
+                               .arg(file.fileName()));
         props->setInfoText(errorString);
-        props->setModal(false); // Don't block the GUI
+        props->setModal(false);  // Don't block the GUI
 
         // Display it
         ErrorDialogHandler* dialogHandler = ErrorDialogHandler::instance();
@@ -87,8 +91,7 @@ QDomElement XmlParse::openXMLFile(const QString& path, const QString& name) {
     return doc.documentElement();
 }
 
-QDomElement XmlParse::addElement(QDomDocument& doc,
-                                 QDomElement& header,
+QDomElement XmlParse::addElement(QDomDocument& doc, QDomElement& header,
                                  const QString& sElementName,
                                  const QString& sText) {
     QDomElement element = doc.createElement(sElementName);

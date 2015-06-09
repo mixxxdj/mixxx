@@ -27,17 +27,14 @@ class TrackCollection;
 class BrowseFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    BrowseFeature(QObject* parent,
-                  ConfigObject<ConfigValue>* pConfig,
-                  TrackCollection* pTrackCollection,
-                  RecordingManager* pRec);
+    BrowseFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig,
+                  TrackCollection* pTrackCollection, RecordingManager* pRec);
     virtual ~BrowseFeature();
 
     QVariant title();
     QIcon getIcon();
 
-    void bindWidget(WLibrary* libraryWidget,
-                    MixxxKeyboard* keyboard);
+    void bindWidget(WLibrary* libraryWidget, MixxxKeyboard* keyboard);
 
     TreeItemModel* getChildModel();
 
@@ -77,4 +74,4 @@ class BrowseFeature : public LibraryFeature {
     QStringList m_quickLinkList;
 };
 
-#endif // BROWSEFEATURE_H
+#endif  // BROWSEFEATURE_H

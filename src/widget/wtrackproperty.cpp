@@ -9,9 +9,7 @@
 WTrackProperty::WTrackProperty(const char* group,
                                ConfigObject<ConfigValue>* pConfig,
                                QWidget* pParent)
-        : WLabel(pParent),
-          m_pGroup(group),
-          m_pConfig(pConfig) {
+        : WLabel(pParent), m_pGroup(group), m_pConfig(pConfig) {
     setAcceptDrops(true);
 }
 
@@ -27,8 +25,8 @@ void WTrackProperty::setup(QDomNode node, const SkinContext& context) {
 void WTrackProperty::slotTrackLoaded(TrackPointer track) {
     if (track) {
         m_pCurrentTrack = track;
-        connect(track.data(), SIGNAL(changed(TrackInfoObject*)),
-                this, SLOT(updateLabel(TrackInfoObject*)));
+        connect(track.data(), SIGNAL(changed(TrackInfoObject*)), this,
+                SLOT(updateLabel(TrackInfoObject*)));
         updateLabel(track.data());
     }
 }
@@ -44,30 +42,31 @@ void WTrackProperty::slotTrackUnloaded(TrackPointer track) {
 
 void WTrackProperty::updateLabel(TrackInfoObject*) {
     if (m_pCurrentTrack) {
-        QVariant property = m_pCurrentTrack->property(m_property.toAscii().constData());
+        QVariant property =
+                m_pCurrentTrack->property(m_property.toAscii().constData());
         if (property.isValid() && qVariantCanConvert<QString>(property)) {
             setText(property.toString());
         }
     }
 }
 
-void WTrackProperty::mouseMoveEvent(QMouseEvent *event) {
+void WTrackProperty::mouseMoveEvent(QMouseEvent* event) {
     if ((event->buttons() & Qt::LeftButton) && m_pCurrentTrack) {
         DragAndDropHelper::dragTrack(m_pCurrentTrack, this, m_pGroup);
     }
 }
 
-void WTrackProperty::dragEnterEvent(QDragEnterEvent *event) {
+void WTrackProperty::dragEnterEvent(QDragEnterEvent* event) {
     if (DragAndDropHelper::allowLoadToPlayer(m_pGroup, m_pConfig) &&
-            DragAndDropHelper::dragEnterAccept(*event->mimeData(), m_pGroup,
-                                               true, false)) {
+        DragAndDropHelper::dragEnterAccept(*event->mimeData(), m_pGroup, true,
+                                           false)) {
         event->acceptProposedAction();
     } else {
         event->ignore();
     }
 }
 
-void WTrackProperty::dropEvent(QDropEvent *event) {
+void WTrackProperty::dropEvent(QDropEvent* event) {
     if (DragAndDropHelper::allowLoadToPlayer(m_pGroup, m_pConfig)) {
         QList<QFileInfo> files = DragAndDropHelper::dropEventFiles(
                 *event->mimeData(), m_pGroup, true, false);

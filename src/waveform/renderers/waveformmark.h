@@ -36,4 +36,4 @@ class WaveformMark {
     friend class WOverview;
 };
 
-#endif // WAVEFORMMARK_H
+#endif  // WAVEFORMMARK_H

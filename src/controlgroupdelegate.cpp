@@ -6,7 +6,7 @@
  */
 
 #include "configobject.h"
-//Need this to know MIDIINPUTTABLEINDEX_CONTROLOBJECTVALUE
+// Need this to know MIDIINPUTTABLEINDEX_CONTROLOBJECTVALUE
 #include "controllers/midi/midiinputmappingtablemodel.h"
 #include "controlvaluedelegate.h"
 #include "controlgroupdelegate.h"
@@ -15,12 +15,11 @@
 QStringList ControlGroupDelegate::m_controlGroups;
 
 ControlGroupDelegate::ControlGroupDelegate(QObject *parent)
-         : QItemDelegate(parent)
-{
-    //This QList is static, so it's shared across all objects of this class. We only want to
-    //fill it once then...
-    if (m_controlGroups.isEmpty())
-    {
+        : QItemDelegate(parent) {
+    // This QList is static, so it's shared across all objects of this class. We
+    // only want to
+    // fill it once then...
+    if (m_controlGroups.isEmpty()) {
         m_controlGroups.append(CONTROLGROUP_CHANNEL1_STRING);
         m_controlGroups.append(CONTROLGROUP_CHANNEL2_STRING);
         m_controlGroups.append(CONTROLGROUP_SAMPLER1_STRING);
@@ -34,32 +33,32 @@ ControlGroupDelegate::ControlGroupDelegate(QObject *parent)
     }
 }
 
-void ControlGroupDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
-                         const QModelIndex &index) const
-{
+void ControlGroupDelegate::paint(QPainter *painter,
+                                 const QStyleOptionViewItem &option,
+                                 const QModelIndex &index) const {
     if (index.data().canConvert<QString>()) {
         QString value = index.data().value<QString>();
 
         if (option.state & QStyle::State_Selected)
             painter->fillRect(option.rect, option.palette.highlight());
 
-        //starRating.paint(painter, option.rect, option.palette,
+        // starRating.paint(painter, option.rect, option.palette,
         //                 StarRating::ReadOnly);
 
         QString text;
         text = value;
 
         painter->drawText(option.rect, text, QTextOption(Qt::AlignCenter));
-        //Note that Qt::AlignCenter does both vertical and horizontal alignment.
+        // Note that Qt::AlignCenter does both vertical and horizontal
+        // alignment.
     } else {
         QItemDelegate::paint(painter, option, index);
     }
 }
 
-QWidget *ControlGroupDelegate::createEditor(QWidget *parent,
-        const QStyleOptionViewItem &/* option */,
-        const QModelIndex &/* index */) const
-{
+QWidget *ControlGroupDelegate::createEditor(
+        QWidget *parent, const QStyleOptionViewItem & /* option */,
+        const QModelIndex & /* index */) const {
     QComboBox *editor = new QComboBox(parent);
     editor->addItem(CONTROLGROUP_CHANNEL1_STRING);
     editor->addItem(CONTROLGROUP_CHANNEL2_STRING);
@@ -76,37 +75,36 @@ QWidget *ControlGroupDelegate::createEditor(QWidget *parent,
 }
 
 void ControlGroupDelegate::setEditorData(QWidget *editor,
-                                    const QModelIndex &index) const
-{
+                                         const QModelIndex &index) const {
     QString value = index.model()->data(index, Qt::EditRole).toString();
 
-    QComboBox *comboBox = static_cast<QComboBox*>(editor);
+    QComboBox *comboBox = static_cast<QComboBox *>(editor);
     comboBox->setCurrentIndex(comboBox->findText(value));
 }
 
-void ControlGroupDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
-                                    const QModelIndex &index) const
-{
+void ControlGroupDelegate::setModelData(QWidget *editor,
+                                        QAbstractItemModel *model,
+                                        const QModelIndex &index) const {
     QString midiType = 0;
-    QComboBox *comboBox = static_cast<QComboBox*>(editor);
-    //comboBox->interpretText();
+    QComboBox *comboBox = static_cast<QComboBox *>(editor);
+    // comboBox->interpretText();
 
-    //Get the text from the combobox and shoot it into the data model.
+    // Get the text from the combobox and shoot it into the data model.
     QString group = comboBox->currentText();
 
     model->setData(index, group, Qt::EditRole);
 
-    //Verify that the ControlValue in the next column is valid for the
-    //newly selected ControlGroup. For example, switching from "[Channel1]"
-    //to "[Master]" means that a ControlValue of "play" is no longer valid.
-    //If it isn't, then blank that column's value.
-    QModelIndex nextDoor = index.sibling(index.row(), MIDIINPUTTABLEINDEX_CONTROLOBJECTVALUE);
+    // Verify that the ControlValue in the next column is valid for the
+    // newly selected ControlGroup. For example, switching from "[Channel1]"
+    // to "[Master]" means that a ControlValue of "play" is no longer valid.
+    // If it isn't, then blank that column's value.
+    QModelIndex nextDoor =
+            index.sibling(index.row(), MIDIINPUTTABLEINDEX_CONTROLOBJECTVALUE);
     ControlValueDelegate::verifyControlValueValidity(group, model, nextDoor);
 }
 
-void ControlGroupDelegate::updateEditorGeometry(QWidget *editor,
-                                           const QStyleOptionViewItem &option,
-                                           const QModelIndex &/* index */) const
-{
+void ControlGroupDelegate::updateEditorGeometry(
+        QWidget *editor, const QStyleOptionViewItem &option,
+        const QModelIndex & /* index */) const {
     editor->setGeometry(option.rect);
 }

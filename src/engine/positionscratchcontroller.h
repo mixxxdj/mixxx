@@ -14,8 +14,8 @@ class PositionScratchController : public QObject {
     PositionScratchController(QString group);
     virtual ~PositionScratchController();
 
-    void process(double currentSample, double releaseRate,
-                 int iBufferSize, double baserate);
+    void process(double currentSample, double releaseRate, int iBufferSize,
+                 double baserate);
     bool isEnabled();
     double getRate();
     void notifySeek(double currentSample);

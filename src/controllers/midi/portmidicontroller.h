@@ -6,7 +6,8 @@
  * @brief PortMidi-based MIDI backend
  *
  * This class is represents a MIDI device, either physical or software.
- * It uses the PortMidi API to send and receive MIDI messages to/from the device.
+ * It uses the PortMidi API to send and receive MIDI messages to/from the
+ *device.
  * It's important to note that PortMidi treats input and output on a single
  * physical device as two separate half-duplex devices. In this class, we wrap
  * those together into a single device, which is why the constructor takes
@@ -21,7 +22,8 @@
 #include "controllers/midi/midicontroller.h"
 
 #define MIXXX_PORTMIDI_BUFFER_LEN 64 /**Number of MIDI messages to buffer*/
-#define MIXXX_PORTMIDI_NO_DEVICE_STRING "None" /**String to display for no MIDI devices present */
+#define MIXXX_PORTMIDI_NO_DEVICE_STRING \
+    "None" /**String to display for no MIDI devices present */
 
 /** A PortMidi-based implementation of MidiController */
 class PortMidiController : public MidiController {
@@ -29,8 +31,7 @@ class PortMidiController : public MidiController {
   public:
     PortMidiController(const PmDeviceInfo* inputDeviceInfo,
                        const PmDeviceInfo* outputDeviceInfo,
-                       int inputDeviceIndex,
-                       int outputDeviceIndex);
+                       int inputDeviceIndex, int outputDeviceIndex);
     virtual ~PortMidiController();
 
   private slots:
@@ -52,8 +53,8 @@ class PortMidiController : public MidiController {
     const PmDeviceInfo* m_pOutputDeviceInfo;
     int m_iInputDeviceIndex;
     int m_iOutputDeviceIndex;
-    PortMidiStream *m_pInputStream;
-    PortMidiStream *m_pOutputStream;
+    PortMidiStream* m_pInputStream;
+    PortMidiStream* m_pOutputStream;
     PmEvent m_midiBuffer[MIXXX_PORTMIDI_BUFFER_LEN];
 
     // Storage for SysEx messages

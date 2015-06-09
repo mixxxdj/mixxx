@@ -4,10 +4,8 @@
 #include <QSqlDatabase>
 #include <QUrl>
 
-class BansheeDbConnection
-{
-public:
-
+class BansheeDbConnection {
+  public:
     struct Playlist {
         QString playlistId;
         QString name;
@@ -57,12 +55,11 @@ public:
     QList<struct Playlist> getPlaylists();
     QList<struct PlaylistEntry> getPlaylistEntries(int playlistId);
 
-private:
+  private:
     QSqlDatabase m_database;
     QMap<int, struct Track> m_trackMap;
     QMap<int, struct Artist> m_artistMap;
     QMap<int, struct Album> m_albumMap;
-
 };
 
-#endif // BANSHEEDBCONNECTION_H
+#endif  // BANSHEEDBCONNECTION_H

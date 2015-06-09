@@ -25,6 +25,6 @@ void ShoutcastManager::setEnabled(bool value) {
 }
 
 bool ShoutcastManager::isEnabled() {
-    return m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY, "enabled")).toInt() == 1;
+    return m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY, "enabled"))
+                   .toInt() == 1;
 }

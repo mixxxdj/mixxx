@@ -17,8 +17,7 @@
 BrowseTableModel::BrowseTableModel(QObject* parent,
                                    TrackCollection* pTrackCollection,
                                    RecordingManager* pRecordingManager)
-        : TrackModel(pTrackCollection->getDatabase(),
-                     "mixxx.db.model.browse"),
+        : TrackModel(pTrackCollection->getDatabase(), "mixxx.db.model.browse"),
           QStandardItemModel(parent),
           m_pTrackCollection(pTrackCollection),
           m_pRecordingManager(pRecordingManager),
@@ -62,24 +61,25 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
 
     setHorizontalHeaderLabels(header_data);
     // register the QList<T> as a metatype since we use QueuedConnection below
-    qRegisterMetaType< QList< QList<QStandardItem*> > >(
-        "QList< QList<QStandardItem*> >");
+    qRegisterMetaType<QList<QList<QStandardItem*>>>(
+            "QList< QList<QStandardItem*> >");
     qRegisterMetaType<BrowseTableModel*>("BrowseTableModel*");
 
     m_pBrowseThread = BrowseThread::getInstanceRef();
-    connect(m_pBrowseThread.data(), SIGNAL(clearModel(BrowseTableModel*)),
-            this, SLOT(slotClear(BrowseTableModel*)),
-            Qt::QueuedConnection);
+    connect(m_pBrowseThread.data(), SIGNAL(clearModel(BrowseTableModel*)), this,
+            SLOT(slotClear(BrowseTableModel*)), Qt::QueuedConnection);
 
     connect(m_pBrowseThread.data(),
-            SIGNAL(rowsAppended(const QList< QList<QStandardItem*> >&, BrowseTableModel*)),
-            this,
-            SLOT(slotInsert(const QList< QList<QStandardItem*> >&, BrowseTableModel*)),
+            SIGNAL(rowsAppended(const QList<QList<QStandardItem*>>&,
+                                BrowseTableModel*)),
+            this, SLOT(slotInsert(const QList<QList<QStandardItem*>>&,
+                                  BrowseTableModel*)),
             Qt::QueuedConnection);
 
     connect(&PlayerInfo::instance(), SIGNAL(trackLoaded(QString, TrackPointer)),
             this, SLOT(trackLoaded(QString, TrackPointer)));
-    trackLoaded(m_previewDeckGroup, PlayerInfo::instance().getTrackInfo(m_previewDeckGroup));
+    trackLoaded(m_previewDeckGroup,
+                PlayerInfo::instance().getTrackInfo(m_previewDeckGroup));
 }
 
 BrowseTableModel::~BrowseTableModel() {
@@ -102,14 +102,14 @@ TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const {
     QString track_location = getTrackLocation(index);
     if (m_pRecordingManager->getRecordingLocation() == track_location) {
         QMessageBox::critical(
-            0, tr("Mixxx Library"),
-            tr("Could not load the following file because"
-               " it is in use by Mixxx or another application.")
-            + "\n" +track_location);
+                0, tr("Mixxx Library"),
+                tr("Could not load the following file because"
+                   " it is in use by Mixxx or another application.") +
+                        "\n" + track_location);
         return TrackPointer();
     }
-    return m_pTrackCollection->getTrackDAO()
-            .getOrAddTrack(track_location, true, NULL);
+    return m_pTrackCollection->getTrackDAO().getOrAddTrack(track_location, true,
+                                                           NULL);
 }
 
 QString BrowseTableModel::getTrackLocation(const QModelIndex& index) const {
@@ -131,7 +131,8 @@ const QLinkedList<int> BrowseTableModel::getTrackRows(int trackId) const {
     return QLinkedList<int>();
 }
 
-void BrowseTableModel::search(const QString& searchText, const QString& extraFilter) {
+void BrowseTableModel::search(const QString& searchText,
+                              const QString& extraFilter) {
     Q_UNUSED(extraFilter);
     Q_UNUSED(searchText);
 }
@@ -145,13 +146,10 @@ bool BrowseTableModel::isColumnInternal(int) {
 }
 
 bool BrowseTableModel::isColumnHiddenByDefault(int column) {
-    if (column == COLUMN_COMPOSER ||
-            column == COLUMN_TRACK_NUMBER ||
-            column == COLUMN_YEAR ||
-            column == COLUMN_GROUPING ||
-            column == COLUMN_LOCATION ||
-            column == COLUMN_ALBUMARTIST ||
-            column == COLUMN_FILE_CREATION_TIME) {
+    if (column == COLUMN_COMPOSER || column == COLUMN_TRACK_NUMBER ||
+        column == COLUMN_YEAR || column == COLUMN_GROUPING ||
+        column == COLUMN_LOCATION || column == COLUMN_ALBUMARTIST ||
+        column == COLUMN_FILE_CREATION_TIME) {
         return true;
     }
     return false;
@@ -185,12 +183,14 @@ void BrowseTableModel::removeTracks(QStringList trackLocations) {
         return;
 
     // Ask user if s/he is sure
-    if (QMessageBox::question(
-        NULL, tr("Mixxx Library"),
-        tr("Warning: This will permanently delete the following files:")
-        + "\n" + trackLocations.join("\n") + "\n" +
-        tr("Are you sure you want to delete these files from your computer?"),
-        QMessageBox::Yes, QMessageBox::Abort) == QMessageBox::Abort) {
+    if (QMessageBox::question(NULL, tr("Mixxx Library"),
+                              tr("Warning: This will permanently delete the "
+                                 "following files:") +
+                                      "\n" + trackLocations.join("\n") + "\n" +
+                                      tr("Are you sure you want to delete "
+                                         "these files from your computer?"),
+                              QMessageBox::Yes,
+                              QMessageBox::Abort) == QMessageBox::Abort) {
         return;
     }
 
@@ -202,9 +202,10 @@ void BrowseTableModel::removeTracks(QStringList trackLocations) {
         // If track is in use or deletion fails, show an error message.
         if (isTrackInUse(track_location) || !QFile::remove(track_location)) {
             QMessageBox::critical(
-                0, tr("Mixxx Library"),
-                tr("Could not delete the following file because"
-                   " it is in use by Mixxx or another application:") + "\n" +track_location);
+                    0, tr("Mixxx Library"),
+                    tr("Could not delete the following file because"
+                       " it is in use by Mixxx or another application:") +
+                            "\n" + track_location);
             continue;
         }
 
@@ -222,8 +223,7 @@ void BrowseTableModel::removeTracks(QStringList trackLocations) {
 
     // Repopulate model if any tracks were actually deleted
     if (any_deleted) {
-        m_pBrowseThread->executePopulation(m_current_directory,
-                                                       this);
+        m_pBrowseThread->executePopulation(m_current_directory, this);
     }
 }
 
@@ -233,8 +233,8 @@ bool BrowseTableModel::addTrack(const QModelIndex& index, QString location) {
     return false;
 }
 
-QMimeData* BrowseTableModel::mimeData(const QModelIndexList &indexes) const {
-    QMimeData *mimeData = new QMimeData();
+QMimeData* BrowseTableModel::mimeData(const QModelIndexList& indexes) const {
+    QMimeData* mimeData = new QMimeData();
     QList<QUrl> urls;
 
     // Ok, so the list of indexes we're given contains separates indexes for
@@ -246,7 +246,8 @@ QMimeData* BrowseTableModel::mimeData(const QModelIndexList &indexes) const {
         if (index.isValid()) {
             if (!rows.contains(index.row())) {
                 rows.push_back(index.row());
-                QUrl url = DragAndDropHelper::urlFromLocation(getTrackLocation(index));
+                QUrl url = DragAndDropHelper::urlFromLocation(
+                        getTrackLocation(index));
                 if (!url.isValid()) {
                     qDebug() << "ERROR invalid url" << url;
                     continue;
@@ -265,13 +266,13 @@ void BrowseTableModel::slotClear(BrowseTableModel* caller_object) {
     }
 }
 
-void BrowseTableModel::slotInsert(const QList< QList<QStandardItem*> >& rows,
+void BrowseTableModel::slotInsert(const QList<QList<QStandardItem*>>& rows,
                                   BrowseTableModel* caller_object) {
     // There exists more than one BrowseTableModel in Mixxx We only want to
     // receive items here, this object has 'ordered' by the BrowserThread
     // (singleton)
     if (caller_object == this) {
-        //qDebug() << "BrowseTableModel::slotInsert";
+        // qDebug() << "BrowseTableModel::slotInsert";
         for (int i = 0; i < rows.size(); ++i) {
             appendRow(rows.at(i));
         }
@@ -280,16 +281,13 @@ void BrowseTableModel::slotInsert(const QList< QList<QStandardItem*> >& rows,
 
 TrackModel::CapabilitiesFlags BrowseTableModel::getCapabilities() const {
     // See src/library/trackmodel.h for the list of TRACKMODELCAPS
-    return TRACKMODELCAPS_NONE
-            | TRACKMODELCAPS_ADDTOPLAYLIST
-            | TRACKMODELCAPS_ADDTOCRATE
-            | TRACKMODELCAPS_ADDTOAUTODJ
-            | TRACKMODELCAPS_LOADTODECK
-            | TRACKMODELCAPS_LOADTOPREVIEWDECK
-            | TRACKMODELCAPS_LOADTOSAMPLER;
+    return TRACKMODELCAPS_NONE | TRACKMODELCAPS_ADDTOPLAYLIST |
+           TRACKMODELCAPS_ADDTOCRATE | TRACKMODELCAPS_ADDTOAUTODJ |
+           TRACKMODELCAPS_LOADTODECK | TRACKMODELCAPS_LOADTOPREVIEWDECK |
+           TRACKMODELCAPS_LOADTOSAMPLER;
 }
 
-Qt::ItemFlags BrowseTableModel::flags(const QModelIndex &index) const {
+Qt::ItemFlags BrowseTableModel::flags(const QModelIndex& index) const {
     Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
 
     // Enable dragging songs from this data model to elsewhere (like the
@@ -299,13 +297,10 @@ Qt::ItemFlags BrowseTableModel::flags(const QModelIndex &index) const {
     QString track_location = getTrackLocation(index);
     int column = index.column();
 
-    if (isTrackInUse(track_location) ||
-            column == COLUMN_FILENAME ||
-            column == COLUMN_BITRATE ||
-            column == COLUMN_DURATION ||
-            column == COLUMN_TYPE ||
-            column == COLUMN_FILE_MODIFIED_TIME ||
-            column == COLUMN_FILE_CREATION_TIME) {
+    if (isTrackInUse(track_location) || column == COLUMN_FILENAME ||
+        column == COLUMN_BITRATE || column == COLUMN_DURATION ||
+        column == COLUMN_TYPE || column == COLUMN_FILE_MODIFIED_TIME ||
+        column == COLUMN_FILE_CREATION_TIME) {
         return defaultFlags;
     } else {
         return defaultFlags | Qt::ItemIsEditable;
@@ -324,7 +319,7 @@ bool BrowseTableModel::isTrackInUse(const QString& track_location) const {
     return false;
 }
 
-bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
+bool BrowseTableModel::setData(const QModelIndex& index, const QVariant& value,
                                int role) {
     Q_UNUSED(role);
 
@@ -343,13 +338,18 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
     trackMetadata.setAlbum(this->index(row, COLUMN_ALBUM).data().toString());
     trackMetadata.setKey(this->index(row, COLUMN_KEY).data().toString());
     trackMetadata.setBpm(this->index(row, COLUMN_BPM).data().toDouble());
-    trackMetadata.setComment(this->index(row, COLUMN_COMMENT).data().toString());
-    trackMetadata.setTrackNumber(this->index(row, COLUMN_TRACK_NUMBER).data().toString());
+    trackMetadata.setComment(
+            this->index(row, COLUMN_COMMENT).data().toString());
+    trackMetadata.setTrackNumber(
+            this->index(row, COLUMN_TRACK_NUMBER).data().toString());
     trackMetadata.setYear(this->index(row, COLUMN_YEAR).data().toString());
     trackMetadata.setGenre(this->index(row, COLUMN_GENRE).data().toString());
-    trackMetadata.setComposer(this->index(row, COLUMN_COMPOSER).data().toString());
-    trackMetadata.setAlbumArtist(this->index(row, COLUMN_ALBUMARTIST).data().toString());
-    trackMetadata.setGrouping(this->index(row, COLUMN_GROUPING).data().toString());
+    trackMetadata.setComposer(
+            this->index(row, COLUMN_COMPOSER).data().toString());
+    trackMetadata.setAlbumArtist(
+            this->index(row, COLUMN_ALBUMARTIST).data().toString());
+    trackMetadata.setGrouping(
+            this->index(row, COLUMN_GROUPING).data().toString());
 
     // check if one the item were edited
     if (col == COLUMN_ARTIST) {
@@ -394,9 +394,8 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
         item->setText(index.data().toString());
         item->setToolTip(item->text());
         QMessageBox::critical(
-            0, tr("Mixxx Library"),
-            tr("Could not update file metadata.")
-            + "\n" +track_location);
+                0, tr("Mixxx Library"),
+                tr("Could not update file metadata.") + "\n" + track_location);
         return false;
     }
 }
@@ -413,7 +412,8 @@ void BrowseTableModel::trackLoaded(QString group, TrackPointer pTrack) {
         if (pTrack) {
             for (int row = 0; row < rowCount(); ++row) {
                 QModelIndex i = index(row, COLUMN_PREVIEW);
-                QString location = index(row, COLUMN_LOCATION).data().toString();
+                QString location =
+                        index(row, COLUMN_LOCATION).data().toString();
                 if (location == pTrack->getLocation()) {
                     QStandardItem* item = itemFromIndex(i);
                     item->setText("1");
@@ -431,7 +431,8 @@ bool BrowseTableModel::isColumnSortable(int column) {
     return true;
 }
 
-QAbstractItemDelegate* BrowseTableModel::delegateForColumn(const int i, QObject* pParent) {
+QAbstractItemDelegate* BrowseTableModel::delegateForColumn(const int i,
+                                                           QObject* pParent) {
     if (PlayerManager::numPreviewDecks() > 0 && i == COLUMN_PREVIEW) {
         return new PreviewButtonDelegate(pParent, i);
     }

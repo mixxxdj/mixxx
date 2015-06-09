@@ -10,11 +10,14 @@
 struct ControlInfo {
     ControlInfo()
             : clickControl(NULL),
-              emitOption(ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE),
+              emitOption(ControlParameterWidgetConnection::
+                                 EMIT_ON_PRESS_AND_RELEASE),
               leftClickControl(NULL),
-              leftEmitOption(ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE),
+              leftEmitOption(ControlParameterWidgetConnection::
+                                     EMIT_ON_PRESS_AND_RELEASE),
               rightClickControl(NULL),
-              rightEmitOption(ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE) {
+              rightEmitOption(ControlParameterWidgetConnection::
+                                      EMIT_ON_PRESS_AND_RELEASE) {
     }
 
     ControlObject* clickControl;
@@ -33,9 +36,10 @@ class ControllerLearningEventFilter : public QObject {
 
     virtual bool eventFilter(QObject* pObject, QEvent* pEvent);
 
-    void addWidgetClickInfo(QWidget* pWidget, Qt::MouseButton buttonState,
-                            ControlObject* pControl,
-                            ControlParameterWidgetConnection::EmitOption emitOption);
+    void addWidgetClickInfo(
+            QWidget* pWidget, Qt::MouseButton buttonState,
+            ControlObject* pControl,
+            ControlParameterWidgetConnection::EmitOption emitOption);
 
   public slots:
     void startListening();
@@ -48,6 +52,5 @@ class ControllerLearningEventFilter : public QObject {
     QHash<QWidget*, ControlInfo> m_widgetControlInfo;
     bool m_bListening;
 };
-
 
 #endif /* CONTROLLERLEARNINGEVENTFILTER_H */

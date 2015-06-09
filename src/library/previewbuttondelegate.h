@@ -10,14 +10,13 @@
 class ControlObjectSlave;
 
 class PreviewButtonDelegate : public QStyledItemDelegate {
-  Q_OBJECT
+    Q_OBJECT
 
   public:
-    explicit PreviewButtonDelegate(QObject* parent = NULL, int column = 0);
+    explicit PreviewButtonDelegate(QObject *parent = NULL, int column = 0);
     virtual ~PreviewButtonDelegate();
 
-    QWidget* createEditor(QWidget *parent,
-                          const QStyleOptionViewItem &option,
+    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
                           const QModelIndex &index) const;
 
     void setEditorData(QWidget *editor, const QModelIndex &index) const;
@@ -27,7 +26,8 @@ class PreviewButtonDelegate : public QStyledItemDelegate {
                const QModelIndex &index) const;
     QSize sizeHint(const QStyleOptionViewItem &option,
                    const QModelIndex &index) const;
-    void updateEditorGeometry(QWidget *editor,const QStyleOptionViewItem &option,
+    void updateEditorGeometry(QWidget *editor,
+                              const QStyleOptionViewItem &option,
                               const QModelIndex &index) const;
 
   signals:
@@ -40,12 +40,12 @@ class PreviewButtonDelegate : public QStyledItemDelegate {
     void previewDeckPlayChanged(double v);
 
   private:
-    QTableView* m_pTableView;
-    ControlObjectSlave* m_pPreviewDeckPlay;
-    QPushButton* m_pButton;
+    QTableView *m_pTableView;
+    ControlObjectSlave *m_pPreviewDeckPlay;
+    QPushButton *m_pButton;
     bool m_isOneCellInEditMode;
     QPersistentModelIndex m_currentEditedCellIndex;
     int m_column;
 };
 
-#endif // PREVIEWBUTTONDELEGATE_H
+#endif  // PREVIEWBUTTONDELEGATE_H

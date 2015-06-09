@@ -19,24 +19,24 @@
 
 #include "library/parser.h"
 
-class ParserM3u : public Parser
-{
+class ParserM3u : public Parser {
     Q_OBJECT
-public:
+  public:
     ParserM3u();
     ~ParserM3u();
     /**Overwriting function parse in class Parser**/
     QList<QString> parse(QString);
-    //Playlist Export
-    static bool writeM3UFile(const QString &file_str, QList<QString> &items, bool useRelativePath, bool useUtf8);
-    static bool writeM3UFile(const QString &file, QList<QString> &items, bool useRelativePath);
-    static bool writeM3U8File(const QString &file_str, QList<QString> &items, bool useRelativePath);
+    // Playlist Export
+    static bool writeM3UFile(const QString &file_str, QList<QString> &items,
+                             bool useRelativePath, bool useUtf8);
+    static bool writeM3UFile(const QString &file, QList<QString> &items,
+                             bool useRelativePath);
+    static bool writeM3U8File(const QString &file_str, QList<QString> &items,
+                              bool useRelativePath);
 
-private:
+  private:
     /**Reads a line from the file and returns filepath if a valid file**/
     QString getFilepath(QTextStream *, QString);
-
-
 };
 
 #endif

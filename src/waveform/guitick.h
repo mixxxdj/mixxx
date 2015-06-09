@@ -23,7 +23,7 @@ class GuiTick : public QObject {
     PerformanceTimer m_cpuTimer;
 
     double m_lastUpdateTime;
-    static double m_cpuTimeLastTick; // Stream Time in seconds
+    static double m_cpuTimeLastTick;  // Stream Time in seconds
 };
 
-#endif // GUITICK_H
+#endif  // GUITICK_H

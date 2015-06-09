@@ -21,5 +21,4 @@ class LibraryTest : public MixxxTest {
     QScopedPointer<TrackCollection> m_pTrackCollection;
 };
 
-
 #endif /* LIBRARYTEST_H */

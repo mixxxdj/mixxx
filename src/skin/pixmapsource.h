@@ -22,10 +22,7 @@ class PixmapSource {
     QString getId() const;
 
   private:
-    enum Type {
-        SVG,
-        BITMAP
-    };
+    enum Type { SVG, BITMAP };
 
     QString m_path;
     QByteArray m_baData;

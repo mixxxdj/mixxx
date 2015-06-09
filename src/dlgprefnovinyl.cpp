@@ -15,12 +15,11 @@
 *                                                                         *
 ***************************************************************************/
 
-
 #include <QtDebug>
 #include "dlgprefnovinyl.h"
 
-DlgPrefNoVinyl::DlgPrefNoVinyl(QWidget * parent, SoundManager * soundman,
-                               ConfigObject<ConfigValue> * _config)
+DlgPrefNoVinyl::DlgPrefNoVinyl(QWidget* parent, SoundManager* soundman,
+                               ConfigObject<ConfigValue>* _config)
         : DlgPreferencePage(parent) {
     Q_UNUSED(soundman);
     Q_UNUSED(_config);

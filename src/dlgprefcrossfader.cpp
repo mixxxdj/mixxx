@@ -24,7 +24,8 @@
 
 #define kConfigKey "[Mixer Profile]"
 
-DlgPrefCrossfader::DlgPrefCrossfader(QWidget * parent, ConfigObject<ConfigValue> * _config)
+DlgPrefCrossfader::DlgPrefCrossfader(QWidget* parent,
+                                     ConfigObject<ConfigValue>* _config)
         : DlgPreferencePage(parent),
           config(_config),
           m_pxfScene(NULL),
@@ -45,14 +46,20 @@ DlgPrefCrossfader::DlgPrefCrossfader(QWidget * parent, ConfigObject<ConfigValue>
 
     loadSettings();
 
-    connect(SliderXFader, SIGNAL(valueChanged(int)), this, SLOT(slotUpdateXFader()));
-    connect(SliderXFader, SIGNAL(sliderMoved(int)), this, SLOT(slotUpdateXFader()));
-    connect(SliderXFader, SIGNAL(sliderReleased()), this, SLOT(slotUpdateXFader()));
+    connect(SliderXFader, SIGNAL(valueChanged(int)), this,
+            SLOT(slotUpdateXFader()));
+    connect(SliderXFader, SIGNAL(sliderMoved(int)), this,
+            SLOT(slotUpdateXFader()));
+    connect(SliderXFader, SIGNAL(sliderReleased()), this,
+            SLOT(slotUpdateXFader()));
     connect(SliderXFader, SIGNAL(sliderReleased()), this, SLOT(slotApply()));
 
-    //Update the crossfader curve graph and other setings when the crossfader mode is changed.
-    connect(radioButtonAdditive, SIGNAL(clicked(bool)), this, SLOT(slotUpdate()));
-    connect(radioButtonConstantPower, SIGNAL(clicked(bool)), this, SLOT(slotUpdate()));
+    // Update the crossfader curve graph and other setings when the crossfader
+    // mode is changed.
+    connect(radioButtonAdditive, SIGNAL(clicked(bool)), this,
+            SLOT(slotUpdate()));
+    connect(radioButtonConstantPower, SIGNAL(clicked(bool)), this,
+            SLOT(slotUpdate()));
 }
 
 DlgPrefCrossfader::~DlgPrefCrossfader() {
@@ -61,22 +68,29 @@ DlgPrefCrossfader::~DlgPrefCrossfader() {
 
 /** Loads the config keys and sets the widgets in the dialog to match */
 void DlgPrefCrossfader::loadSettings() {
-    m_transform = 1. + ((double) SliderXFader->value() / SliderXFader->maximum());
-    double sliderTransform = config->getValueString(ConfigKey(kConfigKey, "xFaderCurve")).toDouble();
-    double sliderVal = SliderXFader->maximum() / MIXXX_XFADER_STEEPNESS_COEFF * (sliderTransform - 1.);
+    m_transform =
+            1. + ((double)SliderXFader->value() / SliderXFader->maximum());
+    double sliderTransform =
+            config->getValueString(ConfigKey(kConfigKey, "xFaderCurve"))
+                    .toDouble();
+    double sliderVal = SliderXFader->maximum() / MIXXX_XFADER_STEEPNESS_COEFF *
+                       (sliderTransform - 1.);
     SliderXFader->setValue((int)sliderVal);
 
-    m_xFaderMode = config->getValueString(ConfigKey(kConfigKey, "xFaderMode")).toInt();
+    m_xFaderMode =
+            config->getValueString(ConfigKey(kConfigKey, "xFaderMode")).toInt();
 
     if (m_xFaderMode == MIXXX_XFADER_CONSTPWR) {
         radioButtonConstantPower->setChecked(true);
-        //SliderXFader->setEnabled(true);
+        // SliderXFader->setEnabled(true);
     } else {
         radioButtonAdditive->setChecked(true);
-        //SliderXFader->setEnabled(false);
+        // SliderXFader->setEnabled(false);
     }
 
-    m_xFaderReverse = config->getValueString(ConfigKey(kConfigKey, "xFaderReverse")).toInt() == 1;
+    m_xFaderReverse =
+            config->getValueString(ConfigKey(kConfigKey, "xFaderReverse"))
+                    .toInt() == 1;
     checkBoxReverse->setChecked(m_xFaderReverse);
 
     slotUpdateXFader();
@@ -112,46 +126,54 @@ void DlgPrefCrossfader::slotApply() {
 void DlgPrefCrossfader::slotUpdate() {
     if (radioButtonAdditive->isChecked()) {
         m_xFaderMode = MIXXX_XFADER_ADDITIVE;
-//         SliderXFader->setValue(SliderXFader->minimum());
+        //         SliderXFader->setValue(SliderXFader->minimum());
     }
     if (radioButtonConstantPower->isChecked()) {
         m_xFaderMode = MIXXX_XFADER_CONSTPWR;
-        double sliderTransform = config->getValueString(ConfigKey(kConfigKey, "xFaderCurve")).toDouble();
-        double sliderVal = SliderXFader->maximum() / MIXXX_XFADER_STEEPNESS_COEFF * (sliderTransform - 1.);
+        double sliderTransform =
+                config->getValueString(ConfigKey(kConfigKey, "xFaderCurve"))
+                        .toDouble();
+        double sliderVal = SliderXFader->maximum() /
+                           MIXXX_XFADER_STEEPNESS_COEFF *
+                           (sliderTransform - 1.);
         SliderXFader->setValue((int)sliderVal);
     }
 
     slotUpdateXFader();
 }
 
-/** Draw the crossfader curve graph. Only needs to get drawn when a change has been made.*/
-void DlgPrefCrossfader::drawXfaderDisplay()
-{
+/** Draw the crossfader curve graph. Only needs to get drawn when a change has
+ * been made.*/
+void DlgPrefCrossfader::drawXfaderDisplay() {
 #define GRID_X_LINES 4
 #define GRID_Y_LINES 6
 
     int sizeX = graphicsViewXfader->width();
     int sizeY = graphicsViewXfader->height();
 
-    //Initialize Scene
+    // Initialize Scene
     if (m_pxfScene) {
         delete m_pxfScene;
         m_pxfScene = NULL;
     }
     m_pxfScene = new QGraphicsScene();
-    m_pxfScene->setSceneRect(0,0,sizeX, sizeY);
+    m_pxfScene->setSceneRect(0, 0, sizeX, sizeY);
     m_pxfScene->setBackgroundBrush(Qt::black);
 
-    //Initialize QPens
+    // Initialize QPens
     QPen gridPen(Qt::green);
     QPen graphLinePen(Qt::white);
 
-    //draw grid
-    for (int i=1; i < GRID_X_LINES; i++) {
-        m_pxfScene->addLine(QLineF(0, i *(sizeY/GRID_X_LINES),sizeX,i *(sizeY/GRID_X_LINES)), gridPen);
+    // draw grid
+    for (int i = 1; i < GRID_X_LINES; i++) {
+        m_pxfScene->addLine(QLineF(0, i * (sizeY / GRID_X_LINES), sizeX,
+                                   i * (sizeY / GRID_X_LINES)),
+                            gridPen);
     }
-    for (int i=1; i < GRID_Y_LINES; i++) {
-        m_pxfScene->addLine(QLineF( i * (sizeX/GRID_Y_LINES), 0, i * (sizeX/GRID_Y_LINES), sizeY), gridPen);
+    for (int i = 1; i < GRID_Y_LINES; i++) {
+        m_pxfScene->addLine(QLineF(i * (sizeX / GRID_Y_LINES), 0,
+                                   i * (sizeX / GRID_Y_LINES), sizeY),
+                            gridPen);
     }
 
     // Draw graph lines
@@ -161,34 +183,33 @@ void DlgPrefCrossfader::drawXfaderDisplay()
         double xfadeStep = 2. / (double)sizeX;
 
         double gain1, gain2;
-        EngineXfader::getXfadeGains((-1. + (xfadeStep * (double) i)),
-                                    m_transform, m_cal,
-                                    (m_xFaderMode == MIXXX_XFADER_CONSTPWR),
-                                    checkBoxReverse->isChecked(),
-                                    &gain1, &gain2);
+        EngineXfader::getXfadeGains(
+                (-1. + (xfadeStep * (double)i)), m_transform, m_cal,
+                (m_xFaderMode == MIXXX_XFADER_CONSTPWR),
+                checkBoxReverse->isChecked(), &gain1, &gain2);
 
         double sum = gain1 + gain2;
-        //scale for graph
+        // scale for graph
         gain1 *= 0.80;
         gain2 *= 0.80;
         sum *= 0.80;
 
-        //draw it
+        // draw it
         pointTotalPrev = pointTotal;
         point1Prev = point1;
         point2Prev = point2;
         pointTotal = QPoint(i - 2, (int)((1. - sum) * (sizeY)));
         point1 = QPoint(i - 2, (int)((1. - gain1) * (sizeY)));
         point2 = QPoint(i - 2, (int)((1. - gain2) * (sizeY)));
-        if(i == 0) {
+        if (i == 0) {
             pointTotalPrev = pointTotal;
             point1Prev = point1;
             point2Prev = point2;
         }
 
-        if(pointTotal != point1)
+        if (pointTotal != point1)
             m_pxfScene->addLine(QLineF(point1, point1Prev), graphLinePen);
-        if(pointTotal != point2)
+        if (pointTotal != point2)
             m_pxfScene->addLine(QLineF(point2, point2Prev), graphLinePen);
         m_pxfScene->addLine(QLineF(pointTotal, pointTotalPrev), QPen(Qt::red));
     }
@@ -199,13 +220,16 @@ void DlgPrefCrossfader::drawXfaderDisplay()
 
 /** Update and save the crossfader's parameters from the dialog's widgets. **/
 void DlgPrefCrossfader::slotUpdateXFader() {
-    m_transform = 1. + ((double) SliderXFader->value() / SliderXFader->maximum() * MIXXX_XFADER_STEEPNESS_COEFF);
+    m_transform = 1. + ((double)SliderXFader->value() /
+                        SliderXFader->maximum() * MIXXX_XFADER_STEEPNESS_COEFF);
 
     m_cal = EngineXfader::getCalibration(m_transform);
     QString QS_transform = QString::number(m_transform);
     config->set(ConfigKey(kConfigKey, "xFaderMode"), ConfigValue(m_xFaderMode));
-    config->set(ConfigKey(kConfigKey, "xFaderCurve"), ConfigValue(QS_transform));
-    //config->set(ConfigKey(CONFIG_KEY, "xFaderCalibration"), ConfigValue(m_cal)); //FIXME: m_cal is a double - be forewarned
+    config->set(ConfigKey(kConfigKey, "xFaderCurve"),
+                ConfigValue(QS_transform));
+    // config->set(ConfigKey(CONFIG_KEY, "xFaderCalibration"),
+    // ConfigValue(m_cal)); //FIXME: m_cal is a double - be forewarned
     config->set(ConfigKey(kConfigKey, "xFaderReverse"),
                 ConfigValue(checkBoxReverse->isChecked() ? 1 : 0));
 

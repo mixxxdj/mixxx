@@ -13,7 +13,7 @@
  8 - Mixxx 1.13.0 New SoundSource Plugin API
  */
 
-//As per QLibrary docs: http://doc.trolltech.com/4.6/qlibrary.html#resolve
+// As per QLibrary docs: http://doc.trolltech.com/4.6/qlibrary.html#resolve
 #ifdef Q_OS_WIN
 #define MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT __declspec(dllexport)
 #else
@@ -28,14 +28,19 @@ namespace Mixxx {
 
 // extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT const char* Mixxx_getVersion()
 
-// extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT int Mixxx_SoundSourcePluginAPI_getVersion()
+// extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT int
+// Mixxx_SoundSourcePluginAPI_getVersion()
 typedef int (*SoundSourcePluginAPI_getVersionFunc)();
-const char * const SoundSourcePluginAPI_getVersionFuncName = "Mixxx_SoundSourcePluginAPI_getVersion";
+const char* const SoundSourcePluginAPI_getVersionFuncName =
+        "Mixxx_SoundSourcePluginAPI_getVersion";
 
-// extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT QStringList Mixxx_SoundSourcePluginAPI_getSoundSourceProvider()
-typedef SoundSourceProviderPointer (*SoundSourcePluginAPI_getSoundSourceProviderFunc)();
-const char* const SoundSourcePluginAPI_getSoundSourceProviderFuncName = "Mixxx_SoundSourcePluginAPI_getSoundSourceProvider";
+// extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT QStringList
+// Mixxx_SoundSourcePluginAPI_getSoundSourceProvider()
+typedef SoundSourceProviderPointer (
+        *SoundSourcePluginAPI_getSoundSourceProviderFunc)();
+const char* const SoundSourcePluginAPI_getSoundSourceProviderFuncName =
+        "Mixxx_SoundSourcePluginAPI_getSoundSourceProvider";
 
-} // Mixxx
+}  // Mixxx
 
-#endif // MIXXX_SOUNDSOURCEPLUGINAPI_H
+#endif  // MIXXX_SOUNDSOURCEPLUGINAPI_H

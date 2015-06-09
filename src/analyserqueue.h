@@ -27,9 +27,11 @@ class AnalyserQueue : public QThread {
     void queueAnalyseTrack(TrackPointer tio);
 
     static AnalyserQueue* createDefaultAnalyserQueue(
-            ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection);
+            ConfigObject<ConfigValue>* pConfig,
+            TrackCollection* pTrackCollection);
     static AnalyserQueue* createAnalysisFeatureAnalyserQueue(
-            ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection);
+            ConfigObject<ConfigValue>* pConfig,
+            TrackCollection* pTrackCollection);
 
   public slots:
     void slotAnalyseTrack(TrackPointer tio);
@@ -47,10 +49,9 @@ class AnalyserQueue : public QThread {
     void run();
 
   private:
-
     struct progress_info {
         TrackPointer current_track;
-        int track_progress; // in 0.1 %
+        int track_progress;  // in 0.1 %
         int queue_size;
         QSemaphore sema;
     };

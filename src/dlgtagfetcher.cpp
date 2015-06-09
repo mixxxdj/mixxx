@@ -3,7 +3,7 @@
 
 #include "dlgtagfetcher.h"
 
-DlgTagFetcher::DlgTagFetcher(QWidget *parent)
+DlgTagFetcher::DlgTagFetcher(QWidget* parent)
         : QDialog(parent),
           m_track(NULL),
           m_TagFetcher(parent),
@@ -17,30 +17,29 @@ DlgTagFetcher::~DlgTagFetcher() {
 void DlgTagFetcher::init() {
     setupUi(this);
 
-    connect(btnApply, SIGNAL(clicked()),
-            this, SLOT(apply()));
-    connect(btnQuit, SIGNAL(clicked()),
-            this, SLOT(quit()));
-    connect(btnPrev, SIGNAL(clicked()),
-            this, SIGNAL(previous()));
-    connect(btnNext, SIGNAL(clicked()),
-            this, SIGNAL(next()));
-    connect(results, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
+    connect(btnApply, SIGNAL(clicked()), this, SLOT(apply()));
+    connect(btnQuit, SIGNAL(clicked()), this, SLOT(quit()));
+    connect(btnPrev, SIGNAL(clicked()), this, SIGNAL(previous()));
+    connect(btnNext, SIGNAL(clicked()), this, SIGNAL(next()));
+    connect(results,
+            SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
             this, SLOT(resultSelected()));
 
-    connect(&m_TagFetcher, SIGNAL(resultAvailable(const TrackPointer,const QList<TrackPointer>&)),
-            this, SLOT(fetchTagFinished(const TrackPointer,const QList<TrackPointer>&)));
-    connect(&m_TagFetcher, SIGNAL(fetchProgress(QString)),
-            this, SLOT(fetchTagProgress(QString)));
-    connect(&m_TagFetcher, SIGNAL(networkError(int, QString)),
-            this, SLOT(slotNetworkError(int, QString)));
+    connect(&m_TagFetcher, SIGNAL(resultAvailable(const TrackPointer,
+                                                  const QList<TrackPointer>&)),
+            this, SLOT(fetchTagFinished(const TrackPointer,
+                                        const QList<TrackPointer>&)));
+    connect(&m_TagFetcher, SIGNAL(fetchProgress(QString)), this,
+            SLOT(fetchTagProgress(QString)));
+    connect(&m_TagFetcher, SIGNAL(networkError(int, QString)), this,
+            SLOT(slotNetworkError(int, QString)));
 
     // Resize columns, this can't be set in the ui file
     results->setColumnWidth(0, 50);  // Track column
     results->setColumnWidth(1, 50);  // Year column
-    results->setColumnWidth(2, 160); // Title column
-    results->setColumnWidth(3, 160); // Artist column
-    results->setColumnWidth(4, 160); // Album column
+    results->setColumnWidth(2, 160);  // Title column
+    results->setColumnWidth(3, 160);  // Artist column
+    results->setColumnWidth(4, 160);  // Album column
 }
 
 void DlgTagFetcher::loadTrack(const TrackPointer track) {
@@ -53,8 +52,8 @@ void DlgTagFetcher::loadTrack(const TrackPointer track) {
     m_TagFetcher.startFetch(m_track);
 
     disconnect(this, SLOT(updateTrackMetadata(TrackPointer)));
-    connect(track.data(), SIGNAL(changed(TrackInfoObject*)),
-            this, SLOT(updateTrackMetadata(TrackInfoObject*)));
+    connect(track.data(), SIGNAL(changed(TrackInfoObject*)), this,
+            SLOT(updateTrackMetadata(TrackInfoObject*)));
 
     updateStack();
 }
@@ -77,12 +76,13 @@ void DlgTagFetcher::apply() {
             m_track->setTitle(m_data.m_results[resultIndex]->getTitle());
         }
         if (!m_data.m_results[resultIndex]->getYear().isEmpty() &&
-             m_data.m_results[resultIndex]->getYear() != "0") {
+            m_data.m_results[resultIndex]->getYear() != "0") {
             m_track->setYear(m_data.m_results[resultIndex]->getYear());
         }
         if (!m_data.m_results[resultIndex]->getTrackNumber().isEmpty() &&
-             m_data.m_results[resultIndex]->getTrackNumber() != "0") {
-            m_track->setTrackNumber(m_data.m_results[resultIndex]->getTrackNumber());
+            m_data.m_results[resultIndex]->getTrackNumber() != "0") {
+            m_track->setTrackNumber(
+                    m_data.m_results[resultIndex]->getTrackNumber());
         }
     }
 }
@@ -111,11 +111,12 @@ void DlgTagFetcher::fetchTagFinished(const TrackPointer track,
 }
 
 void DlgTagFetcher::slotNetworkError(int errorCode, QString app) {
-    m_networkError = errorCode==0 ?  FTWERROR : HTTPERROR;
+    m_networkError = errorCode == 0 ? FTWERROR : HTTPERROR;
     m_data.m_pending = false;
     QString httpStatusMessage = tr("HTTP Status: %1");
     httpStatus->setText(httpStatusMessage.arg(errorCode));
-    QString unknownError = tr("Mixxx can't connect to %1 for an unknown reason.");
+    QString unknownError =
+            tr("Mixxx can't connect to %1 for an unknown reason.");
     cantConnectMessage->setText(unknownError.arg(app));
     QString cantConnect = tr("Mixxx can't connect to %1.");
     cantConnectHttp->setText(cantConnect.arg(app));
@@ -152,7 +153,7 @@ void DlgTagFetcher::updateStack() {
     }
 
     // Find the item that was selected last time
-    for (int i=0 ; i<results->model()->rowCount() ; ++i) {
+    for (int i = 0; i < results->model()->rowCount(); ++i) {
         const QModelIndex index = results->model()->index(i, 0);
         const QVariant id = index.data(Qt::UserRole);
         if (!id.isNull() && id.toInt() == m_data.m_selectedResult) {
@@ -186,9 +187,10 @@ void DlgTagFetcher::addDivider(const QString& text, QTreeWidget* parent) const {
 }
 
 void DlgTagFetcher::resultSelected() {
-  if (!results->currentItem())
-    return;
+    if (!results->currentItem())
+        return;
 
-  const int resultIndex = results->currentItem()->data(0, Qt::UserRole).toInt();
-  m_data.m_selectedResult = resultIndex;
+    const int resultIndex =
+            results->currentItem()->data(0, Qt::UserRole).toInt();
+    m_data.m_selectedResult = resultIndex;
 }

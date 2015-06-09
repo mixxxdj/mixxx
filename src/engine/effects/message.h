@@ -124,7 +124,8 @@ struct EffectsRequest {
     // Message-specific, non-POD values that can't be part of the above union.
     ////////////////////////////////////////////////////////////////////////////
 
-    // Used by ENABLE_EFFECT_CHAIN_FOR_CHANNEL and DISABLE_EFFECT_CHAIN_FOR_CHANNEL.
+    // Used by ENABLE_EFFECT_CHAIN_FOR_CHANNEL and
+    // DISABLE_EFFECT_CHAIN_FOR_CHANNEL.
     ChannelHandle channel;
 
     // Used by SET_EFFECT_PARAMETER.
@@ -149,12 +150,10 @@ struct EffectsResponse {
     };
 
     EffectsResponse()
-            : request_id(-1),
-              success(false),
-              status(NUM_STATUS_CODES) {
+            : request_id(-1), success(false), status(NUM_STATUS_CODES) {
     }
 
-    EffectsResponse(const EffectsRequest& request, bool succeeded=false)
+    EffectsResponse(const EffectsRequest& request, bool succeeded = false)
             : request_id(request.request_id),
               success(succeeded),
               status(NUM_STATUS_CODES) {
@@ -173,9 +172,8 @@ typedef MessagePipe<EffectsResponse, EffectsRequest*> EffectsResponsePipe;
 
 class EffectsRequestHandler {
   public:
-    virtual bool processEffectsRequest(
-        const EffectsRequest& message,
-        EffectsResponsePipe* pResponsePipe) = 0;
+    virtual bool processEffectsRequest(const EffectsRequest& message,
+                                       EffectsResponsePipe* pResponsePipe) = 0;
 };
 
 #endif /* MESSAGE_H */

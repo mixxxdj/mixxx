@@ -8,8 +8,7 @@
 #include <QShortcut>
 
 WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
-        : QLineEdit(pParent),
-          WBaseWidget(this) {
+        : QLineEdit(pParent), WBaseWidget(this) {
     setAcceptDrops(false);
     m_clearButton = new QToolButton(this);
     QPixmap pixmap(":/skins/cross.png");
@@ -22,42 +21,39 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     m_place = true;
     showPlaceholder();
 
-    QShortcut *setFocusShortcut = new QShortcut(
-        QKeySequence(tr("Ctrl+F", "Search|Focus")), this);
-    connect(setFocusShortcut, SIGNAL(activated()),
-            this, SLOT(setFocus()));
+    QShortcut* setFocusShortcut =
+            new QShortcut(QKeySequence(tr("Ctrl+F", "Search|Focus")), this);
+    connect(setFocusShortcut, SIGNAL(activated()), this, SLOT(setFocus()));
 
-    connect(this, SIGNAL(textChanged(const QString&)),
-            this, SLOT(slotTextChanged(const QString&)));
+    connect(this, SIGNAL(textChanged(const QString&)), this,
+            SLOT(slotTextChanged(const QString&)));
 
     // Set up a timer to search after a few hundred milliseconds timeout.  This
     // stops us from thrashing the database if you type really fast.
     m_searchTimer.setSingleShot(true);
-    connect(&m_searchTimer, SIGNAL(timeout()),
-            this, SLOT(triggerSearch()));
+    connect(&m_searchTimer, SIGNAL(timeout()), this, SLOT(triggerSearch()));
 
-    connect(this, SIGNAL(textChanged(const QString&)),
-            this, SLOT(slotSetupTimer(const QString&)));
+    connect(this, SIGNAL(textChanged(const QString&)), this,
+            SLOT(slotSetupTimer(const QString&)));
 
     // When you hit enter, it will trigger the search.
-    connect(this, SIGNAL(returnPressed()),
-            this, SLOT(triggerSearch()));
+    connect(this, SIGNAL(returnPressed()), this, SLOT(triggerSearch()));
 
-    connect(m_clearButton, SIGNAL(clicked()),
-            this, SLOT(onSearchTextCleared()));
+    connect(m_clearButton, SIGNAL(clicked()), this,
+            SLOT(onSearchTextCleared()));
     // Forces immediate update of tracktable
-    connect(m_clearButton, SIGNAL(clicked()),
-            this, SLOT(triggerSearch()));
+    connect(m_clearButton, SIGNAL(clicked()), this, SLOT(triggerSearch()));
 
-    connect(this, SIGNAL(textChanged(const QString&)),
-            this, SLOT(updateCloseButton(const QString&)));
+    connect(this, SIGNAL(textChanged(const QString&)), this,
+            SLOT(updateCloseButton(const QString&)));
 
     // The width of the frame for the widget based on the styling.
     int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
 
     // Ensures the text does not obscure the clear image.
-    setStyleSheet(QString("QLineEdit { padding-right: %1px; } ").
-                  arg(m_clearButton->sizeHint().width() + frameWidth + 1));
+    setStyleSheet(
+            QString("QLineEdit { padding-right: %1px; } ")
+                    .arg(m_clearButton->sizeHint().width() + frameWidth + 1));
 }
 
 WSearchLineEdit::~WSearchLineEdit() {
@@ -65,7 +61,7 @@ WSearchLineEdit::~WSearchLineEdit() {
 
 void WSearchLineEdit::setup(QDomNode node, const SkinContext& context) {
     // Background color
-    QColor bgc(255,255,255);
+    QColor bgc(255, 255, 255);
     if (context.hasNode(node, "BgColor")) {
         bgc.setNamedColor(context.selectString(node, "BgColor"));
         setAutoFillBackground(true);
@@ -74,7 +70,7 @@ void WSearchLineEdit::setup(QDomNode node, const SkinContext& context) {
     pal.setBrush(backgroundRole(), WSkinColor::getCorrectColor(bgc));
 
     // Foreground color
-    m_fgc = QColor(0,0,0);
+    m_fgc = QColor(0, 0, 0);
     if (context.hasNode(node, "FgColor")) {
         m_fgc.setNamedColor(context.selectString(node, "FgColor"));
     }
@@ -88,7 +84,7 @@ void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
     QLineEdit::resizeEvent(e);
     QSize sz = m_clearButton->sizeHint();
     int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
-    int height = (rect().bottom() + 1 - sz.height())/2;
+    int height = (rect().bottom() + 1 - sz.height()) / 2;
     if (layoutDirection() == Qt::LeftToRight) {
         m_clearButton->move(rect().right() - frameWidth - sz.width() - 1,
                             height);
@@ -102,8 +98,8 @@ void WSearchLineEdit::focusInEvent(QFocusEvent* event) {
     if (m_place) {
         // This gets rid of the blue mac highlight.
         setAttribute(Qt::WA_MacShowFocusRect, false);
-        //Must block signals here so that we don't emit a search() signal via
-        //textChanged().
+        // Must block signals here so that we don't emit a search() signal via
+        // textChanged().
         blockSignals(true);
         setText("");
         blockSignals(false);
@@ -128,7 +124,7 @@ void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
 
 // slot
 void WSearchLineEdit::restoreSearch(const QString& text) {
-    if(text.isNull()) {
+    if (text.isNull()) {
         // disable
         setEnabled(false);
         blockSignals(true);
@@ -153,23 +149,21 @@ void WSearchLineEdit::restoreSearch(const QString& text) {
     updateCloseButton(text);
 }
 
-void WSearchLineEdit::slotSetupTimer(const QString& text)
-{
+void WSearchLineEdit::slotSetupTimer(const QString& text) {
     Q_UNUSED(text);
     m_searchTimer.stop();
-    //300 milliseconds timeout
+    // 300 milliseconds timeout
     m_searchTimer.start(300);
 }
 
-void WSearchLineEdit::triggerSearch()
-{
+void WSearchLineEdit::triggerSearch() {
     m_searchTimer.stop();
     emit(search(text()));
 }
 
 void WSearchLineEdit::showPlaceholder() {
-    //Must block signals here so that we don't emit a search() signal via
-    //textChanged().
+    // Must block signals here so that we don't emit a search() signal via
+    // textChanged().
     blockSignals(true);
     setText(tr("Search..."));
     blockSignals(false);
@@ -178,8 +172,7 @@ void WSearchLineEdit::showPlaceholder() {
     setPalette(pal);
 }
 
-void WSearchLineEdit::updateCloseButton(const QString& text)
-{
+void WSearchLineEdit::updateCloseButton(const QString& text) {
     m_clearButton->setVisible(!text.isEmpty() && !m_place);
 }
 

@@ -56,7 +56,7 @@ class WSingletonContainer : public WWidgetGroup {
   public:
     // Prepares the container and remembers the widget, but does not add the
     // widget to the container.
-    WSingletonContainer(QWidget* pParent=NULL);
+    WSingletonContainer(QWidget* pParent = NULL);
 
     virtual void setup(QDomNode node, const SkinContext& context);
 
@@ -83,6 +83,5 @@ class SingletonMap {
   private:
     QMap<QString, QWidget*> m_singletons;
 };
-
 
 #endif  // WSINGLETONCONTAINER_H

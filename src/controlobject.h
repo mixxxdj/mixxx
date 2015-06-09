@@ -34,24 +34,26 @@ class ControlObject : public QObject {
     // bIgnoreNops: Don't emit a signal if the CO is set to its current value.
     // bTrack: Record statistics about this control.
     // bPersist: Store value on exit, load on startup.
-    ControlObject(ConfigKey key,
-                  bool bIgnoreNops=true, bool bTrack=false,
-                  bool bPersist=false);
+    ControlObject(ConfigKey key, bool bIgnoreNops = true, bool bTrack = false,
+                  bool bPersist = false);
     virtual ~ControlObject();
 
     // Returns a pointer to the ControlObject matching the given ConfigKey
     static ControlObject* getControl(const ConfigKey& key, bool warn = true);
-    static inline ControlObject* getControl(const QString& group, const QString& item, bool warn = true) {
+    static inline ControlObject* getControl(const QString& group,
+                                            const QString& item,
+                                            bool warn = true) {
         ConfigKey key(group, item);
         return getControl(key, warn);
     }
-    static inline ControlObject* getControl(const char* group, const char* item, bool warn = true) {
+    static inline ControlObject* getControl(const char* group, const char* item,
+                                            bool warn = true) {
         ConfigKey key(group, item);
         return getControl(key, warn);
     }
 
     QString name() const {
-        return m_pControl ?  m_pControl->name() : QString();
+        return m_pControl ? m_pControl->name() : QString();
     }
 
     void setName(const QString& name) {
@@ -61,7 +63,7 @@ class ControlObject : public QObject {
     }
 
     const QString description() const {
-        return m_pControl ?  m_pControl->description() : QString();
+        return m_pControl ? m_pControl->description() : QString();
     }
 
     void setDescription(const QString& description) {
@@ -139,10 +141,12 @@ class ControlObject : public QObject {
     // Qt::AutoConnection: Qt ensures that the signal slot is called from the
     // thread where the receiving object was created
     // You need to use Qt::DirectConnection for the engine objects, since the
-    // audio thread has no Qt event queue. But be a ware of race conditions in this case.
+    // audio thread has no Qt event queue. But be a ware of race conditions in
+    // this case.
     // ref: http://qt-project.org/doc/qt-4.8/qt.html#ConnectionType-enum
-    bool connectValueChangeRequest(const QObject* receiver,
-                                   const char* method, Qt::ConnectionType type = Qt::AutoConnection);
+    bool connectValueChangeRequest(
+            const QObject* receiver, const char* method,
+            Qt::ConnectionType type = Qt::AutoConnection);
 
   signals:
     void valueChanged(double);

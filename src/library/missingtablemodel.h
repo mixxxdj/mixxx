@@ -20,7 +20,7 @@ class MissingTableModel : public BaseSqlTableModel {
     void setTableModel(int id = -1);
     bool isColumnInternal(int column);
     void purgeTracks(const QModelIndexList& indices);
-    Qt::ItemFlags flags(const QModelIndex &index) const;
+    Qt::ItemFlags flags(const QModelIndex& index) const;
     TrackModel::CapabilitiesFlags getCapabilities() const;
 
   private:

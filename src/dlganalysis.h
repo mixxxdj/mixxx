@@ -11,12 +11,13 @@
 class AnalysisLibraryTableModel;
 class WAnalysisLibraryTableView;
 
-class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual LibraryView {
+class DlgAnalysis : public QWidget,
+                    public Ui::DlgAnalysis,
+                    public virtual LibraryView {
     Q_OBJECT
   public:
-    DlgAnalysis(QWidget *parent,
-               ConfigObject<ConfigValue>* pConfig,
-               TrackCollection* pTrackCollection);
+    DlgAnalysis(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
+                TrackCollection* pTrackCollection);
     virtual ~DlgAnalysis();
 
     virtual void onSearch(const QString& text);
@@ -52,7 +53,7 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
     void trackSelected(TrackPointer pTrack);
 
   private:
-    //Note m_pTrackTablePlaceholder is defined in the .ui file
+    // Note m_pTrackTablePlaceholder is defined in the .ui file
     ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;
     bool m_bAnalysisActive;
@@ -63,4 +64,4 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
     int m_currentTrack;
 };
 
-#endif //DLGTRIAGE_H
+#endif  // DLGTRIAGE_H

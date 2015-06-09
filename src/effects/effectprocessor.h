@@ -20,8 +20,8 @@ class EffectProcessor {
         ENABLING = 0x03
     };
 
-
-    virtual ~EffectProcessor() { }
+    virtual ~EffectProcessor() {
+    }
 
     virtual void initialize(
             const QSet<ChannelHandleAndGroup>& registeredChannels) = 0;
@@ -35,9 +35,8 @@ class EffectProcessor {
     // samples. The provided channel handle allows the effect to maintain state
     // on a per-channel basis. This is important because one Effect instance may
     // be used to process the audio of multiple channels.
-    virtual void process(const ChannelHandle& handle,
-                         const CSAMPLE* pInput, CSAMPLE* pOutput,
-                         const unsigned int numSamples,
+    virtual void process(const ChannelHandle& handle, const CSAMPLE* pInput,
+                         CSAMPLE* pOutput, const unsigned int numSamples,
                          const unsigned int sampleRate,
                          const enum EnableState enableState,
                          const GroupFeatureState& groupFeatures) = 0;
@@ -48,9 +47,11 @@ class EffectProcessor {
 template <typename T>
 class PerChannelEffectProcessor : public EffectProcessor {
     struct ChannelStateHolder {
-        ChannelStateHolder() : state(NULL) { }
+        ChannelStateHolder() : state(NULL) {
+        }
         T* state;
     };
+
   public:
     PerChannelEffectProcessor() {
     }
@@ -71,9 +72,8 @@ class PerChannelEffectProcessor : public EffectProcessor {
         }
     }
 
-    virtual void process(const ChannelHandle& handle,
-                         const CSAMPLE* pInput, CSAMPLE* pOutput,
-                         const unsigned int numSamples,
+    virtual void process(const ChannelHandle& handle, const CSAMPLE* pInput,
+                         CSAMPLE* pOutput, const unsigned int numSamples,
                          const unsigned int sampleRate,
                          const EffectProcessor::EnableState enableState,
                          const GroupFeatureState& groupFeatures) {
@@ -82,8 +82,7 @@ class PerChannelEffectProcessor : public EffectProcessor {
                        enableState, groupFeatures);
     }
 
-    virtual void processChannel(const ChannelHandle& handle,
-                                T* channelState,
+    virtual void processChannel(const ChannelHandle& handle, T* channelState,
                                 const CSAMPLE* pInput, CSAMPLE* pOutput,
                                 const unsigned int numSamples,
                                 const unsigned int sampleRate,

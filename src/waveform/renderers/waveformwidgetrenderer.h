@@ -28,33 +28,48 @@ class WaveformWidgetRenderer {
     virtual ~WaveformWidgetRenderer();
 
     bool init();
-    virtual bool onInit() {return true;}
+    virtual bool onInit() {
+        return true;
+    }
 
     void setup(const QDomNode& node, const SkinContext& context);
     void onPreRender(VSyncThread* vsyncThread);
     void draw(QPainter* painter, QPaintEvent* event);
 
-    inline const char* getGroup() const { return m_group;}
-    const TrackPointer getTrackInfo() const { return m_pTrack;}
+    inline const char* getGroup() const {
+        return m_group;
+    }
+    const TrackPointer getTrackInfo() const {
+        return m_pTrack;
+    }
 
-    double getFirstDisplayedPosition() const { return m_firstDisplayedPosition;}
-    double getLastDisplayedPosition() const { return m_lastDisplayedPosition;}
+    double getFirstDisplayedPosition() const {
+        return m_firstDisplayedPosition;
+    }
+    double getLastDisplayedPosition() const {
+        return m_lastDisplayedPosition;
+    }
 
     void setZoom(int zoom);
 
-    double getVisualSamplePerPixel() const { return m_visualSamplePerPixel;};
-    double getAudioSamplePerPixel() const { return m_audioSamplePerPixel;};
+    double getVisualSamplePerPixel() const {
+        return m_visualSamplePerPixel;
+    };
+    double getAudioSamplePerPixel() const {
+        return m_audioSamplePerPixel;
+    };
 
-    //those function replace at its best sample position to an admissible
-    //sample position according to the current visual resampling
-    //this make mark and signal deterministic
+    // those function replace at its best sample position to an admissible
+    // sample position according to the current visual resampling
+    // this make mark and signal deterministic
     void regulateVisualSample(int& sampleIndex) const;
 
-    //this "regulate" against visual sampling to make the position in widget
-    //stable and deterministic
+    // this "regulate" against visual sampling to make the position in widget
+    // stable and deterministic
     // Transform sample index to pixel in track.
     inline double transformSampleIndexInRendererWorld(int sampleIndex) const {
-        const double relativePosition = (double)sampleIndex / (double)m_trackSamples;
+        const double relativePosition =
+                (double)sampleIndex / (double)m_trackSamples;
         return transformPositionInRendererWorld(relativePosition);
     }
     // Transform position (percentage of track) to pixel in track.
@@ -62,19 +77,37 @@ class WaveformWidgetRenderer {
         return m_trackPixelCount * (position - m_firstDisplayedPosition);
     }
 
-    double getPlayPos() const { return m_playPos;}
-    double getPlayPosVSample() const { return m_playPosVSample;}
-    double getZoomFactor() const { return m_zoomFactor;}
-    double getRateAdjust() const { return m_rateAdjust;}
-    double getGain() const { return m_gain;}
-    int getTrackSamples() const { return m_trackSamples;}
+    double getPlayPos() const {
+        return m_playPos;
+    }
+    double getPlayPosVSample() const {
+        return m_playPosVSample;
+    }
+    double getZoomFactor() const {
+        return m_zoomFactor;
+    }
+    double getRateAdjust() const {
+        return m_rateAdjust;
+    }
+    double getGain() const {
+        return m_gain;
+    }
+    int getTrackSamples() const {
+        return m_trackSamples;
+    }
 
     void resize(int width, int height);
-    int getHeight() const { return m_height;}
-    int getWidth() const { return m_width;}
-    const WaveformSignalColors* getWaveformSignalColors() const { return &m_colors; };
+    int getHeight() const {
+        return m_height;
+    }
+    int getWidth() const {
+        return m_width;
+    }
+    const WaveformSignalColors* getWaveformSignalColors() const {
+        return &m_colors;
+    };
 
-    template< class T_Renderer>
+    template <class T_Renderer>
     inline T_Renderer* addRenderer() {
         T_Renderer* renderer = new T_Renderer(this);
         m_rendererStack.push_back(renderer);
@@ -100,8 +133,8 @@ class WaveformWidgetRenderer {
     double m_visualSamplePerPixel;
     double m_audioSamplePerPixel;
 
-    //TODO: vRince create some class to manage control/value
-    //ControlConnection
+    // TODO: vRince create some class to manage control/value
+    // ControlConnection
     QSharedPointer<VisualPlayPosition> m_visualPlayPosition;
     double m_playPos;
     int m_playPosVSample;
@@ -125,9 +158,9 @@ class WaveformWidgetRenderer {
     int currentFrame;
 #endif
 
-private:
+  private:
     DISALLOW_COPY_AND_ASSIGN(WaveformWidgetRenderer);
     friend class WaveformWidgetFactory;
 };
 
-#endif // WAVEFORMWIDGETRENDERER_H
+#endif  // WAVEFORMWIDGETRENDERER_H

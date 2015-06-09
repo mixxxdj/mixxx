@@ -10,10 +10,10 @@ class EffectsManager;
 class DlgPrefEffects : public DlgPreferencePage, public Ui::DlgPrefEffectsDlg {
     Q_OBJECT
   public:
-    DlgPrefEffects(QWidget* pParent,
-                   ConfigObject<ConfigValue>* pConfig,
+    DlgPrefEffects(QWidget* pParent, ConfigObject<ConfigValue>* pConfig,
                    EffectsManager* pEffectsManager);
-    virtual ~DlgPrefEffects() {}
+    virtual ~DlgPrefEffects() {
+    }
 
     void slotUpdate();
     void slotApply();

@@ -35,8 +35,7 @@ const double kNoTrigger = -1;
 class EngineControl : public QObject {
     Q_OBJECT
   public:
-    EngineControl(QString group,
-                  ConfigObject<ConfigValue>* _config);
+    EngineControl(QString group, ConfigObject<ConfigValue>* _config);
     virtual ~EngineControl();
 
     // Called by EngineBuffer::process every latency period. See the above
@@ -45,18 +44,14 @@ class EngineControl : public QObject {
     // this call. If the EngineControl would like to request the playback
     // position to be altered, it should return the sample to seek to from this
     // method. Otherwise it should return kNoTrigger.
-    virtual double process(const double dRate,
-                           const double dCurrentSample,
-                           const double dTotalSamples,
-                           const int iBufferSize);
+    virtual double process(const double dRate, const double dCurrentSample,
+                           const double dTotalSamples, const int iBufferSize);
 
-    virtual double nextTrigger(const double dRate,
-                               const double dCurrentSample,
+    virtual double nextTrigger(const double dRate, const double dCurrentSample,
                                const double dTotalSamples,
                                const int iBufferSize);
 
-    virtual double getTrigger(const double dRate,
-                              const double dCurrentSample,
+    virtual double getTrigger(const double dRate, const double dCurrentSample,
                               const double dTotalSamples,
                               const int iBufferSize);
 
@@ -67,7 +62,8 @@ class EngineControl : public QObject {
 
     virtual void setEngineMaster(EngineMaster* pEngineMaster);
     void setEngineBuffer(EngineBuffer* pEngineBuffer);
-    virtual void setCurrentSample(const double dCurrentSample, const double dTotalSamples);
+    virtual void setCurrentSample(const double dCurrentSample,
+                                  const double dTotalSamples);
     double getCurrentSample() const;
     double getTotalSamples() const;
     bool atEndPosition() const;

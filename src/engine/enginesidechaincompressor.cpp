@@ -42,7 +42,8 @@ void EngineSideChainCompressor::clearKeys() {
     m_bAboveThreshold = false;
 }
 
-void EngineSideChainCompressor::processKey(const CSAMPLE* pIn, const int iBufferSize) {
+void EngineSideChainCompressor::processKey(const CSAMPLE* pIn,
+                                           const int iBufferSize) {
     for (int i = 0; i + 1 < iBufferSize; i += 2) {
         CSAMPLE val = (pIn[i] + pIn[i + 1]) / 2;
         if (val > m_threshold) {
@@ -61,7 +62,8 @@ double EngineSideChainCompressor::calculateCompressedGain(int frames) {
                 m_compressRatio = m_strength;
             }
         } else if (m_compressRatio > m_strength) {
-            // If the strength param was changed, we might be compressing too much.
+            // If the strength param was changed, we might be compressing too
+            // much.
             m_compressRatio -= m_decayPerFrame * frames;
         }
     } else {

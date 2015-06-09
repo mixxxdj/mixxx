@@ -31,7 +31,7 @@
 #include "control/controlvalue.h"
 #include "cachingreader.h"
 
-//for the writer
+// for the writer
 #ifdef __SCALER_DEBUG__
 #include <QFile>
 #include <QTextStream>
@@ -77,9 +77,9 @@ const int audioBeatMarkLen = 40;
 const int kiTempLength = 200000;
 
 // Rate at which the playpos slider is updated
-const int kiPlaypositionUpdateRate = 10; // updates per second
+const int kiPlaypositionUpdateRate = 10;  // updates per second
 // Number of kiUpdateRates that go by before we update BPM.
-const int kiBpmUpdateCnt = 4; // about 2.5 updates per sec
+const int kiBpmUpdateCnt = 4;  // about 2.5 updates per sec
 
 // End of track mode constants
 const int TRACK_END_MODE_STOP = 0;
@@ -91,10 +91,10 @@ const int ENGINE_RAMP_DOWN = -1;
 const int ENGINE_RAMP_NONE = 0;
 const int ENGINE_RAMP_UP = 1;
 
-//const int kiRampLength = 3;
+// const int kiRampLength = 3;
 
 class EngineBuffer : public EngineObject {
-     Q_OBJECT
+    Q_OBJECT
   private:
     enum SyncRequestQueued {
         SYNC_REQUEST_NONE,
@@ -102,13 +102,9 @@ class EngineBuffer : public EngineObject {
         SYNC_REQUEST_DISABLE,
         SYNC_REQUEST_ENABLEDISABLE,
     };
+
   public:
-    enum SeekRequest {
-        NO_SEEK,
-        SEEK_STANDARD,
-        SEEK_EXACT,
-        SEEK_PHASE
-    };
+    enum SeekRequest { NO_SEEK, SEEK_STANDARD, SEEK_EXACT, SEEK_PHASE };
 
     enum KeylockEngine {
         SOUNDTOUCH,
@@ -126,7 +122,8 @@ class EngineBuffer : public EngineObject {
     double getSpeed();
     // Returns current bpm value (not thread-safe)
     double getBpm();
-    // Returns the BPM of the loaded track around the current position (not thread-safe)
+    // Returns the BPM of the loaded track around the current position (not
+    // thread-safe)
     double getLocalBpm();
     // Sets pointer to other engine buffer/channel
     void setEngineMaster(EngineMaster*);
@@ -151,7 +148,7 @@ class EngineBuffer : public EngineObject {
     void collectFeatures(GroupFeatureState* pGroupFeatures) const;
 
     // For dependency injection of readers.
-    //void setReader(CachingReader* pReader);
+    // void setReader(CachingReader* pReader);
 
     // For dependency injection of scalers.
     void setScalerForTest(EngineBufferScale* pScaleVinyl,
@@ -162,12 +159,12 @@ class EngineBuffer : public EngineObject {
 
     static QString getKeylockEngineName(KeylockEngine engine) {
         switch (engine) {
-        case SOUNDTOUCH:
-            return tr("Soundtouch (faster)");
-        case RUBBERBAND:
-            return tr("Rubberband (better)");
-        default:
-            return tr("Unknown (bad value)");
+            case SOUNDTOUCH:
+                return tr("Soundtouch (faster)");
+            case RUBBERBAND:
+                return tr("Rubberband (better)");
+            default:
+                return tr("Unknown (bad value)");
         }
     }
 
@@ -198,10 +195,8 @@ class EngineBuffer : public EngineObject {
 
   private slots:
     void slotTrackLoading();
-    void slotTrackLoaded(TrackPointer pTrack,
-                         int iSampleRate, int iNumSamples);
-    void slotTrackLoadFailed(TrackPointer pTrack,
-                             QString reason);
+    void slotTrackLoaded(TrackPointer pTrack, int iSampleRate, int iNumSamples);
+    void slotTrackLoadFailed(TrackPointer pTrack, QString reason);
     // Fired when passthrough mode is enabled or disabled.
     void slotPassthroughChanged(double v);
 
@@ -300,7 +295,8 @@ class EngineBuffer : public EngineObject {
     // Copy of file sample rate
     int m_trackSampleRateOld;
 
-    // Mutex controlling weather the process function is in pause mode. This happens
+    // Mutex controlling weather the process function is in pause mode. This
+    // happens
     // during seek and loading of a new track
     QMutex m_pause;
     // Used in update of playpos slider
@@ -311,7 +307,8 @@ class EngineBuffer : public EngineObject {
     double m_dSlipPosition;
     // Saved value of rate for slip mode
     double m_dSlipRate;
-    // m_slipEnabled is a boolean accessed from multiple threads, so we use an atomic int.
+    // m_slipEnabled is a boolean accessed from multiple threads, so we use an
+    // atomic int.
     QAtomicInt m_slipEnabled;
     // m_bSlipEnabledProcessing is only used by the engine processing thread.
     bool m_bSlipEnabledProcessing;
@@ -376,7 +373,8 @@ class EngineBuffer : public EngineObject {
     QAtomicInt m_iSyncModeQueued;
     ControlValueAtomic<double> m_queuedPosition;
 
-    // Holds the last sample value of the previous buffer. This is used when ramping to
+    // Holds the last sample value of the previous buffer. This is used when
+    // ramping to
     // zero in case of an immediate stop of the playback
     float m_fLastSampleValue[2];
     // Is true if the previous buffer was silent due to pausing

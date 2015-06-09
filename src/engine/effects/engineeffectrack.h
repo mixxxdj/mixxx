@@ -14,14 +14,11 @@ class EngineEffectRack : public EffectsRequestHandler {
     EngineEffectRack(int iRackNumber);
     virtual ~EngineEffectRack();
 
-    bool processEffectsRequest(
-        const EffectsRequest& message,
-        EffectsResponsePipe* pResponsePipe);
+    bool processEffectsRequest(const EffectsRequest& message,
+                               EffectsResponsePipe* pResponsePipe);
 
-    void process(const ChannelHandle& handle,
-                 CSAMPLE* pInOut,
-                 const unsigned int numSamples,
-                 const unsigned int sampleRate,
+    void process(const ChannelHandle& handle, CSAMPLE* pInOut,
+                 const unsigned int numSamples, const unsigned int sampleRate,
                  const GroupFeatureState& groupFeatures);
 
     int number() const {

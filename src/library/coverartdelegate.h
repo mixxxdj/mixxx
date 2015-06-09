@@ -15,9 +15,8 @@ class CoverArtDelegate : public QStyledItemDelegate {
     explicit CoverArtDelegate(QObject* parent = NULL);
     virtual ~CoverArtDelegate();
 
-    void paint(QPainter *painter,
-               const QStyleOptionViewItem &option,
-               const QModelIndex &index) const;
+    void paint(QPainter* painter, const QStyleOptionViewItem& option,
+               const QModelIndex& index) const;
 
   signals:
     void coverReadyForCell(int row, int column);
@@ -35,10 +34,8 @@ class CoverArtDelegate : public QStyledItemDelegate {
     // which could bring performance issues.
     void slotOnlyCachedCoverArt(bool b);
 
-    void slotCoverFound(const QObject* pRequestor,
-                        int requestReference,
-                        const CoverInfo& info,
-                        QPixmap pixmap, bool fromCache);
+    void slotCoverFound(const QObject* pRequestor, int requestReference,
+                        const CoverInfo& info, QPixmap pixmap, bool fromCache);
 
   private:
     bool m_bOnlyCachedCover;
@@ -53,7 +50,7 @@ class CoverArtDelegate : public QStyledItemDelegate {
     // We need to record rows in paint() (which is const) so these are marked
     // mutable.
     mutable QList<int> m_cacheMissRows;
-    mutable QHash<quint16, QLinkedList<int> > m_hashToRow;
+    mutable QHash<quint16, QLinkedList<int>> m_hashToRow;
 };
 
-#endif // COVERARTDELEGATE_H
+#endif  // COVERARTDELEGATE_H

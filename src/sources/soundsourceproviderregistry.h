@@ -10,7 +10,7 @@ namespace Mixxx {
 
 // Registry for SoundSourceProviders
 class SoundSourceProviderRegistry {
-public:
+  public:
     SoundSourceProviderPointer registerProvider(
             const SoundSourceProviderPointer& pProvider);
     SoundSourceProviderPointer registerPluginLibrary(
@@ -40,7 +40,7 @@ public:
         return m_supportedFileNameRegex;
     }
 
-private:
+  private:
     struct Entry {
         SoundSourceProviderPointer pProvider;
         SoundSourcePluginLibraryPointer pPluginLibrary;
@@ -54,6 +54,6 @@ private:
     QRegExp m_supportedFileNameRegex;
 };
 
-} // namespace Mixxx
+}  // namespace Mixxx
 
-#endif // MIXXX_SOUNDSOURCEPROVIDERREGISTRY_H
+#endif  // MIXXX_SOUNDSOURCEPROVIDERREGISTRY_H

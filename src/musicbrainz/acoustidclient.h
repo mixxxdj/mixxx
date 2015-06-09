@@ -6,7 +6,7 @@
  *  as published by Sam Hocevar.                                             *
  *  See http://www.wtfpl.net/ for more details.                              *
  *****************************************************************************/
-    
+
 #ifndef ACOUSTIDCLIENT_H
 #define ACOUSTIDCLIENT_H
 
@@ -20,11 +20,12 @@
 class QXmlStreamReader;
 
 class AcoustidClient : public QObject {
-  Q_OBJECT
+    Q_OBJECT
 
     // Gets a MBID from a Chromaprint fingerprint.
     // A fingerprint identifies one particular encoding of a song and is created
-    // by Fingerprinter.  An MBID identifies the actual song and can be passed to
+    // by Fingerprinter.  An MBID identifies the actual song and can be passed
+    // to
     // Musicbrainz to get metadata.
     // You can create one AcoustidClient and make multiple requests using it.
     // IDs are provided by the caller when a request is started and included in
@@ -65,4 +66,4 @@ class AcoustidClient : public QObject {
     QMap<QNetworkReply*, int> m_requests;
 };
 
-#endif // ACOUSTIDCLIENT_H
+#endif  // ACOUSTIDCLIENT_H

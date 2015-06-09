@@ -16,12 +16,13 @@ AnalyserGain::AnalyserGain(ConfigObject<ConfigValue> *_config) {
 }
 
 AnalyserGain::~AnalyserGain() {
-    delete [] m_pLeftTempBuffer;
-    delete [] m_pRightTempBuffer;
+    delete[] m_pLeftTempBuffer;
+    delete[] m_pRightTempBuffer;
     delete m_pReplayGain;
 }
 
-bool AnalyserGain::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
+bool AnalyserGain::initialise(TrackPointer tio, int sampleRate,
+                              int totalSamples) {
     if (loadStored(tio) || totalSamples == 0) {
         return false;
     }
@@ -30,7 +31,11 @@ bool AnalyserGain::initialise(TrackPointer tio, int sampleRate, int totalSamples
 }
 
 bool AnalyserGain::loadStored(TrackPointer tio) const {
-    bool bAnalyserEnabled = (bool)m_pConfigReplayGain->getValueString(ConfigKey("[ReplayGain]","ReplayGainAnalyserEnabled")).toInt();
+    bool bAnalyserEnabled =
+            (bool)m_pConfigReplayGain
+                    ->getValueString(ConfigKey("[ReplayGain]",
+                                               "ReplayGainAnalyserEnabled"))
+                    .toInt();
     float fReplayGain = tio->getReplayGain();
     if (fReplayGain != 0 || !bAnalyserEnabled) {
         return true;
@@ -44,29 +49,33 @@ void AnalyserGain::cleanup(TrackPointer tio) {
 }
 
 void AnalyserGain::process(const CSAMPLE *pIn, const int iLen) {
-    if(!m_bStepControl)
+    if (!m_bStepControl)
         return;
 
     int halfLength = static_cast<int>(iLen / 2);
     if (halfLength > m_iBufferSize) {
-        delete [] m_pLeftTempBuffer;
-        delete [] m_pRightTempBuffer;
+        delete[] m_pLeftTempBuffer;
+        delete[] m_pRightTempBuffer;
         m_pLeftTempBuffer = new CSAMPLE[halfLength];
         m_pRightTempBuffer = new CSAMPLE[halfLength];
     }
-    SampleUtil::deinterleaveBuffer(m_pLeftTempBuffer, m_pRightTempBuffer, pIn, halfLength);
+    SampleUtil::deinterleaveBuffer(m_pLeftTempBuffer, m_pRightTempBuffer, pIn,
+                                   halfLength);
     SampleUtil::applyGain(m_pLeftTempBuffer, 32767, halfLength);
     SampleUtil::applyGain(m_pRightTempBuffer, 32767, halfLength);
-    m_bStepControl = m_pReplayGain->process(m_pLeftTempBuffer, m_pRightTempBuffer, halfLength);
+    m_bStepControl = m_pReplayGain->process(m_pLeftTempBuffer,
+                                            m_pRightTempBuffer, halfLength);
 }
 
 void AnalyserGain::finalise(TrackPointer tio) {
-    //TODO: We are going to store values as relative peaks so that "0" means that no replaygain has been evaluated.
+    // TODO: We are going to store values as relative peaks so that "0" means
+    // that no replaygain has been evaluated.
     // This means that we are going to transform from dB to peaks and viceversa.
     // One may think to digg into replay_gain code and modify it so that
     // it directly sends results as relative peaks.
-    // In that way there is no need to spend resources in calculating log10 or pow.
-    if(!m_bStepControl)
+    // In that way there is no need to spend resources in calculating log10 or
+    // pow.
+    if (!m_bStepControl)
         return;
 
     float ReplayGainOutput = m_pReplayGain->end();
@@ -78,9 +87,13 @@ void AnalyserGain::finalise(TrackPointer tio) {
 
     float fReplayGain_Result = db2ratio(ReplayGainOutput);
 
-    //qDebug() << "ReplayGain result is" << ReplayGainOutput << "pow:" << fReplayGain_Result;
-    //qDebug()<<"ReplayGain outputs "<< ReplayGainOutput << "db for track "<< tio->getFilename();
+    // qDebug() << "ReplayGain result is" << ReplayGainOutput << "pow:" <<
+    // fReplayGain_Result;
+    // qDebug()<<"ReplayGain outputs "<< ReplayGainOutput << "db for track "<<
+    // tio->getFilename();
     tio->setReplayGain(fReplayGain_Result);
-    //if(fReplayGain_Result) qDebug() << "ReplayGain Analyser found a ReplayGain value of "<< 20*log10(fReplayGain_Result) << "dB for track " << (tio->getFilename());
-    m_bStepControl=false;
+    // if(fReplayGain_Result) qDebug() << "ReplayGain Analyser found a
+    // ReplayGain value of "<< 20*log10(fReplayGain_Result) << "dB for track "
+    // << (tio->getFilename());
+    m_bStepControl = false;
 }

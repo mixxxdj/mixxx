@@ -13,7 +13,8 @@ class SuperLinkTest : public BaseEffectTest {
   protected:
     SuperLinkTest()
             : m_master(m_factory.getOrCreateHandle("[Master]"), "[Master]"),
-              m_headphone(m_factory.getOrCreateHandle("[Headphone]"), "[Headphone]") {
+              m_headphone(m_factory.getOrCreateHandle("[Headphone]"),
+                          "[Headphone]") {
         m_pEffectsManager->registerChannel(m_master);
         m_pEffectsManager->registerChannel(m_headphone);
         registerTestBackend();
@@ -24,7 +25,8 @@ class SuperLinkTest : public BaseEffectTest {
         int iChainNumber = 0;
         int iEffectNumber = 0;
 
-        StandardEffectRackPointer pRack = m_pEffectsManager->addStandardEffectRack();
+        StandardEffectRackPointer pRack =
+                m_pEffectsManager->addStandardEffectRack();
         EffectChainSlotPointer pChainSlot = pRack->addEffectChainSlot();
         // StandardEffectRack::addEffectChainSlot automatically adds 4 effect
         // slots. In the future we will probably remove this so this will just
@@ -32,7 +34,7 @@ class SuperLinkTest : public BaseEffectTest {
         m_pEffectSlot = pChainSlot->getEffectSlot(0);
 
         QString group = StandardEffectRack::formatEffectSlotGroupString(
-            iRackNumber, iChainNumber, iEffectNumber);
+                iRackNumber, iChainNumber, iEffectNumber);
 
         EffectManifest manifest;
         manifest.setId("org.mixxx.test.effect");
@@ -53,7 +55,8 @@ class SuperLinkTest : public BaseEffectTest {
         registerTestEffect(manifest, false);
 
         // Check the controls reflect the state of their loaded effect.
-        EffectPointer pEffect = m_pEffectsManager->instantiateEffect(manifest.id());
+        EffectPointer pEffect =
+                m_pEffectsManager->instantiateEffect(manifest.id());
 
         m_pEffectSlot->loadEffect(pEffect);
 
@@ -61,11 +64,11 @@ class SuperLinkTest : public BaseEffectTest {
 
         m_pControlValue.reset(new ControlObjectThread(group, itemPrefix));
 
-        m_pControlLinkType.reset(new ControlObjectThread(group,
-                itemPrefix + QString("_link_type")));
+        m_pControlLinkType.reset(new ControlObjectThread(
+                group, itemPrefix + QString("_link_type")));
 
-        m_pControlLinkInverse.reset(new ControlObjectThread(group,
-                itemPrefix + QString("_link_inverse")));
+        m_pControlLinkInverse.reset(new ControlObjectThread(
+                group, itemPrefix + QString("_link_inverse")));
     }
 
     ChannelHandleFactory m_factory;
@@ -124,8 +127,7 @@ TEST_F(SuperLinkTest, HalfLinkTakeover) {
 
     // We have to recreate the effect because we want a neutral point at
     // 0 or 1.
-    QString group = StandardEffectRack::formatEffectSlotGroupString(
-        0, 0, 0);
+    QString group = StandardEffectRack::formatEffectSlotGroupString(0, 0, 0);
     EffectManifest manifest;
     manifest.setId("org.mixxx.test.effect2");
     manifest.setName("Test Effect2");
@@ -146,10 +148,10 @@ TEST_F(SuperLinkTest, HalfLinkTakeover) {
     m_pEffectSlot->loadEffect(pEffect);
     QString itemPrefix = EffectParameterSlot::formatItemPrefix(0);
     m_pControlValue.reset(new ControlObjectThread(group, itemPrefix));
-    m_pControlLinkType.reset(new ControlObjectThread(group,
-            itemPrefix + QString("_link_type")));
-    m_pControlLinkInverse.reset(new ControlObjectThread(group,
-            itemPrefix + QString("_link_inverse")));
+    m_pControlLinkType.reset(
+            new ControlObjectThread(group, itemPrefix + QString("_link_type")));
+    m_pControlLinkInverse.reset(new ControlObjectThread(
+            group, itemPrefix + QString("_link_inverse")));
 
     // OK now the actual test.
     // 1.5 is a bit of a magic number, but it's enough that a regular

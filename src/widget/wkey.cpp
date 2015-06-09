@@ -8,10 +8,10 @@ WKey::WKey(const char* group, QWidget* pParent)
           m_preferencesUpdated(ConfigKey("[Preferences]", "updated")),
           m_engineKeyDistance(ConfigKey(group, "visual_key_distance")) {
     setValue(m_dOldValue);
-    connect(&m_preferencesUpdated, SIGNAL(valueChanged(double)),
-            this, SLOT(preferencesUpdated(double)));
-    connect(&m_engineKeyDistance, SIGNAL(valueChanged(double)),
-            this, SLOT(setCents()));
+    connect(&m_preferencesUpdated, SIGNAL(valueChanged(double)), this,
+            SLOT(preferencesUpdated(double)));
+    connect(&m_engineKeyDistance, SIGNAL(valueChanged(double)), this,
+            SLOT(setCents()));
 }
 
 WKey::~WKey() {
@@ -45,7 +45,8 @@ void WKey::setValue(double dValue) {
             } else if (diff_cents > 0) {
                 sign = '+';
             }
-            keyStr.append(QString(" %1%2c").arg(sign).arg(qAbs(cents_to_display)));
+            keyStr.append(
+                    QString(" %1%2c").arg(sign).arg(qAbs(cents_to_display)));
         }
         setText(keyStr);
     } else {

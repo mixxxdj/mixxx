@@ -34,14 +34,17 @@ WLabel::~WLabel() {
 
 void WLabel::setup(QDomNode node, const SkinContext& context) {
     // Colors
-    QPalette pal = palette(); //we have to copy out the palette to edit it since it's const (probably for threadsafety)
+    QPalette pal = palette();  // we have to copy out the palette to edit it
+                               // since it's const (probably for threadsafety)
     if (context.hasNode(node, "BgColor")) {
         m_qBgColor.setNamedColor(context.selectString(node, "BgColor"));
-        pal.setColor(this->backgroundRole(), WSkinColor::getCorrectColor(m_qBgColor));
+        pal.setColor(this->backgroundRole(),
+                     WSkinColor::getCorrectColor(m_qBgColor));
         setAutoFillBackground(true);
     }
     m_qFgColor.setNamedColor(context.selectString(node, "FgColor"));
-    pal.setColor(this->foregroundRole(), WSkinColor::getCorrectColor(m_qFgColor));
+    pal.setColor(this->foregroundRole(),
+                 WSkinColor::getCorrectColor(m_qFgColor));
     setPalette(pal);
 
     // Text
@@ -53,14 +56,15 @@ void WLabel::setup(QDomNode node, const SkinContext& context) {
     QString strFontSize;
     if (context.hasNodeSelectString(node, "FontSize", &strFontSize)) {
         int fontsize = strFontSize.toInt();
-        // TODO(XXX) "Helvetica" should retrain the Qt default font matching, verify that.
+        // TODO(XXX) "Helvetica" should retrain the Qt default font matching,
+        // verify that.
         setFont(QFont("Helvetica", fontsize, QFont::Normal));
     }
 
     // Alignment
     QString alignment;
     if (context.hasNodeSelectString(node, "Alignment", &alignment)) {
-    	alignment = alignment.toLower();
+        alignment = alignment.toLower();
         if (alignment == "right") {
             setAlignment(Qt::AlignRight | Qt::AlignVCenter);
         } else if (alignment == "center") {
@@ -68,15 +72,15 @@ void WLabel::setup(QDomNode node, const SkinContext& context) {
         } else if (alignment == "left") {
             setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
         } else {
-            qDebug() << "WLabel::setup(): Alignment =" << alignment <<
-                    " unknown, use right, center or left";
+            qDebug() << "WLabel::setup(): Alignment =" << alignment
+                     << " unknown, use right, center or left";
         }
     }
 
     // Adds an ellipsis to turncated text
     QString elide;
     if (context.hasNodeSelectString(node, "Elide", &elide)) {
-    	elide = elide.toLower();
+        elide = elide.toLower();
         if (elide == "right") {
             m_elideMode = Qt::ElideRight;
         } else if (elide == "middle") {
@@ -86,8 +90,8 @@ void WLabel::setup(QDomNode node, const SkinContext& context) {
         } else if (elide == "none") {
             m_elideMode = Qt::ElideNone;
         } else {
-            qDebug() << "WLabel::setup(): Alide =" << elide <<
-                    "unknown, use right, middle, left or none.";
+            qDebug() << "WLabel::setup(): Alide =" << elide
+                     << "unknown, use right, middle, left or none.";
         }
     }
 }
@@ -105,7 +109,8 @@ void WLabel::setText(const QString& text) {
         // (Tested on Ubuntu Trusty)
         // TODO(lp#:1434865): Fix elide width calculation for cases where
         // this text is next to an expanding widget.
-        QString elidedText = metrics.elidedText(m_longText, m_elideMode, width() - 2);
+        QString elidedText =
+                metrics.elidedText(m_longText, m_elideMode, width() - 2);
         QLabel::setText(elidedText);
     } else {
         QLabel::setText(m_longText);

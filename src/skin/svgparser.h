@@ -7,7 +7,6 @@
 
 #include "skin/skincontext.h"
 
-
 // A class for managing the svg files
 class SvgParser {
   public:

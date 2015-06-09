@@ -15,16 +15,16 @@ QString MidiUtils::opCodeToTranslatedString(MidiOpCode code) {
         case MIDI_PITCH_BEND:
             return QObject::tr("Pitch Bend");
         default:
-            return QObject::tr("Unknown (0x%1)").arg(
-                code, 2, 16, QLatin1Char('0'));
+            return QObject::tr("Unknown (0x%1)")
+                    .arg(code, 2, 16, QLatin1Char('0'));
     }
 }
 
 // static
 QString MidiUtils::formatByteAsHex(unsigned char value) {
     // Construct a hex string formatted like 0xFF.
-    return QString("0x%1").arg(QString::number(value, 16)
-                               .toUpper().rightJustified(2,'0'));
+    return QString("0x%1")
+            .arg(QString::number(value, 16).toUpper().rightJustified(2, '0'));
 }
 
 // static

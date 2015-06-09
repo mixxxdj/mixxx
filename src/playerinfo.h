@@ -45,18 +45,18 @@ class PlayerInfo : public QObject {
 
   private:
     class DeckControls {
-        public:
-            DeckControls(QString& group)
-                    : m_play(group, "play"),
-                      m_pregain(group, "pregain"),
-                      m_volume(group, "volume"),
-                      m_orientation(group, "orientation") {
-            }
+      public:
+        DeckControls(QString& group)
+                : m_play(group, "play"),
+                  m_pregain(group, "pregain"),
+                  m_volume(group, "volume"),
+                  m_orientation(group, "orientation") {
+        }
 
-            ControlObjectThread m_play;
-            ControlObjectThread m_pregain;
-            ControlObjectThread m_volume;
-            ControlObjectThread m_orientation;
+        ControlObjectThread m_play;
+        ControlObjectThread m_pregain;
+        ControlObjectThread m_volume;
+        ControlObjectThread m_orientation;
     };
 
     void clearControlCache();

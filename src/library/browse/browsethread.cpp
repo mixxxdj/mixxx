@@ -13,7 +13,6 @@
 #include "util/time.h"
 #include "util/trace.h"
 
-
 QWeakPointer<BrowseThread> BrowseThread::m_weakInstanceRef;
 static QMutex s_Mutex;
 
@@ -28,22 +27,20 @@ static QMutex s_Mutex;
  * signals to BrowseModel objects. It does not
  * make sense to use this class in non-GUI threads
  */
-BrowseThread::BrowseThread(QObject *parent)
-        : QThread(parent) {
+BrowseThread::BrowseThread(QObject* parent) : QThread(parent) {
     m_bStopThread = false;
     m_model_observer = NULL;
-    //start Thread
+    // start Thread
     start(QThread::LowPriority);
-
 }
 
 BrowseThread::~BrowseThread() {
     qDebug() << "Wait to finish browser background thread";
     m_bStopThread = true;
-    //wake up thread since it might wait for user input
+    // wake up thread since it might wait for user input
     m_locationUpdated.wakeAll();
-    //Wait until thread terminated
-    //terminate();
+    // Wait until thread terminated
+    // terminate();
     wait();
     qDebug() << "Browser background thread terminated!";
 }
@@ -63,7 +60,8 @@ BrowseThreadPointer BrowseThread::getInstanceRef() {
     return strong;
 }
 
-void BrowseThread::executePopulation(const MDir& path, BrowseTableModel* client) {
+void BrowseThread::executePopulation(const MDir& path,
+                                     BrowseTableModel* client) {
     m_path_mutex.lock();
     m_path = path;
     m_model_observer = client;
@@ -76,12 +74,12 @@ void BrowseThread::run() {
     m_mutex.lock();
 
     while (!m_bStopThread) {
-        //Wait until the user has selected a folder
+        // Wait until the user has selected a folder
         m_locationUpdated.wait(&m_mutex);
         Trace trace("BrowseThread");
 
-        //Terminate thread if Mixxx closes
-        if(m_bStopThread) {
+        // Terminate thread if Mixxx closes
+        if (m_bStopThread) {
             break;
         }
         // Populate the model
@@ -92,25 +90,22 @@ void BrowseThread::run() {
 
 namespace {
 
-class YearItem: public QStandardItem {
-public:
-    explicit YearItem(QString year):
-        QStandardItem(year) {
+class YearItem : public QStandardItem {
+  public:
+    explicit YearItem(QString year) : QStandardItem(year) {
     }
 
     QVariant data(int role) const {
         switch (role) {
-        case Qt::DisplayRole:
-        {
-            const QString year(QStandardItem::data(role).toString());
-            return Mixxx::TrackMetadata::formatCalendarYear(year);
-        }
-        default:
-            return QStandardItem::data(role);
+            case Qt::DisplayRole: {
+                const QString year(QStandardItem::data(role).toString());
+                return Mixxx::TrackMetadata::formatCalendarYear(year);
+            }
+            default:
+                return QStandardItem::data(role);
         }
     }
 };
-
 }
 
 void BrowseThread::populateModel() {
@@ -130,7 +125,7 @@ void BrowseThread::populateModel() {
     // see signal/slot connection in BrowseTableModel
     emit(clearModel(thisModelObserver));
 
-    QList< QList<QStandardItem*> > rows;
+    QList<QList<QStandardItem*>> rows;
 
     int row = 0;
     // Iterate over the files
@@ -188,7 +183,8 @@ void BrowseThread::populateModel() {
         item = new YearItem(year);
         item->setToolTip(year);
         // The year column is sorted according to the numeric calendar year
-        item->setData(Mixxx::TrackMetadata::parseCalendarYear(year), Qt::UserRole);
+        item->setData(Mixxx::TrackMetadata::parseCalendarYear(year),
+                      Qt::UserRole);
         row_data.insert(COLUMN_YEAR, item);
 
         item = new QStandardItem(tio.getGenre());
@@ -211,8 +207,8 @@ void BrowseThread::populateModel() {
         item->setData(item->text(), Qt::UserRole);
         row_data.insert(COLUMN_COMMENT, item);
 
-        QString duration = Time::formatSeconds(qVariantValue<int>(
-                tio.getDuration()), false);
+        QString duration = Time::formatSeconds(
+                qVariantValue<int>(tio.getDuration()), false);
         item = new QStandardItem(duration);
         item->setToolTip(item->text());
         item->setData(item->text(), Qt::UserRole);
@@ -244,13 +240,15 @@ void BrowseThread::populateModel() {
         row_data.insert(COLUMN_LOCATION, item);
 
         QDateTime modifiedTime = tio.getFileModifiedTime().toLocalTime();
-        item = new QStandardItem(modifiedTime.toString(Qt::DefaultLocaleShortDate));
+        item = new QStandardItem(
+                modifiedTime.toString(Qt::DefaultLocaleShortDate));
         item->setToolTip(item->text());
         item->setData(modifiedTime, Qt::UserRole);
         row_data.insert(COLUMN_FILE_MODIFIED_TIME, item);
 
         QDateTime creationTime = tio.getFileCreationTime().toLocalTime();
-        item = new QStandardItem(creationTime.toString(Qt::DefaultLocaleShortDate));
+        item = new QStandardItem(
+                creationTime.toString(Qt::DefaultLocaleShortDate));
         item->setToolTip(item->text());
         item->setData(creationTime, Qt::UserRole);
         row_data.insert(COLUMN_FILE_CREATION_TIME, item);

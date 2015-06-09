@@ -17,9 +17,9 @@ EffectManifest PhaserEffect::getManifest() {
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
-                "A more complex sound effect obtained by mixing the input signal" 
-                "with a copy passed through a series of all-pass filters."));
-    
+            "A more complex sound effect obtained by mixing the input signal"
+            "with a copy passed through a series of all-pass filters."));
+
     EffectManifestParameter* stereo = manifest.addParameter();
     stereo->setId("stereo");
     stereo->setName(QObject::tr("Stereo"));
@@ -45,7 +45,8 @@ EffectManifest PhaserEffect::getManifest() {
     EffectManifestParameter* frequency = manifest.addParameter();
     frequency->setId("lfo_frequency");
     frequency->setName(QObject::tr("Rate"));
-    frequency->setDescription("Controls the speed of the low frequency oscilator.");   
+    frequency->setDescription(
+            "Controls the speed of the low frequency oscilator.");
     frequency->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     frequency->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     frequency->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
@@ -78,7 +79,8 @@ EffectManifest PhaserEffect::getManifest() {
     EffectManifestParameter* range = manifest.addParameter();
     range->setId("range");
     range->setName(QObject::tr("Range"));
-    range->setDescription("Controls the frequency range across which the notches sweep.");
+    range->setDescription(
+            "Controls the frequency range across which the notches sweep.");
     range->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     range->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     range->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
@@ -90,7 +92,7 @@ EffectManifest PhaserEffect::getManifest() {
 }
 
 PhaserEffect::PhaserEffect(EngineEffect* pEffect,
-                           const EffectManifest& manifest) 
+                           const EffectManifest& manifest)
         : m_pStagesParameter(pEffect->getParameterById("stages")),
           m_pLFOFrequencyParameter(pEffect->getParameterById("lfo_frequency")),
           m_pDepthParameter(pEffect->getParameterById("depth")),
@@ -101,17 +103,15 @@ PhaserEffect::PhaserEffect(EngineEffect* pEffect,
 }
 
 PhaserEffect::~PhaserEffect() {
-    //qDebug() << debugString() << "destroyed";
+    // qDebug() << debugString() << "destroyed";
 }
 
-void PhaserEffect::processChannel(const ChannelHandle& handle,
-                                  PhaserGroupState* pState,
-                                  const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                  const unsigned int numSamples,
-                                  const unsigned int sampleRate,
-                                  const EffectProcessor::EnableState enableState,
-                                  const GroupFeatureState& groupFeatures) {
-
+void PhaserEffect::processChannel(
+        const ChannelHandle& handle, PhaserGroupState* pState,
+        const CSAMPLE* pInput, CSAMPLE* pOutput, const unsigned int numSamples,
+        const unsigned int sampleRate,
+        const EffectProcessor::EnableState enableState,
+        const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
     Q_UNUSED(enableState);
     Q_UNUSED(groupFeatures);
@@ -128,7 +128,7 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
     CSAMPLE* oldInRight = pState->oldInRight;
     CSAMPLE* oldOutRight = pState->oldOutRight;
 
-    // Using two sets of coefficients for left and right channel 
+    // Using two sets of coefficients for left and right channel
     CSAMPLE filterCoefLeft = 0;
     CSAMPLE filterCoefRight = 0;
 
@@ -140,36 +140,40 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
 
     const int kChannels = 2;
     for (unsigned int i = 0; i < numSamples; i += kChannels) {
-        left = pInput[i] + tanh(left * feedback); 
+        left = pInput[i] + tanh(left * feedback);
         right = pInput[i + 1] + tanh(right * feedback);
 
         // For stereo enabled, the channels are out of phase
         pState->leftPhase = fmodf(pState->leftPhase + freqSkip, 2.0 * M_PI);
-        pState->rightPhase = fmodf(pState->rightPhase + freqSkip + M_PI * stereoCheck, 2.0 * M_PI);
+        pState->rightPhase = fmodf(
+                pState->rightPhase + freqSkip + M_PI * stereoCheck, 2.0 * M_PI);
 
         // Updating filter coefficients once every 'updateCoef' samples to avoid
         // extra computing
         if ((counter++) % updateCoef == 0) {
-                CSAMPLE delayLeft = 0.5 + 0.5 * sin(pState->leftPhase);
-                CSAMPLE delayRight = 0.5 + 0.5 * sin(pState->rightPhase);
-                
-                // Coefficient computing based on the following:
-                // https://ccrma.stanford.edu/~jos/pasp/Classic_Virtual_Analog_Phase.html
-                CSAMPLE wLeft = range * delayLeft;
-                CSAMPLE wRight = range * delayRight;
+            CSAMPLE delayLeft = 0.5 + 0.5 * sin(pState->leftPhase);
+            CSAMPLE delayRight = 0.5 + 0.5 * sin(pState->rightPhase);
 
-                CSAMPLE tanwLeft = tanh(wLeft / 2);
-                CSAMPLE tanwRight = tanh(wRight / 2);
+            // Coefficient computing based on the following:
+            // https://ccrma.stanford.edu/~jos/pasp/Classic_Virtual_Analog_Phase.html
+            CSAMPLE wLeft = range * delayLeft;
+            CSAMPLE wRight = range * delayRight;
 
-                filterCoefLeft = (1.0 - tanwLeft) / (1.0 + tanwLeft);
-                filterCoefRight = (1.0 - tanwRight) / (1.0 + tanwRight);
+            CSAMPLE tanwLeft = tanh(wLeft / 2);
+            CSAMPLE tanwRight = tanh(wRight / 2);
+
+            filterCoefLeft = (1.0 - tanwLeft) / (1.0 + tanwLeft);
+            filterCoefRight = (1.0 - tanwRight) / (1.0 + tanwRight);
         }
-       
-        left = processSample(left, oldInLeft, oldOutLeft, filterCoefLeft, stages);
-        right = processSample(right, oldInRight, oldOutRight, filterCoefRight, stages);
+
+        left = processSample(left, oldInLeft, oldOutLeft, filterCoefLeft,
+                             stages);
+        right = processSample(right, oldInRight, oldOutRight, filterCoefRight,
+                              stages);
 
         // Computing output combining the original and processed sample
         pOutput[i] = pInput[i] * (1.0 - 0.5 * depth) + left * depth * 0.5;
-        pOutput[i + 1] = pInput[i + 1] * (1.0 - 0.5 * depth) + right * depth * 0.5;
+        pOutput[i + 1] =
+                pInput[i + 1] * (1.0 - 0.5 * depth) + right * depth * 0.5;
     }
 }

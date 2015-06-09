@@ -18,8 +18,8 @@ ReadAheadManager::ReadAheadManager()
     // For testing only: ReadAheadManagerMock
 }
 
-ReadAheadManager::ReadAheadManager(CachingReader* pReader, 
-                                   LoopingControl* pLoopingControl) 
+ReadAheadManager::ReadAheadManager(CachingReader* pReader,
+                                   LoopingControl* pLoopingControl)
         : m_pLoopingControl(pLoopingControl),
           m_pRateControl(NULL),
           m_iCurrentPosition(0),
@@ -37,26 +37,26 @@ ReadAheadManager::~ReadAheadManager() {
 int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
                                      int requested_samples) {
     if (!even(requested_samples)) {
-        qDebug() << "ERROR: Non-even requested_samples to ReadAheadManager::getNextSamples";
+        qDebug() << "ERROR: Non-even requested_samples to "
+                    "ReadAheadManager::getNextSamples";
         requested_samples--;
     }
     bool in_reverse = dRate < 0;
     int start_sample = m_iCurrentPosition;
-    //qDebug() << "start" << start_sample << requested_samples;
+    // qDebug() << "start" << start_sample << requested_samples;
     int samples_needed = requested_samples;
     CSAMPLE* base_buffer = buffer;
 
     // A loop will only limit the amount we can read in one shot.
 
-    const double loop_trigger = m_pLoopingControl->nextTrigger(
-            dRate, m_iCurrentPosition, 0, 0);
+    const double loop_trigger =
+            m_pLoopingControl->nextTrigger(dRate, m_iCurrentPosition, 0, 0);
     bool loop_active = loop_trigger != kNoTrigger;
     int preloop_samples = 0;
 
     if (loop_active) {
-        int samples_available = in_reverse ?
-                m_iCurrentPosition - loop_trigger :
-                loop_trigger - m_iCurrentPosition;
+        int samples_available = in_reverse ? m_iCurrentPosition - loop_trigger
+                                           : loop_trigger - m_iCurrentPosition;
         if (samples_available < 0) {
             samples_needed = 0;
         } else {
@@ -71,15 +71,17 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
 
     // Sanity checks.
     if (samples_needed < 0) {
-        qDebug() << "Need negative samples in ReadAheadManager::getNextSamples. Ignoring read";
+        qDebug() << "Need negative samples in "
+                    "ReadAheadManager::getNextSamples. Ignoring read";
         return 0;
     }
 
-    int samples_read = m_pReader->read(start_sample, samples_needed,
-                                       base_buffer);
+    int samples_read =
+            m_pReader->read(start_sample, samples_needed, base_buffer);
 
     if (samples_read != samples_needed) {
-        qDebug() << "didn't get what we wanted" << samples_read << samples_needed;
+        qDebug() << "didn't get what we wanted" << samples_read
+                 << samples_needed;
     }
 
     // Increment or decrement current read-ahead position
@@ -95,25 +97,29 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
     if (loop_active) {
         // LoopingControl makes the decision about whether we should loop or
         // not.
-        const double loop_target = m_pLoopingControl->
-                process(dRate, m_iCurrentPosition, 0, 0);
+        const double loop_target =
+                m_pLoopingControl->process(dRate, m_iCurrentPosition, 0, 0);
 
         if (loop_target != kNoTrigger) {
             m_iCurrentPosition = loop_target;
 
-            int loop_read_position = m_iCurrentPosition +
+            int loop_read_position =
+                    m_iCurrentPosition +
                     (in_reverse ? preloop_samples : -preloop_samples);
 
             int looping_samples_read = m_pReader->read(
                     loop_read_position, samples_read, m_pCrossFadeBuffer);
 
             if (looping_samples_read != samples_read) {
-                qDebug() << "ERROR: Couldn't get all needed samples for crossfade.";
+                qDebug() << "ERROR: Couldn't get all needed samples for "
+                            "crossfade.";
             }
 
             // do crossfade from the current buffer into the new loop beginning
-            if (samples_read != 0) { // avoid division by zero
-                SampleUtil::linearCrossfadeBuffers(base_buffer, base_buffer, m_pCrossFadeBuffer, samples_read);
+            if (samples_read != 0) {  // avoid division by zero
+                SampleUtil::linearCrossfadeBuffers(base_buffer, base_buffer,
+                                                   m_pCrossFadeBuffer,
+                                                   samples_read);
             }
         }
     }
@@ -123,7 +129,7 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
         SampleUtil::reverse(base_buffer, samples_read);
     }
 
-    //qDebug() << "read" << m_iCurrentPosition << samples_read;
+    // qDebug() << "read" << m_iCurrentPosition << samples_read;
     return samples_read;
 }
 
@@ -154,9 +160,8 @@ void ReadAheadManager::hintReader(double dRate, HintVector* pHintList) {
     int length_to_cache = 2 * CachingReaderWorker::kSamplesPerChunk;
 
     current_position.length = length_to_cache;
-    current_position.sample = in_reverse ?
-            m_iCurrentPosition - length_to_cache :
-            m_iCurrentPosition;
+    current_position.sample = in_reverse ? m_iCurrentPosition - length_to_cache
+                                         : m_iCurrentPosition;
 
     // If we are trying to cache before the start of the track,
     // Then we don't need to cache because it's all zeros!
@@ -170,8 +175,9 @@ void ReadAheadManager::hintReader(double dRate, HintVector* pHintList) {
 }
 
 // Not thread-save, call from engine thread only
-void ReadAheadManager::addReadLogEntry(double virtualPlaypositionStart,
-                                       double virtualPlaypositionEndNonInclusive) {
+void ReadAheadManager::addReadLogEntry(
+        double virtualPlaypositionStart,
+        double virtualPlaypositionEndNonInclusive) {
     ReadLogEntry newEntry(virtualPlaypositionStart,
                           virtualPlaypositionEndNonInclusive);
     if (m_readAheadLog.size() > 0) {
@@ -184,15 +190,16 @@ void ReadAheadManager::addReadLogEntry(double virtualPlaypositionStart,
 }
 
 // Not thread-save, call from engine thread only
-int ReadAheadManager::getEffectiveVirtualPlaypositionFromLog(double currentVirtualPlayposition,
-                                                             double numConsumedSamples) {
+int ReadAheadManager::getEffectiveVirtualPlaypositionFromLog(
+        double currentVirtualPlayposition, double numConsumedSamples) {
     if (numConsumedSamples == 0) {
         return currentVirtualPlayposition;
     }
 
     if (m_readAheadLog.size() == 0) {
         // No log entries to read from.
-        qDebug() << this << "No read ahead log entries to read from. Case not currently handled.";
+        qDebug() << this << "No read ahead log entries to read from. Case not "
+                            "currently handled.";
         // TODO(rryan) log through a stats pipe eventually
         return currentVirtualPlayposition;
     }

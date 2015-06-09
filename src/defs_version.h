@@ -14,10 +14,12 @@
  *                                                                         *
  ***************************************************************************/
 
-// Doing this in its own file avoids needlessly rebuilding everything when just the version number changes
+// Doing this in its own file avoids needlessly rebuilding everything when just
+// the version number changes
 
-// We define the version to be the branch name in Sconscript.env, unless it's a release branch
+// We define the version to be the branch name in Sconscript.env, unless it's a
+// release branch
 #ifndef VERSION
-    // In that case, this value is used
-    #define VERSION "2.1-alpha-pre"
+// In that case, this value is used
+#define VERSION "2.1-alpha-pre"
 #endif

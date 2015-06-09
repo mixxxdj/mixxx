@@ -12,12 +12,11 @@
 const int expand_time = 250;
 
 WLibrarySidebar::WLibrarySidebar(QWidget* parent)
-        : QTreeView(parent),
-          WBaseWidget(this) {
-    //Set some properties
+        : QTreeView(parent), WBaseWidget(this) {
+    // Set some properties
     setHeaderHidden(true);
     setSelectionMode(QAbstractItemView::SingleSelection);
-    //Drag and drop setup
+    // Drag and drop setup
     setDragEnabled(false);
     setDragDropMode(QAbstractItemView::DragDrop);
     setDropIndicatorShown(true);
@@ -32,17 +31,17 @@ WLibrarySidebar::WLibrarySidebar(QWidget* parent)
 WLibrarySidebar::~WLibrarySidebar() {
 }
 
-
-void WLibrarySidebar::contextMenuEvent(QContextMenuEvent *event) {
-    //if (event->state() & Qt::RightButton) { //Dis shiz don werk on windowze
+void WLibrarySidebar::contextMenuEvent(QContextMenuEvent* event) {
+    // if (event->state() & Qt::RightButton) { //Dis shiz don werk on windowze
     QModelIndex clickedItem = indexAt(event->pos());
     emit(rightClicked(event->globalPos(), clickedItem));
     //}
 }
 
 // Drag enter event, happens when a dragged item enters the track sources view
-void WLibrarySidebar::dragEnterEvent(QDragEnterEvent * event) {
-    qDebug() << "WLibrarySidebar::dragEnterEvent" << event->mimeData()->formats();
+void WLibrarySidebar::dragEnterEvent(QDragEnterEvent* event) {
+    qDebug() << "WLibrarySidebar::dragEnterEvent"
+             << event->mimeData()->formats();
     if (event->mimeData()->hasUrls()) {
         // We don't have a way to ask the LibraryFeatures whether to accept a
         // drag so for now we accept all drags. Since almost every
@@ -56,12 +55,13 @@ void WLibrarySidebar::dragEnterEvent(QDragEnterEvent * event) {
         }
     }
     event->ignore();
-    //QTreeView::dragEnterEvent(event);
+    // QTreeView::dragEnterEvent(event);
 }
 
-// Drag move event, happens when a dragged item hovers over the track sources view...
-void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event) {
-    //qDebug() << "dragMoveEvent" << event->mimeData()->formats();
+// Drag move event, happens when a dragged item hovers over the track sources
+// view...
+void WLibrarySidebar::dragMoveEvent(QDragMoveEvent* event) {
+    // qDebug() << "dragMoveEvent" << event->mimeData()->formats();
     // Start a timer to auto-expand sections the user hovers on.
     QPoint pos = event->pos();
     QModelIndex index = indexAt(pos);
@@ -76,8 +76,8 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event) {
     if (event->mimeData()->hasUrls()) {
         QList<QUrl> urls(event->mimeData()->urls());
         // Drag and drop within this widget
-        if ((event->source() == this)
-                && (event->possibleActions() & Qt::MoveAction)) {
+        if ((event->source() == this) &&
+            (event->possibleActions() & Qt::MoveAction)) {
             // Do nothing.
             event->ignore();
         } else {
@@ -90,9 +90,12 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event) {
                     if (sidebarModel->dragMoveAccept(destIndex, url)) {
                         // We only need one URL to be valid for us
                         // to accept the whole drag...
-                        // consider we have a long list of valid files, checking all will
-                        // take a lot of time that stales Mixxx and this makes the drop feature useless
-                        // Eg. you may have tried to drag two MP3's and an EXE, the drop is accepted here,
+                        // consider we have a long list of valid files, checking
+                        // all will
+                        // take a lot of time that stales Mixxx and this makes
+                        // the drop feature useless
+                        // Eg. you may have tried to drag two MP3's and an EXE,
+                        // the drop is accepted here,
                         // but the EXE is sorted out later after dropping
                         accepted = true;
                         break;
@@ -110,7 +113,7 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event) {
     }
 }
 
-void WLibrarySidebar::timerEvent(QTimerEvent *event) {
+void WLibrarySidebar::timerEvent(QTimerEvent* event) {
     if (event->timerId() == m_expandTimer.timerId()) {
         QPoint pos = viewport()->mapFromGlobal(QCursor::pos());
         if (viewport()->rect().contains(pos)) {
@@ -125,39 +128,42 @@ void WLibrarySidebar::timerEvent(QTimerEvent *event) {
     QTreeView::timerEvent(event);
 }
 
-// Drag-and-drop "drop" event. Occurs when something is dropped onto the track sources view
-void WLibrarySidebar::dropEvent(QDropEvent * event) {
+// Drag-and-drop "drop" event. Occurs when something is dropped onto the track
+// sources view
+void WLibrarySidebar::dropEvent(QDropEvent* event) {
     if (event->mimeData()->hasUrls()) {
         // Drag and drop within this widget
-        if ((event->source() == this)
-                && (event->possibleActions() & Qt::MoveAction)) {
+        if ((event->source() == this) &&
+            (event->possibleActions() & Qt::MoveAction)) {
             // Do nothing.
             event->ignore();
         } else {
-            //Reset the selected items (if you had anything highlighted, it clears it)
-            //this->selectionModel()->clear();
-            //Drag-and-drop from an external application or the track table widget
-            //eg. dragging a track from Windows Explorer onto the sidebar
+            // Reset the selected items (if you had anything highlighted, it
+            // clears it)
+            // this->selectionModel()->clear();
+            // Drag-and-drop from an external application or the track table
+            // widget
+            // eg. dragging a track from Windows Explorer onto the sidebar
             SidebarModel* sidebarModel = dynamic_cast<SidebarModel*>(model());
             if (sidebarModel) {
                 QModelIndex destIndex = indexAt(event->pos());
                 // event->source() will return NULL if something is droped from
                 // a different application
                 QList<QUrl> urls(event->mimeData()->urls());
-                if (sidebarModel->dropAccept(destIndex, urls, event->source())) {
+                if (sidebarModel->dropAccept(destIndex, urls,
+                                             event->source())) {
                     event->acceptProposedAction();
                 } else {
                     event->ignore();
                 }
             }
         }
-        //emit(trackDropped(name));
-        //repaintEverything();
+        // emit(trackDropped(name));
+        // repaintEverything();
     } else {
         event->ignore();
     }
 }
-
 
 void WLibrarySidebar::toggleSelectedItem() {
     QModelIndexList selectedIndices = this->selectionModel()->selectedRows();
@@ -181,9 +187,11 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
         // But force the index to be activated/clicked after the selection
         // changes. (Saves you from having to push "enter" after changing the
         // selection.)
-        QModelIndexList selectedIndices = this->selectionModel()->selectedRows();
+        QModelIndexList selectedIndices =
+                this->selectionModel()->selectedRows();
 
-        //Note: have to get the selected indices _after_ QTreeView::keyPressEvent()
+        // Note: have to get the selected indices _after_
+        // QTreeView::keyPressEvent()
         if (selectedIndices.size() > 0) {
             QModelIndex index = selectedIndices.at(0);
             emit(pressed(index));

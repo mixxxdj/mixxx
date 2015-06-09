@@ -8,8 +8,9 @@
 namespace Mixxx {
 
 class UrlResource {
-public:
-    virtual ~UrlResource() {}
+  public:
+    virtual ~UrlResource() {
+    }
 
     const QUrl& getUrl() const {
         return m_url;
@@ -18,9 +19,8 @@ public:
         return m_url.toString();
     }
 
-protected:
-    explicit UrlResource(const QUrl& url)
-        : m_url(url) {
+  protected:
+    explicit UrlResource(const QUrl& url) : m_url(url) {
     }
 
     inline bool isLocalFile() const {
@@ -40,10 +40,10 @@ protected:
         return getLocalFileName().toLocal8Bit();
     }
 
-private:
+  private:
     const QUrl m_url;
 };
 
-} // namespace Mixxx
+}  // namespace Mixxx
 
-#endif // MIXXX_URLRESOURCE_H
+#endif  // MIXXX_URLRESOURCE_H

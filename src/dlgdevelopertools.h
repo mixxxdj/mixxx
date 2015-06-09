@@ -14,8 +14,7 @@
 class DlgDeveloperTools : public QDialog, public Ui::DlgDeveloperTools {
     Q_OBJECT
   public:
-    DlgDeveloperTools(QWidget* pParent,
-                      ConfigObject<ConfigValue>* pConfig);
+    DlgDeveloperTools(QWidget* pParent, ConfigObject<ConfigValue>* pConfig);
     virtual ~DlgDeveloperTools();
 
   protected:
@@ -35,7 +34,6 @@ class DlgDeveloperTools : public QDialog, public Ui::DlgDeveloperTools {
 
     QFile m_logFile;
     QTextCursor m_logCursor;
-
 };
 
 #endif /* DLGDEVELOPERTOOLS_H */

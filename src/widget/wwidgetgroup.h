@@ -18,7 +18,7 @@ class SkinContext;
 class WWidgetGroup : public QFrame, public WBaseWidget {
     Q_OBJECT
   public:
-    WWidgetGroup(QWidget* pParent=NULL);
+    WWidgetGroup(QWidget* pParent = NULL);
     virtual ~WWidgetGroup();
 
     // QLayouts are not stylable using Qt style sheets. These properties let us
@@ -32,9 +32,12 @@ class WWidgetGroup : public QFrame, public WBaseWidget {
     //}
     //
     // The property must be DESIGNABLE to style it with Qt CSS.
-    Q_PROPERTY(int layoutSpacing READ layoutSpacing WRITE setLayoutSpacing DESIGNABLE true);
-    Q_PROPERTY(QRect layoutContentsMargins READ layoutContentsMargins WRITE setLayoutContentsMargins DESIGNABLE true);
-    Q_PROPERTY(Qt::Alignment layoutAlignment READ layoutAlignment WRITE setLayoutAlignment DESIGNABLE true);
+    Q_PROPERTY(int layoutSpacing READ layoutSpacing WRITE setLayoutSpacing
+                       DESIGNABLE true);
+    Q_PROPERTY(QRect layoutContentsMargins READ layoutContentsMargins WRITE
+                       setLayoutContentsMargins DESIGNABLE true);
+    Q_PROPERTY(Qt::Alignment layoutAlignment READ layoutAlignment WRITE
+                       setLayoutAlignment DESIGNABLE true);
 
     int layoutSpacing() const;
     void setLayoutSpacing(int spacing);
@@ -58,4 +61,4 @@ class WWidgetGroup : public QFrame, public WBaseWidget {
     PaintablePointer m_pPixmapBack;
 };
 
-#endif // WWIDGETGROUP_H
+#endif  // WWIDGETGROUP_H

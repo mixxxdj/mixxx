@@ -39,4 +39,4 @@ class DlgHidden : public QWidget, public Ui::DlgHidden, public LibraryView {
     HiddenTableModel* m_pHiddenTableModel;
 };
 
-#endif //DLGHIDDEN_H
+#endif  // DLGHIDDEN_H

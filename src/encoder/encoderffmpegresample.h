@@ -47,18 +47,17 @@ extern "C" {
 // Compability
 #include <libavutil/mathematics.h>
 #include <libavutil/opt.h>
-
 }
 
 class EncoderFfmpegResample {
-public:
+  public:
     EncoderFfmpegResample(AVCodecContext *codecCtx);
     ~EncoderFfmpegResample();
     int open(enum AVSampleFormat inSampleFmt, enum AVSampleFormat outSampleFmt);
 
     unsigned int reSample(AVFrame *inframe, quint8 **outbuffer);
 
-private:
+  private:
     AVCodecContext *m_pCodecCtx;
     enum AVSampleFormat m_pOutSampleFmt;
     enum AVSampleFormat m_pInSampleFmt;
@@ -77,7 +76,6 @@ private:
 #else
     ReSampleContext *m_pSwrCtx;
 #endif
-
 };
 
 #endif

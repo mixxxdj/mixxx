@@ -19,7 +19,8 @@ class EffectParameter : public QObject {
     Q_OBJECT
   public:
     EffectParameter(Effect* pEffect, EffectsManager* pEffectsManager,
-                    int iParameterNumber, const EffectManifestParameter& parameter);
+                    int iParameterNumber,
+                    const EffectManifestParameter& parameter);
     virtual ~EffectParameter();
 
     void addToEngine();
@@ -66,8 +67,8 @@ class EffectParameter : public QObject {
         return QString("EffectParameter(%1)").arg(m_parameter.name());
     }
 
-    static bool clampValue(double* pValue,
-                           const double& minimum, const double& maximum);
+    static bool clampValue(double* pValue, const double& minimum,
+                           const double& maximum);
     bool clampValue();
     bool clampDefault();
     bool clampRanges();
@@ -84,6 +85,5 @@ class EffectParameter : public QObject {
 
     DISALLOW_COPY_AND_ASSIGN(EffectParameter);
 };
-
 
 #endif /* EFFECTPARAMETER_H */

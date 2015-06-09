@@ -30,7 +30,7 @@ class SoundDevice;
 class SoundManager;
 
 class SoundManagerConfig {
-public:
+  public:
     enum Defaults {
         API = (1 << 0),
         DEVICES = (1 << 1),
@@ -77,7 +77,8 @@ public:
     void filterOutputs(SoundManager *soundManager);
     void filterInputs(SoundManager *soundManager);
     void loadDefaults(SoundManager *soundManager, unsigned int flags);
-private:
+
+  private:
     QFileInfo m_configFile;
     QString m_api;
     // none of our sample rates are actually decimals, this avoids

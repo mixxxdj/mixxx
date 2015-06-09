@@ -26,22 +26,22 @@ class WStarRating : public QWidget, public WBaseWidget {
 
   private slots:
     void updateRating(TrackInfoObject*);
-    
+
   protected:
     virtual void paintEvent(QPaintEvent* e);
-    void mouseMoveEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
-    void leaveEvent(QEvent *);
-    
+    void mouseMoveEvent(QMouseEvent* event);
+    void mouseReleaseEvent(QMouseEvent* event);
+    void leaveEvent(QEvent*);
+
     StarRating m_starRating;
     QString m_pGroup;
     TrackPointer m_pCurrentTrack;
     bool m_focused;
     mutable QRect m_contentRect;
-    
-    private:
-        void updateRating();
-        int starAtPosition(int x);
+
+  private:
+    void updateRating();
+    int starAtPosition(int x);
 };
 
 #endif /* WSTARRATING_H */

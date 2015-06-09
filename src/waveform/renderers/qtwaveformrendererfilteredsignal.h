@@ -10,10 +10,11 @@ class ControlObject;
 
 class QtWaveformRendererFilteredSignal : public WaveformRendererSignalBase {
   public:
-    explicit QtWaveformRendererFilteredSignal(WaveformWidgetRenderer* waveformWidgetRenderer);
+    explicit QtWaveformRendererFilteredSignal(
+            WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~QtWaveformRendererFilteredSignal();
 
-    virtual void onSetup(const QDomNode &node);
+    virtual void onSetup(const QDomNode& node);
     virtual void draw(QPainter* painter, QPaintEvent* event);
 
   protected:
@@ -31,4 +32,4 @@ class QtWaveformRendererFilteredSignal : public WaveformRendererSignalBase {
     QVector<QPointF> m_polygon[3];
 };
 
-#endif // QTWAVEFROMRENDERERFILTEREDSIGNAL_H
+#endif  // QTWAVEFROMRENDERERFILTEREDSIGNAL_H

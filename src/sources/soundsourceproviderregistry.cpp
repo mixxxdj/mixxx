@@ -19,7 +19,8 @@ SoundSourceProviderPointer SoundSourceProviderRegistry::registerPluginLibrary(
     return registerEntry(entry);
 }
 
-SoundSourceProviderPointer SoundSourceProviderRegistry::registerEntry(const Entry& entry) {
+SoundSourceProviderPointer SoundSourceProviderRegistry::registerEntry(
+        const Entry& entry) {
     DEBUG_ASSERT(m_supportedFileNameRegex.isEmpty());
     DEBUG_ASSERT(entry.pProvider);
     const QStringList supportedFileExtensions(
@@ -27,7 +28,7 @@ SoundSourceProviderPointer SoundSourceProviderRegistry::registerEntry(const Entr
     DEBUG_ASSERT(entry.pPluginLibrary || !supportedFileExtensions.isEmpty());
     if (entry.pPluginLibrary && supportedFileExtensions.isEmpty()) {
         qWarning() << "SoundSource plugin does not support any file types"
-                << entry.pPluginLibrary->getFilePath();
+                   << entry.pPluginLibrary->getFilePath();
     }
     foreach (const QString& supportedFileExtension, supportedFileExtensions) {
         m_entries.insert(supportedFileExtension, entry);
@@ -39,8 +40,8 @@ void SoundSourceProviderRegistry::finishRegistration() {
     const QStringList supportedFileExtensions(getSupportedFileExtensions());
     const QString fileExtensionsRegex(
             RegexUtils::fileExtensionsRegex(supportedFileExtensions));
-    QRegExp(fileExtensionsRegex, Qt::CaseInsensitive).swap(
-            m_supportedFileNameRegex);
+    QRegExp(fileExtensionsRegex, Qt::CaseInsensitive)
+            .swap(m_supportedFileNameRegex);
 }
 
 QStringList SoundSourceProviderRegistry::getSupportedFileNamePatterns() const {
@@ -48,9 +49,10 @@ QStringList SoundSourceProviderRegistry::getSupportedFileNamePatterns() const {
     // Turn the list into a "*.mp3 *.wav *.etc" style string
     QStringList supportedFileNamePatterns;
     foreach (const QString& supportedFileExtension, supportedFileExtensions) {
-        supportedFileNamePatterns += QString("*.%1").arg(supportedFileExtension);
+        supportedFileNamePatterns +=
+                QString("*.%1").arg(supportedFileExtension);
     }
     return supportedFileNamePatterns;
 }
 
-} // Mixxx
+}  // Mixxx

@@ -19,7 +19,8 @@
 #define ROTARY_H
 
 /**
-  * Virtual class for handling the PowerMate. This is implemented as a separate thread.
+  * Virtual class for handling the PowerMate. This is implemented as a separate
+  *thread.
   * Also handles the Hercules...
   *
   *@author Tue Haste Andersen
@@ -27,9 +28,8 @@
 
 const int kiRotaryFilterMaxLen = 50;
 
-class Rotary
-{
-public:
+class Rotary {
+  public:
     Rotary();
     ~Rotary();
 
@@ -51,7 +51,8 @@ public:
     void setFilterLength(int i);
     /** Get filter length */
     int getFilterLength();
-protected:
+
+  protected:
     /** Length of filter */
     int m_iFilterLength;
     /** Update position in filter */

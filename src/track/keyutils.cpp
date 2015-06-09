@@ -10,7 +10,8 @@
 using mixxx::track::io::key::ChromaticKey;
 using mixxx::track::io::key::ChromaticKey_IsValid;
 
-// OpenKey notation, the numbers 1-12 followed by d (dur, major) or m (moll, minor).
+// OpenKey notation, the numbers 1-12 followed by d (dur, major) or m (moll,
+// minor).
 static const char* s_openKeyPattern = "^\\s*(1[0-2]|[1-9])([dm])\\s*$";
 
 // Lancelot notation, the numbers 1-12 followed by a (minor) or b (major).
@@ -20,55 +21,59 @@ static const char* s_lancelotKeyPattern = "^\\s*(1[0-2]|[1-9])([ab])\\s*$";
 // a scale spec (m = minor, min, maj)
 // anchor the pattern so we don't get accidental sub-string matches
 // (?:or)? allows unabbreviated major|minor without capturing
-static const char* s_keyPattern = "^\\s*([a-g])([#♯b♭]*)"
-    "(min(?:or)?|maj(?:or)?|m)?\\s*$";
+static const char* s_keyPattern =
+        "^\\s*([a-g])([#♯b♭]*)"
+        "(min(?:or)?|maj(?:or)?|m)?\\s*$";
 
 static const QString s_sharpSymbol = QString::fromUtf8("♯");
 static const QString s_flatSymbol = QString::fromUtf8("♭");
 
-static const char *s_traditionalKeyNames[] = {
-    "INVALID",
-    "C", "D♭", "D", "E♭", "E", "F", "F♯/G♭", "G", "A♭", "A", "B♭", "B",
-    "Cm", "C♯m", "Dm", "D♯m/E♭m", "Em", "Fm", "F♯m", "Gm", "G♯m", "Am", "B♭m", "Bm"
-};
+static const char* s_traditionalKeyNames[] = {
+        "INVALID", "C",   "D♭", "D",   "E♭", "E",   "F",  "F♯/G♭",   "G",
+        "A♭",      "A",   "B♭", "B",   "Cm", "C♯m", "Dm", "D♯m/E♭m", "Em",
+        "Fm",      "F♯m", "Gm", "G♯m", "Am", "B♭m", "Bm"};
 
 // Maps an OpenKey number to its major and minor key.
 const ChromaticKey s_openKeyToKeys[][2] = {
-    // 0 is not a valid OpenKey number.
-    { mixxx::track::io::key::INVALID,       mixxx::track::io::key::INVALID },
-    { mixxx::track::io::key::C_MAJOR,       mixxx::track::io::key::A_MINOR }, // 1
-    { mixxx::track::io::key::G_MAJOR,       mixxx::track::io::key::E_MINOR }, // 2
-    { mixxx::track::io::key::D_MAJOR,       mixxx::track::io::key::B_MINOR }, // 3
-    { mixxx::track::io::key::A_MAJOR,       mixxx::track::io::key::F_SHARP_MINOR }, // 4
-    { mixxx::track::io::key::E_MAJOR,       mixxx::track::io::key::C_SHARP_MINOR }, // 5
-    { mixxx::track::io::key::B_MAJOR,       mixxx::track::io::key::G_SHARP_MINOR }, // 6
-    { mixxx::track::io::key::F_SHARP_MAJOR, mixxx::track::io::key::E_FLAT_MINOR }, // 7
-    { mixxx::track::io::key::D_FLAT_MAJOR,  mixxx::track::io::key::B_FLAT_MINOR }, // 8
-    { mixxx::track::io::key::A_FLAT_MAJOR,  mixxx::track::io::key::F_MINOR }, // 9
-    { mixxx::track::io::key::E_FLAT_MAJOR,  mixxx::track::io::key::C_MINOR }, // 10
-    { mixxx::track::io::key::B_FLAT_MAJOR,  mixxx::track::io::key::G_MINOR }, // 11
-    { mixxx::track::io::key::F_MAJOR,       mixxx::track::io::key::D_MINOR } // 12
+        // 0 is not a valid OpenKey number.
+        {mixxx::track::io::key::INVALID, mixxx::track::io::key::INVALID},
+        {mixxx::track::io::key::C_MAJOR, mixxx::track::io::key::A_MINOR},  // 1
+        {mixxx::track::io::key::G_MAJOR, mixxx::track::io::key::E_MINOR},  // 2
+        {mixxx::track::io::key::D_MAJOR, mixxx::track::io::key::B_MINOR},  // 3
+        {mixxx::track::io::key::A_MAJOR,
+         mixxx::track::io::key::F_SHARP_MINOR},  // 4
+        {mixxx::track::io::key::E_MAJOR,
+         mixxx::track::io::key::C_SHARP_MINOR},  // 5
+        {mixxx::track::io::key::B_MAJOR,
+         mixxx::track::io::key::G_SHARP_MINOR},  // 6
+        {mixxx::track::io::key::F_SHARP_MAJOR,
+         mixxx::track::io::key::E_FLAT_MINOR},  // 7
+        {mixxx::track::io::key::D_FLAT_MAJOR,
+         mixxx::track::io::key::B_FLAT_MINOR},  // 8
+        {mixxx::track::io::key::A_FLAT_MAJOR,
+         mixxx::track::io::key::F_MINOR},  // 9
+        {mixxx::track::io::key::E_FLAT_MAJOR,
+         mixxx::track::io::key::C_MINOR},  // 10
+        {mixxx::track::io::key::B_FLAT_MAJOR,
+         mixxx::track::io::key::G_MINOR},  // 11
+        {mixxx::track::io::key::F_MAJOR, mixxx::track::io::key::D_MINOR}  // 12
 };
 
 // This is a quick hack to convert an ASCII letter into a key. Lookup the key
 // using (letter.toLower() - 'a') as the index. Make sure the letter matches
 // [a-gA-G] first.
 const ChromaticKey s_letterToMajorKey[] = {
-    mixxx::track::io::key::A_MAJOR,
-    mixxx::track::io::key::B_MAJOR,
-    mixxx::track::io::key::C_MAJOR,
-    mixxx::track::io::key::D_MAJOR,
-    mixxx::track::io::key::E_MAJOR,
-    mixxx::track::io::key::F_MAJOR,
-    mixxx::track::io::key::G_MAJOR
-};
+        mixxx::track::io::key::A_MAJOR, mixxx::track::io::key::B_MAJOR,
+        mixxx::track::io::key::C_MAJOR, mixxx::track::io::key::D_MAJOR,
+        mixxx::track::io::key::E_MAJOR, mixxx::track::io::key::F_MAJOR,
+        mixxx::track::io::key::G_MAJOR};
 
 QMutex KeyUtils::s_notationMutex;
 QMap<ChromaticKey, QString> KeyUtils::s_notation;
 QMap<QString, ChromaticKey> KeyUtils::s_reverseNotation;
 
 // Lancelot notation is OpenKey notation rotated counter-clockwise by 5.
-inline int openKeyNumberToLancelotNumber(const int okNumber)  {
+inline int openKeyNumberToLancelotNumber(const int okNumber) {
     int lancelotNumber = okNumber - 5;
     if (lancelotNumber < 1) {
         lancelotNumber += 12;
@@ -77,7 +82,7 @@ inline int openKeyNumberToLancelotNumber(const int okNumber)  {
 }
 
 // Lancelot notation is OpenKey notation rotated counter-clockwise by 5.
-inline int lancelotNumberToOpenKeyNumber(const int lancelotNumber)  {
+inline int lancelotNumberToOpenKeyNumber(const int lancelotNumber) {
     int okNumber = lancelotNumber + 5;
     if (okNumber > 12) {
         okNumber -= 12;
@@ -87,7 +92,7 @@ inline int lancelotNumberToOpenKeyNumber(const int lancelotNumber)  {
 
 // static
 ChromaticKey KeyUtils::openKeyNumberToKey(int openKeyNumber, bool major) {
-        return s_openKeyToKeys[openKeyNumber][major ? 0 : 1];
+    return s_openKeyToKeys[openKeyNumber][major ? 0 : 1];
 }
 
 // static
@@ -114,10 +119,8 @@ void KeyUtils::setNotation(const QMap<ChromaticKey, QString>& notation) {
 }
 
 // static
-QString KeyUtils::keyToString(ChromaticKey key,
-                              KeyNotation notation) {
-    if (!ChromaticKey_IsValid(key) ||
-        key == mixxx::track::io::key::INVALID) {
+QString KeyUtils::keyToString(ChromaticKey key, KeyNotation notation) {
+    if (!ChromaticKey_IsValid(key) || key == mixxx::track::io::key::INVALID) {
         // TODO(rryan): Maybe just the empty string?
         return "INVALID";
     }
@@ -149,7 +152,8 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
     // Try using the user's custom notation.
     {
         QMutexLocker locker(&s_notationMutex);
-        QMap<QString, ChromaticKey>::const_iterator it = s_reverseNotation.find(text);
+        QMap<QString, ChromaticKey>::const_iterator it =
+                s_reverseNotation.find(text);
         if (it != s_reverseNotation.end()) {
             return it.value();
         }
@@ -165,8 +169,8 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
             return mixxx::track::io::key::INVALID;
         }
 
-        bool major = openKeyMatcher.cap(2)
-                .compare("d", Qt::CaseInsensitive) == 0;
+        bool major =
+                openKeyMatcher.cap(2).compare("d", Qt::CaseInsensitive) == 0;
 
         return openKeyNumberToKey(openKeyNumber, major);
     }
@@ -184,7 +188,7 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
         int openKeyNumber = lancelotNumberToOpenKeyNumber(lancelotNumber);
 
         bool major = lancelotKeyMatcher.cap(2)
-                .compare("b", Qt::CaseInsensitive) == 0;
+                             .compare("b", Qt::CaseInsensitive) == 0;
 
         return openKeyNumberToKey(openKeyNumber, major);
     }
@@ -209,7 +213,7 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
 
         QString scale = keyMatcher.cap(3);
         // we override major if a scale definition exists
-        if (! scale.isEmpty()) {
+        if (!scale.isEmpty()) {
             if (scale.compare("m", Qt::CaseInsensitive) == 0) {
                 major = false;
             } else if (scale.startsWith("min", Qt::CaseInsensitive)) {
@@ -218,12 +222,12 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
                 major = true;
             } else {
                 qDebug() << "WARNING: scale from regexp has unexpected value."
-                  " should never happen";
+                            " should never happen";
             }
         }
 
         ChromaticKey letterKey = static_cast<ChromaticKey>(
-            s_letterToMajorKey[letterIndex] + (major ? 0 : 12));
+                s_letterToMajorKey[letterIndex] + (major ? 0 : 12));
         return scaleKeySteps(letterKey, steps);
     }
 
@@ -248,23 +252,24 @@ double KeyUtils::keyToNumericValue(ChromaticKey key) {
 }
 
 // static
-QPair<ChromaticKey, double> KeyUtils::scaleKeyOctaves(ChromaticKey key, double octave_change) {
+QPair<ChromaticKey, double> KeyUtils::scaleKeyOctaves(ChromaticKey key,
+                                                      double octave_change) {
     // Convert the octave_change from percentage of octave to the nearest
     // integer of key changes. We need the rounding to be in the same direction
     // so that a -1.0 and 1.0 scale of C makes it back to C.
     double key_changes_scaled = octave_change * 12;
     int key_changes = static_cast<int>(key_changes_scaled +
-                          (key_changes_scaled > 0 ? 0.5 : -0.5));
+                                       (key_changes_scaled > 0 ? 0.5 : -0.5));
 
     double diff_to_nearest_full_key = key_changes_scaled - key_changes;
-    return QPair<ChromaticKey, double>(scaleKeySteps(key, key_changes), diff_to_nearest_full_key);
+    return QPair<ChromaticKey, double>(scaleKeySteps(key, key_changes),
+                                       diff_to_nearest_full_key);
 }
 
 // static
 ChromaticKey KeyUtils::scaleKeySteps(ChromaticKey key, int key_changes) {
     // Invalid scales to invalid.
-    if (!ChromaticKey_IsValid(key) ||
-        key == mixxx::track::io::key::INVALID) {
+    if (!ChromaticKey_IsValid(key) || key == mixxx::track::io::key::INVALID) {
         return mixxx::track::io::key::INVALID;
     }
 
@@ -293,23 +298,25 @@ ChromaticKey KeyUtils::scaleKeySteps(ChromaticKey key, int key_changes) {
 
 // static
 mixxx::track::io::key::ChromaticKey KeyUtils::calculateGlobalKey(
-    const KeyChangeList& key_changes, const int iTotalSamples) {
+        const KeyChangeList& key_changes, const int iTotalSamples) {
     const int iTotalFrames = iTotalSamples / 2;
     QMap<mixxx::track::io::key::ChromaticKey, double> key_histogram;
 
     for (int i = 0; i < key_changes.size(); ++i) {
         mixxx::track::io::key::ChromaticKey key = key_changes[i].first;
         const double start_frame = key_changes[i].second;
-        const double next_frame = (i == key_changes.size() - 1) ?
-                iTotalFrames : key_changes[i+1].second;
+        const double next_frame = (i == key_changes.size() - 1)
+                                          ? iTotalFrames
+                                          : key_changes[i + 1].second;
         key_histogram[key] += (next_frame - start_frame);
     }
 
-
     double max_delta = 0;
-    mixxx::track::io::key::ChromaticKey max_key = mixxx::track::io::key::INVALID;
+    mixxx::track::io::key::ChromaticKey max_key =
+            mixxx::track::io::key::INVALID;
     qDebug() << "Key Histogram";
-    for (QMap<mixxx::track::io::key::ChromaticKey, double>::const_iterator it = key_histogram.begin();
+    for (QMap<mixxx::track::io::key::ChromaticKey, double>::const_iterator it =
+                 key_histogram.begin();
          it != key_histogram.end(); ++it) {
         qDebug() << it.key() << ":" << keyDebugName(it.key()) << it.value();
         if (it.value() > max_delta) {
@@ -322,13 +329,12 @@ mixxx::track::io::key::ChromaticKey KeyUtils::calculateGlobalKey(
 
 // static
 int KeyUtils::shortestStepsToKey(
-    mixxx::track::io::key::ChromaticKey key,
-    mixxx::track::io::key::ChromaticKey target_key) {
+        mixxx::track::io::key::ChromaticKey key,
+        mixxx::track::io::key::ChromaticKey target_key) {
     // For invalid keys just return zero steps.
-    if (!ChromaticKey_IsValid(key) ||
-            key == mixxx::track::io::key::INVALID ||
-            !ChromaticKey_IsValid(target_key) ||
-            target_key == mixxx::track::io::key::INVALID) {
+    if (!ChromaticKey_IsValid(key) || key == mixxx::track::io::key::INVALID ||
+        !ChromaticKey_IsValid(target_key) ||
+        target_key == mixxx::track::io::key::INVALID) {
         return 0;
     }
 
@@ -353,16 +359,12 @@ int KeyUtils::shortestStepsToKey(
 int KeyUtils::shortestStepsToCompatibleKey(
         mixxx::track::io::key::ChromaticKey key,
         mixxx::track::io::key::ChromaticKey target_key) {
-
-    if (!ChromaticKey_IsValid(key) ||
-            key == mixxx::track::io::key::INVALID ||
-            !ChromaticKey_IsValid(target_key) ||
-            target_key == mixxx::track::io::key::INVALID ||
-            key == target_key) {
+    if (!ChromaticKey_IsValid(key) || key == mixxx::track::io::key::INVALID ||
+        !ChromaticKey_IsValid(target_key) ||
+        target_key == mixxx::track::io::key::INVALID || key == target_key) {
         // For invalid keys just return zero steps.
         return 0;
     }
-
 
     if (key == target_key) {
         // Already matching
@@ -397,12 +399,13 @@ int KeyUtils::shortestStepsToCompatibleKey(
     if (shortestDistance < -2) {
         // Perfect 4th (Sub-Dominant)
         return 5 + shortestDistance;
-    } if (shortestDistance > 2) {
+    }
+    if (shortestDistance > 2) {
         // Perfect 5th (Dominant)
         return -5 + shortestDistance;
     }
     // tonic match
-    return shortestDistance; // in the range of -2 .. +2
+    return shortestDistance;  // in the range of -2 .. +2
 }
 
 QList<mixxx::track::io::key::ChromaticKey> KeyUtils::getCompatibleKeys(

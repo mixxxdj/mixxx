@@ -16,7 +16,8 @@ class DlgPrefModplug : public DlgPreferencePage {
     Q_OBJECT
 
   public:
-    explicit DlgPrefModplug(QWidget* parent, ConfigObject<ConfigValue>* _config);
+    explicit DlgPrefModplug(QWidget* parent,
+                            ConfigObject<ConfigValue>* _config);
     virtual ~DlgPrefModplug();
 
   public slots:
@@ -34,4 +35,4 @@ class DlgPrefModplug : public DlgPreferencePage {
     ConfigObject<ConfigValue>* m_pConfig;
 };
 
-#endif // DLGPREFMODPLUG_H
+#endif  // DLGPREFMODPLUG_H

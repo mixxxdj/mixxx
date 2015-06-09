@@ -22,10 +22,6 @@
    -------- ------------------------------------------------------ */
 ControlTTRotary::ControlTTRotary(ConfigKey key) : ControlObject(key) {
     if (m_pControl) {
-        m_pControl->setBehavior(
-                new ControlTTRotaryBehavior());
+        m_pControl->setBehavior(new ControlTTRotaryBehavior());
     }
 }
-
-
-

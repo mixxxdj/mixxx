@@ -27,9 +27,9 @@ class ControllerManager;
 class DlgPrefController : public DlgPreferencePage {
     Q_OBJECT
   public:
-    DlgPrefController(QWidget *parent, Controller* controller,
+    DlgPrefController(QWidget* parent, Controller* controller,
                       ControllerManager* controllerManager,
-                      ConfigObject<ConfigValue> *pConfig);
+                      ConfigObject<ConfigValue>* pConfig);
     virtual ~DlgPrefController();
 
   public slots:

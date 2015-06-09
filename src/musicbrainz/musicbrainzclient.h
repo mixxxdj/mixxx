@@ -6,7 +6,7 @@
  *  as published by Sam Hocevar.                                             *
  *  See http://www.wtfpl.net/ for more details.                              *
  *****************************************************************************/
-    
+
 #ifndef MUSICBRAINZCLIENT_H
 #define MUSICBRAINZCLIENT_H
 
@@ -19,24 +19,27 @@
 #include "network.h"
 
 class MusicBrainzClient : public QObject {
-  Q_OBJECT
+    Q_OBJECT
 
-  // Gets metadata for a particular MBID.
-  // An MBID is created from a fingerprint using chromaprint library.
-  // You can create one MusicBrainzClient and make multiple requests using it.
-  // IDs are provided by the caller when a request is started and included in
-  // the Finished signal - they have no meaning to MusicBrainzClient.
+    // Gets metadata for a particular MBID.
+    // An MBID is created from a fingerprint using chromaprint library.
+    // You can create one MusicBrainzClient and make multiple requests using it.
+    // IDs are provided by the caller when a request is started and included in
+    // the Finished signal - they have no meaning to MusicBrainzClient.
 
   public:
     MusicBrainzClient(QObject* parent = 0);
 
     struct Result {
-        Result() : m_duration(0), m_track(0), m_year(-1) {}
+        Result() : m_duration(0), m_track(0), m_year(-1) {
+        }
 
-        bool operator <(const Result& other) const {
-            #define cmp(field) \
-                if (field < other.field) return true; \
-                if (field > other.field) return false;
+        bool operator<(const Result& other) const {
+#define cmp(field)           \
+    if (field < other.field) \
+        return true;         \
+    if (field > other.field) \
+        return false;
 
             cmp(m_track);
             cmp(m_year);
@@ -44,16 +47,13 @@ class MusicBrainzClient : public QObject {
             cmp(m_artist);
             return false;
 
-            #undef cmp
+#undef cmp
         }
-        
-        bool operator ==(const Result& other) const {
-            return m_title == other.m_title &&
-                   m_artist == other.m_artist &&
-                   m_album == other.m_album &&
-                   m_duration == other.m_duration &&
-                   m_track == other.m_track &&
-                   m_year == other.m_year;
+
+        bool operator==(const Result& other) const {
+            return m_title == other.m_title && m_artist == other.m_artist &&
+                   m_album == other.m_album && m_duration == other.m_duration &&
+                   m_track == other.m_track && m_year == other.m_year;
         }
 
         QString m_title;
@@ -64,7 +64,6 @@ class MusicBrainzClient : public QObject {
         int m_year;
     };
     typedef QList<Result> ResultList;
-
 
     // Starts a request and returns immediately.  finished() will be emitted
     // later with the same ID.
@@ -89,7 +88,8 @@ class MusicBrainzClient : public QObject {
 
   private:
     struct Release {
-        Release() : m_track(0), m_year(0) {}
+        Release() : m_track(0), m_year(0) {
+        }
 
         Result CopyAndMergeInto(const Result& orig) const {
             Result ret(orig);
@@ -113,19 +113,15 @@ class MusicBrainzClient : public QObject {
     static const QString m_TrackUrl;
     static const QString m_DateRegex;
     static const int m_DefaultTimeout;
-    
+
     QNetworkAccessManager m_network;
     NetworkTimeouts m_timeouts;
     QMap<QNetworkReply*, int> m_requests;
 };
 
 inline uint qHash(const MusicBrainzClient::Result& result) {
-  return qHash(result.m_album) ^
-         qHash(result.m_artist) ^
-         result.m_duration ^
-         qHash(result.m_title) ^
-         result.m_track ^
-         result.m_year;
+    return qHash(result.m_album) ^ qHash(result.m_artist) ^ result.m_duration ^
+           qHash(result.m_title) ^ result.m_track ^ result.m_year;
 }
 
-#endif // MUSICBRAINZCLIENT_H
+#endif  // MUSICBRAINZCLIENT_H

@@ -13,12 +13,22 @@ class EmptyWaveformWidget : public QWidget, public WaveformWidgetAbstract {
   public:
     virtual ~EmptyWaveformWidget();
 
-    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::EmptyWaveform; }
+    virtual WaveformWidgetType::Type getType() const {
+        return WaveformWidgetType::EmptyWaveform;
+    }
 
-    static inline QString getWaveformWidgetName() { return tr("Empty"); }
-    static inline bool useOpenGl() { return false; }
-    static inline bool useOpenGLShaders() { return false; }
-    static inline bool developerOnly() { return false; }
+    static inline QString getWaveformWidgetName() {
+        return tr("Empty");
+    }
+    static inline bool useOpenGl() {
+        return false;
+    }
+    static inline bool useOpenGLShaders() {
+        return false;
+    }
+    static inline bool developerOnly() {
+        return false;
+    }
 
   protected:
     virtual void castToQWidget();
@@ -30,4 +40,4 @@ class EmptyWaveformWidget : public QWidget, public WaveformWidgetAbstract {
     friend class WaveformWidgetFactory;
 };
 
-#endif // EMPTYWAVEFORM_H
+#endif  // EMPTYWAVEFORM_H

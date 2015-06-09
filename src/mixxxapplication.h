@@ -22,7 +22,6 @@ class MixxxApplication : public QApplication {
     QWidget* m_fakeMouseWidget;
     enum Qt::MouseButton m_activeTouchButton;
     ControlObjectThread* m_pTouchShift;
-
 };
 
-#endif // MIXXXAPPLICATION_H
+#endif  // MIXXXAPPLICATION_H

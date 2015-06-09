@@ -5,11 +5,14 @@
 namespace Mixxx {
 
 /*static*/ const double TrackMetadata::kBpmUndefined = 0.0;
-/*static*/ const double TrackMetadata::kBpmMin = 0.0; // lower bound (exclusive)
-/*static*/ const double TrackMetadata::kBpmMax = 300.0; // upper bound (inclusive)
+/*static*/ const double TrackMetadata::kBpmMin =
+        0.0;  // lower bound (exclusive)
+/*static*/ const double TrackMetadata::kBpmMax =
+        300.0;  // upper bound (inclusive)
 
 /*static*/ const double TrackMetadata::kReplayGainUndefined = 0.0;
-/*static*/ const double TrackMetadata::kReplayGainMin = 0.0; // lower bound (inclusive)
+/*static*/ const double TrackMetadata::kReplayGainMin =
+        0.0;  // lower bound (inclusive)
 /*static*/ const double TrackMetadata::kReplayGain0dB = 1.0;
 
 /*static*/ const int TrackMetadata::kCalendarYearInvalid = 0;
@@ -73,7 +76,7 @@ namespace {
 const QString kReplayGainUnit("dB");
 const QString kReplayGainSuffix(" " + kReplayGainUnit);
 
-} // anonymous namespace
+}  // anonymous namespace
 
 double TrackMetadata::parseReplayGain(QString sReplayGain, bool* pValid) {
     if (pValid) {
@@ -83,10 +86,13 @@ double TrackMetadata::parseReplayGain(QString sReplayGain, bool* pValid) {
     const int plusIndex = normalizedReplayGain.indexOf('+');
     if (0 == plusIndex) {
         // strip leading "+"
-        normalizedReplayGain = normalizedReplayGain.mid(plusIndex + 1).trimmed();
+        normalizedReplayGain =
+                normalizedReplayGain.mid(plusIndex + 1).trimmed();
     }
-    const int unitIndex = normalizedReplayGain.lastIndexOf(kReplayGainUnit, -1, Qt::CaseInsensitive);
-    if ((0 <= unitIndex) && ((normalizedReplayGain.length() - 2) == unitIndex)) {
+    const int unitIndex = normalizedReplayGain.lastIndexOf(kReplayGainUnit, -1,
+                                                           Qt::CaseInsensitive);
+    if ((0 <= unitIndex) &&
+        ((normalizedReplayGain.length() - 2) == unitIndex)) {
         // strip trailing unit suffix
         normalizedReplayGain = normalizedReplayGain.left(unitIndex).trimmed();
     }
@@ -104,7 +110,8 @@ double TrackMetadata::parseReplayGain(QString sReplayGain, bool* pValid) {
         // the replay gain.
         if (kReplayGain0dB == replayGain) {
             // special case
-            qDebug() << "Ignoring possibly undefined replay gain:" << formatReplayGain(replayGain);
+            qDebug() << "Ignoring possibly undefined replay gain:"
+                     << formatReplayGain(replayGain);
             if (pValid) {
                 *pValid = true;
             }
@@ -116,7 +123,8 @@ double TrackMetadata::parseReplayGain(QString sReplayGain, bool* pValid) {
             }
             return replayGain;
         } else {
-            qDebug() << "Invalid replay gain value:" << sReplayGain << " -> "<< replayGain;
+            qDebug() << "Invalid replay gain value:" << sReplayGain << " -> "
+                     << replayGain;
         }
     } else {
         qDebug() << "Failed to parse replay gain:" << sReplayGain;
@@ -169,7 +177,7 @@ QString TrackMetadata::formatCalendarYear(QString year, bool* pValid) {
     if (calendarYearValid) {
         return QString::number(calendarYear);
     } else {
-        return QString(); // empty string
+        return QString();  // empty string
     }
 }
 
@@ -194,13 +202,13 @@ QString TrackMetadata::reformatYear(QString year) {
     return year.simplified();
 }
 
-TrackMetadata::TrackMetadata() :
-        m_channels(0),
-        m_sampleRate(0),
-        m_bitrate(0),
-        m_duration(0),
-        m_bpm(kBpmUndefined),
-        m_replayGain(kReplayGainUndefined) {
+TrackMetadata::TrackMetadata()
+        : m_channels(0),
+          m_sampleRate(0),
+          m_bitrate(0),
+          m_duration(0),
+          m_bpm(kBpmUndefined),
+          m_replayGain(kReplayGainUndefined) {
 }
 
-} //namespace Mixxx
+}  // namespace Mixxx

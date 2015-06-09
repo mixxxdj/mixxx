@@ -31,10 +31,8 @@ class TrackCollection;
 class BaseTrackCache : public QObject {
     Q_OBJECT
   public:
-    BaseTrackCache(TrackCollection* pTrackCollection,
-                   const QString& tableName,
-                   const QString& idColumn,
-                   const QStringList& columns,
+    BaseTrackCache(TrackCollection* pTrackCollection, const QString& tableName,
+                   const QString& idColumn, const QStringList& columns,
                    bool isCaching);
     virtual ~BaseTrackCache();
 
@@ -52,11 +50,9 @@ class BaseTrackCache : public QObject {
     QString columnNameForFieldIndex(int index) const;
     QString columnSortForFieldIndex(int index) const;
     int fieldIndex(ColumnCache::Column column) const;
-    virtual void filterAndSort(const QSet<int>& trackIds,
-                               QString query, QString extraFilter,
-                               QString orderByClause,
-                               const int sortColumn,
-                               Qt::SortOrder sortOrder,
+    virtual void filterAndSort(const QSet<int>& trackIds, QString query,
+                               QString extraFilter, QString orderByClause,
+                               const int sortColumn, Qt::SortOrder sortOrder,
                                QHash<int, int>* trackToIndex);
     virtual bool isCached(int trackId) const;
     virtual void ensureCached(int trackId);
@@ -85,18 +81,16 @@ class BaseTrackCache : public QObject {
 
     QueryNode* parseQuery(QString query, QString extraFilter,
                           QStringList idStrings) const;
-    int findSortInsertionPoint(TrackPointer pTrack,
-                               const int sortColumn,
+    int findSortInsertionPoint(TrackPointer pTrack, const int sortColumn,
                                const Qt::SortOrder sortOrder,
                                const QVector<int> trackIds) const;
     int compareColumnValues(int sortColumn, Qt::SortOrder sortOrder,
                             QVariant val1, QVariant val2) const;
-    bool trackMatches(const TrackPointer& pTrack,
-                      const QRegExp& matcher) const;
+    bool trackMatches(const TrackPointer& pTrack, const QRegExp& matcher) const;
     bool trackMatchesNumeric(const TrackPointer& pTrack,
                              const QStringList& numberMatchers) const;
     bool trackMatchesNamedString(const TrackPointer& pTrack,
-                             const QStringList& numberMatchers) const;
+                                 const QStringList& numberMatchers) const;
     bool evaluateNumeric(const int value, const QString& expression) const;
 
     const QString m_tableName;
@@ -117,7 +111,7 @@ class BaseTrackCache : public QObject {
 
     bool m_bIndexBuilt;
     bool m_bIsCaching;
-    QHash<int, QVector<QVariant> > m_trackInfo;
+    QHash<int, QVector<QVariant>> m_trackInfo;
     TrackDAO& m_trackDAO;
     QSqlDatabase m_database;
     SearchQueryParser* m_pQueryParser;
@@ -125,4 +119,4 @@ class BaseTrackCache : public QObject {
     DISALLOW_COPY_AND_ASSIGN(BaseTrackCache);
 };
 
-#endif // BASETRACKCACHE_H
+#endif  // BASETRACKCACHE_H

@@ -11,9 +11,7 @@
 #include "util/debug.h"
 
 WWidgetGroup::WWidgetGroup(QWidget* pParent)
-        : QFrame(pParent),
-          WBaseWidget(this),
-          m_pPixmapBack(NULL) {
+        : QFrame(pParent), WBaseWidget(this), m_pPixmapBack(NULL) {
     setObjectName("WidgetGroup");
 }
 
@@ -26,7 +24,7 @@ int WWidgetGroup::layoutSpacing() const {
 }
 
 void WWidgetGroup::setLayoutSpacing(int spacing) {
-    //qDebug() << "WWidgetGroup::setSpacing" << spacing;
+    // qDebug() << "WWidgetGroup::setSpacing" << spacing;
     if (spacing < 0) {
         qDebug() << "WWidgetGroup: Invalid spacing:" << spacing;
         return;
@@ -39,25 +37,25 @@ void WWidgetGroup::setLayoutSpacing(int spacing) {
 
 QRect WWidgetGroup::layoutContentsMargins() const {
     QLayout* pLayout = layout();
-    QMargins margins = pLayout ? pLayout->contentsMargins() :
-            contentsMargins();
-    return QRect(margins.left(), margins.top(),
-                 margins.right(), margins.bottom());
+    QMargins margins = pLayout ? pLayout->contentsMargins() : contentsMargins();
+    return QRect(margins.left(), margins.top(), margins.right(),
+                 margins.bottom());
 }
 
 void WWidgetGroup::setLayoutContentsMargins(QRect rectMargins) {
     // qDebug() << "WWidgetGroup::setLayoutContentsMargins" << rectMargins.x()
-    //          << rectMargins.y() << rectMargins.width() << rectMargins.height();
+    //          << rectMargins.y() << rectMargins.width() <<
+    //          rectMargins.height();
 
-    if (rectMargins.x() < 0 || rectMargins.y() < 0 ||
-            rectMargins.width() < 0 || rectMargins.height() < 0) {
+    if (rectMargins.x() < 0 || rectMargins.y() < 0 || rectMargins.width() < 0 ||
+        rectMargins.height() < 0) {
         qDebug() << "WWidgetGroup: Invalid ContentsMargins rectangle:"
                  << rectMargins;
         return;
     }
 
-    setContentsMargins(rectMargins.x(), rectMargins.y(),
-                       rectMargins.width(), rectMargins.height());
+    setContentsMargins(rectMargins.x(), rectMargins.y(), rectMargins.width(),
+                       rectMargins.height());
     QLayout* pLayout = layout();
     if (pLayout) {
         pLayout->setContentsMargins(rectMargins.x(), rectMargins.y(),
@@ -71,7 +69,7 @@ Qt::Alignment WWidgetGroup::layoutAlignment() const {
 }
 
 void WWidgetGroup::setLayoutAlignment(int alignment) {
-    //qDebug() << "WWidgetGroup::setLayoutAlignment" << alignment;
+    // qDebug() << "WWidgetGroup::setLayoutAlignment" << alignment;
 
     QLayout* pLayout = layout();
     if (pLayout) {
@@ -85,8 +83,9 @@ void WWidgetGroup::setup(QDomNode node, const SkinContext& context) {
     // Set background pixmap if available
     if (context.hasNode(node, "BackPath")) {
         QDomElement backPathNode = context.selectElement(node, "BackPath");
-        setPixmapBackground(context.getPixmapSource(backPathNode),
-                            context.selectScaleMode(backPathNode, Paintable::TILE));
+        setPixmapBackground(
+                context.getPixmapSource(backPathNode),
+                context.selectScaleMode(backPathNode, Paintable::TILE));
     }
 
     QLayout* pLayout = NULL;
@@ -119,7 +118,8 @@ void WWidgetGroup::setup(QDomNode node, const SkinContext& context) {
         constraints["SetMinAndMaxSize"] = QLayout::SetMinAndMaxSize;
         constraints["SetNoConstraint"] = QLayout::SetNoConstraint;
 
-        QString sizeConstraintStr = context.selectString(node, "SizeConstraint");
+        QString sizeConstraintStr =
+                context.selectString(node, "SizeConstraint");
         if (constraints.contains(sizeConstraintStr)) {
             pLayout->setSizeConstraint(constraints[sizeConstraintStr]);
         } else {
@@ -132,11 +132,13 @@ void WWidgetGroup::setup(QDomNode node, const SkinContext& context) {
     }
 }
 
-void WWidgetGroup::setPixmapBackground(PixmapSource source, Paintable::DrawMode mode) {
+void WWidgetGroup::setPixmapBackground(PixmapSource source,
+                                       Paintable::DrawMode mode) {
     // Load background pixmap
     m_pPixmapBack = WPixmapStore::getPaintable(source, mode);
     if (!m_pPixmapBack) {
-        qDebug() << "WWidgetGroup: Error loading background pixmap:" << source.getPath();
+        qDebug() << "WWidgetGroup: Error loading background pixmap:"
+                 << source.getPath();
     }
 }
 
@@ -170,7 +172,9 @@ bool WWidgetGroup::event(QEvent* pEvent) {
 
 void WWidgetGroup::fillDebugTooltip(QStringList* debug) {
     WBaseWidget::fillDebugTooltip(debug);
-    *debug << QString("LayoutAlignment: %1").arg(toDebugString(layoutAlignment()))
-           << QString("LayoutContentsMargins: %1").arg(toDebugString(layoutContentsMargins()))
+    *debug << QString("LayoutAlignment: %1")
+                      .arg(toDebugString(layoutAlignment()))
+           << QString("LayoutContentsMargins: %1")
+                      .arg(toDebugString(layoutContentsMargins()))
            << QString("LayoutSpacing: %1").arg(layoutSpacing());
 }

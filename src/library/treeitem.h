@@ -12,11 +12,9 @@
 
 class TreeItem {
   public:
-    TreeItem(); //creates an invisible root item for the tree
-    TreeItem(const QString &data,
-             const QString &data_path,
-             LibraryFeature* feature,
-             TreeItem* parent);
+    TreeItem();  // creates an invisible root item for the tree
+    TreeItem(const QString &data, const QString &data_path,
+             LibraryFeature *feature, TreeItem *parent);
     ~TreeItem();
     /** appends a child item to this object **/
     void appendChild(TreeItem *child);
@@ -32,8 +30,9 @@ class TreeItem {
     TreeItem *parent();
 
     /** for dynamic resizing models **/
-    bool insertChildren(QList<TreeItem*> &data, int position, int count);
-    /** Removes <count> children from the child list starting at index <position> **/
+    bool insertChildren(QList<TreeItem *> &data, int position, int count);
+    /** Removes <count> children from the child list starting at index
+     * <position> **/
     bool removeChildren(int position, int count);
 
     /** sets data **/
@@ -47,16 +46,16 @@ class TreeItem {
     /** returns true if we have an inner node **/
     bool isFolder() const;
     /* Returns the Library feature object to which an item belongs to */
-    LibraryFeature* getFeature();
+    LibraryFeature *getFeature();
 
-    void setIcon(const QIcon& icon);
+    void setIcon(const QIcon &icon);
     QIcon getIcon();
 
   private:
-    QList<TreeItem*> m_childItems;
+    QList<TreeItem *> m_childItems;
     QString m_dataPath;
     QString m_data;
-    LibraryFeature* m_feature;
+    LibraryFeature *m_feature;
 
     TreeItem *m_parentItem;
     QIcon m_icon;

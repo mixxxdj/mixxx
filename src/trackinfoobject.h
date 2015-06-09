@@ -44,24 +44,22 @@ typedef QSharedPointer<TrackInfoObject> TrackPointer;
 typedef QWeakPointer<TrackInfoObject> TrackWeakPointer;
 
 namespace Mixxx {
-    class TrackMetadata;
+class TrackMetadata;
 }
 
 class TrackInfoObject : public QObject {
     Q_OBJECT
   public:
     // Initialize a new track with the filename.
-    TrackInfoObject(const QString& file="",
-                    SecurityTokenPointer pToken=SecurityTokenPointer(),
-                    bool parseHeader=true,
-                    bool parseCoverArt=false);
+    TrackInfoObject(const QString& file = "",
+                    SecurityTokenPointer pToken = SecurityTokenPointer(),
+                    bool parseHeader = true, bool parseCoverArt = false);
     // Initialize track with a QFileInfo class
     TrackInfoObject(const QFileInfo& fileInfo,
-                    SecurityTokenPointer pToken=SecurityTokenPointer(),
-                    bool parseHeader=true,
-                    bool parseCoverArt=false);
+                    SecurityTokenPointer pToken = SecurityTokenPointer(),
+                    bool parseHeader = true, bool parseCoverArt = false);
     // Creates a new track given information from the xml file.
-    TrackInfoObject(const QDomNode &);
+    TrackInfoObject(const QDomNode&);
     virtual ~TrackInfoObject();
 
     // Parse file metadata. If no file metadata is present, attempts to extract
@@ -94,7 +92,6 @@ class TrackInfoObject : public QObject {
     Q_PROPERTY(QString key READ getKeyText WRITE setKeyText)
     Q_PROPERTY(int duration READ getDuration WRITE setDuration)
     Q_PROPERTY(QString durationFormatted READ getDurationStr STORED false)
-
 
     // Returns absolute path to the file, including the filename.
     QString getLocation() const;
@@ -267,8 +264,8 @@ class TrackInfoObject : public QObject {
     QString getKeyText() const;
     void setKey(mixxx::track::io::key::ChromaticKey key,
                 mixxx::track::io::key::Source source);
-    void setKeyText(QString key,
-                    mixxx::track::io::key::Source source=mixxx::track::io::key::USER);
+    void setKeyText(QString key, mixxx::track::io::key::Source source =
+                                         mixxx::track::io::key::USER);
 
     void setCoverInfo(const CoverInfo& cover);
     CoverInfo getCoverInfo() const;
@@ -358,7 +355,6 @@ class TrackInfoObject : public QObject {
     // Track Number
     QString m_sTrackNumber;
 
-
     // File type
     QString m_sType;
     // User comment
@@ -404,11 +400,11 @@ class TrackInfoObject : public QObject {
     // Storage for the track's beats
     BeatsPointer m_pBeats;
 
-    //Visual waveform data
+    // Visual waveform data
     ConstWaveformPointer m_waveform;
     ConstWaveformPointer m_waveformSummary;
 
-    QAtomicInt m_analyserProgress; // in 0.1%
+    QAtomicInt m_analyserProgress;  // in 0.1%
 
     CoverArt m_coverArt;
 

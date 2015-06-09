@@ -18,8 +18,8 @@ class ControllerEngineTest : public MixxxTest {
     virtual void SetUp() {
         qDebug() << "SetUp";
         QThread::currentThread()->setObjectName("Main");
-        new ControlPotmeter(ConfigKey("[Test]", "potmeter"),-1.,1.);
-        Controller* pController = NULL;
+        new ControlPotmeter(ConfigKey("[Test]", "potmeter"), -1., 1.);
+        Controller *pController = NULL;
         cEngine = new ControllerEngine(pController);
         cEngine->setDebug(true);
         cEngine->setPopups(false);
@@ -42,7 +42,8 @@ TEST_F(ControllerEngineTest, commonScriptHasNoErrors) {
 
 TEST_F(ControllerEngineTest, scriptSetValue) {
     ScopedTemporaryFile script(makeTemporaryFile(
-        "setValue = function() { engine.setValue('[Channel1]', 'co', 1.0); }\n"));
+            "setValue = function() { engine.setValue('[Channel1]', 'co', 1.0); "
+            "}\n"));
 
     cEngine->evaluate(script->fileName());
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
@@ -57,7 +58,9 @@ TEST_F(ControllerEngineTest, scriptSetValue) {
 
 TEST_F(ControllerEngineTest, scriptGetSetValue) {
     ScopedTemporaryFile script(makeTemporaryFile(
-        "getSetValue = function() { var val = engine.getValue('[Channel1]', 'co'); engine.setValue('[Channel1]', 'co', val + 1); }\n"));
+            "getSetValue = function() { var val = "
+            "engine.getValue('[Channel1]', 'co'); "
+            "engine.setValue('[Channel1]', 'co', val + 1); }\n"));
 
     cEngine->evaluate(script->fileName());
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
@@ -70,24 +73,25 @@ TEST_F(ControllerEngineTest, scriptGetSetValue) {
 
 TEST_F(ControllerEngineTest, scriptConnectDisconnectControlNamedFunction) {
     ScopedTemporaryFile script(makeTemporaryFile(
-        "var executed = false;\n"
-        "var connection;\n"
-        "testConnectDisconnectControlCallback = function() {\n"
-        "    executed = true;\n"
-        "};\n"
-        "testConnectDisconnectControl = function() { \n"
-        "    connection = engine.connectControl('[Test]', 'potmeter', \n"
-        "                            'testConnectDisconnectControlCallback');\n"
-        "    engine.trigger('[Test]', 'potmeter');\n"
-        "    return true;\n"
-        "};\n"
-        "checkConnectDisconnectControl = function() {\n"
-        "    connection.disconnect();\n"
-        "    if (!executed) {\n"
-        "        throw 'Did Not Execute Callback';\n"
-        "    }\n"
-        "    return executed;\n"
-        "};\n"));
+            "var executed = false;\n"
+            "var connection;\n"
+            "testConnectDisconnectControlCallback = function() {\n"
+            "    executed = true;\n"
+            "};\n"
+            "testConnectDisconnectControl = function() { \n"
+            "    connection = engine.connectControl('[Test]', 'potmeter', \n"
+            "                            "
+            "'testConnectDisconnectControlCallback');\n"
+            "    engine.trigger('[Test]', 'potmeter');\n"
+            "    return true;\n"
+            "};\n"
+            "checkConnectDisconnectControl = function() {\n"
+            "    connection.disconnect();\n"
+            "    if (!executed) {\n"
+            "        throw 'Did Not Execute Callback';\n"
+            "    }\n"
+            "    return executed;\n"
+            "};\n"));
 
     cEngine->evaluate(script->fileName());
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
@@ -101,22 +105,22 @@ TEST_F(ControllerEngineTest, scriptConnectDisconnectControlNamedFunction) {
 
 TEST_F(ControllerEngineTest, scriptConnectDisconnectControlClosure) {
     ScopedTemporaryFile script(makeTemporaryFile(
-        "var executed = false;\n"
-        "var connection;\n"
-        "testConnectDisconnectControl = function() { \n"
-        "    connection = engine.connectControl('[Test]', 'potmeter', \n"
-        "        function() { executed = true; }\n"
-        "    );\n"
-        "    engine.trigger('[Test]', 'potmeter');\n"
-        "    return true;\n"
-        "};\n"
-        "checkConnectDisconnectControl = function() {\n"
-        "    connection.disconnect();\n"
-        "    if (!executed) {\n"
-        "        throw 'Did Not Execute Callback';\n"
-        "    }\n"
-        "    return executed;\n"
-        "};\n"));
+            "var executed = false;\n"
+            "var connection;\n"
+            "testConnectDisconnectControl = function() { \n"
+            "    connection = engine.connectControl('[Test]', 'potmeter', \n"
+            "        function() { executed = true; }\n"
+            "    );\n"
+            "    engine.trigger('[Test]', 'potmeter');\n"
+            "    return true;\n"
+            "};\n"
+            "checkConnectDisconnectControl = function() {\n"
+            "    connection.disconnect();\n"
+            "    if (!executed) {\n"
+            "        throw 'Did Not Execute Callback';\n"
+            "    }\n"
+            "    return executed;\n"
+            "};\n"));
 
     cEngine->evaluate(script->fileName());
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
@@ -130,24 +134,24 @@ TEST_F(ControllerEngineTest, scriptConnectDisconnectControlClosure) {
 
 TEST_F(ControllerEngineTest, scriptConnectDisconnectControlIsDisconnected) {
     ScopedTemporaryFile script(makeTemporaryFile(
-        "var executed = false;\n"
-        "var connection;\n"
-        "testConnectDisconnectControl = function() { \n"
-        "    connection = engine.connectControl('[Test]', 'potmeter', \n"
-        "        function() { executed = true; }\n"
-        "    );\n"
-        "    if (typeof connection == 'undefined')\n"
-        "        throw 'Unable to Connect controller';\n"
-        "    connection.disconnect();\n"
-        "    engine.trigger('[Test]', 'potmeter');\n"
-        "    return true;\n"
-        "};\n"
-        "checkConnectDisconnectControl = function() {\n"
-        "    if (executed) {\n"
-        "        throw 'Callback was executed';\n"
-        "    }\n"
-        "    return executed==false;\n"
-        "};\n"));
+            "var executed = false;\n"
+            "var connection;\n"
+            "testConnectDisconnectControl = function() { \n"
+            "    connection = engine.connectControl('[Test]', 'potmeter', \n"
+            "        function() { executed = true; }\n"
+            "    );\n"
+            "    if (typeof connection == 'undefined')\n"
+            "        throw 'Unable to Connect controller';\n"
+            "    connection.disconnect();\n"
+            "    engine.trigger('[Test]', 'potmeter');\n"
+            "    return true;\n"
+            "};\n"
+            "checkConnectDisconnectControl = function() {\n"
+            "    if (executed) {\n"
+            "        throw 'Callback was executed';\n"
+            "    }\n"
+            "    return executed==false;\n"
+            "};\n"));
 
     cEngine->evaluate(script->fileName());
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
@@ -159,25 +163,28 @@ TEST_F(ControllerEngineTest, scriptConnectDisconnectControlIsDisconnected) {
     EXPECT_TRUE(cEngine->execute("checkConnectDisconnectControl"));
 }
 
-TEST_F(ControllerEngineTest, scriptConnectDisconnectControlIsDisconnectedByName) {
+TEST_F(ControllerEngineTest,
+       scriptConnectDisconnectControlIsDisconnectedByName) {
     ScopedTemporaryFile script(makeTemporaryFile(
-        "var executed = false;\n"
-        "var connection;\n"
-        "connectionCallback = function() { executed = true; }\n"
-        "testConnectDisconnectControl = function() { \n"
-        "    connection = engine.connectControl('[Test]', 'potmeter', 'connectionCallback');\n"
-        "    if (typeof connection == 'undefined')\n"
-        "        throw 'Unable to Connect controller';\n"
-        "    engine.connectControl('[Test]', 'potmeter', 'connectionCallback', 1);\n"
-        "    engine.trigger('[Test]', 'potmeter');\n"
-        "    return true;\n"
-        "};\n"
-        "checkConnectDisconnectControl = function() {\n"
-        "    if (executed) {\n"
-        "        throw 'Callback was executed';\n"
-        "    }\n"
-        "    return executed==false;\n"
-        "};\n"));
+            "var executed = false;\n"
+            "var connection;\n"
+            "connectionCallback = function() { executed = true; }\n"
+            "testConnectDisconnectControl = function() { \n"
+            "    connection = engine.connectControl('[Test]', 'potmeter', "
+            "'connectionCallback');\n"
+            "    if (typeof connection == 'undefined')\n"
+            "        throw 'Unable to Connect controller';\n"
+            "    engine.connectControl('[Test]', 'potmeter', "
+            "'connectionCallback', 1);\n"
+            "    engine.trigger('[Test]', 'potmeter');\n"
+            "    return true;\n"
+            "};\n"
+            "checkConnectDisconnectControl = function() {\n"
+            "    if (executed) {\n"
+            "        throw 'Callback was executed';\n"
+            "    }\n"
+            "    return executed==false;\n"
+            "};\n"));
 
     cEngine->evaluate(script->fileName());
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
@@ -186,26 +193,27 @@ TEST_F(ControllerEngineTest, scriptConnectDisconnectControlIsDisconnectedByName)
     EXPECT_TRUE(cEngine->execute("checkConnectDisconnectControl"));
 }
 
-TEST_F(ControllerEngineTest, scriptConnectDisconnectControlIsDisconnectedByObject) {
+TEST_F(ControllerEngineTest,
+       scriptConnectDisconnectControlIsDisconnectedByObject) {
     ScopedTemporaryFile script(makeTemporaryFile(
-        "var executed = false;\n"
-        "var connection;\n"
-        "testConnectDisconnectControl = function() { \n"
-        "    connection = engine.connectControl('[Test]', 'potmeter', \n"
-        "        function() { executed = true; }\n"
-        "    );\n"
-        "    if (typeof connection == 'undefined')\n"
-        "        throw 'Unable to Connect controller';\n"
-        "    engine.connectControl('[Test]', 'potmeter', connection, 1);\n"
-        "    engine.trigger('[Test]', 'potmeter');\n"
-        "    return true;\n"
-        "};\n"
-        "checkConnectDisconnectControl = function() {\n"
-        "    if (executed) {\n"
-        "        throw 'Callback was executed';\n"
-        "    }\n"
-        "    return executed==false;\n"
-        "};\n"));
+            "var executed = false;\n"
+            "var connection;\n"
+            "testConnectDisconnectControl = function() { \n"
+            "    connection = engine.connectControl('[Test]', 'potmeter', \n"
+            "        function() { executed = true; }\n"
+            "    );\n"
+            "    if (typeof connection == 'undefined')\n"
+            "        throw 'Unable to Connect controller';\n"
+            "    engine.connectControl('[Test]', 'potmeter', connection, 1);\n"
+            "    engine.trigger('[Test]', 'potmeter');\n"
+            "    return true;\n"
+            "};\n"
+            "checkConnectDisconnectControl = function() {\n"
+            "    if (executed) {\n"
+            "        throw 'Callback was executed';\n"
+            "    }\n"
+            "    return executed==false;\n"
+            "};\n"));
 
     cEngine->evaluate(script->fileName());
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
@@ -219,7 +227,8 @@ TEST_F(ControllerEngineTest, scriptConnectDisconnectControlIsDisconnectedByObjec
 
 TEST_F(ControllerEngineTest, setInvalidControlObject) {
     ScopedTemporaryFile script(makeTemporaryFile(
-        "setValue = function() { engine.setValue('[Nothing]', 'nothing', 1.0); }\n"));
+            "setValue = function() { engine.setValue('[Nothing]', 'nothing', "
+            "1.0); }\n"));
 
     cEngine->evaluate(script->fileName());
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
@@ -229,7 +238,8 @@ TEST_F(ControllerEngineTest, setInvalidControlObject) {
 
 TEST_F(ControllerEngineTest, getInvalidControlObject) {
     ScopedTemporaryFile script(makeTemporaryFile(
-        "getValue = function() { return engine.getValue('[Nothing]', 'nothing'); }\n"));
+            "getValue = function() { return engine.getValue('[Nothing]', "
+            "'nothing'); }\n"));
 
     cEngine->evaluate(script->fileName());
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
@@ -239,10 +249,12 @@ TEST_F(ControllerEngineTest, getInvalidControlObject) {
 
 TEST_F(ControllerEngineTest, automaticReaction) {
     ScopedTemporaryFile script(makeTemporaryFile(
-        "setUp = function() { engine.connectControl('[Channel1]','co','reaction'); }\n"
-        "reaction = function(value) { if (value == 2.5) print('TEST PASSED: '+value);\n"
-        "else print('TEST FAILED!  TEST FAILED!  TEST FAILED: '+value);  "
-        "return value; }\n"));
+            "setUp = function() { "
+            "engine.connectControl('[Channel1]','co','reaction'); }\n"
+            "reaction = function(value) { if (value == 2.5) print('TEST "
+            "PASSED: '+value);\n"
+            "else print('TEST FAILED!  TEST FAILED!  TEST FAILED: '+value);  "
+            "return value; }\n"));
 
     cEngine->evaluate(script->fileName());
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
@@ -252,9 +264,9 @@ TEST_F(ControllerEngineTest, automaticReaction) {
     EXPECT_TRUE(cEngine->execute("setUp"));
 
     // The actual test
-    //  TODO: Have the JS call a function in this test class so the test framework
+    //  TODO: Have the JS call a function in this test class so the test
+    //  framework
     //  can tell if it actually passed or not
     co->set(2.5);
 }
-
 }

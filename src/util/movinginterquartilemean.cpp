@@ -1,11 +1,10 @@
 #include "movinginterquartilemean.h"
 
 MovingInterquartileMean::MovingInterquartileMean(const unsigned int listMaxSize)
-        : m_iListMaxSize(listMaxSize),
-          m_bChanged(true) {
+        : m_iListMaxSize(listMaxSize), m_bChanged(true) {
 }
 
-MovingInterquartileMean::~MovingInterquartileMean() {};
+MovingInterquartileMean::~MovingInterquartileMean(){};
 
 double MovingInterquartileMean::insert(double value) {
     m_bChanged = true;
@@ -51,9 +50,7 @@ double MovingInterquartileMean::mean() {
     m_bChanged = false;
     if (m_list.size() <= 4) {
         double d_sum = 0;
-        foreach (double d, m_list) {
-            d_sum += d;
-        }
+        foreach (double d, m_list) { d_sum += d; }
         m_dMean = d_sum / m_list.size();
     } else if (m_list.size() % 4 == 0) {
         int quartileSize = m_list.size() / 4;
@@ -68,9 +65,11 @@ double MovingInterquartileMean::mean() {
         // http://en.wikipedia.org/wiki/Interquartile_mean#Dataset_not_divisible_by_four
         double quartileSize = m_list.size() / 4.0;
         double interQuartileRange = 2 * quartileSize;
-        int nFullValues = m_list.size() - 2*static_cast<int>(quartileSize) - 2;
+        int nFullValues =
+                m_list.size() - 2 * static_cast<int>(quartileSize) - 2;
         double quartileWeight = (interQuartileRange - nFullValues) / 2;
-        QLinkedList<double>::iterator it = m_list.begin() + static_cast<int>(quartileSize);
+        QLinkedList<double>::iterator it =
+                m_list.begin() + static_cast<int>(quartileSize);
         double d_sum = *it * quartileWeight;
         ++it;
         for (int k = 0; k < nFullValues; ++k, ++it) {

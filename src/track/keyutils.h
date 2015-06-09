@@ -22,7 +22,7 @@ class KeyUtils {
 
     static inline bool keyIsMajor(mixxx::track::io::key::ChromaticKey key) {
         return key > mixxx::track::io::key::INVALID &&
-                key < mixxx::track::io::key::C_MINOR;
+               key < mixxx::track::io::key::C_MINOR;
     }
 
     // Returns the tonic, 0-indexed.
@@ -34,46 +34,51 @@ class KeyUtils {
     }
 
     // Takes a 0-indexed tonic and whether it is major/minor and produces a key.
-    static inline mixxx::track::io::key::ChromaticKey tonicToKey(int tonic, bool major) {
+    static inline mixxx::track::io::key::ChromaticKey tonicToKey(int tonic,
+                                                                 bool major) {
         return static_cast<mixxx::track::io::key::ChromaticKey>(
-            tonic + (major ? 1 : 13));
+                tonic + (major ? 1 : 13));
     }
 
     static QString keyToString(mixxx::track::io::key::ChromaticKey key,
-                               KeyNotation notation=DEFAULT);
+                               KeyNotation notation = DEFAULT);
 
-    static mixxx::track::io::key::ChromaticKey keyFromNumericValue(double value);
+    static mixxx::track::io::key::ChromaticKey keyFromNumericValue(
+            double value);
 
     static double keyToNumericValue(mixxx::track::io::key::ChromaticKey key);
 
     static QPair<mixxx::track::io::key::ChromaticKey, double> scaleKeyOctaves(
-        mixxx::track::io::key::ChromaticKey key, double scale);
+            mixxx::track::io::key::ChromaticKey key, double scale);
 
     static mixxx::track::io::key::ChromaticKey scaleKeySteps(
-        mixxx::track::io::key::ChromaticKey key, int steps);
+            mixxx::track::io::key::ChromaticKey key, int steps);
 
     static inline double stepsToOctaveChange(int steps) {
         return static_cast<double>(steps) / 12.0;
     }
 
-    static int shortestStepsToKey(mixxx::track::io::key::ChromaticKey key,
-                                  mixxx::track::io::key::ChromaticKey target_key);
+    static int shortestStepsToKey(
+            mixxx::track::io::key::ChromaticKey key,
+            mixxx::track::io::key::ChromaticKey target_key);
 
-    static int shortestStepsToCompatibleKey(mixxx::track::io::key::ChromaticKey key,
-                                            mixxx::track::io::key::ChromaticKey target_key);
+    static int shortestStepsToCompatibleKey(
+            mixxx::track::io::key::ChromaticKey key,
+            mixxx::track::io::key::ChromaticKey target_key);
 
     // Returns a list of keys that are harmonically compatible with key using
     // the Circle of Fifths (including the key itself).
     static QList<mixxx::track::io::key::ChromaticKey> getCompatibleKeys(
-        mixxx::track::io::key::ChromaticKey key);
+            mixxx::track::io::key::ChromaticKey key);
 
-    static mixxx::track::io::key::ChromaticKey guessKeyFromText(const QString& text);
+    static mixxx::track::io::key::ChromaticKey guessKeyFromText(
+            const QString& text);
 
     static mixxx::track::io::key::ChromaticKey calculateGlobalKey(
-        const KeyChangeList& key_changes, int iTotalSamples);
+            const KeyChangeList& key_changes, int iTotalSamples);
 
     static void setNotation(
-        const QMap<mixxx::track::io::key::ChromaticKey, QString>& notation);
+            const QMap<mixxx::track::io::key::ChromaticKey, QString>& notation);
 
     // Returns pow(2, octaveChange)
     static inline double octaveChangeToPowerOf2(const double& octaveChange) {
@@ -81,9 +86,10 @@ class KeyUtils {
         // using this identity:
         // x^y = e^(y*ln(x))
         // Presumably because exp() is faster than pow() on some machines.
-        // TODO(rryan) benchmark on Intel / AMD / ARM processors and pick accordingly.
-        //static const lg2 = log(2); // 0.69314718056f
-        //return exp(lg2 * octaveChange);
+        // TODO(rryan) benchmark on Intel / AMD / ARM processors and pick
+        // accordingly.
+        // static const lg2 = log(2); // 0.69314718056f
+        // return exp(lg2 * octaveChange);
         return pow(2.0, octaveChange);
     }
 
@@ -92,7 +98,7 @@ class KeyUtils {
     }
 
     static inline double powerOf2ToOctaveChange(const double& power_of_2) {
-        // log2 is in the C99 standard, MSVC only supports C90.
+// log2 is in the C99 standard, MSVC only supports C90.
 #ifdef _MSC_VER
         static const double lg2 = log(2.0);
         return log(power_of_2) / lg2;
@@ -105,9 +111,11 @@ class KeyUtils {
         return powerOf2ToOctaveChange(power_of_2) * 12;
     }
 
-    static mixxx::track::io::key::ChromaticKey openKeyNumberToKey(int openKeyNumber, bool major);
+    static mixxx::track::io::key::ChromaticKey openKeyNumberToKey(
+            int openKeyNumber, bool major);
 
-    static inline int keyToOpenKeyNumber(mixxx::track::io::key::ChromaticKey key) {
+    static inline int keyToOpenKeyNumber(
+            mixxx::track::io::key::ChromaticKey key) {
         switch (key) {
             case mixxx::track::io::key::C_MAJOR:
             case mixxx::track::io::key::A_MINOR:

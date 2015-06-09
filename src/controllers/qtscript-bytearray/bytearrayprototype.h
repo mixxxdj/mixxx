@@ -47,14 +47,13 @@
 #include <QtScript/QScriptValue>
 
 //! [0]
-class ByteArrayPrototype : public QObject, public QScriptable
-{
-Q_OBJECT
-public:
+class ByteArrayPrototype : public QObject, public QScriptable {
+    Q_OBJECT
+  public:
     ByteArrayPrototype(QObject *parent = 0);
     ~ByteArrayPrototype();
 
-public slots:
+  public slots:
     void chop(int n);
     bool equals(const QByteArray &other);
     QByteArray left(int len) const;
@@ -70,10 +69,9 @@ public slots:
     QString toLatin1String() const;
     QScriptValue valueOf() const;
 
-private:
+  private:
     QByteArray *thisByteArray() const;
 };
 //! [0]
-
 
 #endif

@@ -6,7 +6,8 @@
 #include "track/keyutils.h"
 #include "library/dao/trackdao.h"
 
-QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& column) {
+QVariant getTrackValueForColumn(const TrackPointer& pTrack,
+                                const QString& column) {
     if (column == LIBRARYTABLE_ARTIST) {
         return pTrack->getArtist();
     } else if (column == LIBRARYTABLE_TITLE) {
@@ -103,8 +104,7 @@ QString OrNode::toSql() const {
     return queryFragments.join(" OR ");
 }
 
-NotNode::NotNode(QueryNode* pNode)
-        : m_pNode(pNode) {
+NotNode::NotNode(QueryNode* pNode) : m_pNode(pNode) {
 }
 
 bool NotNode::match(const TrackPointer& pTrack) const {
@@ -142,12 +142,13 @@ QString TextFilterNode::toSql() const {
 
     QStringList searchClauses;
     foreach (QString sqlColumn, m_sqlColumns) {
-        searchClauses << QString("(%1 LIKE %2)").arg(sqlColumn, escapedArgument);
+        searchClauses << QString("(%1 LIKE %2)")
+                                 .arg(sqlColumn, escapedArgument);
     }
 
-    return searchClauses.length() > 1 ?
-            QString("(%1)").arg(searchClauses.join(" OR ")) :
-            searchClauses.at(0);
+    return searchClauses.length() > 1
+                   ? QString("(%1)").arg(searchClauses.join(" OR "))
+                   : searchClauses.at(0);
 }
 
 NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns,
@@ -189,7 +190,7 @@ void NumericFilterNode::init(QString argument) {
     }
 }
 
-double NumericFilterNode::parse(const QString& arg, bool *ok) {
+double NumericFilterNode::parse(const QString& arg, bool* ok) {
     return arg.toDouble(ok);
 }
 
@@ -231,25 +232,27 @@ QString NumericFilterNode::toSql() const {
     if (m_bOperatorQuery) {
         QStringList searchClauses;
         foreach (const QString& sqlColumn, m_sqlColumns) {
-            searchClauses << QString("(%1 %2 %3)").arg(
-                sqlColumn, m_operator, QString::number(m_dOperatorArgument));
+            searchClauses << QString("(%1 %2 %3)")
+                                     .arg(sqlColumn, m_operator,
+                                          QString::number(m_dOperatorArgument));
         }
-        return searchClauses.length() > 1 ?
-                QString("(%1)").arg(searchClauses.join(" OR ")) :
-                searchClauses[0];
+        return searchClauses.length() > 1
+                       ? QString("(%1)").arg(searchClauses.join(" OR "))
+                       : searchClauses[0];
     }
 
     if (m_bRangeQuery) {
         QStringList searchClauses;
         foreach (const QString& sqlColumn, m_sqlColumns) {
             searchClauses << QString("(%1 >= %2 AND %1 <= %3)")
-                    .arg(sqlColumn, QString::number(m_dRangeLow),
-                         QString::number(m_dRangeHigh));
+                                     .arg(sqlColumn,
+                                          QString::number(m_dRangeLow),
+                                          QString::number(m_dRangeHigh));
         }
 
-        return searchClauses.length() > 1 ?
-                QString("(%1)").arg(searchClauses.join(" OR ")) :
-                searchClauses[0];
+        return searchClauses.length() > 1
+                       ? QString("(%1)").arg(searchClauses.join(" OR "))
+                       : searchClauses[0];
     }
 
     return QString();
@@ -310,7 +313,7 @@ QString KeyFilterNode::toSql() const {
         searchClauses << QString("(key_id IS %1)").arg(QString::number(match));
     }
 
-    return searchClauses.length() > 1 ?
-            QString("(%1)").arg(searchClauses.join(" OR ")) :
-            searchClauses[0];
+    return searchClauses.length() > 1
+                   ? QString("(%1)").arg(searchClauses.join(" OR "))
+                   : searchClauses[0];
 }

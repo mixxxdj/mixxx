@@ -51,14 +51,16 @@ Waveform::Waveform(int audioSampleRate, int audioSamples,
             // Waveform Summary (Overview)
             if (audioSamples > maxVisualSamples) {
                 m_visualSampleRate = (double)maxVisualSamples *
-                        (double)audioSampleRate / (double)audioSamples;
+                                     (double)audioSampleRate /
+                                     (double)audioSamples;
             } else {
                 m_visualSampleRate = audioSampleRate;
             }
         }
-        m_audioVisualRatio = (double)audioSampleRate / (double)m_visualSampleRate;
+        m_audioVisualRatio =
+                (double)audioSampleRate / (double)m_visualSampleRate;
         numberOfVisualSamples = (audioSamples / m_audioVisualRatio) + 1;
-        numberOfVisualSamples += numberOfVisualSamples%2;
+        numberOfVisualSamples += numberOfVisualSamples % 2;
     }
     assign(numberOfVisualSamples, 0);
     setCompletion(0);
@@ -116,8 +118,7 @@ QByteArray Waveform::toByteArray() const {
     }
 
     qDebug() << "Writing waveform from byte array:"
-             << "dataSize" << dataSize
-             << "allSignalSize" << all->value_size()
+             << "dataSize" << dataSize << "allSignalSize" << all->value_size()
              << "visualSampleRate" << waveform.visual_sample_rate()
              << "audioVisualRatio" << waveform.audio_visual_ratio();
 
@@ -140,8 +141,7 @@ void Waveform::readByteArray(const QByteArray& data) {
     }
 
     if (!waveform.has_visual_sample_rate() ||
-        !waveform.has_audio_visual_ratio() ||
-        !waveform.has_signal_all() ||
+        !waveform.has_audio_visual_ratio() || !waveform.has_signal_all() ||
         !waveform.has_signal_filtered() ||
         !waveform.signal_filtered().has_low() ||
         !waveform.signal_filtered().has_mid() ||
@@ -156,9 +156,9 @@ void Waveform::readByteArray(const QByteArray& data) {
     const io::Waveform::Signal& high = waveform.signal_filtered().high();
 
     qDebug() << "Reading waveform from byte array:"
-             << "allSignalSize" << all.value_size()
-             << "visualSampleRate" << waveform.visual_sample_rate()
-             << "audioVisualRatio" << waveform.audio_visual_ratio();
+             << "allSignalSize" << all.value_size() << "visualSampleRate"
+             << waveform.visual_sample_rate() << "audioVisualRatio"
+             << waveform.audio_visual_ratio();
 
     resize(all.value_size());
 
@@ -172,10 +172,10 @@ void Waveform::readByteArray(const QByteArray& data) {
 
     m_visualSampleRate = waveform.visual_sample_rate();
     m_audioVisualRatio = waveform.audio_visual_ratio();
-    if (low.value_size() != dataSize ||
-        mid.value_size() != dataSize ||
+    if (low.value_size() != dataSize || mid.value_size() != dataSize ||
         high.value_size() != dataSize) {
-        qDebug() << "WARNING: Filtered data size does not match all-signal size.";
+        qDebug() << "WARNING: Filtered data size does not match all-signal "
+                    "size.";
     }
 
     // TODO(XXX) If non-RMS, convert but since we only save RMS today we can add
@@ -188,9 +188,12 @@ void Waveform::readByteArray(const QByteArray& data) {
         bool use_low = low_valid && i < low.value_size();
         bool use_mid = mid_valid && i < mid.value_size();
         bool use_high = high_valid && i < high.value_size();
-        m_data[i].filtered.low = use_low ? static_cast<unsigned char>(low.value(i)) : 0;
-        m_data[i].filtered.mid = use_mid ? static_cast<unsigned char>(mid.value(i)) : 0;
-        m_data[i].filtered.high = use_high ? static_cast<unsigned char>(high.value(i)) : 0;
+        m_data[i].filtered.low =
+                use_low ? static_cast<unsigned char>(low.value(i)) : 0;
+        m_data[i].filtered.mid =
+                use_mid ? static_cast<unsigned char>(mid.value(i)) : 0;
+        m_data[i].filtered.high =
+                use_high ? static_cast<unsigned char>(high.value(i)) : 0;
     }
     m_completion = dataSize;
     m_bDirty = false;
@@ -212,9 +215,9 @@ void Waveform::assign(int size, int value) {
 
 void Waveform::dump() const {
     qDebug() << "Waveform" << this
-             << "size("+QString::number(getDataSize())+")"
-             << "textureStride("+QString::number(m_textureStride)+")"
-             << "completion("+QString::number(getCompletion())+")"
-             << "visualSampleRate("+QString::number(m_visualSampleRate)+")"
-             << "audioVisualRatio("+QString::number(m_audioVisualRatio)+")";
+             << "size(" + QString::number(getDataSize()) + ")"
+             << "textureStride(" + QString::number(m_textureStride) + ")"
+             << "completion(" + QString::number(getCompletion()) + ")"
+             << "visualSampleRate(" + QString::number(m_visualSampleRate) + ")"
+             << "audioVisualRatio(" + QString::number(m_audioVisualRatio) + ")";
 }

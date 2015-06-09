@@ -8,8 +8,8 @@
 #include "controlobjectslave.h"
 #include "preferences/dlgpreferencepage.h"
 
-class DlgPrefReplayGain: public DlgPreferencePage,
-                         public Ui::DlgPrefReplayGainDlg {
+class DlgPrefReplayGain : public DlgPreferencePage,
+                          public Ui::DlgPrefReplayGainDlg {
     Q_OBJECT
   public:
     DlgPrefReplayGain(QWidget *parent, ConfigObject<ConfigValue> *_config);
@@ -35,7 +35,7 @@ class DlgPrefReplayGain: public DlgPreferencePage,
     void setLabelCurrentReplayGainBoost(int value);
 
     // Pointer to config object
-    ConfigObject<ConfigValue>* config;
+    ConfigObject<ConfigValue> *config;
 
     ControlObjectSlave m_replayGainBoost;
     ControlObjectSlave m_defaultBoost;

@@ -31,7 +31,8 @@ class AlphaBetaFilter {
 
     // Prepare the filter for observations every dt seconds. Default filter
     // values were concluded experimentally for time code vinyl.
-    void init(double dt, double v, double alpha = 1.0/512, double beta = (1.0/512)/1024) {
+    void init(double dt, double v, double alpha = 1.0 / 512,
+              double beta = (1.0 / 512) / 1024) {
         m_initialized = true;
         m_dt = dt;
         m_x = 0.0;

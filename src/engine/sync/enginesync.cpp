@@ -33,8 +33,10 @@ EngineSync::~EngineSync() {
 }
 
 void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
-    //qDebug() << "EngineSync::requestSyncMode" << pSyncable->getGroup() << mode;
-    // Based on the call hierarchy I don't think this is possible. (Famous last words.)
+    // qDebug() << "EngineSync::requestSyncMode" << pSyncable->getGroup() <<
+    // mode;
+    // Based on the call hierarchy I don't think this is possible. (Famous last
+    // words.)
     DEBUG_ASSERT_AND_HANDLE(pSyncable) {
         return;
     }
@@ -50,7 +52,8 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
     } else if (mode == SYNC_FOLLOWER) {
         if (pSyncable == m_pInternalClock && channelIsMaster) {
             if (syncDeckExists()) {
-                // Internal clock cannot be set to follower if there are other decks
+                // Internal clock cannot be set to follower if there are other
+                // decks
                 // with sync on. Notify them that their mode has not changed.
                 pSyncable->notifySyncModeChanged(SYNC_MASTER);
             } else {
@@ -81,7 +84,7 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
         }
     } else {
         if (pSyncable == m_pInternalClock && channelIsMaster &&
-                syncDeckExists()) {
+            syncDeckExists()) {
             // Internal clock cannot be disabled if there are other decks with
             // sync on. Notify them that their mode has not changed.
             pSyncable->notifySyncModeChanged(SYNC_MASTER);
@@ -93,7 +96,8 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
 }
 
 void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
-    //qDebug() << "EngineSync::requestEnableSync" << pSyncable->getGroup() << bEnabled;
+    // qDebug() << "EngineSync::requestEnableSync" << pSyncable->getGroup() <<
+    // bEnabled;
     if (bEnabled) {
         bool foundPlayingDeck = false;
         if (m_pMasterSyncable == NULL) {
@@ -141,15 +145,16 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
             activateMaster(m_pInternalClock);
 
             if (foundTargetBpm) {
-                setMasterParams(pSyncable, targetBeatDistance,
-                                targetBaseBpm, targetBpm);
+                setMasterParams(pSyncable, targetBeatDistance, targetBaseBpm,
+                                targetBpm);
             } else if (pSyncable->getBaseBpm() > 0) {
                 setMasterParams(pSyncable, pSyncable->getBeatDistance(),
                                 pSyncable->getBaseBpm(), pSyncable->getBpm());
             }
         } else if (m_pMasterSyncable == m_pInternalClock) {
             if (!syncDeckExists() && pSyncable->getBaseBpm() > 0) {
-                // If there are no active sync decks, reset the internal clock bpm
+                // If there are no active sync decks, reset the internal clock
+                // bpm
                 // and beat distance.
                 setMasterParams(pSyncable, pSyncable->getBeatDistance(),
                                 pSyncable->getBaseBpm(), pSyncable->getBpm());
@@ -162,7 +167,8 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
         }
         activateFollower(pSyncable);
         if (foundPlayingDeck && pSyncable->isPlaying()) {
-            // Users also expect phase to be aligned when they press the sync button.
+            // Users also expect phase to be aligned when they press the sync
+            // button.
             pSyncable->requestSyncPhase();
         }
     } else {
@@ -173,7 +179,8 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
 
 void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
     Q_UNUSED(playing);
-    //qDebug() << "EngineSync::notifyPlaying" << pSyncable->getGroup() << playing;
+    // qDebug() << "EngineSync::notifyPlaying" << pSyncable->getGroup() <<
+    // playing;
     // For now we don't care if the deck is now playing or stopping.
     if (pSyncable->getSyncMode() == SYNC_NONE) {
         return;
@@ -201,16 +208,18 @@ void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
         if (playing_sync_decks == 1) {
             uniqueSyncEnabled->notifyOnlyPlayingSyncable();
             if (playing_nonsync_decks == 1) {
-                m_pInternalClock->setMasterBeatDistance(uniqueSyncDisabled->getBeatDistance());
+                m_pInternalClock->setMasterBeatDistance(
+                        uniqueSyncDisabled->getBeatDistance());
             } else {
-                m_pInternalClock->setMasterBeatDistance(uniqueSyncEnabled->getBeatDistance());
+                m_pInternalClock->setMasterBeatDistance(
+                        uniqueSyncEnabled->getBeatDistance());
             }
         }
     }
 }
 
 void EngineSync::notifyTrackLoaded(Syncable* pSyncable, double suggested_bpm) {
-    //qDebug() << "EngineSync::notifyTrackLoaded";
+    // qDebug() << "EngineSync::notifyTrackLoaded";
     // If there are no other sync decks, initialize master based on this.
     // If there is, make sure to set our rate based on that.
 
@@ -224,7 +233,8 @@ void EngineSync::notifyTrackLoaded(Syncable* pSyncable, double suggested_bpm) {
         if (pOtherSyncable == pSyncable) {
             continue;
         }
-        if (pOtherSyncable->getSyncMode() != SYNC_NONE && pOtherSyncable->getBpm() != 0) {
+        if (pOtherSyncable->getSyncMode() != SYNC_NONE &&
+            pOtherSyncable->getBpm() != 0) {
             sync_deck_exists = true;
             break;
         }
@@ -243,8 +253,10 @@ void EngineSync::notifyScratching(Syncable* pSyncable, bool scratching) {
     Q_UNUSED(scratching);
 }
 
-void EngineSync::notifyBpmChanged(Syncable* pSyncable, double bpm, bool fileChanged) {
-    //qDebug() << "EngineSync::notifyBpmChanged" << pSyncable->getGroup() << bpm
+void EngineSync::notifyBpmChanged(Syncable* pSyncable, double bpm,
+                                  bool fileChanged) {
+    // qDebug() << "EngineSync::notifyBpmChanged" << pSyncable->getGroup() <<
+    // bpm
     //         << fileChanged;
 
     SyncMode syncMode = pSyncable->getSyncMode();
@@ -273,8 +285,10 @@ void EngineSync::notifyBpmChanged(Syncable* pSyncable, double bpm, bool fileChan
     setMasterBpm(pSyncable, bpm);
 }
 
-void EngineSync::notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) {
-    //qDebug() << "EngineSync::notifyInstantaneousBpmChanged" << pSyncable->getGroup() << bpm;
+void EngineSync::notifyInstantaneousBpmChanged(Syncable* pSyncable,
+                                               double bpm) {
+    // qDebug() << "EngineSync::notifyInstantaneousBpmChanged" <<
+    // pSyncable->getGroup() << bpm;
     if (pSyncable->getSyncMode() != SYNC_MASTER) {
         return;
     }
@@ -284,8 +298,10 @@ void EngineSync::notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) 
     setMasterInstantaneousBpm(pSyncable, bpm);
 }
 
-void EngineSync::notifyBeatDistanceChanged(Syncable* pSyncable, double beat_distance) {
-    //qDebug() << "EngineSync::notifyBeatDistanceChanged" << pSyncable->getGroup() << beat_distance;
+void EngineSync::notifyBeatDistanceChanged(Syncable* pSyncable,
+                                           double beat_distance) {
+    // qDebug() << "EngineSync::notifyBeatDistanceChanged" <<
+    // pSyncable->getGroup() << beat_distance;
     if (pSyncable->getSyncMode() != SYNC_MASTER) {
         return;
     }
@@ -295,17 +311,20 @@ void EngineSync::notifyBeatDistanceChanged(Syncable* pSyncable, double beat_dist
 
 void EngineSync::activateFollower(Syncable* pSyncable) {
     if (pSyncable == NULL) {
-        qWarning() << "WARNING: Logic Error: Called activateFollower on a NULL Syncable.";
+        qWarning() << "WARNING: Logic Error: Called activateFollower on a NULL "
+                      "Syncable.";
         return;
     }
 
     pSyncable->notifySyncModeChanged(SYNC_FOLLOWER);
-    pSyncable->setMasterParams(masterBeatDistance(), masterBaseBpm(), masterBpm());
+    pSyncable->setMasterParams(masterBeatDistance(), masterBaseBpm(),
+                               masterBpm());
 }
 
 void EngineSync::activateMaster(Syncable* pSyncable) {
     if (pSyncable == NULL) {
-        qWarning() << "WARNING: Logic Error: Called activateMaster on a NULL Syncable.";
+        qWarning() << "WARNING: Logic Error: Called activateMaster on a NULL "
+                      "Syncable.";
         return;
     }
 
@@ -313,7 +332,8 @@ void EngineSync::activateMaster(Syncable* pSyncable) {
     if (m_pMasterSyncable == pSyncable) {
         // Sanity check.
         if (m_pMasterSyncable->getSyncMode() != SYNC_MASTER) {
-            qWarning() << "WARNING: Logic Error: m_pMasterSyncable is a syncable that does not think it is master.";
+            qWarning() << "WARNING: Logic Error: m_pMasterSyncable is a "
+                          "syncable that does not think it is master.";
         }
         return;
     }
@@ -326,7 +346,7 @@ void EngineSync::activateMaster(Syncable* pSyncable) {
         activateFollower(pOldChannelMaster);
     }
 
-    //qDebug() << "Setting up master " << pSyncable->getGroup();
+    // qDebug() << "Setting up master " << pSyncable->getGroup();
     m_pMasterSyncable = pSyncable;
     pSyncable->notifySyncModeChanged(SYNC_MASTER);
 
@@ -352,14 +372,16 @@ void EngineSync::deactivateSync(Syncable* pSyncable) {
                 activateMaster(m_pInternalClock);
             }
         } else {
-            // Deactivate the internal clock if there are no more sync decks left.
+            // Deactivate the internal clock if there are no more sync decks
+            // left.
             m_pMasterSyncable = NULL;
             m_pInternalClock->notifySyncModeChanged(SYNC_NONE);
         }
     }
 }
 
-EngineChannel* EngineSync::pickNonSyncSyncTarget(EngineChannel* pDontPick) const {
+EngineChannel* EngineSync::pickNonSyncSyncTarget(
+        EngineChannel* pDontPick) const {
     EngineChannel* pFirstNonplayingDeck = NULL;
     foreach (Syncable* pSyncable, m_syncables) {
         EngineChannel* pChannel = pSyncable->getChannel();

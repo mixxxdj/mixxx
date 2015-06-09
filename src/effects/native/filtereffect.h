@@ -11,8 +11,6 @@
 #include "util/defs.h"
 #include "util/types.h"
 
-
-
 struct FilterGroupState {
     FilterGroupState();
     ~FilterGroupState();
@@ -25,7 +23,6 @@ struct FilterGroupState {
     double m_loFreq;
     double m_q;
     double m_hiFreq;
-
 };
 
 class FilterEffect : public PerChannelEffectProcessor<FilterGroupState> {
@@ -37,9 +34,8 @@ class FilterEffect : public PerChannelEffectProcessor<FilterGroupState> {
     static EffectManifest getManifest();
 
     // See effectprocessor.h
-    void processChannel(const ChannelHandle& handle,
-                        FilterGroupState* pState,
-                        const CSAMPLE* pInput, CSAMPLE *pOutput,
+    void processChannel(const ChannelHandle& handle, FilterGroupState* pState,
+                        const CSAMPLE* pInput, CSAMPLE* pOutput,
                         const unsigned int numSamples,
                         const unsigned int sampleRate,
                         const EffectProcessor::EnableState enableState,

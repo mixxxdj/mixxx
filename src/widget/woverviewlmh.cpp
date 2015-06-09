@@ -8,16 +8,15 @@
 #include "util/math.h"
 #include "waveform/waveform.h"
 
-WOverviewLMH::WOverviewLMH(const char *pGroup,
-                           ConfigObject<ConfigValue>* pConfig, QWidget * parent)
-        : WOverview(pGroup, pConfig, parent)  {
+WOverviewLMH::WOverviewLMH(const char* pGroup,
+                           ConfigObject<ConfigValue>* pConfig, QWidget* parent)
+        : WOverview(pGroup, pConfig, parent) {
 }
-
 
 bool WOverviewLMH::drawNextPixmapPart() {
     ScopedTimer t("WOverviewLMH::drawNextPixmapPart");
 
-    //qDebug() << "WOverview::drawNextPixmapPart() - m_waveform" << m_waveform;
+    // qDebug() << "WOverview::drawNextPixmapPart() - m_waveform" << m_waveform;
 
     int currentCompletion;
 
@@ -35,9 +34,9 @@ bool WOverviewLMH::drawNextPixmapPart() {
         // Waveform pixmap twice the height of the viewport to be scalable
         // by total_gain
         // We keep full range waveform data to scale it on paint
-        m_pWaveformSourceImage = new QImage(dataSize / 2, 2 * 255,
-                QImage::Format_ARGB32_Premultiplied);
-        m_pWaveformSourceImage->fill(QColor(0,0,0,0).value());
+        m_pWaveformSourceImage = new QImage(
+                dataSize / 2, 2 * 255, QImage::Format_ARGB32_Premultiplied);
+        m_pWaveformSourceImage->fill(QColor(0, 0, 0, 0).value());
     }
 
     // Always multiple of 2
@@ -52,15 +51,14 @@ bool WOverviewLMH::drawNextPixmapPart() {
 
     const int nextCompletion = m_actualCompletion + completionIncrement;
 
-    //qDebug() << "WOverview::drawNextPixmapPart() - nextCompletion:"
+    // qDebug() << "WOverview::drawNextPixmapPart() - nextCompletion:"
     //         << nextCompletion
     //         << "m_actualCompletion:" << m_actualCompletion
     //         << "waveformCompletion:" << waveformCompletion
     //         << "completionIncrement:" << completionIncrement;
 
-
     QPainter painter(m_pWaveformSourceImage);
-    painter.translate(0.0,(double)m_pWaveformSourceImage->height()/2.0);
+    painter.translate(0.0, (double)m_pWaveformSourceImage->height() / 2.0);
 
     QColor lowColor = m_signalColors.getLowColor();
     QPen lowColorPen(QBrush(lowColor), 1);
@@ -72,9 +70,9 @@ bool WOverviewLMH::drawNextPixmapPart() {
     QPen highColorPen(QBrush(highColor), 1);
 
     for (currentCompletion = m_actualCompletion;
-            currentCompletion < nextCompletion; currentCompletion += 2) {
+         currentCompletion < nextCompletion; currentCompletion += 2) {
         unsigned char lowNeg = pWaveform->getLow(currentCompletion);
-        unsigned char lowPos = pWaveform->getLow(currentCompletion+1);
+        unsigned char lowPos = pWaveform->getLow(currentCompletion + 1);
         if (lowPos || lowNeg) {
             painter.setPen(lowColorPen);
             painter.drawLine(QPoint(currentCompletion / 2, -lowNeg),
@@ -83,27 +81,27 @@ bool WOverviewLMH::drawNextPixmapPart() {
     }
 
     for (currentCompletion = m_actualCompletion;
-            currentCompletion < nextCompletion; currentCompletion += 2) {
+         currentCompletion < nextCompletion; currentCompletion += 2) {
         painter.setPen(midColorPen);
         painter.drawLine(QPoint(currentCompletion / 2,
-                -pWaveform->getMid(currentCompletion)),
-                QPoint(currentCompletion / 2,
-                pWaveform->getMid(currentCompletion+1)));
+                                -pWaveform->getMid(currentCompletion)),
+                         QPoint(currentCompletion / 2,
+                                pWaveform->getMid(currentCompletion + 1)));
     }
 
     for (currentCompletion = m_actualCompletion;
-            currentCompletion < nextCompletion; currentCompletion += 2) {
+         currentCompletion < nextCompletion; currentCompletion += 2) {
         painter.setPen(highColorPen);
         painter.drawLine(QPoint(currentCompletion / 2,
-                -pWaveform->getHigh(currentCompletion)),
-                QPoint(currentCompletion / 2,
-                pWaveform->getHigh(currentCompletion+1)));
+                                -pWaveform->getHigh(currentCompletion)),
+                         QPoint(currentCompletion / 2,
+                                pWaveform->getHigh(currentCompletion + 1)));
     }
 
     // Evaluate waveform ratio peak
 
     for (currentCompletion = m_actualCompletion;
-            currentCompletion < nextCompletion; currentCompletion += 2) {
+         currentCompletion < nextCompletion; currentCompletion += 2) {
         m_waveformPeak = math_max3(
                 m_waveformPeak,
                 static_cast<float>(pWaveform->getAll(currentCompletion)),
@@ -117,7 +115,7 @@ bool WOverviewLMH::drawNextPixmapPart() {
     // Test if the complete waveform is done
     if (m_actualCompletion >= dataSize - 2) {
         m_pixmapDone = true;
-        //qDebug() << "m_waveformPeakRatio" << m_waveformPeak;
+        // qDebug() << "m_waveformPeakRatio" << m_waveformPeak;
     }
 
     return true;

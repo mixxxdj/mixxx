@@ -26,4 +26,4 @@ class WaveformRenderBeat : public WaveformRendererAbstract {
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderBeat);
 };
 
-#endif //WAVEFORMRENDERBEAT_H
+#endif  // WAVEFORMRENDERBEAT_H

@@ -11,28 +11,25 @@
 
 class Trace {
   public:
-    Trace(const char* tag, const char* arg=NULL,
-          bool writeToStdout=false, bool time=true)
-            : m_writeToStdout(writeToStdout),
-              m_time(time) {
+    Trace(const char* tag, const char* arg = NULL, bool writeToStdout = false,
+          bool time = true)
+            : m_writeToStdout(writeToStdout), m_time(time) {
         if (writeToStdout || CmdlineArgs::Instance().getDeveloper()) {
             initialize(tag, arg);
         }
     }
 
-    Trace(const char* tag, int arg,
-          bool writeToStdout=false, bool time=true)
-            : m_writeToStdout(writeToStdout),
-              m_time(time) {
+    Trace(const char* tag, int arg, bool writeToStdout = false,
+          bool time = true)
+            : m_writeToStdout(writeToStdout), m_time(time) {
         if (writeToStdout || CmdlineArgs::Instance().getDeveloper()) {
             initialize(tag, QString::number(arg));
         }
     }
 
-    Trace(const char* tag, const QString& arg,
-          bool writeToStdout=false, bool time=true)
-            : m_writeToStdout(writeToStdout),
-              m_time(time) {
+    Trace(const char* tag, const QString& arg, bool writeToStdout = false,
+          bool time = true)
+            : m_writeToStdout(writeToStdout), m_time(time) {
         if (writeToStdout || CmdlineArgs::Instance().getDeveloper()) {
             initialize(tag, arg);
         }
@@ -57,12 +54,11 @@ class Trace {
                 // a check in StatsManager to infer that a DURATION_NANOSEC
                 // event for the same tag that has an EVENT_START/EVENT_END is a
                 // duration instead of changing the tag.
-                Stat::track(
-                        m_tag + "_duration",
-                        Stat::DURATION_NANOSEC,
-                        Stat::COUNT | Stat::AVERAGE | Stat::SAMPLE_VARIANCE |
-                        Stat::MAX | Stat::MIN,
-                        elapsed);
+                Stat::track(m_tag + "_duration", Stat::DURATION_NANOSEC,
+                            Stat::COUNT | Stat::AVERAGE |
+                                    Stat::SAMPLE_VARIANCE | Stat::MAX |
+                                    Stat::MIN,
+                            elapsed);
             }
         }
     }
@@ -87,12 +83,11 @@ class Trace {
     QString m_tag;
     const bool m_writeToStdout, m_time;
     PerformanceTimer m_timer;
-
 };
 
 class DebugTrace : public Trace {
   public:
-    DebugTrace(const char* tag, bool time=true)
+    DebugTrace(const char* tag, bool time = true)
             : Trace(tag, "", CmdlineArgs::Instance().getDeveloper(), time) {
     }
     virtual ~DebugTrace() {

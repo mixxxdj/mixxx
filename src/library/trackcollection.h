@@ -73,25 +73,18 @@ class TrackCollection : public QObject {
 
   protected:
 #ifdef __SQLITE3__
-    void installSorting(QSqlDatabase &db);
-    static int sqliteLocaleAwareCompare(void* pArg,
-                                        int len1, const void* data1,
+    void installSorting(QSqlDatabase& db);
+    static int sqliteLocaleAwareCompare(void* pArg, int len1, const void* data1,
                                         int len2, const void* data2);
-    static void sqliteLike(sqlite3_context *p,
-                          int aArgc,
-                          sqlite3_value **aArgv);
+    static void sqliteLike(sqlite3_context* p, int aArgc,
+                           sqlite3_value** aArgv);
     static void makeLatinLow(QChar* c, int count);
-    static int likeCompareLatinLow(
-            QString* pattern,
-            QString* string,
-            const QChar esc);
-    static int likeCompareInner(
-            const QChar* pattern,
-            int patterenSize,
-            const QChar* string,
-            int stringSize,
-            const QChar esc);
-#endif // __SQLITE3__
+    static int likeCompareLatinLow(QString* pattern, QString* string,
+                                   const QChar esc);
+    static int likeCompareInner(const QChar* pattern, int patterenSize,
+                                const QChar* string, int stringSize,
+                                const QChar esc);
+#endif  // __SQLITE3__
 
   private:
     ConfigObject<ConfigValue>* m_pConfig;
@@ -106,4 +99,4 @@ class TrackCollection : public QObject {
     TrackDAO m_trackDao;
 };
 
-#endif // TRACKCOLLECTION_H
+#endif  // TRACKCOLLECTION_H

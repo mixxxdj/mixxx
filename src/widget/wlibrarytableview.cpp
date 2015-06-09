@@ -17,13 +17,12 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
         : QTableView(parent),
           m_pConfig(pConfig),
           m_vScrollBarPosKey(vScrollBarPosKey) {
-
     // Setup properties for table
 
     // Editing starts when clicking on an already selected item.
     setEditTriggers(QAbstractItemView::SelectedClicked);
 
-    //Enable selection by rows and extended selection (ctrl/shift click)
+    // Enable selection by rows and extended selection (ctrl/shift click)
     setSelectionBehavior(QAbstractItemView::SelectRows);
     setSelectionMode(QAbstractItemView::ExtendedSelection);
 
@@ -34,8 +33,8 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
     // Used by delegates (e.g. StarDelegate) to tell when the mouse enters a
     // cell.
     setMouseTracking(true);
-    //Work around a Qt bug that lets you make your columns so wide you
-    //can't reach the divider to make them small again.
+    // Work around a Qt bug that lets you make your columns so wide you
+    // can't reach the divider to make them small again.
     setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
 
     verticalHeader()->hide();
@@ -44,8 +43,8 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
 
     loadVScrollBarPosState();
 
-    connect(verticalScrollBar(), SIGNAL(valueChanged(int)),
-            this, SIGNAL(scrollValueChanged(int)));
+    connect(verticalScrollBar(), SIGNAL(valueChanged(int)), this,
+            SIGNAL(scrollValueChanged(int)));
 
     setTabKeyNavigation(false);
 }
@@ -60,25 +59,25 @@ void WLibraryTableView::loadVScrollBarPosState() {
     // position across restarts of Mixxx. Now that we have different views for
     // each mode, the views should just maintain their scrollbar position when
     // you switch views. We should discuss this.
-    m_iSavedVScrollBarPos = m_pConfig->getValueString(m_vScrollBarPosKey).toInt();
+    m_iSavedVScrollBarPos =
+            m_pConfig->getValueString(m_vScrollBarPosKey).toInt();
 }
 
 void WLibraryTableView::restoreVScrollBarPos() {
-    //Restore the scrollbar's position (scroll to that spot)
-    //when the search has been cleared
+    // Restore the scrollbar's position (scroll to that spot)
+    // when the search has been cleared
     updateGeometries();
     verticalScrollBar()->setValue(m_iSavedVScrollBarPos);
 }
 
 void WLibraryTableView::saveVScrollBarPos() {
-    //Save the scrollbar's position so we can return here after
-    //a search is cleared.
+    // Save the scrollbar's position so we can return here after
+    // a search is cleared.
     m_iSavedVScrollBarPos = verticalScrollBar()->value();
 }
 
-
 void WLibraryTableView::saveVScrollBarPosState() {
-    //Save the vertical scrollbar position.
+    // Save the vertical scrollbar position.
     int scrollbarPosition = verticalScrollBar()->value();
     m_pConfig->set(m_vScrollBarPosKey, ConfigValue(scrollbarPosition));
 }
@@ -90,10 +89,10 @@ void WLibraryTableView::moveSelection(int delta) {
         return;
     }
 
-    while(delta != 0) {
+    while (delta != 0) {
         // TODO(rryan) what happens if there is nothing selected?
         QModelIndex current = currentIndex();
-        if(delta > 0) {
+        if (delta > 0) {
             // i is positive, so we want to move the highlight down
             int row = current.row();
             if (row + 1 < pModel->rowCount())
@@ -119,7 +118,5 @@ void WLibraryTableView::setTrackTableFont(const QFont& font) {
 void WLibraryTableView::setTrackTableRowHeight(int rowHeight) {
     QFontMetrics metrics(font());
     int fontHeightPx = metrics.height();
-    verticalHeader()->setDefaultSectionSize(math_max(
-            rowHeight, fontHeightPx));
+    verticalHeader()->setDefaultSectionSize(math_max(rowHeight, fontHeightPx));
 }
-

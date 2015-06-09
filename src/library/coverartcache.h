@@ -26,10 +26,8 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
      * TODO(rryan): Provide a QObject* and a SLOT to invoke directly. Why make
      * everyone filter the signals they receive?
      */
-    QPixmap requestCover(const CoverInfo& info,
-                         const QObject* pRequestor,
-                         const int requestReference,
-                         const int desiredWidth = 0,
+    QPixmap requestCover(const CoverInfo& info, const QObject* pRequestor,
+                         const int requestReference, const int desiredWidth = 0,
                          const bool onlyCached = false,
                          const bool signalWhenDone = true);
 
@@ -40,10 +38,11 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     void requestGuessCover(TrackPointer pTrack);
 
     struct FutureResult {
-        FutureResult() : pRequestor(NULL),
-                         requestReference(0),
-                         desiredWidth(0),
-                         signalWhenDone(false) {
+        FutureResult()
+                : pRequestor(NULL),
+                  requestReference(0),
+                  desiredWidth(0),
+                  signalWhenDone(false) {
         }
 
         CoverArt cover;
@@ -70,8 +69,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     // worker thread.
     FutureResult loadCover(const CoverInfo& coverInfo,
                            const QObject* pRequestor,
-                           const int requestReference,
-                           const int desiredWidth,
+                           const int requestReference, const int desiredWidth,
                            const bool emitSignals);
 
     // Guesses the cover art for each track.
@@ -79,7 +77,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     void guessCover(TrackPointer pTrack);
 
   private:
-    QSet<QPair<const QObject*, int> > m_runningRequests;
+    QSet<QPair<const QObject*, int>> m_runningRequests;
 };
 
-#endif // COVERARTCACHE_H
+#endif  // COVERARTCACHE_H

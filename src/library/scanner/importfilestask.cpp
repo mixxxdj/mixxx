@@ -7,13 +7,14 @@
 ImportFilesTask::ImportFilesTask(LibraryScanner* pScanner,
                                  const ScannerGlobalPointer scannerGlobal,
                                  const QString& dirPath,
-                                 const bool prevHashExists,
-                                 const int newHash,
+                                 const bool prevHashExists, const int newHash,
                                  const QLinkedList<QFileInfo>& filesToImport,
                                  const QLinkedList<QFileInfo>& possibleCovers,
                                  SecurityTokenPointer pToken)
-        : ScannerTask(pScanner, scannerGlobal), m_dirPath(dirPath),
-          m_prevHashExists(prevHashExists), m_newHash(newHash),
+        : ScannerTask(pScanner, scannerGlobal),
+          m_dirPath(dirPath),
+          m_prevHashExists(prevHashExists),
+          m_newHash(newHash),
           m_filesToImport(filesToImport),
           m_possibleCovers(possibleCovers),
           m_pToken(pToken) {
@@ -29,14 +30,15 @@ void ImportFilesTask::run() {
         }
 
         QString filePath = file.filePath();
-        //qDebug() << "ImportFilesTask::run" << filePath;
+        // qDebug() << "ImportFilesTask::run" << filePath;
 
         // If the file does not exist in the database then add it. If it
         // does then it is either in the user's library OR the user has
         // "removed" the track via "Right-Click -> Remove". These tracks
         // stay in the library, but their mixxx_deleted column is 1.
         if (m_scannerGlobal->trackExistsInDatabase(filePath)) {
-            // If the track is in the database, mark it as existing. This code gets
+            // If the track is in the database, mark it as existing. This code
+            // gets
             // executed when other files in the same directory have changed (the
             // directory hash has changed).
             emit(trackExists(filePath));
@@ -47,13 +49,13 @@ void ImportFilesTask::run() {
             // this changes in the future you MUST check that the cover art is
             // not USER_SELECTED first.
             TrackPointer pTrack = TrackPointer(
-                new TrackInfoObject(filePath, m_pToken, true, true));
+                    new TrackInfoObject(filePath, m_pToken, true, true));
 
             // If cover art is not found in the track metadata, populate from
             // possibleCovers.
             if (pTrack->getCoverArt().image.isNull()) {
                 CoverArt art = CoverArtUtils::selectCoverArtForTrack(
-                    pTrack.data(), m_possibleCovers);
+                        pTrack.data(), m_possibleCovers);
                 if (!art.image.isNull()) {
                     pTrack->setCoverArt(art);
                 }

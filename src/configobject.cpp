@@ -29,14 +29,10 @@
 ConfigKey::ConfigKey() {
 }
 
-ConfigKey::ConfigKey(const QString& g, const QString& i)
-    : group(g),
-      item(i) {
+ConfigKey::ConfigKey(const QString& g, const QString& i) : group(g), item(i) {
 }
 
-ConfigKey::ConfigKey(const char* g, const char* i)
-    : group(g),
-      item(i) {
+ConfigKey::ConfigKey(const char* g, const char* i) : group(g), item(i) {
 }
 
 // static
@@ -44,72 +40,61 @@ ConfigKey ConfigKey::parseCommaSeparated(QString key) {
     ConfigKey configKey;
     int comma = key.indexOf(",");
     configKey.group = key.left(comma);
-    configKey.item = key.mid(comma+1);
+    configKey.item = key.mid(comma + 1);
     return configKey;
 }
 
-ConfigValue::ConfigValue()
-{
+ConfigValue::ConfigValue() {
 }
 
-ConfigValue::ConfigValue(QString _value)
-{
+ConfigValue::ConfigValue(QString _value) {
     value = _value;
 }
 
-ConfigValue::ConfigValue(int _value)
-{
+ConfigValue::ConfigValue(int _value) {
     value = QString::number(_value);
 }
 
-void ConfigValue::valCopy(const ConfigValue& _value)
-{
+void ConfigValue::valCopy(const ConfigValue& _value) {
     value = _value.value;
 }
 
-
-ConfigValueKbd::ConfigValueKbd()
-{
+ConfigValueKbd::ConfigValueKbd() {
 }
 
-ConfigValueKbd::ConfigValueKbd(QString _value) : ConfigValue(_value)
-{
+ConfigValueKbd::ConfigValueKbd(QString _value) : ConfigValue(_value) {
     QString key;
 
     QTextStream(&_value) >> key;
     m_qKey = QKeySequence(key);
 }
 
-ConfigValueKbd::ConfigValueKbd(QKeySequence key)
-{
+ConfigValueKbd::ConfigValueKbd(QKeySequence key) {
     m_qKey = key;
     QTextStream(&value) << m_qKey.toString();
-//          qDebug() << "value" << value;
+    //          qDebug() << "value" << value;
 }
 
-void ConfigValueKbd::valCopy(const ConfigValueKbd& v)
-{
+void ConfigValueKbd::valCopy(const ConfigValueKbd& v) {
     m_qKey = v.m_qKey;
     QTextStream(&value) << m_qKey.toString();
 }
 
-bool operator==(const ConfigValue& s1, const ConfigValue& s2)
-{
+bool operator==(const ConfigValue& s1, const ConfigValue& s2) {
     return (s1.value.toUpper() == s2.value.toUpper());
 }
 
-bool operator==(const ConfigValueKbd& s1, const ConfigValueKbd& s2)
-{
+bool operator==(const ConfigValueKbd& s1, const ConfigValueKbd& s2) {
     return (s1.value.toUpper() == s2.value.toUpper());
 }
 
-template <class ValueType> ConfigObject<ValueType>::ConfigObject(QString file)
-{
+template <class ValueType>
+ConfigObject<ValueType>::ConfigObject(QString file) {
     reopen(file);
 }
 
-template <class ValueType> ConfigObject<ValueType>::~ConfigObject()
-{
+template <class ValueType>
+ConfigObject<ValueType>::~ConfigObject() {
     while (m_list.size() > 0) {
         ConfigOption<ValueType>* pConfigOption = m_list.takeLast();
         delete pConfigOption;
@@ -117,67 +102,61 @@ template <class ValueType> ConfigObject<ValueType>::~ConfigObject()
 }
 
 template <class ValueType>
-ConfigOption<ValueType> *ConfigObject<ValueType>::set(ConfigKey k, ValueType v)
-{
+ConfigOption<ValueType>* ConfigObject<ValueType>::set(ConfigKey k,
+                                                      ValueType v) {
     // Search for key in list, and set value if found
-    QListIterator<ConfigOption<ValueType>* > iterator(m_list);
+    QListIterator<ConfigOption<ValueType>*> iterator(m_list);
     ConfigOption<ValueType>* it;
-    while (iterator.hasNext())
-    {
+    while (iterator.hasNext()) {
         it = iterator.next();
-//         if (QString::compare(it->val->value, v.value, Qt::CaseInsensitive) == 0)
-        if (it->key->group == k.group && it->key->item == k.item)
-        {
-            //qDebug() << "set found." << group << "," << item;
-            //cout << "1: " << v.value << "\n";
-            //qDebug() << "configobject " << it->val;
-            it->val->valCopy(v); // Should be done smarter using object copying
-            //qDebug() << "configobject " << it->val;
-            //cout << "2: " << it->val->value << "\n";
+        //         if (QString::compare(it->val->value, v.value,
+        //         Qt::CaseInsensitive) == 0)
+        if (it->key->group == k.group && it->key->item == k.item) {
+            // qDebug() << "set found." << group << "," << item;
+            // cout << "1: " << v.value << "\n";
+            // qDebug() << "configobject " << it->val;
+            it->val->valCopy(v);  // Should be done smarter using object copying
+            // qDebug() << "configobject " << it->val;
+            // cout << "2: " << it->val->value << "\n";
             return it;
         }
     }
 
     // If key is not found, insert it into the list of config objects
-    ConfigKey * key = new ConfigKey(k.group, k.item);
+    ConfigKey* key = new ConfigKey(k.group, k.item);
     it = new ConfigOption<ValueType>(key, new ValueType(v));
-    //qDebug() << "new configobject " << it->val;
+    // qDebug() << "new configobject " << it->val;
     m_list.append(it);
     return it;
 }
 
 template <class ValueType>
-ConfigOption<ValueType> *ConfigObject<ValueType>::get(ConfigKey k)
-{
-    QListIterator<ConfigOption<ValueType>* > iterator(m_list);
+ConfigOption<ValueType>* ConfigObject<ValueType>::get(ConfigKey k) {
+    QListIterator<ConfigOption<ValueType>*> iterator(m_list);
     ConfigOption<ValueType>* it;
-    while (iterator.hasNext())
-    {
+    while (iterator.hasNext()) {
         it = iterator.next();
-        //qDebug() << it->key->group << k->group << it->key->item << k->item;
-        if (it->key->group == k.group && it->key->item == k.item)
-        {
-            //cout << it->key->group << ":" << it->key->item << ", val: " << it->val->value << "\n";
+        // qDebug() << it->key->group << k->group << it->key->item << k->item;
+        if (it->key->group == k.group && it->key->item == k.item) {
+            // cout << it->key->group << ":" << it->key->item << ", val: " <<
+            // it->val->value << "\n";
             return it;
         }
     }
     // If key is not found, insert into list with null values
-    ConfigKey * key = new ConfigKey(k.group, k.item);
+    ConfigKey* key = new ConfigKey(k.group, k.item);
     it = new ConfigOption<ValueType>(key, new ValueType(""));
     m_list.append(it);
     return it;
 }
 
 template <class ValueType>
-bool ConfigObject<ValueType>::exists(ConfigKey k)
-{
-    QListIterator<ConfigOption<ValueType>* > iterator(m_list);
+bool ConfigObject<ValueType>::exists(ConfigKey k) {
+    QListIterator<ConfigOption<ValueType>*> iterator(m_list);
     ConfigOption<ValueType>* it;
-    while (iterator.hasNext())
-    {
+    while (iterator.hasNext()) {
         it = iterator.next();
-        if (it->key->group == k.group && it->key->item == k.item)
-        {
+        if (it->key->group == k.group && it->key->item == k.item) {
             return true;
         }
     }
@@ -185,40 +164,40 @@ bool ConfigObject<ValueType>::exists(ConfigKey k)
 }
 
 template <class ValueType>
-ConfigKey *ConfigObject<ValueType>::get(ValueType v)
-{
-    QListIterator<ConfigOption<ValueType>* > iterator(m_list);
+ConfigKey* ConfigObject<ValueType>::get(ValueType v) {
+    QListIterator<ConfigOption<ValueType>*> iterator(m_list);
     ConfigOption<ValueType>* it;
-    while (iterator.hasNext())
-    {
+    while (iterator.hasNext()) {
         it = iterator.next();
-        if (QString::compare(it->val->value, v.value, Qt::CaseInsensitive) == 0) {
-            //qDebug() << "ConfigObject #534: QString::compare match for " << it->key->group << it->key->item;
+        if (QString::compare(it->val->value, v.value, Qt::CaseInsensitive) ==
+            0) {
+            // qDebug() << "ConfigObject #534: QString::compare match for " <<
+            // it->key->group << it->key->item;
             return it->key;
         }
-        if (((ValueType)*it->val) == ((ValueType)v))
-        {
-            //qDebug() << "ConfigObject: match" << it->val->value.toUpper() << "with" << v.value.toUpper();
+        if (((ValueType)*it->val) == ((ValueType)v)) {
+            // qDebug() << "ConfigObject: match" << it->val->value.toUpper() <<
+            // "with" << v.value.toUpper();
             return it->key;
         }
 
         if (it == m_list.last()) {
-            //qDebug() << "ConfigObject: last match attempted" << it->val->value.toUpper() << "with" << v.value.toUpper();
+            // qDebug() << "ConfigObject: last match attempted" <<
+            // it->val->value.toUpper() << "with" << v.value.toUpper();
         }
     }
-    //qDebug() << "No match for ConfigObject:" << v.value;
+    // qDebug() << "No match for ConfigObject:" << v.value;
     return 0;
 }
 
 template <class ValueType>
-QString ConfigObject<ValueType>::getValueString(ConfigKey k)
-{
+QString ConfigObject<ValueType>::getValueString(ConfigKey k) {
     return get(k)->val->value;
 }
 
 template <class ValueType>
-QString ConfigObject<ValueType>::getValueString(ConfigKey k, const QString& default_string)
-{
+QString ConfigObject<ValueType>::getValueString(ConfigKey k,
+                                                const QString& default_string) {
     QString ret = get(k)->val->value;
     if (ret.isEmpty()) {
         return default_string;
@@ -226,43 +205,37 @@ QString ConfigObject<ValueType>::getValueString(ConfigKey k, const QString& defa
     return ret;
 }
 
-template <class ValueType> bool ConfigObject<ValueType>::Parse()
-{
+template <class ValueType>
+bool ConfigObject<ValueType>::Parse() {
     // Open file for reading
     QFile configfile(m_filename);
-    if (m_filename.length()<1 || !configfile.open(QIODevice::ReadOnly))
-    {
+    if (m_filename.length() < 1 || !configfile.open(QIODevice::ReadOnly)) {
         qDebug() << "ConfigObject: Could not read" << m_filename;
         return false;
-    }
-    else
-    {
-        //qDebug() << "ConfigObject: Parse" << m_filename;
+    } else {
+        // qDebug() << "ConfigObject: Parse" << m_filename;
         // Parse the file
         int group = 0;
         QString groupStr, line;
         QTextStream text(&configfile);
         text.setCodec("UTF-8");
 
-        while (!text.atEnd())
-        {
+        while (!text.atEnd()) {
             line = text.readLine().trimmed();
 
-            if (line.length() != 0)
-            {
-                if (line.startsWith("[") && line.endsWith("]"))
-                {
+            if (line.length() != 0) {
+                if (line.startsWith("[") && line.endsWith("]")) {
                     group++;
                     groupStr = line;
-                    //qDebug() << "Group :" << groupStr;
-                }
-                else if (group>0)
-                {
+                    // qDebug() << "Group :" << groupStr;
+                } else if (group > 0) {
                     QString key;
                     QTextStream(&line) >> key;
-                    QString val = line.right(line.length() - key.length()); // finds the value string
+                    QString val =
+                            line.right(line.length() -
+                                       key.length());  // finds the value string
                     val = val.trimmed();
-                    //qDebug() << "control:" << key << "value:" << val;
+                    // qDebug() << "control:" << key << "value:" << val;
                     ConfigKey k(groupStr, key);
                     ValueType m(val);
                     set(k, m);
@@ -274,10 +247,10 @@ template <class ValueType> bool ConfigObject<ValueType>::Parse()
     return true;
 }
 
-template <class ValueType> void ConfigObject<ValueType>::clear()
-{
-    //Delete the pointers, because that's what we did before we
-    //purged Mixxx of Qt3 code. -- Albert, June 18th 2010 (at 30,000 ft)
+template <class ValueType>
+void ConfigObject<ValueType>::clear() {
+    // Delete the pointers, because that's what we did before we
+    // purged Mixxx of Qt3 code. -- Albert, June 18th 2010 (at 30,000 ft)
     for (int i = 0; i < m_list.count(); i++)
         delete m_list[i];
 
@@ -285,49 +258,47 @@ template <class ValueType> void ConfigObject<ValueType>::clear()
     // members of list. Instead all member values should be set to some
     // null value.
     m_list.clear();
-
 }
 
-template <class ValueType> void ConfigObject<ValueType>::reopen(QString file)
-{
+template <class ValueType>
+void ConfigObject<ValueType>::reopen(QString file) {
     m_filename = file;
     Parse();
 }
 
-template <class ValueType> void ConfigObject<ValueType>::Save()
-{
+template <class ValueType>
+void ConfigObject<ValueType>::Save() {
     QFile file(m_filename);
     if (!QDir(QFileInfo(file).absolutePath()).exists()) {
         QDir().mkpath(QFileInfo(file).absolutePath());
     }
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         qDebug() << "Could not write file" << m_filename << ", don't worry.";
         return;
-    }
-    else
-    {
+    } else {
         QTextStream stream(&file);
         stream.setCodec("UTF-8");
 
         QString grp = "";
 
-        QListIterator<ConfigOption<ValueType>* > iterator(m_list);
+        QListIterator<ConfigOption<ValueType>*> iterator(m_list);
         ConfigOption<ValueType>* it;
-        while (iterator.hasNext())
-        {
+        while (iterator.hasNext()) {
             it = iterator.next();
-//            qDebug() << "group:" << it->key->group << "item" << it->key->item << "val" << it->val->value;
-            if (it->key->group != grp)
-            {
+            //            qDebug() << "group:" << it->key->group << "item" <<
+            //            it->key->item << "val" << it->val->value;
+            if (it->key->group != grp) {
                 grp = it->key->group;
                 stream << "\n" << it->key->group << "\n";
             }
             stream << it->key->item << " " << it->val->value << "\n";
         }
         file.close();
-        if (file.error()!=QFile::NoError) //could be better... should actually say what the error was..
-      qDebug() << "Error while writing configuration file:" << file.errorString();
+        if (file.error() != QFile::NoError)  // could be better... should
+                                             // actually say what the error
+                                             // was..
+            qDebug() << "Error while writing configuration file:"
+                     << file.errorString();
     }
 }
 
@@ -370,16 +341,20 @@ QString ConfigObject<ValueType>::getResourcePath() const {
         else if (mixxxDir.cdUp() && mixxxDir.cd("Resources")) {
             // Release configuraton
             qResourcePath = mixxxDir.absolutePath();
-        } else {
+        }
+        else {
             // TODO(rryan): What should we do here?
         }
 #endif
     } else {
-        //qDebug() << "Setting qResourcePath from location in resourcePath commandline arg:" << qResourcePath;
+        // qDebug() << "Setting qResourcePath from location in resourcePath
+        // commandline arg:" << qResourcePath;
     }
 
     if (qResourcePath.isEmpty()) {
-        reportCriticalErrorAndQuit("qConfigPath is empty, this can not be so -- did our developer forget to define one of __UNIX__, __WINDOWS__, __APPLE__??");
+        reportCriticalErrorAndQuit(
+                "qConfigPath is empty, this can not be so -- did our developer "
+                "forget to define one of __UNIX__, __WINDOWS__, __APPLE__??");
     }
 
     // If the directory does not end with a "/", add one
@@ -392,12 +367,13 @@ QString ConfigObject<ValueType>::getResourcePath() const {
     return qResourcePath;
 }
 
-template <class ValueType> ConfigObject<ValueType>::ConfigObject(QDomNode node) {
+template <class ValueType>
+ConfigObject<ValueType>::ConfigObject(QDomNode node) {
     if (!node.isNull() && node.isElement()) {
         QDomNode ctrl = node.firstChild();
 
         while (!ctrl.isNull()) {
-            if(ctrl.nodeName() == "control") {
+            if (ctrl.nodeName() == "control") {
                 QString group = XmlParse::selectNodeQString(ctrl, "group");
                 QString key = XmlParse::selectNodeQString(ctrl, "key");
                 ConfigKey k(group, key);
@@ -409,13 +385,14 @@ template <class ValueType> ConfigObject<ValueType>::ConfigObject(QDomNode node) 
     }
 }
 
-template <class ValueType> QString ConfigObject<ValueType>::getSettingsPath() const
-{
+template <class ValueType>
+QString ConfigObject<ValueType>::getSettingsPath() const {
     QFileInfo configFileInfo(m_filename);
     return configFileInfo.absoluteDir().absolutePath();
 }
 
-template <class ValueType> QHash<ConfigKey, ValueType> ConfigObject<ValueType>::toHash() const {
+template <class ValueType>
+QHash<ConfigKey, ValueType> ConfigObject<ValueType>::toHash() const {
     QHash<ConfigKey, ValueType> hash;
     foreach (ConfigOption<ValueType>* pOption, m_list) {
         hash.insert(*pOption->key, *pOption->val);

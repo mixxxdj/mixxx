@@ -8,7 +8,8 @@
 
 // Static member variable definition
 ConfigObject<ConfigValue>* ControlDoublePrivate::s_pUserConfig = NULL;
-QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> > ControlDoublePrivate::s_qCOHash;
+QHash<ConfigKey, QWeakPointer<ControlDoublePrivate>>
+        ControlDoublePrivate::s_qCOHash;
 QHash<ConfigKey, ConfigKey> ControlDoublePrivate::s_qCOAliasHash;
 QMutex ControlDoublePrivate::s_qCOHashMutex;
 
@@ -44,7 +45,8 @@ ControlDoublePrivate::ControlDoublePrivate(ConfigKey key,
 void ControlDoublePrivate::initialize() {
     double value = 0;
     if (m_bPersistInConfiguration) {
-        ConfigObject<ConfigValue>* pConfig = ControlDoublePrivate::s_pUserConfig;
+        ConfigObject<ConfigValue>* pConfig =
+                ControlDoublePrivate::s_pUserConfig;
         if (pConfig != NULL) {
             // Assume toDouble() returns 0 if conversion fails.
             value = pConfig->getValueString(m_key).toDouble();
@@ -53,7 +55,8 @@ void ControlDoublePrivate::initialize() {
     m_defaultValue.setValue(0);
     m_value.setValue(value);
 
-    //qDebug() << "Creating:" << m_trackKey << "at" << &m_value << sizeof(m_value);
+    // qDebug() << "Creating:" << m_trackKey << "at" << &m_value <<
+    // sizeof(m_value);
 
     if (m_bTrack) {
         // TODO(rryan): Make configurable.
@@ -65,12 +68,14 @@ void ControlDoublePrivate::initialize() {
 
 ControlDoublePrivate::~ControlDoublePrivate() {
     s_qCOHashMutex.lock();
-    //qDebug() << "ControlDoublePrivate::s_qCOHash.remove(" << m_key.group << "," << m_key.item << ")";
+    // qDebug() << "ControlDoublePrivate::s_qCOHash.remove(" << m_key.group <<
+    // "," << m_key.item << ")";
     s_qCOHash.remove(m_key);
     s_qCOHashMutex.unlock();
 
     if (m_bPersistInConfiguration) {
-        ConfigObject<ConfigValue>* pConfig = ControlDoublePrivate::s_pUserConfig;
+        ConfigObject<ConfigValue>* pConfig =
+                ControlDoublePrivate::s_pUserConfig;
         if (pConfig != NULL) {
             pConfig->set(m_key, QString::number(get()));
         }
@@ -78,19 +83,22 @@ ControlDoublePrivate::~ControlDoublePrivate() {
 }
 
 // static
-void ControlDoublePrivate::insertAlias(const ConfigKey& alias, const ConfigKey& key) {
+void ControlDoublePrivate::insertAlias(const ConfigKey& alias,
+                                       const ConfigKey& key) {
     QMutexLocker locker(&s_qCOHashMutex);
 
-    QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> >::const_iterator it =
+    QHash<ConfigKey, QWeakPointer<ControlDoublePrivate>>::const_iterator it =
             s_qCOHash.find(key);
     if (it == s_qCOHash.end()) {
-        qWarning() << "WARNING: ControlDoublePrivate::insertAlias called for null control" << key;
+        qWarning() << "WARNING: ControlDoublePrivate::insertAlias called for "
+                      "null control" << key;
         return;
     }
 
     QSharedPointer<ControlDoublePrivate> pControl = it.value();
     if (pControl.isNull()) {
-        qWarning() << "WARNING: ControlDoublePrivate::insertAlias called for expired control" << key;
+        qWarning() << "WARNING: ControlDoublePrivate::insertAlias called for "
+                      "expired control" << key;
         return;
     }
 
@@ -112,12 +120,14 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
 
     QMutexLocker locker(&s_qCOHashMutex);
     QSharedPointer<ControlDoublePrivate> pControl;
-    QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> >::const_iterator it = s_qCOHash.find(key);
+    QHash<ConfigKey, QWeakPointer<ControlDoublePrivate>>::const_iterator it =
+            s_qCOHash.find(key);
 
     if (it != s_qCOHash.end()) {
         if (pCreatorCO) {
             if (warn) {
-                qDebug() << "ControlObject" << key.group << key.item << "already created";
+                qDebug() << "ControlObject" << key.group << key.item
+                         << "already created";
             }
         } else {
             pControl = it.value();
@@ -132,12 +142,14 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
                     new ControlDoublePrivate(key, pCreatorCO, bIgnoreNops,
                                              bTrack, bPersist));
             locker.relock();
-            //qDebug() << "ControlDoublePrivate::s_qCOHash.insert(" << key.group << "," << key.item << ")";
+            // qDebug() << "ControlDoublePrivate::s_qCOHash.insert(" <<
+            // key.group << "," << key.item << ")";
             s_qCOHash.insert(key, pControl);
             locker.unlock();
         } else if (warn) {
-            qWarning() << "ControlDoublePrivate::getControl returning NULL for ("
-                       << key.group << "," << key.item << ")";
+            qWarning()
+                    << "ControlDoublePrivate::getControl returning NULL for ("
+                    << key.group << "," << key.item << ")";
         }
     }
     return pControl;
@@ -145,11 +157,12 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
 
 // static
 void ControlDoublePrivate::getControls(
-        QList<QSharedPointer<ControlDoublePrivate> >* pControlList) {
+        QList<QSharedPointer<ControlDoublePrivate>>* pControlList) {
     s_qCOHashMutex.lock();
     pControlList->clear();
-    for (QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> >::const_iterator it = s_qCOHash.begin();
-             it != s_qCOHash.end(); ++it) {
+    for (QHash<ConfigKey, QWeakPointer<ControlDoublePrivate>>::const_iterator
+                 it = s_qCOHash.begin();
+         it != s_qCOHash.end(); ++it) {
         QSharedPointer<ControlDoublePrivate> pControl = it.value();
         if (!pControl.isNull()) {
             pControlList->push_back(pControl);
@@ -256,9 +269,10 @@ double ControlDoublePrivate::getMidiParameter() const {
 }
 
 bool ControlDoublePrivate::connectValueChangeRequest(const QObject* receiver,
-        const char* method, Qt::ConnectionType type) {
+                                                     const char* method,
+                                                     Qt::ConnectionType type) {
     // confirmation is only required if connect was successful
     m_confirmRequired = connect(this, SIGNAL(valueChangeRequest(double)),
-                receiver, method, type);
+                                receiver, method, type);
     return m_confirmRequired;
 }

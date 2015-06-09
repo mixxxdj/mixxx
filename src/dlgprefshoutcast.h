@@ -34,7 +34,8 @@
 
 class ControlObjectThread;
 
-class DlgPrefShoutcast : public DlgPreferencePage, public Ui::DlgPrefShoutcastDlg  {
+class DlgPrefShoutcast : public DlgPreferencePage,
+                         public Ui::DlgPrefShoutcastDlg {
     Q_OBJECT
   public:
     DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_config);
@@ -50,9 +51,9 @@ class DlgPrefShoutcast : public DlgPreferencePage, public Ui::DlgPrefShoutcastDl
     void apply(const QString &);
 
   private:
-    ConfigObject<ConfigValue>* m_pConfig;
+    ConfigObject<ConfigValue> *m_pConfig;
     // If set to 1, EngineShoutcast will update it's settings.
-    ControlObjectThread* m_pUpdateShoutcastFromPrefs;
+    ControlObjectThread *m_pUpdateShoutcastFromPrefs;
 };
 
 #endif

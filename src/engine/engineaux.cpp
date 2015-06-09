@@ -12,12 +12,16 @@
 #include "engine/effects/engineeffectsmanager.h"
 #include "controlaudiotaperpot.h"
 
-EngineAux::EngineAux(const ChannelHandleAndGroup& handle_group, EffectsManager* pEffectsManager)
+EngineAux::EngineAux(const ChannelHandleAndGroup& handle_group,
+                     EffectsManager* pEffectsManager)
         : EngineChannel(handle_group, EngineChannel::CENTER),
-          m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
+          m_pEngineEffectsManager(
+                  pEffectsManager ? pEffectsManager->getEngineEffectsManager()
+                                  : NULL),
           m_vuMeter(getGroup()),
           m_pEnabled(new ControlObject(ConfigKey(getGroup(), "enabled"))),
-          m_pPregain(new ControlAudioTaperPot(ConfigKey(getGroup(), "pregain"), -12, 12, 0.5)),
+          m_pPregain(new ControlAudioTaperPot(ConfigKey(getGroup(), "pregain"),
+                                              -12, 12, 0.5)),
           m_sampleBuffer(NULL),
           m_wasActive(false) {
     if (pEffectsManager != NULL) {
@@ -52,7 +56,8 @@ bool EngineAux::isActive() {
 void EngineAux::onInputConfigured(AudioInput input) {
     if (input.getType() != AudioPath::AUXILIARY) {
         // This is an error!
-        qDebug() << "WARNING: EngineAux connected to AudioInput for a non-auxiliary type!";
+        qDebug() << "WARNING: EngineAux connected to AudioInput for a "
+                    "non-auxiliary type!";
         return;
     }
     m_sampleBuffer = NULL;
@@ -62,7 +67,8 @@ void EngineAux::onInputConfigured(AudioInput input) {
 void EngineAux::onInputUnconfigured(AudioInput input) {
     if (input.getType() != AudioPath::AUXILIARY) {
         // This is an error!
-        qDebug() << "WARNING: EngineAux connected to AudioInput for a non-auxiliary type!";
+        qDebug() << "WARNING: EngineAux connected to AudioInput for a "
+                    "non-auxiliary type!";
         return;
     }
     m_sampleBuffer = NULL;
@@ -77,8 +83,8 @@ void EngineAux::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
 }
 
 void EngineAux::process(CSAMPLE* pOut, const int iBufferSize) {
-    const CSAMPLE* sampleBuffer = m_sampleBuffer; // save pointer on stack
-    double pregain =  m_pPregain->get();
+    const CSAMPLE* sampleBuffer = m_sampleBuffer;  // save pointer on stack
+    double pregain = m_pPregain->get();
     if (sampleBuffer) {
         SampleUtil::copyWithGain(pOut, sampleBuffer, pregain, iBufferSize);
         m_sampleBuffer = NULL;

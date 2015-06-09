@@ -19,14 +19,11 @@ class EngineEffectChain : public EffectsRequestHandler {
     EngineEffectChain(const QString& id);
     virtual ~EngineEffectChain();
 
-    bool processEffectsRequest(
-        const EffectsRequest& message,
-        EffectsResponsePipe* pResponsePipe);
+    bool processEffectsRequest(const EffectsRequest& message,
+                               EffectsResponsePipe* pResponsePipe);
 
-    void process(const ChannelHandle& handle,
-                 CSAMPLE* pInOut,
-                 const unsigned int numSamples,
-                 const unsigned int sampleRate,
+    void process(const ChannelHandle& handle, CSAMPLE* pInOut,
+                 const unsigned int numSamples, const unsigned int sampleRate,
                  const GroupFeatureState& groupFeatures);
 
     const QString& id() const {
@@ -37,9 +34,7 @@ class EngineEffectChain : public EffectsRequestHandler {
 
   private:
     struct ChannelStatus {
-        ChannelStatus()
-                : old_gain(0),
-                  enable_state(EffectProcessor::DISABLED) {
+        ChannelStatus() : old_gain(0), enable_state(EffectProcessor::DISABLED) {
         }
         CSAMPLE old_gain;
         EffectProcessor::EnableState enable_state;

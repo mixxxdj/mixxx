@@ -8,9 +8,9 @@
 #include "util/sandbox.h"
 
 // Creates sound sources for filenames or tracks
-class SoundSourceProxy: public Mixxx::MetadataSource {
-public:
-    static void loadPlugins(); // not thread-safe
+class SoundSourceProxy : public Mixxx::MetadataSource {
+  public:
+    static void loadPlugins();  // not thread-safe
 
     static QStringList getSupportedFileExtensions();
     static QStringList getSupportedFileExtensionsByPlugins();
@@ -22,7 +22,9 @@ public:
     static bool isFileNameSupported(const QString& fileName);
     static bool isFileExtensionSupported(const QString& fileExtension);
 
-    explicit SoundSourceProxy(QString qFilename, SecurityTokenPointer pToken = SecurityTokenPointer());
+    explicit SoundSourceProxy(
+            QString qFilename,
+            SecurityTokenPointer pToken = SecurityTokenPointer());
     explicit SoundSourceProxy(TrackPointer pTrack);
 
     QString getType() const {
@@ -33,12 +35,11 @@ public:
         }
     }
 
-    Result parseTrackMetadataAndCoverArt(
-            Mixxx::TrackMetadata* pTrackMetadata,
-            QImage* pCoverArt) const override {
+    Result parseTrackMetadataAndCoverArt(Mixxx::TrackMetadata* pTrackMetadata,
+                                         QImage* pCoverArt) const override {
         if (m_pSoundSource) {
-            return m_pSoundSource->parseTrackMetadataAndCoverArt(
-                    pTrackMetadata, pCoverArt);
+            return m_pSoundSource->parseTrackMetadataAndCoverArt(pTrackMetadata,
+                                                                 pCoverArt);
         } else {
             return ERR;
         }
@@ -61,11 +62,13 @@ public:
     // Opening the audio data through the proxy will
     // update the some metadata of the track object.
     // Returns a null pointer on failure.
-    Mixxx::AudioSourcePointer openAudioSource(const Mixxx::AudioSourceConfig& audioSrcCfg = Mixxx::AudioSourceConfig());
+    Mixxx::AudioSourcePointer openAudioSource(
+            const Mixxx::AudioSourceConfig& audioSrcCfg =
+                    Mixxx::AudioSourceConfig());
 
     void closeAudioSource();
 
-private:
+  private:
     static Mixxx::SoundSourceProviderRegistry s_soundSourceProviders;
 
     static Mixxx::SoundSourcePointer initialize(const QString& qFilename);

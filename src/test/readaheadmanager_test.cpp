@@ -14,8 +14,8 @@
 
 class StubReader : public CachingReader {
   public:
-    StubReader()
-        : CachingReader("[test]", NULL) { }
+    StubReader() : CachingReader("[test]", NULL) {
+    }
 
     virtual int read(int sample, int num_samples, CSAMPLE* buffer) {
         Q_UNUSED(sample);
@@ -26,8 +26,8 @@ class StubReader : public CachingReader {
 
 class StubLoopControl : public LoopingControl {
   public:
-    StubLoopControl()
-        : LoopingControl("[test]", NULL) { }
+    StubLoopControl() : LoopingControl("[test]", NULL) {
+    }
 
     void pushTriggerReturnValue(double value) {
         m_triggerReturnValues.push_back(value);
@@ -37,10 +37,9 @@ class StubLoopControl : public LoopingControl {
         m_processReturnValues.push_back(value);
     }
 
-    virtual double nextTrigger(const double dRate,
-                       const double currentSample,
-                       const double totalSamples,
-                       const int iBufferSize) {
+    virtual double nextTrigger(const double dRate, const double currentSample,
+                               const double totalSamples,
+                               const int iBufferSize) {
         Q_UNUSED(dRate);
         Q_UNUSED(currentSample);
         Q_UNUSED(totalSamples);
@@ -49,10 +48,8 @@ class StubLoopControl : public LoopingControl {
         return m_triggerReturnValues.takeFirst();
     }
 
-    virtual double process(const double dRate,
-                           const double dCurrentSample,
-                           const double dTotalSamples,
-                           const int iBufferSize) {
+    virtual double process(const double dRate, const double dCurrentSample,
+                           const double dTotalSamples, const int iBufferSize) {
         Q_UNUSED(dRate);
         Q_UNUSED(dCurrentSample);
         Q_UNUSED(dTotalSamples);
@@ -63,10 +60,9 @@ class StubLoopControl : public LoopingControl {
 
     // getTrigger returns the sample that the engine will next be triggered to
     // loop to, given the value of currentSample and dRate.
-    virtual double getTrigger(const double dRate,
-                      const double currentSample,
-                      const double totalSamples,
-                      const int iBufferSize) {
+    virtual double getTrigger(const double dRate, const double currentSample,
+                              const double totalSamples,
+                              const int iBufferSize) {
         Q_UNUSED(dRate);
         Q_UNUSED(currentSample);
         Q_UNUSED(totalSamples);
@@ -98,14 +94,16 @@ class StubLoopControl : public LoopingControl {
 
 class ReadAheadManagerTest : public MixxxTest {
   public:
-    ReadAheadManagerTest() : m_pBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) { }
+    ReadAheadManagerTest() : m_pBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) {
+    }
+
   protected:
     virtual void SetUp() {
         SampleUtil::clear(m_pBuffer, MAX_BUFFER_LEN);
         m_pReader.reset(new StubReader());
         m_pLoopControl.reset(new StubLoopControl());
-        m_pReadAheadManager.reset(new ReadAheadManager(m_pReader.data(),
-                                                       m_pLoopControl.data()));
+        m_pReadAheadManager.reset(
+                new ReadAheadManager(m_pReader.data(), m_pLoopControl.data()));
     }
 
     QScopedPointer<StubReader> m_pReader;

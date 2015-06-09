@@ -11,10 +11,12 @@
 // a QItemEditorFactory for the BPMDelegate.
 class BpmEditorCreator : public QItemEditorCreatorBase {
   public:
-    BpmEditorCreator() {}
-    virtual ~BpmEditorCreator() {}
+    BpmEditorCreator() {
+    }
+    virtual ~BpmEditorCreator() {
+    }
 
-    virtual QWidget* createWidget (QWidget* parent) const {
+    virtual QWidget* createWidget(QWidget* parent) const {
         QDoubleSpinBox* pBpmSpinbox = new QDoubleSpinBox(parent);
         pBpmSpinbox->setFrame(false);
         pBpmSpinbox->setMinimum(0);
@@ -51,8 +53,8 @@ BPMDelegate::~BPMDelegate() {
     delete m_pFactory;
 }
 
-void BPMDelegate::paint(QPainter* painter,const QStyleOptionViewItem &option,
-                        const QModelIndex &index) const {
+void BPMDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option,
+                        const QModelIndex& index) const {
     // NOTE(rryan): Qt has a built-in limitation that we cannot style multiple
     // CheckState indicators in the same QAbstractItemView. The CSS rule
     // QTableView::indicator:checked applies to all columns with a

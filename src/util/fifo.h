@@ -14,8 +14,7 @@
 template <class DataType>
 class FIFO {
   public:
-    explicit FIFO(int size)
-            : m_data(NULL) {
+    explicit FIFO(int size) : m_data(NULL) {
         size = roundUpToPowerOf2(size);
         // If we can't represent the next higher power of 2 then bail.
         if (size < 0) {
@@ -23,11 +22,11 @@ class FIFO {
         }
         m_data = new DataType[size];
         memset(m_data, 0, sizeof(DataType) * size);
-        PaUtil_InitializeRingBuffer(
-                &m_ringBuffer, sizeof(DataType), size, m_data);
+        PaUtil_InitializeRingBuffer(&m_ringBuffer, sizeof(DataType), size,
+                                    m_data);
     }
     virtual ~FIFO() {
-        delete [] m_data;
+        delete[] m_data;
     }
     int readAvailable() const {
         return PaUtil_GetRingBufferReadAvailable(&m_ringBuffer);
@@ -49,24 +48,27 @@ class FIFO {
             written += i;
         }
     }
-    int aquireWriteRegions(int count,
-            DataType** dataPtr1, ring_buffer_size_t* sizePtr1,
-            DataType** dataPtr2, ring_buffer_size_t* sizePtr2) {
+    int aquireWriteRegions(int count, DataType** dataPtr1,
+                           ring_buffer_size_t* sizePtr1, DataType** dataPtr2,
+                           ring_buffer_size_t* sizePtr2) {
         return PaUtil_GetRingBufferWriteRegions(&m_ringBuffer, count,
-                (void**)dataPtr1, sizePtr1, (void**)dataPtr2, sizePtr2);
+                                                (void**)dataPtr1, sizePtr1,
+                                                (void**)dataPtr2, sizePtr2);
     }
     int releaseWriteRegions(int count) {
         return PaUtil_AdvanceRingBufferWriteIndex(&m_ringBuffer, count);
     }
-    int aquireReadRegions(int count,
-            DataType** dataPtr1, ring_buffer_size_t* sizePtr1,
-            DataType** dataPtr2, ring_buffer_size_t* sizePtr2) {
+    int aquireReadRegions(int count, DataType** dataPtr1,
+                          ring_buffer_size_t* sizePtr1, DataType** dataPtr2,
+                          ring_buffer_size_t* sizePtr2) {
         return PaUtil_GetRingBufferReadRegions(&m_ringBuffer, count,
-                (void**)dataPtr1, sizePtr1, (void**)dataPtr2, sizePtr2);
+                                               (void**)dataPtr1, sizePtr1,
+                                               (void**)dataPtr2, sizePtr2);
     }
     int releaseReadRegions(int count) {
         return PaUtil_AdvanceRingBufferReadIndex(&m_ringBuffer, count);
     }
+
   private:
     DataType* m_data;
     PaUtilRingBuffer m_ringBuffer;
@@ -124,7 +126,8 @@ class MessagePipe {
     bool m_bSerializeWrites;
 
 #define COMMA ,
-    DISALLOW_COPY_AND_ASSIGN(MessagePipe<SenderMessageType COMMA ReceiverMessageType>);
+    DISALLOW_COPY_AND_ASSIGN(
+            MessagePipe<SenderMessageType COMMA ReceiverMessageType>);
 #undef COMMA
 };
 
@@ -148,25 +151,28 @@ class TwoWayMessagePipe {
     // ReceiverMessageType messages) and the second is the receiver's pipe
     // (sends ReceiverMessageType and receives SenderMessageType messages).
     static QPair<MessagePipe<SenderMessageType, ReceiverMessageType>*,
-                 MessagePipe<ReceiverMessageType, SenderMessageType>*> makeTwoWayMessagePipe(
-                     int sender_fifo_size,
-                     int receiver_fifo_size,
-                     bool serialize_sender_writes,
-                     bool serialize_receiver_writes) {
-        QSharedPointer<TwoWayMessagePipe<SenderMessageType, ReceiverMessageType> > pipe(
-            new TwoWayMessagePipe<SenderMessageType, ReceiverMessageType>(
-                sender_fifo_size, receiver_fifo_size));
+                 MessagePipe<ReceiverMessageType, SenderMessageType>*>
+    makeTwoWayMessagePipe(int sender_fifo_size, int receiver_fifo_size,
+                          bool serialize_sender_writes,
+                          bool serialize_receiver_writes) {
+        QSharedPointer<
+                TwoWayMessagePipe<SenderMessageType, ReceiverMessageType>>
+                pipe(new TwoWayMessagePipe<SenderMessageType,
+                                           ReceiverMessageType>(
+                        sender_fifo_size, receiver_fifo_size));
 
         return QPair<MessagePipe<SenderMessageType, ReceiverMessageType>*,
                      MessagePipe<ReceiverMessageType, SenderMessageType>*>(
-                         new MessagePipe<SenderMessageType, ReceiverMessageType>(
-                             pipe->m_receiver_messages, pipe->m_sender_messages,
-                             new ReferenceHolder<TwoWayMessagePipe<SenderMessageType, ReceiverMessageType> >(pipe),
-                             serialize_sender_writes),
-                         new MessagePipe<ReceiverMessageType, SenderMessageType>(
-                             pipe->m_sender_messages, pipe->m_receiver_messages,
-                             new ReferenceHolder<TwoWayMessagePipe<SenderMessageType, ReceiverMessageType> >(pipe),
-                             serialize_receiver_writes));
+                new MessagePipe<SenderMessageType, ReceiverMessageType>(
+                        pipe->m_receiver_messages, pipe->m_sender_messages,
+                        new ReferenceHolder<TwoWayMessagePipe<
+                                SenderMessageType, ReceiverMessageType>>(pipe),
+                        serialize_sender_writes),
+                new MessagePipe<ReceiverMessageType, SenderMessageType>(
+                        pipe->m_sender_messages, pipe->m_receiver_messages,
+                        new ReferenceHolder<TwoWayMessagePipe<
+                                SenderMessageType, ReceiverMessageType>>(pipe),
+                        serialize_receiver_writes));
     }
 
   private:
@@ -180,10 +186,11 @@ class TwoWayMessagePipe {
     // Messages waiting to be delivered to the sender.
     FIFO<ReceiverMessageType> m_sender_messages;
 
-    // This #define is because the macro gets confused by the template
-    // parameters.
+// This #define is because the macro gets confused by the template
+// parameters.
 #define COMMA ,
-    DISALLOW_COPY_AND_ASSIGN(TwoWayMessagePipe<SenderMessageType COMMA ReceiverMessageType>);
+    DISALLOW_COPY_AND_ASSIGN(
+            TwoWayMessagePipe<SenderMessageType COMMA ReceiverMessageType>);
 #undef COMMA
 };
 

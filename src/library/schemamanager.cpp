@@ -9,12 +9,13 @@
 #include "util/assert.h"
 
 const QString SchemaManager::SETTINGS_VERSION_STRING = "mixxx.schema.version";
-const QString SchemaManager::SETTINGS_MINCOMPATIBLE_STRING = "mixxx.schema.min_compatible_version";
+const QString SchemaManager::SETTINGS_MINCOMPATIBLE_STRING =
+        "mixxx.schema.min_compatible_version";
 
 // static
 SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
-        const QString& schemaFilename,
-        QSqlDatabase& db, const int targetVersion) {
+        const QString& schemaFilename, QSqlDatabase& db,
+        const int targetVersion) {
     SettingsDAO settings(db);
     int currentVersion = getCurrentSchemaVersion(settings);
     DEBUG_ASSERT_AND_HANDLE(currentVersion >= 0) {
@@ -27,16 +28,16 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
         return RESULT_OK;
     } else if (currentVersion < targetVersion) {
         qDebug() << "SchemaManager::upgradeToSchemaVersion upgrading"
-                 << targetVersion-currentVersion << "versions to version"
+                 << targetVersion - currentVersion << "versions to version"
                  << targetVersion;
     } else {
         qDebug() << "SchemaManager::upgradeToSchemaVersion already past target "
-                "version. currentVersion:"
-                 << currentVersion << "targetVersion:"
-                 << targetVersion;
+                    "version. currentVersion:" << currentVersion
+                 << "targetVersion:" << targetVersion;
 
         if (isBackwardsCompatible(settings, currentVersion, targetVersion)) {
-            qDebug() << "Current schema version is backwards-compatible with" << targetVersion;
+            qDebug() << "Current schema version is backwards-compatible with"
+                     << targetVersion;
             return RESULT_OK;
         } else {
             return RESULT_BACKWARDS_INCOMPATIBLE;
@@ -76,8 +77,8 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
         // how to get all the way to targetVersion.
         if (!revisionMap.contains(thisTarget)) {
             qDebug() << "SchemaManager::upgradeToSchemaVersion"
-                     << "Don't know how to get to"
-                     << thisTarget << "from" << currentVersion;
+                     << "Don't know how to get to" << thisTarget << "from"
+                     << currentVersion;
             return RESULT_SCHEMA_ERROR;
         }
 
@@ -120,16 +121,15 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
             }
             result = result && query.exec(statement);
             if (!result) {
-                qDebug() << "Failed query:"
-                         << statement
-                         << query.lastError();
+                qDebug() << "Failed query:" << statement << query.lastError();
             }
         }
 
         if (result) {
             currentVersion = thisTarget;
             settings.setValue(SETTINGS_VERSION_STRING, thisTarget);
-            settings.setValue(SETTINGS_MINCOMPATIBLE_STRING, minCompatibleVersion);
+            settings.setValue(SETTINGS_MINCOMPATIBLE_STRING,
+                              minCompatibleVersion);
             transaction.commit();
         } else {
             qDebug() << "Failed to move from version" << currentVersion

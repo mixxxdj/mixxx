@@ -20,16 +20,18 @@
 #include "soundmanagerconfig.h"
 
 /**
- * Constructs a new preferences sound item, representing an AudioPath and SoundDevice
+ * Constructs a new preferences sound item, representing an AudioPath and
+ * SoundDevice
  * with a label and two combo boxes.
  * @param type The AudioPathType of the path to be represented
- * @param devices The list of devices for the user to choose from (either a collection
+ * @param devices The list of devices for the user to choose from (either a
+ * collection
  * of input or output devices).
  * @param isInput true if this is representing an AudioInput, false otherwise
  * @param index the index of the represented AudioPath, if applicable
  */
 DlgPrefSoundItem::DlgPrefSoundItem(QWidget *parent, AudioPathType type,
-                                   QList<SoundDevice*> &devices, bool isInput,
+                                   QList<SoundDevice *> &devices, bool isInput,
                                    unsigned int index)
         : QWidget(parent),
           m_type(type),
@@ -40,24 +42,24 @@ DlgPrefSoundItem::DlgPrefSoundItem(QWidget *parent, AudioPathType type,
     typeLabel->setText(AudioPath::getTrStringFromType(type, index));
 
     deviceComboBox->addItem(tr("None"), "None");
-    connect(deviceComboBox, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(deviceChanged(int)));
-    connect(channelComboBox, SIGNAL(currentIndexChanged(int)),
-            this, SIGNAL(settingChanged()));
+    connect(deviceComboBox, SIGNAL(currentIndexChanged(int)), this,
+            SLOT(deviceChanged(int)));
+    connect(channelComboBox, SIGNAL(currentIndexChanged(int)), this,
+            SIGNAL(settingChanged()));
     refreshDevices(m_devices);
 }
 
 DlgPrefSoundItem::~DlgPrefSoundItem() {
-
 }
 
 /**
  * Slot called when the parent preferences pane updates its list of sound
  * devices, to update the item widget's list of devices to display.
  */
-void DlgPrefSoundItem::refreshDevices(const QList<SoundDevice*> &devices) {
+void DlgPrefSoundItem::refreshDevices(const QList<SoundDevice *> &devices) {
     m_devices = devices;
-    QString oldDev = deviceComboBox->itemData(deviceComboBox->currentIndex()).toString();
+    QString oldDev =
+            deviceComboBox->itemData(deviceComboBox->currentIndex()).toString();
     deviceComboBox->setCurrentIndex(0);
     // not using combobox->clear means we can leave in "None" so it
     // doesn't flicker when you switch APIs... cleaner Mixxx :) bkgood
@@ -65,8 +67,10 @@ void DlgPrefSoundItem::refreshDevices(const QList<SoundDevice*> &devices) {
         deviceComboBox->removeItem(deviceComboBox->count() - 1);
     }
     foreach (SoundDevice *device, m_devices) {
-        if (!hasSufficientChannels(device)) continue;
-        deviceComboBox->addItem(device->getDisplayName(), device->getInternalName());
+        if (!hasSufficientChannels(device))
+            continue;
+        deviceComboBox->addItem(device->getDisplayName(),
+                                device->getInternalName());
     }
     int newIndex = deviceComboBox->findData(oldDev);
     if (newIndex != -1) {
@@ -105,16 +109,18 @@ void DlgPrefSoundItem::deviceChanged(int index) {
 
         // Count down from the max so that stereo channels are first.
         for (int channelsForType = maxChannelsForType;
-                 channelsForType >= minChannelsForType; --channelsForType) {
+             channelsForType >= minChannelsForType; --channelsForType) {
             for (unsigned int i = 1; i + (channelsForType - 1) <= numChannels;
-                     i += channelsForType) {
+                 i += channelsForType) {
                 QString channelString;
                 if (channelsForType == 1) {
                     channelString = tr("Channel %1").arg(i);
                 } else {
-                    channelString = tr("Channels %1 - %2").arg(
-                            QString::number(i),
-                            QString::number(i + channelsForType - 1));
+                    channelString =
+                            tr("Channels %1 - %2")
+                                    .arg(QString::number(i),
+                                         QString::number(i + channelsForType -
+                                                         1));
                 }
 
                 // Because QComboBox supports QPoint natively (via QVariant) we
@@ -146,8 +152,8 @@ void DlgPrefSoundItem::loadPath(const SoundManagerConfig &config) {
                     setDevice(devName);
                     setChannel(in.getChannelGroup().getChannelBase(),
                                in.getChannelGroup().getChannelCount());
-                    return; // we're just using the first one found, leave
-                            // multiples to a more advanced dialog -- bkgood
+                    return;  // we're just using the first one found, leave
+                    // multiples to a more advanced dialog -- bkgood
                 }
             }
         }
@@ -159,15 +165,15 @@ void DlgPrefSoundItem::loadPath(const SoundManagerConfig &config) {
                     setDevice(devName);
                     setChannel(out.getChannelGroup().getChannelBase(),
                                out.getChannelGroup().getChannelCount());
-                    return; // we're just using the first one found, leave
-                            // multiples to a more advanced dialog -- bkgood
+                    return;  // we're just using the first one found, leave
+                    // multiples to a more advanced dialog -- bkgood
                 }
             }
         }
     }
     // if we've gotten here without returning, we didn't find a path applicable
     // to us so set some defaults -- bkgood
-    setDevice("None"); // this will blank the channel combo box
+    setDevice("None");  // this will blank the channel combo box
 }
 
 /**
@@ -179,16 +185,16 @@ void DlgPrefSoundItem::writePath(SoundManagerConfig *config) const {
     SoundDevice *device = getDevice();
     if (device == NULL) {
         return;
-    } // otherwise, this will have a valid audiopath
+    }  // otherwise, this will have a valid audiopath
 
     // Because QComboBox supports QPoint natively (via QVariant) we use a QPoint
     // to store the channel info. x is the channel base and y is the channel
     // count.
-    QPoint channelData = channelComboBox->itemData(
-        channelComboBox->currentIndex()).toPoint();
+    QPoint channelData =
+            channelComboBox->itemData(channelComboBox->currentIndex())
+                    .toPoint();
     int channelBase = channelData.x();
     int channelCount = channelData.y();
-
 
     if (m_isInput) {
         config->addInput(
@@ -205,8 +211,10 @@ void DlgPrefSoundItem::writePath(SoundManagerConfig *config) const {
  * Slot called to tell the Item to save its selections for later use.
  */
 void DlgPrefSoundItem::save() {
-    m_savedDevice = deviceComboBox->itemData(deviceComboBox->currentIndex()).toString();
-    m_savedChannel = channelComboBox->itemData(channelComboBox->currentIndex()).toPoint();
+    m_savedDevice =
+            deviceComboBox->itemData(deviceComboBox->currentIndex()).toString();
+    m_savedChannel = channelComboBox->itemData(channelComboBox->currentIndex())
+                             .toPoint();
 }
 
 /**
@@ -227,8 +235,9 @@ void DlgPrefSoundItem::reload() {
  * Gets the currently selected SoundDevice
  * @returns pointer to SoundDevice, or NULL if the "None" option is selected.
  */
-SoundDevice* DlgPrefSoundItem::getDevice() const {
-    QString selection = deviceComboBox->itemData(deviceComboBox->currentIndex()).toString();
+SoundDevice *DlgPrefSoundItem::getDevice() const {
+    QString selection =
+            deviceComboBox->itemData(deviceComboBox->currentIndex()).toString();
     if (selection == "None") {
         return NULL;
     }
@@ -238,7 +247,7 @@ SoundDevice* DlgPrefSoundItem::getDevice() const {
         }
     }
     // looks like something became invalid ???
-    deviceComboBox->setCurrentIndex(0); // set it to none
+    deviceComboBox->setCurrentIndex(0);  // set it to none
     return NULL;
 }
 
@@ -251,7 +260,7 @@ void DlgPrefSoundItem::setDevice(const QString &deviceName) {
     if (index != -1) {
         deviceComboBox->setCurrentIndex(index);
     } else {
-        deviceComboBox->setCurrentIndex(0); // None
+        deviceComboBox->setCurrentIndex(0);  // None
     }
 }
 
@@ -268,15 +277,14 @@ void DlgPrefSoundItem::setChannel(unsigned int channelBase,
     if (index != -1) {
         channelComboBox->setCurrentIndex(index);
     } else {
-        channelComboBox->setCurrentIndex(0); // 1
+        channelComboBox->setCurrentIndex(0);  // 1
     }
 }
 
 /**
  * Checks that a given device can act as a source/input for our type.
  */
-int DlgPrefSoundItem::hasSufficientChannels(const SoundDevice *device) const
-{
+int DlgPrefSoundItem::hasSufficientChannels(const SoundDevice *device) const {
     unsigned char needed(AudioPath::minChannelsForType(m_type));
 
     if (m_isInput) {

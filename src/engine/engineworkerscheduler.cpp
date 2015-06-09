@@ -51,7 +51,7 @@ void EngineWorkerScheduler::run() {
         }
         Event::end("EngineWorkerScheduler");
         m_mutex.lock();
-        m_waitCondition.wait(&m_mutex); // unlock mutex and wait
+        m_waitCondition.wait(&m_mutex);  // unlock mutex and wait
         m_mutex.unlock();
     }
 }

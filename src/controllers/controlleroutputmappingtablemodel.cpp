@@ -8,7 +8,8 @@
 #include "controllers/delegates/midiopcodedelegate.h"
 #include "controllers/delegates/midibytedelegate.h"
 
-ControllerOutputMappingTableModel::ControllerOutputMappingTableModel(QObject* pParent)
+ControllerOutputMappingTableModel::ControllerOutputMappingTableModel(
+        QObject* pParent)
         : ControllerMappingTableModel(pParent) {
 }
 
@@ -44,7 +45,8 @@ void ControllerOutputMappingTableModel::onPresetLoaded() {
         setHeaderData(MIDI_COLUMN_COMMENT, Qt::Horizontal, tr("Comment"));
 
         if (!m_pMidiPreset->outputMappings.isEmpty()) {
-            beginInsertRows(QModelIndex(), 0, m_pMidiPreset->outputMappings.size() - 1);
+            beginInsertRows(QModelIndex(), 0,
+                            m_pMidiPreset->outputMappings.size() - 1);
             m_midiOutputMappings = m_pMidiPreset->outputMappings.values();
             endInsertRows();
         }
@@ -70,12 +72,11 @@ void ControllerOutputMappingTableModel::addEmptyMapping() {
     }
 }
 
-void ControllerOutputMappingTableModel::removeMappings(QModelIndexList indices) {
+void ControllerOutputMappingTableModel::removeMappings(
+        QModelIndexList indices) {
     // Values don't matter, it's just to get a consistent ordering.
     QList<int> rows;
-    foreach (const QModelIndex& index, indices) {
-        rows.append(index.row());
-    }
+    foreach (const QModelIndex& index, indices) { rows.append(index.row()); }
     qSort(rows);
 
     int lastRow = -1;
@@ -111,7 +112,8 @@ QAbstractItemDelegate* ControllerOutputMappingTableModel::delegateForColumn(
     return NULL;
 }
 
-int ControllerOutputMappingTableModel::rowCount(const QModelIndex& parent) const {
+int ControllerOutputMappingTableModel::rowCount(
+        const QModelIndex& parent) const {
     if (parent.isValid()) {
         return 0;
     }
@@ -121,7 +123,8 @@ int ControllerOutputMappingTableModel::rowCount(const QModelIndex& parent) const
     return 0;
 }
 
-int ControllerOutputMappingTableModel::columnCount(const QModelIndex& parent) const {
+int ControllerOutputMappingTableModel::columnCount(
+        const QModelIndex& parent) const {
     if (parent.isValid()) {
         return 0;
     }
@@ -137,8 +140,7 @@ int ControllerOutputMappingTableModel::columnCount(const QModelIndex& parent) co
 QVariant ControllerOutputMappingTableModel::data(const QModelIndex& index,
                                                  int role) const {
     // We use UserRole as the "sort" role with QSortFilterProxyModel.
-    if (!index.isValid() || (role != Qt::DisplayRole &&
-                             role != Qt::EditRole &&
+    if (!index.isValid() || (role != Qt::DisplayRole && role != Qt::EditRole &&
                              role != Qt::UserRole)) {
         return QVariant();
     }
@@ -201,19 +203,22 @@ bool ControllerOutputMappingTableModel::setData(const QModelIndex& index,
         MidiOutputMapping& mapping = m_midiOutputMappings[row];
         switch (column) {
             case MIDI_COLUMN_CHANNEL:
-                mapping.output.status = static_cast<unsigned char>(
-                    MidiUtils::opCodeFromStatus(mapping.output.status)) |
+                mapping.output.status =
+                        static_cast<unsigned char>(MidiUtils::opCodeFromStatus(
+                                mapping.output.status)) |
                         static_cast<unsigned char>(value.toInt());
                 emit(dataChanged(index, index));
                 return true;
             case MIDI_COLUMN_OPCODE:
-                mapping.output.status = static_cast<unsigned char>(
-                    MidiUtils::channelFromStatus(mapping.output.status)) |
+                mapping.output.status =
+                        static_cast<unsigned char>(MidiUtils::channelFromStatus(
+                                mapping.output.status)) |
                         static_cast<unsigned char>(value.toInt());
                 emit(dataChanged(index, index));
                 return true;
             case MIDI_COLUMN_CONTROL:
-                mapping.output.control = static_cast<unsigned char>(value.toInt());
+                mapping.output.control =
+                        static_cast<unsigned char>(value.toInt());
                 emit(dataChanged(index, index));
                 return true;
             case MIDI_COLUMN_ON:

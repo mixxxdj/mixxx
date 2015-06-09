@@ -29,7 +29,7 @@ bool WaveformMarkRange::active() {
 bool WaveformMarkRange::enabled() {
     // Default to enabled if there is no enabled control.
     return !m_markEnabledControl || !m_markEnabledControl->valid() ||
-            m_markEnabledControl->get() > 0.0;
+           m_markEnabledControl->get() > 0.0;
 }
 
 double WaveformMarkRange::start() {
@@ -53,20 +53,22 @@ void WaveformMarkRange::setup(const QString& group, const QDomNode& node,
                               const WaveformSignalColors& signalColors) {
     m_activeColor = context.selectString(node, "Color");
     if (!m_activeColor.isValid()) {
-        //vRince kind of legacy fallback ...
+        // vRince kind of legacy fallback ...
         // As a fallback, grab the mark color from the parent's MarkerColor
         m_activeColor = signalColors.getAxesColor();
-        qDebug() << "Didn't get mark Color, using parent's <AxesColor>:" << m_activeColor;
+        qDebug() << "Didn't get mark Color, using parent's <AxesColor>:"
+                 << m_activeColor;
     } else {
         m_activeColor = WSkinColor::getCorrectColor(m_activeColor);
     }
 
     m_disabledColor = context.selectString(node, "DisabledColor");
     if (!m_disabledColor.isValid()) {
-        //vRince kind of legacy fallback ...
+        // vRince kind of legacy fallback ...
         // Read the text color, otherwise use the parent's SignalColor.
         m_disabledColor = signalColors.getSignalColor();
-        qDebug() << "Didn't get mark TextColor, using parent's <SignalColor>:" << m_disabledColor;
+        qDebug() << "Didn't get mark TextColor, using parent's <SignalColor>:"
+                 << m_disabledColor;
     }
 
     QString startControl = context.selectString(node, "StartControl");
@@ -75,23 +77,22 @@ void WaveformMarkRange::setup(const QString& group, const QDomNode& node,
     }
     QString endControl = context.selectString(node, "EndControl");
     if (!endControl.isEmpty()) {
-        m_markEndPointControl = new ControlObjectThread(
-                group, endControl);
+        m_markEndPointControl = new ControlObjectThread(group, endControl);
     }
     QString enabledControl = context.selectString(node, "EnabledControl");
     if (!enabledControl.isEmpty()) {
-        m_markEnabledControl = new ControlObjectThread(
-                group, enabledControl);
+        m_markEnabledControl = new ControlObjectThread(group, enabledControl);
     }
 }
 
 void WaveformMarkRange::generateImage(int weidth, int height) {
     m_activeImage = QImage(weidth, height, QImage::Format_ARGB32_Premultiplied);
-    m_disabledImage = QImage(weidth, height, QImage::Format_ARGB32_Premultiplied);
+    m_disabledImage =
+            QImage(weidth, height, QImage::Format_ARGB32_Premultiplied);
 
     // fill needed cause they remain transparent
-    m_activeImage.fill(QColor(0,0,0,0).rgba());
-    m_disabledImage.fill(QColor(0,0,0,0).rgba());
+    m_activeImage.fill(QColor(0, 0, 0, 0).rgba());
+    m_disabledImage.fill(QColor(0, 0, 0, 0).rgba());
 
     QColor activeColor = m_activeColor;
     activeColor.setAlphaF(0.3);

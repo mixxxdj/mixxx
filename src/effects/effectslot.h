@@ -19,8 +19,7 @@ typedef QSharedPointer<EffectSlot> EffectSlotPointer;
 class EffectSlot : public QObject {
     Q_OBJECT
   public:
-    EffectSlot(const QString& group,
-               const unsigned int iChainNumber,
+    EffectSlot(const QString& group, const unsigned int iChainNumber,
                const unsigned int iEffectNumber);
     virtual ~EffectSlot();
 
@@ -34,9 +33,10 @@ class EffectSlot : public QObject {
 
     unsigned int numButtonParameterSlots() const;
     EffectButtonParameterSlotPointer addEffectButtonParameterSlot();
-    EffectButtonParameterSlotPointer getEffectButtonParameterSlot(unsigned int slotNumber);
+    EffectButtonParameterSlotPointer getEffectButtonParameterSlot(
+            unsigned int slotNumber);
 
-    void onChainSuperParameterChanged(double parameter, bool force=false);
+    void onChainSuperParameterChanged(double parameter, bool force = false);
 
     // ensures that Softtakover is bypassed for the following
     // ChainParameterChange. Uses for testing only

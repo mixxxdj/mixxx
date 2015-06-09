@@ -40,8 +40,7 @@ class ChannelHandle {
     }
 
   private:
-    ChannelHandle(int iHandle)
-            : m_iHandle(iHandle) {
+    ChannelHandle(int iHandle) : m_iHandle(iHandle) {
     }
 
     void setHandle(int iHandle) {
@@ -75,8 +74,7 @@ inline uint qHash(const ChannelHandle& handle) {
 class ChannelHandleAndGroup {
   public:
     ChannelHandleAndGroup(const ChannelHandle& handle, const QString& name)
-            : m_handle(handle),
-              m_name(name) {
+            : m_handle(handle), m_name(name) {
     }
 
     inline const QString& name() const {
@@ -91,11 +89,13 @@ class ChannelHandleAndGroup {
     const QString m_name;
 };
 
-inline bool operator==(const ChannelHandleAndGroup& g1, const ChannelHandleAndGroup& g2) {
+inline bool operator==(const ChannelHandleAndGroup& g1,
+                       const ChannelHandleAndGroup& g2) {
     return g1.handle() == g2.handle();
 }
 
-inline bool operator!=(const ChannelHandleAndGroup& g1, const ChannelHandleAndGroup& g2) {
+inline bool operator!=(const ChannelHandleAndGroup& g1,
+                       const ChannelHandleAndGroup& g2) {
     return g1.handle() != g2.handle();
 }
 
@@ -153,8 +153,10 @@ template <class T>
 class ChannelHandleMap {
     static const int kMaxExpectedGroups = 256;
     typedef QVarLengthArray<T, kMaxExpectedGroups> container_type;
+
   public:
-    typedef typename QVarLengthArray<T, kMaxExpectedGroups>::const_iterator const_iterator;
+    typedef typename QVarLengthArray<T, kMaxExpectedGroups>::const_iterator
+            const_iterator;
     typedef typename QVarLengthArray<T, kMaxExpectedGroups>::iterator iterator;
 
     const T& at(const ChannelHandle& handle) const {

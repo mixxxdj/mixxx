@@ -5,8 +5,7 @@
 
 class SkinContextTest : public MixxxTest {
   public:
-    SkinContextTest()
-            : m_context(config(), "test") {
+    SkinContextTest() : m_context(config(), "test") {
     }
 
     virtual ~SkinContextTest() {
@@ -117,8 +116,8 @@ TEST_F(SkinContextTest, VariableWithExpression) {
     QDomElement test = doc.createElement("Test");
     test.appendChild(doc.createTextNode("Hello "));
     QDomElement variableNode = doc.createElement("Variable");
-    variableNode.setAttribute(
-        "expression", "'Mixxx, value + 1 = ' + (parseInt(value) + 1)");
+    variableNode.setAttribute("expression",
+                              "'Mixxx, value + 1 = ' + (parseInt(value) + 1)");
     test.appendChild(variableNode);
     test.appendChild(doc.createTextNode(". Isn't that great?"));
     m_context.setVariable("name", "Mixxx");

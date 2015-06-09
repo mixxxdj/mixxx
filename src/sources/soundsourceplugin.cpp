@@ -1,7 +1,6 @@
 #include "soundsourceplugin.h"
 #include "defs_version.h"
 
-
 namespace Mixxx {
 
 namespace {
@@ -12,19 +11,20 @@ void deleteSoundSource(SoundSource* pSoundSource) {
     delete pSoundSource;
 }
 
-} // anonymous namespace
+}  // anonymous namespace
 
 SoundSourcePointer exportSoundSourcePlugin(
         SoundSourcePlugin* pSoundSourcePlugin) {
     return SoundSourcePointer(pSoundSourcePlugin, deleteSoundSource);
 }
 
-} // namespace Mixxx
+}  // namespace Mixxx
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT const char* Mixxx_getVersion() {
     return VERSION;
 }
 
-extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT int Mixxx_SoundSourcePluginAPI_getVersion() {
+extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT int
+Mixxx_SoundSourcePluginAPI_getVersion() {
     return MIXXX_SOUNDSOURCEPLUGINAPI_VERSION;
 }

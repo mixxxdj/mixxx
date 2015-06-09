@@ -10,14 +10,16 @@
 
 // This class is the successor of ControlObjectThread. It should be used for new
 // code. It is better named and may save some CPU time because it is connected
-// only on demand. There are many ControlObjectThread instances where the changed
+// only on demand. There are many ControlObjectThread instances where the
+// changed
 // signal is not needed. This change will save the set() caller for doing
 // unnecessary checks for possible connections.
 class ControlObjectSlave : public QObject {
     Q_OBJECT
   public:
     ControlObjectSlave(QObject* pParent = NULL);
-    ControlObjectSlave(const QString& g, const QString& i, QObject* pParent = NULL);
+    ControlObjectSlave(const QString& g, const QString& i,
+                       QObject* pParent = NULL);
     ControlObjectSlave(const char* g, const char* i, QObject* pParent = NULL);
     ControlObjectSlave(const ConfigKey& key, QObject* pParent = NULL);
     virtual ~ControlObjectSlave();
@@ -28,17 +30,19 @@ class ControlObjectSlave : public QObject {
         return m_key;
     }
 
-    bool connectValueChanged(const QObject* receiver,
-            const char* method, Qt::ConnectionType type = Qt::AutoConnection);
-    bool connectValueChanged(
-            const char* method, Qt::ConnectionType type = Qt::AutoConnection);
+    bool connectValueChanged(const QObject* receiver, const char* method,
+                             Qt::ConnectionType type = Qt::AutoConnection);
+    bool connectValueChanged(const char* method,
+                             Qt::ConnectionType type = Qt::AutoConnection);
 
     // Called from update();
     inline void emitValueChanged() {
         emit(valueChanged(get()));
     }
 
-    inline bool valid() const { return m_pControl != NULL; }
+    inline bool valid() const {
+        return m_pControl != NULL;
+    }
 
     // Returns the value of the object. Thread safe, non-blocking.
     inline double get() const {
@@ -80,9 +84,12 @@ class ControlObjectSlave : public QObject {
     // Resets the control to its default value. Thread safe, non-blocking.
     void reset() {
         if (m_pControl) {
-            // NOTE(rryan): This is important. The originator of this action does
-            // not know the resulting value so it makes sense that we should emit a
-            // general valueChanged() signal even though the change originated from
+            // NOTE(rryan): This is important. The originator of this action
+            // does
+            // not know the resulting value so it makes sense that we should
+            // emit a
+            // general valueChanged() signal even though the change originated
+            // from
             // us. For this reason, we provide NULL here so that the change is
             // broadcast as valueChanged() and not valueChangedByThis().
             m_pControl->reset();
@@ -110,4 +117,4 @@ class ControlObjectSlave : public QObject {
     QSharedPointer<ControlDoublePrivate> m_pControl;
 };
 
-#endif // CONTROLOBJECTSLAVE_H
+#endif  // CONTROLOBJECTSLAVE_H

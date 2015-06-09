@@ -7,11 +7,15 @@ class ImgSource;
 
 class ColorSchemeParser {
   public:
-    static void setupLegacyColorSchemes(QDomElement docElem, ConfigObject<ConfigValue>* pConfig);
+    static void setupLegacyColorSchemes(QDomElement docElem,
+                                        ConfigObject<ConfigValue>* pConfig);
+
   private:
     static ImgSource* parseFilters(QDomNode filter);
-    ColorSchemeParser() { }
-    ~ColorSchemeParser() { }
+    ColorSchemeParser() {
+    }
+    ~ColorSchemeParser() {
+    }
 };
 
 #endif /* COLORSCHEMEPARSER_H */

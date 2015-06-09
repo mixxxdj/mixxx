@@ -14,14 +14,13 @@ const int kMaxBPM = 240;
 // minBPM)
 const int kMaxInterval = static_cast<int>(1000.0 * (60.0 / kMinBPM));
 
-DlgTrackInfo::DlgTrackInfo(QWidget* parent,
-                           DlgTagFetcher& DlgTagFetcher)
-            : QDialog(parent),
-              m_pLoadedTrack(NULL),
-              m_pTapFilter(new TapFilter(this, kFilterLength, kMaxInterval)),
-              m_dLastBpm(-1.),
-              m_DlgTagFetcher(DlgTagFetcher),
-              m_pWCoverArtLabel(new WCoverArtLabel(this)) {
+DlgTrackInfo::DlgTrackInfo(QWidget* parent, DlgTagFetcher& DlgTagFetcher)
+        : QDialog(parent),
+          m_pLoadedTrack(NULL),
+          m_pTapFilter(new TapFilter(this, kFilterLength, kMaxInterval)),
+          m_dLastBpm(-1.),
+          m_DlgTagFetcher(DlgTagFetcher),
+          m_pWCoverArtLabel(new WCoverArtLabel(this)) {
     init();
 }
 
@@ -40,51 +39,41 @@ void DlgTrackInfo::init() {
     // Without this, the background is always solid (white by default).
     txtLocation->viewport()->setAutoFillBackground(false);
 
-    connect(btnNext, SIGNAL(clicked()),
-            this, SLOT(slotNext()));
-    connect(btnPrev, SIGNAL(clicked()),
-            this, SLOT(slotPrev()));
-    connect(btnApply, SIGNAL(clicked()),
-            this, SLOT(apply()));
-    connect(btnOK, SIGNAL(clicked()),
-            this, SLOT(OK()));
-    connect(btnCancel, SIGNAL(clicked()),
-            this, SLOT(cancel()));
+    connect(btnNext, SIGNAL(clicked()), this, SLOT(slotNext()));
+    connect(btnPrev, SIGNAL(clicked()), this, SLOT(slotPrev()));
+    connect(btnApply, SIGNAL(clicked()), this, SLOT(apply()));
+    connect(btnOK, SIGNAL(clicked()), this, SLOT(OK()));
+    connect(btnCancel, SIGNAL(clicked()), this, SLOT(cancel()));
 
-    connect(btnFetchTag, SIGNAL(clicked()),
-            this, SLOT(fetchTag()));
+    connect(btnFetchTag, SIGNAL(clicked()), this, SLOT(fetchTag()));
 
-    connect(bpmDouble, SIGNAL(clicked()),
-            this, SLOT(slotBpmDouble()));
-    connect(bpmHalve, SIGNAL(clicked()),
-            this, SLOT(slotBpmHalve()));
-    connect(bpmTwoThirds, SIGNAL(clicked()),
-            this, SLOT(slotBpmTwoThirds()));
-    connect(bpmThreeFourth, SIGNAL(clicked()),
-            this, SLOT(slotBpmThreeFourth()));
+    connect(bpmDouble, SIGNAL(clicked()), this, SLOT(slotBpmDouble()));
+    connect(bpmHalve, SIGNAL(clicked()), this, SLOT(slotBpmHalve()));
+    connect(bpmTwoThirds, SIGNAL(clicked()), this, SLOT(slotBpmTwoThirds()));
+    connect(bpmThreeFourth, SIGNAL(clicked()), this,
+            SLOT(slotBpmThreeFourth()));
 
-    connect(btnCueActivate, SIGNAL(clicked()),
-            this, SLOT(cueActivate()));
-    connect(btnCueDelete, SIGNAL(clicked()),
-            this, SLOT(cueDelete()));
-    connect(bpmTap, SIGNAL(pressed()),
-            m_pTapFilter.data(), SLOT(tap()));
-    connect(m_pTapFilter.data(), SIGNAL(tapped(double, int)),
-            this, SLOT(slotBpmTap(double, int)));
-    connect(btnReloadFromFile, SIGNAL(clicked()),
-            this, SLOT(reloadTrackMetadata()));
-    connect(btnOpenFileBrowser, SIGNAL(clicked()),
-            this, SLOT(slotOpenInFileBrowser()));
+    connect(btnCueActivate, SIGNAL(clicked()), this, SLOT(cueActivate()));
+    connect(btnCueDelete, SIGNAL(clicked()), this, SLOT(cueDelete()));
+    connect(bpmTap, SIGNAL(pressed()), m_pTapFilter.data(), SLOT(tap()));
+    connect(m_pTapFilter.data(), SIGNAL(tapped(double, int)), this,
+            SLOT(slotBpmTap(double, int)));
+    connect(btnReloadFromFile, SIGNAL(clicked()), this,
+            SLOT(reloadTrackMetadata()));
+    connect(btnOpenFileBrowser, SIGNAL(clicked()), this,
+            SLOT(slotOpenInFileBrowser()));
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
-        connect(pCache, SIGNAL(coverFound(const QObject*, const int, const CoverInfo&, QPixmap, bool)),
-                this, SLOT(slotCoverFound(const QObject*, const int, const CoverInfo&, QPixmap, bool)));
+        connect(pCache, SIGNAL(coverFound(const QObject*, const int,
+                                          const CoverInfo&, QPixmap, bool)),
+                this, SLOT(slotCoverFound(const QObject*, const int,
+                                          const CoverInfo&, QPixmap, bool)));
     }
-    connect(m_pWCoverArtLabel, SIGNAL(coverArtSelected(const CoverArt&)),
-            this, SLOT(slotCoverArtSelected(const CoverArt&)));
-    connect(m_pWCoverArtLabel, SIGNAL(reloadCoverArt()),
-            this, SLOT(slotReloadCoverArt()));
+    connect(m_pWCoverArtLabel, SIGNAL(coverArtSelected(const CoverArt&)), this,
+            SLOT(slotCoverArtSelected(const CoverArt&)));
+    connect(m_pWCoverArtLabel, SIGNAL(reloadCoverArt()), this,
+            SLOT(slotReloadCoverArt()));
 }
 
 void DlgTrackInfo::OK() {
@@ -102,7 +91,6 @@ void DlgTrackInfo::cancel() {
 }
 
 void DlgTrackInfo::trackUpdated() {
-
 }
 
 void DlgTrackInfo::slotNext() {
@@ -114,7 +102,6 @@ void DlgTrackInfo::slotPrev() {
 }
 
 void DlgTrackInfo::cueActivate() {
-
 }
 
 void DlgTrackInfo::cueDelete() {
@@ -122,7 +109,7 @@ void DlgTrackInfo::cueDelete() {
     QListIterator<QTableWidgetItem*> item_it(selected);
 
     QSet<int> rowsToDelete;
-    while(item_it.hasNext()) {
+    while (item_it.hasNext()) {
         QTableWidgetItem* item = item_it.next();
         rowsToDelete.insert(item->row());
     }
@@ -160,7 +147,8 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     txtBpm->setText(pTrack->getBpmStr());
     txtKey->setText(pTrack->getKeyText());
     BeatsPointer pBeats = pTrack->getBeats();
-    bool beatsSupportsSet = !pBeats || (pBeats->getCapabilities() & Beats::BEATSCAP_SET);
+    bool beatsSupportsSet =
+            !pBeats || (pBeats->getCapabilities() & Beats::BEATSCAP_SET);
     bool enableBpmEditing = !pTrack->hasBpmLock() && beatsSupportsSet;
     spinBpm->setEnabled(enableBpmEditing);
     bpmTap->setEnabled(enableBpmEditing);
@@ -194,8 +182,8 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
 
     // We already listen to changed() so we don't need to listen to individual
     // signals such as cuesUpdates, coverArtUpdated(), etc.
-    connect(pTrack.data(), SIGNAL(changed(TrackInfoObject*)),
-            this, SLOT(updateTrackMetadata()));
+    connect(pTrack.data(), SIGNAL(changed(TrackInfoObject*)), this,
+            SLOT(updateTrackMetadata()));
 }
 
 void DlgTrackInfo::slotCoverFound(const QObject* pRequestor,
@@ -203,10 +191,11 @@ void DlgTrackInfo::slotCoverFound(const QObject* pRequestor,
                                   QPixmap pixmap, bool fromCache) {
     Q_UNUSED(fromCache);
     if (pRequestor == this && m_pLoadedTrack &&
-            m_pLoadedTrack->getId() == requestReference) {
+        m_pLoadedTrack->getId() == requestReference) {
         qDebug() << "DlgTrackInfo::slotPixmapFound" << pRequestor << info
                  << pixmap.size();
-        m_pWCoverArtLabel->setCoverArt(m_pLoadedTrack, m_loadedCoverInfo, pixmap);
+        m_pWCoverArtLabel->setCoverArt(m_pLoadedTrack, m_loadedCoverInfo,
+                                       pixmap);
     }
 }
 
@@ -296,16 +285,17 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
             totalSeconds = float(position) / float(sampleRate) / 2.0;
         }
 
-        int fraction = 100*(totalSeconds - floor(totalSeconds));
+        int fraction = 100 * (totalSeconds - floor(totalSeconds));
         int seconds = int(totalSeconds) % 60;
         int mins = int(totalSeconds) / 60;
-        //int hours = mins / 60; //Not going to worry about this for now. :)
+        // int hours = mins / 60; //Not going to worry about this for now. :)
 
-        //Construct a nicely formatted duration string now.
-        QString duration = QString("%1:%2.%3").arg(
-            QString::number(mins),
-            QString("%1").arg(seconds, 2, 10, QChar('0')),
-            QString("%1").arg(fraction, 2, 10, QChar('0')));
+        // Construct a nicely formatted duration string now.
+        QString duration =
+                QString("%1:%2.%3")
+                        .arg(QString::number(mins),
+                             QString("%1").arg(seconds, 2, 10, QChar('0')),
+                             QString("%1").arg(fraction, 2, 10, QChar('0')));
 
         QTableWidgetItem* durationItem = new QTableWidgetItem(duration);
         // Make the duration read only
@@ -329,8 +319,8 @@ void DlgTrackInfo::saveTrack() {
 
     // First, disconnect the track changed signal. Otherwise we signal ourselves
     // and repopulate all these fields.
-    disconnect(m_pLoadedTrack.data(), SIGNAL(changed(TrackInfoObject*)),
-               this, SLOT(updateTrackMetadata()));
+    disconnect(m_pLoadedTrack.data(), SIGNAL(changed(TrackInfoObject*)), this,
+               SLOT(updateTrackMetadata()));
 
     m_pLoadedTrack->setTitle(txtTrackName->text());
     m_pLoadedTrack->setArtist(txtArtist->text());
@@ -369,7 +359,7 @@ void DlgTrackInfo::saveTrack() {
             int iTableHotcue = vHotcue.toInt();
             // The GUI shows hotcues as 1-indexed, but they are actually
             // 0-indexed, so subtract 1
-            pCue->setHotCue(iTableHotcue-1);
+            pCue->setHotCue(iTableHotcue - 1);
         } else {
             pCue->setHotCue(-1);
         }
@@ -378,7 +368,7 @@ void DlgTrackInfo::saveTrack() {
         pCue->setLabel(label);
     }
 
-    QMutableHashIterator<int,Cue*> it(m_cueMap);
+    QMutableHashIterator<int, Cue*> it(m_cueMap);
     // Everything that was not processed above was removed.
     while (it.hasNext()) {
         it.next();
@@ -398,8 +388,8 @@ void DlgTrackInfo::saveTrack() {
     m_pLoadedTrack->setCoverInfo(m_loadedCoverInfo);
 
     // Reconnect changed signals now.
-    connect(m_pLoadedTrack.data(), SIGNAL(changed(TrackInfoObject*)),
-            this, SLOT(updateTrackMetadata()));
+    connect(m_pLoadedTrack.data(), SIGNAL(changed(TrackInfoObject*)), this,
+            SLOT(updateTrackMetadata()));
 }
 
 void DlgTrackInfo::unloadTrack(bool save) {
@@ -416,7 +406,6 @@ void DlgTrackInfo::unloadTrack(bool save) {
 }
 
 void DlgTrackInfo::clear() {
-
     txtTrackName->setText("");
     txtArtist->setText("");
     txtAlbum->setText("");
@@ -440,7 +429,8 @@ void DlgTrackInfo::clear() {
     cueTable->setRowCount(0);
 
     m_loadedCoverInfo = CoverInfo();
-    m_pWCoverArtLabel->setCoverArt(TrackPointer(), m_loadedCoverInfo, QPixmap());
+    m_pWCoverArtLabel->setCoverArt(TrackPointer(), m_loadedCoverInfo,
+                                   QPixmap());
 }
 
 void DlgTrackInfo::slotBpmDouble() {
@@ -452,11 +442,11 @@ void DlgTrackInfo::slotBpmHalve() {
 }
 
 void DlgTrackInfo::slotBpmTwoThirds() {
-    spinBpm->setValue(spinBpm->value() * (2./3.));
+    spinBpm->setValue(spinBpm->value() * (2. / 3.));
 }
 
 void DlgTrackInfo::slotBpmThreeFourth() {
-    spinBpm->setValue(spinBpm->value() * (3./4.));
+    spinBpm->setValue(spinBpm->value() * (3. / 4.));
 }
 
 void DlgTrackInfo::slotBpmTap(double averageLength, int numSamples) {
@@ -474,8 +464,9 @@ void DlgTrackInfo::slotBpmTap(double averageLength, int numSamples) {
 
 void DlgTrackInfo::reloadTrackMetadata() {
     if (m_pLoadedTrack) {
-        TrackPointer pTrack(new TrackInfoObject(m_pLoadedTrack->getLocation(),
-                                                m_pLoadedTrack->getSecurityToken()));
+        TrackPointer pTrack(
+                new TrackInfoObject(m_pLoadedTrack->getLocation(),
+                                    m_pLoadedTrack->getSecurityToken()));
         populateFields(pTrack);
     }
 }

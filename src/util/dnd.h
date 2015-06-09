@@ -27,7 +27,6 @@ class DragAndDropHelper {
                                                     bool acceptPlaylists) {
         QList<QFileInfo> fileLocations;
         foreach (const QUrl& url, urls) {
-
             // XXX: Possible WTF alert - Previously we thought we needed
             // toString() here but what you actually want in any case when
             // converting a QUrl to a file system path is
@@ -48,7 +47,8 @@ class DragAndDropHelper {
                 continue;
             }
 
-            if (acceptPlaylists && (file.endsWith(".m3u") || file.endsWith(".m3u8"))) {
+            if (acceptPlaylists &&
+                (file.endsWith(".m3u") || file.endsWith(".m3u8"))) {
                 QScopedPointer<ParserM3u> playlist_parser(new ParserM3u());
                 QList<QString> track_list = playlist_parser->parse(file);
                 foreach (const QString& playlistFile, track_list) {
@@ -83,22 +83,21 @@ class DragAndDropHelper {
 
     // Allow loading to a player if the player isn't playing or the settings
     // allow interrupting a playing player.
-    static bool allowLoadToPlayer(const QString& group,
-                                  bool isPlaying,
+    static bool allowLoadToPlayer(const QString& group, bool isPlaying,
                                   ConfigObject<ConfigValue>* pConfig) {
         // Always allow loads to preview decks.
         if (PlayerManager::isPreviewDeckGroup(group)) {
             return true;
         }
 
-        return !isPlaying || pConfig->getValueString(
-                ConfigKey("[Controls]",
-                          "AllowTrackLoadToPlayingDeck")).toInt();
+        return !isPlaying ||
+               pConfig->getValueString(ConfigKey("[Controls]",
+                                                 "AllowTrackLoadToPlayingDeck"))
+                       .toInt();
     }
 
     static bool dragEnterAccept(const QMimeData& mimeData,
-                                const QString& sourceIdentifier,
-                                bool firstOnly,
+                                const QString& sourceIdentifier, bool firstOnly,
                                 bool acceptPlaylists) {
         QList<QFileInfo> files = dropEventFiles(mimeData, sourceIdentifier,
                                                 firstOnly, acceptPlaylists);
@@ -110,7 +109,7 @@ class DragAndDropHelper {
                                            bool firstOnly,
                                            bool acceptPlaylists) {
         if (!mimeData.hasUrls() ||
-                (mimeData.hasText() && mimeData.text() == sourceIdentifier)) {
+            (mimeData.hasText() && mimeData.text() == sourceIdentifier)) {
             return QList<QFileInfo>();
         }
 
@@ -118,7 +117,6 @@ class DragAndDropHelper {
                 mimeData.urls(), firstOnly, acceptPlaylists);
         return files;
     }
-
 
     static QDrag* dragTrack(TrackPointer pTrack, QWidget* pDragSource,
                             QString sourceIdentifier) {
@@ -154,7 +152,8 @@ class DragAndDropHelper {
 
         QDrag* drag = new QDrag(pDragSource);
         drag->setMimeData(mimeData);
-        drag->setPixmap(QPixmap(":/images/library/ic_library_drag_and_drop.png"));
+        drag->setPixmap(
+                QPixmap(":/images/library/ic_library_drag_and_drop.png"));
         drag->exec(Qt::CopyAction);
 
         return drag;

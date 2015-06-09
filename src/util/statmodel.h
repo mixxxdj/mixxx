@@ -28,7 +28,7 @@ class StatModel : public QAbstractTableModel {
         NUM_STAT_COLUMNS
     };
 
-    StatModel(QObject* pParent=NULL);
+    StatModel(QObject* pParent = NULL);
     virtual ~StatModel();
 
   public slots:
@@ -46,7 +46,7 @@ class StatModel : public QAbstractTableModel {
                         int role = Qt::DisplayRole) const;
 
   private:
-    QVector<QHash<int, QVariant> > m_headerInfo;
+    QVector<QHash<int, QVariant>> m_headerInfo;
     QList<Stat> m_stats;
     QHash<QString, int> m_statNameToRow;
 };

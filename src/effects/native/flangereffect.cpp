@@ -22,8 +22,8 @@ EffectManifest FlangerEffect::getManifest() {
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
-        "A simple modulation effect, created by taking the input signal "
-        "and mixing it with a delayed, pitch modulated copy of itself."));
+            "A simple modulation effect, created by taking the input signal "
+            "and mixing it with a delayed, pitch modulated copy of itself."));
 
     EffectManifestParameter* depth = manifest.addParameter();
     depth->setId("depth");
@@ -70,16 +70,15 @@ FlangerEffect::FlangerEffect(EngineEffect* pEffect,
 }
 
 FlangerEffect::~FlangerEffect() {
-    //qDebug() << debugString() << "destroyed";
+    // qDebug() << debugString() << "destroyed";
 }
 
-void FlangerEffect::processChannel(const ChannelHandle& handle,
-                                   FlangerGroupState* pState,
-                                   const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                   const unsigned int numSamples,
-                                   const unsigned int sampleRate,
-                                   const EffectProcessor::EnableState enableState,
-                                   const GroupFeatureState& groupFeatures) {
+void FlangerEffect::processChannel(
+        const ChannelHandle& handle, FlangerGroupState* pState,
+        const CSAMPLE* pInput, CSAMPLE* pOutput, const unsigned int numSamples,
+        const unsigned int sampleRate,
+        const EffectProcessor::EnableState enableState,
+        const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
     Q_UNUSED(enableState);
     Q_UNUSED(groupFeatures);
@@ -101,7 +100,7 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
     const int kChannels = 2;
     for (unsigned int i = 0; i < numSamples; i += kChannels) {
         delayLeft[pState->delayPos] = pInput[i];
-        delayRight[pState->delayPos] = pInput[i+1];
+        delayRight[pState->delayPos] = pInput[i + 1];
 
         pState->delayPos = (pState->delayPos + 1) % kMaxDelay;
 
@@ -111,10 +110,12 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
         }
 
         CSAMPLE periodFraction = CSAMPLE(pState->time) / lfoPeriod;
-        CSAMPLE delay = kAverageDelayLength + kLfoAmplitude * sin(M_PI * 2.0f * periodFraction);
+        CSAMPLE delay = kAverageDelayLength +
+                        kLfoAmplitude * sin(M_PI * 2.0f * periodFraction);
 
-        int framePrev = (pState->delayPos - int(delay) + kMaxDelay - 1) % kMaxDelay;
-        int frameNext = (pState->delayPos - int(delay) + kMaxDelay    ) % kMaxDelay;
+        int framePrev =
+                (pState->delayPos - int(delay) + kMaxDelay - 1) % kMaxDelay;
+        int frameNext = (pState->delayPos - int(delay) + kMaxDelay) % kMaxDelay;
         CSAMPLE prevLeft = delayLeft[framePrev];
         CSAMPLE nextLeft = delayLeft[frameNext];
 
@@ -126,6 +127,6 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
         CSAMPLE delayedSampleRight = prevRight + frac * (nextRight - prevRight);
 
         pOutput[i] = pInput[i] + lfoDepth * delayedSampleLeft;
-        pOutput[i+1] = pInput[i+1] + lfoDepth * delayedSampleRight;
+        pOutput[i + 1] = pInput[i + 1] + lfoDepth * delayedSampleRight;
     }
 }

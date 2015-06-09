@@ -7,7 +7,6 @@ namespace {
 
 class MathUtilTest : public testing::Test {
   protected:
-
     MathUtilTest() {
     }
 
@@ -28,7 +27,7 @@ const int MathUtilTest::MIN = -10;
 const int MathUtilTest::MAX = 10;
 
 const int MathUtilTest::VALUE_MIN = 2 * MathUtilTest::MIN;
-const int MathUtilTest::VALUE_MAX = 2  * MathUtilTest::MAX;
+const int MathUtilTest::VALUE_MAX = 2 * MathUtilTest::MAX;
 
 TEST_F(MathUtilTest, MathClampUnsafe) {
     for (int i = VALUE_MIN; i <= VALUE_MAX; ++i) {

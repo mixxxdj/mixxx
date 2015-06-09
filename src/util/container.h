@@ -7,7 +7,7 @@
 
 // Helper function to delete the values of a QMap if they are pointers.
 template <class K, class V>
-void deleteMapValues(QMap<K,V>* pMap) {
+void deleteMapValues(QMap<K, V>* pMap) {
     if (pMap == NULL) {
         return;
     }

@@ -53,7 +53,8 @@ class WPushButton : public WWidget {
     // The declaration #MyButton[displayValue="0"] { } will define the style
     // when the widget is in state 0.  This allows for effects like reversing
     // background and foreground colors to indicate enabled/disabled state.
-    Q_PROPERTY(int displayValue READ readDisplayValue NOTIFY displayValueChanged)
+    Q_PROPERTY(int displayValue READ readDisplayValue NOTIFY
+                       displayValueChanged)
 
     int readDisplayValue() const {
         double value = getControlParameterDisplay();
@@ -91,8 +92,7 @@ class WPushButton : public WWidget {
 
     // Associates a background pixmap with the widget. This is only needed if
     // the button pixmaps contains alpha channel values.
-    void setPixmapBackground(PixmapSource source,
-                            Paintable::DrawMode mode);
+    void setPixmapBackground(PixmapSource source, Paintable::DrawMode mode);
 
     // True, if the button is currently pressed
     bool m_bPressed;

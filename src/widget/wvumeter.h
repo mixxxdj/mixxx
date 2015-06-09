@@ -29,16 +29,15 @@
 #include "skin/skincontext.h"
 #include "util/performancetimer.h"
 
-class WVuMeter : public WWidget  {
-   Q_OBJECT
+class WVuMeter : public WWidget {
+    Q_OBJECT
   public:
-    WVuMeter(QWidget *parent=0);
+    WVuMeter(QWidget *parent = 0);
     virtual ~WVuMeter();
 
-    void setup(QDomNode node, const SkinContext& context);
+    void setup(QDomNode node, const SkinContext &context);
     void setPixmapBackground(PixmapSource source, Paintable::DrawMode mode);
-    void setPixmaps(PixmapSource source,
-                    bool bHorizontal,
+    void setPixmaps(PixmapSource source, bool bHorizontal,
                     Paintable::DrawMode mode);
     void onConnectedControlChanged(double dParameter, double dValue);
 

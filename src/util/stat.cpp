@@ -57,7 +57,8 @@ void Stat::processReport(const StatReport& report) {
         } else {
             double variance_mk_prev = m_variance_mk;
             m_variance_mk += (report.value - m_variance_mk) / m_report_count;
-            m_variance_sk += (report.value - variance_mk_prev) * (report.value - m_variance_mk);
+            m_variance_sk += (report.value - variance_mk_prev) *
+                             (report.value - m_variance_mk);
         }
     }
 
@@ -70,7 +71,7 @@ void Stat::processReport(const StatReport& report) {
     }
 }
 
-QDebug operator<<(QDebug dbg, const Stat &stat) {
+QDebug operator<<(QDebug dbg, const Stat& stat) {
     QStringList stats;
     if (stat.m_compute & Stat::COUNT) {
         stats << "count=" + QString::number(stat.m_report_count);
@@ -83,7 +84,8 @@ QDebug operator<<(QDebug dbg, const Stat &stat) {
     if (stat.m_compute & Stat::AVERAGE) {
         QString value = "average=";
         if (stat.m_report_count > 0) {
-            value += QString::number(stat.m_sum / stat.m_report_count) + stat.valueUnits();
+            value += QString::number(stat.m_sum / stat.m_report_count) +
+                     stat.valueUnits();
         } else {
             value += "XXX";
         }
@@ -112,9 +114,11 @@ QDebug operator<<(QDebug dbg, const Stat &stat) {
 
     if (stat.m_compute & Stat::SAMPLE_VARIANCE) {
         double variance = stat.variance();
-        stats << "variance=" + QString::number(variance) + stat.valueUnits() + "^2";
+        stats << "variance=" + QString::number(variance) + stat.valueUnits() +
+                         "^2";
         if (variance >= 0.0) {
-            stats << "stddev=" + QString::number(sqrt(variance)) + stat.valueUnits();
+            stats << "stddev=" + QString::number(sqrt(variance)) +
+                             stat.valueUnits();
         }
     }
 
@@ -127,7 +131,7 @@ QDebug operator<<(QDebug dbg, const Stat &stat) {
         for (QMap<double, double>::const_iterator it = stat.m_histogram.begin();
              it != stat.m_histogram.end(); ++it) {
             histogram << QString::number(it.key()) + stat.valueUnits() + ":" +
-                    QString::number(it.value());
+                                 QString::number(it.value());
         }
         stats << "histogram=" + histogram.join(",");
     }
@@ -137,10 +141,8 @@ QDebug operator<<(QDebug dbg, const Stat &stat) {
 }
 
 // static
-bool Stat::track(const QString& tag,
-                 Stat::StatType type,
-                 Stat::ComputeFlags compute,
-                 double value) {
+bool Stat::track(const QString& tag, Stat::StatType type,
+                 Stat::ComputeFlags compute, double value) {
     if (!StatsManager::s_bStatsManagerEnabled) {
         return false;
     }

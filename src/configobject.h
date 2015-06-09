@@ -28,7 +28,6 @@
 
 #include "util/debug.h"
 
-
 // Class for the key for a specific configuration element. A key consists of a
 // group and an item.
 
@@ -67,7 +66,6 @@ inline uint qHash(const QKeySequence& key) {
     return qHash(key.toString());
 }
 
-
 // The value corresponding to a key. The basic value is a string, but can be
 // subclassed to more specific needs.
 class ConfigValue {
@@ -76,7 +74,8 @@ class ConfigValue {
     ConfigValue(QString _value);
     ConfigValue(int _value);
     inline ConfigValue(QDomNode /* node */) {
-        reportFatalErrorAndQuit("ConfigValue from QDomNode not implemented here");
+        reportFatalErrorAndQuit(
+                "ConfigValue from QDomNode not implemented here");
     }
     void valCopy(const ConfigValue& _value);
 
@@ -90,7 +89,8 @@ class ConfigValueKbd : public ConfigValue {
     ConfigValueKbd(QString _value);
     ConfigValueKbd(QKeySequence key);
     inline ConfigValueKbd(QDomNode /* node */) {
-        reportFatalErrorAndQuit("ConfigValueKbd from QDomNode not implemented here");
+        reportFatalErrorAndQuit(
+                "ConfigValueKbd from QDomNode not implemented here");
     }
     void valCopy(const ConfigValueKbd& v);
     friend bool operator==(const ConfigValueKbd& s1, const ConfigValueKbd& s2);
@@ -98,10 +98,17 @@ class ConfigValueKbd : public ConfigValue {
     QKeySequence m_qKey;
 };
 
-template <class ValueType> class ConfigOption {
+template <class ValueType>
+class ConfigOption {
   public:
-    ConfigOption() { val = NULL; key = NULL;};
-    ConfigOption(ConfigKey* _key, ValueType* _val) { key = _key ; val = _val; };
+    ConfigOption() {
+        val = NULL;
+        key = NULL;
+    };
+    ConfigOption(ConfigKey* _key, ValueType* _val) {
+        key = _key;
+        val = _val;
+    };
     virtual ~ConfigOption() {
         delete key;
         delete val;
@@ -110,7 +117,8 @@ template <class ValueType> class ConfigOption {
     ConfigKey* key;
 };
 
-template <class ValueType> class ConfigObject {
+template <class ValueType>
+class ConfigObject {
   public:
     ConfigKey key;
     ValueType value;
@@ -119,10 +127,10 @@ template <class ValueType> class ConfigObject {
     ConfigObject(QString file);
     ConfigObject(QDomNode node);
     ~ConfigObject();
-    ConfigOption<ValueType> *set(ConfigKey, ValueType);
-    ConfigOption<ValueType> *get(ConfigKey key);
+    ConfigOption<ValueType>* set(ConfigKey, ValueType);
+    ConfigOption<ValueType>* get(ConfigKey key);
     bool exists(ConfigKey key);
-    ConfigKey *get(ValueType v);
+    ConfigKey* get(ValueType v);
     QString getValueString(ConfigKey k);
     QString getValueString(ConfigKey k, const QString& default_string);
     QHash<ConfigKey, ValueType> toHash() const;
