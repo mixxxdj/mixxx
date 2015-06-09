@@ -153,7 +153,7 @@ class AnalyserWaveform : public Analyser {
     void storeCurentStridePower();
     void resetCurrentStride();
 
-    void resetFilters(TrackPointer tio, int sampleRate);
+    void createFilters(int sampleRate);
     void destroyFilters();
     void storeIfGreater(float* pDest, float source);
 
