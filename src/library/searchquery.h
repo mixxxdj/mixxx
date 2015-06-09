@@ -44,14 +44,14 @@ class GroupNode : public QueryNode {
 
 class OrNode : public GroupNode {
   public:
-    bool match(const TrackPointer& pTrack) const;
-    QString toSql() const;
+    bool match(const TrackPointer& pTrack) const override;
+    QString toSql() const override;
 };
 
 class AndNode : public GroupNode {
   public:
-    bool match(const TrackPointer& pTrack) const;
-    QString toSql() const;
+    bool match(const TrackPointer& pTrack) const override;
+    QString toSql() const override;
 };
 
 class NotNode : public QueryNode {
@@ -74,8 +74,8 @@ class NotNode : public QueryNode {
     }
 >>>>>>> Replace plain pointers with std::unique_ptr to avoid memory leaks
 
-    bool match(const TrackPointer& pTrack) const;
-    QString toSql() const;
+    bool match(const TrackPointer& pTrack) const override;
+    QString toSql() const override;
 
   private:
     std::unique_ptr<QueryNode> m_pNode;
@@ -91,8 +91,8 @@ class TextFilterNode : public QueryNode {
               m_argument(argument) {
     }
 
-    bool match(const TrackPointer& pTrack) const;
-    QString toSql() const;
+    bool match(const TrackPointer& pTrack) const override;
+    QString toSql() const override;
 
   private:
     QSqlDatabase m_database;
@@ -104,8 +104,8 @@ class NumericFilterNode : public QueryNode {
   public:
     NumericFilterNode(const QStringList& sqlColumns, QString argument);
     NumericFilterNode(const QStringList& sqlColumns);
-    bool match(const TrackPointer& pTrack) const;
-    QString toSql() const;
+    bool match(const TrackPointer& pTrack) const override;
+    QString toSql() const override;
 
   protected:
     virtual void init(QString argument);
@@ -124,15 +124,15 @@ class DurationFilterNode : public NumericFilterNode {
     DurationFilterNode(const QStringList& sqlColumns, QString argument);
 
   private:
-    virtual double parse(const QString& arg, bool* ok);
+    double parse(const QString& arg, bool* ok) override;
 };
 
 class KeyFilterNode : public QueryNode {
   public:
     KeyFilterNode(mixxx::track::io::key::ChromaticKey key, bool fuzzy);
 
-    bool match(const TrackPointer& pTrack) const;
-    QString toSql() const;
+    bool match(const TrackPointer& pTrack) const override;
+    QString toSql() const override;
 
   private:
     QList<mixxx::track::io::key::ChromaticKey> m_matchKeys;
@@ -145,14 +145,14 @@ class SqlNode : public QueryNode {
             : m_sql(QString("(%1)").arg(sqlExpression)) {
     }
 
-    bool match(const TrackPointer& pTrack) const {
+    bool match(const TrackPointer& pTrack) const override {
         // We are usually embedded in an AND node so if we don't match
         // everything then we block everything.
         Q_UNUSED(pTrack);
         return true;
     }
 
-    QString toSql() const {
+    QString toSql() const override {
         return m_sql;
     }
 
