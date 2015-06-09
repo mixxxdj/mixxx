@@ -192,7 +192,7 @@ void SearchQueryParser::parseTokens(QStringList tokens,
 std::unique_ptr<QueryNode> SearchQueryParser::parseQuery(const QString& query,
                                          const QStringList& searchColumns,
                                          const QString& extraFilter) const {
-    std::unique_ptr<QueryNode> pQuery(std::make_unique<AndNode>());
+    auto pQuery(std::make_unique<AndNode>());
 
     if (!extraFilter.isEmpty()) {
         pQuery->addNode(std::make_unique<SqlNode>(extraFilter));
@@ -203,5 +203,5 @@ std::unique_ptr<QueryNode> SearchQueryParser::parseQuery(const QString& query,
         parseTokens(tokens, searchColumns, pQuery.get());
     }
 
-    return pQuery;
+    return std::move(pQuery);
 }
