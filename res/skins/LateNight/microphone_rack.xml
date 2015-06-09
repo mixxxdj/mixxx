@@ -1,72 +1,119 @@
 <Template>
   <WidgetGroup>
-    <ObjectName>MicContainer</ObjectName>
-    <Layout>vertical</Layout>
-    <SizePolicy>max,me</SizePolicy>
-    <MaximumSize>550,160</MaximumSize>
+    <Layout>horizontal</Layout>
     <Children>
       <WidgetGroup>
-        <Layout>horizontal</Layout>
-        <SizePolicy>min,min</SizePolicy>
+        <ObjectName>MicContainer</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>max,me</SizePolicy>
+        <MaximumSize>510,160</MaximumSize>
         <Children>
-          <Label>
-            <ObjectName>MicTitle</ObjectName>
-            <Text>Microphones</Text>
-          </Label>
           <WidgetGroup>
-            <Layout>vertical</Layout>
-            <SizePolicy>me,min</SizePolicy>
-            <Children/>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <Label>
+                <ObjectName>MicTitle</ObjectName>
+                <Text>Microphones</Text>
+              </Label>
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,min</SizePolicy>
+                <Children/>
+              </WidgetGroup>
+              <WidgetGroup>
+                <ObjectName>MicButtonContainer</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>f,f</SizePolicy>
+                <Children>
+                  <PushButton>
+                    <Size>65f,15f</Size>
+                    <ObjectName>GuiToggleButton</ObjectName>
+                    <NumberStates>3</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Text>DUCK OFF</Text>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Text>AUTO DUCK</Text>
+                    </State>
+                    <State>
+                      <Number>2</Number>
+                      <Text>MANUAL</Text>
+                    </State>
+                    <Connection>
+                      <ConfigKey>[Master],talkoverDucking</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                  </PushButton>
+                </Children>
+              </WidgetGroup>
+            </Children>
           </WidgetGroup>
           <WidgetGroup>
-            <ObjectName>MicButtonContainer</ObjectName>
             <Layout>horizontal</Layout>
-            <SizePolicy>f,f</SizePolicy>
+            <SizePolicy>max,min</SizePolicy>
             <Children>
-              <PushButton>
-                <Size>65f,15f</Size>
-                <ObjectName>GuiToggleButton</ObjectName>
-                <NumberStates>3</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Text>DUCK OFF</Text>
-                </State>
-                <State>
-                  <Number>1</Number>
-                  <Text>AUTO DUCK</Text>
-                </State>
-                <State>
-                  <Number>2</Number>
-                  <Text>MANUAL</Text>
-                </State>
-                <Connection>
-                  <ConfigKey>[Master],talkoverDucking</ConfigKey>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-              </PushButton>
+              <Template src="skin:microphone.xml">
+                <SetVariable name="mic1hack">1</SetVariable>
+              </Template>
+              <Template src="skin:microphone.xml">
+                <SetVariable name="micnum">2</SetVariable>
+              </Template>
+              <Template src="skin:microphone.xml">
+                <SetVariable name="micnum">3</SetVariable>
+              </Template>
+              <Template src="skin:microphone.xml">
+                <SetVariable name="micnum">4</SetVariable>
+              </Template>
             </Children>
           </WidgetGroup>
         </Children>
       </WidgetGroup>
+      
       <WidgetGroup>
-        <Layout>horizontal</Layout>
-        <BackPath>background_tile.png</BackPath>
-        <SizePolicy>max,min</SizePolicy>
+        <ObjectName>MicContainer</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>max,me</SizePolicy>
+        <MaximumSize>510,160</MaximumSize>
         <Children>
-          <Template src="skin:microphone.xml">
-            <SetVariable name="mic1hack">1</SetVariable>
-          </Template>
-          <Template src="skin:microphone.xml">
-            <SetVariable name="micnum">2</SetVariable>
-          </Template>
-          <Template src="skin:microphone.xml">
-            <SetVariable name="micnum">3</SetVariable>
-          </Template>
-          <Template src="skin:microphone.xml">
-            <SetVariable name="micnum">4</SetVariable>
-          </Template>
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <MinimumSize>0,22</MinimumSize>
+            <Children>
+              <Label>
+                <ObjectName>MicTitle</ObjectName>
+                <Text>Aux Inputs</Text>
+              </Label>
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,min</SizePolicy>
+                <Children/>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>max,min</SizePolicy>
+            <Children>
+              <Template src="skin:aux.xml">
+                <SetVariable name="auxnum">1</SetVariable>
+              </Template>
+              <Template src="skin:aux.xml">
+                <SetVariable name="auxnum">2</SetVariable>
+              </Template>
+              <Template src="skin:aux.xml">
+                <SetVariable name="auxnum">3</SetVariable>
+              </Template>
+              <Template src="skin:aux.xml">
+                <SetVariable name="auxnum">4</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
         </Children>
       </WidgetGroup>
     </Children>
-  </WidgetGroup>
+    </WidgetGroup>
 </Template>
