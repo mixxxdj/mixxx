@@ -27,8 +27,8 @@
 #include "library/trackcollection.h"
 #include "library/library_preferences.h"
 #include "util/math.h"
-#include "util/cmdlineargs.h"
 #include "configobject.h"
+#include "upgrade.h"
 
 
 Upgrade::Upgrade()
