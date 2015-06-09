@@ -30,6 +30,7 @@ class CmdlineArgs {
                 m_settingsPath = QString::fromLocal8Bit(argv[i+1]);
                 if (!m_settingsPath.endsWith("/")) {
                     m_settingsPath.append("/");
+                    m_settingsPathSet=true;
                 }
             } else if (argv[i] == QString("--resourcePath") && i+1 < argc) {
                 m_resourcePath = QString::fromLocal8Bit(argv[i+1]);
@@ -59,6 +60,7 @@ class CmdlineArgs {
     bool getMidiDebug() const { return m_midiDebug; }
     bool getDeveloper() const { return m_developer; }
     bool getSafeMode() const { return m_safeMode; }
+    bool getSettingsPathSet() const { return m_settingsPathSet; }
     bool getTimelineEnabled() const { return !m_timelinePath.isEmpty(); }
     const QString& getLocale() const { return m_locale; }
     const QString& getSettingsPath() const { return m_settingsPath; }
@@ -73,6 +75,7 @@ class CmdlineArgs {
         m_midiDebug(false),
         m_developer(false),
         m_safeMode(false),
+        m_settingsPathSet(false),
 // We are not ready to switch to XDG folders under Linux, so keeping $HOME/.mixxx as preferences folder. see lp:1463273
 #ifdef __LINUX__
         m_settingsPath(QDir::homePath().append("/").append(SETTINGS_PATH)) {
@@ -87,6 +90,7 @@ class CmdlineArgs {
     bool m_midiDebug;
     bool m_developer; // Developer Mode
     bool m_safeMode;
+    bool m_settingsPathSet; // has --settingsPath been set on command line ?
     QString m_locale;
     QString m_settingsPath;
     QString m_resourcePath;

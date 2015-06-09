@@ -180,7 +180,7 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
         qDebug() << "Config version is empty, trying to read pre-1.9.0 config";
         // Try to read the config from the pre-1.9.0 final directory on OS X (we moved it in 1.9.0 final)
         QScopedPointer<QFile> oldConfigFile(new QFile(QDir::homePath().append("/").append(".mixxx/mixxx.cfg")));
-        if (oldConfigFile->exists()) {
+        if (oldConfigFile->exists() && ! CmdlineArgs::Instance().getSettingsPathSet()) {
             qDebug() << "Found pre-1.9.0 config for OS X";
             // Note: We changed SETTINGS_PATH in 1.9.0 final on OS X so it must be hardcoded to ".mixxx" here for legacy.
             config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(".mixxx/mixxx.cfg"));
@@ -193,7 +193,7 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
         qDebug() << "Config version is empty, trying to read pre-1.12.0 config";
         // Try to read the config from the pre-1.12.0 final directory on Windows (we moved it in 1.12.0 final)
         QScopedPointer<QFile> oldConfigFile(new QFile(QDir::homePath().append("/").append("Local Settings/Application Data/Mixxx/").append(SETTINGS_FILE)));
-        if (oldConfigFile->exists()) {
+        if (oldConfigFile->exists() && ! CmdlineArgs::Instance().getSettingsPathSet()) {
             qDebug() << "Found pre-1.12.0 config for Windows";
             // Note: We changed SETTINGS_PATH in 1.12.0 final on Windows so it must be hardcoded to "Local Settings/Application Data/Mixxx/" here for legacy.
             config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append("Local Settings/Application Data/Mixxx/").append(SETTINGS_FILE));
