@@ -54,7 +54,7 @@ TEST_F(SearchQueryParserTest, OneTermOneColumn) {
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-        qPrintable(QString("(artist LIKE '%asdf%')")),
+        qPrintable(QString("artist LIKE '%asdf%'")),
         qPrintable(pQuery->toSql()));
 }
 
@@ -73,7 +73,7 @@ TEST_F(SearchQueryParserTest, OneTermMultipleColumns) {
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-        qPrintable(QString("((artist LIKE '%asdf%') OR (album LIKE '%asdf%'))")),
+        qPrintable(QString("(artist LIKE '%asdf%') OR (album LIKE '%asdf%')")),
         qPrintable(pQuery->toSql()));
 }
 
@@ -161,7 +161,7 @@ TEST_F(SearchQueryParserTest, MultipleTermsMultipleColumnsNegation) {
     EXPECT_STREQ(
         qPrintable(QString(
             "((artist LIKE '%asdf%') OR (album LIKE '%asdf%')) "
-            "AND NOT ((artist LIKE '%zxcv%') OR (album LIKE '%zxcv%'))")),
+            "AND (NOT ((artist LIKE '%zxcv%') OR (album LIKE '%zxcv%')))")),
         qPrintable(pQuery->toSql()));
 }
 
@@ -180,7 +180,7 @@ TEST_F(SearchQueryParserTest, TextFilter) {
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-        qPrintable(QString("(comment LIKE '%asdf%')")),
+        qPrintable(QString("comment LIKE '%asdf%'")),
         qPrintable(pQuery->toSql()));
 }
 
@@ -217,7 +217,7 @@ TEST_F(SearchQueryParserTest, TextFilterQuote) {
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-        qPrintable(QString("(comment LIKE '%asdf zxcv%')")),
+        qPrintable(QString("comment LIKE '%asdf zxcv%'")),
         qPrintable(pQuery->toSql()));
 }
 
@@ -236,7 +236,7 @@ TEST_F(SearchQueryParserTest, TextFilterQuote_NoEndQuoteTakesWholeQuery) {
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-        qPrintable(QString("(comment LIKE '%asdf zxcv qwer%')")),
+        qPrintable(QString("comment LIKE '%asdf zxcv qwer%'")),
         qPrintable(pQuery->toSql()));
 }
 
@@ -255,7 +255,7 @@ TEST_F(SearchQueryParserTest, TextFilterAllowsSpace) {
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-        qPrintable(QString("(comment LIKE '%asdf%')")),
+        qPrintable(QString("comment LIKE '%asdf%'")),
         qPrintable(pQuery->toSql()));
 }
 
@@ -294,7 +294,7 @@ TEST_F(SearchQueryParserTest, NumericFilter) {
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-        qPrintable(QString("(bpm = 127.12)")),
+        qPrintable(QString("bpm = 127.12")),
         qPrintable(pQuery->toSql()));
 }
 
@@ -352,7 +352,7 @@ TEST_F(SearchQueryParserTest, NumericFilterAllowsSpace) {
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-        qPrintable(QString("(bpm = 127.12)")),
+        qPrintable(QString("bpm = 127.12")),
         qPrintable(pQuery->toSql()));
 }
 
@@ -371,7 +371,7 @@ TEST_F(SearchQueryParserTest, NumericFilterOperators) {
     pTrack->setBpm(127.13);
     EXPECT_TRUE(pQuery->match(pTrack));
     EXPECT_STREQ(
-        qPrintable(QString("(bpm > 127.12)")),
+        qPrintable(QString("bpm > 127.12")),
         qPrintable(pQuery->toSql()));
 
 
@@ -381,7 +381,7 @@ TEST_F(SearchQueryParserTest, NumericFilterOperators) {
     pTrack->setBpm(127.12);
     EXPECT_TRUE(pQuery->match(pTrack));
     EXPECT_STREQ(
-        qPrintable(QString("(bpm >= 127.12)")),
+        qPrintable(QString("bpm >= 127.12")),
         qPrintable(pQuery->toSql()));
 
     pQuery = m_parser.parseQuery("bpm:<127.12", searchColumns, "");
@@ -390,7 +390,7 @@ TEST_F(SearchQueryParserTest, NumericFilterOperators) {
     pTrack->setBpm(127.11);
     EXPECT_TRUE(pQuery->match(pTrack));
     EXPECT_STREQ(
-        qPrintable(QString("(bpm < 127.12)")),
+        qPrintable(QString("bpm < 127.12")),
         qPrintable(pQuery->toSql()));
 
     pQuery = m_parser.parseQuery("bpm:<=127.12", searchColumns, "");
@@ -399,7 +399,7 @@ TEST_F(SearchQueryParserTest, NumericFilterOperators) {
     pTrack->setBpm(127.12);
     EXPECT_TRUE(pQuery->match(pTrack));
     EXPECT_STREQ(
-        qPrintable(QString("(bpm <= 127.12)")),
+        qPrintable(QString("bpm <= 127.12")),
         qPrintable(pQuery->toSql()));
 }
 
@@ -421,7 +421,7 @@ TEST_F(SearchQueryParserTest, NumericRangeFilter) {
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-        qPrintable(QString("(bpm >= 127.12 AND bpm <= 129)")),
+        qPrintable(QString("(bpm >= 127.12) AND (bpm <= 129)")),
         qPrintable(pQuery->toSql()));
 }
 
@@ -444,7 +444,7 @@ TEST_F(SearchQueryParserTest, MultipleFilters) {
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-        qPrintable(QString("(bpm >= 127.12 AND bpm <= 129) AND "
+        qPrintable(QString("((bpm >= 127.12) AND (bpm <= 129)) AND "
                            "((artist LIKE '%com truise%') OR (album_artist LIKE '%com truise%')) AND "
                            "((artist LIKE '%Colorvision%') OR (title LIKE '%Colorvision%'))")),
         qPrintable(pQuery->toSql()));
@@ -484,7 +484,7 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearch) {
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-        qPrintable(QString("(duration = 90)")),
+        qPrintable(QString("duration = 90")),
         qPrintable(pQuery->toSql()));
 
     pQuery = m_parser.parseQuery("duration:1m30s", searchColumns, "");
@@ -494,7 +494,7 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearch) {
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-        qPrintable(QString("(duration = 90)")),
+        qPrintable(QString("duration = 90")),
         qPrintable(pQuery->toSql()));
 
     pQuery = m_parser.parseQuery("duration:90", searchColumns, "");
@@ -504,11 +504,11 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearch) {
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-        qPrintable(QString("(duration = 90)")),
+        qPrintable(QString("duration = 90")),
         qPrintable(pQuery->toSql()));
 }
 
-TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithOperators) {
+TEST_F(SearchQueryParserTest, HumanReadableDurationSearchWithOperators) {
     QStringList searchColumns;
     searchColumns << "artist"
                   << "album";
@@ -523,7 +523,7 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithOperators) {
     pTrack->setDuration(91);
     EXPECT_TRUE(pQuery->match(pTrack));
     EXPECT_STREQ(
-        qPrintable(QString("(duration > 90)")),
+        qPrintable(QString("duration > 90")),
         qPrintable(pQuery->toSql()));
 
     pQuery = m_parser.parseQuery("duration:>=90", searchColumns, "");
@@ -532,7 +532,7 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithOperators) {
     pTrack->setDuration(90);
     EXPECT_TRUE(pQuery->match(pTrack));
     EXPECT_STREQ(
-        qPrintable(QString("(duration >= 90)")),
+        qPrintable(QString("duration >= 90")),
         qPrintable(pQuery->toSql()));
 
     pQuery = m_parser.parseQuery("duration:>=1:30", searchColumns, "");
@@ -541,7 +541,7 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithOperators) {
     pTrack->setDuration(90);
     EXPECT_TRUE(pQuery->match(pTrack));
     EXPECT_STREQ(
-        qPrintable(QString("(duration >= 90)")),
+        qPrintable(QString("duration >= 90")),
         qPrintable(pQuery->toSql()));
 
     pQuery = m_parser.parseQuery("duration:<2:30", searchColumns, "");
@@ -550,7 +550,7 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithOperators) {
     pTrack->setDuration(89);
     EXPECT_TRUE(pQuery->match(pTrack));
     EXPECT_STREQ(
-        qPrintable(QString("(duration < 150)")),
+        qPrintable(QString("duration < 150")),
         qPrintable(pQuery->toSql()));
 
     pQuery = m_parser.parseQuery("duration:<=2:30", searchColumns, "");
@@ -559,7 +559,7 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithOperators) {
     pTrack->setDuration(150);
     EXPECT_TRUE(pQuery->match(pTrack));
     EXPECT_STREQ(
-        qPrintable(QString("(duration <= 150)")),
+        qPrintable(QString("duration <= 150")),
         qPrintable(pQuery->toSql()));
 
     pQuery = m_parser.parseQuery("duration:<=150", searchColumns, "");
@@ -568,7 +568,7 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithOperators) {
     pTrack->setDuration(150);
     EXPECT_TRUE(pQuery->match(pTrack));
     EXPECT_STREQ(
-        qPrintable(QString("(duration <= 150)")),
+        qPrintable(QString("duration <= 150")),
         qPrintable(pQuery->toSql()));
 
     pQuery = m_parser.parseQuery("duration:<=2m30s", searchColumns, "");
@@ -577,7 +577,7 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithOperators) {
     pTrack->setDuration(150);
     EXPECT_TRUE(pQuery->match(pTrack));
     EXPECT_STREQ(
-        qPrintable(QString("(duration <= 150)")),
+        qPrintable(QString("duration <= 150")),
         qPrintable(pQuery->toSql()));
 
     pQuery = m_parser.parseQuery("duration:<=2m", searchColumns, "");
@@ -586,7 +586,7 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithOperators) {
     pTrack->setDuration(110);
     EXPECT_TRUE(pQuery->match(pTrack));
     EXPECT_STREQ(
-        qPrintable(QString("(duration <= 120)")),
+        qPrintable(QString("duration <= 120")),
         qPrintable(pQuery->toSql()));
 
     pQuery = m_parser.parseQuery("duration:<=2:", searchColumns, "");
@@ -595,7 +595,7 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithOperators) {
     pTrack->setDuration(110);
     EXPECT_TRUE(pQuery->match(pTrack));
     EXPECT_STREQ(
-        qPrintable(QString("(duration <= 120)")),
+        qPrintable(QString("duration <= 120")),
         qPrintable(pQuery->toSql()));
 
     pQuery = m_parser.parseQuery("duration:>=1:3", searchColumns, "");
@@ -604,7 +604,7 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithOperators) {
     pTrack->setDuration(150);
     EXPECT_TRUE(pQuery->match(pTrack));
     EXPECT_STREQ(
-        qPrintable(QString("(duration >= 63)")),
+        qPrintable(QString("duration >= 63")),
         qPrintable(pQuery->toSql()));
 }
 
@@ -626,7 +626,7 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithRangeFilter) {
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-        qPrintable(QString("(duration >= 150 AND duration <= 200)")),
+        qPrintable(QString("(duration >= 150) AND (duration <= 200)")),
         qPrintable(pQuery->toSql()));
 
     pQuery = m_parser.parseQuery("duration:2:30-200", searchColumns, "");
@@ -639,7 +639,7 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithRangeFilter) {
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-        qPrintable(QString("(duration >= 150 AND duration <= 200)")),
+        qPrintable(QString("(duration >= 150) AND (duration <= 200)")),
         qPrintable(pQuery->toSql()));
 
     pQuery = m_parser.parseQuery("duration:150-200", searchColumns, "");
@@ -652,7 +652,7 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithRangeFilter) {
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-        qPrintable(QString("(duration >= 150 AND duration <= 200)")),
+        qPrintable(QString("(duration >= 150) AND (duration <= 200)")),
         qPrintable(pQuery->toSql()));
 
     pQuery = m_parser.parseQuery("duration:2m30s-3m20s", searchColumns, "");
@@ -665,6 +665,6 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithRangeFilter) {
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-        qPrintable(QString("(duration >= 150 AND duration <= 200)")),
+        qPrintable(QString("(duration >= 150) AND (duration <= 200)")),
         qPrintable(pQuery->toSql()));
 }

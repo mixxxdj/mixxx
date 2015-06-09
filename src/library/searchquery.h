@@ -26,6 +26,8 @@ class QueryNode {
 
   protected:
     QueryNode() {}
+
+    static QString concatSqlClauses(const QStringList& sqlClauses, const QString& sqlConcatOp);
 };
 
 class GroupNode : public QueryNode {
@@ -138,8 +140,10 @@ class KeyFilterNode : public QueryNode {
 class SqlNode : public QueryNode {
   public:
     explicit SqlNode(const QString& sqlExpression)
-            // Need to wrap it since we don't know if the caller wrapped it.
-            : m_sql(QString("(%1)").arg(sqlExpression)) {
+            // No need to wrap into parantheses here! This will be done
+            // later in toSql() if this node is a component of another
+            // composite node.
+            : m_sql(sqlExpression) {
     }
 
     bool match(const TrackPointer& pTrack) const override {
