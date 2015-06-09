@@ -1,7 +1,6 @@
 #ifndef SEARCHQUERY_H
 #define SEARCHQUERY_H
 
-#include <memory>
 #include <vector>
 
 #include <QList>
@@ -13,6 +12,7 @@
 #include "trackinfoobject.h"
 #include "proto/keys.pb.h"
 #include "util/assert.h"
+#include "util/memory.h"
 
 QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& column);
 
