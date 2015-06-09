@@ -4,8 +4,6 @@
 #ifndef BASETRACKCACHE_H
 #define BASETRACKCACHE_H
 
-#include <memory>
-
 #include <QList>
 #include <QObject>
 #include <QSet>
@@ -19,6 +17,7 @@
 #include "library/columncache.h"
 #include "trackinfoobject.h"
 #include "util.h"
+#include "util/memory.h"
 
 class SearchQueryParser;
 class QueryNode;

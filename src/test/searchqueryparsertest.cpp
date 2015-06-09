@@ -29,7 +29,7 @@ class SearchQueryParserTest : public testing::Test {
 };
 
 TEST_F(SearchQueryParserTest, EmptySearch) {
-    std::unique_ptr<QueryNode> pQuery(
+    auto pQuery(
         m_parser.parseQuery("", QStringList(), ""));
 
     // An empty query matches all tracks.
@@ -44,7 +44,7 @@ TEST_F(SearchQueryParserTest, OneTermOneColumn) {
     QStringList searchColumns;
     searchColumns << "artist";
 
-    std::unique_ptr<QueryNode> pQuery(
+    auto pQuery(
         m_parser.parseQuery("asdf", searchColumns, ""));
 
     TrackPointer pTrack(new TrackInfoObject());
@@ -63,7 +63,7 @@ TEST_F(SearchQueryParserTest, OneTermMultipleColumns) {
     searchColumns << "artist"
                   << "album";
 
-    std::unique_ptr<QueryNode> pQuery(
+    auto pQuery(
         m_parser.parseQuery("asdf", searchColumns, ""));
 
     TrackPointer pTrack(new TrackInfoObject());
@@ -82,7 +82,7 @@ TEST_F(SearchQueryParserTest, OneTermMultipleColumnsNegation) {
     searchColumns << "artist"
                   << "album";
 
-    std::unique_ptr<QueryNode> pQuery(
+    auto pQuery(
         m_parser.parseQuery("-asdf", searchColumns, ""));
 
     TrackPointer pTrack(new TrackInfoObject());
@@ -100,7 +100,7 @@ TEST_F(SearchQueryParserTest, MultipleTermsOneColumn) {
     QStringList searchColumns;
     searchColumns << "artist";
 
-    std::unique_ptr<QueryNode> pQuery(
+    auto pQuery(
         m_parser.parseQuery("asdf zxcv", searchColumns, ""));
 
     TrackPointer pTrack(new TrackInfoObject());
@@ -119,7 +119,7 @@ TEST_F(SearchQueryParserTest, MultipleTermsMultipleColumns) {
     searchColumns << "artist"
                   << "album";
 
-    std::unique_ptr<QueryNode> pQuery(
+    auto pQuery(
         m_parser.parseQuery("asdf zxcv", searchColumns, ""));
 
     TrackPointer pTrack(new TrackInfoObject());
@@ -144,7 +144,7 @@ TEST_F(SearchQueryParserTest, MultipleTermsMultipleColumnsNegation) {
     searchColumns << "artist"
                   << "album";
 
-    std::unique_ptr<QueryNode> pQuery(
+    auto pQuery(
         m_parser.parseQuery("asdf -zxcv", searchColumns, ""));
 
     TrackPointer pTrack(new TrackInfoObject());
@@ -170,7 +170,7 @@ TEST_F(SearchQueryParserTest, TextFilter) {
     searchColumns << "artist"
                   << "album";
 
-    std::unique_ptr<QueryNode> pQuery(
+    auto pQuery(
         m_parser.parseQuery("comment:asdf", searchColumns, ""));
 
     TrackPointer pTrack(new TrackInfoObject());
@@ -190,7 +190,7 @@ TEST_F(SearchQueryParserTest, TextFilterEmpty) {
                   << "album";
 
     // An empty argument should pass everything.
-    std::unique_ptr<QueryNode> pQuery(
+    auto pQuery(
         m_parser.parseQuery("comment:", searchColumns, ""));
 
     TrackPointer pTrack(new TrackInfoObject());
@@ -207,7 +207,7 @@ TEST_F(SearchQueryParserTest, TextFilterQuote) {
     searchColumns << "artist"
                   << "album";
 
-    std::unique_ptr<QueryNode> pQuery(
+    auto pQuery(
         m_parser.parseQuery("comment:\"asdf zxcv\"", searchColumns, ""));
 
     TrackPointer pTrack(new TrackInfoObject());
@@ -226,7 +226,7 @@ TEST_F(SearchQueryParserTest, TextFilterQuote_NoEndQuoteTakesWholeQuery) {
     searchColumns << "artist"
                   << "album";
 
-    std::unique_ptr<QueryNode> pQuery(
+    auto pQuery(
         m_parser.parseQuery("comment:\"asdf zxcv qwer", searchColumns, ""));
 
     TrackPointer pTrack(new TrackInfoObject());
@@ -245,7 +245,7 @@ TEST_F(SearchQueryParserTest, TextFilterAllowsSpace) {
     searchColumns << "artist"
                   << "album";
 
-    std::unique_ptr<QueryNode> pQuery(
+    auto pQuery(
         m_parser.parseQuery("comment: asdf", searchColumns, ""));
 
     TrackPointer pTrack(new TrackInfoObject());
@@ -264,7 +264,7 @@ TEST_F(SearchQueryParserTest, TextFilterNegation) {
     searchColumns << "artist"
                   << "album";
 
-    std::unique_ptr<QueryNode> pQuery(
+    auto pQuery(
         m_parser.parseQuery("-comment: asdf", searchColumns, ""));
 
     TrackPointer pTrack(new TrackInfoObject());
@@ -283,7 +283,7 @@ TEST_F(SearchQueryParserTest, NumericFilter) {
     searchColumns << "artist"
                   << "album";
 
-    std::unique_ptr<QueryNode> pQuery(
+    auto pQuery(
         m_parser.parseQuery("bpm:127.12", searchColumns, ""));
 
     TrackPointer pTrack(new TrackInfoObject());
@@ -303,7 +303,7 @@ TEST_F(SearchQueryParserTest, NumericFilterEmpty) {
     searchColumns << "artist"
                   << "album";
 
-    std::unique_ptr<QueryNode> pQuery(
+    auto pQuery(
         m_parser.parseQuery("bpm:", searchColumns, ""));
 
     TrackPointer pTrack(new TrackInfoObject());
@@ -321,7 +321,7 @@ TEST_F(SearchQueryParserTest, NumericFilterNegation) {
     searchColumns << "artist"
                   << "album";
 
-    std::unique_ptr<QueryNode> pQuery(
+    auto pQuery(
         m_parser.parseQuery("-bpm:127.12", searchColumns, ""));
 
     TrackPointer pTrack(new TrackInfoObject());
@@ -341,7 +341,7 @@ TEST_F(SearchQueryParserTest, NumericFilterAllowsSpace) {
     searchColumns << "artist"
                   << "album";
 
-    std::unique_ptr<QueryNode> pQuery(
+    auto pQuery(
         m_parser.parseQuery("bpm: 127.12", searchColumns, ""));
 
     TrackPointer pTrack(new TrackInfoObject());
@@ -361,7 +361,7 @@ TEST_F(SearchQueryParserTest, NumericFilterOperators) {
     searchColumns << "artist"
                   << "album";
 
-    std::unique_ptr<QueryNode> pQuery(
+    auto pQuery(
         m_parser.parseQuery("bpm:>127.12", searchColumns, ""));
 
     TrackPointer pTrack(new TrackInfoObject());
@@ -408,7 +408,7 @@ TEST_F(SearchQueryParserTest, NumericRangeFilter) {
     searchColumns << "artist"
                   << "album";
 
-    std::unique_ptr<QueryNode> pQuery(
+    auto pQuery(
         m_parser.parseQuery("bpm:127.12-129", searchColumns, ""));
 
     TrackPointer pTrack(new TrackInfoObject());
@@ -430,7 +430,7 @@ TEST_F(SearchQueryParserTest, MultipleFilters) {
     searchColumns << "artist"
                   << "title";
 
-    std::unique_ptr<QueryNode> pQuery(
+    auto pQuery(
         m_parser.parseQuery("bpm:127.12-129 artist:\"com truise\" Colorvision",
                             searchColumns, ""));
 
@@ -454,7 +454,7 @@ TEST_F(SearchQueryParserTest, ExtraFilterAppended) {
     QStringList searchColumns;
     searchColumns << "artist";
 
-    std::unique_ptr<QueryNode> pQuery(
+    auto pQuery(
         m_parser.parseQuery("asdf", searchColumns, "1 > 2"));
 
     TrackPointer pTrack(new TrackInfoObject());
@@ -473,7 +473,7 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearch) {
     searchColumns << "artist"
                   << "album";
 
-    std::unique_ptr<QueryNode> pQuery(
+    auto pQuery(
         m_parser.parseQuery("duration:1:30", searchColumns, ""));
 
     TrackPointer pTrack(new TrackInfoObject());
@@ -513,7 +513,7 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchWithOperators) {
     searchColumns << "artist"
                   << "album";
 
-    std::unique_ptr<QueryNode> pQuery(
+    auto pQuery(
         m_parser.parseQuery("duration:>1:30", searchColumns, ""));
 
     TrackPointer pTrack(new TrackInfoObject());
@@ -613,7 +613,7 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithRangeFilter) {
     searchColumns << "artist"
                   << "album";
 
-    std::unique_ptr<QueryNode> pQuery(
+    auto pQuery(
         m_parser.parseQuery("duration:2:30-3:20", searchColumns, ""));
 
     TrackPointer pTrack(new TrackInfoObject());
