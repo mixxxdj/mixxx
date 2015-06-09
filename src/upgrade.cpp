@@ -27,6 +27,7 @@
 #include "library/trackcollection.h"
 #include "library/library_preferences.h"
 #include "util/math.h"
+#include "util/cmdlineargs.h"
 #include "configobject.h"
 #include "upgrade.h"
 
@@ -181,8 +182,10 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
         QScopedPointer<QFile> oldConfigFile(new QFile(QDir::homePath().append("/").append(".mixxx/mixxx.cfg")));
         if (oldConfigFile->exists()) {
             qDebug() << "Found pre-1.9.0 config for OS X";
-            config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(".mixxx/mixxx.cfg"));
             // Note: We changed SETTINGS_PATH in 1.9.0 final on OS X so it must be hardcoded to ".mixxx" here for legacy.
+            config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(".mixxx/mixxx.cfg"));
+            // Just to be sure all files like logs and soundconfig go with mixxx.cfg
+            CmdlineArgs::Instance().setSettingsPath(QDir::homePath().append("/").append(".mixxx/mixxx.cfg"));
             configVersion = config->getValueString(ConfigKey("[Config]","Version"));
         }
         else {
@@ -192,8 +195,10 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
         QScopedPointer<QFile> oldConfigFile(new QFile(QDir::homePath().append("/").append("Local Settings/Application Data/Mixxx/").append(SETTINGS_FILE)));
         if (oldConfigFile->exists()) {
             qDebug() << "Found pre-1.12.0 config for Windows";
-            config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append("Local Settings/Application Data/Mixxx/").append(SETTINGS_FILE));
             // Note: We changed SETTINGS_PATH in 1.12.0 final on Windows so it must be hardcoded to "Local Settings/Application Data/Mixxx/" here for legacy.
+            config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append("Local Settings/Application Data/Mixxx/").append(SETTINGS_FILE));
+            // Just to be sure all files like logs and soundconfig go with mixxx.cfg
+            CmdlineArgs::Instance().setSettingsPath(QDir::homePath().append("/").append("Local Settings/Application Data/Mixxx/")); 
             configVersion = config->getValueString(ConfigKey("[Config]","Version"));
         }
         else {

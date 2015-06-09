@@ -62,6 +62,7 @@ class CmdlineArgs {
     bool getTimelineEnabled() const { return !m_timelinePath.isEmpty(); }
     const QString& getLocale() const { return m_locale; }
     const QString& getSettingsPath() const { return m_settingsPath; }
+    void setSettingsPath(QString newSettingsPath) { m_settingsPath=QString(newSettingsPath); return; }
     const QString& getResourcePath() const { return m_resourcePath; }
     const QString& getPluginPath() const { return m_pluginPath; }
     const QString& getTimelinePath() const { return m_timelinePath; }
