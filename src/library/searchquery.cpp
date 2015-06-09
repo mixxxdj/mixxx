@@ -143,8 +143,7 @@ QString TextFilterNode::toSql() const {
             searchClauses.at(0);
 }
 
-NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns,
-                                     QString argument)
+NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns)
         : m_sqlColumns(sqlColumns),
           m_bOperatorQuery(false),
           m_operator("="),
@@ -152,6 +151,11 @@ NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns,
           m_bRangeQuery(false),
           m_dRangeLow(0.0),
           m_dRangeHigh(0.0) {
+}
+
+NumericFilterNode::NumericFilterNode(
+        const QStringList& sqlColumns, const QString& argument)
+        : NumericFilterNode(sqlColumns) {
     init(argument);
 }
 
@@ -184,16 +188,6 @@ void NumericFilterNode::init(QString argument) {
 
 double NumericFilterNode::parse(const QString& arg, bool *ok) {
     return arg.toDouble(ok);
-}
-
-NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns)
-        : m_sqlColumns(sqlColumns),
-          m_bOperatorQuery(false),
-          m_operator("="),
-          m_dOperatorArgument(0.0),
-          m_bRangeQuery(false),
-          m_dRangeLow(0.0),
-          m_dRangeHigh(0.0) {
 }
 
 bool NumericFilterNode::match(const TrackPointer& pTrack) const {
@@ -248,9 +242,11 @@ QString NumericFilterNode::toSql() const {
     return QString();
 }
 
-DurationFilterNode::DurationFilterNode(const QStringList& sqlColumns,
-                                       QString argument)
+DurationFilterNode::DurationFilterNode(
+        const QStringList& sqlColumns, const QString& argument)
         : NumericFilterNode(sqlColumns) {
+    // init() has to be called from this class directly to invoke
+    // the implementation of this and not that of the base class!
     init(argument);
 }
 
