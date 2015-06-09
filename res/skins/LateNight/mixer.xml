@@ -75,7 +75,7 @@
         						<WidgetGroup>
         						    <SizePolicy>max,min</SizePolicy>
         							<Layout>horizontal</Layout>
-                      <MaximumSize>400,400</MaximumSize>
+                                                                <MaximumSize>400,400</MaximumSize>
         							<Children>
         							   <WidgetGroup>
         							        <SizePolicy>max,min</SizePolicy>

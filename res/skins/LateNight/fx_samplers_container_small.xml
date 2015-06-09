@@ -6,7 +6,7 @@
         <Children>
             <WidgetStack currentpage="[Master],view_curpage" persist="true">
                 <Children>
-                    <WidgetGroup trigger="[Library],show_library" persist="true">
+                    <WidgetGroup trigger="[Library],show_library_tab_small" persist="true">
                         <Layout>vertical</Layout>
                         <Children>
                             <SingletonContainer>

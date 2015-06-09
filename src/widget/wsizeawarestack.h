@@ -20,9 +20,6 @@ class WSizeAwareStack : public QWidget, public WBaseWidget {
     virtual void resizeEvent(QResizeEvent* event);
     bool event(QEvent* pEvent);
 
-  private slots:
-    void showEvent(QShowEvent* event);
-
   private:
     SizeAwareLayout* m_layout;
 };

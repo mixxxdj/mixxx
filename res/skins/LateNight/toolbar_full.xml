@@ -16,11 +16,11 @@
                         <NumberStates>2</NumberStates>
                         <State>
                           <Number>0</Number>
-                          <Text>LIBRARY2</Text>
+                          <Text>LIBRARY</Text>
                         </State>
                         <State>
                           <Number>1</Number>
-                          <Text>LIBRARY2</Text>
+                          <Text>LIBRARY</Text>
                         </State>
                         <Connection>
                           <ConfigKey persist="true">[Library],show_library</ConfigKey>
