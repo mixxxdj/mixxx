@@ -715,16 +715,26 @@ void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
     int trackId = pTrack.isNull() ? -1 : pTrack->getId();
     m_crateDao.getCratesTrackIsIn(trackId, &m_cratesSelectedTrackIsIn);
 
+    TreeItem* rootItem = m_childModel.getItem(QModelIndex());
+    if (rootItem == nullptr) {
+        return;
+    }
+
     // Set all crates the track is in bold (or if there is no track selected,
     // clear all the bolding).
     int row = 0;
     for (QList<QPair<int, QString> >::const_iterator it = m_crateList.begin();
          it != m_crateList.end(); ++it, ++row) {
+        TreeItem* crate = rootItem->child(row);
+        if (crate == nullptr) {
+            continue;
+        }
         int crateId = it->first;
-        QModelIndex index = m_childModel.index(row, 0);
         bool shouldBold = m_cratesSelectedTrackIsIn.contains(crateId);
-        m_childModel.setData(index, shouldBold, TreeItemModel::kBoldRole);
+        crate->setBold(shouldBold);
     }
+
+    m_childModel.triggerRepaint();
 }
 
 void CrateFeature::slotResetSelectedTrack() {
