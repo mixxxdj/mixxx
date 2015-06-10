@@ -5,6 +5,7 @@
 #include <QFileInfo>
 #include <QDesktopServices>
 
+#include "library/library.h"
 #include "library/parser.h"
 #include "library/parserm3u.h"
 #include "library/parserpls.h"
@@ -82,6 +83,12 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
 
     connect(&m_playlistDao, SIGNAL(lockChanged(int)),
             this, SLOT(slotPlaylistTableChanged(int)));
+
+    Library* pLibrary = static_cast<Library*>(parent);
+    connect(pLibrary, SIGNAL(trackSelected(TrackPointer)),
+            this, SLOT(slotTrackSelected(TrackPointer)));
+    connect(pLibrary, SIGNAL(switchToView(const QString&)),
+            this, SLOT(slotResetSelectedTrack()));
 }
 
 BasePlaylistFeature::~BasePlaylistFeature() {
@@ -553,6 +560,8 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
 
         // Create the TreeItem whose parent is the invisible root item
         TreeItem* item = new TreeItem(playlist_name, QString::number(playlist_id), this, root);
+        item->setBold(m_playlistsSelectedTrackIsIn.contains(playlist_id));
+
         decorateChild(item, playlist_id);
         data_list.append(item);
     }
@@ -584,4 +593,37 @@ QModelIndex BasePlaylistFeature::indexFromPlaylistId(int playlistId) {
         }
     }
     return QModelIndex();
+}
+
+void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {
+    m_pSelectedTrack = pTrack;
+    int trackId = pTrack.isNull() ? -1 : pTrack->getId();
+    m_playlistDao.getPlaylistsTrackIsIn(trackId, &m_playlistsSelectedTrackIsIn);
+
+    TreeItem* rootItem = m_childModel.getItem(QModelIndex());
+    if (rootItem == nullptr) {
+        return;
+    }
+
+    // Set all playlists the track is in bold (or if there is no track selected,
+    // clear all the bolding).
+    int row = 0;
+    for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
+         it != m_playlistList.end(); ++it, ++row) {
+        TreeItem* playlist = rootItem->child(row);
+        if (playlist == nullptr) {
+            continue;
+        }
+
+        int playlistId = it->first;
+        bool shouldBold = m_playlistsSelectedTrackIsIn.contains(playlistId);
+        playlist->setBold(shouldBold);
+    }
+
+    m_childModel.triggerRepaint();
+}
+
+
+void BasePlaylistFeature::slotResetSelectedTrack() {
+    slotTrackSelected(TrackPointer());
 }
