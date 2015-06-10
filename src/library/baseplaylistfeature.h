@@ -35,6 +35,9 @@ class BasePlaylistFeature : public LibraryFeature {
     void bindWidget(WLibrary* libraryWidget,
                     MixxxKeyboard* keyboard);
 
+    TrackPointer getSelectedTrack();
+    virtual bool isTrackInChildModel(const int trackId, const QVariant dataPath);
+
   signals:
     void showPage(const QUrl& page);
     void analyzeTracks(QList<int>);
@@ -92,14 +95,14 @@ class BasePlaylistFeature : public LibraryFeature {
     TreeItemModel m_childModel;
     TrackPointer m_pSelectedTrack;
 
-  private slots:
-    void slotTrackSelected(TrackPointer pTrack);
-    void slotResetSelectedTrack();
-
   private:
     virtual QString getRootViewHtml() const = 0;
 
     QString m_rootViewName;
+
+  private slots:
+    void slotTrackSelected(TrackPointer pTrack);
+    void slotResetSelectedTrack();
 };
 
 #endif /* BASEPLAYLISTFEATURE_H */

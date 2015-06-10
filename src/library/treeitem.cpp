@@ -35,7 +35,6 @@ TreeItem::TreeItem(const QString &data, const QString &data_path,
     m_dataPath = data_path;
     m_parentItem = parent;
     m_feature = feature;
-    m_bold = false;
 }
 
 TreeItem::TreeItem() {
@@ -43,7 +42,6 @@ TreeItem::TreeItem() {
     m_dataPath = "$root";
     m_parentItem = NULL;
     m_feature = NULL;
-    m_bold = false;
 }
 
 TreeItem::~TreeItem() {
