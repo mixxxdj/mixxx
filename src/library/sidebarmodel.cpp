@@ -197,13 +197,9 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
                 } else {
                     return tree_item->dataPath();
                 }
-            } else if (role == TreeItemModel::kDataPathRole) {
+            } else if (role == Qt::UserRole) {
                 // We use Qt::UserRole to ask for the datapath.
                 return tree_item->dataPath();
-            } else if (role == Qt::FontRole) {
-                QFont font;
-                font.setBold(tree_item->isBold());
-                return font;
             } else if (role == Qt::DecorationRole) {
                 return tree_item->getIcon();
             }
