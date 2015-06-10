@@ -495,6 +495,14 @@ class QtScriptByteArray(Dependence):
                 '#lib/qtscript-bytearray/bytearrayprototype.cpp']
 
 
+class Reverb(Dependence):
+    def configure(self, build, conf):
+        build.env.Append(CPPPATH='#lib/reverb')
+
+    def sources(self, build):
+        return ['#lib/reverb/Reverb.cc']
+
+
 class MixxxCore(Feature):
 
     def description(self):
@@ -582,8 +590,11 @@ class MixxxCore(Feature):
                    "effects/native/autopaneffect.cpp",
 =======
                    "effects/native/phasereffect.cpp",
+<<<<<<< HEAD
 >>>>>>> [Bug #1299029] phaser effect
                    "effects/native/reverb/Reverb.cc",
+=======
+>>>>>>> Move reverb plugin to lib/reverb.
 
                    "engine/effects/engineeffectsmanager.cpp",
                    "engine/effects/engineeffectrack.cpp",
@@ -1204,7 +1215,7 @@ class MixxxCore(Feature):
         return [SoundTouch, ReplayGain, PortAudio, PortMIDI, Qt, TestHeaders,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices,
-                QtScriptByteArray]
+                QtScriptByteArray, Reverb]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen
