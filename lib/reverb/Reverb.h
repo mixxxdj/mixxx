@@ -49,11 +49,11 @@
 
 #include <stdio.h>
 
-#include "effects/native/reverb/basics.h"
-#include "effects/native/reverb/dsp/Delay.h"
-#include "effects/native/reverb/dsp/OnePole.h"
-#include "effects/native/reverb/dsp/Sine.h"
-#include "effects/native/reverb/dsp/util.h"
+#include "basics.h"
+#include "dsp/Delay.h"
+#include "dsp/OnePole.h"
+#include "dsp/Sine.h"
+#include "dsp/util.h"
 
 /* both reverbs use this */
 class Lattice
