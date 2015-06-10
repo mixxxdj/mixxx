@@ -32,6 +32,8 @@ class TreeItemModel : public QAbstractItemModel {
     // If the index is invalid, the root item is returned.
     TreeItem* getItem(const QModelIndex &index) const;
 
+    void triggerRepaint();
+
   private:
     TreeItem *m_pRootItem;
 };

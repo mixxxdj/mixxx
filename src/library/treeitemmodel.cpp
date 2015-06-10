@@ -193,3 +193,9 @@ TreeItem* TreeItemModel::getItem(const QModelIndex &index) const {
     }
     return m_pRootItem;
 }
+
+void TreeItemModel::triggerRepaint() {
+    QModelIndex left = index(0, 0);
+    QModelIndex right = index(rowCount() - 1, columnCount() - 1);
+    emit(dataChanged(left, right));
+}

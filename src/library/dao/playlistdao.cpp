@@ -15,6 +15,31 @@ PlaylistDAO::~PlaylistDAO() {
 }
 
 void PlaylistDAO::initialize() {
+    //get the count to allocate HashMap
+    int tracksInPlaylistsCount = 0;
+    QSqlQuery query(m_database);
+    query.prepare("SELECT COUNT(*) from " PLAYLIST_TRACKS_TABLE);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    tracksInPlaylistsCount = query.value(0).toInt();
+
+    m_playlistsTrackIsIn.reserve(tracksInPlaylistsCount);
+
+    //now fetch all Tracks from all playlists and insert them into the hashmap
+    query.prepare("SELECT track_id, playlist_id from " PLAYLIST_TRACKS_TABLE);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    const int trackIdColumn = query.record().indexOf(PLAYLISTTRACKSTABLE_TRACKID);
+    const int playlistIdColumn = query.record().indexOf(PLAYLISTTRACKSTABLE_PLAYLISTID);
+    while (query.next()) {
+        m_playlistsTrackIsIn.insert(query.value(playlistIdColumn).toInt(),
+                                    query.value(trackIdColumn).toInt());
+    }
 }
 
 int PlaylistDAO::createPlaylist(const QString& name, const HiddenType hidden) {
@@ -162,6 +187,7 @@ void PlaylistDAO::deletePlaylist(const int playlistId) {
     transaction.commit();
     //TODO: Crap, we need to shuffle the positions of all the playlists?
 
+    m_playlistsTrackIsIn.remove(playlistId);
     emit(deleted(playlistId));
 }
 
@@ -245,6 +271,7 @@ bool PlaylistDAO::appendTracksToPlaylist(const QList<int>& trackIds, const int p
     foreach (int trackId, trackIds) {
         // TODO(XXX) don't emit if the track didn't add successfully.
         emit(trackAdded(playlistId, trackId, insertPosition++));
+        m_playlistsTrackIsIn.insert(playlistId, trackId);
     }
     emit(changed(playlistId));
     return true;
@@ -372,6 +399,7 @@ void PlaylistDAO::removeTrackFromPlaylist(const int playlistId, const int positi
 
     emit(trackRemoved(playlistId, trackId, position));
     emit(changed(playlistId));
+    m_playlistsTrackIsIn.remove(playlistId, trackId);
 }
 
 void PlaylistDAO::removeTracksFromPlaylist(const int playlistId, QList<int>& positions) {
@@ -421,6 +449,7 @@ void PlaylistDAO::removeTracksFromPlaylist(const int playlistId, QList<int>& pos
         }
 
         emit(trackRemoved(playlistId, trackId, position));
+        m_playlistsTrackIsIn.remove(playlistId, trackId);
     }
     transaction.commit();
     emit(changed(playlistId));
@@ -467,6 +496,7 @@ bool PlaylistDAO::insertTrackIntoPlaylist(const int trackId, const int playlistI
 
     emit(trackAdded(playlistId, trackId, position));
     emit(changed(playlistId));
+    m_playlistsTrackIsIn.insert(playlistId, trackId);
     return true;
 }
 
@@ -525,6 +555,7 @@ int PlaylistDAO::insertTracksIntoPlaylist(const QList<int>& trackIds,
     foreach (int trackId, trackIds) {
         // TODO(XXX) The position is wrong if any track failed to insert.
         emit(trackAdded(playlistId, trackId, insertPositon++));
+        m_playlistsTrackIsIn.insert(playlistId, trackId);
     }
     emit(changed(playlistId));
     return tracksAdded;
@@ -637,6 +668,7 @@ bool PlaylistDAO::copyPlaylistTracks(const int sourcePlaylistID, const int targe
         int copiedTrackId = query.value(0).toInt();
         int copiedPosition = query.value(1).toInt();
         emit(trackAdded(targetPlaylistID, copiedTrackId, copiedPosition));
+        m_playlistsTrackIsIn.insert(targetPlaylistID, copiedTrackId);
     }
     emit(changed(targetPlaylistID));
     return true;
@@ -704,6 +736,7 @@ void PlaylistDAO::removeTracksFromPlaylistsInner(const QStringList& trackIdList)
     foreach (int playlistId, removedTracksPlaylistIds) {
         emit(changed(playlistId));
     }
+    //Todo: update the internal memoryMap m_playlistsTrackIsIn - only used for track deletions therefore ok for now
 }
 
 int PlaylistDAO::tracksInPlaylist(const int playlistId) const {
@@ -941,4 +974,8 @@ void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& position
 
     transaction.commit();
     emit(changed(playlistId));
+}
+
+bool PlaylistDAO::isTrackInPlaylist(const int trackId, const int playlistId) {
+    return m_playlistsTrackIsIn.contains(playlistId,trackId);
 }

@@ -6,6 +6,7 @@
 
 #include <QObject>
 #include <QMap>
+#include <QMultiHash>
 #include <QSqlDatabase>
 
 #include "library/dao/dao.h"
@@ -61,6 +62,7 @@ class CrateDAO : public QObject, public virtual DAO {
     bool removeTracksFromCrate(const QList<int>& ids, const int crateId);
     // remove tracks from all crates
     void removeTracksFromCrates(const QList<int>& ids);
+    bool isTrackInCrate(const int trackId, const int crateId);
 
   signals:
     void added(int crateId);
@@ -74,6 +76,7 @@ class CrateDAO : public QObject, public virtual DAO {
 
   private:
     QSqlDatabase& m_database;
+    QMultiHash<int,int> m_cratesTrackIsIn;
     DISALLOW_COPY_AND_ASSIGN(CrateDAO);
 };
 

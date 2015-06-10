@@ -5,6 +5,7 @@
 #include <QFileInfo>
 #include <QDesktopServices>
 
+#include "library/library.h"
 #include "library/parser.h"
 #include "library/parserm3u.h"
 #include "library/parserpls.h"
@@ -82,6 +83,12 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
 
     connect(&m_playlistDao, SIGNAL(lockChanged(int)),
             this, SLOT(slotPlaylistTableChanged(int)));
+
+    Library* pLibrary = static_cast<Library*>(parent);
+    connect(pLibrary, SIGNAL(trackSelected(TrackPointer)),
+                this, SLOT(slotTrackSelected(TrackPointer)));
+    connect(pLibrary, SIGNAL(switchToView(const QString&)),
+                this, SLOT(slotResetSelectedTrack()));
 }
 
 BasePlaylistFeature::~BasePlaylistFeature() {
@@ -584,4 +591,23 @@ QModelIndex BasePlaylistFeature::indexFromPlaylistId(int playlistId) {
         }
     }
     return QModelIndex();
+}
+
+bool BasePlaylistFeature::isTrackInChildModel(const int trackId,
+        const QVariant dataPath) {
+    return m_playlistDao.isTrackInPlaylist(trackId, dataPath.toInt());
+}
+
+TrackPointer BasePlaylistFeature::getSelectedTrack() {
+    return m_pSelectedTrack;
+}
+
+void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {
+    m_pSelectedTrack = pTrack;
+    m_childModel.triggerRepaint();
+}
+
+
+void BasePlaylistFeature::slotResetSelectedTrack() {
+    slotTrackSelected(TrackPointer());
 }

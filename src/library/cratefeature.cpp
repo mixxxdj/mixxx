@@ -24,14 +24,13 @@
 #include "util/dnd.h"
 #include "util/time.h"
 
-CrateFeature::CrateFeature(QObject* parent,
+CrateFeature::CrateFeature(Library* pLibrary,
                            TrackCollection* pTrackCollection,
                            ConfigObject<ConfigValue>* pConfig)
         : m_pTrackCollection(pTrackCollection),
           m_crateDao(pTrackCollection->getCrateDAO()),
           m_crateTableModel(this, pTrackCollection),
           m_pConfig(pConfig) {
-    Q_UNUSED(parent);
     m_pCreateCrateAction = new QAction(tr("Create New Crate"),this);
     connect(m_pCreateCrateAction, SIGNAL(triggered()),
             this, SLOT(slotCreateCrate()));
@@ -92,6 +91,11 @@ CrateFeature::CrateFeature(QObject* parent,
     TreeItem *rootItem = new TreeItem();
     m_childModel.setRootItem(rootItem);
     constructChildModel(-1);
+
+    connect(pLibrary, SIGNAL(trackSelected(TrackPointer)),
+                this, SLOT(slotTrackSelected(TrackPointer)));
+    connect(pLibrary, SIGNAL(switchToView(const QString&)),
+                this, SLOT(slotResetSelectedTrack()));
 }
 
 CrateFeature::~CrateFeature() {
@@ -114,6 +118,11 @@ QVariant CrateFeature::title() {
 
 QIcon CrateFeature::getIcon() {
     return QIcon(":/images/library/ic_library_crates.png");
+}
+
+bool CrateFeature::isTrackInChildModel(const int trackId,
+        const QVariant dataPath) {
+    return m_crateDao.isTrackInCrate(trackId, dataPath.toInt());
 }
 
 int CrateFeature::crateIdFromIndex(QModelIndex index) {
@@ -704,3 +713,17 @@ QString CrateFeature::getRootViewHtml() const {
     html.append("</td></tr></table>");
     return html;
 }
+
+TrackPointer CrateFeature::getSelectedTrack() {
+    return m_pSelectedTrack;
+}
+
+void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
+    m_pSelectedTrack = pTrack;
+    m_childModel.triggerRepaint();
+}
+
+void CrateFeature::slotResetSelectedTrack() {
+    slotTrackSelected(TrackPointer());
+}
+
