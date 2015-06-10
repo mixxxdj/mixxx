@@ -30,19 +30,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         </scriptfiles>
         <controls>
             <control>
-                <group>[Channel2]</group>
-                <key>ElectrixTweaker.keylock</key>
+                <group>[Sampler1]</group>
+                <key>ElectrixTweaker.loop</key>
                 <status>0x90</status>
-                <midino>0x18</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>ElectrixTweaker.leftKnob</key>
-                <status>0xB0</status>
-                <midino>0x33</midino>
+                <midino>0x01</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -57,343 +48,64 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 </options>
             </control>
             <control>
-                <group>[Sampler13]</group>
-                <key>ElectrixTweaker.oneShot</key>
-                <status>0x90</status>
-                <midino>0x43</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>ElectrixTweaker.highEncoderPress</key>
-                <status>0x90</status>
-                <midino>0x2D</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>ElectrixTweaker.quantize</key>
-                <status>0x90</status>
-                <midino>0x17</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Sampler1]</group>
+                <group>[Sampler3]</group>
                 <key>ElectrixTweaker.loop</key>
                 <status>0x90</status>
-                <midino>0x01</midino>
+                <midino>0x03</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Sampler12]</group>
-                <key>ElectrixTweaker.oneShot</key>
+                <group>[Sampler4]</group>
+                <key>ElectrixTweaker.loop</key>
                 <status>0x90</status>
-                <midino>0x42</midino>
+                <midino>0x04</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
-                <key>ElectrixTweaker.bigEncoderButton</key>
+                <group>[Sampler5]</group>
+                <key>ElectrixTweaker.loop</key>
                 <status>0x90</status>
-                <midino>0x2C</midino>
+                <midino>0x05</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Channel2]</group>
-                <key>ElectrixTweaker.sync</key>
+                <group>[Sampler6]</group>
+                <key>ElectrixTweaker.loop</key>
                 <status>0x90</status>
-                <midino>0x16</midino>
+                <midino>0x06</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Sampler11]</group>
-                <key>ElectrixTweaker.oneShot</key>
+                <group>[Sampler7]</group>
+                <key>ElectrixTweaker.loop</key>
                 <status>0x90</status>
-                <midino>0x41</midino>
+                <midino>0x07</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Channel2]</group>
-                <key>ElectrixTweaker.arrowSide</key>
+                <group>[Sampler8]</group>
+                <key>ElectrixTweaker.loop</key>
                 <status>0x90</status>
-                <midino>0x2B</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>ElectrixTweaker.deckToggle</key>
-                <status>0x90</status>
-                <midino>0x15</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Sampler10]</group>
-                <key>ElectrixTweaker.oneShot</key>
-                <status>0x90</status>
-                <midino>0x40</midino>
+                <midino>0x08</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>ElectrixTweaker.arrowSide</key>
-                <status>0x90</status>
-                <midino>0x2A</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>ElectrixTweaker.keylock</key>
-                <status>0x90</status>
-                <midino>0x14</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Sampler9]</group>
-                <key>ElectrixTweaker.oneShot</key>
-                <status>0x90</status>
-                <midino>0x3F</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Playlist]</group>
-                <key>ElectrixTweaker.arrowDown</key>
-                <status>0x90</status>
-                <midino>0x29</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>ElectrixTweaker.quantize</key>
-                <status>0x90</status>
-                <midino>0x13</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>ElectrixTweaker.shiftButton</key>
-                <status>0x90</status>
-                <midino>0x28</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>ElectrixTweaker.sync</key>
-                <status>0x90</status>
-                <midino>0x12</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Playlist]</group>
-                <key>ElectrixTweaker.arrowUp</key>
-                <status>0x90</status>
-                <midino>0x27</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>ElectrixTweaker.deckToggle</key>
-                <status>0x90</status>
-                <midino>0x11</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>ElectrixTweaker.playButton</key>
-                <status>0x90</status>
-                <midino>0x26</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>ElectrixTweaker.forwardButton</key>
-                <status>0x90</status>
-                <midino>0x10</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>ElectrixTweaker.pflButton</key>
-                <status>0x90</status>
-                <midino>0x25</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>ElectrixTweaker.backButton</key>
-                <status>0x90</status>
-                <midino>0x0F</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>ElectrixTweaker.modeButton</key>
-                <status>0x90</status>
-                <midino>0x24</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>ElectrixTweaker.beatjumpForward</key>
-                <status>0x90</status>
-                <midino>0x0E</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>ElectrixTweaker.playButton</key>
-                <status>0x90</status>
-                <midino>0x23</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>ElectrixTweaker.lowEncoder</key>
-                <status>0xB0</status>
-                <midino>0x3E</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
                 <key>ElectrixTweaker.beatjumpBackward</key>
                 <status>0x90</status>
-                <midino>0x0D</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>ElectrixTweaker.pflButton</key>
-                <status>0x90</status>
-                <midino>0x22</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>ElectrixTweaker.forwardButton</key>
-                <status>0x90</status>
-                <midino>0x0C</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>ElectrixTweaker.midEncoder</key>
-                <status>0xB0</status>
-                <midino>0x3D</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>ElectrixTweaker.modeButton</key>
-                <status>0x90</status>
-                <midino>0x21</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>ElectrixTweaker.backButton</key>
-                <status>0x90</status>
-                <midino>0x0B</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>ElectrixTweaker.highEncoder</key>
-                <status>0xB0</status>
-                <midino>0x3C</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>ElectrixTweaker.faderMiddleNote</key>
-                <status>0x90</status>
-                <midino>0x36</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>ElectrixTweaker.hotcueButton</key>
-                <status>0x90</status>
-                <midino>0x20</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>ElectrixTweaker.lowEncoder</key>
-                <status>0xB0</status>
-                <midino>0x3B</midino>
+                <midino>0x09</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -409,99 +121,126 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>ElectrixTweaker.faderMiddleNote</key>
+                <key>ElectrixTweaker.backButton</key>
                 <status>0x90</status>
-                <midino>0x35</midino>
+                <midino>0x0B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ElectrixTweaker.forwardButton</key>
+                <status>0x90</status>
+                <midino>0x0C</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>ElectrixTweaker.hotcueButton</key>
-                <status>0x90</status>
-                <midino>0x1F</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>ElectrixTweaker.midEncoder</key>
-                <status>0xB0</status>
-                <midino>0x3A</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
                 <key>ElectrixTweaker.beatjumpBackward</key>
                 <status>0x90</status>
-                <midino>0x09</midino>
+                <midino>0x0D</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>ElectrixTweaker.hotcueButton</key>
+                <key>ElectrixTweaker.beatjumpForward</key>
                 <status>0x90</status>
-                <midino>0x1E</midino>
+                <midino>0x0E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ElectrixTweaker.backButton</key>
+                <status>0x90</status>
+                <midino>0x0F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ElectrixTweaker.forwardButton</key>
+                <status>0x90</status>
+                <midino>0x10</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>ElectrixTweaker.highEncoder</key>
-                <status>0xB0</status>
-                <midino>0x39</midino>
+                <key>ElectrixTweaker.deckToggle</key>
+                <status>0x90</status>
+                <midino>0x11</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Sampler8]</group>
-                <key>ElectrixTweaker.loop</key>
+                <group>[Channel1]</group>
+                <key>ElectrixTweaker.sync</key>
                 <status>0x90</status>
-                <midino>0x08</midino>
+                <midino>0x12</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ElectrixTweaker.quantize</key>
+                <status>0x90</status>
+                <midino>0x13</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ElectrixTweaker.keylock</key>
+                <status>0x90</status>
+                <midino>0x14</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>ElectrixTweaker.hotcueButton</key>
+                <key>ElectrixTweaker.deckToggle</key>
                 <status>0x90</status>
-                <midino>0x1D</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Playlist]</group>
-                <key>ElectrixTweaker.bigEncoder</key>
-                <status>0xB0</status>
-                <midino>0x38</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Sampler7]</group>
-                <key>ElectrixTweaker.loop</key>
-                <status>0x90</status>
-                <midino>0x07</midino>
+                <midino>0x15</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>ElectrixTweaker.lowEncoderPress</key>
+                <key>ElectrixTweaker.sync</key>
                 <status>0x90</status>
-                <midino>0x32</midino>
+                <midino>0x16</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ElectrixTweaker.quantize</key>
+                <status>0x90</status>
+                <midino>0x17</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ElectrixTweaker.keylock</key>
+                <status>0x90</status>
+                <midino>0x18</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -510,79 +249,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 <group>[Channel1]</group>
                 <key>ElectrixTweaker.hotcueButton</key>
                 <status>0x90</status>
-                <midino>0x1C</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Sampler6]</group>
-                <key>ElectrixTweaker.loop</key>
-                <status>0x90</status>
-                <midino>0x06</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Master]</group>
-                <key>crossfader</key>
-                <status>0xB0</status>
-                <midino>0x37</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>ElectrixTweaker.midEncoderPress</key>
-                <status>0x90</status>
-                <midino>0x31</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>ElectrixTweaker.hotcueButton</key>
-                <status>0x90</status>
-                <midino>0x1B</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Sampler5]</group>
-                <key>ElectrixTweaker.loop</key>
-                <status>0x90</status>
-                <midino>0x05</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>ElectrixTweaker.fader</key>
-                <status>0xB0</status>
-                <midino>0x36</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Sampler16]</group>
-                <key>ElectrixTweaker.oneShot</key>
-                <status>0x90</status>
-                <midino>0x46</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>ElectrixTweaker.highEncoderPress</key>
-                <status>0x90</status>
-                <midino>0x30</midino>
+                <midino>0x19</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -598,27 +265,180 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>ElectrixTweaker.fader</key>
-                <status>0xB0</status>
-                <midino>0x35</midino>
+                <key>ElectrixTweaker.hotcueButton</key>
+                <status>0x90</status>
+                <midino>0x1B</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Sampler4]</group>
-                <key>ElectrixTweaker.loop</key>
+                <group>[Channel1]</group>
+                <key>ElectrixTweaker.hotcueButton</key>
                 <status>0x90</status>
-                <midino>0x04</midino>
+                <midino>0x1C</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Sampler15]</group>
-                <key>ElectrixTweaker.oneShot</key>
+                <group>[Channel2]</group>
+                <key>ElectrixTweaker.hotcueButton</key>
                 <status>0x90</status>
-                <midino>0x45</midino>
+                <midino>0x1D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ElectrixTweaker.hotcueButton</key>
+                <status>0x90</status>
+                <midino>0x1E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ElectrixTweaker.hotcueButton</key>
+                <status>0x90</status>
+                <midino>0x1F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ElectrixTweaker.hotcueButton</key>
+                <status>0x90</status>
+                <midino>0x20</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ElectrixTweaker.modeButton</key>
+                <status>0x90</status>
+                <midino>0x21</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ElectrixTweaker.pflButton</key>
+                <status>0x90</status>
+                <midino>0x22</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ElectrixTweaker.playButton</key>
+                <status>0x90</status>
+                <midino>0x23</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ElectrixTweaker.modeButton</key>
+                <status>0x90</status>
+                <midino>0x24</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ElectrixTweaker.pflButton</key>
+                <status>0x90</status>
+                <midino>0x25</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ElectrixTweaker.playButton</key>
+                <status>0x90</status>
+                <midino>0x26</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Playlist]</group>
+                <key>ElectrixTweaker.arrowUp</key>
+                <status>0x90</status>
+                <midino>0x27</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ElectrixTweaker.shiftButton</key>
+                <status>0x90</status>
+                <midino>0x28</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Playlist]</group>
+                <key>ElectrixTweaker.arrowDown</key>
+                <status>0x90</status>
+                <midino>0x29</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ElectrixTweaker.arrowSide</key>
+                <status>0x90</status>
+                <midino>0x2A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ElectrixTweaker.arrowSide</key>
+                <status>0x90</status>
+                <midino>0x2B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>ElectrixTweaker.bigEncoderButton</key>
+                <status>0x90</status>
+                <midino>0x2C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ElectrixTweaker.highEncoderPress</key>
+                <status>0x90</status>
+                <midino>0x2D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ElectrixTweaker.midEncoderPress</key>
+                <status>0x90</status>
+                <midino>0x2E</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -633,10 +453,37 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 </options>
             </control>
             <control>
-                <group>[Channel1]</group>
-                <key>ElectrixTweaker.hotcueButton</key>
+                <group>[Channel2]</group>
+                <key>ElectrixTweaker.highEncoderPress</key>
                 <status>0x90</status>
-                <midino>0x19</midino>
+                <midino>0x30</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ElectrixTweaker.midEncoderPress</key>
+                <status>0x90</status>
+                <midino>0x31</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ElectrixTweaker.lowEncoderPress</key>
+                <status>0x90</status>
+                <midino>0x32</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ElectrixTweaker.leftKnob</key>
+                <status>0xB0</status>
+                <midino>0x33</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -651,10 +498,154 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 </options>
             </control>
             <control>
-                <group>[Sampler3]</group>
-                <key>ElectrixTweaker.loop</key>
+                <group>[Channel1]</group>
+                <key>ElectrixTweaker.fader</key>
+                <status>0xB0</status>
+                <midino>0x35</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ElectrixTweaker.faderMiddleNote</key>
                 <status>0x90</status>
-                <midino>0x03</midino>
+                <midino>0x35</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ElectrixTweaker.fader</key>
+                <status>0xB0</status>
+                <midino>0x36</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ElectrixTweaker.faderMiddleNote</key>
+                <status>0x90</status>
+                <midino>0x36</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>crossfader</key>
+                <status>0xB0</status>
+                <midino>0x37</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Playlist]</group>
+                <key>ElectrixTweaker.bigEncoder</key>
+                <status>0xB0</status>
+                <midino>0x38</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ElectrixTweaker.highEncoder</key>
+                <status>0xB0</status>
+                <midino>0x39</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ElectrixTweaker.midEncoder</key>
+                <status>0xB0</status>
+                <midino>0x3A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>ElectrixTweaker.lowEncoder</key>
+                <status>0xB0</status>
+                <midino>0x3B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ElectrixTweaker.highEncoder</key>
+                <status>0xB0</status>
+                <midino>0x3C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ElectrixTweaker.midEncoder</key>
+                <status>0xB0</status>
+                <midino>0x3D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>ElectrixTweaker.lowEncoder</key>
+                <status>0xB0</status>
+                <midino>0x3E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler9]</group>
+                <key>ElectrixTweaker.oneShot</key>
+                <status>0x90</status>
+                <midino>0x3F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler10]</group>
+                <key>ElectrixTweaker.oneShot</key>
+                <status>0x90</status>
+                <midino>0x40</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler11]</group>
+                <key>ElectrixTweaker.oneShot</key>
+                <status>0x90</status>
+                <midino>0x41</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler12]</group>
+                <key>ElectrixTweaker.oneShot</key>
+                <status>0x90</status>
+                <midino>0x42</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler13]</group>
+                <key>ElectrixTweaker.oneShot</key>
+                <status>0x90</status>
+                <midino>0x43</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -669,10 +660,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
                 </options>
             </control>
             <control>
-                <group>[Channel1]</group>
-                <key>ElectrixTweaker.midEncoderPress</key>
+                <group>[Sampler15]</group>
+                <key>ElectrixTweaker.oneShot</key>
                 <status>0x90</status>
-                <midino>0x2E</midino>
+                <midino>0x45</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler16]</group>
+                <key>ElectrixTweaker.oneShot</key>
+                <status>0x90</status>
+                <midino>0x46</midino>
                 <options>
                     <script-binding/>
                 </options>
