@@ -501,7 +501,7 @@ SINT SoundSourceFFmpeg::seekSampleFrame(SINT frameIndex) {
 
     m_currentMixxxFrameIndex = frameIndex;
 
-    m_bIsSeeked = TRUE;
+    m_bIsSeeked = true;
 
     return frameIndex;
 }
@@ -513,7 +513,7 @@ SINT SoundSourceFFmpeg::readSampleFrames(SINT numberOfFrames,
         // Make sure we allways start at begining and cache have some
         // material that we can consume.
         seekSampleFrame(0);
-        m_bIsSeeked = FALSE;
+        m_bIsSeeked = false;
     }
 
     getBytesFromCache((char *)sampleBuffer, m_currentMixxxFrameIndex, numberOfFrames);
@@ -521,11 +521,11 @@ SINT SoundSourceFFmpeg::readSampleFrames(SINT numberOfFrames,
     //  As this is also Hack
     // If we don't seek like we don't on analyzer.. keep
     // place in mind..
-    if (m_bIsSeeked == FALSE) {
+    if (m_bIsSeeked == false) {
         m_currentMixxxFrameIndex += numberOfFrames;
     }
 
-    m_bIsSeeked = FALSE;
+    m_bIsSeeked = false;
 
     return numberOfFrames;
 }
