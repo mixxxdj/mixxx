@@ -600,17 +600,27 @@ void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {
     int trackId = pTrack.isNull() ? -1 : pTrack->getId();
     m_playlistDao.getPlaylistsTrackIsIn(trackId, &m_playlistsSelectedTrackIsIn);
 
+    TreeItem* rootItem = m_childModel.getItem(QModelIndex());
+    if (rootItem == nullptr) {
+        return;
+    }
+
     // Set all playlists the track is in bold (or if there is no track selected,
     // clear all the bolding).
     int row = 0;
     for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
          it != m_playlistList.end(); ++it, ++row) {
-        int playlistId = it->first;
-        QModelIndex index = m_childModel.index(row, 0);
+        TreeItem* playlist = rootItem->child(row);
+        if (playlist == nullptr) {
+            continue;
+        }
 
+        int playlistId = it->first;
         bool shouldBold = m_playlistsSelectedTrackIsIn.contains(playlistId);
-        m_childModel.setData(index, shouldBold, TreeItemModel::kBoldRole);
+        playlist->setBold(shouldBold);
     }
+
+    m_childModel.triggerRepaint();
 }
 
 
