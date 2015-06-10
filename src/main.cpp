@@ -248,7 +248,7 @@ int main(int argc, char * argv[])
         return(0);
     }
 
-    Console console();
+    Console console;
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     qInstallMsgHandler(MessageHandler);
