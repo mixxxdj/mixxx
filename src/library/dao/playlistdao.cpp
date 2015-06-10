@@ -1005,7 +1005,7 @@ void PlaylistDAO::getPlaylistsTrackIsIn(const int trackId,
                                         QSet<int>* playlistSet) const {
     playlistSet->clear();
     for (QHash<int, int>::const_iterator it = m_playlistsTrackIsIn.find(trackId);
-         it != m_playlistsTrackIsIn.end(); ++it) {
+         it != m_playlistsTrackIsIn.end() && it.key() == trackId; ++it) {
         playlistSet->insert(it.value());
     }
 }

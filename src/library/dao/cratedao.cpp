@@ -481,7 +481,7 @@ void CrateDAO::getCratesTrackIsIn(const int trackId,
                                   QSet<int>* crateSet) const {
     crateSet->clear();
     for (QHash<int, int>::const_iterator it = m_cratesTrackIsIn.find(trackId);
-         it != m_cratesTrackIsIn.end(); ++it) {
+         it != m_cratesTrackIsIn.end() && it.key() == trackId; ++it) {
         crateSet->insert(it.value());
     }
 }
