@@ -813,7 +813,11 @@ ElectrixTweaker.playButton = function (channel, control, value, status, group) {
 	if (ElectrixTweaker.shift) {
 		engine.setValue(group, 'cue_default', value)
 	} else if (value) {
-		engine.setValue(group, 'play', ! engine.getValue(group, 'play'))
+		if (engine.getValue(group, 'playposition') == 1) {
+			engine.setValue(group, 'start_play', 1)
+		} else {
+			engine.setValue(group, 'play', ! engine.getValue(group, 'play'))
+		}
 	}
 }
 ElectrixTweaker.playButtonLED = function (value, group, control) {
