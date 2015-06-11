@@ -781,14 +781,10 @@ ElectrixTweaker.lowEncoderPress = function (channel, control, value, status, gro
 				}
 				break
 			case 'loop':
-				if (ElectrixTweaker.loopType[group] == 'beatlooproll_') {
-					if (engine.getValue(group, 'loop_enabled')) {
-						engine.setValue(group, 'beatloop_' + ElectrixTweaker.loopSize[group] + '_toggle', 1)
-					} else {
-						engine.setValue(group, 'beatlooproll_' + ElectrixTweaker.loopSize[group] + '_activate', 1)
-					}
+				if (engine.getValue(group, 'loop_enabled')) {
+					engine.setValue(group, 'reloop_exit', 1)
 				} else {
-					engine.setValue(group, ElectrixTweaker.loopType[group] + ElectrixTweaker.loopSize[group] + '_toggle', 1)
+					engine.setValue(group, ElectrixTweaker.loopType[group] + ElectrixTweaker.loopSize[group] + '_activate', 1)
 				}
 				break
 		}
