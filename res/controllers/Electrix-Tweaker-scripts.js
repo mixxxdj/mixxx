@@ -152,30 +152,32 @@ ElectrixTweaker.encoders['[Channel4]'] = ElectrixTweaker.encoders['[Channel2]']
 ElectrixTweaker.encoderRingSteps = [0, 10, 25, 35, 50, 60, 64, 75, 85, 95, 105, 115, 127]
 ElectrixTweaker.buttons = {
 	'[Channel1]': {
-		'beatjumpBack': 9,
-		'beatjumpForward': 10,
-		'back': 11,
-		'forward': 12,
-		'deckToggle': 17,
-		'sync': 18,
-		'quantize': 19,
-		'keylock': 20,
-		'hotcues': [25, 26, 27, 28],
+		'beatjumpBack': 1,
+		'beatjumpForward': 2,
+		'back': 3,
+		'forward': 4,
+		'deckToggle': 9,
+		'sync': 10,
+		'quantize': 11,
+		'keylock': 12,
+		'hotcues': [17, 18, 19, 20],
+		'loops': [25, 26, 27, 28],
 		'mode': 33,
 		'pfl': 34,
 		'play': 35,
 		'arrowSide': 42
 	},
 	'[Channel2]': {
-		'beatjumpBack': 13,
-		'beatjumpForward': 14,
-		'back': 15,
-		'forward': 16,
-		'deckToggle': 21,
-		'sync': 22,
-		'quantize': 23,
-		'keylock': 24,
-		'hotcues': [29, 30, 31, 32],
+		'beatjumpBack': 5,
+		'beatjumpForward': 6,
+		'back': 7,
+		'forward': 8,
+		'deckToggle': 13,
+		'sync': 14,
+		'quantize': 15,
+		'keylock': 16,
+		'hotcues': [21, 22, 23, 24],
+		'loops': [29, 30, 31, 32],
 		'mode': 36,
 		'pfl': 37,
 		'play': 38,
@@ -240,16 +242,16 @@ ElectrixTweaker.init = function () {
 	}
 	ElectrixTweaker.initDeck('[Channel1]',true)
 	ElectrixTweaker.initDeck('[Channel2]',true)
-	for (i=1; i<=8; i++) {
-		engine.connectControl('[Sampler'+i+']', 'track_samples', ElectrixTweaker.loopLoadLED)
-		engine.connectControl('[Sampler'+i+']', 'play', ElectrixTweaker.loopPlayLED)
-		engine.trigger('[Sampler'+i+']', 'track_samples')
-		engine.trigger('[Sampler'+i+']', 'play')
-		engine.setValue('[Sampler'+i+']', 'orientation', (i<=4) ? 0 : 2)
+// 	for (i=1; i<=8; i++) {
+// 		engine.connectControl('[Sampler'+i+']', 'track_samples', ElectrixTweaker.loopLoadLED)
+// 		engine.connectControl('[Sampler'+i+']', 'play', ElectrixTweaker.loopPlayLED)
+// 		engine.trigger('[Sampler'+i+']', 'track_samples')
+// 		engine.trigger('[Sampler'+i+']', 'play')
+// 		engine.setValue('[Sampler'+i+']', 'orientation', (i<=4) ? 0 : 2)
 // 		engine.connectControl('[EffectRack1_EffectUnit'+i+']', 'enabled', ElectrixTweaker.effectsToggleLED)
 // 		engine.trigger('[EffectRack1_EffectUnit'+i+']', 'enabled')
-	}
-	for (i=9; i<=16; i++) {
+// 	}
+	for (i=1; i<=8; i++) {
 		engine.connectControl('[Sampler'+i+']', 'track_samples', ElectrixTweaker.oneShotLED)
 		engine.trigger('[Sampler'+i+']', 'track_samples')
 	}
@@ -297,11 +299,26 @@ ElectrixTweaker.initDeck = function (group, startup) {
 	engine.connectControl(disconnectDeck, 'loop_enabled', ElectrixTweaker.loopButtonToggle, true)
 	engine.connectControl(disconnectDeck, 'sync_enabled', ElectrixTweaker.syncLED, true)
 	engine.connectControl(disconnectDeck, 'keylock', ElectrixTweaker.keylockLED, true)
+	engine.connectControl(disconnectDeck, 'key', ElectrixTweaker.keylockLED, true)
 	engine.connectControl(disconnectDeck, 'quantize', ElectrixTweaker.quantizeLED, true)
 	for (var encoder in ElectrixTweaker.encoders[group]) {
 		engine.connectControl(disconnectDeck, 'filter' + encoder, ElectrixTweaker.eqEncoder, true)
 		engine.connectControl(disconnectDeck, 'filter' + encoder + 'Kill', ElectrixTweaker.eqEncoderKillButton, true)
 	}
+	
+	
+	midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['beatjumpBack'], ElectrixTweaker.colorCodes['blue'])
+	midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['beatjumpForward'], ElectrixTweaker.colorCodes['blue'])
+	midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['back'], ElectrixTweaker.colorCodes['green'])
+	midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['forward'], ElectrixTweaker.colorCodes['green'])
+	
+	engine.connectControl(group, 'sync_enabled', ElectrixTweaker.syncLED)
+	engine.connectControl(group, 'keylock', ElectrixTweaker.keylockLED)
+	engine.connectControl(group, 'key', ElectrixTweaker.keylockLED)
+	engine.connectControl(group, 'quantize', ElectrixTweaker.quantizeLED)
+	engine.trigger(group, 'sync_enabled')
+	engine.trigger(group, 'keylock')
+	engine.trigger(group, 'quantize')
 	
 	engine.connectControl(group, 'pfl', ElectrixTweaker.pflButtonLED)
 	engine.connectControl(group, 'track_samples', ElectrixTweaker.playButtonLED)
@@ -311,21 +328,18 @@ ElectrixTweaker.initDeck = function (group, startup) {
 	engine.trigger(group, 'pfl')
 	engine.trigger(group, 'track_samples')
 	engine.trigger(group, 'play')
+	
 	for (i=1; i <= 4; i++) {
 		engine.connectControl(disconnectDeck, 'hotcue_'+i+'_enabled', ElectrixTweaker.hotcueButtonLED, true)
 		engine.connectControl(group, 'hotcue_'+i+'_enabled', ElectrixTweaker.hotcueButtonLED)
 		engine.trigger(group, 'hotcue_'+i+'_enabled')
 	}
-	engine.connectControl(group, 'sync_enabled', ElectrixTweaker.syncLED)
-	engine.connectControl(group, 'keylock', ElectrixTweaker.keylockLED)
-	engine.connectControl(group, 'quantize', ElectrixTweaker.quantizeLED)
-	engine.trigger(group, 'sync_enabled')
-	engine.trigger(group, 'keylock')
-	engine.trigger(group, 'quantize')
-	midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['beatjumpBack'], ElectrixTweaker.colorCodes['blue'])
-	midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['beatjumpForward'], ElectrixTweaker.colorCodes['blue'])
-	midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['back'], ElectrixTweaker.colorCodes['green'])
-	midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['forward'], ElectrixTweaker.colorCodes['green'])
+	
+	for (i=5; i <= 8; i++) {
+		engine.connectControl(disconnectDeck, 'hotcue_'+i+'_enabled', ElectrixTweaker.loopLED, true)
+		engine.connectControl(group, 'hotcue_'+i+'_enabled', ElectrixTweaker.loopLED)
+		engine.trigger(group, 'hotcue_'+i+'_enabled')
+	}
 	
 	ElectrixTweaker.mode[group] = ElectrixTweaker.mode[disconnectDeck]
 	ElectrixTweaker.initMode(group, ElectrixTweaker.mode[group], startup)
@@ -917,71 +931,61 @@ ElectrixTweaker.oneShotNote = function (channel, control, value, status, group) 
 	}
 }
 ElectrixTweaker.oneShotLED = function (value, group, control) {
-	midi.sendShortMsg(0x90, 62 - 8 + parseInt(ElectrixTweaker.samplerRegEx.exec(group)[1]), (value) ? 127 : 0)
+	midi.sendShortMsg(0x90, 62 + parseInt(ElectrixTweaker.samplerRegEx.exec(group)[1]), (value) ? 127 : 0)
 }
 
 ElectrixTweaker.loop = function (channel, control, value, status, group) {
+	group = ElectrixTweaker.deck[group]
 	if (value) {
-		if (engine.getValue(group, 'track_samples')) {
+		cue = 8 - (ElectrixTweaker.buttons[group]['loops'][3] - control)
+		if (engine.getValue(group, 'hotcue_'+cue+'_enabled')) {
 			if (ElectrixTweaker.shift) {
-				engine.setValue(group, 'keylock', 0)
-				engine.setValue(group, 'sync_enabled', 0)
-				engine.setValue(group, 'repeat', 0)
-				engine.setValue(group, 'play', 0)
-				engine.setValue(group, 'eject', 1)
-				engine.beginTimer(250, 'engine.setValue("'+group+'", "eject", 0)', true)
+				engine.setValue(group, 'hotcue_'+cue+'_clear', 1)
 			} else {
-				engine.setValue(group, 'playposition', 0)
-				engine.setValue(group, 'keylock', ! engine.getValue(group, 'play'))
-				engine.setValue(group, 'sync_enabled', ! engine.getValue(group, 'play'))
-				engine.setValue(group, 'repeat', ! engine.getValue(group, 'play'))
-				engine.setValue(group, 'play', ! engine.getValue(group, 'play'))
+				engine.setValue(group, 'hotcue_'+cue+'_activate', 1)
 			}
 		} else {
-			if (ElectrixTweaker.shift) {
-				engine.setValue(group, 'keylock', 1)
-				engine.setValue(group, 'sync_enabled', 1)
-				engine.setValue(group, 'repeat', 1)
-				engine.setValue(group, 'LoadSelectedTrack', 1)
-			} else {
-				engine.setValue(group, 'keylock', 1)
-				engine.setValue(group, 'sync_enabled', 1)
-				engine.setValue(group, 'repeat', 1)
-				engine.setValue(group, 'LoadSelectedTrackAndPlay', 1)
-			}
+			engine.setValue(group, 'hotcue_'+cue+'_set', 1)
 		}
 	}
+	// TODO: start looping at hotcue points
+// 		if (value) {
+// 			if (engine.getValue(group, 'hotcue_'+cue+'_position')) {
+// 				if (engine.getValue(group, 'loop_enabled')) {
+// 					engine.setValue(group, 'reloop_exit', 1)
+// 				} else {
+// 					engine.setValue(group, 'hotcue_'+cue+'_activate', 1)
+// 					engine.setValue(group, ElectrixTweaker.loopType[group] + ElectrixTweaker.loopSize[group] + '_activate', 1)
+// 				}
+// 			} else {
+// 				if (engine.getValue(group, 'loop_enabled')) {
+// 					engine.setValue(group, 'hotcue_'+cue+'_position', engine.getValue(group, 'loop_start_position'))
+// 				} else {
+// 					engine.setValue(group, 'hotcue_'+cue+'_set', 1)
+// 					engine.setValue(group, ElectrixTweaker.loopType[group] + ElectrixTweaker.loopSize[group] + '_activate', 1)
+// 				}
+// 			}
+// // 		} else if (! value && ElectrixTweaker.someBinary[group]) {
+// // 			engine.setValue(group, 'loop_enabled', 0)
+// 		}
+// // 		if (engine.getValue(group, 'hotcue_'+cue+'_enabled')) {
+// // 			if (ElectrixTweaker.shift) {
+// // 				engine.setValue(group, 'hotcue_'+cue+'_clear', 1)
+// // 			} else {
+// // 				engine.setValue(group, 'hotcue_'+cue+'_activate', 1)
+// // 			}
+// // 		} else {
+// // 			engine.setValue(group, 'hotcue_'+cue+'_set', 1)
+// // 		}
+// 	}
 }
-
-ElectrixTweaker.loopLoadLED = function (value, group, control) {
-	if (engine.getValue(group, 'play')) {
-		midi.sendShortMsg(
-			0x90,
-			ElectrixTweaker.samplerRegEx.exec(group)[1],
-			(value) ? ElectrixTweaker.colorCodes['magenta'] : ElectrixTweaker.colorCodes['off']
-		)
-	} else {
-		midi.sendShortMsg(
-			0x90,
-			ElectrixTweaker.samplerRegEx.exec(group)[1],
-			(value) ? ElectrixTweaker.colorCodes['red'] : ElectrixTweaker.colorCodes['off']
-		)
-	}
-}
-ElectrixTweaker.loopPlayLED = function (value, group, control) {
-	if (engine.getValue(group, 'track_samples')) {
-		midi.sendShortMsg(
-			0x90,
-			ElectrixTweaker.samplerRegEx.exec(group)[1],
-			(engine.getValue(group, 'play')) ? ElectrixTweaker.colorCodes['magenta'] : ElectrixTweaker.colorCodes['red']
-		)
-	} else {
-		midi.sendShortMsg(
-			0x90,
-			ElectrixTweaker.samplerRegEx.exec(group)[1],
-			ElectrixTweaker.colorCodes['off']
-		)
-	}
+ElectrixTweaker.loopLED = function (value, group, control) {
+	cue = control.split('_')[1]
+	midi.sendShortMsg(
+		0x90,
+		ElectrixTweaker.buttons[group]['loops'][cue-5],
+		value * ElectrixTweaker.colorCodes['cyan']
+	)
 }
 
 // // ========================================================= EFFECTS =========================================================
@@ -1019,24 +1023,33 @@ ElectrixTweaker.loopPlayLED = function (value, group, control) {
 // 			engine.trigger(group, 'group_'+chan+'_enable')
 // 		}
 // 		ElectrixTweaker.effectsChain = group
+// ElectrixTweaker.loopLoadLED = function (value, group, control) {
+// 	if (engine.getValue(group, 'play')) {
+// 		midi.sendShortMsg(
+// 			0x90,
+// 			ElectrixTweaker.samplerRegEx.exec(group)[1],
+// 			(value) ? ElectrixTweaker.colorCodes['magenta'] : ElectrixTweaker.colorCodes['off']
+// 		)
+// 	} else {
+// 		midi.sendShortMsg(
+// 			0x90,
+// 			ElectrixTweaker.samplerRegEx.exec(group)[1],
+// 			(value) ? ElectrixTweaker.colorCodes['red'] : ElectrixTweaker.colorCodes['off']
+// 		)
 // 	}
 // }
-// ElectrixTweaker.effectChannelLEDs = function (value, group, control) {
-// 	midi.sendShortMsg(
-// 		0x90,
-// 		ElectrixTweaker.buttons['effects']['channels'][control.split('_')[1]],
-// 		(value) ? ElectrixTweaker.colorCodes['yellow'] : ElectrixTweaker.colorCodes['off']
-// 	)
-// }
-// ElectrixTweaker.effectVelocityNote = function (channel, control, value, status, group) {
-// 	
-// }
-// ElectrixTweaker.effectVelocityCC = function (channel, control, value, status, group) {
-// 	if (! ElectrixTweaker.shift) {
-// 		if (control == ElectrixTweaker.buttons['effects']['velocity']['cc'][3]) {
-// 			engine.setValue(ElectrixTweaker.effectsChain, 'mix', script.absoluteLin(value, 0, 1))
-// 		} else {
-// 			engine.setValue(ElectrixTweaker.effectsChain.slice(0,-1) + '_Effect1]', 'parameter' + (4 + (control - ElectrixTweaker.buttons['effects']['velocity']['cc'][3])), script.absoluteLin(value, 0, 1))
-// 		}
+// ElectrixTweaker.loopPlayLED = function (value, group, control) {
+// 	if (engine.getValue(group, 'track_samples')) {
+// 		midi.sendShortMsg(
+// 			0x90,
+// 			ElectrixTweaker.samplerRegEx.exec(group)[1],
+// 			(engine.getValue(group, 'play')) ? ElectrixTweaker.colorCodes['magenta'] : ElectrixTweaker.colorCodes['red']
+// 		)
+// 	} else {
+// 		midi.sendShortMsg(
+// 			0x90,
+// 			ElectrixTweaker.samplerRegEx.exec(group)[1],
+// 			ElectrixTweaker.colorCodes['off']
+// 		)
 // 	}
 // }
