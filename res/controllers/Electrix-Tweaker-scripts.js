@@ -833,26 +833,27 @@ ElectrixTweaker.playButtonLED = function (value, group, control) {
 				(engine.getValue(group, 'track_samples')) ? ElectrixTweaker.colorCodes['red'] : ElectrixTweaker.colorCodes['off']
 			)
 		} else {
-			midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['play'], ElectrixTweaker.colorCodes['off'])
+			engine.setValue(group, 'cue_gotoandstop', 1)
+// 			midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['play'], ElectrixTweaker.colorCodes['off'])
 		}
 	}
 }
 
 ElectrixTweaker.backButton = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
-	if (ElectrixTweaker.shift && value) {
-		engine.setValue(group, 'playposition', 0)
-	} else {
+// 	if (ElectrixTweaker.shift && value) {
+// 		engine.setValue(group, 'playposition', 0)
+// 	} else {
 		engine.setValue(group, 'back', value)
-	}
+// 	}
 }
 ElectrixTweaker.forwardButton = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
-	if (ElectrixTweaker.shift && value) {
-		engine.setValue(group, 'playposition', 1)
-	} else {
+// 	if (ElectrixTweaker.shift && value) {
+// 		engine.setValue(group, 'playposition', 1)
+// 	} else {
 		engine.setValue(group, 'fwd', value)
-	}
+// 	}
 }
 
 ElectrixTweaker.beatjumpBackward = function (channel, control, value, status, group) {
