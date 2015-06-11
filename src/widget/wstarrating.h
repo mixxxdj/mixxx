@@ -28,10 +28,12 @@ class WStarRating : public QWidget, public WBaseWidget {
     void updateRating(TrackInfoObject*);
     
   protected:
+    virtual bool event(QEvent* pEvent);
     virtual void paintEvent(QPaintEvent* e);
     void mouseMoveEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
     void leaveEvent(QEvent *);
+    void fillDebugTooltip(QStringList* debug);
     
     StarRating m_starRating;
     QString m_pGroup;
