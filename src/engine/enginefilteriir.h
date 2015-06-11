@@ -25,7 +25,7 @@ enum IIRPass {
 
 class EngineFilterIIRBase : public EngineObjectConstIn {
   public:
-    virtual void asumeSettled() = 0;
+    virtual void assumeSettled() = 0;
 };
 
 
@@ -182,7 +182,7 @@ class EngineFilterIIR : public EngineFilterIIRBase {
         }   
     }   
 
-    virtual void asumeSettled() {
+    virtual void assumeSettled() {
         m_doRamping = false;
         m_doStart = false;
     }

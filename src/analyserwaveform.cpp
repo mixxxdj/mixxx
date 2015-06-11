@@ -174,7 +174,7 @@ void AnalyserWaveform::createFilters(int sampleRate) {
     m_filter[High] = new EngineFilterBessel4High(sampleRate, 4000);
     // settle filters for silence in preroll to avoids ramping (Bug #1406389)
     for (int i = 0; i < FilterCount; ++i) {
-        m_filter[i]->asumeSettled();
+        m_filter[i]->assumeSettled();
     }
 }
 
