@@ -9,9 +9,9 @@
 #include "trackinfoobject.h"
 
 #include "library/starrating.h"
-#include "widget/wwidget.h"
+#include "widget/wbasewidget.h"
 
-class WStarRating : public WWidget {
+class WStarRating : public QWidget, public WBaseWidget {
     Q_OBJECT
   public:
     WStarRating(QString group, QWidget* pParent);

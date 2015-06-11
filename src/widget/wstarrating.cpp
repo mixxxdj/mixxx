@@ -6,7 +6,7 @@
 #include "widget/wstarrating.h"
 
 WStarRating::WStarRating(QString group, QWidget* pParent)
-        : WWidget(pParent),
+        : WBaseWidget(pParent),
           m_starRating(0,5),
           m_pGroup(group),
           m_focused(false) {
@@ -19,6 +19,7 @@ void WStarRating::setup(QDomNode node, const SkinContext& context) {
     Q_UNUSED(node);
     Q_UNUSED(context);
     setMouseTracking(true);
+    setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 }
 
 QSize WStarRating::sizeHint() const {
