@@ -202,6 +202,19 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
             configVersion = config->getValueString(ConfigKey("[Config]","Version"));
         }
         else {
+#elif __LINUX__
+        qDebug() << "Config version is empty, trying to read pre-1.12.0 config";
+        // Try to read the config from the pre-1.12.0 final directory on Linux (we moved it in 1.12.0 final)
+        QScopedPointer<QFile> oldConfigFile(new QFile(QDir::homePath().append("/").append(".mixxx/mixxx.cfg")));
+        if (oldConfigFile->exists() && ! CmdlineArgs::Instance().getSettingsPathSet()) {
+            qDebug() << "Found pre-1.12.0 config for Linux";
+            // Note: We changed SETTINGS_PATH in 1.12.0 final on Linux so it must be hardcoded to ".mixxx" here for legacy.
+            config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(".mixxx/mixxx.cfg"));
+            // Just to be sure all files like logs and soundconfig go with mixxx.cfg
+            CmdlineArgs::Instance().setSettingsPath(QDir::homePath().append("/").append(".mixxx/"));
+            configVersion = config->getValueString(ConfigKey("[Config]","Version"));
+        }
+        else {
 #endif
             // This must have been the first run... right? :)
             qDebug() << "No version number in configuration file. Setting to" << VERSION;
@@ -211,6 +224,8 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
 #ifdef __APPLE__
         }
 #elif __WINDOWS__
+        }
+#elif __LINUX__
         }
 #endif
     }

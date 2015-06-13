@@ -1141,15 +1141,11 @@ class MixxxCore(Feature):
 
         # Set up flags for config/track listing files
         # SETTINGS_PATH not needed for windows and MacOSX because we now use QDesktopServices::storageLocation(QDesktopServices::DataLocation)
-        if build.platform_is_linux or \
-                build.platform_is_bsd:
+        if build.platform_is_bsd:
             mixxx_files = [
                 ('SETTINGS_PATH', '.mixxx/'),
                 ('SETTINGS_FILE', 'mixxx.cfg')]
-        elif build.platform_is_osx:
-            mixxx_files = [
-                ('SETTINGS_FILE', 'mixxx.cfg')]
-        elif build.platform_is_windows:
+        else:
             mixxx_files = [
                 ('SETTINGS_FILE', 'mixxx.cfg')]
 
