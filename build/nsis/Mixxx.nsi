@@ -129,31 +129,6 @@ Function InstallVCRedist
   MessageBox MB_ICONSTOP|MB_OK "There was a problem installing the Microsoft Visual C++ libraries.$\r$\nYou may need to run this installer as an administrator."
   Abort
 
-  ; OLD VC stuff below
-
-  ; NOTE: you need to check the mixxx.exe.manifest file in the win??_build directory
-  ; and place the appropriate versions of the listed DLL files and their manifest files
-  ; into the mixxx-win[64]lib-msvc directory for packaging before making the installer
-  ; (Visual C++ 2005 is msvc?80.dll and Microsoft.VC80.CRT.manifest,
-  ;  Visual C++ 2008 is msvc?90.dll and Microsoft.VC90.CRT.manifest)
-  ;
-  ; See http://mixxx.org/wiki/doku.php/build_windows_installer for full details.
-  ;
-  ; All the MSVC files are located here if you have MSVC 2008 installed. (x86)
-  ;File "C:\Program Files\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.CRT\*"
-  ;File "$%VCINSTALLDIR%\redist\x86\Microsoft.VC90.CRT\*"
-  ;File "$%VS90COMNTOOLS%\..\..\VC\redist\x86\Microsoft.VC90.CRT\*"
-
-  ; NOTE: The Microsoft Visual C++ 2010 Runtime gets rid of the manifest file, so it
-  ;         is no longer necessary if we switch to deploying with MSVC 2010. - Albert
-
-  ; If you have the msvc DLLs & manifest elsewhere,
-  ; copy them to the WINLIB_PATH and uncomment these:
-  ;File ${WINLIB_PATH}\msvcr*.dll        ; Required
-  ;File ${WINLIB_PATH}\msvcp*.dll        ; Required
-  ;File /nonfatal ${WINLIB_PATH}\msvcm*.dll    ; Not (currently) required, so nonfatal
-  ;File ${WINLIB_PATH}\Microsoft.VC*.CRT.manifest    ; Required on MSVC < 2010, apparently
-
   VCRedistDone:
     Exch $R0
 
@@ -166,11 +141,6 @@ Function CheckVCRedist
    Push $R0
    ClearErrors
    ReadRegDword $R0 HKLM "SOFTWARE\Wow6432Node\Microsoft\VisualStudio\12.0\VC\Runtimes\${ARCH}" "Installed"
-   ; Old way:
-   ;   x64
-   ;ReadRegDword $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{DA5E371C-6333-3D8A-93A4-6FD5B20BCC6E}" "Version"
-   ;   x86
-   ;ReadRegDword $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{196BB40D-1578-3D01-B289-BEFC77A11A1E}" "Version"
 
    IfErrors 0 VSRedistInstalled
    StrCpy $R0 "-1"
