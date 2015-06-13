@@ -846,6 +846,7 @@ WStarRating {
 
 #EffectUnitGroupControls {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
+  qproperty-layoutSpacing: 1;
 }
 
 #EffectUnit {

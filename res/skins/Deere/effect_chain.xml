@@ -426,6 +426,7 @@
                 We have to use WidgetGroups here, because we can't connect
                <BindProperty> directly to templates. -->
           <WidgetGroup>
+            <ObjectName>EffectUnitGroupControls</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>max,min</SizePolicy>
             <Children>
