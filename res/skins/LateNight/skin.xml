@@ -50,6 +50,7 @@
       <attribute persist="true" config_key="[Vinylcontrol],show_vinylcontrol">0</attribute>
       <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
       <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
+      <attribute persist="true" config_key="[Master],show_eqs">1</attribute>
       <attribute persist="true" config_key="[Master],show_mics">0</attribute>
       <attribute persist="true" config_key="[Master],view_curpage">2</attribute>
       <attribute persist="true" config_key="[Library],show_coverart">1</attribute>
