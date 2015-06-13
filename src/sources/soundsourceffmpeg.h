@@ -57,7 +57,7 @@ private:
     Result tryOpen(const AudioSourceConfig& audioSrcCfg) /*override*/;
 
     bool readFramesToCache(unsigned int count, SINT offset);
-    bool getBytesFromCache(char *buffer, SINT offset, SINT size);
+    bool getBytesFromCache(CSAMPLE* buffer, SINT offset, SINT size);
     SINT getSizeofCache();
     void clearCache();
 

@@ -224,6 +224,11 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
         l_pFrame = av_frame_alloc();
 #endif
 
+        if (l_pFrame == NULL) {
+            qDebug() << "SoundSourceFFmpeg::readFramesToCache: Can't alloc memory!";
+            return false;
+        }
+
         // Read one frame (which has nothing to do with Mixxx Frame)
         // it's some packed audio data from container like MP3, Ogg or MP4
         if (av_read_frame(m_pFormatCtx, &l_SPacket) >= 0) {
@@ -391,13 +396,15 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
     }
 }
 
-bool SoundSourceFFmpeg::getBytesFromCache(char *buffer, SINT offset,
+bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
         SINT size) {
     struct ffmpegCacheObject *l_SObj = NULL;
     qint32 l_lPos = 0;
     quint32 l_lLeft = 0;
     quint32 l_lOffset = 0;
     quint32 l_lBytesToCopy = 0;
+
+    char *l_pBuffer = (char *)buffer;
 
     // Is offset bigger than start of cache
     if (offset >= m_lCacheStartFrame) {
@@ -432,10 +439,15 @@ bool SoundSourceFFmpeg::getBytesFromCache(char *buffer, SINT offset,
         // Use this Cache object as starting point
         l_SObj = m_SCache[l_lPos];
 
+        if (l_pBuffer == NULL) {
+           qDebug() << "SoundSourceFFmpeg::getBytesFromCache: Out buffer NULL";
+           return false;
+        }
+
         // Calculate in other words get bytes how much we must copy to
         // buffer (CSAMPLE = 4 and we have 2 channels which is 8 times)
         l_lLeft = (size * sizeof(CSAMPLE)) * 2;
-        memset(buffer, 0x00, l_lLeft);
+        memset(l_pBuffer, 0x00, l_lLeft);
         while (l_lLeft > 0) {
             // If Cache is running low read more
             if (l_SObj == NULL || (l_lPos + 5) > m_SCache.size()) {
@@ -469,12 +481,12 @@ bool SoundSourceFFmpeg::getBytesFromCache(char *buffer, SINT offset,
             if (l_lLeft > l_SObj->length) {
                 // calculate start point of copy
                 l_lBytesToCopy = l_SObj->length - l_lOffset;
-                memcpy(buffer, (l_SObj->bytes + l_lOffset), l_lBytesToCopy);
+                memcpy(l_pBuffer, (l_SObj->bytes + l_lOffset), l_lBytesToCopy);
                 l_lOffset = 0;
-                buffer += l_lBytesToCopy;
+                l_pBuffer += l_lBytesToCopy;
                 l_lLeft -= l_lBytesToCopy;
             } else {
-                memcpy(buffer, l_SObj->bytes, l_lLeft);
+                memcpy(l_pBuffer, l_SObj->bytes, l_lLeft);
                 l_lLeft = 0;
             }
 
@@ -567,7 +579,7 @@ SINT SoundSourceFFmpeg::readSampleFrames(SINT numberOfFrames,
         m_bIsSeeked = FALSE;
     }
 
-    getBytesFromCache((char *)sampleBuffer, m_currentMixxxFrameIndex, numberOfFrames);
+    getBytesFromCache(sampleBuffer, m_currentMixxxFrameIndex, numberOfFrames);
 
     //  As this is also Hack
     // If we don't seek like we don't on analyzer.. keep
