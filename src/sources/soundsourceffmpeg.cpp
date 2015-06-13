@@ -71,9 +71,9 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     DEBUG_ASSERT(!m_pFormatCtx);
     m_pFormatCtx = avformat_alloc_context();
 
-    if(m_pFormatCtx == NULL) {
-       qDebug() << "SoundSourceFFmpeg::tryOpen: Can't allocate memory";
-       return ERR;
+    if (m_pFormatCtx == NULL) {
+        qDebug() << "SoundSourceFFmpeg::tryOpen: Can't allocate memory";
+        return ERR;
     }
 
 #if LIBAVCODEC_VERSION_INT < 3622144
@@ -109,7 +109,8 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
             break;
         }
     if (m_iAudioStream == -1) {
-        qDebug() << "SoundSourceFFmpeg::tryOpen: cannot find an audio stream: cannot open"
+        qDebug() <<
+                 "SoundSourceFFmpeg::tryOpen: cannot find an audio stream: cannot open"
                  << qBAFilename;
         return ERR;
     }
@@ -119,7 +120,8 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
 
     // Find the decoder for the audio stream
     if (!(m_pCodec=avcodec_find_decoder(m_pCodecCtx->codec_id))) {
-        qDebug() << "SoundSourceFFmpeg::tryOpen: cannot find a decoder for" << qBAFilename;
+        qDebug() << "SoundSourceFFmpeg::tryOpen: cannot find a decoder for" <<
+                 qBAFilename;
         return ERR;
     }
 
@@ -133,9 +135,11 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
 
     setChannelCount(m_pCodecCtx->channels);
     setFrameRate(m_pCodecCtx->sample_rate);
-    setFrameCount((m_pFormatCtx->duration * m_pCodecCtx->sample_rate) / AV_TIME_BASE);
+    setFrameCount((m_pFormatCtx->duration * m_pCodecCtx->sample_rate) /
+                  AV_TIME_BASE);
 
-    qDebug() << "SoundSourceFFmpeg::tryOpen: Samplerate: " << getFrameRate() << ", Channels: " <<
+    qDebug() << "SoundSourceFFmpeg::tryOpen: Samplerate: " << getFrameRate() <<
+             ", Channels: " <<
              getChannelCount() << "\n";
     if (getChannelCount() > 2) {
         qDebug() << "ffmpeg: No support for more than 2 channels!";
@@ -381,7 +385,9 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
     }
 
     if (l_iFrameCount > 0) {
-        qDebug() << "SoundSourceFFmpeg::readFramesToCache(): Frame balance is not 0 it is: " << l_iFrameCount;
+        qDebug() <<
+                 "SoundSourceFFmpeg::readFramesToCache(): Frame balance is not 0 it is: " <<
+                 l_iFrameCount;
     }
 
     l_SObj = m_SCache.first();
@@ -440,8 +446,8 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
         l_SObj = m_SCache[l_lPos];
 
         if (l_pBuffer == NULL) {
-           qDebug() << "SoundSourceFFmpeg::getBytesFromCache: Out buffer NULL";
-           return false;
+            qDebug() << "SoundSourceFFmpeg::getBytesFromCache: Out buffer NULL";
+            return false;
         }
 
         // Calculate in other words get bytes how much we must copy to
