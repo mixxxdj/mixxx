@@ -71,14 +71,19 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     DEBUG_ASSERT(!m_pFormatCtx);
     m_pFormatCtx = avformat_alloc_context();
 
+    if(m_pFormatCtx == NULL) {
+       qDebug() << "SoundSourceFFmpeg::tryOpen: Can't allocate memory";
+       return ERR;
+    }
+
 #if LIBAVCODEC_VERSION_INT < 3622144
     m_pFormatCtx->max_analyze_duration = 999999999;
 #endif
 
     // Open file and make m_pFormatCtx
     if (avformat_open_input(&m_pFormatCtx, qBAFilename.constData(), NULL,
-                            &l_iFormatOpts)!=0) {
-        qDebug() << "av_open_input_file: cannot open" << qBAFilename;
+                            &l_iFormatOpts) != 0) {
+        qDebug() << "SoundSourceFFmpeg::tryOpen: cannot open" << qBAFilename;
         return ERR;
     }
 
@@ -88,7 +93,7 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
 
     // Retrieve stream information
     if (avformat_find_stream_info(m_pFormatCtx, NULL)<0) {
-        qDebug() << "av_find_stream_info: cannot open" << qBAFilename;
+        qDebug() << "SoundSourceFFmpeg::tryOpen: cannot open" << qBAFilename;
         return ERR;
     }
 
@@ -104,7 +109,7 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
             break;
         }
     if (m_iAudioStream == -1) {
-        qDebug() << "ffmpeg: cannot find an audio stream: cannot open"
+        qDebug() << "SoundSourceFFmpeg::tryOpen: cannot find an audio stream: cannot open"
                  << qBAFilename;
         return ERR;
     }
@@ -114,12 +119,12 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
 
     // Find the decoder for the audio stream
     if (!(m_pCodec=avcodec_find_decoder(m_pCodecCtx->codec_id))) {
-        qDebug() << "ffmpeg: cannot find a decoder for" << qBAFilename;
+        qDebug() << "SoundSourceFFmpeg::tryOpen: cannot find a decoder for" << qBAFilename;
         return ERR;
     }
 
     if (avcodec_open2(m_pCodecCtx, m_pCodec, NULL)<0) {
-        qDebug() << "ffmpeg:  cannot open" << qBAFilename;
+        qDebug() << "SoundSourceFFmpeg::tryOpen: cannot open" << qBAFilename;
         return ERR;
     }
 
@@ -130,7 +135,7 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     setFrameRate(m_pCodecCtx->sample_rate);
     setFrameCount((m_pFormatCtx->duration * m_pCodecCtx->sample_rate) / AV_TIME_BASE);
 
-    qDebug() << "ffmpeg: Samplerate: " << getFrameRate() << ", Channels: " <<
+    qDebug() << "SoundSourceFFmpeg::tryOpen: Samplerate: " << getFrameRate() << ", Channels: " <<
              getChannelCount() << "\n";
     if (getChannelCount() > 2) {
         qDebug() << "ffmpeg: No support for more than 2 channels!";
@@ -146,7 +151,7 @@ void SoundSourceFFmpeg::close() {
         qDebug() << "~SoundSourceFFmpeg(): Clear FFMPEG stuff";
         avcodec_close(m_pCodecCtx);
         avformat_close_input(&m_pFormatCtx);
-        av_free(m_pFormatCtx);
+        avformat_free_context(m_pFormatCtx);
         m_pFormatCtx = NULL;
     }
 
