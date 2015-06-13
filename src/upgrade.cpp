@@ -185,7 +185,7 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
             // Note: We changed SETTINGS_PATH in 1.9.0 final on OS X so it must be hardcoded to ".mixxx" here for legacy.
             config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(".mixxx/mixxx.cfg"));
             // Just to be sure all files like logs and soundconfig go with mixxx.cfg
-            CmdlineArgs::Instance().setSettingsPath(QDir::homePath().append("/").append(".mixxx/mixxx.cfg"));
+            CmdlineArgs::Instance().setSettingsPath(QDir::homePath().append("/").append(".mixxx/"));
             configVersion = config->getValueString(ConfigKey("[Config]","Version"));
         }
         else {
