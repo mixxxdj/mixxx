@@ -47,7 +47,7 @@ EffectManifest GraphicEQEffect::getManifest() {
         EffectManifestParameter* mid = manifest.addParameter();
         mid->setId(QString("mid%1").arg(i));
         mid->setName(paramName);
-        mid->setDescription(QString::tr("Gain for Band Filter %1").arg(i));
+        mid->setDescription(QObject::tr("Gain for Band Filter %1").arg(i));
         mid->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
         mid->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
         mid->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
