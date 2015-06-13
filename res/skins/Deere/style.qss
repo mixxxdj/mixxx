@@ -219,9 +219,10 @@ WSearchLineEdit:focus {
   margin: 4px 0px 0px 0px;
   background-color: #1F1F1F;
   border: 1px solid #1A1A1A;
+  qproperty-layoutSpacing: 2;
 }
 
-#PreviewDeckTextRow WLabel  {
+#PreviewDeckTextRow WLabel {
   padding: 2px;
   color: #A9A9A9;
   font-size: 12px/14px;
@@ -487,14 +488,14 @@ WLibrary QRadioButton::indicator:unchecked {
 }
 
 WWidget, QLabel {
-  font-size: 6px;
+  font-family: "Open Sans";
+  font-size: 8px;
   text-transform: uppercase;
 }
 
 WSliderComposed {
   background-color: rgba(200, 200, 200, 128);
 }
-
 
 /* Start spacing for Deck overview row (small waveform, option grid) */
 #OptionGrid {
@@ -558,7 +559,7 @@ WSliderComposed {
 #HotcueGrid WPushButton, #HotcueGridExtended WPushButton {
 }
 
-#LoopingContainer, #BeatLoopContainer, #TransportContainer  {
+#LoopingContainer, #BeatLoopContainer, #TransportContainer {
   background-color: #333333;
   padding: 1px;
   qproperty-layoutSpacing: 2;
@@ -574,6 +575,7 @@ WSliderComposed {
 
 /* Start spacing for toolbar */
 #ToolBar {
+  padding: 0px 4px 0px 4px;
   background-color: #111111;
 }
 #NotificationsContainer {
