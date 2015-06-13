@@ -260,15 +260,15 @@ Section "Translations" SecTranslations
 SectionEnd
 
 Section "Start Menu Shortcuts" SecStartMenu
-  CreateDirectory "$SMPROGRAMS\Mixxx"
+  CreateDirectory "$SMPROGRAMS\Mixxx ${PRODUCT_VERSION}"
   SetOutPath $INSTDIR
-  CreateShortCut "$SMPROGRAMS\Mixxx\Mixxx.lnk" "$INSTDIR\mixxx.exe" "" "$INSTDIR\mixxx.exe" 0
-  CreateShortCut "$SMPROGRAMS\Mixxx\Manual.lnk" "$INSTDIR\Mixxx-Manual.pdf" "" "$INSTDIR\Mixxx-Manual.pdf" 0
+  CreateShortCut "$SMPROGRAMS\Mixxx ${PRODUCT_VERSION}\Mixxx ${PRODUCT_VERSION}.lnk" "$INSTDIR\mixxx.exe" "" "$INSTDIR\mixxx.exe" 0
+  CreateShortCut "$SMPROGRAMS\Mixxx ${PRODUCT_VERSION}\Manual.lnk" "$INSTDIR\Mixxx-Manual.pdf" "" "$INSTDIR\Mixxx-Manual.pdf" 0
 SectionEnd
 
 Section "Desktop Shortcut" SecDesktop
   SetOutPath $INSTDIR
-  CreateShortCut "$DESKTOP\Mixxx.lnk" "$INSTDIR\mixxx.exe" "" "$INSTDIR\mixxx.exe" 0
+  CreateShortCut "$DESKTOP\Mixxx ${PRODUCT_VERSION}.lnk" "$INSTDIR\mixxx.exe" "" "$INSTDIR\mixxx.exe" 0
 SectionEnd
 
 ;--------------------------------
@@ -535,11 +535,11 @@ Section "Uninstall"
   RMDir "$INSTDIR\skins"
 
   ; Remove shortcuts, if any
-  Delete "$SMPROGRAMS\Mixxx\*.*"
-  Delete "$DESKTOP\Mixxx.lnk"
+  Delete "$SMPROGRAMS\Mixxx ${PRODUCT_VERSION}\*.*"
+  Delete "$DESKTOP\Mixxx ${PRODUCT_VERSION}.lnk"
 
   ; Remove directories used
-  RMDir "$SMPROGRAMS\Mixxx"
+  RMDir "$SMPROGRAMS\Mixxx ${PRODUCT_VERSION}"
   RMDir "$INSTDIR"
 
   ; Remove registry keys
