@@ -20,6 +20,7 @@
         <SizePolicy>me,f</SizePolicy>
         <MinimumSize>0,0</MinimumSize>
         <Children>
+          <!-- QSplitter between LibrarySidebar and Library -->
           <Splitter>
             <ObjectName>LibrarySplitter</ObjectName>
             <Orientation>horizontal</Orientation>
@@ -142,18 +143,30 @@
                     </Connection>
                   </WidgetGroup>
 
-                  <LibrarySidebar>
-                  </LibrarySidebar>
-
-                  <CoverArt>
-                    <TooltipId>coverart</TooltipId>
+                  <!-- QSplitter between LibrarySidebar and CoverArt -->
+                  <Splitter>
+                    <ObjectName>LibraryCoverArtSplitter</ObjectName>
+                    <Orientation>vertical</Orientation>
                     <SizePolicy>me,me</SizePolicy>
-                    <MinimumSize>100,100</MinimumSize>
-                    <Connection>
-                      <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </CoverArt>
+                    <MinimumSize>30,30</MinimumSize>
+                    <SplitSizesConfigKey>[Deere],LibraryCoverartSplitSize</SplitSizesConfigKey>
+                    <SplitSizes>2,8</SplitSizes>
+                    <Children>
+                      <LibrarySidebar>
+                      </LibrarySidebar>
+
+                      <CoverArt>
+                        <ObjectName>LibraryCoverArt</ObjectName>
+                        <TooltipId>coverart</TooltipId>
+                        <SizePolicy>me,me</SizePolicy>
+                        <MinimumSize>30,30</MinimumSize>
+                        <Connection>
+                          <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </CoverArt>
+                    </Children>
+                  </Splitter>
                 </Children>
               </WidgetGroup>
               <Library>

@@ -266,25 +266,50 @@ QTreeView::branch:open:has-children:has-siblings {
   border-image: none; image: url(skin:/image/style_branch_open.png);
 }
 
-/* splitter between treeview and library */
-QSplitter::handle {
-  image: url(skin:/image/style_handle_unchecked.svg);
+/* QSplitter between LibrarySidebar and Library */
+QSplitter#LibrarySplitter::handle {
+  image: url(skin:/image/style_handle_horizontal_unchecked.svg);
   background: none;
 }
 
-QSplitter::handle:pressed {
-  image: url(skin:/image/style_handle_checked.svg);
+QSplitter#LibrarySplitter::handle:pressed {
+  image: url(skin:/image/style_handle_horizontal_checked.svg);
   background: none;
 }
 
-QSplitter::handle:horizontal {
+QSplitter#LibrarySplitter::handle:horizontal {
   width: 6px;
 }
 
-QSplitter::handle:vertical {
+QSplitter#LibrarySplitter::handle:vertical {
   height: 6px;
 }
 
+/* QSplitter between LibrarySidebar and CoverArt */
+QSplitter#LibraryCoverArtSplitter::handle {
+  image: url(skin:/image/style_handle_vertical_unchecked.svg);
+  background: none;
+}
+
+QSplitter#LibraryCoverArtSplitter::handle:pressed {
+  image: url(skin:/image/style_handle_vertical_checked.svg);
+  background: none;
+}
+
+QSplitter#LibraryCoverArtSplitter::handle:horizontal {
+  width: 6px;
+}
+
+QSplitter#LibraryCoverArtSplitter::handle:vertical {
+  height: 6px;
+}
+
+/* library cover art widget */
+#LibraryCoverArt {
+  padding: 8px 4px 4px 4px;
+  background-color: #1F1F1F;
+  border: 1px solid #1A1A1A;
+}
 /* transition time in Auto DJ tab */
 WLibrary QSpinBox {
   min-height: 20px;
