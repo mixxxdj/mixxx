@@ -100,13 +100,13 @@ int EncoderFfmpegResample::open(enum AVSampleFormat inSampleFmt,
         av_opt_set_int(m_pSwrCtx,"in_channel_layout", m_pCodecCtx->channel_layout, 0);
         av_opt_set_int(m_pSwrCtx,"in_sample_fmt", inSampleFmt, 0);
         av_opt_set_int(m_pSwrCtx,"in_sample_rate", m_pCodecCtx->sample_rate, 0);
-        av_opt_set_int(m_pSwrCtx,"out_channel_layout", AV_CH_LAYOUT_STEREO, 0);
+        av_opt_set_int(m_pSwrCtx,"out_channel_layout", m_pCodecCtx->channel_layout, 0);
         av_opt_set_int(m_pSwrCtx,"out_sample_fmt", outSampleFmt, 0);
         av_opt_set_int(m_pSwrCtx,"out_sample_rate", m_pCodecCtx->sample_rate, 0);
 
 #else
         qDebug() << "ffmpeg: OLD FFMPEG API in use!";
-        m_pSwrCtx = av_audio_resample_init(2,
+        m_pSwrCtx = av_audio_resample_init(m_pCodecCtx->channels,
                                            m_pCodecCtx->channels,
                                            m_pCodecCtx->sample_rate,
                                            m_pCodecCtx->sample_rate,
@@ -139,7 +139,7 @@ int EncoderFfmpegResample::open(enum AVSampleFormat inSampleFmt,
                      m_pCodecCtx->channel_layout <<
                      ") channels";
             qDebug() << "To " << m_pCodecCtx->sample_rate << " HZ format:" <<
-                     av_get_sample_fmt_name(outSampleFmt) << " with 2 channels";
+                     av_get_sample_fmt_name(outSampleFmt) << " with " << (int)m_pCodecCtx->channels <<" channels";
             return -1;
         }
 #endif // __FFMPEGOLDAPI__
@@ -152,7 +152,7 @@ int EncoderFfmpegResample::open(enum AVSampleFormat inSampleFmt,
                  << av_get_bytes_per_sample(
                      m_pCodecCtx->sample_fmt) << ")";
         qDebug() << "To " << m_pCodecCtx->sample_rate << " HZ format:" <<
-                 av_get_sample_fmt_name(outSampleFmt) << "with 2 (layout:" <<
+                 av_get_sample_fmt_name(outSampleFmt) << "with " << (int)m_pCodecCtx->channels << " (layout:" <<
                  m_pCodecCtx->channel_layout << ") channels (BPS " <<
                  av_get_bytes_per_sample(outSampleFmt) << ")";
     }
