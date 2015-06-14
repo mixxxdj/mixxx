@@ -3,6 +3,7 @@
 #include <QPushButton>
 #include <QTranslator>
 #include <QScopedPointer>
+#include <QFileInfo>
 
 #include "defs_version.h"
 #include "controllers/defs_controllers.h"
@@ -180,56 +181,45 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
             config->getValueString(ConfigKey("[Config]","Version"));
 
     if (configVersion.isEmpty()) {
-
 #ifdef __APPLE__
         qDebug() << "Config version is empty, trying to read pre-1.9.0 config";
-        // Try to read the config from the pre-1.9.0 final directory on OS X (we moved it in 1.9.0 final)
-        QScopedPointer<QFile> oldConfigFile(new QFile(QDir::homePath().append("/").append(".mixxx/mixxx.cfg")));
-        if (oldConfigFile->exists() && !CmdlineArgs::Instance().getSettingsPathSet()) {
-            qDebug() << "Found pre-1.9.0 config for OS X";
-            // Note: We changed SETTINGS_PATH in 1.9.0 final on OS X so it must be hardcoded to ".mixxx" here for legacy.
-            config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(".mixxx/mixxx.cfg"));
-            // Just to be sure all files like logs and soundconfig go with mixxx.cfg
-            CmdlineArgs::Instance().setSettingsPath(QDir::homePath().append("/").append(".mixxx/"));
-            configVersion = config->getValueString(ConfigKey("[Config]","Version"));
-        } else {
+        // Try to read the config from the pre-1.9.0 final directory on OS X
+        // (we moved it in 1.9.0 final)
+        QFileInfo oldConfigFile(QDir::homePath() + "/.mixxx/mixxx.cfg");
 #elif __WINDOWS__
         qDebug() << "Config version is empty, trying to read pre-1.12.0 config";
-        // Try to read the config from the pre-1.12.0 final directory on Windows (we moved it in 1.12.0 final)
-        QScopedPointer<QFile> oldConfigFile(new QFile(QDir::homePath().append("/").append("Local Settings/Application Data/Mixxx/").append(SETTINGS_FILE)));
-        if (oldConfigFile->exists() && ! CmdlineArgs::Instance().getSettingsPathSet()) {
-            qDebug() << "Found pre-1.12.0 config for Windows";
-            // Note: We changed SETTINGS_PATH in 1.12.0 final on Windows so it must be hardcoded to "Local Settings/Application Data/Mixxx/" here for legacy.
-            config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append("Local Settings/Application Data/Mixxx/").append(SETTINGS_FILE));
-            // Just to be sure all files like logs and soundconfig go with mixxx.cfg
-            CmdlineArgs::Instance().setSettingsPath(QDir::homePath().append("/").append("Local Settings/Application Data/Mixxx/")); 
-            configVersion = config->getValueString(ConfigKey("[Config]","Version"));
-        } else {
+        // Try to read the config from the pre-1.12.0 final
+        // directory on Windows (we moved it in 1.12.0 final)
+        QFileInfo oldConfigFile(QDir::homePath() +
+                "/Local Settings/Application Data/Mixxx/mixxx.cfg");
 #elif __LINUX__
         qDebug() << "Config version is empty, trying to read pre-1.12.0 config";
-        // Try to read the config from the pre-1.12.0 final directory on Linux (we moved it in 1.12.0 final)
-        QScopedPointer<QFile> oldConfigFile(new QFile(QDir::homePath().append("/").append(".mixxx/mixxx.cfg")));
-        if (oldConfigFile->exists() && ! CmdlineArgs::Instance().getSettingsPathSet()) {
-            qDebug() << "Found pre-1.12.0 config for Linux";
-            // Note: We changed SETTINGS_PATH in 1.12.0 final on Linux so it must be hardcoded to ".mixxx" here for legacy.
-            config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(".mixxx/mixxx.cfg"));
-            // Just to be sure all files like logs and soundconfig go with mixxx.cfg
-            CmdlineArgs::Instance().setSettingsPath(QDir::homePath().append("/").append(".mixxx/"));
-            configVersion = config->getValueString(ConfigKey("[Config]","Version"));
-        } else {
+        // Try to read the config from the pre-1.12.0 final directory on Linux
+        // (we moved it in 1.12.0 final)
+        QFileInfo oldConfigFile(QDir::homePath() + "/.mixxx/mixxx.cfg");
+#else
+        QFileInfo oldConfigFile("");
 #endif
+        if (oldConfigFile.exists() &&
+                !CmdlineArgs::Instance().getSettingsPathSet()) {
+            qDebug() << "Found config file at"
+                     << oldConfigFile.absoluteFilePath();
+            config = new ConfigObject<ConfigValue>(
+                    oldConfigFile.absoluteFilePath());
+            // Just to be sure all files like logs and soundconfig go with
+            // mixxx.cfg
+            CmdlineArgs::Instance().setSettingsPath(
+                    oldConfigFile.absolutePath());
+            configVersion = config->getValueString(
+                    ConfigKey("[Config]","Version"));
+        } else {
             // This must have been the first run... right? :)
-            qDebug() << "No version number in configuration file. Setting to" << VERSION;
+            qDebug() << "No version number in configuration file. Setting to"
+                     << VERSION;
             config->set(ConfigKey("[Config]","Version"), ConfigValue(VERSION));
             m_bFirstRun = true;
             return config;
-#ifdef __APPLE__
         }
-#elif __WINDOWS__
-        }
-#elif __LINUX__
-        }
-#endif
     }
 
     // If it's already current, stop here
