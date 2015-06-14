@@ -6,6 +6,8 @@
 #include <QDir>
 #include <QDesktopServices>
 
+#include "util/compatibility.h"
+
 // A structure to store the parsed command-line arguments
 class CmdlineArgs {
   public:
@@ -64,7 +66,9 @@ class CmdlineArgs {
     bool getTimelineEnabled() const { return !m_timelinePath.isEmpty(); }
     const QString& getLocale() const { return m_locale; }
     const QString& getSettingsPath() const { return m_settingsPath; }
-    void setSettingsPath(QString newSettingsPath) { m_settingsPath=QString(newSettingsPath); return; }
+    void setSettingsPath(const QString& newSettingsPath) {
+        m_settingsPath = newSettingsPath;
+    }
     const QString& getResourcePath() const { return m_resourcePath; }
     const QString& getPluginPath() const { return m_pluginPath; }
     const QString& getTimelinePath() const { return m_timelinePath; }
@@ -76,9 +80,8 @@ class CmdlineArgs {
         m_developer(false),
         m_safeMode(false),
         m_settingsPathSet(false),
-// We are not ready to switch to XDG folders under Linux, so keeping $HOME/.mixxx as preferences folder. see lp:1463273
 #ifdef __LINUX__
-        m_settingsPath(QDir::homePath().append("/").append(SETTINGS_PATH)) {
+        m_settingsPath(xdgDataHomeMixxx().append("/")) {
 #else
         m_settingsPath(QDesktopServices::storageLocation(QDesktopServices::DataLocation).append("/")) {
 #endif
