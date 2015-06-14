@@ -9,9 +9,9 @@
 #include "widget/wskincolor.h"
 
 WaveformMarkRange::WaveformMarkRange()
-        : m_markStartPointControl(NULL),
-          m_markEndPointControl(NULL),
-          m_markEnabledControl(NULL) {
+    : m_markStartPointControl(NULL),
+      m_markEndPointControl(NULL),
+      m_markEnabledControl(NULL) {
 }
 
 WaveformMarkRange::~WaveformMarkRange() {
@@ -29,7 +29,7 @@ bool WaveformMarkRange::active() {
 bool WaveformMarkRange::enabled() {
     // Default to enabled if there is no enabled control.
     return !m_markEnabledControl || !m_markEnabledControl->valid() ||
-            m_markEnabledControl->get() > 0.0;
+           m_markEnabledControl->get() > 0.0;
 }
 
 double WaveformMarkRange::start() {
@@ -56,7 +56,8 @@ void WaveformMarkRange::setup(const QString& group, const QDomNode& node,
         //vRince kind of legacy fallback ...
         // As a fallback, grab the mark color from the parent's MarkerColor
         m_activeColor = signalColors.getAxesColor();
-        qDebug() << "Didn't get mark Color, using parent's <AxesColor>:" << m_activeColor;
+        qDebug() << "Didn't get mark Color, using parent's <AxesColor>:" <<
+                 m_activeColor;
     } else {
         m_activeColor = WSkinColor::getCorrectColor(m_activeColor);
     }
@@ -66,7 +67,8 @@ void WaveformMarkRange::setup(const QString& group, const QDomNode& node,
         //vRince kind of legacy fallback ...
         // Read the text color, otherwise use the parent's SignalColor.
         m_disabledColor = signalColors.getSignalColor();
-        qDebug() << "Didn't get mark TextColor, using parent's <SignalColor>:" << m_disabledColor;
+        qDebug() << "Didn't get mark TextColor, using parent's <SignalColor>:" <<
+                 m_disabledColor;
     }
 
     QString startControl = context.selectString(node, "StartControl");
@@ -76,12 +78,12 @@ void WaveformMarkRange::setup(const QString& group, const QDomNode& node,
     QString endControl = context.selectString(node, "EndControl");
     if (!endControl.isEmpty()) {
         m_markEndPointControl = new ControlObjectThread(
-                group, endControl);
+            group, endControl);
     }
     QString enabledControl = context.selectString(node, "EnabledControl");
     if (!enabledControl.isEmpty()) {
         m_markEnabledControl = new ControlObjectThread(
-                group, enabledControl);
+            group, enabledControl);
     }
 }
 

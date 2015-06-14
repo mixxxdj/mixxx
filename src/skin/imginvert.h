@@ -22,7 +22,7 @@
 
 class ImgInvert : public ImgColorProcessor {
 
-public:
+  public:
     inline ImgInvert(ImgSource* parent) : ImgColorProcessor(parent) {}
     virtual QColor doColorCorrection(QColor c);
 };

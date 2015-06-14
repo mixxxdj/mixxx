@@ -48,10 +48,10 @@ class Time {
         QTime t = QTime().addMSecs(dSeconds * kMillisPerSecond);
 
         QString formatString =
-                (days > 0 ? (QString::number(days) %
-                             QLatin1String("'d', ")) : QString()) %
-                QLatin1String(days > 0 || t.hour() > 0 ? "hh:mm:ss" : "mm:ss") %
-                QLatin1String(showCentis ? ".zzz" : "");
+            (days > 0 ? (QString::number(days) %
+                         QLatin1String("'d', ")) : QString()) %
+            QLatin1String(days > 0 || t.hour() > 0 ? "hh:mm:ss" : "mm:ss") %
+            QLatin1String(showCentis ? ".zzz" : "");
 
         QString timeString = t.toString(formatString);
 

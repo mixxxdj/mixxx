@@ -10,7 +10,7 @@
 #include "util/math.h"
 
 WaveformRendererFilteredSignal::WaveformRendererFilteredSignal(
-        WaveformWidgetRenderer* waveformWidgetRenderer)
+    WaveformWidgetRenderer* waveformWidgetRenderer)
     : WaveformRendererSignalBase(waveformWidgetRenderer) {
 }
 
@@ -28,7 +28,7 @@ void WaveformRendererFilteredSignal::onSetup(const QDomNode& node) {
 }
 
 void WaveformRendererFilteredSignal::draw(QPainter* painter,
-                                          QPaintEvent* /*event*/) {
+        QPaintEvent* /*event*/) {
     const TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
     if (!trackInfo) {
         return;
@@ -56,12 +56,14 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
     painter->setWorldMatrixEnabled(false);
     painter->resetTransform();
 
-    const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
-    const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
+    const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition()
+                                    * dataSize;
+    const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() *
+                                   dataSize;
 
     // Represents the # of waveform data points per horizontal pixel.
     const double gain = (lastVisualIndex - firstVisualIndex) /
-            (double)m_waveformRenderer->getWidth();
+                        (double)m_waveformRenderer->getWidth();
 
     // Per-band gain from the EQ knobs.
     float allGain(1.0), lowGain(1.0), midGain(1.0), highGain(1.0);
@@ -70,8 +72,8 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
     const float halfHeight = (float)m_waveformRenderer->getHeight()/2.0;
 
     const float heightFactor = m_alignment == Qt::AlignCenter
-            ? allGain*halfHeight/255.0
-            : allGain*m_waveformRenderer->getHeight()/255.0;
+                               ? allGain*halfHeight/255.0
+                               : allGain*m_waveformRenderer->getHeight()/255.0;
 
     //draw reference line
     if (m_alignment == Qt::AlignCenter) {
@@ -136,7 +138,7 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
         unsigned char maxHigh[2] = {0, 0};
 
         for (int i = visualIndexStart;
-             i >= 0 && i + 1 < dataSize && i + 1 <= visualIndexStop; i += 2) {
+                i >= 0 && i + 1 < dataSize && i + 1 <= visualIndexStop; i += 2) {
             const WaveformData& waveformData = *(data + i);
             const WaveformData& waveformDataNext = *(data + i + 1);
             maxLow[0] = math_max(maxLow[0], waveformData.filtered.low);
@@ -149,61 +151,64 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
 
         if (maxLow[0] && maxLow[1]) {
             switch (m_alignment) {
-                case Qt::AlignBottom :
-                    m_lowLines[actualLowLineNumber].setLine(
-                        x, m_waveformRenderer->getHeight(),
-                        x, m_waveformRenderer->getHeight() - (int)(heightFactor*lowGain*(float)math_max(maxLow[0],maxLow[1])));
-                    break;
-                case Qt::AlignTop :
-                    m_lowLines[actualLowLineNumber].setLine(
-                        x, 0,
-                        x, (int)(heightFactor*lowGain*(float)math_max(maxLow[0],maxLow[1])));
-                    break;
-                default :
-                    m_lowLines[actualLowLineNumber].setLine(
-                        x, (int)(halfHeight-heightFactor*(float)maxLow[0]*lowGain),
-                        x, (int)(halfHeight+heightFactor*(float)maxLow[1]*lowGain));
-                    break;
+            case Qt::AlignBottom :
+                m_lowLines[actualLowLineNumber].setLine(
+                    x, m_waveformRenderer->getHeight(),
+                    x, m_waveformRenderer->getHeight() - (int)(heightFactor*lowGain*(float)math_max(
+                                maxLow[0],maxLow[1])));
+                break;
+            case Qt::AlignTop :
+                m_lowLines[actualLowLineNumber].setLine(
+                    x, 0,
+                    x, (int)(heightFactor*lowGain*(float)math_max(maxLow[0],maxLow[1])));
+                break;
+            default :
+                m_lowLines[actualLowLineNumber].setLine(
+                    x, (int)(halfHeight-heightFactor*(float)maxLow[0]*lowGain),
+                    x, (int)(halfHeight+heightFactor*(float)maxLow[1]*lowGain));
+                break;
             }
             actualLowLineNumber++;
         }
         if (maxMid[0] && maxMid[1]) {
             switch (m_alignment) {
-                case Qt::AlignBottom :
-                    m_midLines[actualMidLineNumber].setLine(
-                        x, m_waveformRenderer->getHeight(),
-                        x, m_waveformRenderer->getHeight() - (int)(heightFactor*midGain*(float)math_max(maxMid[0],maxMid[1])));
-                    break;
-                case Qt::AlignTop :
-                    m_midLines[actualMidLineNumber].setLine(
-                        x, 0,
-                        x, (int)(heightFactor*midGain*(float)math_max(maxMid[0],maxMid[1])));
-                    break;
-                default :
-                    m_midLines[actualMidLineNumber].setLine(
-                        x, (int)(halfHeight-heightFactor*(float)maxMid[0]*midGain),
-                        x, (int)(halfHeight+heightFactor*(float)maxMid[1]*midGain));
-                    break;
+            case Qt::AlignBottom :
+                m_midLines[actualMidLineNumber].setLine(
+                    x, m_waveformRenderer->getHeight(),
+                    x, m_waveformRenderer->getHeight() - (int)(heightFactor*midGain*(float)math_max(
+                                maxMid[0],maxMid[1])));
+                break;
+            case Qt::AlignTop :
+                m_midLines[actualMidLineNumber].setLine(
+                    x, 0,
+                    x, (int)(heightFactor*midGain*(float)math_max(maxMid[0],maxMid[1])));
+                break;
+            default :
+                m_midLines[actualMidLineNumber].setLine(
+                    x, (int)(halfHeight-heightFactor*(float)maxMid[0]*midGain),
+                    x, (int)(halfHeight+heightFactor*(float)maxMid[1]*midGain));
+                break;
             }
             actualMidLineNumber++;
         }
         if (maxHigh[0] && maxHigh[1]) {
             switch (m_alignment) {
-                case Qt::AlignBottom :
-                    m_highLines[actualHighLineNumber].setLine(
-                        x, m_waveformRenderer->getHeight(),
-                        x, m_waveformRenderer->getHeight() - (int)(heightFactor*highGain*(float)math_max(maxHigh[0],maxHigh[1])));
-                    break;
-                case Qt::AlignTop :
-                    m_highLines[actualHighLineNumber].setLine(
-                        x, 0,
-                        x, (int)(heightFactor*highGain*(float)math_max(maxHigh[0],maxHigh[1])));
-                    break;
-                default :
-                    m_highLines[actualHighLineNumber].setLine(
-                        x, (int)(halfHeight-heightFactor*(float)maxHigh[0]*highGain),
-                        x, (int)(halfHeight+heightFactor*(float)maxHigh[1]*highGain));
-                    break;
+            case Qt::AlignBottom :
+                m_highLines[actualHighLineNumber].setLine(
+                    x, m_waveformRenderer->getHeight(),
+                    x, m_waveformRenderer->getHeight() - (int)(heightFactor*highGain*
+                            (float)math_max(maxHigh[0],maxHigh[1])));
+                break;
+            case Qt::AlignTop :
+                m_highLines[actualHighLineNumber].setLine(
+                    x, 0,
+                    x, (int)(heightFactor*highGain*(float)math_max(maxHigh[0],maxHigh[1])));
+                break;
+            default :
+                m_highLines[actualHighLineNumber].setLine(
+                    x, (int)(halfHeight-heightFactor*(float)maxHigh[0]*highGain),
+                    x, (int)(halfHeight+heightFactor*(float)maxHigh[1]*highGain));
+                break;
             }
             actualHighLineNumber++;
         }
@@ -211,7 +216,7 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
 
     painter->setPen(QPen(QBrush(m_pColors->getLowColor()), 1));
     if (m_pLowKillControlObject && m_pLowKillControlObject->get() == 0.0) {
-       painter->drawLines(&m_lowLines[0], actualLowLineNumber);
+        painter->drawLines(&m_lowLines[0], actualLowLineNumber);
     }
     painter->setPen(QPen(QBrush(m_pColors->getMidColor()), 1));
     if (m_pMidKillControlObject && m_pMidKillControlObject->get() == 0.0) {

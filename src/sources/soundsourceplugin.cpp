@@ -15,7 +15,7 @@ void deleteSoundSource(SoundSource* pSoundSource) {
 } // anonymous namespace
 
 SoundSourcePointer exportSoundSourcePlugin(
-        SoundSourcePlugin* pSoundSourcePlugin) {
+    SoundSourcePlugin* pSoundSourcePlugin) {
     return SoundSourcePointer(pSoundSourcePlugin, deleteSoundSource);
 }
 
@@ -25,6 +25,7 @@ extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT const char* Mixxx_getVersion() {
     return VERSION;
 }
 
-extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT int Mixxx_SoundSourcePluginAPI_getVersion() {
+extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT int
+Mixxx_SoundSourcePluginAPI_getVersion() {
     return MIXXX_SOUNDSOURCEPLUGINAPI_VERSION;
 }

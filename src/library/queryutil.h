@@ -10,8 +10,8 @@
 class ScopedTransaction {
   public:
     explicit ScopedTransaction(QSqlDatabase& database) :
-            m_database(database),
-            m_active(false) {
+        m_database(database),
+        m_active(false) {
         if (!transaction()) {
             qDebug() << "ERROR: Could not start transaction on"
                      << m_database.connectionName();
@@ -27,7 +27,8 @@ class ScopedTransaction {
     }
     bool transaction() {
         if (m_active) {
-            qDebug() << "WARNING: Transaction already active and received transaction() request on"
+            qDebug() <<
+                     "WARNING: Transaction already active and received transaction() request on"
                      << m_database.connectionName();
             return false;
         }
@@ -68,8 +69,8 @@ class ScopedTransaction {
 class FieldEscaper {
   public:
     FieldEscaper(const QSqlDatabase& database)
-            : m_database(database),
-              m_stringField("string", QVariant::String) {
+        : m_database(database),
+          m_stringField("string", QVariant::String) {
     }
     virtual ~FieldEscaper() {
     }
@@ -98,12 +99,13 @@ class FieldEscaper {
     // LIKE wildcard characters (% and _) with escapeCharacter. This allows the
     // caller to then attach wildcard characters to the string. This does NOT
     // escape the string in the same way that escapeString() does.
-    QString escapeStringForLike(const QString& escapeString, const QChar escapeCharacter) const {
+    QString escapeStringForLike(const QString& escapeString,
+                                const QChar escapeCharacter) const {
         QString escapeCharacterStr(escapeCharacter);
         QString result = escapeString;
         // Replace instances of escapeCharacter with two escapeCharacters.
         result = result.replace(
-            escapeCharacter, escapeCharacterStr + escapeCharacterStr);
+                     escapeCharacter, escapeCharacterStr + escapeCharacterStr);
         // Replace instances of % or _ with $escapeCharacter%.
         if (escapeCharacter != '%') {
             result = result.replace("%", escapeCharacterStr + "%");

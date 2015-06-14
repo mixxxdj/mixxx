@@ -5,7 +5,8 @@
 
 inline void mixxx_noop(void) {}
 
-inline void mixxx_debug_assert(const char* assertion, const char* file, int line) {
+inline void mixxx_debug_assert(const char* assertion, const char* file,
+                               int line) {
 #ifdef MIXXX_DEBUG_ASSERTIONS_FATAL
     qFatal("DEBUG ASSERT: \"%s\" in file %s, line %d", assertion, file, line);
 #else
@@ -13,7 +14,8 @@ inline void mixxx_debug_assert(const char* assertion, const char* file, int line
 #endif
 }
 
-inline bool mixxx_maybe_debug_assert_return_true(const char* assertion, const char* file, int line) {
+inline bool mixxx_maybe_debug_assert_return_true(const char* assertion,
+        const char* file, int line) {
 #ifdef MIXXX_BUILD_DEBUG
     mixxx_debug_assert(assertion, file, line);
 #else
@@ -24,7 +26,8 @@ inline bool mixxx_maybe_debug_assert_return_true(const char* assertion, const ch
     return true;
 }
 
-inline void mixxx_release_assert(const char* assertion, const char* file, int line) {
+inline void mixxx_release_assert(const char* assertion, const char* file,
+                                 int line) {
     qFatal("ASSERT: \"%s\" in file %s, line %d", assertion, file, line);
 }
 

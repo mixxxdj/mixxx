@@ -4,10 +4,11 @@
 
 #include "widget/effectwidgetutils.h"
 
-WEffectPushButton::WEffectPushButton(QWidget* pParent, EffectsManager* pEffectsManager)
-        : WPushButton(pParent),
-          m_pEffectsManager(pEffectsManager),
-          m_pButtonMenu(NULL) {
+WEffectPushButton::WEffectPushButton(QWidget* pParent,
+                                     EffectsManager* pEffectsManager)
+    : WPushButton(pParent),
+      m_pEffectsManager(pEffectsManager),
+      m_pButtonMenu(NULL) {
 }
 
 WEffectPushButton::~WEffectPushButton() {
@@ -23,14 +24,15 @@ void WEffectPushButton::setup(QDomNode node, const SkinContext& context) {
 
     // EffectWidgetUtils propagates NULLs so this is all safe.
     EffectRackPointer pRack = EffectWidgetUtils::getEffectRackFromNode(
-            node, context, m_pEffectsManager);
-    EffectChainSlotPointer pChainSlot = EffectWidgetUtils::getEffectChainSlotFromNode(
+                                  node, context, m_pEffectsManager);
+    EffectChainSlotPointer pChainSlot =
+        EffectWidgetUtils::getEffectChainSlotFromNode(
             node, context, pRack);
     EffectSlotPointer pEffectSlot = EffectWidgetUtils::getEffectSlotFromNode(
-            node, context, pChainSlot);
+                                        node, context, pChainSlot);
     EffectParameterSlotBasePointer pParameterSlot =
-            EffectWidgetUtils::getButtonParameterSlotFromNode(
-                    node, context, pEffectSlot);
+        EffectWidgetUtils::getButtonParameterSlotFromNode(
+            node, context, pEffectSlot);
     if (pParameterSlot) {
         m_pEffectParameterSlot = pParameterSlot;
         connect(pParameterSlot.data(), SIGNAL(updated()),
@@ -42,7 +44,8 @@ void WEffectPushButton::setup(QDomNode node, const SkinContext& context) {
     }
 }
 
-void WEffectPushButton::onConnectedControlChanged(double dParameter, double dValue) {
+void WEffectPushButton::onConnectedControlChanged(double dParameter,
+        double dValue) {
     foreach (QAction* action, m_pButtonMenu->actions()) {
         if (action->data().toDouble() == dValue) {
             action->setChecked(true);
@@ -90,7 +93,8 @@ void WEffectPushButton::mouseReleaseEvent(QMouseEvent* e) {
 
 void WEffectPushButton::parameterUpdated() {
     m_pButtonMenu->clear();
-    const QList<QPair<QString, double> >& options = m_pEffectParameterSlot->getManifest().getSteps();
+    const QList<QPair<QString, double> >& options =
+        m_pEffectParameterSlot->getManifest().getSteps();
     // qDebug() << " HERE IS THE OPTIONS SIZE: " << options.size() << m_pEffectParameterSlot->getManifest().name();
     m_iNoStates = options.size();
     if (m_iNoStates == 0) {

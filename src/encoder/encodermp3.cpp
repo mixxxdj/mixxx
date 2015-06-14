@@ -24,31 +24,31 @@
 #include "errordialoghandler.h"
 
 EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
-  : m_lameFlags(NULL),
-    m_metaDataTitle(NULL),
-    m_metaDataArtist(NULL),
-    m_metaDataAlbum(NULL),
-    m_bufferOut(NULL),
-    m_bufferOutSize(0),
-    /*
-     * @ Author: Tobias Rafreider
-     * Nobody has initialized the field before my code review.  At runtime the
-     * Integer field was inialized by a large random value such that the
-     * following pointer fields were never initialized in the methods
-     * 'bufferOutGrow()' and 'bufferInGrow()' --> Valgrind shows invalid writes
-     * :-)
-     *
-     * m_bufferOut = (unsigned char *)realloc(m_bufferOut, size);
-     * m_bufferIn[0] = (float *)realloc(m_bufferIn[0], size * sizeof(float));
-     * m_bufferIn[1] = (float *)realloc(m_bufferIn[1], size * sizeof(float));
-     *
-     * This has solved many segfaults when using and even closing shoutcast
-     * along with LAME.  This bug was detected by using Valgrind memory analyser
-     *
-     */
-    m_bufferInSize(0),
-    m_pCallback(pCallback),
-    m_library(NULL) {
+    : m_lameFlags(NULL),
+      m_metaDataTitle(NULL),
+      m_metaDataArtist(NULL),
+      m_metaDataAlbum(NULL),
+      m_bufferOut(NULL),
+      m_bufferOutSize(0),
+  /*
+   * @ Author: Tobias Rafreider
+   * Nobody has initialized the field before my code review.  At runtime the
+   * Integer field was inialized by a large random value such that the
+   * following pointer fields were never initialized in the methods
+   * 'bufferOutGrow()' and 'bufferInGrow()' --> Valgrind shows invalid writes
+   * :-)
+   *
+   * m_bufferOut = (unsigned char *)realloc(m_bufferOut, size);
+   * m_bufferIn[0] = (float *)realloc(m_bufferIn[0], size * sizeof(float));
+   * m_bufferIn[1] = (float *)realloc(m_bufferIn[1], size * sizeof(float));
+   *
+   * This has solved many segfaults when using and even closing shoutcast
+   * along with LAME.  This bug was detected by using Valgrind memory analyser
+   *
+   */
+      m_bufferInSize(0),
+      m_pCallback(pCallback),
+      m_library(NULL) {
     m_bufferIn[0] = NULL;
     m_bufferIn[1] = NULL;
 
@@ -100,10 +100,12 @@ EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
     }
 
     if (!m_library || !m_library->isLoaded()) {
-        ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+        ErrorDialogProperties* props =
+            ErrorDialogHandler::instance()->newDialogProperties();
         props->setType(DLG_WARNING);
         props->setTitle(QObject::tr("Encoder"));
-        QString missingCodec = QObject::tr("<html>Mixxx cannot record or stream in MP3 without the MP3 encoder &quot;lame&quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download <b>libmp3lame</b> and install it on your system. <p>See <a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#%1'>Mixxx Wiki</a> for more information. </html>");
+        QString missingCodec =
+            QObject::tr("<html>Mixxx cannot record or stream in MP3 without the MP3 encoder &quot;lame&quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download <b>libmp3lame</b> and install it on your system. <p>See <a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#%1'>Mixxx Wiki</a> for more information. </html>");
 
 #ifdef __LINUX__
         missingCodec = missingCodec.arg("linux");
@@ -119,53 +121,67 @@ EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
     }
 
     typedef const char* (*get_lame_version__)(void);
-    get_lame_version__ get_lame_version = (get_lame_version__)m_library->resolve("get_lame_version");
+    get_lame_version__ get_lame_version = (get_lame_version__)
+                                          m_library->resolve("get_lame_version");
 
 
     //initalize function pointers
     lame_init                   = (lame_init__)m_library->resolve("lame_init");
-    lame_set_num_channels       = (lame_set_num_channels__)m_library->resolve("lame_set_num_channels");
-    lame_set_in_samplerate      = (lame_set_in_samplerate__)m_library->resolve("lame_set_in_samplerate");
-    lame_set_out_samplerate     = (lame_set_out_samplerate__)m_library->resolve("lame_set_out_samplerate");
+    lame_set_num_channels       = (lame_set_num_channels__)
+                                  m_library->resolve("lame_set_num_channels");
+    lame_set_in_samplerate      = (lame_set_in_samplerate__)
+                                  m_library->resolve("lame_set_in_samplerate");
+    lame_set_out_samplerate     = (lame_set_out_samplerate__)
+                                  m_library->resolve("lame_set_out_samplerate");
     lame_close                  = (lame_close__)m_library->resolve("lame_close");
-    lame_set_brate              = (lame_set_brate__)m_library->resolve("lame_set_brate");
-    lame_set_mode               = (lame_set_mode__)m_library->resolve("lame_set_mode");
-    lame_set_quality            = (lame_set_quality__)m_library->resolve("lame_set_quality");
-    lame_set_bWriteVbrTag       = (lame_set_bWriteVbrTag__)m_library->resolve("lame_set_bWriteVbrTag");
-    lame_encode_buffer_float    = (lame_encode_buffer_float__)m_library->resolve("lame_encode_buffer_float");
-    lame_init_params            = (lame_init_params__)m_library->resolve("lame_init_params");
-    lame_encode_flush           = (lame_encode_flush__)m_library->resolve("lame_encode_flush");
+    lame_set_brate              = (lame_set_brate__)
+                                  m_library->resolve("lame_set_brate");
+    lame_set_mode               = (lame_set_mode__)
+                                  m_library->resolve("lame_set_mode");
+    lame_set_quality            = (lame_set_quality__)
+                                  m_library->resolve("lame_set_quality");
+    lame_set_bWriteVbrTag       = (lame_set_bWriteVbrTag__)
+                                  m_library->resolve("lame_set_bWriteVbrTag");
+    lame_encode_buffer_float    = (lame_encode_buffer_float__)
+                                  m_library->resolve("lame_encode_buffer_float");
+    lame_init_params            = (lame_init_params__)
+                                  m_library->resolve("lame_init_params");
+    lame_encode_flush           = (lame_encode_flush__)
+                                  m_library->resolve("lame_encode_flush");
 
     id3tag_init                 = (id3tag_init__)m_library->resolve("id3tag_init");
-    id3tag_set_title            = (id3tag_set_title__)m_library->resolve("id3tag_set_title");
-    id3tag_set_artist           = (id3tag_set_artist__)m_library->resolve("id3tag_set_artist");
-    id3tag_set_album            = (id3tag_set_album__)m_library->resolve("id3tag_set_album");
+    id3tag_set_title            = (id3tag_set_title__)
+                                  m_library->resolve("id3tag_set_title");
+    id3tag_set_artist           = (id3tag_set_artist__)
+                                  m_library->resolve("id3tag_set_artist");
+    id3tag_set_album            = (id3tag_set_album__)
+                                  m_library->resolve("id3tag_set_album");
 
 
-      /*
-     * Check if all function pointers are not NULL
-     * Otherwise, the lame_enc.dll, libmp3lame.so or libmp3lame.mylib do not comply with the official header lame.h
-     * Indicates a modified lame version
-     *
-     * Should not happend on Linux, but many lame binaries for Windows are modified.
-     */
-    if(!lame_init ||
-       !lame_set_num_channels ||
-       !lame_set_in_samplerate ||
-       !lame_set_out_samplerate ||
-       !lame_close ||
-       !lame_set_brate ||
-       !lame_set_mode ||
-       !lame_set_quality ||
-       !lame_set_bWriteVbrTag ||
-       !lame_encode_buffer_float ||
-       !lame_init_params ||
-       !lame_encode_flush ||
-       !get_lame_version ||
-       !id3tag_init ||
-       !id3tag_set_title ||
-       !id3tag_set_artist ||
-       !id3tag_set_album) {
+    /*
+    * Check if all function pointers are not NULL
+    * Otherwise, the lame_enc.dll, libmp3lame.so or libmp3lame.mylib do not comply with the official header lame.h
+    * Indicates a modified lame version
+    *
+    * Should not happend on Linux, but many lame binaries for Windows are modified.
+    */
+    if (!lame_init ||
+            !lame_set_num_channels ||
+            !lame_set_in_samplerate ||
+            !lame_set_out_samplerate ||
+            !lame_close ||
+            !lame_set_brate ||
+            !lame_set_mode ||
+            !lame_set_quality ||
+            !lame_set_bWriteVbrTag ||
+            !lame_encode_buffer_float ||
+            !lame_init_params ||
+            !lame_encode_flush ||
+            !get_lame_version ||
+            !id3tag_init ||
+            !id3tag_set_title ||
+            !id3tag_set_artist ||
+            !id3tag_set_album) {
         m_library->unload();
         m_library = NULL;
         //print qDebugs to detect which function pointers are null
@@ -187,10 +203,12 @@ EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
         qDebug() << "id3tag_set_artist: " << id3tag_set_artist;
         qDebug() << "id3tag_set_album  " << id3tag_set_album ;
 
-        ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+        ErrorDialogProperties* props =
+            ErrorDialogHandler::instance()->newDialogProperties();
         props->setType(DLG_WARNING);
         props->setTitle(QObject::tr("Encoder"));
-        QString key = QObject::tr("<html>Mixxx has detected that you use a modified version of libmp3lame. See <a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'>Mixxx Wiki</a> for more information.</html>");
+        QString key =
+            QObject::tr("<html>Mixxx has detected that you use a modified version of libmp3lame. See <a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'>Mixxx Wiki</a> for more information.</html>");
         props->setText(key);
         props->setKey(key);
         ErrorDialogHandler::instance()->requestErrorDialog(props);
@@ -243,7 +261,7 @@ int EncoderMp3::bufferOutGrow(int size) {
     if (m_bufferOutSize >= size)
         return 0;
 
-    m_bufferOut = (unsigned char *)realloc(m_bufferOut, size);
+    m_bufferOut = (unsigned char*)realloc(m_bufferOut, size);
     if (m_bufferOut == NULL)
         return -1;
 
@@ -259,8 +277,8 @@ int EncoderMp3::bufferInGrow(int size) {
     if (m_bufferInSize >= size)
         return 0;
 
-    m_bufferIn[0] = (float *)realloc(m_bufferIn[0], size * sizeof(float));
-    m_bufferIn[1] = (float *)realloc(m_bufferIn[1], size * sizeof(float));
+    m_bufferIn[0] = (float*)realloc(m_bufferIn[0], size * sizeof(float));
+    m_bufferIn[1] = (float*)realloc(m_bufferIn[1], size * sizeof(float));
     if ((m_bufferIn[0] == NULL) || (m_bufferIn[1] == NULL))
         return -1;
 
@@ -283,7 +301,7 @@ void EncoderMp3::flush() {
     m_pCallback->write(NULL, m_bufferOut, 0, rc);
 }
 
-void EncoderMp3::encodeBuffer(const CSAMPLE *samples, const int size) {
+void EncoderMp3::encodeBuffer(const CSAMPLE* samples, const int size) {
     if (m_library == NULL || !m_library->isLoaded())
         return;
     int outsize = 0;
@@ -312,10 +330,10 @@ void EncoderMp3::encodeBuffer(const CSAMPLE *samples, const int size) {
 
 void EncoderMp3::initStream() {
     m_bufferOutSize = (int)((1.25 * 20000 + 7200) + 1);
-    m_bufferOut = (unsigned char *)malloc(m_bufferOutSize);
+    m_bufferOut = (unsigned char*)malloc(m_bufferOutSize);
 
-    m_bufferIn[0] = (float *)malloc(m_bufferOutSize * sizeof(float));
-    m_bufferIn[1] = (float *)malloc(m_bufferOutSize * sizeof(float));
+    m_bufferIn[0] = (float*)malloc(m_bufferOutSize * sizeof(float));
+    m_bufferIn[1] = (float*)malloc(m_bufferOutSize * sizeof(float));
     return;
 }
 
@@ -325,7 +343,7 @@ int EncoderMp3::initEncoder(int bitrate, int samplerate) {
 
     unsigned long samplerate_in = samplerate;
     unsigned long samplerate_out =
-            (samplerate_in > 48000 ? 48000 : samplerate_in);
+        (samplerate_in > 48000 ? 48000 : samplerate_in);
 
     m_lameFlags = lame_init();
 

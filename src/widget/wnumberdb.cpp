@@ -7,7 +7,7 @@
 #include "widget/wskincolor.h"
 
 WNumberDb::WNumberDb(QWidget* pParent)
-        : WNumber(pParent) {
+    : WNumber(pParent) {
 }
 
 WNumberDb::~WNumberDb() {

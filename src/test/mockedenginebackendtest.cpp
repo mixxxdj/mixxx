@@ -10,4 +10,5 @@ const char* MockedEngineBackendTest::m_sPreviewGroup = "[PreviewDeck1]";
 const char* MockedEngineBackendTest::m_sSamplerGroup = "[Sampler1]";
 const double MockedEngineBackendTest::kDefaultRateRange = 4.0;
 const double MockedEngineBackendTest::kDefaultRateDir = 1.0;
-const double MockedEngineBackendTest::kRateRangeDivisor = kDefaultRateDir * kDefaultRateRange;
+const double MockedEngineBackendTest::kRateRangeDivisor = kDefaultRateDir *
+        kDefaultRateRange;

@@ -11,7 +11,7 @@
 #include "controllers/controllerenumerator.h"
 
 ControllerEnumerator::ControllerEnumerator()
-        : QObject() {
+    : QObject() {
 }
 
 ControllerEnumerator::~ControllerEnumerator() {

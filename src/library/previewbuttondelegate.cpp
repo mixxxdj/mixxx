@@ -8,21 +8,21 @@
 #include "trackinfoobject.h"
 #include "controlobjectslave.h"
 
-PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent, int column)
-        : QStyledItemDelegate(parent),
-          m_pTableView(NULL),
-          m_pButton(NULL),
-          m_isOneCellInEditMode(false),
-          m_column(column) {
+PreviewButtonDelegate::PreviewButtonDelegate(QObject* parent, int column)
+    : QStyledItemDelegate(parent),
+      m_pTableView(NULL),
+      m_pButton(NULL),
+      m_isOneCellInEditMode(false),
+      m_column(column) {
     m_pPreviewDeckPlay = new ControlObjectSlave(
-            PlayerManager::groupForPreviewDeck(0), "play", this);
+        PlayerManager::groupForPreviewDeck(0), "play", this);
     m_pPreviewDeckPlay->connectValueChanged(SLOT(previewDeckPlayChanged(double)));
 
     // This assumes that the parent is wtracktableview
     connect(this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
             parent, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
 
-    if (QTableView *tableView = qobject_cast<QTableView*>(parent)) {
+    if (QTableView* tableView = qobject_cast<QTableView*>(parent)) {
         m_pTableView = tableView;
         m_pButton = new QPushButton("", m_pTableView);
         m_pButton->setObjectName("LibraryPreviewButton");
@@ -37,9 +37,9 @@ PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent, int column)
 PreviewButtonDelegate::~PreviewButtonDelegate() {
 }
 
-QWidget* PreviewButtonDelegate::createEditor(QWidget *parent,
-                                             const QStyleOptionViewItem &option,
-                                             const QModelIndex &index) const {
+QWidget* PreviewButtonDelegate::createEditor(QWidget* parent,
+        const QStyleOptionViewItem& option,
+        const QModelIndex& index) const {
     Q_UNUSED(option);
     QPushButton* btn = new QPushButton(parent);
     btn->setObjectName("LibraryPreviewButton");
@@ -55,23 +55,23 @@ QWidget* PreviewButtonDelegate::createEditor(QWidget *parent,
     return btn;
 }
 
-void PreviewButtonDelegate::setEditorData(QWidget *editor,
-                                          const QModelIndex &index) const {
+void PreviewButtonDelegate::setEditorData(QWidget* editor,
+        const QModelIndex& index) const {
     Q_UNUSED(editor);
     Q_UNUSED(index);
 }
 
-void PreviewButtonDelegate::setModelData(QWidget *editor,
-                                         QAbstractItemModel *model,
-                                         const QModelIndex &index) const {
+void PreviewButtonDelegate::setModelData(QWidget* editor,
+        QAbstractItemModel* model,
+        const QModelIndex& index) const {
     Q_UNUSED(editor);
     Q_UNUSED(model);
     Q_UNUSED(index);
 }
 
-void PreviewButtonDelegate::paint(QPainter *painter,
-                                  const QStyleOptionViewItem &option,
-                                  const QModelIndex &index) const {
+void PreviewButtonDelegate::paint(QPainter* painter,
+                                  const QStyleOptionViewItem& option,
+                                  const QModelIndex& index) const {
     // Let the editor paint in this case
     if (index == m_currentEditedCellIndex) {
         return;
@@ -98,15 +98,15 @@ void PreviewButtonDelegate::paint(QPainter *painter,
     painter->restore();
 }
 
-void PreviewButtonDelegate::updateEditorGeometry(QWidget *editor,
-                                                 const QStyleOptionViewItem &option,
-                                                 const QModelIndex &index) const {
+void PreviewButtonDelegate::updateEditorGeometry(QWidget* editor,
+        const QStyleOptionViewItem& option,
+        const QModelIndex& index) const {
     Q_UNUSED(index);
     editor->setGeometry(option.rect);
 }
 
-QSize PreviewButtonDelegate::sizeHint(const QStyleOptionViewItem &option,
-                                      const QModelIndex &index) const {
+QSize PreviewButtonDelegate::sizeHint(const QStyleOptionViewItem& option,
+                                      const QModelIndex& index) const {
     Q_UNUSED(option);
     Q_UNUSED(index);
     if (!m_pButton) {
@@ -115,7 +115,7 @@ QSize PreviewButtonDelegate::sizeHint(const QStyleOptionViewItem &option,
     return m_pButton->sizeHint();
 }
 
-void PreviewButtonDelegate::cellEntered(const QModelIndex &index) {
+void PreviewButtonDelegate::cellEntered(const QModelIndex& index) {
     if (!m_pTableView) {
         return;
     }
@@ -128,7 +128,8 @@ void PreviewButtonDelegate::cellEntered(const QModelIndex &index) {
         m_pTableView->openPersistentEditor(index);
         m_isOneCellInEditMode = true;
         m_currentEditedCellIndex = index;
-    } else if (m_isOneCellInEditMode) { // close editor if the mouse leaves the button
+    } else if (
+        m_isOneCellInEditMode) { // close editor if the mouse leaves the button
         m_isOneCellInEditMode = false;
         m_pTableView->closePersistentEditor(m_currentEditedCellIndex);
         m_currentEditedCellIndex = QModelIndex();
@@ -140,7 +141,7 @@ void PreviewButtonDelegate::buttonClicked() {
         return;
     }
 
-    TrackModel *pTrackModel = dynamic_cast<TrackModel*>(m_pTableView->model());
+    TrackModel* pTrackModel = dynamic_cast<TrackModel*>(m_pTableView->model());
     if (!pTrackModel) {
         return;
     }
@@ -162,7 +163,7 @@ void PreviewButtonDelegate::buttonClicked() {
 void PreviewButtonDelegate::previewDeckPlayChanged(double v) {
     m_pTableView->update();
     if (m_isOneCellInEditMode) {
-        TrackModel *pTrackModel = dynamic_cast<TrackModel*>(m_pTableView->model());
+        TrackModel* pTrackModel = dynamic_cast<TrackModel*>(m_pTableView->model());
         if (!pTrackModel) {
             return;
         }

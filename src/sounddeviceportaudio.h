@@ -37,8 +37,8 @@ typedef int (*EnableAlsaRT)(PaStream* s, int enable);
 
 class SoundDevicePortAudio : public SoundDevice {
   public:
-    SoundDevicePortAudio(ConfigObject<ConfigValue> *config,
-                         SoundManager *sm, const PaDeviceInfo *deviceInfo,
+    SoundDevicePortAudio(ConfigObject<ConfigValue>* config,
+                         SoundManager* sm, const PaDeviceInfo* deviceInfo,
                          unsigned int devIndex);
     virtual ~SoundDevicePortAudio();
 
@@ -51,23 +51,23 @@ class SoundDevicePortAudio : public SoundDevice {
     // This callback function gets called everytime the sound device runs out of
     // samples (ie. when it needs more sound to play)
     int callbackProcess(const unsigned int framesPerBuffer,
-                        CSAMPLE *output, const CSAMPLE* in,
-                        const PaStreamCallbackTimeInfo *timeInfo,
+                        CSAMPLE* output, const CSAMPLE* in,
+                        const PaStreamCallbackTimeInfo* timeInfo,
                         PaStreamCallbackFlags statusFlags);
     // Same as above but with drift correction
     int callbackProcessDrift(const unsigned int framesPerBuffer,
-                        CSAMPLE *output, const CSAMPLE* in,
-                        const PaStreamCallbackTimeInfo *timeInfo,
-                        PaStreamCallbackFlags statusFlags);
+                             CSAMPLE* output, const CSAMPLE* in,
+                             const PaStreamCallbackTimeInfo* timeInfo,
+                             PaStreamCallbackFlags statusFlags);
     // The same as above but drives the MixxEngine
     int callbackProcessClkRef(const unsigned int framesPerBuffer,
-                        CSAMPLE *output, const CSAMPLE* in,
-                        const PaStreamCallbackTimeInfo *timeInfo,
-                        PaStreamCallbackFlags statusFlags);
+                              CSAMPLE* output, const CSAMPLE* in,
+                              const PaStreamCallbackTimeInfo* timeInfo,
+                              PaStreamCallbackFlags statusFlags);
 
     virtual unsigned int getDefaultSampleRate() const {
         return m_deviceInfo ? static_cast<unsigned int>(
-            m_deviceInfo->defaultSampleRate) : 44100;
+                   m_deviceInfo->defaultSampleRate) : 44100;
     }
 
   private:
@@ -110,15 +110,15 @@ int paV19Callback(const void* inputBuffer, void* outputBuffer,
                   void* soundDevice);
 
 int paV19CallbackDrift(const void* inputBuffer, void* outputBuffer,
-                  unsigned long framesPerBuffer,
-                  const PaStreamCallbackTimeInfo* timeInfo,
-                  PaStreamCallbackFlags statusFlags,
-                  void* soundDevice);
+                       unsigned long framesPerBuffer,
+                       const PaStreamCallbackTimeInfo* timeInfo,
+                       PaStreamCallbackFlags statusFlags,
+                       void* soundDevice);
 
 int paV19CallbackClkRef(const void* inputBuffer, void* outputBuffer,
-                  unsigned long framesPerBuffer,
-                  const PaStreamCallbackTimeInfo* timeInfo,
-                  PaStreamCallbackFlags statusFlags,
-                  void* soundDevice);
+                        unsigned long framesPerBuffer,
+                        const PaStreamCallbackTimeInfo* timeInfo,
+                        PaStreamCallbackFlags statusFlags,
+                        void* soundDevice);
 
 #endif

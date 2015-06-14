@@ -7,10 +7,10 @@
 DlgMissing::DlgMissing(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
                        Library* pLibrary,
                        TrackCollection* pTrackCollection, MixxxKeyboard* pKeyboard)
-         : QWidget(parent),
-           Ui::DlgMissing(),
-           m_pTrackTableView(
-               new WTrackTableView(this, pConfig, pTrackCollection, false)) {
+    : QWidget(parent),
+      Ui::DlgMissing(),
+      m_pTrackTableView(
+          new WTrackTableView(this, pConfig, pTrackCollection, false)) {
     setupUi(this);
     m_pTrackTableView->installEventFilter(pKeyboard);
 
@@ -74,8 +74,8 @@ void DlgMissing::activateButtons(bool enable) {
     btnPurge->setEnabled(enable);
 }
 
-void DlgMissing::selectionChanged(const QItemSelection &selected,
-                                  const QItemSelection &deselected) {
+void DlgMissing::selectionChanged(const QItemSelection& selected,
+                                  const QItemSelection& deselected) {
     Q_UNUSED(deselected);
     activateButtons(!selected.indexes().isEmpty());
 }

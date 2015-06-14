@@ -9,7 +9,7 @@
 #include <qgl.h>
 
 GLWaveformRendererSimpleSignal::GLWaveformRendererSimpleSignal(
-        WaveformWidgetRenderer* waveformWidgetRenderer)
+    WaveformWidgetRenderer* waveformWidgetRenderer)
     : WaveformRendererSignalBase(waveformWidgetRenderer) {
 
 }
@@ -26,7 +26,8 @@ inline void setPoint(QPointF& point, qreal x, qreal y) {
     point.setY(y);
 }
 
-void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*event*/) {
+void GLWaveformRendererSimpleSignal::draw(QPainter* painter,
+        QPaintEvent* /*event*/) {
     TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
     if (!pTrack) {
         return;
@@ -47,8 +48,10 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
         return;
     }
 
-    double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
-    double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
+    double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() *
+                              dataSize;
+    double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() *
+                             dataSize;
 
     const int firstIndex = int(firstVisualIndex+0.5);
     firstVisualIndex = firstIndex - firstIndex%2;
@@ -83,7 +86,8 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
         glDisable(GL_LINE_SMOOTH);
 
         //draw reference line
-        glBegin(GL_LINES); {
+        glBegin(GL_LINES);
+        {
             glColor4f(m_axesColor_r, m_axesColor_g,
                       m_axesColor_b, m_axesColor_a);
             glVertex2f(firstVisualIndex,0);
@@ -94,10 +98,11 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
         glLineWidth(1.1);
         glEnable(GL_LINE_SMOOTH);
 
-        glBegin(GL_LINES); {
+        glBegin(GL_LINES);
+        {
             for (int visualIndex = firstVisualIndex;
-                 visualIndex < lastVisualIndex;
-                 visualIndex += 2) {
+                    visualIndex < lastVisualIndex;
+                    visualIndex += 2) {
 
                 if (visualIndex < 0)
                     continue;
@@ -131,10 +136,11 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
         glLineWidth(1.1);
         glEnable(GL_LINE_SMOOTH);
 
-        glBegin(GL_LINES); {
+        glBegin(GL_LINES);
+        {
             for (int visualIndex = firstVisualIndex;
-                 visualIndex < lastVisualIndex;
-                 visualIndex += 2) {
+                    visualIndex < lastVisualIndex;
+                    visualIndex += 2) {
 
                 if (visualIndex < 0)
                     continue;

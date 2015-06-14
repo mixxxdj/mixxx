@@ -22,8 +22,8 @@ EffectManifest FlangerEffect::getManifest() {
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
-        "A simple modulation effect, created by taking the input signal "
-        "and mixing it with a delayed, pitch modulated copy of itself."));
+                                "A simple modulation effect, created by taking the input signal "
+                                "and mixing it with a delayed, pitch modulated copy of itself."));
 
     EffectManifestParameter* depth = manifest.addParameter();
     depth->setId("depth");
@@ -63,9 +63,9 @@ EffectManifest FlangerEffect::getManifest() {
 
 FlangerEffect::FlangerEffect(EngineEffect* pEffect,
                              const EffectManifest& manifest)
-        : m_pPeriodParameter(pEffect->getParameterById("period")),
-          m_pDepthParameter(pEffect->getParameterById("depth")),
-          m_pDelayParameter(pEffect->getParameterById("delay")) {
+    : m_pPeriodParameter(pEffect->getParameterById("period")),
+      m_pDepthParameter(pEffect->getParameterById("depth")),
+      m_pDelayParameter(pEffect->getParameterById("delay")) {
     Q_UNUSED(manifest);
 }
 
@@ -111,7 +111,8 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
         }
 
         CSAMPLE periodFraction = CSAMPLE(pState->time) / lfoPeriod;
-        CSAMPLE delay = kAverageDelayLength + kLfoAmplitude * sin(M_PI * 2.0f * periodFraction);
+        CSAMPLE delay = kAverageDelayLength + kLfoAmplitude * sin(
+                            M_PI * 2.0f * periodFraction);
 
         int framePrev = (pState->delayPos - int(delay) + kMaxDelay - 1) % kMaxDelay;
         int frameNext = (pState->delayPos - int(delay) + kMaxDelay    ) % kMaxDelay;

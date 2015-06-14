@@ -22,14 +22,14 @@
    Input:   key - Key for the configuration file
    -------- ------------------------------------------------------ */
 ControlPushButton::ControlPushButton(ConfigKey key, bool bPersist)
-        : ControlObject(key, false, false, bPersist),
-          m_buttonMode(PUSH),
-          m_iNoStates(2) {
+    : ControlObject(key, false, false, bPersist),
+      m_buttonMode(PUSH),
+      m_iNoStates(2) {
     if (m_pControl) {
         m_pControl->setBehavior(
-                new ControlPushButtonBehavior(
-                        static_cast<ControlPushButtonBehavior::ButtonMode>(m_buttonMode),
-                        m_iNoStates));
+            new ControlPushButtonBehavior(
+                static_cast<ControlPushButtonBehavior::ButtonMode>(m_buttonMode),
+                m_iNoStates));
     }
 }
 
@@ -43,9 +43,9 @@ void ControlPushButton::setButtonMode(enum ButtonMode mode) {
 
     if (m_pControl) {
         m_pControl->setBehavior(
-                new ControlPushButtonBehavior(
-                        static_cast<ControlPushButtonBehavior::ButtonMode>(m_buttonMode),
-                        m_iNoStates));
+            new ControlPushButtonBehavior(
+                static_cast<ControlPushButtonBehavior::ButtonMode>(m_buttonMode),
+                m_iNoStates));
     }
 }
 
@@ -53,9 +53,9 @@ void ControlPushButton::setStates(int num_states) {
     m_iNoStates = num_states;
 
     if (m_pControl) {
-            m_pControl->setBehavior(
-                    new ControlPushButtonBehavior(
-                            static_cast<ControlPushButtonBehavior::ButtonMode>(m_buttonMode),
-                            m_iNoStates));
+        m_pControl->setBehavior(
+            new ControlPushButtonBehavior(
+                static_cast<ControlPushButtonBehavior::ButtonMode>(m_buttonMode),
+                m_iNoStates));
     }
 }

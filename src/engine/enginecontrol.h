@@ -67,7 +67,8 @@ class EngineControl : public QObject {
 
     virtual void setEngineMaster(EngineMaster* pEngineMaster);
     void setEngineBuffer(EngineBuffer* pEngineBuffer);
-    virtual void setCurrentSample(const double dCurrentSample, const double dTotalSamples);
+    virtual void setCurrentSample(const double dCurrentSample,
+                                  const double dTotalSamples);
     double getCurrentSample() const;
     double getTotalSamples() const;
     bool atEndPosition() const;

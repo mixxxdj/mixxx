@@ -33,7 +33,7 @@ class EncoderVorbis : public Encoder {
     virtual ~EncoderVorbis();
 
     int initEncoder(int bitrate, int samplerate);
-    void encodeBuffer(const CSAMPLE *samples, const int size);
+    void encodeBuffer(const CSAMPLE* samples, const int size);
     void updateMetaData(char* artist, char* title, char* album);
     void flush();
 

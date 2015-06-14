@@ -23,10 +23,10 @@ class WKnobComposed : public WWidget {
     void onConnectedControlChanged(double dParameter, double dValue);
 
   protected:
-    void wheelEvent(QWheelEvent *e);
-    void mouseMoveEvent(QMouseEvent *e);
-    void mousePressEvent(QMouseEvent *e);
-    void mouseReleaseEvent(QMouseEvent *e);
+    void wheelEvent(QWheelEvent* e);
+    void mouseMoveEvent(QMouseEvent* e);
+    void mousePressEvent(QMouseEvent* e);
+    void mouseReleaseEvent(QMouseEvent* e);
     void paintEvent(QPaintEvent*);
 
   private:

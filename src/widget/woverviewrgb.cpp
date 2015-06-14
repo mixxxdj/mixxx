@@ -8,7 +8,7 @@
 
 WOverviewRGB::WOverviewRGB(const char* pGroup,
                            ConfigObject<ConfigValue>* pConfig, QWidget* parent)
-        : WOverview(pGroup, pConfig, parent)  {
+    : WOverview(pGroup, pConfig, parent)  {
 }
 
 bool WOverviewRGB::drawNextPixmapPart() {
@@ -33,7 +33,7 @@ bool WOverviewRGB::drawNextPixmapPart() {
         // by total_gain
         // We keep full range waveform data to scale it on paint
         m_pWaveformSourceImage = new QImage(dataSize / 2, 2 * 255,
-                QImage::Format_ARGB32_Premultiplied);
+                                            QImage::Format_ARGB32_Premultiplied);
         m_pWaveformSourceImage->fill(QColor(0,0,0,0).value());
     }
 
@@ -67,7 +67,8 @@ bool WOverviewRGB::drawNextPixmapPart() {
     m_signalColors.getRgbMidColor().getRgbF(&midColor_r, &midColor_g, &midColor_b);
 
     qreal highColor_r, highColor_g, highColor_b;
-    m_signalColors.getRgbHighColor().getRgbF(&highColor_r, &highColor_g, &highColor_b);
+    m_signalColors.getRgbHighColor().getRgbF(&highColor_r, &highColor_g,
+            &highColor_b);
 
     for (currentCompletion = m_actualCompletion;
             currentCompletion < nextCompletion; currentCompletion += 2) {
@@ -116,9 +117,9 @@ bool WOverviewRGB::drawNextPixmapPart() {
     for (currentCompletion = m_actualCompletion;
             currentCompletion < nextCompletion; currentCompletion += 2) {
         m_waveformPeak = math_max3(
-                m_waveformPeak,
-                static_cast<float>(pWaveform->getAll(currentCompletion)),
-                static_cast<float>(pWaveform->getAll(currentCompletion + 1)));
+                             m_waveformPeak,
+                             static_cast<float>(pWaveform->getAll(currentCompletion)),
+                             static_cast<float>(pWaveform->getAll(currentCompletion + 1)));
     }
 
     m_actualCompletion = nextCompletion;

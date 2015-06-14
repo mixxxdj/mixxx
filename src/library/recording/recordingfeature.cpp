@@ -16,11 +16,11 @@ RecordingFeature::RecordingFeature(Library* pLibrary,
                                    ConfigObject<ConfigValue>* pConfig,
                                    TrackCollection* pTrackCollection,
                                    RecordingManager* pRecordingManager)
-        : LibraryFeature(pLibrary),
-          m_pConfig(pConfig),
-          m_pLibrary(pLibrary),
-          m_pTrackCollection(pTrackCollection),
-          m_pRecordingManager(pRecordingManager) {
+    : LibraryFeature(pLibrary),
+      m_pConfig(pConfig),
+      m_pLibrary(pLibrary),
+      m_pTrackCollection(pTrackCollection),
+      m_pRecordingManager(pRecordingManager) {
 }
 
 RecordingFeature::~RecordingFeature() {
@@ -39,14 +39,14 @@ TreeItemModel* RecordingFeature::getChildModel() {
     return &m_childModel;
 }
 void RecordingFeature::bindWidget(WLibrary* pLibraryWidget,
-                                  MixxxKeyboard *keyboard) {
+                                  MixxxKeyboard* keyboard) {
     //The view will be deleted by LibraryWidget
     DlgRecording* pRecordingView = new DlgRecording(pLibraryWidget,
-                                                    m_pConfig,
-                                                    m_pLibrary,
-                                                    m_pTrackCollection,
-                                                    m_pRecordingManager,
-                                                    keyboard);
+            m_pConfig,
+            m_pLibrary,
+            m_pTrackCollection,
+            m_pRecordingManager,
+            keyboard);
 
     pRecordingView->installEventFilter(keyboard);
     pLibraryWidget->registerView(m_sRecordingViewName, pRecordingView);

@@ -24,8 +24,7 @@
 class EngineMaster;
 class ControlPushButton;
 
-class RecordingManager : public QObject
-{
+class RecordingManager : public QObject {
     Q_OBJECT
   public:
     RecordingManager(ConfigObject<ConfigValue>* pConfig, EngineMaster* pEngine);

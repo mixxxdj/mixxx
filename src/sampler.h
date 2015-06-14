@@ -5,9 +5,9 @@
 
 class Sampler : public BaseTrackPlayerImpl {
     Q_OBJECT
-    public:
+  public:
     Sampler(QObject* pParent,
-            ConfigObject<ConfigValue> *pConfig,
+            ConfigObject<ConfigValue>* pConfig,
             EngineMaster* pMixingEngine,
             EffectsManager* pEffectsManager,
             EngineChannel::ChannelOrientation defaultOrientation,

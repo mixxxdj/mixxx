@@ -16,19 +16,20 @@ const double SyncControl::kBpmUnity = 1.0;
 const double SyncControl::kBpmHalve = 0.5;
 const double SyncControl::kBpmDouble = 2.0;
 
-SyncControl::SyncControl(const QString& group, ConfigObject<ConfigValue>* pConfig,
+SyncControl::SyncControl(const QString& group,
+                         ConfigObject<ConfigValue>* pConfig,
                          EngineChannel* pChannel, SyncableListener* pEngineSync)
-        : EngineControl(group, pConfig),
-          m_sGroup(group),
-          m_pChannel(pChannel),
-          m_pEngineSync(pEngineSync),
-          m_pBpmControl(NULL),
-          m_pRateControl(NULL),
-          m_bOldScratching(false),
-          m_masterBpmAdjustFactor(kBpmUnity),
-          m_unmultipliedTargetBeatDistance(0.0),
-          m_beatDistance(0.0),
-          m_prevLocalBpm(0.0) {
+    : EngineControl(group, pConfig),
+      m_sGroup(group),
+      m_pChannel(pChannel),
+      m_pEngineSync(pEngineSync),
+      m_pBpmControl(NULL),
+      m_pRateControl(NULL),
+      m_bOldScratching(false),
+      m_masterBpmAdjustFactor(kBpmUnity),
+      m_unmultipliedTargetBeatDistance(0.0),
+      m_beatDistance(0.0),
+      m_prevLocalBpm(0.0) {
     // Play button.  We only listen to this to disable master if the deck is
     // stopped.
     m_pPlayButton.reset(new ControlObjectSlave(group, "play", this));
@@ -39,26 +40,27 @@ SyncControl::SyncControl(const QString& group, ConfigObject<ConfigValue>* pConfi
     m_pSyncMode->setButtonMode(ControlPushButton::TOGGLE);
     m_pSyncMode->setStates(SYNC_NUM_MODES);
     m_pSyncMode->connectValueChangeRequest(
-            this, SLOT(slotSyncModeChangeRequest(double)), Qt::DirectConnection);
+        this, SLOT(slotSyncModeChangeRequest(double)), Qt::DirectConnection);
 
     m_pSyncMasterEnabled.reset(
-            new ControlPushButton(ConfigKey(group, "sync_master")));
+        new ControlPushButton(ConfigKey(group, "sync_master")));
     m_pSyncMasterEnabled->setButtonMode(ControlPushButton::TOGGLE);
     m_pSyncMasterEnabled->connectValueChangeRequest(
-            this, SLOT(slotSyncMasterEnabledChangeRequest(double)), Qt::DirectConnection);
+        this, SLOT(slotSyncMasterEnabledChangeRequest(double)), Qt::DirectConnection);
 
     m_pSyncEnabled.reset(
-            new ControlPushButton(ConfigKey(group, "sync_enabled")));
+        new ControlPushButton(ConfigKey(group, "sync_enabled")));
     m_pSyncEnabled->setButtonMode(ControlPushButton::LONGPRESSLATCHING);
     m_pSyncEnabled->connectValueChangeRequest(
-            this, SLOT(slotSyncEnabledChangeRequest(double)), Qt::DirectConnection);
+        this, SLOT(slotSyncEnabledChangeRequest(double)), Qt::DirectConnection);
 
     m_pSyncBeatDistance.reset(
-            new ControlObject(ConfigKey(group, "beat_distance")));
+        new ControlObject(ConfigKey(group, "beat_distance")));
 
     m_pPassthroughEnabled.reset(new ControlObjectSlave(group, "passthrough", this));
-    m_pPassthroughEnabled->connectValueChanged(this, SLOT(slotPassthroughChanged(double)),
-                                               Qt::DirectConnection);
+    m_pPassthroughEnabled->connectValueChanged(this,
+            SLOT(slotPassthroughChanged(double)),
+            Qt::DirectConnection);
 
     m_pEjectButton.reset(new ControlObjectSlave(group, "eject", this));
     m_pEjectButton->connectValueChanged(this, SLOT(slotEjectPushed(double)),
@@ -98,11 +100,12 @@ void SyncControl::setEngineControls(RateControl* pRateControl,
     m_pRateRange->connectValueChanged(this, SLOT(slotRateChanged()),
                                       Qt::DirectConnection);
 
-    m_pSyncPhaseButton.reset(new ControlObjectSlave(getGroup(), "beatsync_phase", this));
+    m_pSyncPhaseButton.reset(new ControlObjectSlave(getGroup(), "beatsync_phase",
+                             this));
 
 #ifdef __VINYLCONTROL__
     m_pVCEnabled.reset(new ControlObjectSlave(
-        getGroup(), "vinylcontrol_enabled", this));
+                           getGroup(), "vinylcontrol_enabled", this));
 
     // Throw a hissy fit if somebody moved us such that the vinylcontrol_enabled
     // control doesn't exist yet. This will blow up immediately, won't go unnoticed.
@@ -135,13 +138,14 @@ void SyncControl::notifySyncModeChanged(SyncMode mode) {
         // If any sync mode is enabled and passthrough was on somehow, disable passthrough.
         // This is very unlikely to happen so this deserves a warning.
         qWarning() << "Notified of sync mode change when passthrough was active -- "
-                      "must disable passthrough";
+                   "must disable passthrough";
         m_pPassthroughEnabled->set(0.0);
     }
     if (mode == SYNC_MASTER) {
         // Make sure all the slaves update based on our current rate.
         slotRateChanged();
-        double dRate = 1.0 + m_pRateDirection->get() * m_pRateRange->get() * m_pRateSlider->get();
+        double dRate = 1.0 + m_pRateDirection->get() * m_pRateRange->get() *
+                       m_pRateSlider->get();
         m_pEngineSync->notifyBeatDistanceChanged(this, getBeatDistance());
         m_pBpm->set(m_pLocalBpm->get() * dRate);
     }
@@ -225,21 +229,23 @@ void SyncControl::setMasterBpm(double bpm) {
     double localBpm = m_pLocalBpm->get();
     if (localBpm > 0.0) {
         double newRate = (bpm * m_masterBpmAdjustFactor / m_pLocalBpm->get() - 1.0)
-                / m_pRateDirection->get() / m_pRateRange->get();
+                         / m_pRateDirection->get() / m_pRateRange->get();
         m_pRateSlider->set(newRate);
     } else {
         m_pRateSlider->set(0);
     }
 }
 
-void SyncControl::setMasterParams(double beatDistance, double baseBpm, double bpm) {
+void SyncControl::setMasterParams(double beatDistance, double baseBpm,
+                                  double bpm) {
     m_unmultipliedTargetBeatDistance = beatDistance;
     m_masterBpmAdjustFactor = determineBpmMultiplier(m_pFileBpm->get(), baseBpm);
     setMasterBpm(bpm);
     updateTargetBeatDistance();
 }
 
-double SyncControl::determineBpmMultiplier(double myBpm, double targetBpm) const {
+double SyncControl::determineBpmMultiplier(double myBpm,
+        double targetBpm) const {
     double multiplier = kBpmUnity;
     double best_margin = fabs((targetBpm / myBpm) - 1.0);
 
@@ -312,7 +318,8 @@ void SyncControl::trackLoaded(TrackPointer pTrack) {
         // rate slider are not updated as soon as we need them, so do that now.
         m_pFileBpm->set(pTrack->getBpm());
         m_pLocalBpm->set(pTrack->getBpm());
-        double dRate = 1.0 + m_pRateDirection->get() * m_pRateRange->get() * m_pRateSlider->get();
+        double dRate = 1.0 + m_pRateDirection->get() * m_pRateRange->get() *
+                       m_pRateSlider->get();
         // We used to set the m_pBpm here, but that causes a signal loop whereby
         // that was interpretted as a rate slider tweak, and the master bpm
         // was changed.  Instead, now we pass the suggested bpm to enginesync
@@ -410,13 +417,15 @@ void SyncControl::setLocalBpm(double local_bpm) {
         // If the local bpm is suddenly zero and sync was active and we are playing,
         // stick with the previous localbpm.
         // I think this can only happen if the beatgrid is reset.
-        qWarning() << getGroup() << "Sync is already enabled on track with empty or zero bpm";
+        qWarning() << getGroup() <<
+                   "Sync is already enabled on track with empty or zero bpm";
         return;
     }
     m_prevLocalBpm = local_bpm;
 
     // FIXME: This recalculating of the rate is duplicated in bpmcontrol.
-    const double rate = 1.0 + m_pRateSlider->get() * m_pRateRange->get() * m_pRateDirection->get();
+    const double rate = 1.0 + m_pRateSlider->get() * m_pRateRange->get() *
+                        m_pRateDirection->get();
     double bpm = local_bpm * rate;
     m_pBpm->set(bpm);
     m_pEngineSync->notifyBpmChanged(this, bpm, true);
@@ -430,7 +439,8 @@ void SyncControl::slotFileBpmChanged() {
 
 void SyncControl::slotRateChanged() {
     // This slot is fired by rate, rate_dir, and rateRange changes.
-    const double rate = 1.0 + m_pRateSlider->get() * m_pRateRange->get() * m_pRateDirection->get();
+    const double rate = 1.0 + m_pRateSlider->get() * m_pRateRange->get() *
+                        m_pRateDirection->get();
     double bpm = m_pLocalBpm ? m_pLocalBpm->get() * rate : 0.0;
     //qDebug() << getGroup() << "SyncControl::slotRateChanged" << rate << bpm;
     if (bpm > 0) {

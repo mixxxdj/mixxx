@@ -19,8 +19,8 @@ using ::testing::_;
 class EffectSlotTest : public BaseEffectTest {
   protected:
     EffectSlotTest()
-            : m_master(m_factory.getOrCreateHandle("[Master]"), "[Master]"),
-              m_headphone(m_factory.getOrCreateHandle("[Headphone]"), "[Headphone]") {
+        : m_master(m_factory.getOrCreateHandle("[Master]"), "[Master]"),
+          m_headphone(m_factory.getOrCreateHandle("[Headphone]"), "[Headphone]") {
         m_pEffectsManager->registerChannel(m_master);
         m_pEffectsManager->registerChannel(m_headphone);
         registerTestBackend();
@@ -33,7 +33,7 @@ class EffectSlotTest : public BaseEffectTest {
 
 TEST_F(EffectSlotTest, ControlsReflectSlotState) {
     EffectChainPointer pChain(new EffectChain(m_pEffectsManager.data(),
-                                              "org.mixxx.test.chain1"));
+                              "org.mixxx.test.chain1"));
     int iRackNumber = 0;
     int iChainNumber = 0;
     int iEffectNumber = 0;
@@ -46,7 +46,7 @@ TEST_F(EffectSlotTest, ControlsReflectSlotState) {
     EffectSlotPointer pEffectSlot = pChainSlot->getEffectSlot(0);
 
     QString group = StandardEffectRack::formatEffectSlotGroupString(
-        iRackNumber, iChainNumber, iEffectNumber);
+                        iRackNumber, iChainNumber, iEffectNumber);
 
     EffectManifest manifest;
     manifest.setId("org.mixxx.test.effect");

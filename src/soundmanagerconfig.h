@@ -30,7 +30,7 @@ class SoundDevice;
 class SoundManager;
 
 class SoundManagerConfig {
-public:
+  public:
     enum Defaults {
         API = (1 << 0),
         DEVICES = (1 << 1),
@@ -50,11 +50,11 @@ public:
     bool readFromDisk();
     bool writeToDisk() const;
     QString getAPI() const;
-    void setAPI(const QString &api);
-    bool checkAPI(const SoundManager &soundManager);
+    void setAPI(const QString& api);
+    bool checkAPI(const SoundManager& soundManager);
     unsigned int getSampleRate() const;
     void setSampleRate(unsigned int sampleRate);
-    bool checkSampleRate(const SoundManager &soundManager);
+    bool checkSampleRate(const SoundManager& soundManager);
 
     // Record the number of decks configured with this setup so they can
     // be created and configured.
@@ -67,17 +67,17 @@ public:
     void setAudioBufferSizeIndex(unsigned int latency);
     unsigned int getSyncBuffers() const;
     void setSyncBuffers(unsigned int sampleRate);
-    void addOutput(const QString &device, const AudioOutput &out);
-    void addInput(const QString &device, const AudioInput &in);
+    void addOutput(const QString& device, const AudioOutput& out);
+    void addInput(const QString& device, const AudioInput& in);
     QMultiHash<QString, AudioOutput> getOutputs() const;
     QMultiHash<QString, AudioInput> getInputs() const;
     void clearOutputs();
     void clearInputs();
     // I'd prefer for these to be const but SoundManager::getDeviceList isn't
-    void filterOutputs(SoundManager *soundManager);
-    void filterInputs(SoundManager *soundManager);
-    void loadDefaults(SoundManager *soundManager, unsigned int flags);
-private:
+    void filterOutputs(SoundManager* soundManager);
+    void filterInputs(SoundManager* soundManager);
+    void loadDefaults(SoundManager* soundManager, unsigned int flags);
+  private:
     QFileInfo m_configFile;
     QString m_api;
     // none of our sample rates are actually decimals, this avoids

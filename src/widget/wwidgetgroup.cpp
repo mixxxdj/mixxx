@@ -11,9 +11,9 @@
 #include "util/debug.h"
 
 WWidgetGroup::WWidgetGroup(QWidget* pParent)
-        : QFrame(pParent),
-          WBaseWidget(this),
-          m_pPixmapBack(NULL) {
+    : QFrame(pParent),
+      WBaseWidget(this),
+      m_pPixmapBack(NULL) {
     setObjectName("WidgetGroup");
 }
 
@@ -40,7 +40,7 @@ void WWidgetGroup::setLayoutSpacing(int spacing) {
 QRect WWidgetGroup::layoutContentsMargins() const {
     QLayout* pLayout = layout();
     QMargins margins = pLayout ? pLayout->contentsMargins() :
-            contentsMargins();
+                       contentsMargins();
     return QRect(margins.left(), margins.top(),
                  margins.right(), margins.bottom());
 }
@@ -132,11 +132,13 @@ void WWidgetGroup::setup(QDomNode node, const SkinContext& context) {
     }
 }
 
-void WWidgetGroup::setPixmapBackground(PixmapSource source, Paintable::DrawMode mode) {
+void WWidgetGroup::setPixmapBackground(PixmapSource source,
+                                       Paintable::DrawMode mode) {
     // Load background pixmap
     m_pPixmapBack = WPixmapStore::getPaintable(source, mode);
     if (!m_pPixmapBack) {
-        qDebug() << "WWidgetGroup: Error loading background pixmap:" << source.getPath();
+        qDebug() << "WWidgetGroup: Error loading background pixmap:" <<
+                 source.getPath();
     }
 }
 
@@ -171,6 +173,7 @@ bool WWidgetGroup::event(QEvent* pEvent) {
 void WWidgetGroup::fillDebugTooltip(QStringList* debug) {
     WBaseWidget::fillDebugTooltip(debug);
     *debug << QString("LayoutAlignment: %1").arg(toDebugString(layoutAlignment()))
-           << QString("LayoutContentsMargins: %1").arg(toDebugString(layoutContentsMargins()))
+           << QString("LayoutContentsMargins: %1").arg(toDebugString(
+                       layoutContentsMargins()))
            << QString("LayoutSpacing: %1").arg(layoutSpacing());
 }

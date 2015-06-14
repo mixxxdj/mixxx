@@ -38,14 +38,14 @@
 const int kMetaDataLifeTimeout = 16;
 
 EngineRecord::EngineRecord(ConfigObject<ConfigValue>* _config)
-        : m_pConfig(_config),
-          m_pEncoder(NULL),
-          m_pSndfile(NULL),
-          m_frames(0),
-          m_recordedDuration(0),
-          m_iMetaDataLife(0),
-          m_cueTrack(0),
-          m_bCueIsEnabled(false) {
+    : m_pConfig(_config),
+      m_pEncoder(NULL),
+      m_pSndfile(NULL),
+      m_frames(0),
+      m_recordedDuration(0),
+      m_iMetaDataLife(0),
+      m_cueTrack(0),
+      m_bCueIsEnabled(false) {
     m_sfInfo.frames = 0;
     m_sfInfo.samplerate = 0;
     m_sfInfo.channels = 0;
@@ -66,16 +66,24 @@ EngineRecord::~EngineRecord() {
 }
 
 void EngineRecord::updateFromPreferences() {
-    m_encoding = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Encoding")).toLatin1();
+    m_encoding = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY,
+                                           "Encoding")).toLatin1();
     // returns a number from 1 .. 10
-    m_OGGquality = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "OGG_Quality")).toLatin1();
-    m_MP3quality = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "MP3_Quality")).toLatin1();
+    m_OGGquality = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY,
+                   "OGG_Quality")).toLatin1();
+    m_MP3quality = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY,
+                   "MP3_Quality")).toLatin1();
     m_fileName = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Path"));
-    m_baTitle = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Title")).toLatin1();
-    m_baAuthor = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Author")).toLatin1();
-    m_baAlbum = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Album")).toLatin1();
-    m_cueFileName = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CuePath")).toLatin1();
-    m_bCueIsEnabled = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CueEnabled")).toInt();
+    m_baTitle = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY,
+                                          "Title")).toLatin1();
+    m_baAuthor = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY,
+                                           "Author")).toLatin1();
+    m_baAlbum = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY,
+                                          "Album")).toLatin1();
+    m_cueFileName = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY,
+                    "CuePath")).toLatin1();
+    m_bCueIsEnabled = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY,
+                      "CueEnabled")).toInt();
     m_sampleRate = m_pSamplerate->get();
 
     // Delete m_pEncoder if it has been initialized (with maybe) different bitrate.
@@ -92,12 +100,13 @@ void EngineRecord::updateFromPreferences() {
 #endif
         m_pEncoder->updateMetaData(m_baAuthor.data(),m_baTitle.data(),m_baAlbum.data());
 
-        if(m_pEncoder->initEncoder(Encoder::convertToBitrate(m_MP3quality.toInt()),
-                                   m_sampleRate) < 0) {
+        if (m_pEncoder->initEncoder(Encoder::convertToBitrate(m_MP3quality.toInt()),
+                                    m_sampleRate) < 0) {
             delete m_pEncoder;
             m_pEncoder = NULL;
 #ifdef __FFMPEGFILE__
-            qDebug() << "MP3 recording is not supported. FFMPEG mp3 could not be initialized";
+            qDebug() <<
+                     "MP3 recording is not supported. FFMPEG mp3 could not be initialized";
 #else
             qDebug() << "MP3 recording is not supported. Lame could not be initialized";
 #endif
@@ -111,21 +120,22 @@ void EngineRecord::updateFromPreferences() {
         m_pEncoder->updateMetaData(m_baAuthor.data(),m_baTitle.data(),m_baAlbum.data());
 
         if (m_pEncoder->initEncoder(Encoder::convertToBitrate(m_OGGquality.toInt()),
-                                   m_sampleRate) < 0) {
+                                    m_sampleRate) < 0) {
             delete m_pEncoder;
             m_pEncoder = NULL;
 #ifdef __FFMPEGFILE__
-            qDebug() << "OGG recording is not supported. FFMPEG OGG/Vorbis could not be initialized";
+            qDebug() <<
+                     "OGG recording is not supported. FFMPEG OGG/Vorbis could not be initialized";
 #else
-            qDebug() << "OGG recording is not supported. OGG/Vorbis library could not be initialized";
+            qDebug() <<
+                     "OGG recording is not supported. OGG/Vorbis library could not be initialized";
 #endif
         }
     }
     // If we use WAVE OR AIFF the encoder will be NULL at all times.
 }
 
-bool EngineRecord::metaDataHasChanged()
-{
+bool EngineRecord::metaDataHasChanged() {
     if (m_iMetaDataLife < kMetaDataLifeTimeout) {
         m_iMetaDataLife++;
         return false;
@@ -139,11 +149,10 @@ bool EngineRecord::metaDataHasChanged()
     if (m_pCurrentTrack) {
         if ((pTrack->getId() == -1) || (m_pCurrentTrack->getId() == -1)) {
             if ((pTrack->getArtist() == m_pCurrentTrack->getArtist()) &&
-                (pTrack->getTitle() == m_pCurrentTrack->getArtist())) {
+                    (pTrack->getTitle() == m_pCurrentTrack->getArtist())) {
                 return false;
             }
-        }
-        else if (pTrack->getId() == m_pCurrentTrack->getId()) {
+        } else if (pTrack->getId() == m_pCurrentTrack->getId()) {
             return false;
         }
     }
@@ -228,8 +237,8 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
 
 QString EngineRecord::getRecordedDurationStr() {
     return QString("%1:%2")
-                 .arg(m_recordedDuration / 60, 2, 'f', 0, '0')   // minutes
-                 .arg(m_recordedDuration % 60, 2, 'f', 0, '0');  // seconds
+           .arg(m_recordedDuration / 60, 2, 'f', 0, '0')   // minutes
+           .arg(m_recordedDuration % 60, 2, 'f', 0, '0');  // seconds
 }
 
 void EngineRecord::writeCueLine() {
@@ -239,17 +248,17 @@ void EngineRecord::writeCueLine() {
 
     // CDDA is specified as having 75 frames a second
     unsigned long cueFrame = ((unsigned long)
-                                ((m_frames / (m_sampleRate / 75)))
-                                    % 75);
+                              ((m_frames / (m_sampleRate / 75)))
+                              % 75);
 
     m_cueFile.write(QString("  TRACK %1 AUDIO\n")
                     .arg((double)m_cueTrack, 2, 'f', 0, '0')
                     .toLatin1());
 
     m_cueFile.write(QString("    TITLE \"%1\"\n")
-        .arg(m_pCurrentTrack->getTitle()).toLatin1());
+                    .arg(m_pCurrentTrack->getTitle()).toLatin1());
     m_cueFile.write(QString("    PERFORMER \"%1\"\n")
-        .arg(m_pCurrentTrack->getArtist()).toLatin1());
+                    .arg(m_pCurrentTrack->getArtist()).toLatin1());
 
     // Woefully inaccurate (at the seconds level anyways).
     // We'd need a signal fired state tracker
@@ -260,7 +269,7 @@ void EngineRecord::writeCueLine() {
 }
 
 // Encoder calls this method to write compressed audio
-void EngineRecord::write(unsigned char *header, unsigned char *body,
+void EngineRecord::write(unsigned char* header, unsigned char* body,
                          int headerLen, int bodyLen) {
     if (!fileOpen()) {
         return;
@@ -302,7 +311,8 @@ bool EngineRecord::openFile() {
         LPCWSTR lpcwFilename = (LPCWSTR)m_fileName.utf16();
         m_pSndfile = sf_wchar_open(lpcwFilename, SFM_WRITE, &m_sfInfo);
 #else
-        m_pSndfile = sf_open(m_fileName.toLocal8Bit().constData(), SFM_WRITE, &m_sfInfo);
+        m_pSndfile = sf_open(m_fileName.toLocal8Bit().constData(), SFM_WRITE,
+                             &m_sfInfo);
 #endif
         if (m_pSndfile) {
             sf_command(m_pSndfile, SFC_SET_NORM_FLOAT, NULL, SF_TRUE);
@@ -310,15 +320,15 @@ bool EngineRecord::openFile() {
             int ret;
 
             ret = sf_set_string(m_pSndfile, SF_STR_TITLE, m_baTitle.constData());
-            if(ret != 0)
+            if (ret != 0)
                 qDebug("libsndfile: %s", sf_error_number(ret));
 
             ret = sf_set_string(m_pSndfile, SF_STR_ARTIST, m_baAuthor.constData());
-            if(ret != 0)
+            if (ret != 0)
                 qDebug("libsndfile: %s", sf_error_number(ret));
 
             ret = sf_set_string(m_pSndfile, SF_STR_COMMENT, m_baAlbum.constData());
-            if(ret != 0)
+            if (ret != 0)
                 qDebug("libsndfile: %s", sf_error_number(ret));
 
         }
@@ -340,7 +350,8 @@ bool EngineRecord::openFile() {
 
     // Check if file is really open.
     if (!fileOpen()) {
-        ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+        ErrorDialogProperties* props =
+            ErrorDialogHandler::instance()->newDialogProperties();
         props->setType(DLG_WARNING);
         props->setTitle(tr("Recording"));
         props->setText("<html>"+tr("Could not create audio file for recording!")
@@ -380,9 +391,9 @@ bool EngineRecord::openCueFile() {
     }
 
     m_cueFile.write(QString("FILE \"%1\" %2%3\n").arg(
-        QString(m_fileName).replace(QString("\""), QString("\\\"")),
-        QString(m_encoding).toUpper(),
-        m_encoding == ENCODING_WAVE ? "E" : " ").toLatin1());
+                        QString(m_fileName).replace(QString("\""), QString("\\\"")),
+                        QString(m_encoding).toUpper(),
+                        m_encoding == ENCODING_WAVE ? "E" : " ").toLatin1());
     return true;
 }
 

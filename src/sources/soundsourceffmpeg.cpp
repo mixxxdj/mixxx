@@ -9,7 +9,7 @@ namespace Mixxx {
 
 QStringList SoundSourceProviderFFmpeg::getSupportedFileExtensions() const {
     QStringList list;
-    AVInputFormat *l_SInputFmt  = NULL;
+    AVInputFormat* l_SInputFmt  = NULL;
 
     while ((l_SInputFmt = av_iformat_next(l_SInputFmt))) {
         if (l_SInputFmt->name == NULL) {
@@ -62,7 +62,7 @@ SoundSourceFFmpeg::~SoundSourceFFmpeg() {
 
 Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     unsigned int i;
-    AVDictionary *l_iFormatOpts = NULL;
+    AVDictionary* l_iFormatOpts = NULL;
 
     const QByteArray qBAFilename(getLocalFileNameBytes());
     qDebug() << "New SoundSourceFFmpeg :" << qBAFilename;
@@ -127,7 +127,8 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
 
     setChannelCount(m_pCodecCtx->channels);
     setFrameRate(m_pCodecCtx->sample_rate);
-    setFrameCount((m_pFormatCtx->duration * m_pCodecCtx->sample_rate) / AV_TIME_BASE);
+    setFrameCount((m_pFormatCtx->duration * m_pCodecCtx->sample_rate) /
+                  AV_TIME_BASE);
 
     qDebug() << "ffmpeg: Samplerate: " << getFrameRate() << ", Channels: " <<
              getChannelCount() << "\n";
@@ -176,11 +177,11 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
     unsigned int l_iCount = 0;
     qint32 l_iRet = 0;
     AVPacket l_SPacket;
-    AVFrame *l_pFrame = NULL;
+    AVFrame* l_pFrame = NULL;
     bool l_iStop = false;
     int l_iFrameFinished = 0;
-    struct ffmpegCacheObject *l_SObj = NULL;
-    struct ffmpegCacheObject *l_SRmObj = NULL;
+    struct ffmpegCacheObject* l_SObj = NULL;
+    struct ffmpegCacheObject* l_SRmObj = NULL;
     bool m_bUnique = false;
     qint64 l_lLastPacketPos = -1;
     int l_iError = 0;
@@ -194,7 +195,7 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
 
     while (l_iCount > 0) {
         if (l_pFrame != NULL) {
-          l_iFrameCount --;
+            l_iFrameCount --;
 // FFMPEG 2.2 3561060 anb beyond
 #if LIBAVCODEC_VERSION_INT >= 3561060
             av_frame_free(&l_pFrame);
@@ -251,7 +252,7 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
                     continue;
                 } else {
                     l_iRet = 0;
-                    l_SObj = (struct ffmpegCacheObject *)malloc(sizeof(struct ffmpegCacheObject));
+                    l_SObj = (struct ffmpegCacheObject*)malloc(sizeof(struct ffmpegCacheObject));
                     if (l_SObj == NULL) {
                         qDebug() << "SoundSourceFFmpeg::readFramesToCache: Not enough memory!";
                         l_iStop = true;
@@ -289,7 +290,7 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
                         if (m_lCacheFramePos > m_lLastStoredPos &&
                                 m_lCacheFramePos > (AUDIOSOURCEFFMPEG_POSDISTANCE + m_lLastStoredPos) &&
                                 m_bUnique == true) {
-                            struct ffmpegLocationObject  *l_SJmp = (struct ffmpegLocationObject  *)malloc(
+                            struct ffmpegLocationObject*  l_SJmp = (struct ffmpegLocationObject*)malloc(
                                     sizeof(struct ffmpegLocationObject));
                             m_lLastStoredPos = m_lCacheFramePos;
                             l_SJmp->startFrame = m_lCacheFramePos;
@@ -332,24 +333,26 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
     }
 
     if (l_pFrame != NULL) {
-      l_iFrameCount --;
+        l_iFrameCount --;
 // FFMPEG 2.2 3561060 anb beyond
 #if LIBAVCODEC_VERSION_INT >= 3561060
-          av_frame_unref(l_pFrame);
-          av_frame_free(&l_pFrame);
+        av_frame_unref(l_pFrame);
+        av_frame_free(&l_pFrame);
 // FFMPEG 0.11 and below
 #elif LIBAVCODEC_VERSION_INT <= 3544932
-          av_free(l_pFrame);
+        av_free(l_pFrame);
 // FFMPEG 1.0 - 2.1
 #else
-          avcodec_free_frame(&l_pFrame);
+        avcodec_free_frame(&l_pFrame);
 #endif
-          l_pFrame = NULL;
+        l_pFrame = NULL;
 
     }
 
     if (l_iFrameCount > 0) {
-       qDebug() << "SoundSourceFFmpeg::readFramesToCache(): Frame balance is not 0 it is: " << l_iFrameCount;
+        qDebug() <<
+                 "SoundSourceFFmpeg::readFramesToCache(): Frame balance is not 0 it is: " <<
+                 l_iFrameCount;
     }
 
     l_SObj = m_SCache.first();
@@ -364,9 +367,9 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
     }
 }
 
-bool SoundSourceFFmpeg::getBytesFromCache(char *buffer, SINT offset,
+bool SoundSourceFFmpeg::getBytesFromCache(char* buffer, SINT offset,
         SINT size) {
-    struct ffmpegCacheObject *l_SObj = NULL;
+    struct ffmpegCacheObject* l_SObj = NULL;
     quint32 l_lPos = 0;
     quint32 l_lLeft = 0;
     quint32 l_lOffset = 0;
@@ -516,7 +519,8 @@ SINT SoundSourceFFmpeg::readSampleFrames(SINT numberOfFrames,
         m_bIsSeeked = false;
     }
 
-    getBytesFromCache((char *)sampleBuffer, m_currentMixxxFrameIndex, numberOfFrames);
+    getBytesFromCache((char*)sampleBuffer, m_currentMixxxFrameIndex,
+                      numberOfFrames);
 
     //  As this is also Hack
     // If we don't seek like we don't on analyzer.. keep

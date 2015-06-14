@@ -16,8 +16,8 @@ const int kProcessLength = kStatsPipeSize * 4 / 5;
 bool StatsManager::s_bStatsManagerEnabled = false;
 
 StatsPipe::StatsPipe(StatsManager* pManager)
-        : FIFO<StatReport>(kStatsPipeSize),
-          m_pManager(pManager) {
+    : FIFO<StatReport>(kStatsPipeSize),
+      m_pManager(pManager) {
     qRegisterMetaType<Stat>("Stat");
 }
 
@@ -28,8 +28,8 @@ StatsPipe::~StatsPipe() {
 }
 
 StatsManager::StatsManager()
-        : QThread(),
-          m_quit(0) {
+    : QThread(),
+      m_quit(0) {
     s_bStatsManagerEnabled = true;
     setObjectName("StatsManager");
     moveToThread(this);
@@ -46,7 +46,7 @@ StatsManager::~StatsManager() {
     qDebug() << "ALL STATS";
     qDebug() << "=====================================";
     for (QMap<QString, Stat>::const_iterator it = m_stats.begin();
-         it != m_stats.end(); ++it) {
+            it != m_stats.end(); ++it) {
         qDebug() << it.value();
     }
 
@@ -55,7 +55,7 @@ StatsManager::~StatsManager() {
         qDebug() << "BASE STATS";
         qDebug() << "=====================================";
         for (QMap<QString, Stat>::const_iterator it = m_baseStats.begin();
-             it != m_baseStats.end(); ++it) {
+                it != m_baseStats.end(); ++it) {
             qDebug() << it.value();
         }
     }
@@ -65,7 +65,7 @@ StatsManager::~StatsManager() {
         qDebug() << "EXPERIMENT STATS";
         qDebug() << "=====================================";
         for (QMap<QString, Stat>::const_iterator it = m_experimentStats.begin();
-             it != m_experimentStats.end(); ++it) {
+                it != m_experimentStats.end(); ++it) {
             qDebug() << it.value();
         }
     }
@@ -129,7 +129,8 @@ void StatsManager::writeTimeline(const QString& filename) {
         qint64 last_start = startTimes.value(event.m_tag, -1);
         qint64 last_end = endTimes.value(event.m_tag, -1);
 
-        qint64 duration_since_last_start = last_start == -1 ? 0 : event.m_time - last_start;
+        qint64 duration_since_last_start = last_start == -1 ? 0 : event.m_time -
+                                           last_start;
         qint64 duration_since_last_end = last_end == -1 ? 0 : event.m_time - last_end;
 
         if (event.m_type == Stat::EVENT_START) {
@@ -243,7 +244,7 @@ void StatsManager::run() {
 
         if (load_atomic(m_emitAllStats) == 1) {
             for (QMap<QString, Stat>::const_iterator it = m_stats.begin();
-                 it != m_stats.end(); ++it) {
+                    it != m_stats.end(); ++it) {
                 emit(statUpdated(it.value()));
             }
             m_emitAllStats = 0;

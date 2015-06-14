@@ -38,18 +38,15 @@
           or on a mounted harddrive.
  **/
 
-ParserM3u::ParserM3u() : Parser()
-{
+ParserM3u::ParserM3u() : Parser() {
 }
 
-ParserM3u::~ParserM3u()
-{
+ParserM3u::~ParserM3u() {
 
 }
 
 
-QList<QString> ParserM3u::parse(QString sFilename)
-{
+QList<QString> ParserM3u::parse(QString sFilename) {
     QFile file(sFilename);
     QString basepath = sFilename.section('/', 0, -2);
 
@@ -68,7 +65,7 @@ QList<QString> ParserM3u::parse(QString sFilename)
         //detect encoding
         bool isCRLF_encoded = ba.contains("\r\n");
         bool isCR_encoded = ba.contains("\r");
-        if(isCR_encoded && !isCRLF_encoded)
+        if (isCR_encoded && !isCRLF_encoded)
             ba.replace('\r','\n');
         QTextStream textstream(ba.constData());
 
@@ -78,9 +75,9 @@ QList<QString> ParserM3u::parse(QString sFilename)
             textstream.setCodec("windows-1252");
         }
 
-        while(!textstream.atEnd()) {
+        while (!textstream.atEnd()) {
             QString sLine = getFilepath(&textstream, basepath);
-            if(sLine.isEmpty())
+            if (sLine.isEmpty())
                 break;
 
             //qDebug() << "ParserM3u: parsed: " << (sLine);
@@ -96,8 +93,7 @@ QList<QString> ParserM3u::parse(QString sFilename)
 }
 
 
-QString ParserM3u::getFilepath(QTextStream *stream, QString basepath)
-{
+QString ParserM3u::getFilepath(QTextStream* stream, QString basepath) {
     QString textline,filename = "";
 
     textline = stream->readLine();
@@ -117,7 +113,7 @@ QString ParserM3u::getFilepath(QTextStream *stream, QString basepath)
             //qDebug() << "QURL UTF-8: " << location;
             QString trackLocation = location.toString();
             //qDebug() << "UTF8 TrackLocation:" << trackLocation;
-            if(isFilepath(trackLocation)) {
+            if (isFilepath(trackLocation)) {
                 return trackLocation;
             } else {
                 // Try relative to m3u dir
@@ -136,16 +132,18 @@ QString ParserM3u::getFilepath(QTextStream *stream, QString basepath)
 
 }
 
-bool ParserM3u::writeM3UFile(const QString &file_str, QList<QString> &items, bool useRelativePath) {
+bool ParserM3u::writeM3UFile(const QString& file_str, QList<QString>& items,
+                             bool useRelativePath) {
     return writeM3UFile(file_str, items, useRelativePath, false);
 }
 
-bool ParserM3u::writeM3U8File(const QString &file_str, QList<QString> &items, bool useRelativePath) {
+bool ParserM3u::writeM3U8File(const QString& file_str, QList<QString>& items,
+                              bool useRelativePath) {
     return writeM3UFile(file_str, items, useRelativePath, true);
 }
 
-bool ParserM3u::writeM3UFile(const QString &file_str, QList<QString> &items, bool useRelativePath, bool useUtf8)
-{
+bool ParserM3u::writeM3UFile(const QString& file_str, QList<QString>& items,
+                             bool useRelativePath, bool useUtf8) {
     // Important note:
     // On Windows \n will produce a <CR><CL> (=\r\n)
     // On Linux and OS X \n is <CR> (which remains \n)

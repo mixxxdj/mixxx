@@ -7,16 +7,16 @@
 #include "controlobjectthread.h"
 #include "mixxx.h"
 
-extern void qt_translateRawTouchEvent(QWidget *window,
-        QTouchEvent::DeviceType deviceType,
-        const QList<QTouchEvent::TouchPoint> &touchPoints);
+extern void qt_translateRawTouchEvent(QWidget* window,
+                                      QTouchEvent::DeviceType deviceType,
+                                      const QList<QTouchEvent::TouchPoint>& touchPoints);
 
 MixxxApplication::MixxxApplication(int& argc, char** argv)
-        : QApplication(argc, argv),
-          m_fakeMouseSourcePointId(0),
-          m_fakeMouseWidget(NULL),
-          m_activeTouchButton(Qt::NoButton),
-          m_pTouchShift(NULL) {
+    : QApplication(argc, argv),
+      m_fakeMouseSourcePointId(0),
+      m_fakeMouseWidget(NULL),
+      m_activeTouchButton(Qt::NoButton),
+      m_pTouchShift(NULL) {
 }
 
 MixxxApplication::~MixxxApplication() {
@@ -28,8 +28,7 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
     switch (event->type()) {
     case QEvent::TouchBegin:
     case QEvent::TouchUpdate:
-    case QEvent::TouchEnd:
-    {
+    case QEvent::TouchEnd: {
         QTouchEvent* touchEvent = static_cast<QTouchEvent*>(event);
         QList<QTouchEvent::TouchPoint> touchPoints = touchEvent->touchPoints();
         QEvent::Type eventType = QEvent::None;
@@ -89,30 +88,29 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
         }
 
         for (int i = 0; i < touchPoints.count(); ++i) {
-             const QTouchEvent::TouchPoint& touchPoint = touchPoints.at(i);
-             if (touchPoint.id() == m_fakeMouseSourcePointId) {
-                 QMouseEvent mouseEvent(eventType,
-                                        fakeMouseWidget->mapFromGlobal(touchPoint.screenPos().toPoint()),
-                                        touchPoint.screenPos().toPoint(),
-                                        m_activeTouchButton, // Button that causes the event
-                                        buttons,
-                                        touchEvent->modifiers());
+            const QTouchEvent::TouchPoint& touchPoint = touchPoints.at(i);
+            if (touchPoint.id() == m_fakeMouseSourcePointId) {
+                QMouseEvent mouseEvent(eventType,
+                                       fakeMouseWidget->mapFromGlobal(touchPoint.screenPos().toPoint()),
+                                       touchPoint.screenPos().toPoint(),
+                                       m_activeTouchButton, // Button that causes the event
+                                       buttons,
+                                       touchEvent->modifiers());
 
-                 //qDebug() << "#" << mouseEvent.type() << mouseEvent.button() << mouseEvent.buttons() << mouseEvent.pos() << mouseEvent.globalPos();
+                //qDebug() << "#" << mouseEvent.type() << mouseEvent.button() << mouseEvent.buttons() << mouseEvent.pos() << mouseEvent.globalPos();
 
-                 //if (m_fakeMouseWidget->focusPolicy() & Qt::ClickFocus) {
-                 //    fakeMouseWidget->setFocus();
-                 //}
-                 QApplication::notify(fakeMouseWidget, &mouseEvent);
-                 return true;
-             }
+                //if (m_fakeMouseWidget->focusPolicy() & Qt::ClickFocus) {
+                //    fakeMouseWidget->setFocus();
+                //}
+                QApplication::notify(fakeMouseWidget, &mouseEvent);
+                return true;
+            }
         }
         //qDebug() << "return false";
         return false;
         break;
     }
-    case QEvent::MouseButtonRelease:
-    {
+    case QEvent::MouseButtonRelease: {
         bool ret = QApplication::notify(target, event);
         if (m_fakeMouseWidget) {
             // It may happen the faked mouse event was grabbed by a non touch window.

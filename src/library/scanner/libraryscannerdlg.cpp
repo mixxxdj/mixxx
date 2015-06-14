@@ -24,14 +24,16 @@
 #include "library/scanner/libraryscannerdlg.h"
 
 LibraryScannerDlg::LibraryScannerDlg(QWidget* parent, Qt::WindowFlags f)
-        : QWidget(parent, f),
-          m_bCancelled(false) {
+    : QWidget(parent, f),
+      m_bCancelled(false) {
     setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
 
     QVBoxLayout* pLayout = new QVBoxLayout(this);
 
     setWindowTitle(tr("Library Scanner"));
-    QLabel* pLabel = new QLabel(tr("It's taking Mixxx a minute to scan your music library, please wait..."),this);
+    QLabel* pLabel = new QLabel(
+        tr("It's taking Mixxx a minute to scan your music library, please wait..."),
+        this);
     pLayout->addWidget(pLabel);
 
     QPushButton* pCancel = new QPushButton(tr("Cancel"), this);
@@ -56,7 +58,7 @@ LibraryScannerDlg::~LibraryScannerDlg() {
 void LibraryScannerDlg::slotUpdate(QString path) {
     //qDebug() << "LibraryScannerDlg slotUpdate" << m_timer.elapsed() << path;
     if (!m_bCancelled && m_timer.elapsed() > 2000) {
-       setVisible(true);
+        setVisible(true);
     }
 
     if (isVisible()) {
@@ -68,13 +70,13 @@ void LibraryScannerDlg::slotUpdate(QString path) {
 void LibraryScannerDlg::slotUpdateCover(QString path) {
     //qDebug() << "LibraryScannerDlg slotUpdate" << m_timer.elapsed() << path;
     if (!m_bCancelled && m_timer.elapsed() > 2000) {
-       setVisible(true);
+        setVisible(true);
     }
 
     if (isVisible()) {
         QString status = QString("%1: %2")
-                .arg(tr("Scanning cover art (safe to cancel)"))
-                .arg(path);
+                         .arg(tr("Scanning cover art (safe to cancel)"))
+                         .arg(path);
         emit(progress(status));
     }
 }

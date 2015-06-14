@@ -13,7 +13,7 @@
 class WTime: public WLabel {
     Q_OBJECT
   public:
-    WTime(QWidget *parent=0);
+    WTime(QWidget* parent=0);
     virtual ~WTime();
 
     void setup(QDomNode node, const SkinContext& context);

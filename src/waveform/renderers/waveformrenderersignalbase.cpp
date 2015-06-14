@@ -10,7 +10,7 @@
 #include "widget/wwidget.h"
 
 WaveformRendererSignalBase::WaveformRendererSignalBase(
-        WaveformWidgetRenderer* waveformWidgetRenderer)
+    WaveformWidgetRenderer* waveformWidgetRenderer)
     : WaveformRendererAbstract(waveformWidgetRenderer),
       m_pEQEnabled(NULL),
       m_pLowFilterControlObject(NULL),
@@ -74,19 +74,19 @@ bool WaveformRendererSignalBase::init() {
 
     //create controls
     m_pEQEnabled = new ControlObjectSlave(
-            m_waveformRenderer->getGroup(), "filterWaveformEnable");
+        m_waveformRenderer->getGroup(), "filterWaveformEnable");
     m_pLowFilterControlObject = new ControlObjectSlave(
-            m_waveformRenderer->getGroup(), "filterLow");
+        m_waveformRenderer->getGroup(), "filterLow");
     m_pMidFilterControlObject = new ControlObjectSlave(
-            m_waveformRenderer->getGroup(), "filterMid");
+        m_waveformRenderer->getGroup(), "filterMid");
     m_pHighFilterControlObject = new ControlObjectSlave(
-            m_waveformRenderer->getGroup(), "filterHigh");
+        m_waveformRenderer->getGroup(), "filterHigh");
     m_pLowKillControlObject = new ControlObjectSlave(
-            m_waveformRenderer->getGroup(), "filterLowKill");
+        m_waveformRenderer->getGroup(), "filterLowKill");
     m_pMidKillControlObject = new ControlObjectSlave(
-            m_waveformRenderer->getGroup(), "filterMidKill");
+        m_waveformRenderer->getGroup(), "filterMidKill");
     m_pHighKillControlObject = new ControlObjectSlave(
-            m_waveformRenderer->getGroup(), "filterHighKill");
+        m_waveformRenderer->getGroup(), "filterHighKill");
 
     return onInit();
 }
@@ -133,7 +133,7 @@ void WaveformRendererSignalBase::setup(const QDomNode& node,
 }
 
 void WaveformRendererSignalBase::getGains(float* pAllGain, float* pLowGain,
-                                          float* pMidGain, float* pHighGain) {
+        float* pMidGain, float* pHighGain) {
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
     if (pAllGain != NULL) {
         float allGain = m_waveformRenderer->getGain();
@@ -148,8 +148,8 @@ void WaveformRendererSignalBase::getGains(float* pAllGain, float* pLowGain,
         // Only adjust low/mid/high gains if EQs are enabled.
         if (m_pEQEnabled->get() > 0.0) {
             if (m_pLowFilterControlObject &&
-                m_pMidFilterControlObject &&
-                m_pHighFilterControlObject) {
+                    m_pMidFilterControlObject &&
+                    m_pHighFilterControlObject) {
                 lowGain = m_pLowFilterControlObject->get();
                 midGain = m_pMidFilterControlObject->get();
                 highGain = m_pHighFilterControlObject->get();

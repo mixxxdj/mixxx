@@ -9,30 +9,30 @@
 #include "util/statsmanager.h"
 
 Stat::Stat()
-        : m_type(UNSPECIFIED),
-          m_compute(NONE),
-          m_report_count(0),
-          m_sum(0),
-          m_min(std::numeric_limits<double>::max()),
-          m_max(std::numeric_limits<double>::min()),
-          m_variance_mk(0),
-          m_variance_sk(0) {
+    : m_type(UNSPECIFIED),
+      m_compute(NONE),
+      m_report_count(0),
+      m_sum(0),
+      m_min(std::numeric_limits<double>::max()),
+      m_max(std::numeric_limits<double>::min()),
+      m_variance_mk(0),
+      m_variance_sk(0) {
 }
 
 QString Stat::valueUnits() const {
     switch (m_type) {
-        case DURATION_MSEC:
-            return "ms";
-        case DURATION_NANOSEC:
-            return "ns";
-        case DURATION_SEC:
-            return "s";
-        case EVENT:
-        case EVENT_START:
-        case EVENT_END:
-        case UNSPECIFIED:
-        default:
-            return "";
+    case DURATION_MSEC:
+        return "ms";
+    case DURATION_NANOSEC:
+        return "ns";
+    case DURATION_SEC:
+        return "s";
+    case EVENT:
+    case EVENT_START:
+    case EVENT_END:
+    case UNSPECIFIED:
+    default:
+        return "";
     }
 }
 
@@ -57,7 +57,8 @@ void Stat::processReport(const StatReport& report) {
         } else {
             double variance_mk_prev = m_variance_mk;
             m_variance_mk += (report.value - m_variance_mk) / m_report_count;
-            m_variance_sk += (report.value - variance_mk_prev) * (report.value - m_variance_mk);
+            m_variance_sk += (report.value - variance_mk_prev) * (report.value -
+                             m_variance_mk);
         }
     }
 
@@ -70,7 +71,7 @@ void Stat::processReport(const StatReport& report) {
     }
 }
 
-QDebug operator<<(QDebug dbg, const Stat &stat) {
+QDebug operator<<(QDebug dbg, const Stat& stat) {
     QStringList stats;
     if (stat.m_compute & Stat::COUNT) {
         stats << "count=" + QString::number(stat.m_report_count);
@@ -125,9 +126,9 @@ QDebug operator<<(QDebug dbg, const Stat &stat) {
     if (stat.m_compute & Stat::HISTOGRAM) {
         QStringList histogram;
         for (QMap<double, double>::const_iterator it = stat.m_histogram.begin();
-             it != stat.m_histogram.end(); ++it) {
+                it != stat.m_histogram.end(); ++it) {
             histogram << QString::number(it.key()) + stat.valueUnits() + ":" +
-                    QString::number(it.value());
+                      QString::number(it.value());
         }
         stats << "histogram=" + histogram.join(",");
     }

@@ -39,7 +39,7 @@ enum SoundDeviceError {
 
 class SoundDevice {
   public:
-    SoundDevice(ConfigObject<ConfigValue> *config, SoundManager* sm);
+    SoundDevice(ConfigObject<ConfigValue>* config, SoundManager* sm);
     virtual ~SoundDevice();
 
     inline const QString& getInternalName() const {
@@ -73,8 +73,8 @@ class SoundDevice {
 
     void clearOutputs();
     void clearInputs();
-    bool operator==(const SoundDevice &other) const;
-    bool operator==(const QString &other) const;
+    bool operator==(const SoundDevice& other) const;
+    bool operator==(const QString& other) const;
 
   protected:
     void composeOutputBuffer(CSAMPLE* outputBuffer,
@@ -90,7 +90,7 @@ class SoundDevice {
     void clearInputBuffer(const unsigned int framesToPush,
                           const unsigned int framesWriteOffset);
 
-    ConfigObject<ConfigValue> *m_pConfig;
+    ConfigObject<ConfigValue>* m_pConfig;
     // Pointer to the SoundManager object which we'll request audio from.
     SoundManager* m_pSoundManager;
     // The name of the soundcard, used internally (may include the device ID)

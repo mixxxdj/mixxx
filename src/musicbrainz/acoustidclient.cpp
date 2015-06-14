@@ -24,9 +24,9 @@ const QString ACOUSTID_URL = "http://api.acoustid.org/v2/lookup";
 const int AcoustidClient::m_DefaultTimeout = 5000; // msec
 
 AcoustidClient::AcoustidClient(QObject* parent)
-              : QObject(parent),
-                m_network(this),
-                m_timeouts(m_DefaultTimeout, this) {
+    : QObject(parent),
+      m_network(this),
+      m_timeouts(m_DefaultTimeout, this) {
 }
 
 void AcoustidClient::setTimeout(int msec) {
@@ -42,7 +42,8 @@ void AcoustidClient::start(int id, const QString& fingerprint, int duration) {
     url.addQueryItem("fingerprint", fingerprint);
 
     QNetworkRequest req(QUrl::fromEncoded(ACOUSTID_URL.toAscii()));
-    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    req.setHeader(QNetworkRequest::ContentTypeHeader,
+                  "application/x-www-form-urlencoded");
     req.setRawHeader("Content-Encoding", "gzip");
     req.setRawHeader("User-Agent", CLIENT_NAME.toAscii());
 
@@ -77,8 +78,8 @@ void AcoustidClient::requestFinished() {
 
     if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() != 200) {
         emit(networkError(
-             reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(),
-             "AcoustID"));
+                 reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(),
+                 "AcoustID"));
         return;
     }
 
@@ -86,9 +87,9 @@ void AcoustidClient::requestFinished() {
     QString ID;
     while (!reader.atEnd()) {
         if (reader.readNext() == QXmlStreamReader::StartElement
-            && reader.name()== "results") {
-                ID = parseResult(reader);
-            }
+                && reader.name()== "results") {
+            ID = parseResult(reader);
+        }
     }
 
     emit(finished(id, ID));

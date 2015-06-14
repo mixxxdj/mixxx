@@ -21,19 +21,21 @@
 const int PaintingScaleFactor = 15;
 
 StarRating::StarRating(int starCount, int maxStarCount)
-        : m_myStarCount(starCount),
-          m_myMaxStarCount(maxStarCount) {
+    : m_myStarCount(starCount),
+      m_myMaxStarCount(maxStarCount) {
     m_starPolygon << QPointF(1.0, 0.5);
     for (int i = 1; i < 5; ++i)
-        m_starPolygon << QPointF(0.5 + 0.5 * cos(0.8 * i * 3.14), 0.5 + 0.5 * sin(0.8 * i * 3.14));
-    m_diamondPolygon << QPointF(0.4, 0.5) << QPointF(0.5, 0.4) << QPointF(0.6, 0.5) << QPointF(0.5, 0.6) << QPointF(0.4, 0.5);
+        m_starPolygon << QPointF(0.5 + 0.5 * cos(0.8 * i * 3.14),
+                                 0.5 + 0.5 * sin(0.8 * i * 3.14));
+    m_diamondPolygon << QPointF(0.4, 0.5) << QPointF(0.5, 0.4) << QPointF(0.6,
+                     0.5) << QPointF(0.5, 0.6) << QPointF(0.4, 0.5);
 }
 
 QSize StarRating::sizeHint() const {
     return PaintingScaleFactor * QSize(m_myMaxStarCount, 1);
 }
 
-void StarRating::paint(QPainter *painter, const QRect &rect) const {
+void StarRating::paint(QPainter* painter, const QRect& rect) const {
     // Assume the painter is configured with the right brush.
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing, true);

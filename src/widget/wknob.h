@@ -28,16 +28,16 @@
 #include "widget/knobeventhandler.h"
 
 class WKnob : public WDisplay {
-   Q_OBJECT
+    Q_OBJECT
   public:
     WKnob(QWidget* pParent=NULL);
     virtual ~WKnob();
 
   protected:
-    void wheelEvent(QWheelEvent *e);
-    void mouseMoveEvent(QMouseEvent *e);
-    void mousePressEvent(QMouseEvent *e);
-    void mouseReleaseEvent(QMouseEvent *e);
+    void wheelEvent(QWheelEvent* e);
+    void mouseMoveEvent(QMouseEvent* e);
+    void mousePressEvent(QMouseEvent* e);
+    void mouseReleaseEvent(QMouseEvent* e);
 
   private:
     KnobEventHandler<WKnob> m_handler;

@@ -12,17 +12,17 @@
 #include "controllers/defs_controllers.h"
 
 Controller::Controller()
-        : QObject(),
-          m_pEngine(NULL),
-          m_bIsOutputDevice(false),
-          m_bIsInputDevice(false),
-          m_bIsOpen(false),
-          m_bDebug(false),
-          m_bLearning(false) {
+    : QObject(),
+      m_pEngine(NULL),
+      m_bIsOutputDevice(false),
+      m_bIsInputDevice(false),
+      m_bIsOpen(false),
+      m_bDebug(false),
+      m_bLearning(false) {
     // Get --controllerDebug command line option
     QStringList commandLineArgs = QApplication::arguments();
     m_bDebug = commandLineArgs.contains("--controllerDebug", Qt::CaseInsensitive) ||
-            commandLineArgs.contains("--midiDebug", Qt::CaseInsensitive);
+               commandLineArgs.contains("--midiDebug", Qt::CaseInsensitive);
 }
 
 Controller::~Controller() {
@@ -30,8 +30,7 @@ Controller::~Controller() {
     // destructors.
 }
 
-void Controller::startEngine()
-{
+void Controller::startEngine() {
     if (debugging()) {
         qDebug() << "  Starting engine";
     }
@@ -67,7 +66,8 @@ void Controller::applyPreset(QList<QString> scriptPaths) {
     }
 
     if (pPreset->scripts.isEmpty()) {
-        qWarning() << "No script functions available! Did the XML file(s) load successfully? See above for any errors.";
+        qWarning() <<
+                   "No script functions available! Did the XML file(s) load successfully? See above for any errors.";
         return;
     }
 
@@ -109,13 +109,13 @@ void Controller::receive(const QByteArray data) {
     if (debugging()) {
         // Formatted packet display
         QString message = QString("%1: %2 bytes:\n").arg(m_sDeviceName).arg(length);
-        for(int i=0; i<length; i++) {
+        for (int i=0; i<length; i++) {
             QString spacer=" ";
             if ((i+1) % 4 == 0) spacer="  ";
             if ((i+1) % 16 == 0) spacer="\n";
             message += QString("%1%2")
-                        .arg((unsigned char)(data.at(i)), 2, 16, QChar('0')).toUpper()
-                        .arg(spacer);
+                       .arg((unsigned char)(data.at(i)), 2, 16, QChar('0')).toUpper()
+                       .arg(spacer);
         }
         qDebug() << message;
     }

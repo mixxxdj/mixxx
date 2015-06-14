@@ -57,20 +57,20 @@ class SignalPathTest : public MixxxTest {
                                                m_pEffectsManager, false, false);
 
         m_pChannel1 = new EngineDeck(
-                m_pEngineMaster->registerChannelGroup(m_sGroup1),
-                m_pConfig.data(), m_pEngineMaster, m_pEffectsManager,
-                EngineChannel::CENTER);
+            m_pEngineMaster->registerChannelGroup(m_sGroup1),
+            m_pConfig.data(), m_pEngineMaster, m_pEffectsManager,
+            EngineChannel::CENTER);
         m_pChannel2 = new EngineDeck(
-                m_pEngineMaster->registerChannelGroup(m_sGroup2),
-                m_pConfig.data(), m_pEngineMaster, m_pEffectsManager,
-                EngineChannel::CENTER);
+            m_pEngineMaster->registerChannelGroup(m_sGroup2),
+            m_pConfig.data(), m_pEngineMaster, m_pEffectsManager,
+            EngineChannel::CENTER);
         m_pChannel3 = new EngineDeck(
-                m_pEngineMaster->registerChannelGroup(m_sGroup3),
-                m_pConfig.data(), m_pEngineMaster, m_pEffectsManager,
-                EngineChannel::CENTER);
+            m_pEngineMaster->registerChannelGroup(m_sGroup3),
+            m_pConfig.data(), m_pEngineMaster, m_pEffectsManager,
+            EngineChannel::CENTER);
         m_pPreview1 = new PreviewDeck(NULL, m_pConfig.data(),
-                                     m_pEngineMaster, m_pEffectsManager,
-                                     EngineChannel::CENTER, m_sPreviewGroup);
+                                      m_pEngineMaster, m_pEffectsManager,
+                                      EngineChannel::CENTER, m_sPreviewGroup);
         ControlObject::getControl(ConfigKey(m_sPreviewGroup, "file_bpm"))->set(2.0);
 
         addDeck(m_pChannel1);
@@ -89,11 +89,11 @@ class SignalPathTest : public MixxxTest {
     void addDeck(EngineDeck* pDeck) {
         m_pEngineMaster->addChannel(pDeck);
         ControlObject::getControl(ConfigKey(pDeck->getGroup(), "master"))
-                ->set(1.0);
+        ->set(1.0);
         ControlObject::getControl(ConfigKey(pDeck->getGroup(), "rate_dir"))
-                ->set(kDefaultRateDir);
+        ->set(kDefaultRateDir);
         ControlObject::getControl(ConfigKey(pDeck->getGroup(), "rateRange"))
-                ->set(kDefaultRateRange);
+        ->set(kDefaultRateRange);
         m_pNumDecks->set(m_pNumDecks->get() + 1);
     }
 
@@ -198,10 +198,10 @@ class SignalPathTest : public MixxxTest {
     EffectsManager* m_pEffectsManager;
     EngineSync* m_pEngineSync;
     TestEngineMaster* m_pEngineMaster;
-    EngineDeck *m_pChannel1, *m_pChannel2, *m_pChannel3;
+    EngineDeck* m_pChannel1, *m_pChannel2, *m_pChannel3;
     TrackPointer m_pTrack1, m_pTrack2, m_pTrack3;
-    PreviewDeck *m_pPreview1;
-    Sampler *m_pSampler1;
+    PreviewDeck* m_pPreview1;
+    Sampler* m_pSampler1;
 
     static const char* m_sGroup1;
     static const char* m_sGroup2;

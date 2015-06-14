@@ -47,15 +47,15 @@ unsigned int SoundSourceModPlug::s_bufferSizeLimit = 0;
 
 // reserve some static space for settings...
 void SoundSourceModPlug::configure(unsigned int bufferSizeLimit,
-        const ModPlug::ModPlug_Settings &settings) {
+                                   const ModPlug::ModPlug_Settings& settings) {
     s_bufferSizeLimit = bufferSizeLimit;
     ModPlug::ModPlug_SetSettings(&settings);
 }
 
 SoundSourceModPlug::SoundSourceModPlug(QUrl url)
-        : SoundSource(url, getModPlugTypeFromUrl(url)),
-          m_pModFile(NULL),
-          m_seekPos(0) {
+    : SoundSource(url, getModPlugTypeFromUrl(url)),
+      m_pModFile(NULL),
+      m_seekPos(0) {
 }
 
 SoundSourceModPlug::~SoundSourceModPlug() {
@@ -63,8 +63,8 @@ SoundSourceModPlug::~SoundSourceModPlug() {
 }
 
 Result SoundSourceModPlug::parseTrackMetadataAndCoverArt(
-        TrackMetadata* pTrackMetadata,
-        QImage* /*pCoverArt*/) const {
+    TrackMetadata* pTrackMetadata,
+    QImage* /*pCoverArt*/) const {
     // The modplug library currently does not support reading cover-art from
     // modplug files -- kain88 (Oct 2014)
     QFile modFile(getLocalFileNameBytes());
@@ -73,7 +73,7 @@ Result SoundSourceModPlug::parseTrackMetadataAndCoverArt(
     modFile.close();
 
     ModPlug::ModPlugFile* pModFile = ModPlug::ModPlug_Load(fileBuf.constData(),
-            fileBuf.length());
+                                     fileBuf.length());
     if (NULL != pModFile) {
         pTrackMetadata->setComment(QString(ModPlug::ModPlug_GetMessage(pModFile)));
         pTrackMetadata->setTitle(QString(ModPlug::ModPlug_GetName(pModFile)));
@@ -98,7 +98,7 @@ Result SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
 
     // get ModPlugFile descriptor for later access
     m_pModFile = ModPlug::ModPlug_Load(m_fileBuf.constData(),
-            m_fileBuf.length());
+                                       m_fileBuf.length());
     if (m_pModFile == NULL) {
         // an error occured
         t.cancel();
@@ -109,19 +109,20 @@ Result SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     DEBUG_ASSERT(0 == (kChunkSizeInBytes % sizeof(m_sampleBuf[0])));
     const SINT chunkSizeInSamples = kChunkSizeInBytes / sizeof(m_sampleBuf[0]);
 
-    const SampleBuffer::size_type bufferSizeLimitInSamples = s_bufferSizeLimit / sizeof(m_sampleBuf[0]);
+    const SampleBuffer::size_type bufferSizeLimitInSamples = s_bufferSizeLimit /
+            sizeof(m_sampleBuf[0]);
 
     // Estimate size of sample buffer (for better performance) aligned
     // with the chunk size. Beware: Module length estimation is unreliable
     // due to loops!
     const SampleBuffer::size_type estimateMilliseconds =
-            ModPlug::ModPlug_GetLength(m_pModFile);
+        ModPlug::ModPlug_GetLength(m_pModFile);
     const SampleBuffer::size_type estimateSamples =
-            estimateMilliseconds * kChannelCount * kFrameRate;
+        estimateMilliseconds * kChannelCount * kFrameRate;
     const SampleBuffer::size_type estimateChunks =
-            (estimateSamples + (chunkSizeInSamples - 1)) / chunkSizeInSamples;
+        (estimateSamples + (chunkSizeInSamples - 1)) / chunkSizeInSamples;
     const SampleBuffer::size_type sampleBufferCapacity = math_min(
-            estimateChunks * chunkSizeInSamples, bufferSizeLimitInSamples);
+                estimateChunks * chunkSizeInSamples, bufferSizeLimitInSamples);
     m_sampleBuf.reserve(sampleBufferCapacity);
     qDebug() << "[ModPlug] Reserved " << m_sampleBuf.capacity() << " #samples";
 
@@ -131,8 +132,8 @@ Result SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
         const SampleBuffer::size_type currentSize = m_sampleBuf.size();
         m_sampleBuf.resize(currentSize + chunkSizeInSamples);
         const int bytesRead = ModPlug::ModPlug_Read(m_pModFile,
-                &m_sampleBuf[currentSize],
-                kChunkSizeInBytes);
+                              &m_sampleBuf[currentSize],
+                              kChunkSizeInBytes);
         // adjust size of sample buffer after reading
         if (0 < bytesRead) {
             DEBUG_ASSERT(0 == (bytesRead % sizeof(m_sampleBuf[0])));
@@ -145,10 +146,10 @@ Result SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
         }
     }
     qDebug() << "[ModPlug] Filled Sample buffer with " << m_sampleBuf.size()
-            << " samples.";
+             << " samples.";
     qDebug() << "[ModPlug] Sample buffer has "
-            << m_sampleBuf.capacity() - m_sampleBuf.size()
-            << " samples unused capacity.";
+             << m_sampleBuf.capacity() - m_sampleBuf.size()
+             << " samples unused capacity.";
 
     setChannelCount(kChannelCount);
     setFrameRate(kFrameRate);
@@ -166,21 +167,22 @@ void SoundSourceModPlug::close() {
 }
 
 SINT SoundSourceModPlug::seekSampleFrame(
-        SINT frameIndex) {
+    SINT frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(frameIndex));
 
     return m_seekPos = frameIndex;
 }
 
 SINT SoundSourceModPlug::readSampleFrames(
-        SINT numberOfFrames, CSAMPLE* sampleBuffer) {
+    SINT numberOfFrames, CSAMPLE* sampleBuffer) {
     DEBUG_ASSERT(0 <= numberOfFrames);
     DEBUG_ASSERT(isValidFrameIndex(m_seekPos));
     const SINT readFrames = math_min(getFrameCount() - m_seekPos, numberOfFrames);
 
     const SINT readSamples = frames2samples(readFrames);
     const SINT readOffset = frames2samples(m_seekPos);
-    SampleUtil::convertS16ToFloat32(sampleBuffer, &m_sampleBuf[readOffset], readSamples);
+    SampleUtil::convertS16ToFloat32(sampleBuffer, &m_sampleBuf[readOffset],
+                                    readSamples);
     m_seekPos += readFrames;
 
     return readFrames;

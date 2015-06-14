@@ -18,32 +18,32 @@ int computeTextureStride(int size) {
 }
 
 Waveform::Waveform(const QByteArray data)
-        : m_id(-1),
-          m_bDirty(true),
-          m_dataSize(0),
-          m_visualSampleRate(0),
-          m_audioVisualRatio(0),
-          m_textureStride(computeTextureStride(0)),
-          m_completion(-1) {
+    : m_id(-1),
+      m_bDirty(true),
+      m_dataSize(0),
+      m_visualSampleRate(0),
+      m_audioVisualRatio(0),
+      m_textureStride(computeTextureStride(0)),
+      m_completion(-1) {
     readByteArray(data);
 }
 
 Waveform::Waveform(int audioSampleRate, int audioSamples,
                    int desiredVisualSampleRate, int maxVisualSamples)
-        : m_id(-1),
-          m_bDirty(true),
-          m_dataSize(0),
-          m_visualSampleRate(0),
-          m_audioVisualRatio(0),
-          m_textureStride(1024),
-          m_completion(-1) {
+    : m_id(-1),
+      m_bDirty(true),
+      m_dataSize(0),
+      m_visualSampleRate(0),
+      m_audioVisualRatio(0),
+      m_textureStride(1024),
+      m_completion(-1) {
     int numberOfVisualSamples = 0;
     if (audioSampleRate > 0) {
         if (maxVisualSamples == -1) {
             // Waveform
             if (desiredVisualSampleRate < audioSampleRate) {
                 m_visualSampleRate =
-                        static_cast<double>(desiredVisualSampleRate);
+                    static_cast<double>(desiredVisualSampleRate);
             } else {
                 m_visualSampleRate = static_cast<double>(audioSampleRate);
             }
@@ -51,7 +51,7 @@ Waveform::Waveform(int audioSampleRate, int audioSamples,
             // Waveform Summary (Overview)
             if (audioSamples > maxVisualSamples) {
                 m_visualSampleRate = (double)maxVisualSamples *
-                        (double)audioSampleRate / (double)audioSamples;
+                                     (double)audioSampleRate / (double)audioSamples;
             } else {
                 m_visualSampleRate = audioSampleRate;
             }
@@ -140,12 +140,12 @@ void Waveform::readByteArray(const QByteArray& data) {
     }
 
     if (!waveform.has_visual_sample_rate() ||
-        !waveform.has_audio_visual_ratio() ||
-        !waveform.has_signal_all() ||
-        !waveform.has_signal_filtered() ||
-        !waveform.signal_filtered().has_low() ||
-        !waveform.signal_filtered().has_mid() ||
-        !waveform.signal_filtered().has_high()) {
+            !waveform.has_audio_visual_ratio() ||
+            !waveform.has_signal_all() ||
+            !waveform.has_signal_filtered() ||
+            !waveform.signal_filtered().has_low() ||
+            !waveform.signal_filtered().has_mid() ||
+            !waveform.signal_filtered().has_high()) {
         qDebug() << "ERROR: Waveform proto is missing key data. Skipping.";
         return;
     }
@@ -173,8 +173,8 @@ void Waveform::readByteArray(const QByteArray& data) {
     m_visualSampleRate = waveform.visual_sample_rate();
     m_audioVisualRatio = waveform.audio_visual_ratio();
     if (low.value_size() != dataSize ||
-        mid.value_size() != dataSize ||
-        high.value_size() != dataSize) {
+            mid.value_size() != dataSize ||
+            high.value_size() != dataSize) {
         qDebug() << "WARNING: Filtered data size does not match all-signal size.";
     }
 
@@ -190,7 +190,8 @@ void Waveform::readByteArray(const QByteArray& data) {
         bool use_high = high_valid && i < high.value_size();
         m_data[i].filtered.low = use_low ? static_cast<unsigned char>(low.value(i)) : 0;
         m_data[i].filtered.mid = use_mid ? static_cast<unsigned char>(mid.value(i)) : 0;
-        m_data[i].filtered.high = use_high ? static_cast<unsigned char>(high.value(i)) : 0;
+        m_data[i].filtered.high = use_high ? static_cast<unsigned char>(high.value(
+                                      i)) : 0;
     }
     m_completion = dataSize;
     m_bDirty = false;

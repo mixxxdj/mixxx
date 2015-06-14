@@ -1,8 +1,8 @@
 #include "movinginterquartilemean.h"
 
 MovingInterquartileMean::MovingInterquartileMean(const unsigned int listMaxSize)
-        : m_iListMaxSize(listMaxSize),
-          m_bChanged(true) {
+    : m_iListMaxSize(listMaxSize),
+      m_bChanged(true) {
 }
 
 MovingInterquartileMean::~MovingInterquartileMean() {};
@@ -70,7 +70,8 @@ double MovingInterquartileMean::mean() {
         double interQuartileRange = 2 * quartileSize;
         int nFullValues = m_list.size() - 2*static_cast<int>(quartileSize) - 2;
         double quartileWeight = (interQuartileRange - nFullValues) / 2;
-        QLinkedList<double>::iterator it = m_list.begin() + static_cast<int>(quartileSize);
+        QLinkedList<double>::iterator it = m_list.begin() + static_cast<int>
+                                           (quartileSize);
         double d_sum = *it * quartileWeight;
         ++it;
         for (int k = 0; k < nFullValues; ++k, ++it) {

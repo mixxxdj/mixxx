@@ -32,22 +32,23 @@ static const int kMaxSortColumns = 3;
 BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
                                      TrackCollection* pTrackCollection,
                                      const char* settingsNamespace)
-        : QAbstractTableModel(pParent),
-          TrackModel(pTrackCollection->getDatabase(), settingsNamespace),
-          m_pTrackCollection(pTrackCollection),
-          m_trackDAO(pTrackCollection->getTrackDAO()),
-          m_database(pTrackCollection->getDatabase()),
-          m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
-          m_iPreviewDeckTrackId(-1),
-          m_bInitialized(false),
-          m_currentSearch(""),
-          m_trackSourceSortColumn(kIdColumn),
-          m_trackSourceSortOrder(Qt::AscendingOrder) {
+    : QAbstractTableModel(pParent),
+      TrackModel(pTrackCollection->getDatabase(), settingsNamespace),
+      m_pTrackCollection(pTrackCollection),
+      m_trackDAO(pTrackCollection->getTrackDAO()),
+      m_database(pTrackCollection->getDatabase()),
+      m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
+      m_iPreviewDeckTrackId(-1),
+      m_bInitialized(false),
+      m_currentSearch(""),
+      m_trackSourceSortColumn(kIdColumn),
+      m_trackSourceSortOrder(Qt::AscendingOrder) {
     connect(&PlayerInfo::instance(), SIGNAL(trackLoaded(QString, TrackPointer)),
             this, SLOT(trackLoaded(QString, TrackPointer)));
     connect(&m_trackDAO, SIGNAL(forceModelUpdate()),
             this, SLOT(select()));
-    trackLoaded(m_previewDeckGroup, PlayerInfo::instance().getTrackInfo(m_previewDeckGroup));
+    trackLoaded(m_previewDeckGroup,
+                PlayerInfo::instance().getTrackInfo(m_previewDeckGroup));
 }
 
 BaseSqlTableModel::~BaseSqlTableModel() {
@@ -113,7 +114,7 @@ QSqlDatabase BaseSqlTableModel::database() const {
 }
 
 void BaseSqlTableModel::setHeaderProperties(
-        ColumnCache::Column column, QString title, int defaultWidth) {
+    ColumnCache::Column column, QString title, int defaultWidth) {
     int fi = fieldIndex(column);
     setHeaderData(fi, Qt::Horizontal, m_tableColumnCache.columnName(column),
                   TrackModel::kHeaderNameRole);
@@ -122,7 +123,7 @@ void BaseSqlTableModel::setHeaderProperties(
 }
 
 bool BaseSqlTableModel::setHeaderData(int section, Qt::Orientation orientation,
-                                      const QVariant &value, int role) {
+                                      const QVariant& value, int role) {
     int numColumns = columnCount();
     if (section < 0 || section >= numColumns) {
         return false;
@@ -154,13 +155,15 @@ QVariant BaseSqlTableModel::headerData(int section, Qt::Orientation orientation,
             headerValue = QVariant(section).toString();
         }
         return headerValue;
-    } else if (role == TrackModel::kHeaderWidthRole && orientation == Qt::Horizontal) {
+    } else if (role == TrackModel::kHeaderWidthRole &&
+               orientation == Qt::Horizontal) {
         QVariant widthValue = m_headerInfo.value(section).value(role);
         if (!widthValue.isValid()) {
             return 50;
         }
         return widthValue;
-    } else if (role == TrackModel::kHeaderNameRole && orientation == Qt::Horizontal) {
+    } else if (role == TrackModel::kHeaderNameRole &&
+               orientation == Qt::Horizontal) {
         return m_headerInfo.value(section).value(role);
     }
     return QAbstractTableModel::headerData(section, orientation, role);
@@ -203,7 +206,7 @@ void BaseSqlTableModel::select() {
 
     // Prepare query for id and all columns not in m_trackSource
     QString queryString = QString("SELECT %1 FROM %2 %3")
-            .arg(m_tableColumnsJoined, m_tableName, m_tableOrderBy);
+                          .arg(m_tableColumnsJoined, m_tableName, m_tableOrderBy);
 
     if (sDebug) {
         qDebug() << this << "select() executing:" << queryString;
@@ -353,12 +356,14 @@ const QString BaseSqlTableModel::currentSearch() const {
     return m_currentSearch;
 }
 
-void BaseSqlTableModel::setSearch(const QString& searchText, const QString& extraFilter) {
+void BaseSqlTableModel::setSearch(const QString& searchText,
+                                  const QString& extraFilter) {
     if (sDebug) {
         qDebug() << this << "setSearch" << searchText;
     }
 
-    bool searchIsDifferent = m_currentSearch.isNull() || m_currentSearch != searchText;
+    bool searchIsDifferent = m_currentSearch.isNull() ||
+                             m_currentSearch != searchText;
     bool filterDisabled = (m_currentSearchFilter.isNull() && extraFilter.isNull());
     bool searchFilterIsDifferent = m_currentSearchFilter != extraFilter;
 
@@ -371,7 +376,8 @@ void BaseSqlTableModel::setSearch(const QString& searchText, const QString& extr
     m_currentSearchFilter = extraFilter;
 }
 
-void BaseSqlTableModel::search(const QString& searchText, const QString& extraFilter) {
+void BaseSqlTableModel::search(const QString& searchText,
+                               const QString& extraFilter) {
     if (sDebug) {
         qDebug() << this << "search" << searchText;
     }
@@ -433,11 +439,11 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
         QString field = m_tableColumns[column];
         QString sort_field = QString("%1.%2").arg(m_tableName, field);
         m_tableOrderBy.append(sort_field);
-    #ifdef __SQLITE3__
+#ifdef __SQLITE3__
         m_tableOrderBy.append(" COLLATE localeAwareCompare");
-    #endif
+#endif
         m_tableOrderBy.append((order == Qt::AscendingOrder) ?
-                " ASC" : " DESC");
+                              " ASC" : " DESC");
         m_sortColumns.clear();
     } else if (m_trackSource) {
         for (int i = 0; i < m_sortColumns.size(); ++i) {
@@ -465,11 +471,11 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
 
             m_trackSourceOrderBy.append(sort_field);
 
-    #ifdef __SQLITE3__
+#ifdef __SQLITE3__
             m_trackSourceOrderBy.append(" COLLATE localeAwareCompare");
-    #endif
+#endif
             m_trackSourceOrderBy.append((sc.m_order == Qt::AscendingOrder) ?
-                    " ASC" : " DESC");
+                                        " ASC" : " DESC");
             //qDebug() << m_trackSourceOrderBy;
         }
     }
@@ -555,94 +561,96 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
     // Format the value based on whether we are in a tooltip, display, or edit
     // role
     switch (role) {
-        case Qt::ToolTipRole:
-        case Qt::DisplayRole:
-            if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION)) {
-                int duration = value.toInt();
-                if (duration > 0) {
-                    value = Time::formatSeconds(duration, false);
-                } else {
-                    value = QString();
-                }
-            } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
-                if (qVariantCanConvert<int>(value))
-                    value = qVariantFromValue(StarRating(value.toInt()));
-            } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED)) {
-                if (qVariantCanConvert<int>(value))
-                    value =  QString("(%1)").arg(value.toInt());
-            } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED)) {
-                value = value.toBool();
-            } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED)) {
-                QDateTime gmtDate = value.toDateTime();
-                gmtDate.setTimeSpec(Qt::UTC);
-                value = gmtDate.toLocalTime();
-            } else if (column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
-                QDateTime gmtDate = value.toDateTime();
-                gmtDate.setTimeSpec(Qt::UTC);
-                value = gmtDate.toLocalTime();
-            } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK)) {
-                value = value.toBool();
-            } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR)) {
-                if (Qt::DisplayRole == role) {
-                    value = Mixxx::TrackMetadata::formatCalendarYear(value.toString());
-                }
-            } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER)) {
-                int track_number = value.toInt();
-                if (track_number <= 0) {
-                    // clear invalid values
-                    value = QString();
-                }
-            } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE)) {
-                int bitrate = value.toInt();
-                if (bitrate <= 0) {
-                    // clear invalid values
-                    value = QString();
-                }
-            } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY)) {
-                // If we know the semantic key via the LIBRARYTABLE_KEY_ID
-                // column (as opposed to the string representation of the key
-                // currently stored in the DB) then lookup the key and render it
-                // using the user's selected notation.
-                int keyIdColumn = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID);
-                if (keyIdColumn != -1) {
-                    mixxx::track::io::key::ChromaticKey key =
-                            KeyUtils::keyFromNumericValue(
-                                index.sibling(row, keyIdColumn).data().toInt());
-
-                    if (key != mixxx::track::io::key::INVALID) {
-                        // Render this key with the user-provided notation.
-                        value = KeyUtils::keyToString(key);
-                    }
-                }
-                // Otherwise, just use the column value.
+    case Qt::ToolTipRole:
+    case Qt::DisplayRole:
+        if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION)) {
+            int duration = value.toInt();
+            if (duration > 0) {
+                value = Time::formatSeconds(duration, false);
+            } else {
+                value = QString();
             }
+        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
+            if (qVariantCanConvert<int>(value))
+                value = qVariantFromValue(StarRating(value.toInt()));
+        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED)) {
+            if (qVariantCanConvert<int>(value))
+                value =  QString("(%1)").arg(value.toInt());
+        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED)) {
+            value = value.toBool();
+        } else if (column == fieldIndex(
+                       ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED)) {
+            QDateTime gmtDate = value.toDateTime();
+            gmtDate.setTimeSpec(Qt::UTC);
+            value = gmtDate.toLocalTime();
+        } else if (column == fieldIndex(
+                       ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
+            QDateTime gmtDate = value.toDateTime();
+            gmtDate.setTimeSpec(Qt::UTC);
+            value = gmtDate.toLocalTime();
+        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK)) {
+            value = value.toBool();
+        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR)) {
+            if (Qt::DisplayRole == role) {
+                value = Mixxx::TrackMetadata::formatCalendarYear(value.toString());
+            }
+        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER)) {
+            int track_number = value.toInt();
+            if (track_number <= 0) {
+                // clear invalid values
+                value = QString();
+            }
+        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE)) {
+            int bitrate = value.toInt();
+            if (bitrate <= 0) {
+                // clear invalid values
+                value = QString();
+            }
+        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY)) {
+            // If we know the semantic key via the LIBRARYTABLE_KEY_ID
+            // column (as opposed to the string representation of the key
+            // currently stored in the DB) then lookup the key and render it
+            // using the user's selected notation.
+            int keyIdColumn = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID);
+            if (keyIdColumn != -1) {
+                mixxx::track::io::key::ChromaticKey key =
+                    KeyUtils::keyFromNumericValue(
+                        index.sibling(row, keyIdColumn).data().toInt());
 
-            break;
-        case Qt::EditRole:
-            if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
-                value = value.toDouble();
-            } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED)) {
-                value = index.sibling(
-                    row, fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED)).data().toBool();
-            } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
-                if (qVariantCanConvert<int>(value)) {
-                    value = qVariantFromValue(StarRating(value.toInt()));
+                if (key != mixxx::track::io::key::INVALID) {
+                    // Render this key with the user-provided notation.
+                    value = KeyUtils::keyToString(key);
                 }
             }
-            break;
-        case Qt::CheckStateRole:
-            if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED)) {
-                bool played = index.sibling(
+            // Otherwise, just use the column value.
+        }
+
+        break;
+    case Qt::EditRole:
+        if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
+            value = value.toDouble();
+        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED)) {
+            value = index.sibling(
                         row, fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED)).data().toBool();
-                value = played ? Qt::Checked : Qt::Unchecked;
-            } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
-                bool locked = index.sibling(
-                        row, fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK)).data().toBool();
-                value = locked ? Qt::Checked : Qt::Unchecked;
+        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
+            if (qVariantCanConvert<int>(value)) {
+                value = qVariantFromValue(StarRating(value.toInt()));
             }
-            break;
-        default:
-            break;
+        }
+        break;
+    case Qt::CheckStateRole:
+        if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED)) {
+            bool played = index.sibling(
+                              row, fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED)).data().toBool();
+            value = played ? Qt::Checked : Qt::Unchecked;
+        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
+            bool locked = index.sibling(
+                              row, fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK)).data().toBool();
+            value = locked ? Qt::Checked : Qt::Unchecked;
+        }
+        break;
+    default:
+        break;
     }
     return value;
 }
@@ -656,17 +664,20 @@ bool BaseSqlTableModel::setData(
     int column = index.column();
 
     if (sDebug) {
-        qDebug() << this << "setData() column:" << column << "value:" << value << "role:" << role;
+        qDebug() << this << "setData() column:" << column << "value:" << value <<
+                 "role:" << role;
     }
 
     // Over-ride sets to TIMESPLAYED and re-direct them to PLAYED
     if (role == Qt::CheckStateRole) {
         QString val = value.toInt() > 0 ? QString("true") : QString("false");
         if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED)) {
-            QModelIndex playedIndex = index.sibling(index.row(), fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED));
+            QModelIndex playedIndex = index.sibling(index.row(),
+                                                    fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED));
             return setData(playedIndex, val, Qt::EditRole);
         } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
-            QModelIndex bpmLockindex = index.sibling(index.row(), fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK));
+            QModelIndex bpmLockindex = index.sibling(index.row(),
+                                       fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK));
             return setData(bpmLockindex, val, Qt::EditRole);
         }
         return false;
@@ -701,12 +712,12 @@ bool BaseSqlTableModel::setData(
     return true;
 }
 
-Qt::ItemFlags BaseSqlTableModel::flags(const QModelIndex &index) const {
+Qt::ItemFlags BaseSqlTableModel::flags(const QModelIndex& index) const {
     return readWriteFlags(index);
 }
 
 Qt::ItemFlags BaseSqlTableModel::readWriteFlags(
-    const QModelIndex &index) const {
+    const QModelIndex& index) const {
     if (!index.isValid())
         return Qt::ItemIsEnabled;
 
@@ -725,24 +736,25 @@ Qt::ItemFlags BaseSqlTableModel::readWriteFlags(
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART)) {
         return defaultFlags;
-    } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED))  {
+    } else if (column == fieldIndex(
+                   ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED))  {
         return defaultFlags | Qt::ItemIsUserCheckable;
     } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK)) {
         return defaultFlags | Qt::ItemIsUserCheckable;
-    } else if(column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
+    } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
         // Allow checking of the BPM-locked indicator.
         defaultFlags |= Qt::ItemIsUserCheckable;
         // Disable editing of BPM field when BPM is locked
         bool locked = index.sibling(
-            index.row(), fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK))
-                .data().toBool();
+                          index.row(), fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK))
+                      .data().toBool();
         return locked ? defaultFlags : defaultFlags | Qt::ItemIsEditable;
     } else {
         return defaultFlags | Qt::ItemIsEditable;
     }
 }
 
-Qt::ItemFlags BaseSqlTableModel::readOnlyFlags(const QModelIndex &index) const {
+Qt::ItemFlags BaseSqlTableModel::readOnlyFlags(const QModelIndex& index) const {
     Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
     if (!index.isValid())
         return Qt::ItemIsEnabled;
@@ -756,7 +768,7 @@ Qt::ItemFlags BaseSqlTableModel::readOnlyFlags(const QModelIndex &index) const {
 
 const QLinkedList<int> BaseSqlTableModel::getTrackRows(int trackId) const {
     QHash<int, QLinkedList<int> >::const_iterator it =
-            m_trackIdToRows.constFind(trackId);
+        m_trackIdToRows.constFind(trackId);
     if (it != m_trackIdToRows.constEnd()) {
         return it.value();
     }
@@ -779,7 +791,8 @@ QString BaseSqlTableModel::getTrackLocation(const QModelIndex& index) const {
         return "";
     }
     QString location = index.sibling(
-        index.row(), fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LOCATION)).data().toString();
+                           index.row(), fieldIndex(
+                               ColumnCache::COLUMN_LIBRARYTABLE_LOCATION)).data().toString();
     return location;
 }
 
@@ -819,7 +832,7 @@ void BaseSqlTableModel::tracksChanged(QSet<int> trackIds) {
 }
 
 void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
-                                               QVariant value) {
+        QVariant value) {
     // TODO(XXX) Qt properties could really help here.
     if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ARTIST) == column) {
         pTrack->setArtist(value.toString());
@@ -870,8 +883,8 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
 QVariant BaseSqlTableModel::getBaseValue(
     const QModelIndex& index, int role) const {
     if (role != Qt::DisplayRole &&
-        role != Qt::ToolTipRole &&
-        role != Qt::EditRole) {
+            role != Qt::ToolTipRole &&
+            role != Qt::EditRole) {
         return QVariant();
     }
 
@@ -927,8 +940,8 @@ QVariant BaseSqlTableModel::getBaseValue(
     return QVariant();
 }
 
-QMimeData* BaseSqlTableModel::mimeData(const QModelIndexList &indexes) const {
-    QMimeData *mimeData = new QMimeData();
+QMimeData* BaseSqlTableModel::mimeData(const QModelIndexList& indexes) const {
+    QMimeData* mimeData = new QMimeData();
     QList<QUrl> urls;
 
     // The list of indexes we're given contains separates indexes for each
@@ -952,12 +965,14 @@ QMimeData* BaseSqlTableModel::mimeData(const QModelIndexList &indexes) const {
     return mimeData;
 }
 
-QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject* pParent) {
+QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i,
+        QObject* pParent) {
     if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
         return new StarDelegate(pParent);
     } else if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
         return new BPMDelegate(pParent);
-    } else if (PlayerManager::numPreviewDecks() > 0 && i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
+    } else if (PlayerManager::numPreviewDecks() > 0 &&
+               i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
         return new PreviewButtonDelegate(pParent, i);
     } else if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART)) {
         CoverArtDelegate* pCoverDelegate = new CoverArtDelegate(pParent);

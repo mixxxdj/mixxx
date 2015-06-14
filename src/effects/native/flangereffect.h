@@ -13,8 +13,8 @@
 
 struct FlangerGroupState {
     FlangerGroupState()
-            : delayPos(0),
-              time(0) {
+        : delayPos(0),
+          time(0) {
         SampleUtil::applyGain(delayLeft, 0, MAX_BUFFER_LEN);
         SampleUtil::applyGain(delayRight, 0, MAX_BUFFER_LEN);
     }

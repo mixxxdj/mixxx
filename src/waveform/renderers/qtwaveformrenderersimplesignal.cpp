@@ -10,7 +10,8 @@
 
 #include <QLinearGradient>
 
-QtWaveformRendererSimpleSignal::QtWaveformRendererSimpleSignal(WaveformWidgetRenderer* waveformWidgetRenderer) :
+QtWaveformRendererSimpleSignal::QtWaveformRendererSimpleSignal(
+    WaveformWidgetRenderer* waveformWidgetRenderer) :
     WaveformRendererSignalBase(waveformWidgetRenderer) {
 
 }
@@ -36,7 +37,8 @@ inline void setPoint(QPointF& point, qreal x, qreal y) {
     point.setY(y);
 }
 
-void QtWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*event*/) {
+void QtWaveformRendererSimpleSignal::draw(QPainter* painter,
+        QPaintEvent* /*event*/) {
 
     TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
     if (!pTrack) {
@@ -84,8 +86,10 @@ void QtWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
         painter->drawLine(0,0,m_waveformRenderer->getWidth(),0);
     }
 
-    const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
-    const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
+    const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition()
+                                    * dataSize;
+    const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() *
+                                   dataSize;
     m_polygon.clear();
     m_polygon.reserve(2 * m_waveformRenderer->getWidth() + 2);
     m_polygon.append(QPointF(0.0, 0.0));
@@ -94,7 +98,7 @@ void QtWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
 
     // Represents the # of waveform data points per horizontal pixel.
     const double gain = (lastVisualIndex - firstVisualIndex) /
-            (double)m_waveformRenderer->getWidth();
+                        (double)m_waveformRenderer->getWidth();
 
     //NOTE(vrince) Please help me find a better name for "channelSeparation"
     //this variable stand for merged channel ... 1 = merged & 2 = separated
@@ -190,7 +194,7 @@ void QtWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
             unsigned char maxAll = 0;
 
             for (int i = visualIndexStart; i >= 0 && i < dataSize && i <= visualIndexStop;
-                 i += channelSeparation) {
+                    i += channelSeparation) {
                 const WaveformData& waveformData = *(data + i);
                 unsigned char all = waveformData.filtered.all;
                 maxAll = math_max(maxAll, all);

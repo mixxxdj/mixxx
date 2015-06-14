@@ -33,18 +33,18 @@
 #define DEFAULT_HOLDSIZE 5
 
 WVuMeter::WVuMeter(QWidget* parent)
-        : WWidget(parent),
-          m_dParameter(0),
-          m_dPeakParameter(0),
-          m_dLastParameter(0),
-          m_dLastPeakParameter(0),
-          m_iPixmapLength(0),
-          m_bHorizontal(false),
-          m_iPeakHoldSize(0),
-          m_iPeakFallStep(0),
-          m_iPeakHoldTime(0),
-          m_iPeakFallTime(0),
-          m_dPeakHoldCountdownMs(0) {
+    : WWidget(parent),
+      m_dParameter(0),
+      m_dPeakParameter(0),
+      m_dLastParameter(0),
+      m_dLastPeakParameter(0),
+      m_iPixmapLength(0),
+      m_bHorizontal(false),
+      m_iPeakHoldSize(0),
+      m_iPeakFallStep(0),
+      m_iPeakHoldTime(0),
+      m_iPeakFallTime(0),
+      m_dPeakHoldCountdownMs(0) {
     m_timer.start();
 }
 
@@ -54,7 +54,7 @@ WVuMeter::~WVuMeter() {
 void WVuMeter::setup(QDomNode node, const SkinContext& context) {
     // Set pixmaps
     bool bHorizontal = context.hasNode(node, "Horizontal") &&
-    context.selectString(node, "Horizontal") == "true";
+                       context.selectString(node, "Horizontal") == "true";
 
     // Set background pixmap if available
     if (context.hasNode(node, "PathBack")) {
@@ -88,7 +88,8 @@ void WVuMeter::setup(QDomNode node, const SkinContext& context) {
         m_iPeakFallTime = DEFAULT_FALLTIME;
 }
 
-void WVuMeter::setPixmapBackground(PixmapSource source, Paintable::DrawMode mode) {
+void WVuMeter::setPixmapBackground(PixmapSource source,
+                                   Paintable::DrawMode mode) {
     m_pPixmapBack = WPixmapStore::getPaintable(source, mode);
     if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
         qDebug() << metaObject()->className()
@@ -148,18 +149,19 @@ void WVuMeter::updateState(double msecsElapsed) {
     // milliseconds elapsed over the fall time multiplier. The peak will fall
     // FallStep times (out of 128 steps) every FallTime milliseconds.
     m_dPeakParameter -= static_cast<double>(m_iPeakFallStep) *
-            msecsElapsed /
-            static_cast<double>(m_iPeakFallTime * m_iPixmapLength);
+                        msecsElapsed /
+                        static_cast<double>(m_iPeakFallTime * m_iPixmapLength);
     m_dPeakParameter = math_clamp(m_dPeakParameter, 0.0, 1.0);
 }
 
 void WVuMeter::maybeUpdate() {
-    if (m_dParameter != m_dLastParameter || m_dPeakParameter != m_dLastPeakParameter) {
+    if (m_dParameter != m_dLastParameter ||
+            m_dPeakParameter != m_dLastPeakParameter) {
         repaint();
     }
 }
 
-void WVuMeter::paintEvent(QPaintEvent *) {
+void WVuMeter::paintEvent(QPaintEvent*) {
     ScopedTimer t("WVuMeter::paintEvent");
 
     QStyleOption option;
@@ -181,22 +183,22 @@ void WVuMeter::paintEvent(QPaintEvent *) {
         // Draw (part of) vu
         if (m_bHorizontal) {
             const double widgetPosition = math_clamp(widgetWidth * m_dParameter,
-                                                     0.0, widgetWidth);
+                                          0.0, widgetWidth);
             QRectF targetRect(0, 0, widgetPosition, widgetHeight);
 
             const double pixmapPosition = math_clamp(pixmapWidth * m_dParameter,
-                                                     0.0, pixmapWidth);
+                                          0.0, pixmapWidth);
             QRectF sourceRect(0, 0, pixmapPosition,  m_pPixmapVu->height());
             m_pPixmapVu->draw(targetRect, &p, sourceRect);
 
             if (m_iPeakHoldSize > 0 && m_dPeakParameter > 0.0) {
                 const double widgetPeakPosition = math_clamp(
-                        widgetWidth * m_dPeakParameter, 0.0, widgetWidth);
+                                                      widgetWidth * m_dPeakParameter, 0.0, widgetWidth);
                 const double widgetPeakHoldSize = widgetWidth *
-                        static_cast<double>(m_iPeakHoldSize) / pixmapWidth;
+                                                  static_cast<double>(m_iPeakHoldSize) / pixmapWidth;
 
                 const double pixmapPeakPosition = math_clamp(
-                        pixmapWidth * m_dPeakParameter, 0.0, pixmapWidth);
+                                                      pixmapWidth * m_dPeakParameter, 0.0, pixmapWidth);
                 const double pixmapPeakHoldSize = m_iPeakHoldSize;
 
                 targetRect = QRectF(widgetPeakPosition - widgetPeakHoldSize, 0,
@@ -207,24 +209,24 @@ void WVuMeter::paintEvent(QPaintEvent *) {
             }
         } else {
             const double widgetPosition = math_clamp(widgetHeight * m_dParameter,
-                                                     0.0, widgetHeight);
+                                          0.0, widgetHeight);
             QRectF targetRect(0, widgetHeight - widgetPosition,
                               widgetWidth, widgetPosition);
 
             const double pixmapPosition = math_clamp(pixmapHeight * m_dParameter,
-                                                     0.0, pixmapHeight);
+                                          0.0, pixmapHeight);
             QRectF sourceRect(0, pixmapHeight - pixmapPosition,
                               pixmapWidth, pixmapPosition);
             m_pPixmapVu->draw(targetRect, &p, sourceRect);
 
             if (m_iPeakHoldSize > 0 && m_dPeakParameter > 0.0) {
                 const double widgetPeakPosition = math_clamp(
-                        widgetHeight * m_dPeakParameter, 0.0, widgetHeight);
+                                                      widgetHeight * m_dPeakParameter, 0.0, widgetHeight);
                 const double widgetPeakHoldSize = widgetHeight *
-                        static_cast<double>(m_iPeakHoldSize) / pixmapHeight;
+                                                  static_cast<double>(m_iPeakHoldSize) / pixmapHeight;
 
                 const double pixmapPeakPosition = math_clamp(
-                        pixmapHeight * m_dPeakParameter, 0.0, pixmapHeight);
+                                                      pixmapHeight * m_dPeakParameter, 0.0, pixmapHeight);
                 const double pixmapPeakHoldSize = m_iPeakHoldSize;
 
                 targetRect = QRectF(0, widgetHeight - widgetPeakPosition,

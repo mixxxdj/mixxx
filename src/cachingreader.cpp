@@ -18,14 +18,14 @@ const int CachingReader::maximumChunksInMemory = 80;
 
 CachingReader::CachingReader(QString group,
                              ConfigObject<ConfigValue>* config)
-        : m_pConfig(config),
-          m_chunkReadRequestFIFO(1024),
-          m_readerStatusFIFO(1024),
-          m_readerStatus(INVALID),
-          m_mruChunk(NULL),
-          m_lruChunk(NULL),
-          m_sampleBuffer(CachingReaderWorker::kSamplesPerChunk * maximumChunksInMemory),
-          m_iTrackNumFramesCallbackSafe(0) {
+    : m_pConfig(config),
+      m_chunkReadRequestFIFO(1024),
+      m_readerStatusFIFO(1024),
+      m_readerStatus(INVALID),
+      m_mruChunk(NULL),
+      m_lruChunk(NULL),
+      m_sampleBuffer(CachingReaderWorker::kSamplesPerChunk* maximumChunksInMemory),
+      m_iTrackNumFramesCallbackSafe(0) {
 
     m_allocatedChunks.reserve(m_sampleBuffer.size());
 
@@ -50,8 +50,8 @@ CachingReader::CachingReader(QString group,
     }
 
     m_pWorker = new CachingReaderWorker(group,
-            &m_chunkReadRequestFIFO,
-            &m_readerStatusFIFO);
+                                        &m_chunkReadRequestFIFO,
+                                        &m_readerStatusFIFO);
 
     // Forward signals from worker
     connect(m_pWorker, SIGNAL(trackLoading()),
@@ -155,7 +155,7 @@ void CachingReader::freeAllChunks() {
     m_mruChunk = NULL;
 
     for (QVector<Chunk*>::const_iterator it = m_chunks.constBegin();
-         it != m_chunks.constEnd(); ++it) {
+            it != m_chunks.constEnd(); ++it) {
         Chunk* pChunk = *it;
 
         // We will receive CHUNK_READ_INVALID for all pending chunk reads which
@@ -260,7 +260,7 @@ void CachingReader::process() {
             m_readerStatus = status.status;
             m_iTrackNumFramesCallbackSafe = status.trackFrameCount;
         } else if ((status.status == CHUNK_READ_SUCCESS) ||
-                (status.status == CHUNK_READ_PARTIAL)) {
+                   (status.status == CHUNK_READ_PARTIAL)) {
             Chunk* pChunk = status.chunk;
 
             // This should not be possible unless there is a bug in
@@ -278,7 +278,8 @@ void CachingReader::process() {
         } else if (status.status == CHUNK_READ_EOF) {
             Chunk* pChunk = status.chunk;
             if (pChunk == NULL) {
-                qDebug() << "ERROR: status.chunk is NULL in CHUNK_READ_EOF ReaderStatusUpdate. Ignoring update.";
+                qDebug() <<
+                         "ERROR: status.chunk is NULL in CHUNK_READ_EOF ReaderStatusUpdate. Ignoring update.";
                 continue;
             }
 
@@ -288,7 +289,8 @@ void CachingReader::process() {
             qDebug() << "WARNING: READER THREAD RECEIVED INVALID CHUNK READ";
             Chunk* pChunk = status.chunk;
             if (pChunk == NULL) {
-                qDebug() << "ERROR: status.chunk is NULL in CHUNK_READ_INVALID ReaderStatusUpdate. Ignoring update.";
+                qDebug() <<
+                         "ERROR: status.chunk is NULL in CHUNK_READ_INVALID ReaderStatusUpdate. Ignoring update.";
                 continue;
             }
             DEBUG_ASSERT(pChunk->state == Chunk::READ_IN_PROGRESS);
@@ -352,7 +354,8 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
     int frames_remaining = samples_remaining / CachingReaderWorker::kChunkChannels;
     const int start_frame = math_min(m_iTrackNumFramesCallbackSafe, frame);
     const int start_chunk = chunkForFrame(start_frame);
-    const int end_frame = math_min(m_iTrackNumFramesCallbackSafe, frame + (frames_remaining - 1));
+    const int end_frame = math_min(m_iTrackNumFramesCallbackSafe,
+                                   frame + (frames_remaining - 1));
     const int end_chunk = chunkForFrame(end_frame);
 
     int current_frame = frame;
@@ -414,7 +417,8 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
         if (chunk_remaining_frames < 0) {
             chunk_remaining_frames = 0;
         }
-        const int frames_to_read = math_clamp(frames_remaining, 0, chunk_remaining_frames);
+        const int frames_to_read = math_clamp(frames_remaining, 0,
+                                              chunk_remaining_frames);
 
         // If we did not decide to read any samples from this chunk then that
         // means we have exhausted all the samples in the song.
@@ -429,9 +433,12 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
             break;
         }
 
-        const int chunk_sample_offset = chunk_frame_offset * CachingReaderWorker::kChunkChannels;
-        const int samples_to_read = frames_to_read * CachingReaderWorker::kChunkChannels;
-        SampleUtil::copy(buffer, current->stereoSamples + chunk_sample_offset, samples_to_read);
+        const int chunk_sample_offset = chunk_frame_offset *
+                                        CachingReaderWorker::kChunkChannels;
+        const int samples_to_read = frames_to_read *
+                                    CachingReaderWorker::kChunkChannels;
+        SampleUtil::copy(buffer, current->stereoSamples + chunk_sample_offset,
+                         samples_to_read);
         buffer += samples_to_read;
         samples_remaining -= samples_to_read;
         current_frame += frames_to_read;
@@ -471,7 +478,7 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
     bool shouldWake = false;
 
     for (HintVector::const_iterator it = hintList.constBegin();
-         it != hintList.constEnd(); ++it) {
+            it != hintList.constEnd(); ++it) {
         // Copy, don't use reference.
         Hint hint = *it;
 
@@ -494,10 +501,10 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
         DEBUG_ASSERT(0 == (hint.length % CachingReaderWorker::kChunkChannels));
         const int frame_count = hint.length / CachingReaderWorker::kChunkChannels;
         const int start_frame = math_clamp(frame, 0,
-                                      m_iTrackNumFramesCallbackSafe);
+                                           m_iTrackNumFramesCallbackSafe);
         const int start_chunk = chunkForFrame(start_frame);
         int end_frame = math_clamp(frame + (frame_count - 1), 0,
-                m_iTrackNumFramesCallbackSafe);
+                                   m_iTrackNumFramesCallbackSafe);
         const int end_chunk = chunkForFrame(end_frame);
 
         for (int current = start_chunk; current <= end_chunk; ++current) {

@@ -20,13 +20,13 @@
 #include "sampleutil.h"
 
 EngineBufferScale::EngineBufferScale()
-        : m_iSampleRate(44100),
-          m_dBaseRate(1.0),
-          m_bSpeedAffectsPitch(false),
-          m_dTempoRatio(1.0),
-          m_dPitchRatio(1.0),
-          m_buffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
-          m_samplesRead(0) {
+    : m_iSampleRate(44100),
+      m_dBaseRate(1.0),
+      m_bSpeedAffectsPitch(false),
+      m_dTempoRatio(1.0),
+      m_dPitchRatio(1.0),
+      m_buffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
+      m_samplesRead(0) {
 }
 
 EngineBufferScale::~EngineBufferScale() {

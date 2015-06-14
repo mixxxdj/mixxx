@@ -24,7 +24,7 @@ class EffectProcessor {
     virtual ~EffectProcessor() { }
 
     virtual void initialize(
-            const QSet<ChannelHandleAndGroup>& registeredChannels) = 0;
+        const QSet<ChannelHandleAndGroup>& registeredChannels) = 0;
 
     // Take a buffer of numSamples samples of audio from a channel, provided as
     // pInput, process the buffer according to Effect-specific logic, and output
@@ -56,8 +56,8 @@ class PerChannelEffectProcessor : public EffectProcessor {
     }
     virtual ~PerChannelEffectProcessor() {
         for (typename ChannelHandleMap<ChannelStateHolder>::iterator it =
-                     m_channelState.begin();
-             it != m_channelState.end(); ++it) {
+                    m_channelState.begin();
+                it != m_channelState.end(); ++it) {
             T* pState = it->state;
             delete pState;
         }
@@ -65,7 +65,7 @@ class PerChannelEffectProcessor : public EffectProcessor {
     }
 
     virtual void initialize(
-            const QSet<ChannelHandleAndGroup>& registeredChannels) {
+        const QSet<ChannelHandleAndGroup>& registeredChannels) {
         foreach (const ChannelHandleAndGroup& channel, registeredChannels) {
             getOrCreateChannelState(channel.handle());
         }

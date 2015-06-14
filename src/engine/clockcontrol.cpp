@@ -7,7 +7,7 @@
 #include "controlobjectslave.h"
 
 ClockControl::ClockControl(QString group, ConfigObject<ConfigValue>* pConfig)
-        : EngineControl(group, pConfig) {
+    : EngineControl(group, pConfig) {
     m_pCOBeatActive = new ControlObject(ConfigKey(group, "beat_active"));
     m_pCOBeatActive->set(0.0);
     m_pCOSampleRate = new ControlObjectSlave("[Master]","samplerate");
@@ -44,7 +44,7 @@ void ClockControl::trackUnloaded(TrackPointer pTrack) {
 }
 
 void ClockControl::slotBeatsUpdated() {
-    if(m_pTrack) {
+    if (m_pTrack) {
         m_pBeats = m_pTrack->getBeats();
     }
 }
@@ -62,7 +62,8 @@ double ClockControl::process(const double dRate,
 
     // Multiply by two to get samples from frames. Interval is scaled linearly
     // by the rate.
-    const double blinkIntervalSamples = 2.0 * samplerate * (1.0 * dRate) * blinkSeconds;
+    const double blinkIntervalSamples = 2.0 * samplerate * (1.0 * dRate) *
+                                        blinkSeconds;
 
     if (m_pBeats) {
         double closestBeat = m_pBeats->findClosestBeat(currentSample);

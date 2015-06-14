@@ -23,7 +23,7 @@ class EngineMicrophoneTest : public testing::Test {
 
         // No need for a real handle in this test.
         m_pMicrophone = new EngineMicrophone(
-                ChannelHandleAndGroup(ChannelHandle(), "[Microphone]"), NULL);
+            ChannelHandleAndGroup(ChannelHandle(), "[Microphone]"), NULL);
         m_pTalkover = ControlObject::getControl(ConfigKey("[Microphone]", "talkover"));
     }
 
@@ -57,7 +57,8 @@ class EngineMicrophoneTest : public testing::Test {
         }
     }
 
-    void AssertWholeBufferEquals(const CSAMPLE* pBuffer, CSAMPLE value, int iBufferLen) {
+    void AssertWholeBufferEquals(const CSAMPLE* pBuffer, CSAMPLE value,
+                                 int iBufferLen) {
         for (int i = 0; i < iBufferLen; ++i) {
             ASSERT_FLOAT_EQ(value, pBuffer[i]);
         }

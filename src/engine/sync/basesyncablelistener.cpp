@@ -7,9 +7,9 @@
 static const char* kInternalClockGroup = "[InternalClock]";
 
 BaseSyncableListener::BaseSyncableListener(ConfigObject<ConfigValue>* pConfig)
-        : m_pConfig(pConfig),
-          m_pInternalClock(new InternalClock(kInternalClockGroup, this)),
-          m_pMasterSyncable(NULL) {
+    : m_pConfig(pConfig),
+      m_pInternalClock(new InternalClock(kInternalClockGroup, this)),
+      m_pMasterSyncable(NULL) {
     qRegisterMetaType<SyncMode>("SyncMode");
     m_pInternalClock->setMasterBpm(124.0);
 }
@@ -17,7 +17,7 @@ BaseSyncableListener::BaseSyncableListener(ConfigObject<ConfigValue>* pConfig)
 BaseSyncableListener::~BaseSyncableListener() {
     // We use the slider value because that is never set to 0.0.
     m_pConfig->set(ConfigKey("[InternalClock]", "bpm"), ConfigValue(
-        m_pInternalClock->getBpm()));
+                       m_pInternalClock->getBpm()));
     delete m_pInternalClock;
 }
 
@@ -110,7 +110,8 @@ void BaseSyncableListener::setMasterBpm(Syncable* pSource, double bpm) {
     }
 }
 
-void BaseSyncableListener::setMasterInstantaneousBpm(Syncable* pSource, double bpm) {
+void BaseSyncableListener::setMasterInstantaneousBpm(Syncable* pSource,
+        double bpm) {
     if (pSource != m_pInternalClock) {
         m_pInternalClock->setInstantaneousBpm(bpm);
     }
@@ -136,7 +137,8 @@ void BaseSyncableListener::setMasterBaseBpm(Syncable* pSource, double bpm) {
     }
 }
 
-void BaseSyncableListener::setMasterBeatDistance(Syncable* pSource, double beat_distance) {
+void BaseSyncableListener::setMasterBeatDistance(Syncable* pSource,
+        double beat_distance) {
     if (pSource != m_pInternalClock) {
         m_pInternalClock->setMasterBeatDistance(beat_distance);
     }
@@ -149,8 +151,9 @@ void BaseSyncableListener::setMasterBeatDistance(Syncable* pSource, double beat_
     }
 }
 
-void BaseSyncableListener::setMasterParams(Syncable* pSource, double beat_distance,
-                                           double base_bpm, double bpm) {
+void BaseSyncableListener::setMasterParams(Syncable* pSource,
+        double beat_distance,
+        double base_bpm, double bpm) {
     if (pSource != m_pInternalClock) {
         m_pInternalClock->setMasterParams(beat_distance, base_bpm, bpm);
     }

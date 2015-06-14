@@ -6,10 +6,10 @@
 #include "controllers/midi/midimessage.h"
 
 ControlDelegate::ControlDelegate(QObject* pParent)
-        : QStyledItemDelegate(pParent),
-          m_pPicker(new ControlPickerMenu(NULL)),
-          m_iMidiOptionsColumn(-1),
-          m_bIsIndexScript(false) {
+    : QStyledItemDelegate(pParent),
+      m_pPicker(new ControlPickerMenu(NULL)),
+      m_iMidiOptionsColumn(-1),
+      m_bIsIndexScript(false) {
 }
 
 ControlDelegate::~ControlDelegate() {
@@ -30,7 +30,7 @@ void ControlDelegate::paint(QPainter* painter,
     // Custom logic for MIDI. If we are enabled for script then say so.
     if (m_iMidiOptionsColumn != -1) {
         QModelIndex optionsColumn = index.sibling(index.row(),
-                                                  m_iMidiOptionsColumn);
+                                    m_iMidiOptionsColumn);
         MidiOptions options = qVariantValue<MidiOptions>(optionsColumn.data());
         m_bIsIndexScript = options.script;
     }
@@ -86,6 +86,6 @@ void ControlDelegate::setModelData(QWidget* editor,
     QStringList keyStrs = pLineEdit->text().split(",");
     if (keyStrs.size() == 2) {
         model->setData(index, qVariantFromValue(
-            ConfigKey(keyStrs.at(0), keyStrs.at(1))), Qt::EditRole);
+                           ConfigKey(keyStrs.at(0), keyStrs.at(1))), Qt::EditRole);
     }
 }

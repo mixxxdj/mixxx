@@ -18,7 +18,8 @@ class ControlObjectThread;
 class VisualPlayPosition;
 class VinylControlManager;
 
-class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityListener {
+class WSpinny : public QGLWidget, public WBaseWidget,
+    public VinylSignalQualityListener {
     Q_OBJECT
   public:
     WSpinny(QWidget* parent, const QString& group,
@@ -29,8 +30,8 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     void onVinylSignalQualityUpdate(const VinylSignalQualityReport& report);
 
     void setup(QDomNode node, const SkinContext& context);
-    void dragEnterEvent(QDragEnterEvent *event);
-    void dropEvent(QDropEvent *event);
+    void dragEnterEvent(QDragEnterEvent* event);
+    void dropEvent(QDropEvent* event);
 
   public slots:
     void slotLoadTrack(TrackPointer);
@@ -53,9 +54,9 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
   protected:
     //QWidget:
     void paintEvent(QPaintEvent*);
-    void mouseMoveEvent(QMouseEvent * e);
-    void mousePressEvent(QMouseEvent * e);
-    void mouseReleaseEvent(QMouseEvent * e);
+    void mouseMoveEvent(QMouseEvent* e);
+    void mousePressEvent(QMouseEvent* e);
+    void mouseReleaseEvent(QMouseEvent* e);
     void resizeEvent(QResizeEvent*);
     void showEvent(QShowEvent* event);
     void hideEvent(QHideEvent* event);

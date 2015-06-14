@@ -9,16 +9,16 @@
 
 EffectChain::EffectChain(EffectsManager* pEffectsManager, const QString& id,
                          EffectChainPointer pPrototype)
-        : QObject(pEffectsManager),
-          m_pEffectsManager(pEffectsManager),
-          m_pPrototype(pPrototype),
-          m_bEnabled(true),
-          m_id(id),
-          m_name(""),
-          m_insertionType(EffectChain::INSERT),
-          m_dMix(0),
-          m_pEngineEffectChain(NULL),
-          m_bAddedToEngine(false) {
+    : QObject(pEffectsManager),
+      m_pEffectsManager(pEffectsManager),
+      m_pPrototype(pPrototype),
+      m_bEnabled(true),
+      m_id(id),
+      m_name(""),
+      m_insertionType(EffectChain::INSERT),
+      m_dMix(0),
+      m_pEngineEffectChain(NULL),
+      m_bAddedToEngine(false) {
 }
 
 EffectChain::~EffectChain() {
@@ -99,7 +99,7 @@ EffectChainPointer EffectChain::clone(EffectChainPointer pChain) {
     }
     foreach (EffectPointer pEffect, pChain->effects()) {
         EffectPointer pClonedEffect = pChain->m_pEffectsManager
-                ->instantiateEffect(pEffect->getManifest().id());
+                                      ->instantiateEffect(pEffect->getManifest().id());
         pClone->addEffect(pClonedEffect);
     }
     return EffectChainPointer(pClone);
@@ -155,7 +155,8 @@ void EffectChain::enableForChannel(const ChannelHandleAndGroup& handle_group) {
     }
 }
 
-bool EffectChain::enabledForChannel(const ChannelHandleAndGroup& handle_group) const {
+bool EffectChain::enabledForChannel(const ChannelHandleAndGroup& handle_group)
+const {
     return m_enabledChannels.contains(handle_group);
 }
 
@@ -203,8 +204,8 @@ void EffectChain::addEffect(EffectPointer pEffect) {
 
     if (m_effects.contains(pEffect)) {
         qWarning() << debugString()
-                 << "WARNING: EffectChain already contains Effect:"
-                 << pEffect;
+                   << "WARNING: EffectChain already contains Effect:"
+                   << pEffect;
         return;
     }
     m_effects.append(pEffect);
@@ -298,7 +299,8 @@ EffectChainPointer EffectChain::fromXML(EffectsManager* pEffectsManager,
     QString id = XmlParse::selectNodeQString(element, "Id");
     QString name = XmlParse::selectNodeQString(element, "Name");
     QString description = XmlParse::selectNodeQString(element, "Description");
-    QString insertionTypeStr = XmlParse::selectNodeQString(element, "InsertionType");
+    QString insertionTypeStr = XmlParse::selectNodeQString(element,
+                               "InsertionType");
 
     EffectChain* pChain = new EffectChain(pEffectsManager, id);
     pChain->setName(name);
@@ -318,7 +320,7 @@ EffectChainPointer EffectChain::fromXML(EffectsManager* pEffectsManager,
         QDomNode effect = effectChildren.at(i);
         if (effect.isElement()) {
             EffectPointer pEffect = Effect::fromXML(
-                pEffectsManager, effect.toElement());
+                                        pEffectsManager, effect.toElement());
             if (pEffect) {
                 pChain->addEffect(pEffect);
             }

@@ -11,10 +11,13 @@ class WaveformWidgetRenderer;
 
 class WaveformRendererAbstract {
   public:
-    explicit WaveformRendererAbstract(WaveformWidgetRenderer* waveformWidgetRenderer);
+    explicit WaveformRendererAbstract(WaveformWidgetRenderer*
+                                      waveformWidgetRenderer);
     virtual ~WaveformRendererAbstract();
 
-    virtual bool init() {return true; }
+    virtual bool init() {
+        return true;
+    }
     virtual void setup(const QDomNode& node, const SkinContext& context) = 0;
     virtual void draw(QPainter* painter, QPaintEvent* event) = 0;
 

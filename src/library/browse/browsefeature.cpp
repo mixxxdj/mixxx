@@ -26,20 +26,22 @@ BrowseFeature::BrowseFeature(QObject* parent,
                              ConfigObject<ConfigValue>* pConfig,
                              TrackCollection* pTrackCollection,
                              RecordingManager* pRecordingManager)
-        : LibraryFeature(parent),
-          m_pConfig(pConfig),
-          m_browseModel(this, pTrackCollection, pRecordingManager),
-          m_proxyModel(&m_browseModel),
-          m_pTrackCollection(pTrackCollection),
-          m_pLastRightClickedItem(NULL) {
+    : LibraryFeature(parent),
+      m_pConfig(pConfig),
+      m_browseModel(this, pTrackCollection, pRecordingManager),
+      m_proxyModel(&m_browseModel),
+      m_pTrackCollection(pTrackCollection),
+      m_pLastRightClickedItem(NULL) {
     connect(this, SIGNAL(requestAddDir(QString)),
             parent, SLOT(slotRequestAddDir(QString)));
 
     m_pAddQuickLinkAction = new QAction(tr("Add to Quick Links"),this);
-    connect(m_pAddQuickLinkAction, SIGNAL(triggered()), this, SLOT(slotAddQuickLink()));
+    connect(m_pAddQuickLinkAction, SIGNAL(triggered()), this,
+            SLOT(slotAddQuickLink()));
 
     m_pRemoveQuickLinkAction = new QAction(tr("Remove from Quick Links"),this);
-    connect(m_pRemoveQuickLinkAction, SIGNAL(triggered()), this, SLOT(slotRemoveQuickLink()));
+    connect(m_pRemoveQuickLinkAction, SIGNAL(triggered()), this,
+            SLOT(slotRemoveQuickLink()));
 
     m_pAddtoLibraryAction = new QAction(tr("Add to Library"),this);
     connect(m_pAddtoLibraryAction, SIGNAL(triggered()),
@@ -56,7 +58,8 @@ BrowseFeature::BrowseFeature(QObject* parent,
     // The invisible root item of the child model
     TreeItem* rootItem = new TreeItem();
 
-    m_pQuickLinkItem = new TreeItem(tr("Quick Links"), QUICK_LINK_NODE, this, rootItem);
+    m_pQuickLinkItem = new TreeItem(tr("Quick Links"), QUICK_LINK_NODE, this,
+                                    rootItem);
     rootItem->appendChild(m_pQuickLinkItem);
 
     // Create the 'devices' shortcut
@@ -109,7 +112,7 @@ BrowseFeature::BrowseFeature(QObject* parent,
     foreach (QString quickLinkPath, m_quickLinkList) {
         QString name = extractNameFromPath(quickLinkPath);
         qDebug() << "Appending Quick Link: " << name << "---" << quickLinkPath;
-        TreeItem *item = new TreeItem(name, quickLinkPath, this, m_pQuickLinkItem);
+        TreeItem* item = new TreeItem(name, quickLinkPath, this, m_pQuickLinkItem);
         m_pQuickLinkItem->appendChild(item);
     }
 
@@ -131,7 +134,7 @@ void BrowseFeature::slotAddQuickLink() {
 
     QString spath = m_pLastRightClickedItem->dataPath().toString();
     QString name = extractNameFromPath(spath);
-    TreeItem *item = new TreeItem(name, spath, this, m_pQuickLinkItem);
+    TreeItem* item = new TreeItem(name, spath, this, m_pQuickLinkItem);
     m_pQuickLinkItem->appendChild(item);
     m_quickLinkList.append(spath);
     saveQuickLinks();
@@ -152,7 +155,7 @@ void BrowseFeature::slotAddToLibrary() {
                       "these directories won't be available until you rescan "
                       "your library. Would you like to rescan now?"));
     QPushButton* scanButton = msgBox.addButton(
-        tr("Scan"), QMessageBox::AcceptRole);
+                                  tr("Scan"), QMessageBox::AcceptRole);
     msgBox.addButton(QMessageBox::Cancel);
     msgBox.setDefaultButton(scanButton);
     msgBox.exec();
@@ -211,7 +214,7 @@ void BrowseFeature::activate() {
 // Note: This is executed whenever you single click on an child item
 // Single clicks will not populate sub folders
 void BrowseFeature::activateChild(const QModelIndex& index) {
-    TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
+    TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
     qDebug() << "BrowseFeature::activateChild " << item->data() << " "
              << item->dataPath();
 
@@ -237,8 +240,9 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
     emit(enableCoverArtDisplay(false));
 }
 
-void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
-    TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
+void BrowseFeature::onRightClickChild(const QPoint& globalPos,
+                                      QModelIndex index) {
+    TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
     m_pLastRightClickedItem = item;
 
     if (!item) {
@@ -261,20 +265,20 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
 
     foreach (const QString& str, m_quickLinkList) {
         if (str == path) {
-             return;
+            return;
         }
-     }
+    }
 
-     menu.addAction(m_pAddQuickLinkAction);
-     menu.addAction(m_pAddtoLibraryAction);
-     menu.exec(globalPos);
-     onLazyChildExpandation(index);
+    menu.addAction(m_pAddQuickLinkAction);
+    menu.addAction(m_pAddtoLibraryAction);
+    menu.exec(globalPos);
+    onLazyChildExpandation(index);
 }
 
 // This is called whenever you double click or use the triangle symbol to expand
 // the subtree. The method will read the subfolders.
 void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
-    TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
+    TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
     if (!item) {
         return;
     }
@@ -314,7 +318,7 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
         MDir dir(path);
 
         QFileInfoList all = dir.dir().entryInfoList(
-            QDir::Dirs | QDir::NoDotAndDotDot);
+                                QDir::Dirs | QDir::NoDotAndDotDot);
 
         // loop through all the item and construct the childs
         foreach (QFileInfo one, all) {
@@ -344,7 +348,7 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
 QString BrowseFeature::getRootViewHtml() const {
     QString browseTitle = tr("Browse");
     QString browseSummary = tr("Browse lets you navigate, view, and load tracks"
-                        " from folders on your hard disk and external devices.");
+                               " from folders on your hard disk and external devices.");
 
     QString html;
     html.append(QString("<h2>%1</h2>").arg(browseTitle));
@@ -356,7 +360,7 @@ QString BrowseFeature::getRootViewHtml() const {
 
 void BrowseFeature::saveQuickLinks() {
     m_pConfig->set(ConfigKey("[Browse]","QuickLinks"),ConfigValue(
-        m_quickLinkList.join(kQuickLinksSeparator)));
+                       m_quickLinkList.join(kQuickLinksSeparator)));
 }
 
 void BrowseFeature::loadQuickLinks() {
@@ -364,7 +368,7 @@ void BrowseFeature::loadQuickLinks() {
         m_quickLinkList = getDefaultQuickLinks();
     } else {
         m_quickLinkList = m_pConfig->getValueString(
-            ConfigKey("[Browse]","QuickLinks")).split(kQuickLinksSeparator);
+                              ConfigKey("[Browse]","QuickLinks")).split(kQuickLinksSeparator);
     }
 }
 
@@ -379,13 +383,13 @@ QStringList BrowseFeature::getDefaultQuickLinks() const {
     // Default configuration
     QStringList mixxxMusicDirs = m_pTrackCollection->getDirectoryDAO().getDirs();
     QDir osMusicDir(QDesktopServices::storageLocation(
-            QDesktopServices::MusicLocation));
+                        QDesktopServices::MusicLocation));
     QDir osDocumentsDir(QDesktopServices::storageLocation(
-            QDesktopServices::DocumentsLocation));
+                            QDesktopServices::DocumentsLocation));
     QDir osHomeDir(QDesktopServices::storageLocation(
-            QDesktopServices::HomeLocation));
+                       QDesktopServices::HomeLocation));
     QDir osDesktopDir(QDesktopServices::storageLocation(
-            QDesktopServices::DesktopLocation));
+                          QDesktopServices::DesktopLocation));
     QDir osDownloadsDir(osHomeDir);
     // TODO(XXX) i18n -- no good way to get the download path. We could tr() it
     // but the translator may not realize we want the usual name of the

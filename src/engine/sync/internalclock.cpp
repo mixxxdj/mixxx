@@ -9,25 +9,26 @@
 #include "configobject.h"
 
 InternalClock::InternalClock(const char* pGroup, SyncableListener* pEngineSync)
-        : m_group(pGroup),
-          m_pEngineSync(pEngineSync),
-          m_mode(SYNC_NONE),
-          m_iOldSampleRate(44100),
-          m_dOldBpm(124.0),
-          m_dBeatLength(m_iOldSampleRate * 60.0 / m_dOldBpm),
-          m_dClockPosition(0) {
+    : m_group(pGroup),
+      m_pEngineSync(pEngineSync),
+      m_mode(SYNC_NONE),
+      m_iOldSampleRate(44100),
+      m_dOldBpm(124.0),
+      m_dBeatLength(m_iOldSampleRate * 60.0 / m_dOldBpm),
+      m_dClockPosition(0) {
     // Pick a wide range (1 to 200) and allow out of bounds sets. This lets you
     // map a soft-takeover MIDI knob to the master BPM. This also creates bpm_up
     // and bpm_down controls.
     // bpm_up / bpm_down steps by 1
     // bpm_up_small / bpm_down_small steps by 0.1
     m_pClockBpm.reset(new ControlLinPotmeter(ConfigKey(m_group, "bpm"),
-                                          1, 200, 1, 0.1, true));
+                      1, 200, 1, 0.1, true));
     connect(m_pClockBpm.data(), SIGNAL(valueChanged(double)),
             this, SLOT(slotBpmChanged(double)),
             Qt::DirectConnection);
 
-    m_pClockBeatDistance.reset(new ControlObject(ConfigKey(m_group, "beat_distance")));
+    m_pClockBeatDistance.reset(new ControlObject(ConfigKey(m_group,
+                               "beat_distance")));
     connect(m_pClockBeatDistance.data(), SIGNAL(valueChanged(double)),
             this, SLOT(slotBeatDistanceChanged(double)),
             Qt::DirectConnection);
@@ -120,7 +121,8 @@ void InternalClock::setInstantaneousBpm(double bpm) {
     Q_UNUSED(bpm);
 }
 
-void InternalClock::setMasterParams(double beatDistance, double baseBpm, double bpm) {
+void InternalClock::setMasterParams(double beatDistance, double baseBpm,
+                                    double bpm) {
     Q_UNUSED(baseBpm)
     if (bpm == 0) {
         return;
@@ -159,7 +161,8 @@ void InternalClock::updateBeatLength(int sampleRate, double bpm) {
     // that last term is 1 over bpm.
 
     if (qFuzzyCompare(bpm, 0)) {
-        qDebug() << "WARNING: Master bpm reported to be zero, internal clock guessing 124bpm";
+        qDebug() <<
+                 "WARNING: Master bpm reported to be zero, internal clock guessing 124bpm";
         m_dBeatLength = (sampleRate * 60.0) / 124.0;
         m_dOldBpm = 124.0;
     } else {
@@ -191,7 +194,8 @@ void InternalClock::onCallbackEnd(int sampleRate, int bufferSize) {
 
     // Can't use mod because we're in double land.
     if (m_dBeatLength <= 0) {
-        qDebug() << "ERROR: Calculated <= 0 samples per beat which is impossible.  Forcibly "
+        qDebug() <<
+                 "ERROR: Calculated <= 0 samples per beat which is impossible.  Forcibly "
                  << "setting to about 124 bpm at 44.1Khz.";
         m_dBeatLength = 21338;
     }

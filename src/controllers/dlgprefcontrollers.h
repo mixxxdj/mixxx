@@ -12,7 +12,8 @@ class DlgPreferences;
 class DlgPrefController;
 class ControllerManager;
 
-class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControllersDlg {
+class DlgPrefControllers : public DlgPreferencePage,
+    public Ui::DlgPrefControllersDlg {
     Q_OBJECT
   public:
     DlgPrefControllers(DlgPreferences* pDlgPreferences,

@@ -73,8 +73,8 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     // preset, not a pointer to the preset itself.
     void presetLoaded(ControllerPresetPointer pPreset);
 
-  // Making these slots protected/private ensures that other parts of Mixxx can
-  // only signal them which allows us to use no locks.
+    // Making these slots protected/private ensures that other parts of Mixxx can
+    // only signal them which allows us to use no locks.
   protected slots:
     // Handles packets of raw bytes and passes them to an ".incomingData" script
     // function that is assumed to exist. (Sub-classes may want to reimplement
@@ -123,7 +123,9 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     virtual int close() = 0;
     // Requests that the device poll if it is a polling device. Returns true
     // if events were handled.
-    virtual bool poll() { return false; }
+    virtual bool poll() {
+        return false;
+    }
 
   private:
     // This must be reimplemented by sub-classes desiring to send raw bytes to a
@@ -155,7 +157,8 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     bool m_bDebug;
     bool m_bLearning;
 
-    friend class ControllerManager; // accesses lots of our stuff, but in the same thread
+    friend class
+        ControllerManager; // accesses lots of our stuff, but in the same thread
 };
 
 #endif

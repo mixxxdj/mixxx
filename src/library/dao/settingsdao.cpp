@@ -4,7 +4,7 @@
 #include "library/dao/settingsdao.h"
 
 SettingsDAO::SettingsDAO(QSqlDatabase& db)
-        : m_db(db) {
+    : m_db(db) {
 }
 
 SettingsDAO::~SettingsDAO() {

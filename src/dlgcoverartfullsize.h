@@ -7,8 +7,8 @@
 #include "library/coverart.h"
 
 class DlgCoverArtFullSize
-        : public QDialog,
-          public Ui::DlgCoverArtFullSize {
+    : public QDialog,
+      public Ui::DlgCoverArtFullSize {
     Q_OBJECT
   public:
     DlgCoverArtFullSize(QWidget* parent=0);

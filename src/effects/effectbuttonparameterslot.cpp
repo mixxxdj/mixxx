@@ -7,26 +7,26 @@
 #include "util/math.h"
 
 EffectButtonParameterSlot::EffectButtonParameterSlot(const QString& group,
-                                                     const unsigned int iParameterSlotNumber)
-        : EffectParameterSlotBase(group,
-                                  iParameterSlotNumber) {
+        const unsigned int iParameterSlotNumber)
+    : EffectParameterSlotBase(group,
+                              iParameterSlotNumber) {
     QString itemPrefix = formatItemPrefix(iParameterSlotNumber);
     m_pControlLoaded = new ControlObject(
-            ConfigKey(m_group, itemPrefix + QString("_loaded")));
+        ConfigKey(m_group, itemPrefix + QString("_loaded")));
     m_pControlValue = new ControlPushButton(
-            ConfigKey(m_group, itemPrefix));
+        ConfigKey(m_group, itemPrefix));
     m_pControlValue->setButtonMode(ControlPushButton::POWERWINDOW);
     m_pControlType = new ControlObject(
-            ConfigKey(m_group, itemPrefix + QString("_type")));
+        ConfigKey(m_group, itemPrefix + QString("_type")));
 
     connect(m_pControlValue, SIGNAL(valueChanged(double)),
             this, SLOT(slotValueChanged(double)));
 
     // Read-only controls.
     m_pControlType->connectValueChangeRequest(
-            this, SLOT(slotValueType(double)));
+        this, SLOT(slotValueType(double)));
     m_pControlLoaded->connectValueChangeRequest(
-            this, SLOT(slotLoaded(double)));
+        this, SLOT(slotLoaded(double)));
 
     clear();
 }
@@ -54,15 +54,18 @@ void EffectButtonParameterSlot::loadEffect(EffectPointer pEffect) {
             //qDebug() << debugString() << "Loading effect parameter" << m_pEffectParameter->name();
             double dValue = m_pEffectParameter->getValue();
             double dMinimum = m_pEffectParameter->getMinimum();
-            double dMinimumLimit = dMinimum; // TODO(rryan) expose limit from EffectParameter
+            double dMinimumLimit =
+                dMinimum; // TODO(rryan) expose limit from EffectParameter
             double dMaximum = m_pEffectParameter->getMaximum();
-            double dMaximumLimit = dMaximum; // TODO(rryan) expose limit from EffectParameter
+            double dMaximumLimit =
+                dMaximum; // TODO(rryan) expose limit from EffectParameter
             double dDefault = m_pEffectParameter->getDefault();
 
             if (dValue > dMaximum || dValue < dMinimum ||
-                dMinimum < dMinimumLimit || dMaximum > dMaximumLimit ||
-                dDefault > dMaximum || dDefault < dMinimum) {
-                qWarning() << debugString() << "WARNING: EffectParameter does not satisfy basic sanity checks.";
+                    dMinimum < dMinimumLimit || dMaximum > dMaximumLimit ||
+                    dDefault > dMaximum || dDefault < dMinimum) {
+                qWarning() << debugString() <<
+                           "WARNING: EffectParameter does not satisfy basic sanity checks.";
             }
 
             // qDebug() << debugString()
@@ -71,7 +74,8 @@ void EffectButtonParameterSlot::loadEffect(EffectPointer pEffect) {
 
             m_pControlValue->set(dValue);
             m_pControlValue->setDefaultValue(dDefault);
-            EffectManifestParameter::ControlHint type = m_pEffectParameter->getControlHint();
+            EffectManifestParameter::ControlHint type =
+                m_pEffectParameter->getControlHint();
             // TODO(rryan) expose this from EffectParameter
             m_pControlType->setAndConfirm(static_cast<double>(type));
             // Default loaded parameters to loaded and unlinked

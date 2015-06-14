@@ -13,12 +13,14 @@ class ControlObject;
 class ControlPushButton;
 
 class EffectButtonParameterSlot;
-typedef QSharedPointer<EffectButtonParameterSlot> EffectButtonParameterSlotPointer;
+typedef QSharedPointer<EffectButtonParameterSlot>
+EffectButtonParameterSlotPointer;
 
 class EffectButtonParameterSlot : public EffectParameterSlotBase {
     Q_OBJECT
   public:
-    EffectButtonParameterSlot(const QString& group, const unsigned int iParameterSlotNumber);
+    EffectButtonParameterSlot(const QString& group,
+                              const unsigned int iParameterSlotNumber);
     virtual ~EffectButtonParameterSlot();
 
     static QString formatItemPrefix(const unsigned int iParameterSlotNumber) {
@@ -38,7 +40,8 @@ class EffectButtonParameterSlot : public EffectParameterSlotBase {
 
   private:
     QString debugString() const {
-        return QString("EffectButtonParameterSlot(%1,%2)").arg(m_group).arg(m_iParameterSlotNumber);
+        return QString("EffectButtonParameterSlot(%1,%2)").arg(m_group).arg(
+                   m_iParameterSlotNumber);
     }
 
     // Control exposed to the rest of Mixxx

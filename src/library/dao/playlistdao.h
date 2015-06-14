@@ -41,11 +41,15 @@ class PlaylistDAO : public QObject, public virtual DAO {
     virtual ~PlaylistDAO();
 
     void initialize();
-    void setDatabase(QSqlDatabase& database) { m_database = database; }
+    void setDatabase(QSqlDatabase& database) {
+        m_database = database;
+    }
     // Create a playlist, fails with -1 if already exists
-    int createPlaylist(const QString& name, const HiddenType type = PLHT_NOT_HIDDEN);
+    int createPlaylist(const QString& name,
+                       const HiddenType type = PLHT_NOT_HIDDEN);
     // Create a playlist, appends "(n)" if already exists, name becomes the new name
-    int createUniquePlaylist(QString* pName, const HiddenType type = PLHT_NOT_HIDDEN);
+    int createUniquePlaylist(QString* pName,
+                             const HiddenType type = PLHT_NOT_HIDDEN);
     // Delete a playlist
     void deletePlaylist(const int playlistId);
     // Rename a playlist
@@ -83,7 +87,8 @@ class PlaylistDAO : public QObject, public virtual DAO {
     // Insert a track into a specific position in a playlist
     bool insertTrackIntoPlaylist(int trackId, int playlistId, int position);
     // Inserts a list of tracks into playlist
-    int insertTracksIntoPlaylist(const QList<int>& trackIds, const int playlistId, int position);
+    int insertTracksIntoPlaylist(const QList<int>& trackIds, const int playlistId,
+                                 int position);
     // Add a playlist to the Auto-DJ Queue
     void addPlaylistToAutoDJQueue(const int playlistId, const bool bTop);
     // Add a list of tracks to the Auto-DJ Queue
@@ -97,9 +102,10 @@ class PlaylistDAO : public QObject, public virtual DAO {
     int tracksInPlaylist(const int playlistId) const;
     // moved Track to a new position
     void moveTrack(const int playlistId,
-            const int oldPosition, const int newPosition);
+                   const int oldPosition, const int newPosition);
     // shuffles all tracks in the position List
-    void shuffleTracks(const int playlistId, const QList<int>& positions, const QHash<int,int>& allIds);
+    void shuffleTracks(const int playlistId, const QList<int>& positions,
+                       const QHash<int,int>& allIds);
     bool isTrackInPlaylist(const int trackId, const int playlistId) const;
 
     void getPlaylistsTrackIsIn(const int trackId, QSet<int>* playlistSet) const;

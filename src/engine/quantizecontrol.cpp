@@ -14,7 +14,7 @@
 
 QuantizeControl::QuantizeControl(QString group,
                                  ConfigObject<ConfigValue>* pConfig)
-        : EngineControl(group, pConfig) {
+    : EngineControl(group, pConfig) {
     // Turn quantize OFF by default. See Bug #898213
     m_pCOQuantizeEnabled = new ControlPushButton(ConfigKey(group, "quantize"));
     m_pCOQuantizeEnabled->setButtonMode(ControlPushButton::TOGGLE);
@@ -84,7 +84,8 @@ void QuantizeControl::setCurrentSample(const double dCurrentSample,
     // do so.
     // NOTE: This bypasses the epsilon calculation, but is there a way
     //       that could actually cause a problem?
-    if (dCurrentSample < m_pCOPrevBeat->get() || dCurrentSample > m_pCONextBeat->get()) {
+    if (dCurrentSample < m_pCOPrevBeat->get() ||
+            dCurrentSample > m_pCONextBeat->get()) {
         lookupBeatPositions(dCurrentSample);
     }
     updateClosestBeat(dCurrentSample);
@@ -120,8 +121,8 @@ void QuantizeControl::updateClosestBeat(double dCurrentSample) {
         m_pCOClosestBeat->set(prevBeat);
     } else {
         double currentClosestBeat =
-                (nextBeat - dCurrentSample > dCurrentSample - prevBeat) ?
-                        prevBeat : nextBeat;
+            (nextBeat - dCurrentSample > dCurrentSample - prevBeat) ?
+            prevBeat : nextBeat;
         DEBUG_ASSERT_AND_HANDLE(even(static_cast<int>(currentClosestBeat))) {
             currentClosestBeat--;
         }

@@ -9,11 +9,11 @@
 
 #define kConfigKey "[Modplug]"
 
-DlgPrefModplug::DlgPrefModplug(QWidget *parent,
-                               ConfigObject<ConfigValue> *_config)
-        : DlgPreferencePage(parent),
-          m_pUi(new Ui::DlgPrefModplug),
-          m_pConfig(_config) {
+DlgPrefModplug::DlgPrefModplug(QWidget* parent,
+                               ConfigObject<ConfigValue>* _config)
+    : DlgPreferencePage(parent),
+      m_pUi(new Ui::DlgPrefModplug),
+      m_pConfig(_config) {
     m_pUi->setupUi(this);
     m_pUi->advancedSettings->setVisible(m_pUi->showAdvanced->isChecked());
 }
@@ -51,35 +51,35 @@ void DlgPrefModplug::slotResetToDefaults() {
 
 void DlgPrefModplug::loadSettings() {
     m_pUi->memoryLimit->setValue(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"PerTrackMemoryLimitMB"),"256").toInt());
+                                     ConfigKey(kConfigKey,"PerTrackMemoryLimitMB"),"256").toInt());
     m_pUi->oversampling->setChecked(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"OversamplingEnabled"),"1") == QString("1"));
+                                        ConfigKey(kConfigKey,"OversamplingEnabled"),"1") == QString("1"));
     m_pUi->noiseReduction->setChecked(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"NoiseReductionEnabled"),"0") == QString("1"));
+                                          ConfigKey(kConfigKey,"NoiseReductionEnabled"),"0") == QString("1"));
     m_pUi->stereoSeparation->setValue(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"StereoSeparation"),"1").toInt());
+                                          ConfigKey(kConfigKey,"StereoSeparation"),"1").toInt());
     m_pUi->maxMixChannels->setValue(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"MaxMixChannels"),"128").toInt());
+                                        ConfigKey(kConfigKey,"MaxMixChannels"),"128").toInt());
     m_pUi->resampleMode->setCurrentIndex(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"ResamplingMode"),"1").toInt());
+            ConfigKey(kConfigKey,"ResamplingMode"),"1").toInt());
     m_pUi->reverb->setChecked(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"ReverbEnabled"),"0") == QString("1"));
+                                  ConfigKey(kConfigKey,"ReverbEnabled"),"0") == QString("1"));
     m_pUi->reverbDepth->setValue(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"ReverbLevel"),"50").toInt());
+                                     ConfigKey(kConfigKey,"ReverbLevel"),"50").toInt());
     m_pUi->reverbDelay->setValue(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"ReverbDelay"),"50").toInt());
+                                     ConfigKey(kConfigKey,"ReverbDelay"),"50").toInt());
     m_pUi->megabass->setChecked(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"MegabassEnabled"),"0") == QString("1"));
+                                    ConfigKey(kConfigKey,"MegabassEnabled"),"0") == QString("1"));
     m_pUi->bassDepth->setValue(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"MegabassLevel"),"50").toInt());
+                                   ConfigKey(kConfigKey,"MegabassLevel"),"50").toInt());
     m_pUi->bassCutoff->setValue(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"MegabassCutoff"),"50").toInt());
+                                    ConfigKey(kConfigKey,"MegabassCutoff"),"50").toInt());
     m_pUi->surround->setChecked(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"SurroundEnabled"),"0") == QString("1"));
+                                    ConfigKey(kConfigKey,"SurroundEnabled"),"0") == QString("1"));
     m_pUi->surroundDepth->setValue(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"SurroundLevel"),"50").toInt());
+                                       ConfigKey(kConfigKey,"SurroundLevel"),"50").toInt());
     m_pUi->surroundDelay->setValue(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"SurroundDelay"),"50").toInt());
+                                       ConfigKey(kConfigKey,"SurroundDelay"),"50").toInt());
 }
 
 void DlgPrefModplug::saveSettings() {

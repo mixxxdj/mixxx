@@ -8,7 +8,7 @@
 #include "util/performancetimer.h"
 
 GLVSyncTestRenderer::GLVSyncTestRenderer(
-        WaveformWidgetRenderer* waveformWidgetRenderer)
+    WaveformWidgetRenderer* waveformWidgetRenderer)
     : WaveformRendererSignalBase(waveformWidgetRenderer),
       m_drawcount(0) {
 }
@@ -16,7 +16,7 @@ GLVSyncTestRenderer::GLVSyncTestRenderer(
 GLVSyncTestRenderer::~GLVSyncTestRenderer() {
 }
 
-void GLVSyncTestRenderer::onSetup(const QDomNode &node) {
+void GLVSyncTestRenderer::onSetup(const QDomNode& node) {
     Q_UNUSED(node);
 }
 
@@ -53,8 +53,10 @@ void GLVSyncTestRenderer::draw(QPainter* painter, QPaintEvent* /*event*/) {
         return;
     }
 
-    double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
-    double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
+    double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() *
+                              dataSize;
+    double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() *
+                             dataSize;
 
     const int firstIndex = int(firstVisualIndex + 0.5);
     firstVisualIndex = firstIndex - firstIndex % 2;

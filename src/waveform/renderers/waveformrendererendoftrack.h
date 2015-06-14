@@ -17,7 +17,7 @@ class WaveformRendererEndOfTrack : public WaveformRendererAbstract {
   public:
     static const int s_maxAlpha = 125;
     explicit WaveformRendererEndOfTrack(
-            WaveformWidgetRenderer* waveformWidgetRenderer);
+        WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~WaveformRendererEndOfTrack();
 
     virtual bool init();

@@ -41,7 +41,8 @@ QImage* WImageStore::getImage(const PixmapSource& source) {
     }
 
     if (loadedImage->isNull()) {
-        qDebug() << "WImageStore couldn't load:" << source.getPath() << (loadedImage == NULL);
+        qDebug() << "WImageStore couldn't load:" << source.getPath() <<
+                 (loadedImage == NULL);
         delete loadedImage;
         return NULL;
     }
@@ -79,20 +80,16 @@ QImage* WImageStore::getImageNoCache(const PixmapSource& source) {
 }
 
 // static
-void WImageStore::deleteImage(QImage * p)
-{
+void WImageStore::deleteImage(QImage* p) {
     // Search for Image in list
-    ImageInfoType *info = NULL;
+    ImageInfoType* info = NULL;
     QMutableHashIterator<QString, ImageInfoType*> it(m_dictionary);
 
-    while (it.hasNext())
-    {
+    while (it.hasNext()) {
         info = it.next().value();
-        if (p == info->image)
-        {
+        if (p == info->image) {
             info->instCount--;
-            if (info->instCount<1)
-            {
+            if (info->instCount<1) {
                 it.remove();
                 delete info->image;
                 delete info;

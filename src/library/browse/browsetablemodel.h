@@ -40,7 +40,8 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel {
     Q_OBJECT
 
   public:
-    BrowseTableModel(QObject* parent, TrackCollection* pTrackCollection, RecordingManager* pRec);
+    BrowseTableModel(QObject* parent, TrackCollection* pTrackCollection,
+                     RecordingManager* pRec);
     virtual ~BrowseTableModel();
     void setPath(const MDir& path);
     //reimplemented from TrackModel class
@@ -54,15 +55,18 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel {
     void removeTrack(const QModelIndex& index);
     void removeTracks(const QModelIndexList& indices);
     bool addTrack(const QModelIndex& index, QString location);
-    QMimeData* mimeData(const QModelIndexList &indexes) const;
+    QMimeData* mimeData(const QModelIndexList& indexes) const;
     const QString currentSearch() const;
     bool isColumnInternal(int);
     void moveTrack(const QModelIndex&, const QModelIndex&);
-    bool isLocked() { return false;}
+    bool isLocked() {
+        return false;
+    }
     bool isColumnHiddenByDefault(int column);
     const QList<int>& searchColumns() const;
-    Qt::ItemFlags flags(const QModelIndex &index) const;
-    bool setData(const QModelIndex& index, const QVariant& value, int role=Qt::EditRole);
+    Qt::ItemFlags flags(const QModelIndex& index) const;
+    bool setData(const QModelIndex& index, const QVariant& value,
+                 int role=Qt::EditRole);
     QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent);
     virtual bool isColumnSortable(int column);
 

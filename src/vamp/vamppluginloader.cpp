@@ -35,7 +35,7 @@ PluginLoader::PluginKey VampPluginLoader::composePluginKey(
     std::string libraryName, std::string identifier) {
     QMutexLocker lock(&s_mutex);
     PluginLoader::PluginKey key = m_pVampPluginLoader->composePluginKey(
-        libraryName, identifier);
+                                      libraryName, identifier);
     return key;
 }
 
@@ -55,7 +55,7 @@ Vamp::Plugin* VampPluginLoader::loadPlugin(
     float inputSampleRate, int adapterFlags) {
     QMutexLocker lock(&s_mutex);
     return m_pVampPluginLoader->loadPlugin(
-        key, inputSampleRate, adapterFlags);
+               key, inputSampleRate, adapterFlags);
 }
 
 

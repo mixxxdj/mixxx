@@ -4,11 +4,11 @@
 #include "playermanager.h"
 
 BaseExternalTrackModel::BaseExternalTrackModel(QObject* parent,
-                                               TrackCollection* pTrackCollection,
-                                               const char* settingsNamespace,
-                                               const QString& trackTable,
-                                               QSharedPointer<BaseTrackCache> trackSource)
-        : BaseSqlTableModel(parent, pTrackCollection, settingsNamespace) {
+        TrackCollection* pTrackCollection,
+        const char* settingsNamespace,
+        const QString& trackTable,
+        QSharedPointer<BaseTrackCache> trackSource)
+    : BaseSqlTableModel(parent, pTrackCollection, settingsNamespace) {
     QString viewTable = trackTable + "_view";
     QStringList columns;
     columns << "id";
@@ -17,16 +17,16 @@ BaseExternalTrackModel::BaseExternalTrackModel(QObject* parent,
     QSqlQuery query(m_database);
     FieldEscaper f(m_database);
     QString queryString = QString(
-        "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
-        "SELECT %2 FROM %3")
-            .arg(f.escapeString(viewTable),
-                 columns.join(","),
-                 f.escapeString(trackTable));
+                              "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+                              "SELECT %2 FROM %3")
+                          .arg(f.escapeString(viewTable),
+                               columns.join(","),
+                               f.escapeString(trackTable));
     query.prepare(queryString);
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) <<
-                "Error creating temporary view for" << trackTable;
+                                "Error creating temporary view for" << trackTable;
         return;
     }
 
@@ -39,14 +39,20 @@ BaseExternalTrackModel::~BaseExternalTrackModel() {
 }
 
 TrackPointer BaseExternalTrackModel::getTrack(const QModelIndex& index) const {
-    QString artist = index.sibling(index.row(), fieldIndex("artist")).data().toString();
-    QString title = index.sibling(index.row(), fieldIndex("title")).data().toString();
-    QString album = index.sibling(index.row(), fieldIndex("album")).data().toString();
+    QString artist = index.sibling(index.row(),
+                                   fieldIndex("artist")).data().toString();
+    QString title = index.sibling(index.row(),
+                                  fieldIndex("title")).data().toString();
+    QString album = index.sibling(index.row(),
+                                  fieldIndex("album")).data().toString();
     QString year = index.sibling(index.row(), fieldIndex("year")).data().toString();
-    QString genre = index.sibling(index.row(), fieldIndex("genre")).data().toString();
-    float bpm = index.sibling(index.row(), fieldIndex("bpm")).data().toString().toFloat();
+    QString genre = index.sibling(index.row(),
+                                  fieldIndex("genre")).data().toString();
+    float bpm = index.sibling(index.row(),
+                              fieldIndex("bpm")).data().toString().toFloat();
 
-    QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
+    QString location = index.sibling(index.row(),
+                                     fieldIndex("location")).data().toString();
 
     if (location.isEmpty()) {
         // Track is lost
@@ -55,7 +61,7 @@ TrackPointer BaseExternalTrackModel::getTrack(const QModelIndex& index) const {
 
     bool track_already_in_library = false;
     TrackPointer pTrack = m_pTrackCollection->getTrackDAO()
-            .getOrAddTrack(location, true, &track_already_in_library);
+                          .getOrAddTrack(location, true, &track_already_in_library);
 
     // If this track was not in the Mixxx library it is now added and will be
     // saved with the metadata from iTunes. If it was already in the library
@@ -104,23 +110,23 @@ bool BaseExternalTrackModel::isColumnInternal(int column) {
     // Used for preview deck widgets.
     if (column == fieldIndex(LIBRARYTABLE_ID) ||
             (PlayerManager::numPreviewDecks() == 0 &&
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW))) {
+             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW))) {
         return true;
     }
     return false;
 }
 
-Qt::ItemFlags BaseExternalTrackModel::flags(const QModelIndex &index) const {
+Qt::ItemFlags BaseExternalTrackModel::flags(const QModelIndex& index) const {
     return readOnlyFlags(index);
 }
 
 TrackModel::CapabilitiesFlags BaseExternalTrackModel::getCapabilities() const {
     // See src/library/trackmodel.h for the list of TRACKMODELCAPS
     return TRACKMODELCAPS_NONE
-            | TRACKMODELCAPS_ADDTOPLAYLIST
-            | TRACKMODELCAPS_ADDTOCRATE
-            | TRACKMODELCAPS_ADDTOAUTODJ
-            | TRACKMODELCAPS_LOADTODECK
-            | TRACKMODELCAPS_LOADTOPREVIEWDECK
-            | TRACKMODELCAPS_LOADTOSAMPLER;
+           | TRACKMODELCAPS_ADDTOPLAYLIST
+           | TRACKMODELCAPS_ADDTOCRATE
+           | TRACKMODELCAPS_ADDTOAUTODJ
+           | TRACKMODELCAPS_LOADTODECK
+           | TRACKMODELCAPS_LOADTOPREVIEWDECK
+           | TRACKMODELCAPS_LOADTOSAMPLER;
 }

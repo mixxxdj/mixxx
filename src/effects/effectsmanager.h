@@ -63,10 +63,11 @@ class EffectsManager : public QObject {
 
     const QList<QString> getAvailableEffects() const;
     // Each entry of the set is a pair containing the effect id and its name
-    const QList<QPair<QString, QString> > getEffectNamesFiltered(EffectManifestFilterFnc filter) const;
+    const QList<QPair<QString, QString> > getEffectNamesFiltered(
+        EffectManifestFilterFnc filter) const;
     bool isEQ(const QString& effectId) const;
     QPair<EffectManifest, EffectsBackend*> getEffectManifestAndBackend(
-            const QString& effectId) const;
+        const QString& effectId) const;
     EffectManifest getEffectManifest(const QString& effectId) const;
     EffectPointer instantiateEffect(const QString& effectId);
 

@@ -28,8 +28,12 @@ class ImgSource {
   public:
     virtual ~ImgSource() {};
     virtual QImage* getImage(QString img) = 0;
-    virtual inline QColor getCorrectColor(QColor c) { return c; }
-    virtual void correctImageColors(QImage* p) { (void)p; };
+    virtual inline QColor getCorrectColor(QColor c) {
+        return c;
+    }
+    virtual void correctImageColors(QImage* p) {
+        (void)p;
+    };
 };
 
 class ImgProcessor : public ImgSource {
@@ -41,7 +45,9 @@ class ImgProcessor : public ImgSource {
     inline QColor getCorrectColor(QColor c) {
         return doColorCorrection(m_parent->getCorrectColor(c));
     }
-    virtual void correctImageColors(QImage* p) { (void)p; };
+    virtual void correctImageColors(QImage* p) {
+        (void)p;
+    };
 
   protected:
     ImgSource* m_parent;
@@ -49,7 +55,7 @@ class ImgProcessor : public ImgSource {
 
 class ImgColorProcessor : public ImgProcessor {
 
-public:
+  public:
     virtual ~ImgColorProcessor() {};
 
     inline ImgColorProcessor(ImgSource* parent) : ImgProcessor(parent) {}
@@ -69,7 +75,7 @@ public:
 
         int bytesPerPixel = 4;
 
-        switch(i->format()) {
+        switch (i->format()) {
 
         case QImage::Format_Mono:
         case QImage::Format_MonoLSB:
@@ -116,7 +122,7 @@ public:
         }
 
         for (int y = 0; y < i->height(); y++) {
-            QRgb *line = (QRgb*)i->scanLine(y); // cast the returned pointer to QRgb*
+            QRgb* line = (QRgb*)i->scanLine(y); // cast the returned pointer to QRgb*
 
             if (line == NULL) {
                 // Image is invalid.

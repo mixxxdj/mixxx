@@ -29,18 +29,18 @@ struct CoverInfo {
     };
 
     CoverInfo() : source(UNKNOWN),
-                  type(NONE),
-                  coverLocation(QString()),
-                  trackLocation(QString()),
-                  // This default value is fine: qChecksum(NULL, 0) is 0.
-                  hash(0) {}
+        type(NONE),
+        coverLocation(QString()),
+        trackLocation(QString()),
+        // This default value is fine: qChecksum(NULL, 0) is 0.
+        hash(0) {}
 
     bool operator==(const CoverInfo& other) const {
         return other.source == source &&
-                other.type == type &&
-                other.coverLocation == coverLocation &&
-                other.trackLocation == trackLocation &&
-                other.hash == hash;
+               other.type == type &&
+               other.coverLocation == coverLocation &&
+               other.trackLocation == trackLocation &&
+               other.hash == hash;
     }
     bool operator!=(const CoverInfo& other) const {
         return !(*this == other);
@@ -59,8 +59,8 @@ struct CoverArt {
     bool operator==(const CoverArt& other) const {
         // Only count image in the equality if both are non-null.
         return other.info == info &&
-                (other.image.isNull() || image.isNull() ||
-                 other.image == image);
+               (other.image.isNull() || image.isNull() ||
+                other.image == image);
     }
     bool operator!=(const CoverArt& other) const {
         return !(*this == other);

@@ -21,17 +21,17 @@
 #include "dlgmissing.h"
 
 MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
-                                         TrackCollection* pTrackCollection,
-                                         ConfigObject<ConfigValue>* pConfig)
-        : LibraryFeature(pLibrary),
-          kMissingTitle(tr("Missing Tracks")),
-          kHiddenTitle(tr("Hidden Tracks")),
-          m_pLibrary(pLibrary),
-          m_pMissingView(NULL),
-          m_pHiddenView(NULL),
-          m_trackDao(pTrackCollection->getTrackDAO()),
-          m_pConfig(pConfig),
-          m_pTrackCollection(pTrackCollection) {
+        TrackCollection* pTrackCollection,
+        ConfigObject<ConfigValue>* pConfig)
+    : LibraryFeature(pLibrary),
+      kMissingTitle(tr("Missing Tracks")),
+      kHiddenTitle(tr("Hidden Tracks")),
+      m_pLibrary(pLibrary),
+      m_pMissingView(NULL),
+      m_pHiddenView(NULL),
+      m_trackDao(pTrackCollection->getTrackDAO()),
+      m_pConfig(pConfig),
+      m_pTrackCollection(pTrackCollection) {
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID
             << "library." + LIBRARYTABLE_PLAYED
@@ -67,10 +67,10 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
     QSqlQuery query(pTrackCollection->getDatabase());
     QString tableName = "library_cache_view";
     QString queryString = QString(
-        "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
-        "SELECT %2 FROM library "
-        "INNER JOIN track_locations ON library.location = track_locations.id")
-            .arg(tableName, columns.join(","));
+                              "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+                              "SELECT %2 FROM library "
+                              "INNER JOIN track_locations ON library.location = track_locations.id")
+                          .arg(tableName, columns.join(","));
     query.prepare(queryString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -78,7 +78,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
 
     // Strip out library. and track_locations.
     for (QStringList::iterator it = columns.begin();
-         it != columns.end(); ++it) {
+            it != columns.end(); ++it) {
         if (it->startsWith("library.")) {
             *it = it->replace("library.", "");
         } else if (it->startsWith("track_locations.")) {
@@ -87,7 +87,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
     }
 
     BaseTrackCache* pBaseTrackCache = new BaseTrackCache(
-            pTrackCollection, tableName, LIBRARYTABLE_ID, columns, true);
+        pTrackCollection, tableName, LIBRARYTABLE_ID, columns, true);
     connect(&m_trackDao, SIGNAL(trackDirty(int)),
             pBaseTrackCache, SLOT(slotTrackDirty(int)));
     connect(&m_trackDao, SIGNAL(trackClean(int)),
@@ -105,13 +105,14 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
     pTrackCollection->setTrackSource(m_pBaseTrackCache);
 
     // These rely on the 'default' track source being present.
-    m_pLibraryTableModel = new LibraryTableModel(this, pTrackCollection, "mixxx.db.model.library");
+    m_pLibraryTableModel = new LibraryTableModel(this, pTrackCollection,
+            "mixxx.db.model.library");
 
     TreeItem* pRootItem = new TreeItem();
     TreeItem* pmissingChildItem = new TreeItem(kMissingTitle, kMissingTitle,
-                                               this, pRootItem);
+            this, pRootItem);
     TreeItem* phiddenChildItem = new TreeItem(kHiddenTitle, kHiddenTitle,
-                                              this, pRootItem);
+            this, pRootItem);
     pRootItem->appendChild(pmissingChildItem);
     pRootItem->appendChild(phiddenChildItem);
 
@@ -177,7 +178,8 @@ bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     if (pSource) {
         return false;
     } else {
-        QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
+        QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false,
+                                 true);
 
         // Adds track, does not insert duplicates, handles unremoving logic.
         QList<int> trackIds = m_trackDao.addTracks(files, true);
@@ -187,5 +189,5 @@ bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
 
 bool MixxxLibraryFeature::dragMoveAccept(QUrl url) {
     return SoundSourceProxy::isUrlSupported(url) ||
-            Parser::isPlaylistFilenameSupported(url.toLocalFile());
+           Parser::isPlaylistFilenameSupported(url.toLocalFile());
 }

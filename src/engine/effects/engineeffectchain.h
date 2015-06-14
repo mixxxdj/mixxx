@@ -38,8 +38,8 @@ class EngineEffectChain : public EffectsRequestHandler {
   private:
     struct ChannelStatus {
         ChannelStatus()
-                : old_gain(0),
-                  enable_state(EffectProcessor::DISABLED) {
+            : old_gain(0),
+              enable_state(EffectProcessor::DISABLED) {
         }
         CSAMPLE old_gain;
         EffectProcessor::EnableState enable_state;

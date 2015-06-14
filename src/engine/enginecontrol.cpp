@@ -9,11 +9,11 @@
 
 EngineControl::EngineControl(QString group,
                              ConfigObject<ConfigValue>* _config)
-        : m_group(group),
-          m_pConfig(_config),
-          m_pEngineMaster(NULL),
-          m_pEngineBuffer(NULL),
-          m_numDecks(ConfigKey("[Master]", "num_decks")) {
+    : m_group(group),
+      m_pConfig(_config),
+      m_pEngineMaster(NULL),
+      m_pEngineBuffer(NULL),
+      m_numDecks(ConfigKey("[Master]", "num_decks")) {
     setCurrentSample(0.0, 0.0);
 }
 
@@ -58,7 +58,8 @@ void EngineControl::setEngineBuffer(EngineBuffer* pEngineBuffer) {
     m_pEngineBuffer = pEngineBuffer;
 }
 
-void EngineControl::setCurrentSample(const double dCurrentSample, const double dTotalSamples) {
+void EngineControl::setCurrentSample(const double dCurrentSample,
+                                     const double dTotalSamples) {
     SampleOfTrack sot;
     sot.current = dCurrentSample;
     sot.total = dTotalSamples;

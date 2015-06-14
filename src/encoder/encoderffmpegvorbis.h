@@ -24,7 +24,7 @@
 class EncoderFfmpegCore;
 
 class EncoderFfmpegVorbis : public EncoderFfmpegCore {
-public:
+  public:
     EncoderFfmpegVorbis(EncoderCallback* pCallback=NULL);
 };
 

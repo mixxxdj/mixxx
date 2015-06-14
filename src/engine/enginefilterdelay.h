@@ -10,11 +10,11 @@ template<unsigned int SIZE>
 class EngineFilterDelay : public EngineObjectConstIn {
   public:
     EngineFilterDelay()
-            : m_delaySamples(0),
-              m_oldDelaySamples(0),
-              m_delayPos(0),
-              m_doRamping(false),
-              m_doStart(false) {
+        : m_delaySamples(0),
+          m_oldDelaySamples(0),
+          m_delayPos(0),
+          m_doRamping(false),
+          m_doStart(false) {
         // Set the current buffers to 0
         memset(m_buf, 0, sizeof(m_buf));
     }
@@ -59,7 +59,8 @@ class EngineFilterDelay : public EngineObjectConstIn {
                 delaySourcePos = (delaySourcePos + 1) % SIZE;
             }
         } else {
-            int delaySourcePos = (m_delayPos + SIZE - m_delaySamples + iBufferSize / 2) % SIZE;
+            int delaySourcePos = (m_delayPos + SIZE - m_delaySamples + iBufferSize / 2) %
+                                 SIZE;
             int oldDelaySourcePos = (m_delayPos + SIZE - m_oldDelaySamples) % SIZE;
 
             DEBUG_ASSERT_AND_HANDLE(delaySourcePos >= 0) {

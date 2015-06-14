@@ -17,7 +17,7 @@
 class WCoverArtMenu : public QMenu {
     Q_OBJECT
   public:
-    WCoverArtMenu(QWidget *parent = 0);
+    WCoverArtMenu(QWidget* parent = 0);
     virtual ~WCoverArtMenu();
 
     void setCoverArt(TrackPointer pTrack, const CoverInfo& info);

@@ -4,8 +4,8 @@
 #include "effects/effectsmanager.h"
 
 EffectsBackend::EffectsBackend(QObject* pParent, QString name)
-        : QObject(pParent),
-          m_name(name) {
+    : QObject(pParent),
+      m_name(name) {
 }
 
 EffectsBackend::~EffectsBackend() {
@@ -26,7 +26,7 @@ void EffectsBackend::registerEffect(const QString& id,
     }
 
     m_registeredEffects[id] = QPair<EffectManifest, EffectInstantiatorPointer>(
-            manifest, pInstantiator);
+                                  manifest, pInstantiator);
     m_effectIds.append(id);
     emit(effectRegistered());
 }
@@ -48,13 +48,13 @@ bool EffectsBackend::canInstantiateEffect(const QString& effectId) const {
 }
 
 EffectPointer EffectsBackend::instantiateEffect(EffectsManager* pEffectsManager,
-                                                const QString& effectId) {
+        const QString& effectId) {
     if (!m_registeredEffects.contains(effectId)) {
         qWarning() << "WARNING: Effect" << effectId << "is not registered.";
         return EffectPointer();
     }
     QPair<EffectManifest, EffectInstantiatorPointer>& effectInfo =
-            m_registeredEffects[effectId];
+        m_registeredEffects[effectId];
 
     return EffectPointer(new Effect(pEffectsManager,
                                     effectInfo.first, effectInfo.second));

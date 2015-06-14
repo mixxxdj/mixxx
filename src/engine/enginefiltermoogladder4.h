@@ -40,16 +40,17 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
 
   private:
     struct Buffer {
-         CSAMPLE m_azt1;
-         CSAMPLE m_azt2;
-         CSAMPLE m_azt3;
-         CSAMPLE m_azt4;
-         CSAMPLE m_az5;
-         CSAMPLE m_amf;
+        CSAMPLE m_azt1;
+        CSAMPLE m_azt2;
+        CSAMPLE m_azt3;
+        CSAMPLE m_azt4;
+        CSAMPLE m_az5;
+        CSAMPLE m_amf;
     };
 
   public:
-    EngineFilterMoogLadderBase(unsigned int sampleRate, float cutoff, float resonance) {
+    EngineFilterMoogLadderBase(unsigned int sampleRate, float cutoff,
+                               float resonance) {
         setParameter(sampleRate, cutoff, resonance);
         initBuffers();
     }
@@ -75,7 +76,8 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
         }
 
         // frequency & amplitude correction
-        float kfcr = 1.8730 * (kfc*kfc*kfc) + 0.4955 * (kfc*kfc) - 0.6490 * kfc + 0.9988;
+        float kfcr = 1.8730 * (kfc*kfc*kfc) + 0.4955 * (kfc*kfc) - 0.6490 * kfc +
+                     0.9988;
 
         float x  = -2.0 * kPi * kfcr * kf; // input for taylor approximations
         float exp_out  = expf(x);
@@ -88,7 +90,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
             m_postGain = 1;
         } else {
             m_postGain = (1 + resonance / 4 * (1.1f + cutoff / sampleRate * 3.5f))
-                    * (2 - (1.0f - resonance / 4) * (1.0f - resonance / 4));
+                         * (2 - (1.0f - resonance / 4) * (1.0f - resonance / 4));
         }
 
         // qDebug() << "setParameter" << m_cutoff << m_resonance;
@@ -98,12 +100,12 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
     // It fades to dry or 0 according to the m_startFromDry parameter
     // it is an alternative for using pauseFillter() calls
     void processAndPauseFilter(const CSAMPLE* pIn, CSAMPLE* pOutput,
-                       const int iBufferSize) {
+                               const int iBufferSize) {
         process(pIn, pOutput, iBufferSize);
         SampleUtil::copy2WithRampingGain(pOutput,
-                pOutput, 1.0, 0,  // fade out filtered
-                pIn, 0, 1.0,  // fade in dry
-                iBufferSize);
+                                         pOutput, 1.0, 0,  // fade out filtered
+                                         pIn, 0, 1.0,  // fade in dry
+                                         iBufferSize);
         initBuffers();
     }
 
@@ -140,7 +142,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
                 } else {
                     pOutput[i] = new1 * cross_mix + old1 * (1.0 - cross_mix);
                     pOutput[i + 1] = new2 * cross_mix
-                            + old2 * (1.0 - cross_mix);
+                                     + old2 * (1.0 - cross_mix);
                     cross_mix += cross_inc;
                 }
             }
@@ -203,7 +205,8 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
 
     inline float tanh_approx(float input) {
         // return tanhf(input); // 142ns for process;
-        return input / (1 + input * input / (3 + input * input / 5)); // 119ns for process
+        return input / (1 + input * input / (3 + input * input /
+                                             5)); // 119ns for process
     }
 
 
@@ -221,14 +224,17 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
 class EngineFilterMoogLadder4Low : public EngineFilterMoogLadderBase<LP_OVERS> {
     Q_OBJECT
   public:
-    EngineFilterMoogLadder4Low(int sampleRate, double freqCorner1, double resonance);
+    EngineFilterMoogLadder4Low(int sampleRate, double freqCorner1,
+                               double resonance);
 };
 
 
-class EngineFilterMoogLadder4High : public EngineFilterMoogLadderBase<HP_OVERS> {
+class EngineFilterMoogLadder4High : public
+    EngineFilterMoogLadderBase<HP_OVERS> {
     Q_OBJECT
   public:
-    EngineFilterMoogLadder4High(int sampleRate, double freqCorner1, double resonance);
+    EngineFilterMoogLadder4High(int sampleRate, double freqCorner1,
+                                double resonance);
 };
 
 #endif // ENGINEFILTERMOOGLADDER4_H

@@ -41,10 +41,18 @@ class StarRating {
     void paint(QPainter* painter, const QRect& rect) const;
     QSize sizeHint() const;
 
-    int starCount() const { return m_myStarCount; }
-    int maxStarCount() const { return m_myMaxStarCount; }
-    void setStarCount(int starCount) { m_myStarCount = starCount; }
-    void setMaxStarCount(int maxStarCount) { m_myMaxStarCount = maxStarCount; }
+    int starCount() const {
+        return m_myStarCount;
+    }
+    int maxStarCount() const {
+        return m_myMaxStarCount;
+    }
+    void setStarCount(int starCount) {
+        m_myStarCount = starCount;
+    }
+    void setMaxStarCount(int maxStarCount) {
+        m_myMaxStarCount = maxStarCount;
+    }
 
   private:
     QPolygonF m_starPolygon;

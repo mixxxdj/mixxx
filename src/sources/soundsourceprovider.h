@@ -12,7 +12,7 @@ namespace Mixxx {
 
 // Factory interface for SoundSources
 class SoundSourceProvider {
-public:
+  public:
     virtual ~SoundSourceProvider() {}
 
     virtual QString getName() const = 0;

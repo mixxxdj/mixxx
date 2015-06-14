@@ -9,12 +9,12 @@
 
 struct ControlInfo {
     ControlInfo()
-            : clickControl(NULL),
-              emitOption(ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE),
-              leftClickControl(NULL),
-              leftEmitOption(ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE),
-              rightClickControl(NULL),
-              rightEmitOption(ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE) {
+        : clickControl(NULL),
+          emitOption(ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE),
+          leftClickControl(NULL),
+          leftEmitOption(ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE),
+          rightClickControl(NULL),
+          rightEmitOption(ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE) {
     }
 
     ControlObject* clickControl;

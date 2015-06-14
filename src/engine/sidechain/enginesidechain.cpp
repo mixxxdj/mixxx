@@ -36,10 +36,10 @@
 #define SIDECHAIN_BUFFER_SIZE 65536
 
 EngineSideChain::EngineSideChain(ConfigObject<ConfigValue>* pConfig)
-        : m_pConfig(pConfig),
-          m_bStopThread(false),
-          m_sampleFifo(SIDECHAIN_BUFFER_SIZE),
-          m_pWorkBuffer(SampleUtil::alloc(SIDECHAIN_BUFFER_SIZE)) {
+    : m_pConfig(pConfig),
+      m_bStopThread(false),
+      m_sampleFifo(SIDECHAIN_BUFFER_SIZE),
+      m_pWorkBuffer(SampleUtil::alloc(SIDECHAIN_BUFFER_SIZE)) {
     // We use HighPriority to prevent starvation by lower-priority processes (Qt
     // main thread, analysis, etc.). This used to be LowPriority but that is not
     // a suitable choice since we do semi-realtime tasks (write to broadcast
@@ -93,7 +93,8 @@ void EngineSideChain::run() {
     // the id of this thread, for debugging purposes //XXX copypasta (should
     // factor this out somehow), -kousu 2/2009
     unsigned static id = 0;
-    QThread::currentThread()->setObjectName(QString("EngineSideChain %1").arg(++id));
+    QThread::currentThread()->setObjectName(QString("EngineSideChain %1").arg(
+            ++id));
 
     Event::start("EngineSideChain");
     while (!m_bStopThread) {
@@ -107,7 +108,7 @@ void EngineSideChain::run() {
 
         int samples_read;
         while ((samples_read = m_sampleFifo.read(m_pWorkBuffer,
-                                                 SIDECHAIN_BUFFER_SIZE))) {
+                               SIDECHAIN_BUFFER_SIZE))) {
             Trace process("EngineSideChain::process");
             QMutexLocker locker(&m_workerLock);
             foreach (SideChainWorker* pWorker, m_workers) {

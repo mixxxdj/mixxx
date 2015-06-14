@@ -6,16 +6,17 @@
 
 DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
                                      ConfigObject<ConfigValue>* pConfig)
-        : QDialog(pParent) {
+    : QDialog(pParent) {
     Q_UNUSED(pConfig);
     setupUi(this);
 
     QList<QSharedPointer<ControlDoublePrivate> > controlsList;
     ControlDoublePrivate::getControls(&controlsList);
     QHash<ConfigKey, ConfigKey> controlAliases =
-            ControlDoublePrivate::getControlAliases();
+        ControlDoublePrivate::getControlAliases();
 
-    for (QList<QSharedPointer<ControlDoublePrivate> >::const_iterator it = controlsList.begin();
+    for (QList<QSharedPointer<ControlDoublePrivate> >::const_iterator it =
+                controlsList.begin();
             it != controlsList.end(); ++it) {
         const QSharedPointer<ControlDoublePrivate>& pControl = *it;
         if (pControl) {

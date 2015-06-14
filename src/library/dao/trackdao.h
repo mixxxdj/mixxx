@@ -108,7 +108,9 @@ class TrackDAO : public QObject, public virtual DAO {
     virtual ~TrackDAO();
 
     void finish();
-    void setDatabase(QSqlDatabase& database) { m_database = database; }
+    void setDatabase(QSqlDatabase& database) {
+        m_database = database;
+    }
 
     void initialize();
     int getTrackId(const QString& absoluteFilePath);
@@ -150,7 +152,8 @@ class TrackDAO : public QObject, public virtual DAO {
     void invalidateTrackLocationsInLibrary();
     void markUnverifiedTracksAsDeleted();
     void markTrackLocationsAsDeleted(const QString& directory);
-    void detectMovedFiles(QSet<int>* tracksMovedSetNew, QSet<int>* tracksMovedSetOld);
+    void detectMovedFiles(QSet<int>* tracksMovedSetNew,
+                          QSet<int>* tracksMovedSetOld);
     void verifyRemainingTracks();
     void detectCoverArtForUnknownTracks(volatile const bool* pCancel,
                                         QSet<int>* pTracksChanged);
@@ -180,7 +183,8 @@ class TrackDAO : public QObject, public virtual DAO {
     void clearCache();
 
     void databaseTrackAdded(TrackPointer pTrack);
-    void databaseTracksMoved(QSet<int> tracksMovedSetOld, QSet<int> tracksMovedSetNew);
+    void databaseTracksMoved(QSet<int> tracksMovedSetOld,
+                             QSet<int> tracksMovedSetNew);
     void databaseTracksChanged(QSet<int> tracksChanged);
 
   private slots:

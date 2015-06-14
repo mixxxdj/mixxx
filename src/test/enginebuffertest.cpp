@@ -244,7 +244,7 @@ TEST_F(EngineBufferE2ETest, ScratchTest) {
     ControlObject::set(ConfigKey(m_sGroup1, "scratch2_enable"), 1.0);
     ControlObject::set(ConfigKey(m_sGroup1, "scratch2"), 1.1);
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(450,
-                                                    EngineBuffer::SEEK_EXACT);
+            EngineBuffer::SEEK_EXACT);
     ProcessBuffer();
     ControlObject::set(ConfigKey(m_sGroup1, "scratch2"), -1.1);
     ProcessBuffer();
@@ -334,7 +334,7 @@ TEST_F(EngineBufferE2ETest, SeekTest) {
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     ProcessBuffer();
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(1000,
-                                                    EngineBuffer::SEEK_EXACT);
+            EngineBuffer::SEEK_EXACT);
     ProcessBuffer();
     assertBufferMatchesGolden(m_pEngineMaster->masterBuffer(),
                               kProcessBufferSize, "SeekTest");

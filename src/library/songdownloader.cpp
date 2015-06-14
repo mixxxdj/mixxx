@@ -65,7 +65,7 @@ bool SongDownloader::downloadFromQueue() {
 
     connect(m_pReply, SIGNAL(readyRead()), this, SLOT(slotReadyRead()));
     connect(m_pReply, SIGNAL(error(QNetworkReply::NetworkError)),
-         this, SLOT(slotError(QNetworkReply::NetworkError)));
+            this, SLOT(slotError(QNetworkReply::NetworkError)));
     connect(m_pReply, SIGNAL(downloadProgress(qint64, qint64)),
             this, SLOT(slotProgress(qint64, qint64)));
     connect(m_pReply, SIGNAL(downloadProgress(qint64, qint64)),

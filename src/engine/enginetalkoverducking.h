@@ -6,7 +6,7 @@ class ConfigValue;
 class ControlObjectSlave;
 
 class EngineTalkoverDucking : public QObject, public EngineSideChainCompressor {
-  Q_OBJECT
+    Q_OBJECT
   public:
 
     enum TalkoverDuckSetting {

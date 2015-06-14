@@ -63,7 +63,7 @@ class MixxxMainWindow : public QMainWindow {
 
   public:
     // Construtor. files is a list of command line arguments
-    MixxxMainWindow(QApplication *app, const CmdlineArgs& args);
+    MixxxMainWindow(QApplication* app, const CmdlineArgs& args);
     virtual ~MixxxMainWindow();
     // initializes all QActions of the application
     void initActions();
@@ -71,10 +71,14 @@ class MixxxMainWindow : public QMainWindow {
     void initMenuBar();
 
     void setToolTipsCfg(int tt);
-    inline int getToolTipsCgf() { return m_toolTipsCfg; }
+    inline int getToolTipsCgf() {
+        return m_toolTipsCfg;
+    }
     void rebootMixxxView();
 
-    inline GuiTick* getGuiTick() { return m_pGuiTick; };
+    inline GuiTick* getGuiTick() {
+        return m_pGuiTick;
+    };
 
   public slots:
 
@@ -162,8 +166,8 @@ class MixxxMainWindow : public QMainWindow {
 
   protected:
     // Event filter to block certain events (eg. tooltips if tooltips are disabled)
-    virtual bool eventFilter(QObject *obj, QEvent *event);
-    virtual void closeEvent(QCloseEvent *event);
+    virtual bool eventFilter(QObject* obj, QEvent* event);
+    virtual void closeEvent(QCloseEvent* event);
     virtual bool event(QEvent* e);
 
   private:
@@ -194,7 +198,7 @@ class MixxxMainWindow : public QMainWindow {
     SkinLoader* m_pSkinLoader;
 
     // The sound manager
-    SoundManager *m_pSoundManager;
+    SoundManager* m_pSoundManager;
 
     // Keeps track of players
     PlayerManager* m_pPlayerManager;

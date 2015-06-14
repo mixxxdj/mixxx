@@ -13,7 +13,7 @@
 class WWidgetStackTest : public MixxxTest {
   public:
     WWidgetStackTest()
-          : m_pGroup("[Channel1]") {
+        : m_pGroup("[Channel1]") {
     }
 
   protected:
@@ -21,11 +21,11 @@ class WWidgetStackTest : public MixxxTest {
         // Create a widget stack with three pages, and *before* the pages
         // are added, set the current page control to the second page.
         m_pPrevControl.reset(
-                new ControlPushButton(ConfigKey(m_pGroup, "prev")));
+            new ControlPushButton(ConfigKey(m_pGroup, "prev")));
         m_pNextControl.reset(
-                new ControlPushButton(ConfigKey(m_pGroup, "next")));
+            new ControlPushButton(ConfigKey(m_pGroup, "next")));
         m_pCurPageControl.reset(
-                new ControlObject(ConfigKey(m_pGroup, "page")));
+            new ControlObject(ConfigKey(m_pGroup, "page")));
         m_pStack.reset(new WWidgetStack(NULL, m_pNextControl.data(),
                                         m_pPrevControl.data(),
                                         m_pCurPageControl.data()));
@@ -107,12 +107,12 @@ TEST_F(WWidgetStackTest, MaintainPageControlValue) {
 
     // This test is set up to reproduce the original LateNight skin case.
     m_pCurPageControl.reset(
-            new ControlObject(ConfigKey(m_pGroup,
-                                        "MaintainPageControlValue-page")));
+        new ControlObject(ConfigKey(m_pGroup,
+                                    "MaintainPageControlValue-page")));
     QScopedPointer<WWidgetStack> stack(
-            new WWidgetStack(NULL, m_pNextControl.data(),
-                             m_pPrevControl.data(),
-                             m_pCurPageControl.data()));
+        new WWidgetStack(NULL, m_pNextControl.data(),
+                         m_pPrevControl.data(),
+                         m_pCurPageControl.data()));
 
     QWidget page0;
     QWidget page1;

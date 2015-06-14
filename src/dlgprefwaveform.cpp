@@ -6,9 +6,9 @@
 
 DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
                                  ConfigObject<ConfigValue>* pConfig)
-        : DlgPreferencePage(pParent),
-          m_pConfig(pConfig),
-          m_pMixxx(pMixxx) {
+    : DlgPreferencePage(pParent),
+      m_pConfig(pConfig),
+      m_pMixxx(pMixxx) {
     setupUi(this);
 
     // Waveform overview init
@@ -26,7 +26,7 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
 
     // Populate zoom options.
     for (int i = WaveformWidgetRenderer::s_waveformMinZoom;
-         i <= WaveformWidgetRenderer::s_waveformMaxZoom; i++) {
+            i <= WaveformWidgetRenderer::s_waveformMaxZoom; i++) {
         defaultZoomComboBox->addItem(QString::number(100/double(i), 'f', 1) + " %");
     }
 
@@ -83,7 +83,8 @@ void DlgPrefWaveform::slotUpdate() {
 
     WaveformWidgetType::Type currentType = factory->getType();
     int currentIndex = waveformTypeComboBox->findData(currentType);
-    if (currentIndex != -1 && waveformTypeComboBox->currentIndex() != currentIndex) {
+    if (currentIndex != -1 &&
+            waveformTypeComboBox->currentIndex() != currentIndex) {
         waveformTypeComboBox->setCurrentIndex(currentIndex);
     }
 
@@ -101,7 +102,7 @@ void DlgPrefWaveform::slotUpdate() {
 
     // By default we set filtered woverview = "0"
     int overviewType = m_pConfig->getValueString(
-            ConfigKey("[Waveform]","WaveformOverviewType"), "0").toInt();
+                           ConfigKey("[Waveform]","WaveformOverviewType"), "0").toInt();
     if (overviewType != waveformOverviewComboBox->currentIndex()) {
         waveformOverviewComboBox->setCurrentIndex(overviewType);
     }
@@ -117,7 +118,8 @@ void DlgPrefWaveform::slotResetToDefaults() {
     // not.
     WaveformWidgetType::Type defaultType = factory->autoChooseWidgetType();
     int defaultIndex = waveformTypeComboBox->findData(defaultType);
-    if (defaultIndex != -1 && waveformTypeComboBox->currentIndex() != defaultIndex) {
+    if (defaultIndex != -1 &&
+            waveformTypeComboBox->currentIndex() != defaultIndex) {
         waveformTypeComboBox->setCurrentIndex(defaultIndex);
     }
 
@@ -158,7 +160,8 @@ void DlgPrefWaveform::slotSetWaveformType(int index) {
 }
 
 void DlgPrefWaveform::slotSetWaveformOverviewType(int index) {
-    m_pConfig->set(ConfigKey("[Waveform]","WaveformOverviewType"), ConfigValue(index));
+    m_pConfig->set(ConfigKey("[Waveform]","WaveformOverviewType"),
+                   ConfigValue(index));
     m_pMixxx->rebootMixxxView();
 }
 
@@ -171,19 +174,23 @@ void DlgPrefWaveform::slotSetZoomSynchronization(bool checked) {
 }
 
 void DlgPrefWaveform::slotSetVisualGainAll(double gain) {
-    WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::All,gain);
+    WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::All,
+            gain);
 }
 
 void DlgPrefWaveform::slotSetVisualGainLow(double gain) {
-    WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::Low,gain);
+    WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::Low,
+            gain);
 }
 
 void DlgPrefWaveform::slotSetVisualGainMid(double gain) {
-    WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::Mid,gain);
+    WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::Mid,
+            gain);
 }
 
 void DlgPrefWaveform::slotSetVisualGainHigh(double gain) {
-    WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::High,gain);
+    WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::High,
+            gain);
 }
 
 void DlgPrefWaveform::slotSetNormalizeOverview(bool normalize) {
@@ -192,6 +199,6 @@ void DlgPrefWaveform::slotSetNormalizeOverview(bool normalize) {
 
 void DlgPrefWaveform::slotWaveformMeasured(float frameRate, int droppedFrames) {
     frameRateAverage->setText(
-            QString::number((double)frameRate, 'f', 2) + " : " +
-            tr("dropped frames") + " " + QString::number(droppedFrames));
+        QString::number((double)frameRate, 'f', 2) + " : " +
+        tr("dropped frames") + " " + QString::number(droppedFrames));
 }

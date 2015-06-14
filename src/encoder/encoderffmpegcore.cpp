@@ -88,7 +88,7 @@ EncoderFfmpegCore::~EncoderFfmpegCore() {
     if (av_write_trailer(m_pEncodeFormatCtx) != 0) {
         qDebug() << "Multiplexer: failed to write a trailer.";
     } else {
-        unsigned char *l_strBuffer = NULL;
+        unsigned char* l_strBuffer = NULL;
         int l_iBufferLen = 0;
         l_iBufferLen = avio_close_dyn_buf(m_pEncodeFormatCtx->pb,
                                           (uint8_t**)(&l_strBuffer));
@@ -122,8 +122,8 @@ int EncoderFfmpegCore::getSerial() {
     return l_iSerial;
 }
 
-void EncoderFfmpegCore::encodeBuffer(const CSAMPLE *samples, const int size) {
-    unsigned char *l_strBuffer = NULL;
+void EncoderFfmpegCore::encodeBuffer(const CSAMPLE* samples, const int size) {
+    unsigned char* l_strBuffer = NULL;
     int l_iBufferLen = 0;
     //int l_iAudioCpyLen = m_iAudioInputFrameSize *
     //                     av_get_bytes_per_sample(m_pEncoderAudioStream->codec->sample_fmt) *
@@ -134,7 +134,7 @@ void EncoderFfmpegCore::encodeBuffer(const CSAMPLE *samples, const int size) {
     unsigned int l_iPos = 0;
 
     // TODO(XXX): Get rid of repeated malloc here!
-    float *l_fNormalizedSamples = (float *)malloc(size * sizeof(float));
+    float* l_fNormalizedSamples = (float*)malloc(size * sizeof(float));
 
     // We use normalized floats in the engine [-1.0, 1.0] and FFMPEG expects
     // samples in the range [-1.0, 1.0] so no conversion is required.
@@ -213,7 +213,8 @@ void EncoderFfmpegCore::encodeBuffer(const CSAMPLE *samples, const int size) {
 // Currently this method is used before init() once to save artist, title and album
 //
 void EncoderFfmpegCore::updateMetaData(char* artist, char* title, char* album) {
-    qDebug() << "ffmpegencodercore: UpdateMetadata: !" << artist << " - " << title <<
+    qDebug() << "ffmpegencodercore: UpdateMetadata: !" << artist << " - " << title
+             <<
              " - " << album;
     m_strMetaDataTitle = title;
     m_strMetaDataArtist = artist;
@@ -287,14 +288,14 @@ int EncoderFfmpegCore::initEncoder(int bitrate, int samplerate) {
 
 // Private methods
 
-int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx,
-                                       AVStream *stream) {
-    AVCodecContext *l_SCodecCtx = NULL;;
+int EncoderFfmpegCore::writeAudioFrame(AVFormatContext* formatctx,
+                                       AVStream* stream) {
+    AVCodecContext* l_SCodecCtx = NULL;;
     AVPacket l_SPacket;
-    AVFrame *l_SFrame = avcodec_alloc_frame();
+    AVFrame* l_SFrame = avcodec_alloc_frame();
     int l_iGotPacket;
     int l_iRet;
-    uint8_t *l_iOut = NULL;
+    uint8_t* l_iOut = NULL;
 #ifdef av_make_error_string
     char l_strErrorBuff[256];
 #endif // av_make_error_string
@@ -323,7 +324,7 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx,
     l_iRet = avcodec_fill_audio_frame(l_SFrame,
                                       l_SCodecCtx->channels,
                                       AV_SAMPLE_FMT_FLT,
-                                      (const uint8_t *)m_pFltSamples,
+                                      (const uint8_t*)m_pFltSamples,
                                       m_iFltAudioCpyLen,
                                       1);
 
@@ -426,13 +427,13 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx,
 }
 
 
-void EncoderFfmpegCore::closeAudio(AVStream *stream) {
+void EncoderFfmpegCore::closeAudio(AVStream* stream) {
     avcodec_close(stream->codec);
     av_free(m_pSamples);
 }
 
-void EncoderFfmpegCore::openAudio(AVCodec *codec, AVStream *stream) {
-    AVCodecContext *l_SCodecCtx;
+void EncoderFfmpegCore::openAudio(AVCodec* codec, AVStream* stream) {
+    AVCodecContext* l_SCodecCtx;
     int l_iRet;
 
     l_SCodecCtx = stream->codec;
@@ -461,9 +462,9 @@ void EncoderFfmpegCore::openAudio(AVCodec *codec, AVStream *stream) {
                         AV_SAMPLE_FMT_FLT,1);
 
     // m_pSamples is destination samples.. m_pFltSamples is FLOAT (32 bit) samples..
-    m_pSamples = (uint8_t *)av_malloc(m_iAudioCpyLen * sizeof(uint8_t));
+    m_pSamples = (uint8_t*)av_malloc(m_iAudioCpyLen * sizeof(uint8_t));
     //m_pFltSamples = (uint16_t *)av_malloc(m_iFltAudioCpyLen);
-    m_pFltSamples = (float *)av_malloc(m_iFltAudioCpyLen * sizeof(float));
+    m_pFltSamples = (float*)av_malloc(m_iFltAudioCpyLen * sizeof(float));
 
     if (!m_pSamples) {
         qDebug() << "Could not allocate audio samples buffer";
@@ -476,14 +477,14 @@ void EncoderFfmpegCore::openAudio(AVCodec *codec, AVStream *stream) {
 
 // Add an output stream.
 #if LIBAVCODEC_VERSION_INT > 3544932
-AVStream *EncoderFfmpegCore::addStream(AVFormatContext *formatctx,
-                                       AVCodec **codec, enum AVCodecID codec_id) {
+AVStream* EncoderFfmpegCore::addStream(AVFormatContext* formatctx,
+                                       AVCodec** codec, enum AVCodecID codec_id) {
 #else
-AVStream *EncoderFfmpegCore::addStream(AVFormatContext *formatctx,
-                                       AVCodec **codec, enum CodecID codec_id) {
+AVStream* EncoderFfmpegCore::addStream(AVFormatContext* formatctx,
+                                       AVCodec** codec, enum CodecID codec_id) {
 #endif
-    AVCodecContext *l_SCodecCtx = NULL;
-    AVStream *l_SStream = NULL;
+    AVCodecContext* l_SCodecCtx = NULL;
+    AVStream* l_SStream = NULL;
 
     // find the encoder
     *codec = avcodec_find_encoder(codec_id);

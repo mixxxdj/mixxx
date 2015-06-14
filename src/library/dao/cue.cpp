@@ -12,28 +12,28 @@ Cue::~Cue() {
 }
 
 Cue::Cue(int trackId)
-        : m_bDirty(false),
-          m_iId(-1),
-          m_iTrackId(trackId),
-          m_type(INVALID),
-          m_iPosition(-1),
-          m_iLength(0),
-          m_iHotCue(-1),
-          m_label("") {
+    : m_bDirty(false),
+      m_iId(-1),
+      m_iTrackId(trackId),
+      m_type(INVALID),
+      m_iPosition(-1),
+      m_iLength(0),
+      m_iHotCue(-1),
+      m_label("") {
     //qDebug() << "Cue(int)";
 }
 
 
 Cue::Cue(int id, int trackId, Cue::CueType type, int position, int length,
          int hotCue, QString label)
-        : m_bDirty(false),
-          m_iId(id),
-          m_iTrackId(trackId),
-          m_type(type),
-          m_iPosition(position),
-          m_iLength(length),
-          m_iHotCue(hotCue),
-          m_label(label) {
+    : m_bDirty(false),
+      m_iId(id),
+      m_iTrackId(trackId),
+      m_type(type),
+      m_iPosition(position),
+      m_iLength(length),
+      m_iHotCue(hotCue),
+      m_label(label) {
     //qDebug() << "Cue(...)";
 }
 

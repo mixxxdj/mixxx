@@ -10,8 +10,8 @@ typedef QPair<MidiKey, unsigned char> MidiKeyAndValue;
 
 struct MessageStats {
     MessageStats()
-            : message_count(0),
-              last_value(0) {
+        : message_count(0),
+          last_value(0) {
     }
 
     void addMessage(const MidiKeyAndValue& message) {
@@ -48,8 +48,8 @@ struct MessageStats {
 
 // static
 MidiInputMappings LearningUtils::guessMidiInputMappings(
-        const ConfigKey& control,
-        const QList<QPair<MidiKey, unsigned char> >& messages) {
+    const ConfigKey& control,
+    const QList<QPair<MidiKey, unsigned char> >& messages) {
     QMap<unsigned char, MessageStats> stats_by_control;
     MessageStats stats;
 
@@ -59,7 +59,8 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         stats_by_control[message.first.control].addMessage(message);
     }
 
-    qDebug() << "LearningUtils guessing MIDI mapping from" << messages.size() << "messages.";
+    qDebug() << "LearningUtils guessing MIDI mapping from" << messages.size() <<
+             "messages.";
 
     foreach (MidiOpCode opcode, stats.opcodes) {
         qDebug() << "Opcode:" << opcode;
@@ -73,19 +74,20 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         qDebug() << "Control:" << control;
     }
 
-    for (QMap<unsigned char, int>::const_iterator it = stats.value_histogram.begin();
-         it != stats.value_histogram.end(); ++it) {
+    for (QMap<unsigned char, int>::const_iterator it =
+                stats.value_histogram.begin();
+            it != stats.value_histogram.end(); ++it) {
         qDebug() << "Overall Value:" << it.key()
                  << "count" << it.value();
     }
 
     for (QMap<unsigned char, MessageStats>::const_iterator control_it =
-                 stats_by_control.begin();
-         control_it != stats_by_control.end(); ++control_it) {
+                stats_by_control.begin();
+            control_it != stats_by_control.end(); ++control_it) {
         QString controlName = QString("Control %1").arg(control_it.key());
         for (QMap<unsigned char, int>::const_iterator it =
-                     control_it->value_histogram.begin();
-             it != control_it->value_histogram.end(); ++it) {
+                    control_it->value_histogram.begin();
+                it != control_it->value_histogram.end(); ++it) {
             qDebug() << controlName << "Value:" << it.key()
                      << "count" << it.value();
         }
@@ -95,49 +97,51 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
 
     bool one_control = stats.controls.size() == 1;
     bool one_channel = stats.channels.size() == 1;
-    bool only_note_on = stats.opcodes.size() == 1 && stats.opcodes.contains(MIDI_NOTE_ON);
+    bool only_note_on = stats.opcodes.size() == 1 &&
+                        stats.opcodes.contains(MIDI_NOTE_ON);
     bool only_note_on_and_note_off = stats.opcodes.size() == 2 &&
-            stats.opcodes.contains(MIDI_NOTE_ON) &&
-            stats.opcodes.contains(MIDI_NOTE_OFF);
+                                     stats.opcodes.contains(MIDI_NOTE_ON) &&
+                                     stats.opcodes.contains(MIDI_NOTE_OFF);
 
     bool has_cc = stats.opcodes.contains(MIDI_CC);
     bool only_cc = stats.opcodes.size() == 1 && has_cc;
     int num_cc_controls = 0;
-    for (QMap<unsigned char, MessageStats>::const_iterator it = stats_by_control.begin();
-         it != stats_by_control.end(); ++it) {
+    for (QMap<unsigned char, MessageStats>::const_iterator it =
+                stats_by_control.begin();
+            it != stats_by_control.end(); ++it) {
         if (it->opcodes.contains(MIDI_CC)) {
             num_cc_controls++;
         }
     }
 
     bool two_values_7bit_max_and_min = stats.value_histogram.size() == 2 &&
-            stats.value_histogram.contains(0x00) && stats.value_histogram.contains(0x7F);
+                                       stats.value_histogram.contains(0x00) && stats.value_histogram.contains(0x7F);
     bool one_value_7bit_max_or_min = stats.value_histogram.size() == 1 &&
-            (stats.value_histogram.contains(0x00) || stats.value_histogram.contains(0x7F));
+                                     (stats.value_histogram.contains(0x00) || stats.value_histogram.contains(0x7F));
     bool multiple_one_or_7f_values = stats.value_histogram.value(0x01, 0) > 1 ||
-            stats.value_histogram.value(0x7F, 0) > 1;
+                                     stats.value_histogram.value(0x7F, 0) > 1;
     bool under_8_distinct_values = stats.value_histogram.size() < 8;
     bool no_0x00_value = !stats.value_histogram.contains(0x00);
     bool no_0x40_value = !stats.value_histogram.contains(0x40);
     bool multiple_values_around_0x40 = stats.value_histogram.value(0x41, 0) > 1 &&
-            stats.value_histogram.value(0x3F, 0) > 1 && no_0x40_value &&
-            under_8_distinct_values;
+                                       stats.value_histogram.value(0x3F, 0) > 1 && no_0x40_value &&
+                                       under_8_distinct_values;
 
     // QMap keys are sorted so we can check this easily by checking the last key
     // is <= 0x7F.
     bool only_7bit_values = !stats.value_histogram.isEmpty() &&
-            (stats.value_histogram.end() - 1).key() <= 0x7F;
+                            (stats.value_histogram.end() - 1).key() <= 0x7F;
 
     // A 7-bit two's complement ticker swinging from +1 to -1 can generate
     // unsigned differences of up to 126 (0x7E). If we see differences in
     // individual messages above 96 (0x60) that's a good hint that we're looking
     // at a two's complement ticker.
     bool abs_differences_above_60 = !stats.abs_diff_histogram.isEmpty() &&
-            (stats.abs_diff_histogram.end() - 1).key() >= 0x60;
+                                    (stats.abs_diff_histogram.end() - 1).key() >= 0x60;
 
     if (one_control && one_channel &&
-        two_values_7bit_max_and_min &&
-        only_note_on_and_note_off) {
+            two_values_7bit_max_and_min &&
+            only_note_on_and_note_off) {
         // A standard button that sends NOTE_ON commands with 0x7F for
         // down-press and NOTE_OFF commands with 0x00 for release.
         MidiOptions options;
@@ -225,8 +229,9 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
 
         // Find the CC control (based on the predicate one must exist) and add a
         // binding for it.
-        for (QMap<unsigned char, MessageStats>::const_iterator it = stats_by_control.begin();
-             it != stats_by_control.end(); ++it) {
+        for (QMap<unsigned char, MessageStats>::const_iterator it =
+                    stats_by_control.begin();
+                it != stats_by_control.end(); ++it) {
             if (it->opcodes.contains(MIDI_CC)) {
                 MidiKey knob;
                 knob.status = MIDI_CC | *stats.channels.begin();
@@ -262,15 +267,17 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         int control2 = *(stats.controls.begin() + 1);
 
         int control1_max_abs_diff =
-                (stats_by_control[control1].abs_diff_histogram.end() - 1).key();
+            (stats_by_control[control1].abs_diff_histogram.end() - 1).key();
         int control2_max_abs_diff =
-                (stats_by_control[control1].abs_diff_histogram.end() - 1).key();
+            (stats_by_control[control1].abs_diff_histogram.end() - 1).key();
 
         // The control with the larger abs difference in messages is the LSB. If
         // they are equal we choose one arbitrarily (depends on QSet iteration
         // order which is undefined).
-        int lsb_control = control1_max_abs_diff > control2_max_abs_diff ? control1 : control2;
-        int msb_control = control1_max_abs_diff > control2_max_abs_diff ? control2 : control1;
+        int lsb_control = control1_max_abs_diff > control2_max_abs_diff ? control1 :
+                          control2;
+        int msb_control = control1_max_abs_diff > control2_max_abs_diff ? control2 :
+                          control1;
 
         // NOTE(rryan): There is an industry convention that a 14-bit CC control
         // is a pair of controls offset by 32 (the lower is the MSB, the higher
@@ -307,10 +314,10 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
 
     // Add control and description info to each learned input mapping.
     for (MidiInputMappings::iterator it = mappings.begin();
-         it != mappings.end(); ++it) {
+            it != mappings.end(); ++it) {
         MidiInputMapping& mapping = *it;
         mapping.description = QString("MIDI Learned from %1 messages.")
-                .arg(messages.size());
+                              .arg(messages.size());
     }
 
     return mappings;

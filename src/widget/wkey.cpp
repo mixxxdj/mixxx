@@ -3,10 +3,10 @@
 #include "track/keyutils.h"
 
 WKey::WKey(const char* group, QWidget* pParent)
-        : WLabel(pParent),
-          m_dOldValue(0),
-          m_preferencesUpdated(ConfigKey("[Preferences]", "updated")),
-          m_engineKeyDistance(ConfigKey(group, "visual_key_distance")) {
+    : WLabel(pParent),
+      m_dOldValue(0),
+      m_preferencesUpdated(ConfigKey("[Preferences]", "updated")),
+      m_engineKeyDistance(ConfigKey(group, "visual_key_distance")) {
     setValue(m_dOldValue);
     connect(&m_preferencesUpdated, SIGNAL(valueChanged(double)),
             this, SLOT(preferencesUpdated(double)));
@@ -32,7 +32,7 @@ void WKey::setup(QDomNode node, const SkinContext& context) {
 void WKey::setValue(double dValue) {
     m_dOldValue = dValue;
     mixxx::track::io::key::ChromaticKey key =
-            KeyUtils::keyFromNumericValue(dValue);
+        KeyUtils::keyFromNumericValue(dValue);
     if (key != mixxx::track::io::key::INVALID) {
         // Render this key with the user-provided notation.
         QString keyStr = KeyUtils::keyToString(key);

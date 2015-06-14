@@ -31,7 +31,7 @@ class ControlObjectThread;
 class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     Q_OBJECT
   public:
-    DlgPrefRecord(QWidget *parent, ConfigObject<ConfigValue> *_config);
+    DlgPrefRecord(QWidget* parent, ConfigObject<ConfigValue>* _config);
     virtual ~DlgPrefRecord();
 
   public slots:
@@ -50,7 +50,7 @@ class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     void slotBrowseRecordingsDir();
 
   signals:
-    void apply(const QString &);
+    void apply(const QString&);
 
   private:
     void setRecordingFolder();

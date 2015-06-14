@@ -43,29 +43,29 @@ TEST_F(CoverArtUtilTest, extractEmbeddedCover) {
     SecurityTokenPointer pToken;
     // aiff
     cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.aiff",
-                                                pToken);
+            pToken);
     EXPECT_TRUE(!cover.isNull());
     // flac
     cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.flac",
-                                                pToken);
+            pToken);
     EXPECT_TRUE(!cover.isNull());
     // mp3
     cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.mp3",
-                                                pToken);
+            pToken);
     EXPECT_TRUE(!cover.isNull());
     // ogg
     cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.ogg",
-                                                pToken);
+            pToken);
     EXPECT_TRUE(!cover.isNull());
     // wav
     cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.wav",
-                                                pToken);
+            pToken);
     EXPECT_TRUE(!cover.isNull());
 
 #ifdef __OPUS__
     // opus
     cover = CoverArtUtils::extractEmbeddedCover(kTestPath % "cover-test.opus",
-                                                pToken);
+            pToken);
     EXPECT_TRUE(!cover.isNull());
 #endif
 }
@@ -87,8 +87,8 @@ TEST_F(CoverArtUtilTest, searchImage) {
 
     // Looking for a track with embedded cover.
     pTrack = TrackPointer(new TrackInfoObject(kTrackLocationTest,
-                                              SecurityTokenPointer(),
-                                              true, true));
+                          SecurityTokenPointer(),
+                          true, true));
     expected = CoverArt();
     expected.image = pTrack->getCoverArt().image;
     expected.info.type = CoverInfo::METADATA;
@@ -137,7 +137,7 @@ TEST_F(CoverArtUtilTest, searchImage) {
     expected.info.hash = CoverArtUtils::calculateHash(expected.image);
     covers << QFileInfo(cLoc_foo);
     res = CoverArtUtils::selectCoverArtForTrack(trackBaseName, trackAlbum,
-                                                covers);
+            covers);
     EXPECT_EQ(expected, res);
     QFile::remove(cLoc_foo);
 
@@ -211,7 +211,7 @@ TEST_F(CoverArtUtilTest, searchImage) {
             expected.info.hash = CoverArtUtils::calculateHash(expected.image);
         }
         res = CoverArtUtils::selectCoverArtForTrack(trackBaseName, trackAlbum,
-                                                    prefCovers);
+                prefCovers);
         EXPECT_QSTRING_EQ(expected.info.coverLocation, res.info.coverLocation);
         EXPECT_QSTRING_EQ(expected.info.hash, res.info.hash);
         EXPECT_EQ(expected, res);
@@ -235,7 +235,7 @@ TEST_F(CoverArtUtilTest, searchImage) {
     extraCovers << cLoc_coverJPG << cLoc_coverjpg;
 
     res = CoverArtUtils::selectCoverArtForTrack(trackBaseName, trackAlbum,
-                                                prefCovers);
+            prefCovers);
     expected.image = QImage(cLoc_coverJPG);
     expected.info.hash = CoverArtUtils::calculateHash(expected.image);
     expected.info.coverLocation = "cover.JPG";
@@ -253,7 +253,7 @@ TEST_F(CoverArtUtilTest, searchImage) {
     EXPECT_TRUE(img.save(cLoc_albumName, format));
     prefCovers.append(QFileInfo(cLoc_albumName));
     res = CoverArtUtils::selectCoverArtForTrack(trackBaseName, trackAlbum,
-                                                prefCovers);
+            prefCovers);
     expected.image = QImage(cLoc_albumName);
     expected.info.hash = CoverArtUtils::calculateHash(expected.image);
     expected.info.coverLocation = trackAlbum % ".jpg";
@@ -264,7 +264,7 @@ TEST_F(CoverArtUtilTest, searchImage) {
     EXPECT_TRUE(img.save(cLoc_filename, format));
     prefCovers.append(QFileInfo(cLoc_filename));
     res = CoverArtUtils::selectCoverArtForTrack(trackBaseName, trackAlbum,
-                                                prefCovers);
+            prefCovers);
     expected.image = QImage(cLoc_filename);
     expected.info.hash = CoverArtUtils::calculateHash(expected.image);
     expected.info.coverLocation = trackBaseName % ".jpg";

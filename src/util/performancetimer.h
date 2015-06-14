@@ -51,13 +51,12 @@
 
 #include <QtCore/qglobal.h>
 
-class PerformanceTimer
-{
-public:
+class PerformanceTimer {
+  public:
     PerformanceTimer() {
-      t1 = 0;
+        t1 = 0;
 #if defined(Q_OS_UNIX) && !defined(Q_OS_MAC)
-      t2 = 0;
+        t2 = 0;
 #endif
     };
     void start();
@@ -65,7 +64,7 @@ public:
     qint64 restart();
     qint64 difference(PerformanceTimer* timer);
 
-private:
+  private:
     qint64 t1;
 #if defined(Q_OS_UNIX) && !defined(Q_OS_MAC)
     qint64 t2;

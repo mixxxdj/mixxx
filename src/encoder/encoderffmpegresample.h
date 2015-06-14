@@ -51,15 +51,15 @@ extern "C" {
 }
 
 class EncoderFfmpegResample {
-public:
-    EncoderFfmpegResample(AVCodecContext *codecCtx);
+  public:
+    EncoderFfmpegResample(AVCodecContext* codecCtx);
     ~EncoderFfmpegResample();
     int open(enum AVSampleFormat inSampleFmt, enum AVSampleFormat outSampleFmt);
 
-    unsigned int reSample(AVFrame *inframe, quint8 **outbuffer);
+    unsigned int reSample(AVFrame* inframe, quint8** outbuffer);
 
-private:
-    AVCodecContext *m_pCodecCtx;
+  private:
+    AVCodecContext* m_pCodecCtx;
     enum AVSampleFormat m_pOutSampleFmt;
     enum AVSampleFormat m_pInSampleFmt;
 
@@ -69,13 +69,13 @@ private:
 // Compile it now.. but because macports doesn't
 // Support both.. damn!
 #ifdef __LIBAVRESAMPLE__
-    AVAudioResampleContext *m_pSwrCtx;
+    AVAudioResampleContext* m_pSwrCtx;
 #else
-    SwrContext *m_pSwrCtx;
+    SwrContext* m_pSwrCtx;
 #endif
 
 #else
-    ReSampleContext *m_pSwrCtx;
+    ReSampleContext* m_pSwrCtx;
 #endif
 
 };

@@ -5,9 +5,9 @@
 #include "library/basesqltablemodel.h"
 
 BaseExternalLibraryFeature::BaseExternalLibraryFeature(QObject* pParent,
-                                                       TrackCollection* pCollection)
-        : LibraryFeature(pParent),
-          m_pTrackCollection(pCollection) {
+        TrackCollection* pCollection)
+    : LibraryFeature(pParent),
+      m_pTrackCollection(pCollection) {
     m_pAddToAutoDJAction = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
     connect(m_pAddToAutoDJAction, SIGNAL(triggered()),
             this, SLOT(slotAddToAutoDJ()));
@@ -32,7 +32,8 @@ void BaseExternalLibraryFeature::onRightClick(const QPoint& globalPos) {
     m_lastRightClickedIndex = QModelIndex();
 }
 
-void BaseExternalLibraryFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
+void BaseExternalLibraryFeature::onRightClickChild(const QPoint& globalPos,
+        QModelIndex index) {
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
 
@@ -65,7 +66,7 @@ void BaseExternalLibraryFeature::addToAutoDJ(bool bTop) {
         return;
     }
 
-    PlaylistDAO &playlistDao = m_pTrackCollection->getPlaylistDAO();
+    PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
     playlistDao.addTracksToAutoDJQueue(trackIds, bTop);
 }
 
@@ -96,7 +97,8 @@ void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
 }
 
 // This is a common function for all external Librarys copied to Mixxx DB
-void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(QList<int>* trackIds, QString* pPlaylist) {
+void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(
+    QList<int>* trackIds, QString* pPlaylist) {
     if (!m_lastRightClickedIndex.isValid()) {
         return;
     }
@@ -106,16 +108,16 @@ void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(QList<int>* t
     // full path/name of the playlist.
     *pPlaylist = m_lastRightClickedIndex.data(Qt::UserRole).toString();
     QScopedPointer<BaseSqlTableModel> pPlaylistModelToAdd(
-            getPlaylistModelForPlaylist(*pPlaylist));
+        getPlaylistModelForPlaylist(*pPlaylist));
 
     if (!pPlaylistModelToAdd || !pPlaylistModelToAdd->initialized()) {
         qDebug() << "BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex "
-                "could not initialize a playlist model for playlist:" << *pPlaylist;
+                 "could not initialize a playlist model for playlist:" << *pPlaylist;
         return;
     }
 
     pPlaylistModelToAdd->setSort(pPlaylistModelToAdd->fieldIndex(
-            ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
+                                     ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
     pPlaylistModelToAdd->select();
 
     // Copy Tracks

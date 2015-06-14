@@ -5,7 +5,7 @@
 
 // static
 Waveform* WaveformFactory::loadWaveformFromAnalysis(
-        const AnalysisDao::AnalysisInfo& analysis) {
+    const AnalysisDao::AnalysisInfo& analysis) {
     Waveform* pWaveform = new Waveform(analysis.data);
     pWaveform->setId(analysis.analysisId);
     pWaveform->setVersion(analysis.version);
@@ -14,7 +14,8 @@ Waveform* WaveformFactory::loadWaveformFromAnalysis(
 }
 
 // static
-WaveformFactory::VersionClass WaveformFactory::waveformVersionToVersionClass(const QString& version) {
+WaveformFactory::VersionClass WaveformFactory::waveformVersionToVersionClass(
+    const QString& version) {
     if (version == WAVEFORM_4_VERSION) {
         return VC_USE;
     }
@@ -34,7 +35,8 @@ WaveformFactory::VersionClass WaveformFactory::waveformVersionToVersionClass(con
 }
 
 // static
-WaveformFactory::VersionClass WaveformFactory::waveformSummaryVersionToVersionClass(const QString& version) {
+WaveformFactory::VersionClass
+WaveformFactory::waveformSummaryVersionToVersionClass(const QString& version) {
     if (version == WAVEFORMSUMMARY_4_VERSION) {
         return VC_USE;
     }

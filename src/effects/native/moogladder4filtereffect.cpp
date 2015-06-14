@@ -19,14 +19,15 @@ EffectManifest MoogLadder4FilterEffect::getManifest() {
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
-            "A 4-pole Moog ladder filter, based on Antti Houvilainen's non linear digital implementation"));
+                                "A 4-pole Moog ladder filter, based on Antti Houvilainen's non linear digital implementation"));
     manifest.setEffectRampsFromDry(true);
     manifest.setIsForFilterKnob(true);
 
     EffectManifestParameter* lpf = manifest.addParameter();
     lpf->setId("lpf");
     lpf->setName(QObject::tr("LPF"));
-    lpf->setDescription(QObject::tr("Corner frequency ratio of the low pass filter"));
+    lpf->setDescription(
+        QObject::tr("Corner frequency ratio of the low pass filter"));
     lpf->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     lpf->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     lpf->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
@@ -39,7 +40,8 @@ EffectManifest MoogLadder4FilterEffect::getManifest() {
     EffectManifestParameter* q = manifest.addParameter();
     q->setId("resonance");
     q->setName(QObject::tr("Resonance"));
-    q->setDescription(QObject::tr("Resonance of the filters. 4 = self oscillating"));
+    q->setDescription(
+        QObject::tr("Resonance of the filters. 4 = self oscillating"));
     q->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     q->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     q->setUnitsHint(EffectManifestParameter::UNITS_SAMPLERATE);
@@ -50,7 +52,8 @@ EffectManifest MoogLadder4FilterEffect::getManifest() {
     EffectManifestParameter* hpf = manifest.addParameter();
     hpf->setId("hpf");
     hpf->setName(QObject::tr("HPF"));
-    hpf->setDescription(QObject::tr("Corner frequency ratio of the high pass filter"));
+    hpf->setDescription(
+        QObject::tr("Corner frequency ratio of the high pass filter"));
     hpf->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     hpf->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     hpf->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
@@ -64,15 +67,15 @@ EffectManifest MoogLadder4FilterEffect::getManifest() {
 }
 
 MoogLadder4FilterGroupState::MoogLadder4FilterGroupState()
-        : m_loFreq(kMaxCorner),
-          m_resonance(0),
-          m_hiFreq(kMinCorner),
-          m_samplerate(kStartupSamplerate) {
+    : m_loFreq(kMaxCorner),
+      m_resonance(0),
+      m_hiFreq(kMinCorner),
+      m_samplerate(kStartupSamplerate) {
     m_pBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pLowFilter = new EngineFilterMoogLadder4Low(
-            kStartupSamplerate, m_loFreq * kStartupSamplerate, m_resonance);
+        kStartupSamplerate, m_loFreq * kStartupSamplerate, m_resonance);
     m_pHighFilter = new EngineFilterMoogLadder4High(
-            kStartupSamplerate, m_hiFreq * kStartupSamplerate, m_resonance);
+        kStartupSamplerate, m_hiFreq * kStartupSamplerate, m_resonance);
 }
 
 MoogLadder4FilterGroupState::~MoogLadder4FilterGroupState() {
@@ -82,10 +85,10 @@ MoogLadder4FilterGroupState::~MoogLadder4FilterGroupState() {
 }
 
 MoogLadder4FilterEffect::MoogLadder4FilterEffect(EngineEffect* pEffect,
-                           const EffectManifest& manifest)
-        : m_pLPF(pEffect->getParameterById("lpf")),
-          m_pResonance(pEffect->getParameterById("resonance")),
-          m_pHPF(pEffect->getParameterById("hpf")) {
+        const EffectManifest& manifest)
+    : m_pLPF(pEffect->getParameterById("lpf")),
+      m_pResonance(pEffect->getParameterById("resonance")),
+      m_pHPF(pEffect->getParameterById("hpf")) {
     Q_UNUSED(manifest);
 }
 
@@ -94,13 +97,13 @@ MoogLadder4FilterEffect::~MoogLadder4FilterEffect() {
 }
 
 void MoogLadder4FilterEffect::processChannel(
-        const ChannelHandle& handle,
-        MoogLadder4FilterGroupState* pState,
-        const CSAMPLE* pInput, CSAMPLE* pOutput,
-        const unsigned int numSamples,
-        const unsigned int sampleRate,
-        const EffectProcessor::EnableState enableState,
-        const GroupFeatureState& groupFeatures) {
+    const ChannelHandle& handle,
+    MoogLadder4FilterGroupState* pState,
+    const CSAMPLE* pInput, CSAMPLE* pOutput,
+    const unsigned int numSamples,
+    const unsigned int sampleRate,
+    const EffectProcessor::EnableState enableState,
+    const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
     Q_UNUSED(sampleRate);
@@ -122,14 +125,14 @@ void MoogLadder4FilterEffect::processChannel(
             pState->m_resonance != resonance ||
             pState->m_samplerate != sampleRate) {
         pState->m_pLowFilter->setParameter(
-                sampleRate, lpf * sampleRate, resonance);
+            sampleRate, lpf * sampleRate, resonance);
     }
 
     if (pState->m_hiFreq != hpf ||
             pState->m_resonance != resonance ||
             pState->m_samplerate != sampleRate) {
         pState->m_pHighFilter->setParameter(
-                sampleRate, hpf * sampleRate, resonance);
+            sampleRate, hpf * sampleRate, resonance);
     }
 
     const CSAMPLE* pLpfInput = pState->m_pBuf;
@@ -144,9 +147,9 @@ void MoogLadder4FilterEffect::processChannel(
         // hpf enabled, fade-in is handled in the filter when starting from pause
         pState->m_pHighFilter->process(pInput, pHpfOutput, numSamples);
     } else if (pState->m_hiFreq > kMinCorner) {
-            // hpf disabling
-            pState->m_pHighFilter->processAndPauseFilter(pInput,
-                    pHpfOutput, numSamples);
+        // hpf disabling
+        pState->m_pHighFilter->processAndPauseFilter(pInput,
+                pHpfOutput, numSamples);
     } else {
         // paused LP uses input directly
         pLpfInput = pInput;

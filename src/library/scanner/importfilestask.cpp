@@ -12,11 +12,11 @@ ImportFilesTask::ImportFilesTask(LibraryScanner* pScanner,
                                  const QLinkedList<QFileInfo>& filesToImport,
                                  const QLinkedList<QFileInfo>& possibleCovers,
                                  SecurityTokenPointer pToken)
-        : ScannerTask(pScanner, scannerGlobal), m_dirPath(dirPath),
-          m_prevHashExists(prevHashExists), m_newHash(newHash),
-          m_filesToImport(filesToImport),
-          m_possibleCovers(possibleCovers),
-          m_pToken(pToken) {
+    : ScannerTask(pScanner, scannerGlobal), m_dirPath(dirPath),
+      m_prevHashExists(prevHashExists), m_newHash(newHash),
+      m_filesToImport(filesToImport),
+      m_possibleCovers(possibleCovers),
+      m_pToken(pToken) {
 }
 
 void ImportFilesTask::run() {
@@ -47,13 +47,13 @@ void ImportFilesTask::run() {
             // this changes in the future you MUST check that the cover art is
             // not USER_SELECTED first.
             TrackPointer pTrack = TrackPointer(
-                new TrackInfoObject(filePath, m_pToken, true, true));
+                                      new TrackInfoObject(filePath, m_pToken, true, true));
 
             // If cover art is not found in the track metadata, populate from
             // possibleCovers.
             if (pTrack->getCoverArt().image.isNull()) {
                 CoverArt art = CoverArtUtils::selectCoverArtForTrack(
-                    pTrack.data(), m_possibleCovers);
+                                   pTrack.data(), m_possibleCovers);
                 if (!art.image.isNull()) {
                     pTrack->setCoverArt(art);
                 }

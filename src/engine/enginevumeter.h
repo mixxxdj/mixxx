@@ -44,7 +44,7 @@ class EngineVuMeter : public EngineObject {
     void reset();
 
   private:
-    void doSmooth(CSAMPLE &currentVolume, CSAMPLE newVolume);
+    void doSmooth(CSAMPLE& currentVolume, CSAMPLE newVolume);
 
     ControlPotmeter* m_ctrlVuMeter;
     ControlPotmeter* m_ctrlVuMeterL;

@@ -30,9 +30,9 @@
 #include "util/performancetimer.h"
 
 class WVuMeter : public WWidget  {
-   Q_OBJECT
+    Q_OBJECT
   public:
-    WVuMeter(QWidget *parent=0);
+    WVuMeter(QWidget* parent=0);
     virtual ~WVuMeter();
 
     void setup(QDomNode node, const SkinContext& context);
@@ -47,7 +47,7 @@ class WVuMeter : public WWidget  {
     void maybeUpdate();
 
   private:
-    void paintEvent(QPaintEvent *);
+    void paintEvent(QPaintEvent*);
     void setPeak(double parameter);
 
     // Current parameter and peak parameter.

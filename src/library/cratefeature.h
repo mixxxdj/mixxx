@@ -76,17 +76,17 @@ class CrateFeature : public LibraryFeature {
 
     TrackCollection* m_pTrackCollection;
     CrateDAO& m_crateDao;
-    QAction *m_pCreateCrateAction;
-    QAction *m_pDeleteCrateAction;
-    QAction *m_pRenameCrateAction;
-    QAction *m_pLockCrateAction;
-    QAction *m_pDuplicateCrateAction;
+    QAction* m_pCreateCrateAction;
+    QAction* m_pDeleteCrateAction;
+    QAction* m_pRenameCrateAction;
+    QAction* m_pLockCrateAction;
+    QAction* m_pDuplicateCrateAction;
 #ifdef __AUTODJCRATES__
-    QAction *m_pAutoDjTrackSource;
+    QAction* m_pAutoDjTrackSource;
 #endif // __AUTODJCRATES__
-    QAction *m_pImportPlaylistAction;
-    QAction *m_pExportPlaylistAction;
-    QAction *m_pAnalyzeCrateAction;
+    QAction* m_pImportPlaylistAction;
+    QAction* m_pExportPlaylistAction;
+    QAction* m_pAnalyzeCrateAction;
     QList<QPair<int, QString> > m_crateList;
     CrateTableModel m_crateTableModel;
     QModelIndex m_lastRightClickedIndex;

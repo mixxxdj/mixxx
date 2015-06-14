@@ -6,8 +6,8 @@
 
 WaveformRenderBackground::WaveformRenderBackground(
     WaveformWidgetRenderer* waveformWidgetRenderer)
-        : WaveformRendererAbstract(waveformWidgetRenderer),
-          m_backgroundColor(0, 0, 0) {
+    : WaveformRendererAbstract(waveformWidgetRenderer),
+      m_backgroundColor(0, 0, 0) {
 }
 
 WaveformRenderBackground::~WaveformRenderBackground() {

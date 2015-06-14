@@ -46,8 +46,8 @@ void ControlObject::initialize(ConfigKey key, bool bIgnoreNops, bool bTrack,
     // Don't bother looking up the control if key is NULL. Prevents log spew.
     if (!m_key.isNull()) {
         m_pControl = ControlDoublePrivate::getControl(m_key, true, this,
-                                                      bIgnoreNops, bTrack,
-                                                      bPersist);
+                     bIgnoreNops, bTrack,
+                     bPersist);
     }
 
     // getControl can fail and return a NULL control even with the create flag.
@@ -71,7 +71,8 @@ void ControlObject::privateValueChanged(double dValue, QObject* pSender) {
 // static
 ControlObject* ControlObject::getControl(const ConfigKey& key, bool warn) {
     //qDebug() << "ControlObject::getControl for (" << key.group << "," << key.item << ")";
-    QSharedPointer<ControlDoublePrivate> pCDP = ControlDoublePrivate::getControl(key, warn);
+    QSharedPointer<ControlDoublePrivate> pCDP = ControlDoublePrivate::getControl(
+                key, warn);
     if (pCDP) {
         return pCDP->getCreatorCO();
     }
@@ -90,7 +91,8 @@ double ControlObject::getMidiParameter() const {
 
 // static
 double ControlObject::get(const ConfigKey& key) {
-    QSharedPointer<ControlDoublePrivate> pCop = ControlDoublePrivate::getControl(key);
+    QSharedPointer<ControlDoublePrivate> pCop = ControlDoublePrivate::getControl(
+                key);
     return pCop ? pCop->get() : 0.0;
 }
 
@@ -120,15 +122,16 @@ void ControlObject::setParameterFrom(double v, QObject* pSender) {
 
 // static
 void ControlObject::set(const ConfigKey& key, const double& value) {
-    QSharedPointer<ControlDoublePrivate> pCop = ControlDoublePrivate::getControl(key);
+    QSharedPointer<ControlDoublePrivate> pCop = ControlDoublePrivate::getControl(
+                key);
     if (pCop) {
         pCop->set(value, NULL);
     }
 }
 
 bool ControlObject::connectValueChangeRequest(const QObject* receiver,
-                                              const char* method,
-                                              Qt::ConnectionType type) {
+        const char* method,
+        Qt::ConnectionType type) {
     bool ret = false;
     if (m_pControl) {
         ret = m_pControl->connectValueChangeRequest(receiver, method, type);

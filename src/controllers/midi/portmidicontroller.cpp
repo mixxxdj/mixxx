@@ -13,15 +13,15 @@ PortMidiController::PortMidiController(const PmDeviceInfo* inputDeviceInfo,
                                        const PmDeviceInfo* outputDeviceInfo,
                                        int inputDeviceIndex,
                                        int outputDeviceIndex)
-        : MidiController(),
-          m_pInputDeviceInfo(inputDeviceInfo),
-          m_pOutputDeviceInfo(outputDeviceInfo),
-          m_iInputDeviceIndex(inputDeviceIndex),
-          m_iOutputDeviceIndex(outputDeviceIndex),
-          m_pInputStream(NULL),
-          m_pOutputStream(NULL),
-          m_cReceiveMsg_index(0),
-          m_bInSysex(false) {
+    : MidiController(),
+      m_pInputDeviceInfo(inputDeviceInfo),
+      m_pOutputDeviceInfo(outputDeviceInfo),
+      m_iInputDeviceIndex(inputDeviceIndex),
+      m_iOutputDeviceIndex(outputDeviceIndex),
+      m_pInputStream(NULL),
+      m_pOutputStream(NULL),
+      m_cReceiveMsg_index(0),
+      m_bInSysex(false) {
     for (unsigned int k = 0; k < MIXXX_PORTMIDI_BUFFER_LEN; ++k) {
         // Can be shortened to `m_midiBuffer[k] = {}` with C++11.
         m_midiBuffer[k].message = 0;
@@ -160,7 +160,8 @@ bool PortMidiController::poll() {
         return false;
     }
 
-    int numEvents = Pm_Read(m_pInputStream, m_midiBuffer, MIXXX_PORTMIDI_BUFFER_LEN);
+    int numEvents = Pm_Read(m_pInputStream, m_midiBuffer,
+                            MIXXX_PORTMIDI_BUFFER_LEN);
 
     if (numEvents < 0) {
         qWarning() << "PortMidi error:" << Pm_GetErrorText((PmError)numEvents);
@@ -175,7 +176,7 @@ bool PortMidiController::poll() {
             receive(status, 0, 0);
         }
 
-        reprocessMessage:
+reprocessMessage:
 
         if (!m_bInSysex) {
             if (status == 0xF0) {
@@ -207,7 +208,7 @@ bool PortMidiController::poll() {
                     receive(data, 0, 0);
                 } else {
                     m_cReceiveMsg[m_cReceiveMsg_index++] = data =
-                        (m_midiBuffer[i].message >> shift) & 0xFF;
+                            (m_midiBuffer[i].message >> shift) & 0xFF;
                 }
             }
 
@@ -235,7 +236,8 @@ void PortMidiController::sendWord(unsigned int word) {
 
 void PortMidiController::send(QByteArray data) {
     if (m_pOutputStream) {
-        PmError err = Pm_WriteSysEx(m_pOutputStream, 0, (unsigned char*)data.constData());
+        PmError err = Pm_WriteSysEx(m_pOutputStream, 0,
+                                    (unsigned char*)data.constData());
         if (err != pmNoError) {
             qDebug() << "PortMidi sendSysexMsg error:"
                      << Pm_GetErrorText(err);

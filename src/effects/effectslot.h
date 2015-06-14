@@ -34,7 +34,8 @@ class EffectSlot : public QObject {
 
     unsigned int numButtonParameterSlots() const;
     EffectButtonParameterSlotPointer addEffectButtonParameterSlot();
-    EffectButtonParameterSlotPointer getEffectButtonParameterSlot(unsigned int slotNumber);
+    EffectButtonParameterSlotPointer getEffectButtonParameterSlot(
+        unsigned int slotNumber);
 
     void onChainSuperParameterChanged(double parameter, bool force=false);
 

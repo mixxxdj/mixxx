@@ -26,7 +26,7 @@ class WCoverArtLabel : public QLabel {
     void mousePressEvent(QMouseEvent* event);
 
   private slots:
-      void slotCoverMenu(const QPoint& pos);
+    void slotCoverMenu(const QPoint& pos);
 
   private:
     TrackPointer m_pTrack;

@@ -6,13 +6,13 @@
 #include "controlpushbutton.h"
 
 EffectParameterSlotBase::EffectParameterSlotBase(const QString& group,
-                                                 const unsigned int iParameterSlotNumber)
-        : m_iParameterSlotNumber(iParameterSlotNumber),
-          m_group(group),
-          m_pEffectParameter(NULL),
-          m_pControlLoaded(NULL),
-          m_pControlType(NULL),
-          m_dChainParameter(0.0) {
+        const unsigned int iParameterSlotNumber)
+    : m_iParameterSlotNumber(iParameterSlotNumber),
+      m_group(group),
+      m_pEffectParameter(NULL),
+      m_pControlLoaded(NULL),
+      m_pControlType(NULL),
+      m_dChainParameter(0.0) {
 
 }
 

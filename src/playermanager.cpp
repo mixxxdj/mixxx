@@ -25,17 +25,20 @@ PlayerManager::PlayerManager(ConfigObject<ConfigValue>* pConfig,
                              SoundManager* pSoundManager,
                              EffectsManager* pEffectsManager,
                              EngineMaster* pEngine) :
-        m_mutex(QMutex::Recursive),
-        m_pConfig(pConfig),
-        m_pSoundManager(pSoundManager),
-        m_pEffectsManager(pEffectsManager),
-        m_pEngine(pEngine),
-        // NOTE(XXX) LegacySkinParser relies on these controls being COs and
-        // not COTMs listening to a CO.
-        m_pAnalyserQueue(NULL),
-        m_pCONumDecks(new ControlObject(ConfigKey("[Master]", "num_decks"), true, true)),
-        m_pCONumSamplers(new ControlObject(ConfigKey("[Master]", "num_samplers"), true, true)),
-        m_pCONumPreviewDecks(new ControlObject(ConfigKey("[Master]", "num_preview_decks"), true, true)) {
+    m_mutex(QMutex::Recursive),
+    m_pConfig(pConfig),
+    m_pSoundManager(pSoundManager),
+    m_pEffectsManager(pEffectsManager),
+    m_pEngine(pEngine),
+    // NOTE(XXX) LegacySkinParser relies on these controls being COs and
+    // not COTMs listening to a CO.
+    m_pAnalyserQueue(NULL),
+    m_pCONumDecks(new ControlObject(ConfigKey("[Master]", "num_decks"), true,
+                                    true)),
+    m_pCONumSamplers(new ControlObject(ConfigKey("[Master]", "num_samplers"), true,
+                                       true)),
+    m_pCONumPreviewDecks(new ControlObject(ConfigKey("[Master]",
+                                           "num_preview_decks"), true, true)) {
 
     connect(m_pCONumDecks, SIGNAL(valueChanged(double)),
             this, SLOT(slotNumDecksControlChanged(double)),
@@ -102,7 +105,7 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
             pLibrary, SLOT(slotLoadLocationToPlayer(QString, QString)));
 
     m_pAnalyserQueue = AnalyserQueue::createDefaultAnalyserQueue(m_pConfig,
-            pLibrary->getTrackCollection());
+                       pLibrary->getTrackCollection());
 
     // Connect the player to the analyser queue so that loaded tracks are
     // analysed.
@@ -197,7 +200,7 @@ unsigned int PlayerManager::numPreviewDecks() {
     static ControlObjectSlave* pNumCO = NULL;
     if (pNumCO == NULL) {
         pNumCO = new ControlObjectSlave(
-                ConfigKey("[Master]", "num_preview_decks"));
+            ConfigKey("[Master]", "num_preview_decks"));
         if (!pNumCO->valid()) {
             delete pNumCO;
             pNumCO = NULL;
@@ -315,7 +318,8 @@ void PlayerManager::addDeckInner() {
     pDeck->setupEqControls();
 
     // Setup quick effect rack for this deck.
-    QuickEffectRackPointer pQuickEffectRack = m_pEffectsManager->getQuickEffectRack(0);
+    QuickEffectRackPointer pQuickEffectRack = m_pEffectsManager->getQuickEffectRack(
+                0);
     if (pQuickEffectRack) {
         pQuickEffectRack->addEffectChainSlotForGroup(group);
     }
@@ -366,8 +370,8 @@ void PlayerManager::addPreviewDeckInner() {
     EngineChannel::ChannelOrientation orientation = EngineChannel::CENTER;
 
     PreviewDeck* pPreviewDeck = new PreviewDeck(this, m_pConfig, m_pEngine,
-                                                m_pEffectsManager, orientation,
-                                                group);
+            m_pEffectsManager, orientation,
+            group);
     if (m_pAnalyserQueue) {
         connect(pPreviewDeck, SIGNAL(newTrackLoaded(TrackPointer)),
                 m_pAnalyserQueue, SLOT(slotAnalyseTrack(TrackPointer)));
@@ -395,10 +399,12 @@ Deck* PlayerManager::getDeck(unsigned int deck) const {
     return m_decks[deck - 1];
 }
 
-PreviewDeck* PlayerManager::getPreviewDeck(unsigned int libPreviewPlayer) const {
+PreviewDeck* PlayerManager::getPreviewDeck(unsigned int libPreviewPlayer)
+const {
     QMutexLocker locker(&m_mutex);
     if (libPreviewPlayer < 1 || libPreviewPlayer > numPreviewDecks()) {
-        qWarning() << "Warning PlayerManager::getPreviewDeck() called with invalid index: "
+        qWarning() <<
+                   "Warning PlayerManager::getPreviewDeck() called with invalid index: "
                    << libPreviewPlayer;
         return NULL;
     }
@@ -420,13 +426,15 @@ bool PlayerManager::hasVinylInput(int inputnum) const {
     return m_pSoundManager->getConfig().getInputs().values().contains(vinyl_input);
 }
 
-void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play) {
+void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group,
+        bool play) {
     // Do not lock mutex in this method unless it is changed to access
     // PlayerManager state.
     BaseTrackPlayer* pPlayer = getPlayer(group);
 
     if (pPlayer == NULL) {
-        qWarning() << "Invalid group argument " << group << " to slotLoadTrackToPlayer.";
+        qWarning() << "Invalid group argument " << group <<
+                   " to slotLoadTrackToPlayer.";
         return;
     }
 
@@ -457,7 +465,7 @@ void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack) {
     while (it != m_decks.end()) {
         Deck* pDeck = *it;
         ControlObject* playControl =
-                ControlObject::getControl(ConfigKey(pDeck->getGroup(), "play"));
+            ControlObject::getControl(ConfigKey(pDeck->getGroup(), "play"));
         if (playControl && playControl->get() != 1.) {
             locker.unlock();
             pDeck->slotLoadTrack(pTrack, false);
@@ -473,7 +481,7 @@ void PlayerManager::slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack) {
     while (it != m_samplers.end()) {
         Sampler* pSampler = *it;
         ControlObject* playControl =
-                ControlObject::getControl(ConfigKey(pSampler->getGroup(), "play"));
+            ControlObject::getControl(ConfigKey(pSampler->getGroup(), "play"));
         if (playControl && playControl->get() != 1.) {
             locker.unlock();
             pSampler->slotLoadTrack(pTrack, false);

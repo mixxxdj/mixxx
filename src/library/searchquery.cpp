@@ -6,7 +6,8 @@
 #include "track/keyutils.h"
 #include "library/dao/trackdao.h"
 
-QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& column) {
+QVariant getTrackValueForColumn(const TrackPointer& pTrack,
+                                const QString& column) {
     if (column == LIBRARYTABLE_ARTIST) {
         return pTrack->getArtist();
     } else if (column == LIBRARYTABLE_TITLE) {
@@ -58,7 +59,7 @@ QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& colum
 
 //static
 QString QueryNode::concatSqlClauses(
-        const QStringList& sqlClauses, const QString& sqlConcatOp) {
+    const QStringList& sqlClauses, const QString& sqlConcatOp) {
     switch (sqlClauses.size()) {
     case 0:
         return QString();
@@ -166,18 +167,18 @@ QString TextFilterNode::toSql() const {
 }
 
 NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns)
-        : m_sqlColumns(sqlColumns),
-          m_bOperatorQuery(false),
-          m_operator("="),
-          m_dOperatorArgument(0.0),
-          m_bRangeQuery(false),
-          m_dRangeLow(0.0),
-          m_dRangeHigh(0.0) {
+    : m_sqlColumns(sqlColumns),
+      m_bOperatorQuery(false),
+      m_operator("="),
+      m_dOperatorArgument(0.0),
+      m_bRangeQuery(false),
+      m_dRangeLow(0.0),
+      m_dRangeHigh(0.0) {
 }
 
 NumericFilterNode::NumericFilterNode(
-        const QStringList& sqlColumns, const QString& argument)
-        : NumericFilterNode(sqlColumns) {
+    const QStringList& sqlColumns, const QString& argument)
+    : NumericFilterNode(sqlColumns) {
     init(argument);
 }
 
@@ -208,7 +209,7 @@ void NumericFilterNode::init(QString argument) {
     }
 }
 
-double NumericFilterNode::parse(const QString& arg, bool *ok) {
+double NumericFilterNode::parse(const QString& arg, bool* ok) {
     return arg.toDouble(ok);
 }
 
@@ -222,10 +223,10 @@ bool NumericFilterNode::match(const TrackPointer& pTrack) const {
         double dValue = value.toDouble();
         if (m_bOperatorQuery) {
             if ((m_operator == "=" && dValue == m_dOperatorArgument) ||
-                (m_operator == "<" && dValue < m_dOperatorArgument) ||
-                (m_operator == ">" && dValue > m_dOperatorArgument) ||
-                (m_operator == "<=" && dValue <= m_dOperatorArgument) ||
-                (m_operator == ">=" && dValue >= m_dOperatorArgument)) {
+                    (m_operator == "<" && dValue < m_dOperatorArgument) ||
+                    (m_operator == ">" && dValue > m_dOperatorArgument) ||
+                    (m_operator == "<=" && dValue <= m_dOperatorArgument) ||
+                    (m_operator == ">=" && dValue >= m_dOperatorArgument)) {
                 return true;
             }
         } else if (m_bRangeQuery && dValue >= m_dRangeLow &&
@@ -241,7 +242,7 @@ QString NumericFilterNode::toSql() const {
         QStringList searchClauses;
         for (const auto& sqlColumn: m_sqlColumns) {
             searchClauses << QString("%1 %2 %3").arg(
-                sqlColumn, m_operator, QString::number(m_dOperatorArgument));
+                              sqlColumn, m_operator, QString::number(m_dOperatorArgument));
         }
         return concatSqlClauses(searchClauses, "OR");
     }
@@ -251,9 +252,9 @@ QString NumericFilterNode::toSql() const {
         for (const auto& sqlColumn: m_sqlColumns) {
             QStringList rangeClauses;
             rangeClauses << QString("%1 >= %2").arg(
-                    sqlColumn, QString::number(m_dRangeLow));
+                             sqlColumn, QString::number(m_dRangeLow));
             rangeClauses << QString("%1 <= %2").arg(
-                    sqlColumn, QString::number(m_dRangeHigh));
+                             sqlColumn, QString::number(m_dRangeHigh));
             searchClauses << concatSqlClauses(rangeClauses, "AND");
         }
         return concatSqlClauses(searchClauses, "OR");
@@ -263,8 +264,8 @@ QString NumericFilterNode::toSql() const {
 }
 
 DurationFilterNode::DurationFilterNode(
-        const QStringList& sqlColumns, const QString& argument)
-        : NumericFilterNode(sqlColumns) {
+    const QStringList& sqlColumns, const QString& argument)
+    : NumericFilterNode(sqlColumns) {
     // init() has to be called from this class directly to invoke
     // the implementation of this and not that of the base class!
     init(argument);

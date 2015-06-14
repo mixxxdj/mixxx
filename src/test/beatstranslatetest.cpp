@@ -32,9 +32,9 @@ TEST_F(BeatsTranslateTest, SimpleTranslateMatch) {
     // Manually set the "bpm" control... I would like to figure out why this
     // doesn't get set naturally, but this will do for now.
     QScopedPointer<ControlObjectThread> pBpm1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "bpm")));
+                ConfigKey(m_sGroup1, "bpm")));
     QScopedPointer<ControlObjectThread> pBpm2(getControlObjectThread(
-            ConfigKey(m_sGroup1, "bpm")));
+                ConfigKey(m_sGroup1, "bpm")));
     pBpm1->set(bpm);
     pBpm2->set(bpm);
     ProcessBuffer();

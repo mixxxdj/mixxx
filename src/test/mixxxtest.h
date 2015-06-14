@@ -29,7 +29,7 @@ class MixxxTest : public testing::Test {
     // and destroying the QApplication multiple times in the same process.
     // http://stackoverflow.com/questions/14243858/qapplication-segfaults-in-googletest
     class ApplicationScope {
-    public:
+      public:
         ApplicationScope(int argc, char** argv);
         ~ApplicationScope();
     };

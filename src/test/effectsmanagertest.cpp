@@ -29,7 +29,8 @@ TEST_F(EffectsManagerTest, CanInstantiateEffectsFromBackend) {
     registerTestEffect(manifest, false);
 
     // Check we can get the same manifest that we registered back.
-    EffectManifest effect_to_load = m_pEffectsManager->getEffectManifest(manifest.id());
+    EffectManifest effect_to_load = m_pEffectsManager->getEffectManifest(
+                                        manifest.id());
     EXPECT_QSTRING_EQ(effect_to_load.name(), manifest.name());
 
     // Check we can instantiate the effect.

@@ -38,7 +38,9 @@ typedef struct Chunk {
 typedef struct ChunkReadRequest {
     Chunk* chunk;
 
-    ChunkReadRequest() { chunk = NULL; }
+    ChunkReadRequest() {
+        chunk = NULL;
+    }
 } ChunkReadRequest;
 
 enum ReaderStatus {
@@ -68,8 +70,8 @@ class CachingReaderWorker : public EngineWorker {
   public:
     // Construct a CachingReader with the given group.
     CachingReaderWorker(QString group,
-            FIFO<ChunkReadRequest>* pChunkReadRequestFIFO,
-            FIFO<ReaderStatusUpdate>* pReaderStatusFIFO);
+                        FIFO<ChunkReadRequest>* pChunkReadRequestFIFO,
+                        FIFO<ReaderStatusUpdate>* pReaderStatusFIFO);
     virtual ~CachingReaderWorker();
 
     // Request to load a new track. wake() must be called afterwards.

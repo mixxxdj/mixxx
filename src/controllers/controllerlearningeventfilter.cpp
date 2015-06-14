@@ -9,14 +9,15 @@
 #include "controllers/controllerlearningeventfilter.h"
 
 ControllerLearningEventFilter::ControllerLearningEventFilter(QObject* pParent)
-        : QObject(pParent),
-          m_bListening(false) {
+    : QObject(pParent),
+      m_bListening(false) {
 }
 
 ControllerLearningEventFilter::~ControllerLearningEventFilter() {
 }
 
-bool ControllerLearningEventFilter::eventFilter(QObject* pObject, QEvent* pEvent) {
+bool ControllerLearningEventFilter::eventFilter(QObject* pObject,
+        QEvent* pEvent) {
     //qDebug() << "ControllerLearningEventFilter::eventFilter" << pObject << pEvent;
 
     WWidget* pWidget = dynamic_cast<WWidget*>(pObject);
@@ -54,7 +55,8 @@ bool ControllerLearningEventFilter::eventFilter(QObject* pObject, QEvent* pEvent
                 ConfigKey key = info.rightClickControl->getKey();
                 qDebug() << "Right-click maps MIDI to:" << key.group << key.item;
                 emit(controlClicked(info.rightClickControl));
-            } else if (has_right_click_reset && (info.leftClickControl || info.clickControl)) {
+            } else if (has_right_click_reset && (info.leftClickControl ||
+                                                 info.clickControl)) {
                 // WKnob and WSliderComposed emits a reset signal on
                 // right-click. For controls that are derived from
                 // ControlPotmeter, we can hack this by appending "_set_default"
@@ -87,9 +89,9 @@ bool ControllerLearningEventFilter::eventFilter(QObject* pObject, QEvent* pEvent
 }
 
 void ControllerLearningEventFilter::addWidgetClickInfo(
-        QWidget* pWidget, Qt::MouseButton buttonState,
-        ControlObject* pControl,
-        ControlParameterWidgetConnection::EmitOption emitOption) {
+    QWidget* pWidget, Qt::MouseButton buttonState,
+    ControlObject* pControl,
+    ControlParameterWidgetConnection::EmitOption emitOption) {
     ControlInfo& info = m_widgetControlInfo[pWidget];
 
     if (buttonState == Qt::LeftButton) {

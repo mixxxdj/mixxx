@@ -28,9 +28,9 @@
 #include "skin/skincontext.h"
 
 class WDisplay : public WWidget {
-   Q_OBJECT
+    Q_OBJECT
   public:
-    WDisplay(QWidget *parent=NULL);
+    WDisplay(QWidget* parent=NULL);
     virtual ~WDisplay();
 
     void setup(QDomNode node, const SkinContext& context);

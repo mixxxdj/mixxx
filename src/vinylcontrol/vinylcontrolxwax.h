@@ -22,7 +22,7 @@ extern "C" {
 
 class VinylControlXwax : public VinylControl {
   public:
-    VinylControlXwax(ConfigObject<ConfigValue> *pConfig, QString group);
+    VinylControlXwax(ConfigObject<ConfigValue>* pConfig, QString group);
     virtual ~VinylControlXwax();
 
     static void freeLUTs();

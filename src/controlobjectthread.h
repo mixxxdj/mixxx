@@ -34,9 +34,9 @@ class ControlObjectThread : public QObject {
     void initialize(const ConfigKey& key);
 
     bool connectValueChanged(const QObject* receiver,
-            const char* method, Qt::ConnectionType type = Qt::AutoConnection);
+                             const char* method, Qt::ConnectionType type = Qt::AutoConnection);
     bool connectValueChanged(
-            const char* method, Qt::ConnectionType type = Qt::AutoConnection);
+        const char* method, Qt::ConnectionType type = Qt::AutoConnection);
 
     QString name() const;
     QString description() const;
@@ -46,8 +46,12 @@ class ControlObjectThread : public QObject {
         emit(valueChanged(get()));
     }
 
-    inline ConfigKey getKey() const { return m_key; }
-    inline bool valid() const { return m_pControl != NULL; }
+    inline ConfigKey getKey() const {
+        return m_key;
+    }
+    inline bool valid() const {
+        return m_pControl != NULL;
+    }
 
     // Returns the value of the object. Thread safe, non-blocking.
     inline double get() {

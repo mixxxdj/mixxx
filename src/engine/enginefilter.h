@@ -44,18 +44,18 @@ class EngineFilter : public EngineObject {
     double buf2[FILTER_BUF_SIZE];
 
   private:
-    double (*processSample)(void *buf, const double sample);
+    double (*processSample)(void* buf, const double sample);
 
-    FidFilter *ff;
-    FidFunc *funcp;
-    FidRun *run;
-    void *fbuf1;
-    void *fbuf2;
+    FidFilter* ff;
+    FidFunc* funcp;
+    FidRun* run;
+    void* fbuf1;
+    void* fbuf2;
 };
 
-double processSampleDynamic(void *buf, const double sample);
-double processSampleHp(void *buf, const double sample);
-double processSampleBp(void *buf, const double sample);
-double processSampleLp(void *buf, const double sample);
+double processSampleDynamic(void* buf, const double sample);
+double processSampleHp(void* buf, const double sample);
+double processSampleBp(void* buf, const double sample);
+double processSampleLp(void* buf, const double sample);
 
 #endif

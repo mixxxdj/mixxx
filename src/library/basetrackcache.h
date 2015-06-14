@@ -85,7 +85,7 @@ class BaseTrackCache : public QObject {
                                 QVariant& trackValue) const;
 
     std::unique_ptr<QueryNode> parseQuery(QString query, QString extraFilter,
-                          QStringList idStrings) const;
+                                          QStringList idStrings) const;
     int findSortInsertionPoint(TrackPointer pTrack,
                                const int sortColumn,
                                const Qt::SortOrder sortOrder,
@@ -97,7 +97,7 @@ class BaseTrackCache : public QObject {
     bool trackMatchesNumeric(const TrackPointer& pTrack,
                              const QStringList& numberMatchers) const;
     bool trackMatchesNamedString(const TrackPointer& pTrack,
-                             const QStringList& numberMatchers) const;
+                                 const QStringList& numberMatchers) const;
     bool evaluateNumeric(const int value, const QString& expression) const;
 
     const QString m_tableName;

@@ -16,12 +16,12 @@ const int kMaxInterval = static_cast<int>(1000.0 * (60.0 / kMinBPM));
 
 DlgTrackInfo::DlgTrackInfo(QWidget* parent,
                            DlgTagFetcher& DlgTagFetcher)
-            : QDialog(parent),
-              m_pLoadedTrack(NULL),
-              m_pTapFilter(new TapFilter(this, kFilterLength, kMaxInterval)),
-              m_dLastBpm(-1.),
-              m_DlgTagFetcher(DlgTagFetcher),
-              m_pWCoverArtLabel(new WCoverArtLabel(this)) {
+    : QDialog(parent),
+      m_pLoadedTrack(NULL),
+      m_pTapFilter(new TapFilter(this, kFilterLength, kMaxInterval)),
+      m_dLastBpm(-1.),
+      m_DlgTagFetcher(DlgTagFetcher),
+      m_pWCoverArtLabel(new WCoverArtLabel(this)) {
     init();
 }
 
@@ -78,8 +78,10 @@ void DlgTrackInfo::init() {
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != NULL) {
-        connect(pCache, SIGNAL(coverFound(const QObject*, const int, const CoverInfo&, QPixmap, bool)),
-                this, SLOT(slotCoverFound(const QObject*, const int, const CoverInfo&, QPixmap, bool)));
+        connect(pCache, SIGNAL(coverFound(const QObject*, const int, const CoverInfo&,
+                                          QPixmap, bool)),
+                this, SLOT(slotCoverFound(const QObject*, const int, const CoverInfo&, QPixmap,
+                                          bool)));
     }
     connect(m_pWCoverArtLabel, SIGNAL(coverArtSelected(const CoverArt&)),
             this, SLOT(slotCoverArtSelected(const CoverArt&)));
@@ -122,7 +124,7 @@ void DlgTrackInfo::cueDelete() {
     QListIterator<QTableWidgetItem*> item_it(selected);
 
     QSet<int> rowsToDelete;
-    while(item_it.hasNext()) {
+    while (item_it.hasNext()) {
         QTableWidgetItem* item = item_it.next();
         rowsToDelete.insert(item->row());
     }
@@ -160,7 +162,8 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     txtBpm->setText(pTrack->getBpmStr());
     txtKey->setText(pTrack->getKeyText());
     BeatsPointer pBeats = pTrack->getBeats();
-    bool beatsSupportsSet = !pBeats || (pBeats->getCapabilities() & Beats::BEATSCAP_SET);
+    bool beatsSupportsSet = !pBeats ||
+                            (pBeats->getCapabilities() & Beats::BEATSCAP_SET);
     bool enableBpmEditing = !pTrack->hasBpmLock() && beatsSupportsSet;
     spinBpm->setEnabled(enableBpmEditing);
     bpmTap->setEnabled(enableBpmEditing);
@@ -303,9 +306,9 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
 
         //Construct a nicely formatted duration string now.
         QString duration = QString("%1:%2.%3").arg(
-            QString::number(mins),
-            QString("%1").arg(seconds, 2, 10, QChar('0')),
-            QString("%1").arg(fraction, 2, 10, QChar('0')));
+                               QString::number(mins),
+                               QString("%1").arg(seconds, 2, 10, QChar('0')),
+                               QString("%1").arg(fraction, 2, 10, QChar('0')));
 
         QTableWidgetItem* durationItem = new QTableWidgetItem(duration);
         // Make the duration read only

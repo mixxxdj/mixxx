@@ -27,7 +27,7 @@ void doNothing(TrackInfoObject*) {
 }
 
 LegacyLibraryImporter::LegacyLibraryImporter(TrackDAO& trackDao,
-                                             PlaylistDAO& playlistDao) : QObject(),
+        PlaylistDAO& playlistDao) : QObject(),
     m_trackDao(trackDao),
     m_playlistDao(playlistDao) {
 }
@@ -42,7 +42,7 @@ void LegacyLibraryImporter::import() {
 
     QDomDocument doc("TrackList");
 
-    if(!file.open(QIODevice::ReadOnly)) {
+    if (!file.open(QIODevice::ReadOnly)) {
         //qDebug() << "Could not import legacy 1.7 XML library: " << trackXML;
         return;
     }
@@ -148,8 +148,7 @@ void LegacyLibraryImporter::import() {
 
             //For each track ID in the XML...
             QList<int> trackIDs = current.indexes;
-            for (int i = 0; i < trackIDs.size(); i++)
-            {
+            for (int i = 0; i < trackIDs.size(); i++) {
                 QString trackLocation;
                 int id = trackIDs[i];
                 //qDebug() << "track ID:" << id;
@@ -176,8 +175,7 @@ void LegacyLibraryImporter::import() {
         QFile upgradefile(upgrade_filename);
         if (!upgradefile.open(QIODevice::WriteOnly | QIODevice::Text))
             qDebug() << "Couldn't open" << upgrade_filename << "for writing";
-        else
-        {
+        else {
             file.write("",0);
             file.close();
         }
@@ -189,6 +187,5 @@ void LegacyLibraryImporter::import() {
 }
 
 
-LegacyLibraryImporter::~LegacyLibraryImporter()
-{
+LegacyLibraryImporter::~LegacyLibraryImporter() {
 }

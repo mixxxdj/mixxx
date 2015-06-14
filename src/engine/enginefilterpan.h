@@ -12,11 +12,11 @@ template<unsigned int SIZE>
 class EngineFilterPan : public EngineObjectConstIn {
   public:
     EngineFilterPan()
-            : m_leftDelayFrames(0),
-              m_oldLeftDelayFrames(0),
-              m_delayFrame(0),
-              m_doRamping(false),
-              m_doStart(false) {
+        : m_leftDelayFrames(0),
+          m_oldLeftDelayFrames(0),
+          m_delayFrame(0),
+          m_doRamping(false),
+          m_doStart(false) {
         // Set the current buffers to 0
         memset(m_buf, 0, sizeof(m_buf));
     }
@@ -106,10 +106,14 @@ class EngineFilterPan : public EngineObjectConstIn {
                 double modLeft = fmod(rampedLeftSourceFrame, 1);
                 double modRight = fmod(rampedRightSourceFrame, 1);
 
-                pOutput[i * 2] = m_buf[(static_cast<int>(floor(rampedLeftSourceFrame)) % SIZE) * 2] * (1 - modLeft);
-                pOutput[i * 2 + 1] = m_buf[(static_cast<int>(floor(rampedRightSourceFrame)) % SIZE) * 2 + 1] * (1 - modRight);
-                pOutput[i * 2] += m_buf[(static_cast<int>(ceil(rampedLeftSourceFrame)) % SIZE) * 2] * modLeft;
-                pOutput[i * 2 + 1] += m_buf[(static_cast<int>(ceil(rampedRightSourceFrame)) % SIZE) * 2 + 1] * modRight;
+                pOutput[i * 2] = m_buf[(static_cast<int>(floor(rampedLeftSourceFrame)) % SIZE) *
+                                       2] * (1 - modLeft);
+                pOutput[i * 2 + 1] = m_buf[(static_cast<int>(floor(rampedRightSourceFrame)) %
+                                            SIZE) * 2 + 1] * (1 - modRight);
+                pOutput[i * 2] += m_buf[(static_cast<int>(ceil(rampedLeftSourceFrame)) % SIZE) *
+                                        2] * modLeft;
+                pOutput[i * 2 + 1] += m_buf[(static_cast<int>(ceil(rampedRightSourceFrame)) %
+                                             SIZE) * 2 + 1] * modRight;
                 delayLeftSourceFrame++;
                 delayRightSourceFrame++;
                 delayOldLeftSourceFrame++;
@@ -124,7 +128,7 @@ class EngineFilterPan : public EngineObjectConstIn {
     int m_leftDelayFrames;
     int m_oldLeftDelayFrames;
     int m_delayFrame;
-    CSAMPLE m_buf[SIZE * numChannels];
+    CSAMPLE m_buf[SIZE* numChannels];
     bool m_doRamping;
     bool m_doStart;
 };

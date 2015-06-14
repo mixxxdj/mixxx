@@ -10,7 +10,7 @@
 #include "util/math.h"
 
 WaveformRendererHSV::WaveformRendererHSV(
-        WaveformWidgetRenderer* waveformWidgetRenderer)
+    WaveformWidgetRenderer* waveformWidgetRenderer)
     : WaveformRendererSignalBase(waveformWidgetRenderer) {
 }
 
@@ -22,7 +22,7 @@ void WaveformRendererHSV::onSetup(const QDomNode& node) {
 }
 
 void WaveformRendererHSV::draw(QPainter* painter,
-                                          QPaintEvent* /*event*/) {
+                               QPaintEvent* /*event*/) {
     const TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
     if (!trackInfo) {
         return;
@@ -50,14 +50,16 @@ void WaveformRendererHSV::draw(QPainter* painter,
     painter->setWorldMatrixEnabled(false);
     painter->resetTransform();
 
-    const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
-    const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
+    const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition()
+                                    * dataSize;
+    const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() *
+                                   dataSize;
 
     const double offset = firstVisualIndex;
 
     // Represents the # of waveform data points per horizontal pixel.
     const double gain = (lastVisualIndex - firstVisualIndex) /
-            (double)m_waveformRenderer->getWidth();
+                        (double)m_waveformRenderer->getWidth();
 
     float allGain(1.0);
     getGains(&allGain, NULL, NULL, NULL);
@@ -118,7 +120,7 @@ void WaveformRendererHSV::draw(QPainter* painter,
         int maxAll[2] = {0, 0};
 
         for (int i = visualIndexStart;
-             i >= 0 && i + 1 < dataSize && i + 1 <= visualIndexStop; i += 2) {
+                i >= 0 && i + 1 < dataSize && i + 1 <= visualIndexStop; i += 2) {
             const WaveformData& waveformData = *(data + i);
             const WaveformData& waveformDataNext = *(data + i + 1);
             maxLow[0] = math_max(maxLow[0], (int)waveformData.filtered.low);
@@ -134,16 +136,15 @@ void WaveformRendererHSV::draw(QPainter* painter,
         if (maxAll[0] && maxAll[1]) {
             // Calculate sum, to normalize
             // Also multiply on 1.2 to prevent very dark or light color
-            total = (maxLow[0] + maxLow[1] + maxMid[0] + maxMid[1] + maxHigh[0] + maxHigh[1]) * 1.2;
+            total = (maxLow[0] + maxLow[1] + maxMid[0] + maxMid[1] + maxHigh[0] +
+                     maxHigh[1]) * 1.2;
 
             // prevent division by zero
-            if (total > 0)
-            {
+            if (total > 0) {
                 // Normalize low and high (mid not need, because it not change the color)
                 lo = (maxLow[0] + maxLow[1]) / total;
                 hi = (maxHigh[0] + maxHigh[1]) / total;
-            }
-            else
+            } else
                 lo = hi = 0.0;
 
             // Set color
@@ -151,20 +152,21 @@ void WaveformRendererHSV::draw(QPainter* painter,
 
             painter->setPen(color);
             switch (m_alignment) {
-                case Qt::AlignBottom :
-                    painter->drawLine(
-                        x, m_waveformRenderer->getHeight(),
-                        x, m_waveformRenderer->getHeight() - (int)(heightFactor*(float)math_max(maxAll[0],maxAll[1])));
-                    break;
-                case Qt::AlignTop :
-                    painter->drawLine(
-                        x, 0,
-                        x, (int)(heightFactor*(float)math_max(maxAll[0],maxAll[1])));
-                    break;
-                default :
-                    painter->drawLine(
-                        x, (int)(halfHeight-heightFactor*(float)maxAll[0]),
-                        x, (int)(halfHeight+heightFactor*(float)maxAll[1]));
+            case Qt::AlignBottom :
+                painter->drawLine(
+                    x, m_waveformRenderer->getHeight(),
+                    x, m_waveformRenderer->getHeight() - (int)(heightFactor*(float)math_max(
+                                maxAll[0],maxAll[1])));
+                break;
+            case Qt::AlignTop :
+                painter->drawLine(
+                    x, 0,
+                    x, (int)(heightFactor*(float)math_max(maxAll[0],maxAll[1])));
+                break;
+            default :
+                painter->drawLine(
+                    x, (int)(halfHeight-heightFactor*(float)maxAll[0]),
+                    x, (int)(halfHeight+heightFactor*(float)maxAll[1]));
             }
         }
     }

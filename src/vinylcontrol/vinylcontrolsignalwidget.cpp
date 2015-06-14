@@ -45,14 +45,14 @@ VinylControlSignalWidget::~VinylControlSignalWidget() {
     delete [] m_imageData;
 }
 
-void VinylControlSignalWidget::setVinylActive(bool active)
-{
+void VinylControlSignalWidget::setVinylActive(bool active) {
     if (m_bVinylActive != active && !active)
         resetWidget();
     m_bVinylActive = active;
 }
 
-void VinylControlSignalWidget::onVinylSignalQualityUpdate(const VinylSignalQualityReport& report) {
+void VinylControlSignalWidget::onVinylSignalQualityUpdate(
+    const VinylSignalQualityReport& report) {
     // If this is a signal quality update for an input we don't care about,
     // ignore.
     if (report.processor != m_iVinylInput) {
@@ -76,7 +76,7 @@ void VinylControlSignalWidget::onVinylSignalQualityUpdate(const VinylSignalQuali
     }
 
     for (int x = 0; x < m_iSize; ++x) {
-        for(int y = 0; y < m_iSize; ++y) {
+        for (int y = 0; y < m_iSize; ++y) {
             //XXX: endianness means this is backwards....
             //does this break on other platforms?
             m_imageData[4*(x+m_iSize*y)+0] = (uchar)b;
@@ -88,8 +88,7 @@ void VinylControlSignalWidget::onVinylSignalQualityUpdate(const VinylSignalQuali
     update();
 }
 
-void VinylControlSignalWidget::resetWidget()
-{
+void VinylControlSignalWidget::resetWidget() {
     if (m_imageData != NULL) {
         memset(m_imageData, 0, sizeof(uchar) * m_iSize * m_iSize * 4);
     }

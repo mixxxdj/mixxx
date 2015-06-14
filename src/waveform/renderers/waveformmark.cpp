@@ -38,7 +38,8 @@ void WaveformMark::setup(const QString& group, const QDomNode& node,
     if (!m_textColor.isValid()) {
         // Read the text color, otherwise use the parent's BgColor.
         m_textColor = signalColors.getBgColor();
-        qDebug() << "Didn't get mark <TextColor>, using parent's <BgColor>:" << m_textColor;
+        qDebug() << "Didn't get mark <TextColor>, using parent's <BgColor>:" <<
+                 m_textColor;
     }
 
     QString markAlign = context.selectString(node, "Align");

@@ -28,7 +28,7 @@ class TrackCollection;
 
 class MixxxLibraryFeature : public LibraryFeature {
     Q_OBJECT
-    public:
+  public:
     MixxxLibraryFeature(Library* pLibrary,
                         TrackCollection* pTrackCollection,
                         ConfigObject<ConfigValue>* pConfig);

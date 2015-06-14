@@ -9,11 +9,12 @@
 
 class MixxxMainWindow;
 
-class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg {
+class DlgPrefWaveform : public DlgPreferencePage,
+    public Ui::DlgPrefWaveformDlg {
     Q_OBJECT
   public:
     DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
-                    ConfigObject<ConfigValue> *pConfig);
+                    ConfigObject<ConfigValue>* pConfig);
     virtual ~DlgPrefWaveform();
 
   public slots:

@@ -33,27 +33,28 @@
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
 
-WOverview::WOverview(const char *pGroup, ConfigObject<ConfigValue>* pConfig, QWidget* parent) :
-        WWidget(parent),
-        m_pWaveformSourceImage(NULL),
-        m_actualCompletion(0),
-        m_pixmapDone(false),
-        m_waveformPeak(-1.0),
-        m_diffGain(0),
-        m_group(pGroup),
-        m_pConfig(pConfig),
-        m_endOfTrack(0),
-        m_bDrag(false),
-        m_iPos(0),
-        m_a(1.0),
-        m_b(0.0),
-        m_dAnalyserProgress(-1.0),
-        m_bAnalyserFinalizing(false),
-        m_trackLoaded(false) {
+WOverview::WOverview(const char* pGroup, ConfigObject<ConfigValue>* pConfig,
+                     QWidget* parent) :
+    WWidget(parent),
+    m_pWaveformSourceImage(NULL),
+    m_actualCompletion(0),
+    m_pixmapDone(false),
+    m_waveformPeak(-1.0),
+    m_diffGain(0),
+    m_group(pGroup),
+    m_pConfig(pConfig),
+    m_endOfTrack(0),
+    m_bDrag(false),
+    m_iPos(0),
+    m_a(1.0),
+    m_b(0.0),
+    m_dAnalyserProgress(-1.0),
+    m_bAnalyserFinalizing(false),
+    m_trackLoaded(false) {
     m_endOfTrackControl = new ControlObjectThread(
-            m_group, "end_of_track");
+        m_group, "end_of_track");
     connect(m_endOfTrackControl, SIGNAL(valueChanged(double)),
-             this, SLOT(onEndOfTrackChange(double)));
+            this, SLOT(onEndOfTrackChange(double)));
     m_trackSamplesControl = new ControlObjectThread(m_group, "track_samples");
     m_playControl = new ControlObjectThread(m_group, "play");
     setAcceptDrops(true);
@@ -81,7 +82,8 @@ void WOverview::setup(QDomNode node, const SkinContext& context) {
     }
 
     m_endOfTrackColor = QColor(200, 25, 20);
-    const QString endOfTrackColorName = context.selectString(node, "EndOfTrackColor");
+    const QString endOfTrackColorName = context.selectString(node,
+                                        "EndOfTrackColor");
     if (!endOfTrackColorName.isNull()) {
         m_endOfTrackColor.setNamedColor(endOfTrackColorName);
         m_endOfTrackColor = WSkinColor::getCorrectColor(m_endOfTrackColor);
@@ -134,7 +136,7 @@ void WOverview::setup(QDomNode node, const SkinContext& context) {
                     ControlParameterWidgetConnection::EMIT_DEFAULT) {
                 // ON_PRESS means here value change on mouse move during press
                 defaultConnection->setEmitOption(
-                        ControlParameterWidgetConnection::EMIT_ON_RELEASE);
+                    ControlParameterWidgetConnection::EMIT_ON_RELEASE);
             }
         }
     }
@@ -286,7 +288,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
     m_bDrag = true;
 }
 
-void WOverview::paintEvent(QPaintEvent *) {
+void WOverview::paintEvent(QPaintEvent*) {
     ScopedTimer t("WOverview::paintEvent");
 
     QPainter painter(this);
@@ -320,15 +322,16 @@ void WOverview::paintEvent(QPaintEvent *) {
             if (normalize && m_pixmapDone && m_waveformPeak > 1) {
                 diffGain = 255 - m_waveformPeak - 1;
             } else {
-                const double visualGain = widgetFactory->getVisualGain(WaveformWidgetFactory::All);
+                const double visualGain = widgetFactory->getVisualGain(
+                                              WaveformWidgetFactory::All);
                 diffGain = 255.0 - 255.0 / visualGain;
             }
 
             if (m_diffGain != diffGain || m_waveformImageScaled.isNull()) {
                 QRect sourceRect(0, diffGain, m_pWaveformSourceImage->width(),
-                    m_pWaveformSourceImage->height() - 2 * diffGain);
+                                 m_pWaveformSourceImage->height() - 2 * diffGain);
                 m_waveformImageScaled = m_pWaveformSourceImage->copy(
-                    sourceRect).scaled(size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+                                            sourceRect).scaled(size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
                 m_diffGain = diffGain;
             }
 
@@ -342,7 +345,8 @@ void WOverview::paintEvent(QPaintEvent *) {
                              width(), height()/2);
         }
 
-        if (m_dAnalyserProgress <= 0.5) { // remove text after progress by wf is recognizable
+        if (m_dAnalyserProgress <=
+                0.5) { // remove text after progress by wf is recognizable
             if (m_trackLoaded) {
                 //: Text on waveform overview when file is cached from source
                 paintText(tr("Ready to play, analyzing .."), &painter);
@@ -466,7 +470,7 @@ void WOverview::paintEvent(QPaintEvent *) {
     painter.end();
 }
 
-void WOverview::paintText(const QString &text, QPainter *painter) {
+void WOverview::paintText(const QString& text, QPainter* painter) {
     QColor lowColor = m_signalColors.getLowColor();
     lowColor.setAlphaF(0.5);
     QPen lowColorPen(QBrush(lowColor), 1.25, Qt::SolidLine, Qt::RoundCap);
@@ -486,15 +490,17 @@ void WOverview::paintText(const QString &text, QPainter *painter) {
     painter->drawText(10, 12, text);
 }
 
-void WOverview::resizeEvent(QResizeEvent *) {
+void WOverview::resizeEvent(QResizeEvent*) {
     // Play-position potmeters range from 0 to 1 but they allow out-of-range
     // sets. This is to give VC access to the pre-roll area.
     const double kMaxPlayposRange = 1.0;
     const double kMinPlayposRange = 0.0;
 
     // Values of zero and one in normalized space.
-    const double zero = (0.0 - kMinPlayposRange) / (kMaxPlayposRange - kMinPlayposRange);
-    const double one = (1.0 - kMinPlayposRange) / (kMaxPlayposRange - kMinPlayposRange);
+    const double zero = (0.0 - kMinPlayposRange) / (kMaxPlayposRange -
+                        kMinPlayposRange);
+    const double one = (1.0 - kMinPlayposRange) / (kMaxPlayposRange -
+                       kMinPlayposRange);
 
     // These coeficients convert between widget space and normalized value
     // space.
@@ -507,10 +513,10 @@ void WOverview::resizeEvent(QResizeEvent *) {
 
 void WOverview::dragEnterEvent(QDragEnterEvent* event) {
     if (DragAndDropHelper::allowLoadToPlayer(m_group,
-                                             m_playControl->get() > 0.0,
-                                             m_pConfig) &&
+            m_playControl->get() > 0.0,
+            m_pConfig) &&
             DragAndDropHelper::dragEnterAccept(*event->mimeData(), m_group,
-                                               true, false)) {
+                    true, false)) {
         event->acceptProposedAction();
     } else {
         event->ignore();
@@ -519,9 +525,9 @@ void WOverview::dragEnterEvent(QDragEnterEvent* event) {
 
 void WOverview::dropEvent(QDropEvent* event) {
     if (DragAndDropHelper::allowLoadToPlayer(m_group, m_playControl->get() > 0.0,
-                                             m_pConfig)) {
+            m_pConfig)) {
         QList<QFileInfo> files = DragAndDropHelper::dropEventFiles(
-                *event->mimeData(), m_group, true, false);
+                                     *event->mimeData(), m_group, true, false);
         if (!files.isEmpty()) {
             event->accept();
             emit(trackDropped(files.at(0).canonicalFilePath(), m_group));

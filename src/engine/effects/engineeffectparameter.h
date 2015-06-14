@@ -10,7 +10,7 @@
 class EngineEffectParameter {
   public:
     EngineEffectParameter(const EffectManifestParameter& parameter)
-            : m_parameter(parameter) {
+        : m_parameter(parameter) {
         // NOTE(rryan): This is just to set the parameter values to sane
         // defaults. When an effect is loaded into the engine it is supposed to
         // immediately send a parameter update. Some effects will go crazy if

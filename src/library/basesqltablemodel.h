@@ -37,7 +37,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     virtual TrackPointer getTrack(const QModelIndex& index) const;
     // calls readWriteFlags() by default, reimplement this if the child calls
     // should be readOnly
-    virtual Qt::ItemFlags flags(const QModelIndex &index) const;
+    virtual Qt::ItemFlags flags(const QModelIndex& index) const;
 
     ////////////////////////////////////////////////////////////////////////////
     // Other public methods
@@ -46,10 +46,13 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     // Returns true if the BaseSqlTableModel has been initialized. Calling data
     // access methods on a BaseSqlTableModel which is not initialized is likely
     // to cause instability / crashes.
-    bool initialized() const { return m_bInitialized; }
+    bool initialized() const {
+        return m_bInitialized;
+    }
     int getTrackId(const QModelIndex& index) const;
     void search(const QString& searchText, const QString& extraFilter = QString());
-    void setSearch(const QString& searchText, const QString& extraFilter = QString());
+    void setSearch(const QString& searchText,
+                   const QString& extraFilter = QString());
     const QString currentSearch() const;
     void setSort(int column, Qt::SortOrder order);
     void hideTracks(const QModelIndexList& indices);
@@ -64,13 +67,14 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     void sort(int column, Qt::SortOrder order);
     int rowCount(const QModelIndex& parent=QModelIndex()) const;
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
-    bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
+    bool setData(const QModelIndex& index, const QVariant& value,
+                 int role = Qt::EditRole);
     int columnCount(const QModelIndex& parent = QModelIndex()) const;
     bool setHeaderData(int section, Qt::Orientation orientation,
-                       const QVariant &value, int role = Qt::DisplayRole);
+                       const QVariant& value, int role = Qt::DisplayRole);
     QVariant headerData(int section, Qt::Orientation orientation,
                         int role=Qt::DisplayRole) const;
-    virtual QMimeData* mimeData(const QModelIndexList &indexes) const;
+    virtual QMimeData* mimeData(const QModelIndexList& indexes) const;
 
   public slots:
     void select();
@@ -85,9 +89,9 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     void initHeaderData();
 
     // Use this if you want a model that is read-only.
-    Qt::ItemFlags readOnlyFlags(const QModelIndex &index) const;
+    Qt::ItemFlags readOnlyFlags(const QModelIndex& index) const;
     // Use this if you want a model that can be changed
-    Qt::ItemFlags readWriteFlags(const QModelIndex &index) const;
+    Qt::ItemFlags readWriteFlags(const QModelIndex& index) const;
 
     TrackCollection* m_pTrackCollection;
     TrackDAO& m_trackDAO;
@@ -105,9 +109,12 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     // A simple helper function for initializing header title and width.  Note
     // that the ideal width of a column is based on the width of its data,
     // not the title string itself.
-    void setHeaderProperties(ColumnCache::Column column, QString title, int defaultWidth);
-    inline void setTrackValueForColumn(TrackPointer pTrack, int column, QVariant value);
-    QVariant getBaseValue(const QModelIndex& index, int role = Qt::DisplayRole) const;
+    void setHeaderProperties(ColumnCache::Column column, QString title,
+                             int defaultWidth);
+    inline void setTrackValueForColumn(TrackPointer pTrack, int column,
+                                       QVariant value);
+    QVariant getBaseValue(const QModelIndex& index,
+                          int role = Qt::DisplayRole) const;
     // Set the columns used for searching. Names must correspond to the column
     // names in the table provided to setTable. Must be called after setTable is
     // called.

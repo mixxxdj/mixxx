@@ -10,14 +10,16 @@
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 
-WaveformRendererPreroll::WaveformRendererPreroll(WaveformWidgetRenderer* waveformWidgetRenderer)
-  : WaveformRendererAbstract(waveformWidgetRenderer) {
+WaveformRendererPreroll::WaveformRendererPreroll(WaveformWidgetRenderer*
+        waveformWidgetRenderer)
+    : WaveformRendererAbstract(waveformWidgetRenderer) {
 }
 
 WaveformRendererPreroll::~WaveformRendererPreroll() {
 }
 
-void WaveformRendererPreroll::setup(const QDomNode& node, const SkinContext& context) {
+void WaveformRendererPreroll::setup(const QDomNode& node,
+                                    const SkinContext& context) {
     m_color.setNamedColor(context.selectString(node, "SignalColor"));
     m_color = WSkinColor::getCorrectColor(m_color);
 }

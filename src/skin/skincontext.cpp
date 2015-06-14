@@ -10,11 +10,11 @@
 
 SkinContext::SkinContext(ConfigObject<ConfigValue>* pConfig,
                          const QString& xmlPath)
-        : m_xmlPath(xmlPath),
-          m_pConfig(pConfig),
-          m_pScriptEngine(new QScriptEngine()),
-          m_pScriptDebugger(new QScriptEngineDebugger()),
-          m_pSingletons(new SingletonMap) {
+    : m_xmlPath(xmlPath),
+      m_pConfig(pConfig),
+      m_pScriptEngine(new QScriptEngine()),
+      m_pScriptDebugger(new QScriptEngineDebugger()),
+      m_pSingletons(new SingletonMap) {
     enableDebugger(true);
     // the extensions are imported once and will be passed to the children
     // global object as properties of the parent's global object.
@@ -24,14 +24,14 @@ SkinContext::SkinContext(ConfigObject<ConfigValue>* pConfig,
 }
 
 SkinContext::SkinContext(const SkinContext& parent)
-        : m_xmlPath(parent.m_xmlPath),
-          m_skinBasePath(parent.m_skinBasePath),
-          m_pConfig(parent.m_pConfig),
-          m_variables(parent.variables()),
-          m_pScriptEngine(parent.m_pScriptEngine),
-          m_pScriptDebugger(parent.m_pScriptDebugger),
-          m_parentGlobal(m_pScriptEngine->globalObject()),
-          m_pSingletons(parent.m_pSingletons) {
+    : m_xmlPath(parent.m_xmlPath),
+      m_skinBasePath(parent.m_skinBasePath),
+      m_pConfig(parent.m_pConfig),
+      m_variables(parent.variables()),
+      m_pScriptEngine(parent.m_pScriptEngine),
+      m_pScriptDebugger(parent.m_pScriptDebugger),
+      m_parentGlobal(m_pScriptEngine->globalObject()),
+      m_pSingletons(parent.m_pSingletons) {
 
     // we generate a new global object to preserve the scope between
     // a context and its children
@@ -45,7 +45,7 @@ SkinContext::SkinContext(const SkinContext& parent)
     m_pScriptEngine->setGlobalObject(newGlobal);
 
     for (QHash<QString, QString>::const_iterator it = m_variables.begin();
-         it != m_variables.end(); ++it) {
+            it != m_variables.end(); ++it) {
         m_pScriptEngine->globalObject().setProperty(it.key(), it.value());
     }
 }
@@ -147,14 +147,14 @@ bool SkinContext::selectBool(const QDomNode& node,
                              bool defaultValue) const {
     QDomNode child = selectNode(node, nodeName);
     if (!child.isNull()) {
-         QString stringValue = nodeToString(child);
+        QString stringValue = nodeToString(child);
         return stringValue.contains("true", Qt::CaseInsensitive);
     }
     return defaultValue;
 }
 
 bool SkinContext::hasNodeSelectString(const QDomNode& node,
-                                      const QString& nodeName, QString *value) const {
+                                      const QString& nodeName, QString* value) const {
     QDomNode child = selectNode(node, nodeName);
     if (!child.isNull()) {
         *value = nodeToString(child);
@@ -164,10 +164,10 @@ bool SkinContext::hasNodeSelectString(const QDomNode& node,
 }
 
 bool SkinContext::hasNodeSelectBool(const QDomNode& node,
-                                    const QString& nodeName, bool *value) const {
+                                    const QString& nodeName, bool* value) const {
     QDomNode child = selectNode(node, nodeName);
     if (!child.isNull()) {
-         QString stringValue = nodeToString(child);
+        QString stringValue = nodeToString(child);
         *value = stringValue.contains("true", Qt::CaseInsensitive);
         return true;
     }
@@ -185,8 +185,8 @@ bool SkinContext::selectAttributeBool(const QDomElement& element,
 }
 
 QString SkinContext::selectAttributeString(const QDomElement& element,
-                                           const QString& attributeName,
-                                           QString defaultValue) const {
+        const QString& attributeName,
+        QString defaultValue) const {
     if (element.hasAttribute(attributeName)) {
         QString stringValue = element.attribute(attributeName);
         return stringValue == "" ? defaultValue :stringValue;
@@ -197,8 +197,8 @@ QString SkinContext::selectAttributeString(const QDomElement& element,
 QString SkinContext::variableNodeToText(const QDomElement& variableNode) const {
     if (variableNode.hasAttribute("expression")) {
         QScriptValue result = m_pScriptEngine->evaluate(
-            variableNode.attribute("expression"), m_xmlPath,
-            variableNode.lineNumber());
+                                  variableNode.attribute("expression"), m_xmlPath,
+                                  variableNode.lineNumber());
         return result.toString();
     } else if (variableNode.hasAttribute("name")) {
         QString variableName = variableNode.attribute("name");
@@ -246,7 +246,7 @@ PixmapSource SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
         if (!svgNode.isNull()) {
             // inline svg
             const QByteArray rslt = svgParser.saveToQByteArray(
-                svgParser.parseSvgTree(svgNode, m_xmlPath));
+                                        svgParser.parseSvgTree(svgNode, m_xmlPath));
             source.setSVG(rslt);
         } else {
             // filename
@@ -255,7 +255,7 @@ PixmapSource SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
                 source.setPath(getSkinPath(pixmapName));
                 if (source.isSVG()) {
                     const QByteArray rslt = svgParser.saveToQByteArray(
-                            svgParser.parseSvgFile(source.getPath()));
+                                                svgParser.parseSvgFile(source.getPath()));
                     source.setSVG(rslt);
                 }
             }
@@ -266,10 +266,10 @@ PixmapSource SkinContext::getPixmapSource(const QDomNode& pixmapNode) const {
 }
 
 Paintable::DrawMode SkinContext::selectScaleMode(
-        const QDomElement& element,
-        Paintable::DrawMode defaultDrawMode) const {
+    const QDomElement& element,
+    Paintable::DrawMode defaultDrawMode) const {
     QString drawModeStr = selectAttributeString(
-            element, "scalemode", Paintable::DrawModeToString(defaultDrawMode));
+                              element, "scalemode", Paintable::DrawModeToString(defaultDrawMode));
     return Paintable::DrawModeFromString(drawModeStr);
 }
 
@@ -278,8 +278,8 @@ Paintable::DrawMode SkinContext::selectScaleMode(
  * from the svgParser.
  */
 QScriptValue SkinContext::evaluateScript(const QString& expression,
-                                         const QString& filename,
-                                         int lineNumber) {
+        const QString& filename,
+        int lineNumber) {
     return m_pScriptEngine->evaluate(expression, filename, lineNumber);
 }
 
@@ -309,9 +309,9 @@ void SkinContext::enableDebugger(bool state) const {
 QDebug SkinContext::logWarning(const char* file, const int line,
                                const QDomNode& node) const {
     return qWarning() << QString("%1:%2 SKIN ERROR at %3:%4 <%5>:")
-                             .arg(file, QString::number(line), m_xmlPath,
-                                  QString::number(node.lineNumber()),
-                                  node.nodeName())
-                             .toUtf8()
-                             .constData();
+           .arg(file, QString::number(line), m_xmlPath,
+                QString::number(node.lineNumber()),
+                node.nodeName())
+           .toUtf8()
+           .constData();
 }

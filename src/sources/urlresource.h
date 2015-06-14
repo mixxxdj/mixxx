@@ -8,7 +8,7 @@
 namespace Mixxx {
 
 class UrlResource {
-public:
+  public:
     virtual ~UrlResource() {}
 
     const QUrl& getUrl() const {
@@ -18,7 +18,7 @@ public:
         return m_url.toString();
     }
 
-protected:
+  protected:
     explicit UrlResource(const QUrl& url)
         : m_url(url) {
     }
@@ -40,7 +40,7 @@ protected:
         return getLocalFileName().toLocal8Bit();
     }
 
-private:
+  private:
     const QUrl m_url;
 };
 

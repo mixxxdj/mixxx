@@ -18,10 +18,10 @@ class TrackModel {
 
     TrackModel(QSqlDatabase db,
                const char* settingsNamespace)
-            : m_db(db),
-              m_settingsNamespace(settingsNamespace),
-              m_iDefaultSortColumn(-1),
-              m_eDefaultSortOrder(Qt::AscendingOrder) {
+        : m_db(db),
+          m_settingsNamespace(settingsNamespace),
+          m_iDefaultSortColumn(-1),
+          m_eDefaultSortOrder(Qt::AscendingOrder) {
     }
     virtual ~TrackModel() {}
 
@@ -63,15 +63,22 @@ class TrackModel {
     // track ID is not present in the result set.
     virtual const QLinkedList<int> getTrackRows(int trackId) const = 0;
 
-    bool isTrackModel() { return true;}
-    virtual void search(const QString& searchText, const QString& extraFilter=QString()) = 0;
+    bool isTrackModel() {
+        return true;
+    }
+    virtual void search(const QString& searchText,
+                        const QString& extraFilter=QString()) = 0;
     virtual const QString currentSearch() const = 0;
     virtual bool isColumnInternal(int column) = 0;
     // if no header state exists, we may hide some columns so that the user can
     // reactivate them
     virtual bool isColumnHiddenByDefault(int column) = 0;
-    virtual const QList<int>& showableColumns() const { return m_emptyColumns; }
-    virtual const QList<int>& searchColumns() const { return m_emptyColumns; }
+    virtual const QList<int>& showableColumns() const {
+        return m_emptyColumns;
+    }
+    virtual const QList<int>& searchColumns() const {
+        return m_emptyColumns;
+    }
 
     virtual void removeTracks(const QModelIndexList& indices) {
         Q_UNUSED(indices);
@@ -85,7 +92,8 @@ class TrackModel {
     virtual void purgeTracks(const QModelIndexList& indices) {
         Q_UNUSED(indices);
     }
-    virtual int addTracks(const QModelIndex& index, const QList<QString>& locations) {
+    virtual int addTracks(const QModelIndex& index,
+                          const QList<QString>& locations) {
         Q_UNUSED(index);
         Q_UNUSED(locations);
         return 0;
@@ -98,7 +106,8 @@ class TrackModel {
     virtual bool isLocked() {
         return false;
     }
-    virtual QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent) {
+    virtual QAbstractItemDelegate* delegateForColumn(const int i,
+            QObject* pParent) {
         Q_UNUSED(i);
         Q_UNUSED(pParent);
         return NULL;

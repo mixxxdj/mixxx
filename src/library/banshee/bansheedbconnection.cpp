@@ -53,7 +53,8 @@ int BansheeDbConnection::getSchemaVersion() {
     return -1;
 }
 
-QList<struct BansheeDbConnection::Playlist> BansheeDbConnection::getPlaylists() {
+QList<struct BansheeDbConnection::Playlist>
+BansheeDbConnection::getPlaylists() {
 
     QList<struct BansheeDbConnection::Playlist> list;
     struct BansheeDbConnection::Playlist playlist;
@@ -73,7 +74,8 @@ QList<struct BansheeDbConnection::Playlist> BansheeDbConnection::getPlaylists() 
     return list;
 }
 
-QList<struct BansheeDbConnection::PlaylistEntry> BansheeDbConnection::getPlaylistEntries(int playlistId) {
+QList<struct BansheeDbConnection::PlaylistEntry>
+BansheeDbConnection::getPlaylistEntries(int playlistId) {
 
     QTime time;
     time.start();
@@ -89,66 +91,66 @@ QList<struct BansheeDbConnection::PlaylistEntry> BansheeDbConnection::getPlaylis
     if (playlistId == 0) {
         // Create Master Playlist
         queryString = QString(
-            "SELECT "
-            "CoreTracks.TrackID, "        // 0
-            "CoreTracks.TrackID, "        // 1
-            "CoreTracks.Title, "          // 2
-            "CoreTracks.Uri, "            // 3
-            "CoreTracks.Duration, "       // 4
-            "CoreTracks.ArtistID, "       // 5
-            "CoreArtists.Name, "          // 6
-            "CoreTracks.Year, "           // 7
-            "CoreTracks.AlbumID, "        // 8
-            "CoreAlbums.Title, "          // 9
-            "CoreTracks.Rating, "         // 10
-            "CoreTracks.Genre, "          // 11
-            "CoreTracks.TrackNumber, "    // 12
-            "CoreTracks.DateAddedStamp, " // 13
-            "CoreTracks.BPM, "            // 14
-            "CoreTracks.BitRate, "        // 15
-            "CoreTracks.Comment, "        // 16
-            "CoreTracks.PlayCount, "      // 17
-            "CoreTracks.Composer, "       // 18
-            "CoreTracks.Grouping, "       // 19
-            "CoreAlbums.ArtistID, "       // 20
-            "AlbumArtists.Name "          // 21
-            "FROM CoreTracks "
-            "INNER JOIN CoreArtists ON CoreArtists.ArtistID = CoreTracks.ArtistID "
-            "INNER JOIN CoreArtists AlbumArtists ON AlbumArtists.ArtistID = CoreAlbums.ArtistID "
-            "INNER JOIN CoreAlbums ON CoreAlbums.AlbumID = CoreTracks.AlbumID ");
-     } else {
+                          "SELECT "
+                          "CoreTracks.TrackID, "        // 0
+                          "CoreTracks.TrackID, "        // 1
+                          "CoreTracks.Title, "          // 2
+                          "CoreTracks.Uri, "            // 3
+                          "CoreTracks.Duration, "       // 4
+                          "CoreTracks.ArtistID, "       // 5
+                          "CoreArtists.Name, "          // 6
+                          "CoreTracks.Year, "           // 7
+                          "CoreTracks.AlbumID, "        // 8
+                          "CoreAlbums.Title, "          // 9
+                          "CoreTracks.Rating, "         // 10
+                          "CoreTracks.Genre, "          // 11
+                          "CoreTracks.TrackNumber, "    // 12
+                          "CoreTracks.DateAddedStamp, " // 13
+                          "CoreTracks.BPM, "            // 14
+                          "CoreTracks.BitRate, "        // 15
+                          "CoreTracks.Comment, "        // 16
+                          "CoreTracks.PlayCount, "      // 17
+                          "CoreTracks.Composer, "       // 18
+                          "CoreTracks.Grouping, "       // 19
+                          "CoreAlbums.ArtistID, "       // 20
+                          "AlbumArtists.Name "          // 21
+                          "FROM CoreTracks "
+                          "INNER JOIN CoreArtists ON CoreArtists.ArtistID = CoreTracks.ArtistID "
+                          "INNER JOIN CoreArtists AlbumArtists ON AlbumArtists.ArtistID = CoreAlbums.ArtistID "
+                          "INNER JOIN CoreAlbums ON CoreAlbums.AlbumID = CoreTracks.AlbumID ");
+    } else {
         // SELECT playlist from CorePlaylistEntries
         queryString = QString(
-            "SELECT "
-            "CorePlaylistEntries.TrackID, "   // 0
-            "CorePlaylistEntries.ViewOrder, " // 1
-            "CoreTracks.Title, "              // 2
-            "CoreTracks.Uri, "                // 3
-            "CoreTracks.Duration, "           // 4
-            "CoreTracks.ArtistID, "           // 5
-            "CoreArtists.Name, "              // 6
-            "CoreTracks.Year, "               // 7
-            "CoreTracks.AlbumID, "            // 8
-            "CoreAlbums.Title, "              // 9
-            "CoreTracks.Rating, "             // 10
-            "CoreTracks.Genre, "              // 11
-            "CoreTracks.TrackNumber, "        // 12
-            "CoreTracks.DateAddedStamp, "     // 13
-            "CoreTracks.BPM, "                // 14
-            "CoreTracks.BitRate, "            // 15
-            "CoreTracks.Comment, "            // 16
-            "CoreTracks.PlayCount, "          // 17
-            "CoreTracks.Composer, "           // 18
-            "CoreTracks.Grouping, "           // 19
-            "CoreAlbums.ArtistID, "           // 20
-            "AlbumArtists.Name "              // 21
-            "FROM CorePlaylistEntries "
-            "INNER JOIN CoreTracks ON CoreTracks.TrackID = CorePlaylistEntries.TrackID "
-            "INNER JOIN CoreArtists ON CoreArtists.ArtistID = CoreTracks.ArtistID "
-            "INNER JOIN CoreArtists AlbumArtists ON AlbumArtists.ArtistID = CoreAlbums.ArtistID "
-            "INNER JOIN CoreAlbums ON CoreAlbums.AlbumID = CoreTracks.AlbumID "
-            "WHERE CorePlaylistEntries.PlaylistID = %1")
-                .arg(playlistId);
+                          "SELECT "
+                          "CorePlaylistEntries.TrackID, "   // 0
+                          "CorePlaylistEntries.ViewOrder, " // 1
+                          "CoreTracks.Title, "              // 2
+                          "CoreTracks.Uri, "                // 3
+                          "CoreTracks.Duration, "           // 4
+                          "CoreTracks.ArtistID, "           // 5
+                          "CoreArtists.Name, "              // 6
+                          "CoreTracks.Year, "               // 7
+                          "CoreTracks.AlbumID, "            // 8
+                          "CoreAlbums.Title, "              // 9
+                          "CoreTracks.Rating, "             // 10
+                          "CoreTracks.Genre, "              // 11
+                          "CoreTracks.TrackNumber, "        // 12
+                          "CoreTracks.DateAddedStamp, "     // 13
+                          "CoreTracks.BPM, "                // 14
+                          "CoreTracks.BitRate, "            // 15
+                          "CoreTracks.Comment, "            // 16
+                          "CoreTracks.PlayCount, "          // 17
+                          "CoreTracks.Composer, "           // 18
+                          "CoreTracks.Grouping, "           // 19
+                          "CoreAlbums.ArtistID, "           // 20
+                          "AlbumArtists.Name "              // 21
+                          "FROM CorePlaylistEntries "
+                          "INNER JOIN CoreTracks ON CoreTracks.TrackID = CorePlaylistEntries.TrackID "
+                          "INNER JOIN CoreArtists ON CoreArtists.ArtistID = CoreTracks.ArtistID "
+                          "INNER JOIN CoreArtists AlbumArtists ON AlbumArtists.ArtistID = CoreAlbums.ArtistID "
+                          "INNER JOIN CoreAlbums ON CoreAlbums.AlbumID = CoreTracks.AlbumID "
+                          "WHERE CorePlaylistEntries.PlaylistID = %1")
+                      .arg(playlistId);
     }
 
     query.prepare(queryString);
@@ -158,7 +160,8 @@ QList<struct BansheeDbConnection::PlaylistEntry> BansheeDbConnection::getPlaylis
             entry.trackId = query.value(0).toInt();
             entry.viewOrder = query.value(1).toInt();
             m_trackMap[entry.trackId].title = query.value(2).toString();
-            m_trackMap[entry.trackId].uri = QUrl::fromEncoded(query.value(3).toByteArray(), QUrl::StrictMode);
+            m_trackMap[entry.trackId].uri = QUrl::fromEncoded(query.value(3).toByteArray(),
+                                            QUrl::StrictMode);
             m_trackMap[entry.trackId].duration = query.value(4).toInt();
 
             int artistId = query.value(5).toInt();
@@ -189,7 +192,8 @@ QList<struct BansheeDbConnection::PlaylistEntry> BansheeDbConnection::getPlaylis
         LOG_FAILED_QUERY(query);
     }
 
-    qDebug() << "BansheeDbConnection::getPlaylistEntries(), took " << time.elapsed() << "ms";
+    qDebug() << "BansheeDbConnection::getPlaylistEntries(), took " << time.elapsed()
+             << "ms";
 
     return list;
 }
@@ -204,7 +208,7 @@ QString BansheeDbConnection::getDatabaseFile() {
     // on Unix and Mac OS X - "$HOME/.config/banshee-1"
 
     QSettings ini(QSettings::IniFormat, QSettings::UserScope,
-            "banshee-1","banshee");
+                  "banshee-1","banshee");
     dbfile = QFileInfo(ini.fileName()).absolutePath();
     dbfile += "/banshee.db";
     if (QFile::exists(dbfile)) {
@@ -213,7 +217,7 @@ QString BansheeDbConnection::getDatabaseFile() {
 
     // Legacy Banshee Application Data Path
     QSettings ini2(QSettings::IniFormat, QSettings::UserScope,
-            "banshee","banshee");
+                   "banshee","banshee");
     dbfile = QFileInfo(ini2.fileName()).absolutePath();
     dbfile += "/banshee.db";
     if (QFile::exists(dbfile)) {

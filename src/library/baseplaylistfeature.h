@@ -65,7 +65,7 @@ class BasePlaylistFeature : public LibraryFeature {
     virtual QModelIndex constructChildModel(int selected_id);
     virtual void clearChildModel();
     virtual void buildPlaylistList() = 0;
-    virtual void decorateChild(TreeItem *pChild, int playlist_id) = 0;
+    virtual void decorateChild(TreeItem* pChild, int playlist_id) = 0;
     virtual void addToAutoDJ(bool bTop);
 
     int playlistIdFromIndex(QModelIndex index);
@@ -75,19 +75,19 @@ class BasePlaylistFeature : public LibraryFeature {
 
     ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;
-    PlaylistDAO &m_playlistDao;
-    TrackDAO &m_trackDao;
+    PlaylistDAO& m_playlistDao;
+    TrackDAO& m_trackDao;
     PlaylistTableModel* m_pPlaylistTableModel;
-    QAction *m_pCreatePlaylistAction;
-    QAction *m_pDeletePlaylistAction;
-    QAction *m_pAddToAutoDJAction;
-    QAction *m_pAddToAutoDJTopAction;
-    QAction *m_pRenamePlaylistAction;
-    QAction *m_pLockPlaylistAction;
-    QAction *m_pImportPlaylistAction;
-    QAction *m_pExportPlaylistAction;
-    QAction *m_pDuplicatePlaylistAction;
-    QAction *m_pAnalyzePlaylistAction;
+    QAction* m_pCreatePlaylistAction;
+    QAction* m_pDeletePlaylistAction;
+    QAction* m_pAddToAutoDJAction;
+    QAction* m_pAddToAutoDJTopAction;
+    QAction* m_pRenamePlaylistAction;
+    QAction* m_pLockPlaylistAction;
+    QAction* m_pImportPlaylistAction;
+    QAction* m_pExportPlaylistAction;
+    QAction* m_pDuplicatePlaylistAction;
+    QAction* m_pAnalyzePlaylistAction;
     QList<QPair<int, QString> > m_playlistList;
     QModelIndex m_lastRightClickedIndex;
     TreeItemModel m_childModel;

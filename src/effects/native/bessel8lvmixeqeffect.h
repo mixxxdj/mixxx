@@ -19,10 +19,11 @@
 
 
 class Bessel8LVMixEQEffectGroupState :
-        public LVMixEQEffectGroupState<EngineFilterBessel8Low> {
+    public LVMixEQEffectGroupState<EngineFilterBessel8Low> {
 };
 
-class Bessel8LVMixEQEffect : public PerChannelEffectProcessor<Bessel8LVMixEQEffectGroupState> {
+class Bessel8LVMixEQEffect : public
+    PerChannelEffectProcessor<Bessel8LVMixEQEffectGroupState> {
   public:
     Bessel8LVMixEQEffect(EngineEffect* pEffect, const EffectManifest& manifest);
     virtual ~Bessel8LVMixEQEffect();

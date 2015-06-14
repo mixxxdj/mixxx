@@ -15,7 +15,7 @@
 struct PhaserGroupState {
     PhaserGroupState() :
         leftPhase(0),
-        rightPhase(0) { 
+        rightPhase(0) {
         SampleUtil::applyGain(oldInLeft, 0, MAXSTAGES);
         SampleUtil::applyGain(oldOutLeft, 0, MAXSTAGES);
         SampleUtil::applyGain(oldInRight, 0, MAXSTAGES);
@@ -23,7 +23,7 @@ struct PhaserGroupState {
     }
     CSAMPLE oldInLeft[MAXSTAGES];
     CSAMPLE oldInRight[MAXSTAGES];
-    CSAMPLE oldOutLeft[MAXSTAGES]; 
+    CSAMPLE oldOutLeft[MAXSTAGES];
     CSAMPLE oldOutRight[MAXSTAGES];
     CSAMPLE leftPhase;
     CSAMPLE rightPhase;
@@ -54,14 +54,14 @@ class PhaserEffect : public PerChannelEffectProcessor<PhaserGroupState> {
 
     EngineEffectParameter* m_pStagesParameter;
     EngineEffectParameter* m_pLFOFrequencyParameter;
-    EngineEffectParameter* m_pDepthParameter; 
-    EngineEffectParameter* m_pFeedbackParameter; 
-    EngineEffectParameter* m_pRangeParameter; 
+    EngineEffectParameter* m_pDepthParameter;
+    EngineEffectParameter* m_pFeedbackParameter;
+    EngineEffectParameter* m_pRangeParameter;
     EngineEffectParameter* m_pStereoParameter;
 
     //Passing the sample through a series of allpass filters
-    inline CSAMPLE processSample(CSAMPLE input, CSAMPLE* oldIn, CSAMPLE* oldOut, 
-                                 CSAMPLE mainCoef, int stages) { 
+    inline CSAMPLE processSample(CSAMPLE input, CSAMPLE* oldIn, CSAMPLE* oldOut,
+                                 CSAMPLE mainCoef, int stages) {
         for (int j = 0; j < stages; j++) {
             oldOut[j] = (mainCoef * input) + (mainCoef * oldOut[j]) - oldIn[j];
             oldIn[j] = input;

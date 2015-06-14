@@ -32,9 +32,12 @@ class WWidgetGroup : public QFrame, public WBaseWidget {
     //}
     //
     // The property must be DESIGNABLE to style it with Qt CSS.
-    Q_PROPERTY(int layoutSpacing READ layoutSpacing WRITE setLayoutSpacing DESIGNABLE true);
-    Q_PROPERTY(QRect layoutContentsMargins READ layoutContentsMargins WRITE setLayoutContentsMargins DESIGNABLE true);
-    Q_PROPERTY(Qt::Alignment layoutAlignment READ layoutAlignment WRITE setLayoutAlignment DESIGNABLE true);
+    Q_PROPERTY(int layoutSpacing READ layoutSpacing WRITE setLayoutSpacing
+               DESIGNABLE true);
+    Q_PROPERTY(QRect layoutContentsMargins READ layoutContentsMargins WRITE
+               setLayoutContentsMargins DESIGNABLE true);
+    Q_PROPERTY(Qt::Alignment layoutAlignment READ layoutAlignment WRITE
+               setLayoutAlignment DESIGNABLE true);
 
     int layoutSpacing() const;
     void setLayoutSpacing(int spacing);

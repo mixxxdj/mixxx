@@ -22,8 +22,8 @@ const QString kTrackLocationTest(QDir::currentPath() %
 class FakeMaster {
   public:
     FakeMaster()
-            : crossfader(ConfigKey("[Master]", "crossfader"), -1.0, 1.0),
-              crossfaderReverse(ConfigKey("[Mixer Profile]", "xFaderReverse")) {
+        : crossfader(ConfigKey("[Master]", "crossfader"), -1.0, 1.0),
+          crossfaderReverse(ConfigKey("[Mixer Profile]", "xFaderReverse")) {
         crossfaderReverse.setButtonMode(ControlPushButton::TOGGLE);
     }
 
@@ -34,10 +34,10 @@ class FakeMaster {
 class FakeDeck : public BaseTrackPlayer {
   public:
     FakeDeck(const QString& group)
-            : BaseTrackPlayer(NULL, group),
-              playposition(ConfigKey(group, "playposition"), 0.0, 1.0, true),
-              play(ConfigKey(group, "play")),
-              repeat(ConfigKey(group, "repeat")) {
+        : BaseTrackPlayer(NULL, group),
+          playposition(ConfigKey(group, "playposition"), 0.0, 1.0, true),
+          play(ConfigKey(group, "play")),
+          repeat(ConfigKey(group, "repeat")) {
         play.setButtonMode(ControlPushButton::TOGGLE);
         repeat.setButtonMode(ControlPushButton::TOGGLE);
     }
@@ -84,10 +84,10 @@ class FakeDeck : public BaseTrackPlayer {
 class MockPlayerManager : public PlayerManagerInterface {
   public:
     MockPlayerManager()
-            : numDecks(ConfigKey("[Master]", "num_decks"), true),
-              numSamplers(ConfigKey("[Master]", "num_samplers"), true),
-              numPreviewDecks(ConfigKey("[Master]", "num_preview_decks"),
-                              true) {
+        : numDecks(ConfigKey("[Master]", "num_decks"), true),
+          numSamplers(ConfigKey("[Master]", "num_samplers"), true),
+          numPreviewDecks(ConfigKey("[Master]", "num_preview_decks"),
+                          true) {
     }
 
     virtual ~MockPlayerManager() {
@@ -122,8 +122,8 @@ class MockAutoDJProcessor : public AutoDJProcessor {
                         PlayerManagerInterface* pPlayerManager,
                         int iAutoDJPlaylistId,
                         TrackCollection* pCollection)
-            : AutoDJProcessor(pParent, pConfig, pPlayerManager,
-                              iAutoDJPlaylistId, pCollection) {
+        : AutoDJProcessor(pParent, pConfig, pPlayerManager,
+                          iAutoDJPlaylistId, pCollection) {
     }
 
     virtual ~MockAutoDJProcessor() {
@@ -136,10 +136,10 @@ class MockAutoDJProcessor : public AutoDJProcessor {
 class AutoDJProcessorTest : public LibraryTest {
   protected:
     AutoDJProcessorTest()
-            :  deck1("[Channel1]"),
-               deck2("[Channel2]"),
-               deck3("[Channel3]"),
-               deck4("[Channel4]") {
+        :  deck1("[Channel1]"),
+           deck2("[Channel2]"),
+           deck3("[Channel3]"),
+           deck4("[Channel4]") {
         qRegisterMetaType<TrackPointer>("TrackPointer");
 
         PlaylistDAO& playlistDao = collection()->getPlaylistDAO();
@@ -147,20 +147,20 @@ class AutoDJProcessorTest : public LibraryTest {
         // If the AutoDJ playlist does not exist yet then create it.
         if (m_iAutoDJPlaylistId < 0) {
             m_iAutoDJPlaylistId = playlistDao.createPlaylist(
-                    AUTODJ_TABLE, PlaylistDAO::PLHT_AUTO_DJ);
+                                      AUTODJ_TABLE, PlaylistDAO::PLHT_AUTO_DJ);
         }
 
         pPlayerManager.reset(new MockPlayerManager());
 
         // Setup 4 fake decks.
         ON_CALL(*pPlayerManager, getPlayer(QString("[Channel1]")))
-                .WillByDefault(Return(&deck1));
+        .WillByDefault(Return(&deck1));
         ON_CALL(*pPlayerManager, getPlayer(QString("[Channel2]")))
-                .WillByDefault(Return(&deck2));
+        .WillByDefault(Return(&deck2));
         ON_CALL(*pPlayerManager, getPlayer(QString("[Channel3]")))
-                .WillByDefault(Return(&deck3));
+        .WillByDefault(Return(&deck3));
         ON_CALL(*pPlayerManager, getPlayer(QString("[Channel4]")))
-                .WillByDefault(Return(&deck4));
+        .WillByDefault(Return(&deck4));
         pPlayerManager->numDecks.set(4);
 
         EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel1]"))).Times(1);
@@ -169,8 +169,8 @@ class AutoDJProcessorTest : public LibraryTest {
         EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel4]"))).Times(1);
 
         pProcessor.reset(new MockAutoDJProcessor(
-                NULL, config(), pPlayerManager.data(),
-                m_iAutoDJPlaylistId, collection()));
+                             NULL, config(), pPlayerManager.data(),
+                             m_iAutoDJPlaylistId, collection()));
     }
 
     virtual ~AutoDJProcessorTest() {
@@ -200,8 +200,8 @@ TEST_F(AutoDJProcessorTest, TransitionTimeLoadedFromConfig) {
     EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel3]"))).Times(1);
     EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel4]"))).Times(1);
     pProcessor.reset(new MockAutoDJProcessor(
-            NULL, config(), pPlayerManager.data(),
-            m_iAutoDJPlaylistId, collection()));
+                         NULL, config(), pPlayerManager.data(),
+                         m_iAutoDJPlaylistId, collection()));
     EXPECT_EQ(25, pProcessor->getTransitionTime());
 }
 
@@ -239,7 +239,8 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped) {
     pAutoDJTableModel->appendTrack(testId);
 
     // Expect that we switch into ADJ_ENABLE_P1LOADED first.
-    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_ENABLE_P1LOADED));
+    EXPECT_CALL(*pProcessor,
+                emitAutoDJStateChanged(AutoDJProcessor::ADJ_ENABLE_P1LOADED));
     // Expect that we get a load-and-play signal for [Channel1].
     EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel1]"), true));
 
@@ -257,7 +258,8 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped) {
     EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_IDLE));
     // Expect that we will receive a load call for [Channel2] after we get the
     // first playposition update from deck 1.
-    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"), false));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"),
+                false));
 
     // Pretend a track loaded successfully and that it is now playing. This
     // triggers a call to AutoDJProcessor::playerPlayChanged and
@@ -292,7 +294,8 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped_TrackLoadFails) {
     pAutoDJTableModel->appendTrack(testId);
 
     // Expect that we switch into ADJ_ENABLE_P1LOADED first.
-    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_ENABLE_P1LOADED));
+    EXPECT_CALL(*pProcessor,
+                emitAutoDJStateChanged(AutoDJProcessor::ADJ_ENABLE_P1LOADED));
     // Expect that we get a load-and-play signal for [Channel1].
     EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel1]"), true));
 
@@ -337,7 +340,8 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped_TrackLoadFails) {
 
     // Expect that we will receive a load call for [Channel2] after we get the
     // first playposition update from deck 1.
-    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"), false));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"),
+                false));
 
     // Expect that we will switch into ADJ_IDLE.
     EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_IDLE));
@@ -350,7 +354,8 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped_TrackLoadFails) {
     EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
 }
 
-TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped_TrackLoadFailsRightDeck) {
+TEST_F(AutoDJProcessorTest,
+       EnabledSuccess_DecksStopped_TrackLoadFailsRightDeck) {
     int testId = collection()->getTrackDAO().addTrack(kTrackLocationTest, false);
     ASSERT_LT(0, testId);
 
@@ -363,7 +368,8 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped_TrackLoadFailsRightDeck)
     pAutoDJTableModel->appendTrack(testId);
 
     // Expect that we switch into ADJ_ENABLE_P1LOADED first.
-    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_ENABLE_P1LOADED));
+    EXPECT_CALL(*pProcessor,
+                emitAutoDJStateChanged(AutoDJProcessor::ADJ_ENABLE_P1LOADED));
     // Expect that we get a load-and-play signal for [Channel1].
     EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel1]"), true));
 
@@ -391,7 +397,8 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped_TrackLoadFailsRightDeck)
 
     // Expect that we will receive a load call for [Channel2] after we get the
     // first playposition update from deck 1.
-    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"), false));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"),
+                false));
 
     // Pretend the engine moved forward on the deck. This will request a track
     // load on deck 2 and put us in IDLE mode.
@@ -402,7 +409,8 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_DecksStopped_TrackLoadFailsRightDeck)
 
     // Expect that we will receive another load call for [Channel2] after we get
     // the track load failed signal.
-    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"), false));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"),
+                false));
 
     // Now pretend that the deck2 load request failed.
     deck2.slotLoadTrack(pTrack, false);
@@ -441,7 +449,8 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck1) {
     pAutoDJTableModel->appendTrack(testId);
 
     EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_IDLE));
-    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"), false));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"),
+                false));
 
     AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
     EXPECT_EQ(AutoDJProcessor::ADJ_OK, err);
@@ -484,7 +493,8 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck1_TrackLoadFailed) {
     pAutoDJTableModel->appendTrack(testId);
 
     EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_IDLE));
-    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"), false));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"),
+                false));
 
     AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
     EXPECT_EQ(AutoDJProcessor::ADJ_OK, err);
@@ -497,7 +507,8 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck1_TrackLoadFailed) {
 
     // After the load failed signal we will receive another track load signal
     // for deck 2.
-    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"), false));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"),
+                false));
 
     // Pretend the track load fails.
     deck2.slotLoadTrack(pTrack, false);
@@ -539,7 +550,8 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck2) {
     pAutoDJTableModel->appendTrack(testId);
 
     EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_IDLE));
-    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel1]"), false));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel1]"),
+                false));
 
     AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
     EXPECT_EQ(AutoDJProcessor::ADJ_OK, err);
@@ -582,7 +594,8 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck2_TrackLoadFailed) {
     pAutoDJTableModel->appendTrack(testId);
 
     EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_IDLE));
-    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel1]"), false));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel1]"),
+                false));
 
     AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
     EXPECT_EQ(AutoDJProcessor::ADJ_OK, err);
@@ -595,7 +608,8 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck2_TrackLoadFailed) {
 
     // After the load failed signal we will receive another track load signal
     // for deck 1.
-    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel1]"), false));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel1]"),
+                false));
 
     // Pretend the track load fails.
     deck1.slotLoadTrack(pTrack, false);
@@ -639,7 +653,8 @@ TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadSuccess) {
     pAutoDJTableModel->appendTrack(testId);
 
     EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_IDLE));
-    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel1]"), false));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel1]"),
+                false));
 
     // Enable AutoDJ, we immediately transition into IDLE and request a track
     // load on deck1.
@@ -676,7 +691,8 @@ TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadSuccess) {
     // Expect that we will transition into IDLE mode and receive a track-load
     // request for deck 2 after deck 1 starts playing.
     EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_IDLE));
-    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"), false));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"),
+                false));
 
     // Now start deck1 playing.
     deck1.playposition.set(0.1);
@@ -722,7 +738,8 @@ TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadFailed) {
     pAutoDJTableModel->appendTrack(testId);
 
     EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_IDLE));
-    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel1]"), false));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel1]"),
+                false));
 
     // Enable AutoDJ, we immediately transition into IDLE and request a track
     // load on deck1.
@@ -759,7 +776,8 @@ TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadFailed) {
     // Expect that we will transition into IDLE mode and receive a track-load
     // request for deck 2 after deck 1 starts playing.
     EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_IDLE));
-    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"), false));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"),
+                false));
 
     // Now start deck1 playing.
     deck1.playposition.set(0.1);
@@ -773,7 +791,8 @@ TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadFailed) {
 
     // Expect we will receive another track load request for deck 2 after we
     // fail the first request.
-    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"), false));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"),
+                false));
 
     // Pretend the track load request fails.
     deck2.slotLoadTrack(pTrack, false);
@@ -817,7 +836,8 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadSuccess) {
     pAutoDJTableModel->appendTrack(testId);
 
     EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_IDLE));
-    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"), false));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"),
+                false));
 
     // Enable AutoDJ, we immediately transition into IDLE and request a track
     // load on deck2.
@@ -854,7 +874,8 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadSuccess) {
     // Expect that we will transition into IDLE mode and receive a track-load
     // request for deck 1 after deck 2 starts playing.
     EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_IDLE));
-    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel1]"), false));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel1]"),
+                false));
 
     // Now start deck2 playing.
     deck2.playposition.set(0.1);
@@ -900,7 +921,8 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadFailed) {
     pAutoDJTableModel->appendTrack(testId);
 
     EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_IDLE));
-    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"), false));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"),
+                false));
 
     // Enable AutoDJ, we immediately transition into IDLE and request a track
     // load on deck2.
@@ -937,7 +959,8 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadFailed) {
     // Expect that we will transition into IDLE mode and receive a track-load
     // request for deck 1 after deck 2 starts playing.
     EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_IDLE));
-    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel1]"), false));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel1]"),
+                false));
 
     // Now start deck2 playing.
     deck2.playposition.set(0.1);
@@ -951,7 +974,8 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadFailed) {
 
     // Expect we will receive another track load request for deck 1 after we
     // fail the first request.
-    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel1]"), false));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel1]"),
+                false));
 
     // Pretend the track load request fails.
     deck1.slotLoadTrack(pTrack, false);
@@ -993,7 +1017,8 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_Long_Transition) {
     pAutoDJTableModel->appendTrack(testId);
 
     EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_IDLE));
-    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"), false));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"),
+                false));
 
     // Enable AutoDJ, we immediately transition into IDLE and request a track
     // load on deck2.
@@ -1051,7 +1076,8 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_Long_Transition) {
     // Expect that we will transition into IDLE mode and receive a track-load
     // request for deck 1 after deck 2 starts playing.
     EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_IDLE));
-    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel1]"), false));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel1]"),
+                false));
 
     deck2.playposition.set(0.5);
 }
@@ -1074,7 +1100,8 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_SeekEnd) {
     pAutoDJTableModel->appendTrack(testId);
 
     EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_IDLE));
-    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"), false));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"),
+                false));
 
     // Enable AutoDJ, we immediately transition into IDLE and request a track
     // load on deck2.
@@ -1123,9 +1150,11 @@ TEST_F(AutoDJProcessorTest, TrackZeroLength) {
     pAutoDJTableModel->appendTrack(testId);
 
     // Expect that we switch into ADJ_ENABLE_P1LOADED first.
-    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_ENABLE_P1LOADED));
+    EXPECT_CALL(*pProcessor,
+                emitAutoDJStateChanged(AutoDJProcessor::ADJ_ENABLE_P1LOADED));
     // Expect that we get a load-and-play signal for [Channel1].
-    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel1]"), true)).Times(2);
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel1]"),
+                true)).Times(2);
 
     AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
     EXPECT_EQ(AutoDJProcessor::ADJ_OK, err);
@@ -1148,5 +1177,5 @@ TEST_F(AutoDJProcessorTest, TrackZeroLength) {
     // Expect that the track is rejected an a new one is loaded
     // Signal that the request to load pTrack succeeded.
     deck1.fakeTrackLoadedEvent(pTrack);
- }
+}
 

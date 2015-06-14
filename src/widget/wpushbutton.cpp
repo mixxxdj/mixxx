@@ -34,17 +34,18 @@
 #include "util/math.h"
 
 WPushButton::WPushButton(QWidget* pParent)
-        : WWidget(pParent),
-          m_leftButtonMode(ControlPushButton::PUSH),
-          m_rightButtonMode(ControlPushButton::PUSH) {
+    : WWidget(pParent),
+      m_leftButtonMode(ControlPushButton::PUSH),
+      m_rightButtonMode(ControlPushButton::PUSH) {
     setStates(0);
 }
 
-WPushButton::WPushButton(QWidget* pParent, ControlPushButton::ButtonMode leftButtonMode,
+WPushButton::WPushButton(QWidget* pParent,
+                         ControlPushButton::ButtonMode leftButtonMode,
                          ControlPushButton::ButtonMode rightButtonMode)
-        : WWidget(pParent),
-          m_leftButtonMode(leftButtonMode),
-          m_rightButtonMode(rightButtonMode) {
+    : WWidget(pParent),
+      m_leftButtonMode(leftButtonMode),
+      m_rightButtonMode(rightButtonMode) {
     setStates(0);
 }
 
@@ -84,7 +85,7 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
                 // The implicit default in <1.12.0 was FIXED so we keep it for
                 // backwards compatibility.
                 Paintable::DrawMode unpressedMode =
-                        stateContext.selectScaleMode(unpressedNode, Paintable::FIXED);
+                    stateContext.selectScaleMode(unpressedNode, Paintable::FIXED);
                 if (!pixmapSource.isEmpty()) {
                     setPixmap(iState, false, pixmapSource, unpressedMode);
                 }
@@ -94,7 +95,7 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
                 // The implicit default in <1.12.0 was FIXED so we keep it for
                 // backwards compatibility.
                 Paintable::DrawMode pressedMode =
-                        stateContext.selectScaleMode(pressedNode, Paintable::FIXED);
+                    stateContext.selectScaleMode(pressedNode, Paintable::FIXED);
                 if (!pixmapSource.isEmpty()) {
                     setPixmap(iState, true, pixmapSource, pressedMode);
                 }
@@ -125,12 +126,13 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
     }
 
     if (leftConnection) {
-        bool leftClickForcePush = context.selectBool(node, "LeftClickIsPushButton", false);
+        bool leftClickForcePush = context.selectBool(node, "LeftClickIsPushButton",
+                                  false);
         m_leftButtonMode = ControlPushButton::PUSH;
         if (!leftClickForcePush) {
             const ConfigKey& configKey = leftConnection->getKey();
             ControlPushButton* p = dynamic_cast<ControlPushButton*>(
-                    ControlObject::getControl(configKey));
+                                       ControlObject::getControl(configKey));
             if (p) {
                 m_leftButtonMode = p->getButtonMode();
             }
@@ -138,27 +140,30 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
         if (leftConnection->getEmitOption() &
                 ControlParameterWidgetConnection::EMIT_DEFAULT) {
             switch (m_leftButtonMode) {
-                case ControlPushButton::PUSH:
-                case ControlPushButton::LONGPRESSLATCHING:
-                case ControlPushButton::POWERWINDOW:
-                    leftConnection->setEmitOption(
-                            ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE);
-                    break;
-                default:
-                    leftConnection->setEmitOption(
-                            ControlParameterWidgetConnection::EMIT_ON_PRESS);
-                    break;
+            case ControlPushButton::PUSH:
+            case ControlPushButton::LONGPRESSLATCHING:
+            case ControlPushButton::POWERWINDOW:
+                leftConnection->setEmitOption(
+                    ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE);
+                break;
+            default:
+                leftConnection->setEmitOption(
+                    ControlParameterWidgetConnection::EMIT_ON_PRESS);
+                break;
             }
         }
         if (leftConnection->getDirectionOption() &
-                        ControlParameterWidgetConnection::DIR_DEFAULT) {
+                ControlParameterWidgetConnection::DIR_DEFAULT) {
             if (m_pDisplayConnection == leftConnection) {
-                leftConnection->setDirectionOption(ControlParameterWidgetConnection::DIR_FROM_AND_TO_WIDGET);
+                leftConnection->setDirectionOption(
+                    ControlParameterWidgetConnection::DIR_FROM_AND_TO_WIDGET);
             } else {
-                leftConnection->setDirectionOption(ControlParameterWidgetConnection::DIR_FROM_WIDGET);
+                leftConnection->setDirectionOption(
+                    ControlParameterWidgetConnection::DIR_FROM_WIDGET);
                 if (m_pDisplayConnection->getDirectionOption() &
                         ControlParameterWidgetConnection::DIR_DEFAULT) {
-                    m_pDisplayConnection->setDirectionOption(ControlParameterWidgetConnection::DIR_TO_WIDGET);
+                    m_pDisplayConnection->setDirectionOption(
+                        ControlParameterWidgetConnection::DIR_TO_WIDGET);
                 }
             }
         }
@@ -166,12 +171,13 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
 
     if (!m_rightConnections.isEmpty()) {
         ControlParameterWidgetConnection* rightConnection = m_rightConnections.at(0);
-        bool rightClickForcePush = context.selectBool(node, "RightClickIsPushButton", false);
+        bool rightClickForcePush = context.selectBool(node, "RightClickIsPushButton",
+                                   false);
         m_rightButtonMode = ControlPushButton::PUSH;
         if (!rightClickForcePush) {
             const ConfigKey configKey = rightConnection->getKey();
             ControlPushButton* p = dynamic_cast<ControlPushButton*>(
-                    ControlObject::getControl(configKey));
+                                       ControlObject::getControl(configKey));
             if (p) {
                 m_rightButtonMode = p->getButtonMode();
                 if (m_rightButtonMode != ControlPushButton::PUSH &&
@@ -185,21 +191,22 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
         if (rightConnection->getEmitOption() &
                 ControlParameterWidgetConnection::EMIT_DEFAULT) {
             switch (m_rightButtonMode) {
-                case ControlPushButton::PUSH:
-                case ControlPushButton::LONGPRESSLATCHING:
-                case ControlPushButton::POWERWINDOW:
-                    rightConnection->setEmitOption(
-                            ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE);
-                    break;
-                default:
-                    rightConnection->setEmitOption(
-                            ControlParameterWidgetConnection::EMIT_ON_PRESS);
-                    break;
+            case ControlPushButton::PUSH:
+            case ControlPushButton::LONGPRESSLATCHING:
+            case ControlPushButton::POWERWINDOW:
+                rightConnection->setEmitOption(
+                    ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE);
+                break;
+            default:
+                rightConnection->setEmitOption(
+                    ControlParameterWidgetConnection::EMIT_ON_PRESS);
+                break;
             }
         }
         if (rightConnection->getDirectionOption() &
-                        ControlParameterWidgetConnection::DIR_DEFAULT) {
-            rightConnection->setDirectionOption(ControlParameterWidgetConnection::DIR_FROM_WIDGET);
+                ControlParameterWidgetConnection::DIR_DEFAULT) {
+            rightConnection->setDirectionOption(
+                ControlParameterWidgetConnection::DIR_FROM_WIDGET);
         }
     }
 }
@@ -218,7 +225,7 @@ void WPushButton::setStates(int iStates) {
 void WPushButton::setPixmap(int iState, bool bPressed, PixmapSource source,
                             Paintable::DrawMode mode) {
     QVector<PaintablePointer>& pixmaps = bPressed ?
-            m_pressedPixmaps : m_unpressedPixmaps;
+                                         m_pressedPixmaps : m_unpressedPixmaps;
 
     if (iState < 0 || iState >= pixmaps.size()) {
         return;
@@ -318,7 +325,7 @@ void WPushButton::paintEvent(QPaintEvent* e) {
     }
 }
 
-void WPushButton::mousePressEvent(QMouseEvent * e) {
+void WPushButton::mousePressEvent(QMouseEvent* e) {
     const bool leftClick = e->button() == Qt::LeftButton;
     const bool rightClick = e->button() == Qt::RightButton;
 
@@ -384,7 +391,7 @@ void WPushButton::focusOutEvent(QFocusEvent* e) {
     }
 }
 
-void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
+void WPushButton::mouseReleaseEvent(QMouseEvent* e) {
     const bool leftClick = e->button() == Qt::LeftButton;
     const bool rightClick = e->button() == Qt::RightButton;
 
@@ -448,7 +455,7 @@ void WPushButton::fillDebugTooltip(QStringList* debug) {
                (m_iNoStates > 0 ? m_iNoStates : 1))
            << QString("Pressed: %1").arg(toDebugString(m_bPressed))
            << QString("LeftButtonMode: %1")
-            .arg(ControlPushButton::buttonModeToString(m_leftButtonMode))
+           .arg(ControlPushButton::buttonModeToString(m_leftButtonMode))
            << QString("RightButtonMode: %1")
-            .arg(ControlPushButton::buttonModeToString(m_rightButtonMode));
+           .arg(ControlPushButton::buttonModeToString(m_rightButtonMode));
 }

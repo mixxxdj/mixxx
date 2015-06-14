@@ -8,12 +8,12 @@
 
 ProxyTrackModel::ProxyTrackModel(QAbstractItemModel* pTrackModel,
                                  bool bHandleSearches)
-        // ProxyTrackModel proxies settings requests to the composed TrackModel,
-        // don't initialize its TrackModel with valid parameters.
-        : TrackModel(QSqlDatabase(), ""),
-          m_pTrackModel(dynamic_cast<TrackModel*>(pTrackModel)),
-          m_currentSearch(""),
-          m_bHandleSearches(bHandleSearches) {
+// ProxyTrackModel proxies settings requests to the composed TrackModel,
+// don't initialize its TrackModel with valid parameters.
+    : TrackModel(QSqlDatabase(), ""),
+      m_pTrackModel(dynamic_cast<TrackModel*>(pTrackModel)),
+      m_currentSearch(""),
+      m_bHandleSearches(bHandleSearches) {
     DEBUG_ASSERT_AND_HANDLE(m_pTrackModel && pTrackModel) {
         return;
     }
@@ -29,7 +29,8 @@ int ProxyTrackModel::getTrackId(const QModelIndex& index) const {
 }
 
 const QLinkedList<int> ProxyTrackModel::getTrackRows(int trackId) const {
-    return m_pTrackModel ? m_pTrackModel->getTrackRows(trackId) : QLinkedList<int>();
+    return m_pTrackModel ? m_pTrackModel->getTrackRows(trackId) :
+           QLinkedList<int>();
 }
 
 TrackPointer ProxyTrackModel::getTrack(const QModelIndex& index) const {
@@ -42,7 +43,8 @@ QString ProxyTrackModel::getTrackLocation(const QModelIndex& index) const {
     return m_pTrackModel ? m_pTrackModel->getTrackLocation(indexSource) : QString();
 }
 
-void ProxyTrackModel::search(const QString& searchText, const QString& extraFilter) {
+void ProxyTrackModel::search(const QString& searchText,
+                             const QString& extraFilter) {
     Q_UNUSED(extraFilter);
     if (m_bHandleSearches) {
         m_currentSearch = searchText;
@@ -87,12 +89,14 @@ void ProxyTrackModel::moveTrack(const QModelIndex& sourceIndex,
     }
 }
 
-QAbstractItemDelegate* ProxyTrackModel::delegateForColumn(const int i, QObject* pParent) {
+QAbstractItemDelegate* ProxyTrackModel::delegateForColumn(const int i,
+        QObject* pParent) {
     return m_pTrackModel ? m_pTrackModel->delegateForColumn(i, pParent) : NULL;
 }
 
 TrackModel::CapabilitiesFlags ProxyTrackModel::getCapabilities() const {
-    return m_pTrackModel ? m_pTrackModel->getCapabilities() : TrackModel::TRACKMODELCAPS_NONE;
+    return m_pTrackModel ? m_pTrackModel->getCapabilities() :
+           TrackModel::TRACKMODELCAPS_NONE;
 }
 
 bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
@@ -106,7 +110,7 @@ bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
 
     const QList<int>& filterColumns = m_pTrackModel->searchColumns();
     QAbstractItemModel* itemModel =
-            dynamic_cast<QAbstractItemModel*>(m_pTrackModel);
+        dynamic_cast<QAbstractItemModel*>(m_pTrackModel);
     bool rowMatches = false;
 
     QRegExp filter = filterRegExp();

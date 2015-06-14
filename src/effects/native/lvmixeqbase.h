@@ -8,7 +8,7 @@
 #include "engine/enginefilterdelay.h"
 
 static const int kMaxDelay = 3300; // allows a 30 Hz filter at 97346;
-static const int kRampDone = -1; 
+static const int kRampDone = -1;
 static const unsigned int kStartupSamplerate = 44100;
 static const double kStartupLoFreq = 246;
 static const double kStartupHiFreq = 2484;
@@ -48,9 +48,9 @@ class LVMixEQEffectGroupState {
 
     void setFilters(int sampleRate, double lowFreq, double highFreq) {
         int delayLow1 = m_low1->setFrequencyCornersForIntDelay(
-                lowFreq / sampleRate, kMaxDelay);
+                            lowFreq / sampleRate, kMaxDelay);
         int delayLow2 = m_low2->setFrequencyCornersForIntDelay(
-                highFreq / sampleRate, kMaxDelay);
+                            highFreq / sampleRate, kMaxDelay);
 
         m_delay2->setDelay((delayLow1 - delayLow2) * 2);
         m_delay3->setDelay(delayLow1 * 2);
@@ -105,10 +105,10 @@ class LVMixEQEffectGroupState {
                 fMid == m_oldMid &&
                 fHigh == m_oldHigh) {
             SampleUtil::copy3WithGain(pOutput,
-                    m_pLowBuf, fLow,
-                    m_pBandBuf, fMid,
-                    m_pHighBuf, fHigh,
-                    numSamples);
+                                      m_pLowBuf, fLow,
+                                      m_pBandBuf, fMid,
+                                      m_pHighBuf, fHigh,
+                                      numSamples);
         } else {
             int copySamples = 0;
             int rampingSamples = numSamples;
@@ -136,18 +136,18 @@ class LVMixEQEffectGroupState {
                 rampingSamples = numSamples - copySamples;
 
                 SampleUtil::copy3WithGain(pOutput,
-                        m_pLowBuf, m_oldLow,
-                        m_pBandBuf, m_oldMid,
-                        m_pHighBuf, m_oldHigh,
-                        copySamples);
+                                          m_pLowBuf, m_oldLow,
+                                          m_pBandBuf, m_oldMid,
+                                          m_pHighBuf, m_oldHigh,
+                                          copySamples);
             }
 
             if (rampingSamples) {
                 SampleUtil::copy3WithRampingGain(&pOutput[copySamples],
-                        &m_pLowBuf[copySamples], m_oldLow, fLow,
-                        &m_pBandBuf[copySamples], m_oldMid, fMid,
-                        &m_pHighBuf[copySamples], m_oldHigh, fHigh,
-                        rampingSamples);
+                                                 &m_pLowBuf[copySamples], m_oldLow, fLow,
+                                                 &m_pBandBuf[copySamples], m_oldMid, fMid,
+                                                 &m_pHighBuf[copySamples], m_oldHigh, fHigh,
+                                                 rampingSamples);
 
                 m_oldLow = fLow;
                 m_oldMid = fMid;

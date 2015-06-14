@@ -14,8 +14,8 @@ EffectManifest BitCrusherEffect::getManifest() {
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
-        "The BitCrusher is an effect that adds quantisation noise to the signal "
-        "by the reduction of the resolution or bandwidth of the samples."));
+                                "The BitCrusher is an effect that adds quantisation noise to the signal "
+                                "by the reduction of the resolution or bandwidth of the samples."));
     manifest.setIsForFilterKnob(true);
     manifest.setEffectRampsFromDry(true);
 
@@ -52,8 +52,8 @@ EffectManifest BitCrusherEffect::getManifest() {
 
 BitCrusherEffect::BitCrusherEffect(EngineEffect* pEffect,
                                    const EffectManifest& manifest)
-        : m_pBitDepthParameter(pEffect->getParameterById("bit_depth")),
-          m_pDownsampleParameter(pEffect->getParameterById("downsample")) {
+    : m_pBitDepthParameter(pEffect->getParameterById("bit_depth")),
+      m_pDownsampleParameter(pEffect->getParameterById("downsample")) {
     Q_UNUSED(manifest);
 }
 
@@ -74,10 +74,10 @@ void BitCrusherEffect::processChannel(const ChannelHandle& handle,
     Q_UNUSED(enableState); // no need to ramp, it is just a bitcrusher ;-)
 
     const CSAMPLE downsample = m_pDownsampleParameter ?
-            m_pDownsampleParameter->value() : 0.0;
+                               m_pDownsampleParameter->value() : 0.0;
 
     CSAMPLE bit_depth = m_pBitDepthParameter ?
-            m_pBitDepthParameter->value() : 16;
+                        m_pBitDepthParameter->value() : 16;
 
     // divided by two because we use float math which includes the sing bit anyway
     const CSAMPLE scale = pow(2.0f, bit_depth) / 2;
@@ -93,8 +93,10 @@ void BitCrusherEffect::processChannel(const ChannelHandle& handle,
             pState->accumulator -= 1.0;
             if (bit_depth < 16) {
 
-                pState->hold_l = floorf(SampleUtil::clampSample(pInput[i] * gainCorrection) * scale + 0.5f) / scale / gainCorrection;
-                pState->hold_r = floorf(SampleUtil::clampSample(pInput[i+1] * gainCorrection) * scale + 0.5f) / scale / gainCorrection;
+                pState->hold_l = floorf(SampleUtil::clampSample(pInput[i] * gainCorrection) *
+                                        scale + 0.5f) / scale / gainCorrection;
+                pState->hold_r = floorf(SampleUtil::clampSample(pInput[i+1] * gainCorrection) *
+                                        scale + 0.5f) / scale / gainCorrection;
             } else {
                 // Mixxx float has 24 bit depth, Audio CDs are 16 bit
                 // here we do not change the depth

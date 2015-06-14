@@ -93,7 +93,7 @@ class AutoDJFeature : public LibraryFeature {
 
     // A context-menu item that allows crates to be removed from the
     // auto-DJ list.
-    QAction *m_pRemoveCrateFromAutoDj;
+    QAction* m_pRemoveCrateFromAutoDj;
 
     // Used to map menu-item signals.
     QSignalMapper m_crateMapper;

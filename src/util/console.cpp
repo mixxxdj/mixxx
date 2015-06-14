@@ -7,7 +7,8 @@
 #ifdef __WINDOWS__
 #include <windows.h>
 #include <io.h> // Debug Console
-typedef BOOL(WINAPI* pfSetCurrentConsoleFontEx)(HANDLE, BOOL, PCONSOLE_FONT_INFOEX);
+typedef BOOL(WINAPI* pfSetCurrentConsoleFontEx)(HANDLE, BOOL,
+        PCONSOLE_FONT_INFOEX);
 
 
 Console::Console() {
@@ -26,10 +27,10 @@ Console::Console() {
     // LOCALE_IDEFAULTCODEPAGE "850" // OEM Codepage Console
 
     m_shouldResetCodePage = false;
-    if(AttachConsole(ATTACH_PARENT_PROCESS)) {
+    if (AttachConsole(ATTACH_PARENT_PROCESS)) {
         // we are started from a console porcess
         int fd;
-        FILE *fp;
+        FILE* fp;
 
         fd = _open_osfhandle((long) GetStdHandle(STD_OUTPUT_HANDLE), 0);
         fp = _fdopen(fd, "w");
@@ -47,7 +48,8 @@ Console::Console() {
 
         HMODULE kernel32_dll = LoadLibraryW(L"kernel32.dll");
         if (kernel32_dll) {
-            pfSetCurrentConsoleFontEx pfSCCFX = (pfSetCurrentConsoleFontEx)GetProcAddress(kernel32_dll, "SetCurrentConsoleFontEx");
+            pfSetCurrentConsoleFontEx pfSCCFX = (pfSetCurrentConsoleFontEx)GetProcAddress(
+                                                    kernel32_dll, "SetCurrentConsoleFontEx");
             if (pfSCCFX) {
                 // Use a unicode font
                 CONSOLE_FONT_INFOEX newFont;
@@ -62,7 +64,7 @@ Console::Console() {
             } else {
                 // This happens on Windows XP
                 qWarning() << "The console font may not support non ANSI characters." <<
-                              "In case of character issues switch to font \"Lucida Console\"";
+                           "In case of character issues switch to font \"Lucida Console\"";
             }
         }
 

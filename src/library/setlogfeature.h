@@ -15,7 +15,7 @@ class TreeItem;
 
 class SetlogFeature : public BasePlaylistFeature {
     Q_OBJECT
-public:
+  public:
     SetlogFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig,
                   TrackCollection* pTrackCollection);
     virtual ~SetlogFeature();
@@ -34,7 +34,7 @@ public:
 
   protected:
     void buildPlaylistList();
-    void decorateChild(TreeItem *pChild, int playlist_id);
+    void decorateChild(TreeItem* pChild, int playlist_id);
 
   private slots:
     void slotPlayingTrackChanged(TrackPointer currentPlayingTrack);

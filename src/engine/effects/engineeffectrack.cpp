@@ -3,7 +3,7 @@
 #include "engine/effects/engineeffectchain.h"
 
 EngineEffectRack::EngineEffectRack(int iRackNumber)
-        : m_iRackNumber(iRackNumber) {
+    : m_iRackNumber(iRackNumber) {
     // Try to prevent memory allocation.
     m_chains.reserve(256);
 }
@@ -13,29 +13,29 @@ EngineEffectRack::~EngineEffectRack() {
 }
 
 bool EngineEffectRack::processEffectsRequest(const EffectsRequest& message,
-                                             EffectsResponsePipe* pResponsePipe) {
+        EffectsResponsePipe* pResponsePipe) {
     EffectsResponse response(message);
     switch (message.type) {
-        case EffectsRequest::ADD_CHAIN_TO_RACK:
-            if (kEffectDebugOutput) {
-                qDebug() << debugString() << "ADD_CHAIN_TO_RACK"
-                         << message.AddChainToRack.pChain
-                         << message.AddChainToRack.iIndex;
-            }
-            response.success = addEffectChain(message.AddChainToRack.pChain,
-                                              message.AddChainToRack.iIndex);
-            break;
-        case EffectsRequest::REMOVE_CHAIN_FROM_RACK:
-            if (kEffectDebugOutput) {
-                qDebug() << debugString() << "REMOVE_CHAIN_FROM_RACK"
-                         << message.RemoveChainFromRack.pChain
-                         << message.RemoveChainFromRack.iIndex;
-            }
-            response.success = removeEffectChain(message.RemoveChainFromRack.pChain,
-                                                 message.RemoveChainFromRack.iIndex);
-            break;
-        default:
-            return false;
+    case EffectsRequest::ADD_CHAIN_TO_RACK:
+        if (kEffectDebugOutput) {
+            qDebug() << debugString() << "ADD_CHAIN_TO_RACK"
+                     << message.AddChainToRack.pChain
+                     << message.AddChainToRack.iIndex;
+        }
+        response.success = addEffectChain(message.AddChainToRack.pChain,
+                                          message.AddChainToRack.iIndex);
+        break;
+    case EffectsRequest::REMOVE_CHAIN_FROM_RACK:
+        if (kEffectDebugOutput) {
+            qDebug() << debugString() << "REMOVE_CHAIN_FROM_RACK"
+                     << message.RemoveChainFromRack.pChain
+                     << message.RemoveChainFromRack.iIndex;
+        }
+        response.success = removeEffectChain(message.RemoveChainFromRack.pChain,
+                                             message.RemoveChainFromRack.iIndex);
+        break;
+    default:
+        return false;
     }
     pResponsePipe->writeMessages(&response, 1);
     return true;
@@ -76,7 +76,8 @@ bool EngineEffectRack::addEffectChain(EngineEffectChain* pChain, int iIndex) {
     return true;
 }
 
-bool EngineEffectRack::removeEffectChain(EngineEffectChain* pChain, int iIndex) {
+bool EngineEffectRack::removeEffectChain(EngineEffectChain* pChain,
+        int iIndex) {
     if (iIndex < 0) {
         if (kEffectDebugOutput) {
             qDebug() << debugString()

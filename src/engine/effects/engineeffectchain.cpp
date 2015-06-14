@@ -5,11 +5,11 @@
 #include "util/defs.h"
 
 EngineEffectChain::EngineEffectChain(const QString& id)
-        : m_id(id),
-          m_enableState(EffectProcessor::ENABLED),
-          m_insertionType(EffectChain::INSERT),
-          m_dMix(0),
-          m_pBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) {
+    : m_id(id),
+      m_enableState(EffectProcessor::ENABLED),
+      m_insertionType(EffectChain::INSERT),
+      m_dMix(0),
+      m_pBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) {
     // Try to prevent memory allocation.
     m_effects.reserve(256);
 }
@@ -29,7 +29,8 @@ bool EngineEffectChain::addEffect(EngineEffect* pEffect, int iIndex) {
     }
     if (m_effects.contains(pEffect)) {
         if (kEffectDebugOutput) {
-            qDebug() << debugString() << "WARNING: effect already added to EngineEffectChain:"
+            qDebug() << debugString() <<
+                     "WARNING: effect already added to EngineEffectChain:"
                      << pEffect->name();
         }
         return false;
@@ -69,60 +70,62 @@ bool EngineEffectChain::updateParameters(const EffectsRequest& message) {
     m_insertionType = message.SetEffectChainParameters.insertion_type;
     m_dMix = message.SetEffectChainParameters.mix;
 
-    if (m_enableState != EffectProcessor::DISABLED && !message.SetEffectParameters.enabled) {
+    if (m_enableState != EffectProcessor::DISABLED &&
+            !message.SetEffectParameters.enabled) {
         m_enableState = EffectProcessor::DISABLING;
-    } else if (m_enableState == EffectProcessor::DISABLED && message.SetEffectParameters.enabled) {
+    } else if (m_enableState == EffectProcessor::DISABLED &&
+               message.SetEffectParameters.enabled) {
         m_enableState = EffectProcessor::ENABLING;
     }
     return true;
 }
 
 bool EngineEffectChain::processEffectsRequest(const EffectsRequest& message,
-                                              EffectsResponsePipe* pResponsePipe) {
+        EffectsResponsePipe* pResponsePipe) {
     EffectsResponse response(message);
     switch (message.type) {
-        case EffectsRequest::ADD_EFFECT_TO_CHAIN:
-            if (kEffectDebugOutput) {
-                qDebug() << debugString() << "ADD_EFFECT_TO_CHAIN"
-                         << message.AddEffectToChain.pEffect
-                         << message.AddEffectToChain.iIndex;
-            }
-            response.success = addEffect(message.AddEffectToChain.pEffect,
-                                         message.AddEffectToChain.iIndex);
-            break;
-        case EffectsRequest::REMOVE_EFFECT_FROM_CHAIN:
-            if (kEffectDebugOutput) {
-                qDebug() << debugString() << "REMOVE_EFFECT_FROM_CHAIN"
-                         << message.RemoveEffectFromChain.pEffect
-                         << message.RemoveEffectFromChain.iIndex;
-            }
-            response.success = removeEffect(message.RemoveEffectFromChain.pEffect,
-                                            message.RemoveEffectFromChain.iIndex);
-            break;
-        case EffectsRequest::SET_EFFECT_CHAIN_PARAMETERS:
-            if (kEffectDebugOutput) {
-                qDebug() << debugString() << "SET_EFFECT_CHAIN_PARAMETERS"
-                         << "enabled" << message.SetEffectChainParameters.enabled
-                         << "mix" << message.SetEffectChainParameters.mix;
-            }
-            response.success = updateParameters(message);
-            break;
-        case EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_CHANNEL:
-            if (kEffectDebugOutput) {
-                qDebug() << debugString() << "ENABLE_EFFECT_CHAIN_FOR_CHANNEL"
-                         << message.channel;
-            }
-            response.success = enableForChannel(message.channel);
-            break;
-        case EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_CHANNEL:
-            if (kEffectDebugOutput) {
-                qDebug() << debugString() << "DISABLE_EFFECT_CHAIN_FOR_CHANNEL"
-                         << message.channel;
-            }
-            response.success = disableForChannel(message.channel);
-            break;
-        default:
-            return false;
+    case EffectsRequest::ADD_EFFECT_TO_CHAIN:
+        if (kEffectDebugOutput) {
+            qDebug() << debugString() << "ADD_EFFECT_TO_CHAIN"
+                     << message.AddEffectToChain.pEffect
+                     << message.AddEffectToChain.iIndex;
+        }
+        response.success = addEffect(message.AddEffectToChain.pEffect,
+                                     message.AddEffectToChain.iIndex);
+        break;
+    case EffectsRequest::REMOVE_EFFECT_FROM_CHAIN:
+        if (kEffectDebugOutput) {
+            qDebug() << debugString() << "REMOVE_EFFECT_FROM_CHAIN"
+                     << message.RemoveEffectFromChain.pEffect
+                     << message.RemoveEffectFromChain.iIndex;
+        }
+        response.success = removeEffect(message.RemoveEffectFromChain.pEffect,
+                                        message.RemoveEffectFromChain.iIndex);
+        break;
+    case EffectsRequest::SET_EFFECT_CHAIN_PARAMETERS:
+        if (kEffectDebugOutput) {
+            qDebug() << debugString() << "SET_EFFECT_CHAIN_PARAMETERS"
+                     << "enabled" << message.SetEffectChainParameters.enabled
+                     << "mix" << message.SetEffectChainParameters.mix;
+        }
+        response.success = updateParameters(message);
+        break;
+    case EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_CHANNEL:
+        if (kEffectDebugOutput) {
+            qDebug() << debugString() << "ENABLE_EFFECT_CHAIN_FOR_CHANNEL"
+                     << message.channel;
+        }
+        response.success = enableForChannel(message.channel);
+        break;
+    case EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_CHANNEL:
+        if (kEffectDebugOutput) {
+            qDebug() << debugString() << "DISABLE_EFFECT_CHAIN_FOR_CHANNEL"
+                     << message.channel;
+        }
+        response.success = disableForChannel(message.channel);
+        break;
+    default:
+        return false;
     }
     pResponsePipe->writeMessages(&response, 1);
     return true;
@@ -145,7 +148,7 @@ bool EngineEffectChain::disableForChannel(const ChannelHandle& handle) {
 }
 
 EngineEffectChain::ChannelStatus& EngineEffectChain::getChannelStatus(
-        const ChannelHandle& handle) {
+    const ChannelHandle& handle) {
     return m_channelStatus[handle];
 }
 

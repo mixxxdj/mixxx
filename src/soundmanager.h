@@ -49,13 +49,14 @@ class ControlObject;
 class SoundManager : public QObject {
     Q_OBJECT
   public:
-    SoundManager(ConfigObject<ConfigValue> *pConfig, EngineMaster *_master);
+    SoundManager(ConfigObject<ConfigValue>* pConfig, EngineMaster* _master);
     virtual ~SoundManager();
 
     // Returns a list of all devices we've enumerated that match the provided
     // filterApi, and have at least one output or input channel if the
     // bOutputDevices or bInputDevices are set, respectively.
-    QList<SoundDevice*> getDeviceList(QString filterAPI, bool bOutputDevices, bool bInputDevices);
+    QList<SoundDevice*> getDeviceList(QString filterAPI, bool bOutputDevices,
+                                      bool bInputDevices);
 
     // Closes all the open sound devices. Because multiple soundcards might be
     // open, this method simply runs through the list of all known soundcards
@@ -102,22 +103,22 @@ class SoundManager : public QObject {
     void writeProcess();
     void readProcess();
 
-    void registerOutput(AudioOutput output, AudioSource *src);
-    void registerInput(AudioInput input, AudioDestination *dest);
+    void registerOutput(AudioOutput output, AudioSource* src);
+    void registerInput(AudioInput input, AudioDestination* dest);
     QList<AudioOutput> registeredOutputs() const;
     QList<AudioInput> registeredInputs() const;
 
   signals:
     void devicesUpdated(); // emitted when pointers to SoundDevices go stale
     void devicesSetup(); // emitted when the sound devices have been set up
-    void outputRegistered(AudioOutput output, AudioSource *src);
-    void inputRegistered(AudioInput input, AudioDestination *dest);
+    void outputRegistered(AudioOutput output, AudioSource* src);
+    void inputRegistered(AudioInput input, AudioDestination* dest);
 
   private:
     void setJACKName() const;
 
-    EngineMaster *m_pMaster;
-    ConfigObject<ConfigValue> *m_pConfig;
+    EngineMaster* m_pMaster;
+    ConfigObject<ConfigValue>* m_pConfig;
 #ifdef __PORTAUDIO__
     bool m_paInitialized;
     unsigned int m_jackSampleRate;

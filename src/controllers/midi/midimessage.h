@@ -63,35 +63,40 @@ typedef enum {
 
 struct MidiOptions {
     MidiOptions()
-            : all(0) {
+        : all(0) {
     }
 
     bool operator==(const MidiOptions& other) const {
         return all == other.all;
     }
 
-    union
-    {
+    union {
         uint32_t    all;
-        struct
-        {
+        struct {
             bool invert        : 1;
             bool rot64         : 1;
             bool rot64_inv     : 1;
             bool rot64_fast    : 1;
             bool diff          : 1;
-            bool button        : 1;    // Button Down (!=00) and Button Up (00) events happen together
-            bool sw            : 1;    // button down (!=00) and button up (00) events happen seperately
+bool button        :
+            1;    // Button Down (!=00) and Button Up (00) events happen together
+bool sw            :
+            1;    // button down (!=00) and button up (00) events happen seperately
             bool spread64      : 1;    // accelerated difference from 64
-            bool herc_jog      : 1;    // generic Hercules range correction 0x01 -> +1; 0x7f -> -1
-            bool selectknob    : 1;    // relative knob which can be turned forever and outputs a signed value
-            bool soft_takeover : 1;    // prevents sudden changes when hardware position differs from software value
-            bool script        : 1;    // maps a MIDI control to a custom MixxxScript function
+bool herc_jog      :
+            1;    // generic Hercules range correction 0x01 -> +1; 0x7f -> -1
+bool selectknob    :
+            1;    // relative knob which can be turned forever and outputs a signed value
+bool soft_takeover :
+            1;    // prevents sudden changes when hardware position differs from software value
+bool script        :
+            1;    // maps a MIDI control to a custom MixxxScript function
             // the message supplies the MSB of a 14-bit message
             bool fourteen_bit_msb : 1;
             // the message supplies the LSB of a 14-bit message
             bool fourteen_bit_lsb : 1;
-            bool herc_jog_fast    : 1;  // generic Hercules range correction 0x01 -> +5; 0x7f -> -5
+bool herc_jog_fast    :
+            1;  // generic Hercules range correction 0x01 -> +5; 0x7f -> -5
             // 19 more available for future expansion
         };
     };
@@ -100,7 +105,7 @@ Q_DECLARE_METATYPE(MidiOptions);
 
 struct MidiOutput {
     MidiOutput()
-            : message(0) {
+        : message(0) {
         // MSVC gets confused and thinks min/max are macros so they can't appear
         // in the initializer list.
         min = 0.0;
@@ -113,11 +118,9 @@ struct MidiOutput {
 
     double min;
     double max;
-    union
-    {
+    union {
         uint32_t    message;
-        struct
-        {
+        struct {
             unsigned char    status  : 8;
             unsigned char    control : 8;
             unsigned char    on      : 8;
@@ -134,11 +137,9 @@ struct MidiKey {
         return key == other.key;
     }
 
-    union
-    {
+    union {
         uint16_t    key;
-        struct
-        {
+        struct {
             unsigned char    status  : 8;
             unsigned char    control : 8;
         };
@@ -150,21 +151,21 @@ struct MidiInputMapping {
     }
 
     MidiInputMapping(MidiKey key, MidiOptions options)
-            : key(key),
-              options(options) {
+        : key(key),
+          options(options) {
     }
 
     MidiInputMapping(MidiKey key, MidiOptions options, const ConfigKey& control)
-            : key(key),
-              options(options),
-              control(control) {
+        : key(key),
+          options(options),
+          control(control) {
     }
 
     // Don't use descriptions in operator== since we only use equality testing
     // for unit tests.
     bool operator==(const MidiInputMapping& other) const {
         return key == other.key && options == other.options &&
-                control == other.control;
+               control == other.control;
     }
 
     MidiKey key;
@@ -177,7 +178,7 @@ typedef QList<MidiInputMapping> MidiInputMappings;
 struct MidiOutputMapping {
     bool operator==(const MidiOutputMapping& other) const {
         return output == other.output && control == other.control &&
-                description == other.description;
+               description == other.description;
     }
 
     MidiOutput output;

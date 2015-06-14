@@ -36,7 +36,7 @@ class PlayerManagerInterface;
 
 class Library : public QObject {
     Q_OBJECT
-public:
+  public:
     Library(QObject* parent,
             ConfigObject<ConfigValue>* pConfig,
             PlayerManagerInterface* pPlayerManager,

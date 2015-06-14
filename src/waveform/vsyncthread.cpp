@@ -17,22 +17,22 @@
 #elif defined(__WINDOWS__)
 #else
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-   extern const QX11Info *qt_x11Info(const QPaintDevice *pd);
+extern const QX11Info* qt_x11Info(const QPaintDevice* pd);
 #endif
 #endif
 
 VSyncThread::VSyncThread(MixxxMainWindow* mixxxMainWindow)
-        : QThread(mixxxMainWindow),
-          m_bDoRendering(true),
-          m_vSyncTypeChanged(false),
-          m_usSyncIntervalTime(33333),
-          m_vSyncMode(ST_TIMER),
-          m_syncOk(false),
-          m_droppedFrames(0),
-          m_swapWait(0),
-          m_displayFrameRate(60.0),
-          m_vSyncPerRendering(1),
-          m_pGuiTick(mixxxMainWindow->getGuiTick()) {
+    : QThread(mixxxMainWindow),
+      m_bDoRendering(true),
+      m_vSyncTypeChanged(false),
+      m_usSyncIntervalTime(33333),
+      m_vSyncMode(ST_TIMER),
+      m_syncOk(false),
+      m_droppedFrames(0),
+      m_swapWait(0),
+      m_displayFrameRate(60.0),
+      m_vSyncPerRendering(1),
+      m_pGuiTick(mixxxMainWindow->getGuiTick()) {
 }
 
 VSyncThread::~VSyncThread() {
@@ -110,7 +110,7 @@ void VSyncThread::run() {
             }
             // try to stay in right intervals
             m_usWaitToSwap = m_usSyncIntervalTime +
-                    ((m_usWaitToSwap - usLastSwapTime) % m_usSyncIntervalTime);
+                             ((m_usWaitToSwap - usLastSwapTime) % m_usSyncIntervalTime);
         }
 
         // Qt timers are not that useful in our case, because they
@@ -131,7 +131,7 @@ void VSyncThread::swapGl(QGLWidget* glw, int index) {
     glw->swapBuffers();
 #else
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    const QX11Info *xinfo = qt_x11Info(glw);
+    const QX11Info* xinfo = qt_x11Info(glw);
     glXSwapBuffers(xinfo->display(), glw->winId());
 #else
     glw->swapBuffers();

@@ -11,21 +11,23 @@
 DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
                            Library* pLibrary, TrackCollection* pTrackCollection,
                            RecordingManager* pRecordingManager, MixxxKeyboard* pKeyboard)
-        : QWidget(parent),
-          m_pConfig(pConfig),
-          m_pTrackCollection(pTrackCollection),
-          m_browseModel(this, m_pTrackCollection, pRecordingManager),
-          m_proxyModel(&m_browseModel),
-          m_bytesRecordedStr("--"),
-          m_durationRecordedStr("--:--"),
-          m_pRecordingManager(pRecordingManager) {
+    : QWidget(parent),
+      m_pConfig(pConfig),
+      m_pTrackCollection(pTrackCollection),
+      m_browseModel(this, m_pTrackCollection, pRecordingManager),
+      m_proxyModel(&m_browseModel),
+      m_bytesRecordedStr("--"),
+      m_durationRecordedStr("--:--"),
+      m_pRecordingManager(pRecordingManager) {
     setupUi(this);
-    m_pTrackTableView = new WTrackTableView(this, pConfig, m_pTrackCollection, false); // No sorting
+    m_pTrackTableView = new WTrackTableView(this, pConfig, m_pTrackCollection,
+                                            false); // No sorting
     m_pTrackTableView->installEventFilter(pKeyboard);
 
     connect(m_pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
-    connect(m_pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
+    connect(m_pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString,
+                                      bool)),
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
     connect(pLibrary, SIGNAL(setTrackTableFont(QFont)),
             m_pTrackTableView, SLOT(setTrackTableFont(QFont)));
@@ -69,7 +71,7 @@ void DlgRecording::onShow() {
 }
 
 void DlgRecording::refreshBrowseModel() {
-     m_browseModel.setPath(m_recordingDir);
+    m_browseModel.setPath(m_recordingDir);
 }
 
 void DlgRecording::onSearch(const QString& text) {
@@ -102,13 +104,10 @@ void DlgRecording::moveSelection(int delta) {
 
 void DlgRecording::toggleRecording(bool toggle) {
     Q_UNUSED(toggle);
-    if (!m_pRecordingManager->isRecordingActive()) //If recording is enabled
-    {
+    if (!m_pRecordingManager->isRecordingActive()) { //If recording is enabled
         //pushButtonRecording->setText(tr("Stop Recording"));
         m_pRecordingManager->startRecording();
-    }
-    else if(m_pRecordingManager->isRecordingActive()) //If we disable recording
-    {
+    } else if (m_pRecordingManager->isRecordingActive()) { //If we disable recording
         //pushButtonRecording->setText(tr("Start Recording"));
         m_pRecordingManager->stopRecording();
     }
@@ -141,11 +140,11 @@ void DlgRecording::slotDurationRecorded(QString durationRecorded) {
 // update label besides start/stop button
 void DlgRecording::refreshLabel() {
     QString text = tr("Recording to file: %1 (%2 MiB written in %3)")
-              .arg(m_pRecordingManager->getRecordingFile())
-              .arg(m_bytesRecordedStr)
-              .arg(m_durationRecordedStr);
+                   .arg(m_pRecordingManager->getRecordingFile())
+                   .arg(m_bytesRecordedStr)
+                   .arg(m_durationRecordedStr);
     label->setText(text);
- }
+}
 
 void DlgRecording::setTrackTableFont(const QFont& font) {
     m_pTrackTableView->setTrackTableFont(font);

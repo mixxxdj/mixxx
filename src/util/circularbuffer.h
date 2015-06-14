@@ -14,10 +14,10 @@ template <typename T>
 class CircularBuffer {
   public:
     CircularBuffer(unsigned int iLength)
-            : m_iLength(iLength),
-              m_pBuffer(new T[m_iLength]),
-              m_iWritePos(0),
-              m_iReadPos(0) {
+        : m_iLength(iLength),
+          m_pBuffer(new T[m_iLength]),
+          m_iWritePos(0),
+          m_iReadPos(0) {
         // No need to clear the buffer because we consider it to be empty right
         // now.
     }

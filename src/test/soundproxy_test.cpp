@@ -12,7 +12,8 @@ class SoundSourceProxyTest: public MixxxTest {
   protected:
     static QStringList getFileExtensions() {
         QStringList availableExtensions;
-        availableExtensions << "aiff" << "flac" << "m4a" << "mp3" << "ogg" << "opus" << "wav";
+        availableExtensions << "aiff" << "flac" << "m4a" << "mp3" << "ogg" << "opus" <<
+                            "wav";
         QStringList supportedExtensions;
         foreach (QString const& fileExtension, availableExtensions) {
             if (SoundSourceProxy::isFileExtensionSupported(fileExtension)) {
@@ -30,7 +31,7 @@ class SoundSourceProxyTest: public MixxxTest {
 TEST_F(SoundSourceProxyTest, open) {
     // This test piggy-backs off of the cover-test files.
     const QString kFilePathPrefix(
-            QDir::currentPath() + "/src/test/id3-test-data/cover-test.");
+        QDir::currentPath() + "/src/test/id3-test-data/cover-test.");
 
     foreach (const QString& fileExtension, getFileExtensions()) {
         const QString filePath(kFilePathPrefix + fileExtension);
@@ -46,7 +47,7 @@ TEST_F(SoundSourceProxyTest, open) {
 
 TEST_F(SoundSourceProxyTest, readArtist) {
     SoundSourceProxy proxy(
-            QDir::currentPath().append("/src/test/id3-test-data/artist.mp3"));
+        QDir::currentPath().append("/src/test/id3-test-data/artist.mp3"));
     Mixxx::TrackMetadata trackMetadata;
     EXPECT_EQ(OK, proxy.parseTrackMetadataAndCoverArt(&trackMetadata, NULL));
     EXPECT_EQ("Test Artist", trackMetadata.getArtist());
@@ -77,7 +78,7 @@ TEST_F(SoundSourceProxyTest, seekForward) {
     const CSAMPLE kOpusSeekDecodingError = 0.2f;
 
     const QString kFilePathPrefix(
-            QDir::currentPath() + "/src/test/id3-test-data/cover-test.");
+        QDir::currentPath() + "/src/test/id3-test-data/cover-test.");
 
     foreach (const QString& fileExtension, getFileExtensions()) {
         const QString filePath(kFilePathPrefix + fileExtension);
@@ -96,28 +97,30 @@ TEST_F(SoundSourceProxyTest, seekForward) {
                 contFrameIndex += kReadFrameCount) {
 
             const SINT contReadFrameCount =
-                    pContReadSource->readSampleFrames(kReadFrameCount, &contReadData[0]);
+                pContReadSource->readSampleFrames(kReadFrameCount, &contReadData[0]);
 
             Mixxx::AudioSourcePointer pSeekReadSource(openAudioSource(filePath));
             ASSERT_FALSE(pSeekReadSource.isNull());
-            ASSERT_EQ(pContReadSource->getChannelCount(), pSeekReadSource->getChannelCount());
+            ASSERT_EQ(pContReadSource->getChannelCount(),
+                      pSeekReadSource->getChannelCount());
             ASSERT_EQ(pContReadSource->getFrameCount(), pSeekReadSource->getFrameCount());
 
             const SINT seekFrameIndex =
-                    pSeekReadSource->seekSampleFrame(contFrameIndex);
+                pSeekReadSource->seekSampleFrame(contFrameIndex);
             ASSERT_EQ(contFrameIndex, seekFrameIndex);
 
             const SINT seekReadFrameCount =
-                    pSeekReadSource->readSampleFrames(kReadFrameCount, &seekReadData[0]);
+                pSeekReadSource->readSampleFrames(kReadFrameCount, &seekReadData[0]);
 
             ASSERT_EQ(contReadFrameCount, seekReadFrameCount);
             const SINT readSampleCount =
-                    pContReadSource->frames2samples(contReadFrameCount);
+                pContReadSource->frames2samples(contReadFrameCount);
             for (SINT readSampleOffset = 0;
                     readSampleOffset < readSampleCount;
                     ++readSampleOffset) {
                 if ("opus" == fileExtension) {
-                    EXPECT_NEAR(contReadData[readSampleOffset], seekReadData[readSampleOffset], kOpusSeekDecodingError)
+                    EXPECT_NEAR(contReadData[readSampleOffset], seekReadData[readSampleOffset],
+                                kOpusSeekDecodingError)
                             << "Mismatch in " << filePath.toStdString()
                             << " at seek frame index " << seekFrameIndex
                             << " for read sample offset " << readSampleOffset;

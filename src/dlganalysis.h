@@ -11,12 +11,13 @@
 class AnalysisLibraryTableModel;
 class WAnalysisLibraryTableView;
 
-class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual LibraryView {
+class DlgAnalysis : public QWidget, public Ui::DlgAnalysis,
+    public virtual LibraryView {
     Q_OBJECT
   public:
-    DlgAnalysis(QWidget *parent,
-               ConfigObject<ConfigValue>* pConfig,
-               TrackCollection* pTrackCollection);
+    DlgAnalysis(QWidget* parent,
+                ConfigObject<ConfigValue>* pConfig,
+                TrackCollection* pTrackCollection);
     virtual ~DlgAnalysis();
 
     virtual void onSearch(const QString& text);

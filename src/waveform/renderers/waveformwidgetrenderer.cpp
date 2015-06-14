@@ -78,15 +78,15 @@ bool WaveformWidgetRenderer::init() {
     m_visualPlayPosition = VisualPlayPosition::getVisualPlayPosition(m_group);
 
     m_pRateControlObject = new ControlObjectThread(
-            m_group, "rate");
+        m_group, "rate");
     m_pRateRangeControlObject = new ControlObjectThread(
-            m_group, "rateRange");
+        m_group, "rateRange");
     m_pRateDirControlObject = new ControlObjectThread(
-            m_group, "rate_dir");
+        m_group, "rate_dir");
     m_pGainControlObject = new ControlObjectThread(
-            m_group, "total_gain");
+        m_group, "total_gain");
     m_pTrackSamplesControlObject = new ControlObjectThread(
-            m_group, "track_samples");
+        m_group, "track_samples");
 
     for (int i = 0; i < m_rendererStack.size(); ++i) {
         if (!m_rendererStack[i]->init()) {
@@ -121,10 +121,12 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
     m_visualSamplePerPixel = math_max(1.0, visualSamplePerPixel);
 
     TrackPointer pTrack(m_pTrack);
-    ConstWaveformPointer pWaveform = pTrack ? pTrack->getWaveform() : ConstWaveformPointer();
+    ConstWaveformPointer pWaveform = pTrack ? pTrack->getWaveform() :
+                                     ConstWaveformPointer();
     int waveformDataSize = pWaveform ? pWaveform->getDataSize() : 0;
     if (pWaveform) {
-        m_audioSamplePerPixel = m_visualSamplePerPixel * pWaveform->getAudioVisualRatio();
+        m_audioSamplePerPixel = m_visualSamplePerPixel *
+                                pWaveform->getAudioVisualRatio();
     } else {
         m_audioSamplePerPixel = 0.0;
     }
@@ -135,14 +137,17 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
 
     if (m_audioSamplePerPixel && m_playPos != -1) {
         // Track length in pixels.
-        m_trackPixelCount = static_cast<double>(m_trackSamples) / 2.0 / m_audioSamplePerPixel;
+        m_trackPixelCount = static_cast<double>(m_trackSamples) / 2.0 /
+                            m_audioSamplePerPixel;
 
         // Ratio of half the width of the renderer to the track length in
         // pixels. Percent of the track shown in half the waveform widget.
-        double displayedLengthHalf = static_cast<double>(m_width) / m_trackPixelCount / 2.0;
+        double displayedLengthHalf = static_cast<double>(m_width) / m_trackPixelCount /
+                                     2.0;
         // Avoid pixel jitter in play position by rounding to the nearest track
         // pixel.
-        m_playPos = round(m_playPos * m_trackPixelCount) / m_trackPixelCount; // Avoid pixel jitter in play position
+        m_playPos = round(m_playPos * m_trackPixelCount) /
+                    m_trackPixelCount; // Avoid pixel jitter in play position
         m_playPosVSample = m_playPos * waveformDataSize;
 
         m_firstDisplayedPosition = m_playPos - displayedLengthHalf;
@@ -239,7 +244,8 @@ void WaveformWidgetRenderer::resize(int width, int height) {
     }
 }
 
-void WaveformWidgetRenderer::setup(const QDomNode& node, const SkinContext& context) {
+void WaveformWidgetRenderer::setup(const QDomNode& node,
+                                   const SkinContext& context) {
     m_colors.setup(node, context);
     for (int i = 0; i < m_rendererStack.size(); ++i) {
         m_rendererStack[i]->setup(node, context);

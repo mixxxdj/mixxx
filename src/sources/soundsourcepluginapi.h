@@ -30,11 +30,14 @@ namespace Mixxx {
 
 // extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT int Mixxx_SoundSourcePluginAPI_getVersion()
 typedef int (*SoundSourcePluginAPI_getVersionFunc)();
-const char * const SoundSourcePluginAPI_getVersionFuncName = "Mixxx_SoundSourcePluginAPI_getVersion";
+const char* const SoundSourcePluginAPI_getVersionFuncName =
+    "Mixxx_SoundSourcePluginAPI_getVersion";
 
 // extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT QStringList Mixxx_SoundSourcePluginAPI_getSoundSourceProvider()
-typedef SoundSourceProviderPointer (*SoundSourcePluginAPI_getSoundSourceProviderFunc)();
-const char* const SoundSourcePluginAPI_getSoundSourceProviderFuncName = "Mixxx_SoundSourcePluginAPI_getSoundSourceProvider";
+typedef SoundSourceProviderPointer (
+    *SoundSourcePluginAPI_getSoundSourceProviderFunc)();
+const char* const SoundSourcePluginAPI_getSoundSourceProviderFuncName =
+    "Mixxx_SoundSourcePluginAPI_getSoundSourceProvider";
 
 } // Mixxx
 

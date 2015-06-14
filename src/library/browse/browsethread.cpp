@@ -28,8 +28,8 @@ static QMutex s_Mutex;
  * signals to BrowseModel objects. It does not
  * make sense to use this class in non-GUI threads
  */
-BrowseThread::BrowseThread(QObject *parent)
-        : QThread(parent) {
+BrowseThread::BrowseThread(QObject* parent)
+    : QThread(parent) {
     m_bStopThread = false;
     m_model_observer = NULL;
     //start Thread
@@ -63,7 +63,8 @@ BrowseThreadPointer BrowseThread::getInstanceRef() {
     return strong;
 }
 
-void BrowseThread::executePopulation(const MDir& path, BrowseTableModel* client) {
+void BrowseThread::executePopulation(const MDir& path,
+                                     BrowseTableModel* client) {
     m_path_mutex.lock();
     m_path = path;
     m_model_observer = client;
@@ -81,7 +82,7 @@ void BrowseThread::run() {
         Trace trace("BrowseThread");
 
         //Terminate thread if Mixxx closes
-        if(m_bStopThread) {
+        if (m_bStopThread) {
             break;
         }
         // Populate the model
@@ -93,15 +94,14 @@ void BrowseThread::run() {
 namespace {
 
 class YearItem: public QStandardItem {
-public:
+  public:
     explicit YearItem(QString year):
         QStandardItem(year) {
     }
 
     QVariant data(int role) const {
         switch (role) {
-        case Qt::DisplayRole:
-        {
+        case Qt::DisplayRole: {
             const QString year(QStandardItem::data(role).toString());
             return Mixxx::TrackMetadata::formatCalendarYear(year);
         }

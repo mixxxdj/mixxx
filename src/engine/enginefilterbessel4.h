@@ -19,9 +19,9 @@ class EngineFilterBessel4Band : public EngineFilterIIR<8, IIR_BP> {
     Q_OBJECT
   public:
     EngineFilterBessel4Band(int sampleRate, double freqCorner1,
-            double freqCorner2);
+                            double freqCorner2);
     void setFrequencyCorners(int sampleRate, double freqCorner1,
-            double freqCorner2);
+                             double freqCorner2);
 };
 
 class EngineFilterBessel4High : public EngineFilterIIR<4, IIR_HP> {

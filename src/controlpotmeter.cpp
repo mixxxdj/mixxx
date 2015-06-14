@@ -19,13 +19,14 @@
 #include "controlpotmeter.h"
 #include "controlobjectthread.h"
 
-ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue, double dMaxValue,
+ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue,
+                                 double dMaxValue,
                                  bool allowOutOfBounds,
                                  bool bIgnoreNops,
                                  bool bTrack,
                                  bool bPersist)
-        : ControlObject(key, bIgnoreNops, bTrack, bPersist),
-          m_controls(key) {
+    : ControlObject(key, bIgnoreNops, bTrack, bPersist),
+      m_controls(key) {
     setRange(dMinValue, dMaxValue, allowOutOfBounds);
     double default_value = dMinValue + 0.5 * (dMaxValue - dMinValue);
     setDefaultValue(default_value);
@@ -52,14 +53,14 @@ void ControlPotmeter::setRange(double dMinValue, double dMaxValue,
 
     if (m_pControl) {
         m_pControl->setBehavior(
-                new ControlPotmeterBehavior(dMinValue, dMaxValue, allowOutOfBounds));
+            new ControlPotmeterBehavior(dMinValue, dMaxValue, allowOutOfBounds));
     }
 }
 
 PotmeterControls::PotmeterControls(const ConfigKey& key)
-        : m_pControl(new ControlObjectThread(key)),
-          m_stepCount(10),
-          m_smallStepCount(100) {
+    : m_pControl(new ControlObjectThread(key)),
+      m_stepCount(10),
+      m_smallStepCount(100) {
     // These controls are deleted when the ControlPotmeter is since
     // PotmeterControls is a member variable of the associated ControlPotmeter
     // and the push-button controls are parented to the PotmeterControls.

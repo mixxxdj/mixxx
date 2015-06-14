@@ -2,9 +2,9 @@
 #include "util/experiment.h"
 
 Timer::Timer(const QString& key, Stat::ComputeFlags compute)
-        : m_key(key),
-          m_compute(Stat::experimentFlags(compute)),
-          m_running(false) {
+    : m_key(key),
+      m_compute(Stat::experimentFlags(compute)),
+      m_running(false) {
 }
 
 void Timer::start() {
@@ -44,8 +44,8 @@ qint64 Timer::elapsed(bool report) {
 
 SuspendableTimer::SuspendableTimer(const QString& key,
                                    Stat::ComputeFlags compute)
-        : Timer(key, compute),
-          m_leapTime(0) {
+    : Timer(key, compute),
+      m_leapTime(0) {
 }
 
 void SuspendableTimer::start() {

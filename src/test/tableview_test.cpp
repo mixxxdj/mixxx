@@ -13,7 +13,7 @@ class HeaderViewStateTest : public testing::Test {
 TEST_F(HeaderViewStateTest, RoundTrip) {
     mixxx::library::HeaderViewState headerViewState_pb;
     mixxx::library::HeaderViewState::HeaderState* header_state_pb =
-                headerViewState_pb.add_header_state();
+        headerViewState_pb.add_header_state();
 
     header_state_pb->set_hidden(true);
     header_state_pb->set_size(50);
@@ -22,7 +22,7 @@ TEST_F(HeaderViewStateTest, RoundTrip) {
     header_state_pb->set_column_name("MyCol");
 
     header_state_pb =
-                headerViewState_pb.add_header_state();
+        headerViewState_pb.add_header_state();
 
     header_state_pb->set_hidden(false);
     header_state_pb->set_size(22);
@@ -52,13 +52,13 @@ TEST_F(HeaderViewStateTest, RoundTrip) {
 
 TEST_F(HeaderViewStateTest, GoodHeaderState) {
     const QString kGoodSerializedProto("ChEIARAAGAEgACoHcHJldmlldwoICAAQSxgEIAE"
-            "KEggBEAAYAiACKghjb3ZlcmFydAoICAEQABgDIAMKCAgBEAAYBSAECggIABBaGBYgB"
-            "QoICAEQABgGIAYKCQgAEPwBGBcgBwoJCAAQvAEYByAICgkIABDmARgIIAkKCAgBEAA"
-            "YCSAKCggIARAAGAogCwoJCAAQkwQYGSAMCggIARAAGAwgDQoICAEQABgNIA4KCAgBE"
-            "AAYDiAPCggIARAAGBAgEAoICAAQVxgRIBEKCAgBEAAYEiASCggIABBGGBMgEwoICAA"
-            "QMhgPIBQKCAgAEHUYCyAVCggIARAAGBQgFgoICAAQNxgVIBcKCAgBEAAYGCAYCggIA"
-            "RAAGBogGQoICAEQABgbIBoKCAgBEAAYHCAbCggIARAAGAAgHAoICAEQABgdIB0KCAg"
-            "BEAAYHiAeEAEYFiAB");
+                                       "KEggBEAAYAiACKghjb3ZlcmFydAoICAEQABgDIAMKCAgBEAAYBSAECggIABBaGBYgB"
+                                       "QoICAEQABgGIAYKCQgAEPwBGBcgBwoJCAAQvAEYByAICgkIABDmARgIIAkKCAgBEAA"
+                                       "YCSAKCggIARAAGAogCwoJCAAQkwQYGSAMCggIARAAGAwgDQoICAEQABgNIA4KCAgBE"
+                                       "AAYDiAPCggIARAAGBAgEAoICAAQVxgRIBEKCAgBEAAYEiASCggIABBGGBMgEwoICAA"
+                                       "QMhgPIBQKCAgAEHUYCyAVCggIARAAGBQgFgoICAAQNxgVIBcKCAgBEAAYGCAYCggIA"
+                                       "RAAGBogGQoICAEQABgbIBoKCAgBEAAYHCAbCggIARAAGAAgHAoICAEQABgdIB0KCAg"
+                                       "BEAAYHiAeEAEYFiAB");
 
     HeaderViewState view_state(kGoodSerializedProto);
     ASSERT_TRUE(view_state.healthy());

@@ -6,18 +6,18 @@
 #include <QtDebug>
 
 class CircularSampleBufferTest: public MixxxTest {
-public:
+  public:
     CircularSampleBufferTest()
         : m_writeValue(CSAMPLE_ZERO),
           m_readValue(CSAMPLE_ZERO) {
     }
 
-protected:
+  protected:
     static const SINT kCapacity;
 
     SINT writeTail(CircularSampleBuffer* pSampleBuffer, SINT size) {
         const SampleBuffer::WritableChunk writableChunk(
-                pSampleBuffer->writeToTail(size));
+            pSampleBuffer->writeToTail(size));
         for (SINT i = 0; i < writableChunk.size(); ++i) {
             writableChunk[i] = m_writeValue;
             m_writeValue += CSAMPLE_ONE;
@@ -27,7 +27,7 @@ protected:
 
     SINT readHeadAndVerify(CircularSampleBuffer* pSampleBuffer, SINT size) {
         const SampleBuffer::ReadableChunk readableChunk(
-                pSampleBuffer->readFromHead(size));
+            pSampleBuffer->readFromHead(size));
         for (SINT i = 0; i < readableChunk.size(); ++i) {
             EXPECT_EQ(readableChunk[i], m_readValue);
             m_readValue += CSAMPLE_ONE;
@@ -37,7 +37,7 @@ protected:
 
     SINT readTailAndVerify(CircularSampleBuffer* pSampleBuffer, SINT size) {
         const SampleBuffer::ReadableChunk readableChunk(
-                pSampleBuffer->readFromTail(size));
+            pSampleBuffer->readFromTail(size));
         for (SINT i = readableChunk.size(); i-- > 0; ) {
             m_writeValue -= CSAMPLE_ONE;
             EXPECT_EQ(readableChunk[i], m_writeValue);
@@ -51,7 +51,7 @@ protected:
         m_readValue = CSAMPLE_ZERO;
     }
 
-private:
+  private:
     CSAMPLE m_writeValue;
     CSAMPLE m_readValue;
 };
@@ -69,13 +69,13 @@ TEST_F(CircularSampleBufferTest, emptyWithoutCapacity) {
     EXPECT_TRUE(sampleBuffer.isEmpty());
 
     const SampleBuffer::WritableChunk writableChunk(
-            sampleBuffer.writeToTail(10));
+        sampleBuffer.writeToTail(10));
     EXPECT_EQ(writableChunk.data(), static_cast<CSAMPLE*>(NULL));
     EXPECT_EQ(writableChunk.size(), 0);
     EXPECT_TRUE(sampleBuffer.isEmpty());
 
     const SampleBuffer::ReadableChunk readableChunk(
-            sampleBuffer.readFromHead(10));
+        sampleBuffer.readFromHead(10));
     EXPECT_EQ(readableChunk.data(), static_cast<const CSAMPLE*>(NULL));
     EXPECT_EQ(readableChunk.size(), 0);
     EXPECT_TRUE(sampleBuffer.isEmpty());

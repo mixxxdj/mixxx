@@ -11,11 +11,12 @@ namespace Mixxx {
 
 class SoundSourcePluginLibrary;
 
-typedef QSharedPointer<SoundSourcePluginLibrary> SoundSourcePluginLibraryPointer;
+typedef QSharedPointer<SoundSourcePluginLibrary>
+SoundSourcePluginLibraryPointer;
 
 // Wrapper class for a dynamic library that implements the SoundSource plugin API
 class SoundSourcePluginLibrary {
-public:
+  public:
     static SoundSourcePluginLibraryPointer load(const QString& libFilePath);
 
     virtual ~SoundSourcePluginLibrary();
@@ -33,14 +34,15 @@ public:
         return (*m_getSoundSourceProviderFunc)();
     }
 
-protected:
+  protected:
     explicit SoundSourcePluginLibrary(const QString& libFilePath);
 
     virtual bool init();
 
-private:
+  private:
     static QMutex s_loadedPluginLibrariesMutex;
-    static QMap<QString, Mixxx::SoundSourcePluginLibraryPointer> s_loadedPluginLibraries;
+    static QMap<QString, Mixxx::SoundSourcePluginLibraryPointer>
+    s_loadedPluginLibraries;
 
     QLibrary m_library;
 

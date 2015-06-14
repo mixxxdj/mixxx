@@ -3,14 +3,14 @@
 #include "engine/enginesidechaincompressor.h"
 
 EngineSideChainCompressor::EngineSideChainCompressor(const char* group)
-        : m_compressRatio(0.0),
-          m_bAboveThreshold(false),
-          m_threshold(1.0),
-          m_strength(0.0),
-          m_attackTime(0),
-          m_decayTime(0),
-          m_attackPerFrame(0.0),
-          m_decayPerFrame(0.0) {
+    : m_compressRatio(0.0),
+      m_bAboveThreshold(false),
+      m_threshold(1.0),
+      m_strength(0.0),
+      m_attackTime(0),
+      m_decayTime(0),
+      m_attackPerFrame(0.0),
+      m_decayPerFrame(0.0) {
     Q_UNUSED(group);
 }
 
@@ -42,7 +42,8 @@ void EngineSideChainCompressor::clearKeys() {
     m_bAboveThreshold = false;
 }
 
-void EngineSideChainCompressor::processKey(const CSAMPLE* pIn, const int iBufferSize) {
+void EngineSideChainCompressor::processKey(const CSAMPLE* pIn,
+        const int iBufferSize) {
     for (int i = 0; i + 1 < iBufferSize; i += 2) {
         CSAMPLE val = (pIn[i] + pIn[i + 1]) / 2;
         if (val > m_threshold) {

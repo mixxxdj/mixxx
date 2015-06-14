@@ -5,9 +5,9 @@
 DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
                                ConfigObject<ConfigValue>* pConfig,
                                EffectsManager* pEffectsManager)
-        : DlgPreferencePage(pParent),
-          m_pConfig(pConfig),
-          m_pEffectsManager(pEffectsManager) {
+    : DlgPreferencePage(pParent),
+      m_pConfig(pConfig),
+      m_pEffectsManager(pEffectsManager) {
     setupUi(this);
 
     connect(availableEffectsList,
@@ -31,7 +31,7 @@ void DlgPrefEffects::slotUpdate() {
 
 void DlgPrefEffects::addEffectToList(const QString& effectId) {
     QPair<EffectManifest, EffectsBackend*> manifestAndBackend =
-            m_pEffectsManager->getEffectManifestAndBackend(effectId);
+        m_pEffectsManager->getEffectManifestAndBackend(effectId);
 
     QListWidgetItem* pItem = new QListWidgetItem();
     pItem->setText(manifestAndBackend.first.name());
@@ -64,7 +64,7 @@ void DlgPrefEffects::slotEffectSelected(QListWidgetItem* pCurrent,
     }
     QString effectId = pCurrent->data(Qt::UserRole).toString();
     QPair<EffectManifest, EffectsBackend*> manifestAndBackend =
-            m_pEffectsManager->getEffectManifestAndBackend(effectId);
+        m_pEffectsManager->getEffectManifestAndBackend(effectId);
 
     const EffectManifest& manifest = manifestAndBackend.first;
     effectName->setText(manifest.name());

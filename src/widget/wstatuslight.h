@@ -32,9 +32,9 @@
 #include "skin/skincontext.h"
 
 class WStatusLight : public WWidget  {
-   Q_OBJECT
+    Q_OBJECT
   public:
-    WStatusLight(QWidget *parent=0);
+    WStatusLight(QWidget* parent=0);
     virtual ~WStatusLight();
 
     void setup(QDomNode node, const SkinContext& context);
@@ -43,7 +43,7 @@ class WStatusLight : public WWidget  {
     void onConnectedControlChanged(double dParameter, double dValue);
 
   protected:
-    void paintEvent(QPaintEvent *);
+    void paintEvent(QPaintEvent*);
 
   private:
     void setPixmap(int iState, PixmapSource source, Paintable::DrawMode mode);

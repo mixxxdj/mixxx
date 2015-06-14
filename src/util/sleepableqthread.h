@@ -9,8 +9,8 @@
 class SleepableQThread : public QThread {
     Q_OBJECT;
     Q_DISABLE_COPY(SleepableQThread);
-public:
-    explicit SleepableQThread(QObject *parent = NULL) : QThread(parent) { }
+  public:
+    explicit SleepableQThread(QObject* parent = NULL) : QThread(parent) { }
     virtual ~SleepableQThread() { }
     static void sleep(unsigned long secs) {
         QThread::sleep(secs);

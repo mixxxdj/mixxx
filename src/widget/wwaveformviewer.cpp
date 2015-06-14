@@ -16,25 +16,26 @@
 #include "util/dnd.h"
 #include "util/math.h"
 
-WWaveformViewer::WWaveformViewer(const char *group, ConfigObject<ConfigValue>* pConfig, QWidget * parent)
-        : WWidget(parent),
-          m_pGroup(group),
-          m_pConfig(pConfig),
-          m_zoomZoneWidth(20),
-          m_bScratching(false),
-          m_bBending(false),
-          m_waveformWidget(NULL) {
+WWaveformViewer::WWaveformViewer(const char* group,
+                                 ConfigObject<ConfigValue>* pConfig, QWidget* parent)
+    : WWidget(parent),
+      m_pGroup(group),
+      m_pConfig(pConfig),
+      m_zoomZoneWidth(20),
+      m_bScratching(false),
+      m_bBending(false),
+      m_waveformWidget(NULL) {
     setAcceptDrops(true);
 
     m_pZoom = new ControlObjectSlave(group, "waveform_zoom");
     m_pZoom->connectValueChanged(this, SLOT(onZoomChange(double)));
 
     m_pScratchPositionEnable = new ControlObjectSlave(
-            group, "scratch_position_enable");
+        group, "scratch_position_enable");
     m_pScratchPosition = new ControlObjectSlave(
-            group, "scratch_position");
+        group, "scratch_position");
     m_pWheel = new ControlObjectSlave(
-            group, "wheel");
+        group, "wheel");
 
     setAttribute(Qt::WA_OpaquePaintEvent);
 }
@@ -130,17 +131,17 @@ void WWaveformViewer::mouseReleaseEvent(QMouseEvent* /*event*/) {
     setCursor(Qt::ArrowCursor);
 }
 
-void WWaveformViewer::wheelEvent(QWheelEvent *event) {
+void WWaveformViewer::wheelEvent(QWheelEvent* event) {
     if (m_waveformWidget) {
         //NOTE: (vrince) to limit the zoom action area uncomment the following line
         //if (event->x() > width() - m_zoomZoneWidth) {
-            if (event->delta() > 0) {
-                //qDebug() << "WaveformWidgetRenderer::wheelEvent +1";
-                onZoomChange(m_waveformWidget->getZoomFactor() + 1);
-            } else {
-                //qDebug() << "WaveformWidgetRenderer::wheelEvent -1";
-                onZoomChange(m_waveformWidget->getZoomFactor() - 1);
-            }
+        if (event->delta() > 0) {
+            //qDebug() << "WaveformWidgetRenderer::wheelEvent +1";
+            onZoomChange(m_waveformWidget->getZoomFactor() + 1);
+        } else {
+            //qDebug() << "WaveformWidgetRenderer::wheelEvent -1";
+            onZoomChange(m_waveformWidget->getZoomFactor() - 1);
+        }
         //}
     }
 }
@@ -148,7 +149,7 @@ void WWaveformViewer::wheelEvent(QWheelEvent *event) {
 void WWaveformViewer::dragEnterEvent(QDragEnterEvent* event) {
     if (DragAndDropHelper::allowLoadToPlayer(m_pGroup, m_pConfig) &&
             DragAndDropHelper::dragEnterAccept(*event->mimeData(), m_pGroup,
-                                               true, false)) {
+                    true, false)) {
         event->acceptProposedAction();
     } else {
         event->ignore();
@@ -158,7 +159,7 @@ void WWaveformViewer::dragEnterEvent(QDragEnterEvent* event) {
 void WWaveformViewer::dropEvent(QDropEvent* event) {
     if (DragAndDropHelper::allowLoadToPlayer(m_pGroup, m_pConfig)) {
         QList<QFileInfo> files = DragAndDropHelper::dropEventFiles(
-                *event->mimeData(), m_pGroup, true, false);
+                                     *event->mimeData(), m_pGroup, true, false);
         if (!files.isEmpty()) {
             event->accept();
             emit(trackDropped(files.at(0).canonicalFilePath(), m_pGroup));
@@ -205,7 +206,8 @@ void WWaveformViewer::setZoom(int zoom) {
     }
 }
 
-void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) {
+void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract*
+                                        waveformWidget) {
     if (m_waveformWidget) {
         QWidget* pWidget = m_waveformWidget->getWidget();
         disconnect(pWidget, SIGNAL(destroyed()),

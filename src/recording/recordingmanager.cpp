@@ -11,18 +11,20 @@
 #include "controlpushbutton.h"
 #include "engine/enginemaster.h"
 
-RecordingManager::RecordingManager(ConfigObject<ConfigValue>* pConfig, EngineMaster* pEngine)
-        : m_pConfig(pConfig),
-          m_recordingDir(""),
-          m_recording_base_file(""),
-          m_recordingFile(""),
-          m_recordingLocation(""),
-          m_bRecording(false),
-          m_iNumberOfBytesRecorded(0),
-          m_split_size(0),
-          m_iNumberSplits(0),
-          m_durationRecorded("") {
-    m_pToggleRecording = new ControlPushButton(ConfigKey(RECORDING_PREF_KEY, "toggle_recording"));
+RecordingManager::RecordingManager(ConfigObject<ConfigValue>* pConfig,
+                                   EngineMaster* pEngine)
+    : m_pConfig(pConfig),
+      m_recordingDir(""),
+      m_recording_base_file(""),
+      m_recordingFile(""),
+      m_recordingLocation(""),
+      m_bRecording(false),
+      m_iNumberOfBytesRecorded(0),
+      m_split_size(0),
+      m_iNumberSplits(0),
+      m_durationRecorded("") {
+    m_pToggleRecording = new ControlPushButton(ConfigKey(RECORDING_PREF_KEY,
+            "toggle_recording"));
     connect(m_pToggleRecording, SIGNAL(valueChanged(double)),
             this, SLOT(slotToggleRecording(double)));
     m_recReadyCO = new ControlObject(ConfigKey(RECORDING_PREF_KEY, "status"));
@@ -45,8 +47,7 @@ RecordingManager::RecordingManager(ConfigObject<ConfigValue>* pConfig, EngineMas
     }
 }
 
-RecordingManager::~RecordingManager()
-{
+RecordingManager::~RecordingManager() {
     qDebug() << "Delete RecordingManager";
 
     delete m_recReady;
@@ -84,14 +85,14 @@ void RecordingManager::startRecording(bool generateFileName) {
     m_split_size = getFileSplitSize();
     qDebug() << "Split size is:" << m_split_size;
     QString encodingType = m_pConfig->getValueString(
-            ConfigKey(RECORDING_PREF_KEY, "Encoding"));
+                               ConfigKey(RECORDING_PREF_KEY, "Encoding"));
 
-    if(generateFileName) {
+    if (generateFileName) {
         m_iNumberSplits = 1;
         // Append file extension.
         QString date_time_str = formatDateTimeForFilename(QDateTime::currentDateTime());
         m_recordingFile = QString("%1.%2")
-                .arg(date_time_str, encodingType.toLower());
+                          .arg(date_time_str, encodingType.toLower());
 
         // Storing the absolutePath of the recording file without file extension.
         m_recording_base_file = getRecordingDir();
@@ -99,22 +100,24 @@ void RecordingManager::startRecording(bool generateFileName) {
         // Appending file extension to get the filelocation.
         m_recordingLocation = m_recording_base_file + "."+ encodingType.toLower();
         m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Path"), m_recordingLocation);
-        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "CuePath"), m_recording_base_file +".cue");
+        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "CuePath"),
+                       m_recording_base_file +".cue");
     } else {
         // This is only executed if filesplit occurs.
         ++m_iNumberSplits;
-        QString new_base_filename = m_recording_base_file +"part"+QString::number(m_iNumberSplits);
+        QString new_base_filename = m_recording_base_file +"part"+QString::number(
+                                        m_iNumberSplits);
         m_recordingLocation = new_base_filename + "." +encodingType.toLower();
 
         m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Path"), m_recordingLocation);
-        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "CuePath"), new_base_filename +".cue");
+        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "CuePath"),
+                       new_base_filename +".cue");
         m_recordingFile = QFileInfo(m_recordingLocation).fileName();
     }
     m_recReady->slotSet(RECORD_READY);
 }
 
-void RecordingManager::stopRecording()
-{
+void RecordingManager::stopRecording() {
     qDebug() << "Recording stopped";
     m_recReady->slotSet(RECORD_OFF);
     m_recordingFile = "";
@@ -124,14 +127,15 @@ void RecordingManager::stopRecording()
 
 void RecordingManager::setRecordingDir() {
     QDir recordDir(m_pConfig->getValueString(
-        ConfigKey(RECORDING_PREF_KEY, "Directory")));
+                       ConfigKey(RECORDING_PREF_KEY, "Directory")));
     // Note: the default ConfigKey for recordDir is set in DlgPrefRecord::DlgPrefRecord.
 
     if (!recordDir.exists()) {
         if (recordDir.mkpath(recordDir.absolutePath())) {
             qDebug() << "Created folder" << recordDir.absolutePath() << "for recordings";
         } else {
-            qDebug() << "Failed to create folder" << recordDir.absolutePath() << "for recordings";
+            qDebug() << "Failed to create folder" << recordDir.absolutePath() <<
+                     "for recordings";
         }
     }
     m_recordingDir = recordDir.absolutePath();
@@ -145,22 +149,18 @@ QString& RecordingManager::getRecordingDir() {
 }
 
 // Only called when recording is active.
-void RecordingManager::slotDurationRecorded(QString durationStr)
-{
-    if(m_durationRecorded != durationStr)
-    {
+void RecordingManager::slotDurationRecorded(QString durationStr) {
+    if (m_durationRecorded != durationStr) {
         m_durationRecorded = durationStr;
         emit(durationRecorded(m_durationRecorded));
     }
 }
 
 // Only called when recording is active.
-void RecordingManager::slotBytesRecorded(int bytes)
-{
+void RecordingManager::slotBytesRecorded(int bytes) {
     // auto conversion to long
     m_iNumberOfBytesRecorded += bytes;
-    if(m_iNumberOfBytesRecorded >= m_split_size)
-    {
+    if (m_iNumberOfBytesRecorded >= m_split_size) {
         stopRecording();
         // Dont generate a new filename.
         // This will reuse the previous filename but append a suffix.
@@ -169,8 +169,7 @@ void RecordingManager::slotBytesRecorded(int bytes)
     emit(bytesRecorded(m_iNumberOfBytesRecorded));
 }
 
-void RecordingManager::slotIsRecording(bool isRecordingActive)
-{
+void RecordingManager::slotIsRecording(bool isRecordingActive) {
     //qDebug() << "SlotIsRecording " << isRecording;
 
     // Notify the GUI controls, see dlgrecording.cpp.
@@ -190,19 +189,19 @@ QString& RecordingManager::getRecordingLocation() {
     return m_recordingLocation;
 }
 
-long RecordingManager::getFileSplitSize()
-{
-     QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "FileSize"));
-     if(fileSizeStr == SPLIT_650MB)
-         return SIZE_650MB;
-     else if(fileSizeStr == SPLIT_700MB)
-         return SIZE_700MB;
-     else if(fileSizeStr == SPLIT_1024MB)
-         return SIZE_1GB;
-     else if(fileSizeStr == SPLIT_2048MB)
-         return SIZE_2GB;
-     else if(fileSizeStr == SPLIT_4096MB)
-         return SIZE_4GB;
-     else
-         return SIZE_650MB;
+long RecordingManager::getFileSplitSize() {
+    QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY,
+                          "FileSize"));
+    if (fileSizeStr == SPLIT_650MB)
+        return SIZE_650MB;
+    else if (fileSizeStr == SPLIT_700MB)
+        return SIZE_700MB;
+    else if (fileSizeStr == SPLIT_1024MB)
+        return SIZE_1GB;
+    else if (fileSizeStr == SPLIT_2048MB)
+        return SIZE_2GB;
+    else if (fileSizeStr == SPLIT_4096MB)
+        return SIZE_4GB;
+    else
+        return SIZE_650MB;
 }

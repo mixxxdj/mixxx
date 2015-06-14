@@ -18,7 +18,7 @@
 #include "util/debug.h"
 
 SkinLoader::SkinLoader(ConfigObject<ConfigValue>* pConfig) :
-        m_pConfig(pConfig) {
+    m_pConfig(pConfig) {
 }
 
 SkinLoader::~SkinLoader() {
@@ -45,7 +45,8 @@ QList<QDir> SkinLoader::getSkinSearchPaths() {
 }
 
 QString SkinLoader::getConfiguredSkinPath() {
-    QString configSkin = m_pConfig->getValueString(ConfigKey("[Config]", "ResizableSkin"));
+    QString configSkin = m_pConfig->getValueString(ConfigKey("[Config]",
+                         "ResizableSkin"));
 
     // If we don't have a skin defined, we might be migrating from 1.11 and
     // should pick the closest-possible skin.

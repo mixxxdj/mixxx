@@ -15,9 +15,9 @@ class SearchQueryParser {
     virtual ~SearchQueryParser();
 
     std::unique_ptr<QueryNode> parseQuery(
-            const QString& query,
-            const QStringList& searchColumns,
-            const QString& extraFilter) const;
+        const QString& query,
+        const QStringList& searchColumns,
+        const QString& extraFilter) const;
 
   private:
     void parseTokens(QStringList tokens,

@@ -13,16 +13,16 @@ template <class T>
 class SliderEventHandler {
   public:
     SliderEventHandler()
-            : m_dStartHandlePos(0),
-              m_dStartMousePos(0),
-              m_bRightButtonPressed(false),
-              m_dOldParameter(-1.0), // virgin
-              m_dPos(0.0),
-              m_dHandleLength(0),
-              m_dSliderLength(0),
-              m_bHorizontal(false),
-              m_bDrag(false),
-              m_bEventWhileDrag(true) { }
+        : m_dStartHandlePos(0),
+          m_dStartMousePos(0),
+          m_bRightButtonPressed(false),
+          m_dOldParameter(-1.0), // virgin
+          m_dPos(0.0),
+          m_dHandleLength(0),
+          m_dSliderLength(0),
+          m_bHorizontal(false),
+          m_bDrag(false),
+          m_bEventWhileDrag(true) { }
 
     void setHorizontal(bool horiz) {
         m_bHorizontal = horiz;
@@ -105,7 +105,7 @@ class SliderEventHandler {
 
     void wheelEvent(T* pWidget, QWheelEvent* e) {
         // For legacy (MIDI) reasons this is tuned to 127.
-        double wheelAdjustment = ((QWheelEvent *)e)->delta() / (120.0 * 127.0);
+        double wheelAdjustment = ((QWheelEvent*)e)->delta() / (120.0 * 127.0);
         double newParameter = pWidget->getControlParameter() + wheelAdjustment;
 
         // Clamp to [0.0, 1.0]

@@ -20,9 +20,9 @@ class AnalysisDao : public DAO {
 
     struct AnalysisInfo {
         AnalysisInfo()
-                : analysisId(-1),
-                  trackId(-1),
-                  type(TYPE_UNKNOWN) {
+            : analysisId(-1),
+              trackId(-1),
+              type(TYPE_UNKNOWN) {
         }
         int analysisId;
         int trackId;
@@ -42,7 +42,8 @@ class AnalysisDao : public DAO {
     bool saveWaveform(const TrackInfoObject& tio);
     bool removeWaveform(const TrackInfoObject& tio);
 
-    QList<AnalysisInfo> getAnalysesForTrackByType(const int trackId, AnalysisType type);
+    QList<AnalysisInfo> getAnalysesForTrackByType(const int trackId,
+            AnalysisType type);
     QList<AnalysisInfo> getAnalysesForTrack(const int trackId);
     bool saveAnalysis(AnalysisInfo* analysis);
     bool deleteAnalysis(const int analysisId);

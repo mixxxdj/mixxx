@@ -19,13 +19,14 @@
 #include "musicbrainz/musicbrainzclient.h"
 
 TagFetcher::TagFetcher(QObject* parent)
-          : QObject(parent),
-            m_pFingerprintWatcher(NULL),
-            m_AcoustidClient(this),
-            m_MusicbrainzClient(this) {
+    : QObject(parent),
+      m_pFingerprintWatcher(NULL),
+      m_AcoustidClient(this),
+      m_MusicbrainzClient(this) {
     connect(&m_AcoustidClient, SIGNAL(finished(int,QString)),
             this, SLOT(mbidFound(int,QString)));
-    connect(&m_MusicbrainzClient, SIGNAL(finished(int,MusicBrainzClient::ResultList)),
+    connect(&m_MusicbrainzClient, SIGNAL(finished(int,
+                                         MusicBrainzClient::ResultList)),
             this, SLOT(tagsFetched(int,MusicBrainzClient::ResultList)));
     connect(&m_AcoustidClient, SIGNAL(networkError(int, QString)),
             this, SIGNAL(networkError(int, QString)));
@@ -70,7 +71,8 @@ void TagFetcher::cancel() {
 }
 
 void TagFetcher::fingerprintFound(int index) {
-    QFutureWatcher<QString>* watcher = reinterpret_cast<QFutureWatcher<QString>*>(sender());
+    QFutureWatcher<QString>* watcher = reinterpret_cast<QFutureWatcher<QString>*>
+                                       (sender());
     if (!watcher || index >= m_tracks.count()) {
         return;
     }
@@ -105,7 +107,8 @@ void TagFetcher::mbidFound(int index, const QString& mbid) {
     m_MusicbrainzClient.start(index, mbid);
 }
 
-void TagFetcher::tagsFetched(int index, const MusicBrainzClient::ResultList& results) {
+void TagFetcher::tagsFetched(int index,
+                             const MusicBrainzClient::ResultList& results) {
     if (index >= m_tracks.count()) {
         return;
     }

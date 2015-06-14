@@ -18,7 +18,7 @@
 
 #include "encoder/encoderffmpegresample.h"
 
-EncoderFfmpegResample::EncoderFfmpegResample(AVCodecContext *codecCtx) {
+EncoderFfmpegResample::EncoderFfmpegResample(AVCodecContext* codecCtx) {
     m_pSwrCtx = NULL;
     m_pCodecCtx = codecCtx;
 }
@@ -160,7 +160,8 @@ int EncoderFfmpegResample::open(enum AVSampleFormat inSampleFmt,
     return 0;
 }
 
-unsigned int EncoderFfmpegResample::reSample(AVFrame *inframe, quint8 **outbuffer) {
+unsigned int EncoderFfmpegResample::reSample(AVFrame* inframe,
+        quint8** outbuffer) {
 
     if (m_pSwrCtx) {
 
@@ -168,20 +169,20 @@ unsigned int EncoderFfmpegResample::reSample(AVFrame *inframe, quint8 **outbuffe
 
 #ifdef __LIBAVRESAMPLE__
 #if LIBAVRESAMPLE_VERSION_MAJOR == 0
-        void **l_pIn = (void **)inframe->extended_data;
+        void** l_pIn = (void**)inframe->extended_data;
 #else
-        quint8 **l_pIn = (quint8 **)inframe->extended_data;
+        quint8** l_pIn = (quint8**)inframe->extended_data;
 #endif // LIBAVRESAMPLE_VERSION_MAJOR == 0
 #else
-        quint8 **l_pIn = (quint8 **)inframe->extended_data;
+        quint8** l_pIn = (quint8**)inframe->extended_data;
 #endif // __LIBAVRESAMPLE__
 
 // Left here for reason!
 // Sometime in time we will need this!
 #else
         qint64 l_lInReadBytes = av_samples_get_buffer_size(NULL, m_pCodecCtx->channels,
-                                 inframe->nb_samples,
-                                 m_pCodecCtx->sample_fmt, 1);
+                                inframe->nb_samples,
+                                m_pCodecCtx->sample_fmt, 1);
 #endif // __FFMPEGOLDAPI__
 
 #ifndef __FFMPEGOLDAPI__
@@ -217,7 +218,7 @@ unsigned int EncoderFfmpegResample::reSample(AVFrame *inframe, quint8 **outbuffe
                            m_pOutSampleFmt, 1);
 
 
-        outbuffer = (short *)malloc(l_iOutBytes * 2);
+        outbuffer = (short*)malloc(l_iOutBytes * 2);
 #endif // __FFMPEGOLDAPI__
 
         int l_iLen = 0;
@@ -229,25 +230,25 @@ unsigned int EncoderFfmpegResample::reSample(AVFrame *inframe, quint8 **outbuffe
 // USED IN FFMPEG 1.0 (LibAV SOMETHING!). New in FFMPEG 1.1 and libav 9
 #if LIBAVRESAMPLE_VERSION_INT <= 3
         // AVResample OLD
-        l_iLen = avresample_convert(m_pSwrCtx, (void **)outbuffer, 0, l_iOutSamples,
-                                    (void **)l_pIn, 0, inframe->nb_samples);
+        l_iLen = avresample_convert(m_pSwrCtx, (void**)outbuffer, 0, l_iOutSamples,
+                                    (void**)l_pIn, 0, inframe->nb_samples);
 #else
         //AVResample NEW
-        l_iLen = avresample_convert(m_pSwrCtx, (quint8 **)outbuffer, 0, l_iOutSamples,
-                                    (quint8 **)l_pIn, 0, inframe->nb_samples);
+        l_iLen = avresample_convert(m_pSwrCtx, (quint8**)outbuffer, 0, l_iOutSamples,
+                                    (quint8**)l_pIn, 0, inframe->nb_samples);
 #endif // LIBAVRESAMPLE_VERSION_INT <= 3
 
 #else
         // SWResample
-        l_iLen = swr_convert(m_pSwrCtx, (quint8 **)outbuffer, l_iOutSamples,
-                             (const quint8 **)l_pIn, inframe->nb_samples);
+        l_iLen = swr_convert(m_pSwrCtx, (quint8**)outbuffer, l_iOutSamples,
+                             (const quint8**)l_pIn, inframe->nb_samples);
 #endif // __LIBAVRESAMPLE__
 
         l_iOutBytes = av_samples_get_buffer_size(NULL, 2, l_iLen, m_pOutSampleFmt, 1);
 
 #else
         l_iLen = audio_resample(m_pSwrCtx,
-                                (short *)outbuffer, (short *)inframe->data[0],
+                                (short*)outbuffer, (short*)inframe->data[0],
                                 inframe->nb_samples);
 
 #endif // __FFMPEGOLDAPI__
@@ -257,16 +258,16 @@ unsigned int EncoderFfmpegResample::reSample(AVFrame *inframe, quint8 **outbuffe
         }
         return l_iOutBytes;
     } else {
-        quint8 *l_ptrBuf = NULL;
+        quint8* l_ptrBuf = NULL;
         qint64 l_lInReadBytes = av_samples_get_buffer_size(NULL, m_pCodecCtx->channels,
-                                 inframe->nb_samples,
-                                 m_pCodecCtx->sample_fmt, 1);
+                                inframe->nb_samples,
+                                m_pCodecCtx->sample_fmt, 1);
 
-        if(l_lInReadBytes < 0) {
-           return 0;
+        if (l_lInReadBytes < 0) {
+            return 0;
         }
 
-        l_ptrBuf = (quint8 *)av_malloc(l_lInReadBytes);
+        l_ptrBuf = (quint8*)av_malloc(l_lInReadBytes);
 
         memcpy(l_ptrBuf, inframe->data[0], l_lInReadBytes);
 

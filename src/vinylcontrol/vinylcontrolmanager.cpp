@@ -18,14 +18,14 @@
 #include "vinylcontrol/vinylcontrolmanager.h"
 
 VinylControlManager::VinylControlManager(QObject* pParent,
-                                         ConfigObject<ConfigValue>* pConfig,
-                                         SoundManager* pSoundManager)
-        : QObject(pParent),
-          m_pConfig(pConfig),
-          m_pProcessor(new VinylControlProcessor(this, pConfig)),
-          m_iTimerId(-1),
-          m_pNumDecks(NULL),
-          m_iNumConfiguredDecks(0) {
+        ConfigObject<ConfigValue>* pConfig,
+        SoundManager* pSoundManager)
+    : QObject(pParent),
+      m_pConfig(pConfig),
+      m_pProcessor(new VinylControlProcessor(this, pConfig)),
+      m_iTimerId(-1),
+      m_pNumDecks(NULL),
+      m_iNumConfiguredDecks(0) {
     // Register every possible VC input with SoundManager to route to the
     // VinylControlProcessor.
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
@@ -43,11 +43,11 @@ VinylControlManager::~VinylControlManager() {
         QString group = PlayerManager::groupForDeck(i);
         m_pConfig->set(ConfigKey(group, "vinylcontrol_enabled"), false);
         m_pConfig->set(ConfigKey(VINYL_PREF_KEY, QString("cueing_ch%1").arg(i + 1)),
-            ConfigValue(static_cast<int>(ControlObject::get(
-                ConfigKey(group, "vinylcontrol_cueing")))));
+                       ConfigValue(static_cast<int>(ControlObject::get(
+                                       ConfigKey(group, "vinylcontrol_cueing")))));
         m_pConfig->set(ConfigKey(VINYL_PREF_KEY, QString("mode_ch%1").arg(i + 1)),
-            ConfigValue(static_cast<int>(ControlObject::get(
-                ConfigKey(group, "vinylcontrol_mode")))));
+                       ConfigValue(static_cast<int>(ControlObject::get(
+                                       ConfigKey(group, "vinylcontrol_mode")))));
     }
 }
 
@@ -62,7 +62,8 @@ void VinylControlManager::slotNumDecksChanged(double dNumDecks) {
 
     // Complain if we try to create more decks than we can handle.
     if (num_decks > kMaxNumberOfDecks) {
-        qWarning() << "Number of decks increased to " << num_decks << ", but Mixxx only supports "
+        qWarning() << "Number of decks increased to " << num_decks <<
+                   ", but Mixxx only supports "
                    << kMaxNumberOfDecks << " vinyl inputs.  Decks above the maximum will not have "
                    << " vinyl control";
         num_decks = kMaxNumberOfDecks;
@@ -75,20 +76,21 @@ void VinylControlManager::slotNumDecksChanged(double dNumDecks) {
 
     for (int i = m_iNumConfiguredDecks; i < num_decks; ++i) {
         QString group = PlayerManager::groupForDeck(i);
-        m_pVcEnabled.push_back(new ControlObjectThread(group, "vinylcontrol_enabled", this));
+        m_pVcEnabled.push_back(new ControlObjectThread(group, "vinylcontrol_enabled",
+                               this));
         m_pVcEnabled.back()->set(0);
 
         // Default cueing should be off.
         ControlObject::set(ConfigKey(group, "vinylcontrol_cueing"),
                            m_pConfig->getValueString(ConfigKey(
-                                   VINYL_PREF_KEY,
-                                   QString("cueing_ch%1").arg(i + 1)), "0").toDouble());
+                                       VINYL_PREF_KEY,
+                                       QString("cueing_ch%1").arg(i + 1)), "0").toDouble());
         // Default mode should be relative.
         const QString kDefaultMode = QString::number(MIXXX_VCMODE_RELATIVE);
         ControlObject::set(ConfigKey(group, "vinylcontrol_mode"),
                            m_pConfig->getValueString(ConfigKey(
-                                   VINYL_PREF_KEY,
-                                   QString("mode_ch%1").arg(i + 1)), kDefaultMode).toDouble());
+                                       VINYL_PREF_KEY,
+                                       QString("mode_ch%1").arg(i + 1)), kDefaultMode).toDouble());
     }
     m_iNumConfiguredDecks = num_decks;
 }
@@ -102,7 +104,8 @@ bool VinylControlManager::vinylInputConnected(int deck) {
         return false;
     }
     if (deck < 0 || deck >= m_pVcEnabled.length()) {
-        qDebug() << "WARNING, tried to get vinyl enabled status for non-existant deck " << deck;
+        qDebug() << "WARNING, tried to get vinyl enabled status for non-existant deck "
+                 << deck;
         return false;
     }
     return m_pProcessor->deckConfigured(deck);
@@ -118,7 +121,8 @@ int VinylControlManager::vinylInputFromGroup(const QString& group) {
     return -1;
 }
 
-void VinylControlManager::addSignalQualityListener(VinylSignalQualityListener* pListener) {
+void VinylControlManager::addSignalQualityListener(VinylSignalQualityListener*
+        pListener) {
     m_listeners.insert(pListener);
     m_pProcessor->setSignalQualityReporting(true);
 
@@ -127,7 +131,8 @@ void VinylControlManager::addSignalQualityListener(VinylSignalQualityListener* p
     }
 }
 
-void VinylControlManager::removeSignalQualityListener(VinylSignalQualityListener* pListener) {
+void VinylControlManager::removeSignalQualityListener(
+    VinylSignalQualityListener* pListener) {
     m_listeners.remove(pListener);
     if (m_listeners.empty()) {
         m_pProcessor->setSignalQualityReporting(false);
@@ -139,7 +144,8 @@ void VinylControlManager::removeSignalQualityListener(VinylSignalQualityListener
 }
 
 void VinylControlManager::updateSignalQualityListeners() {
-    FIFO<VinylSignalQualityReport>* signalQualityFifo = m_pProcessor->getSignalQualityFifo();
+    FIFO<VinylSignalQualityReport>* signalQualityFifo =
+        m_pProcessor->getSignalQualityFifo();
     if (signalQualityFifo == NULL) {
         return;
     }

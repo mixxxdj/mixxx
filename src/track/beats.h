@@ -92,7 +92,8 @@ class Beats {
     // startPosition and endPosition. BeatIterator must be iterated while
     // holding a strong references to the Beats object to ensure that the Beats
     // object is not deleted. Caller takes ownership of the returned BeatIterator;
-    virtual BeatIterator* findBeats(double startSample, double stopSample) const = 0;
+    virtual BeatIterator* findBeats(double startSample,
+                                    double stopSample) const = 0;
 
     // Return whether or not a sample lies between startPosition and endPosition
     virtual bool hasBeatInRange(double startSample, double stopSample) const = 0;

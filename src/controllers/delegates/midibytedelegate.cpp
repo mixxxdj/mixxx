@@ -4,7 +4,7 @@
 #include "widget/hexspinbox.h"
 
 MidiByteDelegate::MidiByteDelegate(QObject* pParent)
-        : QStyledItemDelegate(pParent) {
+    : QStyledItemDelegate(pParent) {
 }
 
 MidiByteDelegate::~MidiByteDelegate() {

@@ -60,10 +60,11 @@ class DlgPrefModplug;
 class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     Q_OBJECT
   public:
-    DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader, SoundManager* soundman,
+    DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader,
+                   SoundManager* soundman,
                    PlayerManager* pPlayerManager, ControllerManager* controllers,
                    VinylControlManager* pVCManager, EffectsManager* pEffectsManager,
-                   ConfigObject<ConfigValue>* pConfig, Library *pLibrary);
+                   ConfigObject<ConfigValue>* pConfig, Library* pLibrary);
     virtual ~DlgPreferences();
 
     void addPageWidget(DlgPreferencePage* pWidget);
@@ -102,7 +103,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     ConfigObject<ConfigValue>* m_pConfig;
     DlgPrefSound* m_wsound;
     DlgPrefLibrary* m_wlibrary;
-    DlgPrefControllers *m_wcontrollers;
+    DlgPrefControllers* m_wcontrollers;
     DlgPrefControls* m_wcontrols;
     DlgPrefWaveform* m_wwaveform;
     DlgPrefAutoDJ* m_wautodj;

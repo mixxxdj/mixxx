@@ -100,8 +100,14 @@ class ConfigValueKbd : public ConfigValue {
 
 template <class ValueType> class ConfigOption {
   public:
-    ConfigOption() { val = NULL; key = NULL;};
-    ConfigOption(ConfigKey* _key, ValueType* _val) { key = _key ; val = _val; };
+    ConfigOption() {
+        val = NULL;
+        key = NULL;
+    };
+    ConfigOption(ConfigKey* _key, ValueType* _val) {
+        key = _key ;
+        val = _val;
+    };
     virtual ~ConfigOption() {
         delete key;
         delete val;
@@ -119,10 +125,10 @@ template <class ValueType> class ConfigObject {
     ConfigObject(QString file);
     ConfigObject(QDomNode node);
     ~ConfigObject();
-    ConfigOption<ValueType> *set(ConfigKey, ValueType);
-    ConfigOption<ValueType> *get(ConfigKey key);
+    ConfigOption<ValueType>* set(ConfigKey, ValueType);
+    ConfigOption<ValueType>* get(ConfigKey key);
     bool exists(ConfigKey key);
-    ConfigKey *get(ValueType v);
+    ConfigKey* get(ValueType v);
     QString getValueString(ConfigKey k);
     QString getValueString(ConfigKey k, const QString& default_string);
     QHash<ConfigKey, ValueType> toHash() const;

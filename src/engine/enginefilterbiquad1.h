@@ -4,10 +4,10 @@
 #include "engine/enginefilteriir.h"
 
 #ifdef _MSC_VER
-    // Visual Studio doesn't have snprintf
-    #define format_fidspec sprintf_s
+// Visual Studio doesn't have snprintf
+#define format_fidspec sprintf_s
 #else
-    #define format_fidspec snprintf
+#define format_fidspec snprintf
 #endif
 
 class EngineFilterBiquad1LowShelving : public EngineFilterIIR<5, IIR_BP> {

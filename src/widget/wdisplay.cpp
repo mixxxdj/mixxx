@@ -25,11 +25,11 @@
 
 #include "widget/wpixmapstore.h"
 
-WDisplay::WDisplay(QWidget * parent)
-        : WWidget(parent),
-          m_iCurrentPixmap(0),
-          m_pPixmapBack(NULL),
-          m_bDisabledLoaded(false) {
+WDisplay::WDisplay(QWidget* parent)
+    : WWidget(parent),
+      m_iCurrentPixmap(0),
+      m_pPixmapBack(NULL),
+      m_bDisabledLoaded(false) {
     setPositions(0);
 }
 
@@ -54,7 +54,7 @@ void WDisplay::setup(QDomNode node, const SkinContext& context) {
     // The implicit default in <1.12.0 was FIXED so we keep it for
     // backwards compatibility.
     Paintable::DrawMode pathMode =
-            context.selectScaleMode(pathNode, Paintable::FIXED);
+        context.selectScaleMode(pathNode, Paintable::FIXED);
     for (int i = 0; i < m_pixmaps.size(); ++i) {
         setPixmap(&m_pixmaps, i, context.getSkinPath(path.arg(i)), pathMode);
     }

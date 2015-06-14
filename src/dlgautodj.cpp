@@ -12,19 +12,20 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
                      AutoDJProcessor* pProcessor,
                      TrackCollection* pTrackCollection,
                      MixxxKeyboard* pKeyboard)
-        : QWidget(parent),
-          Ui::DlgAutoDJ(),
-          m_pAutoDJProcessor(pProcessor),
-          // no sorting
-          m_pTrackTableView(new WTrackTableView(this, pConfig,
-                                                pTrackCollection, false)),
-          m_pAutoDJTableModel(NULL) {
+    : QWidget(parent),
+      Ui::DlgAutoDJ(),
+      m_pAutoDJProcessor(pProcessor),
+      // no sorting
+      m_pTrackTableView(new WTrackTableView(this, pConfig,
+                                            pTrackCollection, false)),
+      m_pAutoDJTableModel(NULL) {
     setupUi(this);
 
     m_pTrackTableView->installEventFilter(pKeyboard);
     connect(m_pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
-    connect(m_pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
+    connect(m_pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString,
+                                      bool)),
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
     connect(m_pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
@@ -79,7 +80,8 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
     spinBoxTransition->setValue(m_pAutoDJProcessor->getTransitionTime());
     connect(m_pAutoDJProcessor, SIGNAL(transitionTimeChanged(int)),
             this, SLOT(transitionTimeChanged(int)));
-    connect(m_pAutoDJProcessor, SIGNAL(autoDJStateChanged(AutoDJProcessor::AutoDJState)),
+    connect(m_pAutoDJProcessor,
+            SIGNAL(autoDJStateChanged(AutoDJProcessor::AutoDJState)),
             this, SLOT(autoDJStateChanged(AutoDJProcessor::AutoDJState)));
     autoDJStateChanged(m_pAutoDJProcessor->getState());
 }
@@ -134,24 +136,24 @@ void DlgAutoDJ::fadeNowButton(bool) {
 void DlgAutoDJ::toggleAutoDJButton(bool enable) {
     AutoDJProcessor::AutoDJError error = m_pAutoDJProcessor->toggleAutoDJ(enable);
     switch (error) {
-        case AutoDJProcessor::ADJ_BOTH_DECKS_PLAYING:
-            QMessageBox::warning(
-                    NULL, tr("Auto-DJ"),
-                    tr("One deck must be stopped to enable Auto-DJ mode."),
-                    QMessageBox::Ok);
-            // Make sure the button becomes unpushed.
-            pushButtonAutoDJ->setChecked(false);
-            break;
-        case AutoDJProcessor::ADJ_DECKS_3_4_PLAYING:
-            QMessageBox::warning(
-                    NULL, tr("Auto-DJ"),
-                    tr("Decks 3 and 4 must be stopped to enable Auto-DJ mode."),
-                    QMessageBox::Ok);
-            pushButtonAutoDJ->setChecked(false);
-            break;
-        case AutoDJProcessor::ADJ_OK:
-        default:
-            break;
+    case AutoDJProcessor::ADJ_BOTH_DECKS_PLAYING:
+        QMessageBox::warning(
+            NULL, tr("Auto-DJ"),
+            tr("One deck must be stopped to enable Auto-DJ mode."),
+            QMessageBox::Ok);
+        // Make sure the button becomes unpushed.
+        pushButtonAutoDJ->setChecked(false);
+        break;
+    case AutoDJProcessor::ADJ_DECKS_3_4_PLAYING:
+        QMessageBox::warning(
+            NULL, tr("Auto-DJ"),
+            tr("Decks 3 and 4 must be stopped to enable Auto-DJ mode."),
+            QMessageBox::Ok);
+        pushButtonAutoDJ->setChecked(false);
+        break;
+    case AutoDJProcessor::ADJ_OK:
+    default:
+        break;
     }
 }
 

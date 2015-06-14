@@ -26,7 +26,7 @@
 #include "util/assert.h"
 
 EngineSync::EngineSync(ConfigObject<ConfigValue>* pConfig)
-        : BaseSyncableListener(pConfig) {
+    : BaseSyncableListener(pConfig) {
 }
 
 EngineSync::~EngineSync() {
@@ -224,7 +224,8 @@ void EngineSync::notifyTrackLoaded(Syncable* pSyncable, double suggested_bpm) {
         if (pOtherSyncable == pSyncable) {
             continue;
         }
-        if (pOtherSyncable->getSyncMode() != SYNC_NONE && pOtherSyncable->getBpm() != 0) {
+        if (pOtherSyncable->getSyncMode() != SYNC_NONE &&
+                pOtherSyncable->getBpm() != 0) {
             sync_deck_exists = true;
             break;
         }
@@ -243,7 +244,8 @@ void EngineSync::notifyScratching(Syncable* pSyncable, bool scratching) {
     Q_UNUSED(scratching);
 }
 
-void EngineSync::notifyBpmChanged(Syncable* pSyncable, double bpm, bool fileChanged) {
+void EngineSync::notifyBpmChanged(Syncable* pSyncable, double bpm,
+                                  bool fileChanged) {
     //qDebug() << "EngineSync::notifyBpmChanged" << pSyncable->getGroup() << bpm
     //         << fileChanged;
 
@@ -273,7 +275,8 @@ void EngineSync::notifyBpmChanged(Syncable* pSyncable, double bpm, bool fileChan
     setMasterBpm(pSyncable, bpm);
 }
 
-void EngineSync::notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) {
+void EngineSync::notifyInstantaneousBpmChanged(Syncable* pSyncable,
+        double bpm) {
     //qDebug() << "EngineSync::notifyInstantaneousBpmChanged" << pSyncable->getGroup() << bpm;
     if (pSyncable->getSyncMode() != SYNC_MASTER) {
         return;
@@ -284,7 +287,8 @@ void EngineSync::notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) 
     setMasterInstantaneousBpm(pSyncable, bpm);
 }
 
-void EngineSync::notifyBeatDistanceChanged(Syncable* pSyncable, double beat_distance) {
+void EngineSync::notifyBeatDistanceChanged(Syncable* pSyncable,
+        double beat_distance) {
     //qDebug() << "EngineSync::notifyBeatDistanceChanged" << pSyncable->getGroup() << beat_distance;
     if (pSyncable->getSyncMode() != SYNC_MASTER) {
         return;
@@ -295,7 +299,8 @@ void EngineSync::notifyBeatDistanceChanged(Syncable* pSyncable, double beat_dist
 
 void EngineSync::activateFollower(Syncable* pSyncable) {
     if (pSyncable == NULL) {
-        qWarning() << "WARNING: Logic Error: Called activateFollower on a NULL Syncable.";
+        qWarning() <<
+                   "WARNING: Logic Error: Called activateFollower on a NULL Syncable.";
         return;
     }
 
@@ -313,7 +318,8 @@ void EngineSync::activateMaster(Syncable* pSyncable) {
     if (m_pMasterSyncable == pSyncable) {
         // Sanity check.
         if (m_pMasterSyncable->getSyncMode() != SYNC_MASTER) {
-            qWarning() << "WARNING: Logic Error: m_pMasterSyncable is a syncable that does not think it is master.";
+            qWarning() <<
+                       "WARNING: Logic Error: m_pMasterSyncable is a syncable that does not think it is master.";
         }
         return;
     }
@@ -359,7 +365,8 @@ void EngineSync::deactivateSync(Syncable* pSyncable) {
     }
 }
 
-EngineChannel* EngineSync::pickNonSyncSyncTarget(EngineChannel* pDontPick) const {
+EngineChannel* EngineSync::pickNonSyncSyncTarget(EngineChannel* pDontPick)
+const {
     EngineChannel* pFirstNonplayingDeck = NULL;
     foreach (Syncable* pSyncable, m_syncables) {
         EngineChannel* pChannel = pSyncable->getChannel();

@@ -19,7 +19,7 @@ class TrackModel;
 // Thanks to StackOverflow http://stackoverflow.com/questions/1163030/qt-qtableview-and-horizontalheader-restorestate
 // answer with this code snippet: http://codepad.org/2gPIMPYU
 class HeaderViewState {
-public:
+  public:
     HeaderViewState() {}
 
     // Populate the object based on the provided live view.
@@ -27,7 +27,7 @@ public:
 
     // Populate from an existing protobuf, mostly for testing.
     explicit HeaderViewState(const mixxx::library::HeaderViewState& pb)
-            : m_view_state(pb) { }
+        : m_view_state(pb) { }
 
     // Populate the object with the serialized protobuf data provided.
     HeaderViewState(const QString& serialized);
@@ -51,7 +51,7 @@ public:
         return false;
     }
 
-private:
+  private:
     mixxx::library::HeaderViewState m_view_state;
 };
 
@@ -68,7 +68,7 @@ class WTrackTableViewHeader : public QHeaderView {
     void saveHeaderState();
     void restoreHeaderState();
     void loadDefaultHeaderState();
-     /** returns false if the header state is stored in the database (on first time usgae) **/
+    /** returns false if the header state is stored in the database (on first time usgae) **/
     bool hasPersistedHeaderState();
 
   private slots:

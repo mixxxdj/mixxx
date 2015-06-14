@@ -11,7 +11,7 @@
 #include <QLinearGradient>
 
 QtWaveformRendererFilteredSignal::QtWaveformRendererFilteredSignal(
-        WaveformWidgetRenderer* waveformWidgetRenderer)
+    WaveformWidgetRenderer* waveformWidgetRenderer)
     : WaveformRendererSignalBase(waveformWidgetRenderer) {
 }
 
@@ -63,19 +63,22 @@ void QtWaveformRendererFilteredSignal::onSetup(const QDomNode& /*node*/) {
     mid.setAlphaF(0.3);
     high.setAlphaF(0.3);
 
-    QLinearGradient gradientKilledLow(QPointF(0.0,-255.0/2.0),QPointF(0.0,255.0/2.0));
+    QLinearGradient gradientKilledLow(QPointF(0.0,-255.0/2.0),QPointF(0.0,
+                                      255.0/2.0));
     gradientKilledLow.setColorAt(0.0,low.darker(80));
     gradientKilledLow.setColorAt(0.5,lowCenter.darker(150));
     gradientKilledLow.setColorAt(1.0,low.darker(80));
     m_lowKilledBrush = QBrush(gradientKilledLow);
 
-    QLinearGradient gradientKilledMid(QPointF(0.0,-255.0/2.0),QPointF(0.0,255.0/2.0));
+    QLinearGradient gradientKilledMid(QPointF(0.0,-255.0/2.0),QPointF(0.0,
+                                      255.0/2.0));
     gradientKilledMid.setColorAt(0.0,mid.darker(80));
     gradientKilledMid.setColorAt(0.5,midCenter.darker(150));
     gradientKilledMid.setColorAt(1.0,mid.darker(80));
     m_midKilledBrush = QBrush(gradientKilledMid);
 
-    QLinearGradient gradientKilledHigh(QPointF(0.0,-255.0/2.0),QPointF(0.0,255.0/2.0));
+    QLinearGradient gradientKilledHigh(QPointF(0.0,-255.0/2.0),QPointF(0.0,
+                                       255.0/2.0));
     gradientKilledHigh.setColorAt(0.0,high.darker(80));
     gradientKilledHigh.setColorAt(0.5,highCenter.darker(150));
     gradientKilledHigh.setColorAt(1.0,high.darker(80));
@@ -116,8 +119,10 @@ int QtWaveformRendererFilteredSignal::buildPolygon() {
         return 0;
     }
 
-    const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
-    const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
+    const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition()
+                                    * dataSize;
+    const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() *
+                                   dataSize;
 
     m_polygon[0].clear();
     m_polygon[1].clear();
@@ -136,7 +141,7 @@ int QtWaveformRendererFilteredSignal::buildPolygon() {
 
     // Represents the # of waveform data points per horizontal pixel.
     const double gain = (lastVisualIndex - firstVisualIndex) /
-            (double)m_waveformRenderer->getWidth();
+                        (double)m_waveformRenderer->getWidth();
 
     float lowGain(1.0), midGain(1.0), highGain(1.0);
     getGains(NULL, &lowGain, &midGain, &highGain);
@@ -243,7 +248,7 @@ int QtWaveformRendererFilteredSignal::buildPolygon() {
             unsigned char maxHigh = 0;
 
             for (int i = visualIndexStart; i >= 0 && i < dataSize && i <= visualIndexStop;
-                 i += channelSeparation) {
+                    i += channelSeparation) {
                 const WaveformData& waveformData = *(data + i);
                 unsigned char low = waveformData.filtered.low;
                 unsigned char mid = waveformData.filtered.mid;
@@ -270,7 +275,8 @@ int QtWaveformRendererFilteredSignal::buildPolygon() {
     return m_polygon[0].size();
 }
 
-void QtWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*event*/) {
+void QtWaveformRendererFilteredSignal::draw(QPainter* painter,
+        QPaintEvent* /*event*/) {
     const TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
     if (!pTrack)
         return;

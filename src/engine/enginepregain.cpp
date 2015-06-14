@@ -33,19 +33,24 @@ ControlObject* EnginePregain::s_pEnableReplayGain = NULL;
    A pregaincontrol is ... a pregain.
    ----------------------------------------------------------------*/
 EnginePregain::EnginePregain(QString group)
-        : m_dSpeed(0),
-          m_fPrevGain(1.0),
-          m_bSmoothFade(false) {
-    m_pPotmeterPregain = new ControlAudioTaperPot(ConfigKey(group, "pregain"), -12, 12, 0.5);
+    : m_dSpeed(0),
+      m_fPrevGain(1.0),
+      m_bSmoothFade(false) {
+    m_pPotmeterPregain = new ControlAudioTaperPot(ConfigKey(group, "pregain"), -12,
+            12, 0.5);
     //Replay Gain things
     m_pCOReplayGain = new ControlObject(ConfigKey(group, "replaygain"));
     m_pTotalGain = new ControlObject(ConfigKey(group, "total_gain"));
-    m_pPassthroughEnabled = ControlObject::getControl(ConfigKey(group, "passthrough"));
+    m_pPassthroughEnabled = ControlObject::getControl(ConfigKey(group,
+                            "passthrough"));
 
     if (s_pReplayGainBoost == NULL) {
-        s_pReplayGainBoost = new ControlAudioTaperPot(ConfigKey("[ReplayGain]", "ReplayGainBoost"), -12, 12, 0.5);
-        s_pDefaultBoost = new ControlAudioTaperPot(ConfigKey("[ReplayGain]", "DefaultBoost"), -12, 12, 0.5);
-        s_pEnableReplayGain = new ControlObject(ConfigKey("[ReplayGain]", "ReplayGainEnabled"));
+        s_pReplayGainBoost = new ControlAudioTaperPot(ConfigKey("[ReplayGain]",
+                "ReplayGainBoost"), -12, 12, 0.5);
+        s_pDefaultBoost = new ControlAudioTaperPot(ConfigKey("[ReplayGain]",
+                "DefaultBoost"), -12, 12, 0.5);
+        s_pEnableReplayGain = new ControlObject(ConfigKey("[ReplayGain]",
+                                                "ReplayGainEnabled"));
     }
 }
 
@@ -91,7 +96,7 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
         // So we need to alter gain each time ::process is called.
 
         const float fullReplayGainBoost = fReplayGain *
-                (float)s_pReplayGainBoost->get();
+                                          (float)s_pReplayGainBoost->get();
 
         // This means that a ReplayGain value has been calculated after the
         // track has been loaded
@@ -103,7 +108,7 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
                 // Fade smoothly
                 double fadeFrac = seconds / kFadeSeconds;
                 fReplayGainCorrection = m_fPrevGain * (1.0 - fadeFrac) +
-                        fadeFrac * fullReplayGainBoost;
+                                        fadeFrac * fullReplayGainBoost;
             } else {
                 m_bSmoothFade = false;
                 fReplayGainCorrection = fullReplayGainBoost;
@@ -118,7 +123,7 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
     // (some corrupt files get really high replay gain values).
     // 10 allows a maximum replay Gain Boost * calculated replay gain of ~2
     float totalGain = (float)m_pPotmeterPregain->get() *
-            math_clamp(fReplayGainCorrection, 0.0f, 10.0f);
+                      math_clamp(fReplayGainCorrection, 0.0f, 10.0f);
 
     m_pTotalGain->set(totalGain);
 
@@ -126,7 +131,8 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
     // As the speed approaches zero, hearing small bursts of sound at full volume
     // is distracting and doesn't mimic the way that vinyl sounds when played slowly.
     // Instead, reduce gain to provide a soft rolloff.
-    const float kThresholdSpeed = 0.070; // Scale volume if playback speed is below 7%.
+    const float kThresholdSpeed =
+        0.070; // Scale volume if playback speed is below 7%.
     if (fabs(m_dSpeed) < kThresholdSpeed) {
         totalGain *= fabs(m_dSpeed) / kThresholdSpeed;
     }

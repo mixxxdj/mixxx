@@ -31,23 +31,23 @@ class ControlObject;
 class MixxxKeyboard : public QObject {
     Q_OBJECT
   public:
-    MixxxKeyboard(ConfigObject<ConfigValueKbd> *pKbdConfigObject,
-                  QObject *parent=NULL, const char* name=NULL);
+    MixxxKeyboard(ConfigObject<ConfigValueKbd>* pKbdConfigObject,
+                  QObject* parent=NULL, const char* name=NULL);
     virtual ~MixxxKeyboard();
 
-    bool eventFilter(QObject *obj, QEvent *e);
+    bool eventFilter(QObject* obj, QEvent* e);
 
     // Set the keyboard config object. MixxxKeyboard does NOT take ownership of
     // pKbdConfigObject.
-    void setKeyboardConfig(ConfigObject<ConfigValueKbd> *pKbdConfigObject);
+    void setKeyboardConfig(ConfigObject<ConfigValueKbd>* pKbdConfigObject);
     ConfigObject<ConfigValueKbd>* getKeyboardConfig();
 
   private:
     struct KeyDownInformation {
         KeyDownInformation(int keyId, int modifiers, ControlObject* pControl)
-                : keyId(keyId),
-                  modifiers(modifiers),
-                  pControl(pControl) {
+            : keyId(keyId),
+              modifiers(modifiers),
+              pControl(pControl) {
         }
 
         int keyId;
@@ -56,11 +56,11 @@ class MixxxKeyboard : public QObject {
     };
 
     // Returns a valid QString with modifier keys from a QKeyEvent
-    QKeySequence getKeySeq(QKeyEvent *e);
+    QKeySequence getKeySeq(QKeyEvent* e);
     // List containing keys which is currently pressed
     QList<KeyDownInformation> m_qActiveKeyList;
     // Pointer to keyboard config object
-    ConfigObject<ConfigValueKbd> *m_pKbdConfigObject;
+    ConfigObject<ConfigValueKbd>* m_pKbdConfigObject;
     // Multi-hash of key sequence to
     QMultiHash<QKeySequence, ConfigKey> m_keySequenceToControlHash;
 };

@@ -50,7 +50,7 @@ TEST_F(CoverArtCacheTest, loadCover) {
     EXPECT_QSTRING_EQ(info.hash, res.cover.info.hash);
 
     SecurityTokenPointer securityToken = Sandbox::openSecurityToken(
-        QDir(kTrackLocationTest), true);
+            QDir(kTrackLocationTest), true);
     img = CoverArtUtils::extractEmbeddedCover(kTrackLocationTest, securityToken);
 
     EXPECT_EQ(img, res.cover.image);

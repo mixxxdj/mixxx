@@ -44,7 +44,8 @@ typedef struct shout shout_t;
 struct _util_dict;
 typedef struct _util_dict shout_metadata_t;
 
-class EngineShoutcast : public QObject, public EncoderCallback, public SideChainWorker {
+class EngineShoutcast : public QObject, public EncoderCallback,
+    public SideChainWorker {
     Q_OBJECT
   public:
     EngineShoutcast(ConfigObject<ConfigValue>* _config);
@@ -60,7 +61,7 @@ class EngineShoutcast : public QObject, public EncoderCallback, public SideChain
 
     // Called by the encoder in method 'encodebuffer()' to flush the stream to
     // the server.
-    void write(unsigned char *header, unsigned char *body,
+    void write(unsigned char* header, unsigned char* body,
                int headerLen, int bodyLen);
     /** connects to server **/
     bool serverConnect();
@@ -90,13 +91,13 @@ class EngineShoutcast : public QObject, public EncoderCallback, public SideChain
     QByteArray encodeString(const QString& string);
     QTextCodec* m_pTextCodec;
     TrackPointer m_pMetaData;
-    shout_t *m_pShout;
-    shout_metadata_t *m_pShoutMetaData;
+    shout_t* m_pShout;
+    shout_metadata_t* m_pShoutMetaData;
     int m_iMetaDataLife;
     long m_iShoutStatus;
     long m_iShoutFailures;
     ConfigObject<ConfigValue>* m_pConfig;
-    Encoder *m_encoder;
+    Encoder* m_encoder;
     ControlObject* m_pShoutcastNeedUpdateFromPrefs;
     ControlObjectSlave* m_pUpdateShoutcastFromPrefs;
     ControlObjectSlave* m_pMasterSamplerate;

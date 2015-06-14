@@ -21,17 +21,18 @@ This is essentially just a C++ version of xwax's pitch.h,
 class AlphaBetaFilter {
   public:
     AlphaBetaFilter()
-            : m_initialized(false),
-              m_dt(0.0),
-              m_x(0.0),
-              m_v(0.0),
-              m_alpha(0.0),
-              m_beta(0.0) {
+        : m_initialized(false),
+          m_dt(0.0),
+          m_x(0.0),
+          m_v(0.0),
+          m_alpha(0.0),
+          m_beta(0.0) {
     }
 
     // Prepare the filter for observations every dt seconds. Default filter
     // values were concluded experimentally for time code vinyl.
-    void init(double dt, double v, double alpha = 1.0/512, double beta = (1.0/512)/1024) {
+    void init(double dt, double v, double alpha = 1.0/512,
+              double beta = (1.0/512)/1024) {
         m_initialized = true;
         m_dt = dt;
         m_x = 0.0;

@@ -43,7 +43,7 @@ class WLabel : public QLabel, public WBaseWidget {
     // Foreground and background colors.
     QColor m_qFgColor;
     QColor m_qBgColor;
-  private: 
+  private:
     QString m_longText;
     Qt::TextElideMode m_elideMode;
 };

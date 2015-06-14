@@ -38,8 +38,7 @@ static int threadCpuTimeAvailable = false;
 #define load_acquire(x) ((volatile const int&)(x))
 #define store_release(x,v) ((volatile int&)(x) = (v))
 
-static void unixCheckClockType()
-{
+static void unixCheckClockType() {
 #if (_POSIX_THREAD_CPUTIME-0 == 0)
     if (is_likely(load_acquire(threadCpuTimeChecked)))
         return;
@@ -54,8 +53,7 @@ static void unixCheckClockType()
 #endif
 }
 
-static inline void do_gettime(qint64 *sec, qint64 *frac)
-{
+static inline void do_gettime(qint64* sec, qint64* frac) {
 #if (_POSIX_MONOTONIC_CLOCK-0 >= 0)
     unixCheckClockType();
     if (is_likely(threadCpuTimeAvailable)) {
@@ -74,13 +72,11 @@ static inline void do_gettime(qint64 *sec, qint64 *frac)
     *frac = 0;
 }
 
-void ThreadCpuTimer::start()
-{
+void ThreadCpuTimer::start() {
     do_gettime(&t1, &t2);
 }
 
-qint64 ThreadCpuTimer::elapsed() const
-{
+qint64 ThreadCpuTimer::elapsed() const {
     qint64 sec, frac;
     do_gettime(&sec, &frac);
     sec = sec - t1;
@@ -89,8 +85,7 @@ qint64 ThreadCpuTimer::elapsed() const
     return sec * Q_INT64_C(1000000000) + frac;
 }
 
-qint64 ThreadCpuTimer::restart()
-{
+qint64 ThreadCpuTimer::restart() {
     qint64 sec, frac;
     sec = t1;
     frac = t2;
@@ -104,17 +99,14 @@ qint64 ThreadCpuTimer::restart()
 #else
 
 // default implementation (no hi-perf timer) does nothing
-void ThreadCpuTimer::start()
-{
+void ThreadCpuTimer::start() {
 }
 
-qint64 ThreadCpuTimer::elapsed() const
-{
+qint64 ThreadCpuTimer::elapsed() const {
     return 0;
 }
 
-qint64 ThreadCpuTimer::restart()
-{
+qint64 ThreadCpuTimer::restart() {
     return 0;
 }
 

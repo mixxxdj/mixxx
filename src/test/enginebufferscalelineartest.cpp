@@ -22,11 +22,11 @@ namespace {
 class ReadAheadManagerMock : public ReadAheadManager {
   public:
     ReadAheadManagerMock()
-            : ReadAheadManager(),
-              m_pBuffer(NULL),
-              m_iBufferSize(0),
-              m_iReadPosition(0),
-              m_iSamplesRead(0) {
+        : ReadAheadManager(),
+          m_pBuffer(NULL),
+          m_iBufferSize(0),
+          m_iReadPosition(0),
+          m_iSamplesRead(0) {
     }
 
     int getNextSamplesFake(double dRate, CSAMPLE* buffer, int requested_samples) {
@@ -52,7 +52,8 @@ class ReadAheadManagerMock : public ReadAheadManager {
         return m_iSamplesRead;
     }
 
-    MOCK_METHOD3(getNextSamples, int(double dRate, CSAMPLE* buffer, int requested_samples));
+    MOCK_METHOD3(getNextSamples, int(double dRate, CSAMPLE* buffer,
+                                     int requested_samples));
 
     CSAMPLE* m_pBuffer;
     int m_iBufferSize;
@@ -77,7 +78,7 @@ class EngineBufferScaleLinearTest : public MixxxTest {
         double pitchRatio = rate;
         m_pScaler->setSampleRate(44100);
         m_pScaler->setScaleParameters(
-                1.0, &tempoRatio, &pitchRatio);
+            1.0, &tempoRatio, &pitchRatio);
     }
 
     void SetRateNoLerp(double rate) {
@@ -94,7 +95,8 @@ class EngineBufferScaleLinearTest : public MixxxTest {
         SampleUtil::fill(pBuffer, value, length);
     }
 
-    void AssertWholeBufferEquals(const CSAMPLE* pBuffer, CSAMPLE value, int iBufferLen) {
+    void AssertWholeBufferEquals(const CSAMPLE* pBuffer, CSAMPLE value,
+                                 int iBufferLen) {
         for (int i = 0; i < iBufferLen; ++i) {
             EXPECT_FLOAT_EQ(value, pBuffer[i]);
         }
@@ -110,8 +112,8 @@ class EngineBufferScaleLinearTest : public MixxxTest {
     }
 
     void AssertBufferMonotonicallyProgresses(const CSAMPLE* pBuffer,
-                                             CSAMPLE start, CSAMPLE finish,
-                                             int iBufferLen) {
+            CSAMPLE start, CSAMPLE finish,
+            int iBufferLen) {
         CSAMPLE currentLimit = start;
         bool increasing = (finish - start) > 0;
 
@@ -139,7 +141,8 @@ TEST_F(EngineBufferScaleLinearTest, ScaleConstant) {
 
     // Tell the RAMAN mock to invoke getNextSamplesFake
     EXPECT_CALL(*m_pReadAheadMock, getNextSamples(_, _, _))
-            .WillRepeatedly(Invoke(m_pReadAheadMock, &ReadAheadManagerMock::getNextSamplesFake));
+    .WillRepeatedly(Invoke(m_pReadAheadMock,
+                           &ReadAheadManagerMock::getNextSamplesFake));
 
     CSAMPLE* pOutput = m_pScaler->getScaled(kiLinearScaleReadAheadLength);
     // TODO(rryan) the LERP w/ the previous buffer causes samples 0 and 1 to be
@@ -156,7 +159,8 @@ TEST_F(EngineBufferScaleLinearTest, UnityRateIsSamplePerfect) {
 
     // Tell the RAMAN mock to invoke getNextSamplesFake
     EXPECT_CALL(*m_pReadAheadMock, getNextSamples(_, _, _))
-            .WillRepeatedly(Invoke(m_pReadAheadMock, &ReadAheadManagerMock::getNextSamplesFake));
+    .WillRepeatedly(Invoke(m_pReadAheadMock,
+                           &ReadAheadManagerMock::getNextSamplesFake));
 
     QVector<CSAMPLE> readBuffer;
     for (int i = 0; i < 1000; ++i) {
@@ -188,7 +192,8 @@ TEST_F(EngineBufferScaleLinearTest, TestRateLERPMonotonicallyProgresses) {
 
     // Tell the RAMAN mock to invoke getNextSamplesFake
     EXPECT_CALL(*m_pReadAheadMock, getNextSamples(_, _, _))
-            .WillRepeatedly(Invoke(m_pReadAheadMock, &ReadAheadManagerMock::getNextSamplesFake));
+    .WillRepeatedly(Invoke(m_pReadAheadMock,
+                           &ReadAheadManagerMock::getNextSamplesFake));
 
     CSAMPLE* pOutput = m_pScaler->getScaled(bufferSize);
 
@@ -206,17 +211,20 @@ TEST_F(EngineBufferScaleLinearTest, TestDoubleSpeedSmoothlyHalvesSamples) {
     CSAMPLE readBuffer[] = { 1.0, 1.0,
                              0.0, 0.0,
                              -1.0, -1.0,
-                             0.0, 0.0 };
+                             0.0, 0.0
+                           };
     m_pReadAheadMock->setReadBuffer(readBuffer, 8);
 
     // Tell the RAMAN mock to invoke getNextSamplesFake
     EXPECT_CALL(*m_pReadAheadMock, getNextSamples(_, _, _))
-            .WillRepeatedly(Invoke(m_pReadAheadMock, &ReadAheadManagerMock::getNextSamplesFake));
+    .WillRepeatedly(Invoke(m_pReadAheadMock,
+                           &ReadAheadManagerMock::getNextSamplesFake));
 
     CSAMPLE* pOutput = m_pScaler->getScaled(bufferSize);
 
     CSAMPLE expectedResult[] = { 1.0, 1.0,
-                                 -1.0, -1.0 };
+                                 -1.0, -1.0
+                               };
     AssertBufferCycles(pOutput, bufferSize, expectedResult, 4);
 
     // Check that the total samples read from the RAMAN is double the samples
@@ -233,19 +241,22 @@ TEST_F(EngineBufferScaleLinearTest, TestHalfSpeedSmoothlyDoublesSamples) {
     // a fraction of either channel were mixed into either, then we would see a
     // big shift in our desired values.
     CSAMPLE readBuffer[] = { -101.0, 101.0,
-                             -99.0, 99.0 };
+                             -99.0, 99.0
+                           };
     m_pReadAheadMock->setReadBuffer(readBuffer, 4);
 
     // Tell the RAMAN mock to invoke getNextSamplesFake
     EXPECT_CALL(*m_pReadAheadMock, getNextSamples(_, _, _))
-            .WillRepeatedly(Invoke(m_pReadAheadMock, &ReadAheadManagerMock::getNextSamplesFake));
+    .WillRepeatedly(Invoke(m_pReadAheadMock,
+                           &ReadAheadManagerMock::getNextSamplesFake));
 
     CSAMPLE* pOutput = m_pScaler->getScaled(bufferSize);
 
     CSAMPLE expectedResult[] = { -101.0, 101.0,
                                  -100.0, 100.0,
                                  -99.0, 99.0,
-                                 -100.0, 100.0 };
+                                 -100.0, 100.0
+                               };
     AssertBufferCycles(pOutput, bufferSize, expectedResult, 8);
 
     // Check that the total samples read from the RAMAN is half the samples we
@@ -263,17 +274,20 @@ TEST_F(EngineBufferScaleLinearTest, TestRepeatedScaleCalls) {
     // a fraction of either channel were mixed into either, then we would see a
     // big shift in our desired values.
     CSAMPLE readBuffer[] = { -101.0, 101.0,
-                             -99.0, 99.0 };
+                             -99.0, 99.0
+                           };
     m_pReadAheadMock->setReadBuffer(readBuffer, 4);
 
     // Tell the RAMAN mock to invoke getNextSamplesFake
     EXPECT_CALL(*m_pReadAheadMock, getNextSamples(_, _, _))
-            .WillRepeatedly(Invoke(m_pReadAheadMock, &ReadAheadManagerMock::getNextSamplesFake));
+    .WillRepeatedly(Invoke(m_pReadAheadMock,
+                           &ReadAheadManagerMock::getNextSamplesFake));
 
     CSAMPLE expectedResult[] = { -101.0, 101.0,
                                  -100.0, 100.0,
                                  -99.0, 99.0,
-                                 -100.0, 100.0 };
+                                 -100.0, 100.0
+                               };
 
     int samplesRemaining = bufferSize;
     while (samplesRemaining > 0) {

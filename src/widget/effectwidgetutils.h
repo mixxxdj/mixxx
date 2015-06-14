@@ -9,9 +9,9 @@
 class EffectWidgetUtils {
   public:
     static EffectRackPointer getEffectRackFromNode(
-            const QDomNode& node,
-            const SkinContext& context,
-            EffectsManager* pEffectsManager) {
+        const QDomNode& node,
+        const SkinContext& context,
+        EffectsManager* pEffectsManager) {
         if (pEffectsManager == NULL) {
             return EffectRackPointer();
         }
@@ -35,9 +35,9 @@ class EffectWidgetUtils {
     }
 
     static EffectChainSlotPointer getEffectChainSlotFromNode(
-            const QDomNode& node,
-            const SkinContext& context,
-            EffectRackPointer pRack) {
+        const QDomNode& node,
+        const SkinContext& context,
+        EffectRackPointer pRack) {
         if (pRack.isNull()) {
             return EffectChainSlotPointer();
         }
@@ -65,9 +65,9 @@ class EffectWidgetUtils {
     }
 
     static EffectSlotPointer getEffectSlotFromNode(
-            const QDomNode& node,
-            const SkinContext& context,
-            EffectChainSlotPointer pChainSlot) {
+        const QDomNode& node,
+        const SkinContext& context,
+        EffectChainSlotPointer pChainSlot) {
         if (pChainSlot.isNull()) {
             return EffectSlotPointer();
         }
@@ -82,9 +82,9 @@ class EffectWidgetUtils {
     }
 
     static EffectParameterSlotBasePointer getParameterSlotFromNode(
-            const QDomNode& node,
-            const SkinContext& context,
-            EffectSlotPointer pEffectSlot) {
+        const QDomNode& node,
+        const SkinContext& context,
+        EffectSlotPointer pEffectSlot) {
         if (pEffectSlot.isNull()) {
             return EffectParameterSlotBasePointer();
         }
@@ -99,9 +99,9 @@ class EffectWidgetUtils {
     }
 
     static EffectParameterSlotBasePointer getButtonParameterSlotFromNode(
-            const QDomNode& node,
-            const SkinContext& context,
-            EffectSlotPointer pEffectSlot) {
+        const QDomNode& node,
+        const SkinContext& context,
+        EffectSlotPointer pEffectSlot) {
         if (pEffectSlot.isNull()) {
             return EffectParameterSlotBasePointer();
         }

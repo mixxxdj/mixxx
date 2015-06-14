@@ -24,7 +24,7 @@ class MixxxKeyboard;
 
 // pure virtual (abstract) class to provide an interface for libraryfeatures
 class LibraryFeature : public QObject {
-  Q_OBJECT
+    Q_OBJECT
   public:
     LibraryFeature(QObject* parent = NULL);
     virtual ~LibraryFeature();
@@ -90,7 +90,7 @@ class LibraryFeature : public QObject {
     // The second arg indicates if the feature should be "selected" when loading starts
     void featureIsLoading(LibraryFeature*, bool selectFeature);
     // emit this signal if the foreign music collection has been imported/parsed.
-    void featureLoadingFinished(LibraryFeature*s);
+    void featureLoadingFinished(LibraryFeature* s);
     // emit this signal to select pFeature
     void featureSelect(LibraryFeature* pFeature, const QModelIndex& index);
     // emit this signal to enable/disable the cover art widget

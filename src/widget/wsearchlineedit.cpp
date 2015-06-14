@@ -8,8 +8,8 @@
 #include <QShortcut>
 
 WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
-        : QLineEdit(pParent),
-          WBaseWidget(this) {
+    : QLineEdit(pParent),
+      WBaseWidget(this) {
     setAcceptDrops(false);
     m_clearButton = new QToolButton(this);
     QPixmap pixmap(":/skins/cross.png");
@@ -22,7 +22,7 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     m_place = true;
     showPlaceholder();
 
-    QShortcut *setFocusShortcut = new QShortcut(
+    QShortcut* setFocusShortcut = new QShortcut(
         QKeySequence(tr("Ctrl+F", "Search|Focus")), this);
     connect(setFocusShortcut, SIGNAL(activated()),
             this, SLOT(setFocus()));
@@ -128,7 +128,7 @@ void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
 
 // slot
 void WSearchLineEdit::restoreSearch(const QString& text) {
-    if(text.isNull()) {
+    if (text.isNull()) {
         // disable
         setEnabled(false);
         blockSignals(true);
@@ -153,16 +153,14 @@ void WSearchLineEdit::restoreSearch(const QString& text) {
     updateCloseButton(text);
 }
 
-void WSearchLineEdit::slotSetupTimer(const QString& text)
-{
+void WSearchLineEdit::slotSetupTimer(const QString& text) {
     Q_UNUSED(text);
     m_searchTimer.stop();
     //300 milliseconds timeout
     m_searchTimer.start(300);
 }
 
-void WSearchLineEdit::triggerSearch()
-{
+void WSearchLineEdit::triggerSearch() {
     m_searchTimer.stop();
     emit(search(text()));
 }
@@ -178,8 +176,7 @@ void WSearchLineEdit::showPlaceholder() {
     setPalette(pal);
 }
 
-void WSearchLineEdit::updateCloseButton(const QString& text)
-{
+void WSearchLineEdit::updateCloseButton(const QString& text) {
     m_clearButton->setVisible(!text.isEmpty() && !m_place);
 }
 

@@ -51,7 +51,7 @@ class ControlRingValue {
             return true;
         }
         return false;
-   }
+    }
 
   private:
     T m_value;
@@ -69,7 +69,8 @@ class ControlValueAtomicBase {
   public:
     inline T getValue() const {
         T value = T();
-        unsigned int index = static_cast<unsigned int>(load_atomic(m_readIndex)) % (cRingSize);
+        unsigned int index = static_cast<unsigned int>(load_atomic(m_readIndex)) %
+                             (cRingSize);
         while (m_ring[index].tryGet(&value) == false) {
             // We are here if
             // 1) there are more then cReaderSlotCnt reader (get) reading the same value or
@@ -105,7 +106,8 @@ class ControlValueAtomicBase {
           m_writeIndex(1) {
         // NOTE(rryan): Wrapping max with parentheses avoids conflict with the
         // max macro defined in windows.h.
-        DEBUG_ASSERT(((std::numeric_limits<unsigned int>::max)() % cRingSize) == (cRingSize - 1));
+        DEBUG_ASSERT(((std::numeric_limits<unsigned int>::max)() % cRingSize) ==
+                     (cRingSize - 1));
     }
 
   private:
@@ -132,7 +134,7 @@ class ControlValueAtomicBase<T, true> {
 
   protected:
     ControlValueAtomicBase()
-            : m_value(T()) {
+        : m_value(T()) {
     }
 
   private:

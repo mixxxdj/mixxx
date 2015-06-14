@@ -30,19 +30,19 @@ QList<Controller*> Hss1394Enumerator::queryDevices() {
     hss1394::uint uNodes = Node::Instance()->GetNodeCount();
     qDebug() << "   Nodes detected:" << uNodes;
 
-    for(hss1394::uint i=0; i<40; i++) {
+    for (hss1394::uint i=0; i<40; i++) {
         TNodeInfo tNodeInfo;
         bool bInstalled;
         if (Node::Instance()->GetNodeInfo(tNodeInfo, i, NULL, &bInstalled)) {
             QString message = QString("Node %1 (%2): Name = <%3>, GUID = %4 %5, FW[%6]")
-                    .arg(QString::number(i),
-                         (bInstalled)?"installed":"not installed",
-                         tNodeInfo.sName.c_str(),
-                         QString("%1").arg(tNodeInfo.uGUID.mu32High, 0, 16),
-                         QString("%1").arg(tNodeInfo.uGUID.mu32Low, 0, 16),
-                         QString("%1").arg(tNodeInfo.uProtocolVersion, 0, 16));
+                              .arg(QString::number(i),
+                                   (bInstalled)?"installed":"not installed",
+                                   tNodeInfo.sName.c_str(),
+                                   QString("%1").arg(tNodeInfo.uGUID.mu32High, 0, 16),
+                                   QString("%1").arg(tNodeInfo.uGUID.mu32Low, 0, 16),
+                                   QString("%1").arg(tNodeInfo.uProtocolVersion, 0, 16));
             qDebug() << " " << message;
-            Hss1394Controller *currentDevice = new Hss1394Controller(
+            Hss1394Controller* currentDevice = new Hss1394Controller(
                 tNodeInfo, i);
             m_devices.push_back(currentDevice);
         }

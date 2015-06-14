@@ -8,8 +8,8 @@ double EngineXfader::getCalibration(double transform) {
 }
 
 void EngineXfader::getXfadeGains(
-        double xfadePosition, double transform, double calibration,
-        bool constPower, bool reverse, double* gain1, double* gain2) {
+    double xfadePosition, double transform, double calibration,
+    bool constPower, bool reverse, double* gain1, double* gain2) {
     if (gain1 == NULL || gain2 == NULL) {
         return;
     }
@@ -35,7 +35,7 @@ void EngineXfader::getXfadeGains(
         *gain2 = 1.0;
     }
 
-    if(xfadePositionRight > 0) { // right side
+    if (xfadePositionRight > 0) { // right side
         *gain1 = (1.0 - (1.0 * pow(xfadePositionRight, transform)));
     } else {
         *gain1 = 1.0;

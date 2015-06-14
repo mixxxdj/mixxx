@@ -17,7 +17,8 @@
 
 #include "controllogpotmeter.h"
 
-ControlLogpotmeter::ControlLogpotmeter(ConfigKey key, double dMaxValue, double minDB)
+ControlLogpotmeter::ControlLogpotmeter(ConfigKey key, double dMaxValue,
+                                       double minDB)
     : ControlPotmeter(key, 0, dMaxValue) {
     // Override ControlPotmeters default value of 0.5
     setDefaultValue(1.0);
@@ -25,6 +26,6 @@ ControlLogpotmeter::ControlLogpotmeter(ConfigKey key, double dMaxValue, double m
 
     if (m_pControl) {
         m_pControl->setBehavior(
-                new ControlLogPotmeterBehavior(0, dMaxValue, minDB));
+            new ControlLogPotmeterBehavior(0, dMaxValue, minDB));
     }
 }

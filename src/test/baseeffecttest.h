@@ -41,21 +41,22 @@ class MockEffectProcessor : public EffectProcessor {
                                const EffectProcessor::EnableState enableState,
                                const GroupFeatureState& groupFeatures));
 
-    MOCK_METHOD1(initialize, void(const QSet<ChannelHandleAndGroup>& registeredChannels));
+    MOCK_METHOD1(initialize,
+                 void(const QSet<ChannelHandleAndGroup>& registeredChannels));
 };
 
 class MockEffectInstantiator : public EffectInstantiator {
   public:
     MockEffectInstantiator() {}
     MOCK_METHOD2(instantiate, EffectProcessor*(EngineEffect* pEngineEffect,
-                                               const EffectManifest& manifest));
+                 const EffectManifest& manifest));
 };
 
 
 class BaseEffectTest : public MixxxTest {
   protected:
     BaseEffectTest() : m_pTestBackend(NULL),
-                       m_pEffectsManager(new EffectsManager(NULL, config())) {
+        m_pEffectsManager(new EffectsManager(NULL, config())) {
     }
 
     void registerTestBackend() {

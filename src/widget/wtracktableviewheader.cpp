@@ -9,19 +9,18 @@
 
 #define WTTVH_MINIMUM_SECTION_SIZE 20
 
-HeaderViewState::HeaderViewState(const QHeaderView& headers)
-{
+HeaderViewState::HeaderViewState(const QHeaderView& headers) {
     QAbstractItemModel* model = headers.model();
     for (int vi = 0; vi < headers.count(); ++vi) {
         int li = headers.logicalIndex(vi);
         mixxx::library::HeaderViewState::HeaderState* header_state =
-                m_view_state.add_header_state();
+            m_view_state.add_header_state();
         header_state->set_hidden(headers.isSectionHidden(li));
         header_state->set_size(headers.sectionSize(li));
         header_state->set_logical_index(li);
         header_state->set_visual_index(vi);
         QString column_name = model->headerData(
-                li, Qt::Horizontal, TrackModel::kHeaderNameRole).toString();
+                                  li, Qt::Horizontal, TrackModel::kHeaderNameRole).toString();
         // If there was some sort of error getting the column id,
         // we have to skip this one. (Happens with non-displayed columns)
         if (column_name.isEmpty()) {
@@ -33,7 +32,7 @@ HeaderViewState::HeaderViewState(const QHeaderView& headers)
     if (m_view_state.sort_indicator_shown()) {
         m_view_state.set_sort_indicator_section(headers.sortIndicatorSection());
         m_view_state.set_sort_order(
-                static_cast<int>(headers.sortIndicatorOrder()));
+            static_cast<int>(headers.sortIndicatorOrder()));
     }
 }
 
@@ -59,20 +58,20 @@ QString HeaderViewState::saveState() const {
 
 void HeaderViewState::restoreState(QHeaderView* headers) {
     const int max_columns =
-            math_min(headers->count(), m_view_state.header_state_size());
+        math_min(headers->count(), m_view_state.header_state_size());
 
     typedef QMap<QString, mixxx::library::HeaderViewState::HeaderState*> state_map;
     state_map map;
     for (int i = 0; i < m_view_state.header_state_size(); ++i) {
         map[QString::fromStdString(m_view_state.header_state(i).column_name())] =
-                m_view_state.mutable_header_state(i);
+            m_view_state.mutable_header_state(i);
     }
 
     // First set all sections to be hidden and update logical indexes.
     for (int li = 0; li < headers->count(); ++li) {
         headers->setSectionHidden(li, true);
         auto it = map.find(headers->model()->headerData(
-            li, Qt::Horizontal, TrackModel::kHeaderNameRole).toString());
+                               li, Qt::Horizontal, TrackModel::kHeaderNameRole).toString());
         if (it != map.end()) {
             it.value()->set_logical_index(li);
         }
@@ -81,7 +80,7 @@ void HeaderViewState::restoreState(QHeaderView* headers) {
     // Now restore
     for (int vi = 0; vi < max_columns; ++vi) {
         const mixxx::library::HeaderViewState::HeaderState& header =
-                m_view_state.header_state(vi);
+            m_view_state.header_state(vi);
         const int li = header.logical_index();
         headers->setSectionHidden(li, header.hidden());
         headers->resizeSection(li, header.size());
@@ -89,16 +88,16 @@ void HeaderViewState::restoreState(QHeaderView* headers) {
     }
     if (m_view_state.sort_indicator_shown()) {
         headers->setSortIndicator(
-                m_view_state.sort_indicator_section(),
-                static_cast<Qt::SortOrder>(m_view_state.sort_order()));
+            m_view_state.sort_indicator_section(),
+            static_cast<Qt::SortOrder>(m_view_state.sort_order()));
     }
 }
 
 WTrackTableViewHeader::WTrackTableViewHeader(Qt::Orientation orientation,
-                                             QWidget* parent)
-        : QHeaderView(orientation, parent),
-          m_menu(tr("Show or hide columns."), this),
-          m_signalMapper(this) {
+        QWidget* parent)
+    : QHeaderView(orientation, parent),
+      m_menu(tr("Show or hide columns."), this),
+      m_signalMapper(this) {
     connect(&m_signalMapper, SIGNAL(mapped(int)),
             this, SLOT(showOrHideColumn(int)));
 }
@@ -166,7 +165,7 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
          * column)
          */
         if (!hasPersistedHeaderState() &&
-            trackModel->isColumnHiddenByDefault(i)) {
+                trackModel->isColumnHiddenByDefault(i)) {
             action->setChecked(false);
         } else {
             action->setChecked(!isSectionHidden(i));
@@ -235,7 +234,7 @@ void WTrackTableViewHeader::loadDefaultHeaderState() {
     QAbstractItemModel* m = model();
     for (int i = 0; i < count(); ++i) {
         int header_size = m->headerData(
-                i, orientation(), TrackModel::kHeaderWidthRole).toInt();
+                              i, orientation(), TrackModel::kHeaderWidthRole).toInt();
         if (header_size > 0) {
             resizeSection(i, header_size);
         }
@@ -288,7 +287,7 @@ void WTrackTableViewHeader::showOrHideColumn(int column) {
 int WTrackTableViewHeader::hiddenCount() {
     int count = 0;
     for (QMap<int, QAction*>::iterator it = m_columnActions.begin();
-         it != m_columnActions.end(); ++it) {
+            it != m_columnActions.end(); ++it) {
         QAction* pAction = *it;
         if (!pAction->isChecked())
             count += 1;

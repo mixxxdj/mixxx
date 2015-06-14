@@ -27,9 +27,8 @@
 
 const int kiRotaryFilterMaxLen = 50;
 
-class Rotary
-{
-public:
+class Rotary {
+  public:
     Rotary();
     ~Rotary();
 
@@ -51,13 +50,13 @@ public:
     void setFilterLength(int i);
     /** Get filter length */
     int getFilterLength();
-protected:
+  protected:
     /** Length of filter */
     int m_iFilterLength;
     /** Update position in filter */
     int m_iFilterPos;
     /** Pointer to rotary filter buffer */
-    double *m_pFilter;
+    double* m_pFilter;
     /** Calibration value */
     double m_dCalibration;
     /** Last value */

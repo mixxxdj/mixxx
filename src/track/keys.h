@@ -10,7 +10,8 @@
 
 #define KEY_MAP_VERSION "KeyMap-1.0"
 
-typedef QVector<QPair<mixxx::track::io::key::ChromaticKey, double> > KeyChangeList;
+typedef QVector<QPair<mixxx::track::io::key::ChromaticKey, double> >
+KeyChangeList;
 
 class KeyFactory;
 

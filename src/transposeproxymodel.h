@@ -1,9 +1,9 @@
 #include <QAbstractProxyModel>
 #include <QModelIndex>
 
-class TransposeProxyModel : public QAbstractProxyModel{
+class TransposeProxyModel : public QAbstractProxyModel {
   public:
-    TransposeProxyModel(QObject *p = 0) : QAbstractProxyModel(p) {}
+    TransposeProxyModel(QObject* p = 0) : QAbstractProxyModel(p) {}
 
     QModelIndex mapFromSource (const QModelIndex& sourceIndex) const {
         return index(sourceIndex.column(), sourceIndex.row());

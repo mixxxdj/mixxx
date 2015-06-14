@@ -21,7 +21,8 @@ TEST_F(SyncControlTest, TestDetermineBpmMultiplier) {
     EXPECT_EQ(SyncControl::kBpmUnity,
               m_pChannel1->getEngineBuffer()->m_pSyncControl->determineBpmMultiplier(70, 80));
     EXPECT_EQ(SyncControl::kBpmHalve,
-              m_pChannel1->getEngineBuffer()->m_pSyncControl->determineBpmMultiplier(70, 160));
+              m_pChannel1->getEngineBuffer()->m_pSyncControl->determineBpmMultiplier(70,
+                      160));
     EXPECT_EQ(SyncControl::kBpmDouble,
               m_pChannel1->getEngineBuffer()->m_pSyncControl->determineBpmMultiplier(70, 40));
 

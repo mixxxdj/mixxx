@@ -37,11 +37,11 @@ struct ffmpegLocationObject {
 struct ffmpegCacheObject {
     SINT startFrame;
     SINT length;
-    quint8 *bytes;
+    quint8* bytes;
 };
 
 class SoundSourceFFmpeg : public SoundSource {
-public:
+  public:
     explicit SoundSourceFFmpeg(QUrl url);
     ~SoundSourceFFmpeg();
 
@@ -51,22 +51,22 @@ public:
 
     SINT readSampleFrames(SINT numberOfFrames, CSAMPLE* sampleBuffer) override;
 
-private:
+  private:
     Result tryOpen(const AudioSourceConfig& audioSrcCfg) override;
 
     bool readFramesToCache(unsigned int count, SINT offset);
-    bool getBytesFromCache(char *buffer, SINT offset, SINT size);
+    bool getBytesFromCache(char* buffer, SINT offset, SINT size);
     SINT getSizeofCache();
     void clearCache();
 
     unsigned int read(unsigned long size, SAMPLE*);
 
-    AVFormatContext *m_pFormatCtx;
+    AVFormatContext* m_pFormatCtx;
     int m_iAudioStream;
-    AVCodecContext *m_pCodecCtx;
-    AVCodec *m_pCodec;
+    AVCodecContext* m_pCodecCtx;
+    AVCodec* m_pCodec;
 
-    EncoderFfmpegResample *m_pResample;
+    EncoderFfmpegResample* m_pResample;
 
     SINT m_currentMixxxFrameIndex;
 
@@ -76,14 +76,14 @@ private:
     SINT m_lCacheStartFrame;
     SINT m_lCacheEndFrame;
     SINT m_lCacheLastPos;
-    QVector<struct ffmpegCacheObject  *> m_SCache;
-    QVector<struct ffmpegLocationObject  *> m_SJumpPoints;
+    QVector<struct ffmpegCacheObject*> m_SCache;
+    QVector<struct ffmpegLocationObject*> m_SJumpPoints;
     SINT m_lLastStoredPos;
     SINT m_lStoredSeekPoint;
 };
 
 class SoundSourceProviderFFmpeg: public SoundSourceProvider {
-public:
+  public:
     QString getName() const override {
         return "FFmpeg";
     }
