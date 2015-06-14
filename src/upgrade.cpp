@@ -1,20 +1,3 @@
-/***************************************************************************
-                          upgrade.cpp  -  description
-                             -------------------
-    begin                : Fri Mar 13 2009
-    copyright            : (C) 2009 by Sean M. Pappalardo
-    email                : pegasus@c64.org
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include <QPixmap>
 #include <QMessageBox>
 #include <QPushButton>
@@ -46,7 +29,8 @@ QString Upgrade::mixxx17HomePath() {
 #ifdef __LINUX__
     return QDir::homePath().append("/").append(".mixxx/");
 #elif __WINDOWS__
-    return QDir::homePath().append("/").append("Local Settings/Application Data/Mixxx/");
+    return QDir::homePath().append("/")
+            .append("Local Settings/Application Data/Mixxx/");
 #elif __APPLE__
     return QDir::homePath().append("/").append(".mixxx/");
 #endif
@@ -56,12 +40,11 @@ QString Upgrade::mixxx17HomePath() {
 // configuration and the location of the file may change between releases.
 ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) {
 
-/*  Pre-1.7.0:
-*
-*   Since we didn't store version numbers in the config file prior to 1.7.0,
-*   we check to see if the user is upgrading if his config files are in the old location,
-*   since we moved them in 1.7.0. This code takes care of moving them.
-*/
+    // Pre-1.7.0:
+    // Since we didn't store version numbers in the config file prior to 1.7.0,
+    // we check to see if the user is upgrading if his config files are in the
+    // old location, since we moved them in 1.7.0. This code takes care of
+    // moving them.
 
     QString oldLocation = QDir::homePath().append("/%1");
 #ifdef __WINDOWS__
@@ -71,7 +54,6 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
 #endif
 
     if (pre170Config->exists()) {
-
         // Move the files to their new location
         QString newLocation = settingsPath;
 
@@ -97,8 +79,13 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
                 m_bUpgraded = true;
             }
             else {
-                if (oldFile->error()==14) qDebug() << errorText.arg("library", oldFilePath, newFilePath) << "The destination file already exists.";
-                else qDebug() << errorText.arg("library", oldFilePath, newFilePath) << "Error #" << oldFile->error();
+                if (oldFile->error() == 14) {
+                    qDebug() << errorText.arg("library", oldFilePath, newFilePath)
+                             << "The destination file already exists.";
+                } else {
+                    qDebug() << errorText.arg("library", oldFilePath, newFilePath)
+                             << "Error #" << oldFile->error();
+                }
             }
         }
         delete oldFile;
@@ -111,11 +98,16 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
         newFilePath = newLocation.arg("mixxxbpmscheme.xml");
         oldFile = new QFile(oldFilePath);
         if (oldFile->exists()) {
-            if (oldFile->copy(newFilePath))
+            if (oldFile->copy(newFilePath)) {
                 oldFile->remove();
-            else {
-                if (oldFile->error()==14) qDebug() << errorText.arg("settings", oldFilePath, newFilePath) << "The destination file already exists.";
-                else qDebug() << errorText.arg("settings", oldFilePath, newFilePath) << "Error #" << oldFile->error();
+            } else {
+                if (oldFile->error()==14) {
+                    qDebug() << errorText.arg("settings", oldFilePath, newFilePath)
+                             << "The destination file already exists.";
+                } else {
+                    qDebug() << errorText.arg("settings", oldFilePath, newFilePath)
+                             << "Error #" << oldFile->error();
+                }
             }
         }
         delete oldFile;
@@ -127,12 +119,20 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
         newFilePath = newLocation.arg("MixxxMIDIBindings.xml");
         oldFile = new QFile(oldFilePath);
         if (oldFile->exists()) {
-            qWarning() << "The MIDI mapping file format has changed in this version of Mixxx. You will need to reconfigure your MIDI controller. See the Wiki for full details on the new format.";
-            if (oldFile->copy(newFilePath))
+            qWarning() << "The MIDI mapping file format has changed in this"
+                          "version of Mixxx. You will need to reconfigure your"
+                          "MIDI controller. See the Wiki for full details on"
+                          "the new format.";
+            if (oldFile->copy(newFilePath)) {
                 oldFile->remove();
-            else {
-                if (oldFile->error()==14) qDebug() << errorText.arg("MIDI mapping", oldFilePath, newFilePath) << "The destination file already exists.";
-                else qDebug() << errorText.arg("MIDI mapping", oldFilePath, newFilePath) << "Error #" << oldFile->error();
+            } else {
+                if (oldFile->error() == 14) {
+                    qDebug() << errorText.arg("MIDI mapping", oldFilePath, newFilePath)
+                             << "The destination file already exists.";
+                } else {
+                    qDebug() << errorText.arg("MIDI mapping", oldFilePath, newFilePath)
+                             << "Error #" << oldFile->error();
+                }
             }
         }
         // Tidy up
@@ -147,12 +147,18 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
 #endif
         newFilePath = newLocation.arg(SETTINGS_FILE);
         oldFile = new QFile(oldFilePath);
-        if (oldFile->copy(newFilePath))
+        if (oldFile->copy(newFilePath)) {
             oldFile->remove();
-        else {
-                if (oldFile->error()==14) qDebug() << errorText.arg("configuration", oldFilePath, newFilePath) << "The destination file already exists.";
-                else qDebug() << errorText.arg("configuration", oldFilePath, newFilePath) << "Error #" << oldFile->error();
-            }
+        } else {
+            if (oldFile->error() == 14) {
+                qDebug() << errorText.arg("configuration", oldFilePath,
+                                          newFilePath)
+                         << "The destination file already exists.";
+            } else
+                qDebug() << errorText.arg("configuration", oldFilePath,
+                                          newFilePath)
+                         << "Error #" << oldFile->error();
+        }
         delete oldFile;
 
     }
@@ -161,18 +167,17 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
     // End pre-1.7.0 code
 
 
-/***************************************************************************
-*                           Post-1.7.0 upgrade code
-*
-*   Add entries to the IF ladder below if anything needs to change from the
-*   previous to the current version. This allows for incremental upgrades
-*   incase a user upgrades from a few versions prior.
-****************************************************************************/
+    // Post-1.7.0 upgrade code
+    // Add entries to the IF ladder below if anything needs to change from the
+    // previous to the current version. This allows for incremental upgrades
+    // incase a user upgrades from a few versions prior.
 
     // Read the config file from home directory
-    ConfigObject<ConfigValue> *config = new ConfigObject<ConfigValue>(settingsPath + "/" + SETTINGS_FILE);
+    ConfigObject<ConfigValue> *config =
+            new ConfigObject<ConfigValue>(settingsPath + "/" + SETTINGS_FILE);
 
-    QString configVersion = config->getValueString(ConfigKey("[Config]","Version"));
+    QString configVersion =
+            config->getValueString(ConfigKey("[Config]","Version"));
 
     if (configVersion.isEmpty()) {
 
@@ -180,15 +185,14 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
         qDebug() << "Config version is empty, trying to read pre-1.9.0 config";
         // Try to read the config from the pre-1.9.0 final directory on OS X (we moved it in 1.9.0 final)
         QScopedPointer<QFile> oldConfigFile(new QFile(QDir::homePath().append("/").append(".mixxx/mixxx.cfg")));
-        if (oldConfigFile->exists() && ! CmdlineArgs::Instance().getSettingsPathSet()) {
+        if (oldConfigFile->exists() && !CmdlineArgs::Instance().getSettingsPathSet()) {
             qDebug() << "Found pre-1.9.0 config for OS X";
             // Note: We changed SETTINGS_PATH in 1.9.0 final on OS X so it must be hardcoded to ".mixxx" here for legacy.
             config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(".mixxx/mixxx.cfg"));
             // Just to be sure all files like logs and soundconfig go with mixxx.cfg
             CmdlineArgs::Instance().setSettingsPath(QDir::homePath().append("/").append(".mixxx/"));
             configVersion = config->getValueString(ConfigKey("[Config]","Version"));
-        }
-        else {
+        } else {
 #elif __WINDOWS__
         qDebug() << "Config version is empty, trying to read pre-1.12.0 config";
         // Try to read the config from the pre-1.12.0 final directory on Windows (we moved it in 1.12.0 final)
@@ -200,8 +204,7 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
             // Just to be sure all files like logs and soundconfig go with mixxx.cfg
             CmdlineArgs::Instance().setSettingsPath(QDir::homePath().append("/").append("Local Settings/Application Data/Mixxx/")); 
             configVersion = config->getValueString(ConfigKey("[Config]","Version"));
-        }
-        else {
+        } else {
 #elif __LINUX__
         qDebug() << "Config version is empty, trying to read pre-1.12.0 config";
         // Try to read the config from the pre-1.12.0 final directory on Linux (we moved it in 1.12.0 final)
@@ -213,8 +216,7 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
             // Just to be sure all files like logs and soundconfig go with mixxx.cfg
             CmdlineArgs::Instance().setSettingsPath(QDir::homePath().append("/").append(".mixxx/"));
             configVersion = config->getValueString(ConfigKey("[Config]","Version"));
-        }
-        else {
+        } else {
 #endif
             // This must have been the first run... right? :)
             qDebug() << "No version number in configuration file. Setting to" << VERSION;
@@ -236,7 +238,8 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
         return config;
     }
 
-    // Allows for incremental upgrades incase someone upgrades from a few versions prior
+    // Allows for incremental upgrades in case someone upgrades from a few
+    // versions prior
     // (I wish we could do a switch on a QString.)
     /*
     // Examples, since we didn't store the version number prior to v1.7.0
@@ -274,7 +277,8 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
         configVersion = "1.8.0";
         config->set(ConfigKey("[Config]","Version"), ConfigValue("1.8.0"));
     }
-    if (configVersion.startsWith("1.8") || configVersion.startsWith("1.9.0beta1")) {
+    if (configVersion.startsWith("1.8") ||
+            configVersion.startsWith("1.9.0beta1")) {
         qDebug() << "Upgrading from" << configVersion << "...";
         // Upgrade tasks go here
 #ifdef __APPLE__
@@ -284,9 +288,14 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
         newOSXDir.mkpath(OSXLocation190);
 
         QList<QPair<QString, QString> > dirsToMove;
-        dirsToMove.push_back(QPair<QString, QString>(OSXLocation180, OSXLocation190));
-        dirsToMove.push_back(QPair<QString, QString>(OSXLocation180 + "/midi", OSXLocation190 + "midi"));
-        dirsToMove.push_back(QPair<QString, QString>(OSXLocation180 + "/presets", OSXLocation190 + "presets"));
+        dirsToMove.push_back(
+                QPair<QString, QString>(OSXLocation180, OSXLocation190));
+        dirsToMove.push_back(
+                QPair<QString, QString>(OSXLocation180 + "/midi",
+                                        OSXLocation190 + "midi"));
+        dirsToMove.push_back(
+                QPair<QString, QString>(OSXLocation180 + "/presets",
+                                        OSXLocation190 + "presets"));
 
         QListIterator<QPair<QString, QString> > dirIt(dirsToMove);
         QPair<QString, QString> curPair;
@@ -296,12 +305,14 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
             qDebug() << "Moving" << curPair.first << "to" << curPair.second;
             QDir oldSubDir(curPair.first);
             QDir newSubDir(curPair.second);
-            newSubDir.mkpath(curPair.second); // Create the new destination directory
-
-            QStringList contents = oldSubDir.entryList(QDir::Files | QDir::NoDotAndDotDot);
+            // Create the new destination directory
+            newSubDir.mkpath(curPair.second);
+            QStringList contents =
+                    oldSubDir.entryList(QDir::Files | QDir::NoDotAndDotDot);
             QStringListIterator it(contents);
             QString cur;
-            // Iterate over all the files in the source directory and copy them to the dest dir.
+            // Iterate over all the files in the source directory and
+            // copy them to the dest dir.
             while (it.hasNext())
             {
                 cur = it.next();
@@ -339,7 +350,8 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
         QStringList contents = oldDir.entryList(QDir::Files | QDir::NoDotAndDotDot);
         QStringListIterator it(contents);
         QString cur;
-        // Iterate over all the files in the source directory and copy them to the dest dir.
+        // Iterate over all the files in the source directory and copy them to
+        // the dest dir.
         while (it.hasNext()) {
             cur = it.next();
             if (newDir.exists(cur)) {
@@ -405,26 +417,28 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
         config->set(ConfigKey("[ReplayGain]", "InitialReplayGainBoost"),
                     ConfigValue(newReplayGain));
 
-        // if everything until here worked fine we can mark the configuration as
-        // updated
+        // if everything until here worked fine we can mark the configuration
+        // as updated
         if (successful) {
             configVersion = VERSION;
             m_bUpgraded = true;
             config->set(ConfigKey("[Config]","Version"), ConfigValue(VERSION));
-        }
-        else {
+        } else {
             qDebug() << "Upgrade failed!\n";
         }
     }
 
-    if (configVersion == VERSION) qDebug() << "Configuration file is now at the current version" << VERSION;
-    else {
-        /* Way too verbose, this confuses the hell out of Linux users when they see this:
-        qWarning() << "Configuration file is at version" << configVersion
-                   << "and I don't know how to upgrade it to the current" << VERSION
-                   << "\n   (That means a function to do this needs to be added to upgrade.cpp.)"
-                   << "\n-> Leaving the configuration file version as-is.";
-        */
+    if (configVersion == VERSION) {
+        qDebug() << "Configuration file is now at the current version" << VERSION;
+    } else {
+        // Way too verbose, this confuses the hell out of Linux users when
+        // they see this:
+        //qWarning() << "Configuration file is at version" << configVersion
+        //           << "and I don't know how to upgrade it to the current"
+        //           << VERSION
+        //           << "\n   (That means a function to do this needs to be
+        //              "added to upgrade.cpp.)"
+        //           << "\n-> Leaving the configuration file version as-is.";
         qWarning() << "Configuration file is at version" << configVersion
                    << "instead of the current" << VERSION;
     }
@@ -437,9 +451,9 @@ bool Upgrade::askReScanLibrary() {
     msgBox.setIconPixmap(QPixmap(":/images/mixxx-icon.png"));
     msgBox.setWindowTitle(QMessageBox::tr("Upgrading Mixxx"));
     msgBox.setText(QMessageBox::tr("Mixxx now supports displaying cover art.\n"
-                      "Do you want to scan your library for cover files now?"));
+            "Do you want to scan your library for cover files now?"));
     QPushButton* rescanButton = msgBox.addButton(
-        QMessageBox::tr("Scan"), QMessageBox::AcceptRole);
+            QMessageBox::tr("Scan"), QMessageBox::AcceptRole);
     msgBox.addButton(QMessageBox::tr("Later"), QMessageBox::RejectRole);
     msgBox.setDefaultButton(rescanButton);
     msgBox.exec();
@@ -453,15 +467,15 @@ bool Upgrade::askReanalyzeBeats() {
     QString mainHeading =
             QMessageBox::tr("Mixxx has a new and improved beat detector.");
     QString paragraph1 = QMessageBox::tr(
-        "When you load tracks, Mixxx can re-analyze them "
-        "and generate new, more accurate beatgrids. This will make "
-        "automatic beatsync and looping more reliable.");
+            "When you load tracks, Mixxx can re-analyze them "
+            "and generate new, more accurate beatgrids. This will make "
+            "automatic beatsync and looping more reliable.");
     QString paragraph2 = QMessageBox::tr(
-        "This does not affect saved cues, hotcues, playlists, or crates.");
+            "This does not affect saved cues, hotcues, playlists, or crates.");
     QString paragraph3 = QMessageBox::tr(
-        "If you do not want Mixxx to re-analyze your tracks, choose "
-        "\"Keep Current Beatgrids\". You can change this setting at any time "
-        "from the \"Beat Detection\" section of the Preferences.");
+            "If you do not want Mixxx to re-analyze your tracks, choose "
+            "\"Keep Current Beatgrids\". You can change this setting at any time "
+            "from the \"Beat Detection\" section of the Preferences.");
     QString keepCurrent = QMessageBox::tr("Keep Current Beatgrids");
     QString generateNew = QMessageBox::tr("Generate New Beatgrids");
 
@@ -472,7 +486,7 @@ bool Upgrade::askReanalyzeBeats() {
                    .arg(mainHeading, paragraph1, paragraph2, paragraph3));
     msgBox.addButton(keepCurrent, QMessageBox::NoRole);
     QPushButton* OverwriteButton = msgBox.addButton(
-        generateNew, QMessageBox::YesRole);
+            generateNew, QMessageBox::YesRole);
     msgBox.setDefaultButton(OverwriteButton);
     msgBox.exec();
 
