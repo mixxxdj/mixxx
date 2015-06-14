@@ -198,6 +198,21 @@
           <Connection>
             <ConfigKey persist="true">[Deere],show_starrating</ConfigKey>
           </Connection>
+            <Size>80me,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>   Hide Artist/Track Info (AM-Mode)</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#10003; Hide Artist/Track Info (AM-Mode)</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey>[Deere],show_no_track_info</ConfigKey>
+            </Connection>
           </PushButton>
 
           <PushButton>
@@ -216,6 +231,21 @@
           <Connection>
             <ConfigKey persist="true">[Deere],show_more_hotcues</ConfigKey>
           </Connection>
+            <Size>80me,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>   Hide BPM Info</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#10003; Hide BPM Info</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey>[Deere],show_no_bpm_info</ConfigKey>
+            </Connection>
           </PushButton>
 
           <PushButton>

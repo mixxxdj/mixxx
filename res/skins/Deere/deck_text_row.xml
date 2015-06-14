@@ -51,13 +51,34 @@
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,max</SizePolicy>
                 <Children>
+
+                  <!-- We allow to hide track/artist info (aka AM-Mode) in the skin settings,
+                       display just a label with asterixes instead. -->
                   <TrackProperty>
                     <TooltipId>track_title</TooltipId>
                     <SizePolicy>me,min</SizePolicy>
                     <Property>title</Property>
                     <Group><Variable name="group"/></Group>
                     <Elide>right</Elide>
+                    <Connection>
+                      <ConfigKey>[Deere],show_no_track_info</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                      <Transform>
+                        <Not/>
+                      </Transform>
+                    </Connection>
                   </TrackProperty>
+
+                  <Label>
+                    <TooltipId>track_title</TooltipId>
+                    <Size>me,min</Size>
+                    <ObjectName>HiddenTrackTitleInfo</ObjectName>
+                    <Text>***</Text>
+                    <Connection>
+                      <ConfigKey>[Deere],show_no_track_info</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </Label>
 
                   <WidgetGroup>
                     <ObjectName>BPMGutter</ObjectName>
@@ -233,6 +254,10 @@
                                   <ConfigKey>[Deere],bpm_layout_next</ConfigKey>
                                 </Connection>
                               </PushButton>
+
+                              <!-- We allow to hide the current BPM info in the skin settings,
+                                   display just a label with asterixes instead.
+                                   See https://bugs.launchpad.net/mixxx/+bug/722889 -->
                               <NumberBpm>
                                 <ObjectName>BpmEditTriggerLabel</ObjectName>
                                 <MinimumSize>70,20</MinimumSize>
@@ -241,7 +266,26 @@
                                 <Connection>
                                   <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
                                 </Connection>
+                                <Connection>
+                                  <ConfigKey>[Deere],show_no_bpm_info</ConfigKey>
+                                  <BindProperty>visible</BindProperty>
+                                  <Transform>
+                                    <Not/>
+                                  </Transform>
+                                </Connection>
                               </NumberBpm>
+
+                              <Label>
+                                <TooltipId>visual_bpm</TooltipId>
+                                <Size>me,min</Size>
+                                <ObjectName>HiddenBpmInfo</ObjectName>
+                                <Text>***.**</Text>
+                                <Connection>
+                                  <ConfigKey>[Deere],show_no_bpm_info</ConfigKey>
+                                  <BindProperty>visible</BindProperty>
+                                </Connection>
+                              </Label>
+
                             </Children>
                           </WidgetGroup>
 
@@ -401,13 +445,33 @@
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,max</SizePolicy>
                 <Children>
+                  <!-- We allow to hide track/artist info (aka AM-Mode) in the skin settings,
+                       display just a label with asterixes instead. -->
                   <TrackProperty>
                     <TooltipId>track_artist</TooltipId>
                     <Property>artist</Property>
                     <SizePolicy>me,min</SizePolicy>
                     <Elide>right</Elide>
                     <Group><Variable name="group"/></Group>
+                    <Connection>
+                      <ConfigKey>[Deere],show_no_track_info</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                      <Transform>
+                        <Not/>
+                      </Transform>
+                    </Connection>
                   </TrackProperty>
+
+                  <Label>
+                    <TooltipId>track_artist</TooltipId>
+                    <Size>me,min</Size>
+                    <ObjectName>HiddenTrackArtistInfo</ObjectName>
+                    <Text>***</Text>
+                    <Connection>
+                      <ConfigKey>[Deere],show_no_track_info</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </Label>
 
                   <WidgetGroup>
                     <ObjectName>StarratingGutter</ObjectName>
