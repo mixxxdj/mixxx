@@ -35,7 +35,8 @@ QString calcFingerprint(const Mixxx::AudioSourcePointer& pAudioSource) {
     // implicit allocation of a temporary buffer when reducing
     // the audio signal to stereo.
     SampleBuffer sampleBuffer(
-        math_max(numFrames * kFingerprintChannels, pAudioSource->frames2samples(numFrames)));
+        math_max(numFrames * kFingerprintChannels,
+                 pAudioSource->frames2samples(numFrames)));
 
     DEBUG_ASSERT(2 == kFingerprintChannels); // implicit assumption of the next line
     const SINT readFrames =
@@ -59,7 +60,8 @@ QString calcFingerprint(const Mixxx::AudioSourcePointer& pAudioSource) {
 
     QTime timerGeneratingFingerprint;
     timerGeneratingFingerprint.start();
-    int success = chromaprint_feed(ctx, &fingerprintSamples[0], fingerprintSamples.size());
+    int success = chromaprint_feed(ctx, &fingerprintSamples[0],
+                                   fingerprintSamples.size());
     chromaprint_finish(ctx);
     if (!success) {
         qDebug() << "could not generate fingerprint";
@@ -86,7 +88,8 @@ QString calcFingerprint(const Mixxx::AudioSourcePointer& pAudioSource) {
     }
     chromaprint_free(ctx);
 
-    qDebug("generating fingerprint took: %d ms" , timerGeneratingFingerprint.elapsed());
+    qDebug("generating fingerprint took: %d ms" ,
+           timerGeneratingFingerprint.elapsed());
 
     return fingerprint;
 }
@@ -100,7 +103,8 @@ QString ChromaPrinter::getFingerprint(TrackPointer pTrack) {
     SoundSourceProxy soundSourceProxy(pTrack);
     Mixxx::AudioSourceConfig audioSrcCfg;
     audioSrcCfg.channelCountHint = kFingerprintChannels;
-    Mixxx::AudioSourcePointer pAudioSource(soundSourceProxy.openAudioSource(audioSrcCfg));
+    Mixxx::AudioSourcePointer pAudioSource(soundSourceProxy.openAudioSource(
+            audioSrcCfg));
     if (pAudioSource.isNull()) {
         qDebug() << "Skipping invalid file:" << pTrack->getLocation();
         return QString();

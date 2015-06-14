@@ -7,7 +7,8 @@
 #ifdef __WINDOWS__
 #include <windows.h>
 #include <io.h> // Debug Console
-typedef BOOL(WINAPI* pfSetCurrentConsoleFontEx)(HANDLE, BOOL, PCONSOLE_FONT_INFOEX);
+typedef BOOL(WINAPI* pfSetCurrentConsoleFontEx)(HANDLE, BOOL,
+        PCONSOLE_FONT_INFOEX);
 
 
 Console::Console() {
@@ -47,7 +48,8 @@ Console::Console() {
 
         HMODULE kernel32_dll = LoadLibraryW(L"kernel32.dll");
         if (kernel32_dll) {
-            pfSetCurrentConsoleFontEx pfSCCFX = (pfSetCurrentConsoleFontEx)GetProcAddress(kernel32_dll, "SetCurrentConsoleFontEx");
+            pfSetCurrentConsoleFontEx pfSCCFX = (pfSetCurrentConsoleFontEx)GetProcAddress(
+                                                    kernel32_dll, "SetCurrentConsoleFontEx");
             if (pfSCCFX) {
                 // Use a unicode font
                 CONSOLE_FONT_INFOEX newFont;

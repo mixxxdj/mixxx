@@ -52,7 +52,8 @@ void PlaylistFeature::onRightClick(const QPoint& globalPos) {
     menu.exec(globalPos);
 }
 
-void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
+void PlaylistFeature::onRightClickChild(const QPoint& globalPos,
+                                        QModelIndex index) {
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
     int playlistId = playlistIdFromIndex(index);
@@ -82,12 +83,14 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
     menu.exec(globalPos);
 }
 
-bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
+bool PlaylistFeature::dropAcceptChild(const QModelIndex& index,
+                                      QList<QUrl> urls,
                                       QObject* pSource) {
     int playlistId = playlistIdFromIndex(index);
     //m_playlistDao.appendTrackToPlaylist(url.toLocalFile(), playlistId);
 
-    QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
+    QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false,
+                             true);
 
     QList<int> trackIds;
     if (pSource) {
@@ -213,10 +216,14 @@ void PlaylistFeature::slotPlaylistTableRenamed(int playlistId,
 
 QString PlaylistFeature::getRootViewHtml() const {
     QString playlistsTitle = tr("Playlists");
-    QString playlistsSummary = tr("Playlists are ordered lists of songs that allow you to plan your DJ sets.");
-    QString playlistsSummary2 = tr("Some DJs construct playlists before they perform live, but others prefer to build them on-the-fly.");
-    QString playlistsSummary3 = tr("When using a playlist during a live DJ set, remember to always pay close attention to how your audience reacts to the music you've chosen to play.");
-    QString playlistsSummary4 = tr("It may be necessary to skip some songs in your prepared playlist or add some different songs in order to maintain the energy of your audience.");
+    QString playlistsSummary =
+        tr("Playlists are ordered lists of songs that allow you to plan your DJ sets.");
+    QString playlistsSummary2 =
+        tr("Some DJs construct playlists before they perform live, but others prefer to build them on-the-fly.");
+    QString playlistsSummary3 =
+        tr("When using a playlist during a live DJ set, remember to always pay close attention to how your audience reacts to the music you've chosen to play.");
+    QString playlistsSummary4 =
+        tr("It may be necessary to skip some songs in your prepared playlist or add some different songs in order to maintain the energy of your audience.");
     QString createPlaylistLink = tr("Create New Playlist");
 
     QString html;

@@ -409,7 +409,8 @@ void WTrackTableView::createActions() {
     connect(m_pReloadMetadataAct, SIGNAL(triggered()),
             this, SLOT(slotReloadTrackMetadata()));
 
-    m_pReloadMetadataFromMusicBrainzAct = new QAction(tr("Get Metadata from MusicBrainz"),this);
+    m_pReloadMetadataFromMusicBrainzAct = new QAction(
+        tr("Get Metadata from MusicBrainz"),this);
     connect(m_pReloadMetadataFromMusicBrainzAct, SIGNAL(triggered()),
             this, SLOT(slotShowDlgTagFetcher()));
 
@@ -464,7 +465,8 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex& index) {
     // Read the current TrackLoadAction settings
     int action = DlgPrefLibrary::LOAD_TRACK_DECK; // default action
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
-        action = m_pConfig->getValueString(ConfigKey("[Library]","TrackLoadAction")).toInt();
+        action = m_pConfig->getValueString(ConfigKey("[Library]",
+                                           "TrackLoadAction")).toInt();
     }
     switch (action) {
     case DlgPrefLibrary::ADD_TRACK_BOTTOM:
@@ -698,7 +700,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
                                        ConfigKey(deckGroup, "play")) > 0.0;
                 bool loadTrackIntoPlayingDeck = m_pConfig->getValueString(
                                                     ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck")).toInt();
-                bool deckEnabled = (!deckPlaying  || loadTrackIntoPlayingDeck)  && oneSongSelected;
+                bool deckEnabled = (!deckPlaying  || loadTrackIntoPlayingDeck)  &&
+                                   oneSongSelected;
                 QAction* pAction = new QAction(tr("Load to Deck %1").arg(i), m_pMenu);
                 pAction->setEnabled(deckEnabled);
                 m_pMenu->addAction(pAction);
@@ -759,7 +762,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             }
         }
         m_pPlaylistMenu->addSeparator();
-        QAction* newPlaylistAction = new QAction(tr("Create New Playlist"), m_pPlaylistMenu);
+        QAction* newPlaylistAction = new QAction(tr("Create New Playlist"),
+                m_pPlaylistMenu);
         m_pPlaylistMenu->addAction(newPlaylistAction);
         m_playlistMapper.setMapping(newPlaylistAction, -1);// -1 to signify new playlist
         connect(newPlaylistAction, SIGNAL(triggered()), &m_playlistMapper, SLOT(map()));
@@ -1218,7 +1222,8 @@ TrackModel* WTrackTableView::getTrackModel() {
     return trackModel;
 }
 
-bool WTrackTableView::modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities) {
+bool WTrackTableView::modelHasCapabilities(TrackModel::CapabilitiesFlags
+        capabilities) {
     TrackModel* trackModel = getTrackModel();
     return trackModel &&
            (trackModel->getCapabilities() & capabilities) == capabilities;
@@ -1382,7 +1387,8 @@ void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
                 validNameGiven = true;
             }
         } while (!validNameGiven);
-        iPlaylistId = playlistDao.createPlaylist(name);//-1 is changed to the new playlist ID return from the DAO
+        iPlaylistId = playlistDao.createPlaylist(
+                          name);//-1 is changed to the new playlist ID return from the DAO
         if (iPlaylistId == -1) {
             QMessageBox::warning(NULL,
                                  tr("Playlist Creation Failed"),
@@ -1443,7 +1449,8 @@ void WTrackTableView::addSelectionToCrate(int iCrateId) {
                 validNameGiven = true;
             }
         } while (!validNameGiven);
-        iCrateId = crateDao.createCrate(name);// -1 is changed to the new crate ID returned by the DAO
+        iCrateId = crateDao.createCrate(
+                       name);// -1 is changed to the new crate ID returned by the DAO
         if (iCrateId == -1) {
             qDebug() << "Error creating crate with name " << name;
             QMessageBox::warning(NULL,
@@ -1480,7 +1487,8 @@ void WTrackTableView::doSortByColumn(int headerSection) {
 
     // Find a visible column
     int visibleColumn = 0;
-    while (isColumnHidden(visibleColumn) && visibleColumn < itemModel->columnCount()) {
+    while (isColumnHidden(visibleColumn) &&
+            visibleColumn < itemModel->columnCount()) {
         visibleColumn++;
     }
 
@@ -1509,7 +1517,8 @@ void WTrackTableView::doSortByColumn(int headerSection) {
     while (i.hasNext()) {
         i.next();
         QModelIndex tl = itemModel->index(i.key(), visibleColumn);
-        currentSelection->select(tl, QItemSelectionModel::Rows | QItemSelectionModel::Select);
+        currentSelection->select(tl,
+                                 QItemSelectionModel::Rows | QItemSelectionModel::Select);
 
         if (!first.isValid()) {
             first = tl;

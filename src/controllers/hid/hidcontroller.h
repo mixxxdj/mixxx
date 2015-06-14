@@ -71,7 +71,8 @@ class HidController : public Controller {
     virtual void guessDeviceCategory();
 
   protected:
-    Q_INVOKABLE void send(QList<int> data, unsigned int length, unsigned int reportID = 0);
+    Q_INVOKABLE void send(QList<int> data, unsigned int length,
+                          unsigned int reportID = 0);
 
   private slots:
     int open();

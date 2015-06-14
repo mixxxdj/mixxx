@@ -101,7 +101,8 @@ TEST_F(MidiControllerTest, ReceiveMessage_PushButtonCO_PushOnOn) {
     EXPECT_DOUBLE_EQ(0.0, cpb.get());
 }
 
-TEST_F(MidiControllerTest, ReceiveMessage_PushButtonCO_ToggleOnOff_ButtonMidiOption) {
+TEST_F(MidiControllerTest,
+       ReceiveMessage_PushButtonCO_ToggleOnOff_ButtonMidiOption) {
     // Using the button MIDI option allows you to use a MIDI toggle button as a
     // push button.
     ConfigKey key("[Channel1]", "hotcue_1_activate");
@@ -132,7 +133,8 @@ TEST_F(MidiControllerTest, ReceiveMessage_PushButtonCO_ToggleOnOff_ButtonMidiOpt
     EXPECT_DOUBLE_EQ(0.0, cpb.get());
 }
 
-TEST_F(MidiControllerTest, ReceiveMessage_PushButtonCO_ToggleOnOff_SwitchMidiOption) {
+TEST_F(MidiControllerTest,
+       ReceiveMessage_PushButtonCO_ToggleOnOff_SwitchMidiOption) {
     // Using the switch MIDI option interprets a MIDI toggle button as a toggle
     // button rather than a momentary push button.
     ConfigKey key("[Channel1]", "hotcue_1_activate");
@@ -263,7 +265,8 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_PushOnOn) {
     EXPECT_DOUBLE_EQ(0.0, cpb.get());
 }
 
-TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_ToggleOnOff_ButtonMidiOption) {
+TEST_F(MidiControllerTest,
+       ReceiveMessage_ToggleCO_ToggleOnOff_ButtonMidiOption) {
     // Using the button MIDI option allows you to use a MIDI toggle button as a
     // push button.
     ConfigKey key("[Channel1]", "keylock");
@@ -297,7 +300,8 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_ToggleOnOff_ButtonMidiOption)
     EXPECT_LT(0.0, cpb.get());
 }
 
-TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_ToggleOnOff_SwitchMidiOption) {
+TEST_F(MidiControllerTest,
+       ReceiveMessage_ToggleCO_ToggleOnOff_SwitchMidiOption) {
     // Using the switch MIDI option interprets a MIDI toggle button as a toggle
     // button rather than a momentary push button.
     ConfigKey key("[Channel1]", "keylock");

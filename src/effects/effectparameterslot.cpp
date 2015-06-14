@@ -6,7 +6,8 @@
 #include "controlpushbutton.h"
 #include "controllers/softtakeover.h"
 
-EffectParameterSlot::EffectParameterSlot(const QString& group, const unsigned int iParameterSlotNumber)
+EffectParameterSlot::EffectParameterSlot(const QString& group,
+        const unsigned int iParameterSlotNumber)
     : EffectParameterSlotBase(group, iParameterSlotNumber) {
     QString itemPrefix = formatItemPrefix(iParameterSlotNumber);
     m_pControlLoaded = new ControlObject(
@@ -61,22 +62,26 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
             //qDebug() << debugString() << "Loading effect parameter" << m_pEffectParameter->name();
             double dValue = m_pEffectParameter->getValue();
             double dMinimum = m_pEffectParameter->getMinimum();
-            double dMinimumLimit = dMinimum; // TODO(rryan) expose limit from EffectParameter
+            double dMinimumLimit =
+                dMinimum; // TODO(rryan) expose limit from EffectParameter
             double dMaximum = m_pEffectParameter->getMaximum();
-            double dMaximumLimit = dMaximum; // TODO(rryan) expose limit from EffectParameter
+            double dMaximumLimit =
+                dMaximum; // TODO(rryan) expose limit from EffectParameter
             double dDefault = m_pEffectParameter->getDefault();
 
             if (dValue > dMaximum || dValue < dMinimum ||
                     dMinimum < dMinimumLimit || dMaximum > dMaximumLimit ||
                     dDefault > dMaximum || dDefault < dMinimum) {
-                qWarning() << debugString() << "WARNING: EffectParameter does not satisfy basic sanity checks.";
+                qWarning() << debugString() <<
+                           "WARNING: EffectParameter does not satisfy basic sanity checks.";
             }
 
             //qDebug() << debugString()
             //         << QString("Val: %1 Min: %2 MinLimit: %3 Max: %4 MaxLimit: %5 Default: %6")
             //         .arg(dValue).arg(dMinimum).arg(dMinimumLimit).arg(dMaximum).arg(dMaximumLimit).arg(dDefault);
 
-            EffectManifestParameter::ControlHint type = m_pEffectParameter->getControlHint();
+            EffectManifestParameter::ControlHint type =
+                m_pEffectParameter->getControlHint();
             m_pControlValue->setBehaviour(type, dMinimum, dMaximum);
             m_pControlValue->setDefaultValue(dDefault);
             m_pControlValue->set(dValue);
@@ -149,7 +154,8 @@ void EffectParameterSlot::slotLinkInverseChanged(double v) {
     m_pSoftTakeover->ignoreNext();
 }
 
-void EffectParameterSlot::onChainSuperParameterChanged(double parameter, bool force) {
+void EffectParameterSlot::onChainSuperParameterChanged(double parameter,
+        bool force) {
     m_dChainParameter = parameter;
     if (m_pEffectParameter != NULL) {
         // Intermediate cast to integer is needed for VC++.

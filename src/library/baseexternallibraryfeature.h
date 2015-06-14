@@ -26,7 +26,8 @@ class BaseExternalLibraryFeature : public LibraryFeature {
         return NULL;
     }
     // Must be implemented by external Libraries not copied to Mixxx DB
-    virtual void appendTrackIdsFromRightClickIndex(QList<int>* trackIds, QString* pPlaylist);
+    virtual void appendTrackIdsFromRightClickIndex(QList<int>* trackIds,
+            QString* pPlaylist);
 
     QModelIndex m_lastRightClickedIndex;
 

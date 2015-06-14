@@ -311,7 +311,8 @@ void BasePlaylistFeature::slotDeletePlaylist() {
 
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
     if (locked) {
-        qDebug() << "Skipping playlist deletion because playlist" << playlistId << "is locked.";
+        qDebug() << "Skipping playlist deletion because playlist" << playlistId <<
+                 "is locked.";
         return;
     }
 
@@ -447,12 +448,16 @@ void BasePlaylistFeature::slotExportPlaylist() {
                                ConfigKey("[Library]", "UseRelativePathOnExport")).toInt());
 
     if (file_location.endsWith(".csv", Qt::CaseInsensitive)) {
-        ParserCsv::writeCSVFile(file_location, pPlaylistTableModel.data(), useRelativePath);
+        ParserCsv::writeCSVFile(file_location, pPlaylistTableModel.data(),
+                                useRelativePath);
     } else if (file_location.endsWith(".txt", Qt::CaseInsensitive)) {
-        if (m_playlistDao.getHiddenType(pPlaylistTableModel->getPlaylist()) == PlaylistDAO::PLHT_SET_LOG) {
-            ParserCsv::writeReadableTextFile(file_location, pPlaylistTableModel.data(), true);
+        if (m_playlistDao.getHiddenType(pPlaylistTableModel->getPlaylist()) ==
+                PlaylistDAO::PLHT_SET_LOG) {
+            ParserCsv::writeReadableTextFile(file_location, pPlaylistTableModel.data(),
+                                             true);
         } else {
-            ParserCsv::writeReadableTextFile(file_location, pPlaylistTableModel.data(), false);
+            ParserCsv::writeReadableTextFile(file_location, pPlaylistTableModel.data(),
+                                             false);
         }
     } else {
         // Create and populate a list of files of the playlist
@@ -558,7 +563,8 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
         }
 
         // Create the TreeItem whose parent is the invisible root item
-        TreeItem* item = new TreeItem(playlist_name, QString::number(playlist_id), this, root);
+        TreeItem* item = new TreeItem(playlist_name, QString::number(playlist_id), this,
+                                      root);
         item->setBold(m_playlistsSelectedTrackIsIn.contains(playlist_id));
 
         decorateChild(item, playlist_id);

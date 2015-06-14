@@ -42,7 +42,8 @@ int MidiController::close() {
 
 void MidiController::visit(const HidControllerPreset* preset) {
     Q_UNUSED(preset);
-    qWarning() << "ERROR: Attempting to load an HidControllerPreset to a MidiController!";
+    qWarning() <<
+               "ERROR: Attempting to load an HidControllerPreset to a MidiController!";
     // TODO(XXX): throw a hissy fit.
 }
 
@@ -130,7 +131,8 @@ void MidiController::createOutputHandlers() {
     }
 
     if (!failures.isEmpty()) {
-        ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+        ErrorDialogProperties* props =
+            ErrorDialogHandler::instance()->newDialogProperties();
         props->setType(DLG_WARNING);
         props->setTitle(tr("MixxxControl(s) not found"));
         props->setText(tr("One or more MixxxControls specified in the "
@@ -160,7 +162,8 @@ void MidiController::destroyOutputHandlers() {
     }
 }
 
-QString formatMidiMessage(unsigned char status, unsigned char control, unsigned char value,
+QString formatMidiMessage(unsigned char status, unsigned char control,
+                          unsigned char value,
                           unsigned char channel, unsigned char opCode) {
     switch (opCode) {
     case MIDI_PITCH_BEND:
@@ -199,7 +202,8 @@ QString formatMidiMessage(unsigned char status, unsigned char control, unsigned 
     }
 }
 
-void MidiController::learnTemporaryInputMappings(const MidiInputMappings& mappings) {
+void MidiController::learnTemporaryInputMappings(const MidiInputMappings&
+        mappings) {
     foreach (const MidiInputMapping& mapping, mappings) {
         m_temporaryInputMappings.insert(mapping.key.key, mapping);
 
@@ -253,7 +257,8 @@ void MidiController::receive(unsigned char status, unsigned char control,
         QHash<uint16_t, MidiInputMapping>::const_iterator it =
             m_temporaryInputMappings.find(mappingKey.key);
         if (it != m_temporaryInputMappings.end()) {
-            for (; it != m_temporaryInputMappings.end() && it.key() == mappingKey.key; ++it) {
+            for (; it != m_temporaryInputMappings.end() &&
+                    it.key() == mappingKey.key; ++it) {
                 processInputMapping(it.value(), status, control, value);
             }
             return;
@@ -320,7 +325,8 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
             if (it->first.control == mapping.control) {
                 if ((it->first.options.fourteen_bit_lsb && mapping.options.fourteen_bit_lsb) ||
                         (it->first.options.fourteen_bit_msb && mapping.options.fourteen_bit_msb)) {
-                    qWarning() << "MidiController: 14-bit MIDI mapping has mis-matched LSB/MSB options."
+                    qWarning() <<
+                               "MidiController: 14-bit MIDI mapping has mis-matched LSB/MSB options."
                                << "Ignoring both messages.";
                     m_fourteen_bit_queued_mappings.erase(it);
                     return;
@@ -395,7 +401,8 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
     pCO->setValueFromMidi(static_cast<MidiOpCode>(opCode), newValue);
 }
 
-double MidiController::computeValue(MidiOptions options, double _prevmidivalue, double _newmidivalue) {
+double MidiController::computeValue(MidiOptions options, double _prevmidivalue,
+                                    double _newmidivalue) {
     double tempval = 0.;
     double diff = 0.;
 
@@ -493,7 +500,8 @@ double MidiController::computeValue(MidiOptions options, double _prevmidivalue, 
 }
 
 QString formatSysexMessage(QString controllerName, const QByteArray& data) {
-    QString message = QString("%1: %2 bytes: [").arg(controllerName).arg(data.size());
+    QString message = QString("%1: %2 bytes: [").arg(controllerName).arg(
+                          data.size());
     for (int i = 0; i < data.size(); ++i) {
         message += QString("%1%2").arg(
                        QString("%1").arg((unsigned char)(data.at(i)), 2, 16, QChar('0')).toUpper(),
@@ -518,7 +526,8 @@ void MidiController::receive(QByteArray data) {
         QHash<uint16_t, MidiInputMapping>::const_iterator it =
             m_temporaryInputMappings.find(mappingKey.key);
         if (it != m_temporaryInputMappings.end()) {
-            for (; it != m_temporaryInputMappings.end() && it.key() == mappingKey.key; ++it) {
+            for (; it != m_temporaryInputMappings.end() &&
+                    it.key() == mappingKey.key; ++it) {
                 processInputMapping(it.value(), data);
             }
             return;

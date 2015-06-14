@@ -204,7 +204,8 @@ int main(int argc, char* argv[]) {
                             Each must be one of the following file types:\n\
                             ", stdout);
 
-        QString fileExtensions(SoundSourceProxy::getSupportedFileNamePatterns().join(" "));
+        QString fileExtensions(
+            SoundSourceProxy::getSupportedFileNamePatterns().join(" "));
         QByteArray fileExtensionsBA = QString(fileExtensions).toUtf8();
         fputs(fileExtensionsBA.constData(), stdout);
         fputs("\n\n", stdout);
@@ -223,7 +224,8 @@ int main(int argc, char* argv[]) {
     --settingsPath PATH     Top-level directory where Mixxx should look\n\
                             for settings. Default is:\n", stdout);
         fprintf(stdout, "\
-                            %s\n", args.getSettingsPath().toLocal8Bit().constData());
+                            %s\n",
+                args.getSettingsPath().toLocal8Bit().constData());
         fputs("\
 \n\
     --controllerDebug       Causes Mixxx to display/log all of the controller\n\
@@ -243,7 +245,8 @@ int main(int argc, char* argv[]) {
 \n\
     -h, --help              Display this help message and exit", stdout);
 
-        fputs("\n\n(For more information, see http://mixxx.org/wiki/doku.php/command_line_options)\n",stdout);
+        fputs("\n\n(For more information, see http://mixxx.org/wiki/doku.php/command_line_options)\n",
+              stdout);
         return (0);
     }
 

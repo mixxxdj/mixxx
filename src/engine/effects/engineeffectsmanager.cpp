@@ -143,7 +143,8 @@ void EngineEffectsManager::process(const ChannelHandle& handle,
 bool EngineEffectsManager::addEffectRack(EngineEffectRack* pRack) {
     if (m_racks.contains(pRack)) {
         if (kEffectDebugOutput) {
-            qDebug() << debugString() << "WARNING: EffectRack already added to EngineEffectsManager:"
+            qDebug() << debugString() <<
+                     "WARNING: EffectRack already added to EngineEffectsManager:"
                      << pRack->number();
         }
         return false;

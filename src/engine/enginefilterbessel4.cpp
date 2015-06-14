@@ -40,7 +40,8 @@ int EngineFilterBessel4Low::setFrequencyCornersForIntDelay(
     };
 
 
-    double dDelay = kDelayFactor1 / desiredCorner1Ratio - kDelayFactor2 * desiredCorner1Ratio;
+    double dDelay = kDelayFactor1 / desiredCorner1Ratio - kDelayFactor2 *
+                    desiredCorner1Ratio;
     int iDelay =  math_clamp((int)(dDelay + 0.5), 0, maxDelay);
 
     double quantizedRatio;

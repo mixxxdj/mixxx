@@ -159,7 +159,8 @@ TEST_F(ControllerEngineTest, scriptConnectDisconnectControlIsDisconnected) {
     EXPECT_TRUE(cEngine->execute("checkConnectDisconnectControl"));
 }
 
-TEST_F(ControllerEngineTest, scriptConnectDisconnectControlIsDisconnectedByName) {
+TEST_F(ControllerEngineTest,
+       scriptConnectDisconnectControlIsDisconnectedByName) {
     ScopedTemporaryFile script(makeTemporaryFile(
                                    "var executed = false;\n"
                                    "var connection;\n"
@@ -186,7 +187,8 @@ TEST_F(ControllerEngineTest, scriptConnectDisconnectControlIsDisconnectedByName)
     EXPECT_TRUE(cEngine->execute("checkConnectDisconnectControl"));
 }
 
-TEST_F(ControllerEngineTest, scriptConnectDisconnectControlIsDisconnectedByObject) {
+TEST_F(ControllerEngineTest,
+       scriptConnectDisconnectControlIsDisconnectedByObject) {
     ScopedTemporaryFile script(makeTemporaryFile(
                                    "var executed = false;\n"
                                    "var connection;\n"

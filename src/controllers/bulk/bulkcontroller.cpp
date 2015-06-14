@@ -102,7 +102,8 @@ QString BulkController::presetExtension() {
 void BulkController::visit(const MidiControllerPreset* preset) {
     Q_UNUSED(preset);
     // TODO(XXX): throw a hissy fit.
-    qDebug() << "ERROR: Attempting to load a MidiControllerPreset to an HidController!";
+    qDebug() <<
+             "ERROR: Attempting to load a MidiControllerPreset to an HidController!";
 }
 
 void BulkController::visit(const HidControllerPreset* preset) {

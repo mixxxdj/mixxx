@@ -33,7 +33,8 @@ EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
                        EngineChannel::ChannelOrientation defaultOrientation)
     : EngineChannel(handle_group, defaultOrientation),
       m_pConfig(pConfig),
-      m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
+      m_pEngineEffectsManager(pEffectsManager ?
+                              pEffectsManager->getEngineEffectsManager() : NULL),
       m_pPassing(new ControlPushButton(ConfigKey(getGroup(), "passthrough"))),
       // Need a +1 here because the CircularBuffer only allows its size-1
       // items to be held at once (it keeps a blank spot open persistently)
@@ -124,7 +125,8 @@ bool EngineDeck::isActive() {
     return (m_pBuffer->isTrackLoaded() || isPassthroughActive());
 }
 
-void EngineDeck::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer, unsigned int nFrames) {
+void EngineDeck::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
+                               unsigned int nFrames) {
     Q_UNUSED(input);
     Q_UNUSED(nFrames);
     // Skip receiving audio input if passthrough is not active
@@ -139,7 +141,8 @@ void EngineDeck::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer, unsigne
 void EngineDeck::onInputConfigured(AudioInput input) {
     if (input.getType() != AudioPath::VINYLCONTROL) {
         // This is an error!
-        qDebug() << "WARNING: EngineDeck connected to AudioInput for a non-vinylcontrol type!";
+        qDebug() <<
+                 "WARNING: EngineDeck connected to AudioInput for a non-vinylcontrol type!";
         return;
     }
     m_sampleBuffer =  NULL;
@@ -148,7 +151,8 @@ void EngineDeck::onInputConfigured(AudioInput input) {
 void EngineDeck::onInputUnconfigured(AudioInput input) {
     if (input.getType() != AudioPath::VINYLCONTROL) {
         // This is an error!
-        qDebug() << "WARNING: EngineDeck connected to AudioInput for a non-vinylcontrol type!";
+        qDebug() <<
+                 "WARNING: EngineDeck connected to AudioInput for a non-vinylcontrol type!";
         return;
     }
     m_sampleBuffer = NULL;

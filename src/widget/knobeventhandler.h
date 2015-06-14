@@ -19,7 +19,8 @@ class KnobEventHandler {
     double valueFromMouseEvent(T* pWidget, QMouseEvent* e) {
         QPoint cur(e->globalPos());
         QPoint diff(cur - m_startPos);
-        double dist = sqrt(static_cast<double>(diff.x() * diff.x() + diff.y() * diff.y()));
+        double dist = sqrt(static_cast<double>(diff.x() * diff.x() + diff.y() *
+                                               diff.y()));
         bool y_dominant = abs(diff.y()) > abs(diff.x());
 
         // if y is dominant, then thread an increase in dy as negative (y is

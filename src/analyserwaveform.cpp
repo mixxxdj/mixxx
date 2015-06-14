@@ -26,10 +26,12 @@ AnalyserWaveform::AnalyserWaveform(ConfigObject<ConfigValue>* pConfig) :
     m_filter[2] = 0;
 
     static int i = 0;
-    m_database = QSqlDatabase::addDatabase("QSQLITE", "WAVEFORM_ANALYSIS" + QString::number(i++));
+    m_database = QSqlDatabase::addDatabase("QSQLITE",
+                                           "WAVEFORM_ANALYSIS" + QString::number(i++));
     if (!m_database.isOpen()) {
         m_database.setHostName("localhost");
-        m_database.setDatabaseName(pConfig->getSettingsPath().append("/mixxxdb.sqlite"));
+        m_database.setDatabaseName(
+            pConfig->getSettingsPath().append("/mixxxdb.sqlite"));
         m_database.setUserName("mixxx");
         m_database.setPassword("mixxx");
 
@@ -52,7 +54,8 @@ AnalyserWaveform::~AnalyserWaveform() {
     delete m_analysisDao;
 }
 
-bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
+bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate,
+                                  int totalSamples) {
     m_skipProcessing = false;
 
     m_timer->start();
@@ -245,7 +248,8 @@ void AnalyserWaveform::process(const CSAMPLE* buffer, const int bufferLength) {
 
         if (fmod(m_stride.m_position, m_stride.m_averageLength) < 1) {
             if (m_currentSummaryStride + ChannelCount > m_waveformSummary->getDataSize()) {
-                qWarning() << "AnalyserWaveform::process - current summary stride >= waveform summary size";
+                qWarning() <<
+                           "AnalyserWaveform::process - current summary stride >= waveform summary size";
                 return;
             }
             m_stride.averageStore(m_waveformSummaryData + m_currentSummaryStride);
@@ -308,7 +312,8 @@ void AnalyserWaveform::finalise(TrackPointer tio) {
     if (m_waveformSummary) {
         m_waveformSummary->setCompletion(m_waveformSummary->getDataSize());
         m_waveformSummary->setVersion(WaveformFactory::currentWaveformSummaryVersion());
-        m_waveformSummary->setDescription(WaveformFactory::currentWaveformSummaryDescription());
+        m_waveformSummary->setDescription(
+            WaveformFactory::currentWaveformSummaryDescription());
         // Since clear() could delete the waveform, clear our pointer to the
         // waveform's vector data first.
         m_waveformSummaryData = NULL;

@@ -178,8 +178,10 @@ void LinkwitzRiley8EQEffect::processChannel(const ChannelHandle& handle,
         pState->setFilters(sampleRate, pState->m_loFreq, pState->m_hiFreq);
     }
 
-    pState->m_high2->process(pInput, pState->m_pHighBuf, numSamples); // HighPass first run
-    pState->m_low2->process(pInput, pState->m_pLowBuf, numSamples); // LowPass first run for low and bandpass
+    pState->m_high2->process(pInput, pState->m_pHighBuf,
+                             numSamples); // HighPass first run
+    pState->m_low2->process(pInput, pState->m_pLowBuf,
+                            numSamples); // LowPass first run for low and bandpass
 
     if (fMid != pState->old_mid ||
             fHigh != pState->old_high) {
@@ -194,8 +196,10 @@ void LinkwitzRiley8EQEffect::processChannel(const ChannelHandle& handle,
                                   numSamples);
     }
 
-    pState->m_high1->process(pState->m_pHighBuf, pState->m_pBandBuf, numSamples); // HighPass + BandPass second run
-    pState->m_low1->process(pState->m_pLowBuf, pState->m_pLowBuf, numSamples); // LowPass second run
+    pState->m_high1->process(pState->m_pHighBuf, pState->m_pBandBuf,
+                             numSamples); // HighPass + BandPass second run
+    pState->m_low1->process(pState->m_pLowBuf, pState->m_pLowBuf,
+                            numSamples); // LowPass second run
 
     if (fLow != pState->old_low) {
         SampleUtil::copy2WithRampingGain(pOutput,

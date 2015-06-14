@@ -60,7 +60,8 @@ class DlgPrefModplug;
 class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     Q_OBJECT
   public:
-    DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader, SoundManager* soundman,
+    DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader,
+                   SoundManager* soundman,
                    PlayerManager* pPlayerManager, ControllerManager* controllers,
                    VinylControlManager* pVCManager, EffectsManager* pEffectsManager,
                    ConfigObject<ConfigValue>* pConfig, Library* pLibrary);

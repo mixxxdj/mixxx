@@ -50,9 +50,11 @@ bool WaveformRendererEndOfTrack::init() {
     return true;
 }
 
-void WaveformRendererEndOfTrack::setup(const QDomNode& node, const SkinContext& context) {
+void WaveformRendererEndOfTrack::setup(const QDomNode& node,
+                                       const SkinContext& context) {
     m_color = QColor(200, 25, 20);
-    const QString endOfTrackColorName = context.selectString(node, "EndOfTrackColor");
+    const QString endOfTrackColorName = context.selectString(node,
+                                        "EndOfTrackColor");
     if (!endOfTrackColorName.isNull()) {
         m_color.setNamedColor(endOfTrackColorName);
         m_color = WSkinColor::getCorrectColor(m_color);
@@ -88,7 +90,8 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter,
              << "m_loopControl->get()" << m_loopControl->get();*/
 
     m_endOfTrackEnabled = m_pEndOfTrackControl->get() > 0.5;
-    m_remainingTimeTriggerSeconds = WaveformWidgetFactory::instance()->getEndOfTrackWarningTime();
+    m_remainingTimeTriggerSeconds =
+        WaveformWidgetFactory::instance()->getEndOfTrackWarningTime();
     // special case of track not long enough
     const double trackLength = 0.5 * trackSamples / sampleRate;
 
@@ -129,9 +132,11 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter,
 
     const int elapsed = m_timer.elapsed() % m_blinkingPeriodMillis;
 
-    const double blickIntensity = (double)(2 * abs(elapsed - m_blinkingPeriodMillis/2)) /
+    const double blickIntensity = (double)(2 * abs(elapsed -
+                                           m_blinkingPeriodMillis/2)) /
                                   m_blinkingPeriodMillis;
-    const double criticalIntensity = (m_remainingTimeTriggerSeconds - remainingTime) /
+    const double criticalIntensity = (m_remainingTimeTriggerSeconds -
+                                      remainingTime) /
                                      m_remainingTimeTriggerSeconds;
 
     painter->save();

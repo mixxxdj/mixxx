@@ -13,12 +13,14 @@
 const QString BansheeFeature::BANSHEE_MOUNT_KEY = "mixxx.BansheeFeature.mount";
 QString BansheeFeature::m_databaseFile;
 
-BansheeFeature::BansheeFeature(QObject* parent, TrackCollection* pTrackCollection, ConfigObject<ConfigValue>* pConfig)
+BansheeFeature::BansheeFeature(QObject* parent,
+                               TrackCollection* pTrackCollection, ConfigObject<ConfigValue>* pConfig)
     : BaseExternalLibraryFeature(parent, pTrackCollection),
       m_pTrackCollection(pTrackCollection),
       m_cancelImport(false) {
     Q_UNUSED(pConfig);
-    m_pBansheePlaylistModel = new BansheePlaylistModel(this, m_pTrackCollection, &m_connection);
+    m_pBansheePlaylistModel = new BansheePlaylistModel(this, m_pTrackCollection,
+            &m_connection);
     m_isActivated = false;
     m_title = tr("Banshee");
 }
@@ -85,7 +87,8 @@ void BansheeFeature::activate() {
             return;
         }
 
-        qDebug() << "Using Banshee Database Schema V" << m_connection.getSchemaVersion();
+        qDebug() << "Using Banshee Database Schema V" <<
+                 m_connection.getSchemaVersion();
 
         m_isActivated =  true;
 
@@ -97,7 +100,8 @@ void BansheeFeature::activate() {
         foreach (playlist, list) {
             qDebug() << playlist.name;
             // append the playlist to the child model
-            TreeItem* item = new TreeItem(playlist.name, playlist.playlistId, this, playlist_root);
+            TreeItem* item = new TreeItem(playlist.name, playlist.playlistId, this,
+                                          playlist_root);
             playlist_root->appendChild(item);
         }
 
@@ -136,15 +140,19 @@ TreeItemModel* BansheeFeature::getChildModel() {
     return &m_childModel;
 }
 
-void BansheeFeature::appendTrackIdsFromRightClickIndex(QList<int>* trackIds, QString* pPlaylist) {
+void BansheeFeature::appendTrackIdsFromRightClickIndex(QList<int>* trackIds,
+        QString* pPlaylist) {
     if (m_lastRightClickedIndex.isValid()) {
-        TreeItem* item = static_cast<TreeItem*>(m_lastRightClickedIndex.internalPointer());
+        TreeItem* item = static_cast<TreeItem*>
+                         (m_lastRightClickedIndex.internalPointer());
         *pPlaylist = item->data().toString();
         QString playlistStId = item->dataPath().toString();
         int playlistID = playlistStId.toInt();
-        qDebug() << "BansheeFeature::appendTrackIdsFromRightClickIndex " << *pPlaylist << " " << playlistStId;
+        qDebug() << "BansheeFeature::appendTrackIdsFromRightClickIndex " << *pPlaylist
+                 << " " << playlistStId;
         if (playlistID > 0) {
-            BansheePlaylistModel* pPlaylistModelToAdd = new BansheePlaylistModel(this, m_pTrackCollection, &m_connection);
+            BansheePlaylistModel* pPlaylistModelToAdd = new BansheePlaylistModel(this,
+                    m_pTrackCollection, &m_connection);
             pPlaylistModelToAdd->setTableModel(playlistID);
 
             // Copy Tracks

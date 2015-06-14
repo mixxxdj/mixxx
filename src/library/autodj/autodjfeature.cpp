@@ -55,7 +55,8 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
     qRegisterMetaType<AutoDJProcessor::AutoDJState>("AutoDJState");
     m_pAutoDJProcessor = new AutoDJProcessor(
         this, m_pConfig, pPlayerManager, m_iAutoDJPlaylistId, m_pTrackCollection);
-    connect(m_pAutoDJProcessor, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
+    connect(m_pAutoDJProcessor, SIGNAL(loadTrackToPlayer(TrackPointer, QString,
+                                       bool)),
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
 
 #ifdef __AUTODJCRATES__
@@ -83,7 +84,8 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
     // from, the auto-DJ queue.
     connect(&m_crateMapper, SIGNAL(mapped(int)),
             this, SLOT(slotAddCrateToAutoDj(int)));
-    m_pRemoveCrateFromAutoDj = new QAction(tr("Remove Crate as Track Source"), this);
+    m_pRemoveCrateFromAutoDj = new QAction(tr("Remove Crate as Track Source"),
+                                           this);
     connect(m_pRemoveCrateFromAutoDj, SIGNAL(triggered()),
             this, SLOT(slotRemoveCrateFromAutoDj()));
 
@@ -149,7 +151,8 @@ bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     // If a track is dropped onto a playlist's name, but the track isn't in the
     // library, then add the track to the library before adding it to the
     // playlist.
-    QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
+    QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false,
+                             true);
     QList<int> trackIds;
     if (pSource) {
         trackIds = trackDao.getTrackIds(files);
@@ -287,7 +290,8 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
             iTrackId = m_autoDjCratesDao.getRandomTrackId();
             if (iTrackId != -1) {
                 // Get Track Information
-                TrackPointer addedTrack = (m_pTrackCollection->getTrackDAO()).getTrack(iTrackId);
+                TrackPointer addedTrack = (m_pTrackCollection->getTrackDAO()).getTrack(
+                                              iTrackId);
                 if (addedTrack->exists()) {
                     playlistDao.appendTrackToPlaylist(iTrackId, m_iAutoDJPlaylistId);
                     m_pAutoDJView->onShow();
@@ -300,7 +304,8 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
             failedRetrieveAttempts += 1;
         }
         // If we couldn't get a track from the crates , get one from the library
-        qDebug () << "Could not load tracks from crates, attempting to load from library.";
+        qDebug () <<
+                  "Could not load tracks from crates, attempting to load from library.";
         failedRetrieveAttempts = 0;
         while ( failedRetrieveAttempts < kMaxRetrieveAttempts ) {
             iTrackId = m_autoDjCratesDao.getRandomTrackIdFromLibrary(m_iAutoDJPlaylistId);
@@ -334,7 +339,8 @@ void AutoDJFeature::constructCrateChildModel() {
     crateListTableModel.setTable(CRATE_TABLE);
     crateListTableModel.setSort(crateListTableModel.fieldIndex(CRATETABLE_NAME),
                                 Qt::AscendingOrder);
-    crateListTableModel.setFilter(CRATETABLE_AUTODJ_SOURCE + " = 1 AND " + CRATETABLE_SHOW + " = 1");
+    crateListTableModel.setFilter(CRATETABLE_AUTODJ_SOURCE + " = 1 AND " +
+                                  CRATETABLE_SHOW + " = 1");
     crateListTableModel.select();
     while (crateListTableModel.canFetchMore()) {
         crateListTableModel.fetchMore();

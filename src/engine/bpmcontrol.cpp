@@ -32,22 +32,27 @@ BpmControl::BpmControl(QString group,
     m_tapFilter(this, filterLength, maxInterval),
     m_sGroup(group) {
     m_pPlayButton = new ControlObjectSlave(group, "play", this);
-    m_pPlayButton->connectValueChanged(SLOT(slotControlPlay(double)), Qt::DirectConnection);
+    m_pPlayButton->connectValueChanged(SLOT(slotControlPlay(double)),
+                                       Qt::DirectConnection);
     m_pReverseButton = new ControlObjectSlave(group, "reverse", this);
     m_pRateSlider = new ControlObjectSlave(group, "rate", this);
-    m_pRateSlider->connectValueChanged(SLOT(slotAdjustRateSlider()), Qt::DirectConnection);
+    m_pRateSlider->connectValueChanged(SLOT(slotAdjustRateSlider()),
+                                       Qt::DirectConnection);
     m_pQuantize = ControlObject::getControl(group, "quantize");
     m_pRateRange = new ControlObjectSlave(group, "rateRange", this);
-    m_pRateRange->connectValueChanged(SLOT(slotAdjustRateSlider()), Qt::DirectConnection);
+    m_pRateRange->connectValueChanged(SLOT(slotAdjustRateSlider()),
+                                      Qt::DirectConnection);
     m_pRateDir = new ControlObjectSlave(group, "rate_dir", this);
-    m_pRateDir->connectValueChanged(SLOT(slotAdjustRateSlider()), Qt::DirectConnection);
+    m_pRateDir->connectValueChanged(SLOT(slotAdjustRateSlider()),
+                                    Qt::DirectConnection);
 
     m_pPrevBeat.reset(new ControlObjectSlave(group, "beat_prev"));
     m_pNextBeat.reset(new ControlObjectSlave(group, "beat_next"));
     m_pClosestBeat.reset(new ControlObjectSlave(group, "beat_closest"));
 
     m_pLoopEnabled = new ControlObjectSlave(group, "loop_enabled", this);
-    m_pLoopStartPosition = new ControlObjectSlave(group, "loop_start_position", this);
+    m_pLoopStartPosition = new ControlObjectSlave(group, "loop_start_position",
+            this);
     m_pLoopEndPosition = new ControlObjectSlave(group, "loop_end_position", this);
 
     m_pVCEnabled = new ControlObjectSlave(group, "vinylcontrol_enabled", this);
@@ -57,19 +62,23 @@ BpmControl::BpmControl(QString group,
             this, SLOT(slotFileBpmChanged(double)),
             Qt::DirectConnection);
     m_pLocalBpm = new ControlObject(ConfigKey(group, "local_bpm"));
-    m_pAdjustBeatsFaster = new ControlPushButton(ConfigKey(group, "beats_adjust_faster"), false);
+    m_pAdjustBeatsFaster = new ControlPushButton(ConfigKey(group,
+            "beats_adjust_faster"), false);
     connect(m_pAdjustBeatsFaster, SIGNAL(valueChanged(double)),
             this, SLOT(slotAdjustBeatsFaster(double)),
             Qt::DirectConnection);
-    m_pAdjustBeatsSlower = new ControlPushButton(ConfigKey(group, "beats_adjust_slower"), false);
+    m_pAdjustBeatsSlower = new ControlPushButton(ConfigKey(group,
+            "beats_adjust_slower"), false);
     connect(m_pAdjustBeatsSlower, SIGNAL(valueChanged(double)),
             this, SLOT(slotAdjustBeatsSlower(double)),
             Qt::DirectConnection);
-    m_pTranslateBeatsEarlier = new ControlPushButton(ConfigKey(group, "beats_translate_earlier"), false);
+    m_pTranslateBeatsEarlier = new ControlPushButton(ConfigKey(group,
+            "beats_translate_earlier"), false);
     connect(m_pTranslateBeatsEarlier, SIGNAL(valueChanged(double)),
             this, SLOT(slotTranslateBeatsEarlier(double)),
             Qt::DirectConnection);
-    m_pTranslateBeatsLater = new ControlPushButton(ConfigKey(group, "beats_translate_later"), false);
+    m_pTranslateBeatsLater = new ControlPushButton(ConfigKey(group,
+            "beats_translate_later"), false);
     connect(m_pTranslateBeatsLater, SIGNAL(valueChanged(double)),
             this, SLOT(slotTranslateBeatsLater(double)),
             Qt::DirectConnection);
@@ -79,7 +88,8 @@ BpmControl::BpmControl(QString group,
     // bpm_down controls.
     // bpm_up / bpm_down steps by 1
     // bpm_up_small / bpm_down_small steps by 0.1
-    m_pEngineBpm = new ControlLinPotmeter(ConfigKey(group, "bpm"), 1, 200, 1, 0.1, true);
+    m_pEngineBpm = new ControlLinPotmeter(ConfigKey(group, "bpm"), 1, 200, 1, 0.1,
+                                          true);
     connect(m_pEngineBpm, SIGNAL(valueChanged(double)),
             this, SLOT(slotSetEngineBpm(double)),
             Qt::DirectConnection);
@@ -105,12 +115,14 @@ BpmControl::BpmControl(QString group,
             this, SLOT(slotControlBeatSyncTempo(double)),
             Qt::DirectConnection);
 
-    m_pTranslateBeats = new ControlPushButton(ConfigKey(group, "beats_translate_curpos"));
+    m_pTranslateBeats = new ControlPushButton(ConfigKey(group,
+            "beats_translate_curpos"));
     connect(m_pTranslateBeats, SIGNAL(valueChanged(double)),
             this, SLOT(slotBeatsTranslate(double)),
             Qt::DirectConnection);
 
-    m_pBeatsTranslateMatchAlignment = new ControlPushButton(ConfigKey(group, "beats_translate_match_alignment"));
+    m_pBeatsTranslateMatchAlignment = new ControlPushButton(ConfigKey(group,
+            "beats_translate_match_alignment"));
     connect(m_pBeatsTranslateMatchAlignment, SIGNAL(valueChanged(double)),
             this, SLOT(slotBeatsTranslateMatchAlignment(double)),
             Qt::DirectConnection);
@@ -233,7 +245,8 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
     // (60 seconds per minute) * (1000 milliseconds per second) / (X millis per
     // beat) = Y beats/minute
     double averageBpm = 60.0 * 1000.0 / averageLength;
-    double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
+    double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() *
+                   m_pRateSlider->get();
     m_pFileBpm->set(averageBpm / dRate);
     slotAdjustRateSlider();
 }
@@ -345,7 +358,8 @@ bool BpmControl::syncTempo() {
 
             // Adjust the rateScale. We have to divide by the range and
             // direction to get the correct rateScale.
-            double desiredRateSlider = desiredRateShift / (m_pRateRange->get() * m_pRateDir->get());
+            double desiredRateSlider = desiredRateShift / (m_pRateRange->get() *
+                                       m_pRateDir->get());
             // And finally, set the slider
             m_pRateSlider->set(desiredRateSlider);
 
@@ -434,7 +448,8 @@ double BpmControl::calcSyncedRate(double userTweak) {
     return (rate + userTweak) * adjustment;
 }
 
-double BpmControl::calcSyncAdjustment(double my_percentage, bool userTweakingSync) {
+double BpmControl::calcSyncAdjustment(double my_percentage,
+                                      bool userTweakingSync) {
     if (m_resetSyncAdjustment) {
         m_resetSyncAdjustment = false;
         m_dLastSyncAdjustment = 1.0;
@@ -648,7 +663,8 @@ double BpmControl::getPhaseOffset(double dThisPosition) {
         }
     }
 
-    bool this_near_next = dThisNextBeat - dThisPosition <= dThisPosition - dThisPrevBeat;
+    bool this_near_next = dThisNextBeat - dThisPosition <= dThisPosition -
+                          dThisPrevBeat;
     bool other_near_next = dOtherBeatFraction >= 0.5;
 
     // We want our beat fraction to be identical to theirs.
@@ -728,7 +744,8 @@ double BpmControl::getPhaseOffset(double dThisPosition) {
 
 void BpmControl::slotAdjustRateSlider() {
     // Adjust playback bpm in response to a change in the rate slider.
-    double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
+    double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() *
+                   m_pRateSlider->get();
     m_pEngineBpm->set(m_pLocalBpm->get() * dRate);
 }
 
@@ -768,7 +785,8 @@ void BpmControl::slotUpdatedTrackBeats() {
 }
 
 void BpmControl::slotBeatsTranslate(double v) {
-    if (v > 0 && m_pBeats && (m_pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
+    if (v > 0 && m_pBeats &&
+            (m_pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
         double currentSample = getCurrentSample();
         double closestBeat = m_pBeats->findClosestBeat(currentSample);
         int delta = currentSample - closestBeat;
@@ -780,7 +798,8 @@ void BpmControl::slotBeatsTranslate(double v) {
 }
 
 void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
-    if (v > 0 && m_pBeats && (m_pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
+    if (v > 0 && m_pBeats &&
+            (m_pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
         // Must reset the user offset *before* calling getPhaseOffset(),
         // otherwise it will always return 0 if master sync is active.
         m_dUserOffset = 0.0;
@@ -790,7 +809,8 @@ void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
     }
 }
 
-void BpmControl::setCurrentSample(const double dCurrentSample, const double dTotalSamples) {
+void BpmControl::setCurrentSample(const double dCurrentSample,
+                                  const double dTotalSamples) {
     m_dPreviousSample = dCurrentSample;
     EngineControl::setCurrentSample(dCurrentSample, dTotalSamples);
 }

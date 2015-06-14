@@ -160,7 +160,8 @@ int EncoderFfmpegResample::open(enum AVSampleFormat inSampleFmt,
     return 0;
 }
 
-unsigned int EncoderFfmpegResample::reSample(AVFrame* inframe, quint8** outbuffer) {
+unsigned int EncoderFfmpegResample::reSample(AVFrame* inframe,
+        quint8** outbuffer) {
 
     if (m_pSwrCtx) {
 

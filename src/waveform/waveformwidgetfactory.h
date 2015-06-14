@@ -58,7 +58,8 @@ class WaveformWidgetHolder {
 
 //########################################
 
-class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFactory> {
+class WaveformWidgetFactory : public QObject,
+    public Singleton<WaveformWidgetFactory> {
     Q_OBJECT
   public:
     //TODO merge this enum woth the waveform analyser one
@@ -148,7 +149,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
   private:
     void evaluateWidgets();
-    WaveformWidgetAbstract* createWaveformWidget(WaveformWidgetType::Type type, WWaveformViewer* viewer);
+    WaveformWidgetAbstract* createWaveformWidget(WaveformWidgetType::Type type,
+            WWaveformViewer* viewer);
     int findIndexOf(WWaveformViewer* viewer) const;
 
     //All type of available widgets

@@ -68,13 +68,16 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
     m_isActivated = false;
     m_title = tr("iTunes");
 
-    m_database = QSqlDatabase::cloneDatabase(pTrackCollection->getDatabase(), "ITUNES_SCANNER");
+    m_database = QSqlDatabase::cloneDatabase(pTrackCollection->getDatabase(),
+                 "ITUNES_SCANNER");
 
     //Open the database connection in this thread.
     if (!m_database.open()) {
-        qDebug() << "Failed to open database for iTunes scanner." << m_database.lastError();
+        qDebug() << "Failed to open database for iTunes scanner." <<
+                 m_database.lastError();
     }
-    connect(&m_future_watcher, SIGNAL(finished()), this, SLOT(onTrackCollectionLoaded()));
+    connect(&m_future_watcher, SIGNAL(finished()), this,
+            SLOT(onTrackCollectionLoaded()));
 }
 
 ITunesFeature::~ITunesFeature() {
@@ -85,7 +88,8 @@ ITunesFeature::~ITunesFeature() {
     delete m_pITunesPlaylistModel;
 }
 
-BaseSqlTableModel* ITunesFeature::getPlaylistModelForPlaylist(QString playlist) {
+BaseSqlTableModel* ITunesFeature::getPlaylistModelForPlaylist(
+    QString playlist) {
     BaseExternalPlaylistModel* pModel = new BaseExternalPlaylistModel(
         this, m_pTrackCollection,
         "mixxx.db.model.itunes_playlist",
@@ -298,7 +302,8 @@ void ITunesFeature::guessMusicLibraryMountpoint(QXmlStreamReader& xml) {
     QString lcs = LCS(m_dbfile, music_folder);
 
     if (lcs.size() <= 1) {
-        qDebug() << "ERROR: Couldn't find a suitable transformation to load iTunes data files. Leaving defaults intact.";
+        qDebug() <<
+                 "ERROR: Couldn't find a suitable transformation to load iTunes data files. Leaving defaults intact.";
     }
 
     int musicFolderLcsIndex = music_folder.indexOf(lcs);
@@ -617,7 +622,8 @@ TreeItem* ITunesFeature::parsePlaylists(QXmlStreamReader& xml) {
 
 bool ITunesFeature::readNextStartElement(QXmlStreamReader& xml) {
     QXmlStreamReader::TokenType token = QXmlStreamReader::NoToken;
-    while (token != QXmlStreamReader::EndDocument && token != QXmlStreamReader::Invalid) {
+    while (token != QXmlStreamReader::EndDocument &&
+            token != QXmlStreamReader::Invalid) {
         token = xml.readNext();
         if (token == QXmlStreamReader::StartElement) {
             return true;
@@ -626,7 +632,8 @@ bool ITunesFeature::readNextStartElement(QXmlStreamReader& xml) {
     return false;
 }
 
-void ITunesFeature::parsePlaylist(QXmlStreamReader& xml, QSqlQuery& query_insert_to_playlists,
+void ITunesFeature::parsePlaylist(QXmlStreamReader& xml,
+                                  QSqlQuery& query_insert_to_playlists,
                                   QSqlQuery& query_insert_to_playlist_tracks, TreeItem* root) {
     //qDebug() << "Parse Playlist";
 

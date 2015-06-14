@@ -22,7 +22,8 @@ TEST_F(AudioTaperPotTest, ScaleTest) {
         const double minDB = -6;
         const double maxDB = 6;
         const double neutralParameter = 0.5;
-        ControlAudioTaperPotBehavior* catpb = new ControlAudioTaperPotBehavior(minDB, maxDB, neutralParameter);
+        ControlAudioTaperPotBehavior* catpb = new ControlAudioTaperPotBehavior(minDB,
+                maxDB, neutralParameter);
         // Parameter 0 is always 0 (-Infinity)
         ASSERT_EQ(0.0, catpb->parameterToValue(0));
         // Parameter 0 is always 0 (-Infinity)
@@ -35,8 +36,10 @@ TEST_F(AudioTaperPotTest, ScaleTest) {
         // Midi value 64 should result in 0,5
         ASSERT_EQ(neutralParameter, catpb->midiValueToParameter(neutralMidi));
         // roundtrip check
-        ASSERT_DOUBLE_EQ(0.25, catpb->parameterToValue(catpb->midiValueToParameter(catpb->valueToMidiParameter(0.25))));
-        ASSERT_DOUBLE_EQ(0.75, catpb->parameterToValue(catpb->midiValueToParameter(catpb->valueToMidiParameter(0.75))));
+        ASSERT_DOUBLE_EQ(0.25, catpb->parameterToValue(catpb->midiValueToParameter(
+                             catpb->valueToMidiParameter(0.25))));
+        ASSERT_DOUBLE_EQ(0.75, catpb->parameterToValue(catpb->midiValueToParameter(
+                             catpb->valueToMidiParameter(0.75))));
         delete catpb;
     }
 
@@ -44,7 +47,8 @@ TEST_F(AudioTaperPotTest, ScaleTest) {
         const double minDB = 0;
         const double maxDB = 6;
         const double neutralParameter = 0.5;
-        ControlAudioTaperPotBehavior* catpb = new ControlAudioTaperPotBehavior(minDB, maxDB, neutralParameter);
+        ControlAudioTaperPotBehavior* catpb = new ControlAudioTaperPotBehavior(minDB,
+                maxDB, neutralParameter);
         // Parameter 0 is always 0 (-Infinity)
         ASSERT_EQ(0.0, catpb->parameterToValue(0));
         // Parameter 0 is always 0 (-Infinity)
@@ -57,8 +61,10 @@ TEST_F(AudioTaperPotTest, ScaleTest) {
         // Midi value 64 should result in 0,5
         ASSERT_EQ(neutralParameter, catpb->midiValueToParameter(neutralMidi));
         // roundtrip check
-        ASSERT_DOUBLE_EQ(0.25, catpb->parameterToValue(catpb->midiValueToParameter(catpb->valueToMidiParameter(0.25))));
-        ASSERT_DOUBLE_EQ(0.75, catpb->parameterToValue(catpb->midiValueToParameter(catpb->valueToMidiParameter(0.75))));
+        ASSERT_DOUBLE_EQ(0.25, catpb->parameterToValue(catpb->midiValueToParameter(
+                             catpb->valueToMidiParameter(0.25))));
+        ASSERT_DOUBLE_EQ(0.75, catpb->parameterToValue(catpb->midiValueToParameter(
+                             catpb->valueToMidiParameter(0.75))));
         delete catpb;
     }
 
@@ -66,7 +72,8 @@ TEST_F(AudioTaperPotTest, ScaleTest) {
         const double minDB = -6;
         const double maxDB = 0;
         const double neutralParameter = 1;
-        ControlAudioTaperPotBehavior* catpb = new ControlAudioTaperPotBehavior(minDB, maxDB, neutralParameter);
+        ControlAudioTaperPotBehavior* catpb = new ControlAudioTaperPotBehavior(minDB,
+                maxDB, neutralParameter);
         // Parameter 0 is always 0 (-Infinity)
         ASSERT_EQ(0.0, catpb->parameterToValue(0));
         // Parameter 0 is always 0 (-Infinity)
@@ -79,8 +86,10 @@ TEST_F(AudioTaperPotTest, ScaleTest) {
         // Midi value 64 should result in 0,5
         ASSERT_EQ(neutralParameter, catpb->midiValueToParameter(neutralMidi));
         // roundtrip checkx
-        ASSERT_DOUBLE_EQ(0.25, catpb->parameterToValue(catpb->midiValueToParameter(catpb->valueToMidiParameter(0.25))));
-        ASSERT_DOUBLE_EQ(0.75, catpb->parameterToValue(catpb->midiValueToParameter(catpb->valueToMidiParameter(0.75))));
+        ASSERT_DOUBLE_EQ(0.25, catpb->parameterToValue(catpb->midiValueToParameter(
+                             catpb->valueToMidiParameter(0.25))));
+        ASSERT_DOUBLE_EQ(0.75, catpb->parameterToValue(catpb->midiValueToParameter(
+                             catpb->valueToMidiParameter(0.75))));
         delete catpb;
     }
 }

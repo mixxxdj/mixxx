@@ -32,7 +32,8 @@ ControlGroupDelegate::ControlGroupDelegate(QObject* parent)
     }
 }
 
-void ControlGroupDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option,
+void ControlGroupDelegate::paint(QPainter* painter,
+                                 const QStyleOptionViewItem& option,
                                  const QModelIndex& index) const {
     if (index.data().canConvert<QString>()) {
         QString value = index.data().value<QString>();
@@ -79,7 +80,8 @@ void ControlGroupDelegate::setEditorData(QWidget* editor,
     comboBox->setCurrentIndex(comboBox->findText(value));
 }
 
-void ControlGroupDelegate::setModelData(QWidget* editor, QAbstractItemModel* model,
+void ControlGroupDelegate::setModelData(QWidget* editor,
+                                        QAbstractItemModel* model,
                                         const QModelIndex& index) const {
     QString midiType = 0;
     QComboBox* comboBox = static_cast<QComboBox*>(editor);
@@ -94,7 +96,8 @@ void ControlGroupDelegate::setModelData(QWidget* editor, QAbstractItemModel* mod
     //newly selected ControlGroup. For example, switching from "[Channel1]"
     //to "[Master]" means that a ControlValue of "play" is no longer valid.
     //If it isn't, then blank that column's value.
-    QModelIndex nextDoor = index.sibling(index.row(), MIDIINPUTTABLEINDEX_CONTROLOBJECTVALUE);
+    QModelIndex nextDoor = index.sibling(index.row(),
+                                         MIDIINPUTTABLEINDEX_CONTROLOBJECTVALUE);
     ControlValueDelegate::verifyControlValueValidity(group, model, nextDoor);
 }
 

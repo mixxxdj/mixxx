@@ -59,7 +59,8 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         stats_by_control[message.first.control].addMessage(message);
     }
 
-    qDebug() << "LearningUtils guessing MIDI mapping from" << messages.size() << "messages.";
+    qDebug() << "LearningUtils guessing MIDI mapping from" << messages.size() <<
+             "messages.";
 
     foreach (MidiOpCode opcode, stats.opcodes) {
         qDebug() << "Opcode:" << opcode;
@@ -73,7 +74,8 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         qDebug() << "Control:" << control;
     }
 
-    for (QMap<unsigned char, int>::const_iterator it = stats.value_histogram.begin();
+    for (QMap<unsigned char, int>::const_iterator it =
+                stats.value_histogram.begin();
             it != stats.value_histogram.end(); ++it) {
         qDebug() << "Overall Value:" << it.key()
                  << "count" << it.value();
@@ -95,7 +97,8 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
 
     bool one_control = stats.controls.size() == 1;
     bool one_channel = stats.channels.size() == 1;
-    bool only_note_on = stats.opcodes.size() == 1 && stats.opcodes.contains(MIDI_NOTE_ON);
+    bool only_note_on = stats.opcodes.size() == 1 &&
+                        stats.opcodes.contains(MIDI_NOTE_ON);
     bool only_note_on_and_note_off = stats.opcodes.size() == 2 &&
                                      stats.opcodes.contains(MIDI_NOTE_ON) &&
                                      stats.opcodes.contains(MIDI_NOTE_OFF);
@@ -103,7 +106,8 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
     bool has_cc = stats.opcodes.contains(MIDI_CC);
     bool only_cc = stats.opcodes.size() == 1 && has_cc;
     int num_cc_controls = 0;
-    for (QMap<unsigned char, MessageStats>::const_iterator it = stats_by_control.begin();
+    for (QMap<unsigned char, MessageStats>::const_iterator it =
+                stats_by_control.begin();
             it != stats_by_control.end(); ++it) {
         if (it->opcodes.contains(MIDI_CC)) {
             num_cc_controls++;
@@ -225,7 +229,8 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
 
         // Find the CC control (based on the predicate one must exist) and add a
         // binding for it.
-        for (QMap<unsigned char, MessageStats>::const_iterator it = stats_by_control.begin();
+        for (QMap<unsigned char, MessageStats>::const_iterator it =
+                    stats_by_control.begin();
                 it != stats_by_control.end(); ++it) {
             if (it->opcodes.contains(MIDI_CC)) {
                 MidiKey knob;
@@ -269,8 +274,10 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         // The control with the larger abs difference in messages is the LSB. If
         // they are equal we choose one arbitrarily (depends on QSet iteration
         // order which is undefined).
-        int lsb_control = control1_max_abs_diff > control2_max_abs_diff ? control1 : control2;
-        int msb_control = control1_max_abs_diff > control2_max_abs_diff ? control2 : control1;
+        int lsb_control = control1_max_abs_diff > control2_max_abs_diff ? control1 :
+                          control2;
+        int msb_control = control1_max_abs_diff > control2_max_abs_diff ? control2 :
+                          control1;
 
         // NOTE(rryan): There is an industry convention that a 14-bit CC control
         // is a pair of controls offset by 32 (the lower is the MSB, the higher

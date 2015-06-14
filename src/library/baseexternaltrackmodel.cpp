@@ -39,14 +39,20 @@ BaseExternalTrackModel::~BaseExternalTrackModel() {
 }
 
 TrackPointer BaseExternalTrackModel::getTrack(const QModelIndex& index) const {
-    QString artist = index.sibling(index.row(), fieldIndex("artist")).data().toString();
-    QString title = index.sibling(index.row(), fieldIndex("title")).data().toString();
-    QString album = index.sibling(index.row(), fieldIndex("album")).data().toString();
+    QString artist = index.sibling(index.row(),
+                                   fieldIndex("artist")).data().toString();
+    QString title = index.sibling(index.row(),
+                                  fieldIndex("title")).data().toString();
+    QString album = index.sibling(index.row(),
+                                  fieldIndex("album")).data().toString();
     QString year = index.sibling(index.row(), fieldIndex("year")).data().toString();
-    QString genre = index.sibling(index.row(), fieldIndex("genre")).data().toString();
-    float bpm = index.sibling(index.row(), fieldIndex("bpm")).data().toString().toFloat();
+    QString genre = index.sibling(index.row(),
+                                  fieldIndex("genre")).data().toString();
+    float bpm = index.sibling(index.row(),
+                              fieldIndex("bpm")).data().toString().toFloat();
 
-    QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
+    QString location = index.sibling(index.row(),
+                                     fieldIndex("location")).data().toString();
 
     if (location.isEmpty()) {
         // Track is lost

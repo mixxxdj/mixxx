@@ -33,9 +33,12 @@ PlayerManager::PlayerManager(ConfigObject<ConfigValue>* pConfig,
     // NOTE(XXX) LegacySkinParser relies on these controls being COs and
     // not COTMs listening to a CO.
     m_pAnalyserQueue(NULL),
-    m_pCONumDecks(new ControlObject(ConfigKey("[Master]", "num_decks"), true, true)),
-    m_pCONumSamplers(new ControlObject(ConfigKey("[Master]", "num_samplers"), true, true)),
-    m_pCONumPreviewDecks(new ControlObject(ConfigKey("[Master]", "num_preview_decks"), true, true)) {
+    m_pCONumDecks(new ControlObject(ConfigKey("[Master]", "num_decks"), true,
+                                    true)),
+    m_pCONumSamplers(new ControlObject(ConfigKey("[Master]", "num_samplers"), true,
+                                       true)),
+    m_pCONumPreviewDecks(new ControlObject(ConfigKey("[Master]",
+                                           "num_preview_decks"), true, true)) {
 
     connect(m_pCONumDecks, SIGNAL(valueChanged(double)),
             this, SLOT(slotNumDecksControlChanged(double)),
@@ -315,7 +318,8 @@ void PlayerManager::addDeckInner() {
     pDeck->setupEqControls();
 
     // Setup quick effect rack for this deck.
-    QuickEffectRackPointer pQuickEffectRack = m_pEffectsManager->getQuickEffectRack(0);
+    QuickEffectRackPointer pQuickEffectRack = m_pEffectsManager->getQuickEffectRack(
+                0);
     if (pQuickEffectRack) {
         pQuickEffectRack->addEffectChainSlotForGroup(group);
     }
@@ -395,10 +399,12 @@ Deck* PlayerManager::getDeck(unsigned int deck) const {
     return m_decks[deck - 1];
 }
 
-PreviewDeck* PlayerManager::getPreviewDeck(unsigned int libPreviewPlayer) const {
+PreviewDeck* PlayerManager::getPreviewDeck(unsigned int libPreviewPlayer)
+const {
     QMutexLocker locker(&m_mutex);
     if (libPreviewPlayer < 1 || libPreviewPlayer > numPreviewDecks()) {
-        qWarning() << "Warning PlayerManager::getPreviewDeck() called with invalid index: "
+        qWarning() <<
+                   "Warning PlayerManager::getPreviewDeck() called with invalid index: "
                    << libPreviewPlayer;
         return NULL;
     }
@@ -420,13 +426,15 @@ bool PlayerManager::hasVinylInput(int inputnum) const {
     return m_pSoundManager->getConfig().getInputs().values().contains(vinyl_input);
 }
 
-void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play) {
+void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group,
+        bool play) {
     // Do not lock mutex in this method unless it is changed to access
     // PlayerManager state.
     BaseTrackPlayer* pPlayer = getPlayer(group);
 
     if (pPlayer == NULL) {
-        qWarning() << "Invalid group argument " << group << " to slotLoadTrackToPlayer.";
+        qWarning() << "Invalid group argument " << group <<
+                   " to slotLoadTrackToPlayer.";
         return;
     }
 

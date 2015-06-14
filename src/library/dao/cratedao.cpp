@@ -328,7 +328,8 @@ QString CrateDAO::crateName(const int crateId) {
 
 unsigned int CrateDAO::crateSize(const int crateId) {
     QSqlQuery query(m_database);
-    query.prepare("SELECT COUNT(*) FROM " CRATE_TRACKS_TABLE " WHERE crate_id = (:id)");
+    query.prepare("SELECT COUNT(*) FROM " CRATE_TRACKS_TABLE
+                  " WHERE crate_id = (:id)");
     query.bindValue(":id", crateId);
     if (query.exec()) {
         if (query.next()) {
@@ -340,7 +341,8 @@ unsigned int CrateDAO::crateSize(const int crateId) {
     return 0;
 }
 
-void CrateDAO::copyCrateTracks(const int sourceCrateId, const int targetCrateId) {
+void CrateDAO::copyCrateTracks(const int sourceCrateId,
+                               const int targetCrateId) {
     // Query Tracks from the source Playlist
     QSqlQuery query(m_database);
     query.prepare("SELECT track_id FROM crate_tracks "
@@ -383,7 +385,8 @@ bool CrateDAO::addTrackToCrate(const int trackId, const int crateId) {
 int CrateDAO::addTracksToCrate(const int crateId, QList<int>* trackIdList) {
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
-    query.prepare("INSERT INTO " CRATE_TRACKS_TABLE " (crate_id, track_id) VALUES (:crate_id, :track_id)");
+    query.prepare("INSERT INTO " CRATE_TRACKS_TABLE
+                  " (crate_id, track_id) VALUES (:crate_id, :track_id)");
 
     for (int i = 0; i < trackIdList->size(); ++i) {
         query.bindValue(":crate_id", crateId);

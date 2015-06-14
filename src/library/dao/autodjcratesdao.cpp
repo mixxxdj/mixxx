@@ -908,7 +908,8 @@ int AutoDJCratesDAO::getRandomTrackIdFromLibrary(const int iPlaylistId) {
     // getRandomTrackId() would have already created the temporary auto-DJ-crates database.
     QSqlQuery oQuery(m_rDatabase);
     // We ignore tracks from [0,ignoreIndex1] and [ignoreIndex2+1,most_played_Track]
-    int iTrackId = -1, iTotalTracks = 0, beginIndex = 0, offset = 0, iIgnoreIndex1 = 0, iIgnoreIndex2 = 0;
+    int iTrackId = -1, iTotalTracks = 0, beginIndex = 0, offset = 0,
+        iIgnoreIndex1 = 0, iIgnoreIndex2 = 0;
     oQuery.prepare(" SELECT COUNT(*)"
                    " FROM library"
                    " WHERE id NOT IN"

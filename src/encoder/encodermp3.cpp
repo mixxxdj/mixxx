@@ -100,10 +100,12 @@ EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
     }
 
     if (!m_library || !m_library->isLoaded()) {
-        ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+        ErrorDialogProperties* props =
+            ErrorDialogHandler::instance()->newDialogProperties();
         props->setType(DLG_WARNING);
         props->setTitle(QObject::tr("Encoder"));
-        QString missingCodec = QObject::tr("<html>Mixxx cannot record or stream in MP3 without the MP3 encoder &quot;lame&quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download <b>libmp3lame</b> and install it on your system. <p>See <a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#%1'>Mixxx Wiki</a> for more information. </html>");
+        QString missingCodec =
+            QObject::tr("<html>Mixxx cannot record or stream in MP3 without the MP3 encoder &quot;lame&quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download <b>libmp3lame</b> and install it on your system. <p>See <a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#%1'>Mixxx Wiki</a> for more information. </html>");
 
 #ifdef __LINUX__
         missingCodec = missingCodec.arg("linux");
@@ -119,27 +121,41 @@ EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
     }
 
     typedef const char* (*get_lame_version__)(void);
-    get_lame_version__ get_lame_version = (get_lame_version__)m_library->resolve("get_lame_version");
+    get_lame_version__ get_lame_version = (get_lame_version__)
+                                          m_library->resolve("get_lame_version");
 
 
     //initalize function pointers
     lame_init                   = (lame_init__)m_library->resolve("lame_init");
-    lame_set_num_channels       = (lame_set_num_channels__)m_library->resolve("lame_set_num_channels");
-    lame_set_in_samplerate      = (lame_set_in_samplerate__)m_library->resolve("lame_set_in_samplerate");
-    lame_set_out_samplerate     = (lame_set_out_samplerate__)m_library->resolve("lame_set_out_samplerate");
+    lame_set_num_channels       = (lame_set_num_channels__)
+                                  m_library->resolve("lame_set_num_channels");
+    lame_set_in_samplerate      = (lame_set_in_samplerate__)
+                                  m_library->resolve("lame_set_in_samplerate");
+    lame_set_out_samplerate     = (lame_set_out_samplerate__)
+                                  m_library->resolve("lame_set_out_samplerate");
     lame_close                  = (lame_close__)m_library->resolve("lame_close");
-    lame_set_brate              = (lame_set_brate__)m_library->resolve("lame_set_brate");
-    lame_set_mode               = (lame_set_mode__)m_library->resolve("lame_set_mode");
-    lame_set_quality            = (lame_set_quality__)m_library->resolve("lame_set_quality");
-    lame_set_bWriteVbrTag       = (lame_set_bWriteVbrTag__)m_library->resolve("lame_set_bWriteVbrTag");
-    lame_encode_buffer_float    = (lame_encode_buffer_float__)m_library->resolve("lame_encode_buffer_float");
-    lame_init_params            = (lame_init_params__)m_library->resolve("lame_init_params");
-    lame_encode_flush           = (lame_encode_flush__)m_library->resolve("lame_encode_flush");
+    lame_set_brate              = (lame_set_brate__)
+                                  m_library->resolve("lame_set_brate");
+    lame_set_mode               = (lame_set_mode__)
+                                  m_library->resolve("lame_set_mode");
+    lame_set_quality            = (lame_set_quality__)
+                                  m_library->resolve("lame_set_quality");
+    lame_set_bWriteVbrTag       = (lame_set_bWriteVbrTag__)
+                                  m_library->resolve("lame_set_bWriteVbrTag");
+    lame_encode_buffer_float    = (lame_encode_buffer_float__)
+                                  m_library->resolve("lame_encode_buffer_float");
+    lame_init_params            = (lame_init_params__)
+                                  m_library->resolve("lame_init_params");
+    lame_encode_flush           = (lame_encode_flush__)
+                                  m_library->resolve("lame_encode_flush");
 
     id3tag_init                 = (id3tag_init__)m_library->resolve("id3tag_init");
-    id3tag_set_title            = (id3tag_set_title__)m_library->resolve("id3tag_set_title");
-    id3tag_set_artist           = (id3tag_set_artist__)m_library->resolve("id3tag_set_artist");
-    id3tag_set_album            = (id3tag_set_album__)m_library->resolve("id3tag_set_album");
+    id3tag_set_title            = (id3tag_set_title__)
+                                  m_library->resolve("id3tag_set_title");
+    id3tag_set_artist           = (id3tag_set_artist__)
+                                  m_library->resolve("id3tag_set_artist");
+    id3tag_set_album            = (id3tag_set_album__)
+                                  m_library->resolve("id3tag_set_album");
 
 
     /*
@@ -187,10 +203,12 @@ EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
         qDebug() << "id3tag_set_artist: " << id3tag_set_artist;
         qDebug() << "id3tag_set_album  " << id3tag_set_album ;
 
-        ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+        ErrorDialogProperties* props =
+            ErrorDialogHandler::instance()->newDialogProperties();
         props->setType(DLG_WARNING);
         props->setTitle(QObject::tr("Encoder"));
-        QString key = QObject::tr("<html>Mixxx has detected that you use a modified version of libmp3lame. See <a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'>Mixxx Wiki</a> for more information.</html>");
+        QString key =
+            QObject::tr("<html>Mixxx has detected that you use a modified version of libmp3lame. See <a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'>Mixxx Wiki</a> for more information.</html>");
         props->setText(key);
         props->setKey(key);
         ErrorDialogHandler::instance()->requestErrorDialog(props);

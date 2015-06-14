@@ -1,7 +1,8 @@
 #include "engine/enginefilterbutterworth4.h"
 
 
-EngineFilterButterworth4Low::EngineFilterButterworth4Low(int sampleRate, double freqCorner1) {
+EngineFilterButterworth4Low::EngineFilterButterworth4Low(int sampleRate,
+        double freqCorner1) {
     setFrequencyCorners(sampleRate, freqCorner1);
 }
 
@@ -12,7 +13,8 @@ void EngineFilterButterworth4Low::setFrequencyCorners(int sampleRate,
 }
 
 
-EngineFilterButterworth4Band::EngineFilterButterworth4Band(int sampleRate, double freqCorner1,
+EngineFilterButterworth4Band::EngineFilterButterworth4Band(int sampleRate,
+        double freqCorner1,
         double freqCorner2) {
     setFrequencyCorners(sampleRate, freqCorner1, freqCorner2);
 }
@@ -24,7 +26,8 @@ void EngineFilterButterworth4Band::setFrequencyCorners(int sampleRate,
 }
 
 
-EngineFilterButterworth4High::EngineFilterButterworth4High(int sampleRate, double freqCorner1) {
+EngineFilterButterworth4High::EngineFilterButterworth4High(int sampleRate,
+        double freqCorner1) {
     setFrequencyCorners(sampleRate, freqCorner1);
 }
 

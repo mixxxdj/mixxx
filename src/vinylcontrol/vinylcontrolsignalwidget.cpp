@@ -51,7 +51,8 @@ void VinylControlSignalWidget::setVinylActive(bool active) {
     m_bVinylActive = active;
 }
 
-void VinylControlSignalWidget::onVinylSignalQualityUpdate(const VinylSignalQualityReport& report) {
+void VinylControlSignalWidget::onVinylSignalQualityUpdate(
+    const VinylSignalQualityReport& report) {
     // If this is a signal quality update for an input we don't care about,
     // ignore.
     if (report.processor != m_iVinylInput) {

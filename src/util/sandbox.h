@@ -59,7 +59,8 @@ class Sandbox {
         return createSecurityToken(dir.canonicalPath(), true);
     }
 
-    static SecurityTokenPointer openSecurityToken(const QFileInfo& info, bool create);
+    static SecurityTokenPointer openSecurityToken(const QFileInfo& info,
+            bool create);
     static SecurityTokenPointer openSecurityToken(const QDir& dir, bool create);
 
   private:

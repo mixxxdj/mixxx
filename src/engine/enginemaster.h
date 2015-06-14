@@ -103,7 +103,8 @@ class EngineMaster : public QObject, public AudioSource {
     // only call it before the engine has started mixing.
     void addChannel(EngineChannel* pChannel);
     EngineChannel* getChannel(const QString& group);
-    static inline double gainForOrientation(EngineChannel::ChannelOrientation orientation,
+    static inline double gainForOrientation(EngineChannel::ChannelOrientation
+                                            orientation,
                                             double leftGain,
                                             double centerGain,
                                             double rightGain) {

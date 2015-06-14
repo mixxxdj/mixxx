@@ -22,7 +22,8 @@ class SoundSourceProxy: public Mixxx::MetadataSource {
     static bool isFileNameSupported(const QString& fileName);
     static bool isFileExtensionSupported(const QString& fileExtension);
 
-    explicit SoundSourceProxy(QString qFilename, SecurityTokenPointer pToken = SecurityTokenPointer());
+    explicit SoundSourceProxy(QString qFilename,
+                              SecurityTokenPointer pToken = SecurityTokenPointer());
     explicit SoundSourceProxy(TrackPointer pTrack);
 
     QString getType() const {
@@ -61,7 +62,8 @@ class SoundSourceProxy: public Mixxx::MetadataSource {
     // Opening the audio data through the proxy will
     // update the some metadata of the track object.
     // Returns a null pointer on failure.
-    Mixxx::AudioSourcePointer openAudioSource(const Mixxx::AudioSourceConfig& audioSrcCfg = Mixxx::AudioSourceConfig());
+    Mixxx::AudioSourcePointer openAudioSource(const Mixxx::AudioSourceConfig&
+            audioSrcCfg = Mixxx::AudioSourceConfig());
 
     void closeAudioSource();
 

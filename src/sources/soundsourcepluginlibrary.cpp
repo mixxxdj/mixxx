@@ -5,7 +5,8 @@
 namespace Mixxx {
 
 /*static*/ QMutex SoundSourcePluginLibrary::s_loadedPluginLibrariesMutex;
-/*static*/ QMap<QString, SoundSourcePluginLibraryPointer> SoundSourcePluginLibrary::s_loadedPluginLibraries;
+/*static*/ QMap<QString, SoundSourcePluginLibraryPointer>
+SoundSourcePluginLibrary::s_loadedPluginLibraries;
 
 /*static*/ SoundSourcePluginLibraryPointer SoundSourcePluginLibrary::load(
     const QString& libFilePath) {
@@ -45,8 +46,9 @@ bool SoundSourcePluginLibrary::init() {
     qDebug() << "Dynamically loaded plugin library"
              << m_library.fileName();
 
-    SoundSourcePluginAPI_getVersionFunc getVersionFunc = (SoundSourcePluginAPI_getVersionFunc)
-            m_library.resolve(SoundSourcePluginAPI_getVersionFuncName);
+    SoundSourcePluginAPI_getVersionFunc getVersionFunc =
+        (SoundSourcePluginAPI_getVersionFunc)
+        m_library.resolve(SoundSourcePluginAPI_getVersionFuncName);
     if (!getVersionFunc) {
         // Try to resolve the legacy plugin API function name
         getVersionFunc = (SoundSourcePluginAPI_getVersionFunc)

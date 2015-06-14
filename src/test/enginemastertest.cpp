@@ -81,7 +81,8 @@ TEST_F(EngineMasterTest, SingleChannelOutputWorks) {
     m_pMaster->addChannel(pChannel);
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
-    CSAMPLE* pChannelBuffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test1]"));
+    CSAMPLE* pChannelBuffer = const_cast<CSAMPLE*>
+                              (m_pMaster->getChannelBuffer("[Test1]"));
     // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
     FillBuffer(pChannelBuffer, 0.1f, MAX_BUFFER_LEN);
 
@@ -121,8 +122,10 @@ TEST_F(EngineMasterTest, TwoChannelOutputWorks) {
     m_pMaster->addChannel(pChannel2);
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
-    CSAMPLE* pChannel1Buffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test1]"));
-    CSAMPLE* pChannel2Buffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test2]"));
+    CSAMPLE* pChannel1Buffer = const_cast<CSAMPLE*>
+                               (m_pMaster->getChannelBuffer("[Test1]"));
+    CSAMPLE* pChannel2Buffer = const_cast<CSAMPLE*>
+                               (m_pMaster->getChannelBuffer("[Test2]"));
 
     // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
     FillBuffer(pChannel1Buffer, 0.1f, MAX_BUFFER_LEN);
@@ -178,8 +181,10 @@ TEST_F(EngineMasterTest, TwoChannelPFLOutputWorks) {
     m_pMaster->addChannel(pChannel2);
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
-    CSAMPLE* pChannel1Buffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test1]"));
-    CSAMPLE* pChannel2Buffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test2]"));
+    CSAMPLE* pChannel1Buffer = const_cast<CSAMPLE*>
+                               (m_pMaster->getChannelBuffer("[Test1]"));
+    CSAMPLE* pChannel2Buffer = const_cast<CSAMPLE*>
+                               (m_pMaster->getChannelBuffer("[Test2]"));
 
     // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
     FillBuffer(pChannel1Buffer, 0.1f, MAX_BUFFER_LEN);
@@ -238,9 +243,12 @@ TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
     m_pMaster->addChannel(pChannel3);
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
-    CSAMPLE* pChannel1Buffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test1]"));
-    CSAMPLE* pChannel2Buffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test2]"));
-    CSAMPLE* pChannel3Buffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test3]"));
+    CSAMPLE* pChannel1Buffer = const_cast<CSAMPLE*>
+                               (m_pMaster->getChannelBuffer("[Test1]"));
+    CSAMPLE* pChannel2Buffer = const_cast<CSAMPLE*>
+                               (m_pMaster->getChannelBuffer("[Test2]"));
+    CSAMPLE* pChannel3Buffer = const_cast<CSAMPLE*>
+                               (m_pMaster->getChannelBuffer("[Test3]"));
 
     // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
     FillBuffer(pChannel1Buffer, 0.1f, MAX_BUFFER_LEN);
@@ -314,9 +322,12 @@ TEST_F(EngineMasterTest, ThreeChannelPFLOutputWorks) {
     m_pMaster->addChannel(pChannel3);
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
-    CSAMPLE* pChannel1Buffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test1]"));
-    CSAMPLE* pChannel2Buffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test2]"));
-    CSAMPLE* pChannel3Buffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test3]"));
+    CSAMPLE* pChannel1Buffer = const_cast<CSAMPLE*>
+                               (m_pMaster->getChannelBuffer("[Test1]"));
+    CSAMPLE* pChannel2Buffer = const_cast<CSAMPLE*>
+                               (m_pMaster->getChannelBuffer("[Test2]"));
+    CSAMPLE* pChannel3Buffer = const_cast<CSAMPLE*>
+                               (m_pMaster->getChannelBuffer("[Test3]"));
 
     // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
     FillBuffer(pChannel1Buffer, 0.1f, MAX_BUFFER_LEN);
@@ -384,7 +395,8 @@ TEST_F(EngineMasterTest, SingleChannelPFLOutputWorks) {
     m_pMaster->addChannel(pChannel);
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
-    CSAMPLE* pChannelBuffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer("[Test1]"));
+    CSAMPLE* pChannelBuffer = const_cast<CSAMPLE*>
+                              (m_pMaster->getChannelBuffer("[Test1]"));
     // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
     FillBuffer(pChannelBuffer, 0.1f, MAX_BUFFER_LEN);
 

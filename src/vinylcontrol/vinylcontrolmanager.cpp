@@ -62,7 +62,8 @@ void VinylControlManager::slotNumDecksChanged(double dNumDecks) {
 
     // Complain if we try to create more decks than we can handle.
     if (num_decks > kMaxNumberOfDecks) {
-        qWarning() << "Number of decks increased to " << num_decks << ", but Mixxx only supports "
+        qWarning() << "Number of decks increased to " << num_decks <<
+                   ", but Mixxx only supports "
                    << kMaxNumberOfDecks << " vinyl inputs.  Decks above the maximum will not have "
                    << " vinyl control";
         num_decks = kMaxNumberOfDecks;
@@ -75,7 +76,8 @@ void VinylControlManager::slotNumDecksChanged(double dNumDecks) {
 
     for (int i = m_iNumConfiguredDecks; i < num_decks; ++i) {
         QString group = PlayerManager::groupForDeck(i);
-        m_pVcEnabled.push_back(new ControlObjectThread(group, "vinylcontrol_enabled", this));
+        m_pVcEnabled.push_back(new ControlObjectThread(group, "vinylcontrol_enabled",
+                               this));
         m_pVcEnabled.back()->set(0);
 
         // Default cueing should be off.
@@ -102,7 +104,8 @@ bool VinylControlManager::vinylInputConnected(int deck) {
         return false;
     }
     if (deck < 0 || deck >= m_pVcEnabled.length()) {
-        qDebug() << "WARNING, tried to get vinyl enabled status for non-existant deck " << deck;
+        qDebug() << "WARNING, tried to get vinyl enabled status for non-existant deck "
+                 << deck;
         return false;
     }
     return m_pProcessor->deckConfigured(deck);
@@ -118,7 +121,8 @@ int VinylControlManager::vinylInputFromGroup(const QString& group) {
     return -1;
 }
 
-void VinylControlManager::addSignalQualityListener(VinylSignalQualityListener* pListener) {
+void VinylControlManager::addSignalQualityListener(VinylSignalQualityListener*
+        pListener) {
     m_listeners.insert(pListener);
     m_pProcessor->setSignalQualityReporting(true);
 
@@ -127,7 +131,8 @@ void VinylControlManager::addSignalQualityListener(VinylSignalQualityListener* p
     }
 }
 
-void VinylControlManager::removeSignalQualityListener(VinylSignalQualityListener* pListener) {
+void VinylControlManager::removeSignalQualityListener(
+    VinylSignalQualityListener* pListener) {
     m_listeners.remove(pListener);
     if (m_listeners.empty()) {
         m_pProcessor->setSignalQualityReporting(false);
@@ -139,7 +144,8 @@ void VinylControlManager::removeSignalQualityListener(VinylSignalQualityListener
 }
 
 void VinylControlManager::updateSignalQualityListeners() {
-    FIFO<VinylSignalQualityReport>* signalQualityFifo = m_pProcessor->getSignalQualityFifo();
+    FIFO<VinylSignalQualityReport>* signalQualityFifo =
+        m_pProcessor->getSignalQualityFifo();
     if (signalQualityFifo == NULL) {
         return;
     }

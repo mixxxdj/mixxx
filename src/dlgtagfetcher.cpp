@@ -28,7 +28,8 @@ void DlgTagFetcher::init() {
     connect(results, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
             this, SLOT(resultSelected()));
 
-    connect(&m_TagFetcher, SIGNAL(resultAvailable(const TrackPointer,const QList<TrackPointer>&)),
+    connect(&m_TagFetcher, SIGNAL(resultAvailable(const TrackPointer,
+                                  const QList<TrackPointer>&)),
             this, SLOT(fetchTagFinished(const TrackPointer,const QList<TrackPointer>&)));
     connect(&m_TagFetcher, SIGNAL(fetchProgress(QString)),
             this, SLOT(fetchTagProgress(QString)));

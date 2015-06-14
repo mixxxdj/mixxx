@@ -190,7 +190,8 @@ void Waveform::readByteArray(const QByteArray& data) {
         bool use_high = high_valid && i < high.value_size();
         m_data[i].filtered.low = use_low ? static_cast<unsigned char>(low.value(i)) : 0;
         m_data[i].filtered.mid = use_mid ? static_cast<unsigned char>(mid.value(i)) : 0;
-        m_data[i].filtered.high = use_high ? static_cast<unsigned char>(high.value(i)) : 0;
+        m_data[i].filtered.high = use_high ? static_cast<unsigned char>(high.value(
+                                      i)) : 0;
     }
     m_completion = dataSize;
     m_bDirty = false;

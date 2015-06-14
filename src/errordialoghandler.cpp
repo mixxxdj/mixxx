@@ -154,7 +154,8 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
 
     // Check we are in the main thread.
     if (QThread::currentThread()->objectName() != "Main") {
-        qWarning() << "WARNING: errorDialog not called in the main thread. Not showing error dialog.";
+        qWarning() <<
+                   "WARNING: errorDialog not called in the main thread. Not showing error dialog.";
         return;
     }
 
@@ -219,7 +220,8 @@ void ErrorDialogHandler::boxClosed(QString key) {
     QMessageBox* msgBox = (QMessageBox*)m_signalMapper.mapping(key);
     locker.unlock();
 
-    QMessageBox::StandardButton whichStdButton = msgBox->standardButton(msgBox->clickedButton());
+    QMessageBox::StandardButton whichStdButton = msgBox->standardButton(
+                msgBox->clickedButton());
     emit(stdButtonClicked(key, whichStdButton));
 
     // If the user clicks "Ignore," we leave the key in the list so the same

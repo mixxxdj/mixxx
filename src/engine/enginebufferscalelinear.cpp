@@ -23,7 +23,8 @@
 #include "util/math.h"
 #include "util/assert.h"
 
-EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager* pReadAheadManager)
+EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager*
+        pReadAheadManager)
     : EngineBufferScale(),
       m_bBackwards(false),
       m_bClear(false),

@@ -54,12 +54,14 @@ TrackCollection::~TrackCollection() {
         // called. If there is, it means we probably aren't committing a
         // transaction somewhere that should be.
         if (m_db.rollback()) {
-            qDebug() << "ERROR: There was a transaction in progress on the main database connection while shutting down."
+            qDebug() <<
+                     "ERROR: There was a transaction in progress on the main database connection while shutting down."
                      << "There is a logic error somewhere.";
         }
         m_db.close();
     } else {
-        qDebug() << "ERROR: The main database connection was closed before TrackCollection closed it."
+        qDebug() <<
+                 "ERROR: The main database connection was closed before TrackCollection closed it."
                  << "There is a logic error somewhere.";
     }
 }
@@ -156,7 +158,8 @@ QSharedPointer<BaseTrackCache> TrackCollection::getTrackSource() {
     return m_defaultTrackSource;
 }
 
-void TrackCollection::setTrackSource(QSharedPointer<BaseTrackCache> trackSource) {
+void TrackCollection::setTrackSource(QSharedPointer<BaseTrackCache>
+                                     trackSource) {
     DEBUG_ASSERT_AND_HANDLE(m_defaultTrackSource.isNull()) {
         return;
     }
@@ -289,7 +292,8 @@ int TrackCollection::likeCompareLatinLow(
     makeLatinLow(pattern->data(), pattern->length());
     makeLatinLow(string->data(), string->length());
     //qDebug() << *pattern << *string;
-    return likeCompareInner(pattern->data(), pattern->length(), string->data(), string->length(), esc);
+    return likeCompareInner(pattern->data(), pattern->length(), string->data(),
+                            string->length(), esc);
 }
 
 // Compare two strings for equality where the first string is

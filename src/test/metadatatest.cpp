@@ -23,7 +23,8 @@ class MetadataTest : public testing::Test {
         //qDebug() << "parseBpm" << inputValue << expectedResult << expectedValue;
 
         bool actualResult;
-        const double actualValue = Mixxx::TrackMetadata::parseBpm(inputValue, &actualResult);
+        const double actualValue = Mixxx::TrackMetadata::parseBpm(inputValue,
+                                   &actualResult);
 
         EXPECT_EQ(expectedResult, actualResult);
         EXPECT_DOUBLE_EQ(expectedValue, actualValue);
@@ -35,11 +36,13 @@ class MetadataTest : public testing::Test {
         return actualResult;
     }
 
-    double parseReplayGain(QString inputValue, bool expectedResult, float expectedValue) {
+    double parseReplayGain(QString inputValue, bool expectedResult,
+                           float expectedValue) {
         //qDebug() << "parseReplayGain" << inputValue << expectedResult << expectedValue;
 
         bool actualResult;
-        const double actualValue = Mixxx::TrackMetadata::parseReplayGain(inputValue, &actualResult);
+        const double actualValue = Mixxx::TrackMetadata::parseReplayGain(inputValue,
+                                   &actualResult);
 
         EXPECT_EQ(expectedResult, actualResult);
         EXPECT_FLOAT_EQ(expectedValue, actualValue);
@@ -57,7 +60,8 @@ TEST_F(MetadataTest, ParseBpmPrecision) {
 }
 
 TEST_F(MetadataTest, ParseBpmValidRange) {
-    for (int bpm100 = int(Mixxx::TrackMetadata::kBpmMin) * 100; int(Mixxx::TrackMetadata::kBpmMax) * 100 >= bpm100; ++bpm100) {
+    for (int bpm100 = int(Mixxx::TrackMetadata::kBpmMin) * 100;
+            int(Mixxx::TrackMetadata::kBpmMax) * 100 >= bpm100; ++bpm100) {
         const double expectedValue = bpm100 / 100.0;
         const QString inputValues[] = {
             QString("%1").arg(expectedValue),
@@ -157,18 +161,23 @@ TEST_F(MetadataTest, ID3v2Year) {
 
 TEST_F(MetadataTest, CalendarYear) {
     // Parsing
-    EXPECT_EQ(2014, Mixxx::TrackMetadata::parseCalendarYear("2014-04-29T07:00:00Z"));
+    EXPECT_EQ(2014,
+              Mixxx::TrackMetadata::parseCalendarYear("2014-04-29T07:00:00Z"));
     EXPECT_EQ(2014, Mixxx::TrackMetadata::parseCalendarYear("2014-04-29"));
     EXPECT_EQ(2014, Mixxx::TrackMetadata::parseCalendarYear("2014"));
     EXPECT_EQ(2015, Mixxx::TrackMetadata::parseCalendarYear("2015-02"));
     EXPECT_EQ(1997, Mixxx::TrackMetadata::parseCalendarYear("1997-W43"));
     EXPECT_EQ(1, Mixxx::TrackMetadata::parseCalendarYear("1"));
-    EXPECT_EQ(Mixxx::TrackMetadata::kCalendarYearInvalid, Mixxx::TrackMetadata::parseCalendarYear("0"));
-    EXPECT_EQ(Mixxx::TrackMetadata::kCalendarYearInvalid, Mixxx::TrackMetadata::parseCalendarYear("-1"));
-    EXPECT_EQ(Mixxx::TrackMetadata::kCalendarYearInvalid, Mixxx::TrackMetadata::parseCalendarYear("year"));
+    EXPECT_EQ(Mixxx::TrackMetadata::kCalendarYearInvalid,
+              Mixxx::TrackMetadata::parseCalendarYear("0"));
+    EXPECT_EQ(Mixxx::TrackMetadata::kCalendarYearInvalid,
+              Mixxx::TrackMetadata::parseCalendarYear("-1"));
+    EXPECT_EQ(Mixxx::TrackMetadata::kCalendarYearInvalid,
+              Mixxx::TrackMetadata::parseCalendarYear("year"));
 
     // Formatting
-    EXPECT_EQ("2014", Mixxx::TrackMetadata::formatCalendarYear("2014-04-29T07:00:00Z"));
+    EXPECT_EQ("2014",
+              Mixxx::TrackMetadata::formatCalendarYear("2014-04-29T07:00:00Z"));
     EXPECT_EQ("2014", Mixxx::TrackMetadata::formatCalendarYear("2014-04-29"));
     EXPECT_EQ("2014", Mixxx::TrackMetadata::formatCalendarYear("2014"));
     EXPECT_EQ("2015", Mixxx::TrackMetadata::formatCalendarYear("2015-02"));

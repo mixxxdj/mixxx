@@ -80,16 +80,22 @@ DlgControllerLearning::DlgControllerLearning(QWidget* parent,
     connect(comboBoxChosenControl, SIGNAL(currentIndexChanged(int)),
             this, SLOT(comboboxIndexChanged(int)));
 
-    connect(pushButtonChooseControl, SIGNAL(clicked()), this, SLOT(showControlMenu()));
+    connect(pushButtonChooseControl, SIGNAL(clicked()), this,
+            SLOT(showControlMenu()));
     connect(pushButtonClose, SIGNAL(clicked()), this, SLOT(close()));
     connect(pushButtonClose_2, SIGNAL(clicked()), this, SLOT(close()));
-    connect(pushButtonCancelLearn, SIGNAL(clicked()), this, SLOT(slotCancelLearn()));
+    connect(pushButtonCancelLearn, SIGNAL(clicked()), this,
+            SLOT(slotCancelLearn()));
     connect(pushButtonRetry, SIGNAL(clicked()), this, SLOT(slotRetry()));
-    connect(pushButtonStartLearn, SIGNAL(clicked()), this, SLOT(slotStartLearningPressed()));
-    connect(pushButtonLearnAnother, SIGNAL(clicked()), this, SLOT(slotChooseControlPressed()));
+    connect(pushButtonStartLearn, SIGNAL(clicked()), this,
+            SLOT(slotStartLearningPressed()));
+    connect(pushButtonLearnAnother, SIGNAL(clicked()), this,
+            SLOT(slotChooseControlPressed()));
 #ifdef CONTROLLERLESSTESTING
-    connect(pushButtonFakeControl, SIGNAL(clicked()), this, SLOT(DEBUGFakeMidiMessage()));
-    connect(pushButtonFakeControl2, SIGNAL(clicked()), this, SLOT(DEBUGFakeMidiMessage2()));
+    connect(pushButtonFakeControl, SIGNAL(clicked()), this,
+            SLOT(DEBUGFakeMidiMessage()));
+    connect(pushButtonFakeControl2, SIGNAL(clicked()), this,
+            SLOT(DEBUGFakeMidiMessage2()));
 #else
     pushButtonFakeControl->hide();
     pushButtonFakeControl2->hide();
@@ -282,7 +288,8 @@ void DlgControllerLearning::slotTimerExpired() {
         LearningUtils::guessMidiInputMappings(m_currentControl, m_messages);
 
     if (mappings.isEmpty()) {
-        labelErrorText->setText(tr("Unable to detect a mapping -- please try again. Be sure to only touch one control at once."));
+        labelErrorText->setText(
+            tr("Unable to detect a mapping -- please try again. Be sure to only touch one control at once."));
         m_messages.clear();
         // Don't reset the wizard.
         stackedWidget->setCurrentWidget(page1Choose);
@@ -300,7 +307,8 @@ void DlgControllerLearning::slotTimerExpired() {
     foreach (const MidiInputMapping& mapping, m_mappings) {
         unsigned char opCode = MidiUtils::opCodeFromStatus(mapping.key.status);
         bool twoBytes = MidiUtils::isMessageTwoBytes(opCode);
-        QString mappingStr = twoBytes ? QString("Status: 0x%1 Control: 0x%2 Options: 0x%03")
+        QString mappingStr = twoBytes ?
+                             QString("Status: 0x%1 Control: 0x%2 Options: 0x%03")
                              .arg(QString::number(mapping.key.status, 16).toUpper(),
                                   QString::number(mapping.key.control, 16).toUpper()
                                   .rightJustified(2, '0'),
@@ -370,7 +378,8 @@ void DlgControllerLearning::commitMapping() {
 void DlgControllerLearning::visit(MidiController* pMidiController) {
     m_pMidiController = pMidiController;
 
-    connect(m_pMidiController, SIGNAL(messageReceived(unsigned char, unsigned char, unsigned char)),
+    connect(m_pMidiController, SIGNAL(messageReceived(unsigned char, unsigned char,
+                                      unsigned char)),
             this, SLOT(slotMessageReceived(unsigned char, unsigned char, unsigned char)));
 
     connect(this, SIGNAL(learnTemporaryInputMappings(MidiInputMappings)),
@@ -434,8 +443,9 @@ void DlgControllerLearning::loadControl(const ConfigKey& key,
     comboBoxChosenControl->setEditText(title);
 
     labelDescription->setText(tr("<i>Ready to learn %1</i>").arg(description));
-    QString learnmessage = tr("Learning: %1. Now move a control on your controller.")
-                           .arg(title);
+    QString learnmessage =
+        tr("Learning: %1. Now move a control on your controller.")
+        .arg(title);
     controlToMapMessage->setText(learnmessage);
     labelMappedTo->setText("");
     pushButtonStartLearn->setDisabled(false);

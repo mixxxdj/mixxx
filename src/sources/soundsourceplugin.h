@@ -26,6 +26,7 @@ SoundSourcePointer exportSoundSourcePlugin(
 } // namespace Mixxx
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT const char* Mixxx_getVersion();
-extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT int Mixxx_SoundSourcePluginAPI_getVersion();
+extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT int
+Mixxx_SoundSourcePluginAPI_getVersion();
 
 #endif

@@ -50,7 +50,8 @@ bool TraktorPlaylistModel::isColumnHiddenByDefault(int column) {
     return BaseSqlTableModel::isColumnHiddenByDefault(column);
 }
 
-TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollection)
+TraktorFeature::TraktorFeature(QObject* parent,
+                               TrackCollection* pTrackCollection)
     : BaseExternalLibraryFeature(parent, pTrackCollection),
       m_pTrackCollection(pTrackCollection),
       m_cancelImport(false) {
@@ -84,8 +85,10 @@ TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollectio
     m_trackSource->setSearchColumns(searchColumns);
 
     m_isActivated = false;
-    m_pTraktorTableModel = new TraktorTrackModel(this, m_pTrackCollection, m_trackSource);
-    m_pTraktorPlaylistModel = new TraktorPlaylistModel(this, m_pTrackCollection, m_trackSource);
+    m_pTraktorTableModel = new TraktorTrackModel(this, m_pTrackCollection,
+            m_trackSource);
+    m_pTraktorPlaylistModel = new TraktorPlaylistModel(this, m_pTrackCollection,
+            m_trackSource);
 
     m_title = tr("Traktor");
 
@@ -109,8 +112,10 @@ TraktorFeature::~TraktorFeature() {
     delete m_pTraktorPlaylistModel;
 }
 
-BaseSqlTableModel* TraktorFeature::getPlaylistModelForPlaylist(QString playlist) {
-    TraktorPlaylistModel* pModel = new TraktorPlaylistModel(this, m_pTrackCollection, m_trackSource);
+BaseSqlTableModel* TraktorFeature::getPlaylistModelForPlaylist(
+    QString playlist) {
+    TraktorPlaylistModel* pModel = new TraktorPlaylistModel(this,
+            m_pTrackCollection, m_trackSource);
     pModel->setPlaylist(playlist);
     return pModel;
 }
@@ -473,7 +478,8 @@ void TraktorFeature::parsePlaylistEntries(
     id_query.bindValue(":path", playlist_path);
 
     if (!id_query.exec()) {
-        LOG_FAILED_QUERY(id_query) << "Could not get inserted playlist id for Traktor playlist::"
+        LOG_FAILED_QUERY(id_query) <<
+                                   "Could not get inserted playlist id for Traktor playlist::"
                                    << playlist_path;
         return;
     }
@@ -546,7 +552,8 @@ void TraktorFeature::clearTable(QString table_name) {
         qDebug() << "Could not delete remove old entries from table "
                  << table_name << " : " << query.lastError();
     else
-        qDebug() << "Traktor table entries of '" << table_name << "' have been cleared.";
+        qDebug() << "Traktor table entries of '" << table_name <<
+                 "' have been cleared.";
 }
 
 QString TraktorFeature::getTraktorMusicDatabase() {
@@ -558,7 +565,8 @@ QString TraktorFeature::getTraktorMusicDatabase() {
     // following path: <Home>/Documents/Native Instruments/Traktor 2.0.3/collection.nml
 
     //Let's try to detect the latest Traktor version and its collection.nml
-    QString myDocuments = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation);
+    QString myDocuments = QDesktopServices::storageLocation(
+                              QDesktopServices::DocumentsLocation);
     QDir ni_directory(myDocuments +"/Native Instruments/");
     ni_directory.setFilter(QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks);
 

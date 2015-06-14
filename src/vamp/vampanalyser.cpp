@@ -31,7 +31,8 @@ void VampAnalyser::initializePluginPaths() {
     }
 
     // TODO(XXX) use correct split separator here.
-    QStringList pathElements = vampPath.length() > 0 ? vampPath.split(PATH_SEPARATOR)
+    QStringList pathElements = vampPath.length() > 0 ? vampPath.split(
+                                   PATH_SEPARATOR)
                                : QStringList();
 
     const QString dataLocation = QDesktopServices::storageLocation(
@@ -164,7 +165,8 @@ bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
 
     if (!m_plugin) {
         qDebug() << "VampAnalyser: Cannot load Vamp Plug-in.";
-        qDebug() << "Please copy libmixxxminimal.so from build dir to one of the following:";
+        qDebug() <<
+                 "Please copy libmixxxminimal.so from build dir to one of the following:";
 
         std::vector<std::string> path = PluginHostAdapter::getPluginPath();
         for (unsigned int i = 0; i < path.size(); i++) {

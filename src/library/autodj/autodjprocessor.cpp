@@ -117,7 +117,8 @@ AutoDJProcessor::AutoDJProcessor(QObject* pParent,
     DEBUG_ASSERT(m_decks.length() > 1);
 
     m_pCOCrossfader = new ControlObjectSlave("[Master]", "crossfader");
-    m_pCOCrossfaderReverse = new ControlObjectSlave("[Mixer Profile]", "xFaderReverse");
+    m_pCOCrossfaderReverse = new ControlObjectSlave("[Mixer Profile]",
+            "xFaderReverse");
 
     QString str_autoDjTransition = m_pConfig->getValueString(
                                        ConfigKey(kConfigKey, kTransitionPreferenceName));
@@ -591,7 +592,8 @@ TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
     }
 }
 
-bool AutoDJProcessor::loadNextTrackFromQueue(const DeckAttributes& deck, bool play) {
+bool AutoDJProcessor::loadNextTrackFromQueue(const DeckAttributes& deck,
+        bool play) {
     TrackPointer nextTrack = getNextTrackFromQueue();
 
     // We ran out of tracks in the queue.
@@ -608,7 +610,8 @@ bool AutoDJProcessor::loadNextTrackFromQueue(const DeckAttributes& deck, bool pl
     return true;
 }
 
-bool AutoDJProcessor::removeLoadedTrackFromTopOfQueue(const DeckAttributes& deck) {
+bool AutoDJProcessor::removeLoadedTrackFromTopOfQueue(const DeckAttributes&
+        deck) {
     // Get loaded track for this group.
     TrackPointer loadedTrack = deck.getLoadedTrack();
 
@@ -670,7 +673,8 @@ bool AutoDJProcessor::removeTrackFromTopOfQueue(TrackPointer pTrack) {
     return true;
 }
 
-void AutoDJProcessor::playerPlayChanged(DeckAttributes* pAttributes, bool playing) {
+void AutoDJProcessor::playerPlayChanged(DeckAttributes* pAttributes,
+                                        bool playing) {
     if (sDebug) {
         qDebug() << this << "playerPlayChanged" << pAttributes->group << playing;
     }
@@ -747,7 +751,8 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     }
 }
 
-void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTrack) {
+void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck,
+                                        TrackPointer pTrack) {
     if (sDebug) {
         qDebug() << this << "playerTrackLoaded" << pDeck->group
                  << (pTrack.isNull() ? "(null)" : pTrack->getLocation());
@@ -766,7 +771,8 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
     }
 }
 
-void AutoDJProcessor::playerTrackLoadFailed(DeckAttributes* pDeck, TrackPointer pTrack) {
+void AutoDJProcessor::playerTrackLoadFailed(DeckAttributes* pDeck,
+        TrackPointer pTrack) {
     if (sDebug) {
         qDebug() << this << "playerTrackLoadFailed" << pDeck->group
                  << (pTrack.isNull() ? "(null)" : pTrack->getLocation());
@@ -792,7 +798,8 @@ void AutoDJProcessor::playerTrackLoadFailed(DeckAttributes* pDeck, TrackPointer 
     loadNextTrackFromQueue(*pDeck, m_eState == ADJ_ENABLE_P1LOADED);
 }
 
-void AutoDJProcessor::playerTrackUnloaded(DeckAttributes* pDeck, TrackPointer pTrack) {
+void AutoDJProcessor::playerTrackUnloaded(DeckAttributes* pDeck,
+        TrackPointer pTrack) {
     if (sDebug) {
         qDebug() << this << "playerTrackUnloaded" << pDeck->group
                  << (pTrack.isNull() ? "(null)" : pTrack->getLocation());

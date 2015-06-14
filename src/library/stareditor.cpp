@@ -122,7 +122,8 @@ int StarEditor::starAtPosition(int x) {
     if (x < m_starRating.sizeHint().width() * 0.05) {
         return 0;
     }
-    int star = (x / (m_starRating.sizeHint().width() / m_starRating.maxStarCount())) + 1;
+    int star = (x / (m_starRating.sizeHint().width() / m_starRating.maxStarCount()))
+               + 1;
 
     if (star <= 0 || star > m_starRating.maxStarCount()) {
         return 0;

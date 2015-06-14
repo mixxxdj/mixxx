@@ -3,7 +3,8 @@
 #include "widget/weffectparameterbase.h"
 #include "effects/effectsmanager.h"
 
-WEffectParameterBase::WEffectParameterBase(QWidget* pParent, EffectsManager* pEffectsManager)
+WEffectParameterBase::WEffectParameterBase(QWidget* pParent,
+        EffectsManager* pEffectsManager)
     : WLabel(pParent),
       m_pEffectsManager(pEffectsManager) {
     parameterUpdated();

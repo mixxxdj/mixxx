@@ -7,7 +7,8 @@
 #include "waveform/waveformwidgetfactory.h"
 #include "controlobjectthread.h"
 
-GLSLWaveformRendererSignal::GLSLWaveformRendererSignal(WaveformWidgetRenderer* waveformWidgetRenderer,
+GLSLWaveformRendererSignal::GLSLWaveformRendererSignal(WaveformWidgetRenderer*
+        waveformWidgetRenderer,
         bool rgbShader)
     : WaveformRendererSignalBase(waveformWidgetRenderer),
       m_unitQuadListId(-1),
@@ -74,7 +75,8 @@ bool GLSLWaveformRendererSignal::loadShaders() {
     }
 
     if (!m_frameShaderProgram->bind()) {
-        qDebug() << "GLWaveformRendererSignalShader::loadShaders - shaders binding failed";
+        qDebug() <<
+                 "GLWaveformRendererSignalShader::loadShaders - shaders binding failed";
         return false;
     }
 
@@ -105,7 +107,8 @@ bool GLSLWaveformRendererSignal::loadTexture() {
 
         int error = glGetError();
         if (error)
-            qDebug() << "GLSLWaveformRendererSignal::loadTexture - m_textureId" << m_textureId << "error" << error;
+            qDebug() << "GLSLWaveformRendererSignal::loadTexture - m_textureId" <<
+                     m_textureId << "error" << error;
     }
 
     glBindTexture(GL_TEXTURE_2D, m_textureId);
@@ -127,7 +130,8 @@ bool GLSLWaveformRendererSignal::loadTexture() {
                      GL_RGBA, GL_UNSIGNED_BYTE, data);
         int error = glGetError();
         if (error)
-            qDebug() << "GLSLWaveformRendererSignal::loadTexture - glTexImage2D error" << error;
+            qDebug() << "GLSLWaveformRendererSignal::loadTexture - glTexImage2D error" <<
+                     error;
     } else {
         glDeleteTextures(1,&m_textureId);
         m_textureId = 0;
@@ -184,7 +188,8 @@ void GLSLWaveformRendererSignal::createFrameBuffers() {
     m_framebuffer = new QGLFramebufferObject(bufferWidth * 4, bufferHeight * 4);
 
     if (!m_framebuffer->isValid())
-        qWarning() << "GLSLWaveformRendererSignal::createFrameBuffer - frame buffer not valid";
+        qWarning() <<
+                   "GLSLWaveformRendererSignal::createFrameBuffer - frame buffer not valid";
 
     m_frameBuffersValid = m_framebuffer->isValid();
 
@@ -223,7 +228,8 @@ void GLSLWaveformRendererSignal::onResize() {
     createFrameBuffers();
 }
 
-void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/) {
+void GLSLWaveformRendererSignal::draw(QPainter* painter,
+                                      QPaintEvent* /*event*/) {
     if (!m_frameBuffersValid || !m_shadersValid) {
         return;
     }
@@ -263,8 +269,10 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
     float lowGain(1.0), midGain(1.0), highGain(1.0), allGain(1.0);
     getGains(&allGain, &lowGain, &midGain, &highGain);
 
-    double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize/2.0;
-    double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize/2.0;
+    double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() *
+                              dataSize/2.0;
+    double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() *
+                             dataSize/2.0;
 
     // const int firstIndex = int(firstVisualIndex+0.5);
     // firstVisualIndex = firstIndex - firstIndex%2;
@@ -293,18 +301,23 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
         m_frameShaderProgram->setUniformValue("framebufferSize", QVector2D(
                 m_framebuffer->width(), m_framebuffer->height()));
         m_frameShaderProgram->setUniformValue("waveformLength", dataSize);
-        m_frameShaderProgram->setUniformValue("textureSize", waveform->getTextureSize());
-        m_frameShaderProgram->setUniformValue("textureStride", waveform->getTextureStride());
+        m_frameShaderProgram->setUniformValue("textureSize",
+                                              waveform->getTextureSize());
+        m_frameShaderProgram->setUniformValue("textureStride",
+                                              waveform->getTextureStride());
 
-        m_frameShaderProgram->setUniformValue("firstVisualIndex", (float)firstVisualIndex);
-        m_frameShaderProgram->setUniformValue("lastVisualIndex", (float)lastVisualIndex);
+        m_frameShaderProgram->setUniformValue("firstVisualIndex",
+                                              (float)firstVisualIndex);
+        m_frameShaderProgram->setUniformValue("lastVisualIndex",
+                                              (float)lastVisualIndex);
 
         m_frameShaderProgram->setUniformValue("allGain", allGain);
         m_frameShaderProgram->setUniformValue("lowGain", lowGain);
         m_frameShaderProgram->setUniformValue("midGain", midGain);
         m_frameShaderProgram->setUniformValue("highGain", highGain);
 
-        m_frameShaderProgram->setUniformValue("axesColor", QVector4D(m_axesColor_r, m_axesColor_g,
+        m_frameShaderProgram->setUniformValue("axesColor", QVector4D(m_axesColor_r,
+                                              m_axesColor_g,
                                               m_axesColor_b, m_axesColor_a));
 
         QVector4D lowColor = m_rgbShader ?
@@ -377,7 +390,8 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
 
     //paint buffer into viewport
     {
-        glViewport(0, 0, m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight());
+        glViewport(0, 0, m_waveformRenderer->getWidth(),
+                   m_waveformRenderer->getHeight());
         glBindTexture(GL_TEXTURE_2D, m_framebuffer->texture());
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

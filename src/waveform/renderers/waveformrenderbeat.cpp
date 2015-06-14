@@ -12,7 +12,8 @@
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 
-WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidgetRenderer)
+WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer*
+                                       waveformWidgetRenderer)
     : WaveformRendererAbstract(waveformWidgetRenderer),
       m_pBeatActive(NULL) {
     m_beats.resize(128);
@@ -29,7 +30,8 @@ bool WaveformRenderBeat::init() {
     return m_pBeatActive->valid();
 }
 
-void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context) {
+void WaveformRenderBeat::setup(const QDomNode& node,
+                               const SkinContext& context) {
     m_beatColor.setNamedColor(context.selectString(node, "BeatColor"));
     m_beatColor = WSkinColor::getCorrectColor(m_beatColor).toRgb();
 
@@ -52,8 +54,10 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
         return;
     }
 
-    const double firstDisplayedPosition = m_waveformRenderer->getFirstDisplayedPosition();
-    const double lastDisplayedPosition = m_waveformRenderer->getLastDisplayedPosition();
+    const double firstDisplayedPosition =
+        m_waveformRenderer->getFirstDisplayedPosition();
+    const double lastDisplayedPosition =
+        m_waveformRenderer->getLastDisplayedPosition();
 
     // qDebug() << "trackSamples" << trackSamples
     //          << "firstDisplayedPosition" << firstDisplayedPosition
@@ -80,7 +84,8 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
     while (it->hasNext()) {
         int beatPosition = it->next();
-        double xBeatPoint = m_waveformRenderer->transformSampleIndexInRendererWorld(beatPosition);
+        double xBeatPoint = m_waveformRenderer->transformSampleIndexInRendererWorld(
+                                beatPosition);
 
         xBeatPoint = qRound(xBeatPoint);
 

@@ -143,7 +143,8 @@ QString ParserPls::getFilepath(QTextStream* stream, QString basepath) {
     return 0;
 
 }
-bool ParserPls::writePLSFile(const QString& file_str, QList<QString>& items, bool useRelativePath) {
+bool ParserPls::writePLSFile(const QString& file_str, QList<QString>& items,
+                             bool useRelativePath) {
     QFile file(file_str);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QMessageBox::warning(NULL,tr("Playlist Export Failed"),

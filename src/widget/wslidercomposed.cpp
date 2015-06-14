@@ -49,7 +49,8 @@ void WSliderComposed::setup(QDomNode node, const SkinContext& context) {
         // The implicit default in <1.12.0 was FIXED so we keep it for backwards
         // compatibility.
         PixmapSource sourceSlider = context.getPixmapSource(slider);
-        setSliderPixmap(sourceSlider, context.selectScaleMode(slider, Paintable::FIXED));
+        setSliderPixmap(sourceSlider, context.selectScaleMode(slider,
+                        Paintable::FIXED));
     }
 
     m_dSliderLength = m_bHorizontal ? width() : height();
@@ -85,7 +86,8 @@ void WSliderComposed::setSliderPixmap(PixmapSource sourceSlider,
                                       Paintable::DrawMode drawMode) {
     m_pSlider = WPixmapStore::getPaintable(sourceSlider, drawMode);
     if (!m_pSlider) {
-        qDebug() << "WSliderComposed: Error loading slider pixmap:" << sourceSlider.getPath();
+        qDebug() << "WSliderComposed: Error loading slider pixmap:" <<
+                 sourceSlider.getPath();
     } else if (drawMode == Paintable::FIXED) {
         // Set size of widget, using size of slider pixmap
         setFixedSize(m_pSlider->size());
@@ -101,7 +103,8 @@ void WSliderComposed::setHandlePixmap(bool bHorizontal,
     m_dHandleLength = calculateHandleLength();
     m_handler.setHandleLength(m_dHandleLength);
     if (!m_pHandle) {
-        qDebug() << "WSliderComposed: Error loading handle pixmap:" << sourceHandle.getPath();
+        qDebug() << "WSliderComposed: Error loading handle pixmap:" <<
+                 sourceHandle.getPath();
     } else {
         // Value is unused in WSliderComposed.
         onConnectedControlChanged(getControlParameter(), 0);

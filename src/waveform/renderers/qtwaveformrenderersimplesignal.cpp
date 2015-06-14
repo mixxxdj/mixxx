@@ -10,7 +10,8 @@
 
 #include <QLinearGradient>
 
-QtWaveformRendererSimpleSignal::QtWaveformRendererSimpleSignal(WaveformWidgetRenderer* waveformWidgetRenderer) :
+QtWaveformRendererSimpleSignal::QtWaveformRendererSimpleSignal(
+    WaveformWidgetRenderer* waveformWidgetRenderer) :
     WaveformRendererSignalBase(waveformWidgetRenderer) {
 
 }
@@ -36,7 +37,8 @@ inline void setPoint(QPointF& point, qreal x, qreal y) {
     point.setY(y);
 }
 
-void QtWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*event*/) {
+void QtWaveformRendererSimpleSignal::draw(QPainter* painter,
+        QPaintEvent* /*event*/) {
 
     TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
     if (!pTrack) {
@@ -84,8 +86,10 @@ void QtWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
         painter->drawLine(0,0,m_waveformRenderer->getWidth(),0);
     }
 
-    const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
-    const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
+    const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition()
+                                    * dataSize;
+    const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() *
+                                   dataSize;
     m_polygon.clear();
     m_polygon.reserve(2 * m_waveformRenderer->getWidth() + 2);
     m_polygon.append(QPointF(0.0, 0.0));

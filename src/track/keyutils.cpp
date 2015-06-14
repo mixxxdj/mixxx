@@ -248,7 +248,8 @@ double KeyUtils::keyToNumericValue(ChromaticKey key) {
 }
 
 // static
-QPair<ChromaticKey, double> KeyUtils::scaleKeyOctaves(ChromaticKey key, double octave_change) {
+QPair<ChromaticKey, double> KeyUtils::scaleKeyOctaves(ChromaticKey key,
+        double octave_change) {
     // Convert the octave_change from percentage of octave to the nearest
     // integer of key changes. We need the rounding to be in the same direction
     // so that a -1.0 and 1.0 scale of C makes it back to C.
@@ -257,7 +258,8 @@ QPair<ChromaticKey, double> KeyUtils::scaleKeyOctaves(ChromaticKey key, double o
                                        (key_changes_scaled > 0 ? 0.5 : -0.5));
 
     double diff_to_nearest_full_key = key_changes_scaled - key_changes;
-    return QPair<ChromaticKey, double>(scaleKeySteps(key, key_changes), diff_to_nearest_full_key);
+    return QPair<ChromaticKey, double>(scaleKeySteps(key, key_changes),
+                                       diff_to_nearest_full_key);
 }
 
 // static
@@ -309,7 +311,8 @@ mixxx::track::io::key::ChromaticKey KeyUtils::calculateGlobalKey(
     double max_delta = 0;
     mixxx::track::io::key::ChromaticKey max_key = mixxx::track::io::key::INVALID;
     qDebug() << "Key Histogram";
-    for (QMap<mixxx::track::io::key::ChromaticKey, double>::const_iterator it = key_histogram.begin();
+    for (QMap<mixxx::track::io::key::ChromaticKey, double>::const_iterator it =
+                key_histogram.begin();
             it != key_histogram.end(); ++it) {
         qDebug() << it.key() << ":" << keyDebugName(it.key()) << it.value();
         if (it.value() > max_delta) {

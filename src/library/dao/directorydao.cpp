@@ -115,11 +115,12 @@ QSet<int> DirectoryDAO::relocateDirectory(const QString& oldFolder,
     // Also update information in the track_locations table. This is where mixxx
     // gets the location information for a track. Put marks around %1 so that
     // this also works on windows
-    query.prepare(QString("SELECT library.id, track_locations.id, track_locations.location "
-                          "FROM library INNER JOIN track_locations ON "
-                          "track_locations.id = library.location WHERE "
-                          "track_locations.location LIKE '%1' ESCAPE '%'")
-                  .arg(startsWithOldFolder));
+    query.prepare(
+        QString("SELECT library.id, track_locations.id, track_locations.location "
+                "FROM library INNER JOIN track_locations ON "
+                "track_locations.id = library.location WHERE "
+                "track_locations.location LIKE '%1' ESCAPE '%'")
+        .arg(startsWithOldFolder));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "could not relocate path of tracks";
         return QSet<int>();

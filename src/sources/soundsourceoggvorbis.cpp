@@ -10,7 +10,8 @@ const int kCurrentBitstreamLink = -1; // retrieve ... for the current bitstream
 
 // Parameter for ov_pcm_total()
 // See also: https://xiph.org/vorbis/doc/vorbisfile/ov_pcm_total.html
-const int kEntireBitstreamLink  = -1; // retrieve ... for the entire physical bitstream
+const int kEntireBitstreamLink  =
+    -1; // retrieve ... for the entire physical bitstream
 
 } // anonymous namespace
 
@@ -56,7 +57,8 @@ Result SoundSourceOggVorbis::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     if (0 <= pcmTotal) {
         setFrameCount(pcmTotal);
     } else {
-        qWarning() << "Failed to read total length of OggVorbis file:" << getUrlString();
+        qWarning() << "Failed to read total length of OggVorbis file:" <<
+                   getUrlString();
         return ERR;
     }
 
@@ -110,7 +112,8 @@ SINT SoundSourceOggVorbis::readSampleFrames(
     SINT numberOfFrames, CSAMPLE* sampleBuffer,
     SINT sampleBufferSize, bool readStereoSamples) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
-    DEBUG_ASSERT(getSampleBufferSize(numberOfFrames, readStereoSamples) <= sampleBufferSize);
+    DEBUG_ASSERT(getSampleBufferSize(numberOfFrames,
+                                     readStereoSamples) <= sampleBufferSize);
 
     const SINT numberOfFramesTotal = math_min(
                                          numberOfFrames, getMaxFrameIndex() - m_curFrameIndex);

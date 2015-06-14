@@ -21,9 +21,11 @@
 // TODO(XXX): The optimum value of the "constant" kFramesPerChunk
 // depends on the properties of the AudioSource as the remarks
 // above suggest!
-const SINT CachingReaderWorker::kChunkChannels = Mixxx::AudioSource::kChannelCountStereo;
+const SINT CachingReaderWorker::kChunkChannels =
+    Mixxx::AudioSource::kChannelCountStereo;
 const SINT CachingReaderWorker::kFramesPerChunk = 8192; // ~ 170 ms at 48 kHz
-const SINT CachingReaderWorker::kSamplesPerChunk = kFramesPerChunk * kChunkChannels;
+const SINT CachingReaderWorker::kSamplesPerChunk = kFramesPerChunk *
+        kChunkChannels;
 
 CachingReaderWorker::CachingReaderWorker(QString group,
         FIFO<ChunkReadRequest>* pChunkReadRequestFIFO,
@@ -110,7 +112,8 @@ void CachingReaderWorker::newTrack(TrackPointer pTrack) {
 
 void CachingReaderWorker::run() {
     unsigned static id = 0; //the id of this thread, for debugging purposes
-    QThread::currentThread()->setObjectName(QString("CachingReaderWorker %1").arg(++id));
+    QThread::currentThread()->setObjectName(QString("CachingReaderWorker %1").arg(
+            ++id));
 
     TrackPointer pLoadTrack;
     ChunkReadRequest request;
@@ -137,9 +140,11 @@ void CachingReaderWorker::run() {
 }
 
 namespace {
-Mixxx::AudioSourcePointer openAudioSourceForReading(const TrackPointer& pTrack, const Mixxx::AudioSourceConfig& audioSrcCfg) {
+Mixxx::AudioSourcePointer openAudioSourceForReading(const TrackPointer& pTrack,
+        const Mixxx::AudioSourceConfig& audioSrcCfg) {
     SoundSourceProxy soundSourceProxy(pTrack);
-    Mixxx::AudioSourcePointer pAudioSource(soundSourceProxy.openAudioSource(audioSrcCfg));
+    Mixxx::AudioSourcePointer pAudioSource(soundSourceProxy.openAudioSource(
+            audioSrcCfg));
     if (pAudioSource.isNull()) {
         qWarning() << "Failed to open file:" << pTrack->getLocation();
         return Mixxx::AudioSourcePointer();

@@ -29,9 +29,11 @@ class ParserCsv : public Parser {
     /**Overwriting function parse in class Parser**/
     QList<QString> parse(QString);
     // Playlist Export
-    static bool writeCSVFile(const QString& file, BaseSqlTableModel* pPlaylistTableModel, bool useRelativePath);
+    static bool writeCSVFile(const QString& file,
+                             BaseSqlTableModel* pPlaylistTableModel, bool useRelativePath);
     // Readable Text export
-    static bool writeReadableTextFile(const QString& file, BaseSqlTableModel* pPlaylistTableModel,  bool writeTimestamp);
+    static bool writeReadableTextFile(const QString& file,
+                                      BaseSqlTableModel* pPlaylistTableModel,  bool writeTimestamp);
   private:
     /**Reads a line from the file and returns filepath if a valid file**/
     QList<QList<QString> > tokenize(const QByteArray& str, char delimiter);

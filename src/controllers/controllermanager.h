@@ -28,7 +28,8 @@ class ControllerManager : public QObject {
     virtual ~ControllerManager();
 
     QList<Controller*> getControllers() const;
-    QList<Controller*> getControllerList(bool outputDevices=true, bool inputDevices=true);
+    QList<Controller*> getControllerList(bool outputDevices=true,
+                                         bool inputDevices=true);
     ControllerLearningEventFilter* getControllerLearningEventFilter() const;
     PresetInfoEnumerator* getMainThreadPresetEnumerator();
 

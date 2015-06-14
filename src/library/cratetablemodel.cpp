@@ -84,7 +84,8 @@ bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
 
     bool success = false;
     if (iTrackId >= 0) {
-        success = m_pTrackCollection->getCrateDAO().addTrackToCrate(iTrackId, m_iCrateId);
+        success = m_pTrackCollection->getCrateDAO().addTrackToCrate(iTrackId,
+                  m_iCrateId);
     }
 
     if (success) {

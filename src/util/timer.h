@@ -5,7 +5,8 @@
 #include "util/performancetimer.h"
 #include "util/cmdlineargs.h"
 
-const Stat::ComputeFlags kDefaultComputeFlags = Stat::COUNT | Stat::SUM | Stat::AVERAGE |
+const Stat::ComputeFlags kDefaultComputeFlags = Stat::COUNT | Stat::SUM |
+        Stat::AVERAGE |
         Stat::MAX | Stat::MIN | Stat::SAMPLE_VARIANCE;
 
 // A Timer that is instrumented for reporting elapsed times to StatsManager

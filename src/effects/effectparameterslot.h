@@ -21,7 +21,8 @@ typedef QSharedPointer<EffectParameterSlot> EffectParameterSlotPointer;
 class EffectParameterSlot : public EffectParameterSlotBase {
     Q_OBJECT
   public:
-    EffectParameterSlot(const QString& group, const unsigned int iParameterSlotNumber);
+    EffectParameterSlot(const QString& group,
+                        const unsigned int iParameterSlotNumber);
     virtual ~EffectParameterSlot();
 
     static QString formatItemPrefix(const unsigned int iParameterSlotNumber) {
@@ -52,7 +53,8 @@ class EffectParameterSlot : public EffectParameterSlotBase {
 
   private:
     QString debugString() const {
-        return QString("EffectParameterSlot(%1,%2)").arg(m_group).arg(m_iParameterSlotNumber);
+        return QString("EffectParameterSlot(%1,%2)").arg(m_group).arg(
+                   m_iParameterSlotNumber);
     }
 
     SoftTakeover* m_pSoftTakeover;

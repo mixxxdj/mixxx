@@ -52,16 +52,17 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
                            EffectsManager* pEffectsManager,
                            bool bEnableSidechain,
                            bool bRampingGain)
-    : m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
-      m_bRampingGain(bRampingGain),
-      m_masterGainOld(0.0),
-      m_headphoneMasterGainOld(0.0),
-      m_headphoneGainOld(1.0),
-      m_masterHandle(registerChannelGroup("[Master]")),
-      m_headphoneHandle(registerChannelGroup("[Headphone]")),
-      m_busLeftHandle(registerChannelGroup("[BusLeft]")),
-      m_busCenterHandle(registerChannelGroup("[BusCenter]")),
-      m_busRightHandle(registerChannelGroup("[BusRight]")) {
+    : m_pEngineEffectsManager(pEffectsManager ?
+                              pEffectsManager->getEngineEffectsManager() : NULL),
+    m_bRampingGain(bRampingGain),
+    m_masterGainOld(0.0),
+    m_headphoneMasterGainOld(0.0),
+    m_headphoneGainOld(1.0),
+    m_masterHandle(registerChannelGroup("[Master]")),
+    m_headphoneHandle(registerChannelGroup("[Headphone]")),
+    m_busLeftHandle(registerChannelGroup("[BusLeft]")),
+    m_busCenterHandle(registerChannelGroup("[BusCenter]")),
+    m_busRightHandle(registerChannelGroup("[BusRight]")) {
     m_bBusOutputConnected[EngineChannel::LEFT] = false;
     m_bBusOutputConnected[EngineChannel::CENTER] = false;
     m_bBusOutputConnected[EngineChannel::RIGHT] = false;
@@ -77,15 +78,20 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     }
 
     // Master sample rate
-    m_pMasterSampleRate = new ControlObject(ConfigKey(group, "samplerate"), true, true);
+    m_pMasterSampleRate = new ControlObject(ConfigKey(group, "samplerate"), true,
+                                            true);
     m_pMasterSampleRate->set(44100.);
 
     // Latency control
     m_pMasterLatency = new ControlObject(ConfigKey(group, "latency"), true, true);
-    m_pMasterAudioBufferSize = new ControlObject(ConfigKey(group, "audio_buffer_size"));
-    m_pAudioLatencyOverloadCount = new ControlObject(ConfigKey(group, "audio_latency_overload_count"), true, true);
-    m_pAudioLatencyUsage = new ControlPotmeter(ConfigKey(group, "audio_latency_usage"), 0.0, 0.25);
-    m_pAudioLatencyOverload  = new ControlPotmeter(ConfigKey(group, "audio_latency_overload"), 0.0, 1.0);
+    m_pMasterAudioBufferSize = new ControlObject(ConfigKey(group,
+            "audio_buffer_size"));
+    m_pAudioLatencyOverloadCount = new ControlObject(ConfigKey(group,
+            "audio_latency_overload_count"), true, true);
+    m_pAudioLatencyUsage = new ControlPotmeter(ConfigKey(group,
+            "audio_latency_usage"), 0.0, 0.25);
+    m_pAudioLatencyOverload  = new ControlPotmeter(ConfigKey(group,
+            "audio_latency_overload"), 0.0, 1.0);
 
     // Master rate
     m_pMasterRate = new ControlPotmeter(ConfigKey(group, "rate"), -1.0, 1.0);
@@ -94,7 +100,8 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_pMasterSync = new EngineSync(_config);
 
     // The last-used bpm value is saved in the destructor of EngineSync.
-    double default_bpm = _config->getValueString(ConfigKey("[InternalClock]", "bpm"),
+    double default_bpm = _config->getValueString(ConfigKey("[InternalClock]",
+                         "bpm"),
                          "124.0").toDouble();
     ControlObject::getControl(ConfigKey("[InternalClock]","bpm"))->set(default_bpm);
 
@@ -105,7 +112,8 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_pBalance = new ControlPotmeter(ConfigKey(group, "balance"), -1., 1.);
 
     // Master gain
-    m_pMasterGain = new ControlAudioTaperPot(ConfigKey(group, "gain"), -14, 14, 0.5);
+    m_pMasterGain = new ControlAudioTaperPot(ConfigKey(group, "gain"), -14, 14,
+            0.5);
 
     // Legacy: the master "gain" control used to be named "volume" in Mixxx
     // 1.11.0 and earlier. See Bug #1306253.
@@ -119,7 +127,8 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue>* _config,
     m_pHeadDelay = new EngineDelay(group, ConfigKey(group, "headDelay"));
 
     // Headphone volume
-    m_pHeadGain = new ControlAudioTaperPot(ConfigKey(group, "headGain"), -14, 14, 0.5);
+    m_pHeadGain = new ControlAudioTaperPot(ConfigKey(group, "headGain"), -14, 14,
+                                           0.5);
 
     // Legacy: the headphone "headGain" control used to be named "headVolume" in
     // Mixxx 1.11.0 and earlier. See Bug #1306253.

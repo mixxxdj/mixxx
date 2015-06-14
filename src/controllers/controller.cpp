@@ -66,7 +66,8 @@ void Controller::applyPreset(QList<QString> scriptPaths) {
     }
 
     if (pPreset->scripts.isEmpty()) {
-        qWarning() << "No script functions available! Did the XML file(s) load successfully? See above for any errors.";
+        qWarning() <<
+                   "No script functions available! Did the XML file(s) load successfully? See above for any errors.";
         return;
     }
 

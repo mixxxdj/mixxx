@@ -12,9 +12,11 @@ EngineTalkoverDucking::EngineTalkoverDucking(
     m_pMasterSampleRate->connectValueChanged(SLOT(slotSampleRateChanged(double)),
             Qt::DirectConnection);
 
-    m_pDuckStrength = new ControlPotmeter(ConfigKey(m_group, "duckStrength"), 0.0, 1.0);
+    m_pDuckStrength = new ControlPotmeter(ConfigKey(m_group, "duckStrength"), 0.0,
+                                          1.0);
     m_pDuckStrength->set(
-        m_pConfig->getValueString(ConfigKey(m_group, "duckStrength"), "90").toDouble() / 100);
+        m_pConfig->getValueString(ConfigKey(m_group, "duckStrength"),
+                                  "90").toDouble() / 100);
     connect(m_pDuckStrength, SIGNAL(valueChanged(double)),
             this, SLOT(slotDuckStrengthChanged(double)),
             Qt::DirectConnection);
@@ -28,7 +30,8 @@ EngineTalkoverDucking::EngineTalkoverDucking(
         m_pMasterSampleRate->get() / 2 * .1,
         m_pMasterSampleRate->get() / 2);
 
-    m_pTalkoverDucking = new ControlPushButton(ConfigKey(m_group, "talkoverDucking"));
+    m_pTalkoverDucking = new ControlPushButton(ConfigKey(m_group,
+            "talkoverDucking"));
     m_pTalkoverDucking->setButtonMode(ControlPushButton::TOGGLE);
     m_pTalkoverDucking->setStates(3);
     m_pTalkoverDucking->set(
@@ -40,8 +43,10 @@ EngineTalkoverDucking::EngineTalkoverDucking(
 }
 
 EngineTalkoverDucking::~EngineTalkoverDucking() {
-    m_pConfig->set(ConfigKey(m_group, "duckStrength"), ConfigValue(m_pDuckStrength->get() * 100));
-    m_pConfig->set(ConfigKey(m_group, "duckMode"), ConfigValue(m_pTalkoverDucking->get()));
+    m_pConfig->set(ConfigKey(m_group, "duckStrength"),
+                   ConfigValue(m_pDuckStrength->get() * 100));
+    m_pConfig->set(ConfigKey(m_group, "duckMode"),
+                   ConfigValue(m_pTalkoverDucking->get()));
 
     delete m_pDuckStrength;
     delete m_pTalkoverDucking;

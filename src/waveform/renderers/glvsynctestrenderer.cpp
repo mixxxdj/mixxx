@@ -53,8 +53,10 @@ void GLVSyncTestRenderer::draw(QPainter* painter, QPaintEvent* /*event*/) {
         return;
     }
 
-    double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
-    double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
+    double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() *
+                              dataSize;
+    double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() *
+                             dataSize;
 
     const int firstIndex = int(firstVisualIndex + 0.5);
     firstVisualIndex = firstIndex - firstIndex % 2;

@@ -69,9 +69,12 @@ class EncoderMp3 : public Encoder {
     typedef int (*lame_init_params__)(lame_global_flags*);
     typedef int (*lame_close__)(lame_global_flags*);
     typedef int (*lame_encode_flush__)(
-        lame_global_flags*   gfp,               /* global context handle                 */
-        unsigned char*       mp3buf,            /* pointer to encoded MP3 stream         */
-        int                  size);             /* number of valid octets in this stream */
+        lame_global_flags*
+        gfp,               /* global context handle                 */
+        unsigned char*
+        mp3buf,            /* pointer to encoded MP3 stream         */
+        int
+        size);             /* number of valid octets in this stream */
     typedef int (*lame_encode_buffer_float__)(
         lame_global_flags*  gfp,                /* global context handle         */
         const float         buffer_l [],        /* PCM data for left channel     */

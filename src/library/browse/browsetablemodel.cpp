@@ -79,7 +79,8 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
 
     connect(&PlayerInfo::instance(), SIGNAL(trackLoaded(QString, TrackPointer)),
             this, SLOT(trackLoaded(QString, TrackPointer)));
-    trackLoaded(m_previewDeckGroup, PlayerInfo::instance().getTrackInfo(m_previewDeckGroup));
+    trackLoaded(m_previewDeckGroup,
+                PlayerInfo::instance().getTrackInfo(m_previewDeckGroup));
 }
 
 BrowseTableModel::~BrowseTableModel() {
@@ -131,7 +132,8 @@ const QLinkedList<int> BrowseTableModel::getTrackRows(int trackId) const {
     return QLinkedList<int>();
 }
 
-void BrowseTableModel::search(const QString& searchText, const QString& extraFilter) {
+void BrowseTableModel::search(const QString& searchText,
+                              const QString& extraFilter) {
     Q_UNUSED(extraFilter);
     Q_UNUSED(searchText);
 }
@@ -344,11 +346,13 @@ bool BrowseTableModel::setData(const QModelIndex& index, const QVariant& value,
     trackMetadata.setKey(this->index(row, COLUMN_KEY).data().toString());
     trackMetadata.setBpm(this->index(row, COLUMN_BPM).data().toDouble());
     trackMetadata.setComment(this->index(row, COLUMN_COMMENT).data().toString());
-    trackMetadata.setTrackNumber(this->index(row, COLUMN_TRACK_NUMBER).data().toString());
+    trackMetadata.setTrackNumber(this->index(row,
+                                 COLUMN_TRACK_NUMBER).data().toString());
     trackMetadata.setYear(this->index(row, COLUMN_YEAR).data().toString());
     trackMetadata.setGenre(this->index(row, COLUMN_GENRE).data().toString());
     trackMetadata.setComposer(this->index(row, COLUMN_COMPOSER).data().toString());
-    trackMetadata.setAlbumArtist(this->index(row, COLUMN_ALBUMARTIST).data().toString());
+    trackMetadata.setAlbumArtist(this->index(row,
+                                 COLUMN_ALBUMARTIST).data().toString());
     trackMetadata.setGrouping(this->index(row, COLUMN_GROUPING).data().toString());
 
     // check if one the item were edited
@@ -431,7 +435,8 @@ bool BrowseTableModel::isColumnSortable(int column) {
     return true;
 }
 
-QAbstractItemDelegate* BrowseTableModel::delegateForColumn(const int i, QObject* pParent) {
+QAbstractItemDelegate* BrowseTableModel::delegateForColumn(const int i,
+        QObject* pParent) {
     if (PlayerManager::numPreviewDecks() > 0 && i == COLUMN_PREVIEW) {
         return new PreviewButtonDelegate(pParent, i);
     }

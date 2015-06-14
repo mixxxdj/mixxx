@@ -6,7 +6,8 @@
 #include "track/keyutils.h"
 #include "library/dao/trackdao.h"
 
-QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& column) {
+QVariant getTrackValueForColumn(const TrackPointer& pTrack,
+                                const QString& column) {
     if (column == LIBRARYTABLE_ARTIST) {
         return pTrack->getArtist();
     } else if (column == LIBRARYTABLE_TITLE) {

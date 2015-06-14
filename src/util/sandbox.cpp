@@ -36,9 +36,11 @@ void Sandbox::initialize(const QString& permissionsFile) {
     SInt32 version = 0;
     Gestalt(gestaltSystemVersion, &version);
     SecCodeRef secCodeSelf;
-    if (version >= 0x1070 && SecCodeCopySelf(kSecCSDefaultFlags, &secCodeSelf) == errSecSuccess) {
+    if (version >= 0x1070 &&
+            SecCodeCopySelf(kSecCSDefaultFlags, &secCodeSelf) == errSecSuccess) {
         SecRequirementRef sandboxReq;
-        CFStringRef entitlement = CFSTR("entitlement [\"com.apple.security.app-sandbox\"]");
+        CFStringRef entitlement =
+            CFSTR("entitlement [\"com.apple.security.app-sandbox\"]");
         if (SecRequirementCreateWithString(entitlement, kSecCSDefaultFlags,
                                            &sandboxReq) == errSecSuccess) {
             if (SecCodeCheckValidity(secCodeSelf, kSecCSDefaultFlags,
@@ -188,7 +190,8 @@ bool Sandbox::createSecurityToken(const QString& canonicalPath,
         }
     } else {
         if (sDebug) {
-            qDebug() << "Failed to create security-scoped bookmark URL for" << canonicalPath;
+            qDebug() << "Failed to create security-scoped bookmark URL for" <<
+                     canonicalPath;
         }
     }
 #endif
@@ -197,7 +200,8 @@ bool Sandbox::createSecurityToken(const QString& canonicalPath,
 }
 
 // static
-SecurityTokenPointer Sandbox::openSecurityToken(const QFileInfo& file, bool create) {
+SecurityTokenPointer Sandbox::openSecurityToken(const QFileInfo& file,
+        bool create) {
     const QString& canonicalFilePath = file.canonicalFilePath();
     if (sDebug) {
         qDebug() << "openSecurityToken QFileInfo" << canonicalFilePath << create;
@@ -320,7 +324,8 @@ SecurityTokenPointer Sandbox::openSecurityToken(const QDir& dir, bool create) {
     return SecurityTokenPointer();
 }
 
-SecurityTokenPointer Sandbox::openTokenFromBookmark(const QString& canonicalPath,
+SecurityTokenPointer Sandbox::openTokenFromBookmark(const QString&
+        canonicalPath,
         const QString& bookmarkBase64) {
 #ifdef Q_OS_MAC
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7

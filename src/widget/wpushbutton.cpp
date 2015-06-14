@@ -40,7 +40,8 @@ WPushButton::WPushButton(QWidget* pParent)
     setStates(0);
 }
 
-WPushButton::WPushButton(QWidget* pParent, ControlPushButton::ButtonMode leftButtonMode,
+WPushButton::WPushButton(QWidget* pParent,
+                         ControlPushButton::ButtonMode leftButtonMode,
                          ControlPushButton::ButtonMode rightButtonMode)
     : WWidget(pParent),
       m_leftButtonMode(leftButtonMode),
@@ -125,7 +126,8 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
     }
 
     if (leftConnection) {
-        bool leftClickForcePush = context.selectBool(node, "LeftClickIsPushButton", false);
+        bool leftClickForcePush = context.selectBool(node, "LeftClickIsPushButton",
+                                  false);
         m_leftButtonMode = ControlPushButton::PUSH;
         if (!leftClickForcePush) {
             const ConfigKey& configKey = leftConnection->getKey();
@@ -153,12 +155,15 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
         if (leftConnection->getDirectionOption() &
                 ControlParameterWidgetConnection::DIR_DEFAULT) {
             if (m_pDisplayConnection == leftConnection) {
-                leftConnection->setDirectionOption(ControlParameterWidgetConnection::DIR_FROM_AND_TO_WIDGET);
+                leftConnection->setDirectionOption(
+                    ControlParameterWidgetConnection::DIR_FROM_AND_TO_WIDGET);
             } else {
-                leftConnection->setDirectionOption(ControlParameterWidgetConnection::DIR_FROM_WIDGET);
+                leftConnection->setDirectionOption(
+                    ControlParameterWidgetConnection::DIR_FROM_WIDGET);
                 if (m_pDisplayConnection->getDirectionOption() &
                         ControlParameterWidgetConnection::DIR_DEFAULT) {
-                    m_pDisplayConnection->setDirectionOption(ControlParameterWidgetConnection::DIR_TO_WIDGET);
+                    m_pDisplayConnection->setDirectionOption(
+                        ControlParameterWidgetConnection::DIR_TO_WIDGET);
                 }
             }
         }
@@ -166,7 +171,8 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
 
     if (!m_rightConnections.isEmpty()) {
         ControlParameterWidgetConnection* rightConnection = m_rightConnections.at(0);
-        bool rightClickForcePush = context.selectBool(node, "RightClickIsPushButton", false);
+        bool rightClickForcePush = context.selectBool(node, "RightClickIsPushButton",
+                                   false);
         m_rightButtonMode = ControlPushButton::PUSH;
         if (!rightClickForcePush) {
             const ConfigKey configKey = rightConnection->getKey();
@@ -199,7 +205,8 @@ void WPushButton::setup(QDomNode node, const SkinContext& context) {
         }
         if (rightConnection->getDirectionOption() &
                 ControlParameterWidgetConnection::DIR_DEFAULT) {
-            rightConnection->setDirectionOption(ControlParameterWidgetConnection::DIR_FROM_WIDGET);
+            rightConnection->setDirectionOption(
+                ControlParameterWidgetConnection::DIR_FROM_WIDGET);
         }
     }
 }

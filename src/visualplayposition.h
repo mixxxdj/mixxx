@@ -47,7 +47,8 @@ class VisualPlayPosition : public QObject {
 
     // WARNING: Not thread safe. This function must be called only from the
     // engine thread.
-    void set(double playPos, double rate, double positionStep, double pSlipPosition);
+    void set(double playPos, double rate, double positionStep,
+             double pSlipPosition);
     double getAtNextVSync(VSyncThread* vsyncThread);
     void getPlaySlipAt(int usFromNow, double* playPosition, double* slipPosition);
     double getEnginePlayPos();
@@ -74,7 +75,8 @@ class VisualPlayPosition : public QObject {
     QString m_key;
     bool m_invalidTimeInfoWarned;
 
-    static QMap<QString, QWeakPointer<VisualPlayPosition> > m_listVisualPlayPosition;
+    static QMap<QString, QWeakPointer<VisualPlayPosition> >
+    m_listVisualPlayPosition;
     // Time info from the Sound device, updated just after audio callback is called
     static PaStreamCallbackTimeInfo m_timeInfo;
     // Time stamp for m_timeInfo in main CPU time

@@ -21,7 +21,8 @@ AnalyserGain::~AnalyserGain() {
     delete m_pReplayGain;
 }
 
-bool AnalyserGain::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
+bool AnalyserGain::initialise(TrackPointer tio, int sampleRate,
+                              int totalSamples) {
     if (loadStored(tio) || totalSamples == 0) {
         return false;
     }
@@ -30,7 +31,8 @@ bool AnalyserGain::initialise(TrackPointer tio, int sampleRate, int totalSamples
 }
 
 bool AnalyserGain::loadStored(TrackPointer tio) const {
-    bool bAnalyserEnabled = (bool)m_pConfigReplayGain->getValueString(ConfigKey("[ReplayGain]","ReplayGainAnalyserEnabled")).toInt();
+    bool bAnalyserEnabled = (bool)m_pConfigReplayGain->getValueString(
+                                ConfigKey("[ReplayGain]","ReplayGainAnalyserEnabled")).toInt();
     float fReplayGain = tio->getReplayGain();
     if (fReplayGain != 0 || !bAnalyserEnabled) {
         return true;
@@ -54,10 +56,12 @@ void AnalyserGain::process(const CSAMPLE* pIn, const int iLen) {
         m_pLeftTempBuffer = new CSAMPLE[halfLength];
         m_pRightTempBuffer = new CSAMPLE[halfLength];
     }
-    SampleUtil::deinterleaveBuffer(m_pLeftTempBuffer, m_pRightTempBuffer, pIn, halfLength);
+    SampleUtil::deinterleaveBuffer(m_pLeftTempBuffer, m_pRightTempBuffer, pIn,
+                                   halfLength);
     SampleUtil::applyGain(m_pLeftTempBuffer, 32767, halfLength);
     SampleUtil::applyGain(m_pRightTempBuffer, 32767, halfLength);
-    m_bStepControl = m_pReplayGain->process(m_pLeftTempBuffer, m_pRightTempBuffer, halfLength);
+    m_bStepControl = m_pReplayGain->process(m_pLeftTempBuffer, m_pRightTempBuffer,
+                                            halfLength);
 }
 
 void AnalyserGain::finalise(TrackPointer tio) {

@@ -7,7 +7,8 @@
 #include "waveform/vsyncthread.h"
 
 //static
-QMap<QString, QWeakPointer<VisualPlayPosition> > VisualPlayPosition::m_listVisualPlayPosition;
+QMap<QString, QWeakPointer<VisualPlayPosition> >
+VisualPlayPosition::m_listVisualPlayPosition;
 PaStreamCallbackTimeInfo VisualPlayPosition::m_timeInfo = { 0.0, 0.0, 0.0 };
 PerformanceTimer VisualPlayPosition::m_timeInfoTime;
 
@@ -31,13 +32,15 @@ void VisualPlayPosition::set(double playPos, double rate,
     VisualPlayPositionData data;
     data.m_referenceTime = m_timeInfoTime;
     // Time from reference time to Buffer at DAC in µs
-    data.m_callbackEntrytoDac = (m_timeInfo.outputBufferDacTime - m_timeInfo.currentTime) * 1000000;
+    data.m_callbackEntrytoDac = (m_timeInfo.outputBufferDacTime -
+                                 m_timeInfo.currentTime) * 1000000;
     data.m_enginePlayPos = playPos;
     data.m_rate = rate;
     data.m_positionStep = positionStep;
     data.m_pSlipPosition = pSlipPosition;
 
-    if (data.m_callbackEntrytoDac < 0 || data.m_callbackEntrytoDac > m_dAudioBufferSize * 1000) {
+    if (data.m_callbackEntrytoDac < 0 ||
+            data.m_callbackEntrytoDac > m_dAudioBufferSize * 1000) {
         // m_timeInfo Invalid, Audio API broken
         if (!m_invalidTimeInfoWarned) {
             qWarning() << "VisualPlayPosition: Audio API provides invalid time stamps,"
@@ -64,10 +67,12 @@ double VisualPlayPosition::getAtNextVSync(VSyncThread* vsyncThread) {
         VisualPlayPositionData data = m_data.getValue();
         int usRefToVSync = vsyncThread->usFromTimerToNextSync(&data.m_referenceTime);
         int offset = usRefToVSync - data.m_callbackEntrytoDac;
-        double playPos = data.m_enginePlayPos;  // load playPos for the first sample in Buffer
+        double playPos =
+            data.m_enginePlayPos;  // load playPos for the first sample in Buffer
         // add the offset for the position of the sample that will be transfered to the DAC
         // When the next display frame is displayed
-        playPos += data.m_positionStep * offset * data.m_rate / m_dAudioBufferSize / 1000;
+        playPos += data.m_positionStep * offset * data.m_rate / m_dAudioBufferSize /
+                   1000;
         //qDebug() << "delta Pos" << playPos - m_playPosOld << offset;
         //m_playPosOld = playPos;
         return playPos;
@@ -75,7 +80,8 @@ double VisualPlayPosition::getAtNextVSync(VSyncThread* vsyncThread) {
     return -1;
 }
 
-void VisualPlayPosition::getPlaySlipAt(int usFromNow, double* playPosition, double* slipPosition) {
+void VisualPlayPosition::getPlaySlipAt(int usFromNow, double* playPosition,
+                                       double* slipPosition) {
     //static double testPos = 0;
     //testPos += 0.000017759; //0.000016608; //  1.46257e-05;
     //return testPos;
@@ -85,8 +91,10 @@ void VisualPlayPosition::getPlaySlipAt(int usFromNow, double* playPosition, doub
         int usElapsed = data.m_referenceTime.elapsed() / 1000;
         int dacFromNow = usElapsed - data.m_callbackEntrytoDac;
         int offset = dacFromNow - usFromNow;
-        double playPos = data.m_enginePlayPos;  // load playPos for the first sample in Buffer
-        playPos += data.m_positionStep * offset * data.m_rate / m_dAudioBufferSize / 1000;
+        double playPos =
+            data.m_enginePlayPos;  // load playPos for the first sample in Buffer
+        playPos += data.m_positionStep * offset * data.m_rate / m_dAudioBufferSize /
+                   1000;
         *playPosition = playPos;
         *slipPosition = data.m_pSlipPosition;
     }
@@ -106,7 +114,8 @@ void VisualPlayPosition::slotAudioBufferSizeChanged(double size) {
 }
 
 //static
-QSharedPointer<VisualPlayPosition> VisualPlayPosition::getVisualPlayPosition(QString group) {
+QSharedPointer<VisualPlayPosition> VisualPlayPosition::getVisualPlayPosition(
+    QString group) {
     QSharedPointer<VisualPlayPosition> vpp = m_listVisualPlayPosition.value(group);
     if (vpp.isNull()) {
         vpp = QSharedPointer<VisualPlayPosition>(new VisualPlayPosition(group));

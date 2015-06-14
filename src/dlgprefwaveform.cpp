@@ -83,7 +83,8 @@ void DlgPrefWaveform::slotUpdate() {
 
     WaveformWidgetType::Type currentType = factory->getType();
     int currentIndex = waveformTypeComboBox->findData(currentType);
-    if (currentIndex != -1 && waveformTypeComboBox->currentIndex() != currentIndex) {
+    if (currentIndex != -1 &&
+            waveformTypeComboBox->currentIndex() != currentIndex) {
         waveformTypeComboBox->setCurrentIndex(currentIndex);
     }
 
@@ -117,7 +118,8 @@ void DlgPrefWaveform::slotResetToDefaults() {
     // not.
     WaveformWidgetType::Type defaultType = factory->autoChooseWidgetType();
     int defaultIndex = waveformTypeComboBox->findData(defaultType);
-    if (defaultIndex != -1 && waveformTypeComboBox->currentIndex() != defaultIndex) {
+    if (defaultIndex != -1 &&
+            waveformTypeComboBox->currentIndex() != defaultIndex) {
         waveformTypeComboBox->setCurrentIndex(defaultIndex);
     }
 
@@ -158,7 +160,8 @@ void DlgPrefWaveform::slotSetWaveformType(int index) {
 }
 
 void DlgPrefWaveform::slotSetWaveformOverviewType(int index) {
-    m_pConfig->set(ConfigKey("[Waveform]","WaveformOverviewType"), ConfigValue(index));
+    m_pConfig->set(ConfigKey("[Waveform]","WaveformOverviewType"),
+                   ConfigValue(index));
     m_pMixxx->rebootMixxxView();
 }
 
@@ -171,19 +174,23 @@ void DlgPrefWaveform::slotSetZoomSynchronization(bool checked) {
 }
 
 void DlgPrefWaveform::slotSetVisualGainAll(double gain) {
-    WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::All,gain);
+    WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::All,
+            gain);
 }
 
 void DlgPrefWaveform::slotSetVisualGainLow(double gain) {
-    WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::Low,gain);
+    WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::Low,
+            gain);
 }
 
 void DlgPrefWaveform::slotSetVisualGainMid(double gain) {
-    WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::Mid,gain);
+    WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::Mid,
+            gain);
 }
 
 void DlgPrefWaveform::slotSetVisualGainHigh(double gain) {
-    WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::High,gain);
+    WaveformWidgetFactory::instance()->setVisualGain(WaveformWidgetFactory::High,
+            gain);
 }
 
 void DlgPrefWaveform::slotSetNormalizeOverview(bool normalize) {

@@ -73,7 +73,8 @@ inline CSAMPLE madScaleSampleValue(mad_fixed_t sampleValue) {
 // Optimization: Reserve initial capacity for seek frame list
 const SINT kMinutesPerFile = 10; // enough for the majority of files (tunable)
 const SINT kSecondsPerMinute = 60; // fixed
-const SINT kMaxMp3FramesPerSecond = 39; // fixed: 1 MP3 frame = 26 ms -> ~ 1000 / 26
+const SINT kMaxMp3FramesPerSecond =
+    39; // fixed: 1 MP3 frame = 26 ms -> ~ 1000 / 26
 const SINT kSeekFrameListCapacity = kMinutesPerFile
                                     * kSecondsPerMinute* kMaxMp3FramesPerSecond;
 
@@ -250,7 +251,8 @@ Result SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
         }
 
         const SINT madChannelCount = MAD_NCHANNELS(&madHeader);
-        if (isValidChannelCount(maxChannelCount) && (madChannelCount != maxChannelCount)) {
+        if (isValidChannelCount(maxChannelCount) &&
+                (madChannelCount != maxChannelCount)) {
             qWarning() << "Differing number of channels"
                        << madChannelCount << "<>" << maxChannelCount
                        << "in some MP3 frame headers:"
@@ -329,7 +331,8 @@ Result SoundSourceMp3::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
 
         qWarning() << "MP3 files with varying sample rate are not supported!";
         qWarning() << "Since this happens most likely due to a corrupt file";
-        qWarning() << "Mixxx tries to plays it with the most common sample rate for this file";
+        qWarning() <<
+                   "Mixxx tries to plays it with the most common sample rate for this file";
     }
 
     if (mostCommonFrameRateIndex < kFrameRateCount) {
@@ -494,11 +497,14 @@ SINT SoundSourceMp3::seekSampleFrame(SINT frameIndex) {
                                        m_curFrameIndex);
     DEBUG_ASSERT(SINT(m_seekFrameList.size()) > curSeekFrameIndex);
     // some consistency checks
-    DEBUG_ASSERT((curSeekFrameIndex >= seekFrameIndex) || (m_curFrameIndex < frameIndex));
-    DEBUG_ASSERT((curSeekFrameIndex <= seekFrameIndex) || (m_curFrameIndex > frameIndex));
+    DEBUG_ASSERT((curSeekFrameIndex >= seekFrameIndex) ||
+                 (m_curFrameIndex < frameIndex));
+    DEBUG_ASSERT((curSeekFrameIndex <= seekFrameIndex) ||
+                 (m_curFrameIndex > frameIndex));
     if ((getMaxFrameIndex() <= m_curFrameIndex) || // out of range
             (frameIndex < m_curFrameIndex) || // seek backward
-            (seekFrameIndex > (curSeekFrameIndex + kMp3SeekFramePrefetchCount))) { // jump forward
+            (seekFrameIndex > (curSeekFrameIndex +
+                               kMp3SeekFramePrefetchCount))) { // jump forward
 
         // Adjust the seek frame index for prefetching
         // Implementation note: The type SINT is unsigned so
@@ -551,7 +557,8 @@ SINT SoundSourceMp3::readSampleFrames(
     SINT numberOfFrames, CSAMPLE* sampleBuffer,
     SINT sampleBufferSize, bool readStereoSamples) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
-    DEBUG_ASSERT(getSampleBufferSize(numberOfFrames, readStereoSamples) <= sampleBufferSize);
+    DEBUG_ASSERT(getSampleBufferSize(numberOfFrames,
+                                     readStereoSamples) <= sampleBufferSize);
 
     const SINT numberOfFramesTotal = math_min(
                                          numberOfFrames, getMaxFrameIndex() - m_curFrameIndex);

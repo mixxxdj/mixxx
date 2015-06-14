@@ -29,7 +29,8 @@ bool EngineEffectChain::addEffect(EngineEffect* pEffect, int iIndex) {
     }
     if (m_effects.contains(pEffect)) {
         if (kEffectDebugOutput) {
-            qDebug() << debugString() << "WARNING: effect already added to EngineEffectChain:"
+            qDebug() << debugString() <<
+                     "WARNING: effect already added to EngineEffectChain:"
                      << pEffect->name();
         }
         return false;
@@ -69,9 +70,11 @@ bool EngineEffectChain::updateParameters(const EffectsRequest& message) {
     m_insertionType = message.SetEffectChainParameters.insertion_type;
     m_dMix = message.SetEffectChainParameters.mix;
 
-    if (m_enableState != EffectProcessor::DISABLED && !message.SetEffectParameters.enabled) {
+    if (m_enableState != EffectProcessor::DISABLED &&
+            !message.SetEffectParameters.enabled) {
         m_enableState = EffectProcessor::DISABLING;
-    } else if (m_enableState == EffectProcessor::DISABLED && message.SetEffectParameters.enabled) {
+    } else if (m_enableState == EffectProcessor::DISABLED &&
+               message.SetEffectParameters.enabled) {
         m_enableState = EffectProcessor::ENABLING;
     }
     return true;

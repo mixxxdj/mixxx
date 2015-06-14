@@ -47,7 +47,8 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
             this, SLOT(trackLoaded(QString, TrackPointer)));
     connect(&m_trackDAO, SIGNAL(forceModelUpdate()),
             this, SLOT(select()));
-    trackLoaded(m_previewDeckGroup, PlayerInfo::instance().getTrackInfo(m_previewDeckGroup));
+    trackLoaded(m_previewDeckGroup,
+                PlayerInfo::instance().getTrackInfo(m_previewDeckGroup));
 }
 
 BaseSqlTableModel::~BaseSqlTableModel() {
@@ -154,13 +155,15 @@ QVariant BaseSqlTableModel::headerData(int section, Qt::Orientation orientation,
             headerValue = QVariant(section).toString();
         }
         return headerValue;
-    } else if (role == TrackModel::kHeaderWidthRole && orientation == Qt::Horizontal) {
+    } else if (role == TrackModel::kHeaderWidthRole &&
+               orientation == Qt::Horizontal) {
         QVariant widthValue = m_headerInfo.value(section).value(role);
         if (!widthValue.isValid()) {
             return 50;
         }
         return widthValue;
-    } else if (role == TrackModel::kHeaderNameRole && orientation == Qt::Horizontal) {
+    } else if (role == TrackModel::kHeaderNameRole &&
+               orientation == Qt::Horizontal) {
         return m_headerInfo.value(section).value(role);
     }
     return QAbstractTableModel::headerData(section, orientation, role);
@@ -353,12 +356,14 @@ const QString BaseSqlTableModel::currentSearch() const {
     return m_currentSearch;
 }
 
-void BaseSqlTableModel::setSearch(const QString& searchText, const QString& extraFilter) {
+void BaseSqlTableModel::setSearch(const QString& searchText,
+                                  const QString& extraFilter) {
     if (sDebug) {
         qDebug() << this << "setSearch" << searchText;
     }
 
-    bool searchIsDifferent = m_currentSearch.isNull() || m_currentSearch != searchText;
+    bool searchIsDifferent = m_currentSearch.isNull() ||
+                             m_currentSearch != searchText;
     bool filterDisabled = (m_currentSearchFilter.isNull() && extraFilter.isNull());
     bool searchFilterIsDifferent = m_currentSearchFilter != extraFilter;
 
@@ -371,7 +376,8 @@ void BaseSqlTableModel::setSearch(const QString& searchText, const QString& extr
     m_currentSearchFilter = extraFilter;
 }
 
-void BaseSqlTableModel::search(const QString& searchText, const QString& extraFilter) {
+void BaseSqlTableModel::search(const QString& searchText,
+                               const QString& extraFilter) {
     if (sDebug) {
         qDebug() << this << "search" << searchText;
     }
@@ -572,11 +578,13 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 value =  QString("(%1)").arg(value.toInt());
         } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED)) {
             value = value.toBool();
-        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED)) {
+        } else if (column == fieldIndex(
+                       ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED)) {
             QDateTime gmtDate = value.toDateTime();
             gmtDate.setTimeSpec(Qt::UTC);
             value = gmtDate.toLocalTime();
-        } else if (column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
+        } else if (column == fieldIndex(
+                       ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
             QDateTime gmtDate = value.toDateTime();
             gmtDate.setTimeSpec(Qt::UTC);
             value = gmtDate.toLocalTime();
@@ -656,17 +664,20 @@ bool BaseSqlTableModel::setData(
     int column = index.column();
 
     if (sDebug) {
-        qDebug() << this << "setData() column:" << column << "value:" << value << "role:" << role;
+        qDebug() << this << "setData() column:" << column << "value:" << value <<
+                 "role:" << role;
     }
 
     // Over-ride sets to TIMESPLAYED and re-direct them to PLAYED
     if (role == Qt::CheckStateRole) {
         QString val = value.toInt() > 0 ? QString("true") : QString("false");
         if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED)) {
-            QModelIndex playedIndex = index.sibling(index.row(), fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED));
+            QModelIndex playedIndex = index.sibling(index.row(),
+                                                    fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED));
             return setData(playedIndex, val, Qt::EditRole);
         } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
-            QModelIndex bpmLockindex = index.sibling(index.row(), fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK));
+            QModelIndex bpmLockindex = index.sibling(index.row(),
+                                       fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK));
             return setData(bpmLockindex, val, Qt::EditRole);
         }
         return false;
@@ -725,7 +736,8 @@ Qt::ItemFlags BaseSqlTableModel::readWriteFlags(
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART)) {
         return defaultFlags;
-    } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED))  {
+    } else if (column == fieldIndex(
+                   ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED))  {
         return defaultFlags | Qt::ItemIsUserCheckable;
     } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK)) {
         return defaultFlags | Qt::ItemIsUserCheckable;
@@ -779,7 +791,8 @@ QString BaseSqlTableModel::getTrackLocation(const QModelIndex& index) const {
         return "";
     }
     QString location = index.sibling(
-                           index.row(), fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LOCATION)).data().toString();
+                           index.row(), fieldIndex(
+                               ColumnCache::COLUMN_LIBRARYTABLE_LOCATION)).data().toString();
     return location;
 }
 
@@ -952,12 +965,14 @@ QMimeData* BaseSqlTableModel::mimeData(const QModelIndexList& indexes) const {
     return mimeData;
 }
 
-QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject* pParent) {
+QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i,
+        QObject* pParent) {
     if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
         return new StarDelegate(pParent);
     } else if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
         return new BPMDelegate(pParent);
-    } else if (PlayerManager::numPreviewDecks() > 0 && i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
+    } else if (PlayerManager::numPreviewDecks() > 0 &&
+               i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
         return new PreviewButtonDelegate(pParent, i);
     } else if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART)) {
         CoverArtDelegate* pCoverDelegate = new CoverArtDelegate(pParent);

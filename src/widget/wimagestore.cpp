@@ -41,7 +41,8 @@ QImage* WImageStore::getImage(const PixmapSource& source) {
     }
 
     if (loadedImage->isNull()) {
-        qDebug() << "WImageStore couldn't load:" << source.getPath() << (loadedImage == NULL);
+        qDebug() << "WImageStore couldn't load:" << source.getPath() <<
+                 (loadedImage == NULL);
         delete loadedImage;
         return NULL;
     }

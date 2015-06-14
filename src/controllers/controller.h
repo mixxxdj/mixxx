@@ -157,7 +157,8 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     bool m_bDebug;
     bool m_bLearning;
 
-    friend class ControllerManager; // accesses lots of our stuff, but in the same thread
+    friend class
+        ControllerManager; // accesses lots of our stuff, but in the same thread
 };
 
 #endif

@@ -37,7 +37,8 @@ class ReadAheadManager {
     // direction the audio is progressing in. Returns the total number of
     // samples read into buffer. Note that it is very common that the total
     // samples read is less than the requested number of samples.
-    virtual int getNextSamples(double dRate, CSAMPLE* buffer, int requested_samples);
+    virtual int getNextSamples(double dRate, CSAMPLE* buffer,
+                               int requested_samples);
 
 
     // Used to add a new EngineControls that ReadAheadManager will use to decide
@@ -56,7 +57,8 @@ class ReadAheadManager {
     // indicate that the given portion of a song is about to be read.
     virtual void hintReader(double dRate, HintVector* hintList);
 
-    virtual int getEffectiveVirtualPlaypositionFromLog(double currentVirtualPlayposition,
+    virtual int getEffectiveVirtualPlaypositionFromLog(double
+            currentVirtualPlayposition,
             double numConsumedSamples);
 
     virtual void setReader(CachingReader* pReader) {

@@ -9,7 +9,8 @@ DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
     // Re-queue tracks in Auto DJ
     ComboBoxAutoDjRequeue->addItem(tr("Off"));
     ComboBoxAutoDjRequeue->addItem(tr("On"));
-    ComboBoxAutoDjRequeue->setCurrentIndex(m_pConfig->getValueString(ConfigKey("[Auto DJ]", "Requeue")).toInt());
+    ComboBoxAutoDjRequeue->setCurrentIndex(m_pConfig->getValueString(
+            ConfigKey("[Auto DJ]", "Requeue")).toInt());
     connect(ComboBoxAutoDjRequeue, SIGNAL(activated(int)),
             this, SLOT(slotSetAutoDjRequeue(int)));
 

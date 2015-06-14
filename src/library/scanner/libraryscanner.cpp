@@ -34,7 +34,8 @@
 // TODO(rryan) make configurable
 const int kScannerThreadPoolSize = 1;
 
-LibraryScanner::LibraryScanner(QWidget* pParentWidget, TrackCollection* collection)
+LibraryScanner::LibraryScanner(QWidget* pParentWidget,
+                               TrackCollection* collection)
     : m_pCollection(collection),
       m_libraryHashDao(m_database),
       m_cueDao(m_database),
@@ -123,7 +124,8 @@ LibraryScanner::~LibraryScanner() {
 
         // Rollback any uncommitted transaction
         if (m_database.rollback()) {
-            qDebug() << "ERROR: There was a transaction in progress while closing the library scanner connection."
+            qDebug() <<
+                     "ERROR: There was a transaction in progress while closing the library scanner connection."
                      << "There is a logic error somewhere.";
         }
         // Close our database connection
@@ -136,13 +138,15 @@ void LibraryScanner::run() {
     Trace trace("LibraryScanner");
 
     if (!m_database.isValid()) {
-        m_database = QSqlDatabase::cloneDatabase(m_pCollection->getDatabase(), "LIBRARY_SCANNER");
+        m_database = QSqlDatabase::cloneDatabase(m_pCollection->getDatabase(),
+                     "LIBRARY_SCANNER");
     }
 
     if (!m_database.isOpen()) {
         // Open the database connection in this thread.
         if (!m_database.open()) {
-            qDebug() << "Failed to open database from library scanner thread." << m_database.lastError();
+            qDebug() << "Failed to open database from library scanner thread." <<
+                     m_database.lastError();
             return;
         }
     }
@@ -189,7 +193,8 @@ void LibraryScanner::slotStartScan() {
     // already done it.
     // TODO(XXX) SETTINGS_PATH may change in new Mixxx Versions. Here we need
     // the SETTINGS_PATH from Mixxx V <= 1.7
-    QString upgrade_filename = QDir::homePath().append("/").append(SETTINGS_PATH).append("DBUPGRADED");
+    QString upgrade_filename = QDir::homePath().append("/").append(
+                                   SETTINGS_PATH).append("DBUPGRADED");
     qDebug() << "upgrade filename is " << upgrade_filename;
     QFile upgradefile(upgrade_filename);
     if (!upgradefile.exists()) {
@@ -252,7 +257,8 @@ void LibraryScanner::slotStartScan() {
 void LibraryScanner::slotFinishScan() {
     qDebug() << "LibraryScanner::slotFinishScan";
     if (m_scannerGlobal.isNull()) {
-        qWarning() << "No scanner global state exists in LibraryScanner::slotFinishScan";
+        qWarning() <<
+                   "No scanner global state exists in LibraryScanner::slotFinishScan";
         return;
     }
 

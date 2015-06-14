@@ -79,7 +79,8 @@ Result SoundSourceOpus::parseTrackMetadataAndCoverArt(
     for (i = 0; i < l_ptrOpusTags->comments; ++i) {
         QString l_SWholeTag = QString(l_ptrOpusTags->user_comments[i]);
         QString l_STag = l_SWholeTag.left(l_SWholeTag.indexOf("="));
-        QString l_SPayload = l_SWholeTag.right((l_SWholeTag.length() - l_SWholeTag.indexOf("=")) - 1);
+        QString l_SPayload = l_SWholeTag.right((l_SWholeTag.length() -
+                                                l_SWholeTag.indexOf("=")) - 1);
 
         if (!l_STag.compare("ARTIST")) {
             pTrackMetadata->setArtist(l_SPayload);
@@ -105,7 +106,8 @@ Result SoundSourceOpus::parseTrackMetadataAndCoverArt(
         } else if (!l_STag.compare("TITLE")) {
             pTrackMetadata->setTitle(l_SPayload);
         } else if (!l_STag.compare("REPLAYGAIN_TRACK_GAIN")) {
-            pTrackMetadata->setReplayGain(Mixxx::TrackMetadata::parseReplayGain(l_SPayload));
+            pTrackMetadata->setReplayGain(Mixxx::TrackMetadata::parseReplayGain(
+                                              l_SPayload));
         }
 
         // This is left fot debug reasons!!
@@ -137,7 +139,8 @@ Result SoundSourceOpus::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     if (0 < channelCount) {
         setChannelCount(channelCount);
     } else {
-        qWarning() << "Failed to read channel configuration of OggOpus file:" << getUrlString();
+        qWarning() << "Failed to read channel configuration of OggOpus file:" <<
+                   getUrlString();
         return ERR;
     }
 

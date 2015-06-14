@@ -134,16 +134,19 @@ SINT SoundSourceFLAC::seekSampleFrame(SINT frameIndex) {
     if (FLAC__stream_decoder_seek_absolute(m_decoder, frameIndex)) {
         // Set the new position
         m_curFrameIndex = frameIndex;
-        DEBUG_ASSERT(FLAC__STREAM_DECODER_SEEK_ERROR != FLAC__stream_decoder_get_state(m_decoder));
+        DEBUG_ASSERT(FLAC__STREAM_DECODER_SEEK_ERROR != FLAC__stream_decoder_get_state(
+                         m_decoder));
     } else {
         qWarning() << "Seek error at" << frameIndex << "in" << m_file.fileName();
         // Invalidate the current position
         m_curFrameIndex = getMaxFrameIndex();
-        if (FLAC__STREAM_DECODER_SEEK_ERROR == FLAC__stream_decoder_get_state(m_decoder)) {
+        if (FLAC__STREAM_DECODER_SEEK_ERROR == FLAC__stream_decoder_get_state(
+                    m_decoder)) {
             // Flush the input stream of the decoder according to the
             // documentation of FLAC__stream_decoder_seek_absolute()
             if (!FLAC__stream_decoder_flush(m_decoder)) {
-                qWarning() << "Failed to flush input buffer of the FLAC decoder after seeking in"
+                qWarning() <<
+                           "Failed to flush input buffer of the FLAC decoder after seeking in"
                            << m_file.fileName();
                 // Invalidate the current position...
                 m_curFrameIndex = getMaxFrameIndex();
@@ -191,7 +194,8 @@ SINT SoundSourceFLAC::readSampleFrames(
     SINT numberOfFrames, CSAMPLE* sampleBuffer,
     SINT sampleBufferSize, bool readStereoSamples) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
-    DEBUG_ASSERT(getSampleBufferSize(numberOfFrames, readStereoSamples) <= sampleBufferSize);
+    DEBUG_ASSERT(getSampleBufferSize(numberOfFrames,
+                                     readStereoSamples) <= sampleBufferSize);
 
     const SINT numberOfFramesTotal =
         math_min(numberOfFrames, getMaxFrameIndex() - m_curFrameIndex);
@@ -349,7 +353,8 @@ FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
 
     // According to the API docs the decoder will always report the current
     // position in "FLAC samples" (= "Mixxx frames") for convenience
-    DEBUG_ASSERT(frame->header.number_type == FLAC__FRAME_NUMBER_TYPE_SAMPLE_NUMBER);
+    DEBUG_ASSERT(frame->header.number_type ==
+                 FLAC__FRAME_NUMBER_TYPE_SAMPLE_NUMBER);
     m_curFrameIndex = frame->header.number.sample_number;
 
     // Decode buffer should be empty before decoding the next frame
@@ -360,7 +365,8 @@ FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
     const SINT numWritableFrames = samples2frames(writableChunk.size());
     DEBUG_ASSERT(numWritableFrames <= numReadableFrames);
     if (numWritableFrames < numReadableFrames) {
-        qWarning() << "Sample buffer has not enough free space for all decoded FLAC samples:"
+        qWarning() <<
+                   "Sample buffer has not enough free space for all decoded FLAC samples:"
                    << numWritableFrames << "<" << numReadableFrames;
     }
 

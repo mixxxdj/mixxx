@@ -42,7 +42,8 @@ void AcoustidClient::start(int id, const QString& fingerprint, int duration) {
     url.addQueryItem("fingerprint", fingerprint);
 
     QNetworkRequest req(QUrl::fromEncoded(ACOUSTID_URL.toAscii()));
-    req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    req.setHeader(QNetworkRequest::ContentTypeHeader,
+                  "application/x-www-form-urlencoded");
     req.setRawHeader("Content-Encoding", "gzip");
     req.setRawHeader("User-Agent", CLIENT_NAME.toAscii());
 

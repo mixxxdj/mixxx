@@ -12,7 +12,8 @@ struct VinylSignalQualityReport {
 
 class VinylSignalQualityListener {
   public:
-    virtual void onVinylSignalQualityUpdate(const VinylSignalQualityReport& report) = 0;
+    virtual void onVinylSignalQualityUpdate(const VinylSignalQualityReport& report)
+        = 0;
 };
 
 #endif /* VINYLSIGNALQUALITY_H */

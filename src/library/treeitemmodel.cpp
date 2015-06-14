@@ -93,14 +93,16 @@ Qt::ItemFlags TreeItemModel::flags(const QModelIndex& index) const {
     return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 }
 
-QVariant TreeItemModel::headerData(int section, Qt::Orientation orientation, int role) const {
+QVariant TreeItemModel::headerData(int section, Qt::Orientation orientation,
+                                   int role) const {
     Q_UNUSED(section);
     Q_UNUSED(orientation);
     Q_UNUSED(role);
     return QVariant();
 }
 
-QModelIndex TreeItemModel::index(int row, int column, const QModelIndex& parent) const {
+QModelIndex TreeItemModel::index(int row, int column,
+                                 const QModelIndex& parent) const {
     if (!hasIndex(row, column, parent))
         return QModelIndex();
 
@@ -164,7 +166,8 @@ void TreeItemModel::setRootItem(TreeItem* item) {
  * Before you can resize the data model dynamically by using 'insertRows' and 'removeRows'
  * make sure you have initialized
  */
-bool TreeItemModel::insertRows(QList<TreeItem*>& data, int position, int rows, const QModelIndex& parent) {
+bool TreeItemModel::insertRows(QList<TreeItem*>& data, int position, int rows,
+                               const QModelIndex& parent) {
     if (rows == 0) {
         return true;
     }
@@ -177,7 +180,8 @@ bool TreeItemModel::insertRows(QList<TreeItem*>& data, int position, int rows, c
     return success;
 }
 
-bool TreeItemModel::removeRows(int position, int rows, const QModelIndex& parent) {
+bool TreeItemModel::removeRows(int position, int rows,
+                               const QModelIndex& parent) {
     if (rows == 0) {
         return true;
     }

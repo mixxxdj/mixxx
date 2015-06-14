@@ -134,7 +134,8 @@ void BeatMap::createFromBeatVector(const QVector<double>& beats) {
         // beatpos is in frames. Do not accept fractional frames.
         beatpos = floor(beatpos);
         if (beatpos <= previous_beatpos || beatpos < 0) {
-            qDebug() << "BeatMap::createFromVector: beats not in increasing order or negative";
+            qDebug() <<
+                     "BeatMap::createFromVector: beats not in increasing order or negative";
             qDebug() << "discarding beat " << beatpos;
         } else {
             beat.set_frame_position(beatpos);
@@ -609,7 +610,8 @@ void BeatMap::onBeatlistChanged() {
     m_dCachedBpm = calculateBpm(startBeat, stopBeat);
 }
 
-double BeatMap::calculateBpm(const Beat& startBeat, const Beat& stopBeat) const {
+double BeatMap::calculateBpm(const Beat& startBeat,
+                             const Beat& stopBeat) const {
     if (startBeat.frame_position() > stopBeat.frame_position()) {
         return -1;
     }

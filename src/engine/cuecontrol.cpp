@@ -553,7 +553,8 @@ void CueControl::hotcueClear(HotcueControl* pControl, double v) {
     detachCue(pControl->getHotcueNumber());
 }
 
-void CueControl::hotcuePositionChanged(HotcueControl* pControl, double newPosition) {
+void CueControl::hotcuePositionChanged(HotcueControl* pControl,
+                                       double newPosition) {
     QMutexLocker lock(&m_mutex);
     if (!m_pLoadedTrack)
         return;
@@ -806,7 +807,8 @@ void CueControl::playStutter(double v) {
     }
 }
 
-double CueControl::updateIndicatorsAndModifyPlay(double play, bool playPossible) {
+double CueControl::updateIndicatorsAndModifyPlay(double play,
+        bool playPossible) {
     QMutexLocker lock(&m_mutex);
     double cueMode = m_pCueMode->get();
 
@@ -988,7 +990,8 @@ HotcueControl::HotcueControl(QString group, int i)
             this, SLOT(slotHotcueActivate(double)),
             Qt::DirectConnection);
 
-    m_hotcueActivatePreview = new ControlPushButton(keyForControl(i, "activate_preview"));
+    m_hotcueActivatePreview = new ControlPushButton(keyForControl(i,
+            "activate_preview"));
     connect(m_hotcueActivatePreview, SIGNAL(valueChanged(double)),
             this, SLOT(slotHotcueActivatePreview(double)),
             Qt::DirectConnection);

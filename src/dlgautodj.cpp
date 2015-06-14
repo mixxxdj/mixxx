@@ -24,7 +24,8 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
     m_pTrackTableView->installEventFilter(pKeyboard);
     connect(m_pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
-    connect(m_pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
+    connect(m_pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString,
+                                      bool)),
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
     connect(m_pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
@@ -79,7 +80,8 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
     spinBoxTransition->setValue(m_pAutoDJProcessor->getTransitionTime());
     connect(m_pAutoDJProcessor, SIGNAL(transitionTimeChanged(int)),
             this, SLOT(transitionTimeChanged(int)));
-    connect(m_pAutoDJProcessor, SIGNAL(autoDJStateChanged(AutoDJProcessor::AutoDJState)),
+    connect(m_pAutoDJProcessor,
+            SIGNAL(autoDJStateChanged(AutoDJProcessor::AutoDJState)),
             this, SLOT(autoDJStateChanged(AutoDJProcessor::AutoDJState)));
     autoDJStateChanged(m_pAutoDJProcessor->getState());
 }

@@ -15,14 +15,16 @@
 #include "library/libraryview.h"
 #include "util/container.h"
 
-LoadToGroupController::LoadToGroupController(QObject* pParent, const QString& group)
+LoadToGroupController::LoadToGroupController(QObject* pParent,
+        const QString& group)
     : QObject(pParent),
       m_group(group) {
     m_pLoadControl = new ControlPushButton(ConfigKey(group, "LoadSelectedTrack"));
     connect(m_pLoadControl, SIGNAL(valueChanged(double)),
             this, SLOT(slotLoadToGroup(double)));
 
-    m_pLoadAndPlayControl = new ControlPushButton(ConfigKey(group, "LoadSelectedTrackAndPlay"));
+    m_pLoadAndPlayControl = new ControlPushButton(ConfigKey(group,
+            "LoadSelectedTrackAndPlay"));
     connect(m_pLoadAndPlayControl, SIGNAL(valueChanged(double)),
             this, SLOT(slotLoadToGroupAndPlay(double)));
 
@@ -68,37 +70,45 @@ LibraryControl::LibraryControl(Library* pLibrary)
 
     // Make controls for library navigation and track loading.
 
-    m_pSelectNextTrack = new ControlPushButton(ConfigKey("[Playlist]", "SelectNextTrack"));
+    m_pSelectNextTrack = new ControlPushButton(ConfigKey("[Playlist]",
+            "SelectNextTrack"));
     connect(m_pSelectNextTrack, SIGNAL(valueChanged(double)),
             this, SLOT(slotSelectNextTrack(double)));
 
-    m_pSelectPrevTrack = new ControlPushButton(ConfigKey("[Playlist]", "SelectPrevTrack"));
+    m_pSelectPrevTrack = new ControlPushButton(ConfigKey("[Playlist]",
+            "SelectPrevTrack"));
     connect(m_pSelectPrevTrack, SIGNAL(valueChanged(double)),
             this, SLOT(slotSelectPrevTrack(double)));
 
     // Ignoring no-ops is important since this is for +/- tickers.
-    m_pSelectTrack = new ControlObject(ConfigKey("[Playlist]","SelectTrackKnob"), false);
+    m_pSelectTrack = new ControlObject(ConfigKey("[Playlist]","SelectTrackKnob"),
+                                       false);
     connect(m_pSelectTrack, SIGNAL(valueChanged(double)),
             this, SLOT(slotSelectTrack(double)));
 
-    m_pSelectNextSidebarItem = new ControlPushButton(ConfigKey("[Playlist]", "SelectNextPlaylist"));
+    m_pSelectNextSidebarItem = new ControlPushButton(ConfigKey("[Playlist]",
+            "SelectNextPlaylist"));
     connect(m_pSelectNextSidebarItem, SIGNAL(valueChanged(double)),
             this, SLOT(slotSelectNextSidebarItem(double)));
 
-    m_pSelectPrevSidebarItem = new ControlPushButton(ConfigKey("[Playlist]", "SelectPrevPlaylist"));
+    m_pSelectPrevSidebarItem = new ControlPushButton(ConfigKey("[Playlist]",
+            "SelectPrevPlaylist"));
     connect(m_pSelectPrevSidebarItem, SIGNAL(valueChanged(double)),
             this, SLOT(slotSelectPrevSidebarItem(double)));
 
     // Ignoring no-ops is important since this is for +/- tickers.
-    m_pSelectSidebarItem = new ControlObject(ConfigKey("[Playlist]", "SelectPlaylist"), false);
+    m_pSelectSidebarItem = new ControlObject(ConfigKey("[Playlist]",
+            "SelectPlaylist"), false);
     connect(m_pSelectSidebarItem, SIGNAL(valueChanged(double)),
             this, SLOT(slotSelectSidebarItem(double)));
 
-    m_pToggleSidebarItem = new ControlPushButton(ConfigKey("[Playlist]", "ToggleSelectedSidebarItem"));
+    m_pToggleSidebarItem = new ControlPushButton(ConfigKey("[Playlist]",
+            "ToggleSelectedSidebarItem"));
     connect(m_pToggleSidebarItem, SIGNAL(valueChanged(double)),
             this, SLOT(slotToggleSelectedSidebarItem(double)));
 
-    m_pLoadSelectedIntoFirstStopped = new ControlPushButton(ConfigKey("[Playlist]","LoadSelectedIntoFirstStopped"));
+    m_pLoadSelectedIntoFirstStopped = new ControlPushButton(ConfigKey("[Playlist]",
+            "LoadSelectedIntoFirstStopped"));
     connect(m_pLoadSelectedIntoFirstStopped, SIGNAL(valueChanged(double)),
             this, SLOT(slotLoadSelectedIntoFirstStopped(double)));
 
@@ -106,7 +116,8 @@ LibraryControl::LibraryControl(Library* pLibrary)
     connect(m_pAutoDjAddTop, SIGNAL(valueChanged(double)),
             this, SLOT(slotAutoDjAddTop(double)));
 
-    m_pAutoDjAddBottom = new ControlPushButton(ConfigKey("[Playlist]","AutoDjAddBottom"));
+    m_pAutoDjAddBottom = new ControlPushButton(ConfigKey("[Playlist]",
+            "AutoDjAddBottom"));
     connect(m_pAutoDjAddBottom, SIGNAL(valueChanged(double)),
             this, SLOT(slotAutoDjAddBottom(double)));
 
@@ -197,7 +208,8 @@ void LibraryControl::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
             this, SLOT(sidebarWidgetDeleted()));
 }
 
-void LibraryControl::bindWidget(WLibrary* pLibraryWidget, MixxxKeyboard* pKeyboard) {
+void LibraryControl::bindWidget(WLibrary* pLibraryWidget,
+                                MixxxKeyboard* pKeyboard) {
     Q_UNUSED(pKeyboard);
     if (m_pLibraryWidget != NULL) {
         disconnect(m_pLibraryWidget, 0, this, 0);

@@ -32,7 +32,8 @@ void BaseExternalLibraryFeature::onRightClick(const QPoint& globalPos) {
     m_lastRightClickedIndex = QModelIndex();
 }
 
-void BaseExternalLibraryFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
+void BaseExternalLibraryFeature::onRightClickChild(const QPoint& globalPos,
+        QModelIndex index) {
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
 
@@ -96,7 +97,8 @@ void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
 }
 
 // This is a common function for all external Librarys copied to Mixxx DB
-void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(QList<int>* trackIds, QString* pPlaylist) {
+void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(
+    QList<int>* trackIds, QString* pPlaylist) {
     if (!m_lastRightClickedIndex.isValid()) {
         return;
     }

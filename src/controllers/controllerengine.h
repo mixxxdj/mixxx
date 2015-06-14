@@ -56,8 +56,10 @@ class ControllerEngineConnectionScriptValue : public QObject {
 };
 
 /* comparison function for ControllerEngineConnection */
-inline bool operator==(const ControllerEngineConnection& c1, const ControllerEngineConnection& c2) {
-    return c1.id == c2.id && c1.key.group == c2.key.group && c1.key.item == c2.key.item;
+inline bool operator==(const ControllerEngineConnection& c1,
+                       const ControllerEngineConnection& c2) {
+    return c1.id == c2.id && c1.key.group == c2.key.group &&
+           c1.key.item == c2.key.item;
 }
 
 class ControllerEngine : public QObject {
@@ -94,7 +96,8 @@ class ControllerEngine : public QObject {
     Q_INVOKABLE void setValue(QString group, QString name, double newValue);
     Q_INVOKABLE double getParameter(QString group, QString name);
     Q_INVOKABLE void setParameter(QString group, QString name, double newValue);
-    Q_INVOKABLE double getParameterForValue(QString group, QString name, double value);
+    Q_INVOKABLE double getParameterForValue(QString group, QString name,
+                                            double value);
     Q_INVOKABLE void reset(QString group, QString name);
     Q_INVOKABLE double getDefaultValue(QString group, QString name);
     Q_INVOKABLE double getDefaultParameter(QString group, QString name);
@@ -103,7 +106,8 @@ class ControllerEngine : public QObject {
     // Called indirectly by the objects returned by connectControl
     Q_INVOKABLE void trigger(QString group, QString name);
     Q_INVOKABLE void log(QString message);
-    Q_INVOKABLE int beginTimer(int interval, QScriptValue scriptCode, bool oneShot = false);
+    Q_INVOKABLE int beginTimer(int interval, QScriptValue scriptCode,
+                               bool oneShot = false);
     Q_INVOKABLE void stopTimer(int timerId);
     Q_INVOKABLE void scratchEnable(int deck, int intervalsPerRev, double rpm,
                                    double alpha, double beta, bool ramp = true);
@@ -111,8 +115,10 @@ class ControllerEngine : public QObject {
     Q_INVOKABLE void scratchDisable(int deck, bool ramp = true);
     Q_INVOKABLE bool isScratching(int deck);
     Q_INVOKABLE void softTakeover(QString group, QString name, bool set);
-    Q_INVOKABLE void brake(int deck, bool activate, double factor=0.9, double rate=1.0);
-    Q_INVOKABLE void spinback(int deck, bool activate, double factor=1.8, double rate=-10.0);
+    Q_INVOKABLE void brake(int deck, bool activate, double factor=0.9,
+                           double rate=1.0);
+    Q_INVOKABLE void spinback(int deck, bool activate, double factor=1.8,
+                              double rate=-10.0);
 
     // Handler for timers that scripts set.
     virtual void timerEvent(QTimerEvent* event);
@@ -160,7 +166,8 @@ class ControllerEngine : public QObject {
     // Stops and removes all timers (for shutdown).
     void stopAllTimers();
 
-    void callFunctionOnObjects(QList<QString>, QString, QScriptValueList args = QScriptValueList());
+    void callFunctionOnObjects(QList<QString>, QString,
+                               QScriptValueList args = QScriptValueList());
     bool checkException();
     QScriptEngine* m_pEngine;
 

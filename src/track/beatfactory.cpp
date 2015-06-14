@@ -22,7 +22,8 @@ BeatsPointer BeatFactory::loadBeatsFromByteArray(TrackPointer pTrack,
         qDebug() << "Successfully deserialized BeatMap";
         return BeatsPointer(pMap, &BeatFactory::deleteBeats);
     }
-    qDebug() << "BeatFactory::loadBeatsFromByteArray could not parse serialized beats.";
+    qDebug() <<
+             "BeatFactory::loadBeatsFromByteArray could not parse serialized beats.";
     return BeatsPointer();
 }
 
@@ -34,7 +35,8 @@ BeatsPointer BeatFactory::makeBeatGrid(TrackInfoObject* pTrack, double dBpm,
 }
 
 // static
-QString BeatFactory::getPreferredVersion(const bool bEnableFixedTempoCorrection) {
+QString BeatFactory::getPreferredVersion(const bool
+        bEnableFixedTempoCorrection) {
     if (bEnableFixedTempoCorrection) {
         return BEAT_GRID_2_VERSION;
     }
@@ -81,7 +83,8 @@ QString BeatFactory::getPreferredSubVersion(
               arg(kSubVersionKeyValueSeparator, QString::number(0.05));
 
     qSort(fragments);
-    return (fragments.size() > 0) ? fragments.join(kSubVersionFragmentSeparator) : "";
+    return (fragments.size() > 0) ? fragments.join(kSubVersionFragmentSeparator) :
+           "";
 }
 
 
@@ -99,7 +102,8 @@ BeatsPointer BeatFactory::makePreferredBeats(
 
     BeatUtils::printBeatStatistics(beats, iSampleRate);
     if (version == BEAT_GRID_2_VERSION) {
-        double globalBpm = BeatUtils::calculateBpm(beats, iSampleRate, iMinBpm, iMaxBpm);
+        double globalBpm = BeatUtils::calculateBpm(beats, iSampleRate, iMinBpm,
+                           iMaxBpm);
         double firstBeat = BeatUtils::calculateFixedTempoFirstBeat(
                                bEnableOffsetCorrection,
                                beats, iSampleRate, iTotalSamples, globalBpm);

@@ -34,7 +34,8 @@ KeyControl::KeyControl(QString group,
     // pitch_adjust is the distance to the linear pitch in semitones
     // set by the speed slider or to the locked key.
     // pitch_adjust knob in semitones; 4.7 ct per midi step; allowOutOfBounds = true;
-    m_pPitchAdjust = new ControlPotmeter(ConfigKey(group, "pitch_adjust"), -3.0, 3.0, true);
+    m_pPitchAdjust = new ControlPotmeter(ConfigKey(group, "pitch_adjust"), -3.0,
+                                         3.0, true);
     // Course adjust by full semitone steps.
     m_pPitchAdjust->setStepCount(6);
     // Fine adjust with semitone / 10 = 10 ct;.
@@ -63,7 +64,8 @@ KeyControl::KeyControl(QString group,
             this, SLOT(slotSetEngineKey(double)),
             Qt::DirectConnection);
 
-    m_pEngineKeyDistance = new ControlPotmeter(ConfigKey(group, "visual_key_distance"),
+    m_pEngineKeyDistance = new ControlPotmeter(ConfigKey(group,
+            "visual_key_distance"),
             -0.5, 0.5);
     connect(m_pEngineKeyDistance, SIGNAL(valueChanged(double)),
             this, SLOT(slotSetEngineKeyDistance(double)),
@@ -97,7 +99,8 @@ KeyControl::KeyControl(QString group,
             this, SLOT(slotRateChanged()),
             Qt::DirectConnection);
 
-    m_pVCEnabled = ControlObject::getControl(ConfigKey(group, "vinylcontrol_enabled"));
+    m_pVCEnabled = ControlObject::getControl(ConfigKey(group,
+                   "vinylcontrol_enabled"));
     if (m_pVCEnabled) {
         connect(m_pVCEnabled, SIGNAL(valueChanged(double)),
                 this, SLOT(slotRateChanged()),
@@ -170,7 +173,8 @@ void KeyControl::updateRate() {
     if (m_pVCEnabled && m_pVCEnabled->toBool()) {
         m_pitchRateInfo.tempoRatio = m_pVCRate->get();
     } else {
-        m_pitchRateInfo.tempoRatio = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
+        m_pitchRateInfo.tempoRatio = 1.0 + m_pRateDir->get() * m_pRateRange->get() *
+                                     m_pRateSlider->get();
     }
 
     if (m_pitchRateInfo.tempoRatio == 0) {
@@ -224,9 +228,11 @@ void KeyControl::updateRate() {
         speedSliderPitchRatio = m_pitchRateInfo.tempoRatio;
     }
 
-    m_pitchRateInfo.pitchRatio = m_pitchRateInfo.pitchTweakRatio * speedSliderPitchRatio;
+    m_pitchRateInfo.pitchRatio = m_pitchRateInfo.pitchTweakRatio *
+                                 speedSliderPitchRatio;
 
-    double pitchOctaves = KeyUtils::powerOf2ToOctaveChange(m_pitchRateInfo.pitchRatio);
+    double pitchOctaves = KeyUtils::powerOf2ToOctaveChange(
+                              m_pitchRateInfo.pitchRatio);
     double dFileKey = m_pFileKey->get();
     updateKeyCOs(dFileKey, pitchOctaves);
 
@@ -326,7 +332,8 @@ void KeyControl::updatePitchAdjust() {
     //        m_pitchRateInfo.pitchTweakRatio <<
     //        m_pitchRateInfo.tempoRatio;
 
-    double speedSliderPitchRatio = m_pitchRateInfo.pitchRatio / m_pitchRateInfo.pitchTweakRatio;
+    double speedSliderPitchRatio = m_pitchRateInfo.pitchRatio /
+                                   m_pitchRateInfo.pitchTweakRatio;
     // speedSliderPitchRatio must be unchanged
     double pitchAdjustKnobRatio = KeyUtils::semitoneChangeToPowerOf2(pitchAdjust);
 
@@ -336,7 +343,8 @@ void KeyControl::updatePitchAdjust() {
     m_pitchRateInfo.pitchRatio = pitchAdjustKnobRatio * speedSliderPitchRatio;
 
     double dFileKey = m_pFileKey->get();
-    updateKeyCOs(dFileKey, KeyUtils::powerOf2ToOctaveChange(m_pitchRateInfo.pitchRatio));
+    updateKeyCOs(dFileKey, KeyUtils::powerOf2ToOctaveChange(
+                     m_pitchRateInfo.pitchRatio));
 
     //qDebug() << "KeyControl::slotPitchAdjustChanged 2" << pitchAdjust <<
     //        m_pitchRateInfo.pitchRatio <<
@@ -366,10 +374,12 @@ bool KeyControl::syncKey(EngineBuffer* pOtherEngineBuffer) {
         KeyUtils::keyFromNumericValue(m_pFileKey->get());
 
     // Get the sync target's effective key, since that is what we aim to match.
-    double dKey = ControlObject::get(ConfigKey(pOtherEngineBuffer->getGroup(), "key"));
+    double dKey = ControlObject::get(ConfigKey(pOtherEngineBuffer->getGroup(),
+                                     "key"));
     mixxx::track::io::key::ChromaticKey otherKey =
         KeyUtils::keyFromNumericValue(dKey);
-    double otherDistance = ControlObject::get(ConfigKey(pOtherEngineBuffer->getGroup(), "visual_key_distance"));
+    double otherDistance = ControlObject::get(ConfigKey(
+                               pOtherEngineBuffer->getGroup(), "visual_key_distance"));
 
     if (thisFileKey == mixxx::track::io::key::INVALID ||
             otherKey == mixxx::track::io::key::INVALID) {

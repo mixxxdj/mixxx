@@ -38,14 +38,16 @@ class SidebarModel : public QAbstractItemModel {
     void clicked(const QModelIndex& index);
     void doubleClicked(const QModelIndex& index);
     void rightClicked(const QPoint& globalPos, const QModelIndex& index);
-    void slotFeatureSelect(LibraryFeature* pFeature, const QModelIndex& index = QModelIndex());
+    void slotFeatureSelect(LibraryFeature* pFeature,
+                           const QModelIndex& index = QModelIndex());
 
     // Slots for every single QAbstractItemModel signal
     // void slotColumnsAboutToBeInserted(const QModelIndex& parent, int start, int end);
     // void slotColumnsAboutToBeRemoved(const QModelIndex& parent, int start, int end);
     // void slotColumnsInserted(const QModelIndex& parent, int start, int end);
     // void slotColumnsRemoved(const QModelIndex& parent, int start, int end);
-    void slotDataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight);
+    void slotDataChanged(const QModelIndex& topLeft,
+                         const QModelIndex& bottomRight);
     //void slotHeaderDataChanged(Qt::Orientation orientation, int first, int last);
     // void slotLayoutAboutToBeChanged();
     // void slotLayoutChanged();
@@ -66,7 +68,8 @@ class SidebarModel : public QAbstractItemModel {
     QModelIndex translateSourceIndex(const QModelIndex& parent);
     void featureRenamed(LibraryFeature*);
     QList<LibraryFeature*> m_sFeatures;
-    unsigned int m_iDefaultSelectedIndex; /** Index of the item in the sidebar model to select at startup. */
+    unsigned int
+    m_iDefaultSelectedIndex; /** Index of the item in the sidebar model to select at startup. */
 };
 
 #endif /* SIDEBARMODEL_H */

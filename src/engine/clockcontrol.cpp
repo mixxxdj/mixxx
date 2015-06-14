@@ -62,7 +62,8 @@ double ClockControl::process(const double dRate,
 
     // Multiply by two to get samples from frames. Interval is scaled linearly
     // by the rate.
-    const double blinkIntervalSamples = 2.0 * samplerate * (1.0 * dRate) * blinkSeconds;
+    const double blinkIntervalSamples = 2.0 * samplerate * (1.0 * dRate) *
+                                        blinkSeconds;
 
     if (m_pBeats) {
         double closestBeat = m_pBeats->findClosestBeat(currentSample);

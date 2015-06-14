@@ -129,7 +129,8 @@ class PerGroupRack : public EffectRack {
   protected:
     virtual void configureEffectChainSlotForGroup(EffectChainSlotPointer pSlot,
             const ChannelHandleAndGroup& handle_group) = 0;
-    virtual QString formatEffectChainSlotGroupForGroup(const unsigned int iRackNumber,
+    virtual QString formatEffectChainSlotGroupForGroup(const unsigned int
+            iRackNumber,
             const unsigned int iChainSlotNumber,
             const QString& group) const = 0;
 
@@ -177,7 +178,8 @@ class QuickEffectRack : public PerGroupRack {
   protected:
     virtual void configureEffectChainSlotForGroup(EffectChainSlotPointer pSlot,
             const ChannelHandleAndGroup& handle_group);
-    virtual QString formatEffectChainSlotGroupForGroup(const unsigned int iRackNumber,
+    virtual QString formatEffectChainSlotGroupForGroup(const unsigned int
+            iRackNumber,
             const unsigned int iChainSlotNumber,
             const QString& group) const {
         Q_UNUSED(iChainSlotNumber);
@@ -225,7 +227,8 @@ class EqualizerRack : public PerGroupRack {
   protected:
     virtual void configureEffectChainSlotForGroup(EffectChainSlotPointer pSlot,
             const ChannelHandleAndGroup& handle_group);
-    virtual QString formatEffectChainSlotGroupForGroup(const unsigned int iRackNumber,
+    virtual QString formatEffectChainSlotGroupForGroup(const unsigned int
+            iRackNumber,
             const unsigned int iChainSlotNumber,
             const QString& group) const {
         Q_UNUSED(iChainSlotNumber);

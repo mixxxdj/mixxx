@@ -155,7 +155,8 @@ void EffectChain::enableForChannel(const ChannelHandleAndGroup& handle_group) {
     }
 }
 
-bool EffectChain::enabledForChannel(const ChannelHandleAndGroup& handle_group) const {
+bool EffectChain::enabledForChannel(const ChannelHandleAndGroup& handle_group)
+const {
     return m_enabledChannels.contains(handle_group);
 }
 
@@ -298,7 +299,8 @@ EffectChainPointer EffectChain::fromXML(EffectsManager* pEffectsManager,
     QString id = XmlParse::selectNodeQString(element, "Id");
     QString name = XmlParse::selectNodeQString(element, "Name");
     QString description = XmlParse::selectNodeQString(element, "Description");
-    QString insertionTypeStr = XmlParse::selectNodeQString(element, "InsertionType");
+    QString insertionTypeStr = XmlParse::selectNodeQString(element,
+                               "InsertionType");
 
     EffectChain* pChain = new EffectChain(pEffectsManager, id);
     pChain->setName(name);

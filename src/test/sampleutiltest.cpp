@@ -602,7 +602,8 @@ TEST_F(SampleUtilTest, copy3WithRampingGainSpeed) {
 
     t.start();
 
-    SampleUtil::copy2WithRampingGain(buffer, buffer2, 1.1f, 1.2f, buffer3, 1.1f, 1.2f, size);
+    SampleUtil::copy2WithRampingGain(buffer, buffer2, 1.1f, 1.2f, buffer3, 1.1f,
+                                     1.2f, size);
 
     elapsed = t.elapsed("");
     qDebug() << "copy2WithRampingGain" << elapsed << "ns" << size;
@@ -611,7 +612,8 @@ TEST_F(SampleUtilTest, copy3WithRampingGainSpeed) {
 
     t.start();
 
-    SampleUtil::copy2WithRampingGain(buffer, buffer2, 1.1f, 1.2f, buffer3, 1.1f, 1.2f, size);
+    SampleUtil::copy2WithRampingGain(buffer, buffer2, 1.1f, 1.2f, buffer3, 1.1f,
+                                     1.2f, size);
 
     elapsed = t.elapsed("");
     qDebug() << "copy2WithRampingGain" << elapsed << "ns" << size;
@@ -620,7 +622,8 @@ TEST_F(SampleUtilTest, copy3WithRampingGainSpeed) {
 
     t.start();
 
-    SampleUtil::copy2WithRampingGain(buffer, buffer2, 1.1f, 1.2f, buffer3, 1.1f, 1.2f, size);
+    SampleUtil::copy2WithRampingGain(buffer, buffer2, 1.1f, 1.2f, buffer3, 1.1f,
+                                     1.2f, size);
 
     elapsed = t.elapsed("");
     qDebug() << "copy2WithRampingGain" << elapsed << "ns" << size;

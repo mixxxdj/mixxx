@@ -86,8 +86,10 @@ void DlgPrefBeats::loadSettings() {
     if (!m_listIdentifier.contains(pluginid)) {
         slotResetToDefaults();
     }
-    m_minBpm = m_pconfig->getValueString(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_START)).toInt();
-    m_maxBpm = m_pconfig->getValueString(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_END)).toInt();
+    m_minBpm = m_pconfig->getValueString(ConfigKey(BPM_CONFIG_KEY,
+                                         BPM_RANGE_START)).toInt();
+    m_maxBpm = m_pconfig->getValueString(ConfigKey(BPM_CONFIG_KEY,
+                                         BPM_RANGE_END)).toInt();
 
     slotUpdate();
 }
@@ -198,21 +200,29 @@ void DlgPrefBeats::slotApply() {
         return;
 
     m_pconfig->set(ConfigKey(
-                       VAMP_CONFIG_KEY, VAMP_ANALYSER_BEAT_LIBRARY), ConfigValue(m_listLibrary[selected]));
+                       VAMP_CONFIG_KEY, VAMP_ANALYSER_BEAT_LIBRARY),
+                   ConfigValue(m_listLibrary[selected]));
     m_pconfig->set(ConfigKey(
-                       VAMP_CONFIG_KEY, VAMP_ANALYSER_BEAT_PLUGIN_ID), ConfigValue(m_selectedAnalyser));
+                       VAMP_CONFIG_KEY, VAMP_ANALYSER_BEAT_PLUGIN_ID),
+                   ConfigValue(m_selectedAnalyser));
     m_pconfig->set(ConfigKey(
-                       BPM_CONFIG_KEY, BPM_DETECTION_ENABLED), ConfigValue(m_banalyserEnabled ? 1 : 0));
+                       BPM_CONFIG_KEY, BPM_DETECTION_ENABLED),
+                   ConfigValue(m_banalyserEnabled ? 1 : 0));
     m_pconfig->set(ConfigKey(
-                       BPM_CONFIG_KEY, BPM_FIXED_TEMPO_ASSUMPTION), ConfigValue(m_bfixedtempoEnabled ? 1 : 0));
+                       BPM_CONFIG_KEY, BPM_FIXED_TEMPO_ASSUMPTION),
+                   ConfigValue(m_bfixedtempoEnabled ? 1 : 0));
     m_pconfig->set(ConfigKey(
-                       BPM_CONFIG_KEY, BPM_FIXED_TEMPO_OFFSET_CORRECTION), ConfigValue(m_boffsetEnabled ? 1 : 0));
+                       BPM_CONFIG_KEY, BPM_FIXED_TEMPO_OFFSET_CORRECTION),
+                   ConfigValue(m_boffsetEnabled ? 1 : 0));
     m_pconfig->set(ConfigKey(
-                       BPM_CONFIG_KEY, BPM_REANALYZE_WHEN_SETTINGS_CHANGE), ConfigValue(m_bReanalyze ? 1 : 0));
+                       BPM_CONFIG_KEY, BPM_REANALYZE_WHEN_SETTINGS_CHANGE),
+                   ConfigValue(m_bReanalyze ? 1 : 0));
     m_pconfig->set(ConfigKey(
-                       BPM_CONFIG_KEY, BPM_FAST_ANALYSIS_ENABLED), ConfigValue(m_FastAnalysisEnabled ? 1 : 0));
+                       BPM_CONFIG_KEY, BPM_FAST_ANALYSIS_ENABLED),
+                   ConfigValue(m_FastAnalysisEnabled ? 1 : 0));
 
-    m_pconfig->set(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_START), ConfigValue(m_minBpm));
+    m_pconfig->set(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_START),
+                   ConfigValue(m_minBpm));
     m_pconfig->set(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_END), ConfigValue(m_maxBpm));
     m_pconfig->Save();
 }
@@ -230,7 +240,8 @@ void DlgPrefBeats::populate() {
             this, SLOT(pluginSelected(int)));
     VampPluginLoader* loader = VampPluginLoader::getInstance();
     std::vector<PluginLoader::PluginKey> plugins = loader->listPlugins();
-    qDebug() << "VampPluginLoader::listPlugins() returned" << plugins.size() << "plugins";
+    qDebug() << "VampPluginLoader::listPlugins() returned" << plugins.size() <<
+             "plugins";
     for (unsigned int iplugin=0; iplugin < plugins.size(); iplugin++) {
         // TODO(XXX): WTF, 48000
         Plugin* plugin = loader->loadPlugin(plugins[iplugin], 48000);
@@ -249,7 +260,8 @@ void DlgPrefBeats::populate() {
                                  displayname.contains("aubiotempo:0"));
                 if (goodones) {
                     m_listName << displaynametext;
-                    QString pluginlibrary = QString::fromStdString(plugins[iplugin]).section(":",0,0);
+                    QString pluginlibrary = QString::fromStdString(plugins[iplugin]).section(":",0,
+                                            0);
                     m_listLibrary << pluginlibrary;
                     QString displayname = QString::fromStdString(plugin->getIdentifier()) + ":"
                                           + QString::number(ioutput);

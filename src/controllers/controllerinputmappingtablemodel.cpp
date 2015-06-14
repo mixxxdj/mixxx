@@ -9,7 +9,8 @@
 #include "controllers/delegates/midibytedelegate.h"
 #include "controllers/delegates/midioptionsdelegate.h"
 
-ControllerInputMappingTableModel::ControllerInputMappingTableModel(QObject* pParent)
+ControllerInputMappingTableModel::ControllerInputMappingTableModel(
+    QObject* pParent)
     : ControllerMappingTableModel(pParent) {
 }
 
@@ -59,7 +60,8 @@ void ControllerInputMappingTableModel::clear() {
     }
 }
 
-void ControllerInputMappingTableModel::addMappings(const MidiInputMappings& mappings) {
+void ControllerInputMappingTableModel::addMappings(const MidiInputMappings&
+        mappings) {
     if (mappings.isEmpty()) {
         return;
     }
@@ -144,7 +146,8 @@ QAbstractItemDelegate* ControllerInputMappingTableModel::delegateForColumn(
     return NULL;
 }
 
-int ControllerInputMappingTableModel::rowCount(const QModelIndex& parent) const {
+int ControllerInputMappingTableModel::rowCount(const QModelIndex& parent)
+const {
     if (parent.isValid()) {
         return 0;
     }
@@ -154,7 +157,8 @@ int ControllerInputMappingTableModel::rowCount(const QModelIndex& parent) const 
     return 0;
 }
 
-int ControllerInputMappingTableModel::columnCount(const QModelIndex& parent) const {
+int ControllerInputMappingTableModel::columnCount(const QModelIndex& parent)
+const {
     if (parent.isValid()) {
         return 0;
     }

@@ -8,7 +8,8 @@
 #include "controllers/delegates/midiopcodedelegate.h"
 #include "controllers/delegates/midibytedelegate.h"
 
-ControllerOutputMappingTableModel::ControllerOutputMappingTableModel(QObject* pParent)
+ControllerOutputMappingTableModel::ControllerOutputMappingTableModel(
+    QObject* pParent)
     : ControllerMappingTableModel(pParent) {
 }
 
@@ -70,7 +71,8 @@ void ControllerOutputMappingTableModel::addEmptyMapping() {
     }
 }
 
-void ControllerOutputMappingTableModel::removeMappings(QModelIndexList indices) {
+void ControllerOutputMappingTableModel::removeMappings(QModelIndexList
+        indices) {
     // Values don't matter, it's just to get a consistent ordering.
     QList<int> rows;
     foreach (const QModelIndex& index, indices) {
@@ -111,7 +113,8 @@ QAbstractItemDelegate* ControllerOutputMappingTableModel::delegateForColumn(
     return NULL;
 }
 
-int ControllerOutputMappingTableModel::rowCount(const QModelIndex& parent) const {
+int ControllerOutputMappingTableModel::rowCount(const QModelIndex& parent)
+const {
     if (parent.isValid()) {
         return 0;
     }
@@ -121,7 +124,8 @@ int ControllerOutputMappingTableModel::rowCount(const QModelIndex& parent) const
     return 0;
 }
 
-int ControllerOutputMappingTableModel::columnCount(const QModelIndex& parent) const {
+int ControllerOutputMappingTableModel::columnCount(const QModelIndex& parent)
+const {
     if (parent.isValid()) {
         return 0;
     }

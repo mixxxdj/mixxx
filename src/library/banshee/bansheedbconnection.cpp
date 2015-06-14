@@ -53,7 +53,8 @@ int BansheeDbConnection::getSchemaVersion() {
     return -1;
 }
 
-QList<struct BansheeDbConnection::Playlist> BansheeDbConnection::getPlaylists() {
+QList<struct BansheeDbConnection::Playlist>
+BansheeDbConnection::getPlaylists() {
 
     QList<struct BansheeDbConnection::Playlist> list;
     struct BansheeDbConnection::Playlist playlist;
@@ -73,7 +74,8 @@ QList<struct BansheeDbConnection::Playlist> BansheeDbConnection::getPlaylists() 
     return list;
 }
 
-QList<struct BansheeDbConnection::PlaylistEntry> BansheeDbConnection::getPlaylistEntries(int playlistId) {
+QList<struct BansheeDbConnection::PlaylistEntry>
+BansheeDbConnection::getPlaylistEntries(int playlistId) {
 
     QTime time;
     time.start();
@@ -158,7 +160,8 @@ QList<struct BansheeDbConnection::PlaylistEntry> BansheeDbConnection::getPlaylis
             entry.trackId = query.value(0).toInt();
             entry.viewOrder = query.value(1).toInt();
             m_trackMap[entry.trackId].title = query.value(2).toString();
-            m_trackMap[entry.trackId].uri = QUrl::fromEncoded(query.value(3).toByteArray(), QUrl::StrictMode);
+            m_trackMap[entry.trackId].uri = QUrl::fromEncoded(query.value(3).toByteArray(),
+                                            QUrl::StrictMode);
             m_trackMap[entry.trackId].duration = query.value(4).toInt();
 
             int artistId = query.value(5).toInt();
@@ -189,7 +192,8 @@ QList<struct BansheeDbConnection::PlaylistEntry> BansheeDbConnection::getPlaylis
         LOG_FAILED_QUERY(query);
     }
 
-    qDebug() << "BansheeDbConnection::getPlaylistEntries(), took " << time.elapsed() << "ms";
+    qDebug() << "BansheeDbConnection::getPlaylistEntries(), took " << time.elapsed()
+             << "ms";
 
     return list;
 }

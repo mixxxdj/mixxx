@@ -12,7 +12,8 @@
 const char* kEqualizerRackName = "[EqualizerChain]";
 const char* kQuickEffectRackName = "[QuickEffectChain]";
 
-EffectsManager::EffectsManager(QObject* pParent, ConfigObject<ConfigValue>* pConfig)
+EffectsManager::EffectsManager(QObject* pParent,
+                               ConfigObject<ConfigValue>* pConfig)
     : QObject(pParent),
       m_pEffectChainManager(new EffectChainManager(pConfig, this)),
       m_nextRequestId(0),
@@ -62,7 +63,8 @@ void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {
             this, SIGNAL(availableEffectsUpdated()));
 }
 
-void EffectsManager::registerChannel(const ChannelHandleAndGroup& handle_group) {
+void EffectsManager::registerChannel(const ChannelHandleAndGroup&
+                                     handle_group) {
     m_pEffectChainManager->registerChannel(handle_group);
 }
 
@@ -148,7 +150,8 @@ QString EffectsManager::getPrevEffectId(const QString& effectId) {
 
 }
 
-QPair<EffectManifest, EffectsBackend*> EffectsManager::getEffectManifestAndBackend(
+QPair<EffectManifest, EffectsBackend*>
+EffectsManager::getEffectManifestAndBackend(
     const QString& effectId) const {
     foreach (EffectsBackend* pBackend, m_effectsBackends) {
         if (pBackend->canInstantiateEffect(effectId)) {
@@ -160,7 +163,8 @@ QPair<EffectManifest, EffectsBackend*> EffectsManager::getEffectManifestAndBacke
     return qMakePair(EffectManifest(), pBackend);
 }
 
-EffectManifest EffectsManager::getEffectManifest(const QString& effectId) const {
+EffectManifest EffectsManager::getEffectManifest(const QString& effectId)
+const {
     QPair<EffectManifest, EffectsBackend*> manifestAndBackend =
         getEffectManifestAndBackend(effectId);
     return manifestAndBackend.first;
@@ -259,8 +263,10 @@ void EffectsManager::setupDefaults() {
     m_pEffectChainManager->addEffectChain(pChain);
 
     // These controls are used inside EQ Effects
-    m_pLoEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "LoEQFrequency"), 0., 22040);
-    m_pHiEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040);
+    m_pLoEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "LoEQFrequency"),
+                                      0., 22040);
+    m_pHiEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "HiEQFrequency"),
+                                      0., 22040);
 
     // Add an EqualizerRack.
     EqualizerRackPointer pEqRack = addEqualizerRack();

@@ -49,8 +49,10 @@ void WaveformRendererRGB::draw(QPainter* painter,
     painter->setWorldMatrixEnabled(false);
     painter->resetTransform();
 
-    const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
-    const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
+    const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition()
+                                    * dataSize;
+    const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() *
+                                   dataSize;
 
     const double offset = firstVisualIndex;
 
@@ -114,9 +116,12 @@ void WaveformRendererRGB::draw(QPainter* painter,
             const WaveformData& waveformData = *(data + i);
             const WaveformData& waveformDataNext = *(data + i + 1);
 
-            maxLow  = math_max3(maxLow,  waveformData.filtered.low,  waveformDataNext.filtered.low);
-            maxMid  = math_max3(maxMid,  waveformData.filtered.mid,  waveformDataNext.filtered.mid);
-            maxHigh = math_max3(maxHigh, waveformData.filtered.high, waveformDataNext.filtered.high);
+            maxLow  = math_max3(maxLow,  waveformData.filtered.low,
+                                waveformDataNext.filtered.low);
+            maxMid  = math_max3(maxMid,  waveformData.filtered.mid,
+                                waveformDataNext.filtered.mid);
+            maxHigh = math_max3(maxHigh, waveformData.filtered.high,
+                                waveformDataNext.filtered.high);
             maxAllA = math_max(maxAllA, waveformData.filtered.all);
             maxAllB = math_max(maxAllB, waveformDataNext.filtered.all);
         }
@@ -125,9 +130,12 @@ void WaveformRendererRGB::draw(QPainter* painter,
         qreal maxMidF = maxMid * midGain;
         qreal maxHighF = maxHigh * highGain;
 
-        qreal red   = maxLowF * m_rgbLowColor_r + maxMidF * m_rgbMidColor_r + maxHighF * m_rgbHighColor_r;
-        qreal green = maxLowF * m_rgbLowColor_g + maxMidF * m_rgbMidColor_g + maxHighF * m_rgbHighColor_g;
-        qreal blue  = maxLowF * m_rgbLowColor_b + maxMidF * m_rgbMidColor_b + maxHighF * m_rgbHighColor_b;
+        qreal red   = maxLowF * m_rgbLowColor_r + maxMidF * m_rgbMidColor_r + maxHighF *
+                      m_rgbHighColor_r;
+        qreal green = maxLowF * m_rgbLowColor_g + maxMidF * m_rgbMidColor_g + maxHighF *
+                      m_rgbHighColor_g;
+        qreal blue  = maxLowF * m_rgbLowColor_b + maxMidF * m_rgbMidColor_b + maxHighF *
+                      m_rgbHighColor_b;
 
         // Compute maximum (needed for value normalization)
         qreal max = math_max3(red, green, blue);
@@ -142,7 +150,8 @@ void WaveformRendererRGB::draw(QPainter* painter,
             case Qt::AlignBottom :
                 painter->drawLine(
                     x, m_waveformRenderer->getHeight(),
-                    x, m_waveformRenderer->getHeight() - (int)(heightFactor*(float)math_max(maxAllA,maxAllB)));
+                    x, m_waveformRenderer->getHeight() - (int)(heightFactor*(float)math_max(maxAllA,
+                            maxAllB)));
                 break;
             case Qt::AlignTop :
                 painter->drawLine(

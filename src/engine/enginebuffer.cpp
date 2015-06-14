@@ -59,7 +59,8 @@
 
 #include "trackinfoobject.h"
 
-const double kLinearScalerElipsis = 1.00058; // 2^(0.01/12): changes < 1 cent allows a linear scaler
+const double kLinearScalerElipsis =
+    1.00058; // 2^(0.01/12): changes < 1 cent allows a linear scaler
 const int kSamplesPerFrame = 2; // Engine buffer uses Stereo frames only
 
 EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
@@ -113,7 +114,8 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
     // normalize engine samples to the range [-1.0, 1.0] we divide by SAMPLE_MAX
     // to preserve the previous behavior.
     for (unsigned int i = 0; i < MAX_BUFFER_LEN; ++i) {
-        m_pDitherBuffer[i] = (static_cast<CSAMPLE>(rand() % RAND_MAX) / RAND_MAX - 0.5) / SAMPLE_MAX;
+        m_pDitherBuffer[i] = (static_cast<CSAMPLE>(rand() % RAND_MAX) / RAND_MAX -
+                              0.5) / SAMPLE_MAX;
     }
 
     // zero out crossfade buffer
@@ -287,7 +289,8 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
     m_bScalerChanged = true;
 
     m_pPassthroughEnabled.reset(new ControlObjectSlave(group, "passthrough", this));
-    m_pPassthroughEnabled->connectValueChanged(this, SLOT(slotPassthroughChanged(double)),
+    m_pPassthroughEnabled->connectValueChanged(this,
+            SLOT(slotPassthroughChanged(double)),
             Qt::DirectConnection);
 
     //m_iRampIter = 0;
@@ -602,17 +605,20 @@ void EngineBuffer::slotControlSeekExact(double playPosition) {
     doSeekPlayPos(playPosition, SEEK_EXACT);
 }
 
-void EngineBuffer::doSeekFractional(double fractionalPos, enum SeekRequest seekType) {
+void EngineBuffer::doSeekFractional(double fractionalPos,
+                                    enum SeekRequest seekType) {
     // Prevent NaN's from sneaking into the engine.
     if (isnan(fractionalPos)) {
         return;
     }
     // Find new play frame, restrict to valid ranges.
-    double newPlayFrame = round(fractionalPos * m_trackSamplesOld / kSamplesPerFrame);
+    double newPlayFrame = round(fractionalPos * m_trackSamplesOld /
+                                kSamplesPerFrame);
     doSeekPlayPos(newPlayFrame * kSamplesPerFrame, seekType);
 }
 
-void EngineBuffer::doSeekPlayPos(double new_playpos, enum SeekRequest seekType) {
+void EngineBuffer::doSeekPlayPos(double new_playpos,
+                                 enum SeekRequest seekType) {
     // Don't allow the playposition to go past the end.
     if (new_playpos > m_trackSamplesOld) {
         new_playpos = m_trackSamplesOld;
@@ -755,7 +761,8 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
 
         // Note: play is also active during cue preview
         bool paused = m_playButton->get() == 0.0;
-        KeyControl::PitchTempoRatio pitchTempoRatio = m_pKeyControl->getPitchTempoRatio();
+        KeyControl::PitchTempoRatio pitchTempoRatio =
+            m_pKeyControl->getPitchTempoRatio();
 
         // The pitch adjustment in Ratio (1.0 being normal
         // pitch. 2.0 is a full octave shift up).
@@ -965,7 +972,8 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             double playFrame = m_filepos_play / kSamplesPerFrame;
             double filepos_play_rounded = round(playFrame) * kSamplesPerFrame;
             DEBUG_ASSERT_AND_HANDLE(filepos_play_rounded == m_filepos_play) {
-                qWarning() << __FILE__ << __LINE__ << "ERROR: filepos_play is not at an even integer sample:" << m_filepos_play;
+                qWarning() << __FILE__ << __LINE__ <<
+                           "ERROR: filepos_play is not at an even integer sample:" << m_filepos_play;
                 m_filepos_play = filepos_play_rounded;
             }
 

@@ -11,7 +11,8 @@
 class AnalysisLibraryTableModel;
 class WAnalysisLibraryTableView;
 
-class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual LibraryView {
+class DlgAnalysis : public QWidget, public Ui::DlgAnalysis,
+    public virtual LibraryView {
     Q_OBJECT
   public:
     DlgAnalysis(QWidget* parent,

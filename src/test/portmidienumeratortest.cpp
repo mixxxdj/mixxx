@@ -94,7 +94,8 @@ TEST_F(PortMidiEnumeratorTest, InputOutputPortsLinked) {
     ASSERT_TRUE(shouldLinkInputToOutput("Daemon Input 1", "daemon output 1"));
     ASSERT_TRUE(shouldLinkInputToOutput("Daemon Input 1", "Daemon Input 1"));
     ASSERT_FALSE(shouldLinkInputToOutput("Daemon Input", "Daemon Output"));
-    ASSERT_FALSE(shouldLinkInputToOutput("Daemon Input 1234", "Daemon Output 5678"));
+    ASSERT_FALSE(shouldLinkInputToOutput("Daemon Input 1234",
+                                         "Daemon Output 5678"));
     ASSERT_FALSE(shouldLinkInputToOutput("Daemon Input 1", "Daemon Output 1 "));
     ASSERT_FALSE(shouldLinkInputToOutput("Daemon Input 1", "Daemon Output 11"));
     ASSERT_FALSE(shouldLinkInputToOutput("Daemon Input 2", "Daemon Output 12"));

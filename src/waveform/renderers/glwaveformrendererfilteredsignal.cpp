@@ -24,7 +24,8 @@ void GLWaveformRendererFilteredSignal::onSetup(const QDomNode& /*node*/) {
 
 }
 
-void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*event*/) {
+void GLWaveformRendererFilteredSignal::draw(QPainter* painter,
+        QPaintEvent* /*event*/) {
 
     TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
     if (!pTrack) {
@@ -46,8 +47,10 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
         return;
     }
 
-    double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
-    double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
+    double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() *
+                              dataSize;
+    double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() *
+                             dataSize;
 
     const int firstIndex = int(firstVisualIndex+0.5);
     firstVisualIndex = firstIndex - firstIndex%2;

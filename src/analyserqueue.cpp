@@ -160,7 +160,8 @@ TrackPointer AnalyserQueue::dequeueNextBlocking() {
 }
 
 // This is called from the AnalyserQueue thread
-bool AnalyserQueue::doAnalysis(TrackPointer tio, Mixxx::AudioSourcePointer pAudioSource) {
+bool AnalyserQueue::doAnalysis(TrackPointer tio,
+                               Mixxx::AudioSourcePointer pAudioSource) {
 
     QTime progressUpdateInhibitTimer;
     progressUpdateInhibitTimer.start(); // Inhibit Updates for 60 milliseconds
@@ -310,7 +311,8 @@ void AnalyserQueue::run() {
         SoundSourceProxy soundSourceProxy(nextTrack);
         Mixxx::AudioSourceConfig audioSrcCfg;
         audioSrcCfg.channelCountHint = kAnalysisChannels;
-        Mixxx::AudioSourcePointer pAudioSource(soundSourceProxy.openAudioSource(audioSrcCfg));
+        Mixxx::AudioSourcePointer pAudioSource(soundSourceProxy.openAudioSource(
+                audioSrcCfg));
         if (!pAudioSource) {
             qWarning() << "Failed to open file for analyzing:" << nextTrack->getLocation();
             continue;
@@ -320,7 +322,8 @@ void AnalyserQueue::run() {
         bool processTrack = false;
         while (it.hasNext()) {
             // Make sure not to short-circuit initialise(...)
-            if (it.next()->initialise(nextTrack, pAudioSource->getFrameRate(), pAudioSource->getFrameCount() * kAnalysisChannels)) {
+            if (it.next()->initialise(nextTrack, pAudioSource->getFrameRate(),
+                                      pAudioSource->getFrameCount() * kAnalysisChannels)) {
                 processTrack = true;
             }
         }
@@ -391,7 +394,8 @@ void AnalyserQueue::emitUpdateProgress(TrackPointer tio, int progress) {
 //slot
 void AnalyserQueue::slotUpdateProgress() {
     if (m_progressInfo.current_track) {
-        m_progressInfo.current_track->setAnalyserProgress(m_progressInfo.track_progress);
+        m_progressInfo.current_track->setAnalyserProgress(
+            m_progressInfo.track_progress);
     }
     emit(trackProgress(m_progressInfo.track_progress/10));
     if (m_progressInfo.track_progress == 1000) {

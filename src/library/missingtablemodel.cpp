@@ -4,7 +4,8 @@
 #include "library/missingtablemodel.h"
 #include "library/librarytablemodel.h"
 
-const QString MissingTableModel::MISSINGFILTER = "mixxx_deleted=0 AND fs_deleted=1";
+const QString MissingTableModel::MISSINGFILTER =
+    "mixxx_deleted=0 AND fs_deleted=1";
 
 MissingTableModel::MissingTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection)

@@ -66,10 +66,12 @@ QDomElement XmlParse::openXMLFile(const QString& path, const QString& name) {
         qWarning() << errorLog;
 
         // Set up error dialog
-        ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+        ErrorDialogProperties* props =
+            ErrorDialogHandler::instance()->newDialogProperties();
         props->setType(DLG_WARNING);
         props->setTitle("Error parsing XML file");
-        props->setText(QString("There was a problem parsing the XML file %1.").arg(file.fileName()));
+        props->setText(QString("There was a problem parsing the XML file %1.").arg(
+                           file.fileName()));
         props->setInfoText(errorString);
         props->setModal(false); // Don't block the GUI
 

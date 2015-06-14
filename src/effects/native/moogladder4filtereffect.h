@@ -29,7 +29,8 @@ struct MoogLadder4FilterGroupState {
 
 };
 
-class MoogLadder4FilterEffect : public PerChannelEffectProcessor<MoogLadder4FilterGroupState> {
+class MoogLadder4FilterEffect : public
+    PerChannelEffectProcessor<MoogLadder4FilterGroupState> {
   public:
     MoogLadder4FilterEffect(EngineEffect* pEffect, const EffectManifest& manifest);
     virtual ~MoogLadder4FilterEffect();

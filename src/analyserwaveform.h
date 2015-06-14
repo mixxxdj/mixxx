@@ -91,13 +91,17 @@ struct WaveformStride {
             for (int i = 0; i < ChannelCount; ++i) {
                 WaveformData& datum = *(data + i);
                 datum.filtered.all = static_cast<unsigned char>(math_min(255.0,
-                                     m_postScaleConversion * scaleSignal(m_averageOverallData[i] / m_averageDivisor) + 0.5));
+                                     m_postScaleConversion * scaleSignal(m_averageOverallData[i] / m_averageDivisor)
+                                     + 0.5));
                 datum.filtered.low = static_cast<unsigned char>(math_min(255.0,
-                                     m_postScaleConversion * scaleSignal(m_averageFilteredData[i][Low] / m_averageDivisor, Low) + 0.5));
+                                     m_postScaleConversion * scaleSignal(m_averageFilteredData[i][Low] /
+                                             m_averageDivisor, Low) + 0.5));
                 datum.filtered.mid = static_cast<unsigned char>(math_min(255.0,
-                                     m_postScaleConversion * scaleSignal(m_averageFilteredData[i][Mid] / m_averageDivisor, Mid) + 0.5));
+                                     m_postScaleConversion * scaleSignal(m_averageFilteredData[i][Mid] /
+                                             m_averageDivisor, Mid) + 0.5));
                 datum.filtered.high = static_cast<unsigned char>(math_min(255.0,
-                                      m_postScaleConversion * scaleSignal(m_averageFilteredData[i][High] / m_averageDivisor, High) + 0.5));
+                                      m_postScaleConversion * scaleSignal(m_averageFilteredData[i][High] /
+                                              m_averageDivisor, High) + 0.5));
             }
         } else {
             // This is the case if The Overview Waveform has more samples than the detailed waveform

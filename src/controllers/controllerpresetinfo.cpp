@@ -88,7 +88,8 @@ PresetInfo::PresetInfo(const QString preset_path)
     }
 }
 
-QHash<QString,QString> PresetInfo::parseBulkProduct(const QDomElement& element) const {
+QHash<QString,QString> PresetInfo::parseBulkProduct(const QDomElement& element)
+const {
     // <product protocol="bulk" vendor_id="0x06f8" product_id="0x0b105" in_epaddr="0x82" out_epaddr="0x03">
 
     QHash<QString, QString> product;
@@ -100,7 +101,8 @@ QHash<QString,QString> PresetInfo::parseBulkProduct(const QDomElement& element) 
     return product;
 }
 
-QHash<QString,QString> PresetInfo::parseHIDProduct(const QDomElement& element) const {
+QHash<QString,QString> PresetInfo::parseHIDProduct(const QDomElement& element)
+const {
     // HID device <product> element parsing. Example of valid element:
     //   <product protocol="hid" vendor_id="0x1" product_id="0x2" usage_page="0x3" usage="0x4" interface_number="0x3" />
     // All numbers must be hex prefixed with 0x
@@ -118,7 +120,8 @@ QHash<QString,QString> PresetInfo::parseHIDProduct(const QDomElement& element) c
     return product;
 }
 
-QHash<QString,QString> PresetInfo::parseMIDIProduct(const QDomElement& element) const {
+QHash<QString,QString> PresetInfo::parseMIDIProduct(const QDomElement& element)
+const {
     // TODO - implement parsing of MIDI attributes
     // When done, remember to fix switch() above to call this
     QHash<QString,QString> product;
@@ -126,7 +129,8 @@ QHash<QString,QString> PresetInfo::parseMIDIProduct(const QDomElement& element) 
     return product;
 }
 
-QHash<QString,QString> PresetInfo::parseOSCProduct(const QDomElement& element) const {
+QHash<QString,QString> PresetInfo::parseOSCProduct(const QDomElement& element)
+const {
     // TODO - implement parsing of OSC product attributes
     // When done, remember to fix switch() above to call this
     QHash<QString,QString> product;
@@ -161,7 +165,8 @@ bool PresetInfoEnumerator::isValidExtension(const QString extension) {
     return false;
 }
 
-bool PresetInfoEnumerator::hasPresetInfo(const QString extension, const QString name) {
+bool PresetInfoEnumerator::hasPresetInfo(const QString extension,
+        const QString name) {
     // Check if preset info matching extension and preset name can be found
     if (!isValidExtension(extension))
         return false;
@@ -237,7 +242,8 @@ void PresetInfoEnumerator::loadSupportedPresets() {
 
     foreach (QString extension, presetsByExtension.keys()) {
         QMap<QString,PresetInfo> presets = presetsByExtension[extension];
-        qDebug() << "Extension" << extension << "total" << presets.keys().length() << "presets";
+        qDebug() << "Extension" << extension << "total" << presets.keys().length() <<
+                 "presets";
     }
 }
 

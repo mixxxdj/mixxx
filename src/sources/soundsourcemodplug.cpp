@@ -109,7 +109,8 @@ Result SoundSourceModPlug::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     DEBUG_ASSERT(0 == (kChunkSizeInBytes % sizeof(m_sampleBuf[0])));
     const SINT chunkSizeInSamples = kChunkSizeInBytes / sizeof(m_sampleBuf[0]);
 
-    const SampleBuffer::size_type bufferSizeLimitInSamples = s_bufferSizeLimit / sizeof(m_sampleBuf[0]);
+    const SampleBuffer::size_type bufferSizeLimitInSamples = s_bufferSizeLimit /
+            sizeof(m_sampleBuf[0]);
 
     // Estimate size of sample buffer (for better performance) aligned
     // with the chunk size. Beware: Module length estimation is unreliable
@@ -180,7 +181,8 @@ SINT SoundSourceModPlug::readSampleFrames(
 
     const SINT readSamples = frames2samples(readFrames);
     const SINT readOffset = frames2samples(m_seekPos);
-    SampleUtil::convertS16ToFloat32(sampleBuffer, &m_sampleBuf[readOffset], readSamples);
+    SampleUtil::convertS16ToFloat32(sampleBuffer, &m_sampleBuf[readOffset],
+                                    readSamples);
     m_seekPos += readFrames;
 
     return readFrames;

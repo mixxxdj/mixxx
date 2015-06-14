@@ -58,7 +58,8 @@ void EngineControl::setEngineBuffer(EngineBuffer* pEngineBuffer) {
     m_pEngineBuffer = pEngineBuffer;
 }
 
-void EngineControl::setCurrentSample(const double dCurrentSample, const double dTotalSamples) {
+void EngineControl::setCurrentSample(const double dCurrentSample,
+                                     const double dTotalSamples) {
     SampleOfTrack sot;
     sot.current = dCurrentSample;
     sot.total = dTotalSamples;

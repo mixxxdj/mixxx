@@ -16,7 +16,8 @@ QString CFStringToQString(CFStringRef str) {
 }
 
 CFStringRef QStringToCFString(const QString& string) {
-    return CFStringCreateWithCharacters(0, reinterpret_cast<const UniChar*>(string.unicode()),
+    return CFStringCreateWithCharacters(0,
+                                        reinterpret_cast<const UniChar*>(string.unicode()),
                                         string.length());
 }
 #endif

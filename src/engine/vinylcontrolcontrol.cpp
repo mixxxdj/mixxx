@@ -4,11 +4,14 @@
 #include "library/dao/cue.h"
 #include "util/math.h"
 
-VinylControlControl::VinylControlControl(QString group, ConfigObject<ConfigValue>* pConfig)
+VinylControlControl::VinylControlControl(QString group,
+        ConfigObject<ConfigValue>* pConfig)
     : EngineControl(group, pConfig),
       m_bSeekRequested(false) {
-    m_pControlVinylStatus = new ControlObject(ConfigKey(group, "vinylcontrol_status"));
-    m_pControlVinylSpeedType = new ControlObject(ConfigKey(group, "vinylcontrol_speed_type"));
+    m_pControlVinylStatus = new ControlObject(ConfigKey(group,
+            "vinylcontrol_status"));
+    m_pControlVinylSpeedType = new ControlObject(ConfigKey(group,
+            "vinylcontrol_speed_type"));
 
     //Convert the ConfigKey's value into a double for the CO (for fast reads).
     QString strVinylSpeedType = pConfig->getValueString(ConfigKey(group,
@@ -27,22 +30,28 @@ VinylControlControl::VinylControlControl(QString group, ConfigObject<ConfigValue
             Qt::DirectConnection);
 
     m_pControlVinylRate = new ControlObject(ConfigKey(group, "vinylcontrol_rate"));
-    m_pControlVinylScratching = new ControlPushButton(ConfigKey(group, "vinylcontrol_scratching"));
+    m_pControlVinylScratching = new ControlPushButton(ConfigKey(group,
+            "vinylcontrol_scratching"));
     m_pControlVinylScratching->set(0);
     m_pControlVinylScratching->setButtonMode(ControlPushButton::TOGGLE);
-    m_pControlVinylEnabled = new ControlPushButton(ConfigKey(group, "vinylcontrol_enabled"));
+    m_pControlVinylEnabled = new ControlPushButton(ConfigKey(group,
+            "vinylcontrol_enabled"));
     m_pControlVinylEnabled->set(0);
     m_pControlVinylEnabled->setButtonMode(ControlPushButton::TOGGLE);
-    m_pControlVinylWantEnabled = new ControlPushButton(ConfigKey(group, "vinylcontrol_wantenabled"));
+    m_pControlVinylWantEnabled = new ControlPushButton(ConfigKey(group,
+            "vinylcontrol_wantenabled"));
     m_pControlVinylWantEnabled->set(0);
     m_pControlVinylWantEnabled->setButtonMode(ControlPushButton::TOGGLE);
-    m_pControlVinylMode = new ControlPushButton(ConfigKey(group, "vinylcontrol_mode"));
+    m_pControlVinylMode = new ControlPushButton(ConfigKey(group,
+            "vinylcontrol_mode"));
     m_pControlVinylMode->setStates(3);
     m_pControlVinylMode->setButtonMode(ControlPushButton::TOGGLE);
-    m_pControlVinylCueing = new ControlPushButton(ConfigKey(group, "vinylcontrol_cueing"));
+    m_pControlVinylCueing = new ControlPushButton(ConfigKey(group,
+            "vinylcontrol_cueing"));
     m_pControlVinylCueing->setStates(3);
     m_pControlVinylCueing->setButtonMode(ControlPushButton::TOGGLE);
-    m_pControlVinylSignalEnabled = new ControlPushButton(ConfigKey(group, "vinylcontrol_signal_enabled"));
+    m_pControlVinylSignalEnabled = new ControlPushButton(ConfigKey(group,
+            "vinylcontrol_signal_enabled"));
     m_pControlVinylSignalEnabled->set(1);
     m_pControlVinylSignalEnabled->setButtonMode(ControlPushButton::TOGGLE);
 
@@ -97,7 +106,8 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
     double total_samples = getTotalSamples();
     double new_playpos = round(fractionalPos * total_samples);
 
-    if (m_pControlVinylEnabled->get() > 0.0 && m_pControlVinylMode->get() == MIXXX_VCMODE_RELATIVE) {
+    if (m_pControlVinylEnabled->get() > 0.0 &&
+            m_pControlVinylMode->get() == MIXXX_VCMODE_RELATIVE) {
         int cuemode = (int)m_pControlVinylCueing->get();
 
         //if in preroll, always seek

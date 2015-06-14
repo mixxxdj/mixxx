@@ -33,7 +33,8 @@
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
 
-WOverview::WOverview(const char* pGroup, ConfigObject<ConfigValue>* pConfig, QWidget* parent) :
+WOverview::WOverview(const char* pGroup, ConfigObject<ConfigValue>* pConfig,
+                     QWidget* parent) :
     WWidget(parent),
     m_pWaveformSourceImage(NULL),
     m_actualCompletion(0),
@@ -81,7 +82,8 @@ void WOverview::setup(QDomNode node, const SkinContext& context) {
     }
 
     m_endOfTrackColor = QColor(200, 25, 20);
-    const QString endOfTrackColorName = context.selectString(node, "EndOfTrackColor");
+    const QString endOfTrackColorName = context.selectString(node,
+                                        "EndOfTrackColor");
     if (!endOfTrackColorName.isNull()) {
         m_endOfTrackColor.setNamedColor(endOfTrackColorName);
         m_endOfTrackColor = WSkinColor::getCorrectColor(m_endOfTrackColor);
@@ -320,7 +322,8 @@ void WOverview::paintEvent(QPaintEvent*) {
             if (normalize && m_pixmapDone && m_waveformPeak > 1) {
                 diffGain = 255 - m_waveformPeak - 1;
             } else {
-                const double visualGain = widgetFactory->getVisualGain(WaveformWidgetFactory::All);
+                const double visualGain = widgetFactory->getVisualGain(
+                                              WaveformWidgetFactory::All);
                 diffGain = 255.0 - 255.0 / visualGain;
             }
 
@@ -342,7 +345,8 @@ void WOverview::paintEvent(QPaintEvent*) {
                              width(), height()/2);
         }
 
-        if (m_dAnalyserProgress <= 0.5) { // remove text after progress by wf is recognizable
+        if (m_dAnalyserProgress <=
+                0.5) { // remove text after progress by wf is recognizable
             if (m_trackLoaded) {
                 //: Text on waveform overview when file is cached from source
                 paintText(tr("Ready to play, analyzing .."), &painter);
@@ -493,8 +497,10 @@ void WOverview::resizeEvent(QResizeEvent*) {
     const double kMinPlayposRange = 0.0;
 
     // Values of zero and one in normalized space.
-    const double zero = (0.0 - kMinPlayposRange) / (kMaxPlayposRange - kMinPlayposRange);
-    const double one = (1.0 - kMinPlayposRange) / (kMaxPlayposRange - kMinPlayposRange);
+    const double zero = (0.0 - kMinPlayposRange) / (kMaxPlayposRange -
+                        kMinPlayposRange);
+    const double one = (1.0 - kMinPlayposRange) / (kMaxPlayposRange -
+                       kMinPlayposRange);
 
     // These coeficients convert between widget space and normalized value
     // space.

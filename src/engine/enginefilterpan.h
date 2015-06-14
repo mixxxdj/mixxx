@@ -106,10 +106,14 @@ class EngineFilterPan : public EngineObjectConstIn {
                 double modLeft = fmod(rampedLeftSourceFrame, 1);
                 double modRight = fmod(rampedRightSourceFrame, 1);
 
-                pOutput[i * 2] = m_buf[(static_cast<int>(floor(rampedLeftSourceFrame)) % SIZE) * 2] * (1 - modLeft);
-                pOutput[i * 2 + 1] = m_buf[(static_cast<int>(floor(rampedRightSourceFrame)) % SIZE) * 2 + 1] * (1 - modRight);
-                pOutput[i * 2] += m_buf[(static_cast<int>(ceil(rampedLeftSourceFrame)) % SIZE) * 2] * modLeft;
-                pOutput[i * 2 + 1] += m_buf[(static_cast<int>(ceil(rampedRightSourceFrame)) % SIZE) * 2 + 1] * modRight;
+                pOutput[i * 2] = m_buf[(static_cast<int>(floor(rampedLeftSourceFrame)) % SIZE) *
+                                       2] * (1 - modLeft);
+                pOutput[i * 2 + 1] = m_buf[(static_cast<int>(floor(rampedRightSourceFrame)) %
+                                            SIZE) * 2 + 1] * (1 - modRight);
+                pOutput[i * 2] += m_buf[(static_cast<int>(ceil(rampedLeftSourceFrame)) % SIZE) *
+                                        2] * modLeft;
+                pOutput[i * 2 + 1] += m_buf[(static_cast<int>(ceil(rampedRightSourceFrame)) %
+                                             SIZE) * 2 + 1] * modRight;
                 delayLeftSourceFrame++;
                 delayRightSourceFrame++;
                 delayOldLeftSourceFrame++;

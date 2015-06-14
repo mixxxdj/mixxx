@@ -73,9 +73,11 @@ PositionScratchController::PositionScratchController(QString group)
       m_dRate(0),
       m_dMoveDelay(0),
       m_dMouseSampeTime(0) {
-    m_pScratchEnable = new ControlObject(ConfigKey(group, "scratch_position_enable"));
+    m_pScratchEnable = new ControlObject(ConfigKey(group,
+                                         "scratch_position_enable"));
     m_pScratchPosition = new ControlObject(ConfigKey(group, "scratch_position"));
-    m_pMasterSampleRate = ControlObject::getControl(ConfigKey("[Master]", "samplerate"));
+    m_pMasterSampleRate = ControlObject::getControl(ConfigKey("[Master]",
+                          "samplerate"));
     m_pVelocityController = new VelocityController();
     m_pRateIIFilter = new RateIIFilter;
 }
@@ -91,7 +93,8 @@ PositionScratchController::~PositionScratchController() {
 //volatile double _d = -0.15;
 //volatile double _f = 0.5;
 
-void PositionScratchController::process(double currentSample, double releaseRate,
+void PositionScratchController::process(double currentSample,
+                                        double releaseRate,
                                         int iBufferSize, double baserate) {
     bool scratchEnable = m_pScratchEnable->get() != 0;
 
@@ -156,7 +159,8 @@ void PositionScratchController::process(double currentSample, double releaseRate
             // kMaxVelocity * alpha ^ (# callbacks to stop in) = decayThreshold
             // # callbacks = kTimeToStop / dt
             // alpha = (decayThreshold / kMaxVelocity) ^ (dt / kTimeToStop)
-            const double kExponentialDecay = pow(decayThreshold / kMaxVelocity, dt / kTimeToStop);
+            const double kExponentialDecay = pow(decayThreshold / kMaxVelocity,
+                                                 dt / kTimeToStop);
 
             m_dRate *= kExponentialDecay;
 
@@ -256,7 +260,8 @@ void PositionScratchController::process(double currentSample, double releaseRate
         m_dMoveDelay = 0;
         // Set up initial values, in a way that the system is settled
         m_dRate = releaseRate;
-        m_dPositionDeltaSum = -(releaseRate / p) * callsPerDt; // Set to the remaining error of a p controller
+        m_dPositionDeltaSum = -(releaseRate / p) *
+                              callsPerDt; // Set to the remaining error of a p controller
         m_pVelocityController->reset(-m_dPositionDeltaSum);
         m_pRateIIFilter->reset(-m_dPositionDeltaSum);
         m_dStartScratchPosition = scratchPosition;

@@ -6,10 +6,12 @@ namespace Mixxx {
 
 /*static*/ const double TrackMetadata::kBpmUndefined = 0.0;
 /*static*/ const double TrackMetadata::kBpmMin = 0.0; // lower bound (exclusive)
-/*static*/ const double TrackMetadata::kBpmMax = 300.0; // upper bound (inclusive)
+/*static*/ const double TrackMetadata::kBpmMax =
+    300.0; // upper bound (inclusive)
 
 /*static*/ const double TrackMetadata::kReplayGainUndefined = 0.0;
-/*static*/ const double TrackMetadata::kReplayGainMin = 0.0; // lower bound (inclusive)
+/*static*/ const double TrackMetadata::kReplayGainMin =
+    0.0; // lower bound (inclusive)
 /*static*/ const double TrackMetadata::kReplayGain0dB = 1.0;
 
 /*static*/ const int TrackMetadata::kCalendarYearInvalid = 0;
@@ -85,7 +87,8 @@ double TrackMetadata::parseReplayGain(QString sReplayGain, bool* pValid) {
         // strip leading "+"
         normalizedReplayGain = normalizedReplayGain.mid(plusIndex + 1).trimmed();
     }
-    const int unitIndex = normalizedReplayGain.lastIndexOf(kReplayGainUnit, -1, Qt::CaseInsensitive);
+    const int unitIndex = normalizedReplayGain.lastIndexOf(kReplayGainUnit, -1,
+                          Qt::CaseInsensitive);
     if ((0 <= unitIndex) && ((normalizedReplayGain.length() - 2) == unitIndex)) {
         // strip trailing unit suffix
         normalizedReplayGain = normalizedReplayGain.left(unitIndex).trimmed();
@@ -104,7 +107,8 @@ double TrackMetadata::parseReplayGain(QString sReplayGain, bool* pValid) {
         // the replay gain.
         if (kReplayGain0dB == replayGain) {
             // special case
-            qDebug() << "Ignoring possibly undefined replay gain:" << formatReplayGain(replayGain);
+            qDebug() << "Ignoring possibly undefined replay gain:" << formatReplayGain(
+                         replayGain);
             if (pValid) {
                 *pValid = true;
             }

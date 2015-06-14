@@ -76,7 +76,8 @@ bool EngineEffectRack::addEffectChain(EngineEffectChain* pChain, int iIndex) {
     return true;
 }
 
-bool EngineEffectRack::removeEffectChain(EngineEffectChain* pChain, int iIndex) {
+bool EngineEffectRack::removeEffectChain(EngineEffectChain* pChain,
+        int iIndex) {
     if (iIndex < 0) {
         if (kEffectDebugOutput) {
             qDebug() << debugString()

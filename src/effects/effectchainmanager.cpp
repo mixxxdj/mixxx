@@ -19,7 +19,8 @@ EffectChainManager::~EffectChainManager() {
     //qDebug() << debugString() << "destroyed";
 }
 
-void EffectChainManager::registerChannel(const ChannelHandleAndGroup& handle_group) {
+void EffectChainManager::registerChannel(const ChannelHandleAndGroup&
+        handle_group) {
     if (m_registeredChannels.contains(handle_group)) {
         qWarning() << debugString() << "WARNING: Channel already registered:"
                    << handle_group.name();
@@ -93,7 +94,8 @@ void EffectChainManager::removeEffectChain(EffectChainPointer pEffectChain) {
     }
 }
 
-EffectChainPointer EffectChainManager::getNextEffectChain(EffectChainPointer pEffectChain) {
+EffectChainPointer EffectChainManager::getNextEffectChain(
+    EffectChainPointer pEffectChain) {
     if (m_effectChains.isEmpty())
         return EffectChainPointer();
 
@@ -103,14 +105,16 @@ EffectChainPointer EffectChainManager::getNextEffectChain(EffectChainPointer pEf
 
     int indexOf = m_effectChains.lastIndexOf(pEffectChain);
     if (indexOf == -1) {
-        qWarning() << debugString() << "WARNING: getNextEffectChain called for an unmanaged EffectChain";
+        qWarning() << debugString() <<
+                   "WARNING: getNextEffectChain called for an unmanaged EffectChain";
         return m_effectChains[0];
     }
 
     return m_effectChains[(indexOf + 1) % m_effectChains.size()];
 }
 
-EffectChainPointer EffectChainManager::getPrevEffectChain(EffectChainPointer pEffectChain) {
+EffectChainPointer EffectChainManager::getPrevEffectChain(
+    EffectChainPointer pEffectChain) {
     if (m_effectChains.isEmpty())
         return EffectChainPointer();
 
@@ -120,11 +124,13 @@ EffectChainPointer EffectChainManager::getPrevEffectChain(EffectChainPointer pEf
 
     int indexOf = m_effectChains.lastIndexOf(pEffectChain);
     if (indexOf == -1) {
-        qWarning() << debugString() << "WARNING: getPrevEffectChain called for an unmanaged EffectChain";
+        qWarning() << debugString() <<
+                   "WARNING: getPrevEffectChain called for an unmanaged EffectChain";
         return m_effectChains[m_effectChains.size()-1];
     }
 
-    return m_effectChains[(indexOf - 1 + m_effectChains.size()) % m_effectChains.size()];
+    return m_effectChains[(indexOf - 1 + m_effectChains.size()) %
+                          m_effectChains.size()];
 }
 
 bool EffectChainManager::saveEffectChains() {

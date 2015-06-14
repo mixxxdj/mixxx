@@ -22,7 +22,8 @@ Effect::Effect(EffectsManager* pEffectsManager,
             this, pEffectsManager, m_parameters.size(), parameter);
         m_parameters.append(pParameter);
         if (m_parametersById.contains(parameter.id())) {
-            qWarning() << debugString() << "WARNING: Loaded EffectManifest that had parameters with duplicate IDs. Dropping one of them.";
+            qWarning() << debugString() <<
+                       "WARNING: Loaded EffectManifest that had parameters with duplicate IDs. Dropping one of them.";
         }
         m_parametersById[parameter.id()] = pParameter;
     }
@@ -111,7 +112,8 @@ void Effect::sendParameterUpdate() {
 unsigned int Effect::numKnobParameters() const {
     unsigned int num = 0;
     foreach(const EffectParameter* parameter, m_parameters) {
-        if (parameter->manifest().controlHint() != EffectManifestParameter::CONTROL_TOGGLE_STEPPING) {
+        if (parameter->manifest().controlHint() !=
+                EffectManifestParameter::CONTROL_TOGGLE_STEPPING) {
             ++num;
         }
     }
@@ -121,7 +123,8 @@ unsigned int Effect::numKnobParameters() const {
 unsigned int Effect::numButtonParameters() const {
     unsigned int num = 0;
     foreach(const EffectParameter* parameter, m_parameters) {
-        if (parameter->manifest().controlHint() == EffectManifestParameter::CONTROL_TOGGLE_STEPPING) {
+        if (parameter->manifest().controlHint() ==
+                EffectManifestParameter::CONTROL_TOGGLE_STEPPING) {
             ++num;
         }
     }
@@ -148,7 +151,8 @@ bool Effect::isKnobParameter(EffectParameter* parameter) {
     return !isButtonParameter(parameter);
 }
 
-EffectParameter* Effect::getFilteredParameterForSlot(ParameterFilterFnc filterFnc,
+EffectParameter* Effect::getFilteredParameterForSlot(ParameterFilterFnc
+        filterFnc,
         unsigned int slotNumber) {
     // It's normal to ask for a parameter that doesn't exist. Callers must check
     // for NULL.
@@ -184,7 +188,8 @@ QDomElement Effect::toXML(QDomDocument* doc) const {
         QDomElement parameter = doc->createElement("Parameter");
         XmlParse::addElement(*doc, parameter, "Id", parameterManifest.id());
         // TODO(rryan): Do smarter QVariant formatting?
-        XmlParse::addElement(*doc, parameter, "Value", QString::number(pParameter->getValue()));
+        XmlParse::addElement(*doc, parameter, "Value",
+                             QString::number(pParameter->getValue()));
         // TODO(rryan): Output link state, etc.
         parameters.appendChild(parameter);
     }

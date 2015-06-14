@@ -69,7 +69,8 @@ TrackInfoObject::TrackInfoObject(const QDomNode& nodeHeader)
     : m_qMutex(QMutex::Recursive),
       m_analyserProgress(-1) {
     QString filename = XmlParse::selectNodeQString(nodeHeader, "Filename");
-    QString location = XmlParse::selectNodeQString(nodeHeader, "Filepath") + "/" +  filename;
+    QString location = XmlParse::selectNodeQString(nodeHeader,
+                       "Filepath") + "/" +  filename;
     m_fileInfo = QFileInfo(location);
     m_pSecurityToken = Sandbox::openSecurityToken(m_fileInfo, true);
 
@@ -156,7 +157,8 @@ void TrackInfoObject::onTrackReferenceExpired(TrackInfoObject* pTrack) {
     }
 }
 
-void TrackInfoObject::setDeleteOnReferenceExpiration(bool deleteOnReferenceExpiration) {
+void TrackInfoObject::setDeleteOnReferenceExpiration(bool
+        deleteOnReferenceExpiration) {
     m_bDeleteOnReferenceExpiration = deleteOnReferenceExpiration;
 }
 
@@ -164,7 +166,8 @@ namespace {
 // Parses artist/title from the file name and returns the file type.
 // Assumes that the file name is written like: "artist - title.xxx"
 // or "artist_-_title.xxx",
-void parseMetadataFromFileName(Mixxx::TrackMetadata& trackMetadata, QString fileName) {
+void parseMetadataFromFileName(Mixxx::TrackMetadata& trackMetadata,
+                               QString fileName) {
     fileName.replace("_", " ");
     QString titleWithFileType;
     if (fileName.count('-') == 1) {

@@ -13,8 +13,9 @@
 #include "controllers/hid/hidcontrollerpresetfilehandler.h"
 
 // static
-ControllerPresetPointer ControllerPresetFileHandler::loadPreset(const QString& pathOrFilename,
-        const QStringList& presetPaths) {
+ControllerPresetPointer ControllerPresetFileHandler::loadPreset(
+    const QString& pathOrFilename,
+    const QStringList& presetPaths) {
     qDebug() << "Searching for controller preset" << pathOrFilename
              << "in paths:" << presetPaths.join(",");
     QString scriptPath = ControllerManager::getAbsolutePath(pathOrFilename,
@@ -58,7 +59,8 @@ ControllerPresetPointer ControllerPresetFileHandler::loadPreset(const QString& p
 ControllerPresetPointer ControllerPresetFileHandler::load(const QString path,
         const QString deviceName) {
     qDebug() << "Loading controller preset from" << path;
-    ControllerPresetPointer pPreset = load(XmlParse::openXMLFile(path, "controller"),
+    ControllerPresetPointer pPreset = load(XmlParse::openXMLFile(path,
+                                           "controller"),
                                            deviceName);
     if (pPreset) {
         pPreset->setFilePath(path);
@@ -93,8 +95,9 @@ void ControllerPresetFileHandler::parsePresetInfo(const QDomElement& root,
     preset->setWikiLink(wiki.isNull() ? "" : wiki.text());
 }
 
-QDomElement ControllerPresetFileHandler::getControllerNode(const QDomElement& root,
-        const QString deviceName) {
+QDomElement ControllerPresetFileHandler::getControllerNode(
+    const QDomElement& root,
+    const QString deviceName) {
     Q_UNUSED(deviceName);
     if (root.isNull()) {
         return QDomElement();
@@ -163,8 +166,9 @@ void addTextTag(QDomDocument& doc, QDomElement& holder,
     holder.appendChild(tag);
 }
 
-QDomDocument ControllerPresetFileHandler::buildRootWithScripts(const ControllerPreset& preset,
-        const QString deviceName) const {
+QDomDocument ControllerPresetFileHandler::buildRootWithScripts(
+    const ControllerPreset& preset,
+    const QString deviceName) const {
     QDomDocument doc("Preset");
     QString blank = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
                     "<MixxxControllerPreset>\n"

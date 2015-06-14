@@ -8,7 +8,8 @@
 WaveformSignalColors::WaveformSignalColors() {
 }
 
-bool WaveformSignalColors::setup(const QDomNode& node, const SkinContext& context) {
+bool WaveformSignalColors::setup(const QDomNode& node,
+                                 const SkinContext& context) {
     // NOTE(rryan): It is critical that every color is converted to RGB with
     // toRgb(). Otherwise Mixxx will waste 3% of its CPU time while rendering
     // the filtered waveform doing RGB color space conversions!
@@ -61,7 +62,8 @@ bool WaveformSignalColors::setup(const QDomNode& node, const SkinContext& contex
     }
     m_bgColor = WSkinColor::getCorrectColor(m_bgColor).toRgb();
 
-    bool filteredColorValid = m_lowColor.isValid() && m_midColor.isValid() && m_highColor.isValid();
+    bool filteredColorValid = m_lowColor.isValid() && m_midColor.isValid() &&
+                              m_highColor.isValid();
 
     if (m_signalColor.isValid() && filteredColorValid) {
         return true; //default

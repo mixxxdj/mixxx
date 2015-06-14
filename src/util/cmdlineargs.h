@@ -20,7 +20,8 @@ class CmdlineArgs {
                 return false; // Display Help Message
             }
 
-            if (argv[i]==QString("-f").toLower() || argv[i]==QString("--f") || argv[i]==QString("--fullScreen")) {
+            if (argv[i]==QString("-f").toLower() || argv[i]==QString("--f") ||
+                    argv[i]==QString("--fullScreen")) {
                 m_startInFullscreen = true;
             } else if (argv[i] == QString("--locale") && i+1 < argc) {
                 m_locale = argv[i+1];
@@ -38,13 +39,17 @@ class CmdlineArgs {
             } else if (argv[i] == QString("--timelinePath") && i+1 < argc) {
                 m_timelinePath = QString::fromLocal8Bit(argv[i+1]);
                 i++;
-            } else if (QString::fromLocal8Bit(argv[i]).contains("--midiDebug", Qt::CaseInsensitive) ||
-                       QString::fromLocal8Bit(argv[i]).contains("--controllerDebug", Qt::CaseInsensitive)) {
+            } else if (QString::fromLocal8Bit(argv[i]).contains("--midiDebug",
+                       Qt::CaseInsensitive) ||
+                       QString::fromLocal8Bit(argv[i]).contains("--controllerDebug",
+                               Qt::CaseInsensitive)) {
                 m_midiDebug = true;
-            } else if (QString::fromLocal8Bit(argv[i]).contains("--developer", Qt::CaseInsensitive)) {
+            } else if (QString::fromLocal8Bit(argv[i]).contains("--developer",
+                       Qt::CaseInsensitive)) {
                 m_developer = true;
 
-            } else if (QString::fromLocal8Bit(argv[i]).contains("--safeMode", Qt::CaseInsensitive)) {
+            } else if (QString::fromLocal8Bit(argv[i]).contains("--safeMode",
+                       Qt::CaseInsensitive)) {
                 m_safeMode = true;
             } else {
                 m_musicFiles += QString::fromLocal8Bit(argv[i]);
@@ -96,7 +101,8 @@ class CmdlineArgs {
     }
     ~CmdlineArgs() { };
 
-    QList<QString> m_musicFiles;    /* List of files to load into players at startup */
+    QList<QString>
+    m_musicFiles;    /* List of files to load into players at startup */
     bool m_startInFullscreen;       /* Start in fullscreen mode */
     bool m_midiDebug;
     bool m_developer; // Developer Mode

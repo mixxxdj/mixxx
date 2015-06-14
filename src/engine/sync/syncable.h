@@ -71,7 +71,8 @@ class Syncable {
     // Combines the above three calls into one, since they are often set
     // simultaneously.  Avoids redundant recalculation that would occur by
     // using the three calls separately.
-    virtual void setMasterParams(double beatDistance, double baseBpm, double bpm) = 0;
+    virtual void setMasterParams(double beatDistance, double baseBpm,
+                                 double bpm) = 0;
 
     // Must never result in a call to
     // SyncableListener::notifyInstantaneousBpmChanged or signal loops could

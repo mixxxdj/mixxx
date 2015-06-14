@@ -111,7 +111,8 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
         }
 
         CSAMPLE periodFraction = CSAMPLE(pState->time) / lfoPeriod;
-        CSAMPLE delay = kAverageDelayLength + kLfoAmplitude * sin(M_PI * 2.0f * periodFraction);
+        CSAMPLE delay = kAverageDelayLength + kLfoAmplitude * sin(
+                            M_PI * 2.0f * periodFraction);
 
         int framePrev = (pState->delayPos - int(delay) + kMaxDelay - 1) % kMaxDelay;
         int frameNext = (pState->delayPos - int(delay) + kMaxDelay    ) % kMaxDelay;

@@ -88,7 +88,8 @@ void WVuMeter::setup(QDomNode node, const SkinContext& context) {
         m_iPeakFallTime = DEFAULT_FALLTIME;
 }
 
-void WVuMeter::setPixmapBackground(PixmapSource source, Paintable::DrawMode mode) {
+void WVuMeter::setPixmapBackground(PixmapSource source,
+                                   Paintable::DrawMode mode) {
     m_pPixmapBack = WPixmapStore::getPaintable(source, mode);
     if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
         qDebug() << metaObject()->className()
@@ -154,7 +155,8 @@ void WVuMeter::updateState(double msecsElapsed) {
 }
 
 void WVuMeter::maybeUpdate() {
-    if (m_dParameter != m_dLastParameter || m_dPeakParameter != m_dLastPeakParameter) {
+    if (m_dParameter != m_dLastParameter ||
+            m_dPeakParameter != m_dLastPeakParameter) {
         repaint();
     }
 }

@@ -34,7 +34,8 @@ class KeyUtils {
     }
 
     // Takes a 0-indexed tonic and whether it is major/minor and produces a key.
-    static inline mixxx::track::io::key::ChromaticKey tonicToKey(int tonic, bool major) {
+    static inline mixxx::track::io::key::ChromaticKey tonicToKey(int tonic,
+            bool major) {
         return static_cast<mixxx::track::io::key::ChromaticKey>(
                    tonic + (major ? 1 : 13));
     }
@@ -67,7 +68,8 @@ class KeyUtils {
     static QList<mixxx::track::io::key::ChromaticKey> getCompatibleKeys(
         mixxx::track::io::key::ChromaticKey key);
 
-    static mixxx::track::io::key::ChromaticKey guessKeyFromText(const QString& text);
+    static mixxx::track::io::key::ChromaticKey guessKeyFromText(
+        const QString& text);
 
     static mixxx::track::io::key::ChromaticKey calculateGlobalKey(
         const KeyChangeList& key_changes, int iTotalSamples);
@@ -105,7 +107,8 @@ class KeyUtils {
         return powerOf2ToOctaveChange(power_of_2) * 12;
     }
 
-    static mixxx::track::io::key::ChromaticKey openKeyNumberToKey(int openKeyNumber, bool major);
+    static mixxx::track::io::key::ChromaticKey openKeyNumberToKey(int openKeyNumber,
+            bool major);
 
     static inline int keyToOpenKeyNumber(mixxx::track::io::key::ChromaticKey key) {
         switch (key) {

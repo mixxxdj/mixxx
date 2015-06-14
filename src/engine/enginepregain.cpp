@@ -36,16 +36,21 @@ EnginePregain::EnginePregain(QString group)
     : m_dSpeed(0),
       m_fPrevGain(1.0),
       m_bSmoothFade(false) {
-    m_pPotmeterPregain = new ControlAudioTaperPot(ConfigKey(group, "pregain"), -12, 12, 0.5);
+    m_pPotmeterPregain = new ControlAudioTaperPot(ConfigKey(group, "pregain"), -12,
+            12, 0.5);
     //Replay Gain things
     m_pCOReplayGain = new ControlObject(ConfigKey(group, "replaygain"));
     m_pTotalGain = new ControlObject(ConfigKey(group, "total_gain"));
-    m_pPassthroughEnabled = ControlObject::getControl(ConfigKey(group, "passthrough"));
+    m_pPassthroughEnabled = ControlObject::getControl(ConfigKey(group,
+                            "passthrough"));
 
     if (s_pReplayGainBoost == NULL) {
-        s_pReplayGainBoost = new ControlAudioTaperPot(ConfigKey("[ReplayGain]", "ReplayGainBoost"), -12, 12, 0.5);
-        s_pDefaultBoost = new ControlAudioTaperPot(ConfigKey("[ReplayGain]", "DefaultBoost"), -12, 12, 0.5);
-        s_pEnableReplayGain = new ControlObject(ConfigKey("[ReplayGain]", "ReplayGainEnabled"));
+        s_pReplayGainBoost = new ControlAudioTaperPot(ConfigKey("[ReplayGain]",
+                "ReplayGainBoost"), -12, 12, 0.5);
+        s_pDefaultBoost = new ControlAudioTaperPot(ConfigKey("[ReplayGain]",
+                "DefaultBoost"), -12, 12, 0.5);
+        s_pEnableReplayGain = new ControlObject(ConfigKey("[ReplayGain]",
+                                                "ReplayGainEnabled"));
     }
 }
 
@@ -126,7 +131,8 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
     // As the speed approaches zero, hearing small bursts of sound at full volume
     // is distracting and doesn't mimic the way that vinyl sounds when played slowly.
     // Instead, reduce gain to provide a soft rolloff.
-    const float kThresholdSpeed = 0.070; // Scale volume if playback speed is below 7%.
+    const float kThresholdSpeed =
+        0.070; // Scale volume if playback speed is below 7%.
     if (fabs(m_dSpeed) < kThresholdSpeed) {
         totalGain *= fabs(m_dSpeed) / kThresholdSpeed;
     }

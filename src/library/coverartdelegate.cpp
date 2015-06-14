@@ -108,13 +108,16 @@ void CoverArtDelegate::paint(QPainter* painter,
 
     info.source = static_cast<CoverInfo::Source>(
                       index.sibling(index.row(), m_iCoverSourceColumn).data().toInt());
-    info.coverLocation = index.sibling(index.row(), m_iCoverLocationColumn).data().toString();
+    info.coverLocation = index.sibling(index.row(),
+                                       m_iCoverLocationColumn).data().toString();
     info.hash = index.sibling(index.row(), m_iCoverHashColumn).data().toUInt();
-    info.trackLocation = index.sibling(index.row(), m_iTrackLocationColumn).data().toString();
+    info.trackLocation = index.sibling(index.row(),
+                                       m_iTrackLocationColumn).data().toString();
 
     // We listen for updates via slotCoverFound above and signal to
     // BaseSqlTableModel when a row's cover is ready.
-    QPixmap pixmap = pCache->requestCover(info, this, info.hash, option.rect.width(),
+    QPixmap pixmap = pCache->requestCover(info, this, info.hash,
+                                          option.rect.width(),
                                           m_bOnlyCachedCover, true);
     if (!pixmap.isNull()) {
         int width = math_min(pixmap.width(), option.rect.width());

@@ -14,7 +14,8 @@
 #define SIGNAL_QUALITY_FIFO_SIZE 256
 #define SAMPLE_PIPE_FIFO_SIZE 65536
 
-VinylControlProcessor::VinylControlProcessor(QObject* pParent, ConfigObject<ConfigValue>* pConfig)
+VinylControlProcessor::VinylControlProcessor(QObject* pParent,
+        ConfigObject<ConfigValue>* pConfig)
     : QThread(pParent),
       m_pConfig(pConfig),
       m_pToggle(new ControlPushButton(ConfigKey(VINYL_PREF_KEY, "Toggle"))),
@@ -76,8 +77,10 @@ void VinylControlProcessor::requestReloadConfig() {
 }
 
 void VinylControlProcessor::run() {
-    unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
-    QThread::currentThread()->setObjectName(QString("VinylControlProcessor %1").arg(++id));
+    unsigned static id =
+        0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
+    QThread::currentThread()->setObjectName(QString("VinylControlProcessor %1").arg(
+            ++id));
 
     while (!m_bQuit) {
         Event::start("VinylControlProcessor");
@@ -96,7 +99,8 @@ void VinylControlProcessor::run() {
                 int samplesRead = pSamplePipe->read(m_pWorkBuffer, MAX_BUFFER_LEN);
 
                 if (samplesRead % 2 != 0) {
-                    qWarning() << "VinylControlProcessor received non-even number of samples via sample FIFO.";
+                    qWarning() <<
+                               "VinylControlProcessor received non-even number of samples via sample FIFO.";
                     samplesRead--;
                 }
                 int framesRead = samplesRead / 2;
@@ -116,7 +120,9 @@ void VinylControlProcessor::run() {
                 if (pProcessor->writeQualityReport(&report)) {
                     report.processor = i;
                     if (m_signalQualityFifo.write(&report, 1) != 1) {
-                        qWarning() << "VinylControlProcessor could not write signal quality report for VC index:" << i;
+                        qWarning() <<
+                                   "VinylControlProcessor could not write signal quality report for VC index:" <<
+                                   i;
                     }
                 }
             }
@@ -162,7 +168,8 @@ void VinylControlProcessor::onInputConfigured(AudioInput input) {
 
     if (index >= kMaximumVinylControlInputs) {
         // Should not be possible.
-        qWarning() << "VinylControlProcessor::onInputConnected got invalid index:" << index;
+        qWarning() << "VinylControlProcessor::onInputConnected got invalid index:" <<
+                   index;
         return;
     }
 
@@ -187,7 +194,8 @@ void VinylControlProcessor::onInputUnconfigured(AudioInput input) {
 
     if (index >= kMaximumVinylControlInputs) {
         // Should not be possible.
-        qWarning() << "VinylControlProcessor::onInputDisconnected got invalid index:" << index;
+        qWarning() << "VinylControlProcessor::onInputDisconnected got invalid index:" <<
+                   index;
         return;
     }
 
@@ -208,7 +216,8 @@ void VinylControlProcessor::receiveBuffer(AudioInput input,
         unsigned int nFrames) {
     ScopedTimer t("VinylControlProcessor::receiveBuffer");
     if (input.getType() != AudioInput::VINYLCONTROL) {
-        qDebug() << "WARNING: AudioInput type is not VINYLCONTROL. Ignoring incoming buffer.";
+        qDebug() <<
+                 "WARNING: AudioInput type is not VINYLCONTROL. Ignoring incoming buffer.";
         return;
     }
 
@@ -231,7 +240,8 @@ void VinylControlProcessor::receiveBuffer(AudioInput input,
     int samplesWritten = pSamplePipe->write(pBuffer, nSamples);
 
     if (samplesWritten < nSamples) {
-        qWarning() << "ERROR: Buffer overflow in VinylControlProcessor. Dropping samples on the floor."
+        qWarning() <<
+                   "ERROR: Buffer overflow in VinylControlProcessor. Dropping samples on the floor."
                    << "VCIndex:" << vcIndex;
     }
 

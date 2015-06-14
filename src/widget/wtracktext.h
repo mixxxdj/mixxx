@@ -12,7 +12,8 @@
 class WTrackText : public WLabel {
     Q_OBJECT
   public:
-    WTrackText(const char* group, ConfigObject<ConfigValue>* pConfig, QWidget* parent);
+    WTrackText(const char* group, ConfigObject<ConfigValue>* pConfig,
+               QWidget* parent);
     virtual ~WTrackText();
 
   signals:

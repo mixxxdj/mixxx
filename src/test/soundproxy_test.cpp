@@ -12,7 +12,8 @@ class SoundSourceProxyTest: public MixxxTest {
   protected:
     static QStringList getFileExtensions() {
         QStringList availableExtensions;
-        availableExtensions << "aiff" << "flac" << "m4a" << "mp3" << "ogg" << "opus" << "wav";
+        availableExtensions << "aiff" << "flac" << "m4a" << "mp3" << "ogg" << "opus" <<
+                            "wav";
         QStringList supportedExtensions;
         foreach (QString const& fileExtension, availableExtensions) {
             if (SoundSourceProxy::isFileExtensionSupported(fileExtension)) {
@@ -100,7 +101,8 @@ TEST_F(SoundSourceProxyTest, seekForward) {
 
             Mixxx::AudioSourcePointer pSeekReadSource(openAudioSource(filePath));
             ASSERT_FALSE(pSeekReadSource.isNull());
-            ASSERT_EQ(pContReadSource->getChannelCount(), pSeekReadSource->getChannelCount());
+            ASSERT_EQ(pContReadSource->getChannelCount(),
+                      pSeekReadSource->getChannelCount());
             ASSERT_EQ(pContReadSource->getFrameCount(), pSeekReadSource->getFrameCount());
 
             const SINT seekFrameIndex =
@@ -117,7 +119,8 @@ TEST_F(SoundSourceProxyTest, seekForward) {
                     readSampleOffset < readSampleCount;
                     ++readSampleOffset) {
                 if ("opus" == fileExtension) {
-                    EXPECT_NEAR(contReadData[readSampleOffset], seekReadData[readSampleOffset], kOpusSeekDecodingError)
+                    EXPECT_NEAR(contReadData[readSampleOffset], seekReadData[readSampleOffset],
+                                kOpusSeekDecodingError)
                             << "Mismatch in " << filePath.toStdString()
                             << " at seek frame index " << seekFrameIndex
                             << " for read sample offset " << readSampleOffset;

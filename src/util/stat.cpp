@@ -57,7 +57,8 @@ void Stat::processReport(const StatReport& report) {
         } else {
             double variance_mk_prev = m_variance_mk;
             m_variance_mk += (report.value - m_variance_mk) / m_report_count;
-            m_variance_sk += (report.value - variance_mk_prev) * (report.value - m_variance_mk);
+            m_variance_sk += (report.value - variance_mk_prev) * (report.value -
+                             m_variance_mk);
         }
     }
 

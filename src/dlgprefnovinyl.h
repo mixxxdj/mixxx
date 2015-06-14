@@ -34,7 +34,8 @@ class SoundManager;
 class DlgPrefNoVinyl : public DlgPreferencePage, Ui::DlgPrefNoVinylDlg  {
     Q_OBJECT
   public:
-    DlgPrefNoVinyl(QWidget* parent, SoundManager* soundman, ConfigObject<ConfigValue>* _config);
+    DlgPrefNoVinyl(QWidget* parent, SoundManager* soundman,
+                   ConfigObject<ConfigValue>* _config);
     virtual ~DlgPrefNoVinyl();
 };
 

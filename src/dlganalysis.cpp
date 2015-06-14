@@ -21,24 +21,28 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
     m_songsButtonGroup.addButton(radioButtonRecentlyAdded);
     m_songsButtonGroup.addButton(radioButtonAllSongs);
 
-    m_pAnalysisLibraryTableView = new WAnalysisLibraryTableView(this, pConfig, pTrackCollection);
+    m_pAnalysisLibraryTableView = new WAnalysisLibraryTableView(this, pConfig,
+            pTrackCollection);
     connect(m_pAnalysisLibraryTableView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
-    connect(m_pAnalysisLibraryTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
+    connect(m_pAnalysisLibraryTableView, SIGNAL(loadTrackToPlayer(TrackPointer,
+            QString)),
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
 
     connect(m_pAnalysisLibraryTableView, SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
 
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
-    DEBUG_ASSERT_AND_HANDLE(box) { // Assumes the form layout is a QVBox/QHBoxLayout!
+    DEBUG_ASSERT_AND_HANDLE(
+        box) { // Assumes the form layout is a QVBox/QHBoxLayout!
     } else {
         box->removeWidget(m_pTrackTablePlaceholder);
         m_pTrackTablePlaceholder->hide();
         box->insertWidget(1, m_pAnalysisLibraryTableView);
     }
 
-    m_pAnalysisLibraryTableModel = new AnalysisLibraryTableModel(this, pTrackCollection);
+    m_pAnalysisLibraryTableModel = new AnalysisLibraryTableModel(this,
+            pTrackCollection);
     m_pAnalysisLibraryTableView->loadTrackModel(m_pAnalysisLibraryTableModel);
 
     connect(radioButtonRecentlyAdded, SIGNAL(clicked()),
@@ -100,7 +104,8 @@ void DlgAnalysis::tableSelectionChanged(const QItemSelection& selected,
                                         const QItemSelection& deselected) {
     Q_UNUSED(selected);
     Q_UNUSED(deselected);
-    bool tracksSelected = m_pAnalysisLibraryTableView->selectionModel()->hasSelection();
+    bool tracksSelected =
+        m_pAnalysisLibraryTableView->selectionModel()->hasSelection();
     pushButtonAnalyze->setEnabled(tracksSelected || m_bAnalysisActive);
 }
 
@@ -115,7 +120,8 @@ void DlgAnalysis::analyze() {
     } else {
         QList<int> trackIds;
 
-        QModelIndexList selectedIndexes = m_pAnalysisLibraryTableView->selectionModel()->selectedRows();
+        QModelIndexList selectedIndexes =
+            m_pAnalysisLibraryTableView->selectionModel()->selectedRows();
         foreach(QModelIndex selectedIndex, selectedIndexes) {
             bool ok;
             int trackId = selectedIndex.sibling(

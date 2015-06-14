@@ -16,7 +16,8 @@
 
 #include "musicbrainzclient.h"
 
-const QString MusicBrainzClient::m_TrackUrl = "http://musicbrainz.org/ws/2/recording/";
+const QString MusicBrainzClient::m_TrackUrl =
+    "http://musicbrainz.org/ws/2/recording/";
 const QString MusicBrainzClient::m_DateRegex = "^[12]\\d{3}";
 const int MusicBrainzClient::m_DefaultTimeout = 5000; // msec
 
@@ -89,7 +90,8 @@ void MusicBrainzClient::requestFinished() {
     emit (finished(id, uniqueResults(ret)));
 }
 
-MusicBrainzClient::ResultList MusicBrainzClient::parseTrack(QXmlStreamReader& reader) {
+MusicBrainzClient::ResultList MusicBrainzClient::parseTrack(
+    QXmlStreamReader& reader) {
     Result result;
     QList<Release> releases;
 
@@ -136,7 +138,8 @@ void MusicBrainzClient::parseArtist(QXmlStreamReader& reader, QString& artist) {
     }
 }
 
-MusicBrainzClient::Release MusicBrainzClient::parseRelease(QXmlStreamReader& reader) {
+MusicBrainzClient::Release MusicBrainzClient::parseRelease(
+    QXmlStreamReader& reader) {
     Release ret;
 
     while (!reader.atEnd()) {
@@ -165,7 +168,8 @@ MusicBrainzClient::Release MusicBrainzClient::parseRelease(QXmlStreamReader& rea
     return ret;
 }
 
-MusicBrainzClient::ResultList MusicBrainzClient::uniqueResults(const ResultList& results) {
+MusicBrainzClient::ResultList MusicBrainzClient::uniqueResults(
+    const ResultList& results) {
     ResultList ret = QSet<Result>::fromList(results).toList();
     qSort(ret);
     return ret;

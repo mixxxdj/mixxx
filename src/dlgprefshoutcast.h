@@ -34,7 +34,8 @@
 
 class ControlObjectThread;
 
-class DlgPrefShoutcast : public DlgPreferencePage, public Ui::DlgPrefShoutcastDlg  {
+class DlgPrefShoutcast : public DlgPreferencePage,
+    public Ui::DlgPrefShoutcastDlg  {
     Q_OBJECT
   public:
     DlgPrefShoutcast(QWidget* parent, ConfigObject<ConfigValue>* _config);

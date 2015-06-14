@@ -23,14 +23,16 @@ double ControlNumericBehavior::valueToMidiParameter(double dValue) {
     return dValue;
 }
 
-void ControlNumericBehavior::setValueFromMidiParameter(MidiOpCode o, double dParam,
+void ControlNumericBehavior::setValueFromMidiParameter(MidiOpCode o,
+        double dParam,
         ControlDoublePrivate* pControl) {
     Q_UNUSED(o);
     double dNorm = midiValueToParameter(dParam);
     pControl->set(parameterToValue(dNorm), NULL);
 }
 
-ControlPotmeterBehavior::ControlPotmeterBehavior(double dMinValue, double dMaxValue,
+ControlPotmeterBehavior::ControlPotmeterBehavior(double dMinValue,
+        double dMaxValue,
         bool allowOutOfBounds)
     : m_dMinValue(dMinValue),
       m_dMaxValue(dMaxValue),
@@ -98,10 +100,12 @@ double ControlPotmeterBehavior::valueToMidiParameter(double dValue) {
 #define middlePosition ((maxPosition - minPosition) / 2.0)
 #define positionrange (maxPosition - minPosition)
 
-ControlLogPotmeterBehavior::ControlLogPotmeterBehavior(double dMinValue, double dMaxValue, double minDB)
+ControlLogPotmeterBehavior::ControlLogPotmeterBehavior(double dMinValue,
+        double dMaxValue, double minDB)
     : ControlPotmeterBehavior(dMinValue, dMaxValue, false) {
     if (minDB >= 0) {
-        qWarning() << "ControlLogPotmeterBehavior::ControlLogPotmeterBehavior() minDB must be negative";
+        qWarning() <<
+                   "ControlLogPotmeterBehavior::ControlLogPotmeterBehavior() minDB must be negative";
         m_minDB = -1;
     } else {
         m_minDB = minDB;
@@ -132,7 +136,8 @@ double ControlLogPotmeterBehavior::parameterToValue(double dParam) {
     return m_dMinValue + (linPrameter * m_dValueRange);
 }
 
-ControlLinPotmeterBehavior::ControlLinPotmeterBehavior(double dMinValue, double dMaxValue,
+ControlLinPotmeterBehavior::ControlLinPotmeterBehavior(double dMinValue,
+        double dMaxValue,
         bool allowOutOfBounds)
     : ControlPotmeterBehavior(dMinValue, dMaxValue, allowOutOfBounds) {
 }
@@ -164,7 +169,8 @@ double ControlAudioTaperPotBehavior::valueToParameter(double dValue) {
         // 0 dB = m_neutralParameter
         double overlay = m_offset * (1 - dValue);
         if (m_minDB) {
-            dParam = (ratio2db(dValue + overlay) - m_minDB) / m_minDB * m_neutralParameter * -1;
+            dParam = (ratio2db(dValue + overlay) - m_minDB) / m_minDB * m_neutralParameter *
+                     -1;
         } else {
             dParam = dValue * m_neutralParameter;
         }
@@ -173,7 +179,8 @@ double ControlAudioTaperPotBehavior::valueToParameter(double dValue) {
     } else if (dValue < m_dMaxValue) {
         // m_maxDB = 1
         // 0 dB = m_neutralParameter
-        dParam = (ratio2db(dValue) / m_maxDB * (1 - m_neutralParameter)) + m_neutralParameter;
+        dParam = (ratio2db(dValue) / m_maxDB * (1 - m_neutralParameter)) +
+                 m_neutralParameter;
     }
     //qDebug() << "ControlAudioTaperPotBehavior::valueToParameter" << "value =" << dValue << "dParam =" << dParam;
     return dParam;
@@ -198,7 +205,8 @@ double ControlAudioTaperPotBehavior::parameterToValue(double dParam) {
     } else if (dParam <= 1.0) {
         // m_maxDB = 1
         // 0 dB = m_neutralParame;
-        dValue = db2ratio((dParam - m_neutralParameter) * m_maxDB / (1 - m_neutralParameter));
+        dValue = db2ratio((dParam - m_neutralParameter) * m_maxDB /
+                          (1 - m_neutralParameter));
     }
     //qDebug() << "ControlAudioTaperPotBehavior::parameterToValue" << "dValue =" << dValue << "dParam =" << dParam;
     return dValue;
@@ -239,7 +247,8 @@ double ControlAudioTaperPotBehavior::valueToMidiParameter(double dValue) {
     return dMidiParam;
 }
 
-void ControlAudioTaperPotBehavior::setValueFromMidiParameter(MidiOpCode o, double dMidiParam,
+void ControlAudioTaperPotBehavior::setValueFromMidiParameter(MidiOpCode o,
+        double dMidiParam,
         ControlDoublePrivate* pControl) {
     Q_UNUSED(o);
     double dParam = midiValueToParameter(dMidiParam);

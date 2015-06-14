@@ -212,9 +212,11 @@ EffectChainSlotPointer StandardEffectRack::addEffectChainSlot() {
     connect(pChainSlot, SIGNAL(prevChain(unsigned int, EffectChainPointer)),
             this, SLOT(loadPrevChain(unsigned int, EffectChainPointer)));
 
-    connect(pChainSlot, SIGNAL(nextEffect(unsigned int, unsigned int, EffectPointer)),
+    connect(pChainSlot, SIGNAL(nextEffect(unsigned int, unsigned int,
+                                          EffectPointer)),
             this, SLOT(loadNextEffect(unsigned int, unsigned int, EffectPointer)));
-    connect(pChainSlot, SIGNAL(prevEffect(unsigned int, unsigned int, EffectPointer)),
+    connect(pChainSlot, SIGNAL(prevEffect(unsigned int, unsigned int,
+                                          EffectPointer)),
             this, SLOT(loadPrevEffect(unsigned int, unsigned int, EffectPointer)));
 
     // Register all the existing channels with the new EffectChain.
@@ -242,7 +244,8 @@ PerGroupRack::PerGroupRack(EffectsManager* pEffectsManager,
     : EffectRack(pEffectsManager, pChainManager, iRackNumber, group) {
 }
 
-EffectChainSlotPointer PerGroupRack::addEffectChainSlotForGroup(const QString& groupName) {
+EffectChainSlotPointer PerGroupRack::addEffectChainSlotForGroup(
+    const QString& groupName) {
     if (m_groupToChainSlot.contains(groupName)) {
         qWarning() << "PerGroupRack" << getGroup()
                    << "group is already registered" << groupName;
@@ -273,7 +276,8 @@ EffectChainSlotPointer PerGroupRack::addEffectChainSlotForGroup(const QString& g
     return pChainSlotPointer;
 }
 
-EffectChainSlotPointer PerGroupRack::getGroupEffectChainSlot(const QString& group) {
+EffectChainSlotPointer PerGroupRack::getGroupEffectChainSlot(
+    const QString& group) {
     return m_groupToChainSlot[group];
 }
 
@@ -378,7 +382,8 @@ bool EqualizerRack::loadEffectToGroup(const QString& groupName,
 }
 
 
-void EqualizerRack::configureEffectChainSlotForGroup(EffectChainSlotPointer pSlot,
+void EqualizerRack::configureEffectChainSlotForGroup(EffectChainSlotPointer
+        pSlot,
         const ChannelHandleAndGroup& handle_group) {
     const QString& groupName = handle_group.name();
 

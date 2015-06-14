@@ -180,8 +180,10 @@ TEST_F(KeyUtilsTest, ShortestStepsToKey) {
 
     for (int i = 0; i < 12; ++i) {
         for (int j = 0; j < 12; ++j) {
-            mixxx::track::io::key::ChromaticKey minor_key = KeyUtils::scaleKeySteps(start_key_minor, j);
-            mixxx::track::io::key::ChromaticKey major_key = KeyUtils::scaleKeySteps(start_key_major, j);
+            mixxx::track::io::key::ChromaticKey minor_key = KeyUtils::scaleKeySteps(
+                        start_key_minor, j);
+            mixxx::track::io::key::ChromaticKey major_key = KeyUtils::scaleKeySteps(
+                        start_key_major, j);
             // When we are 6 steps away, 6 and -6 are equidistant.
             if (j == 6) {
                 EXPECT_EQ(6, abs(KeyUtils::shortestStepsToKey(start_key_minor, minor_key)));

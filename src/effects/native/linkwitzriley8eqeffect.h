@@ -39,7 +39,8 @@ class LinkwitzRiley8EQEffectGroupState {
     int m_hiFreq;
 };
 
-class LinkwitzRiley8EQEffect : public PerChannelEffectProcessor<LinkwitzRiley8EQEffectGroupState> {
+class LinkwitzRiley8EQEffect : public
+    PerChannelEffectProcessor<LinkwitzRiley8EQEffectGroupState> {
   public:
     LinkwitzRiley8EQEffect(EngineEffect* pEffect, const EffectManifest& manifest);
     virtual ~LinkwitzRiley8EQEffect();

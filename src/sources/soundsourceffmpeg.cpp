@@ -127,7 +127,8 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
 
     setChannelCount(m_pCodecCtx->channels);
     setFrameRate(m_pCodecCtx->sample_rate);
-    setFrameCount((m_pFormatCtx->duration * m_pCodecCtx->sample_rate) / AV_TIME_BASE);
+    setFrameCount((m_pFormatCtx->duration * m_pCodecCtx->sample_rate) /
+                  AV_TIME_BASE);
 
     qDebug() << "ffmpeg: Samplerate: " << getFrameRate() << ", Channels: " <<
              getChannelCount() << "\n";
@@ -349,7 +350,9 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
     }
 
     if (l_iFrameCount > 0) {
-        qDebug() << "SoundSourceFFmpeg::readFramesToCache(): Frame balance is not 0 it is: " << l_iFrameCount;
+        qDebug() <<
+                 "SoundSourceFFmpeg::readFramesToCache(): Frame balance is not 0 it is: " <<
+                 l_iFrameCount;
     }
 
     l_SObj = m_SCache.first();
@@ -516,7 +519,8 @@ SINT SoundSourceFFmpeg::readSampleFrames(SINT numberOfFrames,
         m_bIsSeeked = false;
     }
 
-    getBytesFromCache((char*)sampleBuffer, m_currentMixxxFrameIndex, numberOfFrames);
+    getBytesFromCache((char*)sampleBuffer, m_currentMixxxFrameIndex,
+                      numberOfFrames);
 
     //  As this is also Hack
     // If we don't seek like we don't on analyzer.. keep

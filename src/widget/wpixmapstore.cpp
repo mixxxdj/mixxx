@@ -186,7 +186,8 @@ void Paintable::draw(int x, int y, QPainter* pPainter) {
     draw(targetRect, pPainter, sourceRect);
 }
 
-void Paintable::draw(const QPointF& point, QPainter* pPainter, const QRectF& sourceRect) {
+void Paintable::draw(const QPointF& point, QPainter* pPainter,
+                     const QRectF& sourceRect) {
     return draw(QRectF(point, sourceRect.size()), pPainter, sourceRect);
 }
 
@@ -304,7 +305,8 @@ void Paintable::drawInternal(const QRectF& targetRect, QPainter* pPainter,
 PaintablePointer WPixmapStore::getPaintable(PixmapSource source,
         Paintable::DrawMode mode) {
     // See if we have a cached value for the pixmap.
-    PaintablePointer pPaintable = m_paintableCache.value(source.getId(), PaintablePointer());
+    PaintablePointer pPaintable = m_paintableCache.value(source.getId(),
+                                  PaintablePointer());
     if (pPaintable) {
         return pPaintable;
     }

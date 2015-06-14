@@ -37,7 +37,8 @@ class ConfigKey;
 class ControlObjectSlave;
 class Encoder;
 
-class EngineRecord : public QObject, public EncoderCallback, public SideChainWorker {
+class EngineRecord : public QObject, public EncoderCallback,
+    public SideChainWorker {
     Q_OBJECT
   public:
     EngineRecord(ConfigObject<ConfigValue>* _config);
@@ -47,7 +48,8 @@ class EngineRecord : public QObject, public EncoderCallback, public SideChainWor
     void shutdown() {}
 
     // writes compressed audio to file
-    void write(unsigned char* header, unsigned char* body, int headerLen, int bodyLen);
+    void write(unsigned char* header, unsigned char* body, int headerLen,
+               int bodyLen);
     // creates or opens an audio file
     bool openFile();
     // closes the audio file

@@ -28,7 +28,8 @@ double RateControl::m_dPermSmall = 0.05;
 int RateControl::m_iRateRampSensitivity = 250;
 const double RateControl::kWheelMultiplier = 40.0;
 const double RateControl::kPausedJogMultiplier = 18.0;
-enum RateControl::RATERAMP_MODE RateControl::m_eRateRampMode = RateControl::RATERAMP_STEP;
+enum RateControl::RATERAMP_MODE RateControl::m_eRateRampMode =
+    RateControl::RATERAMP_STEP;
 
 RateControl::RateControl(QString group,
                          ConfigObject<ConfigValue>* _config)
@@ -52,7 +53,8 @@ RateControl::RateControl(QString group,
 
     // Search rate. Rate used when searching in sound. This overrules the
     // playback rate
-    m_pRateSearch = new ControlPotmeter(ConfigKey(group, "rateSearch"), -300., 300.);
+    m_pRateSearch = new ControlPotmeter(ConfigKey(group, "rateSearch"), -300.,
+                                        300.);
 
     // Reverse button
     m_pReverseButton = new ControlPushButton(ConfigKey(group, "reverse"));
@@ -79,9 +81,12 @@ RateControl::RateControl(QString group,
 
     m_pSlipEnabled = new ControlObjectSlave(group, "slip_enabled", this);
 
-    m_pVCEnabled = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_enabled"));
-    m_pVCScratching = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_scratching"));
-    m_pVCMode = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_mode"));
+    m_pVCEnabled = ControlObject::getControl(ConfigKey(getGroup(),
+                   "vinylcontrol_enabled"));
+    m_pVCScratching = ControlObject::getControl(ConfigKey(getGroup(),
+                      "vinylcontrol_scratching"));
+    m_pVCMode = ControlObject::getControl(ConfigKey(getGroup(),
+                                          "vinylcontrol_mode"));
 
     // Permanent rate-change buttons
     buttonRatePermDown =
@@ -168,7 +173,8 @@ RateControl::RateControl(QString group,
 
     // Set the Sensitivity
     m_iRateRampSensitivity =
-        getConfig()->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt();
+        getConfig()->getValueString(ConfigKey("[Controls]",
+                                    "RateRampSensitivity")).toInt();
 
     m_pSyncMode = new ControlObjectSlave(group, "sync_mode", this);
 }
@@ -310,7 +316,8 @@ void RateControl::slotControlRateTempDown(double) {
 
 void RateControl::slotControlRateTempDownSmall(double) {
     // Set the state of the Temporary button. Logic is handled in ::process()
-    if (buttonRateTempDownSmall->get() && !(m_ePbPressed & RateControl::RATERAMP_DOWN)) {
+    if (buttonRateTempDownSmall->get() &&
+            !(m_ePbPressed & RateControl::RATERAMP_DOWN)) {
         m_ePbPressed |= RateControl::RATERAMP_DOWN;
         m_ePbCurrent = RateControl::RATERAMP_DOWN;
     } else if (!buttonRateTempDownSmall->get()) {
@@ -332,7 +339,8 @@ void RateControl::slotControlRateTempUp(double) {
 
 void RateControl::slotControlRateTempUpSmall(double) {
     // Set the state of the Temporary button. Logic is handled in ::process()
-    if (buttonRateTempUpSmall->get() && !(m_ePbPressed & RateControl::RATERAMP_UP)) {
+    if (buttonRateTempUpSmall->get() &&
+            !(m_ePbPressed & RateControl::RATERAMP_UP)) {
         m_ePbPressed |= RateControl::RATERAMP_UP;
         m_ePbCurrent = RateControl::RATERAMP_UP;
     } else if (!buttonRateTempUpSmall->get()) {
@@ -557,12 +565,14 @@ double RateControl::process(const double rate,
             } else if (m_ePbCurrent == RateControl::RATERAMP_DOWN) {
                 subRateTemp(m_dTempRateChange);
             }
-        } else if ((m_bTempStarted) || ((m_eRampBackMode != RATERAMP_RAMPBACK_NONE) && (m_dRateTemp != 0.0))) {
+        } else if ((m_bTempStarted) || ((m_eRampBackMode != RATERAMP_RAMPBACK_NONE) &&
+                                        (m_dRateTemp != 0.0))) {
             // No buttons pressed, so time to deinitialize
             m_bTempStarted = false;
 
 
-            if ((m_eRampBackMode == RATERAMP_RAMPBACK_PERIOD) &&  (m_dRateTempRampbackChange == 0.0)) {
+            if ((m_eRampBackMode == RATERAMP_RAMPBACK_PERIOD) &&
+                    (m_dRateTempRampbackChange == 0.0)) {
                 int period = 2;
                 if (period)
                     m_dRateTempRampbackChange = fabs(m_dRateTemp / (double)period);
@@ -571,7 +581,8 @@ double RateControl::process(const double rate,
                     return kNoTrigger;
                 }
 
-            } else if ((m_eRampBackMode != RATERAMP_RAMPBACK_NONE) && (m_dRateTempRampbackChange == 0.0)) {
+            } else if ((m_eRampBackMode != RATERAMP_RAMPBACK_NONE) &&
+                       (m_dRateTempRampbackChange == 0.0)) {
 
                 if (fabs(m_dRateTemp) < m_dRateTempRampbackChange) {
                     resetRateTemp();

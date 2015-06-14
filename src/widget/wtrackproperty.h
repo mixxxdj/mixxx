@@ -13,7 +13,8 @@
 class WTrackProperty : public WLabel {
     Q_OBJECT
   public:
-    WTrackProperty(const char* group, ConfigObject<ConfigValue>* pConfig, QWidget* pParent);
+    WTrackProperty(const char* group, ConfigObject<ConfigValue>* pConfig,
+                   QWidget* pParent);
     virtual ~WTrackProperty();
 
     void setup(QDomNode node, const SkinContext& context);

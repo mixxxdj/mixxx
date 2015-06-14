@@ -45,7 +45,8 @@ const double kMinSignal = 75.0 / SAMPLE_MAX;
 bool VinylControlXwax::s_bLUTInitialized = false;
 QMutex VinylControlXwax::s_xwaxLUTMutex;
 
-VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue>* pConfig, QString group)
+VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue>* pConfig,
+                                   QString group)
     : VinylControl(pConfig, group),
       m_dVinylPositionOld(0.0),
       m_pWorkBuffer(new short[MAX_BUFFER_LEN]),
@@ -124,7 +125,8 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue>* pConfig, QString g
 
     timecode_def* tc_def = timecoder_find_definition(timecode);
     if (tc_def == NULL) {
-        qDebug() << "Error finding timecode definition for " << timecode << ", defaulting to serato_2a";
+        qDebug() << "Error finding timecode definition for " << timecode <<
+                 ", defaulting to serato_2a";
         timecode = (char*)"serato_2a";
         tc_def = timecoder_find_definition(timecode);
     }
@@ -152,7 +154,8 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue>* pConfig, QString g
     m_pPitchRing = new double[m_iPitchRingSize];
 
     qDebug() << "Xwax Vinyl control starting with a sample rate of:" << iSampleRate;
-    qDebug() << "Building timecode lookup tables for" << strVinylType << "with speed" << strVinylSpeed;
+    qDebug() << "Building timecode lookup tables for" << strVinylType <<
+             "with speed" << strVinylSpeed;
 
     // Initialize the timecoder structure. Use the static mutex so that we only
     // do this once across the VinylControlXwax instances.
@@ -253,7 +256,8 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
 
 
     // Check if vinyl control is enabled...
-    m_bIsEnabled = enabled == NULL ? false : checkEnabled(m_bIsEnabled, enabled->get());
+    m_bIsEnabled = enabled == NULL ? false : checkEnabled(m_bIsEnabled,
+                   enabled->get());
 
     if (bHaveSignal) {
         // Always analyze the input samples
@@ -397,7 +401,8 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                 //don't try track selection
                 if (!m_bCDControl) {
                     if (!m_bTrackSelectMode) {
-                        qDebug() << "position greater than safe, select mode" << m_iPosition << m_uiSafeZone;
+                        qDebug() << "position greater than safe, select mode" << m_iPosition <<
+                                 m_uiSafeZone;
                         m_bTrackSelectMode = true;
                         togglePlayButton(false);
                         resetSteadyPitch(0.0, 0.0);
@@ -498,7 +503,8 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                 syncPosition();
                 resetSteadyPitch(dVinylPitch, m_dVinylPosition);
                 if (uiUpdateTime(filePosition)) {
-                    m_pRateSlider->set(rateDir->get() * (fabs(dVinylPitch) - 1.0) / rateRange->get());
+                    m_pRateSlider->set(rateDir->get() * (fabs(dVinylPitch) - 1.0) /
+                                       rateRange->get());
                 }
             } else if (m_iVCMode == MIXXX_VCMODE_ABSOLUTE &&
                        (fabs(m_dVinylPosition - m_dVinylPositionOld) >= 5.0)) {
@@ -701,7 +707,8 @@ void VinylControlXwax::togglePlayButton(bool on) {
     }
 }
 
-void VinylControlXwax::doTrackSelection(bool valid_pos, double pitch, double position) {
+void VinylControlXwax::doTrackSelection(bool valid_pos, double pitch,
+                                        double position) {
     //compare positions, fabricating if we don't have position data, and
     //move the selector every so often
     //track will be selected when the needle is moved back to play area
@@ -713,7 +720,8 @@ void VinylControlXwax::doTrackSelection(bool valid_pos, double pitch, double pos
     if (m_pControlTrackSelector == NULL) {
         //this isn't done in the constructor because this object
         //doesn't seem to be created yet
-        m_pControlTrackSelector = new ControlObjectThread("[Playlist]","SelectTrackKnob");
+        m_pControlTrackSelector = new ControlObjectThread("[Playlist]",
+                "SelectTrackKnob");
         if (m_pControlTrackSelector == NULL) {
             qDebug() << "Warning: Track Selector control object NULL";
             return;
@@ -724,7 +732,8 @@ void VinylControlXwax::doTrackSelection(bool valid_pos, double pitch, double pos
         if (fabs(pitch) > 0.1) {
             //how to estimate how far the record has moved when we don't have a valid
             //position and no mp3 track to compare with???  just add a bullshit amount?
-            m_dCurTrackSelectPos += pitch * NOPOS_SPEED; //MADE UP CONSTANT, needs to be based on frames per second I think
+            m_dCurTrackSelectPos += pitch *
+                                    NOPOS_SPEED; //MADE UP CONSTANT, needs to be based on frames per second I think
         } else {
             // too slow, do nothing
             return;
@@ -742,9 +751,11 @@ void VinylControlXwax::doTrackSelection(bool valid_pos, double pitch, double pos
         //yeah probably not a valid value
         //qDebug() << "large change in track position, resetting";
         m_dLastTrackSelectPos = m_dCurTrackSelectPos;
-    } else if (fabs(m_dCurTrackSelectPos - m_dLastTrackSelectPos) > SELECT_INTERVAL) {
+    } else if (fabs(m_dCurTrackSelectPos - m_dLastTrackSelectPos) >
+               SELECT_INTERVAL) {
         //only adjust by one at a time.  It's no help jumping around
-        m_pControlTrackSelector->slotSet((int)(m_dCurTrackSelectPos - m_dLastTrackSelectPos) / fabs(m_dCurTrackSelectPos - m_dLastTrackSelectPos));
+        m_pControlTrackSelector->slotSet((int)(m_dCurTrackSelectPos -
+                                               m_dLastTrackSelectPos) / fabs(m_dCurTrackSelectPos - m_dLastTrackSelectPos));
         m_dLastTrackSelectPos = m_dCurTrackSelectPos;
     }
 }
@@ -791,7 +802,8 @@ bool VinylControlXwax::checkEnabled(bool was, bool is) {
         //This allows for single-deck control, dj handoffs, etc.
 
         togglePlayButton(playButton->get() || fabs(m_pVCRate->get()) > 0.05);
-        m_pVCRate->set(rateDir->get() * (m_pRateSlider->get() * rateRange->get()) + 1.0);
+        m_pVCRate->set(rateDir->get() * (m_pRateSlider->get() * rateRange->get()) +
+                       1.0);
         resetSteadyPitch(0.0, 0.0);
         m_bForceResync = true;
         if (!was)

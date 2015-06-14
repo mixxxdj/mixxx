@@ -86,7 +86,8 @@ EchoEffect::~EchoEffect() {
     //qDebug() << debugString() << "destroyed";
 }
 
-int EchoEffect::getDelaySamples(double delay_time, const unsigned int sampleRate) const {
+int EchoEffect::getDelaySamples(double delay_time,
+                                const unsigned int sampleRate) const {
     int delay_samples = delay_time * sampleRate;
     if (delay_samples % 2 == 1) {
         --delay_samples;
@@ -98,7 +99,8 @@ int EchoEffect::getDelaySamples(double delay_time, const unsigned int sampleRate
     return delay_samples;
 }
 
-void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGroupState,
+void EchoEffect::processChannel(const ChannelHandle& handle,
+                                EchoGroupState* pGroupState,
                                 const CSAMPLE* pInput,
                                 CSAMPLE* pOutput, const unsigned int numSamples,
                                 const unsigned int sampleRate,
@@ -146,7 +148,8 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
         gs.delay_buf[gs.write_position] *= feedback_amount;
         gs.delay_buf[gs.write_position + 1] *= feedback_amount;
         gs.delay_buf[gs.write_position] += pInput[i] * send_amount * write_ramper;
-        gs.delay_buf[gs.write_position + 1] += pInput[i + 1] * send_amount * write_ramper;
+        gs.delay_buf[gs.write_position + 1] += pInput[i + 1] * send_amount *
+                                               write_ramper;
         // Actual delays distort and saturate, so clamp the buffer here.
         gs.delay_buf[gs.write_position] =
             SampleUtil::clampSample(gs.delay_buf[gs.write_position]);

@@ -40,7 +40,8 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel {
     Q_OBJECT
 
   public:
-    BrowseTableModel(QObject* parent, TrackCollection* pTrackCollection, RecordingManager* pRec);
+    BrowseTableModel(QObject* parent, TrackCollection* pTrackCollection,
+                     RecordingManager* pRec);
     virtual ~BrowseTableModel();
     void setPath(const MDir& path);
     //reimplemented from TrackModel class
@@ -64,7 +65,8 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel {
     bool isColumnHiddenByDefault(int column);
     const QList<int>& searchColumns() const;
     Qt::ItemFlags flags(const QModelIndex& index) const;
-    bool setData(const QModelIndex& index, const QVariant& value, int role=Qt::EditRole);
+    bool setData(const QModelIndex& index, const QVariant& value,
+                 int role=Qt::EditRole);
     QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent);
     virtual bool isColumnSortable(int column);
 

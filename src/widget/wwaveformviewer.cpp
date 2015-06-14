@@ -16,7 +16,8 @@
 #include "util/dnd.h"
 #include "util/math.h"
 
-WWaveformViewer::WWaveformViewer(const char* group, ConfigObject<ConfigValue>* pConfig, QWidget* parent)
+WWaveformViewer::WWaveformViewer(const char* group,
+                                 ConfigObject<ConfigValue>* pConfig, QWidget* parent)
     : WWidget(parent),
       m_pGroup(group),
       m_pConfig(pConfig),
@@ -205,7 +206,8 @@ void WWaveformViewer::setZoom(int zoom) {
     }
 }
 
-void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) {
+void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract*
+                                        waveformWidget) {
     if (m_waveformWidget) {
         QWidget* pWidget = m_waveformWidget->getWidget();
         disconnect(pWidget, SIGNAL(destroyed()),

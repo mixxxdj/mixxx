@@ -138,7 +138,8 @@ SoundSourceProxy::SoundSourceProxy(TrackPointer pTrack)
     , m_pSoundSource(initialize(pTrack->getLocation())) {
 }
 
-Mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const Mixxx::AudioSourceConfig& audioSrcCfg) {
+Mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(
+    const Mixxx::AudioSourceConfig& audioSrcCfg) {
     if (m_pAudioSource) {
         qDebug() << "AudioSource is already open";
         return m_pAudioSource;
@@ -256,7 +257,8 @@ void SoundSourceProxy::loadPlugins() {
         const Mixxx::SoundSourceProviderPointer pProvider(
             s_soundSourceProviders.getProviderForFileExtension(supportedFileExtension));
         const Mixxx::SoundSourcePluginLibraryPointer pPluginLibrary(
-            s_soundSourceProviders.getPluginLibraryForFileExtension(supportedFileExtension));
+            s_soundSourceProviders.getPluginLibraryForFileExtension(
+                supportedFileExtension));
         if (pPluginLibrary) {
             qDebug() << "SoundSourceProvider for" << supportedFileExtension
                      << "is" << pProvider->getName()
@@ -313,7 +315,8 @@ bool SoundSourceProxy::isFileNameSupported(const QString& fileName) {
 
 // static
 bool SoundSourceProxy::isFileExtensionSupported(const QString& fileExtension) {
-    return !s_soundSourceProviders.getProviderForFileExtension(fileExtension).isNull();
+    return !s_soundSourceProviders.getProviderForFileExtension(
+               fileExtension).isNull();
 }
 
 // static

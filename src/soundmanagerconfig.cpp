@@ -38,7 +38,8 @@ SoundManagerConfig::SoundManagerConfig()
       m_deckCount(kDefaultDeckCount),
       m_audioBufferSizeIndex(kDefaultAudioBufferSizeIndex),
       m_syncBuffers(2) {
-    m_configFile = QFileInfo(CmdlineArgs::Instance().getSettingsPath() + SOUNDMANAGERCONFIG_FILENAME);
+    m_configFile = QFileInfo(CmdlineArgs::Instance().getSettingsPath() +
+                             SOUNDMANAGERCONFIG_FILENAME);
 }
 
 SoundManagerConfig::~SoundManagerConfig() {
@@ -128,7 +129,8 @@ bool SoundManagerConfig::writeToDisk() const {
     docElement.setAttribute("deck_count", m_deckCount);
     doc.appendChild(docElement);
 
-    foreach (QString device, m_outputs.keys().toSet().unite(m_inputs.keys().toSet())) {
+    foreach (QString device,
+             m_outputs.keys().toSet().unite(m_inputs.keys().toSet())) {
         QDomElement devElement(doc.createElement("SoundDevice"));
         devElement.setAttribute("name", device);
         foreach (AudioInput in, m_inputs.values(device)) {
@@ -219,7 +221,8 @@ void SoundManagerConfig::setDeckCount(unsigned int deckCount) {
 void SoundManagerConfig::setCorrectDeckCount(int configuredDeckCount) {
     int minimum_deck_count = 0;
 
-    foreach (QString device, m_outputs.keys().toSet().unite(m_inputs.keys().toSet())) {
+    foreach (QString device,
+             m_outputs.keys().toSet().unite(m_inputs.keys().toSet())) {
         foreach (AudioInput in, m_inputs.values(device)) {
             if ((in.getType() == AudioInput::DECK ||
                     in.getType() == AudioInput::VINYLCONTROL ||
@@ -261,7 +264,8 @@ unsigned int SoundManagerConfig::getFramesPerBuffer() const {
     for (; framesPerBuffer / sampleRate * 1000 < 1.0; framesPerBuffer *= 2) {
     }
     // then, keep going until we get to our desired latency index (if not 1)
-    for (unsigned int latencyIndex = 1; latencyIndex < audioBufferSizeIndex; ++latencyIndex) {
+    for (unsigned int latencyIndex = 1; latencyIndex < audioBufferSizeIndex;
+            ++latencyIndex) {
         framesPerBuffer <<= 1; // *= 2
     }
     return framesPerBuffer;
@@ -277,10 +281,12 @@ unsigned int SoundManagerConfig::getFramesPerBuffer() const {
 void SoundManagerConfig::setAudioBufferSizeIndex(unsigned int sizeIndex) {
     // latency should be either the min of kMaxAudioBufferSizeIndex and the passed value
     // if it's 0, pretend it was 1 -- bkgood
-    m_audioBufferSizeIndex = sizeIndex != 0 ? math_min(sizeIndex, kMaxAudioBufferSizeIndex) : 1;
+    m_audioBufferSizeIndex = sizeIndex != 0 ? math_min(sizeIndex,
+                             kMaxAudioBufferSizeIndex) : 1;
 }
 
-void SoundManagerConfig::addOutput(const QString& device, const AudioOutput& out) {
+void SoundManagerConfig::addOutput(const QString& device,
+                                   const AudioOutput& out) {
     m_outputs.insert(device, out);
 }
 
@@ -351,7 +357,8 @@ void SoundManagerConfig::filterInputs(SoundManager* soundManager) {
  *              like SoundManagerConfig::API | SoundManagerConfig::DEVICES to
  *              load default API and master device.
  */
-void SoundManagerConfig::loadDefaults(SoundManager* soundManager, unsigned int flags) {
+void SoundManagerConfig::loadDefaults(SoundManager* soundManager,
+                                      unsigned int flags) {
     if (flags & SoundManagerConfig::API) {
         QList<QString> apiList = soundManager->getHostAPIList();
         if (!apiList.isEmpty()) {
@@ -386,7 +393,8 @@ void SoundManagerConfig::loadDefaults(SoundManager* soundManager, unsigned int f
     if (flags & SoundManagerConfig::DEVICES) {
         clearOutputs();
         clearInputs();
-        QList<SoundDevice*> outputDevices = soundManager->getDeviceList(m_api, true, false);
+        QList<SoundDevice*> outputDevices = soundManager->getDeviceList(m_api, true,
+                                            false);
         if (!outputDevices.isEmpty()) {
             foreach (SoundDevice *device, outputDevices) {
                 if (device->getNumOutputChannels() < 2) {

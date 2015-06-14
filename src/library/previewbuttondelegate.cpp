@@ -128,7 +128,8 @@ void PreviewButtonDelegate::cellEntered(const QModelIndex& index) {
         m_pTableView->openPersistentEditor(index);
         m_isOneCellInEditMode = true;
         m_currentEditedCellIndex = index;
-    } else if (m_isOneCellInEditMode) { // close editor if the mouse leaves the button
+    } else if (
+        m_isOneCellInEditMode) { // close editor if the mouse leaves the button
         m_isOneCellInEditMode = false;
         m_pTableView->closePersistentEditor(m_currentEditedCellIndex);
         m_currentEditedCellIndex = QModelIndex();

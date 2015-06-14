@@ -44,7 +44,8 @@ typedef struct shout shout_t;
 struct _util_dict;
 typedef struct _util_dict shout_metadata_t;
 
-class EngineShoutcast : public QObject, public EncoderCallback, public SideChainWorker {
+class EngineShoutcast : public QObject, public EncoderCallback,
+    public SideChainWorker {
     Q_OBJECT
   public:
     EngineShoutcast(ConfigObject<ConfigValue>* _config);

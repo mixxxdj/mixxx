@@ -18,8 +18,9 @@ void WEffectChain::setup(QDomNode node, const SkinContext& context) {
     // EffectWidgetUtils propagates NULLs so this is all safe.
     EffectRackPointer pRack = EffectWidgetUtils::getEffectRackFromNode(
                                   node, context, m_pEffectsManager);
-    EffectChainSlotPointer pChainSlot = EffectWidgetUtils::getEffectChainSlotFromNode(
-                                            node, context, pRack);
+    EffectChainSlotPointer pChainSlot =
+        EffectWidgetUtils::getEffectChainSlotFromNode(
+            node, context, pRack);
     if (pChainSlot) {
         setEffectChainSlot(pChainSlot);
     } else {

@@ -64,7 +64,8 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
     connect(SliderLoEQ, SIGNAL(sliderMoved(int)), this, SLOT(slotUpdateLoEQ()));
     connect(SliderLoEQ, SIGNAL(sliderReleased()), this, SLOT(slotUpdateLoEQ()));
 
-    connect(CheckBoxEqAutoReset, SIGNAL(stateChanged(int)), this, SLOT(slotUpdateEqAutoReset(int)));
+    connect(CheckBoxEqAutoReset, SIGNAL(stateChanged(int)), this,
+            SLOT(slotUpdateEqAutoReset(int)));
     connect(CheckBoxBypass, SIGNAL(stateChanged(int)), this, SLOT(slotBypass(int)));
 
     connect(CheckBoxEqOnly, SIGNAL(stateChanged(int)),
@@ -146,7 +147,8 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
         QString group = PlayerManager::groupForDeck(i);
         QString configuredEffect = m_pConfig->getValueString(ConfigKey(kConfigKey,
                                    "EffectForGroup_" + group), kDefaultEqId);
-        int selectedEffectIndex = m_deckEqEffectSelectors[i]->findData(configuredEffect);
+        int selectedEffectIndex = m_deckEqEffectSelectors[i]->findData(
+                                      configuredEffect);
         if (selectedEffectIndex < 0) {
             selectedEffectIndex = m_deckEqEffectSelectors[i]->findData(kDefaultEqId);
             configuredEffect = kDefaultEqId;
@@ -290,10 +292,14 @@ void DlgPrefEQ::slotSingleEqChecked(int checked) {
 }
 
 void DlgPrefEQ::loadSettings() {
-    QString highEqCourse = m_pConfig->getValueString(ConfigKey(kConfigKey, "HiEQFrequency"));
-    QString highEqPrecise = m_pConfig->getValueString(ConfigKey(kConfigKey, "HiEQFrequencyPrecise"));
-    QString lowEqCourse = m_pConfig->getValueString(ConfigKey(kConfigKey, "LoEQFrequency"));
-    QString lowEqPrecise = m_pConfig->getValueString(ConfigKey(kConfigKey, "LoEQFrequencyPrecise"));
+    QString highEqCourse = m_pConfig->getValueString(ConfigKey(kConfigKey,
+                           "HiEQFrequency"));
+    QString highEqPrecise = m_pConfig->getValueString(ConfigKey(kConfigKey,
+                            "HiEQFrequencyPrecise"));
+    QString lowEqCourse = m_pConfig->getValueString(ConfigKey(kConfigKey,
+                          "LoEQFrequency"));
+    QString lowEqPrecise = m_pConfig->getValueString(ConfigKey(kConfigKey,
+                           "LoEQFrequencyPrecise"));
     m_bEqAutoReset = static_cast<bool>(m_pConfig->getValueString(
                                            ConfigKey(kConfigKey, "EqAutoReset")).toInt());
     CheckBoxEqAutoReset->setChecked(m_bEqAutoReset);
@@ -316,8 +322,10 @@ void DlgPrefEQ::loadSettings() {
 
     if (lowEqFreq == 0.0 || highEqFreq == 0.0 || lowEqFreq == highEqFreq) {
         setDefaultShelves();
-        lowEqFreq = m_pConfig->getValueString(ConfigKey(kConfigKey, "LoEQFrequencyPrecise")).toDouble();
-        highEqFreq = m_pConfig->getValueString(ConfigKey(kConfigKey, "HiEQFrequencyPrecise")).toDouble();
+        lowEqFreq = m_pConfig->getValueString(ConfigKey(kConfigKey,
+                                              "LoEQFrequencyPrecise")).toDouble();
+        highEqFreq = m_pConfig->getValueString(ConfigKey(kConfigKey,
+                                               "HiEQFrequencyPrecise")).toDouble();
     }
 
     SliderHiEQ->setValue(
@@ -338,8 +346,10 @@ void DlgPrefEQ::loadSettings() {
 void DlgPrefEQ::setDefaultShelves() {
     m_pConfig->set(ConfigKey(kConfigKey, "HiEQFrequency"), ConfigValue(2500));
     m_pConfig->set(ConfigKey(kConfigKey, "LoEQFrequency"), ConfigValue(250));
-    m_pConfig->set(ConfigKey(kConfigKey, "HiEQFrequencyPrecise"), ConfigValue(2500.0));
-    m_pConfig->set(ConfigKey(kConfigKey, "LoEQFrequencyPrecise"), ConfigValue(250.0));
+    m_pConfig->set(ConfigKey(kConfigKey, "HiEQFrequencyPrecise"),
+                   ConfigValue(2500.0));
+    m_pConfig->set(ConfigKey(kConfigKey, "LoEQFrequencyPrecise"),
+                   ConfigValue(250.0));
 }
 
 void DlgPrefEQ::slotResetToDefaults() {
@@ -555,7 +565,8 @@ int DlgPrefEQ::getSliderPosition(double eqFreq, int minValue, int maxValue) {
     } else if (eqFreq <= kFrequencyLowerLimit) {
         return minValue;
     }
-    double dsliderPos = (eqFreq - kFrequencyLowerLimit) / (kFrequencyUpperLimit-kFrequencyLowerLimit);
+    double dsliderPos = (eqFreq - kFrequencyLowerLimit) / (kFrequencyUpperLimit
+                        -kFrequencyLowerLimit);
     dsliderPos = pow(dsliderPos, 1.0 / 4.0) * (maxValue - minValue) + minValue;
     return dsliderPos;
 }
@@ -629,7 +640,8 @@ void DlgPrefEQ::setUpMasterEQ() {
 
     for (int i = 0; i < availableMasterEQEffectNames.size(); ++i) {
         comboBoxMasterEq->addItem(availableMasterEQEffectNames[i].second);
-        comboBoxMasterEq->setItemData(i, QVariant(availableMasterEQEffectNames[i].first));
+        comboBoxMasterEq->setItemData(i,
+                                      QVariant(availableMasterEQEffectNames[i].first));
         if (configuredEffect == availableMasterEQEffectNames[i].first) {
             comboBoxMasterEq->setCurrentIndex(i);
         }
@@ -714,7 +726,8 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
                     slider->setProperty("index", QVariant(i));
                     slidersGridLayout->addWidget(slider, 1, i + 1, Qt::AlignCenter);
                     m_masterEQSliders.append(slider);
-                    connect(slider, SIGNAL(sliderMoved(int)), this, SLOT(slotUpdateMasterEQParameter(int)));
+                    connect(slider, SIGNAL(sliderMoved(int)), this,
+                            SLOT(slotUpdateMasterEQParameter(int)));
 
                     QLabel* valueLabel = new QLabel(this);
                     m_masterEQValues.append(valueLabel);

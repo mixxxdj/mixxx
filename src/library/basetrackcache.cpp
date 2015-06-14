@@ -282,7 +282,8 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
         trackValue.setValue(pTrack->getAlbumArtist());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR) == column) {
         trackValue.setValue(pTrack->getYear());
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED) == column) {
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED) ==
+               column) {
         trackValue.setValue(pTrack->getDateAdded());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE) == column) {
         trackValue.setValue(pTrack->getGenre());
@@ -316,16 +317,20 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
         trackValue.setValue(static_cast<int>(pTrack->getKey()));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) == column) {
         trackValue.setValue(pTrack->hasBpmLock());
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION) == column) {
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION) ==
+               column) {
         trackValue.setValue(pTrack->getCoverInfo().coverLocation);
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH) == column ||
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH) == column
+               ||
                fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART) == column) {
         // For sorting, we give COLUMN_LIBRARYTABLE_COVERART the same value as
         // the cover hash.
         trackValue.setValue(pTrack->getCoverInfo().hash);
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE) == column) {
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE) ==
+               column) {
         trackValue.setValue(static_cast<int>(pTrack->getCoverInfo().source));
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_TYPE) == column) {
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_TYPE) ==
+               column) {
         trackValue.setValue(static_cast<int>(pTrack->getCoverInfo().type));
     }
 }
@@ -378,7 +383,8 @@ void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
     }
 
     if (sortColumn < 0 || sortColumn >= columnCount()) {
-        qDebug() << "ERROR: Invalid sort column provided to BaseTrackCache::filterAndSort";
+        qDebug() <<
+                 "ERROR: Invalid sort column provided to BaseTrackCache::filterAndSort";
         return;
     }
 
@@ -512,7 +518,8 @@ void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
     }
 }
 
-std::unique_ptr<QueryNode> BaseTrackCache::parseQuery(QString query, QString extraFilter,
+std::unique_ptr<QueryNode> BaseTrackCache::parseQuery(QString query,
+        QString extraFilter,
         QStringList idStrings) const {
     QStringList queryFragments;
     if (!extraFilter.isNull() && extraFilter != "") {
@@ -556,7 +563,8 @@ int BaseTrackCache::findSortInsertionPoint(TrackPointer pTrack,
         }
 
         QVariant tableValue = data(otherTrackId, sortColumn);
-        int compare = compareColumnValues(sortColumn, sortOrder, trackValue, tableValue);
+        int compare = compareColumnValues(sortColumn, sortOrder, trackValue,
+                                          tableValue);
 
         if (sDebug) {
             qDebug() << this << "Comparing" << trackValue
@@ -581,7 +589,8 @@ int BaseTrackCache::compareColumnValues(int sortColumn, Qt::SortOrder sortOrder,
                                         QVariant val1, QVariant val2) const {
     int result = 0;
 
-    if (sortColumn == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION) ||
+    if (sortColumn == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION)
+            ||
             sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE) ||
             sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM) ||
             sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION) ||

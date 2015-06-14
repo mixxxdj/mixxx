@@ -37,7 +37,8 @@ ReadAheadManager::~ReadAheadManager() {
 int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
                                      int requested_samples) {
     if (!even(requested_samples)) {
-        qDebug() << "ERROR: Non-even requested_samples to ReadAheadManager::getNextSamples";
+        qDebug() <<
+                 "ERROR: Non-even requested_samples to ReadAheadManager::getNextSamples";
         requested_samples--;
     }
     bool in_reverse = dRate < 0;
@@ -71,7 +72,8 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
 
     // Sanity checks.
     if (samples_needed < 0) {
-        qDebug() << "Need negative samples in ReadAheadManager::getNextSamples. Ignoring read";
+        qDebug() <<
+                 "Need negative samples in ReadAheadManager::getNextSamples. Ignoring read";
         return 0;
     }
 
@@ -113,7 +115,8 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
 
             // do crossfade from the current buffer into the new loop beginning
             if (samples_read != 0) { // avoid division by zero
-                SampleUtil::linearCrossfadeBuffers(base_buffer, base_buffer, m_pCrossFadeBuffer, samples_read);
+                SampleUtil::linearCrossfadeBuffers(base_buffer, base_buffer, m_pCrossFadeBuffer,
+                                                   samples_read);
             }
         }
     }
@@ -184,15 +187,17 @@ void ReadAheadManager::addReadLogEntry(double virtualPlaypositionStart,
 }
 
 // Not thread-save, call from engine thread only
-int ReadAheadManager::getEffectiveVirtualPlaypositionFromLog(double currentVirtualPlayposition,
-        double numConsumedSamples) {
+int ReadAheadManager::getEffectiveVirtualPlaypositionFromLog(
+    double currentVirtualPlayposition,
+    double numConsumedSamples) {
     if (numConsumedSamples == 0) {
         return currentVirtualPlayposition;
     }
 
     if (m_readAheadLog.size() == 0) {
         // No log entries to read from.
-        qDebug() << this << "No read ahead log entries to read from. Case not currently handled.";
+        qDebug() << this <<
+                 "No read ahead log entries to read from. Case not currently handled.";
         // TODO(rryan) log through a stats pipe eventually
         return currentVirtualPlayposition;
     }

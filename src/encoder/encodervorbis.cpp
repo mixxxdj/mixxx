@@ -121,7 +121,8 @@ void EncoderVorbis::writePage() {
             result = ogg_stream_flush(&m_oggs, &m_oggpage);
             if (result == 0)
                 break;
-            m_pCallback->write(m_oggpage.header, m_oggpage.body, m_oggpage.header_len, m_oggpage.body_len);
+            m_pCallback->write(m_oggpage.header, m_oggpage.body, m_oggpage.header_len,
+                               m_oggpage.body_len);
         }
         m_header_write = false;
     }
@@ -200,7 +201,8 @@ void EncoderVorbis::initStream() {
     ogg_packet headerInit;
     ogg_packet headerComment;
     ogg_packet headerCode;
-    vorbis_analysis_headerout(&m_vdsp, &m_vcomment, &headerInit, &headerComment, &headerCode);
+    vorbis_analysis_headerout(&m_vdsp, &m_vcomment, &headerInit, &headerComment,
+                              &headerCode);
     ogg_stream_packetin(&m_oggs, &headerInit);
     ogg_stream_packetin(&m_oggs, &headerComment);
     ogg_stream_packetin(&m_oggs, &headerCode);

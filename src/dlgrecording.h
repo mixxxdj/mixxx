@@ -17,7 +17,8 @@ class PlaylistTableModel;
 class QSqlTableModel;
 class WTrackTableView;
 
-class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual LibraryView {
+class DlgRecording : public QWidget, public Ui::DlgRecording,
+    public virtual LibraryView {
     Q_OBJECT
   public:
     DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,

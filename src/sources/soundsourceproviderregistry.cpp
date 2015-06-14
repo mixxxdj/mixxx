@@ -19,7 +19,8 @@ SoundSourceProviderPointer SoundSourceProviderRegistry::registerPluginLibrary(
     return registerEntry(entry);
 }
 
-SoundSourceProviderPointer SoundSourceProviderRegistry::registerEntry(const Entry& entry) {
+SoundSourceProviderPointer SoundSourceProviderRegistry::registerEntry(
+    const Entry& entry) {
     DEBUG_ASSERT(m_supportedFileNameRegex.isEmpty());
     DEBUG_ASSERT(entry.pProvider);
     const QStringList supportedFileExtensions(

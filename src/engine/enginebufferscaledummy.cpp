@@ -5,7 +5,8 @@
 #include "sampleutil.h"
 
 
-EngineBufferScaleDummy::EngineBufferScaleDummy(ReadAheadManager* pReadAheadManager)
+EngineBufferScaleDummy::EngineBufferScaleDummy(ReadAheadManager*
+        pReadAheadManager)
     : EngineBufferScale(),
       m_pReadAheadManager(pReadAheadManager) {
     m_samplesRead = 0.0;

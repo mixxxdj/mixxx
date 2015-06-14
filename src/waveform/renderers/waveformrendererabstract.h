@@ -11,7 +11,8 @@ class WaveformWidgetRenderer;
 
 class WaveformRendererAbstract {
   public:
-    explicit WaveformRendererAbstract(WaveformWidgetRenderer* waveformWidgetRenderer);
+    explicit WaveformRendererAbstract(WaveformWidgetRenderer*
+                                      waveformWidgetRenderer);
     virtual ~WaveformRendererAbstract();
 
     virtual bool init() {

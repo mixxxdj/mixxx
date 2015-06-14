@@ -54,10 +54,12 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig,
 
     // TODO(rryan) -- turn this construction / adding of features into a static
     // method or something -- CreateDefaultLibrary
-    m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection,m_pConfig);
+    m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection,
+            m_pConfig);
     addFeature(m_pMixxxLibraryFeature);
 
-    addFeature(new AutoDJFeature(this, pConfig, pPlayerManager, m_pTrackCollection));
+    addFeature(new AutoDJFeature(this, pConfig, pPlayerManager,
+                                 m_pTrackCollection));
     m_pPlaylistFeature = new PlaylistFeature(this, m_pTrackCollection, m_pConfig);
     addFeature(m_pPlaylistFeature);
     m_pCrateFeature = new CrateFeature(this, m_pTrackCollection, m_pConfig);
@@ -71,7 +73,8 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig,
     connect(parent, SIGNAL(libraryScanFinished()),
             browseFeature, SLOT(slotLibraryScanFinished()));
     addFeature(browseFeature);
-    addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
+    addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection,
+                                    m_pRecordingManager));
     addFeature(new SetlogFeature(this, pConfig, m_pTrackCollection));
     m_pAnalysisFeature = new AnalysisFeature(this, pConfig, m_pTrackCollection);
     connect(m_pPlaylistFeature, SIGNAL(analyzeTracks(QList<int>)),
@@ -83,21 +86,25 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig,
     //messagebox popup when you select them. (This forces you to reach for your
     //mouse or keyboard if you're using MIDI control and you scroll through them...)
     if (RhythmboxFeature::isSupported() &&
-            pConfig->getValueString(ConfigKey("[Library]","ShowRhythmboxLibrary"),"1").toInt()) {
+            pConfig->getValueString(ConfigKey("[Library]","ShowRhythmboxLibrary"),
+                                    "1").toInt()) {
         addFeature(new RhythmboxFeature(this, m_pTrackCollection));
     }
-    if (pConfig->getValueString(ConfigKey("[Library]","ShowBansheeLibrary"),"1").toInt()) {
+    if (pConfig->getValueString(ConfigKey("[Library]","ShowBansheeLibrary"),
+                                "1").toInt()) {
         BansheeFeature::prepareDbPath(pConfig);
         if (BansheeFeature::isSupported()) {
             addFeature(new BansheeFeature(this, m_pTrackCollection, pConfig));
         }
     }
     if (ITunesFeature::isSupported() &&
-            pConfig->getValueString(ConfigKey("[Library]","ShowITunesLibrary"),"1").toInt()) {
+            pConfig->getValueString(ConfigKey("[Library]","ShowITunesLibrary"),
+                                    "1").toInt()) {
         addFeature(new ITunesFeature(this, m_pTrackCollection));
     }
     if (TraktorFeature::isSupported() &&
-            pConfig->getValueString(ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt()) {
+            pConfig->getValueString(ConfigKey("[Library]","ShowTraktorLibrary"),
+                                    "1").toInt()) {
         addFeature(new TraktorFeature(this, m_pTrackCollection));
     }
 
@@ -256,7 +263,8 @@ void Library::slotLoadLocationToPlayer(QString location, QString group) {
     emit(loadTrackToPlayer(pTrack, group));
 }
 
-void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play) {
+void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group,
+                                    bool play) {
     emit(loadTrackToPlayer(pTrack, group, play));
 }
 
@@ -351,7 +359,8 @@ void Library::slotRequestRelocateDir(QString oldDir, QString newDir) {
     QDir directory(newDir);
     Sandbox::createSecurityToken(directory);
 
-    QSet<int> movedIds = m_pTrackCollection->getDirectoryDAO().relocateDirectory(oldDir, newDir);
+    QSet<int> movedIds = m_pTrackCollection->getDirectoryDAO().relocateDirectory(
+                             oldDir, newDir);
 
     // Clear cache to that all TIO with the old dir information get updated
     m_pTrackCollection->getTrackDAO().clearCache();

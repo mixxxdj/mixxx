@@ -174,7 +174,8 @@ QString AudioPath::getStringFromType(AudioPathType type) {
  * Returns a translated string given an AudioPathType.
  * @note This method is static.
  */
-QString AudioPath::getTrStringFromType(AudioPathType type, unsigned char index) {
+QString AudioPath::getTrStringFromType(AudioPathType type,
+                                       unsigned char index) {
     switch (type) {
     case INVALID:
         // this shouldn't happen but g++ complains if I don't
@@ -219,17 +220,21 @@ AudioPathType AudioPath::getTypeFromString(QString string) {
     string = string.toLower();
     if (string == AudioPath::getStringFromType(AudioPath::MASTER).toLower()) {
         return AudioPath::MASTER;
-    } else if (string == AudioPath::getStringFromType(AudioPath::HEADPHONES).toLower()) {
+    } else if (string == AudioPath::getStringFromType(
+                   AudioPath::HEADPHONES).toLower()) {
         return AudioPath::HEADPHONES;
     } else if (string == AudioPath::getStringFromType(AudioPath::BUS).toLower()) {
         return AudioPath::BUS;
     } else if (string == AudioPath::getStringFromType(AudioPath::DECK).toLower()) {
         return AudioPath::DECK;
-    } else if (string == AudioPath::getStringFromType(AudioPath::VINYLCONTROL).toLower()) {
+    } else if (string == AudioPath::getStringFromType(
+                   AudioPath::VINYLCONTROL).toLower()) {
         return AudioPath::VINYLCONTROL;
-    } else if (string == AudioPath::getStringFromType(AudioPath::MICROPHONE).toLower()) {
+    } else if (string == AudioPath::getStringFromType(
+                   AudioPath::MICROPHONE).toLower()) {
         return AudioPath::MICROPHONE;
-    } else if (string == AudioPath::getStringFromType(AudioPath::AUXILIARY).toLower()) {
+    } else if (string == AudioPath::getStringFromType(
+                   AudioPath::AUXILIARY).toLower()) {
         return AudioPath::AUXILIARY;
     } else {
         return AudioPath::INVALID;

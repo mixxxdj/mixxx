@@ -75,7 +75,8 @@ QVariant ControllerMappingTableModel::headerData(int section,
     return QAbstractTableModel::headerData(section, orientation, role);
 }
 
-Qt::ItemFlags ControllerMappingTableModel::flags(const QModelIndex& index) const {
+Qt::ItemFlags ControllerMappingTableModel::flags(const QModelIndex& index)
+const {
     if (!index.isValid()) {
         return Qt::ItemIsEnabled;
     }

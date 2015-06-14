@@ -49,7 +49,8 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
     };
 
   public:
-    EngineFilterMoogLadderBase(unsigned int sampleRate, float cutoff, float resonance) {
+    EngineFilterMoogLadderBase(unsigned int sampleRate, float cutoff,
+                               float resonance) {
         setParameter(sampleRate, cutoff, resonance);
         initBuffers();
     }
@@ -75,7 +76,8 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
         }
 
         // frequency & amplitude correction
-        float kfcr = 1.8730 * (kfc*kfc*kfc) + 0.4955 * (kfc*kfc) - 0.6490 * kfc + 0.9988;
+        float kfcr = 1.8730 * (kfc*kfc*kfc) + 0.4955 * (kfc*kfc) - 0.6490 * kfc +
+                     0.9988;
 
         float x  = -2.0 * kPi * kfcr * kf; // input for taylor approximations
         float exp_out  = expf(x);
@@ -203,7 +205,8 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
 
     inline float tanh_approx(float input) {
         // return tanhf(input); // 142ns for process;
-        return input / (1 + input * input / (3 + input * input / 5)); // 119ns for process
+        return input / (1 + input * input / (3 + input * input /
+                                             5)); // 119ns for process
     }
 
 
@@ -221,14 +224,17 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
 class EngineFilterMoogLadder4Low : public EngineFilterMoogLadderBase<LP_OVERS> {
     Q_OBJECT
   public:
-    EngineFilterMoogLadder4Low(int sampleRate, double freqCorner1, double resonance);
+    EngineFilterMoogLadder4Low(int sampleRate, double freqCorner1,
+                               double resonance);
 };
 
 
-class EngineFilterMoogLadder4High : public EngineFilterMoogLadderBase<HP_OVERS> {
+class EngineFilterMoogLadder4High : public
+    EngineFilterMoogLadderBase<HP_OVERS> {
     Q_OBJECT
   public:
-    EngineFilterMoogLadder4High(int sampleRate, double freqCorner1, double resonance);
+    EngineFilterMoogLadder4High(int sampleRate, double freqCorner1,
+                                double resonance);
 };
 
 #endif // ENGINEFILTERMOOGLADDER4_H

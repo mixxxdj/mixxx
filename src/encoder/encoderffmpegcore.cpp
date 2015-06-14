@@ -213,7 +213,8 @@ void EncoderFfmpegCore::encodeBuffer(const CSAMPLE* samples, const int size) {
 // Currently this method is used before init() once to save artist, title and album
 //
 void EncoderFfmpegCore::updateMetaData(char* artist, char* title, char* album) {
-    qDebug() << "ffmpegencodercore: UpdateMetadata: !" << artist << " - " << title <<
+    qDebug() << "ffmpegencodercore: UpdateMetadata: !" << artist << " - " << title
+             <<
              " - " << album;
     m_strMetaDataTitle = title;
     m_strMetaDataArtist = artist;

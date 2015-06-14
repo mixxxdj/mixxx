@@ -151,7 +151,8 @@ class CoverArtUtils {
         return art;
     }
 
-    static QLinkedList<QFileInfo> findPossibleCoversInFolder(const QString& folder) {
+    static QLinkedList<QFileInfo> findPossibleCoversInFolder(
+        const QString& folder) {
         // Search for image files in the track directory.
         QRegExp coverArtFilenames(supportedCoverArtExtensionsRegex(),
                                   Qt::CaseInsensitive);

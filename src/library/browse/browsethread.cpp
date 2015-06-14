@@ -63,7 +63,8 @@ BrowseThreadPointer BrowseThread::getInstanceRef() {
     return strong;
 }
 
-void BrowseThread::executePopulation(const MDir& path, BrowseTableModel* client) {
+void BrowseThread::executePopulation(const MDir& path,
+                                     BrowseTableModel* client) {
     m_path_mutex.lock();
     m_path = path;
     m_model_observer = client;

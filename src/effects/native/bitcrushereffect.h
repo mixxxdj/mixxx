@@ -22,7 +22,8 @@ struct BitCrusherGroupState {
     CSAMPLE accumulator;
 };
 
-class BitCrusherEffect : public PerChannelEffectProcessor<BitCrusherGroupState> {
+class BitCrusherEffect : public
+    PerChannelEffectProcessor<BitCrusherGroupState> {
   public:
     BitCrusherEffect(EngineEffect* pEffect, const EffectManifest& manifest);
     virtual ~BitCrusherEffect();

@@ -31,7 +31,8 @@ class GraphicEQEffectGroupState {
     float m_centerFrequencies[8];
 };
 
-class GraphicEQEffect : public PerChannelEffectProcessor<GraphicEQEffectGroupState> {
+class GraphicEQEffect : public
+    PerChannelEffectProcessor<GraphicEQEffectGroupState> {
   public:
     GraphicEQEffect(EngineEffect* pEffect, const EffectManifest& manifest);
     virtual ~GraphicEQEffect();

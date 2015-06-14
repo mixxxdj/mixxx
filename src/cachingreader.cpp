@@ -278,7 +278,8 @@ void CachingReader::process() {
         } else if (status.status == CHUNK_READ_EOF) {
             Chunk* pChunk = status.chunk;
             if (pChunk == NULL) {
-                qDebug() << "ERROR: status.chunk is NULL in CHUNK_READ_EOF ReaderStatusUpdate. Ignoring update.";
+                qDebug() <<
+                         "ERROR: status.chunk is NULL in CHUNK_READ_EOF ReaderStatusUpdate. Ignoring update.";
                 continue;
             }
 
@@ -288,7 +289,8 @@ void CachingReader::process() {
             qDebug() << "WARNING: READER THREAD RECEIVED INVALID CHUNK READ";
             Chunk* pChunk = status.chunk;
             if (pChunk == NULL) {
-                qDebug() << "ERROR: status.chunk is NULL in CHUNK_READ_INVALID ReaderStatusUpdate. Ignoring update.";
+                qDebug() <<
+                         "ERROR: status.chunk is NULL in CHUNK_READ_INVALID ReaderStatusUpdate. Ignoring update.";
                 continue;
             }
             DEBUG_ASSERT(pChunk->state == Chunk::READ_IN_PROGRESS);
@@ -352,7 +354,8 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
     int frames_remaining = samples_remaining / CachingReaderWorker::kChunkChannels;
     const int start_frame = math_min(m_iTrackNumFramesCallbackSafe, frame);
     const int start_chunk = chunkForFrame(start_frame);
-    const int end_frame = math_min(m_iTrackNumFramesCallbackSafe, frame + (frames_remaining - 1));
+    const int end_frame = math_min(m_iTrackNumFramesCallbackSafe,
+                                   frame + (frames_remaining - 1));
     const int end_chunk = chunkForFrame(end_frame);
 
     int current_frame = frame;
@@ -414,7 +417,8 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
         if (chunk_remaining_frames < 0) {
             chunk_remaining_frames = 0;
         }
-        const int frames_to_read = math_clamp(frames_remaining, 0, chunk_remaining_frames);
+        const int frames_to_read = math_clamp(frames_remaining, 0,
+                                              chunk_remaining_frames);
 
         // If we did not decide to read any samples from this chunk then that
         // means we have exhausted all the samples in the song.
@@ -429,9 +433,12 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
             break;
         }
 
-        const int chunk_sample_offset = chunk_frame_offset * CachingReaderWorker::kChunkChannels;
-        const int samples_to_read = frames_to_read * CachingReaderWorker::kChunkChannels;
-        SampleUtil::copy(buffer, current->stereoSamples + chunk_sample_offset, samples_to_read);
+        const int chunk_sample_offset = chunk_frame_offset *
+                                        CachingReaderWorker::kChunkChannels;
+        const int samples_to_read = frames_to_read *
+                                    CachingReaderWorker::kChunkChannels;
+        SampleUtil::copy(buffer, current->stereoSamples + chunk_sample_offset,
+                         samples_to_read);
         buffer += samples_to_read;
         samples_remaining -= samples_to_read;
         current_frame += frames_to_read;

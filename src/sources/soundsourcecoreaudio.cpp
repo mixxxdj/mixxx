@@ -78,7 +78,8 @@ Result SoundSourceCoreAudio::tryOpen(const AudioSourceConfig& audioSrcCfg) {
 
     // create the output format
     const UInt32 numChannels =
-        isValidChannelCount(audioSrcCfg.channelCountHint) ? audioSrcCfg.channelCountHint : 2;
+        isValidChannelCount(audioSrcCfg.channelCountHint) ?
+        audioSrcCfg.channelCountHint : 2;
     m_outputFormat = CAStreamBasicDescription(m_inputFormat.mSampleRate,
                      numChannels, CAStreamBasicDescription::kPCMFormatFloat32, true);
 
@@ -160,7 +161,8 @@ SINT SoundSourceCoreAudio::seekSampleFrame(SINT frameIndex) {
     //_ThrowExceptionIfErr(@"ExtAudioFileSeek", err);
     //qDebug() << "SSCA: Seeking to" << frameIndex;
     if (err != noErr) {
-        qDebug() << "SSCA: Error seeking to" << frameIndex; // << GetMacOSStatusErrorString(err) << GetMacOSStatusCommentString(err);
+        qDebug() << "SSCA: Error seeking to" <<
+                 frameIndex; // << GetMacOSStatusErrorString(err) << GetMacOSStatusCommentString(err);
     }
     return frameIndex;
 }

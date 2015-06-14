@@ -31,7 +31,8 @@ class VinylControlManager;
 class DlgPrefVinyl : public DlgPreferencePage, Ui::DlgPrefVinylDlg  {
     Q_OBJECT
   public:
-    DlgPrefVinyl(QWidget* pParent, VinylControlManager* m_pVCMan, ConfigObject<ConfigValue>* _config);
+    DlgPrefVinyl(QWidget* pParent, VinylControlManager* m_pVCMan,
+                 ConfigObject<ConfigValue>* _config);
     virtual ~DlgPrefVinyl();
 
   public slots:
@@ -58,7 +59,8 @@ class DlgPrefVinyl : public DlgPreferencePage, Ui::DlgPrefVinylDlg  {
     void setDeck2WidgetsVisible(bool visible);
     void setDeck3WidgetsVisible(bool visible);
     void setDeck4WidgetsVisible(bool visible);
-    void verifyAndSaveLeadInTime(QLineEdit* widget, QString group, QString vinyl_type);
+    void verifyAndSaveLeadInTime(QLineEdit* widget, QString group,
+                                 QString vinyl_type);
     int getDefaultLeadIn(QString vinyl_type) const;
 
 

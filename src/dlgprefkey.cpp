@@ -285,7 +285,8 @@ void DlgPrefKey::populate() {
     plugincombo->setDuplicatesEnabled(false);
     VampPluginLoader* loader = VampPluginLoader::getInstance();
     std::vector<PluginLoader::PluginKey> plugins = loader->listPlugins();
-    qDebug() << "VampPluginLoader::listPlugins() returned" << plugins.size() << "plugins";
+    qDebug() << "VampPluginLoader::listPlugins() returned" << plugins.size() <<
+             "plugins";
     for (unsigned int iplugin=0; iplugin < plugins.size(); iplugin++) {
         // TODO(XXX): WTF, 48000
         Plugin* plugin = loader->loadPlugin(plugins[iplugin], 48000);
@@ -301,7 +302,8 @@ void DlgPrefKey::populate() {
 
                 if (goodones) {
                     m_listName << displaynametext;
-                    QString pluginlibrary = QString::fromStdString(plugins[iplugin]).section(":",0,0);
+                    QString pluginlibrary = QString::fromStdString(plugins[iplugin]).section(":",0,
+                                            0);
                     m_listLibrary << pluginlibrary;
                     QString displayname = QString::fromStdString(plugin->getIdentifier()) + ":"
                                           + QString::number(ioutput);

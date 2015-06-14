@@ -145,7 +145,8 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
 
         // For stereo enabled, the channels are out of phase
         pState->leftPhase = fmodf(pState->leftPhase + freqSkip, 2.0 * M_PI);
-        pState->rightPhase = fmodf(pState->rightPhase + freqSkip + M_PI * stereoCheck, 2.0 * M_PI);
+        pState->rightPhase = fmodf(pState->rightPhase + freqSkip + M_PI * stereoCheck,
+                                   2.0 * M_PI);
 
         // Updating filter coefficients once every 'updateCoef' samples to avoid
         // extra computing

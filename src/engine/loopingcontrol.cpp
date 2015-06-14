@@ -32,7 +32,8 @@ ConfigKey keyForControl(QString group, QString ctrlName, double num) {
 // static
 QList<double> LoopingControl::getBeatSizes() {
     QList<double> result;
-    for (unsigned int i = 0; i < (sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0])); ++i) {
+    for (unsigned int i = 0; i < (sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0]));
+            ++i) {
         result.append(s_dBeatSizes[i]);
     }
     return result;
@@ -106,7 +107,8 @@ LoopingControl::LoopingControl(QString group,
 
     // Here we create corresponding beatloop_(SIZE) CO's which all call the same
     // BeatControl, but with a set value.
-    for (unsigned int i = 0; i < (sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0])); ++i) {
+    for (unsigned int i = 0; i < (sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0]));
+            ++i) {
         BeatLoopingControl* pBeatLoop = new BeatLoopingControl(group, s_dBeatSizes[i]);
         connect(pBeatLoop, SIGNAL(activateBeatLoop(BeatLoopingControl*)),
                 this, SLOT(slotBeatLoopActivate(BeatLoopingControl*)),
@@ -129,7 +131,8 @@ LoopingControl::LoopingControl(QString group,
 
     // Create beatjump_(SIZE) CO's which all call beatjump, but with a set
     // value.
-    for (unsigned int i = 0; i < (sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0])); ++i) {
+    for (unsigned int i = 0; i < (sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0]));
+            ++i) {
         BeatJumpControl* pBeatJump = new BeatJumpControl(group, s_dBeatSizes[i]);
         connect(pBeatJump, SIGNAL(beatJump(double)),
                 this, SLOT(slotBeatJump(double)),
@@ -143,7 +146,8 @@ LoopingControl::LoopingControl(QString group,
 
     // Create loop_move_(SIZE) CO's which all call loop_move, but with a set
     // value.
-    for (unsigned int i = 0; i < (sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0])); ++i) {
+    for (unsigned int i = 0; i < (sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0]));
+            ++i) {
         LoopMoveControl* pLoopMove = new LoopMoveControl(group, s_dBeatSizes[i]);
         connect(pLoopMove, SIGNAL(loopMove(double)),
                 this, SLOT(slotLoopMove(double)),
@@ -639,7 +643,8 @@ void LoopingControl::slotUpdatedTrackBeats() {
     }
 }
 
-void LoopingControl::slotBeatLoopActivate(BeatLoopingControl* pBeatLoopControl) {
+void LoopingControl::slotBeatLoopActivate(BeatLoopingControl*
+        pBeatLoopControl) {
     if (!m_pTrack) {
         return;
     }
@@ -651,7 +656,8 @@ void LoopingControl::slotBeatLoopActivate(BeatLoopingControl* pBeatLoopControl) 
     slotBeatLoop(pBeatLoopControl->getSize(), m_bLoopingEnabled);
 }
 
-void LoopingControl::slotBeatLoopActivateRoll(BeatLoopingControl* pBeatLoopControl) {
+void LoopingControl::slotBeatLoopActivateRoll(BeatLoopingControl*
+        pBeatLoopControl) {
     if (!m_pTrack) {
         return;
     }
@@ -662,12 +668,14 @@ void LoopingControl::slotBeatLoopActivateRoll(BeatLoopingControl* pBeatLoopContr
     m_bLoopRollActive = true;
 }
 
-void LoopingControl::slotBeatLoopDeactivate(BeatLoopingControl* pBeatLoopControl) {
+void LoopingControl::slotBeatLoopDeactivate(BeatLoopingControl*
+        pBeatLoopControl) {
     Q_UNUSED(pBeatLoopControl);
     setLoopingEnabled(false);
 }
 
-void LoopingControl::slotBeatLoopDeactivateRoll(BeatLoopingControl* pBeatLoopControl) {
+void LoopingControl::slotBeatLoopDeactivateRoll(BeatLoopingControl*
+        pBeatLoopControl) {
     Q_UNUSED(pBeatLoopControl);
     setLoopingEnabled(false);
     m_pSlipEnabled->set(0);
@@ -877,7 +885,8 @@ void LoopingControl::seekInsideAdjustedLoop(int old_loop_in, int old_loop_out,
     }
     if (new_loop_size > old_loop_out - old_loop_in) {
         // Could this happen if the user grows a loop and then also shifts it?
-        qWarning() << "seekInsideAdjustedLoop called for loop that got larger -- ignoring";
+        qWarning() <<
+                   "seekInsideAdjustedLoop called for loop that got larger -- ignoring";
         return;
     }
 
@@ -887,7 +896,8 @@ void LoopingControl::seekInsideAdjustedLoop(int old_loop_in, int old_loop_out,
         if (adjusted_position < new_loop_in) {
             // I'm not even sure this is possible.  The new loop would have to be bigger than the
             // old loop, and the playhead was somehow outside the old loop.
-            qWarning() << "SHOULDN'T HAPPEN: seekInsideAdjustedLoop couldn't find a new position --"
+            qWarning() <<
+                       "SHOULDN'T HAPPEN: seekInsideAdjustedLoop couldn't find a new position --"
                        << " seeking to in point";
             adjusted_position = new_loop_in;
         }
@@ -895,7 +905,8 @@ void LoopingControl::seekInsideAdjustedLoop(int old_loop_in, int old_loop_out,
     while (adjusted_position < new_loop_in) {
         adjusted_position += new_loop_size;
         if (adjusted_position > new_loop_out) {
-            qWarning() << "SHOULDN'T HAPPEN: seekInsideAdjustedLoop couldn't find a new position --"
+            qWarning() <<
+                       "SHOULDN'T HAPPEN: seekInsideAdjustedLoop couldn't find a new position --"
                        << " seeking to in point";
             adjusted_position = new_loop_in;
         }

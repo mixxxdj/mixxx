@@ -27,7 +27,8 @@ class PlaylistFeature : public BasePlaylistFeature {
     QVariant title();
     QIcon getIcon();
 
-    bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls, QObject* pSource);
+    bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
+                         QObject* pSource);
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
   public slots:

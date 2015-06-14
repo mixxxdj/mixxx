@@ -141,7 +141,8 @@ bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
     if (crateId == -1) {
         return false;
     }
-    QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
+    QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false,
+                             true);
     QList<int> trackIds;
     if (pSource) {
         trackIds = m_pTrackCollection->getTrackDAO().getTrackIds(files);
@@ -213,7 +214,8 @@ void CrateFeature::onRightClick(const QPoint& globalPos) {
     menu.exec(globalPos);
 }
 
-void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
+void CrateFeature::onRightClickChild(const QPoint& globalPos,
+                                     QModelIndex index) {
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
     int crateId = crateIdFromIndex(index);
@@ -511,9 +513,11 @@ QModelIndex CrateFeature::constructChildModel(int selected_id) {
         }
 
         // Create the TreeItem whose parent is the invisible root item
-        TreeItem* item = new TreeItem(crate_name, QString::number(crate_id), this, root);
+        TreeItem* item = new TreeItem(crate_name, QString::number(crate_id), this,
+                                      root);
         bool locked = m_crateDao.isCrateLocked(crate_id);
-        item->setIcon(locked ? QIcon(":/images/library/ic_library_locked.png") : QIcon());
+        item->setIcon(locked ? QIcon(":/images/library/ic_library_locked.png") :
+                      QIcon());
         item->setBold(m_cratesSelectedTrackIsIn.contains(crate_id));
         data_list.append(item);
     }
@@ -636,7 +640,8 @@ void CrateFeature::slotExportPlaylist() {
     pCrateTableModel->select();
 
     if (file_location.endsWith(".csv", Qt::CaseInsensitive)) {
-        ParserCsv::writeCSVFile(file_location, pCrateTableModel.data(), useRelativePath);
+        ParserCsv::writeCSVFile(file_location, pCrateTableModel.data(),
+                                useRelativePath);
     } else if (file_location.endsWith(".txt", Qt::CaseInsensitive)) {
         ParserCsv::writeReadableTextFile(file_location, pCrateTableModel.data(), false);
     } else {
@@ -689,9 +694,12 @@ void CrateFeature::htmlLinkClicked(const QUrl& link) {
 
 QString CrateFeature::getRootViewHtml() const {
     QString cratesTitle = tr("Crates");
-    QString cratesSummary = tr("Crates are a great way to help organize the music you want to DJ with.");
-    QString cratesSummary2 = tr("Make a crate for your next gig, for your favorite electrohouse tracks, or for your most requested songs.");
-    QString cratesSummary3 = tr("Crates let you organize your music however you'd like!");
+    QString cratesSummary =
+        tr("Crates are a great way to help organize the music you want to DJ with.");
+    QString cratesSummary2 =
+        tr("Make a crate for your next gig, for your favorite electrohouse tracks, or for your most requested songs.");
+    QString cratesSummary3 =
+        tr("Crates let you organize your music however you'd like!");
 
     QString html;
     QString createCrateLink = tr("Create New Crate");

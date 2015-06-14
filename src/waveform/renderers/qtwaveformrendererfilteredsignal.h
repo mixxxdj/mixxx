@@ -10,7 +10,8 @@ class ControlObject;
 
 class QtWaveformRendererFilteredSignal : public WaveformRendererSignalBase {
   public:
-    explicit QtWaveformRendererFilteredSignal(WaveformWidgetRenderer* waveformWidgetRenderer);
+    explicit QtWaveformRendererFilteredSignal(WaveformWidgetRenderer*
+            waveformWidgetRenderer);
     virtual ~QtWaveformRendererFilteredSignal();
 
     virtual void onSetup(const QDomNode& node);

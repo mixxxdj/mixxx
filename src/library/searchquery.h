@@ -14,7 +14,8 @@
 #include "util/assert.h"
 #include "util/memory.h"
 
-QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& column);
+QVariant getTrackValueForColumn(const TrackPointer& pTrack,
+                                const QString& column);
 
 class QueryNode {
   public:
@@ -27,7 +28,8 @@ class QueryNode {
   protected:
     QueryNode() {}
 
-    static QString concatSqlClauses(const QStringList& sqlClauses, const QString& sqlConcatOp);
+    static QString concatSqlClauses(const QStringList& sqlClauses,
+                                    const QString& sqlConcatOp);
 };
 
 class GroupNode : public QueryNode {

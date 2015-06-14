@@ -9,7 +9,8 @@
 
 class WaveformRendererPreroll : public WaveformRendererAbstract {
   public:
-    explicit WaveformRendererPreroll(WaveformWidgetRenderer* waveformWidgetRenderer);
+    explicit WaveformRendererPreroll(WaveformWidgetRenderer*
+                                     waveformWidgetRenderer);
     virtual ~WaveformRendererPreroll();
 
     virtual void setup(const QDomNode& node, const SkinContext& context);

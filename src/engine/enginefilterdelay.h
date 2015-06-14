@@ -59,7 +59,8 @@ class EngineFilterDelay : public EngineObjectConstIn {
                 delaySourcePos = (delaySourcePos + 1) % SIZE;
             }
         } else {
-            int delaySourcePos = (m_delayPos + SIZE - m_delaySamples + iBufferSize / 2) % SIZE;
+            int delaySourcePos = (m_delayPos + SIZE - m_delaySamples + iBufferSize / 2) %
+                                 SIZE;
             int oldDelaySourcePos = (m_delayPos + SIZE - m_oldDelaySamples) % SIZE;
 
             DEBUG_ASSERT_AND_HANDLE(delaySourcePos >= 0) {

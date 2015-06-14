@@ -39,7 +39,8 @@ class ControlDoublePrivate : public QObject {
         bool bPersist = false);
 
     // Adds all ControlDoublePrivate that currently exist to pControlList
-    static void getControls(QList<QSharedPointer<ControlDoublePrivate> >* pControlsList);
+    static void getControls(QList<QSharedPointer<ControlDoublePrivate> >*
+                            pControlsList);
 
     static QHash<ConfigKey, ConfigKey> getControlAliases();
 

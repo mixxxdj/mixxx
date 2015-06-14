@@ -50,8 +50,10 @@ void WaveformRendererHSV::draw(QPainter* painter,
     painter->setWorldMatrixEnabled(false);
     painter->resetTransform();
 
-    const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
-    const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
+    const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition()
+                                    * dataSize;
+    const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() *
+                                   dataSize;
 
     const double offset = firstVisualIndex;
 
@@ -134,7 +136,8 @@ void WaveformRendererHSV::draw(QPainter* painter,
         if (maxAll[0] && maxAll[1]) {
             // Calculate sum, to normalize
             // Also multiply on 1.2 to prevent very dark or light color
-            total = (maxLow[0] + maxLow[1] + maxMid[0] + maxMid[1] + maxHigh[0] + maxHigh[1]) * 1.2;
+            total = (maxLow[0] + maxLow[1] + maxMid[0] + maxMid[1] + maxHigh[0] +
+                     maxHigh[1]) * 1.2;
 
             // prevent division by zero
             if (total > 0) {
@@ -152,7 +155,8 @@ void WaveformRendererHSV::draw(QPainter* painter,
             case Qt::AlignBottom :
                 painter->drawLine(
                     x, m_waveformRenderer->getHeight(),
-                    x, m_waveformRenderer->getHeight() - (int)(heightFactor*(float)math_max(maxAll[0],maxAll[1])));
+                    x, m_waveformRenderer->getHeight() - (int)(heightFactor*(float)math_max(
+                                maxAll[0],maxAll[1])));
                 break;
             case Qt::AlignTop :
                 painter->drawLine(

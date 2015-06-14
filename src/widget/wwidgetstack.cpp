@@ -148,7 +148,8 @@ void WWidgetStack::onCurrentPageControlChanged(double v) {
     setCurrentIndex(newIndex);
 }
 
-void WWidgetStack::addWidgetWithControl(QWidget* pWidget, ControlObject* pControl,
+void WWidgetStack::addWidgetWithControl(QWidget* pWidget,
+                                        ControlObject* pControl,
                                         int on_hide_select) {
     int index = addWidget(pWidget);
     if (pControl) {

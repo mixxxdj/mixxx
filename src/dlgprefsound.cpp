@@ -107,7 +107,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
 
     m_pMasterAudioLatencyOverloadCount =
         new ControlObjectSlave("[Master]", "audio_latency_overload_count", this);
-    m_pMasterAudioLatencyOverloadCount->connectValueChanged(SLOT(bufferUnderflow(double)));
+    m_pMasterAudioLatencyOverloadCount->connectValueChanged(SLOT(bufferUnderflow(
+                double)));
 
     m_pMasterLatency = new ControlObjectSlave("[Master]", "latency", this);
     m_pMasterLatency->connectValueChanged(SLOT(masterLatencyChanged(double)));
@@ -133,7 +134,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     masterOutputModeComboBox->setCurrentIndex(m_pMasterMonoMixdown->get() ? 1 : 0);
     connect(masterOutputModeComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(masterOutputModeComboBoxChanged(int)));
-    m_pMasterMonoMixdown->connectValueChanged(this, SLOT(masterMonoMixdownChanged(double)));
+    m_pMasterMonoMixdown->connectValueChanged(this,
+            SLOT(masterMonoMixdownChanged(double)));
 
     m_pMasterTalkoverMix = new ControlObjectSlave("[Master]", "talkover_mix", this);
     micMixComboBox->addItem(tr("Master output"));
@@ -141,7 +143,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     micMixComboBox->setCurrentIndex((int)m_pMasterTalkoverMix->get());
     connect(micMixComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(talkoverMixComboBoxChanged(int)));
-    m_pMasterTalkoverMix->connectValueChanged(this, SLOT(talkoverMixChanged(double)));
+    m_pMasterTalkoverMix->connectValueChanged(this,
+            SLOT(talkoverMixChanged(double)));
 
 
     m_pKeylockEngine =
@@ -359,7 +362,8 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig& config) {
             // the updateLatencies slot won't run -- bkgood lp bug 689373
         }
     }
-    int sizeIndex = audioBufferComboBox->findData(m_config.getAudioBufferSizeIndex());
+    int sizeIndex = audioBufferComboBox->findData(
+                        m_config.getAudioBufferSizeIndex());
     if (sizeIndex != -1) {
         audioBufferComboBox->setCurrentIndex(sizeIndex);
     }
@@ -409,7 +413,8 @@ void DlgPrefSound::apiChanged(int index) {
  * constant if possible.
  */
 void DlgPrefSound::updateAPIs() {
-    QString currentAPI(apiComboBox->itemData(apiComboBox->currentIndex()).toString());
+    QString currentAPI(apiComboBox->itemData(
+                           apiComboBox->currentIndex()).toString());
     emit(updatingAPI());
     while (apiComboBox->count() > 1) {
         apiComboBox->removeItem(apiComboBox->count() - 1);
@@ -472,7 +477,8 @@ void DlgPrefSound::updateAudioBufferSizes(int sampleRateIndex) {
     for (; framesPerBuffer / sampleRate * 1000 < 1.0; framesPerBuffer *= 2) {
     }
     audioBufferComboBox->clear();
-    for (unsigned int i = 0; i < SoundManagerConfig::kMaxAudioBufferSizeIndex; ++i) {
+    for (unsigned int i = 0; i < SoundManagerConfig::kMaxAudioBufferSizeIndex;
+            ++i) {
         float latency = framesPerBuffer / sampleRate * 1000;
         // i + 1 in the next line is a latency index as described in SSConfig
         audioBufferComboBox->addItem(tr("%1 ms").arg(latency,0,'g',3), i + 1);

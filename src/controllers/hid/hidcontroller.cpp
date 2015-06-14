@@ -135,7 +135,8 @@ QString HidController::presetExtension() {
 void HidController::visit(const MidiControllerPreset* preset) {
     Q_UNUSED(preset);
     // TODO(XXX): throw a hissy fit.
-    qDebug() << "ERROR: Attempting to load a MidiControllerPreset to an HidController!";
+    qDebug() <<
+             "ERROR: Attempting to load a MidiControllerPreset to an HidController!";
 }
 
 void HidController::visit(const HidControllerPreset* preset) {
@@ -324,7 +325,8 @@ int HidController::close() {
     return 0;
 }
 
-void HidController::send(QList<int> data, unsigned int length, unsigned int reportID) {
+void HidController::send(QList<int> data, unsigned int length,
+                         unsigned int reportID) {
     Q_UNUSED(length);
     QByteArray temp;
     foreach (int datum, data) {
@@ -341,7 +343,8 @@ void HidController::send(QByteArray data, unsigned int reportID) {
     // Append the Report ID to the beginning of data[] per the API..
     data.prepend(reportID);
 
-    int result = hid_write(m_pHidDevice, (unsigned char*)data.constData(), data.size());
+    int result = hid_write(m_pHidDevice, (unsigned char*)data.constData(),
+                           data.size());
     if (result == -1) {
         if (debugging()) {
             qWarning() << "Unable to send data to" << getName()

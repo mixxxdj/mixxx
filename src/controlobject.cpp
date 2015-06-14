@@ -71,7 +71,8 @@ void ControlObject::privateValueChanged(double dValue, QObject* pSender) {
 // static
 ControlObject* ControlObject::getControl(const ConfigKey& key, bool warn) {
     //qDebug() << "ControlObject::getControl for (" << key.group << "," << key.item << ")";
-    QSharedPointer<ControlDoublePrivate> pCDP = ControlDoublePrivate::getControl(key, warn);
+    QSharedPointer<ControlDoublePrivate> pCDP = ControlDoublePrivate::getControl(
+                key, warn);
     if (pCDP) {
         return pCDP->getCreatorCO();
     }
@@ -90,7 +91,8 @@ double ControlObject::getMidiParameter() const {
 
 // static
 double ControlObject::get(const ConfigKey& key) {
-    QSharedPointer<ControlDoublePrivate> pCop = ControlDoublePrivate::getControl(key);
+    QSharedPointer<ControlDoublePrivate> pCop = ControlDoublePrivate::getControl(
+                key);
     return pCop ? pCop->get() : 0.0;
 }
 
@@ -120,7 +122,8 @@ void ControlObject::setParameterFrom(double v, QObject* pSender) {
 
 // static
 void ControlObject::set(const ConfigKey& key, const double& value) {
-    QSharedPointer<ControlDoublePrivate> pCop = ControlDoublePrivate::getControl(key);
+    QSharedPointer<ControlDoublePrivate> pCop = ControlDoublePrivate::getControl(
+                key);
     if (pCop) {
         pCop->set(value, NULL);
     }

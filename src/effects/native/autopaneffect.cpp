@@ -81,7 +81,8 @@ EffectManifest AutoPanEffect::getManifest() {
     return manifest;
 }
 
-AutoPanEffect::AutoPanEffect(EngineEffect* pEffect, const EffectManifest& manifest)
+AutoPanEffect::AutoPanEffect(EngineEffect* pEffect,
+                             const EffectManifest& manifest)
     : m_pSmoothingParameter(pEffect->getParameterById("smoothing")),
       m_pPeriodUnitParameter(pEffect->getParameterById("periodUnit")),
       m_pPeriodParameter(pEffect->getParameterById("period")),
@@ -92,7 +93,8 @@ AutoPanEffect::AutoPanEffect(EngineEffect* pEffect, const EffectManifest& manife
 AutoPanEffect::~AutoPanEffect() {
 }
 
-void AutoPanEffect::processChannel(const ChannelHandle& handle, PanGroupState* pGroupState,
+void AutoPanEffect::processChannel(const ChannelHandle& handle,
+                                   PanGroupState* pGroupState,
                                    const CSAMPLE* pInput,
                                    CSAMPLE* pOutput, const unsigned int numSamples,
                                    const unsigned int sampleRate,

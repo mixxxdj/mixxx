@@ -19,7 +19,8 @@ class Bessel4LVMixEQEffectGroupState :
     public LVMixEQEffectGroupState<EngineFilterBessel4Low> {
 };
 
-class Bessel4LVMixEQEffect : public PerChannelEffectProcessor<Bessel4LVMixEQEffectGroupState> {
+class Bessel4LVMixEQEffect : public
+    PerChannelEffectProcessor<Bessel4LVMixEQEffectGroupState> {
   public:
     Bessel4LVMixEQEffect(EngineEffect* pEffect, const EffectManifest& manifest);
     virtual ~Bessel4LVMixEQEffect();

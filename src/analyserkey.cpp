@@ -23,7 +23,8 @@ AnalyserKey::~AnalyserKey() {
     delete m_pVamp;
 }
 
-bool AnalyserKey::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
+bool AnalyserKey::initialise(TrackPointer tio, int sampleRate,
+                             int totalSamples) {
     if (totalSamples == 0) {
         return false;
     }
@@ -106,7 +107,8 @@ bool AnalyserKey::loadStored(TrackPointer tio) const {
         if (version == newVersion && subVersion == newSubVersion) {
             // If the version and settings have not changed then if the world is
             // sane, re-analyzing will do nothing.
-            qDebug() << "Keys version/sub-version unchanged since previous analysis. Not analyzing.";
+            qDebug() <<
+                     "Keys version/sub-version unchanged since previous analysis. Not analyzing.";
             return true;
         } else if (m_bPreferencesReanalyzeEnabled) {
             return false;

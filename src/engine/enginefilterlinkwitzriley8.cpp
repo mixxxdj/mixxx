@@ -1,7 +1,8 @@
 #include "engine/enginefilterlinkwitzriley8.h"
 
 
-EngineFilterLinkwtzRiley8Low::EngineFilterLinkwtzRiley8Low(int sampleRate, double freqCorner1) {
+EngineFilterLinkwtzRiley8Low::EngineFilterLinkwtzRiley8Low(int sampleRate,
+        double freqCorner1) {
     setFrequencyCorners(sampleRate, freqCorner1);
 }
 
@@ -13,7 +14,8 @@ void EngineFilterLinkwtzRiley8Low::setFrequencyCorners(int sampleRate,
               "LpBu4", freqCorner1, 0, 0);
 }
 
-EngineFilterLinkwtzRiley8High::EngineFilterLinkwtzRiley8High(int sampleRate, double freqCorner1) {
+EngineFilterLinkwtzRiley8High::EngineFilterLinkwtzRiley8High(int sampleRate,
+        double freqCorner1) {
     setFrequencyCorners(sampleRate, freqCorner1);
 }
 

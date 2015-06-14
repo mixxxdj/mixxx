@@ -75,7 +75,8 @@ void DlgPrefControllers::slotApply() {
 bool DlgPrefControllers::handleTreeItemClick(QTreeWidgetItem* clickedItem) {
     int controllerIndex = m_controllerTreeItems.indexOf(clickedItem);
     if (controllerIndex >= 0) {
-        DlgPrefController* controllerWidget = m_controllerWindows.value(controllerIndex);
+        DlgPrefController* controllerWidget = m_controllerWindows.value(
+                controllerIndex);
         if (controllerWidget) {
             m_pDlgPreferences->switchToPage(controllerWidget);
         }
@@ -129,8 +130,10 @@ void DlgPrefControllers::setupControllerWidgets() {
         connect(controllerDlg, SIGNAL(controllerEnabled(DlgPrefController*, bool)),
                 this, SLOT(slotHighlightDevice(DlgPrefController*, bool)));
 
-        QTreeWidgetItem* controllerWindowLink = new QTreeWidgetItem(QTreeWidgetItem::Type);
-        controllerWindowLink->setIcon(0, QIcon(":/images/preferences/ic_preferences_controllers.png"));
+        QTreeWidgetItem* controllerWindowLink = new QTreeWidgetItem(
+            QTreeWidgetItem::Type);
+        controllerWindowLink->setIcon(0,
+                                      QIcon(":/images/preferences/ic_preferences_controllers.png"));
         QString curDeviceName = pController->getName();
         controllerWindowLink->setText(0, curDeviceName);
         controllerWindowLink->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
@@ -149,7 +152,8 @@ void DlgPrefControllers::setupControllerWidgets() {
     txtNoControllersAvailable->setVisible(controllerList.empty());
 }
 
-void DlgPrefControllers::slotHighlightDevice(DlgPrefController* dialog, bool enabled) {
+void DlgPrefControllers::slotHighlightDevice(DlgPrefController* dialog,
+        bool enabled) {
     int dialogIndex = m_controllerWindows.indexOf(dialog);
     if (dialogIndex < 0) {
         return;

@@ -165,7 +165,8 @@ ControlValueDelegate::ControlValueDelegate(QObject* parent)
     }
 }
 
-void ControlValueDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option,
+void ControlValueDelegate::paint(QPainter* painter,
+                                 const QStyleOptionViewItem& option,
                                  const QModelIndex& index) const {
     if (index.data().canConvert<QString>()) {
         QString value = index.data().value<QString>();
@@ -193,8 +194,10 @@ QWidget* ControlValueDelegate::createEditor(QWidget* parent,
     //      this item. We want to do this because some of the possible
     //      ControlValues only apply to Channel1/2, and not Master (for example).
 
-    QModelIndex nextDoor = index.sibling(index.row(), MIDIINPUTTABLEINDEX_CONTROLOBJECTGROUP);
-    QString controlGroup = nextDoor.model()->data(nextDoor, Qt::EditRole).toString();
+    QModelIndex nextDoor = index.sibling(index.row(),
+                                         MIDIINPUTTABLEINDEX_CONTROLOBJECTGROUP);
+    QString controlGroup = nextDoor.model()->data(nextDoor,
+                           Qt::EditRole).toString();
 
     QComboBox* editor = new QComboBox(parent);
 
@@ -230,7 +233,8 @@ void ControlValueDelegate::setEditorData(QWidget* editor,
     comboBox->setCurrentIndex(comboBox->findText(value));
 }
 
-void ControlValueDelegate::setModelData(QWidget* editor, QAbstractItemModel* model,
+void ControlValueDelegate::setModelData(QWidget* editor,
+                                        QAbstractItemModel* model,
                                         const QModelIndex& index) const {
     QString midiType = 0;
     QComboBox* comboBox = static_cast<QComboBox*>(editor);

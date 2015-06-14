@@ -18,8 +18,10 @@ class DlgTrackInfo;
 class TrackCollection;
 class WCoverArtMenu;
 
-const QString WTRACKTABLEVIEW_VSCROLLBARPOS_KEY = "VScrollBarPos"; /** ConfigValue key for QTable vertical scrollbar position */
-const QString LIBRARY_CONFIGVALUE = "[Library]"; /** ConfigValue "value" (wtf) for library stuff */
+const QString WTRACKTABLEVIEW_VSCROLLBARPOS_KEY =
+    "VScrollBarPos"; /** ConfigValue key for QTable vertical scrollbar position */
+const QString LIBRARY_CONFIGVALUE =
+    "[Library]"; /** ConfigValue "value" (wtf) for library stuff */
 
 
 class WTrackTableView : public WLibraryTableView {

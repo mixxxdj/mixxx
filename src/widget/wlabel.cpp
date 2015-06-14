@@ -34,7 +34,8 @@ WLabel::~WLabel() {
 
 void WLabel::setup(QDomNode node, const SkinContext& context) {
     // Colors
-    QPalette pal = palette(); //we have to copy out the palette to edit it since it's const (probably for threadsafety)
+    QPalette pal =
+        palette(); //we have to copy out the palette to edit it since it's const (probably for threadsafety)
     if (context.hasNode(node, "BgColor")) {
         m_qBgColor.setNamedColor(context.selectString(node, "BgColor"));
         pal.setColor(this->backgroundRole(), WSkinColor::getCorrectColor(m_qBgColor));

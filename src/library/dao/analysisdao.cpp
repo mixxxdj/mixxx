@@ -16,12 +16,14 @@ const QString AnalysisDao::s_analysisTableName = "track_analysis";
 // CPU time so I think we should stick with the default. rryan 4/3/2012
 const int kCompressionLevel = -1;
 
-AnalysisDao::AnalysisDao(QSqlDatabase& database, ConfigObject<ConfigValue>* pConfig)
+AnalysisDao::AnalysisDao(QSqlDatabase& database,
+                         ConfigObject<ConfigValue>* pConfig)
     : m_pConfig(pConfig),
       m_db(database) {
     QDir storagePath = getAnalysisStoragePath();
     if (!QDir().mkpath(storagePath.absolutePath())) {
-        qDebug() << "WARNING: Could not create analysis storage path. Mixxx will be unable to store analyses.";
+        qDebug() <<
+                 "WARNING: Could not create analysis storage path. Mixxx will be unable to store analyses.";
     }
 }
 
@@ -35,7 +37,8 @@ void AnalysisDao::setDatabase(QSqlDatabase& database) {
     m_db = database;
 }
 
-QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrack(const int trackId) {
+QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrack(
+    const int trackId) {
     if (!m_db.isOpen() || trackId == -1) {
         return QList<AnalysisInfo>();
     }
@@ -65,7 +68,8 @@ QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrackByType(
     return loadAnalysesFromQuery(trackId, &query);
 }
 
-QList<AnalysisDao::AnalysisInfo> AnalysisDao::loadAnalysesFromQuery(const int trackId, QSqlQuery* query) {
+QList<AnalysisDao::AnalysisInfo> AnalysisDao::loadAnalysesFromQuery(
+    const int trackId, QSqlQuery* query) {
     QList<AnalysisDao::AnalysisInfo> analyses;
     QTime time;
     time.start();
@@ -278,7 +282,8 @@ bool AnalysisDao::deleteFile(const QString& fileName) const {
     return file.remove();
 }
 
-bool AnalysisDao::saveDataToFile(const QString& fileName, const QByteArray& data) const {
+bool AnalysisDao::saveDataToFile(const QString& fileName,
+                                 const QByteArray& data) const {
     QFile file(fileName);
 
     // If the file exists, do the right thing. Write to a temp file, unlink the

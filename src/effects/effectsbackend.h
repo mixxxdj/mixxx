@@ -50,7 +50,8 @@ class EffectsBackend : public QObject {
 
   private:
     QString m_name;
-    QMap<QString, QPair<EffectManifest, EffectInstantiatorPointer> > m_registeredEffects;
+    QMap<QString, QPair<EffectManifest, EffectInstantiatorPointer> >
+    m_registeredEffects;
     QList<QString> m_effectIds;
 };
 

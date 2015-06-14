@@ -73,7 +73,8 @@ QModelIndex SidebarModel::index(int row, int column,
          * we return its associated childmodel
          */
         if (parent.internalPointer() == this) {
-            const QAbstractItemModel* childModel = m_sFeatures[parent.row()]->getChildModel();
+            const QAbstractItemModel* childModel =
+                m_sFeatures[parent.row()]->getChildModel();
             QModelIndex childIndex = childModel->index(row, column);
             TreeItem* tree_item = (TreeItem*)childIndex.internalPointer();
             if (tree_item && childIndex.isValid()) {
@@ -246,7 +247,8 @@ void SidebarModel::doubleClicked(const QModelIndex& index) {
     }
 }
 
-void SidebarModel::rightClicked(const QPoint& globalPos, const QModelIndex& index) {
+void SidebarModel::rightClicked(const QPoint& globalPos,
+                                const QModelIndex& index) {
     //qDebug() << "SidebarModel::rightClicked() index=" << index;
     if (index.isValid()) {
         if (index.internalPointer() == this) {
@@ -330,28 +332,32 @@ QModelIndex SidebarModel::translateSourceIndex(const QModelIndex& index) {
     return translatedIndex;
 }
 
-void SidebarModel::slotDataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight) {
+void SidebarModel::slotDataChanged(const QModelIndex& topLeft,
+                                   const QModelIndex& bottomRight) {
     //qDebug() << "slotDataChanged topLeft:" << topLeft << "bottomRight:" << bottomRight;
     QModelIndex topLeftTranslated = translateSourceIndex(topLeft);
     QModelIndex bottomRightTranslated = translateSourceIndex(bottomRight);
     emit(dataChanged(topLeftTranslated, bottomRightTranslated));
 }
 
-void SidebarModel::slotRowsAboutToBeInserted(const QModelIndex& parent, int start, int end) {
+void SidebarModel::slotRowsAboutToBeInserted(const QModelIndex& parent,
+        int start, int end) {
     //qDebug() << "slotRowsABoutToBeInserted" << parent << start << end;
 
     QModelIndex newParent = translateSourceIndex(parent);
     beginInsertRows(newParent, start, end);
 }
 
-void SidebarModel::slotRowsAboutToBeRemoved(const QModelIndex& parent, int start, int end) {
+void SidebarModel::slotRowsAboutToBeRemoved(const QModelIndex& parent,
+        int start, int end) {
     //qDebug() << "slotRowsABoutToBeRemoved" << parent << start << end;
 
     QModelIndex newParent = translateSourceIndex(parent);
     beginRemoveRows(newParent, start, end);
 }
 
-void SidebarModel::slotRowsInserted(const QModelIndex& parent, int start, int end) {
+void SidebarModel::slotRowsInserted(const QModelIndex& parent, int start,
+                                    int end) {
     Q_UNUSED(parent);
     Q_UNUSED(start);
     Q_UNUSED(end);
@@ -360,7 +366,8 @@ void SidebarModel::slotRowsInserted(const QModelIndex& parent, int start, int en
     endInsertRows();
 }
 
-void SidebarModel::slotRowsRemoved(const QModelIndex& parent, int start, int end) {
+void SidebarModel::slotRowsRemoved(const QModelIndex& parent, int start,
+                                   int end) {
     Q_UNUSED(parent);
     Q_UNUSED(start);
     Q_UNUSED(end);
@@ -380,7 +387,8 @@ void SidebarModel::slotModelReset() {
  * See RhythmboxFeature for an example, in which the title becomes '(loading) Rhythmbox'
  * If selectFeature is true, the feature is selected when the title change occurs.
  */
-void SidebarModel::slotFeatureIsLoading(LibraryFeature* feature, bool selectFeature) {
+void SidebarModel::slotFeatureIsLoading(LibraryFeature* feature,
+                                        bool selectFeature) {
     featureRenamed(feature);
     if (selectFeature) {
         slotFeatureSelect(feature);
@@ -404,7 +412,8 @@ void SidebarModel::featureRenamed(LibraryFeature* pFeature) {
     }
 }
 
-void SidebarModel::slotFeatureSelect(LibraryFeature* pFeature, const QModelIndex& featureIndex) {
+void SidebarModel::slotFeatureSelect(LibraryFeature* pFeature,
+                                     const QModelIndex& featureIndex) {
     QModelIndex ind;
     if (featureIndex.isValid()) {
         TreeItem* item = (TreeItem*)featureIndex.internalPointer();

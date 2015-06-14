@@ -14,7 +14,8 @@
 class BansheePlaylistModel : public BaseSqlTableModel {
     Q_OBJECT
   public:
-    BansheePlaylistModel(QObject* pParent, TrackCollection* pTrackCollection, BansheeDbConnection* pConnection);
+    BansheePlaylistModel(QObject* pParent, TrackCollection* pTrackCollection,
+                         BansheeDbConnection* pConnection);
     virtual ~BansheePlaylistModel();
 
     void setTableModel(int playlistId);
@@ -26,7 +27,8 @@ class BansheePlaylistModel : public BaseSqlTableModel {
     virtual Qt::ItemFlags flags(const QModelIndex& index) const;
     TrackModel::CapabilitiesFlags getCapabilities() const;
 
-    virtual bool setData(const QModelIndex& index, const QVariant& value, int role=Qt::EditRole);
+    virtual bool setData(const QModelIndex& index, const QVariant& value,
+                         int role=Qt::EditRole);
 
 
   protected:
@@ -40,7 +42,8 @@ class BansheePlaylistModel : public BaseSqlTableModel {
     virtual void trackLoaded(QString group, TrackPointer pTrack);
 
   private:
-    QString getFieldString(const QModelIndex& index, const QString& fieldName) const;
+    QString getFieldString(const QModelIndex& index,
+                           const QString& fieldName) const;
 
     TrackCollection* m_pTrackCollection;
     BansheeDbConnection* m_pConnection;

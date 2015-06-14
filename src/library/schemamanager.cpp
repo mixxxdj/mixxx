@@ -9,7 +9,8 @@
 #include "util/assert.h"
 
 const QString SchemaManager::SETTINGS_VERSION_STRING = "mixxx.schema.version";
-const QString SchemaManager::SETTINGS_MINCOMPATIBLE_STRING = "mixxx.schema.min_compatible_version";
+const QString SchemaManager::SETTINGS_MINCOMPATIBLE_STRING =
+    "mixxx.schema.min_compatible_version";
 
 // static
 SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
@@ -36,7 +37,8 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
                  << targetVersion;
 
         if (isBackwardsCompatible(settings, currentVersion, targetVersion)) {
-            qDebug() << "Current schema version is backwards-compatible with" << targetVersion;
+            qDebug() << "Current schema version is backwards-compatible with" <<
+                     targetVersion;
             return RESULT_OK;
         } else {
             return RESULT_BACKWARDS_INCOMPATIBLE;

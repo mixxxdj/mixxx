@@ -173,7 +173,8 @@ QKeySequence MixxxKeyboard::getKeySeq(QKeyEvent* e) {
     return k;
 }
 
-void MixxxKeyboard::setKeyboardConfig(ConfigObject<ConfigValueKbd>* pKbdConfigObject) {
+void MixxxKeyboard::setKeyboardConfig(ConfigObject<ConfigValueKbd>*
+                                      pKbdConfigObject) {
     // Keyboard configs are a surjection from ConfigKey to key sequence. We
     // invert the mapping to create an injection from key sequence to
     // ConfigKey. This allows a key sequence to trigger multiple controls in

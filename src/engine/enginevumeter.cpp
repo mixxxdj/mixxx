@@ -52,7 +52,8 @@ void EngineVuMeter::process(CSAMPLE* pIn, const int iBufferSize) {
 
     int sampleRate = (int)m_pSampleRate->get();
 
-    bool clipped = SampleUtil::sumAbsPerChannel(&fVolSumL, &fVolSumR, pIn, iBufferSize);
+    bool clipped = SampleUtil::sumAbsPerChannel(&fVolSumL, &fVolSumR, pIn,
+                   iBufferSize);
     m_fRMSvolumeSumL += fVolSumL;
     m_fRMSvolumeSumR += fVolSumR;
 
@@ -60,8 +61,10 @@ void EngineVuMeter::process(CSAMPLE* pIn, const int iBufferSize) {
 
     // Are we ready to update the VU meter?:
     if (m_iSamplesCalculated > (sampleRate/VU_UPDATE_RATE)) {
-        doSmooth(m_fRMSvolumeL, log10(SHRT_MAX * m_fRMSvolumeSumL/(m_iSamplesCalculated*1000)+1));
-        doSmooth(m_fRMSvolumeR, log10(SHRT_MAX * m_fRMSvolumeSumR/(m_iSamplesCalculated*1000)+1));
+        doSmooth(m_fRMSvolumeL, log10(SHRT_MAX * m_fRMSvolumeSumL/
+                                      (m_iSamplesCalculated*1000)+1));
+        doSmooth(m_fRMSvolumeR, log10(SHRT_MAX * m_fRMSvolumeSumR/
+                                      (m_iSamplesCalculated*1000)+1));
 
         const double epsilon = .0001;
 

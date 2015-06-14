@@ -27,7 +27,8 @@ class ScopedTransaction {
     }
     bool transaction() {
         if (m_active) {
-            qDebug() << "WARNING: Transaction already active and received transaction() request on"
+            qDebug() <<
+                     "WARNING: Transaction already active and received transaction() request on"
                      << m_database.connectionName();
             return false;
         }
@@ -98,7 +99,8 @@ class FieldEscaper {
     // LIKE wildcard characters (% and _) with escapeCharacter. This allows the
     // caller to then attach wildcard characters to the string. This does NOT
     // escape the string in the same way that escapeString() does.
-    QString escapeStringForLike(const QString& escapeString, const QChar escapeCharacter) const {
+    QString escapeStringForLike(const QString& escapeString,
+                                const QChar escapeCharacter) const {
         QString escapeCharacterStr(escapeCharacter);
         QString result = escapeString;
         // Replace instances of escapeCharacter with two escapeCharacters.

@@ -3,14 +3,16 @@
 #include "test/mixxxtest.h"
 #include "controllers/learningutils.h"
 
-std::ostream& operator<<(std::ostream& stream, const MidiInputMapping& mapping) {
+std::ostream& operator<<(std::ostream& stream,
+                         const MidiInputMapping& mapping) {
     stream << mapping.key.key << mapping.options.all;
     return stream;
 }
 
 class LearningUtilsTest : public MixxxTest {
   protected:
-    void addMessage(unsigned char status, unsigned char control, unsigned char value) {
+    void addMessage(unsigned char status, unsigned char control,
+                    unsigned char value) {
         m_messages.append(qMakePair(MidiKey(status, control), value));
     }
 
@@ -104,7 +106,8 @@ TEST_F(LearningUtilsTest, CC7BitKnob_CenterPointButton_NoteOn) {
     ASSERT_EQ(2, mappings.size());
     EXPECT_TRUE(mappings.contains(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10),
                                   MidiOptions(), control)));
-    EXPECT_TRUE(mappings.contains(MidiInputMapping(MidiKey(MIDI_NOTE_ON | 0x01, 0xE0),
+    EXPECT_TRUE(mappings.contains(MidiInputMapping(MidiKey(MIDI_NOTE_ON | 0x01,
+                                  0xE0),
                                   MidiOptions(), resetControl)));
 
     m_messages.clear();
@@ -125,7 +128,8 @@ TEST_F(LearningUtilsTest, CC7BitKnob_CenterPointButton_NoteOn) {
     ASSERT_EQ(2, mappings.size());
     EXPECT_TRUE(mappings.contains(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10),
                                   MidiOptions(), control)));
-    EXPECT_TRUE(mappings.contains(MidiInputMapping(MidiKey(MIDI_NOTE_ON | 0x01, 0xE0),
+    EXPECT_TRUE(mappings.contains(MidiInputMapping(MidiKey(MIDI_NOTE_ON | 0x01,
+                                  0xE0),
                                   MidiOptions(), resetControl)));
 }
 
@@ -315,7 +319,8 @@ TEST_F(LearningUtilsTest, CC7BitKnob_ConfusableForCC7BitTicker) {
               mappings.at(0));
 }
 
-TEST_F(LearningUtilsTest, CC7BitKnob_ConfusableForSpread64Ticker_StartAndStopOn41) {
+TEST_F(LearningUtilsTest,
+       CC7BitKnob_ConfusableForSpread64Ticker_StartAndStopOn41) {
     // Moving a CC knob through its range multiple times is confusable for
     // Spread64 select knobs when a 0x41 or 0x3F is repeated. If we start and
     // stop on 0x41 (and don't pass through 0x40) then this can set off Spread64

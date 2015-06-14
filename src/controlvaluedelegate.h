@@ -32,7 +32,8 @@ class ControlValueDelegate : public QItemDelegate {
     void updateEditorGeometry(QWidget* editor,
                               const QStyleOptionViewItem& option, const QModelIndex& index) const;
 
-    static bool verifyControlValueValidity(QString controlGroup, QAbstractItemModel* model,
+    static bool verifyControlValueValidity(QString controlGroup,
+                                           QAbstractItemModel* model,
                                            const QModelIndex& index);
     /** These getters are used by the "Add Control" dialog in the MIDI prefs. */
     static QStringList getChannelControlValues() {

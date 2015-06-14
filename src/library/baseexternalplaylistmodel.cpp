@@ -19,7 +19,8 @@ BaseExternalPlaylistModel::BaseExternalPlaylistModel(QObject* parent,
 BaseExternalPlaylistModel::~BaseExternalPlaylistModel() {
 }
 
-TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const {
+TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index)
+const {
     QString location = index.sibling(
                            index.row(), fieldIndex("location")).data().toString();
 
@@ -78,11 +79,13 @@ Qt::ItemFlags BaseExternalPlaylistModel::flags(const QModelIndex& index) const {
 
 void BaseExternalPlaylistModel::setPlaylist(QString playlist_path) {
     QSqlQuery finder_query(m_database);
-    finder_query.prepare(QString("SELECT id from %1 where name=:name").arg(m_playlistsTable));
+    finder_query.prepare(QString("SELECT id from %1 where name=:name").arg(
+                             m_playlistsTable));
     finder_query.bindValue(":name", playlist_path);
 
     if (!finder_query.exec()) {
-        LOG_FAILED_QUERY(finder_query) << "Error getting id for playlist:" << playlist_path;
+        LOG_FAILED_QUERY(finder_query) << "Error getting id for playlist:" <<
+                                       playlist_path;
         return;
     }
 
@@ -95,7 +98,8 @@ void BaseExternalPlaylistModel::setPlaylist(QString playlist_path) {
     }
 
     if (playlistId == -1) {
-        qDebug() << "ERROR: Could not get the playlist ID for playlist:" << playlist_path;
+        qDebug() << "ERROR: Could not get the playlist ID for playlist:" <<
+                 playlist_path;
         return;
     }
 
@@ -131,7 +135,8 @@ void BaseExternalPlaylistModel::setPlaylist(QString playlist_path) {
     setSearch("");
 }
 
-void BaseExternalPlaylistModel::trackLoaded(QString group, TrackPointer pTrack) {
+void BaseExternalPlaylistModel::trackLoaded(QString group,
+        TrackPointer pTrack) {
     if (group == m_previewDeckGroup) {
         // If there was a previously loaded track, refresh its rows so the
         // preview state will update.
@@ -160,7 +165,8 @@ void BaseExternalPlaylistModel::trackLoaded(QString group, TrackPointer pTrack) 
     }
 }
 
-TrackModel::CapabilitiesFlags BaseExternalPlaylistModel::getCapabilities() const {
+TrackModel::CapabilitiesFlags BaseExternalPlaylistModel::getCapabilities()
+const {
     // See src/library/trackmodel.h for the list of TRACKMODELCAPS
     return TRACKMODELCAPS_NONE
            | TRACKMODELCAPS_ADDTOPLAYLIST

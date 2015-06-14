@@ -36,10 +36,12 @@ BrowseFeature::BrowseFeature(QObject* parent,
             parent, SLOT(slotRequestAddDir(QString)));
 
     m_pAddQuickLinkAction = new QAction(tr("Add to Quick Links"),this);
-    connect(m_pAddQuickLinkAction, SIGNAL(triggered()), this, SLOT(slotAddQuickLink()));
+    connect(m_pAddQuickLinkAction, SIGNAL(triggered()), this,
+            SLOT(slotAddQuickLink()));
 
     m_pRemoveQuickLinkAction = new QAction(tr("Remove from Quick Links"),this);
-    connect(m_pRemoveQuickLinkAction, SIGNAL(triggered()), this, SLOT(slotRemoveQuickLink()));
+    connect(m_pRemoveQuickLinkAction, SIGNAL(triggered()), this,
+            SLOT(slotRemoveQuickLink()));
 
     m_pAddtoLibraryAction = new QAction(tr("Add to Library"),this);
     connect(m_pAddtoLibraryAction, SIGNAL(triggered()),
@@ -56,7 +58,8 @@ BrowseFeature::BrowseFeature(QObject* parent,
     // The invisible root item of the child model
     TreeItem* rootItem = new TreeItem();
 
-    m_pQuickLinkItem = new TreeItem(tr("Quick Links"), QUICK_LINK_NODE, this, rootItem);
+    m_pQuickLinkItem = new TreeItem(tr("Quick Links"), QUICK_LINK_NODE, this,
+                                    rootItem);
     rootItem->appendChild(m_pQuickLinkItem);
 
     // Create the 'devices' shortcut
@@ -237,7 +240,8 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
     emit(enableCoverArtDisplay(false));
 }
 
-void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
+void BrowseFeature::onRightClickChild(const QPoint& globalPos,
+                                      QModelIndex index) {
     TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
     m_pLastRightClickedItem = item;
 

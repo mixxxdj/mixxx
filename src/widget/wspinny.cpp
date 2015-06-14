@@ -20,46 +20,47 @@
 WSpinny::WSpinny(QWidget* parent, const QString& group,
                  ConfigObject<ConfigValue>* pConfig,
                  VinylControlManager* pVCMan)
-    : QGLWidget(QGLFormat(QGL::SampleBuffers), parent, SharedGLContext::getWidget()),
-      WBaseWidget(this),
-      m_group(group),
-      m_pConfig(pConfig),
-      m_pBgImage(NULL),
-      m_pMaskImage(NULL),
-      m_pFgImage(NULL),
-      m_pGhostImage(NULL),
-      m_pPlay(NULL),
-      m_pPlayPos(NULL),
-      m_pVisualPlayPos(NULL),
-      m_pTrackSamples(NULL),
-      m_pTrackSampleRate(NULL),
-      m_pScratchToggle(NULL),
-      m_pScratchPos(NULL),
-      m_pVinylControlSpeedType(NULL),
-      m_pVinylControlEnabled(NULL),
-      m_pSignalEnabled(NULL),
-      m_pSlipEnabled(NULL),
-      m_bShowCover(true),
-      m_dInitialPos(0.),
-      m_iVinylInput(-1),
-      m_bVinylActive(false),
-      m_bSignalActive(true),
-      m_iVinylScopeSize(0),
-      m_fAngle(0.0f),
-      m_dAngleCurrentPlaypos(-1),
-      m_dAngleLastPlaypos(-1),
-      m_fGhostAngle(0.0f),
-      m_dGhostAngleCurrentPlaypos(-1),
-      m_dGhostAngleLastPlaypos(-1),
-      m_iStartMouseX(-1),
-      m_iStartMouseY(-1),
-      m_iFullRotations(0),
-      m_dPrevTheta(0.),
-      m_dTheta(0.),
-      m_dRotationsPerSecond(0.),
-      m_bClampFailedWarning(false),
-      m_bGhostPlayback(false),
-      m_bWidgetDirty(false) {
+    : QGLWidget(QGLFormat(QGL::SampleBuffers), parent,
+                SharedGLContext::getWidget()),
+    WBaseWidget(this),
+    m_group(group),
+    m_pConfig(pConfig),
+    m_pBgImage(NULL),
+    m_pMaskImage(NULL),
+    m_pFgImage(NULL),
+    m_pGhostImage(NULL),
+    m_pPlay(NULL),
+    m_pPlayPos(NULL),
+    m_pVisualPlayPos(NULL),
+    m_pTrackSamples(NULL),
+    m_pTrackSampleRate(NULL),
+    m_pScratchToggle(NULL),
+    m_pScratchPos(NULL),
+    m_pVinylControlSpeedType(NULL),
+    m_pVinylControlEnabled(NULL),
+    m_pSignalEnabled(NULL),
+    m_pSlipEnabled(NULL),
+    m_bShowCover(true),
+    m_dInitialPos(0.),
+    m_iVinylInput(-1),
+    m_bVinylActive(false),
+    m_bSignalActive(true),
+    m_iVinylScopeSize(0),
+    m_fAngle(0.0f),
+    m_dAngleCurrentPlaypos(-1),
+    m_dAngleLastPlaypos(-1),
+    m_fGhostAngle(0.0f),
+    m_dGhostAngleCurrentPlaypos(-1),
+    m_dGhostAngleLastPlaypos(-1),
+    m_iStartMouseX(-1),
+    m_iStartMouseY(-1),
+    m_iFullRotations(0),
+    m_dPrevTheta(0.),
+    m_dTheta(0.),
+    m_dRotationsPerSecond(0.),
+    m_bClampFailedWarning(false),
+    m_bGhostPlayback(false),
+    m_bWidgetDirty(false) {
 #ifdef __VINYLCONTROL__
     m_pVCManager = pVCMan;
 #endif
@@ -101,7 +102,8 @@ WSpinny::~WSpinny() {
 #endif
 }
 
-void WSpinny::onVinylSignalQualityUpdate(const VinylSignalQualityReport& report) {
+void WSpinny::onVinylSignalQualityUpdate(const VinylSignalQualityReport&
+        report) {
 #ifdef __VINYLCONTROL__
     if (!m_bVinylActive || !m_bSignalActive) {
         return;
@@ -543,7 +545,8 @@ void WSpinny::mouseMoveEvent(QMouseEvent* e) {
     //qDebug() << "c t:" << theta << "pt:" << m_dPrevTheta <<
     //            "icr" << m_iFullRotations;
 
-    if ((e->buttons() & Qt::LeftButton || e->buttons() & Qt::RightButton) && !m_bVinylActive) {
+    if ((e->buttons() & Qt::LeftButton || e->buttons() & Qt::RightButton) &&
+            !m_bVinylActive) {
         //Convert deltaTheta into a percentage of song length.
         double absPos = calculatePositionFromAngle(theta);
         double absPosInSamples = absPos * m_pTrackSamples->get();

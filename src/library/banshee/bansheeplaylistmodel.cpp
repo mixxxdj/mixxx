@@ -32,11 +32,13 @@
 #define CLM_COMPOSER "composer"
 #define CLM_PREVIEW "preview"
 
-BansheePlaylistModel::BansheePlaylistModel(QObject* pParent, TrackCollection* pTrackCollection, BansheeDbConnection* pConnection)
-    : BaseSqlTableModel(pParent, pTrackCollection, "mixxx.db.model.banshee_playlist"),
-      m_pTrackCollection(pTrackCollection),
-      m_pConnection(pConnection),
-      m_playlistId(-1) {
+BansheePlaylistModel::BansheePlaylistModel(QObject* pParent,
+        TrackCollection* pTrackCollection, BansheeDbConnection* pConnection)
+    : BaseSqlTableModel(pParent, pTrackCollection,
+                        "mixxx.db.model.banshee_playlist"),
+    m_pTrackCollection(pTrackCollection),
+    m_pConnection(pConnection),
+    m_playlistId(-1) {
 }
 
 BansheePlaylistModel::~BansheePlaylistModel() {
@@ -200,7 +202,8 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
     setSort(defaultSortColumn(), defaultSortOrder());
 }
 
-bool BansheePlaylistModel::setData(const QModelIndex& index, const QVariant& value, int role) {
+bool BansheePlaylistModel::setData(const QModelIndex& index,
+                                   const QVariant& value, int role) {
     Q_UNUSED(index);
     Q_UNUSED(value);
     Q_UNUSED(role);
@@ -220,7 +223,8 @@ Qt::ItemFlags BansheePlaylistModel::flags(const QModelIndex& index) const {
     return readWriteFlags(index);
 }
 
-Qt::ItemFlags BansheePlaylistModel::readWriteFlags(const QModelIndex& index) const {
+Qt::ItemFlags BansheePlaylistModel::readWriteFlags(const QModelIndex& index)
+const {
     if (!index.isValid()) {
         return Qt::ItemIsEnabled;
     }
@@ -234,7 +238,8 @@ Qt::ItemFlags BansheePlaylistModel::readWriteFlags(const QModelIndex& index) con
     return defaultFlags;
 }
 
-Qt::ItemFlags BansheePlaylistModel::readOnlyFlags(const QModelIndex& index) const {
+Qt::ItemFlags BansheePlaylistModel::readOnlyFlags(const QModelIndex& index)
+const {
     Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
     if (!index.isValid())
         return Qt::ItemIsEnabled;

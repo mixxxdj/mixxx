@@ -67,7 +67,8 @@ bool WOverviewRGB::drawNextPixmapPart() {
     m_signalColors.getRgbMidColor().getRgbF(&midColor_r, &midColor_g, &midColor_b);
 
     qreal highColor_r, highColor_g, highColor_b;
-    m_signalColors.getRgbHighColor().getRgbF(&highColor_r, &highColor_g, &highColor_b);
+    m_signalColors.getRgbHighColor().getRgbF(&highColor_r, &highColor_g,
+            &highColor_b);
 
     for (currentCompletion = m_actualCompletion;
             currentCompletion < nextCompletion; currentCompletion += 2) {

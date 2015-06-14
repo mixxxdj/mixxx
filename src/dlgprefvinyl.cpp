@@ -180,10 +180,14 @@ void DlgPrefVinyl::slotResetToDefaults() {
     ComboBoxVinylSpeed2->setCurrentIndex(0);
     ComboBoxVinylSpeed3->setCurrentIndex(0);
     ComboBoxVinylSpeed4->setCurrentIndex(0);
-    LeadinTime1->setText(QString("%1").arg(MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN));
-    LeadinTime2->setText(QString("%1").arg(MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN));
-    LeadinTime3->setText(QString("%1").arg(MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN));
-    LeadinTime4->setText(QString("%1").arg(MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN));
+    LeadinTime1->setText(QString("%1").arg(
+                             MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN));
+    LeadinTime2->setText(QString("%1").arg(
+                             MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN));
+    LeadinTime3->setText(QString("%1").arg(
+                             MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN));
+    LeadinTime4->setText(QString("%1").arg(
+                             MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN));
     SignalQualityEnable->setChecked(true);
     VinylGain->setValue(0);
     slotUpdateVinylGain();
@@ -251,10 +255,12 @@ void DlgPrefVinyl::slotUpdate() {
                          "vinylcontrol_lead_in_time"), "0"));
 
     SignalQualityEnable->setChecked(
-        (bool)config->getValueString(ConfigKey(VINYL_PREF_KEY, "show_signal_quality")).toInt());
+        (bool)config->getValueString(ConfigKey(VINYL_PREF_KEY,
+                                     "show_signal_quality")).toInt());
 
     // set vinyl control gain
-    const double ratioGain = config->getValueString(ConfigKey(VINYL_PREF_KEY, "gain")).toDouble();
+    const double ratioGain = config->getValueString(ConfigKey(VINYL_PREF_KEY,
+                             "gain")).toDouble();
     const double dbGain = ratio2db(ratioGain);
     VinylGain->setValue(static_cast<int>(dbGain + 0.5));
     slotUpdateVinylGain();
@@ -264,7 +270,8 @@ void DlgPrefVinyl::slotUpdate() {
     }
 }
 
-void DlgPrefVinyl::verifyAndSaveLeadInTime(QLineEdit* widget, QString group, QString vinyl_type) {
+void DlgPrefVinyl::verifyAndSaveLeadInTime(QLineEdit* widget, QString group,
+        QString vinyl_type) {
     QString strLeadIn = widget->text();
     bool isInteger;
     strLeadIn.toInt(&isInteger);
@@ -298,10 +305,14 @@ int DlgPrefVinyl::getDefaultLeadIn(QString vinyl_type) const {
 void DlgPrefVinyl::slotApply() {
     qDebug() << "DlgPrefVinyl::Apply";
 
-    verifyAndSaveLeadInTime(LeadinTime1, "[Channel1]", ComboBoxVinylType1->currentText());
-    verifyAndSaveLeadInTime(LeadinTime2, "[Channel2]", ComboBoxVinylType2->currentText());
-    verifyAndSaveLeadInTime(LeadinTime3, "[Channel3]", ComboBoxVinylType3->currentText());
-    verifyAndSaveLeadInTime(LeadinTime4, "[Channel4]", ComboBoxVinylType4->currentText());
+    verifyAndSaveLeadInTime(LeadinTime1, "[Channel1]",
+                            ComboBoxVinylType1->currentText());
+    verifyAndSaveLeadInTime(LeadinTime2, "[Channel2]",
+                            ComboBoxVinylType2->currentText());
+    verifyAndSaveLeadInTime(LeadinTime3, "[Channel3]",
+                            ComboBoxVinylType3->currentText());
+    verifyAndSaveLeadInTime(LeadinTime4, "[Channel4]",
+                            ComboBoxVinylType4->currentText());
 
     // Apply updates for everything else...
     VinylTypeSlotApply();
@@ -374,7 +385,8 @@ void DlgPrefVinyl::slotVinylGainApply() {
     qDebug() << "in VinylGainSlotApply()" << "with gain:" << dBGain << "dB";
     // Update the config key...
     const double ratioGain = db2ratio(static_cast<double>(dBGain));
-    config->set(ConfigKey(VINYL_PREF_KEY, "gain"), ConfigValue(QString::number(ratioGain)));
+    config->set(ConfigKey(VINYL_PREF_KEY, "gain"),
+                ConfigValue(QString::number(ratioGain)));
 
     // Update the ControlObject...
     ControlObject::set(ConfigKey(VINYL_PREF_KEY, "gain"), ratioGain);
@@ -401,7 +413,8 @@ void DlgPrefVinyl::setDeckWidgetsVisible(int deck, bool visible) {
         setDeck4WidgetsVisible(visible);
         break;
     default:
-        qWarning() << "Tried to set a vinyl preference widget visible that doesn't exist: " << deck;
+        qWarning() <<
+                   "Tried to set a vinyl preference widget visible that doesn't exist: " << deck;
     }
 }
 

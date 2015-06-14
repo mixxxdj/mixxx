@@ -33,7 +33,8 @@ AnalyserBeats::AnalyserBeats(ConfigObject<ConfigValue>* pConfig)
 AnalyserBeats::~AnalyserBeats() {
 }
 
-bool AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
+bool AnalyserBeats::initialise(TrackPointer tio, int sampleRate,
+                               int totalSamples) {
     if (totalSamples == 0) {
         return false;
     }
@@ -58,8 +59,10 @@ bool AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
         m_iMinBpm = 0;
         m_iMaxBpm = 9999;
     } else {
-        m_iMinBpm = m_pConfig->getValueString(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_START)).toInt();
-        m_iMaxBpm = m_pConfig->getValueString(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_END)).toInt();
+        m_iMinBpm = m_pConfig->getValueString(ConfigKey(BPM_CONFIG_KEY,
+                                              BPM_RANGE_START)).toInt();
+        m_iMaxBpm = m_pConfig->getValueString(ConfigKey(BPM_CONFIG_KEY,
+                                              BPM_RANGE_END)).toInt();
     }
 
     m_bPreferencesFixedTempo = static_cast<bool>(
@@ -116,8 +119,10 @@ bool AnalyserBeats::loadStored(TrackPointer tio) const {
         iMinBpm = 0;
         iMaxBpm = 9999;
     } else {
-        iMinBpm = m_pConfig->getValueString(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_START)).toInt();
-        iMaxBpm = m_pConfig->getValueString(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_END)).toInt();
+        iMinBpm = m_pConfig->getValueString(ConfigKey(BPM_CONFIG_KEY,
+                                            BPM_RANGE_START)).toInt();
+        iMaxBpm = m_pConfig->getValueString(ConfigKey(BPM_CONFIG_KEY,
+                                            BPM_RANGE_END)).toInt();
     }
 
     bool bpmLock = tio->hasBpmLock();

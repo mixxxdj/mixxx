@@ -84,7 +84,8 @@ void QuantizeControl::setCurrentSample(const double dCurrentSample,
     // do so.
     // NOTE: This bypasses the epsilon calculation, but is there a way
     //       that could actually cause a problem?
-    if (dCurrentSample < m_pCOPrevBeat->get() || dCurrentSample > m_pCONextBeat->get()) {
+    if (dCurrentSample < m_pCOPrevBeat->get() ||
+            dCurrentSample > m_pCONextBeat->get()) {
         lookupBeatPositions(dCurrentSample);
     }
     updateClosestBeat(dCurrentSample);

@@ -12,11 +12,13 @@
 #include "widget/wwidget.h"
 #include "widget/wimagestore.h"
 
-WaveformRenderMark::WaveformRenderMark(WaveformWidgetRenderer* waveformWidgetRenderer) :
+WaveformRenderMark::WaveformRenderMark(WaveformWidgetRenderer*
+                                       waveformWidgetRenderer) :
     WaveformRendererAbstract(waveformWidgetRenderer) {
 }
 
-void WaveformRenderMark::setup(const QDomNode& node, const SkinContext& context) {
+void WaveformRenderMark::setup(const QDomNode& node,
+                               const SkinContext& context) {
     m_marks.setup(m_waveformRenderer->getGroup(), node, context,
                   *m_waveformRenderer->getWaveformSignalColors());
 }
@@ -48,14 +50,16 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
         int samplePosition = mark.m_pointControl->get();
         if (samplePosition > 0.0) {
-            double currentMarkPoint = m_waveformRenderer->transformSampleIndexInRendererWorld(samplePosition);
+            double currentMarkPoint =
+                m_waveformRenderer->transformSampleIndexInRendererWorld(samplePosition);
 
             // NOTE: vRince I guess image width is odd to display the center on the exact line !
             //external image should respect that ...
             const int markHalfWidth = mark.m_image.width() / 2.0;
 
             //check if the current point need to be displayed
-            if (currentMarkPoint > -markHalfWidth && currentMarkPoint < m_waveformRenderer->getWidth() + markHalfWidth) {
+            if (currentMarkPoint > -markHalfWidth &&
+                    currentMarkPoint < m_waveformRenderer->getWidth() + markHalfWidth) {
                 painter->drawImage(QPoint(currentMarkPoint-markHalfWidth,0), mark.m_image);
             }
         }
@@ -190,7 +194,8 @@ void WaveformRenderMark::generateMarkImage(WaveformMark& mark) {
         triangle.clear();
         triangle.append(QPointF(0.0,mark.m_image.height()));
         triangle.append(QPointF(triangleSize+0.5,mark.m_image.height()));
-        triangle.append(QPointF(triangleSize*0.5 + 0.1, mark.m_image.height() - triangleSize*0.5 - 2.1));
+        triangle.append(QPointF(triangleSize*0.5 + 0.1,
+                                mark.m_image.height() - triangleSize*0.5 - 2.1));
 
         painter.drawPolygon(triangle);
 

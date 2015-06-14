@@ -36,7 +36,8 @@ class ControlObject;
   *@author Tue & Ken Haste Andersen
   */
 
-class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg  {
+class DlgPrefControls : public DlgPreferencePage,
+    public Ui::DlgPrefControlsDlg  {
     Q_OBJECT
   public:
     DlgPrefControls(QWidget* parent, MixxxMainWindow* mixxx,

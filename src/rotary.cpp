@@ -82,7 +82,8 @@ void Rotary::calibrateStart() {
 double Rotary::calibrateEnd() {
     m_dCalibration /= (double)m_iCalibrationCount;
 
-    qDebug() << "Calibration " << m_dCalibration << ", count " << m_iCalibrationCount;
+    qDebug() << "Calibration " << m_dCalibration << ", count " <<
+             m_iCalibrationCount;
 
     return m_dCalibration;
 }

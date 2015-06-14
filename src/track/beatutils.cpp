@@ -28,7 +28,8 @@ const int kHistogramDecimalPlaces = 2;
 const double kHistogramDecimalScale = pow(10.0, kHistogramDecimalPlaces);
 const double kBpmFilterTolerance = 1.0;
 
-void BeatUtils::printBeatStatistics(const QVector<double>& beats, int SampleRate) {
+void BeatUtils::printBeatStatistics(const QVector<double>& beats,
+                                    int SampleRate) {
     if (!sDebug) {
         return;
     }
@@ -44,7 +45,8 @@ void BeatUtils::printBeatStatistics(const QVector<double>& beats, int SampleRate
 
         qDebug() << "Beat" << i << "local BPM:" << local_bpm;
 
-        local_bpm = floor(local_bpm * kHistogramDecimalScale + 0.5) / kHistogramDecimalScale;
+        local_bpm = floor(local_bpm * kHistogramDecimalScale + 0.5) /
+                    kHistogramDecimalScale;
         frequency[local_bpm] += 1;
     }
 
@@ -249,7 +251,8 @@ double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate,
         double time = (beat_end - beat_start)/SampleRate;
         double local_bpm = 60.0 * N / time;
         // round BPM to have two decimal places
-        local_bpm = floor(local_bpm * kHistogramDecimalScale + 0.5) / kHistogramDecimalScale;
+        local_bpm = floor(local_bpm * kHistogramDecimalScale + 0.5) /
+                    kHistogramDecimalScale;
 
         //qDebug() << "Local BPM beat " << i << ": " << local_bpm;
         if (!foundFirstCorrectBeat &&
@@ -293,8 +296,10 @@ double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate,
     bool perform_rounding = (bpm_diff <= BPM_ERROR);
 
     // Finally, restrict the BPM to be within min_bpm and max_bpm.
-    const double maybeRoundedBpm = perform_rounding ? rounded_bpm : perfectAverageBpm;
-    const double constrainedBpm = constrainBpm(maybeRoundedBpm, min_bpm, max_bpm, false);
+    const double maybeRoundedBpm = perform_rounding ? rounded_bpm :
+                                   perfectAverageBpm;
+    const double constrainedBpm = constrainBpm(maybeRoundedBpm, min_bpm, max_bpm,
+                                  false);
 
     if (sDebug) {
         qDebug() << "SampleMedianBpm=" << median;
@@ -303,7 +308,8 @@ double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate,
         qDebug() << "Rounded Perfect BPM=" << rounded_bpm;
         qDebug() << "Rounded difference=" << bpm_diff;
         qDebug() << "Perform rounding=" << perform_rounding;
-        qDebug() << "Constrained to Range [" << min_bpm << "," << max_bpm << "]=" << constrainedBpm;
+        qDebug() << "Constrained to Range [" << min_bpm << "," << max_bpm << "]=" <<
+                 constrainedBpm;
     }
     return constrainedBpm;
 }
@@ -434,7 +440,8 @@ double BeatUtils::calculateFixedTempoFirstBeat(
     // Round to nearest integer.
     double firstBeat = floor(FirstFrame + 0.5);
     if (sDebug) {
-        qDebug() << "calculateFixedTempoFirstBeat chose a first beat at frame" << firstBeat
+        qDebug() << "calculateFixedTempoFirstBeat chose a first beat at frame" <<
+                 firstBeat
                  << "while the first raw beat was at" << rawbeats.at(0);
     }
     return firstBeat;

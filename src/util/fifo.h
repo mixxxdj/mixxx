@@ -124,7 +124,8 @@ class MessagePipe {
     bool m_bSerializeWrites;
 
 #define COMMA ,
-    DISALLOW_COPY_AND_ASSIGN(MessagePipe<SenderMessageType COMMA ReceiverMessageType>);
+    DISALLOW_COPY_AND_ASSIGN(
+        MessagePipe<SenderMessageType COMMA ReceiverMessageType>);
 #undef COMMA
 };
 
@@ -161,11 +162,13 @@ class TwoWayMessagePipe {
                MessagePipe<ReceiverMessageType, SenderMessageType>*>(
                    new MessagePipe<SenderMessageType, ReceiverMessageType>(
                        pipe->m_receiver_messages, pipe->m_sender_messages,
-                       new ReferenceHolder<TwoWayMessagePipe<SenderMessageType, ReceiverMessageType> >(pipe),
+                       new ReferenceHolder<TwoWayMessagePipe<SenderMessageType, ReceiverMessageType> >
+                       (pipe),
                        serialize_sender_writes),
                    new MessagePipe<ReceiverMessageType, SenderMessageType>(
                        pipe->m_sender_messages, pipe->m_receiver_messages,
-                       new ReferenceHolder<TwoWayMessagePipe<SenderMessageType, ReceiverMessageType> >(pipe),
+                       new ReferenceHolder<TwoWayMessagePipe<SenderMessageType, ReceiverMessageType> >
+                       (pipe),
                        serialize_receiver_writes));
     }
 
@@ -183,7 +186,8 @@ class TwoWayMessagePipe {
     // This #define is because the macro gets confused by the template
     // parameters.
 #define COMMA ,
-    DISALLOW_COPY_AND_ASSIGN(TwoWayMessagePipe<SenderMessageType COMMA ReceiverMessageType>);
+    DISALLOW_COPY_AND_ASSIGN(
+        TwoWayMessagePipe<SenderMessageType COMMA ReceiverMessageType>);
 #undef COMMA
 };
 

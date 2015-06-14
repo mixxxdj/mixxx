@@ -39,7 +39,8 @@ double ControlWidgetConnection::getControlParameter() const {
     return parameter;
 }
 
-double ControlWidgetConnection::getControlParameterForValue(double value) const {
+double ControlWidgetConnection::getControlParameterForValue(
+    double value) const {
     double parameter = m_pControl->getParameterForValue(value);
     if (m_pValueTransformer != NULL) {
         parameter = m_pValueTransformer->transform(parameter);
@@ -47,11 +48,12 @@ double ControlWidgetConnection::getControlParameterForValue(double value) const 
     return parameter;
 }
 
-ControlParameterWidgetConnection::ControlParameterWidgetConnection(WBaseWidget* pBaseWidget,
-        ControlObjectSlave* pControl,
-        ValueTransformer* pTransformer,
-        DirectionOption directionOption,
-        EmitOption emitOption)
+ControlParameterWidgetConnection::ControlParameterWidgetConnection(
+    WBaseWidget* pBaseWidget,
+    ControlObjectSlave* pControl,
+    ValueTransformer* pTransformer,
+    DirectionOption directionOption,
+    EmitOption emitOption)
     : ControlWidgetConnection(pBaseWidget, pControl, pTransformer),
       m_directionOption(directionOption),
       m_emitOption(emitOption) {
@@ -104,10 +106,11 @@ void ControlParameterWidgetConnection::setControlParameterUp(double v) {
     }
 }
 
-ControlWidgetPropertyConnection::ControlWidgetPropertyConnection(WBaseWidget* pBaseWidget,
-        ControlObjectSlave* pControl,
-        ValueTransformer* pTransformer,
-        const QString& propertyName)
+ControlWidgetPropertyConnection::ControlWidgetPropertyConnection(
+    WBaseWidget* pBaseWidget,
+    ControlObjectSlave* pControl,
+    ValueTransformer* pTransformer,
+    const QString& propertyName)
     : ControlWidgetConnection(pBaseWidget, pControl, pTransformer),
       m_propertyName(propertyName.toAscii()) {
     slotControlValueChanged(m_pControl->get());
@@ -119,7 +122,8 @@ ControlWidgetPropertyConnection::~ControlWidgetPropertyConnection() {
 QString ControlWidgetPropertyConnection::toDebugString() const {
     const ConfigKey& key = getKey();
     return QString("%1,%2 Parameter: %3 Property: %4 Value: %5").arg(
-               key.group, key.item, QString::number(m_pControl->getParameter()), m_propertyName,
+               key.group, key.item, QString::number(m_pControl->getParameter()),
+               m_propertyName,
                m_pWidget->toQWidget()->property(
                    m_propertyName.constData()).toString());
 }

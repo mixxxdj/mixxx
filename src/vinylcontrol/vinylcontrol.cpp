@@ -18,7 +18,8 @@ VinylControl::VinylControl(ConfigObject<ConfigValue>* pConfig, QString group)
                   .toDouble(&gainOk);
     m_pVinylControlInputGain->set(gainOk ? gain : 1.0);
 
-    playPos             = new ControlObjectThread(group, "playposition");    // Range: 0 to 1.0
+    playPos             = new ControlObjectThread(group,
+            "playposition");    // Range: 0 to 1.0
     trackSamples        = new ControlObjectThread(group, "track_samples");
     trackSampleRate     = new ControlObjectThread(group, "track_samplerate");
     vinylSeek           = new ControlObjectThread(group, "vinylcontrol_seek");
@@ -28,14 +29,16 @@ VinylControl::VinylControl(ConfigObject<ConfigValue>* pConfig, QString group)
     duration            = new ControlObjectThread(group, "duration");
     mode                = new ControlObjectThread(group, "vinylcontrol_mode");
     enabled             = new ControlObjectThread(group, "vinylcontrol_enabled");
-    wantenabled         = new ControlObjectThread(group, "vinylcontrol_wantenabled");
+    wantenabled         = new ControlObjectThread(group,
+            "vinylcontrol_wantenabled");
     cueing              = new ControlObjectThread(group, "vinylcontrol_cueing");
     scratching          = new ControlObjectThread(group, "vinylcontrol_scratching");
     rateRange           = new ControlObjectThread(group, "rateRange");
     vinylStatus         = new ControlObjectThread(group, "vinylcontrol_status");
     rateDir             = new ControlObjectThread(group, "rate_dir");
     loopEnabled         = new ControlObjectThread(group, "loop_enabled");
-    signalenabled       = new ControlObjectThread(group, "vinylcontrol_signal_enabled");
+    signalenabled       = new ControlObjectThread(group,
+            "vinylcontrol_signal_enabled");
     reverseButton       = new ControlObjectThread(group, "reverse");
 
     //Enabled or not -- load from saved value in case vinyl control is restarting
@@ -54,7 +57,8 @@ bool VinylControl::isEnabled() {
 
 void VinylControl::toggleVinylControl(bool enable) {
     if (m_pConfig) {
-        m_pConfig->set(ConfigKey(m_group,"vinylcontrol_enabled"), ConfigValue((int)enable));
+        m_pConfig->set(ConfigKey(m_group,"vinylcontrol_enabled"),
+                       ConfigValue((int)enable));
     }
 
     enabled->slotSet(enable);

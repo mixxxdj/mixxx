@@ -14,8 +14,9 @@
 #define DEFAULT_OUTPUT_ON   0x7F
 #define DEFAULT_OUTPUT_OFF  0x00
 
-ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement root,
-        const QString deviceName) {
+ControllerPresetPointer MidiControllerPresetFileHandler::load(
+    const QDomElement root,
+    const QString deviceName) {
     if (root.isNull()) {
         return ControllerPresetPointer();
     }
@@ -31,7 +32,8 @@ ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement 
     parsePresetInfo(root, preset);
     addScriptFilesToPreset(controller, preset);
 
-    QDomElement control = controller.firstChildElement("controls").firstChildElement("control");
+    QDomElement control =
+        controller.firstChildElement("controls").firstChildElement("control");
 
     // Iterate through each <control> block in the XML
     while (!control.isNull()) {
@@ -59,7 +61,8 @@ ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement 
         QString controlDescription = descriptionNode.text();
 
         // Get options
-        QDomElement optionsNode = control.firstChildElement("options").firstChildElement();
+        QDomElement optionsNode =
+            control.firstChildElement("options").firstChildElement();
 
         MidiOptions options;
 
@@ -109,7 +112,8 @@ ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement 
 
     // Parse static output mappings
 
-    QDomElement output = controller.firstChildElement("outputs").firstChildElement("output");
+    QDomElement output =
+        controller.firstChildElement("outputs").firstChildElement("output");
 
     // Iterate through each <control> block in the XML
     while (!output.isNull()) {
@@ -200,8 +204,9 @@ bool MidiControllerPresetFileHandler::save(const MidiControllerPreset& preset,
     return writeDocument(doc, fileName);
 }
 
-void MidiControllerPresetFileHandler::addControlsToDocument(const MidiControllerPreset& preset,
-        QDomDocument* doc) const {
+void MidiControllerPresetFileHandler::addControlsToDocument(
+    const MidiControllerPreset& preset,
+    QDomDocument* doc) const {
     QDomElement controller = doc->documentElement().firstChildElement("controller");
     QDomElement controls = doc->createElement("controls");
 

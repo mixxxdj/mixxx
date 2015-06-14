@@ -54,15 +54,18 @@ void EffectButtonParameterSlot::loadEffect(EffectPointer pEffect) {
             //qDebug() << debugString() << "Loading effect parameter" << m_pEffectParameter->name();
             double dValue = m_pEffectParameter->getValue();
             double dMinimum = m_pEffectParameter->getMinimum();
-            double dMinimumLimit = dMinimum; // TODO(rryan) expose limit from EffectParameter
+            double dMinimumLimit =
+                dMinimum; // TODO(rryan) expose limit from EffectParameter
             double dMaximum = m_pEffectParameter->getMaximum();
-            double dMaximumLimit = dMaximum; // TODO(rryan) expose limit from EffectParameter
+            double dMaximumLimit =
+                dMaximum; // TODO(rryan) expose limit from EffectParameter
             double dDefault = m_pEffectParameter->getDefault();
 
             if (dValue > dMaximum || dValue < dMinimum ||
                     dMinimum < dMinimumLimit || dMaximum > dMaximumLimit ||
                     dDefault > dMaximum || dDefault < dMinimum) {
-                qWarning() << debugString() << "WARNING: EffectParameter does not satisfy basic sanity checks.";
+                qWarning() << debugString() <<
+                           "WARNING: EffectParameter does not satisfy basic sanity checks.";
             }
 
             // qDebug() << debugString()
@@ -71,7 +74,8 @@ void EffectButtonParameterSlot::loadEffect(EffectPointer pEffect) {
 
             m_pControlValue->set(dValue);
             m_pControlValue->setDefaultValue(dDefault);
-            EffectManifestParameter::ControlHint type = m_pEffectParameter->getControlHint();
+            EffectManifestParameter::ControlHint type =
+                m_pEffectParameter->getControlHint();
             // TODO(rryan) expose this from EffectParameter
             m_pControlType->setAndConfirm(static_cast<double>(type));
             // Default loaded parameters to loaded and unlinked

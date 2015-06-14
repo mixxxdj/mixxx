@@ -66,7 +66,8 @@ class TrackModel {
     bool isTrackModel() {
         return true;
     }
-    virtual void search(const QString& searchText, const QString& extraFilter=QString()) = 0;
+    virtual void search(const QString& searchText,
+                        const QString& extraFilter=QString()) = 0;
     virtual const QString currentSearch() const = 0;
     virtual bool isColumnInternal(int column) = 0;
     // if no header state exists, we may hide some columns so that the user can
@@ -91,7 +92,8 @@ class TrackModel {
     virtual void purgeTracks(const QModelIndexList& indices) {
         Q_UNUSED(indices);
     }
-    virtual int addTracks(const QModelIndex& index, const QList<QString>& locations) {
+    virtual int addTracks(const QModelIndex& index,
+                          const QList<QString>& locations) {
         Q_UNUSED(index);
         Q_UNUSED(locations);
         return 0;
@@ -104,7 +106,8 @@ class TrackModel {
     virtual bool isLocked() {
         return false;
     }
-    virtual QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent) {
+    virtual QAbstractItemDelegate* delegateForColumn(const int i,
+            QObject* pParent) {
         Q_UNUSED(i);
         Q_UNUSED(pParent);
         return NULL;

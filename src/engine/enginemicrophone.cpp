@@ -15,10 +15,12 @@
 EngineMicrophone::EngineMicrophone(const ChannelHandleAndGroup& handle_group,
                                    EffectsManager* pEffectsManager)
     : EngineChannel(handle_group, EngineChannel::CENTER),
-      m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
+      m_pEngineEffectsManager(pEffectsManager ?
+                              pEffectsManager->getEngineEffectsManager() : NULL),
       m_vuMeter(getGroup()),
       m_pEnabled(new ControlObject(ConfigKey(getGroup(), "enabled"))),
-      m_pPregain(new ControlAudioTaperPot(ConfigKey(getGroup(), "pregain"), -12, 12, 0.5)),
+      m_pPregain(new ControlAudioTaperPot(ConfigKey(getGroup(), "pregain"), -12, 12,
+                                          0.5)),
       m_sampleBuffer(NULL),
       m_wasActive(false) {
     if (pEffectsManager != NULL) {
@@ -51,7 +53,8 @@ bool EngineMicrophone::isActive() {
 void EngineMicrophone::onInputConfigured(AudioInput input) {
     if (input.getType() != AudioPath::MICROPHONE) {
         // This is an error!
-        qWarning() << "EngineMicrophone connected to AudioInput for a non-Microphone type!";
+        qWarning() <<
+                   "EngineMicrophone connected to AudioInput for a non-Microphone type!";
         return;
     }
     m_sampleBuffer = NULL;
@@ -61,7 +64,8 @@ void EngineMicrophone::onInputConfigured(AudioInput input) {
 void EngineMicrophone::onInputUnconfigured(AudioInput input) {
     if (input.getType() != AudioPath::MICROPHONE) {
         // This is an error!
-        qWarning() << "EngineMicrophone connected to AudioInput for a non-Microphone type!";
+        qWarning() <<
+                   "EngineMicrophone connected to AudioInput for a non-Microphone type!";
         return;
     }
     m_sampleBuffer = NULL;

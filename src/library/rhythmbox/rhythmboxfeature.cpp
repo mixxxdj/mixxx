@@ -10,7 +10,8 @@
 #include "library/treeitem.h"
 #include "library/queryutil.h"
 
-RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackCollection)
+RhythmboxFeature::RhythmboxFeature(QObject* parent,
+                                   TrackCollection* pTrackCollection)
     : BaseExternalLibraryFeature(parent, pTrackCollection),
       m_pTrackCollection(pTrackCollection),
       m_cancelImport(false) {
@@ -79,7 +80,8 @@ RhythmboxFeature::~RhythmboxFeature() {
     delete m_pRhythmboxPlaylistModel;
 }
 
-BaseSqlTableModel* RhythmboxFeature::getPlaylistModelForPlaylist(QString playlist) {
+BaseSqlTableModel* RhythmboxFeature::getPlaylistModelForPlaylist(
+    QString playlist) {
     BaseExternalPlaylistModel* pModel = new BaseExternalPlaylistModel(
         this, m_pTrackCollection,
         "mixxx.db.model.rhythmbox_playlist",
@@ -121,7 +123,8 @@ void RhythmboxFeature::activate() {
         // takes place when the GUI threads terminates, i.e., on
         // Mixxx shutdown.
         QThreadPool::globalInstance()->setMaxThreadCount(4); //Tobias decided to use 4
-        m_track_future = QtConcurrent::run(this, &RhythmboxFeature::importMusicCollection);
+        m_track_future = QtConcurrent::run(this,
+                                           &RhythmboxFeature::importMusicCollection);
         m_track_watcher.setFuture(m_track_future);
         m_title = "(loading) Rhythmbox";
         //calls a slot in the sidebar model such that 'Rhythmbox (isLoading)' is displayed.

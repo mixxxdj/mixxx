@@ -57,7 +57,8 @@ class EngineMicrophoneTest : public testing::Test {
         }
     }
 
-    void AssertWholeBufferEquals(const CSAMPLE* pBuffer, CSAMPLE value, int iBufferLen) {
+    void AssertWholeBufferEquals(const CSAMPLE* pBuffer, CSAMPLE value,
+                                 int iBufferLen) {
         for (int i = 0; i < iBufferLen; ++i) {
             ASSERT_FLOAT_EQ(value, pBuffer[i]);
         }

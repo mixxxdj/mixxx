@@ -10,7 +10,8 @@ class ControlObjectSlave;
 
 class WaveformRendererSignalBase : public WaveformRendererAbstract {
   public:
-    explicit WaveformRendererSignalBase(WaveformWidgetRenderer* waveformWidgetRenderer);
+    explicit WaveformRendererSignalBase(WaveformWidgetRenderer*
+                                        waveformWidgetRenderer);
     virtual ~WaveformRendererSignalBase();
 
     virtual bool init();

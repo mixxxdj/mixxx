@@ -54,9 +54,11 @@ SoundManager::SoundManager(ConfigObject<ConfigValue>* pConfig,
 
     // TODO(xxx) some of these ControlObject are not needed by soundmanager, or are unused here.
     // It is possible to take them out?
-    m_pControlObjectSoundStatusCO = new ControlObject(ConfigKey("[SoundManager]", "status"));
+    m_pControlObjectSoundStatusCO = new ControlObject(ConfigKey("[SoundManager]",
+            "status"));
     m_pControlObjectSoundStatusCO->set(SOUNDMANAGER_DISCONNECTED);
-    m_pControlObjectVinylControlGainCO = new ControlObject(ConfigKey(VINYL_PREF_KEY, "gain"));
+    m_pControlObjectVinylControlGainCO = new ControlObject(ConfigKey(VINYL_PREF_KEY,
+            "gain"));
 
     //Hack because PortAudio samplerate enumeration is slow as hell on Linux (ALSA dmix sucks, so we can't blame PortAudio)
     m_samplerates.push_back(44100);
@@ -257,7 +259,8 @@ void SoundManager::queryDevices() {
             PaTime  defaultHighOutputLatency
             double  defaultSampleRate
          */
-        SoundDevicePortAudio* currentDevice = new SoundDevicePortAudio(m_pConfig, this, deviceInfo, i);
+        SoundDevicePortAudio* currentDevice = new SoundDevicePortAudio(m_pConfig, this,
+                deviceInfo, i);
         m_devices.push_back(currentDevice);
         if (!strcmp(Pa_GetHostApiInfo(deviceInfo->hostApi)->name,
                     MIXXX_PORTAUDIO_JACK_STRING)) {
@@ -322,7 +325,8 @@ Result SoundManager::setupDevices() {
         device->clearInputs();
         device->clearOutputs();
         m_pErrorDevice = device;
-        foreach (AudioInput in, m_config.getInputs().values(device->getInternalName())) {
+        foreach (AudioInput in, m_config.getInputs().values(
+                     device->getInternalName())) {
             isInput = true;
             // TODO(bkgood) look into allocating this with the frames per
             // buffer value from SMConfig
@@ -343,7 +347,8 @@ Result SoundManager::setupDevices() {
                 it.value()->onInputConfigured(in);
             }
         }
-        foreach (AudioOutput out, m_config.getOutputs().values(device->getInternalName())) {
+        foreach (AudioOutput out,
+                 m_config.getOutputs().values(device->getInternalName())) {
             isOutput = true;
             // following keeps us from asking for a channel buffer EngineMaster
             // doesn't have -- bkgood
@@ -452,7 +457,8 @@ Result SoundManager::setConfig(SoundManagerConfig config) {
     // certain parts of mixxx rely on this being here, for the time being, just
     // letting those be -- bkgood
     // Do this first so vinyl control gets the right samplerate -- Owen W.
-    m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(m_config.getSampleRate()));
+    m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"),
+                   ConfigValue(m_config.getSampleRate()));
 
     err = setupDevices();
     if (err == OK) {
@@ -464,7 +470,8 @@ Result SoundManager::setConfig(SoundManagerConfig config) {
 void SoundManager::checkConfig() {
     if (!m_config.checkAPI(*this)) {
         m_config.setAPI(SoundManagerConfig::kDefaultAPI);
-        m_config.loadDefaults(this, SoundManagerConfig::API | SoundManagerConfig::DEVICES);
+        m_config.loadDefaults(this,
+                              SoundManagerConfig::API | SoundManagerConfig::DEVICES);
     }
     if (!m_config.checkSampleRate(*this)) {
         m_config.setSampleRate(SoundManagerConfig::kFallbackSampleRate);

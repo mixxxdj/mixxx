@@ -18,7 +18,8 @@ typedef QSharedPointer<EffectParameterSlotBase> EffectParameterSlotBasePointer;
 class EffectParameterSlotBase : public QObject {
     Q_OBJECT
   public:
-    EffectParameterSlotBase(const QString& group, const unsigned int iParameterSlotNumber);
+    EffectParameterSlotBase(const QString& group,
+                            const unsigned int iParameterSlotNumber);
     virtual ~EffectParameterSlotBase();
 
     QString name() const;

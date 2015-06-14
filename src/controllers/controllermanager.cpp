@@ -121,7 +121,8 @@ ControllerManager::~ControllerManager() {
     delete m_pMainThreadPresetEnumerator;
 }
 
-ControllerLearningEventFilter* ControllerManager::getControllerLearningEventFilter() const {
+ControllerLearningEventFilter*
+ControllerManager::getControllerLearningEventFilter() const {
     return m_pControllerLearningEventFilter;
 }
 
@@ -171,7 +172,8 @@ QList<Controller*> ControllerManager::getControllers() const {
     return m_controllers;
 }
 
-QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, bool bInputDevices) {
+QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices,
+        bool bInputDevices) {
     qDebug() << "ControllerManager::getControllerList";
 
     QMutexLocker locker(&m_mutex);
@@ -225,7 +227,8 @@ int ControllerManager::slotSetUpDevices() {
             continue;
         }
 
-        if (m_pConfig->getValueString(ConfigKey("[Controller]", presetBaseName)) != "1") {
+        if (m_pConfig->getValueString(ConfigKey("[Controller]",
+                                                presetBaseName)) != "1") {
             continue;
         }
 
@@ -372,7 +375,8 @@ void ControllerManager::slotSavePresets(bool onlyActive) {
 }
 
 // static
-QList<QString> ControllerManager::getPresetPaths(ConfigObject<ConfigValue>* pConfig) {
+QList<QString> ControllerManager::getPresetPaths(ConfigObject<ConfigValue>*
+        pConfig) {
     QList<QString> scriptPaths;
     scriptPaths.append(userPresetsPath(pConfig));
     scriptPaths.append(localPresetsPath(pConfig));

@@ -39,7 +39,8 @@ class Effect : public QObject {
     static bool isButtonParameter(EffectParameter* parameter);
     static bool isKnobParameter(EffectParameter* parameter);
 
-    EffectParameter* getFilteredParameterForSlot(ParameterFilterFnc filterFnc, unsigned int slotNumber);
+    EffectParameter* getFilteredParameterForSlot(ParameterFilterFnc filterFnc,
+            unsigned int slotNumber);
     EffectParameter* getKnobParameterForSlot(unsigned int slotNumber);
     EffectParameter* getButtonParameterForSlot(unsigned int slotNumber);
 

@@ -20,12 +20,14 @@ DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
       m_durationRecordedStr("--:--"),
       m_pRecordingManager(pRecordingManager) {
     setupUi(this);
-    m_pTrackTableView = new WTrackTableView(this, pConfig, m_pTrackCollection, false); // No sorting
+    m_pTrackTableView = new WTrackTableView(this, pConfig, m_pTrackCollection,
+                                            false); // No sorting
     m_pTrackTableView->installEventFilter(pKeyboard);
 
     connect(m_pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
-    connect(m_pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
+    connect(m_pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString,
+                                      bool)),
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
     connect(pLibrary, SIGNAL(setTrackTableFont(QFont)),
             m_pTrackTableView, SLOT(setTrackTableFont(QFont)));

@@ -16,7 +16,8 @@
 
 #include "vinylcontrol/vinylsignalquality.h"
 
-class VinylControlSignalWidget : public QWidget, public VinylSignalQualityListener {
+class VinylControlSignalWidget : public QWidget,
+    public VinylSignalQualityListener {
     Q_OBJECT
   public:
     VinylControlSignalWidget();

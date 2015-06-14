@@ -19,7 +19,8 @@
 #include "controlpotmeter.h"
 #include "controlobjectthread.h"
 
-ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue, double dMaxValue,
+ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue,
+                                 double dMaxValue,
                                  bool allowOutOfBounds,
                                  bool bIgnoreNops,
                                  bool bTrack,

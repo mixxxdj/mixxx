@@ -93,7 +93,8 @@ void EngineSideChain::run() {
     // the id of this thread, for debugging purposes //XXX copypasta (should
     // factor this out somehow), -kousu 2/2009
     unsigned static id = 0;
-    QThread::currentThread()->setObjectName(QString("EngineSideChain %1").arg(++id));
+    QThread::currentThread()->setObjectName(QString("EngineSideChain %1").arg(
+            ++id));
 
     Event::start("EngineSideChain");
     while (!m_bStopThread) {

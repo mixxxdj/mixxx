@@ -51,7 +51,8 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     }
     int getTrackId(const QModelIndex& index) const;
     void search(const QString& searchText, const QString& extraFilter = QString());
-    void setSearch(const QString& searchText, const QString& extraFilter = QString());
+    void setSearch(const QString& searchText,
+                   const QString& extraFilter = QString());
     const QString currentSearch() const;
     void setSort(int column, Qt::SortOrder order);
     void hideTracks(const QModelIndexList& indices);
@@ -66,7 +67,8 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     void sort(int column, Qt::SortOrder order);
     int rowCount(const QModelIndex& parent=QModelIndex()) const;
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
-    bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
+    bool setData(const QModelIndex& index, const QVariant& value,
+                 int role = Qt::EditRole);
     int columnCount(const QModelIndex& parent = QModelIndex()) const;
     bool setHeaderData(int section, Qt::Orientation orientation,
                        const QVariant& value, int role = Qt::DisplayRole);
@@ -107,9 +109,12 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     // A simple helper function for initializing header title and width.  Note
     // that the ideal width of a column is based on the width of its data,
     // not the title string itself.
-    void setHeaderProperties(ColumnCache::Column column, QString title, int defaultWidth);
-    inline void setTrackValueForColumn(TrackPointer pTrack, int column, QVariant value);
-    QVariant getBaseValue(const QModelIndex& index, int role = Qt::DisplayRole) const;
+    void setHeaderProperties(ColumnCache::Column column, QString title,
+                             int defaultWidth);
+    inline void setTrackValueForColumn(TrackPointer pTrack, int column,
+                                       QVariant value);
+    QVariant getBaseValue(const QModelIndex& index,
+                          int role = Qt::DisplayRole) const;
     // Set the columns used for searching. Names must correspond to the column
     // names in the table provided to setTable. Must be called after setTable is
     // called.

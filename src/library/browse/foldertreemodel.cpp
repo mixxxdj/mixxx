@@ -79,7 +79,8 @@ bool FolderTreeModel::directoryHasChildren(const QString& path) const {
 
     //quick subfolder test
     SHFILEINFOW sfi;
-    SHGetFileInfo((LPCWSTR) folder.constData(), NULL, &sfi, sizeof(sfi), SHGFI_ATTRIBUTES);
+    SHGetFileInfo((LPCWSTR) folder.constData(), NULL, &sfi, sizeof(sfi),
+                  SHGFI_ATTRIBUTES);
     has_children = (sfi.dwAttributes & SFGAO_HASSUBFOLDER);
 #else
     // For OS X and Linux

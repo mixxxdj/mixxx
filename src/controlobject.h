@@ -41,11 +41,13 @@ class ControlObject : public QObject {
 
     // Returns a pointer to the ControlObject matching the given ConfigKey
     static ControlObject* getControl(const ConfigKey& key, bool warn = true);
-    static inline ControlObject* getControl(const QString& group, const QString& item, bool warn = true) {
+    static inline ControlObject* getControl(const QString& group,
+                                            const QString& item, bool warn = true) {
         ConfigKey key(group, item);
         return getControl(key, warn);
     }
-    static inline ControlObject* getControl(const char* group, const char* item, bool warn = true) {
+    static inline ControlObject* getControl(const char* group, const char* item,
+                                            bool warn = true) {
         ConfigKey key(group, item);
         return getControl(key, warn);
     }

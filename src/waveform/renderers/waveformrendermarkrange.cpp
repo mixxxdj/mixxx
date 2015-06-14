@@ -14,14 +14,16 @@
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 
-WaveformRenderMarkRange::WaveformRenderMarkRange(WaveformWidgetRenderer* waveformWidgetRenderer) :
+WaveformRenderMarkRange::WaveformRenderMarkRange(WaveformWidgetRenderer*
+        waveformWidgetRenderer) :
     WaveformRendererAbstract(waveformWidgetRenderer) {
 }
 
 WaveformRenderMarkRange::~WaveformRenderMarkRange() {
 }
 
-void WaveformRenderMarkRange::setup(const QDomNode& node, const SkinContext& context) {
+void WaveformRenderMarkRange::setup(const QDomNode& node,
+                                    const SkinContext& context) {
     m_markRanges.clear();
     m_markRanges.reserve(1);
 
@@ -58,8 +60,10 @@ void WaveformRenderMarkRange::draw(QPainter* painter, QPaintEvent* /*event*/) {
         int startSample = markRange.start();
         int endSample = markRange.end();
 
-        double startPosition = m_waveformRenderer->transformSampleIndexInRendererWorld(startSample);
-        double endPosition = m_waveformRenderer->transformSampleIndexInRendererWorld(endSample);
+        double startPosition = m_waveformRenderer->transformSampleIndexInRendererWorld(
+                                   startSample);
+        double endPosition = m_waveformRenderer->transformSampleIndexInRendererWorld(
+                                 endSample);
 
         //range not in the current display
         if (startPosition > m_waveformRenderer->getWidth() || endPosition < 0)
@@ -67,11 +71,13 @@ void WaveformRenderMarkRange::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
         QImage* selectedImage = NULL;
 
-        selectedImage = markRange.enabled() ? &markRange.m_activeImage : &markRange.m_disabledImage;
+        selectedImage = markRange.enabled() ? &markRange.m_activeImage :
+                        &markRange.m_disabledImage;
 
         // draw the corresponding portion of the selected image
         // this shouldn't involve *any* scaling it should be fast even in software mode
-        QRect rect(startPosition,0,endPosition-startPosition,m_waveformRenderer->getHeight());
+        QRect rect(startPosition,0,endPosition-startPosition,
+                   m_waveformRenderer->getHeight());
         painter->drawImage(rect, *selectedImage, rect);
     }
 
@@ -80,7 +86,8 @@ void WaveformRenderMarkRange::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
 void WaveformRenderMarkRange::generateImages() {
     for (unsigned int i = 0; i < m_markRanges.size(); i++) {
-        m_markRanges[i].generateImage(m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight());
+        m_markRanges[i].generateImage(m_waveformRenderer->getWidth(),
+                                      m_waveformRenderer->getHeight());
     }
     setDirty(false);
 }

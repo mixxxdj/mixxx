@@ -62,7 +62,8 @@ void WCoverArtMenu::slotChange() {
     }
 
     QStringList extensions = CoverArtUtils::supportedCoverArtExtensions();
-    for (QStringList::iterator it = extensions.begin(); it != extensions.end(); ++it) {
+    for (QStringList::iterator it = extensions.begin(); it != extensions.end();
+            ++it) {
         it->prepend("*.");
     }
     QString supportedText = QString("%1 (%2)").arg(tr("Image Files"))

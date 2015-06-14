@@ -28,7 +28,8 @@ void LibraryTableModel::setTableModel(int id) {
     const QString tableName = "library_view";
 
     QSqlQuery query(m_pTrackCollection->getDatabase());
-    QString queryString = "CREATE TEMPORARY VIEW IF NOT EXISTS " + tableName + " AS "
+    QString queryString = "CREATE TEMPORARY VIEW IF NOT EXISTS " + tableName +
+                          " AS "
                           "SELECT " + columns.join(", ") +
                           " FROM library INNER JOIN track_locations "
                           "ON library.location = track_locations.id "

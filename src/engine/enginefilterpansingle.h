@@ -35,7 +35,8 @@ class EngineFilterPanSingle {
         }
     }
 
-    virtual void process(const CSAMPLE* pIn, CSAMPLE* pOutput, double leftDelayFrames) {
+    virtual void process(const CSAMPLE* pIn, CSAMPLE* pOutput,
+                         double leftDelayFrames) {
         double delayLeftSourceFrame;
         double delayRightSourceFrame;
 
@@ -58,11 +59,15 @@ class EngineFilterPanSingle {
         double timeBetweenFullSamplesRight = fmod(delayRightSourceFrame, 1);
 
         // applying the delay on left channel with linear interpolation between each sample
-        pOutput[0] = m_buf[(static_cast<int>(floor(delayLeftSourceFrame)) % SIZE) * 2] * (1 - timeBetweenFullSamplesLeft);
-        pOutput[0] += m_buf[(static_cast<int>(ceil(delayLeftSourceFrame)) % SIZE) * 2] * timeBetweenFullSamplesLeft;
+        pOutput[0] = m_buf[(static_cast<int>(floor(delayLeftSourceFrame)) % SIZE) *
+                           2] * (1 - timeBetweenFullSamplesLeft);
+        pOutput[0] += m_buf[(static_cast<int>(ceil(delayLeftSourceFrame)) % SIZE) * 2] *
+                      timeBetweenFullSamplesLeft;
         // then on right channel
-        pOutput[1] = m_buf[(static_cast<int>(floor(delayRightSourceFrame)) % SIZE) * 2 + 1] * (1 - timeBetweenFullSamplesRight);
-        pOutput[1] += m_buf[(static_cast<int>(ceil(delayRightSourceFrame)) % SIZE) * 2 + 1] * timeBetweenFullSamplesRight;
+        pOutput[1] = m_buf[(static_cast<int>(floor(delayRightSourceFrame)) % SIZE) * 2 +
+                           1] * (1 - timeBetweenFullSamplesRight);
+        pOutput[1] += m_buf[(static_cast<int>(ceil(delayRightSourceFrame)) % SIZE) * 2 +
+                            1] * timeBetweenFullSamplesRight;
 
         m_doStart = false;
     }

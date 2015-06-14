@@ -56,7 +56,8 @@ void WaveformMarkRange::setup(const QString& group, const QDomNode& node,
         //vRince kind of legacy fallback ...
         // As a fallback, grab the mark color from the parent's MarkerColor
         m_activeColor = signalColors.getAxesColor();
-        qDebug() << "Didn't get mark Color, using parent's <AxesColor>:" << m_activeColor;
+        qDebug() << "Didn't get mark Color, using parent's <AxesColor>:" <<
+                 m_activeColor;
     } else {
         m_activeColor = WSkinColor::getCorrectColor(m_activeColor);
     }
@@ -66,7 +67,8 @@ void WaveformMarkRange::setup(const QString& group, const QDomNode& node,
         //vRince kind of legacy fallback ...
         // Read the text color, otherwise use the parent's SignalColor.
         m_disabledColor = signalColors.getSignalColor();
-        qDebug() << "Didn't get mark TextColor, using parent's <SignalColor>:" << m_disabledColor;
+        qDebug() << "Didn't get mark TextColor, using parent's <SignalColor>:" <<
+                 m_disabledColor;
     }
 
     QString startControl = context.selectString(node, "StartControl");

@@ -105,7 +105,8 @@ template <class ValueType> ConfigObject<ValueType>::~ConfigObject() {
 }
 
 template <class ValueType>
-ConfigOption<ValueType>* ConfigObject<ValueType>::set(ConfigKey k, ValueType v) {
+ConfigOption<ValueType>* ConfigObject<ValueType>::set(ConfigKey k,
+        ValueType v) {
     // Search for key in list, and set value if found
     QListIterator<ConfigOption<ValueType>* > iterator(m_list);
     ConfigOption<ValueType>* it;
@@ -192,7 +193,8 @@ QString ConfigObject<ValueType>::getValueString(ConfigKey k) {
 }
 
 template <class ValueType>
-QString ConfigObject<ValueType>::getValueString(ConfigKey k, const QString& default_string) {
+QString ConfigObject<ValueType>::getValueString(ConfigKey k,
+        const QString& default_string) {
     QString ret = get(k)->val->value;
     if (ret.isEmpty()) {
         return default_string;
@@ -225,7 +227,8 @@ template <class ValueType> bool ConfigObject<ValueType>::Parse() {
                 } else if (group>0) {
                     QString key;
                     QTextStream(&line) >> key;
-                    QString val = line.right(line.length() - key.length()); // finds the value string
+                    QString val = line.right(line.length() -
+                                             key.length()); // finds the value string
                     val = val.trimmed();
                     //qDebug() << "control:" << key << "value:" << val;
                     ConfigKey k(groupStr, key);
@@ -283,7 +286,8 @@ template <class ValueType> void ConfigObject<ValueType>::Save() {
             stream << it->key->item << " " << it->val->value << "\n";
         }
         file.close();
-        if (file.error()!=QFile::NoError) //could be better... should actually say what the error was..
+        if (file.error()!=
+                QFile::NoError) //could be better... should actually say what the error was..
             qDebug() << "Error while writing configuration file:" << file.errorString();
     }
 }
@@ -349,7 +353,8 @@ QString ConfigObject<ValueType>::getResourcePath() const {
     return qResourcePath;
 }
 
-template <class ValueType> ConfigObject<ValueType>::ConfigObject(QDomNode node) {
+template <class ValueType> ConfigObject<ValueType>::ConfigObject(
+    QDomNode node) {
     if (!node.isNull() && node.isElement()) {
         QDomNode ctrl = node.firstChild();
 
@@ -366,12 +371,14 @@ template <class ValueType> ConfigObject<ValueType>::ConfigObject(QDomNode node) 
     }
 }
 
-template <class ValueType> QString ConfigObject<ValueType>::getSettingsPath() const {
+template <class ValueType> QString ConfigObject<ValueType>::getSettingsPath()
+const {
     QFileInfo configFileInfo(m_filename);
     return configFileInfo.absoluteDir().absolutePath();
 }
 
-template <class ValueType> QHash<ConfigKey, ValueType> ConfigObject<ValueType>::toHash() const {
+template <class ValueType> QHash<ConfigKey, ValueType>
+ConfigObject<ValueType>::toHash() const {
     QHash<ConfigKey, ValueType> hash;
     foreach (ConfigOption<ValueType>* pOption, m_list) {
         hash.insert(*pOption->key, *pOption->val);

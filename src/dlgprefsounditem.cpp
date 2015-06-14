@@ -57,7 +57,8 @@ DlgPrefSoundItem::~DlgPrefSoundItem() {
  */
 void DlgPrefSoundItem::refreshDevices(const QList<SoundDevice*>& devices) {
     m_devices = devices;
-    QString oldDev = deviceComboBox->itemData(deviceComboBox->currentIndex()).toString();
+    QString oldDev = deviceComboBox->itemData(
+                         deviceComboBox->currentIndex()).toString();
     deviceComboBox->setCurrentIndex(0);
     // not using combobox->clear means we can leave in "None" so it
     // doesn't flicker when you switch APIs... cleaner Mixxx :) bkgood
@@ -205,8 +206,10 @@ void DlgPrefSoundItem::writePath(SoundManagerConfig* config) const {
  * Slot called to tell the Item to save its selections for later use.
  */
 void DlgPrefSoundItem::save() {
-    m_savedDevice = deviceComboBox->itemData(deviceComboBox->currentIndex()).toString();
-    m_savedChannel = channelComboBox->itemData(channelComboBox->currentIndex()).toPoint();
+    m_savedDevice = deviceComboBox->itemData(
+                        deviceComboBox->currentIndex()).toString();
+    m_savedChannel = channelComboBox->itemData(
+                         channelComboBox->currentIndex()).toPoint();
 }
 
 /**
@@ -228,7 +231,8 @@ void DlgPrefSoundItem::reload() {
  * @returns pointer to SoundDevice, or NULL if the "None" option is selected.
  */
 SoundDevice* DlgPrefSoundItem::getDevice() const {
-    QString selection = deviceComboBox->itemData(deviceComboBox->currentIndex()).toString();
+    QString selection = deviceComboBox->itemData(
+                            deviceComboBox->currentIndex()).toString();
     if (selection == "None") {
         return NULL;
     }
