@@ -187,6 +187,8 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
             // Note: We changed SETTINGS_PATH in 1.9.0 final on OS X so it must be hardcoded to ".mixxx" here for legacy.
             config = new ConfigObject<ConfigValue>(QDir::homePath().append("/.mixxx/mixxx.cfg"));
             // Just to be sure all files like logs and soundconfig go with mixxx.cfg
+            // TODO(XXX) Trailing slash not needed anymore as we switches from String::append
+            // to QDir::filePath elsewhere in the code. This is candidate for removal.
             CmdlineArgs::Instance().setSettingsPath(QDir::homePath().append("/.mixxx/"));
             configVersion = config->getValueString(ConfigKey("[Config]","Version"));
         }
@@ -200,6 +202,8 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
             // Note: We changed SETTINGS_PATH in 1.12.0 final on Windows so it must be hardcoded to "Local Settings/Application Data/Mixxx/" here for legacy.
             config = new ConfigObject<ConfigValue>(QDir::homePath().append("/Local Settings/Application Data/Mixxx/mixxx.cfg"));
             // Just to be sure all files like logs and soundconfig go with mixxx.cfg
+            // TODO(XXX) Trailing slash not needed anymore as we switches from String::append
+            // to QDir::filePath elsewhere in the code. This is candidate for removal.
             CmdlineArgs::Instance().setSettingsPath(QDir::homePath().append("/Local Settings/Application Data/Mixxx/")); 
             configVersion = config->getValueString(ConfigKey("[Config]","Version"));
         }

@@ -28,6 +28,8 @@ class CmdlineArgs {
                 m_locale = argv[i+1];
             } else if (argv[i] == QString("--settingsPath") && i+1 < argc) {
                 m_settingsPath = QString::fromLocal8Bit(argv[i+1]);
+                // TODO(XXX) Trailing slash not needed anymore as we switches from String::append
+                // to QDir::filePath elsewhere in the code. This is candidate for removal.
                 if (!m_settingsPath.endsWith("/")) {
                     m_settingsPath.append("/");
                 }
@@ -82,6 +84,8 @@ class CmdlineArgs {
 #ifdef __LINUX__
         m_settingsPath(QDir::homePath().append("/").append(SETTINGS_PATH)) {
 #else
+        // TODO(XXX) Trailing slash not needed anymore as we switches from String::append
+        // to QDir::filePath elsewhere in the code. This is candidate for removal.
         m_settingsPath(QDesktopServices::storageLocation(QDesktopServices::DataLocation).append("/")) {
 #endif
     }
