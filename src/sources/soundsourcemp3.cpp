@@ -487,6 +487,18 @@ SINT SoundSourceMp3::seekSampleFrame(SINT frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(isValidFrameIndex(frameIndex));
 
+    // Handle trivial case
+    if (m_curFrameIndex == frameIndex) {
+        // Nothing to do
+        return m_curFrameIndex;
+    }
+    // Handle edge case
+    if (getMaxFrameIndex() <= frameIndex) {
+        // EOF reached
+        m_curFrameIndex = getMaxFrameIndex();
+        return m_curFrameIndex;
+    }
+
     SINT seekFrameIndex = findSeekFrameIndex(
             frameIndex);
     DEBUG_ASSERT(SINT(m_seekFrameList.size()) > seekFrameIndex);
