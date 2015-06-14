@@ -65,7 +65,7 @@ class CmdlineArgs {
     const QString& getLocale() const { return m_locale; }
     const QString& getSettingsPath() const { return m_settingsPath; }
     void setSettingsPath(const QString& newSettingsPath) { 
-        m_settingsPath=newSettingsPath; 
+        m_settingsPath = newSettingsPath; 
     }
     const QString& getResourcePath() const { return m_resourcePath; }
     const QString& getPluginPath() const { return m_pluginPath; }
