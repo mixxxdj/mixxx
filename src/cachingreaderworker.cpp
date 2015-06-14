@@ -64,6 +64,11 @@ void CachingReaderWorker::processChunkReadRequest(
         update->status = CHUNK_READ_INVALID;
         return;
     }
+    if (m_pAudioSource->getMaxFrameIndex() <= chunkFrameIndex) {
+        // No more data available for reading
+        update->status = CHUNK_READ_EOF;
+        return;
+    }
 
     const SINT seekFrameIndex =
             m_pAudioSource->seekSampleFrame(chunkFrameIndex);
