@@ -193,6 +193,15 @@ QString formatMidiMessage(unsigned char status, unsigned char control, unsigned 
                          QString::number((status & 255)>>4, 16).toUpper(),
                          QString::number(control, 16).toUpper().rightJustified(2,'0'),
                          QString::number(value, 16).toUpper().rightJustified(2,'0'));
+        case MIDI_START:
+            return QString("MIDI status 0x%1: Start Sequence")
+                    .arg(QString::number(status, 16).toUpper());
+        case MIDI_TIMING_CLK:
+            return QString("MIDI status 0x%1: Clock Tick")
+                    .arg(QString::number(status, 16).toUpper());
+        case MIDI_STOP:
+            return QString("MIDI status 0x%1: Stop Sequence")
+                    .arg(QString::number(status, 16).toUpper());
         default:
             return QString("MIDI status 0x%1")
                     .arg(QString::number(status, 16).toUpper());
@@ -244,6 +253,7 @@ void MidiController::receive(unsigned char status, unsigned char control,
     if (debugging()) {
         qDebug() << formatMidiMessage(status, control, value, channel, opCode);
     }
+
 
     MidiKey mappingKey(status, control);
 
@@ -310,7 +320,7 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
         m_fourteen_bit_queued_mappings.clear();
     }
 
-    //qDebug() << "MIDI Options" << QString::number(mapping.options.all, 2).rightJustified(16,'0');
+    qDebug() << "MIDI Options" << QString::number(mapping.options.all, 2).rightJustified(16,'0');
 
     if (mapping_is_14bit) {
         bool found = false;
