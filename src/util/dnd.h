@@ -23,8 +23,8 @@
 class DragAndDropHelper {
   public:
     static QList<QFileInfo> supportedTracksFromUrls(const QList<QUrl>& urls,
-                                                    bool firstOnly,
-                                                    bool acceptPlaylists) {
+            bool firstOnly,
+            bool acceptPlaylists) {
         QList<QFileInfo> fileLocations;
         foreach (const QUrl& url, urls) {
 
@@ -77,8 +77,8 @@ class DragAndDropHelper {
     static bool allowLoadToPlayer(const QString& group,
                                   ConfigObject<ConfigValue>* pConfig) {
         return allowLoadToPlayer(
-                group, ControlObject::get(ConfigKey(group, "play")) > 0.0,
-                pConfig);
+                   group, ControlObject::get(ConfigKey(group, "play")) > 0.0,
+                   pConfig);
     }
 
     // Allow loading to a player if the player isn't playing or the settings
@@ -92,8 +92,8 @@ class DragAndDropHelper {
         }
 
         return !isPlaying || pConfig->getValueString(
-                ConfigKey("[Controls]",
-                          "AllowTrackLoadToPlayingDeck")).toInt();
+                   ConfigKey("[Controls]",
+                             "AllowTrackLoadToPlayingDeck")).toInt();
     }
 
     static bool dragEnterAccept(const QMimeData& mimeData,
@@ -115,7 +115,7 @@ class DragAndDropHelper {
         }
 
         QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
-                mimeData.urls(), firstOnly, acceptPlaylists);
+                                     mimeData.urls(), firstOnly, acceptPlaylists);
         return files;
     }
 

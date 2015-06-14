@@ -37,7 +37,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     virtual TrackPointer getTrack(const QModelIndex& index) const;
     // calls readWriteFlags() by default, reimplement this if the child calls
     // should be readOnly
-    virtual Qt::ItemFlags flags(const QModelIndex &index) const;
+    virtual Qt::ItemFlags flags(const QModelIndex& index) const;
 
     ////////////////////////////////////////////////////////////////////////////
     // Other public methods
@@ -46,7 +46,9 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     // Returns true if the BaseSqlTableModel has been initialized. Calling data
     // access methods on a BaseSqlTableModel which is not initialized is likely
     // to cause instability / crashes.
-    bool initialized() const { return m_bInitialized; }
+    bool initialized() const {
+        return m_bInitialized;
+    }
     int getTrackId(const QModelIndex& index) const;
     void search(const QString& searchText, const QString& extraFilter = QString());
     void setSearch(const QString& searchText, const QString& extraFilter = QString());
@@ -67,10 +69,10 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
     int columnCount(const QModelIndex& parent = QModelIndex()) const;
     bool setHeaderData(int section, Qt::Orientation orientation,
-                       const QVariant &value, int role = Qt::DisplayRole);
+                       const QVariant& value, int role = Qt::DisplayRole);
     QVariant headerData(int section, Qt::Orientation orientation,
                         int role=Qt::DisplayRole) const;
-    virtual QMimeData* mimeData(const QModelIndexList &indexes) const;
+    virtual QMimeData* mimeData(const QModelIndexList& indexes) const;
 
   public slots:
     void select();
@@ -85,9 +87,9 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     void initHeaderData();
 
     // Use this if you want a model that is read-only.
-    Qt::ItemFlags readOnlyFlags(const QModelIndex &index) const;
+    Qt::ItemFlags readOnlyFlags(const QModelIndex& index) const;
     // Use this if you want a model that can be changed
-    Qt::ItemFlags readWriteFlags(const QModelIndex &index) const;
+    Qt::ItemFlags readWriteFlags(const QModelIndex& index) const;
 
     TrackCollection* m_pTrackCollection;
     TrackDAO& m_trackDAO;

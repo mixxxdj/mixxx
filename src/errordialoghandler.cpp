@@ -25,13 +25,13 @@
 #include "util/assert.h"
 
 ErrorDialogProperties::ErrorDialogProperties()
-        : m_title("Mixxx"),
-          m_modal(true),
-          m_shouldQuit(false),
-          m_type(DLG_NONE),
-          m_icon(QMessageBox::NoIcon),
-          m_defaultButton(QMessageBox::NoButton),
-          m_escapeButton(QMessageBox::NoButton) {
+    : m_title("Mixxx"),
+      m_modal(true),
+      m_shouldQuit(false),
+      m_type(DLG_NONE),
+      m_icon(QMessageBox::NoIcon),
+      m_defaultButton(QMessageBox::NoButton),
+      m_escapeButton(QMessageBox::NoButton) {
 }
 
 void ErrorDialogProperties::setTitle(QString title) {
@@ -47,15 +47,23 @@ void ErrorDialogProperties::setText(QString text) {
 void ErrorDialogProperties::setType(DialogType typeToSet) {
     m_type = typeToSet;
     switch (m_type) {
-        case DLG_FATAL:     // Fatal uses critical icon
-        case DLG_CRITICAL:  m_icon = QMessageBox::Critical; break;
-        case DLG_WARNING:   m_icon = QMessageBox::Warning; break;
-        case DLG_INFO:      m_icon = QMessageBox::Information; break;
-        case DLG_QUESTION:  m_icon = QMessageBox::Question; break;
-        case DLG_NONE:
-        default:
-            // default is NoIcon
-            break;
+    case DLG_FATAL:     // Fatal uses critical icon
+    case DLG_CRITICAL:
+        m_icon = QMessageBox::Critical;
+        break;
+    case DLG_WARNING:
+        m_icon = QMessageBox::Warning;
+        break;
+    case DLG_INFO:
+        m_icon = QMessageBox::Information;
+        break;
+    case DLG_QUESTION:
+        m_icon = QMessageBox::Question;
+        break;
+    case DLG_NONE:
+    default:
+        // default is NoIcon
+        break;
     }
 }
 
@@ -69,7 +77,7 @@ void ErrorDialogProperties::addButton(QMessageBox::StandardButton button) {
 ErrorDialogHandler* ErrorDialogHandler::s_pInstance = NULL;
 
 ErrorDialogHandler::ErrorDialogHandler()
-        : m_signalMapper(this) {
+    : m_signalMapper(this) {
     connect(&m_signalMapper, SIGNAL(mapped(QString)),
             this, SLOT(boxClosed(QString)));
 
@@ -87,7 +95,7 @@ ErrorDialogProperties* ErrorDialogHandler::newDialogProperties() {
 }
 
 bool ErrorDialogHandler::requestErrorDialog(DialogType type, QString message,
-                                            bool shouldQuit) {
+        bool shouldQuit) {
     ErrorDialogProperties* props = newDialogProperties();
     props->setType(type);
     props->setText(message);
@@ -95,15 +103,25 @@ bool ErrorDialogHandler::requestErrorDialog(DialogType type, QString message,
         props->setShouldQuit(shouldQuit);
     }
     switch (type) {
-        case DLG_FATAL:     props->setTitle(tr("Fatal error")); break;
-        case DLG_CRITICAL:  props->setTitle(tr("Critical error")); break;
-        case DLG_WARNING:   props->setTitle(tr("Warning")); break;
-        case DLG_INFO:      props->setTitle(tr("Information")); break;
-        case DLG_QUESTION:  props->setTitle(tr("Question")); break;
-        case DLG_NONE:
-        default:
-            // Default title & (lack of) icon is fine
-            break;
+    case DLG_FATAL:
+        props->setTitle(tr("Fatal error"));
+        break;
+    case DLG_CRITICAL:
+        props->setTitle(tr("Critical error"));
+        break;
+    case DLG_WARNING:
+        props->setTitle(tr("Warning"));
+        break;
+    case DLG_INFO:
+        props->setTitle(tr("Information"));
+        break;
+    case DLG_QUESTION:
+        props->setTitle(tr("Question"));
+        break;
+    case DLG_NONE:
+    default:
+        // Default title & (lack of) icon is fine
+        break;
     }
     return requestErrorDialog(props);
 }

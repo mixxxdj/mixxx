@@ -10,12 +10,22 @@ class RGBWaveformWidget : public QWidget, public WaveformWidgetAbstract {
   public:
     virtual ~RGBWaveformWidget();
 
-    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::RGBWaveform; }
+    virtual WaveformWidgetType::Type getType() const {
+        return WaveformWidgetType::RGBWaveform;
+    }
 
-    static inline QString getWaveformWidgetName() { return tr("RGB"); }
-    static inline bool useOpenGl() { return false; }
-    static inline bool useOpenGLShaders() { return false; }
-    static inline bool developerOnly() { return false; }
+    static inline QString getWaveformWidgetName() {
+        return tr("RGB");
+    }
+    static inline bool useOpenGl() {
+        return false;
+    }
+    static inline bool useOpenGLShaders() {
+        return false;
+    }
+    static inline bool developerOnly() {
+        return false;
+    }
 
   protected:
     virtual void castToQWidget();

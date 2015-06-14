@@ -16,8 +16,8 @@
 #include "util/container.h"
 
 LoadToGroupController::LoadToGroupController(QObject* pParent, const QString& group)
-        : QObject(pParent),
-          m_group(group) {
+    : QObject(pParent),
+      m_group(group) {
     m_pLoadControl = new ControlPushButton(ConfigKey(group, "LoadSelectedTrack"));
     connect(m_pLoadControl, SIGNAL(valueChanged(double)),
             this, SLOT(slotLoadToGroup(double)));
@@ -48,13 +48,13 @@ void LoadToGroupController::slotLoadToGroupAndPlay(double v) {
 }
 
 LibraryControl::LibraryControl(Library* pLibrary)
-        : QObject(pLibrary),
-          m_pLibrary(pLibrary),
-          m_pLibraryWidget(NULL),
-          m_pSidebarWidget(NULL),
-          m_numDecks("[Master]", "num_decks"),
-          m_numSamplers("[Master]", "num_samplers"),
-          m_numPreviewDecks("[Master]", "num_preview_decks") {
+    : QObject(pLibrary),
+      m_pLibrary(pLibrary),
+      m_pLibraryWidget(NULL),
+      m_pSidebarWidget(NULL),
+      m_numDecks("[Master]", "num_decks"),
+      m_numSamplers("[Master]", "num_samplers"),
+      m_numPreviewDecks("[Master]", "num_preview_decks") {
 
     slotNumDecksChanged(m_numDecks.get());
     slotNumSamplersChanged(m_numSamplers.get());
@@ -112,36 +112,36 @@ LibraryControl::LibraryControl(Library* pLibrary)
 
     // Ignoring no-ops is important since this is for +/- tickers.
     m_pFontSizeKnob = new ControlObject(
-            ConfigKey("[Library]", "font_size_knob"), false);
+        ConfigKey("[Library]", "font_size_knob"), false);
     connect(m_pFontSizeKnob, SIGNAL(valueChanged(double)),
             this, SLOT(slotFontSize(double)));
 
     m_pFontSizeDecrement = new ControlPushButton(
-            ConfigKey("[Library]", "font_size_decrement"));
+        ConfigKey("[Library]", "font_size_decrement"));
     connect(m_pFontSizeDecrement, SIGNAL(valueChanged(double)),
             this, SLOT(slotDecrementFontSize(double)));
 
     m_pFontSizeIncrement = new ControlPushButton(
-            ConfigKey("[Library]", "font_size_increment"));
+        ConfigKey("[Library]", "font_size_increment"));
     connect(m_pFontSizeIncrement, SIGNAL(valueChanged(double)),
             this, SLOT(slotIncrementFontSize(double)));
 }
 
 LibraryControl::~LibraryControl() {
-   delete m_pSelectNextTrack;
-   delete m_pSelectPrevTrack;
-   delete m_pSelectTrack;
-   delete m_pSelectNextSidebarItem;
-   delete m_pSelectPrevSidebarItem;
-   delete m_pSelectSidebarItem;
-   delete m_pToggleSidebarItem;
-   delete m_pLoadSelectedIntoFirstStopped;
-   delete m_pAutoDjAddTop;
-   delete m_pAutoDjAddBottom;
-   delete m_pFontSizeKnob;
-   delete m_pFontSizeDecrement;
-   delete m_pFontSizeIncrement;
-   deleteMapValues(&m_loadToGroupControllers);
+    delete m_pSelectNextTrack;
+    delete m_pSelectPrevTrack;
+    delete m_pSelectTrack;
+    delete m_pSelectNextSidebarItem;
+    delete m_pSelectPrevSidebarItem;
+    delete m_pSelectSidebarItem;
+    delete m_pToggleSidebarItem;
+    delete m_pLoadSelectedIntoFirstStopped;
+    delete m_pAutoDjAddTop;
+    delete m_pAutoDjAddBottom;
+    delete m_pFontSizeKnob;
+    delete m_pFontSizeDecrement;
+    delete m_pFontSizeIncrement;
+    deleteMapValues(&m_loadToGroupControllers);
 }
 
 void LibraryControl::maybeCreateGroupController(const QString& group) {
@@ -301,18 +301,18 @@ void LibraryControl::slotSelectSidebarItem(double v) {
     }
     if (v > 0) {
         QApplication::postEvent(m_pSidebarWidget, new QKeyEvent(
-            QEvent::KeyPress,
-            (int)Qt::Key_Down, Qt::NoModifier, QString(), true));
+                                    QEvent::KeyPress,
+                                    (int)Qt::Key_Down, Qt::NoModifier, QString(), true));
         QApplication::postEvent(m_pSidebarWidget, new QKeyEvent(
-            QEvent::KeyRelease,
-            (int)Qt::Key_Down, Qt::NoModifier, QString(), true));
+                                    QEvent::KeyRelease,
+                                    (int)Qt::Key_Down, Qt::NoModifier, QString(), true));
     } else if (v < 0) {
         QApplication::postEvent(m_pSidebarWidget, new QKeyEvent(
-            QEvent::KeyPress,
-            (int)Qt::Key_Up, Qt::NoModifier, QString(), true));
+                                    QEvent::KeyPress,
+                                    (int)Qt::Key_Up, Qt::NoModifier, QString(), true));
         QApplication::postEvent(m_pSidebarWidget, new QKeyEvent(
-            QEvent::KeyRelease,
-            (int)Qt::Key_Up, Qt::NoModifier, QString(), true));
+                                    QEvent::KeyRelease,
+                                    (int)Qt::Key_Up, Qt::NoModifier, QString(), true));
     }
 }
 

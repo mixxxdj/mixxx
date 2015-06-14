@@ -28,19 +28,19 @@ const SINT CachingReaderWorker::kSamplesPerChunk = kFramesPerChunk * kChunkChann
 CachingReaderWorker::CachingReaderWorker(QString group,
         FIFO<ChunkReadRequest>* pChunkReadRequestFIFO,
         FIFO<ReaderStatusUpdate>* pReaderStatusFIFO)
-        : m_group(group),
-          m_tag(QString("CachingReaderWorker %1").arg(m_group)),
-          m_pChunkReadRequestFIFO(pChunkReadRequestFIFO),
-          m_pReaderStatusFIFO(pReaderStatusFIFO),
-          m_stop(0) {
+    : m_group(group),
+      m_tag(QString("CachingReaderWorker %1").arg(m_group)),
+      m_pChunkReadRequestFIFO(pChunkReadRequestFIFO),
+      m_pReaderStatusFIFO(pReaderStatusFIFO),
+      m_stop(0) {
 }
 
 CachingReaderWorker::~CachingReaderWorker() {
 }
 
 void CachingReaderWorker::processChunkReadRequest(
-        ChunkReadRequest* request,
-        ReaderStatusUpdate* update) {
+    ChunkReadRequest* request,
+    ReaderStatusUpdate* update) {
     //qDebug() << "Processing ChunkReadRequest for" << chunk_number;
 
     // Initialize the output parameter
@@ -54,30 +54,30 @@ void CachingReaderWorker::processChunkReadRequest(
     }
 
     const SINT chunkFrameIndex =
-            frameForChunk(chunk_number);
+        frameForChunk(chunk_number);
     if (!m_pAudioSource->isValidFrameIndex(chunkFrameIndex)) {
         // Frame index out of range
         qWarning() << "Invalid chunk seek position"
-                << chunkFrameIndex;
+                   << chunkFrameIndex;
         update->status = CHUNK_READ_INVALID;
         return;
     }
 
     const SINT seekFrameIndex =
-            m_pAudioSource->seekSampleFrame(chunkFrameIndex);
+        m_pAudioSource->seekSampleFrame(chunkFrameIndex);
     if (seekFrameIndex != chunkFrameIndex) {
         // Failed to seek to the requested index.
         // Corrupt file? -> Stop reading!
         qWarning() << "Failed to seek chunk position"
-                << seekFrameIndex << "<>" << chunkFrameIndex;
+                   << seekFrameIndex << "<>" << chunkFrameIndex;
         update->status = CHUNK_READ_INVALID;
         return;
     }
 
     const SINT framesRemaining =
-            m_pAudioSource->getMaxFrameIndex() - seekFrameIndex;
+        m_pAudioSource->getMaxFrameIndex() - seekFrameIndex;
     const SINT framesToRead =
-            math_min(kFramesPerChunk, framesRemaining);
+        math_min(kFramesPerChunk, framesRemaining);
     if (0 >= framesToRead) {
         // No more data available for reading
         update->status = CHUNK_READ_EOF;
@@ -85,16 +85,16 @@ void CachingReaderWorker::processChunkReadRequest(
     }
 
     const SINT framesRead =
-            m_pAudioSource->readSampleFramesStereo(
-                    framesToRead, request->chunk->stereoSamples, kSamplesPerChunk);
+        m_pAudioSource->readSampleFramesStereo(
+            framesToRead, request->chunk->stereoSamples, kSamplesPerChunk);
     DEBUG_ASSERT(framesRead <= framesToRead);
     update->chunk->frameCount = framesRead;
     if (framesRead < framesToRead) {
         // Incomplete read! Corrupt file?
         qWarning() << "Incomplete chunk read @" << seekFrameIndex
-                << "[" << m_pAudioSource->getMinFrameIndex()
-                << "," << m_pAudioSource->getFrameCount()
-                << "]:" << framesRead << "<" << framesToRead;
+                   << "[" << m_pAudioSource->getMinFrameIndex()
+                   << "," << m_pAudioSource->getFrameCount()
+                   << "]:" << framesRead << "<" << framesToRead;
         update->status = CHUNK_READ_PARTIAL;
     } else {
         update->status = CHUNK_READ_SUCCESS;
@@ -136,18 +136,17 @@ void CachingReaderWorker::run() {
     }
 }
 
-namespace
-{
-    Mixxx::AudioSourcePointer openAudioSourceForReading(const TrackPointer& pTrack, const Mixxx::AudioSourceConfig& audioSrcCfg) {
-        SoundSourceProxy soundSourceProxy(pTrack);
-        Mixxx::AudioSourcePointer pAudioSource(soundSourceProxy.openAudioSource(audioSrcCfg));
-        if (pAudioSource.isNull()) {
-            qWarning() << "Failed to open file:" << pTrack->getLocation();
-            return Mixxx::AudioSourcePointer();
-        }
-        // successfully opened and readable
-        return pAudioSource;
+namespace {
+Mixxx::AudioSourcePointer openAudioSourceForReading(const TrackPointer& pTrack, const Mixxx::AudioSourceConfig& audioSrcCfg) {
+    SoundSourceProxy soundSourceProxy(pTrack);
+    Mixxx::AudioSourcePointer pAudioSource(soundSourceProxy.openAudioSource(audioSrcCfg));
+    if (pAudioSource.isNull()) {
+        qWarning() << "Failed to open file:" << pTrack->getLocation();
+        return Mixxx::AudioSourcePointer();
     }
+    // successfully opened and readable
+    return pAudioSource;
+}
 }
 
 void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
@@ -169,7 +168,7 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
                  << filename << "\", unlocked reader lock";
         m_pReaderStatusFIFO->writeBlocking(&status, 1);
         emit(trackLoadFailed(
-            pTrack, QString("The file '%1' could not be found.").arg(filename)));
+                 pTrack, QString("The file '%1' could not be found.").arg(filename)));
         return;
     }
 
@@ -182,7 +181,7 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
                  << filename << "\", file invalid, unlocked reader lock";
         m_pReaderStatusFIFO->writeBlocking(&status, 1);
         emit(trackLoadFailed(
-            pTrack, QString("The file '%1' could not be loaded.").arg(filename)));
+                 pTrack, QString("The file '%1' could not be loaded.").arg(filename)));
         return;
     }
 
@@ -201,7 +200,7 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
 
     // Emit that the track is loaded.
     const SINT sampleCount =
-            m_pAudioSource->getFrameCount() * kChunkChannels;
+        m_pAudioSource->getFrameCount() * kChunkChannels;
     emit(trackLoaded(pTrack, m_pAudioSource->getFrameRate(), sampleCount));
 }
 

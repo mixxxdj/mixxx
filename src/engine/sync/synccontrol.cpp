@@ -18,17 +18,17 @@ const double SyncControl::kBpmDouble = 2.0;
 
 SyncControl::SyncControl(const QString& group, ConfigObject<ConfigValue>* pConfig,
                          EngineChannel* pChannel, SyncableListener* pEngineSync)
-        : EngineControl(group, pConfig),
-          m_sGroup(group),
-          m_pChannel(pChannel),
-          m_pEngineSync(pEngineSync),
-          m_pBpmControl(NULL),
-          m_pRateControl(NULL),
-          m_bOldScratching(false),
-          m_masterBpmAdjustFactor(kBpmUnity),
-          m_unmultipliedTargetBeatDistance(0.0),
-          m_beatDistance(0.0),
-          m_prevLocalBpm(0.0) {
+    : EngineControl(group, pConfig),
+      m_sGroup(group),
+      m_pChannel(pChannel),
+      m_pEngineSync(pEngineSync),
+      m_pBpmControl(NULL),
+      m_pRateControl(NULL),
+      m_bOldScratching(false),
+      m_masterBpmAdjustFactor(kBpmUnity),
+      m_unmultipliedTargetBeatDistance(0.0),
+      m_beatDistance(0.0),
+      m_prevLocalBpm(0.0) {
     // Play button.  We only listen to this to disable master if the deck is
     // stopped.
     m_pPlayButton.reset(new ControlObjectSlave(group, "play", this));
@@ -39,26 +39,26 @@ SyncControl::SyncControl(const QString& group, ConfigObject<ConfigValue>* pConfi
     m_pSyncMode->setButtonMode(ControlPushButton::TOGGLE);
     m_pSyncMode->setStates(SYNC_NUM_MODES);
     m_pSyncMode->connectValueChangeRequest(
-            this, SLOT(slotSyncModeChangeRequest(double)), Qt::DirectConnection);
+        this, SLOT(slotSyncModeChangeRequest(double)), Qt::DirectConnection);
 
     m_pSyncMasterEnabled.reset(
-            new ControlPushButton(ConfigKey(group, "sync_master")));
+        new ControlPushButton(ConfigKey(group, "sync_master")));
     m_pSyncMasterEnabled->setButtonMode(ControlPushButton::TOGGLE);
     m_pSyncMasterEnabled->connectValueChangeRequest(
-            this, SLOT(slotSyncMasterEnabledChangeRequest(double)), Qt::DirectConnection);
+        this, SLOT(slotSyncMasterEnabledChangeRequest(double)), Qt::DirectConnection);
 
     m_pSyncEnabled.reset(
-            new ControlPushButton(ConfigKey(group, "sync_enabled")));
+        new ControlPushButton(ConfigKey(group, "sync_enabled")));
     m_pSyncEnabled->setButtonMode(ControlPushButton::LONGPRESSLATCHING);
     m_pSyncEnabled->connectValueChangeRequest(
-            this, SLOT(slotSyncEnabledChangeRequest(double)), Qt::DirectConnection);
+        this, SLOT(slotSyncEnabledChangeRequest(double)), Qt::DirectConnection);
 
     m_pSyncBeatDistance.reset(
-            new ControlObject(ConfigKey(group, "beat_distance")));
+        new ControlObject(ConfigKey(group, "beat_distance")));
 
     m_pPassthroughEnabled.reset(new ControlObjectSlave(group, "passthrough", this));
     m_pPassthroughEnabled->connectValueChanged(this, SLOT(slotPassthroughChanged(double)),
-                                               Qt::DirectConnection);
+            Qt::DirectConnection);
 
     m_pEjectButton.reset(new ControlObjectSlave(group, "eject", this));
     m_pEjectButton->connectValueChanged(this, SLOT(slotEjectPushed(double)),
@@ -102,7 +102,7 @@ void SyncControl::setEngineControls(RateControl* pRateControl,
 
 #ifdef __VINYLCONTROL__
     m_pVCEnabled.reset(new ControlObjectSlave(
-        getGroup(), "vinylcontrol_enabled", this));
+                           getGroup(), "vinylcontrol_enabled", this));
 
     // Throw a hissy fit if somebody moved us such that the vinylcontrol_enabled
     // control doesn't exist yet. This will blow up immediately, won't go unnoticed.
@@ -135,7 +135,7 @@ void SyncControl::notifySyncModeChanged(SyncMode mode) {
         // If any sync mode is enabled and passthrough was on somehow, disable passthrough.
         // This is very unlikely to happen so this deserves a warning.
         qWarning() << "Notified of sync mode change when passthrough was active -- "
-                      "must disable passthrough";
+                   "must disable passthrough";
         m_pPassthroughEnabled->set(0.0);
     }
     if (mode == SYNC_MASTER) {
@@ -225,7 +225,7 @@ void SyncControl::setMasterBpm(double bpm) {
     double localBpm = m_pLocalBpm->get();
     if (localBpm > 0.0) {
         double newRate = (bpm * m_masterBpmAdjustFactor / m_pLocalBpm->get() - 1.0)
-                / m_pRateDirection->get() / m_pRateRange->get();
+                         / m_pRateDirection->get() / m_pRateRange->get();
         m_pRateSlider->set(newRate);
     } else {
         m_pRateSlider->set(0);

@@ -1,7 +1,7 @@
 #include "control/controlmodel.h"
 
 ControlModel::ControlModel(QObject* pParent)
-        : QAbstractTableModel(pParent) {
+    : QAbstractTableModel(pParent) {
 
     setHeaderData(CONTROL_COLUMN_GROUP, Qt::Horizontal, tr("Group"));
     setHeaderData(CONTROL_COLUMN_ITEM, Qt::Horizontal, tr("Item"));
@@ -61,20 +61,20 @@ QVariant ControlModel::data(const QModelIndex& index,
     const ControlInfo& control = m_controls.at(row);
     QString value;
     switch (column) {
-        case CONTROL_COLUMN_GROUP:
-            return control.key.group;
-        case CONTROL_COLUMN_ITEM:
-            return control.key.item;
-        case CONTROL_COLUMN_VALUE:
-            return control.pControl->get();
-        case CONTROL_COLUMN_PARAMETER:
-            return control.pControl->getParameter();
-        case CONTROL_COLUMN_TITLE:
-            return control.title;
-        case CONTROL_COLUMN_DESCRIPTION:
-            return control.description;
-        case CONTROL_COLUMN_FILTER:
-            return control.key.group + "," + control.key.item;
+    case CONTROL_COLUMN_GROUP:
+        return control.key.group;
+    case CONTROL_COLUMN_ITEM:
+        return control.key.item;
+    case CONTROL_COLUMN_VALUE:
+        return control.pControl->get();
+    case CONTROL_COLUMN_PARAMETER:
+        return control.pControl->getParameter();
+    case CONTROL_COLUMN_TITLE:
+        return control.title;
+    case CONTROL_COLUMN_DESCRIPTION:
+        return control.description;
+    case CONTROL_COLUMN_FILTER:
+        return control.key.group + "," + control.key.item;
     }
     return QVariant();
 }
@@ -136,12 +136,12 @@ bool ControlModel::setData(const QModelIndex& index,
     ControlInfo& control = m_controls[row];
 
     switch (column) {
-        case CONTROL_COLUMN_VALUE:
-            control.pControl->set(value.toDouble());
-            return true;
-        case CONTROL_COLUMN_PARAMETER:
-            control.pControl->setParameter(value.toDouble());
-            return true;
+    case CONTROL_COLUMN_VALUE:
+        control.pControl->set(value.toDouble());
+        return true;
+    case CONTROL_COLUMN_PARAMETER:
+        control.pControl->setParameter(value.toDouble());
+        return true;
     }
 
     return false;

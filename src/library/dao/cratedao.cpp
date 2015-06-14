@@ -10,7 +10,7 @@
 #include "library/queryutil.h"
 
 CrateDAO::CrateDAO(QSqlDatabase& database)
-        : m_database(database) {
+    : m_database(database) {
 }
 
 CrateDAO::~CrateDAO() {
@@ -151,9 +151,9 @@ bool CrateDAO::setCrateInAutoDj(int crateId, bool bIn) {
     QSqlQuery query(m_database);
     // UPDATE crates SET autodj = :in WHERE id = :id AND autodj = :existing;
     query.prepare(QString("UPDATE " CRATE_TABLE
-        " SET %1 = :in WHERE %2 = :id AND %1 = :existing")
-        .arg(CRATETABLE_AUTODJ_SOURCE)     // %1
-        .arg(CRATETABLE_ID));       // %2
+                          " SET %1 = :in WHERE %2 = :id AND %1 = :existing")
+                  .arg(CRATETABLE_AUTODJ_SOURCE)     // %1
+                  .arg(CRATETABLE_ID));       // %2
     query.bindValue(":in", iIn);
     query.bindValue(":id", crateId);
     query.bindValue(":existing", 1 - iIn);
@@ -179,8 +179,8 @@ bool CrateDAO::isCrateInAutoDj(int crateId) {
     query.setForwardOnly(true);
     // SELECT autodj FROM crates WHERE id = :id;
     query.prepare(QString("SELECT %1 FROM " CRATE_TABLE " WHERE %2 = :id")
-        .arg(CRATETABLE_AUTODJ_SOURCE) // %1
-        .arg(CRATETABLE_ID)); // %2
+                  .arg(CRATETABLE_AUTODJ_SOURCE) // %1
+                  .arg(CRATETABLE_ID)); // %2
     query.bindValue(":id", crateId);
 
     if (query.exec()) {
@@ -202,9 +202,9 @@ QList<int> CrateDAO::getCrateTracks(int crateId) {
     query.setForwardOnly(true);
     // SELECT track_id FROM crate_tracks WHERE crate_id = :id;
     query.prepare(QString("SELECT %1 FROM " CRATE_TRACKS_TABLE
-        " WHERE %2 = :id")
-        .arg(CRATETRACKSTABLE_TRACKID)      // %1
-        .arg(CRATETRACKSTABLE_CRATEID));    // %2
+                          " WHERE %2 = :id")
+                  .arg(CRATETRACKSTABLE_TRACKID)      // %1
+                  .arg(CRATETRACKSTABLE_CRATEID));    // %2
     query.bindValue(":id", crateId);
     QList<int> ids;
     if (!query.exec()) {
@@ -227,10 +227,10 @@ void CrateDAO::getAutoDjCrates(bool trackSource, QMap<QString,int>* pCrateMap) {
     query.setForwardOnly(true);
     // SELECT name, id FROM crates WHERE autodj = 1 ORDER BY name;
     query.prepare(QString("SELECT %1, %2 FROM " CRATE_TABLE
-            " WHERE %3 = :in ORDER BY %1")
-            .arg(CRATETABLE_NAME, // %1
-                 CRATETABLE_ID, // %2
-                 CRATETABLE_AUTODJ_SOURCE)); // %3
+                          " WHERE %3 = :in ORDER BY %1")
+                  .arg(CRATETABLE_NAME, // %1
+                       CRATETABLE_ID, // %2
+                       CRATETABLE_AUTODJ_SOURCE)); // %3
     query.bindValue(":in", (trackSource) ? 1 : 0);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -269,7 +269,7 @@ bool CrateDAO::deleteCrate(const int crateId) {
 
     // Update in-memory map
     for (QMultiHash<int, int>::iterator it = m_cratesTrackIsIn.begin();
-         it != m_cratesTrackIsIn.end();) {
+            it != m_cratesTrackIsIn.end();) {
         if (it.value() == crateId) {
             it = m_cratesTrackIsIn.erase(it);
         } else {
@@ -300,7 +300,7 @@ int CrateDAO::getCrateId(const int position) {
     query.prepare("SELECT id FROM " CRATE_TABLE);
     if (query.exec()) {
         int currentRow = 0;
-        while(query.next()) {
+        while (query.next()) {
             if (currentRow++ == position) {
                 int id = query.value(0).toInt();
                 return id;
@@ -481,7 +481,7 @@ void CrateDAO::getCratesTrackIsIn(const int trackId,
                                   QSet<int>* crateSet) const {
     crateSet->clear();
     for (QHash<int, int>::const_iterator it = m_cratesTrackIsIn.find(trackId);
-         it != m_cratesTrackIsIn.end() && it.key() == trackId; ++it) {
+            it != m_cratesTrackIsIn.end() && it.key() == trackId; ++it) {
         crateSet->insert(it.value());
     }
 }

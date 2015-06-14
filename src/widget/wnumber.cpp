@@ -18,8 +18,8 @@
 #include "widget/wnumber.h"
 
 WNumber::WNumber(QWidget* pParent)
-        : WLabel(pParent),
-          m_iNoDigits(2) {
+    : WLabel(pParent),
+      m_iNoDigits(2) {
 }
 
 WNumber::~WNumber() {

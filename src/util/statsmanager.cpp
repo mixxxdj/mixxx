@@ -16,8 +16,8 @@ const int kProcessLength = kStatsPipeSize * 4 / 5;
 bool StatsManager::s_bStatsManagerEnabled = false;
 
 StatsPipe::StatsPipe(StatsManager* pManager)
-        : FIFO<StatReport>(kStatsPipeSize),
-          m_pManager(pManager) {
+    : FIFO<StatReport>(kStatsPipeSize),
+      m_pManager(pManager) {
     qRegisterMetaType<Stat>("Stat");
 }
 
@@ -28,8 +28,8 @@ StatsPipe::~StatsPipe() {
 }
 
 StatsManager::StatsManager()
-        : QThread(),
-          m_quit(0) {
+    : QThread(),
+      m_quit(0) {
     s_bStatsManagerEnabled = true;
     setObjectName("StatsManager");
     moveToThread(this);
@@ -46,7 +46,7 @@ StatsManager::~StatsManager() {
     qDebug() << "ALL STATS";
     qDebug() << "=====================================";
     for (QMap<QString, Stat>::const_iterator it = m_stats.begin();
-         it != m_stats.end(); ++it) {
+            it != m_stats.end(); ++it) {
         qDebug() << it.value();
     }
 
@@ -55,7 +55,7 @@ StatsManager::~StatsManager() {
         qDebug() << "BASE STATS";
         qDebug() << "=====================================";
         for (QMap<QString, Stat>::const_iterator it = m_baseStats.begin();
-             it != m_baseStats.end(); ++it) {
+                it != m_baseStats.end(); ++it) {
             qDebug() << it.value();
         }
     }
@@ -65,7 +65,7 @@ StatsManager::~StatsManager() {
         qDebug() << "EXPERIMENT STATS";
         qDebug() << "=====================================";
         for (QMap<QString, Stat>::const_iterator it = m_experimentStats.begin();
-             it != m_experimentStats.end(); ++it) {
+                it != m_experimentStats.end(); ++it) {
             qDebug() << it.value();
         }
     }
@@ -243,7 +243,7 @@ void StatsManager::run() {
 
         if (load_atomic(m_emitAllStats) == 1) {
             for (QMap<QString, Stat>::const_iterator it = m_stats.begin();
-                 it != m_stats.end(); ++it) {
+                    it != m_stats.end(); ++it) {
                 emit(statUpdated(it.value()));
             }
             m_emitAllStats = 0;

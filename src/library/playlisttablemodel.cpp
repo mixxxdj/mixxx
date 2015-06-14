@@ -6,10 +6,10 @@ PlaylistTableModel::PlaylistTableModel(QObject* parent,
                                        TrackCollection* pTrackCollection,
                                        const char* settingsNamespace,
                                        bool showAll)
-        : BaseSqlTableModel(parent, pTrackCollection, settingsNamespace),
-          m_playlistDao(m_pTrackCollection->getPlaylistDAO()),
-          m_iPlaylistId(-1),
-          m_showAll(showAll) {
+    : BaseSqlTableModel(parent, pTrackCollection, settingsNamespace),
+      m_playlistDao(m_pTrackCollection->getPlaylistDAO()),
+      m_iPlaylistId(-1),
+      m_showAll(showAll) {
 }
 
 PlaylistTableModel::~PlaylistTableModel() {
@@ -61,7 +61,7 @@ void PlaylistTableModel::setTableModel(int playlistId) {
     columns[3] = LIBRARYTABLE_PREVIEW;
     columns[4] = LIBRARYTABLE_COVERART;
     setTable(playlistTableName, LIBRARYTABLE_ID, columns,
-            m_pTrackCollection->getTrackSource());
+             m_pTrackCollection->getTrackSource());
     setSearch("");
     setDefaultSort(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
     setSort(defaultSortColumn(), defaultSortOrder());
@@ -95,7 +95,7 @@ int PlaylistTableModel::addTracks(const QModelIndex& index,
     QList<int> trackIds = m_trackDAO.addTracks(fileInfoList, true);
 
     int tracksAdded = m_playlistDao.insertTracksIntoPlaylist(
-        trackIds, m_iPlaylistId, position);
+                          trackIds, m_iPlaylistId, position);
 
     if (locations.size() - tracksAdded > 0) {
         qDebug() << "PlaylistTableModel::addTracks could not add"
@@ -236,18 +236,18 @@ bool PlaylistTableModel::isColumnHiddenByDefault(int column) {
 
 TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {
     TrackModel::CapabilitiesFlags caps = TRACKMODELCAPS_NONE
-            | TRACKMODELCAPS_RECEIVEDROPS
-            | TRACKMODELCAPS_REORDER
-            | TRACKMODELCAPS_ADDTOCRATE
-            | TRACKMODELCAPS_ADDTOPLAYLIST
-            | TRACKMODELCAPS_RELOADMETADATA
-            | TRACKMODELCAPS_LOADTODECK
-            | TRACKMODELCAPS_LOADTOSAMPLER
-            | TRACKMODELCAPS_LOADTOPREVIEWDECK
-            | TRACKMODELCAPS_REMOVE
-            | TRACKMODELCAPS_MANIPULATEBEATS
-            | TRACKMODELCAPS_CLEAR_BEATS
-            | TRACKMODELCAPS_RESETPLAYED;
+                                         | TRACKMODELCAPS_RECEIVEDROPS
+                                         | TRACKMODELCAPS_REORDER
+                                         | TRACKMODELCAPS_ADDTOCRATE
+                                         | TRACKMODELCAPS_ADDTOPLAYLIST
+                                         | TRACKMODELCAPS_RELOADMETADATA
+                                         | TRACKMODELCAPS_LOADTODECK
+                                         | TRACKMODELCAPS_LOADTOSAMPLER
+                                         | TRACKMODELCAPS_LOADTOPREVIEWDECK
+                                         | TRACKMODELCAPS_REMOVE
+                                         | TRACKMODELCAPS_MANIPULATEBEATS
+                                         | TRACKMODELCAPS_CLEAR_BEATS
+                                         | TRACKMODELCAPS_RESETPLAYED;
 
     // Only allow Add to AutoDJ if we aren't currently showing the AutoDJ queue.
     if (m_iPlaylistId != m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE)) {

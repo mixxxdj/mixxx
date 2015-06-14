@@ -8,10 +8,10 @@
 DlgHidden::DlgHidden(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
                      Library* pLibrary, TrackCollection* pTrackCollection,
                      MixxxKeyboard* pKeyboard)
-         : QWidget(parent),
-           Ui::DlgHidden(),
-           m_pTrackTableView(
-               new WTrackTableView(this, pConfig, pTrackCollection, false)) {
+    : QWidget(parent),
+      Ui::DlgHidden(),
+      m_pTrackTableView(
+          new WTrackTableView(this, pConfig, pTrackCollection, false)) {
     setupUi(this);
     m_pTrackTableView->installEventFilter(pKeyboard);
 
@@ -81,8 +81,8 @@ void DlgHidden::activateButtons(bool enable) {
     btnUnhide->setEnabled(enable);
 }
 
-void DlgHidden::selectionChanged(const QItemSelection &selected,
-                                 const QItemSelection &deselected) {
+void DlgHidden::selectionChanged(const QItemSelection& selected,
+                                 const QItemSelection& deselected) {
     Q_UNUSED(deselected);
     activateButtons(!selected.indexes().isEmpty());
 }

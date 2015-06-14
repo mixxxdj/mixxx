@@ -16,7 +16,7 @@
 #include "lvmixeqbase.h"
 
 class Bessel4LVMixEQEffectGroupState :
-        public LVMixEQEffectGroupState<EngineFilterBessel4Low> {
+    public LVMixEQEffectGroupState<EngineFilterBessel4Low> {
 };
 
 class Bessel4LVMixEQEffect : public PerChannelEffectProcessor<Bessel4LVMixEQEffectGroupState> {

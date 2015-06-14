@@ -14,11 +14,11 @@
 SetlogFeature::SetlogFeature(QObject* parent,
                              ConfigObject<ConfigValue>* pConfig,
                              TrackCollection* pTrackCollection)
-        : BasePlaylistFeature(parent, pConfig, pTrackCollection, "SETLOGHOME"),
-          m_playlistId(-1) {
+    : BasePlaylistFeature(parent, pConfig, pTrackCollection, "SETLOGHOME"),
+      m_playlistId(-1) {
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
-                                                   "mixxx.db.model.setlog",
-                                                   true); //show all tracks
+            "mixxx.db.model.setlog",
+            true); //show all tracks
     m_pJoinWithPreviousAction = new QAction(tr("Join with previous"), this);
     connect(m_pJoinWithPreviousAction, SIGNAL(triggered()),
             this, SLOT(slotJoinWithPrevious()));
@@ -30,7 +30,7 @@ SetlogFeature::SetlogFeature(QObject* parent,
     emit(slotGetNewPlaylist());
 
     //construct child model
-    TreeItem *rootItem = new TreeItem();
+    TreeItem* rootItem = new TreeItem();
     m_childModel.setRootItem(rootItem);
     constructChildModel(-1);
 }
@@ -40,7 +40,7 @@ SetlogFeature::~SetlogFeature() {
     // delete it so we don't end up with tons of empty playlists. This is mostly
     // for developers since they regularly open Mixxx without loading a track.
     if (m_playlistId != -1 &&
-        m_playlistDao.tracksInPlaylist(m_playlistId) == 0) {
+            m_playlistDao.tracksInPlaylist(m_playlistId) == 0) {
         m_playlistDao.deletePlaylist(m_playlistId);
     }
 }
@@ -131,9 +131,9 @@ void SetlogFeature::buildPlaylistList() {
 
     for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
         int id = playlistTableModel.data(
-            playlistTableModel.index(row, idColumn)).toInt();
+                     playlistTableModel.index(row, idColumn)).toInt();
         QString name = playlistTableModel.data(
-            playlistTableModel.index(row, nameColumn)).toString();
+                           playlistTableModel.index(row, nameColumn)).toString();
         m_playlistList.append(qMakePair(id, name));
     }
 }
@@ -166,7 +166,7 @@ void SetlogFeature::slotGetNewPlaylist() {
 
     //qDebug() << "Creating session history playlist name:" << set_log_name;
     m_playlistId = m_playlistDao.createPlaylist(set_log_name,
-                                                PlaylistDAO::PLHT_SET_LOG);
+                   PlaylistDAO::PLHT_SET_LOG);
 
     if (m_playlistId == -1) {
         qDebug() << "Setlog playlist Creation Failed";
@@ -182,7 +182,7 @@ void SetlogFeature::slotJoinWithPrevious() {
 
     if (m_lastRightClickedIndex.isValid()) {
         int currentPlaylistId = m_playlistDao.getPlaylistIdFromName(
-            m_lastRightClickedIndex.data().toString());
+                                    m_lastRightClickedIndex.data().toString());
 
         if (currentPlaylistId >= 0) {
 
@@ -282,14 +282,14 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
     //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
     PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
     if (type == PlaylistDAO::PLHT_SET_LOG ||
-        type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
+            type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
         clearChildModel();
         m_lastRightClickedIndex = constructChildModel(playlistId);
     }
 }
 
 void SetlogFeature::slotPlaylistTableRenamed(int playlistId,
-                                             QString /* a_strName */) {
+        QString /* a_strName */) {
     if (!m_pPlaylistTableModel) {
         return;
     }
@@ -297,7 +297,7 @@ void SetlogFeature::slotPlaylistTableRenamed(int playlistId,
     //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
     if (type == PlaylistDAO::PLHT_SET_LOG ||
-        type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
+            type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
         clearChildModel();
         m_lastRightClickedIndex = constructChildModel(playlistId);
         if (type != PlaylistDAO::PLHT_UNKNOWN) {

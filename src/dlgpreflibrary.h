@@ -40,8 +40,8 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
         ADD_TRACK_TOP     // Add track to Auto-DJ Queue (top).
     };
 
-    DlgPrefLibrary(QWidget *parent, ConfigObject<ConfigValue> *config,
-                   Library *pLibrary);
+    DlgPrefLibrary(QWidget* parent, ConfigObject<ConfigValue>* config,
+                   Library* pLibrary);
     virtual ~DlgPrefLibrary();
 
   public slots:

@@ -9,8 +9,8 @@
 class SearchQueryParserTest : public testing::Test {
   protected:
     SearchQueryParserTest()
-            : m_database(QSqlDatabase::addDatabase("QSQLITE")),
-              m_parser(m_database) {
+        : m_database(QSqlDatabase::addDatabase("QSQLITE")),
+          m_parser(m_database) {
         QTemporaryFile databaseFile("mixxxdb.sqlite");
         RELEASE_ASSERT(databaseFile.open());
         m_database.setHostName("localhost");
@@ -134,8 +134,8 @@ TEST_F(SearchQueryParserTest, MultipleTermsMultipleColumns) {
 
     EXPECT_STREQ(
         qPrintable(QString(
-            "((artist LIKE '%asdf%') OR (album LIKE '%asdf%')) "
-            "AND ((artist LIKE '%zxcv%') OR (album LIKE '%zxcv%'))")),
+                       "((artist LIKE '%asdf%') OR (album LIKE '%asdf%')) "
+                       "AND ((artist LIKE '%zxcv%') OR (album LIKE '%zxcv%'))")),
         qPrintable(pQuery->toSql()));
 }
 
@@ -160,8 +160,8 @@ TEST_F(SearchQueryParserTest, MultipleTermsMultipleColumnsNegation) {
 
     EXPECT_STREQ(
         qPrintable(QString(
-            "((artist LIKE '%asdf%') OR (album LIKE '%asdf%')) "
-            "AND (NOT ((artist LIKE '%zxcv%') OR (album LIKE '%zxcv%')))")),
+                       "((artist LIKE '%asdf%') OR (album LIKE '%asdf%')) "
+                       "AND (NOT ((artist LIKE '%zxcv%') OR (album LIKE '%zxcv%')))")),
         qPrintable(pQuery->toSql()));
 }
 

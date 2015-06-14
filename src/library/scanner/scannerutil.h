@@ -15,14 +15,14 @@ class ScannerUtil {
         // blacklist. On Windows, the iTunes folder is contained within the
         // standard music folder.
         QString iTunesArtFolder = QDir::toNativeSeparators(
-            QDesktopServices::storageLocation(QDesktopServices::MusicLocation) +
-            "/iTunes/Album Artwork");
+                                      QDesktopServices::storageLocation(QDesktopServices::MusicLocation) +
+                                      "/iTunes/Album Artwork");
         blacklist << iTunesArtFolder;
 #ifdef __WINDOWS__
         // Blacklist the _Serato_ directory that pollutes "My Music" on Windows.
         QString seratoDir = QDir::toNativeSeparators(
-            QDesktopServices::storageLocation(QDesktopServices::MusicLocation) +
-            "/_Serato_");
+                                QDesktopServices::storageLocation(QDesktopServices::MusicLocation) +
+                                "/_Serato_");
         blacklist << seratoDir;
 #endif
         return blacklist;

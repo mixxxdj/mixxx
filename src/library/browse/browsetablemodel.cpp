@@ -17,12 +17,12 @@
 BrowseTableModel::BrowseTableModel(QObject* parent,
                                    TrackCollection* pTrackCollection,
                                    RecordingManager* pRecordingManager)
-        : TrackModel(pTrackCollection->getDatabase(),
-                     "mixxx.db.model.browse"),
-          QStandardItemModel(parent),
-          m_pTrackCollection(pTrackCollection),
-          m_pRecordingManager(pRecordingManager),
-          m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)) {
+    : TrackModel(pTrackCollection->getDatabase(),
+                 "mixxx.db.model.browse"),
+    QStandardItemModel(parent),
+    m_pTrackCollection(pTrackCollection),
+    m_pRecordingManager(pRecordingManager),
+    m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)) {
     QStringList header_data;
     header_data.insert(COLUMN_PREVIEW, tr("Preview"));
     header_data.insert(COLUMN_FILENAME, tr("Filename"));
@@ -109,7 +109,7 @@ TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const {
         return TrackPointer();
     }
     return m_pTrackCollection->getTrackDAO()
-            .getOrAddTrack(track_location, true, NULL);
+           .getOrAddTrack(track_location, true, NULL);
 }
 
 QString BrowseTableModel::getTrackLocation(const QModelIndex& index) const {
@@ -186,11 +186,11 @@ void BrowseTableModel::removeTracks(QStringList trackLocations) {
 
     // Ask user if s/he is sure
     if (QMessageBox::question(
-        NULL, tr("Mixxx Library"),
-        tr("Warning: This will permanently delete the following files:")
-        + "\n" + trackLocations.join("\n") + "\n" +
-        tr("Are you sure you want to delete these files from your computer?"),
-        QMessageBox::Yes, QMessageBox::Abort) == QMessageBox::Abort) {
+                NULL, tr("Mixxx Library"),
+                tr("Warning: This will permanently delete the following files:")
+                + "\n" + trackLocations.join("\n") + "\n" +
+                tr("Are you sure you want to delete these files from your computer?"),
+                QMessageBox::Yes, QMessageBox::Abort) == QMessageBox::Abort) {
         return;
     }
 
@@ -223,7 +223,7 @@ void BrowseTableModel::removeTracks(QStringList trackLocations) {
     // Repopulate model if any tracks were actually deleted
     if (any_deleted) {
         m_pBrowseThread->executePopulation(m_current_directory,
-                                                       this);
+                                           this);
     }
 }
 
@@ -233,8 +233,8 @@ bool BrowseTableModel::addTrack(const QModelIndex& index, QString location) {
     return false;
 }
 
-QMimeData* BrowseTableModel::mimeData(const QModelIndexList &indexes) const {
-    QMimeData *mimeData = new QMimeData();
+QMimeData* BrowseTableModel::mimeData(const QModelIndexList& indexes) const {
+    QMimeData* mimeData = new QMimeData();
     QList<QUrl> urls;
 
     // Ok, so the list of indexes we're given contains separates indexes for
@@ -281,15 +281,15 @@ void BrowseTableModel::slotInsert(const QList< QList<QStandardItem*> >& rows,
 TrackModel::CapabilitiesFlags BrowseTableModel::getCapabilities() const {
     // See src/library/trackmodel.h for the list of TRACKMODELCAPS
     return TRACKMODELCAPS_NONE
-            | TRACKMODELCAPS_ADDTOPLAYLIST
-            | TRACKMODELCAPS_ADDTOCRATE
-            | TRACKMODELCAPS_ADDTOAUTODJ
-            | TRACKMODELCAPS_LOADTODECK
-            | TRACKMODELCAPS_LOADTOPREVIEWDECK
-            | TRACKMODELCAPS_LOADTOSAMPLER;
+           | TRACKMODELCAPS_ADDTOPLAYLIST
+           | TRACKMODELCAPS_ADDTOCRATE
+           | TRACKMODELCAPS_ADDTOAUTODJ
+           | TRACKMODELCAPS_LOADTODECK
+           | TRACKMODELCAPS_LOADTOPREVIEWDECK
+           | TRACKMODELCAPS_LOADTOSAMPLER;
 }
 
-Qt::ItemFlags BrowseTableModel::flags(const QModelIndex &index) const {
+Qt::ItemFlags BrowseTableModel::flags(const QModelIndex& index) const {
     Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
 
     // Enable dragging songs from this data model to elsewhere (like the
@@ -324,7 +324,7 @@ bool BrowseTableModel::isTrackInUse(const QString& track_location) const {
     return false;
 }
 
-bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
+bool BrowseTableModel::setData(const QModelIndex& index, const QVariant& value,
                                int role) {
     Q_UNUSED(role);
 

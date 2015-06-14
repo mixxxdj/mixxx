@@ -28,7 +28,7 @@ class DeviceChannelListener : public QObject, public hss1394::ChannelListener {
     virtual ~DeviceChannelListener();
     // Called when data has arrived. This call will occur inside a separate
     // thread.
-    void Process(const hss1394::uint8 *pBuffer, hss1394::uint uBufferSize);
+    void Process(const hss1394::uint8* pBuffer, hss1394::uint uBufferSize);
     void Disconnected();
     void Reconnected();
   signals:
@@ -63,7 +63,7 @@ class Hss1394Controller : public MidiController {
     int m_iDeviceIndex;
     static QList<QString> m_deviceList;
     hss1394::Channel* m_pChannel;
-    DeviceChannelListener *m_pChannelListener;
+    DeviceChannelListener* m_pChannelListener;
 };
 
 #endif

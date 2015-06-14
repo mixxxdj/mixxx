@@ -22,8 +22,8 @@ const QString kTrackLocationTest(QDir::currentPath() %
 class FakeMaster {
   public:
     FakeMaster()
-            : crossfader(ConfigKey("[Master]", "crossfader"), -1.0, 1.0),
-              crossfaderReverse(ConfigKey("[Mixer Profile]", "xFaderReverse")) {
+        : crossfader(ConfigKey("[Master]", "crossfader"), -1.0, 1.0),
+          crossfaderReverse(ConfigKey("[Mixer Profile]", "xFaderReverse")) {
         crossfaderReverse.setButtonMode(ControlPushButton::TOGGLE);
     }
 
@@ -34,10 +34,10 @@ class FakeMaster {
 class FakeDeck : public BaseTrackPlayer {
   public:
     FakeDeck(const QString& group)
-            : BaseTrackPlayer(NULL, group),
-              playposition(ConfigKey(group, "playposition"), 0.0, 1.0, true),
-              play(ConfigKey(group, "play")),
-              repeat(ConfigKey(group, "repeat")) {
+        : BaseTrackPlayer(NULL, group),
+          playposition(ConfigKey(group, "playposition"), 0.0, 1.0, true),
+          play(ConfigKey(group, "play")),
+          repeat(ConfigKey(group, "repeat")) {
         play.setButtonMode(ControlPushButton::TOGGLE);
         repeat.setButtonMode(ControlPushButton::TOGGLE);
     }
@@ -84,10 +84,10 @@ class FakeDeck : public BaseTrackPlayer {
 class MockPlayerManager : public PlayerManagerInterface {
   public:
     MockPlayerManager()
-            : numDecks(ConfigKey("[Master]", "num_decks"), true),
-              numSamplers(ConfigKey("[Master]", "num_samplers"), true),
-              numPreviewDecks(ConfigKey("[Master]", "num_preview_decks"),
-                              true) {
+        : numDecks(ConfigKey("[Master]", "num_decks"), true),
+          numSamplers(ConfigKey("[Master]", "num_samplers"), true),
+          numPreviewDecks(ConfigKey("[Master]", "num_preview_decks"),
+                          true) {
     }
 
     virtual ~MockPlayerManager() {
@@ -122,8 +122,8 @@ class MockAutoDJProcessor : public AutoDJProcessor {
                         PlayerManagerInterface* pPlayerManager,
                         int iAutoDJPlaylistId,
                         TrackCollection* pCollection)
-            : AutoDJProcessor(pParent, pConfig, pPlayerManager,
-                              iAutoDJPlaylistId, pCollection) {
+        : AutoDJProcessor(pParent, pConfig, pPlayerManager,
+                          iAutoDJPlaylistId, pCollection) {
     }
 
     virtual ~MockAutoDJProcessor() {
@@ -136,10 +136,10 @@ class MockAutoDJProcessor : public AutoDJProcessor {
 class AutoDJProcessorTest : public LibraryTest {
   protected:
     AutoDJProcessorTest()
-            :  deck1("[Channel1]"),
-               deck2("[Channel2]"),
-               deck3("[Channel3]"),
-               deck4("[Channel4]") {
+        :  deck1("[Channel1]"),
+           deck2("[Channel2]"),
+           deck3("[Channel3]"),
+           deck4("[Channel4]") {
         qRegisterMetaType<TrackPointer>("TrackPointer");
 
         PlaylistDAO& playlistDao = collection()->getPlaylistDAO();
@@ -147,20 +147,20 @@ class AutoDJProcessorTest : public LibraryTest {
         // If the AutoDJ playlist does not exist yet then create it.
         if (m_iAutoDJPlaylistId < 0) {
             m_iAutoDJPlaylistId = playlistDao.createPlaylist(
-                    AUTODJ_TABLE, PlaylistDAO::PLHT_AUTO_DJ);
+                                      AUTODJ_TABLE, PlaylistDAO::PLHT_AUTO_DJ);
         }
 
         pPlayerManager.reset(new MockPlayerManager());
 
         // Setup 4 fake decks.
         ON_CALL(*pPlayerManager, getPlayer(QString("[Channel1]")))
-                .WillByDefault(Return(&deck1));
+        .WillByDefault(Return(&deck1));
         ON_CALL(*pPlayerManager, getPlayer(QString("[Channel2]")))
-                .WillByDefault(Return(&deck2));
+        .WillByDefault(Return(&deck2));
         ON_CALL(*pPlayerManager, getPlayer(QString("[Channel3]")))
-                .WillByDefault(Return(&deck3));
+        .WillByDefault(Return(&deck3));
         ON_CALL(*pPlayerManager, getPlayer(QString("[Channel4]")))
-                .WillByDefault(Return(&deck4));
+        .WillByDefault(Return(&deck4));
         pPlayerManager->numDecks.set(4);
 
         EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel1]"))).Times(1);
@@ -169,8 +169,8 @@ class AutoDJProcessorTest : public LibraryTest {
         EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel4]"))).Times(1);
 
         pProcessor.reset(new MockAutoDJProcessor(
-                NULL, config(), pPlayerManager.data(),
-                m_iAutoDJPlaylistId, collection()));
+                             NULL, config(), pPlayerManager.data(),
+                             m_iAutoDJPlaylistId, collection()));
     }
 
     virtual ~AutoDJProcessorTest() {
@@ -200,8 +200,8 @@ TEST_F(AutoDJProcessorTest, TransitionTimeLoadedFromConfig) {
     EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel3]"))).Times(1);
     EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel4]"))).Times(1);
     pProcessor.reset(new MockAutoDJProcessor(
-            NULL, config(), pPlayerManager.data(),
-            m_iAutoDJPlaylistId, collection()));
+                         NULL, config(), pPlayerManager.data(),
+                         m_iAutoDJPlaylistId, collection()));
     EXPECT_EQ(25, pProcessor->getTransitionTime());
 }
 
@@ -1148,5 +1148,5 @@ TEST_F(AutoDJProcessorTest, TrackZeroLength) {
     // Expect that the track is rejected an a new one is loaded
     // Signal that the request to load pTrack succeeded.
     deck1.fakeTrackLoadedEvent(pTrack);
- }
+}
 

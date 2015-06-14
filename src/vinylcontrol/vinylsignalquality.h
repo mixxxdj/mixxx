@@ -7,7 +7,7 @@ struct VinylSignalQualityReport {
     unsigned char processor;
     float timecode_quality;
     float angle;
-    unsigned char scope[MIXXX_VINYL_SCOPE_SIZE*MIXXX_VINYL_SCOPE_SIZE];
+    unsigned char scope[MIXXX_VINYL_SCOPE_SIZE* MIXXX_VINYL_SCOPE_SIZE];
 };
 
 class VinylSignalQualityListener {

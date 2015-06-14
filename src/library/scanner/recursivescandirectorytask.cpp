@@ -9,9 +9,9 @@
 RecursiveScanDirectoryTask::RecursiveScanDirectoryTask(
     LibraryScanner* pScanner, const ScannerGlobalPointer scannerGlobal,
     const QDir& dir, SecurityTokenPointer pToken)
-        : ScannerTask(pScanner, scannerGlobal),
-          m_dir(dir),
-          m_pToken(pToken) {
+    : ScannerTask(pScanner, scannerGlobal),
+      m_dir(dir),
+      m_pToken(pToken) {
 }
 
 void RecursiveScanDirectoryTask::run() {
@@ -38,9 +38,9 @@ void RecursiveScanDirectoryTask::run() {
     // TODO(rryan) benchmark QRegExp copy versus QMutex/QRegExp in ScannerGlobal
     // versus slicing the extension off and checking for set/list containment.
     QRegExp supportedExtensionsRegex =
-            m_scannerGlobal->supportedExtensionsRegex();
+        m_scannerGlobal->supportedExtensionsRegex();
     QRegExp supportedCoverExtensionsRegex =
-            m_scannerGlobal->supportedCoverExtensionsRegex();
+        m_scannerGlobal->supportedCoverExtensionsRegex();
 
     while (it.hasNext()) {
         currentFile = it.next();
@@ -81,9 +81,9 @@ void RecursiveScanDirectoryTask::run() {
         // we return immediately.
         if (!filesToImport.isEmpty()) {
             m_pScanner->queueTask(new ImportFilesTask(m_pScanner, m_scannerGlobal,
-                                                    dirPath, newHash, prevHashExists,
-                                                    filesToImport, possibleCovers,
-                                                    m_pToken));
+                                  dirPath, newHash, prevHashExists,
+                                  filesToImport, possibleCovers,
+                                  m_pToken));
         } else {
             emit(directoryHashed(dirPath, !prevHashExists, newHash));
         }
@@ -94,7 +94,7 @@ void RecursiveScanDirectoryTask::run() {
     // Process all of the sub-directories.
     foreach (const QDir& nextDir, dirsToScan) {
         m_pScanner->queueTask(new RecursiveScanDirectoryTask(
-            m_pScanner, m_scannerGlobal, nextDir, m_pToken));
+                                  m_pScanner, m_scannerGlobal, nextDir, m_pToken));
     }
 
     setSuccess(true);

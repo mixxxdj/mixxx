@@ -19,16 +19,16 @@ class ScannerGlobal {
                   const QRegExp& supportedExtensionsMatcher,
                   const QRegExp& supportedCoverExtensionsMatcher,
                   const QStringList& directoriesBlacklist)
-            : m_trackLocations(trackLocations),
-              m_directoryHashes(directoryHashes),
-              m_supportedExtensionsMatcher(supportedExtensionsMatcher),
-              m_supportedCoverExtensionsMatcher(supportedCoverExtensionsMatcher),
-              m_directoriesBlacklist(directoriesBlacklist),
-              // Unless marked un-clean, we assume it will finish cleanly.
-              m_scanFinishedCleanly(true),
-              m_shouldCancel(false),
-              m_numAddedTracks(0),
-              m_numScannedDirectories(0) {
+        : m_trackLocations(trackLocations),
+          m_directoryHashes(directoryHashes),
+          m_supportedExtensionsMatcher(supportedExtensionsMatcher),
+          m_supportedCoverExtensionsMatcher(supportedCoverExtensionsMatcher),
+          m_directoriesBlacklist(directoriesBlacklist),
+          // Unless marked un-clean, we assume it will finish cleanly.
+          m_scanFinishedCleanly(true),
+          m_shouldCancel(false),
+          m_numAddedTracks(0),
+          m_numScannedDirectories(0) {
     }
 
     TaskWatcher& getTaskWatcher() {

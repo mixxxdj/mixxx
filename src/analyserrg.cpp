@@ -6,7 +6,7 @@
 #include "analyserrg.h"
 #include "util/math.h"
 
-AnalyserGain::AnalyserGain(ConfigObject<ConfigValue> *_config) {
+AnalyserGain::AnalyserGain(ConfigObject<ConfigValue>* _config) {
     m_pConfigReplayGain = _config;
     m_bStepControl = false;
     m_pLeftTempBuffer = NULL;
@@ -43,8 +43,8 @@ void AnalyserGain::cleanup(TrackPointer tio) {
     Q_UNUSED(tio);
 }
 
-void AnalyserGain::process(const CSAMPLE *pIn, const int iLen) {
-    if(!m_bStepControl)
+void AnalyserGain::process(const CSAMPLE* pIn, const int iLen) {
+    if (!m_bStepControl)
         return;
 
     int halfLength = static_cast<int>(iLen / 2);
@@ -66,7 +66,7 @@ void AnalyserGain::finalise(TrackPointer tio) {
     // One may think to digg into replay_gain code and modify it so that
     // it directly sends results as relative peaks.
     // In that way there is no need to spend resources in calculating log10 or pow.
-    if(!m_bStepControl)
+    if (!m_bStepControl)
         return;
 
     float ReplayGainOutput = m_pReplayGain->end();

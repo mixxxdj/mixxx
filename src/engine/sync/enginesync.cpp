@@ -26,7 +26,7 @@
 #include "util/assert.h"
 
 EngineSync::EngineSync(ConfigObject<ConfigValue>* pConfig)
-        : BaseSyncableListener(pConfig) {
+    : BaseSyncableListener(pConfig) {
 }
 
 EngineSync::~EngineSync() {

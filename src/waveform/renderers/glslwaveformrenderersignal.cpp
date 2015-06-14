@@ -8,17 +8,17 @@
 #include "controlobjectthread.h"
 
 GLSLWaveformRendererSignal::GLSLWaveformRendererSignal(WaveformWidgetRenderer* waveformWidgetRenderer,
-                                                       bool rgbShader)
-        : WaveformRendererSignalBase(waveformWidgetRenderer),
-          m_unitQuadListId(-1),
-          m_textureId(0),
-          m_loadedWaveform(0),
-          m_frameBuffersValid(false),
-          m_framebuffer(NULL),
-          m_bDumpPng(false),
-          m_shadersValid(false),
-          m_rgbShader(rgbShader),
-          m_frameShaderProgram(NULL) {
+        bool rgbShader)
+    : WaveformRendererSignalBase(waveformWidgetRenderer),
+      m_unitQuadListId(-1),
+      m_textureId(0),
+      m_loadedWaveform(0),
+      m_frameBuffersValid(false),
+      m_framebuffer(NULL),
+      m_bDumpPng(false),
+      m_shadersValid(false),
+      m_rgbShader(rgbShader),
+      m_frameShaderProgram(NULL) {
 }
 
 GLSLWaveformRendererSignal::~GLSLWaveformRendererSignal() {
@@ -52,16 +52,16 @@ bool GLSLWaveformRendererSignal::loadShaders() {
     m_frameShaderProgram->removeAllShaders();
 
     if (!m_frameShaderProgram->addShaderFromSourceFile(
-            QGLShader::Vertex, ":shaders/passthrough.vert")) {
+                QGLShader::Vertex, ":shaders/passthrough.vert")) {
         qDebug() << "GLWaveformRendererSignalShader::loadShaders - "
                  << m_frameShaderProgram->log();
         return false;
     }
     QString fragmentShader = m_rgbShader ?
-            ":/shaders/rgbsignal.frag" :
-            ":/shaders/filteredsignal.frag";
+                             ":/shaders/rgbsignal.frag" :
+                             ":/shaders/filteredsignal.frag";
     if (!m_frameShaderProgram->addShaderFromSourceFile(
-            QGLShader::Fragment, fragmentShader)) {
+                QGLShader::Fragment, fragmentShader)) {
         qDebug() << "GLWaveformRendererSignalShader::loadShaders - "
                  << m_frameShaderProgram->log();
         return false;
@@ -171,8 +171,7 @@ void GLSLWaveformRendererSignal::createGeometry() {
     glEndList();
 }
 
-void GLSLWaveformRendererSignal::createFrameBuffers()
-{
+void GLSLWaveformRendererSignal::createFrameBuffers() {
     m_frameBuffersValid = false;
 
     int bufferWidth = m_waveformRenderer->getWidth();
@@ -292,7 +291,7 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
         glViewport(0, 0, m_framebuffer->width(), m_framebuffer->height());
 
         m_frameShaderProgram->setUniformValue("framebufferSize", QVector2D(
-            m_framebuffer->width(), m_framebuffer->height()));
+                m_framebuffer->width(), m_framebuffer->height()));
         m_frameShaderProgram->setUniformValue("waveformLength", dataSize);
         m_frameShaderProgram->setUniformValue("textureSize", waveform->getTextureSize());
         m_frameShaderProgram->setUniformValue("textureStride", waveform->getTextureStride());
@@ -306,17 +305,17 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
         m_frameShaderProgram->setUniformValue("highGain", highGain);
 
         m_frameShaderProgram->setUniformValue("axesColor", QVector4D(m_axesColor_r, m_axesColor_g,
-                                                                     m_axesColor_b, m_axesColor_a));
+                                              m_axesColor_b, m_axesColor_a));
 
         QVector4D lowColor = m_rgbShader ?
-                QVector4D(m_rgbLowColor_r, m_rgbLowColor_g, m_rgbLowColor_b, 1.0) :
-                QVector4D(m_lowColor_r, m_lowColor_g, m_lowColor_b, 1.0);
+                             QVector4D(m_rgbLowColor_r, m_rgbLowColor_g, m_rgbLowColor_b, 1.0) :
+                             QVector4D(m_lowColor_r, m_lowColor_g, m_lowColor_b, 1.0);
         QVector4D midColor = m_rgbShader ?
-                QVector4D(m_rgbMidColor_r, m_rgbMidColor_g, m_rgbMidColor_b, 1.0) :
-                QVector4D(m_midColor_r, m_midColor_g, m_midColor_b, 1.0);
+                             QVector4D(m_rgbMidColor_r, m_rgbMidColor_g, m_rgbMidColor_b, 1.0) :
+                             QVector4D(m_midColor_r, m_midColor_g, m_midColor_b, 1.0);
         QVector4D highColor = m_rgbShader ?
-                QVector4D(m_rgbHighColor_r, m_rgbHighColor_g, m_rgbHighColor_b, 1.0) :
-                QVector4D(m_highColor_r, m_highColor_g, m_highColor_b, 1.0);
+                              QVector4D(m_rgbHighColor_r, m_rgbHighColor_g, m_rgbHighColor_b, 1.0) :
+                              QVector4D(m_highColor_r, m_highColor_g, m_highColor_b, 1.0);
         m_frameShaderProgram->setUniformValue("lowColor", lowColor);
         m_frameShaderProgram->setUniformValue("midColor", midColor);
         m_frameShaderProgram->setUniformValue("highColor", highColor);

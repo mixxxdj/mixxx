@@ -27,8 +27,8 @@
 
 MixxxKeyboard::MixxxKeyboard(ConfigObject<ConfigValueKbd>* pKbdConfigObject,
                              QObject* parent, const char* name)
-        : QObject(parent),
-          m_pKbdConfigObject(NULL) {
+    : QObject(parent),
+      m_pKbdConfigObject(NULL) {
     setObjectName(name);
     setKeyboardConfig(pKbdConfigObject);
 }
@@ -42,7 +42,7 @@ bool MixxxKeyboard::eventFilter(QObject*, QEvent* e) {
         // because we might not get Key Release events.
         m_qActiveKeyList.clear();
     } else if (e->type() == QEvent::KeyPress) {
-        QKeyEvent* ke = (QKeyEvent *)e;
+        QKeyEvent* ke = (QKeyEvent*)e;
 
 #ifdef __APPLE__
         // On Mac OSX the nativeScanCode is empty (const 1) http://doc.qt.nokia.com/4.7/qkeyevent.html#nativeScanCode
@@ -68,8 +68,8 @@ bool MixxxKeyboard::eventFilter(QObject*, QEvent* e) {
             // Check if a shortcut is defined
             bool result = false;
             for (QMultiHash<QKeySequence, ConfigKey>::const_iterator it =
-                         m_keySequenceToControlHash.find(ks);
-                 it != m_keySequenceToControlHash.end() && it.key() == ks; ++it) {
+                        m_keySequenceToControlHash.find(ks);
+                    it != m_keySequenceToControlHash.end() && it.key() == ks; ++it) {
                 const ConfigKey& configKey = it.value();
                 if (configKey.group != "[KeyboardShortcuts]") {
                     ControlObject* control = ControlObject::getControl(configKey);
@@ -77,7 +77,7 @@ bool MixxxKeyboard::eventFilter(QObject*, QEvent* e) {
                         //qDebug() << configKey << "MIDI_NOTE_ON" << 1;
                         // Add key to active key list
                         m_qActiveKeyList.append(KeyDownInformation(
-                            keyId, ke->modifiers(), control));
+                                                    keyId, ke->modifiers(), control));
                         // Since setting the value might cause us to go down
                         // a route that would eventually clear the active
                         // key list, do that last.
@@ -179,11 +179,11 @@ void MixxxKeyboard::setKeyboardConfig(ConfigObject<ConfigValueKbd>* pKbdConfigOb
     // ConfigKey. This allows a key sequence to trigger multiple controls in
     // Mixxx.
     QHash<ConfigKey, ConfigValueKbd> keyboardConfig =
-            pKbdConfigObject->toHash();
+        pKbdConfigObject->toHash();
 
     m_keySequenceToControlHash.clear();
     for (QHash<ConfigKey, ConfigValueKbd>::const_iterator it =
-                 keyboardConfig.begin(); it != keyboardConfig.end(); ++it) {
+                keyboardConfig.begin(); it != keyboardConfig.end(); ++it) {
         m_keySequenceToControlHash.insert(it.value().m_qKey, it.key());
     }
     m_pKbdConfigObject = pKbdConfigObject;

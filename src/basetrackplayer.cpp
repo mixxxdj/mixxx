@@ -16,31 +16,31 @@
 #include "effects/effectsmanager.h"
 
 BaseTrackPlayer::BaseTrackPlayer(QObject* pParent, const QString& group)
-        : BasePlayer(pParent, group) {
+    : BasePlayer(pParent, group) {
 }
 
 BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
-                                         ConfigObject<ConfigValue>* pConfig,
-                                         EngineMaster* pMixingEngine,
-                                         EffectsManager* pEffectsManager,
-                                         EngineChannel::ChannelOrientation defaultOrientation,
-                                         QString group,
-                                         bool defaultMaster,
-                                         bool defaultHeadphones)
-        : BaseTrackPlayer(pParent, group),
-          m_pConfig(pConfig),
-          m_pLoadedTrack(),
-          m_pLowFilter(NULL),
-          m_pMidFilter(NULL),
-          m_pHighFilter(NULL),
-          m_pLowFilterKill(NULL),
-          m_pMidFilterKill(NULL),
-          m_pHighFilterKill(NULL),
-          m_pSpeed(NULL),
-          m_pPitchAdjust(NULL),
-          m_replaygainPending(false) {
+        ConfigObject<ConfigValue>* pConfig,
+        EngineMaster* pMixingEngine,
+        EffectsManager* pEffectsManager,
+        EngineChannel::ChannelOrientation defaultOrientation,
+        QString group,
+        bool defaultMaster,
+        bool defaultHeadphones)
+    : BaseTrackPlayer(pParent, group),
+      m_pConfig(pConfig),
+      m_pLoadedTrack(),
+      m_pLowFilter(NULL),
+      m_pMidFilter(NULL),
+      m_pHighFilter(NULL),
+      m_pLowFilterKill(NULL),
+      m_pMidFilterKill(NULL),
+      m_pHighFilterKill(NULL),
+      m_pSpeed(NULL),
+      m_pPitchAdjust(NULL),
+      m_replaygainPending(false) {
     ChannelHandleAndGroup channelGroup =
-            pMixingEngine->registerChannelGroup(group);
+        pMixingEngine->registerChannelGroup(group);
     m_pChannel = new EngineDeck(channelGroup, pConfig, pMixingEngine,
                                 pEffectsManager, defaultOrientation);
 
@@ -65,9 +65,9 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
 
     // Get loop point control objects
     m_pLoopInPoint = new ControlObjectThread(
-            getGroup(),"loop_start_position");
+        getGroup(),"loop_start_position");
     m_pLoopOutPoint = new ControlObjectThread(
-            getGroup(),"loop_end_position");
+        getGroup(),"loop_end_position");
 
     // Duration of the current song, we create this one because nothing else does.
     m_pDuration = new ControlObject(ConfigKey(getGroup(), "duration"));
@@ -78,9 +78,9 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
                                           WaveformWidgetRenderer::s_waveformMaxZoom);
     m_pWaveformZoom->set(1.0);
     m_pWaveformZoom->setStepCount(WaveformWidgetRenderer::s_waveformMaxZoom -
-            WaveformWidgetRenderer::s_waveformMinZoom);
+                                  WaveformWidgetRenderer::s_waveformMinZoom);
     m_pWaveformZoom->setSmallStepCount(WaveformWidgetRenderer::s_waveformMaxZoom -
-            WaveformWidgetRenderer::s_waveformMinZoom);
+                                       WaveformWidgetRenderer::s_waveformMinZoom);
 
     m_pEndOfTrack = new ControlObject(ConfigKey(group, "end_of_track"));
     m_pEndOfTrack->set(0.);
@@ -139,7 +139,7 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer track, bool bPlay) {
         int loopStart = m_pLoopInPoint->get();
         int loopEnd = m_pLoopOutPoint->get();
         if (loopStart != -1 && loopEnd != -1 &&
-            even(loopStart) && even(loopEnd) && loopStart <= loopEnd) {
+                even(loopStart) && even(loopEnd) && loopStart <= loopEnd) {
             Cue* pLoopCue = NULL;
             QList<Cue*> cuePoints = m_pLoadedTrack->getCuePoints();
             QListIterator<Cue*> it(cuePoints);
@@ -230,8 +230,7 @@ void BaseTrackPlayerImpl::slotUnloadTrack(TrackPointer) {
     PlayerInfo::instance().setTrackInfo(getGroup(), m_pLoadedTrack);
 }
 
-void BaseTrackPlayerImpl::slotFinishLoading(TrackPointer pTrackInfoObject)
-{
+void BaseTrackPlayerImpl::slotFinishLoading(TrackPointer pTrackInfoObject) {
     m_replaygainPending = false;
     // Read the tags if required
     if (!m_pLoadedTrack->getHeaderParsed()) {
@@ -268,7 +267,7 @@ void BaseTrackPlayerImpl::slotFinishLoading(TrackPointer pTrackInfoObject)
             }
         }
     }
-    if(m_pConfig->getValueString(ConfigKey("[Mixer Profile]", "EqAutoReset"), 0).toInt()) {
+    if (m_pConfig->getValueString(ConfigKey("[Mixer Profile]", "EqAutoReset"), 0).toInt()) {
         if (m_pLowFilter != NULL) {
             m_pLowFilter->set(1.0);
         }
@@ -291,15 +290,15 @@ void BaseTrackPlayerImpl::slotFinishLoading(TrackPointer pTrackInfoObject)
     }
     int reset = m_pConfig->getValueString(ConfigKey(
             "[Controls]", "SpeedAutoReset"),
-            QString("%1").arg(RESET_PITCH)).toInt();
+                                          QString("%1").arg(RESET_PITCH)).toInt();
     switch (reset) {
-      case RESET_PITCH_AND_SPEED:
+    case RESET_PITCH_AND_SPEED:
         // Note: speed may affect pitch
         if (m_pSpeed != NULL) {
             m_pSpeed->set(0.0);
         }
-        // Fallthrough intended
-      case RESET_PITCH:
+    // Fallthrough intended
+    case RESET_PITCH:
         if (m_pPitchAdjust != NULL) {
             m_pPitchAdjust->set(0.0);
         }

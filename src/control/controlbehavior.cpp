@@ -24,18 +24,18 @@ double ControlNumericBehavior::valueToMidiParameter(double dValue) {
 }
 
 void ControlNumericBehavior::setValueFromMidiParameter(MidiOpCode o, double dParam,
-                                                       ControlDoublePrivate* pControl) {
+        ControlDoublePrivate* pControl) {
     Q_UNUSED(o);
     double dNorm = midiValueToParameter(dParam);
     pControl->set(parameterToValue(dNorm), NULL);
 }
 
 ControlPotmeterBehavior::ControlPotmeterBehavior(double dMinValue, double dMaxValue,
-                                                 bool allowOutOfBounds)
-        : m_dMinValue(dMinValue),
-          m_dMaxValue(dMaxValue),
-          m_dValueRange(m_dMaxValue - m_dMinValue),
-          m_bAllowOutOfBounds(allowOutOfBounds) {
+        bool allowOutOfBounds)
+    : m_dMinValue(dMinValue),
+      m_dMaxValue(dMaxValue),
+      m_dValueRange(m_dMaxValue - m_dMinValue),
+      m_bAllowOutOfBounds(allowOutOfBounds) {
 }
 
 ControlPotmeterBehavior::~ControlPotmeterBehavior() {
@@ -99,7 +99,7 @@ double ControlPotmeterBehavior::valueToMidiParameter(double dValue) {
 #define positionrange (maxPosition - minPosition)
 
 ControlLogPotmeterBehavior::ControlLogPotmeterBehavior(double dMinValue, double dMaxValue, double minDB)
-        : ControlPotmeterBehavior(dMinValue, dMaxValue, false) {
+    : ControlPotmeterBehavior(dMinValue, dMaxValue, false) {
     if (minDB >= 0) {
         qWarning() << "ControlLogPotmeterBehavior::ControlLogPotmeterBehavior() minDB must be negative";
         m_minDB = -1;
@@ -133,21 +133,21 @@ double ControlLogPotmeterBehavior::parameterToValue(double dParam) {
 }
 
 ControlLinPotmeterBehavior::ControlLinPotmeterBehavior(double dMinValue, double dMaxValue,
-                                                       bool allowOutOfBounds)
-        : ControlPotmeterBehavior(dMinValue, dMaxValue, allowOutOfBounds) {
+        bool allowOutOfBounds)
+    : ControlPotmeterBehavior(dMinValue, dMaxValue, allowOutOfBounds) {
 }
 
 ControlLinPotmeterBehavior::~ControlLinPotmeterBehavior() {
 }
 
 ControlAudioTaperPotBehavior::ControlAudioTaperPotBehavior(
-                             double minDB, double maxDB,
-                             double neutralParameter)
-        : ControlPotmeterBehavior(0.0, db2ratio(maxDB), false),
-          m_neutralParameter(neutralParameter),
-          m_minDB(minDB),
-          m_maxDB(maxDB),
-          m_offset(db2ratio(m_minDB)) {
+    double minDB, double maxDB,
+    double neutralParameter)
+    : ControlPotmeterBehavior(0.0, db2ratio(maxDB), false),
+      m_neutralParameter(neutralParameter),
+      m_minDB(minDB),
+      m_maxDB(maxDB),
+      m_offset(db2ratio(m_minDB)) {
     m_midiCorrection = ceil(m_neutralParameter * 127) - (m_neutralParameter * 127);
 }
 
@@ -210,11 +210,11 @@ double ControlAudioTaperPotBehavior::midiValueToParameter(double midiValue) {
         double neutralTest = (midiValue - m_midiCorrection) / 127.0;
         if (neutralTest < m_neutralParameter) {
             dParam = midiValue /
-                    (127.0 + m_midiCorrection / m_neutralParameter);
+                     (127.0 + m_midiCorrection / m_neutralParameter);
         } else {
             // m_midicorrection is allways < 1, so NaN check required
             dParam = (midiValue - m_midiCorrection / m_neutralParameter) /
-                    (127.0 - m_midiCorrection / m_neutralParameter);
+                     (127.0 - m_midiCorrection / m_neutralParameter);
         }
     } else {
         dParam = midiValue / 127.0;
@@ -240,7 +240,7 @@ double ControlAudioTaperPotBehavior::valueToMidiParameter(double dValue) {
 }
 
 void ControlAudioTaperPotBehavior::setValueFromMidiParameter(MidiOpCode o, double dMidiParam,
-                                                           ControlDoublePrivate* pControl) {
+        ControlDoublePrivate* pControl) {
     Q_UNUSED(o);
     double dParam = midiValueToParameter(dMidiParam);
     pControl->set(parameterToValue(dParam), NULL);
@@ -266,13 +266,13 @@ const int ControlPushButtonBehavior::kPowerWindowTimeMillis = 300;
 const int ControlPushButtonBehavior::kLongPressLatchingTimeMillis = 300;
 
 ControlPushButtonBehavior::ControlPushButtonBehavior(ButtonMode buttonMode,
-                                                     int iNumStates)
-        : m_buttonMode(buttonMode),
-          m_iNumStates(iNumStates) {
+        int iNumStates)
+    : m_buttonMode(buttonMode),
+      m_iNumStates(iNumStates) {
 }
 
 void ControlPushButtonBehavior::setValueFromMidiParameter(
-        MidiOpCode o, double dParam, ControlDoublePrivate* pControl) {
+    MidiOpCode o, double dParam, ControlDoublePrivate* pControl) {
     // Calculate pressed State of the midi Button
     // Some controller like the RMX2 are sending always MIDI_NOTE_ON
     // with a changed dParam 127 for pressed an 0 for released.

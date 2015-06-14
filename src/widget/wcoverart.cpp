@@ -17,13 +17,13 @@
 WCoverArt::WCoverArt(QWidget* parent,
                      ConfigObject<ConfigValue>* pConfig,
                      const QString& group)
-        : QWidget(parent),
-          WBaseWidget(this),
-          m_group(group),
-          m_pConfig(pConfig),
-          m_bEnable(true),
-          m_pMenu(new WCoverArtMenu(this)),
-          m_pDlgFullSize(new DlgCoverArtFullSize()) {
+    : QWidget(parent),
+      WBaseWidget(this),
+      m_group(group),
+      m_pConfig(pConfig),
+      m_bEnable(true),
+      m_pMenu(new WCoverArtMenu(this)),
+      m_pDlgFullSize(new DlgCoverArtFullSize()) {
     // Accept drops if we have a group to load tracks into.
     setAcceptDrops(!m_group.isEmpty());
 
@@ -241,20 +241,20 @@ void WCoverArt::dragEnterEvent(QDragEnterEvent* event) {
     if (!m_group.isEmpty() &&
             DragAndDropHelper::allowLoadToPlayer(m_group, m_pConfig) &&
             DragAndDropHelper::dragEnterAccept(*event->mimeData(), m_group,
-                                               true, false)) {
+                    true, false)) {
         event->acceptProposedAction();
     } else {
         event->ignore();
     }
 }
 
-void WCoverArt::dropEvent(QDropEvent *event) {
+void WCoverArt::dropEvent(QDropEvent* event) {
     // If group is empty then we are a library cover art widget and we don't
     // accept track drops.
     if (!m_group.isEmpty() &&
             DragAndDropHelper::allowLoadToPlayer(m_group, m_pConfig)) {
         QList<QFileInfo> files = DragAndDropHelper::dropEventFiles(
-                *event->mimeData(), m_group, true, false);
+                                     *event->mimeData(), m_group, true, false);
         if (!files.isEmpty()) {
             event->accept();
             emit(trackDropped(files.at(0).canonicalFilePath(), m_group));

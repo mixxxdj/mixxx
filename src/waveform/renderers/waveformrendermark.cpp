@@ -105,11 +105,11 @@ void WaveformRenderMark::generateMarkImage(WaveformMark& mark) {
         labelRectHeight = wordRect.height() + 2*marginY + 4 ;
 
         QRectF labelRect(0, 0,
-                (float)labelRectWidth, (float)labelRectHeight);
+                         (float)labelRectWidth, (float)labelRectHeight);
 
         mark.m_image = QImage(labelRectWidth+1,
-                m_waveformRenderer->getHeight(),
-                QImage::Format_ARGB32_Premultiplied);
+                              m_waveformRenderer->getHeight(),
+                              QImage::Format_ARGB32_Premultiplied);
 
         if (mark.m_align == Qt::AlignBottom) {
             labelRect.moveBottom(mark.m_image.height()-1);
@@ -160,13 +160,11 @@ void WaveformRenderMark::generateMarkImage(WaveformMark& mark) {
         painter.drawLine(middle - 1, lineTop, middle - 1, lineBottom);
         painter.drawLine(middle + 1, lineTop, middle + 1, lineBottom);
 
-    }
-    else //no text draw triangle
-    {
+    } else { //no text draw triangle
         float triangleSize = 9.0;
         mark.m_image = QImage(labelRectWidth+1,
-                m_waveformRenderer->getHeight(),
-                QImage::Format_ARGB32_Premultiplied);
+                              m_waveformRenderer->getHeight(),
+                              QImage::Format_ARGB32_Premultiplied);
         mark.m_image.fill(QColor(0,0,0,0).rgba());
 
         painter.begin(&mark.m_image);

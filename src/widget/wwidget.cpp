@@ -23,9 +23,9 @@
 #include "util/assert.h"
 
 WWidget::WWidget(QWidget* parent, Qt::WindowFlags flags)
-        : QWidget(parent, flags),
-          WBaseWidget(this),
-          m_activeTouchButton(Qt::NoButton) {
+    : QWidget(parent, flags),
+      WBaseWidget(this),
+      m_activeTouchButton(Qt::NoButton) {
     m_pTouchShift = new ControlObjectSlave("[Controls]", "touch_shift");
     setAttribute(Qt::WA_StaticContents);
     setAttribute(Qt::WA_AcceptTouchEvents);
@@ -44,11 +44,10 @@ bool WWidget::event(QEvent* e) {
     if (e->type() == QEvent::ToolTip) {
         updateTooltip();
     } else if (isEnabled()) {
-        switch(e->type()) {
+        switch (e->type()) {
         case QEvent::TouchBegin:
         case QEvent::TouchUpdate:
-        case QEvent::TouchEnd:
-        {
+        case QEvent::TouchEnd: {
             QTouchEvent* touchEvent = static_cast<QTouchEvent*>(e);
             if (touchEvent->deviceType() !=  QTouchEvent::TouchScreen) {
                 break;
@@ -77,14 +76,14 @@ bool WWidget::event(QEvent* e) {
                 break;
             }
 
-            const QTouchEvent::TouchPoint &touchPoint =
-                    touchEvent->touchPoints().first();
+            const QTouchEvent::TouchPoint& touchPoint =
+                touchEvent->touchPoints().first();
             QMouseEvent mouseEvent(eventType,
-                    touchPoint.pos().toPoint(),
-                    touchPoint.screenPos().toPoint(),
-                    m_activeTouchButton, // Button that causes the event
-                    Qt::NoButton, // Not used, so no need to fake a proper value.
-                    touchEvent->modifiers());
+                                   touchPoint.pos().toPoint(),
+                                   touchPoint.screenPos().toPoint(),
+                                   m_activeTouchButton, // Button that causes the event
+                                   Qt::NoButton, // Not used, so no need to fake a proper value.
+                                   touchEvent->modifiers());
 
             return QWidget::event(&mouseEvent);
         }

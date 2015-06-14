@@ -24,16 +24,14 @@ Rotary::Rotary()
     : m_iFilterPos(0),
       m_dCalibration(1.0),
       m_dLastValue(0.0),
-      m_iCalibrationCount(0)
-{
+      m_iCalibrationCount(0) {
     m_iFilterLength = kiRotaryFilterMaxLen;
     m_pFilter = new double[m_iFilterLength];
     for (int i=0; i<m_iFilterLength; ++i)
         m_pFilter[i] = 0.;
 }
 
-Rotary::~Rotary()
-{
+Rotary::~Rotary() {
     delete [] m_pFilter;
 }
 
@@ -46,15 +44,13 @@ Rotary::~Rotary()
    have you), the ControlObject's internal value never goes back to zero properly.
    - Albert (March 13, 2007)
  */
-double Rotary::filter(double dValue)
-{
+double Rotary::filter(double dValue) {
     // Update filter buffer
     m_pFilter[m_iFilterPos] = dValue/m_dCalibration;
     m_iFilterPos = (m_iFilterPos+1)%m_iFilterLength;
 
     double dMagnitude = 0.;
-    for (int i=0; i<m_iFilterLength; i++)
-    {
+    for (int i=0; i<m_iFilterLength; i++) {
         dMagnitude += m_pFilter[i];
     }
     dMagnitude /= (double)m_iFilterLength;
@@ -65,30 +61,25 @@ double Rotary::filter(double dValue)
     return dMagnitude;
 }
 
-double Rotary::fillBuffer(double dValue)
-{
-    for (int i=0; i<m_iFilterLength; ++i)
-    {
+double Rotary::fillBuffer(double dValue) {
+    for (int i=0; i<m_iFilterLength; ++i) {
         m_pFilter[i] = dValue/m_dCalibration;
     }
     return dValue/m_dCalibration;
 }
 
-void Rotary::calibrate(double dValue)
-{
+void Rotary::calibrate(double dValue) {
     m_dCalibration += dValue;
     m_iCalibrationCount += 1;
 }
 
-void Rotary::calibrateStart()
-{
+void Rotary::calibrateStart() {
     // Reset calibration data
     m_dCalibration = 0.;
     m_iCalibrationCount = 0;
 }
 
-double Rotary::calibrateEnd()
-{
+double Rotary::calibrateEnd() {
     m_dCalibration /= (double)m_iCalibrationCount;
 
     qDebug() << "Calibration " << m_dCalibration << ", count " << m_iCalibrationCount;
@@ -96,18 +87,15 @@ double Rotary::calibrateEnd()
     return m_dCalibration;
 }
 
-void Rotary::setCalibration(double c)
-{
+void Rotary::setCalibration(double c) {
     m_dCalibration = c;
 }
 
-double Rotary::getCalibration()
-{
+double Rotary::getCalibration() {
     return m_dCalibration;
 }
 
-void Rotary::setFilterLength(int i)
-{
+void Rotary::setFilterLength(int i) {
     if (i>kiRotaryFilterMaxLen)
         m_iFilterLength = kiRotaryFilterMaxLen;
     else if (i<1)
@@ -116,7 +104,6 @@ void Rotary::setFilterLength(int i)
         m_iFilterLength = i;
 }
 
-int Rotary::getFilterLength()
-{
+int Rotary::getFilterLength() {
     return  m_iFilterLength;
 }

@@ -34,9 +34,9 @@ class ControlDoublePrivate : public QObject {
     // is non-NULL, allocates a new ControlDoublePrivate for the ConfigKey if
     // one does not exist.
     static QSharedPointer<ControlDoublePrivate> getControl(
-            const ConfigKey& key, bool warn = true,
-            ControlObject* pCreatorCO = NULL, bool bIgnoreNops = true, bool bTrack = false,
-            bool bPersist = false);
+        const ConfigKey& key, bool warn = true,
+        ControlObject* pCreatorCO = NULL, bool bIgnoreNops = true, bool bTrack = false,
+        bool bPersist = false);
 
     // Adds all ControlDoublePrivate that currently exist to pControlList
     static void getControls(QList<QSharedPointer<ControlDoublePrivate> >* pControlsList);

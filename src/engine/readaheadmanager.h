@@ -57,7 +57,7 @@ class ReadAheadManager {
     virtual void hintReader(double dRate, HintVector* hintList);
 
     virtual int getEffectiveVirtualPlaypositionFromLog(double currentVirtualPlayposition,
-                                                       double numConsumedSamples);
+            double numConsumedSamples);
 
     virtual void setReader(CachingReader* pReader) {
         m_pReader = pReader;
@@ -74,7 +74,7 @@ class ReadAheadManager {
                      double virtualPlaypositionEndNonInclusive) {
             this->virtualPlaypositionStart = virtualPlaypositionStart;
             this->virtualPlaypositionEndNonInclusive =
-                    virtualPlaypositionEndNonInclusive;
+                virtualPlaypositionEndNonInclusive;
         }
 
         bool direction() const {
@@ -87,7 +87,7 @@ class ReadAheadManager {
 
         double length() const {
             return fabs(virtualPlaypositionEndNonInclusive -
-                       virtualPlaypositionStart);
+                        virtualPlaypositionStart);
         }
 
         // Moves the start position forward or backward (depending on
@@ -104,9 +104,9 @@ class ReadAheadManager {
             // Allow 0-length ReadLogEntry's to merge regardless of their
             // direction if they have the right start point.
             if ((other.length() == 0 || direction() == other.direction()) &&
-                virtualPlaypositionEndNonInclusive == other.virtualPlaypositionStart) {
+                    virtualPlaypositionEndNonInclusive == other.virtualPlaypositionStart) {
                 virtualPlaypositionEndNonInclusive =
-                        other.virtualPlaypositionEndNonInclusive;
+                    other.virtualPlaypositionEndNonInclusive;
                 return true;
             }
             return false;

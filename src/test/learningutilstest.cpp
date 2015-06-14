@@ -24,7 +24,7 @@ TEST_F(LearningUtilsTest, NoteOnButton) {
 
     ConfigKey control("[Test]", "SomeControl");
     MidiInputMappings mappings =
-            LearningUtils::guessMidiInputMappings(control, m_messages);
+        LearningUtils::guessMidiInputMappings(control, m_messages);
 
     ASSERT_EQ(1, mappings.size());
     EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_NOTE_ON | 0x01, 0x10),
@@ -39,7 +39,7 @@ TEST_F(LearningUtilsTest, NoteOnNoteOffButton) {
 
     ConfigKey control("[Test]", "SomeControl");
     MidiInputMappings mappings =
-            LearningUtils::guessMidiInputMappings(control, m_messages);
+        LearningUtils::guessMidiInputMappings(control, m_messages);
 
     ASSERT_EQ(2, mappings.size());
     EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_NOTE_ON | 0x01, 0x10),
@@ -64,7 +64,7 @@ TEST_F(LearningUtilsTest, CC7BitKnob) {
 
     ConfigKey control("[Test]", "SomeControl");
     MidiInputMappings mappings =
-            LearningUtils::guessMidiInputMappings(control, m_messages);
+        LearningUtils::guessMidiInputMappings(control, m_messages);
 
     ASSERT_EQ(1, mappings.size());
     EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10),
@@ -99,13 +99,13 @@ TEST_F(LearningUtilsTest, CC7BitKnob_CenterPointButton_NoteOn) {
     ConfigKey resetControl("[Test]", "SomeControl_set_default");
     QScopedPointer<ControlObject> pResetControl(new ControlObject(resetControl));
     MidiInputMappings mappings =
-            LearningUtils::guessMidiInputMappings(control, m_messages);
+        LearningUtils::guessMidiInputMappings(control, m_messages);
 
     ASSERT_EQ(2, mappings.size());
     EXPECT_TRUE(mappings.contains(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10),
-                                                   MidiOptions(), control)));
+                                  MidiOptions(), control)));
     EXPECT_TRUE(mappings.contains(MidiInputMapping(MidiKey(MIDI_NOTE_ON | 0x01, 0xE0),
-                                                   MidiOptions(), resetControl)));
+                                  MidiOptions(), resetControl)));
 
     m_messages.clear();
 
@@ -124,9 +124,9 @@ TEST_F(LearningUtilsTest, CC7BitKnob_CenterPointButton_NoteOn) {
 
     ASSERT_EQ(2, mappings.size());
     EXPECT_TRUE(mappings.contains(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10),
-                                                   MidiOptions(), control)));
+                                  MidiOptions(), control)));
     EXPECT_TRUE(mappings.contains(MidiInputMapping(MidiKey(MIDI_NOTE_ON | 0x01, 0xE0),
-                                                   MidiOptions(), resetControl)));
+                                  MidiOptions(), resetControl)));
 }
 
 TEST_F(LearningUtilsTest, CC14BitKnob_MSBFirst) {
@@ -161,17 +161,17 @@ TEST_F(LearningUtilsTest, CC14BitKnob_MSBFirst) {
 
     ConfigKey control("[Test]", "SomeControl");
     MidiInputMappings mappings =
-            LearningUtils::guessMidiInputMappings(control, m_messages);
+        LearningUtils::guessMidiInputMappings(control, m_messages);
 
     ASSERT_EQ(2, mappings.size());
     MidiOptions lsb_option;
     lsb_option.fourteen_bit_lsb = true;
     EXPECT_TRUE(mappings.contains(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10),
-                                                   lsb_option, control)));
+                                  lsb_option, control)));
     MidiOptions msb_option;
     msb_option.fourteen_bit_msb = true;
     EXPECT_TRUE(mappings.contains(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x11),
-                                                   msb_option, control)));
+                                  msb_option, control)));
 }
 
 TEST_F(LearningUtilsTest, CC14BitKnob_LSBFirst) {
@@ -206,17 +206,17 @@ TEST_F(LearningUtilsTest, CC14BitKnob_LSBFirst) {
 
     ConfigKey control("[Test]", "SomeControl");
     MidiInputMappings mappings =
-            LearningUtils::guessMidiInputMappings(control, m_messages);
+        LearningUtils::guessMidiInputMappings(control, m_messages);
 
     ASSERT_EQ(2, mappings.size());
     MidiOptions lsb_option;
     lsb_option.fourteen_bit_lsb = true;
     EXPECT_TRUE(mappings.contains(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10),
-                                                   lsb_option, control)));
+                                  lsb_option, control)));
     MidiOptions msb_option;
     msb_option.fourteen_bit_msb = true;
     EXPECT_TRUE(mappings.contains(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x11),
-                                                   msb_option, control)));
+                                  msb_option, control)));
 }
 
 TEST_F(LearningUtilsTest, CC7BitKnob_ConfusableForCC7BitTicker_Zeroes) {
@@ -230,7 +230,7 @@ TEST_F(LearningUtilsTest, CC7BitKnob_ConfusableForCC7BitTicker_Zeroes) {
 
     ConfigKey control("[Test]", "SomeControl");
     MidiInputMappings mappings =
-            LearningUtils::guessMidiInputMappings(control, m_messages);
+        LearningUtils::guessMidiInputMappings(control, m_messages);
 
     MidiOptions options;
     options.selectknob = true;
@@ -280,7 +280,7 @@ TEST_F(LearningUtilsTest, CC7BitKnob_ConfusableForCC7BitTicker_ZeroIncluded) {
 
     ConfigKey control("[Test]", "SomeControl");
     MidiInputMappings mappings =
-            LearningUtils::guessMidiInputMappings(control, m_messages);
+        LearningUtils::guessMidiInputMappings(control, m_messages);
 
     ASSERT_EQ(1, mappings.size());
     EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10),
@@ -307,7 +307,7 @@ TEST_F(LearningUtilsTest, CC7BitKnob_ConfusableForCC7BitTicker) {
 
     ConfigKey control("[Test]", "SomeControl");
     MidiInputMappings mappings =
-            LearningUtils::guessMidiInputMappings(control, m_messages);
+        LearningUtils::guessMidiInputMappings(control, m_messages);
 
     ASSERT_EQ(1, mappings.size());
     EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10),
@@ -337,7 +337,7 @@ TEST_F(LearningUtilsTest, CC7BitKnob_ConfusableForSpread64Ticker_StartAndStopOn4
 
     ConfigKey control("[Test]", "SomeControl");
     MidiInputMappings mappings =
-            LearningUtils::guessMidiInputMappings(control, m_messages);
+        LearningUtils::guessMidiInputMappings(control, m_messages);
 
     ASSERT_EQ(1, mappings.size());
     EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10),
@@ -370,7 +370,7 @@ TEST_F(LearningUtilsTest, CC7BitKnob_ConfusableForSpread64Ticker_0x40Included) {
 
     ConfigKey control("[Test]", "SomeControl");
     MidiInputMappings mappings =
-            LearningUtils::guessMidiInputMappings(control, m_messages);
+        LearningUtils::guessMidiInputMappings(control, m_messages);
 
     ASSERT_EQ(1, mappings.size());
     EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10),
@@ -394,7 +394,7 @@ TEST_F(LearningUtilsTest, CC7BitTicker) {
 
     ConfigKey control("[Test]", "SomeControl");
     MidiInputMappings mappings =
-            LearningUtils::guessMidiInputMappings(control, m_messages);
+        LearningUtils::guessMidiInputMappings(control, m_messages);
 
     ASSERT_EQ(1, mappings.size());
     MidiOptions options;
@@ -418,7 +418,7 @@ TEST_F(LearningUtilsTest, Spread64Ticker) {
 
     ConfigKey control("[Test]", "SomeControl");
     MidiInputMappings mappings =
-            LearningUtils::guessMidiInputMappings(control, m_messages);
+        LearningUtils::guessMidiInputMappings(control, m_messages);
 
     ASSERT_EQ(1, mappings.size());
     MidiOptions options;
@@ -448,7 +448,7 @@ TEST_F(LearningUtilsTest, CC7BitTicker_SingleDirection) {
 
     ConfigKey control("[Test]", "SomeControl");
     MidiInputMappings mappings =
-            LearningUtils::guessMidiInputMappings(control, m_messages);
+        LearningUtils::guessMidiInputMappings(control, m_messages);
     ASSERT_EQ(1, mappings.size());
     EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_CC | 0x01, 0x10),
                                options, control),
@@ -478,7 +478,7 @@ TEST_F(LearningUtilsTest, SingleMessageSwitchMode_NoteOn) {
 
     ConfigKey control("[Test]", "SomeControl");
     MidiInputMappings mappings =
-            LearningUtils::guessMidiInputMappings(control, m_messages);
+        LearningUtils::guessMidiInputMappings(control, m_messages);
 
     ASSERT_EQ(1, mappings.size());
     MidiOptions options;
@@ -509,7 +509,7 @@ TEST_F(LearningUtilsTest, SingleMessageSwitchMode_CC) {
 
     ConfigKey control("[Test]", "SomeControl");
     MidiInputMappings mappings =
-            LearningUtils::guessMidiInputMappings(control, m_messages);
+        LearningUtils::guessMidiInputMappings(control, m_messages);
 
     ASSERT_EQ(1, mappings.size());
     MidiOptions options;
@@ -543,7 +543,7 @@ TEST_F(LearningUtilsTest, MultipleControlsUnrecognized_BindsFirst) {
 
     ConfigKey control("[Test]", "SomeControl");
     MidiInputMappings mappings =
-            LearningUtils::guessMidiInputMappings(control, m_messages);
+        LearningUtils::guessMidiInputMappings(control, m_messages);
     ASSERT_EQ(1, mappings.size());
     EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_NOTE_ON | 0x01, 0x10),
                                MidiOptions(), control),
@@ -561,7 +561,7 @@ TEST_F(LearningUtilsTest, MultipleChannelsUnrecognized_BindsFirst) {
 
     ConfigKey control("[Test]", "SomeControl");
     MidiInputMappings mappings =
-            LearningUtils::guessMidiInputMappings(control, m_messages);
+        LearningUtils::guessMidiInputMappings(control, m_messages);
     ASSERT_EQ(1, mappings.size());
     EXPECT_EQ(MidiInputMapping(MidiKey(MIDI_NOTE_ON | 0x01, 0x10),
                                MidiOptions(), control),

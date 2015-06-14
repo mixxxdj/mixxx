@@ -10,7 +10,7 @@
 #include "util/math.h"
 
 GLWaveformRendererRGB::GLWaveformRendererRGB(
-        WaveformWidgetRenderer* waveformWidgetRenderer)
+    WaveformWidgetRenderer* waveformWidgetRenderer)
     : WaveformRendererSignalBase(waveformWidgetRenderer) {
 
 }
@@ -79,7 +79,8 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
         glDisable(GL_LINE_SMOOTH);
 
         // Draw reference line
-        glBegin(GL_LINES); {
+        glBegin(GL_LINES);
+        {
             glColor4f(m_axesColor_r, m_axesColor_g, m_axesColor_b, m_axesColor_a);
             glVertex2f(firstVisualIndex, 0);
             glVertex2f(lastVisualIndex,  0);
@@ -89,10 +90,11 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
         glLineWidth(2.0);
         glEnable(GL_LINE_SMOOTH);
 
-        glBegin(GL_LINES); {
+        glBegin(GL_LINES);
+        {
             for (int visualIndex = firstVisualIndex;
-                 visualIndex < lastVisualIndex;
-                 visualIndex += 2) {
+                    visualIndex < lastVisualIndex;
+                    visualIndex += 2) {
 
                 if (visualIndex < 0) {
                     continue;
@@ -153,10 +155,11 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
         glLineWidth(2.0);
         glEnable(GL_LINE_SMOOTH);
 
-        glBegin(GL_LINES); {
+        glBegin(GL_LINES);
+        {
             for (int visualIndex = firstVisualIndex;
-                 visualIndex < lastVisualIndex;
-                 visualIndex += 2) {
+                    visualIndex < lastVisualIndex;
+                    visualIndex += 2) {
 
                 if (visualIndex < 0) {
                     continue;

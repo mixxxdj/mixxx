@@ -10,7 +10,7 @@
 #include "controllers/delegates/midioptionsdelegate.h"
 
 ControllerInputMappingTableModel::ControllerInputMappingTableModel(QObject* pParent)
-        : ControllerMappingTableModel(pParent) {
+    : ControllerMappingTableModel(pParent) {
 }
 
 ControllerInputMappingTableModel::~ControllerInputMappingTableModel() {
@@ -123,22 +123,22 @@ void ControllerInputMappingTableModel::removeMappings(QModelIndexList indices) {
 }
 
 QAbstractItemDelegate* ControllerInputMappingTableModel::delegateForColumn(
-        int column, QWidget* pParent) {
+    int column, QWidget* pParent) {
     if (m_pMidiPreset != NULL) {
         ControlDelegate* pControlDelegate = NULL;
         switch (column) {
-            case MIDI_COLUMN_CHANNEL:
-                return new MidiChannelDelegate(pParent);
-            case MIDI_COLUMN_OPCODE:
-                return new MidiOpCodeDelegate(pParent);
-            case MIDI_COLUMN_CONTROL:
-                return new MidiByteDelegate(pParent);
-            case MIDI_COLUMN_OPTIONS:
-                return new MidiOptionsDelegate(pParent);
-            case MIDI_COLUMN_ACTION:
-                pControlDelegate = new ControlDelegate(this);
-                pControlDelegate->setMidiOptionsColumn(MIDI_COLUMN_OPTIONS);
-                return pControlDelegate;
+        case MIDI_COLUMN_CHANNEL:
+            return new MidiChannelDelegate(pParent);
+        case MIDI_COLUMN_OPCODE:
+            return new MidiOpCodeDelegate(pParent);
+        case MIDI_COLUMN_CONTROL:
+            return new MidiByteDelegate(pParent);
+        case MIDI_COLUMN_OPTIONS:
+            return new MidiOptionsDelegate(pParent);
+        case MIDI_COLUMN_ACTION:
+            pControlDelegate = new ControlDelegate(this);
+            pControlDelegate->setMidiOptionsColumn(MIDI_COLUMN_OPTIONS);
+            return pControlDelegate;
         }
     }
     return NULL;
@@ -168,7 +168,7 @@ int ControllerInputMappingTableModel::columnCount(const QModelIndex& parent) con
 }
 
 QVariant ControllerInputMappingTableModel::data(const QModelIndex& index,
-                                                int role) const {
+        int role) const {
     // We use UserRole as the "sort" role with QSortFilterProxyModel.
     if (!index.isValid() || (role != Qt::DisplayRole &&
                              role != Qt::EditRole &&
@@ -187,36 +187,36 @@ QVariant ControllerInputMappingTableModel::data(const QModelIndex& index,
         const MidiInputMapping& mapping = m_midiInputMappings.at(row);
         QString value;
         switch (column) {
-            case MIDI_COLUMN_CHANNEL:
-                return MidiUtils::channelFromStatus(mapping.key.status);
-            case MIDI_COLUMN_OPCODE:
-                return MidiUtils::opCodeFromStatus(mapping.key.status);
-            case MIDI_COLUMN_CONTROL:
-                return mapping.key.control;
-            case MIDI_COLUMN_OPTIONS:
-                // UserRole is used for sorting.
-                if (role == Qt::UserRole) {
-                    return mapping.options.all;
-                }
-                return qVariantFromValue(mapping.options);
-            case MIDI_COLUMN_ACTION:
-                if (role == Qt::UserRole) {
-                    // TODO(rryan): somehow get the delegate display text?
-                    return mapping.control.group + "," + mapping.control.item;
-                }
-                return qVariantFromValue(mapping.control);
-            case MIDI_COLUMN_COMMENT:
-                return mapping.description;
-            default:
-                return QVariant();
+        case MIDI_COLUMN_CHANNEL:
+            return MidiUtils::channelFromStatus(mapping.key.status);
+        case MIDI_COLUMN_OPCODE:
+            return MidiUtils::opCodeFromStatus(mapping.key.status);
+        case MIDI_COLUMN_CONTROL:
+            return mapping.key.control;
+        case MIDI_COLUMN_OPTIONS:
+            // UserRole is used for sorting.
+            if (role == Qt::UserRole) {
+                return mapping.options.all;
+            }
+            return qVariantFromValue(mapping.options);
+        case MIDI_COLUMN_ACTION:
+            if (role == Qt::UserRole) {
+                // TODO(rryan): somehow get the delegate display text?
+                return mapping.control.group + "," + mapping.control.item;
+            }
+            return qVariantFromValue(mapping.control);
+        case MIDI_COLUMN_COMMENT:
+            return mapping.description;
+        default:
+            return QVariant();
         }
     }
     return QVariant();
 }
 
 bool ControllerInputMappingTableModel::setData(const QModelIndex& index,
-                                               const QVariant& value,
-                                               int role) {
+        const QVariant& value,
+        int role) {
     if (!index.isValid() || role != Qt::EditRole) {
         return false;
     }
@@ -232,36 +232,36 @@ bool ControllerInputMappingTableModel::setData(const QModelIndex& index,
         MidiInputMapping& mapping = m_midiInputMappings[row];
 
         switch (column) {
-            case MIDI_COLUMN_CHANNEL:
-                mapping.key.status = static_cast<unsigned char>(
-                    MidiUtils::opCodeFromStatus(mapping.key.status)) |
-                        static_cast<unsigned char>(value.toInt());
-                emit(dataChanged(index, index));
-                return true;
-            case MIDI_COLUMN_OPCODE:
-                mapping.key.status = static_cast<unsigned char>(
-                    MidiUtils::channelFromStatus(mapping.key.status)) |
-                        static_cast<unsigned char>(value.toInt());
-                emit(dataChanged(index, index));
-                return true;
-            case MIDI_COLUMN_CONTROL:
-                mapping.key.control = static_cast<unsigned char>(value.toInt());
-                emit(dataChanged(index, index));
-                return true;
-            case MIDI_COLUMN_OPTIONS:
-                mapping.options = qVariantValue<MidiOptions>(value);
-                emit(dataChanged(index, index));
-                return true;
-            case MIDI_COLUMN_ACTION:
-                mapping.control = qVariantValue<ConfigKey>(value);
-                emit(dataChanged(index, index));
-                return true;
-            case MIDI_COLUMN_COMMENT:
-                mapping.description = value.toString();
-                emit(dataChanged(index, index));
-                return true;
-            default:
-                return false;
+        case MIDI_COLUMN_CHANNEL:
+            mapping.key.status = static_cast<unsigned char>(
+                                     MidiUtils::opCodeFromStatus(mapping.key.status)) |
+                                 static_cast<unsigned char>(value.toInt());
+            emit(dataChanged(index, index));
+            return true;
+        case MIDI_COLUMN_OPCODE:
+            mapping.key.status = static_cast<unsigned char>(
+                                     MidiUtils::channelFromStatus(mapping.key.status)) |
+                                 static_cast<unsigned char>(value.toInt());
+            emit(dataChanged(index, index));
+            return true;
+        case MIDI_COLUMN_CONTROL:
+            mapping.key.control = static_cast<unsigned char>(value.toInt());
+            emit(dataChanged(index, index));
+            return true;
+        case MIDI_COLUMN_OPTIONS:
+            mapping.options = qVariantValue<MidiOptions>(value);
+            emit(dataChanged(index, index));
+            return true;
+        case MIDI_COLUMN_ACTION:
+            mapping.control = qVariantValue<ConfigKey>(value);
+            emit(dataChanged(index, index));
+            return true;
+        case MIDI_COLUMN_COMMENT:
+            mapping.description = value.toString();
+            emit(dataChanged(index, index));
+            return true;
+        default:
+            return false;
         }
     }
 

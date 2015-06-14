@@ -7,11 +7,11 @@
 
 EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,
                                  unsigned int iChainNumber)
-        : m_iChainSlotNumber(iChainNumber),
-          // The control group names are 1-indexed while internally everything
-          // is 0-indexed.
-          m_group(group),
-          m_pEffectRack(pRack) {
+    : m_iChainSlotNumber(iChainNumber),
+      // The control group names are 1-indexed while internally everything
+      // is 0-indexed.
+      m_group(group),
+      m_pEffectRack(pRack) {
     m_pControlClear = new ControlPushButton(ConfigKey(m_group, "clear"));
     connect(m_pControlClear, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlClear(double)));
@@ -86,7 +86,7 @@ EffectChainSlot::~EffectChainSlot() {
     delete m_pControlChainSelector;
 
     for (QMap<QString, ChannelInfo*>::iterator it = m_channelInfoByName.begin();
-         it != m_channelInfoByName.end();) {
+            it != m_channelInfoByName.end();) {
         delete it.value();
         it = m_channelInfoByName.erase(it);
     }
@@ -138,7 +138,7 @@ void EffectChainSlot::slotChainInsertionTypeChanged(EffectChain::InsertionType t
 }
 
 void EffectChainSlot::slotChainChannelStatusChanged(const QString& group,
-                                                    bool enabled) {
+        bool enabled) {
     ChannelInfo* pInfo = m_channelInfoByName.value(group, NULL);
     if (pInfo != NULL && pInfo->pEnabled != NULL) {
         pInfo->pEnabled->set(enabled);
@@ -163,8 +163,8 @@ void EffectChainSlot::slotChainEffectsChanged(bool shouldEmit) {
                 pSlot->loadEffect(pEffect);
         }
         m_pControlNumEffects->setAndConfirm(math_min(
-            static_cast<unsigned int>(m_slots.size()),
-            m_pEffectChain->numEffects()));
+                                                static_cast<unsigned int>(m_slots.size()),
+                                                m_pEffectChain->numEffects()));
         if (shouldEmit) {
             emit(updated());
         }
@@ -247,7 +247,7 @@ EffectSlotPointer EffectChainSlot::addEffectSlot(const QString& group) {
     //qDebug() << debugString() << "addEffectSlot" << group;
 
     EffectSlot* pEffectSlot = new EffectSlot(group, m_iChainSlotNumber,
-                                             m_slots.size());
+            m_slots.size());
     // Rebroadcast effectLoaded signals
     connect(pEffectSlot, SIGNAL(effectLoaded(EffectPointer, unsigned int)),
             this, SLOT(slotEffectLoaded(EffectPointer, unsigned int)));
@@ -272,7 +272,7 @@ void EffectChainSlot::registerChannel(const ChannelHandleAndGroup& handle_group)
         return;
     }
     ControlPushButton* pEnableControl = new ControlPushButton(
-            ConfigKey(m_group, QString("group_%1_enable").arg(handle_group.name())));
+        ConfigKey(m_group, QString("group_%1_enable").arg(handle_group.name())));
     pEnableControl->setButtonMode(ControlPushButton::POWERWINDOW);
 
     ChannelInfo* pInfo = new ChannelInfo(handle_group, pEnableControl);

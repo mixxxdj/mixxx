@@ -23,9 +23,9 @@
 #include "library/starrating.h"
 
 StarDelegate::StarDelegate(QObject* pParent)
-        : QStyledItemDelegate(pParent),
-          m_pTableView(qobject_cast<QTableView*>(pParent)),
-          m_isOneCellInEditMode(false) {
+    : QStyledItemDelegate(pParent),
+      m_pTableView(qobject_cast<QTableView*>(pParent)),
+      m_isOneCellInEditMode(false) {
     connect(pParent, SIGNAL(entered(QModelIndex)),
             this, SLOT(cellEntered(QModelIndex)));
 }

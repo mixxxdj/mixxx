@@ -8,7 +8,7 @@
 #include "library/queryutil.h"
 
 DirectoryDAO::DirectoryDAO(QSqlDatabase& database)
-            : m_database(database) {
+    : m_database(database) {
 }
 
 DirectoryDAO::~DirectoryDAO() {
@@ -78,7 +78,7 @@ bool DirectoryDAO::isChildDir(QString testDir, QString dirStr) {
 int DirectoryDAO::removeDirectory(const QString& dir) {
     QSqlQuery query(m_database);
     query.prepare("DELETE FROM " % DIRECTORYDAO_TABLE  % " WHERE "
-                   % DIRECTORYDAO_DIR % "= :dir");
+                  % DIRECTORYDAO_DIR % "= :dir");
     query.bindValue(":dir", dir);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "purging dir (" % dir % ") failed";
@@ -89,7 +89,7 @@ int DirectoryDAO::removeDirectory(const QString& dir) {
 
 
 QSet<int> DirectoryDAO::relocateDirectory(const QString& oldFolder,
-                                          const QString& newFolder) {
+        const QString& newFolder) {
     // TODO(rryan): This method could use error reporting. It can fail in
     // mysterious ways for example if a track in the oldFolder also has a zombie
     // track location in newFolder then the replace query will fail because the
@@ -110,7 +110,7 @@ QSet<int> DirectoryDAO::relocateDirectory(const QString& oldFolder,
     // on Windows the absolute path starts with the drive name
     // we also need to check for that
     QString startsWithOldFolder = escaper.escapeStringForLike(
-        QDir(oldFolder).absolutePath() + "/", '%') + "%";
+                                      QDir(oldFolder).absolutePath() + "/", '%') + "%";
 
     // Also update information in the track_locations table. This is where mixxx
     // gets the location information for a track. Put marks around %1 so that
@@ -135,7 +135,7 @@ QSet<int> DirectoryDAO::relocateDirectory(const QString& oldFolder,
     }
 
     QString replacement = "UPDATE track_locations SET location = :newloc "
-            "WHERE id = :id";
+                          "WHERE id = :id";
     query.prepare(replacement);
     for (int i = 0; i < loc_ids.size(); ++i) {
         QString newloc = old_locs.at(i);

@@ -12,7 +12,7 @@
 
 #else
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    #include <qx11info_x11.h>
+#include <qx11info_x11.h>
 #endif // QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #endif
 
@@ -24,11 +24,11 @@
 #elif defined(__WINDOWS__)
 
 #else
-    #include <GL/glx.h>
-    #include "GL/glxext.h"
-    // clean up after Xlib.h, which #defines values that conflict with QT.
-    #undef Bool
-    #undef Unsorted
+#include <GL/glx.h>
+#include "GL/glxext.h"
+// clean up after Xlib.h, which #defines values that conflict with QT.
+#undef Bool
+#undef Unsorted
 #endif
 
 class QGLWidget;
@@ -74,7 +74,7 @@ class VSyncThread : public QThread {
 
   private:
     bool m_bDoRendering;
-    QGLWidget *m_glw;
+    QGLWidget* m_glw;
 
 #if defined(__APPLE__)
 
@@ -82,7 +82,7 @@ class VSyncThread : public QThread {
 
 #else
     void initGlxext(QGLWidget* glw);
-    bool glXExtensionSupported(Display *dpy, int screen, const char *extension);
+    bool glXExtensionSupported(Display* dpy, int screen, const char* extension);
 
     PFNGLXGETVIDEOSYNCSGIPROC glXGetVideoSyncSGI;
     PFNGLXWAITVIDEOSYNCSGIPROC glXWaitVideoSyncSGI;

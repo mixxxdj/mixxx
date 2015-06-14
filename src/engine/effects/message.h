@@ -40,12 +40,12 @@ struct EffectsRequest {
     };
 
     EffectsRequest()
-            : type(NUM_REQUEST_TYPES),
-              request_id(-1),
-              minimum(0.0),
-              maximum(0.0),
-              default_value(0.0),
-              value(0.0) {
+        : type(NUM_REQUEST_TYPES),
+          request_id(-1),
+          minimum(0.0),
+          maximum(0.0),
+          default_value(0.0),
+          value(0.0) {
         pTargetRack = NULL;
         pTargetChain = NULL;
         pTargetEffect = NULL;
@@ -149,15 +149,15 @@ struct EffectsResponse {
     };
 
     EffectsResponse()
-            : request_id(-1),
-              success(false),
-              status(NUM_STATUS_CODES) {
+        : request_id(-1),
+          success(false),
+          status(NUM_STATUS_CODES) {
     }
 
     EffectsResponse(const EffectsRequest& request, bool succeeded=false)
-            : request_id(request.request_id),
-              success(succeeded),
-              status(NUM_STATUS_CODES) {
+        : request_id(request.request_id),
+          success(succeeded),
+          status(NUM_STATUS_CODES) {
     }
 
     qint64 request_id;

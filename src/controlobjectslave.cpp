@@ -5,22 +5,22 @@
 #include "control/control.h"
 
 ControlObjectSlave::ControlObjectSlave(QObject* pParent)
-        : QObject(pParent),
-          m_pControl(NULL) {
+    : QObject(pParent),
+      m_pControl(NULL) {
 }
 
 ControlObjectSlave::ControlObjectSlave(const QString& g, const QString& i, QObject* pParent)
-        : QObject(pParent) {
+    : QObject(pParent) {
     initialize(ConfigKey(g, i));
 }
 
 ControlObjectSlave::ControlObjectSlave(const char* g, const char* i, QObject* pParent)
-        : QObject(pParent) {
+    : QObject(pParent) {
     initialize(ConfigKey(g, i));
 }
 
 ControlObjectSlave::ControlObjectSlave(const ConfigKey& key, QObject* pParent)
-        : QObject(pParent) {
+    : QObject(pParent) {
     initialize(key);
 }
 
@@ -55,7 +55,7 @@ bool ControlObjectSlave::connectValueChanged(const QObject* receiver,
 
 // connect to parent object
 bool ControlObjectSlave::connectValueChanged(
-        const char* method, Qt::ConnectionType type) {
+    const char* method, Qt::ConnectionType type) {
     DEBUG_ASSERT(parent() != NULL);
     return connectValueChanged(parent(), method, type);
 }

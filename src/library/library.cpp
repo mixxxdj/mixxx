@@ -45,11 +45,11 @@ const int Library::kDefaultRowHeightPx = 20;
 Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig,
                  PlayerManagerInterface* pPlayerManager,
                  RecordingManager* pRecordingManager) :
-        m_pConfig(pConfig),
-        m_pSidebarModel(new SidebarModel(parent)),
-        m_pTrackCollection(new TrackCollection(pConfig)),
-        m_pLibraryControl(new LibraryControl(this)),
-        m_pRecordingManager(pRecordingManager) {
+    m_pConfig(pConfig),
+    m_pSidebarModel(new SidebarModel(parent)),
+    m_pTrackCollection(new TrackCollection(pConfig)),
+    m_pLibraryControl(new LibraryControl(this)),
+    m_pRecordingManager(pRecordingManager) {
     qRegisterMetaType<Library::RemovalType>("Library::RemovalType");
 
     // TODO(rryan) -- turn this construction / adding of features into a static
@@ -83,7 +83,7 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig,
     //messagebox popup when you select them. (This forces you to reach for your
     //mouse or keyboard if you're using MIDI control and you scroll through them...)
     if (RhythmboxFeature::isSupported() &&
-        pConfig->getValueString(ConfigKey("[Library]","ShowRhythmboxLibrary"),"1").toInt()) {
+            pConfig->getValueString(ConfigKey("[Library]","ShowRhythmboxLibrary"),"1").toInt()) {
         addFeature(new RhythmboxFeature(this, m_pTrackCollection));
     }
     if (pConfig->getValueString(ConfigKey("[Library]","ShowBansheeLibrary"),"1").toInt()) {
@@ -93,11 +93,11 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig,
         }
     }
     if (ITunesFeature::isSupported() &&
-        pConfig->getValueString(ConfigKey("[Library]","ShowITunesLibrary"),"1").toInt()) {
+            pConfig->getValueString(ConfigKey("[Library]","ShowITunesLibrary"),"1").toInt()) {
         addFeature(new ITunesFeature(this, m_pTrackCollection));
     }
     if (TraktorFeature::isSupported() &&
-        pConfig->getValueString(ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt()) {
+            pConfig->getValueString(ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt()) {
         addFeature(new TraktorFeature(this, m_pTrackCollection));
     }
 
@@ -114,8 +114,8 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig,
     }
 
     m_iTrackTableRowHeight = m_pConfig->getValueString(
-            ConfigKey("[Library]", "RowHeight"),
-            QString::number(kDefaultRowHeightPx)).toInt();
+                                 ConfigKey("[Library]", "RowHeight"),
+                                 QString::number(kDefaultRowHeightPx)).toInt();
     QString fontStr = m_pConfig->getValueString(ConfigKey("[Library]", "Font"));
     if (!fontStr.isEmpty()) {
         m_trackTableFont.fromString(fontStr);
@@ -129,7 +129,7 @@ Library::~Library() {
     delete m_pSidebarModel;
 
     QMutableListIterator<LibraryFeature*> features_it(m_features);
-    while(features_it.hasNext()) {
+    while (features_it.hasNext()) {
         LibraryFeature* feature = features_it.next();
         features_it.remove();
         delete feature;
@@ -168,7 +168,7 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
 void Library::bindWidget(WLibrary* pLibraryWidget,
                          MixxxKeyboard* pKeyboard) {
     WTrackTableView* pTrackTableView =
-            new WTrackTableView(pLibraryWidget, m_pConfig, m_pTrackCollection);
+        new WTrackTableView(pLibraryWidget, m_pConfig, m_pTrackCollection);
     pTrackTableView->installEventFilter(pKeyboard);
     connect(this, SIGNAL(showTrackModel(QAbstractItemModel*)),
             pTrackTableView, SLOT(loadTrackModel(QAbstractItemModel*)));
@@ -197,7 +197,7 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
     m_pLibraryControl->bindWidget(pLibraryWidget, pKeyboard);
 
     QListIterator<LibraryFeature*> feature_it(m_features);
-    while(feature_it.hasNext()) {
+    while (feature_it.hasNext()) {
         LibraryFeature* feature = feature_it.next();
         feature->bindWidget(pLibraryWidget, pKeyboard);
     }
@@ -252,7 +252,7 @@ void Library::slotLoadTrack(TrackPointer pTrack) {
 
 void Library::slotLoadLocationToPlayer(QString location, QString group) {
     TrackPointer pTrack = m_pTrackCollection->getTrackDAO()
-            .getOrAddTrack(location, true, NULL);
+                          .getOrAddTrack(location, true, NULL);
     emit(loadTrackToPlayer(pTrack, group));
 }
 
@@ -265,8 +265,8 @@ void Library::slotRestoreSearch(const QString& text) {
 }
 
 void Library::slotRefreshLibraryModels() {
-   m_pMixxxLibraryFeature->refreshLibraryModels();
-   m_pAnalysisFeature->refreshLibraryModels();
+    m_pMixxxLibraryFeature->refreshLibraryModels();
+    m_pAnalysisFeature->refreshLibraryModels();
 }
 
 void Library::slotCreatePlaylist() {
@@ -294,9 +294,9 @@ void Library::slotRequestAddDir(QString dir) {
 
     if (!m_pTrackCollection->getDirectoryDAO().addDirectory(dir)) {
         QMessageBox::information(0, tr("Add Directory to Library"),
-                tr("Could not add the directory to your library. Either this "
-                    "directory is already in your library or you are currently "
-                    "rescanning your library."));
+                                 tr("Could not add the directory to your library. Either this "
+                                    "directory is already in your library or you are currently "
+                                    "rescanning your library."));
     }
     // set at least one directory in the config file so that it will be possible
     // to downgrade from 1.12
@@ -307,18 +307,18 @@ void Library::slotRequestAddDir(QString dir) {
 
 void Library::slotRequestRemoveDir(QString dir, RemovalType removalType) {
     switch (removalType) {
-        case Library::HideTracks:
-            // Mark all tracks in this directory as deleted but DON'T purge them
-            // in case the user re-adds them manually.
-            m_pTrackCollection->getTrackDAO().markTracksAsMixxxDeleted(dir);
-            break;
-        case Library::PurgeTracks:
-            // The user requested that we purge all metadata.
-            m_pTrackCollection->getTrackDAO().purgeTracks(dir);
-            break;
-        case Library::LeaveTracksUnchanged:
-        default:
-            break;
+    case Library::HideTracks:
+        // Mark all tracks in this directory as deleted but DON'T purge them
+        // in case the user re-adds them manually.
+        m_pTrackCollection->getTrackDAO().markTracksAsMixxxDeleted(dir);
+        break;
+    case Library::PurgeTracks:
+        // The user requested that we purge all metadata.
+        m_pTrackCollection->getTrackDAO().purgeTracks(dir);
+        break;
+    case Library::LeaveTracksUnchanged:
+    default:
+        break;
 
     }
 

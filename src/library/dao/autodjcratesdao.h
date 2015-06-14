@@ -27,7 +27,7 @@ class AutoDJCratesDAO : public QObject, public virtual DAO {
   public:
 
     AutoDJCratesDAO(QSqlDatabase& a_rDatabase, TrackDAO& a_rTrackDAO,
-                    CrateDAO& a_rCrateDAO, PlaylistDAO &a_rPlaylistDAO,
+                    CrateDAO& a_rCrateDAO, PlaylistDAO& a_rPlaylistDAO,
                     ConfigObject<ConfigValue>* a_pConfig);
     virtual ~AutoDJCratesDAO();
 

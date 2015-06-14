@@ -9,15 +9,15 @@ namespace Mixxx {
 }
 
 SoundSource::SoundSource(const QUrl& url)
-        : AudioSource(url),
-          // simply use the file extension as the type
-          m_type(getFileExtensionFromUrl(url)) {
+    : AudioSource(url),
+      // simply use the file extension as the type
+      m_type(getFileExtensionFromUrl(url)) {
     DEBUG_ASSERT(getUrl().isValid());
 }
 
 SoundSource::SoundSource(const QUrl& url, const QString& type)
-        : AudioSource(url),
-          m_type(type) {
+    : AudioSource(url),
+      m_type(type) {
     DEBUG_ASSERT(getUrl().isValid());
 }
 
@@ -37,8 +37,8 @@ Result SoundSource::open(const AudioSourceConfig& audioSrcCfg) {
 }
 
 Result SoundSource::parseTrackMetadataAndCoverArt(
-        TrackMetadata* pTrackMetadata,
-        QImage* pCoverArt) const {
+    TrackMetadata* pTrackMetadata,
+    QImage* pCoverArt) const {
     return readTrackMetadataAndCoverArtFromFile(pTrackMetadata, pCoverArt, getLocalFileName());
 }
 

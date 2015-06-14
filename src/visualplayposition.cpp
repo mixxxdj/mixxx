@@ -12,12 +12,12 @@ PaStreamCallbackTimeInfo VisualPlayPosition::m_timeInfo = { 0.0, 0.0, 0.0 };
 PerformanceTimer VisualPlayPosition::m_timeInfoTime;
 
 VisualPlayPosition::VisualPlayPosition(const QString& key)
-        : m_valid(false),
-          m_key(key),
-          m_invalidTimeInfoWarned(false) {
+    : m_valid(false),
+      m_key(key),
+      m_invalidTimeInfoWarned(false) {
     m_audioBufferSize = new ControlObjectSlave("[Master]", "audio_buffer_size");
     m_audioBufferSize->connectValueChanged(
-            this, SLOT(slotAudioBufferSizeChanged(double)));
+        this, SLOT(slotAudioBufferSizeChanged(double)));
     m_dAudioBufferSize = m_audioBufferSize->get();
 }
 

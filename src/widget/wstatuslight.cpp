@@ -24,9 +24,9 @@
 #include <QtDebug>
 #include <QPixmap>
 
-WStatusLight::WStatusLight(QWidget * parent)
-        : WWidget(parent),
-          m_iPos(0) {
+WStatusLight::WStatusLight(QWidget* parent)
+    : WWidget(parent),
+      m_iPos(0) {
     setNoPos(0);
 }
 
@@ -114,7 +114,7 @@ void WStatusLight::onConnectedControlChanged(double dParameter, double dValue) {
     }
 }
 
-void WStatusLight::paintEvent(QPaintEvent *) {
+void WStatusLight::paintEvent(QPaintEvent*) {
     QStyleOption option;
     option.initFrom(this);
     QStylePainter p(this);

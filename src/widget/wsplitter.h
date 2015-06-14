@@ -12,7 +12,7 @@
 class WSplitter : public QSplitter, public WBaseWidget {
     Q_OBJECT
   public:
-    WSplitter(QWidget* pParent, ConfigObject<ConfigValue> *pConfig);
+    WSplitter(QWidget* pParent, ConfigObject<ConfigValue>* pConfig);
     virtual ~WSplitter();
 
     void setup(QDomNode node, const SkinContext& context);

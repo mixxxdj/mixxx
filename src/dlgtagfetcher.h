@@ -11,10 +11,10 @@ class QTreeWidget;
 
 
 class DlgTagFetcher : public QDialog,  public Ui::DlgTagFetcher {
-  Q_OBJECT
+    Q_OBJECT
 
   public:
-    DlgTagFetcher(QWidget *parent);
+    DlgTagFetcher(QWidget* parent);
     virtual ~DlgTagFetcher();
 
     void init();

@@ -5,7 +5,7 @@
 #include "widget/effectwidgetutils.h"
 
 WEffectParameter::WEffectParameter(QWidget* pParent, EffectsManager* pEffectsManager)
-        : WEffectParameterBase(pParent, pEffectsManager) {
+    : WEffectParameterBase(pParent, pEffectsManager) {
 }
 
 WEffectParameter::~WEffectParameter() {
@@ -14,14 +14,14 @@ WEffectParameter::~WEffectParameter() {
 void WEffectParameter::setup(QDomNode node, const SkinContext& context) {
     // EffectWidgetUtils propagates NULLs so this is all safe.
     EffectRackPointer pRack = EffectWidgetUtils::getEffectRackFromNode(
-            node, context, m_pEffectsManager);
+                                  node, context, m_pEffectsManager);
     EffectChainSlotPointer pChainSlot = EffectWidgetUtils::getEffectChainSlotFromNode(
-            node, context, pRack);
+                                            node, context, pRack);
     EffectSlotPointer pEffectSlot = EffectWidgetUtils::getEffectSlotFromNode(
-            node, context, pChainSlot);
+                                        node, context, pChainSlot);
     EffectParameterSlotBasePointer pParameterSlot =
-            EffectWidgetUtils::getParameterSlotFromNode(
-                    node, context, pEffectSlot);
+        EffectWidgetUtils::getParameterSlotFromNode(
+            node, context, pEffectSlot);
     if (pParameterSlot) {
         setEffectParameterSlot(pParameterSlot);
     } else {

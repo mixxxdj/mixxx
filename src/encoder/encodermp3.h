@@ -32,7 +32,7 @@ class EncoderMp3 : public Encoder {
     virtual ~EncoderMp3();
 
     int initEncoder(int bitrate, int samplerate);
-    void encodeBuffer(const CSAMPLE *samples, const int size);
+    void encodeBuffer(const CSAMPLE* samples, const int size);
     void updateMetaData(char* artist, char* title, char* album);
     void flush();
 
@@ -44,8 +44,8 @@ class EncoderMp3 : public Encoder {
     // For lame
     struct lame_global_struct;
     typedef struct lame_global_struct lame_global_flags;
-    typedef lame_global_flags *lame_t;
-    lame_global_flags *m_lameFlags;
+    typedef lame_global_flags* lame_t;
+    lame_global_flags* m_lameFlags;
 
     /* MPEG modes */
     typedef enum MPEG_mode_e {
@@ -59,17 +59,17 @@ class EncoderMp3 : public Encoder {
 
     //Function pointer for lame
     typedef lame_global_flags* (*lame_init__)(void);
-    typedef int (*lame_set_num_channels__)(lame_global_flags *, int);
-    typedef int (*lame_set_in_samplerate__)(lame_global_flags *, int);
-    typedef int (*lame_set_out_samplerate__)(lame_global_flags *, int);
-    typedef int (*lame_set_brate__)(lame_global_flags *, int);
-    typedef int (*lame_set_mode__)(lame_global_flags *, MPEG_mode);
-    typedef int (*lame_set_quality__)(lame_global_flags *, int);
-    typedef int (*lame_set_bWriteVbrTag__)(lame_global_flags *, int);
-    typedef int (*lame_init_params__)(lame_global_flags *);
-    typedef int (*lame_close__)(lame_global_flags *);
+    typedef int (*lame_set_num_channels__)(lame_global_flags*, int);
+    typedef int (*lame_set_in_samplerate__)(lame_global_flags*, int);
+    typedef int (*lame_set_out_samplerate__)(lame_global_flags*, int);
+    typedef int (*lame_set_brate__)(lame_global_flags*, int);
+    typedef int (*lame_set_mode__)(lame_global_flags*, MPEG_mode);
+    typedef int (*lame_set_quality__)(lame_global_flags*, int);
+    typedef int (*lame_set_bWriteVbrTag__)(lame_global_flags*, int);
+    typedef int (*lame_init_params__)(lame_global_flags*);
+    typedef int (*lame_close__)(lame_global_flags*);
     typedef int (*lame_encode_flush__)(
-        lame_global_flags *  gfp,               /* global context handle                 */
+        lame_global_flags*   gfp,               /* global context handle                 */
         unsigned char*       mp3buf,            /* pointer to encoded MP3 stream         */
         int                  size);             /* number of valid octets in this stream */
     typedef int (*lame_encode_buffer_float__)(
@@ -94,23 +94,23 @@ class EncoderMp3 : public Encoder {
     lame_encode_buffer_float__          lame_encode_buffer_float;
 
     // Function pointers for ID3 Tags
-    typedef void (*id3tag_init__)(lame_global_flags *);
-    typedef void (*id3tag_set_title__)(lame_global_flags *, const char* title);
-    typedef void (*id3tag_set_artist__)(lame_global_flags *, const char* artist);
-    typedef void (*id3tag_set_album__)(lame_global_flags *, const char* album);
+    typedef void (*id3tag_init__)(lame_global_flags*);
+    typedef void (*id3tag_set_title__)(lame_global_flags*, const char* title);
+    typedef void (*id3tag_set_artist__)(lame_global_flags*, const char* artist);
+    typedef void (*id3tag_set_album__)(lame_global_flags*, const char* album);
 
     id3tag_init__                       id3tag_init;
     id3tag_set_title__                  id3tag_set_title;
     id3tag_set_artist__                 id3tag_set_artist;
     id3tag_set_album__                  id3tag_set_album;
 
-    char *m_metaDataTitle;
-    char *m_metaDataArtist;
-    char *m_metaDataAlbum;
+    char* m_metaDataTitle;
+    char* m_metaDataArtist;
+    char* m_metaDataAlbum;
 
-    unsigned char *m_bufferOut;
+    unsigned char* m_bufferOut;
     int m_bufferOutSize;
-    float *m_bufferIn[2];
+    float* m_bufferIn[2];
     int m_bufferInSize;
 
     EncoderCallback* m_pCallback;

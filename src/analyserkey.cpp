@@ -10,13 +10,13 @@ using mixxx::track::io::key::ChromaticKey;
 using mixxx::track::io::key::ChromaticKey_IsValid;
 
 AnalyserKey::AnalyserKey(ConfigObject<ConfigValue>* pConfig)
-        : m_pConfig(pConfig),
-          m_pVamp(NULL),
-          m_iSampleRate(0),
-          m_iTotalSamples(0),
-          m_bPreferencesKeyDetectionEnabled(true),
-          m_bPreferencesFastAnalysisEnabled(false),
-          m_bPreferencesReanalyzeEnabled(false) {
+    : m_pConfig(pConfig),
+      m_pVamp(NULL),
+      m_iSampleRate(0),
+      m_iTotalSamples(0),
+      m_bPreferencesKeyDetectionEnabled(true),
+      m_bPreferencesFastAnalysisEnabled(false),
+      m_bPreferencesReanalyzeEnabled(false) {
 }
 
 AnalyserKey::~AnalyserKey() {
@@ -29,24 +29,24 @@ bool AnalyserKey::initialise(TrackPointer tio, int sampleRate, int totalSamples)
     }
 
     m_bPreferencesKeyDetectionEnabled = static_cast<bool>(
-        m_pConfig->getValueString(
-            ConfigKey(KEY_CONFIG_KEY, KEY_DETECTION_ENABLED)).toInt());
+                                            m_pConfig->getValueString(
+                                                    ConfigKey(KEY_CONFIG_KEY, KEY_DETECTION_ENABLED)).toInt());
     if (!m_bPreferencesKeyDetectionEnabled) {
         qDebug() << "Key detection is deactivated";
         return false;
     }
 
     m_bPreferencesFastAnalysisEnabled = static_cast<bool>(
-        m_pConfig->getValueString(
-            ConfigKey(KEY_CONFIG_KEY, KEY_FAST_ANALYSIS)).toInt());
+                                            m_pConfig->getValueString(
+                                                    ConfigKey(KEY_CONFIG_KEY, KEY_FAST_ANALYSIS)).toInt());
     QString library = m_pConfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_LIBRARY),
-        // TODO(rryan) this default really doesn't belong here.
-        "libmixxxminimal");
+                          ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_LIBRARY),
+                          // TODO(rryan) this default really doesn't belong here.
+                          "libmixxxminimal");
     QString pluginID = m_pConfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_PLUGIN_ID),
-        // TODO(rryan) this default really doesn't belong here.
-        VAMP_ANALYSER_KEY_DEFAULT_PLUGIN_ID);
+                           ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_PLUGIN_ID),
+                           // TODO(rryan) this default really doesn't belong here.
+                           VAMP_ANALYSER_KEY_DEFAULT_PLUGIN_ID);
 
     m_pluginId = pluginID;
     m_iSampleRate = sampleRate;
@@ -58,8 +58,8 @@ bool AnalyserKey::initialise(TrackPointer tio, int sampleRate, int totalSamples)
     if (bShouldAnalyze) {
         m_pVamp = new VampAnalyser();
         bShouldAnalyze = m_pVamp->Init(
-            library, m_pluginId, sampleRate, totalSamples,
-            m_bPreferencesFastAnalysisEnabled);
+                             library, m_pluginId, sampleRate, totalSamples,
+                             m_bPreferencesFastAnalysisEnabled);
         if (!bShouldAnalyze) {
             delete m_pVamp;
             m_pVamp = NULL;
@@ -77,13 +77,13 @@ bool AnalyserKey::initialise(TrackPointer tio, int sampleRate, int totalSamples)
 
 bool AnalyserKey::loadStored(TrackPointer tio) const {
     bool bPreferencesFastAnalysisEnabled = static_cast<bool>(
-        m_pConfig->getValueString(
-            ConfigKey(KEY_CONFIG_KEY, KEY_FAST_ANALYSIS)).toInt());
+            m_pConfig->getValueString(
+                ConfigKey(KEY_CONFIG_KEY, KEY_FAST_ANALYSIS)).toInt());
 
     QString library = m_pConfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_LIBRARY));
+                          ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_LIBRARY));
     QString pluginID = m_pConfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_PLUGIN_ID));
+                           ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_PLUGIN_ID));
 
     // TODO(rryan): This belongs elsewhere.
     if (library.isEmpty() || library.isNull())
@@ -99,7 +99,7 @@ bool AnalyserKey::loadStored(TrackPointer tio) const {
         QString subVersion = keys.getSubVersion();
 
         QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
-            pluginID, bPreferencesFastAnalysisEnabled);
+                    pluginID, bPreferencesFastAnalysisEnabled);
         QString newVersion = KeyFactory::getPreferredVersion();
         QString newSubVersion = KeyFactory::getPreferredSubVersion(extraVersionInfo);
 
@@ -122,7 +122,7 @@ bool AnalyserKey::loadStored(TrackPointer tio) const {
     }
 }
 
-void AnalyserKey::process(const CSAMPLE *pIn, const int iLen) {
+void AnalyserKey::process(const CSAMPLE* pIn, const int iLen) {
     if (m_pVamp == NULL)
         return;
     bool success = m_pVamp->Process(pIn, iLen);
@@ -160,16 +160,16 @@ void AnalyserKey::finalise(TrackPointer tio) {
     for (int i = 0; i < keys.size(); ++i) {
         if (ChromaticKey_IsValid(keys[i])) {
             key_changes.push_back(qMakePair(
-                // int() intermediate cast required by MSVC.
-                static_cast<ChromaticKey>(int(keys[i])), frames[i]));
+                                      // int() intermediate cast required by MSVC.
+                                      static_cast<ChromaticKey>(int(keys[i])), frames[i]));
         }
     }
 
     QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
-        m_pluginId, m_bPreferencesFastAnalysisEnabled);
+                m_pluginId, m_bPreferencesFastAnalysisEnabled);
     Keys track_keys = KeyFactory::makePreferredKeys(
-        key_changes, extraVersionInfo,
-        m_iSampleRate, m_iTotalSamples);
+                          key_changes, extraVersionInfo,
+                          m_iSampleRate, m_iTotalSamples);
     tio->setKeys(track_keys);
 }
 

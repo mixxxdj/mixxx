@@ -11,7 +11,7 @@
 #include <QLinearGradient>
 
 QtWaveformRendererFilteredSignal::QtWaveformRendererFilteredSignal(
-        WaveformWidgetRenderer* waveformWidgetRenderer)
+    WaveformWidgetRenderer* waveformWidgetRenderer)
     : WaveformRendererSignalBase(waveformWidgetRenderer) {
 }
 
@@ -136,7 +136,7 @@ int QtWaveformRendererFilteredSignal::buildPolygon() {
 
     // Represents the # of waveform data points per horizontal pixel.
     const double gain = (lastVisualIndex - firstVisualIndex) /
-            (double)m_waveformRenderer->getWidth();
+                        (double)m_waveformRenderer->getWidth();
 
     float lowGain(1.0), midGain(1.0), highGain(1.0);
     getGains(NULL, &lowGain, &midGain, &highGain);
@@ -243,7 +243,7 @@ int QtWaveformRendererFilteredSignal::buildPolygon() {
             unsigned char maxHigh = 0;
 
             for (int i = visualIndexStart; i >= 0 && i < dataSize && i <= visualIndexStop;
-                 i += channelSeparation) {
+                    i += channelSeparation) {
                 const WaveformData& waveformData = *(data + i);
                 unsigned char low = waveformData.filtered.low;
                 unsigned char mid = waveformData.filtered.mid;

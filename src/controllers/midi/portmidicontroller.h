@@ -52,8 +52,8 @@ class PortMidiController : public MidiController {
     const PmDeviceInfo* m_pOutputDeviceInfo;
     int m_iInputDeviceIndex;
     int m_iOutputDeviceIndex;
-    PortMidiStream *m_pInputStream;
-    PortMidiStream *m_pOutputStream;
+    PortMidiStream* m_pInputStream;
+    PortMidiStream* m_pOutputStream;
     PmEvent m_midiBuffer[MIXXX_PORTMIDI_BUFFER_LEN];
 
     // Storage for SysEx messages

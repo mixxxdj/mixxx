@@ -17,8 +17,8 @@
 #include "library/browse/browsefeature.h"
 #include "util/file.h"
 
-FolderTreeModel::FolderTreeModel(QObject *parent)
-        : TreeItemModel(parent) {
+FolderTreeModel::FolderTreeModel(QObject* parent)
+    : TreeItemModel(parent) {
 }
 
 FolderTreeModel::~FolderTreeModel() {
@@ -33,15 +33,15 @@ FolderTreeModel::~FolderTreeModel() {
  * is only called if necessary.
  */
 bool FolderTreeModel::hasChildren(const QModelIndex& parent) const {
-    TreeItem *item = static_cast<TreeItem*>(parent.internalPointer());
+    TreeItem* item = static_cast<TreeItem*>(parent.internalPointer());
     /* Usually the child count is 0 becuase we do lazy initalization
      * However, for, buid-in items such as 'Quick Links' there exist
      * child items at init time
      */
-    if(item->dataPath().toString() == QUICK_LINK_NODE)
+    if (item->dataPath().toString() == QUICK_LINK_NODE)
         return true;
     //Can only happen on Windows
-    if(item->dataPath().toString() == DEVICE_NODE)
+    if (item->dataPath().toString() == DEVICE_NODE)
         return true;
 
     // In all other cases the dataPath() points to a folder
@@ -87,11 +87,11 @@ bool FolderTreeModel::directoryHasChildren(const QString& path) const {
 
     std::string dot("."), dotdot("..");
     QByteArray ba = path.toLocal8Bit();
-    DIR *directory = opendir(ba);
+    DIR* directory = opendir(ba);
     int unknown_count = 0;
     int total_count = 0;
     if (directory != NULL) {
-        struct dirent *entry;
+        struct dirent* entry;
         while (!has_children && ((entry = readdir(directory)) != NULL)) {
             if (entry->d_name != dot && entry->d_name != dotdot) {
                 total_count++;

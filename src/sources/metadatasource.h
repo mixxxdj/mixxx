@@ -10,16 +10,16 @@ namespace Mixxx {
 
 // Interface for parsing track metadata and cover art.
 class MetadataSource {
-public:
+  public:
     // Read both track metadata and cover art at once, because this
     // is should be the most common use case. Both parameters are
     // output parameters and might be NULL if their result is not
     // needed.
     virtual Result parseTrackMetadataAndCoverArt(
-            TrackMetadata* pTrackMetadata,
-            QImage* pCoverArt) const = 0;
+        TrackMetadata* pTrackMetadata,
+        QImage* pCoverArt) const = 0;
 
-protected:
+  protected:
     virtual ~MetadataSource() {}
 };
 

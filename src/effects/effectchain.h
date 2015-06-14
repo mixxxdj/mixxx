@@ -64,12 +64,12 @@ class EffectChain : public QObject {
     };
     static QString insertionTypeToString(InsertionType type) {
         switch (type) {
-            case INSERT:
-                return "INSERT";
-            case SEND:
-                return "SEND";
-            default:
-                return "UNKNOWN";
+        case INSERT:
+            return "INSERT";
+        case SEND:
+            return "SEND";
+        default:
+            return "UNKNOWN";
         }
     }
     static InsertionType insertionTypeFromString(const QString& typeStr) {

@@ -63,18 +63,16 @@ typedef enum {
 
 struct MidiOptions {
     MidiOptions()
-            : all(0) {
+        : all(0) {
     }
 
     bool operator==(const MidiOptions& other) const {
         return all == other.all;
     }
 
-    union
-    {
+    union {
         uint32_t    all;
-        struct
-        {
+        struct {
             bool invert        : 1;
             bool rot64         : 1;
             bool rot64_inv     : 1;
@@ -100,7 +98,7 @@ Q_DECLARE_METATYPE(MidiOptions);
 
 struct MidiOutput {
     MidiOutput()
-            : message(0) {
+        : message(0) {
         // MSVC gets confused and thinks min/max are macros so they can't appear
         // in the initializer list.
         min = 0.0;
@@ -113,11 +111,9 @@ struct MidiOutput {
 
     double min;
     double max;
-    union
-    {
+    union {
         uint32_t    message;
-        struct
-        {
+        struct {
             unsigned char    status  : 8;
             unsigned char    control : 8;
             unsigned char    on      : 8;
@@ -134,11 +130,9 @@ struct MidiKey {
         return key == other.key;
     }
 
-    union
-    {
+    union {
         uint16_t    key;
-        struct
-        {
+        struct {
             unsigned char    status  : 8;
             unsigned char    control : 8;
         };
@@ -150,21 +144,21 @@ struct MidiInputMapping {
     }
 
     MidiInputMapping(MidiKey key, MidiOptions options)
-            : key(key),
-              options(options) {
+        : key(key),
+          options(options) {
     }
 
     MidiInputMapping(MidiKey key, MidiOptions options, const ConfigKey& control)
-            : key(key),
-              options(options),
-              control(control) {
+        : key(key),
+          options(options),
+          control(control) {
     }
 
     // Don't use descriptions in operator== since we only use equality testing
     // for unit tests.
     bool operator==(const MidiInputMapping& other) const {
         return key == other.key && options == other.options &&
-                control == other.control;
+               control == other.control;
     }
 
     MidiKey key;
@@ -177,7 +171,7 @@ typedef QList<MidiInputMapping> MidiInputMappings;
 struct MidiOutputMapping {
     bool operator==(const MidiOutputMapping& other) const {
         return output == other.output && control == other.control &&
-                description == other.description;
+               description == other.description;
     }
 
     MidiOutput output;

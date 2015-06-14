@@ -63,9 +63,9 @@ EffectManifest FilterEffect::getManifest() {
 }
 
 FilterGroupState::FilterGroupState()
-        : m_loFreq(kMaxCorner),
-          m_q(0.707106781),
-          m_hiFreq(kMinCorner) {
+    : m_loFreq(kMaxCorner),
+      m_q(0.707106781),
+      m_hiFreq(kMinCorner) {
     m_pBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pLowFilter = new EngineFilterBiquad1Low(1, m_loFreq, m_q, true);
     m_pHighFilter = new EngineFilterBiquad1High(1, m_hiFreq, m_q, true);
@@ -79,9 +79,9 @@ FilterGroupState::~FilterGroupState() {
 
 FilterEffect::FilterEffect(EngineEffect* pEffect,
                            const EffectManifest& manifest)
-        : m_pLPF(pEffect->getParameterById("lpf")),
-          m_pQ(pEffect->getParameterById("q")),
-          m_pHPF(pEffect->getParameterById("hpf")) {
+    : m_pLPF(pEffect->getParameterById("lpf")),
+      m_pQ(pEffect->getParameterById("q")),
+      m_pHPF(pEffect->getParameterById("hpf")) {
     Q_UNUSED(manifest);
 }
 
@@ -147,9 +147,9 @@ void FilterEffect::processChannel(const ChannelHandle& handle,
         // hpf enabled, fade-in is handled in the filter when starting from pause
         pState->m_pHighFilter->process(pInput, pHpfOutput, numSamples);
     } else if (pState->m_hiFreq > kMinCorner) {
-            // hpf disabling
-            pState->m_pHighFilter->processAndPauseFilter(pInput,
-                    pHpfOutput, numSamples);
+        // hpf disabling
+        pState->m_pHighFilter->processAndPauseFilter(pInput,
+                pHpfOutput, numSamples);
     } else {
         // paused LP uses input directly
         pLpfInput = pInput;

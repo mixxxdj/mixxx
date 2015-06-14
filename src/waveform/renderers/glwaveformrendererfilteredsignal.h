@@ -10,7 +10,7 @@ class GLWaveformRendererFilteredSignal : public WaveformRendererSignalBase {
     explicit GLWaveformRendererFilteredSignal(WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~GLWaveformRendererFilteredSignal();
 
-    virtual void onSetup(const QDomNode &node);
+    virtual void onSetup(const QDomNode& node);
     virtual void draw(QPainter* painter, QPaintEvent* event);
 };
 

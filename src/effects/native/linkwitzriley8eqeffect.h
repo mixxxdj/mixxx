@@ -50,7 +50,7 @@ class LinkwitzRiley8EQEffect : public PerChannelEffectProcessor<LinkwitzRiley8EQ
     // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,
                         LinkwitzRiley8EQEffectGroupState* pState,
-                        const CSAMPLE* pInput, CSAMPLE *pOutput,
+                        const CSAMPLE* pInput, CSAMPLE* pOutput,
                         const unsigned int numSamples,
                         const unsigned int sampleRate,
                         const EffectProcessor::EnableState enableState,

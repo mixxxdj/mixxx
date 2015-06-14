@@ -33,9 +33,9 @@ ControlObject* EnginePregain::s_pEnableReplayGain = NULL;
    A pregaincontrol is ... a pregain.
    ----------------------------------------------------------------*/
 EnginePregain::EnginePregain(QString group)
-        : m_dSpeed(0),
-          m_fPrevGain(1.0),
-          m_bSmoothFade(false) {
+    : m_dSpeed(0),
+      m_fPrevGain(1.0),
+      m_bSmoothFade(false) {
     m_pPotmeterPregain = new ControlAudioTaperPot(ConfigKey(group, "pregain"), -12, 12, 0.5);
     //Replay Gain things
     m_pCOReplayGain = new ControlObject(ConfigKey(group, "replaygain"));
@@ -91,7 +91,7 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
         // So we need to alter gain each time ::process is called.
 
         const float fullReplayGainBoost = fReplayGain *
-                (float)s_pReplayGainBoost->get();
+                                          (float)s_pReplayGainBoost->get();
 
         // This means that a ReplayGain value has been calculated after the
         // track has been loaded
@@ -103,7 +103,7 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
                 // Fade smoothly
                 double fadeFrac = seconds / kFadeSeconds;
                 fReplayGainCorrection = m_fPrevGain * (1.0 - fadeFrac) +
-                        fadeFrac * fullReplayGainBoost;
+                                        fadeFrac * fullReplayGainBoost;
             } else {
                 m_bSmoothFade = false;
                 fReplayGainCorrection = fullReplayGainBoost;
@@ -118,7 +118,7 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
     // (some corrupt files get really high replay gain values).
     // 10 allows a maximum replay Gain Boost * calculated replay gain of ~2
     float totalGain = (float)m_pPotmeterPregain->get() *
-            math_clamp(fReplayGainCorrection, 0.0f, 10.0f);
+                      math_clamp(fReplayGainCorrection, 0.0f, 10.0f);
 
     m_pTotalGain->set(totalGain);
 

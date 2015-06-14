@@ -105,10 +105,10 @@ class ControlPushButtonBehavior : public ControlNumericBehavior {
     // TODO(XXX) Duplicated from ControlPushButton. It's complicated and
     // annoying to share them so I just copied them.
     enum ButtonMode {
-         PUSH = 0,
-         TOGGLE,
-         POWERWINDOW,
-         LONGPRESSLATCHING,
+        PUSH = 0,
+        TOGGLE,
+        POWERWINDOW,
+        LONGPRESSLATCHING,
     };
 
     ControlPushButtonBehavior(ButtonMode buttonMode, int iNumStates);

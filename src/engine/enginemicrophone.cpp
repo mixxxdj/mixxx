@@ -14,13 +14,13 @@
 
 EngineMicrophone::EngineMicrophone(const ChannelHandleAndGroup& handle_group,
                                    EffectsManager* pEffectsManager)
-        : EngineChannel(handle_group, EngineChannel::CENTER),
-          m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
-          m_vuMeter(getGroup()),
-          m_pEnabled(new ControlObject(ConfigKey(getGroup(), "enabled"))),
-          m_pPregain(new ControlAudioTaperPot(ConfigKey(getGroup(), "pregain"), -12, 12, 0.5)),
-          m_sampleBuffer(NULL),
-          m_wasActive(false) {
+    : EngineChannel(handle_group, EngineChannel::CENTER),
+      m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
+      m_vuMeter(getGroup()),
+      m_pEnabled(new ControlObject(ConfigKey(getGroup(), "enabled"))),
+      m_pPregain(new ControlAudioTaperPot(ConfigKey(getGroup(), "pregain"), -12, 12, 0.5)),
+      m_sampleBuffer(NULL),
+      m_wasActive(false) {
     if (pEffectsManager != NULL) {
         pEffectsManager->registerChannel(handle_group);
     }

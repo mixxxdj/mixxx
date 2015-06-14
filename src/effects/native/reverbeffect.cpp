@@ -17,17 +17,17 @@ EffectManifest ReverbEffect::getManifest() {
     manifest.setAuthor("The Mixxx Team, CAPS Plugins");
     manifest.setVersion("1.0");
     manifest.setDescription("This is a port of the GPL'ed CAPS Reverb plugin, "
-            "which has the following description:"
-            "This is based on some of the famous Stanford CCRMA reverbs "
-            "(NRev, KipRev) all based on the Chowning/Moorer/Schroeder "
-            "reverberators, which use networks of simple allpass and comb"
-            "delay filters.");
+                            "which has the following description:"
+                            "This is based on some of the famous Stanford CCRMA reverbs "
+                            "(NRev, KipRev) all based on the Chowning/Moorer/Schroeder "
+                            "reverberators, which use networks of simple allpass and comb"
+                            "delay filters.");
 
     EffectManifestParameter* time = manifest.addParameter();
     time->setId("bandwidth");
     time->setName(QObject::tr("Bandwidth"));
     time->setDescription(QObject::tr("Higher bandwidth values cause more "
-            "bright (high-frequency) tones to be included"));
+                                     "bright (high-frequency) tones to be included"));
     time->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     time->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     time->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
@@ -39,7 +39,7 @@ EffectManifest ReverbEffect::getManifest() {
     damping->setId("damping");
     damping->setName(QObject::tr("Damping"));
     damping->setDescription(QObject::tr("Higher damping values cause "
-            "reverberations to die out more quickly."));
+                                        "reverberations to die out more quickly."));
     damping->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     damping->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     damping->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
@@ -51,9 +51,9 @@ EffectManifest ReverbEffect::getManifest() {
 }
 
 ReverbEffect::ReverbEffect(EngineEffect* pEffect,
-                             const EffectManifest& manifest)
-        : m_pBandWidthParameter(pEffect->getParameterById("bandwidth")),
-          m_pDampingParameter(pEffect->getParameterById("damping")) {
+                           const EffectManifest& manifest)
+    : m_pBandWidthParameter(pEffect->getParameterById("bandwidth")),
+      m_pDampingParameter(pEffect->getParameterById("damping")) {
     Q_UNUSED(manifest);
 }
 
@@ -62,12 +62,12 @@ ReverbEffect::~ReverbEffect() {
 }
 
 void ReverbEffect::processChannel(const ChannelHandle& handle,
-                                ReverbGroupState* pState,
-                                const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                const unsigned int numSamples,
-                                const unsigned int sampleRate,
-                                const EffectProcessor::EnableState enableState,
-                                const GroupFeatureState& groupFeatures) {
+                                  ReverbGroupState* pState,
+                                  const CSAMPLE* pInput, CSAMPLE* pOutput,
+                                  const unsigned int numSamples,
+                                  const unsigned int sampleRate,
+                                  const EffectProcessor::EnableState enableState,
+                                  const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
     Q_UNUSED(enableState);
     Q_UNUSED(groupFeatures);
@@ -113,6 +113,6 @@ void ReverbEffect::processChannel(const ChannelHandle& handle,
         pState->prev_damping = damping;
 
         SampleUtil::linearCrossfadeBuffers(
-                pOutput, pOutput, pState->crossfade_buffer, numSamples);
+            pOutput, pOutput, pState->crossfade_buffer, numSamples);
     }
 }

@@ -1,9 +1,9 @@
 #include "controllers/controllermappingtablemodel.h"
 
 ControllerMappingTableModel::ControllerMappingTableModel(QObject* pParent)
-        : QAbstractTableModel(pParent),
-          m_pMidiPreset(NULL),
-          m_pHidPreset(NULL) {
+    : QAbstractTableModel(pParent),
+      m_pMidiPreset(NULL),
+      m_pHidPreset(NULL) {
 }
 
 ControllerMappingTableModel::~ControllerMappingTableModel() {
@@ -36,9 +36,9 @@ void ControllerMappingTableModel::visit(HidControllerPreset* pHidPreset) {
 }
 
 bool ControllerMappingTableModel::setHeaderData(int section,
-                                                Qt::Orientation orientation,
-                                                const QVariant& value,
-                                                int role) {
+        Qt::Orientation orientation,
+        const QVariant& value,
+        int role) {
     int numColumns = columnCount();
     if (section < 0 || section >= numColumns) {
         return false;
@@ -59,8 +59,8 @@ bool ControllerMappingTableModel::setHeaderData(int section,
 }
 
 QVariant ControllerMappingTableModel::headerData(int section,
-                                                 Qt::Orientation orientation,
-                                                 int role) const {
+        Qt::Orientation orientation,
+        int role) const {
     if (role == Qt::DisplayRole && orientation == Qt::Horizontal) {
         QVariant headerValue = m_headerInfo.value(section).value(role);
         if (!headerValue.isValid()) {

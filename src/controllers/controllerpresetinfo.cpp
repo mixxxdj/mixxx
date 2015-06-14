@@ -17,11 +17,11 @@
 #include "util/xml.h"
 
 PresetInfo::PresetInfo()
-        : m_valid(false) {
+    : m_valid(false) {
 }
 
 PresetInfo::PresetInfo(const QString preset_path)
-        : m_valid(false) {
+    : m_valid(false) {
     // Parse <info> header section from a controller description XML file
     // Contents parsed by xml path:
     // info.name        Preset name, used for drop down menus in dialogs
@@ -148,8 +148,8 @@ PresetInfoEnumerator::PresetInfoEnumerator(ConfigObject<ConfigValue>* pConfig) {
 
 PresetInfoEnumerator::~PresetInfoEnumerator() {
     for (QMap<QString, ControllerPresetFileHandler*>::iterator it =
-                 m_presetFileHandlersByExtension.begin();
-         it != m_presetFileHandlersByExtension.end(); ++it) {
+                m_presetFileHandlersByExtension.begin();
+            it != m_presetFileHandlersByExtension.end(); ++it) {
         delete it.value();
         it = m_presetFileHandlersByExtension.erase(it);
     }
@@ -167,10 +167,10 @@ bool PresetInfoEnumerator::hasPresetInfo(const QString extension, const QString 
         return false;
 
     for (QMap<QString, QMap<QString, PresetInfo> >::const_iterator it =
-                 presetsByExtension.begin();
-         it != presetsByExtension.end(); ++it) {
+                presetsByExtension.begin();
+            it != presetsByExtension.end(); ++it) {
         for (QMap<QString, PresetInfo>::const_iterator it2 = it.value().begin();
-             it2 != it.value().end(); ++it2) {
+                it2 != it.value().end(); ++it2) {
             if (name == it2.value().getName()) {
                 return true;
             }

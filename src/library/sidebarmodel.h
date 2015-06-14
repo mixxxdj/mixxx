@@ -45,7 +45,7 @@ class SidebarModel : public QAbstractItemModel {
     // void slotColumnsAboutToBeRemoved(const QModelIndex& parent, int start, int end);
     // void slotColumnsInserted(const QModelIndex& parent, int start, int end);
     // void slotColumnsRemoved(const QModelIndex& parent, int start, int end);
-    void slotDataChanged(const QModelIndex& topLeft, const QModelIndex & bottomRight);
+    void slotDataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight);
     //void slotHeaderDataChanged(Qt::Orientation orientation, int first, int last);
     // void slotLayoutAboutToBeChanged();
     // void slotLayoutChanged();

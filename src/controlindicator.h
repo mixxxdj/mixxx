@@ -32,7 +32,9 @@ class ControlIndicator : public ControlObject {
     // set() is private, use setBlinkValue instead
     // it must be called from the GUI thread only to a void
     // race condition by toggle()
-    void set(double value) { ControlObject::set(value); };
+    void set(double value) {
+        ControlObject::set(value);
+    };
 
     enum BlinkValue m_blinkValue;
     double m_nextSwitchTime;

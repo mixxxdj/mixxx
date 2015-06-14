@@ -13,8 +13,8 @@ class BeatUtils {
     static double constrainBpm(double bpm, const int min_bpm,
                                const int max_bpm, bool aboveRange) {
         if (bpm <= 0.0 || min_bpm < 0 || max_bpm < 0 ||
-            min_bpm >= max_bpm ||
-            (bpm >= min_bpm && bpm <= max_bpm)) {
+                min_bpm >= max_bpm ||
+                (bpm >= min_bpm && bpm <= max_bpm)) {
             return bpm;
         }
 

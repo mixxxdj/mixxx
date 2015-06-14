@@ -6,11 +6,11 @@
 #include "trackinfoobject.h"
 
 class ChromaPrinter: public QObject {
-  Q_OBJECT
+    Q_OBJECT
 
-public:
-      explicit ChromaPrinter(QObject* parent = NULL);
-      QString getFingerprint(TrackPointer pTrack);
+  public:
+    explicit ChromaPrinter(QObject* parent = NULL);
+    QString getFingerprint(TrackPointer pTrack);
 };
 
 #endif //CHROMAPRINTER_H

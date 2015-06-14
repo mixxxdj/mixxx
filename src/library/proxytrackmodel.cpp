@@ -8,12 +8,12 @@
 
 ProxyTrackModel::ProxyTrackModel(QAbstractItemModel* pTrackModel,
                                  bool bHandleSearches)
-        // ProxyTrackModel proxies settings requests to the composed TrackModel,
-        // don't initialize its TrackModel with valid parameters.
-        : TrackModel(QSqlDatabase(), ""),
-          m_pTrackModel(dynamic_cast<TrackModel*>(pTrackModel)),
-          m_currentSearch(""),
-          m_bHandleSearches(bHandleSearches) {
+// ProxyTrackModel proxies settings requests to the composed TrackModel,
+// don't initialize its TrackModel with valid parameters.
+    : TrackModel(QSqlDatabase(), ""),
+      m_pTrackModel(dynamic_cast<TrackModel*>(pTrackModel)),
+      m_currentSearch(""),
+      m_bHandleSearches(bHandleSearches) {
     DEBUG_ASSERT_AND_HANDLE(m_pTrackModel && pTrackModel) {
         return;
     }
@@ -106,7 +106,7 @@ bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
 
     const QList<int>& filterColumns = m_pTrackModel->searchColumns();
     QAbstractItemModel* itemModel =
-            dynamic_cast<QAbstractItemModel*>(m_pTrackModel);
+        dynamic_cast<QAbstractItemModel*>(m_pTrackModel);
     bool rowMatches = false;
 
     QRegExp filter = filterRegExp();

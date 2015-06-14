@@ -19,7 +19,7 @@ class ControlObjectThread;
 class WNumberRate : public WNumber {
     Q_OBJECT
   public:
-    WNumberRate(const char *group, QWidget *parent=0);
+    WNumberRate(const char* group, QWidget* parent=0);
     virtual ~WNumberRate();
 
   private slots:

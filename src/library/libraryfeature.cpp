@@ -7,9 +7,9 @@
 // The reason for this is that LibraryFeature uses slots/signals and for this
 // to work the code has to be precompiles by moc
 LibraryFeature::LibraryFeature(QObject* parent)
-              : QObject(parent) {
+    : QObject(parent) {
 }
 
 LibraryFeature::~LibraryFeature() {
-    
+
 }

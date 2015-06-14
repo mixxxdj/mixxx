@@ -3,19 +3,19 @@
 #include "controlobjectslave.h"
 #include "controlobject.h"
 
-VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, QString group)
-        : m_pConfig(pConfig),
-          m_group(group),
-          m_iLeadInTime(m_pConfig->getValueString(
-              ConfigKey(group, "vinylcontrol_lead_in_time")).toInt()),
-          m_dVinylPosition(0.0),
-          m_fTimecodeQuality(0.0f) {
+VinylControl::VinylControl(ConfigObject<ConfigValue>* pConfig, QString group)
+    : m_pConfig(pConfig),
+      m_group(group),
+      m_iLeadInTime(m_pConfig->getValueString(
+                        ConfigKey(group, "vinylcontrol_lead_in_time")).toInt()),
+      m_dVinylPosition(0.0),
+      m_fTimecodeQuality(0.0f) {
     // Get Control objects
     m_pVinylControlInputGain = new ControlObjectThread(VINYL_PREF_KEY, "gain");
 
     bool gainOk = false;
     double gain = m_pConfig->getValueString(ConfigKey(VINYL_PREF_KEY, "gain"))
-            .toDouble(&gainOk);
+                  .toDouble(&gainOk);
     m_pVinylControlInputGain->set(gainOk ? gain : 1.0);
 
     playPos             = new ControlObjectThread(group, "playposition");    // Range: 0 to 1.0
@@ -45,7 +45,7 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, QString group)
     // TODO(rryan): Should probably live in VinylControlManager since it's not
     // specific to a VC deck.
     ControlObject::set(ConfigKey(VINYL_PREF_KEY, "gain"),
-        m_pConfig->getValueString(ConfigKey(VINYL_PREF_KEY,"gain")).toInt());
+                       m_pConfig->getValueString(ConfigKey(VINYL_PREF_KEY,"gain")).toInt());
 }
 
 bool VinylControl::isEnabled() {

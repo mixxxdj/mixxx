@@ -18,7 +18,7 @@
 #include "util/debug.h"
 
 SkinLoader::SkinLoader(ConfigObject<ConfigValue>* pConfig) :
-        m_pConfig(pConfig) {
+    m_pConfig(pConfig) {
 }
 
 SkinLoader::~SkinLoader() {

@@ -37,7 +37,7 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
     if (sDebug) {
         qDebug() << "CoverArtCache::requestCover"
                  << requestInfo << pRequestor << requestReference <<
-                desiredWidth << onlyCached << signalWhenDone;
+                 desiredWidth << onlyCached << signalWhenDone;
     }
 
     if (requestInfo.type == CoverInfo::NONE) {
@@ -61,7 +61,7 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
     // it avoids having to rescale+crop it ALWAYS (which brings a lot of
     // performance issues).
     QString cacheKey = CoverArtUtils::pixmapCacheKey(requestInfo.hash,
-                                                     desiredWidth);
+                       desiredWidth);
 
     QPixmap pixmap;
     if (QPixmapCache::find(cacheKey, &pixmap)) {
@@ -81,19 +81,19 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
     m_runningRequests.insert(requestId);
     QFutureWatcher<FutureResult>* watcher = new QFutureWatcher<FutureResult>(this);
     QFuture<FutureResult> future = QtConcurrent::run(
-            this, &CoverArtCache::loadCover, requestInfo, pRequestor,
-            requestReference, desiredWidth, signalWhenDone);
+                                       this, &CoverArtCache::loadCover, requestInfo, pRequestor,
+                                       requestReference, desiredWidth, signalWhenDone);
     connect(watcher, SIGNAL(finished()), this, SLOT(coverLoaded()));
     watcher->setFuture(future);
     return QPixmap();
 }
 
 CoverArtCache::FutureResult CoverArtCache::loadCover(
-        const CoverInfo& info,
-        const QObject* pRequestor,
-        int requestReference,
-        const int desiredWidth,
-        const bool signalWhenDone) {
+    const CoverInfo& info,
+    const QObject* pRequestor,
+    int requestReference,
+    const int desiredWidth,
+    const bool signalWhenDone) {
     if (sDebug) {
         qDebug() << "CoverArtCache::loadCover"
                  << info << desiredWidth << signalWhenDone;
@@ -120,10 +120,10 @@ CoverArtCache::FutureResult CoverArtCache::loadCover(
     // efficiency.
     if (res.desiredWidth > 0) {
         res.cover.image = CoverArtUtils::resizeImage(res.cover.image,
-                                                     res.desiredWidth);
+                          res.desiredWidth);
     } else {
         res.cover.image = CoverArtUtils::maybeResizeImage(res.cover.image,
-                                                          kMaxCoverWidth);
+                          kMaxCoverWidth);
     }
 
     return res;
@@ -140,7 +140,7 @@ void CoverArtCache::coverLoaded() {
     }
 
     QString cacheKey = CoverArtUtils::pixmapCacheKey(res.cover.info.hash,
-                                                     res.desiredWidth);
+                       res.desiredWidth);
     QPixmap pixmap;
     if (!QPixmapCache::find(cacheKey, &pixmap) && !res.cover.image.isNull()) {
         pixmap.convertFromImage(res.cover.image);

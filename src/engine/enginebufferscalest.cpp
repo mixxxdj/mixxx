@@ -31,7 +31,7 @@
 
 using namespace soundtouch;
 
-EngineBufferScaleST::EngineBufferScaleST(ReadAheadManager *pReadAheadManager)
+EngineBufferScaleST::EngineBufferScaleST(ReadAheadManager* pReadAheadManager)
     : EngineBufferScale(),
       m_bBackwards(false),
       m_pReadAheadManager(pReadAheadManager) {
@@ -59,8 +59,8 @@ EngineBufferScaleST::~EngineBufferScaleST() {
 }
 
 void EngineBufferScaleST::setScaleParameters(double base_rate,
-                                             double* pTempoRatio,
-                                             double* pPitchRatio) {
+        double* pTempoRatio,
+        double* pPitchRatio) {
 
     // Negative speed means we are going backwards. pitch does not affect
     // the playback direction.
@@ -126,7 +126,7 @@ CSAMPLE* EngineBufferScaleST::getScaled(unsigned long buf_size) {
     bool last_read_failed = false;
     while (remaining_frames > 0) {
         unsigned long received_frames = m_pSoundTouch->receiveSamples(
-                (SAMPLETYPE*)read, remaining_frames);
+                                            (SAMPLETYPE*)read, remaining_frames);
         remaining_frames -= received_frames;
         total_received_frames += received_frames;
         read += received_frames * iNumChannels;
@@ -134,11 +134,11 @@ CSAMPLE* EngineBufferScaleST::getScaled(unsigned long buf_size) {
         if (remaining_frames > 0) {
             unsigned long iLenFrames = kiSoundTouchReadAheadLength;
             unsigned long iAvailSamples = m_pReadAheadManager->getNextSamples(
-                        // The value doesn't matter here. All that matters is we
-                        // are going forward or backward.
-                        (m_bBackwards ? -1.0 : 1.0) * m_dBaseRate * m_dTempoRatio,
-                        buffer_back,
-                        iLenFrames * iNumChannels);
+                                              // The value doesn't matter here. All that matters is we
+                                              // are going forward or backward.
+                                              (m_bBackwards ? -1.0 : 1.0) * m_dBaseRate * m_dTempoRatio,
+                                              buffer_back,
+                                              iLenFrames * iNumChannels);
             unsigned long iAvailFrames = iAvailSamples / iNumChannels;
 
             if (iAvailFrames > 0) {
@@ -169,7 +169,7 @@ CSAMPLE* EngineBufferScaleST::getScaled(unsigned long buf_size) {
     // shifting as a tempo shift of (1/m_dPitchAdjust) and a rate shift of
     // (*m_dPitchAdjust) so these two cancel out.
     m_samplesRead = m_dBaseRate * m_dTempoRatio *
-            total_received_frames * iNumChannels;
+                    total_received_frames * iNumChannels;
 
     return m_buffer;
 }

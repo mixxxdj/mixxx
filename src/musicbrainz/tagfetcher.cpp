@@ -19,10 +19,10 @@
 #include "musicbrainz/musicbrainzclient.h"
 
 TagFetcher::TagFetcher(QObject* parent)
-          : QObject(parent),
-            m_pFingerprintWatcher(NULL),
-            m_AcoustidClient(this),
-            m_MusicbrainzClient(this) {
+    : QObject(parent),
+      m_pFingerprintWatcher(NULL),
+      m_AcoustidClient(this),
+      m_MusicbrainzClient(this) {
     connect(&m_AcoustidClient, SIGNAL(finished(int,QString)),
             this, SLOT(mbidFound(int,QString)));
     connect(&m_MusicbrainzClient, SIGNAL(finished(int,MusicBrainzClient::ResultList)),

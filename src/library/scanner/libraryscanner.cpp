@@ -35,16 +35,16 @@
 const int kScannerThreadPoolSize = 1;
 
 LibraryScanner::LibraryScanner(QWidget* pParentWidget, TrackCollection* collection)
-              : m_pCollection(collection),
-                m_libraryHashDao(m_database),
-                m_cueDao(m_database),
-                m_playlistDao(m_database),
-                m_crateDao(m_database),
-                m_directoryDao(m_database),
-                m_analysisDao(m_database, collection->getConfig()),
-                m_trackDao(m_database, m_cueDao, m_playlistDao,
-                           m_crateDao, m_analysisDao, m_libraryHashDao,
-                           collection->getConfig()) {
+    : m_pCollection(collection),
+      m_libraryHashDao(m_database),
+      m_cueDao(m_database),
+      m_playlistDao(m_database),
+      m_crateDao(m_database),
+      m_directoryDao(m_database),
+      m_analysisDao(m_database, collection->getConfig()),
+      m_trackDao(m_database, m_cueDao, m_playlistDao,
+                 m_crateDao, m_analysisDao, m_libraryHashDao,
+                 collection->getConfig()) {
     // Don't initialize m_database here, we need to do it in run() so the DB
     // conn is in the right thread.
     qDebug() << "Starting LibraryScanner thread.";
@@ -173,13 +173,13 @@ void LibraryScanner::slotStartScan() {
     QHash<QString, int> directoryHashes = m_libraryHashDao.getDirectoryHashes();
     QRegExp extensionFilter(SoundSourceProxy::getSupportedFileNameRegex());
     QRegExp coverExtensionFilter =
-            QRegExp(CoverArtUtils::supportedCoverArtExtensionsRegex(),
-                    Qt::CaseInsensitive);
+        QRegExp(CoverArtUtils::supportedCoverArtExtensionsRegex(),
+                Qt::CaseInsensitive);
     QStringList directoryBlacklist = ScannerUtil::getDirectoryBlacklist();
 
     m_scannerGlobal = ScannerGlobalPointer(
-        new ScannerGlobal(trackLocations, directoryHashes, extensionFilter,
-                          coverExtensionFilter, directoryBlacklist));
+                          new ScannerGlobal(trackLocations, directoryHashes, extensionFilter,
+                                            coverExtensionFilter, directoryBlacklist));
     m_scannerGlobal->startTimer();
 
     emit(scanStarted());
@@ -245,7 +245,7 @@ void LibraryScanner::slotStartScan() {
         MDir dir(dirPath);
 
         queueTask(new RecursiveScanDirectoryTask(this, m_scannerGlobal, dir.dir(),
-                                                 dir.token()));
+                  dir.token()));
     }
 }
 
@@ -401,7 +401,7 @@ void LibraryScanner::queueTask(ScannerTask* pTask) {
 }
 
 void LibraryScanner::directoryHashedAndScanned(const QString& directoryPath,
-                                               bool newDirectory, int hash) {
+        bool newDirectory, int hash) {
     ScopedTimer timer("LibraryScanner::directoryHashedAndScanned");
     // qDebug() << "LibraryScanner::directoryHashedAndScanned" << directoryPath
     //          << newDirectory << hash;

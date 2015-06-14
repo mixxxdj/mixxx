@@ -157,7 +157,7 @@ QString SoundManagerConfig::getAPI() const {
     return m_api;
 }
 
-void SoundManagerConfig::setAPI(const QString &api) {
+void SoundManagerConfig::setAPI(const QString& api) {
     // SoundManagerConfig doesn't necessarily have access to a SoundManager
     // instance, so I can't check for input validity here -- bkgood
     m_api = api;
@@ -169,7 +169,7 @@ void SoundManagerConfig::setAPI(const QString &api) {
  * @returns false if the API is not found in SoundManager's list, otherwise
  *          true
  */
-bool SoundManagerConfig::checkAPI(const SoundManager &soundManager) {
+bool SoundManagerConfig::checkAPI(const SoundManager& soundManager) {
     if (!soundManager.getHostAPIList().contains(m_api) && m_api != "None") {
         return false;
     }
@@ -201,7 +201,7 @@ void SoundManagerConfig::setSyncBuffers(unsigned int syncBuffers) {
  * @returns false if the sample rate is not found in SoundManager's list,
  *          otherwise true
  */
-bool SoundManagerConfig::checkSampleRate(const SoundManager &soundManager) {
+bool SoundManagerConfig::checkSampleRate(const SoundManager& soundManager) {
     if (!soundManager.getSampleRates(m_api).contains(m_sampleRate)) {
         return false;
     }
@@ -222,9 +222,9 @@ void SoundManagerConfig::setCorrectDeckCount(int configuredDeckCount) {
     foreach (QString device, m_outputs.keys().toSet().unite(m_inputs.keys().toSet())) {
         foreach (AudioInput in, m_inputs.values(device)) {
             if ((in.getType() == AudioInput::DECK ||
-                 in.getType() == AudioInput::VINYLCONTROL ||
-                 in.getType() == AudioInput::AUXILIARY) &&
-                in.getIndex() + 1 > minimum_deck_count) {
+                    in.getType() == AudioInput::VINYLCONTROL ||
+                    in.getType() == AudioInput::AUXILIARY) &&
+                    in.getIndex() + 1 > minimum_deck_count) {
                 qDebug() << "Found an input connection above current deck count";
                 minimum_deck_count = in.getIndex() + 1;
             }
@@ -280,11 +280,11 @@ void SoundManagerConfig::setAudioBufferSizeIndex(unsigned int sizeIndex) {
     m_audioBufferSizeIndex = sizeIndex != 0 ? math_min(sizeIndex, kMaxAudioBufferSizeIndex) : 1;
 }
 
-void SoundManagerConfig::addOutput(const QString &device, const AudioOutput &out) {
+void SoundManagerConfig::addOutput(const QString& device, const AudioOutput& out) {
     m_outputs.insert(device, out);
 }
 
-void SoundManagerConfig::addInput(const QString &device, const AudioInput &in) {
+void SoundManagerConfig::addInput(const QString& device, const AudioInput& in) {
     m_inputs.insert(device, in);
 }
 
@@ -308,7 +308,7 @@ void SoundManagerConfig::clearInputs() {
  * Removes any outputs with devices that do not exist in the given
  * SoundManager.
  */
-void SoundManagerConfig::filterOutputs(SoundManager *soundManager) {
+void SoundManagerConfig::filterOutputs(SoundManager* soundManager) {
     QSet<QString> deviceNames;
     QSet<QString> toDelete;
     foreach (SoundDevice *device, soundManager->getDeviceList(m_api, true, false)) {
@@ -328,7 +328,7 @@ void SoundManagerConfig::filterOutputs(SoundManager *soundManager) {
  * Removes any inputs with devices that do not exist in the given
  * SoundManager.
  */
-void SoundManagerConfig::filterInputs(SoundManager *soundManager) {
+void SoundManagerConfig::filterInputs(SoundManager* soundManager) {
     QSet<QString> deviceNames;
     QSet<QString> toDelete;
     foreach (SoundDevice *device, soundManager->getDeviceList(m_api, false, true)) {
@@ -351,7 +351,7 @@ void SoundManagerConfig::filterInputs(SoundManager *soundManager) {
  *              like SoundManagerConfig::API | SoundManagerConfig::DEVICES to
  *              load default API and master device.
  */
-void SoundManagerConfig::loadDefaults(SoundManager *soundManager, unsigned int flags) {
+void SoundManagerConfig::loadDefaults(SoundManager* soundManager, unsigned int flags) {
     if (flags & SoundManagerConfig::API) {
         QList<QString> apiList = soundManager->getHostAPIList();
         if (!apiList.isEmpty()) {
@@ -369,8 +369,8 @@ void SoundManagerConfig::loadDefaults(SoundManager *soundManager, unsigned int f
             // hoping this counts as more advanced, tests if ASIO is an option
             // and then that we have at least one ASIO output device -- bkgood
             if (apiList.contains(MIXXX_PORTAUDIO_ASIO_STRING)
-                   && !soundManager->getDeviceList(
-                       MIXXX_PORTAUDIO_ASIO_STRING, true, false).isEmpty()) {
+                    && !soundManager->getDeviceList(
+                        MIXXX_PORTAUDIO_ASIO_STRING, true, false).isEmpty()) {
                 m_api = MIXXX_PORTAUDIO_ASIO_STRING;
             } else {
                 m_api = MIXXX_PORTAUDIO_DIRECTSOUND_STRING;

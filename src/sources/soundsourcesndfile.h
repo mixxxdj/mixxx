@@ -14,7 +14,7 @@
 namespace Mixxx {
 
 class SoundSourceSndFile: public Mixxx::SoundSource {
-public:
+  public:
     explicit SoundSourceSndFile(QUrl url);
     ~SoundSourceSndFile();
 
@@ -23,16 +23,16 @@ public:
     SINT seekSampleFrame(SINT frameIndex) override;
 
     SINT readSampleFrames(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer) override;
+                          CSAMPLE* sampleBuffer) override;
 
-private:
+  private:
     Result tryOpen(const AudioSourceConfig& audioSrcCfg) override;
 
     SNDFILE* m_pSndFile;
 };
 
 class SoundSourceProviderSndFile: public SoundSourceProvider {
-public:
+  public:
     QString getName() const override;
 
     QStringList getSupportedFileExtensions() const override;

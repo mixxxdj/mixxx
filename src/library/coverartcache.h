@@ -41,9 +41,9 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
 
     struct FutureResult {
         FutureResult() : pRequestor(NULL),
-                         requestReference(0),
-                         desiredWidth(0),
-                         signalWhenDone(false) {
+            requestReference(0),
+            desiredWidth(0),
+            signalWhenDone(false) {
         }
 
         CoverArt cover;

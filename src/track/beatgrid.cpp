@@ -14,9 +14,9 @@ struct BeatGridData {
 class BeatGridIterator : public BeatIterator {
   public:
     BeatGridIterator(double dBeatLength, double dFirstBeat, double dEndSample)
-            : m_dBeatLength(dBeatLength),
-              m_dCurrentSample(dFirstBeat),
-              m_dEndSample(dEndSample) {
+        : m_dBeatLength(dBeatLength),
+          m_dCurrentSample(dFirstBeat),
+          m_dEndSample(dEndSample) {
     }
 
     virtual bool hasNext() const {
@@ -37,11 +37,11 @@ class BeatGridIterator : public BeatIterator {
 
 BeatGrid::BeatGrid(TrackInfoObject* pTrack, int iSampleRate,
                    const QByteArray* pByteArray)
-        : QObject(),
-          m_mutex(QMutex::Recursive),
-          m_iSampleRate(iSampleRate > 0 ? iSampleRate :
-                        pTrack->getSampleRate()),
-          m_dBeatLength(0.0) {
+    : QObject(),
+      m_mutex(QMutex::Recursive),
+      m_iSampleRate(iSampleRate > 0 ? iSampleRate :
+                    pTrack->getSampleRate()),
+      m_dBeatLength(0.0) {
     if (pTrack != NULL) {
         // BeatGrid should live in the same thread as the track it is associated
         // with.

@@ -46,46 +46,46 @@ bool VinylControlXwax::s_bLUTInitialized = false;
 QMutex VinylControlXwax::s_xwaxLUTMutex;
 
 VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue>* pConfig, QString group)
-        : VinylControl(pConfig, group),
-          m_dVinylPositionOld(0.0),
-          m_pWorkBuffer(new short[MAX_BUFFER_LEN]),
-          m_workBufferSize(MAX_BUFFER_LEN),
-          m_iQualPos(0),
-          m_iQualFilled(0),
-          m_iPosition(-1),
-          m_bAtRecordEnd(false),
-          m_bForceResync(false),
-          m_iVCMode(mode->get()),
-          m_iOldVCMode(MIXXX_VCMODE_ABSOLUTE),
-          m_dOldFilePos(0.0),
-          m_dOldDuration(0.0),
-          m_dOldDurationInaccurate(-1.0),
-          m_bWasReversed(false),
-          m_pPitchRing(NULL),
-          m_iPitchRingSize(0),
-          m_iPitchRingPos(0),
-          m_iPitchRingFilled(0),
-          m_dDisplayPitch(0.0),
-          m_pSteadySubtle(NULL),
-          m_pSteadyGross(NULL),
-          m_bCDControl(false),
-          m_bTrackSelectMode(false),
-          m_pControlTrackSelector(NULL),
-          m_pControlTrackLoader(NULL),
-          m_dLastTrackSelectPos(0.0),
-          m_dCurTrackSelectPos(0.0),
-          m_dDriftAmt(0.0),
-          m_dUiUpdateTime(-1.0) {
+    : VinylControl(pConfig, group),
+      m_dVinylPositionOld(0.0),
+      m_pWorkBuffer(new short[MAX_BUFFER_LEN]),
+      m_workBufferSize(MAX_BUFFER_LEN),
+      m_iQualPos(0),
+      m_iQualFilled(0),
+      m_iPosition(-1),
+      m_bAtRecordEnd(false),
+      m_bForceResync(false),
+      m_iVCMode(mode->get()),
+      m_iOldVCMode(MIXXX_VCMODE_ABSOLUTE),
+      m_dOldFilePos(0.0),
+      m_dOldDuration(0.0),
+      m_dOldDurationInaccurate(-1.0),
+      m_bWasReversed(false),
+      m_pPitchRing(NULL),
+      m_iPitchRingSize(0),
+      m_iPitchRingPos(0),
+      m_iPitchRingFilled(0),
+      m_dDisplayPitch(0.0),
+      m_pSteadySubtle(NULL),
+      m_pSteadyGross(NULL),
+      m_bCDControl(false),
+      m_bTrackSelectMode(false),
+      m_pControlTrackSelector(NULL),
+      m_pControlTrackLoader(NULL),
+      m_dLastTrackSelectPos(0.0),
+      m_dCurTrackSelectPos(0.0),
+      m_dDriftAmt(0.0),
+      m_dUiUpdateTime(-1.0) {
     // TODO(rryan): Should probably live in VinylControlManager since it's not
     // specific to a VC deck.
     signalenabled->slotSet(m_pConfig->getValueString(
-        ConfigKey(VINYL_PREF_KEY, "show_signal_quality")).toInt());
+                               ConfigKey(VINYL_PREF_KEY, "show_signal_quality")).toInt());
 
     // Get the vinyl type and speed.
     QString strVinylType = m_pConfig->getValueString(
-        ConfigKey(group,"vinylcontrol_vinyl_type"));
+                               ConfigKey(group,"vinylcontrol_vinyl_type"));
     QString strVinylSpeed = m_pConfig->getValueString(
-        ConfigKey(group,"vinylcontrol_speed_type"));
+                                ConfigKey(group,"vinylcontrol_speed_type"));
 
     // libxwax indexes by C-strings so we pass libxwax string literals so we
     // don't have to deal with freeing the strings later
@@ -94,8 +94,7 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue>* pConfig, QString g
 
     if (strVinylType == MIXXX_VINYL_SERATOCV02VINYLSIDEA) {
         timecode = (char*)"serato_2a";
-    }
-    else if (strVinylType == MIXXX_VINYL_SERATOCV02VINYLSIDEB) {
+    } else if (strVinylType == MIXXX_VINYL_SERATOCV02VINYLSIDEB) {
         timecode = (char*)"serato_2b";
     } else if (strVinylType == MIXXX_VINYL_SERATOCD) {
         timecode = (char*)"serato_cd";
@@ -138,14 +137,14 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue>* pConfig, QString g
     }
 
     double latency = ControlObject::getControl(
-            ConfigKey("[Master]", "latency"))->get();
+                         ConfigKey("[Master]", "latency"))->get();
     if (latency <= 0 || latency > 200) {
         qDebug() << "Failed to get sane latency, assuming 20 as a reasonable value";
         latency = 20;
     }
 
     int iSampleRate = m_pConfig->getValueString(
-        ConfigKey("[Soundcard]","Samplerate")).toULong();
+                          ConfigKey("[Soundcard]","Samplerate")).toULong();
 
     // Set pitch ring size to 1/4 of one revolution -- a full revolution adds
     // too much stickiness to the pitch.
@@ -256,7 +255,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
     // Check if vinyl control is enabled...
     m_bIsEnabled = enabled == NULL ? false : checkEnabled(m_bIsEnabled, enabled->get());
 
-    if(bHaveSignal) {
+    if (bHaveSignal) {
         // Always analyze the input samples
         m_iPosition = timecoder_get_position(&timecoder, NULL);
         //Notify the UI if the timecode quality is good
@@ -284,7 +283,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
         m_dOldDuration = trackSamples->get() / 2 / trackSampleRate->get();
 
         // we were at record end, so turn it off and restore mode
-        if(m_bAtRecordEnd) {
+        if (m_bAtRecordEnd) {
             disableRecordEndMode();
             if (m_iOldVCMode == MIXXX_VCMODE_CONSTANT) {
                 m_iVCMode = MIXXX_VCMODE_RELATIVE;
@@ -354,8 +353,8 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
             // corner case: we are waiting for resync so don't enable just yet
             enableRecordEndMode();
         } else if (m_iVCMode != MIXXX_VCMODE_ABSOLUTE &&
-                       m_iPosition != -1 &&
-                       m_iPosition > static_cast<int>(m_uiSafeZone)) {
+                   m_iPosition != -1 &&
+                   m_iPosition > static_cast<int>(m_uiSafeZone)) {
             enableRecordEndMode();
         }
     }
@@ -378,7 +377,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
         if (m_bAtRecordEnd) {
             //ok, it's still valid, blink
             if ((reportedPlayButton && (int)(filePosition * 2.0) % 2) ||
-                (!reportedPlayButton && (int)(m_iPosition / 500.0) % 2))
+                    (!reportedPlayButton && (int)(m_iPosition / 500.0) % 2))
                 vinylStatus->slotSet(VINYL_STATUS_WARNING);
             else
                 vinylStatus->slotSet(VINYL_STATUS_DISABLED);
@@ -447,7 +446,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
         //or 1 (plays back at that rate)
 
         double newScratch = reportedPlayButton ? rateDir->get() *
-                (m_pRateSlider->get() * rateRange->get()) + 1.0 : 0.0;
+                            (m_pRateSlider->get() * rateRange->get()) + 1.0 : 0.0;
         m_pVCRate->set(newScratch);
 
         //is there any reason we'd need to do anything else?
@@ -458,7 +457,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
 
     // When there's a timecode signal available
     // This is set when we analyze samples (no need for lock I think)
-    if(bHaveSignal) {
+    if (bHaveSignal) {
         //POSITION: MAYBE  PITCH: YES
 
         //We have pitch, but not position.  so okay signal but not great (scratching / cueing?)
@@ -644,8 +643,8 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
             syncPosition();
         }
 
-        if(fabs(filePosition - m_dOldFilePos) >= 0.1 ||
-               filePosition == m_dOldFilePos) {
+        if (fabs(filePosition - m_dOldFilePos) >= 0.1 ||
+                filePosition == m_dOldFilePos) {
             //We are not playing any more
             togglePlayButton(false);
             resetSteadyPitch(0.0, 0.0);
@@ -831,7 +830,7 @@ void VinylControlXwax::establishQuality(bool quality_sample) {
     }
 
     m_fTimecodeQuality = static_cast<float>(quality) /
-            static_cast<float>(m_iQualFilled);
+                         static_cast<float>(m_iQualFilled);
     m_iQualPos = (m_iQualPos + 1) % QUALITY_RING_SIZE;
 }
 

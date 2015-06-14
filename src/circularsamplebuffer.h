@@ -14,7 +14,7 @@
 // This class is not thread-safe and not intended to be used from multiple
 // threads!
 class CircularSampleBuffer: public SingularSampleBuffer {
-public:
+  public:
     CircularSampleBuffer() {}
     explicit CircularSampleBuffer(SINT capacity);
 
@@ -28,7 +28,7 @@ public:
         SingularSampleBuffer::trim(m_secondaryBuffer);
     }
 
-private:
+  private:
     SampleBuffer m_secondaryBuffer;
 };
 

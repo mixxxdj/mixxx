@@ -22,48 +22,48 @@
 
 class ImgAdd : public ImgColorProcessor {
 
-public:
+  public:
     ImgAdd(ImgSource* parent, int amt);
     virtual QColor doColorCorrection(QColor c);
 
-private:
+  private:
     int m_amt;
 };
 
 class ImgMax : public ImgColorProcessor {
 
-public:
+  public:
     ImgMax(ImgSource* parent, int amt);
     virtual QColor doColorCorrection(QColor c);
 
-private:
+  private:
     int m_amt;
 };
 
 class ImgScaleWhite : public ImgColorProcessor {
 
-public:
+  public:
     inline ImgScaleWhite(ImgSource* parent, float amt)
         : ImgColorProcessor(parent), m_amt(amt) {}
     virtual QColor doColorCorrection(QColor c);
-private:
+  private:
     float m_amt;
 };
 
 class ImgHueRot : public ImgColorProcessor {
 
-public:
+  public:
     inline ImgHueRot(ImgSource* parent, int amt)
         : ImgColorProcessor(parent), m_amt(amt) {}
     virtual QColor doColorCorrection(QColor c);
 
-private:
+  private:
     int m_amt;
 };
 
 class ImgHueInv : public ImgColorProcessor {
 
-public:
+  public:
     inline ImgHueInv(ImgSource* parent) : ImgColorProcessor(parent) {}
     virtual QColor doColorCorrection(QColor c);
 };
@@ -73,12 +73,12 @@ class ImgHSVTweak : public ImgColorProcessor {
     inline ImgHSVTweak(ImgSource* parent, int hmin, int hmax, int smin,
                        int smax, int vmin, int vmax, float hfact, int hconst, float sfact,
                        int sconst, float vfact, int vconst)
-            : ImgColorProcessor(parent),
-              m_hmin(hmin), m_hmax(hmax),
-              m_smin(smin), m_smax(smax),
-              m_vmin(vmin), m_vmax(vmax),
-              m_hconst(hconst), m_sconst(sconst), m_vconst(vconst),
-              m_hfact(hfact), m_sfact(sfact), m_vfact(vfact) {}
+        : ImgColorProcessor(parent),
+          m_hmin(hmin), m_hmax(hmax),
+          m_smin(smin), m_smax(smax),
+          m_vmin(vmin), m_vmax(vmax),
+          m_hconst(hconst), m_sconst(sconst), m_vconst(vconst),
+          m_hfact(hfact), m_sfact(sfact), m_vfact(vfact) {}
     virtual QColor doColorCorrection(QColor c);
 
   private:

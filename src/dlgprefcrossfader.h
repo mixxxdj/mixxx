@@ -34,7 +34,7 @@
 class DlgPrefCrossfader : public DlgPreferencePage, public Ui::DlgPrefCrossfaderDlg  {
     Q_OBJECT
   public:
-    DlgPrefCrossfader(QWidget *parent, ConfigObject<ConfigValue> *_config);
+    DlgPrefCrossfader(QWidget* parent, ConfigObject<ConfigValue>* _config);
     virtual ~DlgPrefCrossfader();
 
   public slots:
@@ -46,16 +46,16 @@ class DlgPrefCrossfader : public DlgPreferencePage, public Ui::DlgPrefCrossfader
     void slotResetToDefaults();
 
   signals:
-    void apply(const QString &);
+    void apply(const QString&);
 
   private:
     void loadSettings();
     void drawXfaderDisplay();
 
     /** Pointer to config object */
-    ConfigObject<ConfigValue> *config;
+    ConfigObject<ConfigValue>* config;
 
-    QGraphicsScene *m_pxfScene;
+    QGraphicsScene* m_pxfScene;
 
     /** X-fader values */
     double m_xFaderMode, m_transform, m_cal;

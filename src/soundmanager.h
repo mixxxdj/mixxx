@@ -49,7 +49,7 @@ class ControlObject;
 class SoundManager : public QObject {
     Q_OBJECT
   public:
-    SoundManager(ConfigObject<ConfigValue> *pConfig, EngineMaster *_master);
+    SoundManager(ConfigObject<ConfigValue>* pConfig, EngineMaster* _master);
     virtual ~SoundManager();
 
     // Returns a list of all devices we've enumerated that match the provided
@@ -102,22 +102,22 @@ class SoundManager : public QObject {
     void writeProcess();
     void readProcess();
 
-    void registerOutput(AudioOutput output, AudioSource *src);
-    void registerInput(AudioInput input, AudioDestination *dest);
+    void registerOutput(AudioOutput output, AudioSource* src);
+    void registerInput(AudioInput input, AudioDestination* dest);
     QList<AudioOutput> registeredOutputs() const;
     QList<AudioInput> registeredInputs() const;
 
   signals:
     void devicesUpdated(); // emitted when pointers to SoundDevices go stale
     void devicesSetup(); // emitted when the sound devices have been set up
-    void outputRegistered(AudioOutput output, AudioSource *src);
-    void inputRegistered(AudioInput input, AudioDestination *dest);
+    void outputRegistered(AudioOutput output, AudioSource* src);
+    void inputRegistered(AudioInput input, AudioDestination* dest);
 
   private:
     void setJACKName() const;
 
-    EngineMaster *m_pMaster;
-    ConfigObject<ConfigValue> *m_pConfig;
+    EngineMaster* m_pMaster;
+    ConfigObject<ConfigValue>* m_pConfig;
 #ifdef __PORTAUDIO__
     bool m_paInitialized;
     unsigned int m_jackSampleRate;

@@ -30,7 +30,7 @@ class PositionScratchController;
 // various controls, RateControl will calculate the current rate.
 class RateControl : public EngineControl {
     Q_OBJECT
-public:
+  public:
     RateControl(QString group, ConfigObject<ConfigValue>* _config);
     virtual ~RateControl();
 
@@ -45,8 +45,8 @@ public:
     // the caller that the user is currently scratching, and this is used to
     // disable keylock.
     double calculateSpeed(double baserate, double speed, bool paused,
-                         int iSamplesPerBuffer, bool* pReportScratching,
-                         bool* pReportReverse);
+                          int iSamplesPerBuffer, bool* pReportScratching,
+                          bool* pReportReverse);
     double getRawRate() const;
 
     // Set rate change when temp rate button is pressed
@@ -97,11 +97,11 @@ public:
     /** Values used when temp and perm rate buttons are pressed */
     static double m_dTemp, m_dTempSmall, m_dPerm, m_dPermSmall;
 
-    ControlPushButton *buttonRateTempDown, *buttonRateTempDownSmall,
-        *buttonRateTempUp, *buttonRateTempUpSmall;
-    ControlPushButton *buttonRatePermDown, *buttonRatePermDownSmall,
-        *buttonRatePermUp, *buttonRatePermUpSmall;
-    ControlObject *m_pRateDir, *m_pRateRange;
+    ControlPushButton* buttonRateTempDown, *buttonRateTempDownSmall,
+                       *buttonRateTempUp, *buttonRateTempUpSmall;
+    ControlPushButton* buttonRatePermDown, *buttonRatePermDownSmall,
+                       *buttonRatePermUp, *buttonRatePermUpSmall;
+    ControlObject* m_pRateDir, *m_pRateRange;
     ControlPotmeter* m_pRateSlider;
     ControlPotmeter* m_pRateSearch;
     ControlPushButton* m_pReverseButton;

@@ -40,7 +40,7 @@ const QStringList SOUND_SOURCE_PLUGIN_FILENAME_PATTERN; // empty
 #endif
 
 SecurityTokenPointer openSecurityToken(QString qFilename,
-        SecurityTokenPointer pToken) {
+                                       SecurityTokenPointer pToken) {
     if (pToken.isNull()) {
         // Open a security token for the file if we are in a sandbox.
         QFileInfo info(qFilename);
@@ -60,7 +60,7 @@ QList<QDir> getSoundSourcePluginDirectories() {
     }
 
     const QString dataLocation = QDesktopServices::storageLocation(
-            QDesktopServices::DataLocation);
+                                     QDesktopServices::DataLocation);
     const QString applicationPath = QCoreApplication::applicationDirPath();
 
 #ifdef __LINUX__
@@ -124,18 +124,18 @@ QList<QDir> getSoundSourcePluginDirectories() {
 
 //Constructor
 SoundSourceProxy::SoundSourceProxy(QString qFilename,
-        SecurityTokenPointer pToken)
-        : m_pSecurityToken(openSecurityToken(qFilename, pToken))
-                , m_pSoundSource(initialize(qFilename)) {
+                                   SecurityTokenPointer pToken)
+    : m_pSecurityToken(openSecurityToken(qFilename, pToken))
+    , m_pSoundSource(initialize(qFilename)) {
 }
 
 //Other constructor
 SoundSourceProxy::SoundSourceProxy(TrackPointer pTrack)
-        : m_pTrack(pTrack)
-                , m_pSecurityToken(
-                openSecurityToken(pTrack->getLocation(),
-                        pTrack->getSecurityToken()))
-                        , m_pSoundSource(initialize(pTrack->getLocation())) {
+    : m_pTrack(pTrack)
+    , m_pSecurityToken(
+        openSecurityToken(pTrack->getLocation(),
+                          pTrack->getSecurityToken()))
+    , m_pSoundSource(initialize(pTrack->getLocation())) {
 }
 
 Mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const Mixxx::AudioSourceConfig& audioSrcCfg) {
@@ -156,8 +156,8 @@ Mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const Mixxx::AudioSo
 
     if (!m_pSoundSource->isValid()) {
         qWarning() << "Invalid file:" << m_pSoundSource->getUrlString()
-                << "channels" << m_pSoundSource->getChannelCount()
-                << "frame rate" << m_pSoundSource->getChannelCount();
+                   << "channels" << m_pSoundSource->getChannelCount()
+                   << "frame rate" << m_pSoundSource->getChannelCount();
         return m_pAudioSource;
     }
     if (m_pSoundSource->isEmpty()) {
@@ -233,17 +233,17 @@ void SoundSourceProxy::loadPlugins() {
     foreach (QDir dir, pluginDirs) {
         qDebug() << "Loading SoundSource plugins" << dir.path();
         const QStringList files(dir.entryList(
-                SOUND_SOURCE_PLUGIN_FILENAME_PATTERN,
-                QDir::Files | QDir::NoDotAndDotDot));
+                                    SOUND_SOURCE_PLUGIN_FILENAME_PATTERN,
+                                    QDir::Files | QDir::NoDotAndDotDot));
         foreach (const QString& file, files) {
             const QString libFilePath(dir.filePath(file));
             Mixxx::SoundSourcePluginLibraryPointer pPluginLibrary(
-                    Mixxx::SoundSourcePluginLibrary::load(libFilePath));
+                Mixxx::SoundSourcePluginLibrary::load(libFilePath));
             if (pPluginLibrary) {
                 s_soundSourceProviders.registerPluginLibrary(pPluginLibrary);
             } else {
                 qWarning() << "Failed to load SoundSource plugin"
-                        << libFilePath;
+                           << libFilePath;
             }
         }
     }
@@ -251,19 +251,19 @@ void SoundSourceProxy::loadPlugins() {
     s_soundSourceProviders.finishRegistration();
 
     const QStringList supportedFileExtensions(
-            s_soundSourceProviders.getSupportedFileExtensions());
+        s_soundSourceProviders.getSupportedFileExtensions());
     foreach (const QString &supportedFileExtension, supportedFileExtensions) {
         const Mixxx::SoundSourceProviderPointer pProvider(
-                s_soundSourceProviders.getProviderForFileExtension(supportedFileExtension));
+            s_soundSourceProviders.getProviderForFileExtension(supportedFileExtension));
         const Mixxx::SoundSourcePluginLibraryPointer pPluginLibrary(
-                s_soundSourceProviders.getPluginLibraryForFileExtension(supportedFileExtension));
+            s_soundSourceProviders.getPluginLibraryForFileExtension(supportedFileExtension));
         if (pPluginLibrary) {
             qDebug() << "SoundSourceProvider for" << supportedFileExtension
-                    << "is" << pProvider->getName()
-                    << "@" << pPluginLibrary->getFilePath();
+                     << "is" << pProvider->getName()
+                     << "@" << pPluginLibrary->getFilePath();
         } else {
             qDebug() << "SoundSourceProvider for" << supportedFileExtension
-                    << "is" << pProvider->getName();
+                     << "is" << pProvider->getName();
         }
     }
 }
@@ -318,7 +318,7 @@ bool SoundSourceProxy::isFileExtensionSupported(const QString& fileExtension) {
 
 // static
 Mixxx::SoundSourcePointer SoundSourceProxy::initialize(
-        const QString& qFilename) {
+    const QString& qFilename) {
     const QUrl url(QUrl::fromLocalFile(qFilename));
 
     const QString fileExtension(Mixxx::SoundSource::getFileExtensionFromUrl(url));
@@ -328,7 +328,7 @@ Mixxx::SoundSourcePointer SoundSourceProxy::initialize(
     }
 
     Mixxx::SoundSourceProviderPointer pSoundSourceProvider(
-            s_soundSourceProviders.getProviderForFileExtension(fileExtension));
+        s_soundSourceProviders.getProviderForFileExtension(fileExtension));
     if (pSoundSourceProvider) {
         return pSoundSourceProvider->newSoundSource(url);
     } else {

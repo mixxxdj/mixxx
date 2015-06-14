@@ -3,8 +3,8 @@
 #include "sampleutil.h"
 
 SampleBuffer::SampleBuffer(SINT size)
-        : m_data(SampleUtil::alloc(size)),
-          m_size(m_data ? size : 0) {
+    : m_data(SampleUtil::alloc(size)),
+      m_size(m_data ? size : 0) {
 }
 
 SampleBuffer::~SampleBuffer() {

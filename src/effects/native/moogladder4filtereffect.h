@@ -40,7 +40,7 @@ class MoogLadder4FilterEffect : public PerChannelEffectProcessor<MoogLadder4Filt
     // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,
                         MoogLadder4FilterGroupState* pState,
-                        const CSAMPLE* pInput, CSAMPLE *pOutput,
+                        const CSAMPLE* pInput, CSAMPLE* pOutput,
                         const unsigned int numSamples,
                         const unsigned int sampleRate,
                         const EffectProcessor::EnableState enableState,

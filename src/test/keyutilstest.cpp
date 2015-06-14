@@ -144,7 +144,7 @@ TEST_F(KeyUtilsTest, KeyNameNotation) {
 mixxx::track::io::key::ChromaticKey incrementKey(
     mixxx::track::io::key::ChromaticKey key, int steps=1) {
     return static_cast<mixxx::track::io::key::ChromaticKey>(
-        static_cast<int>(key) + steps);
+               static_cast<int>(key) + steps);
 }
 
 TEST_F(KeyUtilsTest, ShortestStepsToKey_EqualKeyZeroSteps) {
@@ -174,9 +174,9 @@ TEST_F(KeyUtilsTest, ShortestStepsToKey_SameTonicZeroSteps) {
 
 TEST_F(KeyUtilsTest, ShortestStepsToKey) {
     mixxx::track::io::key::ChromaticKey start_key_minor =
-            mixxx::track::io::key::C_MINOR;
+        mixxx::track::io::key::C_MINOR;
     mixxx::track::io::key::ChromaticKey start_key_major =
-            mixxx::track::io::key::C_MAJOR;
+        mixxx::track::io::key::C_MAJOR;
 
     for (int i = 0; i < 12; ++i) {
         for (int j = 0; j < 12; ++j) {
@@ -208,24 +208,24 @@ TEST_F(KeyUtilsTest, GetCompatibleKeys) {
     // Test keys on the boundary between 1 and 12 to check that wrap-around
     // works.
     mixxx::track::io::key::ChromaticKey key =
-            mixxx::track::io::key::A_MINOR;
+        mixxx::track::io::key::A_MINOR;
     QList<mixxx::track::io::key::ChromaticKey> compatible =
-            KeyUtils::getCompatibleKeys(key);
+        KeyUtils::getCompatibleKeys(key);
     qSort(compatible);
     EXPECT_THAT(compatible, ElementsAre(
-        mixxx::track::io::key::C_MAJOR,
-        mixxx::track::io::key::D_MINOR,
-        mixxx::track::io::key::E_MINOR,
-        mixxx::track::io::key::A_MINOR));
+                    mixxx::track::io::key::C_MAJOR,
+                    mixxx::track::io::key::D_MINOR,
+                    mixxx::track::io::key::E_MINOR,
+                    mixxx::track::io::key::A_MINOR));
 
     key = mixxx::track::io::key::F_MAJOR;
     compatible = KeyUtils::getCompatibleKeys(key);
     qSort(compatible);
     EXPECT_THAT(compatible, ElementsAre(
-        mixxx::track::io::key::C_MAJOR,
-        mixxx::track::io::key::F_MAJOR,
-        mixxx::track::io::key::B_FLAT_MAJOR,
-        mixxx::track::io::key::D_MINOR));
+                    mixxx::track::io::key::C_MAJOR,
+                    mixxx::track::io::key::F_MAJOR,
+                    mixxx::track::io::key::B_FLAT_MAJOR,
+                    mixxx::track::io::key::D_MINOR));
 }
 
 }  // namespace

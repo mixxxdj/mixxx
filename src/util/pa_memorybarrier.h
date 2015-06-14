@@ -30,13 +30,13 @@
  */
 
 /*
- * The text above constitutes the entire PortAudio license; however, 
+ * The text above constitutes the entire PortAudio license; however,
  * the PortAudio community also makes the following non-binding requests:
  *
  * Any person wishing to distribute modifications to the Software is
  * requested to send the modifications to the original developer so that
- * they can be incorporated into the canonical version. It is also 
- * requested that these non-binding requests be included along with the 
+ * they can be incorporated into the canonical version. It is also
+ * requested that these non-binding requests be included along with the
  * license above.
  */
 
@@ -62,22 +62,22 @@
 
 #if defined(__APPLE__)
 #   include <libkern/OSAtomic.h>
-    /* Here are the memory barrier functions. Mac OS X only provides
-       full memory barriers, so the three types of barriers are the same,
-       however, these barriers are superior to compiler-based ones. */
+/* Here are the memory barrier functions. Mac OS X only provides
+   full memory barriers, so the three types of barriers are the same,
+   however, these barriers are superior to compiler-based ones. */
 #   define PaUtil_FullMemoryBarrier()  OSMemoryBarrier()
 #   define PaUtil_ReadMemoryBarrier()  OSMemoryBarrier()
 #   define PaUtil_WriteMemoryBarrier() OSMemoryBarrier()
 #elif defined(__GNUC__)
-    /* GCC >= 4.1 has built-in intrinsics. We'll use those */
+/* GCC >= 4.1 has built-in intrinsics. We'll use those */
 #   if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1)
 #      define PaUtil_FullMemoryBarrier()  __sync_synchronize()
 #      define PaUtil_ReadMemoryBarrier()  __sync_synchronize()
 #      define PaUtil_WriteMemoryBarrier() __sync_synchronize()
-    /* as a fallback, GCC understands volatile asm and "memory" to mean it
-     * should not reorder memory read/writes */
-    /* Note that it is not clear that any compiler actually defines __PPC__,
-     * it can probably removed safely. */
+/* as a fallback, GCC understands volatile asm and "memory" to mean it
+ * should not reorder memory read/writes */
+/* Note that it is not clear that any compiler actually defines __PPC__,
+ * it can probably removed safely. */
 #   elif defined( __ppc__ ) || defined( __powerpc__) || defined( __PPC__ )
 #      define PaUtil_FullMemoryBarrier()  asm volatile("sync":::"memory")
 #      define PaUtil_ReadMemoryBarrier()  asm volatile("sync":::"memory")

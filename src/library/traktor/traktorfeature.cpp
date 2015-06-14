@@ -20,10 +20,10 @@
 TraktorTrackModel::TraktorTrackModel(QObject* parent,
                                      TrackCollection* pTrackCollection,
                                      QSharedPointer<BaseTrackCache> trackSource)
-        : BaseExternalTrackModel(parent, pTrackCollection,
-                                 "mixxx.db.model.traktor_tablemodel",
-                                 "traktor_library",
-                                 trackSource) {
+    : BaseExternalTrackModel(parent, pTrackCollection,
+                             "mixxx.db.model.traktor_tablemodel",
+                             "traktor_library",
+                             trackSource) {
 }
 
 bool TraktorTrackModel::isColumnHiddenByDefault(int column) {
@@ -34,13 +34,13 @@ bool TraktorTrackModel::isColumnHiddenByDefault(int column) {
 }
 
 TraktorPlaylistModel::TraktorPlaylistModel(QObject* parent,
-                                           TrackCollection* pTrackCollection,
-                                           QSharedPointer<BaseTrackCache> trackSource)
-        : BaseExternalPlaylistModel(parent, pTrackCollection,
-                                    "mixxx.db.model.traktor.playlistmodel",
-                                    "traktor_playlists",
-                                    "traktor_playlist_tracks",
-                                    trackSource) {
+        TrackCollection* pTrackCollection,
+        QSharedPointer<BaseTrackCache> trackSource)
+    : BaseExternalPlaylistModel(parent, pTrackCollection,
+                                "mixxx.db.model.traktor.playlistmodel",
+                                "traktor_playlists",
+                                "traktor_playlist_tracks",
+                                trackSource) {
 }
 
 bool TraktorPlaylistModel::isColumnHiddenByDefault(int column) {
@@ -51,9 +51,9 @@ bool TraktorPlaylistModel::isColumnHiddenByDefault(int column) {
 }
 
 TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollection)
-        : BaseExternalLibraryFeature(parent, pTrackCollection),
-          m_pTrackCollection(pTrackCollection),
-          m_cancelImport(false) {
+    : BaseExternalLibraryFeature(parent, pTrackCollection),
+      m_pTrackCollection(pTrackCollection),
+      m_cancelImport(false) {
     QString tableName = "traktor_library";
     QString idColumn = "id";
     QStringList columns;
@@ -72,8 +72,8 @@ TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollectio
             << "bpm"
             << "key";
     m_trackSource = QSharedPointer<BaseTrackCache>(
-            new BaseTrackCache(m_pTrackCollection, tableName, idColumn,
-                           columns, false));
+                        new BaseTrackCache(m_pTrackCollection, tableName, idColumn,
+                                           columns, false));
     QStringList searchColumns;
     searchColumns << "artist"
                   << "album"
@@ -90,7 +90,7 @@ TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollectio
     m_title = tr("Traktor");
 
     m_database = QSqlDatabase::cloneDatabase(pTrackCollection->getDatabase(),
-                                             "TRAKTOR_SCANNER");
+                 "TRAKTOR_SCANNER");
 
     //Open the database connection in this thread.
     if (!m_database.open()) {
@@ -166,7 +166,7 @@ void TraktorFeature::activateChild(const QModelIndex& index) {
     if (!index.isValid()) return;
 
     //access underlying TreeItem object
-    TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
+    TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
 
     if (item->isPlaylist()) {
         qDebug() << "Activate Traktor Playlist: " << item->dataPath().toString();
@@ -223,7 +223,8 @@ TreeItem* TraktorFeature::importLibrary(QString file) {
             }
             if (xml.name() == "PLAYLISTS") {
                 inPlaylistsTag = true;
-            } if (inPlaylistsTag && !isRootFolderParsed && xml.name() == "NODE") {
+            }
+            if (inPlaylistsTag && !isRootFolderParsed && xml.name() == "NODE") {
                 QXmlStreamAttributes attr = xml.attributes();
                 QString nodetype = attr.value("TYPE").toString();
                 QString name = attr.value("NAME").toString();
@@ -245,11 +246,11 @@ TreeItem* TraktorFeature::importLibrary(QString file) {
         }
     }
     if (xml.hasError()) {
-         // do error handling
-         qDebug() << "Cannot process Traktor music collection";
-         if (root)
-             delete root;
-         return NULL;
+        // do error handling
+        qDebug() << "Cannot process Traktor music collection";
+        if (root)
+            delete root;
+        return NULL;
     }
 
     qDebug() << "Found: " << nAudioFiles << " audio files in Traktor";
@@ -259,7 +260,7 @@ TreeItem* TraktorFeature::importLibrary(QString file) {
     return root;
 }
 
-void TraktorFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
+void TraktorFeature::parseTrack(QXmlStreamReader& xml, QSqlQuery& query) {
     QString title;
     QString artist;
     QString album;
@@ -303,11 +304,11 @@ void TraktorFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
                 // On Windows the volume holds the drive letter e.g., d:
                 // On OS X, the volume is supposed to be "Macintosh HD" at all times,
                 // which is a folder in /Volumes/
-                #if defined(__APPLE__)
+#if defined(__APPLE__)
                 location = "/Volumes/"+volume;
-                #else
+#else
                 location = volume;
-                #endif
+#endif
                 location += path.replace(QString(":"), QString(""));
                 location += filename;
                 continue;
@@ -327,9 +328,9 @@ void TraktorFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
                 //
                 // Our rating values range from 1 to 5. The mapping is defined as follow
                 // ourRatingValue = TraktorRating / 51
-                 if (ranking_str != "" && qVariantCanConvert<int>(ranking_str)) {
+                if (ranking_str != "" && qVariantCanConvert<int>(ranking_str)) {
                     rating = ranking_str.toInt()/51;
-                 }
+                }
                 continue;
             }
             if (xml.name() == "TEMPO") {
@@ -373,7 +374,7 @@ void TraktorFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
 // A folder can contain folders and playlists. A playlist contains entries but no folders.
 // In other words, Traktor uses a tree structure to organize music.
 // Inner nodes represent folders while leaves are playlists.
-TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
+TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader& xml) {
 
     qDebug() << "Process RootFolder";
     //Each playlist is unique and can be identified by a path in the tree structure.
@@ -382,12 +383,12 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
 
     QString delimiter = "-->";
 
-    TreeItem *rootItem = new TreeItem();
-    TreeItem * parent = rootItem;
+    TreeItem* rootItem = new TreeItem();
+    TreeItem* parent = rootItem;
 
     QSqlQuery query_insert_to_playlists(m_database);
     query_insert_to_playlists.prepare("INSERT INTO traktor_playlists (name) "
-                  "VALUES (:name)");
+                                      "VALUES (:name)");
 
     QSqlQuery query_insert_to_playlist_tracks(m_database);
     query_insert_to_playlist_tracks.prepare(
@@ -403,23 +404,23 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
                 QXmlStreamAttributes attr = xml.attributes();
                 QString name = attr.value("NAME").toString();
                 QString type = attr.value("TYPE").toString();
-               //TODO: What happens if the folder node is a leaf (empty folder)
-               // Idea: Hide empty folders :-)
-               if (type == "FOLDER") {
+                //TODO: What happens if the folder node is a leaf (empty folder)
+                // Idea: Hide empty folders :-)
+                if (type == "FOLDER") {
                     current_path += delimiter;
                     current_path += name;
                     //qDebug() << "Folder: " +current_path << " has parent " << parent->data().toString();
                     map.insert(current_path, "FOLDER");
-                    TreeItem * item = new TreeItem(name,current_path, this, parent);
+                    TreeItem* item = new TreeItem(name,current_path, this, parent);
                     parent->appendChild(item);
                     parent = item;
-               } else if (type == "PLAYLIST") {
+                } else if (type == "PLAYLIST") {
                     current_path += delimiter;
                     current_path += name;
                     //qDebug() << "Playlist: " +current_path << " has parent " << parent->data().toString();
                     map.insert(current_path, "PLAYLIST");
 
-                    TreeItem * item = new TreeItem(name,current_path, this, parent);
+                    TreeItem* item = new TreeItem(name,current_path, this, parent);
                     parent->appendChild(item);
                     // process all the entries within the playlist 'name' having path 'current_path'
                     parsePlaylistEntries(xml, current_path,
@@ -451,7 +452,7 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
 }
 
 void TraktorFeature::parsePlaylistEntries(
-    QXmlStreamReader &xml,
+    QXmlStreamReader& xml,
     QString playlist_path,
     QSqlQuery query_insert_into_playlist,
     QSqlQuery query_insert_into_playlisttracks) {
@@ -496,11 +497,11 @@ void TraktorFeature::parsePlaylistEntries(
                 if (type == "TRACK") {
                     key.replace(QString(":"), QString(""));
                     //TODO: IFDEF
-                    #if defined(__WINDOWS__)
+#if defined(__WINDOWS__)
                     key.insert(1,":");
-                    #else
+#else
                     key.prepend("/Volumes/");
-                    #endif
+#endif
 
                     //insert to database
                     int track_id = -1;

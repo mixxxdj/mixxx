@@ -9,15 +9,17 @@ class ControlObject;
 class ControlObjectSlave;
 
 class WaveformRendererSignalBase : public WaveformRendererAbstract {
-public:
+  public:
     explicit WaveformRendererSignalBase(WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~WaveformRendererSignalBase();
 
     virtual bool init();
     virtual void setup(const QDomNode& node, const SkinContext& context);
 
-    virtual bool onInit() {return true;}
-    virtual void onSetup(const QDomNode &node) = 0;
+    virtual bool onInit() {
+        return true;
+    }
+    virtual void onSetup(const QDomNode& node) = 0;
 
   protected:
     void deleteControls();

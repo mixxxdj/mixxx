@@ -60,8 +60,8 @@ TEST_F(MetadataTest, ParseBpmValidRange) {
     for (int bpm100 = int(Mixxx::TrackMetadata::kBpmMin) * 100; int(Mixxx::TrackMetadata::kBpmMax) * 100 >= bpm100; ++bpm100) {
         const double expectedValue = bpm100 / 100.0;
         const QString inputValues[] = {
-                QString("%1").arg(expectedValue),
-                QString("  %1 ").arg(expectedValue),
+            QString("%1").arg(expectedValue),
+            QString("  %1 ").arg(expectedValue),
         };
         for (size_t i = 0; i < sizeof(inputValues) / sizeof(inputValues[0]); ++i) {
             parseBpm(inputValues[i], true, expectedValue);
@@ -83,10 +83,10 @@ TEST_F(MetadataTest, ParseBpmInvalid) {
 TEST_F(MetadataTest, ParseReplayGainDbValidRange) {
     for (int replayGainDb = -100; 100 >= replayGainDb; ++replayGainDb) {
         const QString inputValues[] = {
-                QString("%1 ").arg(replayGainDb),
-                QString("  %1dB ").arg(replayGainDb),
-                QString("  %1 DB ").arg(replayGainDb),
-                QString("  %1db ").arg(replayGainDb)
+            QString("%1 ").arg(replayGainDb),
+            QString("  %1dB ").arg(replayGainDb),
+            QString("  %1 DB ").arg(replayGainDb),
+            QString("  %1db ").arg(replayGainDb)
         };
         float expectedValue;
         if (0 != replayGainDb) {
@@ -113,14 +113,14 @@ TEST_F(MetadataTest, ParseReplayGainDbInvalid) {
 
 TEST_F(MetadataTest, ID3v2Year) {
     const char* kYears[] = {
-            " 1987  ",
-            " 2001-01-01",
-            "1997-12", // yyyy-MM
-            "1977-W43", // year + week
-            "2002 -12 - 31 ",
-            "2015 -02 - 04T 18:43",
-            "2015 -02 - 04  18:43",
-            "2015 -02 - 04  18:43 followed by arbitrary text"
+        " 1987  ",
+        " 2001-01-01",
+        "1997-12", // yyyy-MM
+        "1977-W43", // year + week
+        "2002 -12 - 31 ",
+        "2015 -02 - 04T 18:43",
+        "2015 -02 - 04  18:43",
+        "2015 -02 - 04  18:43 followed by arbitrary text"
     };
     // Only ID3v2.3.0 and ID3v2.4.0 are supported for writing
     for (int majorVersion = 3; 4 >= majorVersion; ++majorVersion) {

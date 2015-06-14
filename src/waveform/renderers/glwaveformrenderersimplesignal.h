@@ -6,11 +6,11 @@
 class ControlObject;
 
 class GLWaveformRendererSimpleSignal : public WaveformRendererSignalBase {
-public:
+  public:
     explicit GLWaveformRendererSimpleSignal(WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~GLWaveformRendererSimpleSignal();
 
-    virtual void onSetup(const QDomNode &node);
+    virtual void onSetup(const QDomNode& node);
     virtual void draw(QPainter* painter, QPaintEvent* event);
 };
 

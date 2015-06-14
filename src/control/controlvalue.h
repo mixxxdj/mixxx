@@ -51,7 +51,7 @@ class ControlRingValue {
             return true;
         }
         return false;
-   }
+    }
 
   private:
     T m_value;
@@ -132,7 +132,7 @@ class ControlValueAtomicBase<T, true> {
 
   protected:
     ControlValueAtomicBase()
-            : m_value(T()) {
+        : m_value(T()) {
     }
 
   private:

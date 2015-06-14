@@ -12,8 +12,8 @@
 const int expand_time = 250;
 
 WLibrarySidebar::WLibrarySidebar(QWidget* parent)
-        : QTreeView(parent),
-          WBaseWidget(this) {
+    : QTreeView(parent),
+      WBaseWidget(this) {
     //Set some properties
     setHeaderHidden(true);
     setSelectionMode(QAbstractItemView::SingleSelection);
@@ -33,7 +33,7 @@ WLibrarySidebar::~WLibrarySidebar() {
 }
 
 
-void WLibrarySidebar::contextMenuEvent(QContextMenuEvent *event) {
+void WLibrarySidebar::contextMenuEvent(QContextMenuEvent* event) {
     //if (event->state() & Qt::RightButton) { //Dis shiz don werk on windowze
     QModelIndex clickedItem = indexAt(event->pos());
     emit(rightClicked(event->globalPos(), clickedItem));
@@ -41,7 +41,7 @@ void WLibrarySidebar::contextMenuEvent(QContextMenuEvent *event) {
 }
 
 // Drag enter event, happens when a dragged item enters the track sources view
-void WLibrarySidebar::dragEnterEvent(QDragEnterEvent * event) {
+void WLibrarySidebar::dragEnterEvent(QDragEnterEvent* event) {
     qDebug() << "WLibrarySidebar::dragEnterEvent" << event->mimeData()->formats();
     if (event->mimeData()->hasUrls()) {
         // We don't have a way to ask the LibraryFeatures whether to accept a
@@ -49,7 +49,7 @@ void WLibrarySidebar::dragEnterEvent(QDragEnterEvent * event) {
         // LibraryFeature accepts all files in the drop and accepts playlist
         // drops we default to those flags to DragAndDropHelper.
         QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
-                event->mimeData()->urls(), false, true);
+                                     event->mimeData()->urls(), false, true);
         if (!files.isEmpty()) {
             event->acceptProposedAction();
             return;
@@ -60,7 +60,7 @@ void WLibrarySidebar::dragEnterEvent(QDragEnterEvent * event) {
 }
 
 // Drag move event, happens when a dragged item hovers over the track sources view...
-void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event) {
+void WLibrarySidebar::dragMoveEvent(QDragMoveEvent* event) {
     //qDebug() << "dragMoveEvent" << event->mimeData()->formats();
     // Start a timer to auto-expand sections the user hovers on.
     QPoint pos = event->pos();
@@ -110,7 +110,7 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event) {
     }
 }
 
-void WLibrarySidebar::timerEvent(QTimerEvent *event) {
+void WLibrarySidebar::timerEvent(QTimerEvent* event) {
     if (event->timerId() == m_expandTimer.timerId()) {
         QPoint pos = viewport()->mapFromGlobal(QCursor::pos());
         if (viewport()->rect().contains(pos)) {
@@ -126,7 +126,7 @@ void WLibrarySidebar::timerEvent(QTimerEvent *event) {
 }
 
 // Drag-and-drop "drop" event. Occurs when something is dropped onto the track sources view
-void WLibrarySidebar::dropEvent(QDropEvent * event) {
+void WLibrarySidebar::dropEvent(QDropEvent* event) {
     if (event->mimeData()->hasUrls()) {
         // Drag and drop within this widget
         if ((event->source() == this)

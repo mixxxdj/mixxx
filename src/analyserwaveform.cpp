@@ -13,12 +13,12 @@
 #include "waveform/waveformfactory.h"
 
 AnalyserWaveform::AnalyserWaveform(ConfigObject<ConfigValue>* pConfig) :
-        m_skipProcessing(false),
-        m_waveformData(NULL),
-        m_waveformSummaryData(NULL),
-        m_stride(0, 0),
-        m_currentStride(0),
-        m_currentSummaryStride(0) {
+    m_skipProcessing(false),
+    m_waveformData(NULL),
+    m_waveformSummaryData(NULL),
+    m_stride(0, 0),
+    m_currentStride(0),
+    m_currentSummaryStride(0) {
     qDebug() << "AnalyserWaveform::AnalyserWaveform()";
 
     m_filter[0] = 0;
@@ -76,10 +76,10 @@ bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
         const int summaryWaveformSamples = 2*1920;
 
         m_waveform = WaveformPointer(new Waveform(
-                sampleRate, totalSamples, mainWaveformSampleRate, -1));
+                                         sampleRate, totalSamples, mainWaveformSampleRate, -1));
         m_waveformSummary = WaveformPointer(new Waveform(
-                sampleRate, totalSamples, mainWaveformSampleRate,
-                summaryWaveformSamples));
+                                                sampleRate, totalSamples, mainWaveformSampleRate,
+                                                summaryWaveformSamples));
 
         // Now, that the Waveform memory is initialized, we can set set them to
         // the TIO. Be aware that other threads of Mixxx can touch them from
@@ -100,10 +100,10 @@ bool AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
         //m_waveform->dump();
         //m_waveformSummary->dump();
 
-    #ifdef TEST_HEAT_MAP
+#ifdef TEST_HEAT_MAP
         test_heatMap = new QImage(256,256,QImage::Format_RGB32);
         test_heatMap->fill(0xFFFFFFFF);
-    #endif
+#endif
     }
     return !m_skipProcessing;
 }
@@ -120,7 +120,7 @@ bool AnalyserWaveform::loadStored(TrackPointer tio) const {
 
     if (trackId != -1 && (missingWaveform || missingWavesummary)) {
         QList<AnalysisDao::AnalysisInfo> analyses =
-                m_analysisDao->getAnalysesForTrack(trackId);
+            m_analysisDao->getAnalysesForTrack(trackId);
 
         QListIterator<AnalysisDao::AnalysisInfo> it(analyses);
         while (it.hasNext()) {
@@ -131,17 +131,18 @@ bool AnalyserWaveform::loadStored(TrackPointer tio) const {
                 vc = WaveformFactory::waveformVersionToVersionClass(analysis.version);
                 if (missingWaveform && vc == WaveformFactory::VC_USE) {
                     pLoadedTrackWaveform = ConstWaveformPointer(
-                            WaveformFactory::loadWaveformFromAnalysis(analysis));
+                                               WaveformFactory::loadWaveformFromAnalysis(analysis));
                     missingWaveform = false;
                 } else if (vc != WaveformFactory::VC_KEEP) {
                     // remove all other Analysis except that one we should keep
                     m_analysisDao->deleteAnalysis(analysis.analysisId);
                 }
-            } if (analysis.type == AnalysisDao::TYPE_WAVESUMMARY) {
+            }
+            if (analysis.type == AnalysisDao::TYPE_WAVESUMMARY) {
                 vc = WaveformFactory::waveformSummaryVersionToVersionClass(analysis.version);
                 if (missingWavesummary && vc == WaveformFactory::VC_USE) {
                     pLoadedTrackWaveformSummary = ConstWaveformPointer(
-                            WaveformFactory::loadWaveformFromAnalysis(analysis));
+                                                      WaveformFactory::loadWaveformFromAnalysis(analysis));
                     missingWavesummary = false;
                 } else if (vc != WaveformFactory::VC_KEEP) {
                     // remove all other Analysis except that one we should keep
@@ -252,14 +253,14 @@ void AnalyserWaveform::process(const CSAMPLE* buffer, const int bufferLength) {
             m_waveformSummary->setCompletion(m_currentSummaryStride);
 
 #ifdef TEST_HEAT_MAP
-                QPointF point(m_stride.m_filteredData[Right][High],
-                              m_stride.m_filteredData[Right][Mid]);
+            QPointF point(m_stride.m_filteredData[Right][High],
+                          m_stride.m_filteredData[Right][Mid]);
 
-                float norm = sqrt(point.x()*point.x() + point.y()*point.y());
-                point /= norm;
+            float norm = sqrt(point.x()*point.x() + point.y()*point.y());
+            point /= norm;
 
-                point *= m_stride.m_filteredData[Right][Low];
-                test_heatMap->setPixel(point.toPoint(),0xFF0000FF);
+            point *= m_stride.m_filteredData[Right][Low];
+            test_heatMap->setPixel(point.toPoint(),0xFF0000FF);
 #endif
         }
     }

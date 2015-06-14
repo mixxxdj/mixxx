@@ -30,7 +30,7 @@ class ControllerEngineConnection {
     ConfigKey key;
     QString id;
     QScriptValue function;
-    ControllerEngine *ce;
+    ControllerEngine* ce;
     QScriptValue context;
 };
 
@@ -46,15 +46,17 @@ class ControllerEngineConnectionScriptValue : public QObject {
     ControllerEngineConnectionScriptValue(ControllerEngineConnection conn) {
         this->conn = conn;
     }
-    QString readId() const { return this->conn.id; }
+    QString readId() const {
+        return this->conn.id;
+    }
     Q_INVOKABLE void disconnect();
 
   private:
-   ControllerEngineConnection conn;
+    ControllerEngineConnection conn;
 };
 
 /* comparison function for ControllerEngineConnection */
-inline bool operator==(const ControllerEngineConnection &c1, const ControllerEngineConnection &c2) {
+inline bool operator==(const ControllerEngineConnection& c1, const ControllerEngineConnection& c2) {
     return c1.id == c2.id && c1.key.group == c2.key.group && c1.key.item == c2.key.item;
 }
 
@@ -81,7 +83,9 @@ class ControllerEngine : public QObject {
     /** Resolve a function name to a QScriptValue. */
     QScriptValue resolveFunction(QString function, bool useCache) const;
     /** Look up registered script function prefixes */
-    QList<QString>& getScriptFunctionPrefixes() { return m_scriptFunctionPrefixes; };
+    QList<QString>& getScriptFunctionPrefixes() {
+        return m_scriptFunctionPrefixes;
+    };
     /** Disconnect a ControllerEngineConnection */
     void disconnectControl(const ControllerEngineConnection conn);
 
@@ -95,7 +99,7 @@ class ControllerEngine : public QObject {
     Q_INVOKABLE double getDefaultValue(QString group, QString name);
     Q_INVOKABLE double getDefaultParameter(QString group, QString name);
     Q_INVOKABLE QScriptValue connectControl(QString group, QString name,
-                                    QScriptValue function, bool disconnect = false);
+                                            QScriptValue function, bool disconnect = false);
     // Called indirectly by the objects returned by connectControl
     Q_INVOKABLE void trigger(QString group, QString name);
     Q_INVOKABLE void log(QString message);
@@ -111,7 +115,7 @@ class ControllerEngine : public QObject {
     Q_INVOKABLE void spinback(int deck, bool activate, double factor=1.8, double rate=-10.0);
 
     // Handler for timers that scripts set.
-    virtual void timerEvent(QTimerEvent *event);
+    virtual void timerEvent(QTimerEvent* event);
 
   public slots:
     void slotValueChanged(double value);
@@ -158,7 +162,7 @@ class ControllerEngine : public QObject {
 
     void callFunctionOnObjects(QList<QString>, QString, QScriptValueList args = QScriptValueList());
     bool checkException();
-    QScriptEngine *m_pEngine;
+    QScriptEngine* m_pEngine;
 
     ControlObjectThread* getControlObjectThread(QString group, QString name);
 

@@ -11,9 +11,9 @@ const unsigned int kDefaultMaxParameters = 16;
 EffectSlot::EffectSlot(const QString& group,
                        const unsigned int iChainNumber,
                        const unsigned int iEffectnumber)
-        : m_iChainNumber(iChainNumber),
-          m_iEffectNumber(iEffectnumber),
-          m_group(group) {
+    : m_iChainNumber(iChainNumber),
+      m_iEffectNumber(iEffectnumber),
+      m_group(group) {
     m_pControlLoaded = new ControlObject(ConfigKey(m_group, "loaded"));
     m_pControlLoaded->connectValueChangeRequest(
         this, SLOT(slotLoaded(double)));
@@ -88,16 +88,16 @@ EffectParameterSlotPointer EffectSlot::addEffectParameterSlot() {
             new EffectParameterSlot(m_group, m_parameters.size()));
     m_parameters.append(pParameter);
     m_pControlNumParameterSlots->setAndConfirm(
-            m_pControlNumParameterSlots->get() + 1);
+        m_pControlNumParameterSlots->get() + 1);
     return pParameter;
 }
 
 EffectButtonParameterSlotPointer EffectSlot::addEffectButtonParameterSlot() {
     EffectButtonParameterSlotPointer pParameter = EffectButtonParameterSlotPointer(
-            new EffectButtonParameterSlot(m_group, m_buttonParameters.size()));
+                new EffectButtonParameterSlot(m_group, m_buttonParameters.size()));
     m_buttonParameters.append(pParameter);
     m_pControlNumButtonParameterSlots->setAndConfirm(
-            m_pControlNumButtonParameterSlots->get() + 1);
+        m_pControlNumButtonParameterSlots->get() + 1);
     return pParameter;
 }
 

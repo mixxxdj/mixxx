@@ -20,7 +20,7 @@ class AnalyserBeats: public Analyser {
     virtual ~AnalyserBeats();
     bool initialise(TrackPointer tio, int sampleRate, int totalSamples);
     bool loadStored(TrackPointer tio) const;
-    void process(const CSAMPLE *pIn, const int iLen);
+    void process(const CSAMPLE* pIn, const int iLen);
     void cleanup(TrackPointer tio);
     void finalise(TrackPointer tio);
 

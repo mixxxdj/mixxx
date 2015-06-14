@@ -14,10 +14,10 @@
 
 MidiOutputHandler::MidiOutputHandler(MidiController* controller,
                                      const MidiOutputMapping& mapping)
-        : m_pController(controller),
-          m_mapping(mapping),
-          m_cot(mapping.control),
-          m_lastVal(0) {
+    : m_pController(controller),
+      m_mapping(mapping),
+      m_cot(mapping.control),
+      m_lastVal(0) {
     connect(&m_cot, SIGNAL(valueChanged(double)),
             this, SLOT(controlChanged(double)));
 }
@@ -26,7 +26,7 @@ MidiOutputHandler::~MidiOutputHandler() {
     ConfigKey cKey = m_cot.getKey();
     if (m_pController->debugging()) {
         qDebug() << QString("Destroying static MIDI output handler on %1 for %2,%3")
-                .arg(m_pController->getName(), cKey.group, cKey.item);
+                 .arg(m_pController->getName(), cKey.group, cKey.item);
     }
 }
 

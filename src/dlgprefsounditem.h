@@ -31,29 +31,33 @@ class SoundManagerConfig;
 class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     Q_OBJECT
   public:
-    DlgPrefSoundItem(QWidget *parent, AudioPathType type,
-            QList<SoundDevice*> &devices, bool isInput, unsigned int index = 0);
+    DlgPrefSoundItem(QWidget* parent, AudioPathType type,
+                     QList<SoundDevice*>& devices, bool isInput, unsigned int index = 0);
     virtual ~DlgPrefSoundItem();
 
-    AudioPathType type() const { return m_type; };
-    unsigned int index() const { return m_index; };
+    AudioPathType type() const {
+        return m_type;
+    };
+    unsigned int index() const {
+        return m_index;
+    };
 
   signals:
     void settingChanged();
 
   public slots:
-    void refreshDevices(const QList<SoundDevice*> &devices);
+    void refreshDevices(const QList<SoundDevice*>& devices);
     void deviceChanged(int index);
-    void loadPath(const SoundManagerConfig &config);
-    void writePath(SoundManagerConfig *config) const;
+    void loadPath(const SoundManagerConfig& config);
+    void writePath(SoundManagerConfig* config) const;
     void save();
     void reload();
 
   private:
     SoundDevice* getDevice() const; // if this returns NULL, we don't have a valid AudioPath
-    void setDevice(const QString &deviceName);
+    void setDevice(const QString& deviceName);
     void setChannel(unsigned int channelBase, unsigned int channels);
-    int hasSufficientChannels(const SoundDevice *device) const;
+    int hasSufficientChannels(const SoundDevice* device) const;
 
     AudioPathType m_type;
     unsigned int m_index;

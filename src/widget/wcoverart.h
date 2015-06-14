@@ -44,9 +44,9 @@ class WCoverArt : public QWidget, public WBaseWidget {
     void mousePressEvent(QMouseEvent*);
     void leaveEvent(QEvent*);
 
-    void dragEnterEvent(QDragEnterEvent *event);
-    void dropEvent(QDropEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
+    void dragEnterEvent(QDragEnterEvent* event);
+    void dropEvent(QDropEvent* event);
+    void mouseMoveEvent(QMouseEvent* event);
 
   private:
     QPixmap scaledCoverArt(const QPixmap& normal);

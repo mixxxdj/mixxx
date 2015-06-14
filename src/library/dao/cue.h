@@ -11,7 +11,7 @@ class CueDAO;
 class TrackInfoObject;
 
 class Cue : public QObject {
-  Q_OBJECT
+    Q_OBJECT
   public:
     enum CueType {
         INVALID = 0,

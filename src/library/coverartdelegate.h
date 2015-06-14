@@ -15,9 +15,9 @@ class CoverArtDelegate : public QStyledItemDelegate {
     explicit CoverArtDelegate(QObject* parent = NULL);
     virtual ~CoverArtDelegate();
 
-    void paint(QPainter *painter,
-               const QStyleOptionViewItem &option,
-               const QModelIndex &index) const;
+    void paint(QPainter* painter,
+               const QStyleOptionViewItem& option,
+               const QModelIndex& index) const;
 
   signals:
     void coverReadyForCell(int row, int column);

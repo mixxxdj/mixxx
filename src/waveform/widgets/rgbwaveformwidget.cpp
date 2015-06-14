@@ -12,8 +12,8 @@
 #include "waveform/renderers/waveformrenderbeat.h"
 
 RGBWaveformWidget::RGBWaveformWidget(const char* group, QWidget* parent)
-        : QWidget(parent),
-          WaveformWidgetAbstract(group) {
+    : QWidget(parent),
+      WaveformWidgetAbstract(group) {
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();

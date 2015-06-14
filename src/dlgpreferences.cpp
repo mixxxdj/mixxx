@@ -56,14 +56,14 @@
 #include "skin/skinloader.h"
 #include "library/library.h"
 
-DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
-                               SoundManager * soundman, PlayerManager* pPlayerManager,
-                               ControllerManager * controllers, VinylControlManager *pVCManager,
+DlgPreferences::DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader,
+                               SoundManager* soundman, PlayerManager* pPlayerManager,
+                               ControllerManager* controllers, VinylControlManager* pVCManager,
                                EffectsManager* pEffectsManager,
-                               ConfigObject<ConfigValue>* pConfig, Library *pLibrary)
-        : m_pConfig(pConfig),
-          m_pageSizeHint(QSize(0, 0)),
-          m_preferencesUpdated(ConfigKey("[Preferences]", "updated"), false) {
+                               ConfigObject<ConfigValue>* pConfig, Library* pLibrary)
+    : m_pConfig(pConfig),
+      m_pageSizeHint(QSize(0, 0)),
+      m_preferencesUpdated(ConfigKey("[Preferences]", "updated"), false) {
     setupUi(this);
 #if QT_VERSION >= 0x040400 //setHeaderHidden is a qt4.4 addition so having it in the .ui file breaks the build on OpenBSD4.4 (FIXME: revisit this when OpenBSD4.5 comes out?)
     contentsTreeWidget->setHeaderHidden(true);
@@ -274,7 +274,7 @@ void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previ
 
     if (current == m_pSoundButton) {
         m_wsound->slotUpdate();
-      switchToPage(m_wsound);
+        switchToPage(m_wsound);
     } else if (current == m_pLibraryButton) {
         switchToPage(m_wlibrary);
     } else if (current == m_pControlsButton) {
@@ -355,15 +355,15 @@ void DlgPreferences::onShow() {
         // load default values (optimum size)
         QRect defaultGeometry = getDefaultGeometry();
         QString defaultGeometryStr = QString("%1,%2,%3,%4")
-                                          .arg(defaultGeometry.left())
-                                            .arg(defaultGeometry.top())
-                                            .arg(defaultGeometry.width())
-                                            .arg(defaultGeometry.height());
+                                     .arg(defaultGeometry.left())
+                                     .arg(defaultGeometry.top())
+                                     .arg(defaultGeometry.width())
+                                     .arg(defaultGeometry.height());
 
         // get last geometry OR use default values from
         m_geometry = m_pConfig->getValueString(
-                    ConfigKey("[Preferences]", "geometry"),
-                    defaultGeometryStr).split(",");
+                         ConfigKey("[Preferences]", "geometry"),
+                         defaultGeometryStr).split(",");
     }
 
     // Update geometry with last values
@@ -380,28 +380,28 @@ void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
     QDialogButtonBox::ButtonRole role = buttonBox->buttonRole(pButton);
     DlgPreferencePage* pCurrentPage = currentPage();
     switch (role) {
-        case QDialogButtonBox::ResetRole:
-            // Only reset to defaults on the current page.
-            if (pCurrentPage != NULL) {
-                pCurrentPage->slotResetToDefaults();
-            }
-            break;
-        case QDialogButtonBox::ApplyRole:
-            // Only apply settings on the current page.
-            if (pCurrentPage != NULL) {
-                pCurrentPage->slotApply();
-            }
-            break;
-        case QDialogButtonBox::AcceptRole:
-            emit(applyPreferences());
-            accept();
-            break;
-        case QDialogButtonBox::RejectRole:
-            emit(cancelPreferences());
-            reject();
-            break;
-        default:
-            break;
+    case QDialogButtonBox::ResetRole:
+        // Only reset to defaults on the current page.
+        if (pCurrentPage != NULL) {
+            pCurrentPage->slotResetToDefaults();
+        }
+        break;
+    case QDialogButtonBox::ApplyRole:
+        // Only apply settings on the current page.
+        if (pCurrentPage != NULL) {
+            pCurrentPage->slotApply();
+        }
+        break;
+    case QDialogButtonBox::AcceptRole:
+        emit(applyPreferences());
+        accept();
+        break;
+    case QDialogButtonBox::RejectRole:
+        emit(cancelPreferences());
+        reject();
+        break;
+    default:
+        break;
     }
 }
 
@@ -428,7 +428,7 @@ void DlgPreferences::addPageWidget(DlgPreferencePage* pWidget) {
 
     int iframe = 2 * sa->frameWidth();
     m_pageSizeHint = m_pageSizeHint.expandedTo(
-            pWidget->sizeHint()+QSize(iframe, iframe));
+                         pWidget->sizeHint()+QSize(iframe, iframe));
 
 }
 

@@ -15,21 +15,21 @@ class ReplayGain;
 
 class AnalyserGain : public Analyser {
   public:
-    AnalyserGain(ConfigObject<ConfigValue> *_config);
+    AnalyserGain(ConfigObject<ConfigValue>* _config);
     virtual ~AnalyserGain();
 
     bool initialise(TrackPointer tio, int sampleRate, int totalSamples);
     bool loadStored(TrackPointer tio) const;
-    void process(const CSAMPLE *pIn, const int iLen);
+    void process(const CSAMPLE* pIn, const int iLen);
     void cleanup(TrackPointer tio);
     void finalise(TrackPointer tio);
 
   private:
     bool m_bStepControl;
-    ConfigObject<ConfigValue> *m_pConfigReplayGain;
+    ConfigObject<ConfigValue>* m_pConfigReplayGain;
     CSAMPLE* m_pLeftTempBuffer;
     CSAMPLE* m_pRightTempBuffer;
-    ReplayGain *m_pReplayGain;
+    ReplayGain* m_pReplayGain;
     int m_iBufferSize;
 };
 

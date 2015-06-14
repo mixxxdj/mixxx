@@ -4,15 +4,15 @@ MFile::MFile() {
 }
 
 MFile::MFile(const QString& file)
-        : m_fileName(file),
-          m_file(file),
-          m_pSecurityToken(Sandbox::openSecurityToken(m_file, true)) {
+    : m_fileName(file),
+      m_file(file),
+      m_pSecurityToken(Sandbox::openSecurityToken(m_file, true)) {
 }
 
 MFile::MFile(const MFile& other)
-        : m_fileName(other.m_fileName),
-          m_file(m_fileName),
-          m_pSecurityToken(other.m_pSecurityToken) {
+    : m_fileName(other.m_fileName),
+      m_file(m_fileName),
+      m_pSecurityToken(other.m_pSecurityToken) {
 }
 
 MFile::~MFile() {
@@ -34,15 +34,15 @@ MDir::MDir() {
 }
 
 MDir::MDir(const QString& path)
-        : m_dirPath(path),
-          m_dir(path),
-          m_pSecurityToken(Sandbox::openSecurityToken(m_dir, true)) {
+    : m_dirPath(path),
+      m_dir(path),
+      m_pSecurityToken(Sandbox::openSecurityToken(m_dir, true)) {
 }
 
 MDir::MDir(const MDir& other)
-        : m_dirPath(other.m_dirPath),
-          m_dir(m_dirPath),
-          m_pSecurityToken(other.m_pSecurityToken) {
+    : m_dirPath(other.m_dirPath),
+      m_dir(m_dirPath),
+      m_pSecurityToken(other.m_pSecurityToken) {
 }
 
 MDir::~MDir() {

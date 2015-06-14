@@ -7,32 +7,32 @@
 
 EffectParameter::EffectParameter(Effect* pEffect, EffectsManager* pEffectsManager,
                                  int iParameterNumber, const EffectManifestParameter& parameter)
-        : QObject(), // no parent
-          m_pEffect(pEffect),
-          m_pEffectsManager(pEffectsManager),
-          m_iParameterNumber(iParameterNumber),
-          m_parameter(parameter),
-          m_bAddedToEngine(false) {
+    : QObject(), // no parent
+      m_pEffect(pEffect),
+      m_pEffectsManager(pEffectsManager),
+      m_iParameterNumber(iParameterNumber),
+      m_parameter(parameter),
+      m_bAddedToEngine(false) {
     // qDebug() << debugString() << "Constructing new EffectParameter from EffectManifestParameter:"
     //          << m_parameter.id();
-     m_minimum = m_parameter.getMinimum();
-     m_maximum = m_parameter.getMaximum();
-     // Sanity check the maximum and minimum
-     if (m_minimum > m_maximum) {
-         qWarning() << debugString() << "WARNING: Parameter maximum is less than the minimum.";
-         m_maximum = m_minimum;
-     }
+    m_minimum = m_parameter.getMinimum();
+    m_maximum = m_parameter.getMaximum();
+    // Sanity check the maximum and minimum
+    if (m_minimum > m_maximum) {
+        qWarning() << debugString() << "WARNING: Parameter maximum is less than the minimum.";
+        m_maximum = m_minimum;
+    }
 
-     // If the parameter specifies a default, set that. Otherwise use the minimum
-     // value.
-     m_default = m_parameter.getDefault();
-     if (m_default < m_minimum || m_default > m_maximum) {
-         qWarning() << debugString() << "WARNING: Parameter default is outside of minimum/maximum range.";
-         m_default = m_minimum;
-     }
+    // If the parameter specifies a default, set that. Otherwise use the minimum
+    // value.
+    m_default = m_parameter.getDefault();
+    if (m_default < m_minimum || m_default > m_maximum) {
+        qWarning() << debugString() << "WARNING: Parameter default is outside of minimum/maximum range.";
+        m_default = m_minimum;
+    }
 
-     // Finally, set the value to the default.
-     m_value = m_default;
+    // Finally, set the value to the default.
+    m_value = m_default;
 }
 
 EffectParameter::~EffectParameter() {

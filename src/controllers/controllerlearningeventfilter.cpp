@@ -9,8 +9,8 @@
 #include "controllers/controllerlearningeventfilter.h"
 
 ControllerLearningEventFilter::ControllerLearningEventFilter(QObject* pParent)
-        : QObject(pParent),
-          m_bListening(false) {
+    : QObject(pParent),
+      m_bListening(false) {
 }
 
 ControllerLearningEventFilter::~ControllerLearningEventFilter() {
@@ -87,9 +87,9 @@ bool ControllerLearningEventFilter::eventFilter(QObject* pObject, QEvent* pEvent
 }
 
 void ControllerLearningEventFilter::addWidgetClickInfo(
-        QWidget* pWidget, Qt::MouseButton buttonState,
-        ControlObject* pControl,
-        ControlParameterWidgetConnection::EmitOption emitOption) {
+    QWidget* pWidget, Qt::MouseButton buttonState,
+    ControlObject* pControl,
+    ControlParameterWidgetConnection::EmitOption emitOption) {
     ControlInfo& info = m_widgetControlInfo[pWidget];
 
     if (buttonState == Qt::LeftButton) {

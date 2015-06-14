@@ -18,14 +18,14 @@ const int CachingReader::maximumChunksInMemory = 80;
 
 CachingReader::CachingReader(QString group,
                              ConfigObject<ConfigValue>* config)
-        : m_pConfig(config),
-          m_chunkReadRequestFIFO(1024),
-          m_readerStatusFIFO(1024),
-          m_readerStatus(INVALID),
-          m_mruChunk(NULL),
-          m_lruChunk(NULL),
-          m_sampleBuffer(CachingReaderWorker::kSamplesPerChunk * maximumChunksInMemory),
-          m_iTrackNumFramesCallbackSafe(0) {
+    : m_pConfig(config),
+      m_chunkReadRequestFIFO(1024),
+      m_readerStatusFIFO(1024),
+      m_readerStatus(INVALID),
+      m_mruChunk(NULL),
+      m_lruChunk(NULL),
+      m_sampleBuffer(CachingReaderWorker::kSamplesPerChunk* maximumChunksInMemory),
+      m_iTrackNumFramesCallbackSafe(0) {
 
     m_allocatedChunks.reserve(m_sampleBuffer.size());
 
@@ -50,8 +50,8 @@ CachingReader::CachingReader(QString group,
     }
 
     m_pWorker = new CachingReaderWorker(group,
-            &m_chunkReadRequestFIFO,
-            &m_readerStatusFIFO);
+                                        &m_chunkReadRequestFIFO,
+                                        &m_readerStatusFIFO);
 
     // Forward signals from worker
     connect(m_pWorker, SIGNAL(trackLoading()),
@@ -155,7 +155,7 @@ void CachingReader::freeAllChunks() {
     m_mruChunk = NULL;
 
     for (QVector<Chunk*>::const_iterator it = m_chunks.constBegin();
-         it != m_chunks.constEnd(); ++it) {
+            it != m_chunks.constEnd(); ++it) {
         Chunk* pChunk = *it;
 
         // We will receive CHUNK_READ_INVALID for all pending chunk reads which
@@ -260,7 +260,7 @@ void CachingReader::process() {
             m_readerStatus = status.status;
             m_iTrackNumFramesCallbackSafe = status.trackFrameCount;
         } else if ((status.status == CHUNK_READ_SUCCESS) ||
-                (status.status == CHUNK_READ_PARTIAL)) {
+                   (status.status == CHUNK_READ_PARTIAL)) {
             Chunk* pChunk = status.chunk;
 
             // This should not be possible unless there is a bug in
@@ -471,7 +471,7 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
     bool shouldWake = false;
 
     for (HintVector::const_iterator it = hintList.constBegin();
-         it != hintList.constEnd(); ++it) {
+            it != hintList.constEnd(); ++it) {
         // Copy, don't use reference.
         Hint hint = *it;
 
@@ -494,10 +494,10 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
         DEBUG_ASSERT(0 == (hint.length % CachingReaderWorker::kChunkChannels));
         const int frame_count = hint.length / CachingReaderWorker::kChunkChannels;
         const int start_frame = math_clamp(frame, 0,
-                                      m_iTrackNumFramesCallbackSafe);
+                                           m_iTrackNumFramesCallbackSafe);
         const int start_chunk = chunkForFrame(start_frame);
         int end_frame = math_clamp(frame + (frame_count - 1), 0,
-                m_iTrackNumFramesCallbackSafe);
+                                   m_iTrackNumFramesCallbackSafe);
         const int end_chunk = chunkForFrame(end_frame);
 
         for (int current = start_chunk; current <= end_chunk; ++current) {

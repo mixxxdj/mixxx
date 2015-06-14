@@ -10,21 +10,21 @@
 #include "cachingreader.h"
 
 ReadAheadManager::ReadAheadManager()
-        : m_pLoopingControl(NULL),
-          m_pRateControl(NULL),
-          m_iCurrentPosition(0),
-          m_pReader(NULL),
-          m_pCrossFadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) {
+    : m_pLoopingControl(NULL),
+      m_pRateControl(NULL),
+      m_iCurrentPosition(0),
+      m_pReader(NULL),
+      m_pCrossFadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) {
     // For testing only: ReadAheadManagerMock
 }
 
-ReadAheadManager::ReadAheadManager(CachingReader* pReader, 
-                                   LoopingControl* pLoopingControl) 
-        : m_pLoopingControl(pLoopingControl),
-          m_pRateControl(NULL),
-          m_iCurrentPosition(0),
-          m_pReader(pReader),
-          m_pCrossFadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) {
+ReadAheadManager::ReadAheadManager(CachingReader* pReader,
+                                   LoopingControl* pLoopingControl)
+    : m_pLoopingControl(pLoopingControl),
+      m_pRateControl(NULL),
+      m_iCurrentPosition(0),
+      m_pReader(pReader),
+      m_pCrossFadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) {
     DEBUG_ASSERT(m_pLoopingControl != NULL);
     DEBUG_ASSERT(m_pReader != NULL);
     SampleUtil::clear(m_pCrossFadeBuffer, MAX_BUFFER_LEN);
@@ -49,14 +49,14 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
     // A loop will only limit the amount we can read in one shot.
 
     const double loop_trigger = m_pLoopingControl->nextTrigger(
-            dRate, m_iCurrentPosition, 0, 0);
+                                    dRate, m_iCurrentPosition, 0, 0);
     bool loop_active = loop_trigger != kNoTrigger;
     int preloop_samples = 0;
 
     if (loop_active) {
         int samples_available = in_reverse ?
-                m_iCurrentPosition - loop_trigger :
-                loop_trigger - m_iCurrentPosition;
+                                m_iCurrentPosition - loop_trigger :
+                                loop_trigger - m_iCurrentPosition;
         if (samples_available < 0) {
             samples_needed = 0;
         } else {
@@ -96,16 +96,16 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
         // LoopingControl makes the decision about whether we should loop or
         // not.
         const double loop_target = m_pLoopingControl->
-                process(dRate, m_iCurrentPosition, 0, 0);
+                                   process(dRate, m_iCurrentPosition, 0, 0);
 
         if (loop_target != kNoTrigger) {
             m_iCurrentPosition = loop_target;
 
             int loop_read_position = m_iCurrentPosition +
-                    (in_reverse ? preloop_samples : -preloop_samples);
+                                     (in_reverse ? preloop_samples : -preloop_samples);
 
             int looping_samples_read = m_pReader->read(
-                    loop_read_position, samples_read, m_pCrossFadeBuffer);
+                                           loop_read_position, samples_read, m_pCrossFadeBuffer);
 
             if (looping_samples_read != samples_read) {
                 qDebug() << "ERROR: Couldn't get all needed samples for crossfade.";
@@ -155,13 +155,13 @@ void ReadAheadManager::hintReader(double dRate, HintVector* pHintList) {
 
     current_position.length = length_to_cache;
     current_position.sample = in_reverse ?
-            m_iCurrentPosition - length_to_cache :
-            m_iCurrentPosition;
+                              m_iCurrentPosition - length_to_cache :
+                              m_iCurrentPosition;
 
     // If we are trying to cache before the start of the track,
     // Then we don't need to cache because it's all zeros!
     if (current_position.sample < 0 &&
-        current_position.sample + current_position.length < 0)
+            current_position.sample + current_position.length < 0)
         return;
 
     // top priority, we need to read this data immediately
@@ -185,7 +185,7 @@ void ReadAheadManager::addReadLogEntry(double virtualPlaypositionStart,
 
 // Not thread-save, call from engine thread only
 int ReadAheadManager::getEffectiveVirtualPlaypositionFromLog(double currentVirtualPlayposition,
-                                                             double numConsumedSamples) {
+        double numConsumedSamples) {
     if (numConsumedSamples == 0) {
         return currentVirtualPlayposition;
     }

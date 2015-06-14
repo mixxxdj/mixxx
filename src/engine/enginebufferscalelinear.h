@@ -32,7 +32,7 @@ const int kiLinearScaleReadAheadLength = 10240;
 
 class EngineBufferScaleLinear : public EngineBufferScale  {
   public:
-    EngineBufferScaleLinear(ReadAheadManager *pReadAheadManager);
+    EngineBufferScaleLinear(ReadAheadManager* pReadAheadManager);
     virtual ~EngineBufferScaleLinear();
 
     CSAMPLE* getScaled(unsigned long buf_size);
@@ -44,7 +44,7 @@ class EngineBufferScaleLinear : public EngineBufferScale  {
 
   private:
     CSAMPLE* do_scale(CSAMPLE* buf, unsigned long buf_size,
-                      int *samples_read);
+                      int* samples_read);
 
     /** Holds playback direction */
     bool m_bBackwards;

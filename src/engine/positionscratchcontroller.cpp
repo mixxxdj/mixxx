@@ -92,7 +92,7 @@ PositionScratchController::~PositionScratchController() {
 //volatile double _f = 0.5;
 
 void PositionScratchController::process(double currentSample, double releaseRate,
-        int iBufferSize, double baserate) {
+                                        int iBufferSize, double baserate) {
     bool scratchEnable = m_pScratchEnable->get() != 0;
 
     if (!m_bScratching && !scratchEnable) {
@@ -103,7 +103,7 @@ void PositionScratchController::process(double currentSample, double releaseRate
 
     // The latency or time difference between process calls.
     const double dt = static_cast<double>(iBufferSize)
-            / m_pMasterSampleRate->get() / 2;
+                      / m_pMasterSampleRate->get() / 2;
 
     // Sample Mouse with fixed timing intervals to iron out significant jitters
     // that are added on the way from mouse to engine thread
@@ -177,7 +177,7 @@ void PositionScratchController::process(double currentSample, double releaseRate
             // it to the running total. This is required to scratch within loop
             // boundaries. And normalize to one buffer
             m_dPositionDeltaSum += (currentSample - m_dLastPlaypos) /
-                    (iBufferSize * baserate);
+                                   (iBufferSize * baserate);
 
             // Continue with the last rate if we do not have a new
             // Mouse position
@@ -186,7 +186,7 @@ void PositionScratchController::process(double currentSample, double releaseRate
                 // Set the scratch target to the current set position
                 // and normalize to one buffer
                 double targetDelta = (scratchPosition - m_dStartScratchPosition) /
-                        (iBufferSize * baserate);
+                                     (iBufferSize * baserate);
 
                 bool calcRate = true;
 
@@ -249,18 +249,18 @@ void PositionScratchController::process(double currentSample, double releaseRate
             //qDebug() << "disable";
         }
     } else if (scratchEnable) {
-            // We were not previously in scratch mode but now are in scratch
-            // mode. Enable scratching.
-            m_bScratching = true;
-            m_bEnableInertia = false;
-            m_dMoveDelay = 0;
-            // Set up initial values, in a way that the system is settled
-            m_dRate = releaseRate;
-            m_dPositionDeltaSum = -(releaseRate / p) * callsPerDt; // Set to the remaining error of a p controller
-            m_pVelocityController->reset(-m_dPositionDeltaSum);
-            m_pRateIIFilter->reset(-m_dPositionDeltaSum);
-            m_dStartScratchPosition = scratchPosition;
-            //qDebug() << "scratchEnable()" << currentSample;
+        // We were not previously in scratch mode but now are in scratch
+        // mode. Enable scratching.
+        m_bScratching = true;
+        m_bEnableInertia = false;
+        m_dMoveDelay = 0;
+        // Set up initial values, in a way that the system is settled
+        m_dRate = releaseRate;
+        m_dPositionDeltaSum = -(releaseRate / p) * callsPerDt; // Set to the remaining error of a p controller
+        m_pVelocityController->reset(-m_dPositionDeltaSum);
+        m_pRateIIFilter->reset(-m_dPositionDeltaSum);
+        m_dStartScratchPosition = scratchPosition;
+        //qDebug() << "scratchEnable()" << currentSample;
     }
     m_dLastPlaypos = currentSample;
 }

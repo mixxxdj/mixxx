@@ -21,9 +21,15 @@ class WaveformWidgetAbstractHandle {
   public:
     WaveformWidgetAbstractHandle();
 
-    WaveformWidgetType::Type getType() const { return m_type;}
-    QString getDisplayName() const { return m_displayString;}
-    bool isActive() const { return m_active;}
+    WaveformWidgetType::Type getType() const {
+        return m_type;
+    }
+    QString getDisplayName() const {
+        return m_displayString;
+    }
+    bool isActive() const {
+        return m_active;
+    }
 
   private:
     bool m_active;
@@ -63,36 +69,56 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     //creates the waveform widget and bind it to the viewer
     //clean-up every thing if needed
     bool setWaveformWidget(WWaveformViewer* viewer,
-                           const QDomElement &node, const SkinContext& context);
+                           const QDomElement& node, const SkinContext& context);
 
     void setFrameRate(int frameRate);
-    int getFrameRate() const { return m_frameRate;}
+    int getFrameRate() const {
+        return m_frameRate;
+    }
 //    bool getVSync() const { return m_vSyncType;}
     void setEndOfTrackWarningTime(int endTime);
-    int getEndOfTrackWarningTime() const { return m_endOfTrackWarningTime;}
+    int getEndOfTrackWarningTime() const {
+        return m_endOfTrackWarningTime;
+    }
 
-    bool isOpenGLAvailable() const { return m_openGLAvailable;}
-    QString getOpenGLVersion() const { return m_openGLVersion;}
+    bool isOpenGLAvailable() const {
+        return m_openGLAvailable;
+    }
+    QString getOpenGLVersion() const {
+        return m_openGLVersion;
+    }
 
-    bool isOpenGlShaderAvailable() const { return m_openGLShaderAvailable;}
+    bool isOpenGlShaderAvailable() const {
+        return m_openGLShaderAvailable;
+    }
 
     bool setWidgetType(WaveformWidgetType::Type type);
     bool setWidgetTypeFromHandle(int handleIndex);
-    WaveformWidgetType::Type getType() const { return m_type;}
+    WaveformWidgetType::Type getType() const {
+        return m_type;
+    }
 
     void setDefaultZoom(int zoom);
-    int getDefaultZoom() const { return m_defaultZoom;}
+    int getDefaultZoom() const {
+        return m_defaultZoom;
+    }
 
     void setZoomSync(bool sync);
-    int isZoomSync() const { return m_zoomSync;}
+    int isZoomSync() const {
+        return m_zoomSync;
+    }
 
     void setVisualGain(FilterIndex index, double gain);
     double getVisualGain(FilterIndex index) const;
 
     void setOverviewNormalized(bool normalize);
-    int isOverviewNormalized() const { return m_overviewNormalized;}
+    int isOverviewNormalized() const {
+        return m_overviewNormalized;
+    }
 
-    const QVector<WaveformWidgetAbstractHandle> getAvailableTypes() const { return m_waveformWidgetHandles;}
+    const QVector<WaveformWidgetAbstractHandle> getAvailableTypes() const {
+        return m_waveformWidgetHandles;
+    }
     void getAvailableVSyncTypes(QList<QPair<int, QString > >* list);
     void destroyWidgets();
 
@@ -102,7 +128,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void setVSyncType(int vsType);
     int getVSyncType();
 
-    void notifyZoomChange(WWaveformViewer *viewer);
+    void notifyZoomChange(WWaveformViewer* viewer);
 
     WaveformWidgetType::Type autoChooseWidgetType() const;
 

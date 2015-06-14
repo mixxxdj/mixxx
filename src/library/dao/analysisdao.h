@@ -20,9 +20,9 @@ class AnalysisDao : public DAO {
 
     struct AnalysisInfo {
         AnalysisInfo()
-                : analysisId(-1),
-                  trackId(-1),
-                  type(TYPE_UNKNOWN) {
+            : analysisId(-1),
+              trackId(-1),
+              type(TYPE_UNKNOWN) {
         }
         int analysisId;
         int trackId;

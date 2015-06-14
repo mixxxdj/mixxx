@@ -35,13 +35,13 @@
  * QWidget's auto-fill background feature to obtain an opaque background.
  * (Without the call, the view's background would shine through the editor.)
  */
-StarEditor::StarEditor(QWidget *parent, QTableView* pTableView,
+StarEditor::StarEditor(QWidget* parent, QTableView* pTableView,
                        const QModelIndex& index,
                        const QStyleOptionViewItemV4& option)
-        : QWidget(parent),
-          m_pTableView(pTableView),
-          m_index(index),
-          m_styleOption(option) {
+    : QWidget(parent),
+      m_pTableView(pTableView),
+      m_index(index),
+      m_styleOption(option) {
     setMouseTracking(true);
 }
 
@@ -69,7 +69,7 @@ void StarEditor::renderHelper(QPainter* painter,
     // not. We also have to check if it is inactive or not and use the
     // appropriate ColorGroup.
     QPalette::ColorGroup cg = option.state & QStyle::State_Enabled
-            ? QPalette::Normal : QPalette::Disabled;
+                              ? QPalette::Normal : QPalette::Disabled;
     if (cg == QPalette::Normal && !(option.state & QStyle::State_Active))
         cg = QPalette::Inactive;
 
@@ -99,7 +99,7 @@ void StarEditor::paintEvent(QPaintEvent*) {
     renderHelper(&painter, m_pTableView, m_styleOption, &m_starRating);
 }
 
-void StarEditor::mouseMoveEvent(QMouseEvent *event) {
+void StarEditor::mouseMoveEvent(QMouseEvent* event) {
     int star = starAtPosition(event->x());
 
     if (star != m_starRating.starCount() && star != -1) {

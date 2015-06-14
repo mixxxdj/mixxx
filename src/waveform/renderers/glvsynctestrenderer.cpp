@@ -8,7 +8,7 @@
 #include "util/performancetimer.h"
 
 GLVSyncTestRenderer::GLVSyncTestRenderer(
-        WaveformWidgetRenderer* waveformWidgetRenderer)
+    WaveformWidgetRenderer* waveformWidgetRenderer)
     : WaveformRendererSignalBase(waveformWidgetRenderer),
       m_drawcount(0) {
 }
@@ -16,7 +16,7 @@ GLVSyncTestRenderer::GLVSyncTestRenderer(
 GLVSyncTestRenderer::~GLVSyncTestRenderer() {
 }
 
-void GLVSyncTestRenderer::onSetup(const QDomNode &node) {
+void GLVSyncTestRenderer::onSetup(const QDomNode& node) {
     Q_UNUSED(node);
 }
 

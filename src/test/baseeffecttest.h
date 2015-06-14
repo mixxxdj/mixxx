@@ -48,14 +48,14 @@ class MockEffectInstantiator : public EffectInstantiator {
   public:
     MockEffectInstantiator() {}
     MOCK_METHOD2(instantiate, EffectProcessor*(EngineEffect* pEngineEffect,
-                                               const EffectManifest& manifest));
+                 const EffectManifest& manifest));
 };
 
 
 class BaseEffectTest : public MixxxTest {
   protected:
     BaseEffectTest() : m_pTestBackend(NULL),
-                       m_pEffectsManager(new EffectsManager(NULL, config())) {
+        m_pEffectsManager(new EffectsManager(NULL, config())) {
     }
 
     void registerTestBackend() {

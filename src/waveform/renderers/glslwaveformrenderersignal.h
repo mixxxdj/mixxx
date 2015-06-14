@@ -10,7 +10,7 @@
 class GLSLWaveformRendererSignal : public WaveformRendererSignalBase {
   public:
     explicit GLSLWaveformRendererSignal(
-            WaveformWidgetRenderer* waveformWidgetRenderer, bool rgbShader);
+        WaveformWidgetRenderer* waveformWidgetRenderer, bool rgbShader);
     virtual ~GLSLWaveformRendererSignal();
 
     virtual bool onInit();

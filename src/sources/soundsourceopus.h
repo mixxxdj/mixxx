@@ -9,35 +9,35 @@
 namespace Mixxx {
 
 class SoundSourceOpus: public Mixxx::SoundSource {
-public:
+  public:
     static const SINT kFrameRate;
 
     explicit SoundSourceOpus(QUrl url);
     ~SoundSourceOpus();
 
     Result parseTrackMetadataAndCoverArt(
-            TrackMetadata* pTrackMetadata,
-            QImage* pCoverArt) const override;
+        TrackMetadata* pTrackMetadata,
+        QImage* pCoverArt) const override;
 
     void close() override;
 
     SINT seekSampleFrame(SINT frameIndex) override;
 
     SINT readSampleFrames(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer) override;
+                          CSAMPLE* sampleBuffer) override;
     SINT readSampleFramesStereo(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer, SINT sampleBufferSize) override;
+                                CSAMPLE* sampleBuffer, SINT sampleBufferSize) override;
 
-private:
+  private:
     Result tryOpen(const AudioSourceConfig& audioSrcCfg) override;
 
-    OggOpusFile *m_pOggOpusFile;
+    OggOpusFile* m_pOggOpusFile;
 
     SINT m_curFrameIndex;
 };
 
 class SoundSourceProviderOpus: public SoundSourceProvider {
-public:
+  public:
     QString getName() const override;
 
     QStringList getSupportedFileExtensions() const override;

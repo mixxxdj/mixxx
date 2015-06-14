@@ -5,10 +5,10 @@
 #include "widget/wknobcomposed.h"
 
 WKnobComposed::WKnobComposed(QWidget* pParent)
-        : WWidget(pParent),
-          m_dCurrentAngle(140.0),
-          m_dMinAngle(-230.0),
-          m_dMaxAngle(50.0) {
+    : WWidget(pParent),
+      m_dCurrentAngle(140.0),
+      m_dMinAngle(-230.0),
+      m_dMaxAngle(50.0) {
 }
 
 WKnobComposed::~WKnobComposed() {

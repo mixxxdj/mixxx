@@ -24,19 +24,19 @@
 
 #define kConfigKey "[Mixer Profile]"
 
-DlgPrefCrossfader::DlgPrefCrossfader(QWidget * parent, ConfigObject<ConfigValue> * _config)
-        : DlgPreferencePage(parent),
-          config(_config),
-          m_pxfScene(NULL),
-          m_xFaderMode(MIXXX_XFADER_ADDITIVE),
-          m_transform(0.0),
-          m_cal(0.0),
-          m_COTMode(kConfigKey, "xFaderMode"),
-          m_COTCurve(kConfigKey, "xFaderCurve"),
-          m_COTCalibration(kConfigKey, "xFaderCalibration"),
-          m_COTReverse(kConfigKey, "xFaderReverse"),
-          m_COTCrossfader("[Master]", "crossfader"),
-          m_xFaderReverse(false) {
+DlgPrefCrossfader::DlgPrefCrossfader(QWidget* parent, ConfigObject<ConfigValue>* _config)
+    : DlgPreferencePage(parent),
+      config(_config),
+      m_pxfScene(NULL),
+      m_xFaderMode(MIXXX_XFADER_ADDITIVE),
+      m_transform(0.0),
+      m_cal(0.0),
+      m_COTMode(kConfigKey, "xFaderMode"),
+      m_COTCurve(kConfigKey, "xFaderCurve"),
+      m_COTCalibration(kConfigKey, "xFaderCalibration"),
+      m_COTReverse(kConfigKey, "xFaderReverse"),
+      m_COTCrossfader("[Master]", "crossfader"),
+      m_xFaderReverse(false) {
     setupUi(this);
 
     QButtonGroup crossfaderModes;
@@ -125,8 +125,7 @@ void DlgPrefCrossfader::slotUpdate() {
 }
 
 /** Draw the crossfader curve graph. Only needs to get drawn when a change has been made.*/
-void DlgPrefCrossfader::drawXfaderDisplay()
-{
+void DlgPrefCrossfader::drawXfaderDisplay() {
 #define GRID_X_LINES 4
 #define GRID_Y_LINES 6
 
@@ -180,15 +179,15 @@ void DlgPrefCrossfader::drawXfaderDisplay()
         pointTotal = QPoint(i - 2, (int)((1. - sum) * (sizeY)));
         point1 = QPoint(i - 2, (int)((1. - gain1) * (sizeY)));
         point2 = QPoint(i - 2, (int)((1. - gain2) * (sizeY)));
-        if(i == 0) {
+        if (i == 0) {
             pointTotalPrev = pointTotal;
             point1Prev = point1;
             point2Prev = point2;
         }
 
-        if(pointTotal != point1)
+        if (pointTotal != point1)
             m_pxfScene->addLine(QLineF(point1, point1Prev), graphLinePen);
-        if(pointTotal != point2)
+        if (pointTotal != point2)
             m_pxfScene->addLine(QLineF(point2, point2Prev), graphLinePen);
         m_pxfScene->addLine(QLineF(pointTotal, pointTotalPrev), QPen(Qt::red));
     }

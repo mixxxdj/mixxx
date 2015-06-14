@@ -4,13 +4,11 @@
 
 #include "widget/wsizeawarestack.h"
 
-class SizeAwareLayout : public QStackedLayout
-{
+class SizeAwareLayout : public QStackedLayout {
   public:
-    QSize minimumSize() const
-    {
+    QSize minimumSize() const {
         QSize s(0, 0) ;
-        QWidget *w = widget(0);
+        QWidget* w = widget(0);
         if (w) {
             // Minimum Widget is at index 0;
             s = w->minimumSize();
@@ -26,7 +24,7 @@ class SizeAwareLayout : public QStackedLayout
 
         int i = currentIndex();
 
-        QWidget *wc = widget(i);
+        QWidget* wc = widget(i);
         bool notFit = false;
         if (i > 0) {
             // Check minimum, but not for the smallest, it is the fallback
@@ -38,7 +36,7 @@ class SizeAwareLayout : public QStackedLayout
         }
 
         if (notFit) {
-            QWidget *w;
+            QWidget* w;
             for (i = 0; i < n; ++i) {
                 w = widget(i);
                 if (w) {
@@ -71,8 +69,8 @@ class SizeAwareLayout : public QStackedLayout
 };
 
 WSizeAwareStack::WSizeAwareStack(QWidget* parent)
-        : QWidget(parent),
-          WBaseWidget(this) {
+    : QWidget(parent),
+      WBaseWidget(this) {
     m_layout = new SizeAwareLayout();
     setLayout(m_layout);
 }
@@ -80,7 +78,7 @@ WSizeAwareStack::WSizeAwareStack(QWidget* parent)
 WSizeAwareStack::~WSizeAwareStack() {
 }
 
-int WSizeAwareStack::addWidget(QWidget *widget) {
+int WSizeAwareStack::addWidget(QWidget* widget) {
     // smallest widgets should be added first
     return m_layout->addWidget(widget);
 }

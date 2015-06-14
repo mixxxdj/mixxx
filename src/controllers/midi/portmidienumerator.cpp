@@ -18,7 +18,7 @@ bool shouldBlacklistDevice(const PmDeviceInfo* device) {
     // In developer mode we show the MIDI Through Port, otherwise blacklist it
     // since it routinely causes trouble.
     return !CmdlineArgs::Instance().getDeveloper() &&
-            deviceName.startsWith("Midi Through Port", Qt::CaseInsensitive);
+           deviceName.startsWith("Midi Through Port", Qt::CaseInsensitive);
 }
 
 PortMidiEnumerator::PortMidiEnumerator() : MidiEnumerator() {
@@ -48,7 +48,7 @@ bool namesMatchMidiPattern(const QString input_name,
             QString outputDeviceName = deviceNamePattern.cap(1);
             QString outputDeviceIndex = deviceNamePattern.cap(2);
             if (outputDeviceName.compare(inputDeviceName, Qt::CaseInsensitive) == 0 &&
-                outputDeviceIndex == inputDeviceIndex) {
+                    outputDeviceIndex == inputDeviceIndex) {
                 return true;
             }
         }
@@ -71,7 +71,7 @@ bool namesMatchInOutPattern(const QString input_name,
             QString outputDeviceName = outputPattern.cap(1);
             QString outputDeviceIndex = outputPattern.cap(2);
             if (outputDeviceName.compare(inputDeviceName, Qt::CaseInsensitive) == 0 &&
-                outputDeviceIndex == inputDeviceIndex) {
+                    outputDeviceIndex == inputDeviceIndex) {
                 return true;
             }
         }
@@ -97,7 +97,7 @@ bool namesMatchPattern(const QString input_name,
             QString outputDeviceName = deviceNamePattern.cap(1);
             QString outputDeviceIndex = deviceNamePattern.cap(2);
             if (outputDeviceName.compare(inputDeviceName, Qt::CaseInsensitive) == 0 &&
-                outputDeviceIndex == inputDeviceIndex) {
+                    outputDeviceIndex == inputDeviceIndex) {
                 return true;
             }
         }
@@ -131,7 +131,7 @@ bool shouldLinkInputToOutput(const QString input_name,
     if (output_name_stripped != input_name_stripped) {
         // Ignore " input " text in the device names
         int offset = input_name_stripped.indexOf(" input ", 0,
-                                                 Qt::CaseInsensitive);
+                     Qt::CaseInsensitive);
         if (offset != -1) {
             input_name_stripped = input_name_stripped.replace(offset, 7, " ");
         }
@@ -145,12 +145,12 @@ bool shouldLinkInputToOutput(const QString input_name,
     }
 
     if (input_name_stripped == output_name_stripped ||
-        namesMatchMidiPattern(input_name_stripped, output_name_stripped) ||
-        namesMatchMidiPattern(input_name, output_name) ||
-        namesMatchInOutPattern(input_name_stripped, output_name_stripped) ||
-        namesMatchInOutPattern(input_name, output_name) ||
-        namesMatchPattern(input_name_stripped, output_name_stripped) ||
-        namesMatchPattern(input_name, output_name)) {
+            namesMatchMidiPattern(input_name_stripped, output_name_stripped) ||
+            namesMatchMidiPattern(input_name, output_name) ||
+            namesMatchInOutPattern(input_name_stripped, output_name_stripped) ||
+            namesMatchInOutPattern(input_name, output_name) ||
+            namesMatchPattern(input_name_stripped, output_name_stripped) ||
+            namesMatchPattern(input_name, output_name)) {
         return true;
     }
 
@@ -234,7 +234,7 @@ QList<Controller*> PortMidiEnumerator::queryDevices() {
             // device (outputDeviceInfo != NULL).
 
             //.... so create our (aggregate) MIDI device!
-            PortMidiController *currentDevice = new PortMidiController(
+            PortMidiController* currentDevice = new PortMidiController(
                 inputDeviceInfo, outputDeviceInfo,
                 inputDevIndex, outputDevIndex);
             m_devices.push_back(currentDevice);

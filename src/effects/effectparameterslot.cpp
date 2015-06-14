@@ -7,24 +7,24 @@
 #include "controllers/softtakeover.h"
 
 EffectParameterSlot::EffectParameterSlot(const QString& group, const unsigned int iParameterSlotNumber)
-        : EffectParameterSlotBase(group, iParameterSlotNumber) {
+    : EffectParameterSlotBase(group, iParameterSlotNumber) {
     QString itemPrefix = formatItemPrefix(iParameterSlotNumber);
     m_pControlLoaded = new ControlObject(
-            ConfigKey(m_group, itemPrefix + QString("_loaded")));
+        ConfigKey(m_group, itemPrefix + QString("_loaded")));
     m_pControlLinkType = new ControlPushButton(
-            ConfigKey(m_group, itemPrefix + QString("_link_type")));
+        ConfigKey(m_group, itemPrefix + QString("_link_type")));
     m_pControlLinkType->setButtonMode(ControlPushButton::TOGGLE);
     m_pControlLinkType->setStates(EffectManifestParameter::NUM_LINK_TYPES);
     m_pControlLinkInverse = new ControlPushButton(
-            ConfigKey(m_group, itemPrefix + QString("_link_inverse")));
+        ConfigKey(m_group, itemPrefix + QString("_link_inverse")));
     m_pControlLinkInverse->setButtonMode(ControlPushButton::TOGGLE);
     m_pControlValue = new ControlEffectKnob(
-            ConfigKey(m_group, itemPrefix));
+        ConfigKey(m_group, itemPrefix));
     m_pControlType = new ControlObject(
-            ConfigKey(m_group, itemPrefix + QString("_type")));
+        ConfigKey(m_group, itemPrefix + QString("_type")));
 
     m_pControlLinkType->connectValueChangeRequest(
-            this, SLOT(slotLinkTypeChanging(double)));
+        this, SLOT(slotLinkTypeChanging(double)));
     connect(m_pControlLinkInverse, SIGNAL(valueChanged(double)),
             this, SLOT(slotLinkInverseChanged(double)));
     connect(m_pControlValue, SIGNAL(valueChanged(double)),
@@ -32,9 +32,9 @@ EffectParameterSlot::EffectParameterSlot(const QString& group, const unsigned in
 
     // Read-only controls.
     m_pControlType->connectValueChangeRequest(
-            this, SLOT(slotValueType(double)));
+        this, SLOT(slotValueType(double)));
     m_pControlLoaded->connectValueChangeRequest(
-            this, SLOT(slotLoaded(double)));
+        this, SLOT(slotLoaded(double)));
 
 
     m_pSoftTakeover = new SoftTakeover();
@@ -67,8 +67,8 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
             double dDefault = m_pEffectParameter->getDefault();
 
             if (dValue > dMaximum || dValue < dMinimum ||
-                dMinimum < dMinimumLimit || dMaximum > dMaximumLimit ||
-                dDefault > dMaximum || dDefault < dMinimum) {
+                    dMinimum < dMinimumLimit || dMaximum > dMaximumLimit ||
+                    dDefault > dMaximum || dDefault < dMinimum) {
                 qWarning() << debugString() << "WARNING: EffectParameter does not satisfy basic sanity checks.";
             }
 
@@ -137,7 +137,7 @@ void EffectParameterSlot::slotLinkTypeChanging(double v) {
     if (static_cast<int>(v) == EffectManifestParameter::LINK_LINKED_LEFT ||
             static_cast<int>(v) == EffectManifestParameter::LINK_LINKED_RIGHT) {
         m_pSoftTakeover->setThreshold(
-                SoftTakeover::kDefaultTakeoverThreshold * 2.0);
+            SoftTakeover::kDefaultTakeoverThreshold * 2.0);
     } else {
         m_pSoftTakeover->setThreshold(SoftTakeover::kDefaultTakeoverThreshold);
     }
@@ -154,71 +154,71 @@ void EffectParameterSlot::onChainSuperParameterChanged(double parameter, bool fo
     if (m_pEffectParameter != NULL) {
         // Intermediate cast to integer is needed for VC++.
         EffectManifestParameter::LinkType type =
-                static_cast<EffectManifestParameter::LinkType>(
-                        static_cast<int>(m_pControlLinkType->get()));
+            static_cast<EffectManifestParameter::LinkType>(
+                static_cast<int>(m_pControlLinkType->get()));
 
         bool inverse = m_pControlLinkInverse->toBool();
 
         switch (type) {
-            case EffectManifestParameter::LINK_LINKED:
-                if (parameter < 0.0 || parameter > 1.0) {
-                    return;
-                }
-                {
-                    double neutral = m_pEffectParameter->getNeutralPointOnScale();
-                    if (neutral > 0.0 && neutral < 1.0) {
-                        if (inverse) {
-                            // the neutral position must stick where it is
-                            neutral = 1.0 - neutral;
-                        }
-                        // Knob is already a split knob
-                        // Match to center position of Super knob
-                        if (parameter <= 0.5) {
-                            parameter /= 0.5;
-                            parameter *= neutral;
-                        } else {
-                            parameter -= 0.5;
-                            parameter /= 0.5;
-                            parameter *= 1 - neutral;
-                            parameter += neutral;
-                        }
+        case EffectManifestParameter::LINK_LINKED:
+            if (parameter < 0.0 || parameter > 1.0) {
+                return;
+            }
+            {
+                double neutral = m_pEffectParameter->getNeutralPointOnScale();
+                if (neutral > 0.0 && neutral < 1.0) {
+                    if (inverse) {
+                        // the neutral position must stick where it is
+                        neutral = 1.0 - neutral;
+                    }
+                    // Knob is already a split knob
+                    // Match to center position of Super knob
+                    if (parameter <= 0.5) {
+                        parameter /= 0.5;
+                        parameter *= neutral;
+                    } else {
+                        parameter -= 0.5;
+                        parameter /= 0.5;
+                        parameter *= 1 - neutral;
+                        parameter += neutral;
                     }
                 }
-                break;
-            case EffectManifestParameter::LINK_LINKED_LEFT:
-                if (parameter >= 0.5 && parameter <= 1.0) {
-                    parameter = 0;
-                } else if (parameter >= 0.0 && parameter <= 0.5) {
-                    parameter *= 2;
-                    parameter = 1.0 - parameter;
-                } else {
-                    return;
-                }
-                break;
-            case EffectManifestParameter::LINK_LINKED_RIGHT:
-                if (parameter >= 0.5 && parameter <= 1.0) {
-                    parameter -= 0.5;
-                    parameter *= 2;
-                } else if (parameter >= 0.0 && parameter < 0.5) {
-                    parameter = 0.0;
-                } else {
-                    return;
-                }
-                break;
-            case EffectManifestParameter::LINK_LINKED_LEFT_RIGHT:
-                if (parameter >= 0.5 && parameter <= 1.0) {
-                    parameter -= 0.5;
-                    parameter *= 2;
-                } else if (parameter >= 0.0 && parameter < 0.5) {
-                    parameter *= 2;
-                    parameter = 1.0 - parameter;
-                } else {
-                    return;
-                }
-                break;
-            case EffectManifestParameter::LINK_NONE:
-            default:
+            }
+            break;
+        case EffectManifestParameter::LINK_LINKED_LEFT:
+            if (parameter >= 0.5 && parameter <= 1.0) {
+                parameter = 0;
+            } else if (parameter >= 0.0 && parameter <= 0.5) {
+                parameter *= 2;
+                parameter = 1.0 - parameter;
+            } else {
                 return;
+            }
+            break;
+        case EffectManifestParameter::LINK_LINKED_RIGHT:
+            if (parameter >= 0.5 && parameter <= 1.0) {
+                parameter -= 0.5;
+                parameter *= 2;
+            } else if (parameter >= 0.0 && parameter < 0.5) {
+                parameter = 0.0;
+            } else {
+                return;
+            }
+            break;
+        case EffectManifestParameter::LINK_LINKED_LEFT_RIGHT:
+            if (parameter >= 0.5 && parameter <= 1.0) {
+                parameter -= 0.5;
+                parameter *= 2;
+            } else if (parameter >= 0.0 && parameter < 0.5) {
+                parameter *= 2;
+                parameter = 1.0 - parameter;
+            } else {
+                return;
+            }
+            break;
+        case EffectManifestParameter::LINK_NONE:
+        default:
+            return;
         }
 
         if (inverse) {

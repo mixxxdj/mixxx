@@ -37,7 +37,7 @@ class ControlObjectThread;
 class DlgPrefShoutcast : public DlgPreferencePage, public Ui::DlgPrefShoutcastDlg  {
     Q_OBJECT
   public:
-    DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_config);
+    DlgPrefShoutcast(QWidget* parent, ConfigObject<ConfigValue>* _config);
     virtual ~DlgPrefShoutcast();
 
   public slots:
@@ -47,7 +47,7 @@ class DlgPrefShoutcast : public DlgPreferencePage, public Ui::DlgPrefShoutcastDl
     void slotResetToDefaults();
 
   signals:
-    void apply(const QString &);
+    void apply(const QString&);
 
   private:
     ConfigObject<ConfigValue>* m_pConfig;

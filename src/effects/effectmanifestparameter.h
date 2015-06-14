@@ -12,9 +12,9 @@ class EffectManifestParameter {
         CONTROL_KNOB_LINEAR,
         CONTROL_KNOB_LOGARITHMIC,
         CONTROL_KNOB_STEPPING,   // A step rotary, steps given by m_steps
-                                 // are arranged with equal distance on scale
+        // are arranged with equal distance on scale
         CONTROL_TOGGLE_STEPPING  // For button and enum controls, not accessible
-                                 // form many controllers, no linking to super knob
+        // form many controllers, no linking to super knob
     };
 
     enum SemanticHint {
@@ -41,15 +41,15 @@ class EffectManifestParameter {
     };
 
     EffectManifestParameter()
-            : m_controlHint(CONTROL_UNKNOWN),
-              m_semanticHint(SEMANTIC_UNKNOWN),
-              m_unitsHint(UNITS_UNKNOWN),
-              m_defaultLinkType(LINK_NONE),
-              m_neutralPointOnScale(0.0),
-              m_default(0),
-              m_minimum(0),
-              m_maximum(1.0),
-              m_showInParametertSlot(true) {
+        : m_controlHint(CONTROL_UNKNOWN),
+          m_semanticHint(SEMANTIC_UNKNOWN),
+          m_unitsHint(UNITS_UNKNOWN),
+          m_defaultLinkType(LINK_NONE),
+          m_neutralPointOnScale(0.0),
+          m_default(0),
+          m_minimum(0),
+          m_maximum(1.0),
+          m_showInParametertSlot(true) {
     }
 
     virtual ~EffectManifestParameter() {

@@ -13,8 +13,8 @@ void BaseEffectTest::registerTestEffect(const EffectManifest& manifest, bool wil
 
     if (willAddToEngine) {
         EXPECT_CALL(*pInstantiator, instantiate(_, _))
-                .Times(1)
-                .WillOnce(Return(pProcessor));
+        .Times(1)
+        .WillOnce(Return(pProcessor));
     }
 
     m_pTestBackend->registerEffect(manifest.id(), manifest,

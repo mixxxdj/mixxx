@@ -31,10 +31,10 @@ class VampPluginLoader {
   public:
     static VampPluginLoader* getInstance();
     PluginLoader::PluginKeyList listPlugins();
-    Vamp::Plugin *loadPlugin(Vamp::HostExt::PluginLoader::PluginKey,
+    Vamp::Plugin* loadPlugin(Vamp::HostExt::PluginLoader::PluginKey,
                              float inputSampleRate, int adapterFlags = 0);
     PluginLoader::PluginKey composePluginKey(std::string libraryName,
-                                             std::string identifier);
+            std::string identifier);
     PluginLoader::PluginCategoryHierarchy getPluginCategory(
         Vamp::HostExt::PluginLoader::PluginKey plugin);
 

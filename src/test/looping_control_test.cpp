@@ -13,49 +13,49 @@
 class LoopingControlTest : public MockedEngineBackendTest {
   public:
     LoopingControlTest()
-            : kTrackLengthSamples(3000) {
+        : kTrackLengthSamples(3000) {
     }
 
   protected:
     virtual void SetUp() {
         MockedEngineBackendTest::SetUp();
         m_pQuantizeEnabled.reset(getControlObjectThread(
-                ConfigKey(m_sGroup1, "quantize")));
+                                     ConfigKey(m_sGroup1, "quantize")));
         m_pQuantizeEnabled->set(1.0);
         m_pNextBeat.reset(getControlObjectThread(
-                ConfigKey(m_sGroup1, "beat_next")));
+                              ConfigKey(m_sGroup1, "beat_next")));
         m_pNextBeat->set(-1);
         m_pClosestBeat.reset(getControlObjectThread(
-                ConfigKey(m_sGroup1, "beat_closest")));
+                                 ConfigKey(m_sGroup1, "beat_closest")));
         m_pClosestBeat->set(-1);
         m_pTrackSamples.reset(getControlObjectThread(
-                ConfigKey(m_sGroup1, "track_samples")));
+                                  ConfigKey(m_sGroup1, "track_samples")));
         m_pTrackSamples->set(kTrackLengthSamples);
 
         m_pButtonLoopIn.reset(getControlObjectThread(
-                ConfigKey(m_sGroup1, "loop_in")));
+                                  ConfigKey(m_sGroup1, "loop_in")));
         m_pButtonLoopOut.reset(getControlObjectThread(
-                ConfigKey(m_sGroup1, "loop_out")));
+                                   ConfigKey(m_sGroup1, "loop_out")));
         m_pButtonLoopExit.reset(getControlObjectThread(
-                ConfigKey(m_sGroup1, "loop_exit")));
+                                    ConfigKey(m_sGroup1, "loop_exit")));
         m_pButtonReloopExit.reset(getControlObjectThread(
-                ConfigKey(m_sGroup1, "reloop_exit")));
+                                      ConfigKey(m_sGroup1, "reloop_exit")));
         m_pButtonLoopDouble.reset(getControlObjectThread(
-                ConfigKey(m_sGroup1, "loop_double")));
+                                      ConfigKey(m_sGroup1, "loop_double")));
         m_pButtonLoopHalve.reset(getControlObjectThread(
-                ConfigKey(m_sGroup1, "loop_halve")));
+                                     ConfigKey(m_sGroup1, "loop_halve")));
         m_pLoopEnabled.reset(getControlObjectThread(
-                ConfigKey(m_sGroup1, "loop_enabled")));
+                                 ConfigKey(m_sGroup1, "loop_enabled")));
         m_pLoopStartPoint.reset(getControlObjectThread(
-                ConfigKey(m_sGroup1, "loop_start_position")));
+                                    ConfigKey(m_sGroup1, "loop_start_position")));
         m_pLoopEndPoint.reset(getControlObjectThread(
-                ConfigKey(m_sGroup1, "loop_end_position")));
+                                  ConfigKey(m_sGroup1, "loop_end_position")));
         m_pPlayPosition.reset(getControlObjectThread(
-                ConfigKey(m_sGroup1, "playposition")));
+                                  ConfigKey(m_sGroup1, "playposition")));
         m_pButtonBeatMoveForward.reset(getControlObjectThread(
-                ConfigKey(m_sGroup1, "loop_move_1_forward")));
+                                           ConfigKey(m_sGroup1, "loop_move_1_forward")));
         m_pButtonBeatMoveBackward.reset(getControlObjectThread(
-                ConfigKey(m_sGroup1, "loop_move_1_backward")));
+                                            ConfigKey(m_sGroup1, "loop_move_1_backward")));
     }
 
     bool isLoopEnabled() {

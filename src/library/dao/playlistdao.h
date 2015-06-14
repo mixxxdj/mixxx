@@ -41,7 +41,9 @@ class PlaylistDAO : public QObject, public virtual DAO {
     virtual ~PlaylistDAO();
 
     void initialize();
-    void setDatabase(QSqlDatabase& database) { m_database = database; }
+    void setDatabase(QSqlDatabase& database) {
+        m_database = database;
+    }
     // Create a playlist, fails with -1 if already exists
     int createPlaylist(const QString& name, const HiddenType type = PLHT_NOT_HIDDEN);
     // Create a playlist, appends "(n)" if already exists, name becomes the new name
@@ -97,7 +99,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     int tracksInPlaylist(const int playlistId) const;
     // moved Track to a new position
     void moveTrack(const int playlistId,
-            const int oldPosition, const int newPosition);
+                   const int oldPosition, const int newPosition);
     // shuffles all tracks in the position List
     void shuffleTracks(const int playlistId, const QList<int>& positions, const QHash<int,int>& allIds);
     bool isTrackInPlaylist(const int trackId, const int playlistId) const;

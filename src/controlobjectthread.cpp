@@ -22,17 +22,17 @@
 #include "control/control.h"
 
 ControlObjectThread::ControlObjectThread(const QString& g, const QString& i, QObject* pParent)
-        : QObject(pParent) {
+    : QObject(pParent) {
     initialize(ConfigKey(g, i));
 }
 
 ControlObjectThread::ControlObjectThread(const char* g, const char* i, QObject* pParent)
-        : QObject(pParent) {
+    : QObject(pParent) {
     initialize(ConfigKey(g, i));
 }
 
 ControlObjectThread::ControlObjectThread(const ConfigKey& key, QObject* pParent)
-        : QObject(pParent) {
+    : QObject(pParent) {
     initialize(key);
 }
 
@@ -58,7 +58,7 @@ bool ControlObjectThread::connectValueChanged(const QObject* receiver,
 }
 
 bool ControlObjectThread::connectValueChanged(
-        const char* method, Qt::ConnectionType type) {
+    const char* method, Qt::ConnectionType type) {
     return connect((QObject*)this, SIGNAL(valueChanged(double)), parent(), method, type);
 }
 

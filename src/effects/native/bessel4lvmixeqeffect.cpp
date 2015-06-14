@@ -14,8 +14,8 @@ EffectManifest Bessel4LVMixEQEffect::getManifest() {
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
-        "A Bessel 4th order filter equalizer with Lipshitz and Vanderkooy mix (bit perfect unity, roll-off -24 db/Oct). "
-        "To adjust frequency shelves see the Equalizer preferences."));
+                                "A Bessel 4th order filter equalizer with Lipshitz and Vanderkooy mix (bit perfect unity, roll-off -24 db/Oct). "
+                                "To adjust frequency shelves see the Equalizer preferences."));
     manifest.setIsMixingEQ(true);
     manifest.setEffectRampsFromDry(true);
 
@@ -92,13 +92,13 @@ EffectManifest Bessel4LVMixEQEffect::getManifest() {
 }
 
 Bessel4LVMixEQEffect::Bessel4LVMixEQEffect(EngineEffect* pEffect,
-                                           const EffectManifest& manifest)
-        : m_pPotLow(pEffect->getParameterById("low")),
-          m_pPotMid(pEffect->getParameterById("mid")),
-          m_pPotHigh(pEffect->getParameterById("high")),
-          m_pKillLow(pEffect->getParameterById("killLow")),
-          m_pKillMid(pEffect->getParameterById("killMid")),
-          m_pKillHigh(pEffect->getParameterById("killHigh")) {
+        const EffectManifest& manifest)
+    : m_pPotLow(pEffect->getParameterById("low")),
+      m_pPotMid(pEffect->getParameterById("mid")),
+      m_pPotHigh(pEffect->getParameterById("high")),
+      m_pKillLow(pEffect->getParameterById("killLow")),
+      m_pKillMid(pEffect->getParameterById("killMid")),
+      m_pKillHigh(pEffect->getParameterById("killHigh")) {
     Q_UNUSED(manifest);
     m_pLoFreqCorner = new ControlObjectSlave("[Mixer Profile]", "LoEQFrequency");
     m_pHiFreqCorner = new ControlObjectSlave("[Mixer Profile]", "HiEQFrequency");
@@ -110,12 +110,12 @@ Bessel4LVMixEQEffect::~Bessel4LVMixEQEffect() {
 }
 
 void Bessel4LVMixEQEffect::processChannel(const ChannelHandle& handle,
-                                          Bessel4LVMixEQEffectGroupState* pState,
-                                          const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                          const unsigned int numSamples,
-                                          const unsigned int sampleRate,
-                                          const EffectProcessor::EnableState enableState,
-                                          const GroupFeatureState& groupFeatures) {
+        Bessel4LVMixEQEffectGroupState* pState,
+        const CSAMPLE* pInput, CSAMPLE* pOutput,
+        const unsigned int numSamples,
+        const unsigned int sampleRate,
+        const EffectProcessor::EnableState enableState,
+        const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
 

@@ -21,12 +21,12 @@ This is essentially just a C++ version of xwax's pitch.h,
 class AlphaBetaFilter {
   public:
     AlphaBetaFilter()
-            : m_initialized(false),
-              m_dt(0.0),
-              m_x(0.0),
-              m_v(0.0),
-              m_alpha(0.0),
-              m_beta(0.0) {
+        : m_initialized(false),
+          m_dt(0.0),
+          m_x(0.0),
+          m_v(0.0),
+          m_alpha(0.0),
+          m_beta(0.0) {
     }
 
     // Prepare the filter for observations every dt seconds. Default filter

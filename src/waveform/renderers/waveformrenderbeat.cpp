@@ -13,8 +13,8 @@
 #include "widget/wwidget.h"
 
 WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidgetRenderer)
-        : WaveformRendererAbstract(waveformWidgetRenderer),
-          m_pBeatActive(NULL) {
+    : WaveformRendererAbstract(waveformWidgetRenderer),
+      m_pBeatActive(NULL) {
     m_beats.resize(128);
 }
 
@@ -25,7 +25,7 @@ WaveformRenderBeat::~WaveformRenderBeat() {
 
 bool WaveformRenderBeat::init() {
     m_pBeatActive = new ControlObjectThread(
-            m_waveformRenderer->getGroup(), "beat_active");
+        m_waveformRenderer->getGroup(), "beat_active");
     return m_pBeatActive->valid();
 }
 
@@ -60,7 +60,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     //          << "lastDisplayedPosition" << lastDisplayedPosition;
 
     QScopedPointer<BeatIterator> it(trackBeats->findBeats(
-        firstDisplayedPosition * trackSamples, lastDisplayedPosition * trackSamples));
+                                        firstDisplayedPosition * trackSamples, lastDisplayedPosition * trackSamples));
 
     // if no beat do not waste time saving/restoring painter
     if (!it || !it->hasNext()) {
@@ -83,7 +83,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
         double xBeatPoint = m_waveformRenderer->transformSampleIndexInRendererWorld(beatPosition);
 
         xBeatPoint = qRound(xBeatPoint);
-        
+
         // If we don't have enough space, double the size.
         if (beatCount >= m_beats.size()) {
             m_beats.resize(m_beats.size() * 2);

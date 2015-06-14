@@ -5,27 +5,24 @@
 #include "crc.h"
 #include "gzip.h"
 
-inline QByteArray render32BitInt(unsigned long value)
-{
+inline QByteArray render32BitInt(unsigned long value) {
     unsigned char data[4];
     data[0] = (value      ) & 255;
     data[1] = (value >>  8) & 255;
     data[2] = (value >> 16) & 255;
     data[3] = (value >> 24) & 255;
-    return QByteArray((char *)data, 4);
+    return QByteArray((char*)data, 4);
 }
 
-inline unsigned long calculateCrc32(const QByteArray &data)
-{
+inline unsigned long calculateCrc32(const QByteArray& data) {
     crc_t crc;
     crc = crc_init();
-    crc = crc_update(crc, (unsigned char *)data.data(), data.size());
+    crc = crc_update(crc, (unsigned char*)data.data(), data.size());
     crc = crc_finalize(crc);
     return crc;
 }
 
-QByteArray gzipCompress(const QByteArray &data)
-{
+QByteArray gzipCompress(const QByteArray& data) {
     const unsigned char header[10] = {
         0x1f, 0x8b, // ID1 + ID2
         8,          // Compression Method

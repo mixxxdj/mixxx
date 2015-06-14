@@ -5,9 +5,9 @@
 #include "library/basesqltablemodel.h"
 
 BaseExternalLibraryFeature::BaseExternalLibraryFeature(QObject* pParent,
-                                                       TrackCollection* pCollection)
-        : LibraryFeature(pParent),
-          m_pTrackCollection(pCollection) {
+        TrackCollection* pCollection)
+    : LibraryFeature(pParent),
+      m_pTrackCollection(pCollection) {
     m_pAddToAutoDJAction = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
     connect(m_pAddToAutoDJAction, SIGNAL(triggered()),
             this, SLOT(slotAddToAutoDJ()));
@@ -65,7 +65,7 @@ void BaseExternalLibraryFeature::addToAutoDJ(bool bTop) {
         return;
     }
 
-    PlaylistDAO &playlistDao = m_pTrackCollection->getPlaylistDAO();
+    PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
     playlistDao.addTracksToAutoDJQueue(trackIds, bTop);
 }
 
@@ -106,16 +106,16 @@ void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(QList<int>* t
     // full path/name of the playlist.
     *pPlaylist = m_lastRightClickedIndex.data(Qt::UserRole).toString();
     QScopedPointer<BaseSqlTableModel> pPlaylistModelToAdd(
-            getPlaylistModelForPlaylist(*pPlaylist));
+        getPlaylistModelForPlaylist(*pPlaylist));
 
     if (!pPlaylistModelToAdd || !pPlaylistModelToAdd->initialized()) {
         qDebug() << "BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex "
-                "could not initialize a playlist model for playlist:" << *pPlaylist;
+                 "could not initialize a playlist model for playlist:" << *pPlaylist;
         return;
     }
 
     pPlaylistModelToAdd->setSort(pPlaylistModelToAdd->fieldIndex(
-            ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
+                                     ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
     pPlaylistModelToAdd->select();
 
     // Copy Tracks

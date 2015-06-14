@@ -94,7 +94,7 @@ const int ENGINE_RAMP_UP = 1;
 //const int kiRampLength = 3;
 
 class EngineBuffer : public EngineObject {
-     Q_OBJECT
+    Q_OBJECT
   private:
     enum SyncRequestQueued {
         SYNC_REQUEST_NONE,

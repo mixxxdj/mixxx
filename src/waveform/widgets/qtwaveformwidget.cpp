@@ -17,8 +17,8 @@
 #include "util/performancetimer.h"
 
 QtWaveformWidget::QtWaveformWidget(const char* group, QWidget* parent)
-        : QGLWidget(parent, SharedGLContext::getWidget()),
-          WaveformWidgetAbstract(group) {
+    : QGLWidget(parent, SharedGLContext::getWidget()),
+      WaveformWidgetAbstract(group) {
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();

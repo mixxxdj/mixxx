@@ -20,7 +20,9 @@ class DirectoryDAO : public DAO {
     virtual ~DirectoryDAO();
 
     void initialize();
-    void setDatabase(QSqlDatabase& database) { m_database = database; }
+    void setDatabase(QSqlDatabase& database) {
+        m_database = database;
+    }
     int addDirectory(const QString& dir);
     int removeDirectory(const QString& dir);
     QSet<int> relocateDirectory(const QString& oldFolder, const QString& newFolder);

@@ -144,8 +144,8 @@ class EffectChainSlot : public QObject {
     struct ChannelInfo {
         // Takes ownership of pEnabled.
         ChannelInfo(const ChannelHandleAndGroup& handle_group, ControlObject* pEnabled)
-                : handle_group(handle_group),
-                  pEnabled(pEnabled) {
+            : handle_group(handle_group),
+              pEnabled(pEnabled) {
 
         }
         ~ChannelInfo() {

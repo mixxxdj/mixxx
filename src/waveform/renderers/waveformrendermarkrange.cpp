@@ -36,7 +36,7 @@ void WaveformRenderMarkRange::setup(const QDomNode& node, const SkinContext& con
     }
 }
 
-void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/) {
+void WaveformRenderMarkRange::draw(QPainter* painter, QPaintEvent* /*event*/) {
     painter->save();
 
     painter->setWorldMatrixEnabled(false);

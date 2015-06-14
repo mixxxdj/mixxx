@@ -26,10 +26,10 @@ Console::Console() {
     // LOCALE_IDEFAULTCODEPAGE "850" // OEM Codepage Console
 
     m_shouldResetCodePage = false;
-    if(AttachConsole(ATTACH_PARENT_PROCESS)) {
+    if (AttachConsole(ATTACH_PARENT_PROCESS)) {
         // we are started from a console porcess
         int fd;
-        FILE *fp;
+        FILE* fp;
 
         fd = _open_osfhandle((long) GetStdHandle(STD_OUTPUT_HANDLE), 0);
         fp = _fdopen(fd, "w");
@@ -62,7 +62,7 @@ Console::Console() {
             } else {
                 // This happens on Windows XP
                 qWarning() << "The console font may not support non ANSI characters." <<
-                              "In case of character issues switch to font \"Lucida Console\"";
+                           "In case of character issues switch to font \"Lucida Console\"";
             }
         }
 

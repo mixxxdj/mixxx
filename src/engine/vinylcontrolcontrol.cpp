@@ -5,14 +5,14 @@
 #include "util/math.h"
 
 VinylControlControl::VinylControlControl(QString group, ConfigObject<ConfigValue>* pConfig)
-        : EngineControl(group, pConfig),
-          m_bSeekRequested(false) {
+    : EngineControl(group, pConfig),
+      m_bSeekRequested(false) {
     m_pControlVinylStatus = new ControlObject(ConfigKey(group, "vinylcontrol_status"));
     m_pControlVinylSpeedType = new ControlObject(ConfigKey(group, "vinylcontrol_speed_type"));
 
     //Convert the ConfigKey's value into a double for the CO (for fast reads).
     QString strVinylSpeedType = pConfig->getValueString(ConfigKey(group,
-                                                      "vinylcontrol_speed_type"));
+                                "vinylcontrol_speed_type"));
     if (strVinylSpeedType == MIXXX_VINYL_SPEED_33) {
         m_pControlVinylSpeedType->set(MIXXX_VINYL_SPEED_33_NUM);
     } else if (strVinylSpeedType == MIXXX_VINYL_SPEED_45) {
@@ -76,8 +76,8 @@ void VinylControlControl::notifySeekQueued() {
     // so there are no issues with signals/slots causing timing
     // issues.
     if (m_pControlVinylMode->get() == MIXXX_VCMODE_ABSOLUTE &&
-        m_pPlayEnabled->get() > 0.0 &&
-        !m_bSeekRequested) {
+            m_pPlayEnabled->get() > 0.0 &&
+            !m_bSeekRequested) {
         m_pControlVinylMode->set(MIXXX_VCMODE_RELATIVE);
     }
 }
@@ -135,7 +135,7 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
             int cue_position = pCue->getPosition();
             //pick cues closest to new_playpos
             if ((nearest_playpos == -1) ||
-                (fabs(new_playpos - cue_position) < shortest_distance)) {
+                    (fabs(new_playpos - cue_position) < shortest_distance)) {
                 nearest_playpos = cue_position;
                 shortest_distance = fabs(new_playpos - cue_position);
             }
@@ -161,12 +161,10 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
     m_bSeekRequested = false;
 }
 
-bool VinylControlControl::isEnabled()
-{
+bool VinylControlControl::isEnabled() {
     return m_pControlVinylEnabled->get();
 }
 
-bool VinylControlControl::isScratching()
-{
+bool VinylControlControl::isScratching() {
     return m_pControlVinylScratching->get();
 }

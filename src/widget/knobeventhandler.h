@@ -13,7 +13,7 @@ template <class T>
 class KnobEventHandler {
   public:
     KnobEventHandler()
-            : m_bRightButtonPressed(false) {
+        : m_bRightButtonPressed(false) {
     }
 
     double valueFromMouseEvent(T* pWidget, QMouseEvent* e) {
@@ -49,36 +49,36 @@ class KnobEventHandler {
 
     void mousePressEvent(T* pWidget, QMouseEvent* e) {
         switch (e->button()) {
-            case Qt::RightButton:
-                pWidget->resetControlParameter();
-                m_bRightButtonPressed = true;
-                break;
-            case Qt::LeftButton:
-            case Qt::MidButton:
-                m_startPos = e->globalPos();
-                QApplication::setOverrideCursor(Qt::BlankCursor);
-                break;
-            default:
-                break;
+        case Qt::RightButton:
+            pWidget->resetControlParameter();
+            m_bRightButtonPressed = true;
+            break;
+        case Qt::LeftButton:
+        case Qt::MidButton:
+            m_startPos = e->globalPos();
+            QApplication::setOverrideCursor(Qt::BlankCursor);
+            break;
+        default:
+            break;
         }
     }
 
     void mouseReleaseEvent(T* pWidget, QMouseEvent* e) {
         double value = 0.0;
         switch (e->button()) {
-            case Qt::LeftButton:
-            case Qt::MidButton:
-                QCursor::setPos(m_startPos);
-                QApplication::restoreOverrideCursor();
-                value = valueFromMouseEvent(pWidget, e);
-                pWidget->setControlParameterUp(value);
-                pWidget->update();
-                break;
-            case Qt::RightButton:
-                m_bRightButtonPressed = false;
-                break;
-            default:
-                break;
+        case Qt::LeftButton:
+        case Qt::MidButton:
+            QCursor::setPos(m_startPos);
+            QApplication::restoreOverrideCursor();
+            value = valueFromMouseEvent(pWidget, e);
+            pWidget->setControlParameterUp(value);
+            pWidget->update();
+            break;
+        case Qt::RightButton:
+            m_bRightButtonPressed = false;
+            break;
+        default:
+            break;
         }
         pWidget->update();
     }

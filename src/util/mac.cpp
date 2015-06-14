@@ -10,13 +10,13 @@ QString CFStringToQString(CFStringRef str) {
         return QString();
 
     QString string(length, Qt::Uninitialized);
-    CFStringGetCharacters(str, CFRangeMake(0, length), reinterpret_cast<UniChar *>
-        (const_cast<QChar *>(string.unicode())));
+    CFStringGetCharacters(str, CFRangeMake(0, length), reinterpret_cast<UniChar*>
+                          (const_cast<QChar*>(string.unicode())));
     return string;
 }
 
 CFStringRef QStringToCFString(const QString& string) {
-    return CFStringCreateWithCharacters(0, reinterpret_cast<const UniChar *>(string.unicode()),
+    return CFStringCreateWithCharacters(0, reinterpret_cast<const UniChar*>(string.unicode()),
                                         string.length());
 }
 #endif

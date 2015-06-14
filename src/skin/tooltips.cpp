@@ -269,7 +269,7 @@ void Tooltips::addStandardTooltips() {
             << tempoDisplay;
 
     add("visual_key")
-            //: The musical key of a track
+    //: The musical key of a track
             << tr("Key")
             << tr("Displays the current musical key of the loaded track after pitch shifting.");
 
@@ -322,7 +322,7 @@ void Tooltips::addStandardTooltips() {
 
     // Reverse and reverseroll (censor)
     add("reverse")
-    << tr("Reverse")
+            << tr("Reverse")
             << QString("%1: %2").arg(leftClick, tr("Reverses track playback during regular playback."))
             << QString("%1: %2").arg(rightClick, tr("Puts a track into reverse while being held (Censor)."))
             << tr("Playback continues where the track would have been if it had not been temporarily reversed.");
@@ -374,9 +374,9 @@ void Tooltips::addStandardTooltips() {
             << tr("Old Synchronize")
             << tr("(This skin should be updated to use Master Sync!)")
             << QString("%1: %2").arg(leftClick, tr("Syncs the tempo (BPM) and phase to that of the other track, "
-                                                   "if BPM is detected on both."))
+                                     "if BPM is detected on both."))
             << QString("%1: %2").arg(rightClick, tr("Syncs the tempo (BPM) to that of the other track, "
-                                                    "if BPM is detected on both."))
+                                     "if BPM is detected on both."))
             << tr("Syncs to the first deck (in numerical order) that is playing a track and has a BPM.")
             << tr("If no deck is playing, syncs to the first deck that has a BPM.")
             << tr("Decks can't sync to samplers and samplers can only sync to decks.");
@@ -393,7 +393,7 @@ void Tooltips::addStandardTooltips() {
     add("sync_reset_key")
             << tr("Sync and Reset Key")
             << QString("%1: %2").arg(leftClick, tr("Sets the key to a compatible key with the other track key, "
-                                                   "if a key is detected on both."))
+                                     "if a key is detected on both."))
             << QString("%1: %2").arg(rightClick, tr("Resets the key to the original track key."));
 
     add("sync_master")
@@ -553,7 +553,7 @@ void Tooltips::addStandardTooltips() {
             << trackTags;
 
     add("track_key")
-            //: The musical key of a track
+    //: The musical key of a track
             << tr("Track Key")
             << tr("Displays the musical key of the loaded track.")
             << trackTags;

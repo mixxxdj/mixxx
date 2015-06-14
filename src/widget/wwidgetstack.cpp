@@ -3,11 +3,11 @@
 #include "widget/wwidgetstack.h"
 
 WidgetStackControlListener::WidgetStackControlListener(QObject* pParent,
-                                                       ControlObject* pControl,
-                                                       int index)
-        : QObject(pParent),
-          m_control(pControl ? pControl->getKey() : ConfigKey()),
-          m_index(index) {
+        ControlObject* pControl,
+        int index)
+    : QObject(pParent),
+      m_control(pControl ? pControl->getKey() : ConfigKey()),
+      m_index(index) {
     connect(&m_control, SIGNAL(valueChanged(double)),
             this, SLOT(slotValueChanged(double)));
 }
@@ -35,13 +35,13 @@ WWidgetStack::WWidgetStack(QWidget* pParent,
                            ControlObject* pNextControl,
                            ControlObject* pPrevControl,
                            ControlObject* pCurrentPageControl)
-        : QStackedWidget(pParent),
-          WBaseWidget(this),
-          m_nextControl(pNextControl ? pNextControl->getKey() : ConfigKey()),
-          m_prevControl(pPrevControl ? pPrevControl->getKey() : ConfigKey()),
-          m_currentPageControl(
-                  pCurrentPageControl ?
-                  pCurrentPageControl->getKey() : ConfigKey()) {
+    : QStackedWidget(pParent),
+      WBaseWidget(this),
+      m_nextControl(pNextControl ? pNextControl->getKey() : ConfigKey()),
+      m_prevControl(pPrevControl ? pPrevControl->getKey() : ConfigKey()),
+      m_currentPageControl(
+          pCurrentPageControl ?
+          pCurrentPageControl->getKey() : ConfigKey()) {
     connect(&m_nextControl, SIGNAL(valueChanged(double)),
             this, SLOT(onNextControlChanged(double)));
     connect(&m_prevControl, SIGNAL(valueChanged(double)),

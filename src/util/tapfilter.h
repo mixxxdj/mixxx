@@ -10,7 +10,7 @@
 class TapFilter : public QObject {
     Q_OBJECT
   public:
-    TapFilter(QObject *pParent, int filterLength, int maxInterval);
+    TapFilter(QObject* pParent, int filterLength, int maxInterval);
     virtual ~TapFilter();
 
   public slots:

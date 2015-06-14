@@ -9,20 +9,20 @@
 #include "configobject.h"
 
 InternalClock::InternalClock(const char* pGroup, SyncableListener* pEngineSync)
-        : m_group(pGroup),
-          m_pEngineSync(pEngineSync),
-          m_mode(SYNC_NONE),
-          m_iOldSampleRate(44100),
-          m_dOldBpm(124.0),
-          m_dBeatLength(m_iOldSampleRate * 60.0 / m_dOldBpm),
-          m_dClockPosition(0) {
+    : m_group(pGroup),
+      m_pEngineSync(pEngineSync),
+      m_mode(SYNC_NONE),
+      m_iOldSampleRate(44100),
+      m_dOldBpm(124.0),
+      m_dBeatLength(m_iOldSampleRate * 60.0 / m_dOldBpm),
+      m_dClockPosition(0) {
     // Pick a wide range (1 to 200) and allow out of bounds sets. This lets you
     // map a soft-takeover MIDI knob to the master BPM. This also creates bpm_up
     // and bpm_down controls.
     // bpm_up / bpm_down steps by 1
     // bpm_up_small / bpm_down_small steps by 0.1
     m_pClockBpm.reset(new ControlLinPotmeter(ConfigKey(m_group, "bpm"),
-                                          1, 200, 1, 0.1, true));
+                      1, 200, 1, 0.1, true));
     connect(m_pClockBpm.data(), SIGNAL(valueChanged(double)),
             this, SLOT(slotBpmChanged(double)),
             Qt::DirectConnection);

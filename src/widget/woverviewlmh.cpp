@@ -8,9 +8,9 @@
 #include "util/math.h"
 #include "waveform/waveform.h"
 
-WOverviewLMH::WOverviewLMH(const char *pGroup,
-                           ConfigObject<ConfigValue>* pConfig, QWidget * parent)
-        : WOverview(pGroup, pConfig, parent)  {
+WOverviewLMH::WOverviewLMH(const char* pGroup,
+                           ConfigObject<ConfigValue>* pConfig, QWidget* parent)
+    : WOverview(pGroup, pConfig, parent)  {
 }
 
 
@@ -36,7 +36,7 @@ bool WOverviewLMH::drawNextPixmapPart() {
         // by total_gain
         // We keep full range waveform data to scale it on paint
         m_pWaveformSourceImage = new QImage(dataSize / 2, 2 * 255,
-                QImage::Format_ARGB32_Premultiplied);
+                                            QImage::Format_ARGB32_Premultiplied);
         m_pWaveformSourceImage->fill(QColor(0,0,0,0).value());
     }
 
@@ -86,18 +86,18 @@ bool WOverviewLMH::drawNextPixmapPart() {
             currentCompletion < nextCompletion; currentCompletion += 2) {
         painter.setPen(midColorPen);
         painter.drawLine(QPoint(currentCompletion / 2,
-                -pWaveform->getMid(currentCompletion)),
-                QPoint(currentCompletion / 2,
-                pWaveform->getMid(currentCompletion+1)));
+                                -pWaveform->getMid(currentCompletion)),
+                         QPoint(currentCompletion / 2,
+                                pWaveform->getMid(currentCompletion+1)));
     }
 
     for (currentCompletion = m_actualCompletion;
             currentCompletion < nextCompletion; currentCompletion += 2) {
         painter.setPen(highColorPen);
         painter.drawLine(QPoint(currentCompletion / 2,
-                -pWaveform->getHigh(currentCompletion)),
-                QPoint(currentCompletion / 2,
-                pWaveform->getHigh(currentCompletion+1)));
+                                -pWaveform->getHigh(currentCompletion)),
+                         QPoint(currentCompletion / 2,
+                                pWaveform->getHigh(currentCompletion+1)));
     }
 
     // Evaluate waveform ratio peak
@@ -105,9 +105,9 @@ bool WOverviewLMH::drawNextPixmapPart() {
     for (currentCompletion = m_actualCompletion;
             currentCompletion < nextCompletion; currentCompletion += 2) {
         m_waveformPeak = math_max3(
-                m_waveformPeak,
-                static_cast<float>(pWaveform->getAll(currentCompletion)),
-                static_cast<float>(pWaveform->getAll(currentCompletion + 1)));
+                             m_waveformPeak,
+                             static_cast<float>(pWaveform->getAll(currentCompletion)),
+                             static_cast<float>(pWaveform->getAll(currentCompletion + 1)));
     }
 
     m_actualCompletion = nextCompletion;

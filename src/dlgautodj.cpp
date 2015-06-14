@@ -12,13 +12,13 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
                      AutoDJProcessor* pProcessor,
                      TrackCollection* pTrackCollection,
                      MixxxKeyboard* pKeyboard)
-        : QWidget(parent),
-          Ui::DlgAutoDJ(),
-          m_pAutoDJProcessor(pProcessor),
-          // no sorting
-          m_pTrackTableView(new WTrackTableView(this, pConfig,
-                                                pTrackCollection, false)),
-          m_pAutoDJTableModel(NULL) {
+    : QWidget(parent),
+      Ui::DlgAutoDJ(),
+      m_pAutoDJProcessor(pProcessor),
+      // no sorting
+      m_pTrackTableView(new WTrackTableView(this, pConfig,
+                                            pTrackCollection, false)),
+      m_pAutoDJTableModel(NULL) {
     setupUi(this);
 
     m_pTrackTableView->installEventFilter(pKeyboard);
@@ -134,24 +134,24 @@ void DlgAutoDJ::fadeNowButton(bool) {
 void DlgAutoDJ::toggleAutoDJButton(bool enable) {
     AutoDJProcessor::AutoDJError error = m_pAutoDJProcessor->toggleAutoDJ(enable);
     switch (error) {
-        case AutoDJProcessor::ADJ_BOTH_DECKS_PLAYING:
-            QMessageBox::warning(
-                    NULL, tr("Auto-DJ"),
-                    tr("One deck must be stopped to enable Auto-DJ mode."),
-                    QMessageBox::Ok);
-            // Make sure the button becomes unpushed.
-            pushButtonAutoDJ->setChecked(false);
-            break;
-        case AutoDJProcessor::ADJ_DECKS_3_4_PLAYING:
-            QMessageBox::warning(
-                    NULL, tr("Auto-DJ"),
-                    tr("Decks 3 and 4 must be stopped to enable Auto-DJ mode."),
-                    QMessageBox::Ok);
-            pushButtonAutoDJ->setChecked(false);
-            break;
-        case AutoDJProcessor::ADJ_OK:
-        default:
-            break;
+    case AutoDJProcessor::ADJ_BOTH_DECKS_PLAYING:
+        QMessageBox::warning(
+            NULL, tr("Auto-DJ"),
+            tr("One deck must be stopped to enable Auto-DJ mode."),
+            QMessageBox::Ok);
+        // Make sure the button becomes unpushed.
+        pushButtonAutoDJ->setChecked(false);
+        break;
+    case AutoDJProcessor::ADJ_DECKS_3_4_PLAYING:
+        QMessageBox::warning(
+            NULL, tr("Auto-DJ"),
+            tr("Decks 3 and 4 must be stopped to enable Auto-DJ mode."),
+            QMessageBox::Ok);
+        pushButtonAutoDJ->setChecked(false);
+        break;
+    case AutoDJProcessor::ADJ_OK:
+    default:
+        break;
     }
 }
 

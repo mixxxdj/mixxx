@@ -94,7 +94,7 @@ void QtWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
 
     // Represents the # of waveform data points per horizontal pixel.
     const double gain = (lastVisualIndex - firstVisualIndex) /
-            (double)m_waveformRenderer->getWidth();
+                        (double)m_waveformRenderer->getWidth();
 
     //NOTE(vrince) Please help me find a better name for "channelSeparation"
     //this variable stand for merged channel ... 1 = merged & 2 = separated
@@ -190,7 +190,7 @@ void QtWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
             unsigned char maxAll = 0;
 
             for (int i = visualIndexStart; i >= 0 && i < dataSize && i <= visualIndexStop;
-                 i += channelSeparation) {
+                    i += channelSeparation) {
                 const WaveformData& waveformData = *(data + i);
                 unsigned char all = waveformData.filtered.all;
                 maxAll = math_max(maxAll, all);

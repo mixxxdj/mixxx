@@ -6,7 +6,7 @@
  *  as published by Sam Hocevar.                                             *
  *  See http://www.wtfpl.net/ for more details.                              *
  *****************************************************************************/
-    
+
 #ifndef TAGFETCHER_H
 #define TAGFETCHER_H
 
@@ -19,10 +19,10 @@
 
 
 class TagFetcher : public QObject {
-  Q_OBJECT
+    Q_OBJECT
 
-  // High level interface to Fingerprinter, AcoustidClient and
-  // MusicBrainzClient.
+    // High level interface to Fingerprinter, AcoustidClient and
+    // MusicBrainzClient.
 
   public:
     TagFetcher(QObject* parent = 0);

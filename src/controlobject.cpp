@@ -46,8 +46,8 @@ void ControlObject::initialize(ConfigKey key, bool bIgnoreNops, bool bTrack,
     // Don't bother looking up the control if key is NULL. Prevents log spew.
     if (!m_key.isNull()) {
         m_pControl = ControlDoublePrivate::getControl(m_key, true, this,
-                                                      bIgnoreNops, bTrack,
-                                                      bPersist);
+                     bIgnoreNops, bTrack,
+                     bPersist);
     }
 
     // getControl can fail and return a NULL control even with the create flag.
@@ -127,8 +127,8 @@ void ControlObject::set(const ConfigKey& key, const double& value) {
 }
 
 bool ControlObject::connectValueChangeRequest(const QObject* receiver,
-                                              const char* method,
-                                              Qt::ConnectionType type) {
+        const char* method,
+        Qt::ConnectionType type) {
     bool ret = false;
     if (m_pControl) {
         ret = m_pControl->connectValueChangeRequest(receiver, method, type);

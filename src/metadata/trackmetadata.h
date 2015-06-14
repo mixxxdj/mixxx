@@ -9,7 +9,7 @@ namespace Mixxx {
 
 // DTO for track metadata properties. Must not be subclassed (no virtual destructor)!
 class TrackMetadata {
-public:
+  public:
     TrackMetadata();
 
     inline const QString& getArtist() const {
@@ -196,7 +196,7 @@ public:
 
     static QString reformatYear(QString year);
 
-private:
+  private:
     QString m_artist;
     QString m_title;
     QString m_album;

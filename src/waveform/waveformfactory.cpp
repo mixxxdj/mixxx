@@ -5,7 +5,7 @@
 
 // static
 Waveform* WaveformFactory::loadWaveformFromAnalysis(
-        const AnalysisDao::AnalysisInfo& analysis) {
+    const AnalysisDao::AnalysisInfo& analysis) {
     Waveform* pWaveform = new Waveform(analysis.data);
     pWaveform->setId(analysis.analysisId);
     pWaveform->setVersion(analysis.version);

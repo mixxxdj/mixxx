@@ -13,31 +13,31 @@
 class TreeItem {
   public:
     TreeItem(); //creates an invisible root item for the tree
-    TreeItem(const QString &data,
-             const QString &data_path,
+    TreeItem(const QString& data,
+             const QString& data_path,
              LibraryFeature* feature,
              TreeItem* parent);
     ~TreeItem();
     /** appends a child item to this object **/
-    void appendChild(TreeItem *child);
+    void appendChild(TreeItem* child);
     /** remove a child item at the given index **/
     void removeChild(int index);
     /** returns the tree item at position 'row' in the childlist **/
-    TreeItem *child(int row);
+    TreeItem* child(int row);
     /** returns the number of childs of this tree item **/
     int childCount() const;
     /** Returns the position of this object within its parent **/
     int row() const;
     /** returns the parent **/
-    TreeItem *parent();
+    TreeItem* parent();
 
     /** for dynamic resizing models **/
-    bool insertChildren(QList<TreeItem*> &data, int position, int count);
+    bool insertChildren(QList<TreeItem*>& data, int position, int count);
     /** Removes <count> children from the child list starting at index <position> **/
     bool removeChildren(int position, int count);
 
     /** sets data **/
-    bool setData(const QVariant &data, const QVariant &data_path);
+    bool setData(const QVariant& data, const QVariant& data_path);
     /** simple name of the playlist **/
     QVariant data() const;
     /** Full path of the playlist **/
@@ -67,7 +67,7 @@ class TreeItem {
     LibraryFeature* m_feature;
     bool m_bold;
 
-    TreeItem *m_parentItem;
+    TreeItem* m_parentItem;
     QIcon m_icon;
 };
 

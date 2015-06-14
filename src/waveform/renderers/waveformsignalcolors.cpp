@@ -8,7 +8,7 @@
 WaveformSignalColors::WaveformSignalColors() {
 }
 
-bool WaveformSignalColors::setup(const QDomNode &node, const SkinContext& context) {
+bool WaveformSignalColors::setup(const QDomNode& node, const SkinContext& context) {
     // NOTE(rryan): It is critical that every color is converted to RGB with
     // toRgb(). Otherwise Mixxx will waste 3% of its CPU time while rendering
     // the filtered waveform doing RGB color space conversions!
@@ -127,7 +127,7 @@ void WaveformSignalColors::fallBackFromSignalColor() {
 
 void WaveformSignalColors::fallBackDefaultColor() {
     qWarning() << "WaveformSignalColors::fallBackDefaultColor - " \
-                  "skin do not provide valid signal colors ! Default colors is use ...";
+               "skin do not provide valid signal colors ! Default colors is use ...";
 
     m_signalColor = Qt::green;
     m_signalColor = m_signalColor.toRgb();

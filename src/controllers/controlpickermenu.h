@@ -43,8 +43,8 @@ class ControlPickerMenu : public QMenu {
                                       QString helpText, QMenu* pMenu,
                                       bool addReset=false);
     void addDeckAndSamplerAndPreviewDeckControl(QString control, QString title,
-                                                QString helpText, QMenu* pMenu,
-                                                bool addReset=false);
+            QString helpText, QMenu* pMenu,
+            bool addReset=false);
     void addDeckControl(QString control, QString title, QString helpText,
                         QMenu* pMenu, bool addReset=false);
     void addSamplerControl(QString control, QString title, QString helpText,

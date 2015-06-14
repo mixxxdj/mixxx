@@ -13,7 +13,7 @@ class QtWaveformRendererFilteredSignal : public WaveformRendererSignalBase {
     explicit QtWaveformRendererFilteredSignal(WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~QtWaveformRendererFilteredSignal();
 
-    virtual void onSetup(const QDomNode &node);
+    virtual void onSetup(const QDomNode& node);
     virtual void draw(QPainter* painter, QPaintEvent* event);
 
   protected:

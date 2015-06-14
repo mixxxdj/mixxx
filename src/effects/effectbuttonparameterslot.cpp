@@ -7,26 +7,26 @@
 #include "util/math.h"
 
 EffectButtonParameterSlot::EffectButtonParameterSlot(const QString& group,
-                                                     const unsigned int iParameterSlotNumber)
-        : EffectParameterSlotBase(group,
-                                  iParameterSlotNumber) {
+        const unsigned int iParameterSlotNumber)
+    : EffectParameterSlotBase(group,
+                              iParameterSlotNumber) {
     QString itemPrefix = formatItemPrefix(iParameterSlotNumber);
     m_pControlLoaded = new ControlObject(
-            ConfigKey(m_group, itemPrefix + QString("_loaded")));
+        ConfigKey(m_group, itemPrefix + QString("_loaded")));
     m_pControlValue = new ControlPushButton(
-            ConfigKey(m_group, itemPrefix));
+        ConfigKey(m_group, itemPrefix));
     m_pControlValue->setButtonMode(ControlPushButton::POWERWINDOW);
     m_pControlType = new ControlObject(
-            ConfigKey(m_group, itemPrefix + QString("_type")));
+        ConfigKey(m_group, itemPrefix + QString("_type")));
 
     connect(m_pControlValue, SIGNAL(valueChanged(double)),
             this, SLOT(slotValueChanged(double)));
 
     // Read-only controls.
     m_pControlType->connectValueChangeRequest(
-            this, SLOT(slotValueType(double)));
+        this, SLOT(slotValueType(double)));
     m_pControlLoaded->connectValueChangeRequest(
-            this, SLOT(slotLoaded(double)));
+        this, SLOT(slotLoaded(double)));
 
     clear();
 }
@@ -60,8 +60,8 @@ void EffectButtonParameterSlot::loadEffect(EffectPointer pEffect) {
             double dDefault = m_pEffectParameter->getDefault();
 
             if (dValue > dMaximum || dValue < dMinimum ||
-                dMinimum < dMinimumLimit || dMaximum > dMaximumLimit ||
-                dDefault > dMaximum || dDefault < dMinimum) {
+                    dMinimum < dMinimumLimit || dMaximum > dMaximumLimit ||
+                    dDefault > dMaximum || dDefault < dMinimum) {
                 qWarning() << debugString() << "WARNING: EffectParameter does not satisfy basic sanity checks.";
             }
 

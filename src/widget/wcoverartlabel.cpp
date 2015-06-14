@@ -7,10 +7,10 @@
 static const QSize s_labelDisplaySize = QSize(100, 100);
 
 WCoverArtLabel::WCoverArtLabel(QWidget* parent)
-        : QLabel(parent),
-          m_pCoverMenu(new WCoverArtMenu(this)),
-          m_pDlgFullSize(new DlgCoverArtFullSize()),
-          m_defaultCover(CoverArtUtils::defaultCoverLocation()) {
+    : QLabel(parent),
+      m_pCoverMenu(new WCoverArtMenu(this)),
+      m_pDlgFullSize(new DlgCoverArtFullSize()),
+      m_defaultCover(CoverArtUtils::defaultCoverLocation()) {
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     setFrameShape(QFrame::Box);
     setAlignment(Qt::AlignCenter);

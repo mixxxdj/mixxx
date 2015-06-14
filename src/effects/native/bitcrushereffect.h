@@ -13,9 +13,9 @@
 struct BitCrusherGroupState {
     // Default accumulator to 1 so we immediately pick an input value.
     BitCrusherGroupState()
-            : hold_l(0),
-              hold_r(0),
-              accumulator(1) {
+        : hold_l(0),
+          hold_r(0),
+          accumulator(1) {
     }
     CSAMPLE hold_l, hold_r;
     // Accumulated fractions of a samplerate period.
@@ -33,7 +33,7 @@ class BitCrusherEffect : public PerChannelEffectProcessor<BitCrusherGroupState> 
     // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,
                         BitCrusherGroupState* pState,
-                        const CSAMPLE* pInput, CSAMPLE *pOutput,
+                        const CSAMPLE* pInput, CSAMPLE* pOutput,
                         const unsigned int numSamples,
                         const unsigned int sampleRate,
                         const EffectProcessor::EnableState enableState,

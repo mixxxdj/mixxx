@@ -57,12 +57,12 @@ class TraktorFeature : public BaseExternalLibraryFeature {
     virtual BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist);
     TreeItem* importLibrary(QString file);
     // parses a track in the music collection
-    void parseTrack(QXmlStreamReader &xml, QSqlQuery &query);
+    void parseTrack(QXmlStreamReader& xml, QSqlQuery& query);
     // Iterates over all playliost and folders and constructs the childmodel
-    TreeItem* parsePlaylists(QXmlStreamReader &xml);
+    TreeItem* parsePlaylists(QXmlStreamReader& xml);
     // processes a particular playlist
-    void parsePlaylistEntries(QXmlStreamReader &xml, QString playlist_path,
-    QSqlQuery query_insert_into_playlist, QSqlQuery query_insert_into_playlisttracks);
+    void parsePlaylistEntries(QXmlStreamReader& xml, QString playlist_path,
+                              QSqlQuery query_insert_into_playlist, QSqlQuery query_insert_into_playlisttracks);
     void clearTable(QString table_name);
     static QString getTraktorMusicDatabase();
     // private fields

@@ -20,17 +20,17 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
                                const QString& idColumn,
                                const QStringList& columns,
                                bool isCaching)
-        : QObject(),
-          m_tableName(tableName),
-          m_idColumn(idColumn),
-          m_columnCount(columns.size()),
-          m_columnsJoined(columns.join(",")),
-          m_columnCache(columns),
-          m_bIndexBuilt(false),
-          m_bIsCaching(isCaching),
-          m_trackDAO(pTrackCollection->getTrackDAO()),
-          m_database(pTrackCollection->getDatabase()),
-          m_pQueryParser(new SearchQueryParser(pTrackCollection->getDatabase())) {
+    : QObject(),
+      m_tableName(tableName),
+      m_idColumn(idColumn),
+      m_columnCount(columns.size()),
+      m_columnsJoined(columns.join(",")),
+      m_columnCache(columns),
+      m_bIndexBuilt(false),
+      m_bIsCaching(isCaching),
+      m_trackDAO(pTrackCollection->getTrackDAO()),
+      m_database(pTrackCollection->getDatabase()),
+      m_pQueryParser(new SearchQueryParser(pTrackCollection->getDatabase())) {
     m_searchColumns << "artist"
                     << "album"
                     << "album_artist"
@@ -215,7 +215,7 @@ void BaseTrackCache::buildIndex() {
     }
 
     QString queryString = QString("SELECT %1 FROM %2")
-            .arg(m_columnsJoined, m_tableName);
+                          .arg(m_columnsJoined, m_tableName);
 
     if (sDebug) {
         qDebug() << this << "buildIndex query:" << queryString;
@@ -250,7 +250,7 @@ void BaseTrackCache::updateTracksInIndex(QSet<int> trackIds) {
     }
 
     QString queryString = QString("SELECT %1 FROM %2 WHERE %3 in (%4)")
-            .arg(m_columnsJoined, m_tableName, m_idColumn, idStrings.join(","));
+                          .arg(m_columnsJoined, m_tableName, m_idColumn, idStrings.join(","));
 
     if (sDebug) {
         qDebug() << this << "updateTracksInIndex update query:" << queryString;
@@ -264,8 +264,8 @@ void BaseTrackCache::updateTracksInIndex(QSet<int> trackIds) {
 }
 
 void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
-                                            int column,
-                                            QVariant& trackValue) const {
+        int column,
+        QVariant& trackValue) const {
     if (!pTrack || column < 0) {
         return;
     }
@@ -352,7 +352,7 @@ QVariant BaseTrackCache::data(int trackId, int column) const {
     // columns to this method, but there should still be a check here I think.
     if (!result.isValid()) {
         QHash<int, QVector<QVariant> >::const_iterator it =
-                m_trackInfo.find(trackId);
+            m_trackInfo.find(trackId);
         if (it != m_trackInfo.end()) {
             const QVector<QVariant>& fields = it.value();
             result = fields.value(column, result);
@@ -394,7 +394,7 @@ void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
     }
 
     std::unique_ptr<QueryNode> pQuery(parseQuery(
-        searchQuery, extraFilter, idStrings));
+                                          searchQuery, extraFilter, idStrings));
 
     QString filter = pQuery->toSql();
     if (!filter.isEmpty()) {
@@ -402,7 +402,7 @@ void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
     }
 
     QString queryString = QString("SELECT %1 FROM %2 %3 %4")
-            .arg(m_idColumn, m_tableName, filter, orderByClause);
+                          .arg(m_idColumn, m_tableName, filter, orderByClause);
 
     if (sDebug) {
         qDebug() << this << "select() executing:" << queryString;
@@ -462,7 +462,7 @@ void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
         // The track should be in the result set if the search is empty or the
         // track matches the search.
         bool shouldBeInResultSet = searchQuery.isEmpty() ||
-                pQuery->match(pTrack);
+                                   pQuery->match(pTrack);
 
         // If the track is in this result set.
         bool isInResultSet = trackToIndex->contains(trackId);
@@ -513,7 +513,7 @@ void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
 }
 
 std::unique_ptr<QueryNode> BaseTrackCache::parseQuery(QString query, QString extraFilter,
-                                      QStringList idStrings) const {
+        QStringList idStrings) const {
     QStringList queryFragments;
     if (!extraFilter.isNull() && extraFilter != "") {
         queryFragments << QString("(%1)").arg(extraFilter);
@@ -521,7 +521,7 @@ std::unique_ptr<QueryNode> BaseTrackCache::parseQuery(QString query, QString ext
 
     if (idStrings.size() > 0) {
         queryFragments << QString("%1 in (%2)")
-                .arg(m_idColumn, idStrings.join(","));
+                       .arg(m_idColumn, idStrings.join(","));
     }
 
     return m_pQueryParser->parseQuery(query, m_searchColumns,
@@ -529,9 +529,9 @@ std::unique_ptr<QueryNode> BaseTrackCache::parseQuery(QString query, QString ext
 }
 
 int BaseTrackCache::findSortInsertionPoint(TrackPointer pTrack,
-                                           const int sortColumn,
-                                           Qt::SortOrder sortOrder,
-                                           const QVector<int> trackIds) const {
+        const int sortColumn,
+        Qt::SortOrder sortOrder,
+        const QVector<int> trackIds) const {
     QVariant trackValue;
     getTrackValueForColumn(pTrack, sortColumn, trackValue);
 

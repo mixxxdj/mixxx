@@ -14,7 +14,7 @@
 #include "controllers/hid/hidcontrollerpreset.h"
 
 class ControllerMappingTableModel : public QAbstractTableModel,
-                                    public ControllerPresetVisitor {
+    public ControllerPresetVisitor {
     Q_OBJECT
   public:
     ControllerMappingTableModel(QObject* pParent);
@@ -42,7 +42,7 @@ class ControllerMappingTableModel : public QAbstractTableModel,
     // Returns a delegate for the provided column or NULL if the column does not
     // need a delegate.
     virtual QAbstractItemDelegate* delegateForColumn(int column,
-                                                     QWidget* pParent) = 0;
+            QWidget* pParent) = 0;
 
     // Validates the mappings.
     // TODO(rryan): do something with this

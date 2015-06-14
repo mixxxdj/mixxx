@@ -28,7 +28,7 @@ class WTrackTableView : public WLibraryTableView {
     WTrackTableView(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
                     TrackCollection* pTrackCollection, bool sorting = true);
     virtual ~WTrackTableView();
-    void contextMenuEvent(QContextMenuEvent * event);
+    void contextMenuEvent(QContextMenuEvent* event);
     void onSearch(const QString& text);
     void onShow();
     virtual void keyPressEvent(QKeyEvent* event);
@@ -44,7 +44,7 @@ class WTrackTableView : public WLibraryTableView {
 
   public slots:
     void loadTrackModel(QAbstractItemModel* model);
-    void slotMouseDoubleClicked(const QModelIndex &);
+    void slotMouseDoubleClicked(const QModelIndex&);
     void slotUnhide();
     void slotPurge();
     void onSearchStarting();
@@ -83,24 +83,24 @@ class WTrackTableView : public WLibraryTableView {
     void showTrackInfo(QModelIndex index);
     void showDlgTagFetcher(QModelIndex index);
     void createActions();
-    void dragMoveEvent(QDragMoveEvent * event);
-    void dragEnterEvent(QDragEnterEvent * event);
-    void dropEvent(QDropEvent * event);
+    void dragMoveEvent(QDragMoveEvent* event);
+    void dragEnterEvent(QDragEnterEvent* event);
+    void dropEvent(QDropEvent* event);
     void lockBpm(bool lock);
 
     void enableCachedOnly();
-    void selectionChanged(const QItemSelection &selected,
-                          const QItemSelection &deselected);
+    void selectionChanged(const QItemSelection& selected,
+                          const QItemSelection& deselected);
 
     // Mouse move event, implemented to hide the text and show an icon instead
     // when dragging.
-    void mouseMoveEvent(QMouseEvent *pEvent);
+    void mouseMoveEvent(QMouseEvent* pEvent);
 
     // Returns the current TrackModel, or returns NULL if none is set.
     TrackModel* getTrackModel();
     bool modelHasCapabilities(TrackModel::CapabilitiesFlags capability);
 
-    ConfigObject<ConfigValue> * m_pConfig;
+    ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;
 
     QSignalMapper m_loadTrackMapper;
@@ -115,42 +115,42 @@ class WTrackTableView : public WLibraryTableView {
     ControlObjectThread* m_pNumPreviewDecks;
 
     // Context menu machinery
-    QMenu *m_pMenu, *m_pPlaylistMenu, *m_pCrateMenu, *m_pSamplerMenu, *m_pBPMMenu;
+    QMenu* m_pMenu, *m_pPlaylistMenu, *m_pCrateMenu, *m_pSamplerMenu, *m_pBPMMenu;
     WCoverArtMenu* m_pCoverMenu;
     QSignalMapper m_playlistMapper, m_crateMapper, m_deckMapper, m_samplerMapper;
 
     // Reload Track Metadata Action:
-    QAction *m_pReloadMetadataAct;
-    QAction *m_pReloadMetadataFromMusicBrainzAct;
+    QAction* m_pReloadMetadataAct;
+    QAction* m_pReloadMetadataFromMusicBrainzAct;
 
     // Load Track to PreviewDeck
     QAction* m_pAddToPreviewDeck;
 
     // Send to Auto-DJ Action
-    QAction *m_pAutoDJAct;
-    QAction *m_pAutoDJTopAct;
+    QAction* m_pAutoDJAct;
+    QAction* m_pAutoDJTopAct;
 
     // Remove from table
-    QAction *m_pRemoveAct;
-    QAction *m_pHideAct;
-    QAction *m_pUnhideAct;
-    QAction *m_pPurgeAct;
+    QAction* m_pRemoveAct;
+    QAction* m_pHideAct;
+    QAction* m_pUnhideAct;
+    QAction* m_pPurgeAct;
 
     // Reset the played count of selected track or tracks
     QAction* m_pResetPlayedAct;
 
     // Show track-editor action
-    QAction *m_pPropertiesAct;
-    QAction *m_pFileBrowserAct;
+    QAction* m_pPropertiesAct;
+    QAction* m_pFileBrowserAct;
 
     // BPM feature
-    QAction *m_pBpmLockAction;
-    QAction *m_pBpmUnlockAction;
+    QAction* m_pBpmLockAction;
+    QAction* m_pBpmUnlockAction;
     QSignalMapper m_BpmMapper;
-    QAction *m_pBpmDoubleAction;
-    QAction *m_pBpmHalveAction;
-    QAction *m_pBpmTwoThirdsAction;
-    QAction *m_pBpmThreeFourthsAction;
+    QAction* m_pBpmDoubleAction;
+    QAction* m_pBpmHalveAction;
+    QAction* m_pBpmTwoThirdsAction;
+    QAction* m_pBpmThreeFourthsAction;
 
     // Clear track beats
     QAction* m_pClearBeatsAction;

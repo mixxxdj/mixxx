@@ -9,14 +9,14 @@
 #include "util/assert.h"
 
 DlgAnalysis::DlgAnalysis(QWidget* parent,
-                       ConfigObject<ConfigValue>* pConfig,
-                       TrackCollection* pTrackCollection)
-        : QWidget(parent),
-          m_pConfig(pConfig),
-          m_pTrackCollection(pTrackCollection),
-          m_bAnalysisActive(false),
-          m_tracksInQueue(0),
-          m_currentTrack(0) {
+                         ConfigObject<ConfigValue>* pConfig,
+                         TrackCollection* pTrackCollection)
+    : QWidget(parent),
+      m_pConfig(pConfig),
+      m_pTrackCollection(pTrackCollection),
+      m_bAnalysisActive(false),
+      m_tracksInQueue(0),
+      m_currentTrack(0) {
     setupUi(this);
     m_songsButtonGroup.addButton(radioButtonRecentlyAdded);
     m_songsButtonGroup.addButton(radioButtonAllSongs);
@@ -57,9 +57,9 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
             this, SLOT(selectAll()));
 
     connect(m_pAnalysisLibraryTableView->selectionModel(),
-            SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection&)),
+            SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
             this,
-            SLOT(tableSelectionChanged(const QItemSelection &, const QItemSelection&)));
+            SLOT(tableSelectionChanged(const QItemSelection&, const QItemSelection&)));
 }
 
 DlgAnalysis::~DlgAnalysis() {
@@ -97,7 +97,7 @@ void DlgAnalysis::moveSelection(int delta) {
 }
 
 void DlgAnalysis::tableSelectionChanged(const QItemSelection& selected,
-                                       const QItemSelection& deselected) {
+                                        const QItemSelection& deselected) {
     Q_UNUSED(selected);
     Q_UNUSED(deselected);
     bool tracksSelected = m_pAnalysisLibraryTableView->selectionModel()->hasSelection();
@@ -119,8 +119,8 @@ void DlgAnalysis::analyze() {
         foreach(QModelIndex selectedIndex, selectedIndexes) {
             bool ok;
             int trackId = selectedIndex.sibling(
-                selectedIndex.row(),
-                m_pAnalysisLibraryTableModel->fieldIndex(LIBRARYTABLE_ID)).data().toInt(&ok);
+                              selectedIndex.row(),
+                              m_pAnalysisLibraryTableModel->fieldIndex(LIBRARYTABLE_ID)).data().toInt(&ok);
             if (ok) {
                 trackIds.append(trackId);
             }
@@ -154,9 +154,9 @@ void DlgAnalysis::trackAnalysisFinished(int size) {
 void DlgAnalysis::trackAnalysisProgress(int progress) {
     if (m_bAnalysisActive) {
         QString text = tr("Analyzing %1/%2 %3%").arg(
-                QString::number(m_currentTrack),
-                QString::number(m_tracksInQueue),
-                QString::number(progress));
+                           QString::number(m_currentTrack),
+                           QString::number(m_tracksInQueue),
+                           QString::number(progress));
         labelProgress->setText(text);
     }
 }

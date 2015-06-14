@@ -5,15 +5,15 @@
 
 #define kConfigKey "[ReplayGain]"
 
-static const int kReplayGainReferenceLUFS = -18; 
+static const int kReplayGainReferenceLUFS = -18;
 
 
-DlgPrefReplayGain::DlgPrefReplayGain(QWidget * parent, ConfigObject<ConfigValue> * _config)
-        : DlgPreferencePage(parent),
-          config(_config),
-          m_replayGainBoost(kConfigKey, "ReplayGainBoost"),
-          m_defaultBoost(kConfigKey, "DefaultBoost"),
-          m_enabled(kConfigKey, "ReplayGainEnabled") {
+DlgPrefReplayGain::DlgPrefReplayGain(QWidget* parent, ConfigObject<ConfigValue>* _config)
+    : DlgPreferencePage(parent),
+      config(_config),
+      m_replayGainBoost(kConfigKey, "ReplayGainBoost"),
+      m_defaultBoost(kConfigKey, "DefaultBoost"),
+      m_enabled(kConfigKey, "ReplayGainEnabled") {
     setupUi(this);
 
     //Connections
@@ -38,23 +38,23 @@ DlgPrefReplayGain::~DlgPrefReplayGain() {
 
 void DlgPrefReplayGain::loadSettings() {
     int iReplayGainBoost = config->getValueString(
-            ConfigKey(kConfigKey, "InitialReplayGainBoost"), "0").toInt();
+                               ConfigKey(kConfigKey, "InitialReplayGainBoost"), "0").toInt();
     SliderReplayGainBoost->setValue(iReplayGainBoost);
     setLabelCurrentReplayGainBoost(iReplayGainBoost);
 
 
     int iDefaultBoost = config->getValueString(
-            ConfigKey(kConfigKey, "InitialDefaultBoost"), "-6").toInt();
+                            ConfigKey(kConfigKey, "InitialDefaultBoost"), "-6").toInt();
     SliderDefaultBoost->setValue(iDefaultBoost);
     LabelCurrentDefaultBoost->setText(
-            QString("%1 dB").arg(iDefaultBoost));
+        QString("%1 dB").arg(iDefaultBoost));
 
     bool gainEnabled = config->getValueString(
-            ConfigKey(kConfigKey, "ReplayGainEnabled"), "1").toInt() == 1;
+                           ConfigKey(kConfigKey, "ReplayGainEnabled"), "1").toInt() == 1;
     EnableGain->setChecked(gainEnabled);
 
     bool analyserEnabled = config->getValueString(
-            ConfigKey(kConfigKey, "ReplayGainAnalyserEnabled"), "1").toInt();
+                               ConfigKey(kConfigKey, "ReplayGainAnalyserEnabled"), "1").toInt();
     EnableAnalyser->setChecked(analyserEnabled);
 
     slotUpdate();
@@ -73,10 +73,10 @@ void DlgPrefReplayGain::slotResetToDefaults() {
     LabelCurrentDefaultBoost->setText("-6 dB");
 
     int iDefaultBoost = config->getValueString(
-            ConfigKey(kConfigKey, "InitialDefaultBoost"), "-6").toInt();
+                            ConfigKey(kConfigKey, "InitialDefaultBoost"), "-6").toInt();
     SliderDefaultBoost->setValue(iDefaultBoost);
     LabelCurrentDefaultBoost->setText(
-            QString("%1 dB").arg(iDefaultBoost));
+        QString("%1 dB").arg(iDefaultBoost));
 
 
     slotUpdate();
@@ -110,8 +110,8 @@ void DlgPrefReplayGain::slotUpdateReplayGainBoost() {
 
 void DlgPrefReplayGain::setLabelCurrentReplayGainBoost(int value) {
     LabelCurrentReplayGainBoost->setText(
-            QString(tr("%1 LUFS (adjust by %2 dB)")).arg(
-                  QString::number(value + kReplayGainReferenceLUFS), QString().sprintf("%+d", value)));
+        QString(tr("%1 LUFS (adjust by %2 dB)")).arg(
+            QString::number(value + kReplayGainReferenceLUFS), QString().sprintf("%+d", value)));
 }
 
 void DlgPrefReplayGain::slotUpdateDefaultBoost() {
@@ -119,13 +119,13 @@ void DlgPrefReplayGain::slotUpdateDefaultBoost() {
     config->set(ConfigKey(kConfigKey, "InitialDefaultBoost"),
                 ConfigValue(value));
     LabelCurrentDefaultBoost->setText(
-            QString("%1 dB").arg(value));
+        QString("%1 dB").arg(value));
     slotApply();
 }
 
 void DlgPrefReplayGain::slotUpdate() {
     if (config->getValueString(
-            ConfigKey(kConfigKey,"ReplayGainEnabled")).toInt() == 1) {
+                ConfigKey(kConfigKey,"ReplayGainEnabled")).toInt() == 1) {
         SliderReplayGainBoost->setEnabled(true);
         SliderDefaultBoost->setEnabled(true);
     } else {

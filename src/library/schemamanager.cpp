@@ -13,8 +13,8 @@ const QString SchemaManager::SETTINGS_MINCOMPATIBLE_STRING = "mixxx.schema.min_c
 
 // static
 SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
-        const QString& schemaFilename,
-        QSqlDatabase& db, const int targetVersion) {
+    const QString& schemaFilename,
+    QSqlDatabase& db, const int targetVersion) {
     SettingsDAO settings(db);
     int currentVersion = getCurrentSchemaVersion(settings);
     DEBUG_ASSERT_AND_HANDLE(currentVersion >= 0) {
@@ -31,7 +31,7 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
                  << targetVersion;
     } else {
         qDebug() << "SchemaManager::upgradeToSchemaVersion already past target "
-                "version. currentVersion:"
+                 "version. currentVersion:"
                  << currentVersion << "targetVersion:"
                  << targetVersion;
 
@@ -155,10 +155,10 @@ int SchemaManager::getCurrentSchemaVersion(SettingsDAO& settings) {
 
 // static
 bool SchemaManager::isBackwardsCompatible(SettingsDAO& settings,
-                                          int currentVersion,
-                                          int targetVersion) {
+        int currentVersion,
+        int targetVersion) {
     QString backwardsCompatibleVersion =
-            settings.getValue(SETTINGS_MINCOMPATIBLE_STRING);
+        settings.getValue(SETTINGS_MINCOMPATIBLE_STRING);
     bool ok = false;
     int iBackwardsCompatibleVersion = backwardsCompatibleVersion.toInt(&ok);
 

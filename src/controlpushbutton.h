@@ -29,27 +29,27 @@ class ControlPushButton : public ControlObject {
     Q_OBJECT
   public:
     enum ButtonMode {
-         PUSH = 0,
-         TOGGLE,
-         POWERWINDOW,
-         LONGPRESSLATCHING,
-         TRIGGER,
+        PUSH = 0,
+        TOGGLE,
+        POWERWINDOW,
+        LONGPRESSLATCHING,
+        TRIGGER,
     };
 
     static QString buttonModeToString(int mode) {
-        switch(mode) {
-            case ControlPushButton::PUSH:
-                return "PUSH";
-            case ControlPushButton::TOGGLE:
-                return "TOGGLE";
-            case ControlPushButton::POWERWINDOW:
-                return "POWERWINDOW";
-            case ControlPushButton::LONGPRESSLATCHING:
-                return "LONGPRESSLATCHING";
-            case ControlPushButton::TRIGGER:
-                return "TRIGGER";
-            default:
-                return "UNKNOWN";
+        switch (mode) {
+        case ControlPushButton::PUSH:
+            return "PUSH";
+        case ControlPushButton::TOGGLE:
+            return "TOGGLE";
+        case ControlPushButton::POWERWINDOW:
+            return "POWERWINDOW";
+        case ControlPushButton::LONGPRESSLATCHING:
+            return "LONGPRESSLATCHING";
+        case ControlPushButton::TRIGGER:
+            return "TRIGGER";
+        default:
+            return "UNKNOWN";
         }
     }
 

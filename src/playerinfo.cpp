@@ -27,8 +27,8 @@ static const int kPlayingDeckUpdateIntervalMillis = 2000;
 static PlayerInfo* m_pPlayerInfo = NULL;
 
 PlayerInfo::PlayerInfo()
-        : m_pCOxfader(new ControlObjectThread("[Master]","crossfader")),
-          m_currentlyPlayingDeck(-1) {
+    : m_pCOxfader(new ControlObjectThread("[Master]","crossfader")),
+      m_currentlyPlayingDeck(-1) {
     startTimer(kPlayingDeckUpdateIntervalMillis);
 }
 
@@ -58,7 +58,8 @@ TrackPointer PlayerInfo::getTrackInfo(const QString& group) {
 
 void PlayerInfo::setTrackInfo(const QString& group, const TrackPointer& track) {
     TrackPointer pOld;
-    { // Scope
+    {
+        // Scope
         QMutexLocker locker(&m_mutex);
         pOld = m_loadedTrackMap.value(group);
         m_loadedTrackMap.insert(group, track);

@@ -18,15 +18,15 @@
 const QString AnalysisFeature::m_sAnalysisViewName = QString("Analysis");
 
 AnalysisFeature::AnalysisFeature(QObject* parent,
-                               ConfigObject<ConfigValue>* pConfig,
-                               TrackCollection* pTrackCollection) :
-        LibraryFeature(parent),
-        m_pConfig(pConfig),
-        m_pTrackCollection(pTrackCollection),
-        m_pAnalyserQueue(NULL),
-        m_iOldBpmEnabled(0),
-        m_analysisTitleName(tr("Analyze")),
-        m_pAnalysisView(NULL) {
+                                 ConfigObject<ConfigValue>* pConfig,
+                                 TrackCollection* pTrackCollection) :
+    LibraryFeature(parent),
+    m_pConfig(pConfig),
+    m_pTrackCollection(pTrackCollection),
+    m_pAnalyserQueue(NULL),
+    m_iOldBpmEnabled(0),
+    m_analysisTitleName(tr("Analyze")),
+    m_pAnalysisView(NULL) {
     setTitleDefault();
 }
 
@@ -44,9 +44,9 @@ void AnalysisFeature::setTitleDefault() {
 
 void AnalysisFeature::setTitleProgress(int trackNum, int totalNum) {
     m_Title = QString("%1 (%2 / %3)")
-            .arg(m_analysisTitleName)
-            .arg(QString::number(trackNum))
-            .arg(QString::number(totalNum));
+              .arg(m_analysisTitleName)
+              .arg(QString::number(trackNum))
+              .arg(QString::number(totalNum));
     emit(featureIsLoading(this, false));
 }
 

@@ -38,9 +38,9 @@ class StubLoopControl : public LoopingControl {
     }
 
     virtual double nextTrigger(const double dRate,
-                       const double currentSample,
-                       const double totalSamples,
-                       const int iBufferSize) {
+                               const double currentSample,
+                               const double totalSamples,
+                               const int iBufferSize) {
         Q_UNUSED(dRate);
         Q_UNUSED(currentSample);
         Q_UNUSED(totalSamples);
@@ -64,9 +64,9 @@ class StubLoopControl : public LoopingControl {
     // getTrigger returns the sample that the engine will next be triggered to
     // loop to, given the value of currentSample and dRate.
     virtual double getTrigger(const double dRate,
-                      const double currentSample,
-                      const double totalSamples,
-                      const int iBufferSize) {
+                              const double currentSample,
+                              const double totalSamples,
+                              const int iBufferSize) {
         Q_UNUSED(dRate);
         Q_UNUSED(currentSample);
         Q_UNUSED(totalSamples);
@@ -105,7 +105,7 @@ class ReadAheadManagerTest : public MixxxTest {
         m_pReader.reset(new StubReader());
         m_pLoopControl.reset(new StubLoopControl());
         m_pReadAheadManager.reset(new ReadAheadManager(m_pReader.data(),
-                                                       m_pLoopControl.data()));
+                                  m_pLoopControl.data()));
     }
 
     QScopedPointer<StubReader> m_pReader;

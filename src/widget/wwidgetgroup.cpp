@@ -11,9 +11,9 @@
 #include "util/debug.h"
 
 WWidgetGroup::WWidgetGroup(QWidget* pParent)
-        : QFrame(pParent),
-          WBaseWidget(this),
-          m_pPixmapBack(NULL) {
+    : QFrame(pParent),
+      WBaseWidget(this),
+      m_pPixmapBack(NULL) {
     setObjectName("WidgetGroup");
 }
 
@@ -40,7 +40,7 @@ void WWidgetGroup::setLayoutSpacing(int spacing) {
 QRect WWidgetGroup::layoutContentsMargins() const {
     QLayout* pLayout = layout();
     QMargins margins = pLayout ? pLayout->contentsMargins() :
-            contentsMargins();
+                       contentsMargins();
     return QRect(margins.left(), margins.top(),
                  margins.right(), margins.bottom());
 }

@@ -29,9 +29,9 @@ class Parser : public QObject {
   public:
     static bool isPlaylistFilenameSupported(const QString& fileName) {
         return fileName.endsWith(".m3u", Qt::CaseInsensitive) ||
-                fileName.endsWith(".m3u8", Qt::CaseInsensitive) ||
-                fileName.endsWith(".pls", Qt::CaseInsensitive) ||
-                fileName.endsWith(".csv", Qt::CaseInsensitive);
+               fileName.endsWith(".m3u8", Qt::CaseInsensitive) ||
+               fileName.endsWith(".pls", Qt::CaseInsensitive) ||
+               fileName.endsWith(".csv", Qt::CaseInsensitive);
     }
 
     Parser();
@@ -43,7 +43,7 @@ class Parser : public QObject {
     virtual QList<QString> parse(QString) = 0;
 
 
-protected:
+  protected:
     /**Pointer to the parsed Filelocations**/
     QList<QString> m_sLocations;
     /**Returns the number of parsed locations**/

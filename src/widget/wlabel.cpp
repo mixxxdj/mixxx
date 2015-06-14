@@ -22,11 +22,11 @@
 #include "widget/wskincolor.h"
 
 WLabel::WLabel(QWidget* pParent)
-        : QLabel(pParent),
-          WBaseWidget(this),
-          m_skinText(),
-          m_longText(),
-          m_elideMode(Qt::ElideNone) {
+    : QLabel(pParent),
+      WBaseWidget(this),
+      m_skinText(),
+      m_longText(),
+      m_elideMode(Qt::ElideNone) {
 }
 
 WLabel::~WLabel() {
@@ -60,7 +60,7 @@ void WLabel::setup(QDomNode node, const SkinContext& context) {
     // Alignment
     QString alignment;
     if (context.hasNodeSelectString(node, "Alignment", &alignment)) {
-    	alignment = alignment.toLower();
+        alignment = alignment.toLower();
         if (alignment == "right") {
             setAlignment(Qt::AlignRight | Qt::AlignVCenter);
         } else if (alignment == "center") {
@@ -69,14 +69,14 @@ void WLabel::setup(QDomNode node, const SkinContext& context) {
             setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
         } else {
             qDebug() << "WLabel::setup(): Alignment =" << alignment <<
-                    " unknown, use right, center or left";
+                     " unknown, use right, center or left";
         }
     }
 
     // Adds an ellipsis to turncated text
     QString elide;
     if (context.hasNodeSelectString(node, "Elide", &elide)) {
-    	elide = elide.toLower();
+        elide = elide.toLower();
         if (elide == "right") {
             m_elideMode = Qt::ElideRight;
         } else if (elide == "middle") {
@@ -87,7 +87,7 @@ void WLabel::setup(QDomNode node, const SkinContext& context) {
             m_elideMode = Qt::ElideNone;
         } else {
             qDebug() << "WLabel::setup(): Alide =" << elide <<
-                    "unknown, use right, middle, left or none.";
+                     "unknown, use right, middle, left or none.";
         }
     }
 }

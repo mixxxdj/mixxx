@@ -26,25 +26,25 @@
 #define FINALIZE_PROMILLE 1
 
 namespace {
-    // Analysis is done in blocks.
-    // We need to use a smaller block size, because on Linux the AnalyserQueue
-    // can starve the CPU of its resources, resulting in xruns. A block size
-    // of 4096 frames per block seems to do fine.
-    const SINT kAnalysisChannels = Mixxx::AudioSource::kChannelCountStereo;
-    const SINT kAnalysisFramesPerBlock = 4096;
-    const SINT kAnalysisSamplesPerBlock =
-            kAnalysisFramesPerBlock * kAnalysisChannels;
+// Analysis is done in blocks.
+// We need to use a smaller block size, because on Linux the AnalyserQueue
+// can starve the CPU of its resources, resulting in xruns. A block size
+// of 4096 frames per block seems to do fine.
+const SINT kAnalysisChannels = Mixxx::AudioSource::kChannelCountStereo;
+const SINT kAnalysisFramesPerBlock = 4096;
+const SINT kAnalysisSamplesPerBlock =
+    kAnalysisFramesPerBlock* kAnalysisChannels;
 } // anonymous namespace
 
 AnalyserQueue::AnalyserQueue(TrackCollection* pTrackCollection)
-        : m_aq(),
-          m_exit(false),
-          m_aiCheckPriorities(false),
-          m_sampleBuffer(kAnalysisSamplesPerBlock),
-          m_tioq(),
-          m_qm(),
-          m_qwait(),
-          m_queue_size(0) {
+    : m_aq(),
+      m_exit(false),
+      m_aiCheckPriorities(false),
+      m_sampleBuffer(kAnalysisSamplesPerBlock),
+      m_tioq(),
+      m_qm(),
+      m_qwait(),
+      m_queue_size(0) {
     Q_UNUSED(pTrackCollection);
     connect(this, SIGNAL(updateProgress()),
             this, SLOT(slotUpdateProgress()));
@@ -173,15 +173,15 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, Mixxx::AudioSourcePointer pAudi
 
         DEBUG_ASSERT(frameIndex < pAudioSource->getMaxFrameIndex());
         const SINT framesRemaining =
-                pAudioSource->getMaxFrameIndex() - frameIndex;
+            pAudioSource->getMaxFrameIndex() - frameIndex;
         const SINT framesToRead =
-                math_min(kAnalysisFramesPerBlock, framesRemaining);
+            math_min(kAnalysisFramesPerBlock, framesRemaining);
         DEBUG_ASSERT(0 < framesToRead);
 
         const SINT framesRead =
-                pAudioSource->readSampleFramesStereo(
-                        kAnalysisFramesPerBlock,
-                        &m_sampleBuffer);
+            pAudioSource->readSampleFramesStereo(
+                kAnalysisFramesPerBlock,
+                &m_sampleBuffer);
         DEBUG_ASSERT(framesRead <= framesToRead);
         frameIndex += framesRead;
         DEBUG_ASSERT(pAudioSource->isValidFrameIndex(frameIndex));
@@ -204,8 +204,8 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, Mixxx::AudioSourcePointer pAudi
             if (frameIndex < pAudioSource->getMaxFrameIndex()) {
                 // EOF not reached -> Maybe a corrupt file?
                 qWarning() << "Failed to read sample data from file:"
-                        << tio->getFilename()
-                        << "@" << frameIndex;
+                           << tio->getFilename()
+                           << "@" << frameIndex;
                 if (0 >= framesRead) {
                     // If no frames have been read then abort the analysis.
                     // Otherwise we might get stuck in this loop forever.
@@ -221,7 +221,7 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, Mixxx::AudioSourcePointer pAudi
         //fp div here prevents insane signed overflow
         DEBUG_ASSERT(pAudioSource->isValidFrameIndex(frameIndex));
         const double frameProgress =
-                double(frameIndex) / double(pAudioSource->getMaxFrameIndex());
+            double(frameIndex) / double(pAudioSource->getMaxFrameIndex());
         int progressPromille = frameProgress * (1000 - FINALIZE_PROMILLE);
 
         if (m_progressInfo.track_progress != progressPromille) {
@@ -376,7 +376,7 @@ void AnalyserQueue::emitUpdateProgress(TrackPointer tio, int progress) {
         if (progress < 1000 - FINALIZE_PROMILLE && progress > 0) {
             // Signals during processing are not required in any case
             if (!m_progressInfo.sema.tryAcquire()) {
-               return;
+                return;
             }
         } else {
             m_progressInfo.sema.acquire();
@@ -419,7 +419,7 @@ void AnalyserQueue::queueAnalyseTrack(TrackPointer tio) {
 
 // static
 AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(
-        ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection) {
+    ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection) {
     AnalyserQueue* ret = new AnalyserQueue(pTrackCollection);
 
     ret->addAnalyser(new AnalyserWaveform(pConfig));
@@ -434,7 +434,7 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(
 
 // static
 AnalyserQueue* AnalyserQueue::createAnalysisFeatureAnalyserQueue(
-        ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection) {
+    ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection) {
     AnalyserQueue* ret = new AnalyserQueue(pTrackCollection);
 
     ret->addAnalyser(new AnalyserGain(pConfig));

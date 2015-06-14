@@ -26,7 +26,7 @@ class ControllerPreset {
 
     struct ScriptFileInfo {
         ScriptFileInfo()
-                : builtin(false) {
+            : builtin(false) {
 
         }
 

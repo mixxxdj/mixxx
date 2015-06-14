@@ -19,7 +19,7 @@
 
 
 class Bessel8LVMixEQEffectGroupState :
-        public LVMixEQEffectGroupState<EngineFilterBessel8Low> {
+    public LVMixEQEffectGroupState<EngineFilterBessel8Low> {
 };
 
 class Bessel8LVMixEQEffect : public PerChannelEffectProcessor<Bessel8LVMixEQEffectGroupState> {

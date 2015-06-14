@@ -9,12 +9,11 @@
 #include "library/queryutil.h"
 
 LibraryHashDAO::LibraryHashDAO(QSqlDatabase& database)
-        : m_database(database) {
+    : m_database(database) {
 
 }
 
-LibraryHashDAO::~LibraryHashDAO()
-{
+LibraryHashDAO::~LibraryHashDAO() {
 }
 
 void LibraryHashDAO::initialize() {
@@ -34,7 +33,7 @@ QHash<QString, int> LibraryHashDAO::getDirectoryHashes() {
     int directoryPathColumn = query.record().indexOf("directory_path");
     while (query.next()) {
         hashes[query.value(directoryPathColumn).toString()] =
-                query.value(hashColumn).toInt();
+            query.value(hashColumn).toInt();
     }
 
     return hashes;
@@ -67,7 +66,7 @@ void LibraryHashDAO::saveDirectoryHash(const QString& dirPath, const int hash) {
     //qDebug() << "LibraryHashDAO::saveDirectoryHash" << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
     query.prepare("INSERT INTO LibraryHashes (directory_path, hash, directory_deleted) "
-                    "VALUES (:directory_path, :hash, :directory_deleted)");
+                  "VALUES (:directory_path, :hash, :directory_deleted)");
     query.bindValue(":directory_path", dirPath);
     query.bindValue(":hash", hash);
     query.bindValue(":directory_deleted", 0);
@@ -79,16 +78,16 @@ void LibraryHashDAO::saveDirectoryHash(const QString& dirPath, const int hash) {
 }
 
 void LibraryHashDAO::updateDirectoryHash(const QString& dirPath,
-                                         const int newHash,
-                                         const int dir_deleted) {
+        const int newHash,
+        const int dir_deleted) {
     //qDebug() << "LibraryHashDAO::updateDirectoryHash" << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
     // By definition if we have calculated a new hash for a directory then it
     // exists and no longer needs verification.
     query.prepare("UPDATE LibraryHashes "
-            "SET hash=:hash, directory_deleted=:directory_deleted, "
-            "needs_verification=0 "
-            "WHERE directory_path=:directory_path");
+                  "SET hash=:hash, directory_deleted=:directory_deleted, "
+                  "needs_verification=0 "
+                  "WHERE directory_path=:directory_path");
     query.bindValue(":hash", newHash);
     query.bindValue(":directory_deleted", dir_deleted);
     query.bindValue(":directory_path", dirPath);
@@ -103,8 +102,8 @@ void LibraryHashDAO::updateDirectoryHash(const QString& dirPath,
 }
 
 void LibraryHashDAO::updateDirectoryStatuses(const QStringList& dirPaths,
-                                             const bool deleted,
-                                             const bool verified) {
+        const bool deleted,
+        const bool verified) {
     //qDebug() << "LibraryHashDAO::updateDirectoryStatus" << QThread::currentThread() << m_database.connectionName();
     FieldEscaper escaper(m_database);
     QStringList escapedDirPaths = escaper.escapeStrings(dirPaths);
@@ -164,7 +163,7 @@ void LibraryHashDAO::markUnverifiedDirectoriesAsDeleted() {
 void LibraryHashDAO::removeDeletedDirectoryHashes() {
     QSqlQuery query(m_database);
     query.prepare("DELETE FROM LibraryHashes WHERE "
-               "directory_deleted=:directory_deleted");
+                  "directory_deleted=:directory_deleted");
     query.bindValue(":directory_deleted", 1);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);

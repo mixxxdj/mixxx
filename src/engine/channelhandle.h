@@ -41,7 +41,7 @@ class ChannelHandle {
 
   private:
     ChannelHandle(int iHandle)
-            : m_iHandle(iHandle) {
+        : m_iHandle(iHandle) {
     }
 
     void setHandle(int iHandle) {
@@ -75,8 +75,8 @@ inline uint qHash(const ChannelHandle& handle) {
 class ChannelHandleAndGroup {
   public:
     ChannelHandleAndGroup(const ChannelHandle& handle, const QString& name)
-            : m_handle(handle),
-              m_name(name) {
+        : m_handle(handle),
+          m_name(name) {
     }
 
     inline const QString& name() const {

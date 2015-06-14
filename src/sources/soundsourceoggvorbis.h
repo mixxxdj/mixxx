@@ -9,7 +9,7 @@
 namespace Mixxx {
 
 class SoundSourceOggVorbis: public SoundSource {
-public:
+  public:
     explicit SoundSourceOggVorbis(QUrl url);
     ~SoundSourceOggVorbis();
 
@@ -18,16 +18,16 @@ public:
     SINT seekSampleFrame(SINT frameIndex) override;
 
     SINT readSampleFrames(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer) override;
+                          CSAMPLE* sampleBuffer) override;
     SINT readSampleFramesStereo(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer, SINT sampleBufferSize) override;
+                                CSAMPLE* sampleBuffer, SINT sampleBufferSize) override;
 
-private:
+  private:
     Result tryOpen(const AudioSourceConfig& audioSrcCfg) override;
 
     SINT readSampleFrames(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer, SINT sampleBufferSize,
-            bool readStereoSamples);
+                          CSAMPLE* sampleBuffer, SINT sampleBufferSize,
+                          bool readStereoSamples);
 
     OggVorbis_File m_vf;
 
@@ -35,7 +35,7 @@ private:
 };
 
 class SoundSourceProviderOggVorbis: public SoundSourceProvider {
-public:
+  public:
     QString getName() const override;
 
     QStringList getSupportedFileExtensions() const override;

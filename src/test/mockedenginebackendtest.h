@@ -31,17 +31,19 @@ using ::testing::_;
 class MockScaler : public EngineBufferScale {
   public:
     MockScaler()
-            : EngineBufferScale(),
-              m_processedTempo(-1),
-              m_processedPitch(-1) {
+        : EngineBufferScale(),
+          m_processedTempo(-1),
+          m_processedPitch(-1) {
         SampleUtil::clear(m_buffer, MAX_BUFFER_LEN);
     }
     void clear() { }
-    CSAMPLE *getScaled(unsigned long buf_size) {
+    CSAMPLE* getScaled(unsigned long buf_size) {
         m_processedTempo = m_dTempoRatio;
         m_processedPitch = m_dPitchRatio;
         m_samplesRead = round(buf_size * m_dTempoRatio);
-        if (static_cast<int>(m_samplesRead) % 2) { m_samplesRead--; }
+        if (static_cast<int>(m_samplesRead) % 2) {
+            m_samplesRead--;
+        }
         return m_buffer;
     }
 
@@ -68,20 +70,20 @@ class MockedEngineBackendTest : public MixxxTest {
                                            m_pEffectsManager, false, false);
 
         m_pChannel1 = new EngineDeck(
-                m_pEngineMaster->registerChannelGroup(m_sGroup1),
-                m_pConfig.data(), m_pEngineMaster, m_pEffectsManager,
-                EngineChannel::CENTER);
+            m_pEngineMaster->registerChannelGroup(m_sGroup1),
+            m_pConfig.data(), m_pEngineMaster, m_pEffectsManager,
+            EngineChannel::CENTER);
         m_pChannel2 = new EngineDeck(
-                m_pEngineMaster->registerChannelGroup(m_sGroup2),
-                m_pConfig.data(), m_pEngineMaster, m_pEffectsManager,
-                EngineChannel::CENTER);
+            m_pEngineMaster->registerChannelGroup(m_sGroup2),
+            m_pConfig.data(), m_pEngineMaster, m_pEffectsManager,
+            EngineChannel::CENTER);
         m_pChannel3 = new EngineDeck(
-                m_pEngineMaster->registerChannelGroup(m_sGroup3),
-                m_pConfig.data(), m_pEngineMaster, m_pEffectsManager,
-                EngineChannel::CENTER);
+            m_pEngineMaster->registerChannelGroup(m_sGroup3),
+            m_pConfig.data(), m_pEngineMaster, m_pEffectsManager,
+            EngineChannel::CENTER);
         m_pPreview1 = new PreviewDeck(NULL, m_pConfig.data(),
-                                     m_pEngineMaster, m_pEffectsManager,
-                                     EngineChannel::CENTER, m_sPreviewGroup);
+                                      m_pEngineMaster, m_pEffectsManager,
+                                      EngineChannel::CENTER, m_sPreviewGroup);
         ControlObject::getControl(ConfigKey(m_sPreviewGroup, "file_bpm"))->set(2.0);
         // TODO(owilliams) Tests fail with this turned on because EngineSync is syncing
         // to this sampler.  FIX IT!
@@ -103,11 +105,11 @@ class MockedEngineBackendTest : public MixxxTest {
         m_pMockScaleVinyl3 = new MockScaler();
         m_pMockScaleKeylock3 = new MockScaler();
         m_pChannel1->getEngineBuffer()->setScalerForTest(m_pMockScaleVinyl1,
-                                                         m_pMockScaleKeylock1);
+                m_pMockScaleKeylock1);
         m_pChannel2->getEngineBuffer()->setScalerForTest(m_pMockScaleVinyl2,
-                                                         m_pMockScaleKeylock2);
+                m_pMockScaleKeylock2);
         m_pChannel3->getEngineBuffer()->setScalerForTest(m_pMockScaleVinyl3,
-                                                         m_pMockScaleKeylock3);
+                m_pMockScaleKeylock3);
         m_pTrack1 = m_pChannel1->getEngineBuffer()->loadFakeTrack();
         m_pTrack2 = m_pChannel2->getEngineBuffer()->loadFakeTrack();
         m_pTrack3 = m_pChannel3->getEngineBuffer()->loadFakeTrack();
@@ -116,11 +118,11 @@ class MockedEngineBackendTest : public MixxxTest {
     void addDeck(EngineDeck* pDeck) {
         m_pEngineMaster->addChannel(pDeck);
         ControlObject::getControl(ConfigKey(pDeck->getGroup(), "master"))
-                ->set(1.0);
+        ->set(1.0);
         ControlObject::getControl(ConfigKey(pDeck->getGroup(), "rate_dir"))
-                ->set(kDefaultRateDir);
+        ->set(kDefaultRateDir);
         ControlObject::getControl(ConfigKey(pDeck->getGroup(), "rateRange"))
-                ->set(kDefaultRateRange);
+        ->set(kDefaultRateRange);
         m_pNumDecks->set(m_pNumDecks->get() + 1);
     }
 
@@ -155,12 +157,12 @@ class MockedEngineBackendTest : public MixxxTest {
     EffectsManager* m_pEffectsManager;
     EngineSync* m_pEngineSync;
     EngineMaster* m_pEngineMaster;
-    EngineDeck *m_pChannel1, *m_pChannel2, *m_pChannel3;
-    MockScaler *m_pMockScaleVinyl1, *m_pMockScaleVinyl2, *m_pMockScaleVinyl3;
-    MockScaler *m_pMockScaleKeylock1, *m_pMockScaleKeylock2, *m_pMockScaleKeylock3;
+    EngineDeck* m_pChannel1, *m_pChannel2, *m_pChannel3;
+    MockScaler* m_pMockScaleVinyl1, *m_pMockScaleVinyl2, *m_pMockScaleVinyl3;
+    MockScaler* m_pMockScaleKeylock1, *m_pMockScaleKeylock2, *m_pMockScaleKeylock3;
     TrackPointer m_pTrack1, m_pTrack2, m_pTrack3;
-    PreviewDeck *m_pPreview1;
-    Sampler *m_pSampler1;
+    PreviewDeck* m_pPreview1;
+    Sampler* m_pSampler1;
 
     static const char* m_sGroup1;
     static const char* m_sGroup2;

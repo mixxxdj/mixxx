@@ -25,7 +25,7 @@ HidEnumerator::~HidEnumerator() {
 bool isDeviceBlacklisted(struct hid_device_info* cur_dev) {
     bool interface_number_valid = cur_dev->interface_number != -1;
     const int blacklist_len = sizeof(hid_blacklisted)/sizeof(hid_blacklisted[0]);
-    for (int bl_index=0;bl_index<blacklist_len;bl_index++) {
+    for (int bl_index=0; bl_index<blacklist_len; bl_index++) {
         hid_blacklist_t blacklisted = hid_blacklisted[bl_index];
         // If vendor ids do not match, skip.
         if (cur_dev->vendor_id != blacklisted.vendor_id)
@@ -43,7 +43,7 @@ bool isDeviceBlacklisted(struct hid_device_info* cur_dev) {
             if (cur_dev->interface_number != blacklisted.interface_number) {
                 continue;
             }
-        } 
+        }
         // Blacklist entry based on usage_page and usage (both required)
         if (blacklisted.usage_page != 0 && blacklisted.usage != 0) {
             // Skip matching for devices with no usage_page/usage info.
@@ -64,7 +64,7 @@ bool isDeviceBlacklisted(struct hid_device_info* cur_dev) {
 QList<Controller*> HidEnumerator::queryDevices() {
     qDebug() << "Scanning HID devices:";
 
-    struct hid_device_info *devs, *cur_dev;
+    struct hid_device_info* devs, *cur_dev;
     devs = hid_enumerate(0x0, 0x0);
 
     for (cur_dev = devs; cur_dev; cur_dev = cur_dev->next) {
@@ -76,8 +76,8 @@ QList<Controller*> HidEnumerator::queryDevices() {
                      << QString("r%1").arg(cur_dev->release_number)
                      << "S/N" << cur_dev->serial_number
                      << (cur_dev->interface_number == -1 ? QString("Usage Page %1 Usage %2").arg(
-                         QString::number(cur_dev->usage_page),
-                         QString::number(cur_dev->usage)) :
+                             QString::number(cur_dev->usage_page),
+                             QString::number(cur_dev->usage)) :
                          QString("Interface %1").arg(cur_dev->interface_number));
             continue;
         }
@@ -89,8 +89,8 @@ QList<Controller*> HidEnumerator::queryDevices() {
                  << QString("r%1").arg(cur_dev->release_number)
                  << "S/N" << cur_dev->serial_number
                  << (cur_dev->interface_number == -1 ? QString("Usage Page %1 Usage %2").arg(
-                     QString::number(cur_dev->usage_page),
-                     QString::number(cur_dev->usage)) :
+                         QString::number(cur_dev->usage_page),
+                         QString::number(cur_dev->usage)) :
                      QString("Interface %1").arg(cur_dev->interface_number));
 
         if (!cur_dev->serial_number && !cur_dev->product_string) {

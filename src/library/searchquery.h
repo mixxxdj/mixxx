@@ -75,9 +75,9 @@ class TextFilterNode : public QueryNode {
     TextFilterNode(const QSqlDatabase& database,
                    const QStringList& sqlColumns,
                    const QString& argument)
-            : m_database(database),
-              m_sqlColumns(sqlColumns),
-              m_argument(argument) {
+        : m_database(database),
+          m_sqlColumns(sqlColumns),
+          m_argument(argument) {
     }
 
     bool match(const TrackPointer& pTrack) const override;
@@ -107,7 +107,7 @@ class NumericFilterNode : public QueryNode {
     void init(QString argument);
 
   private:
-    virtual double parse(const QString& arg, bool *ok);
+    virtual double parse(const QString& arg, bool* ok);
 
     QStringList m_sqlColumns;
     bool m_bOperatorQuery;
@@ -140,10 +140,10 @@ class KeyFilterNode : public QueryNode {
 class SqlNode : public QueryNode {
   public:
     explicit SqlNode(const QString& sqlExpression)
-            // No need to wrap into parantheses here! This will be done
-            // later in toSql() if this node is a component of another
-            // composite node.
-            : m_sql(sqlExpression) {
+    // No need to wrap into parantheses here! This will be done
+    // later in toSql() if this node is a component of another
+    // composite node.
+        : m_sql(sqlExpression) {
     }
 
     bool match(const TrackPointer& pTrack) const override {

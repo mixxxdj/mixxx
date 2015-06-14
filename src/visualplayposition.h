@@ -57,9 +57,11 @@ class VisualPlayPosition : public QObject {
     static QSharedPointer<VisualPlayPosition> getVisualPlayPosition(QString group);
 
     // This is called by SoundDevicePortAudio just after the callback starts.
-    static void setTimeInfo(const PaStreamCallbackTimeInfo *timeInfo);
+    static void setTimeInfo(const PaStreamCallbackTimeInfo* timeInfo);
 
-    void setInvalid() { m_valid = false; };
+    void setInvalid() {
+        m_valid = false;
+    };
 
   private slots:
     void slotAudioBufferSizeChanged(double size);

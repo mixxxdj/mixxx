@@ -21,7 +21,7 @@
 namespace Mixxx {
 
 class SoundSourceCoreAudio : public Mixxx::SoundSource {
-public:
+  public:
     explicit SoundSourceCoreAudio(QUrl url);
     ~SoundSourceCoreAudio();
 
@@ -30,9 +30,9 @@ public:
     SINT seekSampleFrame(SINT frameIndex) override;
 
     SINT readSampleFrames(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer) override;
+                          CSAMPLE* sampleBuffer) override;
 
-private:
+  private:
     Result tryOpen(const AudioSourceConfig& audioSrcCfg) override;
 
     bool m_bFileIsMp3;
@@ -43,7 +43,7 @@ private:
 };
 
 class SoundSourceProviderCoreAudio: public SoundSourceProvider {
-public:
+  public:
     QString getName() const override;
 
     QStringList getSupportedFileExtensions() const override;

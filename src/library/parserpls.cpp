@@ -28,16 +28,13 @@
           not only the filepath;
  **/
 
-ParserPls::ParserPls() : Parser()
-{
+ParserPls::ParserPls() : Parser() {
 }
 
-ParserPls::~ParserPls()
-{
+ParserPls::~ParserPls() {
 }
 
-QList<QString> ParserPls::parse(QString sFilename)
-{
+QList<QString> ParserPls::parse(QString sFilename) {
     //long numEntries =0;
     QFile file(sFilename);
     QString basepath = sFilename.section('/', 0, -2);
@@ -58,13 +55,13 @@ QList<QString> ParserPls::parse(QString sFilename)
         //detect encoding
         bool isCRLF_encoded = ba.contains("\r\n");
         bool isCR_encoded = ba.contains("\r");
-        if(isCR_encoded && !isCRLF_encoded)
+        if (isCR_encoded && !isCRLF_encoded)
             ba.replace('\r','\n');
         QTextStream textstream(ba.constData());
 
-        while(!textstream.atEnd()) {
+        while (!textstream.atEnd()) {
             QString psLine = getFilepath(&textstream, basepath);
-            if(psLine.isNull()) {
+            if (psLine.isNull()) {
                 break;
             } else {
                 m_sLocations.append(psLine);
@@ -74,7 +71,7 @@ QList<QString> ParserPls::parse(QString sFilename)
 
         file.close();
 
-        if(m_sLocations.count() != 0)
+        if (m_sLocations.count() != 0)
             return m_sLocations;
         else
             return QList<QString>(); // NULL pointer returned when no locations were found
@@ -84,8 +81,7 @@ QList<QString> ParserPls::parse(QString sFilename)
     return QList<QString>(); //if we get here something went wrong :D
 }
 
-long ParserPls::getNumEntries(QTextStream *stream)
-{
+long ParserPls::getNumEntries(QTextStream* stream) {
 
     QString textline;
     textline = stream->readLine();
@@ -99,7 +95,7 @@ long ParserPls::getNumEntries(QTextStream *stream)
 
         return temp.toLong();
 
-    } else{
+    } else {
         qDebug() << "ParserPls: pls file is not a playlist! \n";
         return 0;
     }
@@ -107,8 +103,7 @@ long ParserPls::getNumEntries(QTextStream *stream)
 }
 
 
-QString ParserPls::getFilepath(QTextStream *stream, QString basepath)
-{
+QString ParserPls::getFilepath(QTextStream* stream, QString basepath) {
     QString textline,filename = "";
     textline = stream->readLine();
     while (!textline.isEmpty()) {
@@ -116,7 +111,7 @@ QString ParserPls::getFilepath(QTextStream *stream, QString basepath)
             break;
         }
 
-        if(textline.contains("File")) {
+        if (textline.contains("File")) {
             int iPos = textline.indexOf("=",0);
             ++iPos;
 
@@ -130,7 +125,7 @@ QString ParserPls::getFilepath(QTextStream *stream, QString basepath)
             QString trackLocation = location.toString();
             //qDebug() << trackLocation;
 
-            if(isFilepath(trackLocation)) {
+            if (isFilepath(trackLocation)) {
                 return trackLocation;
             } else {
                 // Try relative to m3u dir
@@ -148,8 +143,7 @@ QString ParserPls::getFilepath(QTextStream *stream, QString basepath)
     return 0;
 
 }
-bool ParserPls::writePLSFile(const QString &file_str, QList<QString> &items, bool useRelativePath)
-{
+bool ParserPls::writePLSFile(const QString& file_str, QList<QString>& items, bool useRelativePath) {
     QFile file(file_str);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QMessageBox::warning(NULL,tr("Playlist Export Failed"),

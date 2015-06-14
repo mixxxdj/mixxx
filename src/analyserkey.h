@@ -16,7 +16,7 @@ class AnalyserKey : public Analyser {
 
     bool initialise(TrackPointer tio, int sampleRate, int totalSamples);
     bool loadStored(TrackPointer tio) const;
-    void process(const CSAMPLE *pIn, const int iLen);
+    void process(const CSAMPLE* pIn, const int iLen);
     void finalise(TrackPointer tio);
     void cleanup(TrackPointer tio);
 

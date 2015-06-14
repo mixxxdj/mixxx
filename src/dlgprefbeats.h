@@ -17,7 +17,7 @@
 class DlgPrefBeats : public DlgPreferencePage, public Ui::DlgBeatsDlg {
     Q_OBJECT
   public:
-    DlgPrefBeats(QWidget *parent, ConfigObject<ConfigValue> *_config);
+    DlgPrefBeats(QWidget* parent, ConfigObject<ConfigValue>* _config);
     virtual ~DlgPrefBeats();
 
   public slots:

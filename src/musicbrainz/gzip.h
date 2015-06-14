@@ -7,6 +7,6 @@
 
 #include <QByteArray>
 
-QByteArray gzipCompress(const QByteArray &data);
+QByteArray gzipCompress(const QByteArray& data);
 
 #endif

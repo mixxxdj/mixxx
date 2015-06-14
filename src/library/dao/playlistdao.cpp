@@ -8,7 +8,7 @@
 #include "util/math.h"
 
 PlaylistDAO::PlaylistDAO(QSqlDatabase& database)
-        : m_database(database) {
+    : m_database(database) {
 }
 
 PlaylistDAO::~PlaylistDAO() {
@@ -193,7 +193,7 @@ void PlaylistDAO::deletePlaylist(const int playlistId) {
     //TODO: Crap, we need to shuffle the positions of all the playlists?
 
     for (QMultiHash<int, int>::iterator it = m_playlistsTrackIsIn.begin();
-         it != m_playlistsTrackIsIn.end();) {
+            it != m_playlistsTrackIsIn.end();) {
         if (it.value() == playlistId) {
             it = m_playlistsTrackIsIn.erase(it);
         } else {
@@ -325,7 +325,7 @@ int PlaylistDAO::getPlaylistId(const int index) const {
     }
 
     int currentRow = 0;
-    while(query.next()) {
+    while (query.next()) {
         if (currentRow++ == index) {
             int id = query.value(0).toInt();
             return id;
@@ -365,8 +365,7 @@ bool PlaylistDAO::isHidden(const int playlistId) const {
     return true;
 }
 
-void PlaylistDAO::removeTrackFromPlaylist(const int playlistId, const int position)
-{
+void PlaylistDAO::removeTrackFromPlaylist(const int playlistId, const int position) {
     // qDebug() << "PlaylistDAO::removeTrackFromPlaylist"
     //          << QThread::currentThread() << m_database.connectionName();
     ScopedTransaction transaction(m_database);
@@ -404,7 +403,7 @@ void PlaylistDAO::removeTrackFromPlaylist(const int playlistId, const int positi
     queryString = QString("UPDATE PlaylistTracks SET position=position-1 "
                           "WHERE position>=%1 AND "
                           "playlist_id=%2").arg(QString::number(position),
-                                                QString::number(playlistId));
+                                  QString::number(playlistId));
     if (!query.exec(queryString)) {
         LOG_FAILED_QUERY(query);
     }
@@ -427,7 +426,7 @@ void PlaylistDAO::removeTracksFromPlaylist(const int playlistId, QList<int>& pos
     QSqlQuery query(m_database);
     foreach (int position , positions) {
         query.prepare("SELECT track_id FROM PlaylistTracks WHERE playlist_id=:id "
-                    "AND position=:position");
+                      "AND position=:position");
         query.bindValue(":id", playlistId);
         query.bindValue(":position", position);
 
@@ -438,14 +437,14 @@ void PlaylistDAO::removeTracksFromPlaylist(const int playlistId, QList<int>& pos
 
         if (!query.next()) {
             qDebug() << "removeTrackFromPlaylist no track exists at position:"
-                    << position << "in playlist:" << playlistId;
+                     << position << "in playlist:" << playlistId;
             return;
         }
         int trackId = query.value(query.record().indexOf("track_id")).toInt();
 
         // Delete the track from the playlist.
         query.prepare("DELETE FROM PlaylistTracks "
-                    "WHERE playlist_id=:id AND position= :position");
+                      "WHERE playlist_id=:id AND position= :position");
         query.bindValue(":id", playlistId);
         query.bindValue(":position", position);
 
@@ -456,9 +455,9 @@ void PlaylistDAO::removeTracksFromPlaylist(const int playlistId, QList<int>& pos
 
         QString queryString;
         queryString = QString("UPDATE PlaylistTracks SET position=position-1 "
-                            "WHERE position>=%1 AND "
-                            "playlist_id=%2").arg(QString::number(position),
-                                                    QString::number(playlistId));
+                              "WHERE position>=%1 AND "
+                              "playlist_id=%2").arg(QString::number(position),
+                                      QString::number(playlistId));
         if (!query.exec(queryString)) {
             LOG_FAILED_QUERY(query);
         }
@@ -484,10 +483,10 @@ bool PlaylistDAO::insertTrackIntoPlaylist(const int trackId, const int playlistI
 
     // Move all the tracks in the playlist up by one
     QString queryString =
-            QString("UPDATE PlaylistTracks SET position=position+1 "
-                    "WHERE position>=%1 AND "
-                    "playlist_id=%2").arg(QString::number(position),
-                                          QString::number(playlistId));
+        QString("UPDATE PlaylistTracks SET position=position+1 "
+                "WHERE position>=%1 AND "
+                "playlist_id=%2").arg(QString::number(position),
+                                      QString::number(playlistId));
 
     QSqlQuery query(m_database);
     if (!query.exec(queryString)) {
@@ -516,7 +515,7 @@ bool PlaylistDAO::insertTrackIntoPlaylist(const int trackId, const int playlistI
 }
 
 int PlaylistDAO::insertTracksIntoPlaylist(const QList<int>& trackIds,
-                                          const int playlistId, int position) {
+        const int playlistId, int position) {
     if (playlistId < 0 || position < 0) {
         return 0;
     }
@@ -625,7 +624,7 @@ int PlaylistDAO::getPreviousPlaylist(const int currentPlaylistId, HiddenType hid
         return -1;
     }
 
-     // Get the id of the highest playlist
+    // Get the id of the highest playlist
     int previousPlaylistId = -1;
     if (query.next()) {
         previousPlaylistId = query.value(query.record().indexOf("id")).toInt();
@@ -645,13 +644,13 @@ bool PlaylistDAO::copyPlaylistTracks(const int sourcePlaylistID, const int targe
     // INSERT INTO PlaylistTracks (playlist_id, track_id, position, pl_datetime_added) SELECT :target_plid, track_id, position + :position_offset, pl_datetime_added FROM PlaylistTracks WHERE playlist_id = :source_plid;
     QSqlQuery query(m_database);
     query.prepare(QString("INSERT INTO " PLAYLIST_TRACKS_TABLE
-        " (%1, %2, %3, %4) SELECT :target_plid, %2, "
-        "%3 + :position_offset, %4 FROM " PLAYLIST_TRACKS_TABLE
-        " WHERE %1 = :source_plid")
-        .arg(PLAYLISTTRACKSTABLE_PLAYLISTID)        // %1
-        .arg(PLAYLISTTRACKSTABLE_TRACKID)           // %2
-        .arg(PLAYLISTTRACKSTABLE_POSITION)          // %3
-        .arg(PLAYLISTTRACKSTABLE_DATETIMEADDED));   // %4
+                          " (%1, %2, %3, %4) SELECT :target_plid, %2, "
+                          "%3 + :position_offset, %4 FROM " PLAYLIST_TRACKS_TABLE
+                          " WHERE %1 = :source_plid")
+                  .arg(PLAYLISTTRACKSTABLE_PLAYLISTID)        // %1
+                  .arg(PLAYLISTTRACKSTABLE_TRACKID)           // %2
+                  .arg(PLAYLISTTRACKSTABLE_POSITION)          // %3
+                  .arg(PLAYLISTTRACKSTABLE_DATETIMEADDED));   // %4
     query.bindValue(":position_offset", positionOffset);
     query.bindValue(":source_plid", sourcePlaylistID);
     query.bindValue(":target_plid", targetPlaylistID);
@@ -664,10 +663,10 @@ bool PlaylistDAO::copyPlaylistTracks(const int sourcePlaylistID, const int targe
     // Query each added track and its new position.
     // SELECT track_id, position FROM PlaylistTracks WHERE playlist_id = :target_plid AND position > :position_offset;
     query.prepare(QString("SELECT %2, %3 FROM " PLAYLIST_TRACKS_TABLE
-        " WHERE %1 = :target_plid AND %3 > :position_offset")
-        .arg(PLAYLISTTRACKSTABLE_PLAYLISTID)    // %1
-        .arg(PLAYLISTTRACKSTABLE_TRACKID)       // %2
-        .arg(PLAYLISTTRACKSTABLE_POSITION));    // %3
+                          " WHERE %1 = :target_plid AND %3 > :position_offset")
+                  .arg(PLAYLISTTRACKSTABLE_PLAYLISTID)    // %1
+                  .arg(PLAYLISTTRACKSTABLE_TRACKID)       // %2
+                  .arg(PLAYLISTTRACKSTABLE_POSITION));    // %3
     query.bindValue(":target_plid", targetPlaylistID);
     query.bindValue(":position_offset", positionOffset);
     if (!query.exec()) {
@@ -788,10 +787,10 @@ void PlaylistDAO::moveTrack(const int playlistId, const int oldPosition, const i
     //    2) Decrement position where pos >= dest AND pos < source
     //    3) Set position = dest where pos=-1 -- Move track from dummy pos to final destination.
 
-     // Case 2: destination > source (newPos > oldPos)
-     //   1) Set position=-1 where pos=source -- Give track a dummy index again.
-     //   2) Decrement position where pos > source AND pos <= dest
-     //   3) Set postion=dest where pos=-1 -- Move that track from dummy pos to final destination
+    // Case 2: destination > source (newPos > oldPos)
+    //   1) Set position=-1 where pos=source -- Give track a dummy index again.
+    //   2) Decrement position where pos > source AND pos <= dest
+    //   3) Set postion=dest where pos=-1 -- Move that track from dummy pos to final destination
 
     QString queryString;
 
@@ -799,28 +798,28 @@ void PlaylistDAO::moveTrack(const int playlistId, const int oldPosition, const i
     queryString = QString("UPDATE PlaylistTracks SET position=-1 "
                           "WHERE position=%1 AND "
                           "playlist_id=%2").arg(QString::number(oldPosition),
-                                                QString::number(playlistId));
+                                  QString::number(playlistId));
     query.exec(queryString);
 
     if (newPosition < oldPosition) {
         queryString = QString("UPDATE PlaylistTracks SET position=position+1 "
                               "WHERE position >= %1 AND position < %2 AND "
                               "playlist_id=%3").arg(QString::number(newPosition),
-                                                    QString::number(oldPosition),
-                                                    QString::number(playlistId));
+                                      QString::number(oldPosition),
+                                      QString::number(playlistId));
     } else {
         queryString = QString("UPDATE PlaylistTracks SET position=position-1 "
                               "WHERE position>%1 AND position<=%2 AND "
                               "playlist_id=%3").arg(QString::number(oldPosition),
-                                                    QString::number(newPosition),
-                                                    QString::number(playlistId));
+                                      QString::number(newPosition),
+                                      QString::number(playlistId));
     }
     query.exec(queryString);
 
     queryString = QString("UPDATE PlaylistTracks SET position = %1 "
                           "WHERE position=-1 AND "
                           "playlist_id=%2").arg(QString::number(newPosition),
-                                                QString::number(playlistId));
+                                  QString::number(playlistId));
     query.exec(queryString);
 
     transaction.commit();
@@ -834,18 +833,18 @@ void PlaylistDAO::moveTrack(const int playlistId, const int oldPosition, const i
 }
 
 void PlaylistDAO::searchForDuplicateTrack(const int fromPosition,
-                                          const int toPosition,
-                                          const int trackID,
-                                          const int excludePosition,
-                                          const int otherTrackPosition,
-                                          const QHash<int,int>* pTrackPositionIds,
-                                          int* pTrackDistance) {
+        const int toPosition,
+        const int trackID,
+        const int excludePosition,
+        const int otherTrackPosition,
+        const QHash<int,int>* pTrackPositionIds,
+        int* pTrackDistance) {
     //qDebug() << "        Searching from " << fromPosition << " to " << toPosition;
     for (int pos = fromPosition; pos <= toPosition; pos++) {
         if (pTrackPositionIds->value(pos) == trackID &&
                 pos != excludePosition) {
             int tempTrackDistance =
-                    (otherTrackPosition - pos) * (otherTrackPosition - pos);
+                (otherTrackPosition - pos) * (otherTrackPosition - pos);
             if (tempTrackDistance < *pTrackDistance || *pTrackDistance == -1)
                 *pTrackDistance = tempTrackDistance;
         }
@@ -865,7 +864,7 @@ void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& position
     qDebug() << "Shuffling Tracks";
     qDebug() << "*** Search Distance: " << searchDistance;
     //for (int z = 0; z < positions.count(); z++) {
-        //qDebug() << "*** Position: " << positions[z] << " | ID: " << allIds.value(positions[z]);
+    //qDebug() << "*** Position: " << positions[z] << " | ID: " << allIds.value(positions[z]);
     //}
 
     // This is a modified Fisher-Yates shuffling algorithm.
@@ -903,7 +902,7 @@ void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& position
 
         for (int limit = 10; limit > 0 && conflictFound; limit--) {
             int randomShuffleSetIndex =
-                    (int)(qrand() / (RAND_MAX + 1.0) * (newPositions.count()));
+                (int)(qrand() / (RAND_MAX + 1.0) * (newPositions.count()));
             trackBPosition = positions.at(randomShuffleSetIndex);
             trackBId = trackPositionIds.value(trackBPosition);
             conflictFound = false;
@@ -915,45 +914,45 @@ void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& position
 
             // Search around Track B for Track A
             searchForDuplicateTrack(
-                    math_clamp(trackBPosition - searchDistance, 0, playlistEnd),
-                    math_clamp(trackBPosition + searchDistance, 0, playlistEnd),
-                    trackAId, trackAPosition, trackBPosition,
-                    &trackPositionIds, &trackDistance);
+                math_clamp(trackBPosition - searchDistance, 0, playlistEnd),
+                math_clamp(trackBPosition + searchDistance, 0, playlistEnd),
+                trackAId, trackAPosition, trackBPosition,
+                &trackPositionIds, &trackDistance);
             // Wrap search if needed
             if (trackBPosition - searchDistance < 1) {
                 searchForDuplicateTrack(
-                        playlistEnd + (trackBPosition - searchDistance),
-                        playlistEnd,
-                        trackAId, trackAPosition, trackBPosition,
-                        &trackPositionIds, &trackDistance);
+                    playlistEnd + (trackBPosition - searchDistance),
+                    playlistEnd,
+                    trackAId, trackAPosition, trackBPosition,
+                    &trackPositionIds, &trackDistance);
             }
             if (trackBPosition + searchDistance > playlistEnd) {
                 searchForDuplicateTrack(
-                        1,
-                        (trackBPosition + searchDistance) - playlistEnd,
-                        trackAId, trackAPosition, trackBPosition,
-                        &trackPositionIds, &trackDistance);
+                    1,
+                    (trackBPosition + searchDistance) - playlistEnd,
+                    trackAId, trackAPosition, trackBPosition,
+                    &trackPositionIds, &trackDistance);
             }
             // Search around Track A for Track B
             searchForDuplicateTrack(
-                    math_clamp(trackAPosition - searchDistance, 0, playlistEnd),
-                    math_clamp(trackAPosition + searchDistance, 0, playlistEnd),
-                    trackBId, trackBPosition, trackAPosition,
-                    &trackPositionIds, &trackDistance);
+                math_clamp(trackAPosition - searchDistance, 0, playlistEnd),
+                math_clamp(trackAPosition + searchDistance, 0, playlistEnd),
+                trackBId, trackBPosition, trackAPosition,
+                &trackPositionIds, &trackDistance);
             // Wrap search if needed
             if (trackAPosition - searchDistance < 1) {
                 searchForDuplicateTrack(
-                        playlistEnd + (trackAPosition - searchDistance),
-                        playlistEnd,
-                        trackBId, trackBPosition, trackAPosition,
-                        &trackPositionIds, &trackDistance);
+                    playlistEnd + (trackAPosition - searchDistance),
+                    playlistEnd,
+                    trackBId, trackBPosition, trackAPosition,
+                    &trackPositionIds, &trackDistance);
             }
             if (trackAPosition + searchDistance > playlistEnd) {
                 searchForDuplicateTrack(
-                        1,
-                        (trackAPosition + searchDistance) - playlistEnd,
-                        trackBId, trackBPosition, trackAPosition,
-                        &trackPositionIds, &trackDistance);
+                    1,
+                    (trackAPosition + searchDistance) - playlistEnd,
+                    trackBId, trackBPosition, trackAPosition,
+                    &trackPositionIds, &trackDistance);
             }
 
             conflictFound = trackDistance != -1;
@@ -978,7 +977,7 @@ void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& position
         newPositions.swap(newPositions.indexOf(trackAPosition),
                           newPositions.indexOf(trackBPosition));
         QString swapQuery = "UPDATE PlaylistTracks SET position=%1 "
-                "WHERE position=%2 AND playlist_id=%3";
+                            "WHERE position=%2 AND playlist_id=%3";
         query.exec(swapQuery.arg(QString::number(-1),
                                  QString::number(trackAPosition),
                                  QString::number(playlistId)));
@@ -1005,7 +1004,7 @@ void PlaylistDAO::getPlaylistsTrackIsIn(const int trackId,
                                         QSet<int>* playlistSet) const {
     playlistSet->clear();
     for (QHash<int, int>::const_iterator it = m_playlistsTrackIsIn.find(trackId);
-         it != m_playlistsTrackIsIn.end() && it.key() == trackId; ++it) {
+            it != m_playlistsTrackIsIn.end() && it.key() == trackId; ++it) {
         playlistSet->insert(it.value());
     }
 }

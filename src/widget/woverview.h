@@ -48,11 +48,11 @@ class WOverview : public WWidget {
     void trackDropped(QString filename, QString group);
 
   protected:
-    void mouseMoveEvent(QMouseEvent *e);
-    void mouseReleaseEvent(QMouseEvent *e);
-    void mousePressEvent(QMouseEvent *e);
-    void paintEvent(QPaintEvent *);
-    void resizeEvent(QResizeEvent *);
+    void mouseMoveEvent(QMouseEvent* e);
+    void mouseReleaseEvent(QMouseEvent* e);
+    void mousePressEvent(QMouseEvent* e);
+    void paintEvent(QPaintEvent*);
+    void resizeEvent(QResizeEvent*);
     virtual void dragEnterEvent(QDragEnterEvent* event);
     virtual void dropEvent(QDropEvent* event);
 
@@ -85,7 +85,7 @@ class WOverview : public WWidget {
   private:
     // Append the waveform overview pixmap according to available data in waveform
     virtual bool drawNextPixmapPart() = 0;
-    void paintText(const QString &text, QPainter *painter);
+    void paintText(const QString& text, QPainter* painter);
     inline int valueToPosition(double value) const {
         return static_cast<int>(m_a * value - m_b);
     }

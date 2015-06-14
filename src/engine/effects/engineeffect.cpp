@@ -5,14 +5,14 @@
 EngineEffect::EngineEffect(const EffectManifest& manifest,
                            const QSet<ChannelHandleAndGroup>& registeredChannels,
                            EffectInstantiatorPointer pInstantiator)
-        : m_manifest(manifest),
-          m_enableState(EffectProcessor::ENABLING),
-          m_parameters(manifest.parameters().size()) {
+    : m_manifest(manifest),
+      m_enableState(EffectProcessor::ENABLING),
+      m_parameters(manifest.parameters().size()) {
     const QList<EffectManifestParameter>& parameters = m_manifest.parameters();
     for (int i = 0; i < parameters.size(); ++i) {
         const EffectManifestParameter& parameter = parameters.at(i);
         EngineEffectParameter* pParameter =
-                new EngineEffectParameter(parameter);
+            new EngineEffectParameter(parameter);
         m_parameters[i] = pParameter;
         m_parametersById[parameter.id()] = pParameter;
     }
@@ -37,52 +37,52 @@ EngineEffect::~EngineEffect() {
 }
 
 bool EngineEffect::processEffectsRequest(const EffectsRequest& message,
-                                         EffectsResponsePipe* pResponsePipe) {
+        EffectsResponsePipe* pResponsePipe) {
     EngineEffectParameter* pParameter = NULL;
     EffectsResponse response(message);
 
     switch (message.type) {
-        case EffectsRequest::SET_EFFECT_PARAMETERS:
-            if (kEffectDebugOutput) {
-                qDebug() << debugString() << "SET_EFFECT_PARAMETERS"
-                         << "enabled" << message.SetEffectParameters.enabled;
-            }
+    case EffectsRequest::SET_EFFECT_PARAMETERS:
+        if (kEffectDebugOutput) {
+            qDebug() << debugString() << "SET_EFFECT_PARAMETERS"
+                     << "enabled" << message.SetEffectParameters.enabled;
+        }
 
-            if (m_enableState != EffectProcessor::DISABLED && !message.SetEffectParameters.enabled) {
-                m_enableState = EffectProcessor::DISABLING;
-            } else if (m_enableState == EffectProcessor::DISABLED && message.SetEffectParameters.enabled) {
-                m_enableState = EffectProcessor::ENABLING;
-            }
+        if (m_enableState != EffectProcessor::DISABLED && !message.SetEffectParameters.enabled) {
+            m_enableState = EffectProcessor::DISABLING;
+        } else if (m_enableState == EffectProcessor::DISABLED && message.SetEffectParameters.enabled) {
+            m_enableState = EffectProcessor::ENABLING;
+        }
 
+        response.success = true;
+        pResponsePipe->writeMessages(&response, 1);
+        return true;
+        break;
+    case EffectsRequest::SET_PARAMETER_PARAMETERS:
+        if (kEffectDebugOutput) {
+            qDebug() << debugString() << "SET_PARAMETER_PARAMETERS"
+                     << "parameter" << message.SetParameterParameters.iParameter
+                     << "minimum" << message.minimum
+                     << "maximum" << message.maximum
+                     << "default_value" << message.default_value
+                     << "value" << message.value;
+        }
+        pParameter = m_parameters.value(
+                         message.SetParameterParameters.iParameter, NULL);
+        if (pParameter) {
+            pParameter->setMinimum(message.minimum);
+            pParameter->setMaximum(message.maximum);
+            pParameter->setDefaultValue(message.default_value);
+            pParameter->setValue(message.value);
             response.success = true;
-            pResponsePipe->writeMessages(&response, 1);
-            return true;
-            break;
-        case EffectsRequest::SET_PARAMETER_PARAMETERS:
-            if (kEffectDebugOutput) {
-                qDebug() << debugString() << "SET_PARAMETER_PARAMETERS"
-                         << "parameter" << message.SetParameterParameters.iParameter
-                         << "minimum" << message.minimum
-                         << "maximum" << message.maximum
-                         << "default_value" << message.default_value
-                         << "value" << message.value;
-            }
-            pParameter = m_parameters.value(
-                message.SetParameterParameters.iParameter, NULL);
-            if (pParameter) {
-                pParameter->setMinimum(message.minimum);
-                pParameter->setMaximum(message.maximum);
-                pParameter->setDefaultValue(message.default_value);
-                pParameter->setValue(message.value);
-                response.success = true;
-            } else {
-                response.success = false;
-                response.status = EffectsResponse::NO_SUCH_PARAMETER;
-            }
-            pResponsePipe->writeMessages(&response, 1);
-            return true;
-        default:
-            break;
+        } else {
+            response.success = false;
+            response.status = EffectsResponse::NO_SUCH_PARAMETER;
+        }
+        pResponsePipe->writeMessages(&response, 1);
+        return true;
+    default:
+        break;
     }
     return false;
 }
@@ -101,21 +101,21 @@ void EngineEffect::process(const ChannelHandle& handle,
     }
 
     m_pProcessor->process(handle, pInput, pOutput, numSamples, sampleRate,
-            effectiveEnableState, groupFeatures);
+                          effectiveEnableState, groupFeatures);
     if (!m_effectRampsFromDry) {
         // the effect does not fade, so we care for it
         if (effectiveEnableState == EffectProcessor::DISABLING) {
             // Fade out (fade to dry signal)
             SampleUtil::copy2WithRampingGain(pOutput,
-                    pInput, 0.0, 1.0,
-                    pOutput, 1.0, 0.0,
-                    numSamples);
+                                             pInput, 0.0, 1.0,
+                                             pOutput, 1.0, 0.0,
+                                             numSamples);
         } else if (effectiveEnableState == EffectProcessor::ENABLING) {
             // Fade in (fade to wet signal)
             SampleUtil::copy2WithRampingGain(pOutput,
-                    pInput, 1.0, 0.0,
-                    pOutput, 0.0, 1.0,
-                    numSamples);
+                                             pInput, 1.0, 0.0,
+                                             pOutput, 0.0, 1.0,
+                                             numSamples);
         }
     }
 

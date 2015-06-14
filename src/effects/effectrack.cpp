@@ -8,17 +8,17 @@ EffectRack::EffectRack(EffectsManager* pEffectsManager,
                        EffectChainManager* pEffectChainManager,
                        const unsigned int iRackNumber,
                        const QString& group)
-        : m_pEffectsManager(pEffectsManager),
-          m_pEffectChainManager(pEffectChainManager),
-          m_iRackNumber(iRackNumber),
-          m_group(group),
-          m_controlNumEffectChainSlots(ConfigKey(m_group, "num_effectunits")),
-          m_controlClearRack(ConfigKey(m_group, "clear")),
-          m_pEngineEffectRack(NULL) {
+    : m_pEffectsManager(pEffectsManager),
+      m_pEffectChainManager(pEffectChainManager),
+      m_iRackNumber(iRackNumber),
+      m_group(group),
+      m_controlNumEffectChainSlots(ConfigKey(m_group, "num_effectunits")),
+      m_controlClearRack(ConfigKey(m_group, "clear")),
+      m_pEngineEffectRack(NULL) {
     connect(&m_controlClearRack, SIGNAL(valueChanged(double)),
             this, SLOT(slotClearRack(double)));
     m_controlNumEffectChainSlots.connectValueChangeRequest(
-            this, SLOT(slotNumEffectChainSlots(double)));
+        this, SLOT(slotNumEffectChainSlots(double)));
     addToEngine();
 }
 
@@ -91,7 +91,7 @@ void EffectRack::slotClearRack(double v) {
 
 EffectChainPointer EffectRack::makeEmptyChain() {
     EffectChainPointer pChain(new EffectChain(m_pEffectsManager, QString(),
-                                              EffectChainPointer()));
+                              EffectChainPointer()));
     pChain->setName("Empty Chain");
     return pChain;
 }
@@ -121,7 +121,7 @@ void EffectRack::loadNextChain(const unsigned int iChainSlotNumber,
     }
 
     EffectChainPointer pNextChain = m_pEffectChainManager->getNextEffectChain(
-            pLoadedChain);
+                                        pLoadedChain);
 
     pNextChain = EffectChain::clone(pNextChain);
     m_effectChainSlots[iChainSlotNumber]->loadEffectChain(pNextChain);
@@ -135,7 +135,7 @@ void EffectRack::loadPrevChain(const unsigned int iChainSlotNumber,
     }
 
     EffectChainPointer pPrevChain = m_pEffectChainManager->getPrevEffectChain(
-        pLoadedChain);
+                                        pLoadedChain);
 
     pPrevChain = EffectChain::clone(pPrevChain);
     m_effectChainSlots[iChainSlotNumber]->loadEffectChain(pPrevChain);
@@ -186,17 +186,17 @@ void EffectRack::loadPrevEffect(const unsigned int iChainSlotNumber,
 StandardEffectRack::StandardEffectRack(EffectsManager* pEffectsManager,
                                        EffectChainManager* pChainManager,
                                        const unsigned int iRackNumber)
-        : EffectRack(pEffectsManager, pChainManager, iRackNumber,
-                     formatGroupString(iRackNumber)) {
+    : EffectRack(pEffectsManager, pChainManager, iRackNumber,
+                 formatGroupString(iRackNumber)) {
 }
 
 EffectChainSlotPointer StandardEffectRack::addEffectChainSlot() {
     int iChainSlotNumber = numEffectChainSlots();
 
     QString group = formatEffectChainSlotGroupString(getRackNumber(),
-                                                     iChainSlotNumber);
+                    iChainSlotNumber);
     EffectChainSlot* pChainSlot =
-            new EffectChainSlot(this, group, iChainSlotNumber);
+        new EffectChainSlot(this, group, iChainSlotNumber);
 
     // TODO(rryan) How many should we make default? They create controls that
     // the GUI may rely on, so the choice is important to communicate to skin
@@ -219,7 +219,7 @@ EffectChainSlotPointer StandardEffectRack::addEffectChainSlot() {
 
     // Register all the existing channels with the new EffectChain.
     const QSet<ChannelHandleAndGroup>& registeredChannels =
-            m_pEffectChainManager->registeredChannels();
+        m_pEffectChainManager->registeredChannels();
     foreach (const ChannelHandleAndGroup& handle_group, registeredChannels) {
         pChainSlot->registerChannel(handle_group);
     }
@@ -239,7 +239,7 @@ PerGroupRack::PerGroupRack(EffectsManager* pEffectsManager,
                            EffectChainManager* pChainManager,
                            const unsigned int iRackNumber,
                            const QString& group)
-        : EffectRack(pEffectsManager, pChainManager, iRackNumber, group) {
+    : EffectRack(pEffectsManager, pChainManager, iRackNumber, group) {
 }
 
 EffectChainSlotPointer PerGroupRack::addEffectChainSlotForGroup(const QString& groupName) {
@@ -251,9 +251,9 @@ EffectChainSlotPointer PerGroupRack::addEffectChainSlotForGroup(const QString& g
 
     int iChainSlotNumber = m_groupToChainSlot.size();
     QString chainSlotGroup = formatEffectChainSlotGroupForGroup(
-        getRackNumber(), iChainSlotNumber, groupName);
+                                 getRackNumber(), iChainSlotNumber, groupName);
     EffectChainSlot* pChainSlot = new EffectChainSlot(this, chainSlotGroup,
-                                                      iChainSlotNumber);
+            iChainSlotNumber);
     EffectChainSlotPointer pChainSlotPointer(pChainSlot);
     addEffectChainSlotInternal(pChainSlotPointer);
     m_groupToChainSlot[groupName] = pChainSlotPointer;
@@ -280,18 +280,18 @@ EffectChainSlotPointer PerGroupRack::getGroupEffectChainSlot(const QString& grou
 QuickEffectRack::QuickEffectRack(EffectsManager* pEffectsManager,
                                  EffectChainManager* pChainManager,
                                  const unsigned int iRackNumber)
-        : PerGroupRack(pEffectsManager, pChainManager, iRackNumber,
-                       QuickEffectRack::formatGroupString(iRackNumber)) {
+    : PerGroupRack(pEffectsManager, pChainManager, iRackNumber,
+                   QuickEffectRack::formatGroupString(iRackNumber)) {
 }
 
 void QuickEffectRack::configureEffectChainSlotForGroup(
-        EffectChainSlotPointer pSlot, const ChannelHandleAndGroup& handle_group) {
+    EffectChainSlotPointer pSlot, const ChannelHandleAndGroup& handle_group) {
     // Register this channel alone with the chain slot.
     pSlot->registerChannel(handle_group);
 
     // Add a single EffectSlot for the quick effect.
     pSlot->addEffectSlot(QuickEffectRack::formatEffectSlotGroupString(
-            getRackNumber(), handle_group.name()));
+                             getRackNumber(), handle_group.name()));
 
     // TODO(rryan): Set up next/prev signals.
 
@@ -339,7 +339,7 @@ bool QuickEffectRack::loadEffectToGroup(const QString& groupName,
     EffectSlotPointer pEffectSlot = pChainSlot->getEffectSlot(0);
     if (pEffectSlot) {
         pEffectSlot->onChainSuperParameterChanged(
-                pChainSlot->getSuperParameter(), true);
+            pChainSlot->getSuperParameter(), true);
     }
     return true;
 }
@@ -347,8 +347,8 @@ bool QuickEffectRack::loadEffectToGroup(const QString& groupName,
 EqualizerRack::EqualizerRack(EffectsManager* pEffectsManager,
                              EffectChainManager* pChainManager,
                              const unsigned int iRackNumber)
-        : PerGroupRack(pEffectsManager, pChainManager, iRackNumber,
-                       EqualizerRack::formatGroupString(iRackNumber)) {
+    : PerGroupRack(pEffectsManager, pChainManager, iRackNumber,
+                   EqualizerRack::formatGroupString(iRackNumber)) {
 }
 
 bool EqualizerRack::loadEffectToGroup(const QString& groupName,
@@ -379,7 +379,7 @@ bool EqualizerRack::loadEffectToGroup(const QString& groupName,
 
 
 void EqualizerRack::configureEffectChainSlotForGroup(EffectChainSlotPointer pSlot,
-                                                     const ChannelHandleAndGroup& handle_group) {
+        const ChannelHandleAndGroup& handle_group) {
     const QString& groupName = handle_group.name();
 
     // Register this channel alone with the chain slot.
@@ -387,7 +387,7 @@ void EqualizerRack::configureEffectChainSlotForGroup(EffectChainSlotPointer pSlo
 
     // Add a single EffectSlot for the equalizer effect.
     pSlot->addEffectSlot(EqualizerRack::formatEffectSlotGroupString(
-            getRackNumber(), groupName));
+                             getRackNumber(), groupName));
 
     // TODO(rryan): Set up next/prev signals.
 

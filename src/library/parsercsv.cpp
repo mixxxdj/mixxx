@@ -61,7 +61,7 @@ QList<QString> ParserCsv::parse(QString sFilename) {
 
         file.close();
 
-        if(m_sLocations.count() != 0)
+        if (m_sLocations.count() != 0)
             return m_sLocations;
         else
             return QList<QString>(); // NULL pointer returned when no locations were found
@@ -117,8 +117,7 @@ QList<QList<QString> > ParserCsv::tokenize(const QByteArray& str, char delimiter
     return tokens;
 }
 
-bool ParserCsv::writeCSVFile(const QString &file_str, BaseSqlTableModel* pPlaylistTableModel, bool useRelativePath)
-{
+bool ParserCsv::writeCSVFile(const QString& file_str, BaseSqlTableModel* pPlaylistTableModel, bool useRelativePath) {
     /*
      * Important note:
      * On Windows \n will produce a <CR><CL> (=\r\n)
@@ -138,8 +137,8 @@ bool ParserCsv::writeCSVFile(const QString &file_str, BaseSqlTableModel* pPlayli
     qDebug() << "Basepath: " << base;
     QTextStream out(&file);
     out.setCodec("UTF-8"); // rfc4180: Common usage of CSV is US-ASCII ...
-                           // Using UTF-8 to get around codepage issues
-                           // and it's the default encoding in Ooo Calc
+    // Using UTF-8 to get around codepage issues
+    // and it's the default encoding in Ooo Calc
 
     // writing header section
     bool first = true;
@@ -189,8 +188,7 @@ bool ParserCsv::writeCSVFile(const QString &file_str, BaseSqlTableModel* pPlayli
     return true;
 }
 
-bool ParserCsv::writeReadableTextFile(const QString &file_str, BaseSqlTableModel* pPlaylistTableModel, bool writeTimestamp)
-{
+bool ParserCsv::writeReadableTextFile(const QString& file_str, BaseSqlTableModel* pPlaylistTableModel, bool writeTimestamp) {
     /*
      * Important note:
      * On Windows \n will produce a <CR><CL> (=\r\n)

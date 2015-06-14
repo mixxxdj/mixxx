@@ -4,12 +4,12 @@
 #include "playermanager.h"
 
 const QString LibraryTableModel::DEFAULT_LIBRARYFILTER =
-        "mixxx_deleted=0 AND fs_deleted=0";
+    "mixxx_deleted=0 AND fs_deleted=0";
 
 LibraryTableModel::LibraryTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection,
                                      const char* settingsNamespace)
-        : BaseSqlTableModel(parent, pTrackCollection, settingsNamespace) {
+    : BaseSqlTableModel(parent, pTrackCollection, settingsNamespace) {
     setTableModel();
 }
 
@@ -29,10 +29,10 @@ void LibraryTableModel::setTableModel(int id) {
 
     QSqlQuery query(m_pTrackCollection->getDatabase());
     QString queryString = "CREATE TEMPORARY VIEW IF NOT EXISTS " + tableName + " AS "
-            "SELECT " + columns.join(", ") +
-            " FROM library INNER JOIN track_locations "
-            "ON library.location = track_locations.id "
-            "WHERE (" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")";
+                          "SELECT " + columns.join(", ") +
+                          " FROM library INNER JOIN track_locations "
+                          "ON library.location = track_locations.id "
+                          "WHERE (" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")";
     query.prepare(queryString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -89,16 +89,16 @@ bool LibraryTableModel::isColumnInternal(int column) {
 
 TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const {
     return TRACKMODELCAPS_NONE
-            | TRACKMODELCAPS_RECEIVEDROPS
-            | TRACKMODELCAPS_ADDTOPLAYLIST
-            | TRACKMODELCAPS_ADDTOCRATE
-            | TRACKMODELCAPS_ADDTOAUTODJ
-            | TRACKMODELCAPS_RELOADMETADATA
-            | TRACKMODELCAPS_LOADTODECK
-            | TRACKMODELCAPS_LOADTOSAMPLER
-            | TRACKMODELCAPS_LOADTOPREVIEWDECK
-            | TRACKMODELCAPS_HIDE
-            | TRACKMODELCAPS_MANIPULATEBEATS
-            | TRACKMODELCAPS_CLEAR_BEATS
-            | TRACKMODELCAPS_RESETPLAYED;
+           | TRACKMODELCAPS_RECEIVEDROPS
+           | TRACKMODELCAPS_ADDTOPLAYLIST
+           | TRACKMODELCAPS_ADDTOCRATE
+           | TRACKMODELCAPS_ADDTOAUTODJ
+           | TRACKMODELCAPS_RELOADMETADATA
+           | TRACKMODELCAPS_LOADTODECK
+           | TRACKMODELCAPS_LOADTOSAMPLER
+           | TRACKMODELCAPS_LOADTOPREVIEWDECK
+           | TRACKMODELCAPS_HIDE
+           | TRACKMODELCAPS_MANIPULATEBEATS
+           | TRACKMODELCAPS_CLEAR_BEATS
+           | TRACKMODELCAPS_RESETPLAYED;
 }

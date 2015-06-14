@@ -20,7 +20,7 @@ class WTrackTableView;
 class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual LibraryView {
     Q_OBJECT
   public:
-    DlgRecording(QWidget *parent, ConfigObject<ConfigValue>* pConfig,
+    DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
                  Library* pLibrary, TrackCollection* pTrackCollection,
                  RecordingManager* pRecManager, MixxxKeyboard* pKeyboard);
     virtual ~DlgRecording();
@@ -32,7 +32,9 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     virtual void slotSendToAutoDJTop();
     virtual void loadSelectedTrackToGroup(QString group, bool play);
     virtual void moveSelection(int delta);
-    inline const QString currentSearch() { return m_proxyModel.currentSearch(); }
+    inline const QString currentSearch() {
+        return m_proxyModel.currentSearch();
+    }
 
   public slots:
     void toggleRecording(bool toggle);

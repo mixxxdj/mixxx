@@ -14,11 +14,11 @@
 
 // static
 ControllerPresetPointer ControllerPresetFileHandler::loadPreset(const QString& pathOrFilename,
-                                                                const QStringList& presetPaths) {
+        const QStringList& presetPaths) {
     qDebug() << "Searching for controller preset" << pathOrFilename
              << "in paths:" << presetPaths.join(",");
     QString scriptPath = ControllerManager::getAbsolutePath(pathOrFilename,
-                                                            presetPaths);
+                         presetPaths);
 
     if (scriptPath.isEmpty()) {
         qDebug() << "Could not find" << pathOrFilename
@@ -56,7 +56,7 @@ ControllerPresetPointer ControllerPresetFileHandler::loadPreset(const QString& p
 }
 
 ControllerPresetPointer ControllerPresetFileHandler::load(const QString path,
-                                                          const QString deviceName) {
+        const QString deviceName) {
     qDebug() << "Loading controller preset from" << path;
     ControllerPresetPointer pPreset = load(XmlParse::openXMLFile(path, "controller"),
                                            deviceName);
@@ -67,7 +67,7 @@ ControllerPresetPointer ControllerPresetFileHandler::load(const QString path,
 }
 
 void ControllerPresetFileHandler::parsePresetInfo(const QDomElement& root,
-                                                  ControllerPreset* preset) const {
+        ControllerPreset* preset) const {
     if (root.isNull() || !preset) {
         return;
     }
@@ -94,7 +94,7 @@ void ControllerPresetFileHandler::parsePresetInfo(const QDomElement& root,
 }
 
 QDomElement ControllerPresetFileHandler::getControllerNode(const QDomElement& root,
-                                                           const QString deviceName) {
+        const QString deviceName) {
     Q_UNUSED(deviceName);
     if (root.isNull()) {
         return QDomElement();
@@ -116,7 +116,7 @@ void ControllerPresetFileHandler::addScriptFilesToPreset(
 
     // Build a list of script files to load
     QDomElement scriptFile = controller.firstChildElement("scriptfiles")
-            .firstChildElement("file");
+                             .firstChildElement("file");
 
     // Default currently required file
     preset->addScriptFile(REQUIRED_SCRIPT_FILE, "", true);
@@ -131,7 +131,7 @@ void ControllerPresetFileHandler::addScriptFilesToPreset(
 }
 
 bool ControllerPresetFileHandler::writeDocument(QDomDocument root,
-                                                const QString fileName) const {
+        const QString fileName) const {
     // Need to do this on Windows
     QDir directory;
     if (!directory.mkpath(fileName.left(fileName.lastIndexOf("/")))) {
@@ -164,11 +164,11 @@ void addTextTag(QDomDocument& doc, QDomElement& holder,
 }
 
 QDomDocument ControllerPresetFileHandler::buildRootWithScripts(const ControllerPreset& preset,
-                                                               const QString deviceName) const {
+        const QString deviceName) const {
     QDomDocument doc("Preset");
     QString blank = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-        "<MixxxControllerPreset>\n"
-        "</MixxxControllerPreset>\n";
+                    "<MixxxControllerPreset>\n"
+                    "</MixxxControllerPreset>\n";
     doc.setContent(blank);
 
     QDomElement rootNode = doc.documentElement();

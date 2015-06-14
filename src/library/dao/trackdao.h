@@ -108,7 +108,9 @@ class TrackDAO : public QObject, public virtual DAO {
     virtual ~TrackDAO();
 
     void finish();
-    void setDatabase(QSqlDatabase& database) { m_database = database; }
+    void setDatabase(QSqlDatabase& database) {
+        m_database = database;
+    }
 
     void initialize();
     int getTrackId(const QString& absoluteFilePath);

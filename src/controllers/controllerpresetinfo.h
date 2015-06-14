@@ -32,15 +32,29 @@ class PresetInfo {
         return m_valid;
     }
 
-    inline const QString getPath() const { return path; };
+    inline const QString getPath() const {
+        return path;
+    };
 
-    inline const QString getName() const { return name; } ;
-    inline const QString getDescription() const { return description; };
-    inline const QString getForumLink() const { return forumlink; };
-    inline const QString getWikiLink() const { return wikilink; };
-    inline const QString getAuthor() const { return author; };
+    inline const QString getName() const {
+        return name;
+    } ;
+    inline const QString getDescription() const {
+        return description;
+    };
+    inline const QString getForumLink() const {
+        return forumlink;
+    };
+    inline const QString getWikiLink() const {
+        return wikilink;
+    };
+    inline const QString getAuthor() const {
+        return author;
+    };
 
-    inline const QList<QHash<QString,QString> > getProducts() const { return products; };
+    inline const QList<QHash<QString,QString> > getProducts() const {
+        return products;
+    };
 
   private:
     QHash<QString,QString> parseBulkProduct(const QDomElement& element) const;
@@ -61,7 +75,7 @@ class PresetInfo {
 
 class PresetInfoEnumerator {
   public:
-    PresetInfoEnumerator(ConfigObject<ConfigValue> *pConfig);
+    PresetInfoEnumerator(ConfigObject<ConfigValue>* pConfig);
     virtual ~PresetInfoEnumerator();
 
     bool isValidExtension(const QString extension);

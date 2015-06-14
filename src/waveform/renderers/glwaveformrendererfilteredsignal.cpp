@@ -11,7 +11,7 @@
 #include <qgl.h>
 
 GLWaveformRendererFilteredSignal::GLWaveformRendererFilteredSignal(
-        WaveformWidgetRenderer* waveformWidgetRenderer)
+    WaveformWidgetRenderer* waveformWidgetRenderer)
     : WaveformRendererSignalBase(waveformWidgetRenderer) {
 
 }
@@ -86,7 +86,8 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
         glDisable(GL_LINE_SMOOTH);
 
         //draw reference line
-        glBegin(GL_LINES); {
+        glBegin(GL_LINES);
+        {
             glColor4f(m_axesColor_r, m_axesColor_g,
                       m_axesColor_b, m_axesColor_a);
             glVertex2f(firstVisualIndex,0);
@@ -97,10 +98,11 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
         glLineWidth(1.1);
         glEnable(GL_LINE_SMOOTH);
 
-        glBegin(GL_LINES); {
+        glBegin(GL_LINES);
+        {
             for (int visualIndex = firstVisualIndex;
-                 visualIndex < lastVisualIndex;
-                 visualIndex += 2) {
+                    visualIndex < lastVisualIndex;
+                    visualIndex += 2) {
 
                 if (visualIndex < 0)
                     continue;
@@ -149,10 +151,11 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
         glLineWidth(1.1);
         glEnable(GL_LINE_SMOOTH);
 
-        glBegin(GL_LINES); {
+        glBegin(GL_LINES);
+        {
             for (int visualIndex = firstVisualIndex;
-                 visualIndex < lastVisualIndex;
-                 visualIndex += 2) {
+                    visualIndex < lastVisualIndex;
+                    visualIndex += 2) {
 
                 if (visualIndex < 0)
                     continue;

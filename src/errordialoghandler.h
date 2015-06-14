@@ -133,8 +133,8 @@ class ErrorDialogProperties {
 
 /** Singleton class because we only need one Handler to manage all error dialogs */
 class ErrorDialogHandler : public QObject {
-   Q_OBJECT
- public:
+    Q_OBJECT
+  public:
     static ErrorDialogHandler* instance() {
         if (!s_pInstance)
             s_pInstance = new ErrorDialogHandler();
@@ -171,7 +171,7 @@ class ErrorDialogHandler : public QObject {
     // Private constructor
     ErrorDialogHandler();
 
-    static ErrorDialogHandler *s_pInstance;
+    static ErrorDialogHandler* s_pInstance;
 
     bool m_errorCondition;
     QList<QString> m_dialogKeys;

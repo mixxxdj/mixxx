@@ -1,7 +1,7 @@
 #include "widget/hexspinbox.h"
 
 HexSpinBox::HexSpinBox(QWidget* pParent)
-        : QSpinBox(pParent) {
+    : QSpinBox(pParent) {
     setRange(0, 255);
 }
 
@@ -11,7 +11,7 @@ HexSpinBox::~HexSpinBox() {
 QString HexSpinBox::textFromValue(int value) const {
     // Construct a hex string formatted like 0xFF.
     return QString("0x") + QString("%1")
-            .arg(value, 2, 16, QLatin1Char('0')).toUpper();
+           .arg(value, 2, 16, QLatin1Char('0')).toUpper();
 }
 
 int HexSpinBox::valueFromText(const QString& text) const {

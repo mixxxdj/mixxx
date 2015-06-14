@@ -44,7 +44,7 @@ typedef QSharedPointer<TrackInfoObject> TrackPointer;
 typedef QWeakPointer<TrackInfoObject> TrackWeakPointer;
 
 namespace Mixxx {
-    class TrackMetadata;
+class TrackMetadata;
 }
 
 class TrackInfoObject : public QObject {
@@ -61,7 +61,7 @@ class TrackInfoObject : public QObject {
                     bool parseHeader=true,
                     bool parseCoverArt=false);
     // Creates a new track given information from the xml file.
-    TrackInfoObject(const QDomNode &);
+    TrackInfoObject(const QDomNode&);
     virtual ~TrackInfoObject();
 
     // Parse file metadata. If no file metadata is present, attempts to extract

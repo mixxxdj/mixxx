@@ -55,16 +55,16 @@ class ControlParameterWidgetConnection : public ControlWidgetConnection {
 
     static QString emitOptionToString(EmitOption option) {
         switch (option & EMIT_ON_PRESS_AND_RELEASE) {
-            case EMIT_NEVER:
-                return "NEVER";
-            case EMIT_ON_PRESS:
-                return "PRESS";
-            case EMIT_ON_RELEASE:
-                return "RELEASE";
-            case EMIT_ON_PRESS_AND_RELEASE:
-                return "PRESS_AND_RELEASE";
-            default:
-                return "UNKNOWN";
+        case EMIT_NEVER:
+            return "NEVER";
+        case EMIT_ON_PRESS:
+            return "PRESS";
+        case EMIT_ON_RELEASE:
+            return "RELEASE";
+        case EMIT_ON_PRESS_AND_RELEASE:
+            return "PRESS_AND_RELEASE";
+        default:
+            return "UNKNOWN";
         }
     }
 
@@ -78,16 +78,16 @@ class ControlParameterWidgetConnection : public ControlWidgetConnection {
 
     static QString directionOptionToString(DirectionOption option) {
         switch (option & DIR_FROM_AND_TO_WIDGET) {
-            case DIR_NON:
-                return "NON";
-            case DIR_FROM_WIDGET:
-                return "FROM_WIDGET";
-            case DIR_TO_WIDGET:
-                return "TO_WIDGET";
-            case DIR_FROM_AND_TO_WIDGET:
-                return "FROM_AND_TO_WIDGET";
-            default:
-                return "UNKNOWN";
+        case DIR_NON:
+            return "NON";
+        case DIR_FROM_WIDGET:
+            return "FROM_WIDGET";
+        case DIR_TO_WIDGET:
+            return "TO_WIDGET";
+        case DIR_FROM_AND_TO_WIDGET:
+            return "FROM_AND_TO_WIDGET";
+        default:
+            return "UNKNOWN";
         }
     }
 
@@ -102,11 +102,19 @@ class ControlParameterWidgetConnection : public ControlWidgetConnection {
 
     QString toDebugString() const;
 
-    int getDirectionOption() const { return m_directionOption; };
-    int getEmitOption() const { return m_emitOption; };
+    int getDirectionOption() const {
+        return m_directionOption;
+    };
+    int getEmitOption() const {
+        return m_emitOption;
+    };
 
-    void setDirectionOption(enum DirectionOption v) { m_directionOption = v; };
-    void setEmitOption(enum EmitOption v) { m_emitOption = v; };
+    void setDirectionOption(enum DirectionOption v) {
+        m_directionOption = v;
+    };
+    void setEmitOption(enum EmitOption v) {
+        m_emitOption = v;
+    };
 
     void resetControl();
     void setControlParameter(double v);

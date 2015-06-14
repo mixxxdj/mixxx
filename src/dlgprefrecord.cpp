@@ -26,19 +26,19 @@
 #include "util/sandbox.h"
 
 DlgPrefRecord::DlgPrefRecord(QWidget* parent, ConfigObject<ConfigValue>* pConfig)
-        : DlgPreferencePage(parent),
-          m_pConfig(pConfig),
-          m_bConfirmOverwrite(false),
-          m_pRadioOgg(NULL),
-          m_pRadioMp3(NULL),
-          m_pRadioAiff(NULL),
-          m_pRadioFlac(NULL),
-          m_pRadioWav(NULL) {
+    : DlgPreferencePage(parent),
+      m_pConfig(pConfig),
+      m_bConfirmOverwrite(false),
+      m_pRadioOgg(NULL),
+      m_pRadioMp3(NULL),
+      m_pRadioAiff(NULL),
+      m_pRadioFlac(NULL),
+      m_pRadioWav(NULL) {
     setupUi(this);
 
     // See RECORD_* #defines in defs_recording.h
     m_pRecordControl = new ControlObjectThread(
-            RECORDING_PREF_KEY, "status");
+        RECORDING_PREF_KEY, "status");
 
     m_pRadioOgg = new QRadioButton("Ogg Vorbis");
     m_pRadioMp3 = new QRadioButton(ENCODING_MP3);
@@ -135,7 +135,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, ConfigObject<ConfigValue>* pConfig
 
     // Read CUEfile info
     CheckBoxRecordCueFile->setChecked(
-            (bool) m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CueEnabled")).toInt());
+        (bool) m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CueEnabled")).toInt());
 
 }
 
@@ -210,7 +210,7 @@ void DlgPrefRecord::loadMetaData() {
 }
 
 DlgPrefRecord::~DlgPrefRecord() {
-   delete m_pRecordControl;
+    delete m_pRecordControl;
 }
 
 void DlgPrefRecord::slotRecordPathChange() {
@@ -247,16 +247,16 @@ void DlgPrefRecord::slotUpdate() {
     } else if (m_pRadioOgg && m_pRadioOgg->isChecked()) {
         m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_OGG));
     } else if (m_pRadioMp3 && m_pRadioMp3->isChecked()) {
-       m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_MP3));
+        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_MP3));
     }
     loadMetaData();
 }
 
 void DlgPrefRecord::slotBrowseRecordingsDir() {
     QString fd = QFileDialog::getExistingDirectory(
-            this, tr("Choose recordings directory"),
-            m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY,
-                                                "Directory")));
+                     this, tr("Choose recordings directory"),
+                     m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY,
+                             "Directory")));
 
     if (fd != "") {
         // The user has picked a new directory via a file dialog. This means the
@@ -292,7 +292,7 @@ void DlgPrefRecord::slotEnableCueFile(int enabled) {
 }
 
 void DlgPrefRecord::slotChangeSplitSize() {
-        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "FileSize"),
-                    ConfigValue(comboBoxSplitting->currentText()));
+    m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "FileSize"),
+                   ConfigValue(comboBoxSplitting->currentText()));
 
 }

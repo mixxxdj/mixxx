@@ -9,10 +9,10 @@
 #include "preferences/dlgpreferencepage.h"
 
 class DlgPrefReplayGain: public DlgPreferencePage,
-                         public Ui::DlgPrefReplayGainDlg {
+    public Ui::DlgPrefReplayGainDlg {
     Q_OBJECT
   public:
-    DlgPrefReplayGain(QWidget *parent, ConfigObject<ConfigValue> *_config);
+    DlgPrefReplayGain(QWidget* parent, ConfigObject<ConfigValue>* _config);
     virtual ~DlgPrefReplayGain();
 
   public slots:
@@ -27,7 +27,7 @@ class DlgPrefReplayGain: public DlgPreferencePage,
     void slotResetToDefaults();
 
   signals:
-    void apply(const QString &);
+    void apply(const QString&);
 
   private:
     // Determines whether or not to gray out the preferences

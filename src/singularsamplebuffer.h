@@ -14,7 +14,7 @@
 class SingularSampleBuffer {
     Q_DISABLE_COPY(SingularSampleBuffer);
 
-public:
+  public:
     SingularSampleBuffer();
     explicit SingularSampleBuffer(SINT capacity);
     virtual ~SingularSampleBuffer() {}
@@ -71,10 +71,10 @@ public:
     // valid for reading as long as no modifying member function is called!
     SampleBuffer::ReadableChunk readFromHead(SINT size);
 
-protected:
+  protected:
     void trim(SampleBuffer& secondaryBuffer);
 
-private:
+  private:
     void swapBuffers(SampleBuffer& secondaryBuffer);
 
     void resetOffsets() {

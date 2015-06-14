@@ -11,11 +11,11 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
                                        ConfigObject<ConfigValue>* pConfig,
                                        ControllerManager* pControllerManager,
                                        QTreeWidgetItem* pControllerTreeItem)
-        : DlgPreferencePage(pPreferences),
-          m_pDlgPreferences(pPreferences),
-          m_pConfig(pConfig),
-          m_pControllerManager(pControllerManager),
-          m_pControllerTreeItem(pControllerTreeItem) {
+    : DlgPreferencePage(pPreferences),
+      m_pDlgPreferences(pPreferences),
+      m_pConfig(pConfig),
+      m_pControllerManager(pControllerManager),
+      m_pControllerTreeItem(pControllerTreeItem) {
     setupUi(this);
     setupControllerWidgets();
 
@@ -102,7 +102,7 @@ void DlgPrefControllers::destroyControllerWidgets() {
     }
 
     m_controllerTreeItems.clear();
-    while(m_pControllerTreeItem->childCount() > 0) {
+    while (m_pControllerTreeItem->childCount() > 0) {
         QTreeWidgetItem* controllerWindowLink = m_pControllerTreeItem->takeChild(0);
         delete controllerWindowLink;
     }
@@ -112,7 +112,7 @@ void DlgPrefControllers::setupControllerWidgets() {
     // For each controller, create a dialog and put a little link to it in the
     // treepane on the left.
     QList<Controller*> controllerList =
-            m_pControllerManager->getControllerList(false, true);
+        m_pControllerManager->getControllerList(false, true);
     qSort(controllerList.begin(), controllerList.end(), controllerCompare);
 
     foreach (Controller* pController, controllerList) {
@@ -129,7 +129,7 @@ void DlgPrefControllers::setupControllerWidgets() {
         connect(controllerDlg, SIGNAL(controllerEnabled(DlgPrefController*, bool)),
                 this, SLOT(slotHighlightDevice(DlgPrefController*, bool)));
 
-        QTreeWidgetItem * controllerWindowLink = new QTreeWidgetItem(QTreeWidgetItem::Type);
+        QTreeWidgetItem* controllerWindowLink = new QTreeWidgetItem(QTreeWidgetItem::Type);
         controllerWindowLink->setIcon(0, QIcon(":/images/preferences/ic_preferences_controllers.png"));
         QString curDeviceName = pController->getName();
         controllerWindowLink->setText(0, curDeviceName);
@@ -155,8 +155,8 @@ void DlgPrefControllers::slotHighlightDevice(DlgPrefController* dialog, bool ena
         return;
     }
 
-    QTreeWidgetItem * controllerWindowLink =
-            m_controllerTreeItems.at(dialogIndex);
+    QTreeWidgetItem* controllerWindowLink =
+        m_controllerTreeItems.at(dialogIndex);
 
     if (!controllerWindowLink) {
         return;

@@ -19,7 +19,7 @@ QStringList ControlValueDelegate::m_microphoneControlValues;
 
 
 ControlValueDelegate::ControlValueDelegate(QObject* parent)
-         : QItemDelegate(parent) {
+    : QItemDelegate(parent) {
     // List is static/shared across all objects, so only fill once.
     if (m_channelControlValues.isEmpty()) {
         m_channelControlValues.append("beatsync");
@@ -141,14 +141,12 @@ ControlValueDelegate::ControlValueDelegate(QObject* parent)
         m_channelControlValues.append("hotcue_35_clear");
         m_channelControlValues.append("hotcue_36_clear");
     }
-    if (m_masterControlValues.isEmpty())
-    {
+    if (m_masterControlValues.isEmpty()) {
         m_masterControlValues.append("balance");
         m_masterControlValues.append("crossfader");
         m_masterControlValues.append("volume");
     }
-    if (m_playlistControlValues.isEmpty())
-    {
+    if (m_playlistControlValues.isEmpty()) {
         m_playlistControlValues.append("LoadSelectedIntoFirstStopped");
         m_playlistControlValues.append("SelectNextPlaylist");
         m_playlistControlValues.append("SelectNextTrack");
@@ -156,20 +154,18 @@ ControlValueDelegate::ControlValueDelegate(QObject* parent)
         m_playlistControlValues.append("SelectPrevTrack");
         m_playlistControlValues.append("SelectTrackKnob");
     }
-    if (m_flangerControlValues.isEmpty())
-    {
+    if (m_flangerControlValues.isEmpty()) {
         m_flangerControlValues.append("lfoPeriod");
         m_flangerControlValues.append("lfoDepth");
         m_flangerControlValues.append("lfoDelay");
     }
-    if (m_microphoneControlValues.isEmpty())
-    {
+    if (m_microphoneControlValues.isEmpty()) {
         m_microphoneControlValues.append("talkover");
         m_microphoneControlValues.append("volume");
     }
 }
 
-void ControlValueDelegate::paint(QPainter *painter, const QStyleOptionViewItem& option,
+void ControlValueDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option,
                                  const QModelIndex& index) const {
     if (index.data().canConvert<QString>()) {
         QString value = index.data().value<QString>();
@@ -191,8 +187,8 @@ void ControlValueDelegate::paint(QPainter *painter, const QStyleOptionViewItem& 
 }
 
 QWidget* ControlValueDelegate::createEditor(QWidget* parent,
-                                            const QStyleOptionViewItem& /* option */,
-                                            const QModelIndex& index) const {
+        const QStyleOptionViewItem& /* option */,
+        const QModelIndex& index) const {
     //TODO: Use index to grab the value of the ControlGroup column next to
     //      this item. We want to do this because some of the possible
     //      ControlValues only apply to Channel1/2, and not Master (for example).
@@ -200,35 +196,26 @@ QWidget* ControlValueDelegate::createEditor(QWidget* parent,
     QModelIndex nextDoor = index.sibling(index.row(), MIDIINPUTTABLEINDEX_CONTROLOBJECTGROUP);
     QString controlGroup = nextDoor.model()->data(nextDoor, Qt::EditRole).toString();
 
-    QComboBox *editor = new QComboBox(parent);
+    QComboBox* editor = new QComboBox(parent);
 
     if (controlGroup == CONTROLGROUP_CHANNEL1_STRING ||
-        controlGroup == CONTROLGROUP_CHANNEL2_STRING ||
-        controlGroup == CONTROLGROUP_SAMPLER1_STRING ||
-        controlGroup == CONTROLGROUP_SAMPLER2_STRING ||
-        controlGroup == CONTROLGROUP_SAMPLER3_STRING ||
-        controlGroup == CONTROLGROUP_SAMPLER4_STRING)
-    {
+            controlGroup == CONTROLGROUP_CHANNEL2_STRING ||
+            controlGroup == CONTROLGROUP_SAMPLER1_STRING ||
+            controlGroup == CONTROLGROUP_SAMPLER2_STRING ||
+            controlGroup == CONTROLGROUP_SAMPLER3_STRING ||
+            controlGroup == CONTROLGROUP_SAMPLER4_STRING) {
         //Add all the channel 1/2 items)
         editor->addItems(m_channelControlValues);
-    }
-    else if (controlGroup == CONTROLGROUP_MASTER_STRING)
-    {
+    } else if (controlGroup == CONTROLGROUP_MASTER_STRING) {
         //Add all the ControlObject values that only [Master] has.
         editor->addItems(m_masterControlValues);
-    }
-    else if (controlGroup == CONTROLGROUP_PLAYLIST_STRING)
-    {
+    } else if (controlGroup == CONTROLGROUP_PLAYLIST_STRING) {
         //Add all the ControlObject values that only [Playlist] has.
         editor->addItems(m_playlistControlValues);
-    }
-    else if (controlGroup == CONTROLGROUP_FLANGER_STRING)
-    {
+    } else if (controlGroup == CONTROLGROUP_FLANGER_STRING) {
         //Add all the ControlObject values that only [Flanger] has.
         editor->addItems(m_flangerControlValues);
-    }
-    else if (controlGroup == CONTROLGROUP_MICROPHONE_STRING)
-    {
+    } else if (controlGroup == CONTROLGROUP_MICROPHONE_STRING) {
         //Add all the ControlObject values that only [Microphone] has.
         editor->addItems(m_microphoneControlValues);
     }
@@ -236,17 +223,17 @@ QWidget* ControlValueDelegate::createEditor(QWidget* parent,
 }
 
 void ControlValueDelegate::setEditorData(QWidget* editor,
-                                         const QModelIndex& index) const {
+        const QModelIndex& index) const {
     QString value = index.model()->data(index, Qt::EditRole).toString();
 
-    QComboBox *comboBox = static_cast<QComboBox*>(editor);
+    QComboBox* comboBox = static_cast<QComboBox*>(editor);
     comboBox->setCurrentIndex(comboBox->findText(value));
 }
 
 void ControlValueDelegate::setModelData(QWidget* editor, QAbstractItemModel* model,
                                         const QModelIndex& index) const {
     QString midiType = 0;
-    QComboBox *comboBox = static_cast<QComboBox*>(editor);
+    QComboBox* comboBox = static_cast<QComboBox*>(editor);
     //comboBox->interpretText();
 
     //Get the text from the combobox and shoot it into the data model.
@@ -256,8 +243,8 @@ void ControlValueDelegate::setModelData(QWidget* editor, QAbstractItemModel* mod
 }
 
 void ControlValueDelegate::updateEditorGeometry(QWidget* editor,
-                                                const QStyleOptionViewItem& option,
-                                                const QModelIndex& /* index */) const {
+        const QStyleOptionViewItem& option,
+        const QModelIndex& /* index */) const {
     editor->setGeometry(option.rect);
 }
 
@@ -268,42 +255,31 @@ void ControlValueDelegate::updateEditorGeometry(QWidget* editor,
     @param index The model index of the ControlValue.
 */
 bool ControlValueDelegate::verifyControlValueValidity(QString controlGroup,
-                                                      QAbstractItemModel* model,
-                                                      const QModelIndex& index) {
+        QAbstractItemModel* model,
+        const QModelIndex& index) {
     QString value = index.data().value<QString>();
 
     if (controlGroup == CONTROLGROUP_CHANNEL1_STRING ||
-        controlGroup == CONTROLGROUP_CHANNEL2_STRING ||
-        controlGroup == CONTROLGROUP_SAMPLER1_STRING ||
-        controlGroup == CONTROLGROUP_SAMPLER2_STRING ||
-        controlGroup == CONTROLGROUP_SAMPLER3_STRING ||
-        controlGroup == CONTROLGROUP_SAMPLER4_STRING)
-    {
+            controlGroup == CONTROLGROUP_CHANNEL2_STRING ||
+            controlGroup == CONTROLGROUP_SAMPLER1_STRING ||
+            controlGroup == CONTROLGROUP_SAMPLER2_STRING ||
+            controlGroup == CONTROLGROUP_SAMPLER3_STRING ||
+            controlGroup == CONTROLGROUP_SAMPLER4_STRING) {
         if (m_channelControlValues.contains(value))
             return true;
-    }
-    else if (controlGroup == CONTROLGROUP_MASTER_STRING)
-    {
+    } else if (controlGroup == CONTROLGROUP_MASTER_STRING) {
         if (m_masterControlValues.contains(value))
             return true;
-    }
-    else if (controlGroup == CONTROLGROUP_PLAYLIST_STRING)
-    {
+    } else if (controlGroup == CONTROLGROUP_PLAYLIST_STRING) {
         if (m_playlistControlValues.contains(value))
             return true;
-    }
-    else if (controlGroup == CONTROLGROUP_FLANGER_STRING)
-    {
+    } else if (controlGroup == CONTROLGROUP_FLANGER_STRING) {
         if (m_flangerControlValues.contains(value))
             return true;
-    }
-    else if (controlGroup == CONTROLGROUP_MICROPHONE_STRING)
-    {
+    } else if (controlGroup == CONTROLGROUP_MICROPHONE_STRING) {
         if (m_microphoneControlValues.contains(value))
             return true;
-    }
-    else
-    {
+    } else {
         qDebug() << "Unknown ControlGroup in " << __FILE__;
     }
 

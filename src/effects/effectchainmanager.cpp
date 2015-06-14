@@ -10,9 +10,9 @@
 
 EffectChainManager::EffectChainManager(ConfigObject<ConfigValue>* pConfig,
                                        EffectsManager* pEffectsManager)
-        : QObject(pEffectsManager),
-          m_pConfig(pConfig),
-          m_pEffectsManager(pEffectsManager) {
+    : QObject(pEffectsManager),
+      m_pConfig(pConfig),
+      m_pEffectsManager(pEffectsManager) {
 }
 
 EffectChainManager::~EffectChainManager() {
@@ -34,7 +34,7 @@ void EffectChainManager::registerChannel(const ChannelHandleAndGroup& handle_gro
 
 StandardEffectRackPointer EffectChainManager::addStandardEffectRack() {
     StandardEffectRackPointer pRack(new StandardEffectRack(
-        m_pEffectsManager, this, m_standardEffectRacks.size()));
+                                        m_pEffectsManager, this, m_standardEffectRacks.size()));
     m_standardEffectRacks.append(pRack);
     m_effectRacksByGroup.insert(pRack->getGroup(), pRack);
     return pRack;
@@ -49,7 +49,7 @@ StandardEffectRackPointer EffectChainManager::getStandardEffectRack(int i) {
 
 EqualizerRackPointer EffectChainManager::addEqualizerRack() {
     EqualizerRackPointer pRack(new EqualizerRack(
-        m_pEffectsManager, this, m_equalizerEffectRacks.size()));
+                                   m_pEffectsManager, this, m_equalizerEffectRacks.size()));
     m_equalizerEffectRacks.append(pRack);
     m_effectRacksByGroup.insert(pRack->getGroup(), pRack);
     return pRack;
@@ -64,7 +64,7 @@ EqualizerRackPointer EffectChainManager::getEqualizerRack(int i) {
 
 QuickEffectRackPointer EffectChainManager::addQuickEffectRack() {
     QuickEffectRackPointer pRack(new QuickEffectRack(
-        m_pEffectsManager, this, m_quickEffectRacks.size()));
+                                     m_pEffectsManager, this, m_quickEffectRacks.size()));
     m_quickEffectRacks.append(pRack);
     m_effectRacksByGroup.insert(pRack->getGroup(), pRack);
     return pRack;
@@ -132,8 +132,8 @@ bool EffectChainManager::saveEffectChains() {
     QDomDocument doc("MixxxEffects");
 
     QString blank = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-        "<MixxxEffects>\n"
-        "</MixxxEffects>\n";
+                    "<MixxxEffects>\n"
+                    "</MixxxEffects>\n";
     doc.setContent(blank);
 
     QDomElement rootNode = doc.documentElement();
@@ -191,7 +191,7 @@ bool EffectChainManager::loadEffectChains() {
 
         if (chainNode.isElement()) {
             EffectChainPointer pChain = EffectChain::fromXML(
-                m_pEffectsManager, chainNode.toElement());
+                                            m_pEffectsManager, chainNode.toElement());
 
             m_effectChains.append(pChain);
         }

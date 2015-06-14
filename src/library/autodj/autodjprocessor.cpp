@@ -16,15 +16,15 @@ static const bool sDebug = false;
 DeckAttributes::DeckAttributes(int index,
                                BaseTrackPlayer* pPlayer,
                                EngineChannel::ChannelOrientation orientation)
-        : index(index),
-          group(pPlayer->getGroup()),
-          posThreshold(1.0),
-          fadeDuration(0.0),
-          m_orientation(orientation),
-          m_playPos(group, "playposition"),
-          m_play(group, "play"),
-          m_repeat(group, "repeat"),
-          m_pPlayer(pPlayer) {
+    : index(index),
+      group(pPlayer->getGroup()),
+      posThreshold(1.0),
+      fadeDuration(0.0),
+      m_orientation(orientation),
+      m_playPos(group, "playposition"),
+      m_play(group, "play"),
+      m_repeat(group, "repeat"),
+      m_pPlayer(pPlayer) {
     connect(m_pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
             this, SLOT(slotTrackLoaded(TrackPointer)));
     connect(m_pPlayer, SIGNAL(loadTrackFailed(TrackPointer)),
@@ -67,34 +67,34 @@ AutoDJProcessor::AutoDJProcessor(QObject* pParent,
                                  PlayerManagerInterface* pPlayerManager,
                                  int iAutoDJPlaylistId,
                                  TrackCollection* pTrackCollection)
-        : QObject(pParent),
-          m_pConfig(pConfig),
-          m_pPlayerManager(pPlayerManager),
-          m_pAutoDJTableModel(NULL),
-          m_eState(ADJ_DISABLED),
-          m_iTransitionTime(kTransitionPreferenceDefault),
-          m_nextTransitionTime(kTransitionPreferenceDefault) {
+    : QObject(pParent),
+      m_pConfig(pConfig),
+      m_pPlayerManager(pPlayerManager),
+      m_pAutoDJTableModel(NULL),
+      m_eState(ADJ_DISABLED),
+      m_iTransitionTime(kTransitionPreferenceDefault),
+      m_nextTransitionTime(kTransitionPreferenceDefault) {
     m_pAutoDJTableModel = new PlaylistTableModel(this, pTrackCollection,
-                                                 "mixxx.db.model.autodj");
+            "mixxx.db.model.autodj");
     m_pAutoDJTableModel->setTableModel(iAutoDJPlaylistId);
 
     m_pShufflePlaylist = new ControlPushButton(
-            ConfigKey("[AutoDJ]", "shuffle_playlist"));
+        ConfigKey("[AutoDJ]", "shuffle_playlist"));
     connect(m_pShufflePlaylist, SIGNAL(valueChanged(double)),
             this, SLOT(controlShuffle(double)));
 
     m_pSkipNext = new ControlPushButton(
-            ConfigKey("[AutoDJ]", "skip_next"));
+        ConfigKey("[AutoDJ]", "skip_next"));
     connect(m_pSkipNext, SIGNAL(valueChanged(double)),
             this, SLOT(controlSkipNext(double)));
 
     m_pFadeNow = new ControlPushButton(
-            ConfigKey("[AutoDJ]", "fade_now"));
+        ConfigKey("[AutoDJ]", "fade_now"));
     connect(m_pFadeNow, SIGNAL(valueChanged(double)),
             this, SLOT(controlFadeNow(double)));
 
     m_pEnabledAutoDJ = new ControlPushButton(
-            ConfigKey("[AutoDJ]", "enabled"));
+        ConfigKey("[AutoDJ]", "enabled"));
     m_pEnabledAutoDJ->setButtonMode(ControlPushButton::TOGGLE);
     connect(m_pEnabledAutoDJ, SIGNAL(valueChanged(double)),
             this, SLOT(controlEnable(double)));
@@ -110,7 +110,7 @@ AutoDJProcessor::AutoDJProcessor(QObject* pParent,
             continue;
         }
         EngineChannel::ChannelOrientation orientation =
-                (i % 2 == 0) ? EngineChannel::LEFT : EngineChannel::RIGHT;
+            (i % 2 == 0) ? EngineChannel::LEFT : EngineChannel::RIGHT;
         m_decks.append(new DeckAttributes(i, pPlayer, orientation));
     }
     // Auto-DJ needs at least two decks
@@ -120,7 +120,7 @@ AutoDJProcessor::AutoDJProcessor(QObject* pParent,
     m_pCOCrossfaderReverse = new ControlObjectSlave("[Mixer Profile]", "xFaderReverse");
 
     QString str_autoDjTransition = m_pConfig->getValueString(
-            ConfigKey(kConfigKey, kTransitionPreferenceName));
+                                       ConfigKey(kConfigKey, kTransitionPreferenceName));
     if (!str_autoDjTransition.isEmpty()) {
         m_iTransitionTime = str_autoDjTransition.toInt();
         m_nextTransitionTime =  m_iTransitionTime;
@@ -168,7 +168,7 @@ void AutoDJProcessor::setCrossfader(double value, bool right) {
 }
 
 AutoDJProcessor::AutoDJError AutoDJProcessor::shufflePlaylist(
-        const QModelIndexList& selectedIndices) {
+    const QModelIndexList& selectedIndices) {
     QModelIndex exclude;
     if (m_eState != ADJ_DISABLED) {
         exclude = m_pAutoDJTableModel->index(0, 0);
@@ -194,7 +194,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::fadeNow() {
 
             // override posThreshold to start fade now
             leftDeck.posThreshold = leftDeck.playPosition() -
-                    ((crossfader + 1.0) / 2 * (leftDeck.fadeDuration));
+                                    ((crossfader + 1.0) / 2 * (leftDeck.fadeDuration));
             // Repeat is disabled by FadeNow but disables auto Fade
             leftDeck.setRepeat(false);
         } else if (crossfader >= -0.3 && rightDeck.isPlaying()) {
@@ -205,7 +205,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::fadeNow() {
 
             // override posThreshold to start fade now
             rightDeck.posThreshold = rightDeck.playPosition() -
-                    ((1.0 - crossfader) / 2 * (rightDeck.fadeDuration));
+                                     ((1.0 - crossfader) / 2 * (rightDeck.fadeDuration));
             // Repeat is disabled by FadeNow but disables auto Fade
             rightDeck.setRepeat(false);
         }
@@ -379,7 +379,7 @@ void AutoDJProcessor::controlSkipNext(double value) {
 }
 
 void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
-                                            double thisPlayPosition) {
+        double thisPlayPosition) {
     if (sDebug) {
         qDebug() << this << "playerPositionChanged" << pAttributes->group
                  << thisPlayPosition;
@@ -458,7 +458,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
     // is not playing -- we switch the crossfader fully to this deck's side,
     // switch to IDLE mode and load the next track into the other deck.
     if ((m_eState == ADJ_P1FADING && thisDeck.isRight()) ||
-        (m_eState == ADJ_P2FADING && thisDeck.isLeft())) {
+            (m_eState == ADJ_P2FADING && thisDeck.isLeft())) {
         // Once P1 or P2 has stopped switch out of fading mode to idle.
         if (thisDeckPlaying && !otherDeckPlaying) {
             // Force crossfader all the way to this side.
@@ -549,7 +549,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             // adjustment.
             double crossfadeEdgeValue = -1.0;
             double adjustment = 2 * (thisPlayPosition - thisDeck.posThreshold) /
-                    (posFadeEnd - thisDeck.posThreshold);
+                                (posFadeEnd - thisDeck.posThreshold);
             bool isLeft = thisDeck.isLeft();
             if (!isLeft) {
                 crossfadeEdgeValue = 1.0;
@@ -563,9 +563,9 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
 TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
     // Get the track at the top of the playlist.
     bool randomQueueEnabled = (((m_pConfig->getValueString(
-                ConfigKey("[Auto DJ]", "EnableRandomQueue")).toInt())) == 1);
+                                     ConfigKey("[Auto DJ]", "EnableRandomQueue")).toInt())) == 1);
     int minAutoDJCrateTracks = m_pConfig->getValueString(
-                ConfigKey(kConfigKey, "RandomQueueMinimumAllowed")).toInt();
+                                   ConfigKey(kConfigKey, "RandomQueueMinimumAllowed")).toInt();
     int tracksToAdd = minAutoDJCrateTracks - m_pAutoDJTableModel->rowCount();
     // Incase we start off with < minimum tracks
     if (randomQueueEnabled && (tracksToAdd > 0)) {
@@ -574,7 +574,7 @@ TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
 
     while (true) {
         TrackPointer nextTrack = m_pAutoDJTableModel->getTrack(
-            m_pAutoDJTableModel->index(0, 0));
+                                     m_pAutoDJTableModel->index(0, 0));
 
         if (nextTrack) {
             if (nextTrack->exists()) {
@@ -582,7 +582,7 @@ TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
             } else {
                 // Remove missing song from auto DJ playlist.
                 m_pAutoDJTableModel->removeTrack(
-                        m_pAutoDJTableModel->index(0, 0));
+                    m_pAutoDJTableModel->index(0, 0));
             }
         } else {
             // We're out of tracks. Return the null TrackPointer.
@@ -635,7 +635,7 @@ bool AutoDJProcessor::removeTrackFromTopOfQueue(TrackPointer pTrack) {
 
     // Get the track id at the top of the playlist.
     int nextId = m_pAutoDJTableModel->getTrackId(
-            m_pAutoDJTableModel->index(0, 0));
+                     m_pAutoDJTableModel->index(0, 0));
 
     // No track at the top of the queue.
     if (nextId == -1) {
@@ -657,9 +657,9 @@ bool AutoDJProcessor::removeTrackFromTopOfQueue(TrackPointer pTrack) {
 
     // Fill random tracks if configured
     int minAutoDJCrateTracks = m_pConfig->getValueString(
-            ConfigKey(kConfigKey, "RandomQueueMinimumAllowed")).toInt();
+                                   ConfigKey(kConfigKey, "RandomQueueMinimumAllowed")).toInt();
     bool randomQueueEnabled = (((m_pConfig->getValueString(
-            ConfigKey("[Auto DJ]", "EnableRandomQueue")).toInt())) == 1);
+                                     ConfigKey("[Auto DJ]", "EnableRandomQueue")).toInt())) == 1);
 
     int tracksToAdd = minAutoDJCrateTracks - m_pAutoDJTableModel->rowCount();
     if (randomQueueEnabled && (tracksToAdd > 0)) {
@@ -687,7 +687,7 @@ void AutoDJProcessor::playerPlayChanged(DeckAttributes* pAttributes, bool playin
 }
 
 void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
-                                          DeckAttributes* pToDeck) {
+        DeckAttributes* pToDeck) {
     if (pFromDeck == NULL) {
         return;
     }
@@ -707,7 +707,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
             // track_samples / track_samplerate instead.
             int fromTrackDuration = fromTrack->getDuration();
             qDebug() << fromTrack->getLocation()
-                    << "fromTrackDuration =" << fromTrackDuration;
+                     << "fromTrackDuration =" << fromTrackDuration;
 
             // The track might be shorter than the transition period. Use a
             // sensible cap.
@@ -721,7 +721,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
                     // track_samples / track_samplerate instead.
                     int toTrackDuration = toTrack->getDuration();
                     qDebug() << toTrack->getLocation()
-                            << "toTrackDuration = " << toTrackDuration;
+                             << "toTrackDuration = " << toTrackDuration;
                     m_nextTransitionTime = math_min(m_nextTransitionTime,
                                                     toTrackDuration / 2);
                 }
@@ -729,8 +729,8 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
 
             if (fromTrackDuration > 0) {
                 pFromDeck->fadeDuration =
-                        static_cast<double>(m_nextTransitionTime) /
-                        static_cast<double>(fromTrackDuration);
+                    static_cast<double>(m_nextTransitionTime) /
+                    static_cast<double>(fromTrackDuration);
             } else {
                 pFromDeck->fadeDuration = 0;
             }
@@ -828,7 +828,7 @@ void AutoDJProcessor::setTransitionTime(int time) {
 }
 
 DeckAttributes* AutoDJProcessor::getOtherDeck(DeckAttributes* pThisDeck,
-                                              bool playing) {
+        bool playing) {
     DeckAttributes* pOtherDeck = NULL;
     if (pThisDeck->isLeft()) {
         // find first right deck

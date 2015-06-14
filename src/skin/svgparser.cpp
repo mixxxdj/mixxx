@@ -5,7 +5,7 @@
 #include "skin/svgparser.h"
 
 SvgParser::SvgParser(const SkinContext& parent)
-        : m_context(parent) {
+    : m_context(parent) {
 }
 
 SvgParser::~SvgParser() {
@@ -56,7 +56,7 @@ void SvgParser::parseElement(QDomNode* node) const {
         if (element.hasAttribute("value")) {
             QString expression = element.attribute("value");
             QString result = evaluateTemplateExpression(
-                expression, node->lineNumber()).toString();
+                                 expression, node->lineNumber()).toString();
 
             if (!result.isNull()) {
                 QDomNodeList children = node->childNodes();
@@ -74,7 +74,7 @@ void SvgParser::parseElement(QDomNode* node) const {
         if (element.hasAttribute("expression")) {
             QString expression = element.attribute("expression");
             value = evaluateTemplateExpression(
-                expression, node->lineNumber()).toString();
+                        expression, node->lineNumber()).toString();
         } else if (element.hasAttribute("name")) {
             /* TODO (jclaveau) : Getting the variable from the context or the
              * script engine have the same result here (in the skin context two)
@@ -107,12 +107,12 @@ void SvgParser::parseElement(QDomNode* node) const {
             }
             QTextStream in(&scriptFile);
             QScriptValue result = m_context.evaluateScript(in.readAll(),
-                                                           scriptPath);
+                                  scriptPath);
         }
         // Evaluates the content of the script element
         // QString expression = m_context.nodeToString(*node);
         QScriptValue result = m_context.evaluateScript(
-            element.text(), m_currentFile, node->lineNumber());
+                                  element.text(), m_currentFile, node->lineNumber());
     }
 }
 
@@ -124,7 +124,7 @@ void SvgParser::parseAttributes(const QDomNode& node) const {
     // Retrieving hooks pattern from script extension
     QScriptValue global = m_context.getScriptEngine()->globalObject();
     QScriptValue hooksPattern = global.property("svg")
-        .property("getHooksPattern").call(global.property("svg"));
+                                .property("getHooksPattern").call(global.property("svg"));
     QRegExp hookRx;
     if (!hooksPattern.isNull())
         hookRx.setPattern(hooksPattern.toString());
@@ -141,7 +141,7 @@ void SvgParser::parseAttributes(const QDomNode& node) const {
         // expr-attribute_name="variable_name|expression"
         if (nameRx.indexIn(attributeName) != -1) {
             QString varValue = evaluateTemplateExpression(
-                attributeValue, node.lineNumber()).toString();
+                                   attributeValue, node.lineNumber()).toString();
             if (varValue.length()) {
                 element.setAttribute(nameRx.cap(1), varValue);
             }
@@ -156,7 +156,7 @@ void SvgParser::parseAttributes(const QDomNode& node) const {
                 QString match = hookRx.cap(0);
                 QString tmp = "svg.templateHooks." + match;
                 QString replacement = evaluateTemplateExpression(
-                    tmp, node.lineNumber()).toString();
+                                          tmp, node.lineNumber()).toString();
                 attributeValue.replace(pos, match.length(), replacement);
                 pos += replacement.length();
             }
@@ -176,9 +176,9 @@ QByteArray SvgParser::saveToQByteArray(const QDomNode& svgNode) const {
 }
 
 QScriptValue SvgParser::evaluateTemplateExpression(const QString& expression,
-                                                   int lineNumber) const {
+        int lineNumber) const {
     QScriptValue out = m_context.evaluateScript(
-        expression, m_currentFile, lineNumber);
+                           expression, m_currentFile, lineNumber);
     if (m_context.getScriptEngine()->hasUncaughtException()) {
         // return an empty string as replacement for the in-attribute expression
         return QScriptValue();

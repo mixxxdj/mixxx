@@ -24,13 +24,13 @@ Result writeTrackMetadataIntoFile(const TrackMetadata& trackMetadata, QString fi
 void readTrackMetadataFromID3v2Tag(TrackMetadata* pTrackMetadata, const TagLib::ID3v2::Tag& tag);
 void readTrackMetadataFromAPETag(TrackMetadata* pTrackMetadata, const TagLib::APE::Tag& tag);
 void readTrackMetadataFromXiphComment(TrackMetadata* pTrackMetadata,
-        const TagLib::Ogg::XiphComment& tag);
+                                      const TagLib::Ogg::XiphComment& tag);
 void readTrackMetadataFromMP4Tag(TrackMetadata* pTrackMetadata, const TagLib::MP4::Tag& tag);
 bool writeTrackMetadataIntoID3v2Tag(TagLib::ID3v2::Tag* pTag,
-        const TrackMetadata& trackMetadata);
+                                    const TrackMetadata& trackMetadata);
 bool writeTrackMetadataIntoAPETag(TagLib::APE::Tag* pTag, const TrackMetadata& trackMetadata);
 bool writeTrackMetadataIntoXiphComment(TagLib::Ogg::XiphComment* pTag,
-        const TrackMetadata& trackMetadata);
+                                       const TrackMetadata& trackMetadata);
 bool writeTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& trackMetadata);
 
 } //namespace Mixxx

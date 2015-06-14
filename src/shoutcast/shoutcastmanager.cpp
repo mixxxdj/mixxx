@@ -7,7 +7,7 @@
 
 ShoutcastManager::ShoutcastManager(ConfigObject<ConfigValue>* pConfig,
                                    EngineMaster* pEngine)
-        : m_pConfig(pConfig) {
+    : m_pConfig(pConfig) {
     EngineSideChain* pSidechain = pEngine->getSideChain();
     if (pSidechain) {
         pSidechain->addSideChainWorker(new EngineShoutcast(pConfig));
@@ -26,5 +26,5 @@ void ShoutcastManager::setEnabled(bool value) {
 
 bool ShoutcastManager::isEnabled() {
     return m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY, "enabled")).toInt() == 1;
+               ConfigKey(SHOUTCAST_PREF_KEY, "enabled")).toInt() == 1;
 }

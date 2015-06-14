@@ -4,7 +4,7 @@
 #include "widget/wlibrarytextbrowser.h"
 
 WLibraryTextBrowser::WLibraryTextBrowser(QWidget* parent)
-        : QTextBrowser(parent) {
+    : QTextBrowser(parent) {
 }
 
 WLibraryTextBrowser::~WLibraryTextBrowser() {

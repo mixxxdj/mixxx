@@ -40,16 +40,16 @@ class ControlObjectSlave;
 class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     Q_OBJECT;
   public:
-    DlgPrefSound(QWidget *parent, SoundManager *soundManager,
+    DlgPrefSound(QWidget* parent, SoundManager* soundManager,
                  PlayerManager* pPlayerManager,
-                 ConfigObject<ConfigValue> *config);
+                 ConfigObject<ConfigValue>* config);
     virtual ~DlgPrefSound();
 
   signals:
-    void loadPaths(const SoundManagerConfig &config);
-    void writePaths(SoundManagerConfig *config);
-    void refreshOutputDevices(const QList<SoundDevice*> &devices);
-    void refreshInputDevices(const QList<SoundDevice*> &devices);
+    void loadPaths(const SoundManagerConfig& config);
+    void writePaths(SoundManagerConfig* config);
+    void refreshOutputDevices(const QList<SoundDevice*>& devices);
+    void refreshInputDevices(const QList<SoundDevice*>& devices);
     void updatingAPI();
     void updatedAPI();
 
@@ -84,13 +84,13 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
 
   private:
     void initializePaths();
-    void connectSoundItem(DlgPrefSoundItem *item);
-    void loadSettings(const SoundManagerConfig &config);
-    void insertItem(DlgPrefSoundItem *pItem, QVBoxLayout *pLayout);
+    void connectSoundItem(DlgPrefSoundItem* item);
+    void loadSettings(const SoundManagerConfig& config);
+    void insertItem(DlgPrefSoundItem* pItem, QVBoxLayout* pLayout);
 
-    SoundManager *m_pSoundManager;
-    PlayerManager *m_pPlayerManager;
-    ConfigObject<ConfigValue> *m_pConfig;
+    SoundManager* m_pSoundManager;
+    PlayerManager* m_pPlayerManager;
+    ConfigObject<ConfigValue>* m_pConfig;
     ControlObjectSlave* m_pMasterAudioLatencyOverloadCount;
     ControlObjectSlave* m_pMasterLatency;
     ControlObjectSlave* m_pHeadDelay;

@@ -26,7 +26,7 @@
 #include "util/debug.h"
 #include "util/math.h"
 
-WSliderComposed::WSliderComposed(QWidget * parent)
+WSliderComposed::WSliderComposed(QWidget* parent)
     : WWidget(parent),
       m_bRightButtonPressed(false),
       m_dHandleLength(0.0),
@@ -75,7 +75,7 @@ void WSliderComposed::setup(QDomNode node, const SkinContext& context) {
                     ControlParameterWidgetConnection::EMIT_DEFAULT) {
                 // ON_PRESS means here value change on mouse move during press
                 defaultConnection->setEmitOption(
-                        ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE);
+                    ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE);
             }
         }
     }
@@ -114,23 +114,23 @@ void WSliderComposed::unsetPixmaps() {
     m_pHandle.clear();
 }
 
-void WSliderComposed::mouseMoveEvent(QMouseEvent * e) {
+void WSliderComposed::mouseMoveEvent(QMouseEvent* e) {
     m_handler.mouseMoveEvent(this, e);
 }
 
-void WSliderComposed::wheelEvent(QWheelEvent *e) {
+void WSliderComposed::wheelEvent(QWheelEvent* e) {
     m_handler.wheelEvent(this, e);
 }
 
-void WSliderComposed::mouseReleaseEvent(QMouseEvent * e) {
+void WSliderComposed::mouseReleaseEvent(QMouseEvent* e) {
     m_handler.mouseReleaseEvent(this, e);
 }
 
-void WSliderComposed::mousePressEvent(QMouseEvent * e) {
+void WSliderComposed::mousePressEvent(QMouseEvent* e) {
     m_handler.mousePressEvent(this, e);
 }
 
-void WSliderComposed::paintEvent(QPaintEvent *) {
+void WSliderComposed::paintEvent(QPaintEvent*) {
     QStyleOption option;
     option.initFrom(this);
     QStylePainter p(this);
@@ -176,7 +176,7 @@ void WSliderComposed::fillDebugTooltip(QStringList* debug) {
     int sliderLength = m_bHorizontal ? width() : height();
     *debug << QString("Horizontal: %1").arg(toDebugString(m_bHorizontal))
            << QString("SliderPosition: %1").arg(
-                   m_handler.parameterToPosition(getControlParameterDisplay()))
+               m_handler.parameterToPosition(getControlParameterDisplay()))
            << QString("SliderLength: %1").arg(sliderLength)
            << QString("HandleLength: %1").arg(m_dHandleLength);
 }
@@ -192,11 +192,11 @@ double WSliderComposed::calculateHandleLength() {
             } else if (mode == Paintable::STRETCH_ASPECT) {
                 const int iHeight = m_pHandle->height();
                 if (iHeight == 0) {
-                  qDebug() << "WSliderComposed: Invalid height.";
-                  return 0.0;
+                    qDebug() << "WSliderComposed: Invalid height.";
+                    return 0.0;
                 }
                 const qreal aspect =
-                  static_cast<qreal>(m_pHandle->width()) / iHeight;
+                    static_cast<qreal>(m_pHandle->width()) / iHeight;
                 return aspect * height();
             }
         } else {
@@ -207,11 +207,11 @@ double WSliderComposed::calculateHandleLength() {
             } else if (mode == Paintable::STRETCH_ASPECT) {
                 const int iWidth = m_pHandle->width();
                 if (iWidth == 0) {
-                  qDebug() << "WSliderComposed: Invalid width.";
-                  return 0.0;
+                    qDebug() << "WSliderComposed: Invalid width.";
+                    return 0.0;
                 }
                 const qreal aspect =
-                  static_cast<qreal>(m_pHandle->height()) / iWidth;
+                    static_cast<qreal>(m_pHandle->height()) / iWidth;
                 return aspect * width();
             }
         }

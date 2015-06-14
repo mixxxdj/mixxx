@@ -10,7 +10,7 @@
 class DlgPrefAutoDJ : public DlgPreferencePage, public Ui::DlgPrefAutoDJDlg {
     Q_OBJECT
   public:
-    DlgPrefAutoDJ(QWidget* pParent, ConfigObject<ConfigValue> *pConfig);
+    DlgPrefAutoDJ(QWidget* pParent, ConfigObject<ConfigValue>* pConfig);
     virtual ~DlgPrefAutoDJ();
 
   public slots:
@@ -23,7 +23,7 @@ class DlgPrefAutoDJ : public DlgPreferencePage, public Ui::DlgPrefAutoDJDlg {
     void slotSetAutoDjRequeue(int);
     void slotSetAutoDjMinimumAvailable(int);
     void slotSetAutoDjUseIgnoreTime(int);
-    void slotSetAutoDjIgnoreTime(const QTime &a_rTime);
+    void slotSetAutoDjIgnoreTime(const QTime& a_rTime);
     void slotSetAutoDJRandomQueueMin(int);
     void slotEnableAutoDJRandomQueueComboBox(int);
     void slotEnableAutoDJRandomQueue(int);

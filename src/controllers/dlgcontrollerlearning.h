@@ -30,12 +30,12 @@ class ControllerPreset;
 //#define CONTROLLERLESSTESTING
 
 class DlgControllerLearning : public QDialog,
-                              public ControllerVisitor,
-                              public Ui::DlgControllerLearning {
+    public ControllerVisitor,
+    public Ui::DlgControllerLearning {
     Q_OBJECT
 
   public:
-    DlgControllerLearning(QWidget *parent, Controller *controller);
+    DlgControllerLearning(QWidget* parent, Controller* controller);
     virtual ~DlgControllerLearning();
 
     void visit(MidiController* pController);

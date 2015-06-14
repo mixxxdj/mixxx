@@ -13,11 +13,11 @@
 #include "util/compatibility.h"
 #include "util/trace.h"
 
-BulkReader::BulkReader(libusb_device_handle *handle, unsigned char in_epaddr)
-        : QThread(),
-          m_phandle(handle),
-          m_stop(0),
-          m_in_epaddr(in_epaddr) {
+BulkReader::BulkReader(libusb_device_handle* handle, unsigned char in_epaddr)
+    : QThread(),
+      m_phandle(handle),
+      m_stop(0),
+      m_in_epaddr(in_epaddr) {
 }
 
 BulkReader::~BulkReader() {
@@ -57,7 +57,7 @@ void BulkReader::run() {
     qDebug() << "Stopped Reader";
 }
 
-static QString get_string(libusb_device_handle *handle, u_int8_t id) {
+static QString get_string(libusb_device_handle* handle, u_int8_t id) {
     unsigned char buf[128] = { 0 };
 
     if (id) {
@@ -69,13 +69,12 @@ static QString get_string(libusb_device_handle *handle, u_int8_t id) {
 
 
 BulkController::BulkController(libusb_context* context,
-                               libusb_device_handle *handle,
-                               struct libusb_device_descriptor *desc)
-        : m_context(context),
-          m_phandle(handle),
-          in_epaddr(0),
-          out_epaddr(0)
-{
+                               libusb_device_handle* handle,
+                               struct libusb_device_descriptor* desc)
+    : m_context(context),
+      m_phandle(handle),
+      in_epaddr(0),
+      out_epaddr(0) {
     vendor_id = desc->idVendor;
     product_id = desc->idProduct;
 
@@ -151,7 +150,7 @@ int BulkController::open() {
     int i;
     for (i = 0; bulk_supported[i].vendor_id; ++i) {
         if ((bulk_supported[i].vendor_id == vendor_id) &&
-            (bulk_supported[i].product_id == product_id)) {
+                (bulk_supported[i].product_id == product_id)) {
             in_epaddr = bulk_supported[i].in_epaddr;
             out_epaddr = bulk_supported[i].out_epaddr;
             break;
@@ -166,7 +165,7 @@ int BulkController::open() {
     // XXX: we should enumerate devices and match vendor, product, and serial
     if (m_phandle == NULL) {
         m_phandle = libusb_open_device_with_vid_pid(
-            m_context, vendor_id, product_id);
+                        m_context, vendor_id, product_id);
     }
 
     if (m_phandle == NULL) {
@@ -246,7 +245,7 @@ void BulkController::send(QByteArray data) {
 
     // XXX: don't get drunk again.
     ret = libusb_bulk_transfer(m_phandle, out_epaddr,
-                               (unsigned char *)data.constData(), data.size(),
+                               (unsigned char*)data.constData(), data.size(),
                                &transferred, 0);
     if (ret < 0) {
         qWarning() << "Unable to send data to" << getName()

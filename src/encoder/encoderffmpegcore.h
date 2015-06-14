@@ -51,7 +51,7 @@ extern "C" {
 class EncoderCallback;
 
 class EncoderFfmpegCore : public Encoder {
-public:
+  public:
 #if LIBAVCODEC_VERSION_INT > 3544932
     EncoderFfmpegCore(EncoderCallback* pCallback=NULL,
                       AVCodecID codec = AV_CODEC_ID_MP2);
@@ -61,25 +61,25 @@ public:
 #endif
     ~EncoderFfmpegCore();
     int initEncoder(int bitrate, int samplerate);
-    void encodeBuffer(const CSAMPLE *samples, const int size);
+    void encodeBuffer(const CSAMPLE* samples, const int size);
     void updateMetaData(char* artist, char* title, char* album);
     void flush();
-protected:
-    unsigned int reSample(AVFrame *inframe);
+  protected:
+    unsigned int reSample(AVFrame* inframe);
 
 
-private:
+  private:
     int getSerial();
     bool metaDataHasChanged();
     //Call this method in conjunction with shoutcast streaming
-    int writeAudioFrame(AVFormatContext *oc, AVStream *st);
-    void closeAudio(AVStream *st);
-    void openAudio(AVCodec *codec, AVStream *st);
+    int writeAudioFrame(AVFormatContext* oc, AVStream* st);
+    void closeAudio(AVStream* st);
+    void openAudio(AVCodec* codec, AVStream* st);
 #if LIBAVCODEC_VERSION_INT > 3544932
-    AVStream *addStream(AVFormatContext *oc, AVCodec **codec,
+    AVStream* addStream(AVFormatContext* oc, AVCodec** codec,
                         enum AVCodecID codec_id);
 #else
-    AVStream *addStream(AVFormatContext *oc, AVCodec **codec,
+    AVStream* addStream(AVFormatContext* oc, AVCodec** codec,
                         enum CodecID codec_id);
 #endif
     bool m_bStreamInitialized;
@@ -87,22 +87,22 @@ private:
     EncoderCallback* m_pCallback;
     TrackPointer m_pMetaData;
 
-    char *m_strMetaDataTitle;
-    char *m_strMetaDataArtist;
-    char *m_strMetaDataAlbum;
+    char* m_strMetaDataTitle;
+    char* m_strMetaDataArtist;
+    char* m_strMetaDataAlbum;
     QFile m_pFile;
 
     QByteArray m_strReadByteArray;
     CSAMPLE m_SBuffer[65535];
     unsigned long m_lBufferSize;
 
-    AVFormatContext *m_pEncodeFormatCtx;
-    AVStream *m_pEncoderAudioStream;
-    AVCodec *m_pEncoderAudioCodec;
-    AVOutputFormat *m_pEncoderFormat;
+    AVFormatContext* m_pEncodeFormatCtx;
+    AVStream* m_pEncoderAudioStream;
+    AVCodec* m_pEncoderAudioCodec;
+    AVOutputFormat* m_pEncoderFormat;
 
-    uint8_t *m_pSamples;
-    float *m_pFltSamples;
+    uint8_t* m_pSamples;
+    float* m_pFltSamples;
     int m_iAudioInputFrameSize;
 
     unsigned int m_iFltAudioCpyLen;
@@ -119,8 +119,8 @@ private:
     enum CodecID m_SCcodecId;
 #endif
 
-    EncoderFfmpegResample *m_pResample;
-    AVStream *m_pStream;
+    EncoderFfmpegResample* m_pResample;
+    AVStream* m_pStream;
 };
 
 #endif

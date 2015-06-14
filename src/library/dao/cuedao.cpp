@@ -12,7 +12,7 @@
 #include "util/assert.h"
 
 CueDAO::CueDAO(QSqlDatabase& database)
-        : m_database(database) {
+    : m_database(database) {
 }
 
 CueDAO::~CueDAO() {
@@ -166,13 +166,13 @@ bool CueDAO::saveCue(Cue* cue) {
         // Update cue
         QSqlQuery query(m_database);
         query.prepare("UPDATE " CUE_TABLE " SET "
-                        "track_id = :track_id,"
-                        "type = :type,"
-                        "position = :position,"
-                        "length = :length,"
-                        "hotcue = :hotcue,"
-                        "label = :label"
-                        " WHERE id = :id");
+                      "track_id = :track_id,"
+                      "type = :type,"
+                      "position = :position,"
+                      "length = :length,"
+                      "hotcue = :hotcue,"
+                      "label = :label"
+                      " WHERE id = :id");
         query.bindValue(":id", cue->getId());
         query.bindValue(":track_id", cue->getTrackId());
         query.bindValue(":type", cue->getType());

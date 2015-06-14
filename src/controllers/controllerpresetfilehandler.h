@@ -17,7 +17,7 @@ class ControllerPresetFileHandler {
     virtual ~ControllerPresetFileHandler() {};
 
     static ControllerPresetPointer loadPreset(const QString& path,
-                                              const QStringList& presetPaths);
+            const QStringList& presetPaths);
 
     /** load(QString,QString,bool)
      * Overloaded function for convenience

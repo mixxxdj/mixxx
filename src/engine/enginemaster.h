@@ -86,7 +86,7 @@ class EngineMaster : public QObject, public AudioSource {
 
     ChannelHandleAndGroup registerChannelGroup(const QString& group) {
         return ChannelHandleAndGroup(
-                m_channelHandleFactory.getOrCreateHandle(group), group);
+                   m_channelHandleFactory.getOrCreateHandle(group), group);
     }
 
     // WARNING: These methods are called by the main thread. They should only
@@ -108,18 +108,18 @@ class EngineMaster : public QObject, public AudioSource {
                                             double centerGain,
                                             double rightGain) {
         switch (orientation) {
-            case EngineChannel::LEFT:
-                return leftGain;
-            case EngineChannel::RIGHT:
-                return rightGain;
-            case EngineChannel::CENTER:
-            default:
-                return centerGain;
+        case EngineChannel::LEFT:
+            return leftGain;
+        case EngineChannel::RIGHT:
+            return rightGain;
+        case EngineChannel::CENTER:
+        default:
+            return centerGain;
         }
     }
 
     // Provide access to the master sync so enginebuffers can know what their rate controller is.
-    EngineSync* getEngineSync() const{
+    EngineSync* getEngineSync() const {
         return m_pMasterSync;
     }
 
@@ -136,11 +136,11 @@ class EngineMaster : public QObject, public AudioSource {
 
     struct ChannelInfo {
         ChannelInfo(int index)
-                : m_pChannel(NULL),
-                  m_pBuffer(NULL),
-                  m_pVolumeControl(NULL),
-                  m_pMuteControl(NULL),
-                  m_index(index) {
+            : m_pChannel(NULL),
+              m_pBuffer(NULL),
+              m_pVolumeControl(NULL),
+              m_pMuteControl(NULL),
+              m_index(index) {
         }
         ChannelHandle m_handle;
         EngineChannel* m_pChannel;
@@ -181,22 +181,22 @@ class EngineMaster : public QObject, public AudioSource {
     class OrientationVolumeGainCalculator : public GainCalculator {
       public:
         OrientationVolumeGainCalculator()
-                : m_dVolume(1.0),
-                  m_dLeftGain(1.0),
-                  m_dCenterGain(1.0),
-                  m_dRightGain(1.0) {
+            : m_dVolume(1.0),
+              m_dLeftGain(1.0),
+              m_dCenterGain(1.0),
+              m_dRightGain(1.0) {
         }
 
         inline double getGain(ChannelInfo* pChannelInfo) const {
             const double channelVolume = pChannelInfo->m_pVolumeControl->get();
             const double orientationGain = EngineMaster::gainForOrientation(
-                    pChannelInfo->m_pChannel->getOrientation(),
-                    m_dLeftGain, m_dCenterGain, m_dRightGain);
+                                               pChannelInfo->m_pChannel->getOrientation(),
+                                               m_dLeftGain, m_dCenterGain, m_dRightGain);
             return m_dVolume * channelVolume * orientationGain;
         }
 
         inline void setGains(double dVolume, double leftGain,
-                double centerGain, double rightGain) {
+                             double centerGain, double rightGain) {
             m_dVolume = dVolume;
             m_dLeftGain = leftGain;
             m_dCenterGain = centerGain;
@@ -212,7 +212,7 @@ class EngineMaster : public QObject, public AudioSource {
     template<typename T, unsigned int CAPACITY>
     class FastVector {
       public:
-        inline FastVector() : m_size(0), m_data((T*)((void *)m_buffer)) {};
+        inline FastVector() : m_size(0), m_data((T*)((void*)m_buffer)) {};
         inline ~FastVector() {
             if (QTypeInfo<T>::isComplex) {
                 for (int i = 0; i < m_size; ++i) {
@@ -248,7 +248,7 @@ class EngineMaster : public QObject, public AudioSource {
         T* const m_data;
         // Using a long double buffer guarantees the alignment for any type
         // but avoids the constructor call T();
-        long double m_buffer[(CAPACITY * sizeof(T) + sizeof(long double) - 1) /
+        long double m_buffer[(CAPACITY* sizeof(T) + sizeof(long double) - 1) /
                              sizeof(long double)];
     };
 

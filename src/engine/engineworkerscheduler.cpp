@@ -8,9 +8,9 @@
 #include "util/event.h"
 
 EngineWorkerScheduler::EngineWorkerScheduler(QObject* pParent)
-        : m_bWakeScheduler(false),
-          m_scheduleFIFO(MAX_ENGINE_WORKERS),
-          m_bQuit(false) {
+    : m_bWakeScheduler(false),
+      m_scheduleFIFO(MAX_ENGINE_WORKERS),
+      m_bQuit(false) {
     Q_UNUSED(pParent);
 }
 

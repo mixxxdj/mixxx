@@ -4,7 +4,7 @@
 #include "library/coverartutils.h"
 
 DlgCoverArtFullSize::DlgCoverArtFullSize(QWidget* parent)
-        : QDialog(parent) {
+    : QDialog(parent) {
     setupUi(this);
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
 }
@@ -37,7 +37,7 @@ void DlgCoverArtFullSize::init(CoverInfo info) {
     if (pixmap.height() > mixxxSize.height()
             || pixmap.width() > mixxxSize.width()) {
         pixmap = pixmap.scaled(
-            mixxxSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+                     mixxxSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     }
     resize(pixmap.size());
     coverArt->setPixmap(pixmap);

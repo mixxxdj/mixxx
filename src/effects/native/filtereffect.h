@@ -39,7 +39,7 @@ class FilterEffect : public PerChannelEffectProcessor<FilterGroupState> {
     // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,
                         FilterGroupState* pState,
-                        const CSAMPLE* pInput, CSAMPLE *pOutput,
+                        const CSAMPLE* pInput, CSAMPLE* pOutput,
                         const unsigned int numSamples,
                         const unsigned int sampleRate,
                         const EffectProcessor::EnableState enableState,

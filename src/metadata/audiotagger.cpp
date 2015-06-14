@@ -16,8 +16,8 @@ inline SecurityTokenPointer openSecurityToken(QFileInfo file,
 } // anonymous namespace
 
 AudioTagger::AudioTagger(const QString& file, SecurityTokenPointer pToken) :
-        m_file(file),
-        m_pSecurityToken(openSecurityToken(m_file, pToken)) {
+    m_file(file),
+    m_pSecurityToken(openSecurityToken(m_file, pToken)) {
 }
 
 AudioTagger::~AudioTagger() {

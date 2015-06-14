@@ -23,7 +23,7 @@ class BansheePlaylistModel : public BaseSqlTableModel {
     virtual QString getTrackLocation(const QModelIndex& index) const;
     virtual bool isColumnInternal(int column);
 
-    virtual Qt::ItemFlags flags(const QModelIndex &index) const;
+    virtual Qt::ItemFlags flags(const QModelIndex& index) const;
     TrackModel::CapabilitiesFlags getCapabilities() const;
 
     virtual bool setData(const QModelIndex& index, const QVariant& value, int role=Qt::EditRole);
@@ -31,9 +31,9 @@ class BansheePlaylistModel : public BaseSqlTableModel {
 
   protected:
     // Use this if you want a model that is read-only.
-    virtual Qt::ItemFlags readOnlyFlags(const QModelIndex &index) const;
+    virtual Qt::ItemFlags readOnlyFlags(const QModelIndex& index) const;
     // Use this if you want a model that can be changed
-    virtual Qt::ItemFlags readWriteFlags(const QModelIndex &index) const;
+    virtual Qt::ItemFlags readWriteFlags(const QModelIndex& index) const;
 
   private slots:
     virtual void tracksChanged(QSet<int> trackIds);

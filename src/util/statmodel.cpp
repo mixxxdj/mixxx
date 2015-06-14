@@ -4,7 +4,7 @@
 #include "util/math.h"
 
 StatModel::StatModel(QObject* pParent)
-        : QAbstractTableModel(pParent) {
+    : QAbstractTableModel(pParent) {
 
     setHeaderData(STAT_COLUMN_NAME, Qt::Horizontal, tr("Name"));
     setHeaderData(STAT_COLUMN_COUNT, Qt::Horizontal, tr("Count"));
@@ -53,7 +53,7 @@ int StatModel::columnCount(const QModelIndex& parent) const {
 }
 
 QVariant StatModel::data(const QModelIndex& index,
-                            int role) const {
+                         int role) const {
     if (!index.isValid() || (role != Qt::DisplayRole &&
                              role != Qt::EditRole)) {
         return QVariant();
@@ -69,29 +69,29 @@ QVariant StatModel::data(const QModelIndex& index,
     const Stat& stat = m_stats.at(row);
     QString value;
     switch (column) {
-        case STAT_COLUMN_NAME:
-            return stat.m_tag;
-        case STAT_COLUMN_TYPE:
-            return stat.m_type;
-        case STAT_COLUMN_COUNT:
-            return stat.m_report_count;
-        case STAT_COLUMN_SUM:
-            return stat.m_sum;
-        case STAT_COLUMN_MIN:
-            return std::numeric_limits<double>::max() == stat.m_min ?
-                    QVariant("XXX") : QVariant(stat.m_min);
-        case STAT_COLUMN_MAX:
-            return std::numeric_limits<double>::min() == stat.m_max ?
-                    QVariant("XXX") : QVariant(stat.m_max);
-        case STAT_COLUMN_MEAN:
-            return stat.m_report_count > 0 ?
-                    QVariant(stat.m_sum / stat.m_report_count) : QVariant("XXX");
-        case STAT_COLUMN_VARIANCE:
-            return stat.variance();
-        case STAT_COLUMN_STDDEV:
-            return sqrt(stat.variance());
-        case STAT_COLUMN_UNITS:
-            return stat.valueUnits();
+    case STAT_COLUMN_NAME:
+        return stat.m_tag;
+    case STAT_COLUMN_TYPE:
+        return stat.m_type;
+    case STAT_COLUMN_COUNT:
+        return stat.m_report_count;
+    case STAT_COLUMN_SUM:
+        return stat.m_sum;
+    case STAT_COLUMN_MIN:
+        return std::numeric_limits<double>::max() == stat.m_min ?
+               QVariant("XXX") : QVariant(stat.m_min);
+    case STAT_COLUMN_MAX:
+        return std::numeric_limits<double>::min() == stat.m_max ?
+               QVariant("XXX") : QVariant(stat.m_max);
+    case STAT_COLUMN_MEAN:
+        return stat.m_report_count > 0 ?
+               QVariant(stat.m_sum / stat.m_report_count) : QVariant("XXX");
+    case STAT_COLUMN_VARIANCE:
+        return stat.variance();
+    case STAT_COLUMN_STDDEV:
+        return sqrt(stat.variance());
+    case STAT_COLUMN_UNITS:
+        return stat.valueUnits();
     }
     return QVariant();
 }

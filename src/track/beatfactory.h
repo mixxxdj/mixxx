@@ -8,9 +8,9 @@
 class BeatFactory {
   public:
     static BeatsPointer loadBeatsFromByteArray(TrackPointer pTrack,
-                                               QString beatsVersion,
-                                               QString beatsSubVersion,
-                                               QByteArray* beatsSerialized);
+            QString beatsVersion,
+            QString beatsSubVersion,
+            QByteArray* beatsSerialized);
     static BeatsPointer makeBeatGrid(TrackInfoObject* pTrack,
                                      double dBpm, double dFirstBeatSample);
 

@@ -16,8 +16,8 @@
 #include "controlobjectthread.h"
 #include "util/math.h"
 
-WNumberRate::WNumberRate(const char * group, QWidget * parent)
-        : WNumber(parent) {
+WNumberRate::WNumberRate(const char* group, QWidget* parent)
+    : WNumber(parent) {
     m_pRateRangeControl = new ControlObjectThread(group, "rateRange");
     connect(m_pRateRangeControl, SIGNAL(valueChanged(double)),
             this, SLOT(setValue(double)));
@@ -39,8 +39,8 @@ WNumberRate::~WNumberRate() {
 
 void WNumberRate::setValue(double) {
     double vsign = m_pRateControl->get() *
-            m_pRateRangeControl->get() *
-            m_pRateDirControl->get();
+                   m_pRateRangeControl->get() *
+                   m_pRateDirControl->get();
 
     char sign = '+';
     if (vsign < -0.00000001) {

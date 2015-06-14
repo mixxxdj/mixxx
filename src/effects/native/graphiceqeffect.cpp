@@ -16,13 +16,14 @@ EffectManifest GraphicEQEffect::getManifest() {
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
-        "An 8 band Graphic EQ based on Biquad Filters"));
+                                "An 8 band Graphic EQ based on Biquad Filters"));
     manifest.setEffectRampsFromDry(true);
     manifest.setIsMasterEQ(true);
 
     // Display rounded center frequencies for each filter
     float centerFrequencies[8] = {45, 100, 220, 500, 1100, 2500,
-                                  5500, 12000};
+                                  5500, 12000
+                                 };
 
     EffectManifestParameter* low = manifest.addParameter();
     low->setId(QString("low"));
@@ -96,8 +97,8 @@ GraphicEQEffectGroupState::GraphicEQEffectGroupState() {
     m_high = new EngineFilterBiquad1HighShelving(44100, m_centerFrequencies[7], Q);
     for (int i = 1; i < 7; i++) {
         m_bands.append(new EngineFilterBiquad1Peaking(44100,
-                                                      m_centerFrequencies[i],
-                                                      Q));
+                       m_centerFrequencies[i],
+                       Q));
     }
 }
 
@@ -127,7 +128,7 @@ void GraphicEQEffectGroupState::setFilters(int sampleRate) {
 
 GraphicEQEffect::GraphicEQEffect(EngineEffect* pEffect,
                                  const EffectManifest& manifest)
-        : m_oldSampleRate(44100) {
+    : m_oldSampleRate(44100) {
     Q_UNUSED(manifest);
     m_pPotLow = pEffect->getParameterById("low");
     for (int i = 0; i < 6; i++) {
@@ -161,7 +162,7 @@ void GraphicEQEffect::processChannel(const ChannelHandle& handle,
     float fHigh;
 
     if (enableState == EffectProcessor::DISABLING) {
-         // Ramp to dry, when disabling, this will ramp from dry when enabling as well
+        // Ramp to dry, when disabling, this will ramp from dry when enabling as well
         fLow = 1.0;
         fHigh = 1.0;;
         for (int i = 0; i < 6; i++) {

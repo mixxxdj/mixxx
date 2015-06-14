@@ -14,17 +14,17 @@
 #define SIGNAL_QUALITY_FIFO_SIZE 256
 #define SAMPLE_PIPE_FIFO_SIZE 65536
 
-VinylControlProcessor::VinylControlProcessor(QObject* pParent, ConfigObject<ConfigValue> *pConfig)
-        : QThread(pParent),
-          m_pConfig(pConfig),
-          m_pToggle(new ControlPushButton(ConfigKey(VINYL_PREF_KEY, "Toggle"))),
-          m_pWorkBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
-          m_processorsLock(QMutex::Recursive),
-          m_processors(kMaximumVinylControlInputs, NULL),
-          m_signalQualityFifo(SIGNAL_QUALITY_FIFO_SIZE),
-          m_bReportSignalQuality(false),
-          m_bQuit(false),
-          m_bReloadConfig(false) {
+VinylControlProcessor::VinylControlProcessor(QObject* pParent, ConfigObject<ConfigValue>* pConfig)
+    : QThread(pParent),
+      m_pConfig(pConfig),
+      m_pToggle(new ControlPushButton(ConfigKey(VINYL_PREF_KEY, "Toggle"))),
+      m_pWorkBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
+      m_processorsLock(QMutex::Recursive),
+      m_processors(kMaximumVinylControlInputs, NULL),
+      m_signalQualityFifo(SIGNAL_QUALITY_FIFO_SIZE),
+      m_bReportSignalQuality(false),
+      m_bQuit(false),
+      m_bReloadConfig(false) {
     connect(m_pToggle, SIGNAL(valueChanged(double)),
             this, SLOT(toggleDeck(double)),
             Qt::DirectConnection);
@@ -144,7 +144,7 @@ void VinylControlProcessor::reloadConfig() {
             continue;
         }
 
-        VinylControl *pNew = new VinylControlXwax(
+        VinylControl* pNew = new VinylControlXwax(
             m_pConfig, kVCGroup.arg(i + 1));
         m_processors.replace(i, pNew);
         locker.unlock();
@@ -166,7 +166,7 @@ void VinylControlProcessor::onInputConfigured(AudioInput input) {
         return;
     }
 
-    VinylControl *pNew = new VinylControlXwax(
+    VinylControl* pNew = new VinylControlXwax(
         m_pConfig, kVCGroup.arg(index + 1));
 
     QMutexLocker locker(&m_processorsLock);
@@ -204,8 +204,8 @@ bool VinylControlProcessor::deckConfigured(int index) const {
 }
 
 void VinylControlProcessor::receiveBuffer(AudioInput input,
-                                          const CSAMPLE* pBuffer,
-                                          unsigned int nFrames) {
+        const CSAMPLE* pBuffer,
+        unsigned int nFrames) {
     ScopedTimer t("VinylControlProcessor::receiveBuffer");
     if (input.getType() != AudioInput::VINYLCONTROL) {
         qDebug() << "WARNING: AudioInput type is not VINYLCONTROL. Ignoring incoming buffer.";

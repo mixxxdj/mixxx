@@ -15,7 +15,7 @@
 
 class Analyser {
 
-public:
+  public:
     virtual bool initialise(TrackPointer tio, int sampleRate, int totalSamples) = 0;
     virtual bool loadStored(TrackPointer tio) const = 0;
     virtual void process(const CSAMPLE* pIn, const int iLen) = 0;

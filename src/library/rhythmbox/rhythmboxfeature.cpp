@@ -11,9 +11,9 @@
 #include "library/queryutil.h"
 
 RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackCollection)
-        : BaseExternalLibraryFeature(parent, pTrackCollection),
-          m_pTrackCollection(pTrackCollection),
-          m_cancelImport(false) {
+    : BaseExternalLibraryFeature(parent, pTrackCollection),
+      m_pTrackCollection(pTrackCollection),
+      m_cancelImport(false) {
     QString tableName = "rhythmbox_library";
     QString idColumn = "id";
     QStringList columns;
@@ -31,8 +31,8 @@ RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackColle
             << "bitrate"
             << "bpm";
     m_trackSource = QSharedPointer<BaseTrackCache>(
-            new BaseTrackCache(m_pTrackCollection,
-                    tableName, idColumn, columns, false));
+                        new BaseTrackCache(m_pTrackCollection,
+                                           tableName, idColumn, columns, false));
     QStringList searchColumns;
     searchColumns << "artist"
                   << "album"
@@ -58,7 +58,7 @@ RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackColle
     m_title = tr("Rhythmbox");
 
     m_database = QSqlDatabase::cloneDatabase(pTrackCollection->getDatabase(),
-                                             "RHYTHMBOX_SCANNER");
+                 "RHYTHMBOX_SCANNER");
 
     //Open the database connection in this thread.
     if (!m_database.open()) {
@@ -81,11 +81,11 @@ RhythmboxFeature::~RhythmboxFeature() {
 
 BaseSqlTableModel* RhythmboxFeature::getPlaylistModelForPlaylist(QString playlist) {
     BaseExternalPlaylistModel* pModel = new BaseExternalPlaylistModel(
-                                            this, m_pTrackCollection,
-                                            "mixxx.db.model.rhythmbox_playlist",
-                                            "rhythmbox_playlists",
-                                            "rhythmbox_playlist_tracks",
-                                            m_trackSource);
+        this, m_pTrackCollection,
+        "mixxx.db.model.rhythmbox_playlist",
+        "rhythmbox_playlists",
+        "rhythmbox_playlist_tracks",
+        m_trackSource);
     pModel->setPlaylist(playlist);
     return pModel;
 }
@@ -143,8 +143,8 @@ void RhythmboxFeature::activateChild(const QModelIndex& index) {
 
 TreeItem* RhythmboxFeature::importMusicCollection() {
     qDebug() << "importMusicCollection Thread Id: " << QThread::currentThread();
-     // Try and open the Rhythmbox DB. An API call which tells us where
-     // the file is would be nice.
+    // Try and open the Rhythmbox DB. An API call which tells us where
+    // the file is would be nice.
     QFile db(QDir::homePath() + "/.gnome2/rhythmbox/rhythmdb.xml");
     if (!db.exists()) {
         db.setFileName(QDir::homePath() + "/.local/share/rhythmbox/rhythmdb.xml");
@@ -208,7 +208,7 @@ TreeItem* RhythmboxFeature::importPlaylists() {
         }
     }
     //Open file
-     if (!db.open(QIODevice::ReadOnly | QIODevice::Text))
+    if (!db.open(QIODevice::ReadOnly | QIODevice::Text))
         return NULL;
 
     QSqlQuery query_insert_to_playlists(m_database);
@@ -217,8 +217,8 @@ TreeItem* RhythmboxFeature::importPlaylists() {
 
     QSqlQuery query_insert_to_playlist_tracks(m_database);
     query_insert_to_playlist_tracks.prepare(
-            "INSERT INTO rhythmbox_playlist_tracks (playlist_id, track_id, position) "
-            "VALUES (:playlist_id, :track_id, :position)");
+        "INSERT INTO rhythmbox_playlist_tracks (playlist_id, track_id, position) "
+        "VALUES (:playlist_id, :track_id, :position)");
     //The tree structure holding the playlists
     TreeItem* rootItem = new TreeItem();
 
@@ -233,7 +233,7 @@ TreeItem* RhythmboxFeature::importPlaylists() {
                 QString playlist_name = attr.value("name").toString();
 
                 //Construct the childmodel
-                TreeItem * item = new TreeItem(playlist_name, playlist_name, this, rootItem);
+                TreeItem* item = new TreeItem(playlist_name, playlist_name, this, rootItem);
                 rootItem->appendChild(item);
 
                 //Execute SQL statement
@@ -267,7 +267,7 @@ TreeItem* RhythmboxFeature::importPlaylists() {
 
 }
 
-void RhythmboxFeature::importTrack(QXmlStreamReader &xml, QSqlQuery &query) {
+void RhythmboxFeature::importTrack(QXmlStreamReader& xml, QSqlQuery& query) {
     QString title;
     QString artist;
     QString album;
@@ -367,8 +367,8 @@ void RhythmboxFeature::importTrack(QXmlStreamReader &xml, QSqlQuery &query) {
 }
 
 // reads all playlist entries and executes a SQL statement
-void RhythmboxFeature::importPlaylist(QXmlStreamReader &xml,
-                                      QSqlQuery &query_insert_to_playlist_tracks,
+void RhythmboxFeature::importPlaylist(QXmlStreamReader& xml,
+                                      QSqlQuery& query_insert_to_playlist_tracks,
                                       int playlist_id) {
     int playlist_position = 1;
     while (!xml.atEnd()) {
@@ -394,7 +394,7 @@ void RhythmboxFeature::importPlaylist(QXmlStreamReader &xml,
                 while (finder_query.next()) {
                     track_id = finder_query.value(idColumn).toInt();
                 }
-             } else {
+            } else {
                 qDebug() << "SQL Error in RhythmboxFeature.cpp: line"
                          << __LINE__ << " " << finder_query.lastError();
             }
@@ -444,7 +444,7 @@ void RhythmboxFeature::onTrackCollectionLoaded() {
 
         //m_pRhythmboxTrackModel->select();
     } else {
-         qDebug() << "Rhythmbox Playlists loaded: false";
+        qDebug() << "Rhythmbox Playlists loaded: false";
     }
 
     // calls a slot in the sidebarmodel such that 'isLoading' is removed from

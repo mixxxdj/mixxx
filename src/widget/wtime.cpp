@@ -4,10 +4,10 @@
 
 #include "widget/wtime.h"
 
-WTime::WTime(QWidget *parent)
-        : WLabel(parent),
-          m_sTimeFormat("h:mm AP"),
-          m_iInterval(s_iMinuteInterval) {
+WTime::WTime(QWidget* parent)
+    : WLabel(parent),
+      m_sTimeFormat("h:mm AP"),
+      m_iInterval(s_iMinuteInterval) {
     m_pTimer = new QTimer(this);
 }
 
@@ -31,7 +31,7 @@ void WTime::setTimeFormat(QDomNode node, const SkinContext& context) {
         QString secondsFormat = context.selectString(node, "ShowSeconds");
         // long format is equivalent to showing seconds
         QLocale::FormatType format;
-        if(secondsFormat == "true" || secondsFormat == "yes") {
+        if (secondsFormat == "true" || secondsFormat == "yes") {
             format = QLocale::LongFormat;
             m_iInterval = s_iSecondInterval;
         } else {

@@ -10,13 +10,13 @@
 Effect::Effect(EffectsManager* pEffectsManager,
                const EffectManifest& manifest,
                EffectInstantiatorPointer pInstantiator)
-        : QObject(), // no parent
-          m_pEffectsManager(pEffectsManager),
-          m_manifest(manifest),
-          m_pInstantiator(pInstantiator),
-          m_pEngineEffect(NULL),
-          m_bAddedToEngine(false),
-          m_bEnabled(true) {
+    : QObject(), // no parent
+      m_pEffectsManager(pEffectsManager),
+      m_manifest(manifest),
+      m_pInstantiator(pInstantiator),
+      m_pEngineEffect(NULL),
+      m_bAddedToEngine(false),
+      m_bEnabled(true) {
     foreach (const EffectManifestParameter& parameter, m_manifest.parameters()) {
         EffectParameter* pParameter = new EffectParameter(
             this, pEffectsManager, m_parameters.size(), parameter);
@@ -44,8 +44,8 @@ void Effect::addToEngine(EngineEffectChain* pChain, int iIndex) {
         return;
     }
     m_pEngineEffect = new EngineEffect(m_manifest,
-            m_pEffectsManager->registeredChannels(),
-            m_pInstantiator);
+                                       m_pEffectsManager->registeredChannels(),
+                                       m_pInstantiator);
     EffectsRequest* request = new EffectsRequest();
     request->type = EffectsRequest::ADD_EFFECT_TO_CHAIN;
     request->pTargetChain = pChain;
@@ -149,13 +149,13 @@ bool Effect::isKnobParameter(EffectParameter* parameter) {
 }
 
 EffectParameter* Effect::getFilteredParameterForSlot(ParameterFilterFnc filterFnc,
-                                                     unsigned int slotNumber) {
+        unsigned int slotNumber) {
     // It's normal to ask for a parameter that doesn't exist. Callers must check
     // for NULL.
     unsigned int num = 0;
     foreach(EffectParameter* parameter, m_parameters) {
         if (parameter->manifest().showInParameterSlot() && filterFnc(parameter)) {
-            if(num == slotNumber) {
+            if (num == slotNumber) {
                 return parameter;
             }
             ++num;
@@ -180,7 +180,7 @@ QDomElement Effect::toXML(QDomDocument* doc) const {
     QDomElement parameters = doc->createElement("Parameters");
     foreach (EffectParameter* pParameter, m_parameters) {
         const EffectManifestParameter& parameterManifest =
-                pParameter->manifest();
+            pParameter->manifest();
         QDomElement parameter = doc->createElement("Parameter");
         XmlParse::addElement(*doc, parameter, "Id", parameterManifest.id());
         // TODO(rryan): Do smarter QVariant formatting?

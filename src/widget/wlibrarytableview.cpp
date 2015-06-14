@@ -14,9 +14,9 @@
 WLibraryTableView::WLibraryTableView(QWidget* parent,
                                      ConfigObject<ConfigValue>* pConfig,
                                      ConfigKey vScrollBarPosKey)
-        : QTableView(parent),
-          m_pConfig(pConfig),
-          m_vScrollBarPosKey(vScrollBarPosKey) {
+    : QTableView(parent),
+      m_pConfig(pConfig),
+      m_vScrollBarPosKey(vScrollBarPosKey) {
 
     // Setup properties for table
 
@@ -90,10 +90,10 @@ void WLibraryTableView::moveSelection(int delta) {
         return;
     }
 
-    while(delta != 0) {
+    while (delta != 0) {
         // TODO(rryan) what happens if there is nothing selected?
         QModelIndex current = currentIndex();
-        if(delta > 0) {
+        if (delta > 0) {
             // i is positive, so we want to move the highlight down
             int row = current.row();
             if (row + 1 < pModel->rowCount())

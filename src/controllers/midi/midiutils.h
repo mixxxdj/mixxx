@@ -20,14 +20,14 @@ class MidiUtils {
 
     static inline bool isMessageTwoBytes(unsigned char opCode) {
         switch (opCode) {
-            case MIDI_SONG:
-            case MIDI_NOTE_OFF:
-            case MIDI_NOTE_ON:
-            case MIDI_AFTERTOUCH:
-            case MIDI_CC:
-                return true;
-            default:
-                return false;
+        case MIDI_SONG:
+        case MIDI_NOTE_OFF:
+        case MIDI_NOTE_ON:
+        case MIDI_AFTERTOUCH:
+        case MIDI_CC:
+            return true;
+        default:
+            return false;
         }
     }
 

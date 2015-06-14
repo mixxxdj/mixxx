@@ -15,35 +15,35 @@ namespace Mixxx {
 // The whole file is decoded at once and saved
 // in RAM to allow seeking and smooth operation in Mixxx.
 class SoundSourceModPlug: public Mixxx::SoundSource {
-public:
+  public:
     static const SINT kChannelCount;
     static const SINT kBitsPerSample;
     static const SINT kFrameRate;
 
     // apply settings for decoding
     static void configure(unsigned int bufferSizeLimit,
-            const ModPlug::ModPlug_Settings &settings);
+                          const ModPlug::ModPlug_Settings& settings);
 
     explicit SoundSourceModPlug(QUrl url);
     ~SoundSourceModPlug();
 
     Result parseTrackMetadataAndCoverArt(
-            TrackMetadata* pTrackMetadata,
-            QImage* pCoverArt) const override;
+        TrackMetadata* pTrackMetadata,
+        QImage* pCoverArt) const override;
 
     void close() override;
 
     SINT seekSampleFrame(SINT frameIndex) override;
 
     SINT readSampleFrames(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer) override;
+                          CSAMPLE* sampleBuffer) override;
 
-private:
+  private:
     Result tryOpen(const AudioSourceConfig& audioSrcCfg) override;
 
     static unsigned int s_bufferSizeLimit; // max track buffer length (bytes)
 
-    ModPlug::ModPlugFile *m_pModFile; // modplug file descriptor
+    ModPlug::ModPlugFile* m_pModFile; // modplug file descriptor
     QByteArray m_fileBuf; // original module file data
 
     typedef std::vector<SAMPLE> SampleBuffer;
@@ -53,7 +53,7 @@ private:
 };
 
 class SoundSourceProviderModPlug: public SoundSourceProvider {
-public:
+  public:
     QString getName() const override;
 
     QStringList getSupportedFileExtensions() const override;

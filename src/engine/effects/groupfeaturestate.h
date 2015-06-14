@@ -5,26 +5,26 @@
 
 struct GroupFeatureState {
     GroupFeatureState()
-            : has_current_position(false),
-              current_position(0.0),
-              has_rms_volume_sum(false),
-              rms_volume_sum(0.0),
-              has_file_bpm(false),
-              file_bpm(0.0),
-              has_bpm(false),
-              bpm(0.0),
-              has_next_beat(false),
-              next_beat(false),
-              has_prev_beat(false),
-              prev_beat(0.0),
-              has_beat_length(false),
-              beat_length(0.0),
-              has_beat_fraction(false),
-              beat_fraction(0.0),
-              has_file_key(false),
-              file_key(mixxx::track::io::key::INVALID),
-              has_key(false),
-              key(mixxx::track::io::key::INVALID) {
+        : has_current_position(false),
+          current_position(0.0),
+          has_rms_volume_sum(false),
+          rms_volume_sum(0.0),
+          has_file_bpm(false),
+          file_bpm(0.0),
+          has_bpm(false),
+          bpm(0.0),
+          has_next_beat(false),
+          next_beat(false),
+          has_prev_beat(false),
+          prev_beat(0.0),
+          has_beat_length(false),
+          beat_length(0.0),
+          has_beat_fraction(false),
+          beat_fraction(0.0),
+          has_file_key(false),
+          file_key(mixxx::track::io::key::INVALID),
+          has_key(false),
+          key(mixxx::track::io::key::INVALID) {
     }
 
     // The current player position (if it is a player with the concept of a

@@ -47,14 +47,14 @@ Paintable::DrawMode Paintable::DrawModeFromString(const QString& str) {
 // static
 QString Paintable::DrawModeToString(DrawMode mode) {
     switch (mode) {
-        case FIXED:
-            return "FIXED";
-        case STRETCH:
-            return "STRETCH";
-        case STRETCH_ASPECT:
-            return "STRETCH_ASPECT";
-        case TILE:
-            return "TILE";
+    case FIXED:
+        return "FIXED";
+    case STRETCH:
+        return "STRETCH";
+    case STRETCH_ASPECT:
+        return "STRETCH_ASPECT";
+    case TILE:
+        return "TILE";
     }
     // Fall back on the implicit default from before Mixxx supported draw modes.
     qWarning() << "Unknown DrawMode in DrawModeToString " << mode
@@ -63,7 +63,7 @@ QString Paintable::DrawModeToString(DrawMode mode) {
 }
 
 Paintable::Paintable(QImage* pImage, DrawMode mode)
-        : m_draw_mode(mode) {
+    : m_draw_mode(mode) {
 #if QT_VERSION >= 0x040700
     m_pPixmap.reset(new QPixmap());
     m_pPixmap->convertFromImage(*pImage);
@@ -74,7 +74,7 @@ Paintable::Paintable(QImage* pImage, DrawMode mode)
 }
 
 Paintable::Paintable(const QString& fileName, DrawMode mode)
-        : m_draw_mode(mode) {
+    : m_draw_mode(mode) {
     if (fileName.endsWith(".svg", Qt::CaseInsensitive)) {
         if (mode == TILE) {
             // The SVG renderer doesn't directly support tiling, so we render
@@ -95,7 +95,7 @@ Paintable::Paintable(const QString& fileName, DrawMode mode)
 }
 
 Paintable::Paintable(const PixmapSource& source, DrawMode mode)
-        : m_draw_mode(mode) {
+    : m_draw_mode(mode) {
     if (source.isSVG()) {
         QScopedPointer<QSvgRenderer> pSvgRenderer(new QSvgRenderer());
         if (source.getData().isEmpty()) {
@@ -117,7 +117,7 @@ Paintable::Paintable(const PixmapSource& source, DrawMode mode)
             m_pSvg.reset(pSvgRenderer.take());
         }
     } else {
-        QPixmap * pPixmap = new QPixmap();
+        QPixmap* pPixmap = new QPixmap();
         if (!source.getData().isEmpty()) {
             pPixmap->loadFromData(source.getData());
         } else {
@@ -302,7 +302,7 @@ void Paintable::drawInternal(const QRectF& targetRect, QPainter* pPainter,
 
 // static
 PaintablePointer WPixmapStore::getPaintable(PixmapSource source,
-                                            Paintable::DrawMode mode) {
+        Paintable::DrawMode mode) {
     // See if we have a cached value for the pixmap.
     PaintablePointer pPaintable = m_paintableCache.value(source.getId(), PaintablePointer());
     if (pPaintable) {

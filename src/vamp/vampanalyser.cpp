@@ -14,10 +14,10 @@
 #include "vamp/vampanalyser.h"
 
 #ifdef __WINDOWS__
-    #include <windows.h>
-    #define PATH_SEPARATOR ";"
+#include <windows.h>
+#define PATH_SEPARATOR ";"
 #else
-    #define PATH_SEPARATOR ":"
+#define PATH_SEPARATOR ":"
 #endif
 
 using Vamp::Plugin;
@@ -32,10 +32,10 @@ void VampAnalyser::initializePluginPaths() {
 
     // TODO(XXX) use correct split separator here.
     QStringList pathElements = vampPath.length() > 0 ? vampPath.split(PATH_SEPARATOR)
-            : QStringList();
+                               : QStringList();
 
     const QString dataLocation = QDesktopServices::storageLocation(
-            QDesktopServices::DataLocation);
+                                     QDesktopServices::DataLocation);
     const QString applicationPath = QCoreApplication::applicationDirPath();
 
 #ifdef __WINDOWS__
@@ -142,7 +142,7 @@ bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
         qDebug() << "VampAnalyser: kill plugin";
     }
 
-    VampPluginLoader *loader = VampPluginLoader::getInstance();
+    VampPluginLoader* loader = VampPluginLoader::getInstance();
     QStringList pluginlist = pluginid.split(":");
     if (pluginlist.size() != 2) {
         qDebug() << "VampAnalyser: got malformed pluginid: " << pluginid;
@@ -217,7 +217,7 @@ bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
     return true;
 }
 
-bool VampAnalyser::Process(const CSAMPLE *pIn, const int iLen) {
+bool VampAnalyser::Process(const CSAMPLE* pIn, const int iLen) {
     if (!m_plugin) {
         qDebug() << "VampAnalyser: Plugin not loaded";
         return false;
@@ -267,17 +267,17 @@ bool VampAnalyser::Process(const CSAMPLE *pIn, const int iLen) {
             //qDebug() << "VAMP Block size reached";
             //qDebug() << "Ramaining samples=" << m_iRemainingSamples;
             Vamp::RealTime timestamp =
-                    Vamp::RealTime::frame2RealTime(m_iSampleCount, m_rate);
+                Vamp::RealTime::frame2RealTime(m_iSampleCount, m_rate);
 
             Vamp::Plugin::FeatureSet features =
-                    m_plugin->process(m_pluginbuf, timestamp);
+                m_plugin->process(m_pluginbuf, timestamp);
 
             m_Results.insert(m_Results.end(), features[m_iOutput].begin(),
                              features[m_iOutput].end());
 
             if (lastsamples) {
                 Vamp::Plugin::FeatureSet features =
-                        m_plugin->getRemainingFeatures();
+                    m_plugin->getRemainingFeatures();
                 m_Results.insert(m_Results.end(), features[m_iOutput].begin(),
                                  features[m_iOutput].end());
             }
@@ -341,13 +341,13 @@ void VampAnalyser::SelectOutput(const int outputnumber) {
 QVector<double> VampAnalyser::GetInitFramesVector() {
     QVector<double> vectout;
     for (Vamp::Plugin::FeatureList::iterator fli = m_Results.begin();
-         fli != m_Results.end(); ++fli) {
+            fli != m_Results.end(); ++fli) {
         if (fli->hasTimestamp) {
             Vamp::RealTime ftime0 = fli->timestamp;
             //double ltime0 = ftime0.sec + (double(ftime0.nsec)
             //        / 1000000000.0);
             vectout << static_cast<double>(
-                Vamp::RealTime::realTime2Frame(ftime0, m_rate));
+                        Vamp::RealTime::realTime2Frame(ftime0, m_rate));
         }
     }
     return vectout;
@@ -356,14 +356,14 @@ QVector<double> VampAnalyser::GetInitFramesVector() {
 QVector<double> VampAnalyser::GetEndFramesVector() {
     QVector<double> vectout;
     for (Vamp::Plugin::FeatureList::iterator fli = m_Results.begin();
-         fli != m_Results.end(); ++fli) {
+            fli != m_Results.end(); ++fli) {
         if (fli->hasDuration) {
             Vamp::RealTime ftime0 = fli->timestamp;
             Vamp::RealTime ftime1 = ftime0 + fli->duration;
             //double ltime1 = ftime1.sec + (double(ftime1.nsec)
             //        / 1000000000.0);
             vectout << static_cast<double>(
-                Vamp::RealTime::realTime2Frame(ftime1, m_rate));
+                        Vamp::RealTime::realTime2Frame(ftime1, m_rate));
         }
     }
     return vectout;
@@ -372,7 +372,7 @@ QVector<double> VampAnalyser::GetEndFramesVector() {
 QVector<QString> VampAnalyser::GetLabelsVector() {
     QVector<QString> vectout;
     for (Vamp::Plugin::FeatureList::iterator fli = m_Results.begin();
-         fli != m_Results.end(); ++fli) {
+            fli != m_Results.end(); ++fli) {
         vectout << fli->label.c_str();
     }
     return vectout;
@@ -381,7 +381,7 @@ QVector<QString> VampAnalyser::GetLabelsVector() {
 QVector<double> VampAnalyser::GetFirstValuesVector() {
     QVector<double> vectout;
     for (Vamp::Plugin::FeatureList::iterator fli = m_Results.begin();
-         fli != m_Results.end(); ++fli) {
+            fli != m_Results.end(); ++fli) {
         std::vector<float> vec = fli->values;
         if (!vec.empty())
             vectout << vec[0];
@@ -392,7 +392,7 @@ QVector<double> VampAnalyser::GetFirstValuesVector() {
 QVector<double> VampAnalyser::GetLastValuesVector() {
     QVector<double> vectout;
     for (Vamp::Plugin::FeatureList::iterator fli = m_Results.begin();
-         fli != m_Results.end(); ++fli) {
+            fli != m_Results.end(); ++fli) {
         std::vector<float> vec = fli->values;
         if (!vec.empty())
             vectout << vec[vec.size() - 1];

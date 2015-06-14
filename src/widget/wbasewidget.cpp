@@ -7,8 +7,8 @@
 #include "util/debug.h"
 
 WBaseWidget::WBaseWidget(QWidget* pWidget)
-        : m_pDisplayConnection(NULL),
-          m_pWidget(pWidget) {
+    : m_pDisplayConnection(NULL),
+      m_pWidget(pWidget) {
 }
 
 WBaseWidget::~WBaseWidget() {
@@ -162,22 +162,22 @@ void WBaseWidget::updateTooltip() {
 template <>
 QString toDebugString(const QSizePolicy::Policy& policy) {
     switch (policy) {
-        case QSizePolicy::Fixed:
-            return "Fixed";
-        case QSizePolicy::Minimum:
-            return "Minimum";
-        case QSizePolicy::Maximum:
-            return "Maximum";
-        case QSizePolicy::Preferred:
-            return "Preferred";
-        case QSizePolicy::Expanding:
-            return "Expanding";
-        case QSizePolicy::MinimumExpanding:
-            return "MinimumExpanding";
-        case QSizePolicy::Ignored:
-            return "Ignored";
-        default:
-            break;
+    case QSizePolicy::Fixed:
+        return "Fixed";
+    case QSizePolicy::Minimum:
+        return "Minimum";
+    case QSizePolicy::Maximum:
+        return "Maximum";
+    case QSizePolicy::Preferred:
+        return "Preferred";
+    case QSizePolicy::Expanding:
+        return "Expanding";
+    case QSizePolicy::MinimumExpanding:
+        return "MinimumExpanding";
+    case QSizePolicy::Ignored:
+        return "Ignored";
+    default:
+        break;
     }
     return QString::number(static_cast<int>(policy));
 }
@@ -188,7 +188,7 @@ void WBaseWidget::fillDebugTooltip(QStringList* debug) {
            << QString("ObjectName: %1").arg(m_pWidget->objectName())
            << QString("Position: %1").arg(toDebugString(m_pWidget->pos()))
            << QString("SizePolicy: %1,%2").arg(toDebugString(policy.horizontalPolicy()),
-                                               toDebugString(policy.verticalPolicy()))
+                   toDebugString(policy.verticalPolicy()))
            << QString("Size: %1").arg(toDebugString(m_pWidget->size()))
            << QString("SizeHint: %1").arg(toDebugString(m_pWidget->sizeHint()))
            << QString("MinimumSizeHint: %1").arg(toDebugString(m_pWidget->minimumSizeHint()));

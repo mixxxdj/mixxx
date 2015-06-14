@@ -102,7 +102,7 @@ void MessageHandler(QtMsgType type,
             QFileInfo logbackup(logFileName);
             if (logbackup.exists()) {
                 QString olderlogname =
-                        QString("%1/mixxx.log.%2").arg(logLocation).arg(i + 1);
+                    QString("%1/mixxx.log.%2").arg(logLocation).arg(i + 1);
                 // This should only happen with number 10
                 if (QFileInfo(olderlogname).exists()) {
                     QFile::remove(olderlogname);
@@ -169,8 +169,7 @@ void MessageHandler(QtMsgType type,
     }
 }
 
-int main(int argc, char * argv[])
-{
+int main(int argc, char* argv[]) {
 
 #ifdef Q_OS_LINUX
     XInitThreads();
@@ -200,7 +199,7 @@ int main(int argc, char * argv[])
         fputs(mixxxVersionBA.constData(), stdout);
         fputs(" - Command line options", stdout);
         fputs(
-                   "\n(These are case-sensitive.)\n\n\
+            "\n(These are case-sensitive.)\n\n\
     [FILE]                  Load the specified music file(s) at start-up.\n\
                             Each must be one of the following file types:\n\
                             ", stdout);
@@ -245,7 +244,7 @@ int main(int argc, char * argv[])
     -h, --help              Display this help message and exit", stdout);
 
         fputs("\n\n(For more information, see http://mixxx.org/wiki/doku.php/command_line_options)\n",stdout);
-        return(0);
+        return (0);
     }
 
     Console console;
@@ -270,12 +269,12 @@ int main(int argc, char * argv[])
 #endif
 
 #ifdef __FFMPEGFILE__
-     av_register_all();
-     avcodec_register_all();
+    av_register_all();
+    avcodec_register_all();
 #endif
 
-     //Enumerate and load SoundSource plugins
-     SoundSourceProxy::loadPlugins();
+    //Enumerate and load SoundSource plugins
+    SoundSourceProxy::loadPlugins();
 
     // Check if one of the command line arguments is "--no-visuals"
 //    bool bVisuals = true;
@@ -285,20 +284,20 @@ int main(int argc, char * argv[])
 
 
 #ifdef __APPLE__
-     QDir dir(QApplication::applicationDirPath());
-     // Set the search path for Qt plugins to be in the bundle's PlugIns
-     // directory, but only if we think the mixxx binary is in a bundle.
-     if (dir.path().contains(".app/")) {
-         // If in a bundle, applicationDirPath() returns something formatted
-         // like: .../Mixxx.app/Contents/MacOS
-         dir.cdUp();
-         dir.cd("PlugIns");
-         qDebug() << "Setting Qt plugin search path to:" << dir.absolutePath();
-         // asantoni: For some reason we need to do setLibraryPaths() and not
-         // addLibraryPath(). The latter causes weird problems once the binary
-         // is bundled (happened with 1.7.2 when Brian packaged it up).
-         QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
-     }
+    QDir dir(QApplication::applicationDirPath());
+    // Set the search path for Qt plugins to be in the bundle's PlugIns
+    // directory, but only if we think the mixxx binary is in a bundle.
+    if (dir.path().contains(".app/")) {
+        // If in a bundle, applicationDirPath() returns something formatted
+        // like: .../Mixxx.app/Contents/MacOS
+        dir.cdUp();
+        dir.cd("PlugIns");
+        qDebug() << "Setting Qt plugin search path to:" << dir.absolutePath();
+        // asantoni: For some reason we need to do setLibraryPaths() and not
+        // addLibraryPath(). The latter causes weird problems once the binary
+        // is bundled (happened with 1.7.2 when Brian packaged it up).
+        QApplication::setLibraryPaths(QStringList(dir.absolutePath()));
+    }
 #endif
 
     MixxxMainWindow* mixxx = new MixxxMainWindow(&a, args);
@@ -328,9 +327,10 @@ int main(int argc, char * argv[])
 
     // Don't make any more output after this
     //    or mixxx.log will get clobbered!
-    { // scope
+    {
+        // scope
         QMutexLocker locker(&mutexLogfile);
-        if(Logfile.isOpen()) {
+        if (Logfile.isOpen()) {
             Logfile.close();
         }
     }

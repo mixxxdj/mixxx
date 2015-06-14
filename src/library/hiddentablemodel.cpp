@@ -2,7 +2,7 @@
 
 HiddenTableModel::HiddenTableModel(QObject* parent,
                                    TrackCollection* pTrackCollection)
-        : BaseSqlTableModel(parent, pTrackCollection, "mixxx.db.model.missing") {
+    : BaseSqlTableModel(parent, pTrackCollection, "mixxx.db.model.missing") {
     setTableModel();
 }
 
@@ -88,12 +88,12 @@ bool HiddenTableModel::isColumnInternal(int column) {
 }
 
 // Override flags from BaseSqlModel since we don't want edit this model
-Qt::ItemFlags HiddenTableModel::flags(const QModelIndex &index) const {
+Qt::ItemFlags HiddenTableModel::flags(const QModelIndex& index) const {
     return readOnlyFlags(index);
 }
 
 TrackModel::CapabilitiesFlags HiddenTableModel::getCapabilities() const {
     return TRACKMODELCAPS_NONE
-            | TRACKMODELCAPS_PURGE
-            | TRACKMODELCAPS_UNHIDE;
+           | TRACKMODELCAPS_PURGE
+           | TRACKMODELCAPS_UNHIDE;
 }

@@ -36,12 +36,12 @@ http://svn.xiph.org/trunk/vorbis/examples/encoder_example.c
 #include "errordialoghandler.h"
 
 EncoderVorbis::EncoderVorbis(EncoderCallback* pCallback)
-        : m_bStreamInitialized(false),
-          m_header_write(false),
-          m_pCallback(pCallback),
-          m_metaDataTitle(NULL),
-          m_metaDataArtist(NULL),
-          m_metaDataAlbum(NULL){
+    : m_bStreamInitialized(false),
+      m_header_write(false),
+      m_pCallback(pCallback),
+      m_metaDataTitle(NULL),
+      m_metaDataArtist(NULL),
+      m_metaDataAlbum(NULL) {
     m_vdsp.pcm_returned = 0;
     m_vdsp.preextrapolate = 0;
     m_vdsp.eofflag = 0;
@@ -92,8 +92,7 @@ void EncoderVorbis::flush() {
   Get new random serial number
   -> returns random number
 */
-int EncoderVorbis::getSerial()
-{
+int EncoderVorbis::getSerial() {
     static int prevSerial = 0;
     int serial = rand();
     while (prevSerial == serial)
@@ -148,8 +147,8 @@ void EncoderVorbis::writePage() {
     }
 }
 
-void EncoderVorbis::encodeBuffer(const CSAMPLE *samples, const int size) {
-    float **buffer = vorbis_analysis_buffer(&m_vdsp, size);
+void EncoderVorbis::encodeBuffer(const CSAMPLE* samples, const int size) {
+    float** buffer = vorbis_analysis_buffer(&m_vdsp, size);
 
     // Deinterleave samples. We use normalized floats in the engine [-1.0, 1.0]
     // and libvorbis expects samples in the range [-1.0, 1.0] so no conversion

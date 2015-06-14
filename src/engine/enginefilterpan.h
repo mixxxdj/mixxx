@@ -12,11 +12,11 @@ template<unsigned int SIZE>
 class EngineFilterPan : public EngineObjectConstIn {
   public:
     EngineFilterPan()
-            : m_leftDelayFrames(0),
-              m_oldLeftDelayFrames(0),
-              m_delayFrame(0),
-              m_doRamping(false),
-              m_doStart(false) {
+        : m_leftDelayFrames(0),
+          m_oldLeftDelayFrames(0),
+          m_delayFrame(0),
+          m_doRamping(false),
+          m_doStart(false) {
         // Set the current buffers to 0
         memset(m_buf, 0, sizeof(m_buf));
     }
@@ -124,7 +124,7 @@ class EngineFilterPan : public EngineObjectConstIn {
     int m_leftDelayFrames;
     int m_oldLeftDelayFrames;
     int m_delayFrame;
-    CSAMPLE m_buf[SIZE * numChannels];
+    CSAMPLE m_buf[SIZE* numChannels];
     bool m_doRamping;
     bool m_doStart;
 };

@@ -240,7 +240,7 @@ DlgAbout::DlgAbout(QWidget* parent) :  QDialog(parent), Ui::DlgAboutDlg() {
             << "Nimatek";
 
     QString sectionTemplate = QString(
-        "<p align=\"center\"><b>%1</b></p><p align=\"center\">%2</p>");
+                                  "<p align=\"center\"><b>%1</b></p><p align=\"center\">%2</p>");
     QStringList sections;
     sections << sectionTemplate.arg(s_devTeam,
                                     thisReleaseDevelopers.join("<br>"))

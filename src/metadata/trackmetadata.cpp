@@ -195,12 +195,12 @@ QString TrackMetadata::reformatYear(QString year) {
 }
 
 TrackMetadata::TrackMetadata() :
-        m_channels(0),
-        m_sampleRate(0),
-        m_bitrate(0),
-        m_duration(0),
-        m_bpm(kBpmUndefined),
-        m_replayGain(kReplayGainUndefined) {
+    m_channels(0),
+    m_sampleRate(0),
+    m_bitrate(0),
+    m_duration(0),
+    m_bpm(kBpmUndefined),
+    m_replayGain(kReplayGainUndefined) {
 }
 
 } //namespace Mixxx

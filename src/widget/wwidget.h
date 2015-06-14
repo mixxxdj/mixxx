@@ -38,9 +38,9 @@ class ControlObjectSlave;
   */
 
 class WWidget : public QWidget, public WBaseWidget {
-   Q_OBJECT
+    Q_OBJECT
   public:
-    WWidget(QWidget *parent=0, Qt::WindowFlags flags=0);
+    WWidget(QWidget* parent=0, Qt::WindowFlags flags=0);
     virtual ~WWidget();
 
     Q_PROPERTY(double value READ getControlParameterDisplay);

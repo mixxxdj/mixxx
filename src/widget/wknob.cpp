@@ -22,7 +22,7 @@
 #include "widget/wknob.h"
 
 WKnob::WKnob(QWidget* pParent)
-        : WDisplay(pParent) {
+    : WDisplay(pParent) {
 }
 
 WKnob::~WKnob() {

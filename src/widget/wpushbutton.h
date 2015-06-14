@@ -92,7 +92,7 @@ class WPushButton : public WWidget {
     // Associates a background pixmap with the widget. This is only needed if
     // the button pixmaps contains alpha channel values.
     void setPixmapBackground(PixmapSource source,
-                            Paintable::DrawMode mode);
+                             Paintable::DrawMode mode);
 
     // True, if the button is currently pressed
     bool m_bPressed;

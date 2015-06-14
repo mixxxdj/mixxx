@@ -6,7 +6,7 @@
 class SkinContextTest : public MixxxTest {
   public:
     SkinContextTest()
-            : m_context(config(), "test") {
+        : m_context(config(), "test") {
     }
 
     virtual ~SkinContextTest() {

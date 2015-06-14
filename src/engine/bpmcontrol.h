@@ -23,7 +23,9 @@ class BpmControl : public EngineControl {
     virtual ~BpmControl();
 
     double getBpm() const;
-    double getLocalBpm() const { return m_pLocalBpm ? m_pLocalBpm->get() : 0.0; }
+    double getLocalBpm() const {
+        return m_pLocalBpm ? m_pLocalBpm->get() : 0.0;
+    }
     // When in master sync mode, ratecontrol calls calcSyncedRate to figure out
     // how fast the track should play back.  The returned rate is usually just
     // the correct pitch to match bpms.  The usertweak argument represents
@@ -35,7 +37,9 @@ class BpmControl : public EngineControl {
     // Get the phase offset from the specified position.
     double getPhaseOffset(double reference_position);
     double getBeatDistance(double dThisPosition) const;
-    double getPreviousSample() const { return m_dPreviousSample; }
+    double getPreviousSample() const {
+        return m_dPreviousSample;
+    }
 
     void setCurrentSample(const double dCurrentSample, const double dTotalSamples);
     double process(const double dRate,
@@ -64,11 +68,11 @@ class BpmControl : public EngineControl {
     // Alternative version that works if the next and previous beat positions
     // are already known.
     static bool getBeatContextNoLookup(
-                               const double dPosition,
-                               const double dPrevBeat,
-                               const double dNextBeat,
-                               double* dpBeatLength,
-                               double* dpBeatPercentage);
+        const double dPosition,
+        const double dPrevBeat,
+        const double dNextBeat,
+        double* dpBeatLength,
+        double* dpBeatPercentage);
 
     // Returns the shortest change in percentage needed to achieve
     // target_percentage.

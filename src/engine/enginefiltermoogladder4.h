@@ -40,12 +40,12 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
 
   private:
     struct Buffer {
-         CSAMPLE m_azt1;
-         CSAMPLE m_azt2;
-         CSAMPLE m_azt3;
-         CSAMPLE m_azt4;
-         CSAMPLE m_az5;
-         CSAMPLE m_amf;
+        CSAMPLE m_azt1;
+        CSAMPLE m_azt2;
+        CSAMPLE m_azt3;
+        CSAMPLE m_azt4;
+        CSAMPLE m_az5;
+        CSAMPLE m_amf;
     };
 
   public:
@@ -88,7 +88,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
             m_postGain = 1;
         } else {
             m_postGain = (1 + resonance / 4 * (1.1f + cutoff / sampleRate * 3.5f))
-                    * (2 - (1.0f - resonance / 4) * (1.0f - resonance / 4));
+                         * (2 - (1.0f - resonance / 4) * (1.0f - resonance / 4));
         }
 
         // qDebug() << "setParameter" << m_cutoff << m_resonance;
@@ -98,12 +98,12 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
     // It fades to dry or 0 according to the m_startFromDry parameter
     // it is an alternative for using pauseFillter() calls
     void processAndPauseFilter(const CSAMPLE* pIn, CSAMPLE* pOutput,
-                       const int iBufferSize) {
+                               const int iBufferSize) {
         process(pIn, pOutput, iBufferSize);
         SampleUtil::copy2WithRampingGain(pOutput,
-                pOutput, 1.0, 0,  // fade out filtered
-                pIn, 0, 1.0,  // fade in dry
-                iBufferSize);
+                                         pOutput, 1.0, 0,  // fade out filtered
+                                         pIn, 0, 1.0,  // fade in dry
+                                         iBufferSize);
         initBuffers();
     }
 
@@ -140,7 +140,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
                 } else {
                     pOutput[i] = new1 * cross_mix + old1 * (1.0 - cross_mix);
                     pOutput[i + 1] = new2 * cross_mix
-                            + old2 * (1.0 - cross_mix);
+                                     + old2 * (1.0 - cross_mix);
                     cross_mix += cross_inc;
                 }
             }

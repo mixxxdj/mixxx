@@ -12,16 +12,15 @@ class CmdlineArgs {
         static CmdlineArgs cla;
         return cla;
     }
-    bool Parse(int &argc, char **argv) {
+    bool Parse(int& argc, char** argv) {
         for (int i = 0; i < argc; ++i) {
             if (   argv[i] == QString("-h")
-                || argv[i] == QString("--h")
-                || argv[i] == QString("--help")) {
+                    || argv[i] == QString("--h")
+                    || argv[i] == QString("--help")) {
                 return false; // Display Help Message
             }
 
-            if (argv[i]==QString("-f").toLower() || argv[i]==QString("--f") || argv[i]==QString("--fullScreen"))
-            {
+            if (argv[i]==QString("-f").toLower() || argv[i]==QString("--f") || argv[i]==QString("--fullScreen")) {
                 m_startInFullscreen = true;
             } else if (argv[i] == QString("--locale") && i+1 < argc) {
                 m_locale = argv[i+1];
@@ -53,17 +52,39 @@ class CmdlineArgs {
         }
         return true;
     }
-    const QList<QString>& getMusicFiles() const { return m_musicFiles; }
-    bool getStartInFullscreen() const { return m_startInFullscreen; }
-    bool getMidiDebug() const { return m_midiDebug; }
-    bool getDeveloper() const { return m_developer; }
-    bool getSafeMode() const { return m_safeMode; }
-    bool getTimelineEnabled() const { return !m_timelinePath.isEmpty(); }
-    const QString& getLocale() const { return m_locale; }
-    const QString& getSettingsPath() const { return m_settingsPath; }
-    const QString& getResourcePath() const { return m_resourcePath; }
-    const QString& getPluginPath() const { return m_pluginPath; }
-    const QString& getTimelinePath() const { return m_timelinePath; }
+    const QList<QString>& getMusicFiles() const {
+        return m_musicFiles;
+    }
+    bool getStartInFullscreen() const {
+        return m_startInFullscreen;
+    }
+    bool getMidiDebug() const {
+        return m_midiDebug;
+    }
+    bool getDeveloper() const {
+        return m_developer;
+    }
+    bool getSafeMode() const {
+        return m_safeMode;
+    }
+    bool getTimelineEnabled() const {
+        return !m_timelinePath.isEmpty();
+    }
+    const QString& getLocale() const {
+        return m_locale;
+    }
+    const QString& getSettingsPath() const {
+        return m_settingsPath;
+    }
+    const QString& getResourcePath() const {
+        return m_resourcePath;
+    }
+    const QString& getPluginPath() const {
+        return m_pluginPath;
+    }
+    const QString& getTimelinePath() const {
+        return m_timelinePath;
+    }
 
   private:
     CmdlineArgs() :

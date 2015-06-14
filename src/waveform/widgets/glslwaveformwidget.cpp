@@ -16,18 +16,18 @@
 #include "util/performancetimer.h"
 
 GLSLFilteredWaveformWidget::GLSLFilteredWaveformWidget(const char* group,
-                                                       QWidget* parent)
-        : GLSLWaveformWidget(group, parent, false) {
+        QWidget* parent)
+    : GLSLWaveformWidget(group, parent, false) {
 }
 
 GLSLRGBWaveformWidget::GLSLRGBWaveformWidget(const char* group, QWidget* parent)
-        : GLSLWaveformWidget(group, parent, true) {
+    : GLSLWaveformWidget(group, parent, true) {
 }
 
 GLSLWaveformWidget::GLSLWaveformWidget(const char* group, QWidget* parent,
                                        bool rgbRenderer)
-        : QGLWidget(parent, SharedGLContext::getWidget()),
-          WaveformWidgetAbstract(group) {
+    : QGLWidget(parent, SharedGLContext::getWidget()),
+      WaveformWidgetAbstract(group) {
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();
@@ -92,7 +92,7 @@ void GLSLWaveformWidget::resize(int width, int height) {
     WaveformWidgetAbstract::resize(width,height);
 }
 
-void GLSLWaveformWidget::mouseDoubleClickEvent(QMouseEvent *event) {
+void GLSLWaveformWidget::mouseDoubleClickEvent(QMouseEvent* event) {
     if (event->button() == Qt::RightButton) {
         makeCurrent();
         signalRenderer_->debugClick();

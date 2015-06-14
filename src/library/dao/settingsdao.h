@@ -12,7 +12,7 @@
 
 class SettingsDAO : public QObject {
   public:
-    SettingsDAO(QSqlDatabase &db);
+    SettingsDAO(QSqlDatabase& db);
     virtual ~SettingsDAO();
 
     virtual void initialize();

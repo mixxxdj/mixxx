@@ -34,7 +34,7 @@ MixxxTest::ApplicationScope::~ApplicationScope() {
 }
 
 MixxxTest::MixxxTest()
-    // This directory has to be deleted later to clean up the test env.
+// This directory has to be deleted later to clean up the test env.
     : m_testDataDir(QDir::current().absoluteFilePath("src/test/test_data")),
       m_testDataCfg(m_testDataDir.filePath("test.cfg")),
       m_pConfig(new ConfigObject<ConfigValue>(m_testDataCfg)) {
@@ -47,11 +47,11 @@ bool QDir_removeRecursively(const QDir& dir) {
     if (dir.exists()) {
         qDebug() << "dir exists" << dir;
         foreach (QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot |
-                                                   QDir::System |
-                                                   QDir::Hidden  |
-                                                   QDir::AllDirs |
-                                                   QDir::Files,
-                                                   QDir::DirsFirst)) {
+                 QDir::System |
+                 QDir::Hidden  |
+                 QDir::AllDirs |
+                 QDir::Files,
+                 QDir::DirsFirst)) {
             if (info.isDir()) {
                 // recursively
                 result = QDir_removeRecursively(QDir(info.absoluteFilePath()));

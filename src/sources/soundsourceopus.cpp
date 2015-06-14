@@ -13,17 +13,17 @@ const int kCurrentStreamLink = -1; // get ... of the current (stream) link
 const int kEntireStreamLink  = -1; // get ... of the whole/entire stream
 
 class OggOpusFileOwner {
-public:
+  public:
     explicit OggOpusFileOwner(OggOpusFile* pFile) :
-            m_pFile(pFile) {
+        m_pFile(pFile) {
     }
     ~OggOpusFileOwner() {
         op_free(m_pFile);
     }
-    operator OggOpusFile*() const {
+    operator OggOpusFile* () const {
         return m_pFile;
     }
-private:
+  private:
     OggOpusFileOwner(const OggOpusFileOwner&); // disable copy constructor
     OggOpusFile* const m_pFile;
 };
@@ -34,9 +34,9 @@ private:
 const SINT SoundSourceOpus::kFrameRate = 48000;
 
 SoundSourceOpus::SoundSourceOpus(QUrl url)
-        : SoundSource(url, "opus"),
-          m_pOggOpusFile(NULL),
-          m_curFrameIndex(getMinFrameIndex()) {
+    : SoundSource(url, "opus"),
+      m_pOggOpusFile(NULL),
+      m_curFrameIndex(getMinFrameIndex()) {
 }
 
 SoundSourceOpus::~SoundSourceOpus() {
@@ -44,10 +44,10 @@ SoundSourceOpus::~SoundSourceOpus() {
 }
 
 Result SoundSourceOpus::parseTrackMetadataAndCoverArt(
-        TrackMetadata* pTrackMetadata,
-        QImage* pCoverArt) const {
+    TrackMetadata* pTrackMetadata,
+    QImage* pCoverArt) const {
     if (OK == SoundSource::parseTrackMetadataAndCoverArt(
-            pTrackMetadata, pCoverArt)) {
+                pTrackMetadata, pCoverArt)) {
         // Done if the default implementation in the base class
         // supports Opus files.
         return OK;
@@ -64,16 +64,16 @@ Result SoundSourceOpus::parseTrackMetadataAndCoverArt(
 
     int error = 0;
     OggOpusFileOwner l_ptrOpusFile(
-            op_open_file(getLocalFileNameBytes().constData(), &error));
+        op_open_file(getLocalFileNameBytes().constData(), &error));
 
     int i = 0;
-    const OpusTags *l_ptrOpusTags = op_tags(l_ptrOpusFile, -1);
+    const OpusTags* l_ptrOpusTags = op_tags(l_ptrOpusFile, -1);
 
     pTrackMetadata->setChannels(op_channel_count(l_ptrOpusFile, -1));
     pTrackMetadata->setSampleRate(Mixxx::SoundSourceOpus::kFrameRate);
     pTrackMetadata->setBitrate(op_bitrate(l_ptrOpusFile, -1) / 1000);
     pTrackMetadata->setDuration(
-            op_pcm_total(l_ptrOpusFile, -1) / pTrackMetadata->getSampleRate());
+        op_pcm_total(l_ptrOpusFile, -1) / pTrackMetadata->getSampleRate());
 
     bool hasDate = false;
     for (i = 0; i < l_ptrOpusTags->comments; ++i) {
@@ -124,7 +124,7 @@ Result SoundSourceOpus::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     m_pOggOpusFile = op_open_file(qbaFilename.constData(), &errorCode);
     if (!m_pOggOpusFile) {
         qWarning() << "Failed to open OggOpus file:" << getUrlString() << "errorCode"
-                << errorCode;
+                   << errorCode;
         return ERR;
     }
 
@@ -194,25 +194,25 @@ SINT SoundSourceOpus::seekSampleFrame(SINT frameIndex) {
 }
 
 SINT SoundSourceOpus::readSampleFrames(
-        SINT numberOfFrames, CSAMPLE* sampleBuffer) {
+    SINT numberOfFrames, CSAMPLE* sampleBuffer) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
 
     const SINT numberOfFramesTotal = math_min(
-            numberOfFrames, getMaxFrameIndex() - m_curFrameIndex);
+                                         numberOfFrames, getMaxFrameIndex() - m_curFrameIndex);
 
     CSAMPLE* pSampleBuffer = sampleBuffer;
     SINT numberOfFramesRemaining = numberOfFramesTotal;
     while (0 < numberOfFramesRemaining) {
         int readResult = op_read_float(m_pOggOpusFile,
-                pSampleBuffer,
-                frames2samples(numberOfFramesRemaining), NULL);
+                                       pSampleBuffer,
+                                       frames2samples(numberOfFramesRemaining), NULL);
         if (0 < readResult) {
             m_curFrameIndex += readResult;
             pSampleBuffer += frames2samples(readResult);
             numberOfFramesRemaining -= readResult;
         } else {
             qWarning() << "Failed to read sample data from OggOpus file:"
-                    << readResult;
+                       << readResult;
             break; // abort
         }
     }
@@ -223,27 +223,27 @@ SINT SoundSourceOpus::readSampleFrames(
 }
 
 SINT SoundSourceOpus::readSampleFramesStereo(
-        SINT numberOfFrames, CSAMPLE* sampleBuffer,
-        SINT sampleBufferSize) {
+    SINT numberOfFrames, CSAMPLE* sampleBuffer,
+    SINT sampleBufferSize) {
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(getSampleBufferSize(numberOfFrames, true) <= sampleBufferSize);
 
     const SINT numberOfFramesTotal = math_min(
-            numberOfFrames, getMaxFrameIndex() - m_curFrameIndex);
+                                         numberOfFrames, getMaxFrameIndex() - m_curFrameIndex);
 
     CSAMPLE* pSampleBuffer = sampleBuffer;
     SINT numberOfFramesRemaining = numberOfFramesTotal;
     while (0 < numberOfFramesRemaining) {
         int readResult = op_read_float_stereo(m_pOggOpusFile,
-                pSampleBuffer,
-                numberOfFramesRemaining * 2); // stereo
+                                              pSampleBuffer,
+                                              numberOfFramesRemaining * 2); // stereo
         if (0 < readResult) {
             m_curFrameIndex += readResult;
             pSampleBuffer += readResult * 2; // stereo
             numberOfFramesRemaining -= readResult;
         } else {
             qWarning() << "Failed to read sample data from OggOpus file:"
-                    << readResult;
+                       << readResult;
             break; // abort
         }
     }

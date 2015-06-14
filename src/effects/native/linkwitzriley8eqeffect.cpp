@@ -18,8 +18,8 @@ EffectManifest LinkwitzRiley8EQEffect::getManifest() {
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription(QObject::tr(
-        "A Linkwitz-Riley 8th order filter equalizer (optimized crossover, constant phase shift, roll-off -48 db/Oct). "
-        "To adjust frequency shelves see the Equalizer preferences."));
+                                "A Linkwitz-Riley 8th order filter equalizer (optimized crossover, constant phase shift, roll-off -48 db/Oct). "
+                                "To adjust frequency shelves see the Equalizer preferences."));
     manifest.setIsMixingEQ(true);
 
     EffectManifestParameter* low = manifest.addParameter();
@@ -95,12 +95,12 @@ EffectManifest LinkwitzRiley8EQEffect::getManifest() {
 }
 
 LinkwitzRiley8EQEffectGroupState::LinkwitzRiley8EQEffectGroupState()
-        : old_low(1.0),
-          old_mid(1.0),
-          old_high(1.0),
-          m_oldSampleRate(kStartupSamplerate),
-          m_loFreq(kStartupLoFreq),
-          m_hiFreq(kStartupHiFreq) {
+    : old_low(1.0),
+      old_mid(1.0),
+      old_high(1.0),
+      m_oldSampleRate(kStartupSamplerate),
+      m_loFreq(kStartupLoFreq),
+      m_hiFreq(kStartupHiFreq) {
 
     m_pLowBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pBandBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
@@ -123,7 +123,7 @@ LinkwitzRiley8EQEffectGroupState::~LinkwitzRiley8EQEffectGroupState() {
 }
 
 void LinkwitzRiley8EQEffectGroupState::setFilters(int sampleRate, int lowFreq,
-                                               int highFreq) {
+        int highFreq) {
     m_low1->setFrequencyCorners(sampleRate, lowFreq);
     m_high1->setFrequencyCorners(sampleRate, lowFreq);
     m_low2->setFrequencyCorners(sampleRate, highFreq);
@@ -131,13 +131,13 @@ void LinkwitzRiley8EQEffectGroupState::setFilters(int sampleRate, int lowFreq,
 }
 
 LinkwitzRiley8EQEffect::LinkwitzRiley8EQEffect(EngineEffect* pEffect,
-                                         const EffectManifest& manifest)
-        : m_pPotLow(pEffect->getParameterById("low")),
-          m_pPotMid(pEffect->getParameterById("mid")),
-          m_pPotHigh(pEffect->getParameterById("high")),
-          m_pKillLow(pEffect->getParameterById("killLow")),
-          m_pKillMid(pEffect->getParameterById("killMid")),
-          m_pKillHigh(pEffect->getParameterById("killHigh")) {
+        const EffectManifest& manifest)
+    : m_pPotLow(pEffect->getParameterById("low")),
+      m_pPotMid(pEffect->getParameterById("mid")),
+      m_pPotHigh(pEffect->getParameterById("high")),
+      m_pKillLow(pEffect->getParameterById("killLow")),
+      m_pKillMid(pEffect->getParameterById("killMid")),
+      m_pKillHigh(pEffect->getParameterById("killHigh")) {
     Q_UNUSED(manifest);
     m_pLoFreqCorner = new ControlObjectSlave("[Mixer Profile]", "LoEQFrequency");
     m_pHiFreqCorner = new ControlObjectSlave("[Mixer Profile]", "HiEQFrequency");
@@ -149,12 +149,12 @@ LinkwitzRiley8EQEffect::~LinkwitzRiley8EQEffect() {
 }
 
 void LinkwitzRiley8EQEffect::processChannel(const ChannelHandle& handle,
-                                            LinkwitzRiley8EQEffectGroupState* pState,
-                                            const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                            const unsigned int numSamples,
-                                            const unsigned int sampleRate,
-                                            const EffectProcessor::EnableState enableState,
-                                            const GroupFeatureState& groupFeatures) {
+        LinkwitzRiley8EQEffectGroupState* pState,
+        const CSAMPLE* pInput, CSAMPLE* pOutput,
+        const unsigned int numSamples,
+        const unsigned int sampleRate,
+        const EffectProcessor::EnableState enableState,
+        const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
 
@@ -184,14 +184,14 @@ void LinkwitzRiley8EQEffect::processChannel(const ChannelHandle& handle,
     if (fMid != pState->old_mid ||
             fHigh != pState->old_high) {
         SampleUtil::copy2WithRampingGain(pState->m_pHighBuf,
-                pState->m_pHighBuf, pState->old_high, fHigh,
-                pState->m_pLowBuf, pState->old_mid, fMid,
-                numSamples);
+                                         pState->m_pHighBuf, pState->old_high, fHigh,
+                                         pState->m_pLowBuf, pState->old_mid, fMid,
+                                         numSamples);
     } else {
         SampleUtil::copy2WithGain(pState->m_pHighBuf,
-                pState->m_pHighBuf, fHigh,
-                pState->m_pLowBuf, fMid,
-                numSamples);
+                                  pState->m_pHighBuf, fHigh,
+                                  pState->m_pLowBuf, fMid,
+                                  numSamples);
     }
 
     pState->m_high1->process(pState->m_pHighBuf, pState->m_pBandBuf, numSamples); // HighPass + BandPass second run
@@ -199,14 +199,14 @@ void LinkwitzRiley8EQEffect::processChannel(const ChannelHandle& handle,
 
     if (fLow != pState->old_low) {
         SampleUtil::copy2WithRampingGain(pOutput,
-                pState->m_pLowBuf, pState->old_low, fLow,
-                pState->m_pBandBuf, 1, 1,
-                numSamples);
+                                         pState->m_pLowBuf, pState->old_low, fLow,
+                                         pState->m_pBandBuf, 1, 1,
+                                         numSamples);
     } else {
         SampleUtil::copy2WithGain(pOutput,
-                pState->m_pLowBuf, fLow,
-                pState->m_pBandBuf, 1,
-                numSamples);
+                                  pState->m_pLowBuf, fLow,
+                                  pState->m_pBandBuf, 1,
+                                  numSamples);
     }
 
     if (enableState == EffectProcessor::DISABLING) {

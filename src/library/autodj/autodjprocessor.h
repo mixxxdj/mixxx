@@ -141,7 +141,7 @@ class AutoDJProcessor : public QObject {
 
     // The following virtual signal wrappers are used for testing
     virtual void emitLoadTrackToPlayer(TrackPointer pTrack, QString group,
-                                   bool play) {
+                                       bool play) {
         emit(loadTrackToPlayer(pTrack, group, play));
     }
     virtual void emitAutoDJStateChanged(AutoDJProcessor::AutoDJState state) {
@@ -150,7 +150,7 @@ class AutoDJProcessor : public QObject {
 
   signals:
     void loadTrackToPlayer(TrackPointer pTrack, QString group,
-                                   bool play);
+                           bool play);
     void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
     void transitionTimeChanged(int time);
     void randomTrackRequested(int tracksToAdd);

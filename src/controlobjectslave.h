@@ -29,16 +29,18 @@ class ControlObjectSlave : public QObject {
     }
 
     bool connectValueChanged(const QObject* receiver,
-            const char* method, Qt::ConnectionType type = Qt::AutoConnection);
+                             const char* method, Qt::ConnectionType type = Qt::AutoConnection);
     bool connectValueChanged(
-            const char* method, Qt::ConnectionType type = Qt::AutoConnection);
+        const char* method, Qt::ConnectionType type = Qt::AutoConnection);
 
     // Called from update();
     inline void emitValueChanged() {
         emit(valueChanged(get()));
     }
 
-    inline bool valid() const { return m_pControl != NULL; }
+    inline bool valid() const {
+        return m_pControl != NULL;
+    }
 
     // Returns the value of the object. Thread safe, non-blocking.
     inline double get() const {

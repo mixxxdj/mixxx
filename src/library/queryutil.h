@@ -10,8 +10,8 @@
 class ScopedTransaction {
   public:
     explicit ScopedTransaction(QSqlDatabase& database) :
-            m_database(database),
-            m_active(false) {
+        m_database(database),
+        m_active(false) {
         if (!transaction()) {
             qDebug() << "ERROR: Could not start transaction on"
                      << m_database.connectionName();
@@ -68,8 +68,8 @@ class ScopedTransaction {
 class FieldEscaper {
   public:
     FieldEscaper(const QSqlDatabase& database)
-            : m_database(database),
-              m_stringField("string", QVariant::String) {
+        : m_database(database),
+          m_stringField("string", QVariant::String) {
     }
     virtual ~FieldEscaper() {
     }
@@ -103,7 +103,7 @@ class FieldEscaper {
         QString result = escapeString;
         // Replace instances of escapeCharacter with two escapeCharacters.
         result = result.replace(
-            escapeCharacter, escapeCharacterStr + escapeCharacterStr);
+                     escapeCharacter, escapeCharacterStr + escapeCharacterStr);
         // Replace instances of % or _ with $escapeCharacter%.
         if (escapeCharacter != '%') {
             result = result.replace("%", escapeCharacterStr + "%");

@@ -24,24 +24,24 @@ class Stat {
 
     static QString statTypeToString(StatType type) {
         switch (type) {
-            case UNSPECIFIED:
-                return "UNSPECIFIED";
-            case COUNTER:
-                return "COUNTER";
-            case DURATION_MSEC:
-                return "DURATION_MSEC";
-            case DURATION_NANOSEC:
-                return "DURATION_NANOSEC";
-            case DURATION_SEC:
-                return "DURATION_SEC";
-            case EVENT:
-                return "EVENT";
-            case EVENT_START:
-                return "START";
-            case EVENT_END:
-                return "END";
-            default:
-                return "UNKNOWN";
+        case UNSPECIFIED:
+            return "UNSPECIFIED";
+        case COUNTER:
+            return "COUNTER";
+        case DURATION_MSEC:
+            return "DURATION_MSEC";
+        case DURATION_NANOSEC:
+            return "DURATION_NANOSEC";
+        case DURATION_SEC:
+            return "DURATION_SEC";
+        case EVENT:
+            return "EVENT";
+        case EVENT_START:
+            return "START";
+        case EVENT_END:
+            return "END";
+        default:
+            return "UNKNOWN";
         }
     }
 
@@ -88,13 +88,13 @@ class Stat {
 
     static ComputeFlags experimentFlags(ComputeFlags flags) {
         switch (Experiment::mode()) {
-            case Experiment::EXPERIMENT:
-                return flags | STATS_EXPERIMENT;
-            case Experiment::BASE:
-                return flags | STATS_BASE;
-            default:
-            case Experiment::OFF:
-                return flags;
+        case Experiment::EXPERIMENT:
+            return flags | STATS_EXPERIMENT;
+        case Experiment::BASE:
+            return flags | STATS_BASE;
+        default:
+        case Experiment::OFF:
+            return flags;
         }
     }
 
@@ -124,7 +124,7 @@ class Stat {
                       double value);
 };
 
-QDebug operator<<(QDebug dbg, const Stat &stat);
+QDebug operator<<(QDebug dbg, const Stat& stat);
 
 struct StatReport {
     char* tag;

@@ -3,14 +3,14 @@
 #include "engine/enginesidechaincompressor.h"
 
 EngineSideChainCompressor::EngineSideChainCompressor(const char* group)
-        : m_compressRatio(0.0),
-          m_bAboveThreshold(false),
-          m_threshold(1.0),
-          m_strength(0.0),
-          m_attackTime(0),
-          m_decayTime(0),
-          m_attackPerFrame(0.0),
-          m_decayPerFrame(0.0) {
+    : m_compressRatio(0.0),
+      m_bAboveThreshold(false),
+      m_threshold(1.0),
+      m_strength(0.0),
+      m_attackTime(0),
+      m_decayTime(0),
+      m_attackPerFrame(0.0),
+      m_decayPerFrame(0.0) {
     Q_UNUSED(group);
 }
 

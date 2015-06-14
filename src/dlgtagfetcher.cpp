@@ -3,11 +3,11 @@
 
 #include "dlgtagfetcher.h"
 
-DlgTagFetcher::DlgTagFetcher(QWidget *parent)
-        : QDialog(parent),
-          m_track(NULL),
-          m_TagFetcher(parent),
-          m_networkError(NOERROR) {
+DlgTagFetcher::DlgTagFetcher(QWidget* parent)
+    : QDialog(parent),
+      m_track(NULL),
+      m_TagFetcher(parent),
+      m_networkError(NOERROR) {
     init();
 }
 
@@ -77,11 +77,11 @@ void DlgTagFetcher::apply() {
             m_track->setTitle(m_data.m_results[resultIndex]->getTitle());
         }
         if (!m_data.m_results[resultIndex]->getYear().isEmpty() &&
-             m_data.m_results[resultIndex]->getYear() != "0") {
+                m_data.m_results[resultIndex]->getYear() != "0") {
             m_track->setYear(m_data.m_results[resultIndex]->getYear());
         }
         if (!m_data.m_results[resultIndex]->getTrackNumber().isEmpty() &&
-             m_data.m_results[resultIndex]->getTrackNumber() != "0") {
+                m_data.m_results[resultIndex]->getTrackNumber() != "0") {
             m_track->setTrackNumber(m_data.m_results[resultIndex]->getTrackNumber());
         }
     }
@@ -186,9 +186,9 @@ void DlgTagFetcher::addDivider(const QString& text, QTreeWidget* parent) const {
 }
 
 void DlgTagFetcher::resultSelected() {
-  if (!results->currentItem())
-    return;
+    if (!results->currentItem())
+        return;
 
-  const int resultIndex = results->currentItem()->data(0, Qt::UserRole).toInt();
-  m_data.m_selectedResult = resultIndex;
+    const int resultIndex = results->currentItem()->data(0, Qt::UserRole).toInt();
+    m_data.m_selectedResult = resultIndex;
 }

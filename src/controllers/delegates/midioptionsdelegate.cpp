@@ -7,7 +7,7 @@
 #include "controllers/midi/midiutils.h"
 
 MidiOptionsDelegate::MidiOptionsDelegate(QObject* pParent)
-        : QStyledItemDelegate(pParent) {
+    : QStyledItemDelegate(pParent) {
 }
 
 MidiOptionsDelegate::~MidiOptionsDelegate() {
@@ -15,8 +15,8 @@ MidiOptionsDelegate::~MidiOptionsDelegate() {
 
 
 QWidget* MidiOptionsDelegate::createEditor(QWidget* parent,
-                                           const QStyleOptionViewItem& option,
-                                           const QModelIndex& index) const {
+        const QStyleOptionViewItem& option,
+        const QModelIndex& index) const {
     Q_UNUSED(option);
     Q_UNUSED(index);
     QComboBox* pComboBox = new QComboBox(parent);
@@ -48,7 +48,7 @@ QWidget* MidiOptionsDelegate::createEditor(QWidget* parent,
 }
 
 QString MidiOptionsDelegate::displayText(const QVariant& value,
-                                         const QLocale& locale) const {
+        const QLocale& locale) const {
     Q_UNUSED(locale);
     MidiOptions options = qVariantValue<MidiOptions>(value);
     QStringList optionStrs;

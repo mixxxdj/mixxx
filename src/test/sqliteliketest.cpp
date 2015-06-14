@@ -2,16 +2,16 @@
 #include "library/trackcollection.h"
 
 class TrackCollectionTest : public TrackCollection {
-   public:
+  public:
 #ifdef __SQLITE3__
-     static int likeCompareLatinLowTest(
-                    QString* pattern,
-                    QString* string,
-                    const QChar esc) {
-         return TrackCollection::likeCompareLatinLow(
-                        pattern, string, esc);
+    static int likeCompareLatinLowTest(
+        QString* pattern,
+        QString* string,
+        const QChar esc) {
+        return TrackCollection::likeCompareLatinLow(
+                   pattern, string, esc);
 
-     }
+    }
 #endif // __SQLITE3__
 };
 

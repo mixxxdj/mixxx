@@ -13,12 +13,12 @@ Keys::Keys(const QByteArray* pByteArray) {
 }
 
 Keys::Keys(const KeyMap& keyMap)
-        : m_keyMap(keyMap) {
+    : m_keyMap(keyMap) {
 }
 
 Keys::Keys(const Keys& other)
-        : m_subVersion(other.m_subVersion),
-          m_keyMap(other.m_keyMap) {
+    : m_subVersion(other.m_subVersion),
+      m_keyMap(other.m_keyMap) {
 }
 
 Keys::~Keys() {
@@ -54,7 +54,7 @@ void Keys::setSubVersion(const QString& subVersion) {
 
 bool Keys::isValid() const {
     return m_keyMap.global_key() != mixxx::track::io::key::INVALID ||
-            m_keyMap.global_key_text().length() > 0;
+           m_keyMap.global_key_text().length() > 0;
 }
 
 ChromaticKey Keys::getGlobalKey() const {

@@ -128,7 +128,7 @@ TEST_F(DirectoryDAOTest, getDirTest) {
 }
 
 TEST_F(DirectoryDAOTest, relocateDirTest) {
-    DirectoryDAO &directoryDao = m_pTrackCollection->getDirectoryDAO();
+    DirectoryDAO& directoryDao = m_pTrackCollection->getDirectoryDAO();
 
     // use a temp dir so that we always use a real existing system path
     QString testdir(QDir::tempPath() + "/TestDir");
@@ -138,17 +138,17 @@ TEST_F(DirectoryDAOTest, relocateDirTest) {
     directoryDao.addDirectory(testdir);
     directoryDao.addDirectory(test2);
 
-    TrackDAO &trackDAO = m_pTrackCollection->getTrackDAO();
+    TrackDAO& trackDAO = m_pTrackCollection->getTrackDAO();
     // ok now lets create some tracks here
     trackDAO.addTracksPrepare();
     trackDAO.addTracksAdd(new TrackInfoObject(
-            testdir + "/a", SecurityTokenPointer(), false), false);
+                              testdir + "/a", SecurityTokenPointer(), false), false);
     trackDAO.addTracksAdd(new TrackInfoObject(
-            testdir + "/b", SecurityTokenPointer(), false), false);
+                              testdir + "/b", SecurityTokenPointer(), false), false);
     trackDAO.addTracksAdd(new TrackInfoObject(
-            test2 + "/c", SecurityTokenPointer(), false), false);
+                              test2 + "/c", SecurityTokenPointer(), false), false);
     trackDAO.addTracksAdd(new TrackInfoObject(
-            test2 + "/d", SecurityTokenPointer(), false), false);
+                              test2 + "/d", SecurityTokenPointer(), false), false);
     trackDAO.addTracksFinish(false);
 
     QSet<int> ids = directoryDao.relocateDirectory(testdir, testnew);

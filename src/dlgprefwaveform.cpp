@@ -6,9 +6,9 @@
 
 DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
                                  ConfigObject<ConfigValue>* pConfig)
-        : DlgPreferencePage(pParent),
-          m_pConfig(pConfig),
-          m_pMixxx(pMixxx) {
+    : DlgPreferencePage(pParent),
+      m_pConfig(pConfig),
+      m_pMixxx(pMixxx) {
     setupUi(this);
 
     // Waveform overview init
@@ -26,7 +26,7 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
 
     // Populate zoom options.
     for (int i = WaveformWidgetRenderer::s_waveformMinZoom;
-         i <= WaveformWidgetRenderer::s_waveformMaxZoom; i++) {
+            i <= WaveformWidgetRenderer::s_waveformMaxZoom; i++) {
         defaultZoomComboBox->addItem(QString::number(100/double(i), 'f', 1) + " %");
     }
 
@@ -101,7 +101,7 @@ void DlgPrefWaveform::slotUpdate() {
 
     // By default we set filtered woverview = "0"
     int overviewType = m_pConfig->getValueString(
-            ConfigKey("[Waveform]","WaveformOverviewType"), "0").toInt();
+                           ConfigKey("[Waveform]","WaveformOverviewType"), "0").toInt();
     if (overviewType != waveformOverviewComboBox->currentIndex()) {
         waveformOverviewComboBox->setCurrentIndex(overviewType);
     }
@@ -192,6 +192,6 @@ void DlgPrefWaveform::slotSetNormalizeOverview(bool normalize) {
 
 void DlgPrefWaveform::slotWaveformMeasured(float frameRate, int droppedFrames) {
     frameRateAverage->setText(
-            QString::number((double)frameRate, 'f', 2) + " : " +
-            tr("dropped frames") + " " + QString::number(droppedFrames));
+        QString::number((double)frameRate, 'f', 2) + " : " +
+        tr("dropped frames") + " " + QString::number(droppedFrames));
 }

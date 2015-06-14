@@ -78,15 +78,15 @@ bool WaveformWidgetRenderer::init() {
     m_visualPlayPosition = VisualPlayPosition::getVisualPlayPosition(m_group);
 
     m_pRateControlObject = new ControlObjectThread(
-            m_group, "rate");
+        m_group, "rate");
     m_pRateRangeControlObject = new ControlObjectThread(
-            m_group, "rateRange");
+        m_group, "rateRange");
     m_pRateDirControlObject = new ControlObjectThread(
-            m_group, "rate_dir");
+        m_group, "rate_dir");
     m_pGainControlObject = new ControlObjectThread(
-            m_group, "total_gain");
+        m_group, "total_gain");
     m_pTrackSamplesControlObject = new ControlObjectThread(
-            m_group, "track_samples");
+        m_group, "track_samples");
 
     for (int i = 0; i < m_rendererStack.size(); ++i) {
         if (!m_rendererStack[i]->init()) {

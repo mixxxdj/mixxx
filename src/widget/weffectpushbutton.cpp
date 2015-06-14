@@ -5,9 +5,9 @@
 #include "widget/effectwidgetutils.h"
 
 WEffectPushButton::WEffectPushButton(QWidget* pParent, EffectsManager* pEffectsManager)
-        : WPushButton(pParent),
-          m_pEffectsManager(pEffectsManager),
-          m_pButtonMenu(NULL) {
+    : WPushButton(pParent),
+      m_pEffectsManager(pEffectsManager),
+      m_pButtonMenu(NULL) {
 }
 
 WEffectPushButton::~WEffectPushButton() {
@@ -23,14 +23,14 @@ void WEffectPushButton::setup(QDomNode node, const SkinContext& context) {
 
     // EffectWidgetUtils propagates NULLs so this is all safe.
     EffectRackPointer pRack = EffectWidgetUtils::getEffectRackFromNode(
-            node, context, m_pEffectsManager);
+                                  node, context, m_pEffectsManager);
     EffectChainSlotPointer pChainSlot = EffectWidgetUtils::getEffectChainSlotFromNode(
-            node, context, pRack);
+                                            node, context, pRack);
     EffectSlotPointer pEffectSlot = EffectWidgetUtils::getEffectSlotFromNode(
-            node, context, pChainSlot);
+                                        node, context, pChainSlot);
     EffectParameterSlotBasePointer pParameterSlot =
-            EffectWidgetUtils::getButtonParameterSlotFromNode(
-                    node, context, pEffectSlot);
+        EffectWidgetUtils::getButtonParameterSlotFromNode(
+            node, context, pEffectSlot);
     if (pParameterSlot) {
         m_pEffectParameterSlot = pParameterSlot;
         connect(pParameterSlot.data(), SIGNAL(updated()),

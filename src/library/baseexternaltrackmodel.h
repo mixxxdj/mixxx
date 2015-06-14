@@ -25,7 +25,7 @@ class BaseExternalTrackModel : public BaseSqlTableModel {
     TrackPointer getTrack(const QModelIndex& index) const;
     virtual void trackLoaded(QString group, TrackPointer pTrack);
     virtual bool isColumnInternal(int column);
-    Qt::ItemFlags flags(const QModelIndex &index) const;
+    Qt::ItemFlags flags(const QModelIndex& index) const;
 };
 
 #endif /* BASEEXTERNALTRACKMODEL_H */

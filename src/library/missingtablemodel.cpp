@@ -8,8 +8,8 @@ const QString MissingTableModel::MISSINGFILTER = "mixxx_deleted=0 AND fs_deleted
 
 MissingTableModel::MissingTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection)
-        : BaseSqlTableModel(parent, pTrackCollection,
-                            "mixxx.db.model.missing") {
+    : BaseSqlTableModel(parent, pTrackCollection,
+                        "mixxx.db.model.missing") {
     setTableModel();
 }
 
@@ -85,7 +85,7 @@ bool MissingTableModel::isColumnInternal(int column) {
 }
 
 // Override flags from BaseSqlModel since we don't want edit this model
-Qt::ItemFlags MissingTableModel::flags(const QModelIndex &index) const {
+Qt::ItemFlags MissingTableModel::flags(const QModelIndex& index) const {
     return readOnlyFlags(index);
 }
 

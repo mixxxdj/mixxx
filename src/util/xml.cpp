@@ -59,10 +59,10 @@ QDomElement XmlParse::openXMLFile(const QString& path, const QString& name) {
     int line, col;
     if (!doc.setContent(&file, &error, &line, &col)) {
         QString errorString = QString("%1 at line %2, column %3")
-                                .arg(error).arg(line).arg(col);
+                              .arg(error).arg(line).arg(col);
 
         QString errorLog = QString("Error parsing XML file %1: %2")
-                            .arg(file.fileName(), errorString);
+                           .arg(file.fileName(), errorString);
         qWarning() << errorLog;
 
         // Set up error dialog

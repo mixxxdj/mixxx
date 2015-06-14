@@ -32,7 +32,7 @@ struct AudioSourceConfig;
 // Audio sources are implicitly opened upon creation and
 // closed upon destruction.
 class AudioSource: public UrlResource {
-public:
+  public:
     static const SINT kChannelCountMono = 1;
     static const SINT kChannelCountStereo = 2;
 
@@ -118,7 +118,7 @@ public:
     // [getMinFrameIndex(), getMaxFrameIndex()].
     inline bool isValidFrameIndex(SINT frameIndex) const {
         return (getMinFrameIndex() <= frameIndex) &&
-                (getMaxFrameIndex() >= frameIndex);
+               (getMaxFrameIndex() >= frameIndex);
     }
 
     // Adjusts the current frame seek index:
@@ -143,17 +143,17 @@ public:
     // of the audio stream has been reached. The current frame seek
     // position is moved forward towards the next unread frame.
     virtual SINT readSampleFrames(
-            SINT numberOfFrames,
-            CSAMPLE* sampleBuffer) = 0;
+        SINT numberOfFrames,
+        CSAMPLE* sampleBuffer) = 0;
 
     inline SINT skipSampleFrames(
-            SINT numberOfFrames) {
+        SINT numberOfFrames) {
         return readSampleFrames(numberOfFrames, static_cast<CSAMPLE*>(NULL));
     }
 
     inline SINT readSampleFrames(
-            SINT numberOfFrames,
-            SampleBuffer* pSampleBuffer) {
+        SINT numberOfFrames,
+        SampleBuffer* pSampleBuffer) {
         if (pSampleBuffer) {
             DEBUG_ASSERT(frames2samples(numberOfFrames) <= pSampleBuffer->size());
             return readSampleFrames(numberOfFrames, pSampleBuffer->data());
@@ -194,22 +194,22 @@ public:
     // i.e. only the minimum size is required for an in-place
     // transformation without temporary allocations.
     virtual SINT readSampleFramesStereo(
-            SINT numberOfFrames,
-            CSAMPLE* sampleBuffer,
-            SINT sampleBufferSize);
+        SINT numberOfFrames,
+        CSAMPLE* sampleBuffer,
+        SINT sampleBufferSize);
 
     inline SINT readSampleFramesStereo(
-            SINT numberOfFrames,
-            SampleBuffer* pSampleBuffer) {
+        SINT numberOfFrames,
+        SampleBuffer* pSampleBuffer) {
         if (pSampleBuffer) {
             return readSampleFramesStereo(numberOfFrames,
-                    pSampleBuffer->data(), pSampleBuffer->size());
+                                          pSampleBuffer->data(), pSampleBuffer->size());
         } else {
             return skipSampleFrames(numberOfFrames);
         }
     }
 
-protected:
+  protected:
     explicit AudioSource(const QUrl& url);
 
     inline static bool isValidChannelCount(SINT channelCount) {
@@ -236,10 +236,10 @@ protected:
     void setBitrate(SINT bitrate);
 
     SINT getSampleBufferSize(
-            SINT numberOfFrames,
-            bool readStereoSamples = false) const;
+        SINT numberOfFrames,
+        bool readStereoSamples = false) const;
 
-private:
+  private:
     friend struct AudioSourceConfig;
 
     static const SINT kChannelCountZero = 0;
@@ -268,7 +268,7 @@ private:
 struct AudioSourceConfig {
     AudioSourceConfig()
         : channelCountHint(AudioSource::kChannelCountDefault),
-          frameRateHint(AudioSource::kFrameRateDefault){
+          frameRateHint(AudioSource::kFrameRateDefault) {
     }
 
     SINT channelCountHint;

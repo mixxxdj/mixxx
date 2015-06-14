@@ -7,11 +7,11 @@
 #include "track/beatutils.h"
 
 BeatsPointer BeatFactory::loadBeatsFromByteArray(TrackPointer pTrack,
-                                                 QString beatsVersion,
-                                                 QString beatsSubVersion,
-                                                 QByteArray* beatsSerialized) {
+        QString beatsVersion,
+        QString beatsSubVersion,
+        QByteArray* beatsSerialized) {
     if (beatsVersion == BEAT_GRID_1_VERSION ||
-        beatsVersion == BEAT_GRID_2_VERSION) {
+            beatsVersion == BEAT_GRID_2_VERSION) {
         BeatGrid* pGrid = new BeatGrid(pTrack.data(), 0, beatsSerialized);
         pGrid->setSubVersion(beatsSubVersion);
         qDebug() << "Successfully deserialized BeatGrid";
@@ -62,23 +62,23 @@ QString BeatFactory::getPreferredSubVersion(
     while (it.hasNext()) {
         it.next();
         if (it.key().contains(kSubVersionKeyValueSeparator) ||
-            it.key().contains(kSubVersionFragmentSeparator) ||
-            it.value().contains(kSubVersionKeyValueSeparator) ||
-            it.value().contains(kSubVersionFragmentSeparator)) {
+                it.key().contains(kSubVersionFragmentSeparator) ||
+                it.value().contains(kSubVersionKeyValueSeparator) ||
+                it.value().contains(kSubVersionFragmentSeparator)) {
             qDebug() << "ERROR: Your analyser key/value contains invalid characters:"
                      << it.key() << ":" << it.value() << "Skipping.";
             continue;
         }
         fragments << QString("%1%2%3").arg(
-            it.key(), kSubVersionKeyValueSeparator, it.value());
+                      it.key(), kSubVersionKeyValueSeparator, it.value());
     }
     if (bEnableFixedTempoCorrection && bEnableOffsetCorrection) {
         fragments << QString("offset_correction%1%2")
-                .arg(kSubVersionKeyValueSeparator, QString::number(1));
+                  .arg(kSubVersionKeyValueSeparator, QString::number(1));
     }
 
     fragments << QString("rounding%1%2").
-            arg(kSubVersionKeyValueSeparator, QString::number(0.05));
+              arg(kSubVersionKeyValueSeparator, QString::number(0.05));
 
     qSort(fragments);
     return (fragments.size() > 0) ? fragments.join(kSubVersionFragmentSeparator) : "";
@@ -93,16 +93,16 @@ BeatsPointer BeatFactory::makePreferredBeats(
     const int iMinBpm, const int iMaxBpm) {
     const QString version = getPreferredVersion(bEnableFixedTempoCorrection);
     const QString subVersion = getPreferredSubVersion(bEnableFixedTempoCorrection,
-                                                      bEnableOffsetCorrection,
-                                                      iMinBpm, iMaxBpm,
-                                                      extraVersionInfo);
+                               bEnableOffsetCorrection,
+                               iMinBpm, iMaxBpm,
+                               extraVersionInfo);
 
     BeatUtils::printBeatStatistics(beats, iSampleRate);
     if (version == BEAT_GRID_2_VERSION) {
         double globalBpm = BeatUtils::calculateBpm(beats, iSampleRate, iMinBpm, iMaxBpm);
         double firstBeat = BeatUtils::calculateFixedTempoFirstBeat(
-            bEnableOffsetCorrection,
-            beats, iSampleRate, iTotalSamples, globalBpm);
+                               bEnableOffsetCorrection,
+                               beats, iSampleRate, iTotalSamples, globalBpm);
         BeatGrid* pGrid = new BeatGrid(pTrack.data(), iSampleRate);
         // firstBeat is in frames here and setGrid() takes samples.
         pGrid->setGrid(globalBpm, firstBeat * 2);

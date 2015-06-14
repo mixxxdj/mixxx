@@ -14,7 +14,7 @@
 
 QuantizeControl::QuantizeControl(QString group,
                                  ConfigObject<ConfigValue>* pConfig)
-        : EngineControl(group, pConfig) {
+    : EngineControl(group, pConfig) {
     // Turn quantize OFF by default. See Bug #898213
     m_pCOQuantizeEnabled = new ControlPushButton(ConfigKey(group, "quantize"));
     m_pCOQuantizeEnabled->setButtonMode(ControlPushButton::TOGGLE);
@@ -120,8 +120,8 @@ void QuantizeControl::updateClosestBeat(double dCurrentSample) {
         m_pCOClosestBeat->set(prevBeat);
     } else {
         double currentClosestBeat =
-                (nextBeat - dCurrentSample > dCurrentSample - prevBeat) ?
-                        prevBeat : nextBeat;
+            (nextBeat - dCurrentSample > dCurrentSample - prevBeat) ?
+            prevBeat : nextBeat;
         DEBUG_ASSERT_AND_HANDLE(even(static_cast<int>(currentClosestBeat))) {
             currentClosestBeat--;
         }

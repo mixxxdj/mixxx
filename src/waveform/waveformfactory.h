@@ -32,7 +32,7 @@ class WaveformFactory {
     };
 
     static Waveform* loadWaveformFromAnalysis(
-            const AnalysisDao::AnalysisInfo& analysis);
+        const AnalysisDao::AnalysisInfo& analysis);
     static VersionClass waveformVersionToVersionClass(const QString& version);
     static VersionClass waveformSummaryVersionToVersionClass(const QString& version);
     static QString currentWaveformVersion();

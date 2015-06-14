@@ -9,11 +9,11 @@
 
 EngineControl::EngineControl(QString group,
                              ConfigObject<ConfigValue>* _config)
-        : m_group(group),
-          m_pConfig(_config),
-          m_pEngineMaster(NULL),
-          m_pEngineBuffer(NULL),
-          m_numDecks(ConfigKey("[Master]", "num_decks")) {
+    : m_group(group),
+      m_pConfig(_config),
+      m_pEngineMaster(NULL),
+      m_pEngineBuffer(NULL),
+      m_numDecks(ConfigKey("[Master]", "num_decks")) {
     setCurrentSample(0.0, 0.0);
 }
 

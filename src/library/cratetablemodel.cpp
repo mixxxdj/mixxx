@@ -11,10 +11,10 @@
 
 CrateTableModel::CrateTableModel(QObject* pParent,
                                  TrackCollection* pTrackCollection)
-        : BaseSqlTableModel(pParent, pTrackCollection,
-                            "mixxx.db.model.crate"),
-          m_iCrateId(-1),
-          m_crateDAO(pTrackCollection->getCrateDAO()) {
+    : BaseSqlTableModel(pParent, pTrackCollection,
+                        "mixxx.db.model.crate"),
+    m_iCrateId(-1),
+    m_crateDAO(pTrackCollection->getCrateDAO()) {
 }
 
 CrateTableModel::~CrateTableModel() {
@@ -160,18 +160,18 @@ bool CrateTableModel::isColumnInternal(int column) {
 
 TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {
     CapabilitiesFlags caps =  TRACKMODELCAPS_NONE
-            | TRACKMODELCAPS_RECEIVEDROPS
-            | TRACKMODELCAPS_ADDTOPLAYLIST
-            | TRACKMODELCAPS_ADDTOCRATE
-            | TRACKMODELCAPS_ADDTOAUTODJ
-            | TRACKMODELCAPS_RELOADMETADATA
-            | TRACKMODELCAPS_LOADTODECK
-            | TRACKMODELCAPS_LOADTOSAMPLER
-            | TRACKMODELCAPS_LOADTOPREVIEWDECK
-            | TRACKMODELCAPS_REMOVE
-            | TRACKMODELCAPS_MANIPULATEBEATS
-            | TRACKMODELCAPS_CLEAR_BEATS
-            | TRACKMODELCAPS_RESETPLAYED;
+                              | TRACKMODELCAPS_RECEIVEDROPS
+                              | TRACKMODELCAPS_ADDTOPLAYLIST
+                              | TRACKMODELCAPS_ADDTOCRATE
+                              | TRACKMODELCAPS_ADDTOAUTODJ
+                              | TRACKMODELCAPS_RELOADMETADATA
+                              | TRACKMODELCAPS_LOADTODECK
+                              | TRACKMODELCAPS_LOADTOSAMPLER
+                              | TRACKMODELCAPS_LOADTOPREVIEWDECK
+                              | TRACKMODELCAPS_REMOVE
+                              | TRACKMODELCAPS_MANIPULATEBEATS
+                              | TRACKMODELCAPS_CLEAR_BEATS
+                              | TRACKMODELCAPS_RESETPLAYED;
 
     bool locked = m_crateDAO.isCrateLocked(m_iCrateId);
     if (locked) {

@@ -8,15 +8,15 @@
 #include "controllers/midi/hss1394controller.h"
 
 DeviceChannelListener::DeviceChannelListener(QObject* pParent, QString name)
-        : QObject(pParent),
-          hss1394::ChannelListener(),
-          m_sName(name) {
+    : QObject(pParent),
+      hss1394::ChannelListener(),
+      m_sName(name) {
 }
 
 DeviceChannelListener::~DeviceChannelListener() {
 }
 
-void DeviceChannelListener::Process(const hss1394::uint8 *pBuffer, hss1394::uint uBufferSize) {
+void DeviceChannelListener::Process(const hss1394::uint8* pBuffer, hss1394::uint uBufferSize) {
     unsigned int i = 0;
 
     // If multiple three-byte messages arrive right next to each other, handle them all
@@ -27,26 +27,26 @@ void DeviceChannelListener::Process(const hss1394::uint8 *pBuffer, hss1394::uint
         unsigned char note;
         unsigned char velocity;
         switch (status & 0xF0) {
-            case MIDI_NOTE_OFF:
-            case MIDI_NOTE_ON:
-            case MIDI_AFTERTOUCH:
-            case MIDI_CC:
-            case MIDI_PITCH_BEND:
-                if (i + 2 < uBufferSize) {
-                    note = pBuffer[i+1];
-                    velocity = pBuffer[i+2];
-                    emit(incomingData(status, note, velocity));
-                } else {
-                    qWarning() << "Buffer underflow in DeviceChannelListener::Process()";
-                }
-                i += 3;
-                break;
-            default:
-                // Handle platter messages and any others that are not 3 bytes
-                QByteArray outArray((char*)pBuffer,uBufferSize);
-                emit(incomingData(outArray));
-                i = uBufferSize;
-                break;
+        case MIDI_NOTE_OFF:
+        case MIDI_NOTE_ON:
+        case MIDI_AFTERTOUCH:
+        case MIDI_CC:
+        case MIDI_PITCH_BEND:
+            if (i + 2 < uBufferSize) {
+                note = pBuffer[i+1];
+                velocity = pBuffer[i+2];
+                emit(incomingData(status, note, velocity));
+            } else {
+                qWarning() << "Buffer underflow in DeviceChannelListener::Process()";
+            }
+            i += 3;
+            break;
+        default:
+            // Handle platter messages and any others that are not 3 bytes
+            QByteArray outArray((char*)pBuffer,uBufferSize);
+            emit(incomingData(outArray));
+            i = uBufferSize;
+            break;
         }
     }
 }
@@ -61,9 +61,9 @@ void DeviceChannelListener::Reconnected() {
 
 Hss1394Controller::Hss1394Controller(const hss1394::TNodeInfo deviceInfo,
                                      int deviceIndex)
-        : MidiController(),
-          m_deviceInfo(deviceInfo),
-          m_iDeviceIndex(deviceIndex) {
+    : MidiController(),
+      m_deviceInfo(deviceInfo),
+      m_iDeviceIndex(deviceIndex) {
     // Note: We prepend the input stream's index to the device's name to prevent
     // duplicate devices from causing mayhem.
     //setDeviceName(QString("H%1. %2").arg(QString::number(m_iDeviceIndex), QString(deviceInfo.sName.c_str())));
@@ -170,9 +170,9 @@ void Hss1394Controller::sendWord(unsigned int word) {
     data[2] = (word >> 16) & 0xFF;
 
     QString message = QString("%1 %2 %3").arg(
-        QString("%1").arg(data[0], 2, 16, QChar('0')),
-        QString("%1").arg(data[1], 2, 16, QChar('0')),
-        QString("%1").arg(data[2], 2, 16, QChar('0')));
+                          QString("%1").arg(data[0], 2, 16, QChar('0')),
+                          QString("%1").arg(data[1], 2, 16, QChar('0')),
+                          QString("%1").arg(data[2], 2, 16, QChar('0')));
 
     int bytesSent = m_pChannel->SendChannelBytes(data, 3);
 
@@ -184,7 +184,7 @@ void Hss1394Controller::sendWord(unsigned int word) {
 
 void Hss1394Controller::send(QByteArray data) {
     int bytesSent = m_pChannel->SendChannelBytes(
-        (unsigned char*)data.constData(), data.size());
+                        (unsigned char*)data.constData(), data.size());
 
     //if (bytesSent != length) {
     //    qDebug()<<"ERROR: Sent" << bytesSent << "of" << length << "bytes (SysEx)";

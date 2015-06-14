@@ -29,32 +29,32 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
                              ConfigObject<ConfigValue>* pConfig,
                              PlayerManagerInterface* pPlayerManager,
                              TrackCollection* pTrackCollection)
-        : LibraryFeature(pLibrary),
-          m_pConfig(pConfig),
-          m_pLibrary(pLibrary),
-          m_pTrackCollection(pTrackCollection),
-          m_crateDao(pTrackCollection->getCrateDAO()),
-          m_playlistDao(pTrackCollection->getPlaylistDAO()),
-          m_iAutoDJPlaylistId(-1),
-          m_pAutoDJProcessor(NULL),
-          m_pAutoDJView(NULL)
+    : LibraryFeature(pLibrary),
+      m_pConfig(pConfig),
+      m_pLibrary(pLibrary),
+      m_pTrackCollection(pTrackCollection),
+      m_crateDao(pTrackCollection->getCrateDAO()),
+      m_playlistDao(pTrackCollection->getPlaylistDAO()),
+      m_iAutoDJPlaylistId(-1),
+      m_pAutoDJProcessor(NULL),
+      m_pAutoDJView(NULL)
 #ifdef __AUTODJCRATES__
-          , m_autoDjCratesDao(pTrackCollection->getDatabase(),
-                              pTrackCollection->getTrackDAO(),
-                              pTrackCollection->getCrateDAO(),
-                              pTrackCollection->getPlaylistDAO(),
-                              pConfig)
+      , m_autoDjCratesDao(pTrackCollection->getDatabase(),
+                          pTrackCollection->getTrackDAO(),
+                          pTrackCollection->getCrateDAO(),
+                          pTrackCollection->getPlaylistDAO(),
+                          pConfig)
 #endif // __AUTODJCRATES__
 {
     m_iAutoDJPlaylistId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
     // If the AutoDJ playlist does not exist yet then create it.
     if (m_iAutoDJPlaylistId < 0) {
         m_iAutoDJPlaylistId = m_playlistDao.createPlaylist(
-                AUTODJ_TABLE, PlaylistDAO::PLHT_AUTO_DJ);
+                                  AUTODJ_TABLE, PlaylistDAO::PLHT_AUTO_DJ);
     }
     qRegisterMetaType<AutoDJProcessor::AutoDJState>("AutoDJState");
     m_pAutoDJProcessor = new AutoDJProcessor(
-            this, m_pConfig, pPlayerManager, m_iAutoDJPlaylistId, m_pTrackCollection);
+        this, m_pConfig, pPlayerManager, m_iAutoDJPlaylistId, m_pTrackCollection);
     connect(m_pAutoDJProcessor, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
 
@@ -128,7 +128,7 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
             this,SLOT(slotRandomQueue(int)));
     connect(m_pAutoDJView, SIGNAL(addRandomButton(bool)),
             this, SLOT(slotAddRandomTrack(bool)));
-    
+
 #endif // __AUTODJCRATES__
 }
 
@@ -144,7 +144,7 @@ void AutoDJFeature::activate() {
 }
 
 bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
-    TrackDAO &trackDao = m_pTrackCollection->getTrackDAO();
+    TrackDAO& trackDao = m_pTrackCollection->getTrackDAO();
 
     // If a track is dropped onto a playlist's name, but the track isn't in the
     // library, then add the track to the library before adding it to the
@@ -171,7 +171,7 @@ bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
 
 bool AutoDJFeature::dragMoveAccept(QUrl url) {
     return SoundSourceProxy::isUrlSupported(url) ||
-            Parser::isPlaylistFilenameSupported(url.toLocalFile());
+           Parser::isPlaylistFilenameSupported(url.toLocalFile());
 }
 
 // Add a crate to the auto-DJ queue.
@@ -272,7 +272,7 @@ void AutoDJFeature::slotCrateAutoDjChanged(int crateId, bool added) {
     }
 #endif // __AUTODJCRATES__
 }
-// Adds a random track : this will be faster when there are sufficiently large 
+// Adds a random track : this will be faster when there are sufficiently large
 // tracks in the crates
 
 void AutoDJFeature::slotAddRandomTrack(bool) {
@@ -288,7 +288,7 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
             if (iTrackId != -1) {
                 // Get Track Information
                 TrackPointer addedTrack = (m_pTrackCollection->getTrackDAO()).getTrack(iTrackId);
-                if(addedTrack->exists()) {
+                if (addedTrack->exists()) {
                     playlistDao.appendTrackToPlaylist(iTrackId, m_iAutoDJPlaylistId);
                     m_pAutoDJView->onShow();
                     return;
@@ -306,8 +306,8 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
             iTrackId = m_autoDjCratesDao.getRandomTrackIdFromLibrary(m_iAutoDJPlaylistId);
             if (iTrackId != -1) {
                 TrackPointer addedTrack = m_pTrackCollection->getTrackDAO().getTrack(iTrackId);
-                if(addedTrack->exists()) {
-                    if(!addedTrack->getPlayed()) {
+                if (addedTrack->exists()) {
+                    if (!addedTrack->getPlayed()) {
                         playlistDao.appendTrackToPlaylist(iTrackId, m_iAutoDJPlaylistId);
                         m_pAutoDJView->onShow();
                         return;
@@ -347,9 +347,9 @@ void AutoDJFeature::constructCrateChildModel() {
     // Create a tree-item for each auto-DJ crate.
     for (int row = 0; row < crateListTableModel.rowCount(); ++row) {
         int id = crateListTableModel.data(
-            crateListTableModel.index(row, idColumn)).toInt();
+                     crateListTableModel.index(row, idColumn)).toInt();
         QString name = crateListTableModel.data(
-            crateListTableModel.index(row, nameColumn)).toString();
+                           crateListTableModel.index(row, nameColumn)).toString();
         m_crateList.append(qMakePair(id, name));
 
         // Create the TreeItem for this crate.
@@ -363,7 +363,7 @@ void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
 
-    TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
+    TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
     QString crateName = item->dataPath().toString();
     if (crateName.length() > 0) {
         // A crate was right-clicked.

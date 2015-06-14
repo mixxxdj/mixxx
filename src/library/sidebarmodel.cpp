@@ -9,8 +9,8 @@
 #include "util/assert.h"
 
 SidebarModel::SidebarModel(QObject* parent)
-        : QAbstractItemModel(parent),
-          m_iDefaultSelectedIndex(0) {
+    : QAbstractItemModel(parent),
+      m_iDefaultSelectedIndex(0) {
 }
 
 SidebarModel::~SidebarModel() {
@@ -66,7 +66,7 @@ void SidebarModel::activateDefaultSelection() {
 QModelIndex SidebarModel::index(int row, int column,
                                 const QModelIndex& parent) const {
     // qDebug() << "SidebarModel::index row=" << row
-      //       << "column=" << column << "parent=" << parent.data();
+    //       << "column=" << column << "parent=" << parent.data();
     if (parent.isValid()) {
         /* If we have selected the root of a library feature at position 'row'
          * its internal pointer is the current sidebar object model
@@ -154,9 +154,7 @@ bool SidebarModel::hasChildren(const QModelIndex& parent) const {
     if (parent.isValid()) {
         if (parent.internalPointer() == this) {
             return QAbstractItemModel::hasChildren(parent);
-        }
-        else
-        {
+        } else {
             TreeItem* tree_item = (TreeItem*)parent.internalPointer();
             if (tree_item) {
                 LibraryFeature* feature = tree_item->getFeature();
@@ -237,7 +235,7 @@ void SidebarModel::clicked(const QModelIndex& index) {
 void SidebarModel::doubleClicked(const QModelIndex& index) {
     if (index.isValid()) {
         if (index.internalPointer() == this) {
-           return;
+            return;
         } else {
             TreeItem* tree_item = (TreeItem*)index.internalPointer();
             if (tree_item) {
@@ -254,9 +252,7 @@ void SidebarModel::rightClicked(const QPoint& globalPos, const QModelIndex& inde
         if (index.internalPointer() == this) {
             m_sFeatures[index.row()]->activate();
             m_sFeatures[index.row()]->onRightClick(globalPos);
-        }
-        else
-        {
+        } else {
             TreeItem* tree_item = (TreeItem*)index.internalPointer();
             if (tree_item) {
                 LibraryFeature* feature = tree_item->getFeature();
@@ -320,11 +316,9 @@ QModelIndex SidebarModel::translateSourceIndex(const QModelIndex& index) {
     }
 
     if (index.isValid()) {
-       TreeItem* item = (TreeItem*)index.internalPointer();
-       translatedIndex = createIndex(index.row(), index.column(), item);
-    }
-    else
-    {
+        TreeItem* item = (TreeItem*)index.internalPointer();
+        translatedIndex = createIndex(index.row(), index.column(), item);
+    } else {
         //Comment from Tobias Rafreider --> Dead Code????
 
         for (int i = 0; i < m_sFeatures.size(); ++i) {
@@ -386,7 +380,7 @@ void SidebarModel::slotModelReset() {
  * See RhythmboxFeature for an example, in which the title becomes '(loading) Rhythmbox'
  * If selectFeature is true, the feature is selected when the title change occurs.
  */
-void SidebarModel::slotFeatureIsLoading(LibraryFeature * feature, bool selectFeature) {
+void SidebarModel::slotFeatureIsLoading(LibraryFeature* feature, bool selectFeature) {
     featureRenamed(feature);
     if (selectFeature) {
         slotFeatureSelect(feature);
@@ -396,7 +390,7 @@ void SidebarModel::slotFeatureIsLoading(LibraryFeature * feature, bool selectFea
 /* Tobias: This slot is somewhat redundant but I decided
  * to leave it for code readability reasons
  */
-void SidebarModel::slotFeatureLoadingFinished(LibraryFeature * feature) {
+void SidebarModel::slotFeatureLoadingFinished(LibraryFeature* feature) {
     featureRenamed(feature);
     slotFeatureSelect(feature);
 }

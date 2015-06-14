@@ -4,8 +4,8 @@
 #include "widget/wcombobox.h"
 
 WComboBox::WComboBox(QWidget* pParent)
-        : QComboBox(pParent),
-          WBaseWidget(this) {
+    : QComboBox(pParent),
+      WBaseWidget(this) {
     connect(this, SIGNAL(currentIndexChanged(int)),
             this, SLOT(slotCurrentIndexChanged(int)));
 }
