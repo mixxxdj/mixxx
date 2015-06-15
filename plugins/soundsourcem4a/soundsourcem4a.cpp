@@ -235,42 +235,53 @@ void SoundSourceM4A::restartDecoding(MP4SampleId sampleBlockId) {
 }
 
 SINT SoundSourceM4A::seekSampleFrame(SINT frameIndex) {
+    DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     DEBUG_ASSERT(isValidFrameIndex(frameIndex));
 
-    if (m_curFrameIndex != frameIndex) {
-        MP4SampleId sampleBlockId = kSampleBlockIdMin
-                + (frameIndex / kFramesPerSampleBlock);
-        DEBUG_ASSERT(isValidSampleBlockId(sampleBlockId));
-        if ((frameIndex < m_curFrameIndex) || // seeking backwards?
-                !isValidSampleBlockId(m_curSampleBlockId) || // invalid seek position?
-                (sampleBlockId
-                        > (m_curSampleBlockId + kNumberOfPrefetchSampleBlocks))) { // jumping forward?
-            // Restart decoding one or more blocks of samples backwards
-            // from the calculated starting block to avoid audible glitches.
-            // Implementation note: The type MP4SampleId is unsigned so we
-            // need to be careful when subtracting!
-            if ((kSampleBlockIdMin + kNumberOfPrefetchSampleBlocks)
-                    < sampleBlockId) {
-                sampleBlockId -= kNumberOfPrefetchSampleBlocks;
-            } else {
-                sampleBlockId = kSampleBlockIdMin;
-            }
-            restartDecoding(sampleBlockId);
-            DEBUG_ASSERT(m_curSampleBlockId == sampleBlockId);
+    // Handle trivial case
+    if (m_curFrameIndex == frameIndex) {
+        // Nothing to do
+        return m_curFrameIndex;
+    }
+    // Handle edge case
+    if (getMaxFrameIndex() <= frameIndex) {
+        // EOF reached
+        m_curFrameIndex = getMaxFrameIndex();
+        return m_curFrameIndex;
+    }
+
+    MP4SampleId sampleBlockId = kSampleBlockIdMin
+            + (frameIndex / kFramesPerSampleBlock);
+    DEBUG_ASSERT(isValidSampleBlockId(sampleBlockId));
+    if ((frameIndex < m_curFrameIndex) || // seeking backwards?
+            !isValidSampleBlockId(m_curSampleBlockId) || // invalid seek position?
+            (sampleBlockId
+                    > (m_curSampleBlockId + kNumberOfPrefetchSampleBlocks))) { // jumping forward?
+        // Restart decoding one or more blocks of samples backwards
+        // from the calculated starting block to avoid audible glitches.
+        // Implementation note: The type MP4SampleId is unsigned so we
+        // need to be careful when subtracting!
+        if ((kSampleBlockIdMin + kNumberOfPrefetchSampleBlocks)
+                < sampleBlockId) {
+            sampleBlockId -= kNumberOfPrefetchSampleBlocks;
+        } else {
+            sampleBlockId = kSampleBlockIdMin;
         }
-        // Decoding starts before the actual target position
-        DEBUG_ASSERT(m_curFrameIndex <= frameIndex);
-        // Prefetch (decode and discard) all samples up to the target position
-        const SINT prefetchFrameCount = frameIndex - m_curFrameIndex;
-        const SINT skipFrameCount =
-                skipSampleFrames(prefetchFrameCount);
-        DEBUG_ASSERT(skipFrameCount <= prefetchFrameCount);
-        if (skipFrameCount != prefetchFrameCount) {
-            qWarning()
-                    << "Failed to skip over prefetched sample frames after seeking @"
-                    << m_curFrameIndex;
-            return m_curFrameIndex; // abort
-        }
+        restartDecoding(sampleBlockId);
+        DEBUG_ASSERT(m_curSampleBlockId == sampleBlockId);
+    }
+    // Decoding starts before the actual target position
+    DEBUG_ASSERT(m_curFrameIndex <= frameIndex);
+    // Prefetch (decode and discard) all samples up to the target position
+    const SINT prefetchFrameCount = frameIndex - m_curFrameIndex;
+    const SINT skipFrameCount =
+            skipSampleFrames(prefetchFrameCount);
+    DEBUG_ASSERT(skipFrameCount <= prefetchFrameCount);
+    if (skipFrameCount != prefetchFrameCount) {
+        qWarning()
+                << "Failed to skip over prefetched sample frames after seeking @"
+                << m_curFrameIndex;
+        return m_curFrameIndex; // abort
     }
     DEBUG_ASSERT(m_curFrameIndex == frameIndex);
     return m_curFrameIndex;
