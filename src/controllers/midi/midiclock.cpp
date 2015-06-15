@@ -56,8 +56,8 @@ void MidiClock::tick() {
         if (m_iFilled < kRingBufferSize) {
             earlyTickTime = m_iTickRingBuffer[0];
         } else {
-            // In a filled ring buffer, the earliest tick is the next one that will
-            // get filled.
+            // In a filled ring buffer, the earliest tick is the next one that
+            // will get filled.
             earlyTickTime = m_iTickRingBuffer[m_iRingBufferPos];
         }
         m_dBpm = calcBpm(earlyTickTime, lastTickTime, m_iFilled);

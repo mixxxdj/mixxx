@@ -43,12 +43,13 @@ class MidiClock {
     bool handleMessage(unsigned char status);
 
     // Signals MIDI Start Sequence.  The MidiClock will reset its beat
-    // percentage to 0.
+    // percentage to 0, but the bpm value will be seeded with the last recorded
+    // value.
     void start();
 
     // Signals MIDI Stop Sequence.  The MidiClock will stop updating its beat
-    // precentage.  Subsequent calls to beatPercentage will be based on the last
-    // recorded beat time and last reported bpm.
+    // precentage.  Subsequent calls to beatPercentage will return valid results
+    // based on the last recorded beat time and last reported bpm.
     void stop();
 
     // Signals MIDI Timing Clock.  The timing between ticks will be used to

@@ -23,6 +23,7 @@ MidiController::MidiController()
     m_pClockBpm.reset(new ControlObjectSlave("[MidiClock]", "bpm"));
     m_pClockLastBeat.reset(
             new ControlObjectSlave("[MidiClock]", "last_beat_time"));
+    m_pClockRunning.reset(new ControlObjectSlave("[MidiClock]", "play"));
 }
 
 MidiController::~MidiController() {
@@ -259,10 +260,12 @@ void MidiController::receive(unsigned char status, unsigned char control,
         qDebug() << formatMidiMessage(status, control, value, channel, opCode);
     }
 
-    // If midiclock handles the message, no further action is needed.
+    // If midiclock handles the message, record the updated values and
+    // no further action is needed.
     if (m_midiClock.handleMessage(status)) {
         m_pClockBpm->set(m_midiClock.bpm());
         m_pClockLastBeat->set(m_midiClock.lastBeatTime());
+        m_pClockRunning->set(static_cast<double>(m_midiClock.running()));
         return;
     }
 

@@ -13,17 +13,19 @@ MidiMasterClock::MidiMasterClock(const char* pGroup, SyncableListener* pEngineSy
         : m_group(pGroup),
           m_pEngineSync(pEngineSync),
           m_mode(SYNC_NONE) {
-    qDebug() << "MIDI MASTER CLOCK constructor";
     m_pMidiClockBpm.reset(new ControlObject(ConfigKey(pGroup, "bpm")));
     m_pMidiClockLastBeatTime.reset(
             new ControlObject(ConfigKey(pGroup, "last_beat_time")));
 
+    m_pMidiClockRunning.reset(
+            new ControlPushButton(ConfigKey(pGroup, "play")));
+
     m_pSyncMasterEnabled.reset(
-        new ControlPushButton(ConfigKey(pGroup, "sync_master")));
+            new ControlPushButton(ConfigKey(pGroup, "sync_master")));
     m_pSyncMasterEnabled->setButtonMode(ControlPushButton::TOGGLE);
     m_pSyncMasterEnabled->connectValueChangeRequest(
-        this, SLOT(slotSyncMasterEnabledChangeRequest(double)),
-        Qt::DirectConnection);
+            this, SLOT(slotSyncMasterEnabledChangeRequest(double)),
+            Qt::DirectConnection);
 }
 
 MidiMasterClock::~MidiMasterClock() {
@@ -42,7 +44,7 @@ void MidiMasterClock::notifyOnlyPlayingSyncable() {
 
 void MidiMasterClock::requestSyncPhase() {
     // TODO: maybe tell midiclock to reset which tick is the beat tick??
-    // but really, it's in charge.
+    // but really, it's a read-only clock.
 }
 
 void MidiMasterClock::slotSyncMasterEnabledChangeRequest(double state) {
@@ -62,40 +64,40 @@ void MidiMasterClock::slotSyncMasterEnabledChangeRequest(double state) {
 
 double MidiMasterClock::getBeatDistance() const {
     qint64 last_beat = static_cast<qint64>(m_pMidiClockLastBeatTime->get());
-//    qDebug() << "midi beat dist " << MidiClock::beatPercentage(last_beat, Time::elapsed(),
-//                                     m_pMidiClockBpm->get());
     return MidiClock::beatPercentage(last_beat, Time::elapsed(),
                                      m_pMidiClockBpm->get());
 }
 
 void MidiMasterClock::setMasterBeatDistance(double beatDistance) {
-    // no can do boss.
+    // Midi master is read-only.
     Q_UNUSED(beatDistance);
 }
 
 double MidiMasterClock::getBaseBpm() const {
-//    qDebug() << "base bpm??" << m_pMidiClockBpm->get();
     return m_pMidiClockBpm->get();
 }
 
 void MidiMasterClock::setMasterBaseBpm(double bpm) {
+    // Midi master is read-only.
     Q_UNUSED(bpm)
 }
 
 double MidiMasterClock::getBpm() const {
-//    qDebug() << "bpm??" << m_pMidiClockBpm->get();
     return m_pMidiClockBpm->get();
 }
 
 void MidiMasterClock::setMasterBpm(double bpm) {
+    // Midi master is read-only.
     Q_UNUSED(bpm);
 }
 
 void MidiMasterClock::setInstantaneousBpm(double bpm) {
+    // Midi master is read-only.
     Q_UNUSED(bpm);
 }
 
 void MidiMasterClock::setMasterParams(double beatDistance, double baseBpm, double bpm) {
+    // Midi master is read-only.
     Q_UNUSED(beatDistance);
     Q_UNUSED(baseBpm);
     Q_UNUSED(bpm);

@@ -61,6 +61,8 @@ class MidiMasterClock : public QObject, public Clock, public Syncable {
 
     QScopedPointer<ControlObject> m_pMidiClockBpm;
     QScopedPointer<ControlObject> m_pMidiClockLastBeatTime;
+    // Indicates if the midi clock is active or stopped.
+    QScopedPointer<ControlPushButton> m_pMidiClockRunning;
 
     SyncMode m_mode;
 };

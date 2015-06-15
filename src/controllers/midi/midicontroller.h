@@ -109,6 +109,7 @@ class MidiController : public Controller {
     MidiClock m_midiClock;
     QScopedPointer<ControlObjectSlave> m_pClockBpm;
     QScopedPointer<ControlObjectSlave> m_pClockLastBeat;
+    QScopedPointer<ControlObjectSlave> m_pClockRunning;
 
     // So it can access sendShortMsg()
     friend class MidiOutputHandler;
