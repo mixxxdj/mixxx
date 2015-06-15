@@ -11,13 +11,18 @@
 #include "controllers/midi/midiutils.h"
 #include "controllers/defs_controllers.h"
 #include "controlobject.h"
+#include "controlobjectslave.h"
 #include "errordialoghandler.h"
 #include "playermanager.h"
 #include "util/math.h"
 
 MidiController::MidiController()
-        : Controller() {
+        : Controller(), m_midiClock(&m_mixxxClock) {
     setDeviceCategory(tr("MIDI Controller"));
+    qDebug() << "MIDI CONTROLLER CONSTRUCTOR";
+    m_pClockBpm.reset(new ControlObjectSlave("[MidiClock]", "bpm"));
+    m_pClockLastBeat.reset(
+            new ControlObjectSlave("[MidiClock]", "last_beat_time"));
 }
 
 MidiController::~MidiController() {
@@ -254,6 +259,12 @@ void MidiController::receive(unsigned char status, unsigned char control,
         qDebug() << formatMidiMessage(status, control, value, channel, opCode);
     }
 
+    // If midiclock handles the message, no further action is needed.
+    if (m_midiClock.handleMessage(status)) {
+        m_pClockBpm->set(m_midiClock.bpm());
+        m_pClockLastBeat->set(m_midiClock.lastBeatTime());
+        return;
+    }
 
     MidiKey mappingKey(status, control);
 

@@ -4,8 +4,9 @@
 #include "engine/sync/syncable.h"
 #include "configobject.h"
 
-class InternalClock;
 class EngineChannel;
+class InternalClock;
+class MidiMasterClock;
 
 class BaseSyncableListener : public SyncableListener {
   public:
@@ -88,6 +89,8 @@ class BaseSyncableListener : public SyncableListener {
     ConfigObject<ConfigValue>* m_pConfig;
     // The InternalClock syncable.
     InternalClock* m_pInternalClock;
+    // Midi master clock.
+    MidiMasterClock* m_pMidiClock;
     // The current Syncable that is the master.
     Syncable* m_pMasterSyncable;
     // The list of all Syncables registered with BaseSyncableListener via

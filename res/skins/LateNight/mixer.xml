@@ -16,7 +16,7 @@
                      <Layout>horizontal</Layout>
                      <SizePolicy>me,max</SizePolicy>
                      <Children>
-                           <!-- <WidgetGroup>
+                           <WidgetGroup>
                               <ObjectName>MasterSync</ObjectName>
                               <SizePolicy>f,me</SizePolicy>
                               <Size>50,</Size>
@@ -38,7 +38,7 @@
                                       </State>
                                       <Pos>4,4</Pos>
                                       <Connection>
-                                          <ConfigKey>[InternalClock],sync_master</ConfigKey>
+                                          <ConfigKey>[MidiClock],sync_master</ConfigKey>
                                           <ButtonState>LeftButton</ButtonState>
                                       </Connection>
                                   </PushButton>
@@ -54,11 +54,11 @@
                                       <Channel>1</Channel>
                                       <NumberOfDigits>2</NumberOfDigits>
                                       <Connection>
-                                          <ConfigKey>[InternalClock],bpm</ConfigKey>
+                                          <ConfigKey>[MidiClock],bpm</ConfigKey>
                                       </Connection>
                                   </NumberBpm>
                               </Children>
-                          </WidgetGroup> -->
+                          </WidgetGroup>
         		          <WidgetGroup>
         	                <ObjectName>MixerLeftMargin</ObjectName>
         	                <Layout>horizontal</Layout>

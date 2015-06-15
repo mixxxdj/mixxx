@@ -14,11 +14,14 @@
 #define MIDICONTROLLER_H
 
 #include "controllers/controller.h"
+#include "controllers/midi/midiclock.h"
 #include "controllers/midi/midicontrollerpreset.h"
 #include "controllers/midi/midicontrollerpresetfilehandler.h"
 #include "controllers/midi/midimessage.h"
 #include "controllers/midi/midioutputhandler.h"
 #include "controllers/softtakeover.h"
+
+class ControlObjectSlave;
 
 class MidiController : public Controller {
     Q_OBJECT
@@ -102,6 +105,10 @@ class MidiController : public Controller {
     MidiControllerPreset m_preset;
     SoftTakeoverCtrl m_st;
     QList<QPair<MidiInputMapping, unsigned char> > m_fourteen_bit_queued_mappings;
+    MixxxClock m_mixxxClock;
+    MidiClock m_midiClock;
+    QScopedPointer<ControlObjectSlave> m_pClockBpm;
+    QScopedPointer<ControlObjectSlave> m_pClockLastBeat;
 
     // So it can access sendShortMsg()
     friend class MidiOutputHandler;

@@ -35,11 +35,14 @@ TEST_F(MidiClockTest, SimpleTest) {
     m_pMidiClock->start();
 
     // Nanos per tick for 124 bpm midi ticks:
-    //     60secs per min / 124bpm / 24 tpb * 1e9 nps
+    //     60secs per min / 124bpm / kPulsesPerQuarter tpb * 1e9 nps
     // tpb = ticks per beat
     // nps = nanos per second
-    const double nanos_per_tick = 20161290.322580643;
-    for (double t = 0; t < 60; ++t) {
+    const double nanos_per_tick =
+            60.0 / 124 / MidiClock::kPulsesPerQuarter * 1e9;
+    // This test should end before the ringbuffer is exhausted and not on
+    // a beat.
+    for (double t = 0; t < MidiClock::kPulsesPerQuarter * 2.5; ++t) {
         m_pFakeClock->setTime(static_cast<qint64>(t * nanos_per_tick));
         m_pMidiClock->tick();
     }
@@ -50,13 +53,14 @@ TEST_F(MidiClockTest, SimpleTest) {
 }
 
 TEST_F(MidiClockTest, RingBufferTest) {
-    // Same test, but more ticks to test the ringbuffer
-
     m_pMidiClock->start();
 
     // Nanos per tick for 124 bpm midi ticks.
-    const double nanos_per_tick = 20161290.322580643;
-    for (double t = 0; t < 144; ++t) {
+    const double nanos_per_tick =
+            60.0 / 124 / MidiClock::kPulsesPerQuarter * 1e9;
+    // This test should exhaust the ringbuffer at least once, and end on
+    // a beat.
+    for (double t = 0; t < MidiClock::kPulsesPerQuarter * 6; ++t) {
         m_pFakeClock->setTime(static_cast<qint64>(t * nanos_per_tick));
         m_pMidiClock->tick();
     }

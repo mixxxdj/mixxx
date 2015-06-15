@@ -1,5 +1,22 @@
 #include "controllers/midi/midiclock.h"
+#include "controllers/midi/midimessage.h"
 #include "util/math.h"
+
+bool MidiClock::handleMessage(unsigned char status) {
+    switch (status) {
+    case MIDI_START:
+        start();
+        return true;
+    case MIDI_STOP:
+        stop();
+        return true;
+    case MIDI_TIMING_CLK:
+        tick();
+        return true;
+    default:
+        return false;
+    }
+}
 
 void MidiClock::start() {
     m_bRunning = true;
@@ -10,9 +27,9 @@ void MidiClock::start() {
 void MidiClock::stop() {
     m_bRunning = false;
     // if we stop and don't clear the buffer, ticks will be way off.
-    // but also, if we start over the bpm will be weird at the begging, right?
+    // but also, if we start over the bpm will be weird at the beginning, right?
     // maybe that's a TODO for now
-    // maybe use previous bpm to inform new bpm??
+    // maybe use previous bpm until we have a new bpm?
 }
 
 void MidiClock::tick() {
@@ -33,7 +50,7 @@ void MidiClock::tick() {
     }
 
     // If this tick is a beat mark, record it, even if we have very few samples.
-    if (m_iRingBufferPos % 24 == 0) {
+    if (m_iRingBufferPos % kPulsesPerQuarter == 0) {
         m_iLastBeatTime = lastTickTime;
     }
 
@@ -63,7 +80,9 @@ double MidiClock::calcBpm(qint64 early_tick, qint64 late_tick) const {
     const double elapsed_mins =
             static_cast<double>(late_tick - early_tick) / (60.0 * 1e9);
 
-    return static_cast<double>(m_iFilled - 1) / 24.0 / elapsed_mins;
+    // We subtract one since two time values denote a single span of time --
+    // so a filled value of 3 indicates 2 tick periods, etc.
+    return static_cast<double>(m_iFilled - 1) / kPulsesPerQuarter / elapsed_mins;
 }
 
 double MidiClock::bpm() const {
@@ -75,16 +94,20 @@ double MidiClock::beatPercentage() const {
         // If we aren't running we can't produce a reliable percentage.
         return 0.0;
     }
-
     // Due to threading, last beat time and bpm may be based on different
     // values, but that shouldn't cause large amounts of error.
+    return beatPercentage(m_iLastBeatTime, m_pClock->now(),
+                          (static_cast<double>(m_aiBpm) / kFixedPrecision));
+}
 
-    const qint64 last_beat = m_iLastBeatTime;
-    const qint64 now = m_pClock->now();
-
-    // 60 seconds per bpm = seconds per beat.
-    const double beat_length =
-            60.0 / (static_cast<double>(m_aiBpm) / kFixedPrecision);
+// static
+double MidiClock::beatPercentage(const qint64 last_beat, const qint64 now,
+                                 const double bpm) {
+    // Get seconds per beat.
+    const double beat_length = 60.0 / bpm;
     // seconds / secondsperbeat = percentage of beat.
-    return static_cast<double>(now - last_beat) / 1e9 / beat_length;
+    const double beat_percent = static_cast<double>(now - last_beat) / 1e9 / beat_length;
+    // Callers don't know if we're running or not, but we can still generate
+    // a valid distance, right?
+    return beat_percent - floor(beat_percent);
 }

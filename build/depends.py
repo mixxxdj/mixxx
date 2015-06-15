@@ -580,6 +580,7 @@ class MixxxCore(Feature):
                    "engine/sync/enginesync.cpp",
                    "engine/sync/synccontrol.cpp",
                    "engine/sync/internalclock.cpp",
+                   "engine/sync/midimaster.cpp",
 
                    "engine/engineworker.cpp",
                    "engine/engineworkerscheduler.cpp",
