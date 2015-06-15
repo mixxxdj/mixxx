@@ -19,13 +19,12 @@ class MixxxClock : public MockableClock {
     }
 };
 
-// MidiClock will be accessed from two threads.  One, the MIDI thread, will call
-// start, stop, and tick.  The other, the engine thread, will call
-// beatPercentage on every buffer to determine where the midi clock is.
-
-// Bpm and beat percentage are stored as atomic integers for lock-free design.
-// The reduction in floating point precision does not affect internal state, and
-// is more than precise enough for midi (which is notoriously drifty).
+// MidiClock is not thread-safe, but is thread compatible using ControlObjects.
+// The MIDI thread will make calls into MidiClock and then update two Control
+// Objects with the current reported BPM and last beat time.  The engine thread
+// can use those values to call a static function to calculate beat percentage
+// at any time in the future.  Time values are in nanoseconds for compatibility
+// with Time::elapsed().
 class MidiClock {
   public:
     // The number of midi ticks per quarter note (1 beat in 4/4 time).
@@ -35,7 +34,6 @@ class MidiClock {
     // Some of the tests use the ring buffer size, so keep those test in sync
     // with this constant.
     static const int kRingBufferSize = kPulsesPerQuarter * 4;
-    static const int kFixedPrecision = 1e5;  // 5 decimal places.
 
   public:
     // Injectable clock for testing.  Does not take ownership of the clock.
@@ -49,7 +47,8 @@ class MidiClock {
     void start();
 
     // Signals MIDI Stop Sequence.  The MidiClock will stop updating its beat
-    // precentage.
+    // precentage.  Subsequent calls to beatPercentage will be based on the last
+    // recorded beat time and last reported bpm.
     void stop();
 
     // Signals MIDI Timing Clock.  The timing between ticks will be used to
@@ -57,41 +56,51 @@ class MidiClock {
     void tick();
 
     // Return the current BPM.  Values are significant to 5 decimal places.
-    double bpm() const;
+    double bpm() const {
+        return m_dBpm;
+    }
 
     // Return the time of the last beat;
     qint64 lastBeatTime() const {
         return m_iLastBeatTime;
     }
 
-    // Return the instantaneous beat percentage.  Static so that the
-    // SyncableListener can get beat percentage on-demand.
-    double beatPercentage() const;
-
-    // Static convenience function for SyncableListener which uses
-    // ControlObjects to get last_beat and bpm.
+    // Calculate instantaneous beat percentage based on provided values.  If
+    // the beat percentage is >= 1.0, the integer value will be sliced off until
+    // the result is between 0 <= x < 1.0.  Can be called from any thread
+    // since it's static.
     static double beatPercentage(const qint64 last_beat, const qint64 now,
                                  const double bpm);
+
+    // Convenience function for callers that have access to the MidiClock
+    // object.  Returns the instantaneous beat percentage.  This should only be
+    // called from the same thread that makes calls to tick().
+    double beatPercentage() const;
+
 
     // Returns true if the clock is running.  A master sync listener should
     // always call this to make sure that the beatpercentage and bpm are
     // valid.
     bool running() const {
-        return static_cast<bool>(m_bRunning);
+        return m_bRunning;
     }
 
   private:
-    double calcBpm(qint64 early_tick, qint64 late_tick) const;
+    // Calculate the bpm based on the
+    static double calcBpm(
+            qint64 early_tick, qint64 late_tick, int tick_count);
+
+    bool m_bRunning = false;
+    // It's a hack to say 124 all over the source, but it provides a sane
+    // baseline in case the midi device is already running when Mixxx starts up.
+    double m_dBpm = 124.0;
+    qint64 m_iLastBeatTime = 0;
 
     MockableClock* m_pClock;
 
-    QAtomicInt m_bRunning = false;
     qint64 m_iTickRingBuffer[kRingBufferSize];
-    qint64 m_iLastBeatTime = 0;
     int m_iRingBufferPos = 0;
     int m_iFilled = 0;
-
-    QAtomicInt m_aiBpm = 0.0;
 };
 
 
