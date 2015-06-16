@@ -167,6 +167,7 @@ class MockedEngineBackendTest : public MixxxTest {
     static const char* m_sGroup3;
     static const char* m_sMasterGroup;
     static const char* m_sInternalClockGroup;
+    static const char* m_sMidiClockGroup;
     static const char* m_sPreviewGroup;
     static const char* m_sSamplerGroup;
     static const double kDefaultRateRange;

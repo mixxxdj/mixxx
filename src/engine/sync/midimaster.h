@@ -9,6 +9,7 @@
 #include "engine/sync/syncable.h"
 #include "engine/enginechannel.h"
 
+class ControlLinPotmeter;
 class ControlObject;
 class ControlPushButton;
 class EngineSync;
@@ -61,8 +62,12 @@ class MidiMasterClock : public QObject, public Clock, public Syncable {
 
     QScopedPointer<ControlObject> m_pMidiClockBpm;
     QScopedPointer<ControlObject> m_pMidiClockLastBeatTime;
+    QScopedPointer<ControlObject> m_pMidiClockBeatDistance;
     // Indicates if the midi clock is active or stopped.
     QScopedPointer<ControlPushButton> m_pMidiClockRunning;
+    // Since there may be differences in latency between other midi devices and
+    // Mixxx, allow for manual adjustment of the beat percentage value.
+    QScopedPointer<ControlLinPotmeter> m_pMidiClockSyncAdjust;
 
     SyncMode m_mode;
 };

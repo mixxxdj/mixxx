@@ -2,6 +2,7 @@
 
 const char* MockedEngineBackendTest::m_sMasterGroup = "[Master]";
 const char* MockedEngineBackendTest::m_sInternalClockGroup = "[InternalClock]";
+const char* MockedEngineBackendTest::m_sMidiClockGroup = "[MidiClock]";
 // these names need to match PlayerManager::groupForDeck and friends
 const char* MockedEngineBackendTest::m_sGroup1 = "[Channel1]";
 const char* MockedEngineBackendTest::m_sGroup2 = "[Channel2]";

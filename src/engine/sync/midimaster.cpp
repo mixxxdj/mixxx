@@ -4,6 +4,7 @@
 
 #include "engine/sync/enginesync.h"
 #include "controllers/midi/midiclock.h"
+#include "controllinpotmeter.h"
 #include "controlobject.h"
 #include "controlpushbutton.h"
 #include "configobject.h"
@@ -16,6 +17,8 @@ MidiMasterClock::MidiMasterClock(const char* pGroup, SyncableListener* pEngineSy
     m_pMidiClockBpm.reset(new ControlObject(ConfigKey(pGroup, "bpm")));
     m_pMidiClockLastBeatTime.reset(
             new ControlObject(ConfigKey(pGroup, "last_beat_time")));
+    m_pMidiClockBeatDistance.reset(
+            new ControlObject(ConfigKey(pGroup, "beat_distance")));
 
     m_pMidiClockRunning.reset(
             new ControlPushButton(ConfigKey(pGroup, "play")));
@@ -26,6 +29,10 @@ MidiMasterClock::MidiMasterClock(const char* pGroup, SyncableListener* pEngineSy
     m_pSyncMasterEnabled->connectValueChangeRequest(
             this, SLOT(slotSyncMasterEnabledChangeRequest(double)),
             Qt::DirectConnection);
+
+    m_pMidiClockSyncAdjust.reset(
+            new ControlLinPotmeter(ConfigKey(pGroup, "sync_adjust"), -.5, .5,
+                                   0.1, 0.01, /*allow oob*/ true));
 }
 
 MidiMasterClock::~MidiMasterClock() {
@@ -64,8 +71,11 @@ void MidiMasterClock::slotSyncMasterEnabledChangeRequest(double state) {
 
 double MidiMasterClock::getBeatDistance() const {
     qint64 last_beat = static_cast<qint64>(m_pMidiClockLastBeatTime->get());
-    return MidiClock::beatPercentage(last_beat, Time::elapsed(),
-                                     m_pMidiClockBpm->get());
+    double raw_percent = MidiClock::beatPercentage(last_beat, Time::elapsed(),
+                                                   m_pMidiClockBpm->get());
+    raw_percent += m_pMidiClockSyncAdjust->get();
+    // Fix beat loop-around.
+    return raw_percent - floor(raw_percent);
 }
 
 void MidiMasterClock::setMasterBeatDistance(double beatDistance) {
@@ -112,6 +122,8 @@ void MidiMasterClock::onCallbackStart(int sampleRate, int bufferSize) {
 void MidiMasterClock::onCallbackEnd(int sampleRate, int bufferSize) {
     Q_UNUSED(sampleRate)
     Q_UNUSED(bufferSize)
-    m_pEngineSync->notifyBeatDistanceChanged(this, getBeatDistance());
+    double beat_distance = getBeatDistance();
+    m_pMidiClockBeatDistance->set(beat_distance);
+    m_pEngineSync->notifyBeatDistanceChanged(this, beat_distance);
 }
 

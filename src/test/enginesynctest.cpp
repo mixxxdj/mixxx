@@ -29,12 +29,12 @@ class EngineSyncTest : public MockedEngineBackendTest {
         return "";
     }
     void assertIsMaster(QString group) {
-        if (group == m_sInternalClockGroup) {
+        if (group == m_sInternalClockGroup || group == m_sMidiClockGroup) {
             ASSERT_EQ(1,
-                      ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
+                      ControlObject::getControl(ConfigKey(group,
                                                           "sync_master"))->get());
             ASSERT_EQ(NULL, m_pEngineSync->getMaster());
-            ASSERT_EQ(m_sInternalClockGroup, getMasterGroup());
+            ASSERT_EQ(group.toStdString(), getMasterGroup());
         } else {
             if (group == m_sGroup1) {
                 ASSERT_EQ(m_pChannel1, m_pEngineSync->getMaster());
@@ -55,9 +55,9 @@ class EngineSyncTest : public MockedEngineBackendTest {
     }
 
     void assertSyncOff(QString group) {
-        if (group == m_sInternalClockGroup) {
+        if (group == m_sInternalClockGroup || group == m_sMidiClockGroup) {
             ASSERT_EQ(0,
-                      ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
+                      ControlObject::getControl(ConfigKey(group,
                                                           "sync_master"))->get());
         } else {
             ASSERT_EQ(SYNC_NONE, ControlObject::getControl(ConfigKey(group, "sync_mode"))->get());
@@ -246,6 +246,33 @@ TEST_F(EngineSyncTest, InternalMasterSetSlaveSliderMoves) {
                     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
     EXPECT_FLOAT_EQ(100.0, ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
 }
+
+TEST_F(EngineSyncTest, MidiClockMasterSetSlaveSliderMoves) {
+    // TODO: refactor this with the test above -- but we have to be careful to
+    // reset state between passes.
+    // If midi clock is master, and we turn on a slave, the slider should move.
+    QScopedPointer<ControlObjectThread> pButtonMasterSyncMidi(getControlObjectThread(
+            ConfigKey(m_sMidiClockGroup, "sync_master")));
+    pButtonMasterSyncMidi->slotSet(1);
+    QScopedPointer<ControlObjectThread> pMasterSyncSlider(getControlObjectThread(
+            ConfigKey(m_sMidiClockGroup, "bpm")));
+    pMasterSyncSlider->set(100.0);
+
+    // Set the file bpm of channel 1 to 160bpm.
+    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
+        ConfigKey(m_sGroup1, "file_bpm")));
+    pFileBpm1->set(80.0);
+
+    QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
+            ConfigKey(m_sGroup1, "sync_mode")));
+    pButtonMasterSync1->slotSet(SYNC_FOLLOWER);
+    ProcessBuffer();
+
+    EXPECT_FLOAT_EQ(getRateSliderValue(1.25),
+                    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
+    EXPECT_FLOAT_EQ(100.0, ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+}
+
 
 TEST_F(EngineSyncTest, AnySyncDeckSliderStays) {
     // If there exists a sync deck, even if it's not playing, don't change the
@@ -812,6 +839,25 @@ TEST_F(EngineSyncTest, EnableOneDeckSliderUpdates) {
     // Internal clock rate should be set.
     EXPECT_FLOAT_EQ(130.0,
                     ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+}
+
+TEST_F(EngineSyncTest, EnableMidiSliderUpdates) {
+    // If we enable midi to be master, the internal slider should immediately update.
+    QScopedPointer<ControlObjectThread> pButtonMidiSyncMaster(getControlObjectThread(
+            ConfigKey(m_sMidiClockGroup, "sync_master")));
+    ControlObject::getControl(ConfigKey(m_sMidiClockGroup, "bpm"))->set(132.0);
+
+    // Set midi to sync master.
+    pButtonMidiSyncMaster->slotSet(1.0);
+    ProcessBuffer();
+
+    // Midi should still be master.
+    assertIsMaster(m_sMidiClockGroup);
+
+    // Internal clock rate should be set.
+    EXPECT_FLOAT_EQ(132.0,
+                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
+                                                        "bpm"))->get());
 }
 
 TEST_F(EngineSyncTest, SyncToNonSyncDeck) {
