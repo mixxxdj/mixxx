@@ -200,6 +200,16 @@ class Qt(Dependence):
             qt_modules.extend(['QtWidgets', 'QtConcurrent'])
         return qt_modules
 
+    @staticmethod
+    def enabled_imageformats(build):
+        qt5 = Qt.qt5_enabled(build)
+        qt_imageformats = [
+            'qgif', 'qico', 'qjpeg',  'qmng', 'qtga', 'qtiff', 'qsvg'
+        ]
+        if qt5:
+            qt_imageformats.extend(['qdds', 'qicns', 'qjp2', 'qwbmp', 'qwebp'])
+        return qt_imageformats
+
     def satisfy(self):
         pass
 
@@ -1161,6 +1171,7 @@ class MixxxCore(Feature):
         build.env.Append(CPPPATH=['.'])
 
         # Set up flags for config/track listing files
+        # SETTINGS_PATH not needed for windows and MacOSX because we now use QDesktopServices::storageLocation(QDesktopServices::DataLocation)
         if build.platform_is_linux or \
                 build.platform_is_bsd:
             mixxx_files = [
@@ -1168,11 +1179,9 @@ class MixxxCore(Feature):
                 ('SETTINGS_FILE', 'mixxx.cfg')]
         elif build.platform_is_osx:
             mixxx_files = [
-                ('SETTINGS_PATH', 'Library/Application Support/Mixxx/'),
                 ('SETTINGS_FILE', 'mixxx.cfg')]
         elif build.platform_is_windows:
             mixxx_files = [
-                ('SETTINGS_PATH', 'Local Settings/Application Data/Mixxx/'),
                 ('SETTINGS_FILE', 'mixxx.cfg')]
 
         # Escape the filenames so they don't end up getting screwed up in the

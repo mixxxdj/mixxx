@@ -180,9 +180,6 @@ EngineBuffer::EngineBuffer(QString group, ConfigObject<ConfigValue>* _config,
             this, SLOT(slotControlSlip(double)),
             Qt::DirectConnection);
 
-    // Actual rate (used in visuals, not for control)
-    m_rateEngine = new ControlObject(ConfigKey(m_group, "rateEngine"));
-
     // BPM to display in the UI (updated more slowly than the actual bpm)
     m_visualBpm = new ControlObject(ConfigKey(m_group, "visual_bpm"));
     m_visualKey = new ControlObject(ConfigKey(m_group, "visual_key"));
@@ -319,7 +316,6 @@ EngineBuffer::~EngineBuffer() {
     delete m_startButton;
     delete m_endButton;
     delete m_stopButton;
-    delete m_rateEngine;
     delete m_playposSlider;
     delete m_visualBpm;
     delete m_visualKey;
@@ -1283,14 +1279,10 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
         m_iSamplesCalculated = 0;
     }
 
-    if (speed != m_rateEngine->get()) {
-        m_rateEngine->set(speed);
-    }
-
     // Update visual control object, this needs to be done more often than the
     // playpos slider
-    m_visualPlayPos->set(fFractionalPlaypos, speed,
-            (double)iBufferSize/m_trackSamplesOld,
+    m_visualPlayPos->set(fFractionalPlaypos, speed * m_baserate_old,
+            (double)iBufferSize / m_trackSamplesOld,
             fractionalPlayposFromAbsolute(m_dSlipPosition));
 }
 

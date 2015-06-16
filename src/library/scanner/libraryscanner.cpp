@@ -30,6 +30,7 @@
 #include "util/file.h"
 #include "util/timer.h"
 #include "library/scanner/scannerutil.h"
+#include "upgrade.h"
 
 // TODO(rryan) make configurable
 const int kScannerThreadPoolSize = 1;
@@ -187,9 +188,8 @@ void LibraryScanner::slotStartScan() {
     // Try to upgrade the library from 1.7 (XML) to 1.8+ (DB) if needed. If the
     // upgrade_filename already exists, then do not try to upgrade since we have
     // already done it.
-    // TODO(XXX) SETTINGS_PATH may change in new Mixxx Versions. Here we need
-    // the SETTINGS_PATH from Mixxx V <= 1.7
-    QString upgrade_filename = QDir::homePath().append("/").append(SETTINGS_PATH).append("DBUPGRADED");
+    //  Here we need the SETTINGS_PATH from Mixxx V <= 1.7
+    QString upgrade_filename = Upgrade::mixxx17HomePath().append("DBUPGRADED");
     qDebug() << "upgrade filename is " << upgrade_filename;
     QFile upgradefile(upgrade_filename);
     if (!upgradefile.exists()) {
@@ -403,7 +403,7 @@ void LibraryScanner::queueTask(ScannerTask* pTask) {
 void LibraryScanner::directoryHashedAndScanned(const QString& directoryPath,
                                                bool newDirectory, int hash) {
     ScopedTimer timer("LibraryScanner::directoryHashedAndScanned");
-    // qDebug() << "LibraryScanner::directoryHashedAndScanned" << directoryPath
+    //qDebug() << "LibraryScanner::directoryHashedAndScanned" << directoryPath
     //          << newDirectory << hash;
 
     // For statistics tracking -- if we hashed a directory then we scanned it
