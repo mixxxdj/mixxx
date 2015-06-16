@@ -38,7 +38,7 @@
                       <Text>
                         <TooltipId>text</TooltipId>
                         <Style>QLabel {
-                          font: 13px/14px "Lucida Grande", "Helvetica Neue", Arial, "Open Sans Light";
+                          font: 13px/14px "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
                           background-color: transparent;
                           font-weight:bold;
                           color: #cfb32c;
