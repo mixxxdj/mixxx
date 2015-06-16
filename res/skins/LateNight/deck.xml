@@ -90,7 +90,7 @@
                               <ObjectName>TextColor<Variable name="channum" /></ObjectName>
                               <Style>QLabel { qproperty-alignment: 'AlignCenter';
                                   font: bold 13px/16px Lucida Grande, Lucida Sans
-                                  Unicode, Arial, Verdana, sans-serif;
+                                  Unicode, Segoe UI, Arial, Verdana, sans-serif;
                                   background-color: transparent; padding: 0px; margin: 0px;}
                               </Style>
                               <Group>[Channel<Variable name="channum"/>]</Group>
