@@ -98,16 +98,16 @@
             <Layout>horizontal</Layout>
             <SizePolicy>max,min</SizePolicy>
             <Children>
-              <Template src="skin:aux.xml">
+              <Template src="skin:aux_passthrough.xml">
                 <SetVariable name="auxnum">1</SetVariable>
               </Template>
-              <Template src="skin:aux.xml">
+              <Template src="skin:aux_passthrough.xml">
                 <SetVariable name="auxnum">2</SetVariable>
               </Template>
-              <Template src="skin:aux.xml">
+              <Template src="skin:aux_passthrough.xml">
                 <SetVariable name="auxnum">3</SetVariable>
               </Template>
-              <Template src="skin:aux.xml">
+              <Template src="skin:aux_passthrough.xml">
                 <SetVariable name="auxnum">4</SetVariable>
               </Template>
             </Children>
