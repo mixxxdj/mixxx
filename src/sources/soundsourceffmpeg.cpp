@@ -4,6 +4,7 @@
 
 #define AUDIOSOURCEFFMPEG_CACHESIZE 1000
 #define AUDIOSOURCEFFMPEG_MIXXXFRAME_TO_BYTEOFFSET (sizeof(CSAMPLE) * getChannelCount())
+#define AUDIOSOURCEFFMPEG_FILL_FROM_CURRENTPOS -1
 
 namespace Mixxx {
 
@@ -459,7 +460,9 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
             // If Cache is running low read more
             if (l_SObj == NULL || (l_lPos + 5) > m_SCache.size()) {
                 offset = l_SObj->startFrame;
-                if (readFramesToCache(50, -1) == false) {
+                // Read 50 frames from current pos. If we hit file end before that
+                // exit
+                if (readFramesToCache(50, AUDIOSOURCEFFMPEG_FILL_FROM_CURRENTPOS) == false) {
                     return false;
                 }
                 // Seek back to correct place
@@ -515,11 +518,21 @@ SINT SoundSourceFFmpeg::seekSampleFrame(SINT frameIndex) {
     struct ffmpegLocationObject *l_STestObj = NULL;
 
     if (frameIndex < 0 || frameIndex < m_lCacheStartFrame) {
+        // Seek to set (start of the stream which is FFmpeg frame 0)
+        // because we are dealing with compressed audio FFmpeg takes
+        // best of to seek that point (in this case 0 Is allways there)
+        // in every other case we should provide MIN and MAX tolerance
+        // which we can take.
+        // FFmpeg just just can't take zero as MAX tolerance so we try to
+        // just make some tolerable (which is never used because zero point
+        // should always be there) some number (which is 0xffff 65535)
+        // that is chosen because in WMA frames can be that big and if it's
+        // smaller than the frame we are seeking we can get into error
         ret = avformat_seek_file(m_pFormatCtx,
                                  m_iAudioStream,
                                  0,
                                  0,
-                                 32767 * 2,
+                                 0xffff,
                                  AVSEEK_FLAG_BACKWARD);
 
         if (ret < 0) {
@@ -558,14 +571,20 @@ SINT SoundSourceFFmpeg::seekSampleFrame(SINT frameIndex) {
         }
 
         if (frameIndex == 0) {
-            readFramesToCache((AUDIOSOURCEFFMPEG_CACHESIZE - 50), -1);
-        } else {
-            readFramesToCache(100, frameIndex);
+            // Because we are in the begining just read cache full
+            // but leave 50 of just in case
+            // -1 one means we are seeking from current position and
+            // filling the cache
+            readFramesToCache((AUDIOSOURCEFFMPEG_CACHESIZE - 50),
+                              AUDIOSOURCEFFMPEG_FILL_FROM_CURRENTPOS);
         }
     }
 
-
     if (m_lCacheEndFrame <= frameIndex) {
+        // Cache tries to read until it gets to frameIndex
+        // after that we still read 100 FFmpeg frames to memory
+        // so we have good cache to go forward (100) and backward (900)
+        // from the point
         readFramesToCache(100, frameIndex);
     }
 
