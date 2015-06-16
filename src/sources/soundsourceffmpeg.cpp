@@ -452,10 +452,8 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
             return false;
         }
 
-        // Calculate in other words get bytes how much we must copy to
-        // buffer (CSAMPLE = 4 and we have 2 channels which is 8 times)
+        // Calculate how many bytes should be copied to buffer
         l_lLeft = size * AUDIOSOURCEFFMPEG_MIXXXFRAME_TO_BYTEOFFSET;
-        memset(l_pBuffer, 0x00, l_lLeft);
         while (l_lLeft > 0) {
             // If Cache is running low read more
             if (l_SObj == NULL || (l_lPos + 5) > m_SCache.size()) {
