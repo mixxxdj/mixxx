@@ -124,10 +124,10 @@ QString ProxyTrackModel::getModelSetting(QString name) {
         return QString();
     QString modelSettings;
     // tro's lambda idea. This code calls synchronously!
-//    m_pTrackCollection->callSync(
-//                [this, &modelSettings] (void) {
-        modelSettings = m_pTrackModel->getModelSetting(name);
-//    }, __PRETTY_FUNCTION__);
+    m_pTrackCollection->callSync(
+                [this, &modelSettings, name] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        modelSettings = m_pTrackModel->getModelSetting(name, pTrackCollectionPrivate);
+    }, __PRETTY_FUNCTION__);
     return modelSettings;
 }
 

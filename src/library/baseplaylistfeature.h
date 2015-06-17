@@ -30,6 +30,7 @@ class BasePlaylistFeature : public LibraryFeature {
   signals:
     void showPage(const QUrl& page);
     void analyzeTracks(QList<int>);
+    void playlistTableChanged(int playlistId);
 
   public slots:
     virtual void activate();

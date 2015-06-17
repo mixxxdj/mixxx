@@ -103,8 +103,8 @@ bool TrackCollectionPrivate::checkForTables() {
                                      "\n\n" + okToExit,
                                      QMessageBox::Ok);
             }
-        }
         checkResult = false;
+        }
     },__PRETTY_FUNCTION__);
     return checkResult;
 }

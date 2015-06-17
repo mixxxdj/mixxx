@@ -63,7 +63,7 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
     connect(m_pAnalyzePlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotAnalyzePlaylist()));
 
-        pTrackCollection->callSync([this] (TrackCollectionPrivate* pTrackCollectionPrivate){
+    pTrackCollection->callSync([this] (TrackCollectionPrivate* pTrackCollectionPrivate){
         connect(&pTrackCollectionPrivate->getPlaylistDAO(), SIGNAL(added(int)),
                 this, SLOT(slotPlaylistTableChanged(int)),
                 Qt::QueuedConnection);
@@ -80,6 +80,10 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
                 this, SLOT(slotPlaylistTableChanged(int)),
                 Qt::QueuedConnection);
         }, __PRETTY_FUNCTION__);
+
+    connect(this, SIGNAL(playlistTableChanged(int)),
+            this, SLOT(slotPlaylistTableChanged(int)),
+            Qt::QueuedConnection);
 }
 
 BasePlaylistFeature::~BasePlaylistFeature() {
@@ -181,7 +185,8 @@ void BasePlaylistFeature::slotRenamePlaylist() {
 
 void BasePlaylistFeature::slotPlaylistTableRenamed(int playlistId,
                                                    QString /* a_strName */) {
-    slotPlaylistTableChanged(playlistId);
+    //slotPlaylistTableChanged(playlistId);
+    emit playlistTableChanged(playlistId);
 }
 
 void BasePlaylistFeature::slotDuplicatePlaylist() {

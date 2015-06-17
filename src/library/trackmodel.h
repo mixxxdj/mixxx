@@ -105,14 +105,13 @@ class TrackModel {
         return TRACKMODELCAPS_NONE;
     }
 
-    virtual QString getModelSetting(QString name) {
+    virtual QString getModelSetting(QString name,
+                                    TrackCollectionPrivate* pTrackCollectionPrivate) {
         QString result;
-				m_pTrackCollection->callSync([this, &result, name] (TrackCollectionPrivate* pTrackCollectionPrivate) {
         SettingsDAO settings(pTrackCollectionPrivate->getDatabase());
         QString key = m_settingsNamespace + "." + name;
         result = settings.getValue(key);
-				},__PRETTY_FUNCTION__);
-				return result;
+        return result;
     }
 
     virtual bool setModelSetting(QString name, QVariant value) {
@@ -146,8 +145,10 @@ class TrackModel {
     virtual void select() {
     }
 
-  private:
+  protected:
     TrackCollection* m_pTrackCollection;
+
+  private:
     QString m_settingsNamespace;
     QList<int> m_emptyColumns;
     int m_iDefaultSortColumn;

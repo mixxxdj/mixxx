@@ -99,9 +99,10 @@ void TrackCollection::callAsync(func lambda, QString where) {
 //    @param: lambda function, string (for debug purposes).
 void TrackCollection::callSync(func lambda, QString where) {
     qDebug() << "callSync BEGIN from"<<where;
-//    if (m_inCallSyncCount > 0) { // callSync inside callSync is workable, but we must avoid it
-//        Q_ASSERT(0==1); // just stop here in debug
-//    }
+    if (m_inCallSyncCount > 0) { // callSync inside callSync is workable, but we must avoid it
+        DBG() << "nested CallSync";
+        Q_ASSERT(0==1); // just stop here in debug
+    }
     qDebug() << "callSync from" << where;
     ++m_inCallSyncCount;
 

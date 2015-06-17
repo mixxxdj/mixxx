@@ -142,8 +142,8 @@ void WTrackTableViewHeader::restoreHeaderState() {
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
             [this, track_model, &headerStateString] (TrackCollectionPrivate* pTrackCollectionPrivate) {
-        Q_UNUSED(pTrackCollectionPrivate);
-        headerStateString = track_model->getModelSetting("header_state");
+        headerStateString =
+            track_model->getModelSetting("header_state", pTrackCollectionPrivate);
     }, __PRETTY_FUNCTION__);
 
     if (!headerStateString.isNull()) {
@@ -166,8 +166,8 @@ bool WTrackTableViewHeader::hasPersistedHeaderState() {
     // tro's lambda idea. This code calls Synchronously!
     m_pTrackCollection->callSync(
             [this, track_model, &headerStateString] (TrackCollectionPrivate* pTrackCollectionPrivate) {
-        Q_UNUSED(pTrackCollectionPrivate);
-        headerStateString = track_model->getModelSetting("header_state");
+        headerStateString =
+            track_model->getModelSetting("header_state", pTrackCollectionPrivate);
     }, __PRETTY_FUNCTION__);
 
     if (!headerStateString.isNull()) return true;
