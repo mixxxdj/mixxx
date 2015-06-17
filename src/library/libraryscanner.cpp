@@ -31,7 +31,8 @@
 
 LibraryScanner::LibraryScanner(TrackCollection* pTrackCollection) :
     m_pTrackCollection(pTrackCollection),
-    m_database(nullptr),
+    //this is ugly, we are creating a database to overwrite it later
+    m_database(),
     m_pProgress(NULL),
     m_libraryHashDao(m_database),
     m_cueDao(m_database),
@@ -49,8 +50,11 @@ LibraryScanner::LibraryScanner(TrackCollection* pTrackCollection) :
     // scan is finished, because we might have modified the database directly
     // when we detected moved files, and the TIOs corresponding to the moved
     // files would then have the wrong track location.
-    connect(this, SIGNAL(scanFinished()),
-            &(pTrackCollection->getTrackDAO()), SLOT(clearCache()));
+    m_pTrackCollection->callSync(
+        [this] (TrackCollectionPrivate* pTrackCollectionPrivate){
+            connect(this, SIGNAL(scanFinished()),
+                    &pTrackCollectionPrivate->getTrackDAO(), SLOT(clearCache()));
+    }, __PRETTY_FUNCTION__);
 
     // The "Album Artwork" folder within iTunes stores Album Arts.
     // It has numerous hundreds of sub folders but no audio files
@@ -134,6 +138,11 @@ void LibraryScanner::run() {
 
     qRegisterMetaType<QSet<int> >("QSet<int>");
 
+    //this is dangerous. We are pulling the db out of its thread so bad things can happen
+    m_pTrackCollection->callSync(
+        [this] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+            m_database = pTrackCollectionPrivate->getDatabase();
+    }, __PRETTY_FUNCTION__);
     m_libraryHashDao.setDatabase(m_database);
     m_cueDao.setDatabase(m_database);
     m_trackDao.setDatabase(m_database);
@@ -178,17 +187,15 @@ void LibraryScanner::run() {
     QTime t;
     t.start();
 
-    m_pTrackCollection->callSync([this](TrackCollectionPrivate* pTrackCollectionPrivate) {
-        // First, we're going to mark all the directories that we've
-        // previously hashed as needing verification. As we search through the directory tree
-        // when we rescan, we'll mark any directory that does still exist as verified.
-        m_libraryHashDao.invalidateAllDirectories();
-        // Mark all the tracks in the library as needing
-        // verification of their existance...
-        // (ie. we want to check they're still on your hard drive where
-        // we think they are)
-        m_trackDao.invalidateTrackLocationsInLibrary(m_qLibraryPath);
-    }, __FUNCTION__);
+    // First, we're going to mark all the directories that we've
+    // previously hashed as needing verification. As we search through the directory tree
+    // when we rescan, we'll mark any directory that does still exist as verified.
+    m_libraryHashDao.invalidateAllDirectories();
+    // Mark all the tracks in the library as needing
+    // verification of their existance...
+    // (ie. we want to check they're still on your hard drive where
+    // we think they are)
+    m_trackDao.invalidateTrackLocationsInLibrary(m_qLibraryPath);
 
 
     qDebug() << "Recursively scanning library.";
@@ -211,55 +218,56 @@ void LibraryScanner::run() {
 
 
     // tro's lambda idea. This code calls Synchronously!
+    // Start a transaction for all the library hashing (moved file detection)
+    // stuff.
+    ScopedTransaction transaction(m_database);
+
+    // At the end of a scan, mark all tracks and directories that
+    // weren't "verified" as "deleted" (as long as the scan wasn't canceled
+    // half way through. This condition is important because our rescanning
+    // algorithm starts by marking all tracks and dirs as unverified, so a
+    // canceled scan might leave half of your library as unverified. Don't
+    // want to mark those tracks/dirs as deleted in that case) :)
+    QSet<int> tracksMovedSetOld;
+    QSet<int> tracksMovedSetNew;
+    if (bScanFinishedCleanly) {
+        qDebug() << "Marking unchanged directories and tracks as verified";
+        m_libraryHashDao.updateDirectoryStatuses(verifiedDirectories, false, true);
+        m_trackDao.markTracksInDirectoriesAsVerified(verifiedDirectories);
+
+        qDebug() << "Marking unverified tracks as deleted.";
+        m_trackDao.markUnverifiedTracksAsDeleted();
+        qDebug() << "Marking unverified directories as deleted.";
+        m_libraryHashDao.markUnverifiedDirectoriesAsDeleted();
+
+        // Check to see if the "deleted" tracks showed up in another location,
+        // and if so, do some magic to update all our tables.
+        qDebug() << "Detecting moved files.";
+        m_trackDao.detectMovedFiles(&tracksMovedSetOld, &tracksMovedSetNew);
+
+        // Remove the hashes for any directories that have been
+        // marked as deleted to clean up. We need to do this otherwise
+        // we can skip over songs if you move a set of songs from directory
+        // A to B, then back to A.
+        m_libraryHashDao.removeDeletedDirectoryHashes();
+
+        transaction.commit();
+        qDebug() << "Scan finished cleanly";
+    } else {
+        transaction.rollback();
+        qDebug() << "Scan cancelled";
+    }
+
+    qDebug("Scan took: %d ms", t.elapsed());
+
+    // Update BaseTrackCache via the main TrackDao
     m_pTrackCollection->callSync(
-                [this, &bScanFinishedCleanly, &verifiedDirectories, &t] (TrackCollectionPrivate* pTrackCollectionPrivate) {
-        // Start a transaction for all the library hashing (moved file detection)
-        // stuff.
-        ScopedTransaction transaction(m_database);
+        [this, &tracksMovedSetOld, &tracksMovedSetNew] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+            pTrackCollectionPrivate->getTrackDAO().databaseTracksMoved(
+                tracksMovedSetOld, tracksMovedSetNew);
 
-        // At the end of a scan, mark all tracks and directories that
-        // weren't "verified" as "deleted" (as long as the scan wasn't canceled
-        // half way through. This condition is important because our rescanning
-        // algorithm starts by marking all tracks and dirs as unverified, so a
-        // canceled scan might leave half of your library as unverified. Don't
-        // want to mark those tracks/dirs as deleted in that case) :)
-        QSet<int> tracksMovedSetOld;
-        QSet<int> tracksMovedSetNew;
-        if (bScanFinishedCleanly) {
-            qDebug() << "Marking unchanged directories and tracks as verified";
-            m_libraryHashDao.updateDirectoryStatuses(verifiedDirectories, false, true);
-            m_trackDao.markTracksInDirectoriesAsVerified(verifiedDirectories);
-
-            qDebug() << "Marking unverified tracks as deleted.";
-            m_trackDao.markUnverifiedTracksAsDeleted();
-            qDebug() << "Marking unverified directories as deleted.";
-            m_libraryHashDao.markUnverifiedDirectoriesAsDeleted();
-
-            // Check to see if the "deleted" tracks showed up in another location,
-            // and if so, do some magic to update all our tables.
-            qDebug() << "Detecting moved files.";
-            m_trackDao.detectMovedFiles(&tracksMovedSetOld, &tracksMovedSetNew);
-
-            // Remove the hashes for any directories that have been
-            // marked as deleted to clean up. We need to do this otherwise
-            // we can skip over songs if you move a set of songs from directory
-            // A to B, then back to A.
-            m_libraryHashDao.removeDeletedDirectoryHashes();
-
-            transaction.commit();
-            qDebug() << "Scan finished cleanly";
-        } else {
-            transaction.rollback();
-            qDebug() << "Scan cancelled";
-        }
-
-        qDebug("Scan took: %d ms", t.elapsed());
-
-        // Update BaseTrackCache via the main TrackDao
-        m_pTrackCollection->getTrackDAO().databaseTracksMoved(tracksMovedSetOld, tracksMovedSetNew);
-
-        emit(scanFinished());
     }, __PRETTY_FUNCTION__);
+    emit(scanFinished());
 }
 
 void LibraryScanner::scan(const QString& libraryPath, QWidget *parent) {
@@ -353,9 +361,8 @@ void LibraryScanner::addTrackToChunk(const QString filePath) {
     if (m_tracksListInCnunk.count() < MAX_CHUNK_SIZE) {
         m_tracksListInCnunk.append(filePath);
     } else {
-        m_pTrackCollection->callSync( [this] (TrackCollectionPrivate* pTrackCollectionPrivate) {
-            addChunkToDatabase();
-        }, "addTrackToChunk");
+        //No Lambda here, because only working on local DAOs?
+        addChunkToDatabase();
     }
 }
 
@@ -382,7 +389,10 @@ void LibraryScanner::addChunkToDatabase() {
                 // Successful added
                 // signal the main instance of TrackDao, that there is a
                 // new Track in the database
-                m_pTrackCollection->getTrackDAO().databaseTrackAdded(pTrack);
+                m_pTrackCollection->callSync( 
+                    [this, pTrack] (TrackCollectionPrivate* pTrackCollectionPrivate){
+                        pTrackCollectionPrivate->getTrackDAO().databaseTrackAdded(pTrack);
+               }, __PRETTY_FUNCTION__);
             } else {
                 qDebug() << "Track ("+m_tmpTrackPath+") could not be added";
             }

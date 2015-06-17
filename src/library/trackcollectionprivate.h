@@ -74,7 +74,7 @@ class TrackCollectionPrivate : public QObject {
     CueDAO* m_pCueDao;
     AnalysisDao* m_pAnalysisDao;
     TrackDAO* m_pTrackDao;
-		AutoDJCratesDAO* m_pAutoDjCratesDao;
+    AutoDJCratesDAO* m_pAutoDjCratesDao;
 
     QQueue<func> m_lambdas;
     volatile bool m_stop;

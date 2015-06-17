@@ -124,11 +124,14 @@ class TrackCollection : public QThread {
     QSharedPointer<BaseTrackCache> getTrackSource(const QString& name);
     void addTrackSource(const QString& name, QSharedPointer<BaseTrackCache> trackSource);
 
+    ConfigObject<ConfigValue>* getConfig();
+
   signals:
     void initialized();
 
   private:
-		TrackCollectionPrivate* m_pTrackCollectionPrivate;
+    TrackCollectionPrivate* m_pTrackCollectionPrivate;
+    ConfigObject<ConfigValue>* m_pConfig;
     QHash<QString, QSharedPointer<BaseTrackCache> > m_trackSources;
     QQueue<func> m_lambdas;
     volatile bool m_stop;

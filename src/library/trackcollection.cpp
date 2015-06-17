@@ -21,11 +21,12 @@
 #define MAX_LAMBDA_COUNT 8
 
 TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
-        : m_stop(false),
+        : m_pConfig(pConfig),
+          m_stop(false),
           m_semLambdasReadyToCall(0),
           m_semLambdasFree(MAX_LAMBDA_COUNT),
           m_pCOTPlaylistIsBusy(NULL),
-          m_inCallSyncCount(0) {
+          m_inCallSyncCount(0){
     DBG() << "TrackCollection constructor \tfrom thread id="
           << QThread::currentThreadId() << "name="
           << QThread::currentThread()->objectName();
@@ -196,4 +197,8 @@ void TrackCollection::addTrackSource(
         const QString& name, QSharedPointer<BaseTrackCache> trackSource) {
     Q_ASSERT(!m_trackSources.contains(name));
     m_trackSources[name] = trackSource;
+}
+
+ConfigObject<ConfigValue>* TrackCollection::getConfig() {
+    return m_pConfig;
 }

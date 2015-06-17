@@ -18,7 +18,7 @@
 #include "controlobject.h"
 #include "configobject.h"
 #ifdef __AUTODJCRATES__
-#include "library/dao/autodjcratesdao.cpp"
+#include "library/dao/autodjcratesdao.h"
 #endif
 
 
@@ -32,7 +32,7 @@ TrackCollectionPrivate::TrackCollectionPrivate(ConfigObject<ConfigValue>* pConfi
           m_pCueDao(NULL),
           m_pAnalysisDao(NULL),
           m_pTrackDao(NULL),
-					m_pAutoDjCratesDao(NULL),
+		  m_pAutoDjCratesDao(NULL),
           m_supportedFileExtensionsRegex(
                   SoundSourceProxy::supportedFileExtensionsRegex(),
                   Qt::CaseInsensitive){
