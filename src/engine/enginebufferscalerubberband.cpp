@@ -82,7 +82,7 @@ void EngineBufferScaleRubberBand::setScaleParameters(double base_rate,
 
     // RubberBand handles checking for whether the change in pitchScale is a
     // no-op.
-    double pitchScale = base_rate * *pPitchRatio;
+    double pitchScale = fabs(base_rate * *pPitchRatio);
 
     if (pitchScale > 0) {
         //qDebug() << "EngineBufferScaleRubberBand setPitchScale" << *pitch << pitchScale;

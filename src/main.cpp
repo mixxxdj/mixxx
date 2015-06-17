@@ -171,6 +171,7 @@ void MessageHandler(QtMsgType type,
 
 int main(int argc, char * argv[])
 {
+    Console console;
 
 #ifdef Q_OS_LINUX
     XInitThreads();
@@ -247,8 +248,6 @@ int main(int argc, char * argv[])
         fputs("\n\n(For more information, see http://mixxx.org/wiki/doku.php/command_line_options)\n",stdout);
         return(0);
     }
-
-    Console console;
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     qInstallMsgHandler(MessageHandler);

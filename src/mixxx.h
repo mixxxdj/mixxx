@@ -104,7 +104,9 @@ class MixxxMainWindow : public QMainWindow {
     void slotHelpFeedback();
     // Open the manual.
     void slotHelpManual();
-    // Visits translation interface on launchpad.net
+    // Open the keyboard mapping table in the manual.
+    void slotHelpShortcuts();
+    // Visits translation interface on www.transifex.com
     void slotHelpTranslation();
     // Scan or rescan the music library directory
     void slotScanLibrary();
@@ -260,8 +262,9 @@ class MixxxMainWindow : public QMainWindow {
     QAction* m_pHelpAboutApp;
     QAction* m_pHelpSupport;
     QAction* m_pHelpFeedback;
-    QAction* m_pHelpTranslation;
     QAction* m_pHelpManual;
+    QAction* m_pHelpShortcuts;
+    QAction* m_pHelpTranslation;
 
     QAction* m_pDeveloperReloadSkin;
     QAction* m_pDeveloperTools;

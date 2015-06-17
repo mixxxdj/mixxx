@@ -1158,7 +1158,7 @@
                 <status>0x94</status>
                 <midino>0x05</midino>
                 <options>
-                    <switch/>
+                    <normal/>
                 </options>
             </control>
             <control>
@@ -1198,7 +1198,7 @@
                 <status>0x95</status>
                 <midino>0x05</midino>
                 <options>
-                    <switch/>
+                    <normal/>
                 </options>
             </control>
             <control>

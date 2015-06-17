@@ -22,11 +22,18 @@ enum IIRPass {
     IIR_HPMO,
 };
 
+
+class EngineFilterIIRBase : public EngineObjectConstIn {
+  public:
+    virtual void assumeSettled() = 0;
+};
+
+
 // length of the 3rd argument to fid_design_coef
 #define FIDSPEC_LENGTH 40
 
 template<unsigned int SIZE, enum IIRPass PASS>
-class EngineFilterIIR : public EngineObjectConstIn {
+class EngineFilterIIR : public EngineFilterIIRBase {
   public:
     EngineFilterIIR()
             : m_doRamping(false),
@@ -175,6 +182,10 @@ class EngineFilterIIR : public EngineObjectConstIn {
         }
     }
 
+    virtual void assumeSettled() {
+        m_doRamping = false;
+        m_doStart = false;
+    }
 
     virtual void process(const CSAMPLE* pIn, CSAMPLE* pOutput,
                          const int iBufferSize) {

@@ -131,8 +131,6 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     int playlistId = playlistIdFromIndex(index);
     if (playlistId != -1 && m_pPlaylistTableModel) {
         m_pPlaylistTableModel->setTableModel(playlistId);
-        // Update selection
-        emit(featureSelect(this, index));
         emit(showTrackModel(m_pPlaylistTableModel));
         emit(enableCoverArtDisplay(true));
     }

@@ -3,6 +3,32 @@
     <Layout>horizontal</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Children>
+      <!-- If the spinnies are hidden, create an invisible margin of the correct
+      height because the waveforms follow that height.  -->
+      <WidgetGroup>
+        <ObjectName>SpinnyBorder</ObjectName>
+        <Layout>horizontal</Layout>
+        <Size>1f,88f</Size>
+        <Children/>
+        <Connection>
+            <ConfigKey>[Master],show_mixer</ConfigKey>
+            <BindProperty>visible</BindProperty>
+            <Transform>
+              <Not/>
+            </Transform>
+        </Connection>
+      </WidgetGroup>
+      <!-- Same, but for the smaller spinny size. -->
+      <WidgetGroup>
+        <ObjectName>SpinnyBorder</ObjectName>
+        <Layout>horizontal</Layout>
+        <Size>1f,50f</Size>
+        <Children/>
+        <Connection>
+            <ConfigKey>[Master],show_mixer</ConfigKey>
+            <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
       <SingletonDefinition>
         <ObjectName>SpinnySingleton<Variable name="channum"/></ObjectName>
         <Children>
@@ -16,21 +42,12 @@
           </Spinny>
         </Children>
       </SingletonDefinition>
-      <WidgetStack currentpage="[Master],spinny_size" persist="true">
+      <!-- The spinnies determine the size of the waveform. -->
+      <WidgetGroup>
         <SizePolicy>max,min</SizePolicy>
+        <Layout>horizontal</Layout>
         <Children>
           <WidgetGroup>
-            <ObjectName>SpinnyContainer</ObjectName>
-            <Layout>horizontal</Layout>
-            <SizePolicy>min,min</SizePolicy>
-            <Children>
-                <SingletonContainer>
-                    <Size>96f,96f</Size>
-                    <ObjectName>SpinnySingleton<Variable name="channum"/></ObjectName>
-                </SingletonContainer>
-            </Children>
-          </WidgetGroup>
-          <WidgetGroup trigger="[Master],show_mixer">
             <ObjectName>SpinnyContainer</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
@@ -40,19 +57,39 @@
                   <ObjectName>SpinnySingleton<Variable name="channum"/></ObjectName>
               </SingletonContainer>
             </Children>
+            <Connection>
+                <ConfigKey>[Master],show_mixer</ConfigKey>
+                <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+          <WidgetGroup trigger="[Master],show_mixer">
+            <ObjectName>SpinnyContainer</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+                <SingletonContainer>
+                    <Size>88f,88f</Size>
+                    <ObjectName>SpinnySingleton<Variable name="channum"/></ObjectName>
+                </SingletonContainer>
+            </Children>
+            <Connection>
+                <ConfigKey>[Master],show_mixer</ConfigKey>
+                <BindProperty>visible</BindProperty>
+                <Transform><Not/></Transform>
+            </Connection>
           </WidgetGroup>
         </Children>
         <Connection>
             <ConfigKey persist="true">[Spinny],show_spinnies</ConfigKey>
             <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetStack>
+      </WidgetGroup>
       <!-- If the spinnies are hidden, create an invisible margin of the correct
       height because the waveforms follow that height.  -->
       <WidgetGroup>
         <ObjectName>SpinnyContainer</ObjectName>
         <Layout>horizontal</Layout>
-        <Size>1f,96f</Size>
+        <Size>1f,88f</Size>
         <Children/>
         <Connection>
             <ConfigKey>[Master],show_mixer</ConfigKey>
