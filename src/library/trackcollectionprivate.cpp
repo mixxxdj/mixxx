@@ -49,6 +49,7 @@ TrackCollectionPrivate::~TrackCollectionPrivate() {
 void TrackCollectionPrivate::initialize(){
     qRegisterMetaType<QSet<int> >("QSet<int>");
 
+    DBG() << "createAndPopulateDbConnection inside TrackCollectionPrivate";
     createAndPopulateDbConnection();
 
     DBG() << "Initializing DAOs inside TrackCollectionPrivate";
@@ -104,7 +105,7 @@ bool TrackCollectionPrivate::checkForTables() {
             }
         }
         checkResult = false;
-    });
+    },__PRETTY_FUNCTION__);
     return checkResult;
 }
 
@@ -155,6 +156,7 @@ void TrackCollectionPrivate::createAndPopulateDbConnection() {
     // Check for tables and create them if missing
     if (!checkForTables()) {
         // TODO(XXX) something a little more elegant
+        DBG() << "check for tables failed";
         exit(-1);
     }
 
