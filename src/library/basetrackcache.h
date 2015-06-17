@@ -14,11 +14,13 @@
 #include <QVector>
 
 #include "library/dao/trackdao.h"
+#include "library/trackcollectionprivate.h"
 #include "trackinfoobject.h"
 #include "util.h"
 
 class SearchQueryParser;
 class TrackCollection;
+class TrackCollectionPrivate;
 
 // BaseTrackCache is a cache of all of the values in certain table. It supports
 // searching and sorting of tracks by values within the table. The reasoning for
@@ -38,7 +40,7 @@ class BaseTrackCache : public QObject {
 
     // Rebuild the BaseTrackCache index from the SQL table. This can be
     // expensive on large tables.
-    virtual void buildIndex();
+    virtual void buildIndex(TrackCollectionPrivate* pTrackCollectionPrivate);
 
     ////////////////////////////////////////////////////////////////////////////
     // Data access methods
@@ -51,7 +53,8 @@ class BaseTrackCache : public QObject {
     virtual void filterAndSort(const QSet<int>& trackIds,
                                QString query, QString extraFilter,
                                int sortColumn, Qt::SortOrder sortOrder,
-                               QHash<int, int>* trackToIndex);
+                               QHash<int, int>* trackToIndex,
+                               TrackCollectionPrivate* pTrackCollectionPrivate);
     virtual bool isCached(int trackId) /*const*/;
     virtual void ensureCached(int trackId);
     virtual void ensureCached(QSet<int> trackIds);
@@ -69,7 +72,8 @@ class BaseTrackCache : public QObject {
 
   private:
     TrackPointer lookupCachedTrack(int trackId) const;
-    bool updateIndexWithQuery(const QString& query);
+    bool updateIndexWithQuery(const QString& query,
+                              TrackCollectionPrivate* pTrackCollectionPrivate);
     bool updateIndexWithTrackpointer(TrackPointer pTrack);
     void updateTrackInIndex(int trackId);
     void updateTracksInIndex(QSet<int> trackIds);
@@ -78,7 +82,8 @@ class BaseTrackCache : public QObject {
 
     QString filterClause(QString query, QString extraFilter,
                          QStringList idStrings) const;
-    QString orderByClause(int sortColumn, Qt::SortOrder sortOrder) const;
+    QString orderByClause(int sortColumn, Qt::SortOrder sortOrder,
+                          TrackCollectionPrivate* pTrackCollectionPrivate) const;
     int findSortInsertionPoint(TrackPointer pTrack,
                                const int sortColumn,
                                const Qt::SortOrder sortOrder,

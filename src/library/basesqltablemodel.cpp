@@ -242,7 +242,8 @@ void BaseSqlTableModel::select(TrackCollectionPrivate* pTrackCollectionPrivate) 
     m_trackSource->filterAndSort(trackIds, m_currentSearch,
                                  m_currentSearchFilter,
                                  sortColumn, m_eSortOrder,
-                                 &m_trackSortOrder);
+                                 &m_trackSortOrder,
+                                 pTrackCollectionPrivate);
 
     // Re-sort the track IDs since filterAndSort can change their order or mark
     // them for removal (by setting their row to -1).
@@ -279,7 +280,7 @@ void BaseSqlTableModel::select(TrackCollectionPrivate* pTrackCollectionPrivate) 
     }
 
     // populating query results in UI thread
-    MainExecuter::callSync( [this] (){
+    MainExecuter::callAsync( [this] (){
         slotPopulateQueryResult();
     }, __PRETTY_FUNCTION__);
 }

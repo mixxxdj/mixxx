@@ -189,7 +189,8 @@ bool BaseTrackCache::updateIndexWithTrackpointer(TrackPointer pTrack) {
 
 // Must be called from TrackCollection thread
 // Not true anymore since we use lambdas inside
-bool BaseTrackCache::updateIndexWithQuery(const QString& queryString) {
+bool BaseTrackCache::updateIndexWithQuery(const QString& queryString,
+                                    TrackCollectionPrivate* pTrackCollectionPrivate) {
     QTime timer;
     timer.start();
 
@@ -197,43 +198,39 @@ bool BaseTrackCache::updateIndexWithQuery(const QString& queryString) {
         qDebug() << "updateIndexWithQuery issuing query:" << queryString;
     }
 
-    bool result;
-    m_pTrackCollection->callSync( [this, &queryString, &result] (TrackCollectionPrivate* pTrackCollectionPrivate) {
-        QSqlQuery query(pTrackCollectionPrivate->getDatabase());
-        // This causes a memory savings since QSqlCachedResult (what QtSQLite uses)
-        // won't allocate a giant in-memory table that we won't use at all.
-        query.setForwardOnly(true); // performance improvement?
-        query.prepare(queryString);
+    QSqlQuery query(pTrackCollectionPrivate->getDatabase());
+    // This causes a memory savings since QSqlCachedResult (what QtSQLite uses)
+    // won't allocate a giant in-memory table that we won't use at all.
+    query.setForwardOnly(true); // performance improvement?
+    query.prepare(queryString);
 
-        if (!query.exec()) {
-            LOG_FAILED_QUERY(query);
-            result = false;
-            return;
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return false;
+    }
+
+    int numColumns = columnCount();
+    int idColumn = query.record().indexOf(m_idColumn);
+
+    while (query.next()) {
+        int id = query.value(idColumn).toInt();
+        m_pTrackInfoMutex->lock();
+        //m_trackInfo[id] will insert a QVector<QVariant> into the
+        //m_trackInfo HashTable with the key "id"
+        QVector<QVariant>& record = m_trackInfo[id];
+        record.resize(numColumns);
+
+        for (int i = 0; i < numColumns; ++i) {
+            record[i] = query.value(i);
         }
-
-        int numColumns = columnCount();
-        int idColumn = query.record().indexOf(m_idColumn);
-
-        while (query.next()) {
-            int id = query.value(idColumn).toInt();
-            m_pTrackInfoMutex->lock();
-            //m_trackInfo[id] will insert a QVector<QVariant> into the
-            //m_trackInfo HashTable with the key "id"
-            QVector<QVariant>& record = m_trackInfo[id];
-            record.resize(numColumns);
-
-            for (int i = 0; i < numColumns; ++i) {
-                record[i] = query.value(i);
-            }
-            m_pTrackInfoMutex->unlock();
-        }
-    }, __PRETTY_FUNCTION__);
+        m_pTrackInfoMutex->unlock();
+    }
 
     qDebug() << this << "updateIndexWithQuery took" << timer.elapsed() << "ms";
-    return result;;
+    return true;
 }
 
-void BaseTrackCache::buildIndex() {
+void BaseTrackCache::buildIndex(TrackCollectionPrivate* pTrackCollectionPrivate) {
     if (sDebug) {
         qDebug() << this << "buildIndex()";
     }
@@ -252,7 +249,7 @@ void BaseTrackCache::buildIndex() {
     m_trackInfo.clear();
     m_pTrackInfoMutex->unlock();
 
-    if (!updateIndexWithQuery(queryString)) {
+    if (!updateIndexWithQuery(queryString, pTrackCollectionPrivate)) {
         qDebug() << "buildIndex failed!";
     }
 
@@ -282,10 +279,12 @@ void BaseTrackCache::updateTracksInIndex(QSet<int> trackIds) {
         qDebug() << this << "updateTracksInIndex update query:" << queryString;
     }
 
-    if (!updateIndexWithQuery(queryString)) {
-        qDebug() << "updateTracksInIndex failed!";
-        return;
-    }
+    m_pTrackCollection->callSync([this, &queryString] (TrackCollectionPrivate* pTrackCollectionPrivate){
+        if (!updateIndexWithQuery(queryString, pTrackCollectionPrivate)) {
+            qDebug() << "updateTracksInIndex failed!";
+            return;
+        }
+    }, __PRETTY_FUNCTION__);
     emit(tracksChanged(trackIds));
 }
 
@@ -542,14 +541,15 @@ void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
                                    QString searchQuery,
                                    QString extraFilter, int sortColumn,
                                    Qt::SortOrder sortOrder,
-                                   QHash<int, int>* trackToIndex) {
+                                   QHash<int, int>* trackToIndex,
+                                   TrackCollectionPrivate* pTrackCollectionPrivate) {
     // Skip processing if there are no tracks to filter or sort.
     if (trackIds.size() == 0) {
         return;
     }
 
     if (!m_bIndexBuilt) {
-        buildIndex();
+        buildIndex(pTrackCollectionPrivate);
     }
 
     QStringList idStrings;
@@ -570,7 +570,7 @@ void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
     }
 
     QString filter = filterClause(searchQuery, extraFilter, idStrings);
-    QString orderBy = orderByClause(sortColumn, sortOrder);
+    QString orderBy = orderByClause(sortColumn, sortOrder, pTrackCollectionPrivate);
     QString queryString = QString("SELECT %1 FROM %2 %3 %4")
             .arg(m_idColumn, m_tableName, filter, orderBy);
 
@@ -578,37 +578,35 @@ void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
         qDebug() << this << "select() executing:" << queryString;
     }
 
-    m_pTrackCollection->callSync( [this, &queryString, &trackToIndex] (TrackCollectionPrivate* pTrackCollectionPrivate) {
-        QSqlQuery query(pTrackCollectionPrivate->getDatabase());
-        // This causes a memory savings since QSqlCachedResult (what QtSQLite uses)
-        // won't allocate a giant in-memory table that we won't use at all.
-        query.setForwardOnly(true);
-        query.prepare(queryString);
+    QSqlQuery query(pTrackCollectionPrivate->getDatabase());
+    // This causes a memory savings since QSqlCachedResult (what QtSQLite uses)
+    // won't allocate a giant in-memory table that we won't use at all.
+    query.setForwardOnly(true);
+    query.prepare(queryString);
 
-        if (!query.exec()) {
-            LOG_FAILED_QUERY(query);
-        }
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
 
-        int idColumn = query.record().indexOf(m_idColumn);
-        int rows = query.size();
+    int idColumn = query.record().indexOf(m_idColumn);
+    int rows = query.size();
 
-        if (sDebug) {
-            qDebug() << "Rows returned:" << rows;
-        }
+    if (sDebug) {
+        qDebug() << "Rows returned:" << rows;
+    }
 
-        m_trackOrder.resize(0);
-        trackToIndex->clear();
-        if (rows > 0) {
-            trackToIndex->reserve(rows);
-            m_trackOrder.reserve(rows);
-        }
+    m_trackOrder.resize(0);
+    trackToIndex->clear();
+    if (rows > 0) {
+        trackToIndex->reserve(rows);
+        m_trackOrder.reserve(rows);
+    }
 
-        while (query.next()) {
-            int id = query.value(idColumn).toInt();
-            (*trackToIndex)[id] = m_trackOrder.size();
-            m_trackOrder.push_back(id);
-        }
-    }, __PRETTY_FUNCTION__);
+    while (query.next()) {
+        int id = query.value(idColumn).toInt();
+        (*trackToIndex)[id] = m_trackOrder.size();
+        m_trackOrder.push_back(id);
+    }
 
     // At this point, the original set of tracks have been divided into two
     // pieces: those that should be in the result set and those that should
@@ -726,51 +724,50 @@ QString BaseTrackCache::filterClause(QString query, QString extraFilter,
 }
 
 QString BaseTrackCache::orderByClause(int sortColumn,
-                                      Qt::SortOrder sortOrder) const {
+                                      Qt::SortOrder sortOrder,
+                                      TrackCollectionPrivate* pTrackCollectionPrivate
+                                      ) const {
     // This is all stolen from QSqlTableModel::orderByClause(), just rigged to
     // sort case-insensitively.
 
-    QString s;
-    m_pTrackCollection->callSync( [this, &sortColumn, &sortOrder, &s] (TrackCollectionPrivate* pTrackCollectionPrivate) {
-        QSqlQuery query(pTrackCollectionPrivate->getDatabase());
-        QString queryString = QString("SELECT %1 FROM %2 LIMIT 1")
-                .arg(m_columnsJoined, m_tableName);
-        query.prepare(queryString);
-        if (!query.exec()) {
-            LOG_FAILED_QUERY(query);
+    QString s = "";
+    QSqlQuery query(pTrackCollectionPrivate->getDatabase());
+    QString queryString = QString("SELECT %1 FROM %2 LIMIT 1")
+            .arg(m_columnsJoined, m_tableName);
+    query.prepare(queryString);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    QSqlField f = query.record().field(sortColumn);
+    if (!f.isValid()) {
+        if (sDebug) {
+            qDebug() << "field not valid";
         }
+        return QString();
+    }
 
-        QSqlField f = query.record().field(sortColumn);
-        if (!f.isValid()) {
-            if (sDebug) {
-                qDebug() << "field not valid";
-            }
-            s = QString();
-            return;
-        }
+    QString field = pTrackCollectionPrivate->getDatabase().driver()->escapeIdentifier(
+        f.name(), QSqlDriver::FieldName);
 
-        QString field = pTrackCollectionPrivate->getDatabase().driver()->escapeIdentifier(
-            f.name(), QSqlDriver::FieldName);
+    s.append(QLatin1String("ORDER BY "));
+    QString sort_field = QString("%1.%2").arg(m_tableName, field);
 
-        s.append(QLatin1String("ORDER BY "));
-        QString sort_field = QString("%1.%2").arg(m_tableName, field);
+    // If the field is a string, sort using its lowercase form so sort is
+    // case-insensitive.
+    QVariant::Type type = f.type();
 
-        // If the field is a string, sort using its lowercase form so sort is
-        // case-insensitive.
-        QVariant::Type type = f.type();
+    // TODO(XXX) Instead of special-casing tracknumber here, we should ask the
+    // child class to format the expression for sorting.
+    if (sort_field.contains("tracknumber")) {
+        sort_field = QString("cast(%1 as integer)").arg(sort_field);
+    } else if (type == QVariant::String) {
+        sort_field = QString("lower(%1)").arg(sort_field);
+    }
+    s.append(sort_field);
 
-        // TODO(XXX) Instead of special-casing tracknumber here, we should ask the
-        // child class to format the expression for sorting.
-        if (sort_field.contains("tracknumber")) {
-            sort_field = QString("cast(%1 as integer)").arg(sort_field);
-        } else if (type == QVariant::String) {
-            sort_field = QString("lower(%1)").arg(sort_field);
-        }
-        s.append(sort_field);
-
-        s += (sortOrder == Qt::AscendingOrder) ? QLatin1String(" ASC") :
-                QLatin1String(" DESC");
-    }, __PRETTY_FUNCTION__);
+    s += (sortOrder == Qt::AscendingOrder) ? QLatin1String(" ASC") :
+            QLatin1String(" DESC");
     return s;
 }
 

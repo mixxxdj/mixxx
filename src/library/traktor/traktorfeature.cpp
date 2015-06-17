@@ -615,7 +615,12 @@ void TraktorFeature::onTrackCollectionLoaded() {
     if (root) {
         m_childModel.setRootItem(root);
         // Tell the rhythmbox track source that it should re-build its index.
-        m_pTrackCollection->getTrackSource("traktor")->buildIndex();
+        // this is dangerous since this feature uses its own DB not in the Collection
+        m_pTrackCollection->callSync(
+            [this] (TrackCollectionPrivate* pTrackCollectionPrivate){
+                m_pTrackCollection->getTrackSource("traktor")
+                    ->buildIndex(pTrackCollectionPrivate);
+            }, __PRETTY_FUNCTION__);
 
         //m_pTraktorTableModel->select();
         emit(showTrackModel(m_pTraktorTableModel));

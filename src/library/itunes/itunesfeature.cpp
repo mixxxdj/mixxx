@@ -707,7 +707,12 @@ void ITunesFeature::onTrackCollectionLoaded() {
         m_childModel.setRootItem(root);
 
         // Tell the rhythmbox track source that it should re-build its index.
-        m_pTrackCollection->getTrackSource("itunes")->buildIndex();
+        // this is dangerous, as this feature uses its own DB-object not in Collection
+        m_pTrackCollection->callSync(
+            [this] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+                m_pTrackCollection->getTrackSource("itunes")->
+                    buildIndex(pTrackCollectionPrivate);
+            },__PRETTY_FUNCTION__);
 
         //m_pITunesTrackModel->select();
         emit(showTrackModel(m_pITunesTrackModel));

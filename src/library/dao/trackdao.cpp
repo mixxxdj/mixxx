@@ -940,7 +940,7 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
 }
 
 TrackPointer TrackDAO::getTrack(const int id, const bool cacheOnly) const {
-    //qDebug() << "TrackDAO::getTrack" << QThread::currentThread() << m_database.connectionName();
+    qDebug() << "TrackDAO::getTrack" << QThread::currentThread() << m_database.connectionName();
     TrackPointer pTrack;
 
     // If the track cache contains the track, use it to get a strong reference
@@ -963,7 +963,7 @@ TrackPointer TrackDAO::getTrack(const int id, const bool cacheOnly) const {
         // track cache. m_tracks is a map of weak pointers to the tracks.
         QMutexLocker locker(&m_sTracksMutex);
         if (m_sTracks.contains(id)) {
-            //qDebug() << "Returning cached TIO for track" << id;
+            qDebug() << "Returning cached TIO for track" << id;
             pTrack = m_sTracks[id];
         }
     }
@@ -979,10 +979,11 @@ TrackPointer TrackDAO::getTrack(const int id, const bool cacheOnly) const {
     }
     // The person only wanted the track if it was cached.
     if (cacheOnly) {
-        //qDebug() << "TrackDAO::getTrack()" << id << "Caller wanted track but only if it was cached. Returning null.";
+        qDebug() << "TrackDAO::getTrack()" << id << "Caller wanted track but only if it was cached. Returning null.";
         return TrackPointer();
     }
 
+    qDebug() << "TrackDAO::getTrack nearly over" << QThread::currentThread() << m_database.connectionName();
     return getTrackFromDB(id);
 }
 
