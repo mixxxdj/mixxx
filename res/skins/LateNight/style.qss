@@ -40,11 +40,12 @@
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
-#SpinnyContainer {
+#SpinnyBorder {
   border: 1px solid #585858;
-  border-right: 0px;
-  border-top: 0px;
-  border-bottom: 0px;
+}
+
+#SpinnyContainer {
+  border: 0px;
   background-color: #0f0f0f;
 }
 
@@ -180,19 +181,19 @@
 #MixerContainer {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
   background-color: #1e1e1e;
-  padding-top: 5px;
+  padding-top: 3px;
 }
 
 #MixerChannel {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  padding-left: 5px;
-  padding-right: 5px;
+  padding-left: 2px;
+  padding-right: 2px;
 }
 
 #MixerChannelReversed {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  padding-left: 5px;
-  padding-right: 5px;
+  padding-left: 2px;
+  padding-right: 2px;
 }
 
 #MixerChannelHoriz {
@@ -361,8 +362,8 @@
   color: #585858;
   text-align: center;
   qproperty-alignment: 'AlignCenter | AlignBottom';
-  padding-bottom: 2px;
-  padding-top: -4px;
+  padding-bottom: 1px;
+  padding-top: -3px;
 }
 
 #SyncControls {
@@ -854,10 +855,15 @@
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   border: 1px solid #585858;
   padding: 2px;
-  padding-left:10px;
-  padding-right:10px;
+  padding-left:0px;
+  padding-right:0px;
   margin-left: 3px;
   margin-right: 3px;
+}
+
+#MicInterior {
+  padding-left:10px;
+  padding-right:10px;
 }
 
 #MicButtonContainer {

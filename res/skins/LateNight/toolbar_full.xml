@@ -38,16 +38,16 @@
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
                     <PushButton>
-                        <Size>85f,20f</Size>
+                        <Size>55f,20f</Size>
                         <ObjectName>GuiToggleButton</ObjectName>
                         <NumberStates>2</NumberStates>
                         <State>
                           <Number>0</Number>
-                          <Text>MICROPHONES</Text>
+                          <Text>MIC/AUX</Text>
                         </State>
                         <State>
                           <Number>1</Number>
-                          <Text>MICROPHONES</Text>
+                          <Text>MIC/AUX</Text>
                         </State>
                         <Connection>
                           <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>

@@ -22,7 +22,7 @@ EffectManifest BitCrusherEffect::getManifest() {
     EffectManifestParameter* depth = manifest.addParameter();
     depth->setId("bit_depth");
     depth->setName(QObject::tr("Bit Depth"));
-    depth->setDescription("Adjusts the bit depth of the samples.");
+    depth->setDescription(QObject::tr("Adjusts the bit depth of the samples."));
     depth->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     depth->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
@@ -37,7 +37,7 @@ EffectManifest BitCrusherEffect::getManifest() {
     EffectManifestParameter* frequency = manifest.addParameter();
     frequency->setId("downsample");
     frequency->setName(QObject::tr("Downsampling"));
-    frequency->setDescription("Adjusts the sample rate, to which the signal is downsampled.");
+    frequency->setDescription(QObject::tr("Adjusts the sample rate, to which the signal is downsampled."));
     frequency->setControlHint(EffectManifestParameter::CONTROL_KNOB_LOGARITHMIC);
     frequency->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     frequency->setUnitsHint(EffectManifestParameter::UNITS_SAMPLERATE);
