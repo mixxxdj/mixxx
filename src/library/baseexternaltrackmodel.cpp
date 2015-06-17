@@ -46,12 +46,12 @@ TrackPointer BaseExternalTrackModel::getTrack(const QModelIndex& index) const {
         return TrackPointer();
     }
 
-    TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
     bool track_already_in_library = false;
     int track_id = -1;
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-            [this, &track_dao, &location, &track_already_in_library, &track_id] (void) {
+            [this, &location, &track_already_in_library, &track_id] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        TrackDAO& track_dao = pTrackCollectionPrivate->getTrackDAO();
         track_id = track_dao.getTrackId(location);
         track_already_in_library = track_id >= 0;
         if (track_id < 0) {
@@ -67,7 +67,8 @@ TrackPointer BaseExternalTrackModel::getTrack(const QModelIndex& index) const {
     } else {
         // tro's lambda idea. This code calls synchronously!
         m_pTrackCollection->callSync(
-                [this, &track_dao, &track_id, &pTrack] (void) {
+                [this, &track_id, &pTrack] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+            TrackDAO& track_dao = pTrackCollectionPrivate->getTrackDAO();
             pTrack = track_dao.getTrack(track_id);
         });
     }

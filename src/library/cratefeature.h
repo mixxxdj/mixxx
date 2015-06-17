@@ -64,7 +64,6 @@ class CrateFeature : public LibraryFeature {
     void buildCrateList();
 
     TrackCollection* m_pTrackCollection;
-    CrateDAO& m_crateDao;
     QAction *m_pCreateCrateAction;
     QAction *m_pDeleteCrateAction;
     QAction *m_pRenameCrateAction;

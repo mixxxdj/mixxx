@@ -78,9 +78,9 @@ void BaseExternalLibraryFeature::addToAutoDJ(bool bTop) {
     int autoDJId = -1;
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-                [this, &pPlaylistModelToAdd, &autoDJId] (void) {
-        pPlaylistModelToAdd->select();
-        autoDJId = m_pTrackCollection->getPlaylistDAO().getPlaylistIdFromName(AUTODJ_TABLE);
+                [this, &pPlaylistModelToAdd, &autoDJId] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        pPlaylistModelToAdd->select(pTrackCollectionPrivate);
+        autoDJId = pTrackCollectionPrivate->getPlaylistDAO().getPlaylistIdFromName(AUTODJ_TABLE);
     }, __PRETTY_FUNCTION__);
 
     int rows = pPlaylistModelToAdd->rowCount();
@@ -95,13 +95,13 @@ void BaseExternalLibraryFeature::addToAutoDJ(bool bTop) {
             continue;
         }
         m_pTrackCollection->callSync(
-                    [this, &bTop, &track, &i, &autoDJId] (void) {
+                    [this, &bTop, &track, &i, &autoDJId] (TrackCollectionPrivate* pTrackCollectionPrivate) {
             if (bTop) {
                 // Start at position 2 because position 1 was already loaded to the deck
-                m_pTrackCollection->getPlaylistDAO().insertTrackIntoPlaylist(track->getId(), autoDJId, i+2);
+                pTrackCollectionPrivate->getPlaylistDAO().insertTrackIntoPlaylist(track->getId(), autoDJId, i+2);
             } else {
                 // TODO(XXX): Care whether the append succeeded.
-                m_pTrackCollection->getPlaylistDAO().appendTrackToPlaylist(track->getId(), autoDJId);
+                pTrackCollectionPrivate->getPlaylistDAO().appendTrackToPlaylist(track->getId(), autoDJId);
             }
         }, __PRETTY_FUNCTION__);
     }
@@ -118,7 +118,7 @@ void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
 
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-                [this, &playlist] (void) {
+                [this, &playlist] (TrackCollectionPrivate* pTrackCollectionPrivate) {
         // Qt::UserRole asks TreeItemModel for the TreeItem's dataPath. We need to
         // use the dataPath because models with nested playlists need to use the
         // full path/name of the playlist.
@@ -130,8 +130,8 @@ void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
             return;
         }
 
-        pPlaylistModelToAdd->select();
-        PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
+        pPlaylistModelToAdd->select(pTrackCollectionPrivate);
+        PlaylistDAO& playlistDao = pTrackCollectionPrivate->getPlaylistDAO();
 
         int playlistId = playlistDao.getPlaylistIdFromName(playlist);
         int i = 1;

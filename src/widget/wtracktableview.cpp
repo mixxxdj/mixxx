@@ -596,62 +596,60 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
 
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOPLAYLIST)) {
         m_pPlaylistMenu->clear();
-        PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
         QMap<QString,int> playlists;
         // tro's lambda idea. This code calls synchronously!
         m_pTrackCollection->callSync(
-                [this, &playlistDao, &playlists] (void) {
+                [this,&playlists] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+            PlaylistDAO& playlistDao = pTrackCollectionPrivate->getPlaylistDAO();
             int numPlaylists = playlistDao.playlistCount();
             for (int i = 0; i < numPlaylists; ++i) {
                 int iPlaylistId = playlistDao.getPlaylistId(i);
                 playlists.insert(playlistDao.getPlaylistName(iPlaylistId), iPlaylistId);
             }
-        }, __PRETTY_FUNCTION__);
 
-        QMapIterator<QString, int> it(playlists);
-        while (it.hasNext()) {
-            it.next();
-            if (!playlistDao.isHidden(it.value())) {
-                // No leak because making the menu the parent means they will be auto-deleted
-                bool locked = false;
-                // tro's lambda idea. This code calls synchronously!
-                m_pTrackCollection->callSync(
-                        [this, &playlistDao, &it, &locked] (void) {
+            QMapIterator<QString, int> it(playlists);
+            while (it.hasNext()) {
+                it.next();
+                if (!playlistDao.isHidden(it.value())) {
+                    // No leak because making the menu the parent means they will be auto-deleted
+                    bool locked = false;
                     locked = playlistDao.isPlaylistLocked(it.value());
-                }, __PRETTY_FUNCTION__);
 
-                QAction* pAction;
-                pAction = new QAction(it.key(), m_pPlaylistMenu);
-                pAction->setEnabled(!locked);
-                m_pPlaylistMenu->addAction(pAction);
-                m_playlistMapper.setMapping(pAction, it.value());
-                connect(pAction, SIGNAL(triggered()), &m_playlistMapper, SLOT(map()));
+                    QAction* pAction;
+                    pAction = new QAction(it.key(), m_pPlaylistMenu);
+                    pAction->setEnabled(!locked);
+                    m_pPlaylistMenu->addAction(pAction);
+                    m_playlistMapper.setMapping(pAction, it.value());
+                    connect(pAction, SIGNAL(triggered()), &m_playlistMapper, SLOT(map()));
+                }
             }
-        }
+        }, __PRETTY_FUNCTION__);
         m_pMenu->addMenu(m_pPlaylistMenu);
     }
 
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOCRATE)) {
         m_pCrateMenu->clear();
-        CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
-        QMap<QString , int> crates;
-        int numCrates = crateDao.crateCount();
-        for (int i = 0; i < numCrates; ++i) {
-            int iCrateId = crateDao.getCrateId(i);
-            crates.insert(crateDao.crateName(iCrateId),iCrateId);
-        }
-        QMapIterator<QString, int> it(crates);
-        while (it.hasNext()) {
-            it.next();
-            // No leak because making the menu the parent means they will be
-            // auto-deleted
-            QAction* pAction = new QAction(it.key(), m_pCrateMenu);
-            bool locked = crateDao.isCrateLocked(it.value());
-            pAction->setEnabled(!locked);
-            m_pCrateMenu->addAction(pAction);
-            m_crateMapper.setMapping(pAction, it.value());
-            connect(pAction, SIGNAL(triggered()), &m_crateMapper, SLOT(map()));
-        }
+        m_pTrackCollection->callSync( [this] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+            CrateDAO& crateDao = pTrackCollectionPrivate->getCrateDAO();
+            QMap<QString , int> crates;
+            int numCrates = crateDao.crateCount();
+            for (int i = 0; i < numCrates; ++i) {
+                int iCrateId = crateDao.getCrateId(i);
+                crates.insert(crateDao.crateName(iCrateId),iCrateId);
+            }
+            QMapIterator<QString, int> it(crates);
+            while (it.hasNext()) {
+                it.next();
+                // No leak because making the menu the parent means they will be
+                // auto-deleted
+                QAction* pAction = new QAction(it.key(), m_pCrateMenu);
+                bool locked = crateDao.isCrateLocked(it.value());
+                pAction->setEnabled(!locked);
+                m_pCrateMenu->addAction(pAction);
+                m_crateMapper.setMapping(pAction, it.value());
+                connect(pAction, SIGNAL(triggered()), &m_crateMapper, SLOT(map()));
+            }
+        }, __PRETTY_FUNCTION__);
         m_pMenu->addMenu(m_pCrateMenu);
     }
     m_pMenu->addSeparator();
@@ -1164,8 +1162,8 @@ void WTrackTableView::sendToAutoDJ(bool bTop) {
     }
 
     m_pTrackCollection->callAsync(
-            [this, trackIds, bTop] (void) {
-        PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
+            [this, trackIds, bTop] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        PlaylistDAO& playlistDao = pTrackCollectionPrivate->getPlaylistDAO();
         int iAutoDJPlaylistId = playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
         if (iAutoDJPlaylistId == -1) {
             return;
@@ -1241,10 +1239,10 @@ void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
 
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(
-            [this, trackIds, iPlaylistId] (void) {
+            [this, trackIds, iPlaylistId] (TrackCollectionPrivate* pTrackCollectionPrivate) {
         if (trackIds.size() > 0) {
             // TODO(XXX): Care whether the append succeeded.
-            m_pTrackCollection->getPlaylistDAO().appendTracksToPlaylist(trackIds, iPlaylistId);
+            pTrackCollectionPrivate->getPlaylistDAO().appendTracksToPlaylist(trackIds, iPlaylistId);
         }
     }, __PRETTY_FUNCTION__);
 }
@@ -1270,9 +1268,9 @@ void WTrackTableView::addSelectionToCrate(int iCrateId) {
 
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-            [this, &trackIds, &iCrateId] (void) {
+            [this, &trackIds, &iCrateId] (TrackCollectionPrivate* pTrackCollectionPrivate) {
         if (trackIds.size() > 0) {
-            CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
+            CrateDAO& crateDao = pTrackCollectionPrivate->getCrateDAO();
             crateDao.addTracksToCrate(iCrateId, &trackIds);
         }
     }, __PRETTY_FUNCTION__);
@@ -1294,8 +1292,10 @@ void WTrackTableView::doSortByColumn(int headerSection) {
         trackIds.insert(trackId);
     }
 
+    //TODO(MK,daschuer,nazar): why is this called via lambda?
     m_pTrackCollection->callSync(
-            [this, &headerSection] (void) {
+            [this, &headerSection] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+                Q_UNUSED(pTrackCollectionPrivate);
         sortByColumn(headerSection);
     }, __PRETTY_FUNCTION__);
 

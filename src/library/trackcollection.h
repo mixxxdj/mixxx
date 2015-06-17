@@ -18,6 +18,7 @@
 #include <QAtomicInt>
 
 #include "configobject.h"
+#include "library/trackcollectionprivate.h"
 #include "library/basetrackcache.h"
 #include "library/dao/trackdao.h"
 #include "library/dao/cratedao.h"
@@ -29,7 +30,8 @@
 #define AUTODJ_TABLE "Auto DJ"
 
 // Lambda function
-typedef std::function <void ()> func;
+typedef std::function <void (TrackCollectionPrivate*)> func;
+typedef std::function <void ()> funcNoParams;
 
 class TrackInfoObject;
 class ControlObjectThread;
@@ -47,7 +49,7 @@ public:
         return instance;
     }
 
-    static void callAsync(func lambda, QString where = QString()) {
+    static void callAsync(funcNoParams lambda, QString where = QString()) {
         DBG() << where;
         MainExecuter& instance = getInstance();
         instance.m_lambdaMutex.lock();
@@ -55,7 +57,7 @@ public:
         emit(instance.runOnMainThread());
     }
 
-    static void callSync(func lambda, QString where = QString()) {
+    static void callSync(funcNoParams lambda, QString where = QString()) {
         DBG() << where;
         if (QThread::currentThread() == qApp->thread()) {
             // We are already on Main thread
@@ -90,13 +92,13 @@ private:
                 this, SLOT(call()), Qt::QueuedConnection);
     }
 
-    void setLambda(func newLambda) {
+    void setLambda(funcNoParams newLambda) {
         m_lambda = newLambda;
         m_lamdaCount = 1;
     }
 
     QMutex m_lambdaMutex;
-    func m_lambda;
+    funcNoParams m_lambda;
     QAtomicInt m_lamdaCount;
 };
 
@@ -119,34 +121,15 @@ class TrackCollection : public QThread {
     void setupControlObject();
     void setUiEnabled(const bool enabled);
 
-    bool checkForTables();
-
-    QSqlDatabase& getDatabase();
-
-    CrateDAO& getCrateDAO();
-    TrackDAO& getTrackDAO();
-    PlaylistDAO& getPlaylistDAO();
     QSharedPointer<BaseTrackCache> getTrackSource(const QString& name);
     void addTrackSource(const QString& name, QSharedPointer<BaseTrackCache> trackSource);
-
-    ConfigObject<ConfigValue>* getConfig() {
-        return m_pConfig;
-    }
 
   signals:
     void initialized();
 
   private:
-    void createAndPopulateDbConnection();
-    ConfigObject<ConfigValue>* m_pConfig;
-    QSqlDatabase* m_pDatabase;
+		TrackCollectionPrivate* m_pTrackCollectionPrivate;
     QHash<QString, QSharedPointer<BaseTrackCache> > m_trackSources;
-    PlaylistDAO* m_pPlaylistDao;
-    CrateDAO* m_pCrateDao;
-    CueDAO* m_pCueDao;
-    AnalysisDao* m_pAnalysisDao;
-    TrackDAO* m_pTrackDao;
-
     QQueue<func> m_lambdas;
     volatile bool m_stop;
     QMutex m_lambdasQueueMutex; // mutex for accessing queue of lambdas
@@ -154,7 +137,6 @@ class TrackCollection : public QThread {
     QSemaphore m_semLambdasFree; // count of vacant places for lambdas in queue
     ControlObjectThread* m_pCOTPlaylistIsBusy;
 
-    const QRegExp m_supportedFileExtensionsRegex;
     int m_inCallSyncCount;
 };
 

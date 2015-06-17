@@ -556,6 +556,7 @@ class MixxxCore(Feature):
                    "widget/wanalysislibrarytableview.cpp",
                    "widget/wlibrarytextbrowser.cpp",
                    "library/trackcollection.cpp",
+                   "library/trackcollectionprivate.cpp",
                    "library/basesqltablemodel.cpp",
                    "library/basetrackcache.cpp",
                    "library/librarytablemodel.cpp",

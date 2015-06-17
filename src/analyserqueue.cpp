@@ -32,8 +32,10 @@ AnalyserQueue::AnalyserQueue(TrackCollection* pTrackCollection) :
         m_queue_size(0) {
     connect(this, SIGNAL(updateProgress()),
             this, SLOT(slotUpdateProgress()));
+    pTrackCollection->callSync([this] (TrackCollectionPrivate* pTrackCollectionPrivate){
     connect(this, SIGNAL(trackDone(TrackPointer)),
-            &pTrackCollection->getTrackDAO(), SLOT(saveTrack(TrackPointer)));
+            &pTrackCollectionPrivate->getTrackDAO(), SLOT(saveTrack(TrackPointer)));
+    }, __PRETTY_FUNCTION__);
 }
 
 void AnalyserQueue::addAnalyser(Analyser* an) {

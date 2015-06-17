@@ -67,8 +67,8 @@ void DlgAnalysis::onShow() {
     // There might be new tracks dropped to other views
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(
-            [this] (void) {
-        m_pAnalysisLibraryTableModel->select();
+            [this] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        m_pAnalysisLibraryTableModel->select(pTrackCollectionPrivate);
     }, __PRETTY_FUNCTION__);
 }
 

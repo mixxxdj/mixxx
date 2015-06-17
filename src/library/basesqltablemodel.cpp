@@ -22,9 +22,8 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
                                      TrackCollection* pTrackCollection,
                                      QString settingsNamespace)
         :  QAbstractTableModel(pParent),
-           TrackModel(pTrackCollection->getDatabase(), settingsNamespace),
+           TrackModel(pTrackCollection, settingsNamespace),
            m_pTrackCollection(pTrackCollection),
-           m_trackDAO(m_pTrackCollection->getTrackDAO()),
            m_pRowInfo(new QVector<RowInfo>),
            m_pNewRowInfo(new QVector<RowInfo>),
            m_currentSearch(""),
@@ -155,7 +154,8 @@ QString BaseSqlTableModel::orderByClause() const {
 }
 
 // must be called only from from TrackCollection thread (via callSync/callAsync)
-void BaseSqlTableModel::select() {
+// this is for sure because you need a trackcollectionPrivate for that
+void BaseSqlTableModel::select(TrackCollectionPrivate* pTrackCollectionPrivate) {
     if (!m_bInitialized) {
         return;
     }
@@ -178,7 +178,7 @@ void BaseSqlTableModel::select() {
     QString queryString = QString("SELECT %1 FROM %2 %3")
                           .arg(columns, m_tableName, orderBy);
 
-    QSqlQuery selectQuery(m_pTrackCollection->getDatabase());
+    QSqlQuery selectQuery(pTrackCollectionPrivate->getDatabase());
     // This causes a memory savings since QSqlCachedResult (what QtSQLite uses)
     // won't allocate a giant in-memory table that we won't use at all.
     selectQuery.setForwardOnly(true);
@@ -373,8 +373,8 @@ void BaseSqlTableModel::search(const QString& searchText, const QString& extraFi
 
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(
-             [this] (void) {
-        select();
+             [this] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        select(pTrackCollectionPrivate);
     }, __PRETTY_FUNCTION__);
 }
 
@@ -404,7 +404,11 @@ void BaseSqlTableModel::sort(int column, Qt::SortOrder order) {
         qDebug() << this << "sort()" << column << order;
     }
     setSort(column, order);
-    select();
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+             [this] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        select(pTrackCollectionPrivate);
+    }, __PRETTY_FUNCTION__);
 }
 
 int BaseSqlTableModel::rowCount(const QModelIndex& parent) const {
@@ -558,7 +562,13 @@ bool BaseSqlTableModel::setData(
 
     // TODO(rryan) ugly and only works because the mixxx library tables are the
     // only ones that aren't read-only. This should be moved into BTC.
-    TrackPointer pTrack = m_trackDAO.getTrack(trackId);
+    TrackPointer pTrack;
+		
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callSync(
+             [trackId, &pTrack] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+				pTrack = pTrackCollectionPrivate->getTrackDAO().getTrack(trackId);
+    }, __PRETTY_FUNCTION__);
     if (!pTrack) {
         return false;
     }
@@ -644,8 +654,8 @@ TrackPointer BaseSqlTableModel::getTrack(const QModelIndex& index) const {
     TrackPointer trackPointer;
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-            [this, &trackId, &trackPointer] (void) {
-        trackPointer = m_trackDAO.getTrack(trackId);
+            [this, &trackId, &trackPointer] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        trackPointer = pTrackCollectionPrivate->getTrackDAO().getTrack(trackId);
     }, __PRETTY_FUNCTION__);
     return trackPointer;
 }
@@ -843,9 +853,9 @@ void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {
 
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(
-                [this, trackIds] (void) {
-        m_trackDAO.hideTracks(trackIds);
+                [this, trackIds] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        pTrackCollectionPrivate->getTrackDAO().hideTracks(trackIds);
         // TODO(rryan) : do not select, instead route event to BTC and notify from there.
-        select(); //Repopulate the data model.
+        select(pTrackCollectionPrivate); //Repopulate the data model.
     }, __PRETTY_FUNCTION__);
 }

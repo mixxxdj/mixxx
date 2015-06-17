@@ -62,9 +62,9 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
 
     // tro's lambda idea. This code calls synchronously!
      m_pTrackCollection->callSync(
-                 [this, &playlistName, &playlistId, &locked] (void) {
-         playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
-         locked = m_playlistDao.isPlaylistLocked(playlistId);
+                 [this, &playlistName, &playlistId, &locked] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+         playlistId = pTrackCollectionPrivate->getPlaylistDAO().getPlaylistIdFromName(playlistName);
+         locked = pTrackCollectionPrivate->getPlaylistDAO().isPlaylistLocked(playlistId);
      }, __PRETTY_FUNCTION__);
 
 
@@ -124,16 +124,16 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
     const bool is_pSource = pSource;
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-                [this, &is_pSource, &playlistName, &files, &result] (void) {
+                [this, &is_pSource, &playlistName, &files, &result] (TrackCollectionPrivate* pTrackCollectionPrivate) {
         QList<int> trackIds;
         if (is_pSource) {
-            trackIds = m_pTrackCollection->getTrackDAO().getTrackIds(files);
+            trackIds = pTrackCollectionPrivate->getTrackDAO().getTrackIds(files);
         } else {
             // If a track is dropped onto a playlist's name, but the track isn't in the
             // library, then add the track to the library before adding it to the
             // playlist.
             // Adds track, does not insert duplicates, handles unremoving logic.
-            trackIds = m_pTrackCollection->getTrackDAO().addTracks(files, true);
+            trackIds = pTrackCollectionPrivate->getTrackDAO().addTracks(files, true);
         }
 
         // remove tracks that could not be added
@@ -143,20 +143,25 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
             }
         }
 
-        const int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
+        const int playlistId = pTrackCollectionPrivate->getPlaylistDAO().getPlaylistIdFromName(playlistName);
         // Return whether appendTracksToPlaylist succeeded.
-        result = m_playlistDao.appendTracksToPlaylist(trackIds, playlistId);
+        result = pTrackCollectionPrivate->getPlaylistDAO().appendTracksToPlaylist(trackIds, playlistId);
     }, __PRETTY_FUNCTION__);
     return result;
 }
 
 // Must be called from TrackCollection
+// We now use lambdas in here so that is guaranteed
 bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
 
     QString playlistName = index.data().toString();
-    int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
-    bool locked = m_playlistDao.isPlaylistLocked(playlistId);
+    int playlistId;
+    bool locked;
+    m_pTrackCollection->callSync( [this,&playlistId,&locked,&playlistName] (TrackCollectionPrivate* pTrackCollectionPrivate){
+        playlistId = pTrackCollectionPrivate->getPlaylistDAO().getPlaylistIdFromName(playlistName);
+        locked = pTrackCollectionPrivate->getPlaylistDAO().isPlaylistLocked(playlistId);
+    }, __PRETTY_FUNCTION__);
 
     QFileInfo file(url.toLocalFile());
     bool formatSupported = SoundSourceProxy::isFilenameSupported(file.fileName()) ||
@@ -166,9 +171,9 @@ bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
 }
 
 void PlaylistFeature::buildPlaylistList() {
-    QSqlTableModel playlistTableModel(this, m_pTrackCollection->getDatabase());
     m_pTrackCollection->callSync(
-                [this, &playlistTableModel] (void) {
+                [this] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        QSqlTableModel playlistTableModel(this, pTrackCollectionPrivate->getDatabase());
         m_playlistList.clear();
         // Setup the sidebar playlist model
 
@@ -198,8 +203,8 @@ void PlaylistFeature::decorateChild(TreeItem* item, int playlist_id) {
     bool playListIsLocked = false;
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-                [this, &playlist_id, &playListIsLocked] (void) {
-        playListIsLocked = m_playlistDao.isPlaylistLocked(playlist_id);
+                [this, &playlist_id, &playListIsLocked] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        playListIsLocked = pTrackCollectionPrivate->getPlaylistDAO().isPlaylistLocked(playlist_id);
     }, __PRETTY_FUNCTION__);
     if (playListIsLocked) {
         item->setIcon(QIcon(":/images/library/ic_library_locked.png"));
@@ -219,8 +224,8 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
     PlaylistDAO::HiddenType type;
 
     m_pTrackCollection->callSync(
-                [this, &playlistId, &type] (void) {
-        type = m_playlistDao.getHiddenType(playlistId);
+                [this, &playlistId, &type] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        type = pTrackCollectionPrivate->getPlaylistDAO().getHiddenType(playlistId);
     }, __PRETTY_FUNCTION__ + objectName());
 
     if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||

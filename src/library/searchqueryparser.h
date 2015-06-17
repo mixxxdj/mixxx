@@ -6,10 +6,11 @@
 #include <QtSql>
 
 #include "util.h"
+#include "library/trackcollection.h"
 
 class SearchQueryParser {
   public:
-    SearchQueryParser(QSqlDatabase& database);
+    SearchQueryParser(TrackCollection* pTrackCollection);
     virtual ~SearchQueryParser();
 
     QString parseQuery(const QString& query,
@@ -36,7 +37,7 @@ class SearchQueryParser {
     bool parseSpecialFilter(QString field, QString argument,
                             QStringList* tokens, QStringList* output) const;
 
-    QSqlDatabase m_database;
+    TrackCollection* m_pTrackCollection;
 
     QStringList m_textFilters;
     QStringList m_numericFilters;

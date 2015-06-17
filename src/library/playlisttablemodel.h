@@ -35,7 +35,6 @@ class PlaylistTableModel : public BaseSqlTableModel {
     void playlistChanged(int playlistId);
 
   private:
-    PlaylistDAO& m_playlistDao;
     int m_iPlaylistId;
     bool m_showAll;
 };

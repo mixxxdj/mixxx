@@ -122,8 +122,10 @@ void WTrackTableViewHeader::saveHeaderState() {
     const QString headerState = QString(saveState().toBase64());
 
     // tro's lambda idea. This code calls synchronously!
+    // TODO(MK,daschuer,nazar): Why is this called via lambda?
     m_pTrackCollection->callSync(
-            [this, &headerState, track_model] (void) {
+            [this, &headerState, track_model] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        Q_UNUSED(pTrackCollectionPrivate);
         track_model->setModelSetting("header_state", headerState);
     }, __PRETTY_FUNCTION__);
     //qDebug() << "Saving old header state:" << result << headerState;
@@ -139,7 +141,8 @@ void WTrackTableViewHeader::restoreHeaderState() {
     QString headerStateString;
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-            [this, track_model, &headerStateString] (void) {
+            [this, track_model, &headerStateString] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        Q_UNUSED(pTrackCollectionPrivate);
         headerStateString = track_model->getModelSetting("header_state");
     }, __PRETTY_FUNCTION__);
 
@@ -162,7 +165,8 @@ bool WTrackTableViewHeader::hasPersistedHeaderState() {
     QString headerStateString;
     // tro's lambda idea. This code calls Synchronously!
     m_pTrackCollection->callSync(
-            [this, track_model, &headerStateString] (void) {
+            [this, track_model, &headerStateString] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        Q_UNUSED(pTrackCollectionPrivate);
         headerStateString = track_model->getModelSetting("header_state");
     }, __PRETTY_FUNCTION__);
 

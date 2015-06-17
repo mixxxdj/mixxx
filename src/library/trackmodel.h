@@ -8,14 +8,15 @@
 
 #include "trackinfoobject.h"
 #include "library/dao/settingsdao.h"
+#include "library/trackcollection.h"
 
 /** Pure virtual (abstract) class that provides an interface for data models which
     display track lists. */
 class TrackModel {
   public:
-    TrackModel(QSqlDatabase db,
+    TrackModel(TrackCollection* pTrackCollection,
                QString settingsNamespace)
-            : m_db(db),
+            : m_pTrackCollection(pTrackCollection),
               m_settingsNamespace(settingsNamespace),
               m_iDefaultSortColumn(-1),
               m_eDefaultSortOrder(Qt::AscendingOrder) {
@@ -104,18 +105,24 @@ class TrackModel {
         return TRACKMODELCAPS_NONE;
     }
 
-    // Must be called from TrackCollection thread
     virtual QString getModelSetting(QString name) {
-        SettingsDAO settings(m_db);
+        QString result;
+				m_pTrackCollection->callSync([this, &result, name] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        SettingsDAO settings(pTrackCollectionPrivate->getDatabase());
         QString key = m_settingsNamespace + "." + name;
-        return settings.getValue(key);
+        result = settings.getValue(key);
+				},__PRETTY_FUNCTION__);
+				return result;
     }
 
-    // Must be called from TrackCollection thread
     virtual bool setModelSetting(QString name, QVariant value) {
-        SettingsDAO settings(m_db);
+				bool result;
+				m_pTrackCollection->callSync([this, &result, name, value] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        SettingsDAO settings(pTrackCollectionPrivate->getDatabase());
         QString key = m_settingsNamespace + "." + name;
-        return settings.setValue(key, value);
+        result = settings.setValue(key, value);
+				},__PRETTY_FUNCTION__);
+				return result;
     }
 
     virtual int defaultSortColumn() const {
@@ -140,7 +147,7 @@ class TrackModel {
     }
 
   private:
-    QSqlDatabase m_db;
+    TrackCollection* m_pTrackCollection;
     QString m_settingsNamespace;
     QList<int> m_emptyColumns;
     int m_iDefaultSortColumn;

@@ -19,7 +19,7 @@
 BrowseTableModel::BrowseTableModel(QObject* parent,
                                    TrackCollection* pTrackCollection,
                                    RecordingManager* pRecordingManager)
-        : TrackModel(pTrackCollection->getDatabase(),
+        : TrackModel(pTrackCollection,
                      "mixxx.db.model.browse"),
           QStandardItemModel(parent),
           m_pTrackCollection(pTrackCollection),
@@ -98,8 +98,8 @@ TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const {
     TrackPointer track;
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-                [this, &track_location, &track] (void) {
-        TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
+                [this, &track_location, &track] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        TrackDAO& track_dao = pTrackCollectionPrivate->getTrackDAO();
         int track_id = track_dao.getTrackId(track_location);
         if (track_id < 0) {
             // Add Track to library
@@ -187,7 +187,6 @@ void BrowseTableModel::removeTracks(QStringList trackLocations) {
 
     QList<int> deleted_ids;
     bool any_deleted = false;
-    TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
 
     foreach (QString track_location, trackLocations) {
         // If track is in use or deletion fails, show an error message.
@@ -204,7 +203,8 @@ void BrowseTableModel::removeTracks(QStringList trackLocations) {
 
         // tro's lambda idea. This code calls synchronously!
         m_pTrackCollection->callSync(
-                [this, &track_location, &track_dao, &deleted_ids] (void) {
+                [this, &track_location, &deleted_ids] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+            TrackDAO& track_dao = pTrackCollectionPrivate->getTrackDAO();
             deleted_ids.append(track_dao.getTrackId(track_location));
         }, __PRETTY_FUNCTION__);
     }
@@ -214,7 +214,8 @@ void BrowseTableModel::removeTracks(QStringList trackLocations) {
         qDebug() << "BrowseFeature: Purge affected track from database";
         // tro's lambda idea. This code calls synchronously!
         m_pTrackCollection->callSync(
-                [this, &track_dao, &deleted_ids] (void) {
+                [this, &deleted_ids] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+            TrackDAO& track_dao = pTrackCollectionPrivate->getTrackDAO();
             track_dao.purgeTracks(deleted_ids);
         }, __PRETTY_FUNCTION__);
     }

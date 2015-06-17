@@ -21,24 +21,15 @@
 #define MAX_LAMBDA_COUNT 8
 
 TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
-        : m_pConfig(pConfig),
-          m_pDatabase(NULL),
-          m_pPlaylistDao(NULL),
-          m_pCrateDao(NULL),
-          m_pCueDao(NULL),
-          m_pAnalysisDao(NULL),
-          m_pTrackDao(NULL),
-          m_stop(false),
+        : m_stop(false),
           m_semLambdasReadyToCall(0),
           m_semLambdasFree(MAX_LAMBDA_COUNT),
           m_pCOTPlaylistIsBusy(NULL),
-          m_supportedFileExtensionsRegex(
-                  SoundSourceProxy::supportedFileExtensionsRegex(),
-                  Qt::CaseInsensitive),
           m_inCallSyncCount(0) {
     DBG() << "TrackCollection constructor \tfrom thread id="
           << QThread::currentThreadId() << "name="
           << QThread::currentThread()->objectName();
+    m_pTrackCollectionPrivate = new TrackCollectionPrivate(pConfig);
 }
 
 TrackCollection::~TrackCollection() {
@@ -51,15 +42,7 @@ void TrackCollection::run() {
     DBG() << "id=" << QThread::currentThreadId()
           << "name=" << QThread::currentThread()->objectName();
 
-    qRegisterMetaType<QSet<int> >("QSet<int>");
-
-    createAndPopulateDbConnection();
-
-    DBG() << "Initializing DAOs inside TrackCollection's thread";
-    m_pTrackDao->initialize();
-    m_pPlaylistDao->initialize();
-    m_pCrateDao->initialize();
-    m_pCueDao->initialize();
+    m_pTrackCollectionPrivate->initialize();
 
     emit(initialized()); // to notify that Daos can be used
 
@@ -79,7 +62,7 @@ void TrackCollection::run() {
                 m_lambdasQueueMutex.lock();
                 lambda = m_lambdas.dequeue();
                 m_lambdasQueueMutex.unlock();
-                lambda();
+                lambda(m_pTrackCollectionPrivate);
                 m_semLambdasFree.release(1);
             }
             break;
@@ -88,15 +71,12 @@ void TrackCollection::run() {
                 m_lambdasQueueMutex.lock();
                 lambda = m_lambdas.dequeue();
                 m_lambdasQueueMutex.unlock();
-                lambda();
+                lambda(m_pTrackCollectionPrivate);
                 m_semLambdasFree.release(1);
             }
         }
     }
-    delete m_pPlaylistDao;
-    delete m_pCrateDao;
-    delete m_pCueDao;
-    delete m_pAnalysisDao;
+    //TODO(MK) TearDown TrackCollectionPrivate
     DBG() << " ### Thread ended ###";
 }
 
@@ -132,8 +112,8 @@ void TrackCollection::callSync(func lambda, QString where) {
     }
     QMutex mutex;
     mutex.lock();
-    func lambdaWithMutex =  [&mutex, &lambda] (void) {
-        lambda();
+    func lambdaWithMutex =  [&mutex, &lambda] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        lambda(pTrackCollectionPrivate);
         mutex.unlock();
     };
     addLambdaToQueue(lambdaWithMutex);
@@ -178,7 +158,8 @@ void TrackCollection::setUiEnabled(const bool enabled) {
 
 void TrackCollection::stopThread() {
     DBG() << "Stopping thread";
-
+		//Todo(MK): TearDown TrackCollectionPrivate here
+/*
     callSync([this](void) {
         DBG() << "Closing database connection";
         m_pTrackDao->finish();
@@ -201,76 +182,9 @@ void TrackCollection::stopThread() {
                      << "There is a logic error somewhere.";
         }
     }, "TrackCollection::stopThread, closing DB connection");
-
+*/
     m_semLambdasReadyToCall.release(1);
     m_stop = true;
-}
-
-
-bool TrackCollection::checkForTables() {
-    if (!m_pDatabase->open()) {
-        MainExecuter::callSync([this](void) {
-            QMessageBox::critical(0, tr("Cannot open database"),
-                                  tr("Unable to establish a database connection.\n"
-                                     "Mixxx requires Qt with SQLite support. Please read "
-                                     "the Qt SQL driver documentation for information on how "
-                                     "to build it.\n\n"
-                                     "Click OK to exit."), QMessageBox::Ok);
-        });
-        return false;
-    }
-
-    bool checkResult = true;
-    MainExecuter::callSync([this, &checkResult](void) {
-        int requiredSchemaVersion = 20; // TODO(xxx) avoid constant 20
-        QString schemaFilename = m_pConfig->getResourcePath();
-        schemaFilename.append("schema.xml");
-        QString okToExit = tr("Click OK to exit.");
-        QString upgradeFailed = tr("Cannot upgrade database schema");
-        QString upgradeToVersionFailed = tr("Unable to upgrade your database schema to version %1")
-                .arg(QString::number(requiredSchemaVersion));
-        int result = SchemaManager::upgradeToSchemaVersion(schemaFilename, *m_pDatabase, requiredSchemaVersion);
-        if (result < 0) {
-            if (result == -1) {
-                QMessageBox::warning(0, upgradeFailed,
-                                     upgradeToVersionFailed + "\n" +
-                                     tr("Your %1 file may be outdated.").arg(schemaFilename) +
-                                     "\n\n" + okToExit,
-                                     QMessageBox::Ok);
-            } else if (result == -2) {
-                QMessageBox::warning(0, upgradeFailed,
-                                     upgradeToVersionFailed + "\n" +
-                                     tr("Your mixxxdb.sqlite file may be corrupt.") + "\n" +
-                                     tr("Try renaming it and restarting Mixxx.") +
-                                     "\n\n" + okToExit,
-                                     QMessageBox::Ok);
-            } else { // -3
-                QMessageBox::warning(0, upgradeFailed,
-                                     upgradeToVersionFailed + "\n" +
-                                     tr("Your %1 file may be missing or invalid.").arg(schemaFilename) +
-                                     "\n\n" + okToExit,
-                                     QMessageBox::Ok);
-            }
-        }
-        checkResult = false;
-    });
-    return checkResult;
-}
-
-QSqlDatabase& TrackCollection::getDatabase() {
-    return *m_pDatabase;
-}
-
-CrateDAO& TrackCollection::getCrateDAO() {
-    return *m_pCrateDao;
-}
-
-TrackDAO& TrackCollection::getTrackDAO() {
-    return *m_pTrackDao;
-}
-
-PlaylistDAO& TrackCollection::getPlaylistDAO() {
-    return *m_pPlaylistDao;
 }
 
 QSharedPointer<BaseTrackCache> TrackCollection::getTrackSource(
@@ -282,39 +196,4 @@ void TrackCollection::addTrackSource(
         const QString& name, QSharedPointer<BaseTrackCache> trackSource) {
     Q_ASSERT(!m_trackSources.contains(name));
     m_trackSources[name] = trackSource;
-}
-
-void TrackCollection::createAndPopulateDbConnection() {
-    // initialize database connection in TrackCollection
-    const QStringList avaiableDrivers = QSqlDatabase::drivers();
-    const QString sqliteDriverName("QSQLITE");
-
-    if (!avaiableDrivers.contains(sqliteDriverName)) {
-        QString errorMsg = QString("No QSQLITE driver! Available QtSQL drivers: %1")
-                .arg(avaiableDrivers.join(","));
-        qDebug() << errorMsg;
-        exit(-1);
-    }
-
-    m_pDatabase = new QSqlDatabase(QSqlDatabase::addDatabase("QSQLITE", "track_collection_connection"));
-    m_pDatabase->setHostName("localhost");
-    m_pDatabase->setDatabaseName(m_pConfig->getSettingsPath().append("/mixxxdb.sqlite"));
-    m_pDatabase->setUserName("mixxx");
-    m_pDatabase->setPassword("mixxx");
-    bool ok = m_pDatabase->open();
-    qDebug() << "DB status:" << m_pDatabase->databaseName() << "=" << ok;
-    if (m_pDatabase->lastError().isValid()) {
-        qDebug() << "Error loading database:" << m_pDatabase->lastError();
-    }
-    // Check for tables and create them if missing
-    if (!checkForTables()) {
-        // TODO(XXX) something a little more elegant
-        exit(-1);
-    }
-
-    m_pPlaylistDao = new PlaylistDAO(*m_pDatabase);
-    m_pCrateDao = new CrateDAO(*m_pDatabase);
-    m_pCueDao = new CueDAO(*m_pDatabase);
-    m_pAnalysisDao = new AnalysisDao(*m_pDatabase, m_pConfig);
-    m_pTrackDao = new TrackDAO(*m_pDatabase, *m_pCueDao, *m_pPlaylistDao, *m_pCrateDao, *m_pAnalysisDao, m_pConfig);
 }

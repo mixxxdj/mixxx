@@ -8,7 +8,6 @@ PlaylistTableModel::PlaylistTableModel(QObject* parent,
                                     QString settingsNamespace,
                                     bool showAll)
         : BaseSqlTableModel(parent, pTrackCollection, settingsNamespace),
-                            m_playlistDao(m_pTrackCollection->getPlaylistDAO()),
                             m_iPlaylistId(-1),
                             m_showAll(showAll) {
 }
@@ -27,8 +26,6 @@ void PlaylistTableModel::setTableModel(int playlistId) {
 
     m_iPlaylistId = playlistId;
     QString playlistTableName = "playlist_" + QString::number(m_iPlaylistId);
-    QSqlQuery query(m_pTrackCollection->getDatabase());
-    FieldEscaper escaper(m_pTrackCollection->getDatabase());
 
     QStringList columns = QStringList()
             << PLAYLISTTRACKSTABLE_TRACKID + " as " + LIBRARYTABLE_ID
@@ -37,9 +34,9 @@ void PlaylistTableModel::setTableModel(int playlistId) {
             << "'' as preview";
 
     m_pTrackCollection->callSync(
-                [this, &playlistTableName, &playlistId, &columns](void) {
-        QSqlQuery query(m_pTrackCollection->getDatabase());
-        FieldEscaper escaper(m_pTrackCollection->getDatabase());
+                [this, &playlistTableName, &playlistId, &columns](TrackCollectionPrivate* pTrackCollectionPrivate) {
+        QSqlQuery query(pTrackCollectionPrivate->getDatabase());
+        FieldEscaper escaper(pTrackCollectionPrivate->getDatabase());
 
 
         // We drop files that have been explicitly deleted from mixxx
@@ -71,8 +68,11 @@ void PlaylistTableModel::setTableModel(int playlistId) {
     setDefaultSort(fieldIndex(PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
     setSort(defaultSortColumn(), defaultSortOrder());
 
-    connect(&m_playlistDao, SIGNAL(changed(int)),
-            this, SLOT(playlistChanged(int)));
+    m_pTrackCollection->callSync(
+                [this](TrackCollectionPrivate* pTrackCollectionPrivate) {
+        connect(&pTrackCollectionPrivate->getPlaylistDAO(), SIGNAL(changed(int)),
+                this, SLOT(playlistChanged(int)),Qt::QueuedConnection);
+    }, __PRETTY_FUNCTION__);
 }
 
 // Must be called from Main thread
@@ -97,14 +97,14 @@ int PlaylistTableModel::addTracks(const QModelIndex& index, QList<QString> locat
     int tracksAdded = 0;
     // tro's lambda idea. This code calls Synchronously!
     m_pTrackCollection->callSync(
-                [this, &fileInfoList, &position, &locations, &tracksAdded] (void) {
-        QList<int> trackIds = m_trackDAO.addTracks(fileInfoList, true);
+                [this, &fileInfoList, &position, &locations, &tracksAdded] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        QList<int> trackIds = pTrackCollectionPrivate->getTrackDAO().addTracks(fileInfoList, true);
 
-        tracksAdded = m_playlistDao.insertTracksIntoPlaylist(
+        tracksAdded = pTrackCollectionPrivate->getPlaylistDAO().insertTracksIntoPlaylist(
                     trackIds, m_iPlaylistId, position);
 
         if (tracksAdded > 0) {
-            select();
+            select(pTrackCollectionPrivate);
         } else if (locations.size() - tracksAdded > 0) {
             qDebug() << "PlaylistTableModel::addTracks could not add"
                      << locations.size() - tracksAdded
@@ -121,42 +121,42 @@ bool PlaylistTableModel::appendTrack(const int trackId) {
     }
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(
-                [this, trackId] (void) {
-        m_playlistDao.appendTrackToPlaylist(trackId, m_iPlaylistId);
-        select(); //Repopulate the data model.
+               [this, trackId] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        pTrackCollectionPrivate->getPlaylistDAO().appendTrackToPlaylist(trackId, m_iPlaylistId);
+        select(pTrackCollectionPrivate); //Repopulate the data model.
     }, __PRETTY_FUNCTION__);
     return true;
 }
 
 // Must be called from Main
 void PlaylistTableModel::removeTrack(const QModelIndex& index) {
-    if (m_playlistDao.isPlaylistLocked(m_iPlaylistId)) {
-        return;
-    }
-
-    const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
-    const int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(
-                [this, index, positionColumnIndex, position] (void) {
-        if (m_playlistDao.isPlaylistLocked(m_iPlaylistId)) {
+                [this, index] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        if (pTrackCollectionPrivate->getPlaylistDAO().isPlaylistLocked(m_iPlaylistId)) {
             return;
         }
-        m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, position);
-        select(); //Repopulate the data model.
+
+        const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
+        const int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
+        if (pTrackCollectionPrivate->getPlaylistDAO().isPlaylistLocked(m_iPlaylistId)) {
+            return;
+        }
+        pTrackCollectionPrivate->getPlaylistDAO().removeTrackFromPlaylist(m_iPlaylistId, position);
+        select(pTrackCollectionPrivate); //Repopulate the data model.
     }, __PRETTY_FUNCTION__);
 }
 
 void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
-    bool locked = m_playlistDao.isPlaylistLocked(m_iPlaylistId);
-
-    if (locked) {
-        return;
-    }
-
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(
-                [this, indices] (void) {
+                [this, indices] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        bool locked = pTrackCollectionPrivate->getPlaylistDAO().isPlaylistLocked(m_iPlaylistId);
+
+        if (locked) {
+            return;
+        }
+
         const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
 
         QList<int> trackPositions;
@@ -164,7 +164,7 @@ void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
             int trackPosition = index.sibling(index.row(), positionColumnIndex).data().toInt();
             trackPositions.append(trackPosition);
         }
-        m_playlistDao.removeTracksFromPlaylist(m_iPlaylistId,trackPositions);
+        pTrackCollectionPrivate->getPlaylistDAO().removeTracksFromPlaylist(m_iPlaylistId,trackPositions);
     });
 }
 
@@ -193,8 +193,8 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
         newPosition = rowCount();
     }
     m_pTrackCollection->callSync(
-                [this, &oldPosition, &newPosition](void) {
-        m_playlistDao.moveTrack(m_iPlaylistId, oldPosition, newPosition);
+                [this, &oldPosition, &newPosition](TrackCollectionPrivate* pTrackCollectionPrivate) {
+        pTrackCollectionPrivate->getPlaylistDAO().moveTrack(m_iPlaylistId, oldPosition, newPosition);
     }, __PRETTY_FUNCTION__);
 }
 
@@ -202,8 +202,8 @@ bool PlaylistTableModel::isLocked() {
     bool locked = false;
     // tro's lambda idea. This code calls synchronously!
      m_pTrackCollection->callSync(
-                 [this, &locked] (void) {
-         locked = m_playlistDao.isPlaylistLocked(m_iPlaylistId);
+                 [this, &locked] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+         locked = pTrackCollectionPrivate->getPlaylistDAO().isPlaylistLocked(m_iPlaylistId);
      }, __PRETTY_FUNCTION__);
     return locked;
 }
@@ -235,7 +235,10 @@ void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QMo
         }
     }
 
-    m_playlistDao.shuffleTracks(m_iPlaylistId, positions);
+    m_pTrackCollection->callSync(
+                 [this, &positions] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        pTrackCollectionPrivate->getPlaylistDAO().shuffleTracks(m_iPlaylistId, positions);
+    }, __PRETTY_FUNCTION__);
 }
 
 bool PlaylistTableModel::isColumnInternal(int column) {
@@ -276,19 +279,24 @@ TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {
             | TRACKMODELCAPS_RESETPLAYED;
 
     // Only allow Add to AutoDJ if we aren't currently showing the AutoDJ queue.
-    if (m_iPlaylistId != m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE)) {
-        caps |= TRACKMODELCAPS_ADDTOAUTODJ;
-    }
-    bool locked = m_playlistDao.isPlaylistLocked(m_iPlaylistId);
-    if (locked) {
-        caps |= TRACKMODELCAPS_LOCKED;
-    }
+    m_pTrackCollection->callSync( [this, &caps] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        if (m_iPlaylistId != pTrackCollectionPrivate->getPlaylistDAO().getPlaylistIdFromName(AUTODJ_TABLE)) {
+            caps |= TRACKMODELCAPS_ADDTOAUTODJ;
+        }
+        bool locked = pTrackCollectionPrivate->getPlaylistDAO().isPlaylistLocked(m_iPlaylistId);
+        if (locked) {
+            caps |= TRACKMODELCAPS_LOCKED;
+        }
+    }, __PRETTY_FUNCTION__);
 
     return caps;
 }
 
 void PlaylistTableModel::playlistChanged(int playlistId) {
     if (playlistId == m_iPlaylistId) {
-        select(); // Repopulate the data model.
+        m_pTrackCollection->callSync(
+            [this] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+            select(pTrackCollectionPrivate); // Repopulate the data model.
+        }, __PRETTY_FUNCTION__);
     }
 }

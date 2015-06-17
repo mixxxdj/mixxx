@@ -10,7 +10,8 @@ ProxyTrackModel::ProxyTrackModel(QAbstractItemModel* pTrackModel,
                                  bool bHandleSearches)
         // ProxyTrackModel proxies settings requests to the composed TrackModel,
         // don't initialize its TrackModel with valid parameters.
-        : TrackModel(QSqlDatabase(), ""),
+        //TODO(MK): this could be dangerous
+        : TrackModel(nullptr, ""),
           m_currentSearch(""),
           m_bHandleSearches(bHandleSearches) {
     m_pTrackModel = dynamic_cast<TrackModel*>(pTrackModel);

@@ -66,7 +66,10 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
     m_isActivated = false;
     m_title = tr("iTunes");
 
-    m_database = QSqlDatabase::cloneDatabase( pTrackCollection->getDatabase(), "ITUNES_SCANNER");
+    //TODO(MK,daschuer,nazar): is it ok to do that here?
+    pTrackCollection->callSync( [this] (TrackCollectionPrivate* pTrackCollectionPrivate){
+        m_database = QSqlDatabase::cloneDatabase( pTrackCollectionPrivate->getDatabase(), "ITUNES_SCANNER");
+    }, __PRETTY_FUNCTION__);
 
     //Open the database connection in this thread.
     if (!m_database.open()) {
@@ -119,12 +122,12 @@ void ITunesFeature::activate() {
 void ITunesFeature::activate(bool forceReload) {
     //qDebug("ITunesFeature::activate()");
     if (!m_isActivated || forceReload) {
-        SettingsDAO settings(m_pTrackCollection->getDatabase());
 
         QString pathKey;
         // tro's lambda idea. This code calls synchronously!
         m_pTrackCollection->callSync(
-                [this, &settings, &pathKey] (void) {
+                [this, &pathKey] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+            SettingsDAO settings(pTrackCollectionPrivate->getDatabase());
             pathKey = settings.getValue(ITDB_PATH_KEY);
         }, __PRETTY_FUNCTION__);
 
@@ -148,7 +151,8 @@ void ITunesFeature::activate(bool forceReload) {
 
             // tro's lambda idea. This code calls synchronously!
             m_pTrackCollection->callSync(
-                    [this, &settings] (void) {
+                    [this] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+                SettingsDAO settings(pTrackCollectionPrivate->getDatabase());
                 settings.setValue(ITDB_PATH_KEY, m_dbfile);
             }, __PRETTY_FUNCTION__);
         }

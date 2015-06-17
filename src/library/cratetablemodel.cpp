@@ -14,8 +14,7 @@ CrateTableModel::CrateTableModel(QObject* pParent,
                                  TrackCollection* pTrackCollection)
         : BaseSqlTableModel(pParent, pTrackCollection,
                             "mixxx.db.model.crate"),
-          m_iCrateId(-1),
-          m_crateDAO(pTrackCollection->getCrateDAO()) {
+          m_iCrateId(-1){
 }
 
 CrateTableModel::~CrateTableModel() {
@@ -39,9 +38,9 @@ void CrateTableModel::setTableModel(int crateId) {
 
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-                [this, &columns, &tableName] (void) {
-        QSqlQuery query(m_pTrackCollection->getDatabase());
-        FieldEscaper escaper(m_pTrackCollection->getDatabase());
+                [this, &columns, &tableName] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        QSqlQuery query(pTrackCollectionPrivate->getDatabase());
+        FieldEscaper escaper(pTrackCollectionPrivate->getDatabase());
         QString filter = "library.mixxx_deleted = 0";
 
         // We drop files that have been explicitly deleted from mixxx
@@ -84,17 +83,17 @@ bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
     bool success = false;
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callSync(
-                [this, &fileInfo, &success] (void) {
+                [this, &fileInfo, &success] (TrackCollectionPrivate* pTrackCollectionPrivate) {
         // Adds track, does not insert duplicates, handles unremoving logic.
-        int iTrackId = m_pTrackCollection->getTrackDAO().addTrack(fileInfo, true);
+        int iTrackId = pTrackCollectionPrivate->getTrackDAO().addTrack(fileInfo, true);
 
         bool success = false;
         if (iTrackId >= 0) {
-            success = m_pTrackCollection->getCrateDAO().addTrackToCrate(iTrackId, m_iCrateId);
+            success = pTrackCollectionPrivate->getCrateDAO().addTrackToCrate(iTrackId, m_iCrateId);
         }
         if (success) {
             // TODO(rryan) just add the track dont select
-            select();
+            select(pTrackCollectionPrivate);
         } else {
             qDebug() << "CrateTableModel::addTrack could not add track"
                      << fileInfo.absoluteFilePath() << "to crate" << m_iCrateId;
@@ -117,11 +116,11 @@ int CrateTableModel::addTracks(const QModelIndex& index,
     int tracksAdded = 0;
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-                [this, &fileInfoList, &tracksAdded] (void) {
-        QList<int> trackIDs = m_trackDAO.addTracks(fileInfoList, true);
-        tracksAdded = m_crateDAO.addTracksToCrate(m_iCrateId, &trackIDs);
+                [this, &fileInfoList, &tracksAdded] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        QList<int> trackIDs = pTrackCollectionPrivate->getTrackDAO().addTracks(fileInfoList, true);
+        tracksAdded = pTrackCollectionPrivate->getCrateDAO().addTracksToCrate(m_iCrateId, &trackIDs);
         if (tracksAdded > 0) {
-            select();
+            select(pTrackCollectionPrivate);
         }
     }, __PRETTY_FUNCTION__);
 
@@ -137,16 +136,16 @@ int CrateTableModel::addTracks(const QModelIndex& index,
 void CrateTableModel::removeTracks(const QModelIndexList& indices) {
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(
-                [this, indices] (void) {
-        bool locked = m_crateDAO.isCrateLocked(m_iCrateId);
+                [this, indices] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        bool locked = pTrackCollectionPrivate->getCrateDAO().isCrateLocked(m_iCrateId);
 
         if (!locked) {
             QList<int> trackIds;
             foreach (QModelIndex index, indices) {
                 trackIds.append(getTrackId(index));
             }
-            m_crateDAO.removeTracksFromCrate(trackIds, m_iCrateId);
-            select();
+            pTrackCollectionPrivate->getCrateDAO().removeTracksFromCrate(trackIds, m_iCrateId);
+            select(pTrackCollectionPrivate);
         }
     }, __PRETTY_FUNCTION__);
 }
@@ -185,7 +184,10 @@ TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {
             | TRACKMODELCAPS_CLEAR_BEATS
             | TRACKMODELCAPS_RESETPLAYED;
 
-    bool locked = m_crateDAO.isCrateLocked(m_iCrateId);
+    bool locked;
+    m_pTrackCollection->callSync( [this, &locked] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        locked = pTrackCollectionPrivate->getCrateDAO().isCrateLocked(m_iCrateId);
+    }, __PRETTY_FUNCTION__);
     if (locked) {
         caps |= TRACKMODELCAPS_LOCKED;
     }

@@ -108,8 +108,8 @@ void AnalysisFeature::analyzeTracks(QList<int> trackIds) {
         TrackPointer pTrack;
         // tro's lambda idea. This code calls Synchronously!
         m_pTrackCollection->callSync(
-                [this, &trackId, &pTrack] (void) {
-            pTrack = m_pTrackCollection->getTrackDAO().getTrack(trackId);
+                [this, &trackId, &pTrack] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+            pTrack = pTrackCollectionPrivate->getTrackDAO().getTrack(trackId);
         }, __PRETTY_FUNCTION__);
 
         if (pTrack) {
@@ -154,8 +154,8 @@ bool AnalysisFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     QList<int> trackIds;
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-            [this, &files, &trackIds] (void) {
-        trackIds = m_pTrackCollection->getTrackDAO().addTracks(files, true);
+            [this, &files, &trackIds] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        trackIds = pTrackCollectionPrivate->getTrackDAO().addTracks(files, true);
     }, __PRETTY_FUNCTION__);
     // Adds track, does not insert duplicates, handles unremoving logic.
 

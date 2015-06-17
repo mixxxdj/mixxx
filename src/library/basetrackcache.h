@@ -112,8 +112,6 @@ class BaseTrackCache : public QObject {
     bool m_bIsCaching;
     QHash<int, QVector<QVariant> > m_trackInfo;
     TrackCollection* m_pTrackCollection;
-    TrackDAO& m_trackDAO;
-    QSqlDatabase m_database;
     SearchQueryParser* m_pQueryParser;
     
     QStringList m_numericFilters;

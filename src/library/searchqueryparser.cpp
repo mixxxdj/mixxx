@@ -2,8 +2,8 @@
 #include "library/searchqueryparser.h"
 #include "library/queryutil.h"
 
-SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
-        : m_database(database) {
+SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection)
+        : m_pTrackCollection(pTrackCollection) {
     m_textFilters << "artist"
                   << "album"
                   << "title"
@@ -54,14 +54,16 @@ SearchQueryParser::~SearchQueryParser() {
 bool SearchQueryParser::searchFieldsForPhrase(const QString& phrase,
                                               const QStringList& fields,
                                               QStringList* output) const {
-    FieldEscaper escaper(m_database);
-    QString escapedPhrase = escaper.escapeString("%" + phrase + "%");
+    m_pTrackCollection->callSync( [this, &phrase, &fields, &output] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        FieldEscaper escaper(pTrackCollectionPrivate->getDatabase());
+        QString escapedPhrase = escaper.escapeString("%" + phrase + "%");
 
-    QStringList fieldFragments;
-    foreach (QString field, fields) {
-        fieldFragments << QString("(%1 LIKE %2)").arg(field, escapedPhrase);
-    }
-    *output << QString("(%1)").arg(fieldFragments.join(" OR "));
+        QStringList fieldFragments;
+        foreach (QString field, fields) {
+            fieldFragments << QString("(%1 LIKE %2)").arg(field, escapedPhrase);
+        }
+        *output << QString("(%1)").arg(fieldFragments.join(" OR "));
+    }, __PRETTY_FUNCTION__);
     return true;
 }
 
@@ -141,9 +143,11 @@ bool SearchQueryParser::parseTextFilter(QString field, QString argument,
         return false;
     }
 
-    FieldEscaper escaper(m_database);
-    QString escapedFilter = escaper.escapeString("%" + filter + "%");
-    *output << QString("(%1 LIKE %2)").arg(sqlField, escapedFilter);
+    m_pTrackCollection->callSync( [this, &filter, &sqlField, &output] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        FieldEscaper escaper(pTrackCollectionPrivate->getDatabase());
+        QString escapedFilter = escaper.escapeString("%" + filter + "%");
+        *output << QString("(%1 LIKE %2)").arg(sqlField, escapedFilter);
+    }, __PRETTY_FUNCTION__);
     return true;
 }
 
@@ -267,7 +271,7 @@ void SearchQueryParser::parseTokens(QStringList tokens,
 QString SearchQueryParser::parseQuery(const QString& query,
                                       const QStringList& searchColumns,
                                       const QString& extraFilter) const {
-    FieldEscaper escaper(m_database);
+    //FieldEscaper escaper(m_database);
     QStringList queryFragments;
 
     if (!extraFilter.isNull() && extraFilter != "") {

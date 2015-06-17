@@ -275,16 +275,19 @@ bool SidebarModel::dragMoveAccept(const QModelIndex& index, QUrl url) {
 
     if (index.isValid()) {
         if (index.internalPointer() == this) {
+            //TODO(MK,daschuer,nazar): why is this in callSync?
             m_pTrackCollection->callSync(
-                        [this, &index, &url, &result] (void) {
+                        [this, &index, &url, &result] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+                Q_UNUSED(pTrackCollectionPrivate);
                 result = m_sFeatures[index.row()]->dragMoveAccept(url);
-            });
+            }, __PRETTY_FUNCTION__);
         } else {
             TreeItem* tree_item = (TreeItem*)index.internalPointer();
             if (tree_item) {
                 LibraryFeature* feature = tree_item->getFeature();
                 m_pTrackCollection->callSync(
-                            [this, &feature, &index, &url, &result] (void) {
+                            [this, &feature, &index, &url, &result] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+                    Q_UNUSED(pTrackCollectionPrivate);
                     result = feature->dragMoveAcceptChild(index, url);
                 });
             }

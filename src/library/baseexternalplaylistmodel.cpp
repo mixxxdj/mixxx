@@ -43,17 +43,16 @@ TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const
         return TrackPointer();
     }
 
-    TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
     bool track_already_in_library = false;
     int track_id = -1;
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-            [this, &location, &track_dao, &track_already_in_library, &track_id] (void) {
-        track_id = track_dao.getTrackId(location);
+            [this, &location, &track_already_in_library, &track_id] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        track_id = pTrackCollectionPrivate->getTrackDAO().getTrackId(location);
         track_already_in_library = track_id >= 0;
         if (track_id < 0) {
             // Add Track to library
-            track_id = track_dao.addTrack(location, true);
+            track_id = pTrackCollectionPrivate->getTrackDAO().addTrack(location, true);
         }
     }, __PRETTY_FUNCTION__);
 
@@ -64,8 +63,8 @@ TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const
     } else {
         // tro's lambda idea. This code calls synchronously!
         m_pTrackCollection->callSync(
-                    [this, &track_dao, &track_id, &pTrack] (void) {
-            pTrack = track_dao.getTrack(track_id);
+                    [this, &track_id, &pTrack] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+            pTrack = pTrackCollectionPrivate->getTrackDAO().getTrack(track_id);
         });
     }
 
@@ -102,8 +101,8 @@ bool BaseExternalPlaylistModel::setPlaylist(QString playlist_path) {
     QStringList columns;
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-                [this, &playlist_path, &playlistViewTable, &columns, &result] (void) {
-        QSqlQuery finder_query(m_pTrackCollection->getDatabase());
+                [this, &playlist_path, &playlistViewTable, &columns, &result] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        QSqlQuery finder_query(pTrackCollectionPrivate->getDatabase());
         finder_query.prepare(QString("SELECT id from %1 where name=:name").arg(m_playlistsTable));
         finder_query.bindValue(":name", playlist_path);
 
@@ -132,8 +131,8 @@ bool BaseExternalPlaylistModel::setPlaylist(QString playlist_path) {
         columns << "track_id";
         columns << "position";
 
-        QSqlQuery query(m_pTrackCollection->getDatabase());
-        FieldEscaper f(m_pTrackCollection->getDatabase());
+        QSqlQuery query(pTrackCollectionPrivate->getDatabase());
+        FieldEscaper f(pTrackCollectionPrivate->getDatabase());
         QString queryString = QString(
                     "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
                     "SELECT %2 FROM %3 WHERE playlist_id = %4")

@@ -50,8 +50,12 @@ RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackColle
     m_isActivated =  false;
     m_title = tr("Rhythmbox");
 
-    m_database = QSqlDatabase::cloneDatabase(pTrackCollection->getDatabase(),
-                                             "RHYTHMBOX_SCANNER");
+    //TODO(MK,daschuer,nazar): is it ok to do that here?
+    pTrackCollection->callSync( [this] (TrackCollectionPrivate* pTrackCollectionPrivate){
+        m_database = QSqlDatabase::cloneDatabase(pTrackCollectionPrivate->getDatabase(),
+                                                 "RHYTHMBOX_SCANNER");
+    }, __PRETTY_FUNCTION__);
+
 
     //Open the database connection in this thread.
     if (!m_database.open()) {

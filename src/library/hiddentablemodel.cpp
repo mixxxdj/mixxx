@@ -18,8 +18,8 @@ void HiddenTableModel::setTableModel(int id){
     const QString tableName("hidden_songs");
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-            [this, &tableName] (void) {
-        QSqlQuery query(m_pTrackCollection->getDatabase());
+            [this, &tableName] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        QSqlQuery query(pTrackCollectionPrivate->getDatabase());
 
         QStringList columns;
         columns << "library." + LIBRARYTABLE_ID;
@@ -57,11 +57,11 @@ void HiddenTableModel::purgeTracks(const QModelIndexList& indices) {
 
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(
-                [this, trackIds] (void) {
-        m_trackDAO.purgeTracks(trackIds);
+                [this, trackIds] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        pTrackCollectionPrivate->getTrackDAO().purgeTracks(trackIds);
         // TODO(rryan) : do not select, instead route event to BTC and notify from
         // there.
-        select(); //Repopulate the data model.
+        select(pTrackCollectionPrivate); //Repopulate the data model.
     }, __PRETTY_FUNCTION__);
 }
 
@@ -76,11 +76,11 @@ void HiddenTableModel::unhideTracks(const QModelIndexList& indices) {
 
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(
-                [this, trackIds] (void) {
-        m_trackDAO.unhideTracks(trackIds);
+                [this, trackIds] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        pTrackCollectionPrivate->getTrackDAO().unhideTracks(trackIds);
         // TODO(rryan) : do not select, instead route event to BTC and notify from 
         // there.
-        select(); //Repopulate the data model.
+        select(pTrackCollectionPrivate); //Repopulate the data model.
     }, __PRETTY_FUNCTION__);
 }
 

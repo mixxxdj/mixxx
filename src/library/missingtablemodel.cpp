@@ -16,34 +16,33 @@ MissingTableModel::MissingTableModel(QObject* parent,
 }
 
 void MissingTableModel::init() {
-    // tro's lambda idea. This code calls synchronously!
-    m_pTrackCollection->callSync(
-                [this] (void) {
-        setTableModel();
-    }, __PRETTY_FUNCTION__);
+    setTableModel();
 }
 
 // Must be called from m_pTrackCollection thread
 void MissingTableModel::setTableModel(int id) {
     Q_UNUSED(id);
-    QSqlQuery query(m_pTrackCollection->getDatabase());
-    //query.prepare("DROP VIEW " + playlistTableName);
-    //query.exec();
-    QString tableName("missing_songs");
+		QString tableName("missing_songs");
+    m_pTrackCollection->callSync(
+                [this, &tableName] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+				QSqlQuery query(pTrackCollectionPrivate->getDatabase());
+				//query.prepare("DROP VIEW " + playlistTableName);
+				//query.exec();
 
-    QStringList columns;
-    columns << "library." + LIBRARYTABLE_ID;
+				QStringList columns;
+				columns << "library." + LIBRARYTABLE_ID;
 
-    query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS " + tableName + " AS "
-                  "SELECT "
-                  + columns.join(",") +
-                  " FROM library "
-                  "INNER JOIN track_locations "
-                  "ON library.location=track_locations.id "
-                  "WHERE " + MissingTableModel::MISSINGFILTER);
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-    }
+				query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS " + tableName + " AS "
+											"SELECT "
+											+ columns.join(",") +
+											" FROM library "
+											"INNER JOIN track_locations "
+											"ON library.location=track_locations.id "
+											"WHERE " + MissingTableModel::MISSINGFILTER);
+				if (!query.exec()) {
+						LOG_FAILED_QUERY(query);
+				}
+    }, __PRETTY_FUNCTION__);
 
     QStringList tableColumns;
     tableColumns << LIBRARYTABLE_ID;
@@ -69,11 +68,11 @@ void MissingTableModel::purgeTracks(const QModelIndexList& indices) {
 
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(
-                [this, trackIds] (void) {
-        m_trackDAO.purgeTracks(trackIds);
+                [this, trackIds] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        pTrackCollectionPrivate->getTrackDAO().purgeTracks(trackIds);
         // TODO(rryan) : do not select, instead route event to BTC and notify from
         // there.
-        select(); //Repopulate the data model.
+        select(pTrackCollectionPrivate); //Repopulate the data model.
     }, __PRETTY_FUNCTION__);
 }
 

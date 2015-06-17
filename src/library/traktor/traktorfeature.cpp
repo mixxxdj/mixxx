@@ -87,8 +87,12 @@ TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollectio
 
     m_title = tr("Traktor");
 
-    m_database = QSqlDatabase::cloneDatabase(pTrackCollection->getDatabase(),
+    //TODO(MK,daschuer,nazar): is it ok to do that here?
+    pTrackCollection->callSync( [this] (TrackCollectionPrivate* pTrackCollectionPrivate){
+        m_database = QSqlDatabase::cloneDatabase(pTrackCollectionPrivate->getDatabase(),
                                              "TRAKTOR_SCANNER");
+    }, __PRETTY_FUNCTION__);
+
 
     //Open the database connection in this thread.
     if (!m_database.open()) {

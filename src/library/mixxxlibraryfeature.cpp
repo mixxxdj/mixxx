@@ -24,7 +24,6 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
           m_pLibraryTableModel(new LibraryTableModel(this, pTrackCollection)),
           m_pMissingView(NULL),
           m_pHiddenView(NULL),
-          m_trackDao(pTrackCollection->getTrackDAO()),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection) {
 }
@@ -59,8 +58,8 @@ void MixxxLibraryFeature::init() {
 
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callSync(
-                [this, columns, tableName] (void) {
-        QSqlQuery query(m_pTrackCollection->getDatabase());
+                [this, columns, tableName] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        QSqlQuery query(pTrackCollectionPrivate->getDatabase());
         QString queryString = QString(
                     "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
                     "SELECT %2 FROM library "
@@ -88,25 +87,27 @@ void MixxxLibraryFeature::init() {
 
     BaseTrackCache* pBaseTrackCache = new BaseTrackCache(
         m_pTrackCollection, tableName, LIBRARYTABLE_ID, columns, true);
-    connect(&m_trackDao, SIGNAL(trackDirty(int)),
-            pBaseTrackCache, SLOT(slotTrackDirty(int)),
-            Qt::DirectConnection);
-    connect(&m_trackDao, SIGNAL(trackClean(int)),
-            pBaseTrackCache, SLOT(slotTrackClean(int)),
-            Qt::DirectConnection);
-    connect(&m_trackDao, SIGNAL(trackChanged(int)),
-            pBaseTrackCache, SLOT(slotTrackChanged(int)),
-            Qt::DirectConnection);
-    connect(&m_trackDao, SIGNAL(tracksAdded(QSet<int>)),
-            pBaseTrackCache, SLOT(slotTracksAdded(QSet<int>)),
-            Qt::DirectConnection);
-    connect(&m_trackDao, SIGNAL(tracksRemoved(QSet<int>)),
-            pBaseTrackCache, SLOT(slotTracksRemoved(QSet<int>)),
-            Qt::DirectConnection);
-    connect(&m_trackDao, SIGNAL(dbTrackAdded(TrackPointer)),
-            pBaseTrackCache, SLOT(slotDbTrackAdded(TrackPointer)),
-            Qt::DirectConnection);
 
+        m_pTrackCollection->callSync( [this, &pBaseTrackCache] (TrackCollectionPrivate* pTrackCollectionPrivate){
+        connect(&pTrackCollectionPrivate->getTrackDAO(), SIGNAL(trackDirty(int)),
+                pBaseTrackCache, SLOT(slotTrackDirty(int)),
+                Qt::DirectConnection);
+        connect(&pTrackCollectionPrivate->getTrackDAO(), SIGNAL(trackClean(int)),
+                pBaseTrackCache, SLOT(slotTrackClean(int)),
+                Qt::DirectConnection);
+        connect(&pTrackCollectionPrivate->getTrackDAO(), SIGNAL(trackChanged(int)),
+                pBaseTrackCache, SLOT(slotTrackChanged(int)),
+                Qt::DirectConnection);
+        connect(&pTrackCollectionPrivate->getTrackDAO(), SIGNAL(tracksAdded(QSet<int>)),
+                pBaseTrackCache, SLOT(slotTracksAdded(QSet<int>)),
+                Qt::DirectConnection);
+        connect(&pTrackCollectionPrivate->getTrackDAO(), SIGNAL(tracksRemoved(QSet<int>)),
+                pBaseTrackCache, SLOT(slotTracksRemoved(QSet<int>)),
+                Qt::DirectConnection);
+        connect(&pTrackCollectionPrivate->getTrackDAO(), SIGNAL(dbTrackAdded(TrackPointer)),
+                pBaseTrackCache, SLOT(slotDbTrackAdded(TrackPointer)),
+                Qt::DirectConnection);
+    }, __PRETTY_FUNCTION__);
     m_pBaseTrackCache = QSharedPointer<BaseTrackCache>(pBaseTrackCache);
     m_pTrackCollection->addTrackSource(QString("default"), m_pBaseTrackCache);
 
@@ -166,8 +167,8 @@ void MixxxLibraryFeature::refreshLibraryModels() {
     if (m_pLibraryTableModel) {
         // tro's lambda idea. This code calls synchronously!
         m_pTrackCollection->callSync(
-                [this] (void) {
-            m_pLibraryTableModel->select();
+                [this] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+            m_pLibraryTableModel->select(pTrackCollectionPrivate);
         }, __PRETTY_FUNCTION__);
     }
     if (m_pMissingView) {
@@ -205,9 +206,9 @@ bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
         bool result = false;
         // tro's lambda idea. This code calls synchronously!
         m_pTrackCollection->callSync(
-                [this, &files, &result] (void) {
+                [this, &files, &result] (TrackCollectionPrivate* pTrackCollectionPrivate) {
             // Adds track, does not insert duplicates, handles unremoving logic.
-            QList<int> trackIds = m_trackDao.addTracks(files, true);
+            QList<int> trackIds = pTrackCollectionPrivate->getTrackDAO().addTracks(files, true);
             result = trackIds.size() > 0;
         }, __PRETTY_FUNCTION__);
         return result;

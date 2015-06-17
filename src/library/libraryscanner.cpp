@@ -31,7 +31,7 @@
 
 LibraryScanner::LibraryScanner(TrackCollection* pTrackCollection) :
     m_pTrackCollection(pTrackCollection),
-    m_database(pTrackCollection->getDatabase()),
+    m_database(nullptr),
     m_pProgress(NULL),
     m_libraryHashDao(m_database),
     m_cueDao(m_database),
@@ -83,14 +83,14 @@ LibraryScanner::~LibraryScanner() {
 
     // tro's lambda idea. This code calls Synchronously!
     m_pTrackCollection->callSync(
-                [this] (void) {
+                [this] (TrackCollectionPrivate* pTrackCollectionPrivate) {
         // Do housekeeping on the LibraryHashes table.
-        ScopedTransaction transaction(m_pTrackCollection->getDatabase());
+        ScopedTransaction transaction(pTrackCollectionPrivate->getDatabase());
 
         // Mark the corresponding file locations in the track_locations table as deleted
         // if we find one or more deleted directories.
         QStringList deletedDirs;
-        QSqlQuery query(m_pTrackCollection->getDatabase());
+        QSqlQuery query(pTrackCollectionPrivate->getDatabase());
         query.prepare("SELECT directory_path FROM LibraryHashes "
                       "WHERE directory_deleted=1");
         if (query.exec()) {
@@ -115,7 +115,7 @@ LibraryScanner::~LibraryScanner() {
 
         QString dir;
         foreach(dir, deletedDirs) {
-            m_pTrackCollection->getTrackDAO().markTrackLocationsAsDeleted(dir);
+            pTrackCollectionPrivate->getTrackDAO().markTrackLocationsAsDeleted(dir);
         }
         transaction.commit();
     }, __PRETTY_FUNCTION__);
@@ -178,7 +178,7 @@ void LibraryScanner::run() {
     QTime t;
     t.start();
 
-    m_pTrackCollection->callSync([this](void) {
+    m_pTrackCollection->callSync([this](TrackCollectionPrivate* pTrackCollectionPrivate) {
         // First, we're going to mark all the directories that we've
         // previously hashed as needing verification. As we search through the directory tree
         // when we rescan, we'll mark any directory that does still exist as verified.
@@ -212,7 +212,7 @@ void LibraryScanner::run() {
 
     // tro's lambda idea. This code calls Synchronously!
     m_pTrackCollection->callSync(
-                [this, &bScanFinishedCleanly, &verifiedDirectories, &t] (void) {
+                [this, &bScanFinishedCleanly, &verifiedDirectories, &t] (TrackCollectionPrivate* pTrackCollectionPrivate) {
         // Start a transaction for all the library hashing (moved file detection)
         // stuff.
         ScopedTransaction transaction(m_database);
@@ -353,7 +353,7 @@ void LibraryScanner::addTrackToChunk(const QString filePath) {
     if (m_tracksListInCnunk.count() < MAX_CHUNK_SIZE) {
         m_tracksListInCnunk.append(filePath);
     } else {
-        m_pTrackCollection->callSync( [this] (void) {
+        m_pTrackCollection->callSync( [this] (TrackCollectionPrivate* pTrackCollectionPrivate) {
             addChunkToDatabase();
         }, "addTrackToChunk");
     }

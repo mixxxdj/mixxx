@@ -30,8 +30,8 @@ void LibraryTableModel::setTableModel(int id) {
 
     // TODO(xxx) move this to separate function on accessing DB (create table)
     m_pTrackCollection->callSync(
-            [this, &columns, &tableName] (void) {
-        QSqlQuery query(m_pTrackCollection->getDatabase());
+            [this, &columns, &tableName] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        QSqlQuery query(pTrackCollectionPrivate->getDatabase());
         QString queryString = "CREATE TEMPORARY VIEW IF NOT EXISTS "+tableName+" AS "
                 "SELECT " + columns.join(", ") +
                 " FROM library INNER JOIN track_locations "
@@ -66,9 +66,9 @@ int LibraryTableModel::addTracks(const QModelIndex& index, QList<QString> locati
     int tracksAdded = 0;
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-                [this, &fileInfoList, &tracksAdded] (void) {
-        QList<int> trackIds = m_trackDAO.addTracks(fileInfoList, true);
-        select();
+                [this, &fileInfoList, &tracksAdded] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        QList<int> trackIds = pTrackCollectionPrivate->getTrackDAO().addTracks(fileInfoList, true);
+        select(pTrackCollectionPrivate);
         tracksAdded = trackIds.count();
     }, __PRETTY_FUNCTION__);
     return tracksAdded;

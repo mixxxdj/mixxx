@@ -48,8 +48,6 @@ class AutoDJFeature : public LibraryFeature {
   private:
     ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;
-    CrateDAO& m_crateDao;
-    PlaylistDAO& m_playlistDao;
     const static QString m_sAutoDJViewName;
     TreeItemModel m_childModel;
     DlgAutoDJ* m_pAutoDJView;
@@ -66,9 +64,6 @@ class AutoDJFeature : public LibraryFeature {
     // Its indices correspond one-to-one with tree-items contained by the
     // "Crates" tree-item.
     QList<QPair<int, QString> > m_crateList;
-
-    // How we access the auto-DJ-crates database.
-    AutoDJCratesDAO m_autoDjCratesDao;
 
     // The model-index of the last tree-item that was right-clicked on.
     // Only stored for tree-items contained by the "Crates" tree-item.

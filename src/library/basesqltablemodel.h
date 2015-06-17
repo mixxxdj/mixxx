@@ -56,7 +56,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     void setSort(int column, Qt::SortOrder order);
     void hideTracks(const QModelIndexList& indices);
     int fieldIndex(const QString& fieldName) const;
-    void select();
+    void select(TrackCollectionPrivate* pTrackCollectionPrivate);
     QString getTrackLocation(const QModelIndex& index) const;
     QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent);
 
@@ -87,8 +87,6 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     Qt::ItemFlags readWriteFlags(const QModelIndex &index) const;
 
     TrackCollection* m_pTrackCollection;
-
-    TrackDAO& m_trackDAO;
 
   public slots:
     void slotPopulateQueryResult();

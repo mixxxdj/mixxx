@@ -179,8 +179,8 @@ void Library::slotLoadTrack(TrackPointer pTrack) {
 void Library::slotLoadLocationToPlayer(QString location, QString group) {
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(
-                [this, location, group] (void) {
-        TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
+                [this, location, group] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+        TrackDAO& track_dao = pTrackCollectionPrivate->getTrackDAO();
         int track_id = track_dao.getTrackId(location);
         if (track_id < 0) {
             // Add Track to library

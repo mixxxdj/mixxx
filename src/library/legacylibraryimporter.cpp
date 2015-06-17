@@ -127,7 +127,8 @@ void LegacyLibraryImporter::import() {
                 TrackPointer pTrack(&trackInfo17, &doNothing);
                 // tro's lambda idea. This code calls synchronously!
                 m_pTrackCollection->callSync(
-                        [this, &pTrack] (void) {
+                        [this, &pTrack] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+										Q_UNUSED(pTrackCollectionPrivate);
                     m_trackDao.saveTrack(pTrack);
                 }, __PRETTY_FUNCTION__);
 
@@ -142,8 +143,8 @@ void LegacyLibraryImporter::import() {
 
         // tro's lambda idea. This code calls synchronously!
         m_pTrackCollection->callSync(
-                    [this, &legacyPlaylists, &playlistHashTable] (void) {
-
+                    [this, &legacyPlaylists, &playlistHashTable] (TrackCollectionPrivate* pTrackCollectionPrivate) {
+						Q_UNUSED(pTrackCollectionPrivate);
             //Create the imported playlists
             QListIterator<LegacyPlaylist> it(legacyPlaylists);
             LegacyPlaylist current;
