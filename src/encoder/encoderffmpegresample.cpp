@@ -180,7 +180,8 @@ unsigned int EncoderFfmpegResample::reSample(AVFrame *inframe, quint8 **outbuffe
        // So return before something goes bad
        if(inframe->nb_samples <= 0)
        {
-            return -1;
+            qDebug() << "EncoderFfmpegResample::reSample: nb_samples is zero";
+            return 0;
        }
 
 // Left here for reason!
@@ -259,8 +260,8 @@ unsigned int EncoderFfmpegResample::reSample(AVFrame *inframe, quint8 **outbuffe
 
 #endif // __FFMPEGOLDAPI__
         if (l_iLen < 0) {
-            qDebug() << "Sample format conversion failed!";
-            return -1;
+            qDebug() << "EncoderFfmpegResample::reSample: Sample format conversion failed!";
+            return 0;
         }
         return l_iOutBytes;
     } else {
