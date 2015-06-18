@@ -9,6 +9,7 @@
 class TransformNode {
   public:
     TransformNode() {}
+    virtual ~TransformNode() {}
 
     virtual double transform(double argument) const = 0;
     virtual double transformInverse(double argument) const = 0;
@@ -58,6 +59,7 @@ class TransformNot : public TransformNode {
 
 class ValueTransformer {
   public:
+    ~ValueTransformer();
     double transform(double argument) const;
     double transformInverse(double argument) const;
 

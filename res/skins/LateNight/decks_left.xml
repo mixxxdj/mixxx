@@ -41,14 +41,8 @@
                       <Layout>horizontal</Layout>
                       <SizePolicy>me,me</SizePolicy>
                       <MinimumSize>0,0</MinimumSize>
+                      <MaximumSize>,80</MaximumSize>
                       <Children/>
-                      <Connection>
-                        <ConfigKey>[Master],show_4decks</ConfigKey>
-                        <BindProperty>visible</BindProperty>
-                        <Transform>
-                          <Not/>
-                        </Transform>
-                      </Connection>
                     </WidgetGroup>
                 </Children>
             </WidgetGroup>

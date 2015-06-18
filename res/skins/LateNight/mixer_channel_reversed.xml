@@ -104,6 +104,11 @@ vertical layout and a reversed side-by-side layout for two-deck mode -->
                     <SetVariable name="parameter">1</SetVariable>
                     <SetVariable name="reversed">Reversed</SetVariable>
                 </Template>
+                <WidgetGroup>
+                  <Layout>horizontal</Layout>
+                  <SizePolicy>min,me</SizePolicy>
+                  <Children/>
+                </WidgetGroup>
               </Children>
             </WidgetGroup>
           </Children>
