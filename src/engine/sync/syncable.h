@@ -85,9 +85,11 @@ class SyncableListener {
     virtual void requestEnableSync(Syncable* pSyncable, bool enabled) = 0;
 
     // A Syncable must never call notifyBpmChanged in response to a setMasterBpm()
-    // call.
+    // call.  notifyBpmChanged updates the rate sliders of follower decks.
     virtual void notifyBpmChanged(Syncable* pSyncable, double bpm,
                                   bool fileChanged=false) = 0;
+    // notifyInstantaneousBpmChanged does change the rate of follower decks, but
+    // does not update their rate sliders.
     virtual void notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) = 0;
 
     // Notify Syncable that the Syncable's scratching state changed.

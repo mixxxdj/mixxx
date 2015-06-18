@@ -70,6 +70,7 @@ class MidiMasterClock : public QObject, public Clock, public Syncable {
     QScopedPointer<ControlLinPotmeter> m_pMidiClockSyncAdjust;
 
     SyncMode m_mode;
+    double m_dOldBpm = 0.0;
 };
 
 #endif   // MIDIMASTER_H

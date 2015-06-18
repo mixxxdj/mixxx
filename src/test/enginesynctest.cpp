@@ -1464,3 +1464,39 @@ TEST_F(EngineSyncTest, MasterBpmNeverZero) {
     EXPECT_EQ(128.0,
               ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
 }
+
+TEST_F(EngineSyncTest, MidiRateChangeMovesSlider) {
+    // If the midi rate changes, the rate sliders should change on followers.
+    QScopedPointer<ControlObjectThread> pButtonMasterSyncMidi(getControlObjectThread(
+            ConfigKey(m_sMidiClockGroup, "sync_master")));
+    pButtonMasterSyncMidi->slotSet(1);
+    QScopedPointer<ControlObjectThread> pMidiSlider(getControlObjectThread(
+            ConfigKey(m_sMidiClockGroup, "bpm")));
+    pMidiSlider->set(100.0);
+
+    QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
+        ConfigKey(m_sGroup1, "file_bpm")));
+    pFileBpm1->set(80.0);
+
+    QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
+            ConfigKey(m_sGroup1, "sync_mode")));
+    pButtonMasterSync1->slotSet(SYNC_FOLLOWER);
+    ProcessBuffer();
+
+    EXPECT_FLOAT_EQ(getRateSliderValue(1.25),
+                    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
+    EXPECT_FLOAT_EQ(100.0, ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+
+    pMidiSlider->set(120.0);
+    ProcessBuffer();
+    EXPECT_FLOAT_EQ(getRateSliderValue(1.5),
+                    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
+    EXPECT_FLOAT_EQ(120.0, ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+
+    // Setting the deck slider shouldn't work
+    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
+    ProcessBuffer();
+    EXPECT_FLOAT_EQ(getRateSliderValue(1.5),
+                    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
+
+}
