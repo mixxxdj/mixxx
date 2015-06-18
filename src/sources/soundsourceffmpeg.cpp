@@ -137,8 +137,7 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
 
     setChannelCount(m_pCodecCtx->channels);
     setFrameRate(m_pCodecCtx->sample_rate);
-    setFrameCount((m_pFormatCtx->duration * m_pCodecCtx->sample_rate) /
-                  AV_TIME_BASE);
+    setFrameCount((int64_t)round((double)(m_pFormatCtx->duration / AV_TIME_BASE) * m_pCodecCtx->sample_rate));
 
     qDebug() << "SoundSourceFFmpeg::tryOpen: Samplerate: " << getFrameRate() <<
              ", Channels: " <<
@@ -454,6 +453,7 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
 
         // Calculate how many bytes should be copied to buffer
         l_lLeft = size * AUDIOSOURCEFFMPEG_MIXXXFRAME_TO_BYTEOFFSET;
+
         while (l_lLeft > 0) {
             // If Cache is running low read more
             if (l_SObj == NULL || (l_lPos + 5) > m_SCache.size()) {
