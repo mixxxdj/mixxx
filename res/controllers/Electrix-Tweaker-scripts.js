@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 Description:
-Shift button is the small circular button in the middle of the directional buttons at the top
-The encoders, knobs, vertical faders, and small multicolor buttons (with the exception of the first row loopers) control a deck. The left button of row 3 toggles between decks 1 (white) & 3 (purple) on the left half of the controller and decks 2 (white) & 4 (purple) on the right half of the controller.
+The shift buttons are the small circular button in the middle of the arrows at the top and the yellow buttons in the grid at the bottom.
+The encoders, knobs, vertical faders, and small multicolor buttons control a deck.
 
 Big encoder: scroll through library
 Big encoder + shift: scroll through library quickly
@@ -32,7 +32,7 @@ Up and down arrows navigate the left library pane. Press shift and either the up
 Big velocity sensitive buttons: one shot samplers
 	Off when empty, red when loaded
 	Press a button to load the selected sample into a sampler and play it
-	Press a button to play a sample.
+	Press a button to play a sample. When the button is released, the sample will stop playing.
 	Samples will play with their volume proportional to how much force was used to strike the button.
 
 The analog knobs control filters for each deck.
@@ -46,43 +46,39 @@ The small multicolor button below the encoders toggles the mode for the encoders
 		Middle encoder: move loop backwards and forwards
 		Bottom encoder: adjust loop length. Center LED represents 1 beat. Each step to the right doubles the loop size; each step to the left halves the loop size.
 		
-		Top encoder press: toggle between normal and rolling loop mode
 		Middle encoder press: toggle between loop moving and beatjumping
 		Low encoder press: toggle loop on/off
 	
+	In any mode, holding shift and moving the middle encoder scrolls through the 4 pages of hotcues on the button grid.
 	In any mode, holding shift and moving the low encoder scrolls through the track 32 beats at a time.
+When holding shift in any mode and pressing the mode button, a loop will be toggled that is equal to the length selected by the bottom encoder in loop mode.
 
-The small multicolor button above the vertical fader toggles headphone cueing.
-The vertical fader controls volume. Holding shift while moving the fader adjusts pitch.
+Small multicolor button above the vertical fader: toggle headphone cueing
+Shift + headphone button: disable loop. This is especially helpful for loops set manually on the button grid.
+Vertical fader: volume
+Shit + vertical fader: pitch
 The bottom multicolor buttons are play/pause buttons. They are off when a deck is empty, red when loaded and paused, and green when playing.
 Shift + play/pause is the cue button. When previewing from a cue point while a track is paused, let go of shift to let the track continue playing. Let go of the cue button to stop the track and jump back to the cue point.
 
 Small button grid:
-Row 1: loopers (sample decks 1-8)
-	Off when empty, red when loaded and paused, purple when looping
-	Press an empty looper button to the load selected sample into that looper and play it. Press shift and an empty looper button to load the selected sample without playing it.
-	Press a playing looper button to pause it
-	Press shift + a looper button to eject a sample from a loaded looper
-	Loopers on the left half of the controller are assigned to the left of the crossfader; loopers on the right half of the controller are assigned to the right of the crossfader
-Row 2: seeking
-	Left blue button: jump 1 beat back
-	Right blue button: jump 1 beat forward
-	Press shift and either of the blue buttons to jump 4 beats backwards or forewards
-	
-	Left green button: rewind
-	Right green button: fast forward
-	Left green button + shift: seek to beginning of track
-	Right green button + shift: seek to end of track
-Row 3: deck controls
-	From left to right:
-	1: toggle which deck that half of the controller manipulates. Left side controls deck 1 when white, deck 3 when purple. Right side controls deck 2 when white, deck 4 when purple.
-	2: toggle master sync. Shift + sync button syncs the deck once without enabling master sync mode.
-	3: toggle quantize mode
-	4: toggle key
-Row 4: hotcues
-	Off when unset, cyan when set
-	Press an unset hotcue button to set a hotcue. Press a cyan hotcue button to jump to that hotcue. Press shift and a cyan hotcue button to unset that hotcue.
+Rows 1 & 2 are hotcue buttons. By default, they control hotcues 1-8. By pressing shift and turning the middle encoder, they can be switched between 4 pages with 8 hotcues each for a total of 32 hotcues. When there is no hotcue set, they are off.
+To set a hotcue point, simply press a hotcue button that is off. To move a hotcue that is already set, press a yellow shift buttons in the button grid and a hotcue button. To delete a cue point, press the top shift button surrounded by the red arrows and a hotcue button.
+When slip mode is off, pressing a hotcue button will simply jump to that hotcue point.
+When slip mode is on, the deck will jump to the hotcue and keep playing from there as long as the hotcue button is held down. If the deck was playing before any hotcue buttons were pressed, when all hotcue buttons are released, the deck will jump to where it would have been if no hotcue buttons were pressed. If the deck was not playing before any hotcue buttons were pressed, when all hotcue buttons are released, the deck will stop playing.
+
+The vertical green/white buttons on the bottom left of the deck are for seeking. When quantize is off, they are green. The top green button plays the deck in fast-forward and the bottom green button plays it in reverse. When shift is pressed, the top green button jumps to the end of the track and the bottom green button jumps to the beginning of the track. When quantize is on, they are white. The top white button jumps forward 1 beat and the bottom white button jumps backward 1 beat. When shift is pressed, the top white button jumps forward 4 beats and the bottom white button jumps backward 4 beats.
+
+The yellow button is a shift button.
+The button to the left of the yellow shift button toggles slip mode. With shift pressed, a loop in point is placed at the current play position.
+The button to the right of the yellow shift button toggles betwen decks 1 & 3 on the left and decks 2 & 4 on the left. With shift pressed, a loop out point is placed at the current play position.
+
+The button to the left of the bottom green/white navigation button toggles quantize mode. With shift pressed, the beatgrid is aligned to the current play position.
+The next button to the left toggles keylock. With shift pressed, it syncs the key to that of the other deck. When the key of a deck has been changed from its original value, the button will turn white. Pressing the button when it is white will reset the key to its original value.
+The next button to the left (the bottom right button in the deck's grid) toggles sync. With shift pressed, it sync the deck to the other deck without keeping sync mode enabled.
 **/
+
+// Adjust this variable to your liking. The higher it is, the less hard you have to strike the sample pads to play samples loudly.
+ElectrixTweaker.samplerSensitivity = 4
 
 // ====================================================== INITIALIZATION ======================================================
 
