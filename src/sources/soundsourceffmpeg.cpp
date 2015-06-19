@@ -23,6 +23,7 @@ QList<QString> SoundSourceFFmpeg::supportedFileExtensions() {
             list.append("ogg");
         } else if (!strcmp(l_SInputFmt->name, "mov,mp4,m4a,3gp,3g2,mj2")) {
             list.append("m4a");
+            list.append("mp4");
         } else if (!strcmp(l_SInputFmt->name, "mp4")) {
             list.append("mp4");
         } else if (!strcmp(l_SInputFmt->name, "mp3")) {
@@ -32,7 +33,7 @@ QList<QString> SoundSourceFFmpeg::supportedFileExtensions() {
         } else if (!strcmp(l_SInputFmt->name, "opus") ||
                    !strcmp(l_SInputFmt->name, "libopus")) {
             list.append("opus");
-        } else if (!strcmp(l_SInputFmt->name, "wma")) {
+        } else if (!strcmp(l_SInputFmt->name, "wma") or !strcmp(l_SInputFmt->name, "xwma")) {
             list.append("wma");
         }
     }
