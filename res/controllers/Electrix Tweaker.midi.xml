@@ -31,7 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
         <controls>
             <control>
                 <group>[Channel1]</group>
-                <key>ElectrixTweaker.beatjumpBackward</key>
+                <key>ElectrixTweaker.hotcue</key>
                 <status>0x90</status>
                 <midino>0x01</midino>
                 <options>
@@ -40,7 +40,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>ElectrixTweaker.beatjumpForward</key>
+                <key>ElectrixTweaker.hotcue</key>
                 <status>0x90</status>
                 <midino>0x02</midino>
                 <options>
@@ -49,7 +49,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>ElectrixTweaker.backButton</key>
+                <key>ElectrixTweaker.hotcue</key>
                 <status>0x90</status>
                 <midino>0x03</midino>
                 <options>
@@ -58,7 +58,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>ElectrixTweaker.forwardButton</key>
+                <key>ElectrixTweaker.hotcue</key>
                 <status>0x90</status>
                 <midino>0x04</midino>
                 <options>
@@ -67,7 +67,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>ElectrixTweaker.beatjumpBackward</key>
+                <key>ElectrixTweaker.hotcue</key>
                 <status>0x90</status>
                 <midino>0x05</midino>
                 <options>
@@ -76,7 +76,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>ElectrixTweaker.beatjumpForward</key>
+                <key>ElectrixTweaker.hotcue</key>
                 <status>0x90</status>
                 <midino>0x06</midino>
                 <options>
@@ -85,7 +85,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>ElectrixTweaker.backButton</key>
+                <key>ElectrixTweaker.hotcue</key>
                 <status>0x90</status>
                 <midino>0x07</midino>
                 <options>
@@ -94,7 +94,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>ElectrixTweaker.forwardButton</key>
+                <key>ElectrixTweaker.hotcue</key>
                 <status>0x90</status>
                 <midino>0x08</midino>
                 <options>
@@ -103,7 +103,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>ElectrixTweaker.deckToggle</key>
+                <key>ElectrixTweaker.hotcue</key>
                 <status>0x90</status>
                 <midino>0x09</midino>
                 <options>
@@ -112,7 +112,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>ElectrixTweaker.sync</key>
+                <key>ElectrixTweaker.hotcue</key>
                 <status>0x90</status>
                 <midino>0x0A</midino>
                 <options>
@@ -121,7 +121,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>ElectrixTweaker.quantize</key>
+                <key>ElectrixTweaker.hotcue</key>
                 <status>0x90</status>
                 <midino>0x0B</midino>
                 <options>
@@ -130,7 +130,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>ElectrixTweaker.keylock</key>
+                <key>ElectrixTweaker.hotcue</key>
                 <status>0x90</status>
                 <midino>0x0C</midino>
                 <options>
@@ -139,7 +139,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>ElectrixTweaker.deckToggle</key>
+                <key>ElectrixTweaker.hotcue</key>
                 <status>0x90</status>
                 <midino>0x0D</midino>
                 <options>
@@ -148,7 +148,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>ElectrixTweaker.sync</key>
+                <key>ElectrixTweaker.hotcue</key>
                 <status>0x90</status>
                 <midino>0x0E</midino>
                 <options>
@@ -157,7 +157,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>ElectrixTweaker.quantize</key>
+                <key>ElectrixTweaker.hotcue</key>
                 <status>0x90</status>
                 <midino>0x0F</midino>
                 <options>
@@ -166,7 +166,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>ElectrixTweaker.keylock</key>
+                <key>ElectrixTweaker.hotcue</key>
                 <status>0x90</status>
                 <midino>0x10</midino>
                 <options>
@@ -175,7 +175,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>ElectrixTweaker.hotcueButton</key>
+                <key>ElectrixTweaker.forward</key>
                 <status>0x90</status>
                 <midino>0x11</midino>
                 <options>
@@ -184,7 +184,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>ElectrixTweaker.hotcueButton</key>
+                <key>ElectrixTweaker.slipMode</key>
                 <status>0x90</status>
                 <midino>0x12</midino>
                 <options>
@@ -193,7 +193,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>ElectrixTweaker.hotcueButton</key>
+                <key>ElectrixTweaker.shiftButton</key>
                 <status>0x90</status>
                 <midino>0x13</midino>
                 <options>
@@ -202,7 +202,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>ElectrixTweaker.hotcueButton</key>
+                <key>ElectrixTweaker.deckToggle</key>
                 <status>0x90</status>
                 <midino>0x14</midino>
                 <options>
@@ -211,7 +211,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>ElectrixTweaker.hotcueButton</key>
+                <key>ElectrixTweaker.forward</key>
                 <status>0x90</status>
                 <midino>0x15</midino>
                 <options>
@@ -220,7 +220,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>ElectrixTweaker.hotcueButton</key>
+                <key>ElectrixTweaker.slipMode</key>
                 <status>0x90</status>
                 <midino>0x16</midino>
                 <options>
@@ -229,7 +229,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>ElectrixTweaker.hotcueButton</key>
+                <key>ElectrixTweaker.shiftButton</key>
                 <status>0x90</status>
                 <midino>0x17</midino>
                 <options>
@@ -238,7 +238,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>ElectrixTweaker.hotcueButton</key>
+                <key>ElectrixTweaker.deckToggle</key>
                 <status>0x90</status>
                 <midino>0x18</midino>
                 <options>
@@ -247,7 +247,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>ElectrixTweaker.loop</key>
+                <key>ElectrixTweaker.back</key>
                 <status>0x90</status>
                 <midino>0x19</midino>
                 <options>
@@ -256,7 +256,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>ElectrixTweaker.loop</key>
+                <key>ElectrixTweaker.quantize</key>
                 <status>0x90</status>
                 <midino>0x1A</midino>
                 <options>
@@ -265,7 +265,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>ElectrixTweaker.loop</key>
+                <key>ElectrixTweaker.key</key>
                 <status>0x90</status>
                 <midino>0x1B</midino>
                 <options>
@@ -274,7 +274,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>ElectrixTweaker.loop</key>
+                <key>ElectrixTweaker.sync</key>
                 <status>0x90</status>
                 <midino>0x1C</midino>
                 <options>
@@ -283,7 +283,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>ElectrixTweaker.loop</key>
+                <key>ElectrixTweaker.back</key>
                 <status>0x90</status>
                 <midino>0x1D</midino>
                 <options>
@@ -292,7 +292,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>ElectrixTweaker.loop</key>
+                <key>ElectrixTweaker.quantize</key>
                 <status>0x90</status>
                 <midino>0x1E</midino>
                 <options>
@@ -301,7 +301,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>ElectrixTweaker.loop</key>
+                <key>ElectrixTweaker.key</key>
                 <status>0x90</status>
                 <midino>0x1F</midino>
                 <options>
@@ -310,7 +310,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>ElectrixTweaker.loop</key>
+                <key>ElectrixTweaker.sync</key>
                 <status>0x90</status>
                 <midino>0x20</midino>
                 <options>
