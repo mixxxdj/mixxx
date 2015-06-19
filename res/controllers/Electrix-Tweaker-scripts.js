@@ -546,7 +546,7 @@ ElectrixTweaker.oneShot = function (channel, control, value, status, group) {
 				engine.setValue(group, 'eject', 1)
 				engine.beginTimer(250, 'engine.setValue("'+group+'", "eject", 0)', true)
 			} else {
-				engine.setValue(group, 'volume', script.absoluteNonLin(value, 0, .25, 1))
+				engine.setValue(group, 'volume', script.absoluteNonLin(value * ElectrixTweaker.samplerSensitivity, 0, .25, 1))
 				engine.setValue(group, 'playposition', 0)
 				engine.setValue(group, 'play', 1)
 			}
