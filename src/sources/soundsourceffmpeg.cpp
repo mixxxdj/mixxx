@@ -410,6 +410,7 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
     quint32 l_lLeft = 0;
     quint32 l_lOffset = 0;
     quint32 l_lBytesToCopy = 0;
+    bool l_bEndOfFile = false;
 
     char *l_pBuffer = (char *)buffer;
 
@@ -456,18 +457,16 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
 
         while (l_lLeft > 0) {
             // If Cache is running low read more
-            if (l_SObj == NULL || (l_lPos + 5) > m_SCache.size()) {
+            if ((l_SObj == NULL || (l_lPos + 5) > m_SCache.size()) && l_bEndOfFile == false) {
                 offset = l_SObj->startFrame;
                 // Read 50 frames from current pos. If we hit file end before that
                 // exit
                 if (readFramesToCache(50, AUDIOSOURCEFFMPEG_FILL_FROM_CURRENTPOS) == false) {
-                    // With MP3 VBR length of audio is just a guess
-                    // it's near good as it can get but it can be too long
-                    // so fill buffer with 0x00 (zero) that we don't get ugly
-                    // noise at the end of the file
-                    memset(l_pBuffer, 0x00, l_lLeft);
-                    return false;
+                    // File has ended.. don't try to cache anymore
+                    // or some fatal error has occurred so.. just don't
+                    l_bEndOfFile = true;
                 }
+
                 // Seek back to correct place
                 for (l_lPos = (m_SCache.size() - 50); l_lPos > 0; l_lPos --) {
                     l_SObj = m_SCache[l_lPos];
@@ -503,7 +502,18 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
                 l_lLeft = 0;
             }
 
-            l_SObj = m_SCache[++ l_lPos];
+            // If we have more items of cache use them
+            // or after that just zero buffer..
+            if ((l_lPos + 1) < m_SCache.size()) {
+                l_SObj = m_SCache[++ l_lPos];
+            } else {
+                // With MP3 VBR length of audio is just a guess
+                // it's near good as it can get but it can be too long
+                // so fill buffer with 0x00 (zero) that we don't get ugly
+                // noise at the end of the file
+                memset(l_pBuffer, 0x00, l_lLeft);
+                l_lLeft = 0;
+            }
         }
 
         m_lCacheLastPos = --l_lPos;
