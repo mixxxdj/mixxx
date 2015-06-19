@@ -137,7 +137,7 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
 
     setChannelCount(m_pCodecCtx->channels);
     setFrameRate(m_pCodecCtx->sample_rate);
-    setFrameCount((int64_t)round((double)(m_pFormatCtx->duration / AV_TIME_BASE) * m_pCodecCtx->sample_rate));
+    setFrameCount((qint64)round((double)((double)m_pFormatCtx->duration * (double)m_pCodecCtx->sample_rate) / (double)AV_TIME_BASE));
 
     qDebug() << "SoundSourceFFmpeg::tryOpen: Samplerate: " << getFrameRate() <<
              ", Channels: " <<
