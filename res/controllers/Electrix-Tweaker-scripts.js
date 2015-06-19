@@ -1025,7 +1025,7 @@ ElectrixTweaker.sync = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
 	if (value) {
 		if (ElectrixTweaker.shift) {
-			engine.setValue(group, 'beatsync', 1)
+			engine.setValue(group, 'rate', 0)
 		} else {
 			engine.setValue(group, 'sync_enabled', ! engine.getValue(group, 'sync_enabled'))
 		}
