@@ -461,6 +461,11 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
                 // Read 50 frames from current pos. If we hit file end before that
                 // exit
                 if (readFramesToCache(50, AUDIOSOURCEFFMPEG_FILL_FROM_CURRENTPOS) == false) {
+                    // With MP3 VBR length of audio is just a guess
+                    // it's near good as it can get but it can be too long
+                    // so fill buffer with 0x00 (zero) that we don't get ugly
+                    // noise at the end of the file
+                    memset(l_pBuffer, 0x00, l_lLeft);
                     return false;
                 }
                 // Seek back to correct place
