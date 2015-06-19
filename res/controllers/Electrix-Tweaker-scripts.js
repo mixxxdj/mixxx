@@ -47,7 +47,7 @@ The small multicolor button below the encoders toggles the mode for the encoders
 		Bottom encoder: adjust loop length. Center LED represents 1 beat. Each step to the right doubles the loop size; each step to the left halves the loop size.
 		
 		Middle encoder press: toggle between loop moving and beatjumping
-		Low encoder press: toggle loop on/off
+		Low encoder press: toggle loop on/off. With slip mode on, the loop will be a rolling loop. That is, when the loop is disabled, the deck will jump to where it would have been if the loop was not activated.
 	
 	In any mode, holding shift and moving the middle encoder scrolls through the 4 pages of hotcues on the button grid.
 	In any mode, holding shift and moving the low encoder scrolls through the track 32 beats at a time.
@@ -61,8 +61,10 @@ The bottom multicolor buttons are play/pause buttons. They are off when a deck i
 Shift + play/pause is the cue button. When previewing from a cue point while a track is paused, let go of shift to let the track continue playing. Let go of the cue button to stop the track and jump back to the cue point.
 
 Small button grid:
+The button grid is divided in half with each side controlling a deck. If that side of the controller is controlling deck 1 or 2, the hotcues are cyan and the switches are blue. If it is controlling deck 3 or 4, the hotcues are red and the switches are magenta.
+
 Rows 1 & 2 are hotcue buttons. By default, they control hotcues 1-8. By pressing shift and turning the middle encoder, they can be switched between 4 pages with 8 hotcues each for a total of 32 hotcues. When there is no hotcue set, they are off.
-To set a hotcue point, simply press a hotcue button that is off. To move a hotcue that is already set, press a yellow shift buttons in the button grid and a hotcue button. To delete a cue point, press the top shift button surrounded by the red arrows and a hotcue button.
+To set a hotcue point, simply press a hotcue button that is off. To move a hotcue that is already set, press a yellow shift button in the grid and a hotcue button. To delete a cue point, press the top shift button surrounded by the red arrows and a hotcue button.
 When slip mode is off, pressing a hotcue button will simply jump to that hotcue point.
 When slip mode is on, the deck will jump to the hotcue and keep playing from there as long as the hotcue button is held down. If the deck was playing before any hotcue buttons were pressed, when all hotcue buttons are released, the deck will jump to where it would have been if no hotcue buttons were pressed. If the deck was not playing before any hotcue buttons were pressed, when all hotcue buttons are released, the deck will stop playing.
 
@@ -74,7 +76,7 @@ The button to the right of the yellow shift button toggles betwen decks 1 & 3 on
 
 The button to the left of the bottom green/white navigation button toggles quantize mode. With shift pressed, the beatgrid is aligned to the current play position.
 The next button to the left toggles keylock. With shift pressed, it syncs the key to that of the other deck. When the key of a deck has been changed from its original value, the button will turn white. Pressing the button when it is white will reset the key to its original value.
-The next button to the left (the bottom right button in the deck's grid) toggles sync. With shift pressed, it sync the deck to the other deck without keeping sync mode enabled.
+The next button to the left (the bottom right button in the deck's grid) toggles sync. With shift pressed, it resets the speed (if sync is enabled, this will snap the tempo of all other tracks with sync enabled too).
 **/
 
 // Adjust this variable to your liking. The higher it is, the less hard you have to strike the sample pads to play samples loudly.
@@ -886,7 +888,6 @@ ElectrixTweaker.hotcue = function (channel, control, value, status, group) {
 	var cueButton = 4 + row*4 - (ElectrixTweaker.buttons[group]['hotcues'][row][3] - control)
 	var cue = cueButton + (8 * ElectrixTweaker.hotcuePage[group])
 	if (value) {
-		print(ElectrixTweaker.topShift)
 		if (engine.getValue(group, 'hotcue_'+cue+'_enabled')) {
 			if (ElectrixTweaker.shift && (! ElectrixTweaker.topShift)) {
 				engine.setValue(group, 'hotcue_'+cue+'_set', 1)
@@ -906,10 +907,8 @@ ElectrixTweaker.hotcue = function (channel, control, value, status, group) {
 		} else {
 			engine.setValue(group, 'hotcue_'+cue+'_set', 1)
 		}
-	} else {
-		ElectrixTweaker.hotcuesPressed[group][cueButton] = false
-		
-		if (ElectrixTweaker.slipMode[group]) {
+	} else if (! value && ElectrixTweaker.slipMode[group]) {
+			ElectrixTweaker.hotcuesPressed[group][cueButton] = false
 			if (! engine.getValue(group, 'slip_enabled')) { // if cue jugging started from pause
 				if (ElectrixTweaker.playPressedWhileCueJuggling[group]) {
 					ElectrixTweaker.playPressedWhileCueJuggling[group] = false
@@ -919,7 +918,6 @@ ElectrixTweaker.hotcue = function (channel, control, value, status, group) {
 			} else if (! ElectrixTweaker.anyHotcuesPressed(group)) {
 				engine.setValue(group, 'slip_enabled', 0)
 			}
-		}
 	}
 }
 ElectrixTweaker.hotcueLED = function (value, group, control) {
