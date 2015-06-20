@@ -259,8 +259,8 @@ ElectrixTweaker.samplerRegEx = /\[Sampler(\d+)\]/
 ElectrixTweaker.channelRegEx = /\[Channel(\d+)\]/
 
 ElectrixTweaker.init = function () {
-	if (engine.getValue('[Master]', 'num_samplers') < 16) {
-		engine.setValue('[Master]', 'num_samplers', 16)
+	if (engine.getValue('[Master]', 'num_samplers') < 8) {
+		engine.setValue('[Master]', 'num_samplers', 8)
 	}
 	engine.softTakeover('[Master]', 'headMix', true)
 	engine.softTakeover('[Master]', 'headVolume', true)
