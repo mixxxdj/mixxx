@@ -806,6 +806,9 @@ ElectrixTweaker.lowEncoderPress = function (channel, control, value, status, gro
 				}
 				break
 		}
+	} else if (ElectrixTweaker.mode[group] == 'loop' && ElectrixTweaker.slipMode[group]) {
+		engine.setValue(group, 'slip_enabled', ! engine.getValue(group, 'slip_enabled'))
+		engine.setValue(group, 'reloop_exit', 1)
 	}
 }
 ElectrixTweaker.loopButtonToggle = function (value, group, control) {
