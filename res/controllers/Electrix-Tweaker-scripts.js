@@ -310,7 +310,6 @@ ElectrixTweaker.connectDeckControls = function (group, remove) {
 	
 	var controlsToFunctions = {
 		'pfl': ElectrixTweaker.pflButtonLED,
-		'track_samples': ElectrixTweaker.playButtonLED,
 		'track_samples': ElectrixTweaker.arrowSideLED,
 		'play': ElectrixTweaker.playButtonLED,
 		'playposition': ElectrixTweaker.playButtonLED,
@@ -506,11 +505,13 @@ ElectrixTweaker.bigEncoderButton = function (channel, control, value, status, gr
 }
 ElectrixTweaker.arrowSide = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
-	if (ElectrixTweaker.shift) {
-		engine.setValue(group, 'eject', 1)
-		engine.beginTimer(250, 'engine.setValue("'+group+'", "eject", 0)', true)
-	} else {
-		engine.setValue(group, 'LoadSelectedTrack', 1)
+	if (value) {
+		if (ElectrixTweaker.shift) {
+				engine.setValue(group, 'eject', 1)
+				engine.beginTimer(250, 'engine.setValue("'+group+'", "eject", 0)', true)
+		} else {
+			engine.setValue(group, 'LoadSelectedTrack', 1)
+		}
 	}
 }
 ElectrixTweaker.arrowSideLED = function (value, group, control) {
@@ -857,17 +858,19 @@ ElectrixTweaker.playButtonLED = function (value, group, control) {
 		) {
 			midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['play'], ElectrixTweaker.colorCodes['green'])
 		}
-	} else {
-		if (engine.getValue(group, 'playposition') < .999) {
-			midi.sendShortMsg(
-				0x90,
-				ElectrixTweaker.buttons[group]['play'],
-				(engine.getValue(group, 'track_samples')) ? ElectrixTweaker.colorCodes['red'] : ElectrixTweaker.colorCodes['off']
-			)
+// 	} else if (control == 'eject') {
+// 		midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['play'], ElectrixTweaker.colorCodes['off'])
+	} else if (engine.getValue(group, 'track_samples')) {
+		if ((engine.getValue(group, 'playposition') < .999)) {
+			midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['play'], ElectrixTweaker.colorCodes['red'])
+// 		} else if (engine.getValue(group, 'playposition') == engine.getValue(group, 'cue_point')) {
+// 			midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['play'], ElectrixTweaker.colorCodes['yellow'])
 		} else {
 			engine.setValue(group, 'cue_gotoandstop', 1)
 // 			midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['play'], ElectrixTweaker.colorCodes['off'])
 		}
+	} else {
+		midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['play'], ElectrixTweaker.colorCodes['off'])
 	}
 }
 
