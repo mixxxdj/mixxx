@@ -963,14 +963,16 @@ ElectrixTweaker.forward = function (channel, control, value, status, group) {
 	if (engine.getValue(group, 'quantize')) {
 		if (value) {
 			if (ElectrixTweaker.shift) {
-				engine.setValue(group, 'beatjump_4_forward', 1)
-			} else {
 				engine.setValue(group, 'beatjump_1_forward', 1)
+			} else {
+				engine.setValue(group, 'beatjump_4_forward', 1)
 			}
 		}
 	} else {
-		if (ElectrixTweaker.shift && value) {
-			engine.setValue(group, 'playposition', 1)
+		if (ElectrixTweaker.shift) {
+// 			engine.setValue(group, 'playposition', 1)
+// 			engine.setValue(group, 'jog', 1)
+			engine.setValue(group, 'rate_temp_up', ! engine.getValue(group, 'rate_temp_up'))
 		} else {
 			engine.setValue(group, 'fwd', value)
 		}
@@ -981,14 +983,16 @@ ElectrixTweaker.back = function (channel, control, value, status, group) {
 	if (engine.getValue(group, 'quantize')) {
 		if (value) {
 			if (ElectrixTweaker.shift) {
-				engine.setValue(group, 'beatjump_4_backward', 1)
-			} else {
 				engine.setValue(group, 'beatjump_1_backward', 1)
+			} else {
+				engine.setValue(group, 'beatjump_4_backward', 1)
 			}
 		}
 	} else {
-		if (ElectrixTweaker.shift && value) {
-			engine.setValue(group, 'playposition', 0)
+		if (ElectrixTweaker.shift) {
+// 			engine.setValue(group, 'playposition', 0)
+// 			engine.setValue(group, 'jog', -1)
+			engine.setValue(group, 'rate_temp_down', ! engine.getValue(group, 'rate_temp_down'))
 		} else {
 			engine.setValue(group, 'back', value)
 		}
