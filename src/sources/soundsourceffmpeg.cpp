@@ -491,7 +491,16 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
                 continue;
             }
 
-            if (l_lLeft > l_SObj->length) {
+            // If bytes left is bigger than FFmpeg frame bytes available
+            // then copy to buffer end and then jump to next FFmpeg frame
+            // to understand this here are some examples
+            //   * MP3 have size 2304 * 4
+            //   * OGG/Opus size 256 - 1024
+            //   * WMA size 32767 - 131070
+            // and all these are separated in packets nor solid stream of bytes
+            // that just can be copied to buffer
+            // so that's why this kind of abstraction is needed
+            if (l_lLeft > (l_SObj->length - l_lOffset)) {
                 // calculate start point of copy
                 l_lBytesToCopy = l_SObj->length - l_lOffset;
                 memcpy(l_pBuffer, (l_SObj->bytes + l_lOffset), l_lBytesToCopy);
@@ -499,7 +508,7 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
                 l_pBuffer += l_lBytesToCopy;
                 l_lLeft -= l_lBytesToCopy;
             } else {
-                memcpy(l_pBuffer, l_SObj->bytes, l_lLeft);
+                memcpy(l_pBuffer, (l_SObj->bytes + l_lOffset), l_lLeft);
                 l_lLeft = 0;
             }
 
