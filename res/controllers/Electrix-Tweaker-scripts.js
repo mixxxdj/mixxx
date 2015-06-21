@@ -47,7 +47,7 @@ The small multicolor button below the encoders toggles the mode for the encoders
 		Bottom encoder: adjust loop length. Center LED represents 1 beat. Each step to the right doubles the loop size; each step to the left halves the loop size.
 		
 		Middle encoder press: toggle between loop moving and beatjumping
-		Low encoder press: toggle loop on/off. With slip mode on, the loop will be a rolling loop. That is, when the loop is disabled, the deck will jump to where it would have been if the loop was not activated.
+		Low encoder press: toggle loop on/off. With slip mode on, the loop will be a rolling loop and only be active as long as the encoder is held down. That is, when the loop is disabled, the deck will jump to where it would have been if the loop was not activated.
 	
 	In any mode, holding shift and moving the middle encoder scrolls through the 4 pages of hotcues on the button grid.
 	In any mode, holding shift and moving the low encoder scrolls through the track 32 beats at a time.
@@ -66,9 +66,9 @@ The button grid is divided in half with each side controlling a deck. If that si
 Rows 1 & 2 are hotcue buttons. By default, they control hotcues 1-8. By pressing shift and turning the middle encoder, they can be switched between 4 pages with 8 hotcues each for a total of 32 hotcues. When there is no hotcue set, they are off.
 To set a hotcue point, simply press a hotcue button that is off. To move a hotcue that is already set, press a yellow shift button in the grid and a hotcue button. To delete a cue point, press the top shift button surrounded by the red arrows and a hotcue button.
 When slip mode is off, pressing a hotcue button will simply jump to that hotcue point.
-When slip mode is on, the deck will jump to the hotcue and keep playing from there as long as the hotcue button is held down. If the deck was playing before any hotcue buttons were pressed, when all hotcue buttons are released, the deck will jump to where it would have been if no hotcue buttons were pressed. If the deck was not playing before any hotcue buttons were pressed, when all hotcue buttons are released, the deck will stop playing.
+When slip mode is on, the deck will jump to the hotcue and keep playing from there as long as the hotcue button is held down. If the deck was playing before any hotcue buttons were pressed, when all hotcue buttons are released, the deck will jump to where it would have been if no hotcue buttons were pressed. If the deck was not playing before any hotcue buttons were pressed, when all hotcue buttons are released, the deck will jump back to the last pressed hotcue and stop playing. To prevent the track from stopping, press play or turn off slip mode while holding down a hotcue button.
 
-The vertical green/white buttons on the bottom left of the deck are for seeking. When quantize is off, they are green. The top green button plays the deck in fast-forward and the bottom green button plays it in reverse. When shift is pressed, the top green button jumps to the end of the track and the bottom green button jumps to the beginning of the track. When quantize is on, they are white. The top white button jumps forward 1 beat and the bottom white button jumps backward 1 beat. When shift is pressed, the top white button jumps forward 4 beats and the bottom white button jumps backward 4 beats.
+The vertical green/white buttons on the bottom left of the deck are for seeking. When quantize is off, they are green. The top green button plays the deck in fast-forward and the bottom green button plays it in reverse. When shift is pressed with quantize off, they are temporary rate adjustment buttons. When quantize is on, they are white and jump forward/backward 4 beats. When shift is pressed with quantize on, they jump forward/backward 1 beat.
 
 The yellow button is a shift button.
 The button to the left of the yellow shift button toggles slip mode. With shift pressed, a loop in point is placed at the current play position.
