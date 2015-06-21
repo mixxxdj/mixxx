@@ -95,7 +95,7 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
 #endif
 
     // Retrieve stream information
-    if (avformat_find_stream_info(m_pFormatCtx, NULL)<0) {
+    if (avformat_find_stream_info(m_pFormatCtx, NULL) < 0) {
         qDebug() << "SoundSourceFFmpeg::tryOpen: cannot open" << qBAFilename;
         return ERR;
     }
@@ -104,13 +104,14 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     //av_dump_format(m_pFormatCtx, 0, qBAFilename.constData(), false);
 
     // Find the first audio stream
-    m_iAudioStream=-1;
+    m_iAudioStream = -1;
 
-    for (i=0; i<m_pFormatCtx->nb_streams; i++)
-        if (m_pFormatCtx->streams[i]->codec->codec_type==AVMEDIA_TYPE_AUDIO) {
-            m_iAudioStream=i;
+    for (i = 0; i < m_pFormatCtx->nb_streams; i++)
+        if (m_pFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_AUDIO) {
+            m_iAudioStream = i;
             break;
         }
+
     if (m_iAudioStream == -1) {
         qDebug() <<
                  "SoundSourceFFmpeg::tryOpen: cannot find an audio stream: cannot open"
@@ -119,10 +120,10 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
     }
 
     // Get a pointer to the codec context for the audio stream
-    m_pCodecCtx=m_pFormatCtx->streams[m_iAudioStream]->codec;
+    m_pCodecCtx = m_pFormatCtx->streams[m_iAudioStream]->codec;
 
     // Find the decoder for the audio stream
-    if (!(m_pCodec=avcodec_find_decoder(m_pCodecCtx->codec_id))) {
+    if (!(m_pCodec = avcodec_find_decoder(m_pCodecCtx->codec_id))) {
         qDebug() << "SoundSourceFFmpeg::tryOpen: cannot find a decoder for" <<
                  qBAFilename;
         return ERR;
@@ -147,6 +148,7 @@ Result SoundSourceFFmpeg::tryOpen(const AudioSourceConfig& /*audioSrcCfg*/) {
         qDebug() << "ffmpeg: No support for more than 2 channels!";
         return ERR;
     }
+
     return OK;
 }
 
