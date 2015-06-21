@@ -66,7 +66,7 @@ The button grid is divided in half with each side controlling a deck. If that si
 Rows 1 & 2 are hotcue buttons. By default, they control hotcues 1-8. By pressing shift and turning the middle encoder, they can be switched between 4 pages with 8 hotcues each for a total of 32 hotcues. When there is no hotcue set, they are off.
 To set a hotcue point, simply press a hotcue button that is off. To move a hotcue that is already set, press a yellow shift button in the grid and a hotcue button. To delete a cue point, press the top shift button surrounded by the red arrows and a hotcue button.
 When slip mode is off, pressing a hotcue button will simply jump to that hotcue point.
-When slip mode is on, the deck will jump to the hotcue and keep playing from there as long as the hotcue button is held down. If the deck was playing before any hotcue buttons were pressed, when all hotcue buttons are released, the deck will jump to where it would have been if no hotcue buttons were pressed. If the deck was not playing before any hotcue buttons were pressed, when all hotcue buttons are released, the deck will jump back to the last pressed hotcue and stop playing. To prevent the track from stopping, press play or turn off slip mode while holding down a hotcue button.
+When slip mode is on, the deck will jump to the hotcue and keep playing from there as long as the hotcue button is held down. If the deck was playing before any hotcue buttons were pressed, when all hotcue buttons are released, the deck will jump to where it would have been if no hotcue buttons were pressed. If the deck was not playing before any hotcue buttons were pressed, when all hotcue buttons are released, the deck will jump back to the last pressed hotcue and stop playing.
 
 The vertical green/white buttons on the bottom left of the deck are for seeking. When quantize is off, they are green. The top green button plays the deck in fast-forward and the bottom green button plays it in reverse. When shift is pressed with quantize off, they are temporary rate adjustment buttons. When quantize is on, they are white and jump forward/backward 4 beats. When shift is pressed with quantize on, they jump forward/backward 1 beat.
 
@@ -838,16 +838,18 @@ ElectrixTweaker.playButton = function (channel, control, value, status, group) {
 	if (ElectrixTweaker.shift) {
 		engine.setValue(group, 'cue_default', value)
 	} else if (value) {
-		if (ElectrixTweaker.anyHotcuesPressed(group)) {
-			ElectrixTweaker.playPressedWhileCueJuggling[group] = true
-			engine.trigger(group, 'play')
-		} else {
+// 		if (ElectrixTweaker.anyHotcuesPressed(group)) {
+// 			ElectrixTweaker.playPressedWhileCueJuggling[group] = true
+// 			for (i=0; i <= 32; i++) {
+// 				engine.setValue(group, 'hotcue_'+i+'_activate', 0)
+// 			}
+// 		} else {
 			if (engine.getValue(group, 'playposition') == 1) {
 				engine.setValue(group, 'start_play', 1)
 			} else {
 				engine.setValue(group, 'play', ! engine.getValue(group, 'play'))
 			}
-		}
+// 		}
 	}
 }
 ElectrixTweaker.playButtonLED = function (value, group, control) {
@@ -855,8 +857,8 @@ ElectrixTweaker.playButtonLED = function (value, group, control) {
 		if (
 			(control != 'playposition') // do not spam MIDI signals with each update in playposition while playing
 			&& (
-				(! ElectrixTweaker.anyHotcuesPressed(group)) ||
-				ElectrixTweaker.playPressedWhileCueJuggling[group]
+				(! ElectrixTweaker.anyHotcuesPressed(group))
+// 				|| ElectrixTweaker.playPressedWhileCueJuggling[group]
 			)
 		) {
 			midi.sendShortMsg(0x90, ElectrixTweaker.buttons[group]['play'], ElectrixTweaker.colorCodes['green'])
@@ -904,7 +906,7 @@ ElectrixTweaker.hotcue = function (channel, control, value, status, group) {
 					if (engine.getValue(group, 'play') && (! ElectrixTweaker.anyHotcuesPressed(group))) {
 						engine.setValue(group, 'slip_enabled', 1)
 					}
-					engine.setValue(group, 'hotcue_'+cue+'_gotoandplay', 1)
+					engine.setValue(group, 'hotcue_'+cue+'_activate', 1)
 					ElectrixTweaker.hotcuesPressed[group][cueButton] = true
 				} else {
 					engine.setValue(group, 'hotcue_'+cue+'_goto', 1)
@@ -915,11 +917,15 @@ ElectrixTweaker.hotcue = function (channel, control, value, status, group) {
 		}
 	} else {
 		ElectrixTweaker.hotcuesPressed[group][cueButton] = false
+		engine.setValue(group, 'hotcue_'+cue+'_activate', 0)
+// 		if (ElectrixTweaker.playPressedWhileCueJuggling[group]) {
+// 			engine.setValue(group, 'play', 1)
+// 			ElectrixTweaker.playPressedWhileCueJuggling[group] = false
+// 		}
+		
 		if (ElectrixTweaker.slipMode[group]) {
 			if (! engine.getValue(group, 'slip_enabled')) { // if cue jugging started from pause
-				if (ElectrixTweaker.playPressedWhileCueJuggling[group]) {
-					ElectrixTweaker.playPressedWhileCueJuggling[group] = false
-				} else if (! ElectrixTweaker.anyHotcuesPressed(group)) {
+				if (! ElectrixTweaker.anyHotcuesPressed(group)) {
 					engine.setValue(group, 'hotcue_'+cue+'_gotoandstop', 1)
 				}
 			} else if (! ElectrixTweaker.anyHotcuesPressed(group)) {
@@ -945,12 +951,15 @@ ElectrixTweaker.slipButton = function (channel, control, value, status, group) {
 			engine.setValue(group, 'loop_in', 1)
 		} else {
 			if (ElectrixTweaker.slipMode[group]) {
+// 				if (ElectrixTweaker.anyHotcuesPressed(group)) {
+// 					ElectrixTweaker.playPressedWhileCueJuggling[group] = true
+// 					engine.setValue(group, 'play', 1)
+// 					engine.trigger(group, 'play')
+// 				}
 				var length = ElectrixTweaker.hotcuesPressed[group].length
 				for (i=0; i<=length; i++) {
 					ElectrixTweaker.hotcuesPressed[group][i] = false
 				}
-				ElectrixTweaker.playPressedWhileCueJuggling[group] = true
-				engine.trigger(group, 'play')
 			}
 			
 			ElectrixTweaker.slipMode[group] = ! ElectrixTweaker.slipMode[group]
