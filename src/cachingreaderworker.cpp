@@ -73,8 +73,8 @@ void CachingReaderWorker::processChunkReadRequest(
     const SINT seekFrameIndex =
             m_pAudioSource->seekSampleFrame(chunkFrameIndex);
     if (seekFrameIndex != chunkFrameIndex) {
-        // Failed to seek to the requested index.
-        // Corrupt file? -> Stop reading!
+        // Failed to seek to the requested index. The file might
+        // be corrupt and decoding should be aborted.
         qWarning() << "Failed to seek chunk position"
                 << seekFrameIndex << "<>" << chunkFrameIndex;
         update->status = CHUNK_READ_INVALID;

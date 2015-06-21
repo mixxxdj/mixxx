@@ -535,10 +535,14 @@ SINT SoundSourceMp3::seekSampleFrame(SINT frameIndex) {
     // Decoding starts before the actual target position
     DEBUG_ASSERT(m_curFrameIndex <= frameIndex);
 
-    // Skip (= decode and discard) prefetch data
-    const SINT skipFrameCount = frameIndex - m_curFrameIndex;
-    skipSampleFrames(skipFrameCount);
-    DEBUG_ASSERT(m_curFrameIndex == frameIndex);
+    // Skip (= decode and discard) all samples up to the target position
+    const SINT prefetchFrameCount = frameIndex - m_curFrameIndex;
+    const SINT skipFrameCount = skipSampleFrames(prefetchFrameCount);
+    DEBUG_ASSERT(skipFrameCount <= prefetchFrameCount);
+    if (skipFrameCount < prefetchFrameCount) {
+        qWarning() << "Failed to prefetch sample data while seeking"
+                << skipFrameCount << "<" << prefetchFrameCount;
+    }
 
     DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     return m_curFrameIndex;

@@ -270,19 +270,19 @@ SINT SoundSourceM4A::seekSampleFrame(SINT frameIndex) {
         restartDecoding(sampleBlockId);
         DEBUG_ASSERT(m_curSampleBlockId == sampleBlockId);
     }
+
     // Decoding starts before the actual target position
     DEBUG_ASSERT(m_curFrameIndex <= frameIndex);
-    // Prefetch (decode and discard) all samples up to the target position
+
+    // Skip (= decode and discard) all samples up to the target position
     const SINT prefetchFrameCount = frameIndex - m_curFrameIndex;
-    const SINT skipFrameCount =
-            skipSampleFrames(prefetchFrameCount);
+    const SINT skipFrameCount = skipSampleFrames(prefetchFrameCount);
     DEBUG_ASSERT(skipFrameCount <= prefetchFrameCount);
-    if (skipFrameCount != prefetchFrameCount) {
-        qWarning()
-                << "Failed to skip over prefetched sample frames after seeking @"
-                << m_curFrameIndex;
-        return m_curFrameIndex; // abort
+    if (skipFrameCount < prefetchFrameCount) {
+        qWarning() << "Failed to prefetch sample data while seeking"
+                << skipFrameCount << "<" << prefetchFrameCount;
     }
+
     DEBUG_ASSERT(m_curFrameIndex == frameIndex);
     return m_curFrameIndex;
 }
