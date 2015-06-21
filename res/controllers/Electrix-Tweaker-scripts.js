@@ -938,7 +938,7 @@ ElectrixTweaker.hotcueLED = function (value, group, control) {
 	)
 }
 
-ElectrixTweaker.slipMode = function (channel, control, value, status, group) {
+ElectrixTweaker.slipButton = function (channel, control, value, status, group) {
 	group = ElectrixTweaker.deck[group]
 	if (value) {
 		if (ElectrixTweaker.shift) {

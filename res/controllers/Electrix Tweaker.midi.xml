@@ -184,7 +184,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>ElectrixTweaker.slipMode</key>
+                <key>ElectrixTweaker.slipButton</key>
                 <status>0x90</status>
                 <midino>0x12</midino>
                 <options>
@@ -220,7 +220,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>ElectrixTweaker.slipMode</key>
+                <key>ElectrixTweaker.slipButton</key>
                 <status>0x90</status>
                 <midino>0x16</midino>
                 <options>
