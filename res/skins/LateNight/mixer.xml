@@ -16,7 +16,7 @@
                      <Layout>horizontal</Layout>
                      <SizePolicy>me,max</SizePolicy>
                      <Children>
-                           <WidgetGroup>
+                           <!-- <WidgetGroup>
                               <ObjectName>MasterSync</ObjectName>
                               <SizePolicy>f,me</SizePolicy>
                               <Size>50,</Size>
@@ -58,7 +58,7 @@
                                       </Connection>
                                   </NumberBpm>
                               </Children>
-                          </WidgetGroup>
+                          </WidgetGroup> -->
         		          <WidgetGroup>
         	                <ObjectName>MixerLeftMargin</ObjectName>
         	                <Layout>horizontal</Layout>
