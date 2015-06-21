@@ -283,7 +283,7 @@ SINT SoundSourceM4A::seekSampleFrame(SINT frameIndex) {
                 << skipFrameCount << "<" << prefetchFrameCount;
     }
 
-    DEBUG_ASSERT(m_curFrameIndex == frameIndex);
+    DEBUG_ASSERT(isValidFrameIndex(m_curFrameIndex));
     return m_curFrameIndex;
 }
 
